@@ -144,7 +144,7 @@ are testable and benchmarkable without a GUI.
 | Blob compression / hashing | `zstd`, `blake3` | |
 | HTML safety | `ammonia` | |
 | Calendar data | `calcard` (iCalendar + vCard), `rrule`, `jiff` (time zones) | |
-| D-Bus and desktop | `zbus`, `ashpd` (portals), `oo7` (Secret Service), `ksni` (tray) | Notifications implemented directly on `org.freedesktop.Notifications` via `zbus` (actions, inline reply, activation tokens). |
+| D-Bus and desktop | `zbus`, `ashpd` (portals), `oo7` (Secret Service) | Notifications implemented directly on `org.freedesktop.Notifications` via `zbus` (actions, inline reply, activation tokens); the tray (StatusNotifierItem), dbusmenu and the taskbar count too (§15.2). |
 | Icons | `freedesktop-icons` + `resvg` | |
 | Spell check | `spellbook` | Hunspell dictionaries. |
 | Mail rules on the server | `sieve-rs` (compile) + ManageSieve | |
@@ -701,7 +701,7 @@ the same matching on event attendees ("Meeting with Acme").
 - Notifications with actions and inline reply (§15.1).
 - D-Bus API for the apps and desktop integrations (§14).
 - KRunner runner and GNOME Shell search provider (§15.3), served in-process.
-- Tray icon and unread badge (optional, §15.5).
+- Tray icon and unread count on the taskbar icon (§15.2).
 
 ### 9.2 Lifecycle
 
@@ -1274,12 +1274,51 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
 - Not yet: inline reply, sender pictures (`image-data`), per-organization
   policy.
 
-### 15.2 Taskbar and tray
+### 15.2 Taskbar, tray and global menu
 
-- Unread count on the Plasma task manager icon via
-  `com.canonical.Unity.LauncherEntry` (also Dash-to-Dock on GNOME).
-- Optional tray icon (`ksni`, StatusNotifierItem): unread count, compose,
-  pause sync, quit.
+The count and the tray live in `katna-daemon`, so they stay while the app
+is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
+`dbusmenu`, `icon`), written on zbus rather than with `ksni`.
+
+- **Unread count** on Katna Mail's taskbar or dock icon:
+  `com.canonical.Unity.LauncherEntry` `Update` signals for
+  `application://in.invenia.katna.Mail.desktop` from
+  `/in/invenia/katna/Daemon/LauncherEntry`. The number is the unread
+  messages in every account's Inbox, the same as next to Inbox in the app,
+  recounted half a second after mail changes. Plasma's task manager shows
+  it; on GNOME, Ubuntu Dock, Dash to Dock and Dash to Panel do (the stock
+  GNOME dash shows no counts). Setting `general.unread_badge` (default on).
+- **Tray icon**: a StatusNotifierItem under its own name
+  (`org.kde.StatusNotifierItem-PID-N`), registered with
+  `org.kde.StatusNotifierWatcher` again whenever the watcher restarts.
+  Plasma shows it natively; GNOME needs the AppIndicator extension (on by
+  default on Ubuntu). The icon is drawn in code (the app icon's shapes plus
+  a red badge with the count, `99+` above 99), since the protocol takes
+  pixels and an SVG renderer would grow the daemon. Left click raises the
+  app, middle click starts a new message. The right-click menu
+  (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
+  Quit. Quit closes the app and stops the daemon until the next login or
+  until the app starts it again (D-Bus activation). Setting
+  `general.tray_icon` (default on); `ReloadConfig` applies both settings.
+- **Single instance and actions**: Katna Mail owns `in.invenia.katna.Mail`
+  and serves `org.freedesktop.Application` at `/in/invenia/katna/Mail` with
+  the actions `open-inbox`, `compose`, `preferences`, `open-message` (a
+  message ID) and `quit` (`katna_dbus::app_action`). A second `katna-mail`
+  hands its request to the first and exits. The tray, notifications and
+  the desktop file use this: its actions New Message, Open Inbox and
+  Preferences (right-click on the taskbar icon in Plasma and GNOME) run
+  `katna-mail --compose`, `--inbox` and `--settings`. With `--data-dir` the
+  app stands alone.
+- **KDE global menu**: the app serves its menu bar (File, Edit, View, Go,
+  Message, Settings, Help) with `com.canonical.dbusmenu` at
+  `/in/invenia/katna/Mail/MenuBar`, built from its GPUI actions and their
+  key bindings; items for actions a build lacks are left out, and a click
+  dispatches the action in the window. GPUI cannot announce a menu on
+  Linux, so `vendor/gpui-pre-linux` patches its Linux backend
+  (`[patch.crates-io]`, see `KATNA.md` there): `set_kde_appmenu` gives
+  every normal window `org_kde_kwin_appmenu` on Wayland and the
+  `_KDE_NET_WM_APPMENU_*` properties on X11. Plasma's Global Menu applet and
+  the title-bar menu button then show it.
 
 ### 15.3 KRunner and GNOME Shell search
 
@@ -1496,7 +1535,9 @@ ashpd), IMAP parsing and regex.
 ## 20. Dependency policy
 
 - **GPUI:** pin exact `gpui-pre` and GPUI Kit versions; GPUI types only in
-  `katna-ui`, `katna-chrome` and the GUI apps.
+  `katna-ui`, `katna-chrome` and the GUI apps. `gpui-pre-linux` is a
+  vendored copy with the KDE global menu patch (§15.2); upgrading GPUI means
+  re-applying it (`vendor/gpui-pre-linux/KATNA.md`).
 - **Pimalaya: light forks.** Fork only crates we change. Fork `master`
   mirrors upstream; our changes live on a `katna` branch. Use
   `[patch.crates-io]` in the workspace; drop the patch when upstream merges

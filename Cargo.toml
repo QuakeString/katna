@@ -1,6 +1,8 @@
 [workspace]
 resolver = "3"
 members = ["crates/*", "apps/*", "tools/*"]
+# Patched third-party crates (see [patch.crates-io]); not ours to lint.
+exclude = ["vendor"]
 
 [workspace.package]
 version = "0.0.0"
@@ -74,6 +76,8 @@ io-smtp = { version = "=0.3.0", default-features = false }
 # crates (deny.toml). The crate is imported as `gpui`.
 gpui = { package = "gpui-pre", version = "=0.3.6" }
 gpui-platform = { package = "gpui-pre-platform", version = "=0.3.6", features = ["wayland", "x11"] }
+# GPUI's Linux backend, for `set_kde_appmenu` from the patched copy below.
+gpui-linux = { package = "gpui-pre-linux", version = "=0.3.6", default-features = false }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
@@ -118,3 +122,9 @@ opt-level = "s"
 
 [profile.release.package.regex-syntax]
 opt-level = "s"
+
+# GPUI's Linux backend with KDE global menu support (the window carries the
+# app's dbusmenu address). vendor/gpui-pre-linux/KATNA.md lists the changes;
+# drop this when upstream GPUI has an equivalent.
+[patch.crates-io]
+gpui-pre-linux = { path = "vendor/gpui-pre-linux" }

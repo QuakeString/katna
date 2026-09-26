@@ -32,7 +32,7 @@ use katna_sync::{
     worker::{self, Connector, Event, ImapConnector, Pop3Connector, WorkerConfig},
 };
 
-use crate::{notify::NewMailNotices, secrets::Secrets};
+use crate::{desktop, notify::NewMailNotices, secrets::Secrets};
 
 /// How long a stopping worker may take to log out.
 const STOP_TIMEOUT: Duration = Duration::from_secs(10);
@@ -146,6 +146,8 @@ pub struct Daemon {
     notices: Sender<Notice>,
     /// Desktop notifications, once a session bus has a server for them.
     new_mail: OnceLock<Arc<NewMailNotices>>,
+    /// The taskbar count and the tray, once they run.
+    desktop: OnceLock<desktop::Handle>,
     /// Set once all data is being deleted: nothing starts any more.
     closing: AtomicBool,
     /// Asks the [`crate::Instance`] to delete the files and exit; it
@@ -180,6 +182,7 @@ impl Daemon {
             send_errors: Mutex::default(),
             notices,
             new_mail: OnceLock::new(),
+            desktop: OnceLock::new(),
             closing: AtomicBool::new(false),
             delete_requests: async_channel::bounded(1),
         });
@@ -204,6 +207,11 @@ impl Daemon {
             }
             Err(err) => tracing::warn!(%err, "no desktop notifications"),
         }
+    }
+
+    /// Where settings changes for the taskbar count and the tray go.
+    pub(crate) fn set_desktop(&self, handle: desktop::Handle) {
+        let _ = self.desktop.set(handle);
     }
 
     pub(crate) fn new_mail_notices(&self) -> Option<Arc<NewMailNotices>> {
@@ -565,7 +573,8 @@ impl Daemon {
     }
 
     /// Reads the settings file again and applies what the daemon uses from
-    /// it (`sync.metered`, `notifications.new_mail`). Katna Mail calls this after saving settings.
+    /// it (`sync.metered`, `notifications.new_mail`, the `general` tray and
+    /// badge switches). Katna Mail calls this after saving settings.
     pub fn reload_config(&self) -> Result<(), CommandError> {
         let config = Config::load(&self.paths.config_file())
             .map_err(|err| CommandError::InvalidArgs(err.to_string()))?;
@@ -577,6 +586,9 @@ impl Daemon {
         *self.metered_setting.lock().unwrap() = config.sync.metered;
         if let Some(notices) = self.new_mail_notices() {
             notices.set_enabled(config.notifications.new_mail);
+        }
+        if let Some(desktop) = self.desktop.get() {
+            desktop.settings(config.general.clone());
         }
         self.apply_metered();
         Ok(())
@@ -1130,9 +1142,8 @@ fn unix_now() -> i64 {
         .map_or(0, |elapsed| elapsed.as_secs() as i64)
 }
 
-/// The `sync.metered` setting; the default if the file cannot be read.
 /// The settings file, or the defaults when it cannot be read.
-fn settings(paths: &Paths) -> Config {
+pub(crate) fn settings(paths: &Paths) -> Config {
     Config::load(&paths.config_file()).unwrap_or_else(|err| {
         tracing::warn!(%err, "settings unreadable; using the defaults");
         Config::default()

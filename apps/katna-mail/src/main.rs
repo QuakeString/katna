@@ -10,6 +10,7 @@ mod assets;
 mod daemon;
 mod data;
 mod format;
+mod instance;
 mod outgoing;
 mod sidebar;
 mod signatures;
@@ -24,17 +25,24 @@ use std::process::ExitCode;
 use gpui::{App, AppContext, SharedString, px, size};
 use katna_chrome::{Desktop, Environment, window_options};
 use katna_core::Paths;
-use katna_core::ids::MAIL_APP_ID;
+use katna_core::ids::{MAIL_APP_ID, MAIL_MENU_BAR_PATH};
+use katna_platform::dbusmenu::Menu;
 use katna_platform::font;
 
 const USAGE: &str = "\
-Usage: katna-mail [--data-dir DIR] [--search QUERY]
+Usage: katna-mail [--data-dir DIR] [--search QUERY] [--compose | --inbox | --settings]
+
+When Katna Mail is already running, it comes to the front and does what
+the options ask; a second window does not open.
 
 Options:
   --data-dir DIR   Use DIR/data, DIR/config and DIR/cache instead of the
                    XDG directories (the same layout as katna-search-cli)
   --search QUERY   Start with QUERY in the search box
   --open           Open the first conversation of the list
+  --compose        Start a new message
+  --inbox          Show the Inbox
+  --settings       Open the settings
   -h, --help       Show this help
   -V, --version    Show the version
 
@@ -48,6 +56,7 @@ fn main() -> ExitCode {
     let mut data_dir: Option<PathBuf> = None;
     let mut search: Option<String> = None;
     let mut open_first = false;
+    let mut request = None;
     let mut args = std::env::args_os().skip(1);
     while let Some(arg) = args.next() {
         match arg.to_str() {
@@ -60,6 +69,9 @@ fn main() -> ExitCode {
                 None => return usage_error(),
             },
             Some("--open") => open_first = true,
+            Some(flag @ ("--compose" | "--inbox" | "--settings")) => {
+                request = instance::Request::from_flag(flag);
+            }
             Some("-h" | "--help") => {
                 print!("{USAGE}");
                 return ExitCode::SUCCESS;
@@ -71,6 +83,8 @@ fn main() -> ExitCode {
             _ => return usage_error(),
         }
     }
+    // A private data directory gets a window of its own.
+    let single = data_dir.is_none();
     let paths = match data_dir {
         Some(dir) => Paths::with_root(dir),
         None => match Paths::from_env() {
@@ -84,10 +98,22 @@ fn main() -> ExitCode {
     if let Err(err) = katna_core::logging::init("warn") {
         eprintln!("katna-mail: {err}");
     }
+    let (connection, sender, requests) = match instance::start(request, single) {
+        instance::Started::HandedOff => return ExitCode::SUCCESS,
+        instance::Started::First {
+            connection,
+            sender,
+            requests,
+        } => (connection, sender, requests),
+    };
 
     gpui_platform::application()
         .with_assets(assets::Assets)
         .run(move |cx: &mut App| {
+            // Before the window opens, which reads the menu bar's address.
+            if let Some(connection) = &connection {
+                serve_menu_bar(connection, sender, cx);
+            }
             let env = Environment::from_env();
             let font = ui_font(&env, cx);
             if let Some(font) = &font {
@@ -111,15 +137,62 @@ fn main() -> ExitCode {
                     view
                 })
             });
-            if let Err(err) = opened {
-                eprintln!("katna-mail: cannot open a window: {err}");
-                cx.quit();
-                return;
-            }
+            let handle = match opened {
+                Ok(handle) => handle,
+                Err(err) => {
+                    eprintln!("katna-mail: cannot open a window: {err}");
+                    cx.quit();
+                    return;
+                }
+            };
+            // The window has bound the keys; show them in the menu bar.
+            window::refresh_menu_bar(cx);
+            cx.spawn(async move |cx| {
+                // Keeps the bus name, the app interface and the menu bar
+                // for as long as the app runs.
+                let _connection = connection;
+                while let Ok(request) = requests.recv().await {
+                    let handled = handle.update(cx, |view, window, cx| {
+                        view.handle_request(request, window, cx);
+                    });
+                    if handled.is_err() {
+                        break;
+                    }
+                }
+            })
+            .detach();
             cx.on_window_closed(|cx, _| cx.quit()).detach();
             cx.activate(true);
         });
     ExitCode::SUCCESS
+}
+
+/// Serves the menu bar for the KDE global menu and has GPUI's windows point
+/// to it. A click becomes a [`instance::Request::Menu`] on `sender`.
+fn serve_menu_bar(
+    connection: &katna_dbus::zbus::Connection,
+    sender: async_channel::Sender<instance::Request>,
+    cx: &mut App,
+) {
+    let Some(service) = connection.unique_name().map(|name| name.to_string()) else {
+        return;
+    };
+    let items = window::menu_bar(cx);
+    let served = futures_lite::future::block_on(Menu::serve(
+        connection,
+        MAIL_MENU_BAR_PATH,
+        items,
+        move |action| {
+            let _ = sender.try_send(instance::Request::Menu(action.to_owned()));
+        },
+    ));
+    match served {
+        Ok(menu) => {
+            cx.set_global(window::MenuBar(menu));
+            gpui_linux::set_kde_appmenu(service, MAIL_MENU_BAR_PATH);
+        }
+        Err(err) => tracing::warn!(%err, "no menu bar for the global menu"),
+    }
 }
 
 /// The desktop's UI font if it is installed, else a common one.

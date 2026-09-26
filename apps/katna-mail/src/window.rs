@@ -21,6 +21,7 @@ mod colors;
 mod compose;
 mod context_menu;
 mod dark;
+mod desktop;
 mod keymap;
 mod list;
 mod nav;
@@ -64,6 +65,8 @@ use crate::widgets::{elevation, icon};
 use apps::{APP_RAIL_WIDTH, App as RailApp, People};
 use reader::Conversation;
 use search_panel::SearchPanel;
+
+pub use desktop::{MenuBar, menu_bar, refresh_menu_bar};
 
 actions!(
     katna_mail,

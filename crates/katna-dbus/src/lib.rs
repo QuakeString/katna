@@ -113,6 +113,33 @@ pub mod send_state {
     pub const CANCELLED: &str = "cancelled";
 }
 
+/// Actions Katna Mail serves through `org.freedesktop.Application`
+/// (`ActivateAction`) under its app ID, and the command-line flags that do
+/// the same when it has to be started.
+pub mod app_action {
+    /// Show the Inbox.
+    pub const OPEN_INBOX: &str = "open-inbox";
+    /// Start a new message.
+    pub const COMPOSE: &str = "compose";
+    /// Open the settings.
+    pub const PREFERENCES: &str = "preferences";
+    /// Open one message; the parameter is its ID (`x`).
+    pub const OPEN_MESSAGE: &str = "open-message";
+    /// Close the app.
+    pub const QUIT: &str = "quit";
+
+    /// The command-line flag that starts Katna Mail doing `action`, if it
+    /// has one.
+    pub fn flag(action: &str) -> Option<&'static str> {
+        match action {
+            OPEN_INBOX => Some("--inbox"),
+            COMPOSE => Some("--compose"),
+            PREFERENCES => Some("--settings"),
+            _ => None,
+        }
+    }
+}
+
 /// Message flag names for `SetFlags`.
 pub mod flag {
     pub const SEEN: &str = "seen";
