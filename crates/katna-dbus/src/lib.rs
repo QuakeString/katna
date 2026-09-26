@@ -196,6 +196,18 @@ macro_rules! pim_proxy {
             /// Messages waiting to be sent, failed or cancelled.
             fn outbox(&self) -> zbus::Result<Vec<OutboxItem>>;
 
+            /// Downloads a remote image of a message the user chose to show
+            /// (`https`; `http` is upgraded), at most 8 MB. Fails for
+            /// anything that is not an image. Apps never use the network
+            /// themselves.
+            fn fetch_image(&self, url: &str) -> zbus::Result<Vec<u8>>;
+
+            /// The picture of the organization that sends from `address`
+            /// (its BIMI logo, or its website's icon), cached for a week.
+            /// Empty when there is none, and always for free-mail
+            /// addresses.
+            fn sender_picture(&self, address: &str) -> zbus::Result<Vec<u8>>;
+
             /// Accounts were added or removed.
             #[zbus(signal)]
             fn accounts_changed(&self) -> zbus::Result<()>;

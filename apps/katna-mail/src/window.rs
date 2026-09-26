@@ -18,6 +18,8 @@ mod compose;
 mod list;
 mod nav;
 mod reader;
+mod remote;
+mod rich;
 mod search_panel;
 mod settings;
 
@@ -250,6 +252,8 @@ pub struct MailWindow {
     visible: Range<usize>,
     hovered: Option<usize>,
     reader: Option<Conversation>,
+    /// Remote images and sender pictures of the open conversation.
+    remote: remote::Remote,
     /// Whether a conversation is open: in place of the list with two
     /// panes, beside it with three.
     reading: bool,
@@ -327,6 +331,7 @@ impl MailWindow {
             people_task: None,
             font,
             mail: Mail::open(&paths),
+            remote: remote::Remote::load(&paths),
             accounts: Vec::new(),
             paths,
             config,

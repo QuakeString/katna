@@ -138,6 +138,14 @@ macro_rules! pim_interface {
                 Ok(self.daemon.outbox()?)
             }
 
+            async fn fetch_image(&self, url: String) -> fdo::Result<Vec<u8>> {
+                Ok(self.daemon.fetch_image(&url).await?)
+            }
+
+            async fn sender_picture(&self, address: String) -> fdo::Result<Vec<u8>> {
+                Ok(self.daemon.sender_picture(&address).await?)
+            }
+
             #[zbus(signal)]
             async fn accounts_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
 
