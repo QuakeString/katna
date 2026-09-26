@@ -53,17 +53,22 @@ impl MailWindow {
 
     /// Whether lines show as three stacked lines: the list is narrow.
     fn stacked(&self) -> bool {
-        self.list_width() < STACKED_BELOW
+        self.list_width_of(self.cards_target) < STACKED_BELOW
     }
 
     /// The list card's width once the reading pane is where it is going.
     pub(super) fn list_width(&self) -> f32 {
+        self.list_width_of(self.cards_width)
+    }
+
+    /// The list card's width beside the reading pane in `cards` width.
+    fn list_width_of(&self, cards: f32) -> f32 {
         let open = self.split() && self.reading && self.reader.is_some();
         if open {
-            let pane = (self.cards_width - super::SPLIT_GAP) * self.config.mail.reading_pane_share;
-            self.cards_width - pane - super::SPLIT_GAP
+            let pane = (cards - super::SPLIT_GAP) * self.config.mail.reading_pane_share;
+            cards - pane - super::SPLIT_GAP
         } else {
-            self.cards_width
+            cards
         }
     }
 

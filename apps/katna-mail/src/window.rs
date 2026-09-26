@@ -333,6 +333,9 @@ pub struct MailWindow {
     split_drag: Option<(f32, f32)>,
     /// Width available to the list and the reading pane, at the last frame.
     cards_width: f32,
+    /// The same once the layout's motion settles, so the lines change
+    /// shape once rather than midway through it.
+    cards_target: f32,
     settings_open: bool,
     settings_spring: Spring,
     /// The reading-pane choice of the quick settings under the pointer.
@@ -431,6 +434,7 @@ impl MailWindow {
             pane_spring: Spring::new(motion::SLIDE, 0.0),
             split_drag: None,
             cards_width: 0.0,
+            cards_target: 0.0,
             settings_open: false,
             pane_hover: None,
             settings_spring: Spring::new(motion::SLIDE, 0.0),
@@ -1738,6 +1742,18 @@ impl Render for MailWindow {
         let available =
             (width - shape.rail() - nav_width - shape.card_margin() - settings_width).max(200.0);
         self.cards_width = available;
+        let (rail, margin) = if shape.is_phone() {
+            (0.0, 0.0)
+        } else {
+            (apps::APP_RAIL_WIDTH, 16.0)
+        };
+        let nav = if self.nav_docked() { NAV_WIDTH } else { 0.0 };
+        let settings = if self.settings_open && !settings_floats {
+            SETTINGS_WIDTH
+        } else {
+            0.0
+        };
+        self.cards_target = (width - rail - nav - margin - settings).max(200.0);
 
         let settings = (settings_t > 0.001).then(|| self.render_settings(&th, settings_t, cx));
         let (docked_settings, floating_settings) = if settings_floats {
