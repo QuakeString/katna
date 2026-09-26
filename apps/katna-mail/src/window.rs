@@ -10,8 +10,9 @@
 //! The parts live in submodules: `nav` (top bar and navigation), `list`
 //! (toolbar, tabs and rows), `reader` (the open conversation), `settings`
 //! (quick settings), `search_panel` (search options), `compose`, `apps`
-//! (the app rail), `add_account` (adding an account) and `context_menu`
-//! (the list's right-click menu).
+//! (the app rail), `add_account` (adding an account), `context_menu`
+//! (the list's right-click menu), `onboarding` (the first start) and `tour`
+//! (a walk through the window).
 
 mod accounts;
 mod add_account;
@@ -24,12 +25,14 @@ mod dark;
 mod keymap;
 mod list;
 mod nav;
+mod onboarding;
 mod reader;
 mod remote;
 mod rich;
 mod search_panel;
 mod settings;
 mod settings_page;
+mod tour;
 mod viewer;
 
 use std::collections::{HashMap, HashSet};
@@ -286,6 +289,16 @@ pub struct MailWindow {
     /// Attachment thumbnails and the attachment viewer.
     files: attachments::Files,
     add_account: Option<add_account::AddAccount>,
+    /// The first-start pages, until the first account is in and set up.
+    onboarding: Option<onboarding::Onboarding>,
+    tour: Option<tour::Tour>,
+    tour_marks: tour::Marks,
+    /// Where the parts the tour shows were in the last frame.
+    tour_seen: HashMap<tour::Spot, gpui::Bounds<gpui::Pixels>>,
+    /// An account still waits for its first sync, so an empty folder may
+    /// only be not fetched yet.
+    first_sync: bool,
+    _first_sync_check: Option<Task<()>>,
     /// The account card above the rail's account picture.
     account_menu: bool,
     /// The message last handed to the outbox, for Undo.
@@ -385,6 +398,12 @@ impl MailWindow {
             compose: None,
             files: attachments::Files::default(),
             add_account: None,
+            onboarding: None,
+            tour: None,
+            tour_marks: Default::default(),
+            tour_seen: HashMap::new(),
+            first_sync: false,
+            _first_sync_check: None,
             account_menu: false,
             unsent: None,
             settings_page: None,
@@ -414,6 +433,11 @@ impl MailWindow {
             tracing::info!("{err}");
         }
         window.focus(&this.list_focus, cx);
+        if this.needs_account() {
+            this.onboarding = Some(onboarding::Onboarding::new());
+        } else if !this.config.onboarding.done {
+            this.start_tour(true, window, cx);
+        }
         tracing::info!(elapsed = ?started.elapsed(), lines = this.entries.len(), "mail loaded");
         this
     }
@@ -456,6 +480,33 @@ impl MailWindow {
                 accent: th.accent,
             }));
         th
+    }
+
+    /// No account yet: the store is not made, or has no account.
+    fn needs_account(&self) -> bool {
+        match &self.mail {
+            Err(OpenError::NoStore { .. }) => true,
+            Err(OpenError::Other(_)) => false,
+            Ok(_) => self.accounts.is_empty(),
+        }
+    }
+
+    /// Asks the daemon whether an account waits for its first sync.
+    fn check_first_sync(&mut self, cx: &mut Context<Self>) {
+        let Some(connection) = self.daemon.clone() else {
+            return;
+        };
+        self._first_sync_check = Some(cx.spawn(async move |this, cx| {
+            let pending = daemon::first_sync_pending(&connection).await;
+            this.update(cx, |this, cx| {
+                let pending = pending.unwrap_or(false);
+                if this.first_sync != pending {
+                    this.first_sync = pending;
+                    cx.notify();
+                }
+            })
+            .ok();
+        }));
     }
 
     fn split(&self) -> bool {
@@ -514,6 +565,7 @@ impl MailWindow {
             this.update(cx, |this, cx| {
                 this.daemon = Some(connection.clone());
                 this.watch_sending(connection.clone(), cx);
+                this.check_first_sync(cx);
             })
             .ok();
             let mut changes = match daemon::mail_changes(&connection).await {
@@ -525,7 +577,11 @@ impl MailWindow {
             };
             while changes.next().await.is_some() {
                 cx.background_executor().timer(CHANGE_DELAY).await;
-                if this.update(cx, |this, cx| this.refresh(false, cx)).is_err() {
+                let refreshed = this.update(cx, |this, cx| {
+                    this.refresh(false, cx);
+                    this.check_first_sync(cx);
+                });
+                if refreshed.is_err() {
                     break;
                 }
             }
@@ -1047,6 +1103,9 @@ impl MailWindow {
         } else {
             self.refresh(true, cx);
         }
+        self.first_sync = true;
+        self.check_first_sync(cx);
+        self.onboarding_account_added(cx);
     }
 
     /// Reads the store again, keeping the cursor and the open conversation.
@@ -1574,10 +1633,11 @@ impl MailWindow {
         )
     }
 
-    fn render_error(&self, error: &OpenError, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    fn render_error(&self, error: &OpenError, th: &Theme) -> AnyElement {
         let err = match error {
-            // The daemon makes the store when the first account is added.
-            OpenError::NoStore { .. } => return self.render_welcome(th, cx),
+            // The daemon makes the store when the first account is added;
+            // until then the first-start pages show.
+            OpenError::NoStore { .. } => return div().into_any_element(),
             OpenError::Other(err) => err.clone(),
         };
         let card = page_card(th)
@@ -1596,41 +1656,6 @@ impl MailWindow {
                     .text_color(rgba(th.text_faint))
                     .text_center()
                     .child(err),
-            );
-        div()
-            .size_full()
-            .flex()
-            .flex_col()
-            .child(card)
-            .into_any_element()
-    }
-
-    /// Before the first account: what Katna Mail is and how to begin.
-    fn render_welcome(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        let card = page_card(th)
-            .child(icon("mail", th.text_faint, 64.0))
-            .child(
-                div()
-                    .text_size(px(22.0))
-                    .text_color(rgba(th.text))
-                    .child("Welcome to Katna Mail"),
-            )
-            .child(
-                div()
-                    .max_w(px(460.0))
-                    .text_size(px(14.0))
-                    .line_height(px(21.0))
-                    .text_color(rgba(th.text_faint))
-                    .text_center()
-                    .child(
-                        "Add your mail account to get started. Katna keeps a copy of your \
-                         mail on this computer, so you can read and search it offline.",
-                    ),
-            )
-            .child(
-                crate::widgets::filled_button("welcome-add-account", "Add an account", th)
-                    .mt(px(8.0))
-                    .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx))),
             );
         div()
             .size_full()
@@ -1716,6 +1741,7 @@ impl MailWindow {
 
 impl Render for MailWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        self.tour_new_frame();
         let th = self.theme(window);
         self.release_images(window, cx);
         if let Some(viewer) = &self.files.viewer {
@@ -1768,30 +1794,14 @@ impl Render for MailWindow {
         let available = (viewport - APP_RAIL_WIDTH - nav_width - 16.0 - settings_width).max(200.0);
         self.cards_width = available;
 
+        if self.onboarding.is_none() && self.needs_account() {
+            self.onboarding = Some(onboarding::Onboarding::new());
+        }
+        // The Settings page stays reachable, for example to delete data.
+        let onboarding = self.onboarding() && self.settings_page.is_none();
         let content = match &self.mail {
-            Err(err) => self.render_error(err, &th, cx),
-            Ok(_)
-                if self.app == RailApp::Mail
-                    && self.accounts.is_empty()
-                    && self.settings_page.is_none() =>
-            {
-                div()
-                    .size_full()
-                    .flex()
-                    .flex_row_reverse()
-                    .when(settings_t > 0.001, |d| {
-                        d.child(self.render_settings(&th, settings_t, cx))
-                    })
-                    .child(
-                        div()
-                            .flex_1()
-                            .min_w_0()
-                            .h_full()
-                            .child(self.render_welcome(&th, cx)),
-                    )
-                    .child(self.render_app_rail(&th, cx))
-                    .into_any_element()
-            }
+            _ if onboarding => self.render_onboarding(&th, window, cx),
+            Err(err) => self.render_error(err, &th),
             // Reversed so the navigation paints last, over the cards, when
             // it opens from the rail.
             Ok(_) if self.app == RailApp::Mail => div()
@@ -1829,6 +1839,7 @@ impl Render for MailWindow {
         let danger = self.render_danger(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
+        let tour = self.render_tour(&th, window, cx);
         let content = div()
             .key_context(WINDOW_CONTEXT)
             .relative()
@@ -1865,15 +1876,23 @@ impl Render for MailWindow {
             .children(context_menu)
             .children(danger)
             .children(snackbar)
+            .children(tour)
             .into_any_element();
 
+        // The first-start pages keep the bar empty.
         let bar = Bar {
-            start: self.render_top_start(&th, wide, cx),
-            center: self
-                .mail
-                .is_ok()
+            start: if onboarding {
+                Vec::new()
+            } else {
+                self.render_top_start(&th, wide, cx)
+            },
+            center: (self.mail.is_ok() && !onboarding)
                 .then(|| self.render_search(&th, search_width, search_t, cx)),
-            end: self.render_top_end(&th, cx),
+            end: if onboarding {
+                Vec::new()
+            } else {
+                self.render_top_end(&th, cx)
+            },
             height: Some(TOP_BAR_HEIGHT),
             background: Some(th.page),
         };
