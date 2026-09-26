@@ -174,7 +174,13 @@ impl MailWindow {
                 .unwrap_or_default();
             div()
                 .absolute()
-                .map(|d| if flip_y { d.bottom(px(-8.0)) } else { d.top(px(-8.0)) })
+                .map(|d| {
+                    if flip_y {
+                        d.bottom(px(-8.0))
+                    } else {
+                        d.top(px(-8.0))
+                    }
+                })
                 .map(|d| {
                     if flip_x {
                         d.right(px(MENU_WIDTH - 4.0))
