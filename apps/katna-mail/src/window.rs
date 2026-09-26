@@ -15,6 +15,7 @@
 //! (a walk through the window) and `layout` (phone, tablet and desktop
 //! layouts, by the window's width).
 
+mod account_view;
 mod accounts;
 mod add_account;
 mod apps;
@@ -380,7 +381,7 @@ impl MailWindow {
         let mut this = Self::build(env, paths, font, window, cx);
         keymap::bind(&this.config.shortcuts, cx);
         this.load_tree();
-        if let Some((folder, ancestors)) = this.tree.default_folder() {
+        if let Some((folder, ancestors)) = this.default_folder() {
             this.expanded.extend(ancestors);
             this.rebuild_nav();
             this.open_folder(folder, cx);
@@ -713,7 +714,7 @@ impl MailWindow {
 
     /// With one account the folders stand alone, without an account heading.
     fn rebuild_nav(&mut self) {
-        let mut rows = self.tree.rows(&self.expanded);
+        let mut rows = self.tree.rows(&self.expanded, self.shown_account());
         let accounts = rows
             .iter()
             .filter(|r| matches!(r, sidebar::Row::Account { .. }))
@@ -812,6 +813,7 @@ impl MailWindow {
     }
 
     fn open_folder(&mut self, folder: FolderId, cx: &mut Context<Self>) {
+        self.follow_folder_account(folder);
         let Ok(mail) = &mut self.mail else {
             return;
         };
@@ -1226,7 +1228,7 @@ impl MailWindow {
         if self.listing.is_some() {
             return;
         }
-        if let Some((folder, ancestors)) = self.tree.default_folder() {
+        if let Some((folder, ancestors)) = self.default_folder() {
             self.expanded.extend(ancestors);
             self.rebuild_nav();
             self.open_folder(folder, cx);
@@ -1404,8 +1406,9 @@ impl MailWindow {
                     .and_then(|ix| self.entries.get(ix))
                     .map(|e| e.key);
                 let hits: Vec<MessageId> = results.hits.iter().map(|hit| hit.message).collect();
+                let only = self.shown_account();
                 self.entries = match &self.mail {
-                    Ok(mail) => mail.hit_entries(&hits, self.config.mail.conversations),
+                    Ok(mail) => mail.hit_entries(&hits, self.config.mail.conversations, only),
                     Err(_) => Vec::new(),
                 };
                 self.listing = Some(Listing::Search {
@@ -1453,6 +1456,7 @@ impl MailWindow {
     fn account(&self) -> Option<AccountId> {
         self.folder
             .and_then(|f| self.tree.account_of(f))
+            .or_else(|| self.shown_account())
             .or_else(|| self.accounts.first().map(|a| a.id))
     }
 

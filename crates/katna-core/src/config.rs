@@ -250,6 +250,13 @@ pub struct MailView {
     pub app_labels: bool,
     /// Where each kind of attachment opens.
     pub open: OpenAttachments,
+    /// With several accounts: the folder pane shows one account, picked in
+    /// the account card, or all of them one after another.
+    pub accounts_shown: AccountsShown,
+    /// The account on show with [`AccountsShown::One`], by lower-case
+    /// address; empty for the first.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub current_account: String,
 }
 
 impl Default for MailView {
@@ -265,6 +272,8 @@ impl Default for MailView {
             desktop_colors: true,
             app_labels: true,
             open: OpenAttachments::default(),
+            accounts_shown: AccountsShown::One,
+            current_account: String::new(),
         }
     }
 }
@@ -408,6 +417,17 @@ pub enum ReadingPane {
     Right,
     /// In place of the list: two panes.
     None,
+}
+
+/// [`MailView::accounts_shown`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum AccountsShown {
+    /// One account at a time, as in webmail.
+    #[default]
+    One,
+    /// Every account, one after another.
+    All,
 }
 
 /// [`MailView::density`].
@@ -647,6 +667,21 @@ mod tests {
         );
         assert!(!config.shortcuts.single_keys);
         assert_eq!(config.shortcuts.keys["archive"], ["y", "ctrl-e"]);
+        let text = toml::to_string_pretty(&config).unwrap();
+        assert_eq!(Config::parse(&text).unwrap(), config);
+    }
+
+    #[test]
+    fn one_account_is_shown_by_default() {
+        let config = Config::default();
+        assert_eq!(config.mail.accounts_shown, AccountsShown::One);
+        assert!(config.mail.current_account.is_empty());
+        let config = Config::parse(
+            "[mail]\naccounts_shown = \"all\"\ncurrent_account = \"kay@example.org\"\n",
+        )
+        .unwrap();
+        assert_eq!(config.mail.accounts_shown, AccountsShown::All);
+        assert_eq!(config.mail.current_account, "kay@example.org");
         let text = toml::to_string_pretty(&config).unwrap();
         assert_eq!(Config::parse(&text).unwrap(), config);
     }

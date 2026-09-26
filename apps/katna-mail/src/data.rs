@@ -9,7 +9,7 @@ use std::rc::Rc;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use katna_core::{Account, MailCategory, Paths};
+use katna_core::{Account, AccountId, MailCategory, Paths};
 use katna_search::{Query, SearchIndex, SearchOptions, SearchResults};
 use katna_store::{
     FolderId, FolderSummary, MessageFlags, MessageId, Mode, ParticipantRole, Store, StoredMessage,
@@ -421,30 +421,53 @@ impl Mail {
 
     /// Search hits as lines: grouped into conversations when asked, each
     /// where its best hit is.
-    pub fn hit_entries(&self, hits: &[MessageId], conversations: bool) -> Vec<Entry> {
-        if !conversations {
+    /// Lines for search hits, of account `only` when given.
+    pub fn hit_entries(
+        &self,
+        hits: &[MessageId],
+        conversations: bool,
+        only: Option<AccountId>,
+    ) -> Vec<Entry> {
+        if !conversations && only.is_none() {
             return hits.iter().copied().map(Entry::message).collect();
         }
-        let threads: HashMap<MessageId, ThreadId> = match self.store.messages_by_id(hits) {
-            Ok(messages) => messages
-                .into_iter()
-                .filter_map(|m| Some((m.id, m.thread_id?)))
-                .collect(),
-            Err(err) => {
-                tracing::warn!("reading search hits: {err}");
-                HashMap::new()
-            }
-        };
+        let messages = self.store.messages_by_id(hits).unwrap_or_else(|err| {
+            tracing::warn!("reading search hits: {err}");
+            Vec::new()
+        });
+        let kept: HashMap<MessageId, Option<ThreadId>> = messages
+            .into_iter()
+            .filter(|m| only.is_none_or(|a| a == m.account))
+            .map(|m| (m.id, m.thread_id))
+            .collect();
+        let hits = hits
+            .iter()
+            .filter(|id| only.is_none() || kept.contains_key(id));
+        if !conversations {
+            return hits.copied().map(Entry::message).collect();
+        }
+        let threads: HashMap<MessageId, ThreadId> = kept
+            .iter()
+            .filter_map(|(id, thread)| Some((*id, (*thread)?)))
+            .collect();
         let mut seen = std::collections::HashSet::new();
-        hits.iter()
-            .filter_map(|id| match threads.get(id) {
-                Some(thread) => seen.insert(*thread).then_some(Entry {
-                    key: EntryKey::Thread(*thread),
-                    latest: *id,
-                }),
-                None => Some(Entry::message(*id)),
-            })
-            .collect()
+        hits.filter_map(|id| match threads.get(id) {
+            Some(thread) => seen.insert(*thread).then_some(Entry {
+                key: EntryKey::Thread(*thread),
+                latest: *id,
+            }),
+            None => Some(Entry::message(*id)),
+        })
+        .collect()
+    }
+
+    /// The account of message `id`.
+    pub fn message_account(&self, id: MessageId) -> Option<AccountId> {
+        self.store
+            .messages_by_id(&[id])
+            .ok()?
+            .first()
+            .map(|m| m.account)
     }
 
     /// The messages of a line, oldest first: a whole conversation.

@@ -9,10 +9,12 @@ use gpui::{
     AnyElement, Context, Div, Entity, Focusable, FontWeight, Stateful, Subscription, Window, div,
     prelude::*, px, rgba,
 };
+use katna_core::config::AccountsShown;
 use katna_core::{Account, AccountKind, Config};
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::{InputEvent, TextInput};
 
+use super::settings::Change;
 use super::{Listing, MailWindow, keymap};
 use crate::daemon;
 use crate::data::Mail;
@@ -135,9 +137,38 @@ impl MailWindow {
                 danger_button("delete-all-open", "Delete all Katna data", false, th)
                     .on_click(cx.listener(|this, _, window, cx| this.ask_delete_all(window, cx))),
             );
+        let shown = self.config.mail.accounts_shown;
+        let mut pane = div().flex().flex_col().gap(px(2.0));
+        for (choice, id, label) in [
+            (
+                AccountsShown::One,
+                "page-accounts-one",
+                "One account at a time; switch in the account card",
+            ),
+            (
+                AccountsShown::All,
+                "page-accounts-all",
+                "All accounts, one after another",
+            ),
+        ] {
+            pane = pane.child(self.radio_row(
+                id,
+                label,
+                shown == choice,
+                Change::AccountsShown(choice),
+                th,
+                cx,
+            ));
+        }
         div()
             .flex()
             .flex_col()
+            .child(super::settings_page::row(
+                "Folder pane",
+                Some("Which accounts' folders the pane on the left shows."),
+                pane,
+                th,
+            ))
             .child(super::settings_page::row(
                 "Accounts",
                 Some(

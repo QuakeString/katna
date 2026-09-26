@@ -12,7 +12,7 @@ use gpui::{
     div, prelude::*, px, rgba,
 };
 use katna_core::config::{
-    Density, FileGroup, OpenIn, ReadingPane, Theme as ThemeChoice, UNDO_SEND_CHOICES,
+    AccountsShown, Density, FileGroup, OpenIn, ReadingPane, Theme as ThemeChoice, UNDO_SEND_CHOICES,
 };
 use katna_ui::Ripple;
 use katna_ui::motion;
@@ -37,6 +37,7 @@ pub(super) enum Change {
     AppLabels(bool),
     SingleKeys(bool),
     OpenIn(FileGroup, OpenIn),
+    AccountsShown(AccountsShown),
 }
 
 impl MailWindow {
@@ -346,6 +347,14 @@ impl MailWindow {
             Change::Conversations(on) => {
                 view.conversations = on;
                 relist = true;
+            }
+            Change::AccountsShown(shown) => {
+                view.accounts_shown = shown;
+                // The account on screen stays: it becomes the one shown.
+                if let Some(account) = self.account() {
+                    self.set_shown_account(account);
+                }
+                self.rebuild_nav();
             }
             Change::SingleKeys(on) => {
                 self.config.shortcuts.single_keys = on;
