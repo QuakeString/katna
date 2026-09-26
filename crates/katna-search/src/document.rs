@@ -35,7 +35,9 @@ pub fn message_text(raw: &[u8]) -> MessageText {
             if !body.is_empty() {
                 body.push('\n');
             }
-            body.push_str(&text);
+            // Encrypted inline PGP is noise to search, and decrypted text
+            // is never indexed (docs/ARCHITECTURE.md §19.1).
+            body.push_str(&katna_crypto::without_armor(&text));
         }
     }
     truncate_at_char(&mut body, MAX_BODY_BYTES);
