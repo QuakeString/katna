@@ -25,5 +25,5 @@ Exec=katna-mail --inbox
 
 [Desktop Action preferences]
 Name=Preferences
-Icon=preferences-system
+Icon=preferences-system-symbolic
 Exec=katna-mail --settings
