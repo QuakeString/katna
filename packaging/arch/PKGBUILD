@@ -1,0 +1,92 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Arch Linux package for Katna, built from this git checkout.
+#
+#   cd packaging/arch && makepkg -si
+#
+# makepkg clones the checkout it sits in (committed HEAD only; uncommitted
+# changes are not packaged). See packaging/README.md.
+
+pkgname=katna-git
+pkgver=0.0.0.r0.g0000000
+pkgrel=1
+pkgdesc='Katna Mail and the Katna background sync service'
+arch=('x86_64' 'aarch64')
+url='https://github.com/QuakeString/katna'
+license=('GPL-3.0-or-later')
+# Linked: libxcb, libxkbcommon(-x11), glibc, gcc-libs; fontconfig and
+# freetype2 when found at build time. Loaded at runtime: libwayland-client,
+# libvulkan (vulkan-icd-loader) and libEGL (libglvnd, the OpenGL fallback).
+# dbus: the session bus that katna-daemon and the apps talk over.
+depends=(
+  'dbus'
+  'fontconfig'
+  'freetype2'
+  'gcc-libs'
+  'glibc'
+  'libglvnd'
+  'libxcb'
+  'libxkbcommon'
+  'libxkbcommon-x11'
+  'vulkan-icd-loader'
+  'wayland'
+)
+makedepends=('cargo' 'git')
+optdepends=(
+  'org.freedesktop.secrets: keeps account passwords (GNOME Keyring, KWallet or KeePassXC)'
+  'vulkan-driver: GPU rendering with Vulkan instead of the OpenGL fallback'
+)
+provides=('katna')
+conflicts=('katna')
+# makepkg's LTO flags make the C code that crates build (SQLite, ring,
+# zstd) into GCC LTO objects, which rustc's link step does not handle.
+# Rust code still gets LTO from Cargo's release profile.
+options=('!lto')
+# The repository root, two levels above this file. `git -C` also works
+# from a linked worktree.
+source=("katna::git+file://$(git -C "${startdir:-.}" rev-parse --show-toplevel 2>/dev/null || realpath ../..)")
+sha256sums=('SKIP')
+
+# Binaries that go into the package. katna-calendar is not ready yet.
+_bins=(katna-mail katna-daemon katnactl)
+
+pkgver() {
+  cd katna
+  local version
+  if version=$(git describe --long --tags --abbrev=7 2>/dev/null); then
+    printf '%s' "${version#v}" | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+  else
+    printf '0.0.0.r%s.g%s' "$(git rev-list --count HEAD)" "$(git rev-parse --short=7 HEAD)"
+  fi
+}
+
+prepare() {
+  cd katna
+  export RUSTUP_TOOLCHAIN=stable
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+  cd katna
+  export RUSTUP_TOOLCHAIN=stable
+  export CARGO_TARGET_DIR=target
+  # Two builds: in one, Cargo would give katna-daemon and katnactl the
+  # features GPUI turns on in shared crates, making them bigger for nothing.
+  cargo build --frozen --release --package katna-mail
+  cargo build --frozen --release --package katna-daemon --package katnactl
+}
+
+package() {
+  cd katna
+  local bin
+  for bin in "${_bins[@]}"; do
+    install -Dm755 "target/release/$bin" "$pkgdir/usr/bin/$bin"
+  done
+
+  # The file names are the IDs from katna_core::ids; globs keep them out
+  # of this file (crates/katna-core/tests/packaging.rs checks them).
+  install -Dm644 -t "$pkgdir/usr/lib/systemd/user" packaging/systemd/*.service
+  install -Dm644 -t "$pkgdir/usr/share/dbus-1/services" packaging/dbus/*.service
+  install -Dm644 -t "$pkgdir/usr/share/applications" packaging/desktop/*.desktop
+  install -Dm644 -t "$pkgdir/usr/share/icons/hicolor/scalable/apps" packaging/icons/*.svg
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

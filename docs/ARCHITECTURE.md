@@ -558,8 +558,8 @@ the same matching on event attendees ("Meeting with Acme").
   refused login is an error to the caller and nothing is saved.
 - SIGTERM and SIGINT stop every worker; each ends its IDLE and logs out.
 - `katna-daemon install-user-service` writes the systemd user unit and the
-  D-Bus activation file for the installed binary, until distribution
-  packages ship them.
+  D-Bus activation file for a binary installed by hand. Packages install
+  the same files from `packaging/` system-wide (§21.1).
 - `katnactl` (task 1.13) drives it: `add-imap`, `status`, `sync`, `watch`,
   `password`, `remove`, and store reads (`folders`, `list`, `show`).
 
@@ -1027,6 +1027,24 @@ Notes:
 - Official Debian/Fedora repositories require every crate to be packaged
   separately and do not accept git dependencies. Third-party repositories
   (Flathub, AUR, OBS, Copr, PPA) are the realistic path.
+
+### 21.1 What exists today
+
+`packaging/` holds the files every package installs, named after the IDs in
+`katna_core::ids`: the systemd user unit (`systemd/katna-daemon.service`,
+`Type=dbus`), the D-Bus activation file
+(`dbus/in.invenia.katna.Daemon.service`, which starts that unit), and the
+desktop entry and scalable icon of Katna Mail (`desktop/`, `icons/`, named
+`in.invenia.katna.Mail`). Tests in `katna-core` and `katna-daemon` fail if
+the file names or their `Name`, `Exec`, `Icon`, `StartupWMClass` and
+`BusName` lines drift from the IDs or from what
+`katna-daemon install-user-service` writes. Package scripts install these
+files with globs, so they never spell out an ID.
+
+`packaging/arch/PKGBUILD` builds a `katna-git` package (provides `katna`)
+from the checkout it sits in: `cd packaging/arch && makepkg -si`. It ships
+`katna-mail`, `katna-daemon` and `katnactl`; Katna Calendar joins once it
+does something. See `packaging/README.md`.
 
 ## 22. Licensing — Decided
 

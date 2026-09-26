@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+[Desktop Entry]
+Type=Application
+Name=Katna Mail
+GenericName=Mail Client
+Comment=Read, search and write email
+Exec=katna-mail
+Icon=in.invenia.katna.Mail
+Terminal=false
+Categories=Network;Email;
+Keywords=email;mail;inbox;imap;
+StartupNotify=true
+StartupWMClass=in.invenia.katna.Mail
