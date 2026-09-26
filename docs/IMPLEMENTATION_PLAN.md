@@ -286,6 +286,7 @@ Plasma integration (Phase 6), which have few dependencies on the rest.
 4. ✅ Toolchain (latest stable); CI `check` (Arch + Ubuntu 26.04), `deny`, `size`.
 5. ✅ Add `dev/compose.yaml` with Stalwart, Dovecot, Radicale, Mailpit and seed data.
 6. Start spike **S2** (Pimalaya + I/O) and spike **S1** (window chrome).
+   S1 done: `docs/spikes/S1-window-chrome.md`.
 7. ✅ Implement `katna-core` and the first `katna-store` migration (secrets move to task 1.2; `calendar.db` schema to Phase 6).
 8. ✅ Write the Enron download script and the Maildir importer.
 9. Create GitHub milestones (Phases 0–8) and issues for Phase 0 tasks.
