@@ -526,7 +526,11 @@ This is a major risk: GPUI has no HTML engine.
 | Others (Sway, Hyprland, …) | SSD if offered, else minimal CSD; none when tiled | |
 | X11 | SSD by default | CSD shadows need a compositor. |
 
-Detection via `XDG_CURRENT_DESKTOP`, with a user override.
+Detection via `XDG_CURRENT_DESKTOP`, with a user override
+(`KATNA_DECORATIONS=auto|server|client` until the setting exists). The frame
+is drawn from the negotiated mode, not the requested one: GPUI falls back to
+CSD when the compositor has no xdg-decoration. Validated by spike S1
+(`docs/spikes/S1-window-chrome.md`).
 
 ### 13.2 Look and feel
 
@@ -757,11 +761,17 @@ Release build, `lto = "fat"`, `codegen-units = 1`, `strip = true`,
 
 | Build | Binary size | xz-compressed |
 |---|---|---|
-| GPUI window "hello world" (`gpui-pre` 0.3.6) | 8.4 MB | 2.4 MB |
+| GPUI window "hello world" (`gpui-pre` 0.3.6), **no Linux backend** (does not run) | 8.4 MB | 2.4 MB |
+| GPUI window "hello world" with the Wayland and X11 backends (spike S1) | 21.3 MB | 6.2 MB |
+| Window chrome spike (`katna-chrome` example, spike S1) | 21.5 MB | 6.2 MB |
 | Engine libraries: tantivy + SQLite (bundled) + mail-parser + rustls | 6.2 MB | 2.2 MB |
 
-The GPUI binary links only `libc`; Wayland, X11 and Vulkan libraries are
-loaded at runtime.
+The first GPUI row was built without the `wayland`/`x11` features of
+`gpui-pre-platform`, so it had no backend and panics at start. With the
+backends the binary links `libc`, `libxkbcommon`, `libxkbcommon-x11` and
+`libxcb`; Wayland and Vulkan libraries are loaded at runtime. GPUI alone
+takes about 21 MB of the 30 MB Katna Mail budget
+(`docs/spikes/S1-window-chrome.md`).
 
 ### 17.2 Targets (to be verified on real hardware)
 

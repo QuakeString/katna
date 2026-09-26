@@ -21,13 +21,14 @@ jobs:
     steps:
       - name: Install system packages (Arch)
         if: startsWith(matrix.image, 'archlinux')
-        run: pacman -Syu --noconfirm --needed base-devel git curl
+        run: pacman -Syu --noconfirm --needed base-devel git curl libxkbcommon libxkbcommon-x11 fontconfig freetype2
       - name: Install system packages (Ubuntu)
         if: startsWith(matrix.image, 'ubuntu')
         run: |
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-            build-essential ca-certificates curl git pkg-config
+            build-essential ca-certificates curl git pkg-config \
+            libxkbcommon-dev libxkbcommon-x11-dev libfontconfig-dev libfreetype-dev
       - uses: actions/checkout@v4
       - name: Install Rust (version from rust-toolchain.toml)
         run: |

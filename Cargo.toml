@@ -56,6 +56,11 @@ io-imap = { version = "=0.6.0", default-features = false }
 io-sasl = { version = "=0.1.0", default-features = false }
 io-smtp = { version = "=0.3.0", default-features = false }
 
+# GUI: exact pins (docs/ARCHITECTURE.md §20). GPUI is only allowed in the UI
+# crates (deny.toml). The crate is imported as `gpui`.
+gpui = { package = "gpui-pre", version = "=0.3.6" }
+gpui-platform = { package = "gpui-pre-platform", version = "=0.3.6", features = ["wayland", "x11"] }
+
 [workspace.lints.rust]
 unsafe_code = "forbid"
 
