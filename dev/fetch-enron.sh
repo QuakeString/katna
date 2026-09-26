@@ -10,13 +10,18 @@
 #   target-dir        Where to put the corpus. Default:
 #                     ${KATNA_CORPUS_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/katna/corpora}/enron
 #   ENRON_URL         Override the download URL (for a mirror).
-#   ENRON_SHA256      Expected SHA-256 of the archive. When set, a mismatch aborts.
+#   ENRON_SHA256      Expected SHA-256 of the archive; a mismatch aborts. Defaults
+#                     to the pinned hash of the CMU release. Set it to an empty
+#                     value to skip the check.
 #
 # Result: <target-dir>/maildir/<user>/<folder>/<n>. — one file per message.
 # The script is idempotent: a finished download or extraction is not repeated.
 set -euo pipefail
 
 url="${ENRON_URL:-https://www.cs.cmu.edu/~enron/enron_mail_20150507.tar.gz}"
+# SHA-256 of enron_mail_20150507.tar.gz (422.7 MB; 517,401 messages).
+pinned_sha256="b3da1b3fe0369ec3140bb4fbce94702c33b7da810ec15d718b3fadf5cd748ca7"
+expected="${ENRON_SHA256-$pinned_sha256}"
 default_root="${KATNA_CORPUS_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/katna/corpora}"
 target="${1:-$default_root/enron}"
 archive="$target/enron_mail_20150507.tar.gz"
@@ -43,16 +48,16 @@ if [[ ! -f "$archive" ]]; then
 fi
 
 actual="$(sha256sum "$archive" | cut -d' ' -f1)"
-if [[ -n "${ENRON_SHA256:-}" ]]; then
-    if [[ "$actual" != "$ENRON_SHA256" ]]; then
+if [[ -n "$expected" ]]; then
+    if [[ "$actual" != "$expected" ]]; then
         echo "error: checksum mismatch for $archive" >&2
-        echo "  expected $ENRON_SHA256" >&2
+        echo "  expected $expected" >&2
         echo "  actual   $actual" >&2
         echo "Delete the archive and run again." >&2
         exit 1
     fi
 else
-    echo "SHA-256: $actual (set ENRON_SHA256 to verify)"
+    echo "SHA-256: $actual (not checked)"
 fi
 
 echo "Extracting to $target"
