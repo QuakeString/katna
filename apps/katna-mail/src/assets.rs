@@ -38,6 +38,7 @@ icons!(
     "close",
     "compose",
     "contacts",
+    "download",
     "drafts",
     "drop-down",
     "emoji",
@@ -73,6 +74,7 @@ icons!(
     "more",
     "move-to",
     "notes",
+    "open-external",
     "open-full",
     "people",
     "person-add",
@@ -105,6 +107,8 @@ icons!(
     "undo",
     "warning",
     "window-restore",
+    "zoom-in",
+    "zoom-out",
 );
 
 pub struct Assets;

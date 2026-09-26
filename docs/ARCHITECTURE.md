@@ -94,6 +94,7 @@ katna/
 │   ├── katna-search/          # tantivy index, query language, ranking
 │   ├── katna-org/             # organizations, matching rules, suggestions
 │   ├── katna-render/          # HTML sanitizing and message rendering
+│   ├── katna-preview/         # attachment previews: PDF pages, pictures, text
 │   ├── katna-dav/             # CalDAV/CardDAV sync, iCalendar/vCard, recurrence
 │   ├── katna-dbus/            # D-Bus API definitions (in.invenia.katna.Pim1), client + server sides
 │   ├── katna-notify/          # notification builder, actions, inline reply, grouping
@@ -1227,6 +1228,54 @@ Two ideas from the owner for a later phase. Nothing is built for them yet.
   Replying to a conversation takes it out of the Workspace. The user can
   give mail a priority or a marker, or snooze it to come back into the
   Workspace at a set date and time.
+
+### 13.8 Attachments and the attachment viewer
+
+Received attachments open inside Katna Mail, like webmail's preview; the
+desktop's own app stays one click away.
+
+- **Cards.** Under each open message, one card per attachment (the
+  webmail layout): a thumbnail (pictures, and the top of a PDF's first
+  page) or a colored type badge, and the file name. Hovering shows the
+  name, the size and a Save button. Thumbnails are made in the background
+  from the stored raw message and freed when the conversation closes.
+- **Viewer.** Clicking a card opens the viewer over the window below the
+  top bar (the window's own controls stay usable): a dark page with a bar
+  naming the file, "Open in another app" and Save; arrows (and ←/→) go
+  through the message's other attachments; a pill at the foot zooms
+  (−/+/0, 25 %–400 %, 100 % fits the window) and counts PDF pages.
+  Escape closes it. It is dark in light and dark themes alike.
+  - **PDF:** `hayro` (pure Rust, CPU, Apache-2.0/MIT) draws the pages.
+    Only pages on screen (and one either side) are drawn, at the zoom and
+    the screen's scale, one at a time on a background thread; pages far
+    off screen are freed. Password-protected PDFs are not opened yet (the
+    viewer says so and offers the other app).
+  - **Pictures:** PNG, JPEG, GIF, WebP, BMP, TIFF through the `image`
+    crate GPUI already uses, turned upright by their EXIF orientation and
+    scaled to at most 4096 px; animated GIFs and SVG are drawn by GPUI.
+  - **Text** (`text/*`, JSON, CSV, logs, code by extension): monospace, the
+    first 512 KB and 10,000 lines.
+  - Anything else shows "No preview available" with Save and "Open in
+    another app".
+- **Save** asks where through the desktop's file chooser (portal),
+  starting in the download folder (`XDG_DOWNLOAD_DIR`); without a portal
+  it saves there under a free name. **Open in another app** writes a
+  read-only copy to `$XDG_CACHE_HOME/katna/opened/` (removed after a day)
+  and hands it to the desktop. Files that could run a program
+  (`.desktop`, scripts, executables, `.jar`, Flatpak refs) are never
+  handed over; they can only be saved.
+- `katna-preview` holds the decoding (no GPUI); `katna_render::
+  attachment_file` extracts an attachment's bytes from the raw message.
+  The app reads only the store, like the rest of the reader.
+- **Size:** the viewer adds 7.5 MB to the Katna Mail release binary
+  (31.55 → 39.10 MB, measured on the same main). Nearly all of it is
+  `hayro` and its CPU rasterizer (`vello_cpu`, compiled for several SIMD
+  levels, and `pic-scale`); pictures use the `image` crate GPUI already
+  links. A pure-Rust renderer was chosen over PDFium or Poppler so the
+  package needs no C library and the app keeps `unsafe` out.
+- Not yet: attachments of encrypted mail open from the stored (encrypted)
+  message, so they fail until the viewer uses the decrypted copy; text
+  search in PDFs, printing, and previews of office documents.
 
 ## 14. D-Bus API (`katna-dbus`)
 

@@ -11,5 +11,7 @@ pub mod html;
 mod plain;
 mod rich;
 
-pub use plain::{Address, Attachment, MAX_BODY_BYTES, MessageView, message_view};
+pub use plain::{
+    Address, Attachment, AttachmentFile, MAX_BODY_BYTES, MessageView, attachment_file, message_view,
+};
 pub use rich::message_document;

@@ -17,6 +17,7 @@
 mod accounts;
 mod add_account;
 mod apps;
+mod attachments;
 mod colors;
 mod compose;
 mod context_menu;
@@ -33,6 +34,7 @@ mod search_panel;
 mod settings;
 mod settings_page;
 mod tour;
+mod viewer;
 
 use std::collections::{HashMap, HashSet};
 use std::ops::Range;
@@ -295,6 +297,8 @@ pub struct MailWindow {
     tab_spring: Spring,
     snackbar: Option<Snackbar>,
     compose: Option<compose::Compose>,
+    /// Attachment thumbnails and the attachment viewer.
+    files: attachments::Files,
     add_account: Option<add_account::AddAccount>,
     /// The first-start pages, until the first account is in and set up.
     onboarding: Option<onboarding::Onboarding>,
@@ -406,6 +410,7 @@ impl MailWindow {
             tab_spring: Spring::new(motion::SLIDE, 0.0),
             snackbar: None,
             compose: None,
+            files: attachments::Files::default(),
             add_account: None,
             onboarding: None,
             tour: None,
@@ -1792,6 +1797,10 @@ impl Render for MailWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         self.tour_new_frame();
         let th = self.theme(window);
+        self.release_images(window, cx);
+        if let Some(viewer) = &self.files.viewer {
+            viewer.update(cx, |viewer, _| viewer.th = th);
+        }
         let reduce = cx.reduce_motion();
         let viewport = f32::from(window.viewport_size().width);
         let wide = viewport > 760.0;
@@ -1914,6 +1923,7 @@ impl Render for MailWindow {
             .on_action(cx.listener(Self::open_settings))
             .on_action(cx.listener(Self::show_shortcuts))
             .child(content)
+            .children(self.files.viewer.clone())
             .children(search_panel)
             .children(compose)
             .children(scheduled)
