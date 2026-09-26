@@ -362,6 +362,44 @@ rank above loose matches. Highlighted snippets via `SnippetGenerator`.
   Thunderbird, and publish the numbers.
 - `katna-search-cli` is built **first**, before the GUI.
 
+### 7.7 Phase 0 implementation
+
+Implemented in `crates/katna-search` (plan tasks 0.5–0.8). What differs
+from or adds to the sketch above:
+
+- **Fields.** As in §7.1, except: `domain` holds every participant domain
+  and its parent domains (`mail.enron.com` → also `enron.com`) and backs
+  `org:` until organizations exist (Phase 2); `folder` holds each folder
+  path, its components (`lay-k/inbox` → `lay-k`, `inbox`) and its role;
+  `flags` is a fast field for ranking. `lang` and attachment text are not
+  indexed yet.
+- **No text stored.** Snippets are made at query time from the raw message
+  in `blobs.db` (first 64 KB), so the index stays small and holds no copy
+  of the mail. Twenty snippets take a few milliseconds.
+- **Tokenizer.** One analyzer for all text fields: Unicode words,
+  lower-cased, folded to ASCII, tokens over 40 bytes dropped. No stemming
+  and no CJK segmentation yet; both are later steps measured against index
+  size. Addresses split into words, so `from:kenneth.lay` is the phrase
+  "kenneth lay" and also matches the display name.
+- **Query language.** `OR` binds tighter than the implicit AND, as in
+  Gmail (`a OR b c` is `(a OR b) c`). `to:` matches To, Cc and Bcc. Dates
+  are UTC days; `before:` excludes the day, `after:` includes it. Unknown
+  `word:value` is plain text; broken parentheses are ignored; nesting is
+  limited to 32 levels.
+- **Ranking.** BM25 with field boosts (subject 3, from 2, attachment names
+  1.5, others 1), times a recency factor `1 + 0.5 · 2^(−age/60 days)` where
+  age is measured from the newest indexed message (so an old archive still
+  ranks by recency), times 1.2 for starred mail. Queries without free text
+  (only operators such as `from:`) are sorted newest first instead.
+- **Keeping up to date.** The tantivy commit payload stores the schema
+  version and the `mail.db` change-journal sequence number the index
+  covers, atomically with the documents. The first run scans all messages
+  (resumable, committing every 100,000); later runs re-index the messages
+  the journal lists. A schema-version mismatch requires a rebuild
+  (`katna-search-cli index --rebuild`).
+- **Tools.** `katna-search-cli index|query` and `katna-bench search|synth`
+  (synthetic corpus of Enron's shape for machines without Enron).
+
 ## 8. Organizations (`katna-org`)
 
 ### 8.1 Model

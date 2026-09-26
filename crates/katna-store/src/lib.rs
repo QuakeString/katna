@@ -10,6 +10,7 @@ mod db;
 pub mod error;
 pub mod journal;
 pub mod mail;
+mod mail_read;
 
 use katna_core::{Account, AccountId, AccountKind, Paths};
 use rusqlite::{Connection, TransactionBehavior, params};
@@ -22,6 +23,7 @@ pub use mail::{
     Added, FolderId, MailBatch, MessageFlags, MessageId, NewMessage, NewParticipant,
     ParticipantRole,
 };
+pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.
 #[derive(Debug)]
@@ -144,6 +146,23 @@ impl Store {
     pub fn mail_batch(&mut self) -> Result<MailBatch<'_>> {
         self.check_writable()?;
         MailBatch::begin(&mut self.mail, &self.blobs)
+    }
+
+    /// Messages with ID greater than `after`, in ID order, at most `limit`,
+    /// with their participants and folders. Used to index the whole store.
+    pub fn messages_after(&self, after: MessageId, limit: u32) -> Result<Vec<StoredMessage>> {
+        mail_read::messages_after(&self.mail, after, limit)
+    }
+
+    /// The messages with the given IDs, in that order; IDs that no longer
+    /// exist are left out.
+    pub fn messages_by_id(&self, ids: &[MessageId]) -> Result<Vec<StoredMessage>> {
+        mail_read::messages_by_id(&self.mail, ids)
+    }
+
+    /// Number of messages in all accounts.
+    pub fn message_count(&self) -> Result<u64> {
+        mail_read::message_count(&self.mail)
     }
 
     /// Journal entries of `db` after sequence number `after`, oldest first,

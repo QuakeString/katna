@@ -11,6 +11,16 @@ publish.workspace = true
 [dependencies]
 katna-core.workspace = true
 katna-store.workspace = true
+mail-parser.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tantivy.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+katna-import.workspace = true
+tempfile.workspace = true
 
 [lints]
 workspace = true
