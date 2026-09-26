@@ -97,6 +97,9 @@ pub struct MailView {
     pub inbox_tabs: bool,
     pub density: Density,
     pub theme: Theme,
+    /// Use the desktop's color scheme and accent color instead of Katna's
+    /// own colors.
+    pub desktop_colors: bool,
 }
 
 impl Default for MailView {
@@ -108,6 +111,7 @@ impl Default for MailView {
             inbox_tabs: true,
             density: Density::Default,
             theme: Theme::System,
+            desktop_colors: true,
         }
     }
 }
@@ -276,6 +280,7 @@ mod tests {
         assert_eq!(config.mail.reading_pane, ReadingPane::None);
         assert_eq!(config.mail.density, Density::Compact);
         assert_eq!(config.mail.theme, Theme::Dark);
+        assert!(config.mail.desktop_colors);
         assert!(Config::parse("[mail]\nreading_pane_share = 0.9\n").is_err());
         let config = Config::parse("[sending]\nsignature = \"Kay\\nEnron\"\n").unwrap();
         assert_eq!(config.sending.signature, "Kay\nEnron");
