@@ -135,6 +135,7 @@ impl Fixture {
                     gm_thread_id: thrid,
                     gm_msgid: None,
                     category: None,
+                    attachments: &[],
                 },
             )
             .unwrap();

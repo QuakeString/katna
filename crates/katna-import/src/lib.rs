@@ -10,6 +10,7 @@
 pub mod backfill;
 pub mod maildir;
 pub mod mbox;
+pub mod mime;
 pub mod parse;
 pub mod store;
 

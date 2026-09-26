@@ -39,7 +39,7 @@ pub use ops::{Location, QueuedOp};
 pub use outbox::{OutboxEntry, SendState};
 pub use people::Person;
 pub use pop3::Pop3Uidl;
-pub use remote::{FolderRole, RemoteMessage, StoredFolder};
+pub use remote::{FolderRole, NewAttachment, RemoteMessage, StoredAttachment, StoredFolder};
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.
 #[derive(Debug)]

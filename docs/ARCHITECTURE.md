@@ -345,8 +345,21 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   category classifier reads (`katna_core::category::CLASSIFIER_HEADERS`);
   each new message is threaded and classified as it is saved (§6.5). Each
   server copy of a message is its own row; copies share a thread, and the
-  conversation reads show one per `Message-ID`. `has_attachments` is
-  guessed from `multipart/mixed` until `BODYSTRUCTURE` is parsed.
+  conversation reads show one per `Message-ID`.
+- **Attachments before the body:** each header chunk is followed by
+  `UID FETCH … (UID BODYSTRUCTURE)`, a command of its own so that a
+  structure imap-codec cannot parse costs only that message's attachment
+  list, never the message. The `attachment` table gets each attachment's
+  body section (`2`, `1.3`), type, decoded file name (RFC 2231 and 2047)
+  and estimated decoded size; `has_attachments` follows it. One rule,
+  `katna_import::mime::is_attachment`, is shared with whole-message
+  parsing so the paperclip does not change when the body arrives:
+  anything marked `attachment`, otherwise every part except the text/plain
+  or text/html body and pictures with a `Content-ID` (shown inline by the
+  HTML). An attached message is one attachment; its parts are not listed.
+  Without a usable structure, `has_attachments` is guessed from
+  `multipart/mixed`. Mail synced before this, POP3 and imported mail have
+  no rows, only the flag.
 - **Header refresh:** messages synced before threading (no thread or no
   category, and no body to parse) get their headers fetched again, up to
   5,000 per folder per sync, and only the missing fields are filled.

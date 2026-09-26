@@ -12,7 +12,7 @@ use std::{
 
 use futures_lite::FutureExt;
 use katna_sync::{
-    Credentials, Endpoint, Error, Flags, FolderChange, MailBackend, Security,
+    AttachmentPart, Credentials, Endpoint, Error, Flags, FolderChange, MailBackend, Security,
     connection::{self, Connection},
     imap::ImapBackend,
     net::{Conn, Tls},
@@ -364,6 +364,10 @@ fn gmail_thread_ids_and_search() {
         s.ok(&tag);
 
         let (tag, rest) = s.command();
+        assert_eq!(rest, "UID FETCH 1:2 (UID BODYSTRUCTURE)");
+        s.ok(&tag);
+
+        let (tag, rest) = s.command();
         assert_eq!(rest, "UID FETCH 1:2 (UID X-GM-THRID X-GM-MSGID)");
         s.send(&format!(
             "* 1 FETCH (X-GM-THRID 1278455344230334865 X-GM-MSGID 1278455344230334866 UID 1)\r\n\
@@ -408,6 +412,70 @@ fn gmail_thread_ids_and_search() {
             imap.gmail_search(1, "a\"b").await.is_err(),
             "quotes cannot be sent"
         );
+        imap.poll_changes().await.unwrap();
+    });
+    server.join().unwrap();
+}
+
+/// Attachments come from `BODYSTRUCTURE`, in a command of its own: a
+/// structure imap-codec cannot parse loses that message's attachment list,
+/// not the message.
+#[test]
+fn attachments_from_the_body_structure() {
+    let (endpoint, server) = serve(CAPS, |s| {
+        let (tag, rest) = s.command();
+        assert!(rest.starts_with("UID FETCH 1:3 ("), "{rest}");
+        s.send(
+            "* 1 FETCH (UID 1 RFC822.SIZE 100 BODY[HEADER.FIELDS (SUBJECT)] {14}\r\nSubject: a\r\n\r\n)\r\n\
+             * 2 FETCH (UID 2 RFC822.SIZE 100 BODY[HEADER.FIELDS (SUBJECT)] {14}\r\nSubject: b\r\n\r\n)\r\n\
+             * 3 FETCH (UID 3 RFC822.SIZE 100 BODY[HEADER.FIELDS (SUBJECT)] {14}\r\nSubject: c\r\n\r\n)\r\n",
+        );
+        s.ok(&tag);
+
+        let (tag, rest) = s.command();
+        assert_eq!(rest, "UID FETCH 1:3 (UID BODYSTRUCTURE)");
+        // 1: text, a PDF with an RFC 2231 name, an HTML body with an
+        // inline logo, and a forwarded message. 2: plain text only.
+        // 3: a structure imap-codec rejects.
+        s.send(concat!(
+            "* 1 FETCH (UID 1 BODYSTRUCTURE (",
+            "(\"TEXT\" \"PLAIN\" (\"CHARSET\" \"utf-8\") NIL NIL \"7BIT\" 20 1 NIL NIL NIL NIL)",
+            "(\"APPLICATION\" \"PDF\" (\"NAME\" \"rates.pdf\") NIL NIL \"BASE64\" 4000 NIL ",
+            "(\"ATTACHMENT\" (\"FILENAME*\" \"utf-8''%E2%82%AC%20rates.pdf\")) NIL NIL)",
+            "((\"TEXT\" \"HTML\" (\"CHARSET\" \"utf-8\") NIL NIL \"7BIT\" 30 1 NIL NIL NIL NIL)",
+            "(\"IMAGE\" \"PNG\" (\"NAME\" \"logo.png\") \"<logo>\" NIL \"BASE64\" 800 NIL ",
+            "(\"INLINE\" (\"FILENAME\" \"logo.png\")) NIL NIL) ",
+            "\"RELATED\" (\"BOUNDARY\" \"r\") NIL NIL NIL)",
+            "(\"MESSAGE\" \"RFC822\" NIL NIL NIL \"7BIT\" 500 ",
+            "(NIL \"Fwd\" NIL NIL NIL NIL NIL NIL NIL NIL) ",
+            "(\"TEXT\" \"PLAIN\" (\"CHARSET\" \"us-ascii\") NIL NIL \"7BIT\" 10 1) 20 NIL NIL NIL NIL) ",
+            "\"MIXED\" (\"BOUNDARY\" \"b\") NIL NIL NIL))\r\n",
+            "* 2 FETCH (UID 2 BODYSTRUCTURE (\"TEXT\" \"PLAIN\" (\"CHARSET\" \"us-ascii\") NIL NIL \"7BIT\" 10 1))\r\n",
+            "* 3 FETCH (UID 3 BODYSTRUCTURE (\"TEXT\" \"PLAIN\" bogus))\r\n",
+        ));
+        s.ok(&tag);
+        s.quiet_noop();
+    });
+    smol::block_on(async {
+        let mut imap = connect(&endpoint).await;
+        let headers = imap.fetch_headers(1, Some(3)).await.unwrap();
+        let uids: Vec<_> = headers.iter().map(|h| h.uid).collect();
+        assert_eq!(uids, [1, 2, 3], "no message is lost to its structure");
+        let pdf = AttachmentPart {
+            part: "2".into(),
+            mime: "application/pdf".into(),
+            filename: Some("€ rates.pdf".into()),
+            size: 3000,
+        };
+        let forwarded = AttachmentPart {
+            part: "4".into(),
+            mime: "message/rfc822".into(),
+            filename: None,
+            size: 500,
+        };
+        assert_eq!(headers[0].attachments, Some(vec![pdf, forwarded]));
+        assert_eq!(headers[1].attachments, Some(vec![]));
+        assert_eq!(headers[2].attachments, None);
         imap.poll_changes().await.unwrap();
     });
     server.join().unwrap();

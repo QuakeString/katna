@@ -22,8 +22,9 @@ use imap_codec::{
     fragmentizer::{DecodeMessageError, FragmentInfo, Fragmentizer},
 };
 use imap_types::{
+    body::{BodyStructure, SpecificFields},
     command::{Command, CommandBody, FetchModifier, SelectParameter},
-    core::{AString, Atom, NString, TagGenerator, Vec1},
+    core::{AString, Atom, IString, NString, TagGenerator, Vec1},
     envelope::Address as ImapAddress,
     extensions::idle::IdleDone,
     fetch::{MacroOrMessageDataItemNames, MessageDataItem, MessageDataItemName, Section},
@@ -57,8 +58,8 @@ use io_imap::{
 use io_sasl::rfc4616::plain::SaslPlainCreds;
 
 use crate::{
-    Address, Credentials, Endpoint, Envelope, Error, FlagState, Flags, Folder, FolderChange,
-    FolderRole, FolderStatus, MailBackend, MessageHeaders, Result, Security, Wait,
+    Address, AttachmentPart, Credentials, Endpoint, Envelope, Error, FlagState, Flags, Folder,
+    FolderChange, FolderRole, FolderStatus, MailBackend, MessageHeaders, Result, Security, Wait,
     net::{Conn, Tls},
 };
 
@@ -208,6 +209,44 @@ impl ImapBackend {
             .raw_command(&format!("UID FETCH {range} (UID X-GM-THRID X-GM-MSGID)"))
             .await?;
         Ok(lines.iter().filter_map(|line| gmail_fetch(line)).collect())
+    }
+
+    /// The attachments of UIDs `first..=last` (or `first..`), from their
+    /// `BODYSTRUCTURE`. A command of its own: a structure imap-codec cannot
+    /// parse costs only that message's attachment list, never the message.
+    async fn structures(
+        &mut self,
+        first: u32,
+        last: Option<u32>,
+    ) -> Result<HashMap<u32, Vec<AttachmentPart>>> {
+        let items = vec![MessageDataItemName::Uid, MessageDataItemName::BodyStructure];
+        let fetched = match self.uid_fetch_range(first, last, items, Vec::new()).await {
+            Ok(fetched) => fetched,
+            Err(Error::Rejected(why)) => {
+                tracing::warn!(%why, "server refused BODYSTRUCTURE; guessing attachments");
+                return Ok(HashMap::new());
+            }
+            Err(e) => return Err(e),
+        };
+        Ok(fetched
+            .into_iter()
+            .filter_map(|items| {
+                let mut uid = None;
+                let mut parts = None;
+                for item in items {
+                    match item {
+                        MessageDataItem::Uid(value) => uid = Some(value.get()),
+                        MessageDataItem::BodyStructure(structure) => {
+                            let mut out = Vec::new();
+                            attachment_parts(&structure, "", &mut out);
+                            parts = Some(out);
+                        }
+                        _ => {}
+                    }
+                }
+                Some((uid?, parts?))
+            })
+            .collect())
     }
 
     /// `UID FETCH first:last` (or `first:*`). Returns each message's items,
@@ -495,6 +534,12 @@ impl MailBackend for ImapBackend {
         ];
         let fetched = self.uid_fetch_range(first, last, items, Vec::new()).await?;
         let mut messages: Vec<MessageHeaders> = fetched.into_iter().map(headers).collect();
+        if !messages.is_empty() {
+            let mut structures = self.structures(first, last).await?;
+            for message in &mut messages {
+                message.attachments = structures.remove(&message.uid);
+            }
+        }
         // imap-codec cannot parse X-GM-THRID, and would drop a whole FETCH
         // response that had it, so it comes in a second, small command.
         if self.is_gmail() && !messages.is_empty() {
@@ -975,6 +1020,78 @@ fn headers(items: impl IntoIterator<Item = MessageDataItem<'static>>) -> Message
         }
     }
     out
+}
+
+/// Collects the attachments of `structure`, whose body section is `part`
+/// (`""` for the whole message). Parts of an attached message stay inside
+/// it: the attached message is the attachment.
+fn attachment_parts(structure: &BodyStructure<'_>, part: &str, out: &mut Vec<AttachmentPart>) {
+    match structure {
+        BodyStructure::Multi { bodies, .. } => {
+            for (i, body) in bodies.as_ref().iter().enumerate() {
+                let child = match part {
+                    "" => (i + 1).to_string(),
+                    _ => format!("{part}.{}", i + 1),
+                };
+                attachment_parts(body, &child, out);
+            }
+        }
+        BodyStructure::Single {
+            body,
+            extension_data,
+        } => {
+            let (kind, subtype) = match &body.specific {
+                SpecificFields::Basic { r#type, subtype } => (istring(r#type), istring(subtype)),
+                SpecificFields::Message { .. } => ("message".into(), "rfc822".into()),
+                SpecificFields::Text { subtype, .. } => ("text".into(), istring(subtype)),
+            };
+            let mime = format!("{kind}/{subtype}").to_ascii_lowercase();
+            let disposition = extension_data
+                .as_ref()
+                .and_then(|ext| ext.tail.as_ref())
+                .and_then(|tail| tail.disposition.as_ref());
+            let pairs = |list: &[(IString<'_>, IString<'_>)]| -> Vec<(String, String)> {
+                list.iter().map(|(k, v)| (istring(k), istring(v))).collect()
+            };
+            let disposition_params = disposition.map(|(_, p)| pairs(p)).unwrap_or_default();
+            let type_params = pairs(&body.basic.parameter_list);
+            let filename = katna_import::mime::part_filename(
+                &borrowed(&disposition_params),
+                &borrowed(&type_params),
+            );
+            let kind = disposition.map(|(kind, _)| istring(kind));
+            let info = katna_import::mime::PartInfo {
+                mime: &mime,
+                disposition: kind.as_deref(),
+                content_id: body.basic.id.0.is_some(),
+                filename: filename.is_some(),
+            };
+            if !katna_import::mime::is_attachment(&info) {
+                return;
+            }
+            let encoded = u64::from(body.basic.size);
+            let base64 =
+                istring(&body.basic.content_transfer_encoding).eq_ignore_ascii_case("base64");
+            out.push(AttachmentPart {
+                part: if part.is_empty() {
+                    "1".into()
+                } else {
+                    part.into()
+                },
+                mime,
+                filename,
+                size: if base64 { encoded * 3 / 4 } else { encoded },
+            });
+        }
+    }
+}
+
+fn borrowed(list: &[(String, String)]) -> Vec<(&str, &str)> {
+    list.iter().map(|(k, v)| (k.as_str(), v.as_str())).collect()
+}
+
+fn istring(value: &IString<'_>) -> String {
+    String::from_utf8_lossy(value.as_ref()).into_owned()
 }
 
 /// `12 FETCH (X-GM-THRID 1278455344230334865 UID 4)` → `(4, 1278…)`.

@@ -4,7 +4,7 @@
 //! from a raw RFC 5322 message.
 
 use katna_core::{MailCategory, MailFacts, classify};
-use mail_parser::{Address, HeaderValue, Message, MessageParser};
+use mail_parser::{Address, HeaderValue, Message, MessageParser, MimeHeaders};
 
 /// Maximum snippet length in characters.
 pub const SNIPPET_CHARS: usize = 200;
@@ -101,7 +101,18 @@ pub fn parse_message(raw: &[u8]) -> Option<ParsedMessage> {
         subject: message.subject().and_then(non_empty),
         date: message.date().map(|date| date.to_timestamp()),
         size: raw.len() as u64,
-        has_attachments: message.attachment_count() > 0,
+        has_attachments: message.attachments().any(|part| {
+            let mime = part.content_type().map(|t| match t.subtype() {
+                Some(sub) => format!("{}/{sub}", t.ctype()),
+                None => t.ctype().to_owned(),
+            });
+            crate::mime::is_attachment(&crate::mime::PartInfo {
+                mime: mime.as_deref().unwrap_or("text/plain"),
+                disposition: part.content_disposition().map(|d| d.ctype()),
+                content_id: part.content_id().is_some(),
+                filename: part.attachment_name().is_some(),
+            })
+        }),
         list_id: list_id(message.list_id()),
         snippet: message
             .body_preview(SNIPPET_CHARS)
@@ -256,6 +267,27 @@ Here is our forecast\r
                 },
             ]
         );
+    }
+
+    #[test]
+    fn inline_pictures_are_not_attachments() {
+        let raw = b"From: a@example.org\r
+Subject: Newsletter\r
+Content-Type: multipart/related; boundary=\"r\"\r
+\r
+--r\r
+Content-Type: text/html\r
+\r
+<img src=\"cid:logo\">\r
+--r\r
+Content-Type: image/png; name=\"logo.png\"\r
+Content-Disposition: inline; filename=\"logo.png\"\r
+Content-ID: <logo>\r
+\r
+PNG\r
+--r--\r
+";
+        assert!(!parse_message(raw).unwrap().has_attachments);
     }
 
     #[test]

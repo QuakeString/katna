@@ -17,8 +17,8 @@ use futures_lite::FutureExt;
 use katna_core::{AccountId, AccountKind, Paths};
 use katna_store::{Mode, Store};
 use katna_sync::{
-    Envelope, Error, FlagState, Flags, Folder, FolderChange, FolderRole, FolderStatus, MailBackend,
-    MessageHeaders, Result, Wait, worker::Connector,
+    AttachmentPart, Envelope, Error, FlagState, Flags, Folder, FolderChange, FolderRole,
+    FolderStatus, MailBackend, MessageHeaders, Result, Wait, worker::Connector,
 };
 
 #[derive(Clone, Debug)]
@@ -34,6 +34,8 @@ pub struct Message {
     pub gm_msgid: Option<u64>,
     /// Gmail only: `promotions`, `social`, … (`None` for Primary).
     pub gmail_category: Option<String>,
+    /// What `BODYSTRUCTURE` would name; `None` as if the server sent none.
+    pub attachments: Option<Vec<AttachmentPart>>,
 }
 
 #[derive(Clone, Debug)]
@@ -117,9 +119,24 @@ impl FakeServer {
                 gm_thread_id: None,
                 gm_msgid: None,
                 gmail_category: None,
+                attachments: None,
             },
         );
         uid
+    }
+
+    /// Gives the message at `uid` in `folder` the attachments its
+    /// structure names (`Some(vec![])`: a structure without any).
+    pub fn set_attachments(&self, folder: &str, uid: u32, parts: Option<Vec<AttachmentPart>>) {
+        let mut state = self.state();
+        let message = state
+            .folders
+            .get_mut(folder)
+            .unwrap()
+            .messages
+            .get_mut(&uid)
+            .unwrap();
+        message.attachments = parts;
     }
 
     /// Makes the server Gmail-like: thread IDs and `X-GM-RAW` search.
@@ -363,6 +380,7 @@ impl MailBackend for FakeConnection {
                 header: m.header.clone(),
                 gm_thread_id: m.gm_thread_id.filter(|_| gmail),
                 gm_msgid: m.gm_msgid.filter(|_| gmail),
+                attachments: m.attachments.clone(),
             })
             .collect())
     }
@@ -537,6 +555,7 @@ impl MailBackend for FakeConnection {
                 gm_thread_id: None,
                 gm_msgid: None,
                 gmail_category: None,
+                attachments: None,
             },
         );
         Ok(())

@@ -152,6 +152,23 @@ pub struct MessageHeaders {
     /// Gmail's message ID (`X-GM-MSGID`): the same in every folder (label)
     /// that shows the message.
     pub gm_msgid: Option<u64>,
+    /// The attachments named by the message's structure (IMAP
+    /// `BODYSTRUCTURE`); `None` when the server sent none we could read.
+    pub attachments: Option<Vec<AttachmentPart>>,
+}
+
+/// An attachment of a message, from its structure: known before the body
+/// is downloaded.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct AttachmentPart {
+    /// IMAP body section, like `2` or `1.3`.
+    pub part: String,
+    /// `type/subtype`, lower case.
+    pub mime: String,
+    /// Decoded file name.
+    pub filename: Option<String>,
+    /// Decoded size in bytes, estimated from the encoded size.
+    pub size: u64,
 }
 
 impl MessageHeaders {
@@ -165,8 +182,8 @@ impl MessageHeaders {
     }
 
     /// The header fields sync level 1 asks for (`docs/ARCHITECTURE.md`
-    /// §6.2), besides the classifier's. `Content-Type` is there to spot
-    /// likely attachments until `BODYSTRUCTURE` is parsed.
+    /// §6.2), besides the classifier's. `Content-Type` is there to guess
+    /// attachments when the server sends no usable `BODYSTRUCTURE`.
     pub const FIELDS: [&'static str; 14] = [
         "Date",
         "Subject",

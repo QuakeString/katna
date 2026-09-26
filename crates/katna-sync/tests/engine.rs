@@ -7,7 +7,10 @@ mod common;
 use common::{FakeServer, store as setup};
 use katna_core::{AccountId, MailCategory};
 use katna_store::{FolderRole as StoreRole, Store};
-use katna_sync::engine::{self, CHUNK, FolderReport};
+use katna_sync::{
+    AttachmentPart,
+    engine::{self, CHUNK, FolderReport},
+};
 
 fn sync(server: &FakeServer, store: &mut Store, account: AccountId) -> Vec<FolderReport> {
     server.clear_log();
@@ -379,6 +382,59 @@ fn gmail_labels_are_one_message_in_several_folders() {
         due[0].op_json.contains("\"from_path\":\"INBOX\""),
         "{}",
         due[0].op_json
+    );
+}
+
+#[test]
+fn attachments_come_from_the_structure() {
+    let (_tmp, mut store, account) = setup();
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    let mixed = "Content-Type: multipart/mixed; boundary=b\r\n";
+    let pdf = server.deliver_header("INBOX", &header("pdf", mixed), "");
+    let none = server.deliver_header("INBOX", &header("none", mixed), "");
+    let guess = server.deliver_header("INBOX", &header("guess", mixed), "");
+    let part = AttachmentPart {
+        part: "2".into(),
+        mime: "application/pdf".into(),
+        filename: Some("rates.pdf".into()),
+        size: 51_200,
+    };
+    server.set_attachments("INBOX", pdf, Some(vec![part]));
+    // A structure without attachments beats the header's guess.
+    server.set_attachments("INBOX", none, Some(Vec::new()));
+    server.set_attachments("INBOX", guess, None);
+    sync(&server, &mut store, account);
+
+    let inbox = store.folders(account).unwrap()[0].id;
+    let messages = store.messages_in_folder(inbox).unwrap();
+    let got: Vec<_> = messages
+        .iter()
+        .map(|m| {
+            let names: Vec<_> = store
+                .attachments(m.id)
+                .unwrap()
+                .into_iter()
+                .map(|a| (a.part, a.mime, a.filename, a.size))
+                .collect();
+            (m.has_attachments, names)
+        })
+        .collect();
+    assert_eq!(
+        got,
+        [
+            (
+                true,
+                vec![(
+                    "2".into(),
+                    "application/pdf".into(),
+                    Some("rates.pdf".into()),
+                    51_200
+                )]
+            ),
+            (false, vec![]),
+            (true, vec![]),
+        ]
     );
 }
 
