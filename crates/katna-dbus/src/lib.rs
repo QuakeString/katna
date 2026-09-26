@@ -181,6 +181,13 @@ macro_rules! pim_proxy {
             /// password. Returns whether it existed.
             fn remove_account(&self, account: i64) -> zbus::Result<bool>;
 
+            /// Deletes everything Katna keeps on this computer: every
+            /// account with its mail and password, contacts, calendars,
+            /// the search index, the cache and the settings file. Mail
+            /// servers are not touched. The daemon exits once it answers;
+            /// the next call starts a new one with nothing stored.
+            fn delete_all_data(&self) -> zbus::Result<()>;
+
             /// Syncs every folder of `account` now (0: every account).
             fn sync_now(&self, account: i64) -> zbus::Result<()>;
 
