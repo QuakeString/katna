@@ -13,8 +13,9 @@ use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
 use gpui::{
-    AnyElement, Context, Entity, FocusHandle, FontWeight, ImageSource, ObjectFit, RenderImage,
-    SharedString, Subscription, Task, Window, div, img, prelude::*, px, rgba,
+    AnyElement, Context, Entity, FocusHandle, FontWeight, ImageSource, ObjectFit,
+    PathPromptOptions, RenderImage, SharedString, Subscription, Task, Window, div, img, prelude::*,
+    px, rgba,
 };
 use katna_core::config::{FileGroup, OpenIn};
 use katna_preview::Kind;
@@ -286,6 +287,7 @@ impl MailWindow {
             return None;
         }
         let count = list.len();
+        let indices: Vec<usize> = list.iter().map(|&(ix, _)| ix).collect();
         let cards = list.iter().map(|&(ix, attachment)| {
             let item = Item::new(ix, attachment);
             let group = SharedString::from(format!("attachment-{}-{ix}", id.0));
@@ -439,13 +441,46 @@ impl MailWindow {
                 .child(
                     div()
                         .mb(px(12.0))
-                        .text_size(px(13.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .text_color(rgba(th.text_dim))
-                        .child(if count == 1 {
-                            "One attachment".to_owned()
-                        } else {
-                            format!("{count} attachments")
+                        .h(px(32.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .justify_between()
+                        .child(
+                            div()
+                                .text_size(px(13.0))
+                                .font_weight(FontWeight::MEDIUM)
+                                .text_color(rgba(th.text_dim))
+                                .child(if count == 1 {
+                                    "One attachment".to_owned()
+                                } else {
+                                    format!("{count} attachments")
+                                }),
+                        )
+                        .when(count > 1, |row| {
+                            row.child(
+                                div()
+                                    .id(("attachments-save-all", id.0 as usize))
+                                    .h(px(32.0))
+                                    .px(px(12.0))
+                                    .flex()
+                                    .flex_row()
+                                    .items_center()
+                                    .gap(px(6.0))
+                                    .rounded_full()
+                                    .cursor_pointer()
+                                    .text_size(px(13.0))
+                                    .font_weight(FontWeight::MEDIUM)
+                                    .text_color(rgba(th.text_dim))
+                                    .hover(|s| s.bg(rgba(th.hover)))
+                                    .tooltip(tip("Save every attachment to a folder", th))
+                                    .on_click(cx.listener(move |this, _, _, cx| {
+                                        cx.stop_propagation();
+                                        this.save_all(id, indices.clone(), cx);
+                                    }))
+                                    .child(icon("download", th.text_dim, 18.0))
+                                    .child("Save all"),
+                            )
                         }),
                 )
                 .child(
@@ -602,6 +637,62 @@ impl MailWindow {
             this.update(cx, |this, cx| match file {
                 Some(file) => this.save_attachment(Arc::new(file), cx),
                 None => this.show_snackbar(format!("Could not read {name}"), None, cx),
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Asks for a folder (the desktop's folder chooser, else Downloads),
+    /// then saves attachments `indices` of message `id` there, each as its
+    /// own file. Files already there are kept: a new file of the same name
+    /// is saved as "name (1).ext".
+    fn save_all(&mut self, id: MessageId, indices: Vec<usize>, cx: &mut Context<Self>) {
+        let Some((raw, _)) = self.attachment_raw(id) else {
+            self.show_snackbar("This message is not downloaded.", None, cx);
+            return;
+        };
+        let prompt = cx.prompt_for_paths(PathPromptOptions {
+            files: false,
+            directories: true,
+            multiple: false,
+            prompt: Some("Save here".into()),
+        });
+        cx.spawn(async move |this, cx| {
+            let dir = match prompt.await {
+                Ok(Ok(Some(mut dirs))) if !dirs.is_empty() => dirs.swap_remove(0),
+                Ok(Ok(_)) => return,
+                // No folder chooser (no desktop portal): save to Downloads.
+                _ => download_dir(),
+            };
+            let total = indices.len();
+            let (saved, failed, dir) = cx
+                .background_executor()
+                .spawn(async move {
+                    let mut saved = 0;
+                    let mut failed = Vec::new();
+                    for index in indices {
+                        let Some(file) = katna_render::attachment_file(&raw, index) else {
+                            failed.push(format!("attachment {}", index + 1));
+                            continue;
+                        };
+                        match save_new(&dir, &safe_name(&file.name), &file.bytes) {
+                            Ok(_) => saved += 1,
+                            Err(err) => failed.push(format!("{}: {err}", file.name)),
+                        }
+                    }
+                    (saved, failed, dir)
+                })
+                .await;
+            this.update(cx, |this, cx| {
+                let place = folder_label(&dir);
+                let text = match failed.first() {
+                    None => format!("Saved {saved} files to {place}"),
+                    Some(first) => {
+                        format!("Saved {saved} of {total} files to {place}. Could not save {first}")
+                    }
+                };
+                this.show_snackbar(text, None, cx);
             })
             .ok();
         })
@@ -853,20 +944,53 @@ fn safe_name(name: &str) -> String {
     name
 }
 
-/// `dir/name`, or `dir/name (2)` and so on when that exists.
-fn unique_path(dir: &Path, name: &str) -> PathBuf {
-    let path = dir.join(name);
-    if !path.exists() {
-        return path;
-    }
+/// `dir/name`, then `dir/name (1)`, `dir/name (2)` and so on.
+fn candidates(dir: &Path, name: &str) -> impl Iterator<Item = PathBuf> {
     let (stem, ext) = match name.rsplit_once('.') {
-        Some((stem, ext)) if !stem.is_empty() => (stem, format!(".{ext}")),
-        _ => (name, String::new()),
+        Some((stem, ext)) if !stem.is_empty() => (stem.to_owned(), format!(".{ext}")),
+        _ => (name.to_owned(), String::new()),
     };
-    (2..)
-        .map(|n| dir.join(format!("{stem} ({n}){ext}")))
+    let dir = dir.to_owned();
+    std::iter::once(dir.join(name))
+        .chain((1..).map(move |n| dir.join(format!("{stem} ({n}){ext}"))))
+}
+
+/// The first of `candidates` that does not exist yet.
+fn unique_path(dir: &Path, name: &str) -> PathBuf {
+    candidates(dir, name)
         .find(|p| !p.exists())
-        .unwrap_or(path)
+        .unwrap_or_else(|| dir.join(name))
+}
+
+/// Writes `bytes` to a new file `dir/name`, or `dir/name (1)` and so on,
+/// never replacing a file that is there (even one made meanwhile).
+fn save_new(dir: &Path, name: &str, bytes: &[u8]) -> std::io::Result<PathBuf> {
+    use std::io::{ErrorKind, Write};
+    for path in candidates(dir, name).take(10_000) {
+        match std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&path)
+        {
+            Ok(mut file) => return file.write_all(bytes).map(|()| path),
+            Err(err) if err.kind() == ErrorKind::AlreadyExists => continue,
+            Err(err) => return Err(err),
+        }
+    }
+    Err(ErrorKind::AlreadyExists.into())
+}
+
+/// How a toast names folder `dir`: "Downloads" for the download folder,
+/// else its path.
+fn folder_label(dir: &Path) -> String {
+    if dir == download_dir() {
+        dir.file_name().map_or_else(
+            || dir.display().to_string(),
+            |n| n.to_string_lossy().into_owned(),
+        )
+    } else {
+        dir.display().to_string()
+    }
 }
 
 /// The user's download folder (`XDG_DOWNLOAD_DIR` of `user-dirs.dirs`),
@@ -983,11 +1107,25 @@ tmpfs /run/user/1000 tmpfs rw,nosuid,mode=700 0 0\n\
         let dir = tempfile::tempdir().unwrap();
         assert_eq!(unique_path(dir.path(), "a.pdf"), dir.path().join("a.pdf"));
         std::fs::write(dir.path().join("a.pdf"), b"1").unwrap();
-        std::fs::write(dir.path().join("a (2).pdf"), b"2").unwrap();
+        std::fs::write(dir.path().join("a (1).pdf"), b"2").unwrap();
         assert_eq!(
             unique_path(dir.path(), "a.pdf"),
-            dir.path().join("a (3).pdf")
+            dir.path().join("a (2).pdf")
         );
+    }
+
+    #[test]
+    fn saving_all_keeps_files_already_there() {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(dir.path().join("a.pdf"), b"old").unwrap();
+        let first = save_new(dir.path(), "a.pdf", b"new").unwrap();
+        let second = save_new(dir.path(), "a.pdf", b"newer").unwrap();
+        let bare = save_new(dir.path(), "README", b"x").unwrap();
+        assert_eq!(first, dir.path().join("a (1).pdf"));
+        assert_eq!(second, dir.path().join("a (2).pdf"));
+        assert_eq!(bare, dir.path().join("README"));
+        assert_eq!(std::fs::read(dir.path().join("a.pdf")).unwrap(), b"old");
+        assert_eq!(std::fs::read(&second).unwrap(), b"newer");
     }
 
     #[test]
