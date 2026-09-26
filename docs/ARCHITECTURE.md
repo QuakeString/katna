@@ -1582,7 +1582,7 @@ about 2 MB of the first 30 MiB (31.5 MB) budget.
 
 | Metric | Target |
 |---|---|
-| Katna Mail binary | ≤ 50 MB (50,000,000 bytes) |
+| Katna Mail binary | ≤ 100 MB (100,000,000 bytes) |
 | `katna-daemon` binary | ≤ 20 MiB (21 MB) |
 | Idle CPU (app and daemon) | ≈ 0 %; no periodic wake-ups beyond IDLE renewals |
 | Cold start to usable inbox | < 500 ms |
@@ -1593,8 +1593,9 @@ With sync, bodies, the op queue, sending and the search indexer,
 `katna-daemon` is 15.6 MB. tantivy is the biggest part. Its budget was
 15 MiB until sending came in; it is 20 MiB (September 2026) so features
 are not trimmed to fit. Katna Mail's budget was 30 MiB until the fixes
-after the first real install, when the app reached it; it is 50 MB
-(September 2026). Crates that are not hot are built with
+after the first real install, when the app reached it; then 50 MB, and
+100 MB since the attachment viewers (September 2026), so features are
+not trimmed to fit; light crates are still preferred. Crates that are not hot are built with
 `opt-level = "s"` (root `Cargo.toml`): D-Bus (zbus, zvariant, oo7,
 ashpd), IMAP parsing and regex.
 
