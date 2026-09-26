@@ -168,11 +168,16 @@ fn nearest(searcher: &Searcher, fields: &[Field], word: &str) -> Result<Option<S
             }
         }
     }
+    // Fewest typos, then the same first letter (people rarely get that
+    // wrong: `kenet` → kenneth, not genex), then the most messages.
+    let first = word.chars().next();
+    let other_start = |candidate: &str| candidate.chars().next() != first;
     Ok(found
         .into_iter()
         .min_by(|(a, (a_typos, a_count)), (b, (b_typos, b_count))| {
             a_typos
                 .cmp(b_typos)
+                .then(other_start(a).cmp(&other_start(b)))
                 .then(b_count.cmp(a_count))
                 .then(a.cmp(b))
         })

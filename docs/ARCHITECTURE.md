@@ -626,7 +626,8 @@ from or adds to the sketch above:
   highlight near matches yet.
 - **Did you mean.** `SearchIndex::suggest` rewrites the typed text with
   each word that is not in the mail as typed (four or more letters) swapped
-  for the nearest word that is: fewest typos, then the most messages, in
+  for the nearest word that is: fewest typos, then the same first letter
+  (`kenet` → kenneth, not genex), then the most messages, in
   the fields that word searches (`from:Hasnia` looks only at senders).
   Quoted phrases, `-words` and `OR` are left alone, and the unfinished last
   word counts as found if any word starts with it. The mail app shows it as

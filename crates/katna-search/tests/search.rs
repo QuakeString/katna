@@ -379,6 +379,12 @@ fn banu_corpus() -> Vec<Mail> {
              Subject: Hello\nDate: Wed, 16 May 2001 16:39:00 +0000",
             "Hello from Rahman.",
         ),
+        mail(
+            "inbox",
+            "From: Kerston Lee <kerston@example.net>\nTo: me@example.com\n\
+             Subject: Tea\nDate: Wed, 16 May 2001 17:39:00 +0000",
+            "Tea at four.",
+        ),
     ];
     // Twenty-six names that sort before "banu": baaa, baab, …, baaz.
     for letter in 'a'..='z' {
@@ -457,6 +463,8 @@ fn forgives_typos_and_short_prefixes() {
     assert_eq!(suggest("hasina b"), None);
     assert_eq!(suggest("\"scool fees\" -haskina"), None);
     assert_eq!(suggest("qzxwvq"), None);
+    // One typo from both; the first letter wins over the 26 "Person" mails.
+    assert_eq!(suggest("kerson").as_deref(), Some("kerston"));
     assert!(!fuzzy("haskina banu"));
     assert!(!fuzzy("school fees"));
 }
