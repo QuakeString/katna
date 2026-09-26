@@ -445,6 +445,18 @@ fn forgives_typos_and_short_prefixes() {
             .fuzzy
     };
     assert!(fuzzy("scool fees"));
+
+    // "Did you mean": the nearest words that are in the mail.
+    let suggest = |text: &str| index.suggest(text, true).unwrap();
+    assert_eq!(suggest("haskina banu").as_deref(), Some("hasina banu"));
+    assert_eq!(suggest("Haskina Banu").as_deref(), Some("Hasina Banu"));
+    assert_eq!(suggest("hasina bano").as_deref(), Some("hasina banu"));
+    assert_eq!(suggest("from:Hasnia").as_deref(), Some("from:Hasina"));
+    assert_eq!(suggest("scool fees").as_deref(), Some("school fees"));
+    assert_eq!(suggest("hasina banu"), None);
+    assert_eq!(suggest("hasina b"), None);
+    assert_eq!(suggest("\"scool fees\" -haskina"), None);
+    assert_eq!(suggest("qzxwvq"), None);
     assert!(!fuzzy("haskina banu"));
     assert!(!fuzzy("school fees"));
 }

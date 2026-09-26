@@ -142,7 +142,12 @@ const FAILURE_TIME: Duration = Duration::from_secs(12);
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Listing {
     Folder(FolderId),
-    Search { query: String, total: Option<usize> },
+    Search {
+        query: String,
+        total: Option<usize>,
+        /// "Did you mean": the query with misspelled words corrected.
+        suggestion: Option<String>,
+    },
 }
 
 /// An open popup menu.
@@ -1163,11 +1168,11 @@ impl MailWindow {
     fn show_results(
         &mut self,
         query: String,
-        results: Result<SearchResults, String>,
+        results: Result<(SearchResults, Option<String>), String>,
         cx: &mut Context<Self>,
     ) {
         match results {
-            Ok(results) => {
+            Ok((results, suggestion)) => {
                 // Search results mix folders; show senders.
                 if self.show_recipients {
                     self.show_recipients = false;
@@ -1184,6 +1189,7 @@ impl MailWindow {
                 self.listing = Some(Listing::Search {
                     query,
                     total: results.total,
+                    suggestion,
                 });
                 self.selected = (!self.entries.is_empty()).then_some(0);
                 self.checked.clear();

@@ -262,6 +262,16 @@ impl MailWindow {
                 format::thousands(end as u64)
             )
         };
+        let did_you_mean = match (&self.search_error, &self.listing) {
+            (
+                None,
+                Some(Listing::Search {
+                    suggestion: Some(suggestion),
+                    ..
+                }),
+            ) => Some(suggestion.clone()),
+            _ => None,
+        };
         let at_top = self.visible.start == 0;
         let at_end = self.visible.end >= count;
         bar.child(
@@ -269,10 +279,29 @@ impl MailWindow {
                 .pl(px(8.0))
                 .flex_1()
                 .min_w_0()
-                .truncate()
+                .flex()
+                .items_center()
+                .gap(px(12.0))
                 .text_size(px(14.0))
-                .text_color(rgba(th.text_dim))
-                .children(label),
+                .child(
+                    div()
+                        .flex_shrink(1.0)
+                        .min_w_0()
+                        .truncate()
+                        .text_color(rgba(th.text_dim))
+                        .children(label),
+                )
+                .children(did_you_mean.map(|suggestion| {
+                    div()
+                        .id("did-you-mean")
+                        .flex_none()
+                        .cursor_pointer()
+                        .text_color(rgba(th.accent))
+                        .child(format!("Did you mean “{suggestion}”?"))
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            this.search_for(suggestion.clone(), window, cx);
+                        }))
+                })),
         )
         .child(
             div()

@@ -624,6 +624,14 @@ from or adds to the sketch above:
   noise on the synthetic corpus); a misspelled search costs about as much
   as a correct one (4–25 ms p50 on the synthetic corpus). Snippets do not
   highlight near matches yet.
+- **Did you mean.** `SearchIndex::suggest` rewrites the typed text with
+  each word that is not in the mail as typed (four or more letters) swapped
+  for the nearest word that is: fewest typos, then the most messages, in
+  the fields that word searches (`from:Hasnia` looks only at senders).
+  Quoted phrases, `-words` and `OR` are left alone, and the unfinished last
+  word counts as found if any word starts with it. The mail app shows it as
+  a "Did you mean …?" link beside the results count; clicking it searches
+  the corrected text.
 - **Ranking.** BM25 with field boosts (subject 3, from 2, attachment names
   1.5, others 1), times a recency factor `1 + 0.5 · 2^(−age/60 days)` where
   age is measured from the newest indexed message (so an old archive still

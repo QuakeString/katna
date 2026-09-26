@@ -48,7 +48,7 @@ fn max_body_expansions(prefix: &str) -> u32 {
 /// one typo is a different word, one in words of four letters and two in
 /// longer ones (`kenet` finds `kenneth`). A swap of neighbouring letters
 /// counts as one.
-fn max_typos(word: &str) -> u8 {
+pub(crate) fn max_typos(word: &str) -> u8 {
     match word.chars().count() {
         0..=3 => 0,
         4 => 1,

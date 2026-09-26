@@ -463,6 +463,15 @@ impl SearchIndex {
         Ok(results)
     }
 
+    /// "Did you mean": `input` (search-box text) with each misspelled word
+    /// replaced by the nearest word in the mail, or `None` if every word is
+    /// in the mail as typed. With `as_you_type`, an unfinished last word
+    /// counts as there if a word starts with it. Cheap when nothing is
+    /// misspelled.
+    pub fn suggest(&self, input: &str, as_you_type: bool) -> Result<Option<String>> {
+        crate::suggest::suggest(&self.reader.searcher(), &self.fields, input, as_you_type)
+    }
+
     fn search_with(
         &self,
         query: &Query,

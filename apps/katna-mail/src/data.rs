@@ -528,11 +528,16 @@ pub fn people(paths: &Paths) -> Result<Vec<katna_store::Person>, String> {
         .map_err(|err| format!("Reading people from the mail failed: {err}"))
 }
 
-/// Runs a search typed into the search box. `now` is Unix seconds, for
-/// relative dates such as `newer_than:`.
-pub fn search(index: &SearchIndex, text: &str, now: i64) -> Result<SearchResults, String> {
+/// Runs a search typed into the search box, with a "did you mean" text if
+/// a word is not in the mail as typed. `now` is Unix seconds, for relative
+/// dates such as `newer_than:`.
+pub fn search(
+    index: &SearchIndex,
+    text: &str,
+    now: i64,
+) -> Result<(SearchResults, Option<String>), String> {
     let query = Query::parse_as_you_type(text, now).map_err(|err| err.to_string())?;
-    index
+    let results = index
         .search(
             &query,
             &SearchOptions {
@@ -541,7 +546,9 @@ pub fn search(index: &SearchIndex, text: &str, now: i64) -> Result<SearchResults
                 ..SearchOptions::default()
             },
         )
-        .map_err(|err| err.to_string())
+        .map_err(|err| err.to_string())?;
+    let suggestion = index.suggest(text, true).map_err(|err| err.to_string())?;
+    Ok((results, suggestion))
 }
 
 #[cfg(test)]
@@ -672,10 +679,15 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
         }
         let mut mail = Mail::open(&paths).unwrap();
         let index = mail.index().expect("index opened");
-        let results = search(&index, "budg", 0).unwrap();
+        let (results, suggestion) = search(&index, "budg", 0).unwrap();
+        assert_eq!(suggestion, None);
         assert_eq!(results.hits.len(), 1);
         assert_eq!(results.hits[0].message, id);
         assert_eq!(results.total, Some(1));
-        assert!(search(&index, "from:nobody", 0).unwrap().hits.is_empty());
+        assert!(search(&index, "from:nobody", 0).unwrap().0.hits.is_empty());
+        assert_eq!(
+            search(&index, "budgte", 0).unwrap().1.as_deref(),
+            Some("budget")
+        );
     }
 }

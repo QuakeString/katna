@@ -11,10 +11,12 @@ publish.workspace = true
 [dependencies]
 katna-core.workspace = true
 katna-store.workspace = true
+levenshtein_automata.workspace = true
 mail-parser.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 tantivy.workspace = true
+tantivy-fst.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 
