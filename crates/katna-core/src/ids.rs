@@ -2,14 +2,15 @@
 
 //! Application IDs, D-Bus names and object paths.
 //!
-//! The prefix is a **placeholder** until Katna has a registered domain
-//! (implementation plan, decision D6). Change it only in [`prefix!`]; every
-//! other identifier is derived from it.
+//! The prefix is the reversed project domain `katna.invenia.in`
+//! (implementation plan, decision D6). It is defined only in [`prefix!`];
+//! every other identifier is derived from it. These IDs end up in desktop
+//! files, Flatpak and user settings, so they must not change after release.
 
 /// Reverse-DNS prefix for every Katna identifier.
 macro_rules! prefix {
     () => {
-        "org.katna"
+        "in.invenia.katna"
     };
 }
 
@@ -29,7 +30,7 @@ pub const DAEMON_BUS_NAME: &str = concat!(prefix!(), ".Daemon");
 pub const PIM_INTERFACE: &str = concat!(prefix!(), ".Pim1");
 
 /// D-Bus object path of the daemon API.
-pub const PIM_OBJECT_PATH: &str = "/org/katna/Pim1";
+pub const PIM_OBJECT_PATH: &str = "/in/invenia/katna/Pim1";
 
 /// Returns whether `id` is usable as an application ID, D-Bus well-known name
 /// and D-Bus interface name at the same time.
@@ -61,6 +62,14 @@ mod tests {
         for id in [MAIL_APP_ID, CALENDAR_APP_ID, DAEMON_BUS_NAME, PIM_INTERFACE] {
             assert!(is_valid_app_id(id), "invalid identifier: {id}");
         }
+    }
+
+    #[test]
+    fn identifiers_use_project_domain() {
+        assert_eq!(MAIL_APP_ID, "in.invenia.katna.Mail");
+        assert_eq!(CALENDAR_APP_ID, "in.invenia.katna.Calendar");
+        assert_eq!(DAEMON_BUS_NAME, "in.invenia.katna.Daemon");
+        assert_eq!(PIM_INTERFACE, "in.invenia.katna.Pim1");
     }
 
     #[test]

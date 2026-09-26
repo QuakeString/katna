@@ -31,7 +31,7 @@ they become the plan.
 | D3 | Mail storage | **Decided:** SQLite (`rusqlite`) for metadata **and** compressed raw messages (`blobs.db`); files only for large attachments; Maildir export. Turso re-evaluated at its 1.0 (file-format compatible) | `katna-store` design |
 | D4 | Rust toolchain | **Decided: latest stable** — `rust-toolchain.toml` with `channel = "stable"`; `rust-version` in `Cargo.toml` records the minimum and is raised deliberately | CI, contributors |
 | D5 | Supported systems for CI | **Decided: Arch Linux and Ubuntu 26.04 LTS** — Arch = latest Plasma and GNOME; Ubuntu = GNOME, Kubuntu 26.04 = older Plasma | Test matrix, Plasma versions |
-| D6 | App ID / D-Bus prefix | Register a domain and use its reverse form, e.g. `app.katna.Mail`, `app.katna.Calendar`, `app.katna.Daemon`; fallback without a domain: `io.github.quakestring.*` | Flatpak IDs, D-Bus names, desktop files |
+| D6 | App ID / D-Bus prefix | **Decided: `in.invenia.katna`** (domain `katna.invenia.in`): `in.invenia.katna.Mail`, `in.invenia.katna.Calendar`, `in.invenia.katna.Daemon`, interface `in.invenia.katna.Pim1` | Flatpak IDs, D-Bus names, desktop files |
 
 D6 matters for Flathub: its app IDs must match a domain or code-hosting
 account you control.
@@ -130,7 +130,7 @@ normal laptop; the index can be deleted and rebuilt from the store; CI is green.
 | 1.8 SMTP + outbox | Sending, Sent-folder handling, outbox with undo delay |
 | 1.9 `katna-meta` | Metadata table + scheduler (undo send first) |
 | 1.10 POP3 | Client with UIDL tracking, leave-on-server, `TOP` preview |
-| 1.11 `katna-daemon` | Process, `org.katna.Pim1` D-Bus skeleton (commands + change signals), single instance, systemd user unit, D-Bus activation, graceful shutdown |
+| 1.11 `katna-daemon` | Process, `in.invenia.katna.Pim1` D-Bus skeleton (commands + change signals), single instance, systemd user unit, D-Bus activation, graceful shutdown |
 | 1.12 System events | Network changes, suspend/resume, metered connections |
 | 1.13 `katnactl` | Small CLI client for the daemon (add account, sync, search, send, list) — the test harness until the GUI exists |
 
@@ -276,7 +276,7 @@ Plasma integration (Phase 6), which have few dependencies on the rest.
 
 ## 8. First two weeks (concrete checklist)
 
-1. Choose the domain / app ID (D6). D1–D5 are decided.
+1. ✅ All pre-coding decisions D1–D6 are made.
 2. ✅ Repo renamed; `LICENSE`, `README`, `CLAUDE.md` added.
 3. ✅ Cargo workspace with empty crates and the dependency rules.
 4. ✅ Toolchain (latest stable); CI `check` (Arch + Ubuntu 26.04), `deny`, `size`.

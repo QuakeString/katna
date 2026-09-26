@@ -40,8 +40,8 @@ The toolchain is always the latest stable Rust (`rust-toolchain.toml`).
   depend on GPUI.
 - TLS is `rustls` only; no OpenSSL.
 - Pimalaya and GPUI types never appear in engine or store APIs.
-- App IDs and D-Bus names come from `katna_core::ids` only (the prefix is
-  a placeholder until the domain is chosen).
+- App IDs and D-Bus names come from `katna_core::ids` only. The prefix is
+  `in.invenia.katna` (domain `katna.invenia.in`); never hard-code it elsewhere.
 - No `unsafe` code (workspace lint `unsafe_code = "forbid"`).
 - Keep binary sizes within `ci/size-budgets.txt`.
 - Commit messages: `area: summary` (for example `search: add date filters`).

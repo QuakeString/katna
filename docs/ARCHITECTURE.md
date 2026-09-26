@@ -42,7 +42,8 @@ Merkuro).
                          │ katna-daemon (background service, no GUI)     │
                          │  sync (IDLE/push) · indexing · scheduler      │
                          │  notifications · KRunner runner · GNOME       │
-                         │  search provider · D-Bus API org.katna.Pim1   │
+                         │  search provider · D-Bus API                  │
+                         │  in.invenia.katna.Pim1                        │
                          └───────┬───────────────────────────┬──────────┘
                      writes      │                           │  D-Bus
            ┌─────────────────────┴─────┐      ┌──────────────┴───────────────────────┐
@@ -93,7 +94,7 @@ katna/
 │   ├── katna-org/             # organizations, matching rules, suggestions
 │   ├── katna-render/          # HTML sanitizing and message rendering
 │   ├── katna-dav/             # CalDAV/CardDAV sync, iCalendar/vCard, recurrence
-│   ├── katna-dbus/            # D-Bus API definitions (org.katna.Pim1), client + server sides
+│   ├── katna-dbus/            # D-Bus API definitions (in.invenia.katna.Pim1), client + server sides
 │   ├── katna-notify/          # notification builder, actions, inline reply, grouping
 │   ├── katna-platform/        # portals, desktop detection, settings, tray, badges
 │   ├── katna-chrome/          # window decorations (SSD/CSD), theme tokens + presets
@@ -415,7 +416,7 @@ the same matching on event attendees ("Meeting with Acme").
 | Environment | How it starts |
 |---|---|
 | systemd | `katna-daemon.service` (systemd user unit), started at login when "run in background" is on. |
-| Any session | **D-Bus activation** (`org.katna.Pim1.service`): starts on demand when an app, KRunner, the clock plugin or a notification action calls it. |
+| Any session | **D-Bus activation** (`in.invenia.katna.Daemon.service`): starts on demand when an app, KRunner, the clock plugin or a notification action calls it. |
 | No systemd | XDG autostart `.desktop` file. |
 | Flatpak | **Background portal** (`RequestBackground` with autostart). KDE and GNOME both implement it; GNOME lists it under "Background Apps". |
 
@@ -532,7 +533,7 @@ with undo delay.
 
 ## 14. D-Bus API (`katna-dbus`)
 
-### 14.1 Interface `org.katna.Pim1` (object `/org/katna/Pim1`)
+### 14.1 Interface `in.invenia.katna.Pim1` (object `/in/invenia/katna/Pim1`, bus name `in.invenia.katna.Daemon`)
 
 Sketch — versioned by the interface name; breaking changes create `Pim2`.
 
@@ -550,7 +551,7 @@ Sketch — versioned by the interface name; breaking changes create `Pim2`.
 - Commands are asynchronous and idempotent where possible (retries are safe).
 - Change signals carry IDs only; clients re-read from SQLite.
 - Access is limited to the user's session bus. Inside Flatpak, only the
-  Katna apps own/talk to `org.katna.*` names.
+  Katna apps own/talk to `in.invenia.katna.*` names.
 - Each app also implements `org.freedesktop.Application` (`Activate`,
   `ActivateAction`, `Open`) so notifications and KRunner can open a
   specific message or event, with an activation token.
@@ -639,8 +640,8 @@ Katna integrates in three layers:
 - Source: `plasma-workspace/applets/digital-clock` (about 5,900 lines together
   with the calendar component; GPL-2.0-or-later / LGPL / KDE-accepted GPL).
 - Renamed to avoid clashes in the shared `plasmashell` process:
-  applet `org.kde.plasma.digitalclock` → `org.katna.plasma.clock`;
-  QML module `org.kde.plasma.private.digitalclock` → `org.katna.plasma.private.clock`.
+  applet `org.kde.plasma.digitalclock` → `in.invenia.katna.clock`;
+  QML module `org.kde.plasma.private.digitalclock` → `in.invenia.katna.private.clock`.
 - Declares `X-Plasma-Provides: org.kde.plasma.time, org.kde.plasma.date`, so
   it appears in the clock's **"Show Alternatives"** menu (two-click switch).
 - Keeps importing the shared `org.kde.plasma.workspace.calendar` component
@@ -880,14 +881,14 @@ Packaging (Flatpak, deb, rpm, AUR) starts from Phase 3; the
 ## 25. Open decisions
 
 1. HTML renderer for phase 2 (§12).
-2. App ID prefix: registered domain (proposed, e.g. `app.katna.*`) vs.
-   `io.github.quakestring.*` (plan D6).
-3. Katna Server hosting and pricing model; Katna Server license (GPL-3.0 or AGPL-3.0).
+2. Katna Server hosting and pricing model; Katna Server license (GPL-3.0 or AGPL-3.0).
 
 Decided:
 
 - License: GPL-3.0-or-later (§22).
-- Repository: `QuakeString/katna`, one monorepo (§3).
+- Repository: `QuakeString/katna`, one monorepo (§3); default branch `main`.
+- App ID prefix: `in.invenia.katna` (domain `katna.invenia.in`); defined
+  only in `katna_core::ids`.
 - Message storage: SQLite for metadata and compressed raw messages;
   files only for large attachments (§5.2).
 - Rust toolchain: latest stable (`channel = "stable"`).

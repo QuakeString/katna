@@ -1,6 +1,6 @@
 [package]
 name = "katna-dbus"
-description = "D-Bus API (org.katna.Pim1) definitions shared by the daemon and its clients."
+description = "D-Bus API (in.invenia.katna.Pim1) definitions shared by the daemon and its clients."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
