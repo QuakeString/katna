@@ -104,7 +104,6 @@ pub(super) struct Shape {
     pub phone: f32,
     /// How much of the word "Compose" shows on the top bar's button.
     pub label: f32,
-    pub desktop: f32,
     /// Where the conversation is when it slides over the list: 0 = the
     /// list, 1 = the conversation.
     pub page: f32,
@@ -163,7 +162,6 @@ pub(super) struct Layout {
     /// `None` until the first frame, which takes its layout without motion.
     size: Option<Size>,
     phone: Spring,
-    desktop: Spring,
     label: Spring,
     page: Spring,
     /// 0 = no drawer, 1 = the drawer is open over the dimmed window.
@@ -184,7 +182,6 @@ impl Layout {
         Self {
             size: None,
             phone: Spring::new(motion::SLIDE, 0.0),
-            desktop: Spring::new(motion::SLIDE, 1.0),
             label: Spring::new(motion::SMOOTH, 1.0),
             page: Spring::new(motion::SLIDE, 0.0),
             scrim: Spring::new(motion::SMOOTH, 0.0),
@@ -197,7 +194,6 @@ impl Layout {
                 width: 1280.0,
                 phone: 0.0,
                 label: 1.0,
-                desktop: 1.0,
                 page: 0.0,
                 room: (0.0, 0.0),
             },
@@ -253,9 +249,6 @@ impl MailWindow {
         layout
             .phone
             .set(if size == Size::Phone { 1.0 } else { 0.0 });
-        layout
-            .desktop
-            .set(if size == Size::Desktop { 1.0 } else { 0.0 });
         let labelled = layout.label.target() > 0.5;
         let fold_below = if labelled {
             COMPOSE_FOLD_BELOW - HYSTERESIS
@@ -267,19 +260,16 @@ impl MailWindow {
             .set(if width >= fold_below { 1.0 } else { 0.0 });
         if first {
             layout.phone.snap(layout.phone.target());
-            layout.desktop.snap(layout.desktop.target());
             layout.label.snap(layout.label.target());
         }
         let label = layout.label.tick(window, reduce).clamp(0.0, 1.0);
         let phone = layout.phone.tick(window, reduce).clamp(0.0, 1.0);
-        let desktop = layout.desktop.tick(window, reduce).clamp(0.0, 1.0);
         // The shape's size decides `split` below, so it goes in first.
         layout.shape = Shape {
             size,
             width,
             phone,
             label,
-            desktop,
             page: layout.shape.page,
             room,
         };

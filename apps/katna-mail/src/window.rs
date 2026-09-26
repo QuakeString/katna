@@ -2109,20 +2109,21 @@ impl Render for MailWindow {
                 .into_any_element()
         });
 
-        // The search box, centered, grows into a pill across the top bar
-        // of a phone, under its menu button and account picture.
+        // The search box starts where the list does, as the folders open
+        // and fold, but never over Compose (a tablet keeps Compose beside
+        // the menu button, and the folders there are a drawer). It grows
+        // into a pill across the top bar of a phone, under its menu button
+        // and account picture.
         let (room_start, room_end) = shape.room;
-        // A tablet keeps Compose beside the menu button.
-        let side = lerp(
-            (room_start + 60.0 + shape.compose_room()).max(room_end + 112.0) + 8.0,
-            NAV_WIDTH,
-            shape.desktop,
-        );
-        let regular = (width - 2.0 * side).clamp(200.0, SEARCH_WIDTH);
+        let after_compose = room_start + 60.0 + shape.compose_room() + 24.0;
+        let search_left = (shape.rail() + nav_width).max(after_compose);
+        let regular = (width - search_left - room_end - 120.0).clamp(200.0, SEARCH_WIDTH);
         let pill = (width - 12.0 - room_start - room_end).max(200.0);
         let search_width = lerp(regular, pill, shape.phone);
         let search_panel_width = lerp(regular, width - 16.0, shape.phone);
-        let search_panel = self.render_search_panel(&th, width, search_panel_width, window, cx);
+        let search_panel_left = lerp(search_left, 8.0, shape.phone);
+        let search_panel =
+            self.render_search_panel(&th, search_panel_left, search_panel_width, window, cx);
         let fab = if onboarding {
             None
         } else {
@@ -2189,8 +2190,8 @@ impl Render for MailWindow {
             },
             center: (self.mail.is_ok() && !onboarding).then(|| {
                 div()
-                    .ml(px((6.0 + room_start) * shape.phone))
-                    .mr(px((6.0 + room_end) * shape.phone))
+                    .w_full()
+                    .pl(px(lerp(search_left, 6.0 + room_start, shape.phone)))
                     .child(self.render_search(&th, search_width, search_t, cx))
                     .into_any_element()
             }),

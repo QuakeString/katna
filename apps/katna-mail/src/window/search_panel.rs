@@ -192,7 +192,7 @@ impl MailWindow {
     pub(super) fn render_search_panel(
         &mut self,
         th: &Theme,
-        viewport: f32,
+        left: f32,
         width: f32,
         window: &mut Window,
         cx: &mut Context<Self>,
@@ -393,7 +393,7 @@ impl MailWindow {
             div()
                 .absolute()
                 .top(px(-4.0 + 8.0 * (1.0 - t)))
-                .left(px(((viewport - width) / 2.0).max(0.0)))
+                .left(px(left.max(0.0)))
                 .opacity(t)
                 .child(body)
                 .children(popover)
