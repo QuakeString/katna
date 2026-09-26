@@ -1014,7 +1014,17 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   height and background for this.
 - **Navigation.** The folders as pills rounded on the right. The menu
   button folds it away (it first folded to a rail of icons; see below).
-  With one account the account heading is left out.
+  With one account the account heading is left out. With several, the
+  owner asked for one account at a time by default, as Gmail does:
+  "Folder pane" in Settings > Accounts (`mail.accounts_shown`, `one` or
+  `all`) picks between the shown account's folders only and every account
+  one after another. The account card switches the shown account (it marks
+  it and gives each account's unread count); the choice is kept in
+  `mail.current_account`. The list, search results, Go to, compose's From
+  and the top-bar picture follow the shown account, and opening a message
+  of another account (from a notification) switches to it. The taskbar
+  badge, tray and notifications still count every account, so no new mail
+  goes unseen.
 - **One card.** The list and the open message share a white card with
   rounded corners on a tinted page. The list is one line per message:
   star, sender, subject in bold if unread with the snippet after it, and

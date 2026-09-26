@@ -199,7 +199,10 @@ impl MailWindow {
         .child(self.tour_mark(Spot::Settings));
         // The account picture opens the account card; with no account yet,
         // the button adds one.
-        let account = match self.accounts.first() {
+        let shown = self
+            .account()
+            .and_then(|id| self.accounts.iter().find(|a| a.id == id));
+        let account = match shown.or_else(|| self.accounts.first()) {
             Some(account) => {
                 let name = if account.display_name.trim().is_empty() {
                     account.address.clone()

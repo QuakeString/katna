@@ -271,9 +271,9 @@ impl MailWindow {
         }
     }
 
-    /// Lists the first account's Inbox, leaving search and the open mail.
+    /// Lists the shown account's Inbox, leaving search and the open mail.
     fn show_inbox(&mut self, cx: &mut Context<Self>) {
-        let Some((folder, ancestors)) = self.tree.default_folder() else {
+        let Some((folder, ancestors)) = self.default_folder() else {
             return;
         };
         self.clear_search(cx);
@@ -285,6 +285,17 @@ impl MailWindow {
     /// Opens the conversation of `message` from the Inbox list, or shows the
     /// Inbox when it is not listed there.
     fn show_message(&mut self, message: MessageId, window: &mut Window, cx: &mut Context<Self>) {
+        // Mail of another account: show that account.
+        if let Some(account) = self
+            .mail
+            .as_ref()
+            .ok()
+            .and_then(|m| m.message_account(message))
+            && self.shown_account().is_some_and(|shown| shown != account)
+        {
+            self.set_shown_account(account);
+            self.rebuild_nav();
+        }
         self.show_inbox(cx);
         let found = self
             .entries
