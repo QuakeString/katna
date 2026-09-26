@@ -45,6 +45,8 @@ is `admin` / `katna-dev`, for its web UI at <http://127.0.0.1:18080/admin>
 
 ## Ports
 
+The addresses below use the default ports; see [Changing ports](#changing-ports).
+
 | Server | Protocol | Address |
 |---|---|---|
 | Stalwart | IMAP (TLS) | `127.0.0.1:10993` |
@@ -69,6 +71,36 @@ a restart, so the setup keeps Stalwart's defaults (TLS only).
 Mail that Stalwart or Dovecot would send to another domain goes to Mailpit
 instead. The seed script sends one such message through each server, so
 Mailpit starts with two messages.
+
+### Changing ports
+
+Every host port can be changed with an environment variable, for example
+when another service already uses it. Set the variable in your shell or put
+it in `dev/.env`, which Compose reads automatically and git ignores:
+
+```sh
+# dev/.env
+KATNA_STALWART_HTTP_PORT=38080
+```
+
+| Variable | Default |
+|---|---|
+| `KATNA_STALWART_IMAPS_PORT` | 10993 |
+| `KATNA_STALWART_SUBMISSIONS_PORT` | 10465 |
+| `KATNA_STALWART_SMTP_PORT` | 10025 |
+| `KATNA_STALWART_SIEVE_PORT` | 14190 |
+| `KATNA_STALWART_HTTP_PORT` | 18080 |
+| `KATNA_STALWART_HTTPS_PORT` | 18443 |
+| `KATNA_DOVECOT_IMAP_PORT` | 20143 |
+| `KATNA_DOVECOT_IMAPS_PORT` | 20993 |
+| `KATNA_DOVECOT_SUBMISSION_PORT` | 20587 |
+| `KATNA_DOVECOT_SIEVE_PORT` | 24190 |
+| `KATNA_RADICALE_PORT` | 5232 |
+| `KATNA_MAILPIT_SMTP_PORT` | 1025 |
+| `KATNA_MAILPIT_HTTP_PORT` | 8025 |
+
+The seed service talks to the servers inside the Compose network, so it is
+not affected by these settings.
 
 ## Sample data
 
