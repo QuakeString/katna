@@ -459,33 +459,42 @@ fn folder_lists_summaries_and_tab_counts() {
         ]
     );
     assert_eq!(
-        app.folder_threads(inbox, Some(MailCategory::Primary))
+        app.folder_threads(inbox, Some(&[MailCategory::Primary]))
             .unwrap(),
         entries[1..]
     );
     assert_eq!(
-        app.folder_threads(inbox, Some(MailCategory::Promotions))
+        app.folder_threads(inbox, Some(&[MailCategory::Promotions]))
             .unwrap(),
         entries[..1]
     );
     assert!(
-        app.folder_threads(inbox, Some(MailCategory::Social))
+        app.folder_threads(inbox, Some(&[MailCategory::Social]))
             .unwrap()
             .is_empty()
+    );
+    // A tab of several categories, such as Focused and Other's Other.
+    assert_eq!(
+        app.folder_threads(
+            inbox,
+            Some(&[MailCategory::Primary, MailCategory::Promotions])
+        )
+        .unwrap(),
+        entries
     );
     assert_eq!(app.folder_thread_messages(sent, thread).unwrap(), [b]);
     // Without conversations, the tabs hold single messages.
     assert_eq!(
-        app.folder_messages_in(inbox, MailCategory::Promotions)
+        app.folder_messages_in(inbox, &[MailCategory::Promotions])
             .unwrap(),
         [promo]
     );
     let primary = app
-        .folder_messages_in(inbox, MailCategory::Primary)
+        .folder_messages_in(inbox, &[MailCategory::Primary])
         .unwrap();
     assert!(primary.contains(&c) && primary.contains(&old) && !primary.contains(&promo));
     assert!(
-        app.folder_messages_in(inbox, MailCategory::Social)
+        app.folder_messages_in(inbox, &[MailCategory::Social])
             .unwrap()
             .is_empty()
     );

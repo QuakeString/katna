@@ -107,7 +107,7 @@ async fn run() -> Result<bool> {
         summaries.iter().filter(|s| s.message_count > 1).count(),
     );
     for category in MailCategory::ALL {
-        let tab = store.folder_threads(*folder, Some(category))?.len();
+        let tab = store.folder_threads(*folder, Some(&[category]))?.len();
         println!("  tab {category:?}: {tab} conversations");
     }
     for (category, unread) in store.category_unread(*folder)? {

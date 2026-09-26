@@ -8,9 +8,9 @@
 //! action this build does not have is left out, and its shortcut comes from
 //! the keymap.
 
-use gpui::{Action, App, Context, Window};
+use gpui::{Action, App, AppContext, Context, Global, Window};
 use katna_dbus::app_action;
-use katna_platform::dbusmenu::MenuItem;
+use katna_platform::dbusmenu::{Menu, MenuItem};
 use katna_store::MessageId;
 
 use super::MailWindow;
@@ -117,6 +117,26 @@ pub fn menu_bar(cx: &App) -> Vec<MenuItem> {
             (!items.is_empty()).then(|| MenuItem::submenu(*label, items))
         })
         .collect()
+}
+
+/// The menu bar served for the KDE global menu, when there is one.
+pub struct MenuBar(pub Menu);
+
+impl Global for MenuBar {}
+
+/// Sends the menu bar again, for new shortcuts or actions.
+pub fn refresh_menu_bar(cx: &mut App) {
+    let Some(MenuBar(menu)) = cx.try_global::<MenuBar>() else {
+        return;
+    };
+    let menu = menu.clone();
+    let items = menu_bar(cx);
+    cx.background_spawn(async move {
+        if let Err(err) = menu.set_items(items).await {
+            tracing::warn!(%err, "cannot update the menu bar");
+        }
+    })
+    .detach();
 }
 
 /// Drops separators at either end and next to each other.

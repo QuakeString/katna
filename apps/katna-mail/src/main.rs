@@ -13,6 +13,8 @@ mod format;
 mod instance;
 mod outgoing;
 mod sidebar;
+mod signatures;
+mod tabs;
 mod theme;
 mod widgets;
 mod window;
@@ -45,9 +47,9 @@ Options:
   -V, --version    Show the version
 
 Keys: Up/Down or j/k move through the list, Enter or o opens, u or
-Escape closes, e archives, # deletes, s stars, x ticks, Shift+I and
-Shift+U mark read and unread, / or Ctrl+F searches, Ctrl+, opens quick
-settings, F5 reloads, Ctrl+Q quits.
+Escape closes, r replies, e archives, # deletes, s stars, x ticks, / or
+Ctrl+F searches, ? lists every shortcut, Ctrl+Q quits. Settings, Keyboard
+shortcuts changes them.
 ";
 
 fn main() -> ExitCode {
@@ -108,7 +110,7 @@ fn main() -> ExitCode {
     gpui_platform::application()
         .with_assets(assets::Assets)
         .run(move |cx: &mut App| {
-            window::bind_keys(cx);
+            // Before the window opens, which reads the menu bar's address.
             if let Some(connection) = &connection {
                 serve_menu_bar(connection, sender, cx);
             }
@@ -143,6 +145,8 @@ fn main() -> ExitCode {
                     return;
                 }
             };
+            // The window has bound the keys; show them in the menu bar.
+            window::refresh_menu_bar(cx);
             cx.spawn(async move |cx| {
                 // Keeps the bus name, the app interface and the menu bar
                 // for as long as the app runs.
@@ -168,7 +172,7 @@ fn main() -> ExitCode {
 fn serve_menu_bar(
     connection: &katna_dbus::zbus::Connection,
     sender: async_channel::Sender<instance::Request>,
-    cx: &App,
+    cx: &mut App,
 ) {
     let Some(service) = connection.unique_name().map(|name| name.to_string()) else {
         return;
@@ -183,7 +187,10 @@ fn serve_menu_bar(
         },
     ));
     match served {
-        Ok(_) => gpui_linux::set_kde_appmenu(service, MAIL_MENU_BAR_PATH),
+        Ok(menu) => {
+            cx.set_global(window::MenuBar(menu));
+            gpui_linux::set_kde_appmenu(service, MAIL_MENU_BAR_PATH);
+        }
         Err(err) => tracing::warn!(%err, "no menu bar for the global menu"),
     }
 }
