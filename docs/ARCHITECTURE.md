@@ -344,6 +344,20 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
 - **Gmail / Microsoft:** OAuth2. Google's restricted scope for full mail
   access requires app verification and a yearly security assessment.
   Launch with generic IMAP, Fastmail/JMAP and app-password accounts first.
+- **Account setup** (task 1.2, `katna_sync::autoconfig`, D-Bus
+  `DiscoverAccount`): the user gives an address and the daemon finds the
+  servers, in Thunderbird's order. First built-in settings for Gmail,
+  Yahoo, iCloud and Fastmail. Then the provider's own `config-v1.1.xml`
+  (`https://autoconfig.DOMAIN/…` and `https://DOMAIN/.well-known/…`) and
+  Thunderbird's ISPDB, fetched at once; the provider's file wins. Then DNS
+  SRV (`_imaps`, `_imap`, `_submissions`, `_submission`; RFC 6186 and
+  8314), then the ISPDB entry of the MX host's domain (hosted mail such as
+  Google Workspace), then probing `imap.`, `mail.` and `smtp.DOMAIN` on
+  993/143 and 465/587 for a mail greeting. Files come only over HTTPS; TLS
+  beats STARTTLS beats plain; servers that only take OAuth2 are skipped.
+  The HTTP client and DNS resolver are our own few hundred lines (UDP to
+  `/etc/resolv.conf` servers), not a crate, to keep the daemon small.
+  Adding the account still checks the login.
 
 ### 6.5 Threading
 
@@ -655,7 +669,7 @@ Features built on it:
   under `gmail.com` or `googlemail.com` the copy is only forgotten. With
   no Sent folder, nothing is filed.
 - Not yet: per-recipient sending, attachments from the composer, drafts
-  saved on the server, and SMTP autoconfiguration (task 1.2).
+  saved on the server.
 
 ## 12. Message rendering (`katna-render`)
 
@@ -815,7 +829,8 @@ Sketch — versioned by the interface name; breaking changes create `Pim2`.
 | Signals | `MessagesChanged(ids)`, `FoldersChanged`, `EventsChanged(range)`, `SyncStatusChanged`, `UnreadCountChanged(n)` |
 
 Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssx)`
-(id, kind, name, address, state, detail, last sync), `AddImapAccount(account,
+(id, kind, name, address, state, detail, last sync),
+`DiscoverAccount(address) → (account, source)`, `AddImapAccount(account,
 password) → id`, `SetPassword(id, password)`, `RemoveAccount(id) → b`,
 `SyncNow(id)` (0 for every account), `FetchBody(message)`,
 `SetFlags(ax messages, as add, as remove)` (flag names `seen`, `answered`,

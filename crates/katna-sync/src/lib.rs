@@ -15,6 +15,7 @@
 //! - [`connection`]: gives each connection to a single task and hands out
 //!   cheap handles, because IMAP commands cannot be cancelled halfway.
 //! - [`engine`]: sync level 1 (folders, flags, headers) into the store.
+//! - [`autoconfig`]: finds an address's IMAP and SMTP servers.
 //! - [`bodies`]: sync level 3, full messages for the offline window and on
 //!   request.
 //! - [`ops`]: the operation queue; local flag changes, moves and deletes,
@@ -27,6 +28,7 @@
 //! Everything is executor-independent: sockets and timers use the `async-io`
 //! reactor, and [`connection::spawn`] returns a future for the caller to run.
 
+pub mod autoconfig;
 mod backend;
 pub mod bodies;
 pub mod connection;
