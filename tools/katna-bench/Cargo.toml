@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 katna-core.workspace = true
 katna-store.workspace = true
+katna-import.workspace = true
 katna-search.workspace = true
 
 [lints]

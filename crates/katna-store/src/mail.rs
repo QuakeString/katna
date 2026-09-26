@@ -108,6 +108,20 @@ impl ParticipantRole {
             Self::Sender => "sender",
         }
     }
+
+    /// Reads a name stored in `participant.role`.
+    pub fn parse(name: &str) -> Option<Self> {
+        [
+            Self::From,
+            Self::To,
+            Self::Cc,
+            Self::Bcc,
+            Self::ReplyTo,
+            Self::Sender,
+        ]
+        .into_iter()
+        .find(|role| role.as_str() == name)
+    }
 }
 
 /// One address of a new message.
