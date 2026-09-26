@@ -19,6 +19,18 @@ katna-dav.workspace = true
 katna-dbus.workspace = true
 katna-notify.workspace = true
 katna-platform.workspace = true
+async-channel.workspace = true
+async-io.workspace = true
+async-signal.workspace = true
+futures-lite.workspace = true
+oo7.workspace = true
+smol.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+zbus.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
 
 [lints]
 workspace = true

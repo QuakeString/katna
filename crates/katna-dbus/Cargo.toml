@@ -10,6 +10,8 @@ publish.workspace = true
 
 [dependencies]
 katna-core.workspace = true
+serde.workspace = true
+zbus.workspace = true
 
 [lints]
 workspace = true

@@ -509,6 +509,26 @@ the same matching on event attendees ("Meeting with Acme").
 - Single instance, enforced by owning the D-Bus name.
 - Graceful shutdown: finish in-flight sends, flush the index, close IMAP sessions.
 
+### 9.2.1 What runs today (Phase 1)
+
+- `katna-daemon` opens the store for writing, serves `Pim1`, then takes the
+  bus name with `DoNotQueue`; a second daemon exits with "already running".
+- One sync worker (`katna_sync::worker`) per IMAP account, each with its own
+  store handle. Worker events become the account's status and D-Bus signals.
+- Account server settings are JSON in `account.settings_json`
+  (`katna_core::AccountSettings`); passwords are in the Secret Service
+  under the attributes `application=in.invenia.katna` and `account=<id>`,
+  labelled "Katna: <address>". Only the daemon links `oo7`, so the apps stay
+  small.
+- Adding an account or changing its password logs in once first; a
+  refused login is an error to the caller and nothing is saved.
+- SIGTERM and SIGINT stop every worker; each ends its IDLE and logs out.
+- `katna-daemon install-user-service` writes the systemd user unit and the
+  D-Bus activation file for the installed binary, until distribution
+  packages ship them.
+- `katnactl` (task 1.13) drives it: `add-imap`, `status`, `sync`, `watch`,
+  `password`, `remove`, and store reads (`folders`, `list`).
+
 ### 9.3 Resource targets
 
 - Idle CPU ≈ 0 % (event-driven; no polling loops except IDLE renewals).
@@ -633,6 +653,16 @@ Sketch — versioned by the interface name; breaking changes create `Pim2`.
 | Contacts / orgs | `FindContacts(text)`, `Organizations()` |
 | Sync | `SyncNow(account?)`, `SetForegroundFolders(ids)`, `Status() → per-account state` |
 | Signals | `MessagesChanged(ids)`, `FoldersChanged`, `EventsChanged(range)`, `SyncStatusChanged`, `UnreadCountChanged(n)` |
+
+Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssx)`
+(id, kind, name, address, state, detail, last sync), `AddImapAccount(account,
+password) → id`, `SetPassword(id, password)`, `RemoveAccount(id) → b`,
+`SyncNow(id)` (0 for every account), and the signals `AccountsChanged`,
+`SyncStatusChanged(id)` and `MailChanged(id)`. `MailChanged` carries the
+account, not message IDs: clients read the change journal. Errors use the
+standard names `org.freedesktop.DBus.Error.AuthFailed`, `InvalidArgs`,
+`UnknownObject` and `Failed`. zbus needs the interface name as a literal, so
+`katna_core::with_dbus_names!` hands it to the attribute macros.
 
 ### 14.2 Rules
 
