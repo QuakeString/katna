@@ -6,6 +6,8 @@
 //! - [`document`]: raw message → searchable text → index document.
 //! - [`SearchIndex`]: indexes a [`katna_store::Store`] (fully the first time,
 //!   then from its change journal) and searches it.
+//! - [`Indexer`]: keeps the index up to date on a background thread
+//!   (`katna-daemon`); apps search with [`SearchIndex::open_read_only`].
 //! - [`Query`]: the query language, compiled to tantivy queries by [`compile`].
 //!
 //! The index is disposable: it can be deleted and rebuilt from the store.
@@ -15,6 +17,7 @@ pub mod document;
 mod error;
 mod highlight;
 mod index;
+mod indexer;
 pub mod query;
 pub mod schema;
 
@@ -23,5 +26,6 @@ pub use index::{
     Hit, IndexOptions, IndexState, SearchIndex, SearchOptions, SearchResults, Snippet, Sort,
     UpdateStats,
 };
+pub use indexer::{IndexEvent, Indexer, IndexerOptions};
 pub use query::{Filter, ParseError, Query, TextField};
 pub use schema::SCHEMA_VERSION;
