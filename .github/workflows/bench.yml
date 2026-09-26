@@ -1,7 +1,8 @@
 name: Bench
 
 # Nightly Enron search benchmark (docs/IMPLEMENTATION_PLAN.md §3.3, task 0.8).
-# Fails when the p99 of the query set is over the Phase 0 budget of 50 ms.
+# Fails when the p99 of the query set is over the Phase 0 budget of 50 ms, or
+# when p50 or p99 is more than 10 % (and 1 ms) slower than the last good run.
 
 on:
   schedule:
@@ -35,10 +36,28 @@ jobs:
         run: target/release/katna-search-cli import --data-dir "$DATA" --account enron ~/.cache/katna/corpora/enron/maildir
       - name: Index
         run: target/release/katna-search-cli index --data-dir "$DATA"
-      - name: Search (p99 budget 50 ms)
-        run: target/release/katna-bench search --data-dir "$DATA" --max-p99-ms 50 | tee bench.txt
+      - name: Restore the last good results
+        uses: actions/cache/restore@v4
+        with:
+          path: bench-baseline.json
+          key: enron-bench-baseline-${{ github.run_id }}
+          restore-keys: enron-bench-baseline-
+      - name: Search (p99 budget 50 ms, 10 % regression limit)
+        run: |
+          baseline=()
+          if [[ -f bench-baseline.json ]]; then baseline=(--baseline bench-baseline.json); fi
+          target/release/katna-bench search --data-dir "$DATA" --max-p99-ms 50 \
+            --json bench.json "${baseline[@]}" | tee bench.txt
+      - name: Keep these results as the next baseline
+        run: cp bench.json bench-baseline.json
+      - uses: actions/cache/save@v4
+        with:
+          path: bench-baseline.json
+          key: enron-bench-baseline-${{ github.run_id }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: enron-bench
-          path: bench.txt
+          path: |
+            bench.txt
+            bench.json

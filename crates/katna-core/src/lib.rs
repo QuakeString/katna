@@ -10,7 +10,7 @@ pub mod ids;
 pub mod logging;
 pub mod paths;
 
-pub use account::{Account, AccountId, AccountKind};
+pub use account::{Account, AccountId, AccountKind, AccountSettings, Security, Server};
 pub use config::Config;
 pub use error::{Error, Result};
 pub use paths::Paths;

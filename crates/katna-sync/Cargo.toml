@@ -10,6 +10,7 @@ publish.workspace = true
 
 [dependencies]
 katna-core.workspace = true
+katna-import.workspace = true
 katna-store.workspace = true
 katna-meta.workspace = true
 
@@ -30,6 +31,7 @@ io-sasl.workspace = true
 io-smtp.workspace = true
 
 [dev-dependencies]
+tempfile.workspace = true
 smol.workspace = true
 tracing-subscriber.workspace = true
 

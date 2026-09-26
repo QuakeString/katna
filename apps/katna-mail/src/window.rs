@@ -618,7 +618,7 @@ impl MailWindow {
                     })
                     .on_click(cx.listener(move |this, _, _, cx| this.click_sidebar_row(ix, cx)))
                     .child(chevron)
-                    .child(icon(role_icon(*role, folder.is_some()), t.fg_dim, 16.0))
+                    .child(icon(role_icon(*role), t.fg_dim, 16.0))
                     .child(
                         div()
                             .flex_1()
@@ -1099,15 +1099,15 @@ fn icon(name: &str, color: u32, size: f32) -> AnyElement {
         .into_any_element()
 }
 
-fn role_icon(role: Role, is_folder: bool) -> &'static str {
+fn role_icon(role: Role) -> &'static str {
     match role {
         Role::Inbox => "inbox",
+        Role::Flagged => "star",
         Role::Drafts => "drafts",
         Role::Sent => "sent",
         Role::Archive | Role::All => "archive",
         Role::Junk => "junk",
         Role::Trash => "trash",
-        Role::Other if is_folder => "folder",
         Role::Other => "folder",
     }
 }

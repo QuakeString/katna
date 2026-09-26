@@ -20,6 +20,7 @@ const EXPAND_ALL_UP_TO: usize = 40;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Role {
     Inbox,
+    Flagged,
     Drafts,
     Sent,
     Archive,
@@ -33,6 +34,7 @@ impl Role {
     pub fn detect(role: Option<&str>, name: &str) -> Self {
         let from_role = match role.map(str::to_ascii_lowercase).as_deref() {
             Some("inbox") => Some(Self::Inbox),
+            Some("flagged") => Some(Self::Flagged),
             Some("drafts") => Some(Self::Drafts),
             Some("sent") => Some(Self::Sent),
             Some("archive") => Some(Self::Archive),
@@ -49,6 +51,7 @@ impl Role {
                 .as_str()
             {
                 "inbox" => Self::Inbox,
+                "starred" | "flagged" => Self::Flagged,
                 "drafts" => Self::Drafts,
                 "sent" | "sent items" | "sent mail" | "sent messages" => Self::Sent,
                 "archive" | "archives" => Self::Archive,
@@ -411,6 +414,7 @@ mod tests {
         assert_eq!(Role::detect(None, "_sent_mail"), Role::Sent);
         assert_eq!(Role::detect(None, "[Gmail]"), Role::Other);
         assert_eq!(Role::detect(None, "Spam"), Role::Junk);
+        assert_eq!(Role::detect(Some("flagged"), "Starred"), Role::Flagged);
         assert!(Role::Sent.shows_recipients() && !Role::Inbox.shows_recipients());
     }
 

@@ -12,9 +12,10 @@ pub mod journal;
 pub mod mail;
 mod mail_read;
 mod mail_view;
+pub mod remote;
 
-use katna_core::{Account, AccountId, AccountKind, Paths};
-use rusqlite::{Connection, TransactionBehavior, params};
+use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths};
+use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 
 pub use blob::{BlobHash, BlobStore};
 pub use db::{DbKind, Mode};
@@ -26,6 +27,7 @@ pub use mail::{
 };
 pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
 pub use mail_view::FolderSummary;
+pub use remote::{FolderRole, RemoteMessage, StoredFolder};
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.
 #[derive(Debug)]
@@ -144,6 +146,46 @@ impl Store {
         .collect()
     }
 
+    /// Server settings of an account, or `None` if it does not exist.
+    pub fn account_settings(&self, id: AccountId) -> Result<Option<AccountSettings>> {
+        let json: Option<String> = self
+            .pim
+            .query_row(
+                "SELECT settings_json FROM account WHERE id = ?1",
+                [id.0],
+                |row| row.get(0),
+            )
+            .optional()?;
+        json.map(|json| {
+            serde_json::from_str(&json)
+                .map_err(|err| Error::InvalidData(format!("settings of account {id}: {err}")))
+        })
+        .transpose()
+    }
+
+    /// Replaces the server settings of an account. Returns whether it exists.
+    pub fn set_account_settings(
+        &mut self,
+        id: AccountId,
+        settings: &AccountSettings,
+    ) -> Result<bool> {
+        self.check_writable()?;
+        let json = serde_json::to_string(settings)
+            .map_err(|err| Error::InvalidData(format!("settings of account {id}: {err}")))?;
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let updated = tx.execute(
+            "UPDATE account SET settings_json = ?2 WHERE id = ?1",
+            params![id.0, json],
+        )? > 0;
+        if updated {
+            journal::record(&tx, ObjectKind::Account, id.0, ChangeOp::Update)?;
+        }
+        tx.commit()?;
+        Ok(updated)
+    }
+
     /// Starts a batch of mail writes (see [`MailBatch`]).
     pub fn mail_batch(&mut self) -> Result<MailBatch<'_>> {
         self.check_writable()?;
@@ -239,6 +281,43 @@ mod tests {
             Err(Error::NotFound { .. })
         ));
         assert!(!paths.data_dir().exists());
+    }
+
+    #[test]
+    fn account_settings_round_trip() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut store = Store::open(&Paths::with_root(tmp.path()), Mode::ReadWrite).unwrap();
+        let account = store
+            .add_account(AccountKind::Imap, "Work", "alice@example.org")
+            .unwrap();
+        assert_eq!(
+            store.account_settings(account.id).unwrap(),
+            Some(AccountSettings::default())
+        );
+        let settings = AccountSettings {
+            imap: Some(katna_core::Server {
+                host: "imap.example.org".into(),
+                port: 993,
+                security: katna_core::Security::Tls,
+                username: "alice".into(),
+                accept_invalid_certs: false,
+            }),
+            smtp: None,
+        };
+        let before = store.latest_change(DbKind::Pim).unwrap();
+        assert!(store.set_account_settings(account.id, &settings).unwrap());
+        assert_eq!(
+            store.account_settings(account.id).unwrap(),
+            Some(settings.clone())
+        );
+        assert!(store.latest_change(DbKind::Pim).unwrap() > before);
+
+        assert!(
+            !store
+                .set_account_settings(AccountId(99), &settings)
+                .unwrap()
+        );
+        assert_eq!(store.account_settings(AccountId(99)).unwrap(), None);
     }
 
     #[test]

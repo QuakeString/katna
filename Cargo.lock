@@ -3369,6 +3369,8 @@ dependencies = [
  "katna-import",
  "katna-search",
  "katna-store",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -3398,6 +3400,7 @@ name = "katna-core"
 version = "0.0.0"
 dependencies = [
  "serde",
+ "serde_json",
  "tempfile",
  "thiserror 2.0.21",
  "toml 1.1.6+spec-1.1.0",
@@ -3409,6 +3412,10 @@ dependencies = [
 name = "katna-daemon"
 version = "0.0.0"
 dependencies = [
+ "async-channel",
+ "async-io",
+ "async-signal",
+ "futures-lite",
  "katna-core",
  "katna-dav",
  "katna-dbus",
@@ -3419,6 +3426,12 @@ dependencies = [
  "katna-search",
  "katna-store",
  "katna-sync",
+ "oo7",
+ "smol",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tracing",
+ "zbus",
 ]
 
 [[package]]
@@ -3434,6 +3447,8 @@ name = "katna-dbus"
 version = "0.0.0"
 dependencies = [
  "katna-core",
+ "serde",
+ "zbus",
 ]
 
 [[package]]
@@ -3560,10 +3575,12 @@ dependencies = [
  "io-sasl",
  "io-smtp",
  "katna-core",
+ "katna-import",
  "katna-meta",
  "katna-store",
  "rustls-platform-verifier",
  "smol",
+ "tempfile",
  "thiserror 2.0.21",
  "tracing",
  "tracing-subscriber",
@@ -3582,8 +3599,12 @@ dependencies = [
 name = "katnactl"
 version = "0.0.0"
 dependencies = [
+ "futures-lite",
  "katna-core",
  "katna-dbus",
+ "katna-store",
+ "rpassword",
+ "zbus",
 ]
 
 [[package]]
@@ -5420,6 +5441,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "rpassword"
+version = "7.5.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2da316a15f47e3d053de9cb2c439650bd8fa4aaeb9365f2e5f27f492ff73c196"
+dependencies = [
+ "libc",
+ "rtoolbox",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
 name = "rsqlite-vfs"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5427,6 +5459,16 @@ checksum = "c51c9ae4df8a7fba42103df5c621fa3c37eccf3a3c650879e90fc48b11cc192c"
 dependencies = [
  "hashbrown 0.16.1",
  "thiserror 2.0.21",
+]
+
+[[package]]
+name = "rtoolbox"
+version = "0.0.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9a1efe12a1469752d0e6ff5ebec0b6ef4924cc5c4c71046b0ec730040535819d"
+dependencies = [
+ "libc",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -5442,6 +5484,16 @@ dependencies = [
  "libsqlite3-sys",
  "smallvec",
  "sqlite-wasm-rs",
+]
+
+[[package]]
+name = "rust-stemmers"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e46a2036019fdb888131db7a4c847a1063a7493f971ed94ea82c67eada63ca54"
+dependencies = [
+ "serde",
+ "serde_derive",
 ]
 
 [[package]]
@@ -6305,6 +6357,7 @@ dependencies = [
  "oneshot",
  "rayon",
  "regex",
+ "rust-stemmers",
  "rustc-hash 2.1.3",
  "serde",
  "serde_json",

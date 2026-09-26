@@ -10,16 +10,19 @@ use tantivy::schema::{
     FAST, Field, INDEXED, IndexRecordOption, STRING, Schema, TextFieldIndexing, TextOptions,
 };
 use tantivy::tokenizer::{
-    AsciiFoldingFilter, LowerCaser, RemoveLongFilter, SimpleTokenizer, TextAnalyzer,
-    TokenizerManager,
+    AsciiFoldingFilter, Language, LowerCaser, RemoveLongFilter, SimpleTokenizer, Stemmer,
+    TextAnalyzer, TokenizerManager,
 };
 
 /// Version of the schema and of what the indexer puts into it. Raise it when
 /// either changes; an index with another version must be rebuilt.
-pub const SCHEMA_VERSION: u32 = 1;
+pub const SCHEMA_VERSION: u32 = 2;
 
-/// Name of the tokenizer of all text fields.
+/// Name of the tokenizer of the text fields that match words as written.
 pub const TOKENIZER: &str = "katna";
+
+/// Name of the tokenizer of the stemmed fields.
+pub const STEM_TOKENIZER: &str = "katna_en";
 
 /// Tokens longer than this many bytes are dropped (base64 runs, hashes).
 const MAX_TOKEN_BYTES: usize = 40;
@@ -38,6 +41,10 @@ pub struct Fields {
     pub flags: Field,
     pub subject: Field,
     pub body: Field,
+    /// `subject` and `body` stemmed (English), so `contract` also finds
+    /// `contracts`. Without positions: phrases match the words as written.
+    pub subject_stem: Field,
+    pub body_stem: Field,
     /// `From` and `Sender`: names and addresses.
     pub from: Field,
     pub to: Field,
@@ -60,6 +67,13 @@ pub struct Fields {
 }
 
 impl Fields {
+    /// Stemmed fields that a plain word also searches, with their boosts.
+    /// The stemmed subject adds half the subject's boost, so the word as
+    /// written ranks first there; the stemmed body replaces the body.
+    pub fn stemmed(&self) -> [(Field, f32); 2] {
+        [(self.subject_stem, 1.5), (self.body_stem, 1.0)]
+    }
+
     /// Text fields that plain words search, with their boosts.
     pub fn free_text(&self) -> [(Field, f32); 7] {
         [
@@ -84,6 +98,8 @@ impl Fields {
             flags: get("flags")?,
             subject: get("subject")?,
             body: get("body")?,
+            subject_stem: get("subject_stem")?,
+            body_stem: get("body_stem")?,
             from: get("from")?,
             to: get("to")?,
             cc: get("cc")?,
@@ -124,15 +140,22 @@ pub fn build_schema() -> Schema {
     ] {
         builder.add_text_field(name, text.clone());
     }
+    let stemmed = TextOptions::default().set_indexing_options(
+        TextFieldIndexing::default()
+            .set_tokenizer(STEM_TOKENIZER)
+            .set_index_option(IndexRecordOption::WithFreqs),
+    );
+    for name in ["subject_stem", "body_stem"] {
+        builder.add_text_field(name, stemmed.clone());
+    }
     for name in ["domain", "folder", "label", "flag", "has"] {
         builder.add_text_field(name, STRING);
     }
     builder.build()
 }
 
-/// The analyzer of all text fields: Unicode words, lower-cased and folded to
-/// ASCII (`café` finds `cafe`). No stemming yet: per-language stemming is a
-/// separate step once we can measure its cost on the index size.
+/// The analyzer of the text fields as written: Unicode words, lower-cased
+/// and folded to ASCII (`café` finds `cafe`).
 pub fn analyzer() -> TextAnalyzer {
     TextAnalyzer::builder(SimpleTokenizer::default())
         .filter(RemoveLongFilter::limit(MAX_TOKEN_BYTES))
@@ -141,14 +164,35 @@ pub fn analyzer() -> TextAnalyzer {
         .build()
 }
 
-/// Registers [`TOKENIZER`] in `manager`.
+/// [`analyzer`] followed by the English Snowball stemmer. Every message is
+/// stemmed as English until we detect languages; on other languages it
+/// mostly leaves words alone or merges a few forms.
+pub fn stem_analyzer() -> TextAnalyzer {
+    TextAnalyzer::builder(SimpleTokenizer::default())
+        .filter(RemoveLongFilter::limit(MAX_TOKEN_BYTES))
+        .filter(LowerCaser)
+        .filter(AsciiFoldingFilter)
+        .filter(Stemmer::new(Language::English))
+        .build()
+}
+
+/// Registers [`TOKENIZER`] and [`STEM_TOKENIZER`] in `manager`.
 pub fn register_tokenizers(manager: &TokenizerManager) {
     manager.register(TOKENIZER, analyzer());
+    manager.register(STEM_TOKENIZER, stem_analyzer());
 }
 
 /// The words of `text` as the index sees them.
 pub fn tokens(text: &str) -> Vec<String> {
-    let mut analyzer = analyzer();
+    tokens_with(analyzer(), text)
+}
+
+/// The words of `text` as the stemmed fields see them.
+pub fn stems(text: &str) -> Vec<String> {
+    tokens_with(stem_analyzer(), text)
+}
+
+fn tokens_with(mut analyzer: TextAnalyzer, text: &str) -> Vec<String> {
     let mut stream = analyzer.token_stream(text);
     let mut out = Vec::new();
     while stream.advance() {
@@ -177,5 +221,14 @@ mod tests {
         );
         assert_eq!(tokens("Café crème"), ["cafe", "creme"]);
         assert!(tokens(&"x".repeat(100)).is_empty());
+    }
+
+    #[test]
+    fn stems_english() {
+        assert_eq!(
+            stems("Contracts contracted CONTRACTING"),
+            ["contract", "contract", "contract"]
+        );
+        assert_eq!(stems("Café meetings"), ["cafe", "meet"]);
     }
 }

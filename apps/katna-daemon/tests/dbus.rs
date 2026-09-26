@@ -1,0 +1,322 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+//! The daemon on a private session bus, driven through the client proxy.
+//!
+//! Needs `dbus-daemon` (package `dbus` on Arch, `dbus-daemon` on Debian and
+//! Ubuntu). The `#[ignore]`d tests also need the dev servers:
+//! `docker compose -f dev/compose.yaml up -d`, then
+//! `cargo test -p katna-daemon --test dbus -- --ignored --test-threads 1`.
+
+use std::{
+    io::{BufRead, BufReader},
+    process::{Child, Command, Stdio},
+    time::{Duration, SystemTime, UNIX_EPOCH},
+};
+
+use async_io::Timer;
+use futures_lite::{FutureExt, StreamExt};
+use katna_core::{AccountKind, Paths};
+use katna_daemon::{Instance, StartError, secrets::Secrets};
+use katna_dbus::{NewImapAccount, PimProxy, ServerSpec, state};
+use katna_store::{Mode, Store};
+use katna_sync::{
+    Credentials, Endpoint, MailBackend, Security, imap::ImapBackend, net::Tls, worker::WorkerConfig,
+};
+
+/// A private `dbus-daemon`, killed on drop.
+struct Bus {
+    child: Child,
+    address: String,
+}
+
+impl Bus {
+    fn start() -> Self {
+        let mut child = Command::new("dbus-daemon")
+            .args(["--session", "--nofork", "--print-address=1"])
+            .stdout(Stdio::piped())
+            .spawn()
+            .expect("dbus-daemon is installed");
+        let mut address = String::new();
+        BufReader::new(child.stdout.take().unwrap())
+            .read_line(&mut address)
+            .unwrap();
+        Self {
+            child,
+            address: address.trim().to_owned(),
+        }
+    }
+
+    async fn connect(&self) -> zbus::Connection {
+        zbus::connection::Builder::address(self.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap()
+    }
+}
+
+impl Drop for Bus {
+    fn drop(&mut self) {
+        let _ = self.child.kill();
+        let _ = self.child.wait();
+    }
+}
+
+async fn start(bus: &Bus, paths: &Paths, secrets: Secrets) -> Result<Instance, StartError> {
+    Instance::start(
+        paths.clone(),
+        secrets,
+        WorkerConfig::default(),
+        bus.connect().await,
+    )
+    .await
+}
+
+async fn within<T>(what: &str, seconds: u64, future: impl Future<Output = T>) -> T {
+    future
+        .or(async {
+            Timer::after(Duration::from_secs(seconds)).await;
+            panic!("{what}: nothing within {seconds} s");
+        })
+        .await
+}
+
+fn error_name(err: &zbus::Error) -> String {
+    match err {
+        zbus::Error::MethodError(name, _, _) => name.to_string(),
+        other => format!("{other:?}"),
+    }
+}
+
+fn imap(host: &str, port: u16, security: &str) -> NewImapAccount {
+    NewImapAccount {
+        display_name: String::new(),
+        address: "alice@katna.test".into(),
+        imap: ServerSpec {
+            host: host.into(),
+            port,
+            security: security.into(),
+            username: String::new(),
+            accept_invalid_certs: true,
+        },
+        smtp: ServerSpec::default(),
+    }
+}
+
+#[test]
+fn rejects_bad_accounts_and_unknown_ids() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let client = bus.connect().await;
+        let pim = PimProxy::new(&client).await.unwrap();
+        assert!(pim.accounts().await.unwrap().is_empty());
+
+        let mut no_address = imap("127.0.0.1", 993, "tls");
+        no_address.address.clear();
+        let err = pim.add_imap_account(&no_address, "pw").await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+
+        let err = pim
+            .add_imap_account(&imap("127.0.0.1", 993, "ssl"), "pw")
+            .await
+            .unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+        assert!(err.to_string().contains("tls, starttls or plain"), "{err}");
+
+        // Nothing listens on port 1.
+        let err = pim
+            .add_imap_account(&imap("127.0.0.1", 1, "tls"), "pw")
+            .await
+            .unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.Failed");
+        assert!(err.to_string().contains("could not connect"), "{err}");
+        assert!(pim.accounts().await.unwrap().is_empty());
+
+        let err = pim.sync_now(99).await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.UnknownObject");
+        assert!(!pim.remove_account(99).await.unwrap());
+        pim.sync_now(0).await.unwrap();
+        instance.shutdown().await;
+    });
+}
+
+#[test]
+fn only_one_daemon_per_bus() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    smol::block_on(async {
+        let first = start(
+            &bus,
+            &Paths::with_root(tmp.path().join("a")),
+            Secrets::memory(),
+        )
+        .await
+        .unwrap();
+        let second = start(
+            &bus,
+            &Paths::with_root(tmp.path().join("b")),
+            Secrets::memory(),
+        )
+        .await;
+        assert!(
+            matches!(second, Err(StartError::AlreadyRunning)),
+            "{:?}",
+            second.err()
+        );
+        first.shutdown().await;
+    });
+}
+
+#[test]
+fn imported_accounts_are_listed_but_not_synced() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    store
+        .add_account(AccountKind::Local, "enron", "enron@local")
+        .unwrap();
+    drop(store);
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let pim = PimProxy::new(&bus.connect().await).await.unwrap();
+        let accounts = pim.accounts().await.unwrap();
+        assert_eq!(accounts.len(), 1);
+        assert_eq!(accounts[0].kind, "local");
+        assert_eq!(accounts[0].state, state::NOT_SYNCED);
+        instance.shutdown().await;
+    });
+}
+
+fn port(var: &str, default: u16) -> u16 {
+    std::env::var(var)
+        .ok()
+        .and_then(|value| value.parse().ok())
+        .unwrap_or(default)
+}
+
+fn unique(prefix: &str) -> String {
+    let nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    format!("{prefix}-{nanos}")
+}
+
+async fn wait_until_online(pim: &PimProxy<'_>, id: i64) {
+    let mut changes = pim.receive_sync_status_changed().await.unwrap();
+    within("online", 30, async {
+        loop {
+            let accounts = pim.accounts().await.unwrap();
+            let account = accounts.iter().find(|a| a.id == id).unwrap();
+            if account.state == state::ONLINE {
+                assert!(account.last_sync > 0);
+                return;
+            }
+            assert_ne!(account.state, state::AUTH_FAILED, "{account:?}");
+            changes.next().await;
+        }
+    })
+    .await;
+}
+
+#[test]
+#[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
+fn adds_syncs_restarts_and_removes_dev_accounts() {
+    let servers = [
+        ("stalwart", port("KATNA_STALWART_IMAPS_PORT", 10993), "tls"),
+        (
+            "dovecot",
+            port("KATNA_DOVECOT_IMAP_PORT", 20143),
+            "starttls",
+        ),
+    ];
+    for (name, imap_port, security) in servers {
+        let bus = Bus::start();
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        let secrets = Secrets::memory();
+        let Secrets::Memory(passwords) = &secrets else {
+            unreachable!()
+        };
+        let passwords = passwords.clone();
+        smol::block_on(async {
+            let instance = start(&bus, &paths, secrets).await.unwrap();
+            let client = bus.connect().await;
+            let pim = PimProxy::new(&client).await.unwrap();
+            let account = imap("127.0.0.1", imap_port, security);
+
+            let err = pim.add_imap_account(&account, "wrong").await.unwrap_err();
+            assert_eq!(
+                error_name(&err),
+                "org.freedesktop.DBus.Error.AuthFailed",
+                "{name}: {err}"
+            );
+
+            let id = pim.add_imap_account(&account, "katna-dev").await.unwrap();
+            wait_until_online(&pim, id).await;
+            let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
+            let folders = reader.folders(katna_core::AccountId(id)).unwrap();
+            assert!(folders.iter().any(|f| f.path == "INBOX"), "{name}");
+            let before = reader.message_count().unwrap();
+            assert!(before > 0, "{name}");
+
+            // New mail: the daemon's IDLE sees it and signals.
+            let mut changed = pim.receive_mail_changed().await.unwrap();
+            let endpoint = Endpoint::new(
+                "127.0.0.1",
+                imap_port,
+                if security == "tls" {
+                    Security::Tls
+                } else {
+                    Security::StartTls
+                },
+            );
+            let mut other = ImapBackend::connect(
+                &endpoint,
+                &Credentials::new("alice@katna.test", "katna-dev"),
+                Tls::insecure_for_local_tests(),
+            )
+            .await
+            .unwrap();
+            let subject = unique("daemon");
+            let message = format!(
+                "From: <alice@katna.test>\r\nTo: <alice@katna.test>\r\nSubject: {subject}\r\n\
+                 Message-ID: <{subject}@katna.test>\r\n\r\nHello.\r\n"
+            );
+            other.append("INBOX", message.into_bytes()).await.unwrap();
+            let signal = within("MailChanged", 10, changed.next()).await.unwrap();
+            assert_eq!(signal.args().unwrap().account, id);
+            assert_eq!(reader.message_count().unwrap(), before + 1, "{name}");
+            other.logout().await.unwrap();
+
+            // A restarted daemon picks the account up from the store and
+            // the keyring.
+            instance.shutdown().await;
+            drop(pim);
+            drop(client);
+            let instance = start(&bus, &paths, Secrets::Memory(passwords.clone()))
+                .await
+                .unwrap();
+            let client = bus.connect().await;
+            let pim = PimProxy::new(&client).await.unwrap();
+            wait_until_online(&pim, id).await;
+            pim.sync_now(id).await.unwrap();
+
+            assert!(pim.remove_account(id).await.unwrap());
+            assert!(pim.accounts().await.unwrap().is_empty());
+            assert!(
+                reader
+                    .folders(katna_core::AccountId(id))
+                    .unwrap()
+                    .is_empty()
+            );
+            assert_eq!(reader.message_count().unwrap(), 0, "{name}");
+            assert!(passwords.lock().unwrap().is_empty());
+            instance.shutdown().await;
+        });
+    }
+}

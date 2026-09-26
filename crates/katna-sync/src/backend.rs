@@ -134,6 +134,50 @@ pub struct Envelope {
     pub in_reply_to: Option<String>,
 }
 
+/// What sync level 1 downloads for a message: flags, size and the header
+/// fields the store indexes, but no body.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct MessageHeaders {
+    pub uid: u32,
+    pub size: u32,
+    pub flags: Flags,
+    /// When the server received the message (IMAP INTERNALDATE), in Unix
+    /// seconds. The fallback for messages without a `Date` header.
+    pub received: Option<i64>,
+    /// The header fields in [`MessageHeaders::FIELDS`], raw, as the server
+    /// sent them. Decoding belongs to the MIME layer.
+    pub header: Vec<u8>,
+}
+
+impl MessageHeaders {
+    /// The header fields sync level 1 asks for (`docs/ARCHITECTURE.md`
+    /// §6.2). `Content-Type` is there to spot likely attachments until
+    /// `BODYSTRUCTURE` is parsed.
+    pub const FIELDS: [&'static str; 14] = [
+        "Date",
+        "Subject",
+        "From",
+        "Sender",
+        "Reply-To",
+        "To",
+        "Cc",
+        "Bcc",
+        "Message-ID",
+        "In-Reply-To",
+        "References",
+        "List-Id",
+        "Content-Type",
+        "Authentication-Results",
+    ];
+}
+
+/// Current flags of a message, from [`MailBackend::fetch_flags`].
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct FlagState {
+    pub uid: u32,
+    pub flags: Flags,
+}
+
 /// A change the server reported for the selected folder.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum FolderChange {
@@ -177,6 +221,27 @@ pub trait MailBackend: Send + 'static {
         first: u32,
         last: Option<u32>,
     ) -> impl Future<Output = Result<Vec<Envelope>>> + Send;
+
+    /// Flags, size and indexed header fields for UIDs `first..=last` (or
+    /// `first..`) of the selected folder, in UID order.
+    fn fetch_headers(
+        &mut self,
+        first: u32,
+        last: Option<u32>,
+    ) -> impl Future<Output = Result<Vec<MessageHeaders>>> + Send;
+
+    /// Flags for UIDs `first..=last` of the selected folder, in UID order.
+    /// With `changed_since` (CONDSTORE), only messages whose flags changed
+    /// after that mod-sequence.
+    fn fetch_flags(
+        &mut self,
+        first: u32,
+        last: u32,
+        changed_since: Option<u64>,
+    ) -> impl Future<Output = Result<Vec<FlagState>>> + Send;
+
+    /// Every UID in the selected folder, ascending.
+    fn uids(&mut self) -> impl Future<Output = Result<Vec<u32>>> + Send;
 
     fn create_folder(&mut self, folder: &str) -> impl Future<Output = Result<()>> + Send;
 

@@ -293,9 +293,26 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   rest of the daemon holds cloneable handles. Dropping a caller only drops
   the answer. A request from any handle ends an IDLE wait cleanly (DONE),
   then runs.
+- **Level-1 sync (`katna_sync::engine`):** per folder, SELECT with
+  CONDSTORE, reset on a new UIDVALIDITY, fetch flags changed since the stored
+  HIGHESTMODSEQ, fetch headers of new UIDs in chunks of 500 (committed chunk
+  by chunk), and compare UID lists only when the message count does not add
+  up. Headers come from `BODY.PEEK[HEADER.FIELDS (…)]` and are decoded by
+  the same parser as the importer; INTERNALDATE stands in for a missing
+  `Date`. Each server copy of a message is its own row for now; merging
+  copies (Gmail labels) comes with threading (task 1.7). `has_attachments`
+  is guessed from `multipart/mixed` until `BODYSTRUCTURE` is parsed.
 - **Waiting for changes:** every wait starts with a NOOP, then IDLEs (or
   sleeps and NOOPs on servers without IDLE). Stalwart 0.16 reports changes
   made between two commands on NOOP only, never when IDLE starts.
+- **Account worker (`katna_sync::worker`):** one per account. It syncs every
+  folder, then loops: catch up on the inbox, IDLE on it (renewed every
+  25 minutes), and sync every folder again every 15 minutes. Any network
+  or protocol error ends the session; it reconnects after 2 s, doubling up
+  to 5 minutes, and a session that synced resets the wait. A refused
+  password is never retried (it would lock the account on many servers);
+  the worker reports it and waits to be stopped. It talks to the daemon
+  through an event channel and a stop handle.
 - **POP3:** our own small client (UIDL tracking, leave-on-server option,
   `TOP` for header preview). POP3 mail is always fully local.
 - **Gmail / Microsoft:** OAuth2. Google's restricted scope for full mail
@@ -387,10 +404,21 @@ from or adds to the sketch above:
   in `blobs.db` (first 64 KB), so the index stays small and holds no copy
   of the mail. Twenty snippets take a few milliseconds.
 - **Tokenizer.** One analyzer for all text fields: Unicode words,
-  lower-cased, folded to ASCII, tokens over 40 bytes dropped. No stemming
-  and no CJK segmentation yet; both are later steps measured against index
-  size. Addresses split into words, so `from:kenneth.lay` is the phrase
-  "kenneth lay" and also matches the display name.
+  lower-cased, folded to ASCII, tokens over 40 bytes dropped. Addresses
+  split into words, so `from:kenneth.lay` is the phrase "kenneth lay" and
+  also matches the display name. No CJK segmentation yet.
+- **Stemming.** Subject and body are also indexed through the English
+  Snowball stemmer, in `subject_stem` and `body_stem`, with frequencies but
+  no positions. A single whole word searches the stemmed subject (boost
+  1.5, on top of the subject's 3, so the word as written ranks first) and
+  the stemmed body instead of the body; `contract` finds `contracts` and
+  `contracted`. Phrases and the word being typed match as written, since
+  the stemmed fields have no positions and a stem is not a prefix of every
+  longer form. Snippets highlight other forms too, stemming only the words
+  that start like a searched stem. Every message is stemmed as English
+  until languages are detected (`whatlang`, later). Cost on the 500k
+  synthetic corpus: index 348 → 475 MiB (+36 %), indexing time unchanged,
+  query latency within noise (p50 6.1 ms, p99 20 ms).
 - **Query language.** `OR` binds tighter than the implicit AND, as in
   Gmail (`a OR b c` is `(a OR b) c`). `to:` matches To, Cc and Bcc. Dates
   are UTC days; `before:` excludes the day, `after:` includes it. Unknown
@@ -410,10 +438,14 @@ from or adds to the sketch above:
   version and the `mail.db` change-journal sequence number the index
   covers, atomically with the documents. The first run scans all messages
   (resumable, committing every 100,000); later runs re-index the messages
-  the journal lists. A schema-version mismatch requires a rebuild
-  (`katna-search-cli index --rebuild`).
+  the journal lists. An index of another schema version is deleted and
+  rebuilt when opened for writing; opened read-only (as apps do) it is an
+  error until the daemon has rebuilt it.
 - **Tools.** `katna-search-cli index|query` and `katna-bench search|synth`
-  (synthetic corpus of Enron's shape for machines without Enron).
+  (synthetic corpus of Enron's shape for machines without Enron). The
+  nightly `bench` job fails on a p99 over 50 ms or on overall p50/p99 more
+  than 10 % (and 1 ms) slower than the last good run; the nightly `fuzz`
+  job runs `fuzz/` (query parser and compiler) for 10 minutes.
 
 ## 8. Organizations (`katna-org`)
 
@@ -488,6 +520,26 @@ the same matching on event attendees ("Meeting with Acme").
   icon, and a real "Quit" (stops the daemon until next login or activation).
 - Single instance, enforced by owning the D-Bus name.
 - Graceful shutdown: finish in-flight sends, flush the index, close IMAP sessions.
+
+### 9.2.1 What runs today (Phase 1)
+
+- `katna-daemon` opens the store for writing, serves `Pim1`, then takes the
+  bus name with `DoNotQueue`; a second daemon exits with "already running".
+- One sync worker (`katna_sync::worker`) per IMAP account, each with its own
+  store handle. Worker events become the account's status and D-Bus signals.
+- Account server settings are JSON in `account.settings_json`
+  (`katna_core::AccountSettings`); passwords are in the Secret Service
+  under the attributes `application=in.invenia.katna` and `account=<id>`,
+  labelled "Katna: <address>". Only the daemon links `oo7`, so the apps stay
+  small.
+- Adding an account or changing its password logs in once first; a
+  refused login is an error to the caller and nothing is saved.
+- SIGTERM and SIGINT stop every worker; each ends its IDLE and logs out.
+- `katna-daemon install-user-service` writes the systemd user unit and the
+  D-Bus activation file for the installed binary, until distribution
+  packages ship them.
+- `katnactl` (task 1.13) drives it: `add-imap`, `status`, `sync`, `watch`,
+  `password`, `remove`, and store reads (`folders`, `list`).
 
 ### 9.3 Resource targets
 
@@ -613,6 +665,16 @@ Sketch — versioned by the interface name; breaking changes create `Pim2`.
 | Contacts / orgs | `FindContacts(text)`, `Organizations()` |
 | Sync | `SyncNow(account?)`, `SetForegroundFolders(ids)`, `Status() → per-account state` |
 | Signals | `MessagesChanged(ids)`, `FoldersChanged`, `EventsChanged(range)`, `SyncStatusChanged`, `UnreadCountChanged(n)` |
+
+Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssx)`
+(id, kind, name, address, state, detail, last sync), `AddImapAccount(account,
+password) → id`, `SetPassword(id, password)`, `RemoveAccount(id) → b`,
+`SyncNow(id)` (0 for every account), and the signals `AccountsChanged`,
+`SyncStatusChanged(id)` and `MailChanged(id)`. `MailChanged` carries the
+account, not message IDs: clients read the change journal. Errors use the
+standard names `org.freedesktop.DBus.Error.AuthFailed`, `InvalidArgs`,
+`UnknownObject` and `Failed`. zbus needs the interface name as a literal, so
+`katna_core::with_dbus_names!` hands it to the attribute macros.
 
 ### 14.2 Rules
 
