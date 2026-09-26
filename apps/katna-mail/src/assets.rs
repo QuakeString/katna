@@ -15,6 +15,7 @@ macro_rules! icons {
 }
 
 icons!(
+    "add",
     "all-mail",
     "archive",
     "attachment",
@@ -59,11 +60,13 @@ icons!(
     "refresh",
     "reply-all",
     "reply",
+    "restore",
     "schedule",
     "search",
     "send",
     "sent",
     "settings",
+    "signature",
     "snooze",
     "star-filled",
     "star",
@@ -71,6 +74,7 @@ icons!(
     "tasks",
     "trash",
     "tune",
+    "warning",
 );
 
 pub struct Assets;

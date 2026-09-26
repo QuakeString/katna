@@ -82,6 +82,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.remove_account(AccountId(account)).await?)
             }
 
+            async fn delete_all_data(&self) -> fdo::Result<()> {
+                Ok(self.daemon.delete_all_data().await?)
+            }
+
             async fn sync_now(&self, account: i64) -> fdo::Result<()> {
                 let account = (account != 0).then_some(AccountId(account));
                 Ok(self.daemon.sync_now(account).await?)

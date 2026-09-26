@@ -17,7 +17,7 @@ use katna_store::Person;
 use katna_ui::Ripple;
 use katna_ui::motion;
 
-use super::{MailWindow, ToggleSettings};
+use super::{MailWindow, OpenSettings};
 use crate::format;
 use crate::theme::{Theme, fade};
 use crate::widgets::{avatar, icon, icon_button_colored, placeholder, tip};
@@ -211,7 +211,7 @@ impl MailWindow {
                     "rail-settings",
                     "settings",
                     22.0,
-                    if self.settings_open {
+                    if self.settings_page.is_some() {
                         th.accent
                     } else {
                         th.text_dim
@@ -220,7 +220,11 @@ impl MailWindow {
                 )
                 .tooltip(tip("Settings", th))
                 .on_click(cx.listener(|this, _, window, cx| {
-                    this.toggle_settings(&ToggleSettings, window, cx)
+                    if this.settings_page.is_some() && this.app == App::Mail {
+                        this.close_settings_page(window, cx);
+                    } else {
+                        this.open_settings(&OpenSettings, window, cx);
+                    }
                 })),
             )
             .into_any_element()

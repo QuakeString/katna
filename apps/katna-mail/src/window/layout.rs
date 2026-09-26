@@ -21,7 +21,6 @@ use katna_ui::motion::{self, Spring, lerp};
 
 use super::apps::{APP_RAIL_WIDTH, App as RailApp};
 use super::{Compose, MailWindow, NAV_WIDTH, ToggleSettings};
-use crate::data::Category;
 use crate::format;
 use crate::theme::{Theme, fade};
 use crate::widgets::{avatar, elevation, icon, tip};
@@ -500,26 +499,30 @@ impl MailWindow {
             return None;
         }
         let tabs = (shape.is_phone() && self.shows_tabs()).then(|| {
-            let rows = Category::ALL.iter().map(|&category| {
-                let on = category == self.category;
-                let tint = th.tabs[category.index()];
-                let unread = self.category_unread.get(&category).copied().unwrap_or(0);
-                drawer_row(("drawer-tab", category.index()), on, th)
+            let rows = self.tabs.iter().enumerate().map(|(ix, tab)| {
+                let on = ix == self.tab;
+                let tint = th.tabs[tab.color];
+                let unread: u64 = tab
+                    .categories
+                    .iter()
+                    .filter_map(|c| self.category_unread.get(c))
+                    .sum();
+                drawer_row(("drawer-tab", ix), on, th)
                     .on_click(cx.listener(move |this, _, _, cx| {
                         this.layout.drawer = false;
-                        this.open_category(category, cx);
+                        this.open_tab(ix, cx);
                         cx.notify();
                     }))
-                    .child(icon(category.icon(), if on { tint } else { th.text }, 20.0))
+                    .child(icon(tab.icon, if on { tint } else { th.text }, 20.0))
                     .child(
                         div()
                             .flex_1()
                             .min_w_0()
                             .pl(px(18.0))
                             .truncate()
-                            .child(category.label()),
+                            .child(tab.label),
                     )
-                    .when(unread > 0 && category != Category::Primary, |d| {
+                    .when(unread > 0 && ix != 0, |d| {
                         d.child(
                             div()
                                 .flex_none()

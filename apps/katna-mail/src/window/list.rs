@@ -18,7 +18,7 @@ use katna_ui::Ripple;
 use katna_ui::motion;
 
 use super::{Act, LIST_CONTEXT, Listing, MailWindow, Menu, READER_CONTEXT, Reload, STACKED_BELOW};
-use crate::data::{Category, EntryKey, Row};
+use crate::data::{EntryKey, Row};
 use crate::format;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
@@ -396,7 +396,10 @@ impl MailWindow {
         let label: SharedString = match (&self.search_error, &self.listing) {
             (Some(err), _) => err.clone(),
             (None, Some(Listing::Search { query, .. })) => format!("Results for “{query}”").into(),
-            _ if self.shows_tabs() => self.category.label().into(),
+            _ if self.shows_tabs() => self
+                .tabs
+                .get(self.tab)
+                .map_or_else(SharedString::default, |t| t.label.into()),
             _ => self.folder_name().unwrap_or_default().into(),
         };
         let more = icon_button("list-more", "more", 20.0, th)
@@ -763,17 +766,25 @@ impl MailWindow {
     // Tabs
 
     fn render_tabs(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        let width = (self.list_width() / Category::ALL.len() as f32).min(TAB_MAX_WIDTH);
+        let count = self.tabs.len().max(1);
+        let width = (self.list_width() / count as f32).min(TAB_MAX_WIDTH);
         let at = self.tab_spring.value();
-        let selected = self.category;
-        let color = th.tabs[selected.index()];
-        let tabs = Category::ALL.iter().map(|&category| {
-            let on = category == selected;
-            let tint = th.tabs[category.index()];
-            let unread = self.category_unread.get(&category).copied().unwrap_or(0);
+        let selected = self.tab;
+        let color = self
+            .tabs
+            .get(selected)
+            .map_or(th.accent, |t| th.tabs[t.color]);
+        let tabs = self.tabs.iter().enumerate().map(|(ix, tab)| {
+            let on = ix == selected;
+            let tint = th.tabs[tab.color];
+            let unread: u64 = tab
+                .categories
+                .iter()
+                .filter_map(|c| self.category_unread.get(c))
+                .sum();
             let compact = width < 150.0;
             div()
-                .id(("tab", category.index()))
+                .id(("tab", ix))
                 .relative()
                 .overflow_hidden()
                 .flex_none()
@@ -790,13 +801,9 @@ impl MailWindow {
                 .text_color(rgba(if on { tint } else { th.text_dim }))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
-                .on_click(cx.listener(move |this, _, _, cx| this.open_category(category, cx)))
-                .child(Ripple::new(("tab-ripple", category.index()), rgba(th.ripple)).rounded(0.0))
-                .child(icon(
-                    category.icon(),
-                    if on { tint } else { th.text_dim },
-                    20.0,
-                ))
+                .on_click(cx.listener(move |this, _, _, cx| this.open_tab(ix, cx)))
+                .child(Ripple::new(("tab-ripple", ix), rgba(th.ripple)).rounded(0.0))
+                .child(icon(tab.icon, if on { tint } else { th.text_dim }, 20.0))
                 .when(width >= 116.0, |d| {
                     d.child(
                         div()
@@ -804,8 +811,8 @@ impl MailWindow {
                             .flex_col()
                             .items_start()
                             .min_w_0()
-                            .child(div().truncate().child(category.label()))
-                            .when(unread > 0 && !on && category != Category::Primary, |d| {
+                            .child(div().truncate().child(tab.label))
+                            .when(unread > 0 && !on && ix != 0, |d| {
                                 d.child(
                                     div()
                                         .mt(px(2.0))
@@ -853,7 +860,8 @@ impl MailWindow {
             let text = match &self.listing {
                 Some(Listing::Search { .. }) => "No messages matched your search.".to_owned(),
                 Some(Listing::Folder(_)) if self.shows_tabs() => {
-                    format!("No mail in {}.", self.category.label())
+                    let tab = self.tabs.get(self.tab).map_or("this tab", |t| t.label);
+                    format!("No mail in {tab}.")
                 }
                 Some(Listing::Folder(_)) => format!(
                     "No messages in {}.",

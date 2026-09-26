@@ -52,71 +52,6 @@ impl Entry {
     }
 }
 
-/// An inbox category tab.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Category {
-    Primary,
-    Promotions,
-    Social,
-    Updates,
-    Forums,
-}
-
-impl Category {
-    pub const ALL: [Self; 5] = [
-        Self::Primary,
-        Self::Promotions,
-        Self::Social,
-        Self::Updates,
-        Self::Forums,
-    ];
-
-    pub fn label(self) -> &'static str {
-        match self {
-            Self::Primary => "Primary",
-            Self::Promotions => "Promotions",
-            Self::Social => "Social",
-            Self::Updates => "Updates",
-            Self::Forums => "Forums",
-        }
-    }
-
-    pub fn icon(self) -> &'static str {
-        match self {
-            Self::Primary => "inbox",
-            Self::Promotions => "tag",
-            Self::Social => "people",
-            Self::Updates => "info",
-            Self::Forums => "forum",
-        }
-    }
-
-    pub fn index(self) -> usize {
-        Self::ALL.iter().position(|c| *c == self).unwrap_or(0)
-    }
-
-    /// The store's category for this tab.
-    pub fn mail(self) -> MailCategory {
-        match self {
-            Self::Primary => MailCategory::Primary,
-            Self::Promotions => MailCategory::Promotions,
-            Self::Social => MailCategory::Social,
-            Self::Updates => MailCategory::Updates,
-            Self::Forums => MailCategory::Forums,
-        }
-    }
-
-    fn from_mail(category: MailCategory) -> Self {
-        match category {
-            MailCategory::Primary => Self::Primary,
-            MailCategory::Promotions => Self::Promotions,
-            MailCategory::Social => Self::Social,
-            MailCategory::Updates => Self::Updates,
-            MailCategory::Forums => Self::Forums,
-        }
-    }
-}
-
 /// One line of the message list.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Row {
@@ -313,6 +248,12 @@ impl Mail {
         })
     }
 
+    /// The IMAP server of an account, to tell its provider.
+    pub fn incoming_host(&self, account: katna_core::AccountId) -> Option<String> {
+        let settings = self.store.account_settings(account).ok()??;
+        settings.imap.map(|server| server.host)
+    }
+
     pub fn folders(&self) -> Vec<FolderSummary> {
         self.store.folder_summaries().unwrap_or_else(|err| {
             tracing::warn!("reading folders: {err}");
@@ -321,30 +262,31 @@ impl Mail {
     }
 
     /// The lines of `folder`, newest first: conversations or messages.
-    /// `category` picks an inbox tab.
+    /// `categories` picks an inbox tab.
     pub fn entries(
         &self,
         folder: FolderId,
-        category: Option<Category>,
+        categories: Option<&[MailCategory]>,
         conversations: bool,
     ) -> Vec<Entry> {
-        let category = category.map(Category::mail);
         let entries = if conversations {
-            self.store.folder_threads(folder, category).map(|threads| {
-                threads
-                    .into_iter()
-                    .map(|entry| match entry.thread {
-                        Some(thread) => Entry {
-                            key: EntryKey::Thread(thread),
-                            latest: entry.latest,
-                        },
-                        None => Entry::message(entry.latest),
-                    })
-                    .collect()
-            })
+            self.store
+                .folder_threads(folder, categories)
+                .map(|threads| {
+                    threads
+                        .into_iter()
+                        .map(|entry| match entry.thread {
+                            Some(thread) => Entry {
+                                key: EntryKey::Thread(thread),
+                                latest: entry.latest,
+                            },
+                            None => Entry::message(entry.latest),
+                        })
+                        .collect()
+                })
         } else {
-            match category {
-                Some(category) => self.store.folder_messages_in(folder, category),
+            match categories {
+                Some(categories) => self.store.folder_messages_in(folder, categories),
                 None => self.store.folder_message_ids(folder),
             }
             .map(|ids| ids.into_iter().map(Entry::message).collect())
@@ -408,13 +350,10 @@ impl Mail {
         }
     }
 
-    /// Unread conversations per inbox tab.
-    pub fn category_unread(&self, folder: FolderId) -> HashMap<Category, u64> {
+    /// Unread conversations per category of an inbox.
+    pub fn category_unread(&self, folder: FolderId) -> HashMap<MailCategory, u64> {
         match self.store.category_unread(folder) {
-            Ok(counts) => counts
-                .into_iter()
-                .map(|(category, n)| (Category::from_mail(category), n))
-                .collect(),
+            Ok(counts) => counts.into_iter().collect(),
             Err(err) => {
                 tracing::warn!("counting unread conversations: {err}");
                 HashMap::new()
