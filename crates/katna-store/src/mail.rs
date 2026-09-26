@@ -181,7 +181,7 @@ impl<'s> MailBatch<'s> {
         })
     }
 
-    fn tx(&self) -> &Transaction<'s> {
+    pub(crate) fn tx(&self) -> &Transaction<'s> {
         self.tx.as_ref().expect("transaction is open until commit")
     }
 

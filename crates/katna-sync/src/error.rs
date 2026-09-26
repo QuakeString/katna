@@ -40,13 +40,18 @@ pub enum Error {
     /// The server or the connection's task closed the connection.
     #[error("connection closed: {0}")]
     Closed(String),
+
+    /// Reading or writing the local store failed.
+    #[error("store: {0}")]
+    Store(#[from] katna_store::Error),
 }
 
 impl Error {
     /// Whether the connection is unusable after this error. Only
-    /// [`Error::Rejected`] leaves it ready for the next command.
+    /// [`Error::Rejected`] (and store errors, which never touch it) leave it
+    /// ready for the next command.
     pub fn is_fatal(&self) -> bool {
-        !matches!(self, Self::Rejected(_))
+        !matches!(self, Self::Rejected(_) | Self::Store(_))
     }
 
     /// Whether trying again later, on a new connection, may succeed.

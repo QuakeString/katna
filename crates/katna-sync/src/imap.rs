@@ -21,14 +21,15 @@ use imap_codec::{
     fragmentizer::{DecodeMessageError, FragmentInfo, Fragmentizer},
 };
 use imap_types::{
-    command::{Command, CommandBody, SelectParameter},
-    core::{NString, TagGenerator},
+    command::{Command, CommandBody, FetchModifier, SelectParameter},
+    core::{AString, NString, TagGenerator, Vec1},
     envelope::Address as ImapAddress,
     extensions::idle::IdleDone,
-    fetch::{MacroOrMessageDataItemNames, MessageDataItem, MessageDataItemName},
+    fetch::{MacroOrMessageDataItemNames, MessageDataItem, MessageDataItemName, Section},
     flag::{Flag, FlagFetch, FlagNameAttribute},
     mailbox::{ListMailbox, Mailbox},
     response::{Capability, Data, Response, Status, StatusKind},
+    search::SearchKey,
     sequence::SequenceSet,
 };
 use io_imap::{
@@ -38,6 +39,7 @@ use io_imap::{
         create::{ImapMailboxCreate, ImapMailboxCreateError},
         fetch::{ImapMessageFetch, ImapMessageFetchError, ImapMessageFetchOptions},
         list::{ImapMailboxList, ImapMailboxListError},
+        search::{ImapMessageSearch, ImapMessageSearchError, ImapMessageSearchOptions},
         select::{ImapMailboxSelect, ImapMailboxSelectError, ImapMailboxSelectOptions},
     },
     send::{ImapSend, ImapSendError, ImapSendOutput},
@@ -49,8 +51,8 @@ use io_imap::{
 use io_sasl::rfc4616::plain::SaslPlainCreds;
 
 use crate::{
-    Address, Credentials, Endpoint, Envelope, Error, Flags, Folder, FolderChange, FolderRole,
-    FolderStatus, MailBackend, Result, Security, Wait,
+    Address, Credentials, Endpoint, Envelope, Error, FlagState, Flags, Folder, FolderChange,
+    FolderRole, FolderStatus, MailBackend, MessageHeaders, Result, Security, Wait,
     net::{Conn, Tls},
 };
 
@@ -140,6 +142,42 @@ impl ImapBackend {
 
     fn has(&self, capability: &Capability<'_>) -> bool {
         self.capabilities.contains(capability)
+    }
+
+    /// `UID FETCH first:last` (or `first:*`). Returns each message's items,
+    /// in UID order, without messages below `first` (`n:*` always matches
+    /// the last message, even when its UID is lower).
+    async fn uid_fetch(
+        &mut self,
+        first: u32,
+        last: Option<u32>,
+        items: Vec<MessageDataItemName<'static>>,
+        modifiers: Vec<FetchModifier>,
+    ) -> Result<Vec<Vec<MessageDataItem<'static>>>> {
+        let range = match last {
+            Some(last) => format!("{first}:{last}"),
+            None => format!("{first}:*"),
+        };
+        let set = SequenceSet::try_from(range.as_str()).map_err(protocol)?;
+        let items = MacroOrMessageDataItemNames::MessageDataItemNames(items);
+        let opts = ImapMessageFetchOptions {
+            uid: true,
+            modifiers,
+        };
+        let fetched = self.run(ImapMessageFetch::new(set, items, opts)).await?;
+        let mut messages: Vec<(u32, Vec<MessageDataItem<'static>>)> = fetched
+            .into_values()
+            .filter_map(|items| {
+                let items: Vec<_> = items.into_iter().collect();
+                let uid = items.iter().find_map(|item| match item {
+                    MessageDataItem::Uid(uid) => Some(uid.get()),
+                    _ => None,
+                })?;
+                (uid >= first).then_some((uid, items))
+            })
+            .collect();
+        messages.sort_by_key(|(uid, _)| *uid);
+        Ok(messages.into_iter().map(|(_, items)| items).collect())
     }
 
     /// Runs one command coroutine to completion.
@@ -344,27 +382,84 @@ impl MailBackend for ImapBackend {
     }
 
     async fn fetch_envelopes(&mut self, first: u32, last: Option<u32>) -> Result<Vec<Envelope>> {
-        let range = match last {
-            Some(last) => format!("{first}:{last}"),
-            None => format!("{first}:*"),
-        };
-        let set = SequenceSet::try_from(range.as_str()).map_err(protocol)?;
-        let items = MacroOrMessageDataItemNames::MessageDataItemNames(vec![
+        let items = vec![
             MessageDataItemName::Uid,
             MessageDataItemName::Flags,
             MessageDataItemName::Rfc822Size,
             MessageDataItemName::Envelope,
-        ]);
-        let opts = ImapMessageFetchOptions {
-            uid: true,
-            ..Default::default()
+        ];
+        let fetched = self.uid_fetch(first, last, items, Vec::new()).await?;
+        Ok(fetched.into_iter().map(envelope).collect())
+    }
+
+    async fn fetch_headers(
+        &mut self,
+        first: u32,
+        last: Option<u32>,
+    ) -> Result<Vec<MessageHeaders>> {
+        let fields = MessageHeaders::FIELDS
+            .iter()
+            .map(|name| AString::try_from(*name).map_err(protocol))
+            .collect::<Result<Vec<_>>>()?;
+        let fields = Vec1::try_from(fields).map_err(protocol)?;
+        let items = vec![
+            MessageDataItemName::Uid,
+            MessageDataItemName::Flags,
+            MessageDataItemName::Rfc822Size,
+            MessageDataItemName::InternalDate,
+            MessageDataItemName::BodyExt {
+                section: Some(Section::HeaderFields(None, fields)),
+                partial: None,
+                peek: true,
+            },
+        ];
+        let fetched = self.uid_fetch(first, last, items, Vec::new()).await?;
+        Ok(fetched.into_iter().map(headers).collect())
+    }
+
+    async fn fetch_flags(
+        &mut self,
+        first: u32,
+        last: u32,
+        changed_since: Option<u64>,
+    ) -> Result<Vec<FlagState>> {
+        let modifiers = match changed_since.and_then(std::num::NonZeroU64::new) {
+            Some(modseq) if self.has(&Capability::CondStore) => {
+                vec![FetchModifier::ChangedSince(modseq)]
+            }
+            _ => Vec::new(),
         };
-        let fetched = self.run(ImapMessageFetch::new(set, items, opts)).await?;
-        let mut envelopes: Vec<Envelope> = fetched.into_values().map(envelope).collect();
-        envelopes.sort_by_key(|e| e.uid);
-        // `first:*` always matches the last message, even below `first`.
-        envelopes.retain(|e| e.uid >= first);
-        Ok(envelopes)
+        let items = vec![MessageDataItemName::Uid, MessageDataItemName::Flags];
+        let fetched = self.uid_fetch(first, Some(last), items, modifiers).await?;
+        Ok(fetched
+            .into_iter()
+            .map(|items| {
+                let mut state = FlagState {
+                    uid: 0,
+                    flags: Flags::default(),
+                };
+                for item in items {
+                    match item {
+                        MessageDataItem::Uid(uid) => state.uid = uid.get(),
+                        MessageDataItem::Flags(flags) => state.flags = convert_flags(&flags),
+                        _ => {}
+                    }
+                }
+                state
+            })
+            .collect())
+    }
+
+    async fn uids(&mut self) -> Result<Vec<u32>> {
+        let opts = ImapMessageSearchOptions { uid: true };
+        let mut uids: Vec<u32> = self
+            .run(ImapMessageSearch::new(Vec1::from(SearchKey::All), opts))
+            .await?
+            .into_iter()
+            .map(|uid| uid.get())
+            .collect();
+        uids.sort_unstable();
+        Ok(uids)
     }
 
     async fn create_folder(&mut self, folder: &str) -> Result<()> {
@@ -502,6 +597,7 @@ command_errors!(
     ImapMessageFetchError,
     ImapMailboxCreateError,
     ImapMessageAppendError,
+    ImapMessageSearchError,
 );
 
 fn protocol(err: impl Display) -> Error {
@@ -546,6 +642,23 @@ fn envelope(items: impl IntoIterator<Item = MessageDataItem<'static>>) -> Envelo
                 out.cc = addresses(&e.cc);
                 out.message_id = text(&e.message_id);
                 out.in_reply_to = text(&e.in_reply_to);
+            }
+            _ => {}
+        }
+    }
+    out
+}
+
+fn headers(items: impl IntoIterator<Item = MessageDataItem<'static>>) -> MessageHeaders {
+    let mut out = MessageHeaders::default();
+    for item in items {
+        match item {
+            MessageDataItem::Uid(uid) => out.uid = uid.get(),
+            MessageDataItem::Rfc822Size(size) => out.size = size,
+            MessageDataItem::Flags(flags) => out.flags = convert_flags(&flags),
+            MessageDataItem::InternalDate(date) => out.received = Some(date.as_ref().timestamp()),
+            MessageDataItem::BodyExt { data, .. } => {
+                out.header = data.0.map(|d| d.as_ref().to_vec()).unwrap_or_default();
             }
             _ => {}
         }

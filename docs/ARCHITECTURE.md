@@ -293,6 +293,15 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   rest of the daemon holds cloneable handles. Dropping a caller only drops
   the answer. A request from any handle ends an IDLE wait cleanly (DONE),
   then runs.
+- **Level-1 sync (`katna_sync::engine`):** per folder, SELECT with
+  CONDSTORE, reset on a new UIDVALIDITY, fetch flags changed since the stored
+  HIGHESTMODSEQ, fetch headers of new UIDs in chunks of 500 (committed chunk
+  by chunk), and compare UID lists only when the message count does not add
+  up. Headers come from `BODY.PEEK[HEADER.FIELDS (…)]` and are decoded by
+  the same parser as the importer; INTERNALDATE stands in for a missing
+  `Date`. Each server copy of a message is its own row for now; merging
+  copies (Gmail labels) comes with threading (task 1.7). `has_attachments`
+  is guessed from `multipart/mixed` until `BODYSTRUCTURE` is parsed.
 - **Waiting for changes:** every wait starts with a NOOP, then IDLEs (or
   sleeps and NOOPs on servers without IDLE). Stalwart 0.16 reports changes
   made between two commands on NOOP only, never when IDLE starts.
