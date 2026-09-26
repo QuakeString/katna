@@ -292,7 +292,7 @@ impl MailWindow {
         layout.shape.page = layout.page.tick(window, reduce);
         layout.scrim.set(if layout.drawer { 1.0 } else { 0.0 });
         layout.scrim.tick(window, reduce);
-        let top = -f32::from(self.list_scroll.0.borrow().base_handle.offset().y);
+        let top = -f32::from(self.list_state.scroll_px_offset_for_scrollbar().y);
         let layout = &mut self.layout;
         layout.fold_fab(top);
         if first {

@@ -70,8 +70,73 @@ pub struct Row {
     pub date: Option<i64>,
     pub unread: bool,
     pub flagged: bool,
+    pub important: bool,
     pub attachments: bool,
+    /// The named attachments, in conversation order, for the chips under
+    /// the line. Empty when only `attachments` is known (mail synced
+    /// before attachment lists were read, POP3 and imported mail).
+    pub files: Vec<RowFile>,
     pub snippet: String,
+}
+
+/// An attachment shown on a line of the list.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RowFile {
+    /// The message it is attached to.
+    pub message: MessageId,
+    pub name: String,
+    /// `type/subtype`, lower case.
+    pub mime: String,
+    /// Decoded size in bytes (estimated).
+    pub size: u64,
+    /// How many attachments of the same name come before it in its
+    /// message, to find it again in the parsed message.
+    pub nth: usize,
+    /// Its place among the named attachments of its message.
+    pub order: usize,
+}
+
+/// The chips of a line: named attachments of `messages`, in that order,
+/// each name once.
+fn row_files(
+    messages: &[MessageId],
+    lists: &HashMap<MessageId, Vec<katna_store::StoredAttachment>>,
+) -> Vec<RowFile> {
+    let mut files: Vec<RowFile> = Vec::new();
+    for &message in messages {
+        let Some(list) = lists.get(&message) else {
+            continue;
+        };
+        let mut seen: HashMap<&str, usize> = HashMap::new();
+        let mut order = 0;
+        for attachment in list {
+            let Some(name) = attachment.filename.as_deref().map(str::trim) else {
+                continue;
+            };
+            if name.is_empty() {
+                continue;
+            }
+            let nth = seen.entry(name).or_default();
+            let file = RowFile {
+                message,
+                name: name.to_owned(),
+                mime: attachment.mime.clone(),
+                size: attachment.size,
+                nth: *nth,
+                order,
+            };
+            *nth += 1;
+            order += 1;
+            // The same file sent again later in the conversation shows once.
+            if !files
+                .iter()
+                .any(|f| f.name == file.name && f.mime == file.mime)
+            {
+                files.push(file);
+            }
+        }
+    }
+    files
 }
 
 impl Row {
@@ -123,7 +188,9 @@ impl Row {
             date: message.date,
             unread: !message.flags.contains(MessageFlags::SEEN),
             flagged: message.flags.contains(MessageFlags::FLAGGED),
+            important: message.flags.contains(MessageFlags::IMPORTANT),
             attachments: message.has_attachments,
+            files: Vec::new(),
             snippet: message
                 .snippet
                 .as_deref()
@@ -149,6 +216,7 @@ impl Row {
             self.count = summary.message_count.max(1);
             self.unread = summary.unread;
             self.flagged = summary.flagged;
+            self.important = summary.important;
             self.attachments = summary.has_attachments;
             if !show_recipients && !summary.senders.is_empty() {
                 self.correspondent = senders(&summary.senders, me);
@@ -448,11 +516,44 @@ impl Mail {
                 Err(err) => tracing::warn!("reading conversations: {err}"),
             }
         }
+        // The messages whose attachments each line shows.
+        let mut attached: HashMap<EntryKey, Vec<MessageId>> = HashMap::new();
+        for entry in entries {
+            let has = match entry.key {
+                EntryKey::Thread(thread) if summaries.contains_key(&thread) => {
+                    summaries[&thread].has_attachments
+                }
+                // Search results have no summary: their hit tells.
+                _ => messages
+                    .get(&entry.latest)
+                    .is_some_and(|m| m.has_attachments),
+            };
+            if !has {
+                continue;
+            }
+            let ids = match entry.key {
+                EntryKey::Thread(thread) => self.store.thread_messages(thread).unwrap_or_default(),
+                EntryKey::Message(id) => vec![id],
+            };
+            attached.insert(entry.key, ids);
+        }
+        let lists = if attached.is_empty() {
+            HashMap::new()
+        } else {
+            let ids: Vec<MessageId> = attached.values().flatten().copied().collect();
+            self.store.attachment_lists(&ids).unwrap_or_else(|err| {
+                tracing::warn!("reading attachments: {err}");
+                HashMap::new()
+            })
+        };
         for entry in entries {
             let Some(message) = messages.get(&entry.latest) else {
                 continue;
             };
-            let row = Row::new(message, show_recipients);
+            let mut row = Row::new(message, show_recipients);
+            if let Some(ids) = attached.get(&entry.key) {
+                row.files = row_files(ids, &lists);
+            }
             let row = match entry.key {
                 EntryKey::Message(_) => row,
                 EntryKey::Thread(thread) => {
@@ -621,6 +722,46 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
     }
 
     #[test]
+    fn line_attachments() {
+        let file = |part: &str, mime: &str, name: Option<&str>| katna_store::StoredAttachment {
+            part: part.into(),
+            mime: mime.into(),
+            filename: name.map(Into::into),
+            size: 10,
+        };
+        let (first, reply) = (MessageId(1), MessageId(2));
+        let lists = HashMap::from([
+            (
+                first,
+                vec![
+                    file("2", "application/pdf", Some("a.pdf")),
+                    file("3", "image/png", None),
+                    file("4", "application/pdf", Some("a.pdf")),
+                ],
+            ),
+            (
+                reply,
+                vec![
+                    file("2", "application/pdf", Some("a.pdf")),
+                    file("3", "image/jpeg", Some(" photo.jpg ")),
+                ],
+            ),
+        ]);
+        let files: Vec<_> = row_files(&[first, reply, MessageId(3)], &lists)
+            .into_iter()
+            .map(|f| (f.message, f.name, f.nth))
+            .collect();
+        assert_eq!(
+            files,
+            [
+                (first, "a.pdf".to_owned(), 0),
+                (reply, "photo.jpg".to_owned(), 0)
+            ],
+            "unnamed parts are left out, and a name shows once"
+        );
+    }
+
+    #[test]
     fn no_store_yet() {
         let tmp = tempfile::tempdir().unwrap();
         let paths = Paths::with_root(tmp.path());
@@ -658,7 +799,9 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
                 date: Some(989_858_340),
                 unread: true,
                 flagged: true,
+                important: false,
                 attachments: false,
+                files: Vec::new(),
                 snippet: "The budget is final.".into(),
             }
         );

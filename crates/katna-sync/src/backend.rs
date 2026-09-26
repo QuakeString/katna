@@ -105,6 +105,11 @@ pub struct Address {
     pub email: String,
 }
 
+/// The keyword of mail marked important (RFC 8457). Backends that keep
+/// importance some other way, like Gmail's Important label, report and
+/// take it as this keyword too.
+pub const IMPORTANT: &str = "$Important";
+
 /// Message flags. Keywords keep their IMAP spelling (`$Forwarded`, …).
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Flags {

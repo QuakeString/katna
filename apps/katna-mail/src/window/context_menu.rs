@@ -289,6 +289,13 @@ impl MailWindow {
             } else {
                 plain("context-star", "star", "Add star").on_click(act(Act::Star(true)))
             })
+            .child(if row.important {
+                plain("context-important", "important", "Mark as not important")
+                    .on_click(act(Act::Important(false)))
+            } else {
+                plain("context-important", "important", "Mark as important")
+                    .on_click(act(Act::Important(true)))
+            })
             .child(separator())
             .child(move_to)
             .when_some(find, |d, find| d.child(separator()).child(find))

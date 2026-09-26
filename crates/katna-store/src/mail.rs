@@ -59,6 +59,9 @@ impl MessageFlags {
     pub const DELETED: Self = Self(1 << 4);
     /// `$Forwarded` keyword; kept here because every client shows it.
     pub const FORWARDED: Self = Self(1 << 5);
+    /// Marked important: the `$Important` keyword (RFC 8457), or Gmail's
+    /// Important label.
+    pub const IMPORTANT: Self = Self(1 << 6);
 
     pub const fn empty() -> Self {
         Self(0)
