@@ -20,6 +20,7 @@ icons!(
     "attachment",
     "back",
     "calendar",
+    "check",
     "checkbox-checked",
     "checkbox-partial",
     "checkbox",

@@ -36,7 +36,7 @@ pub(super) enum App {
 }
 
 impl App {
-    const ALL: [Self; 6] = [
+    pub(super) const ALL: [Self; 6] = [
         Self::Mail,
         Self::Calendar,
         Self::Contacts,
@@ -45,7 +45,7 @@ impl App {
         Self::Feeds,
     ];
 
-    fn label(self) -> &'static str {
+    pub(super) fn label(self) -> &'static str {
         match self {
             Self::Mail => "Mail",
             Self::Calendar => "Calendar",
@@ -56,7 +56,7 @@ impl App {
         }
     }
 
-    fn icon(self) -> &'static str {
+    pub(super) fn icon(self) -> &'static str {
         match self {
             Self::Mail => "mail",
             Self::Calendar => "calendar",

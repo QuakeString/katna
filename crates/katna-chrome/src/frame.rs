@@ -161,6 +161,59 @@ impl WindowChrome {
         }
     }
 
+    /// The width the content gets: the window's surface less the shadow,
+    /// resize margins and border that the frame draws around it.
+    pub fn inner_width(&self, window: &Window) -> f32 {
+        let width = f32::from(window.viewport_size().width);
+        let Decorations::Client { tiling } = window.window_decorations() else {
+            return width;
+        };
+        let full = self.env.full_client_frame();
+        if !full && tiling.top && tiling.right && tiling.bottom && tiling.left {
+            return width;
+        }
+        let inset = if full {
+            self.tokens(window).shadow_inset
+        } else {
+            RESIZE_HANDLE
+        };
+        // The margin and the one-pixel border on an edge that is not tiled.
+        let edge = |tiled: bool| if tiled { 0.0 } else { inset + 1.0 };
+        (width - edge(tiling.left) - edge(tiling.right)).max(0.0)
+    }
+
+    /// The room the window buttons take at the start and at the end of
+    /// the header bar, with their padding and the gap after them. Zero on a
+    /// side without buttons, and on both under server-side decorations.
+    pub fn button_room(&self, window: &Window, cx: &App) -> (f32, f32) {
+        if !matches!(window.window_decorations(), Decorations::Client { .. }) {
+            return (0.0, 0.0);
+        }
+        let t = self.tokens(window);
+        let layout = cx
+            .button_layout()
+            .unwrap_or_else(WindowButtonLayout::linux_default);
+        let controls = window.window_controls();
+        let room = |side: &[Option<WindowButton>]| {
+            let n = side
+                .iter()
+                .flatten()
+                .filter(|b| match b {
+                    WindowButton::Minimize => controls.minimize,
+                    WindowButton::Maximize => controls.maximize,
+                    WindowButton::Close => true,
+                })
+                .count() as f32;
+            if n == 0.0 {
+                0.0
+            } else {
+                // Buttons and gaps, the group's padding, the bar's gap.
+                n * t.button_size + (n - 1.0) * t.button_gap + 12.0 + 6.0
+            }
+        };
+        (room(&layout.left), room(&layout.right))
+    }
+
     /// Wraps `content` in the frame. `start` and `end` go at the two ends of
     /// the header bar (CSD) or the toolbar (SSD).
     pub fn render(

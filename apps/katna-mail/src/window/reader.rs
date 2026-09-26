@@ -182,7 +182,7 @@ impl MailWindow {
             .size_full()
             .flex()
             .flex_col()
-            .rounded(px(super::PANEL_RADIUS))
+            .rounded(px(self.layout.shape.card_radius()))
             .overflow_hidden()
             .bg(rgba(th.surface))
             .child(self.render_reader_toolbar(th, cx))
@@ -209,12 +209,14 @@ impl MailWindow {
         .on_click(
             cx.listener(|this, _, window, cx| this.close_message(&super::CloseMessage, window, cx)),
         );
-        let narrow = self.split() && self.cards_width * self.config.mail.reading_pane_share < 520.0;
+        let phone = self.layout.shape.is_phone();
+        let narrow =
+            phone || self.split() && self.cards_width * self.config.mail.reading_pane_share < 520.0;
         toolbar(th)
             .child(back)
-            .child(separator(th))
+            .when(!phone, |d| d.child(separator(th)))
             .child(self.action_buttons("reader", th, cx))
-            .child(separator(th))
+            .when(!phone, |d| d.child(separator(th)))
             .child(
                 icon_button("reader-unread", "mail", 20.0, th)
                     .tooltip(tip("Mark as unread", th))
@@ -250,24 +252,25 @@ impl MailWindow {
                         )),
                 )
             })
-            .child(
-                icon_button("newer", "chevron-left", 20.0, th)
-                    .tooltip(tip("Newer", th))
-                    .when(ix == 0, |d| d.opacity(0.4))
-                    .on_click(cx.listener(|this, _, window, cx| {
-                        this.select_previous(&SelectPrevious, window, cx)
-                    })),
-            )
-            .child(
-                icon_button("older", "chevron-right", 20.0, th)
-                    .tooltip(tip("Older", th))
-                    .when(ix + 1 >= count, |d| d.opacity(0.4))
-                    .on_click(
-                        cx.listener(|this, _, window, cx| {
+            // A phone moves between conversations from the list.
+            .when(!phone, |d| {
+                d.child(
+                    icon_button("newer", "chevron-left", 20.0, th)
+                        .tooltip(tip("Newer", th))
+                        .when(ix == 0, |d| d.opacity(0.4))
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            this.select_previous(&SelectPrevious, window, cx)
+                        })),
+                )
+                .child(
+                    icon_button("older", "chevron-right", 20.0, th)
+                        .tooltip(tip("Older", th))
+                        .when(ix + 1 >= count, |d| d.opacity(0.4))
+                        .on_click(cx.listener(|this, _, window, cx| {
                             this.select_next(&SelectNext, window, cx)
-                        }),
-                    ),
-            )
+                        })),
+                )
+            })
             .into_any_element()
     }
 
@@ -284,7 +287,7 @@ impl MailWindow {
             .flex_row()
             .items_start()
             .gap(px(12.0))
-            .pl(px(72.0))
+            .pl(px(self.layout.shape.reader_indent()))
             .pr(px(16.0))
             .pt(px(20.0))
             .pb(px(12.0))
@@ -378,7 +381,7 @@ impl MailWindow {
                     .flex_row()
                     .flex_wrap()
                     .gap(px(12.0))
-                    .pl(px(72.0))
+                    .pl(px(self.layout.shape.reader_indent()))
                     .pr(px(24.0))
                     .py(px(14.0))
                     .child(
