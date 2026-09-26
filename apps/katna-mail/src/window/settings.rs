@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Quick settings: a panel that slides in from the right with the reading
-//! pane (three or two panes), density, theme, inbox tabs, undo send, the
+//! pane (three or two panes), density, theme, app names, inbox tabs, undo send, the
 //! signature and conversation view. Changes apply at once and are saved to
 //! `config.toml`.
 
@@ -32,6 +32,7 @@ pub(super) enum Change {
     DesktopColors(bool),
     Tabs(bool),
     Conversations(bool),
+    AppLabels(bool),
     SingleKeys(bool),
 }
 
@@ -168,6 +169,15 @@ impl MailWindow {
                                 th,
                                 cx,
                             ))
+                            .child(self.switch_row(
+                                "app-labels",
+                                "App names",
+                                "Names under the app icons at the far left",
+                                view.app_labels,
+                                Change::AppLabels(!view.app_labels),
+                                th,
+                                cx,
+                            ))
                             .child(divider(th))
                             .child(heading("Inbox", th))
                             .child(self.switch_row(
@@ -297,6 +307,7 @@ impl MailWindow {
             Change::Density(density) => view.density = density,
             Change::Theme(theme) => view.theme = theme,
             Change::DesktopColors(on) => view.desktop_colors = on,
+            Change::AppLabels(on) => view.app_labels = on,
             Change::Tabs(on) => {
                 view.inbox_tabs = on;
                 relist = true;

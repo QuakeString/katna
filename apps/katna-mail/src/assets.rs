@@ -75,6 +75,7 @@ icons!(
     "trash",
     "tune",
     "warning",
+    "window-restore",
 );
 
 pub struct Assets;

@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! The app rail at the far left: Mail, Calendar, Contacts, Tasks, Notes
-//! and Feeds, with settings at the bottom. Mail is the
+//! and Feeds, with settings at the bottom; their names can be hidden in
+//! quick settings. Mail is the
 //! only app so far; Contacts lists the people from the mail, and the
 //! others show what is coming. Each app gets its own page here, so new
 //! ones plug in as they are built.
@@ -123,6 +124,7 @@ impl MailWindow {
     }
 
     pub(super) fn render_app_rail(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let labels = self.config.mail.app_labels;
         let items = App::ALL.into_iter().map(|app| {
             let on = self.app == app;
             div()
@@ -182,16 +184,28 @@ impl MailWindow {
                             },
                         ),
                 )
+                .when(!labels, |d| d.tooltip(tip(app.label(), th)))
+                // The name folds away when the settings hide it.
                 .child(
                     div()
+                        .overflow_hidden()
                         .text_size(px(12.0))
+                        .line_height(px(16.0))
                         .font_weight(if on {
                             FontWeight::BOLD
                         } else {
                             FontWeight::MEDIUM
                         })
                         .text_color(rgba(if on { th.text } else { th.text_dim }))
-                        .child(app.label()),
+                        .child(app.label())
+                        .with_spring(
+                            ("app-label", app as usize),
+                            SpringAnimation::new(motion::SLIDE).to(if labels { 1.0 } else { 0.0 }),
+                            |el, s: f32| {
+                                let s = s.clamp(0.0, 1.0);
+                                el.h(px(16.0 * s)).opacity(s)
+                            },
+                        ),
                 )
         });
         div()
