@@ -90,6 +90,16 @@ pub fn size(bytes: u64) -> String {
     }
 }
 
+/// A reason from the daemon (lower case, no full stop) as a sentence.
+pub fn sentence(reason: &str) -> String {
+    let reason = reason.trim().trim_end_matches('.');
+    let mut chars = reason.chars();
+    match chars.next() {
+        Some(first) => format!("{}{}.", first.to_uppercase(), chars.as_str()),
+        None => String::new(),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use jiff::civil::date;
@@ -155,5 +165,15 @@ mod tests {
         assert_eq!(size(12_345), "12 KB");
         assert_eq!(size(999_999), "1.0 MB");
         assert_eq!(size(5_300_000), "5.3 MB");
+    }
+
+    #[test]
+    fn reasons_read_as_sentences() {
+        assert_eq!(
+            sentence("\u{201c}Work\u{201d} already exists"),
+            "\u{201c}Work\u{201d} already exists."
+        );
+        assert_eq!(sentence("the name is empty."), "The name is empty.");
+        assert_eq!(sentence(" "), "");
     }
 }

@@ -23,6 +23,7 @@ mod compose;
 mod context_menu;
 mod dark;
 mod desktop;
+mod download;
 mod keymap;
 mod labels;
 mod list;
@@ -326,6 +327,8 @@ pub struct MailWindow {
     /// The question before removing an account or deleting all data.
     danger: Option<accounts::Danger>,
     new_label: Option<labels::NewLabel>,
+    /// Bodies being downloaded because their message was opened.
+    downloads: HashMap<MessageId, download::Download>,
     /// Navigation openness at this frame, for the folder rows.
     nav_t: f32,
     daemon: Option<Connection>,
@@ -435,6 +438,7 @@ impl MailWindow {
             settings_page: None,
             danger: None,
             new_label: None,
+            downloads: HashMap::new(),
             nav_t: 1.0,
             daemon: None,
             _listen: None,
@@ -1323,6 +1327,16 @@ impl MailWindow {
                     }
                 }
                 let first = !matches!(self.listing, Some(Listing::Search { .. }));
+                // The same search again, after the mail changed: keep the
+                // cursor, the ticks and the open conversation.
+                let again = matches!(
+                    &self.listing,
+                    Some(Listing::Search { query: old, .. }) if *old == query
+                );
+                let selected_key = self
+                    .selected
+                    .and_then(|ix| self.entries.get(ix))
+                    .map(|e| e.key);
                 let hits: Vec<MessageId> = results.hits.iter().map(|hit| hit.message).collect();
                 self.entries = match &self.mail {
                     Ok(mail) => mail.hit_entries(&hits, self.config.mail.conversations),
@@ -1333,6 +1347,19 @@ impl MailWindow {
                     total: results.total,
                     corrected,
                 });
+                if again {
+                    self.selected =
+                        selected_key.and_then(|key| self.entries.iter().position(|e| e.key == key));
+                    let keys: HashSet<EntryKey> = self.entries.iter().map(|e| e.key).collect();
+                    self.checked.retain(|key| keys.contains(key));
+                    self.reset_list(true);
+                    if self.selected.is_none() && self.reading {
+                        self.show_list();
+                        self.reader = None;
+                    }
+                    cx.notify();
+                    return;
+                }
                 self.selected = (!self.entries.is_empty()).then_some(0);
                 self.checked.clear();
                 self.checked_all = false;

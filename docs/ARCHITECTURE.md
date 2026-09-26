@@ -394,8 +394,12 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   offline window (default: the last 30 days, up to 10 MB each), newest
   first, 25 per command. The raw message goes to the blob store; the
   snippet and attachment flag are recomputed from it and `body_state` is
-  set to 2. `FetchBody(id)` on D-Bus downloads any other message through
-  the account's worker. Level 2 (text only) and eviction come later.
+  set to 2. `FetchBody(id)` on D-Bus downloads any other message at once
+  on a second, on-demand connection per account (so it never waits behind
+  a running sync), which closes after two idle minutes. Katna Mail calls it
+  when the reader shows a message that has no body yet and shows
+  "Downloading…" meanwhile, or the reason and Try again if it fails.
+  Level 2 (text only) and eviction come later.
 - **Waiting for changes:** every wait starts with a NOOP, then IDLEs (or
   sleeps and NOOPs on servers without IDLE). Stalwart 0.16 reports changes
   made between two commands on NOOP only, never when IDLE starts.
