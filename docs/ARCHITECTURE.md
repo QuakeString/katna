@@ -1048,7 +1048,16 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   Pins are local (schema v5, §5.3).
 - **Reading view.** Subject with the folder as a chip, a letter avatar
   (color from the address), sender, recipients, date with "(2 hours ago)",
-  the body, attachments as cards, and Reply/Forward buttons.
+  the body, attachments as cards, and Reply/Forward buttons. Opening or
+  folding a message of a conversation animates its height from the old
+  one; the sender picture stays in place and only the text fades.
+- **Conversation windows.** Double-clicking a line opens its conversation
+  in a window of its own (without the reading pane, the second click lands
+  on the conversation that replaced the list, and moves it there). The
+  window is a second `MailWindow` in a detached mode that shows only the
+  reading view: it reads the store and follows `MailChanged` itself.
+  Archiving, deleting or moving the conversation closes it, and the main
+  window shows the snackbar with Undo.
 - **Motion.** Springs (`katna_ui::motion::Spring`, on GPUI's spring
   solver) drive values that shape several elements: the navigation width,
   the search box turning white with a shadow when focused, the snackbar.

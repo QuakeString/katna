@@ -126,6 +126,12 @@ impl MailWindow {
             .rounded(px(super::PANEL_RADIUS))
             .overflow_hidden()
             .bg(rgba(th.surface))
+            .on_mouse_down(
+                gpui::MouseButton::Left,
+                cx.listener(|this, event: &gpui::MouseDownEvent, window, cx| {
+                    this.double_click_reader(event, window, cx)
+                }),
+            )
             .on_action(cx.listener(Self::select_next))
             .on_action(cx.listener(Self::select_previous))
             .on_action(cx.listener(Self::select_first))
@@ -976,7 +982,17 @@ impl MailWindow {
                 }
                 cx.notify();
             }))
-            .on_click(cx.listener(move |this, _, window, cx| this.open(ix, window, cx)))
+            .on_click(
+                cx.listener(move |this, event: &gpui::ClickEvent, window, cx| {
+                    // A double-click opens the line in a window of its own.
+                    if event.click_count() >= 2 {
+                        this.open_in_window(ix, cx);
+                    } else {
+                        this.clicked = Some((std::time::Instant::now(), ix));
+                        this.open(ix, window, cx);
+                    }
+                }),
+            )
             .on_mouse_down(
                 gpui::MouseButton::Right,
                 cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {

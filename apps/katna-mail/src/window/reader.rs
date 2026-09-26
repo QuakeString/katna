@@ -135,6 +135,10 @@ impl Conversation {
         }
     }
 
+    pub(super) fn subject(&self) -> &str {
+        &self.subject
+    }
+
     pub(super) fn load(mail: &mut Mail, key: EntryKey) -> Self {
         let ids = mail.entry_messages(key);
         let rows = mail.message_rows(&ids);
@@ -270,7 +274,7 @@ impl MailWindow {
             .as_ref()
             .and_then(|r| self.entries.iter().position(|e| e.key == r.key));
         let ix = position.or(self.selected).unwrap_or(0);
-        let back = if self.split() {
+        let back = if self.split() || self.detached {
             icon_button("reader-close", "close", 20.0, th).tooltip(tip("Close", th))
         } else {
             icon_button("reader-back", "back", 20.0, th).tooltip(tip("Back", th))
@@ -306,7 +310,8 @@ impl MailWindow {
                 self.with_menu(more, Menu::ReaderMore, th, cx)
             })
             .child(div().flex_1())
-            .when(!narrow && count > 0, |d| {
+            // A conversation in its own window has no list to step through.
+            .when(!narrow && count > 0 && !self.detached, |d| {
                 d.child(
                     div()
                         .px(px(8.0))
@@ -319,24 +324,24 @@ impl MailWindow {
                         )),
                 )
             })
-            .child(
-                icon_button("newer", "chevron-left", 20.0, th)
-                    .tooltip(tip("Newer", th))
-                    .when(ix == 0, |d| d.opacity(0.4))
-                    .on_click(cx.listener(|this, _, window, cx| {
-                        this.select_previous(&SelectPrevious, window, cx)
-                    })),
-            )
-            .child(
-                icon_button("older", "chevron-right", 20.0, th)
-                    .tooltip(tip("Older", th))
-                    .when(ix + 1 >= count, |d| d.opacity(0.4))
-                    .on_click(
-                        cx.listener(|this, _, window, cx| {
+            .when(!self.detached, |d| {
+                d.child(
+                    icon_button("newer", "chevron-left", 20.0, th)
+                        .tooltip(tip("Newer", th))
+                        .when(ix == 0, |d| d.opacity(0.4))
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            this.select_previous(&SelectPrevious, window, cx)
+                        })),
+                )
+                .child(
+                    icon_button("older", "chevron-right", 20.0, th)
+                        .tooltip(tip("Older", th))
+                        .when(ix + 1 >= count, |d| d.opacity(0.4))
+                        .on_click(cx.listener(|this, _, window, cx| {
                             this.select_next(&SelectNext, window, cx)
-                        }),
-                    ),
-            )
+                        })),
+                )
+            })
             .into_any_element()
     }
 
