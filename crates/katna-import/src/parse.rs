@@ -114,9 +114,7 @@ pub fn parse_message(raw: &[u8]) -> Option<ParsedMessage> {
             })
         }),
         list_id: list_id(message.list_id()),
-        snippet: message
-            .body_preview(SNIPPET_CHARS)
-            .and_then(|text| non_empty(&collapse_whitespace(&text))),
+        snippet: snippet(&message),
         participants,
         in_reply_to: links.in_reply_to,
         references: links.references,
@@ -206,6 +204,22 @@ fn list_id(value: &HeaderValue<'_>) -> Option<String> {
         _ => text,
     };
     non_empty(text)
+}
+
+/// The start of the body, whitespace collapsed. Inline PGP armor is left
+/// out: encrypted text is noise, and a clear-signed message starts with
+/// its text, not with `-----BEGIN PGP SIGNED MESSAGE-----`.
+fn snippet(message: &Message<'_>) -> Option<String> {
+    let preview = message.body_preview(SNIPPET_CHARS)?;
+    if !preview.contains("-----BEGIN PGP ") {
+        return non_empty(&collapse_whitespace(&preview));
+    }
+    let text = message.body_text(0)?;
+    let text: String = katna_crypto::without_armor(&text)
+        .chars()
+        .take(SNIPPET_CHARS)
+        .collect();
+    non_empty(&collapse_whitespace(&text))
 }
 
 fn non_empty(text: &str) -> Option<String> {
@@ -380,5 +394,19 @@ Deals.\r
     #[test]
     fn rejects_non_mail() {
         assert_eq!(parse_message(b""), None);
+    }
+
+    #[test]
+    fn snippets_leave_out_pgp_armor() {
+        let encrypted = b"From: a@example.org\r\nSubject: x\r\n\r\n\
+-----BEGIN PGP MESSAGE-----\r\n\r\nhQIMA3xyz\r\n-----END PGP MESSAGE-----\r\n";
+        assert_eq!(parse_message(encrypted).unwrap().snippet, None);
+        let signed = b"From: a@example.org\r\nSubject: x\r\n\r\n\
+-----BEGIN PGP SIGNED MESSAGE-----\r\nHash: SHA256\r\n\r\nSee you at noon.\r\n\
+-----BEGIN PGP SIGNATURE-----\r\n\r\niQEz\r\n-----END PGP SIGNATURE-----\r\n";
+        assert_eq!(
+            parse_message(signed).unwrap().snippet.as_deref(),
+            Some("See you at noon.")
+        );
     }
 }

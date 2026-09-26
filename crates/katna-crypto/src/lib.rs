@@ -18,12 +18,14 @@
 //! enveloped, opaque-signed and detached-signed. Nested layers (signed, then
 //! encrypted) are opened in turn.
 
+mod armor;
 mod gnupg;
 mod mime;
 mod status;
 
 use mail_parser::MessageParser;
 
+pub use armor::without_armor;
 pub use gnupg::Gnupg;
 
 /// At most this many protection layers are opened, so a crafted message

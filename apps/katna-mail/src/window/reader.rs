@@ -27,6 +27,9 @@ use crate::widgets::{
     avatar, icon, icon_button, icon_button_colored, pill_button, placeholder, toolbar,
 };
 
+mod security;
+use security::Secured;
+
 /// The reading view shows at most this many lines of a body.
 const MAX_BODY_LINES: usize = 4000;
 /// Fold the middle of a conversation when this many messages in a row are
@@ -59,6 +62,10 @@ struct Body {
     /// The body, in blocks of consecutive quoted or unquoted lines.
     blocks: Vec<(bool, SharedString)>,
     cut: bool,
+    /// Encrypted or signed: what opening it found.
+    security: Option<Secured>,
+    /// The raw message, until it is handed to GnuPG.
+    sealed: Option<Vec<u8>>,
 }
 
 impl Conversation {
@@ -264,6 +271,7 @@ impl MailWindow {
     }
 
     pub(super) fn render_reader(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        self.open_sealed(cx);
         let Some(reader) = &self.reader else {
             return placeholder("", th);
         };
@@ -662,6 +670,7 @@ impl MailWindow {
                 view: Some(view),
                 blocks,
                 cut,
+                ..
             }) => {
                 let notes = [
                     view.from_html
@@ -774,6 +783,7 @@ impl MailWindow {
                     .max_w(px(960.0))
                     .child(header)
                     .children(details_box)
+                    .children(self.security_banner(part, th, cx))
                     .child(body),
             )
             .with_animation(
@@ -881,14 +891,26 @@ fn read(mail: &Mail, id: MessageId) -> Body {
             view: None,
             blocks: Vec::new(),
             cut: false,
+            security: None,
+            sealed: None,
         };
     };
-    let view = katna_render::message_view(&raw);
+    match katna_crypto::protection(&raw) {
+        Some(protection) => security::sealed(raw, protection),
+        None => shown(&raw, None),
+    }
+}
+
+/// The body of `raw` as the reading view shows it.
+fn shown(raw: &[u8], security: Option<Secured>) -> Body {
+    let view = katna_render::message_view(raw);
     let (blocks, cut) = body_blocks(&view.body, MAX_BODY_LINES);
     Body {
         view: Some(view),
         blocks,
         cut,
+        security,
+        sealed: None,
     }
 }
 
