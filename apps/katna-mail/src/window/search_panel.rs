@@ -279,7 +279,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(8.0))
-            .rounded(px(12.0))
+            .rounded(px(15.0))
             .bg(rgba(th.menu))
             .shadow(elevation(th, 3.0))
             .text_color(rgba(th.text))
@@ -296,7 +296,10 @@ impl MailWindow {
                             .child("Search options"),
                     )
                     .child(
+                        // Out into the side padding, so the button sits as
+                        // far from the right edge as from the top.
                         icon_button("search-panel-close", "close", 20.0, th)
+                            .mr(px(-12.0))
                             .tooltip(tip("Close", th))
                             .on_click(cx.listener(|this, _, _, cx| {
                                 this.search_panel = None;
