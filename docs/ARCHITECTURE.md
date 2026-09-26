@@ -197,7 +197,6 @@ Decided (implementation plan, D3).
 ### 5.3 Mail schema (sketch)
 
 ```sql
-account          (id, kind, display_name, settings_json)
 folder           (id, account_id, path, role, uidvalidity, highestmodseq, sync_state)
 message          (id, account_id, message_id_hdr, thread_id, subject, date,
                   size, flags, keywords, has_attachments, list_id,
@@ -216,9 +215,20 @@ notification     (notif_id, message_ids, account_id, created_at)   -- to close/u
 `participant` is the key table for organizations (§8) and address search.
 `body_state` drives sync, search and UI (§6, §7).
 
+Schema v1 is implemented in `crates/katna-store/src/schema/`. Conventions:
+times are Unix seconds (UTC), hashes are 32-byte blake3 digests, JSON is
+`TEXT`. The `account` table lives in `pim.db` (§5.4), shared by mail and
+calendar; `account_id` columns in `mail.db` therefore have no foreign key.
+Each database version is `PRAGMA user_version`; migrations are append-only.
+Each of `mail.db` and `pim.db` has a `change_log` table (change journal):
+every daemon write appends `(seq, object_kind, object_id, op)` in the same
+transaction, and apps read entries after the last `seq` they saw when a
+change signal arrives (§14.2).
+
 ### 5.4 Shared PIM schema (sketch)
 
 ```sql
+account          (id, kind, display_name, address, settings_json)  -- kind: imap|jmap|pop3|caldav|carddav
 organization     (id, name, kind, color, notes, notify_policy)  -- kind: customer|vendor|partner|other
 org_alias        (org_id, alias)
 org_rule         (org_id, rule_kind, value)               -- domain | subdomain | address
