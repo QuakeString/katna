@@ -70,6 +70,21 @@ impl Role {
     }
 }
 
+impl AccountNode {
+    /// Every node of the account, depth first.
+    fn folders(&self) -> impl Iterator<Item = &Node> {
+        fn walk<'a>(nodes: &'a [Node], out: &mut Vec<&'a Node>) {
+            for node in nodes {
+                out.push(node);
+                walk(&node.children, out);
+            }
+        }
+        let mut out = Vec::new();
+        walk(&self.roots, &mut out);
+        out.into_iter()
+    }
+}
+
 /// One folder (or path component without a folder of its own).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Node {
@@ -225,6 +240,34 @@ impl Tree {
             None
         }
         self.accounts.iter().find_map(|a| go(&a.roots, folder))
+    }
+
+    /// The account `folder` belongs to.
+    pub fn account_of(&self, folder: FolderId) -> Option<AccountId> {
+        self.accounts
+            .iter()
+            .find(|a| a.folders().any(|n| n.folder == Some(folder)))
+            .map(|a| a.id)
+    }
+
+    /// The first folder of `account` with `role`.
+    pub fn role_folder(&self, account: AccountId, role: Role) -> Option<FolderId> {
+        self.accounts
+            .iter()
+            .find(|a| a.id == account)?
+            .folders()
+            .find(|n| n.role == role)
+            .and_then(|n| n.folder)
+    }
+
+    /// The folders of `account` in tree order, with their full names.
+    pub fn folders_of(&self, account: AccountId) -> Vec<(FolderId, String, Role)> {
+        self.accounts
+            .iter()
+            .filter(|a| a.id == account)
+            .flat_map(|a| a.folders())
+            .filter_map(|n| Some((n.folder?, n.name.clone(), n.role)))
+            .collect()
     }
 
     /// The visible rows, given the expanded node keys.

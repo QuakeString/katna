@@ -24,12 +24,84 @@ const INDEX_RETRY: Duration = Duration::from_secs(2);
 /// Rows kept in memory; the cache is dropped when it grows past this.
 const ROW_CACHE: usize = 5000;
 
+/// What one line of the list stands for.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum EntryKey {
+    Message(MessageId),
+}
+
+/// One line of the list: a message, or a conversation shown by its newest
+/// message in the folder.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Entry {
+    pub key: EntryKey,
+    pub latest: MessageId,
+}
+
+impl Entry {
+    pub fn message(id: MessageId) -> Self {
+        Self {
+            key: EntryKey::Message(id),
+            latest: id,
+        }
+    }
+}
+
+/// An inbox category tab.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Category {
+    Primary,
+    Promotions,
+    Social,
+    Updates,
+    Forums,
+}
+
+impl Category {
+    pub const ALL: [Self; 5] = [
+        Self::Primary,
+        Self::Promotions,
+        Self::Social,
+        Self::Updates,
+        Self::Forums,
+    ];
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Primary => "Primary",
+            Self::Promotions => "Promotions",
+            Self::Social => "Social",
+            Self::Updates => "Updates",
+            Self::Forums => "Forums",
+        }
+    }
+
+    pub fn icon(self) -> &'static str {
+        match self {
+            Self::Primary => "inbox",
+            Self::Promotions => "tag",
+            Self::Social => "people",
+            Self::Updates => "info",
+            Self::Forums => "forum",
+        }
+    }
+
+    pub fn index(self) -> usize {
+        Self::ALL.iter().position(|c| *c == self).unwrap_or(0)
+    }
+}
+
 /// One line of the message list.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Row {
+    pub key: EntryKey,
+    /// The message the line shows: the newest of a conversation.
     pub id: MessageId,
-    /// Sender, or the recipients in sent and draft folders.
+    /// Sender, or the recipients in sent and draft folders; for a
+    /// conversation, its senders.
     pub correspondent: String,
+    /// Messages in the conversation; 1 for a single message.
+    pub count: u32,
     pub subject: String,
     /// Unix seconds.
     pub date: Option<i64>,
@@ -70,7 +142,9 @@ impl Row {
         };
         let subject = message.subject.trim();
         Self {
+            key: EntryKey::Message(message.id),
             id: message.id,
+            count: 1,
             correspondent,
             subject: if subject.is_empty() {
                 "(no subject)".to_owned()
@@ -109,7 +183,7 @@ pub struct Mail {
     index: Option<Arc<SearchIndex>>,
     index_error: Option<String>,
     index_tried: Instant,
-    rows: HashMap<MessageId, Rc<Row>>,
+    rows: HashMap<EntryKey, Rc<Row>>,
 }
 
 impl Mail {
@@ -146,11 +220,44 @@ impl Mail {
         })
     }
 
-    pub fn folder_message_ids(&self, folder: FolderId) -> Vec<MessageId> {
-        self.store.folder_message_ids(folder).unwrap_or_else(|err| {
-            tracing::warn!("reading folder {}: {err}", folder.0);
-            Vec::new()
-        })
+    /// The lines of `folder`, newest first: conversations or messages.
+    /// `category` picks an inbox tab.
+    pub fn entries(
+        &self,
+        folder: FolderId,
+        _category: Option<Category>,
+        _conversations: bool,
+    ) -> Vec<Entry> {
+        match self.store.folder_message_ids(folder) {
+            Ok(ids) => ids.into_iter().map(Entry::message).collect(),
+            Err(err) => {
+                tracing::warn!("reading folder {}: {err}", folder.0);
+                Vec::new()
+            }
+        }
+    }
+
+    /// Search hits as lines: grouped into conversations when asked.
+    pub fn hit_entries(&self, hits: &[MessageId], _conversations: bool) -> Vec<Entry> {
+        hits.iter().copied().map(Entry::message).collect()
+    }
+
+    /// The messages of a line, oldest first: a whole conversation.
+    pub fn entry_messages(&self, key: EntryKey) -> Vec<MessageId> {
+        match key {
+            EntryKey::Message(id) => vec![id],
+        }
+    }
+
+    /// The messages of a line that are in `folder`, for moving them out.
+    pub fn entry_messages_in(&self, key: EntryKey, folder: FolderId) -> Vec<MessageId> {
+        let _ = folder;
+        self.entry_messages(key)
+    }
+
+    /// Unread lines per inbox tab.
+    pub fn category_unread(&self, _folder: FolderId) -> HashMap<Category, u64> {
+        HashMap::new()
     }
 
     /// The search index, shared with background searches. The daemon
@@ -184,13 +291,13 @@ impl Mail {
         }
     }
 
-    /// The rows of `ids`, reading the ones not cached yet in one go.
-    /// Messages that no longer exist are `None`.
-    pub fn rows(&mut self, ids: &[MessageId], show_recipients: bool) -> Vec<Option<Rc<Row>>> {
-        let missing: Vec<MessageId> = ids
+    /// The rows of `entries`, reading the ones not cached yet in one go.
+    /// Lines whose mail no longer exists are `None`.
+    pub fn rows(&mut self, entries: &[Entry], show_recipients: bool) -> Vec<Option<Rc<Row>>> {
+        let missing: Vec<MessageId> = entries
             .iter()
-            .copied()
-            .filter(|id| !self.rows.contains_key(id))
+            .filter(|e| !self.rows.contains_key(&e.key))
+            .map(|e| e.latest)
             .collect();
         if !missing.is_empty() {
             if self.rows.len() + missing.len() > ROW_CACHE {
@@ -199,14 +306,23 @@ impl Mail {
             match self.store.messages_by_id(&missing) {
                 Ok(messages) => {
                     for message in &messages {
-                        self.rows
-                            .insert(message.id, Rc::new(Row::new(message, show_recipients)));
+                        let row = Row::new(message, show_recipients);
+                        self.rows.insert(row.key, Rc::new(row));
                     }
                 }
                 Err(err) => tracing::warn!("reading messages: {err}"),
             }
         }
-        ids.iter().map(|id| self.rows.get(id).cloned()).collect()
+        entries
+            .iter()
+            .map(|e| self.rows.get(&e.key).cloned())
+            .collect()
+    }
+
+    /// Rows of single messages (the parts of a conversation).
+    pub fn message_rows(&mut self, ids: &[MessageId]) -> Vec<Option<Rc<Row>>> {
+        let entries: Vec<Entry> = ids.iter().copied().map(Entry::message).collect();
+        self.rows(&entries, false)
     }
 
     /// Forgets cached rows, for example when the sender/recipient column
@@ -342,14 +458,16 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
         assert!(mail.index_error().is_some());
         assert_eq!(mail.accounts()[0].display_name, "Enron");
         assert_eq!(mail.folders()[0].total, 1);
-        let ids = mail.folder_message_ids(inbox);
-        assert_eq!(ids, [id]);
+        let entries = mail.entries(inbox, None, false);
+        assert_eq!(entries, [Entry::message(id)]);
 
-        let rows = mail.rows(&[id, MessageId(999)], false);
+        let rows = mail.rows(&[Entry::message(id), Entry::message(MessageId(999))], false);
         assert_eq!(
             **rows[0].as_ref().unwrap(),
             Row {
+                key: EntryKey::Message(id),
                 id,
+                count: 1,
                 correspondent: "Ada".into(),
                 subject: "Budget".into(),
                 date: Some(989_858_340),
@@ -361,7 +479,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
         );
         assert_eq!(rows[1], None);
         mail.clear_rows();
-        let sent = mail.rows(&[id], true);
+        let sent = mail.rows(&[Entry::message(id)], true);
         assert_eq!(
             sent[0].as_ref().unwrap().correspondent,
             "To: bob@example.net"
