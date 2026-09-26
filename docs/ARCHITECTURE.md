@@ -137,7 +137,7 @@ are testable and benchmarkable without a GUI.
 | Async / I/O | GPUI executors in apps; `smol`-compatible I/O in the daemon; `rustls` | Pimalaya is sans-I/O, so we choose the runtime. The server uses Tokio (axum). |
 | Protocols | Pimalaya `io-email`, `io-imap`, `io-smtp`, `io-jmap`, `io-webdav`, `io-calendar` | Light forks where needed (§20). POP3 is our own (not in `io-email`). |
 | MIME | `mail-parser`, `mail-builder` | |
-| Database | SQLite via `rusqlite` (WAL mode) | |
+| Database | SQLite via `rusqlite` (bundled, WAL mode) | Turso (Rust rewrite of SQLite, same file format) evaluated: pre-1.0, not fully SQLite-compatible yet. Re-evaluate at 1.0; keep all SQL inside `katna-store` and avoid features Turso lacks, so switching needs no data migration. |
 | Search | `tantivy` | Plus `rust-stemmers`, `whatlang`; `lindera`/`jieba` for CJK as optional downloads (large dictionaries). |
 | Blob compression / hashing | `zstd`, `blake3` | |
 | HTML safety | `ammonia` | |
@@ -165,7 +165,8 @@ not runtime performance.
 | `$XDG_DATA_HOME/katna/mail.db` | Mail database. |
 | `$XDG_DATA_HOME/katna/pim.db` | Shared: accounts, contacts, organizations. |
 | `$XDG_DATA_HOME/katna/calendar.db` | Calendar database. |
-| `$XDG_DATA_HOME/katna/blobs/` | Raw messages and attachments. |
+| `$XDG_DATA_HOME/katna/blobs.db` | Raw messages, zstd-compressed, content-addressed (proposal, §5.2). |
+| `$XDG_DATA_HOME/katna/attachments/` | Large attachments only (> 256 KB). |
 | `$XDG_DATA_HOME/katna/index/` | tantivy index (rebuildable, but expensive, so not in cache). |
 | Secret Service (`oo7`) | Passwords and OAuth tokens. Never in files. |
 
@@ -173,16 +174,24 @@ Only `katna-daemon` writes these databases. Apps open them read-only
 (SQLite WAL allows concurrent readers while the daemon writes) and learn
 about changes from D-Bus signals (§14.2).
 
-### 5.2 Blob store
+### 5.2 Message storage (proposal)
 
-- Raw RFC 822 messages stored content-addressed:
-  `blobs/<first 2 hex>/<blake3>.eml.zst` (zstd-compressed).
-- The same message in several folders or labels is stored once.
-- Large attachments can be stored as separate blobs and fetched on demand.
+- Raw RFC 822 messages are stored **inside SQLite**, in a separate
+  `blobs.db`, zstd-compressed and keyed by their blake3 hash. The same
+  message in several folders or labels is stored once.
+- Attachments larger than ~256 KB are split out and stored as files in
+  `attachments/` (SQLite is faster than the filesystem for small blobs,
+  slower for large ones).
+- Why not one file per message (Maildir): millions of tiny files waste
+  inodes and make backups, disk-usage scans and Flatpak sandbox access slow.
+- `blobs.db` uses `auto_vacuum = INCREMENTAL`, so space is returned when
+  messages leave the offline window.
+- Write order: blob first, then the metadata row that references it
+  (atomic commits across attached databases are not guaranteed in WAL
+  mode); a background job removes unreferenced blobs.
 - Maildir **export** is offered for interoperability with notmuch/mu/mutt.
 
-**Decision needed:** own blob store (smaller, deduplicated) vs. plain
-Maildir (interoperable). The proposal is the blob store plus Maildir export.
+**Decision needed:** confirm this proposal (see implementation plan, D3).
 
 ### 5.3 Mail schema (sketch)
 
@@ -799,13 +808,13 @@ loaded at runtime.
 | Package | Contents | Formats |
 |---|---|---|
 | `katna` | Katna Mail, Katna Calendar, `katna-daemon`, systemd user unit, D-Bus service files, KRunner and GNOME search-provider files, `.desktop` files, AppStream metainfo, icons, MIME handlers (`mailto`, `text/calendar`), Dolphin service menu | Flatpak, .deb, .rpm, AUR, AppImage, Nix |
-| `katna-plasma-integration` | Calendar-events plugin, Katna Clock | .deb, .rpm, AUR, Nix — **not** Flatpak or KDE Store (C++ loaded into `plasmashell`); built against each distro's Plasma |
+| `katna-plasma-integration` | Calendar-events plugin, Katna Clock | .deb (Kubuntu), AUR (Arch) — **not** Flatpak or KDE Store (C++ loaded into `plasmashell`); built against each distro's Plasma |
 
 | Format | Tooling | Priority |
 |---|---|---|
 | Flatpak (Flathub) | `flatpak-cargo-generator` for offline builds | 1 |
 | .deb | `cargo-deb` (+ CMake for the Plasma package) | 1 |
-| .rpm | `cargo-generate-rpm` (+ CMake for the Plasma package) | 1 |
+| .rpm | `cargo-generate-rpm` | 2 (built in CI, not tested) |
 | AUR | PKGBUILD | 1 |
 | AppImage, Nix flake | standard tooling | 2 |
 | Gentoo, Alpine, Void | `cargo-ebuild`, APKBUILD, templates | 3 |
@@ -870,11 +879,17 @@ Packaging (Flatpak, deb, rpm, AUR) starts from Phase 3; the
 
 ## 25. Open decisions
 
-1. Blob store vs. Maildir (§5.2).
+1. Message storage in SQLite vs. files (§5.2; plan D3).
 2. HTML renderer for phase 2 (§12).
-3. Repository name/structure: one `katna` monorepo (proposed) vs. per-app repos (§3).
-4. Supported Plasma versions for `katna-plasma-integration` (for example: the
-   current release and the version in the latest Debian stable / Ubuntu LTS).
-5. Katna Server hosting and pricing model.
+3. Repository name: `katna` (proposed) vs. `katna-pim` (§3; plan D2).
+4. App ID prefix: registered domain (proposed, e.g. `app.katna.*`) vs.
+   `io.github.quakestring.*` (plan D6).
+5. Katna Server hosting and pricing model; Katna Server license (GPL-3.0 or AGPL-3.0).
 
-Decided: license — GPL-3.0-or-later (§22).
+Decided:
+
+- License: GPL-3.0-or-later (§22).
+- Rust toolchain: latest stable (`channel = "stable"`).
+- Test and support matrix: Arch Linux (latest Plasma and GNOME) and
+  Ubuntu 26.04 LTS (GNOME) / Kubuntu 26.04 (Plasma). The Plasma
+  integration supports the Plasma versions of these two.

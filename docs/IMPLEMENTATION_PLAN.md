@@ -27,11 +27,11 @@ they become the plan.
 | # | Decision | Proposed default | Affects |
 |---|---|---|---|
 | D1 | License | **Decided: GPL-3.0-or-later** (`LICENSE` added) | `cargo-deny` config, SPDX headers, what code we may reuse |
-| D2 | Repository | Rename this repo to `katna` (monorepo) | Paths, CI, package names |
-| D3 | Mail storage | Own blob store (zstd + blake3) + Maildir export | `katna-store` design |
-| D4 | Rust toolchain | Pin stable 1.98 in `rust-toolchain.toml` (GPUI needs recent Rust) | CI, contributors |
-| D5 | Supported systems for CI | Arch (latest Plasma/GNOME), Fedora (latest), Ubuntu LTS, Debian stable | Test matrix, Plasma versions |
-| D6 | App ID / D-Bus prefix | `org.katna.*` (needs a domain you control, e.g. `katna.org`) — or `io.github.quakestring.Katna*` if no domain | Flatpak IDs, D-Bus names, desktop files |
+| D2 | Repository | Rename this repo to `katna` (monorepo); alternative `katna-pim` | Paths, CI, package names |
+| D3 | Mail storage | SQLite (`rusqlite`) for metadata **and** compressed raw messages (`blobs.db`); files only for large attachments; Maildir export. Turso re-evaluated at its 1.0 (file-format compatible) | `katna-store` design |
+| D4 | Rust toolchain | **Decided: latest stable** — `rust-toolchain.toml` with `channel = "stable"`; `rust-version` in `Cargo.toml` records the minimum and is raised deliberately | CI, contributors |
+| D5 | Supported systems for CI | **Decided: Arch Linux and Ubuntu 26.04 LTS** — Arch = latest Plasma and GNOME; Ubuntu = GNOME, Kubuntu 26.04 = older Plasma | Test matrix, Plasma versions |
+| D6 | App ID / D-Bus prefix | Register a domain and use its reverse form, e.g. `app.katna.Mail`, `app.katna.Calendar`, `app.katna.Daemon`; fallback without a domain: `io.github.quakestring.*` | Flatpak IDs, D-Bus names, desktop files |
 
 D6 matters for Flathub: its app IDs must match a domain or code-hosting
 account you control.
@@ -64,7 +64,7 @@ Seed scripts create test accounts and load sample mailboxes.
 
 | Job | When | What |
 |---|---|---|
-| `check` | every push/PR | `cargo fmt --check`, `clippy -D warnings`, unit tests |
+| `check` | every push/PR | `cargo fmt --check`, `clippy -D warnings`, unit tests — in `archlinux:latest` and `ubuntu:26.04` containers |
 | `integration` | every PR | Start containers, run protocol tests against Stalwart/Dovecot/Radicale |
 | `deny` | every PR | `cargo-deny`: licenses, duplicate/banned crates, advisories |
 | `size` | every PR | Release build; fail if a binary exceeds its budget |
@@ -169,7 +169,7 @@ instantly for all old mail; suggestions have a documented precision test.
 | 3.8 Account setup UI | Wizard using Phase 1 autoconfiguration |
 | 3.9 Organizations UI | Organization pages, "Add to organization…", suggestion review |
 | 3.10 Keyboard + a11y | Gmail-style shortcuts, command palette, AccessKit labels |
-| 3.11 Packaging v1 | Flatpak (with Background portal), .deb, .rpm, AUR; desktop files, AppStream, `mailto:` handler |
+| 3.11 Packaging v1 | Flatpak (with Background portal), .deb, AUR (tested); .rpm (built, not tested); desktop files, AppStream, `mailto:` handler |
 
 **Done when:** you can use Katna Mail as your daily client for one account
 on both Plasma and GNOME (Wayland and X11); performance budgets hold
@@ -214,7 +214,7 @@ against Stalwart, Dovecot and Gmail, with integration tests.
 | 6.5 Plasma events plugin | C++ `CalendarEventsPlugin` → daemon; Katna Calendar as `text/calendar` handler |
 | 6.6 Katna Clock | Fork of `applets/digital-clock`: renames, `X-Plasma-Provides`, quick-add, click/right-click actions, drag to reschedule |
 | 6.7 Upstream proposals | Merge requests to Plasma: "Add…" with date, click event to open, plugin action hook |
-| 6.8 Packaging | `katna-plasma-integration` for .deb/.rpm/AUR; CI per supported Plasma version |
+| 6.8 Packaging | `katna-plasma-integration` for .deb and AUR; CI against Arch's Plasma and Kubuntu 26.04's Plasma |
 
 **Done when:** events sync with Google, Nextcloud and Fastmail; recurring
 events with exceptions and time zones match a reference test set; events
@@ -276,7 +276,7 @@ Plasma integration (Phase 6), which have few dependencies on the rest.
 
 ## 8. First two weeks (concrete checklist)
 
-1. Confirm decisions D2–D6 (§2). D1 (license) is decided.
+1. Confirm decisions D2, D3 and D6 (§2). D1 (license), D4 (toolchain) and D5 (distros) are decided.
 2. Rename repo if D2 is accepted; add `CLAUDE.md` (`LICENSE` and `README` exist).
 3. Create the Cargo workspace with empty crates and the dependency rules.
 4. Pin the toolchain; set up CI `check`, `deny`, `size`.
