@@ -309,15 +309,21 @@ pub fn archive_messages(
 }
 
 /// Files a sent message in its account's Sent folder: queues an APPEND,
-/// or forgets the outgoing copy when there is no Sent folder. Returns
-/// whether the worker has something to replay.
+/// files it locally for accounts without an IMAP server (POP3), or forgets
+/// the outgoing copy when there is no Sent folder. Returns whether the
+/// worker has something to replay.
 pub fn file_sent(store: &mut Store, message: MessageId) -> Result<bool, ChangeError> {
     let account = account_of(store, message)?;
     let sent = folders_of(store, account)?
         .into_values()
         .find(|f| f.role == Some(FolderRole::Sent));
+    let synced = is_synced(store, account)?;
     let mut batch = store.mail_batch()?;
     let queued = match sent {
+        Some(sent) if !synced => {
+            batch.file_outgoing(message, sent.id)?;
+            false
+        }
         Some(sent) => {
             let op = Op::Append {
                 message: message.0,
@@ -573,12 +579,13 @@ fn folders_of(
         .collect())
 }
 
-/// Whether `account` lives on a server. Changes to imported mail stay local.
+/// Whether `account`'s folders live on a server. Changes to imported and
+/// POP3 mail stay local.
 fn is_synced(store: &Store, account: AccountId) -> Result<bool, ChangeError> {
     Ok(store
         .accounts()?
         .into_iter()
-        .any(|a| a.id == account && a.kind != AccountKind::Local))
+        .any(|a| a.id == account && matches!(a.kind, AccountKind::Imap | AccountKind::Jmap)))
 }
 
 fn encode(op: &Op) -> String {

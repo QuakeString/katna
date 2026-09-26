@@ -50,6 +50,7 @@ The addresses below use the default ports; see [Changing ports](#changing-ports)
 | Server | Protocol | Address |
 |---|---|---|
 | Stalwart | IMAP (TLS) | `127.0.0.1:10993` |
+| | POP3 (TLS) | `127.0.0.1:10995` |
 | | SMTP submission (TLS) | `127.0.0.1:10465` |
 | | SMTP (STARTTLS) | `127.0.0.1:10025` |
 | | ManageSieve | `127.0.0.1:14190` |
@@ -59,13 +60,14 @@ The addresses below use the default ports; see [Changing ports](#changing-ports)
 | | HTTPS (all of the above) | `https://127.0.0.1:18443` |
 | Dovecot | IMAP (plain or STARTTLS) | `127.0.0.1:20143` |
 | | IMAP (TLS) | `127.0.0.1:20993` |
+| | POP3 (plain or STLS) | `127.0.0.1:20110` |
 | | Submission (plain or STARTTLS) | `127.0.0.1:20587` |
 | | ManageSieve | `127.0.0.1:24190` |
 | Radicale | CalDAV and CardDAV | `http://127.0.0.1:5232/alice%40katna.test/` |
 | Mailpit | Web UI and API | <http://127.0.0.1:8025> |
 | | SMTP (no auth) | `127.0.0.1:1025` |
 
-Stalwart has no plain-text IMAP port here: its listeners only change after
+Stalwart has no plain-text IMAP or POP3 port here: its listeners only change after
 a restart, so the setup keeps Stalwart's defaults (TLS only).
 
 Mail that Stalwart or Dovecot would send to another domain goes to Mailpit
@@ -86,6 +88,7 @@ KATNA_STALWART_HTTP_PORT=38080
 | Variable | Default |
 |---|---|
 | `KATNA_STALWART_IMAPS_PORT` | 10993 |
+| `KATNA_STALWART_POP3S_PORT` | 10995 |
 | `KATNA_STALWART_SUBMISSIONS_PORT` | 10465 |
 | `KATNA_STALWART_SMTP_PORT` | 10025 |
 | `KATNA_STALWART_SIEVE_PORT` | 14190 |
@@ -93,6 +96,7 @@ KATNA_STALWART_HTTP_PORT=38080
 | `KATNA_STALWART_HTTPS_PORT` | 18443 |
 | `KATNA_DOVECOT_IMAP_PORT` | 20143 |
 | `KATNA_DOVECOT_IMAPS_PORT` | 20993 |
+| `KATNA_DOVECOT_POP3_PORT` | 20110 |
 | `KATNA_DOVECOT_SUBMISSION_PORT` | 20587 |
 | `KATNA_DOVECOT_SIEVE_PORT` | 24190 |
 | `KATNA_RADICALE_PORT` | 5232 |

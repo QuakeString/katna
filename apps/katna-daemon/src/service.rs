@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 use async_channel::Receiver;
 use katna_core::{AccountId, ids};
-use katna_dbus::{AccountStatus, NewImapAccount, OutboxItem, flag};
+use katna_dbus::{AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, flag};
 use katna_store::{FolderId, MessageFlags, MessageId};
 use zbus::{fdo, object_server::SignalEmitter};
 
@@ -53,6 +53,14 @@ macro_rules! pim_interface {
                 password: String,
             ) -> fdo::Result<i64> {
                 Ok(self.daemon.add_imap_account(account, password).await?.0)
+            }
+
+            async fn add_pop3_account(
+                &self,
+                account: NewPop3Account,
+                password: String,
+            ) -> fdo::Result<i64> {
+                Ok(self.daemon.add_pop3_account(account, password).await?.0)
             }
 
             async fn discover_account(

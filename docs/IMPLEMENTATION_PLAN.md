@@ -137,7 +137,7 @@ query set runs at p50 2.4 ms, p99 9.7 ms, including subjects and snippets.
 | 1.7 Threading | JWZ threading + Gmail thread IDs; property tests |
 | 1.8 SMTP + outbox | Sending, Sent-folder handling, outbox with undo delay |
 | 1.9 `katna-meta` | Metadata table + scheduler (undo send first) |
-| 1.10 POP3 | Client with UIDL tracking, leave-on-server, `TOP` preview |
+| 1.10 POP3 | Client with UIDL tracking, leave-on-server, `TOP` (header-first partial download of large messages comes later) |
 | 1.11 `katna-daemon` | Process, `in.invenia.katna.Pim1` D-Bus skeleton (commands + change signals), single instance, systemd user unit, D-Bus activation, graceful shutdown |
 | 1.12 System events | Network changes, suspend/resume, metered connections |
 | 1.13 `katnactl` | Small CLI client for the daemon (add account, sync, search, send, list) — the test harness until the GUI exists |

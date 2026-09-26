@@ -27,6 +27,7 @@ fn config() -> WorkerConfig {
             days: None,
             max_size: u64::MAX,
         },
+        pop3_interval: Duration::from_secs(60),
     }
 }
 

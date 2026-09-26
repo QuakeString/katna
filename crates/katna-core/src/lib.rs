@@ -12,7 +12,7 @@ pub mod logging;
 pub mod paths;
 pub mod subject;
 
-pub use account::{Account, AccountId, AccountKind, AccountSettings, Security, Server};
+pub use account::{Account, AccountId, AccountKind, AccountSettings, Pop3Keep, Security, Server};
 pub use category::{MailCategory, MailFacts, classify};
 pub use config::Config;
 pub use error::{Error, Result};

@@ -44,6 +44,7 @@ impl DbKind {
             Self::Mail => &[
                 include_str!("schema/mail_v1.sql"),
                 include_str!("schema/mail_v2.sql"),
+                include_str!("schema/mail_v3.sql"),
             ],
             Self::Pim => &[include_str!("schema/pim_v1.sql")],
             Self::Blobs => &[include_str!("schema/blobs_v1.sql")],
@@ -216,6 +217,7 @@ mod tests {
                 "op_queue",
                 "outbox",
                 "participant",
+                "pop3_uidl",
                 "thread",
                 "thread_ref",
             ]
@@ -264,7 +266,7 @@ mod tests {
         drop(conn);
 
         let conn = open(&path, DbKind::Mail, Mode::ReadWrite).unwrap();
-        assert_eq!(user_version(&conn).unwrap(), 2);
+        assert_eq!(user_version(&conn).unwrap(), DbKind::Mail.schema_version());
         let row: (Option<i64>, Option<i64>) = conn
             .query_row(
                 "SELECT thread_id, category FROM message WHERE id = 1",

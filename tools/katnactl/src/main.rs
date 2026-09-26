@@ -12,7 +12,7 @@ use std::{
 
 use futures_lite::StreamExt;
 use katna_core::{AccountId, Paths};
-use katna_dbus::{AccountStatus, NewImapAccount, OutboxItem, PimProxy, ServerSpec};
+use katna_dbus::{AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, PimProxy, ServerSpec};
 use katna_store::{MessageId, Mode, ParticipantRole, Store};
 
 const USAGE: &str = "\
@@ -21,6 +21,10 @@ usage: katnactl status
                 [--imap HOST[:PORT]] [--security tls|starttls|plain]
                 [--smtp HOST[:PORT]] [--smtp-security tls|starttls|plain]
                 [--insecure]
+       katnactl add-pop3 ADDRESS --pop3 HOST[:PORT] [--name NAME] [--user LOGIN]
+                [--security tls|starttls|plain] [--smtp HOST[:PORT]]
+                [--smtp-security tls|starttls|plain] [--insecure]
+                [--remove | --keep-days N] [--keep-deleted]
        katnactl discover ADDRESS
        katnactl password ACCOUNT
        katnactl remove ACCOUNT
@@ -47,6 +51,12 @@ add-imap   Adds an IMAP account. Asks for the password (or reads one line
            `discover` does). Gmail, Yahoo and iCloud need an app password.
            Ports default to 993/465 (tls) or 143/587 (starttls).
            --insecure accepts self-signed certificates (test servers only).
+add-pop3   Adds a POP3 account: its mail is downloaded into local folders.
+           Ports default to 995/465 (tls) or 110/587 (starttls). Without
+           --smtp the daemon looks for the SMTP server. Mail stays on the
+           server until you delete it in Katna; --remove deletes it from the
+           server once downloaded, --keep-days N after N days, and
+           --keep-deleted keeps it there after you delete it in Katna.
 discover   Shows the servers the daemon finds for an address, and where
            it found them (provider settings, Thunderbird's database, DNS,
            or by trying the usual names).
@@ -135,6 +145,7 @@ fn run(command: &str, args: &[String]) -> Result<()> {
     match command {
         "status" => no_args(args).and_then(|()| with_daemon(status)),
         "add-imap" => add_imap(args),
+        "add-pop3" => add_pop3(args),
         "discover" => match args {
             [address] => {
                 let address = address.clone();
@@ -554,6 +565,93 @@ fn add_imap(args: &[String]) -> Result<()> {
     with_daemon(|pim| async move {
         let id = pim.add_imap_account(&account, &password).await?;
         println!("added account {id} ({address}); syncing in the background");
+        println!("follow it with `katnactl watch` or `katnactl status`");
+        Ok(())
+    })
+}
+
+fn add_pop3(args: &[String]) -> Result<()> {
+    let mut address = None;
+    let mut name = String::new();
+    let mut user = String::new();
+    let mut pop3 = None;
+    let mut smtp = None;
+    let mut security = "tls".to_owned();
+    let mut smtp_security = None;
+    let mut insecure = false;
+    let mut leave_on_server = true;
+    let mut keep_days = 0;
+    let mut delete_with_local = true;
+    let mut args = args.iter();
+    while let Some(arg) = args.next() {
+        let mut value = || {
+            args.next()
+                .cloned()
+                .ok_or_else(|| usage(format!("{arg} needs a value")))
+        };
+        match arg.as_str() {
+            "--name" => name = value()?,
+            "--user" => user = value()?,
+            "--pop3" => pop3 = Some(value()?),
+            "--smtp" => smtp = Some(value()?),
+            "--security" => security = value()?,
+            "--smtp-security" => smtp_security = Some(value()?),
+            "--insecure" => insecure = true,
+            "--remove" => leave_on_server = false,
+            "--keep-days" => {
+                keep_days = value()?
+                    .parse()
+                    .map_err(|_| usage("--keep-days needs a number of days"))?
+            }
+            "--keep-deleted" => delete_with_local = false,
+            flag if flag.starts_with('-') => return Err(usage(format!("unknown option {flag}"))),
+            _ if address.is_none() => address = Some(arg.clone()),
+            _ => return Err(usage(format!("unexpected {arg:?}"))),
+        }
+    }
+    let address = address.ok_or_else(|| usage("add-pop3 needs an address"))?;
+    let pop3 = pop3.ok_or_else(|| usage("add-pop3 needs --pop3 HOST"))?;
+    let smtp = match smtp {
+        Some(smtp) => {
+            let smtp_security = smtp_security.unwrap_or_else(|| security.clone());
+            server_spec(&smtp, &smtp_security, &user, insecure, [465, 587])?
+        }
+        None => {
+            let lookup = address.clone();
+            let mut found = ServerSpec::default();
+            let slot = &mut found;
+            with_daemon(|pim| async move {
+                if let Ok((account, _)) = pim.discover_account(&lookup).await {
+                    *slot = account.smtp;
+                }
+                Ok(())
+            })?;
+            if found.host.is_empty() {
+                eprintln!("no SMTP server found; this account can receive but not send");
+            } else {
+                println!("SMTP: {}:{} {}", found.host, found.port, found.security);
+                if !user.is_empty() {
+                    found.username = user.clone();
+                }
+                found.accept_invalid_certs = insecure;
+            }
+            found
+        }
+    };
+    let account = NewPop3Account {
+        display_name: name,
+        address: address.clone(),
+        pop3: server_spec(&pop3, &security, &user, insecure, [995, 110])?,
+        smtp,
+        leave_on_server,
+        keep_days,
+        delete_with_local,
+    };
+    let password = read_password()?;
+    println!("checking the login at {}…", account.pop3.host);
+    with_daemon(|pim| async move {
+        let id = pim.add_pop3_account(&account, &password).await?;
+        println!("added account {id} ({address}); downloading mail in the background");
         println!("follow it with `katnactl watch` or `katnactl status`");
         Ok(())
     })

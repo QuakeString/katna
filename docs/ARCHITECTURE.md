@@ -214,6 +214,7 @@ thread_ref       (account_id, message_id_hdr, thread_id)  -- referenced, not yet
 op_queue         (id, account_id, op_json, state, attempts, next_try_at)
 outbox           (id, draft_message_id, send_at, state, per_recipient BOOL, attempts)
 notification     (notif_id, message_ids, account_id, created_at)   -- to close/update later
+pop3_uidl        (account_id, uidl, message_id NULL, first_seen)   -- POP3 downloads (v3)
 ```
 
 `participant` is the key table for organizations (§8) and address search.
@@ -236,6 +237,11 @@ indexes for thread lists and subject matching, and triggers that keep
 delete (a thread with no messages left is deleted). The category numbers
 are stable: 1 Primary, 2 Promotions, 3 Social, 4 Updates, 5 Forums; NULL
 means "not classified yet" and reads as Primary.
+
+Mail schema v3 (`mail_v3.sql`) adds `pop3_uidl`: the server messages each
+POP3 account has downloaded. `message_id` becomes NULL when the local
+message is deleted, so it is not downloaded again and can be removed from
+the server (§6.4).
 
 ### 5.4 Shared PIM schema (sketch)
 
@@ -362,8 +368,23 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
     flags by forgetting the folder's HIGHESTMODSEQ so the next sync reads
     them again. A broken connection keeps the operation queued.
   - Imported (`local`) accounts only change in the store.
-- **POP3:** our own small client (UIDL tracking, leave-on-server option,
-  `TOP` for header preview). POP3 mail is always fully local.
+- **POP3** (task 1.10, `katna_sync::pop3`): our own small client (RFC 1939
+  with CAPA and STLS; USER/PASS login). POP3 mail is always fully local and
+  stored like imported mail, in local folders `INBOX`, `Sent` and `Trash`;
+  flag changes, moves and deletes stay in the store, and sent mail is filed
+  in the local Sent folder. POP3 has no push, so the worker checks every 5
+  minutes and on `SyncNow`, and holds a connection only while checking (the
+  server locks the maildrop for a session). A check lists `UIDL` and
+  `LIST`, downloads (`RETR`) every UIDL not in `pop3_uidl`, newest first,
+  committing each message at once, then deletes on the server what the
+  account's `Pop3Keep` says: everything once stored (leave-on-server off),
+  mail older than N days, or mail deleted for good in Katna (the default,
+  as in Thunderbird). Deletions happen at `QUIT`; only then does the store
+  forget those UIDLs and the ones the server no longer lists. A broken
+  session therefore never loses mail or deletes what is not stored. The
+  client has `TOP`; partial download of very large messages (header first,
+  body on request) is a later option. Discovery does not look for POP3
+  servers yet, so `AddPop3Account` needs the server.
 - **Gmail / Microsoft:** OAuth2. Google's restricted scope for full mail
   access requires app verification and a yearly security assessment.
   Launch with generic IMAP, Fastmail/JMAP and app-password accounts first.
@@ -965,7 +986,9 @@ Sketch — versioned by the interface name; breaking changes create `Pim2`.
 Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssx)`
 (id, kind, name, address, state, detail, last sync),
 `DiscoverAccount(address) → (account, source)`, `AddImapAccount(account,
-password) → id`, `SetPassword(id, password)`, `RemoveAccount(id) → b`,
+password) → id`, `AddPop3Account(account, password) → id` (with
+leave-on-server, days to keep, and delete-with-local),
+`SetPassword(id, password)`, `RemoveAccount(id) → b`,
 `SyncNow(id)` (0 for every account), `FetchBody(message)`,
 `SetFlags(ax messages, as add, as remove)` (flag names `seen`, `answered`,
 `flagged`, `draft`, `forwarded`), `MoveMessages(ax, folder)`,

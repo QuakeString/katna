@@ -11,8 +11,10 @@ use std::{
 
 use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
-use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths, Security, Server};
-use katna_dbus::{AccountStatus, NewImapAccount, OutboxItem, ServerSpec, state};
+use katna_core::{
+    Account, AccountId, AccountKind, AccountSettings, Paths, Pop3Keep, Security, Server,
+};
+use katna_dbus::{AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, state};
 use katna_store::{FolderId, MessageFlags, MessageId, Mode, SendState, Store};
 use katna_sync::{
     Credentials, Endpoint, MailBackend,
@@ -20,8 +22,9 @@ use katna_sync::{
     net::Tls,
     ops::{self, ChangeError},
     outbox::{self, OutboxConfig, OutboxEvent, OutboxHandle, Outgoing, QueueError},
+    pop3::{self, Pop3Client},
     smtp::SmtpSender,
-    worker::{self, Connector, Event, ImapConnector, WorkerConfig},
+    worker::{self, Connector, Event, ImapConnector, Pop3Connector, WorkerConfig},
 };
 
 use crate::secrets::Secrets;
@@ -227,20 +230,81 @@ impl Daemon {
         let imap = server(&new.imap, &address)?
             .ok_or_else(|| CommandError::InvalidArgs("the IMAP server is missing".into()))?;
         let smtp = server(&new.smtp, &address)?;
-        check_login(&imap, &password).await?;
+        check_login(AccountKind::Imap, &imap, &password).await?;
 
         let settings = AccountSettings {
             imap: Some(imap),
             smtp,
+            ..AccountSettings::default()
         };
-        let name = match new.display_name.trim() {
+        self.save_account(
+            AccountKind::Imap,
+            &new.display_name,
+            address,
+            settings,
+            password,
+        )
+        .await
+    }
+
+    /// Checks the login, then adds the POP3 account and starts checking
+    /// it for mail.
+    pub async fn add_pop3_account(
+        self: &Arc<Self>,
+        new: NewPop3Account,
+        password: String,
+    ) -> Result<AccountId, CommandError> {
+        let address = new.address.trim().to_owned();
+        if address.is_empty() {
+            return Err(CommandError::InvalidArgs("the address is empty".into()));
+        }
+        let pop3 = server(&new.pop3, &address)?
+            .ok_or_else(|| CommandError::InvalidArgs("the POP3 server is missing".into()))?;
+        let smtp = server(&new.smtp, &address)?;
+        check_login(AccountKind::Pop3, &pop3, &password).await?;
+
+        let settings = AccountSettings {
+            pop3: Some(pop3),
+            smtp,
+            pop3_keep: Pop3Keep {
+                leave_on_server: new.leave_on_server,
+                days: (new.keep_days > 0).then_some(new.keep_days),
+                delete_with_local: new.delete_with_local,
+            },
+            ..AccountSettings::default()
+        };
+        self.save_account(
+            AccountKind::Pop3,
+            &new.display_name,
+            address,
+            settings,
+            password,
+        )
+        .await
+    }
+
+    /// Stores a checked account and its password, and starts its worker.
+    async fn save_account(
+        self: &Arc<Self>,
+        kind: AccountKind,
+        display_name: &str,
+        address: String,
+        settings: AccountSettings,
+        password: String,
+    ) -> Result<AccountId, CommandError> {
+        let name = match display_name.trim() {
             "" => address.clone(),
             name => name.to_owned(),
         };
         let account = {
             let mut store = self.store();
-            let account = store.add_account(AccountKind::Imap, &name, &address)?;
+            let account = store.add_account(kind, &name, &address)?;
             store.set_account_settings(account.id, &settings)?;
+            if kind == AccountKind::Pop3 {
+                // So the apps show its folders before the first check.
+                pop3::sync::ensure_folders(&mut store, account.id)
+                    .map_err(|err| CommandError::Failed(err.to_string()))?;
+            }
             account
         };
         if let Err(err) = self
@@ -293,12 +357,15 @@ impl Daemon {
         password: String,
     ) -> Result<(), CommandError> {
         let account = self.account(id)?;
-        let imap = self
-            .store()
-            .account_settings(id)?
-            .and_then(|settings| settings.imap)
-            .ok_or_else(|| CommandError::InvalidArgs(format!("account {id} has no IMAP server")))?;
-        check_login(&imap, &password).await?;
+        let settings = self.store().account_settings(id)?.unwrap_or_default();
+        let incoming = match account.kind {
+            AccountKind::Pop3 => settings.pop3,
+            _ => settings.imap,
+        }
+        .ok_or_else(|| {
+            CommandError::InvalidArgs(format!("account {id} has no server to log in to"))
+        })?;
+        check_login(account.kind, &incoming, &password).await?;
         self.secrets
             .set_password(id, &account.address, &password)
             .await?;
@@ -324,6 +391,7 @@ impl Daemon {
             // go out from the next account.
             batch.clear_ops(id)?;
             batch.clear_outbox(id)?;
+            batch.clear_pop3(id)?;
             batch.commit()?;
             store.remove_account(id)?
         };
@@ -551,7 +619,7 @@ impl Daemon {
             stop(account.id, old).await;
         }
         match self.connector(account).await {
-            Ok(Some(connector)) => self.spawn_worker(account.id, connector),
+            Ok(Some(link)) => self.spawn_worker(account.id, link),
             Ok(None) => self.set_status(account.id, Status::new(state::NOT_SYNCED, "")),
             Err(detail) => {
                 tracing::warn!(account = %account.id, %detail, "not syncing");
@@ -560,16 +628,20 @@ impl Daemon {
         }
     }
 
-    /// How to reach the account's IMAP server; `None` if it has none.
-    async fn connector(&self, account: &Account) -> Result<Option<ImapConnector>, String> {
-        if account.kind != AccountKind::Imap {
-            return Ok(None);
-        }
+    /// How to reach the account's IMAP or POP3 server; `None` if it has
+    /// none.
+    async fn connector(&self, account: &Account) -> Result<Option<Link>, String> {
         let settings = self
             .store()
             .account_settings(account.id)
-            .map_err(|err| err.to_string())?;
-        let Some(imap) = settings.and_then(|settings| settings.imap) else {
+            .map_err(|err| err.to_string())?
+            .unwrap_or_default();
+        let server = match account.kind {
+            AccountKind::Imap => settings.imap,
+            AccountKind::Pop3 => settings.pop3,
+            _ => None,
+        };
+        let Some(server) = server else {
             return Ok(None);
         };
         let password = self
@@ -578,10 +650,26 @@ impl Daemon {
             .await
             .map_err(|err| err.to_string())?
             .ok_or("no password saved; set one with katnactl password")?;
-        imap_connector(&imap, &password).map(Some)
+        let (endpoint, tls) = endpoint(&server)?;
+        let credentials = Credentials::new(server.username.clone(), &password);
+        Ok(Some(match account.kind {
+            AccountKind::Pop3 => Link::Pop3(
+                Pop3Connector {
+                    endpoint,
+                    credentials,
+                    tls,
+                },
+                settings.pop3_keep,
+            ),
+            _ => Link::Imap(ImapConnector {
+                endpoint,
+                credentials,
+                tls,
+            }),
+        }))
     }
 
-    fn spawn_worker(self: &Arc<Self>, id: AccountId, connector: ImapConnector) {
+    fn spawn_worker(self: &Arc<Self>, id: AccountId, link: Link) {
         let store = match Store::open(&self.paths, Mode::ReadWrite) {
             Ok(store) => store,
             Err(err) => {
@@ -591,14 +679,15 @@ impl Daemon {
         };
         let (handle, control) = worker::control();
         let (events, received) = async_channel::unbounded();
-        let task = smol::spawn(worker::run(
-            connector,
-            store,
-            id,
-            self.config.clone(),
-            events,
-            control,
-        ));
+        let config = self.config.clone();
+        let task = match link {
+            Link::Imap(connector) => {
+                smol::spawn(worker::run(connector, store, id, config, events, control))
+            }
+            Link::Pop3(connector, keep) => smol::spawn(worker::run_pop3(
+                connector, store, id, keep, config, events, control,
+            )),
+        };
         // Ends when the worker does and drops its event sender.
         smol::spawn(self.clone().forward(id, received)).detach();
         self.set_status(id, Status::new(state::CONNECTING, ""));
@@ -673,6 +762,12 @@ impl Daemon {
     }
 }
 
+/// How a worker reaches its account's incoming server.
+enum Link {
+    Imap(ImapConnector),
+    Pop3(Pop3Connector, Pop3Keep),
+}
+
 /// Drops the handle and waits for the worker to log out.
 async fn stop(account: AccountId, running: Running) {
     drop(running.handle);
@@ -726,15 +821,6 @@ fn server(spec: &ServerSpec, address: &str) -> Result<Option<Server>, CommandErr
         username,
         accept_invalid_certs: spec.accept_invalid_certs,
     }))
-}
-
-fn imap_connector(server: &Server, password: &str) -> Result<ImapConnector, String> {
-    let (endpoint, tls) = endpoint(server)?;
-    Ok(ImapConnector {
-        endpoint,
-        credentials: Credentials::new(server.username.clone(), password),
-        tls,
-    })
 }
 
 fn endpoint(server: &Server) -> Result<(Endpoint, Tls), String> {
@@ -806,13 +892,38 @@ impl Outgoing for SmtpAccounts {
 }
 
 /// Logs in once to check the server and password.
-async fn check_login(server: &Server, password: &str) -> Result<(), CommandError> {
-    let connector = imap_connector(server, password).map_err(CommandError::Failed)?;
-    match connector.connect().await {
-        Ok(backend) => {
-            let _ = backend.logout().await;
-            Ok(())
+async fn check_login(
+    kind: AccountKind,
+    server: &Server,
+    password: &str,
+) -> Result<(), CommandError> {
+    let (endpoint, tls) = endpoint(server).map_err(CommandError::Failed)?;
+    let credentials = Credentials::new(server.username.clone(), password);
+    let result = match kind {
+        AccountKind::Pop3 => match Pop3Client::connect(&endpoint, &credentials, tls).await {
+            Ok(client) => {
+                let _ = client.quit().await;
+                Ok(())
+            }
+            Err(err) => Err(err),
+        },
+        _ => {
+            let connector = ImapConnector {
+                endpoint,
+                credentials,
+                tls,
+            };
+            match connector.connect().await {
+                Ok(backend) => {
+                    let _ = backend.logout().await;
+                    Ok(())
+                }
+                Err(err) => Err(err),
+            }
         }
+    };
+    match result {
+        Ok(()) => Ok(()),
         Err(katna_sync::Error::Auth(message)) => Err(CommandError::AuthFailed(format!(
             "{} refused the login: {message}",
             server.host

@@ -6,13 +6,16 @@
 //! mailbox and is not journaled, so clients and the search index skip it.
 //! Once sent and filed (or given up), [`MailBatch::forget_outgoing`]
 //! removes it; the copy in the Sent folder arrives with the next sync.
+//! Accounts without an IMAP server file it locally instead
+//! ([`MailBatch::file_outgoing`]).
 
 use katna_core::AccountId;
 use rusqlite::{OptionalExtension, params};
 
 use crate::Store;
 use crate::error::Result;
-use crate::mail::{MailBatch, MessageId, NewMessage};
+use crate::journal::{self, ChangeOp, ObjectKind};
+use crate::mail::{FolderId, MailBatch, MessageFlags, MessageId, NewMessage};
 
 /// Where an outgoing message is (`outbox.state`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -227,6 +230,23 @@ impl MailBatch<'_> {
                 .execute([message.0])?;
         }
         Ok(())
+    }
+
+    /// Files a sent message in a local `folder` (accounts without an IMAP
+    /// server) and takes it out of the outbox.
+    pub fn file_outgoing(&mut self, message: MessageId, folder: FolderId) -> Result<()> {
+        let tx = self.tx();
+        let added = tx
+            .prepare_cached(
+                "INSERT OR IGNORE INTO message_location (message_id, folder_id) VALUES (?1, ?2)",
+            )?
+            .execute(params![message.0, folder.0])?;
+        tx.prepare_cached("UPDATE message SET flags = flags | ?2 WHERE id = ?1")?
+            .execute(params![message.0, MessageFlags::SEEN.bits()])?;
+        if added > 0 {
+            journal::record(tx, ObjectKind::Message, message.0, ChangeOp::Insert)?;
+        }
+        self.forget_outgoing(message)
     }
 
     /// Forgets every outgoing message of `account`, for example when it

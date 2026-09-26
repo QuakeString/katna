@@ -22,6 +22,7 @@ services:
       - "127.0.0.1:${KATNA_STALWART_SMTP_PORT:-10025}:25" # SMTP (STARTTLS)
       - "127.0.0.1:${KATNA_STALWART_SUBMISSIONS_PORT:-10465}:465" # SMTP submission (implicit TLS)
       - "127.0.0.1:${KATNA_STALWART_IMAPS_PORT:-10993}:993" # IMAP (implicit TLS)
+      - "127.0.0.1:${KATNA_STALWART_POP3S_PORT:-10995}:995" # POP3 (implicit TLS)
       - "127.0.0.1:${KATNA_STALWART_SIEVE_PORT:-14190}:4190" # ManageSieve
       - "127.0.0.1:${KATNA_STALWART_HTTP_PORT:-18080}:8080" # HTTP: JMAP, CalDAV, CardDAV, web admin
       - "127.0.0.1:${KATNA_STALWART_HTTPS_PORT:-18443}:443" # HTTPS: same as above
@@ -38,6 +39,7 @@ services:
     ports:
       - "127.0.0.1:${KATNA_DOVECOT_IMAP_PORT:-20143}:31143" # IMAP (STARTTLS optional)
       - "127.0.0.1:${KATNA_DOVECOT_IMAPS_PORT:-20993}:31993" # IMAP (implicit TLS)
+      - "127.0.0.1:${KATNA_DOVECOT_POP3_PORT:-20110}:31110" # POP3 (STLS optional)
       - "127.0.0.1:${KATNA_DOVECOT_SUBMISSION_PORT:-20587}:31587" # submission, relayed to Mailpit
       - "127.0.0.1:${KATNA_DOVECOT_SIEVE_PORT:-24190}:34190" # ManageSieve
 

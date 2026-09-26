@@ -105,6 +105,45 @@ pub struct AccountSettings {
     /// Outgoing mail.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub smtp: Option<Server>,
+    /// Incoming mail (POP3 accounts).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pop3: Option<Server>,
+    /// What a POP3 account leaves on the server.
+    #[serde(skip_serializing_if = "Pop3Keep::is_default")]
+    pub pop3_keep: Pop3Keep,
+}
+
+/// What a POP3 account leaves on the server once mail is downloaded.
+/// The default is Thunderbird's: keep it until it is deleted in Katna.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Pop3Keep {
+    /// Leave downloaded mail on the server. When `false`, mail is removed
+    /// from the server as soon as it is stored.
+    pub leave_on_server: bool,
+    /// With `leave_on_server`: remove mail from the server this many days
+    /// after downloading it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub days: Option<u32>,
+    /// With `leave_on_server`: remove mail from the server once it is
+    /// deleted for good in Katna.
+    pub delete_with_local: bool,
+}
+
+impl Default for Pop3Keep {
+    fn default() -> Self {
+        Self {
+            leave_on_server: true,
+            days: None,
+            delete_with_local: true,
+        }
+    }
+}
+
+impl Pop3Keep {
+    fn is_default(&self) -> bool {
+        *self == Self::default()
+    }
 }
 
 /// One server of an account.
@@ -190,7 +229,7 @@ mod tests {
                 username: "alice".into(),
                 accept_invalid_certs: false,
             }),
-            smtp: None,
+            ..AccountSettings::default()
         };
         let json = serde_json::to_string(&settings).unwrap();
         assert_eq!(
@@ -206,6 +245,29 @@ mod tests {
             AccountSettings::default()
         );
         assert_eq!("starttls".parse(), Ok(Security::StartTls));
+    }
+
+    #[test]
+    fn pop3_keep_defaults_to_until_deleted() {
+        let keep: Pop3Keep = serde_json::from_str(r#"{"days":14}"#).unwrap();
+        assert_eq!(
+            keep,
+            Pop3Keep {
+                days: Some(14),
+                ..Pop3Keep::default()
+            }
+        );
+        let settings = AccountSettings {
+            pop3_keep: Pop3Keep {
+                leave_on_server: false,
+                ..Pop3Keep::default()
+            },
+            ..AccountSettings::default()
+        };
+        assert_eq!(
+            serde_json::to_string(&settings).unwrap(),
+            r#"{"pop3_keep":{"leave_on_server":false,"delete_with_local":true}}"#
+        );
     }
 
     #[test]

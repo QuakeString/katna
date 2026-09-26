@@ -20,6 +20,11 @@
 //! [`Handle::fetch_body`] downloads one message now. Dropping the
 //! [`Handle`] logs out and ends the worker.
 //!
+//! POP3 accounts get [`run_pop3`] instead: POP3 has no push, so it checks
+//! the maildrop every [`WorkerConfig::pop3_interval`] and when asked, and
+//! holds a connection only while checking (the server locks the maildrop
+//! for the length of a session).
+//!
 //! The worker owns its [`Store`] handle, so several workers can run at once;
 //! SQLite serialises their writes.
 
@@ -31,7 +36,7 @@ use std::{
 use async_channel::{Receiver, Sender};
 use async_io::Timer;
 use futures_lite::FutureExt;
-use katna_core::AccountId;
+use katna_core::{AccountId, Pop3Keep};
 use katna_store::{FolderRole, MessageId, Store};
 
 use crate::{
@@ -41,6 +46,10 @@ use crate::{
     imap::ImapBackend,
     net::Tls,
     ops::{self, ReplayReport},
+    pop3::{
+        Maildrop, Pop3Client,
+        sync::{self as pop3_sync, PROGRESS_EVERY, Pop3Report},
+    },
 };
 
 /// Opens new connections for a worker.
@@ -66,6 +75,29 @@ impl Connector for ImapConnector {
     }
 }
 
+/// Opens POP3 sessions for [`run_pop3`].
+pub trait Pop3Connect: Send + Sync + 'static {
+    type Maildrop: Maildrop;
+
+    fn connect(&self) -> impl Future<Output = Result<Self::Maildrop>> + Send;
+}
+
+/// Connects to a POP3 server with a password.
+#[derive(Clone)]
+pub struct Pop3Connector {
+    pub endpoint: Endpoint,
+    pub credentials: Credentials,
+    pub tls: Tls,
+}
+
+impl Pop3Connect for Pop3Connector {
+    type Maildrop = Pop3Client;
+
+    async fn connect(&self) -> Result<Pop3Client> {
+        Pop3Client::connect(&self.endpoint, &self.credentials, self.tls.clone()).await
+    }
+}
+
 /// Timing of a worker, and what it keeps offline.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct WorkerConfig {
@@ -79,6 +111,8 @@ pub struct WorkerConfig {
     pub retry_max: Duration,
     /// Messages whose bodies are downloaded ahead of time.
     pub offline: OfflineWindow,
+    /// How often a POP3 account checks for new mail.
+    pub pop3_interval: Duration,
 }
 
 impl Default for WorkerConfig {
@@ -89,6 +123,7 @@ impl Default for WorkerConfig {
             retry_min: Duration::from_secs(2),
             retry_max: Duration::from_secs(5 * 60),
             offline: OfflineWindow::default(),
+            pop3_interval: Duration::from_secs(5 * 60),
         }
     }
 }
@@ -348,6 +383,108 @@ pub async fn run<C: Connector>(
             // Sync now: reconnect at once, starting the waits over.
             Some(Signal::Wake) => delay = config.retry_min,
             Some(_) => return,
+        }
+    }
+}
+
+/// Runs the POP3 worker for `account` until its [`Handle`] is dropped.
+/// Reports each check as a sync of `INBOX`.
+pub async fn run_pop3<C: Pop3Connect>(
+    connector: C,
+    mut store: Store,
+    account: AccountId,
+    keep: Pop3Keep,
+    config: WorkerConfig,
+    events: Sender<Event>,
+    control: Control,
+) {
+    let mut delay = config.retry_min;
+    loop {
+        // Stopping mid-session is safe: every stored message is committed,
+        // and without QUIT the server deletes nothing.
+        let checked =
+            async { Some(pop3_check(&connector, &mut store, account, &keep, &events).await) }
+                .or(async {
+                    control.stopped().await;
+                    None
+                })
+                .await;
+        let wait = match checked {
+            None => return,
+            Some(Ok(report)) => {
+                delay = config.retry_min;
+                tracing::debug!(%account, ?report, "POP3 check");
+                let _ = events.try_send(Event::Synced(vec![FolderReport {
+                    path: pop3_sync::FOLDERS[0].0.to_owned(),
+                    added: report.added,
+                    ..FolderReport::default()
+                }]));
+                config.pop3_interval
+            }
+            Some(Err(Error::Auth(message))) => {
+                tracing::warn!(%account, %message, "login refused; waiting for sync now");
+                let _ = events.try_send(Event::AuthFailed(message));
+                Duration::MAX
+            }
+            Some(Err(error)) => {
+                tracing::info!(%account, %error, retry_in = ?delay, "POP3 check failed");
+                let _ = events.try_send(Event::Disconnected {
+                    error: error.to_string(),
+                    retry_in: delay,
+                });
+                let wait = delay;
+                delay = (delay * 2).min(config.retry_max);
+                wait
+            }
+        };
+        if !pop3_wait(&control, wait).await {
+            return;
+        }
+    }
+}
+
+async fn pop3_check<C: Pop3Connect>(
+    connector: &C,
+    store: &mut Store,
+    account: AccountId,
+    keep: &Pop3Keep,
+    events: &Sender<Event>,
+) -> Result<Pop3Report> {
+    let maildrop = connector.connect().await?;
+    let _ = events.try_send(Event::Connected);
+    pop3_sync::sync_account(maildrop, store, account, keep, unix_now(), |_| {
+        let _ = events.try_send(Event::BodiesStored(PROGRESS_EVERY));
+    })
+    .await
+}
+
+/// Waits `wait`, or until a wake-up. Returns `false` when stopped.
+async fn pop3_wait(control: &Control, wait: Duration) -> bool {
+    let deadline = Instant::now().checked_add(wait);
+    loop {
+        let left = deadline.map_or(Duration::MAX, |d| {
+            d.saturating_duration_since(Instant::now())
+        });
+        if left.is_zero() {
+            return true;
+        }
+        let signal = async {
+            Timer::after(left).await;
+            None
+        }
+        .or(async { Some(control.signal().await) })
+        .await;
+        match signal {
+            None | Some(Signal::Wake) => return true,
+            Some(Signal::Stop) => return false,
+            // Changes to POP3 mail are local only.
+            Some(Signal::Changes) => {}
+            Some(Signal::Fetch(request)) => {
+                // Never asked: POP3 messages are stored whole.
+                let _ = request.done.try_send(Err(Error::Rejected(
+                    "POP3 messages are always downloaded whole".into(),
+                )));
+            }
         }
     }
 }

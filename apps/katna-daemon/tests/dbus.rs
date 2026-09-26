@@ -17,7 +17,7 @@ use async_io::Timer;
 use futures_lite::{FutureExt, StreamExt};
 use katna_core::{AccountKind, AccountSettings, Paths, Server};
 use katna_daemon::{Instance, StartError, secrets::Secrets};
-use katna_dbus::{NewImapAccount, PimProxy, ServerSpec, send_state, state};
+use katna_dbus::{NewImapAccount, NewPop3Account, PimProxy, ServerSpec, send_state, state};
 use katna_import::{Flags, IncomingMessage, MessageSink, StoreSink, parse_message};
 use katna_search::{Query, SearchIndex, SearchOptions};
 use katna_store::{Added, MessageFlags, Mode, NewMessage, Store};
@@ -385,8 +385,8 @@ fn queues_undoes_and_retries_outgoing_mail() {
         accept_invalid_certs: true,
     };
     let settings = AccountSettings {
-        imap: None,
         smtp: Some(smtp),
+        ..AccountSettings::default()
     };
     store.set_account_settings(account, &settings).unwrap();
     drop(store);
@@ -614,6 +614,112 @@ fn adds_syncs_restarts_and_removes_dev_accounts() {
                     .is_empty()
             );
             assert_eq!(reader.message_count().unwrap(), 0, "{name}");
+            assert!(passwords.lock().unwrap().is_empty());
+            instance.shutdown().await;
+        });
+    }
+}
+
+#[test]
+#[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
+fn pop3_accounts_on_dev_servers() {
+    let servers = [
+        (
+            "stalwart",
+            port("KATNA_STALWART_POP3S_PORT", 10995),
+            "tls",
+            Endpoint::new(
+                "127.0.0.1",
+                port("KATNA_STALWART_IMAPS_PORT", 10993),
+                Security::Tls,
+            ),
+        ),
+        (
+            "dovecot",
+            port("KATNA_DOVECOT_POP3_PORT", 20110),
+            "starttls",
+            Endpoint::new(
+                "127.0.0.1",
+                port("KATNA_DOVECOT_IMAP_PORT", 20143),
+                Security::StartTls,
+            ),
+        ),
+    ];
+    for (name, pop3_port, security, imap) in servers {
+        let bus = Bus::start();
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        let secrets = Secrets::memory();
+        let Secrets::Memory(passwords) = &secrets else {
+            unreachable!()
+        };
+        let passwords = passwords.clone();
+        smol::block_on(async {
+            let instance = start(&bus, &paths, secrets).await.unwrap();
+            let client = bus.connect().await;
+            let pim = PimProxy::new(&client).await.unwrap();
+            let account = NewPop3Account {
+                address: "alice@katna.test".into(),
+                pop3: ServerSpec {
+                    host: "127.0.0.1".into(),
+                    port: pop3_port,
+                    security: security.into(),
+                    username: String::new(),
+                    accept_invalid_certs: true,
+                },
+                leave_on_server: true,
+                delete_with_local: false,
+                ..NewPop3Account::default()
+            };
+            let err = pim.add_pop3_account(&account, "wrong").await.unwrap_err();
+            assert_eq!(
+                error_name(&err),
+                "org.freedesktop.DBus.Error.AuthFailed",
+                "{name}: {err}"
+            );
+
+            let id = pim.add_pop3_account(&account, "katna-dev").await.unwrap();
+            wait_until_online(&pim, id).await;
+            let listed = pim.accounts().await.unwrap();
+            assert_eq!(listed[0].kind, "pop3");
+            let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
+            let account_id = katna_core::AccountId(id);
+            let folders = reader.folders(account_id).unwrap();
+            let paths_found: Vec<_> = folders.iter().map(|f| f.path.as_str()).collect();
+            assert_eq!(paths_found, ["INBOX", "Sent", "Trash"], "{name}");
+            let before = reader.message_count().unwrap();
+            assert!(before > 0, "{name}");
+
+            // New mail shows after `sync now`.
+            let subject = unique("pop3-daemon");
+            let mut other = ImapBackend::connect(
+                &imap,
+                &Credentials::new("alice@katna.test", "katna-dev"),
+                Tls::insecure_for_local_tests(),
+            )
+            .await
+            .unwrap();
+            let message = format!(
+                "From: <alice@katna.test>\r\nTo: <alice@katna.test>\r\nSubject: {subject}\r\n\
+                 Message-ID: <{subject}@katna.test>\r\n\r\nHello.\r\n"
+            );
+            other.append("INBOX", message.into_bytes()).await.unwrap();
+            other.logout().await.unwrap();
+            pim.sync_now(id).await.unwrap();
+            within("new POP3 mail", 20, async {
+                while reader.message_count().unwrap() == before {
+                    Timer::after(Duration::from_millis(50)).await;
+                }
+            })
+            .await;
+            let inbox = &folders[0];
+            let stored = reader.messages_in_folder(inbox.id).unwrap();
+            let new = stored.iter().find(|m| m.subject == subject).unwrap();
+            assert!(new.blob_hash.is_some(), "{name}: POP3 mail is stored whole");
+
+            assert!(pim.remove_account(id).await.unwrap());
+            assert!(reader.folders(account_id).unwrap().is_empty());
+            assert!(reader.pop3_uidls(account_id).unwrap().is_empty());
             assert!(passwords.lock().unwrap().is_empty());
             instance.shutdown().await;
         });

@@ -795,3 +795,80 @@ fn queued_changes_reach_the_server() {
         });
     }
 }
+
+/// The POP3 endpoints: Stalwart over TLS and Dovecot over STLS.
+fn pop3_servers() -> Vec<(&'static str, Endpoint, Endpoint)> {
+    vec![
+        (
+            "stalwart",
+            Endpoint::new(
+                "127.0.0.1",
+                port("KATNA_STALWART_POP3S_PORT", 10995),
+                Security::Tls,
+            ),
+            imap_servers()[0].1.clone(),
+        ),
+        (
+            "dovecot-stls",
+            Endpoint::new(
+                "127.0.0.1",
+                port("KATNA_DOVECOT_POP3_PORT", 20110),
+                Security::StartTls,
+            ),
+            imap_servers()[1].1.clone(),
+        ),
+    ]
+}
+
+#[test]
+#[ignore = "needs the dev servers"]
+fn pop3_downloads_what_imap_delivered() {
+    use katna_core::{AccountKind, Paths, Pop3Keep};
+    use katna_store::{Mode, Store};
+    use katna_sync::pop3::{Pop3Client, sync};
+
+    for (name, pop3, imap) in pop3_servers() {
+        smol::block_on(async {
+            let err = Pop3Client::connect(&pop3, &Credentials::new(USER, "wrong"), tls()).await;
+            assert!(matches!(err, Err(Error::Auth(_))), "{name}");
+
+            let subject = unique("pop3");
+            let mut backend = connect(&imap).await;
+            backend
+                .append("INBOX", message(&subject, USER))
+                .await
+                .unwrap();
+            backend.logout().await.unwrap();
+
+            let mut client = Pop3Client::connect(&pop3, &creds(), tls()).await.unwrap();
+            assert!(client.capabilities().iter().any(|c| c == "UIDL"), "{name}");
+            let entries = client.entries().await.unwrap();
+            let newest = entries.last().expect("mail in the maildrop");
+            let raw = client.retr(newest.number).await.unwrap();
+            assert!(
+                String::from_utf8_lossy(&raw).contains(&subject),
+                "{name}: the newest message is the one just delivered"
+            );
+            let header = client.top(newest.number, 0).await.unwrap();
+            assert!(header.len() < raw.len() && raw.starts_with(&header[..header.len() - 2]));
+            client.quit().await.unwrap();
+
+            // Into the store, leaving everything on the server.
+            let tmp = tempfile::tempdir().unwrap();
+            let mut store = Store::open(&Paths::with_root(tmp.path()), Mode::ReadWrite).unwrap();
+            let account = store.add_account(AccountKind::Pop3, name, USER).unwrap().id;
+            let keep = Pop3Keep::default();
+            let client = Pop3Client::connect(&pop3, &creds(), tls()).await.unwrap();
+            let report = sync::sync_account(client, &mut store, account, &keep, 0, |_| {})
+                .await
+                .unwrap();
+            assert_eq!(report.added, entries.len(), "{name}");
+            assert_eq!(report.deleted, 0, "{name}");
+            let client = Pop3Client::connect(&pop3, &creds(), tls()).await.unwrap();
+            let again = sync::sync_account(client, &mut store, account, &keep, 0, |_| {})
+                .await
+                .unwrap();
+            assert_eq!(again, sync::Pop3Report::default(), "{name}");
+        });
+    }
+}
