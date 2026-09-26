@@ -998,8 +998,10 @@ icons and name and without Google-only features (no Chat, Meet, Drive,
 Gemini or confidential mode):
 
 - **App rail.** A 72 px column at the far left holds Mail, Calendar,
-  Contacts, Tasks, Notes and Feeds (RSS and Atom), with Settings and the
-  account at the bottom. Each app is a page (`window/apps.rs`), so new ones
+  Contacts, Tasks, Notes and Feeds (RSS and Atom), with Settings at the
+  bottom. Their names show under the icons unless "App names" is off in
+  quick settings (`mail.app_labels`); then the icons have tooltips. Each
+  app is a page (`window/apps.rs`), so new ones
   plug in. Mail is the only app so far; Contacts lists the people the mail
   was exchanged with, most written with first, and a click searches their
   mail; the others show a "coming soon" page saying what they will do.
