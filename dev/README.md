@@ -114,6 +114,28 @@ cargo test -p katna-sync --test dev_servers -- --ignored --test-threads 1
 They honour the `KATNA_*_PORT` variables above and only write to folders
 named `katna-test-…` and to alice's inbox.
 
+`katna-daemon` has the same kind of test, driving the daemon over a private
+D-Bus bus (needs `dbus-daemon`):
+
+```sh
+cargo test -p katna-daemon --test dbus -- --ignored --test-threads 1
+```
+
+### The daemon by hand
+
+With a keyring running (any Plasma or GNOME session has one):
+
+```sh
+cargo run -p katna-daemon &
+echo katna-dev | cargo run -p katnactl -- add-imap alice@katna.test \
+    --imap 127.0.0.1:10993 --smtp 127.0.0.1:10465 --insecure
+cargo run -p katnactl -- status
+cargo run -p katnactl -- list 1
+```
+
+This writes the real store in `~/.local/share/katna`. To keep it apart,
+point `HOME` (or the `XDG_*_HOME` variables) somewhere else first.
+
 ## Sample data
 
 Everything lives in `seed/` and is loaded into alice's account on every

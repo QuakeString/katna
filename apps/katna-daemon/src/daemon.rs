@@ -1,0 +1,490 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+//! The daemon's state: one sync worker per account, what each is doing, and
+//! the account commands behind the D-Bus API.
+
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex, MutexGuard},
+    time::{Duration, SystemTime, UNIX_EPOCH},
+};
+
+use async_channel::{Receiver, Sender};
+use futures_lite::FutureExt;
+use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths, Security, Server};
+use katna_dbus::{AccountStatus, NewImapAccount, ServerSpec, state};
+use katna_store::{Mode, Store};
+use katna_sync::{
+    Credentials, Endpoint, MailBackend,
+    net::Tls,
+    worker::{self, Connector, Event, ImapConnector, WorkerConfig},
+};
+
+use crate::secrets::Secrets;
+
+/// How long a stopping worker may take to log out.
+const STOP_TIMEOUT: Duration = Duration::from_secs(10);
+
+/// Something D-Bus clients should hear about.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Notice {
+    AccountsChanged,
+    StatusChanged(AccountId),
+    MailChanged(AccountId),
+}
+
+/// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
+#[derive(Debug, thiserror::Error)]
+pub enum CommandError {
+    #[error("{0}")]
+    InvalidArgs(String),
+    #[error("{0}")]
+    AuthFailed(String),
+    #[error("no account {0}")]
+    UnknownAccount(i64),
+    #[error("{0}")]
+    Failed(String),
+}
+
+impl From<katna_store::Error> for CommandError {
+    fn from(err: katna_store::Error) -> Self {
+        Self::Failed(format!("store: {err}"))
+    }
+}
+
+impl From<crate::secrets::Error> for CommandError {
+    fn from(err: crate::secrets::Error) -> Self {
+        Self::Failed(err.to_string())
+    }
+}
+
+#[derive(Debug, Clone)]
+struct Status {
+    state: &'static str,
+    detail: String,
+    last_sync: i64,
+}
+
+impl Status {
+    fn new(state: &'static str, detail: impl Into<String>) -> Self {
+        Self {
+            state,
+            detail: detail.into(),
+            last_sync: 0,
+        }
+    }
+}
+
+struct Running {
+    handle: worker::Handle,
+    task: smol::Task<()>,
+}
+
+/// Shared state of a running daemon.
+pub struct Daemon {
+    paths: Paths,
+    store: Mutex<Store>,
+    secrets: Secrets,
+    config: WorkerConfig,
+    workers: Mutex<HashMap<AccountId, Running>>,
+    status: Mutex<HashMap<AccountId, Status>>,
+    notices: Sender<Notice>,
+}
+
+impl Daemon {
+    /// Opens the store for writing. Workers start with [`Daemon::start`].
+    pub fn new(
+        paths: Paths,
+        secrets: Secrets,
+        config: WorkerConfig,
+    ) -> katna_store::Result<(Arc<Self>, Receiver<Notice>)> {
+        let store = Store::open(&paths, Mode::ReadWrite)?;
+        let (notices, receiver) = async_channel::unbounded();
+        let daemon = Arc::new(Self {
+            paths,
+            store: Mutex::new(store),
+            secrets,
+            config,
+            workers: Mutex::default(),
+            status: Mutex::default(),
+            notices,
+        });
+        Ok((daemon, receiver))
+    }
+
+    /// Starts a worker for every account.
+    pub async fn start(self: &Arc<Self>) -> Result<(), CommandError> {
+        let accounts = self.store().accounts()?;
+        tracing::info!(accounts = accounts.len(), "starting");
+        for account in accounts {
+            self.start_account(&account).await;
+        }
+        Ok(())
+    }
+
+    /// Stops every worker; each logs out.
+    pub async fn shutdown(&self) {
+        let workers: Vec<_> = self.workers().drain().collect();
+        // Signal every worker first, so they log out at the same time.
+        let tasks: Vec<_> = workers
+            .into_iter()
+            .map(|(account, running)| {
+                drop(running.handle);
+                (account, running.task)
+            })
+            .collect();
+        for (account, task) in tasks {
+            wait_for(account, task).await;
+        }
+    }
+
+    /// Every account with its sync state.
+    pub fn accounts(&self) -> Result<Vec<AccountStatus>, CommandError> {
+        let accounts = self.store().accounts()?;
+        let status = self.status.lock().unwrap();
+        Ok(accounts
+            .into_iter()
+            .map(|account| {
+                let current = status
+                    .get(&account.id)
+                    .cloned()
+                    .unwrap_or_else(|| Status::new(state::NOT_SYNCED, ""));
+                AccountStatus {
+                    id: account.id.0,
+                    kind: account.kind.to_string(),
+                    display_name: account.display_name,
+                    address: account.address,
+                    state: current.state.to_owned(),
+                    detail: current.detail,
+                    last_sync: current.last_sync,
+                }
+            })
+            .collect())
+    }
+
+    /// Checks the login, then adds the account and starts syncing it.
+    pub async fn add_imap_account(
+        self: &Arc<Self>,
+        new: NewImapAccount,
+        password: String,
+    ) -> Result<AccountId, CommandError> {
+        let address = new.address.trim().to_owned();
+        if address.is_empty() {
+            return Err(CommandError::InvalidArgs("the address is empty".into()));
+        }
+        let imap = server(&new.imap, &address)?
+            .ok_or_else(|| CommandError::InvalidArgs("the IMAP server is missing".into()))?;
+        let smtp = server(&new.smtp, &address)?;
+        check_login(&imap, &password).await?;
+
+        let settings = AccountSettings {
+            imap: Some(imap),
+            smtp,
+        };
+        let name = match new.display_name.trim() {
+            "" => address.clone(),
+            name => name.to_owned(),
+        };
+        let account = {
+            let mut store = self.store();
+            let account = store.add_account(AccountKind::Imap, &name, &address)?;
+            store.set_account_settings(account.id, &settings)?;
+            account
+        };
+        if let Err(err) = self
+            .secrets
+            .set_password(account.id, &address, &password)
+            .await
+        {
+            // Without the password the account could never sync.
+            self.store().remove_account(account.id)?;
+            return Err(CommandError::Failed(format!(
+                "{err}. Is a keyring (KWallet or GNOME Keyring) running?"
+            )));
+        }
+        tracing::info!(account = %account.id, %address, "account added");
+        let _ = self.notices.try_send(Notice::AccountsChanged);
+        self.start_account(&account).await;
+        Ok(account.id)
+    }
+
+    /// Checks and saves a new password, then restarts the account's worker.
+    pub async fn set_password(
+        self: &Arc<Self>,
+        id: AccountId,
+        password: String,
+    ) -> Result<(), CommandError> {
+        let account = self.account(id)?;
+        let imap = self
+            .store()
+            .account_settings(id)?
+            .and_then(|settings| settings.imap)
+            .ok_or_else(|| CommandError::InvalidArgs(format!("account {id} has no IMAP server")))?;
+        check_login(&imap, &password).await?;
+        self.secrets
+            .set_password(id, &account.address, &password)
+            .await?;
+        self.start_account(&account).await;
+        Ok(())
+    }
+
+    /// Stops the account's worker and deletes the account, its mail and its
+    /// password. Returns whether it existed.
+    pub async fn remove_account(&self, id: AccountId) -> Result<bool, CommandError> {
+        let running = self.workers().remove(&id);
+        if let Some(running) = running {
+            stop(id, running).await;
+        }
+        let existed = {
+            let mut store = self.store();
+            let folders = store.folders(id)?;
+            let mut batch = store.mail_batch()?;
+            for folder in &folders {
+                batch.remove_folder(folder.id)?;
+            }
+            batch.commit()?;
+            store.remove_account(id)?
+        };
+        if let Err(err) = self.secrets.delete(id).await {
+            tracing::warn!(account = %id, %err, "could not delete the password");
+        }
+        self.status.lock().unwrap().remove(&id);
+        if existed {
+            tracing::info!(account = %id, "account removed");
+            let _ = self.notices.try_send(Notice::AccountsChanged);
+            let _ = self.notices.try_send(Notice::MailChanged(id));
+        }
+        Ok(existed)
+    }
+
+    /// Syncs every folder of `id` now, or of every account.
+    pub async fn sync_now(self: &Arc<Self>, id: Option<AccountId>) -> Result<(), CommandError> {
+        let accounts = match id {
+            Some(id) => vec![self.account(id)?],
+            None => self.store().accounts()?,
+        };
+        for account in accounts {
+            let running = self
+                .workers()
+                .get(&account.id)
+                .map(|running| running.handle.sync_now())
+                .is_some();
+            if !running {
+                // For example, the password was missing at startup.
+                self.start_account(&account).await;
+            }
+        }
+        Ok(())
+    }
+
+    fn account(&self, id: AccountId) -> Result<Account, CommandError> {
+        self.store()
+            .accounts()?
+            .into_iter()
+            .find(|account| account.id == id)
+            .ok_or(CommandError::UnknownAccount(id.0))
+    }
+
+    /// Starts (or restarts) the worker of `account`.
+    async fn start_account(self: &Arc<Self>, account: &Account) {
+        let old = self.workers().remove(&account.id);
+        if let Some(old) = old {
+            stop(account.id, old).await;
+        }
+        match self.connector(account).await {
+            Ok(Some(connector)) => self.spawn_worker(account.id, connector),
+            Ok(None) => self.set_status(account.id, Status::new(state::NOT_SYNCED, "")),
+            Err(detail) => {
+                tracing::warn!(account = %account.id, %detail, "not syncing");
+                self.set_status(account.id, Status::new(state::AUTH_FAILED, detail));
+            }
+        }
+    }
+
+    /// How to reach the account's IMAP server; `None` if it has none.
+    async fn connector(&self, account: &Account) -> Result<Option<ImapConnector>, String> {
+        if account.kind != AccountKind::Imap {
+            return Ok(None);
+        }
+        let settings = self
+            .store()
+            .account_settings(account.id)
+            .map_err(|err| err.to_string())?;
+        let Some(imap) = settings.and_then(|settings| settings.imap) else {
+            return Ok(None);
+        };
+        let password = self
+            .secrets
+            .password(account.id)
+            .await
+            .map_err(|err| err.to_string())?
+            .ok_or("no password saved; set one with katnactl password")?;
+        imap_connector(&imap, &password).map(Some)
+    }
+
+    fn spawn_worker(self: &Arc<Self>, id: AccountId, connector: ImapConnector) {
+        let store = match Store::open(&self.paths, Mode::ReadWrite) {
+            Ok(store) => store,
+            Err(err) => {
+                self.set_status(id, Status::new(state::OFFLINE, err.to_string()));
+                return;
+            }
+        };
+        let (handle, control) = worker::control();
+        let (events, received) = async_channel::unbounded();
+        let task = smol::spawn(worker::run(
+            connector,
+            store,
+            id,
+            self.config.clone(),
+            events,
+            control,
+        ));
+        // Ends when the worker does and drops its event sender.
+        smol::spawn(self.clone().forward(id, received)).detach();
+        self.set_status(id, Status::new(state::CONNECTING, ""));
+        self.workers().insert(id, Running { handle, task });
+    }
+
+    /// Turns a worker's events into status and notices.
+    async fn forward(self: Arc<Self>, id: AccountId, events: Receiver<Event>) {
+        while let Ok(event) = events.recv().await {
+            let mut status = self
+                .status
+                .lock()
+                .unwrap()
+                .get(&id)
+                .cloned()
+                .unwrap_or_else(|| Status::new(state::CONNECTING, ""));
+            match event {
+                Event::Connected => {
+                    status.state = state::CONNECTING;
+                    status.detail.clear();
+                }
+                Event::Synced(reports) => {
+                    status.state = state::ONLINE;
+                    status.detail.clear();
+                    status.last_sync = unix_now();
+                    let changed = reports.iter().any(|report| {
+                        report.added + report.flags_changed + report.removed > 0 || report.reset
+                    });
+                    if changed {
+                        let _ = self.notices.try_send(Notice::MailChanged(id));
+                    }
+                }
+                Event::Disconnected { error, retry_in } => {
+                    status.state = state::OFFLINE;
+                    status.detail = format!("{error}; retrying in {} s", retry_in.as_secs());
+                }
+                Event::AuthFailed(message) => {
+                    status.state = state::AUTH_FAILED;
+                    status.detail = message;
+                }
+            }
+            // A removed account's last events must not bring it back.
+            if self.workers().contains_key(&id) {
+                self.set_status(id, status);
+            }
+        }
+    }
+
+    fn set_status(&self, id: AccountId, status: Status) {
+        self.status.lock().unwrap().insert(id, status);
+        let _ = self.notices.try_send(Notice::StatusChanged(id));
+    }
+
+    fn store(&self) -> MutexGuard<'_, Store> {
+        self.store.lock().unwrap()
+    }
+
+    fn workers(&self) -> MutexGuard<'_, HashMap<AccountId, Running>> {
+        self.workers.lock().unwrap()
+    }
+}
+
+/// Drops the handle and waits for the worker to log out.
+async fn stop(account: AccountId, running: Running) {
+    drop(running.handle);
+    wait_for(account, running.task).await;
+}
+
+async fn wait_for(account: AccountId, task: smol::Task<()>) {
+    let stopped = async {
+        task.await;
+        true
+    }
+    .or(async {
+        async_io::Timer::after(STOP_TIMEOUT).await;
+        false
+    })
+    .await;
+    if !stopped {
+        tracing::warn!(%account, "worker did not stop in time");
+    }
+}
+
+/// Parses a server from D-Bus; `None` if its host is empty.
+fn server(spec: &ServerSpec, address: &str) -> Result<Option<Server>, CommandError> {
+    let host = spec.host.trim();
+    if host.is_empty() {
+        return Ok(None);
+    }
+    if spec.port == 0 {
+        return Err(CommandError::InvalidArgs(format!("no port for {host}")));
+    }
+    let security: Security = spec.security.parse().map_err(CommandError::InvalidArgs)?;
+    let username = match spec.username.trim() {
+        "" => address.to_owned(),
+        name => name.to_owned(),
+    };
+    Ok(Some(Server {
+        host: host.to_owned(),
+        port: spec.port,
+        security,
+        username,
+        accept_invalid_certs: spec.accept_invalid_certs,
+    }))
+}
+
+fn imap_connector(server: &Server, password: &str) -> Result<ImapConnector, String> {
+    let security = match server.security {
+        Security::Tls => katna_sync::Security::Tls,
+        Security::StartTls => katna_sync::Security::StartTls,
+        Security::Plain => katna_sync::Security::Plain,
+    };
+    let tls = if server.accept_invalid_certs {
+        Tls::insecure_for_local_tests()
+    } else {
+        Tls::system().map_err(|err| format!("TLS setup: {err}"))?
+    };
+    Ok(ImapConnector {
+        endpoint: Endpoint::new(server.host.clone(), server.port, security),
+        credentials: Credentials::new(server.username.clone(), password),
+        tls,
+    })
+}
+
+/// Logs in once to check the server and password.
+async fn check_login(server: &Server, password: &str) -> Result<(), CommandError> {
+    let connector = imap_connector(server, password).map_err(CommandError::Failed)?;
+    match connector.connect().await {
+        Ok(backend) => {
+            let _ = backend.logout().await;
+            Ok(())
+        }
+        Err(katna_sync::Error::Auth(message)) => Err(CommandError::AuthFailed(format!(
+            "{} refused the login: {message}",
+            server.host
+        ))),
+        Err(err) => Err(CommandError::Failed(format!(
+            "could not connect to {}:{}: {err}",
+            server.host, server.port
+        ))),
+    }
+}
+
+fn unix_now() -> i64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_or(0, |elapsed| elapsed.as_secs() as i64)
+}
