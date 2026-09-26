@@ -35,6 +35,7 @@ optdepends=(
   'gnupg: read and send encrypted and signed mail (OpenPGP and S/MIME)'
   'org.freedesktop.secrets: keeps account passwords (GNOME Keyring, KWallet or KeePassXC)'
   'vulkan-driver: GPU rendering with Vulkan instead of the OpenGL fallback'
+  'hunspell-en_us: spell check while writing mail (or another hunspell dictionary)'
 )
 provides=('katna')
 conflicts=('katna')

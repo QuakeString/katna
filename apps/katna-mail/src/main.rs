@@ -14,6 +14,7 @@ mod instance;
 mod outgoing;
 mod sidebar;
 mod signatures;
+mod spell;
 mod tabs;
 mod theme;
 mod widgets;
@@ -161,7 +162,15 @@ fn main() -> ExitCode {
                 }
             })
             .detach();
-            cx.on_window_closed(|cx, _| cx.quit()).detach();
+            // Other windows (a message being written) close on their own;
+            // the app ends with the mail window.
+            let main = handle.window_id();
+            cx.on_window_closed(move |cx, id| {
+                if id == main {
+                    cx.quit();
+                }
+            })
+            .detach();
             cx.activate(true);
         });
     ExitCode::SUCCESS

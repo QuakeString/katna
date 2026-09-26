@@ -319,6 +319,8 @@ pub struct MailWindow {
     account_menu: bool,
     /// The message last handed to the outbox, for Undo.
     unsent: Option<compose::Unsent>,
+    /// The spelling dictionary and scheduled mail of compose.
+    writing: compose::Writing,
     /// The Settings page, when open in place of the list.
     settings_page: Option<settings_page::SettingsPage>,
     /// The question before removing an account or deleting all data.
@@ -426,6 +428,7 @@ impl MailWindow {
             _first_sync_check: None,
             account_menu: false,
             unsent: None,
+            writing: compose::Writing::default(),
             settings_page: None,
             danger: None,
             nav_t: 1.0,
@@ -484,6 +487,11 @@ impl MailWindow {
     /// The colors: the desktop's light or dark, unless the settings pick
     /// one, in the desktop's color scheme or accent color if it has them.
     fn theme(&self, window: &Window) -> Theme {
+        self.theme_for(&self.chrome, window)
+    }
+
+    /// [`Self::theme`] for a window framed by `chrome`.
+    fn theme_for(&self, chrome: &WindowChrome, window: &Window) -> Theme {
         let choice = match self.config.mail.theme {
             ThemeChoice::System => None,
             ThemeChoice::Light => Some(false),
@@ -498,14 +506,13 @@ impl MailWindow {
             Theme::new(dark)
         };
         // The window frame follows the same choices.
-        self.chrome.set_dark(choice);
-        self.chrome
-            .set_colors(desktop_scheme.then_some(ChromeColors {
-                window_bg: th.page,
-                view_bg: th.surface,
-                fg: th.text,
-                accent: th.accent,
-            }));
+        chrome.set_dark(choice);
+        chrome.set_colors(desktop_scheme.then_some(ChromeColors {
+            window_bg: th.page,
+            view_bg: th.surface,
+            fg: th.text,
+            accent: th.accent,
+        }));
         th
     }
 
@@ -595,6 +602,7 @@ impl MailWindow {
             this.update(cx, |this, cx| {
                 this.daemon = Some(connection.clone());
                 this.watch_sending(connection.clone(), cx);
+                this.watch_scheduled(connection.clone(), cx);
                 this.check_first_sync(cx);
             })
             .ok();
@@ -656,6 +664,36 @@ impl MailWindow {
             .count();
         if accounts == 1 {
             rows.retain(|r| !matches!(r, sidebar::Row::Account { .. }));
+        }
+        // Scheduled mail shows under the first Sent folder while there is
+        // some.
+        let scheduled = self.writing.scheduled_count();
+        if scheduled > 0 {
+            let at = rows
+                .iter()
+                .position(|r| {
+                    matches!(
+                        r,
+                        sidebar::Row::Folder {
+                            role: Role::Sent,
+                            ..
+                        }
+                    )
+                })
+                .map_or(rows.len(), |ix| ix + 1);
+            rows.insert(
+                at,
+                sidebar::Row::Folder {
+                    key: compose::SCHEDULED_NAV_KEY.to_owned(),
+                    depth: 0,
+                    label: "Scheduled".to_owned(),
+                    role: Role::Other,
+                    folder: None,
+                    unread: scheduled as u64,
+                    has_children: false,
+                    expanded: false,
+                },
+            );
         }
         self.nav_rows = rows;
     }
@@ -1949,6 +1987,7 @@ impl Render for MailWindow {
             self.render_phone_fab(&th, cx)
         };
         let compose = self.render_compose(&th, window, reduce, cx);
+        let scheduled = self.render_scheduled(&th, window, cx);
         let account_menu = self.render_account_menu(&th, cx);
         let add_account = self.render_add_account(&th, window, reduce, cx);
         let danger = self.render_danger(&th, window, reduce, cx);
@@ -1988,6 +2027,7 @@ impl Render for MailWindow {
             .children(self.files.viewer.clone())
             .children(search_panel)
             .children(compose)
+            .children(scheduled)
             .children(account_menu)
             .children(add_account)
             .children(context_menu)

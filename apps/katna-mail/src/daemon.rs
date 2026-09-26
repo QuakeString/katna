@@ -7,7 +7,7 @@
 
 use futures_lite::{Stream, StreamExt};
 use katna_dbus::zbus::Connection;
-use katna_dbus::{NewImapAccount, PimProxy, flag, send_state, state};
+use katna_dbus::{NewImapAccount, OutboxItem, PimProxy, flag, send_state, state};
 use katna_store::{FolderId, MessageId};
 
 /// A change to send to the daemon.
@@ -221,6 +221,26 @@ pub async fn send_failures(
             }
         })
         .filter_map(|failure| failure))
+}
+
+/// Every message in the outbox: waiting, being sent, sent or failed.
+pub async fn outbox(connection: &Connection) -> Result<Vec<OutboxItem>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.outbox().await.map_err(|err| describe(&err))
+}
+
+/// Yields whenever an outbox entry changes.
+pub async fn outbox_changes(connection: &Connection) -> Result<impl Stream<Item = ()>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let changes = pim
+        .receive_outbox_changed()
+        .await
+        .map_err(|err| describe(&err))?;
+    Ok(changes.map(|_| ()))
 }
 
 /// Asks the daemon about the accounts, which also starts it if D-Bus can.
