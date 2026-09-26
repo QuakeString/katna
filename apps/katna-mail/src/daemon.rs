@@ -128,6 +128,24 @@ pub async fn discover(
         .map_err(|err| describe(&err))
 }
 
+/// Asks the daemon for a remote image of a message.
+pub async fn fetch_image(connection: &Connection, url: &str) -> Result<Vec<u8>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.fetch_image(url).await.map_err(|err| describe(&err))
+}
+
+/// Asks the daemon for the picture of the sender `address` (empty: none).
+pub async fn sender_picture(connection: &Connection, address: &str) -> Result<Vec<u8>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.sender_picture(address)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Stops syncing `account` and deletes its mail and password from this
 /// computer. Nothing changes on the server.
 pub async fn remove_account(connection: &Connection, account: i64) -> Result<(), String> {

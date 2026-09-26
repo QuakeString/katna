@@ -14,17 +14,19 @@ use gpui::{
     prelude::*, px, rgba,
 };
 use katna_render::MessageView;
+use katna_render::html::Document;
 use katna_store::MessageId;
 
 use super::compose::Kind;
 use super::list::separator;
+use super::rich::{self, Painter};
 use super::{MailWindow, Menu, SelectNext, SelectPrevious};
 use crate::daemon::Command;
 use crate::data::{EntryKey, Mail, Row};
 use crate::format;
 use crate::theme::{Theme, fade};
 use crate::widgets::{
-    avatar, icon, icon_button, icon_button_colored, pill_button, placeholder, tip, toolbar,
+    icon, icon_button, icon_button_colored, pill_button, placeholder, tip, toolbar,
 };
 
 mod security;
@@ -62,10 +64,27 @@ struct Body {
     /// The body, in blocks of consecutive quoted or unquoted lines.
     blocks: Vec<(bool, SharedString)>,
     cut: bool,
+    /// The HTML body laid out, when the message has one.
+    doc: Option<Document>,
+    /// The remote images of `doc`.
+    remote: Vec<String>,
     /// Encrypted or signed: what opening it found.
     security: Option<Secured>,
     /// The raw message, until it is handed to GnuPG.
     sealed: Option<Vec<u8>>,
+}
+
+impl Body {
+    /// Encrypted (being opened, or opened): remote content stays blocked.
+    fn encrypted(&self) -> bool {
+        match &self.security {
+            Some(Secured::Opening(protection)) => {
+                matches!(protection, katna_crypto::Protection::Encrypted(_))
+            }
+            Some(Secured::Opened(security)) => security.encrypted(),
+            None => false,
+        }
+    }
 }
 
 impl Conversation {
@@ -172,6 +191,22 @@ impl Conversation {
 
     fn all_expanded(&self) -> bool {
         self.parts.iter().all(|p| p.expanded)
+    }
+
+    /// Each open message's ID, sender address and remote images.
+    pub(super) fn remote_content(&self) -> Vec<(MessageId, String, Vec<String>)> {
+        self.parts
+            .iter()
+            .filter(|p| p.expanded)
+            .filter_map(|p| {
+                // Encrypted mail never loads remote content: a fetch would
+                // tell the sender (or whoever altered the message) that it
+                // was opened, and could leak its text (EFAIL).
+                let body = p.body.as_ref().filter(|b| !b.encrypted())?;
+                let sender = body.view.as_ref()?.from.first()?.email.clone();
+                Some((p.id, sender, body.remote.clone()))
+            })
+            .collect()
     }
 }
 
@@ -280,6 +315,7 @@ impl MailWindow {
 
     pub(super) fn render_reader(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         self.open_sealed(cx);
+        self.fetch_remote(cx);
         let Some(reader) = &self.reader else {
             return placeholder("", th);
         };
@@ -495,7 +531,7 @@ impl MailWindow {
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .on_click(toggle)
-                .child(avatar(&name, &email, 40.0))
+                .child(self.sender_avatar(&name, &email, 40.0))
                 .child(
                     div()
                         .flex_1()
@@ -716,14 +752,37 @@ impl MailWindow {
                 view: Some(view),
                 blocks,
                 cut,
+                doc,
                 ..
             }) => {
+                let too_long = match doc {
+                    Some(doc) => doc.truncated,
+                    None => *cut || view.truncated,
+                };
+                let encrypted = part.body.as_ref().is_some_and(Body::encrypted);
+                let blocked = encrypted && doc.as_ref().is_some_and(|d| d.remote_images > 0);
                 let notes = [
-                    view.from_html
-                        .then_some("This message is HTML; it is shown as plain text for now."),
-                    (*cut || view.truncated).then_some("The message is too long to show in full."),
+                    too_long.then_some("The message is too long to show in full."),
+                    blocked.then_some("Images from the web are never loaded in encrypted mail."),
                 ];
-                let attachments = (!view.attachments.is_empty()).then(|| {
+                let allowed = !encrypted && self.remote.allowed(id, &email);
+                let banner = doc
+                    .as_ref()
+                    .filter(|doc| doc.remote_images > 0 && !allowed && !encrypted)
+                    .map(|_| self.images_banner(ix, id, &email, th, cx));
+                // Images the body shows are not listed again.
+                let listed: Vec<_> = view
+                    .attachments
+                    .iter()
+                    .filter(|a| {
+                        !doc.as_ref().is_some_and(|doc| {
+                            a.content_id.as_ref().is_some_and(|id| {
+                                doc.inline_ids.iter().any(|i| i.eq_ignore_ascii_case(id))
+                            })
+                        })
+                    })
+                    .collect();
+                let attachments = (!listed.is_empty()).then(|| {
                     div()
                         .flex()
                         .flex_row()
@@ -733,7 +792,7 @@ impl MailWindow {
                         .mt(px(16.0))
                         .border_t_1()
                         .border_color(rgba(th.divider))
-                        .children(view.attachments.iter().map(|a| {
+                        .children(listed.iter().map(|a| {
                             div()
                                 .w(px(200.0))
                                 .flex()
@@ -785,16 +844,24 @@ impl MailWindow {
                             .text_color(rgba(th.text_dim))
                             .child(note)
                     }))
-                    .children(blocks.iter().map(|(quoted, text)| {
-                        div()
-                            .when(*quoted, |d| {
-                                d.pl(px(12.0))
-                                    .border_l_2()
-                                    .border_color(rgba(th.divider))
-                                    .text_color(rgba(th.text_faint))
-                            })
-                            .child(text.clone())
-                    }))
+                    .children(banner)
+                    .when_some(doc.as_ref(), |d, doc| {
+                        let painter =
+                            Painter::new(th, &self.remote.images, allowed, self.remote.mono());
+                        d.child(painter.document(doc))
+                    })
+                    .when(doc.is_none(), |d| {
+                        d.children(blocks.iter().map(|(quoted, text)| {
+                            div()
+                                .when(*quoted, |d| {
+                                    d.pl(px(12.0))
+                                        .border_l_2()
+                                        .border_color(rgba(th.divider))
+                                        .text_color(rgba(th.text_faint))
+                                })
+                                .child(text.clone())
+                        }))
+                    })
                     .children(attachments)
                     .into_any_element()
             }
@@ -820,7 +887,7 @@ impl MailWindow {
                     .flex_none()
                     .flex()
                     .justify_center()
-                    .child(avatar(&name, &email, 40.0)),
+                    .child(self.sender_avatar(&name, &email, 40.0)),
             )
             .child(
                 div()
@@ -937,6 +1004,8 @@ fn read(mail: &Mail, id: MessageId) -> Body {
             view: None,
             blocks: Vec::new(),
             cut: false,
+            doc: None,
+            remote: Vec::new(),
             security: None,
             sealed: None,
         };
@@ -950,11 +1019,18 @@ fn read(mail: &Mail, id: MessageId) -> Body {
 /// The body of `raw` as the reading view shows it.
 fn shown(raw: &[u8], security: Option<Secured>) -> Body {
     let view = katna_render::message_view(raw);
-    let (blocks, cut) = body_blocks(&view.body, MAX_BODY_LINES);
+    let doc = katna_render::message_document(raw);
+    let (blocks, cut) = match doc {
+        Some(_) => (Vec::new(), false),
+        None => body_blocks(&view.body, MAX_BODY_LINES),
+    };
+    let remote = doc.as_ref().map(rich::remote_urls).unwrap_or_default();
     Body {
         view: Some(view),
         blocks,
         cut,
+        doc,
+        remote,
         security,
         sealed: None,
     }

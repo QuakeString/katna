@@ -32,6 +32,8 @@ pub(super) fn sealed(raw: Vec<u8>, protection: Protection) -> Body {
         view: Some(headers_only(&raw)),
         blocks: Vec::new(),
         cut: false,
+        doc: None,
+        remote: Vec::new(),
         security: Some(Secured::Opening(protection)),
         sealed: Some(raw),
     }
@@ -57,6 +59,8 @@ fn opened_body(raw: &[u8], opened: Option<Opened>) -> Body {
                 view: Some(headers_only(raw)),
                 blocks: Vec::new(),
                 cut: false,
+                doc: None,
+                remote: Vec::new(),
                 security: Some(Secured::Opened(security)),
                 sealed: None,
             }
@@ -400,6 +404,29 @@ mod tests {
             "658C A70C A20C 0FE0"
         );
         assert_eq!(short_key("ABCD"), "ABCD");
+    }
+
+    #[test]
+    fn encrypted_mail_is_marked_for_remote_blocking() {
+        let raw = b"From: Ada <ada@example.org>\r\n\
+Content-Type: text/html\r\n\r\n<p>Hi<img src=\"https://example.org/t.png\"></p>\r\n";
+        let security = |decryption| {
+            Secured::Opened(katna_crypto::Security {
+                standard: katna_crypto::Standard::OpenPgp,
+                whole: true,
+                decryption,
+                signatures: Vec::new(),
+            })
+        };
+        let opened = shown(raw, Some(security(Some(Decryption::Decrypted))));
+        assert!(!opened.remote.is_empty() && opened.encrypted());
+        assert!(!shown(raw, Some(security(None))).encrypted());
+        assert!(!shown(raw, None).encrypted());
+        let opening = sealed(
+            raw.to_vec(),
+            katna_crypto::Protection::Encrypted(katna_crypto::Standard::OpenPgp),
+        );
+        assert!(opening.encrypted());
     }
 
     #[test]
