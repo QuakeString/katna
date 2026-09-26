@@ -30,7 +30,7 @@ use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
 
 use crate::{
-    Envelope, Error, FlagState, Flags, Folder, FolderChange, FolderStatus, MailBackend,
+    Envelope, Error, FlagChanges, Flags, Folder, FolderChange, FolderStatus, MailBackend,
     MessageHeaders, Result, Wait,
 };
 
@@ -45,7 +45,7 @@ enum Request {
     StoreFlags(Vec<u32>, Flags, bool, Reply<()>),
     MoveMessages(Vec<u32>, String, Reply<Vec<(u32, u32)>>),
     Expunge(Vec<u32>, Reply<()>),
-    FetchFlags(u32, u32, Option<u64>, Reply<Vec<FlagState>>),
+    FetchFlags(u32, u32, Option<u64>, Reply<FlagChanges>),
     Uids(Reply<Vec<u32>>),
     Status(String, Reply<FolderStatus>),
     CreateFolder(String, Reply<()>),
@@ -126,7 +126,7 @@ impl Connection {
         first: u32,
         last: u32,
         changed_since: Option<u64>,
-    ) -> Result<Vec<FlagState>> {
+    ) -> Result<FlagChanges> {
         self.call(|reply| Request::FetchFlags(first, last, changed_since, reply))
             .await
     }
@@ -246,7 +246,7 @@ impl MailBackend for Connection {
         first: u32,
         last: u32,
         changed_since: Option<u64>,
-    ) -> Result<Vec<FlagState>> {
+    ) -> Result<FlagChanges> {
         Connection::fetch_flags(self, first, last, changed_since).await
     }
 

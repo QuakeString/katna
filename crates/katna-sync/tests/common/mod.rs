@@ -17,8 +17,8 @@ use futures_lite::FutureExt;
 use katna_core::{AccountId, AccountKind, Paths};
 use katna_store::{Mode, Store};
 use katna_sync::{
-    AttachmentPart, Envelope, Error, FlagState, Flags, Folder, FolderChange, FolderRole,
-    FolderStatus, MailBackend, MessageHeaders, Result, Wait, worker::Connector,
+    AttachmentPart, Envelope, Error, FlagChanges, FlagState, Flags, Folder, FolderChange,
+    FolderRole, FolderStatus, MailBackend, MessageHeaders, Result, Wait, worker::Connector,
 };
 
 #[derive(Clone, Debug)]
@@ -43,6 +43,8 @@ pub struct Mailbox {
     pub uid_validity: u32,
     pub uid_next: u32,
     pub messages: BTreeMap<u32, Message>,
+    /// Expunged UIDs and the mod-sequence of their expunge (QRESYNC).
+    pub vanished: Vec<(u32, u64)>,
 }
 
 /// Server state: folders of messages with UIDs, flags and one global
@@ -67,6 +69,8 @@ pub struct State {
     pub refuse_changes: bool,
     /// Offer Gmail's thread IDs and `X-GM-RAW` search.
     pub gmail: bool,
+    /// Report expunges with flag fetches (QRESYNC `VANISHED (EARLIER)`).
+    pub qresync: bool,
 }
 
 /// A shared server; clones see the same state.
@@ -85,6 +89,7 @@ impl FakeServer {
                 uid_validity,
                 uid_next: 1,
                 messages: BTreeMap::new(),
+                vanished: Vec::new(),
             },
         );
     }
@@ -220,7 +225,11 @@ impl FakeServer {
     pub fn expunge(&self, folder: &str, uid: u32) {
         let mut state = self.state();
         state.modseq += 1;
-        state.folders.get_mut(folder).unwrap().messages.remove(&uid);
+        let modseq = state.modseq;
+        let mailbox = state.folders.get_mut(folder).unwrap();
+        if mailbox.messages.remove(&uid).is_some() {
+            mailbox.vanished.push((uid, modseq));
+        }
     }
 
     /// Drops every open connection, as a network change would.
@@ -418,16 +427,26 @@ impl MailBackend for FakeConnection {
         first: u32,
         last: u32,
         changed_since: Option<u64>,
-    ) -> Result<Vec<FlagState>> {
+    ) -> Result<FlagChanges> {
         let state = self.state(format!("FLAGS {first}:{last} since {changed_since:?}"))?;
         let since = changed_since.unwrap_or(0);
-        Ok(range(&state.folders[self.selected()], first, Some(last))
+        let mailbox = &state.folders[self.selected()];
+        let flags = range(mailbox, first, Some(last))
             .filter(|(_, m)| m.modseq > since)
             .map(|(uid, m)| FlagState {
                 uid: *uid,
                 flags: m.flags.clone(),
             })
-            .collect())
+            .collect();
+        let vanished = (state.qresync && changed_since.is_some()).then(|| {
+            mailbox
+                .vanished
+                .iter()
+                .filter(|(uid, modseq)| *modseq > since && (first..=last).contains(uid))
+                .map(|(uid, _)| *uid..=*uid)
+                .collect()
+        });
+        Ok(FlagChanges { flags, vanished })
     }
 
     async fn uids(&mut self) -> Result<Vec<u32>> {
@@ -492,10 +511,11 @@ impl MailBackend for FakeConnection {
         let from = self.selected().to_owned();
         let mut moved = Vec::new();
         for uid in uids {
-            let Some(mut message) = state.folders.get_mut(&from).unwrap().messages.remove(uid)
-            else {
+            let source = state.folders.get_mut(&from).unwrap();
+            let Some(mut message) = source.messages.remove(uid) else {
                 continue;
             };
+            source.vanished.push((*uid, modseq));
             message.modseq = modseq;
             let target = state.folders.get_mut(folder).unwrap();
             let new = target.uid_next;
@@ -515,10 +535,13 @@ impl MailBackend for FakeConnection {
             return Err(Error::Rejected("NO not today".into()));
         }
         state.modseq += 1;
+        let modseq = state.modseq;
         let folder = self.selected().to_owned();
-        let messages = &mut state.folders.get_mut(&folder).unwrap().messages;
+        let mailbox = state.folders.get_mut(&folder).unwrap();
         for uid in uids {
-            messages.remove(uid);
+            if mailbox.messages.remove(uid).is_some() {
+                mailbox.vanished.push((*uid, modseq));
+            }
         }
         Ok(())
     }

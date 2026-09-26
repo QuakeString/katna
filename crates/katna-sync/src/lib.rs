@@ -45,8 +45,8 @@ pub mod smtp;
 pub mod worker;
 
 pub use backend::{
-    Address, AttachmentPart, Credentials, Endpoint, Envelope, FlagState, Flags, Folder,
-    FolderChange, FolderRole, FolderStatus, MailBackend, MailSender, MessageHeaders, Security,
-    Wait,
+    Address, AttachmentPart, Credentials, Endpoint, Envelope, FlagChanges, FlagState, Flags,
+    Folder, FolderChange, FolderRole, FolderStatus, MailBackend, MailSender, MessageHeaders,
+    Security, Wait,
 };
 pub use error::{Error, Result};

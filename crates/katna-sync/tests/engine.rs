@@ -88,6 +88,52 @@ fn first_sync_then_incremental_changes() {
 }
 
 #[test]
+fn qresync_reports_expunges_without_a_uid_list() {
+    let (_tmp, mut store, account) = setup();
+    let server = FakeServer::default();
+    server.state().qresync = true;
+    server.create("INBOX", 1);
+    for i in 0..5 {
+        server.deliver("INBOX", &format!("hello-{i}"));
+    }
+    sync(&server, &mut store, account);
+    let inbox = store.folders(account).unwrap()[0].id;
+
+    // Two expunged, one new, one read.
+    server.expunge("INBOX", 2);
+    server.expunge("INBOX", 4);
+    server.deliver("INBOX", "hello-5");
+    server.set_seen("INBOX", 1);
+    let reports = sync(&server, &mut store, account);
+    assert_eq!(reports[0], report("INBOX", 1, 1, 2));
+    assert_eq!(store.folder_uids(inbox).unwrap(), vec![1, 3, 5, 6]);
+    assert!(
+        !server.log().iter().any(|c| c == "UIDS"),
+        "the UID list is not needed: {:?}",
+        server.log()
+    );
+
+    // A server that forgot an expunge: the counts give it away.
+    server.expunge("INBOX", 3);
+    server
+        .state()
+        .folders
+        .get_mut("INBOX")
+        .unwrap()
+        .vanished
+        .clear();
+    server.set_seen("INBOX", 5);
+    let reports = sync(&server, &mut store, account);
+    assert_eq!(reports[0], report("INBOX", 0, 1, 1));
+    assert!(
+        server.log().iter().any(|c| c == "UIDS"),
+        "{:?}",
+        server.log()
+    );
+    assert_eq!(store.folder_uids(inbox).unwrap(), vec![1, 5, 6]);
+}
+
+#[test]
 fn big_folder_is_fetched_in_chunks() {
     let (_tmp, mut store, account) = setup();
     let server = FakeServer::default();

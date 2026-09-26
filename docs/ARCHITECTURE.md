@@ -339,7 +339,12 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   CONDSTORE, reset on a new UIDVALIDITY, fetch flags changed since the stored
   HIGHESTMODSEQ, fetch headers of new UIDs in chunks of 500 (committed chunk
   by chunk), and compare UID lists only when the message count does not add
-  up. Headers come from `BODY.PEEK[HEADER.FIELDS (…)]` and are decoded by
+  up. Servers with QRESYNC (Stalwart and Dovecot here; Gmail has none) get
+  `ENABLE QRESYNC` after login: the flag fetch then carries the
+  `VANISHED` modifier, so the expunges since the stored HIGHESTMODSEQ come
+  with the flag changes and the UID list is only fetched if the count
+  still does not add up. Pushed expunges arrive as `VANISHED` and wake the
+  worker like `EXPUNGE` did. Headers come from `BODY.PEEK[HEADER.FIELDS (…)]` and are decoded by
   the same parser as the importer; INTERNALDATE stands in for a missing
   `Date`. The header list includes the threading headers and the ones the
   category classifier reads (`katna_core::category::CLASSIFIER_HEADERS`);
