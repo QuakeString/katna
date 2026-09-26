@@ -9,6 +9,7 @@ mod backfill;
 pub mod blob;
 mod db;
 pub mod error;
+mod gmail_merge;
 pub mod journal;
 pub mod mail;
 mod mail_read;
@@ -27,6 +28,7 @@ pub use backfill::Backfill;
 pub use blob::{BlobHash, BlobStore};
 pub use db::{DbKind, Mode};
 pub use error::{Error, Result};
+pub use gmail_merge::Adopted;
 pub use journal::{Change, ChangeOp, ObjectKind};
 pub use katna_core::MailCategory;
 pub use mail::{

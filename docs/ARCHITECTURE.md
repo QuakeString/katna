@@ -391,8 +391,13 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   `message_location` per folder. Flags, tabs, threads and search see it
   once; removing a label removes only that location. Moving a message
   takes it from one of its folders other than All Mail, since leaving All
-  Mail only adds a label on Gmail. Stores synced before v4 keep their
-  duplicate rows until the account is added again. io-imap cannot express these extensions, so they are written as
+  Mail only adds a label on Gmail. Stores synced before v4 have a row per label, all without `gm_msgid`: the
+  first sync after the upgrade fetches `UID FETCH … (X-GM-MSGID)` for them,
+  once per folder, and merges the copies into one row
+  (`MailBatch::adopt_gm_msgid`): its folders, flags and keywords are the
+  union of the copies', it keeps a downloaded body and a pin, and a copy
+  with a change still queued waits for the next sync. Nothing changes on
+  the server. io-imap cannot express these extensions, so they are written as
   raw commands on the connection. Progress lives in `folder.sync_state`.
 - **Level 3 so far (`katna_sync::bodies`):** after each full sync, and after
   each inbox catch-up, the worker fetches `BODY.PEEK[]` for messages in the

@@ -905,6 +905,25 @@ impl MailBackend for ImapBackend {
         Ok(Some(uids))
     }
 
+    async fn gmail_message_ids(&mut self, uids: &[u32]) -> Result<Option<HashMap<u32, u64>>> {
+        if !self.is_gmail() {
+            return Ok(None);
+        }
+        if uids.is_empty() {
+            return Ok(Some(HashMap::new()));
+        }
+        let lines = self
+            .raw_command(&format!("UID FETCH {} (UID X-GM-MSGID)", uid_set(uids)))
+            .await?;
+        Ok(Some(
+            lines
+                .iter()
+                .filter_map(|line| gmail_fetch(line))
+                .filter_map(|(uid, ids)| Some((uid, ids.message?)))
+                .collect(),
+        ))
+    }
+
     async fn wait_for_changes<I>(
         &mut self,
         max_wait: Duration,

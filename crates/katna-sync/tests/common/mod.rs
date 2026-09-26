@@ -6,7 +6,7 @@
 #![allow(dead_code)] // each test file uses a different part
 
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, HashMap},
     future::Future,
     sync::{Arc, Mutex, MutexGuard},
     time::{Duration, Instant},
@@ -404,6 +404,19 @@ impl MailBackend for FakeConnection {
             range(&state.folders[self.selected()], first, None)
                 .filter(|(_, m)| m.gmail_category.as_deref() == Some(category))
                 .map(|(uid, _)| *uid)
+                .collect(),
+        ))
+    }
+
+    async fn gmail_message_ids(&mut self, uids: &[u32]) -> Result<Option<HashMap<u32, u64>>> {
+        let state = self.state(format!("X-GM-MSGID {uids:?}"))?;
+        if !state.gmail {
+            return Ok(None);
+        }
+        let messages = &state.folders[self.selected()].messages;
+        Ok(Some(
+            uids.iter()
+                .filter_map(|uid| Some((*uid, messages.get(uid)?.gm_msgid?)))
                 .collect(),
         ))
     }
