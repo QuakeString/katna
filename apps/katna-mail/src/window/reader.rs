@@ -17,14 +17,14 @@ use gpui::{
 };
 use katna_render::MessageView;
 use katna_render::html::Document;
-use katna_store::MessageId;
+use katna_store::{MessageFlags, MessageId};
 
 use super::compose::Kind;
 use super::list::separator;
 use super::rich::{self, Painter};
 use super::{MailWindow, Menu, SelectNext, SelectPrevious};
 use crate::daemon::Command;
-use crate::data::{EntryKey, Mail, Row};
+use crate::data::{self, EntryKey, Mail, Row};
 use crate::format;
 use crate::theme::{Theme, fade};
 use crate::widgets::{
@@ -1029,9 +1029,13 @@ impl MailWindow {
                     .any(|p| p.row.as_ref().is_some_and(|r| r.flagged));
             self.pending.entry(key).or_default().flagged = Some(any);
         }
-        let command = Command::Star(vec![id], on);
+        let ids = match &self.mail {
+            Ok(mail) => data::flag_changes(&mail.with_copies(&[id]), MessageFlags::FLAGGED, on),
+            Err(_) => vec![id],
+        };
+        let command = Command::Star(ids.clone(), on);
         let done = command.done_text("Message");
-        let undo = Command::Star(vec![id], !on);
+        let undo = Command::Star(ids, !on);
         self.send(command, done, Some(undo), false, cx);
         cx.notify();
     }

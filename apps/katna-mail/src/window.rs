@@ -59,7 +59,7 @@ use katna_core::config::{ReadingPane, Theme as ThemeChoice};
 use katna_core::{Account, AccountId, Config, Paths};
 use katna_dbus::zbus::Connection;
 use katna_search::SearchResults;
-use katna_store::{FolderId, MessageId};
+use katna_store::{FolderId, MessageFlags, MessageId};
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::{InputEvent, TextInput};
 
@@ -1512,9 +1512,16 @@ impl MailWindow {
             Some(folder) => mail.entry_messages_in(key, folder),
             None => mail.entry_messages(key),
         };
+        // Flag changes touch every stored copy of a message (the line is
+        // starred or unread when any copy is), and undo restores exactly
+        // the copies that changed.
+        let copies_of = |keys: &[EntryKey]| {
+            let ids: Vec<MessageId> = keys.iter().flat_map(|k| mail.entry_messages(*k)).collect();
+            mail.with_copies(&ids)
+        };
         let (command, undo) = match act {
             Act::Read(read) => {
-                let ids = keys.iter().flat_map(|k| mail.entry_messages(*k)).collect();
+                let ids = data::flag_changes(&copies_of(&keys), MessageFlags::SEEN, read);
                 for key in &keys {
                     self.pending.entry(*key).or_default().unread = Some(!read);
                 }
@@ -1522,15 +1529,18 @@ impl MailWindow {
             }
             Act::Star(on) => {
                 // Starring marks the newest message; unstarring clears all.
-                let ids: Vec<MessageId> = if on {
-                    self.entries
+                let copies = if on {
+                    let latest: Vec<MessageId> = self
+                        .entries
                         .iter()
                         .filter(|e| keys.contains(&e.key))
                         .map(|e| e.latest)
-                        .collect()
+                        .collect();
+                    mail.with_copies(&latest)
                 } else {
-                    keys.iter().flat_map(|k| mail.entry_messages(*k)).collect()
+                    copies_of(&keys)
                 };
+                let ids = data::flag_changes(&copies, MessageFlags::FLAGGED, on);
                 for key in &keys {
                     self.pending.entry(*key).or_default().flagged = Some(on);
                 }
@@ -1538,8 +1548,7 @@ impl MailWindow {
                 (Command::Star(ids, on), Some(undo))
             }
             Act::Important(on) => {
-                let ids: Vec<MessageId> =
-                    keys.iter().flat_map(|k| mail.entry_messages(*k)).collect();
+                let ids = data::flag_changes(&copies_of(&keys), MessageFlags::IMPORTANT, on);
                 for key in &keys {
                     self.pending.entry(*key).or_default().important = Some(on);
                 }
@@ -1548,8 +1557,7 @@ impl MailWindow {
             }
             Act::Pin(on) => {
                 // The whole conversation, wherever its messages are.
-                let ids: Vec<MessageId> =
-                    keys.iter().flat_map(|k| mail.entry_messages(*k)).collect();
+                let ids: Vec<MessageId> = copies_of(&keys).into_iter().map(|(id, _)| id).collect();
                 for key in &keys {
                     self.pending.entry(*key).or_default().pinned = Some(on);
                 }

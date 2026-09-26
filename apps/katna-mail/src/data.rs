@@ -481,6 +481,19 @@ impl Mail {
         }
     }
 
+    /// `messages` and their other stored copies, with their flags: what a
+    /// flag change must touch so the line shows it (see
+    /// [`Store::with_copies`](katna_store::Store::with_copies)).
+    pub fn with_copies(&self, messages: &[MessageId]) -> Vec<(MessageId, MessageFlags)> {
+        self.store.with_copies(messages).unwrap_or_else(|err| {
+            tracing::warn!("reading copies of messages: {err}");
+            messages
+                .iter()
+                .map(|&id| (id, MessageFlags::empty()))
+                .collect()
+        })
+    }
+
     /// The messages of a line that are in `folder`, for moving them out.
     pub fn entry_messages_in(&self, key: EntryKey, folder: FolderId) -> Vec<MessageId> {
         match key {
@@ -744,6 +757,21 @@ pub fn search(
     Ok((run(text)?, None))
 }
 
+/// Which of `copies` setting `flag` to `on` changes: the ones not in that
+/// state yet. Undo sets the opposite on exactly these, so it restores the
+/// copies as they were.
+pub fn flag_changes(
+    copies: &[(MessageId, MessageFlags)],
+    flag: MessageFlags,
+    on: bool,
+) -> Vec<MessageId> {
+    copies
+        .iter()
+        .filter(|(_, flags)| flags.contains(flag) != on)
+        .map(|(id, _)| *id)
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use katna_core::AccountKind;
@@ -753,6 +781,28 @@ mod tests {
 
     const RAW: &[u8] = b"From: Ada <ada@example.org>\r\nTo: bob@example.net\r\n\
 Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is final.\r\n";
+
+    #[test]
+    fn flag_changes_touch_only_what_changes() {
+        let copies = [
+            (MessageId(1), MessageFlags::FLAGGED | MessageFlags::SEEN),
+            (MessageId(2), MessageFlags::SEEN),
+            (MessageId(3), MessageFlags::FLAGGED),
+        ];
+        // Unstarring clears every starred copy; undo stars those again.
+        assert_eq!(
+            flag_changes(&copies, MessageFlags::FLAGGED, false),
+            [MessageId(1), MessageId(3)]
+        );
+        assert_eq!(
+            flag_changes(&copies, MessageFlags::FLAGGED, true),
+            [MessageId(2)]
+        );
+        assert_eq!(
+            flag_changes(&copies, MessageFlags::SEEN, false),
+            [MessageId(1), MessageId(2)]
+        );
+    }
 
     #[test]
     fn pinned_lines_go_first() {

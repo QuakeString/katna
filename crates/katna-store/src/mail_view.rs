@@ -302,6 +302,37 @@ fn thread_rows(conn: &Connection, thread: ThreadId) -> Result<Vec<Vec<ThreadRow>
     Ok(groups)
 }
 
+/// See [`Store::with_copies`](crate::Store::with_copies).
+pub(crate) fn with_copies(
+    conn: &Connection,
+    messages: &[MessageId],
+) -> Result<Vec<(MessageId, MessageFlags)>> {
+    let mut stmt = conn.prepare_cached(
+        "SELECT c.id, c.flags FROM message m JOIN message c
+           ON c.id = m.id
+           OR (c.account_id = m.account_id AND c.message_id_hdr = m.message_id_hdr)
+         WHERE m.id = ?1
+         ORDER BY c.id",
+    )?;
+    let mut out: Vec<(MessageId, MessageFlags)> = Vec::new();
+    for message in messages {
+        let rows = stmt.query_map([message.0], |row| {
+            let flags: i64 = row.get(1)?;
+            Ok((
+                MessageId(row.get(0)?),
+                MessageFlags::from_bits(u32::try_from(flags).unwrap_or_default()),
+            ))
+        })?;
+        for row in rows {
+            let row = row?;
+            if !out.iter().any(|(id, _)| *id == row.0) {
+                out.push(row);
+            }
+        }
+    }
+    Ok(out)
+}
+
 /// All messages of `thread`, oldest first; see [`thread_rows`].
 pub(crate) fn thread_messages(conn: &Connection, thread: ThreadId) -> Result<Vec<MessageId>> {
     Ok(thread_rows(conn, thread)?

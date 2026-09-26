@@ -867,6 +867,63 @@ mod tests {
     }
 
     #[test]
+    fn finds_every_copy_of_a_message() {
+        let (_tmp, mut store, account) = open();
+        let other = store
+            .add_account(AccountKind::Imap, "Home", "ada@example.net")
+            .unwrap()
+            .id;
+        let mut batch = store.mail_batch().unwrap();
+        let inbox = batch
+            .upsert_folder(account, "INBOX", Some(FolderRole::Inbox))
+            .unwrap();
+        let all = batch
+            .upsert_folder(account, "[Gmail]/All Mail", Some(FolderRole::All))
+            .unwrap();
+        let elsewhere = batch
+            .upsert_folder(other, "INBOX", Some(FolderRole::Inbox))
+            .unwrap();
+        let mut add = |account, folder, message: RemoteMessage<'_>| {
+            let Added::Message(id) = batch.add_remote_message(account, folder, &message).unwrap()
+            else {
+                panic!("expected a new message");
+            };
+            id
+        };
+        // Gmail mail synced before Gmail's message IDs: one row per label.
+        let starred = RemoteMessage {
+            flags: MessageFlags::FLAGGED,
+            ..remote(1, &[])
+        };
+        let in_inbox = add(account, inbox, starred);
+        let in_all = add(account, all, remote(1, &[]));
+        // The same Message-ID in another account is another message.
+        let other_account = add(other, elsewhere, remote(1, &[]));
+        let no_id = add(
+            account,
+            inbox,
+            RemoteMessage {
+                message_id_hdr: None,
+                ..remote(2, &[])
+            },
+        );
+        batch.commit().unwrap();
+
+        assert_eq!(
+            store.with_copies(&[in_all, no_id, in_inbox]).unwrap(),
+            [
+                (in_inbox, MessageFlags::FLAGGED),
+                (in_all, MessageFlags::empty()),
+                (no_id, MessageFlags::empty()),
+            ]
+        );
+        assert_eq!(
+            store.with_copies(&[other_account]).unwrap(),
+            [(other_account, MessageFlags::empty())]
+        );
+    }
+
+    #[test]
     fn finds_new_inbox_mail_for_notifications() {
         let (_tmp, mut store, account) = open();
         assert_eq!(store.latest_message(account).unwrap(), MessageId(0));
