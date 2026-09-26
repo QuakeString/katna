@@ -3,9 +3,9 @@
 //! Katna background service. See `docs/ARCHITECTURE.md` §9.
 //!
 //! The daemon is the only process that writes the store and talks to mail
-//! servers. It runs one sync worker per account and serves
-//! `in.invenia.katna.Pim1` on the session bus; owning the bus name keeps it
-//! to a single instance.
+//! servers. It runs one sync worker per account, keeps the search index up
+//! to date and serves `in.invenia.katna.Pim1` on the session bus; owning
+//! the bus name keeps it to a single instance.
 
 pub mod daemon;
 pub mod install;
@@ -14,11 +14,17 @@ pub mod service;
 
 use std::sync::Arc;
 
+use async_channel::{Receiver, Sender};
 use katna_core::{Paths, ids};
+use katna_search::{IndexEvent, Indexer, IndexerOptions, IndexerWaker};
 use katna_sync::worker::WorkerConfig;
 use zbus::fdo::{RequestNameFlags, RequestNameReply};
 
-use crate::{daemon::Daemon, secrets::Secrets, service::PimService};
+use crate::{
+    daemon::{Daemon, Notice},
+    secrets::Secrets,
+    service::PimService,
+};
 
 /// Why the daemon could not start.
 #[derive(Debug, thiserror::Error)]
@@ -37,6 +43,8 @@ pub enum StartError {
 pub struct Instance {
     pub daemon: Arc<Daemon>,
     connection: zbus::Connection,
+    /// `None` if the index could not be opened; mail still syncs.
+    indexer: Option<Indexer>,
 }
 
 impl Instance {
@@ -48,6 +56,7 @@ impl Instance {
         config: WorkerConfig,
         connection: zbus::Connection,
     ) -> Result<Self, StartError> {
+        let index_paths = paths.clone();
         let (daemon, notices) = Daemon::new(paths, secrets, config)?;
         connection
             .object_server()
@@ -63,16 +72,66 @@ impl Instance {
             | Err(zbus::Error::NameTaken) => return Err(StartError::AlreadyRunning),
             Err(err) => return Err(err.into()),
         }
-        smol::spawn(service::emit_signals(connection.clone(), notices)).detach();
+        // Only the daemon that owns the bus name may write the index.
+        let indexer = start_indexer(&index_paths);
+        let (forward, forwarded) = async_channel::unbounded();
+        smol::spawn(watch_mail(
+            notices,
+            forward,
+            indexer.as_ref().map(Indexer::waker),
+        ))
+        .detach();
+        smol::spawn(service::emit_signals(connection.clone(), forwarded)).detach();
         daemon.start().await?;
-        Ok(Self { daemon, connection })
+        Ok(Self {
+            daemon,
+            connection,
+            indexer,
+        })
     }
 
-    /// Releases the bus name and stops every worker.
+    /// Releases the bus name and stops every worker and the indexer.
     pub async fn shutdown(self) {
         if let Err(err) = self.connection.release_name(ids::DAEMON_BUS_NAME).await {
             tracing::debug!(%err, "releasing the bus name");
         }
         self.daemon.shutdown().await;
+        if let Some(indexer) = self.indexer {
+            // Commits what it has indexed; at most one batch more.
+            smol::unblock(move || indexer.stop()).await;
+        }
+    }
+}
+
+/// Starts indexing the store for search. Without an index, search is
+/// unavailable but mail still syncs, so a failure is only logged.
+fn start_indexer(paths: &Paths) -> Option<Indexer> {
+    let started = Indexer::start(paths, IndexerOptions::default(), |event| match event {
+        IndexEvent::Progress { indexed } => tracing::debug!(indexed, "indexing"),
+        IndexEvent::Updated(stats) => tracing::debug!(?stats, "index updated"),
+        IndexEvent::Failed(err) => tracing::warn!(%err, "indexing failed; retrying later"),
+    });
+    match started {
+        Ok(indexer) => Some(indexer),
+        Err(err) => {
+            tracing::error!(%err, "search index unavailable");
+            None
+        }
+    }
+}
+
+/// Passes `notices` on to `forward` and wakes the indexer when mail changed.
+async fn watch_mail(
+    notices: Receiver<Notice>,
+    forward: Sender<Notice>,
+    indexer: Option<IndexerWaker>,
+) {
+    while let Ok(notice) = notices.recv().await {
+        if let (Notice::MailChanged(_), Some(indexer)) = (notice, &indexer) {
+            indexer.changed();
+        }
+        if forward.send(notice).await.is_err() {
+            break;
+        }
     }
 }

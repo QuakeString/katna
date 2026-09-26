@@ -441,6 +441,21 @@ from or adds to the sketch above:
   the journal lists. An index of another schema version is deleted and
   rebuilt when opened for writing; opened read-only (as apps do) it is an
   error until the daemon has rebuilt it.
+- **In the daemon.** `katna-daemon` starts the indexer once it owns its bus
+  name (so a second instance never writes the index) and wakes it on every
+  `MailChanged` notice. If the index cannot be opened, mail still syncs
+  and the error is logged. Linking tantivy grows the daemon from 11.6 to
+  15.0 MB (14.3 MiB of its 15 MiB budget).
+  `katna_search::Indexer` runs updates on its own thread
+  with its own read-only store connection: once at start, then on
+  `Indexer::changed()` (the daemon calls it after each sync) and every 5 s
+  as a fallback for other writers. Calls while it is busy coalesce into one
+  more update. `IndexEvent`s report progress, finished updates and
+  failures (retried at the next wake). `Indexer::stop` makes a running
+  update commit what it has done and return within one batch; the next
+  start carries on. Apps open the index with `SearchIndex::open_read_only`,
+  which reloads by itself within about 0.5 s of each commit (tantivy's
+  `OnCommitWithDelay`), so no D-Bus signal is needed for search.
 - **Tools.** `katna-search-cli index|query` and `katna-bench search|synth`
   (synthetic corpus of Enron's shape for machines without Enron). The
   nightly `bench` job fails on a p99 over 50 ms or on overall p50/p99 more

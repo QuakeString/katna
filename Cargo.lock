@@ -3419,6 +3419,7 @@ dependencies = [
  "katna-core",
  "katna-dav",
  "katna-dbus",
+ "katna-import",
  "katna-meta",
  "katna-notify",
  "katna-org",
