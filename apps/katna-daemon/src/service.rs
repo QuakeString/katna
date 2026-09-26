@@ -55,6 +55,14 @@ macro_rules! pim_interface {
                 Ok(self.daemon.add_imap_account(account, password).await?.0)
             }
 
+            async fn discover_account(
+                &self,
+                address: String,
+            ) -> fdo::Result<(NewImapAccount, String)> {
+                let (account, source) = self.daemon.discover_account(&address).await?;
+                Ok((account, source.to_owned()))
+            }
+
             async fn set_password(&self, account: i64, password: String) -> fdo::Result<()> {
                 Ok(self
                     .daemon

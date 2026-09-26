@@ -3580,6 +3580,7 @@ dependencies = [
  "katna-import",
  "katna-meta",
  "katna-store",
+ "roxmltree 0.21.1",
  "rustls-platform-verifier",
  "serde",
  "serde_json",

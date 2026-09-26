@@ -16,6 +16,7 @@ use katna_dbus::{AccountStatus, NewImapAccount, OutboxItem, ServerSpec, state};
 use katna_store::{FolderId, MessageFlags, MessageId, Mode, SendState, Store};
 use katna_sync::{
     Credentials, Endpoint, MailBackend,
+    autoconfig::Discovery,
     net::Tls,
     ops::{self, ChangeError},
     outbox::{self, OutboxConfig, OutboxEvent, OutboxHandle, Outgoing, QueueError},
@@ -257,6 +258,32 @@ impl Daemon {
         let _ = self.notices.try_send(Notice::AccountsChanged);
         self.start_account(&account).await;
         Ok(account.id)
+    }
+
+    /// Finds the servers of `address`.
+    pub async fn discover_account(
+        &self,
+        address: &str,
+    ) -> Result<(NewImapAccount, &'static str), CommandError> {
+        let discovery =
+            Discovery::system().map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
+        let found = discovery
+            .discover(address)
+            .await
+            .map_err(CommandError::Failed)?;
+        tracing::info!(
+            address,
+            source = found.source.as_str(),
+            host = found.imap.host,
+            "discovered"
+        );
+        let account = NewImapAccount {
+            display_name: String::new(),
+            address: address.trim().to_owned(),
+            imap: spec(&found.imap),
+            smtp: found.smtp.as_ref().map(spec).unwrap_or_default(),
+        };
+        Ok((account, found.source.as_str()))
     }
 
     /// Checks and saves a new password, then restarts the account's worker.
@@ -664,6 +691,17 @@ async fn wait_for(account: AccountId, task: smol::Task<()>) {
     .await;
     if !stopped {
         tracing::warn!(%account, "worker did not stop in time");
+    }
+}
+
+/// A server as D-Bus sends it.
+fn spec(server: &Server) -> ServerSpec {
+    ServerSpec {
+        host: server.host.clone(),
+        port: server.port,
+        security: server.security.to_string(),
+        username: server.username.clone(),
+        accept_invalid_certs: server.accept_invalid_certs,
     }
 }
 

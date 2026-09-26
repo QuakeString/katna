@@ -146,6 +146,32 @@ fn rejects_bad_accounts_and_unknown_ids() {
 }
 
 #[test]
+fn discovers_servers() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let pim = PimProxy::new(&bus.connect().await).await.unwrap();
+        let (account, source) = pim.discover_account(" ada@gmail.com ").await.unwrap();
+        assert_eq!(source, "built-in");
+        assert_eq!(account.address, "ada@gmail.com");
+        assert_eq!(
+            (
+                account.imap.host.as_str(),
+                account.imap.port,
+                account.imap.security.as_str()
+            ),
+            ("imap.gmail.com", 993, "tls")
+        );
+        assert_eq!(account.smtp.host, "smtp.gmail.com");
+        let err = pim.discover_account("not an address").await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.Failed");
+        instance.shutdown().await;
+    });
+}
+
+#[test]
 fn only_one_daemon_per_bus() {
     let bus = Bus::start();
     let tmp = tempfile::tempdir().unwrap();

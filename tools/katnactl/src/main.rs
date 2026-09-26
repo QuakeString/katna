@@ -21,6 +21,7 @@ usage: katnactl status
                 [--imap HOST[:PORT]] [--security tls|starttls|plain]
                 [--smtp HOST[:PORT]] [--smtp-security tls|starttls|plain]
                 [--insecure]
+       katnactl discover ADDRESS
        katnactl password ACCOUNT
        katnactl remove ACCOUNT
        katnactl sync [ACCOUNT]
@@ -42,10 +43,13 @@ Talks to katna-daemon, which syncs your accounts in the background.
 status     Accounts and what their sync is doing.
 add-imap   Adds an IMAP account. Asks for the password (or reads one line
            from standard input), and the daemon checks it before saving it
-           in your keyring. For Gmail, Yahoo, iCloud and Fastmail the
-           servers are known; use an app password there. Other providers
-           need --imap. Ports default to 993/465 (tls) or 143/587 (starttls).
+           in your keyring. Without --imap the daemon finds the servers (as
+           `discover` does). Gmail, Yahoo and iCloud need an app password.
+           Ports default to 993/465 (tls) or 143/587 (starttls).
            --insecure accepts self-signed certificates (test servers only).
+discover   Shows the servers the daemon finds for an address, and where
+           it found them (provider settings, Thunderbird's database, DNS,
+           or by trying the usual names).
 password   Changes an account's saved password.
 remove     Deletes an account, its synced mail and its password.
 sync       Syncs every folder now, of one account or of all.
@@ -131,6 +135,17 @@ fn run(command: &str, args: &[String]) -> Result<()> {
     match command {
         "status" => no_args(args).and_then(|()| with_daemon(status)),
         "add-imap" => add_imap(args),
+        "discover" => match args {
+            [address] => {
+                let address = address.clone();
+                with_daemon(|pim| async move {
+                    let (account, source) = pim.discover_account(&address).await?;
+                    print_discovered(&account, &source);
+                    Ok(())
+                })
+            }
+            _ => Err(usage("discover needs one address")),
+        },
         "password" => {
             let id = one_account(args)?;
             let password = read_password()?;
@@ -463,35 +478,6 @@ async fn watch(pim: PimProxy<'static>) -> Result<()> {
     Ok(())
 }
 
-/// Well-known providers: (domains, IMAP host, SMTP host, SMTP security).
-/// Proper autoconfiguration is plan task 1.2.
-const PROVIDERS: &[(&[&str], &str, &str, &str)] = &[
-    (
-        &["gmail.com", "googlemail.com"],
-        "imap.gmail.com",
-        "smtp.gmail.com",
-        "tls",
-    ),
-    (
-        &["yahoo.com", "ymail.com"],
-        "imap.mail.yahoo.com",
-        "smtp.mail.yahoo.com",
-        "tls",
-    ),
-    (
-        &["icloud.com", "me.com", "mac.com"],
-        "imap.mail.me.com",
-        "smtp.mail.me.com",
-        "starttls",
-    ),
-    (
-        &["fastmail.com", "fastmail.fm"],
-        "imap.fastmail.com",
-        "smtp.fastmail.com",
-        "tls",
-    ),
-];
-
 fn add_imap(args: &[String]) -> Result<()> {
     let mut address = None;
     let mut name = String::new();
@@ -522,39 +508,45 @@ fn add_imap(args: &[String]) -> Result<()> {
         }
     }
     let address = address.ok_or_else(|| usage("add-imap needs an address"))?;
-    let domain = address
-        .rsplit_once('@')
-        .map(|(_, domain)| domain.to_ascii_lowercase())
-        .unwrap_or_default();
-    let known = PROVIDERS
-        .iter()
-        .find(|(domains, ..)| domains.contains(&domain.as_str()));
-    let (imap, smtp, smtp_security) = match (imap, known) {
-        (Some(imap), _) => {
+    let account = match imap {
+        Some(imap) => {
             let smtp_security = smtp_security.unwrap_or_else(|| security.clone());
-            (imap, smtp, smtp_security)
+            NewImapAccount {
+                display_name: name,
+                address: address.clone(),
+                imap: server_spec(&imap, &security, &user, insecure, [993, 143])?,
+                smtp: match smtp {
+                    Some(smtp) => server_spec(&smtp, &smtp_security, &user, insecure, [465, 587])?,
+                    None => ServerSpec::default(),
+                },
+            }
         }
-        (None, Some((_, imap_host, smtp_host, smtp_sec))) => (
-            (*imap_host).to_owned(),
-            smtp.or_else(|| Some((*smtp_host).to_owned())),
-            smtp_security.unwrap_or_else(|| (*smtp_sec).to_owned()),
-        ),
-        (None, None) => {
-            return Err(usage(format!(
-                "the servers for {domain:?} are not known; give --imap HOST"
-            )));
+        None => {
+            let lookup = address.clone();
+            let mut found = None;
+            let slot = &mut found;
+            with_daemon(|pim| async move {
+                let (account, source) = pim.discover_account(&lookup).await?;
+                print_discovered(&account, &source);
+                *slot = Some(account);
+                Ok(())
+            })?;
+            let mut account = found.ok_or_else(|| error("no servers found"))?;
+            account.display_name = name;
+            if let Some(smtp) = smtp {
+                let smtp_security = smtp_security.unwrap_or_else(|| "tls".to_owned());
+                account.smtp = server_spec(&smtp, &smtp_security, &user, insecure, [465, 587])?;
+            }
+            for server in [&mut account.imap, &mut account.smtp] {
+                if !user.is_empty() && !server.host.is_empty() {
+                    server.username = user.clone();
+                }
+                server.accept_invalid_certs = insecure;
+            }
+            account
         }
     };
-    let account = NewImapAccount {
-        display_name: name,
-        address: address.clone(),
-        imap: server_spec(&imap, &security, &user, insecure, [993, 143])?,
-        smtp: match smtp {
-            Some(smtp) => server_spec(&smtp, &smtp_security, &user, insecure, [465, 587])?,
-            None => ServerSpec::default(),
-        },
-    };
-    if known.is_some_and(|(domains, ..)| domains[0] == "gmail.com") {
+    if account.imap.host == "imap.gmail.com" {
         eprintln!("Gmail needs an app password: Google Account > Security > App passwords.");
     }
     let password = read_password()?;
@@ -565,6 +557,19 @@ fn add_imap(args: &[String]) -> Result<()> {
         println!("follow it with `katnactl watch` or `katnactl status`");
         Ok(())
     })
+}
+
+fn print_discovered(account: &NewImapAccount, source: &str) {
+    let show = |spec: &ServerSpec| match spec.host.as_str() {
+        "" => "not found".to_owned(),
+        host => format!(
+            "{host}:{} {} as {}",
+            spec.port, spec.security, spec.username
+        ),
+    };
+    println!("found via {source}:");
+    println!("  IMAP  {}", show(&account.imap));
+    println!("  SMTP  {}", show(&account.smtp));
 }
 
 /// Parses `HOST[:PORT]`; `ports` are the defaults for tls and starttls.

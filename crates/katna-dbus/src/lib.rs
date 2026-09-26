@@ -117,6 +117,13 @@ macro_rules! pim_proxy {
             fn add_imap_account(&self, account: &NewImapAccount, password: &str)
             -> zbus::Result<i64>;
 
+            /// Finds the IMAP and SMTP servers of `address` (provider
+            /// settings, Thunderbird's ISPDB, DNS, then guesses), for
+            /// `AddImapAccount`. Returns them and where they came from:
+            /// `built-in`, `provider`, `ispdb`, `dns-srv`, `mx` or `guess`.
+            /// An SMTP server with an empty host was not found.
+            fn discover_account(&self, address: &str) -> zbus::Result<(NewImapAccount, String)>;
+
             /// Checks and saves a new password, then syncs.
             fn set_password(&self, account: i64, password: &str) -> zbus::Result<()>;
 
