@@ -587,9 +587,17 @@ impl MailBackend for ImapBackend {
         self.run(ImapMailboxCreate::new(mailbox)).await
     }
 
-    async fn append(&mut self, folder: &str, message: Vec<u8>) -> Result<()> {
+    async fn append_with_flags(
+        &mut self,
+        folder: &str,
+        message: Vec<u8>,
+        flags: &Flags,
+    ) -> Result<()> {
         let mailbox = Mailbox::try_from(folder.to_owned()).map_err(protocol)?;
-        let opts = ImapMessageAppendOptions::default();
+        let opts = ImapMessageAppendOptions {
+            flags: imap_flags(flags)?,
+            ..ImapMessageAppendOptions::default()
+        };
         self.run(ImapMessageAppend::new(mailbox, message, opts))
             .await?;
         Ok(())

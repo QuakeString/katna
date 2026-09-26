@@ -15,9 +15,9 @@ use std::{
 
 use async_io::Timer;
 use futures_lite::{FutureExt, StreamExt};
-use katna_core::{AccountKind, Paths};
+use katna_core::{AccountKind, AccountSettings, Paths, Server};
 use katna_daemon::{Instance, StartError, secrets::Secrets};
-use katna_dbus::{NewImapAccount, PimProxy, ServerSpec, state};
+use katna_dbus::{NewImapAccount, PimProxy, ServerSpec, send_state, state};
 use katna_import::{Flags, IncomingMessage, MessageSink, StoreSink, parse_message};
 use katna_search::{Query, SearchIndex, SearchOptions};
 use katna_store::{Added, MessageFlags, Mode, NewMessage, Store};
@@ -328,6 +328,109 @@ fn changes_imported_mail_in_the_store() {
     });
 }
 
+#[test]
+fn queues_undoes_and_retries_outgoing_mail() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    // Nothing listens on this port once the listener is gone.
+    let closed = std::net::TcpListener::bind("127.0.0.1:0")
+        .unwrap()
+        .local_addr()
+        .unwrap()
+        .port();
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    let local = store
+        .add_account(AccountKind::Local, "enron", "enron@local")
+        .unwrap()
+        .id;
+    let account = store
+        .add_account(AccountKind::Imap, "Alice", "alice@katna.test")
+        .unwrap()
+        .id;
+    let smtp = Server {
+        host: "127.0.0.1".into(),
+        port: closed,
+        security: katna_core::Security::Tls,
+        username: "alice@katna.test".into(),
+        accept_invalid_certs: true,
+    };
+    let settings = AccountSettings {
+        imap: None,
+        smtp: Some(smtp),
+    };
+    store.set_account_settings(account, &settings).unwrap();
+    drop(store);
+    let secrets = Secrets::memory();
+    let Secrets::Memory(passwords) = &secrets else {
+        unreachable!()
+    };
+    passwords
+        .lock()
+        .unwrap()
+        .insert(account, "katna-dev".into());
+    let message = b"From: alice@katna.test\r\nTo: bob@katna.test\r\n\
+        Subject: Lunch\r\n\r\nNoon?\r\n";
+
+    smol::block_on(async {
+        let instance = start(&bus, &paths, secrets).await.unwrap();
+        let client = bus.connect().await;
+        let pim = PimProxy::new(&client).await.unwrap();
+        let mut changed = pim.receive_outbox_changed().await.unwrap();
+
+        let err = pim.queue_send(local.0, message, 0).await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+        assert!(err.to_string().contains("no SMTP server"), "{err}");
+        let err = pim
+            .queue_send(account.0, b"Subject: x\r\n\r\n", 0)
+            .await
+            .unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+
+        // Undo send: the message waits for its delay.
+        let id = pim.queue_send(account.0, message, 3600).await.unwrap();
+        let signal = within("OutboxChanged", 5, changed.next()).await.unwrap();
+        assert_eq!(signal.args().unwrap().id, id);
+        let outbox = pim.outbox().await.unwrap();
+        assert_eq!(outbox.len(), 1);
+        assert_eq!(
+            (
+                outbox[0].account,
+                outbox[0].subject.as_str(),
+                outbox[0].state.as_str()
+            ),
+            (account.0, "Lunch", send_state::QUEUED)
+        );
+        assert!(!pim.discard_send(id).await.unwrap(), "still queued");
+        assert!(pim.undo_send(id).await.unwrap());
+        assert!(!pim.undo_send(id).await.unwrap());
+        assert_eq!(pim.outbox().await.unwrap()[0].state, send_state::CANCELLED);
+        assert!(pim.discard_send(id).await.unwrap());
+        assert!(pim.outbox().await.unwrap().is_empty());
+
+        // Offline: it goes back in the queue and says why.
+        let id = pim.queue_send(account.0, message, 0).await.unwrap();
+        within("retry", 10, async {
+            loop {
+                changed.next().await;
+                let outbox = pim.outbox().await.unwrap();
+                if let Some(item) = outbox.iter().find(|item| item.id == id)
+                    && item.state == send_state::QUEUED
+                    && item.detail.starts_with("offline")
+                {
+                    break;
+                }
+            }
+        })
+        .await;
+
+        // Removing the account takes its outgoing mail with it.
+        assert!(pim.remove_account(account.0).await.unwrap());
+        assert!(pim.outbox().await.unwrap().is_empty());
+        instance.shutdown().await;
+    });
+}
+
 fn port(var: &str, default: u16) -> u16 {
     std::env::var(var)
         .ok()
@@ -486,4 +589,164 @@ fn adds_syncs_restarts_and_removes_dev_accounts() {
             instance.shutdown().await;
         });
     }
+}
+
+#[test]
+#[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
+fn sends_through_dev_servers() {
+    let servers = [
+        (
+            "stalwart",
+            port("KATNA_STALWART_IMAPS_PORT", 10993),
+            "tls",
+            port("KATNA_STALWART_SUBMISSIONS_PORT", 10465),
+            "tls",
+        ),
+        (
+            "dovecot",
+            port("KATNA_DOVECOT_IMAP_PORT", 20143),
+            "starttls",
+            port("KATNA_DOVECOT_SUBMISSION_PORT", 20587),
+            "starttls",
+        ),
+    ];
+    for (name, imap_port, security, smtp_port, smtp_security) in servers {
+        let bus = Bus::start();
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        smol::block_on(async {
+            let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+            let client = bus.connect().await;
+            let pim = PimProxy::new(&client).await.unwrap();
+            let mut account = imap("127.0.0.1", imap_port, security);
+            account.smtp = ServerSpec {
+                host: "127.0.0.1".into(),
+                port: smtp_port,
+                security: smtp_security.into(),
+                username: String::new(),
+                accept_invalid_certs: true,
+            };
+            let id = pim.add_imap_account(&account, "katna-dev").await.unwrap();
+            wait_until_online(&pim, id).await;
+            let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
+            let account_id = katna_core::AccountId(id);
+            let sent = reader
+                .folders(account_id)
+                .unwrap()
+                .into_iter()
+                .find(|f| f.role == Some(katna_store::FolderRole::Sent));
+
+            let subject = unique("send");
+            let message = format!(
+                "From: Alice <alice@katna.test>\r\nTo: alice@katna.test\r\n\
+                 Bcc: bob@katna.test\r\nSubject: {subject}\r\n\r\nSent by Katna.\r\n"
+            );
+            let started = std::time::Instant::now();
+            let outbox_id = pim.queue_send(id, message.as_bytes(), 0).await.unwrap();
+            // Sent, then filed: the outbox forgets it.
+            within("sent and filed", 30, async {
+                while !pim.outbox().await.unwrap().is_empty() {
+                    let item = &pim.outbox().await.unwrap()[0];
+                    assert_eq!(item.id, outbox_id);
+                    assert_ne!(item.state, send_state::FAILED, "{name}: {item:?}");
+                    Timer::after(Duration::from_millis(20)).await;
+                }
+            })
+            .await;
+            eprintln!("{name}: sent and filed in {:?}", started.elapsed());
+
+            let has = |folder: katna_store::FolderId| {
+                reader
+                    .messages_in_folder(folder)
+                    .unwrap()
+                    .into_iter()
+                    .find(|m| m.subject == subject)
+            };
+            if let Some(sent) = &sent {
+                let copy = within("copy in Sent", 30, async {
+                    loop {
+                        if let Some(copy) = has(sent.id) {
+                            return copy;
+                        }
+                        Timer::after(Duration::from_millis(50)).await;
+                    }
+                })
+                .await;
+                assert!(copy.flags.contains(MessageFlags::SEEN), "{name}");
+                let copies = reader.messages_in_folder(sent.id).unwrap();
+                let copies = copies.iter().filter(|m| m.subject == subject).count();
+                assert_eq!(copies, 1, "{name}: the server filed one too");
+                pim.fetch_body(copy.id.0).await.unwrap();
+                let stored = &reader.messages_by_id(&[copy.id]).unwrap()[0];
+                let raw = reader
+                    .blobs()
+                    .get(&stored.blob_hash.unwrap())
+                    .unwrap()
+                    .unwrap();
+                let raw = String::from_utf8_lossy(&raw);
+                assert!(
+                    raw.contains("Bcc: bob@katna.test"),
+                    "{name}: the sender's copy keeps Bcc"
+                );
+                assert!(raw.contains("Message-ID: <"), "{name}");
+            } else {
+                eprintln!("{name}: no Sent folder; nothing filed");
+            }
+
+            if name == "stalwart" {
+                // Delivered back to alice, without the Bcc line.
+                let inbox = reader
+                    .folders(account_id)
+                    .unwrap()
+                    .into_iter()
+                    .find(|f| f.path == "INBOX")
+                    .unwrap();
+                let delivered = within("delivery", 30, async {
+                    loop {
+                        if let Some(message) = has(inbox.id) {
+                            return message;
+                        }
+                        pim.sync_now(id).await.unwrap();
+                        Timer::after(Duration::from_millis(200)).await;
+                    }
+                })
+                .await;
+                pim.fetch_body(delivered.id.0).await.unwrap();
+                let stored = &reader.messages_by_id(&[delivered.id]).unwrap()[0];
+                let raw = reader
+                    .blobs()
+                    .get(&stored.blob_hash.unwrap())
+                    .unwrap()
+                    .unwrap();
+                let raw = String::from_utf8_lossy(&raw);
+                assert!(
+                    !raw.contains("bob@katna.test"),
+                    "{name}: Bcc leaked:\n{raw}"
+                );
+            } else {
+                within("Mailpit", 30, async {
+                    while !mailpit_has(&subject) {
+                        Timer::after(Duration::from_millis(200)).await;
+                    }
+                })
+                .await;
+            }
+
+            assert!(pim.remove_account(id).await.unwrap());
+            instance.shutdown().await;
+        });
+    }
+}
+
+/// Asks Mailpit's API whether a message with this subject arrived.
+fn mailpit_has(subject: &str) -> bool {
+    use std::io::{Read, Write};
+    let port = port("KATNA_MAILPIT_HTTP_PORT", 8025);
+    let mut stream = std::net::TcpStream::connect(("127.0.0.1", port)).unwrap();
+    let request =
+        format!("GET /api/v1/search?query=subject:{subject} HTTP/1.0\r\nHost: 127.0.0.1\r\n\r\n");
+    stream.write_all(request.as_bytes()).unwrap();
+    let mut response = String::new();
+    stream.read_to_string(&mut response).unwrap();
+    response.contains(subject)
 }
