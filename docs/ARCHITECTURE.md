@@ -149,7 +149,7 @@ are testable and benchmarkable without a GUI.
 | Icons | `freedesktop-icons` + `resvg` | |
 | Spell check | `spellbook` | Hunspell dictionaries. |
 | Mail rules on the server | `sieve-rs` (compile) + ManageSieve | |
-| OpenPGP (later) | `sequoia-openpgp` or `pgp` (rPGP) | |
+| OpenPGP and S/MIME | The user's GnuPG: `gpg` and `gpgsm` (`katna-crypto`) | Like KMail: existing keys, trust, gpg-agent, pinentry and smartcards work unchanged (§19.1). Sequoia/rPGP kept in reserve. |
 | Server | `axum`, PostgreSQL (`sqlx`) | |
 | Plasma extensions | C++ / Qt 6 / QML, KF6, libplasma | Only in `integrations/plasma-*` (§15.6). |
 
@@ -1628,9 +1628,81 @@ ashpd), IMAP parsing and regex.
 - Metadata uploaded to Katna Server is E2E-encrypted where possible.
 - The D-Bus API is session-bus only; inline replies and actions go through
   the same outbox and undo delay as normal sends.
-- OpenPGP (later): Sequoia or rPGP. S/MIME: later, Rust support is weaker.
+- OpenPGP and S/MIME through the user's GnuPG (§19.1).
 - The search index contains message text: it is covered by the same disk
-  protection as the mail itself. Decrypted PGP mail is not indexed by default.
+  protection as the mail itself. Decrypted mail is never indexed.
+
+### 19.1 Encrypted and signed mail
+
+**Approach.** Katna does not keep keys. Like KMail (which uses GPGME),
+`katna-crypto` runs the user's `gpg` for OpenPGP and `gpgsm` for S/MIME,
+reading their machine-readable status lines (`--status-fd`). So the keys
+people already have, their trust settings (web of trust, TOFU, certificate
+chains), the gpg-agent passphrase cache, pinentry (KDE's or GNOME's) and
+smartcards all work with no setup, and no key material passes through
+Katna. `gnupg` is always installed on Arch (pacman needs it). A pure-Rust
+engine (Sequoia, rPGP) stays in reserve for Flatpak or systems without
+GnuPG; it would sit behind the same `katna_crypto::open` API.
+
+**Reading (done).** `katna_crypto::protection(raw)` tells cheaply whether a
+message is encrypted or signed; `katna_crypto::open(raw)` runs GnuPG and
+returns the message with the protected part replaced by its content, plus a
+report: decrypted or why not (no secret key, passphrase prompt closed,
+damaged data, GnuPG missing), and each signature with its state (good, bad,
+expired, key expired or revoked, key missing), the signer, the key's
+addresses and GnuPG's validity. Supported: PGP/MIME (RFC 3156), inline PGP
+(encrypted and clear-signed, in the part's own charset), S/MIME (RFC 8551)
+enveloped, opaque-signed and detached-signed, and layers of these (signed
+then encrypted). Protected headers (`protected-headers="v1"`) bring the
+real Subject; other inner headers are ignored.
+
+- **Where.** Katna Mail opens a message when it is shown, on a background
+  thread (pinentry may be waiting for the user). Plaintext lives only in
+  the app's memory: it is never written to the store, the blob store, the
+  search index or a temporary file (detached signatures go to a temporary
+  file in `$XDG_RUNTIME_DIR`; they are not secret). The daemon never
+  decrypts, so no passphrase prompt appears without the user opening a
+  message.
+- **Banner.** Above the body: "Encrypted message", "Signed by … · verified"
+  (green), "the key is not verified", "who is not the sender", "Bad
+  signature", "Signed with a key you don't have", and failures with a "Try
+  again" when the prompt was closed.
+- **Verified** means: a good signature, from a key GnuPG fully trusts,
+  whose addresses include the `From` address. A good signature by someone
+  else is shown as a warning, not as a signature by the sender.
+- **EFAIL.** Encrypted content is only opened when it is the whole message
+  (the root part); GnuPG refuses unauthenticated (no MDC) ciphertext. Signed
+  parts are checked wherever they are; when protection covers only a part
+  (a mailing list footer), the banner says the rest could come from anyone.
+  Remote content stays blocked in encrypted mail whatever the setting
+  (for the HTML view).
+- **Snippets and search.** Inline armor is left out of list snippets and
+  the index (`katna_crypto::without_armor`): encrypted blocks are dropped,
+  clear-signed text is kept without its armor.
+
+**Sending (done).** Compose has Encrypt (lock) and Sign (shield) toggles
+at the end of the recipients row. Answers to and forwards of encrypted mail
+start encrypted and signed, in the same standard. The app builds the
+message as usual, then `katna_crypto::protect` wraps it (PGP/MIME
+`multipart/signed` or `multipart/encrypted`; S/MIME `multipart/signed` or
+`application/pkcs7-mime` enveloped, signed inside first) before it is
+queued, so the outbox and Sent hold only what was sent. Details:
+
+- Keys are chosen by exact address in the local keyring
+  (`katna_crypto::encryption_keys`: usable for encryption, a verified key
+  before an unverified one) and passed to GnuPG by fingerprint, so GnuPG
+  never looks a recipient up on the network (WKD) while sending. A key the
+  user has not certified is still used (`--trust-model always`); a
+  recipient without any key stops the send with "no key for …" and the
+  message comes back.
+- The sender is always a recipient too, so Sent stays readable. Bcc
+  recipients are hidden recipients in OpenPGP (`--hidden-recipient`); CMS
+  has no such thing.
+- OpenPGP by default; S/MIME when answering S/MIME mail or when the sender
+  only has an S/MIME certificate.
+- Routing headers (From, To, Subject) stay outside the protection; hiding
+  the subject (protected headers) and Autocrypt headers come later (E.3).
+
 
 ## 20. Dependency policy
 

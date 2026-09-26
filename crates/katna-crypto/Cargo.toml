@@ -1,6 +1,6 @@
 [package]
-name = "katna-import"
-description = "Maildir and mbox import into the Katna store."
+name = "katna-crypto"
+description = "Encrypted and signed mail (OpenPGP and S/MIME) through the user's GnuPG."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -9,10 +9,10 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-katna-core.workspace = true
-katna-crypto.workspace = true
-katna-store.workspace = true
+jiff.workspace = true
 mail-parser.workspace = true
+tempfile.workspace = true
+tracing.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true
