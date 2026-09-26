@@ -207,6 +207,35 @@ clicking it focuses the right message on Wayland; reply-all from the
 Plasma notification is delivered (with undo); KRunner and GNOME search
 find contacts, mail and organizations in < 50 ms.
 
+### Release track — update channels and safe updates (before the first public release)
+
+Planned 26 September 2026 and **not started**: the basic apps come first.
+The design is `ARCHITECTURE.md` §21.2. Until this track is done, only the
+nightly `arch-latest` build exists and it is for testers. It must be done
+before Katna is offered as a stable release or on Flathub. U.2 and U.3 are
+cheap and protect testers' data too, so they may start earlier, once the
+mail schema stops changing every week.
+
+| Task | Deliverable |
+|---|---|
+| U.1 Versions and channels | SemVer tags (`vX.Y.Z`, `vX.Y.Z-beta.N`); nightly, beta and stable channels per format (§21.2 table); `docs/RELEASING.md` |
+| U.2 Migration fixtures | A committed database of each released schema version (mail, PIM, blobs) and a test that migrates each to the current version and compares counts and query answers |
+| U.3 Backup before migrating | The daemon backs up each database before raising its `user_version`, checks free space first, keeps the last two backups |
+| U.4 Schema compatibility | `schema_meta.min_reader_version`; expand-then-contract rule checked in review and by a rollback test; settings keep unknown keys |
+| U.5 Running while updated | Daemon notices its binary was replaced and restarts when idle; `Version()` on D-Bus; restart pill in the apps; old/new app and daemon tests |
+| U.6 Health check and safe mode | First-start self-check, `health.toml`, safe mode after three failed starts, restore from backup, export of local-only data, "Copy debug report" |
+| U.7 Upgrade and rollback tests in CI | Container test: previous stable → candidate with the daemon running, against the dev servers; candidate → previous stable |
+| U.8 Release workflow | On a tag: build every format once, run the checks, publish to beta; promotion to stable copies the same files after a required reviewer approves |
+| U.9 Signing | GPG-signed pacman packages and repository databases (`SigLevel = Required`); minisign-signed manifests and AppImages; keys only in the release environment |
+| U.10 Update checks | Daemon reads the signed channel manifest (daily, not on metered networks, can be turned off); Flatpak update monitor; AppImage self-update with staged rollout and the `pulled` flag |
+
+**Done when:** a beta built by the release workflow upgrades a running
+install of the previous stable on Arch and Ubuntu without losing a message,
+setting, password or queued send; installing the previous stable again
+still opens the data or restores the backup; a daemon made to fail its
+self-check starts in safe mode and restores the backup from its
+notification; promotion to stable ships byte-identical, signed files.
+
 ### Phase 5 — Gmail-class features (≈ 8 weeks)
 
 Labels (IMAP keywords, Gmail labels), snooze, send later, follow-up
@@ -284,6 +313,7 @@ Plasma integration (Phase 6), which have few dependencies on the rest.
 |---|---|
 | Parsers (query, MIME wrapper, iCalendar, vCard) | Unit tests, property tests (`proptest`), fuzzing (`cargo-fuzz`) |
 | Store | Migration tests (every schema version upgrades cleanly), crash-safety tests |
+| Updates | Migration fixtures of every released schema, upgrade and rollback tests in containers, old/new app and daemon over D-Bus (release track U.2, U.7) |
 | Search | Relevance test set (queries with expected top results), Enron benchmarks |
 | Sync | Integration tests against Stalwart, Dovecot, Radicale in CI; recorded sessions for Gmail/Fastmail quirks |
 | Threading, recurrence | Property tests and reference data sets |

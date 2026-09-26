@@ -25,6 +25,55 @@ pub struct Config {
     pub logging: Logging,
     pub sending: Sending,
     pub mail: MailView,
+    pub sync: SyncConfig,
+    pub notifications: Notifications,
+}
+
+/// Desktop notifications from `katna-daemon` (`docs/ARCHITECTURE.md` §15.1).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Notifications {
+    /// Notify about new mail in the inbox (Primary tab).
+    pub new_mail: bool,
+}
+
+impl Default for Notifications {
+    fn default() -> Self {
+        Self { new_mail: true }
+    }
+}
+
+/// How `katna-daemon` syncs (`docs/ARCHITECTURE.md` §6.1).
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SyncConfig {
+    /// Whether to save data as on a metered network: no bodies downloaded
+    /// ahead of time.
+    pub metered: Metered,
+}
+
+/// [`SyncConfig::metered`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Metered {
+    /// Ask NetworkManager.
+    #[default]
+    Auto,
+    /// Always, for example on a phone hotspot NetworkManager does not know.
+    Always,
+    /// Never, whatever NetworkManager says.
+    Never,
+}
+
+impl Metered {
+    /// Whether to act metered when NetworkManager says `network`.
+    pub fn decide(self, network: bool) -> bool {
+        match self {
+            Self::Auto => network,
+            Self::Always => true,
+            Self::Never => false,
+        }
+    }
 }
 
 /// Background-service behavior (`docs/ARCHITECTURE.md` §9.2).
@@ -97,6 +146,9 @@ pub struct MailView {
     pub inbox_tabs: bool,
     pub density: Density,
     pub theme: Theme,
+    /// Use the desktop's color scheme and accent color instead of Katna's
+    /// own colors.
+    pub desktop_colors: bool,
 }
 
 impl Default for MailView {
@@ -108,6 +160,7 @@ impl Default for MailView {
             inbox_tabs: true,
             density: Density::Default,
             theme: Theme::System,
+            desktop_colors: true,
         }
     }
 }
@@ -276,9 +329,28 @@ mod tests {
         assert_eq!(config.mail.reading_pane, ReadingPane::None);
         assert_eq!(config.mail.density, Density::Compact);
         assert_eq!(config.mail.theme, Theme::Dark);
+        assert!(config.mail.desktop_colors);
         assert!(Config::parse("[mail]\nreading_pane_share = 0.9\n").is_err());
         let config = Config::parse("[sending]\nsignature = \"Kay\\nEnron\"\n").unwrap();
         assert_eq!(config.sending.signature, "Kay\nEnron");
+    }
+
+    #[test]
+    fn new_mail_notifications_are_on_by_default() {
+        assert!(Config::default().notifications.new_mail);
+        let config = Config::parse("[notifications]\nnew_mail = false\n").unwrap();
+        assert!(!config.notifications.new_mail);
+    }
+
+    #[test]
+    fn metered_setting() {
+        assert_eq!(Config::default().sync.metered, Metered::Auto);
+        let config = Config::parse("[sync]\nmetered = \"always\"\n").unwrap();
+        assert_eq!(config.sync.metered, Metered::Always);
+        assert!(Config::parse("[sync]\nmetered = \"sometimes\"\n").is_err());
+        assert!(Metered::Auto.decide(true) && !Metered::Auto.decide(false));
+        assert!(Metered::Always.decide(false));
+        assert!(!Metered::Never.decide(true));
     }
 
     #[test]

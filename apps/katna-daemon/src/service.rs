@@ -134,6 +134,17 @@ macro_rules! pim_interface {
                 Ok(self.daemon.discard_send(id)?)
             }
 
+            /// Reads the settings file again (after Katna Mail saved it).
+            async fn reload_config(&self) -> fdo::Result<()> {
+                Ok(self.daemon.reload_config()?)
+            }
+
+            /// Whether the daemon saves data as on a metered network: from
+            /// NetworkManager, or the `sync.metered` setting.
+            async fn metered(&self) -> bool {
+                self.daemon.metered()
+            }
+
             async fn outbox(&self) -> fdo::Result<Vec<OutboxItem>> {
                 Ok(self.daemon.outbox()?)
             }
@@ -160,6 +171,12 @@ macro_rules! pim_interface {
 
             #[zbus(signal)]
             async fn outbox_changed(emitter: &SignalEmitter<'_>, id: i64) -> zbus::Result<()>;
+
+            #[zbus(signal)]
+            async fn metered_changed(
+                emitter: &SignalEmitter<'_>,
+                metered: bool,
+            ) -> zbus::Result<()>;
         }
     };
 }
@@ -206,6 +223,7 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::StatusChanged(id) => PimService::sync_status_changed(&emitter, id.0).await,
             Notice::MailChanged(id) => PimService::mail_changed(&emitter, id.0).await,
             Notice::OutboxChanged(id) => PimService::outbox_changed(&emitter, id).await,
+            Notice::MeteredChanged(on) => PimService::metered_changed(&emitter, on).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");

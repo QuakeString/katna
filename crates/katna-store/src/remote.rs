@@ -168,6 +168,51 @@ impl Store {
         Ok(rows.collect::<rusqlite::Result<_>>()?)
     }
 
+    /// The newest message ID of `account`; 0 when it has none.
+    pub fn latest_message(&self, account: AccountId) -> Result<MessageId> {
+        let id: Option<i64> = self
+            .mail
+            .prepare_cached("SELECT max(id) FROM message WHERE account_id = ?1")?
+            .query_row([account.0], |row| row.get(0))?;
+        Ok(MessageId(id.unwrap_or(0)))
+    }
+
+    /// Mail worth a new-mail notification: unread messages of `account`
+    /// in its inbox, in the Primary tab or not classified, stored after
+    /// message `after` and dated `since` (Unix seconds) or later. Oldest
+    /// first, at most `limit`.
+    pub fn new_inbox_mail(
+        &self,
+        account: AccountId,
+        after: MessageId,
+        since: i64,
+        limit: u32,
+    ) -> Result<Vec<MessageId>> {
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT m.id FROM message m
+             WHERE m.account_id = ?1 AND m.id > ?2 AND (m.flags & ?3) = 0
+               AND m.date >= ?4 AND (m.category IS NULL OR m.category = ?5)
+               AND EXISTS (SELECT 1 FROM message_location l
+                           JOIN folder f ON f.id = l.folder_id
+                           WHERE l.message_id = m.id AND f.role = ?6)
+             ORDER BY m.id LIMIT ?7",
+        )?;
+        let unwanted = (MessageFlags::SEEN | MessageFlags::DELETED).bits();
+        let rows = stmt.query_map(
+            params![
+                account.0,
+                after.0,
+                unwanted,
+                since,
+                MailCategory::Primary.to_storage(),
+                FolderRole::Inbox.as_str(),
+                limit
+            ],
+            |row| row.get(0).map(MessageId),
+        )?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
     /// The folders of `account`, ordered by path.
     pub fn folders(&self, account: AccountId) -> Result<Vec<StoredFolder>> {
         let mut stmt = self.mail.prepare_cached(
@@ -809,6 +854,48 @@ mod tests {
             .query_row("SELECT count(*) FROM attachment", [], |row| row.get(0))
             .unwrap();
         assert_eq!(rows, 0, "attachments go with their message");
+    }
+
+    #[test]
+    fn finds_new_inbox_mail_for_notifications() {
+        let (_tmp, mut store, account) = open();
+        assert_eq!(store.latest_message(account).unwrap(), MessageId(0));
+        let mut batch = store.mail_batch().unwrap();
+        let inbox = batch
+            .upsert_folder(account, "INBOX", Some(FolderRole::Inbox))
+            .unwrap();
+        let archive = batch.upsert_folder(account, "Archive", None).unwrap();
+        let mut add = |folder, uid, date, flags, category| {
+            let message = RemoteMessage {
+                date: Some(date),
+                flags,
+                category,
+                ..remote(uid, &[])
+            };
+            match batch.add_remote_message(account, folder, &message).unwrap() {
+                Added::Message(id) => id,
+                other => panic!("{other:?}"),
+            }
+        };
+        let none = MessageFlags::empty();
+        let before = add(inbox, 1, 2_000, none, None);
+        let primary = add(inbox, 2, 2_000, none, Some(MailCategory::Primary));
+        add(inbox, 3, 2_000, MessageFlags::SEEN, None);
+        add(inbox, 4, 2_000, none, Some(MailCategory::Promotions));
+        add(archive, 5, 2_000, none, None);
+        add(inbox, 6, 500, none, None);
+        let unclassified = add(inbox, 7, 3_000, none, None);
+        batch.commit().unwrap();
+
+        assert_eq!(store.latest_message(account).unwrap(), unclassified);
+        assert_eq!(
+            store.new_inbox_mail(account, before, 1_000, 10).unwrap(),
+            [primary, unclassified]
+        );
+        assert_eq!(
+            store.new_inbox_mail(account, before, 1_000, 1).unwrap(),
+            [primary]
+        );
     }
 
     #[test]

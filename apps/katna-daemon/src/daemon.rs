@@ -6,7 +6,7 @@
 use std::{
     collections::HashMap,
     sync::{
-        Arc, Mutex, MutexGuard, Weak,
+        Arc, Mutex, MutexGuard, OnceLock, Weak,
         atomic::{AtomicBool, Ordering},
     },
     time::{Duration, SystemTime, UNIX_EPOCH},
@@ -15,7 +15,8 @@ use std::{
 use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
 use katna_core::{
-    Account, AccountId, AccountKind, AccountSettings, Paths, Pop3Keep, Security, Server,
+    Account, AccountId, AccountKind, AccountSettings, Config, Paths, Pop3Keep, Security, Server,
+    config::Metered,
 };
 use katna_dbus::{AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, state};
 use katna_store::{FolderId, MessageFlags, MessageId, Mode, SendState, Store};
@@ -31,7 +32,7 @@ use katna_sync::{
     worker::{self, Connector, Event, ImapConnector, Pop3Connector, WorkerConfig},
 };
 
-use crate::secrets::Secrets;
+use crate::{notify::NewMailNotices, secrets::Secrets};
 
 /// How long a stopping worker may take to log out.
 const STOP_TIMEOUT: Duration = Duration::from_secs(10);
@@ -44,6 +45,8 @@ pub enum Notice {
     MailChanged(AccountId),
     /// An outbox entry changed state.
     OutboxChanged(i64),
+    /// Workers now act metered, or stopped doing so.
+    MeteredChanged(bool),
 }
 
 /// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
@@ -129,13 +132,20 @@ pub struct Daemon {
     secrets: Secrets,
     config: WorkerConfig,
     workers: Mutex<HashMap<AccountId, Running>>,
-    /// Whether the network is metered; new workers start with it.
+    /// Whether workers act metered (the network as NetworkManager sees
+    /// it, or the user's setting); new workers start with it.
     metered: AtomicBool,
+    /// What NetworkManager last said.
+    network_metered: AtomicBool,
+    /// The user's `sync.metered` setting.
+    metered_setting: Mutex<Metered>,
     status: Mutex<HashMap<AccountId, Status>>,
     outbox: Mutex<Option<Sending>>,
     /// Why each outbox entry's last try failed.
     send_errors: Mutex<HashMap<i64, String>>,
     notices: Sender<Notice>,
+    /// Desktop notifications, once a session bus has a server for them.
+    new_mail: OnceLock<Arc<NewMailNotices>>,
 }
 
 impl Daemon {
@@ -146,6 +156,7 @@ impl Daemon {
         config: WorkerConfig,
     ) -> katna_store::Result<(Arc<Self>, Receiver<Notice>)> {
         let store = Store::open(&paths, Mode::ReadWrite)?;
+        let setting = settings(&paths).sync.metered;
         let (notices, receiver) = async_channel::unbounded();
         let daemon = Arc::new(Self {
             paths,
@@ -153,11 +164,14 @@ impl Daemon {
             secrets,
             config,
             workers: Mutex::default(),
-            metered: AtomicBool::new(false),
+            metered: AtomicBool::new(setting.decide(false)),
+            network_metered: AtomicBool::new(false),
+            metered_setting: Mutex::new(setting),
             status: Mutex::default(),
             outbox: Mutex::default(),
             send_errors: Mutex::default(),
             notices,
+            new_mail: OnceLock::new(),
         });
         Ok((daemon, receiver))
     }
@@ -165,6 +179,25 @@ impl Daemon {
     /// A sender for notices from outside the workers (the backfill).
     pub(crate) fn notifier(&self) -> Sender<Notice> {
         self.notices.clone()
+    }
+
+    /// Shows new-mail notifications through the desktop's notification
+    /// server on `connection` (the session bus), as `notifications.new_mail`
+    /// says. Call before [`Daemon::start`].
+    pub async fn notify_new_mail(self: &Arc<Self>, connection: &zbus::Connection) {
+        let enabled = settings(&self.paths).notifications.new_mail;
+        match NewMailNotices::new(connection, enabled).await {
+            Ok(notices) => {
+                if self.new_mail.set(Arc::new(notices)).is_ok() {
+                    smol::spawn(NewMailNotices::serve_actions(Arc::downgrade(self))).detach();
+                }
+            }
+            Err(err) => tracing::warn!(%err, "no desktop notifications"),
+        }
+    }
+
+    pub(crate) fn new_mail_notices(&self) -> Option<Arc<NewMailNotices>> {
+        self.new_mail.get().cloned()
     }
 
     /// Starts a worker for every account, and the outbox.
@@ -423,6 +456,9 @@ impl Daemon {
             tracing::warn!(account = %id, %err, "could not delete the password");
         }
         self.status.lock().unwrap().remove(&id);
+        if let Some(notices) = self.new_mail_notices() {
+            notices.forget(id);
+        }
         if existed {
             tracing::info!(account = %id, "account removed");
             let _ = self.notices.try_send(Notice::AccountsChanged);
@@ -461,15 +497,50 @@ impl Daemon {
         }
     }
 
-    /// The network became metered or stopped being so: workers download
-    /// bodies ahead of time only on an unmetered network, and catch up
-    /// when it stops being metered.
+    /// NetworkManager says the network became metered or stopped being so.
+    /// What workers do also depends on the user's setting
+    /// ([`Daemon::reload_config`]).
     pub fn set_metered(&self, metered: bool) {
         tracing::info!(metered, "network metering changed");
-        self.metered.store(metered, Ordering::Relaxed);
+        self.network_metered.store(metered, Ordering::Relaxed);
+        self.apply_metered();
+    }
+
+    /// Whether workers act metered now.
+    pub fn metered(&self) -> bool {
+        self.metered.load(Ordering::Relaxed)
+    }
+
+    /// Reads the settings file again and applies what the daemon uses from
+    /// it (`sync.metered`, `notifications.new_mail`). Katna Mail calls this after saving settings.
+    pub fn reload_config(&self) -> Result<(), CommandError> {
+        let config = Config::load(&self.paths.config_file())
+            .map_err(|err| CommandError::InvalidArgs(err.to_string()))?;
+        tracing::info!(
+            metered = ?config.sync.metered,
+            new_mail = config.notifications.new_mail,
+            "settings reloaded"
+        );
+        *self.metered_setting.lock().unwrap() = config.sync.metered;
+        if let Some(notices) = self.new_mail_notices() {
+            notices.set_enabled(config.notifications.new_mail);
+        }
+        self.apply_metered();
+        Ok(())
+    }
+
+    /// Workers download bodies ahead of time only when not metered, and
+    /// catch up when that ends.
+    fn apply_metered(&self) {
+        let setting = *self.metered_setting.lock().unwrap();
+        let metered = setting.decide(self.network_metered.load(Ordering::Relaxed));
+        if self.metered.swap(metered, Ordering::Relaxed) == metered {
+            return;
+        }
         for running in self.workers().values() {
             running.handle.set_metered(metered);
         }
+        let _ = self.notices.try_send(Notice::MeteredChanged(metered));
     }
 
     /// Downloads one message through its account's worker.
@@ -638,6 +709,13 @@ impl Daemon {
         change: impl FnOnce(&mut Store) -> Result<Vec<AccountId>, ChangeError>,
     ) -> Result<(), CommandError> {
         let accounts = change(&mut self.store())?;
+        // Mail read or moved here needs no notification any more.
+        if let Some(notices) = self.new_mail_notices() {
+            let handled = notices.handled(&self.store(), None);
+            if !handled.is_empty() {
+                smol::spawn(async move { notices.close(handled).await }).detach();
+            }
+        }
         let workers = self.workers();
         for account in accounts {
             let _ = self.notices.try_send(Notice::MailChanged(account));
@@ -722,6 +800,9 @@ impl Daemon {
                 return;
             }
         };
+        if let Some(notices) = self.new_mail_notices() {
+            notices.watch(&self.store(), id);
+        }
         let (handle, control) = worker::control();
         handle.set_metered(self.metered.load(Ordering::Relaxed));
         let (events, received) = async_channel::unbounded();
@@ -768,6 +849,9 @@ impl Daemon {
                     });
                     if changed || first {
                         let _ = self.notices.try_send(Notice::MailChanged(id));
+                    }
+                    if let Some(notices) = self.new_mail_notices() {
+                        notices.synced(&self.store, id).await;
                     }
                 }
                 Event::BodiesStored(_) => {
@@ -988,4 +1072,13 @@ fn unix_now() -> i64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_or(0, |elapsed| elapsed.as_secs() as i64)
+}
+
+/// The `sync.metered` setting; the default if the file cannot be read.
+/// The settings file, or the defaults when it cannot be read.
+fn settings(paths: &Paths) -> Config {
+    Config::load(&paths.config_file()).unwrap_or_else(|err| {
+        tracing::warn!(%err, "settings unreadable; using the defaults");
+        Config::default()
+    })
 }

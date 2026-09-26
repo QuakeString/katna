@@ -9,6 +9,7 @@
 
 pub mod daemon;
 pub mod install;
+mod notify;
 pub mod secrets;
 pub mod service;
 pub mod system;
@@ -167,6 +168,7 @@ impl Instance {
         ))
         .detach();
         smol::spawn(service::emit_signals(connection.clone(), forwarded)).detach();
+        daemon.notify_new_mail(&connection).await;
         daemon.start().await?;
         let backfill = Backfill::start(&index_paths, daemon.notifier());
         Ok(Self {
