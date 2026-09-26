@@ -29,7 +29,7 @@ use crate::{Error, Result};
 pub const MAX_IMAGE: usize = 8 * 1024 * 1024;
 /// Largest sender picture: BIMI allows 32 KB; icons are small.
 const MAX_PICTURE: usize = 256 * 1024;
-/// Largest home page read for the icons it names.
+/// How much of a home page is read for the icons its head names.
 const MAX_PAGE: usize = 512 * 1024;
 /// How long a sender picture (or its absence) is kept.
 const PICTURE_TTL: Duration = Duration::from_secs(7 * 24 * 3600);
@@ -159,10 +159,7 @@ impl Pictures {
         }
         let mut urls = Vec::new();
         for host in [org.to_owned(), format!("www.{org}")] {
-            let Some(page) = self
-                .fetch(&format!("https://{host}/"), MAX_PAGE, reached)
-                .await
-            else {
+            let Some(page) = self.fetch_head(&format!("https://{host}/"), reached).await else {
                 continue;
             };
             urls = page_icons(&String::from_utf8_lossy(&page), &host);
@@ -185,6 +182,20 @@ impl Pictures {
             }
         }
         None
+    }
+
+    /// The start of the page at `url`, up to the end of its `<head>`.
+    async fn fetch_head(&self, url: &str, reached: &mut bool) -> Option<Vec<u8>> {
+        match http::get_head(url, &self.tls, self.timeout, MAX_PAGE).await {
+            Ok(page) => {
+                *reached = true;
+                page
+            }
+            Err(err) => {
+                tracing::debug!(url, %err, "page not read");
+                None
+            }
+        }
     }
 
     async fn fetch(&self, url: &str, max: usize, reached: &mut bool) -> Option<Vec<u8>> {
