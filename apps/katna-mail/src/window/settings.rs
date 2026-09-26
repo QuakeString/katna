@@ -2,7 +2,7 @@
 
 //! Quick settings: a panel that slides in from the right with the reading
 //! pane (three or two panes), density, theme, app names, inbox tabs, undo send, the
-//! signature and conversation view. Changes apply at once and are saved to
+//! signature, conversation view and the tour. Changes apply at once and are saved to
 //! `config.toml`.
 
 use std::time::Duration;
@@ -17,7 +17,7 @@ use katna_ui::motion;
 
 use super::{MailWindow, SETTINGS_WIDTH};
 use crate::theme::{Theme, mix};
-use crate::widgets::{elevation, icon_button, radio, switch, tip};
+use crate::widgets::{elevation, icon, icon_button, radio, switch, tip};
 
 /// One loop of the reading-pane demo.
 const PANE_DEMO: Duration = Duration::from_millis(2600);
@@ -218,7 +218,34 @@ impl MailWindow {
                                 Change::Conversations(!view.conversations),
                                 th,
                                 cx,
-                            )),
+                            ))
+                            .child(divider(th))
+                            .child(heading("Help", th))
+                            .child(
+                                div()
+                                    .id("take-tour")
+                                    .relative()
+                                    .overflow_hidden()
+                                    .h(px(40.0))
+                                    .px(px(8.0))
+                                    .flex()
+                                    .flex_row()
+                                    .items_center()
+                                    .gap(px(14.0))
+                                    .rounded(px(8.0))
+                                    .text_size(px(14.0))
+                                    .cursor_pointer()
+                                    .hover(|s| s.bg(rgba(th.hover)))
+                                    .on_click(cx.listener(|this, _, window, cx| {
+                                        this.start_tour(false, window, cx)
+                                    }))
+                                    .child(
+                                        Ripple::new("take-tour-ripple", rgba(th.ripple))
+                                            .rounded(8.0),
+                                    )
+                                    .child(icon("tour", th.text_dim, 20.0))
+                                    .child("Take the tour"),
+                            ),
                     ),
             );
         // The panel keeps its width and slides out from under the edge.

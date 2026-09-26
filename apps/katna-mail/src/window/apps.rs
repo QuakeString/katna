@@ -210,6 +210,7 @@ impl MailWindow {
         });
         div()
             .id("app-rail")
+            .relative()
             .flex_none()
             .w(px(APP_RAIL_WIDTH))
             .h_full()
@@ -218,6 +219,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .items_center()
+            .child(self.tour_mark(super::tour::Spot::Apps))
             .children(items)
             .child(div().flex_1())
             .child(

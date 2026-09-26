@@ -12,6 +12,7 @@ use gpui::{
 use katna_ui::Ripple;
 use katna_ui::motion::{self, lerp};
 
+use super::tour::Spot;
 use super::{
     Compose, FocusSearch, Hover, Listing, MailWindow, NAV_WIDTH, PANEL_RADIUS, SEARCH_CONTEXT,
     ToggleNavigation, ToggleSettings,
@@ -50,6 +51,7 @@ impl MailWindow {
                 this.toggle_navigation(&ToggleNavigation, window, cx)
             }))
             .child(Ripple::new("menu-ripple", rgba(th.ripple)).centered())
+            .child(self.tour_mark(Spot::Menu))
             .child(
                 svg()
                     .path("icons/menu.svg")
@@ -78,6 +80,7 @@ impl MailWindow {
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .on_click(cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)))
             .child(Ripple::new("compose-ripple", rgba(th.ripple)).rounded(COMPOSE_RADIUS))
+            .child(self.tour_mark(Spot::Compose))
             .child(
                 div()
                     .pl(px(16.0))
@@ -122,6 +125,7 @@ impl MailWindow {
         div()
             .id("search-box")
             .key_context(SEARCH_CONTEXT)
+            .relative()
             .w(px(width))
             .h(px(lerp(SEARCH_HEIGHT, 48.0, phone)))
             .pl(px(lerp(2.0, 56.0, phone)))
@@ -139,6 +143,7 @@ impl MailWindow {
             .when(!available, |d| d.opacity(0.6))
             // A drag here selects text rather than moving the window.
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
+            .child(self.tour_mark(Spot::Search))
             .when(phone < 0.999, |d| {
                 d.child(
                     div()
@@ -202,7 +207,8 @@ impl MailWindow {
         .tooltip(tip("Settings", th))
         .on_click(
             cx.listener(|this, _, window, cx| this.toggle_settings(&ToggleSettings, window, cx)),
-        );
+        )
+        .child(self.tour_mark(Spot::Settings));
         // The account picture opens the account card; with no account yet,
         // the button adds one.
         let account = match self.accounts.first() {
@@ -214,6 +220,7 @@ impl MailWindow {
                 };
                 div()
                     .id("top-account")
+                    .relative()
                     .p(px(4.0))
                     .rounded_full()
                     .cursor_pointer()
@@ -226,6 +233,7 @@ impl MailWindow {
                         cx.notify();
                     }))
                     .child(avatar(&name, &account.address, 32.0))
+                    .child(self.tour_mark(Spot::Account))
                     .into_any_element()
             }
             None => icon_button_colored("top-account", "person-add", 22.0, th.text_dim, th)
