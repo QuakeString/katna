@@ -351,10 +351,13 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   category, and no body to parse) get their headers fetched again, up to
   5,000 per folder per sync, and only the missing fields are filled.
 - **Gmail (`X-GM-EXT-1`):** header fetches also ask for `X-GM-THRID`, and
-  Gmail's thread id decides the thread. After syncing the inbox, the engine
-  runs `UID SEARCH X-GM-RAW "category:social"` (then promotions, updates,
-  forums) over the UIDs not yet categorized; the rest of the inbox is
-  Primary. io-imap cannot express these extensions, so they are written as
+  Gmail's thread id decides the thread. After syncing each folder, the
+  engine runs `UID SEARCH X-GM-RAW "category:social"` (then promotions,
+  updates, forums) over the UIDs not yet categorized; the rest of the
+  folder is Primary. Every folder, not only the inbox: each server copy is
+  its own message row, and the copy in All Mail must land in the same tab
+  as the one in the inbox (found by `examples/thread_check.rs` on a real
+  Gmail account). io-imap cannot express these extensions, so they are written as
   raw commands on the connection. Progress lives in `folder.sync_state`.
 - **Level 3 so far (`katna_sync::bodies`):** after each full sync, and after
   each inbox catch-up, the worker fetches `BODY.PEEK[]` for messages in the

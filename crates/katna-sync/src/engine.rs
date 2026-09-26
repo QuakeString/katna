@@ -17,9 +17,11 @@
 //! 5. Messages stored before threading and without a downloaded body:
 //!    their headers again, so they get a thread and a category (at most
 //!    [`REFRESH_PER_SYNC`] per run).
-//! 6. Gmail inbox (`X-GM-EXT-1`): Gmail's own categories, with one
-//!    `X-GM-RAW "category:…"` search per tab; the first time for every
-//!    message, then for new ones.
+//! 6. Gmail (`X-GM-EXT-1`), in every folder: Gmail's own categories, with
+//!    one `X-GM-RAW "category:…"` search per tab; the first time for every
+//!    message, then for new ones. Every folder, because each server copy
+//!    is its own message: the same mail in the inbox and in All Mail must
+//!    land in the same tab.
 //! 7. Save UIDVALIDITY, HIGHESTMODSEQ, UIDNEXT and the message count seen
 //!    at SELECT. Changes made during the sync have higher mod-sequences and
 //!    UIDs, so the next run sees them, and so does [`stale_folders`].
@@ -75,7 +77,7 @@ const GMAIL_CATEGORIES: [MailCategory; 4] = [
 /// UIDVALIDITY and HIGHESTMODSEQ.
 #[derive(Debug, Default, Serialize, Deserialize)]
 struct FolderState {
-    /// Gmail categories were read for every message of this inbox; from
+    /// Gmail categories were read for every message of this folder; from
     /// then on only new messages are asked about.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     gmail_categories: bool,
@@ -204,9 +206,6 @@ pub async fn sync_folder<B: MailBackend>(
     };
     let status = backend.select(path).await?;
     let stored = store.folders(account)?.into_iter().find(|f| f.id == folder);
-    let is_inbox = stored
-        .as_ref()
-        .is_some_and(|f| f.role == Some(katna_store::FolderRole::Inbox));
     let mut state = stored.as_ref().map(FolderState::of).unwrap_or_default();
     let (old_validity, old_modseq) = stored
         .map(|f| (f.uidvalidity, f.highestmodseq))
@@ -273,20 +272,18 @@ pub async fn sync_folder<B: MailBackend>(
     // 5. Headers again for messages stored before threading.
     report.backfilled += refresh_headers(backend, store, folder).await?;
 
-    // 6. Gmail's own inbox categories: every message the first time, then
-    //    new ones.
-    if is_inbox {
-        let first = if !state.gmail_categories {
-            Some(1)
-        } else {
-            (added_uids > 0).then_some(last_known + 1)
-        };
-        if let Some(first) = first
-            && let Some(changed) = gmail_categories(backend, store, folder, first).await?
-        {
-            report.backfilled += changed;
-            state.gmail_categories = true;
-        }
+    // 6. Gmail's own categories: every message the first time, then new
+    //    ones. Elsewhere `gmail_search` answers `None` without asking.
+    let first = if !state.gmail_categories {
+        Some(1)
+    } else {
+        (added_uids > 0).then_some(last_known + 1)
+    };
+    if let Some(first) = first
+        && let Some(changed) = gmail_categories(backend, store, folder, first).await?
+    {
+        report.backfilled += changed;
+        state.gmail_categories = true;
     }
 
     // 7. Where to continue next time.
