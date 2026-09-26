@@ -12,6 +12,7 @@
 //! (quick settings) and `search_panel` (search options).
 
 mod apps;
+mod compose;
 mod list;
 mod nav;
 mod reader;
@@ -37,7 +38,7 @@ use katna_dbus::zbus::Connection;
 use katna_search::SearchResults;
 use katna_store::{FolderId, MessageId};
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::{InputEvent, TextInput};
+use katna_ui::{InputEvent, TextArea, TextInput};
 
 use crate::daemon::{self, Command};
 use crate::data::{self, Category, Entry, EntryKey, Mail, OpenError};
@@ -106,7 +107,8 @@ const SNACKBAR_TIME: Duration = Duration::from_secs(5);
 /// Changes signalled by the daemon within this time are read together.
 const CHANGE_DELAY: Duration = Duration::from_millis(120);
 const LINE_SCROLL: f32 = 48.0;
-const NOT_YET: &str = "Katna Mail cannot send mail yet.";
+/// How long a send failure stays on screen.
+const FAILURE_TIME: Duration = Duration::from_secs(12);
 
 /// Binds the window's keys. Call once at startup.
 pub fn bind_keys(cx: &mut App) {
@@ -159,6 +161,7 @@ pub fn bind_keys(cx: &mut App) {
     }
     cx.bind_keys(keys);
     katna_ui::text_input::bind_keys(cx);
+    katna_ui::text_area::bind_keys(cx);
 }
 
 /// What the message list shows.
@@ -277,10 +280,17 @@ pub struct MailWindow {
     /// The tab indicator's position, in tabs.
     tab_spring: Spring,
     snackbar: Option<Snackbar>,
+    compose: Option<compose::Compose>,
+    /// The message last handed to the outbox, for Undo.
+    unsent: Option<compose::Unsent>,
+    /// The signature editor of the quick settings.
+    signature: Option<Entity<TextArea>>,
+    signature_save: Option<Task<()>>,
     /// Navigation openness at this frame, for the folder rows.
     nav_t: f32,
     daemon: Option<Connection>,
     _listen: Option<Task<()>>,
+    _watch_sending: Option<Task<()>>,
     list_focus: FocusHandle,
     list_scroll: UniformListScrollHandle,
     nav_scroll: UniformListScrollHandle,
@@ -355,9 +365,14 @@ impl MailWindow {
             settings_spring: Spring::new(motion::SLIDE, 0.0),
             tab_spring: Spring::new(motion::SLIDE, 0.0),
             snackbar: None,
+            compose: None,
+            unsent: None,
+            signature: None,
+            signature_save: None,
             nav_t: 1.0,
             daemon: None,
             _listen: None,
+            _watch_sending: None,
             list_focus: cx.focus_handle(),
             list_scroll: UniformListScrollHandle::new(),
             nav_scroll: UniformListScrollHandle::new(),
@@ -458,8 +473,11 @@ impl MailWindow {
                     return;
                 }
             };
-            this.update(cx, |this, _| this.daemon = Some(connection.clone()))
-                .ok();
+            this.update(cx, |this, cx| {
+                this.daemon = Some(connection.clone());
+                this.watch_sending(connection.clone(), cx);
+            })
+            .ok();
             let mut changes = match daemon::mail_changes(&connection).await {
                 Ok(changes) => changes,
                 Err(err) => {
@@ -470,6 +488,33 @@ impl MailWindow {
             while changes.next().await.is_some() {
                 cx.background_executor().timer(CHANGE_DELAY).await;
                 if this.update(cx, |this, cx| this.refresh(false, cx)).is_err() {
+                    break;
+                }
+            }
+        }));
+    }
+
+    /// Says when the server refuses a message for good.
+    fn watch_sending(&mut self, connection: Connection, cx: &mut Context<Self>) {
+        self._watch_sending = Some(cx.spawn(async move |this, cx| {
+            let mut failures = match daemon::send_failures(&connection).await {
+                Ok(failures) => Box::pin(failures),
+                Err(err) => {
+                    tracing::info!("not following the outbox: {err}");
+                    return;
+                }
+            };
+            while let Some((subject, detail)) = failures.next().await {
+                let subject = if subject.trim().is_empty() {
+                    "(no subject)".to_owned()
+                } else {
+                    subject
+                };
+                let text = format!("\u{201c}{subject}\u{201d} could not be sent: {detail}");
+                if this
+                    .update(cx, |this, cx| this.show_snackbar_for(text, None, FAILURE_TIME, cx))
+                    .is_err()
+                {
                     break;
                 }
             }
@@ -707,21 +752,34 @@ impl MailWindow {
         cx.notify();
     }
 
-    fn toggle_settings(&mut self, _: &ToggleSettings, _: &mut Window, cx: &mut Context<Self>) {
+    fn toggle_settings(&mut self, _: &ToggleSettings, window: &mut Window, cx: &mut Context<Self>) {
         self.settings_open = !self.settings_open;
         self.search_panel = None;
+        if self.settings_open && self.signature.is_none() {
+            self.signature = Some(self.signature_editor(window, cx));
+        }
         cx.notify();
     }
 
-    fn compose(&mut self, _: &Compose, _: &mut Window, cx: &mut Context<Self>) {
-        self.show_snackbar(NOT_YET, None, cx);
+    fn compose(&mut self, _: &Compose, window: &mut Window, cx: &mut Context<Self>) {
+        self.open_compose(compose::Kind::New, None, window, cx);
     }
 
     fn show_snackbar(&mut self, text: impl Into<SharedString>, undo: Option<Command>, cx: &mut Context<Self>) {
+        self.show_snackbar_for(text, undo, SNACKBAR_TIME, cx);
+    }
+
+    fn show_snackbar_for(
+        &mut self,
+        text: impl Into<SharedString>,
+        undo: Option<Command>,
+        time: Duration,
+        cx: &mut Context<Self>,
+    ) {
         let mut shown = Spring::new(motion::SLIDE, 0.0);
         shown.set(1.0);
         let hide = cx.spawn(async move |this, cx| {
-            cx.background_executor().timer(SNACKBAR_TIME).await;
+            cx.background_executor().timer(time).await;
             this.update(cx, |this, cx| {
                 if let Some(snackbar) = &mut this.snackbar {
                     snackbar.shown.set(0.0);
@@ -1142,12 +1200,38 @@ impl MailWindow {
         .detach();
     }
 
-    fn undo(&mut self, cx: &mut Context<Self>) {
+    fn undo(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let Some(undo) = self.snackbar.as_mut().and_then(|s| s.undo.take()) else {
             return;
         };
-        self.send(undo, Some("Action undone.".to_owned()), None, false, cx);
         self.hide_snackbar(cx);
+        if let Command::UndoSend(_) = undo {
+            // Taken back from the outbox: the message opens again.
+            let connection = self.daemon.clone();
+            cx.spawn_in(window, async move |this, cx| {
+                let result = cx
+                    .background_executor()
+                    .spawn(async move {
+                        let connection = match connection {
+                            Some(connection) => connection,
+                            None => daemon::connect().await?,
+                        };
+                        daemon::send(&connection, &undo).await
+                    })
+                    .await;
+                this.update_in(cx, |this, window, cx| match result {
+                    Ok(()) => {
+                        this.reopen_unsent(window, cx);
+                        this.show_snackbar("Sending undone.", None, cx);
+                    }
+                    Err(err) => this.show_snackbar(err, None, cx),
+                })
+                .ok();
+            })
+            .detach();
+            return;
+        }
+        self.send(undo, Some("Action undone.".to_owned()), None, false, cx);
     }
 
     fn archive(&mut self, _: &Archive, _: &mut Window, cx: &mut Context<Self>) {
@@ -1267,7 +1351,7 @@ impl MailWindow {
                             .font_weight(gpui::FontWeight::MEDIUM)
                             .cursor_pointer()
                             .hover(|s| s.bg(rgba(0xffffff1f)))
-                            .on_click(cx.listener(|this, _, _, cx| this.undo(cx)))
+                            .on_click(cx.listener(|this, _, window, cx| this.undo(window, cx)))
                             .child("Undo"),
                     )
                 })
@@ -1469,6 +1553,7 @@ impl Render for MailWindow {
         let side = if wide { NAV_WIDTH } else { 110.0 };
         let search_width = (viewport - 2.0 * side).clamp(200.0, SEARCH_WIDTH);
         let search_panel = self.render_search_panel(&th, viewport, search_width, window, cx);
+        let compose = self.render_compose(&th, window, reduce, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let content = div()
             .key_context(WINDOW_CONTEXT)
@@ -1485,6 +1570,7 @@ impl Render for MailWindow {
             .on_action(cx.listener(Self::quit))
             .child(content)
             .children(search_panel)
+            .children(compose)
             .children(snackbar)
             .into_any_element();
 

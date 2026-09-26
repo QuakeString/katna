@@ -1,14 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Quick settings: a panel that slides in from the right with the reading
-//! pane (three or two panes), density, theme, inbox tabs and conversation
-//! view. Changes apply at once and are saved to `config.toml`.
+//! pane (three or two panes), density, theme, inbox tabs, undo send, the
+//! signature and conversation view. Changes apply at once and are saved to
+//! `config.toml`.
+
+use std::time::Duration;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, Div, FontWeight, SpringAnimation, div,
-    prelude::*, px, rgba,
+    AnimationExt, AnyElement, Context, Div, Entity, Focusable, FontWeight, Hsla,
+    SpringAnimation, Window, div, prelude::*, px, rgba,
 };
-use katna_core::config::{Density, ReadingPane, Theme as ThemeChoice};
+use katna_core::config::{Density, ReadingPane, Theme as ThemeChoice, UNDO_SEND_CHOICES};
+use katna_ui::{InputEvent, TextArea};
 use katna_ui::Ripple;
 use katna_ui::motion;
 
@@ -16,9 +20,13 @@ use super::{MailWindow, SETTINGS_WIDTH};
 use crate::theme::{Theme, mix};
 use crate::widgets::{elevation, icon_button, radio, switch};
 
+/// A signature edit is saved this long after the last key.
+const SIGNATURE_SAVE_DELAY: Duration = Duration::from_millis(600);
+
 /// What a quick setting changes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Change {
+    UndoSend(u32),
     Pane(ReadingPane),
     Density(Density),
     Theme(ThemeChoice),
@@ -130,6 +138,45 @@ impl MailWindow {
                         cx,
                     ))
                     .child(divider(th))
+                    .child(heading("Sending", th))
+                    .child(self.undo_send_choice(th, cx))
+                    .children(self.signature.clone().map(|editor| {
+                        div()
+                            .pt(px(12.0))
+                            .flex()
+                            .flex_col()
+                            .gap(px(6.0))
+                            .child(div().px(px(8.0)).text_size(px(14.0)).child("Signature"))
+                            .child(
+                                div()
+                                    .id("signature-box")
+                                    .mx(px(8.0))
+                                    .min_h(px(72.0))
+                                    .max_h(px(160.0))
+                                    .overflow_y_scroll()
+                                    .px(px(10.0))
+                                    .py(px(8.0))
+                                    .rounded(px(8.0))
+                                    .border_1()
+                                    .border_color(rgba(th.divider))
+                                    .text_size(px(14.0))
+                                    .line_height(px(20.0))
+                                    .cursor_text()
+                                    .on_click({
+                                        let focus = editor.focus_handle(cx);
+                                        move |_, window, cx| window.focus(&focus, cx)
+                                    })
+                                    .child(editor),
+                            )
+                            .child(
+                                div()
+                                    .px(px(8.0))
+                                    .text_size(px(12.0))
+                                    .text_color(rgba(th.text_faint))
+                                    .child("Added below new mail, replies and forwards."),
+                            )
+                    }))
+                    .child(divider(th))
                     .child(heading("Email threading", th))
                     .child(self.switch_row(
                         "conversations",
@@ -159,7 +206,74 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// The signature editor, saving as the user types.
+    pub(super) fn signature_editor(
+        &mut self,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Entity<TextArea> {
+        let accent: Hsla = rgba(self.theme(window).accent).into();
+        let signature = self.config.sending.signature.clone();
+        let editor = cx.new(|cx| {
+            let mut area = TextArea::new("Your name, and anything to add below it", cx);
+            area.set_text(signature, 0, cx);
+            area.set_accent(accent);
+            area
+        });
+        let subscription = cx.subscribe(&editor, |this, editor, event: &InputEvent, cx| {
+            if *event != InputEvent::Changed {
+                return;
+            }
+            this.config.sending.signature = editor.read(cx).text().to_owned();
+            this.signature_save = Some(cx.spawn(async move |this, cx| {
+                cx.background_executor().timer(SIGNATURE_SAVE_DELAY).await;
+                this.update(cx, |this, _| this.save_config()).ok();
+            }));
+        });
+        self._subscriptions.push(subscription);
+        editor
+    }
+
+    /// Undo send: how long a sent message waits before it goes out.
+    fn undo_send_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let now = self.config.sending.undo_send_seconds;
+        let chips = UNDO_SEND_CHOICES.into_iter().map(|seconds| {
+            let on = seconds == now;
+            div()
+                .id(("undo-send", seconds as usize))
+                .px(px(10.0))
+                .h(px(28.0))
+                .flex()
+                .items_center()
+                .rounded(px(8.0))
+                .border_1()
+                .border_color(rgba(if on { th.nav_selected } else { th.divider }))
+                .bg(rgba(if on { th.nav_selected } else { th.surface }))
+                .text_color(rgba(if on { th.nav_selected_text } else { th.text_dim }))
+                .text_size(px(13.0))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.apply(Change::UndoSend(seconds), cx)
+                }))
+                .child(if seconds == 0 {
+                    "Off".to_owned()
+                } else {
+                    format!("{seconds} s")
+                })
+        });
+        div()
+            .px(px(8.0))
+            .flex()
+            .flex_col()
+            .gap(px(8.0))
+            .child(div().text_size(px(14.0)).child("Undo send"))
+            .child(div().flex().flex_row().flex_wrap().gap(px(6.0)).children(chips))
+            .into_any_element()
+    }
+
     fn apply(&mut self, change: Change, cx: &mut Context<Self>) {
+        let sending = &mut self.config.sending;
         let view = &mut self.config.mail;
         let mut relist = false;
         match change {
@@ -173,6 +287,7 @@ impl MailWindow {
                     self.reader = None;
                 }
             }
+            Change::UndoSend(seconds) => sending.undo_send_seconds = seconds,
             Change::Density(density) => view.density = density,
             Change::Theme(theme) => view.theme = theme,
             Change::Tabs(on) => {

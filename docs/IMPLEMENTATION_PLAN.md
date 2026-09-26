@@ -180,7 +180,10 @@ instantly for all old mail; suggestions have a documented precision test.
 | 3.11 Packaging v1 | Flatpak (with Background portal), .deb, AUR (tested); .rpm (built, not tested); desktop files, AppStream, `mailto:` handler |
 
 Started: the first window (sidebar, message list, plain-text reading pane,
-search box) reads the local store; see `ARCHITECTURE.md` §13.5. GPUI Kit is
+search box) reads the local store; see `ARCHITECTURE.md` §13.5. The window
+now follows Gmail's layout (app rail, three panes, conversations, category
+tabs, quick settings, search options) and has a composer that sends
+through the daemon's outbox with undo; see §13.6. GPUI Kit is
 not used yet because of the size budget.
 
 **Done when:** you can use Katna Mail as your daily client for one account
@@ -214,6 +217,9 @@ one-click unsubscribe (RFC 8058), templates, mute thread, inbox categories
 
 **Done when:** the feature checklist in the architecture (§10, §11) works
 against Stalwart, Dovecot and Gmail, with integration tests.
+
+Later, not scheduled yet: notes on mail and the Workspace view
+(`ARCHITECTURE.md` §13.7). Workspace builds on snooze from this phase.
 
 ### Phase 6 — Katna Calendar and Plasma calendar (≈ 14 weeks)
 

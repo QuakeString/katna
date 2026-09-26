@@ -794,10 +794,78 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   Everything honors the desktop's reduce-motion setting.
 - **Colors.** `theme.rs` has the light and dark palettes; the app does not
   use the desktop accent color here, to keep the webmail look.
-- **Not there yet.** Katna Mail cannot send mail, so Compose, Reply and
-  Forward show a snackbar saying so. There are no checkboxes or hover
-  actions (archive, delete) until the daemon takes those commands, and
-  the star shows the flag without changing it.
+
+The owner then asked for the rest of Gmail's pattern, with Katna's own
+icons and name and without Google-only features (no Chat, Meet, Drive,
+Gemini or confidential mode):
+
+- **App rail.** A 72 px column at the far left holds Mail, Calendar,
+  Contacts, Tasks, Notes and Feeds (RSS and Atom), with Settings and the
+  account at the bottom. Each app is a page (`window/apps.rs`), so new ones
+  plug in. Mail is the only app so far; Contacts lists the people the mail
+  was exchanged with, most written with first, and a click searches their
+  mail; the others show a "coming soon" page saying what they will do.
+- **Top bar.** Settings gear on the right; the search box has a search
+  options button at its right end that opens a panel (from, to, subject,
+  has the words, doesn't have, date within, has attachment) which builds
+  the query.
+- **Panes.** Quick settings choose the reading pane: *right of the list*
+  (three panes, the default) or *no split* (two panes). With three panes
+  the list takes the whole card until a message is opened; the message then
+  slides in on the right, and the divider between them can be dragged
+  (the share is saved). With two panes the message replaces the list.
+- **Conversations.** The list shows one line per conversation by default
+  (senders, a count, the newest subject and snippet); a setting shows
+  single messages instead.
+- **Category tabs.** The inbox has Primary, Promotions, Social, Updates and
+  Forums tabs with "N new" badges; a setting turns them off. Gmail accounts
+  use Gmail's own categories; other accounts use header rules: mailing
+  lists go to Forums, newsletters and marketing to Promotions, automated
+  notices to Updates, social networks to Social, and people to Primary.
+- **List toolbar.** A select-all checkbox with a menu (all, none, read,
+  unread, starred, unstarred), refresh and more; with lines ticked it shows
+  archive, report spam, delete, mark read or unread, move to and more.
+  Hovering a row shows archive, delete and mark read. Changes are shown at
+  once and sent to the daemon; the snackbar offers Undo.
+- **Open conversation.** A toolbar with back (or close with three panes),
+  archive, spam, delete, mark unread, move to, more, and "3 of 72" with
+  previous and next; the subject with folder chips; each message with an
+  avatar, sender, "to ..." with a details drop-down, date with "(ago)",
+  star and reply; earlier messages folded to one line, and a run of three
+  or more folded into a count; Reply, Reply all and Forward buttons below.
+- **Quick settings.** A panel that slides in from the right and pushes the
+  cards: reading pane (with small drawings of the two layouts), density,
+  theme (desktop, light or dark, the window frame included), category tabs,
+  undo-send delay, signature and conversation view. Changes apply at once
+  and are saved to `config.toml` (`[mail]` and `[sending]`).
+- **Compose.** A "New Message" window docked at the bottom right, as in
+  Gmail: title bar with minimize, full size and close; To (with Cc and Bcc
+  links), Subject, and the body with the signature after a `-- ` line.
+  The bottom bar has the Send button with a menu (schedule send), buttons
+  for formatting, attachments, links, emoji and images, and discard.
+  Compose, Reply, Reply all and Forward all open it, filled in (recipients,
+  `Re:`/`Fwd:`, the quoted message, `In-Reply-To` and `References`). Send
+  builds a plain-text RFC 5322 message (`outgoing.rs`) and hands it to the
+  daemon's outbox (`QueueSend`) with the undo-send delay; the snackbar's
+  Undo takes it back (`UndoSend`, then `DiscardSend`) and opens it again. A
+  message the server refuses for good raises a snackbar
+  (`OutboxChanged`).
+- **Not there yet.** Drafts are not saved (closing a written message
+  discards it and says so), and formatting, attachments, links, emoji,
+  images and scheduled sending in the composer say they are not ready yet.
+
+### 13.7 Later: notes on mail and Workspace
+
+Two ideas from the owner for a later phase. Nothing is built for them yet.
+
+- **Notes on mail.** Attach a note to a message or conversation for later
+  reference. The notes live in the Notes app (rail), so a note can be found
+  from the mail and the mail from the note. The owner plans more Notes
+  features around this.
+- **Workspace.** A view that shows only the mail the user has to act on.
+  Replying to a conversation takes it out of the Workspace. The user can
+  give mail a priority or a marker, or snooze it to come back into the
+  Workspace at a set date and time.
 
 ## 14. D-Bus API (`katna-dbus`)
 

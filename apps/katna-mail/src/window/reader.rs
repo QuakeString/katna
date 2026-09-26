@@ -17,7 +17,8 @@ use katna_render::MessageView;
 use katna_store::MessageId;
 
 use super::list::separator;
-use super::{MailWindow, Menu, NOT_YET, SelectNext, SelectPrevious};
+use super::compose::Kind;
+use super::{MailWindow, Menu, SelectNext, SelectPrevious};
 use crate::daemon::Command;
 use crate::data::{EntryKey, Mail, Row};
 use crate::format;
@@ -61,6 +62,18 @@ struct Body {
 }
 
 impl Conversation {
+    /// The loaded message `id`, or by default the newest loaded one: what a
+    /// reply or forward starts from.
+    pub(super) fn view(&self, id: Option<MessageId>) -> Option<&MessageView> {
+        fn view(part: &Part) -> Option<&MessageView> {
+            part.body.as_ref().and_then(|b| b.view.as_ref())
+        }
+        match id {
+            Some(id) => self.parts.iter().find(|p| p.id == id).and_then(view),
+            None => self.parts.iter().rev().find_map(view),
+        }
+    }
+
     pub(super) fn load(mail: &mut Mail, key: EntryKey) -> Self {
         let ids = mail.entry_messages(key);
         let rows = mail.message_rows(&ids);
@@ -349,16 +362,19 @@ impl MailWindow {
             .pt(px(24.0))
             .pb(px(32.0))
             .child(
-                pill_button("reply", "reply", "Reply", th)
-                    .on_click(cx.listener(|this, _, _, cx| this.show_snackbar(NOT_YET, None, cx))),
+                pill_button("reply", "reply", "Reply", th).on_click(cx.listener(|this, _, window, cx| {
+                    this.open_compose(Kind::Reply, None, window, cx)
+                })),
             )
             .child(
-                pill_button("reply-all", "reply-all", "Reply all", th)
-                    .on_click(cx.listener(|this, _, _, cx| this.show_snackbar(NOT_YET, None, cx))),
+                pill_button("reply-all", "reply-all", "Reply all", th).on_click(cx.listener(|this, _, window, cx| {
+                    this.open_compose(Kind::ReplyAll, None, window, cx)
+                })),
             )
             .child(
-                pill_button("forward", "forward", "Forward", th)
-                    .on_click(cx.listener(|this, _, _, cx| this.show_snackbar(NOT_YET, None, cx))),
+                pill_button("forward", "forward", "Forward", th).on_click(cx.listener(|this, _, window, cx| {
+                    this.open_compose(Kind::Forward, None, window, cx)
+                })),
             );
         let key = reader.key;
         div()
@@ -582,9 +598,9 @@ impl MailWindow {
             .child(
                 icon_button(("part-reply", ix), "reply", 20.0, th)
                     .size(px(32.0))
-                    .on_click(cx.listener(|this, _, _, cx| {
+                    .on_click(cx.listener(move |this, _, window, cx| {
                         cx.stop_propagation();
-                        this.show_snackbar(NOT_YET, None, cx);
+                        this.open_compose(Kind::Reply, Some(id), window, cx);
                     })),
             );
 

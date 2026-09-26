@@ -6,8 +6,9 @@
 //! and discard. Compose, Reply, Reply all and Forward all open it. It can
 //! be minimized to its title bar or opened large in the middle.
 //!
-//! Sending needs the background service's outbox, so Send only says it is
-//! not ready yet and the message stays open.
+//! Send hands the message to the background service's outbox, which holds
+//! it for the undo-send delay; the snackbar's Undo takes it back and opens
+//! it again.
 
 use gpui::{
     AnyElement, Context, Entity, FocusHandle, Focusable, FontWeight, Hsla, ScrollHandle,
@@ -18,8 +19,12 @@ use katna_store::MessageId;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::{InputEvent, TextArea, TextInput};
 
-use super::{MailWindow, NOT_YET};
+use std::time::Duration;
+
+use super::{MailWindow, SNACKBAR_TIME};
+use crate::daemon::{self, Command};
 use crate::format;
+use crate::outgoing::{self, Mailbox, Outgoing};
 use crate::theme::Theme;
 use crate::widgets::{elevation, icon, icon_button, icon_button_colored, menu, menu_item};
 
@@ -27,6 +32,8 @@ const WIDTH: f32 = 560.0;
 const MAX_HEIGHT: f32 = 620.0;
 const MINIMIZED_WIDTH: f32 = 300.0;
 const TITLE_HEIGHT: f32 = 40.0;
+/// How long after an edit the text area has drawn its new cursor.
+const CURSOR_SETTLE: Duration = Duration::from_millis(24);
 
 /// What the window starts from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -50,8 +57,11 @@ pub(super) struct Compose {
     bcc: Entity<TextInput>,
     subject: Entity<TextInput>,
     body: Entity<TextArea>,
-    /// The body as it was opened, to tell whether anything was written.
-    start: String,
+    /// The fields as they were opened, to tell whether anything was
+    /// written.
+    start: Draft,
+    /// The message this replies to.
+    thread: Threading,
     show_cc: bool,
     show_bcc: bool,
     mode: Mode,
@@ -63,14 +73,21 @@ pub(super) struct Compose {
 }
 
 impl Compose {
+    /// What the fields hold now.
+    fn fields(&self, cx: &gpui::App) -> Draft {
+        let text = |input: &Entity<TextInput>| input.read(cx).text().to_owned();
+        Draft {
+            to: text(&self.to),
+            cc: text(&self.cc),
+            bcc: text(&self.bcc),
+            subject: text(&self.subject),
+            body: self.body.read(cx).text().to_owned(),
+        }
+    }
+
     /// Something was written that closing would lose.
     fn touched(&self, cx: &gpui::App) -> bool {
-        let filled = |input: &Entity<TextInput>| !input.read(cx).text().trim().is_empty();
-        [&self.to, &self.cc, &self.bcc, &self.subject]
-            .into_iter()
-            .any(filled)
-            && self.body.read(cx).text() != self.start
-            || self.body.read(cx).text() != self.start
+        self.fields(cx) != self.start
     }
 
     fn title(&self, cx: &gpui::App) -> SharedString {
@@ -90,13 +107,41 @@ pub(super) struct Original<'a> {
     pub date: String,
 }
 
-/// What a compose window starts with.
-#[derive(Debug, Default, PartialEq, Eq)]
-struct Draft {
+/// What the fields of a compose window hold.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub(super) struct Draft {
     to: String,
     cc: String,
+    bcc: String,
     subject: String,
     body: String,
+}
+
+/// The `In-Reply-To` and `References` of a reply.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+struct Threading {
+    in_reply_to: Option<String>,
+    references: Vec<String>,
+}
+
+impl Threading {
+    fn of(kind: Kind, view: Option<&MessageView>) -> Self {
+        let Some(view) = view.filter(|_| matches!(kind, Kind::Reply | Kind::ReplyAll)) else {
+            return Self::default();
+        };
+        let mut references = view.references.clone();
+        references.extend(view.message_id.clone());
+        Self {
+            in_reply_to: view.message_id.clone(),
+            references,
+        }
+    }
+}
+
+/// A message handed to the outbox, kept so that Undo can reopen it.
+pub(super) struct Unsent {
+    draft: Draft,
+    thread: Threading,
 }
 
 fn address(a: &Address) -> String {
@@ -182,6 +227,7 @@ fn draft(
                 cc: addresses(cc),
                 subject: prefixed("Re:", &view.subject),
                 body,
+                ..Draft::default()
             }
         }
         Kind::Forward => {
@@ -217,30 +263,42 @@ impl MailWindow {
     ) {
         if let Some(compose) = &mut self.compose
             && !compose.closing
+            && compose.touched(cx)
         {
-            if compose.touched(cx) {
-                compose.mode = Mode::Open;
-                self.show_snackbar("Send or discard the open message first.", None, cx);
-                return;
-            }
+            compose.mode = Mode::Open;
+            self.show_snackbar("Send or discard the open message first.", None, cx);
+            return;
         }
         let date = |d: Option<i64>| {
             d.and_then(|d| format::local(d, &self.tz))
                 .map(format::long_date)
                 .unwrap_or_default()
         };
-        let original = self
-            .reader
-            .as_ref()
-            .and_then(|reader| reader.view(source))
-            .map(|view| Original {
-                view,
-                date: date(view.date),
-            });
+        let view = self.reader.as_ref().and_then(|reader| reader.view(source));
+        let original = view.map(|view| Original {
+            view,
+            date: date(view.date),
+        });
         let accounts = &self.accounts;
         let is_me = |email: &str| accounts.iter().any(|a| a.address.eq_ignore_ascii_case(email));
         let draft = draft(kind, original.as_ref(), is_me, &self.config.sending.signature);
+        let thread = Threading::of(kind, view);
+        let reply = matches!(kind, Kind::Reply | Kind::ReplyAll) && !draft.to.is_empty();
+        let start = draft.clone();
+        self.show_compose(draft, start, thread, reply, window, cx);
+    }
 
+    /// Opens the compose window on `draft`; `start` is what counts as
+    /// untouched.
+    fn show_compose(
+        &mut self,
+        draft: Draft,
+        start: Draft,
+        thread: Threading,
+        focus_body: bool,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
         let accent: Hsla = rgba(self.theme(window).accent).into();
         let input = |placeholder: &str, text: &str, cx: &mut Context<Self>| {
             let (placeholder, text) = (placeholder.to_owned(), text.to_owned());
@@ -253,7 +311,7 @@ impl MailWindow {
         };
         let to = input("", &draft.to, cx);
         let cc = input("", &draft.cc, cx);
-        let bcc = input("", "", cx);
+        let bcc = input("", &draft.bcc, cx);
         let subject = input("Subject", &draft.subject, cx);
         let body = cx.new(|cx| {
             let mut area = TextArea::new("", cx);
@@ -282,13 +340,13 @@ impl MailWindow {
         subscriptions.push(cx.subscribe_in(
             &body,
             window,
-            |this, _, event: &InputEvent, _, cx| match event {
-                InputEvent::Submit => this.send_compose(cx),
-                InputEvent::Changed => this.keep_cursor_in_view(),
+            |this, _, event: &InputEvent, window, cx| match event {
+                InputEvent::Submit => this.send_compose(window, cx),
+                InputEvent::Changed => this.keep_cursor_in_view(cx),
                 InputEvent::Cancel => {}
             },
         ));
-        let focus = if matches!(kind, Kind::Reply | Kind::ReplyAll) && !draft.to.is_empty() {
+        let focus = if focus_body {
             body.focus_handle(cx)
         } else {
             to.focus_handle(cx)
@@ -298,11 +356,12 @@ impl MailWindow {
             to,
             show_cc: !draft.cc.is_empty(),
             cc,
-            show_bcc: false,
+            show_bcc: !draft.bcc.is_empty(),
             bcc,
             subject,
-            start: draft.body,
             body,
+            start,
+            thread,
             mode: Mode::Open,
             send_menu: false,
             shown: Spring::new(motion::SLIDE, 0.0),
@@ -313,19 +372,131 @@ impl MailWindow {
         cx.notify();
     }
 
-    /// Scrolls the body so the cursor stays visible while typing.
-    fn keep_cursor_in_view(&mut self) {
-        // The body grows with its text; a scroll to the cursor waits for
-        // the next layout, which the scroll handle does on its own when the
-        // cursor child is tracked. Nothing to do until the text area
-        // reports a cursor row.
+    /// Scrolls the body so the cursor stays in view while typing. The text
+    /// area reports where its cursor was drawn, so this waits for the
+    /// frame that draws the change.
+    fn keep_cursor_in_view(&mut self, cx: &mut Context<Self>) {
+        let Some(compose) = &self.compose else {
+            return;
+        };
+        let (scroll, body) = (compose.body_scroll.clone(), compose.body.clone());
+        cx.spawn(async move |_, cx| {
+            cx.background_executor().timer(CURSOR_SETTLE).await;
+            cx.update(|cx| {
+                let Some(cursor) = body.read(cx).cursor_bounds() else {
+                    return;
+                };
+                let view = scroll.bounds();
+                let pad = px(12.0);
+                let mut offset = scroll.offset();
+                if cursor.bottom() + pad > view.bottom() {
+                    offset.y -= cursor.bottom() + pad - view.bottom();
+                } else if cursor.top() - pad < view.top() {
+                    offset.y += view.top() - (cursor.top() - pad);
+                } else {
+                    return;
+                }
+                offset.y = offset.y.min(px(0.0));
+                scroll.set_offset(offset);
+                body.update(cx, |_, cx| cx.notify());
+            });
+        })
+        .detach();
     }
 
-    fn send_compose(&mut self, cx: &mut Context<Self>) {
-        if let Some(compose) = &mut self.compose {
-            compose.send_menu = false;
+    /// The account new mail goes out from: that of the open folder, or the
+    /// first.
+    fn compose_account(&self) -> Option<&katna_core::Account> {
+        let open = self.folder.and_then(|folder| self.tree.account_of(folder));
+        open.and_then(|id| self.accounts.iter().find(|a| a.id == id))
+            .or_else(|| self.accounts.first())
+    }
+
+    fn send_compose(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        compose.send_menu = false;
+        let draft = compose.fields(cx);
+        let thread = compose.thread.clone();
+        let parse = |text: &str| outgoing::parse_addresses(text);
+        let (to, cc, bcc) = match (parse(&draft.to), parse(&draft.cc), parse(&draft.bcc)) {
+            (Ok(to), Ok(cc), Ok(bcc)) => (to, cc, bcc),
+            (Err(bad), ..) | (_, Err(bad), _) | (.., Err(bad)) => {
+                self.show_snackbar(format!("\u{201c}{bad}\u{201d} is not an email address."), None, cx);
+                return;
+            }
+        };
+        if to.is_empty() && cc.is_empty() && bcc.is_empty() {
+            self.show_snackbar("Add at least one recipient.", None, cx);
+            return;
         }
-        self.show_snackbar(NOT_YET, None, cx);
+        let Some(account) = self.compose_account() else {
+            self.show_snackbar("Add an account with katnactl before sending mail.", None, cx);
+            return;
+        };
+        let from = Mailbox {
+            name: Some(account.display_name.trim().to_owned()).filter(|n| !n.is_empty()),
+            email: account.address.clone(),
+        };
+        let raw = outgoing::build(&Outgoing {
+            from: Some(from),
+            to,
+            cc,
+            bcc,
+            subject: draft.subject.clone(),
+            body: draft.body.clone(),
+            in_reply_to: thread.in_reply_to.clone(),
+            references: thread.references.clone(),
+        });
+        let account = account.id.0;
+        let delay = self.config.sending.undo_send_seconds;
+        self.unsent = Some(Unsent { draft, thread });
+        self.close_compose(false, cx);
+        self.show_snackbar("Sending\u{2026}", None, cx);
+        let connection = self.daemon.clone();
+        cx.spawn_in(window, async move |this, cx| {
+            let result = cx
+                .background_executor()
+                .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await?,
+                    };
+                    daemon::queue_send(&connection, account, &raw, delay).await
+                })
+                .await;
+            this.update_in(cx, |this, window, cx| match result {
+                Ok(id) => {
+                    let (text, undo) = if delay > 0 {
+                        ("Message sent", Some(Command::UndoSend(id)))
+                    } else {
+                        ("Message sent", None)
+                    };
+                    let time = Duration::from_secs(u64::from(delay)).max(SNACKBAR_TIME);
+                    this.show_snackbar_for(text, undo, time, cx);
+                }
+                Err(err) => {
+                    // Nothing went out: the message comes back as it was.
+                    this.reopen_unsent(window, cx);
+                    this.show_snackbar(err, None, cx);
+                }
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Opens the message that was just handed to the outbox again, after
+    /// Undo or a failure to queue it.
+    pub(super) fn reopen_unsent(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(Unsent { draft, thread }) = self.unsent.take() else {
+            return;
+        };
+        if self.compose.as_ref().is_some_and(|c| !c.closing && c.touched(cx)) {
+            return;
+        }
+        self.show_compose(draft, Draft::default(), thread, true, window, cx);
     }
 
     fn close_compose(&mut self, discarded: bool, cx: &mut Context<Self>) {
@@ -410,7 +581,9 @@ impl MailWindow {
             .child(small_button("compose-close", "close", th).on_click(cx.listener(
                 |this, _, _, cx| {
                     cx.stop_propagation();
-                    this.close_compose(false, cx)
+                    // Drafts are not saved yet, so closing loses the text.
+                    let touched = this.compose.as_ref().is_some_and(|c| c.touched(cx));
+                    this.close_compose(touched, cx)
                 },
             )));
 
@@ -504,6 +677,7 @@ impl MailWindow {
                 .text_color(rgba(th.text_dim))
                 .cursor_pointer()
                 .hover(|s| s.text_color(rgba(th.text)).bg(rgba(th.hover)))
+                .child(label)
         };
         let to = row("To", &compose.to).child(
             div()
@@ -512,7 +686,7 @@ impl MailWindow {
                 .flex_row()
                 .gap(px(4.0))
                 .when(!compose.show_cc, |d| {
-                    d.child(link("compose-cc", "Cc").child("Cc").on_click(cx.listener(
+                    d.child(link("compose-cc", "Cc").on_click(cx.listener(
                         |this, _, window, cx| {
                             if let Some(c) = &mut this.compose {
                                 c.show_cc = true;
@@ -523,7 +697,7 @@ impl MailWindow {
                     )))
                 })
                 .when(!compose.show_bcc, |d| {
-                    d.child(link("compose-bcc", "Bcc").child("Bcc").on_click(cx.listener(
+                    d.child(link("compose-bcc", "Bcc").on_click(cx.listener(
                         |this, _, window, cx| {
                             if let Some(c) = &mut this.compose {
                                 c.show_bcc = true;
@@ -599,7 +773,7 @@ impl MailWindow {
                     .rounded_l_full()
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(0xffffff1f)))
-                    .on_click(cx.listener(|this, _, _, cx| this.send_compose(cx)))
+                    .on_click(cx.listener(|this, _, window, cx| this.send_compose(window, cx)))
                     .child("Send"),
             )
             .child(div().w(px(1.0)).h(px(20.0)).bg(rgba(0xffffff66)))
@@ -704,11 +878,10 @@ mod tests {
             from: vec![addr(Some("Kay Mann"), "kay@enron.com")],
             to: vec![addr(None, "me@enron.com"), addr(Some("Bob"), "bob@enron.com")],
             cc: vec![addr(None, "sara@enron.com"), addr(None, "kay@enron.com")],
-            date: None,
             body: "Hello.\n\nSee you.".to_owned(),
-            truncated: false,
-            from_html: false,
-            attachments: Vec::new(),
+            message_id: Some("1@enron.com".to_owned()),
+            references: vec!["0@enron.com".to_owned()],
+            ..MessageView::default()
         }
     }
 

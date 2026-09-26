@@ -46,6 +46,10 @@ pub struct MessageView {
     /// The message has no plain-text part; `body` was converted from HTML.
     pub from_html: bool,
     pub attachments: Vec<Attachment>,
+    /// The `Message-ID`, without angle brackets.
+    pub message_id: Option<String>,
+    /// The `References`, oldest first, without angle brackets.
+    pub references: Vec<String>,
 }
 
 /// Parses `raw` into its plain-text view. A message that cannot be parsed
@@ -124,6 +128,12 @@ pub fn message_view(raw: &[u8]) -> MessageView {
         truncated,
         from_html,
         attachments,
+        message_id: message.message_id().map(str::to_owned),
+        references: message
+            .references()
+            .as_text_list()
+            .map(|ids| ids.iter().map(|id| id.to_string()).collect())
+            .unwrap_or_default(),
     }
 }
 
