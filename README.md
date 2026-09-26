@@ -8,6 +8,7 @@ Status: early development (Phase 0).
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Implementation plan](docs/IMPLEMENTATION_PLAN.md)
+- [Local test servers](dev/README.md)
 
 ## Building
 

@@ -1,0 +1,76 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Local mail and calendar servers for Katna development and integration
+# tests. See dev/README.md. Test use only: fixed passwords, self-signed TLS,
+# and every port is bound to 127.0.0.1.
+
+name: katna-dev
+
+services:
+  # IMAP, JMAP, SMTP, CalDAV, CardDAV and Sieve in one server.
+  stalwart:
+    image: docker.io/stalwartlabs/stalwart:v0.16
+    environment:
+      # Log in as admin without the first-run web wizard. seed.py uses it.
+      STALWART_RECOVERY_ADMIN: admin:katna-dev
+      STALWART_HOSTNAME: stalwart.katna.test
+    volumes:
+      - ./stalwart/config.json:/etc/stalwart/config.json:ro
+      - stalwart-data:/var/lib/stalwart
+    ports:
+      - 127.0.0.1:10025:25 # SMTP (STARTTLS)
+      - 127.0.0.1:10465:465 # SMTP submission (implicit TLS)
+      - 127.0.0.1:10993:993 # IMAP (implicit TLS)
+      - 127.0.0.1:14190:4190 # ManageSieve
+      - 127.0.0.1:18080:8080 # HTTP: JMAP, CalDAV, CardDAV, web admin
+      - 127.0.0.1:18443:443 # HTTPS: same as above
+
+  # The most common real-world IMAP server. Static passdb: any user name,
+  # one shared password.
+  dovecot:
+    image: docker.io/dovecot/dovecot:2.4.5
+    environment:
+      USER_PASSWORD: katna-dev
+    volumes:
+      - ./dovecot/katna.conf:/etc/dovecot/conf.d/zz-katna.conf:ro
+      - dovecot-data:/srv/vmail
+    ports:
+      - 127.0.0.1:20143:31143 # IMAP (STARTTLS optional)
+      - 127.0.0.1:20993:31993 # IMAP (implicit TLS)
+      - 127.0.0.1:20587:31587 # submission, relayed to Mailpit
+      - 127.0.0.1:24190:34190 # ManageSieve
+
+  # Simple CalDAV/CardDAV reference server.
+  radicale:
+    image: docker.io/tomsquest/docker-radicale:3.8.1.0
+    volumes:
+      - ./radicale/config:/config/config:ro
+      - ./radicale/users:/config/users:ro
+      - radicale-data:/data
+    ports:
+      - 127.0.0.1:5232:5232
+
+  # Catches all outgoing mail from Stalwart and Dovecot.
+  mailpit:
+    image: docker.io/axllent/mailpit:v1.31
+    ports:
+      - 127.0.0.1:1025:1025 # SMTP, no auth
+      - 127.0.0.1:8025:8025 # web UI and API
+
+  # Creates accounts and loads sample mail, events and contacts, then exits.
+  seed:
+    image: docker.io/library/python:3.13-alpine
+    command: ["python3", "/seed/seed.py"]
+    volumes:
+      - ./seed:/seed:ro
+    depends_on:
+      - stalwart
+      - dovecot
+      - radicale
+      - mailpit
+    restart: "no"
+
+volumes:
+  stalwart-data:
+  dovecot-data:
+  radicale-data:

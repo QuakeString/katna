@@ -1,0 +1,9 @@
+BEGIN:VCARD
+VERSION:4.0
+UID:urn:uuid:6f1e1d8a-0b0e-4c1e-9d1a-000000000001
+FN:Bob Example
+N:Example;Bob;;;
+EMAIL;TYPE=work:bob@katna.test
+TEL;TYPE=cell:+49 30 1234567
+ORG:Katna
+END:VCARD

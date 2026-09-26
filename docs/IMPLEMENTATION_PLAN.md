@@ -40,16 +40,19 @@ account you control.
 
 ### 3.1 Local test servers (containers)
 
-A `dev/compose.yaml` (Podman or Docker) starts:
+A `dev/compose.yaml` (Podman or Docker) starts the following; see
+`dev/README.md` for ports and accounts:
 
 | Service | Purpose |
 |---|---|
 | **Stalwart** | IMAP, JMAP, SMTP, CalDAV, CardDAV, Sieve in one server |
-| **Dovecot + Postfix** | The most common real-world IMAP setup; CONDSTORE/QRESYNC, NOTIFY |
+| **Dovecot** | The most common real-world IMAP server; CONDSTORE/QRESYNC, NOTIFY. Its own submission service relays to Mailpit, so no Postfix is needed |
 | **Radicale** | Simple CalDAV/CardDAV reference |
 | **Mailpit** | Captures outgoing SMTP for send tests |
 
-Seed scripts create test accounts and load sample mailboxes.
+A seed script creates test accounts and loads sample mail, events and
+contacts. Mail that Stalwart or Dovecot would send to another domain goes to
+Mailpit.
 
 ### 3.2 Test data
 
@@ -280,7 +283,7 @@ Plasma integration (Phase 6), which have few dependencies on the rest.
 2. ✅ Repo renamed; `LICENSE`, `README`, `CLAUDE.md` added.
 3. ✅ Cargo workspace with empty crates and the dependency rules.
 4. ✅ Toolchain (latest stable); CI `check` (Arch + Ubuntu 26.04), `deny`, `size`.
-5. Add `dev/compose.yaml` with Stalwart, Dovecot, Radicale, Mailpit and seed data.
+5. ✅ Add `dev/compose.yaml` with Stalwart, Dovecot, Radicale, Mailpit and seed data.
 6. Start spike **S2** (Pimalaya + I/O) and spike **S1** (window chrome).
 7. Implement `katna-core` and the first `katna-store` migration.
 8. Write the Enron download script and the Maildir importer.

@@ -1,0 +1,8 @@
+BEGIN:VCARD
+VERSION:3.0
+UID:6f1e1d8a-0b0e-4c1e-9d1a-000000000003
+FN:José Müller
+N:Müller;José;;;
+EMAIL:jose@example.org
+ADR;TYPE=home:;;Hauptstraße 1;Berlin;;10115;Germany
+END:VCARD

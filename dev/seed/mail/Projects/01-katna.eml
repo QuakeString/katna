@@ -1,0 +1,9 @@
+From: Alice Example <alice@katna.test>
+To: Bob Example <bob@katna.test>
+Subject: Katna milestones
+Date: Sat, 12 Sep 2026 12:00:00 +0000
+Message-ID: <milestones@katna.test>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+
+Filed in a custom folder so clients see more than INBOX.
