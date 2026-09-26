@@ -13,6 +13,7 @@ mod format;
 mod outgoing;
 mod sidebar;
 mod signatures;
+mod spell;
 mod tabs;
 mod theme;
 mod widgets;

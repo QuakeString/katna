@@ -921,7 +921,7 @@ pub fn parse_color(value: &str) -> Option<u32> {
             3 => {
                 let v = u32::from_str_radix(hex, 16).ok()?;
                 let (r, g, b) = ((v >> 8) & 0xf, (v >> 4) & 0xf, v & 0xf);
-                Some((r * 17) << 16 | (g * 17) << 8 | b * 17)
+                Some(((r * 17) << 16) | ((g * 17) << 8) | (b * 17))
             }
             6 => u32::from_str_radix(hex, 16).ok(),
             _ => None,

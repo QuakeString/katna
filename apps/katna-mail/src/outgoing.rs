@@ -1,10 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Outgoing mail: the addresses typed in the compose window, and the
-//! RFC 5322 message handed to `katna-daemon` to send. Plain text in UTF-8;
-//! the daemon adds `Date` and `Message-ID`. No GPUI here.
+//! RFC 5322 message handed to `katna-daemon` to send: plain text in UTF-8,
+//! with an HTML version, its pictures and attachments as MIME parts when
+//! there are any. The daemon adds `Date` (unless a scheduled message sets
+//! it) and `Message-ID`. No GPUI here.
 
 use std::fmt::Write as _;
+use std::hash::{Hash, Hasher};
+use std::sync::Arc;
+
+use katna_ui::rich::html::base64_encode;
 
 /// A name and address, as in `Kay Mann <kay@example.org>`.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -25,6 +31,24 @@ pub struct Outgoing {
     /// Message-IDs, without angle brackets.
     pub in_reply_to: Option<String>,
     pub references: Vec<String>,
+    /// The same text as HTML.
+    pub html: Option<String>,
+    /// Pictures the HTML shows, by `cid:`.
+    pub inline: Vec<Part>,
+    pub attachments: Vec<Part>,
+    /// An RFC 5322 date for the `Date` header (scheduled mail carries the
+    /// time it goes out).
+    pub date: Option<String>,
+}
+
+/// A file in a message.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Part {
+    pub name: String,
+    pub mime: String,
+    pub data: Arc<Vec<u8>>,
+    /// For pictures in the HTML, without angle brackets.
+    pub content_id: Option<String>,
 }
 
 /// Parses a comma- or semicolon-separated address list such as
@@ -112,9 +136,43 @@ pub fn build(message: &Outgoing) -> Vec<u8> {
             .collect();
         header(&mut out, "References", &ids.join(" "));
     }
+    if let Some(date) = &message.date {
+        header(&mut out, "Date", date);
+    }
     out.push_str("MIME-Version: 1.0\r\n");
-    out.push_str("Content-Type: text/plain; charset=utf-8\r\n");
-    let body = message.body.replace("\r\n", "\n");
+    let seed = boundary_seed(message);
+    let text = text_part(&message.body);
+    let body = match &message.html {
+        None => text,
+        Some(html) => {
+            let html = html_part(html);
+            let html = if message.inline.is_empty() {
+                html
+            } else {
+                let parts: Vec<String> = std::iter::once(html)
+                    .chain(message.inline.iter().map(file_part))
+                    .collect();
+                multipart("related; type=\"text/html\"", &parts, seed + 2)
+            };
+            multipart("alternative", &[text, html], seed + 1)
+        }
+    };
+    let body = if message.attachments.is_empty() {
+        body
+    } else {
+        let parts: Vec<String> = std::iter::once(body)
+            .chain(message.attachments.iter().map(file_part))
+            .collect();
+        multipart("mixed", &parts, seed)
+    };
+    out.push_str(&body);
+    out.into_bytes()
+}
+
+/// A MIME entity: its headers, a blank line and its body.
+fn text_part(body: &str) -> String {
+    let body = body.replace("\r\n", "\n");
+    let mut out = String::from("Content-Type: text/plain; charset=utf-8\r\n");
     let plain = body.is_ascii() && body.lines().all(|l| l.len() <= 78 && !l.ends_with(' '));
     if plain {
         out.push_str("Content-Transfer-Encoding: 7bit\r\n\r\n");
@@ -126,7 +184,90 @@ pub fn build(message: &Outgoing) -> Vec<u8> {
         out.push_str("Content-Transfer-Encoding: quoted-printable\r\n\r\n");
         out.push_str(&quoted_printable(&body));
     }
-    out.into_bytes()
+    out
+}
+
+fn html_part(html: &str) -> String {
+    // Short lines keep quoted-printable readable.
+    let html = html.replace("</div>", "</div>\n").replace("<br>", "<br>\n");
+    format!(
+        "Content-Type: text/html; charset=utf-8\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\n{}",
+        quoted_printable(&html)
+    )
+}
+
+fn file_part(part: &Part) -> String {
+    let mut out = String::new();
+    let name = file_name_params(&part.name);
+    let _ = write!(out, "Content-Type: {};\r\n {}\r\n", part.mime, name.0);
+    match &part.content_id {
+        Some(id) => {
+            let _ = write!(out, "Content-Disposition: inline;\r\n {}\r\n", name.1);
+            let _ = write!(out, "Content-ID: <{id}>\r\n");
+        }
+        None => {
+            let _ = write!(out, "Content-Disposition: attachment;\r\n {}\r\n", name.1);
+        }
+    }
+    out.push_str("Content-Transfer-Encoding: base64\r\n\r\n");
+    let encoded = base64_encode(&part.data);
+    for chunk in encoded.as_bytes().chunks(76) {
+        out.push_str(std::str::from_utf8(chunk).unwrap_or_default());
+        out.push_str("\r\n");
+    }
+    out
+}
+
+/// The `name=` and `filename=` parameters for a file name, RFC 2231
+/// encoded when it is not plain ASCII.
+fn file_name_params(name: &str) -> (String, String) {
+    let simple = name.is_ascii()
+        && !name
+            .chars()
+            .any(|c| c.is_control() || c == '"' || c == '\\');
+    if simple {
+        return (format!("name=\"{name}\""), format!("filename=\"{name}\""));
+    }
+    let mut encoded = String::new();
+    for byte in name.bytes() {
+        if byte.is_ascii_alphanumeric() || b"!#$&+-.^_`|~".contains(&byte) {
+            encoded.push(byte as char);
+        } else {
+            let _ = write!(encoded, "%{byte:02X}");
+        }
+    }
+    let words = encode_words(name);
+    (
+        format!("name=\"{}\"", words.replace('"', "")),
+        format!("filename*=utf-8''{encoded}"),
+    )
+}
+
+fn multipart(kind: &str, parts: &[String], seed: u64) -> String {
+    let boundary = format!("katna-{seed:016x}");
+    let mut out = format!("Content-Type: multipart/{kind};\r\n boundary=\"{boundary}\"\r\n\r\n");
+    for part in parts {
+        let _ = write!(out, "--{boundary}\r\n{part}");
+        if !part.ends_with("\r\n") {
+            out.push_str("\r\n");
+        }
+    }
+    let _ = write!(out, "--{boundary}--\r\n");
+    out
+}
+
+/// A number the boundaries are made from: from the content, so they are
+/// unlikely to appear in it and the same message builds the same bytes.
+fn boundary_seed(message: &Outgoing) -> u64 {
+    let mut hasher = std::collections::hash_map::DefaultHasher::new();
+    message.body.hash(&mut hasher);
+    message.html.hash(&mut hasher);
+    message.subject.hash(&mut hasher);
+    for part in message.inline.iter().chain(&message.attachments) {
+        part.name.hash(&mut hasher);
+        part.data.len().hash(&mut hasher);
+    }
+    hasher.finish() & 0xffff_ffff_ffff_fff0
 }
 
 /// `Name: value`, folded at the spaces between items to keep lines short.
@@ -290,6 +431,51 @@ mod tests {
         let view = katna_render::message_view(raw.as_bytes());
         assert_eq!(view.subject, "Café prices");
         assert_eq!(view.body.trim_end(), "Naïve = true");
+    }
+
+    #[test]
+    fn builds_html_with_pictures_and_attachments() {
+        let raw = String::from_utf8(build(&Outgoing {
+            to: vec![mailbox(None, "bob@x.org")],
+            subject: "Report".to_owned(),
+            body: "Hi *Bob*\n".to_owned(),
+            html: Some("<div dir=\"ltr\"><div><b>Hi</b> Bob</div><div><img src=\"cid:logo@katna\"></div></div>".to_owned()),
+            inline: vec![Part {
+                name: "logo.png".to_owned(),
+                mime: "image/png".to_owned(),
+                data: Arc::new(vec![0x89, b'P', b'N', b'G']),
+                content_id: Some("logo@katna".to_owned()),
+            }],
+            attachments: vec![Part {
+                name: "Qüarterly report.pdf".to_owned(),
+                mime: "application/pdf".to_owned(),
+                data: Arc::new(b"%PDF-1.4 hello".to_vec()),
+                content_id: None,
+            }],
+            date: Some("Mon, 28 Sep 2026 08:00:00 +0000".to_owned()),
+            ..Outgoing::default()
+        }))
+        .unwrap();
+        assert!(raw.contains("Date: Mon, 28 Sep 2026 08:00:00 +0000\r\n"));
+        assert!(raw.contains("Content-Type: multipart/mixed;\r\n boundary="));
+        assert!(raw.contains("Content-Type: multipart/alternative;\r\n boundary="));
+        assert!(raw.contains("Content-Type: multipart/related; type=\"text/html\";\r\n boundary="));
+        assert!(raw.contains("Content-ID: <logo@katna>\r\n"));
+        assert!(raw.contains("filename*=utf-8''Q%C3%BCarterly%20report.pdf"));
+        assert!(raw.lines().all(|l| l.len() <= 78), "{raw}");
+        // It parses back: the text, the HTML and the attachment are there.
+        let parsed = mail_parser::MessageParser::default()
+            .parse(raw.as_bytes())
+            .unwrap();
+        assert_eq!(parsed.body_text(0).unwrap().trim_end(), "Hi *Bob*");
+        assert!(parsed.body_html(0).unwrap().contains("<b>Hi</b> Bob"));
+        use mail_parser::MimeHeaders;
+        assert!(
+            parsed
+                .attachments()
+                .any(|a| a.attachment_name() == Some("Qüarterly report.pdf")
+                    && a.contents() == b"%PDF-1.4 hello")
+        );
     }
 
     #[test]

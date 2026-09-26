@@ -280,6 +280,8 @@ pub struct MailWindow {
     account_menu: bool,
     /// The message last handed to the outbox, for Undo.
     unsent: Option<compose::Unsent>,
+    /// The spelling dictionary and scheduled mail of compose.
+    writing: compose::Writing,
     /// The Settings page, when open in place of the list.
     settings_page: Option<settings_page::SettingsPage>,
     /// Navigation openness at this frame, for the folder rows.
@@ -373,6 +375,7 @@ impl MailWindow {
             add_account: None,
             account_menu: false,
             unsent: None,
+            writing: compose::Writing::default(),
             settings_page: None,
             nav_t: 1.0,
             daemon: None,
@@ -499,6 +502,7 @@ impl MailWindow {
             this.update(cx, |this, cx| {
                 this.daemon = Some(connection.clone());
                 this.watch_sending(connection.clone(), cx);
+                this.watch_scheduled(connection.clone(), cx);
             })
             .ok();
             let mut changes = match daemon::mail_changes(&connection).await {
@@ -555,6 +559,28 @@ impl MailWindow {
             .count();
         if accounts == 1 {
             rows.retain(|r| !matches!(r, sidebar::Row::Account { .. }));
+        }
+        // Scheduled mail shows under the first Sent folder while there is
+        // some.
+        let scheduled = self.writing.scheduled_count();
+        if scheduled > 0 {
+            let at = rows
+                .iter()
+                .position(|r| matches!(r, sidebar::Row::Folder { role: Role::Sent, .. }))
+                .map_or(rows.len(), |ix| ix + 1);
+            rows.insert(
+                at,
+                sidebar::Row::Folder {
+                    key: compose::SCHEDULED_NAV_KEY.to_owned(),
+                    depth: 0,
+                    label: "Scheduled".to_owned(),
+                    role: Role::Other,
+                    folder: None,
+                    unread: scheduled as u64,
+                    has_children: false,
+                    expanded: false,
+                },
+            );
         }
         self.nav_rows = rows;
     }
@@ -1799,6 +1825,7 @@ impl Render for MailWindow {
         let search_width = (viewport - 2.0 * side).clamp(200.0, SEARCH_WIDTH);
         let search_panel = self.render_search_panel(&th, viewport, search_width, window, cx);
         let compose = self.render_compose(&th, window, reduce, cx);
+        let scheduled = self.render_scheduled(&th, window, cx);
         let account_menu = self.render_account_menu(&th, cx);
         let add_account = self.render_add_account(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
@@ -1833,6 +1860,7 @@ impl Render for MailWindow {
             .child(content)
             .children(search_panel)
             .children(compose)
+            .children(scheduled)
             .children(account_menu)
             .children(add_account)
             .children(context_menu)

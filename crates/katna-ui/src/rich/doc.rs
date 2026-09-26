@@ -1199,14 +1199,13 @@ impl Doc {
         pos
     }
 
-    /// Removes the signature paragraphs; returns where they were.
+    /// Removes the signature: its paragraphs and the pictures and tables
+    /// between them. Returns where it was.
     pub fn remove_signature(&mut self) -> Option<usize> {
-        let first = self
-            .blocks
-            .iter()
-            .position(|b| matches!(b, Block::Para(p) if p.style.signature))?;
-        self.blocks
-            .retain(|b| !matches!(b, Block::Para(p) if p.style.signature));
+        let marked = |b: &Block| matches!(b, Block::Para(p) if p.style.signature);
+        let first = self.blocks.iter().position(marked)?;
+        let last = self.blocks.iter().rposition(marked)?;
+        self.blocks.drain(first..=last);
         if self.blocks.is_empty() {
             self.blocks.push(Block::Para(Para::default()));
         }

@@ -459,6 +459,9 @@ fn segments(
         .collect()
 }
 
+/// The lines of a paragraph at a width, kept between frames.
+type LayoutCache = Rc<RefCell<Option<(Pixels, Vec<LineBox>)>>>;
+
 /// Draws the paragraph at `path` of `editor`.
 pub(crate) struct ParaElement {
     pub editor: Entity<RichEditor>,
@@ -472,7 +475,7 @@ pub(crate) struct Measured {
     base: TextBase,
     decos: Vec<(Range<usize>, Deco)>,
     /// The layout made while measuring, by width.
-    cache: Rc<RefCell<Option<(Pixels, Vec<LineBox>)>>>,
+    cache: LayoutCache,
 }
 
 pub(crate) struct Prepainted {
@@ -605,6 +608,7 @@ impl Element for ParaElement {
         let placeholder =
             editor.doc.para(self.path).is_some_and(Para::is_empty) && self.placeholder.is_some();
         let focused = editor.focus_handle.is_focused(window);
+        editor.drawn_focused.set(focused);
         let selection = editor.selection_in(self.path);
         let cursor = editor.cursor_in(self.path);
         let marker = editor.marker(self.path).map(|marker| {

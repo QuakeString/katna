@@ -209,6 +209,8 @@ pub struct RichEditor {
     next_image_id: u64,
     /// The editor's width at the last paint, for sizing images.
     width: Pixels,
+    /// The editor had the focus when last drawn.
+    pub(crate) drawn_focused: std::cell::Cell<bool>,
 }
 
 impl EventEmitter<RichEvent> for RichEditor {}
@@ -241,6 +243,7 @@ impl RichEditor {
             families: RefCell::new(None),
             copied: None,
             images: HashMap::new(),
+            drawn_focused: std::cell::Cell::new(false),
             next_image_id: 0,
             width: px(0.0),
         }
@@ -484,6 +487,12 @@ impl RichEditor {
     }
 
     /// The cursor's bounds in window coordinates as of the last paint.
+    /// Whether the editor had the focus when it was last drawn, for its
+    /// owner's popups (which draw without the window at hand).
+    pub fn had_focus(&self) -> bool {
+        self.drawn_focused.get()
+    }
+
     pub fn cursor_bounds(&self) -> Option<Bounds<Pixels>> {
         let layout = self.layouts.get(&self.head.path)?;
         let (at, height) = layout.caret(self.head.offset, self.upstream);
@@ -1510,6 +1519,8 @@ impl RichEditor {
             }
             head
         });
+        let used = self.doc.images().map(|i| i.id).max().unwrap_or(0);
+        self.next_image_id = self.next_image_id.max(used);
     }
 
     // Undo.
@@ -1840,6 +1851,19 @@ pub fn insert_signature_doc(doc: &mut Doc, at: usize, signature: Doc) {
         && blocks.len() > 1
     {
         blocks.pop();
+    }
+    // It ends on a marked paragraph, so that removing it takes the
+    // pictures and tables at its end too.
+    if !matches!(blocks.last(), Some(Block::Para(_))) {
+        blocks.push(Block::Para(Para::default()));
+    }
+    // Its pictures get IDs of their own in the message.
+    let mut next = doc.images().map(|i| i.id).max().unwrap_or(0);
+    for block in &mut blocks {
+        if let Block::Image(image) = block {
+            next += 1;
+            image.id = next;
+        }
     }
     let at = at.min(doc.blocks.len());
     for (ix, mut block) in blocks.into_iter().enumerate() {

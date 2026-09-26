@@ -23,6 +23,9 @@ gpui-platform.workspace = true
 jiff.workspace = true
 futures-lite.workspace = true
 tracing.workspace = true
+emojis.workspace = true
+spellbook.workspace = true
+mail-parser.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

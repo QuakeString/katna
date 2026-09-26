@@ -130,6 +130,14 @@ pub struct Sending {
     /// The [`Signature::id`] replies and forwards start with, unless the
     /// conversation shows which one the user signed with before.
     pub reply_signature: Option<u32>,
+    /// New messages open full screen.
+    pub compose_full_screen: bool,
+    /// Messages are written and sent as plain text, without formatting.
+    pub plain_text: bool,
+    /// Misspelled words are underlined while writing.
+    pub spell_check: bool,
+    /// The dictionary, as `en_US`; empty for the desktop's language.
+    pub spell_language: String,
 }
 
 impl Default for Sending {
@@ -140,6 +148,10 @@ impl Default for Sending {
             signatures: Vec::new(),
             new_mail_signature: None,
             reply_signature: None,
+            compose_full_screen: false,
+            plain_text: false,
+            spell_check: true,
+            spell_language: String::new(),
         }
     }
 }
@@ -153,7 +165,12 @@ impl Sending {
     /// default for new mail and replies.
     pub fn add_signature(&mut self, name: String, text: String) -> u32 {
         let id = self.signatures.iter().map(|s| s.id).max().unwrap_or(0) + 1;
-        self.signatures.push(Signature { id, name, text });
+        self.signatures.push(Signature {
+            id,
+            name,
+            text,
+            html: String::new(),
+        });
         if self.signatures.len() == 1 {
             self.new_mail_signature = Some(id);
             self.reply_signature = Some(id);
@@ -187,7 +204,12 @@ pub struct Signature {
     /// Stable within the file; defaults refer to it.
     pub id: u32,
     pub name: String,
+    /// The signature as plain text (what plain text mail carries).
     pub text: String,
+    /// The signature with its formatting, as HTML with pictures inside as
+    /// `data:` URIs; empty for a plain text one.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub html: String,
 }
 
 /// How Katna Mail shows mail (its quick settings).
