@@ -28,6 +28,9 @@ pub struct Attachment {
     pub name: String,
     /// Decoded size in bytes.
     pub size: u64,
+    /// The `Content-ID`, without angle brackets, for images an HTML body
+    /// shows inline.
+    pub content_id: Option<String>,
 }
 
 /// What the reading pane shows of a message.
@@ -115,6 +118,9 @@ pub fn message_view(raw: &[u8]) -> MessageView {
                 })
                 .unwrap_or_else(|| "Unnamed attachment".to_owned()),
             size: part.body.len() as u64,
+            content_id: part
+                .content_id()
+                .map(|id| id.trim_matches(['<', '>', ' ']).to_owned()),
         })
         .collect();
 
@@ -210,7 +216,8 @@ Content-Transfer-Encoding: base64\r\n\r\naGVsbG8=\r\n\
             view.attachments,
             [Attachment {
                 name: "q3.pdf".into(),
-                size: 5
+                size: 5,
+                content_id: None,
             }]
         );
     }

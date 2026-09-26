@@ -854,6 +854,47 @@ This is a major risk: GPUI has no HTML engine.
 - Show authentication results (SPF/DKIM/DMARC), lookalike-domain warnings,
   and "external sender" banners.
 
+**What runs today (decided September 2026).** HTML mail is drawn with
+GPUI's own elements, not a browser engine. `katna_render::message_document`
+parses the HTML body with `html5ever` (browser-grade error recovery) and
+walks it once into a small layout tree (`katna_render::html::Document`):
+paragraphs of styled runs (bold, italic, underline, strike, colors,
+monospace, links), headings, lists, quotes, `<pre>`, rules, boxes with
+background, padding, border, radius and width, table rows as rows of cells,
+button-like inline boxes, and images. Only inline `style` attributes and
+presentational attributes are read; `<style>` sheets are ignored. The walk
+is the sanitizer: scripts, style sheets, forms, frames, objects, SVG and
+unknown elements never reach the tree, hidden preheaders are dropped, link
+targets are limited to `http`, `https` and `mailto`, and the tree is capped
+in depth and size. `cid:` and `data:` images come from the message.
+In a light theme a message that sets its own colors is drawn on its own
+page; one that does not follows the app's colors. In a dark theme the
+message's colors are remapped (`window/dark.rs`): white becomes the reading
+pane, other light backgrounds become dark ones of the same hue as dark by
+eye as they were light, dark backgrounds stay, and text that falls under
+3:1 contrast on its new background has its lightness flipped and raised to
+4.5:1. Images are not changed. A `text/plain` part
+that is really an HTML document is rendered as HTML.
+
+Remote content is blocked by default. Tracking pixels (tiny images and
+known open-tracking paths) are dropped. A banner offers "Show images" (this
+message) and "Always show from this sender" (kept in
+`$XDG_CONFIG_HOME/katna/trusted-senders`). Images are fetched by the daemon
+(`FetchImage`, `https` only, `http` upgraded, at most 8 MB, checked to be an
+image by its bytes); the app never uses the network. Sender pictures follow
+the same consent: for a trusted sender, or once a message's images are
+shown, the daemon's `SenderPicture` looks up the organization's BIMI logo
+(`default._bimi` TXT record, SVG) and falls back to its website's
+`apple-touch-icon.png` or `favicon.ico`. Free-mail domains get none, and
+answers are cached in `$XDG_CACHE_HOME/katna/pictures` for a week.
+
+Size: this renderer added 2.7 MB to the release app (31.3 → 34.0 MB). For
+comparison, a minimal program with Blitz (`blitz-html` + `blitz-paint` +
+`anyrender_vello_cpu`) is 12.9 MB, and it paints to a bitmap, so text,
+links and selection would need their own plumbing. WebKitGTK cannot be
+embedded in a GPUI window. Blitz stays the candidate if newsletters that
+depend on `<style>` sheets turn out to matter.
+
 ### Composer
 
 - **Phase 1:** plain text and Markdown compose, sent as text + HTML.
@@ -982,8 +1023,10 @@ icons and name and without Google-only features (no Chat, Meet, Drive,
 Gemini or confidential mode):
 
 - **App rail.** A 72 px column at the far left holds Mail, Calendar,
-  Contacts, Tasks, Notes and Feeds (RSS and Atom), with Settings and the
-  account at the bottom. Each app is a page (`window/apps.rs`), so new ones
+  Contacts, Tasks, Notes and Feeds (RSS and Atom), with Settings at the
+  bottom. Their names show under the icons unless "App names" is off in
+  quick settings (`mail.app_labels`); then the icons have tooltips. Each
+  app is a page (`window/apps.rs`), so new ones
   plug in. Mail is the only app so far; Contacts lists the people the mail
   was exchanged with, most written with first, and a click searches their
   mail; the others show a "coming soon" page saying what they will do.
@@ -1172,7 +1215,9 @@ the next call starts a new one), `SyncNow(id)` (0 for every account), `FetchBody
 `DeleteMessages(ax)`, `ArchiveMessages(ax)`, `QueueSend(x account, ay
 message, u delay) → id`, `UndoSend(id) → b`, `DiscardSend(id) → b`,
 `Outbox() → a(xxxsxss)` (id, account, message, subject, send at, state,
-detail; states in `katna_dbus::send_state`), and the signals
+detail; states in `katna_dbus::send_state`), `FetchImage(url) → ay` and
+`SenderPicture(address) → ay` (images for the reading pane, §12), and the
+signals
 `AccountsChanged`, `SyncStatusChanged(id)`, `MailChanged(id)` and
 `OutboxChanged(id)`. `MailChanged` carries the
 account, not message IDs: clients read the change journal. Errors use the

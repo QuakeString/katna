@@ -107,6 +107,12 @@ impl Paths {
         self.config_dir.join("config.toml")
     }
 
+    /// Senders whose remote images are shown, one address per line:
+    /// `$XDG_CONFIG_HOME/katna/trusted-senders`.
+    pub fn trusted_senders_file(&self) -> PathBuf {
+        self.config_dir.join("trusted-senders")
+    }
+
     /// Mail database: `$XDG_DATA_HOME/katna/mail.db`.
     pub fn mail_db(&self) -> PathBuf {
         self.data_dir.join("mail.db")
@@ -151,8 +157,9 @@ impl Paths {
         for dir in [&self.data_dir, &self.cache_dir] {
             gone(dir, std::fs::remove_dir_all(dir))?;
         }
-        let config = self.config_file();
-        gone(&config, std::fs::remove_file(&config))?;
+        for file in [self.config_file(), self.trusted_senders_file()] {
+            gone(&file, std::fs::remove_file(&file))?;
+        }
         // Fails when the user keeps other files there.
         let _ = std::fs::remove_dir(&self.config_dir);
         Ok(())
@@ -261,6 +268,7 @@ mod tests {
         std::fs::write(paths.index_dir().join("meta.json"), "{}").unwrap();
         std::fs::write(paths.cache_dir().join("pictures"), "").unwrap();
         std::fs::write(paths.config_file(), "[mail]\n").unwrap();
+        std::fs::write(paths.trusted_senders_file(), "a@example.com\n").unwrap();
         paths.delete_all_data().unwrap();
         assert!(!paths.data_dir().exists());
         assert!(!paths.cache_dir().exists());
