@@ -902,12 +902,24 @@ known open-tracking paths) are dropped. A banner offers "Show images" (this
 message) and "Always show from this sender" (kept in
 `$XDG_CONFIG_HOME/katna/trusted-senders`). Images are fetched by the daemon
 (`FetchImage`, `https` only, `http` upgraded, at most 8 MB, checked to be an
-image by its bytes); the app never uses the network. Sender pictures follow
-the same consent: for a trusted sender, or once a message's images are
-shown, the daemon's `SenderPicture` looks up the organization's BIMI logo
-(`default._bimi` TXT record, SVG) and falls back to its website's
-`apple-touch-icon.png` or `favicon.ico`. Free-mail domains get none, and
-answers are cached in `$XDG_CACHE_HOME/katna/pictures` for a week.
+image by its bytes); the app never uses the network.
+
+Sender pictures load without asking, since they are looked up by domain,
+never by message, and kept for a week, so they cannot tell anyone that a
+message was read. The daemon's `SenderPicture` looks up the organization's
+BIMI logo (`default._bimi` TXT record, SVG) and falls back to the largest
+icon its home page names (`<link rel="icon">`, `apple-touch-icon`), then
+`apple-touch-icon.png` and `favicon.ico`. Free-mail domains get none, and
+answers are cached in `$XDG_CACHE_HOME/katna/pictures` for a week. The
+General setting "Sender pictures" (`mail.sender_pictures`) turns them off;
+then only trusted senders get one. The same pictures show in the reading
+pane, the phone list and Contacts.
+
+The user's own accounts show the picture picked in Settings → Accounts
+(kept in `$XDG_DATA_HOME/katna/account-pictures/<account id>`), else the
+desktop user's picture (`~/.face.icon`, the AccountsService icon, or
+`~/.face`). There is no OAuth, so a provider's profile photo is out of
+reach; Libravatar or Gravatar could come later as an opt-in.
 
 Size: this renderer added 2.7 MB to the release app (31.3 → 34.0 MB). For
 comparison, a minimal program with Blitz (`blitz-html` + `blitz-paint` +

@@ -252,6 +252,9 @@ pub struct MailView {
     pub desktop_colors: bool,
     /// Show the names under the icons of the app bar (Mail, Calendar, ...).
     pub app_labels: bool,
+    /// Show the logo of each sender's organization (its BIMI logo or
+    /// website icon) in place of their initial.
+    pub sender_pictures: bool,
     /// Where each kind of attachment opens.
     pub open: OpenAttachments,
     /// With several accounts: the folder pane shows one account, picked in
@@ -275,6 +278,7 @@ impl Default for MailView {
             theme: Theme::System,
             desktop_colors: true,
             app_labels: true,
+            sender_pictures: true,
             open: OpenAttachments::default(),
             accounts_shown: AccountsShown::One,
             current_account: String::new(),

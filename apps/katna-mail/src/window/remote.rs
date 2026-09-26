@@ -1,22 +1,30 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Remote images and sender pictures in the reading pane.
+//! Remote images in messages, and pictures of people.
 //!
-//! Loading anything from the web tells its server that the message was
-//! opened, and when, and from where. So nothing is loaded until the user
-//! says so: "Show images" for one message, or "Always show from" a sender.
-//! A trusted sender's picture (their organization's BIMI logo or website
-//! icon) is shown too. The daemon does the fetching; the app never uses
-//! the network. Trusted senders are kept one per line in
-//! `$XDG_CONFIG_HOME/katna/trusted-senders`.
+//! Loading an image of a message from the web tells its server that the
+//! message was opened, and when, and from where. So none is loaded until
+//! the user says so: "Show images" for one message, or "Always show from"
+//! a sender (kept one per line in `$XDG_CONFIG_HOME/katna/trusted-senders`).
+//!
+//! A sender's picture is their organization's BIMI logo or website icon.
+//! It is looked up by domain, not by message, and kept for a week, so it
+//! cannot tell anyone that a message was read; it is shown for every
+//! sender unless the "Sender pictures" setting is off (then only for
+//! trusted senders). The user's own accounts show the picture picked for
+//! the account in Settings, else the desktop user's picture. The daemon
+//! does all fetching; the app never uses the network.
 
-use std::collections::{BTreeSet, HashMap, HashSet};
-use std::path::PathBuf;
+use std::cell::RefCell;
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use gpui::{AnyElement, Context, SharedString, div, img, prelude::*, px, rgba};
-use katna_core::Paths;
+use gpui::{
+    AnyElement, Context, ObjectFit, PathPromptOptions, SharedString, div, img, prelude::*, px, rgba,
+};
 use katna_core::image::ImageKind;
+use katna_core::{AccountId, Paths};
 use katna_store::MessageId;
 
 use super::MailWindow;
@@ -40,8 +48,16 @@ pub(crate) struct Remote {
     /// Messages whose images the user chose to show, this session.
     shown: HashSet<MessageId>,
     pub(super) images: HashMap<String, Fetch>,
-    /// Sender pictures, by lower-case address.
+    /// Sender pictures, by lower-case domain.
     pictures: HashMap<String, Fetch>,
+    /// Domains whose picture was asked for while drawing, each with an
+    /// address there; fetched once the frame is built.
+    wanted: RefCell<BTreeMap<String, String>>,
+    /// The desktop user's picture, shown for their own accounts.
+    desktop: Option<Arc<gpui::Image>>,
+    /// Pictures picked for accounts, by account ID.
+    own: HashMap<i64, Arc<gpui::Image>>,
+    own_dir: PathBuf,
     /// An installed monospace font, found on first use.
     mono: Option<Option<SharedString>>,
 }
@@ -57,12 +73,26 @@ impl Remote {
                     .collect()
             })
             .unwrap_or_default();
+        let own_dir = paths.account_pictures_dir();
+        let own = std::fs::read_dir(&own_dir)
+            .into_iter()
+            .flatten()
+            .filter_map(|entry| {
+                let entry = entry.ok()?;
+                let id = entry.file_name().to_str()?.parse::<i64>().ok()?;
+                Some((id, read_picture(&entry.path())?))
+            })
+            .collect();
         Self {
             path,
             trusted,
             shown: HashSet::new(),
             images: HashMap::new(),
             pictures: HashMap::new(),
+            wanted: RefCell::default(),
+            desktop: desktop_picture(),
+            own,
+            own_dir,
             mono: None,
         }
     }
@@ -92,11 +122,10 @@ impl Remote {
         }
     }
 
-    fn picture(&self, sender: &str) -> Option<Arc<gpui::Image>> {
-        match self.pictures.get(&sender.to_ascii_lowercase()) {
-            Some(Fetch::Ready(image)) => Some(image.clone()),
-            _ => None,
-        }
+    /// Whether a picture was picked for `account` (else the desktop's is
+    /// used).
+    pub(super) fn has_own_picture(&self, account: AccountId) -> bool {
+        self.own.contains_key(&account.0)
     }
 
     /// The monospace font found by [`Self::find_mono`].
@@ -124,29 +153,89 @@ impl Remote {
     }
 }
 
+/// Largest picture read for an account.
+const MAX_OWN_PICTURE: u64 = 8 * 1024 * 1024;
+
 fn image(bytes: Vec<u8>) -> Option<Arc<gpui::Image>> {
     let kind = ImageKind::sniff(&bytes)?;
     Some(Arc::new(gpui::Image::from_bytes(rich::format(kind), bytes)))
 }
 
+fn read_picture(path: &Path) -> Option<Arc<gpui::Image>> {
+    let meta = std::fs::metadata(path).ok()?;
+    if !meta.is_file() || meta.len() > MAX_OWN_PICTURE {
+        return None;
+    }
+    image(std::fs::read(path).ok()?)
+}
+
+/// The picture of the desktop's user: `~/.face.icon` (KDE), the one the
+/// system's user settings keep (AccountsService), or `~/.face`.
+fn desktop_picture() -> Option<Arc<gpui::Image>> {
+    let home = std::env::var_os("HOME").map(PathBuf::from);
+    let user = std::env::var("USER")
+        .or_else(|_| std::env::var("LOGNAME"))
+        .ok()
+        .filter(|u| !u.is_empty() && !u.contains('/'));
+    let candidates = [
+        home.as_ref().map(|h| h.join(".face.icon")),
+        user.map(|u| Path::new("/var/lib/AccountsService/icons").join(u)),
+        home.as_ref().map(|h| h.join(".face")),
+    ];
+    candidates
+        .into_iter()
+        .flatten()
+        .find_map(|p| read_picture(&p))
+}
+
+/// The domain of `email`, when it looks like one.
+fn domain_of(email: &str) -> Option<String> {
+    let (_, domain) = email.trim().rsplit_once('@')?;
+    let domain = domain.trim().trim_end_matches('.').to_ascii_lowercase();
+    domain.contains('.').then_some(domain)
+}
+
+/// A photo filling a circle.
+fn photo(picture: Arc<gpui::Image>, size: f32) -> AnyElement {
+    img(picture)
+        .size(px(size))
+        .flex_none()
+        .rounded_full()
+        .object_fit(ObjectFit::Cover)
+        .into_any_element()
+}
+
+/// A logo, which may be transparent or not square, on a white circle.
+fn logo(picture: Arc<gpui::Image>, size: f32) -> AnyElement {
+    div()
+        .size(px(size))
+        .flex_none()
+        .rounded_full()
+        .overflow_hidden()
+        .bg(rgba(0xffffffff))
+        .flex()
+        .items_center()
+        .justify_center()
+        .child(
+            img(picture)
+                .size(px(size * 0.7))
+                .object_fit(ObjectFit::Contain),
+        )
+        .into_any_element()
+}
+
 impl MailWindow {
-    /// Starts fetching what the open conversation may show and does not
-    /// have yet: remote images of allowed messages, pictures of trusted
-    /// senders.
+    /// Starts fetching the remote images of the open conversation that
+    /// may show and are not here yet.
     pub(super) fn fetch_remote(&mut self, cx: &mut Context<Self>) {
         self.remote.find_mono(cx);
         let Some(reader) = &self.reader else {
             return;
         };
         let mut urls = Vec::new();
-        let mut senders = Vec::new();
         for (id, sender, remote) in reader.remote_content() {
             if !self.remote.allowed(id, &sender) {
                 continue;
-            }
-            let key = sender.to_ascii_lowercase();
-            if !key.is_empty() && !self.remote.pictures.contains_key(&key) {
-                senders.push(key);
             }
             urls.extend(
                 remote
@@ -182,11 +271,18 @@ impl MailWindow {
             })
             .detach();
         }
-        for sender in senders {
-            self.remote.pictures.insert(sender.clone(), Fetch::Loading);
+    }
+
+    /// Starts fetching the sender pictures asked for while drawing.
+    pub(super) fn fetch_pictures(&mut self, cx: &mut Context<Self>) {
+        let wanted = std::mem::take(&mut *self.remote.wanted.borrow_mut());
+        for (domain, address) in wanted {
+            if self.remote.pictures.contains_key(&domain) {
+                continue;
+            }
+            self.remote.pictures.insert(domain.clone(), Fetch::Loading);
             let connection = self.daemon.clone();
             cx.spawn(async move |this, cx| {
-                let address = sender.clone();
                 let result = cx
                     .background_executor()
                     .spawn(async move {
@@ -202,7 +298,7 @@ impl MailWindow {
                         Some(image) => Fetch::Ready(image),
                         None => Fetch::Missing,
                     };
-                    this.remote.pictures.insert(sender, fetch);
+                    this.remote.pictures.insert(domain, fetch);
                     cx.notify();
                 })
                 .ok();
@@ -211,21 +307,112 @@ impl MailWindow {
         }
     }
 
-    /// The sender's picture when there is one, else their initial.
-    pub(super) fn sender_avatar(&self, name: &str, email: &str, size: f32) -> AnyElement {
-        match self.remote.picture(email) {
-            Some(picture) => div()
-                .size(px(size))
-                .flex_none()
-                .rounded_full()
-                .overflow_hidden()
-                .bg(rgba(0xffffffff))
-                .flex()
-                .items_center()
-                .justify_center()
-                .child(img(picture).size(px(size * 0.8)).rounded(px(size * 0.1)))
-                .into_any_element(),
-            None => avatar(name, email, size),
+    /// The picture of the person at `email`: the user's own picture for
+    /// their accounts, else their organization's logo once fetched, else
+    /// their initial.
+    pub(super) fn person_avatar(&self, name: &str, email: &str, size: f32) -> AnyElement {
+        if let Some(picture) = self.own_picture(email) {
+            return photo(picture, size);
+        }
+        if let Some(domain) = domain_of(email)
+            .filter(|_| self.config.mail.sender_pictures || self.remote.trusts(email))
+        {
+            match self.remote.pictures.get(&domain) {
+                Some(Fetch::Ready(picture)) => return logo(picture.clone(), size),
+                Some(_) => {}
+                None => {
+                    self.remote
+                        .wanted
+                        .borrow_mut()
+                        .entry(domain)
+                        .or_insert_with(|| email.trim().to_owned());
+                }
+            }
+        }
+        avatar(name, email, size)
+    }
+
+    /// The picture of the user's account at `email`, if it is one.
+    fn own_picture(&self, email: &str) -> Option<Arc<gpui::Image>> {
+        let email = email.trim();
+        let account = self
+            .accounts
+            .iter()
+            .find(|a| !email.is_empty() && a.address.eq_ignore_ascii_case(email))?;
+        self.remote
+            .own
+            .get(&account.id.0)
+            .or(self.remote.desktop.as_ref())
+            .cloned()
+    }
+
+    /// Asks for a picture file and uses it for `account`.
+    pub(super) fn pick_account_picture(&mut self, account: AccountId, cx: &mut Context<Self>) {
+        let chosen = cx.prompt_for_paths(PathPromptOptions {
+            files: true,
+            directories: false,
+            multiple: false,
+            prompt: Some("Use".into()),
+        });
+        cx.spawn(async move |this, cx| {
+            let Ok(Ok(Some(paths))) = chosen.await else {
+                return;
+            };
+            let Some(path) = paths.into_iter().next() else {
+                return;
+            };
+            let read = cx
+                .background_executor()
+                .spawn(async move {
+                    let meta = std::fs::metadata(&path)?;
+                    if meta.len() > MAX_OWN_PICTURE {
+                        return Ok(None);
+                    }
+                    std::fs::read(&path).map(Some)
+                })
+                .await;
+            this.update(cx, |this, cx| {
+                let bytes = match read {
+                    Ok(Some(bytes)) => bytes,
+                    Ok(None) => {
+                        this.show_snackbar("Pick a picture of 8 MB or less.", None, cx);
+                        return;
+                    }
+                    Err(err) => {
+                        this.show_snackbar(format!("Cannot read the picture: {err}"), None, cx);
+                        return;
+                    }
+                };
+                let Some(picture) = image(bytes.clone()) else {
+                    this.show_snackbar("Pick a PNG, JPEG, GIF, WebP or SVG picture.", None, cx);
+                    return;
+                };
+                let dir = this.remote.own_dir.clone();
+                if let Err(err) = std::fs::create_dir_all(&dir)
+                    .and_then(|()| std::fs::write(dir.join(account.0.to_string()), &bytes))
+                {
+                    this.show_snackbar(format!("Cannot keep the picture: {err}"), None, cx);
+                    return;
+                }
+                this.remote.own.insert(account.0, picture);
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Goes back to the desktop's picture for `account`.
+    pub(super) fn reset_account_picture(&mut self, account: AccountId, cx: &mut Context<Self>) {
+        let path = self.remote.own_dir.join(account.0.to_string());
+        match std::fs::remove_file(&path) {
+            Err(err) if err.kind() != std::io::ErrorKind::NotFound => {
+                self.show_snackbar(format!("Cannot remove the picture: {err}"), None, cx);
+            }
+            _ => {
+                self.remote.own.remove(&account.0);
+                cx.notify();
+            }
         }
     }
 

@@ -344,6 +344,20 @@ impl MailWindow {
                 th,
             ))
             .child(row(
+                "Sender pictures",
+                None,
+                self.switch_row(
+                    "page-sender-pictures",
+                    "Show company logos",
+                    "Looked up by the sender's domain, never by message, and kept for a week",
+                    view.sender_pictures,
+                    Change::SenderPictures(!view.sender_pictures),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(row(
                 "Sending",
                 Some("How long a sent message waits, so it can be taken back."),
                 self.undo_send_choice(th, cx),

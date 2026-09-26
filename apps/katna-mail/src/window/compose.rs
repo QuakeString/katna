@@ -48,7 +48,7 @@ use crate::outgoing::{self, Mailbox, Outgoing, Part};
 use crate::signatures;
 use crate::spell::{self, Speller};
 use crate::theme::{Theme, fade};
-use crate::widgets::{avatar, elevation, icon, tip};
+use crate::widgets::{elevation, icon, tip};
 
 pub(super) use attach::Attachment;
 pub(super) use scheduled::NAV_KEY as SCHEDULED_NAV_KEY;
@@ -1190,7 +1190,7 @@ impl MailWindow {
             } else {
                 a.display_name.clone()
             };
-            avatar(&name, &a.address, 40.0)
+            self.person_avatar(&name, &a.address, 40.0)
         });
         let header = div()
             .flex_none()

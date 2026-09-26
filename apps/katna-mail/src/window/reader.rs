@@ -632,7 +632,7 @@ impl MailWindow {
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .on_click(toggle)
-                .child(self.sender_avatar(&name, &email, 40.0))
+                .child(self.person_avatar(&name, &email, 40.0))
                 .child(turn_fade(
                     div()
                         .flex_1()
@@ -953,7 +953,7 @@ impl MailWindow {
                     .flex_none()
                     .flex()
                     .justify_center()
-                    .child(self.sender_avatar(&name, &email, 40.0)),
+                    .child(self.person_avatar(&name, &email, 40.0)),
             )
             .child(turn_fade(
                 div()

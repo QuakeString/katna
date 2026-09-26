@@ -21,7 +21,7 @@ use katna_ui::motion;
 use super::{MailWindow, OpenSettings};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{avatar, icon, icon_button_colored, placeholder, tip};
+use crate::widgets::{icon, icon_button_colored, placeholder, tip};
 
 pub(super) const APP_RAIL_WIDTH: f32 = 72.0;
 
@@ -361,9 +361,11 @@ impl MailWindow {
             count,
             cx.processor(move |this, range: Range<usize>, window, cx| {
                 let th = this.theme(window);
-                range
+                let rows = range
                     .map(|ix| render_person(ix, &people[ix], &th, this, cx))
-                    .collect::<Vec<_>>()
+                    .collect::<Vec<_>>();
+                this.fetch_pictures(cx);
+                rows
             }),
         )
         .size_full();
@@ -413,7 +415,7 @@ fn render_person(
             this.open_app(App::Mail, cx);
             this.search_for(format!("from:{email}"), window, cx);
         }))
-        .child(avatar(
+        .child(this.person_avatar(
             name.as_deref().unwrap_or(&person.email),
             &person.email,
             36.0,
