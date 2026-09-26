@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Signing and encrypting in the compose window: two toggles beside Send,
+//! Signing and encrypting in the compose window: two toggles by the
+//! recipients,
 //! and GnuPG run on the finished message before it goes to the outbox, so
 //! the outbox and Sent hold only what was sent.
 
-use gpui::{AnyElement, Context, prelude::*, rgba};
+use gpui::{AnyElement, Context, prelude::*, px, rgba};
 use katna_crypto::{Gnupg, Protect, Recipients, Security, Standard};
 
 use crate::theme::{Theme, fade};
@@ -73,11 +74,12 @@ pub(in crate::window) fn seal(
 }
 
 impl MailWindow {
-    /// The Encrypt and Sign toggles of the compose window.
+    /// The Encrypt and Sign toggles, at the end of the recipients row.
     pub(super) fn render_sealing(&self, th: &Theme, cx: &mut Context<Self>) -> [AnyElement; 2] {
         let sealing = self.compose.as_ref().map(|c| c.sealing).unwrap_or_default();
         let toggle = |id: &'static str, name: &'static str, on: bool, label: &'static str| {
-            icon_button_colored(id, name, 20.0, if on { th.accent } else { th.text_dim }, th)
+            icon_button_colored(id, name, 18.0, if on { th.accent } else { th.text_dim }, th)
+                .size(px(28.0))
                 .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
                 .tooltip(tip(label, th))
         };

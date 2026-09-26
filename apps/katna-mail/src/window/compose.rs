@@ -842,6 +842,7 @@ impl MailWindow {
                         .child("Cc"),
                 )
             })
+            .children(self.render_sealing(th, cx))
             .child(
                 small_button("inline-pop-out", "open-full", th)
                     .tooltip(tip("Pop out reply", th))
@@ -967,7 +968,8 @@ impl MailWindow {
                             cx.notify();
                         },
                     )))
-                }),
+                })
+                .children(self.render_sealing(th, cx)),
         );
         div()
             .flex_none()
@@ -1123,7 +1125,6 @@ impl MailWindow {
                 "Inserting images",
             ))
             .child(tool("compose-more", "more", "More options", "More options"))
-            .children(self.render_sealing(th, cx))
             .child(div().flex_1())
             .child(
                 icon_button_colored("compose-discard", "trash", 20.0, th.text_dim, th)
