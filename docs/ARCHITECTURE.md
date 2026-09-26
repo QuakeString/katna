@@ -88,6 +88,7 @@ katna/
 ├── crates/
 │   ├── katna-core/            # config, XDG paths, accounts, secrets, errors, logging
 │   ├── katna-store/           # SQLite schema + migrations, blob store, read-only views
+│   ├── katna-import/          # Maildir and mbox import into the store (Enron, migration)
 │   ├── katna-meta/            # metadata-with-expiration layer (§10)
 │   ├── katna-sync/            # account workers, IMAP/JMAP/POP3/SMTP, outbox, op queue
 │   ├── katna-search/          # tantivy index, query language, ranking

@@ -54,7 +54,8 @@ Seed scripts create test accounts and load sample mailboxes.
 ### 3.2 Test data
 
 - **Enron corpus** (~500k messages) for search and performance benchmarks,
-  downloaded by a script (not committed).
+  downloaded by `dev/fetch-enron.sh` (not committed) and read with
+  `katna-search-cli import`.
 - A **real-world email corpus** (newsletters, HTML-heavy mail, broken MIME,
   many languages) for rendering and parser tests; only mail we may
   legally use.
