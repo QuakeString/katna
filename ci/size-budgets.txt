@@ -2,7 +2,7 @@
 # <binary> <max-bytes>
 katna-mail 31457280
 katna-calendar 31457280
-katna-daemon 15728640
+katna-daemon 20971520
 katnactl 10485760
 katna-search-cli 15728640
 katna-bench 15728640

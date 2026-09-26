@@ -5,7 +5,7 @@
 //!
 //! So far: the I/O layer (plan task 1.1), the first parts of IMAP sync
 //! (tasks 1.3 and 1.5), the account worker (task 1.4) and the operation
-//! queue (task 1.6).
+//! queue (task 1.6) and sending (task 1.8).
 //!
 //! - [`MailBackend`] and [`MailSender`]: the protocol traits the sync engine
 //!   uses, with Katna's own types ([`Folder`], [`Envelope`], …).
@@ -19,6 +19,8 @@
 //!   request.
 //! - [`ops`]: the operation queue; local flag changes, moves and deletes,
 //!   replayed on the server.
+//! - [`outbox`]: queued outgoing mail, undo send, SMTP delivery and
+//!   filing in Sent.
 //! - [`worker`]: keeps an account in sync: IDLE, periodic full syncs,
 //!   reconnecting with backoff.
 //!
@@ -33,6 +35,7 @@ mod error;
 pub mod imap;
 pub mod net;
 pub mod ops;
+pub mod outbox;
 pub mod smtp;
 pub mod worker;
 

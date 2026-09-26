@@ -274,8 +274,25 @@ pub trait MailBackend: Send + 'static {
 
     fn create_folder(&mut self, folder: &str) -> impl Future<Output = Result<()>> + Send;
 
-    fn append(&mut self, folder: &str, message: Vec<u8>)
-    -> impl Future<Output = Result<()>> + Send;
+    /// Stores `message` in `folder` with `flags`.
+    fn append_with_flags(
+        &mut self,
+        folder: &str,
+        message: Vec<u8>,
+        flags: &Flags,
+    ) -> impl Future<Output = Result<()>> + Send;
+
+    /// Stores `message` in `folder` without flags.
+    fn append(
+        &mut self,
+        folder: &str,
+        message: Vec<u8>,
+    ) -> impl Future<Output = Result<()>> + Send {
+        async move {
+            self.append_with_flags(folder, message, &Flags::default())
+                .await
+        }
+    }
 
     /// Asks the server for changes to the selected folder (IMAP NOOP).
     fn poll_changes(&mut self) -> impl Future<Output = Result<Vec<FolderChange>>> + Send;

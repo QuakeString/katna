@@ -237,6 +237,7 @@ impl MailBackend for FakeConnection {
                     "INBOX" => Some(FolderRole::Inbox),
                     "Trash" => Some(FolderRole::Trash),
                     "Archive" => Some(FolderRole::Archive),
+                    "Sent" => Some(FolderRole::Sent),
                     _ => None,
                 },
                 selectable: true,
@@ -411,8 +412,34 @@ impl MailBackend for FakeConnection {
         unimplemented!()
     }
 
-    async fn append(&mut self, _: &str, _: Vec<u8>) -> Result<()> {
-        unimplemented!()
+    async fn append_with_flags(
+        &mut self,
+        folder: &str,
+        message: Vec<u8>,
+        flags: &Flags,
+    ) -> Result<()> {
+        let mut state = self.state(format!("APPEND {folder} {}", flag_names(flags)))?;
+        state.modseq += 1;
+        let modseq = state.modseq;
+        let Some(mailbox) = state.folders.get_mut(folder) else {
+            return Err(Error::Rejected(format!("no folder {folder}")));
+        };
+        let split = message
+            .windows(4)
+            .position(|w| w == b"\r\n\r\n")
+            .map_or(message.len(), |at| at + 4);
+        let uid = mailbox.uid_next;
+        mailbox.uid_next += 1;
+        mailbox.messages.insert(
+            uid,
+            Message {
+                flags: flags.clone(),
+                modseq,
+                header: message[..split].to_vec(),
+                body: message[split..].to_vec(),
+            },
+        );
+        Ok(())
     }
 
     async fn poll_changes(&mut self) -> Result<Vec<FolderChange>> {

@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 use async_channel::Receiver;
 use katna_core::{AccountId, ids};
-use katna_dbus::{AccountStatus, NewImapAccount, flag};
+use katna_dbus::{AccountStatus, NewImapAccount, OutboxItem, flag};
 use katna_store::{FolderId, MessageFlags, MessageId};
 use zbus::{fdo, object_server::SignalEmitter};
 
@@ -99,6 +99,29 @@ macro_rules! pim_interface {
                 Ok(self.daemon.archive_messages(&ids(&messages))?)
             }
 
+            async fn queue_send(
+                &self,
+                account: i64,
+                message: Vec<u8>,
+                delay: u32,
+            ) -> fdo::Result<i64> {
+                Ok(self
+                    .daemon
+                    .queue_send(AccountId(account), &message, delay)?)
+            }
+
+            async fn undo_send(&self, id: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.undo_send(id)?)
+            }
+
+            async fn discard_send(&self, id: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.discard_send(id)?)
+            }
+
+            async fn outbox(&self) -> fdo::Result<Vec<OutboxItem>> {
+                Ok(self.daemon.outbox()?)
+            }
+
             #[zbus(signal)]
             async fn accounts_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
 
@@ -110,6 +133,9 @@ macro_rules! pim_interface {
 
             #[zbus(signal)]
             async fn mail_changed(emitter: &SignalEmitter<'_>, account: i64) -> zbus::Result<()>;
+
+            #[zbus(signal)]
+            async fn outbox_changed(emitter: &SignalEmitter<'_>, id: i64) -> zbus::Result<()>;
         }
     };
 }
@@ -155,6 +181,7 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::AccountsChanged => PimService::accounts_changed(&emitter).await,
             Notice::StatusChanged(id) => PimService::sync_status_changed(&emitter, id.0).await,
             Notice::MailChanged(id) => PimService::mail_changed(&emitter, id.0).await,
+            Notice::OutboxChanged(id) => PimService::outbox_changed(&emitter, id).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");

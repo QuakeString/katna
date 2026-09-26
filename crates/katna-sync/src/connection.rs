@@ -48,7 +48,7 @@ enum Request {
     FetchFlags(u32, u32, Option<u64>, Reply<Vec<FlagState>>),
     Uids(Reply<Vec<u32>>),
     CreateFolder(String, Reply<()>),
-    Append(String, Vec<u8>, Reply<()>),
+    Append(String, Vec<u8>, Flags, Reply<()>),
     PollChanges(Reply<Vec<FolderChange>>),
     WaitForChanges(Duration, Reply<Vec<FolderChange>>),
     Logout(Reply<()>),
@@ -140,8 +140,18 @@ impl Connection {
     }
 
     pub async fn append(&self, folder: &str, message: Vec<u8>) -> Result<()> {
-        let folder = folder.to_owned();
-        self.call(|reply| Request::Append(folder, message, reply))
+        self.append_with_flags(folder, message, &Flags::default())
+            .await
+    }
+
+    pub async fn append_with_flags(
+        &self,
+        folder: &str,
+        message: Vec<u8>,
+        flags: &Flags,
+    ) -> Result<()> {
+        let (folder, flags) = (folder.to_owned(), flags.clone());
+        self.call(|reply| Request::Append(folder, message, flags, reply))
             .await
     }
 
@@ -235,8 +245,13 @@ impl MailBackend for Connection {
         Connection::create_folder(self, folder).await
     }
 
-    async fn append(&mut self, folder: &str, message: Vec<u8>) -> Result<()> {
-        Connection::append(self, folder, message).await
+    async fn append_with_flags(
+        &mut self,
+        folder: &str,
+        message: Vec<u8>,
+        flags: &Flags,
+    ) -> Result<()> {
+        Connection::append_with_flags(self, folder, message, flags).await
     }
 
     async fn poll_changes(&mut self) -> Result<Vec<FolderChange>> {
@@ -315,9 +330,10 @@ async fn run<B: MailBackend>(mut backend: B, inbox: Receiver<Request>) {
             Request::CreateFolder(folder, reply) => {
                 answer(&reply, backend.create_folder(&folder).await)
             }
-            Request::Append(folder, message, reply) => {
-                answer(&reply, backend.append(&folder, message).await)
-            }
+            Request::Append(folder, message, flags, reply) => answer(
+                &reply,
+                backend.append_with_flags(&folder, message, &flags).await,
+            ),
             Request::PollChanges(reply) => answer(&reply, backend.poll_changes().await),
             Request::WaitForChanges(max_wait, reply) => {
                 // The next request, or the last handle going away, ends the

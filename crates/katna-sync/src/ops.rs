@@ -60,6 +60,13 @@ enum Op {
         path: String,
         uid: u32,
     },
+    /// File the sent, outgoing `message` in `folder` (the Sent folder),
+    /// then forget the outgoing copy.
+    Append {
+        message: i64,
+        folder: i64,
+        path: String,
+    },
 }
 
 /// Why a local change could not be made.
@@ -301,6 +308,34 @@ pub fn archive_messages(
     Ok(accounts)
 }
 
+/// Files a sent message in its account's Sent folder: queues an APPEND,
+/// or forgets the outgoing copy when there is no Sent folder. Returns
+/// whether the worker has something to replay.
+pub fn file_sent(store: &mut Store, message: MessageId) -> Result<bool, ChangeError> {
+    let account = account_of(store, message)?;
+    let sent = folders_of(store, account)?
+        .into_values()
+        .find(|f| f.role == Some(FolderRole::Sent));
+    let mut batch = store.mail_batch()?;
+    let queued = match sent {
+        Some(sent) => {
+            let op = Op::Append {
+                message: message.0,
+                folder: sent.id.0,
+                path: sent.path,
+            };
+            batch.enqueue_op(account, &encode(&op))?;
+            true
+        }
+        None => {
+            batch.forget_outgoing(message)?;
+            false
+        }
+    };
+    batch.commit()?;
+    Ok(queued)
+}
+
 /// Runs the due operations of `account` on `backend`. Returns `Err` only
 /// when the connection broke; the operation it was running stays queued.
 /// Leaves some folder selected.
@@ -430,6 +465,35 @@ async fn run<B: MailBackend>(
             select(backend, selected, path).await?;
             backend.expunge(&[*uid]).await?;
         }
+        Op::Append {
+            message,
+            folder,
+            path,
+        } => {
+            let message = MessageId(*message);
+            let raw = store
+                .messages_by_id(&[message])?
+                .into_iter()
+                .next()
+                .and_then(|m| m.blob_hash)
+                .map(|hash| store.blobs().get(&hash))
+                .transpose()?
+                .flatten();
+            // Forgotten meanwhile (the account was cleared): nothing to file.
+            let Some(raw) = raw else { return Ok(()) };
+            let seen = Flags {
+                seen: true,
+                ..Flags::default()
+            };
+            backend.append_with_flags(path, raw, &seen).await?;
+            let mut batch = store.mail_batch()?;
+            batch.forget_outgoing(message)?;
+            batch.commit()?;
+            let folder = FolderId(*folder);
+            if !report.resync.iter().any(|(id, _)| *id == folder) {
+                report.resync.push((folder, path.clone()));
+            }
+        }
     }
     Ok(())
 }
@@ -456,6 +520,8 @@ fn undo(batch: &mut katna_store::MailBatch<'_>, op: &Op) -> katna_store::Result<
         }
         // Gone locally; it stays on the server and in other clients.
         Op::Expunge { .. } => Ok(()),
+        // It was sent; only the copy in Sent is missing.
+        Op::Append { message, .. } => batch.forget_outgoing(MessageId(*message)),
     }
 }
 
