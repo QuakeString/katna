@@ -8,6 +8,7 @@
 
 use std::cell::Cell;
 use std::rc::Rc;
+use std::sync::Arc;
 use std::time::Duration;
 
 use gpui::{
@@ -49,6 +50,17 @@ pub(super) struct Conversation {
 }
 
 /// One message of the conversation.
+/// Where a message's attachments come from ([`Conversation::attachment_source`]).
+pub(super) enum AttachmentSource {
+    /// The stored message.
+    Stored,
+    /// The message GnuPG opened; `encrypted` when it was decrypted, so
+    /// its attachments must not reach the disk unasked.
+    Opened { raw: Arc<Vec<u8>>, encrypted: bool },
+    /// Encrypted or signed, and not opened.
+    Sealed,
+}
+
 struct Part {
     id: MessageId,
     row: Option<Rc<Row>>,
@@ -107,6 +119,9 @@ struct Body {
     security: Option<Secured>,
     /// The raw message, until it is handed to GnuPG.
     sealed: Option<Vec<u8>>,
+    /// The message as GnuPG opened it (decrypted, or with the signature
+    /// taken off), which the attachments are read from. In memory only.
+    opened: Option<Arc<Vec<u8>>>,
 }
 
 impl Body {
@@ -137,6 +152,27 @@ impl Conversation {
 
     pub(super) fn subject(&self) -> &str {
         &self.subject
+    }
+
+    /// Where the attachments of message `id` are read from.
+    pub(super) fn attachment_source(&self, id: MessageId) -> AttachmentSource {
+        let Some(body) = self
+            .parts
+            .iter()
+            .find(|p| p.id == id)
+            .and_then(|p| p.body.as_ref())
+        else {
+            return AttachmentSource::Stored;
+        };
+        match (&body.opened, &body.security) {
+            (Some(raw), _) => AttachmentSource::Opened {
+                raw: raw.clone(),
+                encrypted: body.encrypted(),
+            },
+            // Protected and not opened (yet): nothing to read.
+            (None, Some(_)) => AttachmentSource::Sealed,
+            (None, None) => AttachmentSource::Stored,
+        }
     }
 
     pub(super) fn load(mail: &mut Mail, key: EntryKey) -> Self {
@@ -1084,6 +1120,7 @@ fn read(mail: &Mail, id: MessageId) -> Body {
             remote: Vec::new(),
             security: None,
             sealed: None,
+            opened: None,
         };
     };
     match katna_crypto::protection(&raw) {
@@ -1109,6 +1146,7 @@ fn shown(raw: &[u8], security: Option<Secured>) -> Body {
         remote,
         security,
         sealed: None,
+        opened: None,
     }
 }
 

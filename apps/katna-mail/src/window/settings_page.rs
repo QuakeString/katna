@@ -3,8 +3,8 @@
 //! The Settings page, shown in place of the list as in webmail's "See all
 //! settings": General (reading pane, density, theme, conversations, undo
 //! send), Inbox (tabs per account), Accounts (remove one, or delete all
-//! data), Signatures (several, with defaults for new mail and replies) and
-//! Keyboard shortcuts (every one, each can be changed by pressing the new
+//! data), Signatures (several, with defaults for new mail and replies),
+//! Default apps (where each kind of attachment opens) and Keyboard shortcuts (every one, each can be changed by pressing the new
 //! keys). Changes apply at once and are saved
 //! to `config.toml`.
 
@@ -14,7 +14,9 @@ use gpui::{
     AnyElement, Context, Div, Entity, Focusable, FontWeight, Keystroke, ScrollHandle, SharedString,
     Stateful, Subscription, Task, Window, div, prelude::*, px, rgba,
 };
-use katna_core::config::{AccountTabs, Density, ReadingPane, TabStyle, Theme as ThemeChoice};
+use katna_core::config::{
+    AccountTabs, Density, FileGroup, OpenIn, ReadingPane, TabStyle, Theme as ThemeChoice,
+};
 use katna_ui::rich::RichEvent;
 use katna_ui::{InputEvent, RichEditor, Ripple, TextInput};
 
@@ -39,15 +41,17 @@ pub(super) enum Section {
     Inbox,
     Accounts,
     Signatures,
+    DefaultApps,
     Shortcuts,
 }
 
 impl Section {
-    const ALL: [Self; 5] = [
+    const ALL: [Self; 6] = [
         Self::General,
         Self::Inbox,
         Self::Accounts,
         Self::Signatures,
+        Self::DefaultApps,
         Self::Shortcuts,
     ];
 
@@ -57,6 +61,7 @@ impl Section {
             Self::Inbox => "Inbox",
             Self::Accounts => "Accounts",
             Self::Signatures => "Signatures",
+            Self::DefaultApps => "Default apps",
             Self::Shortcuts => "Keyboard shortcuts",
         }
     }
@@ -201,6 +206,7 @@ impl MailWindow {
             Section::Inbox => self.inbox_section(th, cx),
             Section::Accounts => self.accounts_section(th, cx),
             Section::Signatures => self.signatures_section(th, cx),
+            Section::DefaultApps => self.default_apps_section(th, cx),
             Section::Shortcuts => self.shortcuts_section(th, cx),
         };
         let card = div()
@@ -343,6 +349,74 @@ impl MailWindow {
                 self.undo_send_choice(th, cx),
                 th,
             ))
+            .into_any_element()
+    }
+
+    // Default apps
+
+    fn default_apps_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let open = self.config.mail.open;
+        let groups = FileGroup::ALL.map(|group| {
+            let (title, detail, ids) = match group {
+                FileGroup::Pdf => (
+                    "PDF files",
+                    "Pages, with zoom.",
+                    ["open-pdf-katna", "open-pdf-system", "open-pdf-ask"],
+                ),
+                FileGroup::Pictures => (
+                    "Pictures",
+                    "Photos (turned upright), PNG, GIF, WebP, BMP, TIFF and SVG.",
+                    ["open-pic-katna", "open-pic-system", "open-pic-ask"],
+                ),
+                FileGroup::Text => (
+                    "Text files",
+                    "Plain text, logs, code and other text.",
+                    ["open-text-katna", "open-text-system", "open-text-ask"],
+                ),
+                FileGroup::Spreadsheets => (
+                    "Spreadsheets",
+                    "Excel (xlsx, xls), OpenDocument (ods) and CSV.",
+                    ["open-sheet-katna", "open-sheet-system", "open-sheet-ask"],
+                ),
+                FileGroup::Documents => (
+                    "Documents",
+                    "Word (docx) and OpenDocument text (odt).",
+                    ["open-doc-katna", "open-doc-system", "open-doc-ask"],
+                ),
+            };
+            let mut choices = div().flex().flex_col().gap(px(2.0));
+            for (choice, id, label) in [
+                (OpenIn::Katna, ids[0], "Katna Mail's viewer"),
+                (OpenIn::System, ids[1], "The desktop's default app"),
+                (OpenIn::Ask, ids[2], "Ask which app each time"),
+            ] {
+                choices = choices.child(self.radio_row(
+                    id,
+                    label,
+                    open.get(group) == choice,
+                    Change::OpenIn(group, choice),
+                    th,
+                    cx,
+                ));
+            }
+            row(title, Some(detail), choices, th)
+        });
+        div()
+            .flex()
+            .flex_col()
+            .child(
+                div()
+                    .pt(px(20.0))
+                    .pb(px(4.0))
+                    .text_size(px(13.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(
+                        "Where attachments open when you click them. The viewer can \
+                         always open a file in another app too. The desktop's default \
+                         apps are set in its own settings.",
+                    ),
+            )
+            .children(groups)
             .into_any_element()
     }
 
