@@ -1296,3 +1296,186 @@ fn notifies_about_new_mail_on_dev_servers() {
         instance.shutdown().await;
     });
 }
+
+/// A StatusNotifierItem tooltip: icon name, pixmaps, title, text.
+type Tooltip = (String, Vec<(i32, i32, Vec<u8>)>, String, String);
+
+/// A dbusmenu layout: ID, properties, children (each a variant).
+type MenuLayout = (
+    i32,
+    std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
+    Vec<zbus::zvariant::OwnedValue>,
+);
+
+/// Plasma's `org.kde.StatusNotifierWatcher`: records who registers.
+struct FakeWatcher {
+    registered: async_channel::Sender<String>,
+}
+
+#[zbus::interface(name = "org.kde.StatusNotifierWatcher")]
+impl FakeWatcher {
+    fn register_status_notifier_item(&self, service: String) {
+        let _ = self.registered.try_send(service);
+    }
+}
+
+/// The unread count reaches the taskbar icon and the tray, whose menu
+/// quits the daemon.
+#[test]
+fn shows_the_unread_count_on_the_taskbar_and_in_the_tray() {
+    use zbus::zvariant::{OwnedValue, Value};
+
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    let account = store
+        .add_account(AccountKind::Local, "local", "me@local")
+        .unwrap()
+        .id;
+    let mut batch = store.mail_batch().unwrap();
+    let inbox = batch
+        .upsert_folder(account, "INBOX", Some(katna_store::FolderRole::Inbox))
+        .unwrap();
+    for (subject, flags) in [
+        ("one", MessageFlags::empty()),
+        ("two", MessageFlags::empty()),
+        ("three", MessageFlags::SEEN),
+    ] {
+        let raw = format!("Subject: {subject}\r\n\r\nHello.\r\n");
+        batch
+            .add_message(
+                account,
+                inbox,
+                &NewMessage {
+                    raw: raw.as_bytes(),
+                    message_id_hdr: None,
+                    subject: Some(subject),
+                    date: None,
+                    flags,
+                    has_attachments: false,
+                    list_id: None,
+                    snippet: None,
+                    participants: &[],
+                    in_reply_to: None,
+                    references: &[],
+                    category: None,
+                },
+            )
+            .unwrap();
+    }
+    batch.commit().unwrap();
+    drop(store);
+
+    smol::block_on(async {
+        let panel = bus.connect().await;
+        let (registered_tx, registered) = async_channel::unbounded();
+        panel
+            .object_server()
+            .at(
+                "/StatusNotifierWatcher",
+                FakeWatcher {
+                    registered: registered_tx,
+                },
+            )
+            .await
+            .unwrap();
+        panel
+            .request_name("org.kde.StatusNotifierWatcher")
+            .await
+            .unwrap();
+        let rule = zbus::MatchRule::builder()
+            .msg_type(zbus::message::Type::Signal)
+            .interface("com.canonical.Unity.LauncherEntry")
+            .unwrap()
+            .member("Update")
+            .unwrap()
+            .build();
+        let mut updates = zbus::MessageStream::for_match_rule(rule, &panel, None)
+            .await
+            .unwrap();
+
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+
+        let update = within("taskbar count", 10, updates.next())
+            .await
+            .unwrap()
+            .unwrap();
+        let (uri, props): (String, std::collections::HashMap<String, OwnedValue>) =
+            update.body().deserialize().unwrap();
+        assert_eq!(uri, "application://in.invenia.katna.Mail.desktop");
+        assert_eq!(props["count"], OwnedValue::from(2i64));
+        assert_eq!(props["count-visible"], OwnedValue::from(true));
+
+        let item = within("tray registration", 10, registered.recv())
+            .await
+            .unwrap();
+        assert!(item.starts_with("org.kde.StatusNotifierItem-"), "{item}");
+        let property = async |name: &str| -> OwnedValue {
+            let reply = panel
+                .call_method(
+                    Some(item.as_str()),
+                    "/StatusNotifierItem",
+                    Some("org.freedesktop.DBus.Properties"),
+                    "Get",
+                    &("org.kde.StatusNotifierItem", name),
+                )
+                .await
+                .unwrap();
+            reply.body().deserialize().unwrap()
+        };
+        let text = |value: OwnedValue| String::try_from(value).unwrap();
+        assert_eq!(text(property("Id").await), "in.invenia.katna.Mail");
+        // The count is drawn into the pixmaps, so there is no icon name.
+        assert_eq!(text(property("IconName").await), "");
+        let tooltip: Tooltip = property("ToolTip").await.try_into().unwrap();
+        assert_eq!(tooltip.3, "2 unread messages");
+        let menu: zbus::zvariant::OwnedObjectPath = property("Menu").await.try_into().unwrap();
+
+        let layout = panel
+            .call_method(
+                Some(item.as_str()),
+                menu.as_str(),
+                Some("com.canonical.dbusmenu"),
+                "GetLayout",
+                &(0i32, -1i32, vec!["label"]),
+            )
+            .await
+            .unwrap();
+        let (_, (_, _, children)): (u32, MenuLayout) = layout.body().deserialize().unwrap();
+        let mut labels = Vec::new();
+        let mut quit = None;
+        for child in children {
+            let structure: zbus::zvariant::Structure = Value::from(child).downcast().unwrap();
+            let fields = structure.fields();
+            let id: i32 = fields[0].try_clone().unwrap().downcast().unwrap();
+            let props: std::collections::HashMap<String, OwnedValue> =
+                fields[1].try_clone().unwrap().downcast().unwrap();
+            if let Some(label) = props.get("label") {
+                let label: String = label.try_clone().unwrap().try_into().unwrap();
+                if label == "_Quit" {
+                    quit = Some(id);
+                }
+                labels.push(label);
+            }
+        }
+        assert_eq!(
+            labels,
+            ["Open _Inbox", "_New Message", "_Preferences", "_Quit"]
+        );
+
+        // Quit asks the (absent) app to close, then stops the daemon.
+        panel
+            .call_method(
+                Some(item.as_str()),
+                menu.as_str(),
+                Some("com.canonical.dbusmenu"),
+                "Event",
+                &(quit.unwrap(), "clicked", Value::from(0i32), 0u32),
+            )
+            .await
+            .unwrap();
+        within("quit", 10, instance.quit_requested()).await;
+        instance.shutdown().await;
+    });
+}

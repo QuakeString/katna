@@ -8,7 +8,6 @@
 
 use std::{
     collections::HashMap,
-    process::Command,
     sync::{
         Mutex, Weak,
         atomic::{AtomicBool, Ordering},
@@ -17,7 +16,7 @@ use std::{
 };
 
 use futures_lite::{FutureExt, StreamExt};
-use katna_core::{AccountId, ids};
+use katna_core::AccountId;
 use katna_notify::{NewMail, Notifier, action};
 use katna_store::{FolderRole, MessageFlags, MessageId, ParticipantRole, Store};
 use zbus::zvariant::Value;
@@ -305,37 +304,9 @@ impl NewMailNotices {
     /// `org.freedesktop.Application` interface when it is running and has
     /// one, else by starting it.
     async fn open(&self, message: MessageId, token: Option<String>) {
-        let mut platform: HashMap<&str, Value<'_>> = HashMap::new();
-        if let Some(token) = &token {
-            platform.insert("activation-token", Value::from(token.as_str()));
-        }
-        let path = format!("/{}", ids::MAIL_APP_ID.replace('.', "/"));
-        let activated = self
-            .connection
-            .call_method(
-                Some(ids::MAIL_APP_ID),
-                path.as_str(),
-                Some("org.freedesktop.Application"),
-                "ActivateAction",
-                &("open-message", vec![Value::from(message.0)], platform),
-            )
-            .await;
-        if activated.is_ok() {
-            return;
-        }
-        let mut command = Command::new("katna-mail");
-        if let Some(token) = &token {
-            command
-                .env("XDG_ACTIVATION_TOKEN", token)
-                .env("DESKTOP_STARTUP_ID", token);
-        }
-        match command.spawn() {
-            // Reaped on its own thread, so it leaves no zombie behind.
-            Ok(mut child) => {
-                std::thread::spawn(move || child.wait());
-            }
-            Err(err) => tracing::warn!(%err, "could not start katna-mail"),
-        }
+        let params = vec![Value::from(message.0)];
+        let action = Some(katna_dbus::app_action::OPEN_MESSAGE);
+        crate::mail_app::run(&self.connection, action, params, token).await;
     }
 }
 

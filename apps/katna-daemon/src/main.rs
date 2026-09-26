@@ -4,7 +4,7 @@
 
 use std::process::ExitCode;
 
-use futures_lite::StreamExt;
+use futures_lite::{FutureExt, StreamExt};
 use katna_core::{Config, Paths};
 use katna_daemon::{Instance, install, secrets::Secrets};
 use katna_sync::worker::WorkerConfig;
@@ -81,7 +81,11 @@ fn run() -> ExitCode {
             Err(err) => tracing::warn!(%err, "no system bus; not watching suspend and network"),
         }
         tracing::info!("katna-daemon running");
-        let signal = signals.next().await;
+        let quit = async {
+            instance.quit_requested().await;
+            None
+        };
+        let signal = signals.next().or(quit).await;
         tracing::info!(?signal, "stopping");
         instance.shutdown().await;
         ExitCode::SUCCESS

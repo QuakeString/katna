@@ -16,6 +16,7 @@ mod add_account;
 mod apps;
 mod colors;
 mod compose;
+mod desktop;
 mod list;
 mod nav;
 mod reader;
@@ -52,6 +53,8 @@ use crate::widgets::{elevation, icon};
 use apps::{APP_RAIL_WIDTH, App as RailApp, People};
 use reader::Conversation;
 use search_panel::SearchPanel;
+
+pub use desktop::menu_bar;
 
 actions!(
     katna_mail,

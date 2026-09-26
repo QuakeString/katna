@@ -4,4 +4,8 @@
 //! See `docs/ARCHITECTURE.md` §13.2 and §15.
 
 pub mod colors;
+pub mod dbusmenu;
 pub mod font;
+pub mod icon;
+pub mod launcher;
+pub mod tray;
