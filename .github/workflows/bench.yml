@@ -20,8 +20,6 @@ jobs:
   enron:
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    env:
-      DATA: ${{ runner.temp }}/katna
     steps:
       - uses: actions/checkout@v4
       - run: rustup toolchain install
@@ -31,6 +29,7 @@ jobs:
           path: ~/.cache/katna/corpora/enron/enron_mail_20150507.tar.gz
           key: enron-mail-20150507
       - run: dev/fetch-enron.sh
+      - run: echo "DATA=$RUNNER_TEMP/katna" >> "$GITHUB_ENV"
       - run: cargo build --release --locked -p katna-search-cli -p katna-bench
       - name: Import
         run: target/release/katna-search-cli import --data-dir "$DATA" --account enron ~/.cache/katna/corpora/enron/maildir
