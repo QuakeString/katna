@@ -1,0 +1,30 @@
+From: Katna Newsletter <news@example.org>
+To: alice@katna.test
+Subject: =?UTF-8?Q?Weekly_digest_=E2=80=94_caf=C3=A9_edition?=
+Date: Tue, 08 Sep 2026 07:30:00 +0000
+Message-ID: <digest-2026-37@example.org>
+List-Id: Katna digest <digest.example.org>
+List-Unsubscribe: <mailto:unsubscribe@example.org>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="alt-boundary"
+
+--alt-boundary
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+This week: caf=C3=A9 reviews, a =E6=97=A5=E6=9C=AC=E8=AA=9E headline and a =
+long line that is soft-wrapped with quoted-printable.
+
+--alt-boundary
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<html><body>
+<h1>Weekly digest</h1>
+<p>This week: <b>caf=C3=A9</b> reviews and a =E6=97=A5=E6=9C=AC=E8=AA=9E =
+headline.</p>
+<p><a href=3D"https://example.org/digest">Read online</a></p>
+<img src=3D"https://example.org/tracker.gif" width=3D"1" height=3D"1">
+</body></html>
+
+--alt-boundary--
