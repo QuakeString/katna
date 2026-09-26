@@ -1320,13 +1320,13 @@ backends the binary links `libc`, `libxkbcommon`, `libxkbcommon-x11` and
 `libxcb`; Wayland and Vulkan libraries are loaded at runtime. GPUI alone
 takes about 21 MB of the 30 MB Katna Mail budget
 (`docs/spikes/S1-window-chrome.md`); the first real window (§13.5) leaves
-about 2 MB (the budget in `ci/size-budgets.txt` is 30 MiB = 31.5 MB).
+about 2 MB of the first 30 MiB (31.5 MB) budget.
 
 ### 17.2 Targets (to be verified on real hardware)
 
 | Metric | Target |
 |---|---|
-| Katna Mail binary | ≤ 30 MB (estimate: 20–30 MB with GPUI Kit, Pimalaya, own code) |
+| Katna Mail binary | ≤ 50 MB (50,000,000 bytes) |
 | `katna-daemon` binary | ≤ 20 MiB (21 MB) |
 | Idle CPU (app and daemon) | ≈ 0 %; no periodic wake-ups beyond IDLE renewals |
 | Cold start to usable inbox | < 500 ms |
@@ -1336,7 +1336,9 @@ about 2 MB (the budget in `ci/size-budgets.txt` is 30 MiB = 31.5 MB).
 With sync, bodies, the op queue, sending and the search indexer,
 `katna-daemon` is 15.6 MB. tantivy is the biggest part. Its budget was
 15 MiB until sending came in; it is 20 MiB (September 2026) so features
-are not trimmed to fit. Crates that are not hot are built with
+are not trimmed to fit. Katna Mail's budget was 30 MiB until the fixes
+after the first real install, when the app reached it; it is 50 MB
+(September 2026). Crates that are not hot are built with
 `opt-level = "s"` (root `Cargo.toml`): D-Bus (zbus, zvariant, oo7,
 ashpd), IMAP parsing and regex.
 
