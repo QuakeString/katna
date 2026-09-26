@@ -1007,7 +1007,16 @@ Gemini or confidential mode):
   `[sending]` and `[shortcuts]`).
 - **Settings page.** "See all settings", the rail's gear or `?` open it in
   place of the list (`window/settings_page.rs`), with sections General,
-  Inbox, Signatures and Keyboard shortcuts.
+  Inbox, Accounts, Signatures and Keyboard shortcuts.
+- **Removing an account, deleting all data.** Settings → Accounts
+  (`window/accounts.rs`; also "Manage accounts" in the account menu) lists
+  the accounts, each with Remove, and has "Delete all Katna data". Both
+  only touch this computer: they ask first in a dialog that lists in red
+  what is deleted, says the mail stays on the server (or, for imported
+  mail, that Katna has the only copy), and deleting everything also needs
+  "delete" typed. The daemon does the work (`RemoveAccount`,
+  `DeleteAllData`); after deleting everything the app starts over with
+  the default settings.
 - **Signatures.** Any number, each with a name; one default for new mail
   and one for replies and forwards. The compose bar's signature button
   swaps the signature in the body. A reply starts with the signature the
@@ -1132,7 +1141,9 @@ Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssx)`
 password) → id`, `AddPop3Account(account, password) → id` (with
 leave-on-server, days to keep, and delete-with-local),
 `SetPassword(id, password)`, `RemoveAccount(id) → b`,
-`SyncNow(id)` (0 for every account), `FetchBody(message)`,
+`DeleteAllData()` (stops every account, deletes every saved password,
+the data directory, the cache and `config.toml`, then the daemon exits;
+the next call starts a new one), `SyncNow(id)` (0 for every account), `FetchBody(message)`,
 `SetFlags(ax messages, as add, as remove)` (flag names `seen`, `answered`,
 `flagged`, `draft`, `forwarded`), `MoveMessages(ax, folder)`,
 `DeleteMessages(ax)`, `ArchiveMessages(ax)`, `QueueSend(x account, ay

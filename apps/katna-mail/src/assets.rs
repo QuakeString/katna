@@ -74,6 +74,7 @@ icons!(
     "tasks",
     "trash",
     "tune",
+    "warning",
     "window-restore",
 );
 
