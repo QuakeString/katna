@@ -635,6 +635,8 @@ impl MailWindow {
             .items_center()
             .gap(px(2.0))
             .bg(rgba(if th.dark { th.menu } else { th.page }))
+            // Its own corners too: the window's clip is square.
+            .rounded_t(px(12.0))
             .cursor_pointer()
             .on_click(cx.listener(|this, _, _, cx| this.compose_mode(Mode::Minimized, cx)))
             .child(
