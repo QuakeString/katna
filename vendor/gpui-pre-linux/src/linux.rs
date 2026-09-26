@@ -1,3 +1,4 @@
+mod appmenu;
 mod dispatcher;
 mod headless;
 mod keyboard;
@@ -13,6 +14,8 @@ mod x11;
 #[cfg(any(feature = "wayland", feature = "x11"))]
 mod xdg_desktop_portal;
 
+pub use appmenu::set_kde_appmenu;
+pub(crate) use appmenu::kde_appmenu;
 pub use dispatcher::*;
 pub(crate) use headless::*;
 pub(crate) use keyboard::*;

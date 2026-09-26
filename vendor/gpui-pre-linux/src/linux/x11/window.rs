@@ -84,6 +84,8 @@ x11rb::atom_manager! {
         _GTK_FRAME_EXTENTS,
         _GTK_EDGE_CONSTRAINTS,
         _NET_CLIENT_LIST_STACKING,
+        _KDE_NET_WM_APPMENU_SERVICE_NAME,
+        _KDE_NET_WM_APPMENU_OBJECT_PATH,
     }
 }
 
@@ -603,6 +605,27 @@ impl X11WindowState {
                         title.as_bytes(),
                     ),
                 )?;
+            }
+
+            // Main windows show the app's menu bar in the KDE global menu.
+            if params.kind == WindowKind::Normal
+                && let Some((service, path)) = crate::linux::kde_appmenu()
+            {
+                for (atom, value) in [
+                    (atoms._KDE_NET_WM_APPMENU_SERVICE_NAME, service),
+                    (atoms._KDE_NET_WM_APPMENU_OBJECT_PATH, path),
+                ] {
+                    check_reply(
+                        || "X11 ChangeProperty8 setting the KDE app menu failed.",
+                        xcb.change_property8(
+                            xproto::PropMode::REPLACE,
+                            x_window,
+                            atom,
+                            xproto::AtomEnum::STRING,
+                            value.as_bytes(),
+                        ),
+                    )?;
+                }
             }
 
             if params.kind == WindowKind::PopUp {

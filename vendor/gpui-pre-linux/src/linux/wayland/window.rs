@@ -27,6 +27,7 @@ use wayland_protocols::{
     wp::fractional_scale::v1::client::wp_fractional_scale_v1,
     xdg::dialog::v1::client::xdg_dialog_v1::XdgDialogV1,
 };
+use wayland_protocols_plasma::appmenu::client::org_kde_kwin_appmenu;
 use wayland_protocols_plasma::blur::client::org_kde_kwin_blur;
 use wayland_protocols_wlr::layer_shell::v1::client::zwlr_layer_surface_v1;
 
@@ -106,6 +107,8 @@ pub struct WaylandWindowState {
     app_id: Option<String>,
     appearance: WindowAppearance,
     blur: Option<org_kde_kwin_blur::OrgKdeKwinBlur>,
+    /// Where the KDE global menu finds this window's menu bar.
+    appmenu: Option<org_kde_kwin_appmenu::OrgKdeKwinAppmenu>,
     viewport: Option<wp_viewport::WpViewport>,
     outputs: HashMap<ObjectId, Output>,
     display: Option<(ObjectId, Output)>,
@@ -598,6 +601,23 @@ impl WaylandWindowState {
                 .set_max_size(max_texture_size, max_texture_size);
         }
 
+        // Main windows (not dialogs or popups) show the app's menu bar in
+        // the KDE global menu.
+        let appmenu = match (
+            &surface_state,
+            &globals.appmenu_manager,
+            crate::linux::kde_appmenu(),
+        ) {
+            (WaylandSurfaceState::Xdg(_), Some(manager), Some((service, path)))
+                if options.kind == WindowKind::Normal =>
+            {
+                let appmenu = manager.create(&surface, &globals.qh, ());
+                appmenu.set_address(service, path);
+                Some(appmenu)
+            }
+            _ => None,
+        };
+
         Ok(Self {
             surface_state,
             parent,
@@ -605,6 +625,7 @@ impl WaylandWindowState {
             surface,
             app_id: options.app_id,
             blur: None,
+            appmenu,
             viewport,
             globals,
             outputs: HashMap::default(),
@@ -772,6 +793,11 @@ impl Drop for WaylandWindow {
         // Destroy blur first, this has no dependencies.
         if let Some(blur) = &state.blur {
             blur.release();
+        }
+        if let Some(appmenu) = &state.appmenu
+            && appmenu.version() >= 2
+        {
+            appmenu.release();
         }
 
         // Decorations must be destroyed before the xdg state.
