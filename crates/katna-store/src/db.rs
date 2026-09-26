@@ -41,7 +41,10 @@ impl DbKind {
     /// Migrations in order; index `i` produces schema version `i + 1`.
     pub(crate) fn migrations(self) -> &'static [&'static str] {
         match self {
-            Self::Mail => &[include_str!("schema/mail_v1.sql")],
+            Self::Mail => &[
+                include_str!("schema/mail_v1.sql"),
+                include_str!("schema/mail_v2.sql"),
+            ],
             Self::Pim => &[include_str!("schema/pim_v1.sql")],
             Self::Blobs => &[include_str!("schema/blobs_v1.sql")],
         }
@@ -198,7 +201,34 @@ mod tests {
     }
 
     #[test]
-    fn schema_v1_has_the_documented_tables() {
+    fn v1_mail_is_left_for_the_threader() {
+        let tmp = tempfile::tempdir().unwrap();
+        let path = tmp.path().join("mail.db");
+        {
+            let conn = Connection::open(&path).unwrap();
+            conn.execute_batch(DbKind::Mail.migrations()[0]).unwrap();
+            conn.execute_batch(
+                "PRAGMA user_version = 1;
+                 INSERT INTO folder (id, account_id, path) VALUES (1, 1, 'INBOX');
+                 INSERT INTO message (id, account_id, message_id_hdr) VALUES (1, 1, 'a@x');
+                 INSERT INTO message_location (message_id, folder_id) VALUES (1, 1);",
+            )
+            .unwrap();
+        }
+        let conn = open(&path, DbKind::Mail, Mode::ReadWrite).unwrap();
+        assert_eq!(user_version(&conn).unwrap(), 2);
+        let (thread, refs): (Option<i64>, Option<String>) = conn
+            .query_row(
+                "SELECT thread_id, refs FROM message WHERE id = 1",
+                [],
+                |row| Ok((row.get(0)?, row.get(1)?)),
+            )
+            .unwrap();
+        assert_eq!((thread, refs), (None, None));
+    }
+
+    #[test]
+    fn schema_has_the_documented_tables() {
         let tmp = tempfile::tempdir().unwrap();
         let mail = open(&tmp.path().join("mail.db"), DbKind::Mail, Mode::ReadWrite).unwrap();
         assert_eq!(
@@ -214,6 +244,7 @@ mod tests {
                 "outbox",
                 "participant",
                 "thread",
+                "thread_key",
             ]
         );
         let pim = open(&tmp.path().join("pim.db"), DbKind::Pim, Mode::ReadWrite).unwrap();

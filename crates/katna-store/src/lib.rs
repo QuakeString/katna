@@ -9,12 +9,14 @@ pub mod blob;
 mod db;
 pub mod error;
 pub mod journal;
+mod jwz;
 pub mod mail;
 mod mail_read;
 mod mail_view;
 pub mod ops;
 pub mod outbox;
 pub mod remote;
+pub mod threads;
 
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths};
 use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
@@ -32,6 +34,7 @@ pub use mail_view::FolderSummary;
 pub use ops::{Location, QueuedOp};
 pub use outbox::{OutboxEntry, SendState};
 pub use remote::{FolderRole, RemoteMessage, StoredFolder};
+pub use threads::{ThreadId, ThreadNode, ThreadSummary, Unthreaded};
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.
 #[derive(Debug)]

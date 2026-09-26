@@ -22,6 +22,7 @@
 //!   replayed on the server.
 //! - [`outbox`]: queued outgoing mail, undo send, SMTP delivery and
 //!   filing in Sent.
+//! - [`threads`]: threads imported and older mail.
 //! - [`worker`]: keeps an account in sync: IDLE, periodic full syncs,
 //!   reconnecting with backoff.
 //!
@@ -39,6 +40,7 @@ pub mod net;
 pub mod ops;
 pub mod outbox;
 pub mod smtp;
+pub mod threads;
 pub mod worker;
 
 pub use backend::{

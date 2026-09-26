@@ -267,6 +267,7 @@ mod tests {
             has_attachments: false,
             list_id: None,
             participants: &[],
+            references: &[],
         };
         let crate::Added::Message(id) = batch.add_remote_message(account, inbox, &message).unwrap()
         else {

@@ -202,12 +202,14 @@ folder           (id, account_id, path, role, uidvalidity, highestmodseq, sync_s
 message          (id, account_id, message_id_hdr, thread_id, subject, date,
                   size, flags, keywords, has_attachments, list_id,
                   body_state,          -- 0 headers | 1 text_indexed | 2 full
-                  blob_hash, snippet, auth_results_json)
+                  blob_hash, snippet, auth_results_json,
+                  refs)                -- v2: ancestor Message-IDs, oldest first
 message_location (message_id, folder_id, uid)        -- one message, many folders/labels
 participant      (message_id, role, email_norm, domain, display_name)
                                                       -- role: from|to|cc|bcc|reply_to|sender
 attachment       (id, message_id, part_id, filename, mime, size, blob_hash NULL)
 thread           (id, account_id, subject_norm, last_date, message_count, flags_summary)
+thread_key       (account_id, key, thread_id)         -- v2: Message-IDs of a thread (§6.5)
 op_queue         (id, account_id, op_json, state, attempts, next_try_at)
 outbox           (id, draft_message_id, send_at, state, per_recipient BOOL, attempts)
 notification     (notif_id, message_ids, account_id, created_at)   -- to close/update later
@@ -216,7 +218,8 @@ notification     (notif_id, message_ids, account_id, created_at)   -- to close/u
 `participant` is the key table for organizations (§8) and address search.
 `body_state` drives sync, search and UI (§6, §7).
 
-Schema v1 is implemented in `crates/katna-store/src/schema/`. Conventions:
+Schemas v1 and v2 (threading) are implemented in
+`crates/katna-store/src/schema/`. Conventions:
 times are Unix seconds (UTC), hashes are 32-byte blake3 digests, JSON is
 `TEXT`. The `account` table lives in `pim.db` (§5.4), shared by mail and
 calendar; `account_id` columns in `mail.db` therefore have no foreign key.
@@ -363,6 +366,35 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
 
 JWZ algorithm over `Message-ID` / `References` / `In-Reply-To`. Use Gmail
 `X-GM-THRID` when available. Subject-only grouping is a limited fallback.
+
+**Implemented (task 1.7, `katna-store/src/threads.rs` and `jwz.rs`, schema
+mail v2):**
+
+- *Which thread.* Each message's own Message-ID and its ancestors
+  (`References`, then `In-Reply-To`) are keys in `thread_key`. A message
+  joins the thread of any key it has; if its keys belong to several
+  threads, they merge into the oldest. The result does not depend on the
+  order mail arrives in, and a reply finds its thread even when the
+  parent was never downloaded (property-tested against a union-find over
+  random reply forests, shuffled and with cut-short `References`). The
+  same message in two folders shares its Message-ID, so it is in one
+  thread.
+- *When.* IMAP sync threads each new message as it stores it (level 1
+  already fetches `References` and `In-Reply-To`). Imported mail and
+  mail stored before schema v2 are threaded by the daemon's threader
+  thread, which reads the headers from the stored message: at start and
+  after every `MailChanged`, 2000 messages per transaction, then signals
+  `MailChanged` (at most every 5 s during a long run).
+- *Reading.* `Store::folder_threads(folder, limit)` lists a folder's
+  conversations, newest first, with message and unread counts over the
+  whole thread. `Store::thread_tree(thread)` orders one thread with JWZ
+  steps 1 to 4: link containers by `References`, never making loops, let
+  the last reference decide the parent, then drop messages we never saw
+  and hang their replies on the nearest ancestor we have. Branches are
+  sorted by their earliest date.
+- Not yet: Gmail `X-GM-THRID`, and grouping by subject when there are no
+  references (JWZ step 5). The `thread` table's counts and dates are not
+  maintained; the queries compute them.
 
 ## 7. Search (`katna-search`)
 

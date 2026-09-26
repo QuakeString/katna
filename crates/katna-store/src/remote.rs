@@ -107,6 +107,9 @@ pub struct RemoteMessage<'a> {
     pub has_attachments: bool,
     pub list_id: Option<&'a str>,
     pub participants: &'a [NewParticipant<'a>],
+    /// Message-IDs of the ancestors, oldest first (`References`, then
+    /// `In-Reply-To`); puts the message in its thread at once.
+    pub references: &'a [String],
 }
 
 impl Store {
@@ -336,7 +339,9 @@ impl MailBatch<'_> {
                 participant.display_name,
             ])?;
         }
+        drop(insert_participant);
         journal::record(tx, ObjectKind::Message, id, ChangeOp::Insert)?;
+        self.assign_thread(MessageId(id), message.references)?;
         Ok(Added::Message(MessageId(id)))
     }
 
@@ -496,6 +501,7 @@ mod tests {
             has_attachments: false,
             list_id: None,
             participants,
+            references: &[],
         }
     }
 

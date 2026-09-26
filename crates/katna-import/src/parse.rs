@@ -24,6 +24,9 @@ pub struct ParsedMessage {
     /// Start of the body text, whitespace collapsed.
     pub snippet: Option<String>,
     pub participants: Vec<Participant>,
+    /// Message-IDs of the ancestors, oldest first: `References`, then the
+    /// `In-Reply-To` IDs it lacks. The last one is the parent.
+    pub references: Vec<String>,
 }
 
 /// Role of an address in a message (`participant.role`).
@@ -75,7 +78,47 @@ pub fn parse_message(raw: &[u8]) -> Option<ParsedMessage> {
             .body_preview(SNIPPET_CHARS)
             .and_then(|text| non_empty(&collapse_whitespace(&text))),
         participants,
+        references: references(&message),
     })
+}
+
+/// `Message-ID` and ancestors (as in [`ParsedMessage::references`]) from
+/// the header alone; cheaper than [`parse_message`] for threading.
+pub fn thread_headers(raw: &[u8]) -> (Option<String>, Vec<String>) {
+    let end = raw
+        .windows(4)
+        .position(|w| w == b"\r\n\r\n")
+        .map(|at| at + 4)
+        .or_else(|| raw.windows(2).position(|w| w == b"\n\n").map(|at| at + 2))
+        .unwrap_or(raw.len());
+    match MessageParser::default().parse_headers(&raw[..end]) {
+        Some(message) => (
+            message.message_id().and_then(non_empty),
+            references(&message),
+        ),
+        None => (None, Vec::new()),
+    }
+}
+
+fn references(message: &mail_parser::Message<'_>) -> Vec<String> {
+    let mut ids = Vec::new();
+    for value in [message.references(), message.in_reply_to()] {
+        let texts: Vec<&str> = match value {
+            HeaderValue::Text(text) => vec![text.as_ref()],
+            HeaderValue::TextList(list) => list.iter().map(|text| text.as_ref()).collect(),
+            _ => Vec::new(),
+        };
+        for text in texts {
+            // Some mailers put several IDs in one list entry.
+            for id in text.split_whitespace() {
+                let id = id.trim_start_matches('<').trim_end_matches('>');
+                if !id.is_empty() && !ids.iter().any(|known| known == id) {
+                    ids.push(id.to_owned());
+                }
+            }
+        }
+    }
+    ids
 }
 
 fn push_participants(out: &mut Vec<Participant>, role: Role, address: &Address<'_>) {
@@ -173,6 +216,20 @@ Here is our forecast\r
                 },
             ]
         );
+    }
+
+    #[test]
+    fn reads_references_oldest_first() {
+        let raw = b"Message-ID: <c@x>\r\nReferences: <a@x>\r\n <b@x>\r\n\
+                    In-Reply-To: <b@x> (Ada's message)\r\nSubject: Re: hi\r\n\r\nbody\r\n";
+        assert_eq!(parse_message(raw).unwrap().references, ["a@x", "b@x"]);
+        let (id, refs) = thread_headers(raw);
+        assert_eq!(id.as_deref(), Some("c@x"));
+        assert_eq!(refs, ["a@x", "b@x"]);
+        // In-Reply-To alone, and an ID only In-Reply-To knows.
+        let raw = b"In-Reply-To: <p@x>\r\nReferences: <o@x>\r\n\r\n";
+        assert_eq!(thread_headers(raw).1, ["o@x", "p@x"]);
+        assert_eq!(thread_headers(b"Subject: x\r\n\r\n"), (None, Vec::new()));
     }
 
     #[test]

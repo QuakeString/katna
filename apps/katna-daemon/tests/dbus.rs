@@ -172,6 +172,81 @@ fn discovers_servers() {
 }
 
 #[test]
+fn threads_imported_mail() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    let account = store
+        .add_account(AccountKind::Local, "enron", "enron@local")
+        .unwrap()
+        .id;
+    let mut batch = store.mail_batch().unwrap();
+    let inbox = batch.ensure_folder(account, "inbox").unwrap();
+    let mut ids = Vec::new();
+    for raw in [
+        "Message-ID: <a@x>\r\nSubject: Lunch\r\nDate: Sat, 26 Sep 2026 10:00:00 +0000\r\n\r\nNoon?\r\n",
+        "Message-ID: <b@x>\r\nIn-Reply-To: <a@x>\r\nSubject: Re: Lunch\r\n\
+         Date: Sat, 26 Sep 2026 11:00:00 +0000\r\n\r\nYes.\r\n",
+        "Message-ID: <c@x>\r\nSubject: Other\r\nDate: Sat, 26 Sep 2026 12:00:00 +0000\r\n\r\n.\r\n",
+    ] {
+        let parsed = parse_message(raw.as_bytes()).unwrap();
+        let added = batch
+            .add_message(
+                account,
+                inbox,
+                &NewMessage {
+                    raw: raw.as_bytes(),
+                    message_id_hdr: parsed.message_id.as_deref(),
+                    subject: parsed.subject.as_deref(),
+                    date: parsed.date,
+                    flags: MessageFlags::empty(),
+                    has_attachments: false,
+                    list_id: None,
+                    snippet: None,
+                    participants: &[],
+                },
+            )
+            .unwrap();
+        let Added::Message(id) = added else {
+            unreachable!()
+        };
+        ids.push(id);
+    }
+    batch.commit().unwrap();
+    drop(store);
+
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
+        within("threaded", 10, async {
+            while !reader.unthreaded(10).unwrap().is_empty() {
+                Timer::after(Duration::from_millis(20)).await;
+            }
+        })
+        .await;
+        let threads = reader.folder_threads(inbox, 10).unwrap();
+        assert_eq!(threads.len(), 2);
+        assert_eq!(
+            (threads[0].subject.as_str(), threads[0].messages),
+            ("Other", 1)
+        );
+        assert_eq!(
+            (threads[1].subject.as_str(), threads[1].messages),
+            ("Lunch", 2)
+        );
+        let tree = reader.thread_tree(threads[1].thread.unwrap()).unwrap();
+        assert_eq!(
+            tree.iter()
+                .map(|n| (n.message, n.depth))
+                .collect::<Vec<_>>(),
+            [(ids[0], 0), (ids[1], 1)]
+        );
+        instance.shutdown().await;
+    });
+}
+
+#[test]
 fn only_one_daemon_per_bus() {
     let bus = Bus::start();
     let tmp = tempfile::tempdir().unwrap();

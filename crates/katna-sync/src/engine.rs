@@ -225,6 +225,7 @@ fn save_messages(
             has_attachments: looks_like_attachments(&message.header),
             list_id: parsed.list_id.as_deref(),
             participants: &participants,
+            references: &parsed.references,
         };
         if matches!(
             batch.add_remote_message(account, folder, &remote)?,

@@ -18,7 +18,7 @@ use std::fs::{self, File};
 use std::io::{self, BufReader};
 use std::path::Path;
 
-pub use parse::{ParsedMessage, Participant, Role, parse_message};
+pub use parse::{ParsedMessage, Participant, Role, parse_message, thread_headers};
 pub use store::StoreSink;
 
 /// IMAP system flags of a message, as far as local formats record them.
