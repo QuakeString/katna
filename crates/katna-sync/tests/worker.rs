@@ -424,3 +424,33 @@ fn refused_changes_wait_until_due() {
         worker.stop().await;
     });
 }
+
+#[test]
+fn reconnect_drops_the_connection_and_connects_at_once() {
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    server.deliver("INBOX", "one");
+    let config = WorkerConfig {
+        // A plain disconnect would wait a minute; a reconnect must not.
+        retry_min: Duration::from_secs(60),
+        ..config()
+    };
+    smol::block_on(async {
+        let worker = start(&server, config);
+        assert!(matches!(worker.next().await, Event::Connected));
+        assert_eq!(added(&worker.next().await), 1);
+
+        // Waiting in IDLE: the old connection is dropped, not logged out.
+        Timer::after(Duration::from_millis(50)).await;
+        worker.handle.reconnect();
+        match worker.next().await {
+            Event::Disconnected { retry_in, .. } => assert_eq!(retry_in, Duration::ZERO),
+            other => panic!("expected Disconnected, got {other:?}"),
+        }
+        assert!(matches!(worker.next().await, Event::Connected));
+        assert!(matches!(worker.next().await, Event::Synced(_)));
+        assert_eq!(server.state().connects, 2);
+
+        worker.stop().await;
+    });
+}

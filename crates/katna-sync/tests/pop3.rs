@@ -513,3 +513,42 @@ fn sent_mail_is_filed_locally() {
     assert_eq!(filed[0].id, message);
     assert!(filed[0].flags.contains(katna_store::MessageFlags::SEEN));
 }
+
+#[test]
+fn worker_checks_again_after_a_network_change() {
+    let server = FakePop3::start(&[("a1", &mail(1))]);
+    let (_tmp, store, account) = store();
+    let connector = Pop3Connector {
+        endpoint: server.endpoint(),
+        credentials: Credentials::new("alice", "secret"),
+        tls: Tls::insecure_for_local_tests(),
+    };
+    let config = WorkerConfig {
+        pop3_interval: Duration::from_secs(3600),
+        ..WorkerConfig::default()
+    };
+    let (handle, control) = worker::control();
+    let (events_tx, events) = async_channel::unbounded();
+    let task = smol::spawn(worker::run_pop3(
+        connector,
+        store,
+        account,
+        Pop3Keep::default(),
+        config,
+        events_tx,
+        control,
+    ));
+    smol::block_on(async {
+        assert!(matches!(recv(&events).await, Event::Connected));
+        assert!(matches!(recv(&events).await, Event::Synced(_)));
+        server.add("b2", &mail(2));
+        handle.reconnect();
+        assert!(matches!(recv(&events).await, Event::Connected));
+        let Event::Synced(reports) = recv(&events).await else {
+            panic!("sync expected");
+        };
+        assert_eq!(reports[0].added, 1);
+        drop(handle);
+        task.await;
+    });
+}

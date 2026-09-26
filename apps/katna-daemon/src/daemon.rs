@@ -427,6 +427,16 @@ impl Daemon {
         Ok(())
     }
 
+    /// The network came back or the machine woke up: every worker drops
+    /// its connection, which may be dead, and connects again at once.
+    /// (Mail the outbox could not send is tried again every 30 s anyway.)
+    pub fn network_changed(&self) {
+        tracing::info!("network changed; reconnecting");
+        for running in self.workers().values() {
+            running.handle.reconnect();
+        }
+    }
+
     /// Downloads one message through its account's worker.
     pub async fn fetch_body(&self, message: MessageId) -> Result<(), CommandError> {
         let (account, stored) = {

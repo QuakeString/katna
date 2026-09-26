@@ -16,7 +16,9 @@
 //! 4. Any network or protocol error ends the session; go back to 1.
 //!
 //! [`Handle::sync_now`] ends any wait: it starts a full sync, or reconnects
-//! at once. [`Handle::send_changes`] sends queued changes now.
+//! at once. [`Handle::reconnect`] drops the connection without waiting for
+//! it (after a network change or a resume, it may be dead) and connects
+//! again at once. [`Handle::send_changes`] sends queued changes now.
 //! [`Handle::fetch_body`] downloads one message now. Dropping the
 //! [`Handle`] logs out and ends the worker.
 //!
@@ -159,6 +161,7 @@ struct BodyRequest {
 pub struct Handle {
     _stop: Sender<()>,
     wake: Sender<()>,
+    reconnect: Sender<()>,
     changes: Sender<()>,
     bodies: Sender<BodyRequest>,
 }
@@ -169,6 +172,15 @@ impl Handle {
     pub fn sync_now(&self) {
         // A full channel already holds a request.
         let _ = self.wake.try_send(());
+    }
+
+    /// Asks the worker to drop its connection and connect again now,
+    /// because the network changed or the machine woke up. Unlike
+    /// [`Handle::sync_now`], this does not wait for a command on the old
+    /// connection, which may hang until it times out. A worker stopped by
+    /// a refused password stays stopped.
+    pub fn reconnect(&self) {
+        let _ = self.reconnect.try_send(());
     }
 
     /// Asks the worker to send the changes queued with [`ops`] now. While
@@ -211,6 +223,7 @@ impl Fetcher {
 pub struct Control {
     stop: Receiver<()>,
     wake: Receiver<()>,
+    reconnect: Receiver<()>,
     changes: Receiver<()>,
     bodies: Receiver<BodyRequest>,
 }
@@ -227,18 +240,21 @@ enum Signal {
 pub fn control() -> (Handle, Control) {
     let (stop_tx, stop) = async_channel::bounded(1);
     let (wake, wake_rx) = async_channel::bounded(1);
+    let (reconnect, reconnect_rx) = async_channel::bounded(1);
     let (changes, changes_rx) = async_channel::bounded(1);
     let (bodies, bodies_rx) = async_channel::unbounded();
     (
         Handle {
             _stop: stop_tx,
             wake,
+            reconnect,
             changes,
             bodies,
         },
         Control {
             stop,
             wake: wake_rx,
+            reconnect: reconnect_rx,
             changes: changes_rx,
             bodies: bodies_rx,
         },
@@ -295,10 +311,26 @@ impl Control {
         let _ = self.stop.recv().await;
     }
 
+    /// Completes on [`Handle::reconnect`]; never once the handle is
+    /// dropped (stopping is [`Self::stopped`]'s job). Cancel-safe.
+    async fn reconnect_requested(&self) {
+        if self.reconnect.recv().await.is_err() {
+            std::future::pending::<()>().await;
+        }
+    }
+
+    /// Forgets reconnect requests made before the current connection.
+    fn clear_reconnect(&self) {
+        while self.reconnect.try_recv().is_ok() {}
+    }
+
     fn is_stopped(&self) -> bool {
         self.stop.is_closed()
     }
 }
+
+/// Why a connection was dropped on [`Handle::reconnect`].
+const RECONNECTING: &str = "reconnecting after a network change";
 
 /// Runs the worker for `account` until its [`Handle`] is dropped.
 pub async fn run<C: Connector>(
@@ -311,10 +343,18 @@ pub async fn run<C: Connector>(
 ) {
     let mut delay = config.retry_min;
     while !control.is_stopped() {
+        // A request to reconnect drops whatever the connection is doing.
+        let mut reconnecting = false;
+        control.clear_reconnect();
         let connected = async { Some(connector.connect().await) }
             .or(async {
                 control.stopped().await;
                 None
+            })
+            .or(async {
+                control.reconnect_requested().await;
+                reconnecting = true;
+                Some(Err(Error::Closed(RECONNECTING.into())))
             })
             .await;
         let error = match connected {
@@ -348,6 +388,11 @@ pub async fn run<C: Connector>(
                     &control,
                     &mut synced,
                 )
+                .or(async {
+                    control.reconnect_requested().await;
+                    reconnecting = true;
+                    Err(Error::Closed(RECONNECTING.into()))
+                })
                 .await;
                 match result {
                     Ok(()) => {
@@ -367,6 +412,15 @@ pub async fn run<C: Connector>(
                 }
             }
         };
+        if reconnecting {
+            tracing::info!(%account, "reconnecting");
+            let _ = events.try_send(Event::Disconnected {
+                error: error.to_string(),
+                retry_in: Duration::ZERO,
+            });
+            delay = config.retry_min;
+            continue;
+        }
         tracing::info!(%account, %error, retry_in = ?delay, "disconnected");
         let _ = events.try_send(Event::Disconnected {
             error: error.to_string(),
@@ -377,10 +431,15 @@ pub async fn run<C: Connector>(
             Timer::after(delay).await;
             None
         }
-        .or(async { Some(control.signal_offline(&offline).await) });
+        .or(async { Some(control.signal_offline(&offline).await) })
+        .or(async {
+            control.reconnect_requested().await;
+            Some(Signal::Wake)
+        });
         match wait.await {
             None => delay = (delay * 2).min(config.retry_max),
-            // Sync now: reconnect at once, starting the waits over.
+            // Sync now or a network change: reconnect at once, starting the
+            // waits over.
             Some(Signal::Wake) => delay = config.retry_min,
             Some(_) => return,
         }
@@ -402,11 +461,18 @@ pub async fn run_pop3<C: Pop3Connect>(
     loop {
         // Stopping mid-session is safe: every stored message is committed,
         // and without QUIT the server deletes nothing.
+        control.clear_reconnect();
         let checked =
             async { Some(pop3_check(&connector, &mut store, account, &keep, &events).await) }
                 .or(async {
                     control.stopped().await;
                     None
+                })
+                .or(async {
+                    // A check on a dead connection would hang until it
+                    // times out; start over.
+                    control.reconnect_requested().await;
+                    Some(Err(Error::Closed(RECONNECTING.into())))
                 })
                 .await;
         let wait = match checked {
@@ -425,6 +491,10 @@ pub async fn run_pop3<C: Pop3Connect>(
                 tracing::warn!(%account, %message, "login refused; waiting for sync now");
                 let _ = events.try_send(Event::AuthFailed(message));
                 Duration::MAX
+            }
+            Some(Err(Error::Closed(reason))) if reason == RECONNECTING => {
+                delay = config.retry_min;
+                Duration::ZERO
             }
             Some(Err(error)) => {
                 tracing::info!(%account, %error, retry_in = ?delay, "POP3 check failed");
@@ -473,6 +543,10 @@ async fn pop3_wait(control: &Control, wait: Duration) -> bool {
             None
         }
         .or(async { Some(control.signal().await) })
+        .or(async {
+            control.reconnect_requested().await;
+            Some(Signal::Wake)
+        })
         .await;
         match signal {
             None | Some(Signal::Wake) => return true,

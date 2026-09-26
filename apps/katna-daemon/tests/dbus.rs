@@ -885,3 +885,99 @@ fn mailpit_has(subject: &str) -> bool {
     stream.read_to_string(&mut response).unwrap();
     response.contains(subject)
 }
+
+/// logind and NetworkManager as far as the daemon listens to them.
+struct FakeLogin;
+
+#[zbus::interface(name = "org.freedesktop.login1.Manager")]
+impl FakeLogin {
+    #[zbus(signal)]
+    async fn prepare_for_sleep(
+        emitter: &zbus::object_server::SignalEmitter<'_>,
+        start: bool,
+    ) -> zbus::Result<()>;
+}
+
+struct FakeNetworkManager;
+
+#[zbus::interface(name = "org.freedesktop.NetworkManager")]
+impl FakeNetworkManager {
+    #[zbus(signal)]
+    async fn state_changed(
+        emitter: &zbus::object_server::SignalEmitter<'_>,
+        state: u32,
+    ) -> zbus::Result<()>;
+}
+
+#[test]
+fn watches_suspend_and_network_on_the_system_bus() {
+    use katna_daemon::system::{self, SystemEvent};
+    use zbus::object_server::SignalEmitter;
+
+    let system_bus = Bus::start();
+    smol::block_on(async {
+        let services = system_bus.connect().await;
+        services
+            .object_server()
+            .at("/org/freedesktop/login1", FakeLogin)
+            .await
+            .unwrap();
+        services
+            .object_server()
+            .at("/org/freedesktop/NetworkManager", FakeNetworkManager)
+            .await
+            .unwrap();
+        services
+            .request_name("org.freedesktop.login1")
+            .await
+            .unwrap();
+        services
+            .request_name("org.freedesktop.NetworkManager")
+            .await
+            .unwrap();
+
+        let (events_tx, events) = async_channel::unbounded();
+        let watcher = system_bus.connect().await;
+        smol::spawn(system::watch(watcher, move |event| {
+            let _ = events_tx.try_send(event);
+        }))
+        .detach();
+        // Let the watcher add its match rules.
+        Timer::after(Duration::from_millis(300)).await;
+
+        let login = SignalEmitter::new(&services, "/org/freedesktop/login1").unwrap();
+        let network = SignalEmitter::new(&services, "/org/freedesktop/NetworkManager").unwrap();
+        FakeLogin::prepare_for_sleep(&login, true).await.unwrap();
+        FakeNetworkManager::state_changed(&network, 20)
+            .await
+            .unwrap(); // disconnected
+        FakeLogin::prepare_for_sleep(&login, false).await.unwrap();
+        FakeNetworkManager::state_changed(&network, 70)
+            .await
+            .unwrap(); // global
+        FakeNetworkManager::state_changed(&network, 60)
+            .await
+            .unwrap(); // site
+        FakeNetworkManager::state_changed(&network, 70)
+            .await
+            .unwrap();
+
+        let mut seen = Vec::new();
+        within("system events", 5, async {
+            while seen.len() < 3 {
+                seen.push(events.recv().await.unwrap());
+            }
+        })
+        .await;
+        assert_eq!(
+            seen,
+            [
+                SystemEvent::Resumed,
+                SystemEvent::NetworkUp,
+                SystemEvent::NetworkUp
+            ]
+        );
+        Timer::after(Duration::from_millis(100)).await;
+        assert!(events.is_empty(), "going to sleep or down is not an event");
+    });
+}
