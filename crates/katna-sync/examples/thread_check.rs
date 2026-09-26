@@ -3,7 +3,9 @@
 //! Read-only check of conversations and inbox tabs on a real account: syncs
 //! one folder into a throwaway store and compares the store's conversations
 //! with the server's. On Gmail every conversation must match one
-//! `X-GM-THRID`. It never appends, sends or changes flags.
+//! `X-GM-THRID`, and after `[Gmail]/All Mail` is synced into the same store
+//! every message of the folder must be stored once, in both folders
+//! (`X-GM-MSGID`). It never appends, sends or changes flags.
 //!
 //! ```sh
 //! KATNA_IMAP=imap.gmail.com:993:tls KATNA_USER=you@gmail.com \
@@ -74,7 +76,7 @@ async fn run() -> Result<bool> {
     let mut store = Store::open(&Paths::with_root(tmp.path()), Mode::ReadWrite)?;
     let account = store.add_account(AccountKind::Imap, "check", "check")?.id;
 
-    let mut imap = ImapBackend::connect(&endpoint(), &creds, tls).await?;
+    let mut imap = ImapBackend::connect(&endpoint(), &creds, tls.clone()).await?;
     let gmail = imap.capabilities().iter().any(|c| c == "X-GM-EXT-1");
     let folders = engine::sync_folders(&mut imap, &mut store, account).await?;
     let (_, folder) = folders
@@ -141,5 +143,40 @@ async fn run() -> Result<bool> {
         by_gm.len(),
         by_thread.len(),
     );
-    Ok(merged == 0 && split == 0 && missing == 0)
+    let threads_ok = merged == 0 && split == 0 && missing == 0;
+
+    // Labels: the same messages in All Mail must not be stored again.
+    const ALL_MAIL: &str = "[Gmail]/All Mail";
+    let Some((_, all)) = folders.iter().find(|(f, _)| f.name == ALL_MAIL) else {
+        println!("no {ALL_MAIL}; label check skipped");
+        return Ok(threads_ok);
+    };
+    if *all == *folder {
+        return Ok(threads_ok);
+    }
+    let mut imap = ImapBackend::connect(&endpoint(), &creds, tls).await?;
+    engine::sync_folder(&mut imap, &mut store, account, *all, ALL_MAIL).await?;
+    imap.logout().await?;
+    let here: HashSet<_> = store
+        .messages_in_folder(*folder)?
+        .iter()
+        .map(|m| m.id)
+        .collect();
+    let everywhere: HashSet<_> = store
+        .messages_in_folder(*all)?
+        .iter()
+        .map(|m| m.id)
+        .collect();
+    let shared = here.intersection(&everywhere).count();
+    // The sync report counts a known message filed in one more folder as
+    // added, so count new stored messages from the store itself.
+    let stored = here.union(&everywhere).count();
+    println!(
+        "labels: {ALL_MAIL} has {} messages ({} not already stored); {shared} of {} in {path} \
+         are the same stored message, {stored} rows for both folders",
+        everywhere.len(),
+        stored - here.len(),
+        here.len(),
+    );
+    Ok(threads_ok && shared == here.len())
 }
