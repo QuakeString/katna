@@ -39,8 +39,9 @@ provides=('katna')
 conflicts=('katna')
 # makepkg's LTO flags make the C code that crates build (SQLite, ring,
 # zstd) into GCC LTO objects, which rustc's link step does not handle.
-# Rust code still gets LTO from Cargo's release profile.
-options=('!lto')
+# Rust code still gets LTO from Cargo's release profile, which also strips
+# the binaries, so a -debug package would be empty.
+options=('!lto' '!debug')
 # The repository root, two levels above this file. `git -C` also works
 # from a linked worktree.
 source=("katna::git+file://$(git -C "${startdir:-.}" rev-parse --show-toplevel 2>/dev/null || realpath ../..)")
@@ -52,7 +53,8 @@ _bins=(katna-mail katna-daemon katnactl)
 pkgver() {
   cd katna
   local version
-  if version=$(git describe --long --tags --abbrev=7 2>/dev/null); then
+  # Only version tags: the arch-latest release tag is not a version.
+  if version=$(git describe --long --tags --abbrev=7 --match 'v[0-9]*' 2>/dev/null); then
     printf '%s' "${version#v}" | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
   else
     printf '0.0.0.r%s.g%s' "$(git rev-list --count HEAD)" "$(git rev-parse --short=7 HEAD)"

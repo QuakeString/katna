@@ -22,6 +22,32 @@ must not spell out an ID: install them with globs.
 
 ## Arch Linux
 
+### Prebuilt package
+
+CI builds the PKGBUILD on every push to `main`
+(`.github/workflows/arch-package.yml`) and puts the package on the
+[`arch-latest`](https://github.com/QuakeString/katna/releases/tag/arch-latest)
+pre-release, which each build replaces. It is x86_64 only and not signed.
+
+Install it once:
+
+```sh
+curl -LO https://github.com/QuakeString/katna/releases/download/arch-latest/katna-git-x86_64.pkg.tar.zst
+sudo pacman -U katna-git-x86_64.pkg.tar.zst
+```
+
+Or let `pacman -Syu` keep it up to date: the release is also a pacman
+repository. Append this to `/etc/pacman.conf`, then run
+`sudo pacman -Syu katna-git`:
+
+```ini
+[katna]
+SigLevel = Optional TrustAll
+Server = https://github.com/QuakeString/katna/releases/download/arch-latest
+```
+
+### Building it yourself
+
 ```sh
 cd packaging/arch
 makepkg -si
