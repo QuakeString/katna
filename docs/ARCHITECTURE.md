@@ -1247,9 +1247,11 @@ Gemini or confidential mode):
   rectangles. Icon buttons have tooltips after GPUI's hover delay
   (`katna_ui::Tooltip`). Dialogs, panels and cards use 15 px corners.
   Reply, Reply all and Forward stay pinned at the foot of the open
-  conversation, and answering writes inline there (a card with the
-  recipients, the text and the Send row, which can pop out into the
-  window); the list's single-letter keys are switched off inside text
+  conversation. Answering writes inline at the end of the conversation,
+  as in Gmail: a card with the recipients, the text and the Send row,
+  which can pop out into the window. The card grows with its text and
+  scrolls with the messages; opening it scrolls smoothly to its first
+  line, and typing keeps the cursor in view; the list's single-letter keys are switched off inside text
   fields. The list has a right-click menu (reply, reply all, forward,
   archive, delete, spam, read, star, move to, find emails from the
   sender) acting on the ticked lines or the clicked one. The "select all
