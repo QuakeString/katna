@@ -1545,6 +1545,10 @@ impl MailWindow {
             let ids: Vec<MessageId> = keys.iter().flat_map(|k| mail.entry_messages(*k)).collect();
             mail.with_copies(&ids)
         };
+        let for_good = matches!(act, Act::Delete) && {
+            let trash = self.account().and_then(|a| mail.trash_folder(a));
+            trash.is_none() || (folder.is_some() && folder == trash)
+        };
         let (command, undo) = match act {
             Act::Read(read) => {
                 let ids = data::flag_changes(&copies_of(&keys), MessageFlags::SEEN, read);
@@ -1614,13 +1618,19 @@ impl MailWindow {
                     (_, Some(target)) => Command::Move(ids.clone(), target),
                     _ => return,
                 };
-                let undo = folder.map(|folder| Command::Move(ids, folder));
+                // Deleting on an account without a Trash folder, or in
+                // Trash itself, is for good (as the daemon does it), so
+                // there is nothing to undo.
+                let undo = folder
+                    .filter(|_| !for_good)
+                    .map(|folder| Command::Move(ids, folder));
                 self.remove_lines(&keys);
                 (command, undo)
             }
         };
         let done = match act {
             Act::Spam => Some(format!("{what} reported as spam.")),
+            Act::Delete if for_good => Some(format!("{what} deleted forever.")),
             _ => command.done_text(&what),
         };
         // Moved out of a conversation window, which now closes: the mail

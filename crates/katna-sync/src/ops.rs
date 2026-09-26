@@ -287,10 +287,7 @@ pub fn delete_messages(
     for &id in messages {
         let account = account_of(store, id)?;
         let folders = folders_of(store, account)?;
-        let trash = folders
-            .values()
-            .find(|f| f.role == Some(FolderRole::Trash))
-            .map(|f| f.id);
+        let trash = store.trash_folder(account)?;
         let locations = store.locations(id)?;
         match trash {
             Some(trash) if !locations.iter().any(|l| l.folder == trash) => {

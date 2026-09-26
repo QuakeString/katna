@@ -442,9 +442,12 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
     UIDPLUS the originals stay marked `\Deleted`, because a plain `EXPUNGE`
     would also remove what other clients marked. The `COPYUID` answer gives
     the new UID; without it the target folder is synced again.
-  - Delete moves to the `\Trash` folder, or expunges when the message is
-    already there or there is no trash. Archive moves to `\Archive` (or
-    Gmail's `\All`).
+  - Delete moves to the `\Trash` folder, else to a top-level (or
+    `INBOX/`) folder named like one ("Deleted Items"), or expunges when
+    the message is already there or there is no trash
+    (`Store::trash_folder`, which the app also reads: a delete for good
+    says "deleted forever" and offers no Undo). Archive moves to
+    `\Archive` (or Gmail's `\All`).
   - A refused operation is retried after 60 s. After three refusals it is
     marked failed (kept for inspection) and undone locally: moves at once,
     flags by forgetting the folder's HIGHESTMODSEQ so the next sync reads
