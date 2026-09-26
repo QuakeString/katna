@@ -36,6 +36,7 @@ pub(super) fn sealed(raw: Vec<u8>, protection: Protection) -> Body {
         remote: Vec::new(),
         security: Some(Secured::Opening(protection)),
         sealed: Some(raw),
+        opened: None,
     }
 }
 
@@ -63,9 +64,16 @@ fn opened_body(raw: &[u8], opened: Option<Opened>) -> Body {
                 remote: Vec::new(),
                 security: Some(Secured::Opened(security)),
                 sealed: None,
+                opened: None,
             }
         }
-        Some(opened) => shown(&opened.raw, Some(Secured::Opened(opened.security))),
+        Some(Opened { raw, security }) => {
+            let body = shown(&raw, Some(Secured::Opened(security)));
+            Body {
+                opened: Some(std::sync::Arc::new(raw)),
+                ..body
+            }
+        }
         None => shown(raw, None),
     }
 }

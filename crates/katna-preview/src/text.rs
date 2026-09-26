@@ -11,17 +11,7 @@ pub const MAX_LINES: usize = 10_000;
 /// the file is not UTF-8 at all), tabs expanded. Returns whether the file
 /// was cut.
 pub fn lines(bytes: &[u8]) -> (Vec<String>, bool) {
-    let mut cut = bytes.len() > MAX_BYTES;
-    let bytes = &bytes[..bytes.len().min(MAX_BYTES)];
-    let text = match std::str::from_utf8(bytes) {
-        Ok(text) => text.to_owned(),
-        // Cut inside a character: drop the partial one.
-        Err(err) if cut && err.error_len().is_none() => {
-            String::from_utf8_lossy(&bytes[..err.valid_up_to()]).into_owned()
-        }
-        Err(_) => bytes.iter().map(|&b| char::from(b)).collect(),
-    };
-    let text = text.strip_prefix('\u{feff}').unwrap_or(&text);
+    let (text, mut cut) = decode(bytes, MAX_BYTES);
     let mut lines: Vec<String> = text
         .lines()
         .take(MAX_LINES)
@@ -40,6 +30,27 @@ pub fn lines(bytes: &[u8]) -> (Vec<String>, bool) {
         lines.push(String::new());
     }
     (lines, cut)
+}
+
+/// The first `max` bytes of a text file as a string: UTF-8 (invalid bytes
+/// replaced), or Latin-1 when it is not UTF-8 at all; a byte order mark is
+/// dropped. Returns whether the file was cut.
+pub fn decode(bytes: &[u8], max: usize) -> (String, bool) {
+    let cut = bytes.len() > max;
+    let bytes = &bytes[..bytes.len().min(max)];
+    let text = match std::str::from_utf8(bytes) {
+        Ok(text) => text.to_owned(),
+        // Cut inside a character: drop the partial one.
+        Err(err) if cut && err.error_len().is_none() => {
+            String::from_utf8_lossy(&bytes[..err.valid_up_to()]).into_owned()
+        }
+        Err(_) => bytes.iter().map(|&b| char::from(b)).collect(),
+    };
+    let text = match text.strip_prefix('\u{feff}') {
+        Some(rest) => rest.to_owned(),
+        None => text,
+    };
+    (text, cut)
 }
 
 #[cfg(test)]
