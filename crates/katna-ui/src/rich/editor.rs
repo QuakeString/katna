@@ -226,7 +226,8 @@ impl RichEditor {
         let doc = Doc::default();
         let start = doc.start();
         Self {
-            focus_handle: cx.focus_handle(),
+            // Tab outside a table or list moves on to the next field.
+            focus_handle: cx.focus_handle().tab_stop(true),
             doc,
             anchor: start,
             head: start,
