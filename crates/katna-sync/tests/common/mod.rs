@@ -27,6 +27,10 @@ pub struct Message {
     pub modseq: u64,
     pub header: Vec<u8>,
     pub body: Vec<u8>,
+    /// Gmail only: `X-GM-THRID`.
+    pub gm_thread_id: Option<u64>,
+    /// Gmail only: `promotions`, `social`, … (`None` for Primary).
+    pub gmail_category: Option<String>,
 }
 
 #[derive(Clone, Debug)]
@@ -56,6 +60,8 @@ pub struct State {
     pub no_uidplus: bool,
     /// Refuse (NO) flag changes, moves and expunges.
     pub refuse_changes: bool,
+    /// Offer Gmail's thread IDs and `X-GM-RAW` search.
+    pub gmail: bool,
 }
 
 /// A shared server; clones see the same state.
@@ -83,26 +89,58 @@ impl FakeServer {
     }
 
     pub fn deliver(&self, folder: &str, subject: &str) -> u32 {
+        let header = format!(
+            "From: Bob <Bob@Example.org>\r\nTo: alice@example.org\r\nSubject: {subject}\r\n\
+             Date: Sat, 26 Sep 2026 10:00:00 +0000\r\nMessage-ID: <{subject}@example.org>\r\n\r\n"
+        );
+        self.deliver_header(folder, &header, &format!("Body of {subject}.\r\n"))
+    }
+
+    /// Delivers a message with this exact header.
+    pub fn deliver_header(&self, folder: &str, header: &str, body: &str) -> u32 {
         let mut state = self.state();
         state.modseq += 1;
         let modseq = state.modseq;
         let mailbox = state.folders.get_mut(folder).unwrap();
         let uid = mailbox.uid_next;
         mailbox.uid_next += 1;
-        let header = format!(
-            "From: Bob <Bob@Example.org>\r\nTo: alice@example.org\r\nSubject: {subject}\r\n\
-             Date: Sat, 26 Sep 2026 10:00:00 +0000\r\nMessage-ID: <{subject}@example.org>\r\n\r\n"
-        );
         mailbox.messages.insert(
             uid,
             Message {
                 flags: Flags::default(),
                 modseq,
-                header: header.into_bytes(),
-                body: format!("Body of {subject}.\r\n").into_bytes(),
+                header: header.as_bytes().to_vec(),
+                body: body.as_bytes().to_vec(),
+                gm_thread_id: None,
+                gmail_category: None,
             },
         );
         uid
+    }
+
+    /// Makes the server Gmail-like: thread IDs and `X-GM-RAW` search.
+    pub fn set_gmail(&self, on: bool) {
+        self.state().gmail = on;
+    }
+
+    /// Sets Gmail's thread ID and category (`promotions`, …) of a message.
+    pub fn set_gmail_labels(
+        &self,
+        folder: &str,
+        uid: u32,
+        thread: Option<u64>,
+        category: Option<&str>,
+    ) {
+        let mut state = self.state();
+        let message = state
+            .folders
+            .get_mut(folder)
+            .unwrap()
+            .messages
+            .get_mut(&uid)
+            .unwrap();
+        message.gm_thread_id = thread;
+        message.gmail_category = category.map(str::to_owned);
     }
 
     pub fn set_seen(&self, folder: &str, uid: u32) {
@@ -272,6 +310,7 @@ impl MailBackend for FakeConnection {
         last: Option<u32>,
     ) -> Result<Vec<MessageHeaders>> {
         let state = self.state(format!("HEADERS {first}:{last:?}"))?;
+        let gmail = state.gmail;
         Ok(range(&state.folders[self.selected()], first, last)
             .map(|(uid, m)| MessageHeaders {
                 uid: *uid,
@@ -279,8 +318,23 @@ impl MailBackend for FakeConnection {
                 flags: m.flags.clone(),
                 received: None,
                 header: m.header.clone(),
+                gm_thread_id: m.gm_thread_id.filter(|_| gmail),
             })
             .collect())
+    }
+
+    async fn gmail_search(&mut self, first: u32, query: &str) -> Result<Option<Vec<u32>>> {
+        let state = self.state(format!("GMAIL {first}: {query}"))?;
+        if !state.gmail {
+            return Ok(None);
+        }
+        let category = query.strip_prefix("category:").expect("a category search");
+        Ok(Some(
+            range(&state.folders[self.selected()], first, None)
+                .filter(|(_, m)| m.gmail_category.as_deref() == Some(category))
+                .map(|(uid, _)| *uid)
+                .collect(),
+        ))
     }
 
     async fn fetch_bodies(&mut self, uids: &[u32]) -> Result<Vec<(u32, Vec<u8>)>> {

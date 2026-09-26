@@ -11,12 +11,15 @@
 use std::fmt;
 use std::ops::{BitOr, BitOrAssign};
 
-use katna_core::AccountId;
+use std::collections::BTreeSet;
+
+use katna_core::{AccountId, MailCategory};
 use rusqlite::{OptionalExtension, Transaction, TransactionBehavior, params};
 
 use crate::blob::BlobStore;
 use crate::error::Result;
 use crate::journal::{self, ChangeOp, ObjectKind};
+use crate::thread::{self, Links};
 
 /// Database ID of a folder.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -27,6 +30,18 @@ pub struct FolderId(pub i64);
 pub struct MessageId(pub i64);
 
 impl fmt::Display for MessageId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
+/// Database ID of a thread (conversation). Threads are merged when a
+/// message links two of them, so a thread ID can disappear; the change
+/// journal records that as a thread `delete`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct ThreadId(pub i64);
+
+impl fmt::Display for ThreadId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.0.fmt(f)
     }
@@ -150,6 +165,12 @@ pub struct NewMessage<'a> {
     pub list_id: Option<&'a str>,
     pub snippet: Option<&'a str>,
     pub participants: &'a [NewParticipant<'a>],
+    /// `In-Reply-To` without angle brackets.
+    pub in_reply_to: Option<&'a str>,
+    /// `References`, oldest first, without angle brackets.
+    pub references: &'a [&'a str],
+    /// Inbox tab; `None` leaves it unclassified (shown as Primary).
+    pub category: Option<MailCategory>,
 }
 
 /// What [`MailBatch::add_message`] did.
@@ -169,6 +190,8 @@ pub enum Added {
 pub struct MailBatch<'s> {
     tx: Option<Transaction<'s>>,
     blobs: &'s BlobStore,
+    /// Threads that gained or lost messages; journaled once at commit.
+    threads: BTreeSet<i64>,
 }
 
 impl<'s> MailBatch<'s> {
@@ -178,6 +201,7 @@ impl<'s> MailBatch<'s> {
         Ok(Self {
             tx: Some(tx),
             blobs,
+            threads: BTreeSet::new(),
         })
     }
 
@@ -187,6 +211,22 @@ impl<'s> MailBatch<'s> {
 
     pub(crate) fn tx(&self) -> &Transaction<'s> {
         self.tx.as_ref().expect("transaction is open until commit")
+    }
+
+    /// The thread a message joins, creating or merging threads as needed.
+    /// Remembers it for the journal.
+    pub(crate) fn assign_thread(&mut self, links: &Links<'_>) -> Result<i64> {
+        let tx = self.tx.as_ref().expect("transaction is open until commit");
+        let (thread, created) = thread::assign(tx, links, &mut self.threads)?;
+        if !created {
+            self.threads.insert(thread);
+        }
+        Ok(thread)
+    }
+
+    /// Remembers that `thread` changed, for the journal.
+    pub(crate) fn thread_changed(&mut self, thread: i64) {
+        self.threads.insert(thread);
     }
 
     /// Returns the folder `path` of `account`, creating it if needed.
@@ -239,10 +279,21 @@ impl<'s> MailBatch<'s> {
         }
 
         let size = i64::try_from(message.raw.len()).unwrap_or(i64::MAX);
+        let thread = self.assign_thread(&Links {
+            account,
+            message_id_hdr: message.message_id_hdr,
+            in_reply_to: message.in_reply_to,
+            references: message.references,
+            subject: message.subject.unwrap_or_default(),
+            date: message.date,
+            gm_thread_id: None,
+        })?;
+        let tx = self.tx();
         tx.prepare_cached(
             "INSERT INTO message (account_id, message_id_hdr, subject, date, size, flags,
-                                  has_attachments, list_id, blob_hash, snippet)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+                                  has_attachments, list_id, blob_hash, snippet, thread_id,
+                                  category)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
         )?
         .execute(params![
             account.0,
@@ -255,6 +306,8 @@ impl<'s> MailBatch<'s> {
             message.list_id,
             hash.as_bytes(),
             message.snippet,
+            thread,
+            message.category.map(MailCategory::to_storage),
         ])?;
         let id = tx.last_insert_rowid();
         tx.prepare_cached("INSERT INTO message_location (message_id, folder_id) VALUES (?1, ?2)")?
@@ -278,6 +331,7 @@ impl<'s> MailBatch<'s> {
 
     /// Commits the blobs, then the rows.
     pub fn commit(mut self) -> Result<()> {
+        thread::journal_changes(self.tx(), &self.threads)?;
         self.blobs.end(true)?;
         let tx = self.tx.take().expect("transaction is open until commit");
         tx.commit()?;
@@ -312,6 +366,9 @@ mod tests {
             list_id: None,
             snippet: Some("Here is our forecast"),
             participants,
+            in_reply_to: None,
+            references: &[],
+            category: None,
         }
     }
 
@@ -378,6 +435,7 @@ mod tests {
             [
                 (ObjectKind::Folder, ChangeOp::Insert),
                 (ObjectKind::Folder, ChangeOp::Insert),
+                (ObjectKind::Thread, ChangeOp::Insert),
                 (ObjectKind::Message, ChangeOp::Insert),
                 (ObjectKind::Message, ChangeOp::Update),
             ]

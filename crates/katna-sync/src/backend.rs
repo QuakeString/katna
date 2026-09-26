@@ -144,15 +144,26 @@ pub struct MessageHeaders {
     /// When the server received the message (IMAP INTERNALDATE), in Unix
     /// seconds. The fallback for messages without a `Date` header.
     pub received: Option<i64>,
-    /// The header fields in [`MessageHeaders::FIELDS`], raw, as the server
+    /// The header fields in [`MessageHeaders::fields`], raw, as the server
     /// sent them. Decoding belongs to the MIME layer.
     pub header: Vec<u8>,
+    /// Gmail's thread ID (`X-GM-THRID`), when the server has `X-GM-EXT-1`.
+    pub gm_thread_id: Option<u64>,
 }
 
 impl MessageHeaders {
+    /// Every header field sync level 1 asks for: [`MessageHeaders::FIELDS`]
+    /// and the ones the inbox-category classifier reads
+    /// ([`katna_core::category::CLASSIFIER_HEADERS`]).
+    pub fn fields() -> impl Iterator<Item = &'static str> {
+        Self::FIELDS
+            .into_iter()
+            .chain(katna_core::category::CLASSIFIER_HEADERS.iter().copied())
+    }
+
     /// The header fields sync level 1 asks for (`docs/ARCHITECTURE.md`
-    /// §6.2). `Content-Type` is there to spot likely attachments until
-    /// `BODYSTRUCTURE` is parsed.
+    /// §6.2), besides the classifier's. `Content-Type` is there to spot
+    /// likely attachments until `BODYSTRUCTURE` is parsed.
     pub const FIELDS: [&'static str; 14] = [
         "Date",
         "Subject",
@@ -279,6 +290,18 @@ pub trait MailBackend: Send + 'static {
 
     /// Asks the server for changes to the selected folder (IMAP NOOP).
     fn poll_changes(&mut self) -> impl Future<Output = Result<Vec<FolderChange>>> + Send;
+
+    /// Gmail search (`X-GM-RAW`, for example `category:promotions`) over
+    /// UIDs `first..` of the selected folder, ascending. `Ok(None)` when the
+    /// server is not Gmail (no `X-GM-EXT-1`).
+    fn gmail_search(
+        &mut self,
+        first: u32,
+        query: &str,
+    ) -> impl Future<Output = Result<Option<Vec<u32>>>> + Send {
+        let _ = (first, query);
+        async { Ok(None) }
+    }
 
     /// Waits on the selected folder until the server reports a change,
     /// `max_wait` passes, or `interrupt` completes, whichever is first.

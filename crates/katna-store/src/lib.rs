@@ -5,6 +5,7 @@
 //!
 //! All SQL in Katna lives in this crate.
 
+mod backfill;
 pub mod blob;
 mod db;
 pub mod error;
@@ -14,20 +15,23 @@ mod mail_read;
 mod mail_view;
 pub mod ops;
 pub mod remote;
+mod thread;
 
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths};
 use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 
+pub use backfill::Backfill;
 pub use blob::{BlobHash, BlobStore};
 pub use db::{DbKind, Mode};
 pub use error::{Error, Result};
 pub use journal::{Change, ChangeOp, ObjectKind};
+pub use katna_core::MailCategory;
 pub use mail::{
     Added, FolderId, MailBatch, MessageFlags, MessageId, NewMessage, NewParticipant,
-    ParticipantRole,
+    ParticipantRole, ThreadId,
 };
 pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
-pub use mail_view::FolderSummary;
+pub use mail_view::{FolderSummary, ThreadEntry, ThreadSender, ThreadSummary};
 pub use ops::{Location, QueuedOp};
 pub use remote::{FolderRole, RemoteMessage, StoredFolder};
 
@@ -221,6 +225,56 @@ impl Store {
     /// The messages in `folder`, newest first.
     pub fn folder_message_ids(&self, folder: FolderId) -> Result<Vec<MessageId>> {
         mail_view::folder_message_ids(&self.mail, folder)
+    }
+
+    /// The conversations in `folder`, newest first: one entry per thread,
+    /// with its newest message in the folder, ordered by that message's
+    /// date (undated last).
+    ///
+    /// With `category`, only conversations whose newest message in the
+    /// folder has that category; unclassified messages count as
+    /// [`MailCategory::Primary`]. So each conversation shows in exactly one
+    /// tab.
+    ///
+    /// A message without a thread yet (a store from before threading, until
+    /// the daemon's backfill reaches it) is an entry of its own with
+    /// `thread: None`.
+    pub fn folder_threads(
+        &self,
+        folder: FolderId,
+        category: Option<MailCategory>,
+    ) -> Result<Vec<ThreadEntry>> {
+        mail_view::folder_threads(&self.mail, folder, category)
+    }
+
+    /// The messages of `thread`, oldest first (undated last).
+    ///
+    /// Server copies of one message (the same `Message-ID`, such as Gmail's
+    /// Inbox and All Mail copies) appear once: the copy that is not in
+    /// trash or junk, preferably one whose body is stored. Messages only in
+    /// trash or junk folders are left out, unless every message of the
+    /// thread is there.
+    pub fn thread_messages(&self, thread: ThreadId) -> Result<Vec<MessageId>> {
+        mail_view::thread_messages(&self.mail, thread)
+    }
+
+    /// List summaries of `threads` as seen from `folder`, in the given
+    /// order; threads that no longer exist (merged or emptied) are left
+    /// out. For entries with `thread: None`, show the message itself.
+    pub fn thread_summaries(
+        &self,
+        threads: &[ThreadId],
+        folder: FolderId,
+    ) -> Result<Vec<ThreadSummary>> {
+        mail_view::thread_summaries(&self.mail, threads, folder)
+    }
+
+    /// Unread **conversations** (not messages) in `folder` per tab, for tab
+    /// badges: every category in tab order, zeros included. A conversation
+    /// counts in the tab of its newest message in the folder, and is unread
+    /// when any of its messages in the folder is.
+    pub fn category_unread(&self, folder: FolderId) -> Result<Vec<(MailCategory, u64)>> {
+        mail_view::category_unread(&self.mail, folder)
     }
 
     /// Number of messages in all accounts.

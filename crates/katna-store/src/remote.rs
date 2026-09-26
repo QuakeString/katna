@@ -11,12 +11,13 @@
 use std::fmt;
 use std::str::FromStr;
 
-use katna_core::AccountId;
+use katna_core::{AccountId, MailCategory};
 use rusqlite::{OptionalExtension, Transaction, params};
 
 use crate::error::{Error, Result};
 use crate::journal::{self, ChangeOp, ObjectKind};
 use crate::mail::{Added, FolderId, MailBatch, MessageFlags, MessageId, NewParticipant};
+use crate::thread::Links;
 use crate::{Store, StoredMessage};
 
 /// `folder.role`: what a folder is for.
@@ -107,6 +108,14 @@ pub struct RemoteMessage<'a> {
     pub has_attachments: bool,
     pub list_id: Option<&'a str>,
     pub participants: &'a [NewParticipant<'a>],
+    /// `In-Reply-To` without angle brackets.
+    pub in_reply_to: Option<&'a str>,
+    /// `References`, oldest first, without angle brackets.
+    pub references: &'a [&'a str],
+    /// Gmail's `X-GM-THRID`, when the server has `X-GM-EXT-1`.
+    pub gm_thread_id: Option<u64>,
+    /// Inbox tab; `None` leaves it unclassified (shown as Primary).
+    pub category: Option<MailCategory>,
 }
 
 impl Store {
@@ -298,14 +307,23 @@ impl MailBatch<'_> {
         folder: FolderId,
         message: &RemoteMessage<'_>,
     ) -> Result<Added> {
-        let tx = self.tx();
-        if let Some(id) = message_at(tx, folder, message.uid)? {
+        if let Some(id) = message_at(self.tx(), folder, message.uid)? {
             return Ok(Added::Duplicate(id));
         }
+        let thread = self.assign_thread(&Links {
+            account,
+            message_id_hdr: message.message_id_hdr,
+            in_reply_to: message.in_reply_to,
+            references: message.references,
+            subject: message.subject.unwrap_or_default(),
+            date: message.date,
+            gm_thread_id: message.gm_thread_id,
+        })?;
+        let tx = self.tx();
         tx.prepare_cached(
             "INSERT INTO message (account_id, message_id_hdr, subject, date, size, flags,
-                                  keywords, has_attachments, list_id)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
+                                  keywords, has_attachments, list_id, thread_id, category)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)",
         )?
         .execute(params![
             account.0,
@@ -317,6 +335,8 @@ impl MailBatch<'_> {
             keywords_json(message.keywords),
             message.has_attachments,
             message.list_id,
+            thread,
+            message.category.map(MailCategory::to_storage),
         ])?;
         let id = tx.last_insert_rowid();
         tx.prepare_cached(
@@ -496,6 +516,10 @@ mod tests {
             has_attachments: false,
             list_id: None,
             participants,
+            in_reply_to: None,
+            references: &[],
+            gm_thread_id: None,
+            category: None,
         }
     }
 
