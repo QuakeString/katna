@@ -419,7 +419,9 @@ fn folder_lists_summaries_and_tab_counts() {
     );
     let old = f.add(inbox, &mail("o@x", "Old", T0 - DAY));
     let mut batch = f.store.mail_batch().unwrap();
-    batch.set_message_flags(c, MessageFlags::FLAGGED).unwrap();
+    batch
+        .set_message_flags(c, MessageFlags::FLAGGED | MessageFlags::IMPORTANT)
+        .unwrap();
     batch.commit().unwrap();
     f.store
         .mail
@@ -513,7 +515,7 @@ fn folder_lists_summaries_and_tab_counts() {
     let s = &summaries[0];
     assert_eq!(s.thread, thread);
     assert_eq!(s.message_count, 3);
-    assert!(s.unread && s.flagged && !s.has_attachments);
+    assert!(s.unread && s.flagged && s.important && !s.has_attachments);
     let senders: Vec<_> = s
         .senders
         .iter()

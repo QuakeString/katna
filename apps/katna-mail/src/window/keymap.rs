@@ -9,11 +9,12 @@ use katna_core::config::Shortcuts;
 
 use super::{
     Archive, CloseMessage, Compose, Delete, FocusList, FocusSearch, Forward, GoToAllMail,
-    GoToDrafts, GoToInbox, GoToSent, GoToStarred, LIST_CONTEXT, MarkRead, MarkUnread, MoveTo,
-    OpenMessage, OpenSettings, PageDown, PageUp, Quit, READER_CONTEXT, Reload, Reply, ReplyAll,
-    ReportSpam, SEARCH_CONTEXT, ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll,
-    SelectFirst, SelectLast, SelectNext, SelectNone, SelectPrevious, ShowShortcuts, ToggleCheck,
-    ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
+    GoToDrafts, GoToInbox, GoToSent, GoToStarred, LIST_CONTEXT, MarkImportant, MarkNotImportant,
+    MarkRead, MarkUnread, MoveTo, OpenMessage, OpenSettings, PageDown, PageUp, Quit,
+    READER_CONTEXT, Reload, Reply, ReplyAll, ReportSpam, SEARCH_CONTEXT, ScrollDown,
+    ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst, SelectLast, SelectNext,
+    SelectNone, SelectPrevious, ShowShortcuts, ToggleCheck, ToggleNavigation, ToggleSettings,
+    ToggleStar, Undo, WINDOW_CONTEXT,
 };
 
 /// Where a shortcut works.
@@ -221,6 +222,22 @@ pub(super) static SHORTCUTS: &[Shortcut] = &[
         MarkUnread
     ),
     shortcut!("star", "Star or unstar", Actions, Mail, ["s"], ToggleStar),
+    shortcut!(
+        "important",
+        "Mark as important",
+        Actions,
+        Mail,
+        ["+", "="],
+        MarkImportant
+    ),
+    shortcut!(
+        "not_important",
+        "Mark as not important",
+        Actions,
+        Mail,
+        ["-"],
+        MarkNotImportant
+    ),
     shortcut!(
         "check",
         "Tick the conversation",

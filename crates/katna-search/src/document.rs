@@ -62,13 +62,14 @@ fn truncate_at_char(text: &mut String, max: usize) {
     }
 }
 
-const FLAG_NAMES: [(MessageFlags, &str); 6] = [
+const FLAG_NAMES: [(MessageFlags, &str); 7] = [
     (MessageFlags::SEEN, "seen"),
     (MessageFlags::ANSWERED, "answered"),
     (MessageFlags::FLAGGED, "flagged"),
     (MessageFlags::DRAFT, "draft"),
     (MessageFlags::DELETED, "deleted"),
     (MessageFlags::FORWARDED, "forwarded"),
+    (MessageFlags::IMPORTANT, "important"),
 ];
 
 /// Index term of a system flag in [`Fields::flag`].
