@@ -21,13 +21,15 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use gpui::{
-    AnyElement, Context, ObjectFit, PathPromptOptions, SharedString, div, img, prelude::*, px, rgba,
+    AnyElement, Context, ObjectFit, PathPromptOptions, RenderImage, SharedString, div, img,
+    prelude::*, px, rgba,
 };
 use katna_core::image::ImageKind;
 use katna_core::{AccountId, Paths};
 use katna_store::MessageId;
 
 use super::MailWindow;
+use super::attachments::bitmap;
 use super::rich;
 use crate::daemon;
 use crate::theme::Theme;
@@ -48,8 +50,9 @@ pub(crate) struct Remote {
     /// Messages whose images the user chose to show, this session.
     shown: HashSet<MessageId>,
     pub(super) images: HashMap<String, Fetch>,
-    /// Sender pictures, by lower-case domain.
-    pictures: HashMap<String, Fetch>,
+    /// Sender pictures made to fill a circle, by lower-case domain;
+    /// `None` while loading or when there is none.
+    pictures: HashMap<String, Option<Arc<RenderImage>>>,
     /// Domains whose picture was asked for while drawing, each with an
     /// address there; fetched once the frame is built.
     wanted: RefCell<BTreeMap<String, String>>,
@@ -205,23 +208,30 @@ fn photo(picture: Arc<gpui::Image>, size: f32) -> AnyElement {
         .into_any_element()
 }
 
-/// A logo, which may be transparent or not square, on a white circle.
-fn logo(picture: Arc<gpui::Image>, size: f32) -> AnyElement {
-    div()
+/// A sender's logo, already made to fill its circle.
+fn logo(picture: Arc<RenderImage>, size: f32) -> AnyElement {
+    img(picture)
         .size(px(size))
         .flex_none()
         .rounded_full()
-        .overflow_hidden()
-        .bg(rgba(0xffffffff))
-        .flex()
-        .items_center()
-        .justify_center()
-        .child(
-            img(picture)
-                .size(px(size * 0.7))
-                .object_fit(ObjectFit::Contain),
-        )
         .into_any_element()
+}
+
+/// A sender picture as the daemon sent it, made to fill a circle: its
+/// margin trimmed, and cropped to the circle or put on a disc of its own
+/// background (see [`katna_preview::avatar`]).
+fn sender_logo(bytes: Vec<u8>) -> Option<Arc<RenderImage>> {
+    let square = match ImageKind::sniff(&bytes)? {
+        ImageKind::Svg => katna_preview::avatar::from_svg(&bytes),
+        _ => katna_preview::avatar::from_bytes(&bytes),
+    };
+    match square {
+        Ok(square) => Some(bitmap(square)),
+        Err(err) => {
+            tracing::debug!(err = err.0, "sender picture not drawn");
+            None
+        }
+    }
 }
 
 impl MailWindow {
@@ -280,7 +290,7 @@ impl MailWindow {
             if self.remote.pictures.contains_key(&domain) {
                 continue;
             }
-            self.remote.pictures.insert(domain.clone(), Fetch::Loading);
+            self.remote.pictures.insert(domain.clone(), None);
             let connection = self.daemon.clone();
             cx.spawn(async move |this, cx| {
                 let result = cx
@@ -290,15 +300,17 @@ impl MailWindow {
                             Some(connection) => connection,
                             None => daemon::connect().await?,
                         };
-                        daemon::sender_picture(&connection, &address).await
+                        let bytes = daemon::sender_picture(&connection, &address).await?;
+                        Ok::<_, String>(sender_logo(bytes))
                     })
                     .await;
                 this.update(cx, |this, cx| {
-                    let fetch = match result.ok().and_then(image) {
-                        Some(image) => Fetch::Ready(image),
-                        None => Fetch::Missing,
-                    };
-                    this.remote.pictures.insert(domain, fetch);
+                    let logo = result.ok().flatten();
+                    let seen = logo.is_some();
+                    this.remote.pictures.insert(domain, logo);
+                    if !seen {
+                        return;
+                    }
                     cx.notify();
                 })
                 .ok();
@@ -318,8 +330,8 @@ impl MailWindow {
             .filter(|_| self.config.mail.sender_pictures || self.remote.trusts(email))
         {
             match self.remote.pictures.get(&domain) {
-                Some(Fetch::Ready(picture)) => return logo(picture.clone(), size),
-                Some(_) => {}
+                Some(Some(picture)) => return logo(picture.clone(), size),
+                Some(None) => {}
                 None => {
                     self.remote
                         .wanted

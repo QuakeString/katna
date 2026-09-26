@@ -12,6 +12,7 @@ publish.workspace = true
 calamine.workspace = true
 hayro.workspace = true
 image.workspace = true
+resvg.workspace = true
 quick-xml.workspace = true
 zip.workspace = true
 

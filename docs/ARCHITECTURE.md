@@ -913,7 +913,11 @@ icon its home page names (`<link rel="icon">`, `apple-touch-icon`), then
 answers are cached in `$XDG_CACHE_HOME/katna/pictures` for a week. The
 General setting "Sender pictures" (`mail.sender_pictures`) turns them off;
 then only trusted senders get one. The same pictures show in the reading
-pane, the phone list and Contacts.
+pane, the phone list and Contacts. Each picture is made to fill its circle
+(`katna_preview::avatar`): a transparent or single-color margin is trimmed.
+An icon that is solid edge to edge is then cropped to the circle. A mark on
+a tile of one color sits on a disc of that color, and a see-through glyph
+sits on a white disc, or a dark one when the glyph is light.
 
 The user's own accounts show the picture picked in Settings → Accounts
 (kept in `$XDG_DATA_HOME/katna/account-pictures/<account id>`), else the
