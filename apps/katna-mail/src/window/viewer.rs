@@ -418,7 +418,10 @@ impl Render for Viewer {
         let (vw, vh) = if area.height > px(0.0) {
             (f32::from(area.width), f32::from(area.height))
         } else {
-            (f32::from(viewport.width), f32::from(viewport.height) - BAR_HEIGHT)
+            (
+                f32::from(viewport.width),
+                f32::from(viewport.height) - BAR_HEIGHT,
+            )
         };
         let zoom = ZOOMS[self.zoom];
         let item = self.items.get(self.current).cloned();

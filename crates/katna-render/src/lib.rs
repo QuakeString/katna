@@ -2,12 +2,16 @@
 
 //! HTML sanitizing and message rendering. See `docs/ARCHITECTURE.md` §12.
 //!
-//! So far only the plain-text view of plan task 3.5: headers, the text of
-//! the message (HTML converted to text) and the attachment list. Sanitized
-//! HTML, remote-content blocking and authentication banners come later.
+//! [`message_view`] gives the headers, the text of a message (HTML
+//! converted to text, for replies and quoting) and its attachments.
+//! [`message_document`] lays out its HTML body for the reading pane (see
+//! [`html`]). Authentication banners come later.
 
+pub mod html;
 mod plain;
+mod rich;
 
 pub use plain::{
     Address, Attachment, AttachmentFile, MAX_BODY_BYTES, MessageView, attachment_file, message_view,
 };
+pub use rich::message_document;

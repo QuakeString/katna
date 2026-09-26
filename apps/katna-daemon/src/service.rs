@@ -82,6 +82,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.remove_account(AccountId(account)).await?)
             }
 
+            async fn delete_all_data(&self) -> fdo::Result<()> {
+                Ok(self.daemon.delete_all_data().await?)
+            }
+
             async fn sync_now(&self, account: i64) -> fdo::Result<()> {
                 let account = (account != 0).then_some(AccountId(account));
                 Ok(self.daemon.sync_now(account).await?)
@@ -147,6 +151,14 @@ macro_rules! pim_interface {
 
             async fn outbox(&self) -> fdo::Result<Vec<OutboxItem>> {
                 Ok(self.daemon.outbox()?)
+            }
+
+            async fn fetch_image(&self, url: String) -> fdo::Result<Vec<u8>> {
+                Ok(self.daemon.fetch_image(&url).await?)
+            }
+
+            async fn sender_picture(&self, address: String) -> fdo::Result<Vec<u8>> {
+                Ok(self.daemon.sender_picture(&address).await?)
             }
 
             #[zbus(signal)]

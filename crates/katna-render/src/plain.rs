@@ -30,6 +30,9 @@ pub struct Attachment {
     pub size: u64,
     /// `type/subtype`, lower case.
     pub mime: String,
+    /// The `Content-ID`, without angle brackets, for images an HTML body
+    /// shows inline.
+    pub content_id: Option<String>,
 }
 
 /// An attachment's content, for the viewer or to save it.
@@ -120,6 +123,9 @@ pub fn message_view(raw: &[u8]) -> MessageView {
             name: attachment_name(part),
             size: part.body.len() as u64,
             mime: part_mime(part),
+            content_id: part
+                .content_id()
+                .map(|id| id.trim_matches(['<', '>', ' ']).to_owned()),
         })
         .collect();
 
@@ -256,6 +262,7 @@ Content-Transfer-Encoding: base64\r\n\r\naGVsbG8=\r\n\
                 name: "q3.pdf".into(),
                 size: 5,
                 mime: "application/pdf".into(),
+                content_id: None,
             }]
         );
         let file = attachment_file(raw, 0).unwrap();

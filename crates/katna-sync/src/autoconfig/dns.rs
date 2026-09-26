@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! SRV and MX lookups over UDP to the system's resolver
+//! SRV, MX and TXT lookups over UDP to the system's resolver
 //! (`/etc/resolv.conf`). Small on purpose: one question, no caching, no
 //! DNSSEC. The answers only pick which servers to try; the login then
 //! goes over TLS to the name found.
@@ -17,6 +17,7 @@ use futures_lite::FutureExt;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Kind {
     Mx = 15,
+    Txt = 16,
     Srv = 33,
 }
 
@@ -87,6 +88,25 @@ pub async fn mx(resolvers: &[SocketAddr], name: &str, timeout: Duration) -> Vec<
         .collect();
     records.sort_by_key(|r| r.preference);
     records
+}
+
+/// TXT records of `name`, each with its strings joined.
+pub async fn txt(resolvers: &[SocketAddr], name: &str, timeout: Duration) -> Vec<String> {
+    let Some(answer) = ask(resolvers, name, Kind::Txt, timeout).await else {
+        return Vec::new();
+    };
+    answers(&answer, Kind::Txt)
+        .into_iter()
+        .map(|(_, mut data)| {
+            let mut text = String::new();
+            while let Some((&len, rest)) = data.split_first() {
+                let len = usize::from(len).min(rest.len());
+                text.push_str(&String::from_utf8_lossy(&rest[..len]));
+                data = &rest[len..];
+            }
+            text
+        })
+        .collect()
 }
 
 /// Sends the question to each resolver in turn; the first answer wins.
@@ -190,6 +210,7 @@ fn answers(packet: &[u8], kind: Kind) -> Vec<(usize, &[u8])> {
         let long_enough = match kind {
             Kind::Srv => length >= 7,
             Kind::Mx => length >= 3,
+            Kind::Txt => length >= 1,
         };
         if rtype == kind as u16 && long_enough {
             found.push((data_at, data));

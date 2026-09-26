@@ -830,6 +830,47 @@ This is a major risk: GPUI has no HTML engine.
 - Show authentication results (SPF/DKIM/DMARC), lookalike-domain warnings,
   and "external sender" banners.
 
+**What runs today (decided September 2026).** HTML mail is drawn with
+GPUI's own elements, not a browser engine. `katna_render::message_document`
+parses the HTML body with `html5ever` (browser-grade error recovery) and
+walks it once into a small layout tree (`katna_render::html::Document`):
+paragraphs of styled runs (bold, italic, underline, strike, colors,
+monospace, links), headings, lists, quotes, `<pre>`, rules, boxes with
+background, padding, border, radius and width, table rows as rows of cells,
+button-like inline boxes, and images. Only inline `style` attributes and
+presentational attributes are read; `<style>` sheets are ignored. The walk
+is the sanitizer: scripts, style sheets, forms, frames, objects, SVG and
+unknown elements never reach the tree, hidden preheaders are dropped, link
+targets are limited to `http`, `https` and `mailto`, and the tree is capped
+in depth and size. `cid:` and `data:` images come from the message.
+In a light theme a message that sets its own colors is drawn on its own
+page; one that does not follows the app's colors. In a dark theme the
+message's colors are remapped (`window/dark.rs`): white becomes the reading
+pane, other light backgrounds become dark ones of the same hue as dark by
+eye as they were light, dark backgrounds stay, and text that falls under
+3:1 contrast on its new background has its lightness flipped and raised to
+4.5:1. Images are not changed. A `text/plain` part
+that is really an HTML document is rendered as HTML.
+
+Remote content is blocked by default. Tracking pixels (tiny images and
+known open-tracking paths) are dropped. A banner offers "Show images" (this
+message) and "Always show from this sender" (kept in
+`$XDG_CONFIG_HOME/katna/trusted-senders`). Images are fetched by the daemon
+(`FetchImage`, `https` only, `http` upgraded, at most 8 MB, checked to be an
+image by its bytes); the app never uses the network. Sender pictures follow
+the same consent: for a trusted sender, or once a message's images are
+shown, the daemon's `SenderPicture` looks up the organization's BIMI logo
+(`default._bimi` TXT record, SVG) and falls back to its website's
+`apple-touch-icon.png` or `favicon.ico`. Free-mail domains get none, and
+answers are cached in `$XDG_CACHE_HOME/katna/pictures` for a week.
+
+Size: this renderer added 2.7 MB to the release app (31.3 → 34.0 MB). For
+comparison, a minimal program with Blitz (`blitz-html` + `blitz-paint` +
+`anyrender_vello_cpu`) is 12.9 MB, and it paints to a bitmap, so text,
+links and selection would need their own plumbing. WebKitGTK cannot be
+embedded in a GPUI window. Blitz stays the candidate if newsletters that
+depend on `<style>` sheets turn out to matter.
+
 ### Composer
 
 - **Phase 1:** plain text and Markdown compose, sent as text + HTML.
@@ -958,8 +999,10 @@ icons and name and without Google-only features (no Chat, Meet, Drive,
 Gemini or confidential mode):
 
 - **App rail.** A 72 px column at the far left holds Mail, Calendar,
-  Contacts, Tasks, Notes and Feeds (RSS and Atom), with Settings and the
-  account at the bottom. Each app is a page (`window/apps.rs`), so new ones
+  Contacts, Tasks, Notes and Feeds (RSS and Atom), with Settings at the
+  bottom. Their names show under the icons unless "App names" is off in
+  quick settings (`mail.app_labels`); then the icons have tooltips. Each
+  app is a page (`window/apps.rs`), so new ones
   plug in. Mail is the only app so far; Contacts lists the people the mail
   was exchanged with, most written with first, and a click searches their
   mail; the others show a "coming soon" page saying what they will do.
@@ -975,11 +1018,18 @@ Gemini or confidential mode):
 - **Conversations.** The list shows one line per conversation by default
   (senders, a count, the newest subject and snippet); a setting shows
   single messages instead.
-- **Category tabs.** The inbox has Primary, Promotions, Social, Updates and
-  Forums tabs with "N new" badges; a setting turns them off. Gmail accounts
-  use Gmail's own categories; other accounts use header rules: mailing
-  lists go to Forums, newsletters and marketing to Promotions, automated
-  notices to Updates, social networks to Social, and people to Primary.
+- **Category tabs.** The inbox has tabs with "N new" badges, the set its
+  provider's webmail uses (`tabs.rs`): Primary, Promotions, Social, Updates
+  and Forums for Gmail; Focused and Other for Outlook; Inbox, Newsletters
+  and Notifications for Zoho Mail; Gmail's five for everyone else. The
+  provider is told from the address and the IMAP host. Every tab is a set
+  of the five stored categories. Gmail accounts use Gmail's own
+  categories; other accounts use header rules: mailing lists go to Forums,
+  newsletters and marketing to Promotions, automated notices to Updates,
+  social networks to Social, and people to Primary. Settings, Inbox picks
+  another set per account or none, and turns single tabs off (their mail
+  shows in the first tab); a switch turns tabs off for every account
+  (`[mail] inbox_tabs`, `[mail.account_tabs."address"]`).
 - **List toolbar.** A select-all checkbox with a menu (all, none, read,
   unread, starred, unstarred), refresh and more; with lines ticked it shows
   archive, report spam, delete, mark read or unread, move to and more.
@@ -992,10 +1042,38 @@ Gemini or confidential mode):
   star and reply; earlier messages folded to one line, and a run of three
   or more folded into a count; Reply, Reply all and Forward buttons below.
 - **Quick settings.** A panel that slides in from the right and pushes the
-  cards: reading pane (with small drawings of the two layouts), density,
-  theme (desktop, light or dark, the window frame included), category tabs,
-  undo-send delay, signature and conversation view. Changes apply at once
-  and are saved to `config.toml` (`[mail]` and `[sending]`).
+  cards: "See all settings", reading pane (with small drawings of the two
+  layouts), density, theme (desktop, light or dark, the window frame
+  included), inbox tabs, undo-send delay, signatures and conversation view.
+  Changes apply at once and are saved to `config.toml` (`[mail]`,
+  `[sending]` and `[shortcuts]`).
+- **Settings page.** "See all settings", the rail's gear or `?` open it in
+  place of the list (`window/settings_page.rs`), with sections General,
+  Inbox, Accounts, Signatures and Keyboard shortcuts.
+- **Removing an account, deleting all data.** Settings → Accounts
+  (`window/accounts.rs`; also "Manage accounts" in the account menu) lists
+  the accounts, each with Remove, and has "Delete all Katna data". Both
+  only touch this computer: they ask first in a dialog that lists in red
+  what is deleted, says the mail stays on the server (or, for imported
+  mail, that Katna has the only copy), and deleting everything also needs
+  "delete" typed. The daemon does the work (`RemoveAccount`,
+  `DeleteAllData`); after deleting everything the app starts over with
+  the default settings.
+- **Signatures.** Any number, each with a name; one default for new mail
+  and one for replies and forwards. The compose bar's signature button
+  swaps the signature in the body. A reply starts with the signature the
+  user signed their newest message in the conversation with, found by
+  comparing the text after its `-- ` line (`signatures.rs`); otherwise the
+  reply default. The single signature of older versions becomes the first.
+- **Keyboard shortcuts.** Every action has one (`window/keymap.rs`), with
+  Gmail's keys as defaults: j/k, o, u, c, r, a, f, e, #, !, v, s, x,
+  Shift+I/U, `* a`, `* n`, z, `g i`/`g s`/`g t`/`g d`/`g a`, /, ?, and Ctrl
+  keys for search, quick settings, reload and quit. The Settings page lists
+  them all; a click on a key (or +) and the new keys change it, a key used
+  elsewhere moves over with a note, and each shortcut or all can go back to
+  the defaults. Keys without Ctrl or Alt only work in the list and the
+  open conversation, never while typing, and a switch turns them off, as in
+  Gmail. Only changes are saved (`[shortcuts.keys]`).
 - **Compose.** A "New Message" window docked at the bottom right, as in
   Gmail: title bar with minimize, full size and close; To (with Cc and Bcc
   links), Subject, and the body with the signature after a `-- ` line.
@@ -1122,8 +1200,12 @@ desktop's own app stays one click away.
 - `katna-preview` holds the decoding (no GPUI); `katna_render::
   attachment_file` extracts an attachment's bytes from the raw message.
   The app reads only the store, like the rest of the reader.
-- **Size:** `hayro` and its vello_cpu rasterizer add about 1.1 MB to
-  Katna Mail (§17.1); pictures cost nothing extra.
+- **Size:** the viewer adds 7.5 MB to the Katna Mail release binary
+  (31.55 → 39.10 MB, measured on the same main). Nearly all of it is
+  `hayro` and its CPU rasterizer (`vello_cpu`, compiled for several SIMD
+  levels, and `pic-scale`); pictures use the `image` crate GPUI already
+  links. A pure-Rust renderer was chosen over PDFium or Poppler so the
+  package needs no C library and the app keeps `unsafe` out.
 - Not yet: attachments of encrypted mail open from the stored (encrypted)
   message, so they fail until the viewer uses the decrypted copy; text
   search in PDFs, printing, and previews of office documents.
@@ -1149,13 +1231,17 @@ Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssx)`
 password) → id`, `AddPop3Account(account, password) → id` (with
 leave-on-server, days to keep, and delete-with-local),
 `SetPassword(id, password)`, `RemoveAccount(id) → b`,
-`SyncNow(id)` (0 for every account), `FetchBody(message)`,
+`DeleteAllData()` (stops every account, deletes every saved password,
+the data directory, the cache and `config.toml`, then the daemon exits;
+the next call starts a new one), `SyncNow(id)` (0 for every account), `FetchBody(message)`,
 `SetFlags(ax messages, as add, as remove)` (flag names `seen`, `answered`,
 `flagged`, `draft`, `forwarded`), `MoveMessages(ax, folder)`,
 `DeleteMessages(ax)`, `ArchiveMessages(ax)`, `QueueSend(x account, ay
 message, u delay) → id`, `UndoSend(id) → b`, `DiscardSend(id) → b`,
 `Outbox() → a(xxxsxss)` (id, account, message, subject, send at, state,
-detail; states in `katna_dbus::send_state`), and the signals
+detail; states in `katna_dbus::send_state`), `FetchImage(url) → ay` and
+`SenderPicture(address) → ay` (images for the reading pane, §12), and the
+signals
 `AccountsChanged`, `SyncStatusChanged(id)`, `MailChanged(id)` and
 `OutboxChanged(id)`. `MailChanged` carries the
 account, not message IDs: clients read the change journal. Errors use the

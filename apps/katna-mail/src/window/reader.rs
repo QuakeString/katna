@@ -14,17 +14,19 @@ use gpui::{
     prelude::*, px, rgba,
 };
 use katna_render::MessageView;
+use katna_render::html::Document;
 use katna_store::MessageId;
 
 use super::compose::Kind;
 use super::list::separator;
+use super::rich::{self, Painter};
 use super::{MailWindow, Menu, SelectNext, SelectPrevious};
 use crate::daemon::Command;
 use crate::data::{EntryKey, Mail, Row};
 use crate::format;
 use crate::theme::{Theme, fade};
 use crate::widgets::{
-    avatar, icon, icon_button, icon_button_colored, pill_button, placeholder, tip, toolbar,
+    icon, icon_button, icon_button_colored, pill_button, placeholder, tip, toolbar,
 };
 
 /// The reading view shows at most this many lines of a body.
@@ -59,6 +61,10 @@ struct Body {
     /// The body, in blocks of consecutive quoted or unquoted lines.
     blocks: Vec<(bool, SharedString)>,
     cut: bool,
+    /// The HTML body laid out, when the message has one.
+    doc: Option<Document>,
+    /// The remote images of `doc`.
+    remote: Vec<String>,
 }
 
 impl Conversation {
@@ -165,6 +171,19 @@ impl Conversation {
 
     fn all_expanded(&self) -> bool {
         self.parts.iter().all(|p| p.expanded)
+    }
+
+    /// Each open message's ID, sender address and remote images.
+    pub(super) fn remote_content(&self) -> Vec<(MessageId, String, Vec<String>)> {
+        self.parts
+            .iter()
+            .filter(|p| p.expanded)
+            .filter_map(|p| {
+                let body = p.body.as_ref()?;
+                let sender = body.view.as_ref()?.from.first()?.email.clone();
+                Some((p.id, sender, body.remote.clone()))
+            })
+            .collect()
     }
 
     /// Each open, downloaded message of the conversation.
@@ -280,6 +299,7 @@ impl MailWindow {
     }
 
     pub(super) fn render_reader(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        self.fetch_remote(cx);
         self.request_thumbnails(cx);
         let Some(reader) = &self.reader else {
             return placeholder("", th);
@@ -496,7 +516,7 @@ impl MailWindow {
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .on_click(toggle)
-                .child(avatar(&name, &email, 40.0))
+                .child(self.sender_avatar(&name, &email, 40.0))
                 .child(
                     div()
                         .flex_1()
@@ -717,13 +737,32 @@ impl MailWindow {
                 view: Some(view),
                 blocks,
                 cut,
+                doc,
+                ..
             }) => {
-                let notes = [
-                    view.from_html
-                        .then_some("This message is HTML; it is shown as plain text for now."),
-                    (*cut || view.truncated).then_some("The message is too long to show in full."),
-                ];
-                let listed: Vec<_> = view.attachments.iter().enumerate().collect();
+                let too_long = match doc {
+                    Some(doc) => doc.truncated,
+                    None => *cut || view.truncated,
+                };
+                let notes = [too_long.then_some("The message is too long to show in full.")];
+                let allowed = self.remote.allowed(id, &email);
+                let banner = doc
+                    .as_ref()
+                    .filter(|doc| doc.remote_images > 0 && !allowed)
+                    .map(|_| self.images_banner(ix, id, &email, th, cx));
+                // Images the body shows are not listed again.
+                let listed: Vec<_> = view
+                    .attachments
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, a)| {
+                        !doc.as_ref().is_some_and(|doc| {
+                            a.content_id.as_ref().is_some_and(|id| {
+                                doc.inline_ids.iter().any(|i| i.eq_ignore_ascii_case(id))
+                            })
+                        })
+                    })
+                    .collect();
                 let attachments = self.attachment_cards(id, &listed, th, cx);
                 div()
                     .flex()
@@ -743,16 +782,24 @@ impl MailWindow {
                             .text_color(rgba(th.text_dim))
                             .child(note)
                     }))
-                    .children(blocks.iter().map(|(quoted, text)| {
-                        div()
-                            .when(*quoted, |d| {
-                                d.pl(px(12.0))
-                                    .border_l_2()
-                                    .border_color(rgba(th.divider))
-                                    .text_color(rgba(th.text_faint))
-                            })
-                            .child(text.clone())
-                    }))
+                    .children(banner)
+                    .when_some(doc.as_ref(), |d, doc| {
+                        let painter =
+                            Painter::new(th, &self.remote.images, allowed, self.remote.mono());
+                        d.child(painter.document(doc))
+                    })
+                    .when(doc.is_none(), |d| {
+                        d.children(blocks.iter().map(|(quoted, text)| {
+                            div()
+                                .when(*quoted, |d| {
+                                    d.pl(px(12.0))
+                                        .border_l_2()
+                                        .border_color(rgba(th.divider))
+                                        .text_color(rgba(th.text_faint))
+                                })
+                                .child(text.clone())
+                        }))
+                    })
                     .children(attachments)
                     .into_any_element()
             }
@@ -778,7 +825,7 @@ impl MailWindow {
                     .flex_none()
                     .flex()
                     .justify_center()
-                    .child(avatar(&name, &email, 40.0)),
+                    .child(self.sender_avatar(&name, &email, 40.0)),
             )
             .child(
                 div()
@@ -894,14 +941,23 @@ fn read(mail: &Mail, id: MessageId) -> Body {
             view: None,
             blocks: Vec::new(),
             cut: false,
+            doc: None,
+            remote: Vec::new(),
         };
     };
     let view = katna_render::message_view(&raw);
-    let (blocks, cut) = body_blocks(&view.body, MAX_BODY_LINES);
+    let doc = katna_render::message_document(&raw);
+    let (blocks, cut) = match doc {
+        Some(_) => (Vec::new(), false),
+        None => body_blocks(&view.body, MAX_BODY_LINES),
+    };
+    let remote = doc.as_ref().map(rich::remote_urls).unwrap_or_default();
     Body {
         view: Some(view),
         blocks,
         cut,
+        doc,
+        remote,
     }
 }
 

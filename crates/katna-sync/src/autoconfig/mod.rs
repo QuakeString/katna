@@ -17,8 +17,8 @@
 //! OAuth2 are skipped until Katna supports it. Whatever is found, adding the
 //! account still checks the login.
 
-mod dns;
-mod http;
+pub(crate) mod dns;
+pub(crate) mod http;
 
 use std::{future::Future, net::SocketAddr, pin::Pin, time::Duration};
 

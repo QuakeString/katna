@@ -42,6 +42,7 @@ hayro = "0.7.1"
 # The version GPUI decodes pictures with; no extra formats of our own.
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "webp", "bmp", "tiff"] }
 jiff = { version = "0.2.37", default-features = false, features = ["std", "tz-system", "tzdb-zoneinfo"] }
+html5ever = "0.40.1"
 mail-parser = "0.11.9"
 # Secret Service client; async-std selects zbus/async-io, not tokio.
 oo7 = { version = "0.6", default-features = false, features = ["async-std", "native_crypto"] }
