@@ -171,6 +171,22 @@ pub async fn remove_account(connection: &Connection, account: i64) -> Result<(),
         .map_err(|err| describe(&err))
 }
 
+/// Creates a folder (a label, on Gmail) on the account's server, inside
+/// `parent` when given. Returns its ID.
+pub async fn create_folder(
+    connection: &Connection,
+    account: i64,
+    name: &str,
+    parent: Option<i64>,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.create_folder(account, name, parent.unwrap_or(0))
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Has the daemon delete everything Katna keeps on this computer. It exits
 /// once done; the next call starts a new one.
 pub async fn delete_all_data(connection: &Connection) -> Result<(), String> {
