@@ -1,6 +1,6 @@
 [package]
 name = "katna-preview"
-description = "Previews of attachments for Katna: PDF pages, pictures and text."
+description = "Previews of attachments for Katna: PDF pages, pictures, text, spreadsheets and documents."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -9,8 +9,11 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+calamine.workspace = true
 hayro.workspace = true
 image.workspace = true
+quick-xml.workspace = true
+zip.workspace = true
 
 [lints]
 workspace = true

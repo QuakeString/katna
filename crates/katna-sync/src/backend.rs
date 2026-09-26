@@ -328,6 +328,7 @@ pub trait MailBackend: Send + 'static {
     /// Not for the selected folder, whose news arrive by themselves.
     fn status(&mut self, folder: &str) -> impl Future<Output = Result<FolderStatus>> + Send;
 
+    /// Creates `folder` (a full path) and subscribes to it.
     fn create_folder(&mut self, folder: &str) -> impl Future<Output = Result<()>> + Send;
 
     /// Stores `message` in `folder` with `flags`.

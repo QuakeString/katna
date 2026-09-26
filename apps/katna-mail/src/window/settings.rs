@@ -11,7 +11,9 @@ use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, FontWeight, SharedString, SpringAnimation,
     div, prelude::*, px, rgba,
 };
-use katna_core::config::{Density, ReadingPane, Theme as ThemeChoice, UNDO_SEND_CHOICES};
+use katna_core::config::{
+    Density, FileGroup, OpenIn, ReadingPane, Theme as ThemeChoice, UNDO_SEND_CHOICES,
+};
 use katna_ui::Ripple;
 use katna_ui::motion;
 
@@ -34,6 +36,7 @@ pub(super) enum Change {
     Conversations(bool),
     AppLabels(bool),
     SingleKeys(bool),
+    OpenIn(FileGroup, OpenIn),
 }
 
 impl MailWindow {
@@ -335,6 +338,7 @@ impl MailWindow {
             Change::Theme(theme) => view.theme = theme,
             Change::DesktopColors(on) => view.desktop_colors = on,
             Change::AppLabels(on) => view.app_labels = on,
+            Change::OpenIn(group, open) => view.open.set(group, open),
             Change::Tabs(on) => {
                 view.inbox_tabs = on;
                 relist = true;

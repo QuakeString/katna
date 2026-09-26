@@ -1,14 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The attachment viewer: a received PDF, picture or text file shown over
-//! the mail, like webmail's preview. A dark bar on top names the file and
-//! offers Save and "Open in another app"; arrows at the sides go through
+//! The attachment viewer: a received PDF, picture, text file, spreadsheet
+//! or document shown over the mail, like webmail's preview. A dark bar on
+//! top names the file and offers Save and "Open with" (the desktop's list
+//! of apps); arrows at the sides go through
 //! the message's other attachments; a pill at the foot zooms (and counts
 //! PDF pages). Escape closes it.
 //!
 //! Decoding happens off the UI thread (`katna_preview`). PDF pages are
 //! drawn only while on screen (and one either side), at the zoom and the
-//! screen's scale, and freed when scrolled far away.
+//! screen's scale, and freed when scrolled far away. Spreadsheets and
+//! documents are drawn by `office.rs`.
+
+mod office;
 
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -21,10 +25,11 @@ use gpui::{
     div, ease_out_quint, img, prelude::*, px, rgba, uniform_list,
 };
 use katna_preview::pdf::{self, Document};
-use katna_preview::{Kind, Picture, picture, text};
+use katna_preview::{Kind, Picture, document, picture, sheet, text};
 use katna_render::AttachmentFile;
 use katna_ui::Ripple;
 
+use self::office::{DocumentView, SheetView};
 use super::attachments::{Item, bitmap, kind_badge};
 use crate::format;
 use crate::theme::Theme;
@@ -87,6 +92,8 @@ enum Content {
     /// Drawn by GPUI itself (animated GIF, SVG), with its size if known.
     Drawn(Arc<gpui::Image>, Option<(u32, u32)>),
     Text(Rc<Vec<SharedString>>, bool),
+    Sheet(SheetView),
+    Document(DocumentView),
     /// No preview; the text says why.
     Nothing(SharedString),
 }
@@ -103,6 +110,8 @@ enum Loaded {
     Bitmap(Arc<RenderImage>, (u32, u32)),
     Drawn(Arc<gpui::Image>, Option<(u32, u32)>),
     Text(Vec<SharedString>, bool),
+    Sheet(sheet::Workbook),
+    Document(document::Document),
     Nothing(&'static str),
 }
 
@@ -188,6 +197,8 @@ impl Viewer {
                     Loaded::Bitmap(image, size) => Content::Bitmap(image, size),
                     Loaded::Drawn(image, size) => Content::Drawn(image, size),
                     Loaded::Text(lines, cut) => Content::Text(Rc::new(lines), cut),
+                    Loaded::Sheet(book) => Content::Sheet(SheetView::new(book)),
+                    Loaded::Document(doc) => Content::Document(DocumentView::new(doc)),
                     Loaded::Nothing(why) => Content::Nothing(why.into()),
                 };
                 cx.notify();
@@ -227,6 +238,23 @@ impl Viewer {
     }
 
     fn scroll_by(&mut self, dy: f32, cx: &mut Context<Self>) {
+        match &self.content {
+            Content::Document(view) => {
+                view.state.scroll_by(px(dy));
+                cx.notify();
+                return;
+            }
+            Content::Sheet(view) => {
+                let handle = view.scroll.0.borrow().base_handle.clone();
+                let offset = handle.offset();
+                let max = handle.max_offset();
+                let y = (f32::from(offset.y) - dy).clamp(-f32::from(max.y), 0.0);
+                handle.set_offset(gpui::point(offset.x, px(y)));
+                cx.notify();
+                return;
+            }
+            _ => {}
+        }
         let offset = self.scroll.offset();
         let max = self.scroll.max_offset();
         let y = (f32::from(offset.y) - dy).clamp(-f32::from(max.y), 0.0);
@@ -237,7 +265,12 @@ impl Viewer {
     fn on_key(&mut self, event: &KeyDownEvent, _: &mut Window, cx: &mut Context<Self>) {
         let keystroke = &event.keystroke;
         let ctrl = keystroke.modifiers.control;
-        let page = f32::from(self.scroll.bounds().size.height) - LINE_SCROLL;
+        let view = match &self.content {
+            Content::Sheet(sheet) => sheet.scroll.0.borrow().base_handle.bounds(),
+            Content::Document(doc) => doc.state.viewport_bounds(),
+            _ => self.scroll.bounds(),
+        };
+        let page = (f32::from(view.size.height) - LINE_SCROLL).max(LINE_SCROLL);
         match keystroke.key.as_str() {
             "escape" => self.close(cx),
             "left" => self.show(self.current + self.items.len() - 1, cx),
@@ -367,9 +400,34 @@ fn load(raw: &[u8], item: &Item) -> (Option<AttachmentFile>, Loaded) {
             let (lines, cut) = text::lines(&file.bytes);
             Loaded::Text(lines.into_iter().map(SharedString::from).collect(), cut)
         }
+        Kind::Sheet { csv: true } => {
+            let tabs = file.name.to_ascii_lowercase().ends_with(".tsv")
+                || file.mime.to_ascii_lowercase().contains("tab-separated");
+            Loaded::Sheet(sheet::csv(&file.bytes, &file.name, tabs))
+        }
+        Kind::Sheet { csv: false } => match sheet::open(file.bytes.clone()) {
+            Ok(book) => Loaded::Sheet(book),
+            Err(_) => Loaded::Nothing("This spreadsheet could not be read."),
+        },
+        Kind::Document => match document::open(file.bytes.clone()) {
+            Ok(doc) => Loaded::Document(doc),
+            Err(_) => Loaded::Nothing("This document could not be read."),
+        },
+        Kind::Other if is_old_office(&file.name) => {
+            Loaded::Nothing("Old Word files (.doc) and slides have no preview yet.")
+        }
         Kind::Other => Loaded::Nothing("No preview available"),
     };
     (Some(file), loaded)
+}
+
+/// Word 97–2003 and RTF documents and slides, which have no preview.
+fn is_old_office(name: &str) -> bool {
+    name.rsplit_once('.').is_some_and(|(_, ext)| {
+        ["doc", "dot", "ppt", "pps", "pptx", "rtf"]
+            .iter()
+            .any(|e| ext.eq_ignore_ascii_case(e))
+    })
 }
 
 fn fit_step() -> usize {
@@ -399,7 +457,7 @@ fn tooltip_for(id: &str) -> &'static str {
     match id {
         "viewer-close" => "Close (Esc)",
         "viewer-save" => "Save (Ctrl+S)",
-        "viewer-open" => "Open in another app",
+        "viewer-open" => "Open with another app",
         "viewer-prev" => "Previous attachment",
         "viewer-next" => "Next attachment",
         "viewer-zoom-in" => "Zoom in (+)",
@@ -429,167 +487,176 @@ impl Render for Viewer {
         let many = self.items.len() > 1;
 
         let mut pages_label = None;
-        let body: AnyElement = match &self.content {
-            Content::Loading => centered(
-                div()
-                    .text_color(rgba(INK_DIM))
-                    .text_size(px(14.0))
-                    .child("Opening…"),
-            ),
-            Content::Nothing(why) => {
-                let why = why.clone();
-                let kind = item.as_ref().map(|i| i.kind).unwrap_or(Kind::Other);
-                centered(
+        let body: AnyElement = if matches!(self.content, Content::Document(_)) {
+            self.document_body(zoom, vw)
+        } else {
+            match &self.content {
+                Content::Document(_) => div().into_any_element(),
+                Content::Sheet(view) => self.sheet_body(view, zoom, vw, cx),
+                Content::Loading => centered(
                     div()
-                        .w(px(360.0))
-                        .p(px(28.0))
+                        .text_color(rgba(INK_DIM))
+                        .text_size(px(14.0))
+                        .child("Opening…"),
+                ),
+                Content::Nothing(why) => {
+                    let why = why.clone();
+                    let kind = item.as_ref().map(|i| i.kind).unwrap_or(Kind::Other);
+                    centered(
+                        div()
+                            .w(px(360.0))
+                            .p(px(28.0))
+                            .flex()
+                            .flex_col()
+                            .items_center()
+                            .gap(px(16.0))
+                            .rounded(px(15.0))
+                            .bg(rgba(PILL))
+                            .child(kind_badge(kind, 48.0))
+                            .child(div().text_size(px(15.0)).text_color(rgba(INK)).child(why))
+                            .when(self.file.is_some(), |d| {
+                                d.child(
+                                    div()
+                                        .flex()
+                                        .flex_row()
+                                        .gap(px(8.0))
+                                        .child(
+                                            text_button("viewer-save-big", "download", "Save")
+                                                .on_click(
+                                                    cx.listener(|this, _, _, cx| this.save(cx)),
+                                                ),
+                                        )
+                                        .child(
+                                            text_button(
+                                                "viewer-open-big",
+                                                "open-external",
+                                                "Open with…",
+                                            )
+                                            .on_click(
+                                                cx.listener(|this, _, _, cx| this.open_with(cx)),
+                                            ),
+                                        ),
+                                )
+                            }),
+                    )
+                }
+                Content::Bitmap(image, (w, h)) => {
+                    let (w, h) = picture_size(*w, *h, window.scale_factor(), vw, vh, zoom);
+                    self.picture(img(ImageSource::Render(image.clone())), w, h)
+                }
+                Content::Drawn(image, size) => {
+                    let (w, h) = match size {
+                        Some((w, h)) => picture_size(*w, *h, window.scale_factor(), vw, vh, zoom),
+                        None => {
+                            let side = ((vw - 160.0).min(vh - 200.0)).max(120.0) * zoom;
+                            (side, side)
+                        }
+                    };
+                    self.picture(img(ImageSource::Image(image.clone())), w, h)
+                }
+                Content::Text(lines, cut) => {
+                    let lines = lines.clone();
+                    let cut = *cut;
+                    let count = lines.len() + usize::from(cut);
+                    let size = 13.0 * zoom;
+                    let width = (vw - 160.0).clamp(300.0, 960.0);
+                    div()
+                        .size_full()
+                        .flex()
+                        .justify_center()
+                        .pt(px(BAR_HEIGHT + 8.0))
+                        .pb(px(80.0))
+                        .child(
+                            div()
+                                .w(px(width))
+                                .h_full()
+                                .rounded(px(8.0))
+                                .bg(rgba(0xffffffff))
+                                .text_color(rgba(0x202124ff))
+                                .font_family("monospace")
+                                .text_size(px(size))
+                                .child(
+                                    uniform_list("viewer-text", count, move |range, _, _| {
+                                        range
+                                            .map(|ix| {
+                                                let line = match lines.get(ix) {
+                                                    Some(line) => line.clone(),
+                                                    None => "… (the rest of the file is not shown)"
+                                                        .into(),
+                                                };
+                                                div()
+                                                    .px(px(20.0))
+                                                    .h(px(size * 1.5))
+                                                    .whitespace_nowrap()
+                                                    .child(line)
+                                            })
+                                            .collect()
+                                    })
+                                    .py(px(12.0))
+                                    .size_full(),
+                                ),
+                        )
+                        .into_any_element()
+                }
+                Content::Pdf(pdf) => {
+                    let count = pdf.doc.pages();
+                    let widest = (0..count)
+                        .map(|p| pdf.doc.page_size(p).0)
+                        .fold(1.0_f32, f32::max);
+                    let fit = ((vw - 176.0).min(PAGE_WIDTH) / widest).clamp(0.2, 4.0);
+                    let z = fit * zoom;
+                    let scale = z * window.scale_factor();
+                    let current = self.current_page(count);
+                    pages_label = Some(format!("Page {} of {}", current + 1, count));
+                    let wide = widest * z > vw - 32.0;
+                    let pages: Vec<AnyElement> = (0..count)
+                        .map(|p| {
+                            let (w, h) = pdf.doc.page_size(p);
+                            let (w, h) = (w * z, h * z);
+                            div()
+                                .flex_none()
+                                .w(px(w))
+                                .h(px(h))
+                                .bg(rgba(0xffffffff))
+                                .shadow(vec![gpui::BoxShadow {
+                                    color: rgba(0x00000080).into(),
+                                    offset: gpui::point(px(0.0), px(2.0)),
+                                    blur_radius: px(8.0),
+                                    spread_radius: px(0.0),
+                                    inset: false,
+                                }])
+                                .when_some(pdf.pages.get(&p), |d, (_, image)| {
+                                    d.child(
+                                        img(ImageSource::Render(image.clone()))
+                                            .w(px(w))
+                                            .h(px(h))
+                                            .object_fit(ObjectFit::Fill),
+                                    )
+                                })
+                                .into_any_element()
+                        })
+                        .collect();
+                    // Pages are drawn after this frame is laid out, once the
+                    // scroll handle knows which are on screen.
+                    let this = cx.entity().downgrade();
+                    window.on_next_frame(move |_, cx| {
+                        this.update(cx, |this, cx| this.draw_pages(scale, cx)).ok();
+                    });
+                    div()
+                        .id("viewer-pages")
+                        .size_full()
+                        .overflow_scroll()
+                        .track_scroll(&self.scroll)
                         .flex()
                         .flex_col()
-                        .items_center()
-                        .gap(px(16.0))
-                        .rounded(px(15.0))
-                        .bg(rgba(PILL))
-                        .child(kind_badge(kind, 48.0))
-                        .child(div().text_size(px(15.0)).text_color(rgba(INK)).child(why))
-                        .when(self.file.is_some(), |d| {
-                            d.child(
-                                div()
-                                    .flex()
-                                    .flex_row()
-                                    .gap(px(8.0))
-                                    .child(
-                                        text_button("viewer-save-big", "download", "Save")
-                                            .on_click(cx.listener(|this, _, _, cx| this.save(cx))),
-                                    )
-                                    .child(
-                                        text_button(
-                                            "viewer-open-big",
-                                            "open-external",
-                                            "Open in another app",
-                                        )
-                                        .on_click(cx.listener(|this, _, _, cx| this.open_with(cx))),
-                                    ),
-                            )
-                        }),
-                )
-            }
-            Content::Bitmap(image, (w, h)) => {
-                let (w, h) = picture_size(*w, *h, window.scale_factor(), vw, vh, zoom);
-                self.picture(img(ImageSource::Render(image.clone())), w, h)
-            }
-            Content::Drawn(image, size) => {
-                let (w, h) = match size {
-                    Some((w, h)) => picture_size(*w, *h, window.scale_factor(), vw, vh, zoom),
-                    None => {
-                        let side = ((vw - 160.0).min(vh - 200.0)).max(120.0) * zoom;
-                        (side, side)
-                    }
-                };
-                self.picture(img(ImageSource::Image(image.clone())), w, h)
-            }
-            Content::Text(lines, cut) => {
-                let lines = lines.clone();
-                let cut = *cut;
-                let count = lines.len() + usize::from(cut);
-                let size = 13.0 * zoom;
-                let width = (vw - 160.0).clamp(300.0, 960.0);
-                div()
-                    .size_full()
-                    .flex()
-                    .justify_center()
-                    .pt(px(BAR_HEIGHT + 8.0))
-                    .pb(px(80.0))
-                    .child(
-                        div()
-                            .w(px(width))
-                            .h_full()
-                            .rounded(px(8.0))
-                            .bg(rgba(0xffffffff))
-                            .text_color(rgba(0x202124ff))
-                            .font_family("monospace")
-                            .text_size(px(size))
-                            .child(
-                                uniform_list("viewer-text", count, move |range, _, _| {
-                                    range
-                                        .map(|ix| {
-                                            let line = match lines.get(ix) {
-                                                Some(line) => line.clone(),
-                                                None => {
-                                                    "… (the rest of the file is not shown)".into()
-                                                }
-                                            };
-                                            div()
-                                                .px(px(20.0))
-                                                .h(px(size * 1.5))
-                                                .whitespace_nowrap()
-                                                .child(line)
-                                        })
-                                        .collect()
-                                })
-                                .py(px(12.0))
-                                .size_full(),
-                            ),
-                    )
-                    .into_any_element()
-            }
-            Content::Pdf(pdf) => {
-                let count = pdf.doc.pages();
-                let widest = (0..count)
-                    .map(|p| pdf.doc.page_size(p).0)
-                    .fold(1.0_f32, f32::max);
-                let fit = ((vw - 176.0).min(PAGE_WIDTH) / widest).clamp(0.2, 4.0);
-                let z = fit * zoom;
-                let scale = z * window.scale_factor();
-                let current = self.current_page(count);
-                pages_label = Some(format!("Page {} of {}", current + 1, count));
-                let wide = widest * z > vw - 32.0;
-                let pages: Vec<AnyElement> = (0..count)
-                    .map(|p| {
-                        let (w, h) = pdf.doc.page_size(p);
-                        let (w, h) = (w * z, h * z);
-                        div()
-                            .flex_none()
-                            .w(px(w))
-                            .h(px(h))
-                            .bg(rgba(0xffffffff))
-                            .shadow(vec![gpui::BoxShadow {
-                                color: rgba(0x00000080).into(),
-                                offset: gpui::point(px(0.0), px(2.0)),
-                                blur_radius: px(8.0),
-                                spread_radius: px(0.0),
-                                inset: false,
-                            }])
-                            .when_some(pdf.pages.get(&p), |d, (_, image)| {
-                                d.child(
-                                    img(ImageSource::Render(image.clone()))
-                                        .w(px(w))
-                                        .h(px(h))
-                                        .object_fit(ObjectFit::Fill),
-                                )
-                            })
-                            .into_any_element()
-                    })
-                    .collect();
-                // Pages are drawn after this frame is laid out, once the
-                // scroll handle knows which are on screen.
-                let this = cx.entity().downgrade();
-                window.on_next_frame(move |_, cx| {
-                    this.update(cx, |this, cx| this.draw_pages(scale, cx)).ok();
-                });
-                div()
-                    .id("viewer-pages")
-                    .size_full()
-                    .overflow_scroll()
-                    .track_scroll(&self.scroll)
-                    .flex()
-                    .flex_col()
-                    .when(!wide, |d| d.items_center())
-                    .gap(px(PAGE_GAP))
-                    .pt(px(BAR_HEIGHT + 8.0))
-                    .pb(px(96.0))
-                    .px(px(16.0))
-                    .children(pages)
-                    .into_any_element()
+                        .when(!wide, |d| d.items_center())
+                        .gap(px(PAGE_GAP))
+                        .pt(px(BAR_HEIGHT + 8.0))
+                        .pb(px(96.0))
+                        .px(px(16.0))
+                        .children(pages)
+                        .into_any_element()
+                }
             }
         };
 
@@ -655,7 +722,12 @@ impl Render for Viewer {
 
         let zoomable = matches!(
             self.content,
-            Content::Pdf(_) | Content::Bitmap(..) | Content::Drawn(..) | Content::Text(..)
+            Content::Pdf(_)
+                | Content::Bitmap(..)
+                | Content::Drawn(..)
+                | Content::Text(..)
+                | Content::Sheet(_)
+                | Content::Document(_)
         );
         let foot = zoomable.then(|| {
             div()

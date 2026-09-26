@@ -94,7 +94,7 @@ katna/
 │   ├── katna-search/          # tantivy index, query language, ranking
 │   ├── katna-org/             # organizations, matching rules, suggestions
 │   ├── katna-render/          # HTML sanitizing and message rendering
-│   ├── katna-preview/         # attachment previews: PDF pages, pictures, text
+│   ├── katna-preview/         # attachment previews: PDF, pictures, text, sheets, documents
 │   ├── katna-dav/             # CalDAV/CardDAV sync, iCalendar/vCard, recurrence
 │   ├── katna-dbus/            # D-Bus API definitions (in.invenia.katna.Pim1), client + server sides
 │   ├── katna-notify/          # notification builder, actions, inline reply, grouping
@@ -1263,7 +1263,7 @@ desktop's own app stays one click away.
   from the stored raw message and freed when the conversation closes.
 - **Viewer.** Clicking a card opens the viewer over the window below the
   top bar (the window's own controls stay usable): a dark page with a bar
-  naming the file, "Open in another app" and Save; arrows (and ←/→) go
+  naming the file, "Open with another app" and Save; arrows (and ←/→) go
   through the message's other attachments; a pill at the foot zooms
   (−/+/0, 25 %–400 %, 100 % fits the window) and counts PDF pages.
   Escape closes it. It is dark in light and dark themes alike.
@@ -1275,15 +1275,39 @@ desktop's own app stays one click away.
   - **Pictures:** PNG, JPEG, GIF, WebP, BMP, TIFF through the `image`
     crate GPUI already uses, turned upright by their EXIF orientation and
     scaled to at most 4096 px; animated GIFs and SVG are drawn by GPUI.
-  - **Text** (`text/*`, JSON, CSV, logs, code by extension): monospace, the
+  - **Text** (`text/*`, JSON, logs, code by extension): monospace, the
     first 512 KB and 10,000 lines.
-  - Anything else shows "No preview available" with Save and "Open in
-    another app".
+  - **Spreadsheets:** Excel (xlsx, xlsm, xlsb, xls) and OpenDocument (ods)
+    read by `calamine` (pure Rust, MIT), and CSV/TSV (separator guessed:
+    comma, semicolon, tab or bar; also CSV sent as `text/plain`). A grid on
+    white with column letters kept at the top, row numbers, numbers on the
+    right, and a tab per sheet at the foot. Values only: formulas show
+    their saved result, dates show as dates; no cell colors, merged cells
+    or charts. Up to 20,000 rows, 256 columns and 2 million cells.
+  - **Documents:** Word (docx) and OpenDocument text (odt), read by
+    `katna-preview` itself (the zip through `zip`, the XML through
+    `quick-xml`, both MIT): one long white page with the title, headings,
+    numbered and bulleted lists (Word numbering and list styles, ODF list
+    styles), tables, alignment and bold/italic/underline/strike-through.
+    Pictures, headers, footers, notes, comments and text boxes are left
+    out. Only paragraphs on screen are laid out. Old Word (.doc), RTF and
+    slides have no preview.
+  - Anything else shows "No preview available" with Save and "Open
+    with…".
+- **Default apps** (Settings → Default apps, `[mail.open]` in
+  `config.toml`): for PDFs, pictures, text, spreadsheets and documents,
+  clicking a card opens Katna Mail's viewer (the default), the desktop's
+  default app for the type, or asks which app each time. Files without a
+  preview always open in the viewer. Which app is the desktop's default
+  is set in the desktop's own settings.
 - **Save** asks where through the desktop's file chooser (portal),
   starting in the download folder (`XDG_DOWNLOAD_DIR`); without a portal
-  it saves there under a free name. **Open in another app** writes a
+  it saves there under a free name. **Open with another app** writes a
   read-only copy to `$XDG_CACHE_HOME/katna/opened/` (removed after a day)
-  and hands it to the desktop. Files that could run a program
+  and asks the desktop's "Open with" portal (`org.freedesktop.portal.
+  OpenURI` with `ask`), which lists the apps for the type; without a
+  portal, the default app opens it (`xdg-open`). "The desktop's default
+  app" in Default apps skips the question. Files that could run a program
   (`.desktop`, scripts, executables, `.jar`, Flatpak refs) are never
   handed over; they can only be saved.
 - `katna-preview` holds the decoding (no GPUI); `katna_render::
@@ -1295,9 +1319,15 @@ desktop's own app stays one click away.
   levels, and `pic-scale`); pictures use the `image` crate GPUI already
   links. A pure-Rust renderer was chosen over PDFium or Poppler so the
   package needs no C library and the app keeps `unsafe` out.
-- Not yet: attachments of encrypted mail open from the stored (encrypted)
-  message, so they fail until the viewer uses the decrypted copy; text
-  search in PDFs, printing, and previews of office documents.
+- **Encrypted mail:** attachments of an encrypted or signed message are
+  read from the message as GnuPG opened it, held in memory with the rest
+  of the decrypted message. Their thumbnails and the viewer stay in
+  memory. "Open with another app" hands a decrypted attachment over only
+  from `XDG_RUNTIME_DIR` when that is in memory (tmpfs, checked in the
+  mount table), never from the cache on disk; otherwise it says to save
+  the file instead. Save writes where the user chooses.
+- Not yet: text search in PDFs, printing, pictures inside documents,
+  old Word files and slides.
 
 ## 14. D-Bus API (`katna-dbus`)
 
@@ -1605,7 +1635,7 @@ about 2 MB of the first 30 MiB (31.5 MB) budget.
 
 | Metric | Target |
 |---|---|
-| Katna Mail binary | ≤ 50 MB (50,000,000 bytes) |
+| Katna Mail binary | ≤ 100 MB (100,000,000 bytes) |
 | `katna-daemon` binary | ≤ 20 MiB (21 MB) |
 | Idle CPU (app and daemon) | ≈ 0 %; no periodic wake-ups beyond IDLE renewals |
 | Cold start to usable inbox | < 500 ms |
@@ -1616,8 +1646,9 @@ With sync, bodies, the op queue, sending and the search indexer,
 `katna-daemon` is 15.6 MB. tantivy is the biggest part. Its budget was
 15 MiB until sending came in; it is 20 MiB (September 2026) so features
 are not trimmed to fit. Katna Mail's budget was 30 MiB until the fixes
-after the first real install, when the app reached it; it is 50 MB
-(September 2026). Crates that are not hot are built with
+after the first real install, when the app reached it; then 50 MB, and
+100 MB since the attachment viewers (September 2026), so features are
+not trimmed to fit; light crates are still preferred. Crates that are not hot are built with
 `opt-level = "s"` (root `Cargo.toml`): D-Bus (zbus, zvariant, oo7,
 ashpd), IMAP parsing and regex.
 
