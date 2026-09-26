@@ -20,7 +20,7 @@ use katna_ui::Ripple;
 use katna_ui::motion::{self, Spring, lerp};
 
 use super::apps::{APP_RAIL_WIDTH, App as RailApp};
-use super::{Compose, MailWindow, NAV_WIDTH, ToggleSettings};
+use super::{Compose, MailWindow, NAV_ROW_INSET, NAV_WIDTH, ToggleSettings};
 use crate::format;
 use crate::theme::{Theme, fade};
 use crate::widgets::{avatar, elevation, icon, tip};
@@ -723,13 +723,14 @@ fn drawer_row(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> gpui::Sta
         .relative()
         .overflow_hidden()
         .h(px(40.0))
+        .ml(px(NAV_ROW_INSET))
         .mr(px(16.0))
-        .pl(px(26.0))
+        .pl(px(26.0 - NAV_ROW_INSET))
         .pr(px(12.0))
         .flex()
         .flex_row()
         .items_center()
-        .rounded_r(px(20.0))
+        .rounded_full()
         .text_size(px(14.0))
         .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
         .when(on, |d| {

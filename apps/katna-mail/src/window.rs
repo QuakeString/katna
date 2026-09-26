@@ -131,6 +131,9 @@ const SEARCH_CONTEXT: &str = "SearchBox";
 
 const TOP_BAR_HEIGHT: f32 = 64.0;
 const NAV_WIDTH: f32 = 256.0;
+/// How far the folder highlight pill (and the drawer's) stays off the
+/// pane's left edge.
+const NAV_ROW_INSET: f32 = 8.0;
 /// Corners of cards that float: menus aside, dialogs and panels.
 const PANEL_RADIUS: f32 = 15.0;
 const SEARCH_WIDTH: f32 = 720.0;

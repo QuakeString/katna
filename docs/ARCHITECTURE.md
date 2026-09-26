@@ -1031,7 +1031,8 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   folders are open, and moves with them as they open and fold; with the
   folders folded, and on a tablet, it starts just after Compose. `katna_chrome::Bar` gives the bar a center slot,
   height and background for this.
-- **Navigation.** The folders as pills rounded on the right. The menu
+- **Navigation.** The folders as full pills, rounded at both ends and
+  set 8 px in from the pane's edge (the drawers' lines too). The menu
   button folds it away (it first folded to a rail of icons; see below).
   With one account the account heading is left out. With several, the
   owner asked for one account at a time by default, as Gmail does:

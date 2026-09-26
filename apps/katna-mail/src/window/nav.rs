@@ -14,8 +14,8 @@ use katna_ui::motion::{self, lerp};
 
 use super::tour::Spot;
 use super::{
-    Compose, FocusSearch, Hover, Listing, MailWindow, NAV_WIDTH, PANEL_RADIUS, SEARCH_CONTEXT,
-    ToggleNavigation, ToggleSettings, compose,
+    Compose, FocusSearch, Hover, Listing, MailWindow, NAV_ROW_INSET, NAV_WIDTH, PANEL_RADIUS,
+    SEARCH_CONTEXT, ToggleNavigation, ToggleSettings, compose,
 };
 use katna_core::AccountKind;
 
@@ -442,7 +442,9 @@ impl MailWindow {
                 let chevron = div()
                     .id(("nav-chevron", ix))
                     .absolute()
-                    .left(px(4.0 + indent))
+                    // Where it was before the highlight was inset: just
+                    // left of the pill's rounded end.
+                    .left(px(indent - 4.0))
                     .top(px(6.0))
                     .size(px(20.0))
                     .flex()
@@ -463,18 +465,19 @@ impl MailWindow {
                         cx.stop_propagation();
                         this.toggle(&key, cx);
                     }));
+                // A full pill, inset from the pane's edge; the icon and
+                // label stay where they were.
                 let row = div()
                     .id(("nav-row", ix))
                     .relative()
-                    .overflow_hidden()
                     .h(px(NAV_ROW_HEIGHT))
-                    .w(px(NAV_WIDTH - 16.0))
-                    .pl(px(26.0 + indent))
+                    .w(px(NAV_WIDTH - 16.0 - NAV_ROW_INSET))
+                    .pl(px(26.0 - NAV_ROW_INSET + indent))
                     .pr(px(12.0))
                     .flex()
                     .flex_row()
                     .items_center()
-                    .rounded_r(px(16.0))
+                    .rounded_full()
                     .text_size(px(14.0))
                     .text_color(rgba(text))
                     .when(bold, |d| d.font_weight(FontWeight::BOLD))
@@ -485,7 +488,7 @@ impl MailWindow {
                     )
                     .child(
                         Ripple::new(("nav-ripple", ix), rgba(th.ripple))
-                            .corners([0.0, 16.0, 16.0, 0.0]),
+                            .rounded(NAV_ROW_HEIGHT / 2.0),
                     )
                     .child(icon(
                         if scheduled {
@@ -514,7 +517,7 @@ impl MailWindow {
                         )
                     })
                     .when(*has_children, |d| d.child(chevron));
-                row.with_spring(
+                let row = row.with_spring(
                     ("nav-selected", ix),
                     SpringAnimation::new(motion::SMOOTH).to(if selected { 1.0 } else { 0.0 }),
                     {
@@ -527,8 +530,10 @@ impl MailWindow {
                             }
                         }
                     },
-                )
-                .into_any_element()
+                );
+                // The list lays lines out edge to edge, so the inset is
+                // padding around the pill rather than its margin.
+                div().pl(px(NAV_ROW_INSET)).child(row).into_any_element()
             }
         }
     }
