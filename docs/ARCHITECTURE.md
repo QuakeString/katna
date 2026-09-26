@@ -1389,6 +1389,181 @@ does something. CI builds it on every push to `main` and publishes it, with
 a pacman repository database, as the `arch-latest` pre-release, so Arch
 users can install and update without building. See `packaging/README.md`.
 
+### 21.2 Update channels and safe updates (planned, not built)
+
+Planned 26 September 2026; nothing here is built yet, because the basic
+apps come first. Today the only update path is the `arch-latest`
+pre-release (§21.1): every push to `main` replaces it, with no gate beyond
+the pull request's CI. That is fine for testers, not for people who rely
+on Katna for their mail. The work is in `IMPLEMENTATION_PLAN.md`,
+"Release track".
+
+The rule behind all of it: **an update must never lose or corrupt mail,
+settings or passwords, and a broken update must be recoverable by the
+user without a terminal.** Mail on the server can always be downloaded
+again; local-only data (outbox, drafts not yet saved on the server,
+offline changes in `op_queue`, organizations, notes, metadata) cannot, so
+it gets the most care.
+
+#### Channels
+
+| Channel | Built from | Who it is for | How often |
+|---|---|---|---|
+| **Nightly** | every push to `main` (today's `arch-latest`) | developers and testers | every merge |
+| **Beta** | a tag `vX.Y.Z-beta.N` cut from `main` after the release checks pass | people who want new features early and report bugs | every few weeks |
+| **Stable** | a beta promoted unchanged after its soak | everyone else; the default | after the soak |
+
+- Stable and beta are the **same files**: promotion copies the beta's
+  packages and signatures, it never rebuilds, so what was tested is what
+  ships. A fix found during the soak makes a new beta (`-beta.N+1`) and
+  restarts the soak.
+- Versions follow SemVer. Patch releases (`X.Y.Z+1`) are bug fixes only and
+  need no schema migration; migrations land in minor or major releases.
+- Each package format maps the channels onto what it already has:
+
+| Format | Stable | Beta | Nightly |
+|---|---|---|---|
+| Flatpak | Flathub | Flathub beta | Katna's own Flatpak repository |
+| Arch | pacman repo `[katna]`; AUR `katna` | repo `[katna-testing]` | repo `[katna-nightly]` (today's `arch-latest`); AUR `katna-git` |
+| .deb / .rpm | apt/dnf repository, `stable` component | `beta` component | `nightly` component |
+| AppImage | update info points at the stable feed | beta feed | nightly feed |
+
+- The channel is chosen in Settings → About → Updates (Flatpak and AppImage)
+  or by the repository the user added (distribution packages; the page then
+  shows how to switch).
+- Moving to a safer channel (nightly → beta → stable) never downgrades. The
+  installed version stays until the new channel catches up, because an older
+  version may not read the newer database (§5.3, `SchemaTooNew`).
+
+#### Who updates what
+
+Katna never replaces files that a package manager owns.
+
+| Install | Who installs the update | What Katna does |
+|---|---|---|
+| Flatpak | Flatpak (GNOME Software, Discover, `flatpak update`) | The daemon watches the Flatpak portal's update monitor (`CreateUpdateMonitor`) and can ask it to update (`Update`) when the user allows automatic updates. |
+| pacman, apt, dnf | the package manager | Nothing by default: the user's usual system update applies it. An optional check (off by default) notifies when the channel has a newer version and opens Discover or GNOME Software. |
+| AppImage | Katna | The daemon downloads the new AppImage (zsync, delta), checks its signature, swaps it in atomically and keeps the old file until the new one has started healthy. |
+| Built from source | the user | Nothing. |
+
+- Only `katna-daemon` talks to the network (CLAUDE.md), so the daemon does
+  the checks. It checks at most once a day, never on a metered connection
+  (§6.1), sends no account or device identifier, and can be
+  turned off.
+- For self-updating formats, the daemon reads a **signed update manifest**
+  per channel (`https://katna.invenia.in/updates/<channel>.json`, mirrored
+  on the GitHub release). It lists the version, release notes link,
+  per-file SHA-256, the oldest version that can update to it directly, the
+  schema versions it migrates to, a rollout percentage and a `pulled` flag.
+  It is signed with an Ed25519 (minisign) key whose public half is built into
+  the daemon; an unsigned or wrongly signed manifest is ignored.
+- **Staged rollout** for self-updating installs: each install keeps a random
+  number from 0 to 99 in its local settings and takes the update once the
+  rollout percentage passes it (for example 10 %, 50 %, 100 % over a few
+  days). Nothing about the install is sent. Package-manager channels cannot
+  stage, so the beta soak is their safety net.
+
+#### Running while updated
+
+A package manager replaces binaries while Katna runs. Every combination of
+old and new daemon and app must keep working:
+
+- The daemon notices its own binary was replaced (`/proc/self/exe` ends in
+  ` (deleted)`, checked on a timer and on each D-Bus call). It restarts
+  itself only when it is idle: no send inside the undo delay, no migration
+  or index write running, the op queue flushed. With systemd it asks the
+  user manager to restart its unit; without systemd it re-executes itself.
+- A new `Version() → (version, api, schemas)` D-Bus method lets the app and
+  the daemon find out what the other side speaks. `Pim1` only ever gains
+  members; anything else becomes `Pim2` (§14.1). A new app that meets an old
+  daemon asks it to restart; an old app that meets a new daemon keeps working
+  on `Pim1` and shows a "Katna was updated, restart" pill.
+- An app that opens a store and gets `SchemaTooNew` shows the same restart
+  pill instead of an error.
+- Search index versions already rebuild in the background when they differ
+  (`katna-search` deletes an index built with another `SCHEMA_VERSION`);
+  search falls back to the store's plain lookups while that runs.
+
+#### Protecting local data
+
+- **Backup before migrating.** When the daemon is about to raise a
+  database's `user_version`, it first copies each database it will change
+  with SQLite's online backup into
+  `$XDG_DATA_HOME/katna/backup/<old version>/`, after checking there is room
+  for it. No room, no migration: the daemon stays on read-only duty and
+  says why. The last two backups are kept.
+- **Expand, then contract.** A minor release's migrations only add tables,
+  columns and indexes, so the previous stable release can still read the
+  database. Removing or renaming happens one release later, once nothing
+  reads the old shape. A migration that cannot follow this rule is only
+  allowed in a major release.
+- Each database records the oldest Katna version that can open it
+  (`min_reader_version` in a small `schema_meta` table), so an older version
+  can tell "newer but still readable" from "too new".
+- Settings: `config.toml` keys are only added; unknown keys written by a
+  newer version are kept, not dropped, when an older version saves.
+- Secrets in the Secret Service keep their attributes (§9.2.1) across
+  versions; a change of attributes needs a migration with the same care.
+
+#### After an update: health check and safe mode
+
+- The first start of a new version runs a short **self-check**: every
+  database opens and passes `PRAGMA quick_check`, the index opens or starts
+  a rebuild, the Secret Service answers, D-Bus names are owned. The result
+  and the version are written to `$XDG_STATE_HOME/katna/health.toml`.
+- If the daemon fails to reach "healthy" three times within ten minutes, it
+  starts in **safe mode**: no sync and no writes except the outbox, and a
+  notification with "Restore previous data" (from the backup above) and
+  "Copy debug report". Local-only data (outbox, `op_queue`, organizations,
+  metadata) is exported to a file before any restore.
+- A **downgrade** (the user installs an older package after a bad update)
+  meets `SchemaTooNew` only if the newer release broke the expand-then-contract
+  rule; the older daemon then offers the same restore.
+- No telemetry. Crash details go to the journal; "Copy debug report"
+  collects version, health file and recent logs, without mail content,
+  for the user to attach to a bug report.
+
+#### Checks before a release ships
+
+A release candidate goes to beta, and a beta to stable, only when all of
+these pass. The upgrade and migration checks run in CI on every pull
+request that touches a migration, not only at release time.
+
+| Check | What it proves |
+|---|---|
+| Pull-request CI on the tagged commit | `fmt`, `clippy`, tests on Arch and Ubuntu 26.04, `cargo deny`, size budgets |
+| Migration fixtures | A committed `mail.db`, `pim.db` and `blobs.db` of every released schema version migrates to the new one; row counts, threads, categories and a fixed set of queries give the same answers |
+| Upgrade test | In a container: install the previous stable (and the one before it), add an account on the dev servers (Stalwart, Dovecot), sync, queue a send, create organizations and settings; upgrade to the candidate while the daemon runs; check the daemon restarts itself, migrations apply, nothing is re-downloaded or lost, the queued send goes out once, passwords still work |
+| Rollback test | Install the candidate, then the previous stable: it opens the data (expand-then-contract), or restores the backup cleanly |
+| Mixed versions | Old app against new daemon and new app against old daemon over D-Bus |
+| Large-store migration | Migrating the Enron store stays within a time budget and needs no more free disk than the backup |
+| Real servers | The dev server runs the candidate's read-only checks against Gmail (`thread_check`), Stalwart and Dovecot |
+| Desktop smoke test | Each package installs and launches on Arch Plasma, Arch GNOME and Ubuntu 26.04 GNOME; screenshots of key screens compared with the last release |
+| Performance | The Enron benchmark does not regress by more than 10 %; binary sizes within budget |
+| Beta soak | At least 7 days on beta (longer for a release with migrations) with no open `release-blocker` issue |
+
+- The steps live in `docs/RELEASING.md`; the release workflow runs the
+  automated ones and a person approves promotion to stable (a GitHub
+  environment with a required reviewer).
+- Packages and manifests are **signed**: pacman packages and repository
+  databases with a Katna GPG key (so the repositories use
+  `SigLevel = Required`), Flatpak by Flathub, AppImages and manifests with
+  the minisign key. Signing keys live only in the release environment.
+- Risky new features ship behind a setting that is on in nightly and beta
+  and off in stable until they have soaked.
+
+#### When a release is bad anyway
+
+- **Roll forward**: the fix goes out as a patch release through beta with a
+  short soak (at least one day). If the fix is not ready fast, the previous
+  release's code is re-released under a new patch version, so no package
+  manager has to downgrade.
+- The manifest's `pulled` flag stops staged rollouts at once. Installs that
+  read the manifest and are already on the release say in the window that a
+  fix is coming.
+- Each bad release gets a short write-up in `docs/releases/` and a new
+  check in the table above that would have caught it.
+
 ## 22. Licensing — Decided
 
 **GPL-3.0-or-later** for the apps, daemon and shared crates (decided
@@ -1437,12 +1612,16 @@ Packaging (Flatpak, deb, rpm, AUR) starts from Phase 3; the
 | GNOME lacks inline reply; Flatpak portal gaps | Uneven notification experience | Capability detection; quick-reply window fallback |
 | Background daemon drains battery or leaks memory | Users disable it | Event-driven design, CI resource budgets, power/metered awareness |
 | GPU/Vulkan missing on old hardware | High CPU from software rendering | Test early on old machines; document requirements |
+| An update corrupts or loses local data, or leaves Katna unable to start | Users lose mail they cannot re-download and stop trusting updates | Channels with a beta soak, upgrade and migration tests, backup before migrating, expand-then-contract schema changes, health check and safe mode (§21.2) |
 | Scope | Burnout, never shipping | Strict phases with "done when" criteria |
 
 ## 25. Open decisions
 
 1. HTML renderer for phase 2 (§12).
 2. Katna Server hosting and pricing model; Katna Server license (GPL-3.0 or AGPL-3.0).
+3. Updates (§21.2): where the update manifests and package repositories are
+   hosted (`katna.invenia.in` or GitHub releases only), who holds the signing
+   keys, and how long the beta soak is.
 
 Decided:
 
