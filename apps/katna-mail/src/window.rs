@@ -1327,6 +1327,7 @@ impl MailWindow {
                 .bottom(px(lerp(-12.0, 24.0, s)))
                 .opacity(s.min(1.0))
                 .min_w(px(288.0))
+                .max_w(px(560.0))
                 .pl(px(16.0))
                 .pr(px(if has_undo { 8.0 } else { 16.0 }))
                 .py(px(if has_undo { 6.0 } else { 14.0 }))

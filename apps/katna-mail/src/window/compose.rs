@@ -618,6 +618,8 @@ impl MailWindow {
         Some(match mode {
             Mode::Full => div()
                 .absolute()
+                .top_0()
+                .left_0()
                 .size_full()
                 .flex()
                 .items_center()
@@ -627,6 +629,8 @@ impl MailWindow {
                     div()
                         .id("compose-scrim")
                         .absolute()
+                        .top_0()
+                        .left_0()
                         .size_full()
                         .on_click(cx.listener(|this, _, _, cx| this.compose_mode(Mode::Full, cx))),
                 )
