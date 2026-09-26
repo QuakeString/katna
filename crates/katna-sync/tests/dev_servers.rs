@@ -633,3 +633,165 @@ fn bodies_are_downloaded_without_marking_mail_read() {
         });
     }
 }
+
+#[test]
+#[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
+fn queued_changes_reach_the_server() {
+    use katna_core::{AccountKind, Paths};
+    use katna_store::{FolderId, MessageFlags, Mode, Store};
+    use katna_sync::{engine, ops};
+
+    const NOW: i64 = 1_790_416_800;
+
+    /// Subject → flags of the messages in `path`.
+    fn contents(
+        store: &Store,
+        account: katna_core::AccountId,
+        path: &str,
+    ) -> Vec<(String, MessageFlags)> {
+        let folder = store
+            .folders(account)
+            .unwrap()
+            .into_iter()
+            .find(|f| f.path == path)
+            .unwrap();
+        let mut messages: Vec<_> = store
+            .messages_in_folder(folder.id)
+            .unwrap()
+            .into_iter()
+            .map(|m| (m.subject, m.flags))
+            .collect();
+        messages.sort_by(|a, b| a.0.cmp(&b.0));
+        messages
+    }
+
+    for (name, endpoint) in imap_servers() {
+        let tmp = tempfile::tempdir().unwrap();
+        let open = |dir: &str| {
+            let mut store =
+                Store::open(&Paths::with_root(tmp.path().join(dir)), Mode::ReadWrite).unwrap();
+            let account = store.add_account(AccountKind::Imap, name, USER).unwrap().id;
+            (store, account)
+        };
+        let (mut store, account) = open("app");
+        let (from, to) = (unique("katna-test-ops-a"), unique("katna-test-ops-b"));
+        let subjects = ["keep", "move", "delete"].map(|s| format!("{from}-{s}"));
+        smol::block_on(async {
+            let mut conn = connect(&endpoint).await;
+            for path in [&from, &to] {
+                conn.create_folder(path).await.unwrap();
+            }
+            for subject in &subjects {
+                conn.append(&from, message(subject, USER)).await.unwrap();
+            }
+            engine::sync_account(&mut conn, &mut store, account)
+                .await
+                .unwrap();
+            let folder = |path: &str| -> FolderId {
+                store
+                    .folders(account)
+                    .unwrap()
+                    .into_iter()
+                    .find(|f| f.path == path)
+                    .unwrap()
+                    .id
+            };
+            let (from_id, to_id) = (folder(&from), folder(&to));
+            let id = |subject: &str| {
+                store
+                    .messages_in_folder(from_id)
+                    .unwrap()
+                    .into_iter()
+                    .find(|m| m.subject == subject)
+                    .unwrap()
+                    .id
+            };
+            let (keep, moved, deleted) = (id(&subjects[0]), id(&subjects[1]), id(&subjects[2]));
+
+            ops::set_flags(
+                &mut store,
+                &[keep, moved],
+                MessageFlags::SEEN | MessageFlags::FLAGGED,
+                MessageFlags::empty(),
+            )
+            .unwrap();
+            ops::set_flags(
+                &mut store,
+                &[keep],
+                MessageFlags::empty(),
+                MessageFlags::SEEN,
+            )
+            .unwrap();
+            ops::move_messages(&mut store, &[moved], to_id).unwrap();
+            // Twice: to the trash, then gone, so the trash stays clean.
+            ops::delete_messages(&mut store, &[deleted]).unwrap();
+            let started = Instant::now();
+            let report = ops::replay(&mut conn, &mut store, account, NOW)
+                .await
+                .unwrap();
+            println!("{name}: {report:?} in {:?}", started.elapsed());
+            assert_eq!((report.retried, report.failed), (0, 0), "{name}");
+            assert!(
+                report.resync.is_empty(),
+                "{name}: MOVE/COPYUID reports UIDs"
+            );
+            ops::delete_messages(&mut store, &[deleted]).unwrap();
+            let report = ops::replay(&mut conn, &mut store, account, NOW)
+                .await
+                .unwrap();
+            assert_eq!((report.done, report.failed), (1, 0), "{name}");
+            assert!(store.messages_by_id(&[deleted]).unwrap().is_empty());
+
+            // Our own sync sees nothing new: the UIDs we recorded match.
+            let reports = engine::sync_account(&mut conn, &mut store, account)
+                .await
+                .unwrap();
+            for report in reports.iter().filter(|r| r.path == from || r.path == to) {
+                assert_eq!(
+                    (report.added, report.removed, report.flags_changed),
+                    (0, 0, 0),
+                    "{name}: {report:?}"
+                );
+            }
+
+            // A fresh store sees the same thing on the server.
+            let (mut fresh, fresh_account) = open("fresh");
+            engine::sync_account(&mut conn, &mut fresh, fresh_account)
+                .await
+                .unwrap();
+            let flagged = MessageFlags::FLAGGED;
+            let both = MessageFlags::SEEN | MessageFlags::FLAGGED;
+            assert_eq!(
+                contents(&fresh, fresh_account, &from),
+                [(subjects[0].clone(), flagged)],
+                "{name}"
+            );
+            assert_eq!(
+                contents(&fresh, fresh_account, &to),
+                [(subjects[1].clone(), both)],
+                "{name}"
+            );
+            for (path, folder) in [(&from, &from), (&to, &to)] {
+                assert_eq!(
+                    contents(&store, account, path),
+                    contents(&fresh, fresh_account, folder),
+                    "{name}"
+                );
+            }
+            let trash = fresh
+                .folders(fresh_account)
+                .unwrap()
+                .into_iter()
+                .find(|f| f.role == Some(katna_store::FolderRole::Trash));
+            if let Some(trash) = trash {
+                assert!(
+                    !contents(&fresh, fresh_account, &trash.path)
+                        .iter()
+                        .any(|(subject, _)| *subject == subjects[2]),
+                    "{name}: expunged from the trash"
+                );
+            }
+            conn.logout().await.unwrap();
+        });
+    }
+}

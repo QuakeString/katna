@@ -436,7 +436,7 @@ fn message_at(tx: &Transaction<'_>, folder: FolderId, uid: u32) -> Result<Option
 }
 
 /// Removes one location, and the message too if that was its last one.
-fn remove_location(tx: &Transaction<'_>, id: MessageId, folder: FolderId) -> Result<()> {
+pub(crate) fn remove_location(tx: &Transaction<'_>, id: MessageId, folder: FolderId) -> Result<()> {
     tx.prepare_cached("DELETE FROM message_location WHERE message_id = ?1 AND folder_id = ?2")?
         .execute(params![id.0, folder.0])?;
     let deleted = tx

@@ -12,6 +12,7 @@ pub mod journal;
 pub mod mail;
 mod mail_read;
 mod mail_view;
+pub mod ops;
 pub mod remote;
 
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths};
@@ -27,6 +28,7 @@ pub use mail::{
 };
 pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
 pub use mail_view::FolderSummary;
+pub use ops::{Location, QueuedOp};
 pub use remote::{FolderRole, RemoteMessage, StoredFolder};
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.

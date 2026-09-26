@@ -8,15 +8,16 @@
 //!    on its own: it would only lock the account on many servers.
 //! 2. Sync every folder ([`engine::sync_account`]), then download the bodies
 //!    of messages in the offline window ([`bodies::download_bodies`]).
-//! 3. Loop: bring the inbox and its bodies up to date, then wait on it with
-//!    IDLE until the
-//!    server reports a change or [`WorkerConfig::idle_timeout`] passes
-//!    (RFC 2177 asks clients to renew IDLE before 29 minutes). Every
-//!    [`WorkerConfig::full_sync_interval`], sync all folders again.
+//! 3. Loop: send queued changes ([`ops::replay`]), bring the inbox and its
+//!    bodies up to date, then wait on it with IDLE until the server reports
+//!    a change, [`WorkerConfig::idle_timeout`] passes (RFC 2177 asks clients
+//!    to renew IDLE before 29 minutes) or a refused change is due again.
+//!    Every [`WorkerConfig::full_sync_interval`], sync all folders again.
 //! 4. Any network or protocol error ends the session; go back to 1.
 //!
 //! [`Handle::sync_now`] ends any wait: it starts a full sync, or reconnects
-//! at once. [`Handle::fetch_body`] downloads one message now. Dropping the
+//! at once. [`Handle::send_changes`] sends queued changes now.
+//! [`Handle::fetch_body`] downloads one message now. Dropping the
 //! [`Handle`] logs out and ends the worker.
 //!
 //! The worker owns its [`Store`] handle, so several workers can run at once;
@@ -39,6 +40,7 @@ use crate::{
     engine::{self, FolderReport},
     imap::ImapBackend,
     net::Tls,
+    ops::{self, ReplayReport},
 };
 
 /// Opens new connections for a worker.
@@ -99,6 +101,8 @@ pub enum Event {
     Synced(Vec<FolderReport>),
     /// Bodies of this many messages were downloaded.
     BodiesStored(usize),
+    /// Queued changes were sent. Failed ones were undone in the store.
+    ChangesSent(ReplayReport),
     /// The connection failed or broke. The worker reconnects after `retry_in`.
     Disconnected {
         error: String,
@@ -120,6 +124,7 @@ struct BodyRequest {
 pub struct Handle {
     _stop: Sender<()>,
     wake: Sender<()>,
+    changes: Sender<()>,
     bodies: Sender<BodyRequest>,
 }
 
@@ -129,6 +134,12 @@ impl Handle {
     pub fn sync_now(&self) {
         // A full channel already holds a request.
         let _ = self.wake.try_send(());
+    }
+
+    /// Asks the worker to send the changes queued with [`ops`] now. While
+    /// offline they wait for the next connection.
+    pub fn send_changes(&self) {
+        let _ = self.changes.try_send(());
     }
 
     /// Downloads the full message `message` now. Fails with
@@ -165,6 +176,7 @@ impl Fetcher {
 pub struct Control {
     stop: Receiver<()>,
     wake: Receiver<()>,
+    changes: Receiver<()>,
     bodies: Receiver<BodyRequest>,
 }
 
@@ -172,6 +184,7 @@ pub struct Control {
 enum Signal {
     Stop,
     Wake,
+    Changes,
     Fetch(BodyRequest),
 }
 
@@ -179,16 +192,19 @@ enum Signal {
 pub fn control() -> (Handle, Control) {
     let (stop_tx, stop) = async_channel::bounded(1);
     let (wake, wake_rx) = async_channel::bounded(1);
+    let (changes, changes_rx) = async_channel::bounded(1);
     let (bodies, bodies_rx) = async_channel::unbounded();
     (
         Handle {
             _stop: stop_tx,
             wake,
+            changes,
             bodies,
         },
         Control {
             stop,
             wake: wake_rx,
+            changes: changes_rx,
             bodies: bodies_rx,
         },
     )
@@ -209,6 +225,12 @@ impl Control {
             }
         })
         .or(async {
+            match self.changes.recv().await {
+                Ok(()) => Signal::Changes,
+                Err(_) => Signal::Stop,
+            }
+        })
+        .or(async {
             match self.bodies.recv().await {
                 Ok(request) => Signal::Fetch(request),
                 Err(_) => Signal::Stop,
@@ -218,7 +240,7 @@ impl Control {
     }
 
     /// Like [`Self::signal`], but turns body requests away with `offline`
-    /// until a stop or wake-up comes.
+    /// and leaves changes queued until a stop or wake-up comes.
     async fn signal_offline(&self, offline: &str) -> Signal {
         loop {
             match self.signal().await {
@@ -227,6 +249,7 @@ impl Control {
                         .done
                         .try_send(Err(Error::Closed(offline.to_owned())));
                 }
+                Signal::Changes => {}
                 other => return other,
             }
         }
@@ -343,6 +366,12 @@ async fn session<B: MailBackend>(
     let mut last_full = Instant::now();
     let mut full = true;
     loop {
+        // Changes go out first, so a sync never overwrites them.
+        let report = ops::replay(backend, store, account, unix_now()).await?;
+        let resync = report.resync.clone();
+        if report != ReplayReport::default() {
+            let _ = events.try_send(Event::ChangesSent(report));
+        }
         if full || last_full.elapsed() >= config.full_sync_interval {
             let reports = engine::sync_account(backend, store, account).await?;
             let _ = events.try_send(Event::Synced(reports));
@@ -350,6 +379,15 @@ async fn session<B: MailBackend>(
             full = false;
             last_full = Instant::now();
             download_all(backend, store, account, config, events).await?;
+        } else {
+            // Moves the server gave no new UIDs for.
+            let mut reports = Vec::new();
+            for (folder, path) in resync {
+                reports.push(engine::sync_folder(backend, store, account, folder, &path).await?);
+            }
+            if !reports.is_empty() {
+                let _ = events.try_send(Event::Synced(reports));
+            }
         }
         let Some(inbox) = store
             .folders(account)?
@@ -359,7 +397,8 @@ async fn session<B: MailBackend>(
             // Nothing to watch: wait for the next full sync.
             let next = config
                 .full_sync_interval
-                .saturating_sub(last_full.elapsed());
+                .saturating_sub(last_full.elapsed())
+                .min(until_retry(store, account)?);
             let wait = async {
                 Timer::after(next).await;
                 None
@@ -369,6 +408,7 @@ async fn session<B: MailBackend>(
                 None => {}
                 Some(Signal::Stop) => return Ok(()),
                 Some(Signal::Wake) => full = true,
+                Some(Signal::Changes) => {}
                 Some(Signal::Fetch(request)) => {
                     serve(backend, store, account, events, request).await?;
                 }
@@ -394,19 +434,20 @@ async fn session<B: MailBackend>(
             let _ = events.try_send(Event::BodiesStored(stored));
         }
 
-        let until_full = config
+        let max_wait = config
             .full_sync_interval
-            .saturating_sub(last_full.elapsed());
-        if until_full.is_zero() {
+            .saturating_sub(last_full.elapsed())
+            .min(config.idle_timeout)
+            .min(until_retry(store, account)?);
+        if max_wait.is_zero() {
             continue;
         }
-        let wait = backend
-            .wait_for_changes(config.idle_timeout.min(until_full), control.signal())
-            .await?;
+        let wait = backend.wait_for_changes(max_wait, control.signal()).await?;
         match wait.interrupted {
             None => {}
             Some(Signal::Stop) => return Ok(()),
             Some(Signal::Wake) => full = true,
+            Some(Signal::Changes) => {}
             // Fetching selects another folder; the next round of the loop
             // selects the inbox again.
             Some(Signal::Fetch(request)) => {
@@ -414,6 +455,17 @@ async fn session<B: MailBackend>(
             }
         }
     }
+}
+
+/// How long until a refused change is tried again; [`Duration::MAX`] when
+/// none waits.
+fn until_retry(store: &Store, account: AccountId) -> Result<Duration> {
+    Ok(match store.next_op_due(account)? {
+        // Anything due now was just sent; the rest waits at least a second
+        // so a busy server does not spin the loop.
+        Some(due) => Duration::from_secs(due.saturating_sub(unix_now()).max(1) as u64),
+        None => Duration::MAX,
+    })
 }
 
 /// Downloads the offline window of every folder, the inbox first.

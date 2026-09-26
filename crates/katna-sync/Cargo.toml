@@ -12,6 +12,8 @@ publish.workspace = true
 katna-core.workspace = true
 katna-import.workspace = true
 katna-store.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 katna-meta.workspace = true
 
 async-channel.workspace = true

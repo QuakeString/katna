@@ -20,7 +20,7 @@ use katna_daemon::{Instance, StartError, secrets::Secrets};
 use katna_dbus::{NewImapAccount, PimProxy, ServerSpec, state};
 use katna_import::{Flags, IncomingMessage, MessageSink, StoreSink, parse_message};
 use katna_search::{Query, SearchIndex, SearchOptions};
-use katna_store::{Mode, Store};
+use katna_store::{Added, MessageFlags, Mode, NewMessage, Store};
 use katna_sync::{
     Credentials, Endpoint, MailBackend, Security, imap::ImapBackend, net::Tls, worker::WorkerConfig,
 };
@@ -245,6 +245,89 @@ fn indexes_the_store_for_search() {
     });
 }
 
+#[test]
+fn changes_imported_mail_in_the_store() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    let account = store
+        .add_account(AccountKind::Local, "enron", "enron@local")
+        .unwrap()
+        .id;
+    let mut batch = store.mail_batch().unwrap();
+    let inbox = batch.ensure_folder(account, "inbox").unwrap();
+    let old = batch.ensure_folder(account, "old").unwrap();
+    let mut ids = Vec::new();
+    for subject in ["one", "two"] {
+        let raw = format!("Subject: {subject}\r\n\r\nHello.\r\n");
+        let added = batch
+            .add_message(
+                account,
+                inbox,
+                &NewMessage {
+                    raw: raw.as_bytes(),
+                    message_id_hdr: None,
+                    subject: Some(subject),
+                    date: None,
+                    flags: MessageFlags::empty(),
+                    has_attachments: false,
+                    list_id: None,
+                    snippet: None,
+                    participants: &[],
+                },
+            )
+            .unwrap();
+        let Added::Message(id) = added else {
+            unreachable!()
+        };
+        ids.push(id);
+    }
+    batch.commit().unwrap();
+    drop(store);
+
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let client = bus.connect().await;
+        let pim = PimProxy::new(&client).await.unwrap();
+        let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
+        let flags = |id| reader.messages_by_id(&[id]).unwrap()[0].flags;
+        let mut changed = pim.receive_mail_changed().await.unwrap();
+
+        pim.set_flags(&[ids[0].0, ids[1].0], &["seen", "flagged"], &[])
+            .await
+            .unwrap();
+        within("MailChanged", 5, changed.next()).await.unwrap();
+        assert_eq!(flags(ids[0]), MessageFlags::SEEN | MessageFlags::FLAGGED);
+        pim.set_flags(&[ids[0].0], &[], &["flagged"]).await.unwrap();
+        assert_eq!(flags(ids[0]), MessageFlags::SEEN);
+        assert_eq!(flags(ids[1]), MessageFlags::SEEN | MessageFlags::FLAGGED);
+
+        pim.move_messages(&[ids[0].0], old.0).await.unwrap();
+        assert_eq!(reader.messages_in_folder(old).unwrap()[0].id, ids[0]);
+        // No trash: deleted for good.
+        pim.delete_messages(&[ids[1].0]).await.unwrap();
+        assert!(reader.messages_by_id(&[ids[1]]).unwrap().is_empty());
+        assert!(reader.messages_in_folder(inbox).unwrap().is_empty());
+        // Nothing waits for a server that does not exist.
+        assert_eq!(reader.next_op_due(account).unwrap(), None);
+
+        let err = pim
+            .set_flags(&[ids[0].0], &["urgent"], &[])
+            .await
+            .unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+        let err = pim.delete_messages(&[999_999]).await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.UnknownObject");
+        let err = pim.move_messages(&[ids[0].0], 999_999).await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.UnknownObject");
+        let err = pim.archive_messages(&[ids[0].0]).await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.Failed");
+        assert!(err.to_string().contains("no archive folder"), "{err}");
+        instance.shutdown().await;
+    });
+}
+
 fn port(var: &str, default: u16) -> u16 {
     std::env::var(var)
         .ok()
@@ -363,6 +446,19 @@ fn adds_syncs_restarts_and_removes_dev_accounts() {
             }
             let err = pim.fetch_body(999_999).await.unwrap_err();
             assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.UnknownObject");
+
+            // A change goes out at once; flag a message and put it back.
+            let first = reader.messages_in_folder(inbox.id).unwrap()[0].id;
+            let account_id = katna_core::AccountId(id);
+            for (add, remove) in [(&["flagged"][..], &[][..]), (&[], &["flagged"])] {
+                pim.set_flags(&[first.0], add, remove).await.unwrap();
+                within("change sent", 10, async {
+                    while !reader.due_ops(account_id, i64::MAX, 1).unwrap().is_empty() {
+                        Timer::after(Duration::from_millis(10)).await;
+                    }
+                })
+                .await;
+            }
 
             // A restarted daemon picks the account up from the store and
             // the keyring.

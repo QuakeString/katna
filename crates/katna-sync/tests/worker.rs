@@ -10,8 +10,10 @@ use async_channel::Receiver;
 use async_io::Timer;
 use common::FakeServer;
 use futures_lite::FutureExt;
+use katna_store::MessageFlags;
 use katna_sync::{
     bodies::OfflineWindow,
+    ops,
     worker::{self, Event, Handle, WorkerConfig},
 };
 
@@ -56,6 +58,15 @@ fn start(server: &FakeServer, config: WorkerConfig) -> Running {
 }
 
 impl Running {
+    /// Another handle on the worker's store, as the daemon has.
+    fn store(&self) -> katna_store::Store {
+        katna_store::Store::open(
+            &katna_core::Paths::with_root(self._tmp.path()),
+            katna_store::Mode::ReadWrite,
+        )
+        .unwrap()
+    }
+
     /// The next event other than [`Event::BodiesStored`].
     async fn next(&self) -> Event {
         loop {
@@ -307,6 +318,108 @@ fn downloads_bodies_and_fetches_on_request() {
         server.deliver("INBOX", "three");
         assert_eq!(added(&worker.next().await), 1);
         assert_eq!(server.state().connects, 1);
+        worker.stop().await;
+    });
+}
+
+#[test]
+fn sends_changes_when_asked_and_after_reconnecting() {
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    server.create("Archive", 1);
+    server.deliver("INBOX", "one");
+    server.deliver("INBOX", "two");
+    smol::block_on(async {
+        let worker = start(&server, config());
+        assert!(matches!(worker.next().await, Event::Connected));
+        assert!(matches!(worker.next().await, Event::Synced(_)));
+        let mut store = worker.store();
+        let account = store.accounts().unwrap()[0].id;
+        let folders = store.folders(account).unwrap();
+        let inbox = folders.iter().find(|f| f.path == "INBOX").unwrap().id;
+        let archive = folders.iter().find(|f| f.path == "Archive").unwrap().id;
+        let messages = store.messages_in_folder(inbox).unwrap();
+
+        // Sent while the worker idles.
+        Timer::after(Duration::from_millis(50)).await;
+        ops::set_flags(
+            &mut store,
+            &[messages[0].id],
+            MessageFlags::SEEN,
+            MessageFlags::empty(),
+        )
+        .unwrap();
+        worker.handle.send_changes();
+        match worker.next().await {
+            Event::ChangesSent(report) => assert_eq!(report.done, 1),
+            other => panic!("{other:?}"),
+        }
+        assert!(server.flags("INBOX", 1).seen);
+
+        // Queued while offline; asking does not stop the worker, and the
+        // change goes out once it is back.
+        server.state().refuse = 1;
+        server.break_connections();
+        assert!(matches!(worker.next().await, Event::Disconnected { .. }));
+        ops::move_messages(&mut store, &[messages[1].id], archive).unwrap();
+        worker.handle.send_changes();
+        assert!(matches!(worker.next().await, Event::Disconnected { .. }));
+        assert!(matches!(worker.next().await, Event::Connected));
+        match worker.next().await {
+            Event::ChangesSent(report) => assert_eq!(report.done, 1),
+            other => panic!("{other:?}"),
+        }
+        assert_eq!(server.uids("Archive"), [1]);
+        assert_eq!(server.state().connects, 3);
+        worker.stop().await;
+    });
+}
+
+#[test]
+fn refused_changes_wait_until_due() {
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    server.deliver("INBOX", "one");
+    smol::block_on(async {
+        let worker = start(&server, config());
+        assert!(matches!(worker.next().await, Event::Connected));
+        assert!(matches!(worker.next().await, Event::Synced(_)));
+        let mut store = worker.store();
+        let account = store.accounts().unwrap()[0].id;
+        let inbox = store.folders(account).unwrap()[0].id;
+        let message = store.messages_in_folder(inbox).unwrap()[0].id;
+
+        server.state().refuse_changes = true;
+        ops::set_flags(
+            &mut store,
+            &[message],
+            MessageFlags::FLAGGED,
+            MessageFlags::empty(),
+        )
+        .unwrap();
+        worker.handle.send_changes();
+        match worker.next().await {
+            Event::ChangesSent(report) => assert_eq!(report.retried, 1),
+            other => panic!("{other:?}"),
+        }
+        // Asking again does not send it before it is due.
+        worker.handle.send_changes();
+        Timer::after(Duration::from_millis(50)).await;
+        assert!(worker.events.is_empty());
+        assert!(!server.flags("INBOX", 1).flagged);
+
+        // Make it due now.
+        let queued = store.due_ops(account, i64::MAX, 10).unwrap()[0].id;
+        let mut batch = store.mail_batch().unwrap();
+        batch.retry_op(queued, 0).unwrap();
+        batch.commit().unwrap();
+        server.state().refuse_changes = false;
+        worker.handle.send_changes();
+        match worker.next().await {
+            Event::ChangesSent(report) => assert_eq!(report.done, 1),
+            other => panic!("{other:?}"),
+        }
+        assert!(server.flags("INBOX", 1).flagged);
         worker.stop().await;
     });
 }

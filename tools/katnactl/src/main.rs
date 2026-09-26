@@ -13,7 +13,7 @@ use std::{
 use futures_lite::StreamExt;
 use katna_core::{AccountId, Paths};
 use katna_dbus::{AccountStatus, NewImapAccount, PimProxy, ServerSpec};
-use katna_store::{Mode, ParticipantRole, Store};
+use katna_store::{MessageId, Mode, ParticipantRole, Store};
 
 const USAGE: &str = "\
 usage: katnactl status
@@ -28,6 +28,10 @@ usage: katnactl status
        katnactl folders ACCOUNT
        katnactl list ACCOUNT [--folder PATH] [--limit N]
        katnactl show MESSAGE
+       katnactl flag MESSAGE... +NAME|-NAME...
+       katnactl move PATH MESSAGE...
+       katnactl delete MESSAGE...
+       katnactl archive MESSAGE...
 
 Talks to katna-daemon, which syncs your accounts in the background.
 
@@ -46,7 +50,14 @@ folders    The synced folders of an account.
 list       The newest messages in a folder (default: INBOX, 20), with their
            message numbers.
 show       Prints a message as it came from the server, downloading it
-           first if it is not stored yet.";
+           first if it is not stored yet.
+flag       Adds (+) or removes (-) flags: seen, answered, flagged, draft,
+           forwarded. For example `katnactl flag 12 13 +seen -flagged`.
+move       Moves messages to the folder PATH of their account.
+delete     Moves messages to the trash, or deletes them if already there.
+archive    Moves messages to the archive folder.
+
+Changes show at once and reach the server when the account is online.";
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -147,8 +158,78 @@ fn run(command: &str, args: &[String]) -> Result<()> {
             ),
             _ => Err(usage("expected one message number (see `katnactl list`)")),
         },
+        "flag" => flag(args),
+        "move" => match args {
+            [path, messages @ ..] if !messages.is_empty() => {
+                let messages = message_ids(messages)?;
+                let folder = folder_by_path(messages[0], path)?;
+                with_daemon(|pim| async move { Ok(pim.move_messages(&messages, folder).await?) })
+            }
+            _ => Err(usage("move needs a folder and at least one message")),
+        },
+        "delete" => {
+            let messages = message_ids(args)?;
+            with_daemon(|pim| async move { Ok(pim.delete_messages(&messages).await?) })
+        }
+        "archive" => {
+            let messages = message_ids(args)?;
+            with_daemon(|pim| async move { Ok(pim.archive_messages(&messages).await?) })
+        }
         other => Err(usage(format!("unknown command {other:?}"))),
     }
+}
+
+/// Message numbers, at least one.
+fn message_ids(args: &[String]) -> Result<Vec<i64>> {
+    if args.is_empty() {
+        return Err(usage("expected message numbers (see `katnactl list`)"));
+    }
+    args.iter()
+        .map(|arg| {
+            arg.parse()
+                .map_err(|_| usage(format!("{arg:?} is not a message number")))
+        })
+        .collect()
+}
+
+fn flag(args: &[String]) -> Result<()> {
+    let (mut add, mut remove, mut messages) = (Vec::new(), Vec::new(), Vec::new());
+    for arg in args {
+        if let Some(name) = arg.strip_prefix('+') {
+            add.push(name.to_owned());
+        } else if let Some(name) = arg.strip_prefix('-') {
+            remove.push(name.to_owned());
+        } else {
+            messages.push(arg.clone());
+        }
+    }
+    if add.is_empty() && remove.is_empty() {
+        return Err(usage("flag needs +NAME or -NAME"));
+    }
+    let messages = message_ids(&messages)?;
+    with_daemon(|pim| async move {
+        let add: Vec<&str> = add.iter().map(String::as_str).collect();
+        let remove: Vec<&str> = remove.iter().map(String::as_str).collect();
+        Ok(pim.set_flags(&messages, &add, &remove).await?)
+    })
+}
+
+/// The folder `path` in the account of `message`.
+fn folder_by_path(message: i64, path: &str) -> Result<i64> {
+    let store = open_store()?;
+    let account = store
+        .messages_by_id(&[MessageId(message)])
+        .map_err(error)?
+        .first()
+        .map(|m| m.account)
+        .ok_or_else(|| error(format!("no message {message}")))?;
+    store
+        .folders(account)
+        .map_err(error)?
+        .into_iter()
+        .find(|folder| folder.path == path)
+        .map(|folder| folder.id.0)
+        .ok_or_else(|| error(format!("no folder {path:?} in account {account}")))
 }
 
 fn no_args(args: &[String]) -> Result<()> {
@@ -485,7 +566,7 @@ fn show(message: i64) -> Result<()> {
     let stored = || -> Result<Option<Vec<u8>>> {
         let store = open_store()?;
         let found = store
-            .messages_by_id(&[katna_store::MessageId(message)])
+            .messages_by_id(&[MessageId(message)])
             .map_err(error)?
             .into_iter()
             .next()
