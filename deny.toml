@@ -1,0 +1,53 @@
+# cargo-deny configuration: licenses, bans and advisories.
+# Katna is GPL-3.0-or-later; every dependency license must be compatible.
+
+[graph]
+all-features = true
+
+[advisories]
+yanked = "deny"
+
+[licenses]
+confidence-threshold = 0.9
+# Allow-list entries not used yet (few dependencies so far) are fine.
+unused-allowed-license = "allow"
+allow = [
+    "GPL-3.0-or-later",
+    "GPL-3.0-only",
+    "LGPL-2.1-or-later",
+    "LGPL-3.0-or-later",
+    "MPL-2.0",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "MIT",
+    "MIT-0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "BSL-1.0",
+    "CC0-1.0",
+    "Unicode-3.0",
+    "Unlicense",
+    "CDLA-Permissive-2.0",
+]
+
+[licenses.private]
+ignore = true
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+allow-wildcard-paths = true
+deny = [
+    # GPUI types stay in the UI crates (docs/ARCHITECTURE.md §3, §20).
+    # katna-daemon must never depend on GPUI.
+    { crate = "gpui-pre", wrappers = ["katna-ui", "katna-chrome", "katna-mail", "katna-calendar"], reason = "GPUI is only allowed in UI crates" },
+    # TLS is rustls only (docs/ARCHITECTURE.md §19).
+    { crate = "openssl-sys", reason = "use rustls" },
+    { crate = "native-tls", reason = "use rustls" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"

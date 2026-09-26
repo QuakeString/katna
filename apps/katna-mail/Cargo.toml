@@ -1,0 +1,23 @@
+[package]
+name = "katna-mail"
+description = "Katna Mail, the email client."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+katna-core.workspace = true
+katna-store.workspace = true
+katna-search.workspace = true
+katna-org.workspace = true
+katna-dbus.workspace = true
+katna-platform.workspace = true
+katna-chrome.workspace = true
+katna-ui.workspace = true
+katna-render.workspace = true
+
+[lints]
+workspace = true

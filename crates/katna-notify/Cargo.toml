@@ -1,0 +1,16 @@
+[package]
+name = "katna-notify"
+description = "Desktop notifications with actions and inline reply."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+katna-core.workspace = true
+katna-dbus.workspace = true
+
+[lints]
+workspace = true

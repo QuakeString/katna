@@ -1,0 +1,24 @@
+[package]
+name = "katna-daemon"
+description = "Katna background service: sync, indexing, scheduling, notifications and the D-Bus API."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+katna-core.workspace = true
+katna-store.workspace = true
+katna-meta.workspace = true
+katna-sync.workspace = true
+katna-search.workspace = true
+katna-org.workspace = true
+katna-dav.workspace = true
+katna-dbus.workspace = true
+katna-notify.workspace = true
+katna-platform.workspace = true
+
+[lints]
+workspace = true

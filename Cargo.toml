@@ -1,0 +1,41 @@
+[workspace]
+resolver = "3"
+members = ["crates/*", "apps/*", "tools/*"]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2024"
+# Minimum supported Rust version. We always build with the latest stable
+# (see rust-toolchain.toml); raise this deliberately when we need newer Rust.
+rust-version = "1.98"
+license = "GPL-3.0-or-later"
+repository = "https://github.com/QuakeString/katna"
+publish = false
+
+[workspace.dependencies]
+katna-core = { path = "crates/katna-core" }
+katna-store = { path = "crates/katna-store" }
+katna-meta = { path = "crates/katna-meta" }
+katna-sync = { path = "crates/katna-sync" }
+katna-search = { path = "crates/katna-search" }
+katna-org = { path = "crates/katna-org" }
+katna-render = { path = "crates/katna-render" }
+katna-dav = { path = "crates/katna-dav" }
+katna-dbus = { path = "crates/katna-dbus" }
+katna-notify = { path = "crates/katna-notify" }
+katna-platform = { path = "crates/katna-platform" }
+katna-chrome = { path = "crates/katna-chrome" }
+katna-ui = { path = "crates/katna-ui" }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+dbg_macro = "warn"
+todo = "warn"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+strip = true

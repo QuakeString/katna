@@ -1,0 +1,15 @@
+[package]
+name = "katna-chrome"
+description = "Window decorations and theme tokens for KDE, GNOME and other desktops."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+katna-core.workspace = true
+
+[lints]
+workspace = true

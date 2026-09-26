@@ -1,0 +1,14 @@
+[package]
+name = "katna-core"
+description = "Configuration, XDG paths, accounts, secrets, identifiers and errors shared by all Katna components."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+
+[lints]
+workspace = true
