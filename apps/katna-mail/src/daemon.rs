@@ -171,6 +171,15 @@ pub async fn remove_account(connection: &Connection, account: i64) -> Result<(),
         .map_err(|err| describe(&err))
 }
 
+/// Downloads message `id` from its server now; it is in the store when
+/// this returns `Ok`.
+pub async fn fetch_body(connection: &Connection, id: i64) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.fetch_body(id).await.map_err(|err| describe(&err))
+}
+
 /// Creates a folder (a label, on Gmail) on the account's server, inside
 /// `parent` when given. Returns its ID.
 pub async fn create_folder(

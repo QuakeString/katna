@@ -1626,3 +1626,83 @@ fn creates_folders_on_dev_servers() {
         });
     }
 }
+
+/// Mail older than the offline window is downloaded when opened, at once
+/// and several at a time, on a connection apart from the sync's.
+#[test]
+#[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
+fn downloads_old_mail_when_opened() {
+    let imap_port = port("KATNA_STALWART_IMAPS_PORT", 10993);
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    smol::block_on(async {
+        let mut other = ImapBackend::connect(
+            &Endpoint::new("127.0.0.1", imap_port, Security::Tls),
+            &Credentials::new("alice@katna.test", "katna-dev"),
+            Tls::insecure_for_local_tests(),
+        )
+        .await
+        .unwrap();
+        let subjects: Vec<String> = (0..3).map(|i| unique(&format!("old{i}"))).collect();
+        for subject in &subjects {
+            let message = format!(
+                "From: <bob@katna.test>\r\nTo: <alice@katna.test>\r\n\
+                 Date: Tue, 1 May 2001 10:00:00 +0000\r\nSubject: {subject}\r\n\
+                 Message-ID: <{subject}@katna.test>\r\n\r\nFrom long ago.\r\n"
+            );
+            other.append("INBOX", message.into_bytes()).await.unwrap();
+        }
+        other.logout().await.unwrap();
+
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let client = bus.connect().await;
+        let pim = PimProxy::new(&client).await.unwrap();
+        let account = imap("127.0.0.1", imap_port, "tls");
+        let id = pim.add_imap_account(&account, "katna-dev").await.unwrap();
+        wait_until_online(&pim, id).await;
+        let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
+        let inbox = reader
+            .folders(katna_core::AccountId(id))
+            .unwrap()
+            .into_iter()
+            .find(|f| f.path == "INBOX")
+            .unwrap();
+        let old: Vec<_> = reader
+            .messages_in_folder(inbox.id)
+            .unwrap()
+            .into_iter()
+            .filter(|m| subjects.contains(&m.subject))
+            .collect();
+        assert_eq!(old.len(), 3);
+        assert!(
+            old.iter().all(|m| m.blob_hash.is_none()),
+            "outside the window"
+        );
+
+        let started = std::time::Instant::now();
+        // Opened one after another, faster than they download.
+        use futures_lite::future::zip;
+        let [a, b, c] = &old[..] else { unreachable!() };
+        let (a, (b, c)) = zip(
+            pim.fetch_body(a.id.0),
+            zip(pim.fetch_body(b.id.0), pim.fetch_body(c.id.0)),
+        )
+        .await;
+        a.unwrap();
+        b.unwrap();
+        c.unwrap();
+        for message in &old {
+            let stored = &reader.messages_by_id(&[message.id]).unwrap()[0];
+            assert!(stored.blob_hash.is_some(), "{}", stored.subject);
+        }
+        assert!(
+            started.elapsed() < Duration::from_secs(10),
+            "{:?}",
+            started.elapsed()
+        );
+
+        assert!(pim.remove_account(id).await.unwrap());
+        instance.shutdown().await;
+    });
+}

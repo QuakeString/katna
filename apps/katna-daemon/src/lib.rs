@@ -12,6 +12,7 @@ mod desktop;
 pub mod install;
 mod mail_app;
 mod notify;
+mod on_demand;
 pub mod secrets;
 pub mod service;
 pub mod system;

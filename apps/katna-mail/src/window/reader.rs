@@ -147,6 +147,10 @@ impl Conversation {
                 Some(ix) => {
                     let mut part = old.swap_remove(ix);
                     part.row = row;
+                    // Downloaded since, by the sync or on request.
+                    if part.body.as_ref().is_some_and(|b| b.view.is_none()) {
+                        part.body = Some(read(mail, id));
+                    }
                     part
                 }
                 None => Part {
@@ -158,6 +162,26 @@ impl Conversation {
                 },
             })
             .collect();
+    }
+
+    /// Open messages whose body is not stored yet.
+    pub(super) fn missing_bodies(&self) -> Vec<MessageId> {
+        self.parts
+            .iter()
+            .filter(|p| p.expanded && p.body.as_ref().is_some_and(|b| b.view.is_none()))
+            .map(|p| p.id)
+            .collect()
+    }
+
+    /// Reads message `id` again, once its body is downloaded.
+    pub(super) fn reload_body(&mut self, id: MessageId, mail: &Mail) {
+        if let Some(part) = self
+            .parts
+            .iter_mut()
+            .find(|p| p.id == id && p.body.is_some())
+        {
+            part.body = Some(read(mail, id));
+        }
     }
 
     pub(super) fn unread_messages(&self) -> Vec<MessageId> {
@@ -324,6 +348,7 @@ impl MailWindow {
     pub(super) fn render_reader(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         self.open_sealed(cx);
         self.fetch_remote(cx);
+        self.download_bodies(cx);
         self.request_thumbnails(cx);
         let Some(reader) = &self.reader else {
             return placeholder("", th);
@@ -832,12 +857,7 @@ impl MailWindow {
                     .children(attachments)
                     .into_any_element()
             }
-            _ => div()
-                .pt(px(16.0))
-                .text_size(px(14.0))
-                .text_color(rgba(th.text_faint))
-                .child("This message has not been downloaded yet.")
-                .into_any_element(),
+            _ => self.download_note(id, ix, th, cx),
         };
 
         div()

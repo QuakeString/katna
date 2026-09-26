@@ -15,9 +15,9 @@ use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::{InputEvent, TextInput};
 
 use super::MailWindow;
-use crate::daemon;
 use crate::theme::{Theme, fade};
 use crate::widgets::{elevation, filled_button, icon, radio};
+use crate::{daemon, format};
 
 const WIDTH: f32 = 420.0;
 
@@ -141,7 +141,7 @@ impl MailWindow {
                 Err(err) => {
                     if let Some(dialog) = &mut this.new_label {
                         dialog.busy = false;
-                        dialog.error = Some(sentence(&err));
+                        dialog.error = Some(format::sentence(&err));
                     }
                     cx.notify();
                 }
@@ -365,30 +365,5 @@ impl MailWindow {
                 .child(div().opacity(t).mt(px(lerp(24.0, 0.0, t))).child(card))
                 .into_any_element(),
         )
-    }
-}
-
-/// The daemon's reason as a sentence.
-fn sentence(reason: &str) -> String {
-    let reason = reason.trim().trim_end_matches('.');
-    let mut chars = reason.chars();
-    match chars.next() {
-        Some(first) => format!("{}{}.", first.to_uppercase(), chars.as_str()),
-        None => "Could not create it.".to_owned(),
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::sentence;
-
-    #[test]
-    fn reasons_read_as_sentences() {
-        assert_eq!(
-            sentence("\u{201c}Work\u{201d} already exists"),
-            "\u{201c}Work\u{201d} already exists."
-        );
-        assert_eq!(sentence("the name is empty."), "The name is empty.");
-        assert_eq!(sentence(""), "Could not create it.");
     }
 }
