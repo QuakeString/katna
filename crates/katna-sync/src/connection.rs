@@ -23,7 +23,7 @@
 //! # Ok(()) }
 //! ```
 
-use std::{future::Future, time::Duration};
+use std::{collections::HashMap, future::Future, time::Duration};
 
 use async_channel::{Receiver, Sender};
 
@@ -52,6 +52,7 @@ enum Request {
     Append(String, Vec<u8>, Flags, Reply<()>),
     PollChanges(Reply<Vec<FolderChange>>),
     GmailSearch(u32, String, Reply<Option<Vec<u32>>>),
+    GmailMessageIds(Vec<u32>, Reply<Option<HashMap<u32, u64>>>),
     WaitForChanges(Duration, Reply<Vec<FolderChange>>),
     Logout(Reply<()>),
 }
@@ -172,6 +173,12 @@ impl Connection {
             .await
     }
 
+    pub async fn gmail_message_ids(&self, uids: &[u32]) -> Result<Option<HashMap<u32, u64>>> {
+        let uids = uids.to_vec();
+        self.call(|reply| Request::GmailMessageIds(uids, reply))
+            .await
+    }
+
     /// Waits for changes to the selected folder, for at most `max_wait`.
     ///
     /// Returns early, possibly with no changes, when another request needs
@@ -279,6 +286,10 @@ impl MailBackend for Connection {
         Connection::gmail_search(self, first, query).await
     }
 
+    async fn gmail_message_ids(&mut self, uids: &[u32]) -> Result<Option<HashMap<u32, u64>>> {
+        Connection::gmail_message_ids(self, uids).await
+    }
+
     /// If `interrupt` wins, the task still finishes its wait, and changes
     /// it reports after that are not delivered; the next sync finds them.
     async fn wait_for_changes<I>(
@@ -359,6 +370,9 @@ async fn run<B: MailBackend>(mut backend: B, inbox: Receiver<Request>) {
             Request::PollChanges(reply) => answer(&reply, backend.poll_changes().await),
             Request::GmailSearch(first, query, reply) => {
                 answer(&reply, backend.gmail_search(first, &query).await)
+            }
+            Request::GmailMessageIds(uids, reply) => {
+                answer(&reply, backend.gmail_message_ids(&uids).await)
             }
             Request::WaitForChanges(max_wait, reply) => {
                 // The next request, or the last handle going away, ends the
