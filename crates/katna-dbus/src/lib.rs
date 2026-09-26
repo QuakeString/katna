@@ -66,6 +66,35 @@ pub mod state {
     pub const AUTH_FAILED: &str = "auth-failed";
 }
 
+/// A message waiting to be sent, or recently sent, from `Outbox`.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct OutboxItem {
+    pub id: i64,
+    pub account: i64,
+    /// The stored message, readable in the store until it is filed.
+    pub message: i64,
+    pub subject: String,
+    /// When it goes out, or went out (Unix seconds).
+    pub send_at: i64,
+    /// See [`send_state`].
+    pub state: String,
+    /// Why the last try failed, or empty.
+    pub detail: String,
+}
+
+/// Values of [`OutboxItem::state`].
+pub mod send_state {
+    /// Waiting for its time: the undo delay, or a retry.
+    pub const QUEUED: &str = "queued";
+    /// Being handed to the SMTP server; too late to undo.
+    pub const SENDING: &str = "sending";
+    pub const SENT: &str = "sent";
+    /// The server refused it for good.
+    pub const FAILED: &str = "failed";
+    /// Undone with `UndoSend`.
+    pub const CANCELLED: &str = "cancelled";
+}
+
 /// Message flag names for `SetFlags`.
 pub mod flag {
     pub const SEEN: &str = "seen";
@@ -120,6 +149,23 @@ macro_rules! pim_proxy {
             /// Moves messages to the account's archive folder.
             fn archive_messages(&self, messages: &[i64]) -> zbus::Result<()>;
 
+            /// Queues `message` (RFC 5322, with `Bcc` if any) from `account`
+            /// to be sent in `delay` seconds; `UndoSend` works until then.
+            /// Adds `Date` and `Message-ID` when missing. Once sent it is
+            /// filed in the Sent folder. Returns the outbox ID.
+            fn queue_send(&self, account: i64, message: &[u8], delay: u32) -> zbus::Result<i64>;
+
+            /// Takes a queued message back. Returns `false` when it is
+            /// already being sent.
+            fn undo_send(&self, id: i64) -> zbus::Result<bool>;
+
+            /// Forgets a cancelled or failed message. Returns whether it
+            /// was one.
+            fn discard_send(&self, id: i64) -> zbus::Result<bool>;
+
+            /// Messages waiting to be sent, failed or cancelled.
+            fn outbox(&self) -> zbus::Result<Vec<OutboxItem>>;
+
             /// Accounts were added or removed.
             #[zbus(signal)]
             fn accounts_changed(&self) -> zbus::Result<()>;
@@ -131,6 +177,10 @@ macro_rules! pim_proxy {
             /// Mail of `account` changed in the store; read the change journal.
             #[zbus(signal)]
             fn mail_changed(&self, account: i64) -> zbus::Result<()>;
+
+            /// Outbox entry `id` changed state; see `Outbox`.
+            #[zbus(signal)]
+            fn outbox_changed(&self, id: i64) -> zbus::Result<()>;
         }
     };
 }

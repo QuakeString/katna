@@ -13,6 +13,7 @@ pub mod mail;
 mod mail_read;
 mod mail_view;
 pub mod ops;
+pub mod outbox;
 mod people;
 pub mod remote;
 
@@ -30,6 +31,7 @@ pub use mail::{
 pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
 pub use mail_view::FolderSummary;
 pub use ops::{Location, QueuedOp};
+pub use outbox::{OutboxEntry, SendState};
 pub use people::Person;
 pub use remote::{FolderRole, RemoteMessage, StoredFolder};
 

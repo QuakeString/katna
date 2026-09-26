@@ -471,7 +471,7 @@ from or adds to the sketch above:
   name (so a second instance never writes the index) and wakes it on every
   `MailChanged` notice. If the index cannot be opened, mail still syncs
   and the error is logged. Linking tantivy grows the daemon from 11.6 to
-  15.0 MB (14.3 MiB of its 15 MiB budget).
+  15.0 MB (then 14.3 MiB of a 15 MiB budget; it is 20 MiB now, §17.2).
   `katna_search::Indexer` runs updates on its own thread
   with its own read-only store connection: once at start, then on
   `Indexer::changed()` (the daemon calls it after each sync) and every 5 s
@@ -630,6 +630,32 @@ Features built on it:
   retries, and never leave a tracked copy where the user will open it.
 - Replies created from a notification (§15.1) use the same outbox, with the
   undo delay.
+
+**Implemented (task 1.8, `katna_sync::outbox`, store `outbox.rs`):**
+
+- `QueueSend` stores the message as a `message` row in no folder (so it
+  shows in no mailbox and is not journaled) and an `outbox` row due at
+  now + the undo delay. `Date` and `Message-ID` are added when missing.
+  `UndoSend` works while the entry is `queued`; once `sending` it is too
+  late. Cancelled and failed entries stay until `DiscardSend`.
+- The daemon runs one outbox task with its own store connection. It sends
+  due entries one SMTP connection each (password from the Secret Service
+  at every send). The envelope is the first `From` address and every
+  `To`, `Cc` and `Bcc` address once; the `Bcc` header is removed from the
+  copy on the wire and kept in the sender's copy.
+- Network and TLS failures requeue the entry after 30 s without counting
+  a try, so mail waits in the outbox while offline. A refused message or
+  login counts; after three the entry is `failed`, with the server's reply
+  in `Outbox()`'s detail. Entries left `sending` by a crash are queued
+  again at start: sending twice beats losing mail.
+- Once sent, the copy is filed in the account's Sent folder by an `Append`
+  operation in the op queue (flag `\Seen`), which the account's worker
+  replays at once; then the local copy is forgotten and the next sync
+  brings the server's. Gmail files sent mail itself, so for an IMAP host
+  under `gmail.com` or `googlemail.com` the copy is only forgotten. With
+  no Sent folder, nothing is filed.
+- Not yet: per-recipient sending, attachments from the composer, drafts
+  saved on the server, and SMTP autoconfiguration (task 1.2).
 
 ## 12. Message rendering (`katna-render`)
 
@@ -794,8 +820,12 @@ password) → id`, `SetPassword(id, password)`, `RemoveAccount(id) → b`,
 `SyncNow(id)` (0 for every account), `FetchBody(message)`,
 `SetFlags(ax messages, as add, as remove)` (flag names `seen`, `answered`,
 `flagged`, `draft`, `forwarded`), `MoveMessages(ax, folder)`,
-`DeleteMessages(ax)`, `ArchiveMessages(ax)`, and the signals
-`AccountsChanged`, `SyncStatusChanged(id)` and `MailChanged(id)`. `MailChanged` carries the
+`DeleteMessages(ax)`, `ArchiveMessages(ax)`, `QueueSend(x account, ay
+message, u delay) → id`, `UndoSend(id) → b`, `DiscardSend(id) → b`,
+`Outbox() → a(xxxsxss)` (id, account, message, subject, send at, state,
+detail; states in `katna_dbus::send_state`), and the signals
+`AccountsChanged`, `SyncStatusChanged(id)`, `MailChanged(id)` and
+`OutboxChanged(id)`. `MailChanged` carries the
 account, not message IDs: clients read the change journal. Errors use the
 standard names `org.freedesktop.DBus.Error.AuthFailed`, `InvalidArgs`,
 `UnknownObject` and `Failed`. zbus needs the interface name as a literal, so
@@ -1010,17 +1040,18 @@ about 2 MB (the budget in `ci/size-budgets.txt` is 30 MiB = 31.5 MB).
 | Metric | Target |
 |---|---|
 | Katna Mail binary | ≤ 30 MB (estimate: 20–30 MB with GPUI Kit, Pimalaya, own code) |
-| `katna-daemon` binary | ≤ 15 MB |
+| `katna-daemon` binary | ≤ 20 MiB (21 MB) |
 | Idle CPU (app and daemon) | ≈ 0 %; no periodic wake-ups beyond IDLE renewals |
 | Cold start to usable inbox | < 500 ms |
 | Search latency | p50 < 20 ms, p99 < 50 ms on 1M messages |
 | Daemon memory | Measured and tracked in CI; budget set after first prototype |
 
-With sync, bodies, the op queue and the search indexer, `katna-daemon` is
-15.6 MB of its 15 MiB budget. tantivy is the biggest part. To get there,
-crates that are not hot are built with `opt-level = "s"` (root
-`Cargo.toml`): D-Bus (zbus, zvariant, oo7, ashpd), IMAP parsing and
-regex.
+With sync, bodies, the op queue, sending and the search indexer,
+`katna-daemon` is 15.6 MB. tantivy is the biggest part. Its budget was
+15 MiB until sending came in; it is 20 MiB (September 2026) so features
+are not trimmed to fit. Crates that are not hot are built with
+`opt-level = "s"` (root `Cargo.toml`): D-Bus (zbus, zvariant, oo7,
+ashpd), IMAP parsing and regex.
 
 ### 17.3 Rules
 

@@ -6,13 +6,13 @@
 //! read-only, as the apps do.
 
 use std::{
-    io::{self, BufRead, IsTerminal},
+    io::{self, BufRead, IsTerminal, Read},
     process::ExitCode,
 };
 
 use futures_lite::StreamExt;
 use katna_core::{AccountId, Paths};
-use katna_dbus::{AccountStatus, NewImapAccount, PimProxy, ServerSpec};
+use katna_dbus::{AccountStatus, NewImapAccount, OutboxItem, PimProxy, ServerSpec};
 use katna_store::{MessageId, Mode, ParticipantRole, Store};
 
 const USAGE: &str = "\
@@ -32,6 +32,10 @@ usage: katnactl status
        katnactl move PATH MESSAGE...
        katnactl delete MESSAGE...
        katnactl archive MESSAGE...
+       katnactl send ACCOUNT [FILE] [--delay SECONDS]
+       katnactl outbox
+       katnactl undo ID
+       katnactl discard ID
 
 Talks to katna-daemon, which syncs your accounts in the background.
 
@@ -56,8 +60,15 @@ flag       Adds (+) or removes (-) flags: seen, answered, flagged, draft,
 move       Moves messages to the folder PATH of their account.
 delete     Moves messages to the trash, or deletes them if already there.
 archive    Moves messages to the archive folder.
+send       Sends a message (RFC 5322 text, from FILE or standard input)
+           from ACCOUNT to its To, Cc and Bcc addresses, after --delay
+           seconds (default 0). A copy goes to the Sent folder.
+outbox     Messages waiting to be sent, failed or undone.
+undo       Takes a message back while it waits for its delay.
+discard    Forgets a failed or undone message.
 
-Changes show at once and reach the server when the account is online.";
+Changes show at once and reach the server when the account is online.
+Mail waits in the outbox while offline.";
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -175,8 +186,119 @@ fn run(command: &str, args: &[String]) -> Result<()> {
             let messages = message_ids(args)?;
             with_daemon(|pim| async move { Ok(pim.archive_messages(&messages).await?) })
         }
+        "send" => send(args),
+        "outbox" => no_args(args).and_then(|()| with_daemon(outbox)),
+        "undo" => {
+            let id = outbox_id(args)?;
+            with_daemon(|pim| async move {
+                if pim.undo_send(id).await? {
+                    println!("undone; the message stays in the outbox as cancelled");
+                    Ok(())
+                } else {
+                    Err(error(format!("{id} is not waiting to be sent")))
+                }
+            })
+        }
+        "discard" => {
+            let id = outbox_id(args)?;
+            with_daemon(|pim| async move {
+                if pim.discard_send(id).await? {
+                    Ok(())
+                } else {
+                    Err(error(format!("{id} is not a failed or undone message")))
+                }
+            })
+        }
         other => Err(usage(format!("unknown command {other:?}"))),
     }
+}
+
+fn send(args: &[String]) -> Result<()> {
+    let (mut account, mut file, mut delay) = (None, None, 0u32);
+    let mut args = args.iter();
+    while let Some(arg) = args.next() {
+        if arg == "--delay" {
+            let value = args.next().ok_or_else(|| usage("--delay needs seconds"))?;
+            delay = value
+                .parse()
+                .map_err(|_| usage(format!("{value:?} is not a number of seconds")))?;
+        } else if account.is_none() {
+            account = Some(parse_account(arg)?);
+        } else if file.is_none() {
+            file = Some(arg.clone());
+        } else {
+            return Err(usage(format!("unexpected {arg:?}")));
+        }
+    }
+    let account = account.ok_or_else(|| usage("send needs an account number"))?;
+    let mut message = Vec::new();
+    match &file {
+        Some(path) => {
+            message = std::fs::read(path).map_err(|err| error(format!("{path}: {err}")))?;
+        }
+        None => {
+            io::stdin()
+                .read_to_end(&mut message)
+                .map_err(|err| error(format!("standard input: {err}")))?;
+        }
+    }
+    let message = crlf(&message);
+    with_daemon(|pim| async move {
+        let id = pim.queue_send(account.0, &message, delay).await?;
+        if delay > 0 {
+            println!("queued as {id}; `katnactl undo {id}` takes it back for {delay} s");
+        } else {
+            println!("queued as {id}");
+        }
+        Ok(())
+    })
+}
+
+/// Line ends as SMTP needs them: CRLF, even if the file has LF.
+fn crlf(text: &[u8]) -> Vec<u8> {
+    let mut out = Vec::with_capacity(text.len() + text.len() / 40);
+    for (at, &byte) in text.iter().enumerate() {
+        if byte == b'\n' && (at == 0 || text[at - 1] != b'\r') {
+            out.push(b'\r');
+        }
+        out.push(byte);
+    }
+    out
+}
+
+fn outbox_id(args: &[String]) -> Result<i64> {
+    match args {
+        [id] => id
+            .parse()
+            .map_err(|_| usage(format!("{id:?} is not an outbox number"))),
+        _ => Err(usage("expected one outbox number (see `katnactl outbox`)")),
+    }
+}
+
+async fn outbox(pim: PimProxy<'static>) -> Result<()> {
+    let items = pim.outbox().await?;
+    if items.is_empty() {
+        println!("the outbox is empty");
+    }
+    for item in &items {
+        print_outbox_item(item);
+    }
+    Ok(())
+}
+
+fn print_outbox_item(item: &OutboxItem) {
+    let detail = match item.detail.as_str() {
+        "" => String::new(),
+        detail => format!(" ({detail})"),
+    };
+    println!(
+        "{:>5}  account {}  {:<9}  {}  {}{detail}",
+        item.id,
+        item.account,
+        item.state,
+        format_time(item.send_at),
+        truncate(&item.subject, 40),
+    );
 }
 
 /// Message numbers, at least one.
@@ -292,26 +414,48 @@ fn print_status(account: &AccountStatus) {
     }
 }
 
+enum Signal {
+    Accounts,
+    Status(i64),
+    Mail(i64),
+    Outbox(i64),
+}
+
 async fn watch(pim: PimProxy<'static>) -> Result<()> {
-    let accounts = pim.receive_accounts_changed().await?.map(|_| None);
+    let accounts = pim
+        .receive_accounts_changed()
+        .await?
+        .map(|_| Some(Signal::Accounts));
     let status = pim
         .receive_sync_status_changed()
         .await?
-        .map(|signal| signal.args().ok().map(|args| (args.account, false)));
+        .map(|signal| signal.args().ok().map(|args| Signal::Status(args.account)));
     let mail = pim
         .receive_mail_changed()
         .await?
-        .map(|signal| signal.args().ok().map(|args| (args.account, true)));
-    let mut signals = accounts.or(status).or(mail);
+        .map(|signal| signal.args().ok().map(|args| Signal::Mail(args.account)));
+    let outbox = pim
+        .receive_outbox_changed()
+        .await?
+        .map(|signal| signal.args().ok().map(|args| Signal::Outbox(args.id)));
+    let mut signals = accounts.or(status).or(mail).or(outbox);
     println!("watching; stop with Ctrl+C");
     while let Some(signal) = signals.next().await {
         match signal {
-            None => println!("accounts changed"),
-            Some((id, true)) => println!("account {id}: mail changed"),
-            Some((id, false)) => {
+            None => {}
+            Some(Signal::Accounts) => println!("accounts changed"),
+            Some(Signal::Mail(id)) => println!("account {id}: mail changed"),
+            Some(Signal::Status(id)) => {
                 let accounts = pim.accounts().await?;
                 if let Some(account) = accounts.iter().find(|a| a.id == id) {
                     print_status(account);
+                }
+            }
+            Some(Signal::Outbox(id)) => {
+                let items = pim.outbox().await?;
+                match items.iter().find(|item| item.id == id) {
+                    Some(item) => print_outbox_item(item),
+                    None => println!("{id:>5}  sent and filed, or discarded"),
                 }
             }
         }
@@ -645,6 +789,11 @@ mod tests {
             .unwrap();
         assert_eq!((explicit.port, explicit.username.as_str()), (10993, "bob"));
         assert!(explicit.accept_invalid_certs);
+    }
+
+    #[test]
+    fn line_ends_become_crlf() {
+        assert_eq!(crlf(b"a\nb\r\nc\n"), b"a\r\nb\r\nc\r\n");
     }
 
     #[test]

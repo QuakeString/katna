@@ -1,23 +1,25 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The daemon's state: one sync worker per account, what each is doing, and
-//! the account commands behind the D-Bus API.
+//! The daemon's state: one sync worker per account, what each is doing, the
+//! outbox, and the account commands behind the D-Bus API.
 
 use std::{
     collections::HashMap,
-    sync::{Arc, Mutex, MutexGuard},
+    sync::{Arc, Mutex, MutexGuard, Weak},
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
 use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths, Security, Server};
-use katna_dbus::{AccountStatus, NewImapAccount, ServerSpec, state};
-use katna_store::{FolderId, MessageFlags, MessageId, Mode, Store};
+use katna_dbus::{AccountStatus, NewImapAccount, OutboxItem, ServerSpec, state};
+use katna_store::{FolderId, MessageFlags, MessageId, Mode, SendState, Store};
 use katna_sync::{
     Credentials, Endpoint, MailBackend,
     net::Tls,
     ops::{self, ChangeError},
+    outbox::{self, OutboxConfig, OutboxEvent, OutboxHandle, Outgoing, QueueError},
+    smtp::SmtpSender,
     worker::{self, Connector, Event, ImapConnector, WorkerConfig},
 };
 
@@ -32,6 +34,8 @@ pub enum Notice {
     AccountsChanged,
     StatusChanged(AccountId),
     MailChanged(AccountId),
+    /// An outbox entry changed state.
+    OutboxChanged(i64),
 }
 
 /// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
@@ -58,6 +62,15 @@ impl From<ChangeError> for CommandError {
             ChangeError::UnknownFolder(id) => Self::UnknownFolder(id),
             ChangeError::NotPossible(reason) => Self::Failed(reason),
             ChangeError::Store(err) => err.into(),
+        }
+    }
+}
+
+impl From<QueueError> for CommandError {
+    fn from(err: QueueError) -> Self {
+        match err {
+            QueueError::Invalid(reason) => Self::InvalidArgs(reason),
+            QueueError::Store(err) => err.into(),
         }
     }
 }
@@ -96,6 +109,11 @@ struct Running {
     task: smol::Task<()>,
 }
 
+struct Sending {
+    handle: OutboxHandle,
+    task: smol::Task<()>,
+}
+
 /// Shared state of a running daemon.
 pub struct Daemon {
     paths: Paths,
@@ -104,6 +122,9 @@ pub struct Daemon {
     config: WorkerConfig,
     workers: Mutex<HashMap<AccountId, Running>>,
     status: Mutex<HashMap<AccountId, Status>>,
+    outbox: Mutex<Option<Sending>>,
+    /// Why each outbox entry's last try failed.
+    send_errors: Mutex<HashMap<i64, String>>,
     notices: Sender<Notice>,
 }
 
@@ -123,23 +144,32 @@ impl Daemon {
             config,
             workers: Mutex::default(),
             status: Mutex::default(),
+            outbox: Mutex::default(),
+            send_errors: Mutex::default(),
             notices,
         });
         Ok((daemon, receiver))
     }
 
-    /// Starts a worker for every account.
+    /// Starts a worker for every account, and the outbox.
     pub async fn start(self: &Arc<Self>) -> Result<(), CommandError> {
         let accounts = self.store().accounts()?;
         tracing::info!(accounts = accounts.len(), "starting");
         for account in accounts {
             self.start_account(&account).await;
         }
+        self.start_outbox()?;
         Ok(())
     }
 
-    /// Stops every worker; each logs out.
+    /// Stops the outbox and every worker; each logs out.
     pub async fn shutdown(&self) {
+        let sending = self.outbox.lock().unwrap().take();
+        if let Some(sending) = sending {
+            // A message being handed over finishes first.
+            drop(sending.handle);
+            wait_for(AccountId(0), sending.task).await;
+        }
         let workers: Vec<_> = self.workers().drain().collect();
         // Signal every worker first, so they log out at the same time.
         let tasks: Vec<_> = workers
@@ -258,9 +288,10 @@ impl Daemon {
             for folder in &folders {
                 batch.remove_folder(folder.id)?;
             }
-            // Account IDs can be reused; its changes must not replay on
-            // the next account.
+            // Account IDs can be reused; its changes and mail must not
+            // go out from the next account.
             batch.clear_ops(id)?;
+            batch.clear_outbox(id)?;
             batch.commit()?;
             store.remove_account(id)?
         };
@@ -352,6 +383,107 @@ impl Daemon {
     /// Moves messages to their account's archive.
     pub fn archive_messages(&self, messages: &[MessageId]) -> Result<(), CommandError> {
         self.change(|store| ops::archive_messages(store, messages))
+    }
+
+    /// Queues `raw` from `account` to be sent after `delay` seconds.
+    pub fn queue_send(
+        &self,
+        account: AccountId,
+        raw: &[u8],
+        delay: u32,
+    ) -> Result<i64, CommandError> {
+        let has_smtp = self
+            .store()
+            .account_settings(account)?
+            .is_some_and(|settings| settings.smtp.is_some());
+        if !has_smtp {
+            self.account(account)?;
+            return Err(CommandError::InvalidArgs(format!(
+                "account {account} has no SMTP server"
+            )));
+        }
+        let id = outbox::queue(&mut self.store(), account, raw, delay, unix_now())?;
+        tracing::info!(id, %account, delay, "queued to send");
+        let _ = self.notices.try_send(Notice::OutboxChanged(id));
+        if let Some(sending) = self.outbox.lock().unwrap().as_ref() {
+            sending.handle.wake();
+        }
+        Ok(id)
+    }
+
+    /// Takes a queued message back, if it is not being sent yet.
+    pub fn undo_send(&self, id: i64) -> Result<bool, CommandError> {
+        let undone = outbox::cancel(&mut self.store(), id)?;
+        if undone {
+            tracing::info!(id, "send undone");
+            let _ = self.notices.try_send(Notice::OutboxChanged(id));
+        }
+        Ok(undone)
+    }
+
+    /// Forgets a cancelled or failed message.
+    pub fn discard_send(&self, id: i64) -> Result<bool, CommandError> {
+        let discarded = outbox::discard(&mut self.store(), id)?;
+        if discarded {
+            self.send_errors.lock().unwrap().remove(&id);
+            let _ = self.notices.try_send(Notice::OutboxChanged(id));
+        }
+        Ok(discarded)
+    }
+
+    /// Every outbox entry.
+    pub fn outbox(&self) -> Result<Vec<OutboxItem>, CommandError> {
+        let entries = self.store().outbox()?;
+        let errors = self.send_errors.lock().unwrap();
+        Ok(entries
+            .into_iter()
+            .map(|entry| OutboxItem {
+                id: entry.id,
+                account: entry.account.0,
+                message: entry.message.0,
+                subject: entry.subject,
+                send_at: entry.send_at,
+                state: entry.state.as_str().to_owned(),
+                detail: errors.get(&entry.id).cloned().unwrap_or_default(),
+            })
+            .collect())
+    }
+
+    fn start_outbox(self: &Arc<Self>) -> Result<(), CommandError> {
+        let store = Store::open(&self.paths, Mode::ReadWrite)?;
+        let (handle, control) = outbox::control();
+        let (events, received) = async_channel::unbounded();
+        let smtp = SmtpAccounts(Arc::downgrade(self));
+        let task = smol::spawn(outbox::run(
+            smtp,
+            store,
+            OutboxConfig::default(),
+            events,
+            control,
+        ));
+        smol::spawn(self.clone().forward_sends(received)).detach();
+        *self.outbox.lock().unwrap() = Some(Sending { handle, task });
+        Ok(())
+    }
+
+    /// Turns outbox events into notices, and has the worker file sent mail.
+    async fn forward_sends(self: Arc<Self>, events: Receiver<OutboxEvent>) {
+        while let Ok(event) = events.recv().await {
+            if event.detail.is_empty() {
+                self.send_errors.lock().unwrap().remove(&event.id);
+            } else {
+                self.send_errors
+                    .lock()
+                    .unwrap()
+                    .insert(event.id, event.detail);
+            }
+            if event.state == SendState::Sent
+                && let Some(running) = self.workers().get(&event.account)
+            {
+                running.handle.send_changes();
+            }
+            let _ = self.notices.try_send(Notice::OutboxChanged(event.id));
+        }
     }
 
     /// Makes a change in the store, tells clients, and has the workers send
@@ -553,6 +685,15 @@ fn server(spec: &ServerSpec, address: &str) -> Result<Option<Server>, CommandErr
 }
 
 fn imap_connector(server: &Server, password: &str) -> Result<ImapConnector, String> {
+    let (endpoint, tls) = endpoint(server)?;
+    Ok(ImapConnector {
+        endpoint,
+        credentials: Credentials::new(server.username.clone(), password),
+        tls,
+    })
+}
+
+fn endpoint(server: &Server) -> Result<(Endpoint, Tls), String> {
     let security = match server.security {
         Security::Tls => katna_sync::Security::Tls,
         Security::StartTls => katna_sync::Security::StartTls,
@@ -563,11 +704,61 @@ fn imap_connector(server: &Server, password: &str) -> Result<ImapConnector, Stri
     } else {
         Tls::system().map_err(|err| format!("TLS setup: {err}"))?
     };
-    Ok(ImapConnector {
-        endpoint: Endpoint::new(server.host.clone(), server.port, security),
-        credentials: Credentials::new(server.username.clone(), password),
+    Ok((
+        Endpoint::new(server.host.clone(), server.port, security),
         tls,
-    })
+    ))
+}
+
+/// The outbox's way to each account's SMTP server.
+struct SmtpAccounts(Weak<Daemon>);
+
+impl SmtpAccounts {
+    fn settings(&self, account: AccountId) -> katna_sync::Result<(Arc<Daemon>, AccountSettings)> {
+        let daemon = self
+            .0
+            .upgrade()
+            .ok_or_else(|| katna_sync::Error::Closed("the daemon is stopping".into()))?;
+        let settings = daemon
+            .store()
+            .account_settings(account)
+            .map_err(|err| katna_sync::Error::Protocol(format!("store: {err}")))?
+            .unwrap_or_default();
+        Ok((daemon, settings))
+    }
+}
+
+impl Outgoing for SmtpAccounts {
+    type Sender = SmtpSender;
+
+    async fn connect(&self, account: AccountId) -> katna_sync::Result<SmtpSender> {
+        let (daemon, settings) = self.settings(account)?;
+        let smtp = settings.smtp.ok_or_else(|| {
+            katna_sync::Error::Rejected(format!("account {account} has no SMTP server"))
+        })?;
+        let password = daemon
+            .secrets
+            .password(account)
+            .await
+            .map_err(|err| katna_sync::Error::Auth(err.to_string()))?
+            .ok_or_else(|| katna_sync::Error::Auth("no password saved".into()))?;
+        drop(daemon);
+        let (endpoint, tls) = endpoint(&smtp).map_err(katna_sync::Error::Tls)?;
+        let credentials = Credentials::new(smtp.username.clone(), &password);
+        SmtpSender::connect(&endpoint, &credentials, tls).await
+    }
+
+    fn files_sent_mail(&self, account: AccountId) -> bool {
+        // Gmail files everything sent through its SMTP server in Sent Mail.
+        self.settings(account).is_ok_and(|(_, settings)| {
+            settings.imap.is_some_and(|imap| {
+                let host = imap.host.to_ascii_lowercase();
+                ["gmail.com", "googlemail.com"]
+                    .iter()
+                    .any(|domain| host.strip_suffix(domain).is_some_and(|h| h.ends_with('.')))
+            })
+        })
+    }
 }
 
 /// Logs in once to check the server and password.
