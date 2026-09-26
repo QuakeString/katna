@@ -66,6 +66,15 @@ pub mod state {
     pub const AUTH_FAILED: &str = "auth-failed";
 }
 
+/// Message flag names for `SetFlags`.
+pub mod flag {
+    pub const SEEN: &str = "seen";
+    pub const ANSWERED: &str = "answered";
+    pub const FLAGGED: &str = "flagged";
+    pub const DRAFT: &str = "draft";
+    pub const FORWARDED: &str = "forwarded";
+}
+
 macro_rules! pim_proxy {
     ($interface:tt, $bus_name:tt, $path:tt) => {
         /// Client side of `in.invenia.katna.Pim1`.
@@ -92,6 +101,24 @@ macro_rules! pim_proxy {
             /// Downloads the full message `message` if it is not stored yet.
             /// Returns once it is in the store (`MailChanged` follows).
             fn fetch_body(&self, message: i64) -> zbus::Result<()>;
+
+            /// Adds and removes flags (names from [`flag`]) on messages.
+            /// Like every change below, it shows in the store at once
+            /// (`MailChanged` follows) and reaches the server when the
+            /// account is online. A change the server refuses three times
+            /// is undone.
+            fn set_flags(&self, messages: &[i64], add: &[&str], remove: &[&str])
+                -> zbus::Result<()>;
+
+            /// Moves messages to `folder` of the same account.
+            fn move_messages(&self, messages: &[i64], folder: i64) -> zbus::Result<()>;
+
+            /// Moves messages to the trash; deletes those already there for
+            /// good, as when the account has no trash.
+            fn delete_messages(&self, messages: &[i64]) -> zbus::Result<()>;
+
+            /// Moves messages to the account's archive folder.
+            fn archive_messages(&self, messages: &[i64]) -> zbus::Result<()>;
 
             /// Accounts were added or removed.
             #[zbus(signal)]

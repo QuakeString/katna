@@ -4,7 +4,8 @@
 //! queue. Runs inside `katna-daemon`. See `docs/ARCHITECTURE.md` §6 and §11.
 //!
 //! So far: the I/O layer (plan task 1.1), the first parts of IMAP sync
-//! (tasks 1.3 and 1.5) and the account worker (task 1.4).
+//! (tasks 1.3 and 1.5), the account worker (task 1.4) and the operation
+//! queue (task 1.6).
 //!
 //! - [`MailBackend`] and [`MailSender`]: the protocol traits the sync engine
 //!   uses, with Katna's own types ([`Folder`], [`Envelope`], …).
@@ -16,6 +17,8 @@
 //! - [`engine`]: sync level 1 (folders, flags, headers) into the store.
 //! - [`bodies`]: sync level 3, full messages for the offline window and on
 //!   request.
+//! - [`ops`]: the operation queue; local flag changes, moves and deletes,
+//!   replayed on the server.
 //! - [`worker`]: keeps an account in sync: IDLE, periodic full syncs,
 //!   reconnecting with backoff.
 //!
@@ -29,6 +32,7 @@ pub mod engine;
 mod error;
 pub mod imap;
 pub mod net;
+pub mod ops;
 pub mod smtp;
 pub mod worker;
 

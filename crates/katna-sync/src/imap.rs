@@ -22,11 +22,11 @@ use imap_codec::{
 };
 use imap_types::{
     command::{Command, CommandBody, FetchModifier, SelectParameter},
-    core::{AString, NString, TagGenerator, Vec1},
+    core::{AString, Atom, NString, TagGenerator, Vec1},
     envelope::Address as ImapAddress,
     extensions::idle::IdleDone,
     fetch::{MacroOrMessageDataItemNames, MessageDataItem, MessageDataItemName, Section},
-    flag::{Flag, FlagFetch, FlagNameAttribute},
+    flag::{Flag, FlagFetch, FlagNameAttribute, StoreType},
     mailbox::{ListMailbox, Mailbox},
     response::{Capability, Data, Response, Status, StatusKind},
     search::SearchKey,
@@ -36,12 +36,16 @@ use io_imap::{
     coroutine::{ImapCoroutine, ImapCoroutineState as S, ImapYield},
     rfc3501::{
         append::{ImapMessageAppend, ImapMessageAppendError, ImapMessageAppendOptions},
+        copy::{ImapMessageCopy, ImapMessageCopyError, ImapMessageCopyOptions},
         create::{ImapMailboxCreate, ImapMailboxCreateError},
         fetch::{ImapMessageFetch, ImapMessageFetchError, ImapMessageFetchOptions},
         list::{ImapMailboxList, ImapMailboxListError},
         search::{ImapMessageSearch, ImapMessageSearchError, ImapMessageSearchOptions},
         select::{ImapMailboxSelect, ImapMailboxSelectError, ImapMailboxSelectOptions},
+        store::{ImapMessageStoreError, ImapMessageStoreOptions, ImapMessageStoreSilent},
     },
+    rfc4315::expunge_uid::{ImapMessageExpungeUid, ImapMessageExpungeUidError},
+    rfc6851::r#move::{ImapMessageMove, ImapMessageMoveError, ImapMessageMoveOptions},
     send::{ImapSend, ImapSendError, ImapSendOutput},
     session::{
         ImapSessionOpen, ImapSessionOpenError, ImapSessionOpenOptions, ImapSessionOpenYield as O,
@@ -519,6 +523,65 @@ impl MailBackend for ImapBackend {
         Ok(uids)
     }
 
+    async fn store_flags(&mut self, uids: &[u32], flags: &Flags, add: bool) -> Result<()> {
+        let flags = imap_flags(flags)?;
+        if uids.is_empty() || flags.is_empty() {
+            return Ok(());
+        }
+        let set = SequenceSet::try_from(uid_set(uids).as_str()).map_err(protocol)?;
+        let kind = if add {
+            StoreType::Add
+        } else {
+            StoreType::Remove
+        };
+        let opts = ImapMessageStoreOptions { uid: true };
+        self.run(ImapMessageStoreSilent::new(set, kind, flags, opts))
+            .await
+    }
+
+    async fn move_messages(&mut self, uids: &[u32], folder: &str) -> Result<Vec<(u32, u32)>> {
+        if uids.is_empty() {
+            return Ok(Vec::new());
+        }
+        let set = SequenceSet::try_from(uid_set(uids).as_str()).map_err(protocol)?;
+        let mailbox = Mailbox::try_from(folder.to_owned()).map_err(protocol)?;
+        let copied = if self.has(&Capability::Move) {
+            let opts = ImapMessageMoveOptions { uid: true };
+            self.run(ImapMessageMove::new(set, mailbox, opts)).await?
+        } else {
+            // RFC 6851 §3.3: COPY, then delete the originals.
+            let opts = ImapMessageCopyOptions { uid: true };
+            let copied = self.run(ImapMessageCopy::new(set, mailbox, opts)).await?;
+            self.expunge(uids).await?;
+            copied
+        };
+        // COPYUID lists source and destination UIDs in the same order.
+        Ok(copied
+            .map(|(_, from, to)| from.into_iter().zip(to).collect())
+            .unwrap_or_default())
+    }
+
+    async fn expunge(&mut self, uids: &[u32]) -> Result<()> {
+        if uids.is_empty() {
+            return Ok(());
+        }
+        let deleted = Flags {
+            deleted: true,
+            ..Flags::default()
+        };
+        self.store_flags(uids, &deleted, true).await?;
+        if !self.has(&Capability::UidPlus) {
+            // Plain EXPUNGE would also remove what other clients marked
+            // \Deleted; leave the messages marked instead. Clients hide
+            // them, and failing here would make a move copy them again.
+            tracing::debug!("no UIDPLUS: leaving messages marked \\Deleted");
+            return Ok(());
+        }
+        let set = SequenceSet::try_from(uid_set(uids).as_str()).map_err(protocol)?;
+        self.run(ImapMessageExpungeUid::new(set)).await?;
+        Ok(())
+    }
+
     async fn create_folder(&mut self, folder: &str) -> Result<()> {
         let mailbox = Mailbox::try_from(folder.to_owned()).map_err(protocol)?;
         self.run(ImapMailboxCreate::new(mailbox)).await
@@ -655,6 +718,10 @@ command_errors!(
     ImapMailboxCreateError,
     ImapMessageAppendError,
     ImapMessageSearchError,
+    ImapMessageStoreError,
+    ImapMessageCopyError,
+    ImapMessageMoveError,
+    ImapMessageExpungeUidError,
 );
 
 fn protocol(err: impl Display) -> Error {
@@ -704,6 +771,27 @@ fn envelope(items: impl IntoIterator<Item = MessageDataItem<'static>>) -> Envelo
         }
     }
     out
+}
+
+/// IMAP flags for the set ones in `flags`.
+fn imap_flags(flags: &Flags) -> Result<Vec<Flag<'static>>> {
+    let mut out = Vec::new();
+    for (on, flag) in [
+        (flags.seen, Flag::Seen),
+        (flags.answered, Flag::Answered),
+        (flags.flagged, Flag::Flagged),
+        (flags.deleted, Flag::Deleted),
+        (flags.draft, Flag::Draft),
+    ] {
+        if on {
+            out.push(flag);
+        }
+    }
+    for keyword in &flags.keywords {
+        let atom = Atom::try_from(keyword.clone()).map_err(protocol)?;
+        out.push(Flag::keyword(atom));
+    }
+    Ok(out)
 }
 
 /// A compact UID set: runs of consecutive UIDs become `a:b`.

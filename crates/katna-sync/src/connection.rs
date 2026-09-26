@@ -30,8 +30,8 @@ use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
 
 use crate::{
-    Envelope, Error, FlagState, Folder, FolderChange, FolderStatus, MailBackend, MessageHeaders,
-    Result, Wait,
+    Envelope, Error, FlagState, Flags, Folder, FolderChange, FolderStatus, MailBackend,
+    MessageHeaders, Result, Wait,
 };
 
 type Reply<T> = Sender<Result<T>>;
@@ -42,6 +42,9 @@ enum Request {
     FetchEnvelopes(u32, Option<u32>, Reply<Vec<Envelope>>),
     FetchHeaders(u32, Option<u32>, Reply<Vec<MessageHeaders>>),
     FetchBodies(Vec<u32>, Reply<Vec<(u32, Vec<u8>)>>),
+    StoreFlags(Vec<u32>, Flags, bool, Reply<()>),
+    MoveMessages(Vec<u32>, String, Reply<Vec<(u32, u32)>>),
+    Expunge(Vec<u32>, Reply<()>),
     FetchFlags(u32, u32, Option<u64>, Reply<Vec<FlagState>>),
     Uids(Reply<Vec<u32>>),
     CreateFolder(String, Reply<()>),
@@ -92,6 +95,23 @@ impl Connection {
     ) -> Result<Vec<MessageHeaders>> {
         self.call(|reply| Request::FetchHeaders(first, last, reply))
             .await
+    }
+
+    pub async fn store_flags(&self, uids: &[u32], flags: &Flags, add: bool) -> Result<()> {
+        let (uids, flags) = (uids.to_vec(), flags.clone());
+        self.call(|reply| Request::StoreFlags(uids, flags, add, reply))
+            .await
+    }
+
+    pub async fn move_messages(&self, uids: &[u32], folder: &str) -> Result<Vec<(u32, u32)>> {
+        let (uids, folder) = (uids.to_vec(), folder.to_owned());
+        self.call(|reply| Request::MoveMessages(uids, folder, reply))
+            .await
+    }
+
+    pub async fn expunge(&self, uids: &[u32]) -> Result<()> {
+        let uids = uids.to_vec();
+        self.call(|reply| Request::Expunge(uids, reply)).await
     }
 
     pub async fn fetch_bodies(&self, uids: &[u32]) -> Result<Vec<(u32, Vec<u8>)>> {
@@ -186,6 +206,18 @@ impl MailBackend for Connection {
         Connection::fetch_bodies(self, uids).await
     }
 
+    async fn store_flags(&mut self, uids: &[u32], flags: &Flags, add: bool) -> Result<()> {
+        Connection::store_flags(self, uids, flags, add).await
+    }
+
+    async fn move_messages(&mut self, uids: &[u32], folder: &str) -> Result<Vec<(u32, u32)>> {
+        Connection::move_messages(self, uids, folder).await
+    }
+
+    async fn expunge(&mut self, uids: &[u32]) -> Result<()> {
+        Connection::expunge(self, uids).await
+    }
+
     async fn fetch_flags(
         &mut self,
         first: u32,
@@ -268,6 +300,13 @@ async fn run<B: MailBackend>(mut backend: B, inbox: Receiver<Request>) {
                 answer(&reply, backend.fetch_headers(first, last).await)
             }
             Request::FetchBodies(uids, reply) => answer(&reply, backend.fetch_bodies(&uids).await),
+            Request::StoreFlags(uids, flags, add, reply) => {
+                answer(&reply, backend.store_flags(&uids, &flags, add).await)
+            }
+            Request::MoveMessages(uids, folder, reply) => {
+                answer(&reply, backend.move_messages(&uids, &folder).await)
+            }
+            Request::Expunge(uids, reply) => answer(&reply, backend.expunge(&uids).await),
             Request::FetchFlags(first, last, changed_since, reply) => answer(
                 &reply,
                 backend.fetch_flags(first, last, changed_since).await,

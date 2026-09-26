@@ -52,6 +52,10 @@ pub struct State {
     pub wrong_password: bool,
     /// Bumped to break every open connection.
     pub generation: u32,
+    /// Report new UIDs on MOVE (UIDPLUS).
+    pub no_uidplus: bool,
+    /// Refuse (NO) flag changes, moves and expunges.
+    pub refuse_changes: bool,
 }
 
 /// A shared server; clones see the same state.
@@ -114,6 +118,20 @@ impl FakeServer {
             .unwrap();
         message.flags.seen = true;
         message.modseq = modseq;
+    }
+
+    /// The flags of message `uid` in `folder`.
+    pub fn flags(&self, folder: &str, uid: u32) -> Flags {
+        self.state().folders[folder].messages[&uid].flags.clone()
+    }
+
+    /// The UIDs in `folder`.
+    pub fn uids(&self, folder: &str) -> Vec<u32> {
+        self.state().folders[folder]
+            .messages
+            .keys()
+            .copied()
+            .collect()
     }
 
     pub fn expunge(&self, folder: &str, uid: u32) {
@@ -215,7 +233,12 @@ impl MailBackend for FakeConnection {
             .map(|name| Folder {
                 name: name.clone(),
                 delimiter: Some('/'),
-                role: (name == "INBOX").then_some(FolderRole::Inbox),
+                role: match name.as_str() {
+                    "INBOX" => Some(FolderRole::Inbox),
+                    "Trash" => Some(FolderRole::Trash),
+                    "Archive" => Some(FolderRole::Archive),
+                    _ => None,
+                },
                 selectable: true,
             })
             .collect())
@@ -300,6 +323,90 @@ impl MailBackend for FakeConnection {
             .collect())
     }
 
+    async fn store_flags(&mut self, uids: &[u32], flags: &Flags, add: bool) -> Result<()> {
+        let mut state = self.state(format!(
+            "STORE {uids:?} {}{}",
+            if add { "+" } else { "-" },
+            flag_names(flags)
+        ))?;
+        if state.refuse_changes {
+            return Err(Error::Rejected("NO not today".into()));
+        }
+        state.modseq += 1;
+        let modseq = state.modseq;
+        let folder = self.selected().to_owned();
+        let messages = &mut state.folders.get_mut(&folder).unwrap().messages;
+        for uid in uids {
+            let Some(message) = messages.get_mut(uid) else {
+                continue;
+            };
+            let f = &mut message.flags;
+            for (on, flag) in [
+                (flags.seen, &mut f.seen),
+                (flags.answered, &mut f.answered),
+                (flags.flagged, &mut f.flagged),
+                (flags.deleted, &mut f.deleted),
+                (flags.draft, &mut f.draft),
+            ] {
+                if on {
+                    *flag = add;
+                }
+            }
+            for keyword in &flags.keywords {
+                f.keywords.retain(|k| k != keyword);
+                if add {
+                    f.keywords.push(keyword.clone());
+                }
+            }
+            message.modseq = modseq;
+        }
+        Ok(())
+    }
+
+    async fn move_messages(&mut self, uids: &[u32], folder: &str) -> Result<Vec<(u32, u32)>> {
+        let mut state = self.state(format!("MOVE {uids:?} {folder}"))?;
+        if state.refuse_changes {
+            return Err(Error::Rejected("NO not today".into()));
+        }
+        if !state.folders.contains_key(folder) {
+            return Err(Error::Rejected(format!("NO no folder {folder}")));
+        }
+        state.modseq += 1;
+        let modseq = state.modseq;
+        let from = self.selected().to_owned();
+        let mut moved = Vec::new();
+        for uid in uids {
+            let Some(mut message) = state.folders.get_mut(&from).unwrap().messages.remove(uid)
+            else {
+                continue;
+            };
+            message.modseq = modseq;
+            let target = state.folders.get_mut(folder).unwrap();
+            let new = target.uid_next;
+            target.uid_next += 1;
+            target.messages.insert(new, message);
+            moved.push((*uid, new));
+        }
+        if state.no_uidplus {
+            moved.clear();
+        }
+        Ok(moved)
+    }
+
+    async fn expunge(&mut self, uids: &[u32]) -> Result<()> {
+        let mut state = self.state(format!("EXPUNGE {uids:?}"))?;
+        if state.refuse_changes {
+            return Err(Error::Rejected("NO not today".into()));
+        }
+        state.modseq += 1;
+        let folder = self.selected().to_owned();
+        let messages = &mut state.folders.get_mut(&folder).unwrap().messages;
+        for uid in uids {
+            messages.remove(uid);
+        }
+        Ok(())
+    }
+
     async fn create_folder(&mut self, _: &str) -> Result<()> {
         unimplemented!()
     }
@@ -372,6 +479,22 @@ impl MailBackend for FakeConnection {
         self.server.state().log.push("LOGOUT".into());
         Ok(())
     }
+}
+
+fn flag_names(flags: &Flags) -> String {
+    let mut names: Vec<String> = [
+        (flags.seen, "\\Seen"),
+        (flags.answered, "\\Answered"),
+        (flags.flagged, "\\Flagged"),
+        (flags.deleted, "\\Deleted"),
+        (flags.draft, "\\Draft"),
+    ]
+    .into_iter()
+    .filter(|(on, _)| *on)
+    .map(|(_, name)| name.to_owned())
+    .collect();
+    names.extend(flags.keywords.iter().cloned());
+    names.join(" ")
 }
 
 /// A fresh store with one IMAP account.
