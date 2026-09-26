@@ -24,6 +24,8 @@ pub enum Command {
     SyncNow,
     /// Takes back the queued message with this outbox ID.
     UndoSend(i64),
+    /// Has the daemon read the settings file again.
+    ReloadConfig,
 }
 
 impl Command {
@@ -39,7 +41,7 @@ impl Command {
             Self::Important(_, false) => Some(format!("{what} marked as not important.")),
             Self::Pin(_, true) => Some(format!("{what} pinned to the top.")),
             Self::Pin(_, false) => Some(format!("{what} unpinned.")),
-            Self::MarkRead(..) | Self::SyncNow | Self::UndoSend(_) => None,
+            Self::MarkRead(..) | Self::SyncNow | Self::UndoSend(_) | Self::ReloadConfig => None,
         }
     }
 }
@@ -104,6 +106,7 @@ pub async fn send(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::Delete(messages) => pim.delete_messages(&ids(messages)).await,
         Command::Move(messages, folder) => pim.move_messages(&ids(messages), folder.0).await,
         Command::SyncNow => pim.sync_now(0).await,
+        Command::ReloadConfig => pim.reload_config().await,
         Command::UndoSend(id) => match pim.undo_send(*id).await {
             // The app opens the message again, so the outbox can forget it.
             Ok(true) => pim.discard_send(*id).await.map(|_| ()),

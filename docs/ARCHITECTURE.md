@@ -753,6 +753,10 @@ the same matching on event attendees ("Meeting with Acme").
   icon, and a real "Quit" (stops the daemon until next login or activation).
 - Single instance, enforced by owning the D-Bus name.
 - Graceful shutdown: finish in-flight sends, flush the index, close IMAP sessions.
+- Updates: a package update replaces the binary while the old one runs.
+  Every 30 s the daemon checks `/proc/self/exe`; once the file was replaced
+  it shuts down gracefully and `exec`s the new binary (same PID, so systemd
+  keeps tracking it). No `systemctl --user restart` after an update.
 
 ### 9.2.1 What runs today (Phase 1)
 
@@ -1518,7 +1522,10 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
   Quit. Quit closes the app and stops the daemon until the next login or
   until the app starts it again (D-Bus activation). Setting
-  `general.tray_icon` (default on); `ReloadConfig` applies both settings.
+  `general.show_in_tray` (default on; the older `tray_icon` key is ignored
+  because versions without a tray saved it as `false`). Both switches are
+  under Settings → General → Desktop; the app calls `ReloadConfig` after
+  saving so the daemon applies them at once.
 - **Single instance and actions**: Katna Mail owns `in.invenia.katna.Mail`
   and serves `org.freedesktop.Application` at `/in/invenia/katna/Mail` with
   the actions `open-inbox`, `compose`, `preferences`, `open-message` (a

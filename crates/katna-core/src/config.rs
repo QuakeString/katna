@@ -94,7 +94,11 @@ pub struct General {
     /// Keep `katna-daemon` running when no window is open.
     pub run_in_background: bool,
     /// Show a tray icon with the unread count and a menu (§15.2).
-    pub tray_icon: bool,
+    ///
+    /// Not `tray_icon`: versions before the tray existed saved
+    /// `tray_icon = false` as their default into every config file the app
+    /// wrote, which would keep the icon hidden. That key is ignored.
+    pub show_in_tray: bool,
     /// Show the Inbox unread count on Katna Mail's taskbar or dock icon.
     pub unread_badge: bool,
 }
@@ -103,7 +107,7 @@ impl Default for General {
     fn default() -> Self {
         Self {
             run_in_background: true,
-            tray_icon: true,
+            show_in_tray: true,
             unread_badge: true,
         }
     }
@@ -755,11 +759,19 @@ mod tests {
     }
 
     #[test]
+    fn ignores_the_tray_setting_older_versions_saved() {
+        let config = Config::parse("[general]\ntray_icon = false\n").unwrap();
+        assert!(config.general.show_in_tray);
+        let config = Config::parse("[general]\nshow_in_tray = false\n").unwrap();
+        assert!(!config.general.show_in_tray);
+    }
+
+    #[test]
     fn save_and_load_round_trip() {
         let tmp = tempfile::tempdir().unwrap();
         let path = tmp.path().join("nested/config.toml");
         let mut config = Config::default();
-        config.general.tray_icon = false;
+        config.general.show_in_tray = false;
         config.logging.filter = "debug".to_owned();
         config.sending.undo_send_seconds = 0;
         config.save(&path).unwrap();

@@ -38,6 +38,10 @@ pub(super) enum Change {
     SingleKeys(bool),
     OpenIn(FileGroup, OpenIn),
     AccountsShown(AccountsShown),
+    /// The tray icon, shown by the daemon.
+    Tray(bool),
+    /// The unread count on the taskbar icon, shown by the daemon.
+    UnreadBadge(bool),
 }
 
 impl MailWindow {
@@ -363,6 +367,18 @@ impl MailWindow {
             Change::SingleKeys(on) => {
                 self.config.shortcuts.single_keys = on;
                 self.shortcuts_changed(cx);
+                return;
+            }
+            Change::Tray(on) | Change::UnreadBadge(on) => {
+                let general = &mut self.config.general;
+                if matches!(change, Change::Tray(_)) {
+                    general.show_in_tray = on;
+                } else {
+                    general.unread_badge = on;
+                }
+                self.save_config();
+                self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
                 return;
             }
         }
