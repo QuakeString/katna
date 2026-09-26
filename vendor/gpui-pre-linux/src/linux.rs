@@ -1,5 +1,6 @@
 mod appmenu;
 mod dispatcher;
+mod effects;
 mod headless;
 mod keyboard;
 mod platform;
@@ -15,6 +16,7 @@ mod x11;
 mod xdg_desktop_portal;
 
 pub use appmenu::set_kde_appmenu;
+pub use effects::{compositor_blur, set_client_corner_radius};
 pub(crate) use appmenu::kde_appmenu;
 pub use dispatcher::*;
 pub(crate) use headless::*;

@@ -86,6 +86,7 @@ x11rb::atom_manager! {
         _NET_CLIENT_LIST_STACKING,
         _KDE_NET_WM_APPMENU_SERVICE_NAME,
         _KDE_NET_WM_APPMENU_OBJECT_PATH,
+        _KDE_NET_WM_BLUR_BEHIND_REGION,
     }
 }
 
@@ -292,12 +293,59 @@ pub struct X11WindowState {
     edge_constraints: Option<EdgeConstraints>,
     pub handle: AnyWindowHandle,
     last_insets: [u32; 4],
+    last_blur_region: Option<Vec<u32>>,
     accesskit_adapter: Option<accesskit_unix::Adapter>,
 }
 
 impl X11WindowState {
     fn is_transparent(&self) -> bool {
+        // Katna: client-side decorations draw their shadow in a transparent
+        // margin, as on Wayland.
         self.background_appearance != WindowBackgroundAppearance::Opaque
+            || (self.decorations == WindowDecorations::Client
+                && self.client_side_decorations_supported)
+    }
+
+    /// The `_KDE_NET_WM_BLUR_BEHIND_REGION` value: none unless `Blurred`;
+    /// empty (the whole window) under server-side decorations; else the
+    /// frame less its rounded corners, relative to the frame (see
+    /// `effects`), in device pixels.
+    fn blur_region(&self) -> Option<Vec<u32>> {
+        if self.background_appearance != WindowBackgroundAppearance::Blurred {
+            return None;
+        }
+        if self.decorations != WindowDecorations::Client || !self.client_side_decorations_supported
+        {
+            return Some(Vec::new());
+        }
+        let [left, right, top, bottom] = self.last_insets.map(|v| v as i32);
+        let width = (f32::from(self.bounds.size.width) * self.scale_factor).round() as i32;
+        let height = (f32::from(self.bounds.size.height) * self.scale_factor).round() as i32;
+        let rounded = !self.fullscreen && !(self.maximized_vertical && self.maximized_horizontal);
+        let radius = if rounded {
+            (crate::linux::effects::client_corner_radius() * self.scale_factor).round() as i32
+        } else {
+            0
+        };
+        let corners = crate::linux::effects::RoundCorners {
+            top_left: top > 0 && left > 0,
+            top_right: top > 0 && right > 0,
+            bottom_left: bottom > 0 && left > 0,
+            bottom_right: bottom > 0 && right > 0,
+        };
+        let rects = crate::linux::effects::frame_region(
+            width - left - right,
+            height - top - bottom,
+            radius,
+            corners,
+        );
+        Some(
+            rects
+                .into_iter()
+                .flat_map(|(x, y, w, h)| [x, y, w, h])
+                .map(|v| v.max(0) as u32)
+                .collect(),
+        )
     }
 }
 
@@ -870,6 +918,7 @@ impl X11WindowState {
                 client_side_decorations_supported,
                 decorations: WindowDecorations::Server,
                 last_insets: [0, 0, 0, 0],
+                last_blur_region: None,
                 edge_constraints: None,
                 accesskit_adapter: None,
                 counter_id: sync_request_counter,
@@ -1072,6 +1121,38 @@ impl X11Window {
 }
 
 impl X11WindowStatePtr {
+    /// Sets or removes KWin's blur behind the window (Katna).
+    fn update_blur(&self) {
+        let state = self.state.borrow();
+        let region = state.blur_region();
+        if state.last_blur_region == region {
+            return;
+        }
+        let atom = state.atoms._KDE_NET_WM_BLUR_BEHIND_REGION;
+        let result = match &region {
+            Some(region) => check_reply(
+                || "X11 ChangeProperty for _KDE_NET_WM_BLUR_BEHIND_REGION failed.",
+                self.xcb.change_property(
+                    xproto::PropMode::REPLACE,
+                    self.x_window,
+                    atom,
+                    xproto::AtomEnum::CARDINAL,
+                    32,
+                    region.len() as u32,
+                    bytemuck::cast_slice::<u32, u8>(region),
+                ),
+            ),
+            None => check_reply(
+                || "X11 DeleteProperty for _KDE_NET_WM_BLUR_BEHIND_REGION failed.",
+                self.xcb.delete_property(self.x_window, atom),
+            ),
+        };
+        drop(state);
+        if result.log_err().is_some() {
+            self.state.borrow_mut().last_blur_region = region;
+        }
+    }
+
     pub fn should_close(&self) -> bool {
         let mut cb = self.callbacks.borrow_mut();
         if let Some(mut should_close) = cb.should_close.take() {
@@ -1344,6 +1425,10 @@ impl X11WindowStatePtr {
 
         if !is_resize && let Some(ref mut fun) = callbacks.moved {
             fun();
+        }
+        drop(callbacks);
+        if is_resize {
+            self.update_blur();
         }
 
         Ok(())
@@ -1645,6 +1730,8 @@ impl PlatformWindow for X11Window {
         state.background_appearance = background_appearance;
         let transparent = state.is_transparent();
         state.renderer.update_transparency(transparent);
+        drop(state);
+        self.0.update_blur();
     }
 
     fn background_appearance(&self) -> WindowBackgroundAppearance {
@@ -1917,6 +2004,8 @@ impl PlatformWindow for X11Window {
                 ),
             )
             .log_err();
+            drop(state);
+            self.0.update_blur();
         }
     }
 
@@ -1961,6 +2050,18 @@ impl PlatformWindow for X11Window {
                 state.decorations = WindowDecorations::Server;
                 let is_transparent = state.is_transparent();
                 state.renderer.update_transparency(is_transparent);
+                // Katna: the frame is the window manager's again, with no
+                // shadow margin of ours around it.
+                if state.last_insets != [0, 0, 0, 0] {
+                    state.last_insets = [0, 0, 0, 0];
+                    check_reply(
+                        || "X11 DeleteProperty for _GTK_FRAME_EXTENTS failed.",
+                        self.0
+                            .xcb
+                            .delete_property(self.0.x_window, state.atoms._GTK_FRAME_EXTENTS),
+                    )
+                    .log_err();
+                }
             }
             WindowDecorations::Client => {
                 state.decorations = WindowDecorations::Client;
@@ -1970,6 +2071,7 @@ impl PlatformWindow for X11Window {
         }
 
         drop(state);
+        self.0.update_blur();
         let mut callbacks = self.0.callbacks.borrow_mut();
         if let Some(appearance_changed) = callbacks.appearance_changed.as_mut() {
             appearance_changed();

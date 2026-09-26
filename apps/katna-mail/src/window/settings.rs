@@ -12,7 +12,8 @@ use gpui::{
     SpringAnimation, Stateful, div, prelude::*, px, rgba,
 };
 use katna_core::config::{
-    AccountsShown, Density, FileGroup, OpenIn, ReadingPane, Theme as ThemeChoice, UNDO_SEND_CHOICES,
+    AccountsShown, Density, FileGroup, OpenIn, ReadingPane, Theme as ThemeChoice,
+    UNDO_SEND_CHOICES, WindowFrame,
 };
 use katna_ui::Ripple;
 use katna_ui::motion;
@@ -43,6 +44,10 @@ pub(super) enum Change {
     Tray(bool),
     /// The unread count on the taskbar icon, shown by the daemon.
     UnreadBadge(bool),
+    /// Katna's own window frame, or the desktop's.
+    WindowFrame(WindowFrame),
+    /// The blurred, translucent window background.
+    Blur(bool),
 }
 
 impl MailWindow {
@@ -363,6 +368,14 @@ impl MailWindow {
                     self.set_shown_account(account);
                 }
                 self.rebuild_nav();
+            }
+            Change::WindowFrame(frame) => {
+                self.config.experimental.window_frame = frame;
+                cx.set_global(super::look(&self.config));
+            }
+            Change::Blur(on) => {
+                self.config.experimental.blur = on;
+                cx.set_global(super::look(&self.config));
             }
             Change::SingleKeys(on) => {
                 self.config.shortcuts.single_keys = on;

@@ -3624,6 +3624,7 @@ name = "katna-chrome"
 version = "0.0.0"
 dependencies = [
  "gpui-pre",
+ "gpui-pre-linux",
  "gpui-pre-platform",
  "katna-core",
 ]

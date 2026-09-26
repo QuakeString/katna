@@ -424,7 +424,7 @@ impl MailWindow {
                 .w_full()
                 .h(px(shape.bottom_bar()))
                 .overflow_hidden()
-                .bg(rgba(th.page))
+                .bg(rgba(th.backdrop))
                 .child(
                     div()
                         .h(px(BOTTOM_BAR_HEIGHT))

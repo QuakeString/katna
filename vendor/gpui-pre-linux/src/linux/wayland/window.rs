@@ -28,6 +28,7 @@ use wayland_protocols::{
     xdg::dialog::v1::client::xdg_dialog_v1::XdgDialogV1,
 };
 use wayland_protocols_plasma::appmenu::client::org_kde_kwin_appmenu;
+use wayland_protocols::ext::background_effect::v1::client::ext_background_effect_surface_v1;
 use wayland_protocols_plasma::blur::client::org_kde_kwin_blur;
 use wayland_protocols_wlr::layer_shell::v1::client::zwlr_layer_surface_v1;
 
@@ -107,6 +108,8 @@ pub struct WaylandWindowState {
     app_id: Option<String>,
     appearance: WindowAppearance,
     blur: Option<org_kde_kwin_blur::OrgKdeKwinBlur>,
+    /// The blur through `ext_background_effect_v1`, preferred over `blur`.
+    background_effect: Option<ext_background_effect_surface_v1::ExtBackgroundEffectSurfaceV1>,
     /// Where the KDE global menu finds this window's menu bar.
     appmenu: Option<org_kde_kwin_appmenu::OrgKdeKwinAppmenu>,
     viewport: Option<wp_viewport::WpViewport>,
@@ -625,6 +628,7 @@ impl WaylandWindowState {
             surface,
             app_id: options.app_id,
             blur: None,
+            background_effect: None,
             appmenu,
             viewport,
             globals,
@@ -793,6 +797,9 @@ impl Drop for WaylandWindow {
         // Destroy blur first, this has no dependencies.
         if let Some(blur) = &state.blur {
             blur.release();
+        }
+        if let Some(effect) = &state.background_effect {
+            effect.destroy();
         }
         if let Some(appmenu) = &state.appmenu
             && appmenu.version() >= 2
@@ -1162,6 +1169,8 @@ impl WaylandWindowStatePtr {
                 window_geometry.size.width,
                 window_geometry.size.height,
             );
+            let mut state = state;
+            update_blur(&mut state);
 
             let initial_configure = self.frame_loop.get() == FrameLoop::Unconfigured;
             drop(state);
@@ -2261,23 +2270,99 @@ fn update_window(mut state: RefMut<WaylandWindowState>) {
         state.surface.set_opaque_region(None);
     }
 
-    if let Some(ref blur_manager) = state.globals.blur_manager {
-        if state.background_appearance == WindowBackgroundAppearance::Blurred {
-            if state.blur.is_none() {
-                let blur = blur_manager.create(&state.surface, &state.globals.qh, ());
-                state.blur = Some(blur);
-            }
-            state.blur.as_ref().unwrap().commit();
-        } else {
-            // It probably doesn't hurt to clear the blur for opaque windows
-            blur_manager.unset(&state.surface);
-            if let Some(b) = state.blur.take() {
-                b.release()
+    update_blur(&mut state);
+
+    region.destroy();
+}
+
+/// The frame's blur region, relative to the frame (see `effects`): the
+/// whole frame under server-side decorations, less the rounded corners of
+/// client-side ones.
+fn blur_rects(state: &WaylandWindowState) -> Vec<(i32, i32, i32, i32)> {
+    let frame = inset_by_tiling(
+        state.bounds.map_origin(|_| px(0.0)),
+        state.inset(),
+        state.tiling,
+    );
+    let (width, height) = (
+        f32::from(frame.size.width) as i32,
+        f32::from(frame.size.height) as i32,
+    );
+    let tiling = state.tiling;
+    let rounded = state.decorations == WindowDecorations::Client
+        && !state.maximized
+        && !state.fullscreen;
+    let radius = if rounded {
+        crate::linux::effects::client_corner_radius().round() as i32
+    } else {
+        0
+    };
+    let corners = crate::linux::effects::RoundCorners {
+        top_left: !tiling.top && !tiling.left,
+        top_right: !tiling.top && !tiling.right,
+        bottom_left: !tiling.bottom && !tiling.left,
+        bottom_right: !tiling.bottom && !tiling.right,
+    };
+    crate::linux::effects::frame_region(width, height, radius, corners)
+}
+
+/// Asks the compositor to blur behind a `Blurred` window, through
+/// `ext_background_effect_v1` when it can blur, else `org_kde_kwin_blur`.
+fn update_blur(state: &mut WaylandWindowState) {
+    let blurred = state.background_appearance == WindowBackgroundAppearance::Blurred;
+    let ext = blurred
+        && state.globals.background_effect_manager.is_some()
+        && crate::linux::effects::ext_blur();
+    let kde = blurred && !ext && state.globals.blur_manager.is_some();
+    let region = (ext || kde).then(|| {
+        let region = state
+            .globals
+            .compositor
+            .create_region(&state.globals.qh, ());
+        for (x, y, width, height) in blur_rects(state) {
+            region.add(x, y, width, height);
+        }
+        region
+    });
+
+    match (&state.globals.background_effect_manager, &region) {
+        (Some(manager), Some(region)) if ext => {
+            let effect = state.background_effect.get_or_insert_with(|| {
+                manager.get_background_effect(&state.surface, &state.globals.qh, ())
+            });
+            effect.set_blur_region(Some(region));
+        }
+        _ => {
+            if let Some(effect) = state.background_effect.take() {
+                effect.destroy();
             }
         }
     }
 
-    region.destroy();
+    if let Some(ref blur_manager) = state.globals.blur_manager {
+        match &region {
+            Some(region) if kde => {
+                if state.blur.is_none() {
+                    let blur = blur_manager.create(&state.surface, &state.globals.qh, ());
+                    state.blur = Some(blur);
+                }
+                let blur = state.blur.as_ref().unwrap();
+                blur.set_region(Some(region));
+                blur.commit();
+            }
+            _ => {
+                // It probably doesn't hurt to clear the blur for opaque windows
+                blur_manager.unset(&state.surface);
+                if let Some(b) = state.blur.take() {
+                    b.release()
+                }
+            }
+        }
+    }
+
+    if let Some(region) = region {
+        region.destroy();
+    }
 }
 
 pub(crate) trait WindowDecorationsExt {

@@ -281,6 +281,28 @@ impl ChromeTokens {
     }
 }
 
+/// How opaque the window background is when the compositor blurs what is
+/// behind it: enough to keep text readable over any wallpaper, while the
+/// blur shows through.
+pub fn blur_alpha(dark: bool) -> u8 {
+    if dark { 0xcc } else { 0xbf }
+}
+
+impl ChromeTokens {
+    /// The tokens of a translucent, blurred window: the window and header
+    /// backgrounds let [`blur_alpha`] of the blur through.
+    pub fn translucent(self) -> Self {
+        let alpha = blur_alpha(self.dark);
+        Self {
+            window_bg: with_alpha(self.window_bg, alpha),
+            header_bg: with_alpha(self.header_bg, alpha),
+            header_bg_unfocused: with_alpha(self.header_bg_unfocused, alpha),
+            sidebar_bg: with_alpha(self.sidebar_bg, alpha),
+            ..self
+        }
+    }
+}
+
 /// Replaces the alpha byte of `0xRRGGBBAA`.
 pub const fn with_alpha(rgba: u32, alpha: u8) -> u32 {
     (rgba & 0xffffff00) | alpha as u32
@@ -307,6 +329,15 @@ mod tests {
             assert_eq!(r.window_radius, t.window_radius);
             assert_eq!(r.shadow_focused, t.shadow_focused);
         }
+    }
+
+    #[test]
+    fn translucent_keeps_colors() {
+        let t = ChromeTokens::new(Preset::BreezeLike, false);
+        let r = t.clone().translucent();
+        assert_eq!(r.window_bg >> 8, t.window_bg >> 8);
+        assert_eq!(r.window_bg & 0xff, u32::from(blur_alpha(false)));
+        assert_eq!(r.view_bg, t.view_bg);
     }
 
     #[test]
