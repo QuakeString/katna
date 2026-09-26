@@ -1532,3 +1532,104 @@ fn shows_the_unread_count_on_the_taskbar_and_in_the_tray() {
         instance.shutdown().await;
     });
 }
+
+/// New folders (Gmail's labels) on the server, at the top and nested, with
+/// names outside ASCII; taken names and separators in names are refused.
+#[test]
+#[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
+fn creates_folders_on_dev_servers() {
+    let servers = [
+        ("stalwart", port("KATNA_STALWART_IMAPS_PORT", 10993), "tls"),
+        (
+            "dovecot",
+            port("KATNA_DOVECOT_IMAP_PORT", 20143),
+            "starttls",
+        ),
+    ];
+    for (name, imap_port, security) in servers {
+        let bus = Bus::start();
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        smol::block_on(async {
+            let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+            let client = bus.connect().await;
+            let pim = PimProxy::new(&client).await.unwrap();
+            let account = imap("127.0.0.1", imap_port, security);
+            let id = pim.add_imap_account(&account, "katna-dev").await.unwrap();
+            wait_until_online(&pim, id).await;
+            let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
+            let folders = || reader.folders(katna_core::AccountId(id)).unwrap();
+
+            let top = unique("Projects");
+            let parent = pim.create_folder(id, &format!(" {top} "), 0).await.unwrap();
+            let stored = folders();
+            let parent_path = &stored.iter().find(|f| f.id.0 == parent).unwrap().path;
+            assert_eq!(parent_path, &top, "{name}: trimmed");
+
+            let child = pim
+                .create_folder(id, "Rechnungen für Café", parent)
+                .await
+                .unwrap();
+            let stored = folders();
+            let child_path = stored
+                .iter()
+                .find(|f| f.id.0 == child)
+                .unwrap()
+                .path
+                .clone();
+            assert!(child_path.starts_with(&top), "{name}: {child_path}");
+            assert!(
+                child_path.ends_with("Rechnungen für Café"),
+                "{name}: {child_path}"
+            );
+            let separator = &child_path[top.len()..child_path.len() - "Rechnungen für Café".len()];
+            assert_eq!(separator.chars().count(), 1, "{name}: {child_path}");
+
+            // The next sync finds both on the server, under the same names.
+            pim.sync_now(id).await.unwrap();
+            Timer::after(Duration::from_secs(2)).await;
+            wait_until_online(&pim, id).await;
+            let after = folders();
+            for folder in [parent, child] {
+                assert!(after.iter().any(|f| f.id.0 == folder), "{name}: {after:?}");
+            }
+            let other = ImapBackend::connect(
+                &Endpoint::new(
+                    "127.0.0.1",
+                    imap_port,
+                    if security == "tls" {
+                        Security::Tls
+                    } else {
+                        Security::StartTls
+                    },
+                ),
+                &Credentials::new("alice@katna.test", "katna-dev"),
+                Tls::insecure_for_local_tests(),
+            )
+            .await
+            .unwrap();
+            let mut other = other;
+            let listed = other.list_folders().await.unwrap();
+            assert!(listed.iter().any(|f| f.name == child_path), "{name}");
+            other.logout().await.unwrap();
+
+            for (bad, parent) in [
+                (top.to_uppercase(), 0),
+                (format!("a{separator}b"), 0),
+                ("  ".to_owned(), 0),
+                ("fine".to_owned(), 999_999),
+            ] {
+                let err = pim.create_folder(id, &bad, parent).await.unwrap_err();
+                let expected = if parent == 0 {
+                    "org.freedesktop.DBus.Error.InvalidArgs"
+                } else {
+                    "org.freedesktop.DBus.Error.UnknownObject"
+                };
+                assert_eq!(error_name(&err), expected, "{name}: {bad:?}: {err}");
+            }
+
+            assert!(pim.remove_account(id).await.unwrap());
+            instance.shutdown().await;
+        });
+    }
+}

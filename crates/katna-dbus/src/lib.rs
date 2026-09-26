@@ -210,6 +210,12 @@ macro_rules! pim_proxy {
             /// than ten conversations fails with a message saying so.
             fn set_pinned(&self, messages: &[i64], on: bool) -> zbus::Result<()>;
 
+            /// Creates a folder (a label, on Gmail) called `name` on the
+            /// account's server, inside folder `parent` (0: at the top), and
+            /// returns its ID; `MailChanged` follows. Fails while the
+            /// server cannot be reached, and when the name is taken.
+            fn create_folder(&self, account: i64, name: &str, parent: i64) -> zbus::Result<i64>;
+
             /// Moves messages to `folder` of the same account.
             fn move_messages(&self, messages: &[i64], folder: i64) -> zbus::Result<()>;
 

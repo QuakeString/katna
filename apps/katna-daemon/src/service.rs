@@ -109,6 +109,20 @@ macro_rules! pim_interface {
                 Ok(self.daemon.set_pinned(&ids(&messages), on)?)
             }
 
+            async fn create_folder(
+                &self,
+                account: i64,
+                name: &str,
+                parent: i64,
+            ) -> fdo::Result<i64> {
+                let parent = (parent != 0).then_some(FolderId(parent));
+                Ok(self
+                    .daemon
+                    .create_folder(AccountId(account), name, parent)
+                    .await?
+                    .0)
+            }
+
             async fn move_messages(&self, messages: Vec<i64>, folder: i64) -> fdo::Result<()> {
                 Ok(self
                     .daemon

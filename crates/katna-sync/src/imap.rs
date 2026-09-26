@@ -48,6 +48,7 @@ use io_imap::{
         search::{ImapMessageSearch, ImapMessageSearchError, ImapMessageSearchOptions},
         select::{ImapMailboxSelect, ImapMailboxSelectError, ImapMailboxSelectOptions},
         store::{ImapMessageStoreError, ImapMessageStoreOptions, ImapMessageStoreSilent},
+        subscribe::{ImapMailboxSubscribe, ImapMailboxSubscribeError},
     },
     rfc4315::expunge_uid::{ImapMessageExpungeUid, ImapMessageExpungeUidError},
     rfc6851::r#move::{ImapMessageMove, ImapMessageMoveError, ImapMessageMoveOptions},
@@ -848,7 +849,13 @@ impl MailBackend for ImapBackend {
 
     async fn create_folder(&mut self, folder: &str) -> Result<()> {
         let mailbox = Mailbox::try_from(folder.to_owned()).map_err(protocol)?;
-        self.run(ImapMailboxCreate::new(mailbox)).await
+        self.run(ImapMailboxCreate::new(mailbox.clone())).await?;
+        // Clients that show only subscribed folders show it too. Not every
+        // server keeps subscriptions; the folder exists either way.
+        if let Err(err) = self.run(ImapMailboxSubscribe::new(mailbox)).await {
+            tracing::debug!(%err, folder, "SUBSCRIBE refused");
+        }
+        Ok(())
     }
 
     async fn append_with_flags(
@@ -1012,6 +1019,7 @@ command_errors!(
     ImapMailboxSelectError,
     ImapMessageFetchError,
     ImapMailboxCreateError,
+    ImapMailboxSubscribeError,
     ImapMessageAppendError,
     ImapMessageSearchError,
     ImapMessageStoreError,
