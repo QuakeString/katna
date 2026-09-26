@@ -499,7 +499,8 @@ fn attachments_from_the_body_structure() {
         let (tag, rest) = s.command();
         assert_eq!(rest, "UID FETCH 1:3 (UID BODYSTRUCTURE)");
         // 1: text, a PDF with an RFC 2231 name, an HTML body with an
-        // inline logo, and a forwarded message. 2: plain text only.
+        // inline logo, and a forwarded message. 2: versions of the text
+        // only (Gmail's AMP one, an invitation's calendar).
         // 3: a structure imap-codec rejects.
         s.send(concat!(
             "* 1 FETCH (UID 1 BODYSTRUCTURE (",
@@ -514,7 +515,12 @@ fn attachments_from_the_body_structure() {
             "(NIL \"Fwd\" NIL NIL NIL NIL NIL NIL NIL NIL) ",
             "(\"TEXT\" \"PLAIN\" (\"CHARSET\" \"us-ascii\") NIL NIL \"7BIT\" 10 1) 20 NIL NIL NIL NIL) ",
             "\"MIXED\" (\"BOUNDARY\" \"b\") NIL NIL NIL))\r\n",
-            "* 2 FETCH (UID 2 BODYSTRUCTURE (\"TEXT\" \"PLAIN\" (\"CHARSET\" \"us-ascii\") NIL NIL \"7BIT\" 10 1))\r\n",
+            "* 2 FETCH (UID 2 BODYSTRUCTURE (",
+            "(\"TEXT\" \"PLAIN\" (\"CHARSET\" \"us-ascii\") NIL NIL \"7BIT\" 10 1 NIL NIL NIL NIL)",
+            "(\"TEXT\" \"HTML\" (\"CHARSET\" \"utf-8\") NIL NIL \"7BIT\" 30 1 NIL NIL NIL NIL)",
+            "(\"TEXT\" \"X-AMP-HTML\" (\"CHARSET\" \"utf-8\") NIL NIL \"7BIT\" 90 1 NIL NIL NIL NIL)",
+            "(\"TEXT\" \"CALENDAR\" (\"METHOD\" \"REQUEST\") NIL NIL \"7BIT\" 70 1 NIL NIL NIL NIL) ",
+            "\"ALTERNATIVE\" (\"BOUNDARY\" \"a\") NIL NIL NIL))\r\n",
             "* 3 FETCH (UID 3 BODYSTRUCTURE (\"TEXT\" \"PLAIN\" bogus))\r\n",
         ));
         s.ok(&tag);

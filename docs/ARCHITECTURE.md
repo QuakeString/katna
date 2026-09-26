@@ -368,12 +368,22 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   and estimated decoded size; `has_attachments` follows it. One rule,
   `katna_import::mime::is_attachment`, is shared with whole-message
   parsing so the paperclip does not change when the body arrives:
-  anything marked `attachment`, otherwise every part except the text/plain
-  or text/html body and pictures with a `Content-ID` (shown inline by the
-  HTML). An attached message is one attachment; its parts are not listed.
-  Without a usable structure, `has_attachments` is guessed from
-  `multipart/mixed`. Mail synced before this, POP3 and imported mail have
-  no rows, only the flag.
+  anything marked `attachment` or with a file name, otherwise every part
+  except the body text (text/plain, text/html, Gmail's text/x-amp-html and
+  the like), the versions of a `multipart/alternative`, and pictures with
+  a `Content-ID` (shown inline by the HTML). An attached message is one
+  attachment; its parts are not listed. Without a usable structure,
+  `has_attachments` is guessed from `multipart/mixed`.
+- **Attachment lists for older mail:** a message flagged with attachments
+  but without rows (synced before structures were read, a structure that
+  did not parse, POP3 and imported mail) gets its list from the first source that
+  has it: the body when it is downloaded (the list is read with the same
+  body sections IMAP uses), the structure fetched again at the next sync
+  when there is no body (up to 5,000 per folder per sync), or the daemon's
+  background pass over bodies already stored. A list already stored is
+  never replaced, and an empty one clears the flag, so each message is
+  repaired once. The same pass drops unnamed body-text rows that older
+  versions listed as files (Gmail's AMP body).
 - **Header refresh:** messages synced before threading (no thread or no
   category, and no body to parse) get their headers fetched again, up to
   5,000 per folder per sync, and only the missing fields are filled.

@@ -488,19 +488,7 @@ impl MailBatch<'_> {
                 participant.display_name,
             ])?;
         }
-        let mut insert_attachment = tx.prepare_cached(
-            "INSERT OR IGNORE INTO attachment (message_id, part_id, filename, mime, size)
-             VALUES (?1, ?2, ?3, ?4, ?5)",
-        )?;
-        for attachment in message.attachments {
-            insert_attachment.execute(params![
-                id,
-                attachment.part,
-                attachment.filename,
-                attachment.mime,
-                i64::try_from(attachment.size).unwrap_or(i64::MAX),
-            ])?;
-        }
+        crate::attachments::insert(tx, MessageId(id), message.attachments)?;
         journal::record(tx, ObjectKind::Message, id, ChangeOp::Insert)?;
         Ok(Added::Message(MessageId(id)))
     }

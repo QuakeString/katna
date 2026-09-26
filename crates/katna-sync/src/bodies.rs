@@ -127,6 +127,12 @@ async fn fetch_and_save<B: MailBackend>(
         };
         let parsed = katna_import::parse_message(raw).unwrap_or_default();
         batch.set_message_body(id, raw, parsed.snippet.as_deref(), parsed.has_attachments)?;
+        // Mail stored before its structure was read, or whose structure
+        // could not be read, gets its list of files now.
+        batch.list_attachments(
+            id,
+            &katna_import::backfill::new_attachments(&parsed.attachments),
+        )?;
         // A message stored before threading: thread it now (does nothing
         // for one that already has its thread and category).
         let references = parsed.reference_strs();

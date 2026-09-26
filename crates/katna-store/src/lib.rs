@@ -5,6 +5,7 @@
 //!
 //! All SQL in Katna lives in this crate.
 
+mod attachments;
 mod backfill;
 pub mod blob;
 mod db;

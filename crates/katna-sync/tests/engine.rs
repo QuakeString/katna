@@ -485,6 +485,71 @@ fn attachments_come_from_the_structure() {
 }
 
 #[test]
+fn mail_stored_without_a_list_gets_its_structure_again() {
+    let (_tmp, mut store, account) = setup();
+    let server = FakeServer::default();
+    server.set_gmail(true);
+    server.create("INBOX", 1);
+    server.create("Scratch", 1);
+    let mixed = "Content-Type: multipart/mixed; boundary=b\r\n";
+    let old = server.deliver_header("INBOX", &header("old", mixed), "");
+    let labelled = server.deliver_header("INBOX", &header("labelled", mixed), "");
+    // Gives it its Gmail ID; All Mail is not there yet.
+    server.label("INBOX", labelled, 201, "Scratch");
+    server.remove_folder("Scratch");
+    // Stored as sync did before it read structures: the header's guess
+    // and no list.
+    sync(&server, &mut store, account);
+    let inbox = store.folders(account).unwrap()[0].id;
+    let unlisted = |store: &Store| -> Vec<bool> {
+        store
+            .messages_in_folder(inbox)
+            .unwrap()
+            .iter()
+            .map(|m| m.has_attachments && store.attachments(m.id).unwrap().is_empty())
+            .collect()
+    };
+    assert_eq!(unlisted(&store), [true, true]);
+
+    let pdf = AttachmentPart {
+        part: "2".into(),
+        mime: "application/pdf".into(),
+        filename: Some("rates.pdf".into()),
+        size: 3000,
+    };
+    // The old one's structure can be read now. The labelled one's only in
+    // All Mail, where it shows up under its label.
+    server.set_attachments("INBOX", old, Some(vec![pdf.clone()]));
+    server.set_attachments("INBOX", labelled, Some(vec![pdf]));
+    server.create("[Gmail]/All Mail", 1);
+    server.label("INBOX", labelled, 201, "[Gmail]/All Mail");
+    server.set_attachments("INBOX", labelled, None);
+    let reports = sync(&server, &mut store, account);
+    assert_eq!(unlisted(&store), [false, false], "{reports:?}");
+    let names: Vec<_> = store
+        .messages_in_folder(inbox)
+        .unwrap()
+        .iter()
+        .flat_map(|m| store.attachments(m.id).unwrap())
+        .map(|a| (a.part, a.filename))
+        .collect();
+    assert_eq!(
+        names,
+        [
+            ("2".into(), Some("rates.pdf".into())),
+            ("2".into(), Some("rates.pdf".into()))
+        ]
+    );
+
+    sync(&server, &mut store, account);
+    assert!(
+        !server.log().iter().any(|l| l.starts_with("HEADERS 1:")),
+        "nothing is fetched again: {:?}",
+        server.log()
+    );
+}
+
+#[test]
 fn messages_from_before_threading_get_their_headers_again() {
     let (_tmp, mut store, account) = setup();
     let server = FakeServer::default();
