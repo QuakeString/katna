@@ -288,6 +288,59 @@ fn wait_reports_changes_made_before_it_started() {
     }
 }
 
+/// QRESYNC on real servers: the flag fetch reports what was expunged
+/// since a mod-sequence, and a watching connection hears it as VANISHED.
+#[test]
+#[ignore = "needs the dev/compose.yaml servers"]
+fn qresync_reports_expunged_mail() {
+    for (name, endpoint) in imap_servers() {
+        smol::block_on(async {
+            let folder = unique("katna-test-qresync");
+            let mut writer = connect(&endpoint).await;
+            let qresync = writer.capabilities().iter().any(|c| c == "QRESYNC");
+            println!("{name}: QRESYNC {qresync}");
+            writer.create_folder(&folder).await.unwrap();
+            for i in 0..3 {
+                writer
+                    .append(&folder, message(&unique(&format!("q{i}")), USER))
+                    .await
+                    .unwrap();
+            }
+            let before = writer.select(&folder).await.unwrap();
+            let watcher = spawn(&endpoint).await;
+            watcher.select(&folder).await.unwrap();
+
+            writer.expunge(&[2]).await.unwrap();
+            let changes = watcher
+                .wait_for_changes(Duration::from_secs(10))
+                .await
+                .unwrap();
+            let changes = writer
+                .fetch_flags(1, 3, before.highest_modseq)
+                .await
+                .unwrap()
+                .vanished
+                .map(|vanished| (vanished, changes));
+            if qresync {
+                let (vanished, pushed) = changes.expect("QRESYNC reports expunges");
+                assert!(
+                    vanished.iter().any(|r| r.contains(&2)),
+                    "{name}: {vanished:?}"
+                );
+                assert!(
+                    pushed.iter().any(|c| matches!(c, FolderChange::Vanished(r)
+                        if r.iter().any(|r| r.contains(&2)))),
+                    "{name}: {pushed:?}"
+                );
+            } else {
+                assert!(changes.is_none(), "{name}");
+            }
+            watcher.logout().await.unwrap();
+            writer.logout().await.unwrap();
+        });
+    }
+}
+
 #[test]
 #[ignore = "needs the dev/compose.yaml servers"]
 fn request_ends_idle_and_runs_next() {

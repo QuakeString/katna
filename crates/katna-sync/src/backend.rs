@@ -3,7 +3,7 @@
 //! The protocol traits and the data types they exchange. Nothing here
 //! depends on a protocol library.
 
-use std::{fmt, future::Future, time::Duration};
+use std::{fmt, future::Future, ops::RangeInclusive, time::Duration};
 
 use crate::Result;
 
@@ -202,6 +202,18 @@ impl MessageHeaders {
     ];
 }
 
+/// What [`MailBackend::fetch_flags`] found.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct FlagChanges {
+    /// Current flags of the messages asked about (all of them, or those
+    /// changed since the given mod-sequence).
+    pub flags: Vec<FlagState>,
+    /// UID ranges expunged since that mod-sequence, when the server told
+    /// (QRESYNC `VANISHED (EARLIER)`); they may cover UIDs never seen.
+    /// `None`: find expunged mail by comparing UID lists.
+    pub vanished: Option<Vec<RangeInclusive<u32>>>,
+}
+
 /// Current flags of a message, from [`MailBackend::fetch_flags`].
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct FlagState {
@@ -219,6 +231,9 @@ pub enum FolderChange {
     Expunged(u32),
     /// Flags changed for the message at this sequence number.
     FlagsChanged { seq: u32, flags: Flags },
+    /// These UIDs were removed (QRESYNC's `VANISHED`, sent instead of
+    /// `EXPUNGE` once QRESYNC is enabled).
+    Vanished(Vec<RangeInclusive<u32>>),
 }
 
 /// Result of [`MailBackend::wait_for_changes`].
@@ -292,13 +307,13 @@ pub trait MailBackend: Send + 'static {
 
     /// Flags for UIDs `first..=last` of the selected folder, in UID order.
     /// With `changed_since` (CONDSTORE), only messages whose flags changed
-    /// after that mod-sequence.
+    /// after that mod-sequence; with QRESYNC also the UIDs expunged since.
     fn fetch_flags(
         &mut self,
         first: u32,
         last: u32,
         changed_since: Option<u64>,
-    ) -> impl Future<Output = Result<Vec<FlagState>>> + Send;
+    ) -> impl Future<Output = Result<FlagChanges>> + Send;
 
     /// Every UID in the selected folder, ascending.
     fn uids(&mut self) -> impl Future<Output = Result<Vec<u32>>> + Send;

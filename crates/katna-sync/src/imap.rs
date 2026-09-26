@@ -10,6 +10,7 @@
 use std::{
     collections::HashMap,
     fmt::Display,
+    ops::RangeInclusive,
     pin::pin,
     time::{Duration, Instant},
 };
@@ -26,13 +27,14 @@ use imap_types::{
     command::{Command, CommandBody, FetchModifier, SelectParameter},
     core::{AString, Atom, IString, NString, TagGenerator, Vec1},
     envelope::Address as ImapAddress,
+    extensions::enable::CapabilityEnable,
     extensions::idle::IdleDone,
     fetch::{MacroOrMessageDataItemNames, MessageDataItem, MessageDataItemName, Section},
     flag::{Flag, FlagFetch, FlagNameAttribute, StoreType},
     mailbox::{ListMailbox, Mailbox},
     response::{Capability, Data, Response, Status, StatusKind},
     search::SearchKey,
-    sequence::SequenceSet,
+    sequence::{SeqOrUid, Sequence, SequenceSet},
     status::{StatusDataItem, StatusDataItemName},
 };
 use io_imap::{
@@ -58,8 +60,9 @@ use io_imap::{
 use io_sasl::rfc4616::plain::SaslPlainCreds;
 
 use crate::{
-    Address, AttachmentPart, Credentials, Endpoint, Envelope, Error, FlagState, Flags, Folder,
-    FolderChange, FolderRole, FolderStatus, MailBackend, MessageHeaders, Result, Security, Wait,
+    Address, AttachmentPart, Credentials, Endpoint, Envelope, Error, FlagChanges, FlagState, Flags,
+    Folder, FolderChange, FolderRole, FolderStatus, MailBackend, MessageHeaders, Result, Security,
+    Wait,
     net::{Conn, Tls},
 };
 
@@ -72,6 +75,8 @@ pub struct ImapBackend {
     frag: Fragmentizer,
     tags: TagGenerator,
     capabilities: Vec<Capability<'static>>,
+    /// QRESYNC is enabled: expunges arrive as `VANISHED`.
+    qresync: bool,
 }
 
 impl ImapBackend {
@@ -134,12 +139,35 @@ impl ImapBackend {
         };
         tracing::debug!(host = endpoint.host, "IMAP session open");
 
-        Ok(Self {
+        let mut backend = Self {
             conn,
             frag,
             tags: TagGenerator::new(),
             capabilities: session.capability,
-        })
+            qresync: false,
+        };
+        if backend.has(&Capability::QResync) {
+            backend.qresync = backend.enable("QRESYNC").await?;
+        }
+        Ok(backend)
+    }
+
+    /// `ENABLE` one extension. Returns whether the server enabled it.
+    async fn enable(&mut self, name: &'static str) -> Result<bool> {
+        let wanted = CapabilityEnable::try_from(name).map_err(protocol)?;
+        let body = CommandBody::Enable {
+            capabilities: Vec1::from(wanted.clone()),
+        };
+        match self.command(body).await {
+            Ok(data) => Ok(data.iter().any(
+                |d| matches!(d, Data::Enabled { capabilities } if capabilities.contains(&wanted)),
+            )),
+            Err(Error::Rejected(why)) => {
+                tracing::warn!(%why, name, "server refused ENABLE");
+                Ok(false)
+            }
+            Err(e) => Err(e),
+        }
     }
 
     /// The server's capabilities after login, as IMAP spells them.
@@ -599,34 +627,56 @@ impl MailBackend for ImapBackend {
         first: u32,
         last: u32,
         changed_since: Option<u64>,
-    ) -> Result<Vec<FlagState>> {
-        let modifiers = match changed_since.and_then(std::num::NonZeroU64::new) {
-            Some(modseq) if self.has(&Capability::CondStore) => {
-                vec![FetchModifier::ChangedSince(modseq)]
-            }
-            _ => Vec::new(),
-        };
+    ) -> Result<FlagChanges> {
+        let since = changed_since.and_then(std::num::NonZeroU64::new);
         let items = vec![MessageDataItemName::Uid, MessageDataItemName::Flags];
-        let fetched = self
-            .uid_fetch_range(first, Some(last), items, modifiers)
-            .await?;
-        Ok(fetched
-            .into_iter()
-            .map(|items| {
-                let mut state = FlagState {
-                    uid: 0,
-                    flags: Flags::default(),
+        let fetched = match since {
+            // QRESYNC: the flag changes and, as `VANISHED (EARLIER)`, the
+            // expunges since `since`, in one command. io-imap's FETCH keeps
+            // only FETCH data, so the command goes through `ImapSend`.
+            Some(modseq) if self.qresync => {
+                let body = CommandBody::Fetch {
+                    sequence_set: SequenceSet::try_from(format!("{first}:{last}").as_str())
+                        .map_err(protocol)?,
+                    macro_or_item_names: MacroOrMessageDataItemNames::MessageDataItemNames(items),
+                    uid: true,
+                    modifiers: vec![FetchModifier::ChangedSince(modseq), FetchModifier::Vanished],
                 };
-                for item in items {
-                    match item {
-                        MessageDataItem::Uid(uid) => state.uid = uid.get(),
-                        MessageDataItem::Flags(flags) => state.flags = convert_flags(&flags),
+                let mut flags = Vec::new();
+                let mut vanished = Vec::new();
+                for data in self.command(body).await? {
+                    match data {
+                        Data::Fetch { items, .. } => flags.push(flag_state(items.into_iter())),
+                        Data::Vanished { known_uids, .. } => {
+                            vanished.extend(uid_ranges(&known_uids));
+                        }
                         _ => {}
                     }
                 }
-                state
-            })
-            .collect())
+                flags.retain(|f| (first..=last).contains(&f.uid));
+                flags.sort_by_key(|f| f.uid);
+                return Ok(FlagChanges {
+                    flags,
+                    vanished: Some(vanished),
+                });
+            }
+            Some(modseq) if self.has(&Capability::CondStore) => {
+                let modifiers = vec![FetchModifier::ChangedSince(modseq)];
+                self.uid_fetch_range(first, Some(last), items, modifiers)
+                    .await?
+            }
+            _ => {
+                self.uid_fetch_range(first, Some(last), items, Vec::new())
+                    .await?
+            }
+        };
+        Ok(FlagChanges {
+            flags: fetched
+                .into_iter()
+                .map(|items| flag_state(items.into_iter()))
+                .collect(),
+            vanished: None,
+        })
     }
 
     async fn uids(&mut self) -> Result<Vec<u32>> {
@@ -1174,8 +1224,43 @@ fn convert_flags(flags: &[FlagFetch<'_>]) -> Flags {
     out
 }
 
+fn flag_state<'a>(items: impl Iterator<Item = MessageDataItem<'a>>) -> FlagState {
+    let mut state = FlagState {
+        uid: 0,
+        flags: Flags::default(),
+    };
+    for item in items {
+        match item {
+            MessageDataItem::Uid(uid) => state.uid = uid.get(),
+            MessageDataItem::Flags(flags) => state.flags = convert_flags(&flags),
+            _ => {}
+        }
+    }
+    state
+}
+
+/// The UID ranges of a `VANISHED` response (it never uses `*`).
+fn uid_ranges(set: &SequenceSet) -> Vec<RangeInclusive<u32>> {
+    let value = |v: &SeqOrUid| match v {
+        SeqOrUid::Value(n) => Some(n.get()),
+        SeqOrUid::Asterisk => None,
+    };
+    set.0
+        .as_ref()
+        .iter()
+        .filter_map(|seq| match seq {
+            Sequence::Single(v) => value(v).map(|n| n..=n),
+            Sequence::Range(a, b) => {
+                let (a, b) = (value(a)?, value(b)?);
+                Some(a.min(b)..=a.max(b))
+            }
+        })
+        .collect()
+}
+
 fn folder_change(data: &Data<'_>) -> Option<FolderChange> {
     match data {
+        Data::Vanished { known_uids, .. } => Some(FolderChange::Vanished(uid_ranges(known_uids))),
         Data::Exists(n) => Some(FolderChange::Exists(*n)),
         Data::Expunge(seq) => Some(FolderChange::Expunged(seq.get())),
         Data::Fetch { seq, items } => items.as_ref().iter().find_map(|item| match item {

@@ -176,6 +176,50 @@ fn idle_returns_pushed_update() {
     server.join().unwrap();
 }
 
+/// With QRESYNC enabled, the flag fetch also reports expunges
+/// (`VANISHED (EARLIER)`), and pushed expunges arrive as `VANISHED`.
+#[test]
+fn qresync_reports_vanished_mail() {
+    let caps = "IMAP4rev1 AUTH=PLAIN SASL-IR IDLE ENABLE CONDSTORE QRESYNC";
+    let (endpoint, server) = serve(caps, |s| {
+        let tag = s.expect("ENABLE");
+        s.send(&format!("* ENABLED QRESYNC\r\n{tag} OK enabled\r\n"));
+
+        let (tag, rest) = s.command();
+        assert_eq!(rest, "UID FETCH 1:10 (UID FLAGS) (CHANGEDSINCE 5 VANISHED)");
+        s.send(&format!(
+            "* VANISHED (EARLIER) 3:4,7\r\n\
+             * 2 FETCH (UID 5 FLAGS (\\Seen) MODSEQ (9))\r\n\
+             * 1 FETCH (UID 1 FLAGS () MODSEQ (8))\r\n{tag} OK done\r\n"
+        ));
+
+        s.quiet_noop();
+        let tag = s.expect("IDLE");
+        s.send("+ idling\r\n");
+        s.send("* VANISHED 8\r\n");
+        assert_eq!(s.line(), "DONE");
+        s.ok(&tag);
+    });
+    smol::block_on(async {
+        let mut imap = connect(&endpoint).await;
+        let changes = imap.fetch_flags(1, 10, Some(5)).await.unwrap();
+        let uids: Vec<_> = changes
+            .flags
+            .iter()
+            .map(|f| (f.uid, f.flags.seen))
+            .collect();
+        assert_eq!(uids, [(1, false), (5, true)]);
+        assert_eq!(changes.vanished, Some(vec![3..=4, 7..=7]));
+        let wait = imap
+            .wait_for_changes(Duration::from_secs(30), never())
+            .await
+            .unwrap();
+        let expected = FolderChange::Vanished(std::iter::once(8..=8).collect());
+        assert_eq!(wait.changes, [expected]);
+    });
+    server.join().unwrap();
+}
+
 /// io-imap's own IDLE drops this update (S2 problem 2).
 #[test]
 fn idle_keeps_updates_sent_after_done() {

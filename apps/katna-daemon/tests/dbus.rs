@@ -780,8 +780,8 @@ fn sends_through_dev_servers() {
             let outbox_id = pim.queue_send(id, message.as_bytes(), 0).await.unwrap();
             // Sent, then filed: the outbox forgets it.
             within("sent and filed", 30, async {
-                while !pim.outbox().await.unwrap().is_empty() {
-                    let item = &pim.outbox().await.unwrap()[0];
+                // One read per round: the item can leave between two reads.
+                while let Some(item) = pim.outbox().await.unwrap().first() {
                     assert_eq!(item.id, outbox_id);
                     assert_ne!(item.state, send_state::FAILED, "{name}: {item:?}");
                     Timer::after(Duration::from_millis(20)).await;

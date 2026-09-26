@@ -12,8 +12,9 @@
 //! 3. New messages: headers and attachments (from `BODYSTRUCTURE`) for UIDs
 //!    above the highest stored one, in chunks, committed chunk by chunk so
 //!    an interrupted first sync keeps its progress.
-//! 4. Expunged messages: when the message count does not add up, compare the
-//!    server's UID list with ours.
+//! 4. Expunged messages: with QRESYNC, the UIDs the flag fetch reported as
+//!    `VANISHED (EARLIER)`; when the message count still does not add up,
+//!    compare the server's UID list with ours.
 //! 5. Messages stored before threading and without a downloaded body:
 //!    their headers again, so they get a thread and a category (at most
 //!    [`REFRESH_PER_SYNC`] per run).
@@ -231,9 +232,11 @@ pub async fn sync_folder<B: MailBackend>(
     let modseq_unchanged = old_modseq.is_some()
         && status.highest_modseq.is_some()
         && old_modseq == status.highest_modseq;
+    let mut vanished = None;
     if last_known > 0 && !modseq_unchanged {
-        let states = backend.fetch_flags(1, last_known, old_modseq).await?;
-        report.flags_changed = save_flags(store, folder, &states)?;
+        let changes = backend.fetch_flags(1, last_known, old_modseq).await?;
+        report.flags_changed = save_flags(store, folder, &changes.flags)?;
+        vanished = changes.vanished;
     }
 
     // 3. New messages.
@@ -255,19 +258,28 @@ pub async fn sync_folder<B: MailBackend>(
         }
     }
 
-    // 4. Expunges. Skipped when the numbers already agree.
-    let expected = known.len() + added_uids;
+    // 4. Expunges: the ones QRESYNC reported; the UID lists are compared
+    //    only when the numbers still do not add up.
+    let mut gone: Vec<u32> = match &vanished {
+        Some(ranges) => known
+            .iter()
+            .copied()
+            .filter(|uid| ranges.iter().any(|r| r.contains(uid)))
+            .collect(),
+        None => Vec::new(),
+    };
+    let expected = known.len() - gone.len() + added_uids;
     if status.exists as usize != expected && !known.is_empty() {
         let on_server: HashSet<u32> = backend.uids().await?.into_iter().collect();
-        let gone: Vec<u32> = known
+        gone = known
             .into_iter()
             .filter(|uid| !on_server.contains(uid))
             .collect();
-        if !gone.is_empty() {
-            let mut batch = store.mail_batch()?;
-            report.removed = batch.remove_remote_messages(folder, &gone)?;
-            batch.commit()?;
-        }
+    }
+    if !gone.is_empty() {
+        let mut batch = store.mail_batch()?;
+        report.removed = batch.remove_remote_messages(folder, &gone)?;
+        batch.commit()?;
     }
 
     // 5. Headers again for messages stored before threading.
