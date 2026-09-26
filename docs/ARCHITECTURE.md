@@ -286,6 +286,16 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
 ### 6.4 Protocol notes
 
 - **IMAP / SMTP / JMAP:** Pimalaya `io-*` crates behind our `MailBackend` trait.
+  Our own I/O drives them: `async-net` sockets, rustls, `async-io` timers, so
+  `katna-sync` runs on any executor.
+- **One task per connection:** an IMAP command cannot be stopped halfway, so
+  each connection lives in its own task (`katna_sync::connection`) and the
+  rest of the daemon holds cloneable handles. Dropping a caller only drops
+  the answer. A request from any handle ends an IDLE wait cleanly (DONE),
+  then runs.
+- **Waiting for changes:** every wait starts with a NOOP, then IDLEs (or
+  sleeps and NOOPs on servers without IDLE). Stalwart 0.16 reports changes
+  made between two commands on NOOP only, never when IDLE starts.
 - **POP3:** our own small client (UIDL tracking, leave-on-server option,
   `TOP` for header preview). POP3 mail is always fully local.
 - **Gmail / Microsoft:** OAuth2. Google's restricted scope for full mail
