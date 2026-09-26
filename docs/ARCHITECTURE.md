@@ -368,12 +368,22 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   and estimated decoded size; `has_attachments` follows it. One rule,
   `katna_import::mime::is_attachment`, is shared with whole-message
   parsing so the paperclip does not change when the body arrives:
-  anything marked `attachment`, otherwise every part except the text/plain
-  or text/html body and pictures with a `Content-ID` (shown inline by the
-  HTML). An attached message is one attachment; its parts are not listed.
-  Without a usable structure, `has_attachments` is guessed from
-  `multipart/mixed`. Mail synced before this, POP3 and imported mail have
-  no rows, only the flag.
+  anything marked `attachment` or with a file name, otherwise every part
+  except the body text (text/plain, text/html, Gmail's text/x-amp-html and
+  the like), the versions of a `multipart/alternative`, and pictures with
+  a `Content-ID` (shown inline by the HTML). An attached message is one
+  attachment; its parts are not listed. Without a usable structure,
+  `has_attachments` is guessed from `multipart/mixed`.
+- **Attachment lists for older mail:** a message flagged with attachments
+  but without rows (synced before structures were read, a structure that
+  did not parse, POP3 and imported mail) gets its list from the first source that
+  has it: the body when it is downloaded (the list is read with the same
+  body sections IMAP uses), the structure fetched again at the next sync
+  when there is no body (up to 5,000 per folder per sync), or the daemon's
+  background pass over bodies already stored. A list already stored is
+  never replaced, and an empty one clears the flag, so each message is
+  repaired once. The same pass drops unnamed body-text rows that older
+  versions listed as files (Gmail's AMP body).
 - **Header refresh:** messages synced before threading (no thread or no
   category, and no body to parse) get their headers fetched again, up to
   5,000 per folder per sync, and only the missing fields are filled.
@@ -1025,10 +1035,17 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
 
 - **Top bar.** The header bar (CSD) or toolbar (SSD) is 64 px tall in the
   page color, with no border: menu button and app name on the left, the
-  search box centered on the window (at most 720 px wide), the account
-  avatar on the right. `katna_chrome::Bar` gives the bar a center slot,
+  search box (at most 720 px wide), the account avatar on the right. As
+  in Gmail, on a desktop the search box starts where the mail list does
+  with the folders open, and stays there when they fold (it does not
+  follow the list). It moves left only when the window is too narrow for
+  that place, and then always sits one gap after Compose, whose width is
+  set for this (whole or folded to its pencil). The top bar uses that one
+  16 px gap between all its items: menu button, Compose, search box,
+  Settings and account picture. `katna_chrome::Bar` gives the bar a center slot,
   height and background for this.
-- **Navigation.** The folders as pills rounded on the right. The menu
+- **Navigation.** The folders as full pills, rounded at both ends and
+  set 8 px in from the pane's edge (the drawers' lines too). The menu
   button folds it away (it first folded to a rail of icons; see below).
   With one account the account heading is left out. With several, the
   owner asked for one account at a time by default, as Gmail does:
@@ -1254,7 +1271,8 @@ Gemini or confidential mode):
   these changes. Compose sits in the top bar in place of the app name, so
   it shows whether the folders are open or not; the account picture moved
   to the top right, beside the settings gear, with its card below it; the
-  search box is 40 px tall. The menu button folds the folders away
+  search box is 40 px tall, and Compose beside it is as tall (a 40 px
+  square when a narrow tablet folds it to its pencil). The menu button folds the folders away
   completely, its bars turning upright as they go; resting on Mail in the
   app rail opens them over the list as a floating panel with rounded
   corners and a bottom margin. Ripples keep to the shape of the element

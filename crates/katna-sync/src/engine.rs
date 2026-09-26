@@ -17,7 +17,9 @@
 //!    compare the server's UID list with ours.
 //! 5. Messages stored before threading and without a downloaded body:
 //!    their headers again, so they get a thread and a category (at most
-//!    [`REFRESH_PER_SYNC`] per run).
+//!    [`REFRESH_PER_SYNC`] per run). Likewise their structure for those
+//!    with attachments but no attachment list (stored before lists were
+//!    read), so the message list can show their files.
 //! 6. Gmail messages stored before schema v4, one row per label: their
 //!    `X-GM-MSGID`, so copies of one message become one row
 //!    ([`MailBatch::adopt_gm_msgid`](katna_store::MailBatch::adopt_gm_msgid)).
@@ -292,8 +294,10 @@ pub async fn sync_folder<B: MailBackend>(
         batch.commit()?;
     }
 
-    // 5. Headers again for messages stored before threading.
+    // 5. Headers again for messages stored before threading, and
+    //    structures for those stored before attachment lists.
     report.backfilled += refresh_headers(backend, store, folder).await?;
+    report.backfilled += refresh_structures(backend, store, folder).await?;
 
     // 6. Gmail copies stored before schema v4, once.
     if !state.gmail_msgids {
@@ -405,6 +409,46 @@ async fn refresh_headers<B: MailBackend>(
                 category: Some(parsed.category),
             };
             if batch.backfill_remote(folder, message.uid, &facts)? {
+                updated += 1;
+            }
+        }
+        batch.commit()?;
+    }
+    Ok(updated)
+}
+
+/// Attachment lists for messages of the selected `folder` that were
+/// stored before lists were read from `BODYSTRUCTURE` and have no body
+/// yet (those with one get theirs from `katna_import::backfill`). At most
+/// [`REFRESH_PER_SYNC`] per call. Returns how many were updated.
+async fn refresh_structures<B: MailBackend>(
+    backend: &mut B,
+    store: &mut Store,
+    folder: FolderId,
+) -> Result<usize> {
+    let uids = store.uids_needing_structure(folder, REFRESH_PER_SYNC)?;
+    let mut updated = 0;
+    for chunk in uid_runs(&uids) {
+        let (first, last) = (chunk[0], chunk[chunk.len() - 1]);
+        let wanted: HashSet<u32> = chunk.iter().copied().collect();
+        let messages = backend.fetch_headers(first, Some(last)).await?;
+        let mut batch = store.mail_batch()?;
+        for message in messages.iter().filter(|m| wanted.contains(&m.uid)) {
+            // A structure that still cannot be read is tried again next
+            // time.
+            let Some(parts) = &message.attachments else {
+                continue;
+            };
+            let list: Vec<NewAttachment<'_>> = parts
+                .iter()
+                .map(|a| NewAttachment {
+                    part: &a.part,
+                    mime: &a.mime,
+                    filename: a.filename.as_deref(),
+                    size: a.size,
+                })
+                .collect();
+            if batch.list_attachments_at(folder, message.uid, &list)? {
                 updated += 1;
             }
         }
@@ -538,11 +582,17 @@ fn save_messages(
         };
         // A Gmail message already stored under another label is new here
         // too, but stays one message.
-        if matches!(
-            batch.add_remote_message(account, folder, &remote)?,
-            katna_store::Added::Message(_) | katna_store::Added::Location(_)
-        ) {
-            added += 1;
+        match batch.add_remote_message(account, folder, &remote)? {
+            katna_store::Added::Message(_) => added += 1,
+            katna_store::Added::Location(id) => {
+                added += 1;
+                // Stored under the other label before its structure was
+                // read: list its files now.
+                if message.attachments.is_some() {
+                    batch.list_attachments(id, &attachments)?;
+                }
+            }
+            katna_store::Added::Duplicate(_) => {}
         }
     }
     batch.commit()?;

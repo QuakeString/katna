@@ -5,7 +5,7 @@
 //! which only sees a message's structure (`BODYSTRUCTURE`), so that a
 //! message keeps its paperclip when its body is downloaded later.
 
-use mail_parser::{MessageParser, MimeHeaders};
+use mail_parser::{Message, MessageParser, MimeHeaders, PartType};
 
 /// One leaf part of a message, as far as the attachment rule needs it.
 #[derive(Clone, Copy, Debug, Default)]
@@ -18,7 +18,20 @@ pub struct PartInfo<'a> {
     pub content_id: bool,
     /// The part has a file name.
     pub filename: bool,
+    /// The part is one of the versions of a `multipart/alternative`.
+    pub alternative: bool,
 }
+
+/// Text types that are a version of the message itself, not a file:
+/// Gmail's AMP body, Apple Watch text and the old rich text formats.
+pub const BODY_TEXT: [&str; 6] = [
+    "text/plain",
+    "text/html",
+    "text/x-amp-html",
+    "text/watch-html",
+    "text/enriched",
+    "text/richtext",
+];
 
 /// Whether the part is shown as an attachment: anything marked
 /// `attachment`; otherwise anything but the text of the message and
@@ -44,13 +57,94 @@ pub fn is_attachment(part: &PartInfo<'_>) -> bool {
     {
         return true;
     }
-    if part.content_id {
+    if part.filename {
+        return !part.content_id;
+    }
+    // A version of the body, a picture the body shows, or the body text.
+    if part.alternative || part.content_id {
         return false;
     }
-    let text = ["text/plain", "text/html"]
-        .iter()
-        .any(|t| part.mime.eq_ignore_ascii_case(t));
-    !text || part.filename
+    !BODY_TEXT.iter().any(|t| part.mime.eq_ignore_ascii_case(t))
+}
+
+/// One attachment of a whole message.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct Attachment {
+    /// IMAP body section (`1`, `2.1`), as `BODYSTRUCTURE` numbers it.
+    pub part: String,
+    /// `type/subtype`, lower case.
+    pub mime: String,
+    pub filename: Option<String>,
+    /// Decoded size in bytes.
+    pub size: u64,
+}
+
+/// The attachments of a parsed message, with the body sections IMAP gives
+/// them, so a list read from the body matches one read from its
+/// `BODYSTRUCTURE`. Parts of an attached message stay inside it.
+pub fn attachments(message: &Message<'_>) -> Vec<Attachment> {
+    let mut out = Vec::new();
+    collect(message, 0, "", false, &mut out);
+    out
+}
+
+fn collect(
+    message: &Message<'_>,
+    index: usize,
+    section: &str,
+    alternative: bool,
+    out: &mut Vec<Attachment>,
+) {
+    let Some(part) = message.parts.get(index) else {
+        return;
+    };
+    let content_type = part.content_type();
+    if let PartType::Multipart(children) = &part.body {
+        let alternative = content_type
+            .and_then(|t| t.subtype())
+            .is_some_and(|s| s.eq_ignore_ascii_case("alternative"));
+        for (i, &child) in children.iter().enumerate() {
+            let section = match section {
+                "" => (i + 1).to_string(),
+                _ => format!("{section}.{}", i + 1),
+            };
+            collect(message, child as usize, &section, alternative, out);
+        }
+        return;
+    }
+    let mime = match (&part.body, content_type) {
+        (PartType::Message(_), _) => "message/rfc822".to_owned(),
+        (_, Some(t)) => match t.subtype() {
+            Some(sub) => format!("{}/{sub}", t.ctype()),
+            None => t.ctype().to_owned(),
+        },
+        (_, None) => "text/plain".to_owned(),
+    }
+    .to_ascii_lowercase();
+    let filename = part
+        .attachment_name()
+        .map(str::trim)
+        .filter(|n| !n.is_empty())
+        .map(str::to_owned);
+    let info = PartInfo {
+        mime: &mime,
+        disposition: part.content_disposition().map(|d| d.ctype()),
+        content_id: part.content_id().is_some(),
+        filename: filename.is_some(),
+        alternative,
+    };
+    if !is_attachment(&info) {
+        return;
+    }
+    out.push(Attachment {
+        part: match section {
+            "" => "1".to_owned(),
+            _ => section.to_owned(),
+        },
+        mime,
+        filename,
+        size: part.len() as u64,
+    });
 }
 
 /// The file name of a part from its `Content-Disposition` and
@@ -125,6 +219,85 @@ mod tests {
             disposition: Some("Attachment"),
             ..part("text/plain")
         }));
+    }
+
+    #[test]
+    fn versions_of_the_body_are_not_attachments() {
+        // Gmail's AMP body and Apple Watch text, anywhere.
+        assert!(!is_attachment(&part("text/x-amp-html")));
+        assert!(!is_attachment(&part("text/watch-html")));
+        // Any version of a multipart/alternative, unless sent as a file.
+        let version = PartInfo {
+            alternative: true,
+            ..part("text/calendar")
+        };
+        assert!(!is_attachment(&version));
+        assert!(is_attachment(&PartInfo {
+            filename: true,
+            ..version
+        }));
+        assert!(is_attachment(&PartInfo {
+            disposition: Some("attachment"),
+            ..version
+        }));
+    }
+
+    #[test]
+    fn lists_a_whole_message_as_imap_numbers_it() {
+        let raw = concat!(
+            "From: a@example.org\r\n",
+            "Subject: Files\r\n",
+            "Content-Type: multipart/mixed; boundary=\"m\"\r\n",
+            "\r\n",
+            "--m\r\n",
+            "Content-Type: multipart/alternative; boundary=\"a\"\r\n",
+            "\r\n",
+            "--a\r\n",
+            "Content-Type: text/plain\r\n\r\nHi\r\n",
+            "--a\r\n",
+            "Content-Type: multipart/related; boundary=\"r\"\r\n",
+            "\r\n",
+            "--r\r\n",
+            "Content-Type: text/html\r\n\r\n<img src=\"cid:logo\">\r\n",
+            "--r\r\n",
+            "Content-Type: image/png; name=\"logo.png\"\r\n",
+            "Content-ID: <logo>\r\n",
+            "Content-Transfer-Encoding: base64\r\n\r\niVBORw0KGgo=\r\n",
+            "--r--\r\n",
+            "--a\r\n",
+            "Content-Type: text/x-amp-html\r\n\r\n<html amp4email></html>\r\n",
+            "--a--\r\n",
+            "--m\r\n",
+            "Content-Type: application/pdf; name=\"rates.pdf\"\r\n",
+            "Content-Disposition: attachment; filename*=utf-8''%E2%82%AC%20rates.pdf\r\n",
+            "Content-Transfer-Encoding: base64\r\n\r\nJVBERi0xLjQK\r\n",
+            "--m\r\n",
+            "Content-Type: message/rfc822\r\n\r\n",
+            "Subject: Old\r\n\r\nForwarded\r\n",
+            "--m--\r\n",
+        );
+        let message = MessageParser::default().parse(raw.as_bytes()).unwrap();
+        let got: Vec<_> = attachments(&message)
+            .into_iter()
+            .map(|a| (a.part, a.mime, a.filename, a.size))
+            .collect();
+        assert_eq!(
+            got,
+            [
+                (
+                    "2".to_owned(),
+                    "application/pdf".to_owned(),
+                    Some("€ rates.pdf".to_owned()),
+                    9
+                ),
+                ("3".to_owned(), "message/rfc822".to_owned(), None, 25),
+            ]
+        );
+
+        let single = "Content-Type: application/pdf\r\n\r\n%PDF\r\n";
+        let message = MessageParser::default().parse(single.as_bytes()).unwrap();
+        let parts: Vec<_> = attachments(&message).into_iter().map(|a| a.part).collect();
+        assert_eq!(parts, ["1"], "a message that is one file");
     }
 
     #[test]

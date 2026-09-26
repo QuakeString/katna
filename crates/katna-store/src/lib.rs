@@ -5,6 +5,7 @@
 //!
 //! All SQL in Katna lives in this crate.
 
+mod attachments;
 mod backfill;
 pub mod blob;
 mod db;
@@ -274,6 +275,16 @@ impl Store {
         categories: Option<&[MailCategory]>,
     ) -> Result<Vec<ThreadEntry>> {
         mail_view::folder_threads(&self.mail, folder, categories)
+    }
+
+    /// `messages` and every other stored copy of them (the same
+    /// `Message-ID` in the same account: copies on servers without
+    /// Gmail's message IDs, and Gmail mail synced before them), each once,
+    /// with its flags. A change the user makes to a message is made to
+    /// all of them, since the list shows a conversation starred or unread
+    /// when any copy is.
+    pub fn with_copies(&self, messages: &[MessageId]) -> Result<Vec<(MessageId, MessageFlags)>> {
+        mail_view::with_copies(&self.mail, messages)
     }
 
     /// The messages of `thread`, oldest first (undated last).

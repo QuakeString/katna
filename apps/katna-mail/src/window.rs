@@ -59,7 +59,7 @@ use katna_core::config::{ReadingPane, Theme as ThemeChoice};
 use katna_core::{Account, AccountId, Config, Paths};
 use katna_dbus::zbus::Connection;
 use katna_search::SearchResults;
-use katna_store::{FolderId, MessageId};
+use katna_store::{FolderId, MessageFlags, MessageId};
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::{InputEvent, TextInput};
 
@@ -133,6 +133,30 @@ const SEARCH_CONTEXT: &str = "SearchBox";
 
 const TOP_BAR_HEIGHT: f32 = 64.0;
 const NAV_WIDTH: f32 = 256.0;
+/// How far the folder highlight pill (and the drawer's) stays off the
+/// pane's left edge.
+const NAV_ROW_INSET: f32 = 8.0;
+/// The one gap between the top bar's elements: the menu button and
+/// Compose, Compose and the search box (when the window is too narrow for
+/// the box's usual place), the search box and Settings, Settings and the
+/// account picture. The header bar itself spaces its items 6 px apart.
+const TOP_BAR_GAP: f32 = 16.0;
+const BAR_ITEM_GAP: f32 = 6.0;
+/// The room Settings and the account picture take at the top bar's end,
+/// up to the window buttons: both 40 px wide, with the gap between them,
+/// and 8 px after the picture plus the bar's own spacing.
+const TOP_END_WIDTH: f32 = 40.0 + TOP_BAR_GAP + 40.0 + 8.0 + BAR_ITEM_GAP;
+/// Room for the word "Compose" on the top bar's Compose button.
+const COMPOSE_TEXT_WIDTH: f32 = 60.0;
+/// Where Compose starts on the top bar: the bar's 6 px padding, the menu
+/// button (48 px with a 6 px margin) and the gap after it.
+const COMPOSE_LEFT: f32 = 6.0 + 6.0 + 48.0 + TOP_BAR_GAP;
+
+/// Width of the top bar's Compose button: a 40 px square when folded to
+/// its pencil (`label` 0), the pencil and the word when `label` is 1.
+fn compose_width(label: f32) -> f32 {
+    lerp(40.0, 16.0 + 24.0 + 12.0 + COMPOSE_TEXT_WIDTH + 24.0, label)
+}
 /// Corners of cards that float: menus aside, dialogs and panels.
 const PANEL_RADIUS: f32 = 15.0;
 const SEARCH_WIDTH: f32 = 720.0;
@@ -1514,9 +1538,16 @@ impl MailWindow {
             Some(folder) => mail.entry_messages_in(key, folder),
             None => mail.entry_messages(key),
         };
+        // Flag changes touch every stored copy of a message (the line is
+        // starred or unread when any copy is), and undo restores exactly
+        // the copies that changed.
+        let copies_of = |keys: &[EntryKey]| {
+            let ids: Vec<MessageId> = keys.iter().flat_map(|k| mail.entry_messages(*k)).collect();
+            mail.with_copies(&ids)
+        };
         let (command, undo) = match act {
             Act::Read(read) => {
-                let ids = keys.iter().flat_map(|k| mail.entry_messages(*k)).collect();
+                let ids = data::flag_changes(&copies_of(&keys), MessageFlags::SEEN, read);
                 for key in &keys {
                     self.pending.entry(*key).or_default().unread = Some(!read);
                 }
@@ -1524,15 +1555,18 @@ impl MailWindow {
             }
             Act::Star(on) => {
                 // Starring marks the newest message; unstarring clears all.
-                let ids: Vec<MessageId> = if on {
-                    self.entries
+                let copies = if on {
+                    let latest: Vec<MessageId> = self
+                        .entries
                         .iter()
                         .filter(|e| keys.contains(&e.key))
                         .map(|e| e.latest)
-                        .collect()
+                        .collect();
+                    mail.with_copies(&latest)
                 } else {
-                    keys.iter().flat_map(|k| mail.entry_messages(*k)).collect()
+                    copies_of(&keys)
                 };
+                let ids = data::flag_changes(&copies, MessageFlags::FLAGGED, on);
                 for key in &keys {
                     self.pending.entry(*key).or_default().flagged = Some(on);
                 }
@@ -1540,8 +1574,7 @@ impl MailWindow {
                 (Command::Star(ids, on), Some(undo))
             }
             Act::Important(on) => {
-                let ids: Vec<MessageId> =
-                    keys.iter().flat_map(|k| mail.entry_messages(*k)).collect();
+                let ids = data::flag_changes(&copies_of(&keys), MessageFlags::IMPORTANT, on);
                 for key in &keys {
                     self.pending.entry(*key).or_default().important = Some(on);
                 }
@@ -1550,8 +1583,7 @@ impl MailWindow {
             }
             Act::Pin(on) => {
                 // The whole conversation, wherever its messages are.
-                let ids: Vec<MessageId> =
-                    keys.iter().flat_map(|k| mail.entry_messages(*k)).collect();
+                let ids: Vec<MessageId> = copies_of(&keys).into_iter().map(|(id, _)| id).collect();
                 for key in &keys {
                     self.pending.entry(*key).or_default().pinned = Some(on);
                 }
@@ -2111,20 +2143,29 @@ impl Render for MailWindow {
                 .into_any_element()
         });
 
-        // The search box, centered, grows into a pill across the top bar
-        // of a phone, under its menu button and account picture.
+        // On a desktop the search box stays where the list starts with the
+        // folders open, whether they are open or folded, and never moves
+        // with them. On a tablet (Compose beside the menu button, the
+        // folders in a drawer) it starts a clear gap after Compose, and it
+        // never comes closer than that. It grows into a pill across the top
+        // bar of a phone, under its menu button and account picture.
         let (room_start, room_end) = shape.room;
-        // A tablet keeps Compose beside the menu button.
-        let side = lerp(
-            (room_start + 60.0 + shape.compose_room()).max(room_end + 112.0) + 8.0,
-            NAV_WIDTH,
-            shape.desktop,
-        );
-        let regular = (width - 2.0 * side).clamp(200.0, SEARCH_WIDTH);
+        let after_compose =
+            room_start + COMPOSE_LEFT + compose_width(shape.compose_label()) + TOP_BAR_GAP;
+        let list_left = if shape.is_desktop() {
+            shape.rail() + NAV_WIDTH
+        } else {
+            0.0
+        };
+        let search_left = list_left.max(after_compose);
+        let regular = (width - search_left - room_end - TOP_END_WIDTH - TOP_BAR_GAP)
+            .clamp(200.0, SEARCH_WIDTH);
         let pill = (width - 12.0 - room_start - room_end).max(200.0);
         let search_width = lerp(regular, pill, shape.phone);
         let search_panel_width = lerp(regular, width - 16.0, shape.phone);
-        let search_panel = self.render_search_panel(&th, width, search_panel_width, window, cx);
+        let search_panel_left = lerp(search_left, 8.0, shape.phone);
+        let search_panel =
+            self.render_search_panel(&th, search_panel_left, search_panel_width, window, cx);
         let fab = if onboarding {
             None
         } else {
@@ -2193,8 +2234,8 @@ impl Render for MailWindow {
             },
             center: (self.mail.is_ok() && !onboarding).then(|| {
                 div()
-                    .ml(px((6.0 + room_start) * shape.phone))
-                    .mr(px((6.0 + room_end) * shape.phone))
+                    .w_full()
+                    .pl(px(lerp(search_left, 6.0 + room_start, shape.phone)))
                     .child(self.render_search(&th, search_width, search_t, cx))
                     .into_any_element()
             }),

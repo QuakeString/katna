@@ -20,7 +20,7 @@ use katna_ui::Ripple;
 use katna_ui::motion::{self, Spring, lerp};
 
 use super::apps::{APP_RAIL_WIDTH, App as RailApp};
-use super::{Compose, MailWindow, NAV_WIDTH, ToggleSettings};
+use super::{Compose, MailWindow, NAV_ROW_INSET, NAV_WIDTH, ToggleSettings};
 use crate::format;
 use crate::theme::{Theme, fade};
 use crate::widgets::{avatar, elevation, icon, tip};
@@ -40,9 +40,6 @@ const HYSTERESIS: f32 = 12.0;
 pub(super) const BOTTOM_BAR_HEIGHT: f32 = 72.0;
 /// A tablet narrower than this shows Compose as its pencil alone.
 const COMPOSE_FOLD_BELOW: f32 = 760.0;
-/// The top bar's Compose button with its margin, folded and whole.
-const COMPOSE_FOLDED: f32 = 58.0;
-const COMPOSE_ROOM: f32 = 148.0;
 /// A phone's Compose button folds to its pencil once the list has scrolled
 /// down this far in one go, and grows back after this far up.
 const FAB_FOLD_AFTER: f32 = 24.0;
@@ -104,7 +101,6 @@ pub(super) struct Shape {
     pub phone: f32,
     /// How much of the word "Compose" shows on the top bar's button.
     pub label: f32,
-    pub desktop: f32,
     /// Where the conversation is when it slides over the list: 0 = the
     /// list, 1 = the conversation.
     pub page: f32,
@@ -143,11 +139,6 @@ impl Shape {
         self.label
     }
 
-    /// The room the top bar's Compose button takes beside the menu button.
-    pub(super) fn compose_room(&self) -> f32 {
-        lerp(COMPOSE_FOLDED, COMPOSE_ROOM, self.compose_label())
-    }
-
     pub(super) fn card_radius(&self) -> f32 {
         super::PANEL_RADIUS * (1.0 - self.phone)
     }
@@ -163,7 +154,6 @@ pub(super) struct Layout {
     /// `None` until the first frame, which takes its layout without motion.
     size: Option<Size>,
     phone: Spring,
-    desktop: Spring,
     label: Spring,
     page: Spring,
     /// 0 = no drawer, 1 = the drawer is open over the dimmed window.
@@ -184,7 +174,6 @@ impl Layout {
         Self {
             size: None,
             phone: Spring::new(motion::SLIDE, 0.0),
-            desktop: Spring::new(motion::SLIDE, 1.0),
             label: Spring::new(motion::SMOOTH, 1.0),
             page: Spring::new(motion::SLIDE, 0.0),
             scrim: Spring::new(motion::SMOOTH, 0.0),
@@ -197,7 +186,6 @@ impl Layout {
                 width: 1280.0,
                 phone: 0.0,
                 label: 1.0,
-                desktop: 1.0,
                 page: 0.0,
                 room: (0.0, 0.0),
             },
@@ -258,9 +246,6 @@ impl MailWindow {
         layout
             .phone
             .set(if size == Size::Phone { 1.0 } else { 0.0 });
-        layout
-            .desktop
-            .set(if size == Size::Desktop { 1.0 } else { 0.0 });
         let labelled = layout.label.target() > 0.5;
         let fold_below = if labelled {
             COMPOSE_FOLD_BELOW - HYSTERESIS
@@ -272,19 +257,16 @@ impl MailWindow {
             .set(if width >= fold_below { 1.0 } else { 0.0 });
         if first {
             layout.phone.snap(layout.phone.target());
-            layout.desktop.snap(layout.desktop.target());
             layout.label.snap(layout.label.target());
         }
         let label = layout.label.tick(window, reduce).clamp(0.0, 1.0);
         let phone = layout.phone.tick(window, reduce).clamp(0.0, 1.0);
-        let desktop = layout.desktop.tick(window, reduce).clamp(0.0, 1.0);
         // The shape's size decides `split` below, so it goes in first.
         layout.shape = Shape {
             size,
             width,
             phone,
             label,
-            desktop,
             page: layout.shape.page,
             room,
         };
@@ -738,13 +720,14 @@ fn drawer_row(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> gpui::Sta
         .relative()
         .overflow_hidden()
         .h(px(40.0))
+        .ml(px(NAV_ROW_INSET))
         .mr(px(16.0))
-        .pl(px(26.0))
+        .pl(px(26.0 - NAV_ROW_INSET))
         .pr(px(12.0))
         .flex()
         .flex_row()
         .items_center()
-        .rounded_r(px(20.0))
+        .rounded_full()
         .text_size(px(14.0))
         .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
         .when(on, |d| {

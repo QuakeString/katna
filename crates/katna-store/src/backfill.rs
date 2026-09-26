@@ -217,7 +217,7 @@ impl MailBatch<'_> {
         Ok(changed)
     }
 
-    fn message_at_uid(&self, folder: FolderId, uid: u32) -> Result<Option<MessageId>> {
+    pub(crate) fn message_at_uid(&self, folder: FolderId, uid: u32) -> Result<Option<MessageId>> {
         Ok(self
             .tx()
             .prepare_cached(

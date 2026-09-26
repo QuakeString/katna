@@ -36,6 +36,8 @@ pub struct Theme {
     /// Text and icons on `accent`.
     pub on_accent: u32,
     pub star: u32,
+    /// The Important marker when set.
+    pub important: u32,
     /// Rows the user ticked.
     pub checked_row: u32,
     /// Menus and dropdowns.
@@ -139,6 +141,7 @@ impl Theme {
                 on(accent)
             },
             star: base.star,
+            important: base.important,
             checked_row: mix(surface, accent, if dark { 0.3 } else { 0.2 }),
             menu: if dark { ink(0.06) } else { surface },
             switch_off: ink(0.18),
@@ -246,6 +249,7 @@ const LIGHT: Theme = Theme {
     accent: 0x0b57d0ff,
     on_accent: 0xffffffff,
     star: 0xf4b400ff,
+    important: 0x0b57d0ff,
     checked_row: 0xc2dbffff,
     menu: 0xffffffff,
     switch_off: 0xe1e3e1ff,
@@ -277,6 +281,8 @@ const DARK: Theme = Theme {
     accent: 0xa8c7faff,
     on_accent: 0x062e6fff,
     star: 0xfdd663ff,
+    // The same blue as Gmail's marker, which reads on dark too.
+    important: 0x0b57d0ff,
     checked_row: 0x004a77ff,
     menu: 0x2d2f33ff,
     switch_off: 0x44474eff,

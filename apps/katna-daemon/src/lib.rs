@@ -119,33 +119,61 @@ fn run_backfill(
     notices: &Sender<Notice>,
 ) -> katna_store::Result<()> {
     let mut store = Store::open(paths, Mode::ReadWrite)?;
-    let left = store.unthreaded_count()?;
-    if left == 0 {
-        return Ok(());
-    }
-    let started = Instant::now();
-    tracing::info!(left, "threading old mail");
     let accounts: Vec<AccountId> = store.accounts()?.into_iter().map(|a| a.id).collect();
+    let tell = || {
+        for &account in &accounts {
+            let _ = notices.try_send(Notice::MailChanged(account));
+        }
+    };
     let mut last_notice = Instant::now();
-    let changed = katna_import::backfill::run(&mut store, katna_import::backfill::BATCH, |_| {
+    let mut keep_going = |_| {
         // Tell the apps now and then, not after every batch.
         if last_notice.elapsed() > Duration::from_secs(2) {
-            for &account in &accounts {
-                let _ = notices.try_send(Notice::MailChanged(account));
-            }
+            tell();
             last_notice = Instant::now();
         }
         std::thread::sleep(BACKFILL_PAUSE);
         !stop.load(Ordering::Relaxed)
-    })?;
-    for &account in &accounts {
-        let _ = notices.try_send(Notice::MailChanged(account));
+    };
+
+    let left = store.unthreaded_count()?;
+    if left > 0 {
+        let started = Instant::now();
+        tracing::info!(left, "threading old mail");
+        let changed = katna_import::backfill::run(
+            &mut store,
+            katna_import::backfill::BATCH,
+            &mut keep_going,
+        )?;
+        tell();
+        tracing::info!(
+            changed,
+            seconds = started.elapsed().as_secs_f32(),
+            "threaded old mail"
+        );
     }
-    tracing::info!(
-        changed,
-        seconds = started.elapsed().as_secs_f32(),
-        "threaded old mail"
-    );
+    if stop.load(Ordering::Relaxed) {
+        return Ok(());
+    }
+
+    // Attachment lists for downloaded mail stored without one; Gmail's AMP
+    // body is not a file.
+    let started = Instant::now();
+    let dropped = store.forget_body_parts(&katna_import::mime::BODY_TEXT)?;
+    let listed = katna_import::backfill::run_attachments(
+        &mut store,
+        katna_import::backfill::BATCH,
+        &mut keep_going,
+    )?;
+    if dropped > 0 || listed > 0 {
+        tell();
+        tracing::info!(
+            dropped,
+            listed,
+            seconds = started.elapsed().as_secs_f32(),
+            "listed attachments of old mail"
+        );
+    }
     Ok(())
 }
 

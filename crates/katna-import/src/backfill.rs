@@ -11,7 +11,7 @@
 //! nothing more. Messages whose body was never downloaded are left to
 //! `katna-sync`, which fetches their headers again.
 
-use katna_store::{Backfill, MailCategory, MessageId, Store};
+use katna_store::{Backfill, MailCategory, MessageId, NewAttachment, Store};
 
 use crate::parse::{HeaderLinks, parse_links};
 
@@ -94,6 +94,77 @@ pub fn run(
     Ok(changed)
 }
 
+/// Attachment lists for up to `limit` downloaded messages with ID above
+/// `after` that have attachments but none listed (stored before lists
+/// were read, or imported), read from their bodies. Returns `None` when
+/// none is left.
+pub fn attachments_step(
+    store: &mut Store,
+    after: MessageId,
+    limit: u32,
+) -> katna_store::Result<Option<Step>> {
+    let candidates = store.unlisted_with_body(after, limit)?;
+    let Some(&(last, _)) = candidates.last() else {
+        return Ok(None);
+    };
+    // Read and parse before taking the write lock.
+    let mut lists = Vec::with_capacity(candidates.len());
+    for (id, hash) in &candidates {
+        // Unreadable: an empty list clears the paperclip, so it is not
+        // looked at again.
+        let list = store
+            .blobs()
+            .get(hash)?
+            .and_then(|raw| crate::parse_message(&raw))
+            .map(|parsed| parsed.attachments)
+            .unwrap_or_default();
+        lists.push((*id, list));
+    }
+    let mut batch = store.mail_batch()?;
+    let mut changed = 0;
+    for (id, list) in &lists {
+        if batch.list_attachments(*id, &new_attachments(list))? {
+            changed += 1;
+        }
+    }
+    batch.commit()?;
+    Ok(Some(Step {
+        last,
+        seen: candidates.len(),
+        changed,
+    }))
+}
+
+/// Runs [`attachments_step`] like [`run`] runs [`step`].
+pub fn run_attachments(
+    store: &mut Store,
+    batch: u32,
+    mut keep_going: impl FnMut(u64) -> bool,
+) -> katna_store::Result<u64> {
+    let mut after = MessageId(0);
+    let mut changed = 0u64;
+    while let Some(step) = attachments_step(store, after, batch)? {
+        after = step.last;
+        changed += step.changed as u64;
+        if !keep_going(changed) {
+            break;
+        }
+    }
+    Ok(changed)
+}
+
+/// `list` as the store takes it.
+pub fn new_attachments(list: &[crate::mime::Attachment]) -> Vec<NewAttachment<'_>> {
+    list.iter()
+        .map(|a| NewAttachment {
+            part: &a.part,
+            mime: &a.mime,
+            filename: a.filename.as_deref(),
+            size: a.size,
+        })
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -152,5 +223,42 @@ mod tests {
         assert_eq!(threads(&store), imported);
         assert_eq!(run(&mut store, 2, |_| true).unwrap(), 0, "nothing left");
         assert_eq!(store.unthreaded_count().unwrap(), 0);
+    }
+
+    #[test]
+    fn lists_the_files_of_downloaded_mail() {
+        let corpus = tempfile::tempdir().unwrap();
+        let path = corpus.path().join("inbox/cur/1:2,S");
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        fs::write(
+            &path,
+            "Message-ID: <1@x>\r\nFrom: ada@example.org\r\nSubject: Rates\r\n\
+             Content-Type: multipart/mixed; boundary=\"m\"\r\n\r\n\
+             --m\r\nContent-Type: text/plain\r\n\r\nAttached.\r\n\
+             --m\r\nContent-Type: application/pdf; name=\"rates.pdf\"\r\n\r\n%PDF\r\n--m--\r\n",
+        )
+        .unwrap();
+        let data = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(data.path());
+        let mut store = katna_store::Store::open(&paths, Mode::ReadWrite).unwrap();
+        let account = StoreSink::local_account(&mut store, "old").unwrap();
+        let mut sink = StoreSink::new(&mut store, account.id);
+        import_maildir(corpus.path(), &mut sink, &Options::default(), |_| {}).unwrap();
+        let id = store.messages_after(MessageId(0), 1).unwrap()[0].id;
+        assert!(store.attachments(id).unwrap().is_empty());
+
+        assert_eq!(run_attachments(&mut store, 10, |_| true).unwrap(), 1);
+        let names: Vec<_> = store
+            .attachments(id)
+            .unwrap()
+            .into_iter()
+            .map(|a| (a.part, a.filename))
+            .collect();
+        assert_eq!(names, [("2".to_owned(), Some("rates.pdf".to_owned()))]);
+        assert_eq!(
+            run_attachments(&mut store, 10, |_| true).unwrap(),
+            0,
+            "done"
+        );
     }
 }

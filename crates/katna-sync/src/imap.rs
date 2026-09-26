@@ -298,7 +298,7 @@ impl ImapBackend {
                         MessageDataItem::Uid(value) => uid = Some(value.get()),
                         MessageDataItem::BodyStructure(structure) => {
                             let mut out = Vec::new();
-                            attachment_parts(&structure, "", &mut out);
+                            attachment_parts(&structure, "", false, &mut out);
                             parts = Some(out);
                         }
                         _ => {}
@@ -1162,15 +1162,23 @@ fn headers(items: impl IntoIterator<Item = MessageDataItem<'static>>) -> Message
 /// Collects the attachments of `structure`, whose body section is `part`
 /// (`""` for the whole message). Parts of an attached message stay inside
 /// it: the attached message is the attachment.
-fn attachment_parts(structure: &BodyStructure<'_>, part: &str, out: &mut Vec<AttachmentPart>) {
+fn attachment_parts(
+    structure: &BodyStructure<'_>,
+    part: &str,
+    alternative: bool,
+    out: &mut Vec<AttachmentPart>,
+) {
     match structure {
-        BodyStructure::Multi { bodies, .. } => {
+        BodyStructure::Multi {
+            bodies, subtype, ..
+        } => {
+            let alternative = istring(subtype).eq_ignore_ascii_case("alternative");
             for (i, body) in bodies.as_ref().iter().enumerate() {
                 let child = match part {
                     "" => (i + 1).to_string(),
                     _ => format!("{part}.{}", i + 1),
                 };
-                attachment_parts(body, &child, out);
+                attachment_parts(body, &child, alternative, out);
             }
         }
         BodyStructure::Single {
@@ -1202,6 +1210,7 @@ fn attachment_parts(structure: &BodyStructure<'_>, part: &str, out: &mut Vec<Att
                 disposition: kind.as_deref(),
                 content_id: body.basic.id.0.is_some(),
                 filename: filename.is_some(),
+                alternative,
             };
             if !katna_import::mime::is_attachment(&info) {
                 return;

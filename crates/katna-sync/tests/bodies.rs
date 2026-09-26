@@ -216,3 +216,50 @@ fn fetches_one_message_on_request() {
     .unwrap_err();
     assert!(matches!(err, Error::Rejected(_)), "{err:?}");
 }
+
+#[test]
+fn a_downloaded_body_lists_the_files_its_structure_did_not() {
+    let (_tmp, mut store, account) = setup();
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    let header = "From: Bob <bob@example.org>\r\nTo: alice@example.org\r\nSubject: Rates\r\n\
+                  Date: Sat, 26 Sep 2026 10:00:00 +0000\r\nMessage-ID: <rates@example.org>\r\n\
+                  MIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"m\"\r\n\r\n";
+    let body = "--m\r\n\
+                Content-Type: multipart/alternative; boundary=\"a\"\r\n\r\n\
+                --a\r\nContent-Type: text/plain\r\n\r\nRates attached.\r\n\
+                --a\r\nContent-Type: text/x-amp-html\r\n\r\n<html amp4email></html>\r\n\
+                --a--\r\n\
+                --m\r\n\
+                Content-Type: application/pdf; name=\"rates.pdf\"\r\n\
+                Content-Disposition: attachment; filename=\"rates.pdf\"\r\n\
+                Content-Transfer-Encoding: base64\r\n\r\nJVBERi0xLjQK\r\n\
+                --m--\r\n";
+    // No structure: stored with the header's guess and no list.
+    server.deliver_header("INBOX", header, body);
+    let inbox = sync(&server, &mut store, account);
+    let message = store.messages_in_folder(inbox).unwrap()[0].id;
+    assert!(store.attachments(message).unwrap().is_empty());
+
+    assert_eq!(
+        download(&server, &mut store, inbox, &thirty_days(), DELIVERED + DAY),
+        1
+    );
+    let listed: Vec<_> = store
+        .attachments(message)
+        .unwrap()
+        .into_iter()
+        .map(|a| (a.part, a.mime, a.filename, a.size))
+        .collect();
+    assert_eq!(
+        listed,
+        [(
+            "2".into(),
+            "application/pdf".into(),
+            Some("rates.pdf".into()),
+            9
+        )],
+        "the AMP version of the text is not a file"
+    );
+    assert!(store.messages_in_folder(inbox).unwrap()[0].has_attachments);
+}

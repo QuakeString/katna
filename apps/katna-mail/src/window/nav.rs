@@ -14,8 +14,8 @@ use katna_ui::motion::{self, lerp};
 
 use super::tour::Spot;
 use super::{
-    Compose, FocusSearch, Hover, Listing, MailWindow, NAV_WIDTH, PANEL_RADIUS, SEARCH_CONTEXT,
-    ToggleNavigation, ToggleSettings, compose,
+    Compose, FocusSearch, Hover, Listing, MailWindow, NAV_ROW_INSET, NAV_WIDTH, PANEL_RADIUS,
+    SEARCH_CONTEXT, ToggleNavigation, ToggleSettings, compose,
 };
 use katna_core::AccountKind;
 
@@ -26,9 +26,9 @@ use crate::widgets::{avatar, elevation, icon, icon_button, icon_button_colored, 
 
 const NAV_ROW_HEIGHT: f32 = 32.0;
 const SEARCH_HEIGHT: f32 = 40.0;
-const COMPOSE_RADIUS: f32 = 16.0;
+const COMPOSE_RADIUS: f32 = 12.0;
 /// Room for the word "Compose" on the top bar's Compose button.
-const COMPOSE_LABEL_WIDTH: f32 = 80.0;
+const COMPOSE_LABEL_WIDTH: f32 = super::COMPOSE_TEXT_WIDTH;
 
 impl MailWindow {
     pub(super) fn render_top_start(&self, th: &Theme, cx: &mut Context<Self>) -> Vec<AnyElement> {
@@ -78,9 +78,11 @@ impl MailWindow {
         let compose = div()
             .id("compose")
             .relative()
-            .ml(px(10.0))
-            .h(px(48.0))
-            .pr(px(lerp(12.0, 24.0, label)))
+            .ml(px(super::TOP_BAR_GAP - super::BAR_ITEM_GAP))
+            // As tall as the search box beside it; folded, a square. A set
+            // width, so the search box can keep an exact gap after it.
+            .h(px(SEARCH_HEIGHT))
+            .w(px(super::compose_width(label)))
             .flex_none()
             .flex()
             .flex_row()
@@ -95,7 +97,7 @@ impl MailWindow {
             .on_click(cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)))
             .child(Ripple::new("compose-ripple", rgba(th.ripple)).rounded(COMPOSE_RADIUS))
             .child(self.tour_mark(Spot::Compose))
-            .child(div().pl(px(lerp(12.0, 16.0, label))).child(icon(
+            .child(div().pl(px(lerp(8.0, 16.0, label))).child(icon(
                 "compose",
                 th.compose_text,
                 24.0,
@@ -103,7 +105,8 @@ impl MailWindow {
             .child(
                 div()
                     .pl(px(12.0 * label))
-                    .max_w(px(COMPOSE_LABEL_WIDTH * label))
+                    .max_w(px((12.0 + COMPOSE_LABEL_WIDTH) * label))
+                    .min_w_0()
                     .overflow_hidden()
                     .opacity(label)
                     .text_size(px(14.0))
@@ -117,8 +120,11 @@ impl MailWindow {
             start.push(
                 div()
                     .flex_none()
-                    .max_w(px(200.0 * shown))
-                    .overflow_hidden()
+                    // Clipped only while it grows or shrinks: a clip would
+                    // cut the hover shadow into a square.
+                    .when(shown < 0.999, |d| {
+                        d.max_w(px(200.0 * shown)).overflow_hidden()
+                    })
                     .opacity(shown)
                     .child(compose)
                     .into_any_element(),
@@ -146,8 +152,8 @@ impl MailWindow {
             .relative()
             .w(px(width))
             .h(px(lerp(SEARCH_HEIGHT, 48.0, phone)))
-            .pl(px(lerp(2.0, 56.0, phone)))
-            .pr(px(lerp(2.0, 50.0, phone)))
+            .pl(px(lerp(0.0, 56.0, phone)))
+            .pr(px(lerp(0.0, 50.0, phone)))
             .flex()
             .flex_row()
             .items_center()
@@ -276,7 +282,13 @@ impl MailWindow {
                     .into_any_element(),
             );
         }
-        end.push(div().mx(px(8.0)).child(account).into_any_element());
+        end.push(
+            div()
+                .ml(px(super::TOP_BAR_GAP - super::BAR_ITEM_GAP))
+                .mr(px(8.0))
+                .child(account)
+                .into_any_element(),
+        );
         end
     }
 
@@ -451,7 +463,9 @@ impl MailWindow {
                 let chevron = div()
                     .id(("nav-chevron", ix))
                     .absolute()
-                    .left(px(4.0 + indent))
+                    // Where it was before the highlight was inset: just
+                    // left of the pill's rounded end.
+                    .left(px(indent - 4.0))
                     .top(px(6.0))
                     .size(px(20.0))
                     .flex()
@@ -472,18 +486,19 @@ impl MailWindow {
                         cx.stop_propagation();
                         this.toggle(&key, cx);
                     }));
+                // A full pill, inset from the pane's edge; the icon and
+                // label stay where they were.
                 let row = div()
                     .id(("nav-row", ix))
                     .relative()
-                    .overflow_hidden()
                     .h(px(NAV_ROW_HEIGHT))
-                    .w(px(NAV_WIDTH - 16.0))
-                    .pl(px(26.0 + indent))
+                    .w(px(NAV_WIDTH - 16.0 - NAV_ROW_INSET))
+                    .pl(px(26.0 - NAV_ROW_INSET + indent))
                     .pr(px(12.0))
                     .flex()
                     .flex_row()
                     .items_center()
-                    .rounded_r(px(16.0))
+                    .rounded_full()
                     .text_size(px(14.0))
                     .text_color(rgba(text))
                     .when(bold, |d| d.font_weight(FontWeight::BOLD))
@@ -494,7 +509,7 @@ impl MailWindow {
                     )
                     .child(
                         Ripple::new(("nav-ripple", ix), rgba(th.ripple))
-                            .corners([0.0, 16.0, 16.0, 0.0]),
+                            .rounded(NAV_ROW_HEIGHT / 2.0),
                     )
                     .child(icon(
                         if scheduled {
@@ -523,7 +538,7 @@ impl MailWindow {
                         )
                     })
                     .when(*has_children, |d| d.child(chevron));
-                row.with_spring(
+                let row = row.with_spring(
                     ("nav-selected", ix),
                     SpringAnimation::new(motion::SMOOTH).to(if selected { 1.0 } else { 0.0 }),
                     {
@@ -536,8 +551,10 @@ impl MailWindow {
                             }
                         }
                     },
-                )
-                .into_any_element()
+                );
+                // The list lays lines out edge to edge, so the inset is
+                // padding around the pill rather than its margin.
+                div().pl(px(NAV_ROW_INSET)).child(row).into_any_element()
             }
         }
     }

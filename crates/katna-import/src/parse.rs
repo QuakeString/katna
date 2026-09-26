@@ -20,6 +20,8 @@ pub struct ParsedMessage {
     /// Size of the raw message in bytes.
     pub size: u64,
     pub has_attachments: bool,
+    /// The attachments, with their IMAP body sections.
+    pub attachments: Vec<crate::mime::Attachment>,
     /// `List-Id` without angle brackets.
     pub list_id: Option<String>,
     /// Start of the body text, whitespace collapsed.
@@ -96,26 +98,20 @@ pub fn parse_message(raw: &[u8]) -> Option<ParsedMessage> {
     }
 
     let links = links(&message, &participants);
+    // What an encrypted message holds is only known once it is
+    // decrypted; its ciphertext part is not an attachment.
+    let attachments = if encrypted(&message) {
+        Vec::new()
+    } else {
+        crate::mime::attachments(&message)
+    };
     Some(ParsedMessage {
         message_id: message.message_id().and_then(non_empty),
         subject: message.subject().and_then(non_empty),
         date: message.date().map(|date| date.to_timestamp()),
         size: raw.len() as u64,
-        // What an encrypted message holds is only known once it is
-        // decrypted; its ciphertext part is not an attachment.
-        has_attachments: !encrypted(&message)
-            && message.attachments().any(|part| {
-                let mime = part.content_type().map(|t| match t.subtype() {
-                    Some(sub) => format!("{}/{sub}", t.ctype()),
-                    None => t.ctype().to_owned(),
-                });
-                crate::mime::is_attachment(&crate::mime::PartInfo {
-                    mime: mime.as_deref().unwrap_or("text/plain"),
-                    disposition: part.content_disposition().map(|d| d.ctype()),
-                    content_id: part.content_id().is_some(),
-                    filename: part.attachment_name().is_some(),
-                })
-            }),
+        has_attachments: !attachments.is_empty(),
+        attachments,
         list_id: list_id(message.list_id()),
         snippet: snippet(&message),
         participants,
