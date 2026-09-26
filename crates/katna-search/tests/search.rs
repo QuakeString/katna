@@ -2,9 +2,15 @@
 
 //! End-to-end: store → index → queries.
 
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, mpsc};
+use std::time::{Duration, Instant};
+
 use katna_core::Paths;
 use katna_import::{Flags, IncomingMessage, MessageSink, StoreSink, parse_message};
-use katna_search::{IndexOptions, Query, SearchIndex, SearchOptions, Sort};
+use katna_search::{
+    IndexEvent, IndexOptions, Indexer, IndexerOptions, Query, SearchIndex, SearchOptions, Sort,
+};
 use katna_store::{MessageId, Mode, Store};
 
 struct Mail {
@@ -80,6 +86,7 @@ fn small_options() -> IndexOptions {
         writer_threads: 1,
         memory_budget: 20 << 20,
         commit_every: 2,
+        ..IndexOptions::default()
     }
 }
 
@@ -271,4 +278,81 @@ fn follows_the_change_journal_and_rebuilds() {
         4
     );
     assert_eq!(subjects(&index, &store, "in:archive"), ["2001 budget"]);
+}
+
+#[test]
+fn stops_early_and_carries_on() {
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    import(&mut store, &corpus());
+
+    let index = SearchIndex::open(&paths.index_dir()).unwrap();
+    let stop = Arc::new(AtomicBool::new(true));
+    let stopping = IndexOptions {
+        stop: Some(stop.clone()),
+        ..small_options()
+    };
+    assert_eq!(index.update(&store, &stopping, |_| {}).unwrap().indexed, 0);
+    assert_eq!(index.state().unwrap().change_seq, None);
+
+    stop.store(false, Ordering::Relaxed);
+    assert_eq!(index.update(&store, &stopping, |_| {}).unwrap().indexed, 4);
+    assert!(index.state().unwrap().change_seq.is_some());
+}
+
+#[test]
+fn indexer_follows_the_store_and_apps_see_it() {
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    let mails = corpus();
+    import(&mut store, &mails[..2]);
+
+    let (events, received) = mpsc::channel();
+    let indexer = Indexer::start(
+        &paths,
+        IndexerOptions {
+            index: small_options(),
+            poll_every: Duration::from_secs(60),
+        },
+        move |event| {
+            let _ = events.send(event);
+        },
+    )
+    .unwrap();
+    let updated = |expected: u64| loop {
+        match received.recv_timeout(Duration::from_secs(20)).unwrap() {
+            IndexEvent::Updated(stats) => {
+                assert_eq!(stats.indexed, expected);
+                break;
+            }
+            IndexEvent::Progress { .. } => {}
+            IndexEvent::Failed(err) => panic!("{err}"),
+        }
+    };
+    updated(2);
+
+    let app = SearchIndex::open_read_only(&paths.index_dir()).unwrap();
+    assert_eq!(app.num_docs(), 2);
+
+    import(&mut store, &mails[2..]);
+    indexer.changed();
+    updated(2);
+    // The app's index reloads by itself.
+    let started = Instant::now();
+    while app.num_docs() < 4 {
+        assert!(started.elapsed() < Duration::from_secs(20), "no reload");
+        std::thread::sleep(Duration::from_millis(50));
+    }
+    assert_eq!(subjects(&app, &store, "cafe"), ["Lunch"]);
+
+    // Nothing changed: no update.
+    indexer.changed();
+    indexer.stop();
+    assert!(
+        received
+            .try_iter()
+            .all(|event| !matches!(event, IndexEvent::Updated(_)))
+    );
 }
