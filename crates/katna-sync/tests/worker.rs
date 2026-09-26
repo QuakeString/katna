@@ -387,10 +387,19 @@ fn metered_network_waits_with_bodies() {
         assert_eq!(bodies(), 1);
 
         // Off the metered network, the worker catches up at once.
+        // (The inbox may catch up before the full sync does.)
         worker.handle.set_metered(false);
-        assert!(matches!(worker.next_any().await, Event::Synced(_)));
-        assert!(matches!(worker.next_any().await, Event::BodiesStored(2)));
-        assert_eq!(bodies(), 3);
+        let mut synced = false;
+        while bodies() < 3 {
+            match worker.next_any().await {
+                Event::Synced(_) => synced = true,
+                Event::BodiesStored(_) => {}
+                other => panic!("unexpected {other:?}"),
+            }
+        }
+        if !synced {
+            assert!(matches!(worker.next_any().await, Event::Synced(_)));
+        }
         assert_eq!(server.state().connects, 1);
         worker.stop().await;
     });
