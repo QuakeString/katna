@@ -138,6 +138,13 @@ impl Conn {
     /// Like [`Self::read`] but returns `None` when `timeout` passes first.
     /// Dropping a pending read is safe: rustls and `async-io` only consume
     /// bytes when the read completes.
+    ///
+    /// Always returns whole lines: when a read stops mid-line, it keeps
+    /// reading until the chunk ends with a line break. io-imap 0.6 mishandles
+    /// a synchronising-literal continuation (`+ OK`) that arrives in two
+    /// pieces (see the S2 findings, problem 10), and Dovecot does split lines
+    /// across TLS records. Every IMAP and SMTP reply ends with CRLF, so this
+    /// never waits for data the server is not about to send.
     pub async fn read_timeout(&mut self, timeout: Duration) -> Result<Option<&[u8]>> {
         let Self { stream, buf, .. } = self;
         let stream = stream.as_mut().ok_or_else(not_connected)?;
@@ -146,10 +153,27 @@ impl Conn {
             Timer::after(timeout).await;
             None
         };
-        match read.or(timer).await {
-            Some(n) => Ok(Some(&buf[..n?])),
-            None => Ok(None),
+        let Some(n) = read.or(timer).await else {
+            return Ok(None);
+        };
+        let mut len = n?;
+        while len > 0 && buf[len - 1] != b'\n' {
+            if len == buf.len() {
+                buf.resize(buf.len() * 2, 0);
+            }
+            let more = stream
+                .read(&mut buf[len..])
+                .or(async {
+                    Timer::after(READ_TIMEOUT).await;
+                    Err(io::ErrorKind::TimedOut.into())
+                })
+                .await?;
+            if more == 0 {
+                break; // EOF mid-line: hand over what we have.
+            }
+            len += more;
         }
+        Ok(Some(&buf[..len]))
     }
 
     pub async fn close(&mut self) -> Result<()> {

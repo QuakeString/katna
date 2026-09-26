@@ -1,6 +1,6 @@
 # Spike S2 — Pimalaya with our own I/O
 
-> Status: **passed on Stalwart and Dovecot; Gmail not yet run** (26 September 2026).
+> Status: **passed on Stalwart, Dovecot and Gmail**, with two Gmail gaps noted below (26 September 2026).
 > Code: [`spikes/s2-pimalaya-io/`](../../spikes/s2-pimalaya-io/) (throw-away).
 
 ## Question
@@ -13,7 +13,7 @@ fetch 1,000 envelopes, and IDLE for new mail
 
 ## Answer
 
-**Yes, Pimalaya fits.** Use it for IMAP and SMTP in task 1.1, with three
+**Yes, Pimalaya fits.** Use it for IMAP and SMTP in task 1.1, with four
 conditions:
 
 1. Some io-imap command wrappers throw away server updates (below). We write
@@ -24,10 +24,13 @@ conditions:
    the protocol.
 3. We pin exact versions. io-imap had seven breaking releases (0.1 to 0.6)
    between June and August 2026, and `imap-codec` is still a 2.0 alpha.
+4. Our driver hands io-imap whole lines only. io-imap breaks APPEND when the
+   server's `+` continuation arrives in two pieces, and Dovecot does send it
+   that way (problem 10).
 
-Gmail is still open: the cloud sandbox cannot open connections to
-`imap.gmail.com:993`. The run command is under
-[Running it](#running-it); the S2 "done when" is met once that run passes.
+Gmail passed login, folders, envelopes and IDLE timeout. Two gaps remain: the
+test account holds only 79 messages, and no mail arrived during the IDLE wait
+(see [Gmail](#gmail)).
 
 ## What was built
 
@@ -37,12 +40,15 @@ Gmail is still open: the cloud sandbox cannot open connections to
   `MailSender` (send, quit). No Pimalaya type appears in them.
 - `net.rs`: `Conn`, a TCP connection from `async-net` with optional TLS from
   `futures-rustls` (ring provider, platform certificate verifier), with read
-  timeouts. About 150 lines, most of it trait plumbing.
+  timeouts. Reads always end on a line break (problem 10). About 170 lines,
+  most of it trait plumbing.
 - `imap.rs` and `smtp.rs`: the only files that import Pimalaya. Each has a
   roughly 20-line loop that answers the coroutine's requests (`WantsRead`,
   `WantsWrite`, and for session opening `WantsTcpConnect`, `WantsTlsConnect`,
   `WantsTlsUpgrade`).
 - `bin/s2.rs`: runs the checks against one server and prints a report.
+- `examples/append_stress.rs`: appends thousands of messages to Dovecot, to
+  reproduce problem 10.
 - `tests/transcripts.rs`: scripted server replies that pin the io-imap
   behaviour described below. No server is needed; this is a real advantage of
   sans-I/O.
@@ -63,10 +69,28 @@ same machine:
 | SMTP login (submission) | 29 ms | 14 ms |
 | SMTP send to self, IDLE sees it arrive | 3 ms after send | not applicable ² |
 | SMTP send to another domain (caught by Mailpit) | not tested | 6 ms |
-| Gmail (app password) | **not run** (see above) | |
 
 ¹ Dovecot batches IDLE notifications; this is its server-side delay.
 ² The Dovecot dev setup relays all mail to Mailpit rather than delivering locally.
+
+### Gmail
+
+Run by the project owner (the cloud sandbox cannot reach `imap.gmail.com`),
+read-only `custom` profile with an app password, on 26 September 2026:
+
+| Check | Result |
+|---|---|
+| IMAP login (implicit TLS, platform certificate verifier) | OK, 1.2 s |
+| List folders | 11 folders in 250 ms; All Mail, Drafts, Sent, Junk, Flagged and Trash roles detected |
+| Fetch envelopes from `[Gmail]/All Mail` | all 79 in 0.4–0.5 s |
+| IDLE ended by our timer, then NOOP, then logout | OK |
+| IDLE woken by new mail | **not tested**: no mail arrived during the 2-minute wait |
+| Nothing appended, sent or created | confirmed |
+
+Gaps: the account holds 79 messages, so the 1,000-envelope check could not
+run on Gmail. It passed on Stalwart and Dovecot. `S2_ALLOW_FEW=1` now turns
+that check into a warning for small accounts. IDLE wake-up on Gmail still
+needs a run where someone sends a mail during the wait.
 
 Also checked:
 
@@ -114,9 +138,11 @@ Problems, and what we do about each:
 | 7 | ENVELOPE strings are raw, so RFC 2047 encoded words are not decoded. | Subjects and names need decoding. | Decode in our MIME layer (`mail-parser`), or fetch the header fields and parse them there. |
 | 8 | Default features pull in `pimalaya-stream`, Pimalaya's own std/TLS I/O. | Extra code we do not use. | Use `default-features = false` (done here). Enable `scram` when we add SCRAM-SHA-256. |
 | 9 | Seven breaking releases in about 11 weeks. `imap-codec` 2.0 is still alpha. | Upgrades will need work. | Pin exact versions. Keep Pimalaya imports in one module per protocol, as here. Rely on the weekly `upstream` CI job (plan §3.3). |
+| 10 | A synchronising-literal APPEND fails with "server did not return a tagged response" when the server's `+ OK` continuation arrives split across two reads. `ImapSend` writes the literal as soon as it has no complete line to decode, then treats the late `+` as the end of the command. The real tagged OK is left unread (test `append_fails_when_continuation_is_split`). | Seen on Dovecot over STARTTLS: 2 of 5 runs of 3,000 APPENDs failed, and the failing read was a lone `+`. Stalwart never split the line in our runs. | `Conn` keeps reading until a chunk ends with a line break, so io-imap never sees half a line. After the fix, 20 runs of 3,000 APPENDs had none. Upstream fix: only send the literal after a continuation request arrives. Report upstream. |
 
 None of these calls for a fork today. Problems 1 and 2 are small upstream
-fixes: return the collected `data` and `untagged` responses. If upstream does
+fixes: return the collected `data` and `untagged` responses. Problem 10 is a
+one-condition fix in `ImapSend`. If upstream does
 not take them, the light-fork policy in ARCHITECTURE.md §20 applies.
 
 ## Running it
@@ -135,13 +161,19 @@ waits in IDLE):
 ```sh
 S2_IMAP=imap.gmail.com:993:tls S2_USER=you@gmail.com \
 S2_PASSWORD='<app password>' S2_FOLDER='[Gmail]/All Mail' \
-cargo run --release -- custom
+S2_ALLOW_FEW=1 cargo run --release -- custom
+```
+
+APPEND stress test (problem 10), against the local Dovecot:
+
+```sh
+cargo run --release --example append_stress -- 3000
 ```
 
 ## Next steps
 
-- Run the Gmail check and add the numbers here.
+- Rerun the Gmail IDLE wait and send a mail during it, to test wake-up.
 - Task 1.1: move `net.rs` and the driver loops into `katna-sync`, with one task
   per connection (problem 4). Fold the traits into the real `MailBackend`
   design (JMAP and POP3 too).
-- Report problems 1 and 2 to `pimalaya/io-imap`.
+- Report problems 1, 2 and 10 to `pimalaya/io-imap`.

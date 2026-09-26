@@ -13,6 +13,8 @@
 //! The `custom` profile is read-only unless `S2_WRITE=1`: it lists folders,
 //! fetches envelopes from `S2_FOLDER` and waits on INBOX with IDLE
 //! (send yourself a mail while it waits). It never appends or sends.
+//! `S2_ALLOW_FEW=1` turns "fewer than 1,000 envelopes" into a warning, for
+//! accounts that hold less mail.
 //!
 //! `S2_EXECUTOR=smol` runs everything as a task on smol's thread pool
 //! instead of a plain `block_on`, to show the futures are `Send` and not
@@ -43,6 +45,9 @@ struct Profile {
     tls: Tls,
     folder: Option<String>,
     write: bool,
+    /// Report fewer than 1,000 envelopes as a warning, not a failure, for
+    /// real accounts that hold less mail.
+    allow_few: bool,
     /// Whether mail sent to ourselves lands in our INBOX (Stalwart does
     /// local delivery; the Dovecot setup relays everything to Mailpit).
     local_delivery: bool,
@@ -96,6 +101,7 @@ fn profile() -> std::result::Result<Profile, String> {
             tls: Tls::insecure_for_local_tests(),
             folder: None,
             write: true,
+            allow_few: false,
             local_delivery: true,
         }),
         "dovecot" => Ok(Profile {
@@ -106,6 +112,7 @@ fn profile() -> std::result::Result<Profile, String> {
             tls: Tls::insecure_for_local_tests(),
             folder: None,
             write: true,
+            allow_few: false,
             local_delivery: false,
         }),
         "custom" => {
@@ -121,6 +128,7 @@ fn profile() -> std::result::Result<Profile, String> {
                 tls: Tls::system().map_err(|e| e.to_string())?,
                 folder: env::var("S2_FOLDER").ok(),
                 write: env::var("S2_WRITE").as_deref() == Ok("1"),
+                allow_few: env::var("S2_ALLOW_FEW").as_deref() == Ok("1"),
                 local_delivery: true,
             })
         }
@@ -210,10 +218,11 @@ async fn run(p: Profile) -> Result<()> {
         );
     }
     if envelopes.len() < BULK_COUNT as usize {
-        return Err(Error::Protocol(format!(
-            "only {} envelopes, need {BULK_COUNT}",
-            envelopes.len()
-        )));
+        let msg = format!("only {} envelopes, need {BULK_COUNT}", envelopes.len());
+        if !p.allow_few {
+            return Err(Error::Protocol(msg));
+        }
+        println!("  warning: {msg} (allowed by S2_ALLOW_FEW=1)");
     }
 
     // 4. IDLE with nothing happening: our timer ends it cleanly.

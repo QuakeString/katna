@@ -98,3 +98,46 @@ fn noop_discards_untagged_updates() {
         other => panic!("unexpected {other:?}"),
     }
 }
+
+/// A synchronising-literal APPEND fails when the server's `+` continuation
+/// line arrives split across two reads: io-imap sends the literal as soon
+/// as it has no complete line to decode, then treats the late `+` as the
+/// end of the command and returns before the tagged OK.
+#[test]
+fn append_fails_when_continuation_is_split() {
+    use io_imap::rfc3501::append::{
+        ImapMessageAppend, ImapMessageAppendError, ImapMessageAppendOptions,
+    };
+
+    let mut co = ImapMessageAppend::new(
+        "INBOX".try_into().unwrap(),
+        b"hi".to_vec(),
+        ImapMessageAppendOptions::default(),
+    );
+    let mut frag = Fragmentizer::new(1 << 20);
+    let S::Yielded(ImapYield::WantsWrite(header)) = co.resume(&mut frag, None) else {
+        panic!("expected APPEND command");
+    };
+    assert!(header.ends_with(b"{2}\r\n"));
+    assert!(matches!(
+        co.resume(&mut frag, None),
+        S::Yielded(ImapYield::WantsRead)
+    ));
+
+    // First half of "+ OK\r\n": io-imap already writes the literal.
+    assert!(matches!(
+        co.resume(&mut frag, Some(b"+ O")),
+        S::Yielded(ImapYield::WantsWrite(ref b)) if b == b"hi\r\n"
+    ));
+    assert!(matches!(
+        co.resume(&mut frag, None),
+        S::Yielded(ImapYield::WantsRead)
+    ));
+
+    // Second half: the command "completes" without its tagged response,
+    // which is still on the wire and will confuse the next command.
+    match co.resume(&mut frag, Some(b"K\r\n")) {
+        S::Complete(Err(ImapMessageAppendError::MissingTagged)) => {}
+        other => panic!("io-imap behaviour changed, update the findings: {other:?}"),
+    }
+}
