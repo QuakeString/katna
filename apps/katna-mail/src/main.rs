@@ -114,6 +114,9 @@ fn main() -> ExitCode {
             }
             let env = Environment::from_env();
             let font = ui_font(&env, cx);
+            if let Some(font) = &font {
+                cx.set_global(katna_ui::UiFont(font.clone()));
+            }
             let options = window_options(
                 &env,
                 MAIL_APP_ID,
