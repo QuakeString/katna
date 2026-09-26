@@ -2,12 +2,14 @@
 
 //! Account model shared by the daemon, the store and the apps.
 //!
-//! Protocol settings (servers, ports, sync options) are added with the sync
-//! engine in Phase 1. Secrets are never part of this model: they live in the
-//! Secret Service (`docs/ARCHITECTURE.md` §5.1).
+//! Server settings are [`AccountSettings`], stored as JSON with the account.
+//! Secrets are never part of this model: they live in the Secret Service
+//! (`docs/ARCHITECTURE.md` §5.1).
 
 use std::fmt;
 use std::str::FromStr;
+
+use serde::{Deserialize, Serialize};
 
 /// Database ID of an account.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -93,6 +95,71 @@ pub struct Account {
     pub address: String,
 }
 
+/// How an account reaches its servers.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AccountSettings {
+    /// Incoming mail (IMAP accounts).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub imap: Option<Server>,
+    /// Outgoing mail.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub smtp: Option<Server>,
+}
+
+/// One server of an account.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Server {
+    pub host: String,
+    pub port: u16,
+    pub security: Security,
+    /// Login name; often the address.
+    pub username: String,
+    /// Accept any certificate. Only for local test servers with
+    /// self-signed certificates.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub accept_invalid_certs: bool,
+}
+
+/// Transport security of a [`Server`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Security {
+    /// TLS from the first byte (IMAPS 993, SMTPS 465).
+    Tls,
+    /// Plain text, upgraded with STARTTLS (143, 587).
+    StartTls,
+    /// No encryption. Only for local test servers.
+    Plain,
+}
+
+impl Security {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Tls => "tls",
+            Self::StartTls => "starttls",
+            Self::Plain => "plain",
+        }
+    }
+}
+
+impl fmt::Display for Security {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+impl FromStr for Security {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        [Self::Tls, Self::StartTls, Self::Plain]
+            .into_iter()
+            .find(|security| security.as_str() == s)
+            .ok_or_else(|| format!("unknown security {s:?} (tls, starttls or plain)"))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -111,6 +178,34 @@ mod tests {
             "IMAP".parse::<AccountKind>(),
             Err(UnknownAccountKind("IMAP".to_owned()))
         );
+    }
+
+    #[test]
+    fn settings_json_is_compact_and_round_trips() {
+        let settings = AccountSettings {
+            imap: Some(Server {
+                host: "imap.example.org".into(),
+                port: 993,
+                security: Security::Tls,
+                username: "alice".into(),
+                accept_invalid_certs: false,
+            }),
+            smtp: None,
+        };
+        let json = serde_json::to_string(&settings).unwrap();
+        assert_eq!(
+            json,
+            r#"{"imap":{"host":"imap.example.org","port":993,"security":"tls","username":"alice"}}"#
+        );
+        assert_eq!(
+            serde_json::from_str::<AccountSettings>(&json).unwrap(),
+            settings
+        );
+        assert_eq!(
+            serde_json::from_str::<AccountSettings>("{}").unwrap(),
+            AccountSettings::default()
+        );
+        assert_eq!("starttls".parse(), Ok(Security::StartTls));
     }
 
     #[test]

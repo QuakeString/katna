@@ -53,9 +53,39 @@ pub fn is_valid_app_id(id: &str) -> bool {
         })
 }
 
+/// Calls `$callback!(interface, bus name, object path)` with the D-Bus names
+/// of the daemon as string literals.
+///
+/// zbus's `#[proxy]` and `#[interface]` attributes need literals, not
+/// constants; this keeps those literals here, next to the constants a test
+/// checks them against.
+#[macro_export]
+macro_rules! with_dbus_names {
+    ($callback:ident) => {
+        $callback!(
+            "in.invenia.katna.Pim1",
+            "in.invenia.katna.Daemon",
+            "/in/invenia/katna/Pim1"
+        );
+    };
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    macro_rules! names {
+        ($interface:tt, $bus_name:tt, $path:tt) => {
+            assert_eq!($interface, PIM_INTERFACE);
+            assert_eq!($bus_name, DAEMON_BUS_NAME);
+            assert_eq!($path, PIM_OBJECT_PATH);
+        };
+    }
+
+    #[test]
+    fn literal_dbus_names_match() {
+        with_dbus_names!(names);
+    }
 
     #[test]
     fn all_identifiers_are_valid() {

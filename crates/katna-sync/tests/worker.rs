@@ -10,7 +10,7 @@ use async_channel::Receiver;
 use async_io::Timer;
 use common::FakeServer;
 use futures_lite::FutureExt;
-use katna_sync::worker::{self, Event, StopHandle, WorkerConfig};
+use katna_sync::worker::{self, Event, Handle, WorkerConfig};
 
 fn config() -> WorkerConfig {
     WorkerConfig {
@@ -23,7 +23,7 @@ fn config() -> WorkerConfig {
 
 struct Running {
     events: Receiver<Event>,
-    stop: StopHandle,
+    handle: Handle,
     task: smol::Task<()>,
     _tmp: tempfile::TempDir,
 }
@@ -31,18 +31,18 @@ struct Running {
 fn start(server: &FakeServer, config: WorkerConfig) -> Running {
     let (tmp, store, account) = common::store();
     let (events_tx, events) = async_channel::unbounded();
-    let (stop, stop_rx) = worker::stop_signal();
+    let (handle, control) = worker::control();
     let task = smol::spawn(worker::run(
         server.clone(),
         store,
         account,
         config,
         events_tx,
-        stop_rx,
+        control,
     ));
     Running {
         events,
-        stop,
+        handle,
         task,
         _tmp: tmp,
     }
@@ -61,7 +61,7 @@ impl Running {
     }
 
     async fn stop(self) {
-        drop(self.stop);
+        drop(self.handle);
         self.task
             .or(async {
                 Timer::after(Duration::from_secs(5)).await;
@@ -135,14 +135,63 @@ fn reconnects_with_growing_waits() {
 }
 
 #[test]
-fn wrong_password_is_not_retried() {
+fn wrong_password_is_retried_only_when_asked() {
     let server = FakeServer::default();
+    server.create("INBOX", 1);
     server.state().wrong_password = true;
     smol::block_on(async {
         let worker = start(&server, config());
         assert!(matches!(worker.next().await, Event::AuthFailed(_)));
         Timer::after(Duration::from_millis(200)).await;
         assert_eq!(server.state().connects, 1);
+
+        // The user fixed the password.
+        server.state().wrong_password = false;
+        worker.handle.sync_now();
+        assert!(matches!(worker.next().await, Event::Connected));
+        assert!(matches!(worker.next().await, Event::Synced(_)));
+        worker.stop().await;
+    });
+}
+
+#[test]
+fn sync_now_ends_the_wait() {
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    server.create("Archive", 1);
+    smol::block_on(async {
+        let worker = start(&server, config());
+        assert!(matches!(worker.next().await, Event::Connected));
+        assert!(matches!(worker.next().await, Event::Synced(_)));
+
+        // New mail in a folder IDLE does not watch shows up on request.
+        Timer::after(Duration::from_millis(50)).await;
+        server.clear_log();
+        server.remove_folder("Archive");
+        server.create("Archive", 1);
+        server.deliver("Archive", "elsewhere");
+        worker.handle.sync_now();
+        let event = worker.next().await;
+        assert_eq!(added(&event), 1, "{event:?}");
+        assert!(server.log().contains(&"LIST".to_owned()));
+        worker.stop().await;
+    });
+}
+
+#[test]
+fn sync_now_reconnects_at_once() {
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    server.state().refuse = 1;
+    let config = WorkerConfig {
+        retry_min: Duration::from_secs(60),
+        ..config()
+    };
+    smol::block_on(async {
+        let worker = start(&server, config);
+        assert!(matches!(worker.next().await, Event::Disconnected { .. }));
+        worker.handle.sync_now();
+        assert!(matches!(worker.next().await, Event::Connected));
         worker.stop().await;
     });
 }

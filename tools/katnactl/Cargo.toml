@@ -11,6 +11,10 @@ publish.workspace = true
 [dependencies]
 katna-core.workspace = true
 katna-dbus.workspace = true
+katna-store.workspace = true
+futures-lite.workspace = true
+rpassword.workspace = true
+zbus.workspace = true
 
 [lints]
 workspace = true

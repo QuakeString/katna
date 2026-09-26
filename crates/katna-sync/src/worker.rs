@@ -4,8 +4,8 @@
 //! as the daemon runs.
 //!
 //! 1. Connect. On failure, wait and try again, doubling the wait each time
-//!    up to [`WorkerConfig::retry_max`]. A refused password is not retried:
-//!    it would only lock the account on many servers.
+//!    up to [`WorkerConfig::retry_max`]. A refused password is not retried
+//!    on its own: it would only lock the account on many servers.
 //! 2. Sync every folder ([`engine::sync_account`]).
 //! 3. Loop: bring the inbox up to date, then wait on it with IDLE until the
 //!    server reports a change or [`WorkerConfig::idle_timeout`] passes
@@ -13,10 +13,16 @@
 //!    [`WorkerConfig::full_sync_interval`], sync all folders again.
 //! 4. Any network or protocol error ends the session; go back to 1.
 //!
+//! [`Handle::sync_now`] ends any wait: it starts a full sync, or reconnects
+//! at once. Dropping the [`Handle`] logs out and ends the worker.
+//!
 //! The worker owns its [`Store`] handle, so several workers can run at once;
 //! SQLite serialises their writes.
 
-use std::{future::Future, time::Duration};
+use std::{
+    future::Future,
+    time::{Duration, Instant},
+};
 
 use async_channel::{Receiver, Sender};
 use async_io::Timer;
@@ -89,75 +95,130 @@ pub enum Event {
         error: String,
         retry_in: Duration,
     },
-    /// The server refused the password. The worker waits for [`Stop`].
+    /// The server refused the password. The worker tries again only when
+    /// asked to ([`Handle::sync_now`]).
     AuthFailed(String),
 }
 
-/// Tells a worker to stop. Dropping it stops the worker too.
-pub struct StopHandle(#[allow(dead_code)] Sender<()>);
-
-/// The worker's side of a [`StopHandle`].
-#[derive(Clone)]
-pub struct Stop(Receiver<()>);
-
-/// A new stop signal.
-pub fn stop_signal() -> (StopHandle, Stop) {
-    let (tx, rx) = async_channel::bounded(1);
-    (StopHandle(tx), Stop(rx))
+/// The daemon's side of a worker: asks it to sync now, and stops it when
+/// dropped.
+pub struct Handle {
+    _stop: Sender<()>,
+    wake: Sender<()>,
 }
 
-impl Stop {
+impl Handle {
+    /// Asks the worker to sync every folder now. A worker waiting to
+    /// reconnect, or stopped by a refused password, tries again at once.
+    pub fn sync_now(&self) {
+        // A full channel already holds a request.
+        let _ = self.wake.try_send(());
+    }
+}
+
+/// The worker's side of a [`Handle`].
+pub struct Control {
+    stop: Receiver<()>,
+    wake: Receiver<()>,
+}
+
+/// What ended a wait on a [`Control`].
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Signal {
+    Stop,
+    Wake,
+}
+
+/// A new handle and the control it drives.
+pub fn control() -> (Handle, Control) {
+    let (stop_tx, stop) = async_channel::bounded(1);
+    let (wake, wake_rx) = async_channel::bounded(1);
+    (
+        Handle {
+            _stop: stop_tx,
+            wake,
+        },
+        Control {
+            stop,
+            wake: wake_rx,
+        },
+    )
+}
+
+impl Control {
+    /// Completes when the handle asks for something. Cancel-safe.
+    async fn signal(&self) -> Signal {
+        // Nothing is sent on `stop`; `recv` fails when the handle is dropped.
+        async {
+            let _ = self.stop.recv().await;
+            Signal::Stop
+        }
+        .or(async {
+            match self.wake.recv().await {
+                Ok(()) => Signal::Wake,
+                Err(_) => Signal::Stop,
+            }
+        })
+        .await
+    }
+
     /// Completes once the handle is dropped. Cancel-safe.
-    pub async fn wait(&self) {
-        // Nothing is ever sent; `recv` fails when the sender goes away.
-        let _ = self.0.recv().await;
+    async fn stopped(&self) {
+        let _ = self.stop.recv().await;
     }
 
-    fn is_set(&self) -> bool {
-        self.0.is_closed()
+    fn is_stopped(&self) -> bool {
+        self.stop.is_closed()
     }
 }
 
-/// Runs the worker for `account` until `stop` fires.
+/// Runs the worker for `account` until its [`Handle`] is dropped.
 pub async fn run<C: Connector>(
     connector: C,
     mut store: Store,
     account: AccountId,
     config: WorkerConfig,
     events: Sender<Event>,
-    stop: Stop,
+    control: Control,
 ) {
     let mut delay = config.retry_min;
-    while !stop.is_set() {
+    while !control.is_stopped() {
         let connected = async { Some(connector.connect().await) }
             .or(async {
-                stop.wait().await;
+                control.stopped().await;
                 None
             })
             .await;
         let error = match connected {
             None => return,
             Some(Err(Error::Auth(message))) => {
-                tracing::warn!(%account, %message, "login refused; not retrying");
+                tracing::warn!(%account, %message, "login refused; waiting for sync now");
                 let _ = events.try_send(Event::AuthFailed(message));
-                stop.wait().await;
-                return;
+                // Retrying on its own could lock the account on many
+                // servers; only an explicit request tries again.
+                match control.signal().await {
+                    Signal::Stop => return,
+                    Signal::Wake => {
+                        delay = config.retry_min;
+                        continue;
+                    }
+                }
             }
             Some(Err(error)) => error,
             Some(Ok(mut backend)) => {
                 let _ = events.try_send(Event::Connected);
                 let mut synced = false;
-                match session(
+                let result = session(
                     &mut backend,
                     &mut store,
                     account,
                     &config,
                     &events,
-                    &stop,
+                    &control,
                     &mut synced,
                 )
-                .await
-                {
+                .await;
+                match result {
                     Ok(()) => {
                         if let Err(error) = backend.logout().await {
                             tracing::debug!(%error, "logout on stop");
@@ -180,11 +241,12 @@ pub async fn run<C: Connector>(
             error: error.to_string(),
             retry_in: delay,
         });
-        let stopped = sleep_or_stop(delay, &stop).await;
-        if stopped {
-            return;
+        match sleep_or_signal(delay, &control).await {
+            Some(Signal::Stop) => return,
+            // Sync now: reconnect at once, starting the waits over.
+            Some(Signal::Wake) => delay = config.retry_min,
+            None => delay = (delay * 2).min(config.retry_max),
         }
-        delay = (delay * 2).min(config.retry_max);
     }
 }
 
@@ -196,18 +258,18 @@ async fn session<B: MailBackend>(
     account: AccountId,
     config: &WorkerConfig,
     events: &Sender<Event>,
-    stop: &Stop,
+    control: &Control,
     synced: &mut bool,
 ) -> Result<()> {
-    let mut last_full = std::time::Instant::now();
-    let mut first = true;
+    let mut last_full = Instant::now();
+    let mut full = true;
     loop {
-        if first || last_full.elapsed() >= config.full_sync_interval {
+        if full || last_full.elapsed() >= config.full_sync_interval {
             let reports = engine::sync_account(backend, store, account).await?;
             let _ = events.try_send(Event::Synced(reports));
             *synced = true;
-            first = false;
-            last_full = std::time::Instant::now();
+            full = false;
+            last_full = Instant::now();
         }
         let Some(inbox) = store
             .folders(account)?
@@ -218,8 +280,10 @@ async fn session<B: MailBackend>(
             let next = config
                 .full_sync_interval
                 .saturating_sub(last_full.elapsed());
-            if sleep_or_stop(next, stop).await {
-                return Ok(());
+            match sleep_or_signal(next, control).await {
+                Some(Signal::Stop) => return Ok(()),
+                Some(Signal::Wake) => full = true,
+                None => {}
             }
             continue;
         };
@@ -237,23 +301,22 @@ async fn session<B: MailBackend>(
             continue;
         }
         let wait = backend
-            .wait_for_changes(config.idle_timeout.min(until_full), stop.wait())
+            .wait_for_changes(config.idle_timeout.min(until_full), control.signal())
             .await?;
-        if wait.interrupted.is_some() {
-            return Ok(());
+        match wait.interrupted {
+            Some(Signal::Stop) => return Ok(()),
+            Some(Signal::Wake) => full = true,
+            None => {}
         }
     }
 }
 
-/// Sleeps for `duration`. Returns `true` if `stop` fired first.
-async fn sleep_or_stop(duration: Duration, stop: &Stop) -> bool {
+/// Sleeps for `duration`. Returns the signal that cut it short, if any.
+async fn sleep_or_signal(duration: Duration, control: &Control) -> Option<Signal> {
     async {
         Timer::after(duration).await;
-        false
+        None
     }
-    .or(async {
-        stop.wait().await;
-        true
-    })
+    .or(async { Some(control.signal().await) })
     .await
 }
