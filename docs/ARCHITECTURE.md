@@ -1015,11 +1015,18 @@ Gemini or confidential mode):
 - **Conversations.** The list shows one line per conversation by default
   (senders, a count, the newest subject and snippet); a setting shows
   single messages instead.
-- **Category tabs.** The inbox has Primary, Promotions, Social, Updates and
-  Forums tabs with "N new" badges; a setting turns them off. Gmail accounts
-  use Gmail's own categories; other accounts use header rules: mailing
-  lists go to Forums, newsletters and marketing to Promotions, automated
-  notices to Updates, social networks to Social, and people to Primary.
+- **Category tabs.** The inbox has tabs with "N new" badges, the set its
+  provider's webmail uses (`tabs.rs`): Primary, Promotions, Social, Updates
+  and Forums for Gmail; Focused and Other for Outlook; Inbox, Newsletters
+  and Notifications for Zoho Mail; Gmail's five for everyone else. The
+  provider is told from the address and the IMAP host. Every tab is a set
+  of the five stored categories. Gmail accounts use Gmail's own
+  categories; other accounts use header rules: mailing lists go to Forums,
+  newsletters and marketing to Promotions, automated notices to Updates,
+  social networks to Social, and people to Primary. Settings, Inbox picks
+  another set per account or none, and turns single tabs off (their mail
+  shows in the first tab); a switch turns tabs off for every account
+  (`[mail] inbox_tabs`, `[mail.account_tabs."address"]`).
 - **List toolbar.** A select-all checkbox with a menu (all, none, read,
   unread, starred, unstarred), refresh and more; with lines ticked it shows
   archive, report spam, delete, mark read or unread, move to and more.
@@ -1032,10 +1039,29 @@ Gemini or confidential mode):
   star and reply; earlier messages folded to one line, and a run of three
   or more folded into a count; Reply, Reply all and Forward buttons below.
 - **Quick settings.** A panel that slides in from the right and pushes the
-  cards: reading pane (with small drawings of the two layouts), density,
-  theme (desktop, light or dark, the window frame included), category tabs,
-  undo-send delay, signature and conversation view. Changes apply at once
-  and are saved to `config.toml` (`[mail]` and `[sending]`).
+  cards: "See all settings", reading pane (with small drawings of the two
+  layouts), density, theme (desktop, light or dark, the window frame
+  included), inbox tabs, undo-send delay, signatures and conversation view.
+  Changes apply at once and are saved to `config.toml` (`[mail]`,
+  `[sending]` and `[shortcuts]`).
+- **Settings page.** "See all settings", the rail's gear or `?` open it in
+  place of the list (`window/settings_page.rs`), with sections General,
+  Inbox, Signatures and Keyboard shortcuts.
+- **Signatures.** Any number, each with a name; one default for new mail
+  and one for replies and forwards. The compose bar's signature button
+  swaps the signature in the body. A reply starts with the signature the
+  user signed their newest message in the conversation with, found by
+  comparing the text after its `-- ` line (`signatures.rs`); otherwise the
+  reply default. The single signature of older versions becomes the first.
+- **Keyboard shortcuts.** Every action has one (`window/keymap.rs`), with
+  Gmail's keys as defaults: j/k, o, u, c, r, a, f, e, #, !, v, s, x,
+  Shift+I/U, `* a`, `* n`, z, `g i`/`g s`/`g t`/`g d`/`g a`, /, ?, and Ctrl
+  keys for search, quick settings, reload and quit. The Settings page lists
+  them all; a click on a key (or +) and the new keys change it, a key used
+  elsewhere moves over with a note, and each shortcut or all can go back to
+  the defaults. Keys without Ctrl or Alt only work in the list and the
+  open conversation, never while typing, and a switch turns them off, as in
+  Gmail. Only changes are saved (`[shortcuts.keys]`).
 - **Compose.** A "New Message" window docked at the bottom right, as in
   Gmail: title bar with minimize, full size and close; To (with Cc and Bcc
   links), Subject, and the body with the signature after a `-- ` line.

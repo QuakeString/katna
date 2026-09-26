@@ -150,19 +150,19 @@ fn tab(category: Option<MailCategory>) -> MailCategory {
 }
 
 /// The conversations in `folder`, newest first, each with its newest
-/// message in the folder. With `category`, only conversations whose newest
-/// message in the folder has that category (unclassified counts as
-/// Primary), so each conversation is in exactly one tab.
+/// message in the folder. With `categories`, only conversations whose newest
+/// message in the folder has one of them (unclassified counts as Primary),
+/// so each conversation is in exactly one tab.
 pub(crate) fn folder_threads(
     conn: &Connection,
     folder: FolderId,
-    category: Option<MailCategory>,
+    categories: Option<&[MailCategory]>,
 ) -> Result<Vec<ThreadEntry>> {
     let mut seen = HashSet::new();
     Ok(folder_rows(conn, folder)?
         .into_iter()
         .filter(|row| row.thread.is_none_or(|thread| seen.insert(thread)))
-        .filter(|row| category.is_none_or(|wanted| tab(row.category) == wanted))
+        .filter(|row| categories.is_none_or(|wanted| wanted.contains(&tab(row.category))))
         .map(|row| ThreadEntry {
             thread: row.thread.map(ThreadId),
             latest: MessageId(row.id),
@@ -185,15 +185,16 @@ pub(crate) fn folder_thread_messages(
     Ok(rows.collect::<rusqlite::Result<_>>()?)
 }
 
-/// The messages of `folder` in one inbox tab, newest first.
+/// The messages of `folder` in one inbox tab (some categories), newest
+/// first.
 pub(crate) fn folder_messages_in(
     conn: &Connection,
     folder: FolderId,
-    category: MailCategory,
+    categories: &[MailCategory],
 ) -> Result<Vec<MessageId>> {
     Ok(folder_rows(conn, folder)?
         .into_iter()
-        .filter(|row| tab(row.category) == category)
+        .filter(|row| categories.contains(&tab(row.category)))
         .map(|row| MessageId(row.id))
         .collect())
 }

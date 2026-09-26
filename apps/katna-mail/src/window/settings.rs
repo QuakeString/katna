@@ -8,13 +8,12 @@
 use std::time::Duration;
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, Div, Entity, Focusable, FontWeight, Hsla,
-    SpringAnimation, Window, div, prelude::*, px, rgba,
+    Animation, AnimationExt, AnyElement, Context, Div, FontWeight, SharedString, SpringAnimation,
+    div, prelude::*, px, rgba,
 };
 use katna_core::config::{Density, ReadingPane, Theme as ThemeChoice, UNDO_SEND_CHOICES};
 use katna_ui::Ripple;
 use katna_ui::motion;
-use katna_ui::{InputEvent, TextArea};
 
 use super::{MailWindow, SETTINGS_WIDTH};
 use crate::theme::{Theme, mix};
@@ -22,12 +21,10 @@ use crate::widgets::{elevation, icon_button, radio, switch, tip};
 
 /// One loop of the reading-pane demo.
 const PANE_DEMO: Duration = Duration::from_millis(2600);
-/// A signature edit is saved this long after the last key.
-const SIGNATURE_SAVE_DELAY: Duration = Duration::from_millis(600);
 
 /// What a quick setting changes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Change {
+pub(super) enum Change {
     UndoSend(u32),
     Pane(ReadingPane),
     Density(Density),
@@ -35,6 +32,7 @@ enum Change {
     DesktopColors(bool),
     Tabs(bool),
     Conversations(bool),
+    SingleKeys(bool),
 }
 
 impl MailWindow {
@@ -90,6 +88,26 @@ impl MailWindow {
                             .flex()
                             .flex_col()
                             .gap(px(4.0))
+                            .child(
+                                div().pt(px(4.0)).pb(px(8.0)).flex().child(
+                                    crate::widgets::outlined_button(
+                                        "see-all-settings",
+                                        "See all settings",
+                                        th,
+                                    )
+                                    .flex_1()
+                                    .justify_center()
+                                    .on_click(cx.listener(
+                                        |this, _, window, cx| {
+                                            this.open_settings_page(
+                                                super::settings_page::Section::General,
+                                                window,
+                                                cx,
+                                            )
+                                        },
+                                    )),
+                                ),
+                            )
                             .child(heading("Reading pane", th))
                             .child(
                                 div()
@@ -154,52 +172,32 @@ impl MailWindow {
                             .child(heading("Inbox", th))
                             .child(self.switch_row(
                                 "tabs",
-                                "Category tabs",
-                                "Primary, Promotions, Social, Updates and Forums",
+                                "Inbox tabs",
+                                "The tabs of each account's mail provider",
                                 view.inbox_tabs,
                                 Change::Tabs(!view.inbox_tabs),
+                                th,
+                                cx,
+                            ))
+                            .child(self.link_row(
+                                "quick-tabs",
+                                "Choose tabs",
+                                "Per account, in Settings".into(),
+                                super::settings_page::Section::Inbox,
                                 th,
                                 cx,
                             ))
                             .child(divider(th))
                             .child(heading("Sending", th))
                             .child(self.undo_send_choice(th, cx))
-                            .children(self.signature.clone().map(|editor| {
-                                div()
-                                    .pt(px(12.0))
-                                    .flex()
-                                    .flex_col()
-                                    .gap(px(6.0))
-                                    .child(div().px(px(8.0)).text_size(px(14.0)).child("Signature"))
-                                    .child(
-                                        div()
-                                            .id("signature-box")
-                                            .mx(px(8.0))
-                                            .min_h(px(72.0))
-                                            .max_h(px(160.0))
-                                            .overflow_y_scroll()
-                                            .px(px(10.0))
-                                            .py(px(8.0))
-                                            .rounded(px(8.0))
-                                            .border_1()
-                                            .border_color(rgba(th.divider))
-                                            .text_size(px(14.0))
-                                            .line_height(px(20.0))
-                                            .cursor_text()
-                                            .on_click({
-                                                let focus = editor.focus_handle(cx);
-                                                move |_, window, cx| window.focus(&focus, cx)
-                                            })
-                                            .child(editor),
-                                    )
-                                    .child(
-                                        div()
-                                            .px(px(8.0))
-                                            .text_size(px(12.0))
-                                            .text_color(rgba(th.text_faint))
-                                            .child("Added below new mail, replies and forwards."),
-                                    )
-                            }))
+                            .child(self.link_row(
+                                "quick-signatures",
+                                "Signatures",
+                                self.signature_summary(),
+                                super::settings_page::Section::Signatures,
+                                th,
+                                cx,
+                            ))
                             .child(divider(th))
                             .child(heading("Email threading", th))
                             .child(self.switch_row(
@@ -231,36 +229,8 @@ impl MailWindow {
             .into_any_element()
     }
 
-    /// The signature editor, saving as the user types.
-    pub(super) fn signature_editor(
-        &mut self,
-        window: &mut Window,
-        cx: &mut Context<Self>,
-    ) -> Entity<TextArea> {
-        let accent: Hsla = rgba(self.theme(window).accent).into();
-        let signature = self.config.sending.signature.clone();
-        let editor = cx.new(|cx| {
-            let mut area = TextArea::new("Your name, and anything to add below it", cx);
-            area.set_text(signature, 0, cx);
-            area.set_accent(accent);
-            area
-        });
-        let subscription = cx.subscribe(&editor, |this, editor, event: &InputEvent, cx| {
-            if *event != InputEvent::Changed {
-                return;
-            }
-            this.config.sending.signature = editor.read(cx).text().to_owned();
-            this.signature_save = Some(cx.spawn(async move |this, cx| {
-                cx.background_executor().timer(SIGNATURE_SAVE_DELAY).await;
-                this.update(cx, |this, _| this.save_config()).ok();
-            }));
-        });
-        self._subscriptions.push(subscription);
-        editor
-    }
-
     /// Undo send: how long a sent message waits before it goes out.
-    fn undo_send_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    pub(super) fn undo_send_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let now = self.config.sending.undo_send_seconds;
         let chips = UNDO_SEND_CHOICES.into_iter().map(|seconds| {
             let on = seconds == now;
@@ -308,7 +278,7 @@ impl MailWindow {
             .into_any_element()
     }
 
-    fn apply(&mut self, change: Change, cx: &mut Context<Self>) {
+    pub(super) fn apply(&mut self, change: Change, cx: &mut Context<Self>) {
         let sending = &mut self.config.sending;
         let view = &mut self.config.mail;
         let mut relist = false;
@@ -335,21 +305,32 @@ impl MailWindow {
                 view.conversations = on;
                 relist = true;
             }
+            Change::SingleKeys(on) => {
+                self.config.shortcuts.single_keys = on;
+                self.shortcuts_changed(cx);
+                return;
+            }
         }
         self.save_config();
         if relist {
-            self.reader = None;
-            self.reading = false;
-            if let Some(folder) = self.folder {
-                self.card_seq += 1;
-                self.open_folder(folder, cx);
-            }
+            self.relist(cx);
+        }
+        cx.notify();
+    }
+
+    /// Lists the open folder again after a setting changed what it shows.
+    pub(super) fn relist(&mut self, cx: &mut Context<Self>) {
+        self.reader = None;
+        self.reading = false;
+        if let Some(folder) = self.folder {
+            self.card_seq += 1;
+            self.open_folder(folder, cx);
         }
         cx.notify();
     }
 
     /// A reading-pane option: a small drawing of the layout and its name.
-    fn pane_choice(
+    pub(super) fn pane_choice(
         &self,
         pane: ReadingPane,
         label: &'static str,
@@ -422,7 +403,7 @@ impl MailWindow {
             .into_any_element()
     }
 
-    fn radio_row(
+    pub(super) fn radio_row(
         &self,
         id: &'static str,
         label: &'static str,
@@ -452,8 +433,80 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// A row that opens a section of the Settings page.
+    fn link_row(
+        &self,
+        id: &'static str,
+        label: &'static str,
+        detail: SharedString,
+        section: super::settings_page::Section,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        div()
+            .id(id)
+            .relative()
+            .overflow_hidden()
+            .py(px(8.0))
+            .px(px(8.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(12.0))
+            .rounded(px(8.0))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .on_click(
+                cx.listener(move |this, _, window, cx| {
+                    this.open_settings_page(section, window, cx)
+                }),
+            )
+            .child(Ripple::new((id, 1_usize), rgba(th.ripple)))
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .flex()
+                    .flex_col()
+                    .child(div().text_size(px(14.0)).child(label))
+                    .child(
+                        div()
+                            .text_size(px(12.0))
+                            .text_color(rgba(th.text_faint))
+                            .truncate()
+                            .child(detail),
+                    ),
+            )
+            .child(crate::widgets::icon("chevron-right", th.text_dim, 20.0))
+            .into_any_element()
+    }
+
+    /// "Work, by default" or "None yet".
+    fn signature_summary(&self) -> SharedString {
+        let sending = &self.config.sending;
+        match (
+            sending.signatures.len(),
+            sending.signature(sending.new_mail_signature),
+        ) {
+            (0, _) => "None yet".into(),
+            (n, Some(default)) => {
+                let name = if default.name.trim().is_empty() {
+                    "Untitled"
+                } else {
+                    default.name.as_str()
+                };
+                if n == 1 {
+                    format!("{name}, used by default").into()
+                } else {
+                    format!("{n} signatures; {name} by default").into()
+                }
+            }
+            (n, None) => format!("{n}, none by default").into(),
+        }
+    }
+
     #[allow(clippy::too_many_arguments)]
-    fn switch_row(
+    pub(super) fn switch_row(
         &self,
         id: &'static str,
         label: &'static str,
@@ -504,7 +557,7 @@ impl MailWindow {
     }
 }
 
-fn animated_radio(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> AnyElement {
+pub(super) fn animated_radio(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> AnyElement {
     let th = *th;
     div()
         .with_spring(
@@ -607,7 +660,7 @@ fn pane_picture(pane: ReadingPane, open: f32, th: &Theme) -> Div {
     }
 }
 
-fn heading(text: &'static str, th: &Theme) -> Div {
+pub(super) fn heading(text: &'static str, th: &Theme) -> Div {
     div()
         .pt(px(12.0))
         .pb(px(8.0))
@@ -617,6 +670,6 @@ fn heading(text: &'static str, th: &Theme) -> Div {
         .child(text.to_uppercase())
 }
 
-fn divider(th: &Theme) -> Div {
+pub(super) fn divider(th: &Theme) -> Div {
     div().mt(px(12.0)).h(px(1.0)).bg(rgba(th.divider))
 }

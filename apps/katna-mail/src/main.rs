@@ -12,6 +12,8 @@ mod data;
 mod format;
 mod outgoing;
 mod sidebar;
+mod signatures;
+mod tabs;
 mod theme;
 mod widgets;
 mod window;
@@ -37,9 +39,9 @@ Options:
   -V, --version    Show the version
 
 Keys: Up/Down or j/k move through the list, Enter or o opens, u or
-Escape closes, e archives, # deletes, s stars, x ticks, Shift+I and
-Shift+U mark read and unread, / or Ctrl+F searches, Ctrl+, opens quick
-settings, F5 reloads, Ctrl+Q quits.
+Escape closes, r replies, e archives, # deletes, s stars, x ticks, / or
+Ctrl+F searches, ? lists every shortcut, Ctrl+Q quits. Settings, Keyboard
+shortcuts changes them.
 ";
 
 fn main() -> ExitCode {
@@ -86,7 +88,6 @@ fn main() -> ExitCode {
     gpui_platform::application()
         .with_assets(assets::Assets)
         .run(move |cx: &mut App| {
-            window::bind_keys(cx);
             let env = Environment::from_env();
             let font = ui_font(&env, cx);
             if let Some(font) = &font {
