@@ -40,6 +40,7 @@ futures-lite = "2.6"
 futures-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12"] }
 jiff = { version = "0.2.37", default-features = false, features = ["std", "tz-system", "tzdb-zoneinfo"] }
 html5ever = "0.40.1"
+levenshtein_automata = "0.2.1"
 mail-parser = "0.11.9"
 # Secret Service client; async-std selects zbus/async-io, not tokio.
 oo7 = { version = "0.6", default-features = false, features = ["async-std", "native_crypto"] }
@@ -51,6 +52,7 @@ roxmltree = "0.21"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 smol = "2.0"
+tantivy-fst = "0.5.0"
 tantivy = { version = "0.26.2", default-features = false, features = ["mmap", "lz4-compression", "stemmer"] }
 tempfile = "3.27"
 thiserror = "2.0"
