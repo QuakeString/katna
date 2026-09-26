@@ -99,8 +99,10 @@ Screenshots (headless, software rendering, half size):
    The 30 MB budget for Katna Mail is tight; architecture §17 is updated.
 2. **Build and runtime dependencies.** With the Linux backends GPUI links
    `libxkbcommon`, `libxkbcommon-x11` and `libxcb` (not only `libc`). The
-   build needs `libxkbcommon-dev` and `libxkbcommon-x11-dev` (Arch:
-   `libxkbcommon`, `libxkbcommon-x11`); CI installs them.
+   build needs `libxkbcommon-dev`, `libxkbcommon-x11-dev` and
+   `libfontconfig-dev` (via `zed-font-kit`), plus `libfreetype-dev` or a
+   C++ compiler for the bundled FreeType (Arch: `libxkbcommon`,
+   `libxkbcommon-x11`, `fontconfig`, `freetype2`); CI installs them.
 3. **cargo-deny.** GPUI brings three unmaintained crates (`paste`,
    `rustybuzz`, `ttf-parser`; no vulnerabilities) and the `bzip2-1.0.6`
    license (permissive). `deny.toml` ignores those advisories with a reason
