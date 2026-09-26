@@ -273,6 +273,44 @@ fn gmail_thread_ids_and_categories_win() {
     );
     let got = threads_and_categories(&store, inbox);
     assert_eq!(got[4].1, Some(MailCategory::Promotions));
+
+    // The same mail in All Mail lands in the same tabs as in the inbox.
+    server.create("[Gmail]/All Mail", 1);
+    for (name, label) in [("a", None), ("c", None), ("d", Some("social"))] {
+        let uid = server.deliver_header(
+            "[Gmail]/All Mail",
+            &header(
+                name,
+                if name == "c" {
+                    "List-Unsubscribe: <https://x.example/u>\r\nX-Campaign: 1\r\n"
+                } else {
+                    ""
+                },
+            ),
+            "",
+        );
+        server.set_gmail_labels("[Gmail]/All Mail", uid, Some(10), label);
+    }
+    sync(&server, &mut store, account);
+    let all = store
+        .folders(account)
+        .unwrap()
+        .into_iter()
+        .find(|f| f.path == "[Gmail]/All Mail")
+        .unwrap()
+        .id;
+    let categories: Vec<_> = threads_and_categories(&store, all)
+        .iter()
+        .map(|(_, c)| *c)
+        .collect();
+    assert_eq!(
+        categories,
+        [
+            Some(MailCategory::Primary),
+            Some(MailCategory::Primary),
+            Some(MailCategory::Social)
+        ]
+    );
 }
 
 #[test]

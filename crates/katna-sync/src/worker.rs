@@ -24,6 +24,10 @@
 //! On a metered network ([`Handle::set_metered`]) step 2 and 3 skip the
 //! bodies; headers, flags and changes stay in sync.
 //!
+//! Other folders than the inbox are watched from a second connection
+//! ([`WorkerConfig::watch_interval`]): it compares their STATUS with the
+//! last sync, and the session syncs the ones that changed.
+//!
 //! POP3 accounts get [`run_pop3`] instead: POP3 has no push, so it checks
 //! the maildrop every [`WorkerConfig::pop3_interval`] and when asked, and
 //! holds a connection only while checking (the server locks the maildrop
@@ -45,10 +49,10 @@ use async_channel::{Receiver, Sender};
 use async_io::Timer;
 use futures_lite::FutureExt;
 use katna_core::{AccountId, Pop3Keep};
-use katna_store::{FolderRole, MessageId, Store};
+use katna_store::{FolderId, FolderRole, MessageId, Store};
 
 use crate::{
-    Credentials, Endpoint, Error, MailBackend, Result,
+    Credentials, Endpoint, Error, FolderStatus, MailBackend, Result,
     bodies::{self, OfflineWindow},
     engine::{self, FolderReport},
     imap::ImapBackend,
@@ -121,6 +125,10 @@ pub struct WorkerConfig {
     pub offline: OfflineWindow,
     /// How often a POP3 account checks for new mail.
     pub pop3_interval: Duration,
+    /// How often a second connection asks the server about every folder
+    /// but the inbox (IMAP STATUS), so mail filed there shows up without
+    /// waiting for the full sync. `None`: only the inbox is watched.
+    pub watch_interval: Option<Duration>,
 }
 
 impl Default for WorkerConfig {
@@ -132,6 +140,7 @@ impl Default for WorkerConfig {
             retry_max: Duration::from_secs(5 * 60),
             offline: OfflineWindow::default(),
             pop3_interval: Duration::from_secs(5 * 60),
+            watch_interval: Some(Duration::from_secs(2 * 60)),
         }
     }
 }
@@ -356,6 +365,26 @@ impl Control {
     }
 }
 
+/// What ended a wait in a session.
+enum Woken {
+    Control(Signal),
+    /// The folder watcher's latest look at every other folder.
+    Statuses(Vec<(String, FolderStatus)>),
+}
+
+/// Waits for the handle or the folder watcher. Cancel-safe.
+async fn woken(control: &Control, statuses: &Receiver<Vec<(String, FolderStatus)>>) -> Woken {
+    async { Woken::Control(control.signal().await) }
+        .or(async {
+            match statuses.recv().await {
+                Ok(statuses) => Woken::Statuses(statuses),
+                // No watcher: only the handle can end the wait.
+                Err(_) => std::future::pending().await,
+            }
+        })
+        .await
+}
+
 /// Why a connection was dropped on [`Handle::reconnect`].
 const RECONNECTING: &str = "reconnecting after a network change";
 
@@ -406,6 +435,7 @@ pub async fn run<C: Connector>(
             Some(Ok(mut backend)) => {
                 let _ = events.try_send(Event::Connected);
                 let mut synced = false;
+                let (statuses_tx, statuses) = async_channel::bounded(1);
                 let result = session(
                     &mut backend,
                     &mut store,
@@ -413,6 +443,7 @@ pub async fn run<C: Connector>(
                     &config,
                     &events,
                     &control,
+                    &statuses,
                     &mut synced,
                 )
                 .or(async {
@@ -420,6 +451,7 @@ pub async fn run<C: Connector>(
                     reconnecting = true;
                     Err(Error::Closed(RECONNECTING.into()))
                 })
+                .or(watch_folders(&connector, &config, statuses_tx))
                 .await;
                 match result {
                     Ok(()) => {
@@ -592,6 +624,7 @@ async fn pop3_wait(control: &Control, wait: Duration) -> bool {
 
 /// One connected session. Returns `Ok` when stopped, `Err` when the
 /// connection is no longer usable.
+#[allow(clippy::too_many_arguments)]
 async fn session<B: MailBackend>(
     backend: &mut B,
     store: &mut Store,
@@ -599,10 +632,13 @@ async fn session<B: MailBackend>(
     config: &WorkerConfig,
     events: &Sender<Event>,
     control: &Control,
+    statuses: &Receiver<Vec<(String, FolderStatus)>>,
     synced: &mut bool,
 ) -> Result<()> {
     let mut last_full = Instant::now();
     let mut full = true;
+    // Folders the watcher saw change, synced on the next round.
+    let mut stale: Vec<(FolderId, String)> = Vec::new();
     loop {
         // Changes go out first, so a sync never overwrites them.
         let report = ops::replay(backend, store, account, unix_now()).await?;
@@ -616,6 +652,7 @@ async fn session<B: MailBackend>(
             *synced = true;
             full = false;
             last_full = Instant::now();
+            stale.clear();
             if !control.metered() {
                 download_all(backend, store, account, config, events).await?;
             }
@@ -624,6 +661,44 @@ async fn session<B: MailBackend>(
             let mut reports = Vec::new();
             for (folder, path) in resync {
                 reports.push(engine::sync_folder(backend, store, account, folder, &path).await?);
+            }
+            for (folder, path) in std::mem::take(&mut stale) {
+                let report = match engine::sync_folder(backend, store, account, folder, &path).await
+                {
+                    Ok(report) => report,
+                    Err(Error::Rejected(reason)) => {
+                        tracing::debug!(path, %reason, "skipping folder");
+                        continue;
+                    }
+                    Err(error) => return Err(error),
+                };
+                if report.added + report.flags_changed + report.removed + report.backfilled > 0
+                    || report.reset
+                {
+                    reports.push(report);
+                }
+                if !control.metered() {
+                    let now = unix_now();
+                    match bodies::download_bodies(
+                        backend,
+                        store,
+                        folder,
+                        &path,
+                        &config.offline,
+                        now,
+                    )
+                    .await
+                    {
+                        Ok(0) => {}
+                        Ok(stored) => {
+                            let _ = events.try_send(Event::BodiesStored(stored));
+                        }
+                        Err(Error::Rejected(reason)) => {
+                            tracing::info!(path, %reason, "skipping bodies");
+                        }
+                        Err(error) => return Err(error),
+                    }
+                }
             }
             if !reports.is_empty() {
                 let _ = events.try_send(Event::Synced(reports));
@@ -643,15 +718,14 @@ async fn session<B: MailBackend>(
                 Timer::after(next).await;
                 None
             }
-            .or(async { Some(control.signal().await) });
-            match wait.await {
-                None => {}
-                Some(Signal::Stop) => return Ok(()),
-                Some(Signal::Wake) => full = true,
-                Some(Signal::Changes) => {}
-                Some(Signal::Fetch(request)) => {
-                    serve(backend, store, account, events, request).await?;
-                }
+            .or(async { Some(woken(control, statuses).await) });
+            let woken = wait.await;
+            if !on_woken(
+                backend, store, account, events, woken, &mut full, &mut stale,
+            )
+            .await?
+            {
+                return Ok(());
             }
             continue;
         };
@@ -684,19 +758,111 @@ async fn session<B: MailBackend>(
         if max_wait.is_zero() {
             continue;
         }
-        let wait = backend.wait_for_changes(max_wait, control.signal()).await?;
-        match wait.interrupted {
-            None => {}
-            Some(Signal::Stop) => return Ok(()),
-            Some(Signal::Wake) => full = true,
-            Some(Signal::Changes) => {}
-            // Fetching selects another folder; the next round of the loop
-            // selects the inbox again.
-            Some(Signal::Fetch(request)) => {
-                serve(backend, store, account, events, request).await?;
+        let wait = backend
+            .wait_for_changes(max_wait, woken(control, statuses))
+            .await?;
+        // Fetching selects another folder; the next round of the loop
+        // selects the inbox again.
+        let woken = wait.interrupted;
+        if !on_woken(
+            backend, store, account, events, woken, &mut full, &mut stale,
+        )
+        .await?
+        {
+            return Ok(());
+        }
+    }
+}
+
+/// Acts on what ended a session's wait (`None`: it timed out or the
+/// server reported a change). Returns `false` when the worker should stop.
+async fn on_woken<B: MailBackend>(
+    backend: &mut B,
+    store: &mut Store,
+    account: AccountId,
+    events: &Sender<Event>,
+    woken: Option<Woken>,
+    full: &mut bool,
+    stale: &mut Vec<(FolderId, String)>,
+) -> Result<bool> {
+    match woken {
+        None | Some(Woken::Control(Signal::Changes)) => {}
+        Some(Woken::Control(Signal::Stop)) => return Ok(false),
+        Some(Woken::Control(Signal::Wake)) => *full = true,
+        Some(Woken::Control(Signal::Fetch(request))) => {
+            serve(backend, store, account, events, request).await?;
+        }
+        Some(Woken::Statuses(statuses)) => {
+            let found = engine::stale_folders(store, account, &statuses)?;
+            if found.unknown {
+                *full = true;
+            }
+            *stale = found.changed;
+        }
+    }
+    Ok(true)
+}
+
+/// Asks the server about every folder but the inbox (IMAP STATUS) on a
+/// second connection, every [`WorkerConfig::watch_interval`], and hands
+/// what it sees to the session, which syncs the folders that changed. The
+/// session's own connection stays on the inbox with IDLE. Never completes:
+/// a failure only skips a round, and a refused login stops the watching.
+async fn watch_folders<C: Connector>(
+    connector: &C,
+    config: &WorkerConfig,
+    statuses: Sender<Vec<(String, FolderStatus)>>,
+) -> Result<()> {
+    let Some(interval) = config.watch_interval else {
+        return std::future::pending().await;
+    };
+    let mut watcher = None;
+    loop {
+        Timer::after(interval).await;
+        let backend = match &mut watcher {
+            Some(backend) => backend,
+            None => match connector.connect().await {
+                Ok(backend) => watcher.insert(backend),
+                Err(Error::Auth(message)) => {
+                    tracing::warn!(%message, "folder watcher: login refused");
+                    return std::future::pending().await;
+                }
+                Err(error) => {
+                    tracing::debug!(%error, "folder watcher could not connect");
+                    continue;
+                }
+            },
+        };
+        match folder_statuses(backend).await {
+            // Replaces a look the session has not taken yet.
+            Ok(list) => {
+                let _ = statuses.force_send(list);
+            }
+            Err(error) => {
+                tracing::debug!(%error, "folder watcher disconnected");
+                watcher = None;
             }
         }
     }
+}
+
+/// STATUS of every selectable folder but the inbox.
+async fn folder_statuses<B: MailBackend>(backend: &mut B) -> Result<Vec<(String, FolderStatus)>> {
+    let mut out = Vec::new();
+    for folder in backend.list_folders().await? {
+        if !folder.selectable || folder.role == Some(crate::FolderRole::Inbox) {
+            continue;
+        }
+        match backend.status(&folder.name).await {
+            Ok(status) => out.push((folder.name, status)),
+            // Deleted since LIST, or not ours to read.
+            Err(Error::Rejected(reason)) => {
+                tracing::debug!(path = folder.name, %reason, "no STATUS");
+            }
+            Err(error) => return Err(error),
+        }
+    }
+    Ok(out)
 }
 
 /// How long until a refused change is tried again; [`Duration::MAX`] when

@@ -47,6 +47,7 @@ enum Request {
     Expunge(Vec<u32>, Reply<()>),
     FetchFlags(u32, u32, Option<u64>, Reply<Vec<FlagState>>),
     Uids(Reply<Vec<u32>>),
+    Status(String, Reply<FolderStatus>),
     CreateFolder(String, Reply<()>),
     Append(String, Vec<u8>, Flags, Reply<()>),
     PollChanges(Reply<Vec<FolderChange>>),
@@ -132,6 +133,11 @@ impl Connection {
 
     pub async fn uids(&self) -> Result<Vec<u32>> {
         self.call(Request::Uids).await
+    }
+
+    pub async fn status(&self, folder: &str) -> Result<FolderStatus> {
+        let folder = folder.to_owned();
+        self.call(|reply| Request::Status(folder, reply)).await
     }
 
     pub async fn create_folder(&self, folder: &str) -> Result<()> {
@@ -248,6 +254,10 @@ impl MailBackend for Connection {
         Connection::uids(self).await
     }
 
+    async fn status(&mut self, folder: &str) -> Result<FolderStatus> {
+        Connection::status(self, folder).await
+    }
+
     async fn create_folder(&mut self, folder: &str) -> Result<()> {
         Connection::create_folder(self, folder).await
     }
@@ -338,6 +348,7 @@ async fn run<B: MailBackend>(mut backend: B, inbox: Receiver<Request>) {
                 backend.fetch_flags(first, last, changed_since).await,
             ),
             Request::Uids(reply) => answer(&reply, backend.uids().await),
+            Request::Status(folder, reply) => answer(&reply, backend.status(&folder).await),
             Request::CreateFolder(folder, reply) => {
                 answer(&reply, backend.create_folder(&folder).await)
             }
