@@ -649,12 +649,28 @@ impl MailWindow {
                     .child(title),
             )
             .child(
-                small_button("compose-minimize", "minimize", th)
-                    .tooltip(tip("Minimize", th))
-                    .on_click(cx.listener(|this, _, _, cx| {
-                        cx.stop_propagation();
-                        this.compose_mode(Mode::Minimized, cx)
-                    })),
+                // Minimized, the same button opens it again.
+                small_button(
+                    "compose-minimize",
+                    if mode == Mode::Minimized {
+                        "restore"
+                    } else {
+                        "minimize"
+                    },
+                    th,
+                )
+                .tooltip(tip(
+                    if mode == Mode::Minimized {
+                        "Restore"
+                    } else {
+                        "Minimize"
+                    },
+                    th,
+                ))
+                .on_click(cx.listener(|this, _, _, cx| {
+                    cx.stop_propagation();
+                    this.compose_mode(Mode::Minimized, cx)
+                })),
             )
             .child(
                 small_button(

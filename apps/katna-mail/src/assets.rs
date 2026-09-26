@@ -58,6 +58,7 @@ icons!(
     "refresh",
     "reply-all",
     "reply",
+    "restore",
     "schedule",
     "search",
     "send",
