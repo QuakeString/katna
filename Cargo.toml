@@ -99,3 +99,20 @@ opt-level = "s"
 
 [profile.release.package.ashpd]
 opt-level = "s"
+
+# IMAP parsing waits on the network anyway.
+[profile.release.package.imap-codec]
+opt-level = "s"
+
+[profile.release.package.imap-types]
+opt-level = "s"
+
+[profile.release.package.io-imap]
+opt-level = "s"
+
+# Only log filters and rare regex searches use these.
+[profile.release.package.regex-automata]
+opt-level = "s"
+
+[profile.release.package.regex-syntax]
+opt-level = "s"

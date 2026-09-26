@@ -3580,6 +3580,8 @@ dependencies = [
  "katna-meta",
  "katna-store",
  "rustls-platform-verifier",
+ "serde",
+ "serde_json",
  "smol",
  "tempfile",
  "thiserror 2.0.21",

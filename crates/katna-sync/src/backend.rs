@@ -238,6 +238,27 @@ pub trait MailBackend: Send + 'static {
         uids: &[u32],
     ) -> impl Future<Output = Result<Vec<(u32, Vec<u8>)>>> + Send;
 
+    /// Adds (`add`) or removes the set flags and keywords of `flags` on
+    /// `uids` of the selected folder.
+    fn store_flags(
+        &mut self,
+        uids: &[u32],
+        flags: &Flags,
+        add: bool,
+    ) -> impl Future<Output = Result<()>> + Send;
+
+    /// Moves `uids` of the selected folder to `folder`. Returns
+    /// `(old UID, new UID)` pairs when the server reports them (UIDPLUS).
+    fn move_messages(
+        &mut self,
+        uids: &[u32],
+        folder: &str,
+    ) -> impl Future<Output = Result<Vec<(u32, u32)>>> + Send;
+
+    /// Deletes `uids` of the selected folder for good. Without UIDPLUS
+    /// they are only marked `\Deleted`, so other clients' marks are kept.
+    fn expunge(&mut self, uids: &[u32]) -> impl Future<Output = Result<()>> + Send;
+
     /// Flags for UIDs `first..=last` of the selected folder, in UID order.
     /// With `changed_since` (CONDSTORE), only messages whose flags changed
     /// after that mod-sequence.

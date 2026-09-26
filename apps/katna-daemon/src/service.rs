@@ -6,8 +6,8 @@ use std::sync::Arc;
 
 use async_channel::Receiver;
 use katna_core::{AccountId, ids};
-use katna_dbus::{AccountStatus, NewImapAccount};
-use katna_store::MessageId;
+use katna_dbus::{AccountStatus, NewImapAccount, flag};
+use katna_store::{FolderId, MessageFlags, MessageId};
 use zbus::{fdo, object_server::SignalEmitter};
 
 use crate::daemon::{CommandError, Daemon, Notice};
@@ -29,9 +29,9 @@ impl From<CommandError> for fdo::Error {
         match err {
             CommandError::InvalidArgs(_) => Self::InvalidArgs(message),
             CommandError::AuthFailed(_) => Self::AuthFailed(message),
-            CommandError::UnknownAccount(_) | CommandError::UnknownMessage(_) => {
-                Self::UnknownObject(message)
-            }
+            CommandError::UnknownAccount(_)
+            | CommandError::UnknownMessage(_)
+            | CommandError::UnknownFolder(_) => Self::UnknownObject(message),
             CommandError::Failed(_) => Self::Failed(message),
         }
     }
@@ -75,6 +75,30 @@ macro_rules! pim_interface {
                 Ok(self.daemon.fetch_body(MessageId(message)).await?)
             }
 
+            async fn set_flags(
+                &self,
+                messages: Vec<i64>,
+                add: Vec<String>,
+                remove: Vec<String>,
+            ) -> fdo::Result<()> {
+                let (add, remove) = (message_flags(&add)?, message_flags(&remove)?);
+                Ok(self.daemon.set_flags(&ids(&messages), add, remove)?)
+            }
+
+            async fn move_messages(&self, messages: Vec<i64>, folder: i64) -> fdo::Result<()> {
+                Ok(self
+                    .daemon
+                    .move_messages(&ids(&messages), FolderId(folder))?)
+            }
+
+            async fn delete_messages(&self, messages: Vec<i64>) -> fdo::Result<()> {
+                Ok(self.daemon.delete_messages(&ids(&messages))?)
+            }
+
+            async fn archive_messages(&self, messages: Vec<i64>) -> fdo::Result<()> {
+                Ok(self.daemon.archive_messages(&ids(&messages))?)
+            }
+
             #[zbus(signal)]
             async fn accounts_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
 
@@ -91,6 +115,31 @@ macro_rules! pim_interface {
 }
 
 katna_core::with_dbus_names!(pim_interface);
+
+fn ids(messages: &[i64]) -> Vec<MessageId> {
+    messages.iter().copied().map(MessageId).collect()
+}
+
+/// Flag names from [`katna_dbus::flag`] as bits.
+fn message_flags(names: &[String]) -> Result<MessageFlags, CommandError> {
+    let mut flags = MessageFlags::empty();
+    for name in names {
+        let bit = match name.as_str() {
+            flag::SEEN => MessageFlags::SEEN,
+            flag::ANSWERED => MessageFlags::ANSWERED,
+            flag::FLAGGED => MessageFlags::FLAGGED,
+            flag::DRAFT => MessageFlags::DRAFT,
+            flag::FORWARDED => MessageFlags::FORWARDED,
+            other => {
+                return Err(CommandError::InvalidArgs(format!(
+                    "unknown flag {other:?} (seen, answered, flagged, draft or forwarded)"
+                )));
+            }
+        };
+        flags.set(bit, true);
+    }
+    Ok(flags)
+}
 
 /// Sends a signal for every notice until the daemon goes away.
 pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice>) {

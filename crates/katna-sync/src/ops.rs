@@ -1,0 +1,526 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+//! The operation queue (plan task 1.6): changes made in the apps are applied
+//! to the store at once and replayed on the server by the account's worker
+//! (`docs/ARCHITECTURE.md` §6.1).
+//!
+//! - [`set_flags`], [`move_messages`], [`delete_messages`] and
+//!   [`archive_messages`] edit the store and queue one operation per
+//!   message. They never touch the network. Imported (`local`) accounts
+//!   only change in the store.
+//! - [`replay`] runs the due operations on a connection. A refused
+//!   operation is tried again later; after [`MAX_ATTEMPTS`] it is dropped
+//!   and the local change undone, so the store matches the server again.
+//!
+//! The worker replays before every sync, so a sync never overwrites a
+//! local change that is still on its way to the server.
+
+use std::collections::HashMap;
+
+use katna_core::{AccountId, AccountKind};
+use katna_store::{FolderId, FolderRole, MessageFlags, MessageId, Store, StoredFolder};
+use serde::{Deserialize, Serialize};
+
+use crate::{Error, Flags, MailBackend, Result};
+
+/// Tries before an operation is given up.
+pub const MAX_ATTEMPTS: u32 = 3;
+/// Wait before trying a refused operation again, in seconds.
+pub const RETRY_AFTER: i64 = 60;
+/// Operations replayed per round.
+const BATCH: u32 = 200;
+
+/// One queued change, as stored in `op_queue.op_json`.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = "op", rename_all = "snake_case")]
+enum Op {
+    /// Add and remove flags of `message` in `folder`. `uid` is `None` when
+    /// the message was moved there and the server has not confirmed it yet;
+    /// it is looked up at replay time.
+    Flags {
+        message: i64,
+        folder: i64,
+        path: String,
+        uid: Option<u32>,
+        add: u32,
+        remove: u32,
+    },
+    /// Move `message` from `from` (where its UID is `uid`) to `to`.
+    Move {
+        message: i64,
+        from: i64,
+        from_path: String,
+        uid: u32,
+        to: i64,
+        to_path: String,
+    },
+    /// Delete `message` in `folder` for good.
+    Expunge {
+        message: i64,
+        path: String,
+        uid: u32,
+    },
+}
+
+/// Why a local change could not be made.
+#[derive(Debug, thiserror::Error)]
+pub enum ChangeError {
+    #[error("no message {0}")]
+    UnknownMessage(i64),
+    #[error("no folder {0}")]
+    UnknownFolder(i64),
+    #[error("{0}")]
+    NotPossible(String),
+    #[error(transparent)]
+    Store(#[from] katna_store::Error),
+}
+
+/// What [`replay`] did.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct ReplayReport {
+    pub done: usize,
+    /// Refused, to be tried again later.
+    pub retried: usize,
+    /// Given up; the local change was undone.
+    pub failed: usize,
+    /// Folders that received moved messages without the server telling
+    /// their new UIDs; sync them to see the messages again.
+    pub resync: Vec<(FolderId, String)>,
+}
+
+/// Adds and removes flags. Returns the accounts whose workers must replay.
+pub fn set_flags(
+    store: &mut Store,
+    messages: &[MessageId],
+    add: MessageFlags,
+    remove: MessageFlags,
+) -> Result<Vec<AccountId>, ChangeError> {
+    let stored = store.messages_by_id(messages)?;
+    if let Some(missing) = messages
+        .iter()
+        .find(|id| !stored.iter().any(|m| m.id == **id))
+    {
+        return Err(ChangeError::UnknownMessage(missing.0));
+    }
+    let mut plans = Vec::new();
+    for message in &stored {
+        let mut flags = MessageFlags::from_bits(message.flags.bits() | add.bits());
+        flags = MessageFlags::from_bits(flags.bits() & !remove.bits());
+        if flags == message.flags {
+            continue;
+        }
+        let folders = folders_of(store, message.account)?;
+        let mut ops = Vec::new();
+        let locations = if is_synced(store, message.account)? {
+            store.locations(message.id)?
+        } else {
+            Vec::new()
+        };
+        for location in locations {
+            let Some(folder) = folders.get(&location.folder) else {
+                continue;
+            };
+            ops.push(Op::Flags {
+                message: message.id.0,
+                folder: folder.id.0,
+                path: folder.path.clone(),
+                uid: location.uid,
+                // Only what really changes, so replays do not undo other
+                // clients' changes.
+                add: flags.bits() & !message.flags.bits(),
+                remove: message.flags.bits() & !flags.bits(),
+            });
+        }
+        plans.push((message.id, message.account, flags, ops));
+    }
+    let mut batch = store.mail_batch()?;
+    let mut accounts = Vec::new();
+    for (id, account, flags, ops) in plans {
+        batch.set_message_flags(id, flags)?;
+        for op in ops {
+            batch.enqueue_op(account, &encode(&op))?;
+        }
+        push_unique(&mut accounts, account);
+    }
+    batch.commit()?;
+    Ok(accounts)
+}
+
+/// Moves messages to `to`. Returns the accounts whose workers must replay.
+pub fn move_messages(
+    store: &mut Store,
+    messages: &[MessageId],
+    to: FolderId,
+) -> Result<Vec<AccountId>, ChangeError> {
+    let mut plans = Vec::new();
+    for &id in messages {
+        let account = account_of(store, id)?;
+        let folders = folders_of(store, account)?;
+        let target = folders
+            .get(&to)
+            .ok_or(ChangeError::UnknownFolder(to.0))?
+            .clone();
+        let Some(source) = store
+            .locations(id)?
+            .into_iter()
+            .find(|location| location.folder != to)
+        else {
+            continue; // already there
+        };
+        let from = &folders[&source.folder];
+        let synced = is_synced(store, account)?;
+        let uid = match source.uid {
+            Some(uid) => uid,
+            // Local folders have no UIDs.
+            None if !synced => 0,
+            None => {
+                return Err(ChangeError::NotPossible(format!(
+                    "message {} is still being moved; try again in a moment",
+                    id.0
+                )));
+            }
+        };
+        plans.push((
+            account,
+            synced,
+            Op::Move {
+                message: id.0,
+                from: from.id.0,
+                from_path: from.path.clone(),
+                uid,
+                to: target.id.0,
+                to_path: target.path.clone(),
+            },
+        ));
+    }
+    let mut batch = store.mail_batch()?;
+    let mut accounts = Vec::new();
+    for (account, synced, op) in plans {
+        let Op::Move {
+            message, from, to, ..
+        } = &op
+        else {
+            unreachable!("only moves are planned here");
+        };
+        batch.move_location(MessageId(*message), FolderId(*from), FolderId(*to), None)?;
+        if synced {
+            batch.enqueue_op(account, &encode(&op))?;
+        }
+        push_unique(&mut accounts, account);
+    }
+    batch.commit()?;
+    Ok(accounts)
+}
+
+/// Moves messages to their account's Trash; messages already there are
+/// deleted for good. Returns the accounts whose workers must replay.
+pub fn delete_messages(
+    store: &mut Store,
+    messages: &[MessageId],
+) -> Result<Vec<AccountId>, ChangeError> {
+    let mut to_trash: HashMap<FolderId, Vec<MessageId>> = HashMap::new();
+    let mut expunge = Vec::new();
+    for &id in messages {
+        let account = account_of(store, id)?;
+        let folders = folders_of(store, account)?;
+        let trash = folders
+            .values()
+            .find(|f| f.role == Some(FolderRole::Trash))
+            .map(|f| f.id);
+        let locations = store.locations(id)?;
+        match trash {
+            Some(trash) if !locations.iter().any(|l| l.folder == trash) => {
+                to_trash.entry(trash).or_default().push(id);
+            }
+            _ => {
+                let synced = is_synced(store, account)?;
+                for location in locations {
+                    let folder = &folders[&location.folder];
+                    let uid = match location.uid {
+                        Some(uid) => Some(uid),
+                        None if !synced => None,
+                        None => {
+                            return Err(ChangeError::NotPossible(format!(
+                                "message {} is still being moved; try again in a moment",
+                                id.0
+                            )));
+                        }
+                    };
+                    expunge.push((account, folder.id, folder.path.clone(), id, uid));
+                }
+            }
+        }
+    }
+    let mut accounts = Vec::new();
+    for (trash, ids) in to_trash {
+        for account in move_messages(store, &ids, trash)? {
+            push_unique(&mut accounts, account);
+        }
+    }
+    let mut batch = store.mail_batch()?;
+    for (account, folder, path, id, uid) in expunge {
+        batch.remove_from_folder(id, folder)?;
+        if let Some(uid) = uid {
+            let op = Op::Expunge {
+                message: id.0,
+                path,
+                uid,
+            };
+            batch.enqueue_op(account, &encode(&op))?;
+        }
+        push_unique(&mut accounts, account);
+    }
+    batch.commit()?;
+    Ok(accounts)
+}
+
+/// Moves messages to their account's archive folder (`\Archive`, or
+/// `\All` on Gmail). Returns the accounts whose workers must replay.
+pub fn archive_messages(
+    store: &mut Store,
+    messages: &[MessageId],
+) -> Result<Vec<AccountId>, ChangeError> {
+    let mut by_archive: HashMap<FolderId, Vec<MessageId>> = HashMap::new();
+    for &id in messages {
+        let account = account_of(store, id)?;
+        let folders = folders_of(store, account)?;
+        let archive = [FolderRole::Archive, FolderRole::All]
+            .into_iter()
+            .find_map(|role| folders.values().find(|f| f.role == Some(role)))
+            .ok_or_else(|| {
+                ChangeError::NotPossible(format!("account {account} has no archive folder"))
+            })?;
+        by_archive.entry(archive.id).or_default().push(id);
+    }
+    let mut accounts = Vec::new();
+    for (archive, ids) in by_archive {
+        for account in move_messages(store, &ids, archive)? {
+            push_unique(&mut accounts, account);
+        }
+    }
+    Ok(accounts)
+}
+
+/// Runs the due operations of `account` on `backend`. Returns `Err` only
+/// when the connection broke; the operation it was running stays queued.
+/// Leaves some folder selected.
+pub async fn replay<B: MailBackend>(
+    backend: &mut B,
+    store: &mut Store,
+    account: AccountId,
+    now: i64,
+) -> Result<ReplayReport> {
+    let mut report = ReplayReport::default();
+    let mut selected: Option<String> = None;
+    loop {
+        let due = store.due_ops(account, now, BATCH)?;
+        if due.is_empty() {
+            break;
+        }
+        for queued in due {
+            let op = match serde_json::from_str::<Op>(&queued.op_json) {
+                Ok(op) => op,
+                Err(err) => {
+                    tracing::warn!(id = queued.id, %err, "dropping an unreadable operation");
+                    let mut batch = store.mail_batch()?;
+                    batch.fail_op(queued.id)?;
+                    batch.commit()?;
+                    report.failed += 1;
+                    continue;
+                }
+            };
+            let result = run(backend, store, &op, &mut selected, &mut report).await;
+            let mut batch = store.mail_batch()?;
+            match result {
+                Ok(()) => {
+                    batch.finish_op(queued.id)?;
+                    report.done += 1;
+                }
+                Err(Error::Rejected(reason)) => {
+                    if queued.attempts + 1 >= MAX_ATTEMPTS {
+                        tracing::warn!(?op, %reason, "giving up an operation");
+                        batch.fail_op(queued.id)?;
+                        undo(&mut batch, &op)?;
+                        report.failed += 1;
+                    } else {
+                        tracing::info!(?op, %reason, "operation refused; retrying later");
+                        batch.retry_op(queued.id, now + RETRY_AFTER)?;
+                        report.retried += 1;
+                    }
+                }
+                Err(error) => return Err(error),
+            }
+            batch.commit()?;
+        }
+    }
+    Ok(report)
+}
+
+/// Runs one operation.
+async fn run<B: MailBackend>(
+    backend: &mut B,
+    store: &mut Store,
+    op: &Op,
+    selected: &mut Option<String>,
+    report: &mut ReplayReport,
+) -> Result<()> {
+    match op {
+        Op::Flags {
+            message,
+            folder,
+            path,
+            uid,
+            add,
+            remove,
+        } => {
+            let uid = match uid {
+                Some(uid) => *uid,
+                None => {
+                    let location = store
+                        .locations(MessageId(*message))?
+                        .into_iter()
+                        .find(|l| l.folder == FolderId(*folder));
+                    match location {
+                        Some(location) => location.uid.ok_or_else(|| {
+                            Error::Rejected("the message's move is not confirmed yet".into())
+                        })?,
+                        // Moved or deleted since: nothing to do there.
+                        None => return Ok(()),
+                    }
+                }
+            };
+            select(backend, selected, path).await?;
+            for (bits, add) in [(*add, true), (*remove, false)] {
+                if bits != 0 {
+                    let flags = flags(MessageFlags::from_bits(bits));
+                    backend.store_flags(&[uid], &flags, add).await?;
+                }
+            }
+        }
+        Op::Move {
+            message,
+            from_path,
+            uid,
+            to,
+            to_path,
+            ..
+        } => {
+            select(backend, selected, from_path).await?;
+            let moved = backend.move_messages(&[*uid], to_path).await?;
+            let mut batch = store.mail_batch()?;
+            let (message, to) = (MessageId(*message), FolderId(*to));
+            match moved.iter().find(|(old, _)| old == uid) {
+                // The local copy now carries its server UID.
+                Some(&(_, new)) => {
+                    batch.move_location(message, to, to, Some(new))?;
+                }
+                // Without UIDPLUS the next sync of `to` adds it again.
+                None => {
+                    if batch.unconfirmed_in(message, to)? {
+                        batch.remove_from_folder(message, to)?;
+                    }
+                    if !report.resync.iter().any(|(id, _)| *id == to) {
+                        report.resync.push((to, to_path.clone()));
+                    }
+                }
+            }
+            batch.commit()?;
+        }
+        Op::Expunge { path, uid, .. } => {
+            select(backend, selected, path).await?;
+            backend.expunge(&[*uid]).await?;
+        }
+    }
+    Ok(())
+}
+
+/// Undoes the local side of an operation the server refused for good.
+fn undo(batch: &mut katna_store::MailBatch<'_>, op: &Op) -> katna_store::Result<()> {
+    match op {
+        // The next sync fetches every flag of the folder again.
+        Op::Flags { folder, .. } => batch.forget_modseq(FolderId(*folder)),
+        Op::Move {
+            message,
+            from,
+            uid,
+            to,
+            ..
+        } => {
+            batch.move_location(
+                MessageId(*message),
+                FolderId(*to),
+                FolderId(*from),
+                Some(*uid),
+            )?;
+            Ok(())
+        }
+        // Gone locally; it stays on the server and in other clients.
+        Op::Expunge { .. } => Ok(()),
+    }
+}
+
+async fn select<B: MailBackend>(
+    backend: &mut B,
+    selected: &mut Option<String>,
+    path: &str,
+) -> Result<()> {
+    if selected.as_deref() != Some(path) {
+        *selected = None;
+        backend.select(path).await?;
+        *selected = Some(path.to_owned());
+    }
+    Ok(())
+}
+
+/// Protocol flags for store flag bits.
+fn flags(bits: MessageFlags) -> Flags {
+    let mut keywords = Vec::new();
+    if bits.contains(MessageFlags::FORWARDED) {
+        keywords.push("$Forwarded".to_owned());
+    }
+    Flags {
+        seen: bits.contains(MessageFlags::SEEN),
+        answered: bits.contains(MessageFlags::ANSWERED),
+        flagged: bits.contains(MessageFlags::FLAGGED),
+        deleted: bits.contains(MessageFlags::DELETED),
+        draft: bits.contains(MessageFlags::DRAFT),
+        keywords,
+    }
+}
+
+fn account_of(store: &Store, id: MessageId) -> Result<AccountId, ChangeError> {
+    store
+        .messages_by_id(&[id])?
+        .first()
+        .map(|m| m.account)
+        .ok_or(ChangeError::UnknownMessage(id.0))
+}
+
+fn folders_of(
+    store: &Store,
+    account: AccountId,
+) -> Result<HashMap<FolderId, StoredFolder>, ChangeError> {
+    Ok(store
+        .folders(account)?
+        .into_iter()
+        .map(|folder| (folder.id, folder))
+        .collect())
+}
+
+/// Whether `account` lives on a server. Changes to imported mail stay local.
+fn is_synced(store: &Store, account: AccountId) -> Result<bool, ChangeError> {
+    Ok(store
+        .accounts()?
+        .into_iter()
+        .any(|a| a.id == account && a.kind != AccountKind::Local))
+}
+
+fn encode(op: &Op) -> String {
+    serde_json::to_string(op).expect("operations serialize")
+}
+
+fn push_unique(accounts: &mut Vec<AccountId>, account: AccountId) {
+    if !accounts.contains(&account) {
+        accounts.push(account);
+    }
+}

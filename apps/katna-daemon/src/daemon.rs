@@ -13,10 +13,11 @@ use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths, Security, Server};
 use katna_dbus::{AccountStatus, NewImapAccount, ServerSpec, state};
-use katna_store::{MessageId, Mode, Store};
+use katna_store::{FolderId, MessageFlags, MessageId, Mode, Store};
 use katna_sync::{
     Credentials, Endpoint, MailBackend,
     net::Tls,
+    ops::{self, ChangeError},
     worker::{self, Connector, Event, ImapConnector, WorkerConfig},
 };
 
@@ -44,8 +45,21 @@ pub enum CommandError {
     UnknownAccount(i64),
     #[error("no message {0}")]
     UnknownMessage(i64),
+    #[error("no folder {0}")]
+    UnknownFolder(i64),
     #[error("{0}")]
     Failed(String),
+}
+
+impl From<ChangeError> for CommandError {
+    fn from(err: ChangeError) -> Self {
+        match err {
+            ChangeError::UnknownMessage(id) => Self::UnknownMessage(id),
+            ChangeError::UnknownFolder(id) => Self::UnknownFolder(id),
+            ChangeError::NotPossible(reason) => Self::Failed(reason),
+            ChangeError::Store(err) => err.into(),
+        }
+    }
 }
 
 impl From<katna_store::Error> for CommandError {
@@ -244,6 +258,9 @@ impl Daemon {
             for folder in &folders {
                 batch.remove_folder(folder.id)?;
             }
+            // Account IDs can be reused; its changes must not replay on
+            // the next account.
+            batch.clear_ops(id)?;
             batch.commit()?;
             store.remove_account(id)?
         };
@@ -310,6 +327,49 @@ impl Daemon {
                 message.0
             ))),
         }
+    }
+
+    /// Adds and removes flags on messages.
+    pub fn set_flags(
+        &self,
+        messages: &[MessageId],
+        add: MessageFlags,
+        remove: MessageFlags,
+    ) -> Result<(), CommandError> {
+        self.change(|store| ops::set_flags(store, messages, add, remove))
+    }
+
+    /// Moves messages to another folder of their account.
+    pub fn move_messages(&self, messages: &[MessageId], to: FolderId) -> Result<(), CommandError> {
+        self.change(|store| ops::move_messages(store, messages, to))
+    }
+
+    /// Moves messages to the trash, or deletes them if they are there.
+    pub fn delete_messages(&self, messages: &[MessageId]) -> Result<(), CommandError> {
+        self.change(|store| ops::delete_messages(store, messages))
+    }
+
+    /// Moves messages to their account's archive.
+    pub fn archive_messages(&self, messages: &[MessageId]) -> Result<(), CommandError> {
+        self.change(|store| ops::archive_messages(store, messages))
+    }
+
+    /// Makes a change in the store, tells clients, and has the workers send
+    /// it to the servers.
+    fn change(
+        &self,
+        change: impl FnOnce(&mut Store) -> Result<Vec<AccountId>, ChangeError>,
+    ) -> Result<(), CommandError> {
+        let accounts = change(&mut self.store())?;
+        let workers = self.workers();
+        for account in accounts {
+            let _ = self.notices.try_send(Notice::MailChanged(account));
+            // Without a worker the change waits for the next start.
+            if let Some(running) = workers.get(&account) {
+                running.handle.send_changes();
+            }
+        }
+        Ok(())
     }
 
     fn account(&self, id: AccountId) -> Result<Account, CommandError> {
@@ -409,6 +469,13 @@ impl Daemon {
                 }
                 Event::BodiesStored(_) => {
                     let _ = self.notices.try_send(Notice::MailChanged(id));
+                    continue;
+                }
+                Event::ChangesSent(report) => {
+                    // Refused changes were undone in the store.
+                    if report.failed > 0 {
+                        let _ = self.notices.try_send(Notice::MailChanged(id));
+                    }
                     continue;
                 }
                 Event::Disconnected { error, retry_in } => {

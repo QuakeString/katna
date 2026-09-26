@@ -320,6 +320,25 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   password is never retried (it would lock the account on many servers);
   the worker reports it and waits to be stopped. It talks to the daemon
   through an event channel and a stop handle.
+- **Op queue (`katna_sync::ops`):** `SetFlags`, `MoveMessages`,
+  `DeleteMessages` and `ArchiveMessages` change the store at once and queue
+  one operation per server copy of a message (table `op_queue`, JSON). The
+  worker replays the queue before each sync step and when the daemon asks,
+  so a sync never overwrites a change still on its way.
+  - Flags go out as `UID STORE +FLAGS.SILENT` / `-FLAGS.SILENT` with only
+    the bits that change, so replays do not undo other clients' changes.
+  - Moves use `UID MOVE`, or `COPY`, `\Deleted` and `UID EXPUNGE`. Without
+    UIDPLUS the originals stay marked `\Deleted`, because a plain `EXPUNGE`
+    would also remove what other clients marked. The `COPYUID` answer gives
+    the new UID; without it the target folder is synced again.
+  - Delete moves to the `\Trash` folder, or expunges when the message is
+    already there or there is no trash. Archive moves to `\Archive` (or
+    Gmail's `\All`).
+  - A refused operation is retried after 60 s. After three refusals it is
+    marked failed (kept for inspection) and undone locally: moves at once,
+    flags by forgetting the folder's HIGHESTMODSEQ so the next sync reads
+    them again. A broken connection keeps the operation queued.
+  - Imported (`local`) accounts only change in the store.
 - **POP3:** our own small client (UIDL tracking, leave-on-server option,
   `TOP` for header preview). POP3 mail is always fully local.
 - **Gmail / Microsoft:** OAuth2. Google's restricted scope for full mail
@@ -772,7 +791,10 @@ Sketch — versioned by the interface name; breaking changes create `Pim2`.
 Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssx)`
 (id, kind, name, address, state, detail, last sync), `AddImapAccount(account,
 password) → id`, `SetPassword(id, password)`, `RemoveAccount(id) → b`,
-`SyncNow(id)` (0 for every account), `FetchBody(message)`, and the signals
+`SyncNow(id)` (0 for every account), `FetchBody(message)`,
+`SetFlags(ax messages, as add, as remove)` (flag names `seen`, `answered`,
+`flagged`, `draft`, `forwarded`), `MoveMessages(ax, folder)`,
+`DeleteMessages(ax)`, `ArchiveMessages(ax)`, and the signals
 `AccountsChanged`, `SyncStatusChanged(id)` and `MailChanged(id)`. `MailChanged` carries the
 account, not message IDs: clients read the change journal. Errors use the
 standard names `org.freedesktop.DBus.Error.AuthFailed`, `InvalidArgs`,
@@ -993,6 +1015,12 @@ about 2 MB (the budget in `ci/size-budgets.txt` is 30 MiB = 31.5 MB).
 | Cold start to usable inbox | < 500 ms |
 | Search latency | p50 < 20 ms, p99 < 50 ms on 1M messages |
 | Daemon memory | Measured and tracked in CI; budget set after first prototype |
+
+With sync, bodies, the op queue and the search indexer, `katna-daemon` is
+15.6 MB of its 15 MiB budget. tantivy is the biggest part. To get there,
+crates that are not hot are built with `opt-level = "s"` (root
+`Cargo.toml`): D-Bus (zbus, zvariant, oo7, ashpd), IMAP parsing and
+regex.
 
 ### 17.3 Rules
 
