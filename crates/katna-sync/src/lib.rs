@@ -14,6 +14,8 @@
 //! - [`connection`]: gives each connection to a single task and hands out
 //!   cheap handles, because IMAP commands cannot be cancelled halfway.
 //! - [`engine`]: sync level 1 (folders, flags, headers) into the store.
+//! - [`worker`]: keeps an account in sync: IDLE, periodic full syncs,
+//!   reconnecting with backoff.
 //!
 //! Everything is executor-independent: sockets and timers use the `async-io`
 //! reactor, and [`connection::spawn`] returns a future for the caller to run.
@@ -25,6 +27,7 @@ mod error;
 pub mod imap;
 pub mod net;
 pub mod smtp;
+pub mod worker;
 
 pub use backend::{
     Address, Credentials, Endpoint, Envelope, FlagState, Flags, Folder, FolderChange, FolderRole,

@@ -483,3 +483,69 @@ fn level_one_sync_into_the_store() {
         });
     }
 }
+
+#[test]
+#[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
+fn worker_syncs_new_mail_by_push() {
+    use async_io::Timer;
+    use futures_lite::FutureExt;
+    use katna_core::{AccountKind, Paths};
+    use katna_store::{Mode, Store};
+    use katna_sync::worker::{self, Event, ImapConnector, WorkerConfig};
+
+    for (name, endpoint) in imap_servers() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut store = Store::open(&Paths::with_root(tmp.path()), Mode::ReadWrite).unwrap();
+        let account = store.add_account(AccountKind::Imap, name, USER).unwrap().id;
+        let connector = ImapConnector {
+            endpoint: endpoint.clone(),
+            credentials: creds(),
+            tls: tls(),
+        };
+        let (events_tx, events) = async_channel::unbounded();
+        let (stop, stop_rx) = worker::stop_signal();
+        smol::block_on(async {
+            let task = smol::spawn(worker::run(
+                connector,
+                store,
+                account,
+                WorkerConfig::default(),
+                events_tx,
+                stop_rx,
+            ));
+            let next = || async {
+                events
+                    .recv()
+                    .or(async {
+                        Timer::after(Duration::from_secs(10)).await;
+                        panic!("{name}: no worker event within 10 s");
+                    })
+                    .await
+                    .unwrap()
+            };
+            assert!(matches!(next().await, Event::Connected), "{name}");
+            assert!(matches!(next().await, Event::Synced(_)), "{name}");
+
+            // Let the worker settle into IDLE, then deliver.
+            Timer::after(Duration::from_millis(300)).await;
+            let other = spawn(&endpoint).await;
+            let started = Instant::now();
+            other
+                .append("INBOX", message(&unique("worker"), USER))
+                .await
+                .unwrap();
+            match next().await {
+                Event::Synced(reports) => {
+                    println!("{name}: worker synced new mail in {:?}", started.elapsed());
+                    assert_eq!(reports.len(), 1, "{name}: {reports:?}");
+                    assert_eq!(reports[0].path, "INBOX");
+                    assert_eq!(reports[0].added, 1, "{name}");
+                }
+                other => panic!("{name}: expected Synced, got {other:?}"),
+            }
+            Connection::logout(&other).await.unwrap();
+            drop(stop);
+            task.await;
+        });
+    }
+}

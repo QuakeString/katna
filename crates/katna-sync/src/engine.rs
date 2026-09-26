@@ -25,7 +25,7 @@ use std::collections::HashSet;
 use katna_core::AccountId;
 use katna_store::{FolderId, MessageFlags, NewParticipant, RemoteMessage, Store};
 
-use crate::{FlagState, Flags, Folder, MailBackend, MessageHeaders, Result};
+use crate::{Error, FlagState, Flags, Folder, MailBackend, MessageHeaders, Result};
 
 /// How many messages one header fetch asks for.
 pub const CHUNK: u32 = 500;
@@ -50,8 +50,16 @@ pub async fn sync_account<B: MailBackend>(
     let folders = sync_folders(backend, store, account).await?;
     let mut reports = Vec::with_capacity(folders.len());
     for (folder, id) in folders {
-        if folder.selectable {
-            reports.push(sync_folder(backend, store, account, id, &folder.name).await?);
+        if !folder.selectable {
+            continue;
+        }
+        match sync_folder(backend, store, account, id, &folder.name).await {
+            Ok(report) => reports.push(report),
+            // Deleted since LIST, or not ours to read: skip it this time.
+            Err(Error::Rejected(reason)) => {
+                tracing::info!(path = folder.name, %reason, "skipping folder");
+            }
+            Err(error) => return Err(error),
         }
     }
     Ok(reports)
