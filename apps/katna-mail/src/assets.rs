@@ -19,6 +19,7 @@ icons!(
     "archive",
     "attachment",
     "back",
+    "calendar",
     "checkbox-checked",
     "checkbox-partial",
     "checkbox",
@@ -53,6 +54,7 @@ icons!(
     "star-filled",
     "star",
     "tag",
+    "tasks",
     "trash",
     "tune",
 );
