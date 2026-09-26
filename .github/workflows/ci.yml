@@ -50,6 +50,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install GPUI build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            pkg-config libxkbcommon-dev libxkbcommon-x11-dev \
+            libfontconfig-dev libfreetype-dev
       - run: rustup toolchain install
       - run: cargo build --release --workspace --bins --locked
       - run: ci/check-sizes.sh
