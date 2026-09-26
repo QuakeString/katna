@@ -258,9 +258,10 @@ impl MailWindow {
         let reserve = self.reserve_spring.value().max(0.0);
         // How far the panel is open beyond the space it takes: it floats.
         let float = (t - reserve).clamp(0.0, 1.0);
-        // On a phone it is a drawer from the window's edge, full height.
+        // On a phone or tablet it is a drawer, full height with square
+        // corners.
         let shape = self.layout.shape;
-        let drawer = shape.is_phone();
+        let drawer = !shape.is_desktop();
         // A drawer (opened with the menu on a phone or tablet) slides in
         // whole; the desktop's panel unfolds.
         let slides = !shape.is_desktop() && !self.nav_peek;
@@ -302,7 +303,6 @@ impl MailWindow {
             .pt(px(lerp(0.0, 12.0, float)))
             .overflow_hidden()
             .when(float > 0.0, |d| {
-                // A phone's drawer has square corners, flush with the window.
                 d.bg(rgba(th.surface))
                     .when(!drawer, |d| d.rounded(px(PANEL_RADIUS)))
                     .shadow(elevation(th, 3.0 * float))
