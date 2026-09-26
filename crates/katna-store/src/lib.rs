@@ -35,7 +35,7 @@ pub use mail::{
 };
 pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
 pub use mail_view::{FolderSummary, ThreadEntry, ThreadSender, ThreadSummary};
-pub use ops::{Location, QueuedOp};
+pub use ops::{Location, PinnedMessage, QueuedOp};
 pub use outbox::{OutboxEntry, SendState};
 pub use people::Person;
 pub use pop3::Pop3Uidl;

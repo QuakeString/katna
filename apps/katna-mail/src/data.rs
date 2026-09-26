@@ -71,6 +71,8 @@ pub struct Row {
     pub unread: bool,
     pub flagged: bool,
     pub important: bool,
+    /// Pinned to the top of the list.
+    pub pinned: bool,
     pub attachments: bool,
     /// The named attachments, in conversation order, for the chips under
     /// the line. Empty when only `attachments` is known (mail synced
@@ -189,6 +191,7 @@ impl Row {
             unread: !message.flags.contains(MessageFlags::SEEN),
             flagged: message.flags.contains(MessageFlags::FLAGGED),
             important: message.flags.contains(MessageFlags::IMPORTANT),
+            pinned: false,
             attachments: message.has_attachments,
             files: Vec::new(),
             snippet: message
@@ -282,6 +285,55 @@ pub struct Mail {
     rows: HashMap<EntryKey, Rc<Row>>,
     /// The accounts' addresses, for "me".
     me: Vec<String>,
+    pins: Pins,
+}
+
+/// Pinned mail, by how recently it was pinned (0 is the newest pin).
+#[derive(Debug, Default)]
+struct Pins {
+    messages: HashMap<MessageId, usize>,
+    threads: HashMap<ThreadId, usize>,
+}
+
+impl Pins {
+    fn read(store: &Store) -> Self {
+        let list = store.pinned().unwrap_or_else(|err| {
+            tracing::warn!("reading pinned mail: {err}");
+            Vec::new()
+        });
+        let mut pins = Self::default();
+        for (rank, pin) in list.into_iter().enumerate() {
+            pins.messages.entry(pin.message).or_insert(rank);
+            if let Some(thread) = pin.thread {
+                pins.threads.entry(thread).or_insert(rank);
+            }
+        }
+        pins
+    }
+
+    /// Where a line goes among the pinned ones, if it is pinned. A
+    /// conversation is pinned when one of its messages is.
+    fn rank(&self, key: EntryKey) -> Option<usize> {
+        match key {
+            EntryKey::Message(id) => self.messages.get(&id),
+            EntryKey::Thread(thread) => self.threads.get(&thread),
+        }
+        .copied()
+    }
+}
+
+/// Moves pinned lines to the top, newest pin first; the rest keep their
+/// order.
+fn pinned_first(entries: Vec<Entry>, pins: &Pins) -> Vec<Entry> {
+    if pins.messages.is_empty() {
+        return entries;
+    }
+    let (mut pinned, rest): (Vec<Entry>, Vec<Entry>) = entries
+        .into_iter()
+        .partition(|e| pins.rank(e.key).is_some());
+    pinned.sort_by_key(|e| pins.rank(e.key));
+    pinned.extend(rest);
+    pinned
 }
 
 impl Mail {
@@ -300,6 +352,7 @@ impl Mail {
             .unwrap_or_default();
         Ok(Self {
             me,
+            pins: Pins::read(&store),
             store,
             index_dir,
             index,
@@ -329,8 +382,8 @@ impl Mail {
         })
     }
 
-    /// The lines of `folder`, newest first: conversations or messages.
-    /// `categories` picks an inbox tab.
+    /// The lines of `folder`, pinned ones first, then newest first:
+    /// conversations or messages. `categories` picks an inbox tab.
     pub fn entries(
         &self,
         folder: FolderId,
@@ -359,10 +412,11 @@ impl Mail {
             }
             .map(|ids| ids.into_iter().map(Entry::message).collect())
         };
-        entries.unwrap_or_else(|err| {
+        let entries = entries.unwrap_or_else(|err| {
             tracing::warn!("reading folder {}: {err}", folder.0);
             Vec::new()
-        })
+        });
+        pinned_first(entries, &self.pins)
     }
 
     /// Search hits as lines: grouped into conversations when asked, each
@@ -453,6 +507,7 @@ impl Mail {
     /// Picks up what the daemon wrote since the last call.
     pub fn refresh(&mut self) {
         self.rows.clear();
+        self.pins = Pins::read(&self.store);
         if let Some(index) = &self.index
             && let Err(err) = index.reload()
         {
@@ -568,6 +623,10 @@ impl Mail {
                     row
                 }
             };
+            let row = Row {
+                pinned: self.pins.rank(row.key).is_some(),
+                ..row
+            };
             self.rows.insert(row.key, Rc::new(row));
         }
     }
@@ -671,6 +730,24 @@ mod tests {
 
     const RAW: &[u8] = b"From: Ada <ada@example.org>\r\nTo: bob@example.net\r\n\
 Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is final.\r\n";
+
+    #[test]
+    fn pinned_lines_go_first() {
+        let line = |n| Entry::message(MessageId(n));
+        let thread = Entry {
+            key: EntryKey::Thread(ThreadId(7)),
+            latest: MessageId(4),
+        };
+        let pins = Pins {
+            messages: HashMap::from([(MessageId(3), 1), (MessageId(9), 0)]),
+            threads: HashMap::from([(ThreadId(7), 0)]),
+        };
+        let entries = vec![line(1), line(2), thread, line(3), line(5)];
+        assert_eq!(
+            pinned_first(entries, &pins),
+            [thread, line(3), line(1), line(2), line(5)]
+        );
+    }
 
     fn store_with_mail(paths: &Paths) -> (FolderId, MessageId) {
         let mut store = Store::open(paths, Mode::ReadWrite).unwrap();
@@ -800,6 +877,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
                 unread: true,
                 flagged: true,
                 important: false,
+                pinned: false,
                 attachments: false,
                 files: Vec::new(),
                 snippet: "The budget is final.".into(),

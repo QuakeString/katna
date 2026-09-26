@@ -651,6 +651,11 @@ impl Daemon {
         self.change(|store| ops::set_flags(store, messages, add, remove))
     }
 
+    /// Pins messages to the top of the list, or unpins them.
+    pub fn set_pinned(&self, messages: &[MessageId], on: bool) -> Result<(), CommandError> {
+        self.change(|store| ops::set_pinned(store, messages, on, unix_now()))
+    }
+
     /// Moves messages to another folder of their account.
     pub fn move_messages(&self, messages: &[MessageId], to: FolderId) -> Result<(), CommandError> {
         self.change(|store| ops::move_messages(store, messages, to))

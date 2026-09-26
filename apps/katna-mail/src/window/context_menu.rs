@@ -296,6 +296,11 @@ impl MailWindow {
                 plain("context-important", "important", "Mark as important")
                     .on_click(act(Act::Important(true)))
             })
+            .child(if row.pinned {
+                plain("context-pin", "pin-filled", "Unpin").on_click(act(Act::Pin(false)))
+            } else {
+                plain("context-pin", "pin", "Pin to top").on_click(act(Act::Pin(true)))
+            })
             .child(separator())
             .child(move_to)
             .when_some(find, |d, find| d.child(separator()).child(find))

@@ -105,6 +105,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.set_flags(&ids(&messages), add, remove)?)
             }
 
+            async fn set_pinned(&self, messages: Vec<i64>, on: bool) -> fdo::Result<()> {
+                Ok(self.daemon.set_pinned(&ids(&messages), on)?)
+            }
+
             async fn move_messages(&self, messages: Vec<i64>, folder: i64) -> fdo::Result<()> {
                 Ok(self
                     .daemon

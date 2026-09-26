@@ -187,6 +187,7 @@ enum Act {
     Read(bool),
     Star(bool),
     Important(bool),
+    Pin(bool),
 }
 
 /// What the pointer rests on that opens the folded navigation.
@@ -212,6 +213,7 @@ struct Pending {
     unread: Option<bool>,
     flagged: Option<bool>,
     important: Option<bool>,
+    pinned: Option<bool>,
 }
 
 pub struct MailWindow {
@@ -1445,6 +1447,16 @@ impl MailWindow {
                 }
                 let undo = Command::Important(ids.clone(), !on);
                 (Command::Important(ids, on), Some(undo))
+            }
+            Act::Pin(on) => {
+                // The whole conversation, wherever its messages are.
+                let ids: Vec<MessageId> =
+                    keys.iter().flat_map(|k| mail.entry_messages(*k)).collect();
+                for key in &keys {
+                    self.pending.entry(*key).or_default().pinned = Some(on);
+                }
+                let undo = Command::Pin(ids.clone(), !on);
+                (Command::Pin(ids, on), Some(undo))
             }
             Act::Archive | Act::Delete | Act::Spam | Act::MoveTo(_) => {
                 let ids: Vec<MessageId> = keys.iter().flat_map(|k| messages_in(*k)).collect();

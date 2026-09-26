@@ -16,6 +16,8 @@ pub enum Command {
     MarkRead(Vec<MessageId>, bool),
     Star(Vec<MessageId>, bool),
     Important(Vec<MessageId>, bool),
+    /// Pins a conversation's messages to the top of the list, or unpins.
+    Pin(Vec<MessageId>, bool),
     Archive(Vec<MessageId>),
     Delete(Vec<MessageId>),
     Move(Vec<MessageId>, FolderId),
@@ -35,6 +37,8 @@ impl Command {
             Self::Star(_, false) => Some(format!("{what} unstarred.")),
             Self::Important(_, true) => Some(format!("{what} marked as important.")),
             Self::Important(_, false) => Some(format!("{what} marked as not important.")),
+            Self::Pin(_, true) => Some(format!("{what} pinned to the top.")),
+            Self::Pin(_, false) => Some(format!("{what} unpinned.")),
             Self::MarkRead(..) | Self::SyncNow | Self::UndoSend(_) => None,
         }
     }
@@ -95,6 +99,7 @@ pub async fn send(connection: &Connection, command: &Command) -> Result<(), Stri
             };
             pim.set_flags(&ids(messages), add, remove).await
         }
+        Command::Pin(messages, on) => pim.set_pinned(&ids(messages), *on).await,
         Command::Archive(messages) => pim.archive_messages(&ids(messages)).await,
         Command::Delete(messages) => pim.delete_messages(&ids(messages)).await,
         Command::Move(messages, folder) => pim.move_messages(&ids(messages), folder.0).await,
@@ -310,6 +315,12 @@ mod tests {
                 .done_text("2 messages")
                 .as_deref(),
             Some("2 messages marked as not important.")
+        );
+        assert_eq!(
+            Command::Pin(ids.clone(), true)
+                .done_text("Conversation")
+                .as_deref(),
+            Some("Conversation pinned to the top.")
         );
         assert_eq!(
             Command::Star(ids.clone(), true)
