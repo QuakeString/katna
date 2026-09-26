@@ -1235,7 +1235,8 @@ Gemini or confidential mode):
   these changes. Compose sits in the top bar in place of the app name, so
   it shows whether the folders are open or not; the account picture moved
   to the top right, beside the settings gear, with its card below it; the
-  search box is 40 px tall. The menu button folds the folders away
+  search box is 40 px tall, and Compose beside it is as tall (a 40 px
+  square when a narrow tablet folds it to its pencil). The menu button folds the folders away
   completely, its bars turning upright as they go; resting on Mail in the
   app rail opens them over the list as a floating panel with rounded
   corners and a bottom margin. Ripples keep to the shape of the element

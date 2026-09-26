@@ -26,7 +26,7 @@ use crate::widgets::{avatar, elevation, icon, icon_button, icon_button_colored, 
 
 const NAV_ROW_HEIGHT: f32 = 32.0;
 const SEARCH_HEIGHT: f32 = 40.0;
-const COMPOSE_RADIUS: f32 = 16.0;
+const COMPOSE_RADIUS: f32 = 12.0;
 /// Room for the word "Compose" on the top bar's Compose button.
 const COMPOSE_LABEL_WIDTH: f32 = 80.0;
 
@@ -73,8 +73,9 @@ impl MailWindow {
             .id("compose")
             .relative()
             .ml(px(10.0))
-            .h(px(48.0))
-            .pr(px(lerp(12.0, 24.0, label)))
+            // As tall as the search box beside it; folded, a square.
+            .h(px(SEARCH_HEIGHT))
+            .pr(px(lerp(8.0, 24.0, label)))
             .flex_none()
             .flex()
             .flex_row()
@@ -89,7 +90,7 @@ impl MailWindow {
             .on_click(cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)))
             .child(Ripple::new("compose-ripple", rgba(th.ripple)).rounded(COMPOSE_RADIUS))
             .child(self.tour_mark(Spot::Compose))
-            .child(div().pl(px(lerp(12.0, 16.0, label))).child(icon(
+            .child(div().pl(px(lerp(8.0, 16.0, label))).child(icon(
                 "compose",
                 th.compose_text,
                 24.0,

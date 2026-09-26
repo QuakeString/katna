@@ -41,7 +41,7 @@ pub(super) const BOTTOM_BAR_HEIGHT: f32 = 72.0;
 /// A tablet narrower than this shows Compose as its pencil alone.
 const COMPOSE_FOLD_BELOW: f32 = 760.0;
 /// The top bar's Compose button with its margin, folded and whole.
-const COMPOSE_FOLDED: f32 = 58.0;
+const COMPOSE_FOLDED: f32 = 50.0;
 const COMPOSE_ROOM: f32 = 148.0;
 /// A phone's Compose button folds to its pencil once the list has scrolled
 /// down this far in one go, and grows back after this far up.
