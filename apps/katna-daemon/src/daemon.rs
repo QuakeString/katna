@@ -26,6 +26,7 @@ use katna_sync::{
     net::Tls,
     ops::{self, ChangeError},
     outbox::{self, OutboxConfig, OutboxEvent, OutboxHandle, Outgoing, QueueError},
+    pictures::Pictures,
     pop3::{self, Pop3Client},
     smtp::SmtpSender,
     worker::{self, Connector, Event, ImapConnector, Pop3Connector, WorkerConfig},
@@ -402,6 +403,23 @@ impl Daemon {
             smtp: found.smtp.as_ref().map(spec).unwrap_or_default(),
         };
         Ok((account, found.source.as_str()))
+    }
+
+    /// Downloads a remote image for the reading pane.
+    pub async fn fetch_image(&self, url: &str) -> Result<Vec<u8>, CommandError> {
+        let pictures = Pictures::system(self.paths.cache_dir())
+            .map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
+        pictures
+            .image(url)
+            .await
+            .map_err(|err| CommandError::Failed(err.to_string()))
+    }
+
+    /// The picture of the sender `address`, or empty.
+    pub async fn sender_picture(&self, address: &str) -> Result<Vec<u8>, CommandError> {
+        let pictures = Pictures::system(self.paths.cache_dir())
+            .map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
+        Ok(pictures.sender(address).await)
     }
 
     /// Checks and saves a new password, then restarts the account's worker.

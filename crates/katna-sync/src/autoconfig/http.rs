@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Just enough HTTPS to fetch a configuration file: `GET`, `Connection:
-//! close`, `Content-Length` or chunked bodies, and a few redirects. Only
-//! `https` URLs, so a network in the middle cannot hand us its servers.
+//! Just enough HTTPS to fetch a configuration file or an image: `GET`,
+//! `Connection: close`, `Content-Length` or chunked bodies, and a few
+//! redirects. Only `https` URLs, so a network in the middle cannot hand us
+//! its servers or see what is fetched.
 
 use std::time::Duration;
 
@@ -10,21 +11,31 @@ use futures_lite::FutureExt;
 
 use crate::{Error, Result, net::Conn, net::Tls};
 
-/// Largest body we accept; configuration files are a few kilobytes.
+/// Largest body [`get`] accepts; configuration files are a few kilobytes.
 const MAX_BODY: usize = 1024 * 1024;
 const MAX_REDIRECTS: usize = 3;
 
 /// Fetches `url` and returns the body of a `200` answer, or `None` for any
 /// other status (404 is the usual "no configuration here").
 pub async fn get(url: &str, tls: &Tls, timeout: Duration) -> Result<Option<Vec<u8>>> {
+    get_limited(url, tls, timeout, MAX_BODY).await
+}
+
+/// Like [`get`], for bodies of at most `max_body` bytes.
+pub async fn get_limited(
+    url: &str,
+    tls: &Tls,
+    timeout: Duration,
+    max_body: usize,
+) -> Result<Option<Vec<u8>>> {
     let fetch = async {
         let mut url = url.to_owned();
         for _ in 0..=MAX_REDIRECTS {
-            match get_once(&url, tls).await? {
+            match get_once(&url, tls, max_body).await? {
                 Answer::Body(body) => return Ok(Some(body)),
                 Answer::Redirect(to) => url = resolve(&url, &to)?,
                 Answer::Status(status) => {
-                    tracing::debug!(url, status, "no configuration");
+                    tracing::debug!(url, status, "nothing there");
                     return Ok(None);
                 }
             }
@@ -91,7 +102,7 @@ fn resolve(base: &str, location: &str) -> Result<String> {
     )))
 }
 
-async fn get_once(url: &str, tls: &Tls) -> Result<Answer> {
+async fn get_once(url: &str, tls: &Tls, max_body: usize) -> Result<Answer> {
     let parts = parse_url(url)?;
     let mut conn = Conn::new(tls.clone());
     conn.connect_tls(parts.host, parts.port).await?;
@@ -108,16 +119,16 @@ async fn get_once(url: &str, tls: &Tls) -> Result<Answer> {
             break;
         }
         response.extend_from_slice(chunk);
-        if response.len() > MAX_BODY + 64 * 1024 {
+        if response.len() > max_body + 64 * 1024 {
             return Err(Error::Protocol(format!("{url}: answer too large")));
         }
     }
     let _ = conn.close().await;
-    parse_response(&response)
+    parse_response(&response, max_body)
 }
 
 /// Splits a whole HTTP/1.1 response into status, headers and body.
-fn parse_response(response: &[u8]) -> Result<Answer> {
+fn parse_response(response: &[u8], max_body: usize) -> Result<Answer> {
     let bad = |what: &str| Error::Protocol(format!("HTTP: {what}"));
     let end = response
         .windows(4)
@@ -164,7 +175,7 @@ fn parse_response(response: &[u8]) -> Result<Answer> {
             None => body.to_vec(),
         }
     };
-    if body.len() > MAX_BODY {
+    if body.len() > max_body {
         return Err(bad("body too large"));
     }
     Ok(Answer::Body(body))
@@ -213,19 +224,23 @@ mod tests {
     #[test]
     fn bodies() {
         let plain = b"HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\nhello!!";
-        assert!(matches!(parse_response(plain).unwrap(), Answer::Body(b) if b == b"hello"));
+        assert!(
+            matches!(parse_response(plain, MAX_BODY).unwrap(), Answer::Body(b) if b == b"hello")
+        );
         let chunked = b"HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n\
                         3\r\nhel\r\n2;x=y\r\nlo\r\n0\r\n\r\n";
-        assert!(matches!(parse_response(chunked).unwrap(), Answer::Body(b) if b == b"hello"));
+        assert!(
+            matches!(parse_response(chunked, MAX_BODY).unwrap(), Answer::Body(b) if b == b"hello")
+        );
         let moved = b"HTTP/1.1 301 Moved\r\nLocation: https://b.org/c\r\n\r\n";
         assert!(
-            matches!(parse_response(moved).unwrap(), Answer::Redirect(l) if l == "https://b.org/c")
+            matches!(parse_response(moved, MAX_BODY).unwrap(), Answer::Redirect(l) if l == "https://b.org/c")
         );
         let missing = b"HTTP/1.0 404 Not Found\r\n\r\n";
         assert!(matches!(
-            parse_response(missing).unwrap(),
+            parse_response(missing, MAX_BODY).unwrap(),
             Answer::Status(404)
         ));
-        assert!(parse_response(b"HTTP/1.1 200 OK\r\n").is_err());
+        assert!(parse_response(b"HTTP/1.1 200 OK\r\n", MAX_BODY).is_err());
     }
 }

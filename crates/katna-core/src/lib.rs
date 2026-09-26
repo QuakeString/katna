@@ -8,6 +8,7 @@ pub mod category;
 pub mod config;
 pub mod error;
 pub mod ids;
+pub mod image;
 pub mod logging;
 pub mod paths;
 pub mod subject;
