@@ -2,3 +2,263 @@
 
 //! SQLite schema, migrations and message storage. Only `katna-daemon` opens the
 //! databases for writing; apps open them read-only. See `docs/ARCHITECTURE.md` §5.
+//!
+//! All SQL in Katna lives in this crate.
+
+pub mod blob;
+mod db;
+pub mod error;
+pub mod journal;
+
+use katna_core::{Account, AccountId, AccountKind, Paths};
+use rusqlite::{Connection, TransactionBehavior, params};
+
+pub use blob::{BlobHash, BlobStore};
+pub use db::{DbKind, Mode};
+pub use error::{Error, Result};
+pub use journal::{Change, ChangeOp, ObjectKind};
+
+/// The open Katna databases: `mail.db`, `pim.db` and the blob store.
+#[derive(Debug)]
+pub struct Store {
+    mail: Connection,
+    pim: Connection,
+    blobs: BlobStore,
+    mode: Mode,
+}
+
+impl Store {
+    /// Opens the store in the directories given by `paths`.
+    ///
+    /// [`Mode::ReadWrite`] creates the data directories and databases and
+    /// applies pending migrations. [`Mode::ReadOnly`] requires databases the
+    /// daemon has already created and migrated.
+    pub fn open(paths: &Paths, mode: Mode) -> Result<Self> {
+        if mode == Mode::ReadWrite {
+            paths.create_dirs()?;
+        }
+        // blobs.db first: metadata may reference blobs, never the reverse.
+        let blobs = BlobStore::new(
+            db::open(&paths.blobs_db(), DbKind::Blobs, mode)?,
+            paths.attachments_dir(),
+            mode,
+        );
+        let pim = db::open(&paths.pim_db(), DbKind::Pim, mode)?;
+        let mail = db::open(&paths.mail_db(), DbKind::Mail, mode)?;
+        Ok(Self {
+            mail,
+            pim,
+            blobs,
+            mode,
+        })
+    }
+
+    /// Whether this store may be written.
+    pub fn mode(&self) -> Mode {
+        self.mode
+    }
+
+    /// The content-addressed blob store.
+    pub fn blobs(&self) -> &BlobStore {
+        &self.blobs
+    }
+
+    /// Adds an account and returns it with its new ID.
+    pub fn add_account(
+        &mut self,
+        kind: AccountKind,
+        display_name: &str,
+        address: &str,
+    ) -> Result<Account> {
+        self.check_writable()?;
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        tx.execute(
+            "INSERT INTO account (kind, display_name, address) VALUES (?1, ?2, ?3)",
+            params![kind.as_str(), display_name, address],
+        )?;
+        let id = tx.last_insert_rowid();
+        journal::record(&tx, ObjectKind::Account, id, ChangeOp::Insert)?;
+        tx.commit()?;
+        Ok(Account {
+            id: AccountId(id),
+            kind,
+            display_name: display_name.to_owned(),
+            address: address.to_owned(),
+        })
+    }
+
+    /// Removes an account. Returns whether it existed.
+    ///
+    /// Its mail is removed separately by the daemon (Phase 1), because it
+    /// lives in `mail.db`.
+    pub fn remove_account(&mut self, id: AccountId) -> Result<bool> {
+        self.check_writable()?;
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let removed = tx.execute("DELETE FROM account WHERE id = ?1", [id.0])? > 0;
+        if removed {
+            journal::record(&tx, ObjectKind::Account, id.0, ChangeOp::Delete)?;
+        }
+        tx.commit()?;
+        Ok(removed)
+    }
+
+    /// All accounts, ordered by ID.
+    pub fn accounts(&self) -> Result<Vec<Account>> {
+        let mut stmt = self
+            .pim
+            .prepare_cached("SELECT id, kind, display_name, address FROM account ORDER BY id")?;
+        let rows = stmt.query_map([], |row| {
+            Ok((
+                row.get::<_, i64>(0)?,
+                row.get::<_, String>(1)?,
+                row.get::<_, String>(2)?,
+                row.get::<_, String>(3)?,
+            ))
+        })?;
+        rows.map(|row| {
+            let (id, kind, display_name, address) = row?;
+            Ok(Account {
+                id: AccountId(id),
+                kind: kind
+                    .parse()
+                    .map_err(|err: katna_core::account::UnknownAccountKind| {
+                        Error::InvalidData(err.to_string())
+                    })?,
+                display_name,
+                address,
+            })
+        })
+        .collect()
+    }
+
+    /// Journal entries of `db` after sequence number `after`, oldest first,
+    /// at most `limit`. `db` must be [`DbKind::Mail`] or [`DbKind::Pim`].
+    pub fn changes_since(&self, db: DbKind, after: i64, limit: u32) -> Result<Vec<Change>> {
+        journal::changes_since(self.journaled(db)?, after, limit)
+    }
+
+    /// The newest journal sequence number of `db`, or 0 if it has none.
+    pub fn latest_change(&self, db: DbKind) -> Result<i64> {
+        journal::latest_seq(self.journaled(db)?)
+    }
+
+    fn journaled(&self, db: DbKind) -> Result<&Connection> {
+        match db {
+            DbKind::Mail => Ok(&self.mail),
+            DbKind::Pim => Ok(&self.pim),
+            DbKind::Blobs => Err(Error::InvalidData(
+                "blobs.db has no change journal".to_owned(),
+            )),
+        }
+    }
+
+    fn check_writable(&self) -> Result<()> {
+        match self.mode {
+            Mode::ReadWrite => Ok(()),
+            Mode::ReadOnly => Err(Error::ReadOnly),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn read_write_creates_everything() {
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        let store = Store::open(&paths, Mode::ReadWrite).unwrap();
+        assert_eq!(store.mode(), Mode::ReadWrite);
+        for db in [paths.mail_db(), paths.pim_db(), paths.blobs_db()] {
+            assert!(db.is_file(), "{}", db.display());
+        }
+        assert!(paths.attachments_dir().is_dir());
+        assert!(store.accounts().unwrap().is_empty());
+    }
+
+    #[test]
+    fn read_only_before_the_daemon_ran() {
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        assert!(matches!(
+            Store::open(&paths, Mode::ReadOnly),
+            Err(Error::NotFound { .. })
+        ));
+        assert!(!paths.data_dir().exists());
+    }
+
+    #[test]
+    fn accounts_are_journaled_and_visible_to_readers() {
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        let mut daemon = Store::open(&paths, Mode::ReadWrite).unwrap();
+        let app = Store::open(&paths, Mode::ReadOnly).unwrap();
+        let seen = app.latest_change(DbKind::Pim).unwrap();
+
+        let work = daemon
+            .add_account(AccountKind::Imap, "Work", "ada@example.org")
+            .unwrap();
+        let cal = daemon
+            .add_account(AccountKind::CalDav, "Calendar", "ada")
+            .unwrap();
+        assert_ne!(work.id, cal.id);
+        assert_eq!(app.accounts().unwrap(), vec![work.clone(), cal.clone()]);
+
+        let changes = app.changes_since(DbKind::Pim, seen, 10).unwrap();
+        let summary: Vec<_> = changes
+            .iter()
+            .map(|c| (c.kind, c.object_id, c.op))
+            .collect();
+        assert_eq!(
+            summary,
+            [
+                (ObjectKind::Account, work.id.0, ChangeOp::Insert),
+                (ObjectKind::Account, cal.id.0, ChangeOp::Insert),
+            ]
+        );
+
+        assert!(daemon.remove_account(work.id).unwrap());
+        assert!(!daemon.remove_account(work.id).unwrap());
+        assert_eq!(app.accounts().unwrap(), vec![cal]);
+        let last = app.changes_since(DbKind::Pim, changes[1].seq, 10).unwrap();
+        assert_eq!(last.len(), 1);
+        assert_eq!(last[0].op, ChangeOp::Delete);
+
+        assert!(app.changes_since(DbKind::Blobs, 0, 10).is_err());
+        assert_eq!(app.latest_change(DbKind::Mail).unwrap(), 0);
+    }
+
+    #[test]
+    fn read_only_store_refuses_writes() {
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        drop(Store::open(&paths, Mode::ReadWrite).unwrap());
+        let mut app = Store::open(&paths, Mode::ReadOnly).unwrap();
+        assert!(matches!(
+            app.add_account(AccountKind::Imap, "x", "x@example.org"),
+            Err(Error::ReadOnly)
+        ));
+        assert!(matches!(app.blobs().put(b"x"), Err(Error::ReadOnly)));
+    }
+
+    #[test]
+    fn data_survives_reopening() {
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        let (account, hash) = {
+            let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+            let account = store
+                .add_account(AccountKind::Jmap, "Home", "ada@example.net")
+                .unwrap();
+            (account, store.blobs().put(b"raw message").unwrap())
+        };
+        let store = Store::open(&paths, Mode::ReadWrite).unwrap();
+        assert_eq!(store.accounts().unwrap(), vec![account]);
+        assert_eq!(store.blobs().get(&hash).unwrap().unwrap(), b"raw message");
+    }
+}
