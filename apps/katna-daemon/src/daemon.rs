@@ -6,7 +6,7 @@
 use std::{
     collections::HashMap,
     sync::{
-        Arc, Mutex, MutexGuard, Weak,
+        Arc, Mutex, MutexGuard, OnceLock, Weak,
         atomic::{AtomicBool, Ordering},
     },
     time::{Duration, SystemTime, UNIX_EPOCH},
@@ -31,7 +31,7 @@ use katna_sync::{
     worker::{self, Connector, Event, ImapConnector, Pop3Connector, WorkerConfig},
 };
 
-use crate::secrets::Secrets;
+use crate::{notify::NewMailNotices, secrets::Secrets};
 
 /// How long a stopping worker may take to log out.
 const STOP_TIMEOUT: Duration = Duration::from_secs(10);
@@ -143,6 +143,8 @@ pub struct Daemon {
     /// Why each outbox entry's last try failed.
     send_errors: Mutex<HashMap<i64, String>>,
     notices: Sender<Notice>,
+    /// Desktop notifications, once a session bus has a server for them.
+    new_mail: OnceLock<Arc<NewMailNotices>>,
 }
 
 impl Daemon {
@@ -153,7 +155,7 @@ impl Daemon {
         config: WorkerConfig,
     ) -> katna_store::Result<(Arc<Self>, Receiver<Notice>)> {
         let store = Store::open(&paths, Mode::ReadWrite)?;
-        let setting = metered_setting(&paths);
+        let setting = settings(&paths).sync.metered;
         let (notices, receiver) = async_channel::unbounded();
         let daemon = Arc::new(Self {
             paths,
@@ -168,6 +170,7 @@ impl Daemon {
             outbox: Mutex::default(),
             send_errors: Mutex::default(),
             notices,
+            new_mail: OnceLock::new(),
         });
         Ok((daemon, receiver))
     }
@@ -175,6 +178,25 @@ impl Daemon {
     /// A sender for notices from outside the workers (the backfill).
     pub(crate) fn notifier(&self) -> Sender<Notice> {
         self.notices.clone()
+    }
+
+    /// Shows new-mail notifications through the desktop's notification
+    /// server on `connection` (the session bus), as `notifications.new_mail`
+    /// says. Call before [`Daemon::start`].
+    pub async fn notify_new_mail(self: &Arc<Self>, connection: &zbus::Connection) {
+        let enabled = settings(&self.paths).notifications.new_mail;
+        match NewMailNotices::new(connection, enabled).await {
+            Ok(notices) => {
+                if self.new_mail.set(Arc::new(notices)).is_ok() {
+                    smol::spawn(NewMailNotices::serve_actions(Arc::downgrade(self))).detach();
+                }
+            }
+            Err(err) => tracing::warn!(%err, "no desktop notifications"),
+        }
+    }
+
+    pub(crate) fn new_mail_notices(&self) -> Option<Arc<NewMailNotices>> {
+        self.new_mail.get().cloned()
     }
 
     /// Starts a worker for every account, and the outbox.
@@ -416,6 +438,9 @@ impl Daemon {
             tracing::warn!(account = %id, %err, "could not delete the password");
         }
         self.status.lock().unwrap().remove(&id);
+        if let Some(notices) = self.new_mail_notices() {
+            notices.forget(id);
+        }
         if existed {
             tracing::info!(account = %id, "account removed");
             let _ = self.notices.try_send(Notice::AccountsChanged);
@@ -469,12 +494,19 @@ impl Daemon {
     }
 
     /// Reads the settings file again and applies what the daemon uses from
-    /// it (`sync.metered`). Katna Mail calls this after saving settings.
+    /// it (`sync.metered`, `notifications.new_mail`). Katna Mail calls this after saving settings.
     pub fn reload_config(&self) -> Result<(), CommandError> {
         let config = Config::load(&self.paths.config_file())
             .map_err(|err| CommandError::InvalidArgs(err.to_string()))?;
-        tracing::info!(metered = ?config.sync.metered, "settings reloaded");
+        tracing::info!(
+            metered = ?config.sync.metered,
+            new_mail = config.notifications.new_mail,
+            "settings reloaded"
+        );
         *self.metered_setting.lock().unwrap() = config.sync.metered;
+        if let Some(notices) = self.new_mail_notices() {
+            notices.set_enabled(config.notifications.new_mail);
+        }
         self.apply_metered();
         Ok(())
     }
@@ -659,6 +691,13 @@ impl Daemon {
         change: impl FnOnce(&mut Store) -> Result<Vec<AccountId>, ChangeError>,
     ) -> Result<(), CommandError> {
         let accounts = change(&mut self.store())?;
+        // Mail read or moved here needs no notification any more.
+        if let Some(notices) = self.new_mail_notices() {
+            let handled = notices.handled(&self.store(), None);
+            if !handled.is_empty() {
+                smol::spawn(async move { notices.close(handled).await }).detach();
+            }
+        }
         let workers = self.workers();
         for account in accounts {
             let _ = self.notices.try_send(Notice::MailChanged(account));
@@ -743,6 +782,9 @@ impl Daemon {
                 return;
             }
         };
+        if let Some(notices) = self.new_mail_notices() {
+            notices.watch(&self.store(), id);
+        }
         let (handle, control) = worker::control();
         handle.set_metered(self.metered.load(Ordering::Relaxed));
         let (events, received) = async_channel::unbounded();
@@ -789,6 +831,9 @@ impl Daemon {
                     });
                     if changed || first {
                         let _ = self.notices.try_send(Notice::MailChanged(id));
+                    }
+                    if let Some(notices) = self.new_mail_notices() {
+                        notices.synced(&self.store, id).await;
                     }
                 }
                 Event::BodiesStored(_) => {
@@ -1012,12 +1057,10 @@ fn unix_now() -> i64 {
 }
 
 /// The `sync.metered` setting; the default if the file cannot be read.
-fn metered_setting(paths: &Paths) -> Metered {
-    match Config::load(&paths.config_file()) {
-        Ok(config) => config.sync.metered,
-        Err(err) => {
-            tracing::warn!(%err, "settings unreadable; metered follows the network");
-            Metered::Auto
-        }
-    }
+/// The settings file, or the defaults when it cannot be read.
+fn settings(paths: &Paths) -> Config {
+    Config::load(&paths.config_file()).unwrap_or_else(|err| {
+        tracing::warn!(%err, "settings unreadable; using the defaults");
+        Config::default()
+    })
 }

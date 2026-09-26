@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! The app rail at the far left: Mail, Calendar, Contacts, Tasks, Notes
-//! and Feeds, with the account and settings at the bottom. Mail is the
+//! and Feeds, with settings at the bottom. Mail is the
 //! only app so far; Contacts lists the people from the mail, and the
 //! others show what is coming. Each app gets its own page here, so new
 //! ones plug in as they are built.
@@ -20,7 +20,7 @@ use katna_ui::motion;
 use super::{MailWindow, OpenSettings};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{avatar, icon, icon_button_colored, placeholder};
+use crate::widgets::{avatar, icon, icon_button_colored, placeholder, tip};
 
 pub(super) const APP_RAIL_WIDTH: f32 = 72.0;
 
@@ -136,6 +136,11 @@ impl MailWindow {
                 .gap(px(4.0))
                 .cursor_pointer()
                 .group("app")
+                .when(app == App::Mail, |d| {
+                    d.on_hover(cx.listener(|this, hovered: &bool, _, cx| {
+                        this.hover_navigation(super::Hover::Rail, *hovered, cx)
+                    }))
+                })
                 .on_click(cx.listener(move |this, _, _, cx| this.open_app(app, cx)))
                 .child(
                     div()
@@ -189,35 +194,6 @@ impl MailWindow {
                         .child(app.label()),
                 )
         });
-        // The account picture opens the account card; with no account yet,
-        // the button adds one.
-        let account = match self.accounts.first() {
-            Some(account) => {
-                let name = if account.display_name.trim().is_empty() {
-                    account.address.clone()
-                } else {
-                    account.display_name.clone()
-                };
-                div()
-                    .id("rail-account")
-                    .mt(px(4.0))
-                    .p(px(4.0))
-                    .rounded_full()
-                    .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
-                    .when(self.account_menu, |d| d.bg(rgba(th.hover)))
-                    .on_click(cx.listener(|this, _, _, cx| {
-                        this.account_menu = !this.account_menu;
-                        cx.notify();
-                    }))
-                    .child(avatar(&name, &account.address, 32.0))
-                    .into_any_element()
-            }
-            None => icon_button_colored("rail-account", "person-add", 22.0, th.text_dim, th)
-                .mt(px(4.0))
-                .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx)))
-                .into_any_element(),
-        };
         div()
             .id("app-rail")
             .flex_none()
@@ -242,6 +218,7 @@ impl MailWindow {
                     },
                     th,
                 )
+                .tooltip(tip("Settings", th))
                 .on_click(cx.listener(|this, _, window, cx| {
                     if this.settings_page.is_some() && this.app == App::Mail {
                         this.close_settings_page(window, cx);
@@ -250,7 +227,6 @@ impl MailWindow {
                     }
                 })),
             )
-            .child(account)
             .into_any_element()
     }
 
@@ -319,7 +295,7 @@ impl MailWindow {
             .child(
                 div()
                     .size_full()
-                    .rounded(px(16.0))
+                    .rounded(px(super::PANEL_RADIUS))
                     .overflow_hidden()
                     .bg(rgba(th.surface))
                     .child(body),

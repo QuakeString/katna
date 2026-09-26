@@ -1,27 +1,29 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The top bar (menu, name, search box, settings, account) and the
-//! navigation (Compose and the folders), which folds to a rail.
+//! The top bar (menu, Compose, search box, settings, account) and the
+//! navigation with the folders, which folds away.
 
 use std::ops::Range;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, div, linear_color_stop,
-    linear_gradient, prelude::*, px, rgba, uniform_list,
+    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, Transformation, div,
+    prelude::*, px, radians, rgba, svg, uniform_list,
 };
 use katna_ui::Ripple;
 use katna_ui::motion::{self, lerp};
 
-use super::{FocusSearch, Listing, MailWindow, SEARCH_CONTEXT, ToggleNavigation, ToggleSettings};
+use super::{
+    Compose, FocusSearch, Hover, Listing, MailWindow, NAV_WIDTH, PANEL_RADIUS, SEARCH_CONTEXT,
+    ToggleNavigation, ToggleSettings,
+};
 use crate::format;
 use crate::sidebar::{self, Role};
 use crate::theme::{Theme, fade, mix};
-use crate::widgets::{elevation, icon, icon_button, icon_button_colored};
-
-use super::{Compose, NAV_WIDTH, RAIL_WIDTH};
+use crate::widgets::{avatar, elevation, icon, icon_button, icon_button_colored, tip};
 
 const NAV_ROW_HEIGHT: f32 = 32.0;
-const COMPOSE_WIDTH: f32 = 142.0;
+const SEARCH_HEIGHT: f32 = 40.0;
+const COMPOSE_RADIUS: f32 = 16.0;
 
 impl MailWindow {
     pub(super) fn render_top_start(
@@ -30,42 +32,76 @@ impl MailWindow {
         wide: bool,
         cx: &mut Context<Self>,
     ) -> Vec<AnyElement> {
-        let menu = icon_button("menu-button", "menu", 24.0, th)
-            .ml(px(2.0))
+        // The bars turn upright as the navigation folds away.
+        let folded = 1.0 - self.reserve_spring.value().clamp(0.0, 1.0);
+        let menu = div()
+            .id("menu-button")
+            .relative()
+            .ml(px(6.0))
+            .size(px(48.0))
+            .flex_none()
+            .flex()
+            .items_center()
+            .justify_center()
+            .rounded_full()
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .on_mouse_move(|_, _, cx| cx.stop_propagation())
+            .tooltip(tip("Main menu", th))
             .on_click(cx.listener(|this, _, window, cx| {
                 this.toggle_navigation(&ToggleNavigation, window, cx)
             }))
+            .child(Ripple::new("menu-ripple", rgba(th.ripple)).centered())
+            .child(
+                svg()
+                    .path("icons/menu.svg")
+                    .size(px(24.0))
+                    .text_color(rgba(th.text_dim))
+                    .with_transformation(Transformation::rotate(radians(
+                        folded * std::f32::consts::FRAC_PI_2,
+                    ))),
+            )
             .into_any_element();
-        let logo = div()
+        let compose = div()
+            .id("compose")
+            .relative()
+            .ml(px(10.0))
+            .h(px(48.0))
+            .when(wide, |d| d.pr(px(24.0)))
+            .when(!wide, |d| d.w(px(48.0)).justify_center())
+            .flex_none()
             .flex()
             .flex_row()
             .items_center()
-            .gap(px(10.0))
-            .pl(px(4.0))
-            .child(
-                div()
-                    .size(px(34.0))
-                    .flex()
-                    .items_center()
-                    .justify_center()
-                    .rounded(px(9.0))
-                    .bg(linear_gradient(
-                        135.0,
-                        linear_color_stop(rgba(0x4f8df7ff), 0.0),
-                        linear_color_stop(rgba(0x3949c9ff), 1.0),
-                    ))
-                    .child(icon("mail", 0xffffffff, 22.0)),
-            )
+            .rounded(px(COMPOSE_RADIUS))
+            .bg(rgba(th.compose))
+            .text_color(rgba(th.compose_text))
+            .hover(|s| s.shadow(elevation(th, 1.5)))
+            .cursor_pointer()
+            .on_mouse_move(|_, _, cx| cx.stop_propagation())
+            .when(!wide, |d| d.tooltip(tip("Compose", th)))
+            .on_click(cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)))
+            .child(Ripple::new("compose-ripple", rgba(th.ripple)).rounded(COMPOSE_RADIUS))
+            .child(div().when(wide, |d| d.pl(px(16.0))).child(icon(
+                "compose",
+                th.compose_text,
+                24.0,
+            )))
             .when(wide, |d| {
                 d.child(
                     div()
-                        .text_size(px(21.0))
-                        .text_color(rgba(th.text_dim))
-                        .child("Katna Mail"),
+                        .pl(px(12.0))
+                        .text_size(px(14.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .child("Compose"),
                 )
             })
             .into_any_element();
-        vec![menu, logo]
+        let mut start = vec![menu];
+        if self.mail.is_ok() && !self.accounts.is_empty() {
+            start.push(compose);
+        }
+        start
     }
 
     pub(super) fn render_search(
@@ -82,9 +118,9 @@ impl MailWindow {
             .id("search-box")
             .key_context(SEARCH_CONTEXT)
             .w(px(width))
-            .h(px(48.0))
-            .pl(px(4.0))
-            .pr(px(4.0))
+            .h(px(SEARCH_HEIGHT))
+            .pl(px(2.0))
+            .pr(px(2.0))
             .flex()
             .flex_row()
             .items_center()
@@ -99,26 +135,26 @@ impl MailWindow {
             // A drag here selects text rather than moving the window.
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .child(
-                icon_button("search-button", "search", 22.0, th).on_click(cx.listener(
-                    |this, _, window, cx| {
+                icon_button("search-button", "search", 22.0, th)
+                    .tooltip(tip("Search", th))
+                    .on_click(cx.listener(|this, _, window, cx| {
                         let text = this.search.read(cx).text().trim().to_owned();
                         if text.is_empty() {
                             this.focus_search(&FocusSearch, window, cx);
                         } else {
                             this.start_search(text, cx);
                         }
-                    },
-                )),
+                    })),
             )
             .child(div().flex_1().min_w_0().child(self.search.clone()))
             .when(has_text, |d| {
                 d.child(
-                    icon_button("search-clear", "close", 22.0, th).on_click(cx.listener(
-                        |this, _, window, cx| {
+                    icon_button("search-clear", "close", 22.0, th)
+                        .tooltip(tip("Clear search", th))
+                        .on_click(cx.listener(|this, _, window, cx| {
                             this.clear_search(cx);
                             this.focus_search(&FocusSearch, window, cx);
-                        },
-                    )),
+                        })),
                 )
             })
             .child(
@@ -129,6 +165,7 @@ impl MailWindow {
                     if panel_open { th.accent } else { th.text_dim },
                     th,
                 )
+                .tooltip(tip("Show search options", th))
                 .on_click(cx.listener(|this, _, window, cx| {
                     this.toggle_search_panel(window, cx);
                 })),
@@ -148,49 +185,53 @@ impl MailWindow {
             },
             th,
         )
+        .tooltip(tip("Settings", th))
         .on_click(
             cx.listener(|this, _, window, cx| this.toggle_settings(&ToggleSettings, window, cx)),
         );
-        let end = vec![settings.mr(px(8.0)).into_any_element()];
-        end
+        // The account picture opens the account card; with no account yet,
+        // the button adds one.
+        let account = match self.accounts.first() {
+            Some(account) => {
+                let name = if account.display_name.trim().is_empty() {
+                    account.address.clone()
+                } else {
+                    account.display_name.clone()
+                };
+                div()
+                    .id("top-account")
+                    .p(px(4.0))
+                    .rounded_full()
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .when(self.account_menu, |d| d.bg(rgba(th.hover)))
+                    .on_mouse_move(|_, _, cx| cx.stop_propagation())
+                    .tooltip(tip(format!("{name}\n{}", account.address), th))
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        this.account_menu = !this.account_menu;
+                        cx.notify();
+                    }))
+                    .child(avatar(&name, &account.address, 32.0))
+                    .into_any_element()
+            }
+            None => icon_button_colored("top-account", "person-add", 22.0, th.text_dim, th)
+                .tooltip(tip("Add an account", th))
+                .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx)))
+                .into_any_element(),
+        };
+        vec![
+            settings.into_any_element(),
+            div().mx(px(8.0)).child(account).into_any_element(),
+        ]
     }
 
+    /// The folders. Folded, the panel is gone; it opens over the list while
+    /// the pointer rests on Mail in the app rail or on the panel itself.
     pub(super) fn render_navigation(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        let t = self.nav_t;
-        let reserve = self.reserve_spring.value();
+        let t = self.nav_t.max(0.0);
+        let reserve = self.reserve_spring.value().max(0.0);
         // How far the panel is open beyond the space it takes: it floats.
         let float = (t - reserve).clamp(0.0, 1.0);
-        let compose = div()
-            .id("compose")
-            .relative()
-            .overflow_hidden()
-            .ml(px(8.0))
-            .h(px(56.0))
-            .w(px(lerp(56.0, COMPOSE_WIDTH, t)))
-            .flex_none()
-            .flex()
-            .flex_row()
-            .items_center()
-            .rounded(px(16.0))
-            .bg(rgba(th.compose))
-            .text_color(rgba(th.compose_text))
-            .hover(|s| s.shadow(elevation(th, 1.5)))
-            .cursor_pointer()
-            .on_click(cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)))
-            .child(Ripple::new("compose-ripple", rgba(th.ripple)))
-            .child(
-                div()
-                    .pl(px(16.0))
-                    .child(icon("compose", th.compose_text, 24.0)),
-            )
-            .child(
-                div()
-                    .pl(px(12.0))
-                    .text_size(px(14.0))
-                    .font_weight(FontWeight::MEDIUM)
-                    .opacity(t)
-                    .child("Compose"),
-            );
         let list = uniform_list(
             "navigation",
             self.nav_rows.len(),
@@ -202,6 +243,7 @@ impl MailWindow {
             }),
         )
         .track_scroll(&self.nav_scroll)
+        .w(px(NAV_WIDTH))
         .flex_1()
         .pb(px(16.0));
         let panel = div()
@@ -209,33 +251,32 @@ impl MailWindow {
             .absolute()
             .top_0()
             .left_0()
-            .bottom_0()
-            .w(px(lerp(RAIL_WIDTH, NAV_WIDTH, t)))
+            .bottom(px(16.0 * float))
+            .w(px(NAV_WIDTH * t))
             .flex()
             .flex_col()
-            .gap(px(16.0))
-            .pt(px(8.0))
+            .pt(px(lerp(0.0, 12.0, float)))
             .overflow_hidden()
-            .bg(rgba(if float > 0.0 { th.surface } else { th.page }))
+            .opacity(t.min(1.0))
             .when(float > 0.0, |d| {
-                d.rounded_r(px(16.0)).shadow(elevation(th, 3.0 * float))
+                d.bg(rgba(th.surface))
+                    .rounded(px(PANEL_RADIUS))
+                    .shadow(elevation(th, 3.0 * float))
             })
-            .on_hover(
-                cx.listener(|this, hovered: &bool, _, cx| this.hover_navigation(*hovered, cx)),
-            )
-            .child(compose)
+            .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
+                this.hover_navigation(Hover::Panel, *hovered, cx)
+            }))
             .child(list);
         div()
             .relative()
             .flex_none()
             .h_full()
-            .w(px(lerp(RAIL_WIDTH, NAV_WIDTH, reserve)))
+            .w(px(NAV_WIDTH * reserve))
             .child(panel)
             .into_any_element()
     }
 
     fn render_nav_row(&self, ix: usize, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        let t = self.nav_t;
         match &self.nav_rows[ix] {
             sidebar::Row::Account { name, .. } => div()
                 .id(("nav-row", ix))
@@ -247,7 +288,6 @@ impl MailWindow {
                 .text_size(px(12.0))
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(rgba(th.text_faint))
-                .opacity(t)
                 .child(div().truncate().child(name.clone()))
                 .into_any_element(),
             sidebar::Row::Folder {
@@ -262,7 +302,7 @@ impl MailWindow {
             } => {
                 let selected = folder.is_some_and(|f| self.listing == Some(Listing::Folder(f)));
                 let key = key.clone();
-                let indent = 12.0 * *depth as f32 * t;
+                let indent = 12.0 * *depth as f32;
                 let text = if selected {
                     th.nav_selected_text
                 } else {
@@ -272,14 +312,13 @@ impl MailWindow {
                 let chevron = div()
                     .id(("nav-chevron", ix))
                     .absolute()
-                    .left(px(lerp(-10.0, 4.0 + indent, t)))
+                    .left(px(4.0 + indent))
                     .top(px(6.0))
                     .size(px(20.0))
                     .flex()
                     .items_center()
                     .justify_center()
                     .rounded_full()
-                    .opacity(t)
                     .hover(|s| s.bg(rgba(th.hover)))
                     .child(icon(
                         if *expanded {
@@ -299,14 +338,12 @@ impl MailWindow {
                     .relative()
                     .overflow_hidden()
                     .h(px(NAV_ROW_HEIGHT))
-                    .ml(px(lerp(8.0, 0.0, t)))
-                    .w(px(lerp(56.0, NAV_WIDTH - 16.0, t)))
-                    .pl(px(lerp(18.0, 26.0, t) + indent))
+                    .w(px(NAV_WIDTH - 16.0))
+                    .pl(px(26.0 + indent))
                     .pr(px(12.0))
                     .flex()
                     .flex_row()
                     .items_center()
-                    .rounded_l(px(lerp(16.0, 0.0, t)))
                     .rounded_r(px(16.0))
                     .text_size(px(14.0))
                     .text_color(rgba(text))
@@ -316,33 +353,17 @@ impl MailWindow {
                     .on_click(
                         cx.listener(move |this, _, window, cx| this.click_nav_row(ix, window, cx)),
                     )
-                    .child(Ripple::new(("nav-ripple", ix), rgba(th.ripple)))
                     .child(
-                        div()
-                            .relative()
-                            .child(icon(role_icon(*role), text, 20.0))
-                            .when(*unread > 0 && t < 1.0, |d| {
-                                d.child(
-                                    div()
-                                        .absolute()
-                                        .top(px(-2.0))
-                                        .right(px(-3.0))
-                                        .size(px(8.0))
-                                        .rounded_full()
-                                        .border_1()
-                                        .border_color(rgba(th.page))
-                                        .bg(rgba(th.accent))
-                                        .opacity(1.0 - t),
-                                )
-                            }),
+                        Ripple::new(("nav-ripple", ix), rgba(th.ripple))
+                            .corners([0.0, 16.0, 16.0, 0.0]),
                     )
+                    .child(icon(role_icon(*role), text, 20.0))
                     .child(
                         div()
                             .flex_1()
                             .min_w_0()
                             .pl(px(18.0))
                             .truncate()
-                            .opacity(t)
                             .child(label.clone()),
                     )
                     .when(*unread > 0, |d| {
@@ -351,7 +372,6 @@ impl MailWindow {
                                 .flex_none()
                                 .pl(px(8.0))
                                 .text_size(px(12.0))
-                                .opacity(t)
                                 .child(format::thousands(*unread)),
                         )
                     })
@@ -388,6 +408,9 @@ impl MailWindow {
                 }
                 self.open_folder(folder, cx);
                 self.reader = None;
+                // A folder picked from the opened navigation closes it.
+                self.nav_peek = false;
+                self.peek_task = None;
                 window.focus(&self.list_focus, cx);
             }
             None => self.toggle(&key, cx),

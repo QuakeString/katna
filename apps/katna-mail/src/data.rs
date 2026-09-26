@@ -61,6 +61,8 @@ pub struct Row {
     /// Sender, or the recipients in sent and draft folders; for a
     /// conversation, its senders.
     pub correspondent: String,
+    /// The address of the message's sender.
+    pub sender: String,
     /// Messages in the conversation; 1 for a single message.
     pub count: u32,
     pub subject: String,
@@ -101,12 +103,18 @@ impl Row {
                 .map(name)
                 .unwrap_or_else(|| "(unknown sender)".to_owned())
         };
+        let sender = message
+            .first(ParticipantRole::From)
+            .or_else(|| message.first(ParticipantRole::Sender))
+            .map(|p| p.email_norm.clone())
+            .unwrap_or_default();
         let subject = message.subject.trim();
         Self {
             key: EntryKey::Message(message.id),
             id: message.id,
             count: 1,
             correspondent,
+            sender,
             subject: if subject.is_empty() {
                 "(no subject)".to_owned()
             } else {
@@ -628,6 +636,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
                 id,
                 count: 1,
                 correspondent: "Ada".into(),
+                sender: "ada@example.org".into(),
                 subject: "Budget".into(),
                 date: Some(989_858_340),
                 unread: true,

@@ -28,6 +28,21 @@ pub struct Config {
     pub mail: MailView,
     pub shortcuts: Shortcuts,
     pub sync: SyncConfig,
+    pub notifications: Notifications,
+}
+
+/// Desktop notifications from `katna-daemon` (`docs/ARCHITECTURE.md` §15.1).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Notifications {
+    /// Notify about new mail in the inbox (Primary tab).
+    pub new_mail: bool,
+}
+
+impl Default for Notifications {
+    fn default() -> Self {
+        Self { new_mail: true }
+    }
 }
 
 /// How `katna-daemon` syncs (`docs/ARCHITECTURE.md` §6.1).
@@ -508,6 +523,13 @@ mod tests {
         assert_eq!(config.shortcuts.keys["archive"], ["y", "ctrl-e"]);
         let text = toml::to_string_pretty(&config).unwrap();
         assert_eq!(Config::parse(&text).unwrap(), config);
+    }
+
+    #[test]
+    fn new_mail_notifications_are_on_by_default() {
+        assert!(Config::default().notifications.new_mail);
+        let config = Config::parse("[notifications]\nnew_mail = false\n").unwrap();
+        assert!(!config.notifications.new_mail);
     }
 
     #[test]

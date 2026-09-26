@@ -334,6 +334,13 @@ pub(super) fn is_single_key(keys: &str) -> bool {
     !(m.control || m.alt || m.platform || m.function) && stroke.key.chars().count() == 1
 }
 
+/// Whether the first key of `keys` types text in a field: a single key,
+/// or Space.
+fn types_text(keys: &str) -> bool {
+    let first = keys.split_whitespace().next().unwrap_or_default();
+    is_single_key(first) || matches!(first, "space" | "shift-space")
+}
+
 /// Whether `keys` parse as GPUI keystrokes.
 pub(super) fn valid(keys: &str) -> bool {
     !keys.trim().is_empty() && keys.split_whitespace().all(|k| Keystroke::parse(k).is_ok())
@@ -352,6 +359,7 @@ pub(super) fn conflict(name: &str, keys: &str, config: &Shortcuts) -> Option<&'s
 pub fn bind(config: &Shortcuts, cx: &mut App) {
     cx.clear_key_bindings();
     let mut bindings = Vec::new();
+    let mut typed = std::collections::BTreeSet::new();
     for shortcut in SHORTCUTS {
         for keys in self::keys(shortcut, config) {
             if !valid(keys) {
@@ -360,6 +368,9 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
             }
             if !config.single_keys && is_single_key(keys) {
                 continue;
+            }
+            if types_text(keys) {
+                typed.insert(keys);
             }
             for context in shortcut.scope.contexts(keys) {
                 let action = (shortcut.action)();
@@ -380,6 +391,17 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
     }
     // Down in the search box goes to the list; not a shortcut to change.
     bindings.push(KeyBinding::new("down", FocusList, Some(SEARCH_CONTEXT)));
+    // Typing in a field inside the reader (the inline reply) types: keys
+    // that type text do nothing else there, and do not wait for a second
+    // key. Bound last, so they also end sequences like "g i".
+    for keys in typed {
+        for context in [
+            katna_ui::TEXT_AREA_CONTEXT,
+            katna_ui::text_input::KEY_CONTEXT,
+        ] {
+            bindings.push(KeyBinding::new(keys, gpui::NoAction, Some(context)));
+        }
+    }
     cx.bind_keys(bindings);
     katna_ui::text_input::bind_keys(cx);
     katna_ui::text_area::bind_keys(cx);

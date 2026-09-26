@@ -22,7 +22,7 @@ use crate::data::{EntryKey, Row};
 use crate::format;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
-    icon, icon_button, icon_button_colored, menu, menu_item, placeholder, toolbar,
+    icon, icon_button, icon_button_colored, menu, menu_item, placeholder, tip, toolbar,
 };
 
 const TAB_HEIGHT: f32 = 56.0;
@@ -102,7 +102,7 @@ impl MailWindow {
             .size_full()
             .flex()
             .flex_col()
-            .rounded(px(16.0))
+            .rounded(px(super::PANEL_RADIUS))
             .overflow_hidden()
             .bg(rgba(th.surface))
             .on_action(cx.listener(Self::select_next))
@@ -128,7 +128,8 @@ impl MailWindow {
             .child(div().flex_1().min_h_0().child(body).with_animation(
                 ("card", self.card_seq),
                 Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
-                |el, t| el.opacity(t),
+                // From half-drawn, so the card never shows a blank frame.
+                |el, t| el.opacity(0.5 + 0.5 * t),
             ));
         card.into_any_element()
     }
@@ -138,7 +139,9 @@ impl MailWindow {
     fn render_list_toolbar(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let count = self.entries.len();
         let checked = self.checked.len();
-        let page_checked = checked > 0 && self.visible_keys().all(|k| self.checked.contains(&k));
+        let page_checked = checked > 0
+            && (self.page_pick == Some(checked)
+                || self.visible_keys().all(|k| self.checked.contains(&k)));
         let (box_icon, box_color) = match checked {
             0 => ("checkbox", th.text_dim),
             _ if page_checked || self.checked_all => ("checkbox-checked", th.text),
@@ -157,6 +160,7 @@ impl MailWindow {
             .child(
                 div()
                     .id("select-box")
+                    .tooltip(tip("Select", th))
                     .size(px(28.0))
                     .flex()
                     .items_center()
@@ -184,26 +188,34 @@ impl MailWindow {
         if checked == 0 {
             bar = bar
                 .child(
-                    icon_button("refresh", "refresh", 20.0, th).on_click(
-                        cx.listener(|this, _, window, cx| this.reload(&Reload, window, cx)),
-                    ),
+                    icon_button("refresh", "refresh", 20.0, th)
+                        .tooltip(tip("Refresh", th))
+                        .on_click(
+                            cx.listener(|this, _, window, cx| this.reload(&Reload, window, cx)),
+                        ),
                 )
                 .child({
-                    let more = icon_button("list-more", "more", 20.0, th).on_click(
-                        cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)),
-                    );
+                    let more = icon_button("list-more", "more", 20.0, th)
+                        .tooltip(tip("More", th))
+                        .on_click(
+                            cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)),
+                        );
                     self.with_menu(more, Menu::ListMore, th, cx)
                 });
         } else {
             let any_unread = self.checked_rows().iter().any(|r| r.unread);
             let read_button = if any_unread {
-                icon_button("mark-read", "mark-read", 20.0, th).on_click(
-                    cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)),
-                )
+                icon_button("mark-read", "mark-read", 20.0, th)
+                    .tooltip(tip("Mark as read", th))
+                    .on_click(
+                        cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)),
+                    )
             } else {
-                icon_button("mark-unread", "mail", 20.0, th).on_click(
-                    cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(false), cx)),
-                )
+                icon_button("mark-unread", "mail", 20.0, th)
+                    .tooltip(tip("Mark as unread", th))
+                    .on_click(
+                        cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(false), cx)),
+                    )
             };
             bar = bar
                 .child(self.action_buttons("list", th, cx))
@@ -211,13 +223,16 @@ impl MailWindow {
                 .child(read_button)
                 .child({
                     let move_to = icon_button("list-move", "move-to", 20.0, th)
+                        .tooltip(tip("Move to", th))
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)));
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
                 })
                 .child({
-                    let more = icon_button("list-more", "more", 20.0, th).on_click(
-                        cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)),
-                    );
+                    let more = icon_button("list-more", "more", 20.0, th)
+                        .tooltip(tip("More", th))
+                        .on_click(
+                            cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)),
+                        );
                     self.with_menu(more, Menu::ListMore, th, cx)
                 });
         }
@@ -269,6 +284,7 @@ impl MailWindow {
         )
         .child(
             icon_button("page-up", "chevron-left", 20.0, th)
+                .tooltip(tip("Newer", th))
                 .when(at_top, |d| d.opacity(0.4))
                 .on_click(cx.listener(|this, _, _, cx| {
                     let page = this.visible.len().max(1);
@@ -280,6 +296,7 @@ impl MailWindow {
         )
         .child(
             icon_button("page-down", "chevron-right", 20.0, th)
+                .tooltip(tip("Older", th))
                 .when(at_end, |d| d.opacity(0.4))
                 .on_click(cx.listener(|this, _, _, cx| {
                     let ix = this.visible.end.min(this.entries.len().saturating_sub(1));
@@ -304,14 +321,17 @@ impl MailWindow {
             .flex_row()
             .child(
                 icon_button((prefix, 1_usize), "archive", 20.0, th)
+                    .tooltip(tip("Archive", th))
                     .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Archive, cx))),
             )
             .child(
                 icon_button((prefix, 2_usize), "junk", 20.0, th)
+                    .tooltip(tip("Report spam", th))
                     .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Spam, cx))),
             )
             .child(
                 icon_button((prefix, 3_usize), "trash", 20.0, th)
+                    .tooltip(tip("Delete", th))
                     .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Delete, cx))),
             )
     }
@@ -512,7 +532,7 @@ impl MailWindow {
     }
 
     /// `row` with changes the daemon has not confirmed yet.
-    fn with_pending(&self, row: Rc<Row>) -> Rc<Row> {
+    pub(super) fn with_pending(&self, row: Rc<Row>) -> Rc<Row> {
         match self.pending.get(&row.key) {
             Some(p) if p.unread.is_some() || p.flagged.is_some() => {
                 let mut row = (*row).clone();
@@ -527,6 +547,7 @@ impl MailWindow {
     fn pick(&mut self, pick: Pick, cx: &mut Context<Self>) {
         self.menu = None;
         self.checked_all = false;
+        self.page_pick = None;
         self.checked.clear();
         let range =
             self.visible.start.min(self.entries.len())..self.visible.end.min(self.entries.len());
@@ -552,17 +573,18 @@ impl MailWindow {
                 self.checked.insert(entry.key);
             }
         }
+        if pick == Pick::All && self.checked.len() < self.entries.len() {
+            self.page_pick = Some(self.checked.len());
+        }
         cx.notify();
     }
 
     /// "All 20 on screen are selected. Select all 1,234" when every line on
     /// screen is ticked and there are more.
     fn render_select_banner(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
-        let on_screen = self.visible.len().min(self.entries.len());
-        let page_checked = !self.checked.is_empty()
-            && self.checked.len() == on_screen
-            && self.visible_keys().all(|k| self.checked.contains(&k));
-        if !(self.checked_all || page_checked && self.entries.len() > on_screen) {
+        let on_screen = self.checked.len();
+        let page_checked = on_screen > 0 && self.page_pick == Some(on_screen);
+        if !(self.checked_all || page_checked) {
             return None;
         }
         let noun = if self.config.mail.conversations {
@@ -610,6 +632,7 @@ impl MailWindow {
                             if this.checked_all {
                                 this.checked.clear();
                                 this.checked_all = false;
+                                this.page_pick = None;
                             } else {
                                 this.checked = this.entries.iter().map(|e| e.key).collect();
                                 this.checked_all = true;
@@ -661,7 +684,7 @@ impl MailWindow {
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .on_click(cx.listener(move |this, _, _, cx| this.open_tab(ix, cx)))
-                .child(Ripple::new(("tab-ripple", ix), rgba(th.ripple)))
+                .child(Ripple::new(("tab-ripple", ix), rgba(th.ripple)).rounded(0.0))
                 .child(icon(tab.icon, if on { tint } else { th.text_dim }, 20.0))
                 .when(width >= 116.0, |d| {
                     d.child(
@@ -806,7 +829,13 @@ impl MailWindow {
                 cx.notify();
             }))
             .on_click(cx.listener(move |this, _, window, cx| this.open(ix, window, cx)))
-            .child(Ripple::new(("row-ripple", ix), rgba(th.ripple)))
+            .on_mouse_down(
+                gpui::MouseButton::Right,
+                cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+                    this.open_context_menu(ix, key, event.position, cx)
+                }),
+            )
+            .child(Ripple::new(("row-ripple", ix), rgba(th.ripple)).rounded(0.0))
             // The shadow of the lifted row above, which this row would
             // otherwise paint over.
             .child(
@@ -917,6 +946,7 @@ impl MailWindow {
                     this.checked.insert(key);
                 }
                 this.checked_all = false;
+                this.page_pick = None;
                 cx.notify();
             }))
             .child(if checked {
@@ -927,6 +957,14 @@ impl MailWindow {
         let flagged = row.flagged;
         let star = div()
             .id(("row-star", ix))
+            .tooltip(tip(
+                if row.flagged {
+                    "Starred"
+                } else {
+                    "Not starred"
+                },
+                th,
+            ))
             .size(px(32.0))
             .flex_none()
             .flex()
@@ -1103,33 +1141,41 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let button = |id: usize, name: &str| {
+        let button = |id: usize, name: &str, label: &'static str| {
             icon_button_colored(("row-action", ix * 4 + id), name, 18.0, th.text_dim, th)
                 .size(px(32.0))
+                .tooltip(tip(label, th))
         };
         div()
             .flex()
             .flex_row()
             .items_center()
             .child(
-                button(0, "archive").on_click(cx.listener(move |this, _, _, cx| {
+                button(0, "archive", "Archive").on_click(cx.listener(move |this, _, _, cx| {
                     cx.stop_propagation();
                     this.act(Act::Archive, vec![key], cx);
                 })),
             )
             .child(
-                button(1, "trash").on_click(cx.listener(move |this, _, _, cx| {
+                button(1, "trash", "Delete").on_click(cx.listener(move |this, _, _, cx| {
                     cx.stop_propagation();
                     this.act(Act::Delete, vec![key], cx);
                 })),
             )
             .child(
-                button(2, if unread { "mark-read" } else { "mail" }).on_click(cx.listener(
-                    move |this, _, _, cx| {
-                        cx.stop_propagation();
-                        this.act(Act::Read(unread), vec![key], cx);
+                button(
+                    2,
+                    if unread { "mark-read" } else { "mail" },
+                    if unread {
+                        "Mark as read"
+                    } else {
+                        "Mark as unread"
                     },
-                )),
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    cx.stop_propagation();
+                    this.act(Act::Read(unread), vec![key], cx);
+                })),
             )
             .with_animation(
                 ("row-actions", ix),

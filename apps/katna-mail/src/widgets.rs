@@ -4,10 +4,10 @@
 //! menus and shadows.
 
 use gpui::{
-    AnyElement, BoxShadow, Div, FontWeight, SharedString, Stateful, div, point, prelude::*, px,
-    rgba, svg,
+    AnyElement, AnyView, App, BoxShadow, Div, FontWeight, SharedString, Stateful, Window, div,
+    point, prelude::*, px, rgba, svg,
 };
-use katna_ui::Ripple;
+use katna_ui::{Ripple, Tooltip};
 
 use crate::theme::{Theme, avatar_color, fade, initial};
 
@@ -20,6 +20,15 @@ pub fn icon(name: &str, color: u32, size: f32) -> AnyElement {
         .flex_none()
         .text_color(rgba(color))
         .into_any_element()
+}
+
+/// A tooltip saying `text`, for `.tooltip()`: it shows once the pointer
+/// rests on the element.
+pub fn tip(
+    text: impl Into<SharedString>,
+    th: &Theme,
+) -> impl Fn(&mut Window, &mut App) -> AnyView + 'static {
+    Tooltip::text(text, rgba(th.snackbar), rgba(th.snackbar_text))
 }
 
 /// A round icon button with a centered ripple.
@@ -226,7 +235,7 @@ pub fn menu(th: &Theme) -> Div {
         .min_w(px(180.0))
         .flex()
         .flex_col()
-        .rounded(px(4.0))
+        .rounded(px(8.0))
         .bg(rgba(th.menu))
         .shadow(elevation(th, 3.0))
         .text_size(px(14.0))
@@ -256,15 +265,19 @@ pub fn switch(t: f32, th: &Theme) -> AnyElement {
         .flex_none()
         .rounded_full()
         .bg(rgba(track))
-        .child(
+        .child({
+            // The knob grows a little when on, and stays centered in the
+            // track with the same gap all round.
+            let size = 14.0 + 2.0 * t;
+            let gap = (20.0 - size) / 2.0;
             div()
                 .absolute()
-                .top(px(3.0 + 1.0 * t))
-                .left(px(3.0 + 16.0 * t - 1.0 * t))
-                .size(px(14.0 + 2.0 * t))
+                .top(px(gap))
+                .left(px(gap + (36.0 - size - 2.0 * gap) * t))
+                .size(px(size))
                 .rounded_full()
-                .bg(rgba(knob)),
-        )
+                .bg(rgba(knob))
+        })
         .into_any_element()
 }
 

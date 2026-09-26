@@ -12,7 +12,7 @@ use katna_ui::{InputEvent, TextInput};
 
 use super::MailWindow;
 use crate::theme::Theme;
-use crate::widgets::{elevation, filled_button, icon, icon_button};
+use crate::widgets::{elevation, filled_button, icon, icon_button, tip};
 
 /// "Date within" choices: label and `newer_than:` value.
 const WITHIN: [(&str, &str); 8] = [
@@ -241,12 +241,12 @@ impl MailWindow {
                             .child("Search options"),
                     )
                     .child(
-                        icon_button("search-panel-close", "close", 20.0, th).on_click(cx.listener(
-                            |this, _, _, cx| {
+                        icon_button("search-panel-close", "close", 20.0, th)
+                            .tooltip(tip("Close", th))
+                            .on_click(cx.listener(|this, _, _, cx| {
                                 this.search_panel = None;
                                 cx.notify();
-                            },
-                        )),
+                            })),
                     ),
             )
             .child(field("From", &panel.from))
