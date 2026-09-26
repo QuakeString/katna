@@ -1444,7 +1444,7 @@ real Subject; other inner headers are ignored.
   clear-signed text is kept without its armor.
 
 **Sending (done).** Compose has Encrypt (lock) and Sign (shield) toggles
-beside the formatting buttons. Answers to and forwards of encrypted mail
+at the end of the recipients row. Answers to and forwards of encrypted mail
 start encrypted and signed, in the same standard. The app builds the
 message as usual, then `katna_crypto::protect` wraps it (PGP/MIME
 `multipart/signed` or `multipart/encrypted`; S/MIME `multipart/signed` or
