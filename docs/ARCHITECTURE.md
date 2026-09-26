@@ -950,8 +950,8 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   message, the message sliding up as it opens). `katna_ui::Ripple` draws
   the Material ink ripple from the pointer on buttons, folders and rows.
   Everything honors the desktop's reduce-motion setting.
-- **Colors.** `theme.rs` has the light and dark palettes; the app does not
-  use the desktop accent color here, to keep the webmail look.
+- **Colors.** `theme.rs` has Katna's light and dark palettes. The owner
+  later asked for the desktop's colors as well; see "Desktop colors" below.
 
 The owner then asked for the rest of Gmail's pattern, with Katna's own
 icons and name and without Google-only features (no Chat, Meet, Drive,
@@ -1023,6 +1023,29 @@ Gemini or confidential mode):
   inboxes), and Send without an account. The daemon signals `MailChanged`
   after each account's first sync, so a new account's folders show even
   when they are empty.
+- **Desktop colors.** The layout stays the webmail one, but its colors
+  come from the desktop (`katna_platform::colors`, `window/colors.rs`):
+  - *KDE*: the active color scheme from `kdeglobals` (`[Colors:Window]`,
+    `[Colors:View]`, `[Colors:Selection]`, with KDE's built-in Breeze
+    Light for missing keys) and `AccentColor` from `[General]`.
+  - *GNOME*: the libadwaita light or dark palette with the accent color,
+    and any `@define-color` a theme tool wrote to
+    `~/.config/gtk-4.0/gtk.css` (inside `@media (prefers-color-scheme)`
+    blocks too).
+  - *Accent color*: the Settings portal (`org.freedesktop.appearance
+    accent-color`), else GNOME's `accent-color` GSettings key.
+
+  The page takes the window color, the cards the view color, and
+  highlights (selected folder, Compose, ticked rows, the first tab) are
+  tints of the accent; text and accents are darkened or lightened until
+  they read. A scheme is used only when it is as dark as the window asks
+  (the theme setting may force light or dark); otherwise, and on desktops
+  without a scheme, Katna's palette is drawn in the accent color, or left
+  as it is without one. The window frame (`katna_chrome::ChromeColors`)
+  follows the scheme too. Colors are read at startup, again on the
+  portal's `SettingChanged`, and when `kdeglobals` or `gtk.css` change
+  (checked every 2 s). A quick setting, *Desktop colors* (on by default,
+  `mail.desktop_colors`), turns this off.
 - **Not there yet.** Drafts are not saved (closing a written message
   discards it and says so), and formatting, attachments, links, emoji,
   images and scheduled sending in the composer say they are not ready yet.

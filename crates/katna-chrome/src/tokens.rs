@@ -3,8 +3,9 @@
 //! Theme tokens for the window chrome (`docs/ARCHITECTURE.md` §13.2).
 //!
 //! Colors are `0xRRGGBBAA`. Values are approximations of libadwaita 1.5 and
-//! Breeze (Plasma 6), not copies of their stylesheets; the portal accent
-//! color and `kdeglobals` palette replace them in `katna-platform` later.
+//! Breeze (Plasma 6), not copies of their stylesheets. Apps that read the
+//! desktop's color scheme (`katna_platform::colors`) redraw them in it with
+//! [`ChromeTokens::recolored`].
 
 use crate::desktop::Preset;
 
@@ -228,6 +229,58 @@ impl ChromeTokens {
     }
 }
 
+/// Desktop colors that replace a preset's own (`0xRRGGBBAA`, opaque).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ChromeColors {
+    pub window_bg: u32,
+    pub view_bg: u32,
+    pub fg: u32,
+    pub accent: u32,
+}
+
+impl ChromeTokens {
+    /// The tokens drawn in `colors`, the desktop's color scheme. Shapes,
+    /// sizes and shadows stay the preset's.
+    pub fn recolored(self, colors: &ChromeColors) -> Self {
+        let fg = colors.fg;
+        let (button_bg, button_bg_hover, button_bg_active, close_bg_hover, close_fg_hover) =
+            match self.button_style {
+                ButtonStyle::Circle => (
+                    with_alpha(fg, 0x1a),
+                    with_alpha(fg, 0x26),
+                    with_alpha(fg, 0x40),
+                    with_alpha(fg, 0x26),
+                    fg,
+                ),
+                ButtonStyle::Flat => (
+                    0x00000000,
+                    with_alpha(fg, 0x33),
+                    with_alpha(fg, 0x55),
+                    self.close_bg_hover,
+                    self.close_fg_hover,
+                ),
+            };
+        Self {
+            outline: with_alpha(fg, if self.dark { 0x12 } else { 0x24 }),
+            window_bg: colors.window_bg,
+            view_bg: colors.view_bg,
+            sidebar_bg: colors.window_bg,
+            fg,
+            fg_dim: with_alpha(fg, 0x99),
+            header_bg: colors.window_bg,
+            header_bg_unfocused: colors.window_bg,
+            header_shade: with_alpha(fg, 0x26),
+            button_bg,
+            button_bg_hover,
+            button_bg_active,
+            close_bg_hover,
+            close_fg_hover,
+            accent: colors.accent,
+            ..self
+        }
+    }
+}
+
 /// Replaces the alpha byte of `0xRRGGBBAA`.
 pub const fn with_alpha(rgba: u32, alpha: u8) -> u32 {
     (rgba & 0xffffff00) | alpha as u32
@@ -236,6 +289,25 @@ pub const fn with_alpha(rgba: u32, alpha: u8) -> u32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn recolored_keeps_shapes() {
+        let colors = ChromeColors {
+            window_bg: 0x303446ff,
+            view_bg: 0x292c3cff,
+            fg: 0xc6d0f5ff,
+            accent: 0x8caaeeff,
+        };
+        for preset in [Preset::AdwaitaLike, Preset::BreezeLike] {
+            let t = ChromeTokens::new(preset, true);
+            let r = t.clone().recolored(&colors);
+            assert_eq!(r.window_bg, 0x303446ff);
+            assert_eq!(r.header_bg, 0x303446ff);
+            assert_eq!(r.accent, 0x8caaeeff);
+            assert_eq!(r.window_radius, t.window_radius);
+            assert_eq!(r.shadow_focused, t.shadow_focused);
+        }
+    }
 
     #[test]
     fn with_alpha_replaces_only_alpha() {

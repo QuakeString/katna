@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Colors of the mail window. The layout follows the familiar webmail look
-//! (tinted page, white cards, pill-shaped navigation); the window frame
-//! still follows the desktop (`katna-chrome`). No GPUI types here.
+//! (tinted page, white cards, pill-shaped navigation). The colors come from
+//! the desktop's color scheme and accent color when it has them
+//! (`katna_platform::colors`), else from Katna's own palettes below. No GPUI
+//! types here.
+
+use katna_platform::colors::{Scheme, SystemColors, contrast, luminance, over};
 
 /// Colors as `0xRRGGBBAA`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -49,9 +53,177 @@ pub struct Theme {
 }
 
 impl Theme {
+    /// Katna's own palette.
     pub fn new(dark: bool) -> Self {
         if dark { DARK } else { LIGHT }
     }
+
+    /// The desktop's color scheme when it is as dark as `dark` asks, else
+    /// Katna's palette in the desktop's accent color (if it has one).
+    pub fn system(dark: bool, colors: &SystemColors) -> Self {
+        match colors.scheme_for(dark) {
+            Some(scheme) => Self::from_scheme(&scheme),
+            None => colors.accent.map_or_else(
+                || Self::new(dark),
+                |accent| Self::new(dark).with_accent(accent),
+            ),
+        }
+    }
+
+    /// Katna's palette with its blues replaced by tones of `accent`.
+    pub fn with_accent(self, accent: u32) -> Self {
+        let accent = readable(opaque(accent), self.surface, 3.0);
+        let (selected, selected_text, compose, checked) = if self.dark {
+            (
+                tone(accent, 0.24),
+                tone(accent, 0.88),
+                tone(accent, 0.24),
+                tone(accent, 0.24),
+            )
+        } else {
+            (
+                tone(accent, 0.91),
+                tone(accent, 0.14),
+                tone(accent, 0.86),
+                tone(accent, 0.87),
+            )
+        };
+        let mut tabs = self.tabs;
+        tabs[0] = accent;
+        Self {
+            accent,
+            on_accent: on(accent),
+            nav_selected: selected,
+            nav_selected_text: selected_text,
+            compose,
+            compose_text: selected_text,
+            checked_row: checked,
+            tabs,
+            ..self
+        }
+    }
+
+    /// The webmail look drawn in a desktop color scheme: the page in the
+    /// window color, the cards in the view color, highlights in tints of
+    /// the accent color.
+    pub fn from_scheme(s: &Scheme) -> Self {
+        let dark = s.dark();
+        let base = Self::new(dark);
+        let (page, surface, text) = (s.window_bg, s.view_bg, s.view_fg);
+        let accent = readable(s.accent, surface, 3.0);
+        // A few percent of the text color over the card.
+        let ink = |alpha: f32| over(fade(text, alpha), surface);
+        let mut tabs = base.tabs;
+        tabs[0] = accent;
+        Self {
+            dark,
+            page,
+            surface,
+            read_row: mix(surface, page, 0.9),
+            text,
+            text_dim: mix(text, surface, 0.18),
+            text_faint: readable(s.inactive_fg, surface, 3.0),
+            divider: fade(text, 0.14),
+            hover: fade(text, if dark { 0.08 } else { 0.07 }),
+            ripple: fade(text, if dark { 0.16 } else { 0.14 }),
+            nav_selected: mix(page, accent, if dark { 0.34 } else { 0.22 }),
+            nav_selected_text: text,
+            compose: mix(page, accent, if dark { 0.34 } else { 0.28 }),
+            compose_text: text,
+            search: over(fade(s.window_fg, if dark { 0.08 } else { 0.06 }), page),
+            search_focused: if dark { ink(0.1) } else { surface },
+            accent,
+            on_accent: if contrast(s.accent_fg, accent) >= 3.0 {
+                s.accent_fg
+            } else {
+                on(accent)
+            },
+            star: base.star,
+            checked_row: mix(surface, accent, if dark { 0.3 } else { 0.2 }),
+            menu: if dark { ink(0.06) } else { surface },
+            switch_off: ink(0.18),
+            tabs,
+            chip: ink(0.1),
+            snackbar: base.snackbar,
+            snackbar_text: base.snackbar_text,
+            error: readable(s.negative, surface, 3.0),
+            shadow: base.shadow,
+        }
+    }
+}
+
+fn opaque(color: u32) -> u32 {
+    color | 0xff
+}
+
+/// Black or white, whichever reads better on `color`.
+fn on(color: u32) -> u32 {
+    if contrast(color, 0x000000ff) > contrast(color, 0xffffffff) {
+        0x000000ff
+    } else {
+        0xffffffff
+    }
+}
+
+/// `color`, darkened or lightened away from `bg` until its contrast with
+/// `bg` is at least `min`.
+fn readable(color: u32, bg: u32, min: f32) -> u32 {
+    let toward = if luminance(bg) > 0.18 {
+        0x000000ff
+    } else {
+        0xffffffff
+    };
+    (0..=20)
+        .map(|step| mix(color, toward, step as f32 * 0.05))
+        .find(|c| contrast(*c, bg) >= min)
+        .unwrap_or(toward)
+}
+
+/// `color` at HSL lightness `l`, keeping its hue and (for pale tints, a
+/// little less of) its saturation.
+fn tone(color: u32, l: f32) -> u32 {
+    let [r, g, b] = [24, 16, 8].map(|s| ((color >> s) & 0xff) as f32 / 255.0);
+    let (max, min) = (r.max(g).max(b), r.min(g).min(b));
+    let (h, s) = if max == min {
+        (0.0, 0.0)
+    } else {
+        let d = max - min;
+        let lum = (max + min) / 2.0;
+        let s = if lum > 0.5 {
+            d / (2.0 - max - min)
+        } else {
+            d / (max + min)
+        };
+        let h = if max == r {
+            (g - b) / d + if g < b { 6.0 } else { 0.0 }
+        } else if max == g {
+            (b - r) / d + 2.0
+        } else {
+            (r - g) / d + 4.0
+        };
+        (h / 6.0, s)
+    };
+    let s = s.min(0.9);
+    let q = if l < 0.5 {
+        l * (1.0 + s)
+    } else {
+        l + s - l * s
+    };
+    let p = 2.0 * l - q;
+    let hue = |t: f32| {
+        let t = t.rem_euclid(1.0);
+        if t < 1.0 / 6.0 {
+            p + (q - p) * 6.0 * t
+        } else if t < 0.5 {
+            q
+        } else if t < 2.0 / 3.0 {
+            p + (q - p) * (2.0 / 3.0 - t) * 6.0
+        } else {
+            p
+        }
+    };
+    let byte = |v: f32| (v.clamp(0.0, 1.0) * 255.0).round() as u32;
+    byte(hue(h + 1.0 / 3.0)) << 24 | byte(hue(h)) << 16 | byte(hue(h - 1.0 / 3.0)) << 8 | 0xff
 }
 
 const LIGHT: Theme = Theme {
@@ -173,6 +345,72 @@ mod tests {
     fn fades_alpha() {
         assert_eq!(fade(0x11223380, 0.5), 0x11223340);
         assert_eq!(fade(0x112233ff, 0.0), 0x11223300);
+    }
+
+    #[test]
+    fn tones_keep_the_hue() {
+        // Katna's own blue, as a pale and a deep tone.
+        let pale = tone(0x0b57d0ff, 0.91);
+        assert!(luminance(pale) > 0.7, "{pale:08x}");
+        assert!((pale >> 8 & 0xff) > (pale >> 24), "still blue: {pale:08x}");
+        assert!(luminance(tone(0x0b57d0ff, 0.14)) < 0.05);
+        // Grey stays grey.
+        assert_eq!(tone(0x808080ff, 0.5), 0x808080ff);
+    }
+
+    #[test]
+    fn readable_colors() {
+        // A bright yellow on white is too faint; it is darkened.
+        let yellow = readable(0xf6d32dff, 0xffffffff, 3.0);
+        assert!(contrast(yellow, 0xffffffff) >= 3.0);
+        assert_ne!(yellow, 0xf6d32dff);
+        assert_eq!(readable(0x0b57d0ff, 0xffffffff, 3.0), 0x0b57d0ff);
+        assert_eq!(on(0xffff00ff), 0x000000ff);
+        assert_eq!(on(0x0b57d0ff), 0xffffffff);
+    }
+
+    #[test]
+    fn system_colors() {
+        use katna_platform::colors::{adwaita, parse_kdeglobals};
+
+        // No scheme and no accent: Katna's palette.
+        assert_eq!(Theme::system(false, &SystemColors::default()), LIGHT);
+        // Only an accent: Katna's palette in that color.
+        let accent_only = SystemColors::accent_only(Some(0xe62d42ff));
+        let th = Theme::system(false, &accent_only);
+        assert_eq!(th.page, LIGHT.page);
+        assert_eq!(th.accent, 0xe62d42ff);
+        assert_ne!(th.nav_selected, LIGHT.nav_selected);
+
+        // A KDE scheme: its window and view colors.
+        let (breeze_dark, _) = parse_kdeglobals(
+            "[Colors:Window]\nBackgroundNormal=32,35,38\nForegroundNormal=252,252,252\n\
+             [Colors:View]\nBackgroundNormal=20,22,24\nForegroundNormal=252,252,252\n",
+        );
+        let kde = SystemColors::kde(breeze_dark);
+        let th = Theme::system(true, &kde);
+        assert!(th.dark);
+        assert_eq!(th.page, 0x202326ff);
+        assert_eq!(th.surface, 0x141618ff);
+        assert_eq!(th.text, 0xfcfcfcff);
+        assert_eq!(th.accent, 0x3daee9ff);
+        // Asked for light, a dark scheme is left out; its accent stays.
+        let th = Theme::system(false, &kde);
+        assert_eq!(th.page, LIGHT.page);
+        assert_ne!(th.accent, LIGHT.accent);
+
+        // Every scheme keeps text readable.
+        for scheme in [
+            adwaita(false, None, &[]),
+            adwaita(true, Some(0xc88800ff), &[]),
+        ] {
+            let th = Theme::from_scheme(&scheme);
+            assert!(contrast(th.text, th.surface) >= 4.5);
+            assert!(contrast(th.text_faint, th.surface) >= 3.0);
+            assert!(contrast(th.accent, th.surface) >= 3.0);
+            assert!(contrast(th.on_accent, th.accent) >= 3.0);
+            assert!(contrast(th.nav_selected_text, th.nav_selected) >= 4.5);
+        }
     }
 
     #[test]

@@ -13,4 +13,4 @@ pub mod tokens;
 
 pub use desktop::{DecorationMode, Desktop, Environment, Preset, Session};
 pub use frame::{Bar, WindowChrome, window_options};
-pub use tokens::ChromeTokens;
+pub use tokens::{ChromeColors, ChromeTokens};

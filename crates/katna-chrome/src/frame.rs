@@ -16,7 +16,7 @@ use gpui::{
 
 use crate::desktop::{DecorationMode, Environment, Preset};
 use crate::geometry::{Edge, FrameGeometry, RESIZE_HANDLE, Rect, Sides};
-use crate::tokens::{ChromeTokens, Shadow};
+use crate::tokens::{ChromeColors, ChromeTokens, Shadow};
 
 /// GNOME HIG minimum window size (360×294 logical pixels).
 pub const MIN_WINDOW_SIZE: Size<Pixels> = Size {
@@ -95,6 +95,8 @@ pub struct WindowChrome {
     input_region: Cell<Option<Rect>>,
     /// The app's own light or dark choice, over the desktop's.
     dark: Cell<Option<bool>>,
+    /// The desktop's color scheme, over the preset's colors.
+    colors: Cell<Option<ChromeColors>>,
 }
 
 impl WindowChrome {
@@ -118,6 +120,7 @@ impl WindowChrome {
             drag_pending: Rc::new(Cell::new(false)),
             input_region: Cell::new(None),
             dark: Cell::new(None),
+            colors: Cell::new(None),
         }
     }
 
@@ -129,6 +132,12 @@ impl WindowChrome {
     /// the desktop uses, or follows the desktop again (`None`).
     pub fn set_dark(&self, dark: Option<bool>) {
         self.dark.set(dark);
+    }
+
+    /// Draws the frame in the desktop's color scheme (`Some`), or in the
+    /// preset's own colors (`None`).
+    pub fn set_colors(&self, colors: Option<ChromeColors>) {
+        self.colors.set(colors);
     }
 
     /// Whether the desktop asks for a dark color scheme.
@@ -145,7 +154,11 @@ impl WindowChrome {
             .dark
             .get()
             .unwrap_or_else(|| Self::desktop_dark(window));
-        ChromeTokens::new(self.env.preset(), dark)
+        let tokens = ChromeTokens::new(self.env.preset(), dark);
+        match self.colors.get() {
+            Some(colors) => tokens.recolored(&colors),
+            None => tokens,
+        }
     }
 
     /// Wraps `content` in the frame. `start` and `end` go at the two ends of
