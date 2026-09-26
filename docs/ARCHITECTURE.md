@@ -629,10 +629,12 @@ from or adds to the sketch above:
   for the nearest word that is: fewest typos, then the same first letter
   (`kenet` → kenneth, not genex), then the most messages, in
   the fields that word searches (`from:Hasnia` looks only at senders).
-  Quoted phrases, `-words` and `OR` are left alone, and the unfinished last
-  word counts as found if any word starts with it. The mail app shows it as
-  a "Did you mean …?" link beside the results count; clicking it searches
-  the corrected text.
+  Quoted phrases, `-words` and `OR` are left alone. As you type, the
+  unfinished last word counts as found if any word starts with it, and is
+  otherwise completed from a word that starts one typo from it (`haskin` →
+  hasina). The mail app works like a web search: it searches the corrected
+  text right away if that finds anything, shows "Showing results for …",
+  and offers "Search instead for …" to search the text as typed.
 - **Ranking.** BM25 with field boosts (subject 3, from 2, attachment names
   1.5, others 1), times a recency factor `1 + 0.5 · 2^(−age/60 days)` where
   age is measured from the newest indexed message (so an old archive still

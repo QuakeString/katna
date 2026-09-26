@@ -465,6 +465,8 @@ fn forgives_typos_and_short_prefixes() {
     assert_eq!(suggest("qzxwvq"), None);
     // One typo from both; the first letter wins over the 26 "Person" mails.
     assert_eq!(suggest("kerson").as_deref(), Some("kerston"));
+    // An unfinished last word is completed from the nearest start.
+    assert_eq!(suggest("haskin").as_deref(), Some("hasina"));
     assert!(!fuzzy("haskina banu"));
     assert!(!fuzzy("school fees"));
 }

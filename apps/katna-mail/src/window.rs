@@ -145,8 +145,9 @@ enum Listing {
     Search {
         query: String,
         total: Option<usize>,
-        /// "Did you mean": the query with misspelled words corrected.
-        suggestion: Option<String>,
+        /// What was searched instead, when the query had a word that is not
+        /// in the mail ("Showing results for …").
+        corrected: Option<String>,
     },
 }
 
@@ -248,6 +249,8 @@ pub struct MailWindow {
     card_seq: usize,
     search: Entity<TextInput>,
     search_error: Option<SharedString>,
+    /// Search this text as typed, not corrected ("Search instead for …").
+    search_verbatim: Option<String>,
     search_task: Option<Task<()>>,
     search_panel: Option<SearchPanel>,
     search_panel_spring: Spring,
@@ -357,6 +360,7 @@ impl MailWindow {
             card_seq: 0,
             search,
             search_error: None,
+            search_verbatim: None,
             search_task: None,
             search_panel: None,
             search_panel_spring: Spring::new(motion::SMOOTH, 0.0),
@@ -410,6 +414,12 @@ impl MailWindow {
         window.focus(&this.list_focus, cx);
         tracing::info!(elapsed = ?started.elapsed(), lines = this.entries.len(), "mail loaded");
         this
+    }
+
+    /// Searches `query` as typed, after a correction the user didn't want.
+    fn search_verbatim(&mut self, query: String, cx: &mut Context<Self>) {
+        self.search_verbatim = Some(query.clone());
+        self.start_search(query, cx);
     }
 
     /// Puts `query` in the search box and searches.
@@ -1152,13 +1162,14 @@ impl MailWindow {
             cx.notify();
             return;
         };
+        let correct = self.search_verbatim.as_deref() != Some(text.as_str());
         self.search_task = Some(cx.spawn(async move |this, cx| {
             cx.background_executor().timer(SEARCH_DELAY).await;
             let now = jiff::Timestamp::now().as_second();
             let query = text.clone();
             let results = cx
                 .background_executor()
-                .spawn(async move { data::search(&index, &query, now) })
+                .spawn(async move { data::search(&index, &query, now, correct) })
                 .await;
             this.update(cx, |this, cx| this.show_results(text, results, cx))
                 .ok();
@@ -1172,7 +1183,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         match results {
-            Ok((results, suggestion)) => {
+            Ok((results, corrected)) => {
                 // Search results mix folders; show senders.
                 if self.show_recipients {
                     self.show_recipients = false;
@@ -1189,7 +1200,7 @@ impl MailWindow {
                 self.listing = Some(Listing::Search {
                     query,
                     total: results.total,
-                    suggestion,
+                    corrected,
                 });
                 self.selected = (!self.entries.is_empty()).then_some(0);
                 self.checked.clear();

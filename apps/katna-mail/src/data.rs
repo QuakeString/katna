@@ -528,27 +528,37 @@ pub fn people(paths: &Paths) -> Result<Vec<katna_store::Person>, String> {
         .map_err(|err| format!("Reading people from the mail failed: {err}"))
 }
 
-/// Runs a search typed into the search box, with a "did you mean" text if
-/// a word is not in the mail as typed. `now` is Unix seconds, for relative
-/// dates such as `newer_than:`.
+/// Runs a search typed into the search box. With `correct`, a text with a
+/// word that is not in the mail is corrected to the nearest words that are,
+/// as a web search does, and the corrected text is returned with the
+/// results if it found any. `now` is Unix seconds, for relative dates such
+/// as `newer_than:`.
 pub fn search(
     index: &SearchIndex,
     text: &str,
     now: i64,
+    correct: bool,
 ) -> Result<(SearchResults, Option<String>), String> {
-    let query = Query::parse_as_you_type(text, now).map_err(|err| err.to_string())?;
-    let results = index
-        .search(
-            &query,
-            &SearchOptions {
-                limit: SEARCH_LIMIT,
-                count: true,
-                ..SearchOptions::default()
-            },
-        )
-        .map_err(|err| err.to_string())?;
-    let suggestion = index.suggest(text, true).map_err(|err| err.to_string())?;
-    Ok((results, suggestion))
+    let run = |text: &str| {
+        let query = Query::parse_as_you_type(text, now).map_err(|err| err.to_string())?;
+        index
+            .search(
+                &query,
+                &SearchOptions {
+                    limit: SEARCH_LIMIT,
+                    count: true,
+                    ..SearchOptions::default()
+                },
+            )
+            .map_err(|err| err.to_string())
+    };
+    if correct && let Some(corrected) = index.suggest(text, true).map_err(|err| err.to_string())? {
+        let results = run(&corrected)?;
+        if !results.hits.is_empty() {
+            return Ok((results, Some(corrected)));
+        }
+    }
+    Ok((run(text)?, None))
 }
 
 #[cfg(test)]
@@ -679,15 +689,24 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
         }
         let mut mail = Mail::open(&paths).unwrap();
         let index = mail.index().expect("index opened");
-        let (results, suggestion) = search(&index, "budg", 0).unwrap();
-        assert_eq!(suggestion, None);
+        let (results, corrected) = search(&index, "budg", 0, true).unwrap();
+        assert_eq!(corrected, None);
         assert_eq!(results.hits.len(), 1);
         assert_eq!(results.hits[0].message, id);
         assert_eq!(results.total, Some(1));
-        assert!(search(&index, "from:nobody", 0).unwrap().0.hits.is_empty());
-        assert_eq!(
-            search(&index, "budgte", 0).unwrap().1.as_deref(),
-            Some("budget")
+        assert!(
+            search(&index, "from:nobody", 0, true)
+                .unwrap()
+                .0
+                .hits
+                .is_empty()
         );
+        let (results, corrected) = search(&index, "budgte fnial", 0, true).unwrap();
+        assert_eq!(corrected.as_deref(), Some("budget final"));
+        assert_eq!(results.hits.len(), 1);
+        let (results, corrected) = search(&index, "budgte fnial", 0, false).unwrap();
+        assert_eq!(corrected, None);
+        // Searched as typed: only near matches, if any.
+        assert!(results.fuzzy);
     }
 }

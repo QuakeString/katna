@@ -19,7 +19,9 @@ use crate::schema::{Fields, tokens};
 /// searches has replaced by the nearest word that one has: fewest typos,
 /// then the most messages. `None` if every word is there, or no near word
 /// is. With `as_you_type`, an unfinished last word counts as there if a
-/// word starts with it. Operators, exclusions and phrases are kept as typed.
+/// word starts with it, and is otherwise replaced by a word that starts
+/// one typo from it (`haskin` → hasina). Operators, exclusions and phrases
+/// are kept as typed.
 pub(crate) fn suggest(
     searcher: &Searcher,
     fields: &Fields,
@@ -39,7 +41,7 @@ pub(crate) fn suggest(
         if max_typos(&word) == 0 || targets.iter().any(|f| has(searcher, *f, &word, prefix)) {
             continue;
         }
-        let Some(nearest) = nearest(searcher, &targets, &word)? else {
+        let Some(nearest) = nearest(searcher, &targets, &word, prefix)? else {
             continue;
         };
         let at = start + offset;
@@ -144,8 +146,17 @@ fn has(searcher: &Searcher, field: Field, word: &str, prefix: bool) -> bool {
 
 /// The word of `fields` fewest typos from `word`, then in the most
 /// messages.
-fn nearest(searcher: &Searcher, fields: &[Field], word: &str) -> Result<Option<String>> {
-    let dfa = builder(max_typos(word)).build_dfa(word);
+fn nearest(
+    searcher: &Searcher,
+    fields: &[Field],
+    word: &str,
+    prefix: bool,
+) -> Result<Option<String>> {
+    let dfa = if prefix {
+        builder(1).build_prefix_dfa(word)
+    } else {
+        builder(max_typos(word)).build_dfa(word)
+    };
     // Candidate → (typos, messages).
     let mut found: HashMap<String, (u8, u64)> = HashMap::new();
     for segment in searcher.segment_readers() {
