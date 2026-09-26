@@ -673,6 +673,46 @@ A small GPUI window used where the notification server has no inline reply
 (GNOME) and from KRunner's "Reply all" action. Reply-all prefilled, send
 with undo delay.
 
+### 13.5 First Katna Mail window (Phase 3 start)
+
+The first slice of tasks 3.1, 3.3, 3.4, 3.5 and 3.6 (`apps/katna-mail`):
+sidebar, message list and reading pane over the local store, and a search
+box. What it does and what we decided:
+
+- **Read-only.** The app opens `mail.db`, `pim.db`, `blobs.db` and the
+  search index read-only (§5.1). It sends no commands yet; F5 re-reads the
+  store until the daemon's change signals are wired in. `--data-dir DIR`
+  uses the same layout as `katna-search-cli`.
+- **Sidebar.** Accounts, then folders nested by path (`/` separator; the
+  store does not record each account's delimiter yet). Special folders
+  (from `folder.role`, else from the name) come first. Accounts with more
+  than 40 folders start collapsed, opened at their first inbox with mail.
+- **Message list.** A virtualized list of the folder's message IDs, newest
+  first; rows are read in visible ranges and cached. Sent and draft folders
+  show recipients. Threads (conversation view) wait for task 1.7.
+- **Counts.** Folder totals come from the location index at startup
+  (5 ms for 100,000 messages). Unread counts need each message's flags
+  (about 100 ms per 100,000 unread messages), so they are counted on a
+  background thread and appear when ready. The daemon should keep counts
+  per folder later.
+- **Reading pane.** `katna-render` gives a plain-text view: headers,
+  text parts (HTML converted to text, with a note), quoted lines dimmed,
+  and the attachment list. At most 256 KB and 4,000 lines are shown.
+- **Search.** As-you-type (`Query::parse_as_you_type`), 60 ms after the
+  last keystroke, on a background thread; up to 1,000 results with a total
+  count. `/` or Ctrl+F focuses the box, Escape clears it.
+- **No GPUI Kit yet.** It would not fit the size budget next to GPUI
+  (§17.1), so `katna-ui` has its own small components (a text input with
+  IME support so far).
+- **UI font.** GPUI's system font on Linux is IBM Plex Sans, which few
+  systems have; the fallback face has no bold. `katna-platform` reads the
+  desktop's font (`kdeglobals` on KDE, the GSettings `font-name` elsewhere)
+  and checks it is installed, falling back to common fonts per desktop.
+- **Colors.** `katna-chrome` tokens gained `view_bg` and `sidebar_bg`
+  (libadwaita and Breeze values).
+- **Icons.** A few symbolic SVG icons are built into the binary until the
+  freedesktop icon theme is read (task 3.3).
+
 ## 14. D-Bus API (`katna-dbus`)
 
 ### 14.1 Interface `in.invenia.katna.Pim1` (object `/in/invenia/katna/Pim1`, bus name `in.invenia.katna.Daemon`)
@@ -892,13 +932,15 @@ Release build, `lto = "fat"`, `codegen-units = 1`, `strip = true`,
 | GPUI window "hello world" with the Wayland and X11 backends (spike S1) | 21.3 MB | 6.2 MB |
 | Window chrome spike (`katna-chrome` example, spike S1) | 21.5 MB | 6.2 MB |
 | Engine libraries: tantivy + SQLite (bundled) + mail-parser + rustls | 6.2 MB | 2.2 MB |
+| Katna Mail, first window (§13.5): GPUI + chrome + store + search + render | 29.2 MB | 8.8 MB |
 
 The first GPUI row was built without the `wayland`/`x11` features of
 `gpui-pre-platform`, so it had no backend and panics at start. With the
 backends the binary links `libc`, `libxkbcommon`, `libxkbcommon-x11` and
 `libxcb`; Wayland and Vulkan libraries are loaded at runtime. GPUI alone
 takes about 21 MB of the 30 MB Katna Mail budget
-(`docs/spikes/S1-window-chrome.md`).
+(`docs/spikes/S1-window-chrome.md`); the first real window (§13.5) leaves
+about 2 MB (the budget in `ci/size-budgets.txt` is 30 MiB = 31.5 MB).
 
 ### 17.2 Targets (to be verified on real hardware)
 

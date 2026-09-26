@@ -10,6 +10,7 @@ publish.workspace = true
 
 [dependencies]
 katna-core.workspace = true
+mail-parser.workspace = true
 
 [lints]
 workspace = true
