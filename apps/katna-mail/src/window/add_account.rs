@@ -1182,6 +1182,40 @@ impl MailWindow {
                 )
             })
             .child(add)
+            .when(!self.accounts.is_empty(), |d| {
+                d.child(
+                    div()
+                        .id("account-manage")
+                        .h(px(48.0))
+                        .px(px(16.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(12.0))
+                        .rounded(px(8.0))
+                        .text_size(px(14.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .cursor_pointer()
+                        .hover(|s| s.bg(rgba(th.hover)))
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            this.account_menu = false;
+                            this.open_settings_page(
+                                super::settings_page::Section::Accounts,
+                                window,
+                                cx,
+                            );
+                        }))
+                        .child(
+                            div()
+                                .size(px(32.0))
+                                .flex()
+                                .items_center()
+                                .justify_center()
+                                .child(icon("settings", th.text_dim, 22.0)),
+                        )
+                        .child("Manage accounts"),
+                )
+            })
             .with_animation(
                 "account-menu",
                 Animation::new(Duration::from_millis(180)).with_easing(gpui::ease_out_quint()),

@@ -2,9 +2,10 @@
 
 //! The Settings page, shown in place of the list as in webmail's "See all
 //! settings": General (reading pane, density, theme, conversations, undo
-//! send), Inbox (tabs per account), Signatures (several, with defaults for
-//! new mail and replies) and Keyboard shortcuts (every one, each can be
-//! changed by pressing the new keys). Changes apply at once and are saved
+//! send), Inbox (tabs per account), Accounts (remove one, or delete all
+//! data), Signatures (several, with defaults for new mail and replies) and
+//! Keyboard shortcuts (every one, each can be changed by pressing the new
+//! keys). Changes apply at once and are saved
 //! to `config.toml`.
 
 use std::time::Duration;
@@ -35,14 +36,16 @@ const LABEL_WIDTH: f32 = 220.0;
 pub(super) enum Section {
     General,
     Inbox,
+    Accounts,
     Signatures,
     Shortcuts,
 }
 
 impl Section {
-    const ALL: [Self; 4] = [
+    const ALL: [Self; 5] = [
         Self::General,
         Self::Inbox,
+        Self::Accounts,
         Self::Signatures,
         Self::Shortcuts,
     ];
@@ -51,6 +54,7 @@ impl Section {
         match self {
             Self::General => "General",
             Self::Inbox => "Inbox",
+            Self::Accounts => "Accounts",
             Self::Signatures => "Signatures",
             Self::Shortcuts => "Keyboard shortcuts",
         }
@@ -194,6 +198,7 @@ impl MailWindow {
         let body = match section {
             Section::General => self.general_section(th, cx),
             Section::Inbox => self.inbox_section(th, cx),
+            Section::Accounts => self.accounts_section(th, cx),
             Section::Signatures => self.signatures_section(th, cx),
             Section::Shortcuts => self.shortcuts_section(th, cx),
         };
@@ -1136,7 +1141,7 @@ fn style_name(style: TabStyle) -> &'static str {
 
 /// A setting: its name (and a line on it) on the left, the controls on the
 /// right.
-fn row(
+pub(super) fn row(
     label: impl Into<SharedString>,
     detail: Option<&'static str>,
     content: impl IntoElement,

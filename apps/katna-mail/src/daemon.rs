@@ -128,6 +128,45 @@ pub async fn discover(
         .map_err(|err| describe(&err))
 }
 
+/// Asks the daemon for a remote image of a message.
+pub async fn fetch_image(connection: &Connection, url: &str) -> Result<Vec<u8>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.fetch_image(url).await.map_err(|err| describe(&err))
+}
+
+/// Asks the daemon for the picture of the sender `address` (empty: none).
+pub async fn sender_picture(connection: &Connection, address: &str) -> Result<Vec<u8>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.sender_picture(address)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Stops syncing `account` and deletes its mail and password from this
+/// computer. Nothing changes on the server.
+pub async fn remove_account(connection: &Connection, account: i64) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.remove_account(account)
+        .await
+        .map(|_| ())
+        .map_err(|err| describe(&err))
+}
+
+/// Has the daemon delete everything Katna keeps on this computer. It exits
+/// once done; the next call starts a new one.
+pub async fn delete_all_data(connection: &Connection) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.delete_all_data().await.map_err(|err| describe(&err))
+}
+
 /// Why an account could not be added.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum AddError {

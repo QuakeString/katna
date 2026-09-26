@@ -154,6 +154,13 @@ macro_rules! pim_proxy {
             /// password. Returns whether it existed.
             fn remove_account(&self, account: i64) -> zbus::Result<bool>;
 
+            /// Deletes everything Katna keeps on this computer: every
+            /// account with its mail and password, contacts, calendars,
+            /// the search index, the cache and the settings file. Mail
+            /// servers are not touched. The daemon exits once it answers;
+            /// the next call starts a new one with nothing stored.
+            fn delete_all_data(&self) -> zbus::Result<()>;
+
             /// Syncs every folder of `account` now (0: every account).
             fn sync_now(&self, account: i64) -> zbus::Result<()>;
 
@@ -195,6 +202,18 @@ macro_rules! pim_proxy {
 
             /// Messages waiting to be sent, failed or cancelled.
             fn outbox(&self) -> zbus::Result<Vec<OutboxItem>>;
+
+            /// Downloads a remote image of a message the user chose to show
+            /// (`https`; `http` is upgraded), at most 8 MB. Fails for
+            /// anything that is not an image. Apps never use the network
+            /// themselves.
+            fn fetch_image(&self, url: &str) -> zbus::Result<Vec<u8>>;
+
+            /// The picture of the organization that sends from `address`
+            /// (its BIMI logo, or its website's icon), cached for a week.
+            /// Empty when there is none, and always for free-mail
+            /// addresses.
+            fn sender_picture(&self, address: &str) -> zbus::Result<Vec<u8>>;
 
             /// Reads the settings file again; call after saving settings
             /// the daemon uses (`sync.metered`).
