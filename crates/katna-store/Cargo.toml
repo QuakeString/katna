@@ -10,6 +10,14 @@ publish.workspace = true
 
 [dependencies]
 katna-core.workspace = true
+blake3.workspace = true
+rusqlite.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+zstd.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
 
 [lints]
 workspace = true
