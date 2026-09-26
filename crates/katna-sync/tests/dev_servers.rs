@@ -503,7 +503,7 @@ fn worker_syncs_new_mail_by_push() {
             tls: tls(),
         };
         let (events_tx, events) = async_channel::unbounded();
-        let (stop, stop_rx) = worker::stop_signal();
+        let (handle, control) = worker::control();
         smol::block_on(async {
             let task = smol::spawn(worker::run(
                 connector,
@@ -511,7 +511,7 @@ fn worker_syncs_new_mail_by_push() {
                 account,
                 WorkerConfig::default(),
                 events_tx,
-                stop_rx,
+                control,
             ));
             let next = || async {
                 events
@@ -544,7 +544,7 @@ fn worker_syncs_new_mail_by_push() {
                 other => panic!("{name}: expected Synced, got {other:?}"),
             }
             Connection::logout(&other).await.unwrap();
-            drop(stop);
+            drop(handle);
             task.await;
         });
     }
