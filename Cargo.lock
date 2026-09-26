@@ -3585,6 +3585,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "katna-crypto"
+version = "0.0.0"
+dependencies = [
+ "jiff",
+ "mail-parser",
+ "tempfile",
+ "tracing",
+]
+
+[[package]]
 name = "katna-daemon"
 version = "0.0.0"
 dependencies = [
@@ -3633,6 +3643,7 @@ name = "katna-import"
 version = "0.0.0"
 dependencies = [
  "katna-core",
+ "katna-crypto",
  "katna-store",
  "mail-parser",
  "tempfile",
@@ -3650,6 +3661,7 @@ dependencies = [
  "jiff",
  "katna-chrome",
  "katna-core",
+ "katna-crypto",
  "katna-dbus",
  "katna-org",
  "katna-platform",
@@ -3720,6 +3732,7 @@ name = "katna-search"
 version = "0.0.0"
 dependencies = [
  "katna-core",
+ "katna-crypto",
  "katna-import",
  "katna-store",
  "levenshtein_automata",
