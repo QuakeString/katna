@@ -1,3 +1,4 @@
+use crate::backdrop_blur::{BackdropBlur, marker_radius};
 use crate::{CompositorGpuHint, WgpuAtlas, WgpuContext};
 use anyhow::{Context as _, Result};
 use bytemuck::{Pod, Zeroable};
@@ -192,6 +193,9 @@ struct WgpuResources {
     path_intermediate_view: Option<wgpu::TextureView>,
     path_msaa_texture: Option<wgpu::Texture>,
     path_msaa_view: Option<wgpu::TextureView>,
+    /// Katna: blurs behind marked quads; `None` if the surface cannot be
+    /// copied from.
+    backdrop_blur: Option<BackdropBlur>,
 }
 
 impl WgpuResources {
@@ -412,7 +416,9 @@ impl WgpuRenderer {
         }
 
         let surface_config = wgpu::SurfaceConfiguration {
-            usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+            // Katna: copying from the frame lets backdrop blur read it.
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT
+                | (surface_caps.usages & wgpu::TextureUsages::COPY_SRC),
             format: surface_format,
             width: clamped_width.max(1),
             height: clamped_height.max(1),
@@ -561,7 +567,9 @@ impl WgpuRenderer {
             *guard = Some(error.to_string());
         }));
 
+        let backdrop_blur = BackdropBlur::new(&device, surface_format, surface_config.usage);
         let resources = WgpuResources {
+            backdrop_blur,
             device,
             queue,
             surface,
@@ -1392,7 +1400,7 @@ impl WgpuRenderer {
             );
         }
 
-        if let Err(error) = self.record_frame(scene, &frame_view) {
+        if let Err(error) = self.record_frame(scene, &frame.texture, &frame_view) {
             log::error!("{error:#}");
             self.resources().queue.submit(std::iter::empty());
             return false;
@@ -1402,7 +1410,12 @@ impl WgpuRenderer {
         true
     }
 
-    fn record_frame(&mut self, scene: &Scene, frame_view: &wgpu::TextureView) -> Result<()> {
+    fn record_frame(
+        &mut self,
+        scene: &Scene,
+        frame: &wgpu::Texture,
+        frame_view: &wgpu::TextureView,
+    ) -> Result<()> {
         let mut instance_offset = 0;
         let instance_bindings = self
             .write_instances(scene, &mut instance_offset)
@@ -1442,14 +1455,67 @@ impl WgpuRenderer {
                 ..Default::default()
             });
 
+            let mut blurs = 0;
             for batch in scene.batches() {
                 match batch {
-                    PrimitiveBatch::Quads(range) => self.draw_instances(
-                        &instance_bindings.quads,
-                        &self.resources().pipelines.quads,
-                        instance_range(range),
-                        &mut pass,
-                    ),
+                    PrimitiveBatch::Quads(range) => {
+                        // Katna: a marked quad first blurs what is under it,
+                        // which ends the pass to copy from the frame.
+                        let mut start = range.start;
+                        if self.resources().backdrop_blur.is_some() {
+                            for index in range.clone() {
+                                let quad = &scene.quads[index];
+                                let Some(radius) = marker_radius(quad) else {
+                                    continue;
+                                };
+                                self.draw_instances(
+                                    &instance_bindings.quads,
+                                    &self.resources().pipelines.quads,
+                                    instance_range(start..index),
+                                    &mut pass,
+                                );
+                                start = index;
+                                drop(pass);
+                                let viewport =
+                                    (self.surface_config.width, self.surface_config.height);
+                                let resources = self.resources_mut();
+                                if let Some(blur) = resources.backdrop_blur.as_mut() {
+                                    blur.blur(
+                                        &resources.device,
+                                        &resources.queue,
+                                        &mut encoder,
+                                        frame,
+                                        frame_view,
+                                        viewport,
+                                        quad,
+                                        radius,
+                                        blurs,
+                                    );
+                                }
+                                blurs += 1;
+                                pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                                    label: Some("main_pass_after_blur"),
+                                    color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                                        view: frame_view,
+                                        resolve_target: None,
+                                        ops: wgpu::Operations {
+                                            load: wgpu::LoadOp::Load,
+                                            store: wgpu::StoreOp::Store,
+                                        },
+                                        depth_slice: None,
+                                    })],
+                                    depth_stencil_attachment: None,
+                                    ..Default::default()
+                                });
+                            }
+                        }
+                        self.draw_instances(
+                            &instance_bindings.quads,
+                            &self.resources().pipelines.quads,
+                            instance_range(start..range.end),
+                            &mut pass,
+                        );
+                    }
                     PrimitiveBatch::Shadows(range) => self.draw_instances(
                         &instance_bindings.shadows,
                         &self.resources().pipelines.shadows,

@@ -134,6 +134,8 @@ const READER_CONTEXT: &str = "MessageReader";
 const SEARCH_CONTEXT: &str = "SearchBox";
 
 const TOP_BAR_HEIGHT: f32 = 64.0;
+/// How far frosted menus and popovers blur what is behind them, in pixels.
+const FROST_BLUR: f32 = 20.0;
 const NAV_WIDTH: f32 = 256.0;
 /// How far the folder highlight pill (and the drawer's) stays off the
 /// pane's left edge.
@@ -594,6 +596,16 @@ impl MailWindow {
             accent: th.accent,
         }));
         chrome.set_backdrop(Some(th.page));
+        // Menus and popovers are frosted with the blurred background, in
+        // every window, blurred or not.
+        let th = if self.config.experimental.blur
+            && katna_chrome::Look::blur_available()
+            && katna_ui::frost::supported()
+        {
+            th.frosted(FROST_BLUR * window.scale_factor())
+        } else {
+            th
+        };
         if chrome.blurred() {
             th.translucent()
         } else {

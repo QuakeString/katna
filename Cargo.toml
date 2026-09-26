@@ -93,6 +93,8 @@ gpui = { package = "gpui-pre", version = "=0.3.6" }
 gpui-platform = { package = "gpui-pre-platform", version = "=0.3.6", features = ["wayland", "x11"] }
 # GPUI's Linux backend, for `set_kde_appmenu` from the patched copy below.
 gpui-linux = { package = "gpui-pre-linux", version = "=0.3.6", default-features = false }
+# GPUI's renderer, for the backdrop blur marker from the patched copy below.
+gpui-wgpu = { package = "gpui-pre-wgpu", version = "=0.3.6" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
@@ -139,7 +141,9 @@ opt-level = "s"
 opt-level = "s"
 
 # GPUI's Linux backend with KDE global menu support (the window carries the
-# app's dbusmenu address). vendor/gpui-pre-linux/KATNA.md lists the changes;
-# drop this when upstream GPUI has an equivalent.
+# app's dbusmenu address) and compositor blur, and GPUI's renderer with a
+# backdrop blur for frosted menus and popovers. vendor/*/KATNA.md lists the
+# changes; drop these when upstream GPUI has an equivalent.
 [patch.crates-io]
 gpui-pre-linux = { path = "vendor/gpui-pre-linux" }
+gpui-pre-wgpu = { path = "vendor/gpui-pre-wgpu" }

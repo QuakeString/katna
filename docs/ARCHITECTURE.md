@@ -993,11 +993,21 @@ GPUI global):
   compositor blurs what is behind it: `ext_background_effect_v1` (KWin 6.7),
   else `org_kde_kwin_blur`, and `_KDE_NET_WM_BLUR_BEHIND_REGION` on X11.
   The blur region is the frame less its rounded corners; the CSD shadow is
-  painted only outside the frame, so it cannot darken the window. Cards,
-  menus and dialogs stay opaque, so text keeps its contrast. Offered only
-  where the compositor can blur (`gpui_linux::compositor_blur`); elsewhere
-  the switch is shown off with the reason. The compose pop-out stays
-  opaque (it is all message).
+  painted only outside the frame, so it cannot darken the window. Cards
+  and dialogs stay opaque, so text keeps its contrast. Offered only where
+  the compositor can blur (`gpui_linux::compositor_blur`); elsewhere the
+  switch is shown off with the reason. The compose pop-out stays opaque
+  (it is all message).
+- The same switch frosts floating panels in every window: menus (the
+  right-click menu and its folder list, dropdowns), Search options and its
+  date popover, and the account menu. Their color is 78 % opaque over a
+  20 px blur of what is behind them in the window
+  (`katna_mail::widgets::raised`, `katna_ui::frost`). GPUI has no backdrop
+  filter, so Katna's copy of its renderer (`vendor/gpui-pre-wgpu`) adds
+  one: a quad marked through its border color is drawn over a dual Kawase
+  blur of the frame under it, clamped to the quad (as CSS
+  `backdrop-filter`). The panel's shadow is painted only outside it. Where
+  the window's surface cannot be copied from, panels stay opaque.
 
 ### 13.2 Look and feel
 

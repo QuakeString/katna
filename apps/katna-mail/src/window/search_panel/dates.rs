@@ -20,7 +20,7 @@ use katna_ui::TextInput;
 
 use super::{MailWindow, chip};
 use crate::theme::Theme;
-use crate::widgets::{elevation, filled_button, icon_button, tip};
+use crate::widgets::{filled_button, icon_button, raised, tip};
 
 /// What a custom date filter finds.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -505,11 +505,9 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(GAP))
-            .rounded(px(RADIUS))
             .border_1()
             .border_color(rgba(th.divider))
-            .bg(rgba(th.menu))
-            .shadow(elevation(th, 4.0))
+            .map(|d| raised(d, th, RADIUS, 4.0))
             .text_color(rgba(th.text))
             .occlude()
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())

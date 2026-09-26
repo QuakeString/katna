@@ -24,7 +24,7 @@ use crate::daemon::{self, AddError};
 use crate::outgoing;
 use crate::sidebar::Role;
 use crate::theme::{Theme, fade};
-use crate::widgets::{avatar, elevation, filled_button, icon};
+use crate::widgets::{avatar, elevation, filled_button, icon, raised};
 
 const WIDTH: f32 = 448.0;
 const MENU_WIDTH: f32 = 340.0;
@@ -1197,10 +1197,8 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(2.0))
-            .rounded(px(super::PANEL_RADIUS))
-            .bg(rgba(th.menu))
+            .map(|d| raised(d, th, super::PANEL_RADIUS, 2.0))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 2.0))
             .children(rows)
             .when(!self.accounts.is_empty(), |d| {
                 d.child(

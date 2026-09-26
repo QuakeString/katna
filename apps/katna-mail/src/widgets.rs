@@ -343,16 +343,41 @@ pub fn placeholder(text: &str, th: &Theme) -> AnyElement {
 
 /// A floating menu: a column of [`menu_item`]s on a raised surface.
 pub fn menu(th: &Theme) -> Div {
-    div()
-        .py(px(8.0))
-        .min_w(px(180.0))
-        .flex()
-        .flex_col()
-        .rounded(px(8.0))
-        .bg(rgba(th.menu))
-        .shadow(elevation(th, 3.0))
-        .text_size(px(14.0))
-        .text_color(rgba(th.text))
+    raised(
+        div()
+            .py(px(8.0))
+            .min_w(px(180.0))
+            .flex()
+            .flex_col()
+            .text_size(px(14.0))
+            .text_color(rgba(th.text)),
+        th,
+        8.0,
+        3.0,
+    )
+}
+
+/// How opaque a frosted panel's color is over the blur.
+const FROST_ALPHA: f32 = 0.78;
+
+/// The surface of a floating panel (menu, popover, dropdown): `th.menu`
+/// with corners of `radius` and a shadow of `level`. When
+/// [`Theme::frost`] is on it is frosted glass: the color translucent over
+/// a blur of what is behind, and the shadow only outside, where it cannot
+/// darken the glass. Call it before adding the panel's children, which
+/// must draw over the glass, and keep a frosted panel from clipping its
+/// children (`overflow_hidden`), or its shadow is lost.
+pub fn raised<E: Styled + ParentElement>(panel: E, th: &Theme, radius: f32, level: f32) -> E {
+    let panel = panel.rounded(px(radius));
+    if th.frost == 0 {
+        return panel.bg(rgba(th.menu)).shadow(elevation(th, level));
+    }
+    panel.child(katna_ui::frost::glass(
+        rgba(fade(th.menu, FROST_ALPHA)).into(),
+        px(radius),
+        th.frost as f32,
+        elevation(th, level),
+    ))
 }
 
 pub fn menu_item(id: impl Into<gpui::ElementId>, label: &str, th: &Theme) -> Stateful<Div> {
