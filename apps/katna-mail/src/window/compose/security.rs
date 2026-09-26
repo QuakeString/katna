@@ -73,6 +73,27 @@ pub(in crate::window) fn seal(
     katna_crypto::protect(&raw, how, &recipients, &gnupg).map_err(|err| err.to_string())
 }
 
+/// A sealed message from the outbox made readable again, with the sealing
+/// it went out with, so a cancelled scheduled send reopens as written.
+/// The sender is always among the recipients of an encrypted message.
+/// `None` when it cannot be decrypted. Blocks on GnuPG like [`seal`].
+pub(in crate::window) fn unseal(raw: Vec<u8>) -> Option<(Vec<u8>, Sealing)> {
+    if katna_crypto::protection(&raw).is_none() {
+        return Some((raw, Sealing::default()));
+    }
+    let opened = katna_crypto::open(&raw, &Gnupg::new())?;
+    let security = &opened.security;
+    if security.encrypted() && !security.decrypted() {
+        return None;
+    }
+    let sealing = Sealing {
+        sign: !security.signatures.is_empty(),
+        encrypt: security.encrypted(),
+        smime: security.standard == Standard::Smime,
+    };
+    Some((opened.raw, sealing))
+}
+
 impl MailWindow {
     /// The Encrypt and Sign toggles, at the end of the recipients row.
     pub(super) fn render_sealing(&self, th: &Theme, cx: &mut Context<Self>) -> [AnyElement; 2] {

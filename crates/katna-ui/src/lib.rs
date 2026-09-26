@@ -4,12 +4,14 @@
 //! `katna-chrome` and the GUI apps. See `docs/ARCHITECTURE.md` §13.
 
 pub mod motion;
+pub mod rich;
 pub mod ripple;
 pub mod text_area;
 pub mod text_input;
 pub mod tooltip;
 
 pub use motion::Spring;
+pub use rich::RichEditor;
 pub use ripple::Ripple;
 pub use text_area::{TEXT_AREA_CONTEXT, TextArea};
 pub use text_input::{InputEvent, TextInput};

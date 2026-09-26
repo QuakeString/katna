@@ -1,0 +1,2171 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+//! The bars of the compose window and their menus, as in webmail: Send
+//! with schedule send; the formatting bar (Aa) with undo, font, size,
+//! bold, italic, underline, colors, alignment, lists, indent, quote,
+//! strikethrough, remove formatting and tables; attach, link, emoji,
+//! photo, signature and more options; the right-click menu and the link
+//! bubble.
+
+use std::rc::Rc;
+
+use gpui::{
+    Anchor, AnyElement, Context, Entity, Focusable, FontWeight, Hsla, MouseButton, Pixels, Point,
+    Stateful, Subscription, Window, anchored, deferred, div, point, prelude::*, px, rgba,
+};
+use jiff::civil::Date;
+use katna_ui::rich::{Align, Font, List, RichEditor, Size, TableEdit, html};
+use katna_ui::{InputEvent, TextInput};
+
+use super::super::MailWindow;
+use super::{Mode, schedule};
+use crate::theme::{Theme, fade};
+use crate::widgets::{filled_button, icon, icon_button, icon_button_colored, menu, menu_item, tip};
+
+/// The open menu or dialog of the compose window.
+#[derive(Debug, Clone, PartialEq)]
+pub(in crate::window) enum Popup {
+    /// The arrow beside Send.
+    Send,
+    /// Schedule send's suggested times.
+    Schedule,
+    /// Schedule send's date and time picker.
+    PickTime,
+    Font,
+    Size,
+    Colors,
+    Align,
+    /// Formatting that does not fit the bar.
+    MoreFormat,
+    /// The table size grid.
+    Table,
+    /// Rows and columns of the table the cursor is in.
+    TableEdit,
+    Emoji,
+    Link,
+    Signature,
+    More,
+    Label,
+    /// Asks before plain text mode drops the formatting.
+    PlainText,
+    /// The right-click menu.
+    Context {
+        position: Point<Pixels>,
+        misspelled: Option<String>,
+    },
+}
+
+/// Fields of the compose window's dialogs.
+pub(in crate::window) struct Dialog {
+    link_text: Entity<TextInput>,
+    link_url: Entity<TextInput>,
+    /// The link dialog changes a link that is there.
+    editing_link: bool,
+    emoji_search: Entity<TextInput>,
+    emoji_group: usize,
+    time: Entity<TextInput>,
+    /// The month the date picker shows.
+    month: Date,
+    day: Date,
+    /// The table size under the pointer in the grid.
+    grid: (usize, usize),
+}
+
+impl Dialog {
+    pub fn new(accent: Hsla, cx: &mut Context<MailWindow>) -> Self {
+        let input = |placeholder: &str, cx: &mut Context<MailWindow>| {
+            let placeholder = placeholder.to_owned();
+            cx.new(|cx| {
+                let mut input = TextInput::new(placeholder, cx);
+                input.set_accent(accent);
+                input
+            })
+        };
+        let today = jiff::Zoned::now().date();
+        Dialog {
+            link_text: input("", cx),
+            link_url: input("https://", cx),
+            editing_link: false,
+            emoji_search: input("Search emoji", cx),
+            emoji_group: 0,
+            time: input("8:00 AM", cx),
+            month: today,
+            day: today,
+            grid: (0, 0),
+        }
+    }
+
+    /// What Enter and Escape do in the dialogs' fields.
+    pub fn subscribe(
+        &self,
+        window: &mut Window,
+        cx: &mut Context<MailWindow>,
+    ) -> Vec<Subscription> {
+        let mut subscriptions = Vec::new();
+        for (field, submit) in [
+            (&self.link_text, Submit::Link),
+            (&self.link_url, Submit::Link),
+            (&self.time, Submit::Time),
+            (&self.emoji_search, Submit::Emoji),
+        ] {
+            subscriptions.push(cx.subscribe_in(
+                field,
+                window,
+                move |this, _, event: &InputEvent, window, cx| match event {
+                    InputEvent::Submit => match submit {
+                        Submit::Link => this.apply_link(window, cx),
+                        Submit::Time => this.schedule_picked(window, cx),
+                        Submit::Emoji => this.insert_first_emoji(window, cx),
+                    },
+                    InputEvent::Cancel => this.close_popup(window, cx),
+                    InputEvent::Changed => cx.notify(),
+                },
+            ));
+        }
+        subscriptions
+    }
+}
+
+#[derive(Clone, Copy)]
+enum Submit {
+    Link,
+    Time,
+    Emoji,
+}
+
+/// Webmail's color palette: grays, bright colors, then six shades.
+pub(super) const COLORS: [u32; 64] = [
+    0x000000, 0x444444, 0x666666, 0x999999, 0xcccccc, 0xeeeeee, 0xf3f3f3, 0xffffff, //
+    0xff0000, 0xff9900, 0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0x9900ff, 0xff00ff, //
+    0xf4cccc, 0xfce5cd, 0xfff2cc, 0xd9ead3, 0xd0e0e3, 0xcfe2f3, 0xd9d2e9, 0xead1dc, //
+    0xea9999, 0xf9cb9c, 0xffe599, 0xb6d7a8, 0xa2c4c9, 0x9fc5e8, 0xb4a7d6, 0xd5a6bd, //
+    0xe06666, 0xf6b26b, 0xffd966, 0x93c47d, 0x76a5af, 0x6fa8dc, 0x8e7cc3, 0xc27ba0, //
+    0xcc0000, 0xe69138, 0xf1c232, 0x6aa84f, 0x45818e, 0x3d85c6, 0x674ea7, 0xa64d79, //
+    0x990000, 0xb45f06, 0xbf9000, 0x38761d, 0x134f5c, 0x0b5394, 0x351c75, 0x741b47, //
+    0x660000, 0x783f04, 0x7f6000, 0x274e13, 0x0c343d, 0x073763, 0x20124d, 0x4c1130,
+];
+
+/// The emoji groups of the picker, with the emoji on their tab.
+const EMOJI_GROUPS: [(emojis::Group, &str, &str); 9] = [
+    (emojis::Group::SmileysAndEmotion, "😀", "Smileys & emotion"),
+    (emojis::Group::PeopleAndBody, "👋", "People"),
+    (emojis::Group::AnimalsAndNature, "🐻", "Animals & nature"),
+    (emojis::Group::FoodAndDrink, "🍔", "Food & drink"),
+    (emojis::Group::TravelAndPlaces, "✈️", "Travel & places"),
+    (emojis::Group::Activities, "⚽", "Activities"),
+    (emojis::Group::Objects, "💡", "Objects"),
+    (emojis::Group::Symbols, "❤️", "Symbols"),
+    (emojis::Group::Flags, "🏁", "Flags"),
+];
+
+/// Most emoji a search shows.
+const EMOJI_RESULTS: usize = 160;
+const TABLE_GRID: usize = 8;
+
+/// The emoji matching `query` by name, or those of `group`.
+fn emoji_list(query: &str, group: usize) -> Vec<&'static emojis::Emoji> {
+    let query = query.trim().to_lowercase();
+    if query.is_empty() {
+        EMOJI_GROUPS[group.min(EMOJI_GROUPS.len() - 1)]
+            .0
+            .emojis()
+            .collect()
+    } else {
+        emojis::iter()
+            .filter(|e| {
+                e.name().contains(&query) || e.shortcodes().any(|s| s.contains(query.as_str()))
+            })
+            .take(EMOJI_RESULTS)
+            .collect()
+    }
+}
+
+/// A web address as typed: `example.com` becomes `https://example.com` and
+/// a bare email address a `mailto:` link.
+pub(super) fn normalize_url(url: &str) -> String {
+    let url = url.trim();
+    let has_scheme = url.split_once(':').is_some_and(|(scheme, _)| {
+        !scheme.is_empty()
+            && scheme
+                .chars()
+                .all(|c| c.is_ascii_alphanumeric() || "+-.".contains(c))
+    });
+    if url.is_empty() || has_scheme {
+        url.to_owned()
+    } else if url.contains('@') && !url.contains('/') {
+        format!("mailto:{url}")
+    } else {
+        format!("https://{url}")
+    }
+}
+
+/// A small square button of the formatting bar, shaded when `active`.
+pub(super) fn format_button(
+    id: &'static str,
+    name: &'static str,
+    active: bool,
+    th: &Theme,
+) -> Stateful<gpui::Div> {
+    div()
+        .id(id)
+        .flex_none()
+        .size(px(28.0))
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded(px(4.0))
+        .cursor_pointer()
+        .when(active, |d| d.bg(rgba(th.chip)))
+        .hover(|s| s.bg(rgba(th.hover)))
+        .child(icon(name, if active { th.text } else { th.text_dim }, 18.0))
+}
+
+/// A dropdown of the formatting bar: its content and a small arrow.
+pub(super) fn format_dropdown(id: &'static str, th: &Theme) -> Stateful<gpui::Div> {
+    div()
+        .id(id)
+        .flex_none()
+        .h(px(28.0))
+        .pl(px(6.0))
+        .pr(px(2.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(2.0))
+        .rounded(px(4.0))
+        .cursor_pointer()
+        .text_size(px(13.0))
+        .text_color(rgba(th.text_dim))
+        .hover(|s| s.bg(rgba(th.hover)))
+}
+
+pub(super) fn separator(th: &Theme) -> gpui::Div {
+    div()
+        .flex_none()
+        .mx(px(3.0))
+        .w(px(1.0))
+        .h(px(20.0))
+        .bg(rgba(th.divider))
+}
+
+/// A popup above the element it belongs to (in a `relative` parent),
+/// kept inside the window.
+pub(super) fn above(popup: impl IntoElement) -> AnyElement {
+    // Anchored to the parent's top left corner.
+    deferred(
+        div().absolute().top_0().left_0().child(
+            anchored()
+                .anchor(Anchor::BottomLeft)
+                .offset(point(px(0.0), px(-6.0)))
+                .snap_to_window_with_margin(px(8.0))
+                .child(div().occlude().child(popup)),
+        ),
+    )
+    .with_priority(2)
+    .into_any_element()
+}
+
+fn menu_divider(th: &Theme) -> gpui::Div {
+    div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider))
+}
+
+/// A menu item with an icon, a label and a shortcut or check on the right.
+fn tool_item(
+    id: impl Into<gpui::ElementId>,
+    name: &'static str,
+    label: &str,
+    th: &Theme,
+) -> Stateful<gpui::Div> {
+    div()
+        .id(id)
+        .h(px(36.0))
+        .px(px(16.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(14.0))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .child(icon(name, th.text_dim, 20.0))
+        .child(div().flex_1().child(label.to_owned()))
+}
+
+fn shortcut(text: &'static str, th: &Theme) -> gpui::Div {
+    div()
+        .flex_none()
+        .pl(px(16.0))
+        .text_size(px(12.0))
+        .text_color(rgba(th.text_faint))
+        .child(text)
+}
+
+impl MailWindow {
+    fn toggle_popup(&mut self, popup: Popup, cx: &mut Context<Self>) {
+        if let Some(c) = &mut self.compose {
+            c.popup = if c.popup.as_ref() == Some(&popup) {
+                None
+            } else {
+                Some(popup)
+            };
+        }
+        cx.notify();
+    }
+
+    pub(super) fn close_popup(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if let Some(c) = &mut self.compose
+            && c.popup.take().is_some()
+        {
+            window.focus(&c.body.focus_handle(cx), cx);
+        }
+        cx.notify();
+    }
+
+    /// Runs `f` on the editor, closes any menu and puts the focus back in
+    /// the text.
+    fn edit_body(
+        &mut self,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+        f: impl FnOnce(&mut RichEditor, &mut Context<RichEditor>),
+    ) {
+        let Some(c) = &mut self.compose else {
+            return;
+        };
+        c.popup = None;
+        let body = c.body.clone();
+        body.update(cx, f);
+        window.focus(&body.focus_handle(cx), cx);
+        cx.notify();
+    }
+
+    /// A listener that runs `f` on the editor.
+    fn on_body<E>(
+        &self,
+        cx: &mut Context<Self>,
+        f: impl Fn(&mut RichEditor, &mut Context<RichEditor>) + 'static,
+    ) -> impl Fn(&E, &mut Window, &mut gpui::App) + 'static {
+        let f = Rc::new(f);
+        cx.listener(move |this, _: &E, window, cx| {
+            let f = f.clone();
+            this.edit_body(window, cx, move |editor, cx| f(editor, cx))
+        })
+    }
+
+    // The bottom bar.
+
+    pub(super) fn render_compose_actions(
+        &self,
+        th: &Theme,
+        width: f32,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let Some(compose) = &self.compose else {
+            return div().into_any_element();
+        };
+        let popup = compose.popup.clone();
+        let plain = compose.plain(cx);
+        let open = |p: Popup| popup.as_ref() == Some(&p);
+        let send = div()
+            .relative()
+            .flex_none()
+            .h(px(36.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .rounded_full()
+            .bg(rgba(th.accent))
+            .text_color(rgba(th.on_accent))
+            .text_size(px(14.0))
+            .font_weight(FontWeight::MEDIUM)
+            .child(
+                div()
+                    .id("compose-send")
+                    .h_full()
+                    .pl(px(20.0))
+                    .pr(px(14.0))
+                    .flex()
+                    .items_center()
+                    .rounded_l_full()
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(0xffffff1f)))
+                    .tooltip(tip("Send (Ctrl+Enter)", th))
+                    .on_click(
+                        cx.listener(|this, _, window, cx| this.send_compose(None, window, cx)),
+                    )
+                    .child("Send"),
+            )
+            .child(div().w(px(1.0)).h(px(20.0)).bg(rgba(0xffffff66)))
+            .child(
+                div()
+                    .id("compose-send-more")
+                    .h_full()
+                    .pl(px(6.0))
+                    .pr(px(10.0))
+                    .flex()
+                    .items_center()
+                    .rounded_r_full()
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(0xffffff1f)))
+                    .tooltip(tip("More send options", th))
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Send, cx)))
+                    .child(icon("drop-down", th.on_accent, 20.0)),
+            )
+            .when(open(Popup::Send), |d| {
+                d.child(above(self.render_send_menu(th, cx)))
+            })
+            .when(open(Popup::Schedule), |d| {
+                d.child(above(self.render_schedule_menu(th, cx)))
+            });
+        let tool = |id: &'static str, name: &'static str, label: &'static str| {
+            icon_button(id, name, 20.0, th).tooltip(tip(label, th))
+        };
+        let format = icon_button_colored(
+            "compose-format",
+            "format-text",
+            20.0,
+            if compose.format_bar {
+                th.text
+            } else {
+                th.text_dim
+            },
+            th,
+        )
+        .when(compose.format_bar, |d| d.bg(rgba(th.chip)))
+        .tooltip(tip("Formatting options", th))
+        .on_click(cx.listener(|this, _, window, cx| {
+            if let Some(c) = &mut this.compose {
+                c.format_bar = !c.format_bar;
+                c.popup = None;
+                window.focus(&c.body.focus_handle(cx), cx);
+            }
+            cx.notify();
+        }));
+        let emoji = div()
+            .relative()
+            .child(
+                tool("compose-emoji", "emoji", "Insert emoji").on_click(cx.listener(
+                    |this, _, window, cx| {
+                        this.toggle_popup(Popup::Emoji, cx);
+                        if let Some(c) = &this.compose
+                            && c.popup == Some(Popup::Emoji)
+                        {
+                            let search = c.dialog.emoji_search.clone();
+                            search.update(cx, |s, cx| s.set_text("", cx));
+                            window.focus(&search.focus_handle(cx), cx);
+                        }
+                    },
+                )),
+            )
+            .when(open(Popup::Emoji), |d| {
+                d.child(above(self.render_emoji_picker(th, cx)))
+            });
+        let more = div()
+            .relative()
+            .child(
+                tool("compose-more", "more", "More options")
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::More, cx))),
+            )
+            .when(open(Popup::More) || open(Popup::Label), |d| {
+                d.child(above(self.render_more_menu(th, cx)))
+            });
+        let narrow = width < 440.0;
+        div()
+            .flex_none()
+            .h(px(60.0))
+            .px(px(16.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(2.0))
+            .child(send)
+            .child(div().w(px(8.0)))
+            .child(format)
+            .child(
+                tool("compose-attach", "attachment", "Attach files")
+                    .on_click(cx.listener(|this, _, _, cx| this.pick_files(false, cx))),
+            )
+            .child(
+                tool("compose-link", "link", "Insert link (Ctrl+K)")
+                    .on_click(cx.listener(|this, _, window, cx| this.open_link_dialog(window, cx))),
+            )
+            .child(emoji)
+            .when(!plain, |d| {
+                d.child(
+                    tool("compose-image", "image", "Insert photo")
+                        .on_click(cx.listener(|this, _, _, cx| this.pick_files(true, cx))),
+                )
+            })
+            .when(!narrow, |d| {
+                d.child(
+                    tool("compose-event", "event", "Insert calendar event").on_click(cx.listener(
+                        |this, _, _, cx| {
+                            this.show_snackbar(
+                                "Calendar events come with Katna Calendar.",
+                                None,
+                                cx,
+                            )
+                        },
+                    )),
+                )
+            })
+            .child(self.render_signature_button(th, cx))
+            .child(more)
+            .child(div().flex_1())
+            .child(
+                icon_button_colored("compose-discard", "trash", 20.0, th.text_dim, th)
+                    .tooltip(tip("Discard draft", th))
+                    .on_click(cx.listener(|this, _, _, cx| this.close_compose(true, cx))),
+            )
+            .children(self.render_popup_scrim(cx))
+            .children(self.render_context_popup(th, cx))
+            .children(self.render_link_bubble(th, cx))
+            .into_any_element()
+    }
+
+    /// Catches a click anywhere outside the open menu, closing it.
+    fn render_popup_scrim(&self, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let popup = self.compose.as_ref()?.popup.as_ref()?;
+        // The dialogs close with their own buttons.
+        if matches!(popup, Popup::Link | Popup::PickTime | Popup::PlainText) {
+            return None;
+        }
+        Some(
+            deferred(
+                anchored().position(point(px(0.0), px(0.0))).child(
+                    div()
+                        .id("compose-popup-scrim")
+                        // Larger than any window.
+                        .w(px(16384.0))
+                        .h(px(16384.0))
+                        .occlude()
+                        .on_mouse_down(
+                            MouseButton::Left,
+                            cx.listener(|this, _, window, cx| this.close_popup(window, cx)),
+                        )
+                        .on_mouse_down(
+                            MouseButton::Right,
+                            cx.listener(|this, _, window, cx| this.close_popup(window, cx)),
+                        ),
+                ),
+            )
+            .with_priority(1)
+            .into_any_element(),
+        )
+    }
+
+    fn render_send_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let count = self.writing.scheduled.len();
+        menu(th)
+            .w(px(240.0))
+            .child(
+                tool_item("compose-schedule", "schedule", "Schedule send", th).on_click(
+                    cx.listener(|this, _, _, cx| {
+                        if let Some(c) = &mut this.compose {
+                            c.popup = Some(Popup::Schedule);
+                        }
+                        cx.notify();
+                    }),
+                ),
+            )
+            .when(count > 0, |d| {
+                d.child(
+                    tool_item(
+                        "compose-scheduled",
+                        "send",
+                        &format!("Scheduled messages ({count})"),
+                        th,
+                    )
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        if let Some(c) = &mut this.compose {
+                            c.popup = None;
+                        }
+                        this.open_scheduled(cx);
+                    })),
+                )
+            })
+            .into_any_element()
+    }
+
+    fn render_schedule_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let now = jiff::Timestamp::now().to_zoned(self.tz.clone());
+        let presets = schedule::presets(&now);
+        let items = presets.into_iter().enumerate().map(|(ix, preset)| {
+            let at = preset.at.timestamp();
+            div()
+                .id(("schedule-preset", ix))
+                .h(px(40.0))
+                .px(px(24.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(16.0))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .child(div().flex_1().child(preset.label))
+                .child(
+                    div()
+                        .text_color(rgba(th.text_dim))
+                        .child(schedule::short(&preset.at)),
+                )
+                .on_click(
+                    cx.listener(move |this, _, window, cx| this.send_compose(Some(at), window, cx)),
+                )
+        });
+        menu(th)
+            .w(px(340.0))
+            .child(
+                div()
+                    .px(px(24.0))
+                    .pt(px(8.0))
+                    .pb(px(8.0))
+                    .text_size(px(16.0))
+                    .child("Schedule send"),
+            )
+            .child(
+                div()
+                    .px(px(24.0))
+                    .pb(px(8.0))
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(format!(
+                        "{}. Katna sends it at that time, even with the app closed.",
+                        self.tz.iana_name().unwrap_or("Local time")
+                    )),
+            )
+            .children(items)
+            .child(menu_divider(th))
+            .child(
+                tool_item("schedule-pick", "calendar", "Pick date & time", th)
+                    .on_click(cx.listener(|this, _, window, cx| this.open_time_picker(window, cx))),
+            )
+            .into_any_element()
+    }
+
+    fn open_time_picker(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let now = jiff::Timestamp::now().to_zoned(self.tz.clone());
+        let Some(c) = &mut self.compose else {
+            return;
+        };
+        let tomorrow = now.date().tomorrow().unwrap_or(now.date());
+        c.dialog.day = tomorrow;
+        c.dialog.month = tomorrow;
+        c.popup = Some(Popup::PickTime);
+        let time = c.dialog.time.clone();
+        time.update(cx, |t, cx| {
+            t.set_text("8:00 AM", cx);
+            t.select_all_text(cx);
+        });
+        window.focus(&time.focus_handle(cx), cx);
+        cx.notify();
+    }
+
+    /// Schedules for the date and time of the picker.
+    fn schedule_picked(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(c) = &self.compose else {
+            return;
+        };
+        let text = c.dialog.time.read(cx).text().to_owned();
+        let Some(time) = schedule::parse_time(&text) else {
+            self.show_snackbar(
+                format!("\u{201c}{text}\u{201d} is not a time, for example 8:00 AM."),
+                None,
+                cx,
+            );
+            return;
+        };
+        let Some(at) = schedule::moment(c.dialog.day, time, &self.tz) else {
+            self.show_snackbar("That time does not exist here.", None, cx);
+            return;
+        };
+        self.send_compose(Some(at), window, cx);
+    }
+
+    // Formatting.
+
+    pub(super) fn render_format_bar(
+        &self,
+        th: &Theme,
+        width: f32,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let Some(compose) = &self.compose else {
+            return div().into_any_element();
+        };
+        let editor = compose.body.read(cx);
+        if editor.is_plain() {
+            return div()
+                .flex_none()
+                .mx(px(16.0))
+                .h(px(40.0))
+                .flex()
+                .items_center()
+                .text_size(px(13.0))
+                .text_color(rgba(th.text_dim))
+                .child("Plain text mode: formatting is off. Turn it on in More options.")
+                .into_any_element();
+        }
+        let style = editor.current_style();
+        let para = editor.para_style();
+        let (can_undo, can_redo, in_table) =
+            (editor.can_undo(), editor.can_redo(), editor.in_table());
+        let popup = compose.popup.clone();
+        let open = |p: Popup| popup.as_ref() == Some(&p);
+        let wide = width >= 660.0;
+
+        let font = div()
+            .relative()
+            .child(
+                format_dropdown("format-font", th)
+                    .w(px(100.0))
+                    .tooltip(tip("Font", th))
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Font, cx)))
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .truncate()
+                            .child(style.font.label()),
+                    )
+                    .child(icon("drop-down", th.text_dim, 18.0)),
+            )
+            .when(open(Popup::Font), |d| {
+                let items = Font::ALL.into_iter().enumerate().map(|(ix, font)| {
+                    menu_item(("font", ix), font.label(), th)
+                        .when(font == style.font, |d| {
+                            d.child(div().flex_1())
+                                .child(icon("check", th.text_dim, 18.0))
+                        })
+                        .on_click(self.on_body(cx, move |e, cx| e.set_font(font, cx)))
+                });
+                d.child(above(menu(th).w(px(200.0)).children(items)))
+            });
+        let size = div()
+            .relative()
+            .child(
+                format_dropdown("format-size", th)
+                    .tooltip(tip("Size", th))
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Size, cx)))
+                    .child(icon("text-size", th.text_dim, 18.0))
+                    .child(icon("drop-down", th.text_dim, 18.0)),
+            )
+            .when(open(Popup::Size), |d| {
+                let items = Size::ALL.into_iter().enumerate().map(|(ix, size)| {
+                    div()
+                        .id(("size", ix))
+                        .min_h(px(32.0))
+                        .px(px(16.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(12.0))
+                        .cursor_pointer()
+                        .hover(|s| s.bg(rgba(th.hover)))
+                        .child(div().w(px(18.0)).when(size == style.size, |d| {
+                            d.child(icon("check", th.text_dim, 18.0))
+                        }))
+                        .child(div().text_size(px(14.0 * size.scale())).child(size.label()))
+                        .on_click(self.on_body(cx, move |e, cx| e.set_size(size, cx)))
+                });
+                d.child(above(menu(th).w(px(180.0)).children(items)))
+            });
+        let colors = div()
+            .relative()
+            .child(
+                format_dropdown("format-color", th)
+                    .tooltip(tip("Text color", th))
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Colors, cx)))
+                    .child(icon("text-color", th.text_dim, 18.0))
+                    .child(icon("drop-down", th.text_dim, 18.0)),
+            )
+            .when(open(Popup::Colors), |d| {
+                d.child(above(self.render_colors(
+                    th,
+                    style.color,
+                    style.background,
+                    cx,
+                )))
+            });
+        let align_icon = match para.align {
+            Align::Left => "align-left",
+            Align::Center => "align-center",
+            Align::Right => "align-right",
+        };
+        let align = div()
+            .relative()
+            .child(
+                format_dropdown("format-align", th)
+                    .tooltip(tip("Align", th))
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Align, cx)))
+                    .child(icon(align_icon, th.text_dim, 18.0))
+                    .child(icon("drop-down", th.text_dim, 18.0)),
+            )
+            .when(open(Popup::Align), |d| {
+                let mut button = |id, name, value: Align, label: &'static str| {
+                    format_button(id, name, para.align == value, th)
+                        .tooltip(tip(label, th))
+                        .on_click(self.on_body(cx, move |e, cx| e.set_align(value, cx)))
+                };
+                d.child(above(
+                    menu(th)
+                        .min_w(px(0.0))
+                        .px(px(6.0))
+                        .py(px(6.0))
+                        .flex_row()
+                        .gap(px(2.0))
+                        .child(button(
+                            "align-left",
+                            "align-left",
+                            Align::Left,
+                            "Align left (Ctrl+Shift+L)",
+                        ))
+                        .child(button(
+                            "align-center",
+                            "align-center",
+                            Align::Center,
+                            "Align center (Ctrl+Shift+E)",
+                        ))
+                        .child(button(
+                            "align-right",
+                            "align-right",
+                            Align::Right,
+                            "Align right (Ctrl+Shift+R)",
+                        )),
+                ))
+            });
+        // What does not fit a narrow bar goes in its "more" menu.
+        let table_click = cx.listener(move |this, _, _, cx| {
+            let p = if in_table {
+                Popup::TableEdit
+            } else {
+                Popup::Table
+            };
+            if let Some(c) = &mut this.compose {
+                c.dialog.grid = (0, 0);
+            }
+            this.toggle_popup(p, cx)
+        });
+        let rest: Vec<AnyElement> = vec![
+            format_button("format-indent-less", "indent-less", false, th)
+                .tooltip(tip("Indent less (Ctrl+[)", th))
+                .on_click(self.on_body(cx, |e, cx| e.indent(false, cx)))
+                .into_any_element(),
+            format_button("format-indent-more", "indent-more", false, th)
+                .tooltip(tip("Indent more (Ctrl+])", th))
+                .on_click(self.on_body(cx, |e, cx| e.indent(true, cx)))
+                .into_any_element(),
+            format_button("format-quote", "quote", para.quote > 0, th)
+                .tooltip(tip("Quote (Ctrl+Shift+9)", th))
+                .on_click(self.on_body(cx, |e, cx| e.toggle_quote(cx)))
+                .into_any_element(),
+            format_button("format-strike", "format-strike", style.strike, th)
+                .tooltip(tip("Strikethrough (Alt+Shift+5)", th))
+                .on_click(self.on_body(cx, |e, cx| e.toggle_strike(cx)))
+                .into_any_element(),
+            format_button("format-clear", "clear-format", false, th)
+                .tooltip(tip("Remove formatting (Ctrl+\\)", th))
+                .on_click(self.on_body(cx, |e, cx| e.clear_formatting(cx)))
+                .into_any_element(),
+            format_button("format-table", "table", in_table, th)
+                .tooltip(tip(if in_table { "Table" } else { "Insert table" }, th))
+                .on_click(table_click)
+                .into_any_element(),
+        ];
+        let table_popup = if open(Popup::Table) {
+            Some(above(self.render_table_grid(th, cx)))
+        } else if open(Popup::TableEdit) {
+            Some(above(self.render_table_menu(th, cx)))
+        } else {
+            None
+        };
+        let tail = if wide {
+            div()
+                .relative()
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(1.0))
+                .children(rest)
+                .children(table_popup)
+        } else {
+            div()
+                .relative()
+                .child(
+                    format_button("format-more", "drop-down", open(Popup::MoreFormat), th)
+                        .tooltip(tip("More formatting options", th))
+                        .on_click(
+                            cx.listener(|this, _, _, cx| this.toggle_popup(Popup::MoreFormat, cx)),
+                        ),
+                )
+                .when(open(Popup::MoreFormat), |d| {
+                    d.child(above(
+                        menu(th)
+                            .min_w(px(0.0))
+                            .px(px(6.0))
+                            .py(px(6.0))
+                            .flex_row()
+                            .gap(px(2.0))
+                            .children(rest),
+                    ))
+                })
+                .children(table_popup)
+        };
+        div()
+            .flex_none()
+            .mx(px(12.0))
+            .mt(px(4.0))
+            .h(px(40.0))
+            .px(px(4.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(1.0))
+            .rounded(px(8.0))
+            .bg(rgba(th.surface))
+            .shadow(crate::widgets::elevation(th, 1.0))
+            .child(
+                format_button("format-undo", "undo", false, th)
+                    .when(!can_undo, |d| d.opacity(0.4))
+                    .tooltip(tip("Undo (Ctrl+Z)", th))
+                    .on_click(self.on_body(cx, |e, cx| e.undo(cx))),
+            )
+            .child(
+                format_button("format-redo", "redo", false, th)
+                    .when(!can_redo, |d| d.opacity(0.4))
+                    .tooltip(tip("Redo (Ctrl+Y)", th))
+                    .on_click(self.on_body(cx, |e, cx| e.redo(cx))),
+            )
+            .child(separator(th))
+            .child(font)
+            .child(separator(th))
+            .child(size)
+            .child(separator(th))
+            .child(
+                format_button("format-bold", "format-bold", style.bold, th)
+                    .tooltip(tip("Bold (Ctrl+B)", th))
+                    .on_click(self.on_body(cx, |e, cx| e.toggle_bold(cx))),
+            )
+            .child(
+                format_button("format-italic", "format-italic", style.italic, th)
+                    .tooltip(tip("Italic (Ctrl+I)", th))
+                    .on_click(self.on_body(cx, |e, cx| e.toggle_italic(cx))),
+            )
+            .child(
+                format_button("format-underline", "format-underline", style.underline, th)
+                    .tooltip(tip("Underline (Ctrl+U)", th))
+                    .on_click(self.on_body(cx, |e, cx| e.toggle_underline(cx))),
+            )
+            .child(colors)
+            .child(separator(th))
+            .child(align)
+            .child(
+                format_button(
+                    "format-numbered",
+                    "list-numbered",
+                    para.list == List::Numbered,
+                    th,
+                )
+                .tooltip(tip("Numbered list (Ctrl+Shift+7)", th))
+                .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Numbered, cx))),
+            )
+            .child(
+                format_button(
+                    "format-bulleted",
+                    "list-bulleted",
+                    para.list == List::Bullet,
+                    th,
+                )
+                .tooltip(tip("Bulleted list (Ctrl+Shift+8)", th))
+                .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Bullet, cx))),
+            )
+            .child(tail)
+            .into_any_element()
+    }
+
+    fn render_colors(
+        &self,
+        th: &Theme,
+        color: Option<u32>,
+        background: Option<u32>,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        div()
+            .p(px(12.0))
+            .flex()
+            .flex_row()
+            .gap(px(20.0))
+            .rounded(px(8.0))
+            .bg(rgba(th.menu))
+            .shadow(crate::widgets::elevation(th, 3.0))
+            .child(self.color_palette(th, true, background, cx))
+            .child(self.color_palette(th, false, color, cx))
+            .into_any_element()
+    }
+
+    /// One palette of the color menu, choosing the background with
+    /// `background`.
+    fn color_palette(
+        &self,
+        th: &Theme,
+        background: bool,
+        current: Option<u32>,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let name = if background { "bg-color" } else { "fg-color" };
+        let set = move |e: &mut RichEditor, color: Option<u32>, cx: &mut Context<RichEditor>| {
+            if background {
+                e.set_background(color, cx)
+            } else {
+                e.set_color(color, cx)
+            }
+        };
+        let swatches = COLORS.iter().enumerate().map(|(ix, &c)| {
+            let selected = current == Some(c);
+            let light = (c >> 16) + ((c >> 8) & 0xff) + (c & 0xff) > 384;
+            div()
+                .id((name, ix))
+                .size(px(18.0))
+                .flex()
+                .items_center()
+                .justify_center()
+                .rounded(px(3.0))
+                .bg(rgba((c << 8) | 0xff))
+                .when(light, |d| d.border_1().border_color(rgba(th.divider)))
+                .when(selected, |d| d.border_1().border_color(rgba(th.text)))
+                .cursor_pointer()
+                .hover(|s| s.border_1().border_color(rgba(th.text)))
+                .when(selected, |d| {
+                    d.child(icon(
+                        "check",
+                        if light { 0x000000ff } else { 0xffffffff },
+                        14.0,
+                    ))
+                })
+                .on_click(self.on_body(cx, move |e, cx| set(e, Some(c), cx)))
+        });
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(8.0))
+            .child(
+                div()
+                    .text_size(px(13.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(if background {
+                        "Background color"
+                    } else {
+                        "Text color"
+                    }),
+            )
+            .child(
+                div()
+                    .w(px(8.0 * 20.0))
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(2.0))
+                    .children(swatches),
+            )
+            .child(
+                div()
+                    .id(if background {
+                        "bg-default"
+                    } else {
+                        "fg-default"
+                    })
+                    .h(px(28.0))
+                    .px(px(8.0))
+                    .flex()
+                    .items_center()
+                    .rounded(px(4.0))
+                    .text_size(px(13.0))
+                    .text_color(rgba(th.text_dim))
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .when(current.is_none(), |d| d.font_weight(FontWeight::MEDIUM))
+                    .child(if background {
+                        "No background"
+                    } else {
+                        "Default color"
+                    })
+                    .on_click(self.on_body(cx, move |e, cx| set(e, None, cx))),
+            )
+            .into_any_element()
+    }
+
+    /// The grid that picks a new table's rows and columns.
+    fn render_table_grid(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(compose) = &self.compose else {
+            return div().into_any_element();
+        };
+        let (rows, cols) = compose.dialog.grid;
+        let cells = (0..TABLE_GRID * TABLE_GRID).map(|ix| {
+            let (r, col) = (ix / TABLE_GRID + 1, ix % TABLE_GRID + 1);
+            let on = r <= rows && col <= cols;
+            div()
+                .id(("table-cell", ix))
+                .size(px(18.0))
+                .rounded(px(2.0))
+                .border_1()
+                .border_color(rgba(if on { th.accent } else { th.divider }))
+                .when(on, |d| d.bg(rgba(fade(th.accent, 0.25))))
+                .cursor_pointer()
+                .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
+                    if *hovered && let Some(c) = &mut this.compose {
+                        c.dialog.grid = (r, col);
+                        cx.notify();
+                    }
+                }))
+                .on_click(self.on_body(cx, move |e, cx| e.insert_table(r, col, cx)))
+        });
+        menu(th)
+            .min_w(px(0.0))
+            .px(px(12.0))
+            .py(px(10.0))
+            .gap(px(8.0))
+            .child(
+                div()
+                    .text_size(px(13.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(if rows == 0 {
+                        "Insert table".to_owned()
+                    } else {
+                        format!("{cols} \u{d7} {rows} table")
+                    }),
+            )
+            .child(
+                div()
+                    .w(px(TABLE_GRID as f32 * 20.0))
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(2.0))
+                    .children(cells),
+            )
+            .into_any_element()
+    }
+
+    fn render_table_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let mut item = |ix: usize, label: &str, edit: TableEdit| {
+            menu_item(("table-edit", ix), label, th)
+                .when(edit == TableEdit::DeleteTable, |d| {
+                    d.text_color(rgba(th.error))
+                })
+                .on_click(self.on_body(cx, move |e, cx| e.edit_table(edit, cx)))
+        };
+        menu(th)
+            .w(px(220.0))
+            .child(item(0, "Insert row above", TableEdit::RowAbove))
+            .child(item(1, "Insert row below", TableEdit::RowBelow))
+            .child(item(2, "Insert column left", TableEdit::ColumnLeft))
+            .child(item(3, "Insert column right", TableEdit::ColumnRight))
+            .child(menu_divider(th))
+            .child(item(4, "Delete row", TableEdit::DeleteRow))
+            .child(item(5, "Delete column", TableEdit::DeleteColumn))
+            .child(item(6, "Delete table", TableEdit::DeleteTable))
+            .into_any_element()
+    }
+
+    // Emoji.
+
+    fn render_emoji_picker(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(compose) = &self.compose else {
+            return div().into_any_element();
+        };
+        let query = compose.dialog.emoji_search.read(cx).text().to_owned();
+        let group = compose.dialog.emoji_group;
+        let list = emoji_list(&query, group);
+        let tabs = EMOJI_GROUPS
+            .iter()
+            .enumerate()
+            .map(|(ix, (_, face, label))| {
+                let selected = query.trim().is_empty() && ix == group;
+                div()
+                    .id(("emoji-group", ix))
+                    .size(px(32.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded(px(6.0))
+                    .text_size(px(18.0))
+                    .cursor_pointer()
+                    .when(selected, |d| d.bg(rgba(th.chip)))
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .tooltip(tip(*label, th))
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        if let Some(c) = &mut this.compose {
+                            c.dialog.emoji_group = ix;
+                            c.dialog.emoji_search.update(cx, |s, cx| s.set_text("", cx));
+                        }
+                        cx.notify();
+                    }))
+                    .child(*face)
+            })
+            .collect::<Vec<_>>();
+        let cells = list.iter().enumerate().map(|(ix, emoji)| {
+            let text = emoji.as_str();
+            div()
+                .id(("emoji", ix))
+                .size(px(36.0))
+                .flex()
+                .items_center()
+                .justify_center()
+                .rounded(px(6.0))
+                .text_size(px(22.0))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .tooltip(tip(emoji.name().to_owned(), th))
+                .on_click(self.on_body(cx, move |e, cx| e.insert(text, cx)))
+                .child(text)
+        });
+        let title = if query.trim().is_empty() {
+            EMOJI_GROUPS[group].2.to_owned()
+        } else if list.is_empty() {
+            "No emoji found".to_owned()
+        } else {
+            "Search results".to_owned()
+        };
+        div()
+            .w(px(360.0))
+            .h(px(380.0))
+            .flex()
+            .flex_col()
+            .rounded(px(12.0))
+            .overflow_hidden()
+            .bg(rgba(th.menu))
+            .shadow(crate::widgets::elevation(th, 3.0))
+            .text_color(rgba(th.text))
+            .child(
+                div()
+                    .flex_none()
+                    .m(px(10.0))
+                    .h(px(36.0))
+                    .px(px(12.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(8.0))
+                    .rounded_full()
+                    .bg(rgba(th.chip))
+                    .text_size(px(14.0))
+                    .child(icon("search", th.text_dim, 18.0))
+                    .child(div().flex_1().child(compose.dialog.emoji_search.clone())),
+            )
+            .child(
+                div()
+                    .flex_none()
+                    .px(px(8.0))
+                    .flex()
+                    .flex_row()
+                    .justify_between()
+                    .children(tabs),
+            )
+            .child(
+                div()
+                    .flex_none()
+                    .px(px(14.0))
+                    .pt(px(8.0))
+                    .pb(px(4.0))
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(title),
+            )
+            .child(
+                div()
+                    .id("emoji-grid")
+                    .flex_1()
+                    .min_h_0()
+                    .overflow_y_scroll()
+                    .px(px(8.0))
+                    .pb(px(8.0))
+                    .child(div().flex().flex_row().flex_wrap().children(cells)),
+            )
+            .into_any_element()
+    }
+
+    /// Enter in the emoji search inserts the first match.
+    fn insert_first_emoji(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(c) = &self.compose else {
+            return;
+        };
+        let query = c.dialog.emoji_search.read(cx).text().to_owned();
+        let Some(first) = emoji_list(&query, c.dialog.emoji_group).first().copied() else {
+            return;
+        };
+        self.edit_body(window, cx, |e, cx| e.insert(first.as_str(), cx));
+    }
+
+    // Links.
+
+    /// Opens the link dialog on the link at the cursor, or for the selected
+    /// text.
+    pub(super) fn open_link_dialog(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(c) = &mut self.compose else {
+            return;
+        };
+        let editor = c.body.read(cx);
+        let (text, url, editing) = match editor.link_at_cursor() {
+            Some((text, url)) => (text, url.to_string(), true),
+            None => (editor.selected_text(), String::new(), false),
+        };
+        c.dialog.editing_link = editing;
+        c.popup = Some(Popup::Link);
+        let (text_input, url_input) = (c.dialog.link_text.clone(), c.dialog.link_url.clone());
+        let focus_text = text.is_empty();
+        text_input.update(cx, |i, cx| i.set_text(text, cx));
+        url_input.update(cx, |i, cx| {
+            i.set_text(url, cx);
+            i.select_all_text(cx);
+        });
+        let focus = if focus_text { &text_input } else { &url_input };
+        window.focus(&focus.focus_handle(cx), cx);
+        cx.notify();
+    }
+
+    fn apply_link(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(c) = &self.compose else {
+            return;
+        };
+        let text = c.dialog.link_text.read(cx).text().to_owned();
+        let url = normalize_url(c.dialog.link_url.read(cx).text());
+        let editing = c.dialog.editing_link;
+        if url.is_empty() {
+            if editing {
+                self.edit_body(window, cx, |e, cx| e.remove_link(cx));
+            } else {
+                self.close_popup(window, cx);
+            }
+            return;
+        }
+        let text = if text.trim().is_empty() {
+            url.trim_start_matches("mailto:").to_owned()
+        } else {
+            text
+        };
+        self.edit_body(window, cx, move |e, cx| e.set_link(&text, &url, cx));
+    }
+
+    /// "Go to link · Change · Remove" under a link the cursor is in.
+    fn render_link_bubble(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let compose = self.compose.as_ref()?;
+        if compose.popup.is_some() || !compose.body.read(cx).had_focus() {
+            return None;
+        }
+        let editor = compose.body.read(cx);
+        if editor.has_selection() {
+            return None;
+        }
+        let (_, url) = editor.link_at_cursor()?;
+        let cursor = editor.cursor_bounds()?;
+        let open_url = url.to_string();
+        Some(
+            deferred(
+                anchored()
+                    .position(point(cursor.left(), cursor.bottom() + px(6.0)))
+                    .snap_to_window_with_margin(px(8.0))
+                    .child(
+                        div()
+                            .id("link-bubble")
+                            .occlude()
+                            .h(px(36.0))
+                            .px(px(12.0))
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(12.0))
+                            .rounded(px(8.0))
+                            .bg(rgba(th.menu))
+                            .shadow(crate::widgets::elevation(th, 2.0))
+                            .text_size(px(13.0))
+                            .text_color(rgba(th.text_dim))
+                            .child("Go to link:")
+                            .child(
+                                div()
+                                    .id("link-bubble-open")
+                                    .max_w(px(240.0))
+                                    .truncate()
+                                    .text_color(rgba(th.accent))
+                                    .cursor_pointer()
+                                    .hover(|s| s.underline())
+                                    .on_click(move |_, _, cx| cx.open_url(&open_url))
+                                    .child(url.to_string()),
+                            )
+                            .child(div().text_color(rgba(th.divider)).child("|"))
+                            .child(
+                                div()
+                                    .id("link-bubble-change")
+                                    .text_color(rgba(th.accent))
+                                    .cursor_pointer()
+                                    .hover(|s| s.underline())
+                                    .on_click(cx.listener(|this, _, window, cx| {
+                                        this.open_link_dialog(window, cx)
+                                    }))
+                                    .child("Change"),
+                            )
+                            .child(
+                                div()
+                                    .id("link-bubble-remove")
+                                    .text_color(rgba(th.accent))
+                                    .cursor_pointer()
+                                    .hover(|s| s.underline())
+                                    .on_click(self.on_body(cx, |e, cx| e.remove_link(cx)))
+                                    .child("Remove"),
+                            ),
+                    ),
+            )
+            .with_priority(1)
+            .into_any_element(),
+        )
+    }
+
+    // Right-click menu.
+
+    pub(super) fn open_compose_menu(
+        &mut self,
+        position: Point<Pixels>,
+        misspelled: Option<String>,
+        cx: &mut Context<Self>,
+    ) {
+        if let Some(c) = &mut self.compose {
+            c.popup = Some(Popup::Context {
+                position,
+                misspelled,
+            });
+        }
+        cx.notify();
+    }
+
+    fn render_context_popup(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let compose = self.compose.as_ref()?;
+        let Some(Popup::Context {
+            position,
+            misspelled,
+        }) = &compose.popup
+        else {
+            return None;
+        };
+        let editor = compose.body.read(cx);
+        let suggestions = if misspelled.is_some() {
+            editor.suggestions()
+        } else {
+            Vec::new()
+        };
+        let in_table = editor.in_table();
+        let in_link = editor.link_at_cursor().is_some();
+        let selection = editor.has_selection();
+        let mut items = menu(th).w(px(240.0));
+        if let Some(word) = misspelled.clone() {
+            if suggestions.is_empty() {
+                items = items.child(
+                    div()
+                        .h(px(32.0))
+                        .px(px(16.0))
+                        .flex()
+                        .items_center()
+                        .text_color(rgba(th.text_faint))
+                        .child("No suggestions"),
+                );
+            }
+            for (ix, s) in suggestions.into_iter().enumerate() {
+                let word = s.clone();
+                items = items.child(
+                    menu_item(("spell-suggestion", ix), &s, th)
+                        .font_weight(FontWeight::BOLD)
+                        .on_click(self.on_body(cx, move |e, cx| e.replace_word(&word, cx))),
+                );
+            }
+            items = items.child(menu_item("spell-add", "Add to dictionary", th).on_click(
+                cx.listener(move |this, _, window, cx| this.add_to_dictionary(&word, window, cx)),
+            ));
+            items = items.child(menu_divider(th));
+        }
+        let action = |ix: usize, label: &str, keys: &'static str, what: Clip| {
+            menu_item(("clip", ix), label, th)
+                .child(div().flex_1())
+                .child(shortcut(keys, th))
+                .on_click(cx.listener(move |this, _, window, cx| this.clipboard(what, window, cx)))
+        };
+        items = items
+            .when(selection, |d| {
+                d.child(action(0, "Cut", "Ctrl+X", Clip::Cut)).child(action(
+                    1,
+                    "Copy",
+                    "Ctrl+C",
+                    Clip::Copy,
+                ))
+            })
+            .child(action(2, "Paste", "Ctrl+V", Clip::Paste))
+            .child(action(3, "Select all", "Ctrl+A", Clip::SelectAll));
+        if in_link {
+            items =
+                items
+                    .child(menu_divider(th))
+                    .child(menu_item("context-link-edit", "Edit link", th).on_click(
+                        cx.listener(|this, _, window, cx| this.open_link_dialog(window, cx)),
+                    ))
+                    .child(
+                        menu_item("context-link-remove", "Remove link", th)
+                            .on_click(self.on_body(cx, |e, cx| e.remove_link(cx))),
+                    );
+        }
+        if in_table {
+            let mut edit = |ix: usize, label: &str, edit: TableEdit| {
+                menu_item(("context-table", ix), label, th)
+                    .on_click(self.on_body(cx, move |e, cx| e.edit_table(edit, cx)))
+            };
+            items = items
+                .child(menu_divider(th))
+                .child(edit(0, "Insert row above", TableEdit::RowAbove))
+                .child(edit(1, "Insert row below", TableEdit::RowBelow))
+                .child(edit(2, "Insert column left", TableEdit::ColumnLeft))
+                .child(edit(3, "Insert column right", TableEdit::ColumnRight))
+                .child(edit(4, "Delete row", TableEdit::DeleteRow))
+                .child(edit(5, "Delete column", TableEdit::DeleteColumn))
+                .child(edit(6, "Delete table", TableEdit::DeleteTable));
+        }
+        Some(
+            deferred(
+                anchored()
+                    .position(*position)
+                    .snap_to_window_with_margin(px(8.0))
+                    .child(div().occlude().child(items)),
+            )
+            .with_priority(2)
+            .into_any_element(),
+        )
+    }
+
+    fn clipboard(&mut self, what: Clip, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(c) = &mut self.compose else {
+            return;
+        };
+        c.popup = None;
+        window.focus(&c.body.focus_handle(cx), cx);
+        let action: Box<dyn gpui::Action> = match what {
+            Clip::Cut => Box::new(katna_ui::text_area::Cut),
+            Clip::Copy => Box::new(katna_ui::text_area::Copy),
+            Clip::Paste => Box::new(katna_ui::text_area::Paste),
+            Clip::SelectAll => Box::new(katna_ui::text_area::SelectAll),
+        };
+        window.dispatch_action(action, cx);
+        cx.notify();
+    }
+
+    fn add_to_dictionary(&mut self, word: &str, window: &mut Window, cx: &mut Context<Self>) {
+        if let Some(speller) = &self.writing.speller
+            && let Err(err) = speller.add_word(word)
+        {
+            self.show_snackbar(format!("Could not save the word: {err}"), None, cx);
+        }
+        // Drawn again, the word is no longer marked.
+        self.edit_body(window, cx, |_, cx| cx.notify());
+    }
+
+    // More options.
+
+    fn render_more_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(compose) = &self.compose else {
+            return div().into_any_element();
+        };
+        let sending = &self.config.sending;
+        let plain = compose.plain(cx);
+        let spell = sending.spell_check;
+        let check = |on: bool| {
+            div()
+                .w(px(20.0))
+                .flex_none()
+                .when(on, |d| d.child(icon("check", th.text_dim, 20.0)))
+        };
+        let label_open = compose.popup == Some(Popup::Label);
+        let label_item = div()
+            .relative()
+            .child(
+                tool_item("more-label", "label", "Label", th)
+                    .child(icon(
+                        if label_open {
+                            "chevron-down"
+                        } else {
+                            "chevron-right"
+                        },
+                        th.text_dim,
+                        18.0,
+                    ))
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        if let Some(c) = &mut this.compose {
+                            c.popup = Some(if c.popup == Some(Popup::Label) {
+                                Popup::More
+                            } else {
+                                Popup::Label
+                            });
+                        }
+                        cx.notify();
+                    })),
+            )
+            .when(label_open, |d| {
+                d.child(
+                    div()
+                        .px(px(16.0))
+                        .pl(px(50.0))
+                        .pb(px(8.0))
+                        .text_size(px(13.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(
+                            "Labels on sent mail are coming soon. \
+                             Label the message in Sent once it is out.",
+                        ),
+                )
+            });
+        menu(th)
+            .w(px(260.0))
+            .child(
+                tool_item(
+                    "more-full-screen",
+                    "open-full",
+                    "Default to full screen",
+                    th,
+                )
+                .child(check(sending.compose_full_screen))
+                .on_click(cx.listener(|this, _, _, cx| {
+                    this.config.sending.compose_full_screen =
+                        !this.config.sending.compose_full_screen;
+                    let full = this.config.sending.compose_full_screen;
+                    this.save_config();
+                    if let Some(c) = &mut this.compose {
+                        c.popup = None;
+                        if matches!(c.mode, Mode::Open | Mode::Full) {
+                            c.mode = if full { Mode::Full } else { Mode::Open };
+                        }
+                    }
+                    cx.notify();
+                })),
+            )
+            .child(menu_divider(th))
+            .child(label_item)
+            .child(menu_divider(th))
+            .child(
+                tool_item("more-plain", "plain-text", "Plain text mode", th)
+                    .child(check(plain))
+                    .on_click(cx.listener(|this, _, window, cx| this.toggle_plain(window, cx))),
+            )
+            .child(menu_divider(th))
+            .child(
+                tool_item("more-print", "print", "Print", th)
+                    .on_click(cx.listener(|this, _, _, cx| this.print_compose(cx))),
+            )
+            .child(
+                tool_item("more-spell", "spell-check", "Check spelling", th)
+                    .child(check(spell))
+                    .on_click(
+                        cx.listener(|this, _, window, cx| this.toggle_spell_check(window, cx)),
+                    ),
+            )
+            .into_any_element()
+    }
+
+    /// Plain text mode on or off. Turning it on asks first when it would
+    /// drop formatting.
+    fn toggle_plain(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(c) = &mut self.compose else {
+            return;
+        };
+        let editor = c.body.read(cx);
+        if editor.is_plain() {
+            c.popup = None;
+            c.body.update(cx, |e, cx| e.set_plain(false, cx));
+            self.config.sending.plain_text = false;
+            self.save_config();
+        } else if editor.doc().has_formatting() && c.popup != Some(Popup::PlainText) {
+            c.popup = Some(Popup::PlainText);
+        } else {
+            self.make_plain(window, cx);
+            return;
+        }
+        cx.notify();
+    }
+
+    /// Drops the formatting, pictures and tables, keeping the text.
+    fn make_plain(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(c) = &mut self.compose else {
+            return;
+        };
+        c.format_bar = false;
+        let doc = html::from_plain(&html::to_plain(c.body.read(cx).doc()));
+        let mut doc = doc;
+        // The signature stays the signature.
+        mark_signature(&mut doc);
+        self.config.sending.plain_text = true;
+        self.save_config();
+        self.edit_body(window, cx, move |e, cx| {
+            let at = e.doc().start();
+            e.set_doc(doc, at, cx);
+            e.set_plain(true, cx);
+        });
+    }
+
+    fn toggle_spell_check(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        self.config.sending.spell_check = !self.config.sending.spell_check;
+        self.save_config();
+        let speller = self.speller(cx);
+        let failed = match &self.writing.speller_state {
+            super::SpellerState::Failed(err) if self.config.sending.spell_check => {
+                Some(err.clone())
+            }
+            _ => None,
+        };
+        self.edit_body(window, cx, move |e, cx| e.set_spell_check(speller, cx));
+        if let Some(err) = failed {
+            self.show_snackbar(err, None, cx);
+        }
+    }
+
+    /// Opens the message in the browser to print, as a page with its
+    /// headers.
+    fn print_compose(&mut self, cx: &mut Context<Self>) {
+        let Some(c) = &mut self.compose else {
+            return;
+        };
+        c.popup = None;
+        let draft = c.fields(cx);
+        let body = html::to_html(&draft.body, &|image| html::data_uri(image));
+        let field = |label: &str, value: &str| {
+            if value.trim().is_empty() {
+                String::new()
+            } else {
+                format!("<div><b>{label}:</b> {}</div>", html::escape(value.trim()))
+            }
+        };
+        let page = format!(
+            "<!doctype html><html><head><meta charset=\"utf-8\"><title>{title}</title>\
+             <style>body{{font-family:arial,sans-serif;font-size:14px;margin:32px}}\
+             h1{{font-size:20px;font-weight:normal}}.h{{color:#444;margin-bottom:16px;\
+             border-bottom:1px solid #ccc;padding-bottom:8px}}</style></head>\
+             <body onload=\"window.print()\"><h1>{title}</h1><div class=\"h\">{to}{cc}{bcc}</div>\
+             {body}</body></html>",
+            title = html::escape(if draft.subject.trim().is_empty() {
+                "(no subject)"
+            } else {
+                draft.subject.trim()
+            }),
+            to = field("To", &draft.to),
+            cc = field("Cc", &draft.cc),
+            bcc = field("Bcc", &draft.bcc),
+        );
+        let dir = std::env::var_os("XDG_RUNTIME_DIR")
+            .map(std::path::PathBuf::from)
+            .unwrap_or_else(std::env::temp_dir)
+            .join("katna");
+        let path = dir.join("print.html");
+        let written = std::fs::create_dir_all(&dir).and_then(|_| std::fs::write(&path, page));
+        match written {
+            Ok(()) => cx.open_url(&format!("file://{}", path.display())),
+            Err(err) => self.show_snackbar(format!("Could not print: {err}"), None, cx),
+        }
+        cx.notify();
+    }
+
+    // Dialogs over the message.
+
+    /// The link, date and time, and plain text dialogs, over the message.
+    pub(super) fn render_compose_dialog(
+        &self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let compose = self.compose.as_ref()?;
+        let card = match compose.popup.as_ref()? {
+            Popup::Link => self.render_link_dialog(th, cx),
+            Popup::PickTime => self.render_time_picker(th, cx),
+            Popup::PlainText => self.render_plain_dialog(th, cx),
+            _ => return None,
+        };
+        Some(
+            div()
+                .absolute()
+                .top_0()
+                .left_0()
+                .size_full()
+                .flex()
+                .items_center()
+                .justify_center()
+                .bg(rgba(0x0000_0040))
+                .child(div().id("compose-dialog").occlude().child(card))
+                .into_any_element(),
+        )
+    }
+
+    fn dialog_buttons(
+        &self,
+        th: &Theme,
+        ok: &'static str,
+        cx: &mut Context<Self>,
+        on_ok: impl Fn(&mut Self, &mut Window, &mut Context<Self>) + 'static,
+    ) -> gpui::Div {
+        div()
+            .mt(px(20.0))
+            .flex()
+            .flex_row()
+            .justify_end()
+            .gap(px(8.0))
+            .child(
+                div()
+                    .id("dialog-cancel")
+                    .h(px(36.0))
+                    .px(px(16.0))
+                    .flex()
+                    .items_center()
+                    .rounded_full()
+                    .text_size(px(14.0))
+                    .font_weight(FontWeight::MEDIUM)
+                    .text_color(rgba(th.accent))
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .on_click(cx.listener(|this, _, window, cx| this.close_popup(window, cx)))
+                    .child("Cancel"),
+            )
+            .child(
+                filled_button("dialog-ok", ok, th)
+                    .on_click(cx.listener(move |this, _, window, cx| on_ok(this, window, cx))),
+            )
+    }
+
+    fn dialog_card(th: &Theme, width: f32, title: &'static str) -> gpui::Div {
+        div()
+            .w(px(width))
+            .p(px(24.0))
+            .flex()
+            .flex_col()
+            .rounded(px(16.0))
+            .bg(rgba(th.menu))
+            .shadow(crate::widgets::elevation(th, 3.0))
+            .text_color(rgba(th.text))
+            .child(div().mb(px(16.0)).text_size(px(20.0)).child(title))
+    }
+
+    fn render_link_dialog(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(compose) = &self.compose else {
+            return div().into_any_element();
+        };
+        let field = |label: &'static str, input: &Entity<TextInput>| {
+            div()
+                .flex()
+                .flex_col()
+                .gap(px(4.0))
+                .mb(px(12.0))
+                .child(
+                    div()
+                        .text_size(px(12.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(label),
+                )
+                .child(
+                    div()
+                        .h(px(40.0))
+                        .px(px(12.0))
+                        .flex()
+                        .items_center()
+                        .rounded(px(6.0))
+                        .border_1()
+                        .border_color(rgba(th.divider))
+                        .text_size(px(14.0))
+                        .child(input.clone()),
+                )
+        };
+        Self::dialog_card(
+            th,
+            400.0,
+            if compose.dialog.editing_link {
+                "Edit link"
+            } else {
+                "Insert link"
+            },
+        )
+        .child(field("Text to display", &compose.dialog.link_text))
+        .child(field(
+            "Web address or email address",
+            &compose.dialog.link_url,
+        ))
+        .child(
+            div()
+                .text_size(px(12.0))
+                .text_color(rgba(th.text_faint))
+                .child("Not sure where to link? Search for the page, then copy its address."),
+        )
+        .child(self.dialog_buttons(th, "OK", cx, |this, window, cx| this.apply_link(window, cx)))
+        .into_any_element()
+    }
+
+    fn render_plain_dialog(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        Self::dialog_card(th, 380.0, "Switch to plain text?")
+            .child(
+                div()
+                    .text_size(px(14.0))
+                    .line_height(px(20.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(
+                        "Plain text mode removes the formatting, pictures and tables \
+                         of this message. Its text stays.",
+                    ),
+            )
+            .child(self.dialog_buttons(th, "Switch", cx, |this, window, cx| {
+                this.make_plain(window, cx)
+            }))
+            .into_any_element()
+    }
+
+    fn render_time_picker(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(compose) = &self.compose else {
+            return div().into_any_element();
+        };
+        let today = jiff::Timestamp::now().to_zoned(self.tz.clone()).date();
+        let (month, day) = (compose.dialog.month, compose.dialog.day);
+        let days = schedule::month_grid(month)
+            .into_iter()
+            .enumerate()
+            .map(|(ix, date)| {
+                let past = date < today;
+                let selected = date == day;
+                let other = date.month() != month.month();
+                div()
+                    .id(("pick-day", ix))
+                    .size(px(36.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded_full()
+                    .text_size(px(13.0))
+                    .when(other, |d| d.text_color(rgba(th.text_faint)))
+                    .when(past, |d| d.opacity(0.38))
+                    .when(date == today && !selected, |d| {
+                        d.border_1().border_color(rgba(th.accent))
+                    })
+                    .when(selected, |d| {
+                        d.bg(rgba(th.accent)).text_color(rgba(th.on_accent))
+                    })
+                    .when(!past, |d| {
+                        d.cursor_pointer()
+                            .hover(|s| s.bg(rgba(th.hover)))
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                if let Some(c) = &mut this.compose {
+                                    c.dialog.day = date;
+                                    c.dialog.month = date;
+                                }
+                                cx.notify();
+                            }))
+                    })
+                    .child(date.day().to_string())
+            })
+            .collect::<Vec<_>>();
+        let step = |months: i32| {
+            move |this: &mut Self, _: &gpui::ClickEvent, _: &mut Window, cx: &mut Context<Self>| {
+                if let Some(c) = &mut this.compose
+                    && let Ok(m) = c
+                        .dialog
+                        .month
+                        .first_of_month()
+                        .checked_add(jiff::Span::new().months(months))
+                {
+                    c.dialog.month = m;
+                }
+                cx.notify();
+            }
+        };
+        let weekdays = ["S", "M", "T", "W", "T", "F", "S"].into_iter().map(|d| {
+            div()
+                .size(px(36.0))
+                .flex()
+                .items_center()
+                .justify_center()
+                .text_size(px(12.0))
+                .text_color(rgba(th.text_dim))
+                .child(d)
+        });
+        let (prev, next) = (cx.listener(step(-1)), cx.listener(step(1)));
+        Self::dialog_card(th, 330.0, "Pick date & time")
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .child(
+                        div()
+                            .flex_1()
+                            .text_size(px(14.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .child(month.strftime("%B %Y").to_string()),
+                    )
+                    .child(
+                        icon_button("pick-prev", "chevron-left", 20.0, th)
+                            .size(px(32.0))
+                            .on_click(prev),
+                    )
+                    .child(
+                        icon_button("pick-next", "chevron-right", 20.0, th)
+                            .size(px(32.0))
+                            .on_click(next),
+                    ),
+            )
+            .child(
+                div()
+                    .mt(px(8.0))
+                    .w(px(7.0 * 40.0))
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap_x(px(4.0))
+                    .children(weekdays)
+                    .children(days),
+            )
+            .child(
+                div()
+                    .mt(px(12.0))
+                    .flex()
+                    .flex_row()
+                    .gap(px(12.0))
+                    .child(
+                        div()
+                            .flex_1()
+                            .h(px(40.0))
+                            .px(px(12.0))
+                            .flex()
+                            .items_center()
+                            .rounded(px(6.0))
+                            .border_1()
+                            .border_color(rgba(th.divider))
+                            .text_size(px(14.0))
+                            .child(day.strftime("%b %-d, %Y").to_string()),
+                    )
+                    .child(
+                        div()
+                            .w(px(110.0))
+                            .h(px(40.0))
+                            .px(px(12.0))
+                            .flex()
+                            .items_center()
+                            .rounded(px(6.0))
+                            .border_1()
+                            .border_color(rgba(th.accent))
+                            .text_size(px(14.0))
+                            .child(compose.dialog.time.clone()),
+                    ),
+            )
+            .child(
+                self.dialog_buttons(th, "Schedule send", cx, |this, window, cx| {
+                    this.schedule_picked(window, cx)
+                }),
+            )
+            .into_any_element()
+    }
+
+    // Signature.
+
+    pub(super) fn render_signature_button(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(compose) = &self.compose else {
+            return div().into_any_element();
+        };
+        let current = compose.signature;
+        let item = |ix: usize, id: Option<u32>, label: &str| {
+            menu_item(("compose-signature-item", ix), label, th)
+                .gap(px(12.0))
+                .child(div().flex_1())
+                .when(current == id, |d| d.child(icon("check", th.text_dim, 18.0)))
+                .on_click(cx.listener(move |this, _, _, cx| this.choose_signature(id, cx)))
+        };
+        let items = self
+            .config
+            .sending
+            .signatures
+            .iter()
+            .enumerate()
+            .map(|(ix, s)| {
+                let name = if s.name.trim().is_empty() {
+                    "Untitled"
+                } else {
+                    s.name.as_str()
+                };
+                item(ix + 1, Some(s.id), name)
+            })
+            .collect::<Vec<_>>();
+        div()
+            .relative()
+            .child(
+                icon_button("compose-signature", "signature", 20.0, th)
+                    .tooltip(tip("Insert signature", th))
+                    .on_click(
+                        cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Signature, cx)),
+                    ),
+            )
+            .when(compose.popup == Some(Popup::Signature), |d| {
+                d.child(above(
+                    menu(th)
+                        .w(px(240.0))
+                        .child(item(0, None, "No signature"))
+                        .children(items)
+                        .child(menu_divider(th))
+                        .child(
+                            menu_item("compose-signatures-manage", "Manage signatures", th)
+                                .on_click(cx.listener(|this, _, window, cx| {
+                                    if let Some(c) = &mut this.compose {
+                                        c.popup = None;
+                                    }
+                                    this.open_settings_page(
+                                        super::super::settings_page::Section::Signatures,
+                                        window,
+                                        cx,
+                                    );
+                                })),
+                        ),
+                ))
+            })
+            .into_any_element()
+    }
+}
+
+/// Marks the lines from `-- ` on as the signature.
+fn mark_signature(doc: &mut katna_ui::rich::Doc) {
+    let mut on = false;
+    for block in &mut doc.blocks {
+        if let katna_ui::rich::Block::Para(p) = block {
+            if p.text == "-- " {
+                on = true;
+            } else if on && p.style.quote > 0 {
+                on = false;
+            }
+            p.style.signature = on;
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+enum Clip {
+    Cut,
+    Copy,
+    Paste,
+    SelectAll,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn links_get_a_scheme() {
+        assert_eq!(normalize_url("example.com/a"), "https://example.com/a");
+        assert_eq!(normalize_url("http://x.org"), "http://x.org");
+        assert_eq!(normalize_url("kay@enron.com"), "mailto:kay@enron.com");
+        assert_eq!(
+            normalize_url("mailto:kay@enron.com"),
+            "mailto:kay@enron.com"
+        );
+        assert_eq!(normalize_url(""), "");
+    }
+
+    #[test]
+    fn finds_emoji() {
+        assert!(
+            emoji_list("thumbs up", 0)
+                .iter()
+                .any(|e| e.as_str() == "👍")
+        );
+        assert_eq!(emoji_list("", 0)[0].as_str(), "😀");
+        assert!(emoji_list("zzzzqqq", 0).is_empty());
+    }
+}
