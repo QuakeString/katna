@@ -7,3 +7,7 @@ Status: design phase.
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Implementation plan](docs/IMPLEMENTATION_PLAN.md)
+
+## License
+
+GPL-3.0-or-later. See [LICENSE](LICENSE).

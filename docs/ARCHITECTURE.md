@@ -818,9 +818,12 @@ Notes:
   separately and do not accept git dependencies. Third-party repositories
   (Flathub, AUR, OBS, Copr, PPA) are the realistic path.
 
-## 22. Licensing — Decision needed
+## 22. Licensing — Decided
 
-Proposal: **GPL-3.0-or-later** for the apps, daemon and shared crates.
+**GPL-3.0-or-later** for the apps, daemon and shared crates (decided
+26 September 2026; full text in `LICENSE`). Every source file carries
+`SPDX-License-Identifier: GPL-3.0-or-later`; each crate sets
+`license = "GPL-3.0-or-later"`.
 
 - Compatible with our MIT/Apache dependencies (Pimalaya, tantivy, GPUI).
 - Allows reusing code from GPLv3 projects such as Mailspring and
@@ -867,10 +870,11 @@ Packaging (Flatpak, deb, rpm, AUR) starts from Phase 3; the
 
 ## 25. Open decisions
 
-1. License (§22).
-2. Blob store vs. Maildir (§5.2).
-3. HTML renderer for phase 2 (§12).
-4. Repository name/structure: one `katna` monorepo (proposed) vs. per-app repos (§3).
-5. Supported Plasma versions for `katna-plasma-integration` (for example: the
+1. Blob store vs. Maildir (§5.2).
+2. HTML renderer for phase 2 (§12).
+3. Repository name/structure: one `katna` monorepo (proposed) vs. per-app repos (§3).
+4. Supported Plasma versions for `katna-plasma-integration` (for example: the
    current release and the version in the latest Debian stable / Ubuntu LTS).
-6. Katna Server hosting and pricing model.
+5. Katna Server hosting and pricing model.
+
+Decided: license — GPL-3.0-or-later (§22).

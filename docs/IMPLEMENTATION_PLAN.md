@@ -26,7 +26,7 @@ they become the plan.
 
 | # | Decision | Proposed default | Affects |
 |---|---|---|---|
-| D1 | License | GPL-3.0-or-later | `LICENSE`, `cargo-deny` config, what code we may reuse |
+| D1 | License | **Decided: GPL-3.0-or-later** (`LICENSE` added) | `cargo-deny` config, SPDX headers, what code we may reuse |
 | D2 | Repository | Rename this repo to `katna` (monorepo) | Paths, CI, package names |
 | D3 | Mail storage | Own blob store (zstd + blake3) + Maildir export | `katna-store` design |
 | D4 | Rust toolchain | Pin stable 1.98 in `rust-toolchain.toml` (GPUI needs recent Rust) | CI, contributors |
@@ -276,8 +276,8 @@ Plasma integration (Phase 6), which have few dependencies on the rest.
 
 ## 8. First two weeks (concrete checklist)
 
-1. Confirm decisions D1–D6 (§2).
-2. Rename repo if D2 is accepted; add `LICENSE`, `README`, `CLAUDE.md`.
+1. Confirm decisions D2–D6 (§2). D1 (license) is decided.
+2. Rename repo if D2 is accepted; add `CLAUDE.md` (`LICENSE` and `README` exist).
 3. Create the Cargo workspace with empty crates and the dependency rules.
 4. Pin the toolchain; set up CI `check`, `deny`, `size`.
 5. Add `dev/compose.yaml` with Stalwart, Dovecot, Radicale, Mailpit and seed data.
