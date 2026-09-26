@@ -79,8 +79,7 @@ Principles:
 ## 3. Repository and crate layout
 
 One Cargo workspace (monorepo) for all apps, shared crates and the server.
-**Decision needed:** repository name (`katna`, proposed) — this repository is
-currently `katna-mail`.
+Repository: `github.com/QuakeString/katna` (renamed from `katna-mail`).
 
 ```
 katna/
@@ -113,7 +112,8 @@ katna/
 │   └── katna-server/          # axum; tracking, metadata stream, scheduled actions
 ├── tools/
 │   ├── katna-search-cli/      # index/query from the terminal, benchmarks
-│   └── katna-bench/           # Enron-corpus benchmarks
+│   ├── katna-bench/           # Enron-corpus benchmarks
+│   └── katnactl/              # command-line client for katna-daemon
 ├── packaging/                 # flatpak, deb, rpm, aur, appimage, nix, desktop/appstream, systemd units
 └── docs/
 ```
@@ -165,7 +165,7 @@ not runtime performance.
 | `$XDG_DATA_HOME/katna/mail.db` | Mail database. |
 | `$XDG_DATA_HOME/katna/pim.db` | Shared: accounts, contacts, organizations. |
 | `$XDG_DATA_HOME/katna/calendar.db` | Calendar database. |
-| `$XDG_DATA_HOME/katna/blobs.db` | Raw messages, zstd-compressed, content-addressed (proposal, §5.2). |
+| `$XDG_DATA_HOME/katna/blobs.db` | Raw messages, zstd-compressed, content-addressed (§5.2). |
 | `$XDG_DATA_HOME/katna/attachments/` | Large attachments only (> 256 KB). |
 | `$XDG_DATA_HOME/katna/index/` | tantivy index (rebuildable, but expensive, so not in cache). |
 | Secret Service (`oo7`) | Passwords and OAuth tokens. Never in files. |
@@ -174,7 +174,7 @@ Only `katna-daemon` writes these databases. Apps open them read-only
 (SQLite WAL allows concurrent readers while the daemon writes) and learn
 about changes from D-Bus signals (§14.2).
 
-### 5.2 Message storage (proposal)
+### 5.2 Message storage
 
 - Raw RFC 822 messages are stored **inside SQLite**, in a separate
   `blobs.db`, zstd-compressed and keyed by their blake3 hash. The same
@@ -191,7 +191,7 @@ about changes from D-Bus signals (§14.2).
   mode); a background job removes unreferenced blobs.
 - Maildir **export** is offered for interoperability with notmuch/mu/mutt.
 
-**Decision needed:** confirm this proposal (see implementation plan, D3).
+Decided (implementation plan, D3).
 
 ### 5.3 Mail schema (sketch)
 
@@ -879,16 +879,17 @@ Packaging (Flatpak, deb, rpm, AUR) starts from Phase 3; the
 
 ## 25. Open decisions
 
-1. Message storage in SQLite vs. files (§5.2; plan D3).
-2. HTML renderer for phase 2 (§12).
-3. Repository name: `katna` (proposed) vs. `katna-pim` (§3; plan D2).
-4. App ID prefix: registered domain (proposed, e.g. `app.katna.*`) vs.
+1. HTML renderer for phase 2 (§12).
+2. App ID prefix: registered domain (proposed, e.g. `app.katna.*`) vs.
    `io.github.quakestring.*` (plan D6).
-5. Katna Server hosting and pricing model; Katna Server license (GPL-3.0 or AGPL-3.0).
+3. Katna Server hosting and pricing model; Katna Server license (GPL-3.0 or AGPL-3.0).
 
 Decided:
 
 - License: GPL-3.0-or-later (§22).
+- Repository: `QuakeString/katna`, one monorepo (§3).
+- Message storage: SQLite for metadata and compressed raw messages;
+  files only for large attachments (§5.2).
 - Rust toolchain: latest stable (`channel = "stable"`).
 - Test and support matrix: Arch Linux (latest Plasma and GNOME) and
   Ubuntu 26.04 LTS (GNOME) / Kubuntu 26.04 (Plasma). The Plasma

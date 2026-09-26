@@ -27,8 +27,8 @@ they become the plan.
 | # | Decision | Proposed default | Affects |
 |---|---|---|---|
 | D1 | License | **Decided: GPL-3.0-or-later** (`LICENSE` added) | `cargo-deny` config, SPDX headers, what code we may reuse |
-| D2 | Repository | Rename this repo to `katna` (monorepo); alternative `katna-pim` | Paths, CI, package names |
-| D3 | Mail storage | SQLite (`rusqlite`) for metadata **and** compressed raw messages (`blobs.db`); files only for large attachments; Maildir export. Turso re-evaluated at its 1.0 (file-format compatible) | `katna-store` design |
+| D2 | Repository | **Decided: `QuakeString/katna`** (renamed), one monorepo | Paths, CI, package names |
+| D3 | Mail storage | **Decided:** SQLite (`rusqlite`) for metadata **and** compressed raw messages (`blobs.db`); files only for large attachments; Maildir export. Turso re-evaluated at its 1.0 (file-format compatible) | `katna-store` design |
 | D4 | Rust toolchain | **Decided: latest stable** — `rust-toolchain.toml` with `channel = "stable"`; `rust-version` in `Cargo.toml` records the minimum and is raised deliberately | CI, contributors |
 | D5 | Supported systems for CI | **Decided: Arch Linux and Ubuntu 26.04 LTS** — Arch = latest Plasma and GNOME; Ubuntu = GNOME, Kubuntu 26.04 = older Plasma | Test matrix, Plasma versions |
 | D6 | App ID / D-Bus prefix | Register a domain and use its reverse form, e.g. `app.katna.Mail`, `app.katna.Calendar`, `app.katna.Daemon`; fallback without a domain: `io.github.quakestring.*` | Flatpak IDs, D-Bus names, desktop files |
@@ -276,10 +276,10 @@ Plasma integration (Phase 6), which have few dependencies on the rest.
 
 ## 8. First two weeks (concrete checklist)
 
-1. Confirm decisions D2, D3 and D6 (§2). D1 (license), D4 (toolchain) and D5 (distros) are decided.
-2. Rename repo if D2 is accepted; add `CLAUDE.md` (`LICENSE` and `README` exist).
-3. Create the Cargo workspace with empty crates and the dependency rules.
-4. Pin the toolchain; set up CI `check`, `deny`, `size`.
+1. Choose the domain / app ID (D6). D1–D5 are decided.
+2. ✅ Repo renamed; `LICENSE`, `README`, `CLAUDE.md` added.
+3. ✅ Cargo workspace with empty crates and the dependency rules.
+4. ✅ Toolchain (latest stable); CI `check` (Arch + Ubuntu 26.04), `deny`, `size`.
 5. Add `dev/compose.yaml` with Stalwart, Dovecot, Radicale, Mailpit and seed data.
 6. Start spike **S2** (Pimalaya + I/O) and spike **S1** (window chrome).
 7. Implement `katna-core` and the first `katna-store` migration.
