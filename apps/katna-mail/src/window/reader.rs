@@ -475,7 +475,9 @@ impl MailWindow {
             })
             .unwrap_or_default();
         let names = |list: &[katna_render::Address]| {
+            let mut seen = std::collections::HashSet::new();
             list.iter()
+                .filter(|a| seen.insert(a.email.to_lowercase()))
                 .map(|a| {
                     if self.is_me(&a.email) {
                         "me".to_owned()

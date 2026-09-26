@@ -22,7 +22,7 @@ pub const SEARCH_LIMIT: usize = 1000;
 const INDEX_RETRY: Duration = Duration::from_secs(2);
 
 /// The contacts page lists at most this many people.
-const PEOPLE_LIMIT: u32 = 2000;
+pub(crate) const PEOPLE_LIMIT: u32 = 2000;
 
 /// Rows kept in memory; the cache is dropped when it grows past this.
 const ROW_CACHE: usize = 5000;

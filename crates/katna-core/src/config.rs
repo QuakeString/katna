@@ -68,12 +68,16 @@ impl Default for Logging {
 pub struct Sending {
     /// Undo-send delay in seconds; one of [`UNDO_SEND_CHOICES`].
     pub undo_send_seconds: u32,
+    /// Added below new mail, replies and forwards, after a "-- " line.
+    /// Empty for none.
+    pub signature: String,
 }
 
 impl Default for Sending {
     fn default() -> Self {
         Self {
             undo_send_seconds: 10,
+            signature: String::new(),
         }
     }
 }
@@ -270,6 +274,8 @@ mod tests {
         assert_eq!(config.mail.density, Density::Compact);
         assert_eq!(config.mail.theme, Theme::Dark);
         assert!(Config::parse("[mail]\nreading_pane_share = 0.9\n").is_err());
+        let config = Config::parse("[sending]\nsignature = \"Kay\\nEnron\"\n").unwrap();
+        assert_eq!(config.sending.signature, "Kay\nEnron");
     }
 
     #[test]

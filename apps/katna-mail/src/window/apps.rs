@@ -328,7 +328,8 @@ impl MailWindow {
                     .text_size(px(13.0))
                     .text_color(rgba(th.text_faint))
                     .child(format!(
-                        "{} people from your mail, most written with first",
+                        "{}{} people from your mail, most written with first",
+                        if people.len() >= crate::data::PEOPLE_LIMIT as usize { "The top " } else { "" },
                         format::thousands(people.len() as u64)
                     )),
             );
@@ -361,7 +362,10 @@ fn render_person(
     this: &MailWindow,
     cx: &mut Context<MailWindow>,
 ) -> AnyElement {
-    let name = person.name.clone().unwrap_or_else(|| person.email.clone());
+    let name = person
+        .name
+        .clone()
+        .filter(|name| !name.trim().is_empty() && *name != person.email);
     let now = jiff::Timestamp::now().as_second();
     let last = person
         .last
@@ -372,6 +376,7 @@ fn render_person(
     let email = person.email.clone();
     div()
         .id(("person", ix))
+        .w_full()
         .h(px(60.0))
         .px(px(24.0))
         .flex()
@@ -386,7 +391,7 @@ fn render_person(
             this.open_app(App::Mail, cx);
             this.search_for(format!("from:{email}"), window, cx);
         }))
-        .child(avatar(&name, &person.email, 36.0))
+        .child(avatar(name.as_deref().unwrap_or(&person.email), &person.email, 36.0))
         .child(
             div()
                 .flex_1()
@@ -398,15 +403,17 @@ fn render_person(
                         .truncate()
                         .text_size(px(14.0))
                         .text_color(rgba(th.text))
-                        .child(name),
+                        .child(name.clone().unwrap_or_else(|| person.email.clone())),
                 )
-                .child(
-                    div()
-                        .truncate()
-                        .text_size(px(12.0))
-                        .text_color(rgba(th.text_faint))
-                        .child(person.email.clone()),
-                ),
+                .when(name.is_some(), |d| {
+                    d.child(
+                        div()
+                            .truncate()
+                            .text_size(px(12.0))
+                            .text_color(rgba(th.text_faint))
+                            .child(person.email.clone()),
+                    )
+                }),
         )
         .child(
             div()
