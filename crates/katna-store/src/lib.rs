@@ -243,25 +243,25 @@ impl Store {
         mail_view::folder_thread_messages(&self.mail, folder, thread)
     }
 
-    /// The messages of `folder` in the inbox tab `category`, newest first
-    /// (undated last); unclassified messages count as
+    /// The messages of `folder` in an inbox tab, one of `categories`,
+    /// newest first (undated last); unclassified messages count as
     /// [`MailCategory::Primary`]. For the list without conversations.
     pub fn folder_messages_in(
         &self,
         folder: FolderId,
-        category: MailCategory,
+        categories: &[MailCategory],
     ) -> Result<Vec<MessageId>> {
-        mail_view::folder_messages_in(&self.mail, folder, category)
+        mail_view::folder_messages_in(&self.mail, folder, categories)
     }
 
     /// The conversations in `folder`, newest first: one entry per thread,
     /// with its newest message in the folder, ordered by that message's
     /// date (undated last).
     ///
-    /// With `category`, only conversations whose newest message in the
-    /// folder has that category; unclassified messages count as
-    /// [`MailCategory::Primary`]. So each conversation shows in exactly one
-    /// tab.
+    /// With `categories` (an inbox tab), only conversations whose newest
+    /// message in the folder has one of them; unclassified messages count
+    /// as [`MailCategory::Primary`]. So each conversation shows in exactly
+    /// one tab.
     ///
     /// A message without a thread yet (a store from before threading, until
     /// the daemon's backfill reaches it) is an entry of its own with
@@ -269,9 +269,9 @@ impl Store {
     pub fn folder_threads(
         &self,
         folder: FolderId,
-        category: Option<MailCategory>,
+        categories: Option<&[MailCategory]>,
     ) -> Result<Vec<ThreadEntry>> {
-        mail_view::folder_threads(&self.mail, folder, category)
+        mail_view::folder_threads(&self.mail, folder, categories)
     }
 
     /// The messages of `thread`, oldest first (undated last).
