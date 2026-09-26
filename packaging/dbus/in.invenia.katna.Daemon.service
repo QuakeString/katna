@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# D-Bus activation for katna-daemon. With systemd, activation starts the
+# user unit, so there is only ever one daemon. Checked by the same tests
+# as packaging/systemd/katna-daemon.service.
+[D-BUS Service]
+Name=in.invenia.katna.Daemon
+Exec=/usr/bin/katna-daemon
+SystemdService=katna-daemon.service

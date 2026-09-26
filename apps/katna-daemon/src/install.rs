@@ -82,4 +82,32 @@ mod tests {
             "{service}"
         );
     }
+
+    /// The files distribution packages install (`packaging/`) say the same
+    /// as the ones this command writes, apart from comments.
+    #[test]
+    fn matches_packaged_files() {
+        let packaging = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packaging");
+        let without_comments = |path: PathBuf| {
+            let text =
+                fs::read_to_string(&path).unwrap_or_else(|err| panic!("{}: {err}", path.display()));
+            text.lines()
+                .filter(|line| !line.starts_with('#'))
+                .map(|line| format!("{line}\n"))
+                .collect::<String>()
+        };
+        let exe = Path::new("/usr/bin/katna-daemon");
+        assert_eq!(
+            without_comments(packaging.join("systemd").join(UNIT)),
+            unit(exe)
+        );
+        assert_eq!(
+            without_comments(
+                packaging
+                    .join("dbus")
+                    .join(format!("{}.service", ids::DAEMON_BUS_NAME))
+            ),
+            dbus_service(exe)
+        );
+    }
 }

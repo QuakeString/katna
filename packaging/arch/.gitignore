@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# makepkg output: the git mirror, build and package trees, packages.
+/katna/
+/src/
+/pkg/
+/*.pkg.tar*
+/*.log

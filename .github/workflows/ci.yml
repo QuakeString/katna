@@ -58,4 +58,9 @@ jobs:
             libfontconfig-dev libfreetype-dev
       - run: rustup toolchain install
       - run: cargo build --release --workspace --bins --locked
+      # Build the non-GUI binaries again on their own, as the Arch package
+      # does: in a whole-workspace build they get the extra features GPUI
+      # turns on in shared crates (zbus portals, regex, log), which they
+      # never use.
+      - run: cargo build --release --locked -p katna-daemon -p katnactl -p katna-search-cli -p katna-bench
       - run: ci/check-sizes.sh

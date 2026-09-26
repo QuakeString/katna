@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Katna Mail application icon: an envelope on a rounded blue square. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4f9cf9"/>
+      <stop offset="1" stop-color="#1c5fd4"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e6eefb"/>
+    </linearGradient>
+  </defs>
+  <!-- Tile, with a soft shadow underneath. -->
+  <rect x="8" y="10" width="112" height="112" rx="26" fill="#0b2f6e" opacity="0.25"/>
+  <rect x="8" y="6" width="112" height="112" rx="26" fill="url(#tile)"/>
+  <rect x="8.5" y="6.5" width="111" height="111" rx="25.5" fill="none" stroke="#ffffff" stroke-opacity="0.18"/>
+  <!-- Envelope. -->
+  <rect x="26" y="36" width="76" height="54" rx="8" fill="#0b2f6e" opacity="0.2" transform="translate(0 3)"/>
+  <rect x="26" y="36" width="76" height="54" rx="8" fill="url(#paper)"/>
+  <path d="M28 88 L57 63 Q64 57 71 63 L100 88" fill="none" stroke="#c3d4f2" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M29 40 L58 64 Q64 69 70 64 L99 40" fill="none" stroke="#1c5fd4" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

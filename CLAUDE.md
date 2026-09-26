@@ -16,7 +16,9 @@ cargo test --workspace
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all
 cargo deny check                         # licenses, bans, advisories
-cargo build --release --workspace --bins && ci/check-sizes.sh
+cargo build --release --workspace --bins \
+  && cargo build --release -p katna-daemon -p katnactl -p katna-search-cli -p katna-bench \
+  && ci/check-sizes.sh                   # non-GUI bins rebuilt without GPUI's features
 ```
 
 The toolchain is always the latest stable Rust (`rust-toolchain.toml`).
