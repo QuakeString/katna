@@ -70,7 +70,8 @@ fn parse_mailbox(entry: &str) -> Option<Mailbox> {
     })
 }
 
-fn valid_email(email: &str) -> bool {
+/// Whether `email` looks like `local@domain`.
+pub fn valid_email(email: &str) -> bool {
     let Some((local, domain)) = email.rsplit_once('@') else {
         return false;
     };

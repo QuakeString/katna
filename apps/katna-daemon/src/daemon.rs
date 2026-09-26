@@ -712,12 +712,15 @@ impl Daemon {
                 Event::Synced(reports) => {
                     status.state = state::ONLINE;
                     status.detail.clear();
+                    // The first sync since start is news, so that a new
+                    // account's folders show even when they are empty.
+                    let first = status.last_sync == 0;
                     status.last_sync = unix_now();
                     let changed = reports.iter().any(|report| {
                         report.added + report.flags_changed + report.removed + report.backfilled > 0
                             || report.reset
                     });
-                    if changed {
+                    if changed || first {
                         let _ = self.notices.try_send(Notice::MailChanged(id));
                     }
                 }

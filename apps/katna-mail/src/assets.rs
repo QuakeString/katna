@@ -54,6 +54,7 @@ icons!(
     "notes",
     "open-full",
     "people",
+    "person-add",
     "refresh",
     "reply-all",
     "reply",

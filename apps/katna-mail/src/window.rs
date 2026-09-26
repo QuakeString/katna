@@ -9,8 +9,10 @@
 //!
 //! The parts live in submodules: `nav` (top bar and navigation), `list`
 //! (toolbar, tabs and rows), `reader` (the open conversation), `settings`
-//! (quick settings) and `search_panel` (search options).
+//! (quick settings), `search_panel` (search options), `compose`, `apps`
+//! (the app rail) and `add_account` (adding an account).
 
+mod add_account;
 mod apps;
 mod compose;
 mod list;
@@ -281,6 +283,9 @@ pub struct MailWindow {
     tab_spring: Spring,
     snackbar: Option<Snackbar>,
     compose: Option<compose::Compose>,
+    add_account: Option<add_account::AddAccount>,
+    /// The account card above the rail's account picture.
+    account_menu: bool,
     /// The message last handed to the outbox, for Undo.
     unsent: Option<compose::Unsent>,
     /// The signature editor of the quick settings.
@@ -366,6 +371,8 @@ impl MailWindow {
             tab_spring: Spring::new(motion::SLIDE, 0.0),
             snackbar: None,
             compose: None,
+            add_account: None,
+            account_menu: false,
             unsent: None,
             signature: None,
             signature_save: None,
@@ -851,24 +858,49 @@ impl MailWindow {
 
     fn reload(&mut self, _: &Reload, _: &mut Window, cx: &mut Context<Self>) {
         if self.mail.is_err() {
-            self.mail = Mail::open(&self.paths);
-            self.load_tree();
-            if let Some((folder, ancestors)) = self.tree.default_folder() {
-                self.expanded.extend(ancestors);
-                self.rebuild_nav();
-                self.open_folder(folder, cx);
-            }
-            self.count_unread(cx);
-            cx.notify();
+            self.reopen(cx);
             return;
         }
         self.send(Command::SyncNow, None, None, true, cx);
         self.refresh(true, cx);
     }
 
+    /// Tries the store again after it could not be opened.
+    fn reopen(&mut self, cx: &mut Context<Self>) {
+        self.mail = Mail::open(&self.paths);
+        self.load_tree();
+        self.open_default_folder(cx);
+        self.count_unread(cx);
+        cx.notify();
+    }
+
+    /// Opens the first inbox when nothing is listed, as when the first
+    /// account's folders arrive.
+    fn open_default_folder(&mut self, cx: &mut Context<Self>) {
+        if self.listing.is_some() {
+            return;
+        }
+        if let Some((folder, ancestors)) = self.tree.default_folder() {
+            self.expanded.extend(ancestors);
+            self.rebuild_nav();
+            self.open_folder(folder, cx);
+        }
+    }
+
+    /// After an account was added: its folders follow with the first sync.
+    fn account_added(&mut self, _: &mut Window, cx: &mut Context<Self>) {
+        if self.mail.is_err() {
+            self.reopen(cx);
+        } else {
+            self.refresh(true, cx);
+        }
+    }
+
     /// Reads the store again, keeping the cursor and the open conversation.
     fn refresh(&mut self, animate: bool, cx: &mut Context<Self>) {
         if self.mail.is_err() {
+            // The daemon may have made the store since.
+            self.reopen(cx);
             return;
         }
         let expanded = std::mem::take(&mut self.expanded);
@@ -901,7 +933,7 @@ impl MailWindow {
                 }
             }
             Some(Listing::Search { query, .. }) => self.start_search(query, cx),
-            None => {}
+            None => self.open_default_folder(cx),
         }
         if let (Some(reader), Ok(mail)) = (&mut self.reader, &mut self.mail) {
             reader.refresh(mail);
@@ -1386,49 +1418,69 @@ impl MailWindow {
         )
     }
 
-    fn render_error(&self, error: &OpenError, th: &Theme) -> AnyElement {
-        let (title, text) = match error {
-            OpenError::NoStore { data_dir } => (
-                "No mail yet".to_owned(),
-                format!(
-                    "Katna Mail shows the mail that the Katna background service keeps in \
-                     {data_dir}. Nothing is there yet. Add an account with katnactl, or \
-                     import a Maildir or mbox with katna-search-cli import, then press F5."
-                ),
-            ),
-            OpenError::Other(err) => ("The mail store could not be opened".to_owned(), err.clone()),
+    fn render_error(&self, error: &OpenError, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let err = match error {
+            // The daemon makes the store when the first account is added.
+            OpenError::NoStore { .. } => return self.render_welcome(th, cx),
+            OpenError::Other(err) => err.clone(),
         };
-        div()
-            .size_full()
-            .px(px(16.0))
-            .pb(px(16.0))
+        let card = page_card(th)
+            .child(icon("mail", th.text_faint, 64.0))
             .child(
                 div()
-                    .size_full()
-                    .flex()
-                    .flex_col()
-                    .items_center()
-                    .justify_center()
-                    .gap(px(12.0))
-                    .rounded(px(16.0))
-                    .bg(rgba(th.surface))
-                    .child(icon("mail", th.text_faint, 64.0))
+                    .text_size(px(22.0))
+                    .text_color(rgba(th.text))
+                    .child("The mail store could not be opened"),
+            )
+            .child(
+                div()
+                    .max_w(px(460.0))
+                    .text_size(px(14.0))
+                    .line_height(px(21.0))
+                    .text_color(rgba(th.text_faint))
+                    .text_center()
+                    .child(err),
+            );
+        div()
+            .size_full()
+            .flex()
+            .flex_col()
+            .child(card)
+            .into_any_element()
+    }
+
+    /// Before the first account: what Katna Mail is and how to begin.
+    fn render_welcome(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let card = page_card(th)
+            .child(icon("mail", th.text_faint, 64.0))
+            .child(
+                div()
+                    .text_size(px(22.0))
+                    .text_color(rgba(th.text))
+                    .child("Welcome to Katna Mail"),
+            )
+            .child(
+                div()
+                    .max_w(px(460.0))
+                    .text_size(px(14.0))
+                    .line_height(px(21.0))
+                    .text_color(rgba(th.text_faint))
+                    .text_center()
                     .child(
-                        div()
-                            .text_size(px(22.0))
-                            .text_color(rgba(th.text))
-                            .child(title),
-                    )
-                    .child(
-                        div()
-                            .max_w(px(460.0))
-                            .text_size(px(14.0))
-                            .line_height(px(21.0))
-                            .text_color(rgba(th.text_faint))
-                            .text_center()
-                            .child(text),
+                        "Add your mail account to get started. Katna keeps a copy of your \
+                         mail on this computer, so you can read and search it offline.",
                     ),
             )
+            .child(
+                crate::widgets::filled_button("welcome-add-account", "Add an account", th)
+                    .mt(px(8.0))
+                    .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx))),
+            );
+        div()
+            .size_full()
+            .flex()
+            .flex_col()
+            .child(card)
             .into_any_element()
     }
 
@@ -1557,7 +1609,23 @@ impl Render for MailWindow {
         self.cards_width = available;
 
         let content = match &self.mail {
-            Err(err) => self.render_error(err, &th),
+            Err(err) => self.render_error(err, &th, cx),
+            Ok(_) if self.app == RailApp::Mail && self.accounts.is_empty() => div()
+                .size_full()
+                .flex()
+                .flex_row_reverse()
+                .when(settings_t > 0.001, |d| {
+                    d.child(self.render_settings(&th, settings_t, cx))
+                })
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .h_full()
+                        .child(self.render_welcome(&th, cx)),
+                )
+                .child(self.render_app_rail(&th, cx))
+                .into_any_element(),
             // Reversed so the navigation paints last, over the cards, when
             // it opens from the rail.
             Ok(_) if self.app == RailApp::Mail => div()
@@ -1586,6 +1654,8 @@ impl Render for MailWindow {
         let search_width = (viewport - 2.0 * side).clamp(200.0, SEARCH_WIDTH);
         let search_panel = self.render_search_panel(&th, viewport, search_width, window, cx);
         let compose = self.render_compose(&th, window, reduce, cx);
+        let account_menu = self.render_account_menu(&th, cx);
+        let add_account = self.render_add_account(&th, window, reduce, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let content = div()
             .key_context(WINDOW_CONTEXT)
@@ -1603,6 +1673,8 @@ impl Render for MailWindow {
             .child(content)
             .children(search_panel)
             .children(compose)
+            .children(account_menu)
+            .children(add_account)
             .children(snackbar)
             .into_any_element();
 
@@ -1628,4 +1700,20 @@ impl Focusable for MailWindow {
     fn focus_handle(&self, _: &App) -> FocusHandle {
         self.list_focus.clone()
     }
+}
+
+/// The card that fills the page for the welcome and error pages.
+fn page_card(th: &Theme) -> gpui::Div {
+    div()
+        .flex_1()
+        .min_h_0()
+        .mx(px(16.0))
+        .mb(px(16.0))
+        .flex()
+        .flex_col()
+        .items_center()
+        .justify_center()
+        .gap(px(12.0))
+        .rounded(px(16.0))
+        .bg(rgba(th.surface))
 }

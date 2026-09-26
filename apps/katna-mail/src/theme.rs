@@ -42,6 +42,8 @@ pub struct Theme {
     pub chip: u32,
     pub snackbar: u32,
     pub snackbar_text: u32,
+    /// Error text and the frame of a field in error.
+    pub error: u32,
     /// Shadow color; its alpha is the strongest shadow.
     pub shadow: u32,
 }
@@ -79,6 +81,7 @@ const LIGHT: Theme = Theme {
     chip: 0xe1e3e1ff,
     snackbar: 0x313033ff,
     snackbar_text: 0xf4eff4ff,
+    error: 0xb3261eff,
     shadow: 0x3c40434d,
 };
 
@@ -109,6 +112,7 @@ const DARK: Theme = Theme {
     chip: 0x3c3f43ff,
     snackbar: 0xe3e3e3ff,
     snackbar_text: 0x1f1f1fff,
+    error: 0xf2b8b5ff,
     shadow: 0x00000099,
 };
 

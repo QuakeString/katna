@@ -88,7 +88,12 @@ pub struct TextInput {
     /// How far the text is scrolled left so the cursor stays visible.
     scroll_x: Pixels,
     is_selecting: bool,
+    /// Draws a dot for each character, for passwords.
+    masked: bool,
 }
+
+/// What a masked input shows for each character.
+const MASK: char = '\u{2022}';
 
 impl EventEmitter<InputEvent> for TextInput {}
 
@@ -106,6 +111,7 @@ impl TextInput {
             last_bounds: None,
             scroll_x: px(0.0),
             is_selecting: false,
+            masked: false,
         }
     }
 
@@ -125,6 +131,36 @@ impl TextInput {
         cx.notify();
         if changed {
             cx.emit(InputEvent::Changed);
+        }
+    }
+
+    /// Shows a dot for each character instead of the text, and keeps the
+    /// text off the clipboard: for passwords.
+    pub fn set_masked(&mut self, masked: bool, cx: &mut Context<Self>) {
+        if self.masked != masked {
+            self.masked = masked;
+            cx.notify();
+        }
+    }
+
+    /// The offset in the drawn text of `offset` in the content.
+    fn display_offset(&self, offset: usize) -> usize {
+        if self.masked {
+            self.content[..offset].chars().count() * MASK.len_utf8()
+        } else {
+            offset
+        }
+    }
+
+    /// The offset in the content of `offset` in the drawn text.
+    fn content_offset(&self, offset: usize) -> usize {
+        if self.masked {
+            self.content
+                .char_indices()
+                .nth(offset / MASK.len_utf8())
+                .map_or(self.content.len(), |(ix, _)| ix)
+        } else {
+            offset
         }
     }
 
@@ -162,6 +198,11 @@ impl TextInput {
     }
 
     fn select_all(&mut self, _: &SelectAll, _: &mut Window, cx: &mut Context<Self>) {
+        self.select_all_text(cx)
+    }
+
+    /// Selects all the text, so typing replaces it.
+    pub fn select_all_text(&mut self, cx: &mut Context<Self>) {
         self.move_to(0, cx);
         self.select_to(self.content.len(), cx)
     }
@@ -211,7 +252,7 @@ impl TextInput {
     }
 
     fn copy(&mut self, _: &Copy, _: &mut Window, cx: &mut Context<Self>) {
-        if !self.selected_range.is_empty() {
+        if !self.selected_range.is_empty() && !self.masked {
             cx.write_to_clipboard(ClipboardItem::new_string(
                 self.content[self.selected_range.clone()].to_string(),
             ));
@@ -219,7 +260,7 @@ impl TextInput {
     }
 
     fn cut(&mut self, _: &Cut, window: &mut Window, cx: &mut Context<Self>) {
-        if !self.selected_range.is_empty() {
+        if !self.selected_range.is_empty() && !self.masked {
             cx.write_to_clipboard(ClipboardItem::new_string(
                 self.content[self.selected_range.clone()].to_string(),
             ));
@@ -279,7 +320,7 @@ impl TextInput {
         if position.y > bounds.bottom() {
             return self.content.len();
         }
-        line.closest_index_for_x(position.x - bounds.left() + self.scroll_x)
+        self.content_offset(line.closest_index_for_x(position.x - bounds.left() + self.scroll_x))
     }
 
     fn select_to(&mut self, offset: usize, cx: &mut Context<Self>) {
@@ -444,8 +485,14 @@ impl EntityInputHandler for TextInput {
         let range = self.range_from_utf16(&range_utf16);
         let left = bounds.left() - self.scroll_x;
         Some(Bounds::from_corners(
-            point(left + last_layout.x_for_index(range.start), bounds.top()),
-            point(left + last_layout.x_for_index(range.end), bounds.bottom()),
+            point(
+                left + last_layout.x_for_index(self.display_offset(range.start)),
+                bounds.top(),
+            ),
+            point(
+                left + last_layout.x_for_index(self.display_offset(range.end)),
+                bounds.bottom(),
+            ),
         ))
     }
 
@@ -458,7 +505,7 @@ impl EntityInputHandler for TextInput {
         let line_point = self.last_bounds?.localize(&point)?;
         let last_layout = self.last_layout.as_ref()?;
         let utf8_index = last_layout.index_for_x(line_point.x + self.scroll_x)?;
-        Some(self.offset_to_utf16(utf8_index))
+        Some(self.offset_to_utf16(self.content_offset(utf8_index)))
     }
 }
 
@@ -517,9 +564,14 @@ impl Element for TextElement {
         cx: &mut App,
     ) -> Self::PrepaintState {
         let input = self.input.read(cx);
-        let content = input.content.clone();
-        let selected_range = input.selected_range.clone();
-        let cursor = input.cursor_offset();
+        let content = if input.masked {
+            SharedString::from(MASK.to_string().repeat(input.content.chars().count()))
+        } else {
+            input.content.clone()
+        };
+        let selected_range = input.display_offset(input.selected_range.start)
+            ..input.display_offset(input.selected_range.end);
+        let cursor = input.display_offset(input.cursor_offset());
         let accent = input.accent;
         let style = window.text_style();
 
@@ -536,7 +588,11 @@ impl Element for TextElement {
             underline: None,
             strikethrough: None,
         };
-        let runs = if let Some(marked_range) = input.marked_range.as_ref() {
+        let marked_range = input
+            .marked_range
+            .as_ref()
+            .map(|range| input.display_offset(range.start)..input.display_offset(range.end));
+        let runs = if let Some(marked_range) = marked_range.as_ref() {
             vec![
                 TextRun {
                     len: marked_range.start,

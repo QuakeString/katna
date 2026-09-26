@@ -445,11 +445,8 @@ impl MailWindow {
             return;
         }
         let Some(account) = self.compose_account() else {
-            self.show_snackbar(
-                "Add an account with katnactl before sending mail.",
-                None,
-                cx,
-            );
+            self.show_snackbar("Add an account to send mail from.", None, cx);
+            self.open_add_account(window, cx);
             return;
         };
         let from = Mailbox {
