@@ -2,7 +2,7 @@
 
 //! The plain-text view of a raw message.
 
-use mail_parser::{MessageParser, MimeHeaders, PartType};
+use mail_parser::{MessageParser, MessagePart, MimeHeaders, PartType};
 
 /// At most this much body text is shown. Longer bodies are nearly always
 /// logs or pasted data, and laying out megabytes of text would stall the UI.
@@ -28,9 +28,21 @@ pub struct Attachment {
     pub name: String,
     /// Decoded size in bytes.
     pub size: u64,
+    /// `type/subtype`, lower case.
+    pub mime: String,
     /// The `Content-ID`, without angle brackets, for images an HTML body
     /// shows inline.
     pub content_id: Option<String>,
+}
+
+/// An attachment's content, for the viewer or to save it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AttachmentFile {
+    pub name: String,
+    /// `type/subtype`, lower case.
+    pub mime: String,
+    /// Decoded content.
+    pub bytes: Vec<u8>,
 }
 
 /// What the reading pane shows of a message.
@@ -108,16 +120,9 @@ pub fn message_view(raw: &[u8]) -> MessageView {
     let attachments = message
         .attachments()
         .map(|part| Attachment {
-            name: part
-                .attachment_name()
-                .map(str::to_owned)
-                .or_else(|| {
-                    part.message()
-                        .and_then(|m| m.subject())
-                        .map(|s| format!("{s}.eml"))
-                })
-                .unwrap_or_else(|| "Unnamed attachment".to_owned()),
+            name: attachment_name(part),
             size: part.body.len() as u64,
+            mime: part_mime(part),
             content_id: part
                 .content_id()
                 .map(|id| id.trim_matches(['<', '>', ' ']).to_owned()),
@@ -140,6 +145,45 @@ pub fn message_view(raw: &[u8]) -> MessageView {
             .as_text_list()
             .map(|ids| ids.iter().map(|id| id.to_string()).collect())
             .unwrap_or_default(),
+    }
+}
+
+/// Attachment `index` of `raw`, counted as in [`MessageView::attachments`].
+pub fn attachment_file(raw: &[u8], index: usize) -> Option<AttachmentFile> {
+    let message = MessageParser::default().parse(raw)?;
+    let part = message.attachments().nth(index)?;
+    let bytes = match &part.body {
+        // An attached message is saved as the message itself (`.eml`).
+        PartType::Message(inner) => inner.raw_message().to_vec(),
+        _ => part.contents().to_vec(),
+    };
+    Some(AttachmentFile {
+        name: attachment_name(part),
+        mime: part_mime(part),
+        bytes,
+    })
+}
+
+fn attachment_name(part: &MessagePart<'_>) -> String {
+    part.attachment_name()
+        .map(str::to_owned)
+        .or_else(|| {
+            part.message()
+                .and_then(|m| m.subject())
+                .map(|s| format!("{s}.eml"))
+        })
+        .unwrap_or_else(|| "Unnamed attachment".to_owned())
+}
+
+fn part_mime(part: &MessagePart<'_>) -> String {
+    match part.content_type() {
+        Some(ct) => match ct.subtype() {
+            Some(sub) => format!("{}/{sub}", ct.ctype()),
+            None => ct.ctype().to_owned(),
+        }
+        .to_ascii_lowercase(),
+        None if matches!(part.body, PartType::Message(_)) => "message/rfc822".to_owned(),
+        None => "text/plain".to_owned(),
     }
 }
 
@@ -217,8 +261,33 @@ Content-Transfer-Encoding: base64\r\n\r\naGVsbG8=\r\n\
             [Attachment {
                 name: "q3.pdf".into(),
                 size: 5,
+                mime: "application/pdf".into(),
                 content_id: None,
             }]
+        );
+        let file = attachment_file(raw, 0).unwrap();
+        assert_eq!(file.name, "q3.pdf");
+        assert_eq!(file.mime, "application/pdf");
+        assert_eq!(file.bytes, b"hello");
+        assert_eq!(attachment_file(raw, 1), None);
+    }
+
+    #[test]
+    fn attached_messages_are_saved_whole() {
+        let raw = b"From: a@example.org\r\nSubject: Fwd\r\n\
+Content-Type: multipart/mixed; boundary=\"b\"\r\n\r\n\
+--b\r\nContent-Type: text/plain\r\n\r\nSee below.\r\n\
+--b\r\nContent-Type: message/rfc822\r\n\r\n\
+From: c@example.org\r\nSubject: Old news\r\n\r\nHi.\r\n\
+--b--\r\n";
+        let view = message_view(raw);
+        assert_eq!(view.attachments[0].name, "Old news.eml");
+        assert_eq!(view.attachments[0].mime, "message/rfc822");
+        let file = attachment_file(raw, 0).unwrap();
+        assert!(
+            file.bytes.starts_with(b"From: c@example.org"),
+            "{:?}",
+            file.bytes
         );
     }
 

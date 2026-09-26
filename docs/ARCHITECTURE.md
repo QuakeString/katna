@@ -94,6 +94,7 @@ katna/
 │   ├── katna-search/          # tantivy index, query language, ranking
 │   ├── katna-org/             # organizations, matching rules, suggestions
 │   ├── katna-render/          # HTML sanitizing and message rendering
+│   ├── katna-preview/         # attachment previews: PDF pages, pictures, text
 │   ├── katna-dav/             # CalDAV/CardDAV sync, iCalendar/vCard, recurrence
 │   ├── katna-dbus/            # D-Bus API definitions (in.invenia.katna.Pim1), client + server sides
 │   ├── katna-notify/          # notification builder, actions, inline reply, grouping
@@ -144,7 +145,7 @@ are testable and benchmarkable without a GUI.
 | Blob compression / hashing | `zstd`, `blake3` | |
 | HTML safety | `ammonia` | |
 | Calendar data | `calcard` (iCalendar + vCard), `rrule`, `jiff` (time zones) | |
-| D-Bus and desktop | `zbus`, `ashpd` (portals), `oo7` (Secret Service), `ksni` (tray) | Notifications implemented directly on `org.freedesktop.Notifications` via `zbus` (actions, inline reply, activation tokens). |
+| D-Bus and desktop | `zbus`, `ashpd` (portals), `oo7` (Secret Service) | Notifications implemented directly on `org.freedesktop.Notifications` via `zbus` (actions, inline reply, activation tokens); the tray (StatusNotifierItem), dbusmenu and the taskbar count too (§15.2). |
 | Icons | `freedesktop-icons` + `resvg` | |
 | Spell check | `spellbook` | Hunspell dictionaries. |
 | Mail rules on the server | `sieve-rs` (compile) + ManageSieve | |
@@ -607,9 +608,34 @@ from or adds to the sketch above:
   limited to 32 levels.
 - **As you type.** `Query::parse_as_you_type` treats a final unfinished
   word as a prefix (`budg` finds `budget`; `"natural g` keeps the phrase
-  order), expanded to at most 16, 32 or 64 index words for one, two or
-  more letters. On the 500k synthetic corpus one-letter prefixes stay
-  under 20 ms p99.
+  order). In the body, and in phrases, the prefix expands to at most 16,
+  32 or 64 index words for one, two or more letters. In the other fields
+  (names, subject, file names) it expands to every word: expansion takes
+  words in alphabetical order, so a cap made `hasina b` miss Hasina Banu
+  whenever enough other names started with "ba…". On the 500k synthetic
+  corpus that costs up to ~12 ms for one letter (`k`: p50 18 ms).
+- **Typos.** One word of four or more letters that no searched field has
+  as typed also matches words one typo away (four letters) or two
+  (longer), a swap of neighbours counting as one, in From, To, Cc and Bcc
+  (`haskina banu` finds Hasina Banu). Near matches score 0.3 of an exact
+  one. If a search finds nothing, it runs again with such words matching
+  near words in every field (`scool fees`), and `SearchResults::fuzzy`
+  tells the app to say so. Words that exist as typed never match near
+  words, which keeps correctly spelled searches as fast as before (within
+  noise on the synthetic corpus); a misspelled search costs about as much
+  as a correct one (4–25 ms p50 on the synthetic corpus). Snippets do not
+  highlight near matches yet.
+- **Did you mean.** `SearchIndex::suggest` rewrites the typed text with
+  each word that is not in the mail as typed (four or more letters) swapped
+  for the nearest word that is: fewest typos, then the same first letter
+  (`kenet` → kenneth, not genex), then the most messages, in
+  the fields that word searches (`from:Hasnia` looks only at senders).
+  Quoted phrases, `-words` and `OR` are left alone. As you type, the
+  unfinished last word counts as found if any word starts with it, and is
+  otherwise completed from a word that starts one typo from it (`haskin` →
+  hasina). The mail app works like a web search: it searches the corrected
+  text right away if that finds anything, shows "Showing results for …",
+  and offers "Search instead for …" to search the text as typed.
 - **Ranking.** BM25 with field boosts (subject 3, from 2, attachment names
   1.5, others 1), times a recency factor `1 + 0.5 · 2^(−age/60 days)` where
   age is measured from the newest indexed message (so an old archive still
@@ -701,7 +727,7 @@ the same matching on event attendees ("Meeting with Acme").
 - Notifications with actions and inline reply (§15.1).
 - D-Bus API for the apps and desktop integrations (§14).
 - KRunner runner and GNOME Shell search provider (§15.3), served in-process.
-- Tray icon and unread badge (optional, §15.5).
+- Tray icon and unread count on the taskbar icon (§15.2).
 
 ### 9.2 Lifecycle
 
@@ -1177,7 +1203,55 @@ Two ideas from the owner for a later phase. Nothing is built for them yet.
   give mail a priority or a marker, or snooze it to come back into the
   Workspace at a set date and time.
 
-### 13.8 Window sizes
+### 13.8 Attachments and the attachment viewer
+
+Received attachments open inside Katna Mail, like webmail's preview; the
+desktop's own app stays one click away.
+
+- **Cards.** Under each open message, one card per attachment (the
+  webmail layout): a thumbnail (pictures, and the top of a PDF's first
+  page) or a colored type badge, and the file name. Hovering shows the
+  name, the size and a Save button. Thumbnails are made in the background
+  from the stored raw message and freed when the conversation closes.
+- **Viewer.** Clicking a card opens the viewer over the window below the
+  top bar (the window's own controls stay usable): a dark page with a bar
+  naming the file, "Open in another app" and Save; arrows (and ←/→) go
+  through the message's other attachments; a pill at the foot zooms
+  (−/+/0, 25 %–400 %, 100 % fits the window) and counts PDF pages.
+  Escape closes it. It is dark in light and dark themes alike.
+  - **PDF:** `hayro` (pure Rust, CPU, Apache-2.0/MIT) draws the pages.
+    Only pages on screen (and one either side) are drawn, at the zoom and
+    the screen's scale, one at a time on a background thread; pages far
+    off screen are freed. Password-protected PDFs are not opened yet (the
+    viewer says so and offers the other app).
+  - **Pictures:** PNG, JPEG, GIF, WebP, BMP, TIFF through the `image`
+    crate GPUI already uses, turned upright by their EXIF orientation and
+    scaled to at most 4096 px; animated GIFs and SVG are drawn by GPUI.
+  - **Text** (`text/*`, JSON, CSV, logs, code by extension): monospace, the
+    first 512 KB and 10,000 lines.
+  - Anything else shows "No preview available" with Save and "Open in
+    another app".
+- **Save** asks where through the desktop's file chooser (portal),
+  starting in the download folder (`XDG_DOWNLOAD_DIR`); without a portal
+  it saves there under a free name. **Open in another app** writes a
+  read-only copy to `$XDG_CACHE_HOME/katna/opened/` (removed after a day)
+  and hands it to the desktop. Files that could run a program
+  (`.desktop`, scripts, executables, `.jar`, Flatpak refs) are never
+  handed over; they can only be saved.
+- `katna-preview` holds the decoding (no GPUI); `katna_render::
+  attachment_file` extracts an attachment's bytes from the raw message.
+  The app reads only the store, like the rest of the reader.
+- **Size:** the viewer adds 7.5 MB to the Katna Mail release binary
+  (31.55 → 39.10 MB, measured on the same main). Nearly all of it is
+  `hayro` and its CPU rasterizer (`vello_cpu`, compiled for several SIMD
+  levels, and `pic-scale`); pictures use the `image` crate GPUI already
+  links. A pure-Rust renderer was chosen over PDFium or Poppler so the
+  package needs no C library and the app keeps `unsafe` out.
+- Not yet: attachments of encrypted mail open from the stored (encrypted)
+  message, so they fail until the viewer uses the decrypted copy; text
+  search in PDFs, printing, and previews of office documents.
+
+### 13.9 Window sizes
 
 The owner asked for the window to follow its size: a phone-sized window
 looks like Gmail's mobile app, a tablet-sized one like its tablet app, and
@@ -1298,12 +1372,51 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
 - Not yet: inline reply, sender pictures (`image-data`), per-organization
   policy.
 
-### 15.2 Taskbar and tray
+### 15.2 Taskbar, tray and global menu
 
-- Unread count on the Plasma task manager icon via
-  `com.canonical.Unity.LauncherEntry` (also Dash-to-Dock on GNOME).
-- Optional tray icon (`ksni`, StatusNotifierItem): unread count, compose,
-  pause sync, quit.
+The count and the tray live in `katna-daemon`, so they stay while the app
+is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
+`dbusmenu`, `icon`), written on zbus rather than with `ksni`.
+
+- **Unread count** on Katna Mail's taskbar or dock icon:
+  `com.canonical.Unity.LauncherEntry` `Update` signals for
+  `application://in.invenia.katna.Mail.desktop` from
+  `/in/invenia/katna/Daemon/LauncherEntry`. The number is the unread
+  messages in every account's Inbox, the same as next to Inbox in the app,
+  recounted half a second after mail changes. Plasma's task manager shows
+  it; on GNOME, Ubuntu Dock, Dash to Dock and Dash to Panel do (the stock
+  GNOME dash shows no counts). Setting `general.unread_badge` (default on).
+- **Tray icon**: a StatusNotifierItem under its own name
+  (`org.kde.StatusNotifierItem-PID-N`), registered with
+  `org.kde.StatusNotifierWatcher` again whenever the watcher restarts.
+  Plasma shows it natively; GNOME needs the AppIndicator extension (on by
+  default on Ubuntu). The icon is drawn in code (the app icon's shapes plus
+  a red badge with the count, `99+` above 99), since the protocol takes
+  pixels and an SVG renderer would grow the daemon. Left click raises the
+  app, middle click starts a new message. The right-click menu
+  (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
+  Quit. Quit closes the app and stops the daemon until the next login or
+  until the app starts it again (D-Bus activation). Setting
+  `general.tray_icon` (default on); `ReloadConfig` applies both settings.
+- **Single instance and actions**: Katna Mail owns `in.invenia.katna.Mail`
+  and serves `org.freedesktop.Application` at `/in/invenia/katna/Mail` with
+  the actions `open-inbox`, `compose`, `preferences`, `open-message` (a
+  message ID) and `quit` (`katna_dbus::app_action`). A second `katna-mail`
+  hands its request to the first and exits. The tray, notifications and
+  the desktop file use this: its actions New Message, Open Inbox and
+  Preferences (right-click on the taskbar icon in Plasma and GNOME) run
+  `katna-mail --compose`, `--inbox` and `--settings`. With `--data-dir` the
+  app stands alone.
+- **KDE global menu**: the app serves its menu bar (File, Edit, View, Go,
+  Message, Settings, Help) with `com.canonical.dbusmenu` at
+  `/in/invenia/katna/Mail/MenuBar`, built from its GPUI actions and their
+  key bindings; items for actions a build lacks are left out, and a click
+  dispatches the action in the window. GPUI cannot announce a menu on
+  Linux, so `vendor/gpui-pre-linux` patches its Linux backend
+  (`[patch.crates-io]`, see `KATNA.md` there): `set_kde_appmenu` gives
+  every normal window `org_kde_kwin_appmenu` on Wayland and the
+  `_KDE_NET_WM_APPMENU_*` properties on X11. Plasma's Global Menu applet and
+  the title-bar menu button then show it.
 
 ### 15.3 KRunner and GNOME Shell search
 
@@ -1520,7 +1633,9 @@ ashpd), IMAP parsing and regex.
 ## 20. Dependency policy
 
 - **GPUI:** pin exact `gpui-pre` and GPUI Kit versions; GPUI types only in
-  `katna-ui`, `katna-chrome` and the GUI apps.
+  `katna-ui`, `katna-chrome` and the GUI apps. `gpui-pre-linux` is a
+  vendored copy with the KDE global menu patch (§15.2); upgrading GPUI means
+  re-applying it (`vendor/gpui-pre-linux/KATNA.md`).
 - **Pimalaya: light forks.** Fork only crates we change. Fork `master`
   mirrors upstream; our changes live on a `katna` branch. Use
   `[patch.crates-io]` in the workspace; drop the patch when upstream merges

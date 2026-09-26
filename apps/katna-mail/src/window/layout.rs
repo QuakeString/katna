@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! How the window follows its width (`docs/ARCHITECTURE.md` §13.8). Wide,
+//! How the window follows its width (`docs/ARCHITECTURE.md` §13.9). Wide,
 //! it is the desktop layout. Tablet-sized, the folders fold into a drawer
 //! and Compose moves to the top of the app rail. Phone-sized, it becomes
 //! the mobile webmail layout: a search pill with the menu and account

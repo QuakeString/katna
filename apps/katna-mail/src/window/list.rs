@@ -331,6 +331,13 @@ impl MailWindow {
         }
         let label: Option<SharedString> = match (&self.search_error, &self.listing) {
             (Some(err), _) => Some(err.clone()),
+            (
+                None,
+                Some(Listing::Search {
+                    corrected: Some(corrected),
+                    ..
+                }),
+            ) => Some(format!("Showing results for “{corrected}”").into()),
             (None, Some(Listing::Search { query, .. })) => {
                 Some(format!("Results for “{query}”").into())
             }
@@ -355,6 +362,17 @@ impl MailWindow {
                 format::thousands(end as u64)
             )
         };
+        let search_instead = match (&self.search_error, &self.listing) {
+            (
+                None,
+                Some(Listing::Search {
+                    query,
+                    corrected: Some(_),
+                    ..
+                }),
+            ) => Some(query.clone()),
+            _ => None,
+        };
         let at_top = self.visible.start == 0;
         let at_end = self.visible.end >= count;
         if phone {
@@ -365,10 +383,31 @@ impl MailWindow {
                 .pl(px(8.0))
                 .flex_1()
                 .min_w_0()
-                .truncate()
+                .flex()
+                .items_center()
+                .gap(px(12.0))
                 .text_size(px(14.0))
-                .text_color(rgba(th.text_dim))
-                .children(label),
+                .child(
+                    div()
+                        .flex_shrink(1.0)
+                        .min_w_0()
+                        .truncate()
+                        .text_color(rgba(th.text_dim))
+                        .children(label),
+                )
+                .children(search_instead.map(|query| {
+                    div()
+                        .id("search-instead")
+                        .flex_shrink(1.0)
+                        .min_w_0()
+                        .truncate()
+                        .cursor_pointer()
+                        .text_color(rgba(th.accent))
+                        .child(format!("Search instead for “{query}”"))
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            this.search_verbatim(query.clone(), cx);
+                        }))
+                })),
         )
         .child(
             div()

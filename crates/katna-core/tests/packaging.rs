@@ -64,6 +64,40 @@ fn desktop_entry_matches_app_id() {
     assert_eq!(value(&text, "StartupWMClass"), Some(MAIL_APP_ID));
 }
 
+/// The actions on the taskbar icon's right-click menu start Katna Mail with
+/// a flag it knows (`katna_dbus::app_action::flag`).
+#[test]
+fn desktop_actions_run_katna_mail_with_a_flag() {
+    let text = read("desktop", &format!("{MAIL_APP_ID}.desktop"));
+    let actions: Vec<&str> = value(&text, "Actions")
+        .unwrap()
+        .split(';')
+        .filter(|a| !a.is_empty())
+        .collect();
+    assert_eq!(actions, ["new-message", "inbox", "preferences"]);
+    let groups: Vec<&str> = text.split("\n[").skip(1).collect();
+    for action in actions {
+        let group = groups
+            .iter()
+            .find(|g| g.starts_with(&format!("Desktop Action {action}]")))
+            .unwrap_or_else(|| panic!("no group for {action}"));
+        assert!(group.contains("\nName="), "{action} has no name");
+        let exec = entries(group)
+            .into_iter()
+            .find_map(|(k, v)| (k == "Exec").then_some(v))
+            .unwrap();
+        assert!(
+            [
+                "katna-mail --compose",
+                "katna-mail --inbox",
+                "katna-mail --settings"
+            ]
+            .contains(&exec),
+            "{action}: {exec}"
+        );
+    }
+}
+
 #[test]
 fn icon_is_named_after_app_id() {
     let text = read("icons", &format!("{MAIL_APP_ID}.svg"));
