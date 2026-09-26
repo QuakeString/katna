@@ -6,8 +6,8 @@ use std::ops::Bound;
 
 use tantivy::Term;
 use tantivy::query::{
-    AllQuery, BooleanQuery, BoostQuery, ConstScoreQuery, EmptyQuery, Occur, PhraseQuery,
-    Query as TantivyQuery, RangeQuery, TermQuery,
+    AllQuery, BooleanQuery, BoostQuery, ConstScoreQuery, EmptyQuery, Occur, PhrasePrefixQuery,
+    PhraseQuery, Query as TantivyQuery, RangeQuery, TermQuery,
 };
 use tantivy::schema::{Field, IndexRecordOption};
 
@@ -16,6 +16,17 @@ use crate::query::{Filter, Query, TextField};
 use crate::schema::{Fields, tokens};
 
 type Boxed = Box<dyn TantivyQuery>;
+
+/// A word being typed matches at most this many longer words per field;
+/// fewer for one or two letters, which match the most words and are
+/// replaced by the next keystroke anyway.
+fn max_expansions(prefix: &str) -> u32 {
+    match prefix.chars().count() {
+        0 | 1 => 16,
+        2 => 32,
+        _ => 64,
+    }
+}
 
 /// Compiles `query` for an index with `fields`.
 pub fn compile(fields: &Fields, query: &Query) -> Boxed {
@@ -29,7 +40,8 @@ pub fn compile(fields: &Fields, query: &Query) -> Boxed {
                 .collect(),
         )),
         Query::Not(inner) => not(fields, inner),
-        Query::Text { field, text } => text_query(fields, *field, text),
+        Query::Text { field, text } => text_query(fields, *field, text, false),
+        Query::Prefix { field, text } => text_query(fields, *field, text, true),
         Query::Filter(filter) => Box::new(ConstScoreQuery::new(filter_query(fields, filter), 0.0)),
     }
 }
@@ -57,7 +69,9 @@ fn not(fields: &Fields, inner: &Query) -> Boxed {
     and(fields, &[Query::Not(Box::new(inner.clone()))])
 }
 
-fn text_query(fields: &Fields, field: TextField, text: &str) -> Boxed {
+/// Words of `text` in `field`: a term, or a phrase for several words. With
+/// `prefix`, the last word also matches longer words.
+fn text_query(fields: &Fields, field: TextField, text: &str, prefix: bool) -> Boxed {
     let words = tokens(text);
     if words.is_empty() {
         return Box::new(AllQuery);
@@ -75,7 +89,16 @@ fn text_query(fields: &Fields, field: TextField, text: &str) -> Boxed {
     let mut alternatives: Vec<(Occur, Boxed)> = targets
         .into_iter()
         .map(|(field, boost)| {
-            let query: Boxed = if let [word] = words.as_slice() {
+            let query: Boxed = if prefix {
+                let mut query = PhrasePrefixQuery::new(
+                    words
+                        .iter()
+                        .map(|word| Term::from_field_text(field, word))
+                        .collect(),
+                );
+                query.set_max_expansions(max_expansions(words.last().map_or("", String::as_str)));
+                Box::new(query)
+            } else if let [word] = words.as_slice() {
                 Box::new(TermQuery::new(
                     Term::from_field_text(field, word),
                     IndexRecordOption::WithFreqs,

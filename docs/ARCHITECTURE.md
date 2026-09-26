@@ -386,6 +386,11 @@ from or adds to the sketch above:
   are UTC days; `before:` excludes the day, `after:` includes it. Unknown
   `word:value` is plain text; broken parentheses are ignored; nesting is
   limited to 32 levels.
+- **As you type.** `Query::parse_as_you_type` treats a final unfinished
+  word as a prefix (`budg` finds `budget`; `"natural g` keeps the phrase
+  order), expanded to at most 16, 32 or 64 index words for one, two or
+  more letters. On the 500k synthetic corpus one-letter prefixes stay
+  under 20 ms p99.
 - **Ranking.** BM25 with field boosts (subject 3, from 2, attachment names
   1.5, others 1), times a recency factor `1 + 0.5 · 2^(−age/60 days)` where
   age is measured from the newest indexed message (so an old archive still

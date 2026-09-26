@@ -36,6 +36,12 @@ pub enum Query {
         field: TextField,
         text: String,
     },
+    /// Like [`Text`](Query::Text), but the last word may be the start of a
+    /// longer word: what the user is still typing.
+    Prefix {
+        field: TextField,
+        text: String,
+    },
     Filter(Filter),
 }
 
@@ -138,12 +144,44 @@ impl Query {
         Ok(and(items))
     }
 
+    /// Parses `input` while the user is still typing it: when it ends in a
+    /// word, that word also matches longer words (`budg` finds `budget`).
+    /// Relative dates count from `now` (Unix seconds).
+    pub fn parse_as_you_type(input: &str, now: i64) -> Result<Self, ParseError> {
+        let mut query = Self::parse_at(input, now)?;
+        if input.chars().next_back().is_some_and(char::is_alphanumeric) {
+            query.make_last_word_prefix();
+        }
+        Ok(query)
+    }
+
+    /// Turns the last text of the query into a [`Prefix`](Query::Prefix),
+    /// unless it is excluded (`-word`) or an operator value like `in:`.
+    fn make_last_word_prefix(&mut self) {
+        match self {
+            Query::And(items) | Query::Or(items) => {
+                if let Some(last) = items.last_mut() {
+                    last.make_last_word_prefix();
+                }
+            }
+            Query::Text { field, text } => {
+                *self = Query::Prefix {
+                    field: *field,
+                    text: std::mem::take(text),
+                };
+            }
+            Query::All | Query::Not(_) | Query::Prefix { .. } | Query::Filter(_) => {}
+        }
+    }
+
     /// Whether the query has plain words or a `subject:`, which rank results
     /// by relevance. Queries of only operators like `from:` read as filters,
     /// so their results are best shown newest first.
     pub fn has_free_text(&self) -> bool {
         match self {
-            Query::Text { field, .. } => matches!(field, TextField::Any | TextField::Subject),
+            Query::Text { field, .. } | Query::Prefix { field, .. } => {
+                matches!(field, TextField::Any | TextField::Subject)
+            }
             Query::And(items) | Query::Or(items) => items.iter().any(Query::has_free_text),
             Query::All | Query::Not(_) | Query::Filter(_) => false,
         }
@@ -659,6 +697,37 @@ mod tests {
         assert!(!parse("from:ada").has_free_text());
         assert!(!parse("has:attachment -budget").has_free_text());
         assert!(!parse("").has_free_text());
+    }
+
+    #[test]
+    fn as_you_type() {
+        let typing = |input: &str| Query::parse_as_you_type(input, NOW).unwrap();
+        let prefix = |field, text: &str| Query::Prefix {
+            field,
+            text: text.to_owned(),
+        };
+        assert_eq!(typing("budg"), prefix(TextField::Any, "budg"));
+        assert_eq!(typing("budget "), any("budget"));
+        assert_eq!(
+            typing("from:kenneth.lay bud"),
+            Query::And(vec![
+                word(TextField::From, "kenneth.lay"),
+                prefix(TextField::Any, "bud")
+            ])
+        );
+        assert_eq!(typing("from:ken"), prefix(TextField::From, "ken"));
+        assert_eq!(
+            typing("gas OR pow"),
+            Query::Or(vec![any("gas"), prefix(TextField::Any, "pow")])
+        );
+        assert_eq!(typing("\"natural gas\""), any("natural gas"));
+        assert_eq!(typing("-budg"), Query::Not(Box::new(any("budg"))));
+        assert_eq!(
+            typing("in:inbox"),
+            Query::Filter(Filter::In("inbox".into()))
+        );
+        assert!(typing("budg").has_free_text());
+        assert_eq!(typing(""), Query::All);
     }
 
     /// Random input never panics and never nests past the limit (fuzzing

@@ -575,7 +575,20 @@ fn body_words(query: &Query, out: &mut Vec<String>) {
                 body_words(item, out);
             }
         }
-        Query::All | Query::Not(_) | Query::Text { .. } | Query::Filter(_) => {}
+        // Words typed so far; the unfinished last one cannot be highlighted.
+        Query::Prefix {
+            field: TextField::Any,
+            text,
+        } => {
+            let mut words = schema::tokens(text);
+            words.pop();
+            out.extend(words);
+        }
+        Query::All
+        | Query::Not(_)
+        | Query::Text { .. }
+        | Query::Prefix { .. }
+        | Query::Filter(_) => {}
     }
 }
 
