@@ -29,6 +29,9 @@ pub struct Message {
     pub body: Vec<u8>,
     /// Gmail only: `X-GM-THRID`.
     pub gm_thread_id: Option<u64>,
+    /// Gmail only: `X-GM-MSGID`, shared by the message's copies in other
+    /// folders (labels).
+    pub gm_msgid: Option<u64>,
     /// Gmail only: `promotions`, `social`, … (`None` for Primary).
     pub gmail_category: Option<String>,
 }
@@ -112,6 +115,7 @@ impl FakeServer {
                 header: header.as_bytes().to_vec(),
                 body: body.as_bytes().to_vec(),
                 gm_thread_id: None,
+                gm_msgid: None,
                 gmail_category: None,
             },
         );
@@ -121,6 +125,30 @@ impl FakeServer {
     /// Makes the server Gmail-like: thread IDs and `X-GM-RAW` search.
     pub fn set_gmail(&self, on: bool) {
         self.state().gmail = on;
+    }
+
+    /// Gives the message at `uid` in `folder` a Gmail message ID and shows
+    /// it in `also` too, as Gmail does for a label. Returns its UID there.
+    pub fn label(&self, folder: &str, uid: u32, gm_msgid: u64, also: &str) -> u32 {
+        let mut state = self.state();
+        state.modseq += 1;
+        let modseq = state.modseq;
+        let message = {
+            let message = state
+                .folders
+                .get_mut(folder)
+                .unwrap()
+                .messages
+                .get_mut(&uid)
+                .unwrap();
+            message.gm_msgid = Some(gm_msgid);
+            message.clone()
+        };
+        let mailbox = state.folders.get_mut(also).unwrap();
+        let new = mailbox.uid_next;
+        mailbox.uid_next += 1;
+        mailbox.messages.insert(new, Message { modseq, ..message });
+        new
     }
 
     /// Sets Gmail's thread ID and category (`promotions`, …) of a message.
@@ -276,6 +304,7 @@ impl MailBackend for FakeConnection {
                     "Trash" => Some(FolderRole::Trash),
                     "Archive" => Some(FolderRole::Archive),
                     "Sent" => Some(FolderRole::Sent),
+                    "[Gmail]/All Mail" => Some(FolderRole::All),
                     _ => None,
                 },
                 selectable: true,
@@ -333,6 +362,7 @@ impl MailBackend for FakeConnection {
                 received: None,
                 header: m.header.clone(),
                 gm_thread_id: m.gm_thread_id.filter(|_| gmail),
+                gm_msgid: m.gm_msgid.filter(|_| gmail),
             })
             .collect())
     }
@@ -505,6 +535,7 @@ impl MailBackend for FakeConnection {
                 header: message[..split].to_vec(),
                 body: message[split..].to_vec(),
                 gm_thread_id: None,
+                gm_msgid: None,
                 gmail_category: None,
             },
         );

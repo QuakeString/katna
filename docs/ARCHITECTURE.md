@@ -357,7 +357,15 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   folder is Primary. Every folder, not only the inbox: each server copy is
   its own message row, and the copy in All Mail must land in the same tab
   as the one in the inbox (found by `examples/thread_check.rs` on a real
-  Gmail account). io-imap cannot express these extensions, so they are written as
+  Gmail account).
+  Header fetches also ask for `X-GM-MSGID` (mail schema v4,
+  `message.gm_msgid`): Gmail shows one message in every folder it has a
+  label for, and those copies are stored as one message row with one
+  `message_location` per folder. Flags, tabs, threads and search see it
+  once; removing a label removes only that location. Moving a message
+  takes it from one of its folders other than All Mail, since leaving All
+  Mail only adds a label on Gmail. Stores synced before v4 keep their
+  duplicate rows until the account is added again. io-imap cannot express these extensions, so they are written as
   raw commands on the connection. Progress lives in `folder.sync_state`.
 - **Level 3 so far (`katna_sync::bodies`):** after each full sync, and after
   each inbox catch-up, the worker fetches `BODY.PEEK[]` for messages in the

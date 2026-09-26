@@ -114,6 +114,9 @@ pub struct RemoteMessage<'a> {
     pub references: &'a [&'a str],
     /// Gmail's `X-GM-THRID`, when the server has `X-GM-EXT-1`.
     pub gm_thread_id: Option<u64>,
+    /// Gmail's `X-GM-MSGID`: the same message under another label is
+    /// stored once, in several folders.
+    pub gm_msgid: Option<u64>,
     /// Inbox tab; `None` leaves it unclassified (shown as Primary).
     pub category: Option<MailCategory>,
 }
@@ -300,7 +303,9 @@ impl MailBatch<'_> {
     }
 
     /// Stores a message seen at `message.uid` in `folder`. Returns
-    /// [`Added::Duplicate`] if that UID is already stored.
+    /// [`Added::Duplicate`] if that UID is already stored, and
+    /// [`Added::Location`] if the account has the message under another
+    /// Gmail label (same `gm_msgid`): then only the folder is added.
     pub fn add_remote_message(
         &mut self,
         account: AccountId,
@@ -309,6 +314,23 @@ impl MailBatch<'_> {
     ) -> Result<Added> {
         if let Some(id) = message_at(self.tx(), folder, message.uid)? {
             return Ok(Added::Duplicate(id));
+        }
+        if let Some(gm_msgid) = message.gm_msgid {
+            let tx = self.tx();
+            let known: Option<i64> = tx
+                .prepare_cached("SELECT id FROM message WHERE account_id = ?1 AND gm_msgid = ?2")?
+                .query_row(params![account.0, gm_msgid as i64], |row| row.get(0))
+                .optional()?;
+            if let Some(id) = known {
+                // A location without a UID is a local move this confirms.
+                tx.prepare_cached(
+                    "INSERT INTO message_location (message_id, folder_id, uid) VALUES (?1, ?2, ?3)
+                     ON CONFLICT (message_id, folder_id) DO UPDATE SET uid = excluded.uid",
+                )?
+                .execute(params![id, folder.0, message.uid])?;
+                journal::record(tx, ObjectKind::Message, id, ChangeOp::Update)?;
+                return Ok(Added::Location(MessageId(id)));
+            }
         }
         let thread = self.assign_thread(&Links {
             account,
@@ -322,8 +344,9 @@ impl MailBatch<'_> {
         let tx = self.tx();
         tx.prepare_cached(
             "INSERT INTO message (account_id, message_id_hdr, subject, date, size, flags,
-                                  keywords, has_attachments, list_id, thread_id, category)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)",
+                                  keywords, has_attachments, list_id, thread_id, category,
+                                  gm_msgid)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
         )?
         .execute(params![
             account.0,
@@ -337,6 +360,7 @@ impl MailBatch<'_> {
             message.list_id,
             thread,
             message.category.map(MailCategory::to_storage),
+            message.gm_msgid.map(|id| id as i64),
         ])?;
         let id = tx.last_insert_rowid();
         tx.prepare_cached(
@@ -519,6 +543,7 @@ mod tests {
             in_reply_to: None,
             references: &[],
             gm_thread_id: None,
+            gm_msgid: None,
             category: None,
         }
     }

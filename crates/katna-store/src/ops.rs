@@ -142,7 +142,9 @@ impl MailBatch<'_> {
 
     /// Moves `message` from folder `from` to `to`, where its UID is `uid`
     /// (`None` until the server reports it). Returns whether it was in
-    /// `from`.
+    /// `from`. A message already in `to` (a Gmail message archived to All
+    /// Mail) only leaves `from`, and keeps its UID in `to` unless `uid`
+    /// gives one.
     pub fn move_location(
         &mut self,
         message: MessageId,
@@ -151,6 +153,31 @@ impl MailBatch<'_> {
         uid: Option<u32>,
     ) -> Result<bool> {
         let tx = self.tx();
+        let already_there = tx
+            .prepare_cached(
+                "SELECT 1 FROM message_location WHERE message_id = ?1 AND folder_id = ?2",
+            )?
+            .query_row(params![message.0, to.0], |_| Ok(()))
+            .optional()?
+            .is_some();
+        if already_there && from != to {
+            let left = tx
+                .prepare_cached(
+                    "DELETE FROM message_location WHERE message_id = ?1 AND folder_id = ?2",
+                )?
+                .execute(params![message.0, from.0])?
+                > 0;
+            if uid.is_some() {
+                tx.prepare_cached(
+                    "UPDATE message_location SET uid = ?3 WHERE message_id = ?1 AND folder_id = ?2",
+                )?
+                .execute(params![message.0, to.0, uid])?;
+            }
+            if left {
+                journal::record(tx, ObjectKind::Message, message.0, ChangeOp::Update)?;
+            }
+            return Ok(left);
+        }
         let moved = tx
             .prepare_cached(
                 "UPDATE message_location SET folder_id = ?3, uid = ?4
@@ -270,6 +297,7 @@ mod tests {
             in_reply_to: None,
             references: &[],
             gm_thread_id: None,
+            gm_msgid: None,
             category: None,
         };
         let crate::Added::Message(id) = batch.add_remote_message(account, inbox, &message).unwrap()

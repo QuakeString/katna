@@ -314,6 +314,75 @@ fn gmail_thread_ids_and_categories_win() {
 }
 
 #[test]
+fn gmail_labels_are_one_message_in_several_folders() {
+    let (_tmp, mut store, account) = setup();
+    let server = FakeServer::default();
+    server.set_gmail(true);
+    server.create("INBOX", 1);
+    server.create("[Gmail]/All Mail", 1);
+    let a = server.deliver("INBOX", "a");
+    let b = server.deliver("INBOX", "b");
+    server.label("INBOX", a, 101, "[Gmail]/All Mail");
+    server.label("INBOX", b, 102, "[Gmail]/All Mail");
+    // Archived: only in All Mail.
+    let c = server.deliver("[Gmail]/All Mail", "c");
+    server.label("[Gmail]/All Mail", c, 103, "[Gmail]/All Mail");
+    server.expunge("[Gmail]/All Mail", c);
+
+    let reports = sync(&server, &mut store, account);
+    let added: Vec<_> = reports.iter().map(|r| (r.path.as_str(), r.added)).collect();
+    assert_eq!(added, [("INBOX", 2), ("[Gmail]/All Mail", 3)]);
+    let folders = store.folders(account).unwrap();
+    let id_of = |path: &str| folders.iter().find(|f| f.path == path).unwrap().id;
+    let (inbox, all) = (id_of("INBOX"), id_of("[Gmail]/All Mail"));
+    let ids = |store: &Store, folder| {
+        let mut ids: Vec<_> = store
+            .messages_in_folder(folder)
+            .unwrap()
+            .iter()
+            .map(|m| m.id)
+            .collect();
+        ids.sort();
+        ids
+    };
+    let in_inbox = ids(&store, inbox);
+    let in_all = ids(&store, all);
+    assert_eq!(in_inbox.len(), 2);
+    assert_eq!(in_all.len(), 3);
+    assert!(
+        in_inbox.iter().all(|id| in_all.contains(id)),
+        "stored once, in both folders"
+    );
+
+    // Read in one folder is read in the other: it is one message.
+    server.set_seen("INBOX", a);
+    sync(&server, &mut store, account);
+    let message = store.messages_by_id(&in_inbox[..1]).unwrap().remove(0);
+    assert!(message.flags.contains(katna_store::MessageFlags::SEEN));
+
+    // Archived by another client: gone from the inbox, still in All Mail.
+    server.expunge("INBOX", a);
+    let reports = sync(&server, &mut store, account);
+    assert_eq!(reports[0].removed, 1);
+    assert_eq!(ids(&store, inbox).len(), 1);
+    assert_eq!(ids(&store, all), in_all);
+
+    // Archived here: the message only leaves the inbox, and the server is
+    // asked to move it from there, not from All Mail.
+    let b_id = ids(&store, inbox)[0];
+    katna_sync::ops::archive_messages(&mut store, &[b_id]).unwrap();
+    assert!(ids(&store, inbox).is_empty());
+    assert_eq!(ids(&store, all), in_all);
+    let due = store.due_ops(account, i64::MAX, 10).unwrap();
+    assert_eq!(due.len(), 1);
+    assert!(
+        due[0].op_json.contains("\"from_path\":\"INBOX\""),
+        "{}",
+        due[0].op_json
+    );
+}
+
+#[test]
 fn messages_from_before_threading_get_their_headers_again() {
     let (_tmp, mut store, account) = setup();
     let server = FakeServer::default();
