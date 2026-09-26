@@ -137,6 +137,26 @@ impl Paths {
     pub fn index_dir(&self) -> PathBuf {
         self.data_dir.join("index")
     }
+
+    /// Deletes everything Katna keeps: the data directory (mail, contacts,
+    /// calendars, attachments, the search index), the cache and the
+    /// settings file. Other files in the configuration directory are left
+    /// alone; the directory goes only if nothing else is in it. Only the
+    /// daemon calls this, with every writer stopped.
+    pub fn delete_all_data(&self) -> Result<()> {
+        let gone = |path: &Path, result: std::io::Result<()>| match result {
+            Err(err) if err.kind() != std::io::ErrorKind::NotFound => Err(Error::io(path, err)),
+            _ => Ok(()),
+        };
+        for dir in [&self.data_dir, &self.cache_dir] {
+            gone(dir, std::fs::remove_dir_all(dir))?;
+        }
+        let config = self.config_file();
+        gone(&config, std::fs::remove_file(&config))?;
+        // Fails when the user keeps other files there.
+        let _ = std::fs::remove_dir(&self.config_dir);
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -229,5 +249,31 @@ mod tests {
             assert_eq!(mode & 0o777, 0o700, "{}", dir.display());
         }
         assert!(paths.attachments_dir().is_dir());
+    }
+
+    #[test]
+    fn deletes_all_data() {
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        paths.create_dirs().unwrap();
+        std::fs::write(paths.mail_db(), "mail").unwrap();
+        std::fs::create_dir_all(paths.index_dir()).unwrap();
+        std::fs::write(paths.index_dir().join("meta.json"), "{}").unwrap();
+        std::fs::write(paths.cache_dir().join("pictures"), "").unwrap();
+        std::fs::write(paths.config_file(), "[mail]\n").unwrap();
+        paths.delete_all_data().unwrap();
+        assert!(!paths.data_dir().exists());
+        assert!(!paths.cache_dir().exists());
+        assert!(!paths.config_dir().exists());
+        // Nothing left to delete is fine.
+        paths.delete_all_data().unwrap();
+
+        // A file of the user's keeps the configuration directory.
+        paths.create_dirs().unwrap();
+        std::fs::write(paths.config_file(), "").unwrap();
+        std::fs::write(paths.config_dir().join("notes.txt"), "mine").unwrap();
+        paths.delete_all_data().unwrap();
+        assert!(!paths.config_file().exists());
+        assert!(paths.config_dir().join("notes.txt").exists());
     }
 }

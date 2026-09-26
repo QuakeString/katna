@@ -1296,3 +1296,49 @@ fn notifies_about_new_mail_on_dev_servers() {
         instance.shutdown().await;
     });
 }
+
+#[test]
+fn deletes_all_data_and_exits() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    let account = store
+        .add_account(AccountKind::Local, "enron", "enron@local")
+        .unwrap();
+    drop(store);
+    std::fs::create_dir_all(paths.config_dir()).unwrap();
+    std::fs::write(paths.config_file(), "[mail]\n").unwrap();
+    let secrets = Secrets::memory();
+    let Secrets::Memory(saved) = &secrets else {
+        unreachable!()
+    };
+    let saved = saved.clone();
+    saved.lock().unwrap().insert(account.id, "pw".into());
+    // A password left from an account removed earlier.
+    saved
+        .lock()
+        .unwrap()
+        .insert(katna_core::AccountId(99), "old".into());
+    smol::block_on(async {
+        let instance = start(&bus, &paths, secrets).await.unwrap();
+        let (stop, stopped) = async_channel::bounded::<()>(1);
+        let served = smol::spawn(instance.serve(async move {
+            let _ = stopped.recv().await;
+        }));
+        let pim = PimProxy::new(&bus.connect().await).await.unwrap();
+        within("deleting", 20, pim.delete_all_data()).await.unwrap();
+        assert!(!paths.data_dir().exists());
+        assert!(!paths.cache_dir().exists());
+        assert!(!paths.config_file().exists());
+        assert!(saved.lock().unwrap().is_empty());
+        let ended = within("exiting", 10, served).await;
+        assert_eq!(ended, katna_daemon::Ended::Deleted);
+        drop(stop);
+
+        // A new daemon starts with nothing stored.
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        assert!(pim.accounts().await.unwrap().is_empty());
+        instance.shutdown().await;
+    });
+}
