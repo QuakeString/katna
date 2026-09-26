@@ -305,6 +305,14 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
 - **Waiting for changes:** every wait starts with a NOOP, then IDLEs (or
   sleeps and NOOPs on servers without IDLE). Stalwart 0.16 reports changes
   made between two commands on NOOP only, never when IDLE starts.
+- **Account worker (`katna_sync::worker`):** one per account. It syncs every
+  folder, then loops: catch up on the inbox, IDLE on it (renewed every
+  25 minutes), and sync every folder again every 15 minutes. Any network
+  or protocol error ends the session; it reconnects after 2 s, doubling up
+  to 5 minutes, and a session that synced resets the wait. A refused
+  password is never retried (it would lock the account on many servers);
+  the worker reports it and waits to be stopped. It talks to the daemon
+  through an event channel and a stop handle.
 - **POP3:** our own small client (UIDL tracking, leave-on-server option,
   `TOP` for header preview). POP3 mail is always fully local.
 - **Gmail / Microsoft:** OAuth2. Google's restricted scope for full mail
