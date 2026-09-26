@@ -2,7 +2,12 @@
 
 //! An ink ripple: on press, a circle grows from the pointer and fades, as in
 //! Material Design. Put [`Ripple`] first among the children of a
-//! `relative()` element with rounded corners and `overflow_hidden()`.
+//! `relative()` element, and give it the element's corner radius with
+//! [`Ripple::rounded`] (pills and round buttons need nothing).
+//!
+//! GPUI clips children to a rectangle, not to rounded corners, so the wave
+//! never draws outside the element: it is the circle cut to the element's
+//! box, with the element's own corners where it reaches them.
 
 use std::cell::Cell;
 use std::rc::Rc;
@@ -23,12 +28,16 @@ struct State {
     press: Option<(Point<Pixels>, usize)>,
 }
 
+/// Corner radii: top left, top right, bottom right, bottom left.
+pub type Corners = [f32; 4];
+
 /// The ripple layer. Presses still reach the element under it.
 #[derive(IntoElement)]
 pub struct Ripple {
     id: ElementId,
     color: Hsla,
     centered: bool,
+    corners: Corners,
 }
 
 impl Ripple {
@@ -38,6 +47,7 @@ impl Ripple {
             id: id.into(),
             color: color.into(),
             centered: false,
+            corners: [f32::INFINITY; 4],
         }
     }
 
@@ -46,6 +56,43 @@ impl Ripple {
         self.centered = true;
         self
     }
+
+    /// The element's corner radius. By default the corners are fully
+    /// round, as for pills and round buttons.
+    pub fn rounded(self, radius: f32) -> Self {
+        self.corners([radius; 4])
+    }
+
+    /// The element's corner radii, when they differ.
+    pub fn corners(mut self, corners: Corners) -> Self {
+        self.corners = corners;
+        self
+    }
+}
+
+/// The wave of radius `r` around (`x`, `y`) cut to a `w` by `h` box with
+/// `corners`: its box and its corner radii.
+pub fn wave_shape(x: f32, y: f32, r: f32, w: f32, h: f32, corners: Corners) -> ([f32; 4], Corners) {
+    let (left, top) = ((x - r).max(0.0), (y - r).max(0.0));
+    let (right, bottom) = ((x + r).min(w), (y + r).min(h));
+    let (ww, wh) = ((right - left).max(0.0), (bottom - top).max(0.0));
+    let cap = |radius: f32, limit: f32| radius.min(limit / 2.0).max(0.0);
+    let own = w.min(h);
+    let wave = ww.min(wh);
+    // A corner of the wave that sits on a corner of the box takes the box's
+    // rounding; elsewhere it is the circle's.
+    let at = [
+        left <= 0.0 && top <= 0.0,
+        right >= w && top <= 0.0,
+        right >= w && bottom >= h,
+        left <= 0.0 && bottom >= h,
+    ];
+    let mut radii = [0.0; 4];
+    for i in 0..4 {
+        let radius = if at[i] { cap(corners[i], own) } else { r };
+        radii[i] = cap(radius, wave);
+    }
+    ([left, top, ww, wh], radii)
 }
 
 impl RenderOnce for Ripple {
@@ -55,6 +102,7 @@ impl RenderOnce for Ripple {
         let press = state.read(cx).press;
         let centered = self.centered;
         let color = self.color;
+        let corners = self.corners;
 
         let wave = press.map(|(origin, n)| {
             let size = bounds.get().size;
@@ -66,21 +114,26 @@ impl RenderOnce for Ripple {
                 .map(|(cx, cy)| ((cx - x).powi(2) + (cy - y).powi(2)).sqrt())
                 .fold(0.0_f32, f32::max);
             let grow = ease_out_quint();
-            div().absolute().rounded_full().with_animation(
-                ("wave", n),
-                Animation::new(DURATION),
-                move |el, t| {
+            div()
+                .absolute()
+                .with_animation(("wave", n), Animation::new(DURATION), move |el, t| {
                     let r = radius * grow((t / 0.8).min(1.0)).max(0.05);
                     let fade = 1.0 - ((t - 0.4) / 0.6).clamp(0.0, 1.0);
-                    el.left(px(x - r))
-                        .top(px(y - r))
-                        .size(px(2.0 * r))
+                    let ([left, top, ww, wh], [tl, tr, br, bl]) =
+                        wave_shape(x, y, r, w, h, corners);
+                    el.left(px(left))
+                        .top(px(top))
+                        .w(px(ww))
+                        .h(px(wh))
+                        .rounded_tl(px(tl))
+                        .rounded_tr(px(tr))
+                        .rounded_br(px(br))
+                        .rounded_bl(px(bl))
                         .bg(Hsla {
                             a: color.a * fade,
                             ..color
                         })
-                },
-            )
+                })
         });
 
         let store = bounds.clone();
@@ -107,5 +160,39 @@ impl RenderOnce for Ripple {
                     cx.notify();
                 });
             })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_small_wave_is_a_circle() {
+        let ([l, t, w, h], radii) = wave_shape(50.0, 20.0, 5.0, 100.0, 40.0, [16.0; 4]);
+        assert_eq!([l, t, w, h], [45.0, 15.0, 10.0, 10.0]);
+        assert_eq!(radii, [5.0; 4]);
+    }
+
+    #[test]
+    fn a_full_wave_takes_the_corners_of_the_box() {
+        let (rect, radii) = wave_shape(50.0, 20.0, 200.0, 100.0, 40.0, [16.0; 4]);
+        assert_eq!(rect, [0.0, 0.0, 100.0, 40.0]);
+        assert_eq!(radii, [16.0; 4]);
+        // A pill: fully round ends.
+        let (_, radii) = wave_shape(50.0, 20.0, 200.0, 100.0, 40.0, [f32::INFINITY; 4]);
+        assert_eq!(radii, [20.0; 4]);
+        // A square row.
+        let (_, radii) = wave_shape(50.0, 20.0, 200.0, 100.0, 40.0, [0.0; 4]);
+        assert_eq!(radii, [0.0; 4]);
+    }
+
+    #[test]
+    fn a_wave_at_one_side_keeps_its_curve_elsewhere() {
+        // Pressed near the left: reaches the left corners but not the right.
+        let ([l, _, w, _], [tl, tr, br, bl]) = wave_shape(10.0, 20.0, 30.0, 200.0, 40.0, [8.0; 4]);
+        assert_eq!((l, w), (0.0, 40.0));
+        assert_eq!((tl, bl), (8.0, 8.0));
+        assert_eq!((tr, br), (20.0, 20.0));
     }
 }

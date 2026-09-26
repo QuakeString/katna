@@ -924,9 +924,8 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   search box centered on the window (at most 720 px wide), the account
   avatar on the right. `katna_chrome::Bar` gives the bar a center slot,
   height and background for this.
-- **Navigation.** Compose, then the folders as pills rounded on the right.
-  The menu button folds it to a 72 px rail of icons (unread folders get a
-  dot); hovering the rail for 300 ms opens it over the list with a shadow.
+- **Navigation.** The folders as pills rounded on the right. The menu
+  button folds it away (it first folded to a rail of icons; see below).
   With one account the account heading is left out.
 - **One card.** The list and the open message share a white card with
   rounded corners on a tinted page. The list is one line per message:
@@ -1020,6 +1019,27 @@ Gemini or confidential mode):
   inboxes), and Send without an account. The daemon signals `MailChanged`
   after each account's first sync, so a new account's folders show even
   when they are empty.
+- **After the first real install.** The owner's first run on KDE brought
+  these changes. Compose sits in the top bar in place of the app name, so
+  it shows whether the folders are open or not; the account picture moved
+  to the top right, beside the settings gear, with its card below it; the
+  search box is 40 px tall. The menu button folds the folders away
+  completely, its bars turning upright as they go; resting on Mail in the
+  app rail opens them over the list as a floating panel with rounded
+  corners and a bottom margin. Ripples keep to the shape of the element
+  they are on (`Ripple::rounded`), since GPUI clips children to
+  rectangles. Icon buttons have tooltips after GPUI's hover delay
+  (`katna_ui::Tooltip`). Dialogs, panels and cards use 15 px corners.
+  Reply, Reply all and Forward stay pinned at the foot of the open
+  conversation, and answering writes inline there (a card with the
+  recipients, the text and the Send row, which can pop out into the
+  window); the list's single-letter keys are switched off inside text
+  fields. The list has a right-click menu (reply, reply all, forward,
+  archive, delete, spam, read, star, move to, find emails from the
+  sender) acting on the ticked lines or the clicked one. The "select all
+  on screen" banner no longer blinks (it depends on what was ticked, not on
+  how many lines fit), inbox tabs switch without a fade, and the reading
+  pane choices in quick settings play a small demo under the pointer.
 - **Not there yet.** Drafts are not saved (closing a written message
   discards it and says so), and formatting, attachments, links, emoji,
   images and scheduled sending in the composer say they are not ready yet.
