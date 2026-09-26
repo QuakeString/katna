@@ -338,7 +338,7 @@ impl MailWindow {
         th: &Theme,
         viewport: f32,
         width: f32,
-        _window: &mut Window,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let t = self.search_panel_spring.value().clamp(0.0, 1.0);
@@ -395,17 +395,12 @@ impl MailWindow {
         let custom = (within == CUSTOM).then(|| self.render_custom_dates(th, cx));
         let attachment = panel.attachment;
         let body = div()
-            .id("search-panel")
-            .occlude()
-            .w(px(width))
+            .flex_none()
             .p(px(24.0))
             .pt(px(12.0))
             .flex()
             .flex_col()
             .gap(px(8.0))
-            .rounded(px(12.0))
-            .bg(rgba(th.menu))
-            .shadow(elevation(th, 3.0))
             .text_color(rgba(th.text))
             .child(
                 div()
@@ -527,7 +522,24 @@ impl MailWindow {
                 .top(px(-4.0 + 8.0 * (1.0 - t)))
                 .left(px(((viewport - width) / 2.0).max(0.0)))
                 .opacity(t)
-                .child(body)
+                .child(
+                    // Scrolls when the custom dates' calendar makes it
+                    // taller than the window (it opens below the top bar).
+                    div()
+                        .id("search-panel")
+                        .occlude()
+                        .w(px(width))
+                        .max_h(px(
+                            (f32::from(window.viewport_size().height) - 76.0).max(200.0)
+                        ))
+                        .overflow_y_scroll()
+                        .flex()
+                        .flex_col()
+                        .rounded(px(12.0))
+                        .bg(rgba(th.menu))
+                        .shadow(elevation(th, 3.0))
+                        .child(body),
+                )
                 .into_any_element(),
         )
     }
@@ -635,7 +647,7 @@ impl MailWindow {
             if span == Span::On {
                 row
             } else {
-                row.child(boxed(&panel.times[ix], 90.0))
+                row.child(boxed(&panel.times[ix], 72.0))
             }
         };
         let mut fields = div()
@@ -740,23 +752,23 @@ impl MailWindow {
                 .tooltip(tip(label, th))
                 .on_click(cx.listener(move |this, _, _, cx| this.turn_calendar(months, cx)))
         };
+        // 4 × 40 px arrows + 84 + 4 + 44 = 292 px, inside 7 × 42 px of days.
         let header = div()
             .flex()
             .flex_row()
             .items_center()
-            .gap(px(4.0))
             .text_size(px(14.0))
             .font_weight(FontWeight::MEDIUM)
             .child(turn("month-back", "chevron-left", -1, "Previous month"))
             .child(
                 div()
-                    .w(px(92.0))
+                    .w(px(84.0))
                     .flex()
                     .justify_center()
                     .child(MONTHS[calendar.month as usize - 1]),
             )
             .child(turn("month-on", "chevron-right", 1, "Next month"))
-            .child(div().w(px(12.0)))
+            .child(div().w(px(4.0)))
             .child(turn("year-back", "chevron-left", -12, "Previous year"))
             .child(
                 div()
@@ -768,8 +780,8 @@ impl MailWindow {
             .child(turn("year-on", "chevron-right", 12, "Next year"));
         let cell = || {
             div()
-                .w(px(34.0))
-                .h(px(30.0))
+                .w(px(42.0))
+                .h(px(34.0))
                 .flex()
                 .items_center()
                 .justify_center()
@@ -794,8 +806,12 @@ impl MailWindow {
             let on = picked == Some(day);
             let is_today = day == today;
             let future = day > today;
-            let mut element = cell()
+            let mut element = div()
                 .id(("day", number as usize))
+                .size(px(32.0))
+                .flex()
+                .items_center()
+                .justify_center()
                 .rounded_full()
                 .text_size(px(13.0))
                 .cursor_pointer()
@@ -814,7 +830,7 @@ impl MailWindow {
             } else if is_today {
                 element = element.border_1().border_color(rgba(th.accent));
             }
-            week.push(element.into_any_element());
+            week.push(cell().child(element).into_any_element());
             if week.len() == 7 {
                 weeks.push(div().flex().flex_row().children(std::mem::take(&mut week)));
             }
@@ -823,7 +839,7 @@ impl MailWindow {
             weeks.push(div().flex().flex_row().children(week));
         }
         div()
-            .w(px(7.0 * 34.0 + 24.0))
+            .w(px(7.0 * 42.0 + 24.0))
             .p(px(12.0))
             .flex()
             .flex_col()
