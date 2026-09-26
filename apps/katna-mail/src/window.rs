@@ -13,16 +13,19 @@
 //! (the app rail), `add_account` (adding an account) and `context_menu`
 //! (the list's right-click menu).
 
+mod accounts;
 mod add_account;
 mod apps;
 mod colors;
 mod compose;
 mod context_menu;
+mod keymap;
 mod list;
 mod nav;
 mod reader;
 mod search_panel;
 mod settings;
+mod settings_page;
 
 use std::collections::{HashMap, HashSet};
 use std::ops::Range;
@@ -31,8 +34,8 @@ use std::time::Duration;
 
 use futures_lite::StreamExt;
 use gpui::{
-    AnyElement, App, Context, Entity, FocusHandle, Focusable, Hsla, KeyBinding, MouseButton,
-    MouseMoveEvent, Render, ScrollHandle, ScrollStrategy, SharedString, Subscription, Task,
+    AnyElement, App, Context, Entity, FocusHandle, Focusable, Hsla, MouseButton, MouseMoveEvent,
+    Render, ScrollHandle, ScrollStrategy, SharedString, Subscription, Task,
     UniformListScrollHandle, Window, actions, div, prelude::*, px, rgba,
 };
 use jiff::tz::TimeZone;
@@ -43,11 +46,12 @@ use katna_dbus::zbus::Connection;
 use katna_search::SearchResults;
 use katna_store::{FolderId, MessageId};
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::{InputEvent, TextArea, TextInput};
+use katna_ui::{InputEvent, TextInput};
 
 use crate::daemon::{self, Command};
-use crate::data::{self, Category, Entry, EntryKey, Mail, OpenError};
+use crate::data::{self, Entry, EntryKey, Mail, OpenError};
 use crate::sidebar::{self, Role, Tree};
+use crate::tabs::{self, Provider, Tab};
 use crate::theme::Theme;
 use crate::widgets::{elevation, icon};
 
@@ -84,6 +88,20 @@ actions!(
         ToggleStar,
         ToggleCheck,
         ToggleSettings,
+        Reply,
+        ReplyAll,
+        Forward,
+        MoveTo,
+        SelectAll,
+        SelectNone,
+        Undo,
+        GoToInbox,
+        GoToStarred,
+        GoToSent,
+        GoToDrafts,
+        GoToAllMail,
+        OpenSettings,
+        ShowShortcuts,
     ]
 );
 
@@ -119,89 +137,6 @@ const CHANGE_DELAY: Duration = Duration::from_millis(120);
 const LINE_SCROLL: f32 = 48.0;
 /// How long a send failure stays on screen.
 const FAILURE_TIME: Duration = Duration::from_secs(12);
-
-/// Keys of the list and the reader that are also typed text.
-const TYPED_KEYS: [&str; 15] = [
-    "j",
-    "k",
-    "u",
-    "o",
-    "x",
-    "c",
-    "e",
-    "s",
-    "/",
-    "#",
-    "!",
-    "shift-i",
-    "shift-u",
-    "space",
-    "shift-space",
-];
-
-/// Binds the window's keys. Call once at startup.
-pub fn bind_keys(cx: &mut App) {
-    let list = Some(LIST_CONTEXT);
-    let reader = Some(READER_CONTEXT);
-    let window = Some(WINDOW_CONTEXT);
-    let mut keys = vec![
-        KeyBinding::new("down", SelectNext, list),
-        KeyBinding::new("j", SelectNext, list),
-        KeyBinding::new("up", SelectPrevious, list),
-        KeyBinding::new("k", SelectPrevious, list),
-        KeyBinding::new("home", SelectFirst, list),
-        KeyBinding::new("end", SelectLast, list),
-        KeyBinding::new("pagedown", PageDown, list),
-        KeyBinding::new("pageup", PageUp, list),
-        KeyBinding::new("enter", OpenMessage, list),
-        KeyBinding::new("o", OpenMessage, list),
-        KeyBinding::new("x", ToggleCheck, list),
-        KeyBinding::new("j", SelectNext, reader),
-        KeyBinding::new("k", SelectPrevious, reader),
-        KeyBinding::new("u", CloseMessage, reader),
-        KeyBinding::new("escape", CloseMessage, reader),
-        KeyBinding::new("backspace", CloseMessage, reader),
-        KeyBinding::new("down", ScrollDown, reader),
-        KeyBinding::new("up", ScrollUp, reader),
-        KeyBinding::new("pagedown", ScrollPageDown, reader),
-        KeyBinding::new("space", ScrollPageDown, reader),
-        KeyBinding::new("pageup", ScrollPageUp, reader),
-        KeyBinding::new("shift-space", ScrollPageUp, reader),
-        KeyBinding::new("ctrl-f", FocusSearch, window),
-        KeyBinding::new("down", FocusList, Some(SEARCH_CONTEXT)),
-        KeyBinding::new("f5", Reload, window),
-        KeyBinding::new("ctrl-r", Reload, window),
-        KeyBinding::new("ctrl-,", ToggleSettings, window),
-        KeyBinding::new("ctrl-q", Quit, None),
-    ];
-    // Webmail keys, in the list and in the open conversation.
-    for context in [list, reader] {
-        keys.extend([
-            KeyBinding::new("/", FocusSearch, context),
-            KeyBinding::new("c", Compose, context),
-            KeyBinding::new("e", Archive, context),
-            KeyBinding::new("#", Delete, context),
-            KeyBinding::new("delete", Delete, context),
-            KeyBinding::new("!", ReportSpam, context),
-            KeyBinding::new("shift-i", MarkRead, context),
-            KeyBinding::new("shift-u", MarkUnread, context),
-            KeyBinding::new("s", ToggleStar, context),
-        ]);
-    }
-    // Typing in a field inside the reader (the inline reply) types; the
-    // reader's single keys stay out of the way.
-    for context in [
-        katna_ui::TEXT_AREA_CONTEXT,
-        katna_ui::text_input::KEY_CONTEXT,
-    ] {
-        for key in TYPED_KEYS {
-            keys.push(KeyBinding::new(key, gpui::NoAction, Some(context)));
-        }
-    }
-    cx.bind_keys(keys);
-    katna_ui::text_input::bind_keys(cx);
-    katna_ui::text_area::bind_keys(cx);
-}
 
 /// What the message list shows.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -280,9 +215,11 @@ pub struct MailWindow {
     folder: Option<FolderId>,
     show_recipients: bool,
     listing: Option<Listing>,
-    /// The inbox tab.
-    category: Category,
-    category_unread: HashMap<Category, u64>,
+    /// The inbox tabs of the listed folder's account; none outside inboxes.
+    tabs: Vec<Tab>,
+    /// The open inbox tab, an index into `tabs`.
+    tab: usize,
+    category_unread: HashMap<katna_core::MailCategory, u64>,
     entries: Vec<Entry>,
     /// The list cursor.
     selected: Option<usize>,
@@ -344,9 +281,10 @@ pub struct MailWindow {
     account_menu: bool,
     /// The message last handed to the outbox, for Undo.
     unsent: Option<compose::Unsent>,
-    /// The signature editor of the quick settings.
-    signature: Option<Entity<TextArea>>,
-    signature_save: Option<Task<()>>,
+    /// The Settings page, when open in place of the list.
+    settings_page: Option<settings_page::SettingsPage>,
+    /// The question before removing an account or deleting all data.
+    danger: Option<accounts::Danger>,
     /// Navigation openness at this frame, for the folder rows.
     nav_t: f32,
     daemon: Option<Connection>,
@@ -377,6 +315,7 @@ impl MailWindow {
             tracing::warn!("{err}; using the default settings");
             Config::default()
         });
+        keymap::bind(&config.shortcuts, cx);
         let desktop_colors = colors::DesktopColors::new(&env.desktop);
         let mut this = Self {
             chrome: WindowChrome::new(env, "Katna Mail", window, cx),
@@ -397,7 +336,8 @@ impl MailWindow {
             folder: None,
             show_recipients: false,
             listing: None,
-            category: Category::Primary,
+            tabs: Vec::new(),
+            tab: 0,
             category_unread: HashMap::new(),
             entries: Vec::new(),
             selected: None,
@@ -436,8 +376,8 @@ impl MailWindow {
             add_account: None,
             account_menu: false,
             unsent: None,
-            signature: None,
-            signature_save: None,
+            settings_page: None,
+            danger: None,
             nav_t: 1.0,
             daemon: None,
             _listen: None,
@@ -642,7 +582,29 @@ impl MailWindow {
 
     /// Whether the list shows inbox tabs now.
     fn shows_tabs(&self) -> bool {
-        self.config.mail.inbox_tabs && self.folder_role() == Role::Inbox
+        !self.tabs.is_empty() && self.folder_role() == Role::Inbox
+    }
+
+    /// The inbox tabs of `account`: as its settings say, else its
+    /// provider's.
+    fn account_tabs(&self, account: AccountId) -> Vec<Tab> {
+        if !self.config.mail.inbox_tabs {
+            return Vec::new();
+        }
+        let Some(account) = self.accounts.iter().find(|a| a.id == account) else {
+            return Vec::new();
+        };
+        let setting = self.config.mail.tabs_of(&account.address);
+        tabs::tabs(&setting, self.provider(account))
+    }
+
+    fn provider(&self, account: &Account) -> Provider {
+        let host = self
+            .mail
+            .as_ref()
+            .ok()
+            .and_then(|mail| mail.incoming_host(account.id));
+        Provider::detect(&account.address, host.as_deref())
     }
 
     fn list_entries(&self, folder: FolderId) -> Vec<Entry> {
@@ -650,9 +612,12 @@ impl MailWindow {
             return Vec::new();
         };
         let role = self.tree.node(folder).map_or(Role::Other, |n| n.role);
-        let category =
-            (self.config.mail.inbox_tabs && role == Role::Inbox).then_some(self.category);
-        mail.entries(folder, category, self.config.mail.conversations)
+        let categories = self
+            .tabs
+            .get(self.tab)
+            .filter(|_| role == Role::Inbox)
+            .map(|tab| tab.categories.as_slice());
+        mail.entries(folder, categories, self.config.mail.conversations)
     }
 
     fn open_folder(&mut self, folder: FolderId, cx: &mut Context<Self>) {
@@ -665,8 +630,13 @@ impl MailWindow {
             mail.clear_rows();
         }
         if self.folder != Some(folder) {
-            self.category = Category::Primary;
+            self.tab = 0;
         }
+        self.tabs = match self.tree.account_of(folder) {
+            Some(account) if role == Role::Inbox => self.account_tabs(account),
+            _ => Vec::new(),
+        };
+        self.tab = self.tab.min(self.tabs.len().saturating_sub(1));
         self.folder = Some(folder);
         self.listing = Some(Listing::Folder(folder));
         self.entries = self.list_entries(folder);
@@ -684,11 +654,11 @@ impl MailWindow {
         cx.notify();
     }
 
-    fn open_category(&mut self, category: Category, cx: &mut Context<Self>) {
-        if self.category == category {
+    fn open_tab(&mut self, tab: usize, cx: &mut Context<Self>) {
+        if self.tab == tab {
             return;
         }
-        self.category = category;
+        self.tab = tab;
         // No fade: the tab's lines replace the last ones in the same frame,
         // as the indicator slides over.
         if let Some(folder) = self.folder {
@@ -857,14 +827,97 @@ impl MailWindow {
     fn toggle_settings(&mut self, _: &ToggleSettings, window: &mut Window, cx: &mut Context<Self>) {
         self.settings_open = !self.settings_open;
         self.search_panel = None;
-        if self.settings_open && self.signature.is_none() {
-            self.signature = Some(self.signature_editor(window, cx));
-        }
+        let _ = window;
         cx.notify();
     }
 
     fn compose(&mut self, _: &Compose, window: &mut Window, cx: &mut Context<Self>) {
         self.open_compose(compose::Kind::New, None, window, cx);
+    }
+
+    fn reply(&mut self, _: &Reply, window: &mut Window, cx: &mut Context<Self>) {
+        self.reply_with(compose::Kind::Reply, window, cx);
+    }
+
+    fn reply_all(&mut self, _: &ReplyAll, window: &mut Window, cx: &mut Context<Self>) {
+        self.reply_with(compose::Kind::ReplyAll, window, cx);
+    }
+
+    fn forward(&mut self, _: &Forward, window: &mut Window, cx: &mut Context<Self>) {
+        self.reply_with(compose::Kind::Forward, window, cx);
+    }
+
+    /// Reply, reply all or forward from the open conversation.
+    fn reply_with(&mut self, kind: compose::Kind, window: &mut Window, cx: &mut Context<Self>) {
+        if self.reading && self.reader.is_some() {
+            self.open_compose(kind, None, window, cx);
+        }
+    }
+
+    fn move_to(&mut self, _: &MoveTo, _: &mut Window, cx: &mut Context<Self>) {
+        if self.checked.is_empty()
+            && !self.reading
+            && let Some(entry) = self.selected.and_then(|ix| self.entries.get(ix))
+        {
+            // The list shows "Move to" for ticked lines.
+            self.checked.insert(entry.key);
+        }
+        if !self.checked.is_empty() || self.reading {
+            self.menu = Some(Menu::MoveTo);
+            cx.notify();
+        }
+    }
+
+    fn select_all(&mut self, _: &SelectAll, _: &mut Window, cx: &mut Context<Self>) {
+        self.checked = self.entries.iter().map(|e| e.key).collect();
+        self.checked_all = true;
+        cx.notify();
+    }
+
+    fn select_none(&mut self, _: &SelectNone, _: &mut Window, cx: &mut Context<Self>) {
+        self.checked.clear();
+        self.checked_all = false;
+        cx.notify();
+    }
+
+    fn undo_action(&mut self, _: &Undo, window: &mut Window, cx: &mut Context<Self>) {
+        self.undo(window, cx);
+    }
+
+    fn go_to(&mut self, role: Role, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(folder) = self
+            .account()
+            .and_then(|account| self.tree.role_folder(account, role))
+        else {
+            self.show_snackbar("This account has no such folder.", None, cx);
+            return;
+        };
+        self.settings_page = None;
+        self.open_app(RailApp::Mail, cx);
+        self.clear_search(cx);
+        self.card_seq += 1;
+        self.open_folder(folder, cx);
+        window.focus(&self.list_focus, cx);
+    }
+
+    fn go_to_inbox(&mut self, _: &GoToInbox, window: &mut Window, cx: &mut Context<Self>) {
+        self.go_to(Role::Inbox, window, cx);
+    }
+
+    fn go_to_starred(&mut self, _: &GoToStarred, window: &mut Window, cx: &mut Context<Self>) {
+        self.go_to(Role::Flagged, window, cx);
+    }
+
+    fn go_to_sent(&mut self, _: &GoToSent, window: &mut Window, cx: &mut Context<Self>) {
+        self.go_to(Role::Sent, window, cx);
+    }
+
+    fn go_to_drafts(&mut self, _: &GoToDrafts, window: &mut Window, cx: &mut Context<Self>) {
+        self.go_to(Role::Drafts, window, cx);
+    }
+
+    fn go_to_all_mail(&mut self, _: &GoToAllMail, window: &mut Window, cx: &mut Context<Self>) {
+        self.go_to(Role::All, window, cx);
     }
 
     fn show_snackbar(
@@ -1677,7 +1730,7 @@ impl Render for MailWindow {
             } else {
                 0.0
             });
-        self.tab_spring.set(self.category.index() as f32);
+        self.tab_spring.set(self.tab as f32);
         self.nav_t = self.nav_spring.tick(window, reduce);
         let reserve = self.reserve_spring.tick(window, reduce);
         let search_t = self.search_spring.tick(window, reduce);
@@ -1702,22 +1755,28 @@ impl Render for MailWindow {
 
         let content = match &self.mail {
             Err(err) => self.render_error(err, &th, cx),
-            Ok(_) if self.app == RailApp::Mail && self.accounts.is_empty() => div()
-                .size_full()
-                .flex()
-                .flex_row_reverse()
-                .when(settings_t > 0.001, |d| {
-                    d.child(self.render_settings(&th, settings_t, cx))
-                })
-                .child(
-                    div()
-                        .flex_1()
-                        .min_w_0()
-                        .h_full()
-                        .child(self.render_welcome(&th, cx)),
-                )
-                .child(self.render_app_rail(&th, cx))
-                .into_any_element(),
+            Ok(_)
+                if self.app == RailApp::Mail
+                    && self.accounts.is_empty()
+                    && self.settings_page.is_none() =>
+            {
+                div()
+                    .size_full()
+                    .flex()
+                    .flex_row_reverse()
+                    .when(settings_t > 0.001, |d| {
+                        d.child(self.render_settings(&th, settings_t, cx))
+                    })
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .h_full()
+                            .child(self.render_welcome(&th, cx)),
+                    )
+                    .child(self.render_app_rail(&th, cx))
+                    .into_any_element()
+            }
             // Reversed so the navigation paints last, over the cards, when
             // it opens from the rail.
             Ok(_) if self.app == RailApp::Mail => div()
@@ -1727,7 +1786,11 @@ impl Render for MailWindow {
                 .when(settings_t > 0.001, |d| {
                     d.child(self.render_settings(&th, settings_t, cx))
                 })
-                .child(self.render_cards(&th, available, cx))
+                .child(if self.settings_page.is_some() {
+                    self.render_settings_page(&th, cx)
+                } else {
+                    self.render_cards(&th, available, cx)
+                })
                 .child(self.render_navigation(&th, cx))
                 .child(self.render_app_rail(&th, cx))
                 .into_any_element(),
@@ -1748,6 +1811,7 @@ impl Render for MailWindow {
         let compose = self.render_compose(&th, window, reduce, cx);
         let account_menu = self.render_account_menu(&th, cx);
         let add_account = self.render_add_account(&th, window, reduce, cx);
+        let danger = self.render_danger(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let content = div()
@@ -1763,12 +1827,27 @@ impl Render for MailWindow {
             .on_action(cx.listener(Self::compose))
             .on_action(cx.listener(Self::reload))
             .on_action(cx.listener(Self::quit))
+            .on_action(cx.listener(Self::reply))
+            .on_action(cx.listener(Self::reply_all))
+            .on_action(cx.listener(Self::forward))
+            .on_action(cx.listener(Self::move_to))
+            .on_action(cx.listener(Self::select_all))
+            .on_action(cx.listener(Self::select_none))
+            .on_action(cx.listener(Self::undo_action))
+            .on_action(cx.listener(Self::go_to_inbox))
+            .on_action(cx.listener(Self::go_to_starred))
+            .on_action(cx.listener(Self::go_to_sent))
+            .on_action(cx.listener(Self::go_to_drafts))
+            .on_action(cx.listener(Self::go_to_all_mail))
+            .on_action(cx.listener(Self::open_settings))
+            .on_action(cx.listener(Self::show_shortcuts))
             .child(content)
             .children(search_panel)
             .children(compose)
             .children(account_menu)
             .children(add_account)
             .children(context_menu)
+            .children(danger)
             .children(snackbar)
             .into_any_element();
 

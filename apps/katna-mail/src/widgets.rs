@@ -133,6 +133,33 @@ pub fn filled_button(
         .child(label.into())
 }
 
+/// An outlined, rounded button with a label.
+pub fn outlined_button(
+    id: impl Into<gpui::ElementId>,
+    label: impl Into<SharedString>,
+    th: &Theme,
+) -> Stateful<Div> {
+    let id = id.into();
+    div()
+        .id(id.clone())
+        .relative()
+        .overflow_hidden()
+        .h(px(36.0))
+        .px(px(20.0))
+        .flex()
+        .items_center()
+        .rounded_full()
+        .border_1()
+        .border_color(rgba(fade(th.text_faint, 0.7)))
+        .text_size(px(14.0))
+        .font_weight(FontWeight::MEDIUM)
+        .text_color(rgba(th.accent))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)))
+        .child(label.into())
+}
+
 pub fn toolbar(th: &Theme) -> Div {
     div()
         .flex_none()

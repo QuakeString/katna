@@ -81,7 +81,7 @@ fn measure(paths: &Paths, reset: bool) -> Result<(), Box<dyn std::error::Error>>
         ms(started)
     );
     let started = Instant::now();
-    let primary = store.folder_threads(folder.id, Some(MailCategory::Primary))?;
+    let primary = store.folder_threads(folder.id, Some(&[MailCategory::Primary]))?;
     println!(
         "folder_threads(primary): {} in {:.1} ms",
         primary.len(),
