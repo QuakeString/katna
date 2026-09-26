@@ -87,21 +87,34 @@ impl MailWindow {
                     })
                     .await;
                 this.update(cx, |this, cx| {
-                    let part = this
-                        .reader
-                        .as_mut()
-                        .and_then(|r| r.parts.iter_mut().find(|p| p.id == id));
-                    // Still waiting: the conversation may have been closed
-                    // or reloaded meanwhile.
-                    if let Some(part) = part
-                        && part
-                            .body
-                            .as_ref()
-                            .is_some_and(|b| matches!(b.security, Some(Secured::Opening(_))))
+                    let Some(reader) = this.reader.as_mut() else {
+                        return;
+                    };
+                    let Some(ix) = reader.parts.iter().position(|p| p.id == id) else {
+                        return;
+                    };
+                    let part = &mut reader.parts[ix];
+                    // Still waiting: the conversation may have been
+                    // reloaded meanwhile.
+                    if !part
+                        .body
+                        .as_ref()
+                        .is_some_and(|b| matches!(b.security, Some(Secured::Opening(_))))
                     {
-                        part.body = Some(body);
-                        cx.notify();
+                        return;
                     }
+                    // An encrypted subject ("..." outside) names the
+                    // conversation once its first message is decrypted.
+                    if ix == 0
+                        && let Some(Secured::Opened(security)) = &body.security
+                        && security.decrypted()
+                        && let Some(subject) = body.view.as_ref().map(|v| v.subject.trim())
+                        && !subject.is_empty()
+                    {
+                        reader.subject = subject.to_owned();
+                    }
+                    reader.parts[ix].body = Some(body);
+                    cx.notify();
                 })
                 .ok();
             })

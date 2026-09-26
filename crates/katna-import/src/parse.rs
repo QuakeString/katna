@@ -101,18 +101,21 @@ pub fn parse_message(raw: &[u8]) -> Option<ParsedMessage> {
         subject: message.subject().and_then(non_empty),
         date: message.date().map(|date| date.to_timestamp()),
         size: raw.len() as u64,
-        has_attachments: message.attachments().any(|part| {
-            let mime = part.content_type().map(|t| match t.subtype() {
-                Some(sub) => format!("{}/{sub}", t.ctype()),
-                None => t.ctype().to_owned(),
-            });
-            crate::mime::is_attachment(&crate::mime::PartInfo {
-                mime: mime.as_deref().unwrap_or("text/plain"),
-                disposition: part.content_disposition().map(|d| d.ctype()),
-                content_id: part.content_id().is_some(),
-                filename: part.attachment_name().is_some(),
-            })
-        }),
+        // What an encrypted message holds is only known once it is
+        // decrypted; its ciphertext part is not an attachment.
+        has_attachments: !encrypted(&message)
+            && message.attachments().any(|part| {
+                let mime = part.content_type().map(|t| match t.subtype() {
+                    Some(sub) => format!("{}/{sub}", t.ctype()),
+                    None => t.ctype().to_owned(),
+                });
+                crate::mime::is_attachment(&crate::mime::PartInfo {
+                    mime: mime.as_deref().unwrap_or("text/plain"),
+                    disposition: part.content_disposition().map(|d| d.ctype()),
+                    content_id: part.content_id().is_some(),
+                    filename: part.attachment_name().is_some(),
+                })
+            }),
         list_id: list_id(message.list_id()),
         snippet: snippet(&message),
         participants,
@@ -204,6 +207,17 @@ fn list_id(value: &HeaderValue<'_>) -> Option<String> {
         _ => text,
     };
     non_empty(text)
+}
+
+/// PGP/MIME or S/MIME encrypted as a whole.
+fn encrypted(message: &Message<'_>) -> bool {
+    message.root_part().content_type().is_some_and(|ct| {
+        let subtype = ct.subtype().unwrap_or_default();
+        (ct.ctype().eq_ignore_ascii_case("multipart") && subtype.eq_ignore_ascii_case("encrypted"))
+            || (ct.ctype().eq_ignore_ascii_case("application")
+                && (subtype.eq_ignore_ascii_case("pkcs7-mime")
+                    || subtype.eq_ignore_ascii_case("x-pkcs7-mime")))
+    })
 }
 
 /// The start of the body, whitespace collapsed. Inline PGP armor is left
@@ -408,5 +422,19 @@ Deals.\r
             parse_message(signed).unwrap().snippet.as_deref(),
             Some("See you at noon.")
         );
+    }
+
+    #[test]
+    fn protection_parts_are_not_attachments() {
+        let signed = b"From: a@example.org\r\n\
+Content-Type: multipart/signed; protocol=\"application/pgp-signature\"; boundary=\"s\"\r\n\r\n\
+--s\r\nContent-Type: text/plain\r\n\r\nHi\r\n\
+--s\r\nContent-Type: application/pgp-signature; name=\"signature.asc\"\r\n\r\nSIG\r\n--s--\r\n";
+        assert!(!parse_message(signed).unwrap().has_attachments);
+        let encrypted = b"From: a@example.org\r\n\
+Content-Type: multipart/encrypted; protocol=\"application/pgp-encrypted\"; boundary=\"e\"\r\n\r\n\
+--e\r\nContent-Type: application/pgp-encrypted\r\n\r\nVersion: 1\r\n\
+--e\r\nContent-Type: application/octet-stream; name=\"encrypted.asc\"\r\n\r\nxx\r\n--e--\r\n";
+        assert!(!parse_message(encrypted).unwrap().has_attachments);
     }
 }
