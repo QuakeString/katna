@@ -557,6 +557,9 @@ fn flags(bits: MessageFlags) -> Flags {
     if bits.contains(MessageFlags::FORWARDED) {
         keywords.push("$Forwarded".to_owned());
     }
+    if bits.contains(MessageFlags::IMPORTANT) {
+        keywords.push(crate::IMPORTANT.to_owned());
+    }
     Flags {
         seen: bits.contains(MessageFlags::SEEN),
         answered: bits.contains(MessageFlags::ANSWERED),

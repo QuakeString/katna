@@ -4,14 +4,14 @@
 //! ticked lines), the inbox tabs and the lines, one row each, or three
 //! stacked lines when the list is narrow.
 
-use std::ops::Range;
 use std::rc::Rc;
 use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, BoxShadow, Context, Div, FontWeight, HighlightStyle,
-    SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, deferred, div,
-    ease_out_quint, linear_color_stop, linear_gradient, point, prelude::*, px, rgba, uniform_list,
+    ListOffset, SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, anchored,
+    deferred, div, ease_out_quint, linear_color_stop, linear_gradient, list, point, prelude::*, px,
+    rgba,
 };
 use katna_core::config::Density;
 use katna_ui::Ripple;
@@ -22,9 +22,17 @@ use katna_ui::motion;
 const ROW_LIFT: SpringConfig = SpringConfig::new(500.0, 44.7, 1.0);
 /// How long the quick actions of a line take to fade in.
 const ACTIONS_IN: Duration = Duration::from_millis(160);
+/// The attachment chips under a line: their line's extra height, their
+/// height, widest size and spacing, and the "+N" button's size.
+const CHIPS_LINE: f32 = 40.0;
+const CHIP_HEIGHT: f32 = 30.0;
+const CHIP_WIDTH: f32 = 184.0;
+const CHIP_GAP: f32 = 8.0;
+const MORE_SIZE: f32 = 30.0;
 
+use super::attachments::kind_badge;
 use super::{Act, LIST_CONTEXT, Listing, MailWindow, Menu, READER_CONTEXT, Reload, STACKED_BELOW};
-use crate::data::{EntryKey, Row};
+use crate::data::{EntryKey, Row, RowFile};
 use crate::format;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
@@ -136,6 +144,8 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_read))
             .on_action(cx.listener(Self::mark_unread))
             .on_action(cx.listener(Self::toggle_star))
+            .on_action(cx.listener(Self::mark_important))
+            .on_action(cx.listener(Self::mark_not_important))
             .on_action(cx.listener(Self::toggle_check))
             .child(toolbar)
             .child(div().flex_1().min_h_0().child(body).with_animation(
@@ -341,8 +351,7 @@ impl MailWindow {
                 .on_click(cx.listener(|this, _, _, cx| {
                     let page = this.visible.len().max(1);
                     let ix = this.visible.start.saturating_sub(page);
-                    this.list_scroll
-                        .scroll_to_item(ix, gpui::ScrollStrategy::Top);
+                    this.scroll_list_to(ix);
                     cx.notify();
                 })),
         )
@@ -352,8 +361,7 @@ impl MailWindow {
                 .when(at_end, |d| d.opacity(0.4))
                 .on_click(cx.listener(|this, _, _, cx| {
                     let ix = this.visible.end.min(this.entries.len().saturating_sub(1));
-                    this.list_scroll
-                        .scroll_to_item(ix, gpui::ScrollStrategy::Top);
+                    this.scroll_list_to(ix);
                     cx.notify();
                 })),
         )
@@ -386,6 +394,50 @@ impl MailWindow {
                     .tooltip(tip("Delete", th))
                     .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Delete, cx))),
             )
+    }
+
+    /// Tells the list its lines changed; `keep_scroll` stays at the same
+    /// line, otherwise it goes back to the top.
+    pub(super) fn reset_list(&mut self, keep_scroll: bool) {
+        let top = self.list_state.logical_scroll_top();
+        let count = self.entries.len();
+        self.list_state
+            .reset_with_uniform_height(count, px(self.row_height()));
+        if keep_scroll && top.item_ix < count {
+            self.list_state.scroll_to(top);
+        } else {
+            self.scroll_list_to(0);
+        }
+        self.files_menu = None;
+    }
+
+    /// Scrolls the list so line `ix` is at the top.
+    pub(super) fn scroll_list_to(&self, ix: usize) {
+        self.list_state.scroll_to(ListOffset {
+            item_ix: ix,
+            offset_in_item: px(0.0),
+        });
+    }
+
+    /// Works out which lines the list showed in its last frame.
+    fn update_visible(&mut self) {
+        let count = self.entries.len();
+        let start = self.list_state.logical_scroll_top().item_ix.min(count);
+        let viewport = self.list_state.viewport_bounds();
+        let mut end = start;
+        while end < count {
+            match self.list_state.bounds_for_item(end) {
+                Some(bounds) if bounds.top() < viewport.bottom() => end += 1,
+                Some(_) => break,
+                None => {
+                    // Not drawn yet: as many as fit at the usual height.
+                    let fit = (viewport.size.height / px(self.row_height())).ceil() as usize;
+                    end = end.max(start + fit.max(1)).min(count);
+                    break;
+                }
+            }
+        }
+        self.visible = start..end;
     }
 
     pub(super) fn toggle_menu(&mut self, menu: Menu, cx: &mut Context<Self>) {
@@ -501,7 +553,21 @@ impl MailWindow {
                         ))
                         .child(menu_item("more-unstar", "Remove star", th).on_click(
                             cx.listener(|this, _, _, cx| this.act_on_targets(Act::Star(false), cx)),
-                        )),
+                        ))
+                        .child(
+                            menu_item("more-important", "Mark as important", th).on_click(
+                                cx.listener(|this, _, _, cx| {
+                                    this.act_on_targets(Act::Important(true), cx)
+                                }),
+                            ),
+                        )
+                        .child(
+                            menu_item("more-not-important", "Mark as not important", th).on_click(
+                                cx.listener(|this, _, _, cx| {
+                                    this.act_on_targets(Act::Important(false), cx)
+                                }),
+                            ),
+                        ),
                 }
             }
             Menu::MoveTo => {
@@ -586,10 +652,11 @@ impl MailWindow {
     /// `row` with changes the daemon has not confirmed yet.
     pub(super) fn with_pending(&self, row: Rc<Row>) -> Rc<Row> {
         match self.pending.get(&row.key) {
-            Some(p) if p.unread.is_some() || p.flagged.is_some() => {
+            Some(p) if p.unread.is_some() || p.flagged.is_some() || p.important.is_some() => {
                 let mut row = (*row).clone();
                 row.unread = p.unread.unwrap_or(row.unread);
                 row.flagged = p.flagged.unwrap_or(row.flagged);
+                row.important = p.important.unwrap_or(row.important);
                 Rc::new(row)
             }
             _ => row,
@@ -790,7 +857,7 @@ impl MailWindow {
 
     // Lines
 
-    fn render_list(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    fn render_list(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         if self.entries.is_empty() {
             let text = match &self.listing {
                 Some(Listing::Search { .. }) => "No messages matched your search.".to_owned(),
@@ -809,33 +876,38 @@ impl MailWindow {
             };
             return placeholder(&text, th);
         }
-        uniform_list(
-            "messages",
-            self.entries.len(),
-            cx.processor(|this, range: Range<usize>, window, cx| {
-                if this.visible != range {
-                    this.visible = range.clone();
-                    cx.notify();
-                }
-                let th = this.theme(window);
-                let entries = this.entries[range.clone()].to_vec();
-                let folder = this.listed_folder();
-                let rows = match &mut this.mail {
-                    Ok(mail) => mail.rows(&entries, folder, this.show_recipients),
-                    Err(_) => vec![None; range.len()],
+        self.update_visible();
+        // Read the lines on show in one go; each line then finds its row.
+        let folder = self.listed_folder();
+        let ahead =
+            self.visible.start.saturating_sub(10)..(self.visible.end + 30).min(self.entries.len());
+        if let Ok(mail) = &mut self.mail {
+            mail.rows(&self.entries[ahead], folder, self.show_recipients);
+        }
+        let shape = (self.stacked(), self.row_height().to_bits());
+        if self.list_shape != shape {
+            self.list_shape = shape;
+            self.list_state.remeasure();
+        }
+        list(
+            self.list_state.clone(),
+            cx.processor(|this, ix: usize, window, cx| {
+                let Some(entry) = this.entries.get(ix).copied() else {
+                    return div().into_any_element();
                 };
-                let rows: Vec<_> = rows
-                    .into_iter()
-                    .map(|r| r.map(|r| this.with_pending(r)))
-                    .collect();
-                range
-                    .zip(entries)
-                    .zip(rows)
-                    .map(|((ix, entry), row)| this.render_row(ix, entry.key, row, &th, cx))
-                    .collect::<Vec<_>>()
+                let th = this.theme(window);
+                let folder = this.listed_folder();
+                let row = match &mut this.mail {
+                    Ok(mail) => mail
+                        .rows(&[entry], folder, this.show_recipients)
+                        .pop()
+                        .flatten(),
+                    Err(_) => None,
+                };
+                let row = row.map(|r| this.with_pending(r));
+                this.render_row(ix, entry.key, row, &th, cx)
             }),
         )
-        .track_scroll(&self.list_scroll)
         .size_full()
         .into_any_element()
     }
@@ -848,7 +920,15 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let height = self.row_height();
+        let line_height = self.row_height();
+        let stacked = self.stacked();
+        let has_chips = row.as_ref().is_some_and(|r| !r.files.is_empty());
+        let height = line_height
+            + match (has_chips, stacked) {
+                (false, _) => 0.0,
+                (true, false) => CHIPS_LINE,
+                (true, true) => CHIPS_LINE - 4.0,
+            };
         let hovered = self.hovered == Some(ix);
         let under_hovered = ix > 0 && self.hovered == Some(ix - 1);
         let cursor = self.selected == Some(ix);
@@ -1044,6 +1124,33 @@ impl MailWindow {
             } else {
                 icon("star", th.text_faint, 20.0)
             });
+        let important = row.important;
+        let marker = div()
+            .id(("row-important", ix))
+            .tooltip(tip(
+                if important {
+                    "Important. Click to mark as not important."
+                } else {
+                    "Mark as important"
+                },
+                th,
+            ))
+            .size(px(32.0))
+            .flex_none()
+            .flex()
+            .items_center()
+            .justify_center()
+            .rounded_full()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .on_click(cx.listener(move |this, _, _, cx| {
+                cx.stop_propagation();
+                this.act(Act::Important(!important), vec![key], cx);
+            }))
+            .child(if important {
+                icon("important-filled", th.star, 18.0)
+            } else {
+                icon("important", th.text_faint, 18.0)
+            });
         let correspondent = div()
             .flex()
             .flex_row()
@@ -1084,10 +1191,10 @@ impl MailWindow {
             .text_color(rgba(if row.unread { th.text } else { th.text_faint }))
             .child(date);
 
-        if self.stacked() {
+        if stacked {
             let line = |child: AnyElement| {
                 div()
-                    .h(px((height - 16.0) / 3.0))
+                    .h(px((line_height - 16.0) / 3.0))
                     .flex()
                     .flex_row()
                     .items_center()
@@ -1137,10 +1244,14 @@ impl MailWindow {
                                 )
                                 .children(actions.or(Some(date.into_any_element()))),
                             )
-                            .child(line(subject).child(star))
-                            .child(line(snippet).when(row.attachments, |d| {
+                            .child(line(subject).child(marker).child(star))
+                            .child(line(snippet).when(row.attachments && !has_chips, |d| {
                                 d.child(icon("attachment", th.text_faint, 16.0))
-                            })),
+                            }))
+                            .when(has_chips, |d| {
+                                let room = self.list_width() - 44.0 - 12.0;
+                                d.child(self.file_chips(ix, &row, 0.0, room, th, cx))
+                            }),
                     ),
             );
         }
@@ -1170,38 +1281,247 @@ impl MailWindow {
             ),
         ]);
         let wide = self.list_width() > 1000.0;
-        lifted(
-            base.items_center()
-                .pl(px(8.0))
-                .child(check)
-                .child(star)
-                .child(
+        let name_width = if wide { 200.0 } else { 150.0 };
+        let first_line = div()
+            .h(px(line_height))
+            .flex_none()
+            .w_full()
+            .flex()
+            .flex_row()
+            .items_center()
+            .pl(px(8.0))
+            .child(check)
+            .child(star)
+            .child(marker)
+            .child(
+                div()
+                    .w(px(name_width))
+                    .flex_none()
+                    .pl(px(8.0))
+                    .pr(px(24.0))
+                    .child(correspondent),
+            )
+            .child(div().flex_1().min_w_0().truncate().child(text))
+            .when(row.attachments && !has_chips, |d| {
+                d.child(
                     div()
-                        .w(px(if wide { 200.0 } else { 150.0 }))
-                        .flex_none()
                         .pl(px(8.0))
-                        .pr(px(24.0))
-                        .child(correspondent),
+                        .child(icon("attachment", th.text_faint, 18.0)),
                 )
-                .child(div().flex_1().min_w_0().truncate().child(text))
-                .when(row.attachments, |d| {
-                    d.child(
-                        div()
-                            .pl(px(8.0))
-                            .child(icon("attachment", th.text_faint, 18.0)),
-                    )
-                })
+            })
+            .child(
+                div()
+                    .flex_none()
+                    .min_w(px(96.0))
+                    .pl(px(16.0))
+                    .pr(px(12.0))
+                    .flex()
+                    .justify_end()
+                    .children(actions.or(Some(date.into_any_element()))),
+            );
+        // The chips line up under the subject.
+        let chips_left = 8.0 + 3.0 * 32.0 + name_width;
+        lifted(base.flex_col().child(first_line).when(has_chips, |d| {
+            let room = self.list_width() - chips_left - 24.0;
+            d.child(self.file_chips(ix, &row, chips_left, room, th, cx))
+        }))
+    }
+
+    /// The attachment chips under a line: as many as fit (at most three),
+    /// then a round "+N" button that lists the rest.
+    fn file_chips(
+        &self,
+        ix: usize,
+        row: &Row,
+        left: f32,
+        room: f32,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let (key, files) = (row.key, row.files.as_slice());
+        let fit = |room: f32| ((room + CHIP_GAP) / (CHIP_WIDTH + CHIP_GAP)).floor() as usize;
+        let mut shown = fit(room);
+        if shown < files.len() {
+            shown = fit(room - MORE_SIZE - CHIP_GAP);
+        }
+        let shown = shown.clamp(1, 3).min(files.len());
+        let rest: Vec<RowFile> = files[shown..].to_vec();
+        let chip = |n: usize, file: &RowFile| {
+            let kind = katna_preview::kind(&file.mime, &file.name);
+            let open = file.clone();
+            div()
+                .id(("row-file", ix * 4 + n))
+                .h(px(CHIP_HEIGHT))
+                .min_w(px(64.0))
+                .max_w(px(CHIP_WIDTH))
+                .flex_shrink(1.0)
+                .flex()
+                .items_center()
+                .gap(px(8.0))
+                .pl(px(8.0))
+                .pr(px(14.0))
+                .rounded_full()
+                .border_1()
+                .border_color(rgba(th.divider))
+                .bg(rgba(th.surface))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .tooltip(tip(file.name.clone(), th))
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    cx.stop_propagation();
+                    this.open_row_file(&open, window, cx);
+                }))
+                .child(kind_badge(kind, 18.0))
                 .child(
                     div()
-                        .flex_none()
-                        .min_w(px(96.0))
-                        .pl(px(16.0))
-                        .pr(px(12.0))
-                        .flex()
-                        .justify_end()
-                        .children(actions.or(Some(date.into_any_element()))),
+                        .min_w_0()
+                        .truncate()
+                        .text_size(px(13.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(file.name.clone()),
+                )
+        };
+        let chips: Vec<_> = files[..shown]
+            .iter()
+            .enumerate()
+            .map(|(n, f)| chip(n, f))
+            .collect();
+        let more = (!rest.is_empty()).then(|| {
+            let open = self.files_menu == Some(key);
+            let names = rest
+                .iter()
+                .map(|f| f.name.as_str())
+                .collect::<Vec<_>>()
+                .join(", ");
+            let button = div()
+                .id(("row-more-files", ix))
+                .size(px(MORE_SIZE))
+                .flex_none()
+                .flex()
+                .items_center()
+                .justify_center()
+                .rounded_full()
+                .border_1()
+                .border_color(rgba(th.divider))
+                .bg(rgba(if open { th.hover } else { th.surface }))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .text_size(px(12.0))
+                .text_color(rgba(th.text_dim))
+                .child(format!("+{}", rest.len()))
+                .when(!open, |d| d.tooltip(tip(names, th)))
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    cx.stop_propagation();
+                    this.menu = None;
+                    this.files_menu = if this.files_menu == Some(key) {
+                        None
+                    } else {
+                        Some(key)
+                    };
+                    cx.notify();
+                }));
+            div()
+                .relative()
+                .child(button)
+                .when(open, |d| d.children(self.files_popover(ix, &rest, th, cx)))
+        });
+        div()
+            .h(px(CHIP_HEIGHT))
+            .flex_none()
+            .pl(px(left))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(CHIP_GAP))
+            .children(chips)
+            .children(more)
+            .into_any_element()
+    }
+
+    /// The list the "+N" button opens: the attachments without a chip.
+    fn files_popover(
+        &self,
+        ix: usize,
+        files: &[RowFile],
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> [AnyElement; 2] {
+        let scrim = deferred(
+            div()
+                .id("files-scrim")
+                .absolute()
+                .top(px(-2000.0))
+                .left(px(-4000.0))
+                .w(px(8000.0))
+                .h(px(6000.0))
+                .occlude()
+                .on_mouse_down(
+                    gpui::MouseButton::Left,
+                    cx.listener(|this, _, _, cx| {
+                        this.files_menu = None;
+                        cx.notify();
+                    }),
                 ),
         )
+        .with_priority(1)
+        .into_any_element();
+        let items = files.iter().enumerate().map(|(n, file)| {
+            let kind = katna_preview::kind(&file.mime, &file.name);
+            let open = file.clone();
+            div()
+                .id(("files-item", n))
+                .h(px(40.0))
+                .px(px(16.0))
+                .flex()
+                .items_center()
+                .gap(px(12.0))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    cx.stop_propagation();
+                    this.open_row_file(&open, window, cx);
+                }))
+                .child(kind_badge(kind, 20.0))
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .truncate()
+                        .text_color(rgba(th.text))
+                        .child(file.name.clone()),
+                )
+                .child(
+                    div()
+                        .flex_none()
+                        .text_size(px(12.0))
+                        .text_color(rgba(th.text_faint))
+                        .child(format::size(file.size)),
+                )
+        });
+        let popover = deferred(
+            anchored()
+                .offset(point(px(0.0), px(6.0)))
+                .snap_to_window_with_margin(px(8.0))
+                .child(
+                    menu(th)
+                        .id(("files-menu", ix))
+                        .w(px(320.0))
+                        .max_h(px(320.0))
+                        .overflow_y_scroll()
+                        .occlude()
+                        .text_size(px(14.0))
+                        .children(items)
+                        .with_animation(
+                            ("files-menu", ix),
+                            Animation::new(Duration::from_millis(160))
+                                .with_easing(ease_out_quint()),
+                            |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
+                        ),
+                ),
+        )
+        .with_priority(2)
+        .into_any_element();
+        [scrim, popover]
     }
 
     /// Archive, delete and read/unread buttons shown on the hovered line in

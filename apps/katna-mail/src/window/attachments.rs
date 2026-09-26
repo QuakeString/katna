@@ -21,6 +21,7 @@ use katna_store::MessageId;
 
 use super::MailWindow;
 use super::viewer::{Viewer, ViewerEvent};
+use crate::data::RowFile;
 use crate::format;
 use crate::theme::Theme;
 use crate::widgets::{icon, tip};
@@ -91,6 +92,25 @@ pub(super) fn bitmap(mut image: RgbaImage) -> Arc<RenderImage> {
         pixel.0.swap(0, 2);
     }
     Arc::new(RenderImage::new([Frame::new(image)]))
+}
+
+/// Where a list chip's attachment is among the message's parsed ones: the
+/// same name (the `nth` of that name), else the same place among the named
+/// ones, as the list read them from the message's structure.
+fn row_file_index(attachments: &[Attachment], file: &RowFile) -> Option<usize> {
+    attachments
+        .iter()
+        .enumerate()
+        .filter(|(_, a)| a.name == file.name)
+        .nth(file.nth)
+        .or_else(|| {
+            attachments
+                .iter()
+                .enumerate()
+                .find(|(_, a)| a.name == file.name)
+        })
+        .map(|(ix, _)| ix)
+        .or_else(|| (file.order < attachments.len()).then_some(file.order))
 }
 
 /// A colored square with the file type's icon.
@@ -382,6 +402,53 @@ impl MailWindow {
             self.show_snackbar("This message is not downloaded.", None, cx);
             return;
         };
+        self.show_viewer(raw, items, index, window, cx);
+    }
+
+    /// Opens an attachment chip of the message list in the viewer, with
+    /// the message's other attachments a click of the arrows away.
+    pub(super) fn open_row_file(
+        &mut self,
+        file: &RowFile,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.files_menu = None;
+        let Some(raw) = self
+            .mail
+            .as_ref()
+            .ok()
+            .and_then(|mail| mail.raw(file.message))
+        else {
+            self.show_snackbar("This message has not been downloaded yet.", None, cx);
+            return;
+        };
+        let view = katna_render::message_view(&raw);
+        let Some(index) = row_file_index(&view.attachments, file) else {
+            self.show_snackbar(
+                "This attachment could not be found in the message.",
+                None,
+                cx,
+            );
+            return;
+        };
+        let items = view
+            .attachments
+            .iter()
+            .enumerate()
+            .map(|(ix, a)| Item::new(ix, a))
+            .collect();
+        self.show_viewer(raw, items, index, window, cx);
+    }
+
+    fn show_viewer(
+        &mut self,
+        raw: Vec<u8>,
+        items: Vec<Item>,
+        index: usize,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
         self.close_viewer(window, cx);
         self.files.restore = window.focused(cx);
         let th = self.theme(window);
@@ -623,6 +690,37 @@ fn user_dir(text: &str, key: &str, home: &Path) -> Option<PathBuf> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn list_chips_find_their_attachment() {
+        let attachment = |name: &str| Attachment {
+            name: name.into(),
+            size: 1,
+            mime: "application/pdf".into(),
+            content_id: None,
+        };
+        let parsed = [
+            attachment("a.pdf"),
+            attachment("b.pdf"),
+            attachment("a.pdf"),
+        ];
+        let file = |name: &str, nth, order| RowFile {
+            message: MessageId(1),
+            name: name.into(),
+            mime: "application/pdf".into(),
+            size: 1,
+            nth,
+            order,
+        };
+        assert_eq!(row_file_index(&parsed, &file("a.pdf", 1, 2)), Some(2));
+        assert_eq!(row_file_index(&parsed, &file("b.pdf", 3, 1)), Some(1));
+        // Decoded differently than the structure named it: by place.
+        assert_eq!(
+            row_file_index(&parsed, &file("=?utf-8?q?b?=", 0, 1)),
+            Some(1)
+        );
+        assert_eq!(row_file_index(&parsed, &file("x", 0, 5)), None);
+    }
 
     #[test]
     fn names_are_made_safe() {

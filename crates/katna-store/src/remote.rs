@@ -8,6 +8,7 @@
 //! `message_location`, because IMAP flags belong to the copy. Merging copies
 //! (Gmail labels) comes with threading.
 
+use std::collections::HashMap;
 use std::fmt;
 use std::str::FromStr;
 
@@ -166,6 +167,22 @@ impl Store {
             })
         })?;
         Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// [`attachments`](Self::attachments) of several messages, for the
+    /// message list. Messages without any are left out.
+    pub fn attachment_lists(
+        &self,
+        messages: &[MessageId],
+    ) -> Result<HashMap<MessageId, Vec<StoredAttachment>>> {
+        let mut out = HashMap::new();
+        for &message in messages {
+            let list = self.attachments(message)?;
+            if !list.is_empty() {
+                out.insert(message, list);
+            }
+        }
+        Ok(out)
     }
 
     /// The newest message ID of `account`; 0 when it has none.
@@ -843,6 +860,11 @@ mod tests {
                 },
             ]
         );
+        let lists = store
+            .attachment_lists(&[id, MessageId(id.0 + 100)])
+            .unwrap();
+        assert_eq!(lists.len(), 1, "messages without attachments are left out");
+        assert_eq!(lists[&id], stored);
 
         let mut batch = store.mail_batch().unwrap();
         batch.remove_folder(inbox).unwrap();

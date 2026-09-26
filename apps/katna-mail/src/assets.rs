@@ -57,6 +57,8 @@ icons!(
     "forward",
     "highlight",
     "image",
+    "important-filled",
+    "important",
     "inbox",
     "indent-less",
     "indent-more",

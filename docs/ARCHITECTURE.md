@@ -530,7 +530,7 @@ needed for filtering and ranking; display data comes from SQLite.
 
 ```
 from:alice  to:bob  cc:  org:acme  subject:  has:attachment  filename:pdf
-in:inbox  label:x  is:unread  is:starred  before:2025-01-01  after:  newer_than:30d
+in:inbox  label:x  is:unread  is:starred  is:important  before:2025-01-01  after:  newer_than:30d
 larger:5M  smaller:  list:  "exact phrase"  -exclude  OR  ( )
 ```
 
@@ -1018,6 +1018,20 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   message in the card; `u`/Escape goes back, `j`/`k` move to the next or
   previous message in both views, as in Gmail. The toolbar shows the
   visible range ("1–19 of 72") and paging arrows.
+- **Line extras (Gmail's).** Next to the star, an importance marker
+  (`+`/`=` mark important, `-` not important; also in the More and
+  right-click menus). Importance is the `$Important` keyword (RFC 8457,
+  `MessageFlags::IMPORTANT`); on Gmail it is the Important label, read
+  with `X-GM-LABELS` along with flags and set with `STORE X-GM-LABELS`,
+  and `is:important` searches it. Lines with named attachments grow a
+  second row of chips (file-type badge and name, the full name as a
+  tooltip; as many as fit, at most three) and a round "+N" that lists
+  the rest; a chip opens the built-in viewer (§13.8) on that file, with
+  the message's other attachments a click of the arrows away. Lines differ
+  in height, so the list is GPUI's `list` (measured lines) rather than
+  `uniform_list`. Hovering a line shows Archive, Delete and Mark as
+  read/unread in place of the date. Star and importance changes show a
+  snackbar with Undo.
 - **Reading view.** Subject with the folder as a chip, a letter avatar
   (color from the address), sender, recipients, date with "(2 hours ago)",
   the body, attachments as cards, and Reply/Forward buttons.
