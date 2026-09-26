@@ -1229,7 +1229,8 @@ mod tests {
         // The paragraph only adds space around the button.
         let Block::Box(button) = &d.blocks[0] else {
             panic!("{:?}", d.blocks)
-        };        assert!(button.style.inline);
+        };
+        assert!(button.style.inline);
         assert_eq!(button.style.align, Align::Center);
         assert_eq!(button.style.background, Some(0x6d28d9ff));
         assert_eq!(button.style.radius, 6.0);
