@@ -73,6 +73,7 @@ icons!(
     "minimize",
     "more",
     "move-to",
+    "notch",
     "notes",
     "open-external",
     "open-full",
