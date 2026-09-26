@@ -166,6 +166,14 @@ impl Conversation {
     fn all_expanded(&self) -> bool {
         self.parts.iter().all(|p| p.expanded)
     }
+
+    /// Each open, downloaded message of the conversation.
+    pub(super) fn open_views(&self) -> impl Iterator<Item = (MessageId, &MessageView)> {
+        self.parts
+            .iter()
+            .filter(|p| p.expanded)
+            .filter_map(|p| Some((p.id, p.body.as_ref()?.view.as_ref()?)))
+    }
 }
 
 /// What the list of messages shows: a message, or a fold of several.
@@ -272,6 +280,7 @@ impl MailWindow {
     }
 
     pub(super) fn render_reader(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        self.request_thumbnails(cx);
         let Some(reader) = &self.reader else {
             return placeholder("", th);
         };
@@ -714,50 +723,8 @@ impl MailWindow {
                         .then_some("This message is HTML; it is shown as plain text for now."),
                     (*cut || view.truncated).then_some("The message is too long to show in full."),
                 ];
-                let attachments = (!view.attachments.is_empty()).then(|| {
-                    div()
-                        .flex()
-                        .flex_row()
-                        .flex_wrap()
-                        .gap(px(12.0))
-                        .pt(px(16.0))
-                        .mt(px(16.0))
-                        .border_t_1()
-                        .border_color(rgba(th.divider))
-                        .children(view.attachments.iter().map(|a| {
-                            div()
-                                .w(px(200.0))
-                                .flex()
-                                .flex_row()
-                                .items_center()
-                                .gap(px(10.0))
-                                .px(px(12.0))
-                                .py(px(10.0))
-                                .rounded(px(8.0))
-                                .border_1()
-                                .border_color(rgba(th.divider))
-                                .child(icon("attachment", th.text_faint, 20.0))
-                                .child(
-                                    div()
-                                        .min_w_0()
-                                        .flex()
-                                        .flex_col()
-                                        .child(
-                                            div()
-                                                .truncate()
-                                                .text_size(px(13.0))
-                                                .text_color(rgba(th.text))
-                                                .child(a.name.clone()),
-                                        )
-                                        .child(
-                                            div()
-                                                .text_size(px(12.0))
-                                                .text_color(rgba(th.text_faint))
-                                                .child(format::size(a.size)),
-                                        ),
-                                )
-                        }))
-                });
+                let listed: Vec<_> = view.attachments.iter().enumerate().collect();
+                let attachments = self.attachment_cards(id, &listed, th, cx);
                 div()
                     .flex()
                     .flex_col()

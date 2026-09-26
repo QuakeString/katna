@@ -8,4 +8,6 @@
 
 mod plain;
 
-pub use plain::{Address, Attachment, MAX_BODY_BYTES, MessageView, message_view};
+pub use plain::{
+    Address, Attachment, AttachmentFile, MAX_BODY_BYTES, MessageView, attachment_file, message_view,
+};

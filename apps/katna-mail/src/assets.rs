@@ -30,11 +30,13 @@ icons!(
     "close",
     "compose",
     "contacts",
+    "download",
     "drafts",
     "drop-down",
     "emoji",
     "expand",
     "feeds",
+    "file",
     "folder",
     "format-text",
     "forum",
@@ -52,6 +54,7 @@ icons!(
     "more",
     "move-to",
     "notes",
+    "open-external",
     "open-full",
     "people",
     "person-add",
@@ -70,6 +73,8 @@ icons!(
     "tasks",
     "trash",
     "tune",
+    "zoom-in",
+    "zoom-out",
 );
 
 pub struct Assets;

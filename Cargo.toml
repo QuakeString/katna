@@ -21,6 +21,7 @@ katna-sync = { path = "crates/katna-sync" }
 katna-search = { path = "crates/katna-search" }
 katna-org = { path = "crates/katna-org" }
 katna-render = { path = "crates/katna-render" }
+katna-preview = { path = "crates/katna-preview" }
 katna-dav = { path = "crates/katna-dav" }
 katna-dbus = { path = "crates/katna-dbus" }
 katna-notify = { path = "crates/katna-notify" }
@@ -36,6 +37,10 @@ async-signal = "0.2"
 blake3 = "1.8"
 futures-lite = "2.6"
 futures-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12"] }
+# Pure-Rust PDF rasterizer for the attachment viewer (katna-preview).
+hayro = "0.7.1"
+# The version GPUI decodes pictures with; no extra formats of our own.
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "webp", "bmp", "tiff"] }
 jiff = { version = "0.2.37", default-features = false, features = ["std", "tz-system", "tzdb-zoneinfo"] }
 mail-parser = "0.11.9"
 # Secret Service client; async-std selects zbus/async-io, not tokio.
