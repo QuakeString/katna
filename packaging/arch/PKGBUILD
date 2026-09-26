@@ -69,11 +69,10 @@ build() {
   cd katna
   export RUSTUP_TOOLCHAIN=stable
   export CARGO_TARGET_DIR=target
-  local bin packages=()
-  for bin in "${_bins[@]}"; do
-    packages+=(--package "$bin")
-  done
-  cargo build --frozen --release "${packages[@]}"
+  # Two builds: in one, Cargo would give katna-daemon and katnactl the
+  # features GPUI turns on in shared crates, making them bigger for nothing.
+  cargo build --frozen --release --package katna-mail
+  cargo build --frozen --release --package katna-daemon --package katnactl
 }
 
 package() {
