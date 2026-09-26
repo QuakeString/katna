@@ -141,6 +141,7 @@ impl FakeServer {
         FakeConnection {
             server: self.clone(),
             selected: None,
+            seen_modseq: 0,
             generation,
         }
     }
@@ -169,6 +170,9 @@ impl Connector for FakeServer {
 pub struct FakeConnection {
     server: FakeServer,
     selected: Option<String>,
+    /// The server state last reported to the client: changes after it
+    /// end the next IDLE at once, as a real server's untagged responses do.
+    seen_modseq: u64,
     generation: u32,
 }
 
@@ -230,6 +234,7 @@ impl MailBackend for FakeConnection {
                 highest_modseq: Some(state.modseq),
             }
         };
+        self.seen_modseq = status.highest_modseq.unwrap();
         self.selected = Some(folder.to_owned());
         Ok(status)
     }
@@ -317,7 +322,8 @@ impl MailBackend for FakeConnection {
         I: Future + Send,
         I::Output: Send,
     {
-        let start = self.state("IDLE".into())?.modseq;
+        drop(self.state("IDLE".into())?);
+        let start = self.seen_modseq;
         let deadline = Instant::now() + max_wait;
         let watch = async {
             loop {
@@ -325,28 +331,41 @@ impl MailBackend for FakeConnection {
                     let state = self.guard()?;
                     if state.modseq != start {
                         let exists = state.folders[self.selected()].messages.len() as u32;
-                        return Ok(Wait {
-                            changes: vec![FolderChange::Exists(exists)],
-                            interrupted: None,
-                        });
+                        return Ok((
+                            Some(state.modseq),
+                            Wait {
+                                changes: vec![FolderChange::Exists(exists)],
+                                interrupted: None,
+                            },
+                        ));
                     }
                 }
                 if Instant::now() >= deadline {
-                    return Ok(Wait {
-                        changes: Vec::new(),
-                        interrupted: None,
-                    });
+                    return Ok((
+                        None,
+                        Wait {
+                            changes: Vec::new(),
+                            interrupted: None,
+                        },
+                    ));
                 }
                 Timer::after(Duration::from_millis(5)).await;
             }
         };
         let stop = async {
-            Ok(Wait {
-                changes: Vec::new(),
-                interrupted: Some(interrupt.await),
-            })
+            Ok::<_, Error>((
+                None,
+                Wait {
+                    changes: Vec::new(),
+                    interrupted: Some(interrupt.await),
+                },
+            ))
         };
-        watch.or(stop).await
+        let (seen, wait): (Option<u64>, _) = watch.or(stop).await?;
+        if let Some(seen) = seen {
+            self.seen_modseq = seen;
+        }
+        Ok(wait)
     }
 
     async fn logout(self) -> Result<()> {
