@@ -7,8 +7,10 @@ pub mod motion;
 pub mod ripple;
 pub mod text_area;
 pub mod text_input;
+pub mod tooltip;
 
 pub use motion::Spring;
 pub use ripple::Ripple;
 pub use text_area::{TEXT_AREA_CONTEXT, TextArea};
 pub use text_input::{InputEvent, TextInput};
+pub use tooltip::{Tooltip, UiFont};

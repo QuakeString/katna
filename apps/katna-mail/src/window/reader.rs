@@ -3,8 +3,8 @@
 //! The open conversation, laid out like webmail: an action bar (back,
 //! archive, spam, delete, mark unread, move, more, "3 of 120"), the subject
 //! with its folder chip, the messages (older ones folded to one line, a
-//! "4 older messages" fold in long threads, the newest open) and a reply
-//! bar at the end.
+//! "4 older messages" fold in long threads, the newest open) and, pinned
+//! at the foot, Reply, Reply all and Forward, or the reply being written.
 
 use std::rc::Rc;
 use std::time::Duration;
@@ -25,7 +25,9 @@ use crate::daemon::Command;
 use crate::data::{EntryKey, Mail, Row};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button, icon_button_colored, pill_button, placeholder, toolbar};
+use crate::widgets::{
+    icon, icon_button, icon_button_colored, pill_button, placeholder, tip, toolbar,
+};
 
 /// The reading view shows at most this many lines of a body.
 const MAX_BODY_LINES: usize = 4000;
@@ -199,7 +201,7 @@ impl MailWindow {
             .size_full()
             .flex()
             .flex_col()
-            .rounded(px(16.0))
+            .rounded(px(super::PANEL_RADIUS))
             .overflow_hidden()
             .bg(rgba(th.surface))
             .child(self.render_reader_toolbar(th, cx))
@@ -219,9 +221,9 @@ impl MailWindow {
             .and_then(|r| self.entries.iter().position(|e| e.key == r.key));
         let ix = position.or(self.selected).unwrap_or(0);
         let back = if self.split() {
-            icon_button("reader-close", "close", 20.0, th)
+            icon_button("reader-close", "close", 20.0, th).tooltip(tip("Close", th))
         } else {
-            icon_button("reader-back", "back", 20.0, th)
+            icon_button("reader-back", "back", 20.0, th).tooltip(tip("Back", th))
         }
         .on_click(
             cx.listener(|this, _, window, cx| this.close_message(&super::CloseMessage, window, cx)),
@@ -232,18 +234,24 @@ impl MailWindow {
             .child(separator(th))
             .child(self.action_buttons("reader", th, cx))
             .child(separator(th))
-            .child(icon_button("reader-unread", "mail", 20.0, th).on_click(
-                cx.listener(|this, _, window, cx| this.mark_unread(&super::MarkUnread, window, cx)),
-            ))
+            .child(
+                icon_button("reader-unread", "mail", 20.0, th)
+                    .tooltip(tip("Mark as unread", th))
+                    .on_click(cx.listener(|this, _, window, cx| {
+                        this.mark_unread(&super::MarkUnread, window, cx)
+                    })),
+            )
             .when(!narrow, |d| {
                 d.child({
                     let move_to = icon_button("reader-move", "move-to", 20.0, th)
+                        .tooltip(tip("Move to", th))
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)));
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
                 })
             })
             .child({
                 let more = icon_button("reader-more", "more", 20.0, th)
+                    .tooltip(tip("More", th))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ReaderMore, cx)));
                 self.with_menu(more, Menu::ReaderMore, th, cx)
             })
@@ -263,6 +271,7 @@ impl MailWindow {
             })
             .child(
                 icon_button("newer", "chevron-left", 20.0, th)
+                    .tooltip(tip("Newer", th))
                     .when(ix == 0, |d| d.opacity(0.4))
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.select_previous(&SelectPrevious, window, cx)
@@ -270,6 +279,7 @@ impl MailWindow {
             )
             .child(
                 icon_button("older", "chevron-right", 20.0, th)
+                    .tooltip(tip("Older", th))
                     .when(ix + 1 >= count, |d| d.opacity(0.4))
                     .on_click(
                         cx.listener(|this, _, window, cx| {
@@ -336,6 +346,14 @@ impl MailWindow {
                         if all_expanded { th.accent } else { th.text_dim },
                         th,
                     )
+                    .tooltip(tip(
+                        if all_expanded {
+                            "Collapse all"
+                        } else {
+                            "Expand all"
+                        },
+                        th,
+                    ))
                     .on_click(cx.listener(move |this, _, _, cx| {
                         if let (Some(reader), Ok(mail)) = (&mut this.reader, &this.mail) {
                             reader.set_all(!all_expanded, mail);
@@ -368,46 +386,74 @@ impl MailWindow {
             })
             .collect();
 
-        let reply_bar = div()
-            .flex()
-            .flex_row()
-            .flex_wrap()
-            .gap(px(12.0))
-            .pl(px(72.0))
-            .pr(px(24.0))
-            .pt(px(24.0))
-            .pb(px(32.0))
-            .child(pill_button("reply", "reply", "Reply", th).on_click(
-                cx.listener(|this, _, window, cx| this.open_compose(Kind::Reply, None, window, cx)),
-            ))
-            .child(
-                pill_button("reply-all", "reply-all", "Reply all", th).on_click(cx.listener(
-                    |this, _, window, cx| this.open_compose(Kind::ReplyAll, None, window, cx),
-                )),
-            )
-            .child(
-                pill_button("forward", "forward", "Forward", th).on_click(cx.listener(
-                    |this, _, window, cx| this.open_compose(Kind::Forward, None, window, cx),
-                )),
-            );
+        // Reply, Reply all and Forward stay at the foot of the pane while
+        // the conversation scrolls; a reply is written there too.
         let key = reader.key;
-        div()
-            .id("reader")
-            .size_full()
-            .overflow_y_scroll()
-            .track_scroll(&self.reader_scroll)
-            .child(
+        let max_body = f32::from(self.reader_scroll.bounds().size.height) * 0.45;
+        let footer = self
+            .render_inline_reply(key, max_body, th, cx)
+            .unwrap_or_else(|| {
                 div()
                     .flex()
-                    .flex_col()
-                    .child(title)
-                    .children(parts)
-                    .child(reply_bar)
-                    .with_animation(
-                        ("open-conversation", key_number(key)),
-                        Animation::new(Duration::from_millis(280)).with_easing(ease_out_quint()),
-                        |el, t| el.opacity(t).mt(px(14.0 * (1.0 - t))),
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(12.0))
+                    .pl(px(72.0))
+                    .pr(px(24.0))
+                    .py(px(14.0))
+                    .child(
+                        pill_button("reply", "reply", "Reply", th).on_click(cx.listener(
+                            |this, _, window, cx| this.open_compose(Kind::Reply, None, window, cx),
+                        )),
+                    )
+                    .child(
+                        pill_button("reply-all", "reply-all", "Reply all", th).on_click(
+                            cx.listener(|this, _, window, cx| {
+                                this.open_compose(Kind::ReplyAll, None, window, cx)
+                            }),
+                        ),
+                    )
+                    .child(
+                        pill_button("forward", "forward", "Forward", th).on_click(cx.listener(
+                            |this, _, window, cx| {
+                                this.open_compose(Kind::Forward, None, window, cx)
+                            },
+                        )),
+                    )
+                    .into_any_element()
+            });
+        div()
+            .size_full()
+            .flex()
+            .flex_col()
+            .child(
+                div()
+                    .id("reader")
+                    .flex_1()
+                    .min_h_0()
+                    .overflow_y_scroll()
+                    .track_scroll(&self.reader_scroll)
+                    .child(
+                        div()
+                            .flex()
+                            .flex_col()
+                            .pb(px(24.0))
+                            .child(title)
+                            .children(parts)
+                            .with_animation(
+                                ("open-conversation", key_number(key)),
+                                Animation::new(Duration::from_millis(280))
+                                    .with_easing(ease_out_quint()),
+                                |el, t| el.opacity(t).mt(px(14.0 * (1.0 - t))),
+                            ),
                     ),
+            )
+            .child(
+                div()
+                    .flex_none()
+                    .border_t_1()
+                    .border_color(rgba(th.divider))
+                    .child(footer),
             )
             .into_any_element()
     }
@@ -611,6 +657,7 @@ impl MailWindow {
                     th,
                 )
                 .size(px(32.0))
+                .tooltip(tip(if flagged { "Starred" } else { "Not starred" }, th))
                 .on_click(cx.listener(move |this, _, _, cx| {
                     cx.stop_propagation();
                     this.star_message(ix, id, !flagged, cx);
@@ -618,6 +665,7 @@ impl MailWindow {
             )
             .child(
                 icon_button(("part-reply", ix), "reply", 20.0, th)
+                    .tooltip(tip("Reply", th))
                     .size(px(32.0))
                     .on_click(cx.listener(move |this, _, window, cx| {
                         cx.stop_propagation();
