@@ -685,9 +685,7 @@ impl Element for ParaElement {
                 cx,
             );
         }
-        if focused
-            && let Some((offset, upstream)) = cursor
-        {
+        if focused && let Some((offset, upstream)) = cursor {
             let offset = if placeholder { 0 } else { offset };
             let (at, height) = layout.caret(offset, upstream);
             window.paint_quad(fill(

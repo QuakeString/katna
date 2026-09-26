@@ -20,6 +20,7 @@
 mod attach;
 mod schedule;
 mod scheduled;
+mod signature_editor;
 mod tools;
 
 use std::rc::Rc;
@@ -48,6 +49,7 @@ use crate::widgets::{avatar, elevation, icon, tip};
 
 pub(super) use attach::Attachment;
 pub(super) use scheduled::NAV_KEY as SCHEDULED_NAV_KEY;
+pub(super) use signature_editor::signature_content;
 use tools::Popup;
 
 const WIDTH: f32 = 560.0;
@@ -151,6 +153,9 @@ pub(super) struct Writing {
     /// The list of scheduled mail shows.
     scheduled_open: bool,
     watch: Option<Task<()>>,
+    /// The signature being edited on the Settings page, and its bar.
+    signature_editor: Option<Entity<RichEditor>>,
+    signature_tools: Option<signature_editor::SignatureTools>,
 }
 
 impl Writing {
@@ -877,7 +882,9 @@ impl MailWindow {
         self.show_compose(draft, Draft::default(), thread, signature, true, window, cx);
         if let Some(compose) = &mut self.compose {
             compose.attachments = attachments;
-            compose.body.update(cx, |editor, cx| editor.set_plain(plain, cx));
+            compose
+                .body
+                .update(cx, |editor, cx| editor.set_plain(plain, cx));
         }
     }
 
@@ -1442,7 +1449,12 @@ mod tests {
             view: &view,
             date: "Tue".to_owned(),
         };
-        let d = draft(Kind::Forward, Some(&original), me, Some(html::from_plain("K")));
+        let d = draft(
+            Kind::Forward,
+            Some(&original),
+            me,
+            Some(html::from_plain("K")),
+        );
         assert_eq!(d.to, "");
         assert_eq!(d.subject, "Fwd: Gas prices");
         let body = text(&d);

@@ -10,7 +10,7 @@
 use std::rc::Rc;
 
 use gpui::{
-    AnyElement, Context, Entity, Focusable, FontWeight, Hsla, MouseButton, Pixels, Point,
+    Anchor, AnyElement, Context, Entity, Focusable, FontWeight, Hsla, MouseButton, Pixels, Point,
     Stateful, Subscription, Window, anchored, deferred, div, point, prelude::*, px, rgba,
 };
 use jiff::civil::Date;
@@ -20,9 +20,7 @@ use katna_ui::{InputEvent, TextInput};
 use super::super::MailWindow;
 use super::{Mode, schedule};
 use crate::theme::{Theme, fade};
-use crate::widgets::{
-    filled_button, icon, icon_button, icon_button_colored, menu, menu_item, tip,
-};
+use crate::widgets::{filled_button, icon, icon_button, icon_button_colored, menu, menu_item, tip};
 
 /// The open menu or dialog of the compose window.
 #[derive(Debug, Clone, PartialEq)]
@@ -98,7 +96,11 @@ impl Dialog {
     }
 
     /// What Enter and Escape do in the dialogs' fields.
-    pub fn subscribe(&self, window: &mut Window, cx: &mut Context<MailWindow>) -> Vec<Subscription> {
+    pub fn subscribe(
+        &self,
+        window: &mut Window,
+        cx: &mut Context<MailWindow>,
+    ) -> Vec<Subscription> {
         let mut subscriptions = Vec::new();
         for (field, submit) in [
             (&self.link_text, Submit::Link),
@@ -132,7 +134,7 @@ enum Submit {
 }
 
 /// Webmail's color palette: grays, bright colors, then six shades.
-const COLORS: [u32; 64] = [
+pub(super) const COLORS: [u32; 64] = [
     0x000000, 0x444444, 0x666666, 0x999999, 0xcccccc, 0xeeeeee, 0xf3f3f3, 0xffffff, //
     0xff0000, 0xff9900, 0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0x9900ff, 0xff00ff, //
     0xf4cccc, 0xfce5cd, 0xfff2cc, 0xd9ead3, 0xd0e0e3, 0xcfe2f3, 0xd9d2e9, 0xead1dc, //
@@ -182,9 +184,12 @@ fn emoji_list(query: &str, group: usize) -> Vec<&'static emojis::Emoji> {
 /// a bare email address a `mailto:` link.
 pub(super) fn normalize_url(url: &str) -> String {
     let url = url.trim();
-    let has_scheme = url
-        .split_once(':')
-        .is_some_and(|(scheme, _)| !scheme.is_empty() && scheme.chars().all(|c| c.is_ascii_alphanumeric() || "+-.".contains(c)));
+    let has_scheme = url.split_once(':').is_some_and(|(scheme, _)| {
+        !scheme.is_empty()
+            && scheme
+                .chars()
+                .all(|c| c.is_ascii_alphanumeric() || "+-.".contains(c))
+    });
     if url.is_empty() || has_scheme {
         url.to_owned()
     } else if url.contains('@') && !url.contains('/') {
@@ -195,7 +200,7 @@ pub(super) fn normalize_url(url: &str) -> String {
 }
 
 /// A small square button of the formatting bar, shaded when `active`.
-fn format_button(
+pub(super) fn format_button(
     id: &'static str,
     name: &'static str,
     active: bool,
@@ -216,7 +221,7 @@ fn format_button(
 }
 
 /// A dropdown of the formatting bar: its content and a small arrow.
-fn format_dropdown(id: &'static str, th: &Theme) -> Stateful<gpui::Div> {
+pub(super) fn format_dropdown(id: &'static str, th: &Theme) -> Stateful<gpui::Div> {
     div()
         .id(id)
         .flex_none()
@@ -234,25 +239,27 @@ fn format_dropdown(id: &'static str, th: &Theme) -> Stateful<gpui::Div> {
         .hover(|s| s.bg(rgba(th.hover)))
 }
 
-fn separator(th: &Theme) -> gpui::Div {
+pub(super) fn separator(th: &Theme) -> gpui::Div {
     div()
         .flex_none()
-        .mx(px(4.0))
+        .mx(px(3.0))
         .w(px(1.0))
         .h(px(20.0))
         .bg(rgba(th.divider))
 }
 
-/// A popup above the element it belongs to (in a `relative` parent).
-fn above(popup: impl IntoElement, right: bool, gap: f32) -> AnyElement {
+/// A popup above the element it belongs to (in a `relative` parent),
+/// kept inside the window.
+pub(super) fn above(popup: impl IntoElement) -> AnyElement {
+    // Anchored to the parent's top left corner.
     deferred(
-        div()
-            .absolute()
-            .bottom(px(gap))
-            .when(right, |d| d.right_0())
-            .when(!right, |d| d.left_0())
-            .occlude()
-            .child(popup),
+        div().absolute().top_0().left_0().child(
+            anchored()
+                .anchor(Anchor::BottomLeft)
+                .offset(point(px(0.0), px(-6.0)))
+                .snap_to_window_with_margin(px(8.0))
+                .child(div().occlude().child(popup)),
+        ),
     )
     .with_priority(2)
     .into_any_element()
@@ -404,10 +411,10 @@ impl MailWindow {
                     .child(icon("drop-down", th.on_accent, 20.0)),
             )
             .when(open(Popup::Send), |d| {
-                d.child(above(self.render_send_menu(th, cx), false, 44.0))
+                d.child(above(self.render_send_menu(th, cx)))
             })
             .when(open(Popup::Schedule), |d| {
-                d.child(above(self.render_schedule_menu(th, cx), false, 44.0))
+                d.child(above(self.render_schedule_menu(th, cx)))
             });
         let tool = |id: &'static str, name: &'static str, label: &'static str| {
             icon_button(id, name, 20.0, th).tooltip(tip(label, th))
@@ -416,15 +423,20 @@ impl MailWindow {
             "compose-format",
             "format-text",
             20.0,
-            if compose.format_bar { th.text } else { th.text_dim },
+            if compose.format_bar {
+                th.text
+            } else {
+                th.text_dim
+            },
             th,
         )
         .when(compose.format_bar, |d| d.bg(rgba(th.chip)))
         .tooltip(tip("Formatting options", th))
-        .on_click(cx.listener(|this, _, _, cx| {
+        .on_click(cx.listener(|this, _, window, cx| {
             if let Some(c) = &mut this.compose {
                 c.format_bar = !c.format_bar;
                 c.popup = None;
+                window.focus(&c.body.focus_handle(cx), cx);
             }
             cx.notify();
         }));
@@ -445,7 +457,7 @@ impl MailWindow {
                 )),
             )
             .when(open(Popup::Emoji), |d| {
-                d.child(above(self.render_emoji_picker(th, cx), false, 44.0))
+                d.child(above(self.render_emoji_picker(th, cx)))
             });
         let more = div()
             .relative()
@@ -454,7 +466,7 @@ impl MailWindow {
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::More, cx))),
             )
             .when(open(Popup::More) || open(Popup::Label), |d| {
-                d.child(above(self.render_more_menu(th, cx), true, 44.0))
+                d.child(above(self.render_more_menu(th, cx)))
             });
         let narrow = width < 440.0;
         div()
@@ -472,9 +484,10 @@ impl MailWindow {
                 tool("compose-attach", "attachment", "Attach files")
                     .on_click(cx.listener(|this, _, _, cx| this.pick_files(false, cx))),
             )
-            .child(tool("compose-link", "link", "Insert link (Ctrl+K)").on_click(
-                cx.listener(|this, _, window, cx| this.open_link_dialog(window, cx)),
-            ))
+            .child(
+                tool("compose-link", "link", "Insert link (Ctrl+K)")
+                    .on_click(cx.listener(|this, _, window, cx| this.open_link_dialog(window, cx))),
+            )
             .child(emoji)
             .when(!plain, |d| {
                 d.child(
@@ -484,15 +497,15 @@ impl MailWindow {
             })
             .when(!narrow, |d| {
                 d.child(
-                    tool("compose-event", "event", "Insert calendar event").on_click(
-                        cx.listener(|this, _, _, cx| {
+                    tool("compose-event", "event", "Insert calendar event").on_click(cx.listener(
+                        |this, _, _, cx| {
                             this.show_snackbar(
                                 "Calendar events come with Katna Calendar.",
                                 None,
                                 cx,
                             )
-                        }),
-                    ),
+                        },
+                    )),
                 )
             })
             .child(self.render_signature_button(th, cx))
@@ -594,9 +607,9 @@ impl MailWindow {
                         .text_color(rgba(th.text_dim))
                         .child(schedule::short(&preset.at)),
                 )
-                .on_click(cx.listener(move |this, _, window, cx| {
-                    this.send_compose(Some(at), window, cx)
-                }))
+                .on_click(
+                    cx.listener(move |this, _, window, cx| this.send_compose(Some(at), window, cx)),
+                )
         });
         menu(th)
             .w(px(340.0))
@@ -622,9 +635,8 @@ impl MailWindow {
             .children(items)
             .child(menu_divider(th))
             .child(
-                tool_item("schedule-pick", "calendar", "Pick date & time", th).on_click(
-                    cx.listener(|this, _, window, cx| this.open_time_picker(window, cx)),
-                ),
+                tool_item("schedule-pick", "calendar", "Pick date & time", th)
+                    .on_click(cx.listener(|this, _, window, cx| this.open_time_picker(window, cx))),
             )
             .into_any_element()
     }
@@ -698,16 +710,22 @@ impl MailWindow {
             (editor.can_undo(), editor.can_redo(), editor.in_table());
         let popup = compose.popup.clone();
         let open = |p: Popup| popup.as_ref() == Some(&p);
-        let wide = width >= 600.0;
+        let wide = width >= 660.0;
 
         let font = div()
             .relative()
             .child(
                 format_dropdown("format-font", th)
-                    .w(px(112.0))
+                    .w(px(100.0))
                     .tooltip(tip("Font", th))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Font, cx)))
-                    .child(div().flex_1().min_w_0().truncate().child(style.font.label()))
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .truncate()
+                            .child(style.font.label()),
+                    )
                     .child(icon("drop-down", th.text_dim, 18.0)),
             )
             .when(open(Popup::Font), |d| {
@@ -719,7 +737,7 @@ impl MailWindow {
                         })
                         .on_click(self.on_body(cx, move |e, cx| e.set_font(font, cx)))
                 });
-                d.child(above(menu(th).w(px(200.0)).children(items), false, 36.0))
+                d.child(above(menu(th).w(px(200.0)).children(items)))
             });
         let size = div()
             .relative()
@@ -742,21 +760,13 @@ impl MailWindow {
                         .gap(px(12.0))
                         .cursor_pointer()
                         .hover(|s| s.bg(rgba(th.hover)))
-                        .child(
-                            div()
-                                .w(px(18.0))
-                                .when(size == style.size, |d| {
-                                    d.child(icon("check", th.text_dim, 18.0))
-                                }),
-                        )
-                        .child(
-                            div()
-                                .text_size(px(14.0 * size.scale()))
-                                .child(size.label()),
-                        )
+                        .child(div().w(px(18.0)).when(size == style.size, |d| {
+                            d.child(icon("check", th.text_dim, 18.0))
+                        }))
+                        .child(div().text_size(px(14.0 * size.scale())).child(size.label()))
                         .on_click(self.on_body(cx, move |e, cx| e.set_size(size, cx)))
                 });
-                d.child(above(menu(th).w(px(180.0)).children(items), false, 36.0))
+                d.child(above(menu(th).w(px(180.0)).children(items)))
             });
         let colors = div()
             .relative()
@@ -768,11 +778,12 @@ impl MailWindow {
                     .child(icon("drop-down", th.text_dim, 18.0)),
             )
             .when(open(Popup::Colors), |d| {
-                d.child(above(
-                    self.render_colors(th, style.color, style.background, cx),
-                    false,
-                    36.0,
-                ))
+                d.child(above(self.render_colors(
+                    th,
+                    style.color,
+                    style.background,
+                    cx,
+                )))
             });
         let align_icon = match para.align {
             Align::Left => "align-left",
@@ -819,43 +830,63 @@ impl MailWindow {
                             Align::Right,
                             "Align right (Ctrl+Shift+R)",
                         )),
-                    false,
-                    36.0,
                 ))
             });
-        let table = div()
-            .relative()
-            .child(
-                format_button("format-table", "table", in_table, th)
-                    .tooltip(tip(if in_table { "Table" } else { "Insert table" }, th))
-                    .on_click(cx.listener(move |this, _, _, cx| {
-                        let p = if in_table {
-                            Popup::TableEdit
-                        } else {
-                            Popup::Table
-                        };
-                        if let Some(c) = &mut this.compose {
-                            c.dialog.grid = (0, 0);
-                        }
-                        this.toggle_popup(p, cx)
-                    })),
-            )
-            .when(open(Popup::Table), |d| {
-                d.child(above(self.render_table_grid(th, cx), true, 36.0))
-            })
-            .when(open(Popup::TableEdit), |d| {
-                d.child(above(self.render_table_menu(th, cx), true, 36.0))
-            });
-        let quote = format_button("format-quote", "quote", para.quote > 0, th)
-            .tooltip(tip("Quote (Ctrl+Shift+9)", th))
-            .on_click(self.on_body(cx, |e, cx| e.toggle_quote(cx)));
-        let strike = format_button("format-strike", "format-strike", style.strike, th)
-            .tooltip(tip("Strikethrough (Alt+Shift+5)", th))
-            .on_click(self.on_body(cx, |e, cx| e.toggle_strike(cx)));
-        let clear = format_button("format-clear", "clear-format", false, th)
-            .tooltip(tip("Remove formatting (Ctrl+\\)", th))
-            .on_click(self.on_body(cx, |e, cx| e.clear_formatting(cx)));
-        let more = (!wide).then(|| {
+        // What does not fit a narrow bar goes in its "more" menu.
+        let table_click = cx.listener(move |this, _, _, cx| {
+            let p = if in_table {
+                Popup::TableEdit
+            } else {
+                Popup::Table
+            };
+            if let Some(c) = &mut this.compose {
+                c.dialog.grid = (0, 0);
+            }
+            this.toggle_popup(p, cx)
+        });
+        let rest: Vec<AnyElement> = vec![
+            format_button("format-indent-less", "indent-less", false, th)
+                .tooltip(tip("Indent less (Ctrl+[)", th))
+                .on_click(self.on_body(cx, |e, cx| e.indent(false, cx)))
+                .into_any_element(),
+            format_button("format-indent-more", "indent-more", false, th)
+                .tooltip(tip("Indent more (Ctrl+])", th))
+                .on_click(self.on_body(cx, |e, cx| e.indent(true, cx)))
+                .into_any_element(),
+            format_button("format-quote", "quote", para.quote > 0, th)
+                .tooltip(tip("Quote (Ctrl+Shift+9)", th))
+                .on_click(self.on_body(cx, |e, cx| e.toggle_quote(cx)))
+                .into_any_element(),
+            format_button("format-strike", "format-strike", style.strike, th)
+                .tooltip(tip("Strikethrough (Alt+Shift+5)", th))
+                .on_click(self.on_body(cx, |e, cx| e.toggle_strike(cx)))
+                .into_any_element(),
+            format_button("format-clear", "clear-format", false, th)
+                .tooltip(tip("Remove formatting (Ctrl+\\)", th))
+                .on_click(self.on_body(cx, |e, cx| e.clear_formatting(cx)))
+                .into_any_element(),
+            format_button("format-table", "table", in_table, th)
+                .tooltip(tip(if in_table { "Table" } else { "Insert table" }, th))
+                .on_click(table_click)
+                .into_any_element(),
+        ];
+        let table_popup = if open(Popup::Table) {
+            Some(above(self.render_table_grid(th, cx)))
+        } else if open(Popup::TableEdit) {
+            Some(above(self.render_table_menu(th, cx)))
+        } else {
+            None
+        };
+        let tail = if wide {
+            div()
+                .relative()
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(1.0))
+                .children(rest)
+                .children(table_popup)
+        } else {
             div()
                 .relative()
                 .child(
@@ -873,26 +904,11 @@ impl MailWindow {
                             .py(px(6.0))
                             .flex_row()
                             .gap(px(2.0))
-                            .child(
-                                format_button("format-quote-2", "quote", para.quote > 0, th)
-                                    .tooltip(tip("Quote (Ctrl+Shift+9)", th))
-                                    .on_click(self.on_body(cx, |e, cx| e.toggle_quote(cx))),
-                            )
-                            .child(
-                                format_button("format-strike-2", "format-strike", style.strike, th)
-                                    .tooltip(tip("Strikethrough (Alt+Shift+5)", th))
-                                    .on_click(self.on_body(cx, |e, cx| e.toggle_strike(cx))),
-                            )
-                            .child(
-                                format_button("format-clear-2", "clear-format", false, th)
-                                    .tooltip(tip("Remove formatting (Ctrl+\\)", th))
-                                    .on_click(self.on_body(cx, |e, cx| e.clear_formatting(cx))),
-                            ),
-                        true,
-                        36.0,
+                            .children(rest),
                     ))
                 })
-        });
+                .children(table_popup)
+        };
         div()
             .flex_none()
             .mx(px(12.0))
@@ -942,28 +958,26 @@ impl MailWindow {
             .child(separator(th))
             .child(align)
             .child(
-                format_button("format-numbered", "list-numbered", para.list == List::Numbered, th)
-                    .tooltip(tip("Numbered list (Ctrl+Shift+7)", th))
-                    .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Numbered, cx))),
+                format_button(
+                    "format-numbered",
+                    "list-numbered",
+                    para.list == List::Numbered,
+                    th,
+                )
+                .tooltip(tip("Numbered list (Ctrl+Shift+7)", th))
+                .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Numbered, cx))),
             )
             .child(
-                format_button("format-bulleted", "list-bulleted", para.list == List::Bullet, th)
-                    .tooltip(tip("Bulleted list (Ctrl+Shift+8)", th))
-                    .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Bullet, cx))),
+                format_button(
+                    "format-bulleted",
+                    "list-bulleted",
+                    para.list == List::Bullet,
+                    th,
+                )
+                .tooltip(tip("Bulleted list (Ctrl+Shift+8)", th))
+                .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Bullet, cx))),
             )
-            .child(
-                format_button("format-indent-less", "indent-less", false, th)
-                    .tooltip(tip("Indent less (Ctrl+[)", th))
-                    .on_click(self.on_body(cx, |e, cx| e.indent(false, cx))),
-            )
-            .child(
-                format_button("format-indent-more", "indent-more", false, th)
-                    .tooltip(tip("Indent more (Ctrl+])", th))
-                    .on_click(self.on_body(cx, |e, cx| e.indent(true, cx))),
-            )
-            .when(wide, |d| d.child(quote).child(strike).child(clear))
-            .child(table)
-            .children(more)
+            .child(tail)
             .into_any_element()
     }
 
@@ -1053,7 +1067,11 @@ impl MailWindow {
             )
             .child(
                 div()
-                    .id(if background { "bg-default" } else { "fg-default" })
+                    .id(if background {
+                        "bg-default"
+                    } else {
+                        "fg-default"
+                    })
                     .h(px(28.0))
                     .px(px(8.0))
                     .flex()
@@ -1156,30 +1174,33 @@ impl MailWindow {
         let query = compose.dialog.emoji_search.read(cx).text().to_owned();
         let group = compose.dialog.emoji_group;
         let list = emoji_list(&query, group);
-        let tabs = EMOJI_GROUPS.iter().enumerate().map(|(ix, (_, face, label))| {
-            let selected = query.trim().is_empty() && ix == group;
-            div()
-                .id(("emoji-group", ix))
-                .size(px(32.0))
-                .flex()
-                .items_center()
-                .justify_center()
-                .rounded(px(6.0))
-                .text_size(px(18.0))
-                .cursor_pointer()
-                .when(selected, |d| d.bg(rgba(th.chip)))
-                .hover(|s| s.bg(rgba(th.hover)))
-                .tooltip(tip(*label, th))
-                .on_click(cx.listener(move |this, _, _, cx| {
-                    if let Some(c) = &mut this.compose {
-                        c.dialog.emoji_group = ix;
-                        c.dialog.emoji_search.update(cx, |s, cx| s.set_text("", cx));
-                    }
-                    cx.notify();
-                }))
-                .child(*face)
-        })
-        .collect::<Vec<_>>();
+        let tabs = EMOJI_GROUPS
+            .iter()
+            .enumerate()
+            .map(|(ix, (_, face, label))| {
+                let selected = query.trim().is_empty() && ix == group;
+                div()
+                    .id(("emoji-group", ix))
+                    .size(px(32.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded(px(6.0))
+                    .text_size(px(18.0))
+                    .cursor_pointer()
+                    .when(selected, |d| d.bg(rgba(th.chip)))
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .tooltip(tip(*label, th))
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        if let Some(c) = &mut this.compose {
+                            c.dialog.emoji_group = ix;
+                            c.dialog.emoji_search.update(cx, |s, cx| s.set_text("", cx));
+                        }
+                        cx.notify();
+                    }))
+                    .child(*face)
+            })
+            .collect::<Vec<_>>();
         let cells = list.iter().enumerate().map(|(ix, emoji)| {
             let text = emoji.as_str();
             div()
@@ -1452,11 +1473,9 @@ impl MailWindow {
                         .on_click(self.on_body(cx, move |e, cx| e.replace_word(&word, cx))),
                 );
             }
-            items = items.child(
-                menu_item("spell-add", "Add to dictionary", th).on_click(cx.listener(
-                    move |this, _, window, cx| this.add_to_dictionary(&word, window, cx),
-                )),
-            );
+            items = items.child(menu_item("spell-add", "Add to dictionary", th).on_click(
+                cx.listener(move |this, _, window, cx| this.add_to_dictionary(&word, window, cx)),
+            ));
             items = items.child(menu_divider(th));
         }
         let action = |ix: usize, label: &str, keys: &'static str, what: Clip| {
@@ -1467,23 +1486,26 @@ impl MailWindow {
         };
         items = items
             .when(selection, |d| {
-                d.child(action(0, "Cut", "Ctrl+X", Clip::Cut))
-                    .child(action(1, "Copy", "Ctrl+C", Clip::Copy))
+                d.child(action(0, "Cut", "Ctrl+X", Clip::Cut)).child(action(
+                    1,
+                    "Copy",
+                    "Ctrl+C",
+                    Clip::Copy,
+                ))
             })
             .child(action(2, "Paste", "Ctrl+V", Clip::Paste))
             .child(action(3, "Select all", "Ctrl+A", Clip::SelectAll));
         if in_link {
-            items = items
-                .child(menu_divider(th))
-                .child(
-                    menu_item("context-link-edit", "Edit link", th).on_click(cx.listener(
-                        |this, _, window, cx| this.open_link_dialog(window, cx),
-                    )),
-                )
-                .child(
-                    menu_item("context-link-remove", "Remove link", th)
-                        .on_click(self.on_body(cx, |e, cx| e.remove_link(cx))),
-                );
+            items =
+                items
+                    .child(menu_divider(th))
+                    .child(menu_item("context-link-edit", "Edit link", th).on_click(
+                        cx.listener(|this, _, window, cx| this.open_link_dialog(window, cx)),
+                    ))
+                    .child(
+                        menu_item("context-link-remove", "Remove link", th)
+                            .on_click(self.on_body(cx, |e, cx| e.remove_link(cx))),
+                    );
         }
         if in_table {
             let mut edit = |ix: usize, label: &str, edit: TableEdit| {
@@ -1558,7 +1580,15 @@ impl MailWindow {
             .relative()
             .child(
                 tool_item("more-label", "label", "Label", th)
-                    .child(icon("chevron-right", th.text_dim, 18.0))
+                    .child(icon(
+                        if label_open {
+                            "chevron-down"
+                        } else {
+                            "chevron-right"
+                        },
+                        th.text_dim,
+                        18.0,
+                    ))
                     .on_click(cx.listener(|this, _, _, cx| {
                         if let Some(c) = &mut this.compose {
                             c.popup = Some(if c.popup == Some(Popup::Label) {
@@ -1572,27 +1602,16 @@ impl MailWindow {
             )
             .when(label_open, |d| {
                 d.child(
-                    deferred(
-                        div()
-                            .absolute()
-                            .top_0()
-                            .right(px(260.0))
-                            .occlude()
-                            .child(
-                                menu(th).w(px(240.0)).child(
-                                    div()
-                                        .px(px(16.0))
-                                        .py(px(8.0))
-                                        .text_size(px(13.0))
-                                        .text_color(rgba(th.text_dim))
-                                        .child(
-                                            "Labels on sent mail are coming soon. \
-                                             Label the message in Sent once it is out.",
-                                        ),
-                                ),
-                            ),
-                    )
-                    .with_priority(3),
+                    div()
+                        .px(px(16.0))
+                        .pl(px(50.0))
+                        .pb(px(8.0))
+                        .text_size(px(13.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(
+                            "Labels on sent mail are coming soon. \
+                             Label the message in Sent once it is out.",
+                        ),
                 )
             });
         menu(th)
@@ -1635,7 +1654,9 @@ impl MailWindow {
             .child(
                 tool_item("more-spell", "spell-check", "Check spelling", th)
                     .child(check(spell))
-                    .on_click(cx.listener(|this, _, window, cx| this.toggle_spell_check(window, cx))),
+                    .on_click(
+                        cx.listener(|this, _, window, cx| this.toggle_spell_check(window, cx)),
+                    ),
             )
             .into_any_element()
     }
@@ -1685,7 +1706,9 @@ impl MailWindow {
         self.save_config();
         let speller = self.speller(cx);
         let failed = match &self.writing.speller_state {
-            super::SpellerState::Failed(err) if self.config.sending.spell_check => Some(err.clone()),
+            super::SpellerState::Failed(err) if self.config.sending.spell_check => {
+                Some(err.clone())
+            }
             _ => None,
         };
         self.edit_body(window, cx, move |e, cx| e.set_spell_check(speller, cx));
@@ -1707,10 +1730,7 @@ impl MailWindow {
             if value.trim().is_empty() {
                 String::new()
             } else {
-                format!(
-                    "<div><b>{label}:</b> {}</div>",
-                    html::escape(value.trim())
-                )
+                format!("<div><b>{label}:</b> {}</div>", html::escape(value.trim()))
             }
         };
         let page = format!(
@@ -1859,7 +1879,10 @@ impl MailWindow {
             },
         )
         .child(field("Text to display", &compose.dialog.link_text))
-        .child(field("Web address or email address", &compose.dialog.link_url))
+        .child(field(
+            "Web address or email address",
+            &compose.dialog.link_url,
+        ))
         .child(
             div()
                 .text_size(px(12.0))
@@ -1894,39 +1917,43 @@ impl MailWindow {
         };
         let today = jiff::Timestamp::now().to_zoned(self.tz.clone()).date();
         let (month, day) = (compose.dialog.month, compose.dialog.day);
-        let days = schedule::month_grid(month).into_iter().enumerate().map(|(ix, date)| {
-            let past = date < today;
-            let selected = date == day;
-            let other = date.month() != month.month();
-            div()
-                .id(("pick-day", ix))
-                .size(px(36.0))
-                .flex()
-                .items_center()
-                .justify_center()
-                .rounded_full()
-                .text_size(px(13.0))
-                .when(other || past, |d| d.text_color(rgba(th.text_faint)))
-                .when(date == today && !selected, |d| {
-                    d.border_1().border_color(rgba(th.accent))
-                })
-                .when(selected, |d| {
-                    d.bg(rgba(th.accent)).text_color(rgba(th.on_accent))
-                })
-                .when(!past, |d| {
-                    d.cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
-                        .on_click(cx.listener(move |this, _, _, cx| {
-                            if let Some(c) = &mut this.compose {
-                                c.dialog.day = date;
-                                c.dialog.month = date;
-                            }
-                            cx.notify();
-                        }))
-                })
-                .child(date.day().to_string())
-        })
-        .collect::<Vec<_>>();
+        let days = schedule::month_grid(month)
+            .into_iter()
+            .enumerate()
+            .map(|(ix, date)| {
+                let past = date < today;
+                let selected = date == day;
+                let other = date.month() != month.month();
+                div()
+                    .id(("pick-day", ix))
+                    .size(px(36.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded_full()
+                    .text_size(px(13.0))
+                    .when(other, |d| d.text_color(rgba(th.text_faint)))
+                    .when(past, |d| d.opacity(0.38))
+                    .when(date == today && !selected, |d| {
+                        d.border_1().border_color(rgba(th.accent))
+                    })
+                    .when(selected, |d| {
+                        d.bg(rgba(th.accent)).text_color(rgba(th.on_accent))
+                    })
+                    .when(!past, |d| {
+                        d.cursor_pointer()
+                            .hover(|s| s.bg(rgba(th.hover)))
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                if let Some(c) = &mut this.compose {
+                                    c.dialog.day = date;
+                                    c.dialog.month = date;
+                                }
+                                cx.notify();
+                            }))
+                    })
+                    .child(date.day().to_string())
+            })
+            .collect::<Vec<_>>();
         let step = |months: i32| {
             move |this: &mut Self, _: &gpui::ClickEvent, _: &mut Window, cx: &mut Context<Self>| {
                 if let Some(c) = &mut this.compose
@@ -2020,9 +2047,11 @@ impl MailWindow {
                             .child(compose.dialog.time.clone()),
                     ),
             )
-            .child(self.dialog_buttons(th, "Schedule send", cx, |this, window, cx| {
-                this.schedule_picked(window, cx)
-            }))
+            .child(
+                self.dialog_buttons(th, "Schedule send", cx, |this, window, cx| {
+                    this.schedule_picked(window, cx)
+                }),
+            )
             .into_any_element()
     }
 
@@ -2084,8 +2113,6 @@ impl MailWindow {
                                     );
                                 })),
                         ),
-                    true,
-                    44.0,
                 ))
             })
             .into_any_element()
@@ -2124,13 +2151,20 @@ mod tests {
         assert_eq!(normalize_url("example.com/a"), "https://example.com/a");
         assert_eq!(normalize_url("http://x.org"), "http://x.org");
         assert_eq!(normalize_url("kay@enron.com"), "mailto:kay@enron.com");
-        assert_eq!(normalize_url("mailto:kay@enron.com"), "mailto:kay@enron.com");
+        assert_eq!(
+            normalize_url("mailto:kay@enron.com"),
+            "mailto:kay@enron.com"
+        );
         assert_eq!(normalize_url(""), "");
     }
 
     #[test]
     fn finds_emoji() {
-        assert!(emoji_list("thumbs up", 0).iter().any(|e| e.as_str() == "👍"));
+        assert!(
+            emoji_list("thumbs up", 0)
+                .iter()
+                .any(|e| e.as_str() == "👍")
+        );
         assert_eq!(emoji_list("", 0)[0].as_str(), "😀");
         assert!(emoji_list("zzzzqqq", 0).is_empty());
     }

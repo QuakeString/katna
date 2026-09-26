@@ -120,9 +120,7 @@ pub(super) fn parse_time(text: &str) -> Option<Time> {
 pub(super) fn month_grid(month: Date) -> Vec<Date> {
     let first = month.first_of_month();
     let back = first.weekday().to_sunday_zero_offset();
-    let start = first
-        .checked_sub(i64::from(back).days())
-        .unwrap_or(first);
+    let start = first.checked_sub(i64::from(back).days()).unwrap_or(first);
     (0..42)
         .filter_map(|i| start.checked_add(i64::from(i).days()).ok())
         .collect()
@@ -161,7 +159,10 @@ mod tests {
     fn suggests_times() {
         let tz = TimeZone::UTC;
         // Saturday evening: tomorrow (Sunday) and Monday.
-        let now = date(2026, 9, 26).at(19, 0, 0, 0).to_zoned(tz.clone()).unwrap();
+        let now = date(2026, 9, 26)
+            .at(19, 0, 0, 0)
+            .to_zoned(tz.clone())
+            .unwrap();
         let p = presets(&now);
         let labels: Vec<_> = p.iter().map(|p| p.label).collect();
         assert_eq!(
@@ -170,7 +171,10 @@ mod tests {
         );
         assert_eq!(short(&p[2].at), "Sep 28, 8:00 AM");
         // Sunday: Monday is tomorrow.
-        let now = date(2026, 9, 27).at(19, 0, 0, 0).to_zoned(tz.clone()).unwrap();
+        let now = date(2026, 9, 27)
+            .at(19, 0, 0, 0)
+            .to_zoned(tz.clone())
+            .unwrap();
         assert_eq!(presets(&now).len(), 2);
         // A weekday morning offers this afternoon.
         let now = date(2026, 9, 29).at(9, 0, 0, 0).to_zoned(tz).unwrap();

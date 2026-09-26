@@ -118,7 +118,11 @@ impl MailWindow {
                 match result {
                     Ok(()) => {
                         this.writing.scheduled_open = false;
-                        this.show_snackbar("Send cancelled. The message is open to edit.", None, cx);
+                        this.show_snackbar(
+                            "Send cancelled. The message is open to edit.",
+                            None,
+                            cx,
+                        );
                         if let Some(unsent) = raw.as_deref().and_then(unsent_from_raw) {
                             this.unsent = Some(unsent);
                             this.reopen_unsent(window, cx);
@@ -257,12 +261,7 @@ impl MailWindow {
                                 .items_center()
                                 .border_b_1()
                                 .border_color(rgba(th.divider))
-                                .child(
-                                    div()
-                                        .flex_1()
-                                        .text_size(px(20.0))
-                                        .child("Scheduled"),
-                                )
+                                .child(div().flex_1().text_size(px(20.0)).child("Scheduled"))
                                 .child(
                                     icon_button("scheduled-close", "close", 20.0, th)
                                         .tooltip(tip("Close", th))
@@ -313,12 +312,8 @@ fn unsent_from_raw(raw: &[u8]) -> Option<Unsent> {
         let mime = part
             .content_type()
             .map(|ct| {
-                format!(
-                    "{}/{}",
-                    ct.ctype(),
-                    ct.subtype().unwrap_or("octet-stream")
-                )
-                .to_ascii_lowercase()
+                format!("{}/{}", ct.ctype(), ct.subtype().unwrap_or("octet-stream"))
+                    .to_ascii_lowercase()
             })
             .unwrap_or_else(|| "text/plain".to_owned());
         let attached = part

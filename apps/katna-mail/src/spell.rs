@@ -98,7 +98,12 @@ pub fn find(language: &str) -> Option<(PathBuf, PathBuf)> {
         };
         let mut names: Vec<String> = entries
             .filter_map(|e| e.ok())
-            .filter_map(|e| e.file_name().to_str()?.strip_suffix(".dic").map(str::to_owned))
+            .filter_map(|e| {
+                e.file_name()
+                    .to_str()?
+                    .strip_suffix(".dic")
+                    .map(str::to_owned)
+            })
             .filter(|n| n == base || n.starts_with(&format!("{base}_")))
             .collect();
         names.sort();

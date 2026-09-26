@@ -15,7 +15,8 @@ use gpui::{
     Stateful, Subscription, Task, Window, div, prelude::*, px, rgba,
 };
 use katna_core::config::{AccountTabs, Density, ReadingPane, TabStyle, Theme as ThemeChoice};
-use katna_ui::{InputEvent, Ripple, TextArea, TextInput};
+use katna_ui::rich::RichEvent;
+use katna_ui::{InputEvent, RichEditor, Ripple, TextInput};
 
 use super::keymap::{self, Group, SHORTCUTS};
 use super::settings::{Change, heading};
@@ -73,7 +74,7 @@ pub(super) struct SettingsPage {
 struct SignatureEditor {
     id: u32,
     name: Entity<TextInput>,
-    text: Entity<TextArea>,
+    text: Entity<RichEditor>,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -541,12 +542,7 @@ impl MailWindow {
             input.set_accent(accent);
             input
         });
-        let text = cx.new(|cx| {
-            let mut area = TextArea::new("Your name, and anything to add below it", cx);
-            area.set_text(signature.text.clone(), 0, cx);
-            area.set_accent(accent);
-            area
-        });
+        let text = self.signature_editor(&signature, window, cx);
         let id = signature.id;
         let subscriptions = vec![
             cx.subscribe(&name, move |this, input, event: &InputEvent, cx| {
@@ -555,12 +551,24 @@ impl MailWindow {
                     this.update_signature(id, |s| s.name = value, cx);
                 }
             }),
-            cx.subscribe(&text, move |this, area, event: &InputEvent, cx| {
-                if *event == InputEvent::Changed {
-                    let value = area.read(cx).text().to_owned();
-                    this.update_signature(id, |s| s.text = value, cx);
-                }
-            }),
+            cx.subscribe(
+                &text,
+                move |this, editor, event: &RichEvent, cx| match event {
+                    RichEvent::Changed => {
+                        let (text, html) = super::compose::signature_content(editor.read(cx).doc());
+                        this.update_signature(
+                            id,
+                            |s| {
+                                s.text = text;
+                                s.html = html;
+                            },
+                            cx,
+                        );
+                    }
+                    RichEvent::Selection => cx.notify(),
+                    _ => {}
+                },
+            ),
         ];
         if let Some(page) = &mut self.settings_page {
             page.editing = Some(SignatureEditor {
@@ -641,6 +649,7 @@ impl MailWindow {
     }
 
     fn signatures_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let tools = self.render_signature_tools(th, cx);
         let sending = &self.config.sending;
         let editing = self.settings_page.as_ref().and_then(|p| p.editing.as_ref());
         let list =
@@ -703,6 +712,7 @@ impl MailWindow {
                         .on_click(move |_, window, cx| window.focus(&text_focus, cx))
                         .child(e.text.clone()),
                 )
+                .children(tools)
                 .child(div().flex().flex_row().child(div().flex_1()).child(
                     outlined_button("page-signature-delete", "Delete", th).on_click(cx.listener(
                         move |this, _, window, cx| this.delete_signature(id, window, cx),

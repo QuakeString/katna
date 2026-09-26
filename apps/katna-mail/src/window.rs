@@ -576,7 +576,15 @@ impl MailWindow {
         if scheduled > 0 {
             let at = rows
                 .iter()
-                .position(|r| matches!(r, sidebar::Row::Folder { role: Role::Sent, .. }))
+                .position(|r| {
+                    matches!(
+                        r,
+                        sidebar::Row::Folder {
+                            role: Role::Sent,
+                            ..
+                        }
+                    )
+                })
                 .map_or(rows.len(), |ix| ix + 1);
             rows.insert(
                 at,

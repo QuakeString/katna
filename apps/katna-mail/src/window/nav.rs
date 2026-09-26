@@ -13,8 +13,8 @@ use katna_ui::Ripple;
 use katna_ui::motion::{self, lerp};
 
 use super::{
-    Compose, compose, FocusSearch, Hover, Listing, MailWindow, NAV_WIDTH, PANEL_RADIUS, SEARCH_CONTEXT,
-    ToggleNavigation, ToggleSettings,
+    Compose, FocusSearch, Hover, Listing, MailWindow, NAV_WIDTH, PANEL_RADIUS, SEARCH_CONTEXT,
+    ToggleNavigation, ToggleSettings, compose,
 };
 use crate::format;
 use crate::sidebar::{self, Role};

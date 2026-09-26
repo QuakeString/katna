@@ -71,10 +71,16 @@ pub fn bind_keys(cx: &mut App) {
         KeyBinding::new("ctrl-b", Bold, context),
         KeyBinding::new("ctrl-i", Italic, context),
         KeyBinding::new("ctrl-u", Underline, context),
+        // Shifted digits arrive as the symbol they type on Linux
+        // (Ctrl+Shift+8 is "ctrl-*" on a US layout).
         KeyBinding::new("alt-shift-5", Strikethrough, context),
+        KeyBinding::new("alt-%", Strikethrough, context),
         KeyBinding::new("ctrl-shift-7", NumberedList, context),
+        KeyBinding::new("ctrl-&", NumberedList, context),
         KeyBinding::new("ctrl-shift-8", BulletList, context),
+        KeyBinding::new("ctrl-*", BulletList, context),
         KeyBinding::new("ctrl-shift-9", Quote, context),
+        KeyBinding::new("ctrl-(", Quote, context),
         KeyBinding::new("ctrl-]", IndentMore, context),
         KeyBinding::new("ctrl-[", IndentLess, context),
         KeyBinding::new("ctrl-shift-l", AlignLeft, context),
