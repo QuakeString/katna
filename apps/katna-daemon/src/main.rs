@@ -76,6 +76,10 @@ fn run() -> ExitCode {
                 Ok(instance) => instance,
                 Err(err) => return fail(err),
             };
+        match zbus::Connection::system().await {
+            Ok(system) => instance.watch_system(system),
+            Err(err) => tracing::warn!(%err, "no system bus; not watching suspend and network"),
+        }
         tracing::info!("katna-daemon running");
         let signal = signals.next().await;
         tracing::info!(?signal, "stopping");

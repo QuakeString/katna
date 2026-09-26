@@ -16,9 +16,13 @@
 //! 4. Any network or protocol error ends the session; go back to 1.
 //!
 //! [`Handle::sync_now`] ends any wait: it starts a full sync, or reconnects
-//! at once. [`Handle::send_changes`] sends queued changes now.
+//! at once. [`Handle::reconnect`] drops the connection without waiting for
+//! it (after a network change or a resume, it may be dead) and connects
+//! again at once. [`Handle::send_changes`] sends queued changes now.
 //! [`Handle::fetch_body`] downloads one message now. Dropping the
 //! [`Handle`] logs out and ends the worker.
+//! On a metered network ([`Handle::set_metered`]) step 2 and 3 skip the
+//! bodies; headers, flags and changes stay in sync.
 //!
 //! POP3 accounts get [`run_pop3`] instead: POP3 has no push, so it checks
 //! the maildrop every [`WorkerConfig::pop3_interval`] and when asked, and
@@ -30,6 +34,10 @@
 
 use std::{
     future::Future,
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
@@ -159,6 +167,8 @@ struct BodyRequest {
 pub struct Handle {
     _stop: Sender<()>,
     wake: Sender<()>,
+    reconnect: Sender<()>,
+    metered: Arc<AtomicBool>,
     changes: Sender<()>,
     bodies: Sender<BodyRequest>,
 }
@@ -169,6 +179,26 @@ impl Handle {
     pub fn sync_now(&self) {
         // A full channel already holds a request.
         let _ = self.wake.try_send(());
+    }
+
+    /// Asks the worker to drop its connection and connect again now,
+    /// because the network changed or the machine woke up. Unlike
+    /// [`Handle::sync_now`], this does not wait for a command on the old
+    /// connection, which may hang until it times out. A worker stopped by
+    /// a refused password stays stopped.
+    pub fn reconnect(&self) {
+        let _ = self.reconnect.try_send(());
+    }
+
+    /// Tells the worker whether the network is metered. While it is, the
+    /// worker keeps mail and changes in sync but downloads no bodies ahead
+    /// of time; a body the user opens is still fetched. When the network
+    /// stops being metered, the worker syncs at once and catches up.
+    pub fn set_metered(&self, metered: bool) {
+        let was = self.metered.swap(metered, Ordering::Relaxed);
+        if was && !metered {
+            self.sync_now();
+        }
     }
 
     /// Asks the worker to send the changes queued with [`ops`] now. While
@@ -211,6 +241,8 @@ impl Fetcher {
 pub struct Control {
     stop: Receiver<()>,
     wake: Receiver<()>,
+    reconnect: Receiver<()>,
+    metered: Arc<AtomicBool>,
     changes: Receiver<()>,
     bodies: Receiver<BodyRequest>,
 }
@@ -227,18 +259,24 @@ enum Signal {
 pub fn control() -> (Handle, Control) {
     let (stop_tx, stop) = async_channel::bounded(1);
     let (wake, wake_rx) = async_channel::bounded(1);
+    let (reconnect, reconnect_rx) = async_channel::bounded(1);
     let (changes, changes_rx) = async_channel::bounded(1);
     let (bodies, bodies_rx) = async_channel::unbounded();
+    let metered = Arc::new(AtomicBool::new(false));
     (
         Handle {
             _stop: stop_tx,
             wake,
+            reconnect,
+            metered: metered.clone(),
             changes,
             bodies,
         },
         Control {
             stop,
             wake: wake_rx,
+            reconnect: reconnect_rx,
+            metered,
             changes: changes_rx,
             bodies: bodies_rx,
         },
@@ -295,10 +333,31 @@ impl Control {
         let _ = self.stop.recv().await;
     }
 
+    /// Completes on [`Handle::reconnect`]; never once the handle is
+    /// dropped (stopping is [`Self::stopped`]'s job). Cancel-safe.
+    async fn reconnect_requested(&self) {
+        if self.reconnect.recv().await.is_err() {
+            std::future::pending::<()>().await;
+        }
+    }
+
+    /// Forgets reconnect requests made before the current connection.
+    fn clear_reconnect(&self) {
+        while self.reconnect.try_recv().is_ok() {}
+    }
+
+    /// Whether bodies should wait for an unmetered network.
+    fn metered(&self) -> bool {
+        self.metered.load(Ordering::Relaxed)
+    }
+
     fn is_stopped(&self) -> bool {
         self.stop.is_closed()
     }
 }
+
+/// Why a connection was dropped on [`Handle::reconnect`].
+const RECONNECTING: &str = "reconnecting after a network change";
 
 /// Runs the worker for `account` until its [`Handle`] is dropped.
 pub async fn run<C: Connector>(
@@ -311,10 +370,18 @@ pub async fn run<C: Connector>(
 ) {
     let mut delay = config.retry_min;
     while !control.is_stopped() {
+        // A request to reconnect drops whatever the connection is doing.
+        let mut reconnecting = false;
+        control.clear_reconnect();
         let connected = async { Some(connector.connect().await) }
             .or(async {
                 control.stopped().await;
                 None
+            })
+            .or(async {
+                control.reconnect_requested().await;
+                reconnecting = true;
+                Some(Err(Error::Closed(RECONNECTING.into())))
             })
             .await;
         let error = match connected {
@@ -348,6 +415,11 @@ pub async fn run<C: Connector>(
                     &control,
                     &mut synced,
                 )
+                .or(async {
+                    control.reconnect_requested().await;
+                    reconnecting = true;
+                    Err(Error::Closed(RECONNECTING.into()))
+                })
                 .await;
                 match result {
                     Ok(()) => {
@@ -367,6 +439,15 @@ pub async fn run<C: Connector>(
                 }
             }
         };
+        if reconnecting {
+            tracing::info!(%account, "reconnecting");
+            let _ = events.try_send(Event::Disconnected {
+                error: error.to_string(),
+                retry_in: Duration::ZERO,
+            });
+            delay = config.retry_min;
+            continue;
+        }
         tracing::info!(%account, %error, retry_in = ?delay, "disconnected");
         let _ = events.try_send(Event::Disconnected {
             error: error.to_string(),
@@ -377,10 +458,15 @@ pub async fn run<C: Connector>(
             Timer::after(delay).await;
             None
         }
-        .or(async { Some(control.signal_offline(&offline).await) });
+        .or(async { Some(control.signal_offline(&offline).await) })
+        .or(async {
+            control.reconnect_requested().await;
+            Some(Signal::Wake)
+        });
         match wait.await {
             None => delay = (delay * 2).min(config.retry_max),
-            // Sync now: reconnect at once, starting the waits over.
+            // Sync now or a network change: reconnect at once, starting the
+            // waits over.
             Some(Signal::Wake) => delay = config.retry_min,
             Some(_) => return,
         }
@@ -402,11 +488,18 @@ pub async fn run_pop3<C: Pop3Connect>(
     loop {
         // Stopping mid-session is safe: every stored message is committed,
         // and without QUIT the server deletes nothing.
+        control.clear_reconnect();
         let checked =
             async { Some(pop3_check(&connector, &mut store, account, &keep, &events).await) }
                 .or(async {
                     control.stopped().await;
                     None
+                })
+                .or(async {
+                    // A check on a dead connection would hang until it
+                    // times out; start over.
+                    control.reconnect_requested().await;
+                    Some(Err(Error::Closed(RECONNECTING.into())))
                 })
                 .await;
         let wait = match checked {
@@ -425,6 +518,10 @@ pub async fn run_pop3<C: Pop3Connect>(
                 tracing::warn!(%account, %message, "login refused; waiting for sync now");
                 let _ = events.try_send(Event::AuthFailed(message));
                 Duration::MAX
+            }
+            Some(Err(Error::Closed(reason))) if reason == RECONNECTING => {
+                delay = config.retry_min;
+                Duration::ZERO
             }
             Some(Err(error)) => {
                 tracing::info!(%account, %error, retry_in = ?delay, "POP3 check failed");
@@ -473,6 +570,10 @@ async fn pop3_wait(control: &Control, wait: Duration) -> bool {
             None
         }
         .or(async { Some(control.signal().await) })
+        .or(async {
+            control.reconnect_requested().await;
+            Some(Signal::Wake)
+        })
         .await;
         match signal {
             None | Some(Signal::Wake) => return true,
@@ -515,7 +616,9 @@ async fn session<B: MailBackend>(
             *synced = true;
             full = false;
             last_full = Instant::now();
-            download_all(backend, store, account, config, events).await?;
+            if !control.metered() {
+                download_all(backend, store, account, config, events).await?;
+            }
         } else {
             // Moves the server gave no new UIDs for.
             let mut reports = Vec::new();
@@ -558,17 +661,19 @@ async fn session<B: MailBackend>(
         if report.added + report.flags_changed + report.removed > 0 || report.reset {
             let _ = events.try_send(Event::Synced(vec![report]));
         }
-        let stored = bodies::download_bodies(
-            backend,
-            store,
-            inbox.id,
-            &inbox.path,
-            &config.offline,
-            unix_now(),
-        )
-        .await?;
-        if stored > 0 {
-            let _ = events.try_send(Event::BodiesStored(stored));
+        if !control.metered() {
+            let stored = bodies::download_bodies(
+                backend,
+                store,
+                inbox.id,
+                &inbox.path,
+                &config.offline,
+                unix_now(),
+            )
+            .await?;
+            if stored > 0 {
+                let _ = events.try_send(Event::BodiesStored(stored));
+            }
         }
 
         let max_wait = config

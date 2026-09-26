@@ -11,6 +11,7 @@ pub mod daemon;
 pub mod install;
 pub mod secrets;
 pub mod service;
+pub mod system;
 
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -27,6 +28,7 @@ use crate::{
     daemon::{Daemon, Notice},
     secrets::Secrets,
     service::PimService,
+    system::SystemEvent,
 };
 
 /// Why the daemon could not start.
@@ -173,6 +175,30 @@ impl Instance {
             indexer,
             backfill,
         })
+    }
+
+    /// Has every worker reconnect at once when the machine wakes up or
+    /// the network comes back, and hold back body downloads while the
+    /// network is metered, as the system bus `system` reports.
+    pub fn watch_system(&self, system: zbus::Connection) {
+        let daemon = Arc::downgrade(&self.daemon);
+        smol::spawn(async move {
+            let watched = system::watch(system, |event| {
+                tracing::debug!(?event, "system event");
+                let Some(daemon) = daemon.upgrade() else {
+                    return;
+                };
+                match event {
+                    SystemEvent::Resumed | SystemEvent::NetworkUp => daemon.network_changed(),
+                    SystemEvent::Metered(metered) => daemon.set_metered(metered),
+                }
+            })
+            .await;
+            if let Err(err) = watched {
+                tracing::warn!(%err, "not watching suspend and network changes");
+            }
+        })
+        .detach();
     }
 
     /// Releases the bus name and stops every worker and the indexer.

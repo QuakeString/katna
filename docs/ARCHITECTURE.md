@@ -277,6 +277,21 @@ One worker per account inside the daemon:
 - **Network and power:** reconnect on network changes (NetworkManager or the
   portal network monitor), after resume (logind `PrepareForSleep`), with
   exponential backoff; pause heavy background work on metered connections.
+  Built so far (task 1.12, `katna_daemon::system`): the daemon watches the
+  system bus for logind's `PrepareForSleep(false)` and NetworkManager's
+  `StateChanged` rising to "connected, local" or better. Either makes
+  every worker drop its connection without waiting on it (after a resume
+  it may be dead, and an IDLE on it would hang until the read timeout) and
+  connect again at once (`worker::Handle::reconnect`); a worker waiting to
+  retry connects at once too. A refused password stays refused. While
+  NetworkManager's `Metered` is "yes" or "guess yes" (a phone hotspot),
+  workers keep headers, flags and queued changes in sync but download no
+  bodies ahead of time; a message the user opens is still fetched, and
+  when the network stops being metered every worker syncs and catches up
+  (`worker::Handle::set_metered`). POP3 has no headers-only download, so
+  it checks as usual. Without a system bus, logind or NetworkManager the
+  daemon runs as before. Not built yet: the portal network monitor (for
+  Flatpak) and a setting to treat a network as metered by hand.
 
 ### 6.2 Sync levels (per account)
 
