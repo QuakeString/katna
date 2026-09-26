@@ -134,6 +134,8 @@ const NAV_WIDTH: f32 = 256.0;
 /// How far the folder highlight pill (and the drawer's) stays off the
 /// pane's left edge.
 const NAV_ROW_INSET: f32 = 8.0;
+/// The least room between Compose and the search box.
+const SEARCH_GAP: f32 = 24.0;
 /// Corners of cards that float: menus aside, dialogs and panels.
 const PANEL_RADIUS: f32 = 15.0;
 const SEARCH_WIDTH: f32 = 720.0;
@@ -2120,14 +2122,20 @@ impl Render for MailWindow {
                 .into_any_element()
         });
 
-        // The search box starts where the list does, as the folders open
-        // and fold, but never over Compose (a tablet keeps Compose beside
-        // the menu button, and the folders there are a drawer). It grows
-        // into a pill across the top bar of a phone, under its menu button
-        // and account picture.
+        // On a desktop the search box stays where the list starts with the
+        // folders open, whether they are open or folded, and never moves
+        // with them. On a tablet (Compose beside the menu button, the
+        // folders in a drawer) it starts a clear gap after Compose, and it
+        // never comes closer than that. It grows into a pill across the top
+        // bar of a phone, under its menu button and account picture.
         let (room_start, room_end) = shape.room;
-        let after_compose = room_start + 60.0 + shape.compose_room() + 24.0;
-        let search_left = (shape.rail() + nav_width).max(after_compose);
+        let after_compose = room_start + 60.0 + shape.compose_room() + SEARCH_GAP;
+        let list_left = if shape.is_desktop() {
+            shape.rail() + NAV_WIDTH
+        } else {
+            0.0
+        };
+        let search_left = list_left.max(after_compose);
         let regular = (width - search_left - room_end - 120.0).clamp(200.0, SEARCH_WIDTH);
         let pill = (width - 12.0 - room_start - room_end).max(200.0);
         let search_width = lerp(regular, pill, shape.phone);
