@@ -6,6 +6,7 @@
 //! error. Unknown keys are ignored, so an older Katna can read a file written
 //! by a newer one.
 
+use std::collections::BTreeMap;
 use std::fs;
 use std::io::{self, Write};
 use std::path::Path;
@@ -25,6 +26,7 @@ pub struct Config {
     pub logging: Logging,
     pub sending: Sending,
     pub mail: MailView,
+    pub shortcuts: Shortcuts,
     pub sync: SyncConfig,
     pub notifications: Notifications,
 }
@@ -117,9 +119,17 @@ impl Default for Logging {
 pub struct Sending {
     /// Undo-send delay in seconds; one of [`UNDO_SEND_CHOICES`].
     pub undo_send_seconds: u32,
-    /// Added below new mail, replies and forwards, after a "-- " line.
-    /// Empty for none.
+    /// The one signature of older versions. Read once and moved into
+    /// [`Sending::signatures`]; never written.
+    #[serde(skip_serializing)]
     pub signature: String,
+    /// Signatures, added below the message after a "-- " line.
+    pub signatures: Vec<Signature>,
+    /// The [`Signature::id`] new mail starts with; `None` for none.
+    pub new_mail_signature: Option<u32>,
+    /// The [`Signature::id`] replies and forwards start with, unless the
+    /// conversation shows which one the user signed with before.
+    pub reply_signature: Option<u32>,
 }
 
 impl Default for Sending {
@@ -127,8 +137,57 @@ impl Default for Sending {
         Self {
             undo_send_seconds: 10,
             signature: String::new(),
+            signatures: Vec::new(),
+            new_mail_signature: None,
+            reply_signature: None,
         }
     }
+}
+
+impl Sending {
+    pub fn signature(&self, id: Option<u32>) -> Option<&Signature> {
+        id.and_then(|id| self.signatures.iter().find(|s| s.id == id))
+    }
+
+    /// Adds a signature and returns its ID. The first one becomes the
+    /// default for new mail and replies.
+    pub fn add_signature(&mut self, name: String, text: String) -> u32 {
+        let id = self.signatures.iter().map(|s| s.id).max().unwrap_or(0) + 1;
+        self.signatures.push(Signature { id, name, text });
+        if self.signatures.len() == 1 {
+            self.new_mail_signature = Some(id);
+            self.reply_signature = Some(id);
+        }
+        id
+    }
+
+    /// Removes a signature, and it as a default.
+    pub fn remove_signature(&mut self, id: u32) {
+        self.signatures.retain(|s| s.id != id);
+        for default in [&mut self.new_mail_signature, &mut self.reply_signature] {
+            if *default == Some(id) {
+                *default = None;
+            }
+        }
+    }
+
+    /// Moves the signature of older versions into the list.
+    fn upgrade(&mut self) {
+        let old = std::mem::take(&mut self.signature);
+        if !old.trim().is_empty() && self.signatures.is_empty() {
+            self.add_signature("My signature".to_owned(), old);
+        }
+    }
+}
+
+/// A named signature ([`Sending::signatures`]).
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Signature {
+    /// Stable within the file; defaults refer to it.
+    pub id: u32,
+    pub name: String,
+    pub text: String,
 }
 
 /// How Katna Mail shows mail (its quick settings).
@@ -143,7 +202,11 @@ pub struct MailView {
     /// List conversations instead of single messages.
     pub conversations: bool,
     /// Split the inbox into category tabs (Primary, Promotions, ...).
+    /// Off turns them off for every account.
     pub inbox_tabs: bool,
+    /// Which tabs each account's inbox has, by lower-case address.
+    /// Accounts not listed use [`TabStyle::Auto`].
+    pub account_tabs: BTreeMap<String, AccountTabs>,
     pub density: Density,
     pub theme: Theme,
     /// Use the desktop's color scheme and accent color instead of Katna's
@@ -160,10 +223,72 @@ impl Default for MailView {
             reading_pane_share: 0.5,
             conversations: true,
             inbox_tabs: true,
+            account_tabs: BTreeMap::new(),
             density: Density::Default,
             theme: Theme::System,
             desktop_colors: true,
             app_labels: true,
+        }
+    }
+}
+
+impl MailView {
+    /// The tab settings of the account with `address`.
+    pub fn tabs_of(&self, address: &str) -> AccountTabs {
+        self.account_tabs
+            .get(&address.to_lowercase())
+            .cloned()
+            .unwrap_or_default()
+    }
+}
+
+/// The inbox tabs of one account ([`MailView::account_tabs`]).
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AccountTabs {
+    pub style: TabStyle,
+    /// Tabs turned off, by name (`promotions`, `newsletters`, ...). Their
+    /// mail shows in the first tab.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub hidden: Vec<String>,
+}
+
+/// Which set of inbox tabs an account uses.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum TabStyle {
+    /// The provider's own tabs: Gmail's categories for Gmail, Focused and
+    /// Other for Outlook, Newsletters and Notifications for Zoho, and
+    /// Gmail's categories by header rules for others.
+    #[default]
+    Auto,
+    /// Primary, Promotions, Social, Updates and Forums.
+    Gmail,
+    /// Focused and Other.
+    Focused,
+    /// Inbox, Newsletters and Notifications.
+    Zoho,
+    /// No tabs.
+    Off,
+}
+
+/// Keyboard shortcuts of Katna Mail.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Shortcuts {
+    /// Shortcuts without Ctrl or Alt, such as `e` to archive, as in webmail.
+    pub single_keys: bool,
+    /// Keys changed from the defaults, by shortcut name (`archive`,
+    /// `reply`, ...): each a list of keystrokes such as `ctrl-shift-a` or
+    /// `g i`. An empty list turns the shortcut off.
+    pub keys: BTreeMap<String, Vec<String>>,
+}
+
+impl Default for Shortcuts {
+    fn default() -> Self {
+        Self {
+            single_keys: true,
+            keys: BTreeMap::new(),
         }
     }
 }
@@ -216,7 +341,8 @@ impl Config {
 
     /// Parses and validates TOML text.
     fn parse(text: &str) -> Result<Self, ParseError> {
-        let config: Self = toml::from_str(text).map_err(ParseError::Toml)?;
+        let mut config: Self = toml::from_str(text).map_err(ParseError::Toml)?;
+        config.sending.upgrade();
         config.validate().map_err(ParseError::Invalid)?;
         Ok(config)
     }
@@ -239,6 +365,13 @@ impl Config {
                     "{} is not between 0.25 and 0.75",
                     self.mail.reading_pane_share
                 ),
+            });
+        }
+        let mut ids = std::collections::HashSet::new();
+        if let Some(dup) = self.sending.signatures.iter().find(|s| !ids.insert(s.id)) {
+            return Err(Error::ConfigValue {
+                key: "sending.signatures",
+                message: format!("signature id {} is used twice", dup.id),
             });
         }
         if self.logging.filter.trim().is_empty() {
@@ -334,8 +467,65 @@ mod tests {
         assert_eq!(config.mail.theme, Theme::Dark);
         assert!(config.mail.desktop_colors);
         assert!(Config::parse("[mail]\nreading_pane_share = 0.9\n").is_err());
+    }
+
+    #[test]
+    fn the_old_signature_becomes_the_default() {
         let config = Config::parse("[sending]\nsignature = \"Kay\\nEnron\"\n").unwrap();
-        assert_eq!(config.sending.signature, "Kay\nEnron");
+        let sending = &config.sending;
+        assert_eq!(sending.signature, "");
+        assert_eq!(sending.signatures.len(), 1);
+        assert_eq!(sending.signatures[0].text, "Kay\nEnron");
+        assert_eq!(sending.new_mail_signature, Some(sending.signatures[0].id));
+        assert_eq!(sending.reply_signature, sending.new_mail_signature);
+        // Written back without the old key.
+        let text = toml::to_string_pretty(&config).unwrap();
+        assert!(
+            !text.lines().any(|l| l.starts_with("signature =")),
+            "{text}"
+        );
+        assert_eq!(Config::parse(&text).unwrap(), config);
+    }
+
+    #[test]
+    fn signatures() {
+        let mut sending = Sending::default();
+        let work = sending.add_signature("Work".into(), "Kay, Enron".into());
+        let home = sending.add_signature("Home".into(), "Kay".into());
+        assert_ne!(work, home);
+        assert_eq!(sending.new_mail_signature, Some(work));
+        sending.reply_signature = Some(home);
+        sending.remove_signature(home);
+        assert_eq!(sending.reply_signature, None);
+        assert_eq!(sending.signature(Some(work)).unwrap().name, "Work");
+        let again = sending.add_signature("Again".into(), String::new());
+        assert!(again > work);
+        let mut config = Config {
+            sending,
+            ..Config::default()
+        };
+        config.sending.signatures[1].id = work;
+        assert!(config.validate().is_err(), "duplicate IDs");
+    }
+
+    #[test]
+    fn tabs_and_shortcuts() {
+        let config = Config::parse(
+            "[mail.account_tabs.\"kay@zoho.example\"]\nstyle = \"zoho\"\nhidden = [\"notifications\"]\n\
+             [shortcuts]\nsingle_keys = false\n[shortcuts.keys]\narchive = [\"y\", \"ctrl-e\"]\n",
+        )
+        .unwrap();
+        let tabs = config.mail.tabs_of("Kay@Zoho.example");
+        assert_eq!(tabs.style, TabStyle::Zoho);
+        assert_eq!(tabs.hidden, ["notifications"]);
+        assert_eq!(
+            config.mail.tabs_of("other@example.org"),
+            AccountTabs::default()
+        );
+        assert!(!config.shortcuts.single_keys);
+        assert_eq!(config.shortcuts.keys["archive"], ["y", "ctrl-e"]);
+        let text = toml::to_string_pretty(&config).unwrap();
+        assert_eq!(Config::parse(&text).unwrap(), config);
     }
 
     #[test]
