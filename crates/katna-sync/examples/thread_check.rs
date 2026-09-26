@@ -155,7 +155,7 @@ async fn run() -> Result<bool> {
         return Ok(threads_ok);
     }
     let mut imap = ImapBackend::connect(&endpoint(), &creds, tls).await?;
-    let report = engine::sync_folder(&mut imap, &mut store, account, *all, ALL_MAIL).await?;
+    engine::sync_folder(&mut imap, &mut store, account, *all, ALL_MAIL).await?;
     imap.logout().await?;
     let here: HashSet<_> = store
         .messages_in_folder(*folder)?
@@ -168,13 +168,15 @@ async fn run() -> Result<bool> {
         .map(|m| m.id)
         .collect();
     let shared = here.intersection(&everywhere).count();
+    // The sync report counts a known message filed in one more folder as
+    // added, so count new stored messages from the store itself.
+    let stored = here.union(&everywhere).count();
     println!(
-        "labels: {ALL_MAIL} has {} messages ({} new to the store); {shared} of {} in {path} \
-         are the same stored message, {} rows for both folders",
+        "labels: {ALL_MAIL} has {} messages ({} not already stored); {shared} of {} in {path} \
+         are the same stored message, {stored} rows for both folders",
         everywhere.len(),
-        report.added,
+        stored - here.len(),
         here.len(),
-        here.union(&everywhere).count(),
     );
     Ok(threads_ok && shared == here.len())
 }
