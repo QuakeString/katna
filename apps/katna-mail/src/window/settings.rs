@@ -329,8 +329,12 @@ impl MailWindow {
                     return;
                 }
                 view.reading_pane = pane;
-                self.card_seq += 1;
-                if !self.reading {
+                // With a conversation open the cards change places and fade
+                // in; with only the list showing nothing moves, so the list
+                // stays as it is.
+                if self.reading {
+                    self.card_seq += 1;
+                } else {
                     self.reader = None;
                 }
             }
