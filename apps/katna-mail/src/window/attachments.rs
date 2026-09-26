@@ -3,7 +3,9 @@
 //! Attachments of received mail: the cards under a message (a thumbnail
 //! of pictures and of a PDF's first page, like webmail), the viewer they
 //! open (`viewer.rs`), saving through the desktop's file chooser and
-//! opening in another app.
+//! opening in another app: the desktop's default one, or one picked from
+//! its "Open with" list. Settings → Default apps says, for each kind of
+//! file, whether clicking a card opens the viewer or another app.
 
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
@@ -14,6 +16,7 @@ use gpui::{
     AnyElement, Context, Entity, FocusHandle, FontWeight, ImageSource, ObjectFit, RenderImage,
     SharedString, Subscription, Task, Window, div, img, prelude::*, px, rgba,
 };
+use katna_core::config::{FileGroup, OpenIn};
 use katna_preview::Kind;
 use katna_preview::image::{Frame, RgbaImage};
 use katna_render::{Attachment, AttachmentFile};
@@ -98,7 +101,9 @@ pub(super) fn kind_badge(kind: Kind, size: f32) -> AnyElement {
     let (color, name) = match kind {
         Kind::Pdf => (0xd93025ff, "file"),
         Kind::Picture(_) => (0xd93025ff, "image"),
-        Kind::Text => (0x1a73e8ff, "notes"),
+        Kind::Text => (0x5f6368ff, "notes"),
+        Kind::Sheet { .. } => (0x188038ff, "sheet"),
+        Kind::Document => (0x1a73e8ff, "document"),
         Kind::Other => (0x5f6368ff, "file"),
     };
     div()
@@ -118,7 +123,20 @@ fn has_thumbnail(kind: Kind) -> bool {
     match kind {
         Kind::Pdf => true,
         Kind::Picture(picture) => picture.decodable(),
-        Kind::Text | Kind::Other => false,
+        Kind::Text | Kind::Sheet { .. } | Kind::Document | Kind::Other => false,
+    }
+}
+
+/// Which Default apps setting covers `kind`; none for files without a
+/// preview, which always open in the viewer.
+fn group(kind: Kind) -> Option<FileGroup> {
+    match kind {
+        Kind::Pdf => Some(FileGroup::Pdf),
+        Kind::Picture(_) => Some(FileGroup::Pictures),
+        Kind::Text => Some(FileGroup::Text),
+        Kind::Sheet { .. } => Some(FileGroup::Spreadsheets),
+        Kind::Document => Some(FileGroup::Documents),
+        Kind::Other => None,
     }
 }
 
@@ -131,7 +149,7 @@ fn thumbnail(raw: &[u8], index: usize, kind: Kind) -> Option<RgbaImage> {
         Kind::Picture(picture) => {
             katna_preview::picture::thumbnail(&file.bytes, picture, w, h).ok()
         }
-        Kind::Text | Kind::Other => None,
+        Kind::Text | Kind::Sheet { .. } | Kind::Document | Kind::Other => None,
     }
 }
 
@@ -378,6 +396,15 @@ impl MailWindow {
             .enumerate()
             .map(|(ix, a)| Item::new(ix, a))
             .collect();
+        let open_in = items
+            .get(index)
+            .and_then(|item| group(item.kind))
+            .map_or(OpenIn::Katna, |g| self.config.mail.open.get(g));
+        if open_in != OpenIn::Katna {
+            let name = items.get(index).map(|i| i.name.clone()).unwrap_or_default();
+            self.open_elsewhere(id, index, &name, open_in == OpenIn::Ask, cx);
+            return;
+        }
         let Some(raw) = self.mail.as_ref().ok().and_then(|mail| mail.raw(id)) else {
             self.show_snackbar("This message is not downloaded.", None, cx);
             return;
@@ -401,7 +428,7 @@ impl MailWindow {
         match event {
             ViewerEvent::Close => self.close_viewer(window, cx),
             ViewerEvent::Save(file) => self.save_attachment(file.clone(), cx),
-            ViewerEvent::OpenWith(file) => self.open_attachment_with(file.clone(), cx),
+            ViewerEvent::OpenWith(file) => self.open_attachment_with(file.clone(), true, cx),
         }
     }
 
@@ -477,7 +504,44 @@ impl MailWindow {
 
     /// Hands `file` to the desktop's app for its type, as a read-only copy
     /// in the cache. Programs and scripts are never handed over.
-    fn open_attachment_with(&mut self, file: Arc<AttachmentFile>, cx: &mut Context<Self>) {
+    /// Opens attachment `index` of message `id` in another app, without the
+    /// viewer: the desktop's default app, or one it asks for when `ask`.
+    fn open_elsewhere(
+        &mut self,
+        id: MessageId,
+        index: usize,
+        name: &str,
+        ask: bool,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(raw) = self.mail.as_ref().ok().and_then(|mail| mail.raw(id)) else {
+            self.show_snackbar("This message is not downloaded.", None, cx);
+            return;
+        };
+        let name = name.to_owned();
+        cx.spawn(async move |this, cx| {
+            let file = cx
+                .background_executor()
+                .spawn(async move { katna_render::attachment_file(&raw, index) })
+                .await;
+            this.update(cx, |this, cx| match file {
+                Some(file) => this.open_attachment_with(Arc::new(file), ask, cx),
+                None => this.show_snackbar(format!("Could not read {name}"), None, cx),
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Hands a read-only copy of `file` to another app: one the user picks
+    /// from the desktop's "Open with" list when `ask` (the default app if
+    /// the desktop cannot ask), else the default app for its type.
+    fn open_attachment_with(
+        &mut self,
+        file: Arc<AttachmentFile>,
+        ask: bool,
+        cx: &mut Context<Self>,
+    ) {
         if katna_preview::risky(&file.mime, &file.name) {
             self.show_snackbar(
                 "This file could run a program, so Katna does not open it. Save it instead.",
@@ -493,14 +557,37 @@ impl MailWindow {
                 .background_executor()
                 .spawn(async move { write_for_opening(&dir, &file, SystemTime::now()) })
                 .await;
-            this.update(cx, |this, cx| match written {
-                Ok(path) => cx.open_with_system(&path),
-                Err(err) => this.show_snackbar(format!("Could not open {name}: {err}"), None, cx),
-            })
-            .ok();
+            let path = match written {
+                Ok(path) => path,
+                Err(err) => {
+                    this.update(cx, |this, cx| {
+                        this.show_snackbar(format!("Could not open {name}: {err}"), None, cx)
+                    })
+                    .ok();
+                    return;
+                }
+            };
+            if ask && choose_app(&path).await {
+                return;
+            }
+            cx.update(|cx| cx.open_with_system(&path));
         })
         .detach();
     }
+}
+
+/// Asks the desktop to open `path` with an app the user picks (the "Open
+/// with" portal). False when there is no portal to ask.
+async fn choose_app(path: &Path) -> bool {
+    let Ok(file) = std::fs::File::open(path) else {
+        return false;
+    };
+    ashpd::desktop::open_uri::OpenFileRequest::default()
+        .ask(true)
+        .writeable(false)
+        .send_file(&file)
+        .await
+        .is_ok()
 }
 
 /// Writes `file` read-only into a fresh folder under `dir`, first removing

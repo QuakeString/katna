@@ -226,6 +226,8 @@ pub struct MailView {
     pub desktop_colors: bool,
     /// Show the names under the icons of the app bar (Mail, Calendar, ...).
     pub app_labels: bool,
+    /// Where each kind of attachment opens.
+    pub open: OpenAttachments,
 }
 
 impl Default for MailView {
@@ -240,6 +242,7 @@ impl Default for MailView {
             theme: Theme::System,
             desktop_colors: true,
             app_labels: true,
+            open: OpenAttachments::default(),
         }
     }
 }
@@ -282,6 +285,76 @@ pub enum TabStyle {
     Zoho,
     /// No tabs.
     Off,
+}
+
+/// Where each kind of attachment opens when clicked ([`MailView::open`]):
+/// Katna Mail's own viewer, the desktop's default app for the file type,
+/// or a choice of apps each time. Files without a preview always open in
+/// the viewer, which offers to save them or open them elsewhere.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct OpenAttachments {
+    pub pdf: OpenIn,
+    pub pictures: OpenIn,
+    pub text: OpenIn,
+    pub spreadsheets: OpenIn,
+    pub documents: OpenIn,
+}
+
+/// A kind of attachment with a setting in [`OpenAttachments`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FileGroup {
+    Pdf,
+    Pictures,
+    Text,
+    Spreadsheets,
+    Documents,
+}
+
+impl FileGroup {
+    pub const ALL: [Self; 5] = [
+        Self::Pdf,
+        Self::Pictures,
+        Self::Text,
+        Self::Spreadsheets,
+        Self::Documents,
+    ];
+}
+
+impl OpenAttachments {
+    pub fn get(&self, group: FileGroup) -> OpenIn {
+        match group {
+            FileGroup::Pdf => self.pdf,
+            FileGroup::Pictures => self.pictures,
+            FileGroup::Text => self.text,
+            FileGroup::Spreadsheets => self.spreadsheets,
+            FileGroup::Documents => self.documents,
+        }
+    }
+
+    pub fn set(&mut self, group: FileGroup, open: OpenIn) {
+        let slot = match group {
+            FileGroup::Pdf => &mut self.pdf,
+            FileGroup::Pictures => &mut self.pictures,
+            FileGroup::Text => &mut self.text,
+            FileGroup::Spreadsheets => &mut self.spreadsheets,
+            FileGroup::Documents => &mut self.documents,
+        };
+        *slot = open;
+    }
+}
+
+/// [`OpenAttachments`]: where one kind of attachment opens.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum OpenIn {
+    /// Katna Mail's viewer.
+    #[default]
+    Katna,
+    /// The desktop's default app for the file type.
+    System,
+    /// The desktop's "Open with" choice of apps, every time.
+    Ask,
 }
 
 /// Keyboard shortcuts of Katna Mail.
@@ -479,6 +552,22 @@ mod tests {
         assert_eq!(config.mail.theme, Theme::Dark);
         assert!(config.mail.desktop_colors);
         assert!(Config::parse("[mail]\nreading_pane_share = 0.9\n").is_err());
+    }
+
+    #[test]
+    fn where_attachments_open() {
+        let config = Config::default();
+        for group in FileGroup::ALL {
+            assert_eq!(config.mail.open.get(group), OpenIn::Katna);
+        }
+        let mut config =
+            Config::parse("[mail.open]\npdf = \"system\"\nspreadsheets = \"ask\"\n").unwrap();
+        assert_eq!(config.mail.open.get(FileGroup::Pdf), OpenIn::System);
+        assert_eq!(config.mail.open.get(FileGroup::Spreadsheets), OpenIn::Ask);
+        assert_eq!(config.mail.open.get(FileGroup::Pictures), OpenIn::Katna);
+        config.mail.open.set(FileGroup::Documents, OpenIn::System);
+        let text = toml::to_string(&config).unwrap();
+        assert_eq!(Config::parse(&text).unwrap(), config);
     }
 
     #[test]
