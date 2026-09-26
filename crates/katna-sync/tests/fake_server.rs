@@ -12,7 +12,8 @@ use std::{
 
 use futures_lite::FutureExt;
 use katna_sync::{
-    Credentials, Endpoint, Error, Flags, FolderChange, MailBackend, Security, connection,
+    Credentials, Endpoint, Error, Flags, FolderChange, MailBackend, Security,
+    connection::{self, Connection},
     imap::ImapBackend,
     net::{Conn, Tls},
 };
@@ -242,7 +243,7 @@ fn request_from_another_handle_ends_idle() {
         let folders = conn.list_folders().await.unwrap();
         assert_eq!(folders.len(), 2);
         assert_eq!(waiter.await.unwrap(), vec![]);
-        conn.logout().await.unwrap();
+        Connection::logout(&conn).await.unwrap();
         task.await;
         assert!(conn.is_closed());
     });

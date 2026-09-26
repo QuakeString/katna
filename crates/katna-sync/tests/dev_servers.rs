@@ -284,7 +284,7 @@ fn request_ends_idle_and_runs_next() {
 
             // Still in IDLE-capable shape.
             conn.poll_changes().await.unwrap();
-            conn.logout().await.unwrap();
+            Connection::logout(&conn).await.unwrap();
             assert!(matches!(conn.select("INBOX").await, Err(Error::Closed(_))));
         });
     }
@@ -421,4 +421,65 @@ fn mailpit_has(subject: &str) -> bool {
     let mut response = String::new();
     stream.read_to_string(&mut response).unwrap();
     response.contains(subject)
+}
+
+/// Sync level 1 into a fresh store, then an incremental run. Runs as a task
+/// on smol's pool to show the engine's futures are `Send`.
+#[test]
+#[ignore = "needs the dev/compose.yaml servers"]
+fn level_one_sync_into_the_store() {
+    use katna_core::{AccountKind, Paths};
+    use katna_store::{Mode, Store};
+    use katna_sync::engine;
+
+    for (name, endpoint) in imap_servers() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut store = Store::open(&Paths::with_root(tmp.path()), Mode::ReadWrite).unwrap();
+        let account = store.add_account(AccountKind::Imap, name, USER).unwrap().id;
+        smol::block_on(async {
+            let mut conn = spawn(&endpoint).await;
+            let (mut conn, mut store, first) = smol::spawn(async move {
+                let started = Instant::now();
+                let reports = engine::sync_account(&mut conn, &mut store, account)
+                    .await
+                    .unwrap();
+                println!("{name}: first sync in {:?}", started.elapsed());
+                (conn, store, reports)
+            })
+            .await;
+            let inbox = first.iter().find(|r| r.path == "INBOX").unwrap();
+            assert!(inbox.added >= 6, "{name}: {first:?}");
+            let projects = first.iter().find(|r| r.path == "Projects").unwrap();
+            assert_eq!(projects.added, 1, "{name}");
+
+            let folders = store.folders(account).unwrap();
+            let inbox_id = folders.iter().find(|f| f.path == "INBOX").unwrap().id;
+            let messages = store.messages_in_folder(inbox_id).unwrap();
+            let subjects: Vec<&str> = messages.iter().map(|m| m.subject.as_str()).collect();
+            assert!(
+                subjects.contains(&"Weekly digest \u{2014} caf\u{e9} edition"),
+                "{name}: encoded words decoded: {subjects:?}"
+            );
+            assert!(messages.iter().all(|m| m.date.is_some()), "{name}");
+            assert!(
+                messages.iter().any(|m| m.has_attachments),
+                "{name}: the attachment sample"
+            );
+
+            // Incremental: one new message, nothing else.
+            conn.append("INBOX", message(&unique("level1"), USER))
+                .await
+                .unwrap();
+            let second = engine::sync_account(&mut conn, &mut store, account)
+                .await
+                .unwrap();
+            let inbox = second.iter().find(|r| r.path == "INBOX").unwrap();
+            assert_eq!(
+                (inbox.added, inbox.removed, inbox.reset),
+                (1, 0, false),
+                "{name}: {second:?}"
+            );
+            Connection::logout(&conn).await.unwrap();
+        });
+    }
 }

@@ -27,7 +27,12 @@ use std::{future::Future, time::Duration};
 
 use async_channel::{Receiver, Sender};
 
-use crate::{Envelope, Error, Folder, FolderChange, FolderStatus, MailBackend, Result, Wait};
+use futures_lite::FutureExt;
+
+use crate::{
+    Envelope, Error, FlagState, Folder, FolderChange, FolderStatus, MailBackend, MessageHeaders,
+    Result, Wait,
+};
 
 type Reply<T> = Sender<Result<T>>;
 
@@ -35,6 +40,9 @@ enum Request {
     ListFolders(Reply<Vec<Folder>>),
     Select(String, Reply<FolderStatus>),
     FetchEnvelopes(u32, Option<u32>, Reply<Vec<Envelope>>),
+    FetchHeaders(u32, Option<u32>, Reply<Vec<MessageHeaders>>),
+    FetchFlags(u32, u32, Option<u64>, Reply<Vec<FlagState>>),
+    Uids(Reply<Vec<u32>>),
     CreateFolder(String, Reply<()>),
     Append(String, Vec<u8>, Reply<()>),
     PollChanges(Reply<Vec<FolderChange>>),
@@ -74,6 +82,29 @@ impl Connection {
     pub async fn fetch_envelopes(&self, first: u32, last: Option<u32>) -> Result<Vec<Envelope>> {
         self.call(|reply| Request::FetchEnvelopes(first, last, reply))
             .await
+    }
+
+    pub async fn fetch_headers(
+        &self,
+        first: u32,
+        last: Option<u32>,
+    ) -> Result<Vec<MessageHeaders>> {
+        self.call(|reply| Request::FetchHeaders(first, last, reply))
+            .await
+    }
+
+    pub async fn fetch_flags(
+        &self,
+        first: u32,
+        last: u32,
+        changed_since: Option<u64>,
+    ) -> Result<Vec<FlagState>> {
+        self.call(|reply| Request::FetchFlags(first, last, changed_since, reply))
+            .await
+    }
+
+    pub async fn uids(&self) -> Result<Vec<u32>> {
+        self.call(Request::Uids).await
     }
 
     pub async fn create_folder(&self, folder: &str) -> Result<()> {
@@ -122,6 +153,87 @@ impl Connection {
     }
 }
 
+/// A handle is a backend too, so code written against [`MailBackend`] (the
+/// sync engine) can share a connection with other callers.
+impl MailBackend for Connection {
+    async fn list_folders(&mut self) -> Result<Vec<Folder>> {
+        Connection::list_folders(self).await
+    }
+
+    async fn select(&mut self, folder: &str) -> Result<FolderStatus> {
+        Connection::select(self, folder).await
+    }
+
+    async fn fetch_envelopes(&mut self, first: u32, last: Option<u32>) -> Result<Vec<Envelope>> {
+        Connection::fetch_envelopes(self, first, last).await
+    }
+
+    async fn fetch_headers(
+        &mut self,
+        first: u32,
+        last: Option<u32>,
+    ) -> Result<Vec<MessageHeaders>> {
+        Connection::fetch_headers(self, first, last).await
+    }
+
+    async fn fetch_flags(
+        &mut self,
+        first: u32,
+        last: u32,
+        changed_since: Option<u64>,
+    ) -> Result<Vec<FlagState>> {
+        Connection::fetch_flags(self, first, last, changed_since).await
+    }
+
+    async fn uids(&mut self) -> Result<Vec<u32>> {
+        Connection::uids(self).await
+    }
+
+    async fn create_folder(&mut self, folder: &str) -> Result<()> {
+        Connection::create_folder(self, folder).await
+    }
+
+    async fn append(&mut self, folder: &str, message: Vec<u8>) -> Result<()> {
+        Connection::append(self, folder, message).await
+    }
+
+    async fn poll_changes(&mut self) -> Result<Vec<FolderChange>> {
+        Connection::poll_changes(self).await
+    }
+
+    /// If `interrupt` wins, the task still finishes its wait, and changes
+    /// it reports after that are not delivered; the next sync finds them.
+    async fn wait_for_changes<I>(
+        &mut self,
+        max_wait: Duration,
+        interrupt: I,
+    ) -> Result<Wait<I::Output>>
+    where
+        I: Future + Send,
+        I::Output: Send,
+    {
+        let wait = async {
+            Connection::wait_for_changes(self, max_wait)
+                .await
+                .map(|changes| Wait {
+                    changes,
+                    interrupted: None,
+                })
+        };
+        let stop = async {
+            Ok(Wait {
+                changes: Vec::new(),
+                interrupted: Some(interrupt.await),
+            })
+        };
+        wait.or(stop).await
+    }
+
+    async fn logout(self) -> Result<()> {
+        Connection::logout(&self).await
+    }
+}
+
 fn closed() -> Error {
     Error::Closed("the connection has ended".into())
 }
@@ -142,6 +254,14 @@ async fn run<B: MailBackend>(mut backend: B, inbox: Receiver<Request>) {
             Request::FetchEnvelopes(first, last, reply) => {
                 answer(&reply, backend.fetch_envelopes(first, last).await)
             }
+            Request::FetchHeaders(first, last, reply) => {
+                answer(&reply, backend.fetch_headers(first, last).await)
+            }
+            Request::FetchFlags(first, last, changed_since, reply) => answer(
+                &reply,
+                backend.fetch_flags(first, last, changed_since).await,
+            ),
+            Request::Uids(reply) => answer(&reply, backend.uids().await),
             Request::CreateFolder(folder, reply) => {
                 answer(&reply, backend.create_folder(&folder).await)
             }

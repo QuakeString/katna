@@ -11,6 +11,7 @@ pub mod error;
 pub mod journal;
 pub mod mail;
 mod mail_read;
+pub mod remote;
 
 use katna_core::{Account, AccountId, AccountKind, Paths};
 use rusqlite::{Connection, TransactionBehavior, params};
@@ -24,6 +25,7 @@ pub use mail::{
     ParticipantRole,
 };
 pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
+pub use remote::{FolderRole, RemoteMessage, StoredFolder};
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.
 #[derive(Debug)]
