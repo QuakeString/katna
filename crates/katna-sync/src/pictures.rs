@@ -166,6 +166,7 @@ impl Pictures {
                 continue;
             };
             urls = page_icons(&String::from_utf8_lossy(&page), &host);
+            tracing::debug!(host, icons = ?urls, "home page");
             break;
         }
         urls.extend([
