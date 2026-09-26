@@ -85,3 +85,17 @@ todo = "warn"
 lto = "fat"
 codegen-units = 1
 strip = true
+
+# D-Bus plumbing is not hot; build it for size to keep katna-daemon within
+# its budget (ci/size-budgets.txt).
+[profile.release.package.zbus]
+opt-level = "s"
+
+[profile.release.package.zvariant]
+opt-level = "s"
+
+[profile.release.package.oo7]
+opt-level = "s"
+
+[profile.release.package.ashpd]
+opt-level = "s"

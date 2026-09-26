@@ -181,6 +181,10 @@ impl<'s> MailBatch<'s> {
         })
     }
 
+    pub(crate) fn blobs(&self) -> &'s BlobStore {
+        self.blobs
+    }
+
     pub(crate) fn tx(&self) -> &Transaction<'s> {
         self.tx.as_ref().expect("transaction is open until commit")
     }

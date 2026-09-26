@@ -27,6 +27,7 @@ usage: katnactl status
        katnactl watch
        katnactl folders ACCOUNT
        katnactl list ACCOUNT [--folder PATH] [--limit N]
+       katnactl show MESSAGE
 
 Talks to katna-daemon, which syncs your accounts in the background.
 
@@ -42,7 +43,10 @@ remove     Deletes an account, its synced mail and its password.
 sync       Syncs every folder now, of one account or of all.
 watch      Prints the daemon's change signals until interrupted.
 folders    The synced folders of an account.
-list       The newest messages in a folder (default: INBOX, 20).";
+list       The newest messages in a folder (default: INBOX, 20), with their
+           message numbers.
+show       Prints a message as it came from the server, downloading it
+           first if it is not stored yet.";
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -136,6 +140,13 @@ fn run(command: &str, args: &[String]) -> Result<()> {
         "watch" => no_args(args).and_then(|()| with_daemon(watch)),
         "folders" => folders(one_account(args)?),
         "list" => list(args),
+        "show" => match args {
+            [id] => show(
+                id.parse()
+                    .map_err(|_| usage(format!("{id:?} is not a message number")))?,
+            ),
+            _ => Err(usage("expected one message number (see `katnactl list`)")),
+        },
         other => Err(usage(format!("unknown command {other:?}"))),
     }
 }
@@ -456,7 +467,8 @@ fn list(args: &[String]) -> Result<()> {
             '*'
         };
         println!(
-            "{unread} {date:16}  {:24}  {}",
+            "{:>7} {unread} {date:16}  {:24}  {}",
+            message.id.0,
             truncate(&from, 24),
             message.subject
         );
@@ -467,6 +479,33 @@ fn list(args: &[String]) -> Result<()> {
         messages.len()
     );
     Ok(())
+}
+
+fn show(message: i64) -> Result<()> {
+    let stored = || -> Result<Option<Vec<u8>>> {
+        let store = open_store()?;
+        let found = store
+            .messages_by_id(&[katna_store::MessageId(message)])
+            .map_err(error)?
+            .into_iter()
+            .next()
+            .ok_or_else(|| error(format!("no message {message}")))?;
+        match found.blob_hash {
+            Some(hash) => store.blobs().get(&hash).map_err(error),
+            None => Ok(None),
+        }
+    };
+    let raw = match stored()? {
+        Some(raw) => raw,
+        None => {
+            with_daemon(|pim| async move { Ok(pim.fetch_body(message).await?) })?;
+            stored()?.ok_or_else(|| error(format!("message {message} was not stored")))?
+        }
+    };
+    use std::io::Write;
+    io::stdout()
+        .write_all(&raw)
+        .map_err(|err| error(format!("writing: {err}")))
 }
 
 fn truncate(text: &str, width: usize) -> String {

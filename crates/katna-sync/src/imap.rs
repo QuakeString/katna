@@ -147,18 +147,17 @@ impl ImapBackend {
     /// `UID FETCH first:last` (or `first:*`). Returns each message's items,
     /// in UID order, without messages below `first` (`n:*` always matches
     /// the last message, even when its UID is lower).
+    /// `UID FETCH` of the UIDs in `set`. Keeps only messages whose UID
+    /// passes `keep` (`n:*` also returns the last message when every UID
+    /// is below `n`), in UID order.
     async fn uid_fetch(
         &mut self,
-        first: u32,
-        last: Option<u32>,
+        set: &str,
+        keep: impl Fn(u32) -> bool,
         items: Vec<MessageDataItemName<'static>>,
         modifiers: Vec<FetchModifier>,
     ) -> Result<Vec<Vec<MessageDataItem<'static>>>> {
-        let range = match last {
-            Some(last) => format!("{first}:{last}"),
-            None => format!("{first}:*"),
-        };
-        let set = SequenceSet::try_from(range.as_str()).map_err(protocol)?;
+        let set = SequenceSet::try_from(set).map_err(protocol)?;
         let items = MacroOrMessageDataItemNames::MessageDataItemNames(items);
         let opts = ImapMessageFetchOptions {
             uid: true,
@@ -173,11 +172,27 @@ impl ImapBackend {
                     MessageDataItem::Uid(uid) => Some(uid.get()),
                     _ => None,
                 })?;
-                (uid >= first).then_some((uid, items))
+                keep(uid).then_some((uid, items))
             })
             .collect();
         messages.sort_by_key(|(uid, _)| *uid);
         Ok(messages.into_iter().map(|(_, items)| items).collect())
+    }
+
+    /// `UID FETCH first:last` (or `first:*`).
+    async fn uid_fetch_range(
+        &mut self,
+        first: u32,
+        last: Option<u32>,
+        items: Vec<MessageDataItemName<'static>>,
+        modifiers: Vec<FetchModifier>,
+    ) -> Result<Vec<Vec<MessageDataItem<'static>>>> {
+        let range = match last {
+            Some(last) => format!("{first}:{last}"),
+            None => format!("{first}:*"),
+        };
+        self.uid_fetch(&range, |uid| uid >= first, items, modifiers)
+            .await
     }
 
     /// Runs one command coroutine to completion.
@@ -388,7 +403,7 @@ impl MailBackend for ImapBackend {
             MessageDataItemName::Rfc822Size,
             MessageDataItemName::Envelope,
         ];
-        let fetched = self.uid_fetch(first, last, items, Vec::new()).await?;
+        let fetched = self.uid_fetch_range(first, last, items, Vec::new()).await?;
         Ok(fetched.into_iter().map(envelope).collect())
     }
 
@@ -413,8 +428,48 @@ impl MailBackend for ImapBackend {
                 peek: true,
             },
         ];
-        let fetched = self.uid_fetch(first, last, items, Vec::new()).await?;
+        let fetched = self.uid_fetch_range(first, last, items, Vec::new()).await?;
         Ok(fetched.into_iter().map(headers).collect())
+    }
+
+    async fn fetch_bodies(&mut self, uids: &[u32]) -> Result<Vec<(u32, Vec<u8>)>> {
+        if uids.is_empty() {
+            return Ok(Vec::new());
+        }
+        let items = vec![
+            MessageDataItemName::Uid,
+            MessageDataItemName::BodyExt {
+                section: None,
+                partial: None,
+                peek: true,
+            },
+        ];
+        let wanted: std::collections::HashSet<u32> = uids.iter().copied().collect();
+        let fetched = self
+            .uid_fetch(
+                &uid_set(uids),
+                |uid| wanted.contains(&uid),
+                items,
+                Vec::new(),
+            )
+            .await?;
+        Ok(fetched
+            .into_iter()
+            .filter_map(|items| {
+                let mut uid = None;
+                let mut body = None;
+                for item in items {
+                    match item {
+                        MessageDataItem::Uid(value) => uid = Some(value.get()),
+                        MessageDataItem::BodyExt { data, .. } => {
+                            body = data.0.map(|d| d.as_ref().to_vec());
+                        }
+                        _ => {}
+                    }
+                }
+                Some((uid?, body?))
+            })
+            .collect())
     }
 
     async fn fetch_flags(
@@ -430,7 +485,9 @@ impl MailBackend for ImapBackend {
             _ => Vec::new(),
         };
         let items = vec![MessageDataItemName::Uid, MessageDataItemName::Flags];
-        let fetched = self.uid_fetch(first, Some(last), items, modifiers).await?;
+        let fetched = self
+            .uid_fetch_range(first, Some(last), items, modifiers)
+            .await?;
         Ok(fetched
             .into_iter()
             .map(|items| {
@@ -649,6 +706,31 @@ fn envelope(items: impl IntoIterator<Item = MessageDataItem<'static>>) -> Envelo
     out
 }
 
+/// A compact UID set: runs of consecutive UIDs become `a:b`.
+fn uid_set(uids: &[u32]) -> String {
+    let mut sorted = uids.to_vec();
+    sorted.sort_unstable();
+    sorted.dedup();
+    let mut runs: Vec<(u32, u32)> = Vec::new();
+    for uid in sorted {
+        match runs.last_mut() {
+            Some((_, end)) if uid == *end + 1 => *end = uid,
+            _ => runs.push((uid, uid)),
+        }
+    }
+    let parts: Vec<String> = runs
+        .into_iter()
+        .map(|(start, end)| {
+            if start == end {
+                start.to_string()
+            } else {
+                format!("{start}:{end}")
+            }
+        })
+        .collect();
+    parts.join(",")
+}
+
 fn headers(items: impl IntoIterator<Item = MessageDataItem<'static>>) -> MessageHeaders {
     let mut out = MessageHeaders::default();
     for item in items {
@@ -714,5 +796,16 @@ fn folder_change(data: &Data<'_>) -> Option<FolderChange> {
             _ => None,
         }),
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn uid_sets_are_compact() {
+        assert_eq!(uid_set(&[7]), "7");
+        assert_eq!(uid_set(&[5, 1, 2, 3, 9, 10, 3]), "1:3,5,9:10");
     }
 }

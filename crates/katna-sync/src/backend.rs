@@ -230,6 +230,14 @@ pub trait MailBackend: Send + 'static {
         last: Option<u32>,
     ) -> impl Future<Output = Result<Vec<MessageHeaders>>> + Send;
 
+    /// The full raw messages at `uids` in the selected folder, as
+    /// `(uid, bytes)` in UID order, without setting `\Seen`. UIDs that no
+    /// longer exist are left out.
+    fn fetch_bodies(
+        &mut self,
+        uids: &[u32],
+    ) -> impl Future<Output = Result<Vec<(u32, Vec<u8>)>>> + Send;
+
     /// Flags for UIDs `first..=last` of the selected folder, in UID order.
     /// With `changed_since` (CONDSTORE), only messages whose flags changed
     /// after that mod-sequence.

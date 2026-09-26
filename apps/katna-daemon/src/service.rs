@@ -7,6 +7,7 @@ use std::sync::Arc;
 use async_channel::Receiver;
 use katna_core::{AccountId, ids};
 use katna_dbus::{AccountStatus, NewImapAccount};
+use katna_store::MessageId;
 use zbus::{fdo, object_server::SignalEmitter};
 
 use crate::daemon::{CommandError, Daemon, Notice};
@@ -28,7 +29,9 @@ impl From<CommandError> for fdo::Error {
         match err {
             CommandError::InvalidArgs(_) => Self::InvalidArgs(message),
             CommandError::AuthFailed(_) => Self::AuthFailed(message),
-            CommandError::UnknownAccount(_) => Self::UnknownObject(message),
+            CommandError::UnknownAccount(_) | CommandError::UnknownMessage(_) => {
+                Self::UnknownObject(message)
+            }
             CommandError::Failed(_) => Self::Failed(message),
         }
     }
@@ -66,6 +69,10 @@ macro_rules! pim_interface {
             async fn sync_now(&self, account: i64) -> fdo::Result<()> {
                 let account = (account != 0).then_some(AccountId(account));
                 Ok(self.daemon.sync_now(account).await?)
+            }
+
+            async fn fetch_body(&self, message: i64) -> fdo::Result<()> {
+                Ok(self.daemon.fetch_body(MessageId(message)).await?)
             }
 
             #[zbus(signal)]
