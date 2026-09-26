@@ -16,6 +16,7 @@ mod mail_view;
 pub mod ops;
 pub mod outbox;
 mod people;
+pub mod pop3;
 pub mod remote;
 mod thread;
 
@@ -37,6 +38,7 @@ pub use mail_view::{FolderSummary, ThreadEntry, ThreadSender, ThreadSummary};
 pub use ops::{Location, QueuedOp};
 pub use outbox::{OutboxEntry, SendState};
 pub use people::Person;
+pub use pop3::Pop3Uidl;
 pub use remote::{FolderRole, RemoteMessage, StoredFolder};
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.
@@ -388,7 +390,7 @@ mod tests {
                 username: "alice".into(),
                 accept_invalid_certs: false,
             }),
-            smtp: None,
+            ..AccountSettings::default()
         };
         let before = store.latest_change(DbKind::Pim).unwrap();
         assert!(store.set_account_settings(account.id, &settings).unwrap());

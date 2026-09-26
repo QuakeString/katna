@@ -22,6 +22,8 @@
 //!   replayed on the server.
 //! - [`outbox`]: queued outgoing mail, undo send, SMTP delivery and
 //!   filing in Sent.
+//! - [`pop3`]: our own POP3 client, and downloading a maildrop into the
+//!   store (task 1.10).
 //! - [`worker`]: keeps an account in sync: IDLE, periodic full syncs,
 //!   reconnecting with backoff.
 //!
@@ -38,6 +40,7 @@ pub mod imap;
 pub mod net;
 pub mod ops;
 pub mod outbox;
+pub mod pop3;
 pub mod smtp;
 pub mod worker;
 

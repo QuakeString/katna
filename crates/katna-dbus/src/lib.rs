@@ -36,11 +36,29 @@ pub struct NewImapAccount {
     pub smtp: ServerSpec,
 }
 
+/// A new POP3 account for `AddPop3Account`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct NewPop3Account {
+    pub display_name: String,
+    pub address: String,
+    pub pop3: ServerSpec,
+    pub smtp: ServerSpec,
+    /// Leave downloaded mail on the server. When `false`, mail is removed
+    /// from the server as soon as it is stored.
+    pub leave_on_server: bool,
+    /// With `leave_on_server`: remove mail from the server this many days
+    /// after downloading it. 0 keeps it.
+    pub keep_days: u32,
+    /// With `leave_on_server`: remove mail from the server once it is
+    /// deleted for good in Katna.
+    pub delete_with_local: bool,
+}
+
 /// What an account's sync is doing, from `Accounts`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 pub struct AccountStatus {
     pub id: i64,
-    /// `imap`, `local`, …
+    /// `imap`, `pop3`, `local`, …
     pub kind: String,
     pub display_name: String,
     pub address: String,
@@ -115,6 +133,11 @@ macro_rules! pim_proxy {
             /// Checks the login, saves the password in the Secret Service,
             /// adds the account and starts syncing it. Returns its ID.
             fn add_imap_account(&self, account: &NewImapAccount, password: &str)
+            -> zbus::Result<i64>;
+
+            /// Like `AddImapAccount`, for a POP3 account. Its mail is
+            /// downloaded into local folders (`INBOX`, `Sent`, `Trash`).
+            fn add_pop3_account(&self, account: &NewPop3Account, password: &str)
             -> zbus::Result<i64>;
 
             /// Finds the IMAP and SMTP servers of `address` (provider
