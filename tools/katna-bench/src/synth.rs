@@ -20,6 +20,9 @@ use crate::usage_error;
 
 const BATCH: usize = 1_000;
 
+/// How many recent Message-IDs replies choose from.
+const RECENT: usize = 1_000;
+
 /// Frequent words first; the synthetic vocabulary follows them.
 const COMMON_WORDS: &[&str] = &[
     "the",
@@ -275,6 +278,8 @@ struct Corpus {
     people_dist: Zipf,
     owners: Vec<String>,
     next_id: u64,
+    /// Message-IDs of recent messages, for replies to answer.
+    recent: Vec<String>,
 }
 
 impl Corpus {
@@ -324,6 +329,7 @@ impl Corpus {
             people,
             owners,
             next_id: 0,
+            recent: Vec::new(),
         }
     }
 
@@ -363,7 +369,8 @@ impl Corpus {
         };
         let subject_words = 2 + self.rng.below(6);
         let mut subject = self.text(subject_words).replace('\n', " ");
-        if self.rng.chance(30) {
+        let is_reply = self.rng.chance(30);
+        if is_reply {
             subject = format!("Re: {subject}");
         }
         // 1999-01-01 .. 2002-07-01
@@ -371,14 +378,29 @@ impl Corpus {
         let body_words = 50 + self.rng.below(550);
         let body = self.text(body_words);
 
-        let mut raw = format!(
-            "Message-ID: <{}.{}.JavaMail.evans@thyme>\r\n\
-             Date: {}\r\nFrom: {from}\r\nTo: {}\r\n",
+        let message_id = format!(
+            "{}.{}.JavaMail.evans@thyme",
             self.next_id,
-            self.rng.next() % 10_000_000,
+            self.rng.next() % 10_000_000
+        );
+        let mut raw = format!(
+            "Message-ID: <{message_id}>\r\nDate: {}\r\nFrom: {from}\r\nTo: {}\r\n",
             rfc2822(date),
             to.join(", "),
         );
+        // Replies answer a recent message. Picked without the random
+        // generator, so the rest of the corpus stays as it was.
+        let slot = (self.next_id % RECENT as u64) as usize;
+        if is_reply && !self.recent.is_empty() {
+            let pick = self.next_id.wrapping_mul(7_919) % self.recent.len() as u64;
+            let answered = &self.recent[pick as usize];
+            raw.push_str(&format!("In-Reply-To: <{answered}>\r\n"));
+        }
+        if self.recent.len() < RECENT {
+            self.recent.push(message_id);
+        } else {
+            self.recent[slot] = message_id;
+        }
         if !cc.is_empty() {
             raw.push_str(&format!("Cc: {}\r\n", cc.join(", ")));
         }
@@ -462,6 +484,7 @@ mod tests {
     fn messages_parse_and_repeat() {
         let mut a = Corpus::new(7);
         let mut b = Corpus::new(7);
+        let mut replies = 0;
         for _ in 0..200 {
             let (folder, raw) = a.message();
             assert_eq!((folder.clone(), raw.clone()), b.message());
@@ -469,7 +492,13 @@ mod tests {
             assert!(parsed.date.is_some());
             assert!(!parsed.participants.is_empty());
             assert!(folder.contains('/'));
+            if let Some(answered) = parsed.in_reply_to {
+                assert!(parsed.subject.unwrap().starts_with("Re: "));
+                assert!(answered.ends_with("JavaMail.evans@thyme"));
+                replies += 1;
+            }
         }
+        assert!(replies > 20, "{replies}");
     }
 
     #[test]

@@ -345,6 +345,75 @@ fn rejected_command_is_not_fatal() {
     server.join().unwrap();
 }
 
+/// Gmail's thread IDs and `X-GM-RAW` search go out as raw commands,
+/// because imap-codec can neither build nor parse them. Written from
+/// Gmail's documented responses; not run against Gmail itself.
+#[test]
+fn gmail_thread_ids_and_search() {
+    let (endpoint, server) = serve("IMAP4rev1 AUTH=PLAIN SASL-IR IDLE X-GM-EXT-1", |s| {
+        let (tag, rest) = s.command();
+        assert!(rest.starts_with("UID FETCH 1:2 ("), "{rest}");
+        assert!(rest.contains(" References "), "{rest}");
+        assert!(rest.contains(" List-Unsubscribe "), "{rest}");
+        s.send(
+            "* 1 FETCH (UID 1 FLAGS (\\Seen) RFC822.SIZE 100 \
+                 BODY[HEADER.FIELDS (SUBJECT)] {15}\r\nSubject: hi\r\n\r\n)\r\n\
+                 * 2 FETCH (UID 2 FLAGS () RFC822.SIZE 200 \
+                 BODY[HEADER.FIELDS (SUBJECT)] {15}\r\nSubject: yo\r\n\r\n)\r\n",
+        );
+        s.ok(&tag);
+
+        let (tag, rest) = s.command();
+        assert_eq!(rest, "UID FETCH 1:2 (UID X-GM-THRID)");
+        s.send(&format!(
+            "* 1 FETCH (X-GM-THRID 1278455344230334865 UID 1)\r\n\
+                 * 3 EXISTS\r\n\
+                 * 2 FETCH (UID 2 X-GM-THRID 99)\r\n{tag} OK Success\r\n"
+        ));
+
+        let (tag, rest) = s.command();
+        assert_eq!(rest, "UID SEARCH UID 1:* X-GM-RAW \"category:promotions\"");
+        s.send(&format!(
+            "* SEARCH 2 1\r\n{tag} OK SEARCH completed (Success)\r\n"
+        ));
+
+        let (tag, _) = s.command();
+        s.send(&format!("{tag} BAD Could not parse command\r\n"));
+        s.quiet_noop();
+    });
+    smol::block_on(async {
+        let mut imap = connect(&endpoint).await;
+        let headers = imap.fetch_headers(1, Some(2)).await.unwrap();
+        let threads: Vec<_> = headers.iter().map(|h| (h.uid, h.gm_thread_id)).collect();
+        assert_eq!(
+            threads,
+            [(1, Some(1_278_455_344_230_334_865)), (2, Some(99))]
+        );
+        assert_eq!(headers[0].header, b"Subject: hi\r\n\r\n");
+        let found = imap.gmail_search(1, "category:promotions").await.unwrap();
+        assert_eq!(found, Some(vec![1, 2]));
+        let err = imap.gmail_search(1, "category:social").await.unwrap_err();
+        assert!(matches!(err, Error::Rejected(_)), "{err:?}");
+        assert!(
+            imap.gmail_search(1, "a\"b").await.is_err(),
+            "quotes cannot be sent"
+        );
+        imap.poll_changes().await.unwrap();
+    });
+    server.join().unwrap();
+}
+
+#[test]
+fn other_servers_have_no_gmail_search() {
+    let (endpoint, server) = serve(CAPS, |s| s.quiet_noop());
+    smol::block_on(async {
+        let mut imap = connect(&endpoint).await;
+        assert_eq!(imap.gmail_search(1, "category:social").await.unwrap(), None);
+        imap.poll_changes().await.unwrap();
+    });
+    server.join().unwrap();
+}
+
 /// A read cancelled halfway through a line keeps the bytes it already has.
 #[test]
 fn cancelled_read_keeps_partial_line() {

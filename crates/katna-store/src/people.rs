@@ -85,6 +85,9 @@ mod tests {
                 list_id: None,
                 snippet: None,
                 participants: &participants,
+                in_reply_to: None,
+                references: &[],
+                category: None,
             };
             batch.add_message(account, inbox, &message).unwrap();
         }

@@ -265,6 +265,9 @@ mod tests {
             list_id: None,
             snippet: None,
             participants: &[],
+            in_reply_to: None,
+            references: &[],
+            category: None,
         }
     }
 

@@ -14,16 +14,26 @@
 //!    progress.
 //! 4. Expunged messages: when the message count does not add up, compare the
 //!    server's UID list with ours.
-//! 5. Save UIDVALIDITY and the HIGHESTMODSEQ seen at SELECT. Changes made
+//! 5. Messages stored before threading and without a downloaded body:
+//!    their headers again, so they get a thread and a category (at most
+//!    [`REFRESH_PER_SYNC`] per run).
+//! 6. Gmail inbox (`X-GM-EXT-1`): Gmail's own categories, with one
+//!    `X-GM-RAW "category:…"` search per tab; the first time for every
+//!    message, then for new ones.
+//! 7. Save UIDVALIDITY and the HIGHESTMODSEQ seen at SELECT. Changes made
 //!    during the sync have higher mod-sequences, so the next run sees them.
+//!
+//! New messages get their thread (with Gmail's `X-GM-THRID` when there is
+//! one) and category as they are stored.
 //!
 //! The store is only written between network calls, never while waiting
 //! on the server.
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
-use katna_core::AccountId;
-use katna_store::{FolderId, MessageFlags, NewParticipant, RemoteMessage, Store};
+use katna_core::{AccountId, MailCategory};
+use katna_store::{Backfill, FolderId, MessageFlags, NewParticipant, RemoteMessage, Store};
+use serde::{Deserialize, Serialize};
 
 use crate::{Error, FlagState, Flags, Folder, MailBackend, MessageHeaders, Result};
 
@@ -39,6 +49,33 @@ pub struct FolderReport {
     pub removed: usize,
     /// UIDVALIDITY changed, so the folder was downloaded again.
     pub reset: bool,
+    /// Messages stored before threading that got their thread or category
+    /// from headers fetched again, plus inbox messages whose Gmail
+    /// category changed.
+    pub backfilled: usize,
+}
+
+/// At most this many old messages per folder and sync get their headers
+/// fetched again for threading, so a big backlog does not hold up new mail.
+pub const REFRESH_PER_SYNC: u32 = 5_000;
+
+/// Gmail's category tabs, besides Primary, in the order a message that
+/// matches several is given one.
+const GMAIL_CATEGORIES: [MailCategory; 4] = [
+    MailCategory::Social,
+    MailCategory::Promotions,
+    MailCategory::Updates,
+    MailCategory::Forums,
+];
+
+/// `folder.sync_state`: what the engine remembers about a folder besides
+/// UIDVALIDITY and HIGHESTMODSEQ.
+#[derive(Debug, Default, Serialize, Deserialize)]
+struct FolderState {
+    /// Gmail categories were read for every message of this inbox; from
+    /// then on only new messages are asked about.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    gmail_categories: bool,
 }
 
 /// Syncs the folder list of `account`, then every selectable folder.
@@ -108,6 +145,14 @@ pub async fn sync_folder<B: MailBackend>(
     };
     let status = backend.select(path).await?;
     let stored = store.folders(account)?.into_iter().find(|f| f.id == folder);
+    let is_inbox = stored
+        .as_ref()
+        .is_some_and(|f| f.role == Some(katna_store::FolderRole::Inbox));
+    let mut state: FolderState = stored
+        .as_ref()
+        .and_then(|f| f.sync_state.as_deref())
+        .and_then(|json| serde_json::from_str(json).ok())
+        .unwrap_or_default();
     let (old_validity, old_modseq) = stored
         .map(|f| (f.uidvalidity, f.highestmodseq))
         .unwrap_or_default();
@@ -122,6 +167,7 @@ pub async fn sync_folder<B: MailBackend>(
         batch.commit()?;
         known.clear();
         report.reset = true;
+        state = FolderState::default();
     }
     let old_modseq = if report.reset { None } else { old_modseq };
 
@@ -169,12 +215,123 @@ pub async fn sync_folder<B: MailBackend>(
         }
     }
 
-    // 5. Where to continue next time.
+    // 5. Headers again for messages stored before threading.
+    report.backfilled += refresh_headers(backend, store, folder).await?;
+
+    // 6. Gmail's own inbox categories: every message the first time, then
+    //    new ones.
+    if is_inbox {
+        let first = if !state.gmail_categories {
+            Some(1)
+        } else {
+            (added_uids > 0).then_some(last_known + 1)
+        };
+        if let Some(first) = first
+            && let Some(changed) = gmail_categories(backend, store, folder, first).await?
+        {
+            report.backfilled += changed;
+            state.gmail_categories = true;
+        }
+    }
+
+    // 7. Where to continue next time.
+    let state = serde_json::to_string(&state).expect("plain struct serializes");
+    let state = (state != "{}").then_some(state);
     let mut batch = store.mail_batch()?;
-    batch.set_folder_state(folder, status.uid_validity, status.highest_modseq, None)?;
+    batch.set_folder_state(
+        folder,
+        status.uid_validity,
+        status.highest_modseq,
+        state.as_deref(),
+    )?;
     batch.commit()?;
     tracing::debug!(?report, "folder synced");
     Ok(report)
+}
+
+/// Fetches the headers of messages that have no thread or category yet
+/// and no stored body (stores from before threading), at most
+/// [`REFRESH_PER_SYNC`] per call. Returns how many were updated.
+async fn refresh_headers<B: MailBackend>(
+    backend: &mut B,
+    store: &mut Store,
+    folder: FolderId,
+) -> Result<usize> {
+    let uids = store.uids_needing_headers(folder, REFRESH_PER_SYNC)?;
+    let mut updated = 0;
+    for chunk in uid_runs(&uids) {
+        let (first, last) = (chunk[0], chunk[chunk.len() - 1]);
+        let wanted: HashSet<u32> = chunk.iter().copied().collect();
+        let messages = backend.fetch_headers(first, Some(last)).await?;
+        let mut batch = store.mail_batch()?;
+        for message in messages.iter().filter(|m| wanted.contains(&m.uid)) {
+            let parsed = katna_import::parse_message(&message.header).unwrap_or_default();
+            let references = parsed.reference_strs();
+            let facts = Backfill {
+                in_reply_to: parsed.in_reply_to.as_deref(),
+                references: &references,
+                gm_thread_id: message.gm_thread_id,
+                category: Some(parsed.category),
+            };
+            if batch.backfill_remote(folder, message.uid, &facts)? {
+                updated += 1;
+            }
+        }
+        batch.commit()?;
+    }
+    Ok(updated)
+}
+
+/// Splits ascending `uids` into runs for one header fetch each: at most
+/// [`CHUNK`] UIDs, spanning at most `2 × CHUNK` UIDs, so a sparse list
+/// does not fetch everything in between.
+fn uid_runs(uids: &[u32]) -> Vec<&[u32]> {
+    let mut runs = Vec::new();
+    let mut start = 0;
+    for i in 1..=uids.len() {
+        let end_run =
+            i == uids.len() || i - start >= CHUNK as usize || uids[i] - uids[start] >= 2 * CHUNK;
+        if end_run {
+            runs.push(&uids[start..i]);
+            start = i;
+        }
+    }
+    runs
+}
+
+/// Sets Gmail's categories on the messages at UIDs `first..` of the inbox
+/// `folder` (selected): one `X-GM-RAW "category:…"` search per tab, the
+/// rest Primary. Returns `None` when the server is not Gmail, otherwise how
+/// many messages changed.
+async fn gmail_categories<B: MailBackend>(
+    backend: &mut B,
+    store: &mut Store,
+    folder: FolderId,
+    first: u32,
+) -> Result<Option<usize>> {
+    let mut found: HashMap<u32, MailCategory> = HashMap::new();
+    for category in GMAIL_CATEGORIES {
+        let query = format!("category:{}", category.as_str());
+        let Some(uids) = backend.gmail_search(first, &query).await? else {
+            return Ok(None);
+        };
+        for uid in uids {
+            found.entry(uid).or_insert(category);
+        }
+    }
+    let categories: Vec<(u32, MailCategory)> = store
+        .folder_uids(folder)?
+        .into_iter()
+        .filter(|&uid| uid >= first)
+        .map(|uid| {
+            let category = found.get(&uid).copied().unwrap_or(MailCategory::Primary);
+            (uid, category)
+        })
+        .collect();
+    let mut batch = store.mail_batch()?;
+    let changed = batch.set_categories(folder, &categories)?;
+    batch.commit()?;
+    Ok(Some(changed))
 }
 
 fn save_flags(store: &mut Store, folder: FolderId, states: &[FlagState]) -> Result<usize> {
@@ -214,6 +371,7 @@ fn save_messages(
             })
             .collect();
         let (flags, keywords) = split_flags(&message.flags);
+        let references = parsed.reference_strs();
         let remote = RemoteMessage {
             uid: message.uid,
             message_id_hdr: parsed.message_id.as_deref(),
@@ -225,6 +383,10 @@ fn save_messages(
             has_attachments: looks_like_attachments(&message.header),
             list_id: parsed.list_id.as_deref(),
             participants: &participants,
+            in_reply_to: parsed.in_reply_to.as_deref(),
+            references: &references,
+            gm_thread_id: message.gm_thread_id,
+            category: Some(parsed.category),
         };
         if matches!(
             batch.add_remote_message(account, folder, &remote)?,

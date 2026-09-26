@@ -202,12 +202,15 @@ folder           (id, account_id, path, role, uidvalidity, highestmodseq, sync_s
 message          (id, account_id, message_id_hdr, thread_id, subject, date,
                   size, flags, keywords, has_attachments, list_id,
                   body_state,          -- 0 headers | 1 text_indexed | 2 full
-                  blob_hash, snippet, auth_results_json)
+                  blob_hash, snippet, auth_results_json,
+                  category)            -- inbox tab, katna_core::MailCategory (v2)
 message_location (message_id, folder_id, uid)        -- one message, many folders/labels
 participant      (message_id, role, email_norm, domain, display_name)
                                                       -- role: from|to|cc|bcc|reply_to|sender
 attachment       (id, message_id, part_id, filename, mime, size, blob_hash NULL)
-thread           (id, account_id, subject_norm, last_date, message_count, flags_summary)
+thread           (id, account_id, subject_norm, last_date, message_count, flags_summary,
+                  gm_thrid)            -- Gmail X-GM-THRID (v2)
+thread_ref       (account_id, message_id_hdr, thread_id)  -- referenced, not yet seen (v2)
 op_queue         (id, account_id, op_json, state, attempts, next_try_at)
 outbox           (id, draft_message_id, send_at, state, per_recipient BOOL, attempts)
 notification     (notif_id, message_ids, account_id, created_at)   -- to close/update later
@@ -225,6 +228,14 @@ Each of `mail.db` and `pim.db` has a `change_log` table (change journal):
 every daemon write appends `(seq, object_kind, object_id, op)` in the same
 transaction, and apps read entries after the last `seq` they saw when a
 change signal arrives (§14.2).
+
+Mail schema v2 (`mail_v2.sql`) adds threads and inbox categories:
+`message.category`, `thread.gm_thrid` (unique per account), `thread_ref`,
+indexes for thread lists and subject matching, and triggers that keep
+`thread.message_count` and `last_date` right on every insert, move and
+delete (a thread with no messages left is deleted). The category numbers
+are stable: 1 Primary, 2 Promotions, 3 Social, 4 Updates, 5 Forums; NULL
+means "not classified yet" and reads as Primary.
 
 ### 5.4 Shared PIM schema (sketch)
 
@@ -299,9 +310,21 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   by chunk), and compare UID lists only when the message count does not add
   up. Headers come from `BODY.PEEK[HEADER.FIELDS (…)]` and are decoded by
   the same parser as the importer; INTERNALDATE stands in for a missing
-  `Date`. Each server copy of a message is its own row for now; merging
-  copies (Gmail labels) comes with threading (task 1.7). `has_attachments`
-  is guessed from `multipart/mixed` until `BODYSTRUCTURE` is parsed.
+  `Date`. The header list includes the threading headers and the ones the
+  category classifier reads (`katna_core::category::CLASSIFIER_HEADERS`);
+  each new message is threaded and classified as it is saved (§6.5). Each
+  server copy of a message is its own row; copies share a thread, and the
+  conversation reads show one per `Message-ID`. `has_attachments` is
+  guessed from `multipart/mixed` until `BODYSTRUCTURE` is parsed.
+- **Header refresh:** messages synced before threading (no thread or no
+  category, and no body to parse) get their headers fetched again, up to
+  5,000 per folder per sync, and only the missing fields are filled.
+- **Gmail (`X-GM-EXT-1`):** header fetches also ask for `X-GM-THRID`, and
+  Gmail's thread id decides the thread. After syncing the inbox, the engine
+  runs `UID SEARCH X-GM-RAW "category:social"` (then promotions, updates,
+  forums) over the UIDs not yet categorized; the rest of the inbox is
+  Primary. io-imap cannot express these extensions, so they are written as
+  raw commands on the connection. Progress lives in `folder.sync_state`.
 - **Level 3 so far (`katna_sync::bodies`):** after each full sync, and after
   each inbox catch-up, the worker fetches `BODY.PEEK[]` for messages in the
   offline window (default: the last 30 days, up to 10 MB each), newest
@@ -347,8 +370,48 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
 
 ### 6.5 Threading
 
-JWZ algorithm over `Message-ID` / `References` / `In-Reply-To`. Use Gmail
-`X-GM-THRID` when available. Subject-only grouping is a limited fallback.
+Threads are assigned incrementally when a message is inserted
+(`katna-store`, `thread.rs`), not rebuilt with a full JWZ pass:
+
+1. **Gmail:** with an `X-GM-THRID`, the thread holding that id wins. A
+   thread built from references takes the id over; two Gmail threads are
+   never merged.
+2. **References:** the threads of the messages named in `References` and
+   `In-Reply-To`, plus threads waiting for this message's own `Message-ID`
+   in `thread_ref` (a reply that arrived before its parent). When a message
+   links two or more threads they are merged into a Gmail one if there is
+   one, else the oldest; the others are deleted and journaled.
+3. **Subject:** a message whose subject has a reply or forward prefix
+   (`katna_core::subject`, many languages, `[list]` tags removed) joins the
+   newest thread with the same normalized subject whose last message is
+   within 30 days.
+4. Otherwise a new thread. References not found yet (up to 16) go into
+   `thread_ref`, so a later parent finds the thread.
+
+Thread changes are journaled as `Thread` entries rather than `Message`
+entries, so search does not reindex messages whose thread changed.
+
+**Reads** (work on a read-only store): `folder_threads` lists a folder's
+conversations newest first, optionally for one inbox tab (the tab of the
+conversation's newest message in the folder); `thread_summaries` gives
+counts, unread and flag state and senders for a page; `thread_messages`
+lists a conversation oldest first, one copy per `Message-ID`, hiding
+trash and junk copies unless the whole conversation is there;
+`category_unread` counts unread conversations per tab.
+
+**Inbox categories:** `katna_core::classify` is a pure function of a few
+headers (sender domain, `List-Id`, `List-Post`, `List-Unsubscribe`,
+`Precedence`, `Auto-Submitted`, bulk-mail service headers, reply prefix).
+It returns Social, Forums, Promotions, Updates or Primary. On Gmail the
+server's categories replace it for the inbox (§6.4).
+
+**Old stores:** the daemon threads and classifies messages stored before
+schema v2 on a background thread (`katna_import::backfill`), 500 messages
+per transaction with a short pause between batches, parsing the stored
+blob's headers. It fills only fields still NULL, so it is idempotent, and
+it resumes after a restart from the messages still unthreaded (a partial
+index keeps finding them cheap). On a synthetic 100k-message store it takes
+about 14 s. Messages without a blob are covered by the header refresh (§6.4).
 
 ## 7. Search (`katna-search`)
 
@@ -576,6 +639,9 @@ the same matching on event attendees ("Meeting with Acme").
 - Adding an account or changing its password logs in once first; a
   refused login is an error to the caller and nothing is saved.
 - SIGTERM and SIGINT stop every worker; each ends its IDLE and logs out.
+- After the workers start, a `katna-backfill` thread threads and classifies
+  mail stored before schema v2 (§6.5) with its own store handle, sends
+  `MailChanged` every 2 s while it works, and is stopped on shutdown.
 - `katna-daemon install-user-service` writes the systemd user unit and the
   D-Bus activation file for a binary installed by hand. Packages install
   the same files from `packaging/` system-wide (§21.1).

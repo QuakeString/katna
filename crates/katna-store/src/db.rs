@@ -41,7 +41,10 @@ impl DbKind {
     /// Migrations in order; index `i` produces schema version `i + 1`.
     pub(crate) fn migrations(self) -> &'static [&'static str] {
         match self {
-            Self::Mail => &[include_str!("schema/mail_v1.sql")],
+            Self::Mail => &[
+                include_str!("schema/mail_v1.sql"),
+                include_str!("schema/mail_v2.sql"),
+            ],
             Self::Pim => &[include_str!("schema/pim_v1.sql")],
             Self::Blobs => &[include_str!("schema/blobs_v1.sql")],
         }
@@ -198,7 +201,7 @@ mod tests {
     }
 
     #[test]
-    fn schema_v1_has_the_documented_tables() {
+    fn schema_has_the_documented_tables() {
         let tmp = tempfile::tempdir().unwrap();
         let mail = open(&tmp.path().join("mail.db"), DbKind::Mail, Mode::ReadWrite).unwrap();
         assert_eq!(
@@ -214,6 +217,7 @@ mod tests {
                 "outbox",
                 "participant",
                 "thread",
+                "thread_ref",
             ]
         );
         let pim = open(&tmp.path().join("pim.db"), DbKind::Pim, Mode::ReadWrite).unwrap();
@@ -242,6 +246,45 @@ mod tests {
             .pragma_query_value(None, "auto_vacuum", |row| row.get(0))
             .unwrap();
         assert_eq!(auto_vacuum, 2, "2 = INCREMENTAL");
+    }
+
+    #[test]
+    fn mail_v2_upgrades_a_v1_store() {
+        let tmp = tempfile::tempdir().unwrap();
+        let path = tmp.path().join("mail.db");
+        let conn = Connection::open(&path).unwrap();
+        conn.execute_batch(DbKind::Mail.migrations()[0]).unwrap();
+        conn.pragma_update(None, "user_version", 1).unwrap();
+        conn.execute_batch(
+            "INSERT INTO folder (id, account_id, path) VALUES (1, 1, 'INBOX');
+             INSERT INTO message (id, account_id, subject) VALUES (1, 1, 'Old');
+             INSERT INTO message_location (message_id, folder_id) VALUES (1, 1);",
+        )
+        .unwrap();
+        drop(conn);
+
+        let conn = open(&path, DbKind::Mail, Mode::ReadWrite).unwrap();
+        assert_eq!(user_version(&conn).unwrap(), 2);
+        let row: (Option<i64>, Option<i64>) = conn
+            .query_row(
+                "SELECT thread_id, category FROM message WHERE id = 1",
+                [],
+                |row| Ok((row.get(0)?, row.get(1)?)),
+            )
+            .unwrap();
+        assert_eq!(row, (None, None), "threaded later by the backfill");
+        // The triggers keep thread counts from now on.
+        conn.execute_batch(
+            "INSERT INTO thread (id, account_id) VALUES (7, 1);
+             UPDATE message SET thread_id = 7 WHERE id = 1;",
+        )
+        .unwrap();
+        let count: i64 = conn
+            .query_row("SELECT message_count FROM thread WHERE id = 7", [], |row| {
+                row.get(0)
+            })
+            .unwrap();
+        assert_eq!(count, 1);
     }
 
     #[test]

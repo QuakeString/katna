@@ -3,7 +3,8 @@
 //! Extracts the fields the store keeps for each message (ARCHITECTURE.md §5.3)
 //! from a raw RFC 5322 message.
 
-use mail_parser::{Address, HeaderValue, MessageParser};
+use katna_core::{MailCategory, MailFacts, classify};
+use mail_parser::{Address, HeaderValue, Message, MessageParser};
 
 /// Maximum snippet length in characters.
 pub const SNIPPET_CHARS: usize = 200;
@@ -24,6 +25,36 @@ pub struct ParsedMessage {
     /// Start of the body text, whitespace collapsed.
     pub snippet: Option<String>,
     pub participants: Vec<Participant>,
+    /// `In-Reply-To` without angle brackets (the first ID if there are
+    /// several).
+    pub in_reply_to: Option<String>,
+    /// `References` without angle brackets, oldest first.
+    pub references: Vec<String>,
+    /// Inbox tab, from the header-based classifier.
+    pub category: MailCategory,
+}
+
+/// The header facts threading and categories need, for messages stored
+/// before either existed (see [`crate::backfill`]).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HeaderLinks {
+    pub in_reply_to: Option<String>,
+    pub references: Vec<String>,
+    pub category: MailCategory,
+}
+
+impl HeaderLinks {
+    /// `references` as the store wants them.
+    pub fn reference_strs(&self) -> Vec<&str> {
+        self.references.iter().map(String::as_str).collect()
+    }
+}
+
+impl ParsedMessage {
+    /// `references` as the store wants them.
+    pub fn reference_strs(&self) -> Vec<&str> {
+        self.references.iter().map(String::as_str).collect()
+    }
 }
 
 /// Role of an address in a message (`participant.role`).
@@ -64,6 +95,7 @@ pub fn parse_message(raw: &[u8]) -> Option<ParsedMessage> {
         }
     }
 
+    let links = links(&message, &participants);
     Some(ParsedMessage {
         message_id: message.message_id().and_then(non_empty),
         subject: message.subject().and_then(non_empty),
@@ -75,7 +107,58 @@ pub fn parse_message(raw: &[u8]) -> Option<ParsedMessage> {
             .body_preview(SNIPPET_CHARS)
             .and_then(|text| non_empty(&collapse_whitespace(&text))),
         participants,
+        in_reply_to: links.in_reply_to,
+        references: links.references,
+        category: links.category,
     })
+}
+
+/// Reads only the header of `raw`, for threading and categories. Cheaper
+/// than [`parse_message`], which also looks at the body. Returns `None` if
+/// it has no headers.
+pub fn parse_links(raw: &[u8]) -> Option<HeaderLinks> {
+    let message = MessageParser::default().parse_headers(raw)?;
+    if message.headers().is_empty() {
+        return None;
+    }
+    let mut from = Vec::new();
+    if let Some(address) = message.from() {
+        push_participants(&mut from, Role::From, address);
+    }
+    Some(links(&message, &from))
+}
+
+fn links(message: &Message<'_>, participants: &[Participant]) -> HeaderLinks {
+    let mut facts = MailFacts::from_headers(message.headers_raw());
+    // Decoded values beat raw ones.
+    if let Some(from) = participants.iter().find(|p| p.role == Role::From) {
+        facts.from = Some(from.email_norm.clone());
+    }
+    if let Some(subject) = message.subject() {
+        facts.subject = Some(subject.to_owned());
+    }
+    HeaderLinks {
+        in_reply_to: message_ids(message.in_reply_to()).into_iter().next(),
+        references: message_ids(message.references()),
+        category: classify(&facts),
+    }
+}
+
+/// Message IDs of an `In-Reply-To` or `References` value, without angle
+/// brackets.
+fn message_ids(value: &HeaderValue<'_>) -> Vec<String> {
+    let texts: Vec<&str> = match value {
+        HeaderValue::Text(text) => vec![text.as_ref()],
+        HeaderValue::TextList(list) => list.iter().map(|t| t.as_ref()).collect(),
+        _ => Vec::new(),
+    };
+    texts
+        .into_iter()
+        .flat_map(|text| text.split_whitespace())
+        .map(|id| id.trim_matches(['<', '>', ',']))
+        .filter(|id| !id.is_empty())
+        .map(str::to_owned)
+        .collect()
 }
 
 fn push_participants(out: &mut Vec<Participant>, role: Role, address: &Address<'_>) {
@@ -221,6 +304,45 @@ Content-Disposition: attachment; filename=\"notes.pdf\"\r
                 ("cc", "charles@example.net", Some("Charles")),
             ]
         );
+    }
+
+    #[test]
+    fn reads_thread_links_and_category() {
+        let raw = b"Message-ID: <3@example.org>\r
+In-Reply-To: <2@example.org>\r
+References: <1@example.org>\r
+ <2@example.org>\r
+From: Ada <ada@example.org>\r
+Subject: Re: Plan\r
+\r
+Sounds good.\r
+";
+        let parsed = parse_message(raw).unwrap();
+        assert_eq!(parsed.in_reply_to.as_deref(), Some("2@example.org"));
+        assert_eq!(parsed.reference_strs(), ["1@example.org", "2@example.org"]);
+        assert_eq!(parsed.category, MailCategory::Primary);
+        let links = parse_links(raw).unwrap();
+        assert_eq!(links.in_reply_to, parsed.in_reply_to);
+        assert_eq!(links.references, parsed.references);
+
+        let promo = b"From: =?utf-8?q?Caf=C3=A9?= <news@cafe.example>\r
+Subject: =?utf-8?q?50=25_off_today?=\r
+List-Unsubscribe: <https://cafe.example/u>\r
+X-MC-User: abc\r
+\r
+Deals.\r
+";
+        assert_eq!(
+            parse_message(promo).unwrap().category,
+            MailCategory::Promotions
+        );
+        assert_eq!(
+            parse_links(promo).unwrap().category,
+            MailCategory::Promotions
+        );
+        let social = b"From: Facebook <notification@facebookmail.com>\r\nSubject: Hi\r\n\r\n";
+        assert_eq!(parse_links(social).unwrap().category, MailCategory::Social);
+        assert_eq!(parse_links(b""), None);
     }
 
     #[test]

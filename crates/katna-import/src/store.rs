@@ -53,6 +53,7 @@ impl MessageSink for StoreSink<'_> {
                 }
             };
             let parsed = &message.parsed;
+            let references = parsed.reference_strs();
             participants.clear();
             participants.extend(parsed.participants.iter().map(|p| NewParticipant {
                 role: p.role,
@@ -70,6 +71,9 @@ impl MessageSink for StoreSink<'_> {
                 list_id: parsed.list_id.as_deref(),
                 snippet: parsed.snippet.as_deref(),
                 participants: &participants,
+                in_reply_to: parsed.in_reply_to.as_deref(),
+                references: &references,
+                category: Some(parsed.category),
             };
             results.push(match mail.add_message(account, folder, &new)? {
                 katna_store::Added::Message(_) => Added::New,
@@ -151,10 +155,12 @@ mod tests {
             [
                 // lay-k/all_documents/1.
                 (ObjectKind::Folder, ChangeOp::Insert),
+                (ObjectKind::Thread, ChangeOp::Insert),
                 (ObjectKind::Message, ChangeOp::Insert),
                 // lay-k/inbox/1. is the same memo; lay-k/inbox/2. is new.
                 (ObjectKind::Folder, ChangeOp::Insert),
                 (ObjectKind::Message, ChangeOp::Update),
+                (ObjectKind::Thread, ChangeOp::Insert),
                 (ObjectKind::Message, ChangeOp::Insert),
             ]
         );

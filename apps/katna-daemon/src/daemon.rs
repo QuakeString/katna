@@ -151,6 +151,11 @@ impl Daemon {
         Ok((daemon, receiver))
     }
 
+    /// A sender for notices from outside the workers (the backfill).
+    pub(crate) fn notifier(&self) -> Sender<Notice> {
+        self.notices.clone()
+    }
+
     /// Starts a worker for every account, and the outbox.
     pub async fn start(self: &Arc<Self>) -> Result<(), CommandError> {
         let accounts = self.store().accounts()?;
@@ -593,7 +598,8 @@ impl Daemon {
                     status.detail.clear();
                     status.last_sync = unix_now();
                     let changed = reports.iter().any(|report| {
-                        report.added + report.flags_changed + report.removed > 0 || report.reset
+                        report.added + report.flags_changed + report.removed + report.backfilled > 0
+                            || report.reset
                     });
                     if changed {
                         let _ = self.notices.try_send(Notice::MailChanged(id));

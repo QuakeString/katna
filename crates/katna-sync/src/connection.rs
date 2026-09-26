@@ -50,6 +50,7 @@ enum Request {
     CreateFolder(String, Reply<()>),
     Append(String, Vec<u8>, Flags, Reply<()>),
     PollChanges(Reply<Vec<FolderChange>>),
+    GmailSearch(u32, String, Reply<Option<Vec<u32>>>),
     WaitForChanges(Duration, Reply<Vec<FolderChange>>),
     Logout(Reply<()>),
 }
@@ -159,6 +160,12 @@ impl Connection {
         self.call(Request::PollChanges).await
     }
 
+    pub async fn gmail_search(&self, first: u32, query: &str) -> Result<Option<Vec<u32>>> {
+        let query = query.to_owned();
+        self.call(|reply| Request::GmailSearch(first, query, reply))
+            .await
+    }
+
     /// Waits for changes to the selected folder, for at most `max_wait`.
     ///
     /// Returns early, possibly with no changes, when another request needs
@@ -258,6 +265,10 @@ impl MailBackend for Connection {
         Connection::poll_changes(self).await
     }
 
+    async fn gmail_search(&mut self, first: u32, query: &str) -> Result<Option<Vec<u32>>> {
+        Connection::gmail_search(self, first, query).await
+    }
+
     /// If `interrupt` wins, the task still finishes its wait, and changes
     /// it reports after that are not delivered; the next sync finds them.
     async fn wait_for_changes<I>(
@@ -335,6 +346,9 @@ async fn run<B: MailBackend>(mut backend: B, inbox: Receiver<Request>) {
                 backend.append_with_flags(&folder, message, &flags).await,
             ),
             Request::PollChanges(reply) => answer(&reply, backend.poll_changes().await),
+            Request::GmailSearch(first, query, reply) => {
+                answer(&reply, backend.gmail_search(first, &query).await)
+            }
             Request::WaitForChanges(max_wait, reply) => {
                 // The next request, or the last handle going away, ends the
                 // wait. `recv` is cancel-safe: nothing is lost if the server

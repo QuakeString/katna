@@ -441,6 +441,9 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
                     list_id: None,
                     snippet: Some("The budget\r\n is final."),
                     participants: &participants,
+                    in_reply_to: None,
+                    references: &[],
+                    category: None,
                 },
             )
             .unwrap()

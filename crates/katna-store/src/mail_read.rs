@@ -5,12 +5,12 @@
 
 use std::collections::HashMap;
 
-use katna_core::AccountId;
+use katna_core::{AccountId, MailCategory};
 use rusqlite::{Connection, OptionalExtension, Row, params};
 
 use crate::blob::BlobHash;
 use crate::error::{Error, Result};
-use crate::mail::{MessageFlags, MessageId, ParticipantRole};
+use crate::mail::{MessageFlags, MessageId, ParticipantRole, ThreadId};
 
 /// One address of a stored message.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -46,6 +46,11 @@ pub struct StoredMessage {
     pub list_id: Option<String>,
     pub blob_hash: Option<BlobHash>,
     pub snippet: Option<String>,
+    /// The conversation; `None` until the daemon's backfill threads a
+    /// message stored before threading.
+    pub thread_id: Option<ThreadId>,
+    /// Inbox tab; `None` when not classified yet (shown as Primary).
+    pub category: Option<MailCategory>,
     pub participants: Vec<StoredParticipant>,
     pub locations: Vec<StoredLocation>,
 }
@@ -58,7 +63,8 @@ impl StoredMessage {
 }
 
 const MESSAGE_COLUMNS: &str = "id, account_id, subject, date, size, flags, keywords,
-                               has_attachments, list_id, blob_hash, snippet";
+                               has_attachments, list_id, blob_hash, snippet, thread_id,
+                               category";
 
 /// Messages with ID greater than `after`, in ID order, at most `limit`.
 pub(crate) fn messages_after(
@@ -134,6 +140,10 @@ fn message_row(row: &Row<'_>) -> rusqlite::Result<Result<StoredMessage>> {
                 })
                 .transpose()?,
             snippet: row.get(10)?,
+            thread_id: row.get::<_, Option<i64>>(11)?.map(ThreadId),
+            category: row
+                .get::<_, Option<i64>>(12)?
+                .and_then(MailCategory::from_storage),
             participants: Vec::new(),
             locations: Vec::new(),
         })
@@ -217,6 +227,9 @@ mod tests {
             list_id: Some("list.example.org"),
             snippet: Some("preview"),
             participants,
+            in_reply_to: None,
+            references: &[],
+            category: None,
         }
     }
 
