@@ -708,7 +708,8 @@ impl MailWindow {
     /// first.
     fn compose_account(&self) -> Option<&katna_core::Account> {
         let open = self.folder.and_then(|folder| self.tree.account_of(folder));
-        open.and_then(|id| self.accounts.iter().find(|a| a.id == id))
+        open.or_else(|| self.shown_account())
+            .and_then(|id| self.accounts.iter().find(|a| a.id == id))
             .or_else(|| self.accounts.first())
     }
 

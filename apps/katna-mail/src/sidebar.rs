@@ -223,10 +223,13 @@ impl Tree {
     /// The folder to open first: the first inbox with mail, else the first
     /// folder with mail, else the first folder. Also returns the keys of its
     /// ancestors, which must be expanded to show it.
-    pub fn default_folder(&self) -> Option<(FolderId, Vec<String>)> {
+    /// Among the folders of `account` only, when one is given.
+    pub fn default_folder_in(&self, account: Option<AccountId>) -> Option<(FolderId, Vec<String>)> {
         let mut candidates: [Option<(FolderId, Vec<String>)>; 3] = [None, None, None];
-        for account in &self.accounts {
-            find(&account.roots, &mut Vec::new(), &mut candidates);
+        for node in &self.accounts {
+            if account.is_none_or(|id| id == node.id) {
+                find(&node.roots, &mut Vec::new(), &mut candidates);
+            }
         }
         candidates.into_iter().flatten().next()
     }
@@ -301,10 +304,14 @@ impl Tree {
             .collect()
     }
 
-    /// The visible rows, given the expanded node keys.
-    pub fn rows(&self, expanded: &HashSet<String>) -> Vec<Row> {
+    /// The visible rows, given the expanded node keys: of every account,
+    /// or of `only` when given.
+    pub fn rows(&self, expanded: &HashSet<String>, only: Option<AccountId>) -> Vec<Row> {
         let mut rows = Vec::new();
         for account in &self.accounts {
+            if only.is_some_and(|id| id != account.id) {
+                continue;
+            }
             rows.push(Row::Account {
                 id: account.id,
                 name: account.name.clone(),
@@ -554,7 +561,7 @@ mod tests {
         assert_eq!(tree.accounts[0].unread, 4);
         assert_eq!(tree.accounts[1].name, "Account 2");
 
-        let rows = tree.rows(&tree.initially_expanded());
+        let rows = tree.rows(&tree.initially_expanded(), None);
         assert_eq!(
             labels(&rows),
             [
@@ -572,7 +579,7 @@ mod tests {
                 "## Labels",
             ]
         );
-        let collapsed = tree.rows(&HashSet::new());
+        let collapsed = tree.rows(&HashSet::new(), None);
         assert_eq!(
             labels(&collapsed)[..4],
             ["# Work", "Inbox +", "archive", "## Labels"]
@@ -582,7 +589,19 @@ mod tests {
         };
         assert_eq!((*folder, *role), (None, Role::Other));
 
-        assert_eq!(tree.default_folder(), Some((FolderId(2), Vec::new())));
+        assert_eq!(
+            tree.default_folder_in(None),
+            Some((FolderId(2), Vec::new()))
+        );
+
+        // One account at a time.
+        let only = tree.rows(&HashSet::new(), Some(AccountId(2)));
+        assert_eq!(labels(&only), ["# Account 2", "Inbox", "## Labels"]);
+        assert_eq!(
+            tree.default_folder_in(Some(AccountId(2))),
+            Some((FolderId(6), Vec::new()))
+        );
+        assert_eq!(tree.default_folder_in(Some(AccountId(9))), None);
         assert_eq!(tree.node(FolderId(3)).unwrap().role, Role::Sent);
         assert_eq!(tree.node(FolderId(99)), None);
     }
@@ -610,11 +629,11 @@ mod tests {
         assert_eq!(folders[7].path, "user03/inbox");
         let tree = Tree::build(&[], &folders, &HashMap::new());
         assert!(tree.initially_expanded().is_empty());
-        let (id, ancestors) = tree.default_folder().unwrap();
+        let (id, ancestors) = tree.default_folder_in(None).unwrap();
         assert_eq!(id, FolderId(8));
         assert_eq!(ancestors, ["1:user03"]);
         let expanded: HashSet<String> = ancestors.into_iter().collect();
-        let rows = tree.rows(&expanded);
+        let rows = tree.rows(&expanded, None);
         assert_eq!(rows.len(), 2 + 30 + 2);
         assert_eq!(labels(&rows)[1], "## Labels");
         assert_eq!(labels(&rows)[5..8], ["user03 -", "  Inbox +", "  notes"]);
@@ -623,7 +642,7 @@ mod tests {
     #[test]
     fn empty_store() {
         let tree = Tree::build(&[], &[], &HashMap::new());
-        assert!(tree.rows(&HashSet::new()).is_empty());
-        assert_eq!(tree.default_folder(), None);
+        assert!(tree.rows(&HashSet::new(), None).is_empty());
+        assert_eq!(tree.default_folder_in(None), None);
     }
 }

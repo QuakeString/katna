@@ -1080,6 +1080,9 @@ impl MailWindow {
         if !self.account_menu {
             return None;
         }
+        // With one account at a time, the shown one is marked and a click
+        // switches to another.
+        let shown = self.shown_account();
         let rows = self.accounts.iter().enumerate().map(|(ix, account)| {
             let name = if account.display_name.trim().is_empty() {
                 account.address.clone()
@@ -1087,6 +1090,13 @@ impl MailWindow {
                 account.display_name.clone()
             };
             let id = account.id;
+            let current = shown == Some(id);
+            let unread = self
+                .tree
+                .accounts
+                .iter()
+                .find(|a| a.id == id)
+                .map_or(0, |a| a.unread);
             div()
                 .id(("account-row", ix))
                 .h(px(56.0))
@@ -1097,11 +1107,15 @@ impl MailWindow {
                 .gap(px(12.0))
                 .rounded(px(8.0))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .when(current, |d| d.bg(rgba(th.nav_selected)))
+                .hover(move |s| s.bg(rgba(if current { th.nav_selected } else { th.hover })))
                 .on_click(cx.listener(move |this, _, _, cx| {
                     this.account_menu = false;
                     this.app = RailApp::Mail;
-                    if let Some(inbox) = this.tree.role_folder(id, Role::Inbox) {
+                    this.settings_page = None;
+                    if this.shown_account().is_some() {
+                        this.switch_account(id, cx);
+                    } else if let Some(inbox) = this.tree.role_folder(id, Role::Inbox) {
                         this.open_folder(inbox, cx);
                     }
                     cx.notify();
@@ -1128,6 +1142,22 @@ impl MailWindow {
                                 .child(account.address.clone()),
                         ),
                 )
+                .when(unread > 0, |d| {
+                    d.child(
+                        div()
+                            .text_size(px(12.0))
+                            .font_weight(FontWeight::SEMIBOLD)
+                            .text_color(rgba(if current {
+                                th.nav_selected_text
+                            } else {
+                                th.text_dim
+                            }))
+                            .child(crate::format::thousands(unread)),
+                    )
+                })
+                .when(current, |d| {
+                    d.child(icon("check", th.nav_selected_text, 20.0))
+                })
         });
         let add = div()
             .id("account-add")
