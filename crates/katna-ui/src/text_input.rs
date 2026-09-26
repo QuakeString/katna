@@ -100,7 +100,8 @@ impl EventEmitter<InputEvent> for TextInput {}
 impl TextInput {
     pub fn new(placeholder: impl Into<SharedString>, cx: &mut Context<Self>) -> Self {
         Self {
-            focus_handle: cx.focus_handle(),
+            // Tab moves between fields (the app binds it to focus_next).
+            focus_handle: cx.focus_handle().tab_stop(true),
             content: SharedString::default(),
             placeholder: placeholder.into(),
             accent: gpui::blue(),

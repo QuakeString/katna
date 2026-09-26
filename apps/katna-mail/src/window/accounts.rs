@@ -19,7 +19,7 @@ use super::{Listing, MailWindow, keymap};
 use crate::daemon;
 use crate::data::Mail;
 use crate::theme::{Theme, fade};
-use crate::widgets::{avatar, elevation, icon};
+use crate::widgets::{FocusRing, avatar, elevation, icon};
 
 const WIDTH: f32 = 500.0;
 /// What to type before everything is deleted.
@@ -93,11 +93,11 @@ impl MailWindow {
                             ),
                     )
                     .child(
-                        danger_button(("account-remove", ix), "Remove", false, th).on_click(
-                            cx.listener(move |this, _, _, cx| {
+                        danger_button(("account-remove", ix), "Remove", false, th)
+                            .map(|d| self.page_control(d, th, cx))
+                            .on_click(cx.listener(move |this, _, _, cx| {
                                 this.ask(What::RemoveAccount(account.clone()), cx)
-                            }),
-                        ),
+                            })),
                     )
             }))
             .when(self.accounts.is_empty(), |d| {
@@ -112,6 +112,7 @@ impl MailWindow {
             .child(
                 div().pt(px(8.0)).flex().child(
                     crate::widgets::outlined_button("account-add-page", "Add an account", th)
+                        .map(|d| self.page_control(d, th, cx))
                         .on_click(
                             cx.listener(|this, _, window, cx| this.open_add_account(window, cx)),
                         ),
@@ -135,6 +136,7 @@ impl MailWindow {
             )
             .child(
                 danger_button("delete-all-open", "Delete all Katna data", false, th)
+                    .map(|d| self.page_control(d, th, cx))
                     .on_click(cx.listener(|this, _, window, cx| this.ask_delete_all(window, cx))),
             );
         let shown = self.config.mail.accounts_shown;
@@ -571,6 +573,7 @@ impl MailWindow {
                     .child(
                         div()
                             .id("danger-cancel")
+                            .focus_ring(th)
                             .h(px(36.0))
                             .px(px(16.0))
                             .flex()
@@ -591,6 +594,7 @@ impl MailWindow {
                             true,
                             th,
                         )
+                        .focus_ring(th)
                         .when(!ready, |d| d.opacity(0.45).cursor_default())
                         .on_click(cx.listener(|this, _, _, cx| this.confirm_danger(cx))),
                     ),

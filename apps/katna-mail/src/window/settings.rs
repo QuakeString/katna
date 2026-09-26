@@ -8,8 +8,8 @@
 use std::time::Duration;
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, Div, FontWeight, SharedString, SpringAnimation,
-    div, prelude::*, px, rgba,
+    Animation, AnimationExt, AnyElement, App, Context, Div, FontWeight, SharedString,
+    SpringAnimation, Stateful, div, prelude::*, px, rgba,
 };
 use katna_core::config::{
     AccountsShown, Density, FileGroup, OpenIn, ReadingPane, Theme as ThemeChoice, UNDO_SEND_CHOICES,
@@ -19,6 +19,7 @@ use katna_ui::motion;
 
 use super::{MailWindow, SETTINGS_WIDTH};
 use crate::theme::{Theme, mix};
+use crate::widgets::FocusRing;
 use crate::widgets::{elevation, icon, icon_button, radio, switch, tip};
 
 /// One loop of the reading-pane demo.
@@ -279,8 +280,7 @@ impl MailWindow {
         let now = self.config.sending.undo_send_seconds;
         let chips = UNDO_SEND_CHOICES.into_iter().map(|seconds| {
             let on = seconds == now;
-            div()
-                .id(("undo-send", seconds as usize))
+            self.page_control(div().id(("undo-send", seconds as usize)), th, cx)
                 .px(px(10.0))
                 .h(px(28.0))
                 .flex()
@@ -425,53 +425,70 @@ impl MailWindow {
         } else {
             pane_picture(pane, rest, th).into_any_element()
         };
-        div()
-            .id(match pane {
+        self.page_control(
+            div().id(match pane {
                 ReadingPane::Right => "pane-right",
                 ReadingPane::None => "pane-none",
-            })
-            .relative()
-            .overflow_hidden()
-            .flex_1()
-            .p(px(6.0))
-            .flex()
-            .flex_col()
-            .gap(px(8.0))
-            .rounded(px(12.0))
-            .border_2()
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
-            .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
-                let now = hovered.then_some(pane);
-                if *hovered || this.pane_hover == Some(pane) {
-                    this.pane_hover = now;
-                    cx.notify();
-                }
-            }))
-            .on_click(cx.listener(move |this, _, _, cx| this.apply(Change::Pane(pane), cx)))
-            .child(Ripple::new(("pane-ripple", pane as usize), rgba(th.ripple)).rounded(12.0))
-            .child(picture)
-            .child(
-                div()
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(8.0))
-                    .px(px(2.0))
-                    .pb(px(2.0))
-                    .text_size(px(13.0))
-                    .child(animated_radio(("pane-radio", pane as usize), on, th))
-                    .child(label),
-            )
-            .with_spring(
-                ("pane-border", pane as usize),
-                SpringAnimation::new(motion::SMOOTH).to(if on { 1.0 } else { 0.0 }),
-                {
-                    let (off, accent) = (th.divider, th.accent);
-                    move |el, s: f32| el.border_color(rgba(mix(off, accent, s.clamp(0.0, 1.0))))
-                },
-            )
-            .into_any_element()
+            }),
+            th,
+            cx,
+        )
+        .relative()
+        .overflow_hidden()
+        .flex_1()
+        .p(px(6.0))
+        .flex()
+        .flex_col()
+        .gap(px(8.0))
+        .rounded(px(12.0))
+        .border_2()
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
+            let now = hovered.then_some(pane);
+            if *hovered || this.pane_hover == Some(pane) {
+                this.pane_hover = now;
+                cx.notify();
+            }
+        }))
+        .on_click(cx.listener(move |this, _, _, cx| this.apply(Change::Pane(pane), cx)))
+        .child(Ripple::new(("pane-ripple", pane as usize), rgba(th.ripple)).rounded(12.0))
+        .child(picture)
+        .child(
+            div()
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(8.0))
+                .px(px(2.0))
+                .pb(px(2.0))
+                .text_size(px(13.0))
+                .child(animated_radio(("pane-radio", pane as usize), on, th))
+                .child(label),
+        )
+        .with_spring(
+            ("pane-border", pane as usize),
+            SpringAnimation::new(motion::SMOOTH).to(if on { 1.0 } else { 0.0 }),
+            {
+                let (off, accent) = (th.divider, th.accent);
+                move |el, s: f32| el.border_color(rgba(mix(off, accent, s.clamp(0.0, 1.0))))
+            },
+        )
+        .into_any_element()
+    }
+
+    /// On the Settings page a control is a Tab stop. The quick settings
+    /// panel leaves the focus in the list, so its keys keep working.
+    pub(super) fn page_control(
+        &self,
+        control: Stateful<Div>,
+        th: &Theme,
+        cx: &App,
+    ) -> Stateful<Div> {
+        match &self.settings_page {
+            Some(page) => control.focus_ring_in(page.tab_stops(), th, cx),
+            None => control,
+        }
     }
 
     pub(super) fn radio_row(
@@ -483,8 +500,7 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        div()
-            .id(id)
+        self.page_control(div().id(id), th, cx)
             .relative()
             .overflow_hidden()
             .h(px(40.0))
@@ -514,8 +530,7 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        div()
-            .id(id)
+        self.page_control(div().id(id), th, cx)
             .relative()
             .overflow_hidden()
             .py(px(8.0))
@@ -532,7 +547,7 @@ impl MailWindow {
                     this.open_settings_page(section, window, cx)
                 }),
             )
-            .child(Ripple::new((id, 1_usize), rgba(th.ripple)))
+            .child(Ripple::new((id, 1_usize), rgba(th.ripple)).rounded(8.0))
             .child(
                 div()
                     .flex_1()
@@ -587,8 +602,7 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        div()
-            .id(id)
+        self.page_control(div().id(id), th, cx)
             .relative()
             .overflow_hidden()
             .py(px(8.0))

@@ -87,9 +87,30 @@ pub fn wave_shape(x: f32, y: f32, r: f32, w: f32, h: f32, corners: Corners) -> (
         right >= w && bottom >= h,
         left <= 0.0 && bottom >= h,
     ];
+    // How far the wave's two edges at each corner are from its centre when
+    // the box cuts them: a circle cut by a straight edge meets it in a
+    // shallow curve, not a half circle, so a wide wave in a low box is
+    // nearly a rectangle rather than a pill.
+    let cut = |edge: f32, near: bool| near.then_some(edge);
+    let edges = [
+        (cut(y, top <= 0.0), cut(x, left <= 0.0)),
+        (cut(y, top <= 0.0), cut(w - x, right >= w)),
+        (cut(h - y, bottom >= h), cut(w - x, right >= w)),
+        (cut(h - y, bottom >= h), cut(x, left <= 0.0)),
+    ];
     let mut radii = [0.0; 4];
     for i in 0..4 {
-        let radius = if at[i] { cap(corners[i], own) } else { r };
+        let own_corner = cap(corners[i], own);
+        let radius = if at[i] {
+            own_corner
+        } else {
+            let curve = match edges[i] {
+                (Some(e), None) | (None, Some(e)) => r - (r * r - e * e).max(0.0).sqrt(),
+                _ => r,
+            };
+            // Never squarer than the element, so it stays inside it.
+            curve.max(own_corner)
+        };
         radii[i] = cap(radius, wave);
     }
     ([left, top, ww, wh], radii)
@@ -193,6 +214,23 @@ mod tests {
         let ([l, _, w, _], [tl, tr, br, bl]) = wave_shape(10.0, 20.0, 30.0, 200.0, 40.0, [8.0; 4]);
         assert_eq!((l, w), (0.0, 40.0));
         assert_eq!((tl, bl), (8.0, 8.0));
-        assert_eq!((tr, br), (20.0, 20.0));
+        assert_eq!((tr, br), (8.0, 8.0));
+        // In a square box the right end is the circle's shallow curve.
+        let (_, [tl, tr, _, _]) = wave_shape(10.0, 20.0, 30.0, 200.0, 40.0, [0.0; 4]);
+        assert_eq!(tl, 0.0);
+        assert!((tr - (30.0 - 500.0_f32.sqrt())).abs() < 1e-4, "{tr}");
+    }
+
+    #[test]
+    fn a_wide_wave_in_a_square_tab_is_not_a_pill() {
+        // A 128 by 48 tab pressed in the middle, halfway through.
+        let ([l, t, w, h], radii) = wave_shape(64.0, 24.0, 50.0, 128.0, 48.0, [0.0; 4]);
+        assert_eq!([l, t, w, h], [14.0, 0.0, 100.0, 48.0]);
+        for radius in radii {
+            assert!(radius < 7.0, "{radius}");
+        }
+        // Pills keep round ends.
+        let (_, radii) = wave_shape(64.0, 24.0, 50.0, 128.0, 48.0, [f32::INFINITY; 4]);
+        assert_eq!(radii, [24.0; 4]);
     }
 }

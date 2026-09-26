@@ -1146,6 +1146,16 @@ Gemini or confidential mode):
 - **Settings page.** "See all settings", the rail's gear or `?` open it in
   place of the list (`window/settings_page.rs`), with sections General,
   Inbox, Accounts, Signatures and Keyboard shortcuts.
+- **Tab between controls.** Tab and Shift+Tab move the focus in the order
+  things are drawn, as in any desktop form: fields (`TextInput`,
+  `RichEditor`) are always Tab stops, and the Settings page's tabs, rows,
+  chips and buttons are too (`widgets::FocusRing`). Enter or Space presses
+  the focused control, a tint with a ring shows it (only after a key, not
+  a click), and the page scrolls to keep it in view. The page's open tab
+  takes the focus when it opens. In the rich editor Tab still moves
+  between table cells and indents list items. Controls in the quick
+  settings panel and toolbars stay out of the Tab order, since focusing
+  them on a click would take the keys away from the list or the editor.
 - **Removing an account, deleting all data.** Settings → Accounts
   (`window/accounts.rs`; also "Manage accounts" in the account menu) lists
   the accounts, each with Remove, and has "Delete all Katna data". Both
@@ -1244,7 +1254,9 @@ Gemini or confidential mode):
   app rail opens them over the list as a floating panel with rounded
   corners and a bottom margin. Ripples keep to the shape of the element
   they are on (`Ripple::rounded`), since GPUI clips children to
-  rectangles. Icon buttons have tooltips after GPUI's hover delay
+  rectangles. Where the element cuts the growing circle, its ends are the
+  circle's shallow curve, so a wave in a wide, low tab fills it as one
+  rectangle rather than showing a pill. Icon buttons have tooltips after GPUI's hover delay
   (`katna_ui::Tooltip`). Dialogs, panels and cards use 15 px corners.
   Reply, Reply all and Forward stay pinned at the foot of the open
   conversation. Answering writes inline at the end of the conversation,
