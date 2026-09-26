@@ -45,7 +45,7 @@ impl MailWindow {
             return;
         };
         let title = self.line_subject(entry);
-        let env = self.chrome.environment().clone();
+        let env = self.chrome.environment();
         let paths = self.paths.clone();
         let font = self.font.clone();
         let origin = Origin {
@@ -192,7 +192,7 @@ impl MailWindow {
             .size_full()
             .p(px(8.0))
             .when(!server_frame, |d| d.pt_0())
-            .bg(rgba(th.page))
+            .bg(rgba(th.backdrop))
             .text_color(rgba(th.text))
             .on_action(cx.listener(Self::reply))
             .on_action(cx.listener(Self::reply_all))
@@ -224,7 +224,7 @@ impl MailWindow {
                     .child(title)
                     .into_any_element(),
             ),
-            background: Some(th.page),
+            background: Some(th.backdrop),
             ..Bar::default()
         };
         let frame = self.chrome.render_bar(bar, content, window, cx);

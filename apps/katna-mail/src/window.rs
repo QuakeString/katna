@@ -31,6 +31,7 @@ mod keymap;
 mod labels;
 mod layout;
 mod list;
+mod look;
 mod nav;
 mod onboarding;
 mod reader;
@@ -75,6 +76,7 @@ use reader::Conversation;
 use search_panel::SearchPanel;
 
 pub use desktop::{MenuBar, menu_bar, refresh_menu_bar};
+pub use look::look;
 
 actions!(
     katna_mail,
@@ -567,7 +569,12 @@ impl MailWindow {
             fg: th.text,
             accent: th.accent,
         }));
-        th
+        chrome.set_backdrop(Some(th.page));
+        if chrome.blurred() {
+            th.translucent()
+        } else {
+            th
+        }
     }
 
     /// No account yet: the store is not made, or has no account.
@@ -1966,6 +1973,7 @@ impl MailWindow {
 
 impl Render for MailWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        self.chrome.sync_look(window, cx);
         if self.detached {
             return self.render_detached(window, cx);
         }
@@ -2143,7 +2151,7 @@ impl Render for MailWindow {
             .key_context(WINDOW_CONTEXT)
             .relative()
             .size_full()
-            .bg(rgba(th.page))
+            .bg(rgba(th.backdrop))
             .text_color(rgba(th.text))
             .on_action(cx.listener(Self::focus_next))
             .on_action(cx.listener(Self::focus_previous))
@@ -2204,7 +2212,7 @@ impl Render for MailWindow {
                 self.render_top_end(&th, cx)
             },
             height: Some(TOP_BAR_HEIGHT),
-            background: Some(th.page),
+            background: Some(th.backdrop),
         };
         let frame = self.chrome.render_bar(bar, content, window, cx);
         match &self.font {

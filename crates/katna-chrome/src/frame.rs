@@ -3,18 +3,18 @@
 //! The window frame: a toolbar under the compositor's title bar (SSD), or our
 //! own header bar, shadow, rounded corners and resize edges (CSD).
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, Bounds, BoxShadow, ClickEvent, Context, CursorStyle, Decorations, Div,
-    FontWeight, HitboxBehavior, Hsla, IntoElement, MouseButton, ParentElement, PathBuilder, Pixels,
-    ResizeEdge, SharedString, Size, Styled, Tiling, TitlebarOptions, Window, WindowAppearance,
-    WindowBackgroundAppearance, WindowBounds, WindowButton, WindowButtonLayout, WindowDecorations,
-    WindowOptions, canvas, div, point, prelude::*, px, rgba, size,
+    FontWeight, Global, HitboxBehavior, Hsla, IntoElement, MouseButton, ParentElement, PathBuilder,
+    Pixels, ResizeEdge, SharedString, Size, Styled, Tiling, TitlebarOptions, Window,
+    WindowAppearance, WindowBackgroundAppearance, WindowBounds, WindowButton, WindowButtonLayout,
+    WindowDecorations, WindowOptions, canvas, div, point, prelude::*, px, rgba, size,
 };
 
-use crate::desktop::{DecorationMode, Environment, Preset};
+use crate::desktop::{DecorationMode, Environment, Preset, Session};
 use crate::geometry::{Edge, FrameGeometry, RESIZE_HANDLE, Rect, Sides};
 use crate::tokens::{ChromeColors, ChromeTokens, Shadow};
 
@@ -23,6 +23,27 @@ pub const MIN_WINDOW_SIZE: Size<Pixels> = Size {
     width: px(360.0),
     height: px(294.0),
 };
+
+/// How the app wants its windows to look: a GPUI global that every
+/// [`WindowChrome`] follows as it changes ([`WindowChrome::sync_look`]).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct Look {
+    /// Katna's own frame where the desktop would draw one
+    /// ([`Environment::own_frame`]).
+    pub own_frame: bool,
+    /// A translucent background that the compositor blurs, where it can.
+    pub blur: bool,
+}
+
+impl Global for Look {}
+
+impl Look {
+    /// Whether the compositor blurs what is behind a window (KWin's blur
+    /// effect). Elsewhere [`Look::blur`] has no effect.
+    pub fn blur_available() -> bool {
+        gpui_linux::compositor_blur()
+    }
+}
 
 /// Options for opening a Katna window with the right decorations.
 pub fn window_options(
@@ -87,7 +108,7 @@ pub struct Bar {
 /// Per-window chrome state. Keep one in the root view and call
 /// [`WindowChrome::render`] from its `render`.
 pub struct WindowChrome {
-    env: Environment,
+    env: RefCell<Environment>,
     title: SharedString,
     /// Set on header-bar mouse down; the move starts on the first mouse move
     /// so a double click can still maximize.
@@ -97,6 +118,12 @@ pub struct WindowChrome {
     dark: Cell<Option<bool>>,
     /// The desktop's color scheme, over the preset's colors.
     colors: Cell<Option<ChromeColors>>,
+    /// The app's window background, over the preset's.
+    backdrop: Cell<Option<u32>>,
+    /// Whether this window may be blurred ([`WindowChrome::opaque`]).
+    blur_allowed: bool,
+    /// The window is translucent and blurred.
+    blurred: Cell<bool>,
 }
 
 impl WindowChrome {
@@ -114,18 +141,63 @@ impl WindowChrome {
             .detach();
         cx.observe_button_layout_changed(window, |_, _, cx| cx.notify())
             .detach();
+        cx.observe_global::<Look>(|_, cx| cx.notify()).detach();
         Self {
-            env,
+            env: RefCell::new(env),
             title: title.into(),
             drag_pending: Rc::new(Cell::new(false)),
             input_region: Cell::new(None),
             dark: Cell::new(None),
             colors: Cell::new(None),
+            backdrop: Cell::new(None),
+            blur_allowed: true,
+            blurred: Cell::new(false),
         }
     }
 
-    pub fn environment(&self) -> &Environment {
-        &self.env
+    /// Keeps the window opaque whatever [`Look::blur`] says, for windows
+    /// that are all content.
+    pub fn opaque(mut self) -> Self {
+        self.blur_allowed = false;
+        self
+    }
+
+    /// The desktop and the frame asked for, as they are now.
+    pub fn environment(&self) -> Environment {
+        self.env.borrow().clone()
+    }
+
+    /// Whether the window is translucent and blurred.
+    pub fn blurred(&self) -> bool {
+        self.blurred.get()
+    }
+
+    /// Brings the window in line with the [`Look`] global: asks for the
+    /// other frame when [`Look::own_frame`] changed, and makes the
+    /// background translucent and blurred, or opaque again. Call it at the
+    /// start of the root view's `render`, before [`WindowChrome::tokens`].
+    pub fn sync_look(&self, window: &mut Window, cx: &App) {
+        let look = cx.try_global::<Look>().copied().unwrap_or_default();
+        let switch = {
+            let mut env = self.env.borrow_mut();
+            (env.own_frame != look.own_frame).then(|| {
+                env.own_frame = look.own_frame;
+                env.requested_decorations()
+            })
+        };
+        if let Some(mode) = switch {
+            self.switch_frame(mode, window);
+        }
+        let blur = self.blur_allowed && look.blur && Look::blur_available();
+        if self.blurred.replace(blur) != blur {
+            window.set_background_appearance(if blur {
+                WindowBackgroundAppearance::Blurred
+            } else {
+                WindowBackgroundAppearance::Opaque
+            });
+        }
+        // The compositor's blur follows the frame's round corners.
+        gpui_linux::set_client_corner_radius(self.tokens(window).window_radius);
     }
 
     /// Makes the frame light (`Some(false)`) or dark (`Some(true)`) whatever
@@ -138,6 +210,38 @@ impl WindowChrome {
     /// preset's own colors (`None`).
     pub fn set_colors(&self, colors: Option<ChromeColors>) {
         self.colors.set(colors);
+    }
+
+    /// Asks for the other frame. The window keeps its size on screen: KWin
+    /// keeps the frame's size when the shadow margin comes, and on Wayland
+    /// its next configure does the same both ways. On X11 the margin is
+    /// taken off the window when it goes, or the window would grow by it.
+    fn switch_frame(&self, mode: DecorationMode, window: &mut Window) {
+        let env = self.env.borrow().clone();
+        let resize = env.session == Session::X11
+            && !window.is_maximized()
+            && !window.is_fullscreen()
+            && env.full_client_frame();
+        let margin = 2.0 * self.tokens(window).shadow_inset;
+        let size = window.viewport_size();
+        window.request_decorations(match mode {
+            DecorationMode::Server => WindowDecorations::Server,
+            DecorationMode::Client => WindowDecorations::Client,
+        });
+        let now_client = matches!(window.window_decorations(), Decorations::Client { .. });
+        if !resize || mode != DecorationMode::Server || now_client {
+            return;
+        }
+        window.resize(gpui::size(
+            (size.width - px(margin)).max(MIN_WINDOW_SIZE.width),
+            (size.height - px(margin)).max(MIN_WINDOW_SIZE.height),
+        ));
+    }
+
+    /// Paints the window's background in the app's own color (`Some`)
+    /// rather than the preset's (`None`).
+    pub fn set_backdrop(&self, color: Option<u32>) {
+        self.backdrop.set(color);
     }
 
     /// Whether the desktop asks for a dark color scheme.
@@ -154,10 +258,18 @@ impl WindowChrome {
             .dark
             .get()
             .unwrap_or_else(|| Self::desktop_dark(window));
-        let tokens = ChromeTokens::new(self.env.preset(), dark);
-        match self.colors.get() {
+        let tokens = ChromeTokens::new(self.env.borrow().preset(), dark);
+        let mut tokens = match self.colors.get() {
             Some(colors) => tokens.recolored(&colors),
             None => tokens,
+        };
+        if let Some(backdrop) = self.backdrop.get() {
+            tokens.window_bg = backdrop;
+        }
+        if self.blurred.get() {
+            tokens.translucent()
+        } else {
+            tokens
         }
     }
 
@@ -168,7 +280,7 @@ impl WindowChrome {
         let Decorations::Client { tiling } = window.window_decorations() else {
             return width;
         };
-        let full = self.env.full_client_frame();
+        let full = self.env.borrow().full_client_frame();
         if !full && tiling.top && tiling.right && tiling.bottom && tiling.left {
             return width;
         }
@@ -281,7 +393,7 @@ impl WindowChrome {
         window: &mut Window,
         cx: &mut App,
     ) -> Div {
-        let full = self.env.full_client_frame();
+        let full = self.env.borrow().full_client_frame();
         let inset = if full { t.shadow_inset } else { RESIZE_HANDLE };
         window.set_client_inset(px(inset));
 
@@ -339,6 +451,14 @@ impl WindowChrome {
             Vec::new()
         };
         let border = |is_tiled: bool| if is_tiled { px(0.0) } else { px(1.0) };
+        // A shadow is painted whole, under the window too; seen through a
+        // translucent window it would darken it. It goes around the frame
+        // instead.
+        let translucent = self.blurred.get();
+        let outer_shadow = (translucent && !shadows.is_empty()).then(|| {
+            let corners = [r_tl, r_tr, r_br, r_bl];
+            shadow_around(geometry, f32::from(radius), corners, shadows.clone())
+        });
 
         let frame = div()
             .id("katna-window-frame")
@@ -357,7 +477,7 @@ impl WindowChrome {
             .border_r(border(tiled.right))
             .border_b(border(tiled.bottom))
             .border_l(border(tiled.left))
-            .shadow(shadows)
+            .when(!translucent, |d| d.shadow(shadows))
             // Keep pointer motion inside the frame from refreshing the
             // resize-cursor logic of the shadow area.
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
@@ -383,6 +503,7 @@ impl WindowChrome {
             .when(!tiled.bottom, |d| d.pb(px(inset)))
             .when(!tiled.left, |d| d.pl(px(inset)))
             .child(resize_cursor_layer(geometry))
+            .children(outer_shadow)
             .on_mouse_move(|_, window, _| window.refresh())
             .on_mouse_down(MouseButton::Left, move |e, window, _| {
                 if let Some(edge) =
@@ -565,6 +686,45 @@ fn resize_cursor_layer(geometry: FrameGeometry) -> impl IntoElement {
     )
     .absolute()
     .size_full()
+}
+
+/// The frame's shadow, painted only outside the frame
+/// ([`FrameGeometry::outside`]): each piece clips a copy of it.
+fn shadow_around(
+    geometry: FrameGeometry,
+    radius: f32,
+    [top_left, top_right, bottom_right, bottom_left]: [Pixels; 4],
+    shadows: Vec<BoxShadow>,
+) -> Div {
+    let frame = geometry.frame();
+    let pieces = geometry.outside(radius).into_iter().map(move |piece| {
+        div()
+            .absolute()
+            .left(px(piece.x))
+            .top(px(piece.y))
+            .w(px(piece.width))
+            .h(px(piece.height))
+            .overflow_hidden()
+            .child(
+                div()
+                    .absolute()
+                    .left(px(frame.x - piece.x))
+                    .top(px(frame.y - piece.y))
+                    .w(px(frame.width))
+                    .h(px(frame.height))
+                    .rounded_tl(top_left)
+                    .rounded_tr(top_right)
+                    .rounded_br(bottom_right)
+                    .rounded_bl(bottom_left)
+                    .shadow(shadows.clone()),
+            )
+    });
+    div()
+        .absolute()
+        .top_0()
+        .left_0()
+        .size_full()
+        .children(pieces)
 }
 
 fn resize_edge(edge: Edge) -> ResizeEdge {

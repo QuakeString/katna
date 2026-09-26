@@ -30,6 +30,28 @@ pub struct Config {
     pub sync: SyncConfig,
     pub notifications: Notifications,
     pub onboarding: Onboarding,
+    pub experimental: Experimental,
+}
+
+/// Settings > Experimental: features still being tried out.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Experimental {
+    /// Who draws the window frame.
+    pub window_frame: WindowFrame,
+    /// A translucent window background that the compositor blurs.
+    pub blur: bool,
+}
+
+/// [`Experimental::window_frame`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum WindowFrame {
+    /// The desktop's choice: KDE's own frame on KDE, Katna's on GNOME.
+    #[default]
+    Native,
+    /// Katna's own title bar, buttons, rounded corners and shadow.
+    Katna,
 }
 
 /// First-run help in Katna Mail.
@@ -598,6 +620,17 @@ mod tests {
         assert_eq!(config.mail.theme, Theme::Dark);
         assert!(config.mail.desktop_colors);
         assert!(Config::parse("[mail]\nreading_pane_share = 0.9\n").is_err());
+    }
+
+    #[test]
+    fn experimental_look() {
+        let config = Config::default();
+        assert_eq!(config.experimental.window_frame, WindowFrame::Native);
+        assert!(!config.experimental.blur);
+        let config =
+            Config::parse("[experimental]\nwindow_frame = \"katna\"\nblur = true\n").unwrap();
+        assert_eq!(config.experimental.window_frame, WindowFrame::Katna);
+        assert!(config.experimental.blur);
     }
 
     #[test]

@@ -45,7 +45,7 @@ impl MailWindow {
         {
             return;
         }
-        let env = self.chrome.environment().clone();
+        let env = self.chrome.environment();
         let mail = cx.entity();
         let body = compose.body.focus_handle(cx);
         let to = compose.to.focus_handle(cx);
@@ -91,7 +91,8 @@ impl MailWindow {
                 });
                 cx.new(|cx| ComposeWindow {
                     mail: mail.clone(),
-                    chrome: WindowChrome::new(env, "New Message", window, cx),
+                    // All of it is the message, on an opaque card.
+                    chrome: WindowChrome::new(env, "New Message", window, cx).opaque(),
                     focus: cx.focus_handle(),
                 })
             });
@@ -186,6 +187,7 @@ impl Focusable for ComposeWindow {
 
 impl Render for ComposeWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        self.chrome.sync_look(window, cx);
         let chrome = &self.chrome;
         let drawn = self.mail.update(cx, |mail, cx| {
             let th = mail.theme_for(chrome, window);

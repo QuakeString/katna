@@ -4,7 +4,7 @@ This is `gpui-pre-linux` 0.3.6 from crates.io (Zed's `gpui_linux` at
 `bcf6582`, Apache-2.0, see `LICENSE-APACHE`), used through
 `[patch.crates-io]` in the workspace `Cargo.toml`.
 
-Katna's change adds KDE global menu support, which GPUI does not have on
+Katna's changes add KDE global menu support, which GPUI does not have on
 Linux:
 
 - `set_kde_appmenu(service, object_path)` (`src/linux/appmenu.rs`) names the
@@ -13,6 +13,26 @@ Linux:
   (`src/linux/wayland/client.rs` binds the manager, `window.rs` creates it).
 - X11: normal windows get the `_KDE_NET_WM_APPMENU_SERVICE_NAME` and
   `_KDE_NET_WM_APPMENU_OBJECT_PATH` properties (`src/linux/x11/window.rs`).
+
+It also adds background blur for translucent windows
+(`src/linux/effects.rs`):
+
+- `ext_background_effect_v1` (KWin 6.7 has only this, not
+  `org_kde_kwin_blur`), bound in `wayland/client.rs`; its capabilities
+  event says whether the compositor can blur. Preferred over
+  `org_kde_kwin_blur` in `wayland/window.rs` (`update_blur`).
+- X11: `_KDE_NET_WM_BLUR_BEHIND_REGION` on `Blurred` windows
+  (`x11/window.rs`), and KWin's blur detected from the root window's
+  properties (`x11/client.rs`).
+- `compositor_blur()` says whether any of these blurs.
+- The blur region is the window's frame, not the whole surface: under
+  client-side decorations it leaves out the shadow margin and follows the
+  rounded corners (`set_client_corner_radius`). KWin reads the region
+  relative to the frame (window geometry), not the surface, so it is given
+  that way.
+- X11: client-side decorations make the surface transparent (as on
+  Wayland), and going back to server-side decorations removes
+  `_GTK_FRAME_EXTENTS`, so a window can switch both ways while open.
 
 The first commit that added this directory holds the crate unchanged, so
 `git diff` against it shows the whole patch. When GPUI is upgraded, copy the

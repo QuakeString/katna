@@ -26,6 +26,7 @@ use std::process::ExitCode;
 use gpui::{App, AppContext, SharedString, px, size};
 use katna_chrome::{Desktop, Environment, window_options};
 use katna_core::Paths;
+use katna_core::config::Config;
 use katna_core::ids::{MAIL_APP_ID, MAIL_MENU_BAR_PATH};
 use katna_platform::dbusmenu::Menu;
 use katna_platform::font;
@@ -115,7 +116,11 @@ fn main() -> ExitCode {
             if let Some(connection) = &connection {
                 serve_menu_bar(connection, sender, cx);
             }
-            let env = Environment::from_env();
+            // Settings > Experimental > Look & Feel, before the first window.
+            let look = window::look(&Config::load(&paths.config_file()).unwrap_or_default());
+            cx.set_global(look);
+            let mut env = Environment::from_env();
+            env.own_frame = look.own_frame;
             let font = ui_font(&env, cx);
             if let Some(font) = &font {
                 cx.set_global(katna_ui::UiFont(font.clone()));

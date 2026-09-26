@@ -138,6 +138,73 @@ impl FrameGeometry {
     }
 
     /// The resize edge under the pointer, if any.
+    /// The surface around the frame, as rectangles: where the shadow of a
+    /// translucent window may paint without showing through the window.
+    /// Corners rounded by `radius` (those with no tiled side) are followed
+    /// one pixel row at a time, as the compositor's blur region is.
+    pub fn outside(&self, radius: f32) -> Vec<Rect> {
+        let f = self.frame();
+        let (w, h) = (self.surface_width, self.surface_height);
+        let mut rects = vec![
+            Rect {
+                x: 0.0,
+                y: 0.0,
+                width: w,
+                height: f.y,
+            },
+            Rect {
+                x: 0.0,
+                y: f.bottom(),
+                width: w,
+                height: h - f.bottom(),
+            },
+            Rect {
+                x: 0.0,
+                y: f.y,
+                width: f.x,
+                height: f.height,
+            },
+            Rect {
+                x: f.right(),
+                y: f.y,
+                width: w - f.right(),
+                height: f.height,
+            },
+        ];
+        let t = self.tiled;
+        let radius = radius
+            .min(f.width / 2.0)
+            .min(f.height / 2.0)
+            .max(0.0)
+            .round();
+        let rows = radius as u32;
+        for row in 0..rows {
+            let cut = corner_cut(radius, row);
+            if cut <= 0.0 {
+                continue;
+            }
+            let (top, bottom) = (f.y + row as f32, f.bottom() - 1.0 - row as f32);
+            let (left, right) = (f.x, f.right() - cut);
+            for (round, x, y) in [
+                (!t.top && !t.left, left, top),
+                (!t.top && !t.right, right, top),
+                (!t.bottom && !t.left, left, bottom),
+                (!t.bottom && !t.right, right, bottom),
+            ] {
+                if round {
+                    rects.push(Rect {
+                        x,
+                        y,
+                        width: cut,
+                        height: 1.0,
+                    });
+                }
+            }
+        }
+        rects.retain(|r| r.width > 0.0 && r.height > 0.0);
+        rects
+    }
+
     pub fn resize_edge(&self, x: f32, y: f32) -> Option<Edge> {
         let frame = self.frame();
         if frame.contains(x, y) || !self.input_region().contains(x, y) {
@@ -163,6 +230,13 @@ impl FrameGeometry {
             _ => None,
         }
     }
+}
+
+/// How far row `row` of a corner with `radius` (row 0 is the outer edge)
+/// lies outside the circle, in whole pixels.
+pub fn corner_cut(radius: f32, row: u32) -> f32 {
+    let dy = radius - (row as f32 + 0.5);
+    (radius - (radius * radius - dy * dy).max(0.0).sqrt()).round()
 }
 
 #[cfg(test)]
@@ -255,5 +329,52 @@ mod tests {
         assert_eq!(g.frame().width, 896.0);
         assert_eq!(g.input_region(), g.frame());
         assert_eq!(g.resize_edge(0.0, 0.0), None);
+    }
+
+    #[test]
+    fn outside_leaves_out_the_rounded_frame() {
+        let g = FrameGeometry {
+            surface_width: 200.0,
+            surface_height: 100.0,
+            inset: 20.0,
+            tiled: Sides::NONE,
+        };
+        let pieces = g.outside(5.0);
+        let f = g.frame();
+        // No piece covers the middle of the frame or its straight edges.
+        for p in &pieces {
+            assert!(!p.contains(f.x + 10.0, f.y));
+            assert!(!p.contains(f.x + f.width / 2.0, f.y + f.height / 2.0));
+        }
+        // The outer corner pixel is outside the round corner; the shadow
+        // paints there.
+        assert!(pieces.iter().any(|p| p.contains(f.x, f.y)));
+        assert!(
+            pieces
+                .iter()
+                .any(|p| p.contains(f.right() - 0.5, f.bottom() - 0.5))
+        );
+        // The margin is covered.
+        assert!(pieces.iter().any(|p| p.contains(5.0, 50.0)));
+        assert!(pieces.iter().any(|p| p.contains(100.0, 95.0)));
+        // Tiled: no corner rows on that side, no margin there.
+        let tiled = FrameGeometry {
+            tiled: Sides {
+                left: true,
+                ..Sides::NONE
+            },
+            ..g
+        };
+        let pieces = tiled.outside(5.0);
+        let f = tiled.frame();
+        assert!(!pieces.iter().any(|p| p.contains(f.x, f.y)));
+        assert!(pieces.iter().any(|p| p.contains(f.right() - 0.5, f.y)));
+    }
+
+    #[test]
+    fn corner_cut_matches_a_circle() {
+        assert_eq!(corner_cut(5.0, 0), 3.0);
+        assert_eq!(corner_cut(5.0, 4), 0.0);
+        assert_eq!(corner_cut(0.0, 0), 0.0);
     }
 }

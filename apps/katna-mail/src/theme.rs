@@ -14,6 +14,10 @@ pub struct Theme {
     pub dark: bool,
     /// Behind the cards: top bar and navigation.
     pub page: u32,
+    /// What the window paints behind everything: `page`, or nothing when
+    /// the window frame paints a translucent `page` for the compositor's
+    /// blur ([`Theme::translucent`]).
+    pub backdrop: u32,
     /// The list and reading cards, and unread rows.
     pub surface: u32,
     /// Rows of read mail.
@@ -56,6 +60,17 @@ impl Theme {
     /// Katna's own palette.
     pub fn new(dark: bool) -> Self {
         if dark { DARK } else { LIGHT }
+    }
+
+    /// For a blurred window: the frame paints the page's color, translucent
+    /// (`katna_chrome::WindowChrome::blurred`); the window paints no
+    /// backdrop over it. Cards and menus stay opaque, so text stays
+    /// readable.
+    pub fn translucent(self) -> Self {
+        Self {
+            backdrop: 0x00000000,
+            ..self
+        }
     }
 
     /// The desktop's color scheme when it is as dark as `dark` asks, else
@@ -118,6 +133,7 @@ impl Theme {
         Self {
             dark,
             page,
+            backdrop: page,
             surface,
             read_row: mix(surface, page, 0.9),
             text,
@@ -229,6 +245,7 @@ fn tone(color: u32, l: f32) -> u32 {
 const LIGHT: Theme = Theme {
     dark: false,
     page: 0xf6f8fcff,
+    backdrop: 0xf6f8fcff,
     surface: 0xffffffff,
     read_row: 0xf2f6fcff,
     text: 0x1f1f1fff,
@@ -260,6 +277,7 @@ const LIGHT: Theme = Theme {
 const DARK: Theme = Theme {
     dark: true,
     page: 0x131416ff,
+    backdrop: 0x131416ff,
     surface: 0x1f2124ff,
     read_row: 0x191b1eff,
     text: 0xe3e3e3ff,

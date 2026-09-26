@@ -942,11 +942,31 @@ depend on `<style>` sheets turn out to matter.
 | Others (Sway, Hyprland, …) | SSD if offered, else minimal CSD; none when tiled | |
 | X11 | SSD by default | CSD shadows need a compositor. |
 
-Detection via `XDG_CURRENT_DESKTOP`, with a user override
-(`KATNA_DECORATIONS=auto|server|client` until the setting exists). The frame
-is drawn from the negotiated mode, not the requested one: GPUI falls back to
-CSD when the compositor has no xdg-decoration. Validated by spike S1
-(`docs/spikes/S1-window-chrome.md`).
+Detection via `XDG_CURRENT_DESKTOP`. The frame is drawn from the negotiated
+mode, not the requested one: GPUI falls back to CSD when the compositor has
+no xdg-decoration. Validated by spike S1 (`docs/spikes/S1-window-chrome.md`).
+
+**Settings > Experimental > Look & Feel** (config `[experimental]`, both
+off by default, applied live to every window through the `katna_chrome::Look`
+GPUI global):
+
+- *Window frame*: `native` (the table above) or `katna`, which asks for CSD
+  everywhere: on KDE Wayland through xdg-decoration, on X11 with no WM frame
+  (`_MOTIF_WM_HINTS`) and `_GTK_FRAME_EXTENTS` for the shadow margin. The
+  frame keeps the desktop's preset (Breeze-like buttons and 5 px corners on
+  KDE). Switching keeps the window's size on screen. Where the desktop never
+  draws frames (GNOME on Wayland) the choice is replaced by a note.
+  `KATNA_DECORATIONS=auto|server|client` still overrides it, for testing.
+- *Blurred background*: the window's page color becomes translucent
+  (`katna_chrome::tokens::blur_alpha`: 75 % light, 80 % dark) and the
+  compositor blurs what is behind it: `ext_background_effect_v1` (KWin 6.7),
+  else `org_kde_kwin_blur`, and `_KDE_NET_WM_BLUR_BEHIND_REGION` on X11.
+  The blur region is the frame less its rounded corners; the CSD shadow is
+  painted only outside the frame, so it cannot darken the window. Cards,
+  menus and dialogs stay opaque, so text keeps its contrast. Offered only
+  where the compositor can blur (`gpui_linux::compositor_blur`); elsewhere
+  the switch is shown off with the reason. The compose pop-out stays
+  opaque (it is all message).
 
 ### 13.2 Look and feel
 

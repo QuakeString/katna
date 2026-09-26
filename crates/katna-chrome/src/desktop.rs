@@ -6,9 +6,8 @@
 //! display server.
 
 /// Environment variable that overrides the decoration policy:
-/// `auto` (default), `server` or `client`.
-///
-/// This stands in for the user setting until the config file has a UI.
+/// `auto` (default), `server` or `client`. It wins over
+/// [`Environment::own_frame`].
 pub const DECORATIONS_ENV: &str = "KATNA_DECORATIONS";
 
 /// The desktop environment we are running in.
@@ -72,6 +71,9 @@ pub struct Environment {
     pub desktop: Desktop,
     pub session: Session,
     pub decoration_override: DecorationOverride,
+    /// The user asked for Katna's own frame (title bar, buttons, rounded
+    /// corners, shadow) where the desktop would draw its own.
+    pub own_frame: bool,
 }
 
 impl Environment {
@@ -99,6 +101,7 @@ impl Environment {
             desktop,
             session,
             decoration_override,
+            own_frame: false,
         }
     }
 
@@ -114,6 +117,15 @@ impl Environment {
             DecorationOverride::Client => return DecorationMode::Client,
             DecorationOverride::Auto => {}
         }
+        if self.own_frame {
+            return DecorationMode::Client;
+        }
+        self.native_decorations()
+    }
+
+    /// The desktop's own choice: who draws the frame when the user has not
+    /// asked for Katna's.
+    pub fn native_decorations(&self) -> DecorationMode {
         match (self.session, &self.desktop) {
             // CSD shadows need a compositor; every X11 window manager decorates.
             (Session::X11, _) => DecorationMode::Server,
@@ -226,6 +238,28 @@ mod tests {
         assert_eq!(e.session, Session::Wayland);
         assert_eq!(e.requested_decorations(), DecorationMode::Server);
         assert!(!e.full_client_frame());
+    }
+
+    #[test]
+    fn own_frame_asks_for_client_side() {
+        for session in ["wayland", "x11"] {
+            let mut e = env(&[
+                ("XDG_CURRENT_DESKTOP", "KDE"),
+                ("XDG_SESSION_TYPE", session),
+            ]);
+            e.own_frame = true;
+            assert_eq!(e.requested_decorations(), DecorationMode::Client);
+            assert_eq!(e.native_decorations(), DecorationMode::Server);
+            assert_eq!(e.preset(), Preset::BreezeLike);
+        }
+        // The variable still wins.
+        let mut e = env(&[
+            ("XDG_CURRENT_DESKTOP", "KDE"),
+            ("XDG_SESSION_TYPE", "wayland"),
+            (DECORATIONS_ENV, "server"),
+        ]);
+        e.own_frame = true;
+        assert_eq!(e.requested_decorations(), DecorationMode::Server);
     }
 
     #[test]

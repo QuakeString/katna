@@ -45,16 +45,18 @@ pub(super) enum Section {
     Signatures,
     DefaultApps,
     Shortcuts,
+    Experimental,
 }
 
 impl Section {
-    const ALL: [Self; 6] = [
+    const ALL: [Self; 7] = [
         Self::General,
         Self::Inbox,
         Self::Accounts,
         Self::Signatures,
         Self::DefaultApps,
         Self::Shortcuts,
+        Self::Experimental,
     ];
 
     fn label(self) -> &'static str {
@@ -65,6 +67,7 @@ impl Section {
             Self::Signatures => "Signatures",
             Self::DefaultApps => "Default apps",
             Self::Shortcuts => "Keyboard shortcuts",
+            Self::Experimental => "Experimental",
         }
     }
 }
@@ -262,6 +265,7 @@ impl MailWindow {
             Section::Signatures => self.signatures_section(th, cx),
             Section::DefaultApps => self.default_apps_section(th, cx),
             Section::Shortcuts => self.shortcuts_section(th, cx),
+            Section::Experimental => self.experimental_section(th, cx),
         };
         let card = div()
             .id("settings-page")

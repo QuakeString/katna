@@ -403,6 +403,9 @@ impl X11Client {
         let gtk_frame_extents_supported =
             check_gtk_frame_extents_supported(&xcb_connection, &atoms, root);
         let client_side_decorations_supported = compositor_present && gtk_frame_extents_supported;
+        crate::linux::effects::set_x11_blur(
+            compositor_present && check_kde_blur_supported(&xcb_connection, &atoms, root),
+        );
         log::info!(
             "x11: compositor present: {}, gtk_frame_extents_supported: {}",
             compositor_present,
@@ -2314,6 +2317,22 @@ fn check_gtk_frame_extents_supported(
         .collect();
 
     supported_atom_ids.contains(&atoms._GTK_FRAME_EXTENTS)
+}
+
+/// Whether KWin's blur effect is on: it announces
+/// `_KDE_NET_WM_BLUR_BEHIND_REGION` as a property of the root window
+/// (Katna).
+fn check_kde_blur_supported(
+    xcb_connection: &XCBConnection,
+    atoms: &XcbAtoms,
+    root: xproto::Window,
+) -> bool {
+    get_reply(
+        || "Failed to list the root window's properties",
+        xcb_connection.list_properties(root),
+    )
+    .log_with_level(Level::Debug)
+    .is_some_and(|reply| reply.atoms.contains(&atoms._KDE_NET_WM_BLUR_BEHIND_REGION))
 }
 
 fn xdnd_is_atom_supported(atom: u32, atoms: &XcbAtoms) -> bool {
