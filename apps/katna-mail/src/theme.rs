@@ -46,6 +46,10 @@ pub struct Theme {
     pub checked_row: u32,
     /// Menus and dropdowns.
     pub menu: u32,
+    /// Floating panels (menus, popovers) are frosted glass: `menu`,
+    /// translucent, over a blur of this many device pixels of what is
+    /// behind. 0 keeps them opaque ([`Theme::frosted`]).
+    pub frost: u32,
     pub switch_off: u32,
     /// Category tab colors: primary, promotions, social, updates, forums.
     pub tabs: [u32; 5],
@@ -66,11 +70,20 @@ impl Theme {
 
     /// For a blurred window: the frame paints the page's color, translucent
     /// (`katna_chrome::WindowChrome::blurred`); the window paints no
-    /// backdrop over it. Cards and menus stay opaque, so text stays
-    /// readable.
+    /// backdrop over it. Cards stay opaque, so text stays readable; menus
+    /// are frosted ([`Theme::frosted`]).
     pub fn translucent(self) -> Self {
         Self {
             backdrop: 0x00000000,
+            ..self
+        }
+    }
+
+    /// Frosted floating panels, blurring `radius` device pixels of what is
+    /// behind them (Settings > Experimental > Blurred background).
+    pub fn frosted(self, radius: f32) -> Self {
+        Self {
+            frost: radius.round().max(1.0) as u32,
             ..self
         }
     }
@@ -160,6 +173,7 @@ impl Theme {
             important: base.important,
             checked_row: mix(surface, accent, if dark { 0.3 } else { 0.2 }),
             menu: if dark { ink(0.06) } else { surface },
+            frost: 0,
             switch_off: ink(0.18),
             tabs,
             chip: ink(0.1),
@@ -269,6 +283,7 @@ const LIGHT: Theme = Theme {
     important: 0x0b57d0ff,
     checked_row: 0xc2dbffff,
     menu: 0xffffffff,
+    frost: 0,
     switch_off: 0xe1e3e1ff,
     tabs: [0x0b57d0ff, 0x188038ff, 0x1a73e8ff, 0xe37400ff, 0x9334e6ff],
     chip: 0xe1e3e1ff,
@@ -303,6 +318,7 @@ const DARK: Theme = Theme {
     important: 0x0b57d0ff,
     checked_row: 0x004a77ff,
     menu: 0x2d2f33ff,
+    frost: 0,
     switch_off: 0x44474eff,
     tabs: [0xa8c7faff, 0x81c995ff, 0x8ab4f8ff, 0xfcad70ff, 0xd7aefbff],
     chip: 0x3c3f43ff,

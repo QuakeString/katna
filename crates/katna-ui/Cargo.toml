@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 katna-core.workspace = true
 gpui.workspace = true
+gpui-wgpu.workspace = true
 unicode-segmentation.workspace = true
 
 [lints]

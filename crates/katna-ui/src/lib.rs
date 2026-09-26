@@ -3,6 +3,7 @@
 //! Shared GPUI components for Katna apps. GPUI types stay in this crate,
 //! `katna-chrome` and the GUI apps. See `docs/ARCHITECTURE.md` §13.
 
+pub mod frost;
 pub mod motion;
 pub mod rich;
 pub mod ripple;

@@ -15,7 +15,7 @@ use katna_ui::{InputEvent, TextInput};
 
 use super::MailWindow;
 use crate::theme::Theme;
-use crate::widgets::{elevation, filled_button, icon, icon_button, tip};
+use crate::widgets::{filled_button, icon, icon_button, raised, tip};
 use dates::CustomDates;
 
 /// "Date within" choices: label and `newer_than:` value.
@@ -279,9 +279,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(8.0))
-            .rounded(px(15.0))
-            .bg(rgba(th.menu))
-            .shadow(elevation(th, 3.0))
+            .map(|d| raised(d, th, 15.0, 3.0))
             .text_color(rgba(th.text))
             .child(
                 div()

@@ -44,7 +44,10 @@ impl MailWindow {
             ))
             .child(row(
                 "Blurred background",
-                Some("The desktop shows through the top bar and the folders, blurred."),
+                Some(
+                    "The desktop shows through the top bar and the folders, blurred, and \
+                     menus and popovers are frosted glass.",
+                ),
                 self.blur_switch(th, cx),
                 th,
             ))

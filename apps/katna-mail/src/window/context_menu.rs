@@ -17,7 +17,7 @@ use super::compose::Kind;
 use super::{Act, MailWindow};
 use crate::data::{EntryKey, Row};
 use crate::theme::Theme;
-use crate::widgets::{elevation, icon};
+use crate::widgets::{icon, raised};
 
 const MENU_WIDTH: f32 = 264.0;
 const ITEM_HEIGHT: f32 = 36.0;
@@ -190,9 +190,7 @@ impl MailWindow {
                 })
                 .w(px(FOLDERS_WIDTH))
                 .py(px(8.0))
-                .rounded(px(8.0))
-                .bg(rgba(th.menu))
-                .shadow(elevation(th, 3.0))
+                .map(|d| raised(d, th, 8.0, 3.0))
                 .child(
                     div()
                         .id("context-folders")
@@ -264,9 +262,7 @@ impl MailWindow {
             .py(px(8.0))
             .flex()
             .flex_col()
-            .rounded(px(8.0))
-            .bg(rgba(th.menu))
-            .shadow(elevation(th, 3.0))
+            .map(|d| raised(d, th, 8.0, 3.0))
             .text_size(px(14.0))
             .text_color(rgba(th.text))
             .child(plain("context-reply", "reply", "Reply").on_click(reply(Kind::Reply)))
