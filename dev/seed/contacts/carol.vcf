@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:4.0
+UID:urn:uuid:6f1e1d8a-0b0e-4c1e-9d1a-000000000002
+FN:Carol Example
+N:Example;Carol;;;
+EMAIL;TYPE=work:carol@example.org
+EMAIL;TYPE=home:carol.home@example.org
+ORG:Example Org
+BDAY:19900214
+END:VCARD

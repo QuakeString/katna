@@ -1,0 +1,32 @@
+From: Bob Example <bob@katna.test>
+To: Alice Example <alice@katna.test>
+Subject: Invitation: Design review
+Date: Fri, 11 Sep 2026 08:00:00 +0000
+Message-ID: <invite-design-review@katna.test>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="inv-boundary"
+
+--inv-boundary
+Content-Type: text/plain; charset=utf-8
+
+You are invited to the design review on 2026-10-06 at 15:00 UTC.
+
+--inv-boundary
+Content-Type: text/calendar; charset=utf-8; method=REQUEST
+
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Katna//dev seed//EN
+METHOD:REQUEST
+BEGIN:VEVENT
+UID:design-review@katna.test
+DTSTAMP:20260911T080000Z
+DTSTART:20261006T150000Z
+DTEND:20261006T160000Z
+SUMMARY:Design review
+ORGANIZER;CN=Bob Example:mailto:bob@katna.test
+ATTENDEE;CN=Alice Example;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:alice@katna.test
+END:VEVENT
+END:VCALENDAR
+
+--inv-boundary--

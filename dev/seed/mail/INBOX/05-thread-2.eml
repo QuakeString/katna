@@ -1,0 +1,14 @@
+From: Carol Example <carol@example.org>
+To: Bob Example <bob@katna.test>, Alice Example <alice@katna.test>
+Subject: Re: Lunch on Friday?
+Date: Thu, 10 Sep 2026 10:20:00 +0000
+Message-ID: <lunch-3@example.org>
+In-Reply-To: <lunch-2@katna.test>
+References: <lunch-1@katna.test> <lunch-2@katna.test>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+
+Can I join? (Replying to a message you do not have, to test threading
+with a missing parent.)
+
+> Sure, 12:30 works.
