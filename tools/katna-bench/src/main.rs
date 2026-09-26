@@ -19,7 +19,7 @@ use katna_store::{Mode, Store};
 
 const USAGE: &str = "\
 usage: katna-bench search --data-dir DIR [--queries FILE] [--runs N] [--limit N]
-                          [--max-p99-ms MS]
+                          [--as-you-type] [--max-p99-ms MS]
        katna-bench synth --data-dir DIR [--messages N] [--seed N]
 
 search: Runs each query once cold, then --runs times (default 20), against
@@ -31,6 +31,9 @@ latency; exits with status 1 if the overall p99 exceeds --max-p99-ms.
 
   --queries FILE   One query per line; # starts a comment. Default: a set
                    written for the Enron corpus.
+  --as-you-type    Treat each query's last word as unfinished, as the search
+                   box does on every keystroke. Default queries: prefixes
+                   down to one letter.
 
 synth: Imports --messages (default 500000) synthetic messages with Enron's
 shape (senders, folders, sizes, attachments, word frequencies) into the
@@ -52,6 +55,19 @@ subject:meeting after:2001-01-01
 has:attachment larger:100K
 (gas OR power) price -subject:re
 in:inbox is:unread
+";
+
+/// Queries as typed, for `--as-you-type`: short prefixes match the most words.
+const DEFAULT_TYPING_QUERIES: &str = "\
+b
+bu
+bud
+budg
+en
+from:kenneth.lay bud
+\"natural g
+calif
+energy trading con
 ";
 
 fn main() -> ExitCode {
@@ -77,6 +93,7 @@ struct SearchArgs {
     queries: Option<PathBuf>,
     runs: usize,
     limit: usize,
+    as_you_type: bool,
     max_p99_ms: Option<f64>,
 }
 
@@ -87,10 +104,15 @@ fn search(args: &[String]) -> ExitCode {
         queries: None,
         runs: 20,
         limit: 20,
+        as_you_type: false,
         max_p99_ms: None,
     };
     let mut args = args.iter();
     while let Some(arg) = args.next() {
+        if arg == "--as-you-type" {
+            parsed.as_you_type = true;
+            continue;
+        }
         let value = args.next();
         let ok = match arg.as_str() {
             "--data-dir" => {
@@ -137,6 +159,7 @@ fn search(args: &[String]) -> ExitCode {
 fn run_search(args: &SearchArgs) -> Result<bool, Box<dyn std::error::Error>> {
     let text = match &args.queries {
         Some(path) => std::fs::read_to_string(path)?,
+        None if args.as_you_type => DEFAULT_TYPING_QUERIES.to_owned(),
         None => DEFAULT_QUERIES.to_owned(),
     };
     let queries: Vec<&str> = text
@@ -160,6 +183,16 @@ fn run_search(args: &SearchArgs) -> Result<bool, Box<dyn std::error::Error>> {
         "query", "matches", "cold ms", "search", "p50 ms", "p99 ms", "max ms"
     );
 
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |d| d.as_secs() as i64);
+    let parse = |input: &str| {
+        if args.as_you_type {
+            Query::parse_as_you_type(input, now)
+        } else {
+            Query::parse_at(input, now)
+        }
+    };
     let mut all = Vec::new();
     for input in &queries {
         let options = SearchOptions {
@@ -168,7 +201,7 @@ fn run_search(args: &SearchArgs) -> Result<bool, Box<dyn std::error::Error>> {
         };
         let run = || -> Result<(f64, f64), Box<dyn std::error::Error>> {
             let started = Instant::now();
-            let query = Query::parse(input)?;
+            let query = parse(input)?;
             let results = index.search(&query, &options)?;
             let search_ms = ms(started);
             let ids: Vec<_> = results.hits.iter().map(|hit| hit.message).collect();
@@ -187,7 +220,7 @@ fn run_search(args: &SearchArgs) -> Result<bool, Box<dyn std::error::Error>> {
         }
         let matches = index
             .search(
-                &Query::parse(input)?,
+                &parse(input)?,
                 &SearchOptions {
                     limit: 1,
                     count: true,
@@ -270,6 +303,9 @@ mod tests {
     fn default_queries_parse() {
         for line in DEFAULT_QUERIES.lines().filter(|l| !l.starts_with('#')) {
             Query::parse(line).unwrap();
+        }
+        for line in DEFAULT_TYPING_QUERIES.lines() {
+            Query::parse_as_you_type(line, 0).unwrap();
         }
     }
 }

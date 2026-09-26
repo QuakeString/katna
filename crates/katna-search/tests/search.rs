@@ -84,7 +84,10 @@ fn small_options() -> IndexOptions {
 }
 
 fn subjects(index: &SearchIndex, store: &Store, query: &str) -> Vec<String> {
-    let query = Query::parse_at(query, 1_000_000_000).unwrap();
+    found(index, store, Query::parse_at(query, 1_000_000_000).unwrap())
+}
+
+fn found(index: &SearchIndex, store: &Store, query: Query) -> Vec<String> {
     let options = SearchOptions {
         limit: 10,
         ..SearchOptions::default()
@@ -146,6 +149,23 @@ fn indexes_the_store_and_answers_queries() {
     assert_eq!(q("-from:enron.com"), ["Lunch"]);
     assert!(q("nothing-matches-this").is_empty());
     assert_eq!(q("").len(), 4);
+
+    // As you type: the last word is a prefix.
+    let typing = |query: &str| {
+        found(
+            &app,
+            &reader,
+            Query::parse_as_you_type(query, 1_000_000_000).unwrap(),
+        )
+    };
+    assert_eq!(typing("budg"), ["2001 budget", "California power"]);
+    assert_eq!(typing("from:kenn"), ["2001 budget"]);
+    assert_eq!(typing("natural ga").len(), 2);
+    // An unfinished phrase keeps its word order.
+    assert_eq!(typing("\"natural ga"), ["2001 budget"]);
+    assert!(typing("-from:jeff califo").is_empty());
+    assert_eq!(typing("-from:kenneth califo"), ["California power"]);
+    assert!(typing("budgetx").is_empty());
 
     let everything = Query::parse("").unwrap();
     let oldest = app

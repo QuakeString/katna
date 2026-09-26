@@ -102,6 +102,7 @@ pub fn query(args: &[String]) -> ExitCode {
     let mut data_dir = None;
     let mut options = SearchOptions::default();
     let mut words = Vec::new();
+    let mut as_you_type = false;
     let mut args = args.iter();
     while let Some(arg) = args.next() {
         match arg.as_str() {
@@ -118,6 +119,7 @@ pub fn query(args: &[String]) -> ExitCode {
                 _ => return usage_error(),
             },
             "--count" => options.count = true,
+            "--as-you-type" => as_you_type = true,
             "--" => words.extend(args.by_ref().cloned()),
             _ if arg.starts_with("--") => return usage_error(),
             _ => words.push(arg.clone()),
@@ -126,7 +128,12 @@ pub fn query(args: &[String]) -> ExitCode {
     let Some(data_dir) = data_dir else {
         return usage_error();
     };
-    match run_query(&Paths::with_root(&data_dir), &words.join(" "), &options) {
+    match run_query(
+        &Paths::with_root(&data_dir),
+        &words.join(" "),
+        as_you_type,
+        &options,
+    ) {
         Ok(()) => ExitCode::SUCCESS,
         Err(err) => {
             eprintln!("error: {err}");
@@ -138,6 +145,7 @@ pub fn query(args: &[String]) -> ExitCode {
 fn run_query(
     paths: &Paths,
     input: &str,
+    as_you_type: bool,
     options: &SearchOptions,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let opened = Instant::now();
@@ -146,7 +154,11 @@ fn run_query(
     let open_ms = ms(opened);
 
     let started = Instant::now();
-    let query = Query::parse(input)?;
+    let query = if as_you_type {
+        Query::parse_as_you_type(input, now())
+    } else {
+        Query::parse(input)
+    }?;
     let results = index.search(&query, options)?;
     let search_ms = ms(started);
 
@@ -199,6 +211,12 @@ fn run_query(
         search_ms + display_ms,
     );
     Ok(())
+}
+
+fn now() -> i64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |d| d.as_secs() as i64)
 }
 
 fn ms(since: Instant) -> f64 {

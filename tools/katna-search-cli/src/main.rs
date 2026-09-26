@@ -18,7 +18,8 @@ const USAGE: &str = "\
 usage: katna-search-cli import --data-dir DIR [--account NAME] [--folder NAME] <source>
        katna-search-cli import --dry-run [--folder NAME] <source>
        katna-search-cli index --data-dir DIR [--rebuild] [--threads N]
-       katna-search-cli query --data-dir DIR [--limit N] [--sort ORDER] [--count] <query>
+       katna-search-cli query --data-dir DIR [--limit N] [--sort ORDER] [--count]
+                              [--as-you-type] <query>
 
 import: Imports a Maildir tree (Maildir, Maildir++ or the Enron corpus layout) or an
 mbox file into a Katna store. Importing the same source again only adds what
@@ -46,7 +47,8 @@ Gmail-like language of docs/ARCHITECTURE.md §7.2, for example
 
   --limit N        Results to show (default 20)
   --sort ORDER     auto (default), relevance, newest or oldest
-  --count          Also count all matches";
+  --count          Also count all matches
+  --as-you-type    Treat the last word as unfinished (budg finds budget)";
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
