@@ -3,6 +3,8 @@
 //! Command-line indexing and search. See `docs/IMPLEMENTATION_PLAN.md` tasks
 //! 0.4 (import) and 0.8 (index, query).
 
+mod index;
+
 use std::convert::Infallible;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
@@ -15,8 +17,10 @@ use katna_store::{Mode, Store};
 const USAGE: &str = "\
 usage: katna-search-cli import --data-dir DIR [--account NAME] [--folder NAME] <source>
        katna-search-cli import --dry-run [--folder NAME] <source>
+       katna-search-cli index --data-dir DIR [--rebuild] [--threads N]
+       katna-search-cli query --data-dir DIR [--limit N] [--sort ORDER] [--count] <query>
 
-Imports a Maildir tree (Maildir, Maildir++ or the Enron corpus layout) or an
+import: Imports a Maildir tree (Maildir, Maildir++ or the Enron corpus layout) or an
 mbox file into a Katna store. Importing the same source again only adds what
 is new.
 
@@ -27,12 +31,29 @@ is new.
                    (default: the source's file name)
   --folder NAME    Folder for the messages of an mbox file (default: its
                    file name)
-  --dry-run        Read and parse only; report what would be imported";
+  --dry-run        Read and parse only; report what would be imported
+
+index: Builds or updates the search index (DIR/data/index) from the store.
+The first run indexes every message; later runs index what changed.
+
+  --rebuild        Delete the index first and build it again
+  --threads N      Threads that parse messages (default: CPU count, up to 8)
+
+query: Searches and prints the results with timings. Queries use the
+Gmail-like language of docs/ARCHITECTURE.md §7.2, for example
+  from:kenneth.lay has:attachment budget
+  \"natural gas\" after:2001-01-01 -subject:re
+
+  --limit N        Results to show (default 20)
+  --sort ORDER     auto (default), relevance, newest or oldest
+  --count          Also count all matches";
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     match args.first().map(String::as_str) {
         Some("import") => import(&args[1..]),
+        Some("index") => index::index(&args[1..]),
+        Some("query") => index::query(&args[1..]),
         Some("-h" | "--help") => {
             println!("{USAGE}");
             ExitCode::SUCCESS
