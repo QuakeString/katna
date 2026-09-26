@@ -92,7 +92,10 @@ Screenshots (headless, software rendering, half size):
    "hello world" in architecture §17.1 was most likely built without the
    `wayland`/`x11` features of `gpui-pre-platform`: without them the
    binary contains no Linux backend and panics at start ("At least one of
-   the wayland or x11 features must be enabled"). HELLO_WORLD_RESULT
+   the wayland or x11 features must be enabled").
+   Measured with the workspace release profile: GPUI's own `hello_world`
+   is 21.3 MB (6.2 MB xz) with the backends and 10.0 MB (2.9 MB xz)
+   without them. The chrome itself adds about 0.25 MB.
    The 30 MB budget for Katna Mail is tight; architecture §17 is updated.
 2. **Build and runtime dependencies.** With the Linux backends GPUI links
    `libxkbcommon`, `libxkbcommon-x11` and `libxcb` (not only `libc`). The
