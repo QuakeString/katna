@@ -48,7 +48,7 @@ pub(crate) struct Remote {
 
 impl Remote {
     pub(super) fn load(paths: &Paths) -> Self {
-        let path = paths.config_dir().join("trusted-senders");
+        let path = paths.trusted_senders_file();
         let trusted = std::fs::read_to_string(&path)
             .map(|text| {
                 text.lines()

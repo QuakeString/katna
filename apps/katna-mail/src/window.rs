@@ -13,6 +13,7 @@
 //! (the app rail), `add_account` (adding an account) and `context_menu`
 //! (the list's right-click menu).
 
+mod accounts;
 mod add_account;
 mod apps;
 mod colors;
@@ -287,6 +288,8 @@ pub struct MailWindow {
     unsent: Option<compose::Unsent>,
     /// The Settings page, when open in place of the list.
     settings_page: Option<settings_page::SettingsPage>,
+    /// The question before removing an account or deleting all data.
+    danger: Option<accounts::Danger>,
     /// Navigation openness at this frame, for the folder rows.
     nav_t: f32,
     daemon: Option<Connection>,
@@ -380,6 +383,7 @@ impl MailWindow {
             account_menu: false,
             unsent: None,
             settings_page: None,
+            danger: None,
             nav_t: 1.0,
             daemon: None,
             _listen: None,
@@ -1757,22 +1761,28 @@ impl Render for MailWindow {
 
         let content = match &self.mail {
             Err(err) => self.render_error(err, &th, cx),
-            Ok(_) if self.app == RailApp::Mail && self.accounts.is_empty() => div()
-                .size_full()
-                .flex()
-                .flex_row_reverse()
-                .when(settings_t > 0.001, |d| {
-                    d.child(self.render_settings(&th, settings_t, cx))
-                })
-                .child(
-                    div()
-                        .flex_1()
-                        .min_w_0()
-                        .h_full()
-                        .child(self.render_welcome(&th, cx)),
-                )
-                .child(self.render_app_rail(&th, cx))
-                .into_any_element(),
+            Ok(_)
+                if self.app == RailApp::Mail
+                    && self.accounts.is_empty()
+                    && self.settings_page.is_none() =>
+            {
+                div()
+                    .size_full()
+                    .flex()
+                    .flex_row_reverse()
+                    .when(settings_t > 0.001, |d| {
+                        d.child(self.render_settings(&th, settings_t, cx))
+                    })
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .h_full()
+                            .child(self.render_welcome(&th, cx)),
+                    )
+                    .child(self.render_app_rail(&th, cx))
+                    .into_any_element()
+            }
             // Reversed so the navigation paints last, over the cards, when
             // it opens from the rail.
             Ok(_) if self.app == RailApp::Mail => div()
@@ -1807,6 +1817,7 @@ impl Render for MailWindow {
         let compose = self.render_compose(&th, window, reduce, cx);
         let account_menu = self.render_account_menu(&th, cx);
         let add_account = self.render_add_account(&th, window, reduce, cx);
+        let danger = self.render_danger(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let content = div()
@@ -1842,6 +1853,7 @@ impl Render for MailWindow {
             .children(account_menu)
             .children(add_account)
             .children(context_menu)
+            .children(danger)
             .children(snackbar)
             .into_any_element();
 

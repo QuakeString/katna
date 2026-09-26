@@ -146,7 +146,15 @@ pub struct Daemon {
     notices: Sender<Notice>,
     /// Desktop notifications, once a session bus has a server for them.
     new_mail: OnceLock<Arc<NewMailNotices>>,
+    /// Set once all data is being deleted: nothing starts any more.
+    closing: AtomicBool,
+    /// Asks the [`crate::Instance`] to delete the files and exit; it
+    /// answers on the sender inside.
+    delete_requests: (Sender<DeleteDone>, Receiver<DeleteDone>),
 }
+
+/// Where the [`crate::Instance`] reports whether it deleted every file.
+pub(crate) type DeleteDone = Sender<Result<(), String>>;
 
 impl Daemon {
     /// Opens the store for writing. Workers start with [`Daemon::start`].
@@ -172,6 +180,8 @@ impl Daemon {
             send_errors: Mutex::default(),
             notices,
             new_mail: OnceLock::new(),
+            closing: AtomicBool::new(false),
+            delete_requests: async_channel::bounded(1),
         });
         Ok((daemon, receiver))
     }
@@ -332,6 +342,11 @@ impl Daemon {
         settings: AccountSettings,
         password: String,
     ) -> Result<AccountId, CommandError> {
+        if self.closing.load(Ordering::SeqCst) {
+            return Err(CommandError::Failed(
+                "Katna is deleting all its data".into(),
+            ));
+        }
         let name = match display_name.trim() {
             "" => address.clone(),
             name => name.to_owned(),
@@ -465,6 +480,44 @@ impl Daemon {
             let _ = self.notices.try_send(Notice::MailChanged(id));
         }
         Ok(existed)
+    }
+
+    /// Deletes everything Katna keeps on this computer: stops every
+    /// account, deletes every saved password, then has the
+    /// [`crate::Instance`] delete the databases, the search index, the
+    /// cache and the settings file and exit. Mail servers are not touched.
+    pub async fn delete_all_data(&self) -> Result<(), CommandError> {
+        if self.closing.swap(true, Ordering::SeqCst) {
+            return Err(CommandError::Failed(
+                "all data is already being deleted".into(),
+            ));
+        }
+        tracing::warn!("deleting all data, as the user asked");
+        self.shutdown().await;
+        let accounts = self.store().accounts()?;
+        for account in accounts {
+            if let Err(err) = self.secrets.delete(account.id).await {
+                tracing::warn!(account = %account.id, %err, "could not delete the password");
+            }
+        }
+        // Also passwords left from accounts removed before.
+        self.secrets.delete_all().await?;
+        let (done, result) = async_channel::bounded(1);
+        self.delete_requests
+            .0
+            .send(done)
+            .await
+            .map_err(|_| CommandError::Failed("the service is stopping".into()))?;
+        result
+            .recv()
+            .await
+            .map_err(|_| CommandError::Failed("the service stopped".into()))?
+            .map_err(CommandError::Failed)
+    }
+
+    /// Requests from [`Daemon::delete_all_data`].
+    pub(crate) fn delete_requests(&self) -> Receiver<DeleteDone> {
+        self.delete_requests.1.clone()
     }
 
     /// Syncs every folder of `id` now, or of every account.
@@ -737,6 +790,9 @@ impl Daemon {
 
     /// Starts (or restarts) the worker of `account`.
     async fn start_account(self: &Arc<Self>, account: &Account) {
+        if self.closing.load(Ordering::SeqCst) {
+            return;
+        }
         let old = self.workers().remove(&account.id);
         if let Some(old) = old {
             stop(account.id, old).await;
