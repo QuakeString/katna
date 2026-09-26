@@ -432,6 +432,76 @@ fn gmail_labels_are_one_message_in_several_folders() {
 }
 
 #[test]
+fn gmail_copies_stored_before_v4_are_merged() {
+    let (_tmp, mut store, account) = setup();
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    server.create("[Gmail]/All Mail", 1);
+    let a = server.deliver("INBOX", "a");
+    let b = server.deliver("INBOX", "b");
+    let a_all = server.label("INBOX", a, 101, "[Gmail]/All Mail");
+    server.label("INBOX", b, 102, "[Gmail]/All Mail");
+
+    // Synced the way Katna did before schema v4: without Gmail's message
+    // IDs, so every label is its own message.
+    sync(&server, &mut store, account);
+    let folders = store.folders(account).unwrap();
+    let id_of = |path: &str| folders.iter().find(|f| f.path == path).unwrap().id;
+    let (inbox, all) = (id_of("INBOX"), id_of("[Gmail]/All Mail"));
+    let count = |store: &Store| store.messages_in_folder(all).unwrap().len();
+    let everything = |store: &Store| {
+        store
+            .messages_after(katna_store::MessageId(0), 100)
+            .unwrap()
+    };
+    assert_eq!(everything(&store).len(), 4);
+    let mut batch = store.mail_batch().unwrap();
+    for folder in &folders {
+        batch
+            .set_folder_state(folder.id, folder.uidvalidity, folder.highestmodseq, None)
+            .unwrap();
+    }
+    batch.commit().unwrap();
+    // Starred in All Mail only, as a failed Undo left it.
+    let mut batch = store.mail_batch().unwrap();
+    batch
+        .set_remote_flags(all, a_all, katna_store::MessageFlags::FLAGGED, &[])
+        .unwrap();
+    batch.commit().unwrap();
+
+    // This version asks for the IDs once and merges the copies.
+    server.set_gmail(true);
+    let reports = sync(&server, &mut store, account);
+    let merged: usize = reports.iter().map(|r| r.backfilled).sum();
+    assert!(merged >= 2, "{reports:?}");
+    let messages = everything(&store);
+    assert_eq!(messages.len(), 2, "one message per Gmail message");
+    assert_eq!(count(&store), 2);
+    assert_eq!(store.messages_in_folder(inbox).unwrap().len(), 2);
+    let a_row = messages
+        .iter()
+        .find(|m| m.subject == "a")
+        .expect("a is still there");
+    assert_eq!(a_row.locations.len(), 2, "in the inbox and All Mail");
+    assert!(
+        a_row.flags.contains(katna_store::MessageFlags::FLAGGED),
+        "the star set on one copy is kept"
+    );
+
+    // Only once: the next sync does not ask again.
+    server.clear_log();
+    sync(&server, &mut store, account);
+    assert!(
+        !server
+            .log()
+            .iter()
+            .any(|line| line.starts_with("X-GM-MSGID")),
+        "{:?}",
+        server.log()
+    );
+}
+
+#[test]
 fn attachments_come_from_the_structure() {
     let (_tmp, mut store, account) = setup();
     let server = FakeServer::default();
