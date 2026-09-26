@@ -3409,6 +3409,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "katna-crypto"
+version = "0.0.0"
+dependencies = [
+ "jiff",
+ "mail-parser",
+ "tempfile",
+ "tracing",
+]
+
+[[package]]
 name = "katna-daemon"
 version = "0.0.0"
 dependencies = [

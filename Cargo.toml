@@ -24,6 +24,7 @@ katna-render = { path = "crates/katna-render" }
 katna-dav = { path = "crates/katna-dav" }
 katna-dbus = { path = "crates/katna-dbus" }
 katna-notify = { path = "crates/katna-notify" }
+katna-crypto = { path = "crates/katna-crypto" }
 katna-platform = { path = "crates/katna-platform" }
 katna-chrome = { path = "crates/katna-chrome" }
 katna-ui = { path = "crates/katna-ui" }
