@@ -898,7 +898,9 @@ impl FakeLogin {
     ) -> zbus::Result<()>;
 }
 
-struct FakeNetworkManager;
+struct FakeNetworkManager {
+    metered: u32,
+}
 
 #[zbus::interface(name = "org.freedesktop.NetworkManager")]
 impl FakeNetworkManager {
@@ -907,10 +909,15 @@ impl FakeNetworkManager {
         emitter: &zbus::object_server::SignalEmitter<'_>,
         state: u32,
     ) -> zbus::Result<()>;
+
+    #[zbus(property)]
+    fn metered(&self) -> u32 {
+        self.metered
+    }
 }
 
 #[test]
-fn watches_suspend_and_network_on_the_system_bus() {
+fn watches_suspend_network_and_metering_on_the_system_bus() {
     use katna_daemon::system::{self, SystemEvent};
     use zbus::object_server::SignalEmitter;
 
@@ -924,7 +931,11 @@ fn watches_suspend_and_network_on_the_system_bus() {
             .unwrap();
         services
             .object_server()
-            .at("/org/freedesktop/NetworkManager", FakeNetworkManager)
+            // "Guess yes", as on a phone hotspot.
+            .at(
+                "/org/freedesktop/NetworkManager",
+                FakeNetworkManager { metered: 3 },
+            )
             .await
             .unwrap();
         services
@@ -961,10 +972,25 @@ fn watches_suspend_and_network_on_the_system_bus() {
         FakeNetworkManager::state_changed(&network, 70)
             .await
             .unwrap();
+        let manager = services
+            .object_server()
+            .interface::<_, FakeNetworkManager>("/org/freedesktop/NetworkManager")
+            .await
+            .unwrap();
+        for metered in [4, 2] {
+            // "Guess no", then "no": only the first is a change.
+            manager.get_mut().await.metered = metered;
+            manager
+                .get()
+                .await
+                .metered_changed(manager.signal_emitter())
+                .await
+                .unwrap();
+        }
 
         let mut seen = Vec::new();
         within("system events", 5, async {
-            while seen.len() < 3 {
+            while seen.len() < 5 {
                 seen.push(events.recv().await.unwrap());
             }
         })
@@ -972,9 +998,11 @@ fn watches_suspend_and_network_on_the_system_bus() {
         assert_eq!(
             seen,
             [
+                SystemEvent::Metered(true),
                 SystemEvent::Resumed,
                 SystemEvent::NetworkUp,
-                SystemEvent::NetworkUp
+                SystemEvent::NetworkUp,
+                SystemEvent::Metered(false),
             ]
         );
         Timer::after(Duration::from_millis(100)).await;

@@ -28,6 +28,7 @@ use crate::{
     daemon::{Daemon, Notice},
     secrets::Secrets,
     service::PimService,
+    system::SystemEvent,
 };
 
 /// Why the daemon could not start.
@@ -177,14 +178,19 @@ impl Instance {
     }
 
     /// Has every worker reconnect at once when the machine wakes up or
-    /// the network comes back, as the system bus `system` reports.
+    /// the network comes back, and hold back body downloads while the
+    /// network is metered, as the system bus `system` reports.
     pub fn watch_system(&self, system: zbus::Connection) {
         let daemon = Arc::downgrade(&self.daemon);
         smol::spawn(async move {
             let watched = system::watch(system, |event| {
                 tracing::debug!(?event, "system event");
-                if let Some(daemon) = daemon.upgrade() {
-                    daemon.network_changed();
+                let Some(daemon) = daemon.upgrade() else {
+                    return;
+                };
+                match event {
+                    SystemEvent::Resumed | SystemEvent::NetworkUp => daemon.network_changed(),
+                    SystemEvent::Metered(metered) => daemon.set_metered(metered),
                 }
             })
             .await;

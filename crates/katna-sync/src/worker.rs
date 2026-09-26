@@ -21,6 +21,8 @@
 //! again at once. [`Handle::send_changes`] sends queued changes now.
 //! [`Handle::fetch_body`] downloads one message now. Dropping the
 //! [`Handle`] logs out and ends the worker.
+//! On a metered network ([`Handle::set_metered`]) step 2 and 3 skip the
+//! bodies; headers, flags and changes stay in sync.
 //!
 //! POP3 accounts get [`run_pop3`] instead: POP3 has no push, so it checks
 //! the maildrop every [`WorkerConfig::pop3_interval`] and when asked, and
@@ -32,6 +34,10 @@
 
 use std::{
     future::Future,
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
@@ -162,6 +168,7 @@ pub struct Handle {
     _stop: Sender<()>,
     wake: Sender<()>,
     reconnect: Sender<()>,
+    metered: Arc<AtomicBool>,
     changes: Sender<()>,
     bodies: Sender<BodyRequest>,
 }
@@ -181,6 +188,17 @@ impl Handle {
     /// a refused password stays stopped.
     pub fn reconnect(&self) {
         let _ = self.reconnect.try_send(());
+    }
+
+    /// Tells the worker whether the network is metered. While it is, the
+    /// worker keeps mail and changes in sync but downloads no bodies ahead
+    /// of time; a body the user opens is still fetched. When the network
+    /// stops being metered, the worker syncs at once and catches up.
+    pub fn set_metered(&self, metered: bool) {
+        let was = self.metered.swap(metered, Ordering::Relaxed);
+        if was && !metered {
+            self.sync_now();
+        }
     }
 
     /// Asks the worker to send the changes queued with [`ops`] now. While
@@ -224,6 +242,7 @@ pub struct Control {
     stop: Receiver<()>,
     wake: Receiver<()>,
     reconnect: Receiver<()>,
+    metered: Arc<AtomicBool>,
     changes: Receiver<()>,
     bodies: Receiver<BodyRequest>,
 }
@@ -243,11 +262,13 @@ pub fn control() -> (Handle, Control) {
     let (reconnect, reconnect_rx) = async_channel::bounded(1);
     let (changes, changes_rx) = async_channel::bounded(1);
     let (bodies, bodies_rx) = async_channel::unbounded();
+    let metered = Arc::new(AtomicBool::new(false));
     (
         Handle {
             _stop: stop_tx,
             wake,
             reconnect,
+            metered: metered.clone(),
             changes,
             bodies,
         },
@@ -255,6 +276,7 @@ pub fn control() -> (Handle, Control) {
             stop,
             wake: wake_rx,
             reconnect: reconnect_rx,
+            metered,
             changes: changes_rx,
             bodies: bodies_rx,
         },
@@ -322,6 +344,11 @@ impl Control {
     /// Forgets reconnect requests made before the current connection.
     fn clear_reconnect(&self) {
         while self.reconnect.try_recv().is_ok() {}
+    }
+
+    /// Whether bodies should wait for an unmetered network.
+    fn metered(&self) -> bool {
+        self.metered.load(Ordering::Relaxed)
     }
 
     fn is_stopped(&self) -> bool {
@@ -589,7 +616,9 @@ async fn session<B: MailBackend>(
             *synced = true;
             full = false;
             last_full = Instant::now();
-            download_all(backend, store, account, config, events).await?;
+            if !control.metered() {
+                download_all(backend, store, account, config, events).await?;
+            }
         } else {
             // Moves the server gave no new UIDs for.
             let mut reports = Vec::new();
@@ -632,17 +661,19 @@ async fn session<B: MailBackend>(
         if report.added + report.flags_changed + report.removed > 0 || report.reset {
             let _ = events.try_send(Event::Synced(vec![report]));
         }
-        let stored = bodies::download_bodies(
-            backend,
-            store,
-            inbox.id,
-            &inbox.path,
-            &config.offline,
-            unix_now(),
-        )
-        .await?;
-        if stored > 0 {
-            let _ = events.try_send(Event::BodiesStored(stored));
+        if !control.metered() {
+            let stored = bodies::download_bodies(
+                backend,
+                store,
+                inbox.id,
+                &inbox.path,
+                &config.offline,
+                unix_now(),
+            )
+            .await?;
+            if stored > 0 {
+                let _ = events.try_send(Event::BodiesStored(stored));
+            }
         }
 
         let max_wait = config

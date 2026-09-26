@@ -324,6 +324,79 @@ fn downloads_bodies_and_fetches_on_request() {
 }
 
 #[test]
+fn metered_network_waits_with_bodies() {
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    server.create("Archive", 1);
+    server.deliver("INBOX", "one");
+    server.deliver("Archive", "two");
+    let (tmp, store, account) = common::store();
+    let paths = katna_core::Paths::with_root(tmp.path());
+    let (events_tx, events) = async_channel::unbounded();
+    let (handle, control) = worker::control();
+    handle.set_metered(true);
+    let task = smol::spawn(worker::run(
+        server.clone(),
+        store,
+        account,
+        config(),
+        events_tx,
+        control,
+    ));
+    let worker = Running {
+        events,
+        handle,
+        task,
+        _tmp: tmp,
+    };
+    smol::block_on(async {
+        assert!(matches!(worker.next_any().await, Event::Connected));
+        assert_eq!(added(&worker.next_any().await), 2);
+        let reader = katna_store::Store::open(&paths, katna_store::Mode::ReadOnly).unwrap();
+        let bodies = || {
+            let ids: Vec<_> = reader
+                .folders(account)
+                .unwrap()
+                .into_iter()
+                .flat_map(|f| reader.messages_in_folder(f.id).unwrap())
+                .map(|m| m.id)
+                .collect();
+            reader
+                .messages_by_id(&ids)
+                .unwrap()
+                .iter()
+                .filter(|m| m.blob_hash.is_some())
+                .count()
+        };
+
+        // New mail still arrives, without its body.
+        server.deliver("INBOX", "three");
+        assert_eq!(added(&worker.next_any().await), 1);
+        assert_eq!(bodies(), 0);
+
+        // What the user opens is still fetched.
+        let inbox = reader
+            .folders(account)
+            .unwrap()
+            .into_iter()
+            .find(|f| f.path == "INBOX")
+            .unwrap();
+        let message = reader.messages_in_folder(inbox.id).unwrap()[0].id;
+        worker.handle.fetch_body(message).await.unwrap();
+        assert!(matches!(worker.next_any().await, Event::BodiesStored(1)));
+        assert_eq!(bodies(), 1);
+
+        // Off the metered network, the worker catches up at once.
+        worker.handle.set_metered(false);
+        assert!(matches!(worker.next_any().await, Event::Synced(_)));
+        assert!(matches!(worker.next_any().await, Event::BodiesStored(2)));
+        assert_eq!(bodies(), 3);
+        assert_eq!(server.state().connects, 1);
+        worker.stop().await;
+    });
+}
+
+#[test]
 fn sends_changes_when_asked_and_after_reconnecting() {
     let server = FakeServer::default();
     server.create("INBOX", 1);

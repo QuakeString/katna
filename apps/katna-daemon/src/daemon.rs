@@ -5,7 +5,10 @@
 
 use std::{
     collections::HashMap,
-    sync::{Arc, Mutex, MutexGuard, Weak},
+    sync::{
+        Arc, Mutex, MutexGuard, Weak,
+        atomic::{AtomicBool, Ordering},
+    },
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
@@ -125,6 +128,8 @@ pub struct Daemon {
     secrets: Secrets,
     config: WorkerConfig,
     workers: Mutex<HashMap<AccountId, Running>>,
+    /// Whether the network is metered; new workers start with it.
+    metered: AtomicBool,
     status: Mutex<HashMap<AccountId, Status>>,
     outbox: Mutex<Option<Sending>>,
     /// Why each outbox entry's last try failed.
@@ -147,6 +152,7 @@ impl Daemon {
             secrets,
             config,
             workers: Mutex::default(),
+            metered: AtomicBool::new(false),
             status: Mutex::default(),
             outbox: Mutex::default(),
             send_errors: Mutex::default(),
@@ -437,6 +443,17 @@ impl Daemon {
         }
     }
 
+    /// The network became metered or stopped being so: workers download
+    /// bodies ahead of time only on an unmetered network, and catch up
+    /// when it stops being metered.
+    pub fn set_metered(&self, metered: bool) {
+        tracing::info!(metered, "network metering changed");
+        self.metered.store(metered, Ordering::Relaxed);
+        for running in self.workers().values() {
+            running.handle.set_metered(metered);
+        }
+    }
+
     /// Downloads one message through its account's worker.
     pub async fn fetch_body(&self, message: MessageId) -> Result<(), CommandError> {
         let (account, stored) = {
@@ -688,6 +705,7 @@ impl Daemon {
             }
         };
         let (handle, control) = worker::control();
+        handle.set_metered(self.metered.load(Ordering::Relaxed));
         let (events, received) = async_channel::unbounded();
         let config = self.config.clone();
         let task = match link {
