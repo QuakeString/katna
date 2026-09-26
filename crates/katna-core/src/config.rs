@@ -149,6 +149,8 @@ pub struct MailView {
     /// Use the desktop's color scheme and accent color instead of Katna's
     /// own colors.
     pub desktop_colors: bool,
+    /// Show the names under the icons of the app bar (Mail, Calendar, ...).
+    pub app_labels: bool,
 }
 
 impl Default for MailView {
@@ -161,6 +163,7 @@ impl Default for MailView {
             density: Density::Default,
             theme: Theme::System,
             desktop_colors: true,
+            app_labels: true,
         }
     }
 }
