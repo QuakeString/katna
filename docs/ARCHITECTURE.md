@@ -1262,7 +1262,7 @@ one of three layouts by the width inside the window frame
 | Layout  | Width         | What changes |
 |---------|---------------|--------------|
 | Desktop | 1080 px and up | §13.6 as is. |
-| Tablet  | 600–1080 px   | The folders fold into a drawer the menu button opens over a dimmed list; Compose becomes a floating button at the top of the app rail; the reading pane (three-pane setting) stays beside the list from 840 px, and narrower the conversation slides in over the list. |
+| Tablet  | 600–1080 px   | The folders fold into a drawer the menu button opens over a dimmed list; Compose stays in the top bar beside the menu button (the owner's choice), folding down to its pencil below 760 px; the reading pane (three-pane setting) stays beside the list from 840 px, and narrower the conversation slides in over the list. |
 | Phone   | under 600 px  | No app rail: the apps sit in a bar along the bottom. The search box is a pill across the top bar with the menu button and account picture inside it (settings move to the drawer). The list is edge to edge, three lines a message with the sender's picture, which ticks the line when tapped; the inbox tabs move to the drawer. Compose floats at the bottom right. An open conversation slides in over the list and the bottom bar sinks away; composing takes a sheet over the whole window. |
 
 A layout changes only 12 px past its threshold, so a window resized right
@@ -1272,7 +1272,7 @@ window size (360 px) is the smallest phone layout.
 Motion: two springs follow the layout (phone, desktop), and every part
 reads them rather than switching: the rail slides out as the bottom bar
 rises, the search box grows into the pill, the cards' margins and corners
-melt away, the top-bar Compose shrinks as the rail's grows. A third spring
+melt away, the top-bar Compose shrinks into the phone's floating one. A third spring
 slides the conversation over the list. All of them honor reduce motion.
 
 ## 14. D-Bus API (`katna-dbus`)

@@ -25,12 +25,14 @@ use crate::widgets::{avatar, elevation, icon, icon_button, icon_button_colored, 
 const NAV_ROW_HEIGHT: f32 = 32.0;
 const SEARCH_HEIGHT: f32 = 40.0;
 const COMPOSE_RADIUS: f32 = 16.0;
+/// Room for the word "Compose" on the top bar's Compose button.
+const COMPOSE_LABEL_WIDTH: f32 = 80.0;
 
 impl MailWindow {
     pub(super) fn render_top_start(&self, th: &Theme, cx: &mut Context<Self>) -> Vec<AnyElement> {
-        // Compose sits here on a desktop; tablets and phones have it at the
-        // top of the rail or floating over the list.
-        let desktop = self.layout.shape.desktop;
+        // Compose sits beside the menu button on a desktop and a tablet;
+        // a phone has it floating over the list.
+        let shown = 1.0 - self.layout.shape.phone;
         // The bars turn upright as the navigation folds away.
         let folded = 1.0 - self.reserve_spring.value().clamp(0.0, 1.0);
         let menu = div()
@@ -62,12 +64,15 @@ impl MailWindow {
                     ))),
             )
             .into_any_element();
+        // A narrow tablet folds Compose down to its pencil, so the search
+        // box keeps its room.
+        let label = self.layout.shape.compose_label();
         let compose = div()
             .id("compose")
             .relative()
             .ml(px(10.0))
             .h(px(48.0))
-            .pr(px(24.0))
+            .pr(px(lerp(12.0, 24.0, label)))
             .flex_none()
             .flex()
             .flex_row()
@@ -78,30 +83,35 @@ impl MailWindow {
             .hover(|s| s.shadow(elevation(th, 1.5)))
             .cursor_pointer()
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
+            .when(label < 0.5, |d| d.tooltip(tip("Compose", th)))
             .on_click(cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)))
             .child(Ripple::new("compose-ripple", rgba(th.ripple)).rounded(COMPOSE_RADIUS))
             .child(self.tour_mark(Spot::Compose))
+            .child(div().pl(px(lerp(12.0, 16.0, label))).child(icon(
+                "compose",
+                th.compose_text,
+                24.0,
+            )))
             .child(
                 div()
-                    .pl(px(16.0))
-                    .child(icon("compose", th.compose_text, 24.0)),
-            )
-            .child(
-                div()
-                    .pl(px(12.0))
+                    .pl(px(12.0 * label))
+                    .max_w(px(COMPOSE_LABEL_WIDTH * label))
+                    .overflow_hidden()
+                    .opacity(label)
                     .text_size(px(14.0))
                     .font_weight(FontWeight::MEDIUM)
+                    .whitespace_nowrap()
                     .child("Compose"),
             )
             .into_any_element();
         let mut start = vec![menu];
-        if self.mail.is_ok() && !self.accounts.is_empty() && desktop > 0.001 {
+        if self.mail.is_ok() && !self.accounts.is_empty() && shown > 0.001 {
             start.push(
                 div()
                     .flex_none()
-                    .max_w(px(200.0 * desktop))
+                    .max_w(px(200.0 * shown))
                     .overflow_hidden()
-                    .opacity(desktop)
+                    .opacity(shown)
                     .child(compose)
                     .into_any_element(),
             );

@@ -1932,8 +1932,9 @@ impl Render for MailWindow {
         // The search box, centered, grows into a pill across the top bar
         // of a phone, under its menu button and account picture.
         let (room_start, room_end) = shape.room;
+        // A tablet keeps Compose beside the menu button.
         let side = lerp(
-            (room_start + 60.0).max(room_end + 112.0) + 8.0,
+            (room_start + 60.0 + shape.compose_room()).max(room_end + 112.0) + 8.0,
             NAV_WIDTH,
             shape.desktop,
         );

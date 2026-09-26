@@ -2,7 +2,7 @@
 
 //! How the window follows its width (`docs/ARCHITECTURE.md` §13.9). Wide,
 //! it is the desktop layout. Tablet-sized, the folders fold into a drawer
-//! and Compose moves to the top of the app rail. Phone-sized, it becomes
+//! over the list. Phone-sized, it becomes
 //! the mobile webmail layout: a search pill with the menu and account
 //! inside, the list edge to edge with sender pictures, a Compose button
 //! floating at the bottom, the apps in a bar along the bottom, and an open
@@ -23,7 +23,7 @@ use super::apps::{APP_RAIL_WIDTH, App as RailApp};
 use super::{Compose, MailWindow, NAV_WIDTH, ToggleSettings};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{avatar, elevation, icon, tip};
+use crate::widgets::{avatar, elevation, icon};
 
 /// Narrower windows use the phone layout.
 pub(super) const PHONE_BELOW: f32 = 600.0;
@@ -38,8 +38,11 @@ pub(super) const TABLET_SPLIT_FROM: f32 = 840.0;
 const HYSTERESIS: f32 = 12.0;
 /// The bar with the apps along the bottom of a phone-sized window.
 pub(super) const BOTTOM_BAR_HEIGHT: f32 = 72.0;
-/// The floating Compose button at the top of the rail of a tablet.
-const RAIL_FAB_SLOT: f32 = 76.0;
+/// A tablet narrower than this shows Compose as its pencil alone.
+const COMPOSE_FOLD_BELOW: f32 = 760.0;
+/// The top bar's Compose button with its margin, folded and whole.
+const COMPOSE_FOLDED: f32 = 58.0;
+const COMPOSE_ROOM: f32 = 148.0;
 const FAB_SIZE: f32 = 56.0;
 const FAB_RADIUS: f32 = 16.0;
 /// A phone's navigation drawer leaves this much of the window beside it.
@@ -93,6 +96,8 @@ pub(super) struct Shape {
     /// The width inside the window frame.
     pub width: f32,
     pub phone: f32,
+    /// How much of the word "Compose" shows on the top bar's button.
+    pub label: f32,
     pub desktop: f32,
     /// Where the conversation is when it slides over the list: 0 = the
     /// list, 1 = the conversation.
@@ -102,10 +107,6 @@ pub(super) struct Shape {
 }
 
 impl Shape {
-    pub(super) fn tablet(&self) -> f32 {
-        (1.0 - self.phone - self.desktop).clamp(0.0, 1.0)
-    }
-
     pub(super) fn is_phone(&self) -> bool {
         self.size == Size::Phone
     }
@@ -130,6 +131,17 @@ impl Shape {
         16.0 * (1.0 - self.phone)
     }
 
+    /// How much of the word "Compose" the top bar's button shows: all of
+    /// it on a desktop and a wide tablet, folding away as a tablet narrows.
+    pub(super) fn compose_label(&self) -> f32 {
+        self.label
+    }
+
+    /// The room the top bar's Compose button takes beside the menu button.
+    pub(super) fn compose_room(&self) -> f32 {
+        lerp(COMPOSE_FOLDED, COMPOSE_ROOM, self.compose_label())
+    }
+
     pub(super) fn card_radius(&self) -> f32 {
         super::PANEL_RADIUS * (1.0 - self.phone)
     }
@@ -146,6 +158,7 @@ pub(super) struct Layout {
     size: Option<Size>,
     phone: Spring,
     desktop: Spring,
+    label: Spring,
     page: Spring,
     /// 0 = no drawer, 1 = the drawer is open over the dimmed window.
     scrim: Spring,
@@ -160,6 +173,7 @@ impl Layout {
             size: None,
             phone: Spring::new(motion::SLIDE, 0.0),
             desktop: Spring::new(motion::SLIDE, 1.0),
+            label: Spring::new(motion::SMOOTH, 1.0),
             page: Spring::new(motion::SLIDE, 0.0),
             scrim: Spring::new(motion::SMOOTH, 0.0),
             drawer: false,
@@ -167,6 +181,7 @@ impl Layout {
                 size: Size::Desktop,
                 width: 1280.0,
                 phone: 0.0,
+                label: 1.0,
                 desktop: 1.0,
                 page: 0.0,
                 room: (0.0, 0.0),
@@ -201,10 +216,21 @@ impl MailWindow {
         layout
             .desktop
             .set(if size == Size::Desktop { 1.0 } else { 0.0 });
+        let labelled = layout.label.target() > 0.5;
+        let fold_below = if labelled {
+            COMPOSE_FOLD_BELOW - HYSTERESIS
+        } else {
+            COMPOSE_FOLD_BELOW + HYSTERESIS
+        };
+        layout
+            .label
+            .set(if width >= fold_below { 1.0 } else { 0.0 });
         if first {
             layout.phone.snap(layout.phone.target());
             layout.desktop.snap(layout.desktop.target());
+            layout.label.snap(layout.label.target());
         }
+        let label = layout.label.tick(window, reduce).clamp(0.0, 1.0);
         let phone = layout.phone.tick(window, reduce).clamp(0.0, 1.0);
         let desktop = layout.desktop.tick(window, reduce).clamp(0.0, 1.0);
         // The shape's size decides `split` below, so it goes in first.
@@ -212,6 +238,7 @@ impl MailWindow {
             size,
             width,
             phone,
+            label,
             desktop,
             page: layout.shape.page,
             room,
@@ -255,31 +282,9 @@ impl MailWindow {
     }
 
     /// The app rail, sliding out to the left as the window turns into a
-    /// phone, with Compose on top of it on a tablet.
+    /// phone.
     pub(super) fn render_rail_slot(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let shape = self.layout.shape;
-        let tablet = shape.tablet();
-        let has_compose =
-            self.app == RailApp::Mail && self.mail.is_ok() && !self.accounts.is_empty();
-        let fab = (has_compose && tablet > 0.001).then(|| {
-            div()
-                .flex_none()
-                .w(px(APP_RAIL_WIDTH))
-                .h(px(RAIL_FAB_SLOT * tablet))
-                .flex()
-                .justify_center()
-                .overflow_hidden()
-                .child(
-                    fab_button("rail-compose", th)
-                        .mt(px(4.0))
-                        .opacity(tablet)
-                        .tooltip(tip("Compose", th))
-                        .on_click(
-                            cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)),
-                        )
-                        .child(icon("compose", th.compose_text, 24.0)),
-                )
-        });
         div()
             .flex_none()
             .h_full()
@@ -291,10 +296,7 @@ impl MailWindow {
                     .h_full()
                     .ml(px(-APP_RAIL_WIDTH * shape.phone))
                     .opacity(1.0 - shape.phone)
-                    .flex()
-                    .flex_col()
-                    .children(fab)
-                    .child(div().flex_1().min_h_0().child(self.render_app_rail(th, cx))),
+                    .child(self.render_app_rail(th, cx)),
             )
             .into_any_element()
     }
