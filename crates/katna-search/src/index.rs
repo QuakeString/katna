@@ -19,7 +19,7 @@ use serde::{Deserialize, Serialize};
 use tantivy::collector::{Count, TopDocs};
 use tantivy::{DocAddress, Index, IndexReader, IndexWriter, Order, ReloadPolicy, Searcher, Term};
 
-use crate::compile::compile;
+use crate::compile::{Fuzziness, compile_with};
 use crate::document::{self, MessageText};
 use crate::error::{Error, Result};
 use crate::highlight::Highlighter;
@@ -155,6 +155,9 @@ pub struct SearchResults {
     pub hits: Vec<Hit>,
     /// Number of all matches, when [`SearchOptions::count`] was set.
     pub total: Option<usize>,
+    /// Nothing matched the words as typed, so these results match words a
+    /// typo or two away ("showing results for similar words").
+    pub fuzzy: bool,
 }
 
 /// A piece of a message's text with the matched words marked.
@@ -448,10 +451,26 @@ impl SearchIndex {
         Ok(added)
     }
 
-    /// Searches the index as of the last [`reload`](Self::reload).
+    /// Searches the index as of the last [`reload`](Self::reload). Names
+    /// also match with typos; if nothing matches, every word may (see
+    /// [`SearchResults::fuzzy`]).
     pub fn search(&self, query: &Query, options: &SearchOptions) -> Result<SearchResults> {
+        let results = self.search_with(query, options, Fuzziness::Names)?;
+        if results.hits.is_empty() && options.offset == 0 && query.has_free_text() {
+            // Nothing matched: try words a typo or two away everywhere.
+            return self.search_with(query, options, Fuzziness::Everywhere);
+        }
+        Ok(results)
+    }
+
+    fn search_with(
+        &self,
+        query: &Query,
+        options: &SearchOptions,
+        fuzziness: Fuzziness,
+    ) -> Result<SearchResults> {
         let searcher = self.reader.searcher();
-        let compiled = compile(&self.fields, query);
+        let compiled = compile_with(&self.fields, query, fuzziness, Some(&searcher));
         let sort = match options.sort {
             Sort::Auto if query.has_free_text() => Sort::Relevance,
             Sort::Auto => Sort::Newest,
@@ -514,7 +533,11 @@ impl SearchIndex {
                 date: fast.i64("date")?.first(address.doc_id),
             });
         }
-        Ok(SearchResults { hits, total })
+        Ok(SearchResults {
+            hits,
+            total,
+            fuzzy: fuzziness == Fuzziness::Everywhere,
+        })
     }
 
     /// Highlighted body snippets for `messages`, which should be results of

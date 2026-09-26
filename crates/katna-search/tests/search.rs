@@ -179,7 +179,7 @@ fn indexes_the_store_and_answers_queries() {
     assert_eq!(typing("\"natural ga"), ["2001 budget"]);
     assert!(typing("-from:jeff califo").is_empty());
     assert_eq!(typing("-from:kenneth califo"), ["California power"]);
-    assert!(typing("budgetx").is_empty());
+    assert!(typing("qzxwv").is_empty());
 
     let everything = Query::parse("").unwrap();
     let oldest = app
@@ -355,4 +355,96 @@ fn indexer_follows_the_store_and_apps_see_it() {
             .try_iter()
             .all(|event| !matches!(event, IndexEvent::Updated(_)))
     );
+}
+
+/// Mail from Hasina Banu among people whose names start with b, as in a
+/// real mailbox, where more than a handful of words start with each letter.
+fn banu_corpus() -> Vec<Mail> {
+    let mut mails = vec![
+        mail(
+            "inbox",
+            "From: Hasina Banu <hasina.banu@example.com>\nTo: me@example.com\n\
+             Subject: School fees\nDate: Mon, 14 May 2001 16:39:00 +0000",
+            "Please pay the school fees by Friday.",
+        ),
+        mail(
+            "inbox",
+            "From: Hasina Banu <hasina.banu@example.com>\nTo: me@example.com\n\
+             Subject: Dinner\nDate: Tue, 15 May 2001 16:39:00 +0000",
+            "Dinner at eight.",
+        ),
+        mail(
+            "inbox",
+            "From: Hasina Rahman <hasina@example.net>\nTo: me@example.com\n\
+             Subject: Hello\nDate: Wed, 16 May 2001 16:39:00 +0000",
+            "Hello from Rahman.",
+        ),
+    ];
+    // Twenty-six names that sort before "banu": baaa, baab, …, baaz.
+    for letter in 'a'..='z' {
+        mails.push(Mail {
+            folder: "inbox",
+            flags: Flags::default(),
+            raw: format!(
+                "From: Baa{letter} Person <baa{letter}@example.org>\r\nTo: me@example.com\r\n\
+                 Subject: Note {letter}\r\nDate: Thu, 17 May 2001 16:39:00 +0000\r\n\r\n\
+                 bab{letter} bad{letter} bag{letter}\r\n"
+            ),
+        });
+    }
+    mails
+}
+
+#[test]
+fn forgives_typos_and_short_prefixes() {
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    import(&mut store, &banu_corpus());
+    let index = SearchIndex::open(&paths.index_dir()).unwrap();
+    index.update(&store, &small_options(), |_| {}).unwrap();
+    let typing = |query: &str| {
+        let query = Query::parse_as_you_type(query, 1_000_000_000).unwrap();
+        let options = SearchOptions {
+            limit: 50,
+            ..SearchOptions::default()
+        };
+        let ids: Vec<MessageId> = index
+            .search(&query, &options)
+            .unwrap()
+            .hits
+            .iter()
+            .map(|h| h.message)
+            .collect();
+        let mut found: Vec<String> = store
+            .messages_by_id(&ids)
+            .unwrap()
+            .into_iter()
+            .map(|m| m.subject)
+            .collect();
+        found.sort();
+        found
+    };
+
+    // A short last word finds every longer word, not only the first few.
+    assert_eq!(typing("hasina b"), ["Dinner", "School fees"]);
+    assert_eq!(typing("hasina ba"), ["Dinner", "School fees"]);
+    assert_eq!(typing("b").len(), 28);
+    // A misspelled name still finds the person.
+    assert_eq!(typing("haskina banu"), ["Dinner", "School fees"]);
+    assert_eq!(typing("hasina bano"), ["Dinner", "School fees"]);
+    assert_eq!(typing("hasna banu"), ["Dinner", "School fees"]);
+    assert_eq!(typing("from:hasnia"), ["Dinner", "Hello", "School fees"]);
+    // Misspelled words anywhere, when nothing matches exactly.
+    assert_eq!(typing("scool fees"), ["School fees"]);
+    let fuzzy = |text: &str| {
+        let query = Query::parse_as_you_type(text, 1_000_000_000).unwrap();
+        index
+            .search(&query, &SearchOptions::default())
+            .unwrap()
+            .fuzzy
+    };
+    assert!(fuzzy("scool fees"));
+    assert!(!fuzzy("haskina banu"));
+    assert!(!fuzzy("school fees"));
 }

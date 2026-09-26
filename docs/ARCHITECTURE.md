@@ -607,9 +607,23 @@ from or adds to the sketch above:
   limited to 32 levels.
 - **As you type.** `Query::parse_as_you_type` treats a final unfinished
   word as a prefix (`budg` finds `budget`; `"natural g` keeps the phrase
-  order), expanded to at most 16, 32 or 64 index words for one, two or
-  more letters. On the 500k synthetic corpus one-letter prefixes stay
-  under 20 ms p99.
+  order). In the body, and in phrases, the prefix expands to at most 16,
+  32 or 64 index words for one, two or more letters. In the other fields
+  (names, subject, file names) it expands to every word: expansion takes
+  words in alphabetical order, so a cap made `hasina b` miss Hasina Banu
+  whenever enough other names started with "ba…". On the 500k synthetic
+  corpus that costs up to ~12 ms for one letter (`k`: p50 18 ms).
+- **Typos.** One word of four or more letters that no searched field has
+  as typed also matches words one typo away (four letters) or two
+  (longer), a swap of neighbours counting as one, in From, To, Cc and Bcc
+  (`haskina banu` finds Hasina Banu). Near matches score 0.3 of an exact
+  one. If a search finds nothing, it runs again with such words matching
+  near words in every field (`scool fees`), and `SearchResults::fuzzy`
+  tells the app to say so. Words that exist as typed never match near
+  words, which keeps correctly spelled searches as fast as before (within
+  noise on the synthetic corpus); a misspelled search costs about as much
+  as a correct one (4–25 ms p50 on the synthetic corpus). Snippets do not
+  highlight near matches yet.
 - **Ranking.** BM25 with field boosts (subject 3, from 2, attachment names
   1.5, others 1), times a recency factor `1 + 0.5 · 2^(−age/60 days)` where
   age is measured from the newest indexed message (so an old archive still
