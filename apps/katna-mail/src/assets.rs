@@ -15,11 +15,13 @@ macro_rules! icons {
 }
 
 icons!(
+    "add",
     "all-mail",
     "archive",
     "attachment",
     "back",
     "calendar",
+    "check",
     "checkbox-checked",
     "checkbox-partial",
     "checkbox",
@@ -59,6 +61,7 @@ icons!(
     "refresh",
     "reply-all",
     "reply",
+    "restore",
     "schedule",
     "search",
     "send",
@@ -67,6 +70,7 @@ icons!(
     "shield-alert",
     "shield-check",
     "shield",
+    "signature",
     "snooze",
     "star-filled",
     "star",

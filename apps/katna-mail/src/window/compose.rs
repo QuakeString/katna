@@ -31,6 +31,7 @@ use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::format;
 use crate::outgoing::{self, Mailbox, Outgoing};
+use crate::signatures;
 use crate::theme::{Theme, fade};
 use crate::widgets::{
     avatar, elevation, icon, icon_button, icon_button_colored, menu, menu_item, tip,
@@ -82,6 +83,9 @@ pub(super) struct Compose {
     send_menu: bool,
     /// Sign and encrypt.
     sealing: Sealing,
+    /// The signature in the body, a [`katna_core::config::Signature::id`].
+    signature: Option<u32>,
+    signature_menu: bool,
     shown: Spring,
     closing: bool,
     body_scroll: ScrollHandle,
@@ -159,6 +163,7 @@ pub(super) struct Unsent {
     draft: Draft,
     thread: Threading,
     sealing: Sealing,
+    signature: Option<u32>,
 }
 
 fn address(a: &Address) -> String {
@@ -198,13 +203,7 @@ fn draft(
     is_me: impl Fn(&str) -> bool,
     signature: &str,
 ) -> Draft {
-    let signature = signature.trim_end();
-    let mut body = String::from("\n");
-    if !signature.is_empty() {
-        body.push_str("\n-- \n");
-        body.push_str(signature);
-        body.push('\n');
-    }
+    let mut body = format!("\n{}", signatures::block(signature));
     let Some(Original { view, date }) = original.filter(|_| kind != Kind::New) else {
         return Draft {
             body,
@@ -315,12 +314,13 @@ impl MailWindow {
                 .iter()
                 .any(|a| a.address.eq_ignore_ascii_case(email))
         };
-        let draft = draft(
-            kind,
-            original.as_ref(),
-            is_me,
-            &self.config.sending.signature,
-        );
+        let signature = self.signature_for(kind);
+        let text = self
+            .config
+            .sending
+            .signature(signature)
+            .map_or("", |s| s.text.as_str());
+        let draft = draft(kind, original.as_ref(), is_me, text);
         let thread = Threading::of(kind, view);
         let reply = matches!(kind, Kind::Reply | Kind::ReplyAll) && !draft.to.is_empty();
         let start = draft.clone();
@@ -335,7 +335,7 @@ impl MailWindow {
         } else {
             Mode::Open
         };
-        self.show_compose(draft, start, thread, reply, window, cx);
+        self.show_compose(draft, start, thread, signature, reply, window, cx);
         if let Some(compose) = &mut self.compose {
             compose.kind = kind;
             compose.mode = mode;
@@ -344,13 +344,74 @@ impl MailWindow {
         }
     }
 
+    /// The signature a new message starts with: for new mail the default;
+    /// in a conversation the one the user signed their newest message in it
+    /// with, else the default for replies.
+    fn signature_for(&self, kind: Kind) -> Option<u32> {
+        let sending = &self.config.sending;
+        let id = match kind {
+            Kind::New => sending.new_mail_signature,
+            _ => self.signature_used().or(sending.reply_signature),
+        };
+        sending.signature(id).map(|s| s.id)
+    }
+
+    /// The signature of the user's newest message in the open conversation.
+    fn signature_used(&self) -> Option<u32> {
+        let (Some(reader), Ok(mail)) = (&self.reader, &self.mail) else {
+            return None;
+        };
+        let signatures = &self.config.sending.signatures;
+        if signatures.is_empty() {
+            return None;
+        }
+        let is_me = |email: &str| {
+            self.accounts
+                .iter()
+                .any(|a| a.address.eq_ignore_ascii_case(email))
+        };
+        mail.entry_messages(reader.key)
+            .into_iter()
+            .rev()
+            .filter_map(|id| mail.raw(id))
+            .map(|raw| katna_render::message_view(&raw))
+            .filter(|view| view.from.iter().any(|a| is_me(&a.email)))
+            .find_map(|view| signatures::used_in(&view.body, signatures))
+    }
+
+    /// Puts signature `id` (or none) in the open message in place of the
+    /// one there.
+    fn choose_signature(&mut self, id: Option<u32>, cx: &mut Context<Self>) {
+        let sending = &self.config.sending;
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        compose.signature_menu = false;
+        if compose.signature == id {
+            cx.notify();
+            return;
+        }
+        let old = sending
+            .signature(compose.signature)
+            .map(|s| s.text.as_str());
+        let new = sending.signature(id).map(|s| s.text.as_str());
+        let body = signatures::swap(compose.body.read(cx).text(), old, new);
+        compose
+            .body
+            .update(cx, |area, cx| area.set_text(body, 0, cx));
+        compose.signature = id;
+        cx.notify();
+    }
+
     /// Opens the compose window on `draft`; `start` is what counts as
     /// untouched.
+    #[allow(clippy::too_many_arguments)]
     fn show_compose(
         &mut self,
         draft: Draft,
         start: Draft,
         thread: Threading,
+        signature: Option<u32>,
         focus_body: bool,
         window: &mut Window,
         cx: &mut Context<Self>,
@@ -423,6 +484,8 @@ impl MailWindow {
             mode: Mode::Open,
             send_menu: false,
             sealing: Sealing::default(),
+            signature,
+            signature_menu: false,
             shown: Spring::new(motion::SLIDE, 0.0),
             closing: false,
             body_scroll: ScrollHandle::new(),
@@ -476,9 +539,11 @@ impl MailWindow {
             return;
         };
         compose.send_menu = false;
+        compose.signature_menu = false;
         let draft = compose.fields(cx);
         let thread = compose.thread.clone();
         let sealing = compose.sealing;
+        let signature = compose.signature;
         let parse = |text: &str| outgoing::parse_addresses(text);
         let (to, cc, bcc) = match (parse(&draft.to), parse(&draft.cc), parse(&draft.bcc)) {
             (Ok(to), Ok(cc), Ok(bcc)) => (to, cc, bcc),
@@ -524,6 +589,7 @@ impl MailWindow {
             draft,
             thread,
             sealing,
+            signature,
         });
         self.close_compose(false, cx);
         self.show_snackbar("Sending\u{2026}", None, cx);
@@ -569,6 +635,7 @@ impl MailWindow {
             draft,
             thread,
             sealing,
+            signature,
         }) = self.unsent.take()
         else {
             return;
@@ -580,7 +647,7 @@ impl MailWindow {
         {
             return;
         }
-        self.show_compose(draft, Draft::default(), thread, true, window, cx);
+        self.show_compose(draft, Draft::default(), thread, signature, true, window, cx);
         if let Some(compose) = &mut self.compose {
             compose.sealing = sealing;
         }
@@ -590,6 +657,7 @@ impl MailWindow {
         if let Some(compose) = &mut self.compose {
             compose.closing = true;
             compose.send_menu = false;
+            compose.signature_menu = false;
         }
         if discarded {
             self.show_snackbar("Draft discarded", None, cx);
@@ -1078,6 +1146,7 @@ impl MailWindow {
                     .with_priority(2),
                 )
             });
+        let signature = self.render_signature_button(th, cx);
         let tool =
             |id: &'static str, name: &'static str, label: &'static str, what: &'static str| {
                 icon_button(id, name, 20.0, th)
@@ -1124,6 +1193,7 @@ impl MailWindow {
                 "Insert photo",
                 "Inserting images",
             ))
+            .child(signature)
             .child(tool("compose-more", "more", "More options", "More options"))
             .child(div().flex_1())
             .child(
@@ -1131,6 +1201,80 @@ impl MailWindow {
                     .tooltip(tip("Discard draft", th))
                     .on_click(cx.listener(|this, _, _, cx| this.close_compose(true, cx))),
             )
+            .into_any_element()
+    }
+}
+
+impl MailWindow {
+    /// The signature button of the compose bar, with its menu: no
+    /// signature, each signature, and a link to manage them.
+    fn render_signature_button(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(compose) = &self.compose else {
+            return div().into_any_element();
+        };
+        let current = compose.signature;
+        let item = |ix: usize, id: Option<u32>, label: &str| {
+            menu_item(("compose-signature-item", ix), label, th)
+                .gap(px(12.0))
+                .child(div().flex_1())
+                .when(current == id, |d| d.child(icon("check", th.text_dim, 18.0)))
+                .on_click(cx.listener(move |this, _, _, cx| this.choose_signature(id, cx)))
+        };
+        let items = self
+            .config
+            .sending
+            .signatures
+            .iter()
+            .enumerate()
+            .map(|(ix, s)| {
+                let name = if s.name.trim().is_empty() {
+                    "Untitled"
+                } else {
+                    s.name.as_str()
+                };
+                item(ix + 1, Some(s.id), name)
+            })
+            .collect::<Vec<_>>();
+        div()
+            .relative()
+            .child(
+                icon_button("compose-signature", "signature", 20.0, th)
+                    .tooltip(tip("Insert signature", th))
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        if let Some(c) = &mut this.compose {
+                            c.signature_menu = !c.signature_menu;
+                            c.send_menu = false;
+                        }
+                        cx.notify();
+                    })),
+            )
+            .when(compose.signature_menu, |d| {
+                d.child(
+                    deferred(
+                        div().absolute().bottom(px(44.0)).right_0().occlude().child(
+                            menu(th)
+                                .w(px(240.0))
+                                .child(item(0, None, "No signature"))
+                                .children(items)
+                                .child(div().my(px(8.0)).h(px(1.0)).bg(rgba(th.divider)))
+                                .child(
+                                    menu_item("compose-signatures-manage", "Manage signatures", th)
+                                        .on_click(cx.listener(|this, _, window, cx| {
+                                            if let Some(c) = &mut this.compose {
+                                                c.signature_menu = false;
+                                            }
+                                            this.open_settings_page(
+                                                super::settings_page::Section::Signatures,
+                                                window,
+                                                cx,
+                                            );
+                                        })),
+                                ),
+                        ),
+                    )
+                    .with_priority(2),
+                )
+            })
             .into_any_element()
     }
 }
