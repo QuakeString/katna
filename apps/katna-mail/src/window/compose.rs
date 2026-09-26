@@ -995,37 +995,26 @@ impl MailWindow {
             .when(compose.signature_menu, |d| {
                 d.child(
                     deferred(
-                        div()
-                            .absolute()
-                            .bottom(px(44.0))
-                            .right_0()
-                            .occlude()
-                            .child(
-                                menu(th)
-                                    .w(px(240.0))
-                                    .child(item(0, None, "No signature"))
-                                    .children(items)
-                                    .child(div().my(px(8.0)).h(px(1.0)).bg(rgba(th.divider)))
-                                    .child(
-                                        menu_item(
-                                            "compose-signatures-manage",
-                                            "Manage signatures",
-                                            th,
-                                        )
-                                        .on_click(
-                                            cx.listener(|this, _, window, cx| {
-                                                if let Some(c) = &mut this.compose {
-                                                    c.signature_menu = false;
-                                                }
-                                                this.open_settings_page(
-                                                    super::settings_page::Section::Signatures,
-                                                    window,
-                                                    cx,
-                                                );
-                                            }),
-                                        ),
-                                    ),
-                            ),
+                        div().absolute().bottom(px(44.0)).right_0().occlude().child(
+                            menu(th)
+                                .w(px(240.0))
+                                .child(item(0, None, "No signature"))
+                                .children(items)
+                                .child(div().my(px(8.0)).h(px(1.0)).bg(rgba(th.divider)))
+                                .child(
+                                    menu_item("compose-signatures-manage", "Manage signatures", th)
+                                        .on_click(cx.listener(|this, _, window, cx| {
+                                            if let Some(c) = &mut this.compose {
+                                                c.signature_menu = false;
+                                            }
+                                            this.open_settings_page(
+                                                super::settings_page::Section::Signatures,
+                                                window,
+                                                cx,
+                                            );
+                                        })),
+                                ),
+                        ),
                     )
                     .with_priority(2),
                 )

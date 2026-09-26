@@ -15,7 +15,8 @@ use std::{
 use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
 use katna_core::{
-    Account, AccountId, AccountKind, AccountSettings, Paths, Pop3Keep, Security, Server,
+    Account, AccountId, AccountKind, AccountSettings, Config, Paths, Pop3Keep, Security, Server,
+    config::Metered,
 };
 use katna_dbus::{AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, state};
 use katna_store::{FolderId, MessageFlags, MessageId, Mode, SendState, Store};
@@ -43,6 +44,8 @@ pub enum Notice {
     MailChanged(AccountId),
     /// An outbox entry changed state.
     OutboxChanged(i64),
+    /// Workers now act metered, or stopped doing so.
+    MeteredChanged(bool),
 }
 
 /// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
@@ -128,8 +131,13 @@ pub struct Daemon {
     secrets: Secrets,
     config: WorkerConfig,
     workers: Mutex<HashMap<AccountId, Running>>,
-    /// Whether the network is metered; new workers start with it.
+    /// Whether workers act metered (the network as NetworkManager sees
+    /// it, or the user's setting); new workers start with it.
     metered: AtomicBool,
+    /// What NetworkManager last said.
+    network_metered: AtomicBool,
+    /// The user's `sync.metered` setting.
+    metered_setting: Mutex<Metered>,
     status: Mutex<HashMap<AccountId, Status>>,
     outbox: Mutex<Option<Sending>>,
     /// Why each outbox entry's last try failed.
@@ -145,6 +153,7 @@ impl Daemon {
         config: WorkerConfig,
     ) -> katna_store::Result<(Arc<Self>, Receiver<Notice>)> {
         let store = Store::open(&paths, Mode::ReadWrite)?;
+        let setting = metered_setting(&paths);
         let (notices, receiver) = async_channel::unbounded();
         let daemon = Arc::new(Self {
             paths,
@@ -152,7 +161,9 @@ impl Daemon {
             secrets,
             config,
             workers: Mutex::default(),
-            metered: AtomicBool::new(false),
+            metered: AtomicBool::new(setting.decide(false)),
+            network_metered: AtomicBool::new(false),
+            metered_setting: Mutex::new(setting),
             status: Mutex::default(),
             outbox: Mutex::default(),
             send_errors: Mutex::default(),
@@ -443,15 +454,43 @@ impl Daemon {
         }
     }
 
-    /// The network became metered or stopped being so: workers download
-    /// bodies ahead of time only on an unmetered network, and catch up
-    /// when it stops being metered.
+    /// NetworkManager says the network became metered or stopped being so.
+    /// What workers do also depends on the user's setting
+    /// ([`Daemon::reload_config`]).
     pub fn set_metered(&self, metered: bool) {
         tracing::info!(metered, "network metering changed");
-        self.metered.store(metered, Ordering::Relaxed);
+        self.network_metered.store(metered, Ordering::Relaxed);
+        self.apply_metered();
+    }
+
+    /// Whether workers act metered now.
+    pub fn metered(&self) -> bool {
+        self.metered.load(Ordering::Relaxed)
+    }
+
+    /// Reads the settings file again and applies what the daemon uses from
+    /// it (`sync.metered`). Katna Mail calls this after saving settings.
+    pub fn reload_config(&self) -> Result<(), CommandError> {
+        let config = Config::load(&self.paths.config_file())
+            .map_err(|err| CommandError::InvalidArgs(err.to_string()))?;
+        tracing::info!(metered = ?config.sync.metered, "settings reloaded");
+        *self.metered_setting.lock().unwrap() = config.sync.metered;
+        self.apply_metered();
+        Ok(())
+    }
+
+    /// Workers download bodies ahead of time only when not metered, and
+    /// catch up when that ends.
+    fn apply_metered(&self) {
+        let setting = *self.metered_setting.lock().unwrap();
+        let metered = setting.decide(self.network_metered.load(Ordering::Relaxed));
+        if self.metered.swap(metered, Ordering::Relaxed) == metered {
+            return;
+        }
         for running in self.workers().values() {
             running.handle.set_metered(metered);
         }
+        let _ = self.notices.try_send(Notice::MeteredChanged(metered));
     }
 
     /// Downloads one message through its account's worker.
@@ -970,4 +1009,15 @@ fn unix_now() -> i64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_or(0, |elapsed| elapsed.as_secs() as i64)
+}
+
+/// The `sync.metered` setting; the default if the file cannot be read.
+fn metered_setting(paths: &Paths) -> Metered {
+    match Config::load(&paths.config_file()) {
+        Ok(config) => config.sync.metered,
+        Err(err) => {
+            tracing::warn!(%err, "settings unreadable; metered follows the network");
+            Metered::Auto
+        }
+    }
 }
