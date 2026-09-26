@@ -81,6 +81,8 @@ actions!(
     [
         SelectNext,
         SelectPrevious,
+        FocusNext,
+        FocusPrevious,
         SelectFirst,
         SelectLast,
         PageDown,
@@ -2184,6 +2186,8 @@ impl Render for MailWindow {
             .size_full()
             .bg(rgba(th.page))
             .text_color(rgba(th.text))
+            .on_action(cx.listener(Self::focus_next))
+            .on_action(cx.listener(Self::focus_previous))
             .on_action(cx.listener(Self::focus_search))
             .on_action(cx.listener(Self::focus_list))
             .on_action(cx.listener(Self::toggle_navigation))

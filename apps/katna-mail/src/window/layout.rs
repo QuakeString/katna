@@ -194,6 +194,11 @@ impl Layout {
 }
 
 impl Layout {
+    /// How far a phone's or tablet's drawer is open, 0 to 1.
+    pub(super) fn drawer_t(&self) -> f32 {
+        self.scrim.value().clamp(0.0, 1.0)
+    }
+
     /// Folds a phone's Compose button to its pencil as the list scrolls
     /// down, and grows it back after a few steps up or at the top.
     fn fold_fab(&mut self, top: f32) {

@@ -401,8 +401,13 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   `message_location` per folder. Flags, tabs, threads and search see it
   once; removing a label removes only that location. Moving a message
   takes it from one of its folders other than All Mail, since leaving All
-  Mail only adds a label on Gmail. Stores synced before v4 keep their
-  duplicate rows until the account is added again. io-imap cannot express these extensions, so they are written as
+  Mail only adds a label on Gmail. Stores synced before v4 have a row per label, all without `gm_msgid`: the
+  first sync after the upgrade fetches `UID FETCH … (X-GM-MSGID)` for them,
+  once per folder, and merges the copies into one row
+  (`MailBatch::adopt_gm_msgid`): its folders, flags and keywords are the
+  union of the copies', it keeps a downloaded body and a pin, and a copy
+  with a change still queued waits for the next sync. Nothing changes on
+  the server. io-imap cannot express these extensions, so they are written as
   raw commands on the connection. Progress lives in `folder.sync_state`.
 - **Level 3 so far (`katna_sync::bodies`):** after each full sync, and after
   each inbox catch-up, the worker fetches `BODY.PEEK[]` for messages in the
@@ -763,6 +768,10 @@ the same matching on event attendees ("Meeting with Acme").
   icon, and a real "Quit" (stops the daemon until next login or activation).
 - Single instance, enforced by owning the D-Bus name.
 - Graceful shutdown: finish in-flight sends, flush the index, close IMAP sessions.
+- Updates: a package update replaces the binary while the old one runs.
+  Every 30 s the daemon checks `/proc/self/exe`; once the file was replaced
+  it shuts down gracefully and `exec`s the new binary (same PID, so systemd
+  keeps tracking it). No `systemctl --user restart` after an update.
 
 ### 9.2.1 What runs today (Phase 1)
 
@@ -1159,6 +1168,16 @@ Gemini or confidential mode):
 - **Settings page.** "See all settings", the rail's gear or `?` open it in
   place of the list (`window/settings_page.rs`), with sections General,
   Inbox, Accounts, Signatures and Keyboard shortcuts.
+- **Tab between controls.** Tab and Shift+Tab move the focus in the order
+  things are drawn, as in any desktop form: fields (`TextInput`,
+  `RichEditor`) are always Tab stops, and the Settings page's tabs, rows,
+  chips and buttons are too (`widgets::FocusRing`). Enter or Space presses
+  the focused control, a tint with a ring shows it (only after a key, not
+  a click), and the page scrolls to keep it in view. The page's open tab
+  takes the focus when it opens. In the rich editor Tab still moves
+  between table cells and indents list items. Controls in the quick
+  settings panel and toolbars stay out of the Tab order, since focusing
+  them on a click would take the keys away from the list or the editor.
 - **Removing an account, deleting all data.** Settings → Accounts
   (`window/accounts.rs`; also "Manage accounts" in the account menu) lists
   the accounts, each with Remove, and has "Delete all Katna data". Both
@@ -1258,12 +1277,16 @@ Gemini or confidential mode):
   app rail opens them over the list as a floating panel with rounded
   corners and a bottom margin. Ripples keep to the shape of the element
   they are on (`Ripple::rounded`), since GPUI clips children to
-  rectangles. Icon buttons have tooltips after GPUI's hover delay
+  rectangles. Where the element cuts the growing circle, its ends are the
+  circle's shallow curve, so a wave in a wide, low tab fills it as one
+  rectangle rather than showing a pill. Icon buttons have tooltips after GPUI's hover delay
   (`katna_ui::Tooltip`). Dialogs, panels and cards use 15 px corners.
   Reply, Reply all and Forward stay pinned at the foot of the open
-  conversation, and answering writes inline there (a card with the
-  recipients, the text and the Send row, which can pop out into the
-  window); the list's single-letter keys are switched off inside text
+  conversation. Answering writes inline at the end of the conversation,
+  as in Gmail: a card with the recipients, the text and the Send row,
+  which can pop out into the window. The card grows with its text and
+  scrolls with the messages; opening it scrolls smoothly to its first
+  line, and typing keeps the cursor in view; the list's single-letter keys are switched off inside text
   fields. The list has a right-click menu (reply, reply all, forward,
   archive, delete, spam, read, star, move to, find emails from the
   sender) acting on the ticked lines or the clicked one. The "select all
@@ -1536,7 +1559,10 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
   Quit. Quit closes the app and stops the daemon until the next login or
   until the app starts it again (D-Bus activation). Setting
-  `general.tray_icon` (default on); `ReloadConfig` applies both settings.
+  `general.show_in_tray` (default on; the older `tray_icon` key is ignored
+  because versions without a tray saved it as `false`). Both switches are
+  under Settings → General → Desktop; the app calls `ReloadConfig` after
+  saving so the daemon applies them at once.
 - **Single instance and actions**: Katna Mail owns `in.invenia.katna.Mail`
   and serves `org.freedesktop.Application` at `/in/invenia/katna/Mail` with
   the actions `open-inbox`, `compose`, `preferences`, `open-message` (a

@@ -35,8 +35,14 @@ impl MailWindow {
         // Compose sits beside the menu button on a desktop and a tablet;
         // a phone has it floating over the list.
         let shown = 1.0 - self.layout.shape.phone;
-        // The bars turn upright as the navigation folds away.
-        let folded = 1.0 - self.reserve_spring.value().clamp(0.0, 1.0);
+        // The bars turn upright as the navigation folds away, and lie down
+        // again as a phone's or tablet's drawer opens.
+        let open = self
+            .reserve_spring
+            .value()
+            .max(self.layout.drawer_t())
+            .clamp(0.0, 1.0);
+        let folded = 1.0 - open;
         let menu = div()
             .id("menu-button")
             .relative()
@@ -292,7 +298,12 @@ impl MailWindow {
         let t = self.nav_t.max(0.0);
         let reserve = self.reserve_spring.value().max(0.0);
         // How far the panel is open beyond the space it takes: it floats.
-        let float = (t - reserve).clamp(0.0, 1.0);
+        // The two springs can differ by a hair once both are open, so a
+        // trace of float is no float at all.
+        let float = match (t - reserve).clamp(0.0, 1.0) {
+            f if f < 0.01 => 0.0,
+            f => f,
+        };
         // On a phone or tablet it is a drawer, full height with square
         // corners.
         let shape = self.layout.shape;
@@ -337,8 +348,10 @@ impl MailWindow {
             .flex_col()
             .pt(px(lerp(0.0, 12.0, float)))
             .overflow_hidden()
+            // Floating, it keeps the page's color, lifted by its shadow; the
+            // panel never turns into a card, so folding it cannot flash.
             .when(float > 0.0, |d| {
-                d.bg(rgba(th.surface))
+                d.bg(rgba(th.page))
                     .when(!drawer, |d| d.rounded(px(PANEL_RADIUS)))
                     .shadow(elevation(th, 3.0 * float))
             })

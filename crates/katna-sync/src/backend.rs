@@ -3,7 +3,7 @@
 //! The protocol traits and the data types they exchange. Nothing here
 //! depends on a protocol library.
 
-use std::{fmt, future::Future, ops::RangeInclusive, time::Duration};
+use std::{collections::HashMap, fmt, future::Future, ops::RangeInclusive, time::Duration};
 
 use crate::Result;
 
@@ -363,6 +363,16 @@ pub trait MailBackend: Send + 'static {
         query: &str,
     ) -> impl Future<Output = Result<Option<Vec<u32>>>> + Send {
         let _ = (first, query);
+        async { Ok(None) }
+    }
+
+    /// Gmail's `X-GM-MSGID` of the messages at `uids` in the selected
+    /// folder. `Ok(None)` when the server is not Gmail (no `X-GM-EXT-1`).
+    fn gmail_message_ids(
+        &mut self,
+        uids: &[u32],
+    ) -> impl Future<Output = Result<Option<HashMap<u32, u64>>>> + Send {
+        let _ = uids;
         async { Ok(None) }
     }
 

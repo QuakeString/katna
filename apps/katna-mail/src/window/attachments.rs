@@ -13,12 +13,13 @@ use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
 use gpui::{
-    AnyElement, Context, Entity, FocusHandle, FontWeight, ImageSource, ObjectFit, RenderImage,
-    SharedString, Subscription, Task, Window, div, img, prelude::*, px, rgba,
+    AnyElement, Context, Entity, FocusHandle, FontWeight, ImageSource, ObjectFit,
+    PathPromptOptions, RenderImage, SharedString, Subscription, Task, Window, div, img, prelude::*,
+    px, rgba,
 };
 use katna_core::config::{FileGroup, OpenIn};
 use katna_preview::Kind;
-use katna_preview::image::{Frame, RgbaImage};
+use katna_preview::image::{Frame, RgbaImage, imageops};
 use katna_render::{Attachment, AttachmentFile};
 use katna_store::MessageId;
 
@@ -34,6 +35,9 @@ const CARD_WIDTH: f32 = 180.0;
 const THUMB_HEIGHT: f32 = 84.0;
 /// Thumbnails are drawn at twice the card's size, sharp on HiDPI screens.
 const THUMB_PIXELS: (u32, u32) = (2 * CARD_WIDTH as u32, 2 * THUMB_HEIGHT as u32);
+/// The card's corner radius; its contents are rounded one pixel less, to
+/// sit inside its border.
+const CARD_RADIUS: f32 = 8.0;
 /// Files handed to another app are removed after this long.
 const OPENED_KEEP: Duration = Duration::from_secs(24 * 60 * 60);
 
@@ -58,10 +62,18 @@ impl Item {
     }
 }
 
+/// A card's thumbnail, and a blurred copy of it shown like frosted glass
+/// behind the name and Save button when the pointer is over the card.
+#[derive(Clone)]
+struct Thumb {
+    sharp: Arc<RenderImage>,
+    frosted: Arc<RenderImage>,
+}
+
 /// The window's attachment state.
 #[derive(Default)]
 pub(super) struct Files {
-    thumbs: HashMap<(MessageId, usize), Arc<RenderImage>>,
+    thumbs: HashMap<(MessageId, usize), Thumb>,
     /// Messages whose thumbnails were made or are being made.
     asked: HashMap<MessageId, Option<Task<()>>>,
     /// Bitmaps no longer drawn, freed at the next frame.
@@ -85,8 +97,8 @@ impl Files {
             .copied()
             .collect();
         for key in gone {
-            if let Some(image) = self.thumbs.remove(&key) {
-                self.released.push(image);
+            if let Some(thumb) = self.thumbs.remove(&key) {
+                self.released.extend([thumb.sharp, thumb.frosted]);
             }
         }
     }
@@ -98,6 +110,15 @@ pub(super) fn bitmap(mut image: RgbaImage) -> Arc<RenderImage> {
         pixel.0.swap(0, 2);
     }
     Arc::new(RenderImage::new([Frame::new(image)]))
+}
+
+/// `thumb` made small and blurred. Drawn stretched over the whole card,
+/// it reads as the thumbnail seen through frosted glass (GPUI has no
+/// backdrop blur).
+fn frosted(thumb: &RgbaImage) -> RgbaImage {
+    let (w, h) = thumb.dimensions();
+    let small = imageops::thumbnail(thumb, (w / 4).max(1), (h / 4).max(1));
+    imageops::fast_blur(&small, 3.0)
 }
 
 /// Where a list chip's attachment is among the message's parsed ones: the
@@ -208,11 +229,16 @@ impl MailWindow {
                 continue;
             };
             let task = cx.spawn(async move |this, cx| {
-                let thumbs: Vec<(usize, Arc<RenderImage>)> = cx
+                let thumbs: Vec<(usize, Thumb)> = cx
                     .background_executor()
                     .spawn(async move {
                         list.into_iter()
-                            .filter_map(|(ix, kind)| Some((ix, bitmap(thumbnail(&raw, ix, kind)?))))
+                            .filter_map(|(ix, kind)| {
+                                let sharp = thumbnail(&raw, ix, kind)?;
+                                let frosted = bitmap(frosted(&sharp));
+                                let sharp = bitmap(sharp);
+                                Some((ix, Thumb { sharp, frosted }))
+                            })
                             .collect()
                     })
                     .await;
@@ -225,7 +251,9 @@ impl MailWindow {
                             .extend(thumbs.into_iter().map(|(ix, t)| ((id, ix), t)));
                     } else {
                         // The message closed meanwhile.
-                        files.released.extend(thumbs.into_iter().map(|(_, t)| t));
+                        files
+                            .released
+                            .extend(thumbs.into_iter().flat_map(|(_, t)| [t.sharp, t.frosted]));
                     }
                     cx.notify();
                 })
@@ -259,15 +287,19 @@ impl MailWindow {
             return None;
         }
         let count = list.len();
+        let indices: Vec<usize> = list.iter().map(|&(ix, _)| ix).collect();
         let cards = list.iter().map(|&(ix, attachment)| {
             let item = Item::new(ix, attachment);
             let group = SharedString::from(format!("attachment-{}-{ix}", id.0));
             let thumb = self.files.thumbs.get(&(id, ix)).cloned();
             let name = item.name.clone();
+            let inner = px(CARD_RADIUS - 1.0);
+            let frost = thumb.as_ref().map(|t| t.frosted.clone());
             let top = match thumb {
-                Some(image) => div().size_full().child(
-                    img(ImageSource::Render(image))
+                Some(thumb) => div().size_full().child(
+                    img(ImageSource::Render(thumb.sharp))
                         .size_full()
+                        .rounded_t(inner)
                         .object_fit(ObjectFit::Cover),
                 ),
                 None => div()
@@ -279,6 +311,16 @@ impl MailWindow {
                     .child(kind_badge(item.kind, 36.0)),
             };
             let save_name = name.clone();
+            // Frosted glass in the theme's own color: the blurred thumbnail
+            // under a veil of the card's surface, text in the theme's ink.
+            // Without a thumbnail there is nothing to blur, so the veil
+            // is thicker and hides the file-type badge under it.
+            let veil = (th.surface & 0xffff_ff00) | if frost.is_some() { 0xa6 } else { 0xf0 };
+            let (ink, ink_dim, button, button_hover) = if th.dark {
+                (0xffffffff, 0xffffffcc, 0xffffff26, 0xffffff4d)
+            } else {
+                (th.text, th.text_dim, 0x0000001a, 0x00000033)
+            };
             let overlay = div()
                 .absolute()
                 .top_0()
@@ -288,12 +330,31 @@ impl MailWindow {
                 // `display` on hover between layout and paint.
                 .opacity(0.0)
                 .group_hover(group.clone(), |s| s.opacity(1.0))
+                .rounded(inner)
+                .overflow_hidden()
+                .children(frost.map(|image| {
+                    img(ImageSource::Render(image))
+                        .absolute()
+                        .top_0()
+                        .left_0()
+                        .size_full()
+                        .rounded(inner)
+                        .object_fit(ObjectFit::Fill)
+                }))
+                .child(
+                    div()
+                        .absolute()
+                        .top_0()
+                        .left_0()
+                        .size_full()
+                        .rounded(inner)
+                        .bg(rgba(veil)),
+                )
                 .flex()
                 .flex_col()
                 .justify_between()
                 .p(px(10.0))
-                .bg(rgba(0x202124eb))
-                .text_color(rgba(0xffffffff))
+                .text_color(rgba(ink))
                 .child(
                     div()
                         .text_size(px(13.0))
@@ -310,7 +371,7 @@ impl MailWindow {
                         .child(
                             div()
                                 .text_size(px(12.0))
-                                .text_color(rgba(0xffffffcc))
+                                .text_color(rgba(ink_dim))
                                 .child(format::size(item.size)),
                         )
                         .child(
@@ -321,14 +382,14 @@ impl MailWindow {
                                 .items_center()
                                 .justify_center()
                                 .rounded_full()
-                                .bg(rgba(0xffffff26))
-                                .hover(|s| s.bg(rgba(0xffffff4d)))
+                                .bg(rgba(button))
+                                .hover(move |s| s.bg(rgba(button_hover)))
                                 .tooltip(tip("Save", th))
                                 .on_click(cx.listener(move |this, _, _, cx| {
                                     cx.stop_propagation();
                                     this.save_from_message(id, ix, &save_name, cx);
                                 }))
-                                .child(icon("download", 0xffffffff, 18.0)),
+                                .child(icon("download", ink, 18.0)),
                         ),
                 );
             div()
@@ -340,7 +401,7 @@ impl MailWindow {
                 .flex()
                 .flex_col()
                 .overflow_hidden()
-                .rounded(px(8.0))
+                .rounded(px(CARD_RADIUS))
                 .border_1()
                 .border_color(rgba(th.divider))
                 .cursor_pointer()
@@ -380,13 +441,46 @@ impl MailWindow {
                 .child(
                     div()
                         .mb(px(12.0))
-                        .text_size(px(13.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .text_color(rgba(th.text_dim))
-                        .child(if count == 1 {
-                            "One attachment".to_owned()
-                        } else {
-                            format!("{count} attachments")
+                        .h(px(32.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .justify_between()
+                        .child(
+                            div()
+                                .text_size(px(13.0))
+                                .font_weight(FontWeight::MEDIUM)
+                                .text_color(rgba(th.text_dim))
+                                .child(if count == 1 {
+                                    "One attachment".to_owned()
+                                } else {
+                                    format!("{count} attachments")
+                                }),
+                        )
+                        .when(count > 1, |row| {
+                            row.child(
+                                div()
+                                    .id(("attachments-save-all", id.0 as usize))
+                                    .h(px(32.0))
+                                    .px(px(12.0))
+                                    .flex()
+                                    .flex_row()
+                                    .items_center()
+                                    .gap(px(6.0))
+                                    .rounded_full()
+                                    .cursor_pointer()
+                                    .text_size(px(13.0))
+                                    .font_weight(FontWeight::MEDIUM)
+                                    .text_color(rgba(th.text_dim))
+                                    .hover(|s| s.bg(rgba(th.hover)))
+                                    .tooltip(tip("Save every attachment to a folder", th))
+                                    .on_click(cx.listener(move |this, _, _, cx| {
+                                        cx.stop_propagation();
+                                        this.save_all(id, indices.clone(), cx);
+                                    }))
+                                    .child(icon("download", th.text_dim, 18.0))
+                                    .child("Save all"),
+                            )
                         }),
                 )
                 .child(
@@ -543,6 +637,62 @@ impl MailWindow {
             this.update(cx, |this, cx| match file {
                 Some(file) => this.save_attachment(Arc::new(file), cx),
                 None => this.show_snackbar(format!("Could not read {name}"), None, cx),
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Asks for a folder (the desktop's folder chooser, else Downloads),
+    /// then saves attachments `indices` of message `id` there, each as its
+    /// own file. Files already there are kept: a new file of the same name
+    /// is saved as "name (1).ext".
+    fn save_all(&mut self, id: MessageId, indices: Vec<usize>, cx: &mut Context<Self>) {
+        let Some((raw, _)) = self.attachment_raw(id) else {
+            self.show_snackbar("This message is not downloaded.", None, cx);
+            return;
+        };
+        let prompt = cx.prompt_for_paths(PathPromptOptions {
+            files: false,
+            directories: true,
+            multiple: false,
+            prompt: Some("Save here".into()),
+        });
+        cx.spawn(async move |this, cx| {
+            let dir = match prompt.await {
+                Ok(Ok(Some(mut dirs))) if !dirs.is_empty() => dirs.swap_remove(0),
+                Ok(Ok(_)) => return,
+                // No folder chooser (no desktop portal): save to Downloads.
+                _ => download_dir(),
+            };
+            let total = indices.len();
+            let (saved, failed, dir) = cx
+                .background_executor()
+                .spawn(async move {
+                    let mut saved = 0;
+                    let mut failed = Vec::new();
+                    for index in indices {
+                        let Some(file) = katna_render::attachment_file(&raw, index) else {
+                            failed.push(format!("attachment {}", index + 1));
+                            continue;
+                        };
+                        match save_new(&dir, &safe_name(&file.name), &file.bytes) {
+                            Ok(_) => saved += 1,
+                            Err(err) => failed.push(format!("{}: {err}", file.name)),
+                        }
+                    }
+                    (saved, failed, dir)
+                })
+                .await;
+            this.update(cx, |this, cx| {
+                let place = folder_label(&dir);
+                let text = match failed.first() {
+                    None => format!("Saved {saved} files to {place}"),
+                    Some(first) => {
+                        format!("Saved {saved} of {total} files to {place}. Could not save {first}")
+                    }
+                };
+                this.show_snackbar(text, None, cx);
             })
             .ok();
         })
@@ -794,20 +944,53 @@ fn safe_name(name: &str) -> String {
     name
 }
 
-/// `dir/name`, or `dir/name (2)` and so on when that exists.
-fn unique_path(dir: &Path, name: &str) -> PathBuf {
-    let path = dir.join(name);
-    if !path.exists() {
-        return path;
-    }
+/// `dir/name`, then `dir/name (1)`, `dir/name (2)` and so on.
+fn candidates(dir: &Path, name: &str) -> impl Iterator<Item = PathBuf> {
     let (stem, ext) = match name.rsplit_once('.') {
-        Some((stem, ext)) if !stem.is_empty() => (stem, format!(".{ext}")),
-        _ => (name, String::new()),
+        Some((stem, ext)) if !stem.is_empty() => (stem.to_owned(), format!(".{ext}")),
+        _ => (name.to_owned(), String::new()),
     };
-    (2..)
-        .map(|n| dir.join(format!("{stem} ({n}){ext}")))
+    let dir = dir.to_owned();
+    std::iter::once(dir.join(name))
+        .chain((1..).map(move |n| dir.join(format!("{stem} ({n}){ext}"))))
+}
+
+/// The first of `candidates` that does not exist yet.
+fn unique_path(dir: &Path, name: &str) -> PathBuf {
+    candidates(dir, name)
         .find(|p| !p.exists())
-        .unwrap_or(path)
+        .unwrap_or_else(|| dir.join(name))
+}
+
+/// Writes `bytes` to a new file `dir/name`, or `dir/name (1)` and so on,
+/// never replacing a file that is there (even one made meanwhile).
+fn save_new(dir: &Path, name: &str, bytes: &[u8]) -> std::io::Result<PathBuf> {
+    use std::io::{ErrorKind, Write};
+    for path in candidates(dir, name).take(10_000) {
+        match std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&path)
+        {
+            Ok(mut file) => return file.write_all(bytes).map(|()| path),
+            Err(err) if err.kind() == ErrorKind::AlreadyExists => continue,
+            Err(err) => return Err(err),
+        }
+    }
+    Err(ErrorKind::AlreadyExists.into())
+}
+
+/// How a toast names folder `dir`: "Downloads" for the download folder,
+/// else its path.
+fn folder_label(dir: &Path) -> String {
+    if dir == download_dir() {
+        dir.file_name().map_or_else(
+            || dir.display().to_string(),
+            |n| n.to_string_lossy().into_owned(),
+        )
+    } else {
+        dir.display().to_string()
+    }
 }
 
 /// The user's download folder (`XDG_DOWNLOAD_DIR` of `user-dirs.dirs`),
@@ -924,11 +1107,25 @@ tmpfs /run/user/1000 tmpfs rw,nosuid,mode=700 0 0\n\
         let dir = tempfile::tempdir().unwrap();
         assert_eq!(unique_path(dir.path(), "a.pdf"), dir.path().join("a.pdf"));
         std::fs::write(dir.path().join("a.pdf"), b"1").unwrap();
-        std::fs::write(dir.path().join("a (2).pdf"), b"2").unwrap();
+        std::fs::write(dir.path().join("a (1).pdf"), b"2").unwrap();
         assert_eq!(
             unique_path(dir.path(), "a.pdf"),
-            dir.path().join("a (3).pdf")
+            dir.path().join("a (2).pdf")
         );
+    }
+
+    #[test]
+    fn saving_all_keeps_files_already_there() {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(dir.path().join("a.pdf"), b"old").unwrap();
+        let first = save_new(dir.path(), "a.pdf", b"new").unwrap();
+        let second = save_new(dir.path(), "a.pdf", b"newer").unwrap();
+        let bare = save_new(dir.path(), "README", b"x").unwrap();
+        assert_eq!(first, dir.path().join("a (1).pdf"));
+        assert_eq!(second, dir.path().join("a (2).pdf"));
+        assert_eq!(bare, dir.path().join("README"));
+        assert_eq!(std::fs::read(dir.path().join("a.pdf")).unwrap(), b"old");
+        assert_eq!(std::fs::read(&second).unwrap(), b"newer");
     }
 
     #[test]

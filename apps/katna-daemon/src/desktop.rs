@@ -3,7 +3,7 @@
 //! The daemon's place on the desktop (`docs/ARCHITECTURE.md` §15.2): the
 //! Inbox unread count on Katna Mail's taskbar or dock icon, and the tray
 //! icon with its badge and menu. Both follow `[general]` `unread_badge` and
-//! `tray_icon`, and stay up while the app is closed.
+//! `show_in_tray`, and stay up while the app is closed.
 
 use std::time::Duration;
 
@@ -72,7 +72,8 @@ fn tray_menu() -> Vec<MenuItem> {
         MenuItem::action("Open _Inbox", app_action::OPEN_INBOX).icon("mail-folder-inbox"),
         MenuItem::action("_New Message", app_action::COMPOSE).icon("mail-message-new"),
         MenuItem::Separator,
-        MenuItem::action("_Preferences", app_action::PREFERENCES).icon("preferences-system"),
+        MenuItem::action("_Preferences", app_action::PREFERENCES)
+            .icon("preferences-system-symbolic"),
         MenuItem::Separator,
         MenuItem::action("_Quit", app_action::QUIT).icon("application-exit"),
     ]
@@ -153,7 +154,7 @@ pub(crate) async fn run(
     }
 }
 
-/// Shows or hides the tray icon as `general.tray_icon` says; `true` when
+/// Shows or hides the tray icon as `general.show_in_tray` says; `true` when
 /// it just appeared.
 async fn follow_setting(
     connection: &zbus::Connection,
@@ -161,11 +162,11 @@ async fn follow_setting(
     tray: &mut Option<Tray>,
     general: &General,
 ) -> bool {
-    if general.tray_icon && tray.is_none() {
+    if general.show_in_tray && tray.is_none() {
         *tray = show_tray(connection, handle).await;
         return tray.is_some();
     }
-    if !general.tray_icon
+    if !general.show_in_tray
         && let Some(shown) = tray.take()
         && let Err(err) = shown.hide().await
     {

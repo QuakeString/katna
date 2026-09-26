@@ -139,7 +139,7 @@ impl EventEmitter<InputEvent> for TextArea {}
 impl TextArea {
     pub fn new(placeholder: impl Into<SharedString>, cx: &mut Context<Self>) -> Self {
         Self {
-            focus_handle: cx.focus_handle(),
+            focus_handle: cx.focus_handle().tab_stop(true),
             content: SharedString::default(),
             placeholder: placeholder.into(),
             accent: gpui::blue(),

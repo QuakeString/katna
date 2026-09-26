@@ -20,12 +20,16 @@
 //!    [`REFRESH_PER_SYNC`] per run). Likewise their structure for those
 //!    with attachments but no attachment list (stored before lists were
 //!    read), so the message list can show their files.
-//! 6. Gmail (`X-GM-EXT-1`), in every folder: Gmail's own categories, with
+//! 6. Gmail messages stored before schema v4, one row per label: their
+//!    `X-GM-MSGID`, so copies of one message become one row
+//!    ([`MailBatch::adopt_gm_msgid`](katna_store::MailBatch::adopt_gm_msgid)).
+//!    Once per folder; nothing changes on the server.
+//! 7. Gmail (`X-GM-EXT-1`), in every folder: Gmail's own categories, with
 //!    one `X-GM-RAW "category:…"` search per tab; the first time for every
 //!    message, then for new ones. Every folder, because each server copy
 //!    is its own message: the same mail in the inbox and in All Mail must
 //!    land in the same tab.
-//! 7. Save UIDVALIDITY, HIGHESTMODSEQ, UIDNEXT and the message count seen
+//! 8. Save UIDVALIDITY, HIGHESTMODSEQ, UIDNEXT and the message count seen
 //!    at SELECT. Changes made during the sync have higher mod-sequences and
 //!    UIDs, so the next run sees them, and so does [`stale_folders`].
 //!
@@ -39,7 +43,7 @@ use std::collections::{HashMap, HashSet};
 
 use katna_core::{AccountId, MailCategory};
 use katna_store::{
-    Backfill, FolderId, MessageFlags, NewAttachment, NewParticipant, RemoteMessage, Store,
+    Adopted, Backfill, FolderId, MessageFlags, NewAttachment, NewParticipant, RemoteMessage, Store,
     StoredFolder,
 };
 use serde::{Deserialize, Serialize};
@@ -61,8 +65,8 @@ pub struct FolderReport {
     /// UIDVALIDITY changed, so the folder was downloaded again.
     pub reset: bool,
     /// Messages stored before threading that got their thread or category
-    /// from headers fetched again, plus inbox messages whose Gmail
-    /// category changed.
+    /// from headers fetched again, inbox messages whose Gmail category
+    /// changed, and Gmail copies merged into one message.
     pub backfilled: usize,
 }
 
@@ -87,6 +91,10 @@ struct FolderState {
     /// then on only new messages are asked about.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     gmail_categories: bool,
+    /// Every message of this folder has its Gmail message ID, or the
+    /// server is not Gmail (step 6 is done).
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    gmail_msgids: bool,
     /// UIDNEXT and message count at the last sync, to tell from a STATUS
     /// whether the folder changed since.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -291,7 +299,14 @@ pub async fn sync_folder<B: MailBackend>(
     report.backfilled += refresh_headers(backend, store, folder).await?;
     report.backfilled += refresh_structures(backend, store, folder).await?;
 
-    // 6. Gmail's own categories: every message the first time, then new
+    // 6. Gmail copies stored before schema v4, once.
+    if !state.gmail_msgids {
+        let (merged, done) = merge_gmail_copies(backend, store, account, folder).await?;
+        report.backfilled += merged;
+        state.gmail_msgids = done;
+    }
+
+    // 7. Gmail's own categories: every message the first time, then new
     //    ones. Elsewhere `gmail_search` answers `None` without asking.
     let first = if !state.gmail_categories {
         Some(1)
@@ -305,7 +320,7 @@ pub async fn sync_folder<B: MailBackend>(
         state.gmail_categories = true;
     }
 
-    // 7. Where to continue next time.
+    // 8. Where to continue next time.
     state.uid_next = status.uid_next;
     state.exists = Some(status.exists);
     let state = serde_json::to_string(&state).expect("plain struct serializes");
@@ -320,6 +335,53 @@ pub async fn sync_folder<B: MailBackend>(
     batch.commit()?;
     tracing::debug!(?report, "folder synced");
     Ok(report)
+}
+
+/// UIDs one `X-GM-MSGID` fetch asks for.
+const GMAIL_ID_CHUNK: u32 = 1_000;
+
+/// Gives messages stored without Gmail's message ID (before schema v4)
+/// their ID, merging copies of one message stored under several labels.
+/// Returns how many copies were merged, and whether every message has its
+/// ID now (or the server is not Gmail).
+async fn merge_gmail_copies<B: MailBackend>(
+    backend: &mut B,
+    store: &mut Store,
+    account: AccountId,
+    folder: FolderId,
+) -> Result<(usize, bool)> {
+    let (mut merged, mut done) = (0, true);
+    let mut after = 0;
+    loop {
+        let uids = store.uids_without_gm_msgid(folder, after, GMAIL_ID_CHUNK)?;
+        let Some(&last) = uids.last() else {
+            break;
+        };
+        let Some(ids) = backend.gmail_message_ids(&uids).await? else {
+            return Ok((merged, true));
+        };
+        let mut batch = store.mail_batch()?;
+        for uid in uids {
+            let Some(&gm_msgid) = ids.get(&uid) else {
+                continue;
+            };
+            match batch.adopt_gm_msgid(account, folder, uid, gm_msgid)? {
+                Adopted::Merged(_) => merged += 1,
+                Adopted::Busy => done = false,
+                Adopted::Set(_) | Adopted::Unchanged => {}
+            }
+        }
+        batch.commit()?;
+        after = last;
+    }
+    if merged > 0 {
+        tracing::info!(
+            folder = folder.0,
+            merged,
+            "merged Gmail copies stored before v4"
+        );
+    }
+    Ok((merged, done))
 }
 
 /// Fetches the headers of messages that have no thread or category yet

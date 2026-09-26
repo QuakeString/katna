@@ -4,9 +4,9 @@
 
 use std::process::ExitCode;
 
-use futures_lite::StreamExt;
+use futures_lite::{FutureExt, StreamExt};
 use katna_core::{Config, Paths};
-use katna_daemon::{Instance, install, secrets::Secrets};
+use katna_daemon::{Ended, Instance, install, secrets::Secrets, update};
 use katna_sync::worker::WorkerConfig;
 
 const USAGE: &str = "\
@@ -81,11 +81,25 @@ fn run() -> ExitCode {
             Err(err) => tracing::warn!(%err, "no system bus; not watching suspend and network"),
         }
         tracing::info!("katna-daemon running");
+        // Set when a package update replaced this binary.
+        let updated = std::cell::OnceCell::new();
         let stop = async {
             let signal = signals.next().await;
             tracing::info!(?signal, "stopping");
-        };
-        instance.serve(stop).await;
+        }
+        .or(async {
+            let _ = updated.set(update::replaced().await);
+        });
+        let ended = instance.serve(stop).await;
+        if let (Ended::Stopped, Some(binary)) = (ended, updated.get()) {
+            tracing::info!("starting the updated katna-daemon");
+            // Only returns on failure; systemd then starts it again.
+            return fail(format!(
+                "starting {}: {}",
+                binary.display(),
+                update::restart(binary)
+            ));
+        }
         ExitCode::SUCCESS
     })
 }
