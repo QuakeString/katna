@@ -16,6 +16,7 @@ mod add_account;
 mod apps;
 mod colors;
 mod compose;
+mod dark;
 mod list;
 mod nav;
 mod reader;

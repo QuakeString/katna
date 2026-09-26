@@ -842,8 +842,13 @@ is the sanitizer: scripts, style sheets, forms, frames, objects, SVG and
 unknown elements never reach the tree, hidden preheaders are dropped, link
 targets are limited to `http`, `https` and `mailto`, and the tree is capped
 in depth and size. `cid:` and `data:` images come from the message.
-A message that sets its own colors is drawn on its own light page in both
-themes; one that does not follows the app's colors. A `text/plain` part
+In a light theme a message that sets its own colors is drawn on its own
+page; one that does not follows the app's colors. In a dark theme the
+message's colors are remapped (`window/dark.rs`): white becomes the reading
+pane, other light backgrounds become dark ones of the same hue as dark by
+eye as they were light, dark backgrounds stay, and text that falls under
+3:1 contrast on its new background has its lightness flipped and raised to
+4.5:1. Images are not changed. A `text/plain` part
 that is really an HTML document is rendered as HTML.
 
 Remote content is blocked by default. Tracking pixels (tiny images and

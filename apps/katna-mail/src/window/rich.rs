@@ -17,6 +17,7 @@ use katna_render::html::{
     TextBlock,
 };
 
+use super::dark::Dark;
 use super::remote::Fetch;
 use crate::theme::Theme;
 use crate::widgets::icon;
@@ -44,6 +45,10 @@ pub(super) struct Painter<'a> {
     remote: bool,
     mono: Option<SharedString>,
     next_id: usize,
+    /// Set in a dark theme: the message's colors are remapped.
+    dark: Option<Dark>,
+    /// The background under what is being drawn, as drawn.
+    bg: u32,
 }
 
 impl<'a> Painter<'a> {
@@ -66,13 +71,44 @@ impl<'a> Painter<'a> {
             remote,
             mono,
             next_id: 0,
+            dark: th.dark.then(|| Dark::new(th.surface)),
+            bg: th.surface,
         }
     }
 
-    /// The whole message. A message that sets its own colors is drawn on
-    /// its own light page, whatever the app's theme, as its sender meant.
+    /// A background color as drawn.
+    fn fill(&self, color: u32) -> u32 {
+        match &self.dark {
+            Some(dark) => dark.background(color),
+            None => color,
+        }
+    }
+
+    /// A text color as drawn on `bg`.
+    fn ink_on(&self, color: u32, bg: u32) -> u32 {
+        match &self.dark {
+            Some(dark) => dark.text(color, bg),
+            None => color,
+        }
+    }
+
+    /// Makes `color` (as drawn) the background of what follows, unless it
+    /// is too faint to count; returns the one to restore.
+    fn enter(&mut self, color: u32) -> u32 {
+        let outer = self.bg;
+        if color & 0xff >= 0x80 {
+            self.bg = color;
+        }
+        outer
+    }
+
+    /// The whole message. In a light theme a message that sets its own
+    /// colors is drawn on its own page, as its sender meant; in a dark theme
+    /// its colors are remapped to dark ones ([`Dark`]).
     pub(super) fn document(mut self, doc: &Document) -> AnyElement {
-        let page = if doc.styled || doc.background.is_some() {
+        let page = if self.dark.is_some() {
+            doc.background.map(|bg| self.fill(bg))
+        } else if doc.styled || doc.background.is_some() {
             self.ink = Ink {
                 text: 0x222222ff,
                 link: 0x1a0dabff,
@@ -84,6 +120,9 @@ impl<'a> Painter<'a> {
         } else {
             None
         };
+        if let Some(page) = page {
+            self.enter(page);
+        }
         let children = self.blocks(&doc.blocks);
         div()
             .w_full()
@@ -127,10 +166,13 @@ impl<'a> Painter<'a> {
     fn boxed(&mut self, b: &BoxBlock, cell: bool) -> AnyElement {
         let s = &b.style;
         let [top, right, bottom, left] = s.padding.map(|p| px(p.min(96.0)));
+        let background = s.background.map(|bg| self.fill(bg));
+        let outer = self.enter(background.unwrap_or(0));
         let children: Vec<AnyElement> = match &b.kind {
             BoxKind::Row => b.children.iter().map(|c| self.cell(c)).collect(),
             _ => self.blocks(&b.children),
         };
+        self.bg = outer;
         let mut d = div()
             .min_w_0()
             .flex()
@@ -144,7 +186,7 @@ impl<'a> Painter<'a> {
             BoxKind::Row => d.flex_row().items_start(),
             _ => d.flex_col(),
         };
-        if let Some(bg) = s.background {
+        if let Some(bg) = background {
             d = d.bg(rgba(bg));
         }
         if let Some((width, color)) = s.border {
@@ -155,7 +197,7 @@ impl<'a> Painter<'a> {
             } else {
                 d.border_4()
             }
-            .border_color(rgba(color));
+            .border_color(rgba(self.fill(color)));
         }
         if s.radius > 0.0 {
             d = d.rounded(px(s.radius.min(48.0)));
@@ -285,12 +327,17 @@ impl<'a> Painter<'a> {
             let st = &run.style;
             size = size.max(st.size);
             all_mono &= st.monospace;
-            let color = st.color.or(st.link.as_ref().map(|_| self.ink.link));
+            let background = st.background.map(|c| self.fill(c));
+            let under = background.filter(|c| c & 0xff >= 0x80).unwrap_or(self.bg);
+            let color = match st.color {
+                Some(c) => Some(self.ink_on(c, under)),
+                None => st.link.as_ref().map(|_| self.ink.link),
+            };
             let style = HighlightStyle {
                 color: color.map(|c| rgba(c).into()),
                 font_weight: st.bold.then_some(FontWeight::BOLD),
                 font_style: st.italic.then_some(FontStyle::Italic),
-                background_color: st.background.map(|c| rgba(c).into()),
+                background_color: background.map(|c| rgba(c).into()),
                 underline: st.underline.then(|| UnderlineStyle {
                     thickness: px(1.0),
                     color: None,
