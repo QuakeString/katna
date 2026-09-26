@@ -18,7 +18,7 @@ use gpui::{
 };
 use katna_core::config::{FileGroup, OpenIn};
 use katna_preview::Kind;
-use katna_preview::image::{Frame, RgbaImage};
+use katna_preview::image::{Frame, RgbaImage, imageops};
 use katna_render::{Attachment, AttachmentFile};
 use katna_store::MessageId;
 
@@ -34,6 +34,9 @@ const CARD_WIDTH: f32 = 180.0;
 const THUMB_HEIGHT: f32 = 84.0;
 /// Thumbnails are drawn at twice the card's size, sharp on HiDPI screens.
 const THUMB_PIXELS: (u32, u32) = (2 * CARD_WIDTH as u32, 2 * THUMB_HEIGHT as u32);
+/// The card's corner radius; its contents are rounded one pixel less, to
+/// sit inside its border.
+const CARD_RADIUS: f32 = 8.0;
 /// Files handed to another app are removed after this long.
 const OPENED_KEEP: Duration = Duration::from_secs(24 * 60 * 60);
 
@@ -58,10 +61,18 @@ impl Item {
     }
 }
 
+/// A card's thumbnail, and a blurred copy of it shown like frosted glass
+/// behind the name and Save button when the pointer is over the card.
+#[derive(Clone)]
+struct Thumb {
+    sharp: Arc<RenderImage>,
+    frosted: Arc<RenderImage>,
+}
+
 /// The window's attachment state.
 #[derive(Default)]
 pub(super) struct Files {
-    thumbs: HashMap<(MessageId, usize), Arc<RenderImage>>,
+    thumbs: HashMap<(MessageId, usize), Thumb>,
     /// Messages whose thumbnails were made or are being made.
     asked: HashMap<MessageId, Option<Task<()>>>,
     /// Bitmaps no longer drawn, freed at the next frame.
@@ -85,8 +96,8 @@ impl Files {
             .copied()
             .collect();
         for key in gone {
-            if let Some(image) = self.thumbs.remove(&key) {
-                self.released.push(image);
+            if let Some(thumb) = self.thumbs.remove(&key) {
+                self.released.extend([thumb.sharp, thumb.frosted]);
             }
         }
     }
@@ -98,6 +109,15 @@ pub(super) fn bitmap(mut image: RgbaImage) -> Arc<RenderImage> {
         pixel.0.swap(0, 2);
     }
     Arc::new(RenderImage::new([Frame::new(image)]))
+}
+
+/// `thumb` made small and blurred. Drawn stretched over the whole card,
+/// it reads as the thumbnail seen through frosted glass (GPUI has no
+/// backdrop blur).
+fn frosted(thumb: &RgbaImage) -> RgbaImage {
+    let (w, h) = thumb.dimensions();
+    let small = imageops::thumbnail(thumb, (w / 4).max(1), (h / 4).max(1));
+    imageops::fast_blur(&small, 3.0)
 }
 
 /// Where a list chip's attachment is among the message's parsed ones: the
@@ -208,11 +228,16 @@ impl MailWindow {
                 continue;
             };
             let task = cx.spawn(async move |this, cx| {
-                let thumbs: Vec<(usize, Arc<RenderImage>)> = cx
+                let thumbs: Vec<(usize, Thumb)> = cx
                     .background_executor()
                     .spawn(async move {
                         list.into_iter()
-                            .filter_map(|(ix, kind)| Some((ix, bitmap(thumbnail(&raw, ix, kind)?))))
+                            .filter_map(|(ix, kind)| {
+                                let sharp = thumbnail(&raw, ix, kind)?;
+                                let frosted = bitmap(frosted(&sharp));
+                                let sharp = bitmap(sharp);
+                                Some((ix, Thumb { sharp, frosted }))
+                            })
                             .collect()
                     })
                     .await;
@@ -225,7 +250,9 @@ impl MailWindow {
                             .extend(thumbs.into_iter().map(|(ix, t)| ((id, ix), t)));
                     } else {
                         // The message closed meanwhile.
-                        files.released.extend(thumbs.into_iter().map(|(_, t)| t));
+                        files
+                            .released
+                            .extend(thumbs.into_iter().flat_map(|(_, t)| [t.sharp, t.frosted]));
                     }
                     cx.notify();
                 })
@@ -264,10 +291,13 @@ impl MailWindow {
             let group = SharedString::from(format!("attachment-{}-{ix}", id.0));
             let thumb = self.files.thumbs.get(&(id, ix)).cloned();
             let name = item.name.clone();
+            let inner = px(CARD_RADIUS - 1.0);
+            let frost = thumb.as_ref().map(|t| t.frosted.clone());
             let top = match thumb {
-                Some(image) => div().size_full().child(
-                    img(ImageSource::Render(image))
+                Some(thumb) => div().size_full().child(
+                    img(ImageSource::Render(thumb.sharp))
                         .size_full()
+                        .rounded_t(inner)
                         .object_fit(ObjectFit::Cover),
                 ),
                 None => div()
@@ -279,6 +309,16 @@ impl MailWindow {
                     .child(kind_badge(item.kind, 36.0)),
             };
             let save_name = name.clone();
+            // Frosted glass in the theme's own color: the blurred thumbnail
+            // under a veil of the card's surface, text in the theme's ink.
+            // Without a thumbnail there is nothing to blur, so the veil
+            // is thicker and hides the file-type badge under it.
+            let veil = (th.surface & 0xffff_ff00) | if frost.is_some() { 0xa6 } else { 0xf0 };
+            let (ink, ink_dim, button, button_hover) = if th.dark {
+                (0xffffffff, 0xffffffcc, 0xffffff26, 0xffffff4d)
+            } else {
+                (th.text, th.text_dim, 0x0000001a, 0x00000033)
+            };
             let overlay = div()
                 .absolute()
                 .top_0()
@@ -288,12 +328,31 @@ impl MailWindow {
                 // `display` on hover between layout and paint.
                 .opacity(0.0)
                 .group_hover(group.clone(), |s| s.opacity(1.0))
+                .rounded(inner)
+                .overflow_hidden()
+                .children(frost.map(|image| {
+                    img(ImageSource::Render(image))
+                        .absolute()
+                        .top_0()
+                        .left_0()
+                        .size_full()
+                        .rounded(inner)
+                        .object_fit(ObjectFit::Fill)
+                }))
+                .child(
+                    div()
+                        .absolute()
+                        .top_0()
+                        .left_0()
+                        .size_full()
+                        .rounded(inner)
+                        .bg(rgba(veil)),
+                )
                 .flex()
                 .flex_col()
                 .justify_between()
                 .p(px(10.0))
-                .bg(rgba(0x202124eb))
-                .text_color(rgba(0xffffffff))
+                .text_color(rgba(ink))
                 .child(
                     div()
                         .text_size(px(13.0))
@@ -310,7 +369,7 @@ impl MailWindow {
                         .child(
                             div()
                                 .text_size(px(12.0))
-                                .text_color(rgba(0xffffffcc))
+                                .text_color(rgba(ink_dim))
                                 .child(format::size(item.size)),
                         )
                         .child(
@@ -321,14 +380,14 @@ impl MailWindow {
                                 .items_center()
                                 .justify_center()
                                 .rounded_full()
-                                .bg(rgba(0xffffff26))
-                                .hover(|s| s.bg(rgba(0xffffff4d)))
+                                .bg(rgba(button))
+                                .hover(move |s| s.bg(rgba(button_hover)))
                                 .tooltip(tip("Save", th))
                                 .on_click(cx.listener(move |this, _, _, cx| {
                                     cx.stop_propagation();
                                     this.save_from_message(id, ix, &save_name, cx);
                                 }))
-                                .child(icon("download", 0xffffffff, 18.0)),
+                                .child(icon("download", ink, 18.0)),
                         ),
                 );
             div()
@@ -340,7 +399,7 @@ impl MailWindow {
                 .flex()
                 .flex_col()
                 .overflow_hidden()
-                .rounded(px(8.0))
+                .rounded(px(CARD_RADIUS))
                 .border_1()
                 .border_color(rgba(th.divider))
                 .cursor_pointer()
