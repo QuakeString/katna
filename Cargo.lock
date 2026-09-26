@@ -277,6 +277,8 @@ dependencies = [
 name = "katna-import"
 version = "0.0.0"
 dependencies = [
+ "katna-core",
+ "katna-store",
  "mail-parser",
  "tempfile",
 ]

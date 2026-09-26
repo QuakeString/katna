@@ -229,7 +229,7 @@ change signal arrives (§14.2).
 ### 5.4 Shared PIM schema (sketch)
 
 ```sql
-account          (id, kind, display_name, address, settings_json)  -- kind: imap|jmap|pop3|caldav|carddav
+account          (id, kind, display_name, address, settings_json)  -- kind: imap|jmap|pop3|caldav|carddav|local
 organization     (id, name, kind, color, notes, notify_policy)  -- kind: customer|vendor|partner|other
 org_alias        (org_id, alias)
 org_rule         (org_id, rule_kind, value)               -- domain | subdomain | address

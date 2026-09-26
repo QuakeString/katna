@@ -5,7 +5,7 @@
 CREATE TABLE account (
     id            INTEGER PRIMARY KEY,
     kind          TEXT    NOT NULL
-                  CHECK (kind IN ('imap', 'jmap', 'pop3', 'caldav', 'carddav')),
+                  CHECK (kind IN ('imap', 'jmap', 'pop3', 'caldav', 'carddav', 'local')),
     display_name  TEXT    NOT NULL,
     address       TEXT    NOT NULL,
     settings_json TEXT    NOT NULL DEFAULT '{}'

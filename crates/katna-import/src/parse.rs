@@ -27,29 +27,7 @@ pub struct ParsedMessage {
 }
 
 /// Role of an address in a message (`participant.role`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Role {
-    From,
-    To,
-    Cc,
-    Bcc,
-    ReplyTo,
-    Sender,
-}
-
-impl Role {
-    /// Name stored in `participant.role`.
-    pub fn as_str(self) -> &'static str {
-        match self {
-            Role::From => "from",
-            Role::To => "to",
-            Role::Cc => "cc",
-            Role::Bcc => "bcc",
-            Role::ReplyTo => "reply_to",
-            Role::Sender => "sender",
-        }
-    }
-}
+pub use katna_store::ParticipantRole as Role;
 
 /// One address of a message (`participant` row).
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -5,11 +5,12 @@
 //!
 //! The importer reads messages ([`maildir`], [`mbox`]), extracts the fields
 //! the store indexes ([`parse`]) and hands each message to a [`MessageSink`],
-//! committing in batches. The sink is the store; tests use an in-memory one.
+//! in batches. The sink is the store ([`StoreSink`]); tests use an in-memory one.
 
 pub mod maildir;
 pub mod mbox;
 pub mod parse;
+pub mod store;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -18,6 +19,7 @@ use std::io::{self, BufReader};
 use std::path::Path;
 
 pub use parse::{ParsedMessage, Participant, Role, parse_message};
+pub use store::StoreSink;
 
 /// IMAP system flags of a message, as far as local formats record them.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
@@ -60,21 +62,24 @@ impl Flags {
     }
 }
 
-/// A message on its way into the store.
-#[derive(Debug, Clone, Copy)]
-pub struct IncomingMessage<'a> {
+/// A parsed message waiting to be written.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct IncomingMessage {
     /// Folder path with `/` separators (`allen-p/inbox`, `INBOX`, `Sent`).
-    pub folder: &'a str,
+    pub folder: String,
     pub flags: Flags,
     /// The message exactly as read from disk.
-    pub raw: &'a [u8],
-    pub parsed: &'a ParsedMessage,
+    pub raw: Vec<u8>,
+    pub parsed: ParsedMessage,
 }
 
-/// Whether a message was new to the store.
+/// What happened to one message of a batch.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Added {
     New,
+    /// The same message was already stored in another folder and is now in
+    /// this one too (Enron has many: `all_documents`, `discussion_threads`).
+    Copy,
     /// The same message is already in this folder (re-running an import).
     Duplicate,
 }
@@ -83,11 +88,9 @@ pub enum Added {
 pub trait MessageSink {
     type Error: StdError + Send + Sync + 'static;
 
-    /// Adds one message. It only has to be durable after [`commit`](Self::commit).
-    fn add(&mut self, message: IncomingMessage<'_>) -> Result<Added, Self::Error>;
-
-    /// Makes all messages added so far durable.
-    fn commit(&mut self) -> Result<(), Self::Error>;
+    /// Writes a batch durably, all or nothing. Returns one result per message,
+    /// in order.
+    fn write(&mut self, batch: &[IncomingMessage]) -> Result<Vec<Added>, Self::Error>;
 }
 
 /// Import settings.
@@ -119,7 +122,10 @@ pub struct Skipped {
 /// Result of an import.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Stats {
+    /// New messages.
     pub imported: u64,
+    /// Messages already stored in another folder (see [`Added::Copy`]).
+    pub copies: u64,
     pub duplicates: u64,
     /// Raw bytes of imported messages.
     pub bytes: u64,
@@ -131,7 +137,7 @@ pub struct Stats {
 pub enum Error {
     /// The source could not be opened.
     Source(io::Error),
-    /// The store failed; messages added since the last commit are lost.
+    /// The store failed; the batch being written is lost, earlier ones are kept.
     Sink(Box<dyn StdError + Send + Sync>),
 }
 
@@ -189,7 +195,7 @@ pub fn import_maildir<S: MessageSink>(
             }
         }
         match fs::read(&entry.path) {
-            Ok(raw) => run.add(source, &entry.folder, entry.flags, &raw)?,
+            Ok(raw) => run.add(source, entry.folder, entry.flags, raw)?,
             Err(err) => run.skip(source, err.to_string()),
         }
     }
@@ -215,7 +221,7 @@ pub fn import_mbox<S: MessageSink>(
                     format!("larger than {} bytes", options.max_message_size),
                 );
             }
-            Ok(entry) => run.add(source, folder, entry.flags, &entry.raw)?,
+            Ok(entry) => run.add(source, folder.to_owned(), entry.flags, entry.raw)?,
             // A read error mid-file leaves the reader in an unknown position.
             Err(err) => return Err(Error::Source(err)),
         }
@@ -223,21 +229,22 @@ pub fn import_mbox<S: MessageSink>(
     run.finish()
 }
 
-/// Shared bookkeeping of one import: counting, batching, progress.
+/// Shared bookkeeping of one import: batching, counting, progress.
 struct Run<'a, S, P> {
     sink: &'a mut S,
     batch_size: usize,
-    in_batch: usize,
+    batch: Vec<IncomingMessage>,
     stats: Stats,
     progress: P,
 }
 
 impl<'a, S: MessageSink, P: FnMut(&Stats)> Run<'a, S, P> {
     fn new(sink: &'a mut S, options: &Options, progress: P) -> Self {
+        let batch_size = options.batch_size.max(1);
         Self {
             sink,
-            batch_size: options.batch_size.max(1),
-            in_batch: 0,
+            batch_size,
+            batch: Vec::with_capacity(batch_size),
             stats: Stats::default(),
             progress,
         }
@@ -247,48 +254,55 @@ impl<'a, S: MessageSink, P: FnMut(&Stats)> Run<'a, S, P> {
         self.stats.skipped.push(Skipped { source, reason });
     }
 
-    fn add(&mut self, source: String, folder: &str, flags: Flags, raw: &[u8]) -> Result<(), Error> {
-        let Some(parsed) = parse_message(raw) else {
+    fn add(
+        &mut self,
+        source: String,
+        folder: String,
+        flags: Flags,
+        raw: Vec<u8>,
+    ) -> Result<(), Error> {
+        let Some(parsed) = parse_message(&raw) else {
             self.skip(source, "not an email message".into());
             return Ok(());
         };
-        let message = IncomingMessage {
+        self.batch.push(IncomingMessage {
             folder,
             flags,
             raw,
-            parsed: &parsed,
-        };
-        match self.sink.add(message).map_err(sink_error)? {
-            Added::New => {
-                self.stats.imported += 1;
-                self.stats.bytes += raw.len() as u64;
-            }
-            Added::Duplicate => self.stats.duplicates += 1,
-        }
-        self.in_batch += 1;
-        if self.in_batch >= self.batch_size {
-            self.commit()?;
+            parsed,
+        });
+        if self.batch.len() >= self.batch_size {
+            self.flush()?;
         }
         Ok(())
     }
 
-    fn commit(&mut self) -> Result<(), Error> {
-        self.sink.commit().map_err(sink_error)?;
-        self.in_batch = 0;
+    fn flush(&mut self) -> Result<(), Error> {
+        let results = self
+            .sink
+            .write(&self.batch)
+            .map_err(|err| Error::Sink(Box::new(err)))?;
+        for (message, added) in self.batch.iter().zip(results) {
+            match added {
+                Added::New => {
+                    self.stats.imported += 1;
+                    self.stats.bytes += message.raw.len() as u64;
+                }
+                Added::Copy => self.stats.copies += 1,
+                Added::Duplicate => self.stats.duplicates += 1,
+            }
+        }
+        self.batch.clear();
         (self.progress)(&self.stats);
         Ok(())
     }
 
     fn finish(mut self) -> Result<Stats, Error> {
-        if self.in_batch > 0 {
-            self.commit()?;
+        if !self.batch.is_empty() {
+            self.flush()?;
         }
         Ok(self.stats)
     }
-}
-
-fn sink_error<E: StdError + Send + Sync + 'static>(err: E) -> Error {
-    Error::Sink(Box::new(err))
 }
 
 #[cfg(test)]
@@ -300,34 +314,33 @@ mod tests {
     /// Keeps messages in memory; duplicates are the same bytes in the same folder.
     #[derive(Default)]
     struct MemorySink {
-        pending: Vec<(String, Flags, Option<String>)>,
         committed: Vec<(String, Flags, Option<String>)>,
         seen: HashSet<(String, Vec<u8>)>,
-        commits: usize,
+        batches: usize,
     }
 
     impl MessageSink for MemorySink {
         type Error = Infallible;
 
-        fn add(&mut self, message: IncomingMessage<'_>) -> Result<Added, Infallible> {
-            if !self
-                .seen
-                .insert((message.folder.to_owned(), message.raw.to_vec()))
-            {
-                return Ok(Added::Duplicate);
-            }
-            self.pending.push((
-                message.folder.to_owned(),
-                message.flags,
-                message.parsed.subject.clone(),
-            ));
-            Ok(Added::New)
-        }
-
-        fn commit(&mut self) -> Result<(), Infallible> {
-            self.committed.append(&mut self.pending);
-            self.commits += 1;
-            Ok(())
+        fn write(&mut self, batch: &[IncomingMessage]) -> Result<Vec<Added>, Infallible> {
+            self.batches += 1;
+            Ok(batch
+                .iter()
+                .map(|message| {
+                    if !self
+                        .seen
+                        .insert((message.folder.clone(), message.raw.clone()))
+                    {
+                        return Added::Duplicate;
+                    }
+                    self.committed.push((
+                        message.folder.clone(),
+                        message.flags,
+                        message.parsed.subject.clone(),
+                    ));
+                    Added::New
+                })
+                .collect())
         }
     }
 
@@ -411,7 +424,7 @@ mod tests {
             ]
         );
         assert_eq!(progress, [2, 4, 5]);
-        assert_eq!(sink.commits, 3);
+        assert_eq!(sink.batches, 3);
         assert_eq!(sink.committed.len(), 5);
         assert_eq!(sink.committed[0].0, "lay-k/inbox");
         assert_eq!(sink.committed[4].2.as_deref(), Some("message 5"));

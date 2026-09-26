@@ -9,6 +9,7 @@ pub mod blob;
 mod db;
 pub mod error;
 pub mod journal;
+pub mod mail;
 
 use katna_core::{Account, AccountId, AccountKind, Paths};
 use rusqlite::{Connection, TransactionBehavior, params};
@@ -17,6 +18,10 @@ pub use blob::{BlobHash, BlobStore};
 pub use db::{DbKind, Mode};
 pub use error::{Error, Result};
 pub use journal::{Change, ChangeOp, ObjectKind};
+pub use mail::{
+    Added, FolderId, MailBatch, MessageFlags, MessageId, NewMessage, NewParticipant,
+    ParticipantRole,
+};
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.
 #[derive(Debug)]
@@ -133,6 +138,12 @@ impl Store {
             })
         })
         .collect()
+    }
+
+    /// Starts a batch of mail writes (see [`MailBatch`]).
+    pub fn mail_batch(&mut self) -> Result<MailBatch<'_>> {
+        self.check_writable()?;
+        MailBatch::begin(&mut self.mail, &self.blobs)
     }
 
     /// Journal entries of `db` after sequence number `after`, oldest first,
