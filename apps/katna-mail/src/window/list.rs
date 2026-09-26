@@ -883,32 +883,35 @@ impl MailWindow {
             );
         let lifted = |base: Stateful<Div>| {
             let shadow = th.shadow;
-            // Shadows barely show on dark pages, so there the line also
-            // lightens.
-            let lit = th.dark.then(|| mix(background, 0xffffffff, 0.07));
+            // The line takes a tint of the accent color; shadows barely
+            // show on dark pages, so there it also lightens.
+            let lit = if th.dark {
+                mix(mix(background, 0xffffffff, 0.05), th.accent, 0.12)
+            } else {
+                mix(background, th.accent, 0.07)
+            };
             base.with_spring(
                 ("row-lift", ix),
                 SpringAnimation::new(ROW_LIFT).to(if hovered { 1.0 } else { 0.0 }),
                 move |el, s: f32| {
                     let s = s.clamp(0.0, 1.0);
                     if s > 0.001 {
-                        el.when_some(lit, |el, lit| el.bg(rgba(mix(background, lit, s))))
-                            .shadow(vec![
-                                BoxShadow {
-                                    color: rgba(fade(shadow, 0.9 * s)).into(),
-                                    offset: point(px(0.0), px(1.0)),
-                                    blur_radius: px(3.0),
-                                    spread_radius: px(0.0),
-                                    inset: false,
-                                },
-                                BoxShadow {
-                                    color: rgba(fade(shadow, 0.5 * s)).into(),
-                                    offset: point(px(0.0), px(2.0 * s)),
-                                    blur_radius: px(8.0),
-                                    spread_radius: px(1.0),
-                                    inset: false,
-                                },
-                            ])
+                        el.bg(rgba(mix(background, lit, s))).shadow(vec![
+                            BoxShadow {
+                                color: rgba(fade(shadow, 0.9 * s)).into(),
+                                offset: point(px(0.0), px(1.0)),
+                                blur_radius: px(3.0),
+                                spread_radius: px(0.0),
+                                inset: false,
+                            },
+                            BoxShadow {
+                                color: rgba(fade(shadow, 0.5 * s)).into(),
+                                offset: point(px(0.0), px(2.0 * s)),
+                                blur_radius: px(8.0),
+                                spread_radius: px(1.0),
+                                inset: false,
+                            },
+                        ])
                     } else {
                         el
                     }
