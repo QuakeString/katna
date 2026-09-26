@@ -170,16 +170,8 @@ impl MailWindow {
             this.open_folder(folder, cx);
         }
         this.count_unread(cx);
-        let index_error = this
-            .mail
-            .as_ref()
-            .ok()
-            .and_then(|m| m.index_error().map(str::to_owned));
-        if let Some(err) = index_error {
-            tracing::info!("search is off: {err}");
-            this.search.update(cx, |search, _| {
-                search.set_placeholder("Search is not available");
-            });
+        if let Some(err) = this.mail.as_ref().ok().and_then(Mail::index_error) {
+            tracing::info!("{err}");
         }
         window.focus(&this.list_focus, cx);
         tracing::info!(elapsed = ?started.elapsed(), messages = this.ids.len(), "mail loaded");
@@ -421,7 +413,13 @@ impl MailWindow {
             }
             return;
         }
-        let Some(index) = self.mail.as_ref().ok().and_then(Mail::index) else {
+        let Some(index) = self.mail.as_mut().ok().and_then(Mail::index) else {
+            self.search_error = self
+                .mail
+                .as_ref()
+                .ok()
+                .and_then(|m| m.index_error().map(SharedString::from));
+            cx.notify();
             return;
         };
         self.search_task = Some(cx.spawn(async move |this, cx| {
@@ -503,7 +501,7 @@ impl MailWindow {
     }
 
     fn render_search_box(&self, t: &ChromeTokens) -> AnyElement {
-        let available = self.mail.as_ref().is_ok_and(|m| m.index().is_some());
+        let available = self.mail.as_ref().is_ok_and(Mail::has_index);
         div()
             .key_context(SEARCH_CONTEXT)
             .w(px(300.0))

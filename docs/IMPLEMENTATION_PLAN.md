@@ -179,6 +179,10 @@ instantly for all old mail; suggestions have a documented precision test.
 | 3.10 Keyboard + a11y | Gmail-style shortcuts, command palette, AccessKit labels |
 | 3.11 Packaging v1 | Flatpak (with Background portal), .deb, AUR (tested); .rpm (built, not tested); desktop files, AppStream, `mailto:` handler |
 
+Started: the first window (sidebar, message list, plain-text reading pane,
+search box) reads the local store; see `ARCHITECTURE.md` §13.5. GPUI Kit is
+not used yet because of the size budget.
+
 **Done when:** you can use Katna Mail as your daily client for one account
 on both Plasma and GNOME (Wayland and X11); performance budgets hold
 (cold start < 500 ms, binary ≤ 30 MB, idle CPU ≈ 0 %); packages install and

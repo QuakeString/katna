@@ -4,8 +4,10 @@
 //! here. Only `katna-daemon` writes; the app opens both read-only.
 
 use std::collections::HashMap;
+use std::path::PathBuf;
 use std::rc::Rc;
 use std::sync::Arc;
+use std::time::{Duration, Instant};
 
 use katna_core::{Account, Paths};
 use katna_search::{Query, SearchIndex, SearchOptions, SearchResults};
@@ -15,6 +17,9 @@ use katna_store::{
 
 /// At most this many search results are listed.
 pub const SEARCH_LIMIT: usize = 1000;
+
+/// How often to try opening a missing search index again.
+const INDEX_RETRY: Duration = Duration::from_secs(2);
 
 /// Rows kept in memory; the cache is dropped when it grows past this.
 const ROW_CACHE: usize = 5000;
@@ -100,8 +105,10 @@ pub enum OpenError {
 /// The open store and, if it exists, the search index.
 pub struct Mail {
     store: Store,
+    index_dir: PathBuf,
     index: Option<Arc<SearchIndex>>,
     index_error: Option<String>,
+    index_tried: Instant,
     rows: HashMap<MessageId, Rc<Row>>,
 }
 
@@ -113,21 +120,14 @@ impl Mail {
             },
             err => OpenError::Other(err.to_string()),
         })?;
-        let (index, index_error) = if paths.index_dir().join("meta.json").is_file() {
-            match SearchIndex::open_read_only(&paths.index_dir()) {
-                Ok(index) => (Some(Arc::new(index)), None),
-                Err(err) => (None, Some(err.to_string())),
-            }
-        } else {
-            (
-                None,
-                Some("The search index has not been built yet.".to_owned()),
-            )
-        };
+        let index_dir = paths.index_dir();
+        let (index, index_error) = open_index(&index_dir);
         Ok(Self {
             store,
+            index_dir,
             index,
             index_error,
+            index_tried: Instant::now(),
             rows: HashMap::new(),
         })
     }
@@ -140,7 +140,7 @@ impl Mail {
     }
 
     pub fn folders(&self) -> Vec<FolderSummary> {
-        self.store.folders().unwrap_or_else(|err| {
+        self.store.folder_summaries().unwrap_or_else(|err| {
             tracing::warn!("reading folders: {err}");
             Vec::new()
         })
@@ -153,9 +153,20 @@ impl Mail {
         })
     }
 
-    /// The search index, shared with background searches.
-    pub fn index(&self) -> Option<Arc<SearchIndex>> {
+    /// The search index, shared with background searches. The daemon
+    /// builds it; until it exists (or while the daemon rebuilds it after an
+    /// upgrade), opening it is retried every few seconds.
+    pub fn index(&mut self) -> Option<Arc<SearchIndex>> {
+        if self.index.is_none() && self.index_tried.elapsed() >= INDEX_RETRY {
+            (self.index, self.index_error) = open_index(&self.index_dir);
+            self.index_tried = Instant::now();
+        }
         self.index.clone()
+    }
+
+    /// Whether the search index is open.
+    pub fn has_index(&self) -> bool {
+        self.index.is_some()
     }
 
     /// Why search is unavailable, if it is.
@@ -214,6 +225,17 @@ impl Mail {
                 None
             }
         }
+    }
+}
+
+fn open_index(dir: &std::path::Path) -> (Option<Arc<SearchIndex>>, Option<String>) {
+    match SearchIndex::open_read_only(dir) {
+        Ok(index) => (Some(Arc::new(index)), None),
+        Err(katna_search::Error::NotFound(_)) => (
+            None,
+            Some("Search is not ready: the index has not been built yet.".to_owned()),
+        ),
+        Err(err) => (None, Some(format!("Search is not ready: {err}"))),
     }
 }
 
@@ -316,7 +338,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
         let (inbox, id) = store_with_mail(&paths);
 
         let mut mail = Mail::open(&paths).unwrap();
-        assert!(mail.index().is_none());
+        assert!(mail.index().is_none() && !mail.has_index());
         assert!(mail.index_error().is_some());
         assert_eq!(mail.accounts()[0].display_name, "Enron");
         assert_eq!(mail.folders()[0].total, 1);
@@ -362,7 +384,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
                 .update(&store, &katna_search::IndexOptions::default(), |_| {})
                 .unwrap();
         }
-        let mail = Mail::open(&paths).unwrap();
+        let mut mail = Mail::open(&paths).unwrap();
         let index = mail.index().expect("index opened");
         let results = search(&index, "budg", 0).unwrap();
         assert_eq!(results.hits.len(), 1);

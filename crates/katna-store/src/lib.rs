@@ -206,7 +206,7 @@ impl Store {
 
     /// All folders of all accounts, ordered by account and path, with their
     /// message counts.
-    pub fn folders(&self) -> Result<Vec<FolderSummary>> {
+    pub fn folder_summaries(&self) -> Result<Vec<FolderSummary>> {
         mail_view::folders(&self.mail)
     }
 

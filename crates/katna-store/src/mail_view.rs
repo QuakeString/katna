@@ -124,7 +124,7 @@ mod tests {
         batch.commit().unwrap();
 
         let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
-        let folders = reader.folders().unwrap();
+        let folders = reader.folder_summaries().unwrap();
         let summary: Vec<_> = folders
             .iter()
             .map(|f| (f.id, f.account, f.path.as_str(), f.total))
