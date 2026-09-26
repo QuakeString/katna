@@ -653,7 +653,7 @@ impl MailWindow {
                 .on_click(cx.listener(move |this, _, _, cx| this.open_category(category, cx)))
                 .child(Ripple::new(("tab-ripple", category.index()), rgba(th.ripple)))
                 .child(icon(category.icon(), if on { tint } else { th.text_dim }, 20.0))
-                .child(
+                .when(width >= 116.0, |d| d.child(
                     div()
                         .flex()
                         .flex_col()
@@ -673,7 +673,8 @@ impl MailWindow {
                                     .child(format!("{} new", format::thousands(unread))),
                             )
                         }),
-                )
+                ))
+                .when(width < 116.0, |d| d.justify_center().pl(px(8.0)))
         });
         div()
             .relative()

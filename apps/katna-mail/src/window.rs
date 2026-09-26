@@ -11,6 +11,7 @@
 //! (toolbar, tabs and rows), `reader` (the open conversation), `settings`
 //! (quick settings) and `search_panel` (search options).
 
+mod apps;
 mod list;
 mod nav;
 mod reader;
@@ -44,6 +45,7 @@ use crate::sidebar::{self, Role, Tree};
 use crate::theme::Theme;
 use crate::widgets::{elevation, icon};
 
+use apps::{APP_RAIL_WIDTH, App as RailApp, People};
 use reader::Conversation;
 use search_panel::SearchPanel;
 
@@ -208,6 +210,10 @@ struct Pending {
 
 pub struct MailWindow {
     chrome: WindowChrome,
+    /// The app of the rail on show.
+    app: RailApp,
+    people: Option<People>,
+    people_task: Option<Task<()>>,
     /// The desktop's UI font, or `None` to leave GPUI's default.
     font: Option<SharedString>,
     paths: Paths,
@@ -301,6 +307,9 @@ impl MailWindow {
         });
         let mut this = Self {
             chrome: WindowChrome::new(env, "Katna Mail", window, cx),
+            app: RailApp::Mail,
+            people: None,
+            people_task: None,
             font,
             mail: Mail::open(&paths),
             accounts: Vec::new(),
@@ -850,6 +859,9 @@ impl MailWindow {
         match event {
             InputEvent::Changed => {
                 let text = search.read(cx).text().trim().to_owned();
+                if !text.is_empty() {
+                    self.open_app(RailApp::Mail, cx);
+                }
                 self.start_search(text, cx);
             }
             InputEvent::Submit => self.focus_list(&FocusList, window, cx),
@@ -1421,14 +1433,15 @@ impl Render for MailWindow {
         // Widths: the cards get what the navigation and settings leave.
         let nav_width = lerp(RAIL_WIDTH, NAV_WIDTH, reserve);
         let settings_width = SETTINGS_WIDTH * settings_t.clamp(0.0, 1.0);
-        let available = (viewport - nav_width - 16.0 - settings_width).max(200.0);
+        let available =
+            (viewport - APP_RAIL_WIDTH - nav_width - 16.0 - settings_width).max(200.0);
         self.cards_width = available;
 
         let content = match &self.mail {
             Err(err) => self.render_error(err, &th),
             // Reversed so the navigation paints last, over the cards, when
             // it opens from the rail.
-            Ok(_) => div()
+            Ok(_) if self.app == RailApp::Mail => div()
                 .size_full()
                 .flex()
                 .flex_row_reverse()
@@ -1437,6 +1450,17 @@ impl Render for MailWindow {
                 })
                 .child(self.render_cards(&th, available, cx))
                 .child(self.render_navigation(&th, cx))
+                .child(self.render_app_rail(&th, cx))
+                .into_any_element(),
+            Ok(_) => div()
+                .size_full()
+                .flex()
+                .flex_row_reverse()
+                .when(settings_t > 0.001, |d| {
+                    d.child(self.render_settings(&th, settings_t, cx))
+                })
+                .child(self.render_app_page(&th, cx))
+                .child(self.render_app_rail(&th, cx))
                 .into_any_element(),
         };
         let side = if wide { NAV_WIDTH } else { 110.0 };

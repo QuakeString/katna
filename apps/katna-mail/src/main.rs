@@ -31,16 +31,20 @@ Options:
   --data-dir DIR   Use DIR/data, DIR/config and DIR/cache instead of the
                    XDG directories (the same layout as katna-search-cli)
   --search QUERY   Start with QUERY in the search box
+  --open           Open the first conversation of the list
   -h, --help       Show this help
   -V, --version    Show the version
 
-Keys: Up/Down or j/k move through the list, / or Ctrl+F searches,
-Escape clears the search, F5 reloads, Ctrl+Q quits.
+Keys: Up/Down or j/k move through the list, Enter or o opens, u or
+Escape closes, e archives, # deletes, s stars, x ticks, Shift+I and
+Shift+U mark read and unread, / or Ctrl+F searches, Ctrl+, opens quick
+settings, F5 reloads, Ctrl+Q quits.
 ";
 
 fn main() -> ExitCode {
     let mut data_dir: Option<PathBuf> = None;
     let mut search: Option<String> = None;
+    let mut open_first = false;
     let mut args = std::env::args_os().skip(1);
     while let Some(arg) = args.next() {
         match arg.to_str() {
@@ -52,6 +56,7 @@ fn main() -> ExitCode {
                 Some(query) => search = Some(query),
                 None => return usage_error(),
             },
+            Some("--open") => open_first = true,
             Some("-h" | "--help") => {
                 print!("{USAGE}");
                 return ExitCode::SUCCESS;
@@ -95,6 +100,8 @@ fn main() -> ExitCode {
                     let mut view = window::MailWindow::new(env, paths, font, window, cx);
                     if let Some(query) = search {
                         view.search_for(query, window, cx);
+                    } else if open_first {
+                        view.open_first(window, cx);
                     }
                     view
                 })

@@ -21,6 +21,9 @@ pub const SEARCH_LIMIT: usize = 1000;
 /// How often to try opening a missing search index again.
 const INDEX_RETRY: Duration = Duration::from_secs(2);
 
+/// The contacts page lists at most this many people.
+const PEOPLE_LIMIT: u32 = 2000;
+
 /// Rows kept in memory; the cache is dropped when it grows past this.
 const ROW_CACHE: usize = 5000;
 
@@ -366,6 +369,14 @@ pub fn unread_counts(paths: &Paths) -> HashMap<FolderId, u64> {
             HashMap::new()
         }
     }
+}
+
+/// The people in the mail, most written with first. Opens its own
+/// connection, for a background thread.
+pub fn people(paths: &Paths) -> Result<Vec<katna_store::Person>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.people(PEOPLE_LIMIT))
+        .map_err(|err| format!("Reading people from the mail failed: {err}"))
 }
 
 /// Runs a search typed into the search box. `now` is Unix seconds, for

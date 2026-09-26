@@ -1,0 +1,426 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+//! The app rail at the far left: Mail, Calendar, Contacts, Tasks, Notes
+//! and Feeds, with the account and settings at the bottom. Mail is the
+//! only app so far; Contacts lists the people from the mail, and the
+//! others show what is coming. Each app gets its own page here, so new
+//! ones plug in as they are built.
+
+use std::ops::Range;
+use std::rc::Rc;
+
+use gpui::{
+    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, div, prelude::*, px, rgba,
+    uniform_list,
+};
+use katna_store::Person;
+use katna_ui::Ripple;
+use katna_ui::motion;
+
+use super::{MailWindow, ToggleSettings};
+use crate::format;
+use crate::theme::{Theme, fade};
+use crate::widgets::{avatar, icon, icon_button_colored, placeholder};
+
+pub(super) const APP_RAIL_WIDTH: f32 = 72.0;
+
+/// The apps of the rail.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub(super) enum App {
+    Mail,
+    Calendar,
+    Contacts,
+    Tasks,
+    Notes,
+    Feeds,
+}
+
+impl App {
+    const ALL: [Self; 6] = [
+        Self::Mail,
+        Self::Calendar,
+        Self::Contacts,
+        Self::Tasks,
+        Self::Notes,
+        Self::Feeds,
+    ];
+
+    fn label(self) -> &'static str {
+        match self {
+            Self::Mail => "Mail",
+            Self::Calendar => "Calendar",
+            Self::Contacts => "Contacts",
+            Self::Tasks => "Tasks",
+            Self::Notes => "Notes",
+            Self::Feeds => "Feeds",
+        }
+    }
+
+    fn icon(self) -> &'static str {
+        match self {
+            Self::Mail => "mail",
+            Self::Calendar => "calendar",
+            Self::Contacts => "contacts",
+            Self::Tasks => "tasks",
+            Self::Notes => "notes",
+            Self::Feeds => "feeds",
+        }
+    }
+
+    /// What the app will do, for its "coming soon" page.
+    fn promise(self) -> &'static str {
+        match self {
+            Self::Mail | Self::Contacts => "",
+            Self::Calendar => {
+                "Your CalDAV calendars, meeting invitations from your mail and \
+                 reminders, next to your inbox."
+            }
+            Self::Tasks => "To-do lists that sync with CalDAV, and tasks made from mail.",
+            Self::Notes => "Quick notes, and notes on a mail or conversation for later.",
+            Self::Feeds => "Read RSS and Atom feeds beside your mail.",
+        }
+    }
+}
+
+/// The people list of the Contacts page.
+pub(super) enum People {
+    Loading,
+    Loaded(Rc<Vec<Person>>),
+    Failed(String),
+}
+
+impl MailWindow {
+    pub(super) fn open_app(&mut self, app: App, cx: &mut Context<Self>) {
+        if self.app == app {
+            return;
+        }
+        self.app = app;
+        self.menu = None;
+        self.search_panel = None;
+        if app == App::Contacts && !matches!(self.people, Some(People::Loaded(_))) {
+            self.load_people(cx);
+        }
+        cx.notify();
+    }
+
+    fn load_people(&mut self, cx: &mut Context<Self>) {
+        self.people = Some(People::Loading);
+        let paths = self.paths.clone();
+        self.people_task = Some(cx.spawn(async move |this, cx| {
+            let people = cx
+                .background_executor()
+                .spawn(async move { crate::data::people(&paths) })
+                .await;
+            this.update(cx, |this, cx| {
+                this.people = Some(match people {
+                    Ok(people) => People::Loaded(Rc::new(people)),
+                    Err(err) => People::Failed(err),
+                });
+                cx.notify();
+            })
+            .ok();
+        }));
+    }
+
+    pub(super) fn render_app_rail(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let items = App::ALL.into_iter().map(|app| {
+            let on = self.app == app;
+            div()
+                .id(("app", app as usize))
+                .w(px(APP_RAIL_WIDTH))
+                .pt(px(4.0))
+                .pb(px(8.0))
+                .flex()
+                .flex_col()
+                .items_center()
+                .gap(px(4.0))
+                .cursor_pointer()
+                .group("app")
+                .on_click(cx.listener(move |this, _, _, cx| this.open_app(app, cx)))
+                .child(
+                    div()
+                        .relative()
+                        .overflow_hidden()
+                        .w(px(56.0))
+                        .h(px(32.0))
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .rounded_full()
+                        .group_hover("app", |s| s.bg(rgba(th.hover)))
+                        .child(Ripple::new(("app-ripple", app as usize), rgba(th.ripple)).centered())
+                        .child(icon(
+                            app.icon(),
+                            if on { th.nav_selected_text } else { th.text_dim },
+                            22.0,
+                        ))
+                        .with_spring(
+                            ("app-pill", app as usize),
+                            SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                            {
+                                let bg = th.nav_selected;
+                                move |el, s: f32| {
+                                    let s = s.clamp(0.0, 1.0);
+                                    if s > 0.001 {
+                                        // The pill grows out from the middle.
+                                        el.bg(rgba(fade(bg, s)))
+                                            .w(px(32.0 + 24.0 * s))
+                                    } else {
+                                        el
+                                    }
+                                }
+                            },
+                        ),
+                )
+                .child(
+                    div()
+                        .text_size(px(12.0))
+                        .font_weight(if on {
+                            FontWeight::BOLD
+                        } else {
+                            FontWeight::MEDIUM
+                        })
+                        .text_color(rgba(if on { th.text } else { th.text_dim }))
+                        .child(app.label()),
+                )
+        });
+        let account = self.accounts.first().map(|account| {
+            let name = if account.display_name.trim().is_empty() {
+                account.address.clone()
+            } else {
+                account.display_name.clone()
+            };
+            div()
+                .id("rail-account")
+                .p(px(4.0))
+                .rounded_full()
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .child(avatar(&name, &account.address, 32.0))
+        });
+        div()
+            .id("app-rail")
+            .flex_none()
+            .w(px(APP_RAIL_WIDTH))
+            .h_full()
+            .pt(px(4.0))
+            .pb(px(16.0))
+            .flex()
+            .flex_col()
+            .items_center()
+            .children(items)
+            .child(div().flex_1())
+            .child(
+                icon_button_colored(
+                    "rail-settings",
+                    "settings",
+                    22.0,
+                    if self.settings_open {
+                        th.accent
+                    } else {
+                        th.text_dim
+                    },
+                    th,
+                )
+                .on_click(cx.listener(|this, _, window, cx| {
+                    this.toggle_settings(&ToggleSettings, window, cx)
+                })),
+            )
+            .children(account)
+            .into_any_element()
+    }
+
+    /// The page of an app other than Mail.
+    pub(super) fn render_app_page(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let body = match self.app {
+            App::Contacts => self.render_contacts(th, cx),
+            app => div()
+                .size_full()
+                .flex()
+                .flex_col()
+                .items_center()
+                .justify_center()
+                .gap(px(12.0))
+                .child(
+                    div()
+                        .size(px(96.0))
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .rounded_full()
+                        .bg(rgba(th.nav_selected))
+                        .child(icon(app.icon(), th.nav_selected_text, 48.0)),
+                )
+                .child(
+                    div()
+                        .pt(px(8.0))
+                        .text_size(px(22.0))
+                        .text_color(rgba(th.text))
+                        .child(format!("Katna {}", app.label())),
+                )
+                .child(
+                    div()
+                        .px(px(10.0))
+                        .py(px(2.0))
+                        .rounded_full()
+                        .bg(rgba(th.chip))
+                        .text_size(px(12.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .text_color(rgba(th.text_dim))
+                        .child("Coming soon"),
+                )
+                .child(
+                    div()
+                        .max_w(px(420.0))
+                        .text_center()
+                        .text_size(px(14.0))
+                        .line_height(px(21.0))
+                        .text_color(rgba(th.text_faint))
+                        .child(app.promise()),
+                )
+                .with_animation(
+                    ("app-page", self.app as usize),
+                    gpui::Animation::new(std::time::Duration::from_millis(260))
+                        .with_easing(gpui::ease_out_quint()),
+                    |el, t| el.opacity(t).mt(px(12.0 * (1.0 - t))),
+                )
+                .into_any_element(),
+        };
+        div()
+            .flex_1()
+            .min_w_0()
+            .h_full()
+            .pr(px(16.0))
+            .pb(px(16.0))
+            .child(
+                div()
+                    .size_full()
+                    .rounded(px(16.0))
+                    .overflow_hidden()
+                    .bg(rgba(th.surface))
+                    .child(body),
+            )
+            .into_any_element()
+    }
+
+    fn render_contacts(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let people = match &self.people {
+            None | Some(People::Loading) => return placeholder("Gathering people from your mail…", th),
+            Some(People::Failed(err)) => return placeholder(err, th),
+            Some(People::Loaded(people)) => people.clone(),
+        };
+        if people.is_empty() {
+            return placeholder("People you write with show up here.", th);
+        }
+        let header = div()
+            .flex_none()
+            .h(px(64.0))
+            .px(px(24.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(12.0))
+            .border_b_1()
+            .border_color(rgba(th.divider))
+            .child(div().text_size(px(20.0)).child("Contacts"))
+            .child(
+                div()
+                    .text_size(px(13.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(format!(
+                        "{} people from your mail, most written with first",
+                        format::thousands(people.len() as u64)
+                    )),
+            );
+        let count = people.len();
+        let list = uniform_list(
+            "people",
+            count,
+            cx.processor(move |this, range: Range<usize>, window, cx| {
+                let th = this.theme(window);
+                range
+                    .map(|ix| render_person(ix, &people[ix], &th, this, cx))
+                    .collect::<Vec<_>>()
+            }),
+        )
+        .size_full();
+        div()
+            .size_full()
+            .flex()
+            .flex_col()
+            .child(header)
+            .child(div().flex_1().min_h_0().child(list))
+            .into_any_element()
+    }
+}
+
+fn render_person(
+    ix: usize,
+    person: &Person,
+    th: &Theme,
+    this: &MailWindow,
+    cx: &mut Context<MailWindow>,
+) -> AnyElement {
+    let name = person.name.clone().unwrap_or_else(|| person.email.clone());
+    let now = jiff::Timestamp::now().as_second();
+    let last = person
+        .last
+        .and_then(|d| format::local(d, &this.tz))
+        .zip(format::local(now, &this.tz))
+        .map(|(d, now)| format!("last {}", format::list_date(d, now)))
+        .unwrap_or_default();
+    let email = person.email.clone();
+    div()
+        .id(("person", ix))
+        .h(px(60.0))
+        .px(px(24.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(16.0))
+        .border_b_1()
+        .border_color(rgba(th.divider))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .on_click(cx.listener(move |this, _, window, cx| {
+            this.open_app(App::Mail, cx);
+            this.search_for(format!("from:{email}"), window, cx);
+        }))
+        .child(avatar(&name, &person.email, 36.0))
+        .child(
+            div()
+                .flex_1()
+                .min_w_0()
+                .flex()
+                .flex_col()
+                .child(
+                    div()
+                        .truncate()
+                        .text_size(px(14.0))
+                        .text_color(rgba(th.text))
+                        .child(name),
+                )
+                .child(
+                    div()
+                        .truncate()
+                        .text_size(px(12.0))
+                        .text_color(rgba(th.text_faint))
+                        .child(person.email.clone()),
+                ),
+        )
+        .child(
+            div()
+                .flex_none()
+                .flex()
+                .flex_col()
+                .items_end()
+                .text_size(px(12.0))
+                .text_color(rgba(th.text_faint))
+                .child(format!(
+                    "{} messages",
+                    format::thousands(person.messages)
+                ))
+                .child(last),
+        )
+        .into_any_element()
+}

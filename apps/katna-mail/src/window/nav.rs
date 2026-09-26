@@ -19,7 +19,7 @@ use super::{
 use crate::format;
 use crate::sidebar::{self, Role};
 use crate::theme::{Theme, fade, mix};
-use crate::widgets::{avatar, elevation, icon, icon_button, icon_button_colored};
+use crate::widgets::{elevation, icon, icon_button, icon_button_colored};
 
 use super::{Compose, NAV_WIDTH, RAIL_WIDTH};
 
@@ -153,28 +153,8 @@ impl MailWindow {
         )
         .on_click(cx.listener(|this, _, window, cx| {
             this.toggle_settings(&ToggleSettings, window, cx)
-        }))
-        .into_any_element();
-        let mut end = vec![settings];
-        if let Some(account) = self.accounts.first() {
-            let name = if account.display_name.trim().is_empty() {
-                &account.address
-            } else {
-                &account.display_name
-            };
-            end.push(
-                div()
-                    .id("account")
-                    .ml(px(4.0))
-                    .mr(px(8.0))
-                    .p(px(4.0))
-                    .rounded_full()
-                    .hover(|s| s.bg(rgba(th.hover)))
-                    .on_mouse_move(|_, _, cx| cx.stop_propagation())
-                    .child(avatar(name, &account.address, 32.0))
-                    .into_any_element(),
-            );
-        }
+        }));
+        let end = vec![settings.mr(px(8.0)).into_any_element()];
         end
     }
 
