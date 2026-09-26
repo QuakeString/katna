@@ -41,6 +41,10 @@ pub struct ChromeTokens {
     /// 1 px outline around the window, drawn over the shadow.
     pub outline: u32,
     pub window_bg: u32,
+    /// Background of content views: lists and the reading pane.
+    pub view_bg: u32,
+    /// Background of the sidebar.
+    pub sidebar_bg: u32,
     pub fg: u32,
     pub fg_dim: u32,
     pub header_height: f32,
@@ -135,6 +139,8 @@ impl ChromeTokens {
             shadow_unfocused,
             outline,
             window_bg,
+            view_bg: if dark { 0x1e1e1eff } else { 0xffffffff },
+            sidebar_bg: if dark { 0x2e2e32ff } else { 0xebebedff },
             fg,
             fg_dim: with_alpha(fg, 0x80),
             header_height: 47.0,
@@ -198,6 +204,8 @@ impl ChromeTokens {
             ],
             outline: with_alpha(fg, 0x33),
             window_bg,
+            view_bg: if dark { 0x1b1e20ff } else { 0xffffffff },
+            sidebar_bg: window_bg,
             fg,
             fg_dim: with_alpha(fg, 0x99),
             header_height: 30.0,

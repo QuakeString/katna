@@ -2,3 +2,5 @@
 
 //! Desktop integration: portals, desktop detection, settings, tray and badges.
 //! See `docs/ARCHITECTURE.md` §13.2 and §15.
+
+pub mod font;

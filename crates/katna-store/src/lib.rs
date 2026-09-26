@@ -11,6 +11,7 @@ pub mod error;
 pub mod journal;
 pub mod mail;
 mod mail_read;
+mod mail_view;
 pub mod ops;
 pub mod remote;
 
@@ -26,6 +27,7 @@ pub use mail::{
     ParticipantRole,
 };
 pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
+pub use mail_view::FolderSummary;
 pub use ops::{Location, QueuedOp};
 pub use remote::{FolderRole, RemoteMessage, StoredFolder};
 
@@ -202,6 +204,23 @@ impl Store {
     /// exist are left out.
     pub fn messages_by_id(&self, ids: &[MessageId]) -> Result<Vec<StoredMessage>> {
         mail_read::messages_by_id(&self.mail, ids)
+    }
+
+    /// All folders of all accounts, ordered by account and path, with their
+    /// message counts.
+    pub fn folder_summaries(&self) -> Result<Vec<FolderSummary>> {
+        mail_view::folders(&self.mail)
+    }
+
+    /// Unread messages per folder, for folders that have any. Slow on big
+    /// stores; call it off the UI thread.
+    pub fn unread_counts(&self) -> Result<Vec<(FolderId, u64)>> {
+        mail_view::unread_counts(&self.mail)
+    }
+
+    /// The messages in `folder`, newest first.
+    pub fn folder_message_ids(&self, folder: FolderId) -> Result<Vec<MessageId>> {
+        mail_view::folder_message_ids(&self.mail, folder)
     }
 
     /// Number of messages in all accounts.
