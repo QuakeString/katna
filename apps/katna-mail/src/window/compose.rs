@@ -3,8 +3,11 @@
 //! The compose window: "New Message" docked at the bottom right, as in
 //! webmail, with To (and Cc, Bcc), Subject, the body with the signature,
 //! and the Send button with its menu, formatting and attachment buttons
-//! and discard. Compose, Reply, Reply all and Forward all open it. It can
-//! be minimized to its title bar or opened large in the middle.
+//! and discard. Compose opens it; it can be minimized to its title bar or
+//! opened large in the middle.
+//!
+//! Reply, Reply all and Forward write inline instead, at the foot of the
+//! open conversation, and can pop out into the window.
 //!
 //! Send hands the message to the background service's outbox, which holds
 //! it for the undo-send delay; the snackbar's Undo takes it back and opens
@@ -23,10 +26,13 @@ use std::time::Duration;
 
 use super::{MailWindow, SNACKBAR_TIME};
 use crate::daemon::{self, Command};
+use crate::data::EntryKey;
 use crate::format;
 use crate::outgoing::{self, Mailbox, Outgoing};
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, icon_button, icon_button_colored, menu, menu_item};
+use crate::widgets::{
+    avatar, elevation, icon, icon_button, icon_button_colored, menu, menu_item, tip,
+};
 
 const WIDTH: f32 = 560.0;
 const MAX_HEIGHT: f32 = 620.0;
@@ -49,6 +55,8 @@ enum Mode {
     Open,
     Minimized,
     Full,
+    /// At the foot of the conversation it answers.
+    Inline,
 }
 
 pub(super) struct Compose {
@@ -62,6 +70,9 @@ pub(super) struct Compose {
     start: Draft,
     /// The message this replies to.
     thread: Threading,
+    kind: Kind,
+    /// The conversation an inline reply belongs to.
+    conversation: Option<EntryKey>,
     show_cc: bool,
     show_bcc: bool,
     mode: Mode,
@@ -261,12 +272,21 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        let open = self.reader.as_ref().map(|r| r.key);
         if let Some(compose) = &mut self.compose
             && !compose.closing
             && compose.touched(cx)
         {
-            compose.mode = Mode::Open;
-            self.show_snackbar("Send or discard the open message first.", None, cx);
+            let inline_here = compose.mode == Mode::Inline && compose.conversation == open;
+            if inline_here {
+                window.focus(&compose.body.focus_handle(cx), cx);
+            } else {
+                if compose.mode == Mode::Minimized {
+                    compose.mode = Mode::Open;
+                }
+                self.show_snackbar("Send or discard the open message first.", None, cx);
+            }
+            cx.notify();
             return;
         }
         let date = |d: Option<i64>| {
@@ -294,7 +314,23 @@ impl MailWindow {
         let thread = Threading::of(kind, view);
         let reply = matches!(kind, Kind::Reply | Kind::ReplyAll) && !draft.to.is_empty();
         let start = draft.clone();
+        // Answers to the open conversation are written inside it.
+        let conversation = self
+            .reader
+            .as_ref()
+            .filter(|_| self.reading && kind != Kind::New)
+            .map(|r| r.key);
+        let mode = if conversation.is_some() {
+            Mode::Inline
+        } else {
+            Mode::Open
+        };
         self.show_compose(draft, start, thread, reply, window, cx);
+        if let Some(compose) = &mut self.compose {
+            compose.kind = kind;
+            compose.mode = mode;
+            compose.conversation = conversation;
+        }
     }
 
     /// Opens the compose window on `draft`; `start` is what counts as
@@ -318,7 +354,7 @@ impl MailWindow {
                 input
             })
         };
-        let to = input("", &draft.to, cx);
+        let to = input("Recipients", &draft.to, cx);
         let cc = input("", &draft.cc, cx);
         let bcc = input("", &draft.bcc, cx);
         let subject = input("Subject", &draft.subject, cx);
@@ -371,6 +407,8 @@ impl MailWindow {
             body,
             start,
             thread,
+            kind: Kind::New,
+            conversation: None,
             mode: Mode::Open,
             send_menu: false,
             shown: Spring::new(motion::SLIDE, 0.0),
@@ -547,6 +585,31 @@ impl MailWindow {
         reduce: bool,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        let (mode, conversation, closing) = self
+            .compose
+            .as_ref()
+            .map(|c| (c.mode, c.conversation, c.closing))?;
+        if mode == Mode::Inline {
+            let here = self.reading
+                && self
+                    .reader
+                    .as_ref()
+                    .is_some_and(|r| Some(r.key) == conversation);
+            let touched = self.compose.as_ref().is_some_and(|c| c.touched(cx));
+            if closing || (!here && !touched) {
+                self.compose = None;
+                return None;
+            }
+            if here {
+                return None;
+            }
+            // The conversation was left with a reply half written: it
+            // carries on in the window.
+            if let Some(compose) = &mut self.compose {
+                compose.mode = Mode::Open;
+                compose.shown.snap(1.0);
+            }
+        }
         let compose = self.compose.as_mut()?;
         compose.shown.set(if compose.closing { 0.0 } else { 1.0 });
         let t = compose.shown.tick(window, reduce);
@@ -584,12 +647,12 @@ impl MailWindow {
                     .child(title),
             )
             .child(
-                small_button("compose-minimize", "minimize", th).on_click(cx.listener(
-                    |this, _, _, cx| {
+                small_button("compose-minimize", "minimize", th)
+                    .tooltip(tip("Minimize", th))
+                    .on_click(cx.listener(|this, _, _, cx| {
                         cx.stop_propagation();
                         this.compose_mode(Mode::Minimized, cx)
-                    },
-                )),
+                    })),
             )
             .child(
                 small_button(
@@ -601,24 +664,32 @@ impl MailWindow {
                     },
                     th,
                 )
+                .tooltip(tip(
+                    if mode == Mode::Full {
+                        "Exit full screen"
+                    } else {
+                        "Full screen"
+                    },
+                    th,
+                ))
                 .on_click(cx.listener(|this, _, _, cx| {
                     cx.stop_propagation();
                     this.compose_mode(Mode::Full, cx)
                 })),
             )
             .child(
-                small_button("compose-close", "close", th).on_click(cx.listener(
-                    |this, _, _, cx| {
+                small_button("compose-close", "close", th)
+                    .tooltip(tip("Close", th))
+                    .on_click(cx.listener(|this, _, _, cx| {
                         cx.stop_propagation();
                         // Drafts are not saved yet, so closing loses the text.
                         let touched = this.compose.as_ref().is_some_and(|c| c.touched(cx));
                         this.close_compose(touched, cx)
-                    },
-                )),
+                    })),
             );
 
         let (width, height) = match mode {
-            Mode::Open => (WIDTH.min(vw - 32.0), MAX_HEIGHT.min(vh - 96.0)),
+            Mode::Open | Mode::Inline => (WIDTH.min(vw - 32.0), MAX_HEIGHT.min(vh - 96.0)),
             Mode::Minimized => (MINIMIZED_WIDTH, TITLE_HEIGHT),
             Mode::Full => ((vw - 128.0).clamp(WIDTH, 1000.0), vh - 96.0),
         };
@@ -674,6 +745,136 @@ impl MailWindow {
                 .child(panel)
                 .into_any_element(),
         })
+    }
+
+    /// The reply being written at the foot of conversation `key`, if any:
+    /// the sender's picture beside a card with the recipients, the text and
+    /// the Send row. `max_body` caps the text's height; longer text scrolls.
+    pub(super) fn render_inline_reply(
+        &self,
+        key: EntryKey,
+        max_body: f32,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let compose = self
+            .compose
+            .as_ref()
+            .filter(|c| c.mode == Mode::Inline && !c.closing && c.conversation == Some(key))?;
+        let (kind_icon, kind_label) = match compose.kind {
+            Kind::ReplyAll => ("reply-all", "Reply all"),
+            Kind::Forward => ("forward", "Forward"),
+            Kind::Reply | Kind::New => ("reply", "Reply"),
+        };
+        let me = self.compose_account().map(|a| {
+            let name = if a.display_name.trim().is_empty() {
+                a.address.clone()
+            } else {
+                a.display_name.clone()
+            };
+            avatar(&name, &a.address, 40.0)
+        });
+        let header = div()
+            .flex_none()
+            .h(px(44.0))
+            .pl(px(12.0))
+            .pr(px(6.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(8.0))
+            .text_size(px(14.0))
+            .child(
+                div()
+                    .id("inline-kind")
+                    .flex_none()
+                    .tooltip(tip(kind_label, th))
+                    .child(icon(kind_icon, th.text_dim, 20.0)),
+            )
+            .child(div().flex_1().min_w_0().child(compose.to.clone()))
+            .when(!compose.show_cc, |d| {
+                d.child(
+                    div()
+                        .id("inline-cc")
+                        .px(px(4.0))
+                        .rounded(px(4.0))
+                        .text_color(rgba(th.text_dim))
+                        .cursor_pointer()
+                        .hover(|s| s.text_color(rgba(th.text)).bg(rgba(th.hover)))
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            if let Some(c) = &mut this.compose {
+                                c.show_cc = true;
+                                window.focus(&c.cc.focus_handle(cx), cx);
+                            }
+                            cx.notify();
+                        }))
+                        .child("Cc"),
+                )
+            })
+            .child(
+                small_button("inline-pop-out", "open-full", th)
+                    .tooltip(tip("Pop out reply", th))
+                    .on_click(cx.listener(|this, _, _, cx| this.compose_mode(Mode::Open, cx))),
+            );
+        let cc = compose.show_cc.then(|| {
+            div()
+                .flex_none()
+                .mx(px(12.0))
+                .h(px(36.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(8.0))
+                .border_t_1()
+                .border_color(rgba(th.divider))
+                .text_size(px(14.0))
+                .child(div().flex_none().text_color(rgba(th.text_dim)).child("Cc"))
+                .child(div().flex_1().min_w_0().child(compose.cc.clone()))
+        });
+        let focus = compose.body.focus_handle(cx);
+        let body = div()
+            .id("inline-body")
+            .min_h(px(96.0))
+            .max_h(px(max_body.max(96.0)))
+            .overflow_y_scroll()
+            .track_scroll(&compose.body_scroll)
+            .px(px(12.0))
+            .py(px(8.0))
+            .text_size(px(14.0))
+            .line_height(px(20.0))
+            .cursor_text()
+            .on_click(move |_, window, cx| window.focus(&focus, cx))
+            .child(compose.body.clone());
+        let card = div()
+            .id("inline-reply")
+            .key_context("Compose")
+            .flex_1()
+            .min_w_0()
+            .flex()
+            .flex_col()
+            .rounded(px(12.0))
+            .bg(rgba(th.surface))
+            .border_1()
+            .border_color(rgba(th.divider))
+            .shadow(elevation(th, 1.5))
+            .child(header)
+            .children(cc)
+            .child(body)
+            .child(self.render_compose_actions(th, cx));
+        Some(
+            div()
+                .flex()
+                .flex_row()
+                .items_start()
+                .gap(px(12.0))
+                .pl(px(16.0))
+                .pr(px(16.0))
+                .pt(px(12.0))
+                .pb(px(16.0))
+                .children(me)
+                .child(card)
+                .into_any_element(),
+        )
     }
 
     fn render_compose_fields(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
@@ -844,9 +1045,12 @@ impl MailWindow {
                     .with_priority(2),
                 )
             });
-        let tool = |id: &'static str, name: &'static str, what: &'static str| {
-            icon_button(id, name, 20.0, th).on_click(cx.listener(later(what)))
-        };
+        let tool =
+            |id: &'static str, name: &'static str, label: &'static str, what: &'static str| {
+                icon_button(id, name, 20.0, th)
+                    .tooltip(tip(label, th))
+                    .on_click(cx.listener(later(what)))
+            };
         div()
             .flex_none()
             .h(px(60.0))
@@ -857,15 +1061,41 @@ impl MailWindow {
             .gap(px(2.0))
             .child(send)
             .child(div().w(px(8.0)))
-            .child(tool("compose-format", "format-text", "Formatting"))
-            .child(tool("compose-attach", "attachment", "Attaching files"))
-            .child(tool("compose-link", "link", "Inserting links"))
-            .child(tool("compose-emoji", "emoji", "Inserting emoji"))
-            .child(tool("compose-image", "image", "Inserting images"))
-            .child(tool("compose-more", "more", "More options"))
+            .child(tool(
+                "compose-format",
+                "format-text",
+                "Formatting options",
+                "Formatting",
+            ))
+            .child(tool(
+                "compose-attach",
+                "attachment",
+                "Attach files",
+                "Attaching files",
+            ))
+            .child(tool(
+                "compose-link",
+                "link",
+                "Insert link",
+                "Inserting links",
+            ))
+            .child(tool(
+                "compose-emoji",
+                "emoji",
+                "Insert emoji",
+                "Inserting emoji",
+            ))
+            .child(tool(
+                "compose-image",
+                "image",
+                "Insert photo",
+                "Inserting images",
+            ))
+            .child(tool("compose-more", "more", "More options", "More options"))
             .child(div().flex_1())
             .child(
                 icon_button_colored("compose-discard", "trash", 20.0, th.text_dim, th)
+                    .tooltip(tip("Discard draft", th))
                     .on_click(cx.listener(|this, _, _, cx| this.close_compose(true, cx))),
             )
             .into_any_element()

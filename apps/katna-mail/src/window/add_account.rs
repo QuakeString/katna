@@ -841,7 +841,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .overflow_hidden()
-            .rounded(px(28.0))
+            .rounded(px(super::PANEL_RADIUS))
             .bg(rgba(th.surface))
             .text_color(rgba(th.text))
             .shadow(elevation(th, 3.0))
@@ -1095,7 +1095,7 @@ impl MailWindow {
                 .flex_row()
                 .items_center()
                 .gap(px(12.0))
-                .rounded(px(12.0))
+                .rounded(px(8.0))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .on_click(cx.listener(move |this, _, _, cx| {
@@ -1137,7 +1137,7 @@ impl MailWindow {
             .flex_row()
             .items_center()
             .gap(px(12.0))
-            .rounded(px(12.0))
+            .rounded(px(8.0))
             .text_size(px(14.0))
             .font_weight(FontWeight::MEDIUM)
             .cursor_pointer()
@@ -1160,14 +1160,14 @@ impl MailWindow {
             .id("account-menu")
             .occlude()
             .absolute()
-            .left(px(super::apps::APP_RAIL_WIDTH + 4.0))
-            .bottom(px(16.0))
+            .right(px(16.0))
+            .top(px(4.0))
             .w(px(MENU_WIDTH))
             .p(px(8.0))
             .flex()
             .flex_col()
             .gap(px(2.0))
-            .rounded(px(28.0))
+            .rounded(px(super::PANEL_RADIUS))
             .bg(rgba(th.menu))
             .text_color(rgba(th.text))
             .shadow(elevation(th, 2.0))
@@ -1185,7 +1185,7 @@ impl MailWindow {
             .with_animation(
                 "account-menu",
                 Animation::new(Duration::from_millis(180)).with_easing(gpui::ease_out_quint()),
-                |el, t| el.opacity(t).mb(px(8.0 * (1.0 - t))),
+                |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
             );
         Some(
             div()
@@ -1288,8 +1288,8 @@ fn progress_bar(th: &Theme) -> AnyElement {
         // Kept clear of the rounded corners, which do not clip.
         .absolute()
         .top_0()
-        .left(px(28.0))
-        .right(px(28.0))
+        .left(px(super::PANEL_RADIUS))
+        .right(px(super::PANEL_RADIUS))
         .h(px(4.0))
         .rounded_b(px(2.0))
         .overflow_hidden()

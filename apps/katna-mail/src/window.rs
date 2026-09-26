@@ -10,12 +10,14 @@
 //! The parts live in submodules: `nav` (top bar and navigation), `list`
 //! (toolbar, tabs and rows), `reader` (the open conversation), `settings`
 //! (quick settings), `search_panel` (search options), `compose`, `apps`
-//! (the app rail) and `add_account` (adding an account).
+//! (the app rail), `add_account` (adding an account) and `context_menu`
+//! (the list's right-click menu).
 
 mod add_account;
 mod apps;
 mod colors;
 mod compose;
+mod context_menu;
 mod list;
 mod nav;
 mod reader;
@@ -92,7 +94,8 @@ const SEARCH_CONTEXT: &str = "SearchBox";
 
 const TOP_BAR_HEIGHT: f32 = 64.0;
 const NAV_WIDTH: f32 = 256.0;
-const RAIL_WIDTH: f32 = 72.0;
+/// Corners of cards that float: menus aside, dialogs and panels.
+const PANEL_RADIUS: f32 = 15.0;
 const SEARCH_WIDTH: f32 = 720.0;
 /// Quick settings panel, with its right margin.
 const SETTINGS_WIDTH: f32 = 336.0;
@@ -104,14 +107,37 @@ const PAGE: usize = 10;
 /// Wait this long after a keystroke before searching, so fast typing
 /// searches once.
 const SEARCH_DELAY: Duration = Duration::from_millis(60);
-/// Hover on the folded rail this long before it opens over the list.
+/// Rest on Mail in the app rail this long before the folded navigation
+/// opens over the list.
 const PEEK_DELAY: Duration = Duration::from_millis(300);
+/// The opened navigation waits this long after the pointer leaves, so it can
+/// cross from the rail to the panel.
+const PEEK_LINGER: Duration = Duration::from_millis(250);
 const SNACKBAR_TIME: Duration = Duration::from_secs(5);
 /// Changes signalled by the daemon within this time are read together.
 const CHANGE_DELAY: Duration = Duration::from_millis(120);
 const LINE_SCROLL: f32 = 48.0;
 /// How long a send failure stays on screen.
 const FAILURE_TIME: Duration = Duration::from_secs(12);
+
+/// Keys of the list and the reader that are also typed text.
+const TYPED_KEYS: [&str; 15] = [
+    "j",
+    "k",
+    "u",
+    "o",
+    "x",
+    "c",
+    "e",
+    "s",
+    "/",
+    "#",
+    "!",
+    "shift-i",
+    "shift-u",
+    "space",
+    "shift-space",
+];
 
 /// Binds the window's keys. Call once at startup.
 pub fn bind_keys(cx: &mut App) {
@@ -162,6 +188,16 @@ pub fn bind_keys(cx: &mut App) {
             KeyBinding::new("s", ToggleStar, context),
         ]);
     }
+    // Typing in a field inside the reader (the inline reply) types; the
+    // reader's single keys stay out of the way.
+    for context in [
+        katna_ui::TEXT_AREA_CONTEXT,
+        katna_ui::text_input::KEY_CONTEXT,
+    ] {
+        for key in TYPED_KEYS {
+            keys.push(KeyBinding::new(key, gpui::NoAction, Some(context)));
+        }
+    }
     cx.bind_keys(keys);
     katna_ui::text_input::bind_keys(cx);
     katna_ui::text_area::bind_keys(cx);
@@ -196,6 +232,14 @@ enum Act {
     MoveTo(FolderId),
     Read(bool),
     Star(bool),
+}
+
+/// What the pointer rests on that opens the folded navigation.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Hover {
+    /// Mail in the app rail.
+    Rail,
+    Panel,
 }
 
 /// A short note at the bottom of the window, maybe with an Undo button.
@@ -246,6 +290,10 @@ pub struct MailWindow {
     checked: HashSet<EntryKey>,
     /// Every line of the list is ticked, not only the ones on screen.
     checked_all: bool,
+    /// How many lines "Select all" ticked on screen, while those are still
+    /// the ticked ones. The banner offering the whole list follows this
+    /// rather than the lines on screen, which the banner itself changes.
+    page_pick: Option<usize>,
     pending: HashMap<EntryKey, Pending>,
     /// Rows of the list on screen at the last layout.
     visible: Range<usize>,
@@ -262,14 +310,19 @@ pub struct MailWindow {
     search_panel: Option<SearchPanel>,
     search_panel_spring: Spring,
     menu: Option<Menu>,
+    /// The right-click menu of the list.
+    context_menu: Option<context_menu::ContextMenu>,
     /// The navigation is open (not folded to the rail).
     nav_open: bool,
-    /// The folded rail is opened over the list while the pointer is on it.
+    /// The folded navigation is opened over the list while the pointer is
+    /// on it or on Mail in the app rail.
     nav_peek: bool,
+    /// The pointer is on Mail in the app rail, and on the panel.
+    peek_hover: (bool, bool),
     peek_task: Option<Task<()>>,
-    /// 0 = rail, 1 = open: the drawn navigation.
+    /// 0 = folded, 1 = open: the drawn navigation.
     nav_spring: Spring,
-    /// 0 = rail, 1 = open: the space the navigation takes from the card.
+    /// 0 = folded, 1 = open: the space the navigation takes from the card.
     reserve_spring: Spring,
     search_spring: Spring,
     /// 0 = closed, 1 = open: the reading pane beside the list.
@@ -280,6 +333,8 @@ pub struct MailWindow {
     cards_width: f32,
     settings_open: bool,
     settings_spring: Spring,
+    /// The reading-pane choice of the quick settings under the pointer.
+    pane_hover: Option<ReadingPane>,
     /// The tab indicator's position, in tabs.
     tab_spring: Spring,
     snackbar: Option<Snackbar>,
@@ -348,6 +403,7 @@ impl MailWindow {
             selected: None,
             checked: HashSet::new(),
             checked_all: false,
+            page_pick: None,
             pending: HashMap::new(),
             visible: 0..0,
             hovered: None,
@@ -360,8 +416,10 @@ impl MailWindow {
             search_panel: None,
             search_panel_spring: Spring::new(motion::SMOOTH, 0.0),
             menu: None,
+            context_menu: None,
             nav_open: true,
             nav_peek: false,
+            peek_hover: (false, false),
             peek_task: None,
             nav_spring: Spring::new(motion::SLIDE, 1.0),
             reserve_spring: Spring::new(motion::SLIDE, 1.0),
@@ -370,6 +428,7 @@ impl MailWindow {
             split_drag: None,
             cards_width: 0.0,
             settings_open: false,
+            pane_hover: None,
             settings_spring: Spring::new(motion::SLIDE, 0.0),
             tab_spring: Spring::new(motion::SLIDE, 0.0),
             snackbar: None,
@@ -619,6 +678,7 @@ impl MailWindow {
         self.selected = (!self.entries.is_empty()).then_some(0);
         self.checked.clear();
         self.checked_all = false;
+        self.page_pick = None;
         self.menu = None;
         self.show_list();
         cx.notify();
@@ -629,8 +689,9 @@ impl MailWindow {
             return;
         }
         self.category = category;
+        // No fade: the tab's lines replace the last ones in the same frame,
+        // as the indicator slides over.
         if let Some(folder) = self.folder {
-            self.card_seq += 1;
             self.open_folder(folder, cx);
         }
     }
@@ -788,6 +849,7 @@ impl MailWindow {
     fn toggle_navigation(&mut self, _: &ToggleNavigation, _: &mut Window, cx: &mut Context<Self>) {
         self.nav_open = !self.nav_open;
         self.nav_peek = false;
+        self.peek_hover = (false, false);
         self.peek_task = None;
         cx.notify();
     }
@@ -849,27 +911,33 @@ impl MailWindow {
         }
     }
 
-    fn hover_navigation(&mut self, hovered: bool, cx: &mut Context<Self>) {
-        if self.nav_open {
+    /// The pointer came to or left Mail in the rail or the navigation
+    /// panel: while the navigation is folded, it opens after a moment of
+    /// rest and closes a moment after the pointer is gone from both.
+    fn hover_navigation(&mut self, what: Hover, hovered: bool, cx: &mut Context<Self>) {
+        match what {
+            Hover::Rail => self.peek_hover.0 = hovered,
+            Hover::Panel => self.peek_hover.1 = hovered,
+        }
+        if self.nav_open || self.app != RailApp::Mail {
             return;
         }
-        if !hovered {
+        let on = self.peek_hover.0 || self.peek_hover.1;
+        if on == self.nav_peek {
             self.peek_task = None;
-            if self.nav_peek {
-                self.nav_peek = false;
-                cx.notify();
-            }
             return;
         }
-        if self.nav_peek || self.peek_task.is_some() {
+        // Only the rail opens the panel; the panel only keeps it open.
+        if on && !self.peek_hover.0 {
             return;
         }
+        let delay = if on { PEEK_DELAY } else { PEEK_LINGER };
         self.peek_task = Some(cx.spawn(async move |this, cx| {
-            cx.background_executor().timer(PEEK_DELAY).await;
+            cx.background_executor().timer(delay).await;
             this.update(cx, |this, cx| {
                 this.peek_task = None;
                 if !this.nav_open {
-                    this.nav_peek = true;
+                    this.nav_peek = on;
                     cx.notify();
                 }
             })
@@ -1067,6 +1135,7 @@ impl MailWindow {
                 self.selected = (!self.entries.is_empty()).then_some(0);
                 self.checked.clear();
                 self.checked_all = false;
+                self.page_pick = None;
                 self.list_scroll.scroll_to_item(0, ScrollStrategy::Top);
                 if first {
                     self.card_seq += 1;
@@ -1223,6 +1292,7 @@ impl MailWindow {
             self.checked.remove(key);
         }
         self.checked_all = false;
+        self.page_pick = None;
         if self.reader.as_ref().is_some_and(|r| keys.contains(&r.key)) {
             self.show_list();
             self.reader = None;
@@ -1345,6 +1415,7 @@ impl MailWindow {
                 self.checked.insert(key);
             }
             self.checked_all = false;
+            self.page_pick = None;
             cx.notify();
         }
     }
@@ -1624,7 +1695,7 @@ impl Render for MailWindow {
             .update(cx, |search, _| search.set_accent(accent));
 
         // Widths: the cards get what the navigation and settings leave.
-        let nav_width = lerp(RAIL_WIDTH, NAV_WIDTH, reserve);
+        let nav_width = NAV_WIDTH * reserve.max(0.0);
         let settings_width = SETTINGS_WIDTH * settings_t.clamp(0.0, 1.0);
         let available = (viewport - APP_RAIL_WIDTH - nav_width - 16.0 - settings_width).max(200.0);
         self.cards_width = available;
@@ -1677,6 +1748,7 @@ impl Render for MailWindow {
         let compose = self.render_compose(&th, window, reduce, cx);
         let account_menu = self.render_account_menu(&th, cx);
         let add_account = self.render_add_account(&th, window, reduce, cx);
+        let context_menu = self.render_context_menu(&th, window, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let content = div()
             .key_context(WINDOW_CONTEXT)
@@ -1696,6 +1768,7 @@ impl Render for MailWindow {
             .children(compose)
             .children(account_menu)
             .children(add_account)
+            .children(context_menu)
             .children(snackbar)
             .into_any_element();
 
@@ -1735,6 +1808,6 @@ fn page_card(th: &Theme) -> gpui::Div {
         .items_center()
         .justify_center()
         .gap(px(12.0))
-        .rounded(px(16.0))
+        .rounded(px(PANEL_RADIUS))
         .bg(rgba(th.surface))
 }
