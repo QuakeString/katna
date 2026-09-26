@@ -300,8 +300,11 @@ One worker per account inside the daemon:
   when the network stops being metered every worker syncs and catches up
   (`worker::Handle::set_metered`). POP3 has no headers-only download, so
   it checks as usual. Without a system bus, logind or NetworkManager the
-  daemon runs as before. Not built yet: the portal network monitor (for
-  Flatpak) and a setting to treat a network as metered by hand.
+  daemon runs as before. The `sync.metered` setting (`auto`, `always`,
+  `never`) wins over NetworkManager; Katna Mail saves it and calls
+  `ReloadConfig`, and the daemon answers `Metered` and signals
+  `MeteredChanged`. Not built yet: the portal network monitor (for
+  Flatpak).
 
 ### 6.2 Sync levels (per account)
 

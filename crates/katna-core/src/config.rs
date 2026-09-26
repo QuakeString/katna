@@ -25,6 +25,40 @@ pub struct Config {
     pub logging: Logging,
     pub sending: Sending,
     pub mail: MailView,
+    pub sync: SyncConfig,
+}
+
+/// How `katna-daemon` syncs (`docs/ARCHITECTURE.md` §6.1).
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SyncConfig {
+    /// Whether to save data as on a metered network: no bodies downloaded
+    /// ahead of time.
+    pub metered: Metered,
+}
+
+/// [`SyncConfig::metered`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Metered {
+    /// Ask NetworkManager.
+    #[default]
+    Auto,
+    /// Always, for example on a phone hotspot NetworkManager does not know.
+    Always,
+    /// Never, whatever NetworkManager says.
+    Never,
+}
+
+impl Metered {
+    /// Whether to act metered when NetworkManager says `network`.
+    pub fn decide(self, network: bool) -> bool {
+        match self {
+            Self::Auto => network,
+            Self::Always => true,
+            Self::Never => false,
+        }
+    }
 }
 
 /// Background-service behavior (`docs/ARCHITECTURE.md` §9.2).
@@ -279,6 +313,17 @@ mod tests {
         assert!(Config::parse("[mail]\nreading_pane_share = 0.9\n").is_err());
         let config = Config::parse("[sending]\nsignature = \"Kay\\nEnron\"\n").unwrap();
         assert_eq!(config.sending.signature, "Kay\nEnron");
+    }
+
+    #[test]
+    fn metered_setting() {
+        assert_eq!(Config::default().sync.metered, Metered::Auto);
+        let config = Config::parse("[sync]\nmetered = \"always\"\n").unwrap();
+        assert_eq!(config.sync.metered, Metered::Always);
+        assert!(Config::parse("[sync]\nmetered = \"sometimes\"\n").is_err());
+        assert!(Metered::Auto.decide(true) && !Metered::Auto.decide(false));
+        assert!(Metered::Always.decide(false));
+        assert!(!Metered::Never.decide(true));
     }
 
     #[test]

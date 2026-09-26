@@ -1009,3 +1009,89 @@ fn watches_suspend_network_and_metering_on_the_system_bus() {
         assert!(events.is_empty(), "going to sleep or down is not an event");
     });
 }
+
+/// `sync.metered` wins over NetworkManager, and `ReloadConfig` applies a
+/// saved change at once.
+#[test]
+fn metered_setting_overrides_the_network() {
+    use katna_core::{Config, config::Metered};
+
+    let system_bus = Bus::start();
+    let session_bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let save = |metered: Metered| {
+        let mut config = Config::default();
+        config.sync.metered = metered;
+        config.save(&paths.config_file()).unwrap();
+    };
+    save(Metered::Never);
+    smol::block_on(async {
+        let services = system_bus.connect().await;
+        services
+            .object_server()
+            // "Guess yes", as on a phone hotspot.
+            .at(
+                "/org/freedesktop/NetworkManager",
+                FakeNetworkManager { metered: 3 },
+            )
+            .await
+            .unwrap();
+        services
+            .request_name("org.freedesktop.NetworkManager")
+            .await
+            .unwrap();
+
+        let instance = start(&session_bus, &paths, Secrets::memory())
+            .await
+            .unwrap();
+        instance.watch_system(system_bus.connect().await);
+        let client = session_bus.connect().await;
+        let pim = PimProxy::new(&client).await.unwrap();
+        let mut changes = pim.receive_metered_changed().await.unwrap();
+        // Let the watcher read NetworkManager.
+        Timer::after(Duration::from_millis(500)).await;
+        assert!(
+            !pim.metered().await.unwrap(),
+            "never, whatever the network says"
+        );
+
+        let mut next = async || {
+            within("MeteredChanged", 5, changes.next())
+                .await
+                .unwrap()
+                .args()
+                .unwrap()
+                .metered
+        };
+        save(Metered::Auto);
+        pim.reload_config().await.unwrap();
+        assert!(next().await, "auto follows the network");
+        assert!(pim.metered().await.unwrap());
+
+        save(Metered::Always);
+        pim.reload_config().await.unwrap();
+        let manager = services
+            .object_server()
+            .interface::<_, FakeNetworkManager>("/org/freedesktop/NetworkManager")
+            .await
+            .unwrap();
+        manager.get_mut().await.metered = 2;
+        manager
+            .get()
+            .await
+            .metered_changed(manager.signal_emitter())
+            .await
+            .unwrap();
+        Timer::after(Duration::from_millis(300)).await;
+        assert!(
+            pim.metered().await.unwrap(),
+            "always, whatever the network says"
+        );
+
+        save(Metered::Auto);
+        pim.reload_config().await.unwrap();
+        assert!(!next().await, "the network is not metered any more");
+        assert!(!pim.metered().await.unwrap());
+    });
+}
