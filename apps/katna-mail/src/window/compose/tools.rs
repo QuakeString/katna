@@ -1631,7 +1631,7 @@ impl MailWindow {
                     this.save_config();
                     if let Some(c) = &mut this.compose {
                         c.popup = None;
-                        if c.mode != Mode::Inline && c.mode != Mode::Minimized {
+                        if matches!(c.mode, Mode::Open | Mode::Full) {
                             c.mode = if full { Mode::Full } else { Mode::Open };
                         }
                     }

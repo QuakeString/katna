@@ -478,6 +478,11 @@ impl MailWindow {
     /// The colors: the desktop's light or dark, unless the settings pick
     /// one, in the desktop's color scheme or accent color if it has them.
     fn theme(&self, window: &Window) -> Theme {
+        self.theme_for(&self.chrome, window)
+    }
+
+    /// [`Self::theme`] for a window framed by `chrome`.
+    fn theme_for(&self, chrome: &WindowChrome, window: &Window) -> Theme {
         let choice = match self.config.mail.theme {
             ThemeChoice::System => None,
             ThemeChoice::Light => Some(false),
@@ -492,14 +497,13 @@ impl MailWindow {
             Theme::new(dark)
         };
         // The window frame follows the same choices.
-        self.chrome.set_dark(choice);
-        self.chrome
-            .set_colors(desktop_scheme.then_some(ChromeColors {
-                window_bg: th.page,
-                view_bg: th.surface,
-                fg: th.text,
-                accent: th.accent,
-            }));
+        chrome.set_dark(choice);
+        chrome.set_colors(desktop_scheme.then_some(ChromeColors {
+            window_bg: th.page,
+            view_bg: th.surface,
+            fg: th.text,
+            accent: th.accent,
+        }));
         th
     }
 

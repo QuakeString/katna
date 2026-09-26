@@ -15,9 +15,11 @@
 //! snackbar's Undo takes it back and opens it again.
 //!
 //! `tools` draws the bars and their menus, `attach` handles files and
-//! pictures, `schedule` the times of schedule send.
+//! pictures, `schedule` the times of schedule send, `popout` the message
+//! in a window of its own.
 
 mod attach;
+mod popout;
 mod schedule;
 mod scheduled;
 mod signature_editor;
@@ -75,6 +77,8 @@ enum Mode {
     Full,
     /// At the foot of the conversation it answers.
     Inline,
+    /// In a window of its own (`popout`).
+    Window,
 }
 
 pub(super) struct Compose {
@@ -156,6 +160,8 @@ pub(super) struct Writing {
     /// The signature being edited on the Settings page, and its bar.
     signature_editor: Option<Entity<RichEditor>>,
     signature_tools: Option<signature_editor::SignatureTools>,
+    /// The window of a popped-out message.
+    compose_window: Option<popout::Handle>,
 }
 
 impl Writing {
@@ -361,6 +367,8 @@ impl MailWindow {
             let inline_here = compose.mode == Mode::Inline && compose.conversation == open;
             if inline_here {
                 window.focus(&compose.body.focus_handle(cx), cx);
+            } else if compose.mode == Mode::Window {
+                self.pop_out_compose(cx);
             } else {
                 if compose.mode == Mode::Minimized {
                     compose.mode = Mode::Open;
@@ -502,6 +510,8 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        // A popped-out message left untouched gives way to the new one.
+        self.close_compose_window(cx);
         let th = self.theme(window);
         let accent: Hsla = rgba(th.accent).into();
         let input = |placeholder: &str, text: &str, cx: &mut Context<Self>| {
@@ -892,7 +902,11 @@ impl MailWindow {
         if let Some(compose) = &mut self.compose {
             compose.closing = true;
             compose.popup = None;
+            if compose.mode == Mode::Window {
+                self.compose = None;
+            }
         }
+        self.close_compose_window(cx);
         if discarded {
             self.show_snackbar("Draft discarded", None, cx);
         }
@@ -922,6 +936,12 @@ impl MailWindow {
             .compose
             .as_ref()
             .map(|c| (c.mode, c.conversation, c.closing))?;
+        if mode == Mode::Window {
+            if closing {
+                self.compose = None;
+            }
+            return None;
+        }
         if mode == Mode::Inline {
             let here = self.reading
                 && self
@@ -1005,28 +1025,24 @@ impl MailWindow {
                     this.compose_mode(Mode::Minimized, cx)
                 })),
             )
-            .child(
-                small_button(
-                    "compose-full",
-                    if mode == Mode::Full {
-                        "close-full"
-                    } else {
-                        "open-full"
-                    },
-                    th,
+            .when(mode == Mode::Full, |d| {
+                d.child(
+                    small_button("compose-full", "close-full", th)
+                        .tooltip(tip("Exit full screen", th))
+                        .on_click(cx.listener(|this, _, _, cx| {
+                            cx.stop_propagation();
+                            this.compose_mode(Mode::Full, cx)
+                        })),
                 )
-                .tooltip(tip(
-                    if mode == Mode::Full {
-                        "Exit full screen"
-                    } else {
-                        "Full screen"
-                    },
-                    th,
-                ))
-                .on_click(cx.listener(|this, _, _, cx| {
-                    cx.stop_propagation();
-                    this.compose_mode(Mode::Full, cx)
-                })),
+            })
+            .child(
+                // Gmail's expand button, in a window of its own here.
+                small_button("compose-pop-out", "open-full", th)
+                    .tooltip(tip("Open in a new window", th))
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        cx.stop_propagation();
+                        this.pop_out_compose(cx)
+                    })),
             )
             .child(
                 small_button("compose-close", "close", th)
@@ -1040,7 +1056,9 @@ impl MailWindow {
             );
 
         let (width, height) = match mode {
-            Mode::Open | Mode::Inline => (WIDTH.min(vw - 32.0), MAX_HEIGHT.min(vh - 96.0)),
+            Mode::Open | Mode::Inline | Mode::Window => {
+                (WIDTH.min(vw - 32.0), MAX_HEIGHT.min(vh - 96.0))
+            }
             Mode::Minimized => (MINIMIZED_WIDTH, TITLE_HEIGHT),
             Mode::Full => ((vw - 128.0).clamp(WIDTH, 1000.0), vh - 96.0),
         };

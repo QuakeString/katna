@@ -1130,6 +1130,12 @@ Gemini or confidential mode):
   suggestions, clipboard, link and table actions. Mail waiting to be sent
   later gets a *Scheduled* row in the folder list after Sent, which opens
   a list with Cancel send; a cancelled message opens again as written.
+  The expand button in the compose title bar moves the message into a
+  window of its own (`compose/popout.rs`); a button in that window's bar
+  docks it back. The message stays in the mail window's state and the new
+  window only draws it, so sending and the snackbar work the same. Closing
+  that window closes the message as its close button does; the app quits
+  only when the mail window closes.
   Compose, Reply, Reply all and Forward all open it, filled in (recipients,
   `Re:`/`Fwd:`, the quoted message, `In-Reply-To` and `References`). Send
   builds an RFC 5322 message (`outgoing.rs`) and hands it to the
