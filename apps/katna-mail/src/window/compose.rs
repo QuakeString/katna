@@ -25,6 +25,8 @@ use katna_ui::{InputEvent, TextArea, TextInput};
 use std::time::Duration;
 
 use super::{MailWindow, SNACKBAR_TIME};
+
+mod security;
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::format;
@@ -34,6 +36,7 @@ use crate::theme::{Theme, fade};
 use crate::widgets::{
     avatar, elevation, icon, icon_button, icon_button_colored, menu, menu_item, tip,
 };
+use security::Sealing;
 
 const WIDTH: f32 = 560.0;
 const MAX_HEIGHT: f32 = 620.0;
@@ -78,6 +81,8 @@ pub(super) struct Compose {
     show_bcc: bool,
     mode: Mode,
     send_menu: bool,
+    /// Sign and encrypt.
+    sealing: Sealing,
     /// The signature in the body, a [`katna_core::config::Signature::id`].
     signature: Option<u32>,
     signature_menu: bool,
@@ -157,6 +162,7 @@ impl Threading {
 pub(super) struct Unsent {
     draft: Draft,
     thread: Threading,
+    sealing: Sealing,
     signature: Option<u32>,
 }
 
@@ -294,6 +300,10 @@ impl MailWindow {
                 .unwrap_or_default()
         };
         let view = self.reader.as_ref().and_then(|reader| reader.view(source));
+        let sealing = match kind {
+            Kind::New => Sealing::default(),
+            _ => Sealing::answering(self.reader.as_ref().and_then(|r| r.security(source))),
+        };
         let original = view.map(|view| Original {
             view,
             date: date(view.date),
@@ -330,6 +340,7 @@ impl MailWindow {
             compose.kind = kind;
             compose.mode = mode;
             compose.conversation = conversation;
+            compose.sealing = sealing;
         }
     }
 
@@ -472,6 +483,7 @@ impl MailWindow {
             conversation: None,
             mode: Mode::Open,
             send_menu: false,
+            sealing: Sealing::default(),
             signature,
             signature_menu: false,
             shown: Spring::new(motion::SLIDE, 0.0),
@@ -530,6 +542,7 @@ impl MailWindow {
         compose.signature_menu = false;
         let draft = compose.fields(cx);
         let thread = compose.thread.clone();
+        let sealing = compose.sealing;
         let signature = compose.signature;
         let parse = |text: &str| outgoing::parse_addresses(text);
         let (to, cc, bcc) = match (parse(&draft.to), parse(&draft.cc), parse(&draft.bcc)) {
@@ -556,6 +569,10 @@ impl MailWindow {
             name: Some(account.display_name.trim().to_owned()).filter(|n| !n.is_empty()),
             email: account.address.clone(),
         };
+        let emails = |list: &[Mailbox]| list.iter().map(|m| m.email.clone()).collect::<Vec<_>>();
+        let sender = account.address.clone();
+        let visible = [emails(&to), emails(&cc)].concat();
+        let hidden = emails(&bcc);
         let raw = outgoing::build(&Outgoing {
             from: Some(from),
             to,
@@ -571,6 +588,7 @@ impl MailWindow {
         self.unsent = Some(Unsent {
             draft,
             thread,
+            sealing,
             signature,
         });
         self.close_compose(false, cx);
@@ -580,6 +598,8 @@ impl MailWindow {
             let result = cx
                 .background_executor()
                 .spawn(async move {
+                    // Signed and encrypted before the outbox sees it.
+                    let raw = security::seal(raw, sealing, sender, visible, hidden)?;
                     let connection = match connection {
                         Some(connection) => connection,
                         None => daemon::connect().await?,
@@ -614,6 +634,7 @@ impl MailWindow {
         let Some(Unsent {
             draft,
             thread,
+            sealing,
             signature,
         }) = self.unsent.take()
         else {
@@ -627,6 +648,9 @@ impl MailWindow {
             return;
         }
         self.show_compose(draft, Draft::default(), thread, signature, true, window, cx);
+        if let Some(compose) = &mut self.compose {
+            compose.sealing = sealing;
+        }
     }
 
     fn close_compose(&mut self, discarded: bool, cx: &mut Context<Self>) {
@@ -904,6 +928,7 @@ impl MailWindow {
                         .child("Cc"),
                 )
             })
+            .children(self.render_sealing(th, cx))
             .child(
                 small_button("inline-pop-out", "open-full", th)
                     .tooltip(tip("Pop out reply", th))
@@ -1029,7 +1054,8 @@ impl MailWindow {
                             cx.notify();
                         },
                     )))
-                }),
+                })
+                .children(self.render_sealing(th, cx)),
         );
         div()
             .flex_none()

@@ -24,6 +24,20 @@ pub struct PartInfo<'a> {
 /// `attachment`; otherwise anything but the text of the message and
 /// pictures the HTML body shows inline.
 pub fn is_attachment(part: &PartInfo<'_>) -> bool {
+    // Signatures and the PGP/MIME version part belong to the message's
+    // protection, which the reading view shows in its own banner.
+    const PROTECTION_PARTS: [&str; 4] = [
+        "application/pgp-signature",
+        "application/pkcs7-signature",
+        "application/x-pkcs7-signature",
+        "application/pgp-encrypted",
+    ];
+    if PROTECTION_PARTS
+        .iter()
+        .any(|t| part.mime.eq_ignore_ascii_case(t))
+    {
+        return false;
+    }
     if part
         .disposition
         .is_some_and(|d| d.eq_ignore_ascii_case("attachment"))
