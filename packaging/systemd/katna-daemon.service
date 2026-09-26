@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# systemd user unit for katna-daemon (docs/ARCHITECTURE.md §9.2).
+# Same as `katna-daemon install-user-service` writes (apps/katna-daemon/src/install.rs);
+# tests there and in crates/katna-core/tests/packaging.rs check it.
+[Unit]
+Description=Katna mail and calendar service
+
+[Service]
+Type=dbus
+BusName=in.invenia.katna.Daemon
+ExecStart=/usr/bin/katna-daemon
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
