@@ -9,6 +9,7 @@
 
 mod report;
 mod synth;
+mod threads;
 
 use std::path::PathBuf;
 use std::process::ExitCode;
@@ -24,6 +25,7 @@ usage: katna-bench search --data-dir DIR [--queries FILE] [--runs N] [--limit N]
                           [--as-you-type] [--max-p99-ms MS] [--json FILE]
                           [--baseline FILE [--max-regression PERCENT]]
        katna-bench synth --data-dir DIR [--messages N] [--seed N]
+       katna-bench threads --data-dir DIR [--reset]
 
 search: Runs each query once cold, then --runs times (default 20), against
 the store and search index in DIR (import with `katna-search-cli import`,
@@ -44,7 +46,13 @@ latency; exits with status 1 if the overall p99 exceeds --max-p99-ms.
 
 synth: Imports --messages (default 500000) synthetic messages with Enron's
 shape (senders, folders, sizes, attachments, word frequencies) into the
-store in DIR. The same --seed gives the same corpus.";
+store in DIR. The same --seed gives the same corpus.
+
+threads: Threads and classifies the messages in DIR that have no thread yet,
+as the daemon does for stores from before threading, and times it; then
+times the conversation list reads on the largest folder. --reset first
+forgets every thread and category, to measure the backfill of a whole
+store.";
 
 /// Queries written for the Enron corpus; the synthetic corpus uses the same
 /// names and words.
@@ -82,6 +90,7 @@ fn main() -> ExitCode {
     match args.first().map(String::as_str) {
         Some("search") => search(&args[1..]),
         Some("synth") => synth::run(&args[1..]),
+        Some("threads") => threads::run(&args[1..]),
         Some("-h" | "--help") => {
             println!("{USAGE}");
             ExitCode::SUCCESS

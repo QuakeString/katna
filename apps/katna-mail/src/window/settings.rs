@@ -1,0 +1,537 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+//! Quick settings: a panel that slides in from the right with the reading
+//! pane (three or two panes), density, theme, inbox tabs, undo send, the
+//! signature and conversation view. Changes apply at once and are saved to
+//! `config.toml`.
+
+use std::time::Duration;
+
+use gpui::{
+    AnimationExt, AnyElement, Context, Div, Entity, Focusable, FontWeight, Hsla, SpringAnimation,
+    Window, div, prelude::*, px, rgba,
+};
+use katna_core::config::{Density, ReadingPane, Theme as ThemeChoice, UNDO_SEND_CHOICES};
+use katna_ui::Ripple;
+use katna_ui::motion;
+use katna_ui::{InputEvent, TextArea};
+
+use super::{MailWindow, SETTINGS_WIDTH};
+use crate::theme::{Theme, mix};
+use crate::widgets::{elevation, icon_button, radio, switch};
+
+/// A signature edit is saved this long after the last key.
+const SIGNATURE_SAVE_DELAY: Duration = Duration::from_millis(600);
+
+/// What a quick setting changes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Change {
+    UndoSend(u32),
+    Pane(ReadingPane),
+    Density(Density),
+    Theme(ThemeChoice),
+    Tabs(bool),
+    Conversations(bool),
+}
+
+impl MailWindow {
+    pub(super) fn render_settings(&self, th: &Theme, t: f32, cx: &mut Context<Self>) -> AnyElement {
+        let view = &self.config.mail;
+        let inner = SETTINGS_WIDTH - 16.0;
+        let panel = div()
+            .id("settings")
+            .w(px(inner))
+            .h_full()
+            .flex()
+            .flex_col()
+            .rounded(px(16.0))
+            .bg(rgba(th.surface))
+            .shadow(elevation(th, 1.0 * t.min(1.0)))
+            .child(
+                div()
+                    .flex_none()
+                    .h(px(56.0))
+                    .pl(px(20.0))
+                    .pr(px(8.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .child(
+                        div()
+                            .flex_1()
+                            .text_size(px(16.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .child("Quick settings"),
+                    )
+                    .child(
+                        icon_button("settings-close", "close", 20.0, th).on_click(cx.listener(
+                            |this, _, window, cx| {
+                                this.toggle_settings(&super::ToggleSettings, window, cx)
+                            },
+                        )),
+                    ),
+            )
+            .child(
+                div()
+                    .id("settings-body")
+                    .flex_1()
+                    .min_h_0()
+                    .overflow_y_scroll()
+                    // One block that keeps its height, so the rows are
+                    // scrolled rather than squeezed.
+                    .child(
+                        div()
+                            .flex_none()
+                            .px(px(20.0))
+                            .pb(px(20.0))
+                            .flex()
+                            .flex_col()
+                            .gap(px(4.0))
+                            .child(heading("Reading pane", th))
+                            .child(
+                                div()
+                                    .flex()
+                                    .flex_row()
+                                    .gap(px(12.0))
+                                    .child(self.pane_choice(
+                                        ReadingPane::Right,
+                                        "Right of the list",
+                                        th,
+                                        cx,
+                                    ))
+                                    .child(self.pane_choice(ReadingPane::None, "No split", th, cx)),
+                            )
+                            .child(divider(th))
+                            .child(heading("Density", th))
+                            .child(self.radio_row(
+                                "density-default",
+                                "Default",
+                                view.density == Density::Default,
+                                Change::Density(Density::Default),
+                                th,
+                                cx,
+                            ))
+                            .child(self.radio_row(
+                                "density-compact",
+                                "Compact",
+                                view.density == Density::Compact,
+                                Change::Density(Density::Compact),
+                                th,
+                                cx,
+                            ))
+                            .child(divider(th))
+                            .child(heading("Theme", th))
+                            .children(
+                                [
+                                    (ThemeChoice::System, "theme-system", "Same as the desktop"),
+                                    (ThemeChoice::Light, "theme-light", "Light"),
+                                    (ThemeChoice::Dark, "theme-dark", "Dark"),
+                                ]
+                                .map(|(choice, id, label)| {
+                                    self.radio_row(
+                                        id,
+                                        label,
+                                        view.theme == choice,
+                                        Change::Theme(choice),
+                                        th,
+                                        cx,
+                                    )
+                                }),
+                            )
+                            .child(divider(th))
+                            .child(heading("Inbox", th))
+                            .child(self.switch_row(
+                                "tabs",
+                                "Category tabs",
+                                "Primary, Promotions, Social, Updates and Forums",
+                                view.inbox_tabs,
+                                Change::Tabs(!view.inbox_tabs),
+                                th,
+                                cx,
+                            ))
+                            .child(divider(th))
+                            .child(heading("Sending", th))
+                            .child(self.undo_send_choice(th, cx))
+                            .children(self.signature.clone().map(|editor| {
+                                div()
+                                    .pt(px(12.0))
+                                    .flex()
+                                    .flex_col()
+                                    .gap(px(6.0))
+                                    .child(div().px(px(8.0)).text_size(px(14.0)).child("Signature"))
+                                    .child(
+                                        div()
+                                            .id("signature-box")
+                                            .mx(px(8.0))
+                                            .min_h(px(72.0))
+                                            .max_h(px(160.0))
+                                            .overflow_y_scroll()
+                                            .px(px(10.0))
+                                            .py(px(8.0))
+                                            .rounded(px(8.0))
+                                            .border_1()
+                                            .border_color(rgba(th.divider))
+                                            .text_size(px(14.0))
+                                            .line_height(px(20.0))
+                                            .cursor_text()
+                                            .on_click({
+                                                let focus = editor.focus_handle(cx);
+                                                move |_, window, cx| window.focus(&focus, cx)
+                                            })
+                                            .child(editor),
+                                    )
+                                    .child(
+                                        div()
+                                            .px(px(8.0))
+                                            .text_size(px(12.0))
+                                            .text_color(rgba(th.text_faint))
+                                            .child("Added below new mail, replies and forwards."),
+                                    )
+                            }))
+                            .child(divider(th))
+                            .child(heading("Email threading", th))
+                            .child(self.switch_row(
+                                "conversations",
+                                "Conversation view",
+                                "Group replies to the same mail",
+                                view.conversations,
+                                Change::Conversations(!view.conversations),
+                                th,
+                                cx,
+                            )),
+                    ),
+            );
+        // The panel keeps its width and slides out from under the edge.
+        div()
+            .flex_none()
+            .h_full()
+            .w(px(SETTINGS_WIDTH * t.clamp(0.0, 1.0)))
+            .pb(px(16.0))
+            .overflow_hidden()
+            .child(
+                div()
+                    .h_full()
+                    .pr(px(16.0))
+                    .ml(px(24.0 * (1.0 - t.clamp(0.0, 1.0))))
+                    .opacity(t.clamp(0.0, 1.0))
+                    .child(panel),
+            )
+            .into_any_element()
+    }
+
+    /// The signature editor, saving as the user types.
+    pub(super) fn signature_editor(
+        &mut self,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Entity<TextArea> {
+        let accent: Hsla = rgba(self.theme(window).accent).into();
+        let signature = self.config.sending.signature.clone();
+        let editor = cx.new(|cx| {
+            let mut area = TextArea::new("Your name, and anything to add below it", cx);
+            area.set_text(signature, 0, cx);
+            area.set_accent(accent);
+            area
+        });
+        let subscription = cx.subscribe(&editor, |this, editor, event: &InputEvent, cx| {
+            if *event != InputEvent::Changed {
+                return;
+            }
+            this.config.sending.signature = editor.read(cx).text().to_owned();
+            this.signature_save = Some(cx.spawn(async move |this, cx| {
+                cx.background_executor().timer(SIGNATURE_SAVE_DELAY).await;
+                this.update(cx, |this, _| this.save_config()).ok();
+            }));
+        });
+        self._subscriptions.push(subscription);
+        editor
+    }
+
+    /// Undo send: how long a sent message waits before it goes out.
+    fn undo_send_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let now = self.config.sending.undo_send_seconds;
+        let chips = UNDO_SEND_CHOICES.into_iter().map(|seconds| {
+            let on = seconds == now;
+            div()
+                .id(("undo-send", seconds as usize))
+                .px(px(10.0))
+                .h(px(28.0))
+                .flex()
+                .items_center()
+                .rounded(px(8.0))
+                .border_1()
+                .border_color(rgba(if on { th.nav_selected } else { th.divider }))
+                .bg(rgba(if on { th.nav_selected } else { th.surface }))
+                .text_color(rgba(if on {
+                    th.nav_selected_text
+                } else {
+                    th.text_dim
+                }))
+                .text_size(px(13.0))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .on_click(
+                    cx.listener(move |this, _, _, cx| this.apply(Change::UndoSend(seconds), cx)),
+                )
+                .child(if seconds == 0 {
+                    "Off".to_owned()
+                } else {
+                    format!("{seconds} s")
+                })
+        });
+        div()
+            .px(px(8.0))
+            .flex()
+            .flex_col()
+            .gap(px(8.0))
+            .child(div().text_size(px(14.0)).child("Undo send"))
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(6.0))
+                    .children(chips),
+            )
+            .into_any_element()
+    }
+
+    fn apply(&mut self, change: Change, cx: &mut Context<Self>) {
+        let sending = &mut self.config.sending;
+        let view = &mut self.config.mail;
+        let mut relist = false;
+        match change {
+            Change::Pane(pane) => {
+                if view.reading_pane == pane {
+                    return;
+                }
+                view.reading_pane = pane;
+                self.card_seq += 1;
+                if !self.reading {
+                    self.reader = None;
+                }
+            }
+            Change::UndoSend(seconds) => sending.undo_send_seconds = seconds,
+            Change::Density(density) => view.density = density,
+            Change::Theme(theme) => view.theme = theme,
+            Change::Tabs(on) => {
+                view.inbox_tabs = on;
+                relist = true;
+            }
+            Change::Conversations(on) => {
+                view.conversations = on;
+                relist = true;
+            }
+        }
+        self.save_config();
+        if relist {
+            self.reader = None;
+            self.reading = false;
+            if let Some(folder) = self.folder {
+                self.card_seq += 1;
+                self.open_folder(folder, cx);
+            }
+        }
+        cx.notify();
+    }
+
+    /// A reading-pane option: a small drawing of the layout and its name.
+    fn pane_choice(
+        &self,
+        pane: ReadingPane,
+        label: &'static str,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let on = self.config.mail.reading_pane == pane;
+        let block = |w: f32, color: u32| div().w(px(w)).h_full().rounded(px(3.0)).bg(rgba(color));
+        let lines = || {
+            div()
+                .flex()
+                .flex_col()
+                .gap(px(4.0))
+                .p(px(5.0))
+                .children((0..4).map(|_| div().h(px(4.0)).rounded_full().bg(rgba(th.divider))))
+        };
+        let picture = div()
+            .h(px(62.0))
+            .p(px(5.0))
+            .flex()
+            .flex_row()
+            .gap(px(4.0))
+            .rounded(px(8.0))
+            .bg(rgba(th.page))
+            .child(block(14.0, th.nav_selected))
+            .child(
+                div()
+                    .flex_1()
+                    .h_full()
+                    .rounded(px(3.0))
+                    .bg(rgba(th.surface))
+                    .child(lines()),
+            )
+            .when(pane == ReadingPane::Right, |d| {
+                d.child(
+                    div()
+                        .flex_1()
+                        .h_full()
+                        .rounded(px(3.0))
+                        .bg(rgba(th.surface))
+                        .p(px(5.0))
+                        .child(
+                            div()
+                                .h(px(6.0))
+                                .w(px(28.0))
+                                .rounded_full()
+                                .bg(rgba(th.text_faint)),
+                        ),
+                )
+            });
+        div()
+            .id(match pane {
+                ReadingPane::Right => "pane-right",
+                ReadingPane::None => "pane-none",
+            })
+            .relative()
+            .overflow_hidden()
+            .flex_1()
+            .p(px(6.0))
+            .flex()
+            .flex_col()
+            .gap(px(8.0))
+            .rounded(px(12.0))
+            .border_2()
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .on_click(cx.listener(move |this, _, _, cx| this.apply(Change::Pane(pane), cx)))
+            .child(Ripple::new(("pane-ripple", pane as usize), rgba(th.ripple)))
+            .child(picture)
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(8.0))
+                    .px(px(2.0))
+                    .pb(px(2.0))
+                    .text_size(px(13.0))
+                    .child(animated_radio(("pane-radio", pane as usize), on, th))
+                    .child(label),
+            )
+            .with_spring(
+                ("pane-border", pane as usize),
+                SpringAnimation::new(motion::SMOOTH).to(if on { 1.0 } else { 0.0 }),
+                {
+                    let (off, accent) = (th.divider, th.accent);
+                    move |el, s: f32| el.border_color(rgba(mix(off, accent, s.clamp(0.0, 1.0))))
+                },
+            )
+            .into_any_element()
+    }
+
+    fn radio_row(
+        &self,
+        id: &'static str,
+        label: &'static str,
+        on: bool,
+        change: Change,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        div()
+            .id(id)
+            .relative()
+            .overflow_hidden()
+            .h(px(40.0))
+            .px(px(8.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(14.0))
+            .rounded(px(8.0))
+            .text_size(px(14.0))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
+            .child(Ripple::new((id, 1_usize), rgba(th.ripple)))
+            .child(animated_radio((id, 2_usize), on, th))
+            .child(label)
+            .into_any_element()
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn switch_row(
+        &self,
+        id: &'static str,
+        label: &'static str,
+        detail: &'static str,
+        on: bool,
+        change: Change,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        div()
+            .id(id)
+            .relative()
+            .overflow_hidden()
+            .py(px(8.0))
+            .px(px(8.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(12.0))
+            .rounded(px(8.0))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
+            .child(Ripple::new((id, 1_usize), rgba(th.ripple)))
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .flex()
+                    .flex_col()
+                    .child(div().text_size(px(14.0)).child(label))
+                    .child(
+                        div()
+                            .text_size(px(12.0))
+                            .text_color(rgba(th.text_faint))
+                            .child(detail),
+                    ),
+            )
+            .child(div().with_spring(
+                (id, 3_usize),
+                SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                {
+                    let th = *th;
+                    move |el, s: f32| el.child(switch(s.clamp(0.0, 1.0), &th))
+                },
+            ))
+            .into_any_element()
+    }
+}
+
+fn animated_radio(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> AnyElement {
+    let th = *th;
+    div()
+        .with_spring(
+            id,
+            SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+            move |el, s: f32| el.child(radio(s.clamp(0.0, 1.0), &th)),
+        )
+        .into_any_element()
+}
+
+fn heading(text: &'static str, th: &Theme) -> Div {
+    div()
+        .pt(px(12.0))
+        .pb(px(8.0))
+        .text_size(px(12.0))
+        .font_weight(FontWeight::MEDIUM)
+        .text_color(rgba(th.text_dim))
+        .child(text.to_uppercase())
+}
+
+fn divider(th: &Theme) -> Div {
+    div().mt(px(12.0)).h(px(1.0)).bg(rgba(th.divider))
+}

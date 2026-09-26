@@ -13,10 +13,13 @@ pub mod secrets;
 pub mod service;
 
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::time::{Duration, Instant};
 
 use async_channel::{Receiver, Sender};
-use katna_core::{Paths, ids};
+use katna_core::{AccountId, Paths, ids};
 use katna_search::{IndexEvent, Indexer, IndexerOptions, IndexerWaker};
+use katna_store::{Mode, Store};
 use katna_sync::worker::WorkerConfig;
 use zbus::fdo::{RequestNameFlags, RequestNameReply};
 
@@ -45,6 +48,86 @@ pub struct Instance {
     connection: zbus::Connection,
     /// `None` if the index could not be opened; mail still syncs.
     indexer: Option<Indexer>,
+    backfill: Backfill,
+}
+
+/// Threads and classifies mail stored before threading existed, on its own
+/// thread with its own store handle, one small transaction at a time.
+struct Backfill {
+    stop: Arc<AtomicBool>,
+    thread: Option<std::thread::JoinHandle<()>>,
+}
+
+/// Pause between backfill batches, so sync gets the write lock often.
+const BACKFILL_PAUSE: Duration = Duration::from_millis(20);
+
+impl Backfill {
+    fn start(paths: &Paths, notices: Sender<Notice>) -> Self {
+        let stop = Arc::new(AtomicBool::new(false));
+        let paths = paths.clone();
+        let stopped = stop.clone();
+        let thread = std::thread::Builder::new()
+            .name("katna-backfill".into())
+            .spawn(move || {
+                if let Err(err) = run_backfill(&paths, &stopped, &notices) {
+                    tracing::warn!(%err, "threading old mail stopped");
+                }
+            });
+        let thread = match thread {
+            Ok(thread) => Some(thread),
+            Err(err) => {
+                tracing::warn!(%err, "cannot start threading old mail");
+                None
+            }
+        };
+        Self { stop, thread }
+    }
+
+    async fn stop(mut self) {
+        self.stop.store(true, Ordering::Relaxed);
+        if let Some(thread) = self.thread.take() {
+            smol::unblock(move || {
+                let _ = thread.join();
+            })
+            .await;
+        }
+    }
+}
+
+fn run_backfill(
+    paths: &Paths,
+    stop: &AtomicBool,
+    notices: &Sender<Notice>,
+) -> katna_store::Result<()> {
+    let mut store = Store::open(paths, Mode::ReadWrite)?;
+    let left = store.unthreaded_count()?;
+    if left == 0 {
+        return Ok(());
+    }
+    let started = Instant::now();
+    tracing::info!(left, "threading old mail");
+    let accounts: Vec<AccountId> = store.accounts()?.into_iter().map(|a| a.id).collect();
+    let mut last_notice = Instant::now();
+    let changed = katna_import::backfill::run(&mut store, katna_import::backfill::BATCH, |_| {
+        // Tell the apps now and then, not after every batch.
+        if last_notice.elapsed() > Duration::from_secs(2) {
+            for &account in &accounts {
+                let _ = notices.try_send(Notice::MailChanged(account));
+            }
+            last_notice = Instant::now();
+        }
+        std::thread::sleep(BACKFILL_PAUSE);
+        !stop.load(Ordering::Relaxed)
+    })?;
+    for &account in &accounts {
+        let _ = notices.try_send(Notice::MailChanged(account));
+    }
+    tracing::info!(
+        changed,
+        seconds = started.elapsed().as_secs_f32(),
+        "threaded old mail"
+    );
+    Ok(())
 }
 
 impl Instance {
@@ -83,10 +166,12 @@ impl Instance {
         .detach();
         smol::spawn(service::emit_signals(connection.clone(), forwarded)).detach();
         daemon.start().await?;
+        let backfill = Backfill::start(&index_paths, daemon.notifier());
         Ok(Self {
             daemon,
             connection,
             indexer,
+            backfill,
         })
     }
 
@@ -95,6 +180,7 @@ impl Instance {
         if let Err(err) = self.connection.release_name(ids::DAEMON_BUS_NAME).await {
             tracing::debug!(%err, "releasing the bus name");
         }
+        self.backfill.stop().await;
         self.daemon.shutdown().await;
         if let Some(indexer) = self.indexer {
             // Commits what it has indexed; at most one batch more.

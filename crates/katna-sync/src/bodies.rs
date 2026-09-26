@@ -127,6 +127,16 @@ async fn fetch_and_save<B: MailBackend>(
         };
         let parsed = katna_import::parse_message(raw).unwrap_or_default();
         batch.set_message_body(id, raw, parsed.snippet.as_deref(), parsed.has_attachments)?;
+        // A message stored before threading: thread it now (does nothing
+        // for one that already has its thread and category).
+        let references = parsed.reference_strs();
+        let facts = katna_store::Backfill {
+            in_reply_to: parsed.in_reply_to.as_deref(),
+            references: &references,
+            gm_thread_id: None,
+            category: Some(parsed.category),
+        };
+        batch.backfill_message(id, &facts)?;
         saved += 1;
     }
     batch.commit()?;

@@ -93,6 +93,8 @@ pub struct WindowChrome {
     /// so a double click can still maximize.
     drag_pending: Rc<Cell<bool>>,
     input_region: Cell<Option<Rect>>,
+    /// The app's own light or dark choice, over the desktop's.
+    dark: Cell<Option<bool>>,
 }
 
 impl WindowChrome {
@@ -115,6 +117,7 @@ impl WindowChrome {
             title: title.into(),
             drag_pending: Rc::new(Cell::new(false)),
             input_region: Cell::new(None),
+            dark: Cell::new(None),
         }
     }
 
@@ -122,12 +125,26 @@ impl WindowChrome {
         &self.env
     }
 
-    /// Tokens for the current preset and color scheme.
-    pub fn tokens(&self, window: &Window) -> ChromeTokens {
-        let dark = matches!(
+    /// Makes the frame light (`Some(false)`) or dark (`Some(true)`) whatever
+    /// the desktop uses, or follows the desktop again (`None`).
+    pub fn set_dark(&self, dark: Option<bool>) {
+        self.dark.set(dark);
+    }
+
+    /// Whether the desktop asks for a dark color scheme.
+    pub fn desktop_dark(window: &Window) -> bool {
+        matches!(
             window.appearance(),
             WindowAppearance::Dark | WindowAppearance::VibrantDark
-        );
+        )
+    }
+
+    /// Tokens for the current preset and color scheme.
+    pub fn tokens(&self, window: &Window) -> ChromeTokens {
+        let dark = self
+            .dark
+            .get()
+            .unwrap_or_else(|| Self::desktop_dark(window));
         ChromeTokens::new(self.env.preset(), dark)
     }
 

@@ -21,6 +21,7 @@ katna-render.workspace = true
 gpui.workspace = true
 gpui-platform.workspace = true
 jiff.workspace = true
+futures-lite.workspace = true
 tracing.workspace = true
 
 [dev-dependencies]

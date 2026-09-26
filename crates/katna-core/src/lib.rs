@@ -4,13 +4,16 @@
 //! Katna components. See `docs/ARCHITECTURE.md` §3 and §5.
 
 pub mod account;
+pub mod category;
 pub mod config;
 pub mod error;
 pub mod ids;
 pub mod logging;
 pub mod paths;
+pub mod subject;
 
 pub use account::{Account, AccountId, AccountKind, AccountSettings, Security, Server};
+pub use category::{MailCategory, MailFacts, classify};
 pub use config::Config;
 pub use error::{Error, Result};
 pub use paths::Paths;

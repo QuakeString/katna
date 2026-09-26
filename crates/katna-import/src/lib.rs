@@ -7,6 +7,7 @@
 //! the store indexes ([`parse`]) and hands each message to a [`MessageSink`],
 //! in batches. The sink is the store ([`StoreSink`]); tests use an in-memory one.
 
+pub mod backfill;
 pub mod maildir;
 pub mod mbox;
 pub mod parse;
@@ -18,7 +19,7 @@ use std::fs::{self, File};
 use std::io::{self, BufReader};
 use std::path::Path;
 
-pub use parse::{ParsedMessage, Participant, Role, parse_message};
+pub use parse::{HeaderLinks, ParsedMessage, Participant, Role, parse_links, parse_message};
 pub use store::StoreSink;
 
 /// IMAP system flags of a message, as far as local formats record them.

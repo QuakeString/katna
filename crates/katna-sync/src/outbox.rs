@@ -112,6 +112,8 @@ pub fn queue(
             display_name: p.display_name.as_deref(),
         })
         .collect();
+    // A reply joins its conversation.
+    let references: Vec<&str> = parsed.references.iter().map(String::as_str).collect();
     let message = NewMessage {
         raw: &raw,
         message_id_hdr: parsed.message_id.as_deref(),
@@ -122,6 +124,9 @@ pub fn queue(
         list_id: None,
         snippet: parsed.snippet.as_deref(),
         participants: &participants,
+        in_reply_to: parsed.in_reply_to.as_deref(),
+        references: &references,
+        category: Some(parsed.category),
     };
     let mut batch = store.mail_batch()?;
     let id = batch.add_outgoing(account, &message)?;

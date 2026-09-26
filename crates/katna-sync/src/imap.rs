@@ -8,6 +8,7 @@
 //! `docs/spikes/s2-pimalaya-io.md` for the list of problems.
 
 use std::{
+    collections::HashMap,
     fmt::Display,
     pin::pin,
     time::{Duration, Instant},
@@ -146,6 +147,70 @@ impl ImapBackend {
 
     fn has(&self, capability: &Capability<'_>) -> bool {
         self.capabilities.contains(capability)
+    }
+
+    /// Gmail's extensions (`X-GM-EXT-1`): thread IDs, labels, `X-GM-RAW`.
+    fn is_gmail(&self) -> bool {
+        self.capabilities
+            .iter()
+            .any(|c| c.to_string().eq_ignore_ascii_case("X-GM-EXT-1"))
+    }
+
+    /// Sends a command imap-codec cannot build or parse (Gmail's
+    /// extensions) as a raw line, and returns the untagged responses as
+    /// text, without the leading `* `. The command must not contain
+    /// literals, and neither may its responses.
+    async fn raw_command(&mut self, command: &str) -> Result<Vec<String>> {
+        let tag = self.tags.generate();
+        let tag = tag.inner().to_owned();
+        let Self { conn, frag, .. } = self;
+        conn.write_all(format!("{tag} {command}\r\n").as_bytes())
+            .await?;
+        let mut untagged = Vec::new();
+        loop {
+            while let Some(info) = frag.progress() {
+                if !matches!(info, FragmentInfo::Line { .. }) || !frag.is_message_complete() {
+                    continue;
+                }
+                let line = String::from_utf8_lossy(frag.message_bytes());
+                let line = line.trim_end_matches(['\r', '\n']);
+                if let Some(data) = line.strip_prefix("* ") {
+                    if data.get(..3).is_some_and(|w| w.eq_ignore_ascii_case("BYE")) {
+                        return Err(Error::Closed(format!("server said {data}")));
+                    }
+                    untagged.push(data.to_owned());
+                } else if let Some(status) = line
+                    .strip_prefix(tag.as_str())
+                    .and_then(|rest| rest.strip_prefix(' '))
+                {
+                    let name = command.split(' ').take(2).collect::<Vec<_>>().join(" ");
+                    return match status.get(..2) {
+                        Some(ok) if ok.eq_ignore_ascii_case("OK") => Ok(untagged),
+                        _ => Err(Error::Rejected(format!("{name}: {status}"))),
+                    };
+                }
+            }
+            match conn.read().await? {
+                [] => return Err(Error::Closed("server closed the connection".into())),
+                bytes => frag.enqueue_bytes(bytes),
+            }
+        }
+    }
+
+    /// Gmail thread IDs of UIDs `first..=last` (or `first..`).
+    async fn gmail_thread_ids(
+        &mut self,
+        first: u32,
+        last: Option<u32>,
+    ) -> Result<HashMap<u32, u64>> {
+        let range = match last {
+            Some(last) => format!("{first}:{last}"),
+            None => format!("{first}:*"),
+        };
+        let lines = self
+            .raw_command(&format!("UID FETCH {range} (UID X-GM-THRID)"))
+            .await?;
+        Ok(lines.iter().filter_map(|line| gmail_fetch(line)).collect())
     }
 
     /// `UID FETCH first:last` (or `first:*`). Returns each message's items,
@@ -416,9 +481,8 @@ impl MailBackend for ImapBackend {
         first: u32,
         last: Option<u32>,
     ) -> Result<Vec<MessageHeaders>> {
-        let fields = MessageHeaders::FIELDS
-            .iter()
-            .map(|name| AString::try_from(*name).map_err(protocol))
+        let fields = MessageHeaders::fields()
+            .map(|name| AString::try_from(name).map_err(protocol))
             .collect::<Result<Vec<_>>>()?;
         let fields = Vec1::try_from(fields).map_err(protocol)?;
         let items = vec![
@@ -433,7 +497,16 @@ impl MailBackend for ImapBackend {
             },
         ];
         let fetched = self.uid_fetch_range(first, last, items, Vec::new()).await?;
-        Ok(fetched.into_iter().map(headers).collect())
+        let mut messages: Vec<MessageHeaders> = fetched.into_iter().map(headers).collect();
+        // imap-codec cannot parse X-GM-THRID, and would drop a whole FETCH
+        // response that had it, so it comes in a second, small command.
+        if self.is_gmail() && !messages.is_empty() {
+            let threads = self.gmail_thread_ids(first, last).await?;
+            for message in &mut messages {
+                message.gm_thread_id = threads.get(&message.uid).copied();
+            }
+        }
+        Ok(messages)
     }
 
     async fn fetch_bodies(&mut self, uids: &[u32]) -> Result<Vec<(u32, Vec<u8>)>> {
@@ -608,6 +681,30 @@ impl MailBackend for ImapBackend {
         // the whole point of a NOOP (S2 problem 1).
         let data = self.command(CommandBody::Noop).await?;
         Ok(data.iter().filter_map(folder_change).collect())
+    }
+
+    async fn gmail_search(&mut self, first: u32, query: &str) -> Result<Option<Vec<u32>>> {
+        if !self.is_gmail() {
+            return Ok(None);
+        }
+        if query.contains(['"', '\\', '\r', '\n']) {
+            return Err(Error::Protocol(format!(
+                "unsupported Gmail query {query:?}"
+            )));
+        }
+        let lines = self
+            .raw_command(&format!("UID SEARCH UID {first}:* X-GM-RAW \"{query}\""))
+            .await?;
+        let mut uids: Vec<u32> = lines
+            .iter()
+            .filter_map(|line| search_results(line))
+            .flatten()
+            // `n:*` also matches the last message when every UID is lower.
+            .filter(|&uid| uid >= first)
+            .collect();
+        uids.sort_unstable();
+        uids.dedup();
+        Ok(Some(uids))
     }
 
     async fn wait_for_changes<I>(
@@ -844,6 +941,40 @@ fn headers(items: impl IntoIterator<Item = MessageDataItem<'static>>) -> Message
     out
 }
 
+/// `12 FETCH (X-GM-THRID 1278455344230334865 UID 4)` → `(4, 1278…)`.
+fn gmail_fetch(line: &str) -> Option<(u32, u64)> {
+    let (_, rest) = line.split_once(' ')?;
+    let items = rest
+        .strip_prefix("FETCH")
+        .or_else(|| rest.strip_prefix("fetch"))?;
+    let items = items.trim().strip_prefix('(')?.strip_suffix(')')?;
+    let mut words = items.split_whitespace();
+    let (mut uid, mut thread) = (None, None);
+    while let Some(name) = words.next() {
+        let value = words.next()?;
+        if name.eq_ignore_ascii_case("UID") {
+            uid = value.parse().ok();
+        } else if name.eq_ignore_ascii_case("X-GM-THRID") {
+            thread = value.parse().ok();
+        }
+    }
+    Some((uid?, thread?))
+}
+
+/// `SEARCH 3 5 8` (maybe followed by `(MODSEQ 99)`) → `[3, 5, 8]`.
+fn search_results(line: &str) -> Option<Vec<u32>> {
+    let (name, rest) = line.split_once(' ').unwrap_or((line, ""));
+    if !name.eq_ignore_ascii_case("SEARCH") {
+        return None;
+    }
+    Some(
+        rest.split_whitespace()
+            .take_while(|word| !word.starts_with('('))
+            .filter_map(|word| word.parse().ok())
+            .collect(),
+    )
+}
+
 fn text(value: &NString<'_>) -> Option<String> {
     value
         .0
@@ -903,5 +1034,23 @@ mod tests {
     fn uid_sets_are_compact() {
         assert_eq!(uid_set(&[7]), "7");
         assert_eq!(uid_set(&[5, 1, 2, 3, 9, 10, 3]), "1:3,5,9:10");
+    }
+
+    #[test]
+    fn parses_gmail_responses() {
+        assert_eq!(
+            gmail_fetch("12 FETCH (X-GM-THRID 1278455344230334865 UID 4)"),
+            Some((4, 1_278_455_344_230_334_865))
+        );
+        assert_eq!(
+            gmail_fetch("1 FETCH (UID 9 X-GM-THRID 18446744073709551614)"),
+            Some((9, u64::MAX - 1))
+        );
+        assert_eq!(gmail_fetch("1 FETCH (UID 9 FLAGS (\\Seen))"), None);
+        assert_eq!(gmail_fetch("3 EXISTS"), None);
+        assert_eq!(search_results("SEARCH 3 5 8"), Some(vec![3, 5, 8]));
+        assert_eq!(search_results("SEARCH 3 (MODSEQ 9)"), Some(vec![3]));
+        assert_eq!(search_results("SEARCH"), Some(vec![]));
+        assert_eq!(search_results("3 EXISTS"), None);
     }
 }

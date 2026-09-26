@@ -202,12 +202,15 @@ folder           (id, account_id, path, role, uidvalidity, highestmodseq, sync_s
 message          (id, account_id, message_id_hdr, thread_id, subject, date,
                   size, flags, keywords, has_attachments, list_id,
                   body_state,          -- 0 headers | 1 text_indexed | 2 full
-                  blob_hash, snippet, auth_results_json)
+                  blob_hash, snippet, auth_results_json,
+                  category)            -- inbox tab, katna_core::MailCategory (v2)
 message_location (message_id, folder_id, uid)        -- one message, many folders/labels
 participant      (message_id, role, email_norm, domain, display_name)
                                                       -- role: from|to|cc|bcc|reply_to|sender
 attachment       (id, message_id, part_id, filename, mime, size, blob_hash NULL)
-thread           (id, account_id, subject_norm, last_date, message_count, flags_summary)
+thread           (id, account_id, subject_norm, last_date, message_count, flags_summary,
+                  gm_thrid)            -- Gmail X-GM-THRID (v2)
+thread_ref       (account_id, message_id_hdr, thread_id)  -- referenced, not yet seen (v2)
 op_queue         (id, account_id, op_json, state, attempts, next_try_at)
 outbox           (id, draft_message_id, send_at, state, per_recipient BOOL, attempts)
 notification     (notif_id, message_ids, account_id, created_at)   -- to close/update later
@@ -225,6 +228,14 @@ Each of `mail.db` and `pim.db` has a `change_log` table (change journal):
 every daemon write appends `(seq, object_kind, object_id, op)` in the same
 transaction, and apps read entries after the last `seq` they saw when a
 change signal arrives (§14.2).
+
+Mail schema v2 (`mail_v2.sql`) adds threads and inbox categories:
+`message.category`, `thread.gm_thrid` (unique per account), `thread_ref`,
+indexes for thread lists and subject matching, and triggers that keep
+`thread.message_count` and `last_date` right on every insert, move and
+delete (a thread with no messages left is deleted). The category numbers
+are stable: 1 Primary, 2 Promotions, 3 Social, 4 Updates, 5 Forums; NULL
+means "not classified yet" and reads as Primary.
 
 ### 5.4 Shared PIM schema (sketch)
 
@@ -299,9 +310,21 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   by chunk), and compare UID lists only when the message count does not add
   up. Headers come from `BODY.PEEK[HEADER.FIELDS (…)]` and are decoded by
   the same parser as the importer; INTERNALDATE stands in for a missing
-  `Date`. Each server copy of a message is its own row for now; merging
-  copies (Gmail labels) comes with threading (task 1.7). `has_attachments`
-  is guessed from `multipart/mixed` until `BODYSTRUCTURE` is parsed.
+  `Date`. The header list includes the threading headers and the ones the
+  category classifier reads (`katna_core::category::CLASSIFIER_HEADERS`);
+  each new message is threaded and classified as it is saved (§6.5). Each
+  server copy of a message is its own row; copies share a thread, and the
+  conversation reads show one per `Message-ID`. `has_attachments` is
+  guessed from `multipart/mixed` until `BODYSTRUCTURE` is parsed.
+- **Header refresh:** messages synced before threading (no thread or no
+  category, and no body to parse) get their headers fetched again, up to
+  5,000 per folder per sync, and only the missing fields are filled.
+- **Gmail (`X-GM-EXT-1`):** header fetches also ask for `X-GM-THRID`, and
+  Gmail's thread id decides the thread. After syncing the inbox, the engine
+  runs `UID SEARCH X-GM-RAW "category:social"` (then promotions, updates,
+  forums) over the UIDs not yet categorized; the rest of the inbox is
+  Primary. io-imap cannot express these extensions, so they are written as
+  raw commands on the connection. Progress lives in `folder.sync_state`.
 - **Level 3 so far (`katna_sync::bodies`):** after each full sync, and after
   each inbox catch-up, the worker fetches `BODY.PEEK[]` for messages in the
   offline window (default: the last 30 days, up to 10 MB each), newest
@@ -361,8 +384,48 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
 
 ### 6.5 Threading
 
-JWZ algorithm over `Message-ID` / `References` / `In-Reply-To`. Use Gmail
-`X-GM-THRID` when available. Subject-only grouping is a limited fallback.
+Threads are assigned incrementally when a message is inserted
+(`katna-store`, `thread.rs`), not rebuilt with a full JWZ pass:
+
+1. **Gmail:** with an `X-GM-THRID`, the thread holding that id wins. A
+   thread built from references takes the id over; two Gmail threads are
+   never merged.
+2. **References:** the threads of the messages named in `References` and
+   `In-Reply-To`, plus threads waiting for this message's own `Message-ID`
+   in `thread_ref` (a reply that arrived before its parent). When a message
+   links two or more threads they are merged into a Gmail one if there is
+   one, else the oldest; the others are deleted and journaled.
+3. **Subject:** a message whose subject has a reply or forward prefix
+   (`katna_core::subject`, many languages, `[list]` tags removed) joins the
+   newest thread with the same normalized subject whose last message is
+   within 30 days.
+4. Otherwise a new thread. References not found yet (up to 16) go into
+   `thread_ref`, so a later parent finds the thread.
+
+Thread changes are journaled as `Thread` entries rather than `Message`
+entries, so search does not reindex messages whose thread changed.
+
+**Reads** (work on a read-only store): `folder_threads` lists a folder's
+conversations newest first, optionally for one inbox tab (the tab of the
+conversation's newest message in the folder); `thread_summaries` gives
+counts, unread and flag state and senders for a page; `thread_messages`
+lists a conversation oldest first, one copy per `Message-ID`, hiding
+trash and junk copies unless the whole conversation is there;
+`category_unread` counts unread conversations per tab.
+
+**Inbox categories:** `katna_core::classify` is a pure function of a few
+headers (sender domain, `List-Id`, `List-Post`, `List-Unsubscribe`,
+`Precedence`, `Auto-Submitted`, bulk-mail service headers, reply prefix).
+It returns Social, Forums, Promotions, Updates or Primary. On Gmail the
+server's categories replace it for the inbox (§6.4).
+
+**Old stores:** the daemon threads and classifies messages stored before
+schema v2 on a background thread (`katna_import::backfill`), 500 messages
+per transaction with a short pause between batches, parsing the stored
+blob's headers. It fills only fields still NULL, so it is idempotent, and
+it resumes after a restart from the messages still unthreaded (a partial
+index keeps finding them cheap). On a synthetic 100k-message store it takes
+about 14 s. Messages without a blob are covered by the header refresh (§6.4).
 
 ## 7. Search (`katna-search`)
 
@@ -590,6 +653,9 @@ the same matching on event attendees ("Meeting with Acme").
 - Adding an account or changing its password logs in once first; a
   refused login is an error to the caller and nothing is saved.
 - SIGTERM and SIGINT stop every worker; each ends its IDLE and logs out.
+- After the workers start, a `katna-backfill` thread threads and classifies
+  mail stored before schema v2 (§6.5) with its own store handle, sends
+  `MailChanged` every 2 s while it works, and is stopped on shutdown.
 - `katna-daemon install-user-service` writes the systemd user unit and the
   D-Bus activation file for a binary installed by hand. Packages install
   the same files from `packaging/` system-wide (§21.1).
@@ -808,10 +874,78 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   Everything honors the desktop's reduce-motion setting.
 - **Colors.** `theme.rs` has the light and dark palettes; the app does not
   use the desktop accent color here, to keep the webmail look.
-- **Not there yet.** Katna Mail cannot send mail, so Compose, Reply and
-  Forward show a snackbar saying so. There are no checkboxes or hover
-  actions (archive, delete) until the daemon takes those commands, and
-  the star shows the flag without changing it.
+
+The owner then asked for the rest of Gmail's pattern, with Katna's own
+icons and name and without Google-only features (no Chat, Meet, Drive,
+Gemini or confidential mode):
+
+- **App rail.** A 72 px column at the far left holds Mail, Calendar,
+  Contacts, Tasks, Notes and Feeds (RSS and Atom), with Settings and the
+  account at the bottom. Each app is a page (`window/apps.rs`), so new ones
+  plug in. Mail is the only app so far; Contacts lists the people the mail
+  was exchanged with, most written with first, and a click searches their
+  mail; the others show a "coming soon" page saying what they will do.
+- **Top bar.** Settings gear on the right; the search box has a search
+  options button at its right end that opens a panel (from, to, subject,
+  has the words, doesn't have, date within, has attachment) which builds
+  the query.
+- **Panes.** Quick settings choose the reading pane: *right of the list*
+  (three panes, the default) or *no split* (two panes). With three panes
+  the list takes the whole card until a message is opened; the message then
+  slides in on the right, and the divider between them can be dragged
+  (the share is saved). With two panes the message replaces the list.
+- **Conversations.** The list shows one line per conversation by default
+  (senders, a count, the newest subject and snippet); a setting shows
+  single messages instead.
+- **Category tabs.** The inbox has Primary, Promotions, Social, Updates and
+  Forums tabs with "N new" badges; a setting turns them off. Gmail accounts
+  use Gmail's own categories; other accounts use header rules: mailing
+  lists go to Forums, newsletters and marketing to Promotions, automated
+  notices to Updates, social networks to Social, and people to Primary.
+- **List toolbar.** A select-all checkbox with a menu (all, none, read,
+  unread, starred, unstarred), refresh and more; with lines ticked it shows
+  archive, report spam, delete, mark read or unread, move to and more.
+  Hovering a row shows archive, delete and mark read. Changes are shown at
+  once and sent to the daemon; the snackbar offers Undo.
+- **Open conversation.** A toolbar with back (or close with three panes),
+  archive, spam, delete, mark unread, move to, more, and "3 of 72" with
+  previous and next; the subject with folder chips; each message with an
+  avatar, sender, "to ..." with a details drop-down, date with "(ago)",
+  star and reply; earlier messages folded to one line, and a run of three
+  or more folded into a count; Reply, Reply all and Forward buttons below.
+- **Quick settings.** A panel that slides in from the right and pushes the
+  cards: reading pane (with small drawings of the two layouts), density,
+  theme (desktop, light or dark, the window frame included), category tabs,
+  undo-send delay, signature and conversation view. Changes apply at once
+  and are saved to `config.toml` (`[mail]` and `[sending]`).
+- **Compose.** A "New Message" window docked at the bottom right, as in
+  Gmail: title bar with minimize, full size and close; To (with Cc and Bcc
+  links), Subject, and the body with the signature after a `-- ` line.
+  The bottom bar has the Send button with a menu (schedule send), buttons
+  for formatting, attachments, links, emoji and images, and discard.
+  Compose, Reply, Reply all and Forward all open it, filled in (recipients,
+  `Re:`/`Fwd:`, the quoted message, `In-Reply-To` and `References`). Send
+  builds a plain-text RFC 5322 message (`outgoing.rs`) and hands it to the
+  daemon's outbox (`QueueSend`) with the undo-send delay; the snackbar's
+  Undo takes it back (`UndoSend`, then `DiscardSend`) and opens it again. A
+  message the server refuses for good raises a snackbar
+  (`OutboxChanged`).
+- **Not there yet.** Drafts are not saved (closing a written message
+  discards it and says so), and formatting, attachments, links, emoji,
+  images and scheduled sending in the composer say they are not ready yet.
+
+### 13.7 Later: notes on mail and Workspace
+
+Two ideas from the owner for a later phase. Nothing is built for them yet.
+
+- **Notes on mail.** Attach a note to a message or conversation for later
+  reference. The notes live in the Notes app (rail), so a note can be found
+  from the mail and the mail from the note. The owner plans more Notes
+  features around this.
+- **Workspace.** A view that shows only the mail the user has to act on.
+  Replying to a conversation takes it out of the Workspace. The user can
+  give mail a priority or a marker, or snooze it to come back into the
+  Workspace at a set date and time.
 
 ## 14. D-Bus API (`katna-dbus`)
 

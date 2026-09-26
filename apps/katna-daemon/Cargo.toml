@@ -13,6 +13,7 @@ katna-core.workspace = true
 katna-store.workspace = true
 katna-meta.workspace = true
 katna-sync.workspace = true
+katna-import.workspace = true
 katna-search.workspace = true
 katna-org.workspace = true
 katna-dav.workspace = true
@@ -30,7 +31,6 @@ tracing.workspace = true
 zbus.workspace = true
 
 [dev-dependencies]
-katna-import.workspace = true
 tempfile.workspace = true
 
 [lints]

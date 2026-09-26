@@ -301,6 +301,9 @@ fn changes_imported_mail_in_the_store() {
                     list_id: None,
                     snippet: None,
                     participants: &[],
+                    in_reply_to: None,
+                    references: &[],
+                    category: None,
                 },
             )
             .unwrap();

@@ -3466,6 +3466,7 @@ dependencies = [
 name = "katna-mail"
 version = "0.0.0"
 dependencies = [
+ "futures-lite",
  "gpui-pre",
  "gpui-pre-platform",
  "jiff",

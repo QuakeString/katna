@@ -18,12 +18,13 @@ use crate::error::{Error, Result};
 pub const UNDO_SEND_CHOICES: [u32; 5] = [0, 5, 10, 20, 30];
 
 /// All user settings.
-#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Config {
     pub general: General,
     pub logging: Logging,
     pub sending: Sending,
+    pub mail: MailView,
 }
 
 /// Background-service behavior (`docs/ARCHITECTURE.md` §9.2).
@@ -67,14 +68,76 @@ impl Default for Logging {
 pub struct Sending {
     /// Undo-send delay in seconds; one of [`UNDO_SEND_CHOICES`].
     pub undo_send_seconds: u32,
+    /// Added below new mail, replies and forwards, after a "-- " line.
+    /// Empty for none.
+    pub signature: String,
 }
 
 impl Default for Sending {
     fn default() -> Self {
         Self {
             undo_send_seconds: 10,
+            signature: String::new(),
         }
     }
+}
+
+/// How Katna Mail shows mail (its quick settings).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct MailView {
+    /// Where an opened message shows.
+    pub reading_pane: ReadingPane,
+    /// Share of the width the reading pane takes beside the list
+    /// (0.25 to 0.75).
+    pub reading_pane_share: f32,
+    /// List conversations instead of single messages.
+    pub conversations: bool,
+    /// Split the inbox into category tabs (Primary, Promotions, ...).
+    pub inbox_tabs: bool,
+    pub density: Density,
+    pub theme: Theme,
+}
+
+impl Default for MailView {
+    fn default() -> Self {
+        Self {
+            reading_pane: ReadingPane::Right,
+            reading_pane_share: 0.5,
+            conversations: true,
+            inbox_tabs: true,
+            density: Density::Default,
+            theme: Theme::System,
+        }
+    }
+}
+
+/// [`MailView::reading_pane`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ReadingPane {
+    /// Beside the list: three panes with the navigation.
+    Right,
+    /// In place of the list: two panes.
+    None,
+}
+
+/// [`MailView::density`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Density {
+    Default,
+    Compact,
+}
+
+/// [`MailView::theme`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Theme {
+    /// Follow the desktop.
+    System,
+    Light,
+    Dark,
 }
 
 impl Config {
@@ -110,6 +173,15 @@ impl Config {
                 message: format!(
                     "{} is not one of {UNDO_SEND_CHOICES:?}",
                     self.sending.undo_send_seconds
+                ),
+            });
+        }
+        if !(0.25..=0.75).contains(&self.mail.reading_pane_share) {
+            return Err(Error::ConfigValue {
+                key: "mail.reading_pane_share",
+                message: format!(
+                    "{} is not between 0.25 and 0.75",
+                    self.mail.reading_pane_share
                 ),
             });
         }
@@ -190,6 +262,23 @@ mod tests {
         assert_eq!(config.sending.undo_send_seconds, 30);
         assert_eq!(config.general, General::default());
         assert_eq!(config.logging, Logging::default());
+    }
+
+    #[test]
+    fn mail_view() {
+        let config = Config::default();
+        assert_eq!(config.mail.reading_pane, ReadingPane::Right);
+        assert!(config.mail.conversations && config.mail.inbox_tabs);
+        let config = Config::parse(
+            "[mail]\nreading_pane = \"none\"\ndensity = \"compact\"\ntheme = \"dark\"\n",
+        )
+        .unwrap();
+        assert_eq!(config.mail.reading_pane, ReadingPane::None);
+        assert_eq!(config.mail.density, Density::Compact);
+        assert_eq!(config.mail.theme, Theme::Dark);
+        assert!(Config::parse("[mail]\nreading_pane_share = 0.9\n").is_err());
+        let config = Config::parse("[sending]\nsignature = \"Kay\\nEnron\"\n").unwrap();
+        assert_eq!(config.sending.signature, "Kay\nEnron");
     }
 
     #[test]
