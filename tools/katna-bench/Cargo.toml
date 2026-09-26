@@ -13,6 +13,8 @@ katna-core.workspace = true
 katna-store.workspace = true
 katna-import.workspace = true
 katna-search.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 
 [lints]
 workspace = true

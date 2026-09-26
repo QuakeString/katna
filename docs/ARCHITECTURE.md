@@ -403,7 +403,10 @@ from or adds to the sketch above:
   the journal lists. A schema-version mismatch requires a rebuild
   (`katna-search-cli index --rebuild`).
 - **Tools.** `katna-search-cli index|query` and `katna-bench search|synth`
-  (synthetic corpus of Enron's shape for machines without Enron).
+  (synthetic corpus of Enron's shape for machines without Enron). The
+  nightly `bench` job fails on a p99 over 50 ms or on overall p50/p99 more
+  than 10 % (and 1 ms) slower than the last good run; the nightly `fuzz`
+  job runs `fuzz/` (query parser and compiler) for 10 minutes.
 
 ## 8. Organizations (`katna-org`)
 

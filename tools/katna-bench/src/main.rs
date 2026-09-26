@@ -7,6 +7,7 @@
 //! - `synth` fills a store with a synthetic corpus of Enron's shape, for
 //!   machines that cannot download Enron.
 
+mod report;
 mod synth;
 
 use std::path::PathBuf;
@@ -16,10 +17,12 @@ use std::time::Instant;
 use katna_core::Paths;
 use katna_search::{Query, SearchIndex, SearchOptions};
 use katna_store::{Mode, Store};
+use report::{QueryReport, Report};
 
 const USAGE: &str = "\
 usage: katna-bench search --data-dir DIR [--queries FILE] [--runs N] [--limit N]
-                          [--as-you-type] [--max-p99-ms MS]
+                          [--as-you-type] [--max-p99-ms MS] [--json FILE]
+                          [--baseline FILE [--max-regression PERCENT]]
        katna-bench synth --data-dir DIR [--messages N] [--seed N]
 
 search: Runs each query once cold, then --runs times (default 20), against
@@ -31,6 +34,10 @@ latency; exits with status 1 if the overall p99 exceeds --max-p99-ms.
 
   --queries FILE   One query per line; # starts a comment. Default: a set
                    written for the Enron corpus.
+  --json FILE      Also write the results as JSON
+  --baseline FILE  Compare with the JSON of an earlier run; exit with status 1
+                   if the overall p50 or p99 is more than --max-regression
+                   percent (default 10) and more than 1 ms slower
   --as-you-type    Treat each query's last word as unfinished, as the search
                    box does on every keystroke. Default queries: prefixes
                    down to one letter.
@@ -95,6 +102,9 @@ struct SearchArgs {
     limit: usize,
     as_you_type: bool,
     max_p99_ms: Option<f64>,
+    json: Option<PathBuf>,
+    baseline: Option<PathBuf>,
+    max_regression: f64,
 }
 
 fn search(args: &[String]) -> ExitCode {
@@ -106,6 +116,9 @@ fn search(args: &[String]) -> ExitCode {
         limit: 20,
         as_you_type: false,
         max_p99_ms: None,
+        json: None,
+        baseline: None,
+        max_regression: 10.0,
     };
     let mut args = args.iter();
     while let Some(arg) = args.next() {
@@ -131,6 +144,18 @@ fn search(args: &[String]) -> ExitCode {
                 .and_then(|v| v.parse().ok())
                 .map(|v| parsed.limit = v)
                 .is_some(),
+            "--json" => {
+                parsed.json = value.map(PathBuf::from);
+                parsed.json.is_some()
+            }
+            "--baseline" => {
+                parsed.baseline = value.map(PathBuf::from);
+                parsed.baseline.is_some()
+            }
+            "--max-regression" => value
+                .and_then(|v| v.parse().ok())
+                .map(|v| parsed.max_regression = v)
+                .is_some(),
             "--max-p99-ms" => value
                 .and_then(|v| v.parse().ok())
                 .map(|v| parsed.max_p99_ms = Some(v))
@@ -155,7 +180,7 @@ fn search(args: &[String]) -> ExitCode {
     }
 }
 
-/// Returns whether the budget (if any) was met.
+/// Returns whether the budget and the baseline (if given) were met.
 fn run_search(args: &SearchArgs) -> Result<bool, Box<dyn std::error::Error>> {
     let text = match &args.queries {
         Some(path) => std::fs::read_to_string(path)?,
@@ -194,6 +219,7 @@ fn run_search(args: &SearchArgs) -> Result<bool, Box<dyn std::error::Error>> {
         }
     };
     let mut all = Vec::new();
+    let mut report = Report::default();
     for input in &queries {
         let options = SearchOptions {
             limit: args.limit,
@@ -239,6 +265,12 @@ fn run_search(args: &SearchArgs) -> Result<bool, Box<dyn std::error::Error>> {
             percentile(&times, 99.0),
             times.last().copied().unwrap_or_default(),
         );
+        report.queries.push(QueryReport {
+            query: (*input).to_owned(),
+            matches,
+            p50_ms: percentile(&times, 50.0),
+            p99_ms: percentile(&times, 99.0),
+        });
         all.extend(times);
     }
     all.sort_by(f64::total_cmp);
@@ -250,17 +282,42 @@ fn run_search(args: &SearchArgs) -> Result<bool, Box<dyn std::error::Error>> {
         all.last().copied().unwrap_or_default(),
         all.len(),
     );
-    Ok(match args.max_p99_ms {
+    report.p50_ms = percentile(&all, 50.0);
+    report.p95_ms = percentile(&all, 95.0);
+    report.p99_ms = p99;
+    if let Some(path) = &args.json {
+        std::fs::write(path, serde_json::to_string_pretty(&report)?)?;
+    }
+
+    let mut ok = true;
+    match args.max_p99_ms {
         Some(budget) if p99 > budget => {
             println!("FAIL: p99 {p99:.1} ms is over the budget of {budget} ms");
-            false
+            ok = false;
         }
-        Some(budget) => {
-            println!("ok: p99 {p99:.1} ms is within the budget of {budget} ms");
-            true
+        Some(budget) => println!("ok: p99 {p99:.1} ms is within the budget of {budget} ms"),
+        None => {}
+    }
+    if let Some(path) = &args.baseline {
+        let baseline: Report = serde_json::from_str(&std::fs::read_to_string(path)?)?;
+        let (failures, notes) = report::compare(&report, &baseline, args.max_regression);
+        for note in notes {
+            println!("note: {note}");
         }
-        None => true,
-    })
+        for failure in &failures {
+            println!("FAIL: regression: {failure}");
+        }
+        if failures.is_empty() {
+            println!(
+                "ok: no regression over {} % against {}",
+                args.max_regression,
+                path.display()
+            );
+        } else {
+            ok = false;
+        }
+    }
+    Ok(ok)
 }
 
 fn ms(since: Instant) -> f64 {

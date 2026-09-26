@@ -120,6 +120,10 @@ Phase 0.
 `from:kenneth.lay has:attachment budget` return in < 50 ms (p99) on a
 normal laptop; the index can be deleted and rebuilt from the store; CI is green.
 
+Status (26 September 2026): tasks 0.1–0.8 are merged. On the real Enron
+corpus (517,401 messages) the index builds in 13.7 s and the benchmark
+query set runs at p50 2.4 ms, p99 9.7 ms, including subjects and snippets.
+
 ### Phase 1 — Daemon and sync core (≈ 10 weeks)
 
 | Task | Deliverable |
