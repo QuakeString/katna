@@ -927,9 +927,8 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   search box centered on the window (at most 720 px wide), the account
   avatar on the right. `katna_chrome::Bar` gives the bar a center slot,
   height and background for this.
-- **Navigation.** Compose, then the folders as pills rounded on the right.
-  The menu button folds it to a 72 px rail of icons (unread folders get a
-  dot); hovering the rail for 300 ms opens it over the list with a shadow.
+- **Navigation.** The folders as pills rounded on the right. The menu
+  button folds it away (it first folded to a rail of icons; see below).
   With one account the account heading is left out.
 - **One card.** The list and the open message share a white card with
   rounded corners on a tinted page. The list is one line per message:
@@ -1023,6 +1022,27 @@ Gemini or confidential mode):
   inboxes), and Send without an account. The daemon signals `MailChanged`
   after each account's first sync, so a new account's folders show even
   when they are empty.
+- **After the first real install.** The owner's first run on KDE brought
+  these changes. Compose sits in the top bar in place of the app name, so
+  it shows whether the folders are open or not; the account picture moved
+  to the top right, beside the settings gear, with its card below it; the
+  search box is 40 px tall. The menu button folds the folders away
+  completely, its bars turning upright as they go; resting on Mail in the
+  app rail opens them over the list as a floating panel with rounded
+  corners and a bottom margin. Ripples keep to the shape of the element
+  they are on (`Ripple::rounded`), since GPUI clips children to
+  rectangles. Icon buttons have tooltips after GPUI's hover delay
+  (`katna_ui::Tooltip`). Dialogs, panels and cards use 15 px corners.
+  Reply, Reply all and Forward stay pinned at the foot of the open
+  conversation, and answering writes inline there (a card with the
+  recipients, the text and the Send row, which can pop out into the
+  window); the list's single-letter keys are switched off inside text
+  fields. The list has a right-click menu (reply, reply all, forward,
+  archive, delete, spam, read, star, move to, find emails from the
+  sender) acting on the ticked lines or the clicked one. The "select all
+  on screen" banner no longer blinks (it depends on what was ticked, not on
+  how many lines fit), inbox tabs switch without a fade, and the reading
+  pane choices in quick settings play a small demo under the pointer.
 - **Desktop colors.** The layout stays the webmail one, but its colors
   come from the desktop (`katna_platform::colors`, `window/colors.rs`):
   - *KDE*: the active color scheme from `kdeglobals` (`[Colors:Window]`,
@@ -1320,13 +1340,13 @@ backends the binary links `libc`, `libxkbcommon`, `libxkbcommon-x11` and
 `libxcb`; Wayland and Vulkan libraries are loaded at runtime. GPUI alone
 takes about 21 MB of the 30 MB Katna Mail budget
 (`docs/spikes/S1-window-chrome.md`); the first real window (§13.5) leaves
-about 2 MB (the budget in `ci/size-budgets.txt` is 30 MiB = 31.5 MB).
+about 2 MB of the first 30 MiB (31.5 MB) budget.
 
 ### 17.2 Targets (to be verified on real hardware)
 
 | Metric | Target |
 |---|---|
-| Katna Mail binary | ≤ 30 MB (estimate: 20–30 MB with GPUI Kit, Pimalaya, own code) |
+| Katna Mail binary | ≤ 50 MB (50,000,000 bytes) |
 | `katna-daemon` binary | ≤ 20 MiB (21 MB) |
 | Idle CPU (app and daemon) | ≈ 0 %; no periodic wake-ups beyond IDLE renewals |
 | Cold start to usable inbox | < 500 ms |
@@ -1336,7 +1356,9 @@ about 2 MB (the budget in `ci/size-budgets.txt` is 30 MiB = 31.5 MB).
 With sync, bodies, the op queue, sending and the search indexer,
 `katna-daemon` is 15.6 MB. tantivy is the biggest part. Its budget was
 15 MiB until sending came in; it is 20 MiB (September 2026) so features
-are not trimmed to fit. Crates that are not hot are built with
+are not trimmed to fit. Katna Mail's budget was 30 MiB until the fixes
+after the first real install, when the app reached it; it is 50 MB
+(September 2026). Crates that are not hot are built with
 `opt-level = "s"` (root `Cargo.toml`): D-Bus (zbus, zvariant, oo7,
 ashpd), IMAP parsing and regex.
 

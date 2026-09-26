@@ -8,8 +8,8 @@
 use std::time::Duration;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, Div, Entity, Focusable, FontWeight, Hsla, SpringAnimation,
-    Window, div, prelude::*, px, rgba,
+    Animation, AnimationExt, AnyElement, Context, Div, Entity, Focusable, FontWeight, Hsla,
+    SpringAnimation, Window, div, prelude::*, px, rgba,
 };
 use katna_core::config::{Density, ReadingPane, Theme as ThemeChoice, UNDO_SEND_CHOICES};
 use katna_ui::Ripple;
@@ -18,8 +18,10 @@ use katna_ui::{InputEvent, TextArea};
 
 use super::{MailWindow, SETTINGS_WIDTH};
 use crate::theme::{Theme, mix};
-use crate::widgets::{elevation, icon_button, radio, switch};
+use crate::widgets::{elevation, icon_button, radio, switch, tip};
 
+/// One loop of the reading-pane demo.
+const PANE_DEMO: Duration = Duration::from_millis(2600);
 /// A signature edit is saved this long after the last key.
 const SIGNATURE_SAVE_DELAY: Duration = Duration::from_millis(600);
 
@@ -45,7 +47,7 @@ impl MailWindow {
             .h_full()
             .flex()
             .flex_col()
-            .rounded(px(16.0))
+            .rounded(px(super::PANEL_RADIUS))
             .bg(rgba(th.surface))
             .shadow(elevation(th, 1.0 * t.min(1.0)))
             .child(
@@ -65,11 +67,11 @@ impl MailWindow {
                             .child("Quick settings"),
                     )
                     .child(
-                        icon_button("settings-close", "close", 20.0, th).on_click(cx.listener(
-                            |this, _, window, cx| {
+                        icon_button("settings-close", "close", 20.0, th)
+                            .tooltip(tip("Close", th))
+                            .on_click(cx.listener(|this, _, window, cx| {
                                 this.toggle_settings(&super::ToggleSettings, window, cx)
-                            },
-                        )),
+                            })),
                     ),
             )
             .child(
@@ -355,49 +357,22 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let on = self.config.mail.reading_pane == pane;
-        let block = |w: f32, color: u32| div().w(px(w)).h_full().rounded(px(3.0)).bg(rgba(color));
-        let lines = || {
+        // At rest the drawing shows the layout; under the pointer it plays
+        // opening a mail in it, over and over.
+        let hovered = self.pane_hover == Some(pane);
+        let rest = if pane == ReadingPane::Right { 1.0 } else { 0.0 };
+        let picture = if hovered && !cx.reduce_motion() {
+            let th = *th;
             div()
-                .flex()
-                .flex_col()
-                .gap(px(4.0))
-                .p(px(5.0))
-                .children((0..4).map(|_| div().h(px(4.0)).rounded_full().bg(rgba(th.divider))))
-        };
-        let picture = div()
-            .h(px(62.0))
-            .p(px(5.0))
-            .flex()
-            .flex_row()
-            .gap(px(4.0))
-            .rounded(px(8.0))
-            .bg(rgba(th.page))
-            .child(block(14.0, th.nav_selected))
-            .child(
-                div()
-                    .flex_1()
-                    .h_full()
-                    .rounded(px(3.0))
-                    .bg(rgba(th.surface))
-                    .child(lines()),
-            )
-            .when(pane == ReadingPane::Right, |d| {
-                d.child(
-                    div()
-                        .flex_1()
-                        .h_full()
-                        .rounded(px(3.0))
-                        .bg(rgba(th.surface))
-                        .p(px(5.0))
-                        .child(
-                            div()
-                                .h(px(6.0))
-                                .w(px(28.0))
-                                .rounded_full()
-                                .bg(rgba(th.text_faint)),
-                        ),
+                .with_animation(
+                    ("pane-demo", pane as usize),
+                    Animation::new(PANE_DEMO).repeat(),
+                    move |el, t| el.child(pane_picture(pane, demo_open(t), &th)),
                 )
-            });
+                .into_any_element()
+        } else {
+            pane_picture(pane, rest, th).into_any_element()
+        };
         div()
             .id(match pane {
                 ReadingPane::Right => "pane-right",
@@ -414,8 +389,15 @@ impl MailWindow {
             .border_2()
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
+            .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
+                let now = hovered.then_some(pane);
+                if *hovered || this.pane_hover == Some(pane) {
+                    this.pane_hover = now;
+                    cx.notify();
+                }
+            }))
             .on_click(cx.listener(move |this, _, _, cx| this.apply(Change::Pane(pane), cx)))
-            .child(Ripple::new(("pane-ripple", pane as usize), rgba(th.ripple)))
+            .child(Ripple::new(("pane-ripple", pane as usize), rgba(th.ripple)).rounded(12.0))
             .child(picture)
             .child(
                 div()
@@ -464,7 +446,7 @@ impl MailWindow {
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
-            .child(Ripple::new((id, 1_usize), rgba(th.ripple)))
+            .child(Ripple::new((id, 1_usize), rgba(th.ripple)).rounded(8.0))
             .child(animated_radio((id, 2_usize), on, th))
             .child(label)
             .into_any_element()
@@ -495,7 +477,7 @@ impl MailWindow {
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
-            .child(Ripple::new((id, 1_usize), rgba(th.ripple)))
+            .child(Ripple::new((id, 1_usize), rgba(th.ripple)).rounded(8.0))
             .child(
                 div()
                     .flex_1()
@@ -531,6 +513,98 @@ fn animated_radio(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> AnyEl
             move |el, s: f32| el.child(radio(s.clamp(0.0, 1.0), &th)),
         )
         .into_any_element()
+}
+
+/// How far the demo of a reading-pane choice has opened its mail at `t`
+/// through the loop: closed, opening, open for a while, closing.
+fn demo_open(t: f32) -> f32 {
+    let ease = |x: f32| {
+        let x = x.clamp(0.0, 1.0);
+        x * x * (3.0 - 2.0 * x)
+    };
+    ease((t - 0.15) / 0.25) - ease((t - 0.75) / 0.18)
+}
+
+/// A small drawing of a layout: the navigation, the list and the open
+/// mail, which is `open` (0 to 1) of the way in: beside the list for
+/// `Right`, in its place for `None`.
+fn pane_picture(pane: ReadingPane, open: f32, th: &Theme) -> Div {
+    let open = open.clamp(0.0, 1.0);
+    let lines = |first: u32| {
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(4.0))
+            .p(px(5.0))
+            .children((0..4).map(move |i| {
+                div()
+                    .h(px(4.0))
+                    .rounded_full()
+                    .bg(rgba(if i == 0 { first } else { th.divider }))
+            }))
+    };
+    // The mail being opened is marked in the list.
+    let first = mix(th.divider, th.accent, open);
+    let message = || {
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(4.0))
+            .p(px(5.0))
+            .child(
+                div()
+                    .h(px(6.0))
+                    .w(px(28.0))
+                    .rounded_full()
+                    .bg(rgba(th.text_faint)),
+            )
+            .children((0..2).map(|_| div().h(px(3.0)).rounded_full().bg(rgba(th.divider))))
+    };
+    let card = || div().h_full().rounded(px(3.0)).bg(rgba(th.surface));
+    let picture = div()
+        .h(px(62.0))
+        .p(px(5.0))
+        .flex()
+        .flex_row()
+        .rounded(px(8.0))
+        .bg(rgba(th.page))
+        .child(
+            div()
+                .w(px(14.0))
+                .mr(px(4.0))
+                .h_full()
+                .rounded(px(3.0))
+                .bg(rgba(th.nav_selected)),
+        );
+    match pane {
+        ReadingPane::Right => picture
+            .child(card().flex_1().min_w_0().child(lines(first)))
+            .child(
+                card()
+                    .flex_none()
+                    .w(px(46.0 * open))
+                    .ml(px(4.0 * open))
+                    .overflow_hidden()
+                    .opacity(open)
+                    .child(message()),
+            ),
+        ReadingPane::None => picture.child(
+            card()
+                .relative()
+                .flex_1()
+                .min_w_0()
+                .child(lines(first).opacity(1.0 - open))
+                .child(
+                    div()
+                        .absolute()
+                        .top_0()
+                        .left_0()
+                        .size_full()
+                        .opacity(open)
+                        .child(message()),
+                ),
+        ),
+    }
 }
 
 fn heading(text: &'static str, th: &Theme) -> Div {
