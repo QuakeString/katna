@@ -32,6 +32,7 @@ enum Change {
     Pane(ReadingPane),
     Density(Density),
     Theme(ThemeChoice),
+    DesktopColors(bool),
     Tabs(bool),
     Conversations(bool),
 }
@@ -140,6 +141,15 @@ impl MailWindow {
                                     )
                                 }),
                             )
+                            .child(self.switch_row(
+                                "desktop-colors",
+                                "Desktop colors",
+                                "The color scheme and accent color of the desktop",
+                                view.desktop_colors,
+                                Change::DesktopColors(!view.desktop_colors),
+                                th,
+                                cx,
+                            ))
                             .child(divider(th))
                             .child(heading("Inbox", th))
                             .child(self.switch_row(
@@ -316,6 +326,7 @@ impl MailWindow {
             Change::UndoSend(seconds) => sending.undo_send_seconds = seconds,
             Change::Density(density) => view.density = density,
             Change::Theme(theme) => view.theme = theme,
+            Change::DesktopColors(on) => view.desktop_colors = on,
             Change::Tabs(on) => {
                 view.inbox_tabs = on;
                 relist = true;
