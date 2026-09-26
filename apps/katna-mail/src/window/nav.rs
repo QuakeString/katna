@@ -302,14 +302,9 @@ impl MailWindow {
             .pt(px(lerp(0.0, 12.0, float)))
             .overflow_hidden()
             .when(float > 0.0, |d| {
+                // A phone's drawer has square corners, flush with the window.
                 d.bg(rgba(th.surface))
-                    .map(|d| {
-                        if drawer {
-                            d.rounded_r(px(PANEL_RADIUS))
-                        } else {
-                            d.rounded(px(PANEL_RADIUS))
-                        }
-                    })
+                    .when(!drawer, |d| d.rounded(px(PANEL_RADIUS)))
                     .shadow(elevation(th, 3.0 * float))
             })
             .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
