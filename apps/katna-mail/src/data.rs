@@ -484,6 +484,14 @@ impl Mail {
     /// `messages` and their other stored copies, with their flags: what a
     /// flag change must touch so the line shows it (see
     /// [`Store::with_copies`](katna_store::Store::with_copies)).
+    /// Where Delete puts `account`'s mail; `None` when it deletes for good.
+    pub fn trash_folder(&self, account: AccountId) -> Option<FolderId> {
+        self.store.trash_folder(account).unwrap_or_else(|err| {
+            tracing::warn!("reading the Trash folder: {err}");
+            None
+        })
+    }
+
     pub fn with_copies(&self, messages: &[MessageId]) -> Vec<(MessageId, MessageFlags)> {
         self.store.with_copies(messages).unwrap_or_else(|err| {
             tracing::warn!("reading copies of messages: {err}");

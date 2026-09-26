@@ -61,6 +61,30 @@ impl FolderRole {
             Self::Flagged => "flagged",
         }
     }
+
+    /// The role a folder's name suggests, for servers and imports that do
+    /// not mark their special folders ("Deleted Items", `_sent_mail`).
+    /// `name` is the last part of the path.
+    pub fn from_name(name: &str) -> Option<Self> {
+        Some(
+            match name
+                .to_lowercase()
+                .trim_matches('_')
+                .replace('_', " ")
+                .as_str()
+            {
+                "inbox" => Self::Inbox,
+                "starred" | "flagged" => Self::Flagged,
+                "drafts" => Self::Drafts,
+                "sent" | "sent items" | "sent mail" | "sent messages" => Self::Sent,
+                "archive" | "archives" => Self::Archive,
+                "junk" | "spam" | "junk e-mail" | "junk email" => Self::Junk,
+                "trash" | "deleted items" | "deleted messages" | "bin" => Self::Trash,
+                "all mail" => Self::All,
+                _ => return None,
+            },
+        )
+    }
 }
 
 impl fmt::Display for FolderRole {
@@ -258,6 +282,29 @@ impl Store {
             })
         })
         .collect()
+    }
+
+    /// Where Delete puts `account`'s mail: the folder marked Trash, else a
+    /// top-level one (or one under INBOX) named so, such as "Deleted
+    /// Items". `None` means Delete removes mail for good.
+    pub fn trash_folder(&self, account: AccountId) -> Result<Option<FolderId>> {
+        let folders = self.folders(account)?;
+        let marked = folders.iter().find(|f| f.role == Some(FolderRole::Trash));
+        let named = || {
+            folders.iter().find(|f| {
+                let name = match f.path.split_once('/') {
+                    None => f.path.as_str(),
+                    Some((parent, name))
+                        if parent.eq_ignore_ascii_case("INBOX") && !name.contains('/') =>
+                    {
+                        name
+                    }
+                    Some(_) => return false,
+                };
+                FolderRole::from_name(name) == Some(FolderRole::Trash)
+            })
+        };
+        Ok(marked.or_else(named).map(|f| f.id))
     }
 
     /// The messages in `folder`, in UID order.
@@ -671,6 +718,43 @@ mod tests {
             assert_eq!(role.as_str().parse::<FolderRole>().unwrap(), role);
         }
         assert!("nope".parse::<FolderRole>().is_err());
+    }
+
+    #[test]
+    fn finds_trash_by_mark_or_name() {
+        let (_tmp, mut store, account) = open();
+        let mut batch = store.mail_batch().unwrap();
+        batch.upsert_folder(account, "INBOX", None).unwrap();
+        // Nested elsewhere (an imported mailbox's "deleted_items"): not
+        // where Delete goes.
+        batch
+            .upsert_folder(account, "alin-m/deleted_items", None)
+            .unwrap();
+        batch.commit().unwrap();
+        assert_eq!(store.trash_folder(account).unwrap(), None);
+
+        let mut batch = store.mail_batch().unwrap();
+        let named = batch.upsert_folder(account, "Deleted Items", None).unwrap();
+        batch.commit().unwrap();
+        assert_eq!(store.trash_folder(account).unwrap(), Some(named));
+
+        let mut batch = store.mail_batch().unwrap();
+        let marked = batch
+            .upsert_folder(account, "Bin2", Some(FolderRole::Trash))
+            .unwrap();
+        batch.commit().unwrap();
+        assert_eq!(store.trash_folder(account).unwrap(), Some(marked));
+    }
+
+    #[test]
+    fn roles_from_names() {
+        assert_eq!(FolderRole::from_name("_sent_mail"), Some(FolderRole::Sent));
+        assert_eq!(
+            FolderRole::from_name("deleted_items"),
+            Some(FolderRole::Trash)
+        );
+        assert_eq!(FolderRole::from_name("Junk E-mail"), Some(FolderRole::Junk));
+        assert_eq!(FolderRole::from_name("Projects"), None);
     }
 
     #[test]

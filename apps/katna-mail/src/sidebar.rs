@@ -6,7 +6,7 @@
 use std::collections::{BTreeMap, HashMap, HashSet};
 
 use katna_core::{Account, AccountId};
-use katna_store::{FolderId, FolderSummary};
+use katna_store::{FolderId, FolderRole, FolderSummary};
 
 /// Folder paths are split at this separator. Stalwart, Gmail and the
 /// importers use `/`; servers with `.` show one level until the store keeps
@@ -46,23 +46,16 @@ impl Role {
             Some("all") => Some(Self::All),
             _ => None,
         };
-        from_role.unwrap_or_else(|| {
-            match name
-                .to_lowercase()
-                .trim_matches('_')
-                .replace('_', " ")
-                .as_str()
-            {
-                "inbox" => Self::Inbox,
-                "starred" | "flagged" => Self::Flagged,
-                "drafts" => Self::Drafts,
-                "sent" | "sent items" | "sent mail" | "sent messages" => Self::Sent,
-                "archive" | "archives" => Self::Archive,
-                "junk" | "spam" | "junk e-mail" | "junk email" => Self::Junk,
-                "trash" | "deleted items" | "deleted messages" | "bin" => Self::Trash,
-                "all mail" => Self::All,
-                _ => Self::Other,
-            }
+        from_role.unwrap_or_else(|| match FolderRole::from_name(name) {
+            Some(FolderRole::Inbox) => Self::Inbox,
+            Some(FolderRole::Flagged) => Self::Flagged,
+            Some(FolderRole::Drafts) => Self::Drafts,
+            Some(FolderRole::Sent) => Self::Sent,
+            Some(FolderRole::Archive) => Self::Archive,
+            Some(FolderRole::Junk) => Self::Junk,
+            Some(FolderRole::Trash) => Self::Trash,
+            Some(FolderRole::All) => Self::All,
+            None => Self::Other,
         })
     }
 
