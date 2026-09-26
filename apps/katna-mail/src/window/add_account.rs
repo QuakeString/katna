@@ -1246,7 +1246,7 @@ impl MailWindow {
 }
 
 /// The Katna Mail mark, as in the top bar.
-fn logo() -> AnyElement {
+pub(super) fn logo() -> AnyElement {
     div()
         .size(px(40.0))
         .flex()
@@ -1300,7 +1300,11 @@ fn hint(text: String, th: &Theme) -> AnyElement {
 }
 
 /// A borderless button with an accent label.
-fn text_button(id: &'static str, label: &'static str, th: &Theme) -> gpui::Stateful<gpui::Div> {
+pub(super) fn text_button(
+    id: &'static str,
+    label: &'static str,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
     div()
         .id(id)
         .h(px(36.0))

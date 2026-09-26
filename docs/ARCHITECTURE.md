@@ -144,7 +144,7 @@ are testable and benchmarkable without a GUI.
 | Blob compression / hashing | `zstd`, `blake3` | |
 | HTML safety | `ammonia` | |
 | Calendar data | `calcard` (iCalendar + vCard), `rrule`, `jiff` (time zones) | |
-| D-Bus and desktop | `zbus`, `ashpd` (portals), `oo7` (Secret Service), `ksni` (tray) | Notifications implemented directly on `org.freedesktop.Notifications` via `zbus` (actions, inline reply, activation tokens). |
+| D-Bus and desktop | `zbus`, `ashpd` (portals), `oo7` (Secret Service) | Notifications implemented directly on `org.freedesktop.Notifications` via `zbus` (actions, inline reply, activation tokens); the tray (StatusNotifierItem), dbusmenu and the taskbar count too (§15.2). |
 | Icons | `freedesktop-icons` + `resvg` | |
 | Spell check | `spellbook` | Hunspell dictionaries. |
 | Mail rules on the server | `sieve-rs` (compile) + ManageSieve | |
@@ -607,9 +607,34 @@ from or adds to the sketch above:
   limited to 32 levels.
 - **As you type.** `Query::parse_as_you_type` treats a final unfinished
   word as a prefix (`budg` finds `budget`; `"natural g` keeps the phrase
-  order), expanded to at most 16, 32 or 64 index words for one, two or
-  more letters. On the 500k synthetic corpus one-letter prefixes stay
-  under 20 ms p99.
+  order). In the body, and in phrases, the prefix expands to at most 16,
+  32 or 64 index words for one, two or more letters. In the other fields
+  (names, subject, file names) it expands to every word: expansion takes
+  words in alphabetical order, so a cap made `hasina b` miss Hasina Banu
+  whenever enough other names started with "ba…". On the 500k synthetic
+  corpus that costs up to ~12 ms for one letter (`k`: p50 18 ms).
+- **Typos.** One word of four or more letters that no searched field has
+  as typed also matches words one typo away (four letters) or two
+  (longer), a swap of neighbours counting as one, in From, To, Cc and Bcc
+  (`haskina banu` finds Hasina Banu). Near matches score 0.3 of an exact
+  one. If a search finds nothing, it runs again with such words matching
+  near words in every field (`scool fees`), and `SearchResults::fuzzy`
+  tells the app to say so. Words that exist as typed never match near
+  words, which keeps correctly spelled searches as fast as before (within
+  noise on the synthetic corpus); a misspelled search costs about as much
+  as a correct one (4–25 ms p50 on the synthetic corpus). Snippets do not
+  highlight near matches yet.
+- **Did you mean.** `SearchIndex::suggest` rewrites the typed text with
+  each word that is not in the mail as typed (four or more letters) swapped
+  for the nearest word that is: fewest typos, then the same first letter
+  (`kenet` → kenneth, not genex), then the most messages, in
+  the fields that word searches (`from:Hasnia` looks only at senders).
+  Quoted phrases, `-words` and `OR` are left alone. As you type, the
+  unfinished last word counts as found if any word starts with it, and is
+  otherwise completed from a word that starts one typo from it (`haskin` →
+  hasina). The mail app works like a web search: it searches the corrected
+  text right away if that finds anything, shows "Showing results for …",
+  and offers "Search instead for …" to search the text as typed.
 - **Ranking.** BM25 with field boosts (subject 3, from 2, attachment names
   1.5, others 1), times a recency factor `1 + 0.5 · 2^(−age/60 days)` where
   age is measured from the newest indexed message (so an old archive still
@@ -701,7 +726,7 @@ the same matching on event attendees ("Meeting with Acme").
 - Notifications with actions and inline reply (§15.1).
 - D-Bus API for the apps and desktop integrations (§14).
 - KRunner runner and GNOME Shell search provider (§15.3), served in-process.
-- Tray icon and unread badge (optional, §15.5).
+- Tray icon and unread count on the taskbar icon (§15.2).
 
 ### 9.2 Lifecycle
 
@@ -1094,12 +1119,28 @@ Gemini or confidential mode):
   nothing is found, or from "Server settings", the servers are entered by
   hand: host, port and SSL/TLS, STARTTLS or none for IMAP and SMTP, and
   the username. `AddImapAccount` checks the login before saving; a refused
-  password is shown under the field. It opens from the welcome page (no
-  account yet), the account card above the rail's account picture ("Add
+  password is shown under the field. It opens from the first-start pages
+  (no account yet), the account card above the rail's account picture ("Add
   another account", which also lists the accounts and opens their
   inboxes), and Send without an account. The daemon signals `MailChanged`
   after each account's first sync, so a new account's folders show even
   when they are empty.
+- **First start.** With no account, pages fill the window instead of an
+  empty list (`window/onboarding.rs`): Welcome (what Katna does), Account
+  (checks that the background service answers, which D-Bus activation
+  also starts, and says how to start it when it does not; then the Add
+  account dialog), Look (reading pane, theme and density, applied at once)
+  and Ready, which offers the tour. The pages slide in and keep one height
+  so nothing jumps. While an account waits for its first sync, an empty
+  folder says the mail is on its way instead of "No mail".
+- **Tour.** A walk through the window (`window/tour.rs`): the page dims
+  around one part at a time (Compose, search, the menu button, the apps,
+  the tabs, the list, quick settings, the account) with a card saying what
+  it is for, Back and Next (or the arrow keys) and Skip (or Escape). The
+  lit box glides from part to part. Parts not on screen are left out. It
+  follows the first-start pages; people who already had an account get an
+  offer of it once (`onboarding.done` in `config.toml`), and quick
+  settings starts it again.
 - **After the first real install.** The owner's first run on KDE brought
   these changes. Compose sits in the top bar in place of the app name, so
   it shows whether the folders are open or not; the account picture moved
@@ -1258,12 +1299,51 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
 - Not yet: inline reply, sender pictures (`image-data`), per-organization
   policy.
 
-### 15.2 Taskbar and tray
+### 15.2 Taskbar, tray and global menu
 
-- Unread count on the Plasma task manager icon via
-  `com.canonical.Unity.LauncherEntry` (also Dash-to-Dock on GNOME).
-- Optional tray icon (`ksni`, StatusNotifierItem): unread count, compose,
-  pause sync, quit.
+The count and the tray live in `katna-daemon`, so they stay while the app
+is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
+`dbusmenu`, `icon`), written on zbus rather than with `ksni`.
+
+- **Unread count** on Katna Mail's taskbar or dock icon:
+  `com.canonical.Unity.LauncherEntry` `Update` signals for
+  `application://in.invenia.katna.Mail.desktop` from
+  `/in/invenia/katna/Daemon/LauncherEntry`. The number is the unread
+  messages in every account's Inbox, the same as next to Inbox in the app,
+  recounted half a second after mail changes. Plasma's task manager shows
+  it; on GNOME, Ubuntu Dock, Dash to Dock and Dash to Panel do (the stock
+  GNOME dash shows no counts). Setting `general.unread_badge` (default on).
+- **Tray icon**: a StatusNotifierItem under its own name
+  (`org.kde.StatusNotifierItem-PID-N`), registered with
+  `org.kde.StatusNotifierWatcher` again whenever the watcher restarts.
+  Plasma shows it natively; GNOME needs the AppIndicator extension (on by
+  default on Ubuntu). The icon is drawn in code (the app icon's shapes plus
+  a red badge with the count, `99+` above 99), since the protocol takes
+  pixels and an SVG renderer would grow the daemon. Left click raises the
+  app, middle click starts a new message. The right-click menu
+  (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
+  Quit. Quit closes the app and stops the daemon until the next login or
+  until the app starts it again (D-Bus activation). Setting
+  `general.tray_icon` (default on); `ReloadConfig` applies both settings.
+- **Single instance and actions**: Katna Mail owns `in.invenia.katna.Mail`
+  and serves `org.freedesktop.Application` at `/in/invenia/katna/Mail` with
+  the actions `open-inbox`, `compose`, `preferences`, `open-message` (a
+  message ID) and `quit` (`katna_dbus::app_action`). A second `katna-mail`
+  hands its request to the first and exits. The tray, notifications and
+  the desktop file use this: its actions New Message, Open Inbox and
+  Preferences (right-click on the taskbar icon in Plasma and GNOME) run
+  `katna-mail --compose`, `--inbox` and `--settings`. With `--data-dir` the
+  app stands alone.
+- **KDE global menu**: the app serves its menu bar (File, Edit, View, Go,
+  Message, Settings, Help) with `com.canonical.dbusmenu` at
+  `/in/invenia/katna/Mail/MenuBar`, built from its GPUI actions and their
+  key bindings; items for actions a build lacks are left out, and a click
+  dispatches the action in the window. GPUI cannot announce a menu on
+  Linux, so `vendor/gpui-pre-linux` patches its Linux backend
+  (`[patch.crates-io]`, see `KATNA.md` there): `set_kde_appmenu` gives
+  every normal window `org_kde_kwin_appmenu` on Wayland and the
+  `_KDE_NET_WM_APPMENU_*` properties on X11. Plasma's Global Menu applet and
+  the title-bar menu button then show it.
 
 ### 15.3 KRunner and GNOME Shell search
 
@@ -1480,7 +1560,9 @@ ashpd), IMAP parsing and regex.
 ## 20. Dependency policy
 
 - **GPUI:** pin exact `gpui-pre` and GPUI Kit versions; GPUI types only in
-  `katna-ui`, `katna-chrome` and the GUI apps.
+  `katna-ui`, `katna-chrome` and the GUI apps. `gpui-pre-linux` is a
+  vendored copy with the KDE global menu patch (§15.2); upgrading GPUI means
+  re-applying it (`vendor/gpui-pre-linux/KATNA.md`).
 - **Pimalaya: light forks.** Fork only crates we change. Fork `master`
   mirrors upstream; our changes live on a `katna` branch. Use
   `[patch.crates-io]` in the workspace; drop the patch when upstream merges

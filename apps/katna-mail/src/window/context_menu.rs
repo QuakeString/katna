@@ -68,7 +68,7 @@ impl MailWindow {
         cx.notify();
     }
 
-    fn close_context_menu(&mut self, cx: &mut Context<Self>) {
+    pub(super) fn close_context_menu(&mut self, cx: &mut Context<Self>) {
         if self.context_menu.take().is_some() {
             cx.notify();
         }

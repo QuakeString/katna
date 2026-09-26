@@ -20,6 +20,7 @@ mod index;
 mod indexer;
 pub mod query;
 pub mod schema;
+mod suggest;
 
 pub use error::{Error, Result};
 pub use index::{

@@ -7,7 +7,7 @@
 
 use futures_lite::{Stream, StreamExt};
 use katna_dbus::zbus::Connection;
-use katna_dbus::{NewImapAccount, OutboxItem, PimProxy, flag, send_state};
+use katna_dbus::{NewImapAccount, OutboxItem, PimProxy, flag, send_state, state};
 use katna_store::{FolderId, MessageId};
 
 /// A change to send to the daemon.
@@ -243,7 +243,20 @@ pub async fn outbox_changes(connection: &Connection) -> Result<impl Stream<Item 
     Ok(changes.map(|_| ()))
 }
 
-/// Yields for every `MailChanged` and `AccountsChanged` signal.
+/// Asks the daemon about the accounts, which also starts it if D-Bus can.
+/// Returns whether an account still waits for its first sync.
+pub async fn first_sync_pending(connection: &Connection) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let accounts = pim.accounts().await.map_err(|err| describe(&err))?;
+    Ok(accounts
+        .iter()
+        .any(|a| a.last_sync == 0 && a.state != state::NOT_SYNCED && a.state != state::AUTH_FAILED))
+}
+
+/// Yields for every `MailChanged`, `AccountsChanged` and `SyncStatusChanged`
+/// signal.
 pub async fn mail_changes(connection: &Connection) -> Result<impl Stream<Item = ()>, String> {
     let pim = PimProxy::new(connection)
         .await
@@ -256,7 +269,14 @@ pub async fn mail_changes(connection: &Connection) -> Result<impl Stream<Item = 
         .receive_accounts_changed()
         .await
         .map_err(|err| describe(&err))?;
-    Ok(changes.map(|_| ()).or(accounts.map(|_| ())))
+    let status = pim
+        .receive_sync_status_changed()
+        .await
+        .map_err(|err| describe(&err))?;
+    Ok(changes
+        .map(|_| ())
+        .or(accounts.map(|_| ()))
+        .or(status.map(|_| ())))
 }
 
 #[cfg(test)]

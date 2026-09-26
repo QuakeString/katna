@@ -92,7 +92,14 @@ impl MailWindow {
                     .flex_col()
                     .children(tabs)
                     .children(banner)
-                    .child(div().flex_1().min_h_0().child(list))
+                    .child(
+                        div()
+                            .relative()
+                            .flex_1()
+                            .min_h_0()
+                            .child(list)
+                            .child(self.tour_mark(super::tour::Spot::List)),
+                    )
                     .into_any_element(),
             )
         };
@@ -244,6 +251,13 @@ impl MailWindow {
         }
         let label: Option<SharedString> = match (&self.search_error, &self.listing) {
             (Some(err), _) => Some(err.clone()),
+            (
+                None,
+                Some(Listing::Search {
+                    corrected: Some(corrected),
+                    ..
+                }),
+            ) => Some(format!("Showing results for “{corrected}”").into()),
             (None, Some(Listing::Search { query, .. })) => {
                 Some(format!("Results for “{query}”").into())
             }
@@ -268,6 +282,17 @@ impl MailWindow {
                 format::thousands(end as u64)
             )
         };
+        let search_instead = match (&self.search_error, &self.listing) {
+            (
+                None,
+                Some(Listing::Search {
+                    query,
+                    corrected: Some(_),
+                    ..
+                }),
+            ) => Some(query.clone()),
+            _ => None,
+        };
         let at_top = self.visible.start == 0;
         let at_end = self.visible.end >= count;
         bar.child(
@@ -275,10 +300,31 @@ impl MailWindow {
                 .pl(px(8.0))
                 .flex_1()
                 .min_w_0()
-                .truncate()
+                .flex()
+                .items_center()
+                .gap(px(12.0))
                 .text_size(px(14.0))
-                .text_color(rgba(th.text_dim))
-                .children(label),
+                .child(
+                    div()
+                        .flex_shrink(1.0)
+                        .min_w_0()
+                        .truncate()
+                        .text_color(rgba(th.text_dim))
+                        .children(label),
+                )
+                .children(search_instead.map(|query| {
+                    div()
+                        .id("search-instead")
+                        .flex_shrink(1.0)
+                        .min_w_0()
+                        .truncate()
+                        .cursor_pointer()
+                        .text_color(rgba(th.accent))
+                        .child(format!("Search instead for “{query}”"))
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            this.search_verbatim(query.clone(), cx);
+                        }))
+                })),
         )
         .child(
             div()
@@ -727,6 +773,7 @@ impl MailWindow {
             .border_b_1()
             .border_color(rgba(th.divider))
             .children(tabs)
+            .child(self.tour_mark(super::tour::Spot::Tabs))
             // The indicator slides to the open tab.
             .child(
                 div()
@@ -747,6 +794,9 @@ impl MailWindow {
         if self.entries.is_empty() {
             let text = match &self.listing {
                 Some(Listing::Search { .. }) => "No messages matched your search.".to_owned(),
+                Some(Listing::Folder(_)) if self.first_sync => {
+                    return first_sync_placeholder(th);
+                }
                 Some(Listing::Folder(_)) if self.shows_tabs() => {
                     let tab = self.tabs.get(self.tab).map_or("this tab", |t| t.label);
                     format!("No mail in {tab}.")
@@ -1216,4 +1266,52 @@ pub(super) fn separator(th: &Theme) -> Div {
         .w(px(1.0))
         .h(px(20.0))
         .bg(rgba(th.divider))
+}
+
+/// An empty folder while the first sync runs: the mail is on its way.
+fn first_sync_placeholder(th: &Theme) -> AnyElement {
+    div()
+        .size_full()
+        .flex()
+        .flex_col()
+        .items_center()
+        .justify_center()
+        .gap(px(12.0))
+        .p(px(24.0))
+        .child(
+            div()
+                .w(px(160.0))
+                .h(px(4.0))
+                .rounded_full()
+                .overflow_hidden()
+                .relative()
+                .bg(rgba(fade(th.accent, 0.24)))
+                .child(
+                    div()
+                        .absolute()
+                        .top_0()
+                        .h_full()
+                        .w(px(64.0))
+                        .rounded_full()
+                        .bg(rgba(th.accent))
+                        .with_animation(
+                            "first-sync",
+                            Animation::new(Duration::from_millis(1300)).repeat(),
+                            |bar, t| bar.left(px(-64.0 + 224.0 * t)),
+                        ),
+                ),
+        )
+        .child(
+            div()
+                .text_size(px(14.0))
+                .text_color(rgba(th.text_dim))
+                .child("Getting your mail\u{2026}"),
+        )
+        .child(
+            div()
+                .text_size(px(13.0))
+                .text_color(rgba(th.text_faint))
+                .child("It shows up here as it arrives."),
+        )
+        .into_any_element()
 }

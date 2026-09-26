@@ -1109,6 +1109,7 @@ impl MailWindow {
         }
         self.save_config();
         keymap::bind(&self.config.shortcuts, cx);
+        super::refresh_menu_bar(cx);
         cx.notify();
     }
 

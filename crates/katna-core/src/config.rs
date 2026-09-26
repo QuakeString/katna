@@ -29,6 +29,15 @@ pub struct Config {
     pub shortcuts: Shortcuts,
     pub sync: SyncConfig,
     pub notifications: Notifications,
+    pub onboarding: Onboarding,
+}
+
+/// First-run help in Katna Mail.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Onboarding {
+    /// The welcome and the offer of a tour of the window have been seen.
+    pub done: bool,
 }
 
 /// Desktop notifications from `katna-daemon` (`docs/ARCHITECTURE.md` §15.1).
@@ -84,15 +93,18 @@ impl Metered {
 pub struct General {
     /// Keep `katna-daemon` running when no window is open.
     pub run_in_background: bool,
-    /// Show a tray icon.
+    /// Show a tray icon with the unread count and a menu (§15.2).
     pub tray_icon: bool,
+    /// Show the Inbox unread count on Katna Mail's taskbar or dock icon.
+    pub unread_badge: bool,
 }
 
 impl Default for General {
     fn default() -> Self {
         Self {
             run_in_background: true,
-            tray_icon: false,
+            tray_icon: true,
+            unread_badge: true,
         }
     }
 }
@@ -551,6 +563,13 @@ mod tests {
     }
 
     #[test]
+    fn onboarding_is_shown_until_done() {
+        assert!(!Config::default().onboarding.done);
+        let config = Config::parse("[onboarding]\ndone = true\n").unwrap();
+        assert!(config.onboarding.done);
+    }
+
+    #[test]
     fn new_mail_notifications_are_on_by_default() {
         assert!(Config::default().notifications.new_mail);
         let config = Config::parse("[notifications]\nnew_mail = false\n").unwrap();
@@ -616,7 +635,7 @@ mod tests {
         let tmp = tempfile::tempdir().unwrap();
         let path = tmp.path().join("nested/config.toml");
         let mut config = Config::default();
-        config.general.tray_icon = true;
+        config.general.tray_icon = false;
         config.logging.filter = "debug".to_owned();
         config.sending.undo_send_seconds = 0;
         config.save(&path).unwrap();

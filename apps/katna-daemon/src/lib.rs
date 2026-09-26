@@ -8,7 +8,9 @@
 //! the bus name keeps it to a single instance.
 
 pub mod daemon;
+mod desktop;
 pub mod install;
+mod mail_app;
 mod notify;
 pub mod secrets;
 pub mod service;
@@ -54,6 +56,8 @@ pub struct Instance {
     /// `None` if the index could not be opened; mail still syncs.
     indexer: Option<Indexer>,
     backfill: Backfill,
+    /// Sent when the user quits from the tray.
+    quit: Receiver<()>,
 }
 
 /// Why [`Instance::serve`] returned.
@@ -170,11 +174,24 @@ impl Instance {
         }
         // Only the daemon that owns the bus name may write the index.
         let indexer = start_indexer(&index_paths);
+        let (desktop, desktop_events) = desktop::channel();
+        let (quit_sender, quit) = async_channel::bounded(1);
+        daemon.set_desktop(desktop.clone());
+        smol::spawn(desktop::run(
+            connection.clone(),
+            index_paths.clone(),
+            daemon::settings(&index_paths).general,
+            desktop.clone(),
+            desktop_events,
+            quit_sender,
+        ))
+        .detach();
         let (forward, forwarded) = async_channel::unbounded();
         smol::spawn(watch_mail(
             notices,
             forward,
             indexer.as_ref().map(Indexer::waker),
+            desktop,
         ))
         .detach();
         smol::spawn(service::emit_signals(connection.clone(), forwarded)).detach();
@@ -187,12 +204,25 @@ impl Instance {
             connection,
             indexer,
             backfill,
+            quit,
         })
     }
 
-    /// Serves until `stop` finishes, then shuts down; or until a client
-    /// asks to delete all data, which it does before exiting.
+    /// Waits until the user quits Katna from the tray. The daemon starts
+    /// again at the next login or when the app needs it (D-Bus activation).
+    pub async fn quit_requested(&self) {
+        let _ = self.quit.recv().await;
+    }
+
+    /// Serves until `stop` finishes or the user quits from the tray, then
+    /// shuts down; or until a client asks to delete all data, which it
+    /// does before exiting.
     pub async fn serve(self, stop: impl Future<Output = ()>) -> Ended {
+        let quit = self.quit.clone();
+        let stop = stop.or(async move {
+            let _ = quit.recv().await;
+            tracing::info!("quit from the tray");
+        });
         let requests = self.daemon.delete_requests();
         let delete = async {
             match requests.recv().await {
@@ -295,15 +325,20 @@ fn start_indexer(paths: &Paths) -> Option<Indexer> {
     }
 }
 
-/// Passes `notices` on to `forward` and wakes the indexer when mail changed.
+/// Passes `notices` on to `forward`, and wakes the indexer and updates the
+/// unread counts when mail changed.
 async fn watch_mail(
     notices: Receiver<Notice>,
     forward: Sender<Notice>,
     indexer: Option<IndexerWaker>,
+    desktop: desktop::Handle,
 ) {
     while let Ok(notice) = notices.recv().await {
-        if let (Notice::MailChanged(_), Some(indexer)) = (notice, &indexer) {
-            indexer.changed();
+        if let Notice::MailChanged(_) = notice {
+            if let Some(indexer) = &indexer {
+                indexer.changed();
+            }
+            desktop.mail_changed();
         }
         if forward.send(notice).await.is_err() {
             break;

@@ -2416,8 +2416,6 @@ dependencies = [
 [[package]]
 name = "gpui-pre-linux"
 version = "0.3.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aab655cda1d6dcd549ac869e8678babc84cf573ab6794a1fe1a39c6c70c60b48"
 dependencies = [
  "accesskit",
  "accesskit_unix",
@@ -3486,9 +3484,11 @@ dependencies = [
 name = "katna-mail"
 version = "0.0.0"
 dependencies = [
+ "async-channel",
  "emojis",
  "futures-lite",
  "gpui-pre",
+ "gpui-pre-linux",
  "gpui-pre-platform",
  "jiff",
  "katna-chrome",
@@ -3504,6 +3504,7 @@ dependencies = [
  "spellbook",
  "tempfile",
  "tracing",
+ "zbus",
 ]
 
 [[package]]
@@ -3536,6 +3537,8 @@ version = "0.0.0"
 dependencies = [
  "futures-lite",
  "katna-core",
+ "serde",
+ "tracing",
  "zbus",
 ]
 
@@ -3555,10 +3558,12 @@ dependencies = [
  "katna-core",
  "katna-import",
  "katna-store",
+ "levenshtein_automata",
  "mail-parser",
  "serde",
  "serde_json",
  "tantivy",
+ "tantivy-fst",
  "tempfile",
  "thiserror 2.0.21",
  "tracing",
