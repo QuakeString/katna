@@ -41,6 +41,7 @@ enum Request {
     Select(String, Reply<FolderStatus>),
     FetchEnvelopes(u32, Option<u32>, Reply<Vec<Envelope>>),
     FetchHeaders(u32, Option<u32>, Reply<Vec<MessageHeaders>>),
+    FetchBodies(Vec<u32>, Reply<Vec<(u32, Vec<u8>)>>),
     FetchFlags(u32, u32, Option<u64>, Reply<Vec<FlagState>>),
     Uids(Reply<Vec<u32>>),
     CreateFolder(String, Reply<()>),
@@ -91,6 +92,11 @@ impl Connection {
     ) -> Result<Vec<MessageHeaders>> {
         self.call(|reply| Request::FetchHeaders(first, last, reply))
             .await
+    }
+
+    pub async fn fetch_bodies(&self, uids: &[u32]) -> Result<Vec<(u32, Vec<u8>)>> {
+        let uids = uids.to_vec();
+        self.call(|reply| Request::FetchBodies(uids, reply)).await
     }
 
     pub async fn fetch_flags(
@@ -176,6 +182,10 @@ impl MailBackend for Connection {
         Connection::fetch_headers(self, first, last).await
     }
 
+    async fn fetch_bodies(&mut self, uids: &[u32]) -> Result<Vec<(u32, Vec<u8>)>> {
+        Connection::fetch_bodies(self, uids).await
+    }
+
     async fn fetch_flags(
         &mut self,
         first: u32,
@@ -257,6 +267,7 @@ async fn run<B: MailBackend>(mut backend: B, inbox: Receiver<Request>) {
             Request::FetchHeaders(first, last, reply) => {
                 answer(&reply, backend.fetch_headers(first, last).await)
             }
+            Request::FetchBodies(uids, reply) => answer(&reply, backend.fetch_bodies(&uids).await),
             Request::FetchFlags(first, last, changed_since, reply) => answer(
                 &reply,
                 backend.fetch_flags(first, last, changed_since).await,

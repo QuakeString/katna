@@ -302,6 +302,13 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   `Date`. Each server copy of a message is its own row for now; merging
   copies (Gmail labels) comes with threading (task 1.7). `has_attachments`
   is guessed from `multipart/mixed` until `BODYSTRUCTURE` is parsed.
+- **Level 3 so far (`katna_sync::bodies`):** after each full sync, and after
+  each inbox catch-up, the worker fetches `BODY.PEEK[]` for messages in the
+  offline window (default: the last 30 days, up to 10 MB each), newest
+  first, 25 per command. The raw message goes to the blob store; the
+  snippet and attachment flag are recomputed from it and `body_state` is
+  set to 2. `FetchBody(id)` on D-Bus downloads any other message through
+  the account's worker. Level 2 (text only) and eviction come later.
 - **Waiting for changes:** every wait starts with a NOOP, then IDLEs (or
   sleeps and NOOPs on servers without IDLE). Stalwart 0.16 reports changes
   made between two commands on NOOP only, never when IDLE starts.
@@ -539,7 +546,7 @@ the same matching on event attendees ("Meeting with Acme").
   D-Bus activation file for the installed binary, until distribution
   packages ship them.
 - `katnactl` (task 1.13) drives it: `add-imap`, `status`, `sync`, `watch`,
-  `password`, `remove`, and store reads (`folders`, `list`).
+  `password`, `remove`, and store reads (`folders`, `list`, `show`).
 
 ### 9.3 Resource targets
 
@@ -669,8 +676,8 @@ Sketch — versioned by the interface name; breaking changes create `Pim2`.
 Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssx)`
 (id, kind, name, address, state, detail, last sync), `AddImapAccount(account,
 password) → id`, `SetPassword(id, password)`, `RemoveAccount(id) → b`,
-`SyncNow(id)` (0 for every account), and the signals `AccountsChanged`,
-`SyncStatusChanged(id)` and `MailChanged(id)`. `MailChanged` carries the
+`SyncNow(id)` (0 for every account), `FetchBody(message)`, and the signals
+`AccountsChanged`, `SyncStatusChanged(id)` and `MailChanged(id)`. `MailChanged` carries the
 account, not message IDs: clients read the change journal. Errors use the
 standard names `org.freedesktop.DBus.Error.AuthFailed`, `InvalidArgs`,
 `UnknownObject` and `Failed`. zbus needs the interface name as a literal, so

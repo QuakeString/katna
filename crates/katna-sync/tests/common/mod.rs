@@ -26,6 +26,7 @@ pub struct Message {
     pub flags: Flags,
     pub modseq: u64,
     pub header: Vec<u8>,
+    pub body: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
@@ -94,6 +95,7 @@ impl FakeServer {
                 flags: Flags::default(),
                 modseq,
                 header: header.into_bytes(),
+                body: format!("Body of {subject}.\r\n").into_bytes(),
             },
         );
         uid
@@ -249,6 +251,20 @@ impl MailBackend for FakeConnection {
                 flags: m.flags.clone(),
                 received: None,
                 header: m.header.clone(),
+            })
+            .collect())
+    }
+
+    async fn fetch_bodies(&mut self, uids: &[u32]) -> Result<Vec<(u32, Vec<u8>)>> {
+        let state = self.state(format!("BODIES {uids:?}"))?;
+        let messages = &state.folders[self.selected()].messages;
+        let mut sorted = uids.to_vec();
+        sorted.sort_unstable();
+        Ok(sorted
+            .into_iter()
+            .filter_map(|uid| {
+                let message = messages.get(&uid)?;
+                Some((uid, [message.header.as_slice(), &message.body].concat()))
             })
             .collect())
     }

@@ -152,6 +152,64 @@ impl Store {
         crate::mail_read::messages_by_id(&self.mail, &ids)
     }
 
+    /// Messages in `folder` whose body is not stored yet, newest first, as
+    /// `(message, uid)`. Only messages dated at or after `since` (when
+    /// given) and at most `max_size` bytes on the server; at most `limit`.
+    pub fn messages_without_body(
+        &self,
+        folder: FolderId,
+        since: Option<i64>,
+        max_size: u64,
+        limit: u32,
+    ) -> Result<Vec<(MessageId, u32)>> {
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT m.id, l.uid FROM message m
+             JOIN message_location l ON l.message_id = m.id
+             WHERE l.folder_id = ?1 AND l.uid IS NOT NULL AND m.blob_hash IS NULL
+               AND m.size <= ?3 AND (?2 IS NULL OR m.date >= ?2)
+             ORDER BY m.date DESC, l.uid DESC LIMIT ?4",
+        )?;
+        let rows = stmt.query_map(
+            params![
+                folder.0,
+                since,
+                i64::try_from(max_size).unwrap_or(i64::MAX),
+                limit
+            ],
+            |row| Ok((MessageId(row.get(0)?), row.get(1)?)),
+        )?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// Where a message is on the server: its account, a folder and the UID
+    /// there. `None` if it is unknown or only stored locally.
+    pub fn remote_location(
+        &self,
+        message: MessageId,
+    ) -> Result<Option<(AccountId, StoredFolder, u32)>> {
+        let found: Option<(i64, i64, u32)> = self
+            .mail
+            .prepare_cached(
+                "SELECT m.account_id, l.folder_id, l.uid FROM message m
+                 JOIN message_location l ON l.message_id = m.id
+                 WHERE m.id = ?1 AND l.uid IS NOT NULL
+                 ORDER BY l.folder_id LIMIT 1",
+            )?
+            .query_row([message.0], |row| {
+                Ok((row.get(0)?, row.get(1)?, row.get(2)?))
+            })
+            .optional()?;
+        let Some((account, folder, uid)) = found else {
+            return Ok(None);
+        };
+        let account = AccountId(account);
+        Ok(self
+            .folders(account)?
+            .into_iter()
+            .find(|f| f.id == FolderId(folder))
+            .map(|folder| (account, folder, uid)))
+    }
+
     /// The UIDs stored for `folder`, ascending.
     pub fn folder_uids(&self, folder: FolderId) -> Result<Vec<u32>> {
         let mut stmt = self.mail.prepare_cached(
@@ -280,6 +338,35 @@ impl MailBatch<'_> {
         }
         journal::record(tx, ObjectKind::Message, id, ChangeOp::Insert)?;
         Ok(Added::Message(MessageId(id)))
+    }
+
+    /// Stores the full raw message of `message` (blob first, then the row)
+    /// and marks its body as downloaded.
+    pub fn set_message_body(
+        &mut self,
+        message: MessageId,
+        raw: &[u8],
+        snippet: Option<&str>,
+        has_attachments: bool,
+    ) -> Result<()> {
+        let hash = self.blobs().put(raw)?;
+        let tx = self.tx();
+        let updated = tx
+            .prepare_cached(
+                "UPDATE message SET blob_hash = ?2, snippet = ?3, has_attachments = ?4,
+                                    body_state = 2
+                 WHERE id = ?1",
+            )?
+            .execute(params![
+                message.0,
+                hash.as_bytes(),
+                snippet,
+                has_attachments
+            ])?;
+        if updated > 0 {
+            journal::record(tx, ObjectKind::Message, message.0, ChangeOp::Update)?;
+        }
+        Ok(())
     }
 
     /// Updates the flags of the message at `uid` in `folder`. Returns the
@@ -558,5 +645,54 @@ mod tests {
         batch.commit().unwrap();
         assert!(store.folders(account).unwrap().is_empty());
         assert_eq!(message_count(&store), 0);
+    }
+
+    #[test]
+    fn bodies_are_downloaded_newest_first_within_limits() {
+        let (_tmp, mut store, account) = open();
+        let mut batch = store.mail_batch().unwrap();
+        let inbox = batch
+            .upsert_folder(account, "INBOX", Some(FolderRole::Inbox))
+            .unwrap();
+        for (uid, date, size) in [(1, 100, 10), (2, 300, 10), (3, 200, 10), (4, 400, 99_999)] {
+            let message = RemoteMessage {
+                date: Some(date),
+                size,
+                ..remote(uid, &[])
+            };
+            batch.add_remote_message(account, inbox, &message).unwrap();
+        }
+        batch.commit().unwrap();
+
+        let wanted = store.messages_without_body(inbox, None, 1000, 10).unwrap();
+        let uids: Vec<u32> = wanted.iter().map(|(_, uid)| *uid).collect();
+        assert_eq!(uids, [2, 3, 1], "newest first, big one left out");
+        let recent = store
+            .messages_without_body(inbox, Some(200), 1000, 10)
+            .unwrap();
+        assert_eq!(recent.len(), 2);
+
+        let (id, _) = wanted[0];
+        let (found_account, folder, uid) = store.remote_location(id).unwrap().unwrap();
+        assert_eq!(
+            (found_account, folder.path.as_str(), uid),
+            (account, "INBOX", 2)
+        );
+
+        let before = store.latest_change(DbKind::Mail).unwrap();
+        let raw = b"Subject: Hello\r\n\r\nThe body.\r\n";
+        let mut batch = store.mail_batch().unwrap();
+        batch
+            .set_message_body(id, raw, Some("The body."), false)
+            .unwrap();
+        batch.commit().unwrap();
+        assert!(store.latest_change(DbKind::Mail).unwrap() > before);
+        let stored = &store.messages_by_id(&[id]).unwrap()[0];
+        assert_eq!(stored.snippet.as_deref(), Some("The body."));
+        let hash = stored.blob_hash.unwrap();
+        assert_eq!(store.blobs().get(&hash).unwrap().unwrap(), raw);
+        let left = store.messages_without_body(inbox, None, 1000, 10).unwrap();
+        assert_eq!(left.len(), 2);
+        assert_eq!(store.remote_location(MessageId(999)).unwrap(), None);
     }
 }
