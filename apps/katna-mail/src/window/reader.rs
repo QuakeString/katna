@@ -509,41 +509,37 @@ impl MailWindow {
             .collect();
 
         // Reply, Reply all and Forward stay at the foot of the pane while
-        // the conversation scrolls; a reply is written there too.
+        // the conversation scrolls. A reply is written at the end of the
+        // conversation itself, as in Gmail: it grows with its text and
+        // scrolls with the messages.
         let key = reader.key;
-        let max_body = f32::from(self.reader_scroll.bounds().size.height) * 0.45;
-        let footer = self
-            .render_inline_reply(key, max_body, th, cx)
-            .unwrap_or_else(|| {
-                div()
-                    .flex()
-                    .flex_row()
-                    .flex_wrap()
-                    .gap(px(12.0))
-                    .pl(px(self.layout.shape.reader_indent()))
-                    .pr(px(24.0))
-                    .py(px(14.0))
-                    .child(
-                        pill_button("reply", "reply", "Reply", th).on_click(cx.listener(
-                            |this, _, window, cx| this.open_compose(Kind::Reply, None, window, cx),
-                        )),
-                    )
-                    .child(
-                        pill_button("reply-all", "reply-all", "Reply all", th).on_click(
-                            cx.listener(|this, _, window, cx| {
-                                this.open_compose(Kind::ReplyAll, None, window, cx)
-                            }),
-                        ),
-                    )
-                    .child(
-                        pill_button("forward", "forward", "Forward", th).on_click(cx.listener(
-                            |this, _, window, cx| {
-                                this.open_compose(Kind::Forward, None, window, cx)
-                            },
-                        )),
-                    )
-                    .into_any_element()
-            });
+        let reply = self.render_inline_reply(key, th, cx);
+        let footer = reply.is_none().then(|| {
+            div()
+                .flex()
+                .flex_row()
+                .flex_wrap()
+                .gap(px(12.0))
+                .pl(px(self.layout.shape.reader_indent()))
+                .pr(px(24.0))
+                .py(px(14.0))
+                .child(
+                    pill_button("reply", "reply", "Reply", th).on_click(cx.listener(
+                        |this, _, window, cx| this.open_compose(Kind::Reply, None, window, cx),
+                    )),
+                )
+                .child(
+                    pill_button("reply-all", "reply-all", "Reply all", th).on_click(cx.listener(
+                        |this, _, window, cx| this.open_compose(Kind::ReplyAll, None, window, cx),
+                    )),
+                )
+                .child(
+                    pill_button("forward", "forward", "Forward", th).on_click(cx.listener(
+                        |this, _, window, cx| this.open_compose(Kind::Forward, None, window, cx),
+                    )),
+                )
+                .into_any_element()
+        });
         div()
             .size_full()
             .flex()
@@ -562,6 +558,7 @@ impl MailWindow {
                             .pb(px(24.0))
                             .child(title)
                             .children(parts)
+                            .children(reply)
                             .with_animation(
                                 ("open-conversation", key_number(key)),
                                 Animation::new(Duration::from_millis(280))
@@ -570,13 +567,13 @@ impl MailWindow {
                             ),
                     ),
             )
-            .child(
+            .children(footer.map(|footer| {
                 div()
                     .flex_none()
                     .border_t_1()
                     .border_color(rgba(th.divider))
-                    .child(footer),
-            )
+                    .child(footer)
+            }))
             .into_any_element()
     }
 

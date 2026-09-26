@@ -3,9 +3,14 @@
 //! Small building blocks of the mail window: icons, buttons, avatars,
 //! menus and shadows.
 
+use std::cell::{Cell, RefCell};
+use std::collections::HashMap;
+use std::rc::Rc;
+
 use gpui::{
-    AnyElement, AnyView, App, BoxShadow, Div, FontWeight, SharedString, Stateful, Window, div,
-    point, prelude::*, px, rgba, svg,
+    AnyElement, AnyView, App, Bounds, BoxShadow, Div, ElementId, FocusHandle, FontWeight, Pixels,
+    ScrollHandle, SharedString, Stateful, StyleRefinement, Window, canvas, div, point, prelude::*,
+    px, rgba, svg,
 };
 use katna_ui::{Ripple, Tooltip};
 
@@ -189,6 +194,114 @@ pub fn avatar(name: &str, address: &str, size: f32) -> AnyElement {
         .font_weight(FontWeight::MEDIUM)
         .child(initial(name))
         .into_any_element()
+}
+
+/// Makes a control reachable with Tab and Shift+Tab. Enter and Space then
+/// click it, and a tint with a ring inside its edge shows it has the
+/// keyboard focus (not after a mouse click). Clicking it also takes the
+/// focus, so keep it off buttons that act on a text field.
+pub trait FocusRing: Sized {
+    fn focus_ring(self, th: &Theme) -> Self;
+    /// The same for a control in a scrolling page: the page scrolls to
+    /// show it when Tab moves to it.
+    fn focus_ring_in(self, stops: &TabStops, th: &Theme, cx: &App) -> Self;
+}
+
+impl FocusRing for Stateful<Div> {
+    fn focus_ring(self, th: &Theme) -> Self {
+        self.tab_index(0).focus_visible(ring_style(th))
+    }
+
+    fn focus_ring_in(mut self, stops: &TabStops, th: &Theme, cx: &App) -> Self {
+        let Some(id) = self.interactivity().element_id.clone() else {
+            return self.focus_ring(th);
+        };
+        let handle = stops.handle(id, cx);
+        let (stops, focus) = (stops.clone(), handle.clone());
+        self.track_focus(&handle)
+            .focus_visible(ring_style(th))
+            .child(
+                canvas(
+                    move |bounds, window, _| stops.reveal(&focus, bounds, window),
+                    |_, _, _, _| {},
+                )
+                .absolute()
+                .top_0()
+                .left_0()
+                .size_full(),
+            )
+    }
+}
+
+fn ring_style(th: &Theme) -> impl FnOnce(StyleRefinement) -> StyleRefinement + use<> {
+    let ring = rgba(th.accent);
+    let tint = rgba(fade(th.accent, 0.08));
+    move |s| {
+        s.bg(tint).shadow(vec![BoxShadow {
+            color: ring.into(),
+            offset: point(px(0.0), px(0.0)),
+            blur_radius: px(0.0),
+            spread_radius: px(2.0),
+            inset: true,
+        }])
+    }
+}
+
+/// The Tab stops of a scrolling page, by element id, and the page's scroll.
+#[derive(Clone)]
+pub struct TabStops(Rc<Stops>);
+
+struct Stops {
+    handles: RefCell<HashMap<ElementId, FocusHandle>>,
+    scroll: ScrollHandle,
+    /// Tab just moved the focus: the next frame shows the focused control.
+    reveal: Cell<bool>,
+}
+
+impl TabStops {
+    pub fn new(scroll: ScrollHandle) -> Self {
+        Self(Rc::new(Stops {
+            handles: RefCell::default(),
+            scroll,
+            reveal: Cell::new(false),
+        }))
+    }
+
+    fn handle(&self, id: ElementId, cx: &App) -> FocusHandle {
+        self.0
+            .handles
+            .borrow_mut()
+            .entry(id)
+            .or_insert_with(|| cx.focus_handle().tab_stop(true))
+            .clone()
+    }
+
+    /// Scrolls the control Tab moves to into view on the next frame.
+    pub fn reveal_focus(&self) {
+        self.0.reveal.set(true);
+    }
+
+    fn reveal(&self, focus: &FocusHandle, bounds: Bounds<Pixels>, window: &mut Window) {
+        if !self.0.reveal.get() || !focus.is_focused(window) {
+            return;
+        }
+        self.0.reveal.set(false);
+        let scroll = &self.0.scroll;
+        let view = scroll.bounds();
+        let margin = px(16.0);
+        let offset = scroll.offset();
+        let y = if bounds.bottom() + margin > view.bottom() {
+            offset.y - (bounds.bottom() + margin - view.bottom())
+        } else if bounds.top() - margin < view.top() {
+            offset.y + (view.top() - (bounds.top() - margin))
+        } else {
+            return;
+        };
+        let y = y.clamp(-scroll.max_offset().y, px(0.0));
+        scroll.set_offset(point(offset.x, y));
+        // Drawn at the new offset in the next frame.
+        window.request_animation_frame();
+    }
 }
 
 /// Material-style elevation: `level` 0 is flat, 3 floats well above.

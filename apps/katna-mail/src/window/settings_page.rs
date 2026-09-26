@@ -11,8 +11,8 @@
 use std::time::Duration;
 
 use gpui::{
-    AnyElement, Context, Div, Entity, Focusable, FontWeight, Keystroke, ScrollHandle, SharedString,
-    Stateful, Subscription, Task, Window, div, prelude::*, px, rgba,
+    AnyElement, App, Context, Div, Entity, FocusHandle, Focusable, FontWeight, Keystroke,
+    ScrollHandle, SharedString, Stateful, Subscription, Task, Window, div, prelude::*, px, rgba,
 };
 use katna_core::config::{
     AccountTabs, Density, FileGroup, OpenIn, ReadingPane, TabStyle, Theme as ThemeChoice,
@@ -22,10 +22,12 @@ use katna_ui::{InputEvent, RichEditor, Ripple, TextInput};
 
 use super::keymap::{self, Group, SHORTCUTS};
 use super::settings::{Change, heading};
-use super::{MailWindow, OpenSettings, ShowShortcuts, apps::App as RailApp};
+use super::{
+    FocusNext, FocusPrevious, MailWindow, OpenSettings, ShowShortcuts, apps::App as RailApp,
+};
 use crate::tabs::{self, Provider};
 use crate::theme::Theme;
-use crate::widgets::{icon, icon_button, outlined_button};
+use crate::widgets::{FocusRing, TabStops, icon, icon_button, outlined_button};
 
 /// A signature edit is saved this long after the last key.
 const SAVE_DELAY: Duration = Duration::from_millis(600);
@@ -74,6 +76,17 @@ pub(super) struct SettingsPage {
     save: Option<Task<()>>,
     recording: Option<Recording>,
     scroll: ScrollHandle,
+    /// The open section's tab. It takes the focus when the page opens, so
+    /// Tab goes on from there.
+    focus: FocusHandle,
+    /// The controls Tab stops at, which the page scrolls to.
+    stops: TabStops,
+}
+
+impl SettingsPage {
+    pub(super) fn tab_stops(&self) -> &TabStops {
+        &self.stops
+    }
 }
 
 struct SignatureEditor {
@@ -103,13 +116,20 @@ impl MailWindow {
         self.open_app(RailApp::Mail, cx);
         self.settings_open = false;
         self.menu = None;
+        let fresh = self.settings_page.is_none();
+        let scroll = ScrollHandle::new();
         let page = self.settings_page.get_or_insert_with(|| SettingsPage {
             section,
             editing: None,
             save: None,
             recording: None,
-            scroll: ScrollHandle::new(),
+            scroll: scroll.clone(),
+            focus: cx.focus_handle().tab_stop(true),
+            stops: TabStops::new(scroll),
         });
+        if fresh {
+            window.focus(&page.focus, cx);
+        }
         page.section = section;
         page.recording = None;
         page.scroll.set_offset(gpui::point(px(0.0), px(0.0)));
@@ -126,6 +146,32 @@ impl MailWindow {
         }
         self.card_seq += 1;
         cx.notify();
+    }
+
+    /// Tab: the next field or button, scrolled into view on this page.
+    pub(super) fn focus_next(
+        &mut self,
+        _: &FocusNext,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        window.focus_next(cx);
+        if let Some(page) = &self.settings_page {
+            page.stops.reveal_focus();
+        }
+    }
+
+    /// Shift+Tab: the one before.
+    pub(super) fn focus_previous(
+        &mut self,
+        _: &FocusPrevious,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        window.focus_prev(cx);
+        if let Some(page) = &self.settings_page {
+            page.stops.reveal_focus();
+        }
     }
 
     pub(super) fn close_settings_page(&mut self, window: &mut Window, cx: &mut Context<Self>) {
@@ -161,6 +207,10 @@ impl MailWindow {
         {
             self.open_settings_page(section, window, cx);
         }
+        // The tab pressed becomes the open one, which keeps the focus.
+        if let Some(page) = &self.settings_page {
+            window.focus(&page.focus, cx);
+        }
     }
 
     pub(super) fn render_settings_page(
@@ -173,10 +223,13 @@ impl MailWindow {
         };
         let section = page.section;
         let scroll = page.scroll.clone();
+        let focus = page.focus.clone();
         let tabs = Section::ALL.map(|s| {
             let on = s == section;
             div()
                 .id(("settings-section", s as usize))
+                .when(on, |d| d.track_focus(&focus))
+                .focus_ring(th)
                 .relative()
                 .overflow_hidden()
                 .h(px(48.0))
@@ -195,10 +248,11 @@ impl MailWindow {
                 .cursor_pointer()
                 .hover(|d| d.bg(rgba(th.hover)))
                 .on_click(cx.listener(move |this, _, window, cx| this.page_section(s, window, cx)))
-                .child(Ripple::new(
-                    ("settings-section-ripple", s as usize),
-                    rgba(th.ripple),
-                ))
+                // The tab is square, so the wave fills all of it.
+                .child(
+                    Ripple::new(("settings-section-ripple", s as usize), rgba(th.ripple))
+                        .rounded(0.0),
+                )
                 .child(s.label())
         });
         let body = match section {
@@ -228,9 +282,11 @@ impl MailWindow {
                     .items_center()
                     .gap(px(8.0))
                     .child(
-                        icon_button("settings-page-back", "back", 20.0, th).on_click(
-                            cx.listener(|this, _, window, cx| this.close_settings_page(window, cx)),
-                        ),
+                        icon_button("settings-page-back", "back", 20.0, th)
+                            .focus_ring(th)
+                            .on_click(cx.listener(|this, _, window, cx| {
+                                this.close_settings_page(window, cx)
+                            })),
                     )
                     .child(div().text_size(px(22.0)).child("Settings")),
             )
@@ -549,6 +605,7 @@ impl MailWindow {
                 label,
                 setting.style == style,
                 th,
+                cx,
             )
             .on_click(cx.listener(move |this, _, _, cx| {
                 this.set_account_tabs(&address, |t| t.style = style, cx)
@@ -572,7 +629,8 @@ impl MailWindow {
                 .rounded(px(8.0))
                 .text_size(px(14.0))
                 .when(!first, |d| {
-                    d.cursor_pointer()
+                    d.map(|d| self.page_control(d, th, cx))
+                        .cursor_pointer()
                         .hover(|s| s.bg(rgba(th.hover)))
                         .on_click(cx.listener(move |this, _, _, cx| {
                             this.set_account_tabs(
@@ -746,8 +804,10 @@ impl MailWindow {
         let id = self.config.sending.add_signature(name, String::new());
         self.save_config();
         self.edit_signature(Some(id), window, cx);
+        // Name it first; Tab then goes on to the signature itself.
         if let Some(editor) = self.settings_page.as_ref().and_then(|p| p.editing.as_ref()) {
-            window.focus(&editor.text.focus_handle(cx), cx);
+            editor.name.update(cx, |name, cx| name.select_all_text(cx));
+            window.focus(&editor.name.focus_handle(cx), cx);
         }
     }
 
@@ -780,6 +840,7 @@ impl MailWindow {
                 let id = s.id;
                 div()
                     .id(("page-signature", id as usize))
+                    .map(|d| self.page_control(d, th, cx))
                     .relative()
                     .overflow_hidden()
                     .h(px(40.0))
@@ -795,10 +856,10 @@ impl MailWindow {
                     .on_click(cx.listener(move |this, _, window, cx| {
                         this.edit_signature(Some(id), window, cx)
                     }))
-                    .child(Ripple::new(
-                        ("page-signature-ripple", id as usize),
-                        rgba(th.ripple),
-                    ))
+                    .child(
+                        Ripple::new(("page-signature-ripple", id as usize), rgba(th.ripple))
+                            .rounded(8.0),
+                    )
                     .child(div().truncate().child(if s.name.trim().is_empty() {
                         "Untitled".to_owned()
                     } else {
@@ -835,11 +896,15 @@ impl MailWindow {
                         .child(e.text.clone()),
                 )
                 .children(tools)
-                .child(div().flex().flex_row().child(div().flex_1()).child(
-                    outlined_button("page-signature-delete", "Delete", th).on_click(cx.listener(
-                        move |this, _, window, cx| this.delete_signature(id, window, cx),
-                    )),
-                ))
+                .child(
+                    div().flex().flex_row().child(div().flex_1()).child(
+                        outlined_button("page-signature-delete", "Delete", th)
+                            .map(|d| self.page_control(d, th, cx))
+                            .on_click(cx.listener(move |this, _, window, cx| {
+                                this.delete_signature(id, window, cx)
+                            })),
+                    ),
+                )
         });
         let defaults = |replies: bool| {
             let current = if replies {
@@ -865,6 +930,7 @@ impl MailWindow {
                         current == id,
                         th,
                     )
+                    .map(|d| self.page_control(d, th, cx))
                     .on_click(cx.listener(move |this, _, _, cx| {
                         this.set_default_signature(replies, id, cx)
                     }))
@@ -890,6 +956,7 @@ impl MailWindow {
                             .children(list)
                             .child(
                                 outlined_button("page-signature-new", "Create new", th)
+                                    .map(|d| self.page_control(d, th, cx))
                                     .mt(px(8.0))
                                     .justify_center()
                                     .on_click(cx.listener(|this, _, window, cx| {
@@ -946,6 +1013,7 @@ impl MailWindow {
                                 return recording_chip(recording_here, th).into_any_element();
                             }
                             key_chip(("key", n * 16 + k), keymap::label(keys), off, th)
+                                .map(|d| self.page_control(d, th, cx))
                                 .on_click(cx.listener(move |this, _, _, cx| {
                                     this.start_recording(name, Some(k), cx)
                                 }))
@@ -1004,6 +1072,7 @@ impl MailWindow {
                             )
                             .child(
                                 icon_button(("key-add", n), "add", 18.0, th)
+                                    .map(|d| self.page_control(d, th, cx))
                                     .size(px(32.0))
                                     .on_click(cx.listener(move |this, _, _, cx| {
                                         this.start_recording(name, None, cx)
@@ -1011,6 +1080,7 @@ impl MailWindow {
                             )
                             .child(
                                 icon_button(("key-reset", n), "restore", 18.0, th)
+                                    .map(|d| self.page_control(d, th, cx))
                                     .size(px(32.0))
                                     .when(!custom, |d| d.invisible())
                                     .on_click(cx.listener(move |this, _, _, cx| {
@@ -1051,6 +1121,7 @@ impl MailWindow {
                     .when(changed, |d| {
                         d.child(
                             outlined_button("keys-reset-all", "Restore all defaults", th)
+                                .map(|d| self.page_control(d, th, cx))
                                 .on_click(cx.listener(|this, _, _, cx| this.reset_all_keys(cx))),
                         )
                     }),
@@ -1242,10 +1313,10 @@ impl MailWindow {
         label: String,
         on: bool,
         th: &Theme,
+        cx: &App,
     ) -> Stateful<Div> {
         let id = id.into();
-        div()
-            .id(id.clone())
+        self.page_control(div().id(id.clone()), th, cx)
             .relative()
             .overflow_hidden()
             .h(px(36.0))

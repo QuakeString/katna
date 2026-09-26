@@ -1352,9 +1352,10 @@ impl MailWindow {
             .child(date);
 
         if stacked {
+            let line_h = (line_height - 16.0) / 3.0;
             let line = |child: AnyElement| {
                 div()
-                    .h(px((line_height - 16.0) / 3.0))
+                    .h(px(line_h))
                     .flex()
                     .flex_row()
                     .items_center()
@@ -1376,29 +1377,45 @@ impl MailWindow {
                 .text_color(rgba(th.text_faint))
                 .child(row.snippet.clone())
                 .into_any_element();
-            // A phone shows the sender's picture, which ticks the line.
-            let lead_width = if self.layout.shape.is_phone() {
-                68.0
-            } else {
-                44.0
-            };
-            let lead = if self.layout.shape.is_phone() {
-                div()
+            // A phone shows the sender's picture, which ticks the line, and
+            // keeps the star and Important marker on the right, as mobile
+            // mail does; it has no hover toolbar to collide with them.
+            // Wider, the tick, star and marker stand in a column on the left,
+            // so the hover toolbar only ever covers the date.
+            let phone = self.layout.shape.is_phone();
+            let actions = if phone { None } else { actions };
+            let lead_width = if phone { 68.0 } else { 44.0 };
+            let (lead, side) = if phone {
+                let lead = div()
                     .w(px(lead_width))
                     .flex_none()
                     .flex()
                     .flex_col()
                     .items_center()
                     .pt(px(2.0))
-                    .child(self.line_picture(ix, &row.correspondent, &row.sender, checked, th, cx))
+                    .child(self.line_picture(ix, &row.correspondent, &row.sender, checked, th, cx));
+                (lead, Some((marker, star)))
             } else {
-                div()
+                // Each sits on one of the three lines, its hover circle
+                // trimmed to the line so neighbors don't overlap.
+                let size = (line_h + 4.0).min(32.0);
+                let cell = |child: Stateful<Div>| {
+                    div()
+                        .h(px(line_h))
+                        .flex()
+                        .items_center()
+                        .child(child.size(px(size)))
+                };
+                let lead = div()
                     .w(px(lead_width))
                     .flex_none()
                     .flex()
                     .flex_col()
                     .items_center()
-                    .child(check)
+                    .child(cell(check))
+                    .child(cell(star))
+                    .child(cell(marker));
+                (lead, None)
             };
             return lifted(
                 base.py(px(8.0)).child(lead).child(
@@ -1418,7 +1435,15 @@ impl MailWindow {
                             )
                             .children(actions.or(Some(date.into_any_element()))),
                         )
-                        .child(line(subject).child(marker).child(star))
+                        .child(line(subject).children(side.map(|(marker, star)| {
+                            div()
+                                .flex()
+                                .flex_row()
+                                .items_center()
+                                .gap(px(8.0))
+                                .child(marker)
+                                .child(star)
+                        })))
                         .child(line(snippet).when(row.attachments && !has_chips, |d| {
                             d.child(icon("attachment", th.text_faint, 16.0))
                         }))

@@ -8,13 +8,13 @@ use gpui::{Action, App, KeyBinding, Keystroke};
 use katna_core::config::Shortcuts;
 
 use super::{
-    Archive, CloseMessage, Compose, Delete, FocusList, FocusSearch, Forward, GoToAllMail,
-    GoToDrafts, GoToInbox, GoToSent, GoToStarred, LIST_CONTEXT, MarkImportant, MarkNotImportant,
-    MarkRead, MarkUnread, MoveTo, OpenMessage, OpenSettings, PageDown, PageUp, Quit,
-    READER_CONTEXT, Reload, Reply, ReplyAll, ReportSpam, SEARCH_CONTEXT, ScrollDown,
-    ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst, SelectLast, SelectNext,
-    SelectNone, SelectPrevious, ShowShortcuts, ToggleCheck, ToggleNavigation, ToggleSettings,
-    ToggleStar, Undo, WINDOW_CONTEXT,
+    Archive, CloseMessage, Compose, Delete, FocusList, FocusNext, FocusPrevious, FocusSearch,
+    Forward, GoToAllMail, GoToDrafts, GoToInbox, GoToSent, GoToStarred, LIST_CONTEXT,
+    MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, OpenMessage, OpenSettings,
+    PageDown, PageUp, Quit, READER_CONTEXT, Reload, Reply, ReplyAll, ReportSpam, SEARCH_CONTEXT,
+    ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst, SelectLast,
+    SelectNext, SelectNone, SelectPrevious, ShowShortcuts, ToggleCheck, ToggleNavigation,
+    ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
 };
 
 /// Where a shortcut works.
@@ -408,6 +408,14 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
     }
     // Down in the search box goes to the list; not a shortcut to change.
     bindings.push(KeyBinding::new("down", FocusList, Some(SEARCH_CONTEXT)));
+    // Tab and Shift+Tab move between fields and buttons, as in any desktop
+    // form. A rich editor uses them first in tables and lists.
+    bindings.push(KeyBinding::new("tab", FocusNext, Some(WINDOW_CONTEXT)));
+    bindings.push(KeyBinding::new(
+        "shift-tab",
+        FocusPrevious,
+        Some(WINDOW_CONTEXT),
+    ));
     // Typing in a field inside the reader (the inline reply) types: keys
     // that type text do nothing else there, and do not wait for a second
     // key. Bound last, so they also end sequences like "g i".

@@ -72,7 +72,8 @@ fn tray_menu() -> Vec<MenuItem> {
         MenuItem::action("Open _Inbox", app_action::OPEN_INBOX).icon("mail-folder-inbox"),
         MenuItem::action("_New Message", app_action::COMPOSE).icon("mail-message-new"),
         MenuItem::Separator,
-        MenuItem::action("_Preferences", app_action::PREFERENCES).icon("preferences-system"),
+        MenuItem::action("_Preferences", app_action::PREFERENCES)
+            .icon("preferences-system-symbolic"),
         MenuItem::Separator,
         MenuItem::action("_Quit", app_action::QUIT).icon("application-exit"),
     ]
