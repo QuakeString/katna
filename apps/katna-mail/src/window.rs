@@ -25,6 +25,7 @@ mod context_menu;
 mod dark;
 mod desktop;
 mod keymap;
+mod labels;
 mod layout;
 mod list;
 mod nav;
@@ -329,6 +330,7 @@ pub struct MailWindow {
     settings_page: Option<settings_page::SettingsPage>,
     /// The question before removing an account or deleting all data.
     danger: Option<accounts::Danger>,
+    new_label: Option<labels::NewLabel>,
     /// Navigation openness at this frame, for the folder rows.
     nav_t: f32,
     daemon: Option<Connection>,
@@ -440,6 +442,7 @@ impl MailWindow {
             writing: compose::Writing::default(),
             settings_page: None,
             danger: None,
+            new_label: None,
             nav_t: 1.0,
             daemon: None,
             _listen: None,
@@ -2031,6 +2034,7 @@ impl Render for MailWindow {
         let account_menu = self.render_account_menu(&th, cx);
         let add_account = self.render_add_account(&th, window, reduce, cx);
         let danger = self.render_danger(&th, window, reduce, cx);
+        let new_label = self.render_new_label(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let tour = self.render_tour(&th, window, cx);
@@ -2072,6 +2076,7 @@ impl Render for MailWindow {
             .children(add_account)
             .children(context_menu)
             .children(danger)
+            .children(new_label)
             .children(snackbar)
             .children(tour)
             .into_any_element();

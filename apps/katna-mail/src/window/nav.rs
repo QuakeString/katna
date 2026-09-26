@@ -17,6 +17,8 @@ use super::{
     Compose, FocusSearch, Hover, Listing, MailWindow, NAV_WIDTH, PANEL_RADIUS, SEARCH_CONTEXT,
     ToggleNavigation, ToggleSettings, compose,
 };
+use katna_core::AccountKind;
+
 use crate::format;
 use crate::sidebar::{self, Role};
 use crate::theme::{Theme, fade, mix};
@@ -367,6 +369,49 @@ impl MailWindow {
                 .text_color(rgba(th.text_faint))
                 .child(div().truncate().child(name.clone()))
                 .into_any_element(),
+            sidebar::Row::Labels { account } => {
+                let account = *account;
+                let gmail = self.tree.is_gmail(account);
+                // Folders (Gmail's labels) are made on the server.
+                let imap = self
+                    .accounts
+                    .iter()
+                    .any(|a| a.id == account && a.kind == AccountKind::Imap);
+                div()
+                    .id(("nav-row", ix))
+                    .h(px(NAV_ROW_HEIGHT))
+                    .w(px(NAV_WIDTH - 16.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .pl(px(26.0))
+                    .text_size(px(15.0))
+                    .font_weight(FontWeight::MEDIUM)
+                    .child(div().flex_1().min_w_0().truncate().child(if gmail {
+                        "Labels"
+                    } else {
+                        "Folders"
+                    }))
+                    .when(imap, |d| {
+                        d.child(
+                            icon_button(("nav-new-label", ix), "add", 20.0, th)
+                                .size(px(32.0))
+                                .tooltip(tip(
+                                    if gmail {
+                                        "Create new label"
+                                    } else {
+                                        "Create new folder"
+                                    },
+                                    th,
+                                ))
+                                .on_click(cx.listener(move |this, _, window, cx| {
+                                    cx.stop_propagation();
+                                    this.open_new_label(account, window, cx);
+                                })),
+                        )
+                    })
+                    .into_any_element()
+            }
             sidebar::Row::Folder {
                 key,
                 depth,
