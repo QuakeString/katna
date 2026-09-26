@@ -81,9 +81,11 @@ fn run() -> ExitCode {
             Err(err) => tracing::warn!(%err, "no system bus; not watching suspend and network"),
         }
         tracing::info!("katna-daemon running");
-        let signal = signals.next().await;
-        tracing::info!(?signal, "stopping");
-        instance.shutdown().await;
+        let stop = async {
+            let signal = signals.next().await;
+            tracing::info!(?signal, "stopping");
+        };
+        instance.serve(stop).await;
         ExitCode::SUCCESS
     })
 }
