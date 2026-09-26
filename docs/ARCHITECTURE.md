@@ -274,6 +274,16 @@ One worker per account inside the daemon:
 - **IDLE hygiene:** re-issue IDLE before the 29-minute limit; watching several
   folders needs several connections (or the NOTIFY extension); respect
   per-server connection limits (Gmail: about 15).
+  Built so far (`katna_sync::worker`): the worker's connection IDLEs on the
+  inbox, and one more connection per account asks the server for STATUS
+  (message count, UIDNEXT, UIDVALIDITY, HIGHESTMODSEQ) of every other
+  folder every 2 minutes (`WorkerConfig::watch_interval`). Folders whose
+  numbers differ from their last sync (`engine::stale_folders`) are synced
+  at once on the IDLE connection; a folder the store does not know yet
+  starts a full sync. So mail a server-side filter files away shows up in
+  about 2 minutes instead of at the 15-minute full sync. Without CONDSTORE
+  a flag change does not show in STATUS and waits for the full sync.
+  NOTIFY (RFC 5465) could replace the polling where servers have it.
 - **Network and power:** reconnect on network changes (NetworkManager or the
   portal network monitor), after resume (logind `PrepareForSleep`), with
   exponential backoff; pause heavy background work on metered connections.

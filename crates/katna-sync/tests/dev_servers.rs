@@ -98,6 +98,28 @@ fn unique(prefix: &str) -> String {
     format!("{prefix}-{nanos}")
 }
 
+/// Deletes the messages in `folder` whose subject starts with `prefix`,
+/// so tests that file mail outside the inbox leave the seed as it was.
+async fn remove_test_mail(conn: &Connection, folder: &str, prefix: &str) {
+    conn.select(folder).await.unwrap();
+    let subject = format!("Subject: {prefix}");
+    let uids: Vec<u32> = conn
+        .fetch_headers(1, None)
+        .await
+        .unwrap()
+        .into_iter()
+        .filter(|m| {
+            String::from_utf8_lossy(&m.header)
+                .lines()
+                .any(|line| line.starts_with(&subject))
+        })
+        .map(|m| m.uid)
+        .collect();
+    if !uids.is_empty() {
+        conn.expunge(&uids).await.unwrap();
+    }
+}
+
 fn message(subject: &str, to: &str) -> Vec<u8> {
     format!(
         "From: Alice <{USER}>\r\nTo: <{to}>\r\nSubject: {subject}\r\n\
@@ -120,6 +142,11 @@ fn lists_folders_and_fetches_seeded_envelopes() {
             let inbox = folders.iter().find(|f| f.name == "INBOX").unwrap();
             assert_eq!(inbox.role, Some(FolderRole::Inbox), "{name}");
             assert!(folders.iter().any(|f| f.name == "Projects"), "{name}");
+
+            // STATUS tells what SELECT would.
+            let counts = imap.status("Projects").await.unwrap();
+            assert_eq!(counts, imap.select("Projects").await.unwrap(), "{name}");
+            assert!(counts.highest_modseq.is_some(), "{name}: {counts:?}");
 
             let status = imap.select("INBOX").await.unwrap();
             assert!(status.exists >= 6, "{name}: {status:?}");
@@ -549,6 +576,82 @@ fn worker_syncs_new_mail_by_push() {
                 }
                 other => panic!("{name}: expected Synced, got {other:?}"),
             }
+            Connection::logout(&other).await.unwrap();
+            drop(handle);
+            task.await;
+        });
+    }
+}
+
+#[test]
+#[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
+fn worker_sees_mail_filed_in_other_folders() {
+    use async_io::Timer;
+    use futures_lite::FutureExt;
+    use katna_core::{AccountKind, Paths};
+    use katna_store::{Mode, Store};
+    use katna_sync::worker::{self, Event, ImapConnector, WorkerConfig};
+
+    for (name, endpoint) in imap_servers() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut store = Store::open(&Paths::with_root(tmp.path()), Mode::ReadWrite).unwrap();
+        let account = store.add_account(AccountKind::Imap, name, USER).unwrap().id;
+        let connector = ImapConnector {
+            endpoint: endpoint.clone(),
+            credentials: creds(),
+            tls: tls(),
+        };
+        let config = WorkerConfig {
+            watch_interval: Some(Duration::from_millis(500)),
+            ..WorkerConfig::default()
+        };
+        let (events_tx, events) = async_channel::unbounded();
+        let (handle, control) = worker::control();
+        smol::block_on(async {
+            let task = smol::spawn(worker::run(
+                connector, store, account, config, events_tx, control,
+            ));
+            let next = || async {
+                loop {
+                    let event = events
+                        .recv()
+                        .or(async {
+                            Timer::after(Duration::from_secs(10)).await;
+                            panic!("{name}: no worker event within 10 s");
+                        })
+                        .await
+                        .unwrap();
+                    if !matches!(event, Event::BodiesStored(_)) {
+                        return event;
+                    }
+                }
+            };
+            // Leftovers of an interrupted run.
+            let other = spawn(&endpoint).await;
+            remove_test_mail(&other, "Projects", "filed-").await;
+            assert!(matches!(next().await, Event::Connected), "{name}");
+            assert!(matches!(next().await, Event::Synced(_)), "{name}");
+
+            // As a server-side filter would, file mail away from the inbox.
+            let started = Instant::now();
+            other
+                .append("Projects", message(&unique("filed"), USER))
+                .await
+                .unwrap();
+            loop {
+                match next().await {
+                    Event::Synced(reports) if reports.iter().any(|r| r.path == "Projects") => {
+                        println!("{name}: filed mail synced in {:?}", started.elapsed());
+                        let report = reports.iter().find(|r| r.path == "Projects").unwrap();
+                        assert_eq!(report.added, 1, "{name}: {reports:?}");
+                        break;
+                    }
+                    // Earlier tests' leftovers in other folders.
+                    Event::Synced(_) => {}
+                    other => panic!("{name}: expected Synced, got {other:?}"),
+                }
+            }
+            remove_test_mail(&other, "Projects", "filed-").await;
             Connection::logout(&other).await.unwrap();
             drop(handle);
             task.await;

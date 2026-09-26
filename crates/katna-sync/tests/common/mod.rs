@@ -301,6 +301,19 @@ impl MailBackend for FakeConnection {
         Ok(status)
     }
 
+    async fn status(&mut self, folder: &str) -> Result<FolderStatus> {
+        let state = self.state(format!("STATUS {folder}"))?;
+        let Some(mailbox) = state.folders.get(folder) else {
+            return Err(Error::Rejected(format!("no folder {folder}")));
+        };
+        Ok(FolderStatus {
+            exists: mailbox.messages.len() as u32,
+            uid_validity: Some(mailbox.uid_validity),
+            uid_next: Some(mailbox.uid_next),
+            highest_modseq: Some(state.modseq),
+        })
+    }
+
     async fn fetch_envelopes(&mut self, _: u32, _: Option<u32>) -> Result<Vec<Envelope>> {
         unimplemented!()
     }

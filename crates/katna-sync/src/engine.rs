@@ -20,8 +20,9 @@
 //! 6. Gmail inbox (`X-GM-EXT-1`): Gmail's own categories, with one
 //!    `X-GM-RAW "category:…"` search per tab; the first time for every
 //!    message, then for new ones.
-//! 7. Save UIDVALIDITY and the HIGHESTMODSEQ seen at SELECT. Changes made
-//!    during the sync have higher mod-sequences, so the next run sees them.
+//! 7. Save UIDVALIDITY, HIGHESTMODSEQ, UIDNEXT and the message count seen
+//!    at SELECT. Changes made during the sync have higher mod-sequences and
+//!    UIDs, so the next run sees them, and so does [`stale_folders`].
 //!
 //! New messages get their thread (with Gmail's `X-GM-THRID` when there is
 //! one) and category as they are stored.
@@ -32,10 +33,12 @@
 use std::collections::{HashMap, HashSet};
 
 use katna_core::{AccountId, MailCategory};
-use katna_store::{Backfill, FolderId, MessageFlags, NewParticipant, RemoteMessage, Store};
+use katna_store::{
+    Backfill, FolderId, MessageFlags, NewParticipant, RemoteMessage, Store, StoredFolder,
+};
 use serde::{Deserialize, Serialize};
 
-use crate::{Error, FlagState, Flags, Folder, MailBackend, MessageHeaders, Result};
+use crate::{Error, FlagState, Flags, Folder, FolderStatus, MailBackend, MessageHeaders, Result};
 
 /// How many messages one header fetch asks for.
 pub const CHUNK: u32 = 500;
@@ -76,6 +79,62 @@ struct FolderState {
     /// then on only new messages are asked about.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     gmail_categories: bool,
+    /// UIDNEXT and message count at the last sync, to tell from a STATUS
+    /// whether the folder changed since.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    uid_next: Option<u32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    exists: Option<u32>,
+}
+
+impl FolderState {
+    fn of(folder: &StoredFolder) -> Self {
+        folder
+            .sync_state
+            .as_deref()
+            .and_then(|json| serde_json::from_str(json).ok())
+            .unwrap_or_default()
+    }
+}
+
+/// What [`stale_folders`] found.
+#[derive(Debug, Default, PartialEq, Eq)]
+pub struct StaleFolders {
+    /// Stored folders that changed on the server since their last sync.
+    pub changed: Vec<(FolderId, String)>,
+    /// Folders the store does not know yet: only a full sync adds them.
+    pub unknown: bool,
+}
+
+/// Compares the server's `statuses` (path and [`MailBackend::status`]) with
+/// what the last sync of each folder saw. Without CONDSTORE a flag change
+/// does not show, so full syncs still catch those.
+pub fn stale_folders(
+    store: &Store,
+    account: AccountId,
+    statuses: &[(String, FolderStatus)],
+) -> Result<StaleFolders> {
+    let stored: HashMap<String, StoredFolder> = store
+        .folders(account)?
+        .into_iter()
+        .map(|f| (f.path.clone(), f))
+        .collect();
+    let mut out = StaleFolders::default();
+    for (path, status) in statuses {
+        let Some(folder) = stored.get(path) else {
+            out.unknown = true;
+            continue;
+        };
+        let state = FolderState::of(folder);
+        let changed = folder.uidvalidity != status.uid_validity
+            || (status.highest_modseq.is_some() && folder.highestmodseq != status.highest_modseq)
+            || (state.uid_next.is_some() && state.uid_next != status.uid_next)
+            || state.exists != Some(status.exists);
+        if changed {
+            out.changed.push((folder.id, path.clone()));
+        }
+    }
+    Ok(out)
 }
 
 /// Syncs the folder list of `account`, then every selectable folder.
@@ -148,11 +207,7 @@ pub async fn sync_folder<B: MailBackend>(
     let is_inbox = stored
         .as_ref()
         .is_some_and(|f| f.role == Some(katna_store::FolderRole::Inbox));
-    let mut state: FolderState = stored
-        .as_ref()
-        .and_then(|f| f.sync_state.as_deref())
-        .and_then(|json| serde_json::from_str(json).ok())
-        .unwrap_or_default();
+    let mut state = stored.as_ref().map(FolderState::of).unwrap_or_default();
     let (old_validity, old_modseq) = stored
         .map(|f| (f.uidvalidity, f.highestmodseq))
         .unwrap_or_default();
@@ -235,6 +290,8 @@ pub async fn sync_folder<B: MailBackend>(
     }
 
     // 7. Where to continue next time.
+    state.uid_next = status.uid_next;
+    state.exists = Some(status.exists);
     let state = serde_json::to_string(&state).expect("plain struct serializes");
     let state = (state != "{}").then_some(state);
     let mut batch = store.mail_batch()?;

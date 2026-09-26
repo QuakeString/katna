@@ -283,6 +283,11 @@ pub trait MailBackend: Send + 'static {
     /// Every UID in the selected folder, ascending.
     fn uids(&mut self) -> impl Future<Output = Result<Vec<u32>>> + Send;
 
+    /// Counts of `folder` without selecting it (IMAP STATUS): message
+    /// count, UIDVALIDITY, UIDNEXT and, with CONDSTORE, HIGHESTMODSEQ.
+    /// Not for the selected folder, whose news arrive by themselves.
+    fn status(&mut self, folder: &str) -> impl Future<Output = Result<FolderStatus>> + Send;
+
     fn create_folder(&mut self, folder: &str) -> impl Future<Output = Result<()>> + Send;
 
     /// Stores `message` in `folder` with `flags`.

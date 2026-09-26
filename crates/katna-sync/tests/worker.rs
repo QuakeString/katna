@@ -28,6 +28,7 @@ fn config() -> WorkerConfig {
             max_size: u64::MAX,
         },
         pop3_interval: Duration::from_secs(60),
+        watch_interval: None,
     }
 }
 
@@ -401,6 +402,49 @@ fn metered_network_waits_with_bodies() {
             assert!(matches!(worker.next_any().await, Event::Synced(_)));
         }
         assert_eq!(server.state().connects, 1);
+        worker.stop().await;
+    });
+}
+
+#[test]
+fn watches_other_folders_on_a_second_connection() {
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    server.create("Archive", 1);
+    server.deliver("INBOX", "one");
+    let worker = start(
+        &server,
+        WorkerConfig {
+            watch_interval: Some(Duration::from_millis(100)),
+            ..config()
+        },
+    );
+    smol::block_on(async {
+        assert!(matches!(worker.next().await, Event::Connected));
+        assert_eq!(added(&worker.next().await), 1);
+
+        // Filed by a server-side rule: no IDLE sees it, the watcher does.
+        server.deliver("Archive", "filed");
+        let Event::Synced(reports) = worker.next().await else {
+            panic!("expected Synced");
+        };
+        assert_eq!(reports.len(), 1);
+        assert_eq!((reports[0].path.as_str(), reports[0].added), ("Archive", 1));
+        assert!(server.log().iter().any(|c| c == "STATUS Archive"));
+        assert!(!server.log().iter().any(|c| c == "STATUS INBOX"));
+
+        // A new folder takes a full sync.
+        server.create("Lists", 1);
+        server.deliver("Lists", "digest");
+        let event = worker.next().await;
+        assert_eq!(added(&event), 1);
+        let Event::Synced(reports) = event else {
+            unreachable!()
+        };
+        assert!(reports.iter().any(|r| r.path == "Lists" && r.added == 1));
+
+        // The inbox connection and the watcher's.
+        assert_eq!(server.state().connects, 2);
         worker.stop().await;
     });
 }

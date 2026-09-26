@@ -32,6 +32,7 @@ use imap_types::{
     response::{Capability, Data, Response, Status, StatusKind},
     search::SearchKey,
     sequence::SequenceSet,
+    status::{StatusDataItem, StatusDataItemName},
 };
 use io_imap::{
     coroutine::{ImapCoroutine, ImapCoroutineState as S, ImapYield},
@@ -594,6 +595,42 @@ impl MailBackend for ImapBackend {
             .collect();
         uids.sort_unstable();
         Ok(uids)
+    }
+
+    async fn status(&mut self, folder: &str) -> Result<FolderStatus> {
+        let mailbox = Mailbox::try_from(folder.to_owned()).map_err(protocol)?;
+        let mut item_names = vec![
+            StatusDataItemName::Messages,
+            StatusDataItemName::UidNext,
+            StatusDataItemName::UidValidity,
+        ];
+        if self.has(&Capability::CondStore) {
+            item_names.push(StatusDataItemName::HighestModSeq);
+        }
+        let data = self
+            .command(CommandBody::Status {
+                mailbox,
+                item_names: item_names.into(),
+            })
+            .await?;
+        let items = data
+            .into_iter()
+            .find_map(|data| match data {
+                Data::Status { items, .. } => Some(items),
+                _ => None,
+            })
+            .ok_or_else(|| protocol(format!("no STATUS for {folder}")))?;
+        let mut status = FolderStatus::default();
+        for item in items.iter() {
+            match item {
+                StatusDataItem::Messages(n) => status.exists = *n,
+                StatusDataItem::UidNext(n) => status.uid_next = Some(n.get()),
+                StatusDataItem::UidValidity(n) => status.uid_validity = Some(n.get()),
+                StatusDataItem::HighestModSeq(n) => status.highest_modseq = Some(*n),
+                _ => {}
+            }
+        }
+        Ok(status)
     }
 
     async fn store_flags(&mut self, uids: &[u32], flags: &Flags, add: bool) -> Result<()> {
