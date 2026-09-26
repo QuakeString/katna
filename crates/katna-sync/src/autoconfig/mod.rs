@@ -209,6 +209,11 @@ async fn discover_with(
             Err(err) => tracing::debug!(%err, "unusable autoconfig file"),
         }
     }
+    // The provider says how to sign in; guessing would only find servers
+    // that refuse the password.
+    if oauth_only {
+        return Err(oauth_error(&domain));
+    }
 
     if let Some(found) = from_srv(net, &user).await {
         return Ok(found);
@@ -231,7 +236,7 @@ async fn discover_with(
                         source: Source::Mx,
                     });
                 }
-                Ok(None) => oauth_only = true,
+                Ok(None) => return Err(oauth_error(&domain)),
                 Err(err) => tracing::debug!(%err, "unusable ISPDB file"),
             }
         }
@@ -240,11 +245,13 @@ async fn discover_with(
     if let Some(found) = guess(net, &user).await {
         return Ok(found);
     }
-    Err(if oauth_only {
-        format!("{domain} only allows OAuth2 sign-in, which Katna does not support yet")
-    } else {
-        format!("no mail servers found for {domain}; give them by hand")
-    })
+    Err(format!(
+        "no mail servers found for {domain}; give them by hand"
+    ))
+}
+
+fn oauth_error(domain: &str) -> String {
+    format!("{domain} only allows OAuth2 sign-in, which Katna does not support yet")
 }
 
 struct User<'a> {
@@ -364,10 +371,14 @@ fn parse_config(
             .any(|auth| auth.trim().starts_with("password-"));
         let host = field("hostname").unwrap_or_default().to_ascii_lowercase();
         let port = field("port").and_then(|p| p.parse::<u16>().ok());
-        let security = match field("socketType").as_deref() {
-            Some("SSL") => Security::Tls,
+        // Thunderbird writes SSL; some providers write TLS for the same.
+        let security = match field("socketType")
+            .map(|t| t.to_ascii_uppercase())
+            .as_deref()
+        {
+            Some("SSL" | "TLS") => Security::Tls,
             Some("STARTTLS") => Security::StartTls,
-            Some("plain") => Security::Plain,
+            Some("PLAIN") => Security::Plain,
             _ => continue,
         };
         let (Some(port), true) = (port, passwords && valid_host(&host)) else {

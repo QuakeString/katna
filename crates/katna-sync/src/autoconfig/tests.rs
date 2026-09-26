@@ -216,6 +216,52 @@ fn nothing_found_says_why() {
         .insert("https://ispdb.test/v1.1/x.org".into(), OAUTH_ONLY);
     let err = discover(&net, "ada@x.org").unwrap_err();
     assert!(err.contains("OAuth2"), "{err}");
+    // It stops there: guessed servers would refuse the password anyway.
+    assert!(
+        !net.asked
+            .lock()
+            .unwrap()
+            .iter()
+            .any(|a| a.starts_with("probe"))
+    );
+
+    // The same when the MX leads to an OAuth2-only provider.
+    let mut net = FakeNet::default();
+    net.mx.insert(
+        "corp.example".into(),
+        vec![dns::Mx {
+            preference: 0,
+            exchange: "corp-example.mail.protection.outlook.com".into(),
+        }],
+    );
+    net.files
+        .insert("https://ispdb.test/v1.1/outlook.com".into(), OAUTH_ONLY);
+    let err = discover(&net, "ada@corp.example").unwrap_err();
+    assert!(err.contains("OAuth2"), "{err}");
+    assert!(
+        !net.asked
+            .lock()
+            .unwrap()
+            .iter()
+            .any(|a| a.starts_with("probe"))
+    );
+}
+
+#[test]
+fn socket_type_tls_means_implicit_tls() {
+    let user = User {
+        address: "a@disroot.org",
+        local: "a",
+        domain: "disroot.org",
+    };
+    let config = CONFIG.replace(
+        "<port>587</port>\n      <socketType>STARTTLS</socketType>",
+        "<port>465</port>\n      <socketType>TLS</socketType>",
+    );
+    assert_ne!(config, CONFIG);
+    let (_, smtp) = parse_config(config.as_bytes(), &user).unwrap().unwrap();
+    let smtp = smtp.unwrap();
+    assert_eq!((smtp.port, smtp.security), (465, Security::Tls));
 }
 
 #[test]
