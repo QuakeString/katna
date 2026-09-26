@@ -40,9 +40,6 @@ const HYSTERESIS: f32 = 12.0;
 pub(super) const BOTTOM_BAR_HEIGHT: f32 = 72.0;
 /// A tablet narrower than this shows Compose as its pencil alone.
 const COMPOSE_FOLD_BELOW: f32 = 760.0;
-/// The top bar's Compose button with its margin, folded and whole.
-const COMPOSE_FOLDED: f32 = 50.0;
-const COMPOSE_ROOM: f32 = 148.0;
 /// A phone's Compose button folds to its pencil once the list has scrolled
 /// down this far in one go, and grows back after this far up.
 const FAB_FOLD_AFTER: f32 = 24.0;
@@ -140,11 +137,6 @@ impl Shape {
     /// it on a desktop and a wide tablet, folding away as a tablet narrows.
     pub(super) fn compose_label(&self) -> f32 {
         self.label
-    }
-
-    /// The room the top bar's Compose button takes beside the menu button.
-    pub(super) fn compose_room(&self) -> f32 {
-        lerp(COMPOSE_FOLDED, COMPOSE_ROOM, self.compose_label())
     }
 
     pub(super) fn card_radius(&self) -> f32 {

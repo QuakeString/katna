@@ -134,8 +134,21 @@ const NAV_WIDTH: f32 = 256.0;
 /// How far the folder highlight pill (and the drawer's) stays off the
 /// pane's left edge.
 const NAV_ROW_INSET: f32 = 8.0;
-/// The least room between Compose and the search box.
-const SEARCH_GAP: f32 = 24.0;
+/// The room between Compose and the search box when the window is too
+/// narrow for the search box's usual place; never less.
+const SEARCH_GAP: f32 = 20.0;
+/// Room for the word "Compose" on the top bar's Compose button.
+const COMPOSE_TEXT_WIDTH: f32 = 60.0;
+/// Where Compose starts on the top bar: the bar's 6 px padding, the menu
+/// button (48 px with a 6 px margin), the bar's 6 px gap and Compose's own
+/// 10 px margin.
+const COMPOSE_LEFT: f32 = 76.0;
+
+/// Width of the top bar's Compose button: a 40 px square when folded to
+/// its pencil (`label` 0), the pencil and the word when `label` is 1.
+fn compose_width(label: f32) -> f32 {
+    lerp(40.0, 16.0 + 24.0 + 12.0 + COMPOSE_TEXT_WIDTH + 24.0, label)
+}
 /// Corners of cards that float: menus aside, dialogs and panels.
 const PANEL_RADIUS: f32 = 15.0;
 const SEARCH_WIDTH: f32 = 720.0;
@@ -2129,7 +2142,8 @@ impl Render for MailWindow {
         // never comes closer than that. It grows into a pill across the top
         // bar of a phone, under its menu button and account picture.
         let (room_start, room_end) = shape.room;
-        let after_compose = room_start + 60.0 + shape.compose_room() + SEARCH_GAP;
+        let after_compose =
+            room_start + COMPOSE_LEFT + compose_width(shape.compose_label()) + SEARCH_GAP;
         let list_left = if shape.is_desktop() {
             shape.rail() + NAV_WIDTH
         } else {

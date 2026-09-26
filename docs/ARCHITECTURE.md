@@ -1029,8 +1029,9 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   search box (at most 720 px wide), the account avatar on the right. As
   in Gmail, on a desktop the search box starts where the mail list does
   with the folders open, and stays there when they fold (it does not
-  follow the list). On a tablet it starts a clear gap (about 20 px) after
-  Compose, and never closer. `katna_chrome::Bar` gives the bar a center slot,
+  follow the list). It moves left only when the window is too narrow for
+  that place, and then always sits exactly 20 px after Compose, whose
+  width is set for this (whole or folded to its pencil). `katna_chrome::Bar` gives the bar a center slot,
   height and background for this.
 - **Navigation.** The folders as full pills, rounded at both ends and
   set 8 px in from the pane's edge (the drawers' lines too). The menu

@@ -28,7 +28,7 @@ const NAV_ROW_HEIGHT: f32 = 32.0;
 const SEARCH_HEIGHT: f32 = 40.0;
 const COMPOSE_RADIUS: f32 = 12.0;
 /// Room for the word "Compose" on the top bar's Compose button.
-const COMPOSE_LABEL_WIDTH: f32 = 80.0;
+const COMPOSE_LABEL_WIDTH: f32 = super::COMPOSE_TEXT_WIDTH;
 
 impl MailWindow {
     pub(super) fn render_top_start(&self, th: &Theme, cx: &mut Context<Self>) -> Vec<AnyElement> {
@@ -73,9 +73,10 @@ impl MailWindow {
             .id("compose")
             .relative()
             .ml(px(10.0))
-            // As tall as the search box beside it; folded, a square.
+            // As tall as the search box beside it; folded, a square. A set
+            // width, so the search box can keep an exact gap after it.
             .h(px(SEARCH_HEIGHT))
-            .pr(px(lerp(8.0, 24.0, label)))
+            .w(px(super::compose_width(label)))
             .flex_none()
             .flex()
             .flex_row()
@@ -98,7 +99,8 @@ impl MailWindow {
             .child(
                 div()
                     .pl(px(12.0 * label))
-                    .max_w(px(COMPOSE_LABEL_WIDTH * label))
+                    .max_w(px((12.0 + COMPOSE_LABEL_WIDTH) * label))
+                    .min_w_0()
                     .overflow_hidden()
                     .opacity(label)
                     .text_size(px(14.0))
