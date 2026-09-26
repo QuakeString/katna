@@ -10,6 +10,7 @@ mod assets;
 mod data;
 mod format;
 mod sidebar;
+mod theme;
 mod window;
 
 use std::path::PathBuf;

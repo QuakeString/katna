@@ -713,6 +713,47 @@ box. What it does and what we decided:
 - **Icons.** A few symbolic SVG icons are built into the binary until the
   freedesktop icon theme is read (task 3.3).
 
+### 13.6 Webmail layout and motion
+
+After the first window, the owner asked for a layout as close to Gmail as
+possible, with the search box in the middle and smooth animation. The
+window keeps the desktop's frame (§13.1) and changes what is inside it:
+
+- **Top bar.** The header bar (CSD) or toolbar (SSD) is 64 px tall in the
+  page color, with no border: menu button and app name on the left, the
+  search box centered on the window (at most 720 px wide), the account
+  avatar on the right. `katna_chrome::Bar` gives the bar a center slot,
+  height and background for this.
+- **Navigation.** Compose, then the folders as pills rounded on the right.
+  The menu button folds it to a 72 px rail of icons (unread folders get a
+  dot); hovering the rail for 300 ms opens it over the list with a shadow.
+  With one account the account heading is left out.
+- **One card.** The list and the open message share a white card with
+  rounded corners on a tinted page. The list is one line per message:
+  star, sender, subject in bold if unread with the snippet after it, and
+  the date. Read rows are tinted. Clicking a row (or Enter/`o`) opens the
+  message in the card; `u`/Escape goes back, `j`/`k` move to the next or
+  previous message in both views, as in Gmail. The toolbar shows the
+  visible range ("1–19 of 72") and paging arrows.
+- **Reading view.** Subject with the folder as a chip, a letter avatar
+  (color from the address), sender, recipients, date with "(2 hours ago)",
+  the body, attachments as cards, and Reply/Forward buttons.
+- **Motion.** Springs (`katna_ui::motion::Spring`, on GPUI's spring
+  solver) drive values that shape several elements: the navigation width,
+  the search box turning white with a shadow when focused, the snackbar.
+  Per-element motion uses GPUI's `with_spring` (row lift on hover, the
+  list cursor bar growing from the middle, the selected folder's pill
+  fading in) and `with_animation` (the card fading between list and
+  message, the message sliding up as it opens). `katna_ui::Ripple` draws
+  the Material ink ripple from the pointer on buttons, folders and rows.
+  Everything honors the desktop's reduce-motion setting.
+- **Colors.** `theme.rs` has the light and dark palettes; the app does not
+  use the desktop accent color here, to keep the webmail look.
+- **Not there yet.** Katna Mail cannot send mail, so Compose, Reply and
+  Forward show a snackbar saying so. There are no checkboxes or hover
+  actions (archive, delete) until the daemon takes those commands, and
+  the star shows the flag without changing it.
+
 ## 14. D-Bus API (`katna-dbus`)
 
 ### 14.1 Interface `in.invenia.katna.Pim1` (object `/in/invenia/katna/Pim1`, bus name `in.invenia.katna.Daemon`)
