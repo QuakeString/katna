@@ -17,8 +17,16 @@ use crate::schema::{Fields, tokens};
 
 type Boxed = Box<dyn TantivyQuery>;
 
-/// A word being typed matches at most this many longer words per field.
-const MAX_PREFIX_EXPANSIONS: u32 = 64;
+/// A word being typed matches at most this many longer words per field;
+/// fewer for one or two letters, which match the most words and are
+/// replaced by the next keystroke anyway.
+fn max_expansions(prefix: &str) -> u32 {
+    match prefix.chars().count() {
+        0 | 1 => 16,
+        2 => 32,
+        _ => 64,
+    }
+}
 
 /// Compiles `query` for an index with `fields`.
 pub fn compile(fields: &Fields, query: &Query) -> Boxed {
@@ -88,7 +96,7 @@ fn text_query(fields: &Fields, field: TextField, text: &str, prefix: bool) -> Bo
                         .map(|word| Term::from_field_text(field, word))
                         .collect(),
                 );
-                query.set_max_expansions(MAX_PREFIX_EXPANSIONS);
+                query.set_max_expansions(max_expansions(words.last().map_or("", String::as_str)));
                 Box::new(query)
             } else if let [word] = words.as_slice() {
                 Box::new(TermQuery::new(
