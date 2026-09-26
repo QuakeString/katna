@@ -1,60 +1,21 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Signatures in message bodies: the block a signature adds, swapping one
-//! for another in a draft, and finding which one a sent message was signed
-//! with, so a reply in that conversation starts with the same one. No GPUI
-//! here.
+//! Signatures in message bodies: a signature as editor content, and
+//! finding which one a sent message was signed with, so a reply in that
+//! conversation starts with the same one. No GPUI here.
 
 use katna_core::config::Signature;
+use katna_ui::rich::{Doc, html};
 
-/// The signature line: dash, dash, space (RFC 3676 §4.3).
-const SEPARATOR: &str = "-- ";
-
-/// What a signature adds below the message, with the blank line before it.
-pub fn block(text: &str) -> String {
-    let text = text.trim_end();
-    if text.is_empty() {
-        String::new()
+/// The signature as editor content: its formatted version when it has
+/// one, else its text.
+pub fn doc(signature: &Signature) -> Doc {
+    if signature.html.trim().is_empty() {
+        html::from_plain(signature.text.trim_end())
     } else {
-        format!("\n{SEPARATOR}\n{text}\n")
+        let mut next = 0;
+        html::from_html(&signature.html, &mut next)
     }
-}
-
-/// `body` with the signature `old` replaced by `new`. When `old` is not
-/// found as written (it was edited), `new` goes where a signature goes:
-/// after the text the user wrote, before any quoted message.
-pub fn swap(body: &str, old: Option<&str>, new: Option<&str>) -> String {
-    let new_block = new.map(block).unwrap_or_default();
-    if let Some(old) = old.map(block).filter(|b| !b.is_empty())
-        && let Some(at) = body.find(&old)
-    {
-        return format!("{}{new_block}{}", &body[..at], &body[at + old.len()..]);
-    }
-    if new_block.is_empty() {
-        return body.to_owned();
-    }
-    let at = quote_start(body).unwrap_or(body.len());
-    let (head, tail) = body.split_at(at);
-    let head = head.trim_end_matches('\n');
-    let sep = if tail.is_empty() { "" } else { "\n" };
-    format!("{head}\n{new_block}{sep}{tail}")
-}
-
-/// Where the quoted message of a reply or forward starts: its "On …
-/// wrote:" or "Forwarded message" line, or the first quoted line.
-fn quote_start(body: &str) -> Option<usize> {
-    let mut at = 0;
-    for line in body.split_inclusive('\n') {
-        let trimmed = line.trim();
-        if trimmed.starts_with('>')
-            || (trimmed.starts_with("On ") && trimmed.ends_with("wrote:"))
-            || trimmed.contains("Forwarded message")
-        {
-            return Some(at);
-        }
-        at += line.len();
-    }
-    None
 }
 
 /// The signature `body` was signed with: the text after its first
@@ -96,38 +57,19 @@ mod tests {
             id,
             name: format!("S{id}"),
             text: text.to_owned(),
+            html: String::new(),
         }
     }
 
     #[test]
-    fn blocks() {
-        assert_eq!(block("Kay\nEnron\n\n"), "\n-- \nKay\nEnron\n");
-        assert_eq!(block("  \n"), "");
-    }
-
-    #[test]
-    fn swaps_in_new_mail() {
-        let body = format!("\n{}", block("Kay"));
-        assert_eq!(
-            swap(&body, Some("Kay"), Some("Kay Mann\nEnron")),
-            "\n\n-- \nKay Mann\nEnron\n"
-        );
-        assert_eq!(swap(&body, Some("Kay"), None), "\n");
-        assert_eq!(swap("\n", None, Some("Kay")), "\n\n-- \nKay\n");
-        assert_eq!(swap("Hello\n", None, None), "Hello\n");
-    }
-
-    #[test]
-    fn a_new_signature_goes_above_the_quote() {
-        let body = "Thanks!\n\nOn Monday, Ada wrote:\n> Hi\n";
-        assert_eq!(
-            swap(body, None, Some("Kay")),
-            "Thanks!\n\n-- \nKay\n\nOn Monday, Ada wrote:\n> Hi\n"
-        );
-        // The old one was edited: it stays, and the new one is added.
-        let body = format!("Hi\n{}", block("Kay"));
-        let edited = body.replace("Kay", "Kay M.");
-        assert!(swap(&edited, Some("Kay"), Some("Bob")).contains("-- \nBob\n"));
+    fn signatures_as_content() {
+        let plain = doc(&sig(1, "Kay\nEnron\n\n"));
+        assert_eq!(html::to_plain(&plain), "Kay\nEnron\n");
+        let mut rich = sig(2, "Kay");
+        rich.html = "<div><b>Kay</b></div>".to_owned();
+        let rich = doc(&rich);
+        assert_eq!(html::to_plain(&rich), "Kay\n");
+        assert!(rich.has_formatting());
     }
 
     #[test]

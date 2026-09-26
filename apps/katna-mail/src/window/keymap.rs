@@ -405,6 +405,7 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
     cx.bind_keys(bindings);
     katna_ui::text_input::bind_keys(cx);
     katna_ui::text_area::bind_keys(cx);
+    katna_ui::rich::bind_keys(cx);
 }
 
 /// How keys read on screen: `ctrl-shift-a` is "Ctrl+Shift+A", `g i` is

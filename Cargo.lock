@@ -1664,6 +1664,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "emojis"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0b1514ced566c94991ed9563258ecf61e311fd773bf0a3f20606830386bf66e3"
+dependencies = [
+ "phf 0.13.1",
+]
+
+[[package]]
 name = "encoding_rs"
 version = "0.8.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3654,6 +3663,7 @@ name = "katna-mail"
 version = "0.0.0"
 dependencies = [
  "async-channel",
+ "emojis",
  "futures-lite",
  "gpui-pre",
  "gpui-pre-linux",
@@ -3670,6 +3680,8 @@ dependencies = [
  "katna-search",
  "katna-store",
  "katna-ui",
+ "mail-parser",
+ "spellbook",
  "tempfile",
  "tracing",
  "zbus",
@@ -6368,6 +6380,16 @@ checksum = "4aaa7368fcf4852a4c2dd92df0cace6a71f2091ca0a23391ce7f3a31833f1523"
 dependencies = [
  "borsh",
  "serde_core",
+]
+
+[[package]]
+name = "spellbook"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0d204abcbdf8e88729306a8d0ca01a79d8a49969fe1f84696909d6dbc4321c1a"
+dependencies = [
+ "foldhash 0.2.0",
+ "hashbrown 0.17.1",
 ]
 
 [[package]]
