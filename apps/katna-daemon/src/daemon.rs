@@ -651,6 +651,66 @@ impl Daemon {
         self.change(|store| ops::set_flags(store, messages, add, remove))
     }
 
+    /// Creates a folder (a label, on Gmail) called `name` on the account's
+    /// server, inside `parent` when given, and stores it. Needs the server:
+    /// fails while offline. Returns the new folder.
+    pub async fn create_folder(
+        &self,
+        account: AccountId,
+        name: &str,
+        parent: Option<FolderId>,
+    ) -> Result<FolderId, CommandError> {
+        let name = name.trim();
+        if name.is_empty() {
+            return Err(CommandError::InvalidArgs("the name is empty".into()));
+        }
+        if name.chars().count() > MAX_FOLDER_NAME || name.chars().any(char::is_control) {
+            return Err(CommandError::InvalidArgs(format!(
+                "a name has at most {MAX_FOLDER_NAME} characters and no line breaks"
+            )));
+        }
+        let account = self.account(account)?;
+        let parent = match parent {
+            Some(id) => Some(
+                self.store()
+                    .folders(account.id)?
+                    .into_iter()
+                    .find(|f| f.id == id)
+                    .ok_or(CommandError::UnknownFolder(id.0))?,
+            ),
+            None => None,
+        };
+        let connector = match self.connector(&account).await {
+            Ok(Some(Link::Imap(connector))) => connector,
+            Ok(_) => {
+                return Err(CommandError::InvalidArgs(
+                    "only IMAP accounts have folders on the server".into(),
+                ));
+            }
+            Err(detail) => return Err(CommandError::Failed(detail)),
+        };
+        let mut backend = connector.connect().await.map_err(|err| {
+            CommandError::Failed(format!("could not reach the mail server: {err}"))
+        })?;
+        let created =
+            create_on_server(&mut backend, name, parent.as_ref().map(|f| &f.path[..])).await;
+        let _ = backend.logout().await;
+        let path = created?;
+        let id = {
+            let mut store = self.store();
+            let mut batch = store.mail_batch()?;
+            let id = batch.upsert_folder(account.id, &path, None)?;
+            batch.commit()?;
+            id
+        };
+        tracing::info!(account = %account.id, path, "folder created");
+        let _ = self.notices.try_send(Notice::MailChanged(account.id));
+        if let Some(running) = self.workers().get(&account.id) {
+            running.handle.sync_now();
+        }
+        Ok(id)
+    }
+
     /// Moves messages to another folder of their account.
     pub fn move_messages(&self, messages: &[MessageId], to: FolderId) -> Result<(), CommandError> {
         self.change(|store| ops::move_messages(store, messages, to))
@@ -1140,6 +1200,56 @@ fn unix_now() -> i64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_or(0, |elapsed| elapsed.as_secs() as i64)
+}
+
+/// Longest folder name, in characters (Gmail's limit for labels).
+const MAX_FOLDER_NAME: usize = 225;
+
+/// Creates `name` inside `parent` (a path) with the server's separator,
+/// and subscribes to it. Returns its path.
+async fn create_on_server(
+    backend: &mut impl MailBackend,
+    name: &str,
+    parent: Option<&str>,
+) -> Result<String, CommandError> {
+    let failed = |err: katna_sync::Error| CommandError::Failed(err.to_string());
+    let existing = backend.list_folders().await.map_err(failed)?;
+    let separator = parent
+        .and_then(|parent| existing.iter().find(|f| f.name == parent))
+        .or_else(|| existing.iter().find(|f| f.delimiter.is_some()))
+        .and_then(|f| f.delimiter);
+    if let Some(separator) = separator
+        && name.contains(separator)
+    {
+        return Err(CommandError::InvalidArgs(format!(
+            "a name cannot contain \u{201c}{separator}\u{201d}; nest it under another \
+             folder instead"
+        )));
+    }
+    let path = match (parent, separator) {
+        (Some(parent), Some(separator)) => format!("{parent}{separator}{name}"),
+        (Some(_), None) => {
+            return Err(CommandError::InvalidArgs(
+                "this server does not nest folders".into(),
+            ));
+        }
+        (None, _) => name.to_owned(),
+    };
+    // Gmail and most servers ignore case in names.
+    if let Some(taken) = existing
+        .iter()
+        .find(|f| f.name.to_lowercase() == path.to_lowercase())
+    {
+        return Err(CommandError::InvalidArgs(format!(
+            "\u{201c}{}\u{201d} already exists",
+            taken.name
+        )));
+    }
+    backend
+        .create_folder(&path)
+        .await
+        .map_err(|err| CommandError::Failed(format!("the mail server did not create it: {err}")))?;
+    Ok(path)
 }
 
 /// The settings file, or the defaults when it cannot be read.

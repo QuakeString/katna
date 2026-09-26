@@ -13,6 +13,9 @@ use katna_store::{FolderId, FolderSummary};
 /// each account's delimiter.
 pub const SEPARATOR: char = '/';
 
+/// Gmail keeps its system labels under one of these.
+const GMAIL_ROOTS: [&str; 2] = ["[Gmail]", "[Google Mail]"];
+
 /// Accounts with at most this many folders start fully expanded.
 const EXPAND_ALL_UP_TO: usize = 40;
 
@@ -125,6 +128,8 @@ pub enum Row {
         name: String,
         unread: u64,
     },
+    /// The header over an account's own folders, Gmail's "Labels".
+    Labels { account: AccountId },
     Folder {
         key: String,
         depth: usize,
@@ -270,6 +275,32 @@ impl Tree {
             .collect()
     }
 
+    /// Whether `account` is a Gmail account, whose folders are labels.
+    pub fn is_gmail(&self, account: AccountId) -> bool {
+        self.accounts
+            .iter()
+            .filter(|a| a.id == account)
+            .flat_map(|a| &a.roots)
+            .any(|n| GMAIL_ROOTS.contains(&n.segment.as_str()))
+    }
+
+    /// The folders of `account` a new folder may go inside, with their
+    /// paths: the user's own, not the special ones or Gmail's system
+    /// labels.
+    pub fn nest_targets(&self, account: AccountId) -> Vec<(FolderId, String)> {
+        self.accounts
+            .iter()
+            .filter(|a| a.id == account)
+            .flat_map(|a| a.folders())
+            .filter(|n| n.role == Role::Other)
+            .filter(|n| {
+                let root = n.path.split(SEPARATOR).next().unwrap_or_default();
+                !GMAIL_ROOTS.contains(&root)
+            })
+            .filter_map(|n| Some((n.folder?, n.path.clone())))
+            .collect()
+    }
+
     /// The visible rows, given the expanded node keys.
     pub fn rows(&self, expanded: &HashSet<String>) -> Vec<Row> {
         let mut rows = Vec::new();
@@ -279,7 +310,18 @@ impl Tree {
                 name: account.name.clone(),
                 unread: account.unread,
             });
-            push_rows(&account.roots, 0, expanded, &mut rows);
+            // The user's own folders (labels) come after the special ones,
+            // under a header with the button that makes a new one.
+            let special = account
+                .roots
+                .iter()
+                .take_while(|n| n.role != Role::Other)
+                .count();
+            push_rows(&account.roots[..special], 0, expanded, &mut rows);
+            rows.push(Row::Labels {
+                account: account.id,
+            });
+            push_rows(&account.roots[special..], 0, expanded, &mut rows);
         }
         rows
     }
@@ -430,6 +472,7 @@ mod tests {
         rows.iter()
             .map(|row| match row {
                 Row::Account { name, .. } => format!("# {name}"),
+                Row::Labels { .. } => "## Labels".to_owned(),
                 Row::Folder {
                     depth,
                     label,
@@ -447,6 +490,33 @@ mod tests {
                 ),
             })
             .collect()
+    }
+
+    #[test]
+    fn new_folders_nest_under_the_users_own() {
+        let folders = [
+            folder(1, 1, "INBOX", 1),
+            folder(2, 1, "[Gmail]/All Mail", 1),
+            folder(3, 1, "[Gmail]/Starred", 0),
+            folder(4, 1, "Work", 0),
+            folder(5, 1, "Work/Clients", 0),
+            folder(6, 1, "Sent", 0),
+            folder(7, 2, "Projects", 0),
+        ];
+        let tree = Tree::build(&[], &folders, &HashMap::new());
+        assert!(tree.is_gmail(AccountId(1)));
+        assert!(!tree.is_gmail(AccountId(2)));
+        assert_eq!(
+            tree.nest_targets(AccountId(1)),
+            [
+                (FolderId(4), "Work".to_owned()),
+                (FolderId(5), "Work/Clients".to_owned())
+            ]
+        );
+        assert_eq!(
+            tree.nest_targets(AccountId(2)),
+            [(FolderId(7), "Projects".to_owned())]
+        );
     }
 
     #[test]
@@ -492,20 +562,22 @@ mod tests {
                 "Inbox -",
                 "  Receipts",
                 "archive",
+                "## Labels",
                 "[Gmail] -",
                 "  Sent Mail",
                 "Projects -",
                 "  Katna",
                 "# Account 2",
                 "Inbox",
+                "## Labels",
             ]
         );
         let collapsed = tree.rows(&HashSet::new());
         assert_eq!(
             labels(&collapsed)[..4],
-            ["# Work", "Inbox +", "archive", "[Gmail] +"]
+            ["# Work", "Inbox +", "archive", "## Labels"]
         );
-        let Row::Folder { folder, role, .. } = &rows[6] else {
+        let Row::Folder { folder, role, .. } = &rows[7] else {
             panic!("expected a folder row");
         };
         assert_eq!((*folder, *role), (None, Role::Other));
@@ -543,8 +615,9 @@ mod tests {
         assert_eq!(ancestors, ["1:user03"]);
         let expanded: HashSet<String> = ancestors.into_iter().collect();
         let rows = tree.rows(&expanded);
-        assert_eq!(rows.len(), 1 + 30 + 2);
-        assert_eq!(labels(&rows)[4..7], ["user03 -", "  Inbox +", "  notes"]);
+        assert_eq!(rows.len(), 2 + 30 + 2);
+        assert_eq!(labels(&rows)[1], "## Labels");
+        assert_eq!(labels(&rows)[5..8], ["user03 -", "  Inbox +", "  notes"]);
     }
 
     #[test]
