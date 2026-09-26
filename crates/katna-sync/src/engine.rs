@@ -440,11 +440,14 @@ fn save_messages(
             in_reply_to: parsed.in_reply_to.as_deref(),
             references: &references,
             gm_thread_id: message.gm_thread_id,
+            gm_msgid: message.gm_msgid,
             category: Some(parsed.category),
         };
+        // A Gmail message already stored under another label is new here
+        // too, but stays one message.
         if matches!(
             batch.add_remote_message(account, folder, &remote)?,
-            katna_store::Added::Message(_)
+            katna_store::Added::Message(_) | katna_store::Added::Location(_)
         ) {
             added += 1;
         }

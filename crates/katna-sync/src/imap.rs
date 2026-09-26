@@ -198,18 +198,14 @@ impl ImapBackend {
         }
     }
 
-    /// Gmail thread IDs of UIDs `first..=last` (or `first..`).
-    async fn gmail_thread_ids(
-        &mut self,
-        first: u32,
-        last: Option<u32>,
-    ) -> Result<HashMap<u32, u64>> {
+    /// Gmail thread and message IDs of UIDs `first..=last` (or `first..`).
+    async fn gmail_ids(&mut self, first: u32, last: Option<u32>) -> Result<HashMap<u32, GmailIds>> {
         let range = match last {
             Some(last) => format!("{first}:{last}"),
             None => format!("{first}:*"),
         };
         let lines = self
-            .raw_command(&format!("UID FETCH {range} (UID X-GM-THRID)"))
+            .raw_command(&format!("UID FETCH {range} (UID X-GM-THRID X-GM-MSGID)"))
             .await?;
         Ok(lines.iter().filter_map(|line| gmail_fetch(line)).collect())
     }
@@ -502,9 +498,12 @@ impl MailBackend for ImapBackend {
         // imap-codec cannot parse X-GM-THRID, and would drop a whole FETCH
         // response that had it, so it comes in a second, small command.
         if self.is_gmail() && !messages.is_empty() {
-            let threads = self.gmail_thread_ids(first, last).await?;
+            let ids = self.gmail_ids(first, last).await?;
             for message in &mut messages {
-                message.gm_thread_id = threads.get(&message.uid).copied();
+                if let Some(ids) = ids.get(&message.uid) {
+                    message.gm_thread_id = ids.thread;
+                    message.gm_msgid = ids.message;
+                }
             }
         }
         Ok(messages)
@@ -979,23 +978,33 @@ fn headers(items: impl IntoIterator<Item = MessageDataItem<'static>>) -> Message
 }
 
 /// `12 FETCH (X-GM-THRID 1278455344230334865 UID 4)` → `(4, 1278…)`.
-fn gmail_fetch(line: &str) -> Option<(u32, u64)> {
+/// Gmail's `X-GM-THRID` and `X-GM-MSGID` of one message.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+struct GmailIds {
+    thread: Option<u64>,
+    message: Option<u64>,
+}
+
+fn gmail_fetch(line: &str) -> Option<(u32, GmailIds)> {
     let (_, rest) = line.split_once(' ')?;
     let items = rest
         .strip_prefix("FETCH")
         .or_else(|| rest.strip_prefix("fetch"))?;
     let items = items.trim().strip_prefix('(')?.strip_suffix(')')?;
     let mut words = items.split_whitespace();
-    let (mut uid, mut thread) = (None, None);
+    let mut uid = None;
+    let mut ids = GmailIds::default();
     while let Some(name) = words.next() {
         let value = words.next()?;
         if name.eq_ignore_ascii_case("UID") {
             uid = value.parse().ok();
         } else if name.eq_ignore_ascii_case("X-GM-THRID") {
-            thread = value.parse().ok();
+            ids.thread = value.parse().ok();
+        } else if name.eq_ignore_ascii_case("X-GM-MSGID") {
+            ids.message = value.parse().ok();
         }
     }
-    Some((uid?, thread?))
+    (ids != GmailIds::default()).then_some((uid?, ids))
 }
 
 /// `SEARCH 3 5 8` (maybe followed by `(MODSEQ 99)`) → `[3, 5, 8]`.
@@ -1077,11 +1086,25 @@ mod tests {
     fn parses_gmail_responses() {
         assert_eq!(
             gmail_fetch("12 FETCH (X-GM-THRID 1278455344230334865 UID 4)"),
-            Some((4, 1_278_455_344_230_334_865))
+            Some((
+                4,
+                GmailIds {
+                    thread: Some(1_278_455_344_230_334_865),
+                    message: None
+                }
+            ))
         );
         assert_eq!(
-            gmail_fetch("1 FETCH (UID 9 X-GM-THRID 18446744073709551614)"),
-            Some((9, u64::MAX - 1))
+            gmail_fetch(
+                "1 FETCH (UID 9 X-GM-THRID 18446744073709551614 X-GM-MSGID 1278455344230334866)"
+            ),
+            Some((
+                9,
+                GmailIds {
+                    thread: Some(u64::MAX - 1),
+                    message: Some(1_278_455_344_230_334_866)
+                }
+            ))
         );
         assert_eq!(gmail_fetch("1 FETCH (UID 9 FLAGS (\\Seen))"), None);
         assert_eq!(gmail_fetch("3 EXISTS"), None);

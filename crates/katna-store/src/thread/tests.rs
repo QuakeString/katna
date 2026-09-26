@@ -133,6 +133,7 @@ impl Fixture {
                     in_reply_to: m.in_reply_to,
                     references: m.references,
                     gm_thread_id: thrid,
+                    gm_msgid: None,
                     category: None,
                 },
             )

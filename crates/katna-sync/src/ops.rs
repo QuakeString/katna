@@ -167,10 +167,17 @@ pub fn move_messages(
             .get(&to)
             .ok_or(ChangeError::UnknownFolder(to.0))?
             .clone();
+        // A Gmail message is in All Mail too; moving it from there would
+        // only add a label, so move it from one of its other folders.
         let Some(source) = store
             .locations(id)?
             .into_iter()
-            .find(|location| location.folder != to)
+            .filter(|location| location.folder != to)
+            .min_by_key(|location| {
+                folders
+                    .get(&location.folder)
+                    .is_some_and(|f| f.role == Some(FolderRole::All))
+            })
         else {
             continue; // already there
         };

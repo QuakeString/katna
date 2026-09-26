@@ -149,6 +149,9 @@ pub struct MessageHeaders {
     pub header: Vec<u8>,
     /// Gmail's thread ID (`X-GM-THRID`), when the server has `X-GM-EXT-1`.
     pub gm_thread_id: Option<u64>,
+    /// Gmail's message ID (`X-GM-MSGID`): the same in every folder (label)
+    /// that shows the message.
+    pub gm_msgid: Option<u64>,
 }
 
 impl MessageHeaders {

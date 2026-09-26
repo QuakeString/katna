@@ -364,11 +364,11 @@ fn gmail_thread_ids_and_search() {
         s.ok(&tag);
 
         let (tag, rest) = s.command();
-        assert_eq!(rest, "UID FETCH 1:2 (UID X-GM-THRID)");
+        assert_eq!(rest, "UID FETCH 1:2 (UID X-GM-THRID X-GM-MSGID)");
         s.send(&format!(
-            "* 1 FETCH (X-GM-THRID 1278455344230334865 UID 1)\r\n\
+            "* 1 FETCH (X-GM-THRID 1278455344230334865 X-GM-MSGID 1278455344230334866 UID 1)\r\n\
                  * 3 EXISTS\r\n\
-                 * 2 FETCH (UID 2 X-GM-THRID 99)\r\n{tag} OK Success\r\n"
+                 * 2 FETCH (UID 2 X-GM-THRID 99 X-GM-MSGID 100)\r\n{tag} OK Success\r\n"
         ));
 
         let (tag, rest) = s.command();
@@ -384,10 +384,20 @@ fn gmail_thread_ids_and_search() {
     smol::block_on(async {
         let mut imap = connect(&endpoint).await;
         let headers = imap.fetch_headers(1, Some(2)).await.unwrap();
-        let threads: Vec<_> = headers.iter().map(|h| (h.uid, h.gm_thread_id)).collect();
+        let ids: Vec<_> = headers
+            .iter()
+            .map(|h| (h.uid, h.gm_thread_id, h.gm_msgid))
+            .collect();
         assert_eq!(
-            threads,
-            [(1, Some(1_278_455_344_230_334_865)), (2, Some(99))]
+            ids,
+            [
+                (
+                    1,
+                    Some(1_278_455_344_230_334_865),
+                    Some(1_278_455_344_230_334_866)
+                ),
+                (2, Some(99), Some(100))
+            ]
         );
         assert_eq!(headers[0].header, b"Subject: hi\r\n\r\n");
         let found = imap.gmail_search(1, "category:promotions").await.unwrap();
