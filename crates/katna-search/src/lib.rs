@@ -13,6 +13,7 @@
 pub mod compile;
 pub mod document;
 mod error;
+mod highlight;
 mod index;
 pub mod query;
 pub mod schema;

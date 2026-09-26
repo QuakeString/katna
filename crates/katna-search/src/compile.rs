@@ -13,7 +13,7 @@ use tantivy::schema::{Field, IndexRecordOption};
 
 use crate::document::flag_term;
 use crate::query::{Filter, Query, TextField};
-use crate::schema::{Fields, tokens};
+use crate::schema::{Fields, stems, tokens};
 
 type Boxed = Box<dyn TantivyQuery>;
 
@@ -70,13 +70,15 @@ fn not(fields: &Fields, inner: &Query) -> Boxed {
 }
 
 /// Words of `text` in `field`: a term, or a phrase for several words. With
-/// `prefix`, the last word also matches longer words.
+/// `prefix`, the last word also matches longer words. One whole word in the
+/// subject or body also matches its other forms, through the stemmed fields;
+/// phrases and unfinished words match as written.
 fn text_query(fields: &Fields, field: TextField, text: &str, prefix: bool) -> Boxed {
     let words = tokens(text);
     if words.is_empty() {
         return Box::new(AllQuery);
     }
-    let targets: Vec<(Field, f32)> = match field {
+    let mut targets: Vec<(Field, f32)> = match field {
         TextField::Any => fields.free_text().to_vec(),
         TextField::From => vec![(fields.from, 1.0)],
         TextField::To => vec![(fields.to, 1.0), (fields.cc, 1.0), (fields.bcc, 1.0)],
@@ -86,6 +88,25 @@ fn text_query(fields: &Fields, field: TextField, text: &str, prefix: bool) -> Bo
         TextField::Filename => vec![(fields.attachment, 1.0)],
         TextField::List => vec![(fields.list, 1.0)],
     };
+    // (field, boost, stem) of the stemmed fields a whole word also searches.
+    let mut stemmed: Vec<(Field, f32, String)> = Vec::new();
+    if let (false, [_], [stem]) = (prefix, words.as_slice(), stems(text).as_slice()) {
+        match field {
+            TextField::Any => {
+                // The stemmed body replaces the body as written: its postings
+                // include the word's, and the body is the costliest field.
+                targets.retain(|(field, _)| *field != fields.body);
+                stemmed.extend(
+                    fields
+                        .stemmed()
+                        .into_iter()
+                        .map(|(field, boost)| (field, boost, stem.clone())),
+                );
+            }
+            TextField::Subject => stemmed.push((fields.subject_stem, 0.5, stem.clone())),
+            _ => {}
+        }
+    }
     let mut alternatives: Vec<(Occur, Boxed)> = targets
         .into_iter()
         .map(|(field, boost)| {
@@ -99,10 +120,7 @@ fn text_query(fields: &Fields, field: TextField, text: &str, prefix: bool) -> Bo
                 query.set_max_expansions(max_expansions(words.last().map_or("", String::as_str)));
                 Box::new(query)
             } else if let [word] = words.as_slice() {
-                Box::new(TermQuery::new(
-                    Term::from_field_text(field, word),
-                    IndexRecordOption::WithFreqs,
-                ))
+                term_query(field, word)
             } else {
                 Box::new(PhraseQuery::new(
                     words
@@ -111,14 +129,14 @@ fn text_query(fields: &Fields, field: TextField, text: &str, prefix: bool) -> Bo
                         .collect(),
                 ))
             };
-            let query = if boost == 1.0 {
-                query
-            } else {
-                Box::new(BoostQuery::new(query, boost))
-            };
-            (Occur::Should, query)
+            (Occur::Should, boosted(query, boost))
         })
         .collect();
+    alternatives.extend(
+        stemmed
+            .into_iter()
+            .map(|(field, boost, stem)| (Occur::Should, boosted(term_query(field, &stem), boost))),
+    );
     if alternatives.len() == 1 {
         return alternatives
             .pop()
@@ -126,6 +144,21 @@ fn text_query(fields: &Fields, field: TextField, text: &str, prefix: bool) -> Bo
             .unwrap_or_else(|| Box::new(EmptyQuery));
     }
     Box::new(BooleanQuery::new(alternatives))
+}
+
+fn term_query(field: Field, word: &str) -> Boxed {
+    Box::new(TermQuery::new(
+        Term::from_field_text(field, word),
+        IndexRecordOption::WithFreqs,
+    ))
+}
+
+fn boosted(query: Boxed, boost: f32) -> Boxed {
+    if boost == 1.0 {
+        query
+    } else {
+        Box::new(BoostQuery::new(query, boost))
+    }
 }
 
 fn filter_query(fields: &Fields, filter: &Filter) -> Boxed {
