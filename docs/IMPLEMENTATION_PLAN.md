@@ -57,7 +57,8 @@ Mailpit.
 ### 3.2 Test data
 
 - **Enron corpus** (~500k messages) for search and performance benchmarks,
-  downloaded by a script (not committed).
+  downloaded by `dev/fetch-enron.sh` (not committed) and read with
+  `katna-search-cli import`.
 - A **real-world email corpus** (newsletters, HTML-heavy mail, broken MIME,
   many languages) for rendering and parser tests; only mail we may
   legally use.
@@ -286,7 +287,7 @@ Plasma integration (Phase 6), which have few dependencies on the rest.
 5. ✅ Add `dev/compose.yaml` with Stalwart, Dovecot, Radicale, Mailpit and seed data.
 6. Start spike **S2** (Pimalaya + I/O) and spike **S1** (window chrome).
 7. ✅ Implement `katna-core` and the first `katna-store` migration (secrets move to task 1.2; `calendar.db` schema to Phase 6).
-8. Write the Enron download script and the Maildir importer.
+8. ✅ Write the Enron download script and the Maildir importer.
 9. Create GitHub milestones (Phases 0–8) and issues for Phase 0 tasks.
 
 ## 9. How this plan is maintained

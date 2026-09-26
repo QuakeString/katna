@@ -88,6 +88,7 @@ katna/
 ├── crates/
 │   ├── katna-core/            # config, XDG paths, accounts, secrets, errors, logging
 │   ├── katna-store/           # SQLite schema + migrations, blob store, read-only views
+│   ├── katna-import/          # Maildir and mbox import into the store (Enron, migration)
 │   ├── katna-meta/            # metadata-with-expiration layer (§10)
 │   ├── katna-sync/            # account workers, IMAP/JMAP/POP3/SMTP, outbox, op queue
 │   ├── katna-search/          # tantivy index, query language, ranking
@@ -228,7 +229,7 @@ change signal arrives (§14.2).
 ### 5.4 Shared PIM schema (sketch)
 
 ```sql
-account          (id, kind, display_name, address, settings_json)  -- kind: imap|jmap|pop3|caldav|carddav
+account          (id, kind, display_name, address, settings_json)  -- kind: imap|jmap|pop3|caldav|carddav|local
 organization     (id, name, kind, color, notes, notify_policy)  -- kind: customer|vendor|partner|other
 org_alias        (org_id, alias)
 org_rule         (org_id, rule_kind, value)               -- domain | subdomain | address

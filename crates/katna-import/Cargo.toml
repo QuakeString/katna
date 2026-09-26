@@ -1,6 +1,6 @@
 [package]
-name = "katna-search-cli"
-description = "Command-line indexing and search for Katna, used for development and benchmarks."
+name = "katna-import"
+description = "Maildir and mbox import into the Katna store."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -11,8 +11,10 @@ publish.workspace = true
 [dependencies]
 katna-core.workspace = true
 katna-store.workspace = true
-katna-import.workspace = true
-katna-search.workspace = true
+mail-parser = "0.11.9"
+
+[dev-dependencies]
+tempfile.workspace = true
 
 [lints]
 workspace = true

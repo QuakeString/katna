@@ -15,6 +15,7 @@ publish = false
 [workspace.dependencies]
 katna-core = { path = "crates/katna-core" }
 katna-store = { path = "crates/katna-store" }
+katna-import = { path = "crates/katna-import" }
 katna-meta = { path = "crates/katna-meta" }
 katna-sync = { path = "crates/katna-sync" }
 katna-search = { path = "crates/katna-search" }

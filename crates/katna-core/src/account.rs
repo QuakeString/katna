@@ -27,16 +27,19 @@ pub enum AccountKind {
     Pop3,
     CalDav,
     CardDav,
+    /// Mail imported from local files (Maildir, mbox); never synced.
+    Local,
 }
 
 impl AccountKind {
     /// Every kind, in a stable order.
-    pub const ALL: [Self; 5] = [
+    pub const ALL: [Self; 6] = [
         Self::Imap,
         Self::Jmap,
         Self::Pop3,
         Self::CalDav,
         Self::CardDav,
+        Self::Local,
     ];
 
     /// Stable name used in the database and in configuration.
@@ -47,12 +50,13 @@ impl AccountKind {
             Self::Pop3 => "pop3",
             Self::CalDav => "caldav",
             Self::CardDav => "carddav",
+            Self::Local => "local",
         }
     }
 
     /// Whether the account carries mail.
     pub fn is_mail(self) -> bool {
-        matches!(self, Self::Imap | Self::Jmap | Self::Pop3)
+        matches!(self, Self::Imap | Self::Jmap | Self::Pop3 | Self::Local)
     }
 }
 
@@ -113,6 +117,7 @@ mod tests {
     fn mail_kinds() {
         assert!(AccountKind::Imap.is_mail());
         assert!(AccountKind::Pop3.is_mail());
+        assert!(AccountKind::Local.is_mail());
         assert!(!AccountKind::CalDav.is_mail());
     }
 }

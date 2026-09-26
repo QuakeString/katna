@@ -98,6 +98,21 @@ impl BlobStore {
         Self { conn, dir, mode }
     }
 
+    /// Starts a transaction that the following [`put`](Self::put)s join, so
+    /// a [`MailBatch`](crate::MailBatch) commits its blobs at once.
+    pub(crate) fn begin(&self) -> Result<()> {
+        self.check_writable()?;
+        self.conn.execute_batch("BEGIN IMMEDIATE")?;
+        Ok(())
+    }
+
+    /// Ends the transaction started by [`begin`](Self::begin).
+    pub(crate) fn end(&self, commit: bool) -> Result<()> {
+        self.conn
+            .execute_batch(if commit { "COMMIT" } else { "ROLLBACK" })?;
+        Ok(())
+    }
+
     /// Stores `data` and returns its hash. Storing the same bytes again is a
     /// cheap no-op.
     pub fn put(&self, data: &[u8]) -> Result<BlobHash> {
