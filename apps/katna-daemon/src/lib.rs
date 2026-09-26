@@ -16,6 +16,7 @@ mod on_demand;
 pub mod secrets;
 pub mod service;
 pub mod system;
+pub mod update;
 
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};

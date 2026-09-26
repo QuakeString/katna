@@ -349,6 +349,40 @@ impl MailWindow {
                 self.undo_send_choice(th, cx),
                 th,
             ))
+            .child(row(
+                "Desktop",
+                Some("Shown even while Katna Mail is closed."),
+                self.desktop_switches(th, cx),
+                th,
+            ))
+            .into_any_element()
+    }
+
+    /// The tray icon and the taskbar count, which the daemon shows.
+    fn desktop_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let general = &self.config.general;
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(2.0))
+            .child(self.switch_row(
+                "page-tray",
+                "Show Katna in the system tray",
+                "With the unread count and a menu",
+                general.show_in_tray,
+                Change::Tray(!general.show_in_tray),
+                th,
+                cx,
+            ))
+            .child(self.switch_row(
+                "page-unread-badge",
+                "Unread count on the taskbar icon",
+                "How many Inbox messages are unread",
+                general.unread_badge,
+                Change::UnreadBadge(!general.unread_badge),
+                th,
+                cx,
+            ))
             .into_any_element()
     }
 
