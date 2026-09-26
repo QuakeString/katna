@@ -23,7 +23,7 @@ use super::apps::{APP_RAIL_WIDTH, App as RailApp};
 use super::{Compose, MailWindow, NAV_WIDTH, ToggleSettings};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{avatar, elevation, icon};
+use crate::widgets::{avatar, elevation, icon, tip};
 
 /// Narrower windows use the phone layout.
 pub(super) const PHONE_BELOW: f32 = 600.0;
@@ -43,6 +43,12 @@ const COMPOSE_FOLD_BELOW: f32 = 760.0;
 /// The top bar's Compose button with its margin, folded and whole.
 const COMPOSE_FOLDED: f32 = 58.0;
 const COMPOSE_ROOM: f32 = 148.0;
+/// A phone's Compose button folds to its pencil once the list has scrolled
+/// down this far in one go, and grows back after this far up.
+const FAB_FOLD_AFTER: f32 = 24.0;
+const FAB_UNFOLD_AFTER: f32 = 120.0;
+/// Room for the word "Compose" on a phone's Compose button.
+const FAB_LABEL_WIDTH: f32 = 80.0;
 const FAB_SIZE: f32 = 56.0;
 const FAB_RADIUS: f32 = 16.0;
 /// A phone's navigation drawer leaves this much of the window beside it.
@@ -164,6 +170,12 @@ pub(super) struct Layout {
     scrim: Spring,
     /// The navigation drawer of a phone or tablet is open.
     pub drawer: bool,
+    /// How much of the word "Compose" a phone's Compose button shows.
+    fab_label: Spring,
+    /// How far the list was scrolled last frame, and how far it has moved
+    /// since it last turned (down positive, up negative).
+    list_top: f32,
+    list_run: f32,
     pub shape: Shape,
 }
 
@@ -177,6 +189,9 @@ impl Layout {
             page: Spring::new(motion::SLIDE, 0.0),
             scrim: Spring::new(motion::SMOOTH, 0.0),
             drawer: false,
+            fab_label: Spring::new(motion::SMOOTH, 1.0),
+            list_top: 0.0,
+            list_run: 0.0,
             shape: Shape {
                 size: Size::Desktop,
                 width: 1280.0,
@@ -186,6 +201,31 @@ impl Layout {
                 page: 0.0,
                 room: (0.0, 0.0),
             },
+        }
+    }
+}
+
+impl Layout {
+    /// Folds a phone's Compose button to its pencil as the list scrolls
+    /// down, and grows it back after a few steps up or at the top.
+    fn fold_fab(&mut self, top: f32) {
+        let moved = top - self.list_top;
+        self.list_top = top;
+        if top <= 1.0 {
+            self.list_run = 0.0;
+            self.fab_label.set(1.0);
+            return;
+        }
+        if moved > 0.0 {
+            self.list_run = self.list_run.max(0.0) + moved;
+            if self.list_run >= FAB_FOLD_AFTER {
+                self.fab_label.set(0.0);
+            }
+        } else if moved < 0.0 {
+            self.list_run = self.list_run.min(0.0) + moved;
+            if -self.list_run >= FAB_UNFOLD_AFTER {
+                self.fab_label.set(1.0);
+            }
         }
     }
 }
@@ -252,6 +292,13 @@ impl MailWindow {
         layout.shape.page = layout.page.tick(window, reduce);
         layout.scrim.set(if layout.drawer { 1.0 } else { 0.0 });
         layout.scrim.tick(window, reduce);
+        let top = -f32::from(self.list_scroll.0.borrow().base_handle.offset().y);
+        let layout = &mut self.layout;
+        layout.fold_fab(top);
+        if first {
+            layout.fab_label.snap(layout.fab_label.target());
+        }
+        layout.fab_label.tick(window, reduce);
         if !self.slides() {
             // The next conversation opened slides in from the edge again.
             self.layout.page.snap(0.0);
@@ -430,6 +477,7 @@ impl MailWindow {
             .snackbar
             .as_ref()
             .map_or(0.0, |s| s.shown.value().clamp(0.0, 1.0));
+        let label = self.layout.fab_label.value().clamp(0.0, 1.0);
         Some(
             div()
                 .absolute()
@@ -442,16 +490,25 @@ impl MailWindow {
                     fab_button("phone-compose", th)
                         .w_auto()
                         .pl(px(16.0))
-                        .pr(px(20.0))
-                        .gap(px(12.0))
+                        .pr(px(lerp(16.0, 20.0, label)))
+                        .justify_start()
                         .text_size(px(14.0))
                         .font_weight(FontWeight::MEDIUM)
                         .shadow(elevation(th, 3.0))
+                        .when(label < 0.5, |d| d.tooltip(tip("Compose", th)))
                         .on_click(
                             cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)),
                         )
                         .child(icon("compose", th.compose_text, 24.0))
-                        .child("Compose"),
+                        .child(
+                            div()
+                                .pl(px(12.0 * label))
+                                .max_w(px(FAB_LABEL_WIDTH * label))
+                                .overflow_hidden()
+                                .whitespace_nowrap()
+                                .opacity(label)
+                                .child("Compose"),
+                        ),
                 )
                 .into_any_element(),
         )
@@ -742,5 +799,24 @@ mod tests {
         assert!(!Size::Tablet.splits(TABLET_SPLIT_FROM - 1.0));
         assert!(Size::Tablet.splits(TABLET_SPLIT_FROM));
         assert!(Size::Desktop.splits(1080.0));
+    }
+
+    #[test]
+    fn compose_folds_scrolling_down_and_unfolds_after_a_few_steps_up() {
+        let mut layout = Layout::new();
+        let label = |l: &Layout| l.fab_label.target();
+        layout.fold_fab(10.0);
+        assert_eq!(label(&layout), 1.0, "a nudge keeps the word");
+        layout.fold_fab(40.0);
+        assert_eq!(label(&layout), 0.0);
+        layout.fold_fab(400.0);
+        layout.fold_fab(340.0);
+        assert_eq!(label(&layout), 0.0, "one step up is not enough");
+        layout.fold_fab(270.0);
+        assert_eq!(label(&layout), 1.0);
+        layout.fold_fab(300.0);
+        assert_eq!(label(&layout), 0.0);
+        layout.fold_fab(0.0);
+        assert_eq!(label(&layout), 1.0, "the top of the list shows it");
     }
 }
