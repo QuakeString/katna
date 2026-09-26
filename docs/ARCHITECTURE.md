@@ -1443,13 +1443,29 @@ real Subject; other inner headers are ignored.
   the index (`katna_crypto::without_armor`): encrypted blocks are dropped,
   clear-signed text is kept without its armor.
 
-**Sending (next).** Sign and encrypt in compose: per-account default key
-and "sign by default", an encrypt toggle that is on when every recipient
-has a usable key (and on by default when replying to encrypted mail),
-PGP/MIME by default and S/MIME for accounts with a certificate, always
-encrypting to the sender's own key too so Sent stays readable. The app
-builds the protected MIME before queueing, so the outbox and Sent hold only
-ciphertext. Autocrypt headers and key lookup (WKD) come after.
+**Sending (done).** Compose has Encrypt (lock) and Sign (shield) toggles
+beside the formatting buttons. Answers to and forwards of encrypted mail
+start encrypted and signed, in the same standard. The app builds the
+message as usual, then `katna_crypto::protect` wraps it (PGP/MIME
+`multipart/signed` or `multipart/encrypted`; S/MIME `multipart/signed` or
+`application/pkcs7-mime` enveloped, signed inside first) before it is
+queued, so the outbox and Sent hold only what was sent. Details:
+
+- Keys are chosen by exact address in the local keyring
+  (`katna_crypto::encryption_keys`: usable for encryption, a verified key
+  before an unverified one) and passed to GnuPG by fingerprint, so GnuPG
+  never looks a recipient up on the network (WKD) while sending. A key the
+  user has not certified is still used (`--trust-model always`); a
+  recipient without any key stops the send with "no key for …" and the
+  message comes back.
+- The sender is always a recipient too, so Sent stays readable. Bcc
+  recipients are hidden recipients in OpenPGP (`--hidden-recipient`); CMS
+  has no such thing.
+- OpenPGP by default; S/MIME when answering S/MIME mail or when the sender
+  only has an S/MIME certificate.
+- Routing headers (From, To, Subject) stay outside the protection; hiding
+  the subject (protected headers) and Autocrypt headers come later (E.3).
+
 
 ## 20. Dependency policy
 

@@ -40,12 +40,18 @@ pub(crate) struct Status {
     failed: bool,
     recipients: usize,
     missing_secret_keys: usize,
-    cancelled: bool,
+    pub cancelled: bool,
     damaged: bool,
     no_secret_key_error: bool,
     /// The last human-readable error line, for [`Failure::Other`].
-    message: Option<String>,
+    pub message: Option<String>,
     pub signatures: Vec<RawSignature>,
+    /// The hash algorithm (libgcrypt number) of a signature just made.
+    pub signed_with: Option<u32>,
+    /// `INV_SGNR`: the signing key was not usable.
+    pub invalid_signer: bool,
+    /// `INV_RECP`: recipients whose key was not usable.
+    pub invalid_recipients: Vec<String>,
 }
 
 impl Status {
@@ -79,6 +85,13 @@ impl Status {
                 self.failed = true;
             }
             "NO_SECKEY" => self.missing_secret_keys += 1,
+            "SIG_CREATED" => self.signed_with = fields.get(2).and_then(|a| a.parse().ok()),
+            "INV_SGNR" => self.invalid_signer = true,
+            "INV_RECP" => {
+                if let Some(spec) = fields.get(1) {
+                    self.invalid_recipients.push((*spec).to_owned());
+                }
+            }
             "BADMDC" | "NODATA" => self.damaged = true,
             "ERROR" | "FAILURE" => {
                 let code = fields

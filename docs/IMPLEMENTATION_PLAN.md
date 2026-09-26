@@ -292,8 +292,8 @@ the user's GnuPG:
 | Task | Content |
 |---|---|
 | E.1 Read encrypted and signed mail ✅ | `katna-crypto`: PGP/MIME, inline PGP, S/MIME via `gpg`/`gpgsm`; banner in the reading view; armor left out of snippets and search |
-| E.2 Sign and encrypt when sending | Compose toggles, recipient key check, per-account key and defaults, encrypt to self, PGP/MIME and S/MIME; reply to encrypted mail encrypted |
-| E.3 Keys | Autocrypt headers, WKD lookup, import keys from attachments, key details in the banner |
+| E.2 Sign and encrypt when sending ✅ | Compose toggles, recipient key check, encrypt to self, hidden Bcc, PGP/MIME and S/MIME; answers to encrypted mail encrypted. Later: per-account defaults in Settings |
+| E.3 Keys | Autocrypt headers, WKD lookup, import keys from attachments, key details in the banner, protected (hidden) subject |
 
 **Done when:** mail from Thunderbird and KMail (OpenPGP and S/MIME,
 signed, encrypted, both) opens and verifies in Katna, and mail Katna sends

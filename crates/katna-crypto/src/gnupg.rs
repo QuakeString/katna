@@ -37,9 +37,11 @@ pub(crate) struct Outcome {
     pub signatures: Vec<Signature>,
 }
 
-struct Run {
-    stdout: Vec<u8>,
-    status: Status,
+pub(crate) struct Run {
+    pub stdout: Vec<u8>,
+    pub status: Status,
+    /// GnuPG exited with 0.
+    pub success: bool,
 }
 
 impl Gnupg {
@@ -164,7 +166,7 @@ impl Gnupg {
 
     /// Runs the tool for `standard` with status lines on stderr, feeding
     /// it `input`.
-    fn run(&self, standard: Standard, args: &[&OsStr], input: &[u8]) -> io::Result<Run> {
+    pub(crate) fn run(&self, standard: Standard, args: &[&OsStr], input: &[u8]) -> io::Result<Run> {
         let mut command = Command::new(match standard {
             Standard::OpenPgp => &self.gpg,
             Standard::Smime => &self.gpgsm,
@@ -195,6 +197,7 @@ impl Gnupg {
         Ok(Run {
             stdout: output.stdout,
             status: Status::parse(&output.stderr),
+            success: output.status.success(),
         })
     }
 

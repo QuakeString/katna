@@ -8,6 +8,9 @@
 //! trust settings, `gpg-agent` passphrase cache, pinentry and smartcards all
 //! work unchanged, and no key material passes through Katna.
 //!
+//! Sending: [`protect`] signs and/or encrypts a message built for
+//! sending; [`encryption_keys`] tells which recipients have a key.
+//!
 //! Reading: [`protection`] tells cheaply whether a raw message is encrypted
 //! or signed; [`open`] decrypts and verifies it and returns a message the
 //! renderer shows as usual, plus a [`Security`] report for the banner above
@@ -20,13 +23,17 @@
 
 mod armor;
 mod gnupg;
+mod keys;
 mod mime;
+mod protect;
 mod status;
 
 use mail_parser::MessageParser;
 
 pub use armor::without_armor;
 pub use gnupg::Gnupg;
+pub use keys::{Key, encryption_keys, has_secret_key, sending_standard};
+pub use protect::{Protect, ProtectError, Recipients, protect};
 
 /// At most this many protection layers are opened, so a crafted message
 /// cannot make us run GnuPG over and over.

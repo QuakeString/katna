@@ -66,6 +66,28 @@ fn opened_body(raw: &[u8], opened: Option<Opened>) -> Body {
     }
 }
 
+impl super::Conversation {
+    /// What protected message `id` (by default the newest loaded one),
+    /// once it is opened.
+    pub(in crate::window) fn security(&self, id: Option<MessageId>) -> Option<&Security> {
+        fn security(part: &Part) -> Option<&Security> {
+            match part.body.as_ref()?.security.as_ref()? {
+                Secured::Opened(security) => Some(security),
+                Secured::Opening(_) => None,
+            }
+        }
+        match id {
+            Some(id) => self.parts.iter().find(|p| p.id == id).and_then(security),
+            None => self
+                .parts
+                .iter()
+                .rev()
+                .find(|p| p.body.as_ref().is_some_and(|b| b.view.is_some()))
+                .and_then(security),
+        }
+    }
+}
+
 impl MailWindow {
     /// Hands every protected message of the open conversation that is
     /// waiting to GnuPG.

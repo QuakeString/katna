@@ -409,7 +409,7 @@ fn push_field(out: &mut Vec<u8>, field: &[u8]) {
 /// The header fields at the start of `block` (each with its folded lines
 /// and line ending) and where the body after the blank line starts. No
 /// fields when `block` does not start with a header.
-fn header_fields(block: &[u8]) -> (Vec<&[u8]>, usize) {
+pub(crate) fn header_fields(block: &[u8]) -> (Vec<&[u8]>, usize) {
     let mut fields: Vec<(usize, usize)> = Vec::new();
     let mut at = 0;
     while at < block.len() {
@@ -446,7 +446,7 @@ fn is_field_start(line: &[u8]) -> bool {
     }
 }
 
-fn field_name(field: &[u8]) -> String {
+pub(crate) fn field_name(field: &[u8]) -> String {
     let colon = field.iter().position(|&b| b == b':').unwrap_or(0);
     String::from_utf8_lossy(&field[..colon])
         .trim()

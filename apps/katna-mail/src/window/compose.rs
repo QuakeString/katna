@@ -25,6 +25,8 @@ use katna_ui::{InputEvent, TextArea, TextInput};
 use std::time::Duration;
 
 use super::{MailWindow, SNACKBAR_TIME};
+
+mod security;
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::format;
@@ -33,6 +35,7 @@ use crate::theme::{Theme, fade};
 use crate::widgets::{
     avatar, elevation, icon, icon_button, icon_button_colored, menu, menu_item, tip,
 };
+use security::Sealing;
 
 const WIDTH: f32 = 560.0;
 const MAX_HEIGHT: f32 = 620.0;
@@ -77,6 +80,8 @@ pub(super) struct Compose {
     show_bcc: bool,
     mode: Mode,
     send_menu: bool,
+    /// Sign and encrypt.
+    sealing: Sealing,
     shown: Spring,
     closing: bool,
     body_scroll: ScrollHandle,
@@ -153,6 +158,7 @@ impl Threading {
 pub(super) struct Unsent {
     draft: Draft,
     thread: Threading,
+    sealing: Sealing,
 }
 
 fn address(a: &Address) -> String {
@@ -295,6 +301,10 @@ impl MailWindow {
                 .unwrap_or_default()
         };
         let view = self.reader.as_ref().and_then(|reader| reader.view(source));
+        let sealing = match kind {
+            Kind::New => Sealing::default(),
+            _ => Sealing::answering(self.reader.as_ref().and_then(|r| r.security(source))),
+        };
         let original = view.map(|view| Original {
             view,
             date: date(view.date),
@@ -330,6 +340,7 @@ impl MailWindow {
             compose.kind = kind;
             compose.mode = mode;
             compose.conversation = conversation;
+            compose.sealing = sealing;
         }
     }
 
@@ -411,6 +422,7 @@ impl MailWindow {
             conversation: None,
             mode: Mode::Open,
             send_menu: false,
+            sealing: Sealing::default(),
             shown: Spring::new(motion::SLIDE, 0.0),
             closing: false,
             body_scroll: ScrollHandle::new(),
@@ -466,6 +478,7 @@ impl MailWindow {
         compose.send_menu = false;
         let draft = compose.fields(cx);
         let thread = compose.thread.clone();
+        let sealing = compose.sealing;
         let parse = |text: &str| outgoing::parse_addresses(text);
         let (to, cc, bcc) = match (parse(&draft.to), parse(&draft.cc), parse(&draft.bcc)) {
             (Ok(to), Ok(cc), Ok(bcc)) => (to, cc, bcc),
@@ -491,6 +504,10 @@ impl MailWindow {
             name: Some(account.display_name.trim().to_owned()).filter(|n| !n.is_empty()),
             email: account.address.clone(),
         };
+        let emails = |list: &[Mailbox]| list.iter().map(|m| m.email.clone()).collect::<Vec<_>>();
+        let sender = account.address.clone();
+        let visible = [emails(&to), emails(&cc)].concat();
+        let hidden = emails(&bcc);
         let raw = outgoing::build(&Outgoing {
             from: Some(from),
             to,
@@ -503,7 +520,11 @@ impl MailWindow {
         });
         let account = account.id.0;
         let delay = self.config.sending.undo_send_seconds;
-        self.unsent = Some(Unsent { draft, thread });
+        self.unsent = Some(Unsent {
+            draft,
+            thread,
+            sealing,
+        });
         self.close_compose(false, cx);
         self.show_snackbar("Sending\u{2026}", None, cx);
         let connection = self.daemon.clone();
@@ -511,6 +532,8 @@ impl MailWindow {
             let result = cx
                 .background_executor()
                 .spawn(async move {
+                    // Signed and encrypted before the outbox sees it.
+                    let raw = security::seal(raw, sealing, sender, visible, hidden)?;
                     let connection = match connection {
                         Some(connection) => connection,
                         None => daemon::connect().await?,
@@ -542,7 +565,12 @@ impl MailWindow {
     /// Opens the message that was just handed to the outbox again, after
     /// Undo or a failure to queue it.
     pub(super) fn reopen_unsent(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let Some(Unsent { draft, thread }) = self.unsent.take() else {
+        let Some(Unsent {
+            draft,
+            thread,
+            sealing,
+        }) = self.unsent.take()
+        else {
             return;
         };
         if self
@@ -553,6 +581,9 @@ impl MailWindow {
             return;
         }
         self.show_compose(draft, Draft::default(), thread, true, window, cx);
+        if let Some(compose) = &mut self.compose {
+            compose.sealing = sealing;
+        }
     }
 
     fn close_compose(&mut self, discarded: bool, cx: &mut Context<Self>) {
@@ -1092,6 +1123,7 @@ impl MailWindow {
                 "Inserting images",
             ))
             .child(tool("compose-more", "more", "More options", "More options"))
+            .children(self.render_sealing(th, cx))
             .child(div().flex_1())
             .child(
                 icon_button_colored("compose-discard", "trash", 20.0, th.text_dim, th)

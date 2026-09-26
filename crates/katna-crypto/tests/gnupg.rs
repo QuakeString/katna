@@ -8,7 +8,8 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
 use katna_crypto::{
-    Decryption, Failure, Gnupg, Protection, SignatureState, Standard, Validity, open, protection,
+    Decryption, Failure, Gnupg, Protect, ProtectError, Protection, Recipients, SignatureState,
+    Standard, Validity, encryption_keys, open, protect, protection,
 };
 use mail_parser::MessageParser;
 
@@ -565,4 +566,155 @@ fn plain_mail_is_not_protected() {
     let raw = b"From: a@example.org\r\nSubject: Hi\r\n\r\nNothing to see.\r\n";
     assert_eq!(protection(raw), None);
     assert!(open(raw, &Gnupg::new()).is_none());
+}
+
+/// What Katna Mail builds for sending: 7-bit plain text.
+fn outgoing(from: &str, to: &str) -> Vec<u8> {
+    format!(
+        "From: {from}\r\nTo: {to}\r\nSubject: Round trip\r\nMIME-Version: 1.0\r\n\
+Content-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\n\
+Gr=C3=BC=C3=9Fe,\r\nthis went both ways.\r\n"
+    )
+    .into_bytes()
+}
+
+fn recipients(sender: &str, visible: &[&str], hidden: &[&str]) -> Recipients {
+    Recipients {
+        sender: sender.to_owned(),
+        visible: visible.iter().map(|s| (*s).to_owned()).collect(),
+        hidden: hidden.iter().map(|s| (*s).to_owned()).collect(),
+    }
+}
+
+#[test]
+fn send_signed_and_encrypted_openpgp() {
+    let Some(home) = openpgp_home() else { return };
+    let gnupg = home.gnupg();
+    let raw = outgoing(ADA, BOB);
+
+    let signed = protect(
+        &raw,
+        Protect {
+            standard: Standard::OpenPgp,
+            sign: true,
+            encrypt: false,
+        },
+        &recipients(ADA, &[BOB], &[]),
+        &gnupg,
+    )
+    .expect("signed");
+    let text = String::from_utf8_lossy(&signed);
+    assert!(text.contains("micalg=pgp-sha"), "{text}");
+    assert!(text.contains("Subject: Round trip\r\n"));
+    let opened = open(&signed, &gnupg).expect("protected");
+    assert!(
+        opened.security.signatures[0].verified(),
+        "{:?}",
+        opened.security
+    );
+    assert_eq!(
+        text_of(&opened.raw).trim(),
+        "Grüße,\r\nthis went both ways."
+    );
+
+    let both = protect(
+        &raw,
+        Protect {
+            standard: Standard::OpenPgp,
+            sign: true,
+            encrypt: true,
+        },
+        &recipients(ADA, &[BOB], &["carol@example.org"]),
+        &gnupg,
+    )
+    .expect("encrypted");
+    assert!(!String::from_utf8_lossy(&both).contains("went both ways"));
+    let opened = open(&both, &gnupg).expect("protected");
+    assert!(opened.security.decrypted());
+    assert!(opened.security.signatures[0].verified());
+    assert_eq!(
+        text_of(&opened.raw).trim(),
+        "Grüße,\r\nthis went both ways."
+    );
+}
+
+#[test]
+fn send_refuses_without_keys() {
+    let Some(home) = openpgp_home() else { return };
+    let gnupg = home.gnupg();
+    let raw = outgoing(ADA, "nobody@example.net");
+    let result = protect(
+        &raw,
+        Protect {
+            standard: Standard::OpenPgp,
+            sign: false,
+            encrypt: true,
+        },
+        &recipients(ADA, &["nobody@example.net", BOB], &[]),
+        &gnupg,
+    );
+    assert_eq!(
+        result,
+        Err(ProtectError::MissingKeys(vec!["nobody@example.net".into()]))
+    );
+    let result = protect(
+        &raw,
+        Protect {
+            standard: Standard::OpenPgp,
+            sign: true,
+            encrypt: false,
+        },
+        &recipients("carol@example.org", &[BOB], &[]),
+        &gnupg,
+    );
+    assert_eq!(result, Err(ProtectError::NoSigningKey));
+
+    let keys = encryption_keys(
+        &gnupg,
+        Standard::OpenPgp,
+        &[
+            BOB.to_owned(),
+            "Carol@Example.org".to_owned(),
+            "x@y.z".to_owned(),
+        ],
+    );
+    assert!(keys[0].as_ref().is_some_and(|k| k.verified));
+    assert!(keys[1].as_ref().is_some_and(|k| !k.verified));
+    assert!(keys[2].is_none());
+}
+
+#[test]
+fn send_smime() {
+    let Some(home) = smime_home() else { return };
+    let gnupg = home.gnupg();
+    let raw = outgoing(BOB, BOB);
+    for encrypt in [false, true] {
+        let protected = protect(
+            &raw,
+            Protect {
+                standard: Standard::Smime,
+                sign: true,
+                encrypt,
+            },
+            &recipients(BOB, &[BOB], &[]),
+            &gnupg,
+        )
+        .expect("protected");
+        let opened = open(&protected, &gnupg).expect("protected");
+        assert_eq!(
+            opened.security.decrypted(),
+            encrypt,
+            "{:?}",
+            opened.security
+        );
+        assert!(
+            opened.security.signatures[0].verified(),
+            "{:?}",
+            opened.security
+        );
+        assert_eq!(
+            text_of(&opened.raw).trim(),
+            "Grüße,\r\nthis went both ways."
+        );
+    }
 }
