@@ -14,6 +14,7 @@
 
 mod add_account;
 mod apps;
+mod colors;
 mod compose;
 mod keymap;
 mod list;
@@ -35,7 +36,7 @@ use gpui::{
     UniformListScrollHandle, Window, actions, div, prelude::*, px, rgba,
 };
 use jiff::tz::TimeZone;
-use katna_chrome::{Bar, Environment, WindowChrome};
+use katna_chrome::{Bar, ChromeColors, Environment, WindowChrome};
 use katna_core::config::{ReadingPane, Theme as ThemeChoice};
 use katna_core::{Account, AccountId, Config, Paths};
 use katna_dbus::zbus::Connection;
@@ -260,6 +261,7 @@ pub struct MailWindow {
     daemon: Option<Connection>,
     _listen: Option<Task<()>>,
     _watch_sending: Option<Task<()>>,
+    desktop_colors: colors::DesktopColors,
     list_focus: FocusHandle,
     list_scroll: UniformListScrollHandle,
     nav_scroll: UniformListScrollHandle,
@@ -285,6 +287,7 @@ impl MailWindow {
             Config::default()
         });
         keymap::bind(&config.shortcuts, cx);
+        let desktop_colors = colors::DesktopColors::new(&env.desktop);
         let mut this = Self {
             chrome: WindowChrome::new(env, "Katna Mail", window, cx),
             app: RailApp::Mail,
@@ -345,6 +348,7 @@ impl MailWindow {
             daemon: None,
             _listen: None,
             _watch_sending: None,
+            desktop_colors,
             list_focus: cx.focus_handle(),
             list_scroll: UniformListScrollHandle::new(),
             nav_scroll: UniformListScrollHandle::new(),
@@ -360,6 +364,7 @@ impl MailWindow {
         }
         this.count_unread(cx);
         this.listen(cx);
+        this.watch_colors(cx);
         if let Some(err) = this.mail.as_ref().ok().and_then(Mail::index_error) {
             tracing::info!("{err}");
         }
@@ -380,16 +385,32 @@ impl MailWindow {
         self.open(0, window, cx);
     }
 
-    /// The colors: the desktop's light or dark, unless the settings pick one.
+    /// The colors: the desktop's light or dark, unless the settings pick
+    /// one, in the desktop's color scheme or accent color if it has them.
     fn theme(&self, window: &Window) -> Theme {
-        let dark = match self.config.mail.theme {
+        let choice = match self.config.mail.theme {
             ThemeChoice::System => None,
             ThemeChoice::Light => Some(false),
             ThemeChoice::Dark => Some(true),
         };
-        // The window frame follows the same choice.
-        self.chrome.set_dark(dark);
-        Theme::new(dark.unwrap_or_else(|| WindowChrome::desktop_dark(window)))
+        let dark = choice.unwrap_or_else(|| WindowChrome::desktop_dark(window));
+        let system = &self.desktop_colors.colors;
+        let desktop_scheme = self.config.mail.desktop_colors && system.scheme_for(dark).is_some();
+        let th = if self.config.mail.desktop_colors {
+            Theme::system(dark, system)
+        } else {
+            Theme::new(dark)
+        };
+        // The window frame follows the same choices.
+        self.chrome.set_dark(choice);
+        self.chrome
+            .set_colors(desktop_scheme.then_some(ChromeColors {
+                window_bg: th.page,
+                view_bg: th.surface,
+                fg: th.text,
+                accent: th.accent,
+            }));
+        th
     }
 
     fn split(&self) -> bool {

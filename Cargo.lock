@@ -3511,7 +3511,9 @@ dependencies = [
 name = "katna-platform"
 version = "0.0.0"
 dependencies = [
+ "futures-lite",
  "katna-core",
+ "zbus",
 ]
 
 [[package]]

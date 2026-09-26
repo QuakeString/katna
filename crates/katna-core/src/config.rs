@@ -194,6 +194,9 @@ pub struct MailView {
     pub account_tabs: BTreeMap<String, AccountTabs>,
     pub density: Density,
     pub theme: Theme,
+    /// Use the desktop's color scheme and accent color instead of Katna's
+    /// own colors.
+    pub desktop_colors: bool,
 }
 
 impl Default for MailView {
@@ -206,6 +209,7 @@ impl Default for MailView {
             account_tabs: BTreeMap::new(),
             density: Density::Default,
             theme: Theme::System,
+            desktop_colors: true,
         }
     }
 }
@@ -443,6 +447,7 @@ mod tests {
         assert_eq!(config.mail.reading_pane, ReadingPane::None);
         assert_eq!(config.mail.density, Density::Compact);
         assert_eq!(config.mail.theme, Theme::Dark);
+        assert!(config.mail.desktop_colors);
         assert!(Config::parse("[mail]\nreading_pane_share = 0.9\n").is_err());
     }
 
