@@ -16,6 +16,7 @@ use katna_ui::rich::html;
 use mail_parser::{MessageParser, MimeHeaders};
 
 use super::super::MailWindow;
+use super::security::{self, Sealing};
 use super::{Draft, Threading, Unsent, addresses, schedule};
 use crate::daemon::{self, Command};
 use crate::theme::{Theme, fade};
@@ -102,14 +103,23 @@ impl MailWindow {
         let connection = self.daemon.clone();
         let id = item.id;
         cx.spawn_in(window, async move |this, cx| {
-            let result = cx
+            let (result, opened) = cx
                 .background_executor()
                 .spawn(async move {
                     let connection = match connection {
                         Some(connection) => connection,
-                        None => daemon::connect().await?,
+                        None => match daemon::connect().await {
+                            Ok(connection) => connection,
+                            Err(err) => return (Err(err), None),
+                        },
                     };
-                    daemon::send(&connection, &Command::UndoSend(id)).await
+                    let result = daemon::send(&connection, &Command::UndoSend(id)).await;
+                    // Encrypted mail is decrypted again to edit it.
+                    let opened = match &result {
+                        Ok(()) => raw.and_then(security::unseal),
+                        Err(_) => None,
+                    };
+                    (result, opened)
                 })
                 .await;
             this.update_in(cx, |this, window, cx| {
@@ -123,9 +133,20 @@ impl MailWindow {
                             None,
                             cx,
                         );
-                        if let Some(unsent) = raw.as_deref().and_then(unsent_from_raw) {
-                            this.unsent = Some(unsent);
-                            this.reopen_unsent(window, cx);
+                        match opened.and_then(|(raw, sealing)| {
+                            let mut unsent = unsent_from_raw(&raw)?;
+                            unsent.sealing = sealing;
+                            Some(unsent)
+                        }) {
+                            Some(unsent) => {
+                                this.unsent = Some(unsent);
+                                this.reopen_unsent(window, cx);
+                            }
+                            None => this.show_snackbar(
+                                "Send cancelled. The message could not be opened again.",
+                                None,
+                                cx,
+                            ),
                         }
                     }
                     Err(err) => this.show_snackbar(err, None, cx),
@@ -382,6 +403,7 @@ fn unsent_from_raw(raw: &[u8]) -> Option<Unsent> {
             in_reply_to: message.in_reply_to().as_text().map(str::to_owned),
             references,
         },
+        sealing: Sealing::default(),
         // The signature stays in the text as it was written.
         signature: None,
         attachments,

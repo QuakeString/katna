@@ -22,6 +22,7 @@ mod attach;
 mod popout;
 mod schedule;
 mod scheduled;
+mod security;
 mod signature_editor;
 mod tools;
 
@@ -51,6 +52,7 @@ use crate::widgets::{avatar, elevation, icon, tip};
 
 pub(super) use attach::Attachment;
 pub(super) use scheduled::NAV_KEY as SCHEDULED_NAV_KEY;
+use security::Sealing;
 pub(super) use signature_editor::signature_content;
 use tools::Popup;
 
@@ -99,6 +101,8 @@ pub(super) struct Compose {
     show_cc: bool,
     show_bcc: bool,
     mode: Mode,
+    /// Sign and encrypt.
+    sealing: Sealing,
     /// The signature in the body, a [`katna_core::config::Signature::id`].
     signature: Option<u32>,
     /// The formatting bar (Aa) shows.
@@ -222,6 +226,7 @@ impl Threading {
 pub(super) struct Unsent {
     draft: Draft,
     thread: Threading,
+    sealing: Sealing,
     signature: Option<u32>,
     attachments: Vec<Attachment>,
     plain: bool,
@@ -384,6 +389,10 @@ impl MailWindow {
                 .unwrap_or_default()
         };
         let view = self.reader.as_ref().and_then(|reader| reader.view(source));
+        let sealing = match kind {
+            Kind::New => Sealing::default(),
+            _ => Sealing::answering(self.reader.as_ref().and_then(|r| r.security(source))),
+        };
         let original = view.map(|view| Original {
             view,
             date: date(view.date),
@@ -432,6 +441,7 @@ impl MailWindow {
                 });
                 compose.start.body = plain_doc;
             }
+            compose.sealing = sealing;
         }
     }
 
@@ -599,6 +609,7 @@ impl MailWindow {
             kind: Kind::New,
             conversation: None,
             mode: Mode::Open,
+            sealing: Sealing::default(),
             signature,
             format_bar: false,
             popup: None,
@@ -712,6 +723,7 @@ impl MailWindow {
         compose.popup = None;
         let draft = compose.fields(cx);
         let thread = compose.thread.clone();
+        let sealing = compose.sealing;
         let signature = compose.signature;
         let attachments = compose.attachments.clone();
         let plain = compose.plain(cx);
@@ -796,6 +808,10 @@ impl MailWindow {
             }
             None => self.config.sending.undo_send_seconds,
         };
+        let emails = |list: &[Mailbox]| list.iter().map(|m| m.email.clone()).collect::<Vec<_>>();
+        let sender = account.address.clone();
+        let visible = [emails(&to), emails(&cc)].concat();
+        let hidden = emails(&bcc);
         let raw = outgoing::build(&Outgoing {
             from: Some(from),
             to,
@@ -814,6 +830,7 @@ impl MailWindow {
         self.unsent = Some(Unsent {
             draft,
             thread,
+            sealing,
             signature,
             attachments,
             plain,
@@ -834,6 +851,8 @@ impl MailWindow {
             let result = cx
                 .background_executor()
                 .spawn(async move {
+                    // Signed and encrypted before the outbox sees it.
+                    let raw = security::seal(raw, sealing, sender, visible, hidden)?;
                     let connection = match connection {
                         Some(connection) => connection,
                         None => daemon::connect().await?,
@@ -875,6 +894,7 @@ impl MailWindow {
         let Some(Unsent {
             draft,
             thread,
+            sealing,
             signature,
             attachments,
             plain,
@@ -895,6 +915,7 @@ impl MailWindow {
             compose
                 .body
                 .update(cx, |editor, cx| editor.set_plain(plain, cx));
+            compose.sealing = sealing;
         }
     }
 
@@ -1190,6 +1211,7 @@ impl MailWindow {
                         .child("Cc"),
                 )
             })
+            .children(self.render_sealing(th, cx))
             .child(
                 small_button("inline-pop-out", "open-full", th)
                     .tooltip(tip("Pop out reply", th))
@@ -1326,7 +1348,8 @@ impl MailWindow {
                             cx.notify();
                         },
                     )))
-                }),
+                })
+                .children(self.render_sealing(th, cx)),
         );
         div()
             .flex_none()
