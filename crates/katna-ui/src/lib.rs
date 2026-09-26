@@ -4,6 +4,7 @@
 //! `katna-chrome` and the GUI apps. See `docs/ARCHITECTURE.md` §13.
 
 pub mod motion;
+pub mod rich;
 pub mod ripple;
 pub mod text_area;
 pub mod text_input;
