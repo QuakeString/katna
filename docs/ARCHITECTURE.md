@@ -605,7 +605,7 @@ from or adds to the sketch above:
   Gmail (`a OR b c` is `(a OR b) c`). `to:` matches To, Cc and Bcc. Dates
   are UTC days; `before:` excludes the day, `after:` includes it. A time
   and offset may follow (`after:2001-05-14T09:30+06:00`); the app's
-  custom date filter writes local times that way. Unknown
+  custom date filter writes local midnight that way. Unknown
   `word:value` is plain text; broken parentheses are ignored; nesting is
   limited to 32 levels.
 - **As you type.** `Query::parse_as_you_type` treats a final unfinished

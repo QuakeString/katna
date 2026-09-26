@@ -136,7 +136,7 @@ impl MailWindow {
                 })
                 .collect();
         // In the custom dates' popover, Enter is Done and Escape Cancel.
-        subscriptions.extend(custom.dates.iter().chain(&custom.times).map(|input| {
+        subscriptions.extend(custom.dates.iter().map(|input| {
             cx.subscribe_in(
                 input,
                 window,
@@ -262,6 +262,8 @@ impl MailWindow {
                         |_, _, _, _| {},
                     )
                     .absolute()
+                    .top_0()
+                    .left_0()
                     .size_full(),
                 )
                 .into_any_element(),

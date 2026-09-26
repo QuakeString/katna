@@ -2,8 +2,8 @@
 
 //! The "Custom" choice of "Date within": a popover from its chip, with a
 //! notch pointing at it, to pick mail on a day, before or since one, or
-//! between two, typed or from a calendar, with optional times. The dates
-//! become `after:`/`before:` in local time.
+//! between two, typed or from a calendar. The dates become `after:`/
+//! `before:` at local midnight.
 
 use std::cell::Cell;
 use std::f32::consts::FRAC_PI_2;
@@ -27,9 +27,9 @@ use crate::widgets::{elevation, filled_button, icon_button, tip};
 pub(super) enum Span {
     /// Mail from one day.
     On,
-    /// Mail before a day (not that day), or before a time.
+    /// Mail before a day (not that day).
     Before,
-    /// Mail from a day (that day included), or from a time.
+    /// Mail from a day (that day included).
     Since,
     /// Mail from the first day to the last, both included.
     Between,
@@ -43,73 +43,47 @@ const SPANS: [(Span, &str); 4] = [
 ];
 
 /// `after:`/`before:` for a custom span in `tz`, from typed dates
-/// (`2026-09-01`) and optional times (`9:30`, `9:30 pm`, `21:30`). The
-/// second date and time are only read for [`Span::Between`].
+/// (`2026-09-01`), each meaning that whole local day. The last date is
+/// only read for [`Span::Between`].
 pub(super) fn custom_dates(
     span: Span,
-    [first_day, first_time]: [&str; 2],
-    [last_day, last_time]: [&str; 2],
+    first: &str,
+    last: &str,
     tz: &TimeZone,
 ) -> Result<String, &'static str> {
     let day = |text: &str| match text.trim() {
         "" => Err("Pick a date"),
         text => parse_day(text).ok_or("Use a date like 2026-09-01"),
     };
-    let time = |text: &str| match text.trim() {
-        "" => Ok(None),
-        text => parse_time(text)
-            .map(Some)
-            .ok_or("Use a time like 9:30, 9:30 pm or 21:30"),
-    };
-    let at = |day: Date, time: Time| -> Result<String, &'static str> {
+    // Local midnight, with its offset.
+    let at = |day: Date| -> Result<String, &'static str> {
         let zoned = day
-            .to_datetime(time)
+            .to_datetime(Time::midnight())
             .to_zoned(tz.clone())
             .map_err(|_| "That date is out of range")?;
         let offset = zoned.offset().seconds();
         let sign = if offset < 0 { '-' } else { '+' };
         let offset = offset.unsigned_abs();
         Ok(format!(
-            "{day}T{:02}:{:02}{sign}{:02}:{:02}",
-            time.hour(),
-            time.minute(),
+            "{day}T00:00{sign}{:02}:{:02}",
             offset / 3_600,
             offset / 60 % 60
         ))
     };
     let next = |day: Date| day.tomorrow().map_err(|_| "That date is out of range");
-    let first = day(first_day)?;
-    // On hides the time fields; ignore what they hold.
-    let first_time = match span {
-        Span::On => None,
-        _ => time(first_time)?,
-    };
+    let first = day(first)?;
     Ok(match span {
-        Span::On => format!(
-            "after:{} before:{}",
-            at(first, Time::midnight())?,
-            at(next(first)?, Time::midnight())?
-        ),
-        Span::Before => format!("before:{}", at(first, first_time.unwrap_or_default())?),
-        Span::Since => format!("after:{}", at(first, first_time.unwrap_or_default())?),
+        Span::On => format!("after:{} before:{}", at(first)?, at(next(first)?)?),
+        Span::Before => format!("before:{}", at(first)?),
+        Span::Since => format!("after:{}", at(first)?),
         Span::Between => {
-            let mut from = (first, first_time);
-            let mut to = (day(last_day)?, time(last_time)?);
-            if (to.0, to.1.unwrap_or(Time::MAX)) < (from.0, from.1.unwrap_or_default()) {
-                std::mem::swap(&mut from, &mut to);
-            }
-            let end = match to.1 {
-                // Up to and including that minute.
-                Some(time) => match time.checked_add(jiff::SignedDuration::from_mins(1)) {
-                    Ok(end) if end > time => at(to.0, end)?,
-                    _ => at(next(to.0)?, Time::midnight())?,
-                },
-                None => at(next(to.0)?, Time::midnight())?,
+            let last = day(last)?;
+            let (from, to) = if last < first {
+                (last, first)
+            } else {
+                (first, last)
             };
-            format!(
-                "after:{} before:{end}",
-                at(from.0, from.1.unwrap_or_default())?
-            )
+            format!("after:{} before:{}", at(from)?, at(next(to)?)?)
         }
     })
 }
@@ -126,42 +100,11 @@ fn parse_day(text: &str) -> Option<Date> {
     Date::new(year, month, day).ok()
 }
 
-/// `9:30`, `09:30`, `21:30`, `9pm`, `9:30 PM`, `12 am`.
-fn parse_time(text: &str) -> Option<Time> {
-    let text = text.trim().to_ascii_lowercase();
-    let (clock, pm) = if let Some(clock) = text.strip_suffix("pm") {
-        (clock.trim_end(), Some(true))
-    } else if let Some(clock) = text.strip_suffix("am") {
-        (clock.trim_end(), Some(false))
-    } else {
-        (text.as_str(), None)
-    };
-    let (hour, minute) = match clock.split_once([':', '.']) {
-        Some((hour, minute)) if minute.len() == 2 => (hour, minute),
-        Some(_) => return None,
-        None if pm.is_some() => (clock, "0"),
-        None => return None,
-    };
-    if hour.is_empty() || hour.len() > 2 || !hour.bytes().all(|b| b.is_ascii_digit()) {
-        return None;
-    }
-    let mut hour: i8 = hour.parse().ok()?;
-    let minute: i8 = minute.parse().ok()?;
-    match pm {
-        Some(_) if !(1..=12).contains(&hour) => return None,
-        Some(true) if hour < 12 => hour += 12,
-        Some(false) if hour == 12 => hour = 0,
-        _ => {}
-    }
-    Time::new(hour, minute, 0, 0).ok()
-}
-
 /// The custom dates and the popover that edits them.
 pub(super) struct CustomDates {
     pub span: Span,
-    /// First and (for Between) last date and time, as typed.
+    /// First and (for Between) last date, as typed.
     pub dates: [Entity<TextInput>; 2],
-    pub times: [Entity<TextInput>; 2],
     /// The date the calendar fills: 0 or 1.
     field: usize,
     /// The month the calendar shows.
@@ -180,12 +123,10 @@ pub(super) struct CustomDates {
 impl CustomDates {
     pub fn new(cx: &mut Context<MailWindow>) -> Self {
         let date = |cx: &mut Context<MailWindow>| cx.new(|cx| TextInput::new("YYYY-MM-DD", cx));
-        let time = |cx: &mut Context<MailWindow>| cx.new(|cx| TextInput::new("Time", cx));
         let today = jiff::Zoned::now().date();
         Self {
             span: Span::On,
             dates: [date(cx), date(cx)],
-            times: [time(cx), time(cx)],
             field: 0,
             year: today.year(),
             month: today.month(),
@@ -196,69 +137,48 @@ impl CustomDates {
         }
     }
 
-    /// The typed first and last date and time.
-    fn texts(&self, cx: &App) -> [[String; 2]; 2] {
-        let text = |input: &Entity<TextInput>| input.read(cx).text().trim().to_owned();
-        [0, 1].map(|ix| [text(&self.dates[ix]), text(&self.times[ix])])
+    /// The typed first and last date.
+    fn texts(&self, cx: &App) -> [String; 2] {
+        [0, 1].map(|ix| self.dates[ix].read(cx).text().trim().to_owned())
     }
 
     /// `after:`/`before:` for the dates, in the local time zone.
     pub fn query(&self, cx: &App) -> Result<String, &'static str> {
         let [first, last] = self.texts(cx);
-        custom_dates(
-            self.span,
-            [&first[0], &first[1]],
-            [&last[0], &last[1]],
-            &TimeZone::system(),
-        )
+        custom_dates(self.span, &first, &last, &TimeZone::system())
     }
 
     /// What the Custom chip says once the dates are good: "May 14, 2002",
-    /// "Since May 14, 2002, 9:30 PM", "May 1 – May 31, 2002".
+    /// "Since May 14, 2002", "May 1 – May 31, 2002".
     pub fn label(&self, cx: &App) -> Option<String> {
         self.query(cx).ok()?;
         let [first, last] = self.texts(cx);
-        custom_label(self.span, [&first[0], &first[1]], [&last[0], &last[1]])
+        custom_label(self.span, &first, &last)
     }
 }
 
 /// The chip text for good custom dates (see [`CustomDates::label`]).
-fn custom_label(span: Span, first: [&str; 2], last: [&str; 2]) -> Option<String> {
-    let day = |text: &str| parse_day(text);
-    let time = |text: &str| parse_time(text).map(|t| format!(", {}", clock(t)));
+fn custom_label(span: Span, first: &str, last: &str) -> Option<String> {
     let long = |d: Date| d.strftime("%b %-d, %Y").to_string();
-    let with_time =
-        |[d, t]: [&str; 2]| Some(format!("{}{}", long(day(d)?), time(t).unwrap_or_default()));
+    let first = parse_day(first)?;
     Some(match span {
-        Span::On => long(day(first[0])?),
-        Span::Before => format!("Before {}", with_time(first)?),
-        Span::Since => format!("Since {}", with_time(first)?),
+        Span::On => long(first),
+        Span::Before => format!("Before {}", long(first)),
+        Span::Since => format!("Since {}", long(first)),
         Span::Between => {
-            let (mut a, mut b) = (first, last);
-            let key = |[d, t]: [&str; 2]| (day(d), parse_time(t));
-            if key(b) < key(a) {
-                std::mem::swap(&mut a, &mut b);
-            }
-            let (da, db) = (day(a[0])?, day(b[0])?);
-            let timed = parse_time(a[1]).is_some() || parse_time(b[1]).is_some();
-            if da.year() == db.year() && !timed {
-                format!("{} – {}", da.strftime("%b %-d"), long(db))
+            let last = parse_day(last)?;
+            let (a, b) = if last < first {
+                (last, first)
             } else {
-                format!("{} – {}", with_time(a)?, with_time(b)?)
+                (first, last)
+            };
+            if a.year() == b.year() {
+                format!("{} – {}", a.strftime("%b %-d"), long(b))
+            } else {
+                format!("{} – {}", long(a), long(b))
             }
         }
     })
-}
-
-/// "9:30 PM".
-fn clock(time: Time) -> String {
-    let (hour, half) = match time.hour() {
-        0 => (12, "AM"),
-        h @ 1..=11 => (h, "AM"),
-        12 => (12, "PM"),
-        h => (h - 12, "PM"),
-    };
-    format!("{hour}:{:02} {half}", time.minute())
 }
 
 const WEEKDAYS: [&str; 7] = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
@@ -285,6 +205,7 @@ const DAY: f32 = 42.0;
 const ROW: f32 = 34.0;
 const CHIPS: f32 = 28.0;
 const FIELD: f32 = 32.0;
+const CAPTION: f32 = 16.0;
 const HEADER: f32 = 32.0;
 const WEEKDAY_ROW: f32 = 24.0;
 const ERROR: f32 = 18.0;
@@ -294,7 +215,7 @@ const RADIUS: f32 = 15.0;
 /// The notch's length out of the popover, and the popover's distance from
 /// the chip and from the window's edges.
 const NOTCH: f32 = 10.0;
-const SPACE: f32 = 4.0;
+const SPACE: f32 = 2.0;
 const MARGIN: f32 = 8.0;
 
 /// Where the popover sits against the chip.
@@ -458,7 +379,11 @@ impl MailWindow {
         let chip_bounds = custom.chip.get()?;
         let first = Date::new(custom.year, custom.month, 1).ok()?;
         let between = custom.span == Span::Between;
-        let fields = if between { 2.0 * FIELD + 8.0 } else { FIELD };
+        let fields = if between {
+            CAPTION + 4.0 + FIELD
+        } else {
+            FIELD
+        };
         let calendar = HEADER + WEEKDAY_ROW + weeks(first) as f32 * ROW;
         let error = custom.error.map_or(0.0, |_| ERROR + GAP);
         let height = 2.0 * PAD + CHIPS + fields + calendar + BUTTONS + 3.0 * GAP + error;
@@ -484,11 +409,12 @@ impl MailWindow {
                 ))
             })
             .collect();
+        // One date across, or From and To side by side.
         let field = |ix: usize, cx: &mut Context<Self>| {
             let active = custom.field == ix;
             let date = div()
                 .id(("date-field", ix))
-                .w(px(150.0))
+                .w_full()
                 .h(px(FIELD))
                 .pl(px(10.0))
                 .pr(px(6.0))
@@ -514,38 +440,23 @@ impl MailWindow {
                     if active { th.accent } else { th.text_dim },
                     18.0,
                 ));
-            let time = (span != Span::On).then(|| {
-                div()
-                    .w(px(72.0))
-                    .h(px(FIELD))
-                    .px(px(10.0))
-                    .flex()
-                    .items_center()
-                    .rounded(px(8.0))
-                    .border_1()
-                    .border_color(rgba(th.divider))
-                    .text_size(px(14.0))
-                    .child(div().flex_1().min_w_0().child(custom.times[ix].clone()))
-            });
             let label = between.then(|| {
                 div()
-                    .w(px(36.0))
-                    .flex_none()
-                    .text_size(px(13.0))
-                    .text_color(rgba(th.text_dim))
+                    .h(px(CAPTION))
+                    .text_size(px(12.0))
+                    .text_color(rgba(if active { th.accent } else { th.text_dim }))
                     .child(if ix == 0 { "From" } else { "To" })
             });
             div()
-                .h(px(FIELD))
+                .flex_1()
+                .min_w_0()
                 .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(8.0))
+                .flex_col()
+                .gap(px(4.0))
                 .children(label)
                 .child(date)
-                .children(time)
         };
-        let mut rows = div().flex().flex_col().gap(px(8.0)).child(field(0, cx));
+        let mut rows = div().flex().flex_row().gap(px(8.0)).child(field(0, cx));
         if between {
             rows = rows.child(field(1, cx));
         }
@@ -791,73 +702,44 @@ mod tests {
     use super::*;
 
     #[test]
-    fn reads_days_and_times() {
+    fn reads_days() {
         assert_eq!(parse_day("2026-09-01"), Some(jiff::civil::date(2026, 9, 1)));
         assert_eq!(parse_day("2001/5/14"), Some(jiff::civil::date(2001, 5, 14)));
         assert_eq!(parse_day("2026-02-30"), None);
         assert_eq!(parse_day("1 Sep 2026"), None);
-        let t = |h, m| Some(Time::new(h, m, 0, 0).unwrap());
-        assert_eq!(parse_time("9:30"), t(9, 30));
-        assert_eq!(parse_time("21:05"), t(21, 5));
-        assert_eq!(parse_time("9:30 pm"), t(21, 30));
-        assert_eq!(parse_time("9PM"), t(21, 0));
-        assert_eq!(parse_time("12 am"), t(0, 0));
-        assert_eq!(parse_time("12:15pm"), t(12, 15));
-        assert_eq!(parse_time("9.45"), t(9, 45));
-        for bad in [
-            "", "9", "24:00", "9:5", "13 pm", "0 am", "nine", "-1:00", "9:30:00",
-        ] {
-            assert_eq!(parse_time(bad), None, "{bad}");
-        }
     }
 
     #[test]
     fn custom_dates_are_local() {
         let dhaka = TimeZone::fixed(jiff::tz::offset(6));
-        let dates =
-            |span, first: [&str; 2], last: [&str; 2]| custom_dates(span, first, last, &dhaka);
-        let none = ["", ""];
+        let dates = |span, first, last| custom_dates(span, first, last, &dhaka);
         assert_eq!(
-            dates(Span::On, ["2026-09-01", "10:00"], none).unwrap(),
+            dates(Span::On, "2026-09-01", "").unwrap(),
             "after:2026-09-01T00:00+06:00 before:2026-09-02T00:00+06:00"
         );
         assert_eq!(
-            dates(Span::Before, ["2026-09-01", ""], none).unwrap(),
+            dates(Span::Before, "2026-09-01", "").unwrap(),
             "before:2026-09-01T00:00+06:00"
         );
         assert_eq!(
-            dates(Span::Since, ["2026-09-01", "9:30 pm"], none).unwrap(),
-            "after:2026-09-01T21:30+06:00"
+            dates(Span::Since, "2026-09-01", "").unwrap(),
+            "after:2026-09-01T00:00+06:00"
         );
         assert_eq!(
-            dates(Span::Between, ["2026-09-01", ""], ["2026-09-10", ""]).unwrap(),
+            dates(Span::Between, "2026-09-01", "2026-09-10").unwrap(),
             "after:2026-09-01T00:00+06:00 before:2026-09-11T00:00+06:00"
         );
-        // Given backwards, with times; the last minute is included.
+        // Given backwards; both days are included.
         assert_eq!(
-            dates(
-                Span::Between,
-                ["2026-09-10", "17:00"],
-                ["2026-09-01", "8:00"]
-            )
-            .unwrap(),
-            "after:2026-09-01T08:00+06:00 before:2026-09-10T17:01+06:00"
+            dates(Span::Between, "2026-09-10", "2026-09-01").unwrap(),
+            "after:2026-09-01T00:00+06:00 before:2026-09-11T00:00+06:00"
         );
-        assert_eq!(
-            dates(Span::Between, ["2026-09-01", ""], ["2026-09-01", "23:59"]).unwrap(),
-            "after:2026-09-01T00:00+06:00 before:2026-09-02T00:00+06:00"
-        );
-        assert_eq!(dates(Span::On, none, none), Err("Pick a date"));
-        assert_eq!(
-            dates(Span::Between, ["2026-09-01", ""], none),
-            Err("Pick a date")
-        );
-        assert!(dates(Span::Since, ["2026-13-01", ""], none).is_err());
-        assert!(dates(Span::Since, ["2026-09-01", "25:00"], none).is_err());
-        assert!(dates(Span::On, ["2026-09-01", "25:00"], none).is_ok());
+        assert_eq!(dates(Span::On, "", ""), Err("Pick a date"));
+        assert_eq!(dates(Span::Between, "2026-09-01", ""), Err("Pick a date"));
+        assert!(dates(Span::Since, "2026-13-01", "").is_err());
 
         // The search parser reads them as the right instants.
-        let query = dates(Span::On, ["2001-05-14", ""], none).unwrap();
+        let query = dates(Span::On, "2001-05-14", "").unwrap();
         let start = 989_798_400 - 6 * 3_600;
         assert_eq!(
             katna_search::Query::parse_at(&query, 0).unwrap(),
@@ -870,22 +752,21 @@ mod tests {
 
     #[test]
     fn labels_the_chip() {
-        let none = ["", ""];
         assert_eq!(
-            custom_label(Span::On, ["2002-05-14", ""], none).as_deref(),
+            custom_label(Span::On, "2002-05-14", "").as_deref(),
             Some("May 14, 2002")
         );
         assert_eq!(
-            custom_label(Span::Since, ["2002-05-14", "21:30"], none).as_deref(),
-            Some("Since May 14, 2002, 9:30 PM")
+            custom_label(Span::Since, "2002-05-14", "").as_deref(),
+            Some("Since May 14, 2002")
         );
         assert_eq!(
-            custom_label(Span::Between, ["2002-05-31", ""], ["2002-05-01", ""]).as_deref(),
+            custom_label(Span::Between, "2002-05-31", "2002-05-01").as_deref(),
             Some("May 1 – May 31, 2002")
         );
         assert_eq!(
-            custom_label(Span::Between, ["2001-12-30", ""], ["2002-01-02", "8:00"]).as_deref(),
-            Some("Dec 30, 2001 – Jan 2, 2002, 8:00 AM")
+            custom_label(Span::Between, "2001-12-30", "2002-01-02").as_deref(),
+            Some("Dec 30, 2001 – Jan 2, 2002")
         );
     }
 
