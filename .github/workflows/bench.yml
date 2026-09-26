@@ -1,0 +1,45 @@
+name: Bench
+
+# Nightly Enron search benchmark (docs/IMPLEMENTATION_PLAN.md §3.3, task 0.8).
+# Fails when the p99 of the query set is over the Phase 0 budget of 50 ms.
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+defaults:
+  run:
+    # Explicit bash turns on pipefail, so `| tee` keeps the exit status.
+    shell: bash
+
+jobs:
+  enron:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      DATA: ${{ runner.temp }}/katna
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install
+      - name: Cache the Enron archive
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/katna/corpora/enron/enron_mail_20150507.tar.gz
+          key: enron-mail-20150507
+      - run: dev/fetch-enron.sh
+      - run: cargo build --release --locked -p katna-search-cli -p katna-bench
+      - name: Import
+        run: target/release/katna-search-cli import --data-dir "$DATA" --account enron ~/.cache/katna/corpora/enron/maildir
+      - name: Index
+        run: target/release/katna-search-cli index --data-dir "$DATA"
+      - name: Search (p99 budget 50 ms)
+        run: target/release/katna-bench search --data-dir "$DATA" --max-p99-ms 50 | tee bench.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: enron-bench
+          path: bench.txt
