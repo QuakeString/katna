@@ -538,8 +538,10 @@ impl MailWindow {
                                     .child(name.clone()),
                             )
                             .when(!email.is_empty() && email != name, |d| {
+                                // Takes only the room the name leaves.
                                 d.child(
                                     div()
+                                        .flex_1()
                                         .min_w_0()
                                         .truncate()
                                         .text_size(px(12.0))

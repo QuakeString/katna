@@ -667,6 +667,7 @@ impl MailWindow {
                         div()
                             .flex()
                             .flex_col()
+                            .items_start()
                             .min_w_0()
                             .child(div().truncate().child(category.label()))
                             .when(unread > 0 && !on && category != Category::Primary, |d| {
