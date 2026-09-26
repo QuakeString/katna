@@ -74,6 +74,7 @@ icons!(
     "tasks",
     "trash",
     "tune",
+    "warning",
 );
 
 pub struct Assets;

@@ -19,6 +19,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 
 use async_channel::{Receiver, Sender};
+use futures_lite::FutureExt;
 use katna_core::{AccountId, Paths, ids};
 use katna_search::{IndexEvent, Indexer, IndexerOptions, IndexerWaker};
 use katna_store::{Mode, Store};
@@ -48,10 +49,19 @@ pub enum StartError {
 /// A daemon serving on a bus connection.
 pub struct Instance {
     pub daemon: Arc<Daemon>,
+    paths: Paths,
     connection: zbus::Connection,
     /// `None` if the index could not be opened; mail still syncs.
     indexer: Option<Indexer>,
     backfill: Backfill,
+}
+
+/// Why [`Instance::serve`] returned.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Ended {
+    Stopped,
+    /// All data was deleted; the next client starts a new daemon.
+    Deleted,
 }
 
 /// Threads and classifies mail stored before threading existed, on its own
@@ -173,10 +183,61 @@ impl Instance {
         let backfill = Backfill::start(&index_paths, daemon.notifier());
         Ok(Self {
             daemon,
+            paths: index_paths,
             connection,
             indexer,
             backfill,
         })
+    }
+
+    /// Serves until `stop` finishes, then shuts down; or until a client
+    /// asks to delete all data, which it does before exiting.
+    pub async fn serve(self, stop: impl Future<Output = ()>) -> Ended {
+        let requests = self.daemon.delete_requests();
+        let delete = async {
+            match requests.recv().await {
+                Ok(done) => Some(done),
+                Err(_) => std::future::pending().await,
+            }
+        };
+        let request = async {
+            stop.await;
+            None
+        }
+        .or(delete)
+        .await;
+        match request {
+            None => {
+                self.shutdown().await;
+                Ended::Stopped
+            }
+            Some(done) => {
+                self.delete_all_data(done).await;
+                Ended::Deleted
+            }
+        }
+    }
+
+    /// Stops what writes files, deletes them and tells `done`. The daemon
+    /// has stopped every account and deleted the passwords already.
+    async fn delete_all_data(self, done: daemon::DeleteDone) {
+        self.backfill.stop().await;
+        if let Some(indexer) = self.indexer {
+            smol::unblock(move || indexer.stop()).await;
+        }
+        let paths = self.paths.clone();
+        let deleted = smol::unblock(move || paths.delete_all_data()).await;
+        match &deleted {
+            Ok(()) => tracing::warn!("all data deleted"),
+            Err(err) => tracing::error!(%err, "deleting all data"),
+        }
+        let _ = done.send(deleted.map_err(|err| err.to_string())).await;
+        // Let the answer go out before the bus name. The bus name is kept
+        // until the files are gone, so no new daemon opens them meanwhile.
+        smol::Timer::after(Duration::from_millis(300)).await;
+        if let Err(err) = self.connection.release_name(ids::DAEMON_BUS_NAME).await {
+            tracing::debug!(%err, "releasing the bus name");
+        }
     }
 
     /// Has every worker reconnect at once when the machine wakes up or

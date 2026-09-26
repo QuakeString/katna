@@ -98,6 +98,20 @@ impl Secrets {
         Ok(())
     }
 
+    /// Deletes every password Katna saved, also of accounts that are gone.
+    pub async fn delete_all(&self) -> Result<(), Error> {
+        match self {
+            Self::Keyring(keyring) => {
+                keyring.unlock().await?;
+                keyring
+                    .delete(&[("application", ids::PREFIX.to_owned())])
+                    .await?;
+            }
+            Self::Memory(map) => map.lock().unwrap().clear(),
+        }
+        Ok(())
+    }
+
     /// Deletes the password of `account`, if any.
     pub async fn delete(&self, account: AccountId) -> Result<(), Error> {
         match self {
