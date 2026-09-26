@@ -1515,7 +1515,7 @@ impl MailWindow {
                 .text_color(rgba(th.snackbar_text))
                 .text_size(px(14.0))
                 .shadow(elevation(th, 3.0))
-                .child(div().flex_1().child(snackbar.text.clone()))
+                .child(div().flex_1().min_w_0().child(snackbar.text.clone()))
                 .when(has_undo, |d| {
                     d.child(
                         div()
