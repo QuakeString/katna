@@ -459,7 +459,10 @@ pub fn from_html(html: &str, next_id: &mut u64) -> Doc {
             rest = &rest[end + 1..];
             continue;
         }
-        let end = rest[1..].find('<').map_or(rest.len(), |e| e + 1);
+        // Past the first character, which may be a lone '<' or take more
+        // than one byte.
+        let first = rest.chars().next().map_or(1, char::len_utf8);
+        let end = rest[first..].find('<').map_or(rest.len(), |e| e + first);
         reader.text(&decode_entities(&rest[..end]));
         rest = &rest[end..];
     }
@@ -1063,6 +1066,17 @@ mod tests {
         Doc {
             blocks: paras.into_iter().map(Block::Para).collect(),
         }
+    }
+
+    #[test]
+    fn reads_text_starting_with_a_wide_character() {
+        let mut next = 0;
+        for html in ["é<b>x</b>", "<p>a</p>€ 5", "日本<br>語", "<i>x</i>😀"] {
+            let doc = from_html(html, &mut next);
+            assert!(!doc.blocks.is_empty(), "{html}");
+        }
+        let doc = from_html("<p>€ 5 &amp; é</p>", &mut next);
+        assert_eq!(to_plain(&doc).trim_end(), "€ 5 & é");
     }
 
     #[test]

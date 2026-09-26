@@ -409,10 +409,13 @@ fn wrap(
                 continue;
             }
         }
-        // A word wider than the line breaks between its graphemes.
+        // A word wider than the line breaks between its graphemes. The
+        // offsets count from where the word's first line starts, which stays
+        // put while `line_start` moves on at each break.
+        let from = line_start;
         let mut last = line_start;
-        for (gx, g) in text[line_start..b].grapheme_indices(true) {
-            let end = line_start + gx + g.len();
+        for (gx, g) in text[from..b].grapheme_indices(true) {
+            let end = from + gx + g.len();
             if x_at(end) - x0 > width && last > line_start {
                 breaks.push(last);
                 line_start = last;
@@ -697,5 +700,42 @@ impl Element for ParaElement {
         self.editor.update(cx, |editor, _| {
             editor.layouts.insert(path, layout);
         });
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Breaks of `text` at `width` with every byte 1 px wide.
+    fn breaks(text: &str, width: f32) -> Vec<usize> {
+        wrap(text, 0..text.len(), px(width), &|offset| px(offset as f32))
+    }
+
+    #[test]
+    fn breaks_a_long_word_many_times_inside_the_text() {
+        // A word several lines long, as a quoted link or hash in a reply.
+        let text = format!("see {} ok", "a".repeat(60));
+        assert_eq!(breaks(&text, 10.0), vec![4, 14, 24, 34, 44, 54, 65]);
+    }
+
+    #[test]
+    fn breaks_a_long_word_of_wide_characters_on_their_boundaries() {
+        let text = "日本語".repeat(20);
+        let breaks = breaks(&text, 7.0);
+        assert!(breaks.len() > 3, "{breaks:?}");
+        assert!(breaks.windows(2).all(|w| w[0] < w[1]), "{breaks:?}");
+        assert!(
+            breaks
+                .iter()
+                .all(|&b| b < text.len() && text.is_char_boundary(b))
+        );
+    }
+
+    #[test]
+    fn breaks_before_words_that_pass_the_edge() {
+        assert_eq!(breaks("aaa bbb ccc", 8.0), vec![8]);
+        assert_eq!(breaks("aaa bbb ccc", 5.0), vec![4, 8]);
+        assert_eq!(breaks("aaa bbb", 100.0), Vec::<usize>::new());
     }
 }
