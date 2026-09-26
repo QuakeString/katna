@@ -299,6 +299,7 @@ mod tests {
             gm_thread_id: None,
             gm_msgid: None,
             category: None,
+            attachments: &[],
         };
         let crate::Added::Message(id) = batch.add_remote_message(account, inbox, &message).unwrap()
         else {

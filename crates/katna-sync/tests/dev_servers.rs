@@ -488,9 +488,21 @@ fn level_one_sync_into_the_store() {
                 "{name}: encoded words decoded: {subjects:?}"
             );
             assert!(messages.iter().all(|m| m.date.is_some()), "{name}");
-            assert!(
-                messages.iter().any(|m| m.has_attachments),
-                "{name}: the attachment sample"
+            let report = messages
+                .iter()
+                .find(|m| m.subject == "Quarterly report")
+                .unwrap();
+            assert!(report.has_attachments, "{name}: the attachment sample");
+            let parts: Vec<_> = store
+                .attachments(report.id)
+                .unwrap()
+                .into_iter()
+                .map(|a| (a.part, a.mime, a.filename))
+                .collect();
+            assert_eq!(
+                parts,
+                [("2".into(), "text/csv".into(), Some("report.csv".into()))],
+                "{name}: attachments known before the body"
             );
 
             // Incremental: one new message, nothing else.
@@ -506,6 +518,94 @@ fn level_one_sync_into_the_store() {
                 (1, 0, false),
                 "{name}: {second:?}"
             );
+            Connection::logout(&conn).await.unwrap();
+        });
+    }
+}
+
+/// How real servers describe names and inline pictures in
+/// `BODYSTRUCTURE`: an RFC 2231 name, an RFC 2047 one, a logo the HTML
+/// shows (not an attachment) and a forwarded message.
+#[test]
+#[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
+fn attachment_names_from_the_structure() {
+    use katna_core::{AccountKind, Paths};
+    use katna_store::{Mode, Store};
+    use katna_sync::engine;
+
+    for (name, endpoint) in imap_servers() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut store = Store::open(&Paths::with_root(tmp.path()), Mode::ReadWrite).unwrap();
+        let account = store.add_account(AccountKind::Imap, name, USER).unwrap().id;
+        let subject = unique("parts");
+        let raw = format!(
+            "From: Alice <{USER}>\r\nTo: <{USER}>\r\nSubject: {subject}\r\n\
+             Date: Sat, 26 Sep 2026 10:00:00 +0000\r\nMessage-ID: <{subject}@katna.test>\r\n\
+             MIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"m\"\r\n\r\n\
+             --m\r\nContent-Type: multipart/related; boundary=\"r\"\r\n\r\n\
+             --r\r\nContent-Type: text/html; charset=utf-8\r\n\r\n<img src=\"cid:logo\">\r\n\
+             --r\r\nContent-Type: image/png; name=\"logo.png\"\r\n\
+             Content-Disposition: inline; filename=\"logo.png\"\r\nContent-ID: <logo>\r\n\
+             Content-Transfer-Encoding: base64\r\n\r\niVBORw0KGgo=\r\n--r--\r\n\
+             --m\r\nContent-Type: application/pdf\r\n\
+             Content-Disposition: attachment; filename*=utf-8''%E2%82%AC%20rates.pdf\r\n\
+             Content-Transfer-Encoding: base64\r\n\r\nJVBERi0xLjQK\r\n\
+             --m\r\nContent-Type: text/plain; name=\"=?UTF-8?B?w6nDqS50eHQ=?=\"\r\n\
+             Content-Disposition: attachment\r\n\r\nnotes\r\n\
+             --m\r\nContent-Type: message/rfc822\r\n\r\n\
+             Subject: Forwarded\r\nFrom: <bob@katna.test>\r\n\r\nHi.\r\n\
+             --m--\r\n"
+        );
+        smol::block_on(async {
+            let conn = spawn(&endpoint).await;
+            remove_test_mail(&conn, "INBOX", "parts-").await;
+            conn.append("INBOX", raw.into_bytes()).await.unwrap();
+            let (conn, store) = smol::spawn(async move {
+                let mut conn = conn;
+                engine::sync_account(&mut conn, &mut store, account)
+                    .await
+                    .unwrap();
+                (conn, store)
+            })
+            .await;
+            let inbox = store
+                .folders(account)
+                .unwrap()
+                .into_iter()
+                .find(|f| f.path == "INBOX")
+                .unwrap();
+            let message = store
+                .messages_in_folder(inbox.id)
+                .unwrap()
+                .into_iter()
+                .find(|m| m.subject == subject)
+                .unwrap();
+            let parts: Vec<_> = store
+                .attachments(message.id)
+                .unwrap()
+                .into_iter()
+                .map(|a| (a.part, a.mime, a.filename))
+                .collect();
+            println!("{name}: {parts:?}");
+            assert_eq!(
+                parts,
+                [
+                    (
+                        "2".into(),
+                        "application/pdf".into(),
+                        Some("\u{20ac} rates.pdf".into())
+                    ),
+                    (
+                        "3".into(),
+                        "text/plain".into(),
+                        Some("\u{e9}\u{e9}.txt".into())
+                    ),
+                    ("4".into(), "message/rfc822".into(), None),
+                ],
+                "{name}"
+            );
+            assert!(message.has_attachments, "{name}");
+            remove_test_mail(&conn, "INBOX", "parts-").await;
             Connection::logout(&conn).await.unwrap();
         });
     }

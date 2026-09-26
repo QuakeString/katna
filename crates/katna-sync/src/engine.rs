@@ -9,9 +9,9 @@
 //!    forget the folder's messages and start over.
 //! 2. Flags of known messages: only those changed since the stored
 //!    HIGHESTMODSEQ when the server has CONDSTORE, otherwise all of them.
-//! 3. New messages: headers for UIDs above the highest stored one, in chunks,
-//!    committed chunk by chunk so an interrupted first sync keeps its
-//!    progress.
+//! 3. New messages: headers and attachments (from `BODYSTRUCTURE`) for UIDs
+//!    above the highest stored one, in chunks, committed chunk by chunk so
+//!    an interrupted first sync keeps its progress.
 //! 4. Expunged messages: when the message count does not add up, compare the
 //!    server's UID list with ours.
 //! 5. Messages stored before threading and without a downloaded body:
@@ -36,7 +36,8 @@ use std::collections::{HashMap, HashSet};
 
 use katna_core::{AccountId, MailCategory};
 use katna_store::{
-    Backfill, FolderId, MessageFlags, NewParticipant, RemoteMessage, Store, StoredFolder,
+    Backfill, FolderId, MessageFlags, NewAttachment, NewParticipant, RemoteMessage, Store,
+    StoredFolder,
 };
 use serde::{Deserialize, Serialize};
 
@@ -426,6 +427,21 @@ fn save_messages(
             .collect();
         let (flags, keywords) = split_flags(&message.flags);
         let references = parsed.reference_strs();
+        let attachments: Vec<NewAttachment<'_>> = message
+            .attachments
+            .iter()
+            .flatten()
+            .map(|a| NewAttachment {
+                part: &a.part,
+                mime: &a.mime,
+                filename: a.filename.as_deref(),
+                size: a.size,
+            })
+            .collect();
+        let has_attachments = match &message.attachments {
+            Some(parts) => !parts.is_empty(),
+            None => looks_like_attachments(&message.header),
+        };
         let remote = RemoteMessage {
             uid: message.uid,
             message_id_hdr: parsed.message_id.as_deref(),
@@ -434,7 +450,7 @@ fn save_messages(
             size: u64::from(message.size),
             flags,
             keywords: &keywords,
-            has_attachments: looks_like_attachments(&message.header),
+            has_attachments,
             list_id: parsed.list_id.as_deref(),
             participants: &participants,
             in_reply_to: parsed.in_reply_to.as_deref(),
@@ -442,6 +458,7 @@ fn save_messages(
             gm_thread_id: message.gm_thread_id,
             gm_msgid: message.gm_msgid,
             category: Some(parsed.category),
+            attachments: &attachments,
         };
         // A Gmail message already stored under another label is new here
         // too, but stays one message.
@@ -475,7 +492,7 @@ fn split_flags(flags: &Flags) -> (MessageFlags, Vec<String>) {
     (bits, keywords)
 }
 
-/// Until `BODYSTRUCTURE` is parsed: `multipart/mixed` usually means
+/// Without a usable `BODYSTRUCTURE`: `multipart/mixed` usually means
 /// attachments.
 fn looks_like_attachments(header: &[u8]) -> bool {
     let text = String::from_utf8_lossy(header).to_ascii_lowercase();

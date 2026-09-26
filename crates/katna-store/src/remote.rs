@@ -119,9 +119,55 @@ pub struct RemoteMessage<'a> {
     pub gm_msgid: Option<u64>,
     /// Inbox tab; `None` leaves it unclassified (shown as Primary).
     pub category: Option<MailCategory>,
+    /// The attachments the message's structure names, when the server
+    /// sent it (IMAP `BODYSTRUCTURE`).
+    pub attachments: &'a [NewAttachment<'a>],
+}
+
+/// An attachment of a message whose body may not be downloaded yet.
+#[derive(Debug, Clone, Copy)]
+pub struct NewAttachment<'a> {
+    /// IMAP body section, like `2` or `1.3`.
+    pub part: &'a str,
+    /// `type/subtype`, lower case.
+    pub mime: &'a str,
+    pub filename: Option<&'a str>,
+    /// Decoded size in bytes, estimated from the encoded one.
+    pub size: u64,
+}
+
+/// An attachment of a stored message, from [`Store::attachments`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct StoredAttachment {
+    /// IMAP body section, like `2` or `1.3`.
+    pub part: String,
+    /// `type/subtype`, lower case.
+    pub mime: String,
+    pub filename: Option<String>,
+    /// Decoded size in bytes (estimated).
+    pub size: u64,
 }
 
 impl Store {
+    /// The attachments of `message` its structure names, in body order.
+    /// Empty for messages synced before structures were read, and for
+    /// POP3 and imported mail: there only `has_attachments` is known.
+    pub fn attachments(&self, message: MessageId) -> Result<Vec<StoredAttachment>> {
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT part_id, mime, filename, size FROM attachment
+             WHERE message_id = ?1 ORDER BY id",
+        )?;
+        let rows = stmt.query_map([message.0], |row| {
+            Ok(StoredAttachment {
+                part: row.get(0)?,
+                mime: row.get(1)?,
+                filename: row.get(2)?,
+                size: row.get::<_, i64>(3)?.try_into().unwrap_or_default(),
+            })
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
     /// The folders of `account`, ordered by path.
     pub fn folders(&self, account: AccountId) -> Result<Vec<StoredFolder>> {
         let mut stmt = self.mail.prepare_cached(
@@ -380,6 +426,19 @@ impl MailBatch<'_> {
                 participant.display_name,
             ])?;
         }
+        let mut insert_attachment = tx.prepare_cached(
+            "INSERT OR IGNORE INTO attachment (message_id, part_id, filename, mime, size)
+             VALUES (?1, ?2, ?3, ?4, ?5)",
+        )?;
+        for attachment in message.attachments {
+            insert_attachment.execute(params![
+                id,
+                attachment.part,
+                attachment.filename,
+                attachment.mime,
+                i64::try_from(attachment.size).unwrap_or(i64::MAX),
+            ])?;
+        }
         journal::record(tx, ObjectKind::Message, id, ChangeOp::Insert)?;
         Ok(Added::Message(MessageId(id)))
     }
@@ -545,6 +604,7 @@ mod tests {
             gm_thread_id: None,
             gm_msgid: None,
             category: None,
+            attachments: &[],
         }
     }
 
@@ -680,6 +740,75 @@ mod tests {
             .query_row("SELECT count(*) FROM participant", [], |row| row.get(0))
             .unwrap();
         assert_eq!(participants, 0, "participants go with their message");
+    }
+
+    #[test]
+    fn keeps_the_attachments_a_structure_names() {
+        let (_tmp, mut store, account) = open();
+        let mut batch = store.mail_batch().unwrap();
+        let inbox = batch
+            .upsert_folder(account, "INBOX", Some(FolderRole::Inbox))
+            .unwrap();
+        let all = batch
+            .upsert_folder(account, "[Gmail]/All Mail", Some(FolderRole::All))
+            .unwrap();
+        let attachments = [
+            NewAttachment {
+                part: "2",
+                mime: "application/pdf",
+                filename: Some("€ rates.pdf"),
+                size: 51_200,
+            },
+            NewAttachment {
+                part: "3.1",
+                mime: "image/png",
+                filename: None,
+                size: 900,
+            },
+        ];
+        let message = RemoteMessage {
+            has_attachments: true,
+            attachments: &attachments,
+            gm_msgid: Some(7),
+            ..remote(1, &[])
+        };
+        let Added::Message(id) = batch.add_remote_message(account, inbox, &message).unwrap() else {
+            panic!("expected a new message");
+        };
+        // The same Gmail message under another label keeps one list.
+        let label = RemoteMessage { uid: 4, ..message };
+        batch.add_remote_message(account, all, &label).unwrap();
+        batch.commit().unwrap();
+
+        let stored = store.attachments(id).unwrap();
+        assert_eq!(
+            stored,
+            [
+                StoredAttachment {
+                    part: "2".into(),
+                    mime: "application/pdf".into(),
+                    filename: Some("€ rates.pdf".into()),
+                    size: 51_200,
+                },
+                StoredAttachment {
+                    part: "3.1".into(),
+                    mime: "image/png".into(),
+                    filename: None,
+                    size: 900,
+                },
+            ]
+        );
+
+        let mut batch = store.mail_batch().unwrap();
+        batch.remove_folder(inbox).unwrap();
+        batch.remove_folder(all).unwrap();
+        batch.commit().unwrap();
+        assert!(store.attachments(id).unwrap().is_empty());
+        let rows: i64 = store
+            .mail
+            .query_row("SELECT count(*) FROM attachment", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(rows, 0, "attachments go with their message");
     }
 
     #[test]
