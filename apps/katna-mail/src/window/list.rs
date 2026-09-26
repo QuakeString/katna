@@ -1293,7 +1293,7 @@ impl MailWindow {
                 this.act(Act::Important(!important), vec![key], cx);
             }))
             .child(if important {
-                icon("important-filled", th.star, 18.0)
+                icon("important-filled", th.important, 18.0)
             } else {
                 icon("important", th.text_faint, 18.0)
             });
