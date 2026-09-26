@@ -32,6 +32,18 @@ pub const PIM_INTERFACE: &str = concat!(prefix!(), ".Pim1");
 /// D-Bus object path of the daemon API.
 pub const PIM_OBJECT_PATH: &str = "/in/invenia/katna/Pim1";
 
+/// Object path of Katna Mail's `org.freedesktop.Application` interface,
+/// served under the bus name [`MAIL_APP_ID`] while the app runs.
+pub const MAIL_OBJECT_PATH: &str = "/in/invenia/katna/Mail";
+
+/// Object path of Katna Mail's menu bar (`com.canonical.dbusmenu`), which
+/// the KDE global menu shows.
+pub const MAIL_MENU_BAR_PATH: &str = "/in/invenia/katna/Mail/MenuBar";
+
+/// Object path of the daemon's `com.canonical.Unity.LauncherEntry`, the
+/// unread count on Katna Mail's taskbar icon.
+pub const LAUNCHER_ENTRY_PATH: &str = "/in/invenia/katna/Daemon/LauncherEntry";
+
 /// Returns whether `id` is usable as an application ID, D-Bus well-known name
 /// and D-Bus interface name at the same time.
 ///
@@ -92,6 +104,14 @@ mod tests {
         for id in [MAIL_APP_ID, CALENDAR_APP_ID, DAEMON_BUS_NAME, PIM_INTERFACE] {
             assert!(is_valid_app_id(id), "invalid identifier: {id}");
         }
+    }
+
+    #[test]
+    fn object_paths_follow_the_bus_names() {
+        let path = |name: &str| format!("/{}", name.replace('.', "/"));
+        assert_eq!(MAIL_OBJECT_PATH, path(MAIL_APP_ID));
+        assert!(MAIL_MENU_BAR_PATH.starts_with(MAIL_OBJECT_PATH));
+        assert!(LAUNCHER_ENTRY_PATH.starts_with(&path(DAEMON_BUS_NAME)));
     }
 
     #[test]

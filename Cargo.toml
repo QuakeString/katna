@@ -1,6 +1,8 @@
 [workspace]
 resolver = "3"
 members = ["crates/*", "apps/*", "tools/*"]
+# Patched third-party crates (see [patch.crates-io]); not ours to lint.
+exclude = ["vendor"]
 
 [workspace.package]
 version = "0.0.0"
@@ -21,6 +23,7 @@ katna-sync = { path = "crates/katna-sync" }
 katna-search = { path = "crates/katna-search" }
 katna-org = { path = "crates/katna-org" }
 katna-render = { path = "crates/katna-render" }
+katna-preview = { path = "crates/katna-preview" }
 katna-dav = { path = "crates/katna-dav" }
 katna-dbus = { path = "crates/katna-dbus" }
 katna-notify = { path = "crates/katna-notify" }
@@ -37,8 +40,13 @@ async-signal = "0.2"
 blake3 = "1.8"
 futures-lite = "2.6"
 futures-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12"] }
+# Pure-Rust PDF rasterizer for the attachment viewer (katna-preview).
+hayro = "0.7.1"
+# The version GPUI decodes pictures with; no extra formats of our own.
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "webp", "bmp", "tiff"] }
 jiff = { version = "0.2.37", default-features = false, features = ["std", "tz-system", "tzdb-zoneinfo"] }
 html5ever = "0.40.1"
+levenshtein_automata = "0.2.1"
 mail-parser = "0.11.9"
 # Secret Service client; async-std selects zbus/async-io, not tokio.
 oo7 = { version = "0.6", default-features = false, features = ["async-std", "native_crypto"] }
@@ -50,6 +58,7 @@ roxmltree = "0.21"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 smol = "2.0"
+tantivy-fst = "0.5.0"
 tantivy = { version = "0.26.2", default-features = false, features = ["mmap", "lz4-compression", "stemmer"] }
 tempfile = "3.27"
 thiserror = "2.0"
@@ -75,6 +84,8 @@ io-smtp = { version = "=0.3.0", default-features = false }
 # crates (deny.toml). The crate is imported as `gpui`.
 gpui = { package = "gpui-pre", version = "=0.3.6" }
 gpui-platform = { package = "gpui-pre-platform", version = "=0.3.6", features = ["wayland", "x11"] }
+# GPUI's Linux backend, for `set_kde_appmenu` from the patched copy below.
+gpui-linux = { package = "gpui-pre-linux", version = "=0.3.6", default-features = false }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
@@ -119,3 +130,9 @@ opt-level = "s"
 
 [profile.release.package.regex-syntax]
 opt-level = "s"
+
+# GPUI's Linux backend with KDE global menu support (the window carries the
+# app's dbusmenu address). vendor/gpui-pre-linux/KATNA.md lists the changes;
+# drop this when upstream GPUI has an equivalent.
+[patch.crates-io]
+gpui-pre-linux = { path = "vendor/gpui-pre-linux" }

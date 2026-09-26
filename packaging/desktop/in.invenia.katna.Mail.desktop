@@ -11,3 +11,19 @@ Categories=Network;Email;
 Keywords=email;mail;inbox;imap;
 StartupNotify=true
 StartupWMClass=in.invenia.katna.Mail
+Actions=new-message;inbox;preferences;
+
+[Desktop Action new-message]
+Name=New Message
+Icon=mail-message-new
+Exec=katna-mail --compose
+
+[Desktop Action inbox]
+Name=Open Inbox
+Icon=mail-folder-inbox
+Exec=katna-mail --inbox
+
+[Desktop Action preferences]
+Name=Preferences
+Icon=preferences-system
+Exec=katna-mail --settings

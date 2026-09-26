@@ -178,6 +178,7 @@ instantly for all old mail; suggestions have a documented precision test.
 | 3.9 Organizations UI | Organization pages, "Add to organization…", suggestion review |
 | 3.10 Keyboard + a11y | Gmail-style shortcuts, command palette, AccessKit labels |
 | 3.11 Packaging v1 | Flatpak (with Background portal), .deb, AUR (tested); .rpm (built, not tested); desktop files, AppStream, `mailto:` handler |
+| 3.12 Attachment viewer | Attachment cards with thumbnails; built-in viewer for PDF, pictures and text; save and open in another app (done, `ARCHITECTURE.md` §13.8) |
 
 Started: the first window (sidebar, message list, plain-text reading pane,
 search box) reads the local store; see `ARCHITECTURE.md` §13.5. The window
@@ -197,7 +198,7 @@ run on the CI distro matrix.
 |---|---|
 | 4.1 `katna-notify` | Notifications with click-to-open (activation tokens), inline reply-all on Plasma, archive/mark read, fallback quick-reply window |
 | 4.2 Notification rules | Grouping, Inbox/category filters, per-organization policy, closing on read elsewhere |
-| 4.3 Badge + tray | Unity LauncherEntry unread count, optional `ksni` tray |
+| 4.3 Badge + tray | Unity LauncherEntry unread count, tray icon with badge and menu, single-instance app actions, KDE global menu (done early, September 2026; §15.2) |
 | 4.4 KRunner | `org.kde.krunner1` in the daemon: contacts, mail, organizations; actions |
 | 4.5 GNOME search | `org.gnome.Shell.SearchProvider2` using the same backend |
 | 4.6 Small integrations | Global shortcut (portal), Dolphin service menu |

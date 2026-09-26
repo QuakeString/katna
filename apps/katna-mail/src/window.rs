@@ -17,10 +17,12 @@
 mod accounts;
 mod add_account;
 mod apps;
+mod attachments;
 mod colors;
 mod compose;
 mod context_menu;
 mod dark;
+mod desktop;
 mod keymap;
 mod list;
 mod nav;
@@ -32,6 +34,7 @@ mod search_panel;
 mod settings;
 mod settings_page;
 mod tour;
+mod viewer;
 
 use std::collections::{HashMap, HashSet};
 use std::ops::Range;
@@ -64,6 +67,8 @@ use crate::widgets::{elevation, icon};
 use apps::{APP_RAIL_WIDTH, App as RailApp, People};
 use reader::Conversation;
 use search_panel::SearchPanel;
+
+pub use desktop::{MenuBar, menu_bar, refresh_menu_bar};
 
 actions!(
     katna_mail,
@@ -148,7 +153,13 @@ const FAILURE_TIME: Duration = Duration::from_secs(12);
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Listing {
     Folder(FolderId),
-    Search { query: String, total: Option<usize> },
+    Search {
+        query: String,
+        total: Option<usize>,
+        /// What was searched instead, when the query had a word that is not
+        /// in the mail ("Showing results for …").
+        corrected: Option<String>,
+    },
 }
 
 /// An open popup menu.
@@ -251,6 +262,8 @@ pub struct MailWindow {
     card_seq: usize,
     search: Entity<TextInput>,
     search_error: Option<SharedString>,
+    /// Search this text as typed, not corrected ("Search instead for …").
+    search_verbatim: Option<String>,
     search_task: Option<Task<()>>,
     search_panel: Option<SearchPanel>,
     search_panel_spring: Spring,
@@ -284,6 +297,8 @@ pub struct MailWindow {
     tab_spring: Spring,
     snackbar: Option<Snackbar>,
     compose: Option<compose::Compose>,
+    /// Attachment thumbnails and the attachment viewer.
+    files: attachments::Files,
     add_account: Option<add_account::AddAccount>,
     /// The first-start pages, until the first account is in and set up.
     onboarding: Option<onboarding::Onboarding>,
@@ -371,6 +386,7 @@ impl MailWindow {
             card_seq: 0,
             search,
             search_error: None,
+            search_verbatim: None,
             search_task: None,
             search_panel: None,
             search_panel_spring: Spring::new(motion::SMOOTH, 0.0),
@@ -392,6 +408,7 @@ impl MailWindow {
             tab_spring: Spring::new(motion::SLIDE, 0.0),
             snackbar: None,
             compose: None,
+            files: attachments::Files::default(),
             add_account: None,
             onboarding: None,
             tour: None,
@@ -435,6 +452,12 @@ impl MailWindow {
         }
         tracing::info!(elapsed = ?started.elapsed(), lines = this.entries.len(), "mail loaded");
         this
+    }
+
+    /// Searches `query` as typed, after a correction the user didn't want.
+    fn search_verbatim(&mut self, query: String, cx: &mut Context<Self>) {
+        self.search_verbatim = Some(query.clone());
+        self.start_search(query, cx);
     }
 
     /// Puts `query` in the search box and searches.
@@ -1212,13 +1235,14 @@ impl MailWindow {
             cx.notify();
             return;
         };
+        let correct = self.search_verbatim.as_deref() != Some(text.as_str());
         self.search_task = Some(cx.spawn(async move |this, cx| {
             cx.background_executor().timer(SEARCH_DELAY).await;
             let now = jiff::Timestamp::now().as_second();
             let query = text.clone();
             let results = cx
                 .background_executor()
-                .spawn(async move { data::search(&index, &query, now) })
+                .spawn(async move { data::search(&index, &query, now, correct) })
                 .await;
             this.update(cx, |this, cx| this.show_results(text, results, cx))
                 .ok();
@@ -1228,11 +1252,11 @@ impl MailWindow {
     fn show_results(
         &mut self,
         query: String,
-        results: Result<SearchResults, String>,
+        results: Result<(SearchResults, Option<String>), String>,
         cx: &mut Context<Self>,
     ) {
         match results {
-            Ok(results) => {
+            Ok((results, corrected)) => {
                 // Search results mix folders; show senders.
                 if self.show_recipients {
                     self.show_recipients = false;
@@ -1249,6 +1273,7 @@ impl MailWindow {
                 self.listing = Some(Listing::Search {
                     query,
                     total: results.total,
+                    corrected,
                 });
                 self.selected = (!self.entries.is_empty()).then_some(0);
                 self.checked.clear();
@@ -1738,6 +1763,10 @@ impl Render for MailWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         self.tour_new_frame();
         let th = self.theme(window);
+        self.release_images(window, cx);
+        if let Some(viewer) = &self.files.viewer {
+            viewer.update(cx, |viewer, _| viewer.th = th);
+        }
         let reduce = cx.reduce_motion();
         let viewport = f32::from(window.viewport_size().width);
         let wide = viewport > 760.0;
@@ -1859,6 +1888,7 @@ impl Render for MailWindow {
             .on_action(cx.listener(Self::open_settings))
             .on_action(cx.listener(Self::show_shortcuts))
             .child(content)
+            .children(self.files.viewer.clone())
             .children(search_panel)
             .children(compose)
             .children(account_menu)

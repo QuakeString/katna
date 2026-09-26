@@ -93,15 +93,18 @@ impl Metered {
 pub struct General {
     /// Keep `katna-daemon` running when no window is open.
     pub run_in_background: bool,
-    /// Show a tray icon.
+    /// Show a tray icon with the unread count and a menu (§15.2).
     pub tray_icon: bool,
+    /// Show the Inbox unread count on Katna Mail's taskbar or dock icon.
+    pub unread_badge: bool,
 }
 
 impl Default for General {
     fn default() -> Self {
         Self {
             run_in_background: true,
-            tray_icon: false,
+            tray_icon: true,
+            unread_badge: true,
         }
     }
 }
@@ -610,7 +613,7 @@ mod tests {
         let tmp = tempfile::tempdir().unwrap();
         let path = tmp.path().join("nested/config.toml");
         let mut config = Config::default();
-        config.general.tray_icon = true;
+        config.general.tray_icon = false;
         config.logging.filter = "debug".to_owned();
         config.sending.undo_send_seconds = 0;
         config.save(&path).unwrap();
