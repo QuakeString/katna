@@ -930,6 +930,21 @@ Gemini or confidential mode):
   Undo takes it back (`UndoSend`, then `DiscardSend`) and opens it again. A
   message the server refuses for good raises a snackbar
   (`OutboxChanged`).
+- **Adding an account.** A dialog shaped like a web sign-in
+  (`window/add_account.rs`): the address first; the daemon looks for the
+  servers (`DiscoverAccount`, §6), and the next step asks for the password
+  under a chip with the address, with "Show password", an optional name
+  for the From line and where the servers were found. Gmail, Yahoo, iCloud
+  and AOL addresses get a note that they need an app password. When
+  nothing is found, or from "Server settings", the servers are entered by
+  hand: host, port and SSL/TLS, STARTTLS or none for IMAP and SMTP, and
+  the username. `AddImapAccount` checks the login before saving; a refused
+  password is shown under the field. It opens from the welcome page (no
+  account yet), the account card above the rail's account picture ("Add
+  another account", which also lists the accounts and opens their
+  inboxes), and Send without an account. The daemon signals `MailChanged`
+  after each account's first sync, so a new account's folders show even
+  when they are empty.
 - **Not there yet.** Drafts are not saved (closing a written message
   discards it and says so), and formatting, attachments, links, emoji,
   images and scheduled sending in the composer say they are not ready yet.

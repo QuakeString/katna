@@ -7,7 +7,7 @@
 
 use futures_lite::{Stream, StreamExt};
 use katna_dbus::zbus::Connection;
-use katna_dbus::{PimProxy, flag, send_state};
+use katna_dbus::{NewImapAccount, PimProxy, flag, send_state};
 use katna_store::{FolderId, MessageId};
 
 /// A change to send to the daemon.
@@ -35,12 +35,15 @@ impl Command {
     }
 }
 
+/// What [`describe`] says when the daemon is not running.
+pub const NOT_RUNNING: &str = "The Katna background service is not running.";
+
 /// Why a change could not be sent.
 pub fn describe(err: &katna_dbus::zbus::Error) -> String {
     match err {
         katna_dbus::zbus::Error::MethodError(name, detail, _) => {
             if name.as_str() == "org.freedesktop.DBus.Error.ServiceUnknown" {
-                "The Katna background service is not running.".to_owned()
+                NOT_RUNNING.to_owned()
             } else {
                 detail.clone().unwrap_or_else(|| name.to_string())
             }
@@ -111,6 +114,49 @@ pub async fn queue_send(
         .map_err(|err| describe(&err))
 }
 
+/// Finds the servers of `address`. Returns them and where they came from
+/// (`built-in`, `provider`, `ispdb`, `dns-srv`, `mx` or `guess`).
+pub async fn discover(
+    connection: &Connection,
+    address: &str,
+) -> Result<(NewImapAccount, String), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.discover_account(address)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Why an account could not be added.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum AddError {
+    /// The server refused the password.
+    Password(String),
+    Other(String),
+}
+
+/// Checks the login, then adds the account and starts syncing it.
+pub async fn add_account(
+    connection: &Connection,
+    account: &NewImapAccount,
+    password: &str,
+) -> Result<i64, AddError> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| AddError::Other(describe(&err)))?;
+    pim.add_imap_account(account, password)
+        .await
+        .map_err(|err| match &err {
+            katna_dbus::zbus::Error::MethodError(name, _, _)
+                if name.as_str() == "org.freedesktop.DBus.Error.AuthFailed" =>
+            {
+                AddError::Password(describe(&err))
+            }
+            _ => AddError::Other(describe(&err)),
+        })
+}
+
 /// Yields the subject and reason of each message the server refused for
 /// good.
 pub async fn send_failures(
@@ -138,7 +184,7 @@ pub async fn send_failures(
         .filter_map(|failure| failure))
 }
 
-/// Yields once for every burst of `MailChanged` signals.
+/// Yields for every `MailChanged` and `AccountsChanged` signal.
 pub async fn mail_changes(connection: &Connection) -> Result<impl Stream<Item = ()>, String> {
     let pim = PimProxy::new(connection)
         .await
@@ -147,7 +193,11 @@ pub async fn mail_changes(connection: &Connection) -> Result<impl Stream<Item = 
         .receive_mail_changed()
         .await
         .map_err(|err| describe(&err))?;
-    Ok(changes.map(|_| ()))
+    let accounts = pim
+        .receive_accounts_changed()
+        .await
+        .map_err(|err| describe(&err))?;
+    Ok(changes.map(|_| ()).or(accounts.map(|_| ())))
 }
 
 #[cfg(test)]
