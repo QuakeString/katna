@@ -196,6 +196,14 @@ macro_rules! pim_proxy {
             /// Messages waiting to be sent, failed or cancelled.
             fn outbox(&self) -> zbus::Result<Vec<OutboxItem>>;
 
+            /// Reads the settings file again; call after saving settings
+            /// the daemon uses (`sync.metered`).
+            fn reload_config(&self) -> zbus::Result<()>;
+
+            /// Whether the daemon saves data as on a metered network (no
+            /// bodies downloaded ahead of time).
+            fn metered(&self) -> zbus::Result<bool>;
+
             /// Accounts were added or removed.
             #[zbus(signal)]
             fn accounts_changed(&self) -> zbus::Result<()>;
@@ -211,6 +219,10 @@ macro_rules! pim_proxy {
             /// Outbox entry `id` changed state; see `Outbox`.
             #[zbus(signal)]
             fn outbox_changed(&self, id: i64) -> zbus::Result<()>;
+
+            /// `Metered` changed.
+            #[zbus(signal)]
+            fn metered_changed(&self, metered: bool) -> zbus::Result<()>;
         }
     };
 }
