@@ -29,6 +29,15 @@ pub struct Config {
     pub shortcuts: Shortcuts,
     pub sync: SyncConfig,
     pub notifications: Notifications,
+    pub onboarding: Onboarding,
+}
+
+/// First-run help in Katna Mail.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Onboarding {
+    /// The welcome and the offer of a tour of the window have been seen.
+    pub done: bool,
 }
 
 /// Desktop notifications from `katna-daemon` (`docs/ARCHITECTURE.md` §15.1).
@@ -212,6 +221,8 @@ pub struct MailView {
     /// Use the desktop's color scheme and accent color instead of Katna's
     /// own colors.
     pub desktop_colors: bool,
+    /// Show the names under the icons of the app bar (Mail, Calendar, ...).
+    pub app_labels: bool,
 }
 
 impl Default for MailView {
@@ -225,6 +236,7 @@ impl Default for MailView {
             density: Density::Default,
             theme: Theme::System,
             desktop_colors: true,
+            app_labels: true,
         }
     }
 }
@@ -523,6 +535,13 @@ mod tests {
         assert_eq!(config.shortcuts.keys["archive"], ["y", "ctrl-e"]);
         let text = toml::to_string_pretty(&config).unwrap();
         assert_eq!(Config::parse(&text).unwrap(), config);
+    }
+
+    #[test]
+    fn onboarding_is_shown_until_done() {
+        assert!(!Config::default().onboarding.done);
+        let config = Config::parse("[onboarding]\ndone = true\n").unwrap();
+        assert!(config.onboarding.done);
     }
 
     #[test]

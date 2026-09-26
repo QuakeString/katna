@@ -998,8 +998,10 @@ icons and name and without Google-only features (no Chat, Meet, Drive,
 Gemini or confidential mode):
 
 - **App rail.** A 72 px column at the far left holds Mail, Calendar,
-  Contacts, Tasks, Notes and Feeds (RSS and Atom), with Settings and the
-  account at the bottom. Each app is a page (`window/apps.rs`), so new ones
+  Contacts, Tasks, Notes and Feeds (RSS and Atom), with Settings at the
+  bottom. Their names show under the icons unless "App names" is off in
+  quick settings (`mail.app_labels`); then the icons have tooltips. Each
+  app is a page (`window/apps.rs`), so new ones
   plug in. Mail is the only app so far; Contacts lists the people the mail
   was exchanged with, most written with first, and a click searches their
   mail; the others show a "coming soon" page saying what they will do.
@@ -1092,12 +1094,28 @@ Gemini or confidential mode):
   nothing is found, or from "Server settings", the servers are entered by
   hand: host, port and SSL/TLS, STARTTLS or none for IMAP and SMTP, and
   the username. `AddImapAccount` checks the login before saving; a refused
-  password is shown under the field. It opens from the welcome page (no
-  account yet), the account card above the rail's account picture ("Add
+  password is shown under the field. It opens from the first-start pages
+  (no account yet), the account card above the rail's account picture ("Add
   another account", which also lists the accounts and opens their
   inboxes), and Send without an account. The daemon signals `MailChanged`
   after each account's first sync, so a new account's folders show even
   when they are empty.
+- **First start.** With no account, pages fill the window instead of an
+  empty list (`window/onboarding.rs`): Welcome (what Katna does), Account
+  (checks that the background service answers, which D-Bus activation
+  also starts, and says how to start it when it does not; then the Add
+  account dialog), Look (reading pane, theme and density, applied at once)
+  and Ready, which offers the tour. The pages slide in and keep one height
+  so nothing jumps. While an account waits for its first sync, an empty
+  folder says the mail is on its way instead of "No mail".
+- **Tour.** A walk through the window (`window/tour.rs`): the page dims
+  around one part at a time (Compose, search, the menu button, the apps,
+  the tabs, the list, quick settings, the account) with a card saying what
+  it is for, Back and Next (or the arrow keys) and Skip (or Escape). The
+  lit box glides from part to part. Parts not on screen are left out. It
+  follows the first-start pages; people who already had an account get an
+  offer of it once (`onboarding.done` in `config.toml`), and quick
+  settings starts it again.
 - **After the first real install.** The owner's first run on KDE brought
   these changes. Compose sits in the top bar in place of the app name, so
   it shows whether the folders are open or not; the account picture moved

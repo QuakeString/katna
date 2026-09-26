@@ -20,7 +20,9 @@ icons!(
     "archive",
     "attachment",
     "back",
+    "bolt",
     "calendar",
+    "check-circle",
     "check",
     "checkbox-checked",
     "checkbox-partial",
@@ -76,9 +78,11 @@ icons!(
     "star",
     "tag",
     "tasks",
+    "tour",
     "trash",
     "tune",
     "warning",
+    "window-restore",
 );
 
 pub struct Assets;

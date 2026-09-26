@@ -10,12 +10,18 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, BoxShadow, Context, Div, FontWeight, HighlightStyle,
-    SharedString, SpringAnimation, Stateful, StyledText, deferred, div, ease_out_quint,
-    linear_color_stop, linear_gradient, point, prelude::*, px, rgba, uniform_list,
+    SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, deferred, div,
+    ease_out_quint, linear_color_stop, linear_gradient, point, prelude::*, px, rgba, uniform_list,
 };
 use katna_core::config::Density;
 use katna_ui::Ripple;
 use katna_ui::motion;
+
+/// The lift of the line under the pointer: critically damped and slower
+/// than other hover feedback, so it rises and settles without a jolt.
+const ROW_LIFT: SpringConfig = SpringConfig::new(500.0, 44.7, 1.0);
+/// How long the quick actions of a line take to fade in.
+const ACTIONS_IN: Duration = Duration::from_millis(160);
 
 use super::{Act, LIST_CONTEXT, Listing, MailWindow, Menu, READER_CONTEXT, Reload, STACKED_BELOW};
 use crate::data::{EntryKey, Row};
@@ -86,7 +92,14 @@ impl MailWindow {
                     .flex_col()
                     .children(tabs)
                     .children(banner)
-                    .child(div().flex_1().min_h_0().child(list))
+                    .child(
+                        div()
+                            .relative()
+                            .flex_1()
+                            .min_h_0()
+                            .child(list)
+                            .child(self.tour_mark(super::tour::Spot::List)),
+                    )
                     .into_any_element(),
             )
         };
@@ -721,6 +734,7 @@ impl MailWindow {
             .border_b_1()
             .border_color(rgba(th.divider))
             .children(tabs)
+            .child(self.tour_mark(super::tour::Spot::Tabs))
             // The indicator slides to the open tab.
             .child(
                 div()
@@ -741,6 +755,9 @@ impl MailWindow {
         if self.entries.is_empty() {
             let text = match &self.listing {
                 Some(Listing::Search { .. }) => "No messages matched your search.".to_owned(),
+                Some(Listing::Folder(_)) if self.first_sync => {
+                    return first_sync_placeholder(th);
+                }
                 Some(Listing::Folder(_)) if self.shows_tabs() => {
                     let tab = self.tabs.get(self.tab).map_or("this tab", |t| t.label);
                     format!("No mail in {tab}.")
@@ -844,20 +861,19 @@ impl MailWindow {
                     .top_0()
                     .left_0()
                     .right_0()
-                    .h(px(5.0))
+                    .h(px(8.0))
                     .with_spring(
                         ("row-drop", ix),
-                        SpringAnimation::new(motion::QUICK).to(if under_hovered {
-                            1.0
-                        } else {
-                            0.0
-                        }),
+                        SpringAnimation::new(ROW_LIFT).to(if under_hovered { 1.0 } else { 0.0 }),
                         {
                             let shadow = th.shadow;
                             move |el, s: f32| {
                                 el.bg(linear_gradient(
                                     180.0,
-                                    linear_color_stop(rgba(fade(shadow, 0.55 * s)), 0.0),
+                                    linear_color_stop(
+                                        rgba(fade(shadow, 0.7 * s.clamp(0.0, 1.0))),
+                                        0.0,
+                                    ),
                                     linear_color_stop(rgba(fade(shadow, 0.0)), 1.0),
                                 ))
                             }
@@ -883,23 +899,31 @@ impl MailWindow {
             );
         let lifted = |base: Stateful<Div>| {
             let shadow = th.shadow;
+            // The line takes a tint of the accent color; shadows barely
+            // show on dark pages, so there it also lightens.
+            let lit = if th.dark {
+                mix(mix(background, 0xffffffff, 0.05), th.accent, 0.12)
+            } else {
+                mix(background, th.accent, 0.07)
+            };
             base.with_spring(
                 ("row-lift", ix),
-                SpringAnimation::new(motion::QUICK).to(if hovered { 1.0 } else { 0.0 }),
+                SpringAnimation::new(ROW_LIFT).to(if hovered { 1.0 } else { 0.0 }),
                 move |el, s: f32| {
+                    let s = s.clamp(0.0, 1.0);
                     if s > 0.001 {
-                        el.shadow(vec![
+                        el.bg(rgba(mix(background, lit, s))).shadow(vec![
                             BoxShadow {
                                 color: rgba(fade(shadow, 0.9 * s)).into(),
                                 offset: point(px(0.0), px(1.0)),
-                                blur_radius: px(2.0),
+                                blur_radius: px(3.0),
                                 spread_radius: px(0.0),
                                 inset: false,
                             },
                             BoxShadow {
-                                color: rgba(fade(shadow, 0.45 * s)).into(),
-                                offset: point(px(0.0), px(1.0)),
-                                blur_radius: px(3.0),
+                                color: rgba(fade(shadow, 0.5 * s)).into(),
+                                offset: point(px(0.0), px(2.0 * s)),
+                                blur_radius: px(8.0),
                                 spread_radius: px(1.0),
                                 inset: false,
                             },
@@ -1003,7 +1027,17 @@ impl MailWindow {
                         .child(row.count.to_string()),
                 )
             });
-        let actions = hovered.then(|| self.hover_actions(ix, key, row.unread, th, cx));
+        // The quick actions fade in over the date.
+        let actions = hovered.then(|| {
+            div()
+                .child(self.hover_actions(ix, key, row.unread, th, cx))
+                .with_animation(
+                    ("row-actions", ix),
+                    Animation::new(ACTIONS_IN).with_easing(ease_out_quint()),
+                    |el, t| el.opacity(t),
+                )
+                .into_any_element()
+        });
         let date = div()
             .flex_none()
             .text_size(px(12.0))
@@ -1193,4 +1227,52 @@ pub(super) fn separator(th: &Theme) -> Div {
         .w(px(1.0))
         .h(px(20.0))
         .bg(rgba(th.divider))
+}
+
+/// An empty folder while the first sync runs: the mail is on its way.
+fn first_sync_placeholder(th: &Theme) -> AnyElement {
+    div()
+        .size_full()
+        .flex()
+        .flex_col()
+        .items_center()
+        .justify_center()
+        .gap(px(12.0))
+        .p(px(24.0))
+        .child(
+            div()
+                .w(px(160.0))
+                .h(px(4.0))
+                .rounded_full()
+                .overflow_hidden()
+                .relative()
+                .bg(rgba(fade(th.accent, 0.24)))
+                .child(
+                    div()
+                        .absolute()
+                        .top_0()
+                        .h_full()
+                        .w(px(64.0))
+                        .rounded_full()
+                        .bg(rgba(th.accent))
+                        .with_animation(
+                            "first-sync",
+                            Animation::new(Duration::from_millis(1300)).repeat(),
+                            |bar, t| bar.left(px(-64.0 + 224.0 * t)),
+                        ),
+                ),
+        )
+        .child(
+            div()
+                .text_size(px(14.0))
+                .text_color(rgba(th.text_dim))
+                .child("Getting your mail\u{2026}"),
+        )
+        .child(
+            div()
+                .text_size(px(13.0))
+                .text_color(rgba(th.text_faint))
+                .child("It shows up here as it arrives."),
+        )
+        .into_any_element()
 }
