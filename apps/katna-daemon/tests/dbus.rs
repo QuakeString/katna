@@ -1095,3 +1095,204 @@ fn metered_setting_overrides_the_network() {
         assert!(!pim.metered().await.unwrap());
     });
 }
+
+/// What the fake notification server was asked.
+#[derive(Debug, PartialEq)]
+enum Asked {
+    Notify {
+        summary: String,
+        body: String,
+        actions: Vec<String>,
+        origin: String,
+    },
+    Close(u32),
+}
+
+/// The desktop's notification server, as far as the daemon uses it.
+struct FakeNotifications {
+    asked: async_channel::Sender<Asked>,
+    next: u32,
+}
+
+#[zbus::interface(name = "org.freedesktop.Notifications")]
+impl FakeNotifications {
+    #[allow(clippy::too_many_arguments)]
+    fn notify(
+        &mut self,
+        _app_name: &str,
+        _replaces_id: u32,
+        _app_icon: &str,
+        summary: &str,
+        body: &str,
+        actions: Vec<String>,
+        hints: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
+        _expire_timeout: i32,
+    ) -> u32 {
+        let origin = hints
+            .get("x-kde-origin-name")
+            .and_then(|v| String::try_from(v.clone()).ok())
+            .unwrap_or_default();
+        self.next += 1;
+        let _ = self.asked.try_send(Asked::Notify {
+            summary: summary.into(),
+            body: body.into(),
+            actions,
+            origin,
+        });
+        self.next
+    }
+
+    fn close_notification(&self, id: u32) {
+        let _ = self.asked.try_send(Asked::Close(id));
+    }
+
+    fn get_capabilities(&self) -> Vec<String> {
+        vec!["actions".into(), "body".into()]
+    }
+
+    #[zbus(signal)]
+    async fn action_invoked(
+        emitter: &zbus::object_server::SignalEmitter<'_>,
+        id: u32,
+        action_key: &str,
+    ) -> zbus::Result<()>;
+}
+
+/// New mail in the inbox becomes a desktop notification; its Mark as read
+/// button marks it read; `notifications.new_mail = false` turns them off.
+#[test]
+#[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
+fn notifies_about_new_mail_on_dev_servers() {
+    use katna_core::Config;
+    use zbus::object_server::SignalEmitter;
+
+    let imap_port = port("KATNA_STALWART_IMAPS_PORT", 10993);
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    smol::block_on(async {
+        let (asked_tx, asked) = async_channel::unbounded();
+        let desktop = bus.connect().await;
+        desktop
+            .object_server()
+            .at(
+                "/org/freedesktop/Notifications",
+                FakeNotifications {
+                    asked: asked_tx,
+                    next: 0,
+                },
+            )
+            .await
+            .unwrap();
+        desktop
+            .request_name("org.freedesktop.Notifications")
+            .await
+            .unwrap();
+
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let client = bus.connect().await;
+        let pim = PimProxy::new(&client).await.unwrap();
+        let account = imap("127.0.0.1", imap_port, "tls");
+        let id = pim.add_imap_account(&account, "katna-dev").await.unwrap();
+        wait_until_online(&pim, id).await;
+        Timer::after(Duration::from_millis(300)).await;
+        assert!(asked.is_empty(), "mail already there is not news");
+
+        let mut other = ImapBackend::connect(
+            &Endpoint::new("127.0.0.1", imap_port, Security::Tls),
+            &Credentials::new("alice@katna.test", "katna-dev"),
+            Tls::insecure_for_local_tests(),
+        )
+        .await
+        .unwrap();
+        let mut append = async |subject: &str| {
+            // No Date header: the server's arrival time counts.
+            let message = format!(
+                "From: Carol Example <carol@katna.test>\r\nTo: <alice@katna.test>\r\n\
+                 Subject: {subject}\r\nMessage-ID: <{subject}@katna.test>\r\n\r\nSee you at 3.\r\n"
+            );
+            other.append("INBOX", message.into_bytes()).await.unwrap();
+        };
+        let subject = unique("notify");
+        append(&subject).await;
+        let mut shown = within("Notify", 15, asked.recv()).await.unwrap();
+        // The preview is there when the body was downloaded in the same
+        // sync.
+        if let Asked::Notify { body, .. } = &mut shown {
+            let preview = format!("{subject}\nSee you at 3.");
+            assert!(*body == subject || *body == preview, "{body}");
+            *body = subject.clone();
+        }
+        assert_eq!(
+            shown,
+            Asked::Notify {
+                summary: "Carol Example".into(),
+                body: subject.clone(),
+                actions: [
+                    "default",
+                    "Open",
+                    "mark-read",
+                    "Mark as read",
+                    "archive",
+                    "Archive"
+                ]
+                .map(String::from)
+                .to_vec(),
+                origin: "alice@katna.test".into(),
+            }
+        );
+
+        // Mark as read: the mail is read in the store, and the
+        // notification closes.
+        let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
+        // The daemon records the notification when Notify returns; a
+        // click cannot come sooner.
+        Timer::after(Duration::from_millis(300)).await;
+        let emitter = SignalEmitter::new(&desktop, "/org/freedesktop/Notifications").unwrap();
+        FakeNotifications::action_invoked(&emitter, 1, "mark-read")
+            .await
+            .unwrap();
+        assert_eq!(
+            within("CloseNotification", 5, asked.recv()).await.unwrap(),
+            Asked::Close(1)
+        );
+        let inbox = reader
+            .folders(katna_core::AccountId(id))
+            .unwrap()
+            .into_iter()
+            .find(|f| f.path == "INBOX")
+            .unwrap();
+        let read = reader
+            .messages_in_folder(inbox.id)
+            .unwrap()
+            .into_iter()
+            .find(|m| m.subject == subject)
+            .unwrap();
+        assert!(read.flags.contains(MessageFlags::SEEN));
+
+        // Turned off in the settings: nothing more.
+        let mut config = Config::default();
+        config.notifications.new_mail = false;
+        config.save(&paths.config_file()).unwrap();
+        pim.reload_config().await.unwrap();
+        let mut changed = pim.receive_mail_changed().await.unwrap();
+        let quiet = unique("quiet");
+        append(&quiet).await;
+        within("MailChanged", 15, async {
+            loop {
+                changed.next().await.unwrap();
+                let all = reader.messages_in_folder(inbox.id).unwrap();
+                if all.iter().any(|m| m.subject == quiet) {
+                    return;
+                }
+            }
+        })
+        .await;
+        Timer::after(Duration::from_millis(500)).await;
+        assert!(asked.is_empty(), "{:?}", asked.try_recv());
+
+        other.logout().await.unwrap();
+        assert!(pim.remove_account(id).await.unwrap());
+        instance.shutdown().await;
+    });
+}

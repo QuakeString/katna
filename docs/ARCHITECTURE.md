@@ -1113,6 +1113,26 @@ Content and behavior:
   otherwise request `--talk-name=org.freedesktop.Notifications`.
 - KDE Connect mirrors these notifications to the user's phone automatically.
 
+Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
+
+- After each sync, unread mail that reached an account's inbox (Primary tab,
+  or not classified yet) since the daemon last looked, and dated within the
+  last two days, becomes one notification per account and sync. One message
+  shows sender, subject and the start of its text; more show "N new emails"
+  with up to four "Sender: Subject" lines.
+- Mail already stored when the daemon starts, and a new account's first
+  sync, are not news.
+- Buttons: Open (click), Mark as read / Mark all as read, Archive. Open
+  calls `ActivateAction("open-message", [id])` on the app's
+  `org.freedesktop.Application` object (`/in/invenia/katna/Mail`) with the
+  activation token, and starts `katna-mail` with `XDG_ACTIVATION_TOKEN` when
+  the app does not answer.
+- A notification closes when all its mail is read or out of the inbox, from
+  a sync or from a change made in the app.
+- Setting `notifications.new_mail` (default on); `ReloadConfig` applies it.
+- Not yet: inline reply, sender pictures (`image-data`), per-organization
+  policy.
+
 ### 15.2 Taskbar and tray
 
 - Unread count on the Plasma task manager icon via

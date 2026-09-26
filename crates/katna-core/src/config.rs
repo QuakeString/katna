@@ -26,6 +26,21 @@ pub struct Config {
     pub sending: Sending,
     pub mail: MailView,
     pub sync: SyncConfig,
+    pub notifications: Notifications,
+}
+
+/// Desktop notifications from `katna-daemon` (`docs/ARCHITECTURE.md` §15.1).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Notifications {
+    /// Notify about new mail in the inbox (Primary tab).
+    pub new_mail: bool,
+}
+
+impl Default for Notifications {
+    fn default() -> Self {
+        Self { new_mail: true }
+    }
 }
 
 /// How `katna-daemon` syncs (`docs/ARCHITECTURE.md` §6.1).
@@ -313,6 +328,13 @@ mod tests {
         assert!(Config::parse("[mail]\nreading_pane_share = 0.9\n").is_err());
         let config = Config::parse("[sending]\nsignature = \"Kay\\nEnron\"\n").unwrap();
         assert_eq!(config.sending.signature, "Kay\nEnron");
+    }
+
+    #[test]
+    fn new_mail_notifications_are_on_by_default() {
+        assert!(Config::default().notifications.new_mail);
+        let config = Config::parse("[notifications]\nnew_mail = false\n").unwrap();
+        assert!(!config.notifications.new_mail);
     }
 
     #[test]
