@@ -46,6 +46,8 @@ icons!(
     "forum",
     "forward",
     "image",
+    "important-filled",
+    "important",
     "inbox",
     "info",
     "junk",

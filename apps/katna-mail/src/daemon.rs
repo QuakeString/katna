@@ -15,6 +15,7 @@ use katna_store::{FolderId, MessageId};
 pub enum Command {
     MarkRead(Vec<MessageId>, bool),
     Star(Vec<MessageId>, bool),
+    Important(Vec<MessageId>, bool),
     Archive(Vec<MessageId>),
     Delete(Vec<MessageId>),
     Move(Vec<MessageId>, FolderId),
@@ -30,7 +31,11 @@ impl Command {
             Self::Archive(_) => Some(format!("{what} archived.")),
             Self::Delete(_) => Some(format!("{what} moved to Trash.")),
             Self::Move(..) => Some(format!("{what} moved.")),
-            Self::MarkRead(..) | Self::Star(..) | Self::SyncNow | Self::UndoSend(_) => None,
+            Self::Star(_, true) => Some(format!("{what} starred.")),
+            Self::Star(_, false) => Some(format!("{what} unstarred.")),
+            Self::Important(_, true) => Some(format!("{what} marked as important.")),
+            Self::Important(_, false) => Some(format!("{what} marked as not important.")),
+            Self::MarkRead(..) | Self::SyncNow | Self::UndoSend(_) => None,
         }
     }
 }
@@ -79,6 +84,14 @@ pub async fn send(connection: &Connection, command: &Command) -> Result<(), Stri
                 (&[flag::FLAGGED], &[])
             } else {
                 (&[], &[flag::FLAGGED])
+            };
+            pim.set_flags(&ids(messages), add, remove).await
+        }
+        Command::Important(messages, on) => {
+            let (add, remove): (&[&str], &[&str]) = if *on {
+                (&[flag::IMPORTANT], &[])
+            } else {
+                (&[], &[flag::IMPORTANT])
             };
             pim.set_flags(&ids(messages), add, remove).await
         }
@@ -271,6 +284,18 @@ mod tests {
                 .done_text("Conversation")
                 .as_deref(),
             Some("Conversation archived.")
+        );
+        assert_eq!(
+            Command::Important(ids.clone(), false)
+                .done_text("2 messages")
+                .as_deref(),
+            Some("2 messages marked as not important.")
+        );
+        assert_eq!(
+            Command::Star(ids.clone(), true)
+                .done_text("Message")
+                .as_deref(),
+            Some("Message starred.")
         );
         assert_eq!(Command::MarkRead(ids, true).done_text("x"), None);
     }

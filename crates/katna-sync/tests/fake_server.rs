@@ -419,6 +419,19 @@ fn gmail_thread_ids_and_search() {
                  * 2 FETCH (UID 2 X-GM-THRID 99 X-GM-MSGID 100)\r\n{tag} OK Success\r\n"
         ));
 
+        // Importance is a label on Gmail.
+        let (tag, rest) = s.command();
+        assert_eq!(rest, "UID FETCH 1:2 (UID X-GM-LABELS)");
+        s.send(&format!(
+            "* 1 FETCH (X-GM-LABELS (\\Inbox \"\\\\Important\") UID 1)\r\n\
+                 * 2 FETCH (UID 2 X-GM-LABELS (\\Inbox Important))\r\n{tag} OK Success\r\n"
+        ));
+        let (tag, rest) = s.command();
+        assert_eq!(rest, "UID STORE 2 +X-GM-LABELS (\\Important)");
+        s.send(&format!(
+            "* 2 FETCH (UID 2 X-GM-LABELS (\\Inbox \\Important))\r\n{tag} OK Success\r\n"
+        ));
+
         let (tag, rest) = s.command();
         assert_eq!(rest, "UID SEARCH UID 1:* X-GM-RAW \"category:promotions\"");
         s.send(&format!(
@@ -448,6 +461,13 @@ fn gmail_thread_ids_and_search() {
             ]
         );
         assert_eq!(headers[0].header, b"Subject: hi\r\n\r\n");
+        assert_eq!(headers[0].flags.keywords, [katna_sync::IMPORTANT]);
+        assert!(headers[1].flags.keywords.is_empty());
+        let important = Flags {
+            keywords: vec![katna_sync::IMPORTANT.to_owned()],
+            ..Flags::default()
+        };
+        imap.store_flags(&[2], &important, true).await.unwrap();
         let found = imap.gmail_search(1, "category:promotions").await.unwrap();
         assert_eq!(found, Some(vec![1, 2]));
         let err = imap.gmail_search(1, "category:social").await.unwrap_err();

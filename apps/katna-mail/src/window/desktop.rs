@@ -83,6 +83,8 @@ const MENU_BAR: &[(&str, &[Entry])] = &[
             Item("Mark as R_ead", "katna_mail::MarkRead"),
             Item("Mark as _Unread", "katna_mail::MarkUnread"),
             Item("S_tar", "katna_mail::ToggleStar"),
+            Item("Mark as Im_portant", "katna_mail::MarkImportant"),
+            Item("Mark as _Not Important", "katna_mail::MarkNotImportant"),
         ],
     ),
     (

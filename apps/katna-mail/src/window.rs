@@ -43,8 +43,8 @@ use std::time::Duration;
 
 use futures_lite::StreamExt;
 use gpui::{
-    AnyElement, App, Context, Entity, FocusHandle, Focusable, Hsla, MouseButton, MouseMoveEvent,
-    Render, ScrollHandle, ScrollStrategy, SharedString, Subscription, Task,
+    AnyElement, App, Context, Entity, FocusHandle, Focusable, Hsla, ListAlignment, ListState,
+    MouseButton, MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task,
     UniformListScrollHandle, Window, actions, div, prelude::*, px, rgba,
 };
 use jiff::tz::TimeZone;
@@ -97,6 +97,8 @@ actions!(
         MarkRead,
         MarkUnread,
         ToggleStar,
+        MarkImportant,
+        MarkNotImportant,
         ToggleCheck,
         ToggleSettings,
         Reply,
@@ -184,6 +186,7 @@ enum Act {
     MoveTo(FolderId),
     Read(bool),
     Star(bool),
+    Important(bool),
 }
 
 /// What the pointer rests on that opens the folded navigation.
@@ -208,6 +211,7 @@ struct Snackbar {
 struct Pending {
     unread: Option<bool>,
     flagged: Option<bool>,
+    important: Option<bool>,
 }
 
 pub struct MailWindow {
@@ -325,7 +329,12 @@ pub struct MailWindow {
     _watch_sending: Option<Task<()>>,
     desktop_colors: colors::DesktopColors,
     list_focus: FocusHandle,
-    list_scroll: UniformListScrollHandle,
+    /// The message list: lines differ in height (attachment chips).
+    list_state: ListState,
+    /// The line whose "+N" attachments button has its list open.
+    files_menu: Option<EntryKey>,
+    /// Layout and line height the list's lines were measured for.
+    list_shape: (bool, u32),
     nav_scroll: UniformListScrollHandle,
     reader_scroll: ScrollHandle,
     tz: TimeZone,
@@ -426,12 +435,19 @@ impl MailWindow {
             _watch_sending: None,
             desktop_colors,
             list_focus: cx.focus_handle(),
-            list_scroll: UniformListScrollHandle::new(),
+            list_state: ListState::new(0, ListAlignment::Top, px(400.0)),
+            files_menu: None,
+            list_shape: (false, 0),
             nav_scroll: UniformListScrollHandle::new(),
             reader_scroll: ScrollHandle::new(),
             tz: TimeZone::try_system().unwrap_or(TimeZone::UTC),
             _subscriptions: subscriptions,
         };
+        let weak = cx.entity().downgrade();
+        // The toolbar's "1–50 of N" follows the scrolling.
+        this.list_state.set_scroll_handler(move |_, _, cx| {
+            weak.update(cx, |_, cx| cx.notify()).ok();
+        });
         this.load_tree();
         if let Some((folder, ancestors)) = this.tree.default_folder() {
             this.expanded.extend(ancestors);
@@ -729,7 +745,7 @@ impl MailWindow {
             Ok(mail) if role == Role::Inbox => mail.category_unread(folder),
             _ => HashMap::new(),
         };
-        self.list_scroll.scroll_to_item(0, ScrollStrategy::Top);
+        self.reset_list(false);
         self.selected = (!self.entries.is_empty()).then_some(0);
         self.checked.clear();
         self.checked_all = false;
@@ -768,7 +784,7 @@ impl MailWindow {
             return;
         }
         self.selected = Some(ix);
-        self.list_scroll.scroll_to_item(ix, ScrollStrategy::Nearest);
+        self.list_state.scroll_to_reveal_item(ix);
         if self.reading {
             self.load_reader(ix, cx);
         }
@@ -1148,6 +1164,7 @@ impl MailWindow {
         match self.listing.clone() {
             Some(Listing::Folder(folder)) => {
                 self.entries = self.list_entries(folder);
+                self.reset_list(true);
                 if let Ok(mail) = &self.mail
                     && self.folder_role() == Role::Inbox
                 {
@@ -1279,7 +1296,7 @@ impl MailWindow {
                 self.checked.clear();
                 self.checked_all = false;
                 self.page_pick = None;
-                self.list_scroll.scroll_to_item(0, ScrollStrategy::Top);
+                self.reset_list(false);
                 if first {
                     self.card_seq += 1;
                 }
@@ -1367,7 +1384,7 @@ impl MailWindow {
             }
             Act::Star(on) => {
                 // Starring marks the newest message; unstarring clears all.
-                let ids = if on {
+                let ids: Vec<MessageId> = if on {
                     self.entries
                         .iter()
                         .filter(|e| keys.contains(&e.key))
@@ -1379,7 +1396,17 @@ impl MailWindow {
                 for key in &keys {
                     self.pending.entry(*key).or_default().flagged = Some(on);
                 }
-                (Command::Star(ids, on), None)
+                let undo = Command::Star(ids.clone(), !on);
+                (Command::Star(ids, on), Some(undo))
+            }
+            Act::Important(on) => {
+                let ids: Vec<MessageId> =
+                    keys.iter().flat_map(|k| mail.entry_messages(*k)).collect();
+                for key in &keys {
+                    self.pending.entry(*key).or_default().important = Some(on);
+                }
+                let undo = Command::Important(ids.clone(), !on);
+                (Command::Important(ids, on), Some(undo))
             }
             Act::Archive | Act::Delete | Act::Spam | Act::MoveTo(_) => {
                 let ids: Vec<MessageId> = keys.iter().flat_map(|k| messages_in(*k)).collect();
@@ -1425,6 +1452,11 @@ impl MailWindow {
             .iter()
             .filter(|e| keys.contains(&e.key))
             .count();
+        for ix in (0..self.entries.len()).rev() {
+            if keys.contains(&self.entries[ix].key) {
+                self.list_state.splice(ix..ix + 1, 0);
+            }
+        }
         self.entries.retain(|e| !keys.contains(&e.key));
         self.selected = if self.entries.is_empty() {
             None
@@ -1549,6 +1581,14 @@ impl MailWindow {
         let keys = self.target_keys();
         let on = !keys.iter().all(|k| self.is_flagged(*k));
         self.act(Act::Star(on), keys, cx);
+    }
+
+    fn mark_important(&mut self, _: &MarkImportant, _: &mut Window, cx: &mut Context<Self>) {
+        self.act_on_targets(Act::Important(true), cx);
+    }
+
+    fn mark_not_important(&mut self, _: &MarkNotImportant, _: &mut Window, cx: &mut Context<Self>) {
+        self.act_on_targets(Act::Important(false), cx);
     }
 
     fn toggle_check(&mut self, _: &ToggleCheck, _: &mut Window, cx: &mut Context<Self>) {

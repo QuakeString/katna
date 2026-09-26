@@ -862,7 +862,10 @@ impl MailWindow {
                     .any(|p| p.row.as_ref().is_some_and(|r| r.flagged));
             self.pending.entry(key).or_default().flagged = Some(any);
         }
-        self.send(Command::Star(vec![id], on), None, None, false, cx);
+        let command = Command::Star(vec![id], on);
+        let done = command.done_text("Message");
+        let undo = Command::Star(vec![id], !on);
+        self.send(command, done, Some(undo), false, cx);
         cx.notify();
     }
 
