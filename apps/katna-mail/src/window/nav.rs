@@ -112,8 +112,11 @@ impl MailWindow {
             start.push(
                 div()
                     .flex_none()
-                    .max_w(px(200.0 * shown))
-                    .overflow_hidden()
+                    // Clipped only while it grows or shrinks: a clip would
+                    // cut the hover shadow into a square.
+                    .when(shown < 0.999, |d| {
+                        d.max_w(px(200.0 * shown)).overflow_hidden()
+                    })
                     .opacity(shown)
                     .child(compose)
                     .into_any_element(),
