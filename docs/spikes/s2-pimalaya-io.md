@@ -173,7 +173,8 @@ cargo run --release --example append_stress -- 3000
 ## Next steps
 
 - Rerun the Gmail IDLE wait and send a mail during it, to test wake-up.
-- Task 1.1: move `net.rs` and the driver loops into `katna-sync`, with one task
-  per connection (problem 4). Fold the traits into the real `MailBackend`
-  design (JMAP and POP3 too).
+- ~~Task 1.1: move `net.rs` and the driver loops into `katna-sync`, with one
+  task per connection (problem 4).~~ Done: `crates/katna-sync` (NOOP and IDLE
+  built on `ImapSend`, which also fixes problem 2). JMAP and POP3 still need
+  their place in the `MailBackend` design.
 - Report problems 1, 2 and 10 to `pimalaya/io-imap`.

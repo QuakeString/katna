@@ -102,6 +102,18 @@ KATNA_STALWART_HTTP_PORT=38080
 The seed service talks to the servers inside the Compose network, so it is
 not affected by these settings.
 
+## Integration tests
+
+`katna-sync` has tests that run against these servers. They are ignored by
+default because they need the servers up:
+
+```sh
+cargo test -p katna-sync --test dev_servers -- --ignored --test-threads 1
+```
+
+They honour the `KATNA_*_PORT` variables above and only write to folders
+named `katna-test-…` and to alice's inbox.
+
 ## Sample data
 
 Everything lives in `seed/` and is loaded into alice's account on every

@@ -13,5 +13,25 @@ katna-core.workspace = true
 katna-store.workspace = true
 katna-meta.workspace = true
 
+async-channel.workspace = true
+async-io.workspace = true
+async-net.workspace = true
+futures-lite.workspace = true
+futures-rustls.workspace = true
+rustls-platform-verifier.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+
+# Pimalaya: only `src/imap.rs` and `src/smtp.rs` may use these.
+imap-codec.workspace = true
+imap-types.workspace = true
+io-imap.workspace = true
+io-sasl.workspace = true
+io-smtp.workspace = true
+
+[dev-dependencies]
+smol.workspace = true
+tracing-subscriber.workspace = true
+
 [lints]
 workspace = true
