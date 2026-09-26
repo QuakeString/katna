@@ -1346,7 +1346,9 @@ files with globs, so they never spell out an ID.
 `packaging/arch/PKGBUILD` builds a `katna-git` package (provides `katna`)
 from the checkout it sits in: `cd packaging/arch && makepkg -si`. It ships
 `katna-mail`, `katna-daemon` and `katnactl`; Katna Calendar joins once it
-does something. See `packaging/README.md`.
+does something. CI builds it on every push to `main` and publishes it, with
+a pacman repository database, as the `arch-latest` pre-release, so Arch
+users can install and update without building. See `packaging/README.md`.
 
 ## 22. Licensing — Decided
 

@@ -1,0 +1,133 @@
+name: Arch package
+
+# Builds packaging/arch/PKGBUILD in an Arch container. On main it replaces
+# the `arch-latest` pre-release with the new package and a pacman repository
+# database, so Arch users install and update Katna without building it
+# (packaging/README.md, "Prebuilt package").
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "packaging/**"
+      - ".github/workflows/arch-package.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: arch-package-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    timeout-minutes: 120
+    steps:
+      # The package's depends and makedepends (rustup provides cargo), so
+      # makepkg finds them all installed and needs no sudo.
+      - name: Install build tools and dependencies
+        run: |
+          pacman -Syu --noconfirm --needed base-devel git rustup \
+            dbus fontconfig freetype2 gcc-libs glibc libglvnd libxcb \
+            libxkbcommon libxkbcommon-x11 vulkan-icd-loader wayland
+      - uses: actions/checkout@v4
+        with:
+          # pkgver counts the commits.
+          fetch-depth: 0
+      # makepkg refuses to run as root.
+      - name: Create the build user
+        run: |
+          useradd --create-home builder
+          chown -R builder: "$GITHUB_WORKSPACE"
+          git config --system --add safe.directory '*'
+      - name: Build the package
+        run: |
+          runuser -u builder -- env HOME=/home/builder bash -euc '
+            rustup toolchain install stable --profile minimal
+            rustup default stable
+            # makepkg clones the checked-out branch; pull request
+            # checkouts have none.
+            git checkout -B makepkg-ci
+            cd packaging/arch
+            makepkg --noconfirm
+          '
+      - name: Make the pacman repository
+        run: |
+          mkdir out
+          pkg=$(cd packaging/arch && ls katna-git-*.pkg.tar.zst)
+          cp "packaging/arch/$pkg" out/
+          # The same package under a name that does not change, for a
+          # one-off download.
+          cp "packaging/arch/$pkg" out/katna-git-x86_64.pkg.tar.zst
+          cd out
+          repo-add katna.db.tar.gz "$pkg"
+          # Release assets cannot be symlinks.
+          rm katna.db katna.files
+          cp katna.db.tar.gz katna.db
+          cp katna.files.tar.gz katna.files
+          ls -l
+      - name: Install it and run it
+        run: |
+          pacman -U --noconfirm out/katna-git-x86_64.pkg.tar.zst
+          for bin in katna-mail katna-daemon katnactl; do
+            if ldd "/usr/bin/$bin" | grep 'not found'; then exit 1; fi
+          done
+          katnactl --help > /dev/null
+          pacman -Ql katna-git
+      - uses: actions/upload-artifact@v4
+        with:
+          name: arch-package
+          path: out/
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: arch-package-release
+      cancel-in-progress: false
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: arch-package
+          path: out
+      - name: Replace the arch-latest pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          base="https://github.com/$GH_REPO/releases/download/arch-latest"
+          cat > notes.md <<EOF
+          Katna Mail built from \`main\` at $GITHUB_SHA for Arch Linux (x86_64).
+          Replaced on every push to \`main\`.
+
+          **Install once:**
+
+          \`\`\`sh
+          curl -LO $base/katna-git-x86_64.pkg.tar.zst
+          sudo pacman -U katna-git-x86_64.pkg.tar.zst
+          \`\`\`
+
+          **Or add it as a pacman repository**, so \`pacman -Syu\` keeps it
+          up to date. Append to \`/etc/pacman.conf\`:
+
+          \`\`\`ini
+          [katna]
+          SigLevel = Optional TrustAll
+          Server = $base
+          \`\`\`
+
+          then \`sudo pacman -Syu katna-git\`.
+
+          The package is not signed. See \`packaging/README.md\` for starting
+          the background service and adding an account.
+          EOF
+          gh release delete arch-latest --cleanup-tag --yes || true
+          gh release create arch-latest out/* --prerelease \
+            --target "$GITHUB_SHA" \
+            --title "Katna for Arch Linux (latest main)" \
+            --notes-file notes.md
