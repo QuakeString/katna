@@ -11,8 +11,8 @@
 use std::time::Duration;
 
 use gpui::{
-    AnyElement, Context, FontWeight, MouseDownEvent, SharedString, Window, div, prelude::*, px,
-    rgba, size,
+    AnyElement, Context, Decorations, FontWeight, MouseDownEvent, SharedString, Window, div,
+    prelude::*, px, rgba, size,
 };
 use katna_chrome::{Bar, Environment, window_options};
 use katna_core::Paths;
@@ -163,6 +163,7 @@ impl MailWindow {
             .map(|r| r.subject().to_owned())
             .unwrap_or_default();
         window.set_window_title(&title);
+        let server_frame = matches!(window.window_decorations(), Decorations::Server);
 
         let card = div()
             .key_context(READER_CONTEXT)
@@ -190,7 +191,7 @@ impl MailWindow {
             .relative()
             .size_full()
             .p(px(8.0))
-            .pt_0()
+            .when(!server_frame, |d| d.pt_0())
             .bg(rgba(th.page))
             .text_color(rgba(th.text))
             .on_action(cx.listener(Self::reply))
@@ -205,6 +206,14 @@ impl MailWindow {
             .children(context_menu)
             .children(snackbar)
             .into_any_element();
+        // The desktop's own title bar already names the window.
+        if server_frame {
+            let page = div().size_full().child(content);
+            return match &self.font {
+                Some(font) => page.font_family(font.clone()).into_any_element(),
+                None => page.into_any_element(),
+            };
+        }
         let bar = Bar {
             center: Some(
                 div()
