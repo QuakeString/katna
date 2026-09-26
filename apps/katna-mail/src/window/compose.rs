@@ -25,7 +25,7 @@ use super::{MailWindow, SNACKBAR_TIME};
 use crate::daemon::{self, Command};
 use crate::format;
 use crate::outgoing::{self, Mailbox, Outgoing};
-use crate::theme::Theme;
+use crate::theme::{Theme, fade};
 use crate::widgets::{elevation, icon, icon_button, icon_button_colored, menu, menu_item};
 
 const WIDTH: f32 = 560.0;
@@ -280,8 +280,17 @@ impl MailWindow {
             date: date(view.date),
         });
         let accounts = &self.accounts;
-        let is_me = |email: &str| accounts.iter().any(|a| a.address.eq_ignore_ascii_case(email));
-        let draft = draft(kind, original.as_ref(), is_me, &self.config.sending.signature);
+        let is_me = |email: &str| {
+            accounts
+                .iter()
+                .any(|a| a.address.eq_ignore_ascii_case(email))
+        };
+        let draft = draft(
+            kind,
+            original.as_ref(),
+            is_me,
+            &self.config.sending.signature,
+        );
         let thread = Threading::of(kind, view);
         let reply = matches!(kind, Kind::Reply | Kind::ReplyAll) && !draft.to.is_empty();
         let start = draft.clone();
@@ -423,7 +432,11 @@ impl MailWindow {
         let (to, cc, bcc) = match (parse(&draft.to), parse(&draft.cc), parse(&draft.bcc)) {
             (Ok(to), Ok(cc), Ok(bcc)) => (to, cc, bcc),
             (Err(bad), ..) | (_, Err(bad), _) | (.., Err(bad)) => {
-                self.show_snackbar(format!("\u{201c}{bad}\u{201d} is not an email address."), None, cx);
+                self.show_snackbar(
+                    format!("\u{201c}{bad}\u{201d} is not an email address."),
+                    None,
+                    cx,
+                );
                 return;
             }
         };
@@ -432,7 +445,11 @@ impl MailWindow {
             return;
         }
         let Some(account) = self.compose_account() else {
-            self.show_snackbar("Add an account with katnactl before sending mail.", None, cx);
+            self.show_snackbar(
+                "Add an account with katnactl before sending mail.",
+                None,
+                cx,
+            );
             return;
         };
         let from = Mailbox {
@@ -493,7 +510,11 @@ impl MailWindow {
         let Some(Unsent { draft, thread }) = self.unsent.take() else {
             return;
         };
-        if self.compose.as_ref().is_some_and(|c| !c.closing && c.touched(cx)) {
+        if self
+            .compose
+            .as_ref()
+            .is_some_and(|c| !c.closing && c.touched(cx))
+        {
             return;
         }
         self.show_compose(draft, Draft::default(), thread, true, window, cx);
@@ -512,7 +533,11 @@ impl MailWindow {
 
     fn compose_mode(&mut self, mode: Mode, cx: &mut Context<Self>) {
         if let Some(compose) = &mut self.compose {
-            compose.mode = if compose.mode == mode { Mode::Open } else { mode };
+            compose.mode = if compose.mode == mode {
+                Mode::Open
+            } else {
+                mode
+            };
             compose.send_menu = false;
         }
         cx.notify();
@@ -561,16 +586,22 @@ impl MailWindow {
                     .font_weight(FontWeight::MEDIUM)
                     .child(title),
             )
-            .child(small_button("compose-minimize", "minimize", th).on_click(cx.listener(
-                |this, _, _, cx| {
-                    cx.stop_propagation();
-                    this.compose_mode(Mode::Minimized, cx)
-                },
-            )))
+            .child(
+                small_button("compose-minimize", "minimize", th).on_click(cx.listener(
+                    |this, _, _, cx| {
+                        cx.stop_propagation();
+                        this.compose_mode(Mode::Minimized, cx)
+                    },
+                )),
+            )
             .child(
                 small_button(
                     "compose-full",
-                    if mode == Mode::Full { "close-full" } else { "open-full" },
+                    if mode == Mode::Full {
+                        "close-full"
+                    } else {
+                        "open-full"
+                    },
                     th,
                 )
                 .on_click(cx.listener(|this, _, _, cx| {
@@ -578,14 +609,16 @@ impl MailWindow {
                     this.compose_mode(Mode::Full, cx)
                 })),
             )
-            .child(small_button("compose-close", "close", th).on_click(cx.listener(
-                |this, _, _, cx| {
-                    cx.stop_propagation();
-                    // Drafts are not saved yet, so closing loses the text.
-                    let touched = this.compose.as_ref().is_some_and(|c| c.touched(cx));
-                    this.close_compose(touched, cx)
-                },
-            )));
+            .child(
+                small_button("compose-close", "close", th).on_click(cx.listener(
+                    |this, _, _, cx| {
+                        cx.stop_propagation();
+                        // Drafts are not saved yet, so closing loses the text.
+                        let touched = this.compose.as_ref().is_some_and(|c| c.touched(cx));
+                        this.close_compose(touched, cx)
+                    },
+                )),
+            );
 
         let (width, height) = match mode {
             Mode::Open => (WIDTH.min(vw - 32.0), MAX_HEIGHT.min(vh - 96.0)),
@@ -624,7 +657,7 @@ impl MailWindow {
                 .flex()
                 .items_center()
                 .justify_center()
-                .bg(rgba(0x0000_0000 | (0x66 as f32 * t) as u32))
+                .bg(rgba(fade(0x0000_0066, t)))
                 .child(
                     div()
                         .id("compose-scrim")
@@ -663,12 +696,7 @@ impl MailWindow {
                 .border_color(rgba(th.divider))
                 .text_size(px(14.0))
                 .when(!label.is_empty(), |d| {
-                    d.child(
-                        div()
-                            .flex_none()
-                            .text_color(rgba(th.text_dim))
-                            .child(label),
-                    )
+                    d.child(div().flex_none().text_color(rgba(th.text_dim)).child(label))
                 })
                 .child(div().flex_1().min_w_0().child(input.clone()))
         };
@@ -848,11 +876,7 @@ impl MailWindow {
 }
 
 /// A small button of the title bar.
-fn small_button(
-    id: &'static str,
-    name: &'static str,
-    th: &Theme,
-) -> gpui::Stateful<gpui::Div> {
+fn small_button(id: &'static str, name: &'static str, th: &Theme) -> gpui::Stateful<gpui::Div> {
     div()
         .id(id)
         .size(px(28.0))
@@ -880,7 +904,10 @@ mod tests {
         MessageView {
             subject: "Gas prices".to_owned(),
             from: vec![addr(Some("Kay Mann"), "kay@enron.com")],
-            to: vec![addr(None, "me@enron.com"), addr(Some("Bob"), "bob@enron.com")],
+            to: vec![
+                addr(None, "me@enron.com"),
+                addr(Some("Bob"), "bob@enron.com"),
+            ],
             cc: vec![addr(None, "sara@enron.com"), addr(None, "kay@enron.com")],
             body: "Hello.\n\nSee you.".to_owned(),
             message_id: Some("1@enron.com".to_owned()),
@@ -930,8 +957,14 @@ mod tests {
         let d = draft(Kind::Forward, Some(&original), me, "K");
         assert_eq!(d.to, "");
         assert_eq!(d.subject, "Fwd: Gas prices");
-        assert!(d.body.starts_with("\n\n-- \nK\n\n---------- Forwarded message ---------\n"));
-        assert!(d.body.contains("From: Kay Mann <kay@enron.com>\nDate: Tue\n"));
+        assert!(
+            d.body
+                .starts_with("\n\n-- \nK\n\n---------- Forwarded message ---------\n")
+        );
+        assert!(
+            d.body
+                .contains("From: Kay Mann <kay@enron.com>\nDate: Tue\n")
+        );
         assert!(d.body.ends_with("\nHello.\n\nSee you.\n"));
     }
 

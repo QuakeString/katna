@@ -148,10 +148,16 @@ impl MailWindow {
                         .justify_center()
                         .rounded_full()
                         .group_hover("app", |s| s.bg(rgba(th.hover)))
-                        .child(Ripple::new(("app-ripple", app as usize), rgba(th.ripple)).centered())
+                        .child(
+                            Ripple::new(("app-ripple", app as usize), rgba(th.ripple)).centered(),
+                        )
                         .child(icon(
                             app.icon(),
-                            if on { th.nav_selected_text } else { th.text_dim },
+                            if on {
+                                th.nav_selected_text
+                            } else {
+                                th.text_dim
+                            },
                             22.0,
                         ))
                         .with_spring(
@@ -163,8 +169,7 @@ impl MailWindow {
                                     let s = s.clamp(0.0, 1.0);
                                     if s > 0.001 {
                                         // The pill grows out from the middle.
-                                        el.bg(rgba(fade(bg, s)))
-                                            .w(px(32.0 + 24.0 * s))
+                                        el.bg(rgba(fade(bg, s))).w(px(32.0 + 24.0 * s))
                                     } else {
                                         el
                                     }
@@ -305,7 +310,9 @@ impl MailWindow {
 
     fn render_contacts(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let people = match &self.people {
-            None | Some(People::Loading) => return placeholder("Gathering people from your mail…", th),
+            None | Some(People::Loading) => {
+                return placeholder("Gathering people from your mail…", th);
+            }
             Some(People::Failed(err)) => return placeholder(err, th),
             Some(People::Loaded(people)) => people.clone(),
         };
@@ -329,7 +336,11 @@ impl MailWindow {
                     .text_color(rgba(th.text_faint))
                     .child(format!(
                         "{}{} people from your mail, most written with first",
-                        if people.len() >= crate::data::PEOPLE_LIMIT as usize { "The top " } else { "" },
+                        if people.len() >= crate::data::PEOPLE_LIMIT as usize {
+                            "The top "
+                        } else {
+                            ""
+                        },
                         format::thousands(people.len() as u64)
                     )),
             );
@@ -391,7 +402,11 @@ fn render_person(
             this.open_app(App::Mail, cx);
             this.search_for(format!("from:{email}"), window, cx);
         }))
-        .child(avatar(name.as_deref().unwrap_or(&person.email), &person.email, 36.0))
+        .child(avatar(
+            name.as_deref().unwrap_or(&person.email),
+            &person.email,
+            36.0,
+        ))
         .child(
             div()
                 .flex_1()
@@ -423,10 +438,7 @@ fn render_person(
                 .items_end()
                 .text_size(px(12.0))
                 .text_color(rgba(th.text_faint))
-                .child(format!(
-                    "{} messages",
-                    format::thousands(person.messages)
-                ))
+                .child(format!("{} messages", format::thousands(person.messages)))
                 .child(last),
         )
         .into_any_element()

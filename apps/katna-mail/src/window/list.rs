@@ -17,15 +17,12 @@ use katna_core::config::Density;
 use katna_ui::Ripple;
 use katna_ui::motion;
 
-use super::{
-    Act, LIST_CONTEXT, Listing, MailWindow, Menu, READER_CONTEXT, Reload, STACKED_BELOW,
-};
+use super::{Act, LIST_CONTEXT, Listing, MailWindow, Menu, READER_CONTEXT, Reload, STACKED_BELOW};
 use crate::data::{Category, EntryKey, Row};
 use crate::format;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
-    icon, icon_button, icon_button_colored, menu, menu_item, placeholder,
-    toolbar,
+    icon, icon_button, icon_button_colored, menu, menu_item, placeholder, toolbar,
 };
 
 const TAB_HEIGHT: f32 = 56.0;
@@ -73,7 +70,10 @@ impl MailWindow {
     pub(super) fn render_list_card(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let two_pane_reading = !self.split() && self.reading;
         let (toolbar, body) = if two_pane_reading {
-            (self.render_reader_toolbar(th, cx), self.render_reader(th, cx))
+            (
+                self.render_reader_toolbar(th, cx),
+                self.render_reader(th, cx),
+            )
         } else {
             let tabs = self.shows_tabs().then(|| self.render_tabs(th, cx));
             let banner = self.render_select_banner(th, cx);
@@ -197,8 +197,9 @@ impl MailWindow {
         } else {
             let any_unread = self.checked_rows().iter().any(|r| r.unread);
             let read_button = if any_unread {
-                icon_button("mark-read", "mark-read", 20.0, th)
-                    .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)))
+                icon_button("mark-read", "mark-read", 20.0, th).on_click(
+                    cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)),
+                )
             } else {
                 icon_button("mark-unread", "mail", 20.0, th).on_click(
                     cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(false), cx)),
@@ -209,9 +210,8 @@ impl MailWindow {
                 .child(separator(th))
                 .child(read_button)
                 .child({
-                    let move_to = icon_button("list-move", "move-to", 20.0, th).on_click(
-                        cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)),
-                    );
+                    let move_to = icon_button("list-move", "move-to", 20.0, th)
+                        .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)));
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
                 })
                 .child({
@@ -368,12 +368,14 @@ impl MailWindow {
                             .top(px(40.0))
                             .left(px(0.0))
                             .occlude()
-                            .child(items.with_animation(
-                                ("menu", which as usize),
-                                Animation::new(Duration::from_millis(160))
-                                    .with_easing(ease_out_quint()),
-                                |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
-                            )),
+                            .child(
+                                items.with_animation(
+                                    ("menu", which as usize),
+                                    Animation::new(Duration::from_millis(160))
+                                        .with_easing(ease_out_quint()),
+                                    |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
+                                ),
+                            ),
                     )
                     .with_priority(2),
                 )
@@ -405,39 +407,29 @@ impl MailWindow {
                     Some(())
                 };
                 match targets {
-                    None => menu(th).child(
-                        menu_item("mark-all-read", "Mark all as read", th).on_click(cx.listener(
-                            |this, _, _, cx| {
+                    None => {
+                        menu(th).child(menu_item("mark-all-read", "Mark all as read", th).on_click(
+                            cx.listener(|this, _, _, cx| {
                                 let keys = this.entries.iter().map(|e| e.key).collect();
                                 this.act(Act::Read(true), keys, cx);
-                            },
-                        )),
-                    ),
+                            }),
+                        ))
+                    }
                     Some(()) => menu(th)
-                        .child(
-                            menu_item("more-read", "Mark as read", th).on_click(
-                                cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)),
-                            ),
-                        )
-                        .child(
-                            menu_item("more-unread", "Mark as unread", th).on_click(cx.listener(
-                                |this, _, window, cx| {
-                                    this.mark_unread(&super::MarkUnread, window, cx)
-                                },
-                            )),
-                        )
-                        .child(
-                            menu_item("more-star", "Add star", th).on_click(
-                                cx.listener(|this, _, _, cx| this.act_on_targets(Act::Star(true), cx)),
-                            ),
-                        )
-                        .child(
-                            menu_item("more-unstar", "Remove star", th).on_click(
-                                cx.listener(|this, _, _, cx| {
-                                    this.act_on_targets(Act::Star(false), cx)
-                                }),
-                            ),
-                        ),
+                        .child(menu_item("more-read", "Mark as read", th).on_click(
+                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)),
+                        ))
+                        .child(menu_item("more-unread", "Mark as unread", th).on_click(
+                            cx.listener(|this, _, window, cx| {
+                                this.mark_unread(&super::MarkUnread, window, cx)
+                            }),
+                        ))
+                        .child(menu_item("more-star", "Add star", th).on_click(
+                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Star(true), cx)),
+                        ))
+                        .child(menu_item("more-unstar", "Remove star", th).on_click(
+                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Star(false), cx)),
+                        )),
                 }
             }
             Menu::MoveTo => {
@@ -478,7 +470,11 @@ impl MailWindow {
                                             .on_click(cx.listener(move |this, _, _, cx| {
                                                 this.act_on_targets(Act::MoveTo(id), cx)
                                             }))
-                                            .child(icon(super::nav::role_icon(role), th.text_dim, 18.0))
+                                            .child(icon(
+                                                super::nav::role_icon(role),
+                                                th.text_dim,
+                                                18.0,
+                                            ))
                                             .child(name)
                                     }),
                             ),
@@ -489,7 +485,8 @@ impl MailWindow {
 
     /// Keys of the lines on screen.
     fn visible_keys(&self) -> impl Iterator<Item = EntryKey> + '_ {
-        let range = self.visible.start.min(self.entries.len())..self.visible.end.min(self.entries.len());
+        let range =
+            self.visible.start.min(self.entries.len())..self.visible.end.min(self.entries.len());
         self.entries[range].iter().map(|e| e.key)
     }
 
@@ -502,9 +499,10 @@ impl MailWindow {
             .take(500)
             .copied()
             .collect();
+        let folder = self.listed_folder();
         match &mut self.mail {
             Ok(mail) => mail
-                .rows(&entries, self.show_recipients)
+                .rows(&entries, folder, self.show_recipients)
                 .into_iter()
                 .flatten()
                 .map(|r| self.with_pending(r))
@@ -533,8 +531,9 @@ impl MailWindow {
         let range =
             self.visible.start.min(self.entries.len())..self.visible.end.min(self.entries.len());
         let entries = self.entries[range].to_vec();
+        let folder = self.listed_folder();
         let rows: Vec<Option<Rc<Row>>> = match &mut self.mail {
-            Ok(mail) => mail.rows(&entries, self.show_recipients),
+            Ok(mail) => mail.rows(&entries, folder, self.show_recipients),
             Err(_) => Vec::new(),
         };
         for (entry, row) in entries.iter().zip(rows) {
@@ -577,7 +576,10 @@ impl MailWindow {
             .unwrap_or_default();
         let total = format::thousands(self.entries.len() as u64);
         let (text, link) = if self.checked_all {
-            (format!("All {total} {noun}{place} are selected."), "Clear selection".to_owned())
+            (
+                format!("All {total} {noun}{place} are selected."),
+                "Clear selection".to_owned(),
+            )
         } else {
             (
                 format!("All {on_screen} {noun} on screen are selected."),
@@ -651,29 +653,38 @@ impl MailWindow {
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .on_click(cx.listener(move |this, _, _, cx| this.open_category(category, cx)))
-                .child(Ripple::new(("tab-ripple", category.index()), rgba(th.ripple)))
-                .child(icon(category.icon(), if on { tint } else { th.text_dim }, 20.0))
-                .when(width >= 116.0, |d| d.child(
-                    div()
-                        .flex()
-                        .flex_col()
-                        .min_w_0()
-                        .child(div().truncate().child(category.label()))
-                        .when(unread > 0 && !on && category != Category::Primary, |d| {
-                            d.child(
-                                div()
-                                    .mt(px(2.0))
-                                    .px(px(6.0))
-                                    .rounded_full()
-                                    .bg(rgba(tint))
-                                    .text_color(rgba(th.on_accent))
-                                    .text_size(px(11.0))
-                                    .line_height(px(16.0))
-                                    .truncate()
-                                    .child(format!("{} new", format::thousands(unread))),
-                            )
-                        }),
+                .child(Ripple::new(
+                    ("tab-ripple", category.index()),
+                    rgba(th.ripple),
                 ))
+                .child(icon(
+                    category.icon(),
+                    if on { tint } else { th.text_dim },
+                    20.0,
+                ))
+                .when(width >= 116.0, |d| {
+                    d.child(
+                        div()
+                            .flex()
+                            .flex_col()
+                            .min_w_0()
+                            .child(div().truncate().child(category.label()))
+                            .when(unread > 0 && !on && category != Category::Primary, |d| {
+                                d.child(
+                                    div()
+                                        .mt(px(2.0))
+                                        .px(px(6.0))
+                                        .rounded_full()
+                                        .bg(rgba(tint))
+                                        .text_color(rgba(th.on_accent))
+                                        .text_size(px(11.0))
+                                        .line_height(px(16.0))
+                                        .truncate()
+                                        .child(format!("{} new", format::thousands(unread))),
+                                )
+                            }),
+                    )
+                })
                 .when(width < 116.0, |d| d.justify_center().pl(px(8.0)))
         });
         div()
@@ -726,8 +737,9 @@ impl MailWindow {
                 }
                 let th = this.theme(window);
                 let entries = this.entries[range.clone()].to_vec();
+                let folder = this.listed_folder();
                 let rows = match &mut this.mail {
-                    Ok(mail) => mail.rows(&entries, this.show_recipients),
+                    Ok(mail) => mail.rows(&entries, folder, this.show_recipients),
                     Err(_) => vec![None; range.len()],
                 };
                 let rows: Vec<_> = rows
@@ -1002,8 +1014,14 @@ impl MailWindow {
                             .flex()
                             .flex_col()
                             .child(
-                                line(div().flex_1().min_w_0().child(correspondent).into_any_element())
-                                    .children(actions.or(Some(date.into_any_element()))),
+                                line(
+                                    div()
+                                        .flex_1()
+                                        .min_w_0()
+                                        .child(correspondent)
+                                        .into_any_element(),
+                                )
+                                .children(actions.or(Some(date.into_any_element()))),
                             )
                             .child(line(subject).child(star))
                             .child(line(snippet).when(row.attachments, |d| {
@@ -1090,14 +1108,18 @@ impl MailWindow {
             .flex()
             .flex_row()
             .items_center()
-            .child(button(0, "archive").on_click(cx.listener(move |this, _, _, cx| {
-                cx.stop_propagation();
-                this.act(Act::Archive, vec![key], cx);
-            })))
-            .child(button(1, "trash").on_click(cx.listener(move |this, _, _, cx| {
-                cx.stop_propagation();
-                this.act(Act::Delete, vec![key], cx);
-            })))
+            .child(
+                button(0, "archive").on_click(cx.listener(move |this, _, _, cx| {
+                    cx.stop_propagation();
+                    this.act(Act::Archive, vec![key], cx);
+                })),
+            )
+            .child(
+                button(1, "trash").on_click(cx.listener(move |this, _, _, cx| {
+                    cx.stop_propagation();
+                    this.act(Act::Delete, vec![key], cx);
+                })),
+            )
             .child(
                 button(2, if unread { "mark-read" } else { "mail" }).on_click(cx.listener(
                     move |this, _, _, cx| {

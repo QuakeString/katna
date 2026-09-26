@@ -86,7 +86,9 @@ pub async fn send(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::UndoSend(id) => match pim.undo_send(*id).await {
             // The app opens the message again, so the outbox can forget it.
             Ok(true) => pim.discard_send(*id).await.map(|_| ()),
-            Ok(false) => return Err("Too late to undo: the message is already on its way.".to_owned()),
+            Ok(false) => {
+                return Err("Too late to undo: the message is already on its way.".to_owned());
+            }
             Err(err) => Err(err),
         },
     };
@@ -156,7 +158,9 @@ mod tests {
     fn snackbar_texts() {
         let ids = vec![MessageId(1)];
         assert_eq!(
-            Command::Archive(ids.clone()).done_text("Conversation").as_deref(),
+            Command::Archive(ids.clone())
+                .done_text("Conversation")
+                .as_deref(),
             Some("Conversation archived.")
         );
         assert_eq!(Command::MarkRead(ids, true).done_text("x"), None);

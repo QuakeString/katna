@@ -253,11 +253,6 @@ pub fn radio(t: f32, th: &Theme) -> AnyElement {
         .rounded_full()
         .border_2()
         .border_color(rgba(ring))
-        .child(
-            div()
-                .size(px(10.0 * t))
-                .rounded_full()
-                .bg(rgba(th.accent)),
-        )
+        .child(div().size(px(10.0 * t)).rounded_full().bg(rgba(th.accent)))
         .into_any_element()
 }

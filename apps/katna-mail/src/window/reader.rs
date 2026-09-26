@@ -16,8 +16,8 @@ use gpui::{
 use katna_render::MessageView;
 use katna_store::MessageId;
 
-use super::list::separator;
 use super::compose::Kind;
+use super::list::separator;
 use super::{MailWindow, Menu, SelectNext, SelectPrevious};
 use crate::daemon::Command;
 use crate::data::{EntryKey, Mail, Row};
@@ -190,7 +190,11 @@ impl MailWindow {
             .into_any_element()
     }
 
-    pub(super) fn render_reader_toolbar(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    pub(super) fn render_reader_toolbar(
+        &mut self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let count = self.entries.len();
         let position = self
             .reader
@@ -202,32 +206,28 @@ impl MailWindow {
         } else {
             icon_button("reader-back", "back", 20.0, th)
         }
-        .on_click(cx.listener(|this, _, window, cx| {
-            this.close_message(&super::CloseMessage, window, cx)
-        }));
+        .on_click(
+            cx.listener(|this, _, window, cx| this.close_message(&super::CloseMessage, window, cx)),
+        );
         let narrow = self.split() && self.cards_width * self.config.mail.reading_pane_share < 520.0;
         toolbar(th)
             .child(back)
             .child(separator(th))
             .child(self.action_buttons("reader", th, cx))
             .child(separator(th))
-            .child(
-                icon_button("reader-unread", "mail", 20.0, th).on_click(cx.listener(
-                    |this, _, window, cx| this.mark_unread(&super::MarkUnread, window, cx),
-                )),
-            )
+            .child(icon_button("reader-unread", "mail", 20.0, th).on_click(
+                cx.listener(|this, _, window, cx| this.mark_unread(&super::MarkUnread, window, cx)),
+            ))
             .when(!narrow, |d| {
                 d.child({
-                    let move_to = icon_button("reader-move", "move-to", 20.0, th).on_click(
-                        cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)),
-                    );
+                    let move_to = icon_button("reader-move", "move-to", 20.0, th)
+                        .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)));
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
                 })
             })
             .child({
-                let more = icon_button("reader-more", "more", 20.0, th).on_click(
-                    cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ReaderMore, cx)),
-                );
+                let more = icon_button("reader-more", "more", 20.0, th)
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ReaderMore, cx)));
                 self.with_menu(more, Menu::ReaderMore, th, cx)
             })
             .child(div().flex_1())
@@ -332,9 +332,7 @@ impl MailWindow {
         let n = reader.parts.len();
         let mut ix = 0;
         while ix < n {
-            let run_end = (ix..n)
-                .find(|&j| reader.parts[j].expanded)
-                .unwrap_or(n);
+            let run_end = (ix..n).find(|&j| reader.parts[j].expanded).unwrap_or(n);
             let run = run_end - ix;
             if !reader.show_all && ix > 0 && run >= FOLD_AT && run_end < n {
                 shown.push(Shown::Fold(run));
@@ -361,20 +359,18 @@ impl MailWindow {
             .pr(px(24.0))
             .pt(px(24.0))
             .pb(px(32.0))
+            .child(pill_button("reply", "reply", "Reply", th).on_click(
+                cx.listener(|this, _, window, cx| this.open_compose(Kind::Reply, None, window, cx)),
+            ))
             .child(
-                pill_button("reply", "reply", "Reply", th).on_click(cx.listener(|this, _, window, cx| {
-                    this.open_compose(Kind::Reply, None, window, cx)
-                })),
+                pill_button("reply-all", "reply-all", "Reply all", th).on_click(cx.listener(
+                    |this, _, window, cx| this.open_compose(Kind::ReplyAll, None, window, cx),
+                )),
             )
             .child(
-                pill_button("reply-all", "reply-all", "Reply all", th).on_click(cx.listener(|this, _, window, cx| {
-                    this.open_compose(Kind::ReplyAll, None, window, cx)
-                })),
-            )
-            .child(
-                pill_button("forward", "forward", "Forward", th).on_click(cx.listener(|this, _, window, cx| {
-                    this.open_compose(Kind::Forward, None, window, cx)
-                })),
+                pill_button("forward", "forward", "Forward", th).on_click(cx.listener(
+                    |this, _, window, cx| this.open_compose(Kind::Forward, None, window, cx),
+                )),
             );
         let key = reader.key;
         div()
@@ -412,7 +408,10 @@ impl MailWindow {
             (None, None) => ("(unknown sender)".to_owned(), String::new()),
         };
         let now = jiff::Timestamp::now().as_second();
-        let date = row.as_ref().and_then(|r| r.date).or(view.and_then(|v| v.date));
+        let date = row
+            .as_ref()
+            .and_then(|r| r.date)
+            .or(view.and_then(|v| v.date));
         let unread = row.as_ref().is_some_and(|r| r.unread);
         let flagged = row.as_ref().is_some_and(|r| r.flagged);
         let id = part.id;
@@ -866,6 +865,8 @@ fn fold(count: usize, th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
 fn key_number(key: EntryKey) -> usize {
     match key {
         EntryKey::Message(id) => id.0 as usize,
+        // Apart from message numbers, so the two never share an element ID.
+        EntryKey::Thread(thread) => (thread.0 as usize) | (1 << (usize::BITS - 1)),
     }
 }
 

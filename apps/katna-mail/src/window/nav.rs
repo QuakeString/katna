@@ -7,15 +7,12 @@ use std::ops::Range;
 
 use gpui::{
     AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, div, linear_color_stop,
-    linear_gradient,
-    prelude::*, px, rgba, uniform_list,
+    linear_gradient, prelude::*, px, rgba, uniform_list,
 };
 use katna_ui::Ripple;
 use katna_ui::motion::{self, lerp};
 
-use super::{
-    FocusSearch, Listing, MailWindow, SEARCH_CONTEXT, ToggleNavigation, ToggleSettings,
-};
+use super::{FocusSearch, Listing, MailWindow, SEARCH_CONTEXT, ToggleNavigation, ToggleSettings};
 use crate::format;
 use crate::sidebar::{self, Role};
 use crate::theme::{Theme, fade, mix};
@@ -151,9 +148,9 @@ impl MailWindow {
             },
             th,
         )
-        .on_click(cx.listener(|this, _, window, cx| {
-            this.toggle_settings(&ToggleSettings, window, cx)
-        }));
+        .on_click(
+            cx.listener(|this, _, window, cx| this.toggle_settings(&ToggleSettings, window, cx)),
+        );
         let end = vec![settings.mr(px(8.0)).into_any_element()];
         end
     }

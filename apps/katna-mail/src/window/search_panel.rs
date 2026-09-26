@@ -5,8 +5,8 @@
 //! ...), as webmail's advanced search does.
 
 use gpui::{
-    AnyElement, Context, Entity, Focusable, FontWeight, Subscription, Window, div, prelude::*,
-    px, rgba,
+    AnyElement, Context, Entity, Focusable, FontWeight, Subscription, Window, div, prelude::*, px,
+    rgba,
 };
 use katna_ui::{InputEvent, TextInput};
 
@@ -105,21 +105,22 @@ impl MailWindow {
         let input = |cx: &mut Context<Self>| cx.new(|cx| TextInput::new("", cx));
         let (from, to, subject, words, without) =
             (input(cx), input(cx), input(cx), input(cx), input(cx));
-        let subscriptions = [&from, &to, &subject, &words, &without]
-            .into_iter()
-            .map(|input| {
-                cx.subscribe_in(input, window, |this, _, event: &InputEvent, window, cx| {
-                    match event {
-                        InputEvent::Submit => this.run_search_panel(window, cx),
-                        InputEvent::Cancel => {
-                            this.search_panel = None;
-                            cx.notify();
+        let subscriptions =
+            [&from, &to, &subject, &words, &without]
+                .into_iter()
+                .map(|input| {
+                    cx.subscribe_in(input, window, |this, _, event: &InputEvent, window, cx| {
+                        match event {
+                            InputEvent::Submit => this.run_search_panel(window, cx),
+                            InputEvent::Cancel => {
+                                this.search_panel = None;
+                                cx.notify();
+                            }
+                            InputEvent::Changed => {}
                         }
-                        InputEvent::Changed => {}
-                    }
+                    })
                 })
-            })
-            .collect();
+                .collect();
         window.focus(&from.focus_handle(cx), cx);
         self.search_panel = Some(SearchPanel {
             from,
@@ -197,7 +198,11 @@ impl MailWindow {
                 .border_1()
                 .border_color(rgba(if on { th.nav_selected } else { th.divider }))
                 .bg(rgba(if on { th.nav_selected } else { th.surface }))
-                .text_color(rgba(if on { th.nav_selected_text } else { th.text_dim }))
+                .text_color(rgba(if on {
+                    th.nav_selected_text
+                } else {
+                    th.text_dim
+                }))
                 .text_size(px(13.0))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
@@ -235,12 +240,14 @@ impl MailWindow {
                             .font_weight(FontWeight::MEDIUM)
                             .child("Search options"),
                     )
-                    .child(icon_button("search-panel-close", "close", 20.0, th).on_click(
-                        cx.listener(|this, _, _, cx| {
-                            this.search_panel = None;
-                            cx.notify();
-                        }),
-                    )),
+                    .child(
+                        icon_button("search-panel-close", "close", 20.0, th).on_click(cx.listener(
+                            |this, _, _, cx| {
+                                this.search_panel = None;
+                                cx.notify();
+                            },
+                        )),
+                    ),
             )
             .child(field("From", &panel.from))
             .child(field("To", &panel.to))
@@ -353,7 +360,16 @@ mod tests {
             }
         };
         assert_eq!(
-            build_query("kay", "", "gas deal", "price", "draft old", "1w", true, quote),
+            build_query(
+                "kay",
+                "",
+                "gas deal",
+                "price",
+                "draft old",
+                "1w",
+                true,
+                quote
+            ),
             "from:kay subject:\"gas deal\" price -draft -old newer_than:1w has:attachment"
         );
         assert_eq!(build_query("", "", "", "", "", "", false, quote), "");

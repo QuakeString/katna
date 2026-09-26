@@ -90,7 +90,11 @@ pub fn build(message: &Outgoing) -> Vec<u8> {
     if let Some(from) = &message.from {
         header(&mut out, "From", &mailboxes(std::slice::from_ref(from)));
     }
-    for (name, list) in [("To", &message.to), ("Cc", &message.cc), ("Bcc", &message.bcc)] {
+    for (name, list) in [
+        ("To", &message.to),
+        ("Cc", &message.cc),
+        ("Bcc", &message.bcc),
+    ] {
         if !list.is_empty() {
             header(&mut out, name, &mailboxes(list));
         }
@@ -100,7 +104,11 @@ pub fn build(message: &Outgoing) -> Vec<u8> {
         header(&mut out, "In-Reply-To", &format!("<{id}>"));
     }
     if !message.references.is_empty() {
-        let ids: Vec<String> = message.references.iter().map(|id| format!("<{id}>")).collect();
+        let ids: Vec<String> = message
+            .references
+            .iter()
+            .map(|id| format!("<{id}>"))
+            .collect();
         header(&mut out, "References", &ids.join(" "));
     }
     out.push_str("MIME-Version: 1.0\r\n");
@@ -285,7 +293,9 @@ mod tests {
 
     #[test]
     fn folds_long_lines() {
-        let to: Vec<Mailbox> = (0..12).map(|i| mailbox(None, &format!("person{i}@example.org"))).collect();
+        let to: Vec<Mailbox> = (0..12)
+            .map(|i| mailbox(None, &format!("person{i}@example.org")))
+            .collect();
         let raw = String::from_utf8(build(&Outgoing {
             to,
             body: format!("{}\n", "word ".repeat(40).trim_end()),

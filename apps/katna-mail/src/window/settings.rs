@@ -8,13 +8,13 @@
 use std::time::Duration;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, Div, Entity, Focusable, FontWeight, Hsla,
-    SpringAnimation, Window, div, prelude::*, px, rgba,
+    AnimationExt, AnyElement, Context, Div, Entity, Focusable, FontWeight, Hsla, SpringAnimation,
+    Window, div, prelude::*, px, rgba,
 };
 use katna_core::config::{Density, ReadingPane, Theme as ThemeChoice, UNDO_SEND_CHOICES};
-use katna_ui::{InputEvent, TextArea};
 use katna_ui::Ripple;
 use katna_ui::motion;
+use katna_ui::{InputEvent, TextArea};
 
 use super::{MailWindow, SETTINGS_WIDTH};
 use crate::theme::{Theme, mix};
@@ -38,156 +38,162 @@ impl MailWindow {
     pub(super) fn render_settings(&self, th: &Theme, t: f32, cx: &mut Context<Self>) -> AnyElement {
         let view = &self.config.mail;
         let inner = SETTINGS_WIDTH - 16.0;
-        let panel = div()
-            .id("settings")
-            .w(px(inner))
-            .h_full()
-            .flex()
-            .flex_col()
-            .rounded(px(16.0))
-            .bg(rgba(th.surface))
-            .shadow(elevation(th, 1.0 * t.min(1.0)))
-            .child(
-                div()
-                    .flex_none()
-                    .h(px(56.0))
-                    .pl(px(20.0))
-                    .pr(px(8.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .child(
-                        div()
-                            .flex_1()
-                            .text_size(px(16.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .child("Quick settings"),
-                    )
-                    .child(icon_button("settings-close", "close", 20.0, th).on_click(
-                        cx.listener(|this, _, window, cx| {
-                            this.toggle_settings(&super::ToggleSettings, window, cx)
-                        }),
-                    )),
-            )
-            .child(
-                div()
-                    .id("settings-body")
-                    .flex_1()
-                    .min_h_0()
-                    .overflow_y_scroll()
-                    .px(px(20.0))
-                    .pb(px(20.0))
-                    .flex()
-                    .flex_col()
-                    .gap(px(4.0))
-                    .child(heading("Reading pane", th))
-                    .child(
-                        div()
-                            .flex()
-                            .flex_row()
-                            .gap(px(12.0))
-                            .child(self.pane_choice(ReadingPane::Right, "Right of the list", th, cx))
-                            .child(self.pane_choice(ReadingPane::None, "No split", th, cx)),
-                    )
-                    .child(divider(th))
-                    .child(heading("Density", th))
-                    .child(self.radio_row(
-                        "density-default",
-                        "Default",
-                        view.density == Density::Default,
-                        Change::Density(Density::Default),
-                        th,
-                        cx,
-                    ))
-                    .child(self.radio_row(
-                        "density-compact",
-                        "Compact",
-                        view.density == Density::Compact,
-                        Change::Density(Density::Compact),
-                        th,
-                        cx,
-                    ))
-                    .child(divider(th))
-                    .child(heading("Theme", th))
-                    .children(
-                        [
-                            (ThemeChoice::System, "theme-system", "Same as the desktop"),
-                            (ThemeChoice::Light, "theme-light", "Light"),
-                            (ThemeChoice::Dark, "theme-dark", "Dark"),
-                        ]
-                        .map(|(choice, id, label)| {
-                            self.radio_row(
-                                id,
-                                label,
-                                view.theme == choice,
-                                Change::Theme(choice),
-                                th,
-                                cx,
-                            )
-                        }),
-                    )
-                    .child(divider(th))
-                    .child(heading("Inbox", th))
-                    .child(self.switch_row(
-                        "tabs",
-                        "Category tabs",
-                        "Primary, Promotions, Social, Updates and Forums",
-                        view.inbox_tabs,
-                        Change::Tabs(!view.inbox_tabs),
-                        th,
-                        cx,
-                    ))
-                    .child(divider(th))
-                    .child(heading("Sending", th))
-                    .child(self.undo_send_choice(th, cx))
-                    .children(self.signature.clone().map(|editor| {
-                        div()
-                            .pt(px(12.0))
-                            .flex()
-                            .flex_col()
-                            .gap(px(6.0))
-                            .child(div().px(px(8.0)).text_size(px(14.0)).child("Signature"))
-                            .child(
-                                div()
-                                    .id("signature-box")
-                                    .mx(px(8.0))
-                                    .min_h(px(72.0))
-                                    .max_h(px(160.0))
-                                    .overflow_y_scroll()
-                                    .px(px(10.0))
-                                    .py(px(8.0))
-                                    .rounded(px(8.0))
-                                    .border_1()
-                                    .border_color(rgba(th.divider))
-                                    .text_size(px(14.0))
-                                    .line_height(px(20.0))
-                                    .cursor_text()
-                                    .on_click({
-                                        let focus = editor.focus_handle(cx);
-                                        move |_, window, cx| window.focus(&focus, cx)
-                                    })
-                                    .child(editor),
-                            )
-                            .child(
-                                div()
-                                    .px(px(8.0))
-                                    .text_size(px(12.0))
-                                    .text_color(rgba(th.text_faint))
-                                    .child("Added below new mail, replies and forwards."),
-                            )
-                    }))
-                    .child(divider(th))
-                    .child(heading("Email threading", th))
-                    .child(self.switch_row(
-                        "conversations",
-                        "Conversation view",
-                        "Group replies to the same mail",
-                        view.conversations,
-                        Change::Conversations(!view.conversations),
-                        th,
-                        cx,
-                    )),
-            );
+        let panel =
+            div()
+                .id("settings")
+                .w(px(inner))
+                .h_full()
+                .flex()
+                .flex_col()
+                .rounded(px(16.0))
+                .bg(rgba(th.surface))
+                .shadow(elevation(th, 1.0 * t.min(1.0)))
+                .child(
+                    div()
+                        .flex_none()
+                        .h(px(56.0))
+                        .pl(px(20.0))
+                        .pr(px(8.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .child(
+                            div()
+                                .flex_1()
+                                .text_size(px(16.0))
+                                .font_weight(FontWeight::MEDIUM)
+                                .child("Quick settings"),
+                        )
+                        .child(icon_button("settings-close", "close", 20.0, th).on_click(
+                            cx.listener(|this, _, window, cx| {
+                                this.toggle_settings(&super::ToggleSettings, window, cx)
+                            }),
+                        )),
+                )
+                .child(
+                    div()
+                        .id("settings-body")
+                        .flex_1()
+                        .min_h_0()
+                        .overflow_y_scroll()
+                        .px(px(20.0))
+                        .pb(px(20.0))
+                        .flex()
+                        .flex_col()
+                        .gap(px(4.0))
+                        .child(heading("Reading pane", th))
+                        .child(
+                            div()
+                                .flex()
+                                .flex_row()
+                                .gap(px(12.0))
+                                .child(self.pane_choice(
+                                    ReadingPane::Right,
+                                    "Right of the list",
+                                    th,
+                                    cx,
+                                ))
+                                .child(self.pane_choice(ReadingPane::None, "No split", th, cx)),
+                        )
+                        .child(divider(th))
+                        .child(heading("Density", th))
+                        .child(self.radio_row(
+                            "density-default",
+                            "Default",
+                            view.density == Density::Default,
+                            Change::Density(Density::Default),
+                            th,
+                            cx,
+                        ))
+                        .child(self.radio_row(
+                            "density-compact",
+                            "Compact",
+                            view.density == Density::Compact,
+                            Change::Density(Density::Compact),
+                            th,
+                            cx,
+                        ))
+                        .child(divider(th))
+                        .child(heading("Theme", th))
+                        .children(
+                            [
+                                (ThemeChoice::System, "theme-system", "Same as the desktop"),
+                                (ThemeChoice::Light, "theme-light", "Light"),
+                                (ThemeChoice::Dark, "theme-dark", "Dark"),
+                            ]
+                            .map(|(choice, id, label)| {
+                                self.radio_row(
+                                    id,
+                                    label,
+                                    view.theme == choice,
+                                    Change::Theme(choice),
+                                    th,
+                                    cx,
+                                )
+                            }),
+                        )
+                        .child(divider(th))
+                        .child(heading("Inbox", th))
+                        .child(self.switch_row(
+                            "tabs",
+                            "Category tabs",
+                            "Primary, Promotions, Social, Updates and Forums",
+                            view.inbox_tabs,
+                            Change::Tabs(!view.inbox_tabs),
+                            th,
+                            cx,
+                        ))
+                        .child(divider(th))
+                        .child(heading("Sending", th))
+                        .child(self.undo_send_choice(th, cx))
+                        .children(self.signature.clone().map(|editor| {
+                            div()
+                                .pt(px(12.0))
+                                .flex()
+                                .flex_col()
+                                .gap(px(6.0))
+                                .child(div().px(px(8.0)).text_size(px(14.0)).child("Signature"))
+                                .child(
+                                    div()
+                                        .id("signature-box")
+                                        .mx(px(8.0))
+                                        .min_h(px(72.0))
+                                        .max_h(px(160.0))
+                                        .overflow_y_scroll()
+                                        .px(px(10.0))
+                                        .py(px(8.0))
+                                        .rounded(px(8.0))
+                                        .border_1()
+                                        .border_color(rgba(th.divider))
+                                        .text_size(px(14.0))
+                                        .line_height(px(20.0))
+                                        .cursor_text()
+                                        .on_click({
+                                            let focus = editor.focus_handle(cx);
+                                            move |_, window, cx| window.focus(&focus, cx)
+                                        })
+                                        .child(editor),
+                                )
+                                .child(
+                                    div()
+                                        .px(px(8.0))
+                                        .text_size(px(12.0))
+                                        .text_color(rgba(th.text_faint))
+                                        .child("Added below new mail, replies and forwards."),
+                                )
+                        }))
+                        .child(divider(th))
+                        .child(heading("Email threading", th))
+                        .child(self.switch_row(
+                            "conversations",
+                            "Conversation view",
+                            "Group replies to the same mail",
+                            view.conversations,
+                            Change::Conversations(!view.conversations),
+                            th,
+                            cx,
+                        )),
+                );
         // The panel keeps its width and slides out from under the edge.
         div()
             .flex_none()
@@ -249,13 +255,17 @@ impl MailWindow {
                 .border_1()
                 .border_color(rgba(if on { th.nav_selected } else { th.divider }))
                 .bg(rgba(if on { th.nav_selected } else { th.surface }))
-                .text_color(rgba(if on { th.nav_selected_text } else { th.text_dim }))
+                .text_color(rgba(if on {
+                    th.nav_selected_text
+                } else {
+                    th.text_dim
+                }))
                 .text_size(px(13.0))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
-                .on_click(cx.listener(move |this, _, _, cx| {
-                    this.apply(Change::UndoSend(seconds), cx)
-                }))
+                .on_click(
+                    cx.listener(move |this, _, _, cx| this.apply(Change::UndoSend(seconds), cx)),
+                )
                 .child(if seconds == 0 {
                     "Off".to_owned()
                 } else {
@@ -268,7 +278,14 @@ impl MailWindow {
             .flex_col()
             .gap(px(8.0))
             .child(div().text_size(px(14.0)).child("Undo send"))
-            .child(div().flex().flex_row().flex_wrap().gap(px(6.0)).children(chips))
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(6.0))
+                    .children(chips),
+            )
             .into_any_element()
     }
 
@@ -354,7 +371,13 @@ impl MailWindow {
                         .rounded(px(3.0))
                         .bg(rgba(th.surface))
                         .p(px(5.0))
-                        .child(div().h(px(6.0)).w(px(28.0)).rounded_full().bg(rgba(th.text_faint))),
+                        .child(
+                            div()
+                                .h(px(6.0))
+                                .w(px(28.0))
+                                .rounded_full()
+                                .bg(rgba(th.text_faint)),
+                        ),
                 )
             });
         div()
@@ -469,16 +492,14 @@ impl MailWindow {
                             .child(detail),
                     ),
             )
-            .child(
-                div().with_spring(
-                    (id, 3_usize),
-                    SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
-                    {
-                        let th = *th;
-                        move |el, s: f32| el.child(switch(s.clamp(0.0, 1.0), &th))
-                    },
-                ),
-            )
+            .child(div().with_spring(
+                (id, 3_usize),
+                SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                {
+                    let th = *th;
+                    move |el, s: f32| el.child(switch(s.clamp(0.0, 1.0), &th))
+                },
+            ))
             .into_any_element()
     }
 }

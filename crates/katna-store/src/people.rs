@@ -93,7 +93,10 @@ mod tests {
         }
         batch.commit().unwrap();
 
-        let people = Store::open(&paths, Mode::ReadOnly).unwrap().people(10).unwrap();
+        let people = Store::open(&paths, Mode::ReadOnly)
+            .unwrap()
+            .people(10)
+            .unwrap();
         let summary: Vec<_> = people
             .iter()
             .map(|p| (p.email.as_str(), p.name.as_deref(), p.messages, p.last))

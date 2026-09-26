@@ -179,7 +179,10 @@ impl Config {
         if !(0.25..=0.75).contains(&self.mail.reading_pane_share) {
             return Err(Error::ConfigValue {
                 key: "mail.reading_pane_share",
-                message: format!("{} is not between 0.25 and 0.75", self.mail.reading_pane_share),
+                message: format!(
+                    "{} is not between 0.25 and 0.75",
+                    self.mail.reading_pane_share
+                ),
             });
         }
         if self.logging.filter.trim().is_empty() {

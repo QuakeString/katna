@@ -512,7 +512,9 @@ impl MailWindow {
                 };
                 let text = format!("\u{201c}{subject}\u{201d} could not be sent: {detail}");
                 if this
-                    .update(cx, |this, cx| this.show_snackbar_for(text, None, FAILURE_TIME, cx))
+                    .update(cx, |this, cx| {
+                        this.show_snackbar_for(text, None, FAILURE_TIME, cx)
+                    })
                     .is_err()
                 {
                     break;
@@ -534,9 +536,19 @@ impl MailWindow {
         self.nav_rows = rows;
     }
 
+    /// The folder the list shows; `None` for search results.
+    fn listed_folder(&self) -> Option<FolderId> {
+        match &self.listing {
+            Some(Listing::Folder(folder)) => Some(*folder),
+            _ => None,
+        }
+    }
+
     fn folder_role(&self) -> Role {
         match &self.listing {
-            Some(Listing::Folder(folder)) => self.tree.node(*folder).map_or(Role::Other, |n| n.role),
+            Some(Listing::Folder(folder)) => {
+                self.tree.node(*folder).map_or(Role::Other, |n| n.role)
+            }
             _ => Role::Other,
         }
     }
@@ -765,7 +777,12 @@ impl MailWindow {
         self.open_compose(compose::Kind::New, None, window, cx);
     }
 
-    fn show_snackbar(&mut self, text: impl Into<SharedString>, undo: Option<Command>, cx: &mut Context<Self>) {
+    fn show_snackbar(
+        &mut self,
+        text: impl Into<SharedString>,
+        undo: Option<Command>,
+        cx: &mut Context<Self>,
+    ) {
         self.show_snackbar_for(text, undo, SNACKBAR_TIME, cx);
     }
 
@@ -1068,7 +1085,9 @@ impl MailWindow {
             (n, true) => format!("{n} conversations"),
             (n, false) => format!("{n} messages"),
         };
-        let folder = self.folder.filter(|_| matches!(self.listing, Some(Listing::Folder(_))));
+        let folder = self
+            .folder
+            .filter(|_| matches!(self.listing, Some(Listing::Folder(_))));
         let messages_in = |key: EntryKey| match folder {
             Some(folder) => mail.entry_messages_in(key, folder),
             None => mail.entry_messages(key),
@@ -1285,9 +1304,10 @@ impl MailWindow {
         let Some(entry) = self.entries.iter().find(|e| e.key == key).copied() else {
             return false;
         };
+        let folder = self.listed_folder();
         match &mut self.mail {
             Ok(mail) => mail
-                .rows(&[entry], self.show_recipients)
+                .rows(&[entry], folder, self.show_recipients)
                 .into_iter()
                 .flatten()
                 .any(|r| r.flagged),
@@ -1311,7 +1331,13 @@ impl MailWindow {
         cx.notify();
     }
 
-    fn render_snackbar(&mut self, th: &Theme, window: &Window, reduce: bool, cx: &mut Context<Self>) -> Option<AnyElement> {
+    fn render_snackbar(
+        &mut self,
+        th: &Theme,
+        window: &Window,
+        reduce: bool,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
         let snackbar = self.snackbar.as_mut()?;
         let s = snackbar.shown.tick(window, reduce);
         if snackbar.shown.target() == 0.0 && snackbar.shown.settled() {
@@ -1418,9 +1444,9 @@ impl MailWindow {
             .size_full()
             .flex()
             .flex_row()
-            .on_mouse_move(cx.listener(|this, event: &MouseMoveEvent, _, cx| {
-                this.on_split_drag(event, cx)
-            }))
+            .on_mouse_move(
+                cx.listener(|this, event: &MouseMoveEvent, _, cx| this.on_split_drag(event, cx)),
+            )
             .child(div().flex_1().min_w_0().h_full().child(list));
         let row = if split && pane_t > 0.001 {
             let handle = div()
@@ -1436,8 +1462,10 @@ impl MailWindow {
                 .on_mouse_down(
                     MouseButton::Left,
                     cx.listener(|this, event: &gpui::MouseDownEvent, _, cx| {
-                        this.split_drag =
-                            Some((f32::from(event.position.x), this.config.mail.reading_pane_share));
+                        this.split_drag = Some((
+                            f32::from(event.position.x),
+                            this.config.mail.reading_pane_share,
+                        ));
                         cx.stop_propagation();
                     }),
                 )
@@ -1500,7 +1528,11 @@ impl Render for MailWindow {
         self.settings_spring
             .set(if self.settings_open { 1.0 } else { 0.0 });
         self.search_panel_spring
-            .set(if self.search_panel.is_some() { 1.0 } else { 0.0 });
+            .set(if self.search_panel.is_some() {
+                1.0
+            } else {
+                0.0
+            });
         self.tab_spring.set(self.category.index() as f32);
         self.nav_t = self.nav_spring.tick(window, reduce);
         let reserve = self.reserve_spring.tick(window, reduce);
@@ -1521,8 +1553,7 @@ impl Render for MailWindow {
         // Widths: the cards get what the navigation and settings leave.
         let nav_width = lerp(RAIL_WIDTH, NAV_WIDTH, reserve);
         let settings_width = SETTINGS_WIDTH * settings_t.clamp(0.0, 1.0);
-        let available =
-            (viewport - APP_RAIL_WIDTH - nav_width - 16.0 - settings_width).max(200.0);
+        let available = (viewport - APP_RAIL_WIDTH - nav_width - 16.0 - settings_width).max(200.0);
         self.cards_width = available;
 
         let content = match &self.mail {

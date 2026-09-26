@@ -231,6 +231,27 @@ impl Store {
         mail_view::folder_message_ids(&self.mail, folder)
     }
 
+    /// The messages of `thread` that are in `folder`, oldest first: what
+    /// archiving or moving the conversation out of the folder moves.
+    pub fn folder_thread_messages(
+        &self,
+        folder: FolderId,
+        thread: ThreadId,
+    ) -> Result<Vec<MessageId>> {
+        mail_view::folder_thread_messages(&self.mail, folder, thread)
+    }
+
+    /// The messages of `folder` in the inbox tab `category`, newest first
+    /// (undated last); unclassified messages count as
+    /// [`MailCategory::Primary`]. For the list without conversations.
+    pub fn folder_messages_in(
+        &self,
+        folder: FolderId,
+        category: MailCategory,
+    ) -> Result<Vec<MessageId>> {
+        mail_view::folder_messages_in(&self.mail, folder, category)
+    }
+
     /// The conversations in `folder`, newest first: one entry per thread,
     /// with its newest message in the folder, ordered by that message's
     /// date (undated last).

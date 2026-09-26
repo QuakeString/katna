@@ -170,6 +170,34 @@ pub(crate) fn folder_threads(
         .collect())
 }
 
+/// The messages of `thread` that are in `folder`, oldest first.
+pub(crate) fn folder_thread_messages(
+    conn: &Connection,
+    folder: FolderId,
+    thread: ThreadId,
+) -> Result<Vec<MessageId>> {
+    let mut stmt = conn.prepare_cached(
+        "SELECT m.id FROM message_location l JOIN message m ON m.id = l.message_id
+         WHERE l.folder_id = ?1 AND m.thread_id = ?2
+         ORDER BY m.date IS NULL, m.date, m.id",
+    )?;
+    let rows = stmt.query_map([folder.0, thread.0], |row| Ok(MessageId(row.get(0)?)))?;
+    Ok(rows.collect::<rusqlite::Result<_>>()?)
+}
+
+/// The messages of `folder` in one inbox tab, newest first.
+pub(crate) fn folder_messages_in(
+    conn: &Connection,
+    folder: FolderId,
+    category: MailCategory,
+) -> Result<Vec<MessageId>> {
+    Ok(folder_rows(conn, folder)?
+        .into_iter()
+        .filter(|row| tab(row.category) == category)
+        .map(|row| MessageId(row.id))
+        .collect())
+}
+
 /// Conversations in `folder` with unread mail, per tab (every category, in
 /// tab order, zeros included).
 pub(crate) fn category_unread(

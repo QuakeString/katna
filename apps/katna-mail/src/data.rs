@@ -9,10 +9,11 @@ use std::rc::Rc;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use katna_core::{Account, Paths};
+use katna_core::{Account, MailCategory, Paths};
 use katna_search::{Query, SearchIndex, SearchOptions, SearchResults};
 use katna_store::{
     FolderId, FolderSummary, MessageFlags, MessageId, Mode, ParticipantRole, Store, StoredMessage,
+    ThreadId, ThreadSender, ThreadSummary,
 };
 
 /// At most this many search results are listed.
@@ -31,6 +32,7 @@ const ROW_CACHE: usize = 5000;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum EntryKey {
     Message(MessageId),
+    Thread(ThreadId),
 }
 
 /// One line of the list: a message, or a conversation shown by its newest
@@ -91,6 +93,27 @@ impl Category {
 
     pub fn index(self) -> usize {
         Self::ALL.iter().position(|c| *c == self).unwrap_or(0)
+    }
+
+    /// The store's category for this tab.
+    pub fn mail(self) -> MailCategory {
+        match self {
+            Self::Primary => MailCategory::Primary,
+            Self::Promotions => MailCategory::Promotions,
+            Self::Social => MailCategory::Social,
+            Self::Updates => MailCategory::Updates,
+            Self::Forums => MailCategory::Forums,
+        }
+    }
+
+    fn from_mail(category: MailCategory) -> Self {
+        match category {
+            MailCategory::Primary => Self::Primary,
+            MailCategory::Promotions => Self::Promotions,
+            MailCategory::Social => Self::Social,
+            MailCategory::Updates => Self::Updates,
+            MailCategory::Forums => Self::Forums,
+        }
     }
 }
 
@@ -169,6 +192,65 @@ impl Row {
     }
 }
 
+impl Row {
+    /// Makes the row of a message the line of its conversation.
+    fn conversation(
+        mut self,
+        thread: ThreadId,
+        summary: Option<&ThreadSummary>,
+        me: &[String],
+        show_recipients: bool,
+    ) -> Self {
+        self.key = EntryKey::Thread(thread);
+        if let Some(summary) = summary {
+            self.count = summary.message_count.max(1);
+            self.unread = summary.unread;
+            self.flagged = summary.flagged;
+            self.attachments = summary.has_attachments;
+            if !show_recipients && !summary.senders.is_empty() {
+                self.correspondent = senders(&summary.senders, me);
+            }
+        }
+        self
+    }
+}
+
+/// "Kay, Bob, me": the senders of a conversation, first names when there
+/// are several, as webmail shows them.
+fn senders(list: &[ThreadSender], me: &[String]) -> String {
+    let full = |s: &ThreadSender| {
+        s.name
+            .as_deref()
+            .map(str::trim)
+            .filter(|n| !n.is_empty())
+            .unwrap_or(&s.email)
+            .to_owned()
+    };
+    let is_me = |s: &ThreadSender| me.iter().any(|m| m.eq_ignore_ascii_case(&s.email));
+    if let [only] = list {
+        return if is_me(only) {
+            "me".to_owned()
+        } else {
+            full(only)
+        };
+    }
+    let short = |s: &ThreadSender| {
+        if is_me(s) {
+            return "me".to_owned();
+        }
+        match s.name.as_deref().map(str::trim).filter(|n| !n.is_empty()) {
+            Some(name) => name.split_whitespace().next().unwrap_or(name).to_owned(),
+            None => s.email.split('@').next().unwrap_or(&s.email).to_owned(),
+        }
+    };
+    let names: Vec<String> = list.iter().map(short).collect();
+    if names.len() > 3 {
+        format!("{} .. {}", names[0], names[names.len() - 2..].join(", "))
+    } else {
+        names.join(", ")
+    }
+}
+
 /// Why the store could not be opened.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum OpenError {
@@ -187,6 +269,8 @@ pub struct Mail {
     index_error: Option<String>,
     index_tried: Instant,
     rows: HashMap<EntryKey, Rc<Row>>,
+    /// The accounts' addresses, for "me".
+    me: Vec<String>,
 }
 
 impl Mail {
@@ -199,7 +283,12 @@ impl Mail {
         })?;
         let index_dir = paths.index_dir();
         let (index, index_error) = open_index(&index_dir);
+        let me = store
+            .accounts()
+            .map(|accounts| accounts.into_iter().map(|a| a.address).collect())
+            .unwrap_or_default();
         Ok(Self {
+            me,
             store,
             index_dir,
             index,
@@ -228,39 +317,101 @@ impl Mail {
     pub fn entries(
         &self,
         folder: FolderId,
-        _category: Option<Category>,
-        _conversations: bool,
+        category: Option<Category>,
+        conversations: bool,
     ) -> Vec<Entry> {
-        match self.store.folder_message_ids(folder) {
-            Ok(ids) => ids.into_iter().map(Entry::message).collect(),
-            Err(err) => {
-                tracing::warn!("reading folder {}: {err}", folder.0);
-                Vec::new()
+        let category = category.map(Category::mail);
+        let entries = if conversations {
+            self.store.folder_threads(folder, category).map(|threads| {
+                threads
+                    .into_iter()
+                    .map(|entry| match entry.thread {
+                        Some(thread) => Entry {
+                            key: EntryKey::Thread(thread),
+                            latest: entry.latest,
+                        },
+                        None => Entry::message(entry.latest),
+                    })
+                    .collect()
+            })
+        } else {
+            match category {
+                Some(category) => self.store.folder_messages_in(folder, category),
+                None => self.store.folder_message_ids(folder),
             }
-        }
+            .map(|ids| ids.into_iter().map(Entry::message).collect())
+        };
+        entries.unwrap_or_else(|err| {
+            tracing::warn!("reading folder {}: {err}", folder.0);
+            Vec::new()
+        })
     }
 
-    /// Search hits as lines: grouped into conversations when asked.
-    pub fn hit_entries(&self, hits: &[MessageId], _conversations: bool) -> Vec<Entry> {
-        hits.iter().copied().map(Entry::message).collect()
+    /// Search hits as lines: grouped into conversations when asked, each
+    /// where its best hit is.
+    pub fn hit_entries(&self, hits: &[MessageId], conversations: bool) -> Vec<Entry> {
+        if !conversations {
+            return hits.iter().copied().map(Entry::message).collect();
+        }
+        let threads: HashMap<MessageId, ThreadId> = match self.store.messages_by_id(hits) {
+            Ok(messages) => messages
+                .into_iter()
+                .filter_map(|m| Some((m.id, m.thread_id?)))
+                .collect(),
+            Err(err) => {
+                tracing::warn!("reading search hits: {err}");
+                HashMap::new()
+            }
+        };
+        let mut seen = std::collections::HashSet::new();
+        hits.iter()
+            .filter_map(|id| match threads.get(id) {
+                Some(thread) => seen.insert(*thread).then_some(Entry {
+                    key: EntryKey::Thread(*thread),
+                    latest: *id,
+                }),
+                None => Some(Entry::message(*id)),
+            })
+            .collect()
     }
 
     /// The messages of a line, oldest first: a whole conversation.
     pub fn entry_messages(&self, key: EntryKey) -> Vec<MessageId> {
         match key {
             EntryKey::Message(id) => vec![id],
+            EntryKey::Thread(thread) => self.store.thread_messages(thread).unwrap_or_else(|err| {
+                tracing::warn!("reading conversation {}: {err}", thread.0);
+                Vec::new()
+            }),
         }
     }
 
     /// The messages of a line that are in `folder`, for moving them out.
     pub fn entry_messages_in(&self, key: EntryKey, folder: FolderId) -> Vec<MessageId> {
-        let _ = folder;
-        self.entry_messages(key)
+        match key {
+            EntryKey::Message(id) => vec![id],
+            EntryKey::Thread(thread) => self
+                .store
+                .folder_thread_messages(folder, thread)
+                .unwrap_or_else(|err| {
+                    tracing::warn!("reading conversation {}: {err}", thread.0);
+                    Vec::new()
+                }),
+        }
     }
 
-    /// Unread lines per inbox tab.
-    pub fn category_unread(&self, _folder: FolderId) -> HashMap<Category, u64> {
-        HashMap::new()
+    /// Unread conversations per inbox tab.
+    pub fn category_unread(&self, folder: FolderId) -> HashMap<Category, u64> {
+        match self.store.category_unread(folder) {
+            Ok(counts) => counts
+                .into_iter()
+                .map(|(category, n)| (Category::from_mail(category), n))
+                .collect(),
+            Err(err) => {
+                tracing::warn!("counting unread conversations: {err}");
+                HashMap::new()
+            }
+        }
     }
 
     /// The search index, shared with background searches. The daemon
@@ -295,26 +446,25 @@ impl Mail {
     }
 
     /// The rows of `entries`, reading the ones not cached yet in one go.
-    /// Lines whose mail no longer exists are `None`.
-    pub fn rows(&mut self, entries: &[Entry], show_recipients: bool) -> Vec<Option<Rc<Row>>> {
-        let missing: Vec<MessageId> = entries
+    /// `folder` is the listed folder (`None` for search results), whose
+    /// unread state a conversation's line shows. Lines whose mail no longer
+    /// exists are `None`.
+    pub fn rows(
+        &mut self,
+        entries: &[Entry],
+        folder: Option<FolderId>,
+        show_recipients: bool,
+    ) -> Vec<Option<Rc<Row>>> {
+        let missing: Vec<Entry> = entries
             .iter()
             .filter(|e| !self.rows.contains_key(&e.key))
-            .map(|e| e.latest)
+            .copied()
             .collect();
         if !missing.is_empty() {
             if self.rows.len() + missing.len() > ROW_CACHE {
                 self.rows.clear();
             }
-            match self.store.messages_by_id(&missing) {
-                Ok(messages) => {
-                    for message in &messages {
-                        let row = Row::new(message, show_recipients);
-                        self.rows.insert(row.key, Rc::new(row));
-                    }
-                }
-                Err(err) => tracing::warn!("reading messages: {err}"),
-            }
+            self.read_rows(&missing, folder, show_recipients);
         }
         entries
             .iter()
@@ -322,10 +472,62 @@ impl Mail {
             .collect()
     }
 
+    fn read_rows(&mut self, entries: &[Entry], folder: Option<FolderId>, show_recipients: bool) {
+        let latest: Vec<MessageId> = entries.iter().map(|e| e.latest).collect();
+        let messages: HashMap<MessageId, StoredMessage> = match self.store.messages_by_id(&latest) {
+            Ok(messages) => messages.into_iter().map(|m| (m.id, m)).collect(),
+            Err(err) => {
+                tracing::warn!("reading messages: {err}");
+                return;
+            }
+        };
+        let threads: Vec<ThreadId> = entries
+            .iter()
+            .filter_map(|e| match e.key {
+                EntryKey::Thread(thread) => Some(thread),
+                EntryKey::Message(_) => None,
+            })
+            .collect();
+        let mut summaries: HashMap<ThreadId, ThreadSummary> = HashMap::new();
+        if !threads.is_empty() {
+            let read = match folder {
+                Some(folder) => self.store.thread_summaries(&threads, folder),
+                // Search results: each conversation as seen from the folder
+                // its hit is in.
+                None => Ok(Vec::new()),
+            };
+            match read {
+                Ok(list) => summaries.extend(list.into_iter().map(|s| (s.thread, s))),
+                Err(err) => tracing::warn!("reading conversations: {err}"),
+            }
+        }
+        for entry in entries {
+            let Some(message) = messages.get(&entry.latest) else {
+                continue;
+            };
+            let row = Row::new(message, show_recipients);
+            let row = match entry.key {
+                EntryKey::Message(_) => row,
+                EntryKey::Thread(thread) => {
+                    let mut row =
+                        row.conversation(thread, summaries.get(&thread), &self.me, show_recipients);
+                    if folder.is_none() {
+                        row.count = self
+                            .store
+                            .thread_messages(thread)
+                            .map_or(1, |ids| ids.len().max(1) as u32);
+                    }
+                    row
+                }
+            };
+            self.rows.insert(row.key, Rc::new(row));
+        }
+    }
+
     /// Rows of single messages (the parts of a conversation).
     pub fn message_rows(&mut self, ids: &[MessageId]) -> Vec<Option<Rc<Row>>> {
         let entries: Vec<Entry> = ids.iter().copied().map(Entry::message).collect();
-        self.rows(&entries, false)
+        self.rows(&entries, None, false)
     }
 
     /// Forgets cached rows, for example when the sender/recipient column
@@ -475,7 +677,11 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
         let entries = mail.entries(inbox, None, false);
         assert_eq!(entries, [Entry::message(id)]);
 
-        let rows = mail.rows(&[Entry::message(id), Entry::message(MessageId(999))], false);
+        let rows = mail.rows(
+            &[Entry::message(id), Entry::message(MessageId(999))],
+            None,
+            false,
+        );
         assert_eq!(
             **rows[0].as_ref().unwrap(),
             Row {
@@ -493,7 +699,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
         );
         assert_eq!(rows[1], None);
         mail.clear_rows();
-        let sent = mail.rows(&[Entry::message(id)], true);
+        let sent = mail.rows(&[Entry::message(id)], None, true);
         assert_eq!(
             sent[0].as_ref().unwrap().correspondent,
             "To: bob@example.net"

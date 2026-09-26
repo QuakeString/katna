@@ -471,6 +471,22 @@ fn folder_lists_summaries_and_tab_counts() {
             .unwrap()
             .is_empty()
     );
+    assert_eq!(app.folder_thread_messages(sent, thread).unwrap(), [b]);
+    // Without conversations, the tabs hold single messages.
+    assert_eq!(
+        app.folder_messages_in(inbox, MailCategory::Promotions)
+            .unwrap(),
+        [promo]
+    );
+    let primary = app
+        .folder_messages_in(inbox, MailCategory::Primary)
+        .unwrap();
+    assert!(primary.contains(&c) && primary.contains(&old) && !primary.contains(&promo));
+    assert!(
+        app.folder_messages_in(inbox, MailCategory::Social)
+            .unwrap()
+            .is_empty()
+    );
     assert_eq!(
         app.folder_threads(sent, None).unwrap(),
         [ThreadEntry {
