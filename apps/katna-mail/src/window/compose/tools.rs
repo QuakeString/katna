@@ -468,7 +468,10 @@ impl MailWindow {
             .when(open(Popup::More) || open(Popup::Label), |d| {
                 d.child(above(self.render_more_menu(th, cx)))
             });
+        // A phone-sized sheet keeps the tools that fit beside Send; links
+        // still come with Ctrl+K.
         let narrow = width < 440.0;
+        let tiny = width < 400.0;
         div()
             .flex_none()
             .h(px(60.0))
@@ -484,12 +487,15 @@ impl MailWindow {
                 tool("compose-attach", "attachment", "Attach files")
                     .on_click(cx.listener(|this, _, _, cx| this.pick_files(false, cx))),
             )
-            .child(
-                tool("compose-link", "link", "Insert link (Ctrl+K)")
-                    .on_click(cx.listener(|this, _, window, cx| this.open_link_dialog(window, cx))),
-            )
-            .child(emoji)
-            .when(!plain, |d| {
+            .when(!narrow, |d| {
+                d.child(
+                    tool("compose-link", "link", "Insert link (Ctrl+K)").on_click(
+                        cx.listener(|this, _, window, cx| this.open_link_dialog(window, cx)),
+                    ),
+                )
+            })
+            .when(!tiny, |d| d.child(emoji))
+            .when(!plain && !narrow, |d| {
                 d.child(
                     tool("compose-image", "image", "Insert photo")
                         .on_click(cx.listener(|this, _, _, cx| this.pick_files(true, cx))),

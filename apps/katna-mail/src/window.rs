@@ -11,8 +11,9 @@
 //! (toolbar, tabs and rows), `reader` (the open conversation), `settings`
 //! (quick settings), `search_panel` (search options), `compose`, `apps`
 //! (the app rail), `add_account` (adding an account), `context_menu`
-//! (the list's right-click menu), `onboarding` (the first start) and `tour`
-//! (a walk through the window).
+//! (the list's right-click menu), `onboarding` (the first start), `tour`
+//! (a walk through the window) and `layout` (phone, tablet and desktop
+//! layouts, by the window's width).
 
 mod accounts;
 mod add_account;
@@ -26,6 +27,7 @@ mod desktop;
 mod download;
 mod keymap;
 mod labels;
+mod layout;
 mod list;
 mod nav;
 mod onboarding;
@@ -66,7 +68,7 @@ use crate::tabs::{self, Provider, Tab};
 use crate::theme::Theme;
 use crate::widgets::{elevation, icon};
 
-use apps::{APP_RAIL_WIDTH, App as RailApp, People};
+use apps::{App as RailApp, People};
 use reader::Conversation;
 use search_panel::SearchPanel;
 
@@ -295,6 +297,9 @@ pub struct MailWindow {
     split_drag: Option<(f32, f32)>,
     /// Width available to the list and the reading pane, at the last frame.
     cards_width: f32,
+    /// The same once the layout's motion settles, so the lines change
+    /// shape once rather than midway through it.
+    cards_target: f32,
     settings_open: bool,
     settings_spring: Spring,
     /// The reading-pane choice of the quick settings under the pointer.
@@ -335,6 +340,8 @@ pub struct MailWindow {
     _listen: Option<Task<()>>,
     _watch_sending: Option<Task<()>>,
     desktop_colors: colors::DesktopColors,
+    /// Phone, tablet or desktop, by the window's width.
+    layout: layout::Layout,
     list_focus: FocusHandle,
     /// The message list: lines differ in height (attachment chips).
     list_state: ListState,
@@ -418,6 +425,7 @@ impl MailWindow {
             pane_spring: Spring::new(motion::SLIDE, 0.0),
             split_drag: None,
             cards_width: 0.0,
+            cards_target: 0.0,
             settings_open: false,
             pane_hover: None,
             settings_spring: Spring::new(motion::SLIDE, 0.0),
@@ -444,6 +452,7 @@ impl MailWindow {
             _listen: None,
             _watch_sending: None,
             desktop_colors,
+            layout: layout::Layout::new(),
             list_focus: cx.focus_handle(),
             list_state: ListState::new(0, ListAlignment::Top, px(400.0)),
             files_menu: None,
@@ -557,8 +566,11 @@ impl MailWindow {
         }));
     }
 
+    /// Whether an open conversation sits beside the list: the three-pane
+    /// setting, in a window wide enough for it.
     fn split(&self) -> bool {
-        self.config.mail.reading_pane == ReadingPane::Right
+        let shape = &self.layout.shape;
+        self.config.mail.reading_pane == ReadingPane::Right && shape.size.splits(shape.width)
     }
 
     fn save_config(&mut self) {
@@ -817,7 +829,8 @@ impl MailWindow {
             self.card_seq += 1;
         }
         self.reading = false;
-        if !self.split() {
+        // A conversation beside the list or over it slides away first.
+        if !self.split() && !self.slides() {
             self.reader = None;
         }
         self.hovered = None;
@@ -963,6 +976,14 @@ impl MailWindow {
     }
 
     fn toggle_navigation(&mut self, _: &ToggleNavigation, _: &mut Window, cx: &mut Context<Self>) {
+        // Phones and tablets open the folders as a drawer over the list.
+        if !self.layout.shape.is_desktop() {
+            self.layout.drawer = !self.layout.drawer;
+            self.nav_peek = false;
+            self.peek_task = None;
+            cx.notify();
+            return;
+        }
         self.nav_open = !self.nav_open;
         self.nav_peek = false;
         self.peek_hover = (false, false);
@@ -1118,7 +1139,7 @@ impl MailWindow {
             Hover::Rail => self.peek_hover.0 = hovered,
             Hover::Panel => self.peek_hover.1 = hovered,
         }
-        if self.nav_open || self.app != RailApp::Mail {
+        if self.nav_docked() || self.layout.drawer || self.app != RailApp::Mail {
             return;
         }
         let on = self.peek_hover.0 || self.peek_hover.1;
@@ -1135,7 +1156,7 @@ impl MailWindow {
             cx.background_executor().timer(delay).await;
             this.update(cx, |this, cx| {
                 this.peek_task = None;
-                if !this.nav_open {
+                if !this.nav_docked() {
                     this.nav_peek = on;
                     cx.notify();
                 }
@@ -1721,11 +1742,15 @@ impl MailWindow {
         }
         let s = s.max(0.0);
         let has_undo = snackbar.undo.is_some();
+        // On a phone the note spans the window above the bottom bar.
+        let shape = self.layout.shape;
+        let edge = lerp(24.0, 8.0, shape.phone);
         Some(
             div()
                 .absolute()
-                .left(px(24.0))
-                .bottom(px(lerp(-12.0, 24.0, s)))
+                .left(px(edge))
+                .when(shape.is_phone(), |d| d.right(px(edge)))
+                .bottom(px(shape.bottom_bar() + lerp(-12.0, edge, s)))
                 .opacity(s.min(1.0))
                 .min_w(px(288.0))
                 .max_w(px(560.0))
@@ -1741,7 +1766,7 @@ impl MailWindow {
                 .text_color(rgba(th.snackbar_text))
                 .text_size(px(14.0))
                 .shadow(elevation(th, 3.0))
-                .child(div().flex_1().child(snackbar.text.clone()))
+                .child(div().flex_1().min_w_0().child(snackbar.text.clone()))
                 .when(has_undo, |d| {
                     d.child(
                         div()
@@ -1856,12 +1881,13 @@ impl MailWindow {
             row
         };
         // Padding, not margins: a margin would push the card past the window.
+        let margin = self.layout.shape.card_margin();
         div()
             .flex_1()
             .min_w_0()
             .h_full()
-            .pr(px(16.0))
-            .pb(px(16.0))
+            .pr(px(margin))
+            .pb(px(margin))
             .child(row)
             .into_any_element()
     }
@@ -1876,16 +1902,19 @@ impl Render for MailWindow {
             viewer.update(cx, |viewer, _| viewer.th = th);
         }
         let reduce = cx.reduce_motion();
-        let viewport = f32::from(window.viewport_size().width);
-        let wide = viewport > 760.0;
+        self.update_layout(window, reduce, cx);
+        let shape = self.layout.shape;
+        let width = shape.width;
 
-        self.nav_spring.set(if self.nav_open || self.nav_peek {
-            1.0
-        } else {
-            0.0
-        });
+        self.nav_spring.set(
+            if self.nav_docked() || self.nav_peek || self.layout.drawer {
+                1.0
+            } else {
+                0.0
+            },
+        );
         self.reserve_spring
-            .set(if self.nav_open { 1.0 } else { 0.0 });
+            .set(if self.nav_docked() { 1.0 } else { 0.0 });
         let search_focused = self.search.focus_handle(cx).is_focused(window);
         self.search_spring
             .set(if search_focused { 1.0 } else { 0.0 });
@@ -1908,7 +1937,14 @@ impl Render for MailWindow {
         self.search_panel_spring.tick(window, reduce);
         self.tab_spring.tick(window, reduce);
         // Forget the closed conversation once its pane has slid away.
-        if self.split() && !self.reading && pane_t <= 0.0 && self.pane_spring.settled() {
+        if !self.reading
+            && self.reader.is_some()
+            && if self.split() {
+                pane_t <= 0.0 && self.pane_spring.settled()
+            } else {
+                self.slides() && self.page_closed()
+            }
+        {
             self.reader = None;
         }
 
@@ -1916,12 +1952,37 @@ impl Render for MailWindow {
         self.search
             .update(cx, |search, _| search.set_accent(accent));
 
-        // Widths: the cards get what the navigation and settings leave.
+        // Widths: the cards get what the navigation and settings leave. On a
+        // phone the settings float over the cards instead.
         let nav_width = NAV_WIDTH * reserve.max(0.0);
-        let settings_width = SETTINGS_WIDTH * settings_t.clamp(0.0, 1.0);
-        let available = (viewport - APP_RAIL_WIDTH - nav_width - 16.0 - settings_width).max(200.0);
+        let settings_floats = shape.is_phone();
+        let settings_width = if settings_floats {
+            0.0
+        } else {
+            SETTINGS_WIDTH * settings_t.clamp(0.0, 1.0)
+        };
+        let available =
+            (width - shape.rail() - nav_width - shape.card_margin() - settings_width).max(200.0);
         self.cards_width = available;
+        let (rail, margin) = if shape.is_phone() {
+            (0.0, 0.0)
+        } else {
+            (apps::APP_RAIL_WIDTH, 16.0)
+        };
+        let nav = if self.nav_docked() { NAV_WIDTH } else { 0.0 };
+        let settings = if self.settings_open && !settings_floats {
+            SETTINGS_WIDTH
+        } else {
+            0.0
+        };
+        self.cards_target = (width - rail - nav - margin - settings).max(200.0);
 
+        let settings = (settings_t > 0.001).then(|| self.render_settings(&th, settings_t, cx));
+        let (docked_settings, floating_settings) = if settings_floats {
+            (None, settings)
+        } else {
+            (settings, None)
+        };
         if self.onboarding.is_none() && self.needs_account() {
             self.onboarding = Some(onboarding::Onboarding::new());
         }
@@ -1936,31 +1997,65 @@ impl Render for MailWindow {
                 .size_full()
                 .flex()
                 .flex_row_reverse()
-                .when(settings_t > 0.001, |d| {
-                    d.child(self.render_settings(&th, settings_t, cx))
-                })
+                .children(docked_settings)
                 .child(if self.settings_page.is_some() {
                     self.render_settings_page(&th, cx)
                 } else {
                     self.render_cards(&th, available, cx)
                 })
                 .child(self.render_navigation(&th, cx))
-                .child(self.render_app_rail(&th, cx))
+                .child(self.render_rail_slot(&th, cx))
                 .into_any_element(),
             Ok(_) => div()
                 .size_full()
                 .flex()
                 .flex_row_reverse()
-                .when(settings_t > 0.001, |d| {
-                    d.child(self.render_settings(&th, settings_t, cx))
-                })
+                .children(docked_settings)
                 .child(self.render_app_page(&th, cx))
-                .child(self.render_app_rail(&th, cx))
+                .child(self.render_rail_slot(&th, cx))
                 .into_any_element(),
         };
-        let side = if wide { NAV_WIDTH } else { 110.0 };
-        let search_width = (viewport - 2.0 * side).clamp(200.0, SEARCH_WIDTH);
-        let search_panel = self.render_search_panel(&th, viewport, search_width, window, cx);
+        // The apps move to a bar along the bottom on a phone.
+        let content = div()
+            .size_full()
+            .flex()
+            .flex_col()
+            .child(div().flex_1().min_h_0().child(content))
+            .children(if onboarding {
+                None
+            } else {
+                self.render_bottom_bar(&th, cx)
+            })
+            .into_any_element();
+        let floating_settings = floating_settings.map(|panel| {
+            div()
+                .absolute()
+                .top_0()
+                .right_0()
+                .bottom(px(shape.bottom_bar()))
+                .child(panel)
+                .into_any_element()
+        });
+
+        // The search box, centered, grows into a pill across the top bar
+        // of a phone, under its menu button and account picture.
+        let (room_start, room_end) = shape.room;
+        // A tablet keeps Compose beside the menu button.
+        let side = lerp(
+            (room_start + 60.0 + shape.compose_room()).max(room_end + 112.0) + 8.0,
+            NAV_WIDTH,
+            shape.desktop,
+        );
+        let regular = (width - 2.0 * side).clamp(200.0, SEARCH_WIDTH);
+        let pill = (width - 12.0 - room_start - room_end).max(200.0);
+        let search_width = lerp(regular, pill, shape.phone);
+        let search_panel_width = lerp(regular, width - 16.0, shape.phone);
+        let search_panel = self.render_search_panel(&th, width, search_panel_width, window, cx);
+        let fab = if onboarding {
+            None
+        } else {
+            self.render_phone_fab(&th, cx)
+        };
         let compose = self.render_compose(&th, window, reduce, cx);
         let scheduled = self.render_scheduled(&th, window, cx);
         let account_menu = self.render_account_menu(&th, cx);
@@ -1998,6 +2093,8 @@ impl Render for MailWindow {
             .on_action(cx.listener(Self::open_settings))
             .on_action(cx.listener(Self::show_shortcuts))
             .child(content)
+            .children(floating_settings)
+            .children(fab)
             .children(self.files.viewer.clone())
             .children(search_panel)
             .children(compose)
@@ -2016,10 +2113,15 @@ impl Render for MailWindow {
             start: if onboarding {
                 Vec::new()
             } else {
-                self.render_top_start(&th, wide, cx)
+                self.render_top_start(&th, cx)
             },
-            center: (self.mail.is_ok() && !onboarding)
-                .then(|| self.render_search(&th, search_width, search_t, cx)),
+            center: (self.mail.is_ok() && !onboarding).then(|| {
+                div()
+                    .ml(px((6.0 + room_start) * shape.phone))
+                    .mr(px((6.0 + room_end) * shape.phone))
+                    .child(self.render_search(&th, search_width, search_t, cx))
+                    .into_any_element()
+            }),
             end: if onboarding {
                 Vec::new()
             } else {
