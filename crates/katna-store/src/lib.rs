@@ -13,6 +13,7 @@ pub mod mail;
 mod mail_read;
 mod mail_view;
 pub mod ops;
+mod people;
 pub mod remote;
 
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths};
@@ -29,6 +30,7 @@ pub use mail::{
 pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
 pub use mail_view::FolderSummary;
 pub use ops::{Location, QueuedOp};
+pub use people::Person;
 pub use remote::{FolderRole, RemoteMessage, StoredFolder};
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.
@@ -224,6 +226,11 @@ impl Store {
     }
 
     /// Number of messages in all accounts.
+    /// The `limit` addresses on the most messages; see [`Person`].
+    pub fn people(&self, limit: u32) -> Result<Vec<Person>> {
+        people::people(&self.mail, limit)
+    }
+
     pub fn message_count(&self) -> Result<u64> {
         mail_read::message_count(&self.mail)
     }

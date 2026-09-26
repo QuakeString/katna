@@ -6,7 +6,8 @@
 use std::ops::Range;
 
 use gpui::{
-    AnyElement, Context, FontWeight, SpringAnimation, div, linear_color_stop, linear_gradient,
+    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, div, linear_color_stop,
+    linear_gradient,
     prelude::*, px, rgba, uniform_list,
 };
 use katna_ui::Ripple;

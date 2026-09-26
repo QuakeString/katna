@@ -7,10 +7,12 @@
 //! come with `katna-daemon`.
 
 mod assets;
+mod daemon;
 mod data;
 mod format;
 mod sidebar;
 mod theme;
+mod widgets;
 mod window;
 
 use std::path::PathBuf;

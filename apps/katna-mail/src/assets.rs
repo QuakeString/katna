@@ -28,6 +28,7 @@ icons!(
     "chevron-right",
     "close",
     "compose",
+    "contacts",
     "drafts",
     "drop-down",
     "expand",
