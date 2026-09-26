@@ -237,6 +237,23 @@ still opens the data or restores the backup; a daemon made to fail its
 self-check starts in safe mode and restores the backup from its
 notification; promotion to stable ships byte-identical, signed files.
 
+### Later: promotional website (not scheduled yet)
+
+Asked for by the owner on 26 September 2026 so it is not forgotten; nothing
+is built. A public site at `katna.invenia.in` that says what Katna is (a
+fast, private mail and calendar suite for Linux desktops), shows
+screenshots and short clips of Katna Mail and Katna Calendar, explains how
+to install it (today the `arch-latest` pre-release and its `[katna]`
+pacman repository; later the beta and stable channels, Flatpak and
+AppImage) and links to the source, license and issue tracker. It should be
+ready by the first public release, alongside the release track.
+
+Open questions: static site generator and hosting (GitHub Pages or our own
+server); whether the site also serves the update manifests and package
+repositories (release track U.9, U.10); a Katna logo and brand look;
+languages; and no trackers or third-party analytics, to match Katna's
+privacy promise.
+
 ### Phase 5 — Gmail-class features (≈ 8 weeks)
 
 Labels (IMAP keywords, Gmail labels), snooze, send later, follow-up
