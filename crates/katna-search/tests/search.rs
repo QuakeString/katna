@@ -148,6 +148,13 @@ fn indexes_the_store_and_answers_queries() {
     assert_eq!(q("(power OR lunch) -california"), ["Lunch"]);
     assert_eq!(q("-from:enron.com"), ["Lunch"]);
     assert!(q("nothing-matches-this").is_empty());
+    // Other forms of a word, in the subject and body; phrases stay exact.
+    assert_eq!(q("price"), ["California power"]);
+    assert_eq!(q("rises"), ["California power"]);
+    assert_eq!(q("trade"), ["2001 budget"]);
+    assert_eq!(q("subject:budgets"), ["2001 budget"]);
+    assert!(q("\"natural gases\"").is_empty());
+    assert!(q("from:skill").is_empty());
     assert_eq!(q("").len(), 4);
 
     // As you type: the last word is a prefix.
@@ -195,6 +202,17 @@ fn indexes_the_store_and_answers_queries() {
     assert!(marked.contains(&"budget"), "{snippet:?}");
     assert!(marked.contains(&"natural"), "{snippet:?}");
     assert!(!marked.contains(&"trading"), "{snippet:?}");
+
+    // Other forms of the searched word are highlighted.
+    let query = Query::parse("price rise").unwrap();
+    let hit = app.search(&query, &SearchOptions::default()).unwrap().hits[0];
+    let snippet = &app.snippets(&reader, &query, &[hit.message], 80).unwrap()[0];
+    let marked: Vec<&str> = snippet
+        .highlights
+        .iter()
+        .map(|r| &snippet.text[r.clone()])
+        .collect();
+    assert_eq!(marked, ["prices", "rising"], "{snippet:?}");
 
     // No match in the body: the snippet is the start of the body.
     let query = Query::parse("from:owner").unwrap();

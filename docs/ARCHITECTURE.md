@@ -404,10 +404,21 @@ from or adds to the sketch above:
   in `blobs.db` (first 64 KB), so the index stays small and holds no copy
   of the mail. Twenty snippets take a few milliseconds.
 - **Tokenizer.** One analyzer for all text fields: Unicode words,
-  lower-cased, folded to ASCII, tokens over 40 bytes dropped. No stemming
-  and no CJK segmentation yet; both are later steps measured against index
-  size. Addresses split into words, so `from:kenneth.lay` is the phrase
-  "kenneth lay" and also matches the display name.
+  lower-cased, folded to ASCII, tokens over 40 bytes dropped. Addresses
+  split into words, so `from:kenneth.lay` is the phrase "kenneth lay" and
+  also matches the display name. No CJK segmentation yet.
+- **Stemming.** Subject and body are also indexed through the English
+  Snowball stemmer, in `subject_stem` and `body_stem`, with frequencies but
+  no positions. A single whole word searches the stemmed subject (boost
+  1.5, on top of the subject's 3, so the word as written ranks first) and
+  the stemmed body instead of the body; `contract` finds `contracts` and
+  `contracted`. Phrases and the word being typed match as written, since
+  the stemmed fields have no positions and a stem is not a prefix of every
+  longer form. Snippets highlight other forms too, stemming only the words
+  that start like a searched stem. Every message is stemmed as English
+  until languages are detected (`whatlang`, later). Cost on the 500k
+  synthetic corpus: index 348 → 475 MiB (+36 %), indexing time unchanged,
+  query latency within noise (p50 6.1 ms, p99 20 ms).
 - **Query language.** `OR` binds tighter than the implicit AND, as in
   Gmail (`a OR b c` is `(a OR b) c`). `to:` matches To, Cc and Bcc. Dates
   are UTC days; `before:` excludes the day, `after:` includes it. Unknown
@@ -427,8 +438,9 @@ from or adds to the sketch above:
   version and the `mail.db` change-journal sequence number the index
   covers, atomically with the documents. The first run scans all messages
   (resumable, committing every 100,000); later runs re-index the messages
-  the journal lists. A schema-version mismatch requires a rebuild
-  (`katna-search-cli index --rebuild`).
+  the journal lists. An index of another schema version is deleted and
+  rebuilt when opened for writing; opened read-only (as apps do) it is an
+  error until the daemon has rebuilt it.
 - **Tools.** `katna-search-cli index|query` and `katna-bench search|synth`
   (synthetic corpus of Enron's shape for machines without Enron). The
   nightly `bench` job fails on a p99 over 50 ms or on overall p50/p99 more

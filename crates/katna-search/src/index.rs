@@ -17,12 +17,12 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use katna_store::{DbKind, MessageFlags, MessageId, ObjectKind, Store, StoredMessage};
 use serde::{Deserialize, Serialize};
 use tantivy::collector::{Count, TopDocs};
-use tantivy::snippet::SnippetGenerator;
 use tantivy::{DocAddress, Index, IndexReader, IndexWriter, Order, ReloadPolicy, Searcher, Term};
 
 use crate::compile::compile;
 use crate::document::{self, MessageText};
 use crate::error::{Error, Result};
+use crate::highlight::Highlighter;
 use crate::query::{Query, TextField};
 use crate::schema::{self, Fields, SCHEMA_VERSION};
 
@@ -163,22 +163,34 @@ pub struct SearchIndex {
 
 impl SearchIndex {
     /// Opens the index in `dir` for indexing and searching, creating it if
-    /// needed. Fails with [`Error::SchemaVersion`] if it was built by another
-    /// version; [`delete`](Self::delete) it and build it again.
+    /// needed. An index built with another [`SCHEMA_VERSION`] is deleted and
+    /// created again empty, so the next [`update`](Self::update) rebuilds it.
     pub fn open(dir: &Path) -> Result<Self> {
-        if !dir.join("meta.json").is_file() {
-            fs::create_dir_all(dir).map_err(|source| io_error(dir, source))?;
-            let index = Index::create_in_dir(dir, schema::build_schema())?;
-            schema::register_tokenizers(index.tokenizers());
-            let mut writer: IndexWriter = index.writer_with_num_threads(1, 15_000_000)?;
-            commit(
-                &mut writer,
-                &IndexState {
-                    schema_version: SCHEMA_VERSION,
-                    ..IndexState::default()
-                },
-            )?;
+        if dir.join("meta.json").is_file() {
+            match Self::open_existing(dir) {
+                Err(Error::SchemaVersion { found, .. }) => {
+                    tracing::warn!(
+                        path = %dir.display(),
+                        found,
+                        expected = SCHEMA_VERSION,
+                        "search index has another schema version; rebuilding it"
+                    );
+                    Self::delete(dir)?;
+                }
+                opened => return opened,
+            }
         }
+        fs::create_dir_all(dir).map_err(|source| io_error(dir, source))?;
+        let index = Index::create_in_dir(dir, schema::build_schema())?;
+        schema::register_tokenizers(index.tokenizers());
+        let mut writer: IndexWriter = index.writer_with_num_threads(1, 15_000_000)?;
+        commit(
+            &mut writer,
+            &IndexState {
+                schema_version: SCHEMA_VERSION,
+                ..IndexState::default()
+            },
+        )?;
         Self::open_existing(dir)
     }
 
@@ -499,7 +511,7 @@ impl SearchIndex {
         messages: &[MessageId],
         max_chars: usize,
     ) -> Result<Vec<Snippet>> {
-        let generator = self.snippet_generator(query, max_chars)?;
+        let highlighter = self.highlighter(query, max_chars)?;
         let stored = store.messages_by_id(messages)?;
         let mut out = Vec::with_capacity(messages.len());
         for id in messages {
@@ -519,43 +531,36 @@ impl SearchIndex {
             // parsing (decoding) big attachments would dominate the time.
             let raw = &raw[..raw.len().min(SNIPPET_SCAN_BYTES)];
             let MessageText { body, .. } = document::message_text(raw);
-            let snippet = generator.snippet(&body);
-            if snippet.fragment().is_empty() {
-                // No match in the body: show its start.
-                out.push(Snippet {
-                    text: start_of(&body, max_chars),
-                    highlights: Vec::new(),
-                });
-            } else {
-                out.push(Snippet {
+            match highlighter.snippet(&body) {
+                Some(snippet) => out.push(Snippet {
                     text: snippet.fragment().to_owned(),
                     highlights: snippet.highlighted().to_vec(),
-                });
+                }),
+                // No match in the body: show its start.
+                None => out.push(Snippet {
+                    text: start_of(&body, max_chars),
+                    highlights: Vec::new(),
+                }),
             }
         }
         Ok(out)
     }
 
-    /// A snippet generator for the body words of `query`, leaving out
-    /// excluded words (`-word`), which tantivy's own would highlight.
-    fn snippet_generator(&self, query: &Query, max_chars: usize) -> Result<SnippetGenerator> {
+    /// A highlighter for the body words of `query`, leaving out excluded
+    /// words (`-word`), which tantivy's own snippets would highlight.
+    fn highlighter(&self, query: &Query, max_chars: usize) -> Result<Highlighter> {
         let searcher = self.reader.searcher();
         let mut words = Vec::new();
         body_words(query, &mut words);
-        let mut terms = BTreeMap::new();
-        for word in words {
-            let term = Term::from_field_text(self.fields.body, &word);
+        let mut stems = BTreeMap::new();
+        for stem in words.iter().flat_map(|word| schema::stems(word)) {
+            let term = Term::from_field_text(self.fields.body_stem, &stem);
             let doc_freq = searcher.doc_freq(&term)?;
             if doc_freq > 0 {
-                terms.insert(word, 1.0 / (1.0 + doc_freq as f32));
+                stems.insert(stem, 1.0 / (1.0 + doc_freq as f32));
             }
         }
-        Ok(SnippetGenerator::new(
-            terms,
-            schema::analyzer(),
-            self.fields.body,
-            max_chars,
-        ))
+        Ok(Highlighter::new(stems, self.fields.body, max_chars))
     }
 
     /// The fields of the index schema.
@@ -667,5 +672,35 @@ fn io_error(path: &Path, source: io::Error) -> Error {
     Error::Io {
         path: path.to_owned(),
         source,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rebuilds_an_index_of_another_schema_version() {
+        let tmp = tempfile::tempdir().unwrap();
+        let dir = tmp.path().join("index");
+        let index = SearchIndex::open(&dir).unwrap();
+        let mut writer: IndexWriter = index.index.writer_with_num_threads(1, 15_000_000).unwrap();
+        writer
+            .add_document(tantivy::doc!(index.fields.msg_id => 7u64))
+            .unwrap();
+        let old = IndexState {
+            schema_version: SCHEMA_VERSION - 1,
+            ..IndexState::default()
+        };
+        commit(&mut writer, &old).unwrap();
+        drop((writer, index));
+
+        assert!(matches!(
+            SearchIndex::open_read_only(&dir),
+            Err(Error::SchemaVersion { found, .. }) if found == SCHEMA_VERSION - 1
+        ));
+        let index = SearchIndex::open(&dir).unwrap();
+        assert_eq!(index.num_docs(), 0);
+        assert_eq!(index.state().unwrap().schema_version, SCHEMA_VERSION);
     }
 }

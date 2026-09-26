@@ -94,6 +94,7 @@ pub fn build(
     doc.add_u64(fields.flags, u64::from(message.flags.bits()));
     if !message.subject.is_empty() {
         doc.add_text(fields.subject, &message.subject);
+        doc.add_text(fields.subject_stem, &message.subject);
     }
 
     let mut domains: Vec<&str> = Vec::new();
@@ -163,6 +164,7 @@ pub fn build(
         }
         if !text.body.is_empty() {
             doc.add_text(fields.body, &text.body);
+            doc.add_text(fields.body_stem, &text.body);
         }
     }
     doc
