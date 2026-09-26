@@ -122,6 +122,12 @@ impl MailWindow {
             .rounded(px(self.layout.shape.card_radius()))
             .overflow_hidden()
             .bg(rgba(th.surface))
+            .on_mouse_down(
+                gpui::MouseButton::Left,
+                cx.listener(|this, event: &gpui::MouseDownEvent, window, cx| {
+                    this.double_click_reader(event, window, cx)
+                }),
+            )
             .on_action(cx.listener(Self::select_next))
             .on_action(cx.listener(Self::select_previous))
             .on_action(cx.listener(Self::select_first))
@@ -685,7 +691,13 @@ impl MailWindow {
                                     this.act_on_targets(Act::Important(false), cx)
                                 }),
                             ),
-                        ),
+                        )
+                        .child(menu_item("more-pin", "Pin to top", th).on_click(
+                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Pin(true), cx)),
+                        ))
+                        .child(menu_item("more-unpin", "Unpin", th).on_click(
+                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Pin(false), cx)),
+                        )),
                 }
             }
             Menu::MoveTo => {
@@ -770,11 +782,17 @@ impl MailWindow {
     /// `row` with changes the daemon has not confirmed yet.
     pub(super) fn with_pending(&self, row: Rc<Row>) -> Rc<Row> {
         match self.pending.get(&row.key) {
-            Some(p) if p.unread.is_some() || p.flagged.is_some() || p.important.is_some() => {
+            Some(p)
+                if p.unread.is_some()
+                    || p.flagged.is_some()
+                    || p.important.is_some()
+                    || p.pinned.is_some() =>
+            {
                 let mut row = (*row).clone();
                 row.unread = p.unread.unwrap_or(row.unread);
                 row.flagged = p.flagged.unwrap_or(row.flagged);
                 row.important = p.important.unwrap_or(row.important);
+                row.pinned = p.pinned.unwrap_or(row.pinned);
                 Rc::new(row)
             }
             _ => row,
@@ -1082,7 +1100,17 @@ impl MailWindow {
                 }
                 cx.notify();
             }))
-            .on_click(cx.listener(move |this, _, window, cx| this.open(ix, window, cx)))
+            .on_click(
+                cx.listener(move |this, event: &gpui::ClickEvent, window, cx| {
+                    // A double-click opens the line in a window of its own.
+                    if event.click_count() >= 2 {
+                        this.open_in_window(ix, cx);
+                    } else {
+                        this.clicked = Some((std::time::Instant::now(), ix));
+                        this.open(ix, window, cx);
+                    }
+                }),
+            )
             .on_mouse_down(
                 gpui::MouseButton::Right,
                 cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
@@ -1294,7 +1322,7 @@ impl MailWindow {
         // The quick actions fade in over the date.
         let actions = hovered.then(|| {
             div()
-                .child(self.hover_actions(ix, key, row.unread, th, cx))
+                .child(self.hover_actions(ix, key, row.unread, row.pinned, th, cx))
                 .with_animation(
                     ("row-actions", ix),
                     Animation::new(ACTIONS_IN).with_easing(ease_out_quint()),
@@ -1304,9 +1332,21 @@ impl MailWindow {
         });
         let date = div()
             .flex_none()
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(6.0))
             .text_size(px(12.0))
             .font_weight(weight)
             .text_color(rgba(if row.unread { th.text } else { th.text_faint }))
+            .when(row.pinned, |d| {
+                d.child(
+                    div()
+                        .id(("row-pinned", ix))
+                        .tooltip(tip("Pinned to the top", th))
+                        .child(icon("pin-filled", th.accent, 16.0)),
+                )
+            })
             .child(date);
 
         if stacked {
@@ -1656,13 +1696,14 @@ impl MailWindow {
         [scrim, popover]
     }
 
-    /// Archive, delete and read/unread buttons shown on the hovered line in
-    /// place of its date.
+    /// Archive, delete, read/unread and pin buttons shown on the hovered
+    /// line in place of its date.
     fn hover_actions(
         &self,
         ix: usize,
         key: EntryKey,
         unread: bool,
+        pinned: bool,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -1700,6 +1741,17 @@ impl MailWindow {
                 .on_click(cx.listener(move |this, _, _, cx| {
                     cx.stop_propagation();
                     this.act(Act::Read(unread), vec![key], cx);
+                })),
+            )
+            .child(
+                button(
+                    3,
+                    if pinned { "pin-filled" } else { "pin" },
+                    if pinned { "Unpin" } else { "Pin to top" },
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    cx.stop_propagation();
+                    this.act(Act::Pin(!pinned), vec![key], cx);
                 })),
             )
             .with_animation(

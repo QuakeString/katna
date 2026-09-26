@@ -25,6 +25,7 @@ mod compose;
 mod context_menu;
 mod dark;
 mod desktop;
+mod detached;
 mod download;
 mod keymap;
 mod labels;
@@ -50,7 +51,7 @@ use futures_lite::StreamExt;
 use gpui::{
     AnyElement, App, Context, Entity, FocusHandle, Focusable, Hsla, ListAlignment, ListState,
     MouseButton, MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task,
-    UniformListScrollHandle, Window, actions, div, prelude::*, px, rgba,
+    UniformListScrollHandle, WeakEntity, Window, actions, div, prelude::*, px, rgba,
 };
 use jiff::tz::TimeZone;
 use katna_chrome::{Bar, ChromeColors, Environment, WindowChrome};
@@ -192,6 +193,7 @@ enum Act {
     Read(bool),
     Star(bool),
     Important(bool),
+    Pin(bool),
 }
 
 /// What the pointer rests on that opens the folded navigation.
@@ -217,6 +219,7 @@ struct Pending {
     unread: Option<bool>,
     flagged: Option<bool>,
     important: Option<bool>,
+    pinned: Option<bool>,
 }
 
 pub struct MailWindow {
@@ -262,6 +265,16 @@ pub struct MailWindow {
     visible: Range<usize>,
     hovered: Option<usize>,
     reader: Option<Conversation>,
+    /// A window of its own showing one conversation (double-click on a
+    /// line), not the main mail window.
+    detached: bool,
+    /// For a conversation window, the mail window it came from: it shows
+    /// the snackbar (and its Undo) when the conversation moves away and
+    /// this window closes.
+    main: Option<WeakEntity<Self>>,
+    /// When a line was last opened by a click, and which: the second click
+    /// of a double-click lands on the conversation that replaced the list.
+    clicked: Option<(std::time::Instant, usize)>,
     /// Remote images and sender pictures of the open conversation.
     remote: remote::Remote,
     /// Whether a conversation is open: in place of the list with two
@@ -365,6 +378,38 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Self {
         let started = std::time::Instant::now();
+        let mut this = Self::build(env, paths, font, window, cx);
+        keymap::bind(&this.config.shortcuts, cx);
+        this.load_tree();
+        if let Some((folder, ancestors)) = this.default_folder() {
+            this.expanded.extend(ancestors);
+            this.rebuild_nav();
+            this.open_folder(folder, cx);
+        }
+        this.count_unread(cx);
+        this.listen(cx);
+        this.watch_colors(cx);
+        if let Some(err) = this.mail.as_ref().ok().and_then(Mail::index_error) {
+            tracing::info!("{err}");
+        }
+        window.focus(&this.list_focus, cx);
+        if this.needs_account() {
+            this.onboarding = Some(onboarding::Onboarding::new());
+        } else if !this.config.onboarding.done {
+            this.start_tour(true, window, cx);
+        }
+        tracing::info!(elapsed = ?started.elapsed(), lines = this.entries.len(), "mail loaded");
+        this
+    }
+
+    /// The window's state before any mail is listed.
+    fn build(
+        env: Environment,
+        paths: Paths,
+        font: Option<SharedString>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Self {
         let search = cx.new(|cx| TextInput::new("Search mail", cx));
         let subscriptions = vec![cx.subscribe_in(&search, window, Self::on_search_event)];
         let config_path = paths.config_file();
@@ -372,9 +417,8 @@ impl MailWindow {
             tracing::warn!("{err}; using the default settings");
             Config::default()
         });
-        keymap::bind(&config.shortcuts, cx);
         let desktop_colors = colors::DesktopColors::new(&env.desktop);
-        let mut this = Self {
+        let this = Self {
             chrome: WindowChrome::new(env, "Katna Mail", window, cx),
             app: RailApp::Mail,
             people: None,
@@ -406,6 +450,9 @@ impl MailWindow {
             visible: 0..0,
             hovered: None,
             reader: None,
+            detached: false,
+            main: None,
+            clicked: None,
             reading: false,
             card_seq: 0,
             search,
@@ -468,25 +515,6 @@ impl MailWindow {
         this.list_state.set_scroll_handler(move |_, _, cx| {
             weak.update(cx, |_, cx| cx.notify()).ok();
         });
-        this.load_tree();
-        if let Some((folder, ancestors)) = this.default_folder() {
-            this.expanded.extend(ancestors);
-            this.rebuild_nav();
-            this.open_folder(folder, cx);
-        }
-        this.count_unread(cx);
-        this.listen(cx);
-        this.watch_colors(cx);
-        if let Some(err) = this.mail.as_ref().ok().and_then(Mail::index_error) {
-            tracing::info!("{err}");
-        }
-        window.focus(&this.list_focus, cx);
-        if this.needs_account() {
-            this.onboarding = Some(onboarding::Onboarding::new());
-        } else if !this.config.onboarding.done {
-            this.start_tour(true, window, cx);
-        }
-        tracing::info!(elapsed = ?started.elapsed(), lines = this.entries.len(), "mail loaded");
         this
     }
 
@@ -625,9 +653,12 @@ impl MailWindow {
             };
             this.update(cx, |this, cx| {
                 this.daemon = Some(connection.clone());
-                this.watch_sending(connection.clone(), cx);
-                this.watch_scheduled(connection.clone(), cx);
-                this.check_first_sync(cx);
+                // The main window reports sending and the first sync.
+                if !this.detached {
+                    this.watch_sending(connection.clone(), cx);
+                    this.watch_scheduled(connection.clone(), cx);
+                    this.check_first_sync(cx);
+                }
             })
             .ok();
             let mut changes = match daemon::mail_changes(&connection).await {
@@ -641,7 +672,9 @@ impl MailWindow {
                 cx.background_executor().timer(CHANGE_DELAY).await;
                 let refreshed = this.update(cx, |this, cx| {
                     this.refresh(false, cx);
-                    this.check_first_sync(cx);
+                    if !this.detached {
+                        this.check_first_sync(cx);
+                    }
                 });
                 if refreshed.is_err() {
                     break;
@@ -929,6 +962,10 @@ impl MailWindow {
     }
 
     fn close_message(&mut self, _: &CloseMessage, window: &mut Window, cx: &mut Context<Self>) {
+        if self.detached {
+            window.remove_window();
+            return;
+        }
         self.show_list();
         window.focus(&self.list_focus, cx);
         cx.notify();
@@ -1222,6 +1259,14 @@ impl MailWindow {
             mail.refresh();
         }
         self.pending.clear();
+        if self.detached {
+            self.expanded = expanded;
+            if let (Some(reader), Ok(mail)) = (&mut self.reader, &mut self.mail) {
+                reader.refresh(mail);
+            }
+            cx.notify();
+            return;
+        }
         self.load_tree();
         self.expanded = expanded;
         self.rebuild_nav();
@@ -1501,6 +1546,16 @@ impl MailWindow {
                 let undo = Command::Important(ids.clone(), !on);
                 (Command::Important(ids, on), Some(undo))
             }
+            Act::Pin(on) => {
+                // The whole conversation, wherever its messages are.
+                let ids: Vec<MessageId> =
+                    keys.iter().flat_map(|k| mail.entry_messages(*k)).collect();
+                for key in &keys {
+                    self.pending.entry(*key).or_default().pinned = Some(on);
+                }
+                let undo = Command::Pin(ids.clone(), !on);
+                (Command::Pin(ids, on), Some(undo))
+            }
             Act::Archive | Act::Delete | Act::Spam | Act::MoveTo(_) => {
                 let ids: Vec<MessageId> = keys.iter().flat_map(|k| messages_in(*k)).collect();
                 let target = match act {
@@ -1534,6 +1589,16 @@ impl MailWindow {
             Act::Spam => Some(format!("{what} reported as spam.")),
             _ => command.done_text(&what),
         };
+        // Moved out of a conversation window, which now closes: the mail
+        // window says so and offers Undo.
+        if self.detached
+            && self.reader.is_none()
+            && let Some(main) = self.main.as_ref().and_then(WeakEntity::upgrade)
+        {
+            main.update(cx, |main, cx| main.send(command, done, undo, false, cx));
+            cx.notify();
+            return;
+        }
         self.send(command, done, undo, false, cx);
         cx.notify();
     }
@@ -1899,6 +1964,9 @@ impl MailWindow {
 
 impl Render for MailWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        if self.detached {
+            return self.render_detached(window, cx);
+        }
         self.tour_new_frame();
         let th = self.theme(window);
         self.release_images(window, cx);
@@ -2136,8 +2204,8 @@ impl Render for MailWindow {
         };
         let frame = self.chrome.render_bar(bar, content, window, cx);
         match &self.font {
-            Some(font) => frame.font_family(font.clone()),
-            None => frame,
+            Some(font) => frame.font_family(font.clone()).into_any_element(),
+            None => frame.into_any_element(),
         }
     }
 }

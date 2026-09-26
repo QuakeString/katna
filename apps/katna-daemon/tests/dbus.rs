@@ -332,6 +332,13 @@ fn changes_imported_mail_in_the_store() {
         assert_eq!(flags(ids[0]), MessageFlags::SEEN);
         assert_eq!(flags(ids[1]), MessageFlags::SEEN | MessageFlags::FLAGGED);
 
+        pim.set_pinned(&[ids[1].0], true).await.unwrap();
+        let pinned = reader.pinned().unwrap();
+        assert_eq!(pinned.len(), 1);
+        assert_eq!(pinned[0].message, ids[1]);
+        pim.set_pinned(&[ids[1].0], false).await.unwrap();
+        assert!(reader.pinned().unwrap().is_empty());
+
         pim.move_messages(&[ids[0].0], old.0).await.unwrap();
         assert_eq!(reader.messages_in_folder(old).unwrap()[0].id, ids[0]);
         // No trash: deleted for good.

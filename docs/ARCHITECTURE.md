@@ -216,6 +216,7 @@ op_queue         (id, account_id, op_json, state, attempts, next_try_at)
 outbox           (id, draft_message_id, send_at, state, per_recipient BOOL, attempts)
 notification     (notif_id, message_ids, account_id, created_at)   -- to close/update later
 pop3_uidl        (account_id, uidl, message_id NULL, first_seen)   -- POP3 downloads (v3)
+pin              (message_id, pinned_at)   -- pinned to the top of the list (v5)
 ```
 
 `participant` is the key table for organizations (§8) and address search.
@@ -243,6 +244,10 @@ Mail schema v3 (`mail_v3.sql`) adds `pop3_uidl`: the server messages each
 POP3 account has downloaded. `message_id` becomes NULL when the local
 message is deleted, so it is not downloaded again and can be removed from
 the server (§6.4).
+
+Mail schema v5 (`mail_v5.sql`) adds `pin`: messages pinned to the top of
+their folder's list (§13.5). Pins are Katna's own (IMAP has none), so they
+stay on this computer; a pinned conversation pins each message it had.
 
 ### 5.4 Shared PIM schema (sketch)
 
@@ -1045,12 +1050,30 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   the rest; a chip opens the built-in viewer (§13.8) on that file, with
   the message's other attachments a click of the arrows away. Lines differ
   in height, so the list is GPUI's `list` (measured lines) rather than
-  `uniform_list`. Hovering a line shows Archive, Delete and Mark as
-  read/unread in place of the date. Star and importance changes show a
-  snackbar with Undo.
+  `uniform_list`. Hovering a line shows Archive, Delete, Mark as
+  read/unread and Pin in place of the date. Star, importance and pin
+  changes show a snackbar with Undo.
+- **Pins.** Pin to top (hover button, More and right-click menus) keeps a
+  conversation, or a single message in message view, above the rest of
+  every folder it is listed in, newest pin first, with a pin next to the
+  date; search results keep their order. Pinning takes the whole
+  conversation, so its later replies stay pinned too. At most ten
+  conversations are pinned (`katna_sync::ops::MAX_PINS`): the daemon's
+  `SetPinned` refuses an eleventh with "You can pin up to 10
+  conversations. Unpin one to pin another.", which the snackbar shows.
+  Pins are local (schema v5, §5.3).
 - **Reading view.** Subject with the folder as a chip, a letter avatar
   (color from the address), sender, recipients, date with "(2 hours ago)",
-  the body, attachments as cards, and Reply/Forward buttons.
+  the body, attachments as cards, and Reply/Forward buttons. Opening or
+  folding a message of a conversation animates its height from the old
+  one; the sender picture stays in place and only the text fades.
+- **Conversation windows.** Double-clicking a line opens its conversation
+  in a window of its own (without the reading pane, the second click lands
+  on the conversation that replaced the list, and moves it there). The
+  window is a second `MailWindow` in a detached mode that shows only the
+  reading view: it reads the store and follows `MailChanged` itself.
+  Archiving, deleting or moving the conversation closes it, and the main
+  window shows the snackbar with Undo.
 - **Motion.** Springs (`katna_ui::motion::Spring`, on GPUI's spring
   solver) drive values that shape several elements: the navigation width,
   the search box turning white with a shadow when focused, the snackbar.
@@ -1396,7 +1419,9 @@ leave-on-server, days to keep, and delete-with-local),
 the data directory, the cache and `config.toml`, then the daemon exits;
 the next call starts a new one), `SyncNow(id)` (0 for every account), `FetchBody(message)`,
 `SetFlags(ax messages, as add, as remove)` (flag names `seen`, `answered`,
-`flagged`, `draft`, `forwarded`), `MoveMessages(ax, folder)`,
+`flagged`, `draft`, `forwarded`, `important`), `SetPinned(ax messages, b
+on)` (local only; more than ten pinned conversations is an error),
+`MoveMessages(ax, folder)`,
 `DeleteMessages(ax)`, `ArchiveMessages(ax)`, `QueueSend(x account, ay
 message, u delay) → id`, `UndoSend(id) → b`, `DiscardSend(id) → b`,
 `Outbox() → a(xxxsxss)` (id, account, message, subject, send at, state,

@@ -82,6 +82,8 @@ icons!(
     "open-full",
     "people",
     "person-add",
+    "pin-filled",
+    "pin",
     "plain-text",
     "print",
     "quote",

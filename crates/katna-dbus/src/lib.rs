@@ -205,6 +205,11 @@ macro_rules! pim_proxy {
             fn set_flags(&self, messages: &[i64], add: &[&str], remove: &[&str])
                 -> zbus::Result<()>;
 
+            /// Pins messages (and so their conversations) to the top of the
+            /// list, or unpins them. Pins stay on this computer. Pinning more
+            /// than ten conversations fails with a message saying so.
+            fn set_pinned(&self, messages: &[i64], on: bool) -> zbus::Result<()>;
+
             /// Creates a folder (a label, on Gmail) called `name` on the
             /// account's server, inside folder `parent` (0: at the top), and
             /// returns its ID; `MailChanged` follows. Fails while the

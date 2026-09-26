@@ -6,6 +6,7 @@
 //! "4 older messages" fold in long threads, the newest open) and, pinned
 //! at the foot, Reply, Reply all and Forward, or the reply being written.
 
+use std::cell::Cell;
 use std::rc::Rc;
 use std::sync::Arc;
 use std::time::Duration;
@@ -68,6 +69,40 @@ struct Part {
     body: Option<Body>,
     /// The "to me, Bob ▾" details are open.
     details: bool,
+    /// How tall it was when last drawn, to grow or shrink it smoothly.
+    height: Rc<Cell<f32>>,
+    /// Its height when it was last opened or folded, and how many times
+    /// that happened: each time starts a new height animation.
+    from: f32,
+    turns: u32,
+}
+
+impl Part {
+    fn new(id: MessageId, row: Option<Rc<Row>>, expanded: bool) -> Self {
+        Self {
+            id,
+            row,
+            expanded,
+            body: None,
+            details: false,
+            height: Rc::default(),
+            from: 0.0,
+            turns: 0,
+        }
+    }
+
+    /// Opens or folds it, animating from how it looks now.
+    fn set_expanded(&mut self, expanded: bool, mail: &Mail) {
+        if expanded == self.expanded {
+            return;
+        }
+        self.expanded = expanded;
+        self.from = self.height.get();
+        self.turns += 1;
+        if expanded && self.body.is_none() {
+            self.body = Some(read(mail, self.id));
+        }
+    }
 }
 
 struct Body {
@@ -115,6 +150,10 @@ impl Conversation {
         }
     }
 
+    pub(super) fn subject(&self) -> &str {
+        &self.subject
+    }
+
     /// Where the attachments of message `id` are read from.
     pub(super) fn attachment_source(&self, id: MessageId) -> AttachmentSource {
         let Some(body) = self
@@ -146,13 +185,7 @@ impl Conversation {
             .enumerate()
             .map(|(ix, (id, row))| {
                 let unread = row.as_ref().is_some_and(|r| r.unread);
-                let mut part = Part {
-                    id: *id,
-                    row,
-                    expanded: ix == last || unread,
-                    body: None,
-                    details: false,
-                };
+                let mut part = Part::new(*id, row, ix == last || unread);
                 if part.expanded {
                     part.body = Some(read(mail, part.id));
                 }
@@ -190,11 +223,8 @@ impl Conversation {
                     part
                 }
                 None => Part {
-                    id,
-                    row,
-                    expanded: true,
                     body: Some(read(mail, id)),
-                    details: false,
+                    ..Part::new(id, row, true)
                 },
             })
             .collect();
@@ -229,22 +259,15 @@ impl Conversation {
     }
 
     fn toggle(&mut self, ix: usize, mail: &Mail) {
-        let Some(part) = self.parts.get_mut(ix) else {
-            return;
-        };
-        part.expanded = !part.expanded;
-        if part.expanded && part.body.is_none() {
-            part.body = Some(read(mail, part.id));
+        if let Some(part) = self.parts.get_mut(ix) {
+            part.set_expanded(!part.expanded, mail);
         }
     }
 
     fn set_all(&mut self, expanded: bool, mail: &Mail) {
         let last = self.parts.len().saturating_sub(1);
         for (ix, part) in self.parts.iter_mut().enumerate() {
-            part.expanded = expanded || ix == last;
-            if part.expanded && part.body.is_none() {
-                part.body = Some(read(mail, part.id));
-            }
+            part.set_expanded(expanded || ix == last, mail);
         }
         self.show_all = expanded;
     }
@@ -311,7 +334,7 @@ impl MailWindow {
             .as_ref()
             .and_then(|r| self.entries.iter().position(|e| e.key == r.key));
         let ix = position.or(self.selected).unwrap_or(0);
-        let back = if self.split() {
+        let back = if self.split() || self.detached {
             icon_button("reader-close", "close", 20.0, th).tooltip(tip("Close", th))
         } else {
             icon_button("reader-back", "back", 20.0, th).tooltip(tip("Back", th))
@@ -349,7 +372,8 @@ impl MailWindow {
                 self.with_menu(more, Menu::ReaderMore, th, cx)
             })
             .child(div().flex_1())
-            .when(!narrow && count > 0, |d| {
+            // A conversation in its own window has no list to step through.
+            .when(!narrow && count > 0 && !self.detached, |d| {
                 d.child(
                     div()
                         .px(px(8.0))
@@ -362,8 +386,9 @@ impl MailWindow {
                         )),
                 )
             })
-            // A phone moves between conversations from the list.
-            .when(!phone, |d| {
+            // A phone moves between conversations from the list; a
+            // conversation window shows only its own.
+            .when(!phone && !self.detached, |d| {
                 d.child(
                     icon_button("newer", "chevron-left", 20.0, th)
                         .tooltip(tip("Newer", th))
@@ -555,17 +580,20 @@ impl MailWindow {
             .into_any_element()
     }
 
-    fn render_part(&self, ix: usize, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    fn render_part_content(&self, ix: usize, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let Some(reader) = &self.reader else {
             return div().into_any_element();
         };
         let part = &reader.parts[ix];
+        let turn = part_turn(reader.key, ix, part.turns);
         let last = ix + 1 == reader.parts.len();
         let row = part.row.clone();
         let view = part.body.as_ref().and_then(|b| b.view.as_ref());
         let (name, email) = match (view.and_then(|v| v.from.first()), &row) {
             (Some(from), _) => (from.label().to_owned(), from.email.clone()),
-            (None, Some(row)) => (row.correspondent.clone(), String::new()),
+            // Not read yet: the list line knows the sender, so the picture
+            // (when one was already fetched) stays the same once it opens.
+            (None, Some(row)) => (row.correspondent.clone(), row.sender.clone()),
             (None, None) => ("(unknown sender)".to_owned(), String::new()),
         };
         let now = jiff::Timestamp::now().as_second();
@@ -605,39 +633,49 @@ impl MailWindow {
                 .hover(|s| s.bg(rgba(th.hover)))
                 .on_click(toggle)
                 .child(self.sender_avatar(&name, &email, 40.0))
-                .child(
+                .child(turn_fade(
                     div()
                         .flex_1()
                         .min_w_0()
                         .flex()
-                        .flex_col()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(16.0))
                         .child(
                             div()
-                                .truncate()
-                                .text_size(px(14.0))
-                                .font_weight(if unread {
-                                    FontWeight::BOLD
-                                } else {
-                                    FontWeight::MEDIUM
-                                })
-                                .text_color(rgba(th.text))
-                                .child(name),
+                                .flex_1()
+                                .min_w_0()
+                                .flex()
+                                .flex_col()
+                                .child(
+                                    div()
+                                        .truncate()
+                                        .text_size(px(14.0))
+                                        .font_weight(if unread {
+                                            FontWeight::BOLD
+                                        } else {
+                                            FontWeight::MEDIUM
+                                        })
+                                        .text_color(rgba(th.text))
+                                        .child(name),
+                                )
+                                .child(
+                                    div()
+                                        .truncate()
+                                        .text_size(px(13.0))
+                                        .text_color(rgba(th.text_faint))
+                                        .child(snippet),
+                                ),
                         )
                         .child(
                             div()
-                                .truncate()
-                                .text_size(px(13.0))
+                                .flex_none()
+                                .text_size(px(12.0))
                                 .text_color(rgba(th.text_faint))
-                                .child(snippet),
+                                .child(short_date),
                         ),
-                )
-                .child(
-                    div()
-                        .flex_none()
-                        .text_size(px(12.0))
-                        .text_color(rgba(th.text_faint))
-                        .child(short_date),
-                )
+                    turn,
+                ))
                 .into_any_element();
         }
 
@@ -899,12 +937,14 @@ impl MailWindow {
             _ => self.download_note(id, ix, th, cx),
         };
 
+        // The picture sits where it does on the folded line, so only the
+        // text changes when a message opens.
         div()
             .id(("part", ix))
             .flex()
             .flex_row()
             .pr(px(16.0))
-            .pt(px(16.0))
+            .pt(px(12.0))
             .pb(px(if last { 0.0 } else { 16.0 }))
             .when(ix > 0, |d| d.border_t_1().border_color(rgba(th.divider)))
             .child(
@@ -915,7 +955,7 @@ impl MailWindow {
                     .justify_center()
                     .child(self.sender_avatar(&name, &email, 40.0)),
             )
-            .child(
+            .child(turn_fade(
                 div()
                     .flex_1()
                     .min_w_0()
@@ -924,13 +964,51 @@ impl MailWindow {
                     .children(details_box)
                     .children(self.security_banner(part, th, cx))
                     .child(body),
-            )
-            .with_animation(
-                ("part-open", key_number(reader.key) ^ ix),
-                Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
-                |el, t| el.opacity(t),
-            )
+                turn,
+            ))
             .into_any_element()
+    }
+
+    /// A message of the open conversation. Opening or folding it grows or
+    /// shrinks it from the height it had, so the messages below slide.
+    fn render_part(&self, ix: usize, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(reader) = &self.reader else {
+            return div().into_any_element();
+        };
+        let part = &reader.parts[ix];
+        let measured = part.height.clone();
+        let target = part.height.clone();
+        let from = part.from;
+        let content = div()
+            .flex()
+            .flex_col()
+            .overflow_hidden()
+            .on_children_prepainted(move |bounds, _, _| {
+                if let Some(bounds) = bounds.first() {
+                    measured.set(f32::from(bounds.size.height));
+                }
+            })
+            .child(
+                div()
+                    .flex_none()
+                    .child(self.render_part_content(ix, th, cx)),
+            );
+        match part_turn(reader.key, ix, part.turns) {
+            None => content.into_any_element(),
+            Some(id) => content
+                .with_animation(
+                    id,
+                    Animation::new(TURN).with_easing(ease_out_cubic),
+                    move |el, t| {
+                        if t >= 1.0 {
+                            el
+                        } else {
+                            el.h(px(from + (target.get() - from) * t))
+                        }
+                    },
+                )
+                .into_any_element(),
+        }
     }
 
     /// Stars or unstars one message of the open conversation.
@@ -1016,6 +1094,35 @@ fn fold(count: usize, th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
                 .child(count.to_string()),
         )
         .into_any_element()
+}
+
+/// How long a message takes to open or fold.
+const TURN: Duration = Duration::from_millis(260);
+
+/// The animation ID of a message's latest opening or folding; `None` until
+/// it has been opened or folded.
+fn part_turn(key: EntryKey, ix: usize, turns: u32) -> Option<SharedString> {
+    (turns > 0).then(|| format!("part-turn-{}-{ix}-{turns}", key_number(key)).into())
+}
+
+/// Fades a message's text in after it opens or folds.
+fn turn_fade(el: gpui::Div, turn: Option<SharedString>) -> AnyElement {
+    match turn {
+        None => el.into_any_element(),
+        Some(id) => el
+            .with_animation(
+                SharedString::from(format!("{id}-text")),
+                Animation::new(TURN).with_easing(ease_out_cubic),
+                |el, t| el.opacity(0.3 + 0.7 * t),
+            )
+            .into_any_element(),
+    }
+}
+
+/// Gentler than quint: the height change stays visible for most of
+/// [`TURN`].
+fn ease_out_cubic(t: f32) -> f32 {
+    1.0 - (1.0 - t).powi(3)
 }
 
 fn key_number(key: EntryKey) -> usize {

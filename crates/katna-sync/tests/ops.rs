@@ -225,6 +225,51 @@ fn refused_changes_are_retried_then_undone() {
 }
 
 #[test]
+fn pins_are_local_and_capped() {
+    let (_tmp, mut store, account) = setup();
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    for n in 0..=ops::MAX_PINS {
+        server.deliver("INBOX", &format!("subject {n}"));
+    }
+    sync(&server, &mut store, account);
+    let inbox = folder(&store, account, "INBOX");
+    let ids: Vec<MessageId> = (0..=ops::MAX_PINS)
+        .map(|n| message_at(&store, inbox, n))
+        .collect();
+
+    let (ten, eleventh) = ids.split_at(ops::MAX_PINS);
+    assert_eq!(
+        ops::set_pinned(&mut store, ten, true, NOW).unwrap(),
+        [account]
+    );
+    assert_eq!(store.pinned().unwrap().len(), ops::MAX_PINS);
+    // Pinning again is fine; an 11th conversation is not.
+    assert!(
+        ops::set_pinned(&mut store, &ten[..1], true, NOW)
+            .unwrap()
+            .is_empty()
+    );
+    assert!(matches!(
+        ops::set_pinned(&mut store, eleventh, true, NOW),
+        Err(ChangeError::NotPossible(_))
+    ));
+    assert_eq!(store.pinned().unwrap().len(), ops::MAX_PINS);
+
+    // Unpinning one makes room. Nothing goes to the server.
+    ops::set_pinned(&mut store, &ten[..1], false, NOW).unwrap();
+    ops::set_pinned(&mut store, eleventh, true, NOW + 1).unwrap();
+    let pinned = store.pinned().unwrap();
+    assert_eq!(pinned[0].message, eleventh[0], "newest pin first");
+    assert!(!pinned.iter().any(|p| p.message == ten[0]));
+    assert!(store.due_ops(account, NOW, 10).unwrap().is_empty());
+    assert!(matches!(
+        ops::set_pinned(&mut store, &[MessageId(999)], true, NOW),
+        Err(ChangeError::UnknownMessage(999))
+    ));
+}
+
+#[test]
 fn impossible_changes_are_errors() {
     let (_tmp, mut store, account) = setup();
     let server = FakeServer::default();

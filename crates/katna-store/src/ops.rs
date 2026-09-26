@@ -9,11 +9,11 @@
 use katna_core::AccountId;
 use rusqlite::{OptionalExtension, params};
 
-use crate::Store;
 use crate::error::Result;
 use crate::journal::{self, ChangeOp, ObjectKind};
 use crate::mail::{FolderId, MailBatch, MessageFlags, MessageId};
 use crate::remote::remove_location;
+use crate::{Store, ThreadId};
 
 /// One queued operation.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -32,7 +32,35 @@ pub struct Location {
     pub uid: Option<u32>,
 }
 
+/// A pinned message.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct PinnedMessage {
+    pub message: MessageId,
+    pub account: AccountId,
+    pub thread: Option<ThreadId>,
+    /// Unix seconds.
+    pub pinned_at: i64,
+}
+
 impl Store {
+    /// Every pinned message, most recently pinned first.
+    pub fn pinned(&self) -> Result<Vec<PinnedMessage>> {
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT p.message_id, m.account_id, m.thread_id, p.pinned_at
+             FROM pin p JOIN message m ON m.id = p.message_id
+             ORDER BY p.pinned_at DESC, p.message_id DESC",
+        )?;
+        let rows = stmt.query_map([], |row| {
+            Ok(PinnedMessage {
+                message: MessageId(row.get(0)?),
+                account: AccountId(row.get(1)?),
+                thread: row.get::<_, Option<i64>>(2)?.map(ThreadId),
+                pinned_at: row.get(3)?,
+            })
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
     /// Pending operations of `account` that are due at `now`, oldest
     /// first, at most `limit`.
     pub fn due_ops(&self, account: AccountId, now: i64, limit: u32) -> Result<Vec<QueuedOp>> {
@@ -138,6 +166,23 @@ impl MailBatch<'_> {
             journal::record(tx, ObjectKind::Message, message.0, ChangeOp::Update)?;
         }
         Ok(changed)
+    }
+
+    /// Pins `message` at Unix time `at`, or unpins it with `None`.
+    /// Returns whether that changed anything.
+    pub fn set_pinned(&mut self, message: MessageId, at: Option<i64>) -> Result<bool> {
+        let tx = self.tx();
+        let changed = match at {
+            Some(at) => tx
+                .prepare_cached(
+                    "INSERT OR IGNORE INTO pin (message_id, pinned_at) VALUES (?1, ?2)",
+                )?
+                .execute(params![message.0, at])?,
+            None => tx
+                .prepare_cached("DELETE FROM pin WHERE message_id = ?1")?
+                .execute([message.0])?,
+        };
+        Ok(changed > 0)
     }
 
     /// Moves `message` from folder `from` to `to`, where its UID is `uid`
@@ -308,6 +353,20 @@ mod tests {
         batch.commit().unwrap();
 
         let mut batch = store.mail_batch().unwrap();
+        assert!(batch.set_pinned(id, Some(100)).unwrap());
+        assert!(!batch.set_pinned(id, Some(200)).unwrap(), "pinned already");
+        batch.commit().unwrap();
+        assert_eq!(
+            store.pinned().unwrap(),
+            [PinnedMessage {
+                message: id,
+                account,
+                thread: store.messages_by_id(&[id]).unwrap()[0].thread_id,
+                pinned_at: 100,
+            }]
+        );
+
+        let mut batch = store.mail_batch().unwrap();
         assert!(batch.set_message_flags(id, MessageFlags::SEEN).unwrap());
         assert!(!batch.set_message_flags(id, MessageFlags::SEEN).unwrap());
         assert!(batch.move_location(id, inbox, trash, None).unwrap());
@@ -328,5 +387,9 @@ mod tests {
         batch.remove_from_folder(id, trash).unwrap();
         batch.commit().unwrap();
         assert!(store.messages_by_id(&[id]).unwrap().is_empty());
+        assert!(
+            store.pinned().unwrap().is_empty(),
+            "pins go with the message"
+        );
     }
 }

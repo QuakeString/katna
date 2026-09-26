@@ -15,10 +15,10 @@
 //! The worker replays before every sync, so a sync never overwrites a
 //! local change that is still on its way to the server.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use katna_core::{AccountId, AccountKind};
-use katna_store::{FolderId, FolderRole, MessageFlags, MessageId, Store, StoredFolder};
+use katna_store::{FolderId, FolderRole, MessageFlags, MessageId, Store, StoredFolder, ThreadId};
 use serde::{Deserialize, Serialize};
 
 use crate::{Error, Flags, MailBackend, Result};
@@ -148,6 +148,56 @@ pub fn set_flags(
             batch.enqueue_op(account, &encode(&op))?;
         }
         push_unique(&mut accounts, account);
+    }
+    batch.commit()?;
+    Ok(accounts)
+}
+
+/// At most this many lines (conversations, or messages outside one) are
+/// pinned at a time.
+pub const MAX_PINS: usize = 10;
+
+/// Pins or unpins messages at Unix time `now`. Pinning more than
+/// [`MAX_PINS`] conversations is refused. Pins stay on this computer:
+/// IMAP has none. Returns the accounts whose mail changed.
+pub fn set_pinned(
+    store: &mut Store,
+    messages: &[MessageId],
+    on: bool,
+    now: i64,
+) -> Result<Vec<AccountId>, ChangeError> {
+    let stored = store.messages_by_id(messages)?;
+    if let Some(missing) = messages
+        .iter()
+        .find(|id| !stored.iter().any(|m| m.id == **id))
+    {
+        return Err(ChangeError::UnknownMessage(missing.0));
+    }
+    // A conversation counts once, however many of its messages are pinned.
+    let group = |thread: Option<ThreadId>, id: MessageId| match thread {
+        Some(thread) => (true, thread.0),
+        None => (false, id.0),
+    };
+    if on {
+        let mut groups: HashSet<(bool, i64)> = store
+            .pinned()?
+            .iter()
+            .map(|p| group(p.thread, p.message))
+            .collect();
+        let before = groups.len();
+        groups.extend(stored.iter().map(|m| group(m.thread_id, m.id)));
+        if groups.len() > MAX_PINS && groups.len() > before {
+            return Err(ChangeError::NotPossible(format!(
+                "You can pin up to {MAX_PINS} conversations. Unpin one to pin another."
+            )));
+        }
+    }
+    let mut batch = store.mail_batch()?;
+    let mut accounts = Vec::new();
+    for message in &stored {
+        if batch.set_pinned(message.id, on.then_some(now))? {
+            push_unique(&mut accounts, message.account);
+        }
     }
     batch.commit()?;
     Ok(accounts)
