@@ -519,7 +519,7 @@ impl MailWindow {
             .child(
                 div()
                     .flex_1()
-                    .min_w_0()
+                    .min_w(px(120.0))
                     .flex()
                     .flex_col()
                     .child(
@@ -575,8 +575,10 @@ impl MailWindow {
                     }),
             )
             .child(
+                // Gives way to the sender's name in a narrow pane.
                 div()
-                    .flex_none()
+                    .min_w_0()
+                    .truncate()
                     .pt(px(2.0))
                     .text_size(px(12.0))
                     .text_color(rgba(th.text_faint))
