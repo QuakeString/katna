@@ -6,6 +6,13 @@ all-features = true
 
 [advisories]
 yanked = "deny"
+ignore = [
+    # Unmaintained (not vulnerable) crates pulled in by GPUI (gpui-pre 0.3.6).
+    # Revisit when GPUI is upgraded (docs/spikes/S1-window-chrome.md).
+    { id = "RUSTSEC-2024-0436", reason = "paste: via gpui-pre (image/exr, metal); unmaintained, no known vulnerability" },
+    { id = "RUSTSEC-2026-0206", reason = "rustybuzz: via gpui-pre (usvg); unmaintained, no known vulnerability" },
+    { id = "RUSTSEC-2026-0192", reason = "ttf-parser: via gpui-pre (fontdb, rustybuzz); unmaintained, no known vulnerability" },
+]
 
 [licenses]
 confidence-threshold = 0.9
@@ -29,6 +36,8 @@ allow = [
     "CC0-1.0",
     "Unicode-3.0",
     "Unlicense",
+    # libbz2-rs-sys (via GPUI's HTTP client): permissive, GPL-compatible.
+    "bzip2-1.0.6",
     "CDLA-Permissive-2.0",
 ]
 
@@ -42,7 +51,10 @@ allow-wildcard-paths = true
 deny = [
     # GPUI types stay in the UI crates (docs/ARCHITECTURE.md §3, §20).
     # katna-daemon must never depend on GPUI.
-    { crate = "gpui-pre", wrappers = ["katna-ui", "katna-chrome", "katna-mail", "katna-calendar"], reason = "GPUI is only allowed in UI crates" },
+    # GPUI's own platform crates depend on gpui-pre too; the platform crate
+    # is banned the same way, so the chain still ends in a UI crate.
+    { crate = "gpui-pre", wrappers = ["katna-ui", "katna-chrome", "katna-mail", "katna-calendar", "gpui-pre-platform", "gpui-pre-linux", "gpui-pre-wgpu", "gpui-pre-apple", "gpui-pre-macos", "gpui-pre-windows", "gpui-pre-web"], reason = "GPUI is only allowed in UI crates" },
+    { crate = "gpui-pre-platform", wrappers = ["katna-ui", "katna-chrome", "katna-mail", "katna-calendar"], reason = "GPUI is only allowed in UI crates" },
     # TLS is rustls only (docs/ARCHITECTURE.md §19).
     { crate = "openssl-sys", reason = "use rustls" },
     { crate = "native-tls", reason = "use rustls" },

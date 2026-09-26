@@ -39,6 +39,11 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 zstd = "0.14"
 
+# GUI: exact pins (docs/ARCHITECTURE.md §20). GPUI is only allowed in the UI
+# crates (deny.toml). The crate is imported as `gpui`.
+gpui = { package = "gpui-pre", version = "=0.3.6" }
+gpui-platform = { package = "gpui-pre-platform", version = "=0.3.6", features = ["wayland", "x11"] }
+
 [workspace.lints.rust]
 unsafe_code = "forbid"
 

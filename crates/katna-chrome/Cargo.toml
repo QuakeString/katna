@@ -10,6 +10,14 @@ publish.workspace = true
 
 [dependencies]
 katna-core.workspace = true
+gpui.workspace = true
+
+[dev-dependencies]
+gpui-platform.workspace = true
+
+[[example]]
+name = "chrome-spike"
+path = "examples/chrome_spike.rs"
 
 [lints]
 workspace = true
