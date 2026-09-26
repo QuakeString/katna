@@ -18,6 +18,8 @@ use futures_lite::{FutureExt, StreamExt};
 use katna_core::{AccountKind, Paths};
 use katna_daemon::{Instance, StartError, secrets::Secrets};
 use katna_dbus::{NewImapAccount, PimProxy, ServerSpec, state};
+use katna_import::{Flags, IncomingMessage, MessageSink, StoreSink, parse_message};
+use katna_search::{Query, SearchIndex, SearchOptions};
 use katna_store::{Mode, Store};
 use katna_sync::{
     Credentials, Endpoint, MailBackend, Security, imap::ImapBackend, net::Tls, worker::WorkerConfig,
@@ -187,6 +189,58 @@ fn imported_accounts_are_listed_but_not_synced() {
         assert_eq!(accounts.len(), 1);
         assert_eq!(accounts[0].kind, "local");
         assert_eq!(accounts[0].state, state::NOT_SYNCED);
+        instance.shutdown().await;
+    });
+}
+
+#[test]
+fn indexes_the_store_for_search() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    let import = |store: &mut Store, subject: &str| {
+        let raw = format!(
+            "From: kenneth.lay@enron.com\r\nSubject: {subject}\r\n\
+             Date: Mon, 14 May 2001 16:39:00 -0700\r\n\r\nThe budget.\r\n"
+        );
+        let account = StoreSink::local_account(store, "enron").unwrap();
+        let message = IncomingMessage {
+            folder: "inbox".into(),
+            flags: Flags::default(),
+            parsed: parse_message(raw.as_bytes()).unwrap(),
+            raw: raw.into_bytes(),
+        };
+        StoreSink::new(store, account.id).write(&[message]).unwrap();
+    };
+    import(&mut store, "2001 budget");
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        // The index exists as soon as the daemon has started.
+        let index = SearchIndex::open_read_only(&paths.index_dir()).unwrap();
+        let found = |text: &str| {
+            let query = Query::parse(text).unwrap();
+            index
+                .search(&query, &SearchOptions::default())
+                .unwrap()
+                .hits
+                .len()
+        };
+        within("first index", 20, async {
+            while found("budget") == 0 {
+                Timer::after(Duration::from_millis(50)).await;
+            }
+        })
+        .await;
+
+        // Mail added by another writer is found by the fallback poll.
+        import(&mut store, "Budget review");
+        within("the new message", 20, async {
+            while found("review") == 0 {
+                Timer::after(Duration::from_millis(100)).await;
+            }
+        })
+        .await;
         instance.shutdown().await;
     });
 }

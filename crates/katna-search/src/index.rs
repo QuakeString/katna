@@ -8,9 +8,9 @@ use std::fs;
 use std::io;
 use std::ops::Range;
 use std::path::{Path, PathBuf};
-use std::sync::Mutex;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::mpsc;
+use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -54,6 +54,17 @@ pub struct IndexOptions {
     pub memory_budget: usize,
     /// Commit (make searchable and crash-safe) after this many messages.
     pub commit_every: u64,
+    /// When set, [`SearchIndex::update`] commits what it has done and
+    /// returns early; the next update carries on from there.
+    pub stop: Option<Arc<AtomicBool>>,
+}
+
+impl IndexOptions {
+    fn stopped(&self) -> bool {
+        self.stop
+            .as_ref()
+            .is_some_and(|stop| stop.load(Ordering::Relaxed))
+    }
 }
 
 impl Default for IndexOptions {
@@ -64,6 +75,7 @@ impl Default for IndexOptions {
             writer_threads: cpus.clamp(1, 4),
             memory_budget: 512 << 20,
             commit_every: 100_000,
+            stop: None,
         }
     }
 }
@@ -167,7 +179,7 @@ impl SearchIndex {
     /// created again empty, so the next [`update`](Self::update) rebuilds it.
     pub fn open(dir: &Path) -> Result<Self> {
         if dir.join("meta.json").is_file() {
-            match Self::open_existing(dir) {
+            match Self::open_existing(dir, ReloadPolicy::Manual) {
                 Err(Error::SchemaVersion { found, .. }) => {
                     tracing::warn!(
                         path = %dir.display(),
@@ -191,19 +203,21 @@ impl SearchIndex {
                 ..IndexState::default()
             },
         )?;
-        Self::open_existing(dir)
+        Self::open_existing(dir, ReloadPolicy::Manual)
     }
 
     /// Opens an existing index for searching only, as apps do while the
-    /// daemon writes it.
+    /// daemon writes it. Searches see the daemon's commits by themselves,
+    /// within about half a second; [`reload`](Self::reload) makes them
+    /// visible at once.
     pub fn open_read_only(dir: &Path) -> Result<Self> {
         if !dir.join("meta.json").is_file() {
             return Err(Error::NotFound(dir.to_owned()));
         }
-        Self::open_existing(dir)
+        Self::open_existing(dir, ReloadPolicy::OnCommitWithDelay)
     }
 
-    fn open_existing(dir: &Path) -> Result<Self> {
+    fn open_existing(dir: &Path, reload: ReloadPolicy) -> Result<Self> {
         let index = Index::open_in_dir(dir)?;
         let found = read_state(&index)?.schema_version;
         if found != SCHEMA_VERSION {
@@ -215,10 +229,7 @@ impl SearchIndex {
         }
         schema::register_tokenizers(index.tokenizers());
         let fields = Fields::from_schema(&index.schema())?;
-        let reader = index
-            .reader_builder()
-            .reload_policy(ReloadPolicy::Manual)
-            .try_into()?;
+        let reader = index.reader_builder().reload_policy(reload).try_into()?;
         Ok(Self {
             index,
             fields,
@@ -283,7 +294,7 @@ impl SearchIndex {
             loop {
                 let mut read = 0;
                 self.add_documents(&writer, store, options, &mut stats, |store| {
-                    if read >= options.commit_every {
+                    if read >= options.commit_every || options.stopped() {
                         return Ok(Vec::new());
                     }
                     let messages = store.messages_after(after, READ_BATCH)?;
@@ -293,7 +304,8 @@ impl SearchIndex {
                     read += messages.len() as u64;
                     Ok(messages)
                 })?;
-                let finished = read < options.commit_every;
+                let stopped = options.stopped();
+                let finished = read < options.commit_every && !stopped;
                 state = IndexState {
                     schema_version: SCHEMA_VERSION,
                     change_seq: finished.then_some(scan_seq),
@@ -302,6 +314,10 @@ impl SearchIndex {
                 };
                 commit(&mut writer, &state)?;
                 progress(stats.indexed);
+                if stopped {
+                    self.reload()?;
+                    return Ok(stats);
+                }
                 if finished {
                     break;
                 }
@@ -309,7 +325,7 @@ impl SearchIndex {
         }
 
         let mut seq = state.change_seq.unwrap_or_default();
-        loop {
+        while !options.stopped() {
             let changes = store.changes_since(DbKind::Mail, seq, JOURNAL_BATCH)?;
             let Some(last) = changes.last() else {
                 break;
