@@ -6,7 +6,8 @@
 //! - [`Pictures::image`]: a remote image in a message, once the user chose
 //!   to show that message's images.
 //! - [`Pictures::sender`]: the picture of a sender's organization: its BIMI
-//!   logo (the `default._bimi` DNS record), or else its website's icon.
+//!   logo (the `default._bimi` DNS record), or else its website's icon (the
+//!   largest one its home page names, then the usual file names).
 //!   Addresses at free-mail providers get none, since the provider's logo
 //!   says nothing about the person. Answers, including "none", are kept in
 //!   the cache directory for a week.
@@ -28,6 +29,8 @@ use crate::{Error, Result};
 pub const MAX_IMAGE: usize = 8 * 1024 * 1024;
 /// Largest sender picture: BIMI allows 32 KB; icons are small.
 const MAX_PICTURE: usize = 256 * 1024;
+/// How much of a home page is read for the icons its head names.
+const MAX_PAGE: usize = 512 * 1024;
 /// How long a sender picture (or its absence) is kept.
 const PICTURE_TTL: Duration = Duration::from_secs(7 * 24 * 3600);
 
@@ -108,7 +111,9 @@ impl Pictures {
         if FREE_MAIL.contains(&org.as_str()) {
             return Vec::new();
         }
-        let cached = self.cache.join(format!("{domain}.img"));
+        // `.pic`: answers found before home-page icons were looked for (`.img`)
+        // are asked again.
+        let cached = self.cache.join(format!("{domain}.pic"));
         if let Some(bytes) = read_fresh(&cached) {
             return bytes;
         }
@@ -152,11 +157,23 @@ impl Pictures {
                 }
             }
         }
-        for url in [
+        let mut urls = Vec::new();
+        for host in [org.to_owned(), format!("www.{org}")] {
+            let Some(page) = self.fetch_head(&format!("https://{host}/"), reached).await else {
+                continue;
+            };
+            urls = page_icons(&String::from_utf8_lossy(&page), &host);
+            tracing::debug!(host, icons = ?urls, "home page");
+            break;
+        }
+        urls.extend([
             format!("https://{org}/apple-touch-icon.png"),
             format!("https://www.{org}/apple-touch-icon.png"),
             format!("https://{org}/favicon.ico"),
-        ] {
+            format!("https://www.{org}/favicon.ico"),
+        ]);
+        urls.dedup();
+        for url in urls {
             if let Some(icon) = self.fetch(&url, MAX_PICTURE, reached).await
                 && ImageKind::sniff(&icon).is_some()
             {
@@ -165,6 +182,20 @@ impl Pictures {
             }
         }
         None
+    }
+
+    /// The start of the page at `url`, up to the end of its `<head>`.
+    async fn fetch_head(&self, url: &str, reached: &mut bool) -> Option<Vec<u8>> {
+        match http::get_head(url, &self.tls, self.timeout, MAX_PAGE).await {
+            Ok(page) => {
+                *reached = true;
+                page
+            }
+            Err(err) => {
+                tracing::debug!(url, %err, "page not read");
+                None
+            }
+        }
     }
 
     async fn fetch(&self, url: &str, max: usize, reached: &mut bool) -> Option<Vec<u8>> {
@@ -179,6 +210,113 @@ impl Pictures {
             }
         }
     }
+}
+
+/// The icons a home page on `host` names in its `<link rel=…icon…>` tags,
+/// as `https` URLs, largest first.
+fn page_icons(html: &str, host: &str) -> Vec<String> {
+    let lower = html.to_ascii_lowercase();
+    let mut icons: Vec<(u32, String)> = Vec::new();
+    let mut at = 0;
+    while let Some(start) = lower[at..].find("<link").map(|i| at + i) {
+        let end = lower[start..].find('>').map_or(lower.len(), |i| start + i);
+        at = end;
+        let attrs = attributes(&html[start + 5..end]);
+        let get = |name: &str| {
+            attrs
+                .iter()
+                .find(|(n, _)| n == name)
+                .map(|(_, v)| v.as_str())
+        };
+        let rel = get("rel").unwrap_or_default().to_ascii_lowercase();
+        let Some(href) = get("href").map(|h| h.trim().replace("&amp;", "&")) else {
+            continue;
+        };
+        let apple = rel.contains("apple-touch-icon");
+        if !(apple || rel.split_whitespace().any(|r| r == "icon")) || href.is_empty() {
+            continue;
+        }
+        let url = if let Some(rest) = href.strip_prefix("//") {
+            format!("https://{rest}")
+        } else if href.contains("://") {
+            match https(&href) {
+                Some(url) => url,
+                None => continue,
+            }
+        } else if href
+            .split('/')
+            .next()
+            .is_some_and(|first| first.contains(':'))
+        {
+            // `data:`, `javascript:` and other schemes.
+            continue;
+        } else {
+            format!("https://{host}/{}", href.trim_start_matches('/'))
+        };
+        // The largest of `sizes` ("32x32 64x64", "any" for a drawing).
+        let size = get("sizes")
+            .unwrap_or_default()
+            .split_whitespace()
+            .filter_map(|s| {
+                if s.eq_ignore_ascii_case("any") {
+                    return Some(256);
+                }
+                s.split(['x', 'X']).next()?.parse::<u32>().ok()
+            })
+            .max()
+            .unwrap_or(if apple {
+                180
+            } else if url.ends_with(".svg") {
+                256
+            } else {
+                32
+            });
+        if !icons.iter().any(|(_, u)| *u == url) {
+            icons.push((size, url));
+        }
+    }
+    icons.sort_by_key(|icon| std::cmp::Reverse(icon.0));
+    icons.into_iter().map(|(_, url)| url).collect()
+}
+
+/// The `name=value` pairs of a tag, names in lower case.
+fn attributes(tag: &str) -> Vec<(String, String)> {
+    let mut out = Vec::new();
+    let mut rest = tag.trim_start();
+    while !rest.is_empty() {
+        let name_end = rest
+            .find(|c: char| c == '=' || c.is_whitespace() || c == '/')
+            .unwrap_or(rest.len());
+        let name = rest[..name_end].to_ascii_lowercase();
+        rest = rest[name_end..].trim_start();
+        let value = if let Some(after) = rest.strip_prefix('=') {
+            let after = after.trim_start();
+            let (value, next) = match after.chars().next() {
+                Some(q @ ('"' | '\'')) => {
+                    let body = &after[1..];
+                    let close = body.find(q).unwrap_or(body.len());
+                    (&body[..close], body.get(close + 1..).unwrap_or(""))
+                }
+                _ => {
+                    let close = after.find(char::is_whitespace).unwrap_or(after.len());
+                    (&after[..close], &after[close..])
+                }
+            };
+            rest = next.trim_start();
+            value.to_owned()
+        } else {
+            if name.is_empty() {
+                // A stray `/` or other mark.
+                rest = rest.get(1..).unwrap_or("").trim_start();
+                continue;
+            }
+            String::new()
+        };
+        if !name.is_empty() {
+            out.push((name, value));
+        }
+    }
+    out
 }
 
 /// `url` as `https`, or `None` for anything but a web URL.
@@ -266,6 +404,30 @@ mod tests {
     }
 
     #[test]
+    fn icons_named_by_a_home_page() {
+        let page = r#"<html><head>
+            <LINK rel="icon" href="/favicon-32.png" sizes="32x32">
+            <link rel='shortcut icon' href=favicon.ico>
+            <link rel="apple-touch-icon" href="https://cdn.e.test/touch.png?v=1&amp;x=2" />
+            <link rel="icon" type="image/svg+xml" href="//cdn.e.test/logo.svg" sizes="any">
+            <link rel="mask-icon" href="/mask.svg">
+            <link rel="stylesheet" href="/site.css">
+            <link rel="icon" sizes="192x192" href="http://e.test/big.png">
+        </head></html>"#;
+        assert_eq!(
+            page_icons(page, "e.test"),
+            [
+                "https://cdn.e.test/logo.svg",
+                "https://e.test/big.png",
+                "https://cdn.e.test/touch.png?v=1&x=2",
+                "https://e.test/favicon-32.png",
+                "https://e.test/favicon.ico",
+            ]
+        );
+        assert!(page_icons("<link rel=icon href='javascript:x'>", "e.test").is_empty());
+    }
+
+    #[test]
     fn domains_and_urls() {
         assert!(valid_domain("mail.example.org"));
         assert!(!valid_domain("../etc"));
@@ -297,7 +459,7 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let cache = dir.path().join("pictures");
         std::fs::create_dir_all(&cache).unwrap();
-        std::fs::write(cache.join("news.example.org.img"), b"\x89PNG\r\n\x1a\n").unwrap();
+        std::fs::write(cache.join("news.example.org.pic"), b"\x89PNG\r\n\x1a\n").unwrap();
         let pictures = Pictures {
             tls: Tls::system().unwrap(),
             resolvers: Vec::new(),

@@ -9,6 +9,7 @@
 //! Bitmaps are [`image::RgbaImage`]s with straight (not premultiplied)
 //! alpha, which is what GPUI expects after swapping red and blue.
 
+pub mod avatar;
 pub mod document;
 pub mod pdf;
 pub mod picture;

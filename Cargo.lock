@@ -3780,6 +3780,7 @@ dependencies = [
  "hayro",
  "image",
  "quick-xml",
+ "resvg",
  "zip",
 ]
 

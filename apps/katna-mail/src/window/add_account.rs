@@ -1120,7 +1120,7 @@ impl MailWindow {
                     }
                     cx.notify();
                 }))
-                .child(avatar(&name, &account.address, 32.0))
+                .child(self.person_avatar(&name, &account.address, 32.0))
                 .child(
                     div()
                         .flex_1()

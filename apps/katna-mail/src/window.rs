@@ -2007,7 +2007,9 @@ impl Render for MailWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         self.chrome.sync_look(window, cx);
         if self.detached {
-            return self.render_detached(window, cx);
+            let detached = self.render_detached(window, cx);
+            self.fetch_pictures(cx);
+            return detached;
         }
         self.tour_new_frame();
         let th = self.theme(window);
@@ -2255,6 +2257,8 @@ impl Render for MailWindow {
             height: Some(TOP_BAR_HEIGHT),
             background: Some(th.backdrop),
         };
+        // Pictures of people asked for while drawing.
+        self.fetch_pictures(cx);
         let frame = self.chrome.render_bar(bar, content, window, cx);
         match &self.font {
             Some(font) => frame.font_family(font.clone()).into_any_element(),

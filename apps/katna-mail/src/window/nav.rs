@@ -22,7 +22,7 @@ use katna_core::AccountKind;
 use crate::format;
 use crate::sidebar::{self, Role};
 use crate::theme::{Theme, fade, mix};
-use crate::widgets::{avatar, elevation, icon, icon_button, icon_button_colored, tip};
+use crate::widgets::{elevation, icon, icon_button, icon_button_colored, tip};
 
 const NAV_ROW_HEIGHT: f32 = 32.0;
 const SEARCH_HEIGHT: f32 = 40.0;
@@ -259,7 +259,7 @@ impl MailWindow {
                         this.account_menu = !this.account_menu;
                         cx.notify();
                     }))
-                    .child(avatar(&name, &account.address, 32.0))
+                    .child(self.person_avatar(&name, &account.address, 32.0))
                     .child(self.tour_mark(Spot::Account))
                     .into_any_element()
             }

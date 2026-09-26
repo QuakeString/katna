@@ -47,7 +47,8 @@ calamine = "0.36.1"
 quick-xml = "0.41"
 zip = { version = "8.6", default-features = false, features = ["deflate-flate2"] }
 # The version GPUI decodes pictures with; no extra formats of our own.
-image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "webp", "bmp", "tiff"] }
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "webp", "bmp", "tiff", "ico"] }
+resvg = { version = "0.46", default-features = false }
 jiff = { version = "0.2.37", default-features = false, features = ["std", "tz-system", "tzdb-zoneinfo"] }
 html5ever = "0.40.1"
 levenshtein_automata = "0.2.1"

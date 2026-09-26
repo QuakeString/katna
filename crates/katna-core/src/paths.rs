@@ -113,6 +113,12 @@ impl Paths {
         self.config_dir.join("trusted-senders")
     }
 
+    /// Pictures the user picked for their own accounts, one file per
+    /// account ID: `$XDG_DATA_HOME/katna/account-pictures/`.
+    pub fn account_pictures_dir(&self) -> PathBuf {
+        self.data_dir.join("account-pictures")
+    }
+
     /// Mail database: `$XDG_DATA_HOME/katna/mail.db`.
     pub fn mail_db(&self) -> PathBuf {
         self.data_dir.join("mail.db")

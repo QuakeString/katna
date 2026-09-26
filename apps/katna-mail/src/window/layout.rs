@@ -23,7 +23,7 @@ use super::apps::{APP_RAIL_WIDTH, App as RailApp};
 use super::{Compose, MailWindow, NAV_ROW_INSET, NAV_WIDTH, ToggleSettings};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{avatar, elevation, icon, tip};
+use crate::widgets::{elevation, icon, tip};
 
 /// Narrower windows use the phone layout.
 pub(super) const PHONE_BELOW: f32 = 600.0;
@@ -685,7 +685,7 @@ impl MailWindow {
                     .child(icon("check", th.on_accent, 22.0))
                     .into_any_element()
             } else {
-                avatar(name, address, 40.0)
+                self.person_avatar(name, address, 40.0)
             })
             .into_any_element()
     }

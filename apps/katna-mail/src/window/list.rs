@@ -1041,7 +1041,9 @@ impl MailWindow {
                     Err(_) => None,
                 };
                 let row = row.map(|r| this.with_pending(r));
-                this.render_row(ix, entry.key, row, &th, cx)
+                let row = this.render_row(ix, entry.key, row, &th, cx);
+                this.fetch_pictures(cx);
+                row
             }),
         )
         .size_full()

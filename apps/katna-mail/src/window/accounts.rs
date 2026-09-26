@@ -19,7 +19,7 @@ use super::{Listing, MailWindow, keymap};
 use crate::daemon;
 use crate::data::Mail;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, avatar, elevation, icon};
+use crate::widgets::{FocusRing, elevation, icon};
 
 const WIDTH: f32 = 500.0;
 /// What to type before everything is deleted.
@@ -66,7 +66,7 @@ impl MailWindow {
                     .flex_row()
                     .items_center()
                     .gap(px(12.0))
-                    .child(avatar(&name, &account.address, 36.0))
+                    .child(self.person_avatar(&name, &account.address, 36.0))
                     .child(
                         div()
                             .flex_1()
@@ -92,6 +92,26 @@ impl MailWindow {
                                     )),
                             ),
                     )
+                    .when(self.remote.has_own_picture(account.id), |d| {
+                        let id = account.id;
+                        d.child(
+                            text_button(("account-picture-reset", ix), "Use desktop picture", th)
+                                .map(|d| self.page_control(d, th, cx))
+                                .on_click(cx.listener(move |this, _, _, cx| {
+                                    this.reset_account_picture(id, cx)
+                                })),
+                        )
+                    })
+                    .child({
+                        let id = account.id;
+                        text_button(("account-picture", ix), "Change picture", th)
+                            .map(|d| self.page_control(d, th, cx))
+                            .on_click(
+                                cx.listener(move |this, _, _, cx| {
+                                    this.pick_account_picture(id, cx)
+                                }),
+                            )
+                    })
                     .child(
                         danger_button(("account-remove", ix), "Remove", false, th)
                             .map(|d| self.page_control(d, th, cx))
@@ -640,6 +660,24 @@ impl MailWindow {
 }
 
 /// A red button: outlined in the page, filled in the dialog.
+/// A quiet button: accent text, a background under the pointer.
+fn text_button(id: impl Into<gpui::ElementId>, label: &'static str, th: &Theme) -> Stateful<Div> {
+    div()
+        .id(id)
+        .flex_none()
+        .h(px(36.0))
+        .px(px(12.0))
+        .flex()
+        .items_center()
+        .rounded_full()
+        .text_size(px(14.0))
+        .font_weight(FontWeight::MEDIUM)
+        .text_color(rgba(th.accent))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .child(label)
+}
+
 fn danger_button(
     id: impl Into<gpui::ElementId>,
     label: &'static str,
