@@ -342,10 +342,27 @@ fn adds_syncs_restarts_and_removes_dev_accounts() {
                  Message-ID: <{subject}@katna.test>\r\n\r\nHello.\r\n"
             );
             other.append("INBOX", message.into_bytes()).await.unwrap();
-            let signal = within("MailChanged", 10, changed.next()).await.unwrap();
-            assert_eq!(signal.args().unwrap().account, id);
+            // Body downloads signal too; wait for the one with the new mail.
+            within("MailChanged", 10, async {
+                while reader.message_count().unwrap() == before {
+                    let signal = changed.next().await.unwrap();
+                    assert_eq!(signal.args().unwrap().account, id);
+                }
+            })
+            .await;
             assert_eq!(reader.message_count().unwrap(), before + 1, "{name}");
             other.logout().await.unwrap();
+
+            // Every message can be downloaded on request; bodies in the
+            // offline window are there already.
+            let inbox = folders.iter().find(|f| f.path == "INBOX").unwrap();
+            for message in reader.messages_in_folder(inbox.id).unwrap() {
+                pim.fetch_body(message.id.0).await.unwrap();
+                let stored = &reader.messages_by_id(&[message.id]).unwrap()[0];
+                assert!(stored.blob_hash.is_some(), "{name}: {}", stored.subject);
+            }
+            let err = pim.fetch_body(999_999).await.unwrap_err();
+            assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.UnknownObject");
 
             // A restarted daemon picks the account up from the store and
             // the keyring.

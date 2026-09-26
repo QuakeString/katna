@@ -6,32 +6,36 @@
 //! 1. Connect. On failure, wait and try again, doubling the wait each time
 //!    up to [`WorkerConfig::retry_max`]. A refused password is not retried
 //!    on its own: it would only lock the account on many servers.
-//! 2. Sync every folder ([`engine::sync_account`]).
-//! 3. Loop: bring the inbox up to date, then wait on it with IDLE until the
+//! 2. Sync every folder ([`engine::sync_account`]), then download the bodies
+//!    of messages in the offline window ([`bodies::download_bodies`]).
+//! 3. Loop: bring the inbox and its bodies up to date, then wait on it with
+//!    IDLE until the
 //!    server reports a change or [`WorkerConfig::idle_timeout`] passes
 //!    (RFC 2177 asks clients to renew IDLE before 29 minutes). Every
 //!    [`WorkerConfig::full_sync_interval`], sync all folders again.
 //! 4. Any network or protocol error ends the session; go back to 1.
 //!
 //! [`Handle::sync_now`] ends any wait: it starts a full sync, or reconnects
-//! at once. Dropping the [`Handle`] logs out and ends the worker.
+//! at once. [`Handle::fetch_body`] downloads one message now. Dropping the
+//! [`Handle`] logs out and ends the worker.
 //!
 //! The worker owns its [`Store`] handle, so several workers can run at once;
 //! SQLite serialises their writes.
 
 use std::{
     future::Future,
-    time::{Duration, Instant},
+    time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
 use async_channel::{Receiver, Sender};
 use async_io::Timer;
 use futures_lite::FutureExt;
 use katna_core::AccountId;
-use katna_store::{FolderRole, Store};
+use katna_store::{FolderRole, MessageId, Store};
 
 use crate::{
     Credentials, Endpoint, Error, MailBackend, Result,
+    bodies::{self, OfflineWindow},
     engine::{self, FolderReport},
     imap::ImapBackend,
     net::Tls,
@@ -60,7 +64,7 @@ impl Connector for ImapConnector {
     }
 }
 
-/// Timing of a worker.
+/// Timing of a worker, and what it keeps offline.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct WorkerConfig {
     /// How long one IDLE may last before it is renewed.
@@ -71,6 +75,8 @@ pub struct WorkerConfig {
     pub retry_min: Duration,
     /// Longest wait before reconnecting.
     pub retry_max: Duration,
+    /// Messages whose bodies are downloaded ahead of time.
+    pub offline: OfflineWindow,
 }
 
 impl Default for WorkerConfig {
@@ -80,6 +86,7 @@ impl Default for WorkerConfig {
             full_sync_interval: Duration::from_secs(15 * 60),
             retry_min: Duration::from_secs(2),
             retry_max: Duration::from_secs(5 * 60),
+            offline: OfflineWindow::default(),
         }
     }
 }
@@ -90,6 +97,8 @@ pub enum Event {
     Connected,
     /// A sync changed something, or a full sync finished.
     Synced(Vec<FolderReport>),
+    /// Bodies of this many messages were downloaded.
+    BodiesStored(usize),
     /// The connection failed or broke. The worker reconnects after `retry_in`.
     Disconnected {
         error: String,
@@ -100,11 +109,18 @@ pub enum Event {
     AuthFailed(String),
 }
 
-/// The daemon's side of a worker: asks it to sync now, and stops it when
-/// dropped.
+/// A request to download one message, answered when it is stored.
+struct BodyRequest {
+    message: MessageId,
+    done: Sender<Result<()>>,
+}
+
+/// The daemon's side of a worker: asks it to sync now or fetch a message,
+/// and stops it when dropped.
 pub struct Handle {
     _stop: Sender<()>,
     wake: Sender<()>,
+    bodies: Sender<BodyRequest>,
 }
 
 impl Handle {
@@ -114,33 +130,66 @@ impl Handle {
         // A full channel already holds a request.
         let _ = self.wake.try_send(());
     }
+
+    /// Downloads the full message `message` now. Fails with
+    /// [`Error::Closed`] while the worker is offline.
+    pub async fn fetch_body(&self, message: MessageId) -> Result<()> {
+        self.fetcher().fetch_body(message).await
+    }
+
+    /// A cheap handle for [`Handle::fetch_body`] that can be awaited
+    /// without borrowing the [`Handle`].
+    pub fn fetcher(&self) -> Fetcher {
+        Fetcher(self.bodies.clone())
+    }
+}
+
+/// Asks a worker for message bodies. Does not keep the worker running.
+#[derive(Clone)]
+pub struct Fetcher(Sender<BodyRequest>);
+
+impl Fetcher {
+    /// See [`Handle::fetch_body`].
+    pub async fn fetch_body(&self, message: MessageId) -> Result<()> {
+        let (done, answer) = async_channel::bounded(1);
+        let stopped = || Error::Closed("the account's worker stopped".into());
+        self.0
+            .send(BodyRequest { message, done })
+            .await
+            .map_err(|_| stopped())?;
+        answer.recv().await.map_err(|_| stopped())?
+    }
 }
 
 /// The worker's side of a [`Handle`].
 pub struct Control {
     stop: Receiver<()>,
     wake: Receiver<()>,
+    bodies: Receiver<BodyRequest>,
 }
 
 /// What ended a wait on a [`Control`].
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Signal {
     Stop,
     Wake,
+    Fetch(BodyRequest),
 }
 
 /// A new handle and the control it drives.
 pub fn control() -> (Handle, Control) {
     let (stop_tx, stop) = async_channel::bounded(1);
     let (wake, wake_rx) = async_channel::bounded(1);
+    let (bodies, bodies_rx) = async_channel::unbounded();
     (
         Handle {
             _stop: stop_tx,
             wake,
+            bodies,
         },
         Control {
             stop,
             wake: wake_rx,
+            bodies: bodies_rx,
         },
     )
 }
@@ -159,7 +208,28 @@ impl Control {
                 Err(_) => Signal::Stop,
             }
         })
+        .or(async {
+            match self.bodies.recv().await {
+                Ok(request) => Signal::Fetch(request),
+                Err(_) => Signal::Stop,
+            }
+        })
         .await
+    }
+
+    /// Like [`Self::signal`], but turns body requests away with `offline`
+    /// until a stop or wake-up comes.
+    async fn signal_offline(&self, offline: &str) -> Signal {
+        loop {
+            match self.signal().await {
+                Signal::Fetch(request) => {
+                    let _ = request
+                        .done
+                        .try_send(Err(Error::Closed(offline.to_owned())));
+                }
+                other => return other,
+            }
+        }
     }
 
     /// Completes once the handle is dropped. Cancel-safe.
@@ -193,15 +263,18 @@ pub async fn run<C: Connector>(
             None => return,
             Some(Err(Error::Auth(message))) => {
                 tracing::warn!(%account, %message, "login refused; waiting for sync now");
-                let _ = events.try_send(Event::AuthFailed(message));
+                let _ = events.try_send(Event::AuthFailed(message.clone()));
                 // Retrying on its own could lock the account on many
                 // servers; only an explicit request tries again.
-                match control.signal().await {
-                    Signal::Stop => return,
+                match control
+                    .signal_offline(&format!("the server refused the login: {message}"))
+                    .await
+                {
                     Signal::Wake => {
                         delay = config.retry_min;
                         continue;
                     }
+                    _ => return,
                 }
             }
             Some(Err(error)) => error,
@@ -241,11 +314,17 @@ pub async fn run<C: Connector>(
             error: error.to_string(),
             retry_in: delay,
         });
-        match sleep_or_signal(delay, &control).await {
-            Some(Signal::Stop) => return,
+        let offline = format!("offline: {error}");
+        let wait = async {
+            Timer::after(delay).await;
+            None
+        }
+        .or(async { Some(control.signal_offline(&offline).await) });
+        match wait.await {
+            None => delay = (delay * 2).min(config.retry_max),
             // Sync now: reconnect at once, starting the waits over.
             Some(Signal::Wake) => delay = config.retry_min,
-            None => delay = (delay * 2).min(config.retry_max),
+            Some(_) => return,
         }
     }
 }
@@ -270,6 +349,7 @@ async fn session<B: MailBackend>(
             *synced = true;
             full = false;
             last_full = Instant::now();
+            download_all(backend, store, account, config, events).await?;
         }
         let Some(inbox) = store
             .folders(account)?
@@ -280,10 +360,18 @@ async fn session<B: MailBackend>(
             let next = config
                 .full_sync_interval
                 .saturating_sub(last_full.elapsed());
-            match sleep_or_signal(next, control).await {
+            let wait = async {
+                Timer::after(next).await;
+                None
+            }
+            .or(async { Some(control.signal().await) });
+            match wait.await {
+                None => {}
                 Some(Signal::Stop) => return Ok(()),
                 Some(Signal::Wake) => full = true,
-                None => {}
+                Some(Signal::Fetch(request)) => {
+                    serve(backend, store, account, events, request).await?;
+                }
             }
             continue;
         };
@@ -292,6 +380,18 @@ async fn session<B: MailBackend>(
         let report = engine::sync_folder(backend, store, account, inbox.id, &inbox.path).await?;
         if report.added + report.flags_changed + report.removed > 0 || report.reset {
             let _ = events.try_send(Event::Synced(vec![report]));
+        }
+        let stored = bodies::download_bodies(
+            backend,
+            store,
+            inbox.id,
+            &inbox.path,
+            &config.offline,
+            unix_now(),
+        )
+        .await?;
+        if stored > 0 {
+            let _ = events.try_send(Event::BodiesStored(stored));
         }
 
         let until_full = config
@@ -304,19 +404,81 @@ async fn session<B: MailBackend>(
             .wait_for_changes(config.idle_timeout.min(until_full), control.signal())
             .await?;
         match wait.interrupted {
+            None => {}
             Some(Signal::Stop) => return Ok(()),
             Some(Signal::Wake) => full = true,
-            None => {}
+            // Fetching selects another folder; the next round of the loop
+            // selects the inbox again.
+            Some(Signal::Fetch(request)) => {
+                serve(backend, store, account, events, request).await?;
+            }
         }
     }
 }
 
-/// Sleeps for `duration`. Returns the signal that cut it short, if any.
-async fn sleep_or_signal(duration: Duration, control: &Control) -> Option<Signal> {
-    async {
-        Timer::after(duration).await;
-        None
+/// Downloads the offline window of every folder, the inbox first.
+async fn download_all<B: MailBackend>(
+    backend: &mut B,
+    store: &mut Store,
+    account: AccountId,
+    config: &WorkerConfig,
+    events: &Sender<Event>,
+) -> Result<()> {
+    let mut folders = store.folders(account)?;
+    folders.sort_by_key(|f| f.role != Some(FolderRole::Inbox));
+    let now = unix_now();
+    let mut stored = 0;
+    for folder in folders {
+        match bodies::download_bodies(
+            backend,
+            store,
+            folder.id,
+            &folder.path,
+            &config.offline,
+            now,
+        )
+        .await
+        {
+            Ok(count) => stored += count,
+            Err(Error::Rejected(reason)) => {
+                tracing::info!(path = folder.path, %reason, "skipping bodies");
+            }
+            Err(error) => return Err(error),
+        }
     }
-    .or(async { Some(control.signal().await) })
-    .await
+    if stored > 0 {
+        let _ = events.try_send(Event::BodiesStored(stored));
+    }
+    Ok(())
+}
+
+/// Answers one body request. Only errors that break the connection end
+/// the session.
+async fn serve<B: MailBackend>(
+    backend: &mut B,
+    store: &mut Store,
+    account: AccountId,
+    events: &Sender<Event>,
+    request: BodyRequest,
+) -> Result<()> {
+    let result = bodies::fetch_body(backend, store, account, request.message).await;
+    let fatal = match &result {
+        Ok(()) => {
+            let _ = events.try_send(Event::BodiesStored(1));
+            None
+        }
+        Err(error) if error.is_fatal() => Some(error.to_string()),
+        Err(_) => None,
+    };
+    let _ = request.done.try_send(result);
+    match fatal {
+        Some(message) => Err(Error::Closed(message)),
+        None => Ok(()),
+    }
+}
+
+fn unix_now() -> i64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_or(0, |elapsed| elapsed.as_secs() as i64)
 }

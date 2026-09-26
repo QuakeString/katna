@@ -10,7 +10,10 @@ use async_channel::Receiver;
 use async_io::Timer;
 use common::FakeServer;
 use futures_lite::FutureExt;
-use katna_sync::worker::{self, Event, Handle, WorkerConfig};
+use katna_sync::{
+    bodies::OfflineWindow,
+    worker::{self, Event, Handle, WorkerConfig},
+};
 
 fn config() -> WorkerConfig {
     WorkerConfig {
@@ -18,6 +21,10 @@ fn config() -> WorkerConfig {
         full_sync_interval: Duration::from_secs(60),
         retry_min: Duration::from_millis(20),
         retry_max: Duration::from_millis(80),
+        offline: OfflineWindow {
+            days: None,
+            max_size: u64::MAX,
+        },
     }
 }
 
@@ -49,7 +56,17 @@ fn start(server: &FakeServer, config: WorkerConfig) -> Running {
 }
 
 impl Running {
+    /// The next event other than [`Event::BodiesStored`].
     async fn next(&self) -> Event {
+        loop {
+            match self.next_any().await {
+                Event::BodiesStored(_) => {}
+                event => return event,
+            }
+        }
+    }
+
+    async fn next_any(&self) -> Event {
         self.events
             .recv()
             .or(async {
@@ -218,5 +235,78 @@ fn renews_idle_and_syncs_everything_periodically() {
         assert!(count("IDLE") >= 4, "{log:?}");
         assert!(count("LIST") >= 2, "{log:?}");
         assert_eq!(server.state().connects, 1);
+    });
+}
+
+#[test]
+fn downloads_bodies_and_fetches_on_request() {
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    server.create("Archive", 1);
+    server.deliver("INBOX", "one");
+    server.deliver("Archive", "two");
+    let (tmp, store, account) = common::store();
+    let paths = katna_core::Paths::with_root(tmp.path());
+    let config = WorkerConfig {
+        offline: OfflineWindow {
+            days: None,
+            // The fake server's messages are 1000 bytes: nothing fits.
+            max_size: 10,
+        },
+        ..config()
+    };
+    let (events_tx, events) = async_channel::unbounded();
+    let (handle, control) = worker::control();
+    let task = smol::spawn(worker::run(
+        server.clone(),
+        store,
+        account,
+        config,
+        events_tx,
+        control,
+    ));
+    let worker = Running {
+        events,
+        handle,
+        task,
+        _tmp: tmp,
+    };
+    smol::block_on(async {
+        assert!(matches!(worker.next().await, Event::Connected));
+        assert!(matches!(worker.next().await, Event::Synced(_)));
+
+        let reader = katna_store::Store::open(&paths, katna_store::Mode::ReadOnly).unwrap();
+        let archive = reader
+            .folders(account)
+            .unwrap()
+            .into_iter()
+            .find(|f| f.path == "Archive")
+            .unwrap();
+        let message = reader.messages_in_folder(archive.id).unwrap()[0].id;
+        assert!(
+            reader.messages_by_id(&[message]).unwrap()[0]
+                .blob_hash
+                .is_none()
+        );
+
+        Timer::after(Duration::from_millis(50)).await;
+        worker.handle.fetch_body(message).await.unwrap();
+        assert!(matches!(worker.next_any().await, Event::BodiesStored(1)));
+        let stored = &reader.messages_by_id(&[message]).unwrap()[0];
+        assert_eq!(stored.snippet.as_deref(), Some("Body of two."));
+
+        // Unknown messages fail without breaking the connection.
+        let err = worker
+            .handle
+            .fetch_body(katna_store::MessageId(999))
+            .await
+            .unwrap_err();
+        assert!(matches!(err, katna_sync::Error::Rejected(_)), "{err:?}");
+
+        // The inbox is watched again afterwards.
+        server.deliver("INBOX", "three");
+        assert_eq!(added(&worker.next().await), 1);
+        assert_eq!(server.state().connects, 1);
+        worker.stop().await;
     });
 }

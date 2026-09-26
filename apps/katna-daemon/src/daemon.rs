@@ -13,7 +13,7 @@ use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths, Security, Server};
 use katna_dbus::{AccountStatus, NewImapAccount, ServerSpec, state};
-use katna_store::{Mode, Store};
+use katna_store::{MessageId, Mode, Store};
 use katna_sync::{
     Credentials, Endpoint, MailBackend,
     net::Tls,
@@ -42,6 +42,8 @@ pub enum CommandError {
     AuthFailed(String),
     #[error("no account {0}")]
     UnknownAccount(i64),
+    #[error("no message {0}")]
+    UnknownMessage(i64),
     #[error("{0}")]
     Failed(String),
 }
@@ -277,6 +279,39 @@ impl Daemon {
         Ok(())
     }
 
+    /// Downloads one message through its account's worker.
+    pub async fn fetch_body(&self, message: MessageId) -> Result<(), CommandError> {
+        let (account, stored) = {
+            let store = self.store();
+            let stored = store
+                .messages_by_id(&[message])?
+                .into_iter()
+                .next()
+                .ok_or(CommandError::UnknownMessage(message.0))?;
+            let location = store.remote_location(message)?;
+            (location.map(|(account, ..)| account), stored)
+        };
+        if stored.blob_hash.is_some() {
+            return Ok(());
+        }
+        let account = account.ok_or_else(|| {
+            CommandError::Failed(format!("message {} is not on a server", message.0))
+        })?;
+        let fetcher = self
+            .workers()
+            .get(&account)
+            .map(|running| running.handle.fetcher())
+            .ok_or_else(|| CommandError::Failed(format!("account {account} is not syncing")))?;
+        match fetcher.fetch_body(message).await {
+            Ok(()) => Ok(()),
+            Err(katna_sync::Error::Rejected(reason)) => Err(CommandError::Failed(reason)),
+            Err(err) => Err(CommandError::Failed(format!(
+                "could not download message {}: {err}",
+                message.0
+            ))),
+        }
+    }
+
     fn account(&self, id: AccountId) -> Result<Account, CommandError> {
         self.store()
             .accounts()?
@@ -371,6 +406,10 @@ impl Daemon {
                     if changed {
                         let _ = self.notices.try_send(Notice::MailChanged(id));
                     }
+                }
+                Event::BodiesStored(_) => {
+                    let _ = self.notices.try_send(Notice::MailChanged(id));
+                    continue;
                 }
                 Event::Disconnected { error, retry_in } => {
                     status.state = state::OFFLINE;

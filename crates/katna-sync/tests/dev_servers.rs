@@ -513,15 +513,21 @@ fn worker_syncs_new_mail_by_push() {
                 events_tx,
                 control,
             ));
+            // The next event other than a body download.
             let next = || async {
-                events
-                    .recv()
-                    .or(async {
-                        Timer::after(Duration::from_secs(10)).await;
-                        panic!("{name}: no worker event within 10 s");
-                    })
-                    .await
-                    .unwrap()
+                loop {
+                    let event = events
+                        .recv()
+                        .or(async {
+                            Timer::after(Duration::from_secs(10)).await;
+                            panic!("{name}: no worker event within 10 s");
+                        })
+                        .await
+                        .unwrap();
+                    if !matches!(event, Event::BodiesStored(_)) {
+                        return event;
+                    }
+                }
             };
             assert!(matches!(next().await, Event::Connected), "{name}");
             assert!(matches!(next().await, Event::Synced(_)), "{name}");
@@ -546,6 +552,84 @@ fn worker_syncs_new_mail_by_push() {
             Connection::logout(&other).await.unwrap();
             drop(handle);
             task.await;
+        });
+    }
+}
+
+#[test]
+#[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
+fn bodies_are_downloaded_without_marking_mail_read() {
+    use katna_core::{AccountKind, Paths};
+    use katna_store::{Mode, Store};
+    use katna_sync::{
+        bodies::{self, OfflineWindow},
+        engine,
+    };
+
+    for (name, endpoint) in imap_servers() {
+        let tmp = tempfile::tempdir().unwrap();
+        let mut store = Store::open(&Paths::with_root(tmp.path()), Mode::ReadWrite).unwrap();
+        let account = store.add_account(AccountKind::Imap, name, USER).unwrap().id;
+        smol::block_on(async {
+            let mut conn = connect(&endpoint).await;
+            engine::sync_account(&mut conn, &mut store, account)
+                .await
+                .unwrap();
+            let inbox = store
+                .folders(account)
+                .unwrap()
+                .into_iter()
+                .find(|f| f.path == "INBOX")
+                .unwrap();
+            let unread_before: Vec<_> = store
+                .messages_in_folder(inbox.id)
+                .unwrap()
+                .into_iter()
+                .filter(|m| !m.flags.contains(katna_store::MessageFlags::SEEN))
+                .map(|m| m.id)
+                .collect();
+
+            let everything = OfflineWindow {
+                days: None,
+                max_size: u64::MAX,
+            };
+            let started = Instant::now();
+            let stored =
+                bodies::download_bodies(&mut conn, &mut store, inbox.id, "INBOX", &everything, 0)
+                    .await
+                    .unwrap();
+            println!("{name}: {stored} bodies in {:?}", started.elapsed());
+            let messages = store.messages_in_folder(inbox.id).unwrap();
+            assert_eq!(stored, messages.len(), "{name}");
+            for message in &messages {
+                let raw = store
+                    .blobs()
+                    .get(&message.blob_hash.unwrap())
+                    .unwrap()
+                    .unwrap();
+                assert_eq!(
+                    raw.len() as u64,
+                    message.size,
+                    "{name}: {}",
+                    message.subject
+                );
+            }
+            let attachment = messages.iter().find(|m| m.has_attachments);
+            assert!(attachment.is_some(), "{name}: the attachment sample");
+
+            // BODY.PEEK leaves \Seen alone.
+            let report = engine::sync_folder(&mut conn, &mut store, account, inbox.id, "INBOX")
+                .await
+                .unwrap();
+            assert_eq!(report.flags_changed, 0, "{name}");
+            let still_unread = store
+                .messages_by_id(&unread_before)
+                .unwrap()
+                .iter()
+                .filter(|m| !m.flags.contains(katna_store::MessageFlags::SEEN))
+                .count();
+            assert_eq!(still_unread, unread_before.len(), "{name}");
+            conn.logout().await.unwrap();
         });
     }
 }
