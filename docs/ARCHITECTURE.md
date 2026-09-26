@@ -1271,10 +1271,15 @@ desktop's own app stays one click away.
   levels, and `pic-scale`); pictures use the `image` crate GPUI already
   links. A pure-Rust renderer was chosen over PDFium or Poppler so the
   package needs no C library and the app keeps `unsafe` out.
-- Not yet: attachments of encrypted mail open from the stored (encrypted)
-  message, so they fail until the viewer uses the decrypted copy; text
-  search in PDFs, printing, pictures inside documents, old Word files and
-  slides.
+- **Encrypted mail:** attachments of an encrypted or signed message are
+  read from the message as GnuPG opened it, held in memory with the rest
+  of the decrypted message. Their thumbnails and the viewer stay in
+  memory. "Open with another app" hands a decrypted attachment over only
+  from `XDG_RUNTIME_DIR` when that is in memory (tmpfs, checked in the
+  mount table), never from the cache on disk; otherwise it says to save
+  the file instead. Save writes where the user chooses.
+- Not yet: text search in PDFs, printing, pictures inside documents,
+  old Word files and slides.
 
 ## 14. D-Bus API (`katna-dbus`)
 

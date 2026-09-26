@@ -23,6 +23,7 @@ use katna_render::{Attachment, AttachmentFile};
 use katna_store::MessageId;
 
 use super::MailWindow;
+use super::reader::AttachmentSource;
 use super::viewer::{Viewer, ViewerEvent};
 use crate::format;
 use crate::theme::Theme;
@@ -67,6 +68,8 @@ pub(super) struct Files {
     pub(super) viewer: Option<Entity<Viewer>>,
     /// What had the keyboard before the viewer opened.
     restore: Option<FocusHandle>,
+    /// The viewer shows the attachments of a decrypted message.
+    viewer_encrypted: bool,
     _viewer_events: Option<Subscription>,
 }
 
@@ -175,14 +178,13 @@ impl MailWindow {
             .collect();
         self.files
             .keep_only(&open.iter().map(|(id, _)| *id).collect());
-        let Ok(mail) = &self.mail else {
-            return;
-        };
         for (id, list) in open {
             if self.files.asked.contains_key(&id) {
                 continue;
             }
-            let Some(raw) = mail.raw(id) else {
+            // Thumbnails of decrypted attachments stay in memory like the
+            // rest of the decrypted message.
+            let Some((raw, _)) = self.attachment_raw(id) else {
                 continue;
             };
             let task = cx.spawn(async move |this, cx| {
@@ -405,14 +407,15 @@ impl MailWindow {
             self.open_elsewhere(id, index, &name, open_in == OpenIn::Ask, cx);
             return;
         }
-        let Some(raw) = self.mail.as_ref().ok().and_then(|mail| mail.raw(id)) else {
+        let Some((raw, encrypted)) = self.attachment_raw(id) else {
             self.show_snackbar("This message is not downloaded.", None, cx);
             return;
         };
         self.close_viewer(window, cx);
         self.files.restore = window.focused(cx);
+        self.files.viewer_encrypted = encrypted;
         let th = self.theme(window);
-        let viewer = cx.new(|cx| Viewer::new(Arc::new(raw), items, index, th, window, cx));
+        let viewer = cx.new(|cx| Viewer::new(raw, items, index, th, window, cx));
         self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
         self.files.viewer = Some(viewer);
         cx.notify();
@@ -428,7 +431,10 @@ impl MailWindow {
         match event {
             ViewerEvent::Close => self.close_viewer(window, cx),
             ViewerEvent::Save(file) => self.save_attachment(file.clone(), cx),
-            ViewerEvent::OpenWith(file) => self.open_attachment_with(file.clone(), true, cx),
+            ViewerEvent::OpenWith(file) => {
+                let encrypted = self.files.viewer_encrypted;
+                self.open_attachment_with(file.clone(), true, encrypted, cx)
+            }
         }
     }
 
@@ -454,7 +460,7 @@ impl MailWindow {
         name: &str,
         cx: &mut Context<Self>,
     ) {
-        let Some(raw) = self.mail.as_ref().ok().and_then(|mail| mail.raw(id)) else {
+        let Some((raw, _)) = self.attachment_raw(id) else {
             self.show_snackbar("This message is not downloaded.", None, cx);
             return;
         };
@@ -502,8 +508,6 @@ impl MailWindow {
         .detach();
     }
 
-    /// Hands `file` to the desktop's app for its type, as a read-only copy
-    /// in the cache. Programs and scripts are never handed over.
     /// Opens attachment `index` of message `id` in another app, without the
     /// viewer: the desktop's default app, or one it asks for when `ask`.
     fn open_elsewhere(
@@ -514,7 +518,7 @@ impl MailWindow {
         ask: bool,
         cx: &mut Context<Self>,
     ) {
-        let Some(raw) = self.mail.as_ref().ok().and_then(|mail| mail.raw(id)) else {
+        let Some((raw, encrypted)) = self.attachment_raw(id) else {
             self.show_snackbar("This message is not downloaded.", None, cx);
             return;
         };
@@ -525,7 +529,7 @@ impl MailWindow {
                 .spawn(async move { katna_render::attachment_file(&raw, index) })
                 .await;
             this.update(cx, |this, cx| match file {
-                Some(file) => this.open_attachment_with(Arc::new(file), ask, cx),
+                Some(file) => this.open_attachment_with(Arc::new(file), ask, encrypted, cx),
                 None => this.show_snackbar(format!("Could not read {name}"), None, cx),
             })
             .ok();
@@ -535,11 +539,14 @@ impl MailWindow {
 
     /// Hands a read-only copy of `file` to another app: one the user picks
     /// from the desktop's "Open with" list when `ask` (the default app if
-    /// the desktop cannot ask), else the default app for its type.
+    /// the desktop cannot ask), else the default app for its type. The copy
+    /// is in the cache, or, for an `encrypted` message's attachment, in
+    /// memory (never on disk). Programs and scripts are never handed over.
     fn open_attachment_with(
         &mut self,
         file: Arc<AttachmentFile>,
         ask: bool,
+        encrypted: bool,
         cx: &mut Context<Self>,
     ) {
         if katna_preview::risky(&file.mime, &file.name) {
@@ -550,7 +557,21 @@ impl MailWindow {
             );
             return;
         }
-        let dir = self.paths.cache_dir().join("opened");
+        let dir = if encrypted {
+            match memory_dir() {
+                Some(dir) => dir,
+                None => {
+                    self.show_snackbar(
+                        "This file came encrypted. Save it to open it elsewhere.",
+                        None,
+                        cx,
+                    );
+                    return;
+                }
+            }
+        } else {
+            self.paths.cache_dir().join("opened")
+        };
         cx.spawn(async move |this, cx| {
             let name = file.name.clone();
             let written = cx
@@ -574,6 +595,48 @@ impl MailWindow {
         })
         .detach();
     }
+}
+
+impl MailWindow {
+    /// The message the attachments of `id` are read from (as GnuPG opened
+    /// it, for protected mail), and whether it was encrypted. `None` when
+    /// it is not downloaded, or protected and not opened yet.
+    fn attachment_raw(&self, id: MessageId) -> Option<(Arc<Vec<u8>>, bool)> {
+        match self.reader.as_ref().map(|r| r.attachment_source(id)) {
+            Some(AttachmentSource::Opened { raw, encrypted }) => Some((raw, encrypted)),
+            Some(AttachmentSource::Sealed) => None,
+            Some(AttachmentSource::Stored) | None => {
+                let raw = self.mail.as_ref().ok()?.raw(id)?;
+                Some((Arc::new(raw), false))
+            }
+        }
+    }
+}
+
+/// Where decrypted attachments are handed to other apps from: a folder in
+/// `XDG_RUNTIME_DIR` when that is in memory (tmpfs), so they never reach
+/// the disk. It is private to the user and emptied at logout.
+fn memory_dir() -> Option<PathBuf> {
+    let runtime = PathBuf::from(std::env::var_os("XDG_RUNTIME_DIR")?);
+    let mounts = std::fs::read_to_string("/proc/self/mounts").ok()?;
+    in_memory(&runtime, &mounts).then(|| runtime.join("katna").join("opened"))
+}
+
+/// Whether `path` lies on a file system kept in memory, by the mount
+/// table (`/proc/self/mounts`): the deepest mount point holding it.
+fn in_memory(path: &Path, mounts: &str) -> bool {
+    mounts
+        .lines()
+        .filter_map(|line| {
+            let mut fields = line.split_whitespace();
+            let _device = fields.next()?;
+            let point = fields.next()?.replace("\\040", " ");
+            let kind = fields.next()?;
+            Some((PathBuf::from(point), kind))
+        })
+        .filter(|(point, _)| path.starts_with(point))
+        .max_by_key(|(point, _)| point.as_os_str().len())
+        .is_some_and(|(_, kind)| kind == "tmpfs" || kind == "ramfs")
 }
 
 /// Asks the desktop to open `path` with an app the user picks (the "Open
@@ -710,6 +773,22 @@ fn user_dir(text: &str, key: &str, home: &Path) -> Option<PathBuf> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn memory_file_systems_are_found() {
+        let mounts = "/dev/vda / ext4 rw 0 0\n\
+tmpfs /run tmpfs rw,nosuid 0 0\n\
+tmpfs /run/user/1000 tmpfs rw,nosuid,mode=700 0 0\n\
+/dev/vdb /run/user/1000/doc fuse rw 0 0\n\
+/dev/vdc /mnt/my\\040disk ext4 rw 0 0\n";
+        assert!(in_memory(Path::new("/run/user/1000"), mounts));
+        assert!(in_memory(Path::new("/run/user/1000/katna/opened"), mounts));
+        assert!(!in_memory(Path::new("/run/user/1000/doc/x"), mounts));
+        assert!(!in_memory(Path::new("/home/sara/.cache"), mounts));
+        assert!(!in_memory(Path::new("/mnt/my disk/x"), mounts));
+        // `/runner` is not under `/run`.
+        assert!(!in_memory(Path::new("/runner"), mounts));
+    }
 
     #[test]
     fn names_are_made_safe() {
