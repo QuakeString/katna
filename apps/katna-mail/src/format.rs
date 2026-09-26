@@ -37,6 +37,27 @@ pub fn long_date(date: DateTime) -> String {
     date.strftime("%a, %-d %b %Y, %H:%M").to_string()
 }
 
+/// How long ago `then` was, both in Unix seconds, as the reading pane
+/// shows it next to the date: `2 hours ago`. `None` after a week, or when
+/// `then` is in the future.
+pub fn ago(then: i64, now: i64) -> Option<String> {
+    let secs = now.checked_sub(then).filter(|s| *s >= 0)?;
+    let plural = |n: i64, unit: &str| {
+        if n == 1 {
+            format!("1 {unit} ago")
+        } else {
+            format!("{n} {unit}s ago")
+        }
+    };
+    Some(match secs {
+        0..60 => "just now".to_owned(),
+        60..3600 => plural(secs / 60, "minute"),
+        3600..86_400 => plural(secs / 3600, "hour"),
+        86_400..604_800 => plural(secs / 86_400, "day"),
+        _ => return None,
+    })
+}
+
 /// `n` with thousands separators: `1,234,567`.
 pub fn thousands(n: u64) -> String {
     let digits = n.to_string();
@@ -74,6 +95,16 @@ mod tests {
     use jiff::civil::date;
 
     use super::*;
+
+    #[test]
+    fn how_long_ago() {
+        assert_eq!(ago(100, 110).as_deref(), Some("just now"));
+        assert_eq!(ago(0, 60).as_deref(), Some("1 minute ago"));
+        assert_eq!(ago(0, 7300).as_deref(), Some("2 hours ago"));
+        assert_eq!(ago(0, 3 * 86_400).as_deref(), Some("3 days ago"));
+        assert_eq!(ago(0, 8 * 86_400), None);
+        assert_eq!(ago(10, 0), None);
+    }
 
     #[test]
     fn list_dates() {

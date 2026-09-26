@@ -68,6 +68,22 @@ pub fn window_options(
     }
 }
 
+/// What the header bar (CSD) or toolbar (SSD) holds.
+#[derive(Default)]
+pub struct Bar {
+    /// Items at the start of the bar, after any window buttons there.
+    pub start: Vec<AnyElement>,
+    /// An element centered on the bar in place of the window title.
+    pub center: Option<AnyElement>,
+    /// Items at the end of the bar, before any window buttons there.
+    pub end: Vec<AnyElement>,
+    /// Bar height, instead of the preset's.
+    pub height: Option<f32>,
+    /// Bar background, instead of the preset's. The bar then has no bottom
+    /// border, so it can blend into the content below.
+    pub background: Option<u32>,
+}
+
 /// Per-window chrome state. Keep one in the root view and call
 /// [`WindowChrome::render`] from its `render`.
 pub struct WindowChrome {
@@ -125,6 +141,22 @@ impl WindowChrome {
         window: &mut Window,
         cx: &mut App,
     ) -> Div {
+        let bar = Bar {
+            start,
+            end,
+            ..Bar::default()
+        };
+        self.render_bar(bar, content, window, cx)
+    }
+
+    /// Wraps `content` in the frame, with a custom [`Bar`].
+    pub fn render_bar(
+        &self,
+        bar: Bar,
+        content: AnyElement,
+        window: &mut Window,
+        cx: &mut App,
+    ) -> Div {
         let t = self.tokens(window);
         match window.window_decorations() {
             Decorations::Server => {
@@ -135,11 +167,11 @@ impl WindowChrome {
                     .flex_col()
                     .bg(rgba(t.window_bg))
                     .text_color(rgba(t.fg))
-                    .child(self.bar(&t, false, start, end, window, cx))
+                    .child(self.bar(&t, false, bar, window, cx))
                     .child(div().flex_1().min_h_0().child(content))
             }
             Decorations::Client { tiling } => {
-                self.client_frame(&t, tiling, start, end, content, window, cx)
+                self.client_frame(&t, tiling, bar, content, window, cx)
             }
         }
     }
@@ -157,13 +189,11 @@ impl WindowChrome {
         }
     }
 
-    #[allow(clippy::too_many_arguments)]
     fn client_frame(
         &self,
         t: &ChromeTokens,
         tiling: Tiling,
-        start: Vec<AnyElement>,
-        end: Vec<AnyElement>,
+        bar: Bar,
         content: AnyElement,
         window: &mut Window,
         cx: &mut App,
@@ -249,7 +279,7 @@ impl WindowChrome {
             // resize-cursor logic of the shadow area.
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .child(
-                self.bar(t, true, start, end, window, cx)
+                self.bar(t, true, bar, window, cx)
                     .rounded_tl(r_tl)
                     .rounded_tr(r_tr),
             )
@@ -282,21 +312,37 @@ impl WindowChrome {
     }
 
     /// The header bar (CSD) or toolbar (SSD).
-    #[allow(clippy::too_many_arguments)]
     fn bar(
         &self,
         t: &ChromeTokens,
         client_side: bool,
-        start: Vec<AnyElement>,
-        end: Vec<AnyElement>,
+        bar: Bar,
         window: &mut Window,
         cx: &mut App,
     ) -> gpui::Stateful<Div> {
+        let Bar {
+            start,
+            center,
+            end,
+            height,
+            background,
+        } = bar;
         let focused = window.is_window_active();
-        let bg = if focused || !client_side {
+        let bg = background.unwrap_or(if focused || !client_side {
             t.header_bg
         } else {
             t.header_bg_unfocused
+        });
+        // Centered on the whole bar, like the title of AdwHeaderBar. It has
+        // no hitbox of its own, so the bar under it still drags the window.
+        let middle = |child: AnyElement| {
+            div()
+                .absolute()
+                .inset_0()
+                .flex()
+                .items_center()
+                .justify_center()
+                .child(child)
         };
         let bar = div()
             .id("katna-header-bar")
@@ -305,18 +351,20 @@ impl WindowChrome {
             .flex_row()
             .items_center()
             .flex_none()
-            .h(px(t.header_height))
+            .h(px(height.unwrap_or(t.header_height)))
             .px(px(6.0))
             .gap(px(6.0))
             .bg(rgba(bg))
-            .border_b_1()
-            .border_color(rgba(t.header_shade));
+            .when(background.is_none(), |d| {
+                d.border_b_1().border_color(rgba(t.header_shade))
+            });
 
         if !client_side {
             // Under SSD the compositor owns the title bar; this is a plain
             // toolbar and window operations stay with the compositor.
             return bar
-                .h(px(t.header_height.max(40.0)))
+                .h(px(height.unwrap_or(t.header_height.max(40.0))))
+                .when_some(center, |d, center| d.child(middle(center)))
                 .children(start)
                 .child(div().flex_1())
                 .children(end);
@@ -363,22 +411,14 @@ impl WindowChrome {
             .on_mouse_down(MouseButton::Right, |e, window, _| {
                 window.show_window_menu(e.position)
             })
-            // Title, centered on the whole bar like AdwHeaderBar.
-            .child(
+            .child(middle(center.unwrap_or_else(|| {
                 div()
-                    .absolute()
-                    .inset_0()
-                    .flex()
-                    .items_center()
-                    .justify_center()
-                    .child(
-                        div()
-                            .text_size(px(t.title_size))
-                            .font_weight(FontWeight(t.title_weight as f32))
-                            .text_color(rgba(title_color))
-                            .child(self.title.clone()),
-                    ),
-            )
+                    .text_size(px(t.title_size))
+                    .font_weight(FontWeight(t.title_weight as f32))
+                    .text_color(rgba(title_color))
+                    .child(self.title.clone())
+                    .into_any_element()
+            })))
             .when(!left.is_empty(), |b| {
                 b.child(
                     div()

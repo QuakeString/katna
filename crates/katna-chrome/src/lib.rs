@@ -12,5 +12,5 @@ pub mod geometry;
 pub mod tokens;
 
 pub use desktop::{DecorationMode, Desktop, Environment, Preset, Session};
-pub use frame::{WindowChrome, window_options};
+pub use frame::{Bar, WindowChrome, window_options};
 pub use tokens::ChromeTokens;

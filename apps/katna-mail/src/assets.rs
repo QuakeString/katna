@@ -15,17 +15,28 @@ macro_rules! icons {
 }
 
 icons!(
+    "all-mail",
     "archive",
     "attachment",
+    "back",
     "chevron-down",
+    "chevron-left",
     "chevron-right",
+    "close",
+    "compose",
     "drafts",
     "folder",
+    "forward",
     "inbox",
     "junk",
+    "label",
     "mail",
+    "menu",
+    "refresh",
+    "reply",
     "search",
     "sent",
+    "star-filled",
     "star",
     "trash",
 );
