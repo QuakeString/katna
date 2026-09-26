@@ -26,6 +26,6 @@ pub use index::{
     Hit, IndexOptions, IndexState, SearchIndex, SearchOptions, SearchResults, Snippet, Sort,
     UpdateStats,
 };
-pub use indexer::{IndexEvent, Indexer, IndexerOptions};
+pub use indexer::{IndexEvent, Indexer, IndexerOptions, IndexerWaker};
 pub use query::{Filter, ParseError, Query, TextField};
 pub use schema::SCHEMA_VERSION;

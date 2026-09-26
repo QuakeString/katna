@@ -118,6 +118,12 @@ impl Indexer {
         let _ = self.wake.send(Wake::Changed);
     }
 
+    /// A handle that can only call [`changed`](Self::changed), for other
+    /// tasks and threads.
+    pub fn waker(&self) -> IndexerWaker {
+        IndexerWaker(self.wake.clone())
+    }
+
     /// Stops the indexer: a running update commits what it has done (at most
     /// one batch of messages more) and the thread exits. Blocks until then.
     pub fn stop(mut self) {
@@ -130,6 +136,17 @@ impl Indexer {
         if let Some(thread) = self.thread.take() {
             let _ = thread.join();
         }
+    }
+}
+
+/// See [`Indexer::waker`]. Does nothing once the indexer has stopped.
+#[derive(Clone)]
+pub struct IndexerWaker(mpsc::Sender<Wake>);
+
+impl IndexerWaker {
+    /// See [`Indexer::changed`].
+    pub fn changed(&self) {
+        let _ = self.0.send(Wake::Changed);
     }
 }
 

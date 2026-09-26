@@ -441,7 +441,12 @@ from or adds to the sketch above:
   the journal lists. An index of another schema version is deleted and
   rebuilt when opened for writing; opened read-only (as apps do) it is an
   error until the daemon has rebuilt it.
-- **In the daemon.** `katna_search::Indexer` runs updates on its own thread
+- **In the daemon.** `katna-daemon` starts the indexer once it owns its bus
+  name (so a second instance never writes the index) and wakes it on every
+  `MailChanged` notice. If the index cannot be opened, mail still syncs
+  and the error is logged. Linking tantivy grows the daemon from 11.6 to
+  15.0 MB (14.3 MiB of its 15 MiB budget).
+  `katna_search::Indexer` runs updates on its own thread
   with its own read-only store connection: once at start, then on
   `Indexer::changed()` (the daemon calls it after each sync) and every 5 s
   as a fallback for other writers. Calls while it is busy coalesce into one
