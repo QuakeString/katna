@@ -27,7 +27,7 @@ mod signature_editor;
 mod tools;
 
 use std::rc::Rc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use gpui::{
     AnyElement, Context, Entity, ExternalPaths, FocusHandle, Focusable, FontWeight, Hsla,
@@ -62,6 +62,11 @@ const MINIMIZED_WIDTH: f32 = 300.0;
 const TITLE_HEIGHT: f32 = 40.0;
 /// How long after an edit the editor has drawn its new cursor.
 const CURSOR_SETTLE: Duration = Duration::from_millis(24);
+/// How long the scroll to a reply that opens inline takes.
+const REVEAL: Duration = Duration::from_millis(280);
+/// How far below the top of the conversation an opened reply's cursor may
+/// end up when the card is taller than the view.
+const REVEAL_ABOVE: f32 = 120.0;
 
 /// What the window starts from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -445,6 +450,53 @@ impl MailWindow {
             }
             compose.sealing = sealing;
         }
+        if mode == Mode::Inline {
+            self.reveal_inline_reply(cx);
+        }
+    }
+
+    /// Scrolls the conversation smoothly to the reply that just opened at
+    /// its end, as Gmail does: to the end when the whole card fits, else
+    /// just far enough that its first line, with the cursor, sits near the
+    /// top.
+    fn reveal_inline_reply(&mut self, cx: &mut Context<Self>) {
+        let Some(body) = self.compose.as_ref().map(|c| c.body.clone()) else {
+            return;
+        };
+        let scroll = self.reader_scroll.clone();
+        let reduce = cx.reduce_motion();
+        cx.spawn(async move |this, cx| {
+            // The frame that lays out the new card first.
+            cx.background_executor().timer(CURSOR_SETTLE).await;
+            let from = scroll.offset().y;
+            // How far down the cursor may go: room above it for the card's
+            // recipients and the end of the message being answered.
+            let limit = cx.update(|cx| {
+                body.read(cx)
+                    .cursor_bounds()
+                    .map(|cursor| from + scroll.bounds().top() + px(REVEAL_ABOVE) - cursor.top())
+            });
+            let start = Instant::now();
+            loop {
+                let t = if reduce {
+                    1.0
+                } else {
+                    (start.elapsed().as_secs_f32() / REVEAL.as_secs_f32()).min(1.0)
+                };
+                let eased = 1.0 - (1.0 - t).powi(3);
+                // The end can move while the card settles. Never upwards.
+                let end = -scroll.max_offset().y;
+                let to = limit.map_or(end, |limit| end.max(limit.min(from)));
+                scroll.set_offset(gpui::point(scroll.offset().x, from + (to - from) * eased));
+                if this.update(cx, |_, cx| cx.notify()).is_err() || t >= 1.0 {
+                    return;
+                }
+                cx.background_executor()
+                    .timer(Duration::from_millis(16))
+                    .await;
+            }
+        })
+        .detach();
     }
 
     /// The signature a new message starts with: for new mail the default;
@@ -679,7 +731,13 @@ impl MailWindow {
         let Some(compose) = &self.compose else {
             return;
         };
-        let (scroll, body) = (compose.body_scroll.clone(), compose.body.clone());
+        // An inline reply has no scroll of its own: the conversation scrolls.
+        let scroll = if compose.mode == Mode::Inline {
+            self.reader_scroll.clone()
+        } else {
+            compose.body_scroll.clone()
+        };
+        let body = compose.body.clone();
         cx.spawn(async move |_, cx| {
             cx.background_executor().timer(CURSOR_SETTLE).await;
             cx.update(|cx| {
@@ -1165,13 +1223,12 @@ impl MailWindow {
         })
     }
 
-    /// The reply being written at the foot of conversation `key`, if any:
+    /// The reply being written at the end of conversation `key`, if any:
     /// the sender's picture beside a card with the recipients, the text and
-    /// the Send row. `max_body` caps the text's height; longer text scrolls.
+    /// the Send row. The card grows with its text; the conversation scrolls.
     pub(super) fn render_inline_reply(
         &self,
         key: EntryKey,
-        max_body: f32,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
@@ -1254,9 +1311,6 @@ impl MailWindow {
         let body = div()
             .id("inline-body")
             .min_h(px(96.0))
-            .max_h(px(max_body.max(96.0)))
-            .overflow_y_scroll()
-            .track_scroll(&compose.body_scroll)
             .px(px(12.0))
             .py(px(8.0))
             .text_size(px(14.0))
