@@ -166,6 +166,8 @@ pub(super) struct Writing {
     signature_tools: Option<signature_editor::SignatureTools>,
     /// The window of a popped-out message.
     compose_window: Option<popout::Handle>,
+    /// That window has the desktop's title bar rather than Katna's.
+    popout_server_frame: bool,
 }
 
 impl Writing {
@@ -373,7 +375,7 @@ impl MailWindow {
             if inline_here {
                 window.focus(&compose.body.focus_handle(cx), cx);
             } else if compose.mode == Mode::Window {
-                self.pop_out_compose(cx);
+                self.pop_out_compose(window, cx);
             } else {
                 if compose.mode == Mode::Minimized {
                     compose.mode = Mode::Open;
@@ -1060,9 +1062,9 @@ impl MailWindow {
                 // Gmail's expand button, in a window of its own here.
                 small_button("compose-pop-out", "open-full", th)
                     .tooltip(tip("Open in a new window", th))
-                    .on_click(cx.listener(|this, _, _, cx| {
+                    .on_click(cx.listener(|this, _, window, cx| {
                         cx.stop_propagation();
-                        this.pop_out_compose(cx)
+                        this.pop_out_compose(window, cx)
                     })),
             )
             .child(

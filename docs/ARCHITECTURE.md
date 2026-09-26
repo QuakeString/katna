@@ -1145,8 +1145,12 @@ Gemini or confidential mode):
   later gets a *Scheduled* row in the folder list after Sent, which opens
   a list with Cancel send; a cancelled message opens again as written.
   The expand button in the compose title bar moves the message into a
-  window of its own (`compose/popout.rs`); a button in that window's bar
-  docks it back. The message stays in the mail window's state and the new
+  normal window of its own (`compose/popout.rs`), framed like the mail
+  window: Katna's header bar with the window buttons, rounded corners and
+  shadow where Katna draws the frame (GNOME), or the desktop's own title
+  bar where the desktop draws it (KDE). A button docks it back: in the
+  header bar, or in the bottom bar under the desktop's title bar, where
+  no toolbar repeats the title. The message stays in the mail window's state and the new
   window only draws it, so sending and the snackbar work the same. Closing
   that window closes the message as its close button does; the app quits
   only when the mail window closes.

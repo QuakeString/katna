@@ -511,6 +511,16 @@ impl MailWindow {
             .child(self.render_signature_button(th, cx))
             .child(more)
             .child(div().flex_1())
+            .when(
+                compose.mode == Mode::Window && self.writing.popout_server_frame,
+                |d| {
+                    d.child(
+                        icon_button_colored("compose-dock", "close-full", 20.0, th.text_dim, th)
+                            .tooltip(tip("Back to the mail window", th))
+                            .on_click(cx.listener(|this, _, _, cx| this.dock_compose(cx))),
+                    )
+                },
+            )
             .child(
                 icon_button_colored("compose-discard", "trash", 20.0, th.text_dim, th)
                     .tooltip(tip("Discard draft", th))
