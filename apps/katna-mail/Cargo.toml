@@ -18,6 +18,7 @@ katna-platform.workspace = true
 katna-chrome.workspace = true
 katna-ui.workspace = true
 katna-render.workspace = true
+katna-preview.workspace = true
 gpui.workspace = true
 gpui-platform.workspace = true
 gpui-linux.workspace = true

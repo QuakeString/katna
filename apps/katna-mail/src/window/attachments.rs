@@ -1,0 +1,685 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+//! Attachments of received mail: the cards under a message (a thumbnail
+//! of pictures and of a PDF's first page, like webmail), the viewer they
+//! open (`viewer.rs`), saving through the desktop's file chooser and
+//! opening in another app.
+
+use std::collections::{HashMap, HashSet};
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+use std::time::{Duration, SystemTime};
+
+use gpui::{
+    AnyElement, Context, Entity, FocusHandle, FontWeight, ImageSource, ObjectFit, RenderImage,
+    SharedString, Subscription, Task, Window, div, img, prelude::*, px, rgba,
+};
+use katna_preview::Kind;
+use katna_preview::image::{Frame, RgbaImage};
+use katna_render::{Attachment, AttachmentFile};
+use katna_store::MessageId;
+
+use super::MailWindow;
+use super::viewer::{Viewer, ViewerEvent};
+use crate::format;
+use crate::theme::Theme;
+use crate::widgets::{icon, tip};
+
+const CARD_WIDTH: f32 = 180.0;
+const THUMB_HEIGHT: f32 = 84.0;
+/// Thumbnails are drawn at twice the card's size, sharp on HiDPI screens.
+const THUMB_PIXELS: (u32, u32) = (2 * CARD_WIDTH as u32, 2 * THUMB_HEIGHT as u32);
+/// Files handed to another app are removed after this long.
+const OPENED_KEEP: Duration = Duration::from_secs(24 * 60 * 60);
+
+/// One attachment of a message, as the viewer lists it.
+#[derive(Debug, Clone)]
+pub(super) struct Item {
+    /// Its place among the message's attachments.
+    pub index: usize,
+    pub name: String,
+    pub size: u64,
+    pub kind: Kind,
+}
+
+impl Item {
+    fn new(index: usize, attachment: &Attachment) -> Self {
+        Self {
+            index,
+            name: attachment.name.clone(),
+            size: attachment.size,
+            kind: katna_preview::kind(&attachment.mime, &attachment.name),
+        }
+    }
+}
+
+/// The window's attachment state.
+#[derive(Default)]
+pub(super) struct Files {
+    thumbs: HashMap<(MessageId, usize), Arc<RenderImage>>,
+    /// Messages whose thumbnails were made or are being made.
+    asked: HashMap<MessageId, Option<Task<()>>>,
+    /// Bitmaps no longer drawn, freed at the next frame.
+    released: Vec<Arc<RenderImage>>,
+    pub(super) viewer: Option<Entity<Viewer>>,
+    /// What had the keyboard before the viewer opened.
+    restore: Option<FocusHandle>,
+    _viewer_events: Option<Subscription>,
+}
+
+impl Files {
+    /// Forgets the thumbnails of messages other than `keep`.
+    fn keep_only(&mut self, keep: &HashSet<MessageId>) {
+        self.asked.retain(|id, _| keep.contains(id));
+        let gone: Vec<_> = self
+            .thumbs
+            .keys()
+            .filter(|(id, _)| !keep.contains(id))
+            .copied()
+            .collect();
+        for key in gone {
+            if let Some(image) = self.thumbs.remove(&key) {
+                self.released.push(image);
+            }
+        }
+    }
+}
+
+/// A decoded picture as GPUI draws it (BGRA).
+pub(super) fn bitmap(mut image: RgbaImage) -> Arc<RenderImage> {
+    for pixel in image.pixels_mut() {
+        pixel.0.swap(0, 2);
+    }
+    Arc::new(RenderImage::new([Frame::new(image)]))
+}
+
+/// A colored square with the file type's icon.
+pub(super) fn kind_badge(kind: Kind, size: f32) -> AnyElement {
+    let (color, name) = match kind {
+        Kind::Pdf => (0xd93025ff, "file"),
+        Kind::Picture(_) => (0xd93025ff, "image"),
+        Kind::Text => (0x1a73e8ff, "notes"),
+        Kind::Other => (0x5f6368ff, "file"),
+    };
+    div()
+        .size(px(size))
+        .flex_none()
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded(px(size * 0.2))
+        .bg(rgba(color))
+        .child(icon(name, 0xffffffff, size * 0.72))
+        .into_any_element()
+}
+
+/// Whether the cards show a thumbnail of this kind.
+fn has_thumbnail(kind: Kind) -> bool {
+    match kind {
+        Kind::Pdf => true,
+        Kind::Picture(picture) => picture.decodable(),
+        Kind::Text | Kind::Other => false,
+    }
+}
+
+/// The thumbnail of attachment `index` of `raw`.
+fn thumbnail(raw: &[u8], index: usize, kind: Kind) -> Option<RgbaImage> {
+    let file = katna_render::attachment_file(raw, index)?;
+    let (w, h) = THUMB_PIXELS;
+    match kind {
+        Kind::Pdf => katna_preview::pdf::thumbnail(file.bytes, w, h),
+        Kind::Picture(picture) => {
+            katna_preview::picture::thumbnail(&file.bytes, picture, w, h).ok()
+        }
+        Kind::Text | Kind::Other => None,
+    }
+}
+
+impl MailWindow {
+    /// Makes the thumbnails of the open messages' attachments in the
+    /// background, and forgets those of messages no longer open.
+    pub(super) fn request_thumbnails(&mut self, cx: &mut Context<Self>) {
+        let open: Vec<(MessageId, Vec<(usize, Kind)>)> = self
+            .reader
+            .iter()
+            .flat_map(|reader| reader.open_views())
+            .map(|(id, view)| {
+                let list = view
+                    .attachments
+                    .iter()
+                    .enumerate()
+                    .map(|(ix, a)| (ix, katna_preview::kind(&a.mime, &a.name)))
+                    .filter(|(_, kind)| has_thumbnail(*kind))
+                    .collect::<Vec<_>>();
+                (id, list)
+            })
+            .filter(|(_, list)| !list.is_empty())
+            .collect();
+        self.files
+            .keep_only(&open.iter().map(|(id, _)| *id).collect());
+        let Ok(mail) = &self.mail else {
+            return;
+        };
+        for (id, list) in open {
+            if self.files.asked.contains_key(&id) {
+                continue;
+            }
+            let Some(raw) = mail.raw(id) else {
+                continue;
+            };
+            let task = cx.spawn(async move |this, cx| {
+                let thumbs: Vec<(usize, Arc<RenderImage>)> = cx
+                    .background_executor()
+                    .spawn(async move {
+                        list.into_iter()
+                            .filter_map(|(ix, kind)| Some((ix, bitmap(thumbnail(&raw, ix, kind)?))))
+                            .collect()
+                    })
+                    .await;
+                this.update(cx, |this, cx| {
+                    let files = &mut this.files;
+                    if let Some(task) = files.asked.get_mut(&id) {
+                        *task = None;
+                        files
+                            .thumbs
+                            .extend(thumbs.into_iter().map(|(ix, t)| ((id, ix), t)));
+                    } else {
+                        // The message closed meanwhile.
+                        files.released.extend(thumbs.into_iter().map(|(_, t)| t));
+                    }
+                    cx.notify();
+                })
+                .ok();
+            });
+            self.files.asked.insert(id, Some(task));
+        }
+    }
+
+    /// Frees bitmaps nothing draws any more. Call at the start of a frame.
+    pub(super) fn release_images(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let mut released = std::mem::take(&mut self.files.released);
+        if let Some(viewer) = &self.files.viewer {
+            released.extend(viewer.update(cx, |viewer, _| viewer.take_released(false)));
+        }
+        for image in released {
+            window.drop_image(image).ok();
+        }
+    }
+
+    /// The cards of message `id`'s attachments (`list` pairs each with its
+    /// place among all of them).
+    pub(super) fn attachment_cards(
+        &self,
+        id: MessageId,
+        list: &[(usize, &Attachment)],
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        if list.is_empty() {
+            return None;
+        }
+        let count = list.len();
+        let cards = list.iter().map(|&(ix, attachment)| {
+            let item = Item::new(ix, attachment);
+            let group = SharedString::from(format!("attachment-{}-{ix}", id.0));
+            let thumb = self.files.thumbs.get(&(id, ix)).cloned();
+            let name = item.name.clone();
+            let top = match thumb {
+                Some(image) => div().size_full().child(
+                    img(ImageSource::Render(image))
+                        .size_full()
+                        .object_fit(ObjectFit::Cover),
+                ),
+                None => div()
+                    .size_full()
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .bg(rgba(th.read_row))
+                    .child(kind_badge(item.kind, 36.0)),
+            };
+            let save_name = name.clone();
+            let overlay = div()
+                .absolute()
+                .top_0()
+                .left_0()
+                .size_full()
+                // Shown on hover. Not `hidden()`: GPUI cannot switch
+                // `display` on hover between layout and paint.
+                .opacity(0.0)
+                .group_hover(group.clone(), |s| s.opacity(1.0))
+                .flex()
+                .flex_col()
+                .justify_between()
+                .p(px(10.0))
+                .bg(rgba(0x202124eb))
+                .text_color(rgba(0xffffffff))
+                .child(
+                    div()
+                        .text_size(px(13.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .line_clamp(2)
+                        .child(name.clone()),
+                )
+                .child(
+                    div()
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .justify_between()
+                        .child(
+                            div()
+                                .text_size(px(12.0))
+                                .text_color(rgba(0xffffffcc))
+                                .child(format::size(item.size)),
+                        )
+                        .child(
+                            div()
+                                .id(("attachment-save", ix))
+                                .size(px(32.0))
+                                .flex()
+                                .items_center()
+                                .justify_center()
+                                .rounded_full()
+                                .bg(rgba(0xffffff26))
+                                .hover(|s| s.bg(rgba(0xffffff4d)))
+                                .tooltip(tip("Save", th))
+                                .on_click(cx.listener(move |this, _, _, cx| {
+                                    cx.stop_propagation();
+                                    this.save_from_message(id, ix, &save_name, cx);
+                                }))
+                                .child(icon("download", 0xffffffff, 18.0)),
+                        ),
+                );
+            div()
+                .id(("attachment", ix))
+                .group(group)
+                .relative()
+                .w(px(CARD_WIDTH))
+                .flex_none()
+                .flex()
+                .flex_col()
+                .overflow_hidden()
+                .rounded(px(8.0))
+                .border_1()
+                .border_color(rgba(th.divider))
+                .cursor_pointer()
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    cx.stop_propagation();
+                    this.open_attachment(id, ix, window, cx);
+                }))
+                .child(div().h(px(THUMB_HEIGHT)).w_full().child(top))
+                .child(
+                    div()
+                        .h(px(40.0))
+                        .px(px(10.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(8.0))
+                        .border_t_1()
+                        .border_color(rgba(th.divider))
+                        .child(kind_badge(item.kind, 18.0))
+                        .child(
+                            div()
+                                .min_w_0()
+                                .truncate()
+                                .text_size(px(13.0))
+                                .text_color(rgba(th.text))
+                                .child(name),
+                        ),
+                )
+                .child(overlay)
+        });
+        Some(
+            div()
+                .pt(px(16.0))
+                .mt(px(16.0))
+                .border_t_1()
+                .border_color(rgba(th.divider))
+                .child(
+                    div()
+                        .mb(px(12.0))
+                        .text_size(px(13.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .text_color(rgba(th.text_dim))
+                        .child(if count == 1 {
+                            "One attachment".to_owned()
+                        } else {
+                            format!("{count} attachments")
+                        }),
+                )
+                .child(
+                    div()
+                        .flex()
+                        .flex_row()
+                        .flex_wrap()
+                        .gap(px(12.0))
+                        .children(cards),
+                )
+                .into_any_element(),
+        )
+    }
+
+    /// Opens attachment `index` of message `id` in the viewer.
+    fn open_attachment(
+        &mut self,
+        id: MessageId,
+        index: usize,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(view) = self.reader.as_ref().and_then(|r| r.view(Some(id))) else {
+            return;
+        };
+        let items: Vec<Item> = view
+            .attachments
+            .iter()
+            .enumerate()
+            .map(|(ix, a)| Item::new(ix, a))
+            .collect();
+        let Some(raw) = self.mail.as_ref().ok().and_then(|mail| mail.raw(id)) else {
+            self.show_snackbar("This message is not downloaded.", None, cx);
+            return;
+        };
+        self.close_viewer(window, cx);
+        self.files.restore = window.focused(cx);
+        let th = self.theme(window);
+        let viewer = cx.new(|cx| Viewer::new(Arc::new(raw), items, index, th, window, cx));
+        self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
+        self.files.viewer = Some(viewer);
+        cx.notify();
+    }
+
+    fn on_viewer(
+        &mut self,
+        _: &Entity<Viewer>,
+        event: &ViewerEvent,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        match event {
+            ViewerEvent::Close => self.close_viewer(window, cx),
+            ViewerEvent::Save(file) => self.save_attachment(file.clone(), cx),
+            ViewerEvent::OpenWith(file) => self.open_attachment_with(file.clone(), cx),
+        }
+    }
+
+    pub(super) fn close_viewer(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(viewer) = self.files.viewer.take() else {
+            return;
+        };
+        let released = viewer.update(cx, |viewer, _| viewer.take_released(true));
+        self.files.released.extend(released);
+        self.files._viewer_events = None;
+        match self.files.restore.take() {
+            Some(focus) => focus.focus(window, cx),
+            None => self.list_focus.focus(window, cx),
+        }
+        cx.notify();
+    }
+
+    /// Saves attachment `index` of message `id`.
+    fn save_from_message(
+        &mut self,
+        id: MessageId,
+        index: usize,
+        name: &str,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(raw) = self.mail.as_ref().ok().and_then(|mail| mail.raw(id)) else {
+            self.show_snackbar("This message is not downloaded.", None, cx);
+            return;
+        };
+        let name = name.to_owned();
+        cx.spawn(async move |this, cx| {
+            let file = cx
+                .background_executor()
+                .spawn(async move { katna_render::attachment_file(&raw, index) })
+                .await;
+            this.update(cx, |this, cx| match file {
+                Some(file) => this.save_attachment(Arc::new(file), cx),
+                None => this.show_snackbar(format!("Could not read {name}"), None, cx),
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Asks where to save `file` (the desktop's file chooser), then saves it.
+    fn save_attachment(&mut self, file: Arc<AttachmentFile>, cx: &mut Context<Self>) {
+        let dir = download_dir();
+        let name = safe_name(&file.name);
+        let prompt = cx.prompt_for_new_path(&dir, Some(&name));
+        cx.spawn(async move |this, cx| {
+            let target = match prompt.await {
+                Ok(Ok(Some(path))) => path,
+                Ok(Ok(None)) => return,
+                // No file chooser (no desktop portal): save to Downloads.
+                _ => unique_path(&dir, &name),
+            };
+            let bytes = file.clone();
+            let saved = cx
+                .background_executor()
+                .spawn(async move { std::fs::write(&target, &bytes.bytes).map(|()| target) })
+                .await;
+            this.update(cx, |this, cx| {
+                let text = match saved {
+                    Ok(path) => format!("Saved to {}", path.display()),
+                    Err(err) => format!("Could not save {}: {err}", file.name),
+                };
+                this.show_snackbar(text, None, cx);
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Hands `file` to the desktop's app for its type, as a read-only copy
+    /// in the cache. Programs and scripts are never handed over.
+    fn open_attachment_with(&mut self, file: Arc<AttachmentFile>, cx: &mut Context<Self>) {
+        if katna_preview::risky(&file.mime, &file.name) {
+            self.show_snackbar(
+                "This file could run a program, so Katna does not open it. Save it instead.",
+                None,
+                cx,
+            );
+            return;
+        }
+        let dir = self.paths.cache_dir().join("opened");
+        cx.spawn(async move |this, cx| {
+            let name = file.name.clone();
+            let written = cx
+                .background_executor()
+                .spawn(async move { write_for_opening(&dir, &file, SystemTime::now()) })
+                .await;
+            this.update(cx, |this, cx| match written {
+                Ok(path) => cx.open_with_system(&path),
+                Err(err) => this.show_snackbar(format!("Could not open {name}: {err}"), None, cx),
+            })
+            .ok();
+        })
+        .detach();
+    }
+}
+
+/// Writes `file` read-only into a fresh folder under `dir`, first removing
+/// what earlier openings left there.
+fn write_for_opening(
+    dir: &Path,
+    file: &AttachmentFile,
+    now: SystemTime,
+) -> std::io::Result<PathBuf> {
+    if let Ok(entries) = std::fs::read_dir(dir) {
+        for entry in entries.flatten() {
+            let old = entry
+                .metadata()
+                .and_then(|m| m.modified())
+                .ok()
+                .and_then(|m| now.duration_since(m).ok())
+                .is_some_and(|age| age > OPENED_KEEP);
+            if old {
+                std::fs::remove_dir_all(entry.path()).ok();
+            }
+        }
+    }
+    let stamp = now
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_nanos();
+    let folder = dir.join(format!("{stamp:x}"));
+    std::fs::create_dir_all(&folder)?;
+    let path = folder.join(safe_name(&file.name));
+    std::fs::write(&path, &file.bytes)?;
+    let mut permissions = std::fs::metadata(&path)?.permissions();
+    permissions.set_readonly(true);
+    std::fs::set_permissions(&path, permissions)?;
+    Ok(path)
+}
+
+/// `name` as a file name: no folders, no hidden files, not too long.
+fn safe_name(name: &str) -> String {
+    let name: String = name
+        .chars()
+        .map(|c| {
+            if matches!(c, '/' | '\\' | '\0') || c.is_control() {
+                '_'
+            } else {
+                c
+            }
+        })
+        .collect();
+    let name = name.trim().trim_start_matches('.').trim();
+    let mut name = if name.is_empty() {
+        "attachment".to_owned()
+    } else {
+        name.to_owned()
+    };
+    // Most file systems allow 255 bytes; keep the extension.
+    while name.len() > 200 {
+        let cut = match name.rsplit_once('.') {
+            Some((stem, ext)) if ext.len() < 16 && stem.len() > 1 => {
+                let mut stem = stem.to_owned();
+                stem.pop();
+                format!("{stem}.{ext}")
+            }
+            _ => {
+                let mut name = name.clone();
+                name.pop();
+                name
+            }
+        };
+        name = cut;
+    }
+    name
+}
+
+/// `dir/name`, or `dir/name (2)` and so on when that exists.
+fn unique_path(dir: &Path, name: &str) -> PathBuf {
+    let path = dir.join(name);
+    if !path.exists() {
+        return path;
+    }
+    let (stem, ext) = match name.rsplit_once('.') {
+        Some((stem, ext)) if !stem.is_empty() => (stem, format!(".{ext}")),
+        _ => (name, String::new()),
+    };
+    (2..)
+        .map(|n| dir.join(format!("{stem} ({n}){ext}")))
+        .find(|p| !p.exists())
+        .unwrap_or(path)
+}
+
+/// The user's download folder (`XDG_DOWNLOAD_DIR` of `user-dirs.dirs`),
+/// else `~/Downloads`, else home.
+fn download_dir() -> PathBuf {
+    let home = std::env::var_os("HOME")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| "/".into());
+    let config = std::env::var_os("XDG_CONFIG_HOME")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| home.join(".config"));
+    std::fs::read_to_string(config.join("user-dirs.dirs"))
+        .ok()
+        .and_then(|text| user_dir(&text, "XDG_DOWNLOAD_DIR", &home))
+        .filter(|dir| dir.is_dir())
+        .or_else(|| Some(home.join("Downloads")).filter(|d| d.is_dir()))
+        .unwrap_or(home)
+}
+
+/// A folder of `user-dirs.dirs` (lines like `XDG_DOWNLOAD_DIR="$HOME/Downloads"`).
+fn user_dir(text: &str, key: &str, home: &Path) -> Option<PathBuf> {
+    text.lines().find_map(|line| {
+        let value = line.trim().strip_prefix(key)?.trim().strip_prefix('=')?;
+        let value = value.trim().trim_matches('"');
+        match value.strip_prefix("$HOME") {
+            Some(rest) => Some(home.join(rest.trim_start_matches('/'))),
+            None if value.starts_with('/') => Some(PathBuf::from(value)),
+            None => None,
+        }
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn names_are_made_safe() {
+        assert_eq!(safe_name("report.pdf"), "report.pdf");
+        assert_eq!(safe_name("../../etc/passwd"), "_.._etc_passwd");
+        assert_eq!(safe_name(".bashrc"), "bashrc");
+        assert_eq!(safe_name("  "), "attachment");
+        assert_eq!(safe_name("a\nb"), "a_b");
+        let long = format!("{}.pdf", "x".repeat(300));
+        let short = safe_name(&long);
+        assert!(short.len() <= 200 && short.ends_with(".pdf"), "{short}");
+    }
+
+    #[test]
+    fn user_dirs_file() {
+        let text =
+            "# comment\nXDG_DESKTOP_DIR=\"$HOME/Desktop\"\nXDG_DOWNLOAD_DIR=\"$HOME/Hämtningar\"\n";
+        let home = Path::new("/home/sara");
+        assert_eq!(
+            user_dir(text, "XDG_DOWNLOAD_DIR", home),
+            Some(PathBuf::from("/home/sara/Hämtningar"))
+        );
+        assert_eq!(
+            user_dir("XDG_DOWNLOAD_DIR=\"/data/dl\"", "XDG_DOWNLOAD_DIR", home),
+            Some(PathBuf::from("/data/dl"))
+        );
+        assert_eq!(user_dir(text, "XDG_MUSIC_DIR", home), None);
+    }
+
+    #[test]
+    fn saving_never_overwrites_in_the_fallback() {
+        let dir = tempfile::tempdir().unwrap();
+        assert_eq!(unique_path(dir.path(), "a.pdf"), dir.path().join("a.pdf"));
+        std::fs::write(dir.path().join("a.pdf"), b"1").unwrap();
+        std::fs::write(dir.path().join("a (2).pdf"), b"2").unwrap();
+        assert_eq!(
+            unique_path(dir.path(), "a.pdf"),
+            dir.path().join("a (3).pdf")
+        );
+    }
+
+    #[test]
+    fn opened_files_are_read_only_and_cleaned_up() {
+        let dir = tempfile::tempdir().unwrap();
+        let file = AttachmentFile {
+            name: "q3.pdf".into(),
+            mime: "application/pdf".into(),
+            bytes: b"%PDF".to_vec(),
+        };
+        let now = SystemTime::now();
+        let first = write_for_opening(dir.path(), &file, now).unwrap();
+        assert_eq!(std::fs::read(&first).unwrap(), b"%PDF");
+        assert!(std::fs::metadata(&first).unwrap().permissions().readonly());
+        // A day later the first copy is removed.
+        let later = now + OPENED_KEEP + Duration::from_secs(60);
+        let second = write_for_opening(dir.path(), &file, later).unwrap();
+        assert!(!first.exists());
+        assert!(second.exists());
+    }
+}

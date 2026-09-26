@@ -185,6 +185,14 @@ impl Conversation {
             })
             .collect()
     }
+
+    /// Each open, downloaded message of the conversation.
+    pub(super) fn open_views(&self) -> impl Iterator<Item = (MessageId, &MessageView)> {
+        self.parts
+            .iter()
+            .filter(|p| p.expanded)
+            .filter_map(|p| Some((p.id, p.body.as_ref()?.view.as_ref()?)))
+    }
 }
 
 /// What the list of messages shows: a message, or a fold of several.
@@ -292,6 +300,7 @@ impl MailWindow {
 
     pub(super) fn render_reader(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         self.fetch_remote(cx);
+        self.request_thumbnails(cx);
         let Some(reader) = &self.reader else {
             return placeholder("", th);
         };
@@ -745,7 +754,8 @@ impl MailWindow {
                 let listed: Vec<_> = view
                     .attachments
                     .iter()
-                    .filter(|a| {
+                    .enumerate()
+                    .filter(|(_, a)| {
                         !doc.as_ref().is_some_and(|doc| {
                             a.content_id.as_ref().is_some_and(|id| {
                                 doc.inline_ids.iter().any(|i| i.eq_ignore_ascii_case(id))
@@ -753,50 +763,7 @@ impl MailWindow {
                         })
                     })
                     .collect();
-                let attachments = (!listed.is_empty()).then(|| {
-                    div()
-                        .flex()
-                        .flex_row()
-                        .flex_wrap()
-                        .gap(px(12.0))
-                        .pt(px(16.0))
-                        .mt(px(16.0))
-                        .border_t_1()
-                        .border_color(rgba(th.divider))
-                        .children(listed.iter().map(|a| {
-                            div()
-                                .w(px(200.0))
-                                .flex()
-                                .flex_row()
-                                .items_center()
-                                .gap(px(10.0))
-                                .px(px(12.0))
-                                .py(px(10.0))
-                                .rounded(px(8.0))
-                                .border_1()
-                                .border_color(rgba(th.divider))
-                                .child(icon("attachment", th.text_faint, 20.0))
-                                .child(
-                                    div()
-                                        .min_w_0()
-                                        .flex()
-                                        .flex_col()
-                                        .child(
-                                            div()
-                                                .truncate()
-                                                .text_size(px(13.0))
-                                                .text_color(rgba(th.text))
-                                                .child(a.name.clone()),
-                                        )
-                                        .child(
-                                            div()
-                                                .text_size(px(12.0))
-                                                .text_color(rgba(th.text_faint))
-                                                .child(format::size(a.size)),
-                                        ),
-                                )
-                        }))
-                });
+                let attachments = self.attachment_cards(id, &listed, th, cx);
                 div()
                     .flex()
                     .flex_col()
