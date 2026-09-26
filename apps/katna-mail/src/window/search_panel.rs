@@ -2,17 +2,21 @@
 
 //! Search options: the panel the tune button in the search box opens, with
 //! fields that build a search query (`from:`, `subject:`, `newer_than:`,
-//! ...), as webmail's advanced search does.
+//! ...), as webmail's advanced search does. "Custom" dates open a popover
+//! from their chip (`dates`).
+
+mod dates;
 
 use gpui::{
-    AnyElement, Context, Entity, Focusable, FontWeight, Subscription, Window, div, prelude::*, px,
-    rgba,
+    AnyElement, Context, Div, Entity, Focusable, FontWeight, Stateful, Subscription, Window,
+    canvas, div, prelude::*, px, rgba,
 };
 use katna_ui::{InputEvent, TextInput};
 
 use super::MailWindow;
 use crate::theme::Theme;
 use crate::widgets::{elevation, filled_button, icon, icon_button, tip};
+use dates::CustomDates;
 
 /// "Date within" choices: label and `newer_than:` value.
 const WITHIN: [(&str, &str); 8] = [
@@ -26,6 +30,9 @@ const WITHIN: [(&str, &str); 8] = [
     ("1 year", "1y"),
 ];
 
+/// The "Custom" chip, after [`WITHIN`].
+const CUSTOM: usize = WITHIN.len();
+
 pub(super) struct SearchPanel {
     from: Entity<TextInput>,
     to: Entity<TextInput>,
@@ -33,13 +40,14 @@ pub(super) struct SearchPanel {
     words: Entity<TextInput>,
     without: Entity<TextInput>,
     within: usize,
+    custom: CustomDates,
     attachment: bool,
     _subscriptions: Vec<Subscription>,
 }
 
 impl SearchPanel {
-    /// The search query the fields make.
-    fn query(&self, cx: &gpui::App) -> String {
+    /// The search query the fields make, or why the custom dates are wrong.
+    fn query(&self, cx: &gpui::App) -> Result<String, &'static str> {
         let text = |input: &Entity<TextInput>| input.read(cx).text().trim().to_owned();
         let quote = |value: &str| {
             if value.contains(char::is_whitespace) {
@@ -48,16 +56,21 @@ impl SearchPanel {
                 value.to_owned()
             }
         };
-        build_query(
+        let dates = match WITHIN.get(self.within) {
+            Some((_, "")) => String::new(),
+            Some((_, age)) => format!("newer_than:{age}"),
+            None => self.custom.query(cx)?,
+        };
+        Ok(build_query(
             &text(&self.from),
             &text(&self.to),
             &text(&self.subject),
             &text(&self.words),
             &text(&self.without),
-            WITHIN[self.within].1,
+            &dates,
             self.attachment,
             quote,
-        )
+        ))
     }
 }
 
@@ -68,7 +81,7 @@ fn build_query(
     subject: &str,
     words: &str,
     without: &str,
-    within: &str,
+    dates: &str,
     attachment: bool,
     quote: impl Fn(&str) -> String,
 ) -> String {
@@ -86,8 +99,8 @@ fn build_query(
         parts.push(words.to_owned());
     }
     parts.extend(without.split_whitespace().map(|w| format!("-{w}")));
-    if !within.is_empty() {
-        parts.push(format!("newer_than:{within}"));
+    if !dates.is_empty() {
+        parts.push(dates.to_owned());
     }
     if attachment {
         parts.push("has:attachment".to_owned());
@@ -105,7 +118,8 @@ impl MailWindow {
         let input = |cx: &mut Context<Self>| cx.new(|cx| TextInput::new("", cx));
         let (from, to, subject, words, without) =
             (input(cx), input(cx), input(cx), input(cx), input(cx));
-        let subscriptions =
+        let custom = CustomDates::new(cx);
+        let mut subscriptions: Vec<Subscription> =
             [&from, &to, &subject, &words, &without]
                 .into_iter()
                 .map(|input| {
@@ -121,6 +135,22 @@ impl MailWindow {
                     })
                 })
                 .collect();
+        // In the custom dates' popover, Enter is Done and Escape Cancel.
+        subscriptions.extend(custom.dates.iter().map(|input| {
+            cx.subscribe_in(
+                input,
+                window,
+                |this, _, event: &InputEvent, window, cx| match event {
+                    InputEvent::Submit => this.custom_done(window, cx),
+                    InputEvent::Cancel => this.custom_cancel(window, cx),
+                    InputEvent::Changed => {
+                        if let Some(panel) = &mut this.search_panel {
+                            panel.custom.error = None;
+                        }
+                    }
+                },
+            )
+        }));
         window.focus(&from.focus_handle(cx), cx);
         self.search_panel = Some(SearchPanel {
             from,
@@ -129,6 +159,7 @@ impl MailWindow {
             words,
             without,
             within: 0,
+            custom,
             attachment: false,
             _subscriptions: subscriptions,
         });
@@ -136,10 +167,20 @@ impl MailWindow {
     }
 
     fn run_search_panel(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let Some(panel) = self.search_panel.take() else {
+        let Some(panel) = &mut self.search_panel else {
             return;
         };
-        let query = panel.query(cx);
+        let query = match panel.query(cx) {
+            Ok(query) => query,
+            Err(error) => {
+                self.open_custom_dates(window, cx);
+                if let Some(panel) = &mut self.search_panel {
+                    panel.custom.error = Some(error);
+                }
+                return;
+            }
+        };
+        self.search_panel = None;
         if query.is_empty() {
             cx.notify();
             return;
@@ -153,7 +194,7 @@ impl MailWindow {
         th: &Theme,
         viewport: f32,
         width: f32,
-        _window: &mut Window,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let t = self.search_panel_spring.value().clamp(0.0, 1.0);
@@ -186,34 +227,48 @@ impl MailWindow {
                 )
         };
         let within = panel.within;
-        let chips = WITHIN.iter().enumerate().map(|(ix, (label, _))| {
-            let on = ix == within;
+        let mut chips: Vec<AnyElement> = WITHIN
+            .iter()
+            .enumerate()
+            .map(|(ix, (label, _))| {
+                chip(("within", ix), label, ix == within, th)
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        if let Some(panel) = &mut this.search_panel {
+                            panel.within = ix;
+                        }
+                        cx.notify();
+                    }))
+                    .into_any_element()
+            })
+            .collect();
+        // "Custom", or the dates once picked; it opens the popover, which
+        // needs to know where it is.
+        let label = (within == CUSTOM)
+            .then(|| panel.custom.label(cx))
+            .flatten()
+            .unwrap_or_else(|| "Custom".to_owned());
+        let chip_bounds = panel.custom.chip.clone();
+        chips.push(
             div()
-                .id(("within", ix))
-                .px(px(10.0))
-                .h(px(28.0))
-                .flex()
-                .items_center()
-                .rounded(px(8.0))
-                .border_1()
-                .border_color(rgba(if on { th.nav_selected } else { th.divider }))
-                .bg(rgba(if on { th.nav_selected } else { th.surface }))
-                .text_color(rgba(if on {
-                    th.nav_selected_text
-                } else {
-                    th.text_dim
-                }))
-                .text_size(px(13.0))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
-                .on_click(cx.listener(move |this, _, _, cx| {
-                    if let Some(panel) = &mut this.search_panel {
-                        panel.within = ix;
-                    }
-                    cx.notify();
-                }))
-                .child(*label)
-        });
+                .relative()
+                .child(
+                    chip(("within", CUSTOM), &label, within == CUSTOM, th).on_click(
+                        cx.listener(|this, _, window, cx| this.open_custom_dates(window, cx)),
+                    ),
+                )
+                .child(
+                    canvas(
+                        move |bounds, _, _| chip_bounds.set(Some(bounds)),
+                        |_, _, _, _| {},
+                    )
+                    .absolute()
+                    .top_0()
+                    .left_0()
+                    .size_full(),
+                )
+                .into_any_element(),
+        );
+        let popover = self.render_custom_popover(th, window, cx);
         let attachment = panel.attachment;
         let body = div()
             .id("search-panel")
@@ -341,9 +396,33 @@ impl MailWindow {
                 .left(px(((viewport - width) / 2.0).max(0.0)))
                 .opacity(t)
                 .child(body)
+                .children(popover)
                 .into_any_element(),
         )
     }
+}
+
+/// A chip in a row of choices.
+fn chip(id: impl Into<gpui::ElementId>, label: &str, on: bool, th: &Theme) -> Stateful<Div> {
+    div()
+        .id(id)
+        .px(px(10.0))
+        .h(px(28.0))
+        .flex()
+        .items_center()
+        .rounded(px(8.0))
+        .border_1()
+        .border_color(rgba(if on { th.nav_selected } else { th.divider }))
+        .bg(rgba(if on { th.nav_selected } else { th.surface }))
+        .text_color(rgba(if on {
+            th.nav_selected_text
+        } else {
+            th.text_dim
+        }))
+        .text_size(px(13.0))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .child(label.to_owned())
 }
 
 #[cfg(test)]
@@ -366,7 +445,7 @@ mod tests {
                 "gas deal",
                 "price",
                 "draft old",
-                "1w",
+                "newer_than:1w",
                 true,
                 quote
             ),
