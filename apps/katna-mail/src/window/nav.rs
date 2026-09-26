@@ -15,7 +15,7 @@ use katna_ui::motion::{self, lerp};
 use super::tour::Spot;
 use super::{
     Compose, FocusSearch, Hover, Listing, MailWindow, NAV_WIDTH, PANEL_RADIUS, SEARCH_CONTEXT,
-    ToggleNavigation, ToggleSettings,
+    ToggleNavigation, ToggleSettings, compose,
 };
 use crate::format;
 use crate::sidebar::{self, Role};
@@ -309,6 +309,7 @@ impl MailWindow {
                 expanded,
             } => {
                 let selected = folder.is_some_and(|f| self.listing == Some(Listing::Folder(f)));
+                let scheduled = key == compose::SCHEDULED_NAV_KEY;
                 let key = key.clone();
                 let indent = 12.0 * *depth as f32;
                 let text = if selected {
@@ -365,7 +366,15 @@ impl MailWindow {
                         Ripple::new(("nav-ripple", ix), rgba(th.ripple))
                             .corners([0.0, 16.0, 16.0, 0.0]),
                     )
-                    .child(icon(role_icon(*role), text, 20.0))
+                    .child(icon(
+                        if scheduled {
+                            "schedule"
+                        } else {
+                            role_icon(*role)
+                        },
+                        text,
+                        20.0,
+                    ))
                     .child(
                         div()
                             .flex_1()
@@ -421,6 +430,7 @@ impl MailWindow {
                 self.peek_task = None;
                 window.focus(&self.list_focus, cx);
             }
+            None if key == compose::SCHEDULED_NAV_KEY => self.open_scheduled(cx),
             None => self.toggle(&key, cx),
         }
     }

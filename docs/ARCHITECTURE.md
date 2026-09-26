@@ -838,8 +838,13 @@ Features built on it:
   brings the server's. Gmail files sent mail itself, so for an IMAP host
   under `gmail.com` or `googlemail.com` the copy is only forgotten. With
   no Sent folder, nothing is filed.
-- Not yet: per-recipient sending, attachments from the composer, drafts
-  saved on the server.
+- **Send later.** Schedule send queues the message with a delay until
+  the chosen time; the daemon holds it like an undo-send delay and sends
+  it on time with or without the app. The app lists queued messages
+  (`Outbox`, `OutboxChanged`) and counts one as scheduled when it is
+  still queued, has no error and is due later than the undo-send delay
+  would put it. Cancel is `UndoSend`, as for undo send.
+- Not yet: per-recipient sending, drafts saved on the server.
 
 ## 12. Message rendering (`katna-render`)
 
@@ -898,9 +903,18 @@ depend on `<style>` sheets turn out to matter.
 
 ### Composer
 
-- **Phase 1:** plain text and Markdown compose, sent as text + HTML.
-- **Phase 2:** WYSIWYG rich-text editor in GPUI (significant work).
-- Templates, per-identity signatures, spell check (`spellbook`), inline images.
+- A WYSIWYG rich-text editor in GPUI (`katna-ui::rich`): paragraphs with
+  bold, italic, underline, strikethrough, font, size, text and background
+  color, links, alignment, lists, indent and quote levels, inline images
+  and tables. The document model is GPUI-free (`rich/doc.rs`); it reads
+  and writes a small HTML subset (`rich/html.rs`), which is what mail
+  sends and signatures store.
+- A message goes out as `multipart/alternative` (text and HTML) with
+  inline pictures as `multipart/related` parts (`cid:`), plus attachments.
+  In plain text mode only the text part goes.
+- Spell check with `spellbook` and the system's Hunspell dictionaries
+  (`spell.rs`); added words are kept in `$XDG_CONFIG_HOME/katna/dictionary`.
+- Templates later.
 
 ## 13. UI
 
@@ -1085,8 +1099,10 @@ Gemini or confidential mode):
   `DeleteAllData`); after deleting everything the app starts over with
   the default settings.
 - **Signatures.** Any number, each with a name; one default for new mail
-  and one for replies and forwards. The compose bar's signature button
-  swaps the signature in the body. A reply starts with the signature the
+  and one for replies and forwards. Each is edited with the rich editor
+  and its own small toolbar (font, size, colors, link, picture, table,
+  align, lists) and is stored as text plus HTML when it has formatting.
+  The compose bar's signature button swaps the signature in the body. A reply starts with the signature the
   user signed their newest message in the conversation with, found by
   comparing the text after its `-- ` line (`signatures.rs`); otherwise the
   reply default. The single signature of older versions becomes the first.
@@ -1101,12 +1117,28 @@ Gemini or confidential mode):
   Gmail. Only changes are saved (`[shortcuts.keys]`).
 - **Compose.** A "New Message" window docked at the bottom right, as in
   Gmail: title bar with minimize, full size and close; To (with Cc and Bcc
-  links), Subject, and the body with the signature after a `-- ` line.
-  The bottom bar has the Send button with a menu (schedule send), buttons
-  for formatting, attachments, links, emoji and images, and discard.
+  links), Subject, and the rich body with the signature after a `-- `
+  line. The bottom bar has the Send button with a menu (schedule send:
+  suggested times and a date and time picker; the scheduled count), the
+  formatting bar toggle (undo, redo, font, size, bold, italic, underline,
+  colors, align, lists, indent, quote, strikethrough, clear formatting,
+  table; the tail moves into a menu when narrow), attach (the file picker
+  or files dropped on the message, 25 MB in all), link (Ctrl+K), emoji,
+  photo, calendar event (says it comes with Katna Calendar), signature,
+  More (default to full screen, label (coming soon), plain text mode,
+  print, check spelling) and discard. A right-click gives spelling
+  suggestions, clipboard, link and table actions. Mail waiting to be sent
+  later gets a *Scheduled* row in the folder list after Sent, which opens
+  a list with Cancel send; a cancelled message opens again as written.
+  The expand button in the compose title bar moves the message into a
+  window of its own (`compose/popout.rs`); a button in that window's bar
+  docks it back. The message stays in the mail window's state and the new
+  window only draws it, so sending and the snackbar work the same. Closing
+  that window closes the message as its close button does; the app quits
+  only when the mail window closes.
   Compose, Reply, Reply all and Forward all open it, filled in (recipients,
   `Re:`/`Fwd:`, the quoted message, `In-Reply-To` and `References`). Send
-  builds a plain-text RFC 5322 message (`outgoing.rs`) and hands it to the
+  builds an RFC 5322 message (`outgoing.rs`) and hands it to the
   daemon's outbox (`QueueSend`) with the undo-send delay; the snackbar's
   Undo takes it back (`UndoSend`, then `DiscardSend`) and opens it again. A
   message the server refuses for good raises a snackbar
@@ -1187,8 +1219,8 @@ Gemini or confidential mode):
   (checked every 2 s). A quick setting, *Desktop colors* (on by default,
   `mail.desktop_colors`), turns this off.
 - **Not there yet.** Drafts are not saved (closing a written message
-  discards it and says so), and formatting, attachments, links, emoji,
-  images and scheduled sending in the composer say they are not ready yet.
+  discards it and says so). Labels on a message being written and
+  calendar invitations wait for their features.
 
 ### 13.7 Later: notes on mail and Workspace
 
