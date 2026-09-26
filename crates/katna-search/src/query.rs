@@ -6,7 +6,7 @@
 //! ```text
 //! budget  "exact phrase"  -exclude  a OR b  ( … )
 //! from:  to:  cc:  bcc:  subject:  filename:  list:  org:
-//! has:attachment  in:inbox  label:x  is:unread|read|starred|answered|draft
+//! has:attachment  in:inbox  label:x  is:unread|read|starred|important|answered|draft
 //! before:2001-05-01  after:  older_than:30d  newer_than:2w  larger:5M  smaller:
 //! ```
 //!
@@ -402,6 +402,7 @@ impl<'a> Parser<'a> {
                 "answered" | "replied" => Filter::Flag(MessageFlags::ANSWERED, true),
                 "draft" => Filter::Flag(MessageFlags::DRAFT, true),
                 "forwarded" => Filter::Flag(MessageFlags::FORWARDED, true),
+                "important" => Filter::Flag(MessageFlags::IMPORTANT, true),
                 _ => return Err(invalid()),
             },
             Operator::In if lower.is_empty() => return Err(invalid()),
@@ -700,6 +701,10 @@ mod tests {
         };
         assert_eq!(f("is:unread"), Filter::Flag(MessageFlags::SEEN, false));
         assert_eq!(f("is:Starred"), Filter::Flag(MessageFlags::FLAGGED, true));
+        assert_eq!(
+            f("is:important"),
+            Filter::Flag(MessageFlags::IMPORTANT, true)
+        );
         assert_eq!(f("in:Inbox"), Filter::In("inbox".into()));
         assert_eq!(f("label:Work"), Filter::Label("work".into()));
         assert_eq!(f("org:enron.com"), Filter::Org("enron.com".into()));
@@ -751,7 +756,7 @@ mod tests {
             "larger:big",
             "larger:99999999999999999999",
             "newer_than:3x",
-            "is:important",
+            "is:snoozed",
             "has:drive",
             "in:",
         ] {

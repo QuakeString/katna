@@ -201,9 +201,11 @@ fn message_flags(names: &[String]) -> Result<MessageFlags, CommandError> {
             flag::FLAGGED => MessageFlags::FLAGGED,
             flag::DRAFT => MessageFlags::DRAFT,
             flag::FORWARDED => MessageFlags::FORWARDED,
+            flag::IMPORTANT => MessageFlags::IMPORTANT,
             other => {
                 return Err(CommandError::InvalidArgs(format!(
-                    "unknown flag {other:?} (seen, answered, flagged, draft or forwarded)"
+                    "unknown flag {other:?} \
+                     (seen, answered, flagged, draft, forwarded or important)"
                 )));
             }
         };

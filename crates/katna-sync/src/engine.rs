@@ -42,7 +42,9 @@ use katna_store::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::{Error, FlagState, Flags, Folder, FolderStatus, MailBackend, MessageHeaders, Result};
+use crate::{
+    Error, FlagState, Flags, Folder, FolderStatus, IMPORTANT, MailBackend, MessageHeaders, Result,
+};
 
 /// How many messages one header fetch asks for.
 pub const CHUNK: u32 = 500;
@@ -497,6 +499,8 @@ fn split_flags(flags: &Flags) -> (MessageFlags, Vec<String>) {
     for keyword in &flags.keywords {
         if keyword.eq_ignore_ascii_case("$Forwarded") {
             bits |= MessageFlags::FORWARDED;
+        } else if keyword.eq_ignore_ascii_case(IMPORTANT) {
+            bits |= MessageFlags::IMPORTANT;
         } else {
             keywords.push(keyword.clone());
         }
@@ -536,13 +540,16 @@ mod tests {
         let flags = Flags {
             seen: true,
             flagged: true,
-            keywords: vec!["$Forwarded".into(), "$Label1".into()],
+            keywords: vec!["$Forwarded".into(), "$Label1".into(), "$important".into()],
             ..Flags::default()
         };
         let (bits, keywords) = split_flags(&flags);
         assert_eq!(
             bits,
-            MessageFlags::SEEN | MessageFlags::FLAGGED | MessageFlags::FORWARDED
+            MessageFlags::SEEN
+                | MessageFlags::FLAGGED
+                | MessageFlags::FORWARDED
+                | MessageFlags::IMPORTANT
         );
         assert_eq!(keywords, vec!["$Label1".to_owned()]);
     }

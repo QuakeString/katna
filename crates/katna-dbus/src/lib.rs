@@ -147,6 +147,8 @@ pub mod flag {
     pub const FLAGGED: &str = "flagged";
     pub const DRAFT: &str = "draft";
     pub const FORWARDED: &str = "forwarded";
+    /// Marked important (`$Important`, or Gmail's Important label).
+    pub const IMPORTANT: &str = "important";
 }
 
 macro_rules! pim_proxy {

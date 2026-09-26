@@ -108,6 +108,8 @@ pub struct ThreadSummary {
     pub unread: bool,
     /// Some message of the conversation is flagged.
     pub flagged: bool,
+    /// Some message of the conversation is marked important.
+    pub important: bool,
     /// Some message of the conversation has attachments.
     pub has_attachments: bool,
     /// Distinct `From` addresses, in the order they first wrote.
@@ -341,6 +343,7 @@ pub(crate) fn thread_summaries(
             message_count: u32::try_from(messages.len()).unwrap_or(u32::MAX),
             unread,
             flagged: copies().any(|m| m.flags.contains(MessageFlags::FLAGGED)),
+            important: copies().any(|m| m.flags.contains(MessageFlags::IMPORTANT)),
             has_attachments: copies().any(|m| m.has_attachments),
             senders: Vec::new(),
         };
