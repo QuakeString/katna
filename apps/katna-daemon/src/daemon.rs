@@ -23,6 +23,8 @@ use katna_store::{FolderId, MessageFlags, MessageId, Mode, SendState, Store};
 use katna_sync::{
     Credentials, Endpoint, MailBackend,
     autoconfig::Discovery,
+    bodies,
+    connection::Connection,
     net::Tls,
     ops::{self, ChangeError},
     outbox::{self, OutboxConfig, OutboxEvent, OutboxHandle, Outgoing, QueueError},
@@ -32,7 +34,7 @@ use katna_sync::{
     worker::{self, Connector, Event, ImapConnector, Pop3Connector, WorkerConfig},
 };
 
-use crate::{desktop, notify::NewMailNotices, secrets::Secrets};
+use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secrets};
 
 /// How long a stopping worker may take to log out.
 const STOP_TIMEOUT: Duration = Duration::from_secs(10);
@@ -144,6 +146,8 @@ pub struct Daemon {
     /// Why each outbox entry's last try failed.
     send_errors: Mutex<HashMap<i64, String>>,
     notices: Sender<Notice>,
+    /// Connections for messages the user opens.
+    on_demand: OnDemand,
     /// Desktop notifications, once a session bus has a server for them.
     new_mail: OnceLock<Arc<NewMailNotices>>,
     /// The taskbar count and the tray, once they run.
@@ -181,6 +185,7 @@ impl Daemon {
             outbox: Mutex::default(),
             send_errors: Mutex::default(),
             notices,
+            on_demand: OnDemand::default(),
             new_mail: OnceLock::new(),
             desktop: OnceLock::new(),
             closing: AtomicBool::new(false),
@@ -608,7 +613,9 @@ impl Daemon {
         let _ = self.notices.try_send(Notice::MeteredChanged(metered));
     }
 
-    /// Downloads one message through its account's worker.
+    /// Downloads one message now, for a user who opened it. Runs on a
+    /// connection of its own, kept for a while for the next one, so it
+    /// never waits for the account's sync to finish.
     pub async fn fetch_body(&self, message: MessageId) -> Result<(), CommandError> {
         let (account, stored) = {
             let store = self.store();
@@ -626,19 +633,67 @@ impl Daemon {
         let account = account.ok_or_else(|| {
             CommandError::Failed(format!("message {} is not on a server", message.0))
         })?;
-        let fetcher = self
-            .workers()
-            .get(&account)
-            .map(|running| running.handle.fetcher())
-            .ok_or_else(|| CommandError::Failed(format!("account {account} is not syncing")))?;
-        match fetcher.fetch_body(message).await {
-            Ok(()) => Ok(()),
+        let session = self.on_demand.session(account);
+        let mut connection = session.connection.lock().await;
+        let mut store = Store::open(&self.paths, Mode::ReadWrite)?;
+        // A kept connection may have been closed by the server meanwhile:
+        // then once more on a new one.
+        let mut result = Ok(());
+        for _ in 0..2 {
+            let fresh = connection.as_ref().is_none_or(Connection::is_closed);
+            if fresh {
+                *connection = Some(self.connect_on_demand(account).await?);
+            }
+            let mut handle = connection.clone().expect("connected above");
+            result = bodies::fetch_body(&mut handle, &mut store, account, message).await;
+            if !result.as_ref().is_err_and(katna_sync::Error::is_fatal) {
+                break;
+            }
+            *connection = None;
+            if fresh {
+                break;
+            }
+        }
+        drop(connection);
+        self.on_demand.used(account, &session);
+        match result {
+            Ok(()) => {
+                let _ = self.notices.try_send(Notice::MailChanged(account));
+                Ok(())
+            }
             Err(katna_sync::Error::Rejected(reason)) => Err(CommandError::Failed(reason)),
+            Err(err) if err.is_fatal() => Err(CommandError::Failed(format!(
+                "lost the connection to the mail server ({err})"
+            ))),
             Err(err) => Err(CommandError::Failed(format!(
-                "could not download message {}: {err}",
-                message.0
+                "the mail server did not send it ({err})"
             ))),
         }
+    }
+
+    /// A new connection to the account's IMAP server, for
+    /// [`Daemon::fetch_body`].
+    async fn connect_on_demand(&self, account: AccountId) -> Result<Connection, CommandError> {
+        let connector = match self.connector(&self.account(account)?).await {
+            Ok(Some(Link::Imap(connector))) => connector,
+            Ok(Some(Link::Pop3(..))) => {
+                return Err(CommandError::Failed(
+                    "POP3 messages are always downloaded whole".into(),
+                ));
+            }
+            Ok(None) => {
+                return Err(CommandError::Failed(format!(
+                    "account {account} has no server"
+                )));
+            }
+            Err(detail) => return Err(CommandError::Failed(detail)),
+        };
+        let backend = connector.connect().await.map_err(|err| {
+            CommandError::Failed(format!("could not reach the mail server ({err})"))
+        })?;
+        let (handle, task) = katna_sync::connection::spawn(backend);
+        smol::spawn(task).detach();
+        Ok(handle)
     }
 
     /// Adds and removes flags on messages.

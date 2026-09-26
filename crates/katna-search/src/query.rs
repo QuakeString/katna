@@ -484,7 +484,51 @@ impl Operator {
 }
 
 /// `2001-05-14` or `2001/05/14` → Unix time of that day's start, UTC.
+/// A time and a UTC offset may follow, as the app's date picker writes
+/// them for local time: `2001-05-14T09:30+06:00`, `2001-05-14T09:30Z`
+/// (UTC without an offset).
 fn parse_date(value: &str) -> Option<i64> {
+    let (day, time) = match value.split_once(['T', 't']) {
+        Some((day, time)) => (day, Some(time)),
+        None => (value, None),
+    };
+    let day = parse_day(day)?;
+    let Some(time) = time else {
+        return Some(day);
+    };
+    let (clock, offset) = match time.find(['+', '-', 'Z', 'z']) {
+        Some(at) => time.split_at(at),
+        None => (time, ""),
+    };
+    let offset = match offset {
+        "" | "Z" | "z" => 0,
+        _ => {
+            let sign = if offset.starts_with('-') { -1 } else { 1 };
+            let (hours, minutes) = offset[1..].split_once(':')?;
+            let (hours, minutes) = (two_digits(hours, 23)?, two_digits(minutes, 59)?);
+            sign * (hours * 3_600 + minutes * 60)
+        }
+    };
+    let mut parts = clock.split(':');
+    let hours = two_digits(parts.next()?, 23)?;
+    let minutes = two_digits(parts.next()?, 59)?;
+    let seconds = parts.next().map_or(Some(0), |s| two_digits(s, 59))?;
+    if parts.next().is_some() {
+        return None;
+    }
+    Some(day + hours * 3_600 + minutes * 60 + seconds - offset)
+}
+
+/// Exactly two ASCII digits, at most `max`.
+fn two_digits(value: &str, max: i64) -> Option<i64> {
+    if value.len() != 2 || !value.bytes().all(|b| b.is_ascii_digit()) {
+        return None;
+    }
+    value.parse().ok().filter(|v| *v <= max)
+}
+
+/// The day part of [`parse_date`].
+fn parse_day(value: &str) -> Option<i64> {
     let mut parts = value.split(['-', '/']);
     let year: i64 = parts.next()?.parse().ok()?;
     let month: u32 = parts.next()?.parse().ok()?;
@@ -668,6 +712,33 @@ mod tests {
         assert_eq!(f("after:2001/5/14"), Filter::After(989_798_400));
         assert_eq!(f("after:1970-01-01"), Filter::After(0));
         assert_eq!(f("before:2000-02-29"), Filter::Before(951_782_400));
+        // With a time, and a UTC offset as the app's date picker writes.
+        assert_eq!(
+            f("after:2001-05-14T09:30Z"),
+            Filter::After(989_798_400 + 34_200)
+        );
+        assert_eq!(
+            f("after:2001-05-14T09:30"),
+            Filter::After(989_798_400 + 34_200)
+        );
+        assert_eq!(
+            f("before:2001-05-14T00:00+06:00"),
+            Filter::Before(989_798_400 - 21_600)
+        );
+        assert_eq!(
+            f("after:2001-05-14T23:15:30-04:30"),
+            Filter::After(989_798_400 + 83_730 + 16_200)
+        );
+        for bad in [
+            "after:2001-05-14T",
+            "after:2001-05-14T9:30",
+            "after:2001-05-14T24:00",
+            "after:2001-05-14T09:30+6",
+            "after:2001-05-14T09:30+06:00:00",
+            "after:2001-05-14T09:30:00:00",
+        ] {
+            assert!(Query::parse_at(bad, NOW).is_err(), "{bad}");
+        }
         assert_eq!(f("newer_than:2d"), Filter::After(NOW - 2 * 86_400));
         assert_eq!(f("older_than:1y"), Filter::Before(NOW - 365 * 86_400));
         assert_eq!(f("larger:5M"), Filter::Larger(5 << 20));

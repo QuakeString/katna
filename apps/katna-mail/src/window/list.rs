@@ -11,7 +11,7 @@ use gpui::{
     Animation, AnimationExt, AnyElement, BoxShadow, Context, Div, FontWeight, HighlightStyle,
     ListOffset, SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, anchored,
     deferred, div, ease_out_quint, linear_color_stop, linear_gradient, list, point, prelude::*, px,
-    rgba,
+    relative, rgba,
 };
 use katna_core::config::Density;
 use katna_ui::Ripple;
@@ -67,49 +67,45 @@ impl MailWindow {
 
     /// Whether lines show as three stacked lines: the list is narrow.
     fn stacked(&self) -> bool {
-        self.list_width() < STACKED_BELOW
+        self.list_width_of(self.cards_target) < STACKED_BELOW
     }
 
     /// The list card's width once the reading pane is where it is going.
     pub(super) fn list_width(&self) -> f32 {
+        self.list_width_of(self.cards_width)
+    }
+
+    /// The list card's width beside the reading pane in `cards` width.
+    fn list_width_of(&self, cards: f32) -> f32 {
         let open = self.split() && self.reading && self.reader.is_some();
         if open {
-            let pane = (self.cards_width - super::SPLIT_GAP) * self.config.mail.reading_pane_share;
-            self.cards_width - pane - super::SPLIT_GAP
+            let pane = (cards - super::SPLIT_GAP) * self.config.mail.reading_pane_share;
+            cards - pane - super::SPLIT_GAP
         } else {
-            self.cards_width
+            cards
         }
     }
 
     pub(super) fn render_list_card(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let two_pane_reading = !self.split() && self.reading;
-        let (toolbar, body) = if two_pane_reading {
-            (
-                self.render_reader_toolbar(th, cx),
-                self.render_reader(th, cx),
-            )
+        let inner = if self.slides() {
+            self.render_sliding(th, cx)
         } else {
-            let tabs = self.shows_tabs().then(|| self.render_tabs(th, cx));
-            let banner = self.render_select_banner(th, cx);
-            let list = self.render_list(th, cx);
-            (
-                self.render_list_toolbar(th, cx),
-                div()
-                    .size_full()
-                    .flex()
-                    .flex_col()
-                    .children(tabs)
-                    .children(banner)
-                    .child(
-                        div()
-                            .relative()
-                            .flex_1()
-                            .min_h_0()
-                            .child(list)
-                            .child(self.tour_mark(super::tour::Spot::List)),
-                    )
-                    .into_any_element(),
-            )
+            let (toolbar, body) = if two_pane_reading {
+                (
+                    self.render_reader_toolbar(th, cx),
+                    self.render_reader(th, cx),
+                )
+            } else {
+                self.render_list_parts(th, cx)
+            };
+            div()
+                .size_full()
+                .flex()
+                .flex_col()
+                .child(toolbar)
+                .child(fade_in(body, self.card_seq))
+                .into_any_element()
         };
         let reading_context = self.reading && (two_pane_reading || self.split());
         let card = div()
@@ -123,7 +119,7 @@ impl MailWindow {
             .size_full()
             .flex()
             .flex_col()
-            .rounded(px(super::PANEL_RADIUS))
+            .rounded(px(self.layout.shape.card_radius()))
             .overflow_hidden()
             .bg(rgba(th.surface))
             .on_mouse_down(
@@ -153,14 +149,93 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_important))
             .on_action(cx.listener(Self::mark_not_important))
             .on_action(cx.listener(Self::toggle_check))
-            .child(toolbar)
-            .child(div().flex_1().min_h_0().child(body).with_animation(
-                ("card", self.card_seq),
-                Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
-                // From half-drawn, so the card never shows a blank frame.
-                |el, t| el.opacity(0.5 + 0.5 * t),
-            ));
+            .child(inner);
         card.into_any_element()
+    }
+
+    /// The list's toolbar and its tabs, banner and lines.
+    fn render_list_parts(
+        &mut self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> (AnyElement, AnyElement) {
+        // A phone has the tabs in its drawer.
+        let tabs =
+            (self.shows_tabs() && !self.layout.shape.is_phone()).then(|| self.render_tabs(th, cx));
+        let banner = self.render_select_banner(th, cx);
+        let list = self.render_list(th, cx);
+        (
+            self.render_list_toolbar(th, cx),
+            div()
+                .size_full()
+                .flex()
+                .flex_col()
+                .children(tabs)
+                .children(banner)
+                .child(
+                    div()
+                        .relative()
+                        .flex_1()
+                        .min_h_0()
+                        .child(list)
+                        .child(self.tour_mark(super::tour::Spot::List)),
+                )
+                .into_any_element(),
+        )
+    }
+
+    /// The list with the open conversation sliding in over it from the
+    /// right, as on a phone; the list drifts left and dims beneath.
+    fn render_sliding(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let page = self.layout.shape.page;
+        let shown = page.clamp(0.0, 1.0);
+        let has_reader = self.reader.is_some();
+        let list = (shown < 0.999 || !has_reader).then(|| {
+            let (toolbar, body) = self.render_list_parts(th, cx);
+            div()
+                .absolute()
+                .top_0()
+                .bottom_0()
+                .left(relative(-0.25 * shown))
+                .w_full()
+                .flex()
+                .flex_col()
+                .child(toolbar)
+                .child(fade_in(body, self.card_seq))
+                .when(has_reader && shown > 0.001, |d| {
+                    d.child(
+                        div()
+                            .absolute()
+                            .top_0()
+                            .left_0()
+                            .size_full()
+                            .bg(rgba(fade(th.shadow, 0.5 * shown))),
+                    )
+                })
+        });
+        let reader = (has_reader && page > 0.001).then(|| {
+            div()
+                .absolute()
+                .top_0()
+                .bottom_0()
+                .left(relative(1.0 - page))
+                .w_full()
+                .flex()
+                .flex_col()
+                .bg(rgba(th.surface))
+                .when(shown < 0.999, |d| {
+                    d.shadow(crate::widgets::elevation(th, 2.0))
+                })
+                .child(self.render_reader_toolbar(th, cx))
+                .child(div().flex_1().min_h_0().child(self.render_reader(th, cx)))
+        });
+        div()
+            .relative()
+            .size_full()
+            .overflow_hidden()
+            .children(list)
+            .children(reader)
+            .into_any_element()
     }
 
     // Toolbar
@@ -168,6 +243,10 @@ impl MailWindow {
     fn render_list_toolbar(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let count = self.entries.len();
         let checked = self.checked.len();
+        let phone = self.layout.shape.is_phone();
+        if phone && checked == 0 {
+            return self.render_phone_list_bar(th, cx);
+        }
         let page_checked = checked > 0
             && (self.page_pick == Some(checked)
                 || self.visible_keys().all(|k| self.checked.contains(&k)));
@@ -311,6 +390,9 @@ impl MailWindow {
         };
         let at_top = self.visible.start == 0;
         let at_end = self.visible.end >= count;
+        if phone {
+            return bar.child(div().flex_1()).into_any_element();
+        }
         bar.child(
             div()
                 .pl(px(8.0))
@@ -372,6 +454,42 @@ impl MailWindow {
                 })),
         )
         .into_any_element()
+    }
+
+    /// A phone's bar over the list: what the list shows, refresh and more.
+    /// Ticking a line (on its picture) brings the actions.
+    fn render_phone_list_bar(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let label: SharedString = match (&self.search_error, &self.listing) {
+            (Some(err), _) => err.clone(),
+            (None, Some(Listing::Search { query, .. })) => format!("Results for “{query}”").into(),
+            _ if self.shows_tabs() => self
+                .tabs
+                .get(self.tab)
+                .map_or_else(SharedString::default, |t| t.label.into()),
+            _ => self.folder_name().unwrap_or_default().into(),
+        };
+        let more = icon_button("list-more", "more", 20.0, th)
+            .tooltip(tip("More", th))
+            .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)));
+        toolbar(th)
+            .pl(px(16.0))
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .truncate()
+                    .text_size(px(14.0))
+                    .font_weight(FontWeight::MEDIUM)
+                    .text_color(rgba(th.text_dim))
+                    .child(label),
+            )
+            .child(
+                icon_button("refresh", "refresh", 20.0, th)
+                    .tooltip(tip("Refresh", th))
+                    .on_click(cx.listener(|this, _, window, cx| this.reload(&Reload, window, cx))),
+            )
+            .child(self.with_menu(more, Menu::ListMore, th, cx))
+            .into_any_element()
     }
 
     /// Archive, spam and delete, for the ticked lines or the open
@@ -1256,43 +1374,57 @@ impl MailWindow {
                 .text_color(rgba(th.text_faint))
                 .child(row.snippet.clone())
                 .into_any_element();
+            // A phone shows the sender's picture, which ticks the line.
+            let lead_width = if self.layout.shape.is_phone() {
+                68.0
+            } else {
+                44.0
+            };
+            let lead = if self.layout.shape.is_phone() {
+                div()
+                    .w(px(lead_width))
+                    .flex_none()
+                    .flex()
+                    .flex_col()
+                    .items_center()
+                    .pt(px(2.0))
+                    .child(self.line_picture(ix, &row.correspondent, &row.sender, checked, th, cx))
+            } else {
+                div()
+                    .w(px(lead_width))
+                    .flex_none()
+                    .flex()
+                    .flex_col()
+                    .items_center()
+                    .child(check)
+            };
             return lifted(
-                base.py(px(8.0))
-                    .child(
-                        div()
-                            .w(px(44.0))
-                            .flex_none()
-                            .flex()
-                            .flex_col()
-                            .items_center()
-                            .child(check),
-                    )
-                    .child(
-                        div()
-                            .flex_1()
-                            .min_w_0()
-                            .pr(px(12.0))
-                            .flex()
-                            .flex_col()
-                            .child(
-                                line(
-                                    div()
-                                        .flex_1()
-                                        .min_w_0()
-                                        .child(correspondent)
-                                        .into_any_element(),
-                                )
-                                .children(actions.or(Some(date.into_any_element()))),
+                base.py(px(8.0)).child(lead).child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .pr(px(12.0))
+                        .flex()
+                        .flex_col()
+                        .child(
+                            line(
+                                div()
+                                    .flex_1()
+                                    .min_w_0()
+                                    .child(correspondent)
+                                    .into_any_element(),
                             )
-                            .child(line(subject).child(marker).child(star))
-                            .child(line(snippet).when(row.attachments && !has_chips, |d| {
-                                d.child(icon("attachment", th.text_faint, 16.0))
-                            }))
-                            .when(has_chips, |d| {
-                                let room = self.list_width() - 44.0 - 12.0;
-                                d.child(self.file_chips(ix, &row, 0.0, room, th, cx))
-                            }),
-                    ),
+                            .children(actions.or(Some(date.into_any_element()))),
+                        )
+                        .child(line(subject).child(marker).child(star))
+                        .child(line(snippet).when(row.attachments && !has_chips, |d| {
+                            d.child(icon("attachment", th.text_faint, 16.0))
+                        }))
+                        .when(has_chips, |d| {
+                            let room = self.list_width() - lead_width - 12.0;
+                            d.child(self.file_chips(ix, &row, 0.0, room, th, cx))
+                        }),
+                ),
             );
         }
 
@@ -1629,6 +1761,21 @@ impl MailWindow {
             )
             .into_any_element()
     }
+}
+
+/// Fades `body` in whenever `seq` changes: the card switched content.
+fn fade_in(body: AnyElement, seq: usize) -> AnyElement {
+    div()
+        .flex_1()
+        .min_h_0()
+        .child(body)
+        .with_animation(
+            ("card", seq),
+            Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
+            // From half-drawn, so the card never shows a blank frame.
+            |el, t| el.opacity(0.5 + 0.5 * t),
+        )
+        .into_any_element()
 }
 
 /// A thin vertical line between toolbar groups.

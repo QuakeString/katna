@@ -216,6 +216,10 @@ impl Conversation {
                 Some(ix) => {
                     let mut part = old.swap_remove(ix);
                     part.row = row;
+                    // Downloaded since, by the sync or on request.
+                    if part.body.as_ref().is_some_and(|b| b.view.is_none()) {
+                        part.body = Some(read(mail, id));
+                    }
                     part
                 }
                 None => Part {
@@ -224,6 +228,26 @@ impl Conversation {
                 },
             })
             .collect();
+    }
+
+    /// Open messages whose body is not stored yet.
+    pub(super) fn missing_bodies(&self) -> Vec<MessageId> {
+        self.parts
+            .iter()
+            .filter(|p| p.expanded && p.body.as_ref().is_some_and(|b| b.view.is_none()))
+            .map(|p| p.id)
+            .collect()
+    }
+
+    /// Reads message `id` again, once its body is downloaded.
+    pub(super) fn reload_body(&mut self, id: MessageId, mail: &Mail) {
+        if let Some(part) = self
+            .parts
+            .iter_mut()
+            .find(|p| p.id == id && p.body.is_some())
+        {
+            part.body = Some(read(mail, id));
+        }
     }
 
     pub(super) fn unread_messages(&self) -> Vec<MessageId> {
@@ -291,7 +315,7 @@ impl MailWindow {
             .size_full()
             .flex()
             .flex_col()
-            .rounded(px(super::PANEL_RADIUS))
+            .rounded(px(self.layout.shape.card_radius()))
             .overflow_hidden()
             .bg(rgba(th.surface))
             .child(self.render_reader_toolbar(th, cx))
@@ -318,12 +342,14 @@ impl MailWindow {
         .on_click(
             cx.listener(|this, _, window, cx| this.close_message(&super::CloseMessage, window, cx)),
         );
-        let narrow = self.split() && self.cards_width * self.config.mail.reading_pane_share < 520.0;
+        let phone = self.layout.shape.is_phone();
+        let narrow =
+            phone || self.split() && self.cards_width * self.config.mail.reading_pane_share < 520.0;
         toolbar(th)
             .child(back)
-            .child(separator(th))
+            .when(!phone, |d| d.child(separator(th)))
             .child(self.action_buttons("reader", th, cx))
-            .child(separator(th))
+            .when(!phone, |d| d.child(separator(th)))
             .child(
                 icon_button("reader-unread", "mail", 20.0, th)
                     .tooltip(tip("Mark as unread", th))
@@ -360,7 +386,9 @@ impl MailWindow {
                         )),
                 )
             })
-            .when(!self.detached, |d| {
+            // A phone moves between conversations from the list; a
+            // conversation window shows only its own.
+            .when(!phone && !self.detached, |d| {
                 d.child(
                     icon_button("newer", "chevron-left", 20.0, th)
                         .tooltip(tip("Newer", th))
@@ -384,6 +412,7 @@ impl MailWindow {
     pub(super) fn render_reader(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         self.open_sealed(cx);
         self.fetch_remote(cx);
+        self.download_bodies(cx);
         self.request_thumbnails(cx);
         let Some(reader) = &self.reader else {
             return placeholder("", th);
@@ -397,7 +426,7 @@ impl MailWindow {
             .flex_row()
             .items_start()
             .gap(px(12.0))
-            .pl(px(72.0))
+            .pl(px(self.layout.shape.reader_indent()))
             .pr(px(16.0))
             .pt(px(20.0))
             .pb(px(12.0))
@@ -491,7 +520,7 @@ impl MailWindow {
                     .flex_row()
                     .flex_wrap()
                     .gap(px(12.0))
-                    .pl(px(72.0))
+                    .pl(px(self.layout.shape.reader_indent()))
                     .pr(px(24.0))
                     .py(px(14.0))
                     .child(
@@ -905,12 +934,7 @@ impl MailWindow {
                     .children(attachments)
                     .into_any_element()
             }
-            _ => div()
-                .pt(px(16.0))
-                .text_size(px(14.0))
-                .text_color(rgba(th.text_faint))
-                .child("This message has not been downloaded yet.")
-                .into_any_element(),
+            _ => self.download_note(id, ix, th, cx),
         };
 
         // The picture sits where it does on the folded line, so only the

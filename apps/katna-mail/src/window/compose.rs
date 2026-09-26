@@ -166,6 +166,8 @@ pub(super) struct Writing {
     signature_tools: Option<signature_editor::SignatureTools>,
     /// The window of a popped-out message.
     compose_window: Option<popout::Handle>,
+    /// That window has the desktop's title bar rather than Katna's.
+    popout_server_frame: bool,
 }
 
 impl Writing {
@@ -373,7 +375,7 @@ impl MailWindow {
             if inline_here {
                 window.focus(&compose.body.focus_handle(cx), cx);
             } else if compose.mode == Mode::Window {
-                self.pop_out_compose(cx);
+                self.pop_out_compose(window, cx);
             } else {
                 if compose.mode == Mode::Minimized {
                     compose.mode = Mode::Open;
@@ -1060,9 +1062,9 @@ impl MailWindow {
                 // Gmail's expand button, in a window of its own here.
                 small_button("compose-pop-out", "open-full", th)
                     .tooltip(tip("Open in a new window", th))
-                    .on_click(cx.listener(|this, _, _, cx| {
+                    .on_click(cx.listener(|this, _, window, cx| {
                         cx.stop_propagation();
-                        this.pop_out_compose(cx)
+                        this.pop_out_compose(window, cx)
                     })),
             )
             .child(
@@ -1076,7 +1078,13 @@ impl MailWindow {
                     })),
             );
 
+        // On a phone the message is written on a sheet over the whole
+        // window, as mobile mail does; minimized, it is a strip at the foot.
+        let shape = self.layout.shape;
+        let sheet = shape.is_phone() && mode != Mode::Minimized;
         let (width, height) = match mode {
+            _ if sheet => (shape.width, vh),
+            Mode::Minimized if shape.is_phone() => (shape.width - 16.0, TITLE_HEIGHT),
             Mode::Open | Mode::Inline | Mode::Window => {
                 (WIDTH.min(vw - 32.0), MAX_HEIGHT.min(vh - 96.0))
             }
@@ -1089,7 +1097,7 @@ impl MailWindow {
             .occlude()
             .relative()
             .w(px(width))
-            .h(px(height))
+            .map(|d| if sheet { d.h_full() } else { d.h(px(height)) })
             .flex()
             .flex_col()
             .overflow_hidden()
@@ -1097,6 +1105,7 @@ impl MailWindow {
             .text_color(rgba(th.text))
             .shadow(elevation(th, 3.0))
             .map(|d| match mode {
+                _ if sheet => d,
                 Mode::Full => d.rounded(px(12.0)),
                 _ => d.rounded_t(px(12.0)),
             })
@@ -1117,6 +1126,14 @@ impl MailWindow {
             });
 
         Some(match mode {
+            _ if sheet => div()
+                .absolute()
+                .top(px(lerp(48.0, 0.0, t)))
+                .left_0()
+                .size_full()
+                .opacity(t)
+                .child(panel)
+                .into_any_element(),
             Mode::Full => div()
                 .absolute()
                 .top_0()
@@ -1139,8 +1156,8 @@ impl MailWindow {
                 .into_any_element(),
             _ => div()
                 .absolute()
-                .right(px(24.0))
-                .bottom(px(lerp(-48.0, 0.0, t)))
+                .right(px(lerp(24.0, 8.0, shape.phone)))
+                .bottom(px(shape.bottom_bar() + lerp(-48.0, 0.0, t)))
                 .opacity(t)
                 .child(panel)
                 .into_any_element(),

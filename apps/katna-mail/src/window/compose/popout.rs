@@ -8,8 +8,8 @@
 //! so sending, the snackbar and the outbox work as in the docked window.
 
 use gpui::{
-    AnyElement, App, Context, Entity, ExternalPaths, FocusHandle, Focusable, FontWeight, Window,
-    WindowHandle, div, prelude::*, px, rgba, size,
+    AnyElement, App, Context, Decorations, Entity, ExternalPaths, FocusHandle, Focusable,
+    FontWeight, Window, WindowBounds, WindowHandle, div, point, prelude::*, px, rgba, size,
 };
 use katna_chrome::{Bar, WindowChrome, window_options};
 use katna_core::ids::MAIL_APP_ID;
@@ -33,7 +33,7 @@ pub(in crate::window) struct ComposeWindow {
 impl MailWindow {
     /// Moves the message being written into a window of its own, or brings
     /// that window forward if it is already out.
-    pub(in crate::window) fn pop_out_compose(&mut self, cx: &mut Context<Self>) {
+    pub(in crate::window) fn pop_out_compose(&mut self, window: &Window, cx: &mut Context<Self>) {
         let Some(compose) = &mut self.compose else {
             return;
         };
@@ -50,13 +50,22 @@ impl MailWindow {
         let body = compose.body.focus_handle(cx);
         let to = compose.to.focus_handle(cx);
         let empty_to = compose.to.read(cx).text().is_empty();
-        let options = window_options(
+        let mut options = window_options(
             &env,
             MAIL_APP_ID,
             compose.title(cx),
             size(px(WIDTH), px(HEIGHT)),
             cx,
         );
+        // Over the middle of the mail window, where the message was. On
+        // Wayland the compositor places it instead.
+        if let Some(WindowBounds::Windowed(bounds)) = &mut options.window_bounds {
+            let main = window.bounds();
+            bounds.origin = point(
+                main.origin.x + (main.size.width - bounds.size.width) / 2.0,
+                main.origin.y + (main.size.height - bounds.size.height) / 2.0,
+            );
+        }
         // The new window's first frame already looks for it there.
         compose.mode = Mode::Window;
         // Opened after this update, which holds the mail window.
@@ -103,7 +112,7 @@ impl MailWindow {
     }
 
     /// Puts the popped-out message back in the mail window.
-    fn dock_compose(&mut self, cx: &mut Context<Self>) {
+    pub(super) fn dock_compose(&mut self, cx: &mut Context<Self>) {
         if let Some(c) = &mut self.compose {
             c.mode = Mode::Open;
             c.popup = None;
@@ -139,6 +148,10 @@ impl MailWindow {
             return None;
         }
         let width = f32::from(window.viewport_size().width).max(360.0);
+        // With the desktop's own title bar the back button moves to the
+        // bottom bar (`tools`).
+        self.writing.popout_server_frame =
+            matches!(window.window_decorations(), Decorations::Server);
         let panel = div()
             .id("compose-window")
             .key_context("Compose")
@@ -187,6 +200,19 @@ impl Render for ComposeWindow {
             return div().into_any_element();
         };
         window.set_window_title(&title);
+        // The desktop's title bar already names the window and holds its
+        // buttons; no toolbar repeats it.
+        if matches!(window.window_decorations(), Decorations::Server) {
+            let frame = div()
+                .size_full()
+                .bg(rgba(th.surface))
+                .text_color(rgba(th.text))
+                .child(content);
+            return match font {
+                Some(font) => frame.font_family(font).into_any_element(),
+                None => frame.into_any_element(),
+            };
+        }
         let bar = Bar {
             center: Some(
                 div()

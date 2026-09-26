@@ -27,14 +27,14 @@ use crate::widgets::{avatar, elevation, icon, icon_button, icon_button_colored, 
 const NAV_ROW_HEIGHT: f32 = 32.0;
 const SEARCH_HEIGHT: f32 = 40.0;
 const COMPOSE_RADIUS: f32 = 16.0;
+/// Room for the word "Compose" on the top bar's Compose button.
+const COMPOSE_LABEL_WIDTH: f32 = 80.0;
 
 impl MailWindow {
-    pub(super) fn render_top_start(
-        &self,
-        th: &Theme,
-        wide: bool,
-        cx: &mut Context<Self>,
-    ) -> Vec<AnyElement> {
+    pub(super) fn render_top_start(&self, th: &Theme, cx: &mut Context<Self>) -> Vec<AnyElement> {
+        // Compose sits beside the menu button on a desktop and a tablet;
+        // a phone has it floating over the list.
+        let shown = 1.0 - self.layout.shape.phone;
         // The bars turn upright as the navigation folds away.
         let folded = 1.0 - self.reserve_spring.value().clamp(0.0, 1.0);
         let menu = div()
@@ -66,13 +66,15 @@ impl MailWindow {
                     ))),
             )
             .into_any_element();
+        // A narrow tablet folds Compose down to its pencil, so the search
+        // box keeps its room.
+        let label = self.layout.shape.compose_label();
         let compose = div()
             .id("compose")
             .relative()
             .ml(px(10.0))
             .h(px(48.0))
-            .when(wide, |d| d.pr(px(24.0)))
-            .when(!wide, |d| d.w(px(48.0)).justify_center())
+            .pr(px(lerp(12.0, 24.0, label)))
             .flex_none()
             .flex()
             .flex_row()
@@ -83,28 +85,38 @@ impl MailWindow {
             .hover(|s| s.shadow(elevation(th, 1.5)))
             .cursor_pointer()
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
-            .when(!wide, |d| d.tooltip(tip("Compose", th)))
+            .when(label < 0.5, |d| d.tooltip(tip("Compose", th)))
             .on_click(cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)))
             .child(Ripple::new("compose-ripple", rgba(th.ripple)).rounded(COMPOSE_RADIUS))
             .child(self.tour_mark(Spot::Compose))
-            .child(div().when(wide, |d| d.pl(px(16.0))).child(icon(
+            .child(div().pl(px(lerp(12.0, 16.0, label))).child(icon(
                 "compose",
                 th.compose_text,
                 24.0,
             )))
-            .when(wide, |d| {
-                d.child(
-                    div()
-                        .pl(px(12.0))
-                        .text_size(px(14.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .child("Compose"),
-                )
-            })
+            .child(
+                div()
+                    .pl(px(12.0 * label))
+                    .max_w(px(COMPOSE_LABEL_WIDTH * label))
+                    .overflow_hidden()
+                    .opacity(label)
+                    .text_size(px(14.0))
+                    .font_weight(FontWeight::MEDIUM)
+                    .whitespace_nowrap()
+                    .child("Compose"),
+            )
             .into_any_element();
         let mut start = vec![menu];
-        if self.mail.is_ok() && !self.accounts.is_empty() {
-            start.push(compose);
+        if self.mail.is_ok() && !self.accounts.is_empty() && shown > 0.001 {
+            start.push(
+                div()
+                    .flex_none()
+                    .max_w(px(200.0 * shown))
+                    .overflow_hidden()
+                    .opacity(shown)
+                    .child(compose)
+                    .into_any_element(),
+            );
         }
         start
     }
@@ -119,14 +131,17 @@ impl MailWindow {
         let available = self.mail.as_ref().is_ok_and(crate::data::Mail::has_index);
         let has_text = !self.search.read(cx).text().is_empty();
         let panel_open = self.search_panel.is_some();
+        // On a phone the box is a pill across the bar, with the menu button
+        // and the account picture over its two ends.
+        let phone = self.layout.shape.phone;
         div()
             .id("search-box")
             .key_context(SEARCH_CONTEXT)
             .relative()
             .w(px(width))
-            .h(px(SEARCH_HEIGHT))
-            .pl(px(2.0))
-            .pr(px(2.0))
+            .h(px(lerp(SEARCH_HEIGHT, 48.0, phone)))
+            .pl(px(lerp(2.0, 56.0, phone)))
+            .pr(px(lerp(2.0, 50.0, phone)))
             .flex()
             .flex_row()
             .items_center()
@@ -141,18 +156,27 @@ impl MailWindow {
             // A drag here selects text rather than moving the window.
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .child(self.tour_mark(Spot::Search))
-            .child(
-                icon_button("search-button", "search", 22.0, th)
-                    .tooltip(tip("Search", th))
-                    .on_click(cx.listener(|this, _, window, cx| {
-                        let text = this.search.read(cx).text().trim().to_owned();
-                        if text.is_empty() {
-                            this.focus_search(&FocusSearch, window, cx);
-                        } else {
-                            this.start_search(text, cx);
-                        }
-                    })),
-            )
+            .when(phone < 0.999, |d| {
+                d.child(
+                    div()
+                        .flex_none()
+                        .w(px(40.0 * (1.0 - phone)))
+                        .overflow_hidden()
+                        .opacity(1.0 - phone)
+                        .child(
+                            icon_button("search-button", "search", 22.0, th)
+                                .tooltip(tip("Search", th))
+                                .on_click(cx.listener(|this, _, window, cx| {
+                                    let text = this.search.read(cx).text().trim().to_owned();
+                                    if text.is_empty() {
+                                        this.focus_search(&FocusSearch, window, cx);
+                                    } else {
+                                        this.start_search(text, cx);
+                                    }
+                                })),
+                        ),
+                )
+            })
             .child(div().flex_1().min_w_0().child(self.search.clone()))
             .when(has_text, |d| {
                 d.child(
@@ -229,10 +253,22 @@ impl MailWindow {
                 .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx)))
                 .into_any_element(),
         };
-        vec![
-            settings.into_any_element(),
-            div().mx(px(8.0)).child(account).into_any_element(),
-        ]
+        // A phone has Settings in its drawer.
+        let phone = self.layout.shape.phone;
+        let mut end = Vec::new();
+        if phone < 0.999 {
+            end.push(
+                div()
+                    .flex_none()
+                    .w(px(40.0 * (1.0 - phone)))
+                    .overflow_hidden()
+                    .opacity(1.0 - phone)
+                    .child(settings)
+                    .into_any_element(),
+            );
+        }
+        end.push(div().mx(px(8.0)).child(account).into_any_element());
+        end
     }
 
     /// The folders. Folded, the panel is gone; it opens over the list while
@@ -242,6 +278,18 @@ impl MailWindow {
         let reserve = self.reserve_spring.value().max(0.0);
         // How far the panel is open beyond the space it takes: it floats.
         let float = (t - reserve).clamp(0.0, 1.0);
+        // On a phone or tablet it is a drawer, full height with square
+        // corners.
+        let shape = self.layout.shape;
+        let drawer = !shape.is_desktop();
+        // A drawer (opened with the menu on a phone or tablet) slides in
+        // whole; the desktop's panel unfolds.
+        let slides = !shape.is_desktop() && !self.nav_peek;
+        let width = if slides {
+            self.drawer_width()
+        } else {
+            NAV_WIDTH
+        };
         let list = uniform_list(
             "navigation",
             self.nav_rows.len(),
@@ -258,31 +306,52 @@ impl MailWindow {
         .pb(px(16.0));
         let panel = div()
             .id("navigation-panel")
+            .occlude()
             .absolute()
             .top_0()
             .left_0()
-            .bottom(px(16.0 * float))
-            .w(px(NAV_WIDTH * t))
+            .bottom(px(if drawer { 0.0 } else { 16.0 * float }))
+            .map(|d| {
+                if slides {
+                    d.left(px(-width * (1.0 - t))).w(px(width))
+                } else {
+                    d.w(px(width * t)).opacity(t.min(1.0))
+                }
+            })
             .flex()
             .flex_col()
             .pt(px(lerp(0.0, 12.0, float)))
             .overflow_hidden()
-            .opacity(t.min(1.0))
             .when(float > 0.0, |d| {
                 d.bg(rgba(th.surface))
-                    .rounded(px(PANEL_RADIUS))
+                    .when(!drawer, |d| d.rounded(px(PANEL_RADIUS)))
                     .shadow(elevation(th, 3.0 * float))
             })
             .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
                 this.hover_navigation(Hover::Panel, *hovered, cx)
             }))
-            .child(list);
+            .children(self.render_drawer_head(th, cx))
+            .child(list)
+            .children(self.render_drawer_foot(th, cx));
+        let scrim_width = shape.width - shape.rail();
         div()
             .relative()
             .flex_none()
             .h_full()
             .w(px(NAV_WIDTH * reserve))
-            .child(panel)
+            .children(self.render_scrim(scrim_width, cx))
+            // Clips the drawer as it slides out from the rail's edge.
+            .child(
+                div()
+                    .absolute()
+                    .top_0()
+                    .left_0()
+                    .bottom_0()
+                    // Room for the panel's shadow.
+                    .w(px(width + 24.0))
+                    .overflow_hidden()
+                    .child(panel),
+            )
             .into_any_element()
     }
 
@@ -472,6 +541,7 @@ impl MailWindow {
                 self.reader = None;
                 // A folder picked from the opened navigation closes it.
                 self.nav_peek = false;
+                self.layout.drawer = false;
                 self.peek_task = None;
                 window.focus(&self.list_focus, cx);
             }

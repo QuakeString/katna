@@ -399,8 +399,12 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   offline window (default: the last 30 days, up to 10 MB each), newest
   first, 25 per command. The raw message goes to the blob store; the
   snippet and attachment flag are recomputed from it and `body_state` is
-  set to 2. `FetchBody(id)` on D-Bus downloads any other message through
-  the account's worker. Level 2 (text only) and eviction come later.
+  set to 2. `FetchBody(id)` on D-Bus downloads any other message at once
+  on a second, on-demand connection per account (so it never waits behind
+  a running sync), which closes after two idle minutes. Katna Mail calls it
+  when the reader shows a message that has no body yet and shows
+  "Downloading…" meanwhile, or the reason and Try again if it fails.
+  Level 2 (text only) and eviction come later.
 - **Waiting for changes:** every wait starts with a NOOP, then IDLEs (or
   sleeps and NOOPs on servers without IDLE). Stalwart 0.16 reports changes
   made between two commands on NOOP only, never when IDLE starts.
@@ -608,7 +612,9 @@ from or adds to the sketch above:
   query latency within noise (p50 6.1 ms, p99 20 ms).
 - **Query language.** `OR` binds tighter than the implicit AND, as in
   Gmail (`a OR b c` is `(a OR b) c`). `to:` matches To, Cc and Bcc. Dates
-  are UTC days; `before:` excludes the day, `after:` includes it. Unknown
+  are UTC days; `before:` excludes the day, `after:` includes it. A time
+  and offset may follow (`after:2001-05-14T09:30+06:00`); the app's
+  custom date filter writes local midnight that way. Unknown
   `word:value` is plain text; broken parentheses are ignored; nesting is
   limited to 32 levels.
 - **As you type.** `Query::parse_as_you_type` treats a final unfinished
@@ -1168,8 +1174,12 @@ Gemini or confidential mode):
   later gets a *Scheduled* row in the folder list after Sent, which opens
   a list with Cancel send; a cancelled message opens again as written.
   The expand button in the compose title bar moves the message into a
-  window of its own (`compose/popout.rs`); a button in that window's bar
-  docks it back. The message stays in the mail window's state and the new
+  normal window of its own (`compose/popout.rs`), framed like the mail
+  window: Katna's header bar with the window buttons, rounded corners and
+  shadow where Katna draws the frame (GNOME), or the desktop's own title
+  bar where the desktop draws it (KDE). A button docks it back: in the
+  header bar, or in the bottom bar under the desktop's title bar, where
+  no toolbar repeats the title. The message stays in the mail window's state and the new
   window only draws it, so sending and the snackbar work the same. Closing
   that window closes the message as its close button does; the app quits
   only when the mail window closes.
@@ -1349,6 +1359,30 @@ desktop's own app stays one click away.
   the file instead. Save writes where the user chooses.
 - Not yet: text search in PDFs, printing, pictures inside documents,
   old Word files and slides.
+
+### 13.9 Window sizes
+
+The owner asked for the window to follow its size: a phone-sized window
+looks like Gmail's mobile app, a tablet-sized one like its tablet app, and
+moving between them animates rather than jumps. `window/layout.rs` picks
+one of three layouts by the width inside the window frame
+(`WindowChrome::inner_width`, which leaves out the CSD shadow margins):
+
+| Layout  | Width         | What changes |
+|---------|---------------|--------------|
+| Desktop | 1080 px and up | §13.6 as is. |
+| Tablet  | 600–1080 px   | The folders fold into a drawer the menu button opens over a dimmed list; Compose stays in the top bar beside the menu button (the owner's choice), folding down to its pencil below 760 px; the reading pane (three-pane setting) stays beside the list from 840 px, and narrower the conversation slides in over the list. |
+| Phone   | under 600 px  | No app rail: the apps sit in a bar along the bottom. The search box is a pill across the top bar with the menu button and account picture inside it (settings move to the drawer). The list is edge to edge, three lines a message with the sender's picture, which ticks the line when tapped; the inbox tabs move to the drawer. Compose floats at the bottom right; it folds to its pencil as the list scrolls down and grows back after a few steps up (or at the top). An open conversation slides in over the list and the bottom bar sinks away; composing takes a sheet over the whole window. |
+
+A layout changes only 12 px past its threshold, so a window resized right
+at a threshold does not flicker between two layouts. The GNOME minimum
+window size (360 px) is the smallest phone layout.
+
+Motion: two springs follow the layout (phone, desktop), and every part
+reads them rather than switching: the rail slides out as the bottom bar
+rises, the search box grows into the pill, the cards' margins and corners
+melt away, the top-bar Compose shrinks into the phone's floating one. A third spring
+slides the conversation over the list. All of them honor reduce motion.
 
 ## 14. D-Bus API (`katna-dbus`)
 
