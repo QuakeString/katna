@@ -72,7 +72,7 @@ impl MailWindow {
         let compose = div()
             .id("compose")
             .relative()
-            .ml(px(10.0))
+            .ml(px(super::TOP_BAR_GAP - super::BAR_ITEM_GAP))
             // As tall as the search box beside it; folded, a square. A set
             // width, so the search box can keep an exact gap after it.
             .h(px(SEARCH_HEIGHT))
@@ -276,7 +276,13 @@ impl MailWindow {
                     .into_any_element(),
             );
         }
-        end.push(div().mx(px(8.0)).child(account).into_any_element());
+        end.push(
+            div()
+                .ml(px(super::TOP_BAR_GAP - super::BAR_ITEM_GAP))
+                .mr(px(8.0))
+                .child(account)
+                .into_any_element(),
+        );
         end
     }
 

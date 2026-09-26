@@ -134,15 +134,21 @@ const NAV_WIDTH: f32 = 256.0;
 /// How far the folder highlight pill (and the drawer's) stays off the
 /// pane's left edge.
 const NAV_ROW_INSET: f32 = 8.0;
-/// The room between Compose and the search box when the window is too
-/// narrow for the search box's usual place; never less.
-const SEARCH_GAP: f32 = 20.0;
+/// The one gap between the top bar's elements: the menu button and
+/// Compose, Compose and the search box (when the window is too narrow for
+/// the box's usual place), the search box and Settings, Settings and the
+/// account picture. The header bar itself spaces its items 6 px apart.
+const TOP_BAR_GAP: f32 = 16.0;
+const BAR_ITEM_GAP: f32 = 6.0;
+/// The room Settings and the account picture take at the top bar's end,
+/// up to the window buttons: both 40 px wide, with the gap between them,
+/// and 8 px after the picture plus the bar's own spacing.
+const TOP_END_WIDTH: f32 = 40.0 + TOP_BAR_GAP + 40.0 + 8.0 + BAR_ITEM_GAP;
 /// Room for the word "Compose" on the top bar's Compose button.
 const COMPOSE_TEXT_WIDTH: f32 = 60.0;
 /// Where Compose starts on the top bar: the bar's 6 px padding, the menu
-/// button (48 px with a 6 px margin), the bar's 6 px gap and Compose's own
-/// 10 px margin.
-const COMPOSE_LEFT: f32 = 76.0;
+/// button (48 px with a 6 px margin) and the gap after it.
+const COMPOSE_LEFT: f32 = 6.0 + 6.0 + 48.0 + TOP_BAR_GAP;
 
 /// Width of the top bar's Compose button: a 40 px square when folded to
 /// its pencil (`label` 0), the pencil and the word when `label` is 1.
@@ -2143,14 +2149,15 @@ impl Render for MailWindow {
         // bar of a phone, under its menu button and account picture.
         let (room_start, room_end) = shape.room;
         let after_compose =
-            room_start + COMPOSE_LEFT + compose_width(shape.compose_label()) + SEARCH_GAP;
+            room_start + COMPOSE_LEFT + compose_width(shape.compose_label()) + TOP_BAR_GAP;
         let list_left = if shape.is_desktop() {
             shape.rail() + NAV_WIDTH
         } else {
             0.0
         };
         let search_left = list_left.max(after_compose);
-        let regular = (width - search_left - room_end - 120.0).clamp(200.0, SEARCH_WIDTH);
+        let regular = (width - search_left - room_end - TOP_END_WIDTH - TOP_BAR_GAP)
+            .clamp(200.0, SEARCH_WIDTH);
         let pill = (width - 12.0 - room_start - room_end).max(200.0);
         let search_width = lerp(regular, pill, shape.phone);
         let search_panel_width = lerp(regular, width - 16.0, shape.phone);
