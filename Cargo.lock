@@ -3496,7 +3496,7 @@ name = "katna-notify"
 version = "0.0.0"
 dependencies = [
  "katna-core",
- "katna-dbus",
+ "zbus",
 ]
 
 [[package]]
