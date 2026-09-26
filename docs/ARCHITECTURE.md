@@ -1,8 +1,13 @@
 # Katna PIM — Architecture
 
-> Status: **Draft v0.1** (September 2026). This is the design reference for
-> Katna Mail, Katna Calendar and Katna Server. Nothing here is built yet;
-> sections marked **Decision needed** are open.
+> Status: **Draft v0.2** (26 September 2026). This is the design reference for
+> Katna Mail, Katna Calendar, the Katna background service and Katna Server.
+> Nothing here is built yet; sections marked **Decision needed** are open.
+>
+> Changes since v0.1: background service (`katna-daemon`) as the single owner
+> of sync and data; desktop integration (notifications with actions and
+> inline reply, KRunner, GNOME search, Plasma calendar plugin and clock fork);
+> measured performance budget; updated packaging, roadmap and risks.
 
 ## 1. Goals
 
@@ -15,10 +20,13 @@ Merkuro).
 | **Best-in-class search** | Instant (<50 ms) full-text search across very large mailboxes, including mail that is not fully downloaded. |
 | **Organizations first** | Mail is grouped by company/customer/party, not only by address. Searching a company name finds all its mail, even from personal addresses. |
 | **Looks native on KDE and GNOME** | Real KWin decorations on KDE; Adwaita-style header bar, shadows and button layout on GNOME. |
+| **Deep Plasma integration** | Mail, contacts and events in KRunner; events in the Plasma clock, with add/edit; rich notifications with inline reply. GNOME equivalents where GNOME allows. |
+| **Works when the app is closed** | A background service syncs, notifies, sends scheduled mail and fires reminders without any window open. |
 | **Gmail-class features** | Undo send, send later, snooze, reminders, labels, threading, rules, templates, one-click unsubscribe. |
 | **Sales/pro features** | Open and link tracking, activity dashboard (via Katna Server). |
+| **Fast and light** | Near-zero idle CPU, small binaries, low memory (§17). |
 | **Local-first and private** | Works offline, data stays on the machine, incoming trackers are blocked. |
-| **Rust only** | All Katna code is Rust. Only unavoidable system C libraries are linked (Wayland, xkbcommon, fontconfig, Vulkan loader). |
+| **Rust only** | All Katna code is Rust, except the thin Plasma extensions that Plasma requires to be C++/QML (§15.6). Only unavoidable system C libraries are linked. |
 | **Packaged everywhere** | Flatpak, .deb, .rpm, AUR, AppImage, Nix, others. |
 
 ### Non-goals (for now)
@@ -30,96 +38,122 @@ Merkuro).
 ## 2. System overview
 
 ```
-┌──────────────────────┐   ┌──────────────────────┐
-│     Katna Mail       │   │    Katna Calendar    │     apps (GPUI)
-└──────────┬───────────┘   └──────────┬───────────┘
-           │   shared UI crates: katna-ui, katna-chrome, katna-platform
-┌──────────┴──────────────────────────┴───────────┐
-│  Engines: katna-sync · katna-search · katna-org │     Rust library crates
-│           katna-meta · katna-dav · katna-render │
-├─────────────────────────────────────────────────┤
-│  katna-store: SQLite (WAL) + blob store + index │     local data
-├─────────────────────────────────────────────────┤
-│  Protocols: Pimalaya io-* (IMAP, SMTP, JMAP,    │     sans-I/O libraries
-│  WebDAV/CalDAV/CardDAV) + own POP3              │     + our I/O driver (rustls)
-└──────────────────────┬──────────────────────────┘
-                       │ HTTPS / WebSocket (optional)
-              ┌────────┴────────┐
-              │  Katna Server   │  tracking · metadata sync · scheduled actions
-              └─────────────────┘
+                         ┌──────────────────────────────────────────────┐
+                         │ katna-daemon (background service, no GUI)     │
+                         │  sync (IDLE/push) · indexing · scheduler      │
+                         │  notifications · KRunner runner · GNOME       │
+                         │  search provider · D-Bus API org.katna.Pim1   │
+                         └───────┬───────────────────────────┬──────────┘
+                     writes      │                           │  D-Bus
+           ┌─────────────────────┴─────┐      ┌──────────────┴───────────────────────┐
+           │ katna-store               │      │ Clients                              │
+           │ SQLite (WAL) · blobs ·    │◄─────┤  Katna Mail, Katna Calendar (GPUI)   │
+           │ tantivy index             │ read │  KRunner, GNOME Shell search         │
+           └───────────────────────────┘ only │  Plasma calendar-events plugin (C++) │
+                                               │  Katna Clock plasmoid (QML/C++)      │
+                                               │  notification server (actions/reply) │
+                                               └──────────────────────────────────────┘
+           Protocols inside the daemon: Pimalaya io-* (IMAP, SMTP, JMAP,
+           WebDAV/CalDAV/CardDAV) + own POP3, driven by our rustls I/O layer.
+                                   │ HTTPS / WebSocket (optional)
+                          ┌────────┴────────┐
+                          │  Katna Server   │  tracking · metadata sync · scheduled actions
+                          └─────────────────┘
 ```
 
 Principles:
 
-1. **The UI never talks to the network.** It reads from the local store and
-   sends *commands* to the engines. Engines update the store; the UI reacts
-   to store change events.
-2. **Local-first, optimistic.** User actions (archive, flag, move) apply to
+1. **The daemon owns the network and all writes.** It is the only process
+   that syncs, sends, indexes or writes to the databases.
+2. **Apps are clients.** Katna Mail and Katna Calendar read SQLite and the
+   index directly in read-only mode (fast), send *commands* to the daemon
+   over D-Bus, and react to *change signals*. If the daemon is not running,
+   D-Bus activation starts it.
+3. **Local-first, optimistic.** User actions (archive, flag, move) apply to
    the local store immediately and are queued for the server.
-3. **The search index and caches are disposable.** Everything can be rebuilt
+4. **The search index and caches are disposable.** Everything can be rebuilt
    from the SQLite database and the blob store.
-4. **Protocols are behind our own traits.** Pimalaya and GPUI types never leak
-   into engine or store APIs, so either can be replaced.
+5. **Protocols and toolkits are behind our own traits.** Pimalaya and GPUI
+   types never leak into engine or store APIs, so either can be replaced.
 
 ## 3. Repository and crate layout
 
 One Cargo workspace (monorepo) for all apps, shared crates and the server.
+**Decision needed:** repository name (`katna`, proposed) — this repository is
+currently `katna-mail`.
 
 ```
 katna/
 ├── Cargo.toml                 # workspace, shared dependency versions
 ├── crates/
 │   ├── katna-core/            # config, XDG paths, accounts, secrets, errors, logging
-│   ├── katna-store/           # SQLite schema + migrations, blob store, change events
-│   ├── katna-meta/            # metadata-with-expiration layer (§9)
+│   ├── katna-store/           # SQLite schema + migrations, blob store, read-only views
+│   ├── katna-meta/            # metadata-with-expiration layer (§10)
 │   ├── katna-sync/            # account workers, IMAP/JMAP/POP3/SMTP, outbox, op queue
 │   ├── katna-search/          # tantivy index, query language, ranking
 │   ├── katna-org/             # organizations, matching rules, suggestions
 │   ├── katna-render/          # HTML sanitizing and message rendering
 │   ├── katna-dav/             # CalDAV/CardDAV sync, iCalendar/vCard, recurrence
-│   ├── katna-platform/        # portals, desktop detection, settings, notifications, tray
+│   ├── katna-dbus/            # D-Bus API definitions (org.katna.Pim1), client + server sides
+│   ├── katna-notify/          # notification builder, actions, inline reply, grouping
+│   ├── katna-platform/        # portals, desktop detection, settings, tray, badges
 │   ├── katna-chrome/          # window decorations (SSD/CSD), theme tokens + presets
 │   └── katna-ui/              # shared GPUI components
 ├── apps/
-│   ├── katna-mail/
-│   └── katna-calendar/
+│   ├── katna-daemon/          # background service (no GUI dependencies)
+│   ├── katna-mail/            # GPUI
+│   └── katna-calendar/        # GPUI
+├── integrations/
+│   ├── plasma-calendar-plugin/    # C++ CalendarEventsPlugin → daemon over D-Bus
+│   ├── plasma-clock/              # fork of Plasma's digital clock (QML + C++)
+│   ├── krunner/                   # dbusplugin .desktop metadata
+│   ├── gnome-search-provider/     # search-provider .ini
+│   └── dolphin-servicemenu/       # "Send as attachment with Katna"
 ├── server/
 │   └── katna-server/          # axum; tracking, metadata stream, scheduled actions
 ├── tools/
 │   ├── katna-search-cli/      # index/query from the terminal, benchmarks
 │   └── katna-bench/           # Enron-corpus benchmarks
-├── packaging/                 # flatpak, deb, rpm, aur, appimage, nix, desktop/appstream files
+├── packaging/                 # flatpak, deb, rpm, aur, appimage, nix, desktop/appstream, systemd units
 └── docs/
 ```
 
-Crate dependency direction (no cycles, UI at the top):
+Crate dependency direction (no cycles):
 
 ```
-apps → katna-ui, katna-chrome, katna-platform → engines → katna-store → katna-core
+katna-mail / katna-calendar → katna-ui, katna-chrome, katna-platform, katna-dbus (client), katna-store (read-only)
+katna-daemon                → engines, katna-notify, katna-platform, katna-dbus (server) → katna-store → katna-core
 ```
 
-`katna-search-cli` depends only on engines and the store. This keeps search
-and sync testable and benchmarkable without a GUI.
+`katna-daemon` must not depend on GPUI, so it stays small and needs no GPU.
+`katna-search-cli` depends only on engines and the store, so search and sync
+are testable and benchmarkable without a GUI.
 
 ## 4. Technology choices
 
 | Area | Choice | Notes |
 |---|---|---|
-| GUI | **GPUI** via `gpui-pre` + **GPUI Kit** (formerly gpui-component) | Official `gpui` on crates.io is stuck at 0.2.2 (Blade renderer). `gpui-pre` tracks Zed's wgpu renderer and AccessKit. Pin exact versions (§17). |
-| Async / I/O | GPUI executors in apps; `smol`-compatible I/O in engines; `rustls` | Pimalaya is sans-I/O, so we choose the runtime. Avoid pulling in Tokio in the apps. The server uses Tokio (axum). |
-| Protocols | Pimalaya `io-email`, `io-imap`, `io-smtp`, `io-jmap`, `io-webdav`, `io-calendar` | Light forks where needed (§17). POP3 is our own (not in `io-email`). |
+| GUI | **GPUI** via `gpui-pre` + **GPUI Kit** (formerly gpui-component) | Chosen for speed, near-zero idle CPU, pure Rust and small binaries (measured in §17). Official `gpui` on crates.io is stuck at 0.2.2 (Blade renderer); `gpui-pre` tracks Zed's wgpu renderer and AccessKit. Needs recent stable Rust (1.94 failed, 1.98 works). Pin exact versions (§20). |
+| Async / I/O | GPUI executors in apps; `smol`-compatible I/O in the daemon; `rustls` | Pimalaya is sans-I/O, so we choose the runtime. The server uses Tokio (axum). |
+| Protocols | Pimalaya `io-email`, `io-imap`, `io-smtp`, `io-jmap`, `io-webdav`, `io-calendar` | Light forks where needed (§20). POP3 is our own (not in `io-email`). |
 | MIME | `mail-parser`, `mail-builder` | |
 | Database | SQLite via `rusqlite` (WAL mode) | |
-| Search | `tantivy` | Plus `rust-stemmers`, `lindera`/`jieba` tokenizers, `whatlang`. |
+| Search | `tantivy` | Plus `rust-stemmers`, `whatlang`; `lindera`/`jieba` for CJK as optional downloads (large dictionaries). |
 | Blob compression / hashing | `zstd`, `blake3` | |
 | HTML safety | `ammonia` | |
 | Calendar data | `calcard` (iCalendar + vCard), `rrule`, `jiff` (time zones) | |
-| Desktop integration | `zbus`, `ashpd` (portals), `oo7` (Secret Service), `notify-rust`, `ksni` (tray) | |
+| D-Bus and desktop | `zbus`, `ashpd` (portals), `oo7` (Secret Service), `ksni` (tray) | Notifications implemented directly on `org.freedesktop.Notifications` via `zbus` (actions, inline reply, activation tokens). |
 | Icons | `freedesktop-icons` + `resvg` | |
 | Spell check | `spellbook` | Hunspell dictionaries. |
 | Mail rules on the server | `sieve-rs` (compile) + ManageSieve | |
 | OpenPGP (later) | `sequoia-openpgp` or `pgp` (rPGP) | |
 | Server | `axum`, PostgreSQL (`sqlx`) | |
+| Plasma extensions | C++ / Qt 6 / QML, KF6, libplasma | Only in `integrations/plasma-*` (§15.6). |
+
+Alternatives considered for the GUI: iced/libcosmic, Slint, GTK4
+(`gtk4-rs`), Qt (`cxx-qt`). GPUI is kept; its real costs are development
+effort (no HTML engine, no rich-text editor, unofficial release channel),
+not runtime performance.
 
 ## 5. Local data
 
@@ -129,15 +163,15 @@ and sync testable and benchmarkable without a GUI.
 |---|---|
 | `$XDG_CONFIG_HOME/katna/` | Settings (TOML). |
 | `$XDG_DATA_HOME/katna/mail.db` | Mail database. |
-| `$XDG_DATA_HOME/katna/pim.db` | Shared: accounts, contacts, organizations. Used by Mail and Calendar. |
+| `$XDG_DATA_HOME/katna/pim.db` | Shared: accounts, contacts, organizations. |
 | `$XDG_DATA_HOME/katna/calendar.db` | Calendar database. |
 | `$XDG_DATA_HOME/katna/blobs/` | Raw messages and attachments. |
 | `$XDG_DATA_HOME/katna/index/` | tantivy index (rebuildable, but expensive, so not in cache). |
 | Secret Service (`oo7`) | Passwords and OAuth tokens. Never in files. |
 
-Mail and Calendar are separate processes. They share `pim.db` (SQLite WAL
-allows concurrent readers and one writer). They tell each other about
-changes with a D-Bus signal (`org.katna.Pim.Changed`).
+Only `katna-daemon` writes these databases. Apps open them read-only
+(SQLite WAL allows concurrent readers while the daemon writes) and learn
+about changes from D-Bus signals (§14.2).
 
 ### 5.2 Blob store
 
@@ -166,6 +200,7 @@ attachment       (id, message_id, part_id, filename, mime, size, blob_hash NULL)
 thread           (id, account_id, subject_norm, last_date, message_count, flags_summary)
 op_queue         (id, account_id, op_json, state, attempts, next_try_at)
 outbox           (id, draft_message_id, send_at, state, per_recipient BOOL, attempts)
+notification     (notif_id, message_ids, account_id, created_at)   -- to close/update later
 ```
 
 `participant` is the key table for organizations (§8) and address search.
@@ -174,7 +209,7 @@ outbox           (id, draft_message_id, send_at, state, per_recipient BOOL, atte
 ### 5.4 Shared PIM schema (sketch)
 
 ```sql
-organization     (id, name, kind, color, notes)           -- kind: customer|vendor|partner|other
+organization     (id, name, kind, color, notes, notify_policy)  -- kind: customer|vendor|partner|other
 org_alias        (org_id, alias)
 org_rule         (org_id, rule_kind, value)               -- domain | subdomain | address
 contact          (id, display_name, vcard_uid, notes)
@@ -182,22 +217,28 @@ contact_address  (contact_id, email_norm)
 org_member       (org_id, contact_id)
 suggestion       (id, kind, payload_json, state)          -- pending | accepted | dismissed
 meta             (object_kind, object_id, plugin, value_json, version,
-                  expires_at NULL, dirty BOOL)            -- see §9
+                  expires_at NULL, dirty BOOL)            -- see §10
 ```
 
-## 6. Sync engine (`katna-sync`)
+## 6. Sync engine (`katna-sync`, runs in `katna-daemon`)
 
 ### 6.1 Account workers
 
-One worker per account, running on a background executor:
+One worker per account inside the daemon:
 
-- **Foreground loop:** push (IMAP IDLE / JMAP push) on the inbox, quick
-  refresh of visible folders.
-- **Background loop:** backfill, text indexing downloads, other folders.
+- **Foreground loop:** push on the inbox (IMAP IDLE / JMAP push), quick
+  refresh of folders the user is looking at (apps tell the daemon over D-Bus).
+- **Background loop:** backfill, text downloads for indexing, other folders.
 - **Op queue:** replays local changes (flags, moves, deletes) to the server
   with retries and conflict handling.
 - Incremental sync uses **CONDSTORE / QRESYNC** when available.
   Gmail uses `X-GM-EXT-1` (labels, thread IDs, `X-GM-RAW` search).
+- **IDLE hygiene:** re-issue IDLE before the 29-minute limit; watching several
+  folders needs several connections (or the NOTIFY extension); respect
+  per-server connection limits (Gmail: about 15).
+- **Network and power:** reconnect on network changes (NetworkManager or the
+  portal network monitor), after resume (logind `PrepareForSleep`), with
+  exponential backoff; pause heavy background work on metered connections.
 
 ### 6.2 Sync levels (per account)
 
@@ -215,7 +256,8 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
 
 ### 6.3 Opening a message that is not downloaded
 
-- Fetch on click, save the blob, set `body_state = 2`.
+- The app asks the daemon to fetch it; the daemon saves the blob, sets
+  `body_state = 2` and signals the change.
 - Pre-fetch neighbors while the user scrolls the list.
 - Offline: show headers and indexed text with a "not available offline" note.
 - Large attachments (> 5 MB default) are always fetched on click.
@@ -238,7 +280,8 @@ JWZ algorithm over `Message-ID` / `References` / `In-Reply-To`. Use Gmail
 
 ### 7.1 Index design
 
-One tantivy index for all accounts. Documents store only IDs and fields
+One tantivy index for all accounts, written by the daemon and read by apps,
+KRunner and the GNOME search provider. Documents store only IDs and fields
 needed for filtering and ranking; display data comes from SQLite.
 
 | Field | Type | Notes |
@@ -302,10 +345,10 @@ rank above loose matches. Highlighted snippets via `SnippetGenerator`.
 
 ### 8.1 Model
 
-An organization has a name, aliases, a kind, a color, and **rules**:
-domain (`@acme.com`), subdomains (`*.acme.com`) and exact addresses
-(`john.k@gmail.com`). People (contacts) can have many addresses and belong
-to many organizations.
+An organization has a name, aliases, a kind, a color, a notification
+policy, and **rules**: domain (`@acme.com`), subdomains (`*.acme.com`) and
+exact addresses (`john.k@gmail.com`). People (contacts) can have many
+addresses and belong to many organizations.
 
 ### 8.2 Matching at query time
 
@@ -323,6 +366,7 @@ query: "messages where any `participant` matches the organization's rules".
 - Plain text "acme" that matches an organization name or alias → the same
   expansion **OR** normal text matching.
 - Organization facet chips on results ("Acme (132)").
+- Organizations are also KRunner / GNOME search results (§15.3).
 
 ### 8.4 Auto-sorting without breaking other devices
 
@@ -341,10 +385,43 @@ query: "messages where any `participant` matches the organization's rules".
 ### 8.6 Sync and reuse
 
 Organizations and contacts are stored as vCards (`KIND:org`, `ORG`,
-`MEMBER`) and can sync via CardDAV. Katna Calendar uses the same matching on
-event attendees ("all meetings with Acme").
+`MEMBER`) and can sync via CardDAV. Katna Calendar and the Plasma clock use
+the same matching on event attendees ("Meeting with Acme").
 
-## 9. Metadata with expiration (`katna-meta`)
+## 9. Background service (`katna-daemon`)
+
+### 9.1 Responsibilities
+
+- Sync for all accounts (mail, CalDAV, CardDAV), push/IDLE.
+- Search indexing.
+- The metadata scheduler (§10): undo send, send later, snooze, reminders.
+- Calendar alarms.
+- Notifications with actions and inline reply (§15.1).
+- D-Bus API for the apps and desktop integrations (§14).
+- KRunner runner and GNOME Shell search provider (§15.3), served in-process.
+- Tray icon and unread badge (optional, §15.5).
+
+### 9.2 Lifecycle
+
+| Environment | How it starts |
+|---|---|
+| systemd | `katna-daemon.service` (systemd user unit), started at login when "run in background" is on. |
+| Any session | **D-Bus activation** (`org.katna.Pim1.service`): starts on demand when an app, KRunner, the clock plugin or a notification action calls it. |
+| No systemd | XDG autostart `.desktop` file. |
+| Flatpak | **Background portal** (`RequestBackground` with autostart). KDE and GNOME both implement it; GNOME lists it under "Background Apps". |
+
+- User settings: "Keep running in background" (default on), optional tray
+  icon, and a real "Quit" (stops the daemon until next login or activation).
+- Single instance, enforced by owning the D-Bus name.
+- Graceful shutdown: finish in-flight sends, flush the index, close IMAP sessions.
+
+### 9.3 Resource targets
+
+- Idle CPU ≈ 0 % (event-driven; no polling loops except IDLE renewals).
+- No GPU use (no GPUI dependency).
+- Memory budget and wake-up counts are measured in CI (§17).
+
+## 10. Metadata with expiration (`katna-meta`)
 
 Inspired by Mailspring's plugin metadata. Any object (message, thread,
 draft, event) can have a JSON value per feature, with an optional
@@ -352,9 +429,10 @@ draft, event) can have a JSON value per feature, with an optional
 
 - Stored in the `meta` table; versioned; `dirty` rows are uploaded to
   Katna Server when the user has an account there.
-- A **scheduler** sleeps until the next `expires_at` and emits an
-  `Expired(object, plugin)` event. The handler must clear or move the expiry
-  so it does not fire again.
+- The **scheduler runs in `katna-daemon`**, so expiries fire even when no
+  app window is open. It sleeps until the next `expires_at` and emits
+  `Expired(object, plugin)`. The handler must clear or move the expiry so it
+  does not fire again.
 - Values the server does not need are **end-to-end encrypted** before upload;
   the server only sees object IDs, `expires_at` and what a server-side
   action requires.
@@ -364,16 +442,16 @@ Features built on it:
 | Feature | Metadata | On expiry |
 |---|---|---|
 | Undo send | `{send_at: now + N s, undo: true}` on the draft (N = 5/10/20/30 s) | Send the draft. Undo = delete the metadata. The draft stays saved, so a crash does not lose it. |
-| Send later | `{send_at}` | Send the draft (app, or Katna Server if enabled). |
-| Snooze | `{until}`, thread moved to a "Snoozed" folder | Move back to inbox, mark unread. |
+| Send later | `{send_at}` | Send the draft (daemon, or Katna Server if enabled and the machine is off). |
+| Snooze | `{until}`, thread moved to a "Snoozed" folder | Move back to inbox, mark unread, notify. |
 | Reminder | `{remind_at, if_no_reply: true}` | Notify if nobody replied. |
 | Tracking | `{tracking_id, links[], events[]}` | — (events arrive from the server) |
 
-## 10. Sending (outbox)
+## 11. Sending (outbox)
 
-- Every send goes through the persistent `outbox` table.
+- Every send goes through the persistent `outbox` table in the daemon.
 - **Undo send** is a delay in the outbox, not a recall. True "unsend" after
-  delivery is impossible over SMTP. Katna Confidential (§13) is the
+  delivery is impossible over SMTP. Katna Confidential (§16) is the
   alternative.
 - **Per-recipient sending** (needed for tracking who opened): one tracked
   copy per recipient, each sent in its own SMTP transaction to that
@@ -383,8 +461,10 @@ Features built on it:
   with the list of who received it.
 - Sent-folder cleanup must be robust: find copies by `Message-ID` with
   retries, and never leave a tracked copy where the user will open it.
+- Replies created from a notification (§15.1) use the same outbox, with the
+  undo delay.
 
-## 11. Message rendering (`katna-render`)
+## 12. Message rendering (`katna-render`)
 
 This is a major risk: GPUI has no HTML engine.
 
@@ -404,9 +484,9 @@ This is a major risk: GPUI has no HTML engine.
 - **Phase 2:** WYSIWYG rich-text editor in GPUI (significant work).
 - Templates, per-identity signatures, spell check (`spellbook`), inline images.
 
-## 12. UI
+## 13. UI
 
-### 12.1 Window decorations (`katna-chrome`)
+### 13.1 Window decorations (`katna-chrome`)
 
 | Desktop | Mode | Details |
 |---|---|---|
@@ -417,25 +497,187 @@ This is a major risk: GPUI has no HTML engine.
 
 Detection via `XDG_CURRENT_DESKTOP`, with a user override.
 
-### 12.2 Look and feel
+### 13.2 Look and feel
 
 - One Katna design language on a **token layer** (radius, spacing, button
   style, colors, fonts) with two presets: **Breeze-like** and **Adwaita-like**.
 - System integration: color scheme and accent color via the portal
   Settings interface (`ashpd`, live updates); full KDE palette from
   `kdeglobals`; system UI font; freedesktop icon theme; portal file
-  chooser; notifications; tray (`ksni`).
+  chooser.
 - Keyboard-first: Gmail-compatible shortcuts, command palette.
 - Accessibility via AccessKit (AT-SPI) in current GPUI.
 
-### 12.3 Main mail layout
+### 13.3 Main mail layout
 
 Sidebar (accounts, unified inbox, folders, **organizations**, smart views) →
 thread list (organization color badges, availability icon) → reading pane
 (conversation view). Organization page: people, timeline, attachments,
 awaiting-reply threads, engagement stats.
 
-## 13. Katna Server (`server/katna-server`)
+### 13.4 Quick-reply window
+
+A small GPUI window used where the notification server has no inline reply
+(GNOME) and from KRunner's "Reply all" action. Reply-all prefilled, send
+with undo delay.
+
+## 14. D-Bus API (`katna-dbus`)
+
+### 14.1 Interface `org.katna.Pim1` (object `/org/katna/Pim1`)
+
+Sketch — versioned by the interface name; breaking changes create `Pim2`.
+
+| Kind | Members |
+|---|---|
+| Mail commands | `OpenMessage(id)`, `FetchBody(id)`, `SetFlags(ids, flags)`, `Move(ids, folder)`, `Archive(ids)`, `QueueSend(draft)`, `UndoSend(id)`, `ReplyAll(id, text)` |
+| Search | `Search(query, limit) → results` (used by KRunner, GNOME search, apps) |
+| Calendar | `EventsInRange(start, end) → events`, `CreateEvent(ical)`, `UpdateEvent(uid, ical)`, `DeleteEvent(uid)` |
+| Contacts / orgs | `FindContacts(text)`, `Organizations()` |
+| Sync | `SyncNow(account?)`, `SetForegroundFolders(ids)`, `Status() → per-account state` |
+| Signals | `MessagesChanged(ids)`, `FoldersChanged`, `EventsChanged(range)`, `SyncStatusChanged`, `UnreadCountChanged(n)` |
+
+### 14.2 Rules
+
+- Commands are asynchronous and idempotent where possible (retries are safe).
+- Change signals carry IDs only; clients re-read from SQLite.
+- Access is limited to the user's session bus. Inside Flatpak, only the
+  Katna apps own/talk to `org.katna.*` names.
+- Each app also implements `org.freedesktop.Application` (`Activate`,
+  `ActivateAction`, `Open`) so notifications and KRunner can open a
+  specific message or event, with an activation token.
+
+## 15. Desktop integration
+
+### 15.1 Notifications
+
+Implemented by the daemon on `org.freedesktop.Notifications` (`zbus`).
+
+| Interaction | Behavior |
+|---|---|
+| **Click** (`default` action) | Opens Katna Mail on that message (`org.freedesktop.Application.ActivateAction("open-message", id)`), starting the app if needed. The **activation token** from the notification (`ActivationToken` signal) is passed to the app so Wayland focuses the window instead of only flashing it. |
+| **Reply all** | On Plasma: action id `inline-reply` with hints `x-kde-reply-placeholder-text` ("Reply to all…") and `x-kde-reply-submit-button-text` ("Send"). The `NotificationReplied(id, text)` signal gives the text; the daemon builds the reply-all (recipients = From + To + Cc minus own addresses, `Re:` subject, `In-Reply-To`/`References`, quoted original), queues it with the undo delay, and shows "Reply sent · Undo". Elsewhere: a normal "Reply all" button that opens the quick-reply window (§13.4). Support is detected at runtime with `GetCapabilities` (`inline-reply`). |
+| **Archive / Mark read** | Buttons handled by the daemon without opening the app. |
+
+Content and behavior:
+
+- Hints: `desktop-entry`, `category=email.arrived`, `image-data` (sender
+  avatar or organization logo), `sound-name=message-new-email`,
+  `x-kde-origin-name` (account name).
+- **Grouping:** bursts become one notification ("5 new emails from Acme").
+- **Filtering:** notify for Inbox / important categories only by default;
+  per-organization policy (always / never / normal); respect Do Not Disturb
+  (handled by the notification server).
+- **Lifecycle:** notifications are closed (`CloseNotification`) when the
+  message is read, archived or deleted anywhere, including other devices.
+- Calendar alarms and snooze/reminder expiries use the same system.
+- Flatpak: verify inline-reply support through the notification portal;
+  otherwise request `--talk-name=org.freedesktop.Notifications`.
+- KDE Connect mirrors these notifications to the user's phone automatically.
+
+### 15.2 Taskbar and tray
+
+- Unread count on the Plasma task manager icon via
+  `com.canonical.Unity.LauncherEntry` (also Dash-to-Dock on GNOME).
+- Optional tray icon (`ksni`, StatusNotifierItem): unread count, compose,
+  pause sync, quit.
+
+### 15.3 KRunner and GNOME Shell search
+
+Served by the daemon, pure Rust, from the same search index.
+
+- **KRunner:** implements `org.kde.krunner1` (`Match`, `Actions`, `Run`,
+  `Teardown`). Metadata file in `share/krunner/dbusplugins/` names the
+  daemon's D-Bus service, so KRunner activates it on demand. `Match` answers
+  from tantivy in milliseconds.
+- **GNOME:** implements `org.gnome.Shell.SearchProvider2`
+  (`GetInitialResultSet`, `GetSubsearchResultSet`, `GetResultMetas`,
+  `ActivateResult`, `LaunchSearch`) with an `.ini` in
+  `share/gnome-shell/search-providers/`.
+
+| Result type | Matches on | Actions |
+|---|---|---|
+| Contact | name, address, organization | Compose email, copy address, open contact |
+| Email | subject, sender, text (confident matches only, or with a `mail:` prefix) | Open, reply all |
+| Organization | name, alias | Open organization view |
+| Event | title, attendees, location | Open event |
+
+Flatpak: KRunner D-Bus runners are designed to work with sandboxed apps;
+verify that Flatpak exports the `krunner/dbusplugins` file. Distro
+packages install it directly.
+
+### 15.4 Plasma calendar (clock) integration
+
+Plasma's digital clock popup only displays events from calendar-events
+plugins (Akonadi uses the "PIM Events" plugin from kdepim-addons). It has a
+hidden **"Add…"** button, shown only when an events plugin is enabled **and**
+a default `text/calendar` application exists; it launches that app without a
+date. Events in its agenda have no click or right-click actions.
+
+Katna integrates in three layers:
+
+**A. Calendar-events plugin (`integrations/plasma-calendar-plugin`)**
+
+- A small C++ `CalendarEvents::CalendarEventsPlugin` that asks
+  `katna-daemon` for `EventsInRange` over D-Bus and listens to
+  `EventsChanged`.
+- Katna Calendar registers as the `text/calendar` handler, so the stock
+  clock shows **"Add…"** for Katna without any fork.
+- Runs inside `plasmashell`: fully asynchronous, never blocks, minimal code
+  (a crash here crashes the desktop shell).
+
+**B. Katna Clock — fork of the official clock (`integrations/plasma-clock`)**
+
+- Source: `plasma-workspace/applets/digital-clock` (about 5,900 lines together
+  with the calendar component; GPL-2.0-or-later / LGPL / KDE-accepted GPL).
+- Renamed to avoid clashes in the shared `plasmashell` process:
+  applet `org.kde.plasma.digitalclock` → `org.katna.plasma.clock`;
+  QML module `org.kde.plasma.private.digitalclock` → `org.katna.plasma.private.clock`.
+- Declares `X-Plasma-Provides: org.kde.plasma.time, org.kde.plasma.date`, so
+  it appears in the clock's **"Show Alternatives"** menu (two-click switch).
+- Keeps importing the shared `org.kde.plasma.workspace.calendar` component
+  (identical look, gets upstream fixes); copied only if upstream changes
+  break us.
+- Katna features in new files (`KatnaAgenda.qml`, `QuickAddEvent.qml`, a C++
+  `KatnaBridge` for D-Bus), with minimal edits to upstream files:
+  - click a day → quick-add form;
+  - click an event → details; right-click → edit, delete, join meeting;
+  - drag to reschedule;
+  - organization badges ("Meeting with Acme") and related emails.
+- Still reads events through the plugin system (A), so holidays and other
+  plugins keep working.
+
+**C. Upstream contributions to Plasma**
+
+- "Add…" opens the calendar app on the selected date.
+- Clicking an event opens it in the calendar app.
+- An optional plugin hook for "create/edit event" actions.
+
+Each accepted change shrinks the fork and improves the stock clock.
+
+**GNOME:** the top-bar calendar reads only Evolution Data Server; showing
+Katna events there needs an EDS backend (C). Deferred.
+
+### 15.5 Other integration
+
+- Default handler for `mailto:` and `text/calendar` (`.ics`).
+- Global shortcut "Compose new email" via the GlobalShortcuts portal.
+- Dolphin service menu "Send as email attachment with Katna"
+  (`share/kio/servicemenus/`, no code).
+- Portal file chooser, color scheme, accent color (§13.2).
+
+### 15.6 Non-Rust components
+
+Plasma's extension points are C++/QML, so these are the only non-Rust parts:
+
+| Component | Language | Size goal |
+|---|---|---|
+| Calendar-events plugin | C++ / Qt 6 | A few hundred lines |
+| Katna Clock (fork) | QML + C++ | Upstream code + small Katna additions |
+
+They only display data and forward actions to `katna-daemon`; no business
+logic lives there.
+
+## 16. Katna Server (`server/katna-server`)
 
 Optional. Self-hostable (container image) and offered as a hosted Pro service.
 
@@ -443,12 +685,12 @@ Optional. Self-hostable (container image) and offered as a hosted Pro service.
 |---|---|
 | Open/link tracking + event stream | No |
 | Metadata sync between devices (E2E-encrypted values) | No |
-| Snooze / reminders while the app is closed (push notification or IMAP move) | IMAP move: yes (optional) |
-| Send later while the app is closed | Yes: SMTP credentials or a send-only OAuth scope (`gmail.send`); opt-in per account |
+| Snooze / reminders while the machine is off (push notification or IMAP move) | IMAP move: yes (optional) |
+| Send later while the machine is off | Yes: SMTP credentials or a send-only OAuth scope (`gmail.send`); opt-in per account |
 | Katna Confidential (revocable / expiring mail via link) | No |
 | Large-attachment links | No |
 
-### 13.1 Tracking design
+### 16.1 Tracking design
 
 - **Open:** `<img alt="" src="https://<tracking-domain>/o/<id>.png">`,
   inserted before quoted text. `<id>` is a random 128-bit value; the server
@@ -467,92 +709,144 @@ Optional. Self-hostable (container image) and offered as a hosted Pro service.
 - **Consent:** tracking is opt-in per message and off by default. Legal
   review is needed before selling in the EU (GDPR/ePrivacy). Read receipts
   (MDN) are offered as a consent-based alternative.
+- Tracking events arrive at the daemon over the server's event stream and
+  can raise notifications ("Acme opened *Proposal v2*").
 
-### 13.2 Stack
+### 16.2 Stack
 
-`axum` + PostgreSQL; WebSocket/SSE delta stream to clients; a scheduler
-for server-side actions; shared crates with the apps where useful.
+`axum` + PostgreSQL; WebSocket/SSE delta stream to `katna-daemon`; a
+scheduler for server-side actions; shared crates with the apps where useful.
 
-## 14. Katna Calendar
+## 17. Performance budget
 
-- CalDAV sync via `io-webdav` (discovery, sync-token, multiget); local
-  `calendar.db`; also local-only calendars.
+### 17.1 Measured (September 2026)
+
+Release build, `lto = "fat"`, `codegen-units = 1`, `strip = true`,
+`panic = "abort"`, Rust 1.98.1, x86-64 Linux.
+
+| Build | Binary size | xz-compressed |
+|---|---|---|
+| GPUI window "hello world" (`gpui-pre` 0.3.6) | 8.4 MB | 2.4 MB |
+| Engine libraries: tantivy + SQLite (bundled) + mail-parser + rustls | 6.2 MB | 2.2 MB |
+
+The GPUI binary links only `libc`; Wayland, X11 and Vulkan libraries are
+loaded at runtime.
+
+### 17.2 Targets (to be verified on real hardware)
+
+| Metric | Target |
+|---|---|
+| Katna Mail binary | ≤ 30 MB (estimate: 20–30 MB with GPUI Kit, Pimalaya, own code) |
+| `katna-daemon` binary | ≤ 15 MB |
+| Idle CPU (app and daemon) | ≈ 0 %; no periodic wake-ups beyond IDLE renewals |
+| Cold start to usable inbox | < 500 ms |
+| Search latency | p50 < 20 ms, p99 < 50 ms on 1M messages |
+| Daemon memory | Measured and tracked in CI; budget set after first prototype |
+
+### 17.3 Rules
+
+- CI fails if a binary grows beyond its budget.
+- CJK tokenizer dictionaries are optional downloads, not built in.
+- Test early on old hardware and on machines without working Vulkan (GPUI
+  falls back to CPU rendering there, which costs CPU).
+
+## 18. Katna Calendar
+
+- CalDAV sync via `io-webdav` (discovery, sync-token, multiget) in the
+  daemon; local `calendar.db`; also local-only calendars.
 - `calcard` for iCalendar/vCard; `rrule` for recurrence expansion;
   `jiff` for time zones, including embedded `VTIMEZONE` definitions.
 - Correct handling of recurrence exceptions (`RECURRENCE-ID`, `EXDATE`).
 - Invitations (iTIP/iMIP) shared with Katna Mail: accept/decline from mail.
+- Alarms fire from the daemon as notifications (§15.1).
 - Views: day, week, month, agenda; organization filter.
+- Desktop: Plasma clock plugin and Katna Clock (§15.4); KRunner results (§15.3).
 - Server quirks: test against Google, Nextcloud, Radicale, Fastmail, Stalwart.
 
-## 15. Security and privacy
+## 19. Security and privacy
 
 - TLS only via `rustls`; no plain-text auth without an explicit warning.
 - Secrets only in the Secret Service (via portal inside Flatpak).
 - Remote content blocked by default; HTML always sanitized.
 - Incoming tracker removal.
 - Metadata uploaded to Katna Server is E2E-encrypted where possible.
+- The D-Bus API is session-bus only; inline replies and actions go through
+  the same outbox and undo delay as normal sends.
 - OpenPGP (later): Sequoia or rPGP. S/MIME: later, Rust support is weaker.
 - The search index contains message text: it is covered by the same disk
   protection as the mail itself. Decrypted PGP mail is not indexed by default.
 
-## 16. Packaging
-
-| Format | Tooling | Priority |
-|---|---|---|
-| Flatpak (Flathub) | `flatpak-cargo-generator` for offline builds | 1 |
-| .deb | `cargo-deb` | 1 |
-| .rpm | `cargo-generate-rpm` | 1 |
-| AUR | PKGBUILD | 1 |
-| AppImage, Nix flake | standard tooling | 2 |
-| Gentoo, Alpine, Void | `cargo-ebuild`, APKBUILD, templates | 3 |
-
-Every package ships: `.desktop` files, AppStream metainfo, icons, and
-MIME handlers for `x-scheme-handler/mailto` and `text/calendar`.
-
-Official Debian/Fedora repositories require every crate to be packaged
-separately and do not accept git dependencies. Third-party repositories
-(Flathub, AUR, OBS, Copr, PPA) are the realistic path.
-
-## 17. Dependency policy
+## 20. Dependency policy
 
 - **GPUI:** pin exact `gpui-pre` and GPUI Kit versions; GPUI types only in
-  `katna-ui`, `katna-chrome` and the apps.
+  `katna-ui`, `katna-chrome` and the GUI apps.
 - **Pimalaya: light forks.** Fork only crates we change. Fork `master`
   mirrors upstream; our changes live on a `katna` branch. Use
   `[patch.crates-io]` in the workspace; drop the patch when upstream merges
   our fix. Keep `PATCHES.md` in each fork. Upstream fixes early.
-- **Weekly CI job** builds against the latest upstream `gpui-pre` and
-  Pimalaya to detect breaking changes early.
+- **Plasma clock fork:** same light-fork model. Merge upstream
+  `applets/digital-clock` changes on each Plasma release; keep Katna code in
+  separate files; CI builds against every supported Plasma version.
+- **Weekly CI job** builds against the latest upstream `gpui-pre`, Pimalaya
+  and Plasma to detect breaking changes early.
 - Before a release: no git dependencies (upstream merged, or forks
   published as `katna-*` crates).
 - Pimalaya code is AI-assisted by its own disclosure: we test it against
   real servers (Dovecot, Gmail, Fastmail, Stalwart, Nextcloud).
 
-## 18. Licensing — Decision needed
+## 21. Packaging
 
-Proposal: **GPL-3.0-or-later** for the apps and shared crates.
+| Package | Contents | Formats |
+|---|---|---|
+| `katna` | Katna Mail, Katna Calendar, `katna-daemon`, systemd user unit, D-Bus service files, KRunner and GNOME search-provider files, `.desktop` files, AppStream metainfo, icons, MIME handlers (`mailto`, `text/calendar`), Dolphin service menu | Flatpak, .deb, .rpm, AUR, AppImage, Nix |
+| `katna-plasma-integration` | Calendar-events plugin, Katna Clock | .deb, .rpm, AUR, Nix — **not** Flatpak or KDE Store (C++ loaded into `plasmashell`); built against each distro's Plasma |
+
+| Format | Tooling | Priority |
+|---|---|---|
+| Flatpak (Flathub) | `flatpak-cargo-generator` for offline builds | 1 |
+| .deb | `cargo-deb` (+ CMake for the Plasma package) | 1 |
+| .rpm | `cargo-generate-rpm` (+ CMake for the Plasma package) | 1 |
+| AUR | PKGBUILD | 1 |
+| AppImage, Nix flake | standard tooling | 2 |
+| Gentoo, Alpine, Void | `cargo-ebuild`, APKBUILD, templates | 3 |
+
+Notes:
+
+- Flatpak uses the Background portal for the daemon (§9.2) and must be
+  checked for KRunner file export and notification inline reply.
+- Official Debian/Fedora repositories require every crate to be packaged
+  separately and do not accept git dependencies. Third-party repositories
+  (Flathub, AUR, OBS, Copr, PPA) are the realistic path.
+
+## 22. Licensing — Decision needed
+
+Proposal: **GPL-3.0-or-later** for the apps, daemon and shared crates.
 
 - Compatible with our MIT/Apache dependencies (Pimalaya, tantivy, GPUI).
 - Allows reusing code from GPLv3 projects such as Mailspring and
   Mailspring-Sync. With a permissive license, only their ideas could be used.
+- The Plasma clock fork stays under its upstream licenses
+  (GPL-2.0-or-later / LGPL / KDE-accepted GPL), compatible with the above.
 - Katna Server: GPL-3.0 or AGPL-3.0 (AGPL keeps hosted forks open).
 
-## 19. Roadmap
+## 23. Roadmap
 
 | Phase | Deliverable | Done when |
 |---|---|---|
-| **0. Foundations** | Workspace, CI, `katna-core`, `katna-store` schema, `katna-search-cli` on the Enron corpus | Queries like `from:alice has:attachment invoice` return in < 50 ms on Enron |
-| **1. Sync core** | IMAP metadata + text + offline window, POP3, SMTP, op queue, threading | Two real accounts sync incrementally and survive restarts offline |
+| **0. Foundations** | Workspace, CI (size budgets), `katna-core`, `katna-store` schema, `katna-search-cli` on the Enron corpus | Queries like `from:alice has:attachment invoice` return in < 50 ms on Enron |
+| **1. Daemon and sync core** | `katna-daemon` with D-Bus API skeleton, IMAP metadata + text + offline window, POP3, SMTP, op queue, threading, systemd/D-Bus activation | Two real accounts sync incrementally in the background and survive restarts, suspend and network changes |
 | **2. Organizations** | Model, rules, `org:` search, suggestions (CLI first) | Searching a company name finds mail from personal addresses |
-| **3. Mail UI** | GPUI app, window chrome on KDE and GNOME, 3-pane layout, text/HTML-subset rendering, Markdown composer, undo send | Daily-drivable for one account on KDE and GNOME |
-| **4. Gmail-class features** | Labels, snooze, send later, reminders, rules (+ Sieve), unsubscribe, templates, tabs/categories | Feature checklist complete |
-| **5. Katna Server** | Tracking, activity dashboard, metadata sync, server-side scheduled actions | Tracking with bot/scanner labeling in production |
-| **6. Katna Calendar** | CalDAV, recurrence, invitations, organization filter | Syncs with Google, Nextcloud and Fastmail |
-| **7. Polish** | Full HTML rendering, WYSIWYG composer, OpenPGP, semantic search (local embeddings) | — |
+| **3. Mail UI** | GPUI app as a daemon client, window chrome on KDE and GNOME, 3-pane layout, text/HTML-subset rendering, Markdown composer, undo send | Daily-drivable for one account on KDE and GNOME |
+| **4. Notifications and desktop search** | Notifications with click-to-open, inline reply-all, archive/read; grouping; taskbar badge; tray; KRunner runner; GNOME search provider | New mail notifies with the app closed; reply-all from the notification works on Plasma; KRunner finds contacts and mail |
+| **5. Gmail-class features** | Labels, snooze, send later, reminders, rules (+ Sieve), unsubscribe, templates, tabs/categories | Feature checklist complete |
+| **6. Katna Calendar + Plasma calendar** | CalDAV, recurrence, invitations, alarms; calendar-events plugin; Katna Clock fork; upstream proposals to Plasma | Events show in the Plasma clock; add/edit from Katna Clock; syncs with Google, Nextcloud and Fastmail |
+| **7. Katna Server** | Tracking, activity dashboard, metadata sync, server-side scheduled actions | Tracking with bot/scanner labeling in production |
+| **8. Polish** | Full HTML rendering, WYSIWYG composer, OpenPGP, semantic search (local embeddings), GNOME top-bar calendar (EDS) | — |
 
-Packaging (Flatpak, deb, rpm, AUR) starts from Phase 3.
+Packaging (Flatpak, deb, rpm, AUR) starts from Phase 3; the
+`katna-plasma-integration` package from Phase 6.
 
-## 20. Risks
+## 24. Risks
 
 | Risk | Impact | Mitigation |
 |---|---|---|
@@ -563,12 +857,20 @@ Packaging (Flatpak, deb, rpm, AUR) starts from Phase 3.
 | Google/Microsoft OAuth verification | Blocks Gmail/Outlook for public users | Launch with other providers; plan verification budget |
 | Tracking law and spam filters | Legal risk, deliverability | Opt-in, privacy-first server, legal review, dedicated domains |
 | Calendar edge cases (recurrence, time zones) | Wrong event times | Test corpus from real servers, fuzzing |
+| Plasma private/internal QML APIs change every release | Katna Clock breaks on Plasma upgrades | Light fork, minimal edits, CI per supported Plasma version, upstream the generic parts |
+| C++ plugin runs inside `plasmashell` | A bug crashes the desktop shell | Tiny, asynchronous plugin; no logic; crash tests |
+| Wayland focus-stealing prevention | Click on notification does not raise the window | Pass activation tokens end-to-end (§15.1) |
+| GNOME lacks inline reply; Flatpak portal gaps | Uneven notification experience | Capability detection; quick-reply window fallback |
+| Background daemon drains battery or leaks memory | Users disable it | Event-driven design, CI resource budgets, power/metered awareness |
+| GPU/Vulkan missing on old hardware | High CPU from software rendering | Test early on old machines; document requirements |
 | Scope | Burnout, never shipping | Strict phases with "done when" criteria |
 
-## 21. Open decisions
+## 25. Open decisions
 
-1. License (§18).
+1. License (§22).
 2. Blob store vs. Maildir (§5.2).
-3. HTML renderer for phase 2 (§11).
-4. Repository name/structure: one `katna` monorepo (proposed) vs. per-app repos.
-5. Katna Server hosting and pricing model.
+3. HTML renderer for phase 2 (§12).
+4. Repository name/structure: one `katna` monorepo (proposed) vs. per-app repos (§3).
+5. Supported Plasma versions for `katna-plasma-integration` (for example: the
+   current release and the version in the latest Debian stable / Ubuntu LTS).
+6. Katna Server hosting and pricing model.
