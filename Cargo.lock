@@ -3300,6 +3300,8 @@ dependencies = [
  "katna-import",
  "katna-search",
  "katna-store",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

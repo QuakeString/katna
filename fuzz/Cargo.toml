@@ -1,0 +1,29 @@
+# Fuzz targets (docs/IMPLEMENTATION_PLAN.md §3.3, job `fuzz`). Needs nightly
+# Rust and cargo-fuzz:
+#
+#   cargo +nightly fuzz run query -- -max_total_time=60
+#
+# Its own workspace, so the main build never needs nightly or libFuzzer.
+
+[package]
+name = "katna-fuzz"
+version = "0.0.0"
+edition = "2024"
+license = "GPL-3.0-or-later"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+katna-search = { path = "../crates/katna-search" }
+libfuzzer-sys = "0.4"
+
+[[bin]]
+name = "query"
+path = "fuzz_targets/query.rs"
+test = false
+doc = false
+bench = false
+
+[workspace]
