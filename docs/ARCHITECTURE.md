@@ -149,6 +149,7 @@ are testable and benchmarkable without a GUI.
 | D-Bus and desktop | `zbus`, `ashpd` (portals), `oo7` (Secret Service) | Notifications implemented directly on `org.freedesktop.Notifications` via `zbus` (actions, inline reply, activation tokens); the tray (StatusNotifierItem), dbusmenu and the taskbar count too (§15.2). |
 | Icons | `freedesktop-icons` + `resvg` | |
 | Spell check | `spellbook` | Hunspell dictionaries. |
+| Languages | Fluent (`fluent-bundle`) + ICU4X | UI text in `.ftl` files per language, dates, numbers and plurals from CLDR; RTL mirroring in the vendored GPUI (§13.10). |
 | Mail rules on the server | `sieve-rs` (compile) + ManageSieve | |
 | OpenPGP and S/MIME | The user's GnuPG: `gpg` and `gpgsm` (`katna-crypto`) | Like KMail: existing keys, trust, gpg-agent, pinentry and smartcards work unchanged (§19.1). Sequoia/rPGP kept in reserve. |
 | Server | `axum`, PostgreSQL (`sqlx`) | |
@@ -1586,6 +1587,272 @@ of a conversation: as the pane narrows they drop their words one at a
 time (Reply all first, then Reply, then Forward) and keep their icons,
 with the word as a tooltip. The words are measured in the desktop's font.
 
+### 13.10 Languages
+
+Asked for by the owner on 27 September 2026. Until then every label,
+menu, notification and tray item was English typed into the code, dates
+used English month and day names in fixed formats, and numbers always
+grouped by commas. Only the spell-check dictionary followed the desktop's
+language (`spell.rs`).
+
+**Languages.** 51 entries in the picker, 49 translations (the three
+English entries share one text and differ only in formats). Each has a
+BCP 47 tag, its own name, its English name and a flag:
+
+| Group | Entries (tag, flag) |
+|---|---|
+| English | English (India) `en-IN` 🇮🇳, English (UK) `en-GB` 🇬🇧, English (US) `en-US` 🇺🇸 |
+| South Asia | Hindi `hi` 🇮🇳, Bengali `bn` 🇧🇩, Tamil `ta` 🇮🇳, Telugu `te` 🇮🇳, Marathi `mr` 🇮🇳, Gujarati `gu` 🇮🇳, Kannada `kn` 🇮🇳, Malayalam `ml` 🇮🇳, Punjabi `pa` 🇮🇳, Odia `or` 🇮🇳, Assamese `as` 🇮🇳, Urdu `ur` 🇵🇰, Nepali `ne` 🇳🇵 |
+| Himalaya and Sri Lanka | Sinhala `si` 🇱🇰, Dzongkha `dz` 🇧🇹 |
+| East Asia | Chinese (Simplified) `zh-Hans` 🇨🇳, Chinese (Traditional) `zh-Hant` 🇹🇼, Japanese `ja` 🇯🇵, Korean `ko` 🇰🇷 |
+| Southeast Asia | Thai `th` 🇹🇭, Vietnamese `vi` 🇻🇳, Indonesian `id` 🇮🇩, Malay `ms` 🇲🇾, Filipino `fil` 🇵🇭, Khmer `km` 🇰🇭, Burmese `my` 🇲🇲, Lao `lo` 🇱🇦 |
+| Middle East | Arabic `ar` 🇸🇦, Persian `fa` 🇮🇷, Hebrew `he` 🇮🇱, Turkish `tr` 🇹🇷 |
+| Europe | Russian `ru` 🇷🇺, Ukrainian `uk` 🇺🇦, German `de` 🇩🇪, French `fr` 🇫🇷, Spanish `es` 🇪🇸, Portuguese `pt-BR` 🇧🇷, Italian `it` 🇮🇹, Dutch `nl` 🇳🇱, Polish `pl` 🇵🇱, Swedish `sv` 🇸🇪 |
+| Africa | Swahili `sw` 🇰🇪, Amharic `am` 🇪🇹, Hausa `ha` 🇳🇬, Yoruba `yo` 🇳🇬, Igbo `ig` 🇳🇬, Zulu `zu` 🇿🇦, Afrikaans `af` 🇿🇦 |
+
+Portuguese is Brazilian Portuguese (most speakers); European Portuguese
+can be added as its own entry later. Punjabi is Gurmukhi (`pa-Guru`).
+Arabic, Persian, Hebrew and Urdu read right to left and mirror the whole
+layout.
+
+**Tooling: Fluent.** Strings live in Fluent files (`fluent-bundle`,
+Mozilla's Project Fluent), one per binary per language:
+`i18n/<tag>/katna-mail.ftl`, `katna-ui.ftl` (shared widgets),
+`katna-daemon.ftl` (notifications, tray, dock menu). Chosen over gettext
+because:
+
+- It is pure Rust with no `libintl`, and small (about 0.3 MB).
+- Plurals and other variants are chosen inside each message with CLDR's
+  categories, so Arabic's six plural forms, the Slavic few/many forms and
+  languages with no plural all work without code changes. Translators can
+  also vary a message by other values (the kind of folder, say), which
+  gettext cannot.
+- Variables are wrapped in Unicode isolation marks (FSI…PDI) by default,
+  so a Latin name or address inside an Arabic or Hebrew sentence keeps the
+  sentence's direction.
+- Weblate and Pontoon both edit `.ftl` files, and it is the choice of
+  other Rust desktops (COSMIC), so the tooling is proven.
+
+gettext has more translators who know it and is KDE's own format, but in
+Rust it needs a C library or an extractor that does not understand Rust
+macros, and its plural handling is one formula per file. Weblate serves
+either, so contributors lose nothing with Fluent.
+
+All code goes through `katna-i18n` (a new crate without GPUI, used by the
+apps and the daemon): `tr!("message-id")` and `tr!("message-id", count =
+n, name = sender)` return the text in the current language, falling back
+message by message to English, so a partly translated language still
+shows everything. A unit test checks that every id the code uses exists
+in English, and that each translation's variables match English. Log
+messages, `katnactl` and D-Bus error names stay English.
+
+The English files are embedded in every binary; the others are embedded
+compressed with `zstd` (already a dependency) and unpacked on first use.
+A file in `$XDG_DATA_HOME/katna/i18n/<tag>/` is loaded over the built-in
+one message by message, so a reviewer can try a correction without
+building Katna.
+
+**Choosing the language.**
+
+- **System default** (the default) follows the desktop: the first
+  language in `LANGUAGE` (a list, as `bn:en_US`) that Katna has, else
+  `LC_ALL`, `LC_MESSAGES`, `LANG`. On Plasma it also reads
+  `~/.config/plasma-localerc` (`[Translations] LANGUAGE`, `[Formats]`),
+  because the daemon, started by systemd, may not have the session's
+  variables. POSIX names are mapped to the tags above (`bn_IN.UTF-8` →
+  `bn`, `zh_TW` and `zh_HK` → `zh-Hant`, `zh_CN` → `zh-Hans`, `tl_PH` and
+  `fil_PH` → `fil`, `pt_PT` → `pt-BR` until European Portuguese exists,
+  `iw` → `he`). A language Katna does not have falls back to English (US).
+- The user's choice is `general.language` in `config.toml` (empty =
+  System default). The app and the daemon read the same key; the app tells
+  the daemon over D-Bus when it changes, so notifications, the tray and
+  the dock menu switch too. `KATNA_LANGUAGE` overrides everything, for
+  testing.
+- Formats: with System default, dates and numbers follow `LC_TIME` and
+  `LC_NUMERIC` (on Plasma, `[Formats]`), as the desktop does, so a user can
+  read English with Indian formats. A language picked in Katna brings its
+  own formats; this is what makes the three English entries differ.
+- Changing the language applies at once, without a restart: every string
+  is looked up at render, cached measurements (such as the Compose button's
+  width) are measured again, and the layout flips direction if needed.
+
+**Language picker.** Two places change the same setting:
+
+- A **language button** in the top bar, just left of Settings (the gear),
+  with the same size, hover and one shared gap (`TOP_BAR_GAP`) as the
+  other top-bar buttons. It shows the current language's flag and a small
+  chevron; its tooltip names the language ("Language: বাংলা, following
+  the system" with System default).
+- **Settings > General > Language**, a row with the same choices.
+
+The button opens a popover (the popover rules of §13.6: closes on Esc and
+any outside click, stays inside the window, frosted when frosted menus are
+on). At the top a "Search language" box, focused when it opens, matching
+own names, English names and tags, ignoring case and accents. Below it
+the list: "System default" first (with the language it resolves to as its
+second line), then the 51 entries in the order of the table above. Each
+row has the flag, the language's own name, its English name under it
+(each in the other language's script, never transliterated), and a check
+on the current choice. Arrow keys move, Enter picks. Under a
+machine-translated language a line at the foot of the popover says so and
+links to how to help (see below).
+
+On a phone the top bar has no room (the search pill holds the menu and the
+account picture), so Language is a row in the navigation drawer next to
+Settings, and the picker opens as a sheet over the window like Quick
+settings.
+
+Flags are bundled SVGs (from `flag-icons`, MIT, in the app's assets),
+drawn as colour images with rounded corners. Colour emoji are not used:
+they depend on an installed emoji font and GPUI's colour-glyph support.
+Language is not a country, so the flag only helps to find the row; the
+names carry the meaning.
+
+**Dates, numbers and plurals.** `katna-i18n` formats with ICU4X
+(`icu_datetime`, `icu_decimal`, `icu_calendar`; `icu_locale_core` and
+`icu_properties` are already in the tree) using CLDR data for the 51
+locales only, baked with `icu4x-datagen` so the binary does not carry
+every locale. `format.rs` keeps its rules (time today, weekday this week,
+day and month this year, full date otherwise) and asks ICU4X for each
+length, so month and day names, the order (`27/09/2026`, `9/27/2026`,
+`2026/09/27`), 12- or 24-hour time and digits follow the locale:
+
+- English (India) groups numbers in lakhs (`12,34,567`), UK and US by
+  thousands; India and UK write day before month, the US month first.
+- Digits follow CLDR's default for the locale (Bengali digits for Bengali,
+  Arabic-Indic for Arabic, Extended Arabic-Indic for Persian and Urdu,
+  Latin elsewhere).
+- The calendar follows the locale's CLDR default: Buddhist years for Thai,
+  Solar Hijri for Persian, Gregorian elsewhere. A setting to always use
+  Gregorian comes with the date format settings later.
+- The first day of the week (search's date picker) follows the locale.
+- Relative times ("2 hours ago") and sizes ("12 KB") are Fluent messages
+  with plural forms and a formatted number.
+- Folder and label names sort with `icu_collator` in the chosen language.
+
+The daemon does not format dates, so it links only Fluent (its 20 MB
+budget).
+
+**Text shaping and fonts.** The vendored GPUI draws text with
+`cosmic-text`, which shapes every script with `harfrust` (HarfBuzz's
+rules) and reorders mixed-direction lines with `unicode-bidi`, so
+Devanagari, Bengali, Tamil and the other Indic scripts, Thai, Khmer,
+Burmese, Lao, Tibetan (Dzongkha), Ethiopic (Amharic), Arabic and Hebrew
+join and reorder correctly when a font for the script is installed. Katna
+does not bundle fonts: `cosmic-text` falls back per script to the Noto
+family (`Noto Sans Bengali`, `Noto Serif Tibetan`, `Noto Sans Ethiopic`,
+`Noto Sans CJK SC/TC/JP/KR`, …), and packages recommend `noto-fonts` and
+`noto-fonts-cjk` (Arch optdepends; Ubuntu Recommends). Two fixes are
+needed in the vendored GPUI:
+
+- **Line breaking.** GPUI wraps at spaces for a short list of scripts and
+  anywhere at all for the rest, which splits Hindi, Arabic or Tamil words
+  in the middle, even inside a letter cluster. The patch breaks only at
+  Unicode line-break opportunities (UAX #14) and never inside a grapheme
+  cluster; Thai, Lao, Khmer and Burmese, which put no spaces between
+  words, break with `icu_segmenter`'s dictionaries; Chinese and Japanese
+  may break between characters but not before closing punctuation.
+- **Han glyphs.** `cosmic-text` picks Chinese, Japanese or Korean forms of
+  shared characters from the system locale at start; the patch passes
+  Katna's language instead, so Japanese UI text uses Japanese forms.
+
+The picker needs each language's own name to render in any language, so
+it is the first place these are checked. Urdu uses the Naskh style of
+Noto Sans Arabic; Nastaliq (`Noto Nastaliq Urdu`) is used when installed.
+
+**Right to left.** GPUI has no layout direction, and converting every
+`flex_row`, padding and position in the code by hand would touch every
+file. Instead Katna vendors `gpui-pre` (like `gpui-pre-linux` and
+`gpui-pre-wgpu`, with the patch described in its `KATNA.md`) and adds a
+window-wide layout direction:
+
+- In right-to-left windows, every element's horizontal position is
+  mirrored inside its parent when layout bounds are computed
+  (`x' = parent width − x − width`). Rows, paddings, margins, absolute
+  positions and the springs that move them all mirror at once, and hit
+  testing follows because it uses the same bounds.
+- Text alignment reads as start and end: `text_left` means start (right
+  in RTL), `text_right` means end.
+- A subtree can opt out and keep left-to-right (`.layout_ltr()`), for
+  things that are not text: the attachment viewer's pages and pictures,
+  media controls, the colour picker, the mail body (below), phone numbers
+  and code.
+- Icons that point somewhere are drawn mirrored: back, forward, reply,
+  reply all, forward, send, undo, redo, the panel icon, list navigation
+  chevrons, the Compose FAB's position. Icons that do not (search, star,
+  gear, check, clock, logos) are not.
+- Horizontal scrolling starts at the right; the phone's drawer slides in
+  from the right and a conversation from the left; menus open towards the
+  start edge.
+- Left and Right arrow keys follow what is on screen; Newer and Older keep
+  their meaning. J, K and the other letter shortcuts are unchanged.
+- Carets and selection in text boxes follow the visual order of mixed
+  text (GPUI assumes glyphs run left to right in index order; the patch
+  maps positions through the bidi runs).
+
+**Mail content in other scripts.**
+
+- Charsets: `mail-parser` decodes with `encoding_rs`, which covers the
+  legacy charsets these languages used (ISO-2022-JP, Shift_JIS, EUC-KR,
+  GB18030, Big5, windows-874/TIS-620, windows-1256, ISO-8859-6 and -8,
+  KOI8-R/U). Katna always sends UTF-8.
+- Direction is the message's, not the UI's: an HTML body honours `dir`
+  and `dir="auto"`; a plain-text body sets each paragraph's direction from
+  its first strong letter. The subject, sender and snippet in the list do
+  the same per line, aligned to the UI's start edge, so Arabic mail reads
+  right to left in an English UI and English mail left to right in an
+  Arabic one.
+- Compose: each paragraph's direction follows what is typed (first strong
+  letter); the format bar has "Right to left" and "Left to right" buttons
+  when an RTL language is the UI or keyboard layout, and sent HTML carries
+  `dir`. The quote header ("On 27 Sep 2026, Rahim wrote:") and the
+  forwarded-message header are written in the UI language with its date
+  format; `Re:` and `Fwd:` stay as they are (they are protocol, and
+  localized prefixes are already recognised for threading,
+  `katna_core::subject`).
+- Input methods: typing Chinese, Japanese, Korean and Indic scripts goes
+  through the desktop's input method (IBus or Fcitx5) via GPUI's
+  `text-input-v3` (Wayland) and XIM (X11) support; every Katna text box
+  implements GPUI's input handler, so composition works everywhere text
+  is typed.
+- Keyboard shortcuts: on a non-Latin keyboard layout (Russian, Arabic,
+  Hebrew, …) letter shortcuts use the key in the same place on the US
+  layout, as Gmail does, so J and K still step.
+- Search: words in Thai, Lao, Khmer and Burmese are split with the same
+  segmenter as line breaking (§7), and Chinese and Japanese with the
+  optional dictionaries.
+
+**Translations.** English is the source. All 48 other translations are
+first drafted by AI, and are marked as such until a native speaker has
+reviewed them:
+
+- `i18n/languages.toml` lists each entry: tag, own name, English name,
+  flag, direction, formats locale, and `status = "machine"` or
+  `"reviewed"` with the reviewers' names. Each drafted file starts with a
+  comment saying it is machine-drafted and needs review.
+- In the app, a machine-drafted language shows "Translated by machine.
+  Help improve it" at the foot of the picker, linking to the repository's
+  translation guide.
+- Corrections: now, anyone can edit `i18n/<tag>/*.ftl` on GitHub in the
+  browser and open a pull request, or file a "Translation correction"
+  issue (template with language, where, current and better text); the
+  local override folder above lets them check it in the app first. Later,
+  hosted Weblate (free for libre projects; the owner applies) takes over
+  the same files, with English as the source and CI unchanged.
+- New English strings: a pull request that adds UI text adds it to the
+  English file only; a follow-up drafts the other languages, so no
+  feature waits on 48 translations. Missing messages show in English
+  meanwhile, and CI reports each language's coverage.
+- Pseudo-locales for testing: `KATNA_LANGUAGE=qps-ploc` shows every
+  string accented and 40 % longer (finds hard-coded text and clipped
+  labels); `qps-plocm` also mirrors the layout (finds RTL bugs without
+  reading Arabic).
+
+**Size.** Fluent about 0.3 MB; compressed translations about 2 MB; ICU4X
+code and baked data for 51 locales, measured when added (expected a few
+MB). The app is about 56 MB of its 100 MB budget, so this fits; the daemon
+adds only Fluent and its own strings.
+
 ## 14. D-Bus API (`katna-dbus`)
 
 ### 14.1 Interface `in.invenia.katna.Pim1` (object `/in/invenia/katna/Pim1`, bus name `in.invenia.katna.Daemon`)
@@ -2193,7 +2460,9 @@ target; reports already sent stay in the cloud project until it is closed.
 - **GPUI:** pin exact `gpui-pre` and GPUI Kit versions; GPUI types only in
   `katna-ui`, `katna-chrome` and the GUI apps. `gpui-pre-linux` is a
   vendored copy with the KDE global menu patch (§15.2); upgrading GPUI means
-  re-applying it (`vendor/gpui-pre-linux/KATNA.md`).
+  re-applying it (`vendor/gpui-pre-linux/KATNA.md`). `gpui-pre-wgpu` and,
+  for layout direction and line breaking (§13.10), `gpui-pre` are vendored
+  the same way, each with its own `KATNA.md`.
 - **Pimalaya: light forks.** Fork only crates we change. Fork `master`
   mirrors upstream; our changes live on a `katna` branch. Use
   `[patch.crates-io]` in the workspace; drop the patch when upstream merges
@@ -2505,6 +2774,10 @@ Decided:
   over our own receiver and GitHub issues only), moving later to a
   self-hosted GlitchTip or Sentry on `katna.invenia.in`. The DSN stays
   empty until the cloud project exists.
+- Languages (§13.10): Fluent for UI text over gettext, ICU4X for dates and
+  numbers, system fonts (Noto) rather than bundled ones, and AI-drafted
+  translations marked for native review (owner's request, 27 September
+  2026).
 - Test and support matrix: Arch Linux (latest Plasma and GNOME) and
   Ubuntu 26.04 LTS (GNOME) / Kubuntu 26.04 (Plasma). The Plasma
   integration supports the Plasma versions of these two.

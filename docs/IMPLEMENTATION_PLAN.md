@@ -266,6 +266,36 @@ a recording proxy); with sharing on, the same report appears in Sentry
 with function names and lines, and the weekly statistics event carries
 only the documented fields.
 
+### Languages track
+
+Asked for by the owner on 27 September 2026 (design: `ARCHITECTURE.md`
+§13.10): 51 picker entries, 49 translations, the whole layout mirrored for
+Arabic, Persian, Hebrew and Urdu. Many threads change the UI at the same
+time, so strings move to Fluent area by area in small pull requests, each
+merging `main` first, rather than in one large one.
+
+| Task | Deliverable |
+|---|---|
+| L.1 Framework and picker | `katna-i18n` crate: language list (`i18n/languages.toml`), system language (`LANGUAGE`, `LC_*`, `plasma-localerc`), `general.language` setting, Fluent bundles with English fallback, `tr!`, override folder, pseudo-locales, id and variable checks; ICU4X dates, numbers and plurals in `format.rs`; top-bar language button and picker popover, Settings > General row, phone drawer row; bundled flags; the top bar and the picker translated into all 48 languages; CLAUDE.md rule that new UI text goes through `tr!` |
+| L.2 GPUI patches | `gpui-pre` vendored with `KATNA.md`: window layout direction with mirrored bounds, start/end text alignment, `.layout_ltr()`, UAX #14 and grapheme-safe line breaking with dictionary breaks for Thai, Lao, Khmer and Burmese, Han forms from Katna's language, bidi-aware carets |
+| L.3 Mirroring | RTL switch in `window/layout.rs` `Shape`; mirrored directional icons; drawer, conversation and menus from the right; arrow keys; checked with `qps-plocm` |
+| L.4 Strings, by area | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
+| L.5 Mail content | Per-message and per-paragraph direction in the reader and list; compose direction buttons and `dir` in sent HTML; quote and forward headers in the UI language; shortcuts by key position on non-Latin layouts; input method check (Fcitx5, IBus) |
+| L.6 Search in unspaced scripts | Thai, Lao, Khmer and Burmese word splitting in `katna-search` with the shared segmenter |
+| L.7 Corrections | Translation guide (`i18n/README.md`), "Translation correction" issue template, coverage report in CI; later hosted Weblate on the same files (owner applies) |
+| L.8 Review | Native speakers review the machine drafts; `languages.toml` marks each reviewed language and the picker drops its "Translated by machine" note |
+
+**Done when:** with the desktop set to Bengali, Katna Mail, its
+notifications, tray and global menu start in Bengali with Bengali dates
+and digits, and picking English (US), English (UK) and English (India) in
+the top-bar picker switches at once to their formats; in Arabic, Hebrew,
+Persian and Urdu the whole window is mirrored with nothing overlapping or
+clipped, while an English mail still reads left to right; screenshots of
+Hindi, Bengali, Tamil, Thai, Khmer, Burmese, Lao, Dzongkha, Amharic,
+Arabic, Japanese and Korean show correctly joined text that wraps only
+between words; `qps-ploc` finds no untranslated text in the converted
+areas; and the app and the daemon stay within their size budgets.
+
 ### Later: promotional website (not scheduled yet)
 
 Asked for by the owner on 26 September 2026 so it is not forgotten; nothing
