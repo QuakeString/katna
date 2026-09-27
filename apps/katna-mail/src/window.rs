@@ -46,6 +46,7 @@ mod reply_row;
 mod rich;
 mod scale_slider;
 mod search_panel;
+mod select;
 mod settings;
 mod settings_page;
 mod settings_search;
@@ -348,6 +349,8 @@ pub struct MailWindow {
     main: Option<WeakEntity<Self>>,
     /// Remote images and sender pictures of the open conversation.
     remote: remote::Remote,
+    /// The selected text of the open conversation.
+    text: select::TextSelection,
     /// Whether a conversation is open: in place of the list with two
     /// panes, beside it with three.
     reading: bool,
@@ -524,6 +527,7 @@ impl MailWindow {
             font,
             mail: Mail::open(&paths),
             remote: remote::Remote::load(&paths),
+            text: select::TextSelection::new(cx),
             accounts: Vec::new(),
             paths,
             config,

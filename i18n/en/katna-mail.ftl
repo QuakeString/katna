@@ -599,3 +599,8 @@ print-encrypted = (Encrypted. Open it in Katna Mail to print its text.)
 # In the printed page, above a message. $addresses: its recipients.
 print-to = To: { $addresses }
 print-cc = Cc: { $addresses }
+
+## Message text (right-click menu in the reading pane)
+
+text-copy = Copy
+text-select-all = Select all
