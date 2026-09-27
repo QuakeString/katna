@@ -1489,10 +1489,12 @@ Gemini or confidential mode):
     daemon never load the model, so their size and memory budgets hold.
     No cloud service.
 - **Sending account, Send and archive.** Settings → Compose picks the
-  account new mail goes out from: the one whose mail is open (default) or
-  always the same address (`sending.send_from`). Replies and forwards go
-  out from the account whose mail is open. The account is fixed when the message
-  opens. "Send on replies" makes Send on a reply or forward also archive
+  account new mail goes out from (`sending.send_from`): the first account
+  in Settings → Accounts order (default, when unset), always the same
+  address, or the one whose mail is open (`"current"`). Replies and
+  forwards go out from the account whose mail is open. The account is set
+  when the message opens; the compose window's From row shows it, and its
+  arrow picks another account for this message. "Send on replies" makes Send on a reply or forward also archive
   the conversation (`sending.send_and_archive`); the menu beside Send
   offers the other way. The archive happens once the message is queued,
   and Undo on "Sent and archived" brings the conversation back as well.

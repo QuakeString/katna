@@ -30,6 +30,10 @@ compose-show-trimmed = Show trimmed content
 compose-to = To
 compose-cc = Cc
 compose-bcc = Bcc
+# Label of the row showing the account the message goes out from.
+compose-from = From
+# Tooltip of the From row's button: lists the other accounts.
+compose-from-choose = Send from another account
 # Placeholder of the To field.
 compose-recipients = Recipients
 # Placeholder of the subject field.
