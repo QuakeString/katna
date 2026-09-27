@@ -2376,6 +2376,8 @@ impl EntityInputHandler for RichEditor {
         self.head = Pos::new(path, range.end);
         self.marked = None;
         self.replace_text_in_range(None, new_text, window, cx);
+        // No suggestion while a character is being composed.
+        self.ghost = None;
         self.marked = (!new_text.is_empty()).then(|| start..start + new_text.len());
         if let Some(sel) = new_selected_range_utf16 {
             let sel = range_from_utf16(new_text, &sel);
