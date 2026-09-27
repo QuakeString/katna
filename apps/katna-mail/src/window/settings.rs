@@ -55,6 +55,8 @@ pub(super) enum Change {
     OfflineDays(u32),
     /// Crash reports written on this computer (Settings > User feedback).
     SaveCrashReports(bool),
+    /// Crash reports sent to Katna's crash tracker: "Help improve Katna".
+    SendCrashReports(bool),
     /// The interface's language, a tag; empty follows the desktop.
     Language(&'static str),
 }
@@ -420,6 +422,13 @@ impl MailWindow {
                     return;
                 }
                 self.config.sync.offline_days = days;
+                self.save_config();
+                self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
+                return;
+            }
+            Change::SendCrashReports(on) => {
+                self.config.feedback.send_crash_reports = Some(on);
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
                 cx.notify();

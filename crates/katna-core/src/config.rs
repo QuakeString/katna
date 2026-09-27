@@ -39,14 +39,36 @@ pub struct Config {
 #[serde(default)]
 pub struct Feedback {
     /// Write a report on this computer when a Katna program crashes.
-    /// Nothing is sent anywhere.
     pub save_crash_reports: bool,
+    /// Send new crash reports to Katna's crash tracker. `None` until the
+    /// user has answered "Help improve Katna"; nothing is sent unless it
+    /// is `Some(true)`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub send_crash_reports: Option<bool>,
+    /// Where crash reports go instead of Katna's own Sentry project
+    /// ([`crate::ids::SENTRY_DSN`]): a self-hosted Sentry or GlitchTip.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dsn: Option<String>,
+}
+
+impl Feedback {
+    /// Whether crash reports are sent.
+    pub fn sending(&self) -> bool {
+        self.save_crash_reports && self.send_crash_reports == Some(true)
+    }
+
+    /// The Sentry DSN reports go to; empty means nowhere.
+    pub fn dsn(&self) -> &str {
+        self.dsn.as_deref().unwrap_or(crate::ids::SENTRY_DSN).trim()
+    }
 }
 
 impl Default for Feedback {
     fn default() -> Self {
         Self {
             save_crash_reports: true,
+            send_crash_reports: None,
+            dsn: None,
         }
     }
 }

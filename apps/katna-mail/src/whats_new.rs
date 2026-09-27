@@ -95,8 +95,8 @@ pub const HIGHLIGHTS: &[Highlight] = &[
         id: 7,
         title: "Crash reports stay on your computer",
         text: "If Katna Mail or its background service crashes, the next start says so, \
-               with the report to view or copy for a bug report. Nothing is sent. \
-               Settings > User feedback lists them.",
+               with the report to view or copy for a bug report. Settings > User \
+               feedback lists them.",
         animation: None,
     },
     Highlight {
@@ -157,6 +157,23 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 15,
+        title: "Settings tabs on one line",
+        text: "The Settings tabs stay on one line: when they don't fit, arrows at \
+               the edges and the scroll wheel glide the rest into view. Signatures \
+               and templates share a Compose tab, and folders and mail rules \
+               share one too.",
+        animation: None,
+    },
+    Highlight {
+        id: 16,
+        title: "Help improve Katna, if you like",
+        text: "Katna asks once whether to send crash reports to help fix what went \
+               wrong. They go without your IP address, messages or email addresses, \
+               and only if you say yes. Change it any time in Settings > User feedback.",
+        animation: None,
+    },
+    Highlight {
+        id: 17,
         title: "Your language",
         text: "Pick one of 51 languages from the flag button in the top bar, or \
                follow your desktop's. Dates and numbers follow it now; the rest of \
