@@ -16,6 +16,7 @@ use gpui::{
 use katna_chrome::{Bar, Environment, window_options};
 use katna_core::Paths;
 use katna_core::ids::MAIL_APP_ID;
+use katna_i18n::tr;
 use katna_store::FolderId;
 use katna_ui::px;
 use katna_ui::scale::desktop_px;
@@ -82,7 +83,7 @@ impl MailWindow {
             if let Err(err) = opened {
                 tracing::warn!("cannot open a message window: {err}");
                 this.update(cx, |this, cx| {
-                    this.show_snackbar("Could not open a new window.", None, cx);
+                    this.show_snackbar(tr!("reader-window-failed"), None, cx);
                 });
             }
         });

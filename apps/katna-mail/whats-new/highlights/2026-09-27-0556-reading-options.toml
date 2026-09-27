@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Read conversations your way"
+text = """
+Settings > General > Reading can show the newest message first, open the
+full headers of every message, and name recipients in full instead of by
+first name.
+"""

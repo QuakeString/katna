@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Settings on a phone"
+text = """
+On a narrow screen Settings and Quick settings fill the window, and
+every menu and popover closes with Escape or a click outside.
+"""

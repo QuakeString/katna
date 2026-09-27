@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Crash reports stay on your computer"
+text = """
+If Katna Mail or its background service crashes, the next start says so,
+with the report to view or copy for a bug report. Settings > User
+feedback lists them.
+"""
