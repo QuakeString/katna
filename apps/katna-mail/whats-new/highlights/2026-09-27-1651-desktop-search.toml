@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Find mail from KRunner and GNOME search"
+text = """
+Type a name in KRunner (Alt+Space) or the Activities search to write to that
+person, copy their address or find their mail. Messages come up when their
+subject or sender has every word you type; start with mail: to search all your
+mail, as in Katna Mail's search box.
+"""
