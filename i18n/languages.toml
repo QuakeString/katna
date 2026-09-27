@@ -1,0 +1,473 @@
+# The languages Katna offers, in the picker's order (docs/ARCHITECTURE.md §13.10).
+#
+# tag:         the setting's value (general.language), BCP 47
+# name:        the language's own name; english: its English name
+# flag:        a flag in apps/katna-mail/assets/flags (ISO 3166 code)
+# translation: the folder under i18n/ with its text (English entries share `en`)
+# formats:     the locale dates and numbers are formatted in
+# rtl:         reads right to left, so the layout mirrors
+# status:      "source", "machine" (drafted by AI, needs a native speaker's
+#              review) or "reviewed"; reviewers: who reviewed it
+
+[[language]]
+tag = "en-IN"
+name = "English (India)"
+english = "English (India)"
+flag = "in"
+translation = "en"
+formats = "en-IN"
+status = "source"
+
+[[language]]
+tag = "en-GB"
+name = "English (UK)"
+english = "English (UK)"
+flag = "gb"
+translation = "en"
+formats = "en-GB"
+status = "source"
+
+[[language]]
+tag = "en-US"
+name = "English (US)"
+english = "English (US)"
+flag = "us"
+translation = "en"
+formats = "en-US"
+status = "source"
+
+[[language]]
+tag = "hi"
+name = "हिन्दी"
+english = "Hindi"
+flag = "in"
+translation = "hi"
+formats = "hi-IN"
+status = "machine"
+
+[[language]]
+tag = "bn"
+name = "বাংলা"
+english = "Bengali"
+flag = "bd"
+translation = "bn"
+formats = "bn-BD"
+status = "machine"
+
+[[language]]
+tag = "ta"
+name = "தமிழ்"
+english = "Tamil"
+flag = "in"
+translation = "ta"
+formats = "ta-IN"
+status = "machine"
+
+[[language]]
+tag = "te"
+name = "తెలుగు"
+english = "Telugu"
+flag = "in"
+translation = "te"
+formats = "te-IN"
+status = "machine"
+
+[[language]]
+tag = "mr"
+name = "मराठी"
+english = "Marathi"
+flag = "in"
+translation = "mr"
+formats = "mr-IN"
+status = "machine"
+
+[[language]]
+tag = "gu"
+name = "ગુજરાતી"
+english = "Gujarati"
+flag = "in"
+translation = "gu"
+formats = "gu-IN"
+status = "machine"
+
+[[language]]
+tag = "kn"
+name = "ಕನ್ನಡ"
+english = "Kannada"
+flag = "in"
+translation = "kn"
+formats = "kn-IN"
+status = "machine"
+
+[[language]]
+tag = "ml"
+name = "മലയാളം"
+english = "Malayalam"
+flag = "in"
+translation = "ml"
+formats = "ml-IN"
+status = "machine"
+
+[[language]]
+tag = "pa"
+name = "ਪੰਜਾਬੀ"
+english = "Punjabi"
+flag = "in"
+translation = "pa"
+formats = "pa-Guru-IN"
+status = "machine"
+
+[[language]]
+tag = "or"
+name = "ଓଡ଼ିଆ"
+english = "Odia"
+flag = "in"
+translation = "or"
+formats = "or-IN"
+status = "machine"
+
+[[language]]
+tag = "as"
+name = "অসমীয়া"
+english = "Assamese"
+flag = "in"
+translation = "as"
+formats = "as-IN"
+status = "machine"
+
+[[language]]
+tag = "ur"
+name = "اردو"
+english = "Urdu"
+flag = "pk"
+translation = "ur"
+formats = "ur-PK"
+rtl = true
+status = "machine"
+
+[[language]]
+tag = "ne"
+name = "नेपाली"
+english = "Nepali"
+flag = "np"
+translation = "ne"
+formats = "ne-NP"
+status = "machine"
+
+[[language]]
+tag = "si"
+name = "සිංහල"
+english = "Sinhala"
+flag = "lk"
+translation = "si"
+formats = "si-LK"
+status = "machine"
+
+[[language]]
+tag = "dz"
+name = "རྫོང་ཁ"
+english = "Dzongkha"
+flag = "bt"
+translation = "dz"
+formats = "dz-BT"
+status = "machine"
+
+[[language]]
+tag = "zh-Hans"
+name = "简体中文"
+english = "Chinese (Simplified)"
+flag = "cn"
+translation = "zh-Hans"
+formats = "zh-Hans-CN"
+status = "machine"
+
+[[language]]
+tag = "zh-Hant"
+name = "繁體中文"
+english = "Chinese (Traditional)"
+flag = "tw"
+translation = "zh-Hant"
+formats = "zh-Hant-TW"
+status = "machine"
+
+[[language]]
+tag = "ja"
+name = "日本語"
+english = "Japanese"
+flag = "jp"
+translation = "ja"
+formats = "ja-JP"
+status = "machine"
+
+[[language]]
+tag = "ko"
+name = "한국어"
+english = "Korean"
+flag = "kr"
+translation = "ko"
+formats = "ko-KR"
+status = "machine"
+
+[[language]]
+tag = "th"
+name = "ไทย"
+english = "Thai"
+flag = "th"
+translation = "th"
+formats = "th-TH"
+status = "machine"
+
+[[language]]
+tag = "vi"
+name = "Tiếng Việt"
+english = "Vietnamese"
+flag = "vn"
+translation = "vi"
+formats = "vi-VN"
+status = "machine"
+
+[[language]]
+tag = "id"
+name = "Bahasa Indonesia"
+english = "Indonesian"
+flag = "id"
+translation = "id"
+formats = "id-ID"
+status = "machine"
+
+[[language]]
+tag = "ms"
+name = "Bahasa Melayu"
+english = "Malay"
+flag = "my"
+translation = "ms"
+formats = "ms-MY"
+status = "machine"
+
+[[language]]
+tag = "fil"
+name = "Filipino"
+english = "Filipino"
+flag = "ph"
+translation = "fil"
+formats = "fil-PH"
+status = "machine"
+
+[[language]]
+tag = "km"
+name = "ខ្មែរ"
+english = "Khmer"
+flag = "kh"
+translation = "km"
+formats = "km-KH"
+status = "machine"
+
+[[language]]
+tag = "my"
+name = "မြန်မာ"
+english = "Burmese"
+flag = "mm"
+translation = "my"
+formats = "my-MM"
+status = "machine"
+
+[[language]]
+tag = "lo"
+name = "ລາວ"
+english = "Lao"
+flag = "la"
+translation = "lo"
+formats = "lo-LA"
+status = "machine"
+
+[[language]]
+tag = "ar"
+name = "العربية"
+english = "Arabic"
+flag = "sa"
+translation = "ar"
+formats = "ar-SA"
+rtl = true
+status = "machine"
+
+[[language]]
+tag = "fa"
+name = "فارسی"
+english = "Persian"
+flag = "ir"
+translation = "fa"
+formats = "fa-IR"
+rtl = true
+status = "machine"
+
+[[language]]
+tag = "he"
+name = "עברית"
+english = "Hebrew"
+flag = "il"
+translation = "he"
+formats = "he-IL"
+rtl = true
+status = "machine"
+
+[[language]]
+tag = "tr"
+name = "Türkçe"
+english = "Turkish"
+flag = "tr"
+translation = "tr"
+formats = "tr-TR"
+status = "machine"
+
+[[language]]
+tag = "ru"
+name = "Русский"
+english = "Russian"
+flag = "ru"
+translation = "ru"
+formats = "ru-RU"
+status = "machine"
+
+[[language]]
+tag = "uk"
+name = "Українська"
+english = "Ukrainian"
+flag = "ua"
+translation = "uk"
+formats = "uk-UA"
+status = "machine"
+
+[[language]]
+tag = "de"
+name = "Deutsch"
+english = "German"
+flag = "de"
+translation = "de"
+formats = "de-DE"
+status = "machine"
+
+[[language]]
+tag = "fr"
+name = "Français"
+english = "French"
+flag = "fr"
+translation = "fr"
+formats = "fr-FR"
+status = "machine"
+
+[[language]]
+tag = "es"
+name = "Español"
+english = "Spanish"
+flag = "es"
+translation = "es"
+formats = "es-ES"
+status = "machine"
+
+[[language]]
+tag = "pt-BR"
+name = "Português (Brasil)"
+english = "Portuguese"
+flag = "br"
+translation = "pt-BR"
+formats = "pt-BR"
+status = "machine"
+
+[[language]]
+tag = "it"
+name = "Italiano"
+english = "Italian"
+flag = "it"
+translation = "it"
+formats = "it-IT"
+status = "machine"
+
+[[language]]
+tag = "nl"
+name = "Nederlands"
+english = "Dutch"
+flag = "nl"
+translation = "nl"
+formats = "nl-NL"
+status = "machine"
+
+[[language]]
+tag = "pl"
+name = "Polski"
+english = "Polish"
+flag = "pl"
+translation = "pl"
+formats = "pl-PL"
+status = "machine"
+
+[[language]]
+tag = "sv"
+name = "Svenska"
+english = "Swedish"
+flag = "se"
+translation = "sv"
+formats = "sv-SE"
+status = "machine"
+
+[[language]]
+tag = "sw"
+name = "Kiswahili"
+english = "Swahili"
+flag = "ke"
+translation = "sw"
+formats = "sw-KE"
+status = "machine"
+
+[[language]]
+tag = "am"
+name = "አማርኛ"
+english = "Amharic"
+flag = "et"
+translation = "am"
+formats = "am-ET"
+status = "machine"
+
+[[language]]
+tag = "ha"
+name = "Hausa"
+english = "Hausa"
+flag = "ng"
+translation = "ha"
+formats = "ha-NG"
+status = "machine"
+
+[[language]]
+tag = "yo"
+name = "Yorùbá"
+english = "Yoruba"
+flag = "ng"
+translation = "yo"
+formats = "yo-NG"
+status = "machine"
+
+[[language]]
+tag = "ig"
+name = "Igbo"
+english = "Igbo"
+flag = "ng"
+translation = "ig"
+formats = "ig-NG"
+status = "machine"
+
+[[language]]
+tag = "zu"
+name = "isiZulu"
+english = "Zulu"
+flag = "za"
+translation = "zu"
+formats = "zu-ZA"
+status = "machine"
+
+[[language]]
+tag = "af"
+name = "Afrikaans"
+english = "Afrikaans"
+flag = "za"
+translation = "af"
+formats = "af-ZA"
+status = "machine"

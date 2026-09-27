@@ -95,6 +95,7 @@ impl MailWindow {
         } else if self.menu.take().is_some()
             || self.files_menu.take().is_some()
             || std::mem::take(&mut self.account_menu)
+            || self.language_picker.take().is_some()
             || self.dismiss_search_panel(window, cx)
         {
             true

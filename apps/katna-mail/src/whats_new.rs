@@ -222,6 +222,15 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 23,
+        title: "Your language",
+        text: "Pick one of 51 languages from the flag button in the top bar, or \
+               follow your desktop's. Dates and numbers follow it now; the rest of \
+               the app is translated over the next updates. The translations were \
+               drafted by AI, and corrections are welcome.",
+        animation: None,
+    },
+    Highlight {
+        id: 24,
         title: "Addresses suggested as you type",
         text: "To, Cc and Bcc suggest the people you write to most as you type, even \
                with a typo. Pick one with the arrow keys and Enter, Tab or a click.",

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Icons built into the binary, served to GPUI's `svg()` element.
+//! Icons built into the binary, served to GPUI's `svg()` element, and the
+//! language picker's flags (`flags/`, from `flag-icons`, MIT), served to
+//! `img()`.
 
 use std::borrow::Cow;
 
@@ -70,6 +72,7 @@ icons!(
     "info",
     "junk",
     "label",
+    "language",
     "link",
     "list-bulleted",
     "list-numbered",
@@ -125,10 +128,38 @@ icons!(
     "zoom-out",
 );
 
+macro_rules! flags {
+    ($($code:literal),* $(,)?) => {
+        const FLAGS: &[(&str, &[u8])] = &[
+            $((concat!("flags/", $code, ".svg"), include_bytes!(concat!("../flags/", $code, ".svg")))),*
+        ];
+    };
+}
+
+flags!(
+    "bd", "br", "bt", "cn", "de", "es", "et", "fr", "gb", "id", "il", "in", "ir", "it", "jp", "ke",
+    "kh", "kr", "la", "lk", "mm", "my", "ng", "nl", "np", "ph", "pk", "pl", "ru", "sa", "se", "th",
+    "tr", "tw", "ua", "us", "vn", "za",
+);
+
+/// The flags are 4:3 with only a view box; GPUI draws an SVG picture at
+/// its own size, so each is given 48 × 36, twice the size it is shown.
+fn flag(data: &[u8]) -> Vec<u8> {
+    let text = String::from_utf8_lossy(data);
+    text.replacen("<svg ", r#"<svg width="48" height="36" "#, 1)
+        .into_bytes()
+}
+
 pub struct Assets;
 
 impl AssetSource for Assets {
     fn load(&self, path: &str) -> gpui::Result<Option<Cow<'static, [u8]>>> {
+        if path.starts_with("flags/") {
+            return Ok(FLAGS
+                .iter()
+                .find(|(name, _)| *name == path)
+                .map(|(_, data)| Cow::Owned(flag(data))));
+        }
         Ok(ICONS
             .iter()
             .find(|(name, _)| *name == path)
@@ -163,5 +194,15 @@ mod tests {
         assert_eq!(files, built_in);
         assert!(Assets.load("icons/star.svg").unwrap().is_some());
         assert!(Assets.load("icons/nope.svg").unwrap().is_none());
+    }
+
+    #[test]
+    fn every_language_has_its_flag() {
+        for language in katna_i18n::picker() {
+            let path = format!("flags/{}.svg", language.flag);
+            let data = Assets.load(&path).unwrap();
+            assert!(data.is_some(), "{path}");
+            assert!(String::from_utf8_lossy(&data.unwrap()).contains(r#"width="48""#));
+        }
     }
 }
