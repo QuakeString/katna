@@ -1330,10 +1330,15 @@ Gemini or confidential mode):
 - **Keyboard shortcuts.** Every action has one (`window/keymap.rs`), with
   Gmail's keys as defaults: j/k, o, u, c, r, a, f, e, #, !, v, s, x,
   Shift+I/U, `* a`, `* n`, z, `g i`/`g s`/`g t`/`g d`/`g a`, /, ?, and Ctrl
-  keys for search, quick settings, reload and quit. The Settings page lists
-  them all; a click on a key (or +) and the new keys change it, a key used
-  elsewhere moves over with a note, and each shortcut or all can go back to
-  the defaults. Keys without Ctrl or Alt only work in the list and the
+  keys for search, quick settings, reload and quit. A shortcut set starts
+  them from another mail app's keys instead, as in Mailspring: Gmail,
+  Inbox by Gmail, Apple Mail (Ctrl for Cmd, Alt for Control), Outlook or
+  Thunderbird (`[shortcuts] set`); an action that app has no key for keeps
+  Katna's. The Settings page lists them all in two columns; a click on a
+  key (or +) and the new keys change it, a key used elsewhere moves over
+  with a note, and each shortcut or all ("Restore defaults") can go back
+  to the set's keys. The user's changes sit on top of the set and survive
+  a change of set. Keys without Ctrl or Alt only work in the list and the
   open conversation, never while typing, and a switch turns them off, as in
   Gmail. Only changes are saved (`[shortcuts.keys]`).
 - **Compose.** A "New Message" window docked at the bottom right, as in

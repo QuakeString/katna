@@ -148,6 +148,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Shortcuts,
+        "Shortcut set",
+        "Start from the keys of Gmail, Inbox by Gmail, Apple Mail, Outlook or Thunderbird",
+        "keyboard keys hotkeys keymap preset outlook thunderbird apple gmail inbox restore defaults",
+    ),
+    entry(
+        Section::Shortcuts,
         "Single-key shortcuts",
         "Keys without Ctrl or Alt, as in webmail",
         "keyboard keys hotkeys",

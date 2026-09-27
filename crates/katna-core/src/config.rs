@@ -513,7 +513,10 @@ pub enum OpenIn {
 pub struct Shortcuts {
     /// Shortcuts without Ctrl or Alt, such as `e` to archive, as in webmail.
     pub single_keys: bool,
-    /// Keys changed from the defaults, by shortcut name (`archive`,
+    /// Whose keys the shortcuts start from: Katna's own or another mail
+    /// app's. [`Shortcuts::keys`] changes them further.
+    pub set: ShortcutSet,
+    /// Keys changed from the set's, by shortcut name (`archive`,
     /// `reply`, ...): each a list of keystrokes such as `ctrl-shift-a` or
     /// `g i`. An empty list turns the shortcut off.
     pub keys: BTreeMap<String, Vec<String>>,
@@ -523,9 +526,25 @@ impl Default for Shortcuts {
     fn default() -> Self {
         Self {
             single_keys: true,
+            set: ShortcutSet::Katna,
             keys: BTreeMap::new(),
         }
     }
+}
+
+/// [`Shortcuts::set`]: the keys of a familiar mail app.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum ShortcutSet {
+    /// Gmail's keys, with the usual desktop keys as well.
+    #[default]
+    Katna,
+    Gmail,
+    InboxByGmail,
+    /// Apple Mail's, with Ctrl for Cmd.
+    AppleMail,
+    Outlook,
+    Thunderbird,
 }
 
 /// [`MailView::reading_pane`].

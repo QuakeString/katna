@@ -202,6 +202,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                and spacing alike, from 75% to 200% on top of your desktop's scale.",
         animation: None,
     },
+    Highlight {
+        id: 21,
+        title: "Shortcuts from the mail app you know",
+        text: "Settings > Shortcuts can start from the keys of Gmail, Inbox by Gmail, \
+               Apple Mail, Outlook or Thunderbird, lists them in two columns, and \
+               Restore defaults takes back your changes.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.

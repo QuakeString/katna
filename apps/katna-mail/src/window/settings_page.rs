@@ -22,7 +22,8 @@ use gpui::{
     ScrollHandle, SharedString, Stateful, Subscription, Task, Window, div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountTabs, Density, FileGroup, OpenIn, ReadingPane, TabStyle, Theme as ThemeChoice,
+    AccountTabs, Density, FileGroup, OpenIn, ReadingPane, ShortcutSet, TabStyle,
+    Theme as ThemeChoice,
 };
 use katna_ui::motion::lerp;
 use katna_ui::px;
@@ -53,6 +54,10 @@ const ONE_LINE: usize = 40;
 const CONTROL_WIDTH: f32 = 300.0;
 /// The same for the keys of a shortcut.
 const KEYS_WIDTH: f32 = 160.0;
+/// A shortcut's name, and the width a column of shortcuts takes before
+/// the next column wraps under it.
+const SHORTCUT_LABEL_WIDTH: f32 = 160.0;
+const SHORTCUT_COLUMN: f32 = 440.0;
 
 /// A part of the page.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1355,9 +1360,17 @@ impl MailWindow {
                             .gap_y(px(4.0))
                             .border_b_1()
                             .border_color(rgba(th.divider))
-                            .child(label_column(LABEL_WIDTH).text_size(px(14.0)).child(s.label))
                             .child(
-                                control_column(KEYS_WIDTH)
+                                div()
+                                    .w(px(SHORTCUT_LABEL_WIDTH))
+                                    .flex_none()
+                                    .text_size(px(14.0))
+                                    .child(s.label),
+                            )
+                            .child(
+                                div()
+                                    .flex_1()
+                                    .min_w(px(KEYS_WIDTH))
                                     .flex()
                                     .flex_row()
                                     .flex_wrap()
@@ -1398,10 +1411,41 @@ impl MailWindow {
                 .child(heading(group.label(), th))
                 .children(rows)
         });
+        let [moving, actions, go_to, app] = groups;
+        // Two columns side by side where there is room, as in Mailspring;
+        // one under the other on a narrow page.
+        let column = || {
+            div()
+                .flex_basis(px(SHORTCUT_COLUMN))
+                .flex_grow(1.0)
+                .min_w_0()
+                .flex()
+                .flex_col()
+        };
+        let columns = div()
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .gap_x(px(40.0))
+            .child(column().child(moving).child(go_to))
+            .child(column().child(actions).child(app));
+        let sets = div().flex().flex_row().flex_wrap().gap(px(6.0)).children(
+            keymap::SETS.iter().enumerate().map(|(n, &(set, name))| {
+                chip(("shortcut-set", n), name.to_owned(), config.set == set, th)
+                    .map(|d| self.page_control(d, th, cx))
+                    .on_click(cx.listener(move |this, _, _, cx| this.choose_shortcut_set(set, cx)))
+            }),
+        );
         let single = config.single_keys;
         div()
             .flex()
             .flex_col()
+            .child(self.row(
+                "Shortcut set",
+                Some("Start from the keys of a mail app you know. Cmd is Ctrl here. Your own changes stay on top of the set, and Restore defaults goes back to the set's keys."),
+                sets,
+                th,
+            ))
             .child(self.row(
                 "Single-key shortcuts",
                 Some("Keys without Ctrl or Alt, as in webmail: e archives, j and k move, / searches. They work in the list and the open conversation, never while typing."),
@@ -1422,15 +1466,21 @@ impl MailWindow {
                             .text_color(rgba(th.text_faint))
                             .child("Click a key to change it, or + to add one, then press the new keys. Esc cancels."),
                     )
-                    .when(changed, |d| {
-                        d.child(
-                            outlined_button("keys-reset-all", "Restore all defaults", th)
-                                .map(|d| self.page_control(d, th, cx))
-                                .on_click(cx.listener(|this, _, _, cx| this.reset_all_keys(cx))),
-                        )
-                    }),
+                    .child(div().flex_1())
+                    .child(
+                        outlined_button("keys-reset-all", "Restore defaults", th)
+                            .map(|d| self.page_control(d, th, cx))
+                            .when(!changed, |d| {
+                                d.text_color(rgba(th.text_faint)).cursor_default()
+                            })
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                if changed {
+                                    this.reset_all_keys(cx)
+                                }
+                            })),
+                    ),
             )
-            .children(groups)
+            .child(columns)
             .into_any_element()
     }
 
@@ -1586,7 +1636,8 @@ impl MailWindow {
     }
 
     fn store_keys(&mut self, name: &str, keys: Vec<String>) {
-        let defaults = keymap::find(name).map(|s| s.defaults).unwrap_or_default();
+        let set = self.config.shortcuts.set;
+        let defaults = keymap::find(name).map_or(&[][..], |s| keymap::set_keys(s, set));
         if keys.iter().map(String::as_str).eq(defaults.iter().copied()) {
             self.config.shortcuts.keys.remove(name);
         } else {
@@ -1597,7 +1648,23 @@ impl MailWindow {
     fn reset_all_keys(&mut self, cx: &mut Context<Self>) {
         self.config.shortcuts.keys.clear();
         self.shortcuts_changed(cx);
-        self.show_snackbar("Every shortcut has its default keys again.", None, cx);
+        self.show_snackbar("Every shortcut has its set's keys again.", None, cx);
+    }
+
+    /// Starts the shortcuts from `set`'s keys; the user's changes stay.
+    fn choose_shortcut_set(&mut self, set: ShortcutSet, cx: &mut Context<Self>) {
+        if self.config.shortcuts.set == set {
+            return;
+        }
+        self.config.shortcuts.set = set;
+        // A change that now matches the set is no change.
+        let changed: Vec<(String, Vec<String>)> = std::mem::take(&mut self.config.shortcuts.keys)
+            .into_iter()
+            .collect();
+        for (name, keys) in changed {
+            self.store_keys(&name, keys);
+        }
+        self.shortcuts_changed(cx);
     }
 
     pub(super) fn shortcuts_changed(&mut self, cx: &mut Context<Self>) {
