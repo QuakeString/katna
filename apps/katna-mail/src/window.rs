@@ -52,6 +52,7 @@ mod settings;
 mod settings_page;
 mod settings_search;
 mod share_ask;
+mod storage;
 mod tab_strip;
 mod tour;
 mod viewer;
@@ -389,6 +390,11 @@ pub struct MailWindow {
     config_path: PathBuf,
     mail: Result<Mail, OpenError>,
     accounts: Vec<Account>,
+    /// How full each account's mail storage is, when its server says.
+    quotas: HashMap<AccountId, katna_store::StorageQuota>,
+    /// The account the storage line last showed, kept while the list
+    /// shows no one account's folder.
+    storage_account: std::cell::Cell<Option<AccountId>>,
     tree: Tree,
     /// Unread mail per folder, counted in the background.
     unread: HashMap<FolderId, u64>,
@@ -623,6 +629,8 @@ impl MailWindow {
             remote: remote::Remote::load(&paths),
             text: select::TextSelection::new(cx),
             accounts: Vec::new(),
+            quotas: HashMap::new(),
+            storage_account: std::cell::Cell::new(None),
             paths,
             config,
             config_path,
@@ -840,6 +848,7 @@ impl MailWindow {
             return;
         };
         self.accounts = mail.accounts();
+        self.quotas = mail.quotas();
         self.config.mail.order_accounts(&mut self.accounts);
         self.tree = Tree::build(&self.accounts, &mail.folders(), &self.unread);
         self.expanded = self.tree.initially_expanded();

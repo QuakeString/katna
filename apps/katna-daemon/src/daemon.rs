@@ -558,6 +558,7 @@ impl Daemon {
             batch.clear_ops(id)?;
             batch.clear_outbox(id)?;
             batch.clear_pop3(id)?;
+            batch.set_quota(id, None, 0)?;
             batch.commit()?;
             store.remove_account(id)?
         };
@@ -1207,6 +1208,11 @@ impl Daemon {
                 Event::AuthFailed(message) => {
                     status.state = state::AUTH_FAILED;
                     status.detail = message;
+                }
+                // The folder pane shows how full the account is.
+                Event::QuotaChanged => {
+                    let _ = self.notices.try_send(Notice::MailChanged(id));
+                    continue;
                 }
             }
             // A removed account's last events must not bring it back.

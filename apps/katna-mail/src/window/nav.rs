@@ -516,6 +516,7 @@ impl MailWindow {
             .child(div().flex_none().h(px(compose_room)))
             .children(head)
             .child(list)
+            .children(self.render_storage(th))
             .children(self.render_drawer_foot(th, cx));
         let scrim_width = shape.width - shape.rail();
         div()

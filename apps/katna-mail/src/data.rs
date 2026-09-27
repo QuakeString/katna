@@ -370,6 +370,15 @@ impl Mail {
         })
     }
 
+    /// How full each account's mail storage is, for the accounts whose
+    /// server reports it.
+    pub fn quotas(&self) -> HashMap<katna_core::AccountId, katna_store::StorageQuota> {
+        self.accounts()
+            .iter()
+            .filter_map(|a| Some((a.id, self.store.quota(a.id).ok()??)))
+            .collect()
+    }
+
     /// The IMAP server of an account, to tell its provider.
     pub fn incoming_host(&self, account: katna_core::AccountId) -> Option<String> {
         let settings = self.store.account_settings(account).ok()??;

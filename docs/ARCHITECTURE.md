@@ -252,6 +252,13 @@ Mail schema v5 (`mail_v5.sql`) adds `pin`: messages pinned to the top of
 their folder's list (§13.5). Pins are Katna's own (IMAP has none), so they
 stay on this computer; a pinned conversation pins each message it had.
 
+Mail schema v6 (`mail_v6.sql`) adds `quota`: how full each account's mail
+storage is, from IMAP QUOTA (`GETQUOTAROOT INBOX`, the STORAGE resource),
+read on each full sync. The foot of the folder pane shows it for the
+account whose folder is open ("34% of 15 GB used"); accounts whose server
+reports no quota show nothing there. Sizes count in 1024s, as providers
+sell storage.
+
 ### 5.4 Shared PIM schema (sketch)
 
 ```sql
