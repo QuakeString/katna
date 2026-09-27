@@ -133,6 +133,9 @@ impl MailWindow {
             .bg(rgba(th.surface))
             .shadow(card_shadow(th, outline))
             .p(px(outline))
+            // GPUI clips to rectangles, so the lines stop short of the
+            // rounded bottom corners rather than showing square ones.
+            .pb(px(radius.max(outline)))
             .on_action(cx.listener(Self::select_next))
             .on_action(cx.listener(Self::select_previous))
             .on_action(cx.listener(Self::select_first))
