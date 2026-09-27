@@ -40,6 +40,7 @@ mod nav;
 mod onboarding;
 mod popovers;
 mod print;
+mod print_preview;
 mod reader;
 mod remote;
 mod reply_row;
@@ -415,6 +416,8 @@ pub struct MailWindow {
     whats_new: Option<whats_new::WhatsNew>,
     /// "Help improve Katna", asked once after an update.
     share_ask: Option<share_ask::ShareAsk>,
+    /// The print preview, before the desktop's print dialog.
+    print_preview: Option<print_preview::PrintPreview>,
     /// Ask it once What's new is closed.
     share_ask_later: bool,
     /// The About Katna dialog.
@@ -591,6 +594,7 @@ impl MailWindow {
             onboarding: None,
             whats_new: None,
             share_ask: None,
+            print_preview: None,
             share_ask_later: false,
             about: None,
             tour: None,
@@ -2382,6 +2386,7 @@ impl Render for MailWindow {
             self.render_share_ask(&th, window, reduce, cx)
         };
         let about = self.render_about(&th, window, reduce, cx);
+        let print_preview = self.render_print_preview(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let crash_notice = if onboarding {
@@ -2438,6 +2443,7 @@ impl Render for MailWindow {
             .children(whats_new)
             .children(share_ask)
             .children(about)
+            .children(print_preview)
             .children(snackbar)
             .children(tour)
             .into_any_element();
