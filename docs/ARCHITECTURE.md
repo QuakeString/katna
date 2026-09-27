@@ -2469,8 +2469,8 @@ Optional. Self-hostable (container image) and offered as a hosted Pro service.
 
 **Implemented (server, `server/katna-server`):** axum + PostgreSQL behind
 Caddy (TLS), shipped as `ghcr.io/quakestring/katna-server` with a compose
-file; the owner runs it on his own server on a separate tracking domain
-(September 2026). Unknown pixel IDs still get the picture; links redirect
+file; the owner runs it on his own server at `server.katna.invenia.in`
+(`katna_core::ids::TRACKING_SERVER_URL`; September 2026). Unknown pixel IDs still get the picture; links redirect
 only to targets stored with the ID (`http`/`https` only). Installs register
 without an account and get a bearer token (stored hashed); limits are 10
 new installs per address per hour and 5000 tracked copies per install per

@@ -50,7 +50,7 @@ It runs as three containers: Katna Server, PostgreSQL and Caddy, which
 gets the TLS certificate.
 
 1. DNS for the tracking domain (a separate domain from the one you send
-   mail from, for example `t.katna.invenia.in`):
+   mail from, for example `server.katna.invenia.in`):
    - `A` record: the server's IPv4 address.
    - `AAAA` record: its IPv6 address, if it has one.
    - Optional `CAA` record `0 issue "letsencrypt.org"`.
@@ -61,7 +61,7 @@ gets the TLS certificate.
    cd server/katna-server
    cp env.example .env      # set KATNA_TRACKING_DOMAIN and POSTGRES_PASSWORD
    docker compose up -d     # or: docker compose up -d --build
-   curl https://t.katna.invenia.in/healthz
+   curl https://server.katna.invenia.in/healthz
    ```
 
 The image is `ghcr.io/quakestring/katna-server`, built by CI from `main`;
