@@ -1155,11 +1155,12 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   in Gmail, on a desktop the search box starts where the mail list does
   with the folders open, and stays there when they fold (it does not
   follow the list). It moves left only when the window is too narrow for
-  that place, and then always sits one gap after Compose, whose width is
-  set for this (whole or folded to its pencil; whole, it is measured from
-  its word in the desktop's font, so the word never clips). The top bar uses that one
-  16 px gap between all its items: menu button, Compose, search box,
-  Settings and account picture. `katna_chrome::Bar` gives the bar a center slot,
+  that place, and then always sits one gap after the app's name, whose
+  width is set for this: the Katna mark, "Katna" and the longest app name,
+  measured in the desktop's font (a narrow tablet, under 760 px, folds the
+  words away and keeps the mark). The top bar uses that one
+  16 px gap between all its items: menu button, the app's name, search
+  box, Settings and account picture. `katna_chrome::Bar` gives the bar a center slot,
   height and background for this.
 - **Navigation.** The folders as full pills, rounded at both ends and
   set 8 px in from the pane's edge (the drawers' lines too). The menu
@@ -1587,11 +1588,20 @@ Gemini or confidential mode):
   Thunderbird) and that LLMs made it possible. On a phone it fills the
   window.
 - **After the first real install.** The owner's first run on KDE brought
-  these changes. Compose sits in the top bar in place of the app name, so
-  it shows whether the folders are open or not; the account picture moved
+  these changes. The account picture moved
   to the top right, beside the settings gear, with its card below it; the
-  search box is 40 px tall, and Compose beside it is as tall (a 40 px
-  square when a narrow tablet folds it to its pencil). The menu button (a panel icon, not a
+  search box is 40 px tall. Compose first sat in the top bar in place of
+  the app name; the owner later moved it (2026-09-27): it is a 56 px
+  pill at the top of the folders, under the account's name when there is
+  one, and while the folders are folded (and always on a tablet or on
+  another app's page) it is a 56 px square at the top of the app rail.
+  It slides between the two as the folders open or fold, while the
+  rail's apps move down to make room, and resting on it in the rail
+  opens the folders over the list, as resting on Mail does (Escape or
+  leaving closes them). The top bar shows the Katna mark and "Katna
+  Mail" in its place, or Katna Calendar, Contacts, Tasks, Notes or
+  Feeds; switching apps rolls the second word, the old one down and out
+  and the new one down into its place. The menu button (a panel icon, not a
   hamburger: its left part is filled while the folders show and fades to
   an outline as they fold, following the drawer on a tablet or phone;
   "Hide folders" / "Show folders") folds the folders away completely; resting on Mail in the
@@ -1791,7 +1801,7 @@ one of three layouts by the width inside the window frame
 | Layout  | Width         | What changes |
 |---------|---------------|--------------|
 | Desktop | 1080 px and up | §13.6 as is. |
-| Tablet  | 600–1080 px   | The folders fold into a drawer the menu button opens over a dimmed list; Compose stays in the top bar beside the menu button (the owner's choice), folding down to its pencil below 760 px; the reading pane (three-pane setting) stays beside the list from 840 px, and narrower the conversation slides in over the list. |
+| Tablet  | 600–1080 px   | The folders fold into a drawer the menu button opens over a dimmed list; Compose is a square at the top of the app rail, and the top bar shows the Katna mark and the app's name beside the menu button, the name folding away below 760 px; the reading pane (three-pane setting) stays beside the list from 840 px, and narrower the conversation slides in over the list. |
 | Phone   | under 600 px  | No app rail: the apps sit in a bar along the bottom. The search box is a pill across the top bar with the menu button and account picture inside it (settings move to the drawer). The list is edge to edge, three lines a message with the sender's picture, which ticks the line when tapped; the inbox tabs move to the drawer. Compose floats at the bottom right; it folds to its pencil as the list scrolls down and grows back after a few steps up (or at the top). The search row and the list toolbar slide up out of sight once the list has scrolled past them, and come back as soon as it turns back up (or at the top); the list keeps still on screen while they move. An open conversation slides in over the list and the bottom bar sinks away; its messages use the room under the sender's picture, from the picture's left edge, and Reply, Reply all and Forward share the width equally. Composing takes a sheet over the whole window. Quick settings and the Settings page each fill the window between the top bar and the bottom bar, with no Compose button over them; the Settings page's section tabs stay on one line that scrolls sideways. |
 
 Settings rows put the name beside the controls and wrap on width alone,

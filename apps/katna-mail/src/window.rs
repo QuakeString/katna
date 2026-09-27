@@ -158,10 +158,10 @@ const NAV_WIDTH: f32 = 256.0;
 /// How far the folder highlight pill (and the drawer's) stays off the
 /// pane's left edge.
 const NAV_ROW_INSET: f32 = 8.0;
-/// The one gap between the top bar's elements: the menu button and
-/// Compose, Compose and the search box (when the window is too narrow for
-/// the box's usual place), the search box and Settings, Settings and the
-/// account picture. The header bar itself spaces its items 6 px apart.
+/// The one gap between the top bar's elements: the menu button and the
+/// app's name, the name and the search box (when the window is too narrow
+/// for the box's usual place), the search box and Settings, Settings and
+/// the account picture. The header bar itself spaces its items 6 px apart.
 const TOP_BAR_GAP: f32 = 16.0;
 const BAR_ITEM_GAP: f32 = 6.0;
 /// The room the language button, Settings and the account picture take at
@@ -172,30 +172,48 @@ const TOP_END_WIDTH: f32 =
     LANGUAGE_BUTTON_WIDTH + TOP_BAR_GAP + 40.0 + TOP_BAR_GAP + 40.0 + 8.0 + BAR_ITEM_GAP;
 /// The language button: its flag and chevron with 8 px either side.
 const LANGUAGE_BUTTON_WIDTH: f32 = 8.0 + 24.0 + 4.0 + 18.0 + 8.0;
-/// The size of the word on the top bar's Compose button.
+/// The size of the word on the Compose button.
 const COMPOSE_TEXT_SIZE: f32 = 14.0;
-/// Where Compose starts on the top bar: the bar's 6 px padding, the menu
-/// button (48 px with a 6 px margin) and the gap after it.
-const COMPOSE_LEFT: f32 = 6.0 + 6.0 + 48.0 + TOP_BAR_GAP;
+/// Compose is as tall as a phone's: a 56 px square in the rail, a pill in
+/// the folder pane.
+const COMPOSE_HEIGHT: f32 = 56.0;
+const COMPOSE_RADIUS: f32 = 16.0;
+/// Where Compose sits in the rail: centred, 8 px from the top.
+const COMPOSE_RAIL_LEFT: f32 = (apps::APP_RAIL_WIDTH - COMPOSE_HEIGHT) / 2.0;
+const COMPOSE_TOP: f32 = 8.0;
+/// The room Compose takes above the folders, with 16 px under it.
+const COMPOSE_NAV_ROOM: f32 = COMPOSE_TOP + COMPOSE_HEIGHT + 16.0;
+/// Where the app's name starts on the top bar: the bar's 6 px padding,
+/// the menu button (48 px with a 6 px margin) and the gap after it.
+const TITLE_LEFT: f32 = 6.0 + 6.0 + 48.0 + TOP_BAR_GAP;
+/// The Katna mark beside the app's name, the gap after it and the size of
+/// the name.
+const TITLE_MARK: f32 = 32.0;
+const TITLE_MARK_GAP: f32 = 10.0;
+const TITLE_TEXT_SIZE: f32 = 22.0;
 
-/// Width of the top bar's Compose button: a 40 px square when folded to
-/// its pencil (`label` 0), the pencil and the word (`text` px wide) when
-/// `label` is 1.
+/// Width of Compose: a square in the rail (`label` 0), the pencil and the
+/// word (`text` px wide) in the folder pane (`label` 1).
 fn compose_width(label: f32, text: f32) -> f32 {
-    lerp(40.0, 16.0 + 24.0 + 12.0 + text + 24.0, label)
+    lerp(COMPOSE_HEIGHT, 16.0 + 24.0 + 12.0 + text + 24.0, label)
 }
 
-/// How wide the word on Compose is drawn in the window's font, so the
-/// button fits it whatever font and size the desktop uses.
-fn compose_text_width(font: Option<&SharedString>, window: &Window) -> f32 {
+/// How wide `text` is drawn in the window's font, so what holds it fits
+/// whatever font and size the desktop uses.
+fn text_width(
+    text: &str,
+    size: f32,
+    weight: FontWeight,
+    font: Option<&SharedString>,
+    window: &Window,
+) -> f32 {
     let mut style = window.text_style().font();
     if let Some(family) = font {
         style.family = family.clone();
     }
-    style.weight = FontWeight::MEDIUM;
-    let label = katna_i18n::tr!("compose");
+    style.weight = weight;
     let run = TextRun {
-        len: label.len(),
+        len: text.len(),
         font: style,
         color: Hsla::default(),
         background_color: None,
@@ -204,9 +222,40 @@ fn compose_text_width(font: Option<&SharedString>, window: &Window) -> f32 {
     };
     let line = window
         .text_system()
-        .shape_line(label.into(), px(COMPOSE_TEXT_SIZE), &[run], None);
+        .shape_line(text.to_owned().into(), px(size), &[run], None);
     unpx(line.width).ceil() + 1.0
 }
+
+fn compose_text_width(font: Option<&SharedString>, window: &Window) -> f32 {
+    text_width(
+        &katna_i18n::tr!("compose"),
+        COMPOSE_TEXT_SIZE,
+        FontWeight::MEDIUM,
+        font,
+        window,
+    )
+}
+
+/// The widths of "Katna" and of the longest app name after it, so the
+/// search box keeps its place whichever app is on show.
+fn title_widths(font: Option<&SharedString>, window: &Window) -> (f32, f32) {
+    let width = |text: &str| text_width(text, TITLE_TEXT_SIZE, FontWeight::NORMAL, font, window);
+    let brand = width(&katna_i18n::tr!("top-brand"));
+    let name = RailApp::ALL
+        .into_iter()
+        .map(|app| width(&app.label()))
+        .fold(0.0, f32::max);
+    (brand, name)
+}
+
+/// Width of the mark and the name on the top bar; the words fold away
+/// as `label` goes to 0.
+fn title_width(label: f32, (brand, name): (f32, f32)) -> f32 {
+    TITLE_MARK + (TITLE_MARK_GAP + brand + TITLE_WORD_GAP + name) * label
+}
+
+/// The space between "Katna" and the app's name.
+const TITLE_WORD_GAP: f32 = 6.0;
 /// Corners of cards that float: menus aside, dialogs and panels.
 const PANEL_RADIUS: f32 = 15.0;
 const SEARCH_WIDTH: f32 = 720.0;
@@ -318,6 +367,14 @@ pub struct MailWindow {
     chrome: WindowChrome,
     /// The app of the rail on show.
     app: RailApp,
+    /// The app whose name rolls away at the top left, and how far the
+    /// new name has rolled in (0 to 1).
+    title_from: RailApp,
+    title_roll: Spring,
+    /// 0 = hidden, 1 = shown: Compose, in the folder pane or the rail.
+    compose_shown: Spring,
+    /// 0 = Compose is in the rail, 1 = over the folders beside the list.
+    compose_dock: Spring,
     people: Option<People>,
     people_task: Option<Task<()>>,
     /// The desktop's UI font, or `None` to leave GPUI's default.
@@ -544,6 +601,10 @@ impl MailWindow {
         let mut this = Self {
             chrome: WindowChrome::new(env, "Katna Mail", window, cx),
             app: RailApp::Mail,
+            title_from: RailApp::Mail,
+            title_roll: Spring::new(motion::SLIDE, 1.0),
+            compose_shown: Spring::new(motion::SMOOTH, 1.0),
+            compose_dock: Spring::new(motion::SLIDE, 1.0),
             people: None,
             people_task: None,
             font,
@@ -2389,6 +2450,24 @@ impl Render for MailWindow {
         }
         // The Settings page stays reachable, for example to delete data.
         let onboarding = self.onboarding() && self.settings_page.is_none();
+        self.compose_shown.set(
+            if self.mail.is_ok() && !self.accounts.is_empty() && !onboarding {
+                1.0
+            } else {
+                0.0
+            },
+        );
+        self.compose_shown.tick(window, reduce);
+        // The other apps have no folders: Compose waits in the rail there.
+        self.compose_dock
+            .set(if self.app == RailApp::Mail && self.nav_docked() {
+                1.0
+            } else {
+                0.0
+            });
+        self.compose_dock.tick(window, reduce);
+        self.title_roll.tick(window, reduce);
+        let compose_text = compose_text_width(self.font.as_ref(), window);
         let content = match &self.mail {
             _ if onboarding => self.render_onboarding(&th, window, cx),
             Err(err) => self.render_error(err, &th),
@@ -2421,7 +2500,14 @@ impl Render for MailWindow {
             .size_full()
             .flex()
             .flex_col()
-            .child(div().flex_1().min_h_0().child(content))
+            .child(
+                div()
+                    .relative()
+                    .flex_1()
+                    .min_h_0()
+                    .child(content)
+                    .children(self.render_compose_button(&th, compose_text, cx)),
+            )
             .children(if onboarding {
                 None
             } else {
@@ -2442,22 +2528,20 @@ impl Render for MailWindow {
 
         // On a desktop the search box stays where the list starts with the
         // folders open, whether they are open or folded, and never moves
-        // with them. On a tablet (Compose beside the menu button, the
-        // folders in a drawer) it starts a clear gap after Compose, and it
+        // with them. On a tablet (the folders in a drawer) it starts a
+        // clear gap after the app's name beside the menu button, and it
         // never comes closer than that. It grows into a pill across the top
         // bar of a phone, under its menu button and account picture.
         let (room_start, room_end) = shape.room;
-        let compose_text = compose_text_width(self.font.as_ref(), window);
-        let after_compose = room_start
-            + COMPOSE_LEFT
-            + compose_width(shape.compose_label(), compose_text)
-            + TOP_BAR_GAP;
+        let titles = title_widths(self.font.as_ref(), window);
+        let after_title =
+            room_start + TITLE_LEFT + title_width(shape.title_label(), titles) + TOP_BAR_GAP;
         let list_left = if shape.is_desktop() {
             shape.rail() + NAV_WIDTH
         } else {
             0.0
         };
-        let search_left = list_left.max(after_compose);
+        let search_left = list_left.max(after_title);
         let regular = (width - search_left - room_end - TOP_END_WIDTH - TOP_BAR_GAP)
             .clamp(200.0, SEARCH_WIDTH);
         let pill = (width - 12.0 - room_start - room_end).max(200.0);
@@ -2553,7 +2637,7 @@ impl Render for MailWindow {
             start: if onboarding {
                 Vec::new()
             } else {
-                self.render_top_start(&th, compose_text, cx)
+                self.render_top_start(&th, titles, cx)
             },
             center: (self.mail.is_ok() && !onboarding).then(|| {
                 div()
