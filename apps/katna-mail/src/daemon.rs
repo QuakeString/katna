@@ -26,6 +26,9 @@ pub enum Command {
     UndoSend(i64),
     /// Has the daemon read the settings file again.
     ReloadConfig,
+    /// These, one after the other: an undo that moves mail back to
+    /// several folders.
+    Several(Vec<Command>),
 }
 
 impl Command {
@@ -49,7 +52,11 @@ impl Command {
             Self::Important(_, false) => tr!("toast-not-important", count = count, kind = kind),
             Self::Pin(_, true) => tr!("toast-pinned", count = count, kind = kind),
             Self::Pin(_, false) => tr!("toast-unpinned", count = count, kind = kind),
-            Self::MarkRead(..) | Self::SyncNow | Self::UndoSend(_) | Self::ReloadConfig => {
+            Self::MarkRead(..)
+            | Self::SyncNow
+            | Self::UndoSend(_)
+            | Self::ReloadConfig
+            | Self::Several(_) => {
                 return None;
             }
         })
@@ -120,11 +127,15 @@ pub async fn send(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::UndoSend(id) => match pim.undo_send(*id).await {
             // The app opens the message again, so the outbox can forget it.
             Ok(true) => pim.discard_send(*id).await.map(|_| ()),
-            Ok(false) => {
-                return Err("Too late to undo: the message is already on its way.".to_owned());
-            }
+            Ok(false) => return Err(katna_i18n::tr!("toast-too-late-to-undo-send")),
             Err(err) => Err(err),
         },
+        Command::Several(commands) => {
+            for command in commands {
+                Box::pin(send(connection, command)).await?;
+            }
+            return Ok(());
+        }
     };
     result.map_err(|err| describe(&err))
 }
