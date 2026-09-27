@@ -102,6 +102,42 @@ fn flags_change_locally_then_on_the_server() {
 }
 
 #[test]
+fn a_move_is_undone_before_the_server_has_it() {
+    let (_tmp, mut store, account, server) = setup_synced();
+    let (inbox, archive) = (
+        folder(&store, account, "INBOX"),
+        folder(&store, account, "Archive"),
+    );
+    let id = message_at(&store, inbox, 0);
+
+    // Archived, then moved back at once (Undo), before any replay.
+    ops::archive_messages(&mut store, &[id]).unwrap();
+    ops::move_messages(&mut store, &[id], inbox).unwrap();
+    assert_eq!(store.messages_in_folder(archive).unwrap().len(), 0);
+    assert!(
+        store
+            .messages_in_folder(inbox)
+            .unwrap()
+            .iter()
+            .any(|m| m.id == id)
+    );
+
+    // The second move takes the UID the first one got on the server.
+    let report = replay(&server, &mut store, account, NOW);
+    assert_eq!((report.done, report.failed), (2, 0));
+    assert!(server.uids("Archive").is_empty());
+    assert_eq!(server.uids("INBOX").len(), 2);
+    assert!(store.due_ops(account, NOW, 10).unwrap().is_empty());
+    let location = store
+        .locations(id)
+        .unwrap()
+        .into_iter()
+        .find(|l| l.folder == inbox)
+        .unwrap();
+    assert!(location.uid.is_some());
+}
+
+#[test]
 fn moves_keep_the_message_when_the_server_reports_uids() {
     let (_tmp, mut store, account, server) = setup_synced();
     let (inbox, archive) = (
