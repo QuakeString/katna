@@ -15,6 +15,7 @@ pub mod document;
 pub mod glance;
 mod ole;
 pub mod pdf;
+mod pdf_text;
 pub mod picture;
 pub mod sheet;
 pub mod slides;

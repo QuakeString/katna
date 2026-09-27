@@ -491,9 +491,17 @@ impl Mail {
         }
     }
 
-    /// `messages` and their other stored copies, with their flags: what a
-    /// flag change must touch so the line shows it (see
-    /// [`Store::with_copies`](katna_store::Store::with_copies)).
+    /// The folders message `id` is stored in, as the daemon lists them.
+    pub fn message_folders(&self, id: MessageId) -> Vec<FolderId> {
+        match self.store.locations(id) {
+            Ok(locations) => locations.into_iter().map(|l| l.folder).collect(),
+            Err(err) => {
+                tracing::warn!("reading where message {} is: {err}", id.0);
+                Vec::new()
+            }
+        }
+    }
+
     /// Where Delete puts `account`'s mail; `None` when it deletes for good.
     pub fn trash_folder(&self, account: AccountId) -> Option<FolderId> {
         self.store.trash_folder(account).unwrap_or_else(|err| {
@@ -502,6 +510,9 @@ impl Mail {
         })
     }
 
+    /// `messages` and their other stored copies, with their flags: what a
+    /// flag change must touch so the line shows it (see
+    /// [`Store::with_copies`](katna_store::Store::with_copies)).
     pub fn with_copies(&self, messages: &[MessageId]) -> Vec<(MessageId, MessageFlags)> {
         self.store.with_copies(messages).unwrap_or_else(|err| {
             tracing::warn!("reading copies of messages: {err}");

@@ -20,6 +20,8 @@ i18n/
     settings.ftl            the Settings page
     …
   en/katna-ui.ftl         shared widgets
+  en/katna-daemon/        the background service: notifications, the
+                          tray icon
   bn/katna-mail/          Bengali, the same files
   ar/katna-mail/          Arabic
   …
@@ -63,8 +65,9 @@ ago-hours = { $count ->
 To see your change in Katna before sending it, put the file in
 `~/.local/share/katna/i18n/<folder>/` (for example
 `~/.local/share/katna/i18n/bn/katna-mail/list.ftl`) and restart Katna
-Mail. It
-is loaded over the built-in text, message by message.
+Mail (for `katna-daemon/` files, the service too:
+`systemctl --user restart katna-daemon`). It is loaded over the built-in
+text, message by message.
 
 Once a native speaker has reviewed a whole language, its entry in
 `languages.toml` changes from `status = "machine"` to `"reviewed"` with

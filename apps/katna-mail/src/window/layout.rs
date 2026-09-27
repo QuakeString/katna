@@ -39,8 +39,9 @@ pub(super) const TABLET_SPLIT_FROM: f32 = 840.0;
 const HYSTERESIS: f32 = 12.0;
 /// The bar with the apps along the bottom of a phone-sized window.
 pub(super) const BOTTOM_BAR_HEIGHT: f32 = 72.0;
-/// A tablet narrower than this shows Compose as its pencil alone.
-const COMPOSE_FOLD_BELOW: f32 = 760.0;
+/// A tablet narrower than this shows the Katna mark alone at the top left,
+/// without the app's name.
+const TITLE_FOLD_BELOW: f32 = 760.0;
 /// A phone's Compose button folds to its pencil once the list has scrolled
 /// down this far in one go, and grows back after this far up.
 const FAB_FOLD_AFTER: f32 = 24.0;
@@ -103,7 +104,7 @@ pub(super) struct Shape {
     /// The width inside the window frame.
     pub width: f32,
     pub phone: f32,
-    /// How much of the word "Compose" shows on the top bar's button.
+    /// How much of the app's name shows beside the mark on the top bar.
     pub label: f32,
     /// Where the conversation is when it slides over the list: 0 = the
     /// list, 1 = the conversation.
@@ -149,12 +150,12 @@ impl Shape {
 
     /// The margin around the cards, which a phone does without.
     pub(super) fn card_margin(&self) -> f32 {
-        16.0 * (1.0 - self.phone)
+        super::CARD_GAP * (1.0 - self.phone)
     }
 
-    /// How much of the word "Compose" the top bar's button shows: all of
-    /// it on a desktop and a wide tablet, folding away as a tablet narrows.
-    pub(super) fn compose_label(&self) -> f32 {
+    /// How much of the app's name the top bar shows: all of it on a
+    /// desktop and a wide tablet, folding away as a tablet narrows.
+    pub(super) fn title_label(&self) -> f32 {
         self.label
     }
 
@@ -273,9 +274,9 @@ impl MailWindow {
             .set(if size == Size::Phone { 1.0 } else { 0.0 });
         let labelled = layout.label.target() > 0.5;
         let fold_below = if labelled {
-            COMPOSE_FOLD_BELOW - HYSTERESIS
+            TITLE_FOLD_BELOW - HYSTERESIS
         } else {
-            COMPOSE_FOLD_BELOW + HYSTERESIS
+            TITLE_FOLD_BELOW + HYSTERESIS
         };
         layout
             .label

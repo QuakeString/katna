@@ -10,6 +10,7 @@ use std::time::Duration;
 use async_channel::{Receiver, Sender};
 use katna_core::{Paths, config::General, ids};
 use katna_dbus::app_action;
+use katna_i18n::tr;
 use katna_platform::dbusmenu::MenuItem;
 use katna_platform::launcher::LauncherEntry;
 use katna_platform::tray::{self, Tray};
@@ -66,26 +67,22 @@ pub(crate) fn inbox_unread(store: &Store) -> katna_store::Result<u64> {
         .sum())
 }
 
-/// The tray's right-click menu.
+/// The tray's right-click menu, in the current language.
 fn tray_menu() -> Vec<MenuItem> {
     vec![
-        MenuItem::action("Open _Inbox", app_action::OPEN_INBOX).icon("mail-folder-inbox"),
-        MenuItem::action("_New Message", app_action::COMPOSE).icon("mail-message-new"),
+        MenuItem::action(tr!("tray-open-inbox"), app_action::OPEN_INBOX).icon("mail-folder-inbox"),
+        MenuItem::action(tr!("tray-new-message"), app_action::COMPOSE).icon("mail-message-new"),
         MenuItem::Separator,
-        MenuItem::action("_Preferences", app_action::PREFERENCES)
+        MenuItem::action(tr!("tray-preferences"), app_action::PREFERENCES)
             .icon("preferences-system-symbolic"),
         MenuItem::Separator,
-        MenuItem::action("_Quit", app_action::QUIT).icon("application-exit"),
+        MenuItem::action(tr!("tray-quit"), app_action::QUIT).icon("application-exit"),
     ]
 }
 
 /// The tooltip's second line.
 fn status_line(count: u64) -> String {
-    match count {
-        0 => "No unread mail".to_owned(),
-        1 => "1 unread message".to_owned(),
-        n => format!("{n} unread messages"),
-    }
+    tr!("tray-unread", count = count)
 }
 
 /// Keeps the badge and the tray up to date until `events` closes. The
@@ -109,9 +106,14 @@ pub(crate) async fn run(
     let mut tray: Option<Tray> = None;
     let mut count = None;
     let mut dirty = true;
+    // The language the tray's menu and tooltip are in.
+    let mut language = general.language.clone();
     loop {
-        if follow_setting(&connection, &handle, &mut tray, &general).await {
-            // A new tray icon shows no count yet.
+        // A new tray icon shows no count yet; after a new language, the
+        // tooltip is in the old one.
+        let appeared = follow_setting(&connection, &handle, &mut tray, &general).await;
+        let translated = follow_language(tray.as_ref(), &general, &mut language).await;
+        if appeared || translated {
             count = None;
             dirty = true;
         }
@@ -123,7 +125,9 @@ pub(crate) async fn run(
                     return;
                 }
             }
-            if follow_setting(&connection, &handle, &mut tray, &general).await {
+            let appeared = follow_setting(&connection, &handle, &mut tray, &general).await;
+            let translated = follow_language(tray.as_ref(), &general, &mut language).await;
+            if appeared || translated {
                 count = None;
             }
             let paths = paths.clone();
@@ -173,6 +177,22 @@ async fn follow_setting(
         tracing::warn!(%err, "could not hide the tray icon");
     }
     false
+}
+
+/// Rebuilds the tray's menu when `general.language` is no longer
+/// `language`, which the daemon has applied already
+/// (`Daemon::reload_config`); `true` when the tooltip must be set again.
+async fn follow_language(tray: Option<&Tray>, general: &General, language: &mut String) -> bool {
+    if general.language == *language {
+        return false;
+    }
+    language.clone_from(&general.language);
+    if let Some(tray) = tray
+        && let Err(err) = tray.set_menu(tray_menu()).await
+    {
+        tracing::warn!(%err, "could not translate the tray menu");
+    }
+    true
 }
 
 /// Handles an event while counting is on hold; `false` after Quit.

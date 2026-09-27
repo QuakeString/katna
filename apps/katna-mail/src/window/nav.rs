@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The top bar (menu, Compose, search box, settings, account) and the
-//! navigation with the folders, which folds away.
+//! The top bar (menu, the app's name, search box, settings, account), the
+//! navigation with the folders, which folds away, and Compose, which sits
+//! over the folders and moves into the app rail when they fold.
 
 use std::ops::Range;
 
@@ -13,6 +14,7 @@ use katna_ui::Ripple;
 use katna_ui::motion::{self, lerp};
 use katna_ui::px;
 
+use super::apps::APP_RAIL_WIDTH;
 use super::tour::Spot;
 use super::{
     Compose, FocusSearch, Hover, Listing, MailWindow, NAV_ROW_INSET, NAV_WIDTH, PANEL_RADIUS,
@@ -24,21 +26,22 @@ use katna_i18n::tr;
 use crate::format;
 use crate::sidebar::{self, Role};
 use crate::theme::{Theme, fade, mix};
-use crate::widgets::{elevation, icon, icon_button, icon_button_colored, tip};
+use crate::widgets::{elevation, icon, icon_button, icon_button_colored, katna_mark, tip};
 
 const NAV_ROW_HEIGHT: f32 = 32.0;
 const SEARCH_HEIGHT: f32 = 40.0;
-const COMPOSE_RADIUS: f32 = 12.0;
+/// The line the app's name rolls through on the top bar.
+const TITLE_LINE: f32 = 28.0;
 
 impl MailWindow {
     pub(super) fn render_top_start(
         &self,
         th: &Theme,
-        compose_text: f32,
+        titles: (f32, f32),
         cx: &mut Context<Self>,
     ) -> Vec<AnyElement> {
-        // Compose sits beside the menu button on a desktop and a tablet;
-        // a phone has it floating over the list.
+        // The mark and the app's name sit beside the menu button on a
+        // desktop and a tablet; a phone has its search pill there.
         let shown = 1.0 - self.layout.shape.phone;
         // How far the folders show: docked beside the list on a desktop,
         // or a phone's or tablet's drawer.
@@ -96,65 +99,170 @@ impl MailWindow {
                     ),
             )
             .into_any_element();
-        // A narrow tablet folds Compose down to its pencil, so the search
-        // box keeps its room.
-        let label = self.layout.shape.compose_label();
-        let compose = div()
-            .id("compose")
-            .relative()
-            .ml(px(super::TOP_BAR_GAP - super::BAR_ITEM_GAP))
-            // As tall as the search box beside it; folded, a square. A set
-            // width, so the search box can keep an exact gap after it.
-            .h(px(SEARCH_HEIGHT))
-            .w(px(super::compose_width(label, compose_text)))
-            .flex_none()
-            .flex()
-            .flex_row()
-            .items_center()
-            .rounded(px(COMPOSE_RADIUS))
-            .bg(rgba(th.compose))
-            .text_color(rgba(th.compose_text))
-            .hover(|s| s.shadow(elevation(th, 1.5)))
-            .cursor_pointer()
-            .on_mouse_move(|_, _, cx| cx.stop_propagation())
-            .when(label < 0.5, |d| d.tooltip(tip(tr!("compose"), th)))
-            .on_click(cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)))
-            .child(Ripple::new("compose-ripple", rgba(th.ripple)).rounded(COMPOSE_RADIUS))
-            .child(self.tour_mark(Spot::Compose))
-            .child(div().pl(px(lerp(8.0, 16.0, label))).child(icon(
-                "compose",
-                th.compose_text,
-                24.0,
-            )))
-            .child(
-                div()
-                    .pl(px(12.0 * label))
-                    .max_w(px((12.0 + compose_text) * label))
-                    .min_w_0()
-                    .overflow_hidden()
-                    .opacity(label)
-                    .text_size(px(super::COMPOSE_TEXT_SIZE))
-                    .font_weight(FontWeight::MEDIUM)
-                    .whitespace_nowrap()
-                    .child(tr!("compose")),
-            )
-            .into_any_element();
         let mut start = vec![menu];
-        if self.mail.is_ok() && !self.accounts.is_empty() && shown > 0.001 {
+        if shown > 0.001 {
+            let label = self.layout.shape.title_label();
             start.push(
                 div()
                     .flex_none()
-                    // Clipped only while it grows or shrinks: a clip would
-                    // cut the hover shadow into a square.
-                    .when(shown < 0.999, |d| {
-                        d.max_w(px(200.0 * shown)).overflow_hidden()
-                    })
+                    .ml(px(super::TOP_BAR_GAP - super::BAR_ITEM_GAP))
+                    .w(px(super::title_width(label, titles) * shown))
+                    .overflow_hidden()
                     .opacity(shown)
-                    .child(compose)
+                    .child(self.render_title(th, label, titles))
                     .into_any_element(),
             );
         }
         start
+    }
+
+    /// The Katna mark, "Katna" and the app's name. Switching apps rolls
+    /// the name: the old one rolls down and out, the new one down into
+    /// its place. A narrow tablet folds the words away, so the search box
+    /// keeps its room.
+    fn render_title(&self, th: &Theme, label: f32, (brand, name): (f32, f32)) -> AnyElement {
+        let roll = self.title_roll.value();
+        let word = |app: super::RailApp, top: f32, opacity: f32| {
+            div()
+                .absolute()
+                .left_0()
+                .top(px(top))
+                .h(px(TITLE_LINE))
+                .whitespace_nowrap()
+                .opacity(opacity.clamp(0.0, 1.0))
+                .child(app.label())
+        };
+        let rolling = roll < 0.999 && self.title_from != self.app;
+        div()
+            .h(px(super::TOP_BAR_HEIGHT))
+            .flex()
+            .flex_row()
+            .items_center()
+            .child(katna_mark(super::TITLE_MARK))
+            .child(
+                div()
+                    .flex_none()
+                    .pl(px(super::TITLE_MARK_GAP * label))
+                    .w(px((super::TITLE_MARK_GAP
+                        + brand
+                        + super::TITLE_WORD_GAP
+                        + name)
+                        * label))
+                    .overflow_hidden()
+                    .opacity(label)
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .text_size(px(super::TITLE_TEXT_SIZE))
+                    .line_height(px(TITLE_LINE))
+                    .text_color(rgba(th.text_dim))
+                    .child(
+                        div()
+                            .flex_none()
+                            .whitespace_nowrap()
+                            .child(tr!("top-brand")),
+                    )
+                    .child(
+                        div()
+                            .relative()
+                            .flex_none()
+                            .ml(px(super::TITLE_WORD_GAP))
+                            .w(px(name))
+                            .h(px(TITLE_LINE))
+                            .overflow_hidden()
+                            .when(rolling, |d| {
+                                d.child(word(self.title_from, TITLE_LINE * roll, 1.0 - roll))
+                            })
+                            .child(word(
+                                self.app,
+                                -TITLE_LINE * (1.0 - roll),
+                                if rolling { roll } else { 1.0 },
+                            )),
+                    ),
+            )
+            .into_any_element()
+    }
+
+    /// Compose: a pill at the top of the folders while they are open
+    /// beside the list, a square at the top of the app rail while they are
+    /// folded, in a tablet's drawer, or on another app's page. It slides
+    /// between the two as the folders open or fold, and the rail's apps
+    /// move down to make room.
+    pub(super) fn render_compose_button(
+        &self,
+        th: &Theme,
+        text: f32,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let shape = self.layout.shape;
+        let shown = self.compose_shown.value().clamp(0.0, 1.0) * (1.0 - shape.phone);
+        if shown <= 0.001 {
+            return None;
+        }
+        // 0 = in the rail, 1 = over the folders.
+        let dock = self.compose_dock.value().clamp(0.0, 1.0);
+        let left = lerp(
+            super::COMPOSE_RAIL_LEFT,
+            APP_RAIL_WIDTH + NAV_ROW_INSET,
+            dock,
+        ) - APP_RAIL_WIDTH * shape.phone;
+        let top = super::COMPOSE_TOP + self.nav_header() * dock;
+        Some(
+            div()
+                .id("compose")
+                .absolute()
+                .left(px(left))
+                .top(px(top))
+                .h(px(super::COMPOSE_HEIGHT))
+                .w(px(super::compose_width(dock, text)))
+                .opacity(shown)
+                .flex()
+                .flex_row()
+                .items_center()
+                .overflow_hidden()
+                .rounded(px(super::COMPOSE_RADIUS))
+                .bg(rgba(th.compose))
+                .text_color(rgba(th.compose_text))
+                .hover(|s| s.shadow(elevation(th, 1.5)))
+                .cursor_pointer()
+                // In the rail, resting on it opens the folded folders over
+                // the list, as resting on Mail does.
+                .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
+                    this.hover_navigation(Hover::Rail, *hovered, cx)
+                }))
+                .on_click(cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)))
+                .child(
+                    Ripple::new("compose-ripple", rgba(th.ripple)).rounded(super::COMPOSE_RADIUS),
+                )
+                .child(self.tour_mark(Spot::Compose))
+                .child(
+                    div()
+                        .flex_none()
+                        .pl(px(16.0))
+                        .child(icon("compose", th.compose_text, 24.0)),
+                )
+                .child(
+                    div()
+                        .flex_none()
+                        .pl(px(12.0))
+                        .opacity(dock * dock)
+                        .text_size(px(super::COMPOSE_TEXT_SIZE))
+                        .font_weight(FontWeight::MEDIUM)
+                        .whitespace_nowrap()
+                        .child(tr!("compose")),
+                )
+                .into_any_element(),
+        )
+    }
+
+    /// The height of the account's name over the folders, when there is
+    /// one: Compose sits under it.
+    fn nav_header(&self) -> f32 {
+        if matches!(self.nav_rows.first(), Some(sidebar::Row::Account { .. })) {
+            NAV_ROW_HEIGHT
+        } else {
+            0.0
+        }
     }
 
     pub(super) fn render_search(
@@ -356,13 +464,19 @@ impl MailWindow {
         } else {
             NAV_WIDTH
         };
+        // The account's name heads the folders, with Compose under it
+        // while they are open beside the list; the folders scroll below.
+        let skip = usize::from(self.nav_header() > 0.0);
+        let head = (skip > 0).then(|| self.render_nav_row(0, th, cx));
+        let compose_room =
+            super::COMPOSE_NAV_ROOM * reserve.min(1.0) * self.compose_shown.value().clamp(0.0, 1.0);
         let list = uniform_list(
             "navigation",
-            self.nav_rows.len(),
-            cx.processor(|this, range: Range<usize>, window, cx| {
+            self.nav_rows.len() - skip,
+            cx.processor(move |this, range: Range<usize>, window, cx| {
                 let th = this.theme(window);
                 range
-                    .map(|ix| this.render_nav_row(ix, &th, cx))
+                    .map(|ix| this.render_nav_row(ix + skip, &th, cx))
                     .collect::<Vec<_>>()
             }),
         )
@@ -399,6 +513,8 @@ impl MailWindow {
                 this.hover_navigation(Hover::Panel, *hovered, cx)
             }))
             .children(self.render_drawer_head(th, cx))
+            .children(head)
+            .child(div().flex_none().h(px(compose_room)))
             .child(list)
             .children(self.render_drawer_foot(th, cx));
         let scrim_width = shape.width - shape.rail();

@@ -3,6 +3,12 @@
 # In plural forms, write { $count } rather than the digit, so languages
 # with their own digits show them.
 
+## Top bar
+
+# The brand before the app's name at the top left: "Katna" + "Mail",
+# "Katna" + "Contacts" and so on. Keep it as Katna.
+top-brand = Katna
+
 ## App rail (and the bottom bar on a phone)
 
 rail-mail = Mail
