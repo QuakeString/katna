@@ -252,6 +252,13 @@ Mail schema v5 (`mail_v5.sql`) adds `pin`: messages pinned to the top of
 their folder's list (§13.5). Pins are Katna's own (IMAP has none), so they
 stay on this computer; a pinned conversation pins each message it had.
 
+Mail schema v6 (`mail_v6.sql`) adds `quota`: how full each account's mail
+storage is, from IMAP QUOTA (`GETQUOTAROOT INBOX`, the STORAGE resource),
+read on each full sync. The foot of the folder pane shows it for the
+account whose folder is open ("34% of 15 GB used"); accounts whose server
+reports no quota show nothing there. Sizes count in 1024s, as providers
+sell storage.
+
 ### 5.4 Shared PIM schema (sketch)
 
 ```sql
@@ -263,6 +270,8 @@ contact          (id, display_name, vcard_uid, notes)
 contact_address  (contact_id, email_norm)
 org_member       (org_id, contact_id)
 suggestion       (id, kind, payload_json, state)          -- pending | accepted | dismissed
+template         (id, name, subject, html, text, updated_at)   -- mail templates (v2)
+template_attachment (template_id, position, name, mime, data)
 meta             (object_kind, object_id, plugin, value_json, version,
                   expires_at NULL, dirty BOOL)            -- see §10
 ```
@@ -1040,7 +1049,17 @@ depend on `<style>` sheets turn out to matter.
   In plain text mode only the text part goes.
 - Spell check with `spellbook` and the system's Hunspell dictionaries
   (`spell.rs`); added words are kept in `$XDG_CONFIG_HOME/katna/dictionary`.
-- Templates later.
+- Templates (`window/compose/templates.rs`, `window/settings_page/templates.rs`):
+  the compose bar's Templates button lists them, puts one in (its text
+  replaces the empty lines above the signature, or goes at the cursor; its
+  subject fills an empty one; its files join the attachments) and saves
+  the message as one (same name replaces). `{first name}`, `{name}` and
+  `{my name}` are filled from the first recipient and the sender when it
+  is put in, and again on Send for a recipient added later
+  (`templates.rs`). Settings > Compose edits, renames and deletes them.
+  They live in `pim.db` (subject, HTML with pictures as `data:` URIs,
+  plain text, attachments as BLOBs, 20 MB at most), written by the daemon
+  (`SaveTemplate`, `DeleteTemplate`) and read by the app from the store.
 
 ## 13. UI
 
@@ -1401,8 +1420,8 @@ Gemini or confidential mode):
   Important markers, message width, dark colors for HTML mail, attachment
   previews), Shortcuts, Default apps (where each kind of attachment
   opens, and showing saved files in their folder), Folders & rules,
-  Compose (signatures, plain text, spelling and its language, templates
-  to come), MCP server, User feedback (turning crash reports and feedback off at any
+  Compose (signatures, plain text, spelling and its language,
+  templates), MCP server, User feedback (turning crash reports and feedback off at any
   time) and Experimental, always last. Subscription, Folders & rules and
   MCP server are still to come: their tabs are fainter and each shows a
   "Coming soon" page saying what it will do. The tabs always stay on one line (`window/tab_strip.rs`): when
@@ -2247,7 +2266,9 @@ on)` (local only; more than ten pinned conversations is an error),
 `DeleteMessages(ax)`, `ArchiveMessages(ax)`, `QueueSend(x account, ay
 message, u delay) → id`, `UndoSend(id) → b`, `DiscardSend(id) → b`,
 `Outbox() → a(xxxsxss)` (id, account, message, subject, send at, state,
-detail; states in `katna_dbus::send_state`), `FetchImage(url) → ay` and
+detail; states in `katna_dbus::send_state`), `SaveTemplate((xssssa(ssay)))
+→ x`, `RenameTemplate(id, name) → b`, `DeleteTemplate(id) → b` (mail
+templates in `pim.db`; apps read them from the store), `FetchImage(url) → ay` and
 `SenderPicture(address) → ay` (images for the reading pane, §12), and the
 signals
 `AccountsChanged`, `SyncStatusChanged(id)`, `MailChanged(id)` and
@@ -2398,6 +2419,18 @@ Served by the daemon, pure Rust, from the same search index.
 | Organization | name, alias | Open organization view |
 | Event | title, attendees, location | Open event |
 
+As built (`apps/katna-daemon/src/desktop_search.rs`): people come from the
+addresses in the mail (the recipient-suggestion `ContactBook`, read in the
+background 20 s after start and again when mail changed, at most every 10
+minutes). Mail shows only when every word (three letters or more) starts a
+word of its subject or sender, outside Trash and Spam, one message per
+conversation; `mail:` runs the search box's query instead. Enter on a
+person writes to them (a `mailto:` link to Katna Mail); KRunner's buttons
+are Reply all on mail, Copy address (through Klipper) and Find mail on
+people. GNOME's "search in app" opens Katna Mail with the words in its
+search box (app action `search`). Organization results come with Phase 2.
+Answers take a few milliseconds on 60,000 messages.
+
 Flatpak: KRunner D-Bus runners are designed to work with sandboxed apps;
 verify that Flatpak exports the `krunner/dbusplugins` file. Distro
 packages install it directly.
@@ -2478,6 +2511,15 @@ logic lives there.
 
 Optional. Self-hostable (container image) and offered as a hosted Pro service.
 
+Where a feature lives (owner, 27 September 2026): first the mail
+service's own feature when Katna can reach it over the protocols it speaks
+(IMAP, SMTP, Sieve, CardDAV, later JMAP; for example SMTP FUTURERELEASE for
+send later); otherwise locally in `katna-daemon`; Katna Server only for
+what can work neither way (open and link tracking, translation, Katna
+accounts). The server never holds mail logins or tokens; send later,
+snooze and reminders without server support run while the computer is on.
+Plan: `IMPLEMENTATION_PLAN.md` Phase 7.
+
 | Function | Needs user mail credentials? |
 |---|---|
 | Open/link tracking + event stream | No |
@@ -2508,6 +2550,22 @@ Optional. Self-hostable (container image) and offered as a hosted Pro service.
   (MDN) are offered as a consent-based alternative.
 - Tracking events arrive at the daemon over the server's event stream and
   can raise notifications ("Acme opened *Proposal v2*").
+
+**Implemented (server, `server/katna-server`):** axum + PostgreSQL behind
+Caddy (TLS), shipped as `ghcr.io/quakestring/katna-server` with a compose
+file; the owner runs it on his own server at `server.katna.invenia.in`
+(`katna_core::ids::TRACKING_SERVER_URL`; September 2026). Unknown pixel IDs still get the picture; links redirect
+only to targets stored with the ID (`http`/`https` only). Installs register
+without an account and get a bearer token (stored hashed); limits are 10
+new installs per address per hour and 5000 tracked copies per install per
+day. Each event is labelled `person`, `apple_proxy` (Apple's network or a
+bare `Mozilla/5.0` agent) or `scanner` (`HEAD`, bot-like agents, opens
+within 5 s or clicks within 30 s of sending); the address and user agent
+are read for the label and never stored. Events stream to the daemon as
+server-sent events numbered in order, resumed with `Last-Event-ID`.
+Everything is deleted after 180 days, and an install can delete its data.
+One server process (events are ordered within it). The API is in
+`server/katna-server/README.md`.
 
 ### 16.2 Stack
 

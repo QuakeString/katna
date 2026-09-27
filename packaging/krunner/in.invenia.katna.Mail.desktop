@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# KRunner plugin: Katna's mail and contacts in KRunner, served by
+# katna-daemon over D-Bus (docs/ARCHITECTURE.md §15.3). Installed in
+# /usr/share/krunner/dbusplugins/.
+[Desktop Entry]
+Type=Service
+Name=Katna Mail
+Comment=Mail and contacts from Katna Mail
+Icon=in.invenia.katna.Mail
+X-KDE-ServiceTypes=Plasma/Runner
+X-KDE-PluginInfo-Name=in.invenia.katna.Mail
+X-KDE-PluginInfo-Author=Mozammel Hossain
+X-KDE-PluginInfo-License=GPL-3.0-or-later
+X-KDE-PluginInfo-EnabledByDefault=true
+X-Plasma-API=DBus
+X-Plasma-API-Minimum-Version=2.0
+X-Plasma-DBusRunner-Service=in.invenia.katna.Daemon
+X-Plasma-DBusRunner-Path=/in/invenia/katna/Daemon/Runner
+X-Plasma-Request-Actions-Once=true
+X-Plasma-Runner-Min-Letter-Count=3

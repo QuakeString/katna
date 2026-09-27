@@ -7,7 +7,7 @@
 //! delete all data), Appearance (reading pane, density, theme, pictures),
 //! Shortcuts (every one, each can be changed by pressing the new keys),
 //! Default apps (where each kind of attachment opens), Compose (signatures,
-//! with defaults for new mail and replies), User feedback (crash reports
+//! with defaults for new mail and replies, and templates), User feedback (crash reports
 //! and feedback) and Experimental, with pages for
 //! the tabs still to come. The top bar's search box finds settings while
 //! the page is open (`settings_search.rs`). Changes apply at once and are
@@ -42,6 +42,8 @@ use crate::tabs::{self, Provider};
 use crate::theme::Theme;
 use crate::widgets::{FocusRing, TabStops, icon, icon_button, outlined_button, tip};
 
+mod templates;
+
 /// A signature edit is saved this long after the last key.
 const SAVE_DELAY: Duration = Duration::from_millis(600);
 /// After a key without Ctrl or Alt, wait this long for a second one, as in
@@ -73,7 +75,7 @@ pub(super) enum Section {
     DefaultApps,
     /// Folders & rules: folders and labels, and mail rules.
     MailRules,
-    /// Compose: signatures, and templates to come.
+    /// Compose: signatures and templates.
     Signatures,
     McpServer,
     Feedback,
@@ -118,6 +120,8 @@ pub(super) struct SettingsPage {
     pub(super) section: Section,
     /// The signature being edited, with its editors.
     editing: Option<SignatureEditor>,
+    /// The template being edited in Settings > Compose.
+    template: Option<templates::TemplateEditor>,
     save: Option<Task<()>>,
     recording: Option<Recording>,
     pub(super) scroll: ScrollHandle,
@@ -204,6 +208,7 @@ impl MailWindow {
         let page = self.settings_page.get_or_insert_with(|| SettingsPage {
             section,
             editing: None,
+            template: None,
             save: None,
             recording: None,
             scroll: scroll.clone(),
@@ -241,6 +246,7 @@ impl MailWindow {
                 .filter(|id| self.config.sending.signature(Some(*id)).is_some())
                 .or(first);
             self.edit_signature(editing, window, cx);
+            self.load_templates(cx);
         }
         self.card_seq += 1;
         cx.notify();
@@ -1797,12 +1803,7 @@ impl MailWindow {
                 self.spelling_choice(th, cx),
                 th,
             ))
-            .child(self.row(
-                tr!("settings-compose-templates"),
-                Some(&tr!("settings-compose-templates-detail")),
-                div().flex().child(super::settings_search::coming_pill(th)),
-                th,
-            ))
+            .child(self.templates_row(th, cx))
             .into_any_element()
     }
 

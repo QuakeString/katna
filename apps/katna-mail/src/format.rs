@@ -72,16 +72,30 @@ pub fn thousands(n: u64) -> String {
 
 /// A byte size such as `12 KB`, as file managers show it (powers of 1000).
 pub fn size(bytes: u64) -> String {
-    if bytes < 1000 {
+    sized(bytes, 1000.0, false)
+}
+
+/// A mail storage size, counted as the providers sell it: a "15 GB"
+/// plan holds 15 × 1024³ bytes, so it reads "15 GB" here too, not
+/// "15.0 GB".
+pub fn storage_size(bytes: u64) -> String {
+    sized(bytes, 1024.0, true)
+}
+
+/// `bytes` in steps of `step`, with one decimal under 10 unless `trim`
+/// drops a ".0".
+fn sized(bytes: u64, step: f64, trim: bool) -> String {
+    if (bytes as f64) < step {
         return tr!("size-bytes", count = bytes);
     }
-    let mut value = bytes as f64 / 1000.0;
+    let mut value = bytes as f64 / step;
     let mut unit = 0;
     while value >= 999.95 && unit < 3 {
-        value /= 1000.0;
+        value /= step;
         unit += 1;
     }
-    let size = katna_i18n::format::fraction(value, u8::from(value < 10.0));
+    let whole = (value * 10.0).round() % 10.0 == 0.0;
+    let size = katna_i18n::format::fraction(value, u8::from(value < 10.0 && !(trim && whole)));
     match unit {
         0 => tr!("size-kb", size = size),
         1 => tr!("size-mb", size = size),
@@ -165,6 +179,14 @@ mod tests {
         assert_eq!(size(12_345), "12 KB");
         assert_eq!(size(999_999), "1.0 MB");
         assert_eq!(size(5_300_000), "5.3 MB");
+    }
+
+    #[test]
+    fn storage_sizes_count_in_1024s() {
+        assert_eq!(storage_size(15 << 30), "15 GB");
+        assert_eq!(storage_size(2 << 40), "2 TB");
+        assert_eq!(storage_size(1 << 30), "1 GB");
+        assert_eq!(storage_size(5_300 << 20), "5.2 GB");
     }
 
     #[test]

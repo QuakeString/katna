@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 use async_channel::Receiver;
 use katna_core::{AccountId, ids};
-use katna_dbus::{AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, flag};
+use katna_dbus::{AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, TemplateItem, flag};
 use katna_store::{FolderId, MessageFlags, MessageId};
 use zbus::{fdo, object_server::SignalEmitter};
 
@@ -155,6 +155,18 @@ macro_rules! pim_interface {
                 Ok(self
                     .daemon
                     .queue_send(AccountId(account), &message, delay)?)
+            }
+
+            async fn save_template(&self, template: TemplateItem) -> fdo::Result<i64> {
+                Ok(self.daemon.save_template(template)?)
+            }
+
+            async fn rename_template(&self, id: i64, name: String) -> fdo::Result<bool> {
+                Ok(self.daemon.rename_template(id, &name)?)
+            }
+
+            async fn delete_template(&self, id: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.delete_template(id)?)
             }
 
             async fn undo_send(&self, id: i64) -> fdo::Result<bool> {
