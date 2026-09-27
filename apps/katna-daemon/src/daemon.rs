@@ -482,22 +482,30 @@ impl Daemon {
         Ok(pictures.sender(address).await)
     }
 
-    /// Translates `text`, the plain text of `message`, into `target` (a
-    /// LibreTranslate code such as `en`): the language it was in and the
-    /// translation, from the store when this text was translated before.
-    /// Mail already in `target` is never sent.
+    /// Translates `text`, the plain text of `message` in language `source`
+    /// (found by the app; `auto` when unclear), into `target` (LibreTranslate
+    /// codes such as `en`): the language it was in and the translation,
+    /// from the store when this text was translated before. Mail already
+    /// in `target` is never sent.
     pub async fn translate(
         &self,
         message: MessageId,
         text: &str,
+        source: &str,
         target: &str,
     ) -> Result<Translation, TranslateError> {
         let valid = |code: &str| {
             (2..=8).contains(&code.len())
                 && code.bytes().all(|b| b.is_ascii_lowercase() || b == b'-')
         };
-        if !valid(target) {
-            return Err(TranslateError::Server(format!("bad language {target:?}")));
+        if !valid(source) || !valid(target) {
+            return Err(TranslateError::Server(format!(
+                "bad language {source:?} or {target:?}"
+            )));
+        }
+        // Before anything reaches the network, the store included.
+        if katna_translate::same_language(source, target) {
+            return Err(TranslateError::SameLanguage);
         }
         {
             let store = self.store();
@@ -514,15 +522,11 @@ impl Daemon {
                 return Ok(cached);
             }
         }
-        // Before anything reaches the network.
-        if katna_translate::detect(text).is_some_and(|l| katna_translate::same_language(l, target))
-        {
-            return Err(TranslateError::SameLanguage);
-        }
         let mut again = true;
         let done = loop {
             let server = KatnaServer::connect(&self.secrets).await?;
-            match translate::translate(&server, &self.translation_languages, text, target).await {
+            let languages = &self.translation_languages;
+            match translate::translate(&server, languages, text, source, target).await {
                 // The server forgot this install: register again, once.
                 Err(TranslateError::Refused) if again => {
                     again = false;
@@ -550,7 +554,7 @@ impl Daemon {
         let server = match KatnaServer::connect(&self.secrets).await {
             Ok(server) => server,
             Err(err) => {
-                tracing::debug!(%err, "no translation server");
+                tracing::info!(%err, "no translation server");
                 return Vec::new();
             }
         };

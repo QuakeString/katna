@@ -310,17 +310,19 @@ macro_rules! pim_proxy {
             fn sender_picture(&self, address: &str) -> zbus::Result<Vec<u8>>;
 
             /// Translates `text`, the plain text of `message` (HTML made
-            /// plain, quotes and signature kept, never attachments), into
-            /// `target`, a LibreTranslate code such as `en` or `zt`, with
-            /// Katna Server. Returns the language it was in, the
-            /// translation, and a [`translate_problem`] when there is none.
-            /// Its language is found on this computer first: mail already
-            /// in `target` is never sent. Translations are kept in the
-            /// store, so asking again needs no server.
+            /// plain, quotes and signature kept, never attachments), from
+            /// `source` into `target`, LibreTranslate codes such as `es`,
+            /// `en` or `zt`, with Katna Server. `source` is the language
+            /// the caller found in it on this computer (`auto` when
+            /// unclear): mail already in `target` is never sent. Returns
+            /// the language it was in, the translation, and a
+            /// [`translate_problem`] when there is none. Translations are
+            /// kept in the store, so asking again needs no server.
             fn translate(
                 &self,
                 message: i64,
                 text: &str,
+                source: &str,
                 target: &str,
             ) -> zbus::Result<(String, String, String)>;
 

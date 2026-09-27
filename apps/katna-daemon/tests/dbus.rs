@@ -324,19 +324,22 @@ fn translates_from_the_store_and_never_sends_mail_in_the_reading_language() {
     smol::block_on(async {
         let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
         let pim = PimProxy::new(&bus.connect().await).await.unwrap();
-        let (source, text, problem) = pim.translate(id.0, spanish, "en").await.unwrap();
+        let (source, text, problem) = pim.translate(id.0, spanish, "es", "en").await.unwrap();
         assert_eq!((source.as_str(), text.as_str()), ("es", kept.text.as_str()));
         assert_eq!(problem, "");
 
         let english = "Hi Sam, thanks for the notes from the meeting yesterday. I will send \
                        the plan to the whole team before Friday.";
-        let (_, text, problem) = pim.translate(id.0, english, "en").await.unwrap();
+        let (_, text, problem) = pim.translate(id.0, english, "en", "en").await.unwrap();
         assert_eq!(problem, katna_dbus::translate_problem::SAME_LANGUAGE);
         assert!(text.is_empty());
 
-        let (_, _, problem) = pim.translate(999_999, spanish, "en").await.unwrap();
+        let (_, _, problem) = pim.translate(999_999, spanish, "es", "en").await.unwrap();
         assert_eq!(problem, katna_dbus::translate_problem::FAILED);
-        let (_, _, problem) = pim.translate(id.0, spanish, "EN; drop").await.unwrap();
+        let (_, _, problem) = pim
+            .translate(id.0, spanish, "es", "EN; drop")
+            .await
+            .unwrap();
         assert_eq!(problem, katna_dbus::translate_problem::FAILED);
         instance.shutdown().await;
     });

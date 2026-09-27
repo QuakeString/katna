@@ -6,8 +6,10 @@
 //!
 //! Only text goes: the app sends the message's text (HTML already made
 //! plain, quotes and signature kept), never its attachments, headers or
-//! addresses. Its language is found here first, so mail already in the
-//! reading language never leaves the computer.
+//! addresses, with the language Katna Mail found in it on this computer
+//! (`katna_translate::detect`), so mail already in the reading language
+//! never leaves the computer. Detection stays in the app: its models would
+//! take room in the daemon's size budget.
 
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -112,24 +114,22 @@ impl Languages {
     }
 }
 
-/// Translates `text` into `target`: the language found in it, and the
-/// translation. Nothing is sent when `text` is already in `target`.
+/// Translates `text`, in language `source` (or `auto`), into `target`.
+/// Nothing is sent when `source` is `target`, or when the server is known
+/// not to translate between them.
 pub async fn translate(
     server: &impl Server,
     languages: &Languages,
     text: &str,
+    source: &str,
     target: &str,
 ) -> Result<Translation, TranslateError> {
-    let source = katna_translate::detect(text);
-    if let Some(source) = source {
-        if katna_translate::same_language(source, target) {
-            return Err(TranslateError::SameLanguage);
-        }
-        if !languages.translates(server, source, target).await {
-            return Err(TranslateError::Unsupported(source.into(), target.into()));
-        }
+    if katna_translate::same_language(source, target) {
+        return Err(TranslateError::SameLanguage);
     }
-    let source = source.unwrap_or("auto");
+    if source != "auto" && !languages.translates(server, source, target).await {
+        return Err(TranslateError::Unsupported(source.into(), target.into()));
+    }
     let mut translated = String::with_capacity(text.len());
     for piece in katna_translate::pieces(text, katna_translate::MAX_PIECE) {
         // Blank lines and spaces around a piece are kept as they were:
@@ -233,7 +233,9 @@ mod tests {
             let server = Fake::ok();
             let languages = Languages::default();
             let text = format!("\n{SPANISH}\n\n> Cita\n");
-            let done = translate(&server, &languages, &text, "en").await.unwrap();
+            let done = translate(&server, &languages, &text, "es", "en")
+                .await
+                .unwrap();
             assert_eq!(done.source, "es");
             assert_eq!(done.text, format!("\n[en] {SPANISH}\n\n> Cita\n"));
             let calls = server.calls.borrow();
@@ -250,7 +252,7 @@ mod tests {
             let server = Fake::ok();
             let english = "Hi Sam, thanks for the notes from the meeting yesterday. I will \
                            send the plan to the whole team before Friday.";
-            let got = translate(&server, &Languages::default(), english, "en").await;
+            let got = translate(&server, &Languages::default(), english, "en", "en").await;
             assert_eq!(got, Err(TranslateError::SameLanguage));
             assert!(server.calls.borrow().is_empty());
         });
@@ -261,7 +263,7 @@ mod tests {
         smol::block_on(async {
             let server = Fake::ok();
             let languages = Languages::default();
-            let got = translate(&server, &languages, SPANISH, "de").await;
+            let got = translate(&server, &languages, SPANISH, "es", "de").await;
             assert_eq!(
                 got,
                 Err(TranslateError::Unsupported("es".into(), "de".into()))
@@ -282,7 +284,7 @@ mod tests {
             let server = Fake::ok();
             let paragraph = format!("{SPANISH}\n\n");
             let text = paragraph.repeat(katna_translate::MAX_PIECE / paragraph.len() * 2 + 2);
-            let done = translate(&server, &Languages::default(), &text, "en")
+            let done = translate(&server, &Languages::default(), &text, "es", "en")
                 .await
                 .unwrap();
             let posts = server
@@ -311,7 +313,7 @@ mod tests {
                     status,
                     ..Fake::default()
                 };
-                let got = translate(&server, &Languages::default(), SPANISH, "en").await;
+                let got = translate(&server, &Languages::default(), SPANISH, "es", "en").await;
                 assert_eq!(got, Err(error));
             }
         });

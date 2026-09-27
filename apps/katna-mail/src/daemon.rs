@@ -212,20 +212,21 @@ pub async fn save_draft(
         .map_err(|err| describe(&err))
 }
 
-/// Translates `text`, the plain text of `message`, into `target`: the
-/// language it was in and the translation, or a
+/// Translates `text`, the plain text of `message` in language `source`,
+/// into `target`: the language it was in and the translation, or a
 /// [`katna_dbus::translate_problem`].
 pub async fn translate(
     connection: &Connection,
     message: i64,
     text: &str,
+    source: &str,
     target: &str,
 ) -> Result<(String, String), String> {
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
     let (source, translated, problem) = pim
-        .translate(message, text, target)
+        .translate(message, text, source, target)
         .await
         .map_err(|_| katna_dbus::translate_problem::FAILED.to_owned())?;
     if problem.is_empty() {

@@ -13,6 +13,7 @@
 
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::time::{Duration, Instant};
 
 use gpui::{AnyElement, Context, SharedString, div, prelude::*, rgba};
 use katna_dbus::translate_problem as problem;
@@ -52,10 +53,17 @@ pub(crate) struct Translations {
     states: RefCell<HashMap<MessageId, State>>,
     /// The language found in each message; `None` when unclear.
     detected: RefCell<HashMap<MessageId, Option<&'static str>>>,
-    /// The languages the server translates into each reading language;
-    /// `None` while asking.
-    sources: RefCell<HashMap<String, Option<Vec<String>>>>,
+    /// The languages the server translates into each reading language,
+    /// and when it answered; `None` while asking.
+    sources: RefCell<HashMap<String, Option<Answered>>>,
 }
+
+/// The languages the server said it translates, and when.
+type Answered = (Instant, Vec<String>);
+
+/// How long to wait before asking a server that offered nothing (it was
+/// unreachable, or translation is off) again.
+const ASK_AGAIN: Duration = Duration::from_secs(10 * 60);
 
 impl Translations {
     /// Forgets what the server offers, so it is asked again (after the
@@ -135,7 +143,7 @@ impl MailWindow {
                 return None;
             }
             if settings.always.iter().any(|l| l == source) {
-                self.start_translation(id, text, &target, cx);
+                self.start_translation(id, text, source, &target, cx);
             }
         }
         let source_name = source.map(language_name).unwrap_or_default();
@@ -170,6 +178,7 @@ impl MailWindow {
                 let target_name = language_name(&target);
                 let text = text_owned.clone();
                 let target_code = target.clone();
+                let source_code = source.unwrap_or("auto");
                 let mut links = vec![
                     link(
                         if failed.is_some() {
@@ -181,7 +190,7 @@ impl MailWindow {
                     )
                     .on_click(cx.listener(move |this, _, _, cx| {
                         this.translations.states.borrow_mut().remove(&id);
-                        this.start_translation(id, &text, &target_code, cx);
+                        this.start_translation(id, &text, source_code, &target_code, cx);
                         cx.notify();
                     }))
                     .into_any_element(),
@@ -269,10 +278,13 @@ impl MailWindow {
     /// Whether the server translates `source` into `target`. Asks it the
     /// first time; until it answers, nothing is offered.
     fn server_translates(&self, source: &str, target: &str, cx: &mut Context<Self>) -> bool {
-        if let Some(known) = self.translations.sources.borrow().get(target) {
-            return known
-                .as_ref()
-                .is_some_and(|sources| sources.iter().any(|s| s == source));
+        match self.translations.sources.borrow().get(target) {
+            // Still asking.
+            Some(None) => return false,
+            Some(Some((at, sources))) if !sources.is_empty() || at.elapsed() < ASK_AGAIN => {
+                return sources.iter().any(|s| s == source);
+            }
+            _ => {}
         }
         self.translations
             .sources
@@ -300,7 +312,7 @@ impl MailWindow {
                 this.translations
                     .sources
                     .borrow_mut()
-                    .insert(target, Some(sources));
+                    .insert(target, Some((Instant::now(), sources)));
                 cx.notify();
             })
             .ok();
@@ -309,8 +321,16 @@ impl MailWindow {
         false
     }
 
-    /// Asks the daemon to translate message `id`, whose text is `text`.
-    fn start_translation(&self, id: MessageId, text: &str, target: &str, cx: &mut Context<Self>) {
+    /// Asks the daemon to translate message `id`, whose text `text` is in
+    /// `source`.
+    fn start_translation(
+        &self,
+        id: MessageId,
+        text: &str,
+        source: &str,
+        target: &str,
+        cx: &mut Context<Self>,
+    ) {
         {
             let mut states = self.translations.states.borrow_mut();
             if matches!(states.get(&id), Some(State::Working | State::Shown(_))) {
@@ -320,6 +340,7 @@ impl MailWindow {
         }
         let connection = self.daemon.clone();
         let text = text.to_owned();
+        let source = source.to_owned();
         let target = target.to_owned();
         cx.spawn(async move |this, cx| {
             let result = cx
@@ -331,7 +352,7 @@ impl MailWindow {
                             .await
                             .map_err(|_| problem::FAILED.to_owned())?,
                     };
-                    daemon::translate(&connection, id.0, &text, &target).await
+                    daemon::translate(&connection, id.0, &text, &source, &target).await
                 })
                 .await;
             this.update(cx, |this, cx| {

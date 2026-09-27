@@ -217,10 +217,11 @@ macro_rules! pim_interface {
                 &self,
                 message: i64,
                 text: String,
+                source: String,
                 target: String,
             ) -> (String, String, String) {
                 self.daemon
-                    .translate(MessageId(message), &text, &target)
+                    .translate(MessageId(message), &text, &source, &target)
                     .await
                     .map_or_else(
                         |err| (String::new(), String::new(), problem(&err).to_owned()),

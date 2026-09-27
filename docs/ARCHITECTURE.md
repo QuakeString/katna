@@ -2525,11 +2525,13 @@ owner's server, over on-device models or DeepL).
   `POST /api/v1/translate` / `/api/v1/detect` through with the same bearer
   token as tracking and a per-install daily limit, and logs and keeps
   neither the text nor the translation.
-- **Daemon:** `Translate(message, text, target)` on D-Bus. Katna Mail
-  sends the message's plain text (HTML made plain, quotes and signature
-  kept; never attachments, headers or addresses). The daemon finds the
-  language on this computer first (`katna-translate`, whatlang), so mail
-  already in the reading language is never sent; then sends the text in
+- **Daemon:** `Translate(message, text, source, target)` on D-Bus. Katna
+  Mail finds the message's language on this computer (`katna-translate`,
+  whatlang; in the app, as its models would crowd the daemon's size
+  budget) and sends its plain text (HTML made plain, quotes and signature
+  kept; never attachments, headers or addresses). Mail already in the
+  reading language is never sent, and the daemon refuses it too. It sends
+  the text in
   pieces of at most 4000 characters (40,000 in all) over rustls to
   `katna_core::ids::TRACKING_SERVER_URL` (empty turns translation off) and
   keeps the translation in `mail.db` (`translation`, keyed by message,
