@@ -1308,6 +1308,14 @@ Gemini or confidential mode):
   user signed their newest message in the conversation with, found by
   comparing the text after its `-- ` line (`signatures.rs`); otherwise the
   reply default. The single signature of older versions becomes the first.
+- **Sending account, Send and archive.** Settings → Compose picks the
+  account new mail goes out from: the one whose mail is open (default) or
+  always the same address (`sending.send_from`). Replies and forwards go
+  out from the account whose mail is open. The account is fixed when the message
+  opens. "Send on replies" makes Send on a reply or forward also archive
+  the conversation (`sending.send_and_archive`); the menu beside Send
+  offers the other way. The archive happens once the message is queued,
+  and Undo on "Sent and archived" brings the conversation back as well.
 - **Keyboard shortcuts.** Every action has one (`window/keymap.rs`), with
   Gmail's keys as defaults: j/k, o, u, c, r, a, f, e, #, !, v, s, x,
   Shift+I/U, `* a`, `* n`, z, `g i`/`g s`/`g t`/`g d`/`g a`, /, ?, and Ctrl

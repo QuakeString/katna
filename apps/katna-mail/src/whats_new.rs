@@ -187,6 +187,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                instead of by first name.",
         animation: None,
     },
+    Highlight {
+        id: 19,
+        title: "Send and archive",
+        text: "The menu beside Send on a reply sends it and archives the \
+               conversation. Settings > Compose can make that what Send does, and \
+               can send new mail from the same account every time.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.

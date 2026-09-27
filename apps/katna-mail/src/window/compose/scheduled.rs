@@ -408,6 +408,9 @@ fn unsent_from_raw(raw: &[u8]) -> Option<Unsent> {
         signature: None,
         attachments,
         plain,
+        from: None,
+        answering: None,
+        unarchive: None,
     })
 }
 
