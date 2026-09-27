@@ -440,6 +440,7 @@ impl MailWindow {
                 ),
                 th,
             ))
+            .child(self.row("Reading", None, self.reading_switches(th, cx), th))
             .child(self.row(
                 "Sending",
                 Some("How long a sent message waits, so it can be taken back."),
@@ -608,6 +609,43 @@ impl MailWindow {
     }
 
     /// The tray icon and the taskbar count, which the daemon shows.
+    /// How an opened conversation shows.
+    fn reading_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let view = &self.config.mail;
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(2.0))
+            .child(self.switch_row(
+                "page-newest-first",
+                "Newest message first",
+                "A conversation starts with its latest reply",
+                view.newest_first,
+                Change::NewestFirst(!view.newest_first),
+                th,
+                cx,
+            ))
+            .child(self.switch_row(
+                "page-full-headers",
+                "Show full headers",
+                "From, to, cc, date and subject open on every message",
+                view.full_headers,
+                Change::FullHeaders(!view.full_headers),
+                th,
+                cx,
+            ))
+            .child(self.switch_row(
+                "page-full-names",
+                "Full names of recipients",
+                "\u{201c}to me, Ada Lovelace\u{201d} rather than \u{201c}to me, Ada\u{201d}",
+                view.full_names,
+                Change::FullNames(!view.full_names),
+                th,
+                cx,
+            ))
+            .into_any_element()
+    }
+
     fn desktop_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let general = &self.config.general;
         div()
