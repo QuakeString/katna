@@ -689,11 +689,21 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        self.files_menu = None;
+        if let Some(AttachmentSource::Sealed) = self
+            .reader
+            .as_ref()
+            .map(|r| r.attachment_source(file.message))
+        {
+            self.files_menu = None;
+            self.show_snackbar("Open this message to read its attachments.", None, cx);
+            return;
+        }
         let Some((raw, encrypted)) = self.attachment_raw(file.message) else {
-            self.show_snackbar("This message has not been downloaded yet.", None, cx);
+            // Not downloaded yet: the chip fills while it downloads.
+            self.download_row_file(file, window, cx);
             return;
         };
+        self.files_menu = None;
         let view = katna_render::message_view(&raw);
         let Some(index) = row_file_index(&view.attachments, file) else {
             self.show_snackbar(
@@ -995,7 +1005,7 @@ impl MailWindow {
     /// The message the attachments of `id` are read from (as GnuPG opened
     /// it, for protected mail), and whether it was encrypted. `None` when
     /// it is not downloaded, or protected and not opened yet.
-    fn attachment_raw(&self, id: MessageId) -> Option<(Arc<Vec<u8>>, bool)> {
+    pub(super) fn attachment_raw(&self, id: MessageId) -> Option<(Arc<Vec<u8>>, bool)> {
         match self.reader.as_ref().map(|r| r.attachment_source(id)) {
             Some(AttachmentSource::Opened { raw, encrypted }) => Some((raw, encrypted)),
             Some(AttachmentSource::Sealed) => None,

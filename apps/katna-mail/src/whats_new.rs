@@ -174,6 +174,13 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 17,
+        title: "Attachments of older mail open at once",
+        text: "Clicking an attachment of older mail that is not on this computer yet \
+               downloads it: the attachment fills up while it does, then opens.",
+        animation: None,
+    },
+    Highlight {
+        id: 18,
         title: "Old Word files and slides",
         text: "Word 97–2003 documents (.doc) now open in the viewer with their \
                headings, lists and tables, and PowerPoint (.pptx, .ppt) and \
