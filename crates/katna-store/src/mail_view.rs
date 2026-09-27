@@ -405,6 +405,66 @@ pub(crate) fn thread_summaries(
     Ok(out)
 }
 
+/// Whether a line of the list is unread and starred, as its row shows it.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct Marks {
+    pub unread: bool,
+    pub flagged: bool,
+}
+
+/// [`Marks`] of every message in a folder and of every conversation with
+/// a message there, read in two queries, for picking lines ("select all
+/// unread") without reading each row.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct FolderMarks {
+    pub messages: HashMap<MessageId, Marks>,
+    /// Unread as [`ThreadSummary::unread`] (a message in the folder is),
+    /// starred as [`ThreadSummary::flagged`] (any message of it is).
+    pub threads: HashMap<ThreadId, Marks>,
+}
+
+pub(crate) fn folder_marks(conn: &Connection, folder: FolderId) -> Result<FolderMarks> {
+    let mut marks = FolderMarks::default();
+    let mut here = conn.prepare_cached(
+        "SELECT m.id, m.thread_id, m.flags FROM message_location l
+         JOIN message m ON m.id = l.message_id
+         WHERE l.folder_id = ?1",
+    )?;
+    let mut rows = here.query([folder.0])?;
+    while let Some(row) = rows.next()? {
+        let flags: i64 = row.get(2)?;
+        let flags = MessageFlags::from_bits(u32::try_from(flags).unwrap_or_default());
+        let unread = !flags.contains(MessageFlags::SEEN);
+        marks.messages.insert(
+            MessageId(row.get(0)?),
+            Marks {
+                unread,
+                flagged: flags.contains(MessageFlags::FLAGGED),
+            },
+        );
+        if let Some(thread) = row.get::<_, Option<i64>>(1)? {
+            marks.threads.entry(ThreadId(thread)).or_default().unread |= unread;
+        }
+    }
+    let mut starred = conn.prepare_cached(
+        "SELECT DISTINCT m.thread_id FROM message m
+         WHERE (m.flags & ?2) != 0 AND m.thread_id IN (
+             SELECT h.thread_id FROM message_location l
+             JOIN message h ON h.id = l.message_id
+             WHERE l.folder_id = ?1 AND h.thread_id IS NOT NULL
+         )",
+    )?;
+    let mut rows = starred.query(params![folder.0, MessageFlags::FLAGGED.bits()])?;
+    while let Some(row) = rows.next()? {
+        marks
+            .threads
+            .entry(ThreadId(row.get(0)?))
+            .or_default()
+            .flagged = true;
+    }
+    Ok(marks)
+}
+
 #[cfg(test)]
 mod tests {
     use katna_core::{AccountKind, Paths};

@@ -528,6 +528,29 @@ fn folder_lists_summaries_and_tab_counts() {
     let sent_view = &app.thread_summaries(&[thread], sent).unwrap()[0];
     assert!(!sent_view.unread, "the unread message is not in Sent");
 
+    // Marks for picking lines agree with what the rows show.
+    for folder in [inbox, sent] {
+        let marks = app.folder_marks(folder).unwrap();
+        let threads: Vec<ThreadId> = app
+            .folder_threads(folder, None)
+            .unwrap()
+            .into_iter()
+            .filter_map(|e| e.thread)
+            .collect();
+        assert_eq!(marks.threads.len(), threads.len());
+        for s in app.thread_summaries(&threads, folder).unwrap() {
+            let m = marks.threads[&s.thread];
+            assert_eq!((m.unread, m.flagged), (s.unread, s.flagged));
+        }
+        let ids = app.folder_message_ids(folder).unwrap();
+        assert_eq!(marks.messages.len(), ids.len());
+        for m in app.messages_by_id(&ids).unwrap() {
+            let mark = marks.messages[&m.id];
+            assert_eq!(mark.unread, !m.flags.contains(MessageFlags::SEEN));
+            assert_eq!(mark.flagged, m.flags.contains(MessageFlags::FLAGGED));
+        }
+    }
+
     assert_eq!(
         app.category_unread(inbox).unwrap(),
         [
