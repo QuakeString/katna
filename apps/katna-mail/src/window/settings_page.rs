@@ -17,6 +17,7 @@ use gpui::{
 use katna_core::config::{
     AccountTabs, Density, FileGroup, OpenIn, ReadingPane, TabStyle, Theme as ThemeChoice,
 };
+use katna_ui::motion::lerp;
 use katna_ui::rich::RichEvent;
 use katna_ui::{InputEvent, RichEditor, Ripple, TextInput};
 
@@ -35,6 +36,11 @@ const SAVE_DELAY: Duration = Duration::from_millis(600);
 /// "g i".
 const SEQUENCE_WAIT: Duration = Duration::from_millis(900);
 const LABEL_WIDTH: f32 = 220.0;
+/// The least room the controls of a row take beside its name; with less,
+/// they go below it.
+const CONTROL_WIDTH: f32 = 300.0;
+/// The same for the keys of a shortcut.
+const KEYS_WIDTH: f32 = 160.0;
 
 /// A part of the page.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -84,6 +90,8 @@ pub(super) struct SettingsPage {
     focus: FocusHandle,
     /// The controls Tab stops at, which the page scrolls to.
     stops: TabStops,
+    /// The row of section tabs, which scrolls sideways on a phone.
+    tabs: ScrollHandle,
 }
 
 impl SettingsPage {
@@ -129,11 +137,15 @@ impl MailWindow {
             scroll: scroll.clone(),
             focus: cx.focus_handle().tab_stop(true),
             stops: TabStops::new(scroll),
+            tabs: ScrollHandle::new(),
         });
         if fresh {
             window.focus(&page.focus, cx);
         }
         page.section = section;
+        if let Some(ix) = Section::ALL.iter().position(|s| *s == section) {
+            page.tabs.scroll_to_item(ix);
+        }
         page.recording = None;
         page.scroll.set_offset(gpui::point(px(0.0), px(0.0)));
         if section == Section::Signatures {
@@ -227,6 +239,7 @@ impl MailWindow {
         let section = page.section;
         let scroll = page.scroll.clone();
         let focus = page.focus.clone();
+        let tabs_scroll = page.tabs.clone();
         let tabs = Section::ALL.map(|s| {
             let on = s == section;
             div()
@@ -235,6 +248,7 @@ impl MailWindow {
                 .focus_ring(th)
                 .relative()
                 .overflow_hidden()
+                .flex_none()
                 .h(px(48.0))
                 .px(px(16.0))
                 .flex()
@@ -267,12 +281,17 @@ impl MailWindow {
             Section::Shortcuts => self.shortcuts_section(th, cx),
             Section::Experimental => self.experimental_section(th, cx),
         };
+        // On a phone the page fills the window below the top bar, like the
+        // list, and its sides come in closer.
+        let shape = self.layout.shape;
+        let margin = shape.card_margin();
+        let side = lerp(32.0, 16.0, shape.phone);
         let card = div()
             .id("settings-page")
             .size_full()
             .flex()
             .flex_col()
-            .rounded(px(16.0))
+            .rounded(px(shape.card_radius()))
             .bg(rgba(th.surface))
             .overflow_hidden()
             .child(
@@ -294,15 +313,24 @@ impl MailWindow {
                     )
                     .child(div().text_size(px(22.0)).child("Settings")),
             )
+            // The tabs wrap onto more lines on a wide page; on a phone they
+            // stay on one line that scrolls sideways, as a phone's tabs do.
             .child(
                 div()
+                    .id("settings-page-tabs")
                     .flex_none()
-                    .px(px(16.0))
+                    .px(px(lerp(16.0, 4.0, shape.phone)))
                     .flex()
                     .flex_row()
-                    .flex_wrap()
                     .border_b_1()
                     .border_color(rgba(th.divider))
+                    .map(|d| {
+                        if shape.is_phone() {
+                            d.overflow_x_scroll().track_scroll(&tabs_scroll)
+                        } else {
+                            d.flex_wrap()
+                        }
+                    })
                     .children(tabs),
             )
             .child(
@@ -315,9 +343,9 @@ impl MailWindow {
                     .child(
                         div()
                             .flex_none()
-                            .px(px(32.0))
+                            .px(px(side))
                             .pt(px(8.0))
-                            .pb(px(32.0))
+                            .pb(px(side))
                             .max_w(px(1040.0))
                             .flex()
                             .flex_col()
@@ -328,8 +356,8 @@ impl MailWindow {
             .flex_1()
             .min_w_0()
             .h_full()
-            .pr(px(16.0))
-            .pb(px(16.0))
+            .pr(px(margin))
+            .pb(px(margin))
             .child(card)
             .into_any_element()
     }
@@ -874,9 +902,7 @@ impl MailWindow {
             let id = e.id;
             let name_focus = e.name.focus_handle(cx);
             let text_focus = e.text.focus_handle(cx);
-            div()
-                .flex_1()
-                .min_w_0()
+            control_column(240.0)
                 .flex()
                 .flex_col()
                 .gap(px(8.0))
@@ -949,11 +975,10 @@ impl MailWindow {
                 div()
                     .flex()
                     .flex_row()
+                    .flex_wrap()
                     .gap(px(16.0))
                     .child(
-                        div()
-                            .flex_none()
-                            .w(px(200.0))
+                        label_column(200.0)
                             .flex()
                             .flex_col()
                             .gap(px(2.0))
@@ -1043,21 +1068,15 @@ impl MailWindow {
                             .py(px(4.0))
                             .flex()
                             .flex_row()
+                            .flex_wrap()
                             .items_center()
-                            .gap(px(12.0))
+                            .gap_x(px(12.0))
+                            .gap_y(px(4.0))
                             .border_b_1()
                             .border_color(rgba(th.divider))
+                            .child(label_column(LABEL_WIDTH).text_size(px(14.0)).child(s.label))
                             .child(
-                                div()
-                                    .w(px(LABEL_WIDTH))
-                                    .flex_none()
-                                    .text_size(px(14.0))
-                                    .child(s.label),
-                            )
-                            .child(
-                                div()
-                                    .flex_1()
-                                    .min_w_0()
+                                control_column(KEYS_WIDTH)
                                     .flex()
                                     .flex_row()
                                     .flex_wrap()
@@ -1115,9 +1134,9 @@ impl MailWindow {
                     .flex_row()
                     .items_center()
                     .gap(px(12.0))
+                    .flex_wrap()
                     .child(
-                        div()
-                            .flex_1()
+                        control_column(240.0)
                             .text_size(px(13.0))
                             .text_color(rgba(th.text_faint))
                             .child("Click a key to change it, or + to add one, then press the new keys. Esc cancels."),
@@ -1323,7 +1342,8 @@ impl MailWindow {
         self.page_control(div().id(id.clone()), th, cx)
             .relative()
             .overflow_hidden()
-            .h(px(36.0))
+            .min_h(px(36.0))
+            .py(px(6.0))
             .px(px(8.0))
             .flex()
             .flex_row()
@@ -1334,7 +1354,7 @@ impl MailWindow {
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
             .child(super::settings::animated_radio(id, on, th))
-            .child(label)
+            .child(div().flex_1().min_w_0().child(label))
     }
 }
 
@@ -1348,7 +1368,8 @@ fn style_name(style: TabStyle) -> &'static str {
 }
 
 /// A setting: its name (and a line on it) on the left, the controls on the
-/// right.
+/// right. Where the two don't fit side by side, as on a phone, the name
+/// goes above the controls and both take the whole width.
 pub(super) fn row(
     label: impl Into<SharedString>,
     detail: Option<&'static str>,
@@ -1359,13 +1380,13 @@ pub(super) fn row(
         .py(px(20.0))
         .flex()
         .flex_row()
-        .gap(px(24.0))
+        .flex_wrap()
+        .gap_x(px(24.0))
+        .gap_y(px(12.0))
         .border_b_1()
         .border_color(rgba(th.divider))
         .child(
-            div()
-                .w(px(LABEL_WIDTH))
-                .flex_none()
+            label_column(LABEL_WIDTH)
                 .flex()
                 .flex_col()
                 .gap(px(4.0))
@@ -1383,7 +1404,20 @@ pub(super) fn row(
                         .child(d)
                 })),
         )
-        .child(div().flex_1().min_w_0().child(content))
+        .child(control_column(CONTROL_WIDTH).child(content))
+}
+
+/// The name column of a row that wraps: `width` wide beside the controls,
+/// the whole row once the controls wrap below it.
+fn label_column(width: f32) -> Div {
+    div().flex_basis(px(width)).flex_grow(1.0).min_w_0()
+}
+
+/// The controls' column of a row that wraps. It takes nearly all the room
+/// left beside the name, and wraps below the name when it would get less
+/// than `width`.
+fn control_column(width: f32) -> Div {
+    div().flex_basis(px(width)).flex_grow(1000.0).min_w_0()
 }
 
 fn note(text: &'static str, th: &Theme) -> Div {

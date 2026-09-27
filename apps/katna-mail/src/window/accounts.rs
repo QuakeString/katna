@@ -60,40 +60,39 @@ impl MailWindow {
                 } else {
                     account.display_name.clone()
                 };
-                div()
-                    .min_h(px(56.0))
+                let about = div()
+                    .flex_grow(1.0)
+                    .flex_basis(px(180.0))
+                    .min_w_0()
                     .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(12.0))
-                    .child(self.person_avatar(&name, &account.address, 36.0))
+                    .flex_col()
                     .child(
                         div()
-                            .flex_1()
-                            .min_w_0()
-                            .flex()
-                            .flex_col()
-                            .child(
-                                div()
-                                    .truncate()
-                                    .text_size(px(14.0))
-                                    .font_weight(FontWeight::MEDIUM)
-                                    .child(name),
-                            )
-                            .child(
-                                div()
-                                    .truncate()
-                                    .text_size(px(12.0))
-                                    .text_color(rgba(th.text_faint))
-                                    .child(format!(
-                                        "{} \u{b7} {}",
-                                        account.address,
-                                        kind_name(account.kind)
-                                    )),
-                            ),
+                            .truncate()
+                            .text_size(px(14.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .child(name.clone()),
                     )
-                    .when(self.remote.has_own_picture(account.id), |d| {
-                        let id = account.id;
+                    .child(
+                        div()
+                            .truncate()
+                            .text_size(px(12.0))
+                            .text_color(rgba(th.text_faint))
+                            .child(format!(
+                                "{} \u{b7} {}",
+                                account.address,
+                                kind_name(account.kind)
+                            )),
+                    );
+                let id = account.id;
+                let avatar = self.person_avatar(&name, &account.address, 36.0);
+                let buttons = div()
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .items_center()
+                    .gap(px(8.0))
+                    .when(self.remote.has_own_picture(id), |d| {
                         d.child(
                             text_button(("account-picture-reset", ix), "Use desktop picture", th)
                                 .map(|d| self.page_control(d, th, cx))
@@ -102,22 +101,44 @@ impl MailWindow {
                                 })),
                         )
                     })
-                    .child({
-                        let id = account.id;
+                    .child(
                         text_button(("account-picture", ix), "Change picture", th)
                             .map(|d| self.page_control(d, th, cx))
                             .on_click(
                                 cx.listener(move |this, _, _, cx| {
                                     this.pick_account_picture(id, cx)
                                 }),
-                            )
-                    })
+                            ),
+                    )
                     .child(
                         danger_button(("account-remove", ix), "Remove", false, th)
                             .map(|d| self.page_control(d, th, cx))
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 this.ask(What::RemoveAccount(account.clone()), cx)
                             })),
+                    );
+                // The buttons go below the name, together, where the row is
+                // narrow.
+                div()
+                    .py(px(10.0))
+                    .flex()
+                    .flex_row()
+                    .items_start()
+                    .gap(px(12.0))
+                    .child(avatar)
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .min_h(px(36.0))
+                            .flex()
+                            .flex_row()
+                            .flex_wrap()
+                            .items_center()
+                            .gap_x(px(12.0))
+                            .gap_y(px(4.0))
+                            .child(about)
+                            .child(buttons),
                     )
             }))
             .when(self.accounts.is_empty(), |d| {

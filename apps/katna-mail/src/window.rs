@@ -2204,8 +2204,10 @@ impl Render for MailWindow {
             div()
                 .absolute()
                 .top_0()
+                .left_0()
                 .right_0()
                 .bottom(px(shape.bottom_bar()))
+                .overflow_hidden()
                 .child(panel)
                 .into_any_element()
         });
