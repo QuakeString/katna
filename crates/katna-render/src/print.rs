@@ -59,6 +59,12 @@ impl Paper {
         height: 841.89,
     };
 
+    /// US Letter, 8.5 × 11 inches.
+    pub const LETTER: Self = Self {
+        width: 612.0,
+        height: 792.0,
+    };
+
     /// A size given in millimetres. `None` for one too small to hold a
     /// line of text.
     pub fn from_mm(width: f64, height: f64) -> Option<Self> {

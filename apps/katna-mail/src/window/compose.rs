@@ -40,6 +40,7 @@ use gpui::{
 };
 use katna_core::AccountId;
 use katna_dbus::OutboxItem;
+use katna_i18n::tr;
 use katna_render::{Address, MessageView};
 use katna_store::MessageId;
 use katna_ui::motion::{self, Spring, lerp};
@@ -184,7 +185,7 @@ impl Compose {
     fn title(&self, cx: &gpui::App) -> SharedString {
         let subject = self.subject.read(cx).text().trim();
         if subject.is_empty() {
-            "New Message".into()
+            tr!("compose-new-message").into()
         } else {
             subject.to_owned().into()
         }
@@ -500,7 +501,7 @@ impl MailWindow {
                 if compose.mode == Mode::Minimized {
                     compose.mode = Mode::Open;
                 }
-                self.show_snackbar("Send or discard the open message first.", None, cx);
+                self.show_snackbar(tr!("compose-open-elsewhere"), None, cx);
             }
             cx.notify();
             return;
@@ -770,14 +771,14 @@ impl MailWindow {
             *text = chips::normalized(text);
         }
         let placeholder = if chips.get(Field::To).is_empty() {
-            katna_i18n::tr!("recipients-placeholder")
+            tr!("compose-recipients")
         } else {
             String::new()
         };
         let to = input(&placeholder, "", cx);
         let cc = input("", "", cx);
         let bcc = input("", "", cx);
-        let subject = input("Subject", &draft.subject, cx);
+        let subject = input(&tr!("compose-subject"), &draft.subject, cx);
         let speller = self.speller(cx);
         let grammar = self.grammar();
         let answered = thread_text(&draft.body);
@@ -1149,26 +1150,22 @@ impl MailWindow {
         let (to, cc, bcc) = match (parse(&draft.to), parse(&draft.cc), parse(&draft.bcc)) {
             (Ok(to), Ok(cc), Ok(bcc)) => (to, cc, bcc),
             (Err(bad), ..) | (_, Err(bad), _) | (.., Err(bad)) => {
-                self.show_snackbar(
-                    format!("\u{201c}{bad}\u{201d} is not an email address."),
-                    None,
-                    cx,
-                );
+                self.show_snackbar(tr!("compose-bad-address", address = bad), None, cx);
                 return;
             }
         };
         if to.is_empty() && cc.is_empty() && bcc.is_empty() {
-            self.show_snackbar("Add at least one recipient.", None, cx);
+            self.show_snackbar(tr!("compose-no-recipients"), None, cx);
             return;
         }
         let total: usize = attachments.iter().map(|a| a.data.len()).sum::<usize>()
             + draft.body.images().map(|i| i.data.len()).sum::<usize>();
         if total > attach::MAX_TOTAL {
             self.show_snackbar(
-                format!(
-                    "The attachments are {}; mail servers take up to {}.",
-                    format::size(total as u64),
-                    format::size(attach::MAX_TOTAL as u64)
+                tr!(
+                    "compose-attachments-too-large",
+                    size = format::size(total as u64),
+                    limit = format::size(attach::MAX_TOTAL as u64)
                 ),
                 None,
                 cx,
@@ -1192,7 +1189,7 @@ impl MailWindow {
             .and_then(|id| self.accounts.iter().find(|a| a.id == id))
             .or_else(|| self.compose_account(kind));
         let Some(account) = account else {
-            self.show_snackbar("Add an account to send mail from.", None, cx);
+            self.show_snackbar(tr!("compose-no-account"), None, cx);
             self.open_add_account(window, cx);
             return;
         };
@@ -1235,7 +1232,7 @@ impl MailWindow {
             Some(at) => {
                 let seconds = at.as_second() - jiff::Timestamp::now().as_second();
                 if seconds < 60 {
-                    self.show_snackbar("Pick a time in the future.", None, cx);
+                    self.show_snackbar(tr!("compose-past-time"), None, cx);
                     return;
                 }
                 u32::try_from(seconds).unwrap_or(u32::MAX)
@@ -1278,9 +1275,9 @@ impl MailWindow {
         self.close_compose(false, cx);
         self.show_snackbar(
             if at.is_some() {
-                "Scheduling\u{2026}"
+                tr!("compose-scheduling")
             } else {
-                "Sending\u{2026}"
+                tr!("compose-sending")
             },
             None,
             cx,
@@ -1303,9 +1300,9 @@ impl MailWindow {
             this.update_in(cx, |this, window, cx| match result {
                 Ok(id) => {
                     let text = match &when {
-                        Some(when) => format!("Send scheduled for {when}"),
-                        None if answering.is_some() => "Sent and archived".to_owned(),
-                        None => "Message sent".to_owned(),
+                        Some(when) => tr!("compose-scheduled", when = when.clone()),
+                        None if answering.is_some() => tr!("compose-sent-archived"),
+                        None => tr!("compose-sent"),
                     };
                     if let Some(key) = answering {
                         let unarchive = this.act_with(super::Act::Archive, vec![key], false, cx);
@@ -1381,7 +1378,7 @@ impl MailWindow {
         }
         self.close_compose_window(cx);
         if discarded {
-            self.show_snackbar("Draft discarded", None, cx);
+            self.show_snackbar(tr!("compose-discarded"), None, cx);
         }
         cx.notify();
     }
@@ -1491,9 +1488,9 @@ impl MailWindow {
                 )
                 .tooltip(tip(
                     if mode == Mode::Minimized {
-                        "Restore"
+                        tr!("compose-restore")
                     } else {
-                        "Minimize"
+                        tr!("compose-minimize")
                     },
                     th,
                 ))
@@ -1505,7 +1502,7 @@ impl MailWindow {
             .when(mode == Mode::Full, |d| {
                 d.child(
                     small_button("compose-full", "close-full", th)
-                        .tooltip(tip("Exit full screen", th))
+                        .tooltip(tip(tr!("compose-exit-full-screen"), th))
                         .on_click(cx.listener(|this, _, _, cx| {
                             cx.stop_propagation();
                             this.compose_mode(Mode::Full, cx)
@@ -1515,7 +1512,7 @@ impl MailWindow {
             .child(
                 // Gmail's expand button, in a window of its own here.
                 small_button("compose-pop-out", "open-full", th)
-                    .tooltip(tip("Open in a new window", th))
+                    .tooltip(tip(tr!("compose-open-window"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
                         cx.stop_propagation();
                         this.pop_out_compose(window, cx)
@@ -1523,7 +1520,7 @@ impl MailWindow {
             )
             .child(
                 small_button("compose-close", "close", th)
-                    .tooltip(tip("Save and close", th))
+                    .tooltip(tip(tr!("compose-save-close"), th))
                     .on_click(cx.listener(|this, _, _, cx| {
                         cx.stop_propagation();
                         // Drafts are not saved yet, so closing loses the text.
@@ -1632,9 +1629,9 @@ impl MailWindow {
             .as_ref()
             .filter(|c| c.mode == Mode::Inline && !c.closing && c.conversation == Some(key))?;
         let (kind_icon, kind_label) = match compose.kind {
-            Kind::ReplyAll => ("reply-all", "Reply all"),
-            Kind::Forward => ("forward", "Forward"),
-            Kind::Reply | Kind::New => ("reply", "Reply"),
+            Kind::ReplyAll => ("reply-all", tr!("reply-reply-all")),
+            Kind::Forward => ("forward", tr!("reply-forward")),
+            Kind::Reply | Kind::New => ("reply", tr!("reply-reply")),
         };
         let me = compose
             .from
@@ -1683,13 +1680,13 @@ impl MailWindow {
                             }
                             cx.notify();
                         }))
-                        .child("Cc"),
+                        .child(tr!("compose-cc")),
                 )
             })
             .children(self.render_sealing(th, cx))
             .child(
                 small_button("inline-pop-out", "open-full", th)
-                    .tooltip(tip("Pop out reply", th))
+                    .tooltip(tip(tr!("compose-pop-out-reply"), th))
                     // Straight into a window of its own; docking it brings
                     // it back here.
                     .on_click(cx.listener(|this, _, window, cx| this.pop_out_compose(window, cx))),
@@ -1708,7 +1705,12 @@ impl MailWindow {
                 .border_t_1()
                 .border_color(rgba(th.divider))
                 .text_size(px(14.0))
-                .child(div().flex_none().text_color(rgba(th.text_dim)).child("Cc"))
+                .child(
+                    div()
+                        .flex_none()
+                        .text_color(rgba(th.text_dim))
+                        .child(tr!("compose-cc")),
+                )
                 .child(cc_field)
         });
         let cc = cc.map(|cc| self.recipient_row(cc, Field::Cc, th, cx));
@@ -1833,7 +1835,7 @@ impl MailWindow {
                 .bg(rgba(th.chip))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
-                .tooltip(tip("Show trimmed content", th))
+                .tooltip(tip(tr!("compose-show-trimmed"), th))
                 .on_click(cx.listener(|this, _, _, cx| {
                     cx.stop_propagation();
                     this.show_trimmed(cx);
@@ -1862,7 +1864,7 @@ impl MailWindow {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };
-        let row = |label: &'static str, field: AnyElement| {
+        let row = |label: String, field: AnyElement| {
             div()
                 .flex_none()
                 .mx(px(16.0))
@@ -1898,7 +1900,7 @@ impl MailWindow {
         };
         let [to_field, cc_field, bcc_field] = [Field::To, Field::Cc, Field::Bcc]
             .map(|field| self.render_recipient_field(field, th, cx));
-        let link = |id: &'static str, label: &'static str| {
+        let link = |id: &'static str, label: String| {
             div()
                 .id(id)
                 .px(px(4.0))
@@ -1910,7 +1912,7 @@ impl MailWindow {
                 .child(label)
         };
         let to = self
-            .recipient_row(row("To", to_field), Field::To, th, cx)
+            .recipient_row(row(tr!("compose-to"), to_field), Field::To, th, cx)
             .child(
                 div()
                     .flex_none()
@@ -1920,7 +1922,7 @@ impl MailWindow {
                     .items_center()
                     .gap(px(4.0))
                     .when(!compose.show_cc, |d| {
-                        d.child(link("compose-cc", "Cc").on_click(cx.listener(
+                        d.child(link("compose-cc", tr!("compose-cc")).on_click(cx.listener(
                             |this, _, window, cx| {
                                 if let Some(c) = &mut this.compose {
                                     c.show_cc = true;
@@ -1931,15 +1933,17 @@ impl MailWindow {
                         )))
                     })
                     .when(!compose.show_bcc, |d| {
-                        d.child(link("compose-bcc", "Bcc").on_click(cx.listener(
-                            |this, _, window, cx| {
-                                if let Some(c) = &mut this.compose {
-                                    c.show_bcc = true;
-                                    window.focus(&c.bcc.focus_handle(cx), cx);
-                                }
-                                cx.notify();
-                            },
-                        )))
+                        d.child(
+                            link("compose-bcc", tr!("compose-bcc")).on_click(cx.listener(
+                                |this, _, window, cx| {
+                                    if let Some(c) = &mut this.compose {
+                                        c.show_bcc = true;
+                                        window.focus(&c.bcc.focus_handle(cx), cx);
+                                    }
+                                    cx.notify();
+                                },
+                            )),
+                        )
                     })
                     .children(self.render_sealing(th, cx)),
             );
@@ -1949,12 +1953,15 @@ impl MailWindow {
             .flex_col()
             .child(to)
             .when(compose.show_cc, |d| {
-                d.child(self.recipient_row(row("Cc", cc_field), Field::Cc, th, cx))
+                d.child(self.recipient_row(row(tr!("compose-cc"), cc_field), Field::Cc, th, cx))
             })
             .when(compose.show_bcc, |d| {
-                d.child(self.recipient_row(row("Bcc", bcc_field), Field::Bcc, th, cx))
+                d.child(self.recipient_row(row(tr!("compose-bcc"), bcc_field), Field::Bcc, th, cx))
             })
-            .child(row("", compose.subject.clone().into_any_element()))
+            .child(row(
+                String::new(),
+                compose.subject.clone().into_any_element(),
+            ))
             .into_any_element()
     }
 

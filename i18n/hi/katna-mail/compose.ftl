@@ -2,9 +2,75 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+## Compose window: title bar
+
+compose-new-message = नया मैसेज
+compose-restore = पहले के साइज़ में लाएं
+compose-minimize = छोटा करें
+compose-exit-full-screen = फ़ुल स्क्रीन से बाहर निकलें
+compose-open-window = नई विंडो में खोलें
+compose-save-close = सेव करें और बंद करें
+compose-back-to-mail = मेल विंडो पर वापस जाएं
+compose-pop-out-reply = जवाब को अलग विंडो में खोलें
+compose-show-trimmed = छिपा हुआ कॉन्टेंट दिखाएं
+
+## Recipients and subject
+
+compose-to = पाने वाले
+compose-cc = Cc
+compose-bcc = Bcc
+compose-recipients = पाने वाले
+compose-subject = विषय
+
+## Sending (the notes at the bottom of the window)
+
+compose-open-elsewhere = पहले खुले हुए मैसेज को भेजें या खारिज करें।
+compose-bad-address = “{ $address }” ईमेल पता नहीं है।
+compose-no-recipients = पाने वाला कम से कम एक व्यक्ति जोड़ें।
+compose-attachments-too-large = अटैचमेंट { $size } के हैं; मेल सर्वर ज़्यादा से ज़्यादा { $limit } लेते हैं।
+compose-no-account = मेल भेजने के लिए कोई खाता जोड़ें।
+compose-past-time = आने वाले समय में से कोई समय चुनें।
+compose-scheduling = शेड्यूल किया जा रहा है…
+compose-sending = भेजा जा रहा है…
+compose-scheduled = { $when } को भेजने के लिए शेड्यूल किया गया
+compose-sent-archived = भेजा गया और संग्रह किया गया
+compose-sent = मैसेज भेजा गया
+compose-discarded = ड्राफ़्ट खारिज किया गया
+
+## Attachments
+
+compose-picker-insert = डालें
+compose-picker-attach = अटैच करें
+compose-file-too-large = { $name } बहुत बड़ी है: एक मैसेज में ज़्यादा से ज़्यादा { $limit } भेजे जा सकते हैं।
+compose-attachment-size = ({ $size })
+compose-remove-attachment = अटैचमेंट हटाएं
+compose-drop-files = फ़ाइलें यहां छोड़ें
+
+## Encryption and signing (the toggles by the recipients)
+
+compose-encrypt = एन्क्रिप्ट करें
+compose-encrypted = एन्क्रिप्ट किया गया: सिर्फ़ पाने वाले इसे पढ़ सकते हैं
+compose-sign = हस्ताक्षर करें
+compose-signed = हस्ताक्षर किया गया: पाने वाले जांच सकते हैं कि यह आपकी ओर से है
+
+## Spelling
+
+spell-no-dictionary = { $language } के लिए कोई वर्तनी शब्दकोश इंस्टॉल नहीं है (उदाहरण के लिए hunspell-en_us)।
+spell-dictionary-error = वर्तनी शब्दकोश: { $error }
+
 ## Grammar checking (the right-click menu on a grammar mistake)
 
 grammar-replace = “{ $words }”
 grammar-add = “{ $words }” जोड़ें
 grammar-remove = “{ $words }” हटाएं
 grammar-ignore = अनदेखा करें
+
+## Send checks (asked before a message goes out)
+
+send-check-attachment-title = क्या आप फ़ाइलें अटैच करना चाहते थे?
+send-check-attachment-text = आपने अटैचमेंट के बारे में लिखा है, लेकिन कुछ भी अटैच नहीं है।
+send-check-attach = फ़ाइल अटैच करें
+send-check-subject-title = बिना विषय के भेजें?
+send-check-subject-text = इस मैसेज का कोई विषय नहीं है।
+send-check-add-subject = विषय जोड़ें
+send-check-send-anyway = फिर भी भेजें

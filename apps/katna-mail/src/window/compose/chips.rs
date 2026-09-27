@@ -281,7 +281,7 @@ impl MailWindow {
         {
             input.update(cx, |input, cx| {
                 input.set_placeholder(if empty {
-                    tr!("recipients-placeholder")
+                    tr!("compose-recipients")
                 } else {
                     String::new()
                 });
