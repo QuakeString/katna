@@ -2382,23 +2382,36 @@ consent.
   `feedback.save_crash_reports`, read at the moment of a panic, so it
   takes effect at once; off means the panic hook and the core-dump check
   write nothing), and the list of saved reports with
-  **View**, **Copy** and **Delete** (and Delete all). Later (Part 2): the
-  sending switches and **Send feedback**.
+  **View**, **Copy** and **Delete** (and Delete all), each marked "Sent"
+  once it went to the crash tracker. Part 2 adds "Send crash reports"
+  (built) and later the usage statistics switch and **Send feedback**.
 
-**Part 2: sending, only with consent (later).** Reports go to a Sentry
-cloud project (decided by the owner on 27 September 2026, §25).
+**Part 2: sending, only with consent.** Reports go to a Sentry cloud
+project (decided by the owner on 27 September 2026, §25). Sending crash
+reports is built; usage statistics and the feedback form come later.
 
-- **Asking.** The first-run screen (onboarding) has one step, "Help improve
-  Katna", with **Share** and **Don't share** given equal weight and no
-  default: nothing is sent until the user picks. People who installed
-  before this existed are asked once in the same words after updating.
-  Settings > User feedback has the same two switches afterwards, "Send
-  crash reports" and "Send anonymous usage statistics", each off unless the
-  user turned it on, and changeable at any time. The daemon reads the
-  same config keys and sends nothing on metered connections.
-- **Crash reports.** With consent, a new report is shown to the user and
-  sent when they click **Send** (or automatically, if they chose "Always
-  send" in the notice). The text sent is exactly the file they can read.
+- **Asking.** The first-run screen (onboarding) has a step, "Help improve
+  Katna", between the look and the tour: what is sent, what is never sent
+  and where it goes, with **Don't send** and **Send crash reports** given
+  equal weight (the same outlined buttons) and no default. People who
+  installed before this existed get the same words once in a dialog after
+  updating, after What's new if that shows. Closing the dialog without an
+  answer asks again on the next start; until an answer is given
+  (`feedback.send_crash_reports` unset), nothing is sent. Settings > User
+  feedback has the "Send crash reports" switch afterwards, changeable at
+  any time; "Send anonymous usage statistics" joins it with C.6.
+- **Crash reports.** With consent, new reports are sent without asking
+  again, and the saved-reports list marks each one "Sent". The daemon
+  looks 20 seconds after it starts, every 15 minutes, and at once when
+  Katna Mail saves settings (`ReloadConfig`), never on a metered
+  connection. It first turns new core dumps of Katna Mail and itself
+  into reports (a daemon crash is reported even if Katna Mail is not
+  opened), then sends the reports of the last seven days not sent yet,
+  oldest first, at most five per look. `crashes/sent` lists what went. A
+  2xx answer or a refusal (another 4xx) marks the report done; a 429,
+  a server error or no network leaves it for the next look. The text sent
+  is the saved file, scrubbed once more; "Save crash reports on this
+  computer" off means there is nothing to send.
 - **Usage statistics.** Once a week at most, a small JSON document:
   app version, OS release family (Arch, Ubuntu, …), desktop and session
   type, screen scale bucket, number of accounts in buckets (1, 2–3, 4+),
@@ -2418,32 +2431,40 @@ cloud project (decided by the owner on 27 September 2026, §25).
   reply (clearly optional, never filled in from the account). It shows
   exactly what will be sent before sending. This is independent of the
   switches: sending feedback is itself the consent for that one message.
-- **Protocol and SDK.** Everything uses Sentry's envelope format
-  (`POST /api/<project>/envelope/`). Capture (Part 1) needs no Sentry
-  code: the local report already holds what an event needs (message,
-  location, frames as module + offset, build ID, system). When sending
-  (C.5), the daemon turns a report into a Sentry `Event` (frames with
-  `instruction_addr` relative to the image, `debug_meta` from the build
-  ID), so the upload holds exactly what the user could read. The Sentry
-  crates come in with that step, built without default features, and
-  only if the daemon stays within its budget; the envelope is simple
-  enough to write by hand otherwise. Native crashes become events from
-  the `coredumpctl` stack (module build ID plus offset per frame);
-  Sentry's minidump handler (`sentry-rust-minidump`, an extra process) is
-  not used unless the stacks from core dumps turn out not to be enough.
-  Crash reports are error events; feedback uses Sentry's User Feedback
-  item; usage statistics are one `info` event per week whose tags are the
-  feature flags above, plus release-health sessions for crash-free rates.
-- **Client settings.** `send_default_pii` off; no user object, no IP (the
-  project is set to not store IP addresses and to scrub data server-side
-  as well); `server_name` empty; breadcrumbs only from Katna's own log
-  lines after scrubbing. The DSN is one constant in `katna_core::ids`,
-  empty until the owner creates the Sentry project; an empty DSN disables
-  sending entirely, and config can point it at a self-hosted Sentry or
-  GlitchTip. TLS is `rustls` (the SDK is built without default features,
-  so no OpenSSL). The daemon does the upload (only it talks to the
-  network, §9); the app hands it reports over D-Bus. The daemon's 20 MB
-  budget is checked with the SDK in.
+- **Protocol, no SDK.** Everything uses Sentry's envelope format
+  (`POST /api/<project>/envelope/`), written by hand in
+  `katna_core::sentry` and posted with Katna's own small HTTPS client
+  (`katna_sync::autoconfig::http::post`, `rustls`), so sending adds no
+  dependency and nothing to the daemon's size. An envelope holds an error
+  event read back from the report's text and the report itself as a
+  `text/plain` attachment, so the upload is exactly what the user could
+  read. The event ID is a hash of the report, so a report sent twice is
+  kept once. Frames: a panic in a build with function names (Katna Mail)
+  uses Rust's backtrace (function, file, line), without the frames of the
+  panic machinery; a stripped build (the daemon) sends each frame as an
+  address relative to its module (`addr_mode: "rel:N"`) with the module's
+  ELF image in `debug_meta` (debug ID from the GNU build ID, as
+  `sentry-cli` computes it), for the debug files of C.3; a native crash
+  uses the `coredumpctl` stack of the crashed thread the same way, with
+  the build IDs `coredumpctl` lists. Level `fatal`, release
+  `katna@<version>`, tags `app` and `kind`, the OS line as
+  `contexts.os.raw_description`. Checked on 27 September 2026: Sentry
+  answered 200 to a test envelope. Sentry's minidump handler
+  (`sentry-rust-minidump`, an extra process) is not used unless the stacks
+  from core dumps turn out not to be enough. Later, feedback uses Sentry's
+  User Feedback item; usage statistics are one `info` event per week whose
+  tags are the feature flags above, plus release-health sessions for
+  crash-free rates.
+- **Client settings.** Nothing like the SDK's `send_default_pii`: no user
+  object, no IP (the project is also set to not store IP addresses and to
+  scrub data server-side), no `server_name`, no device ID; the recent log
+  lines go only inside the scrubbed report. The DSN is one constant,
+  `katna_core::ids::SENTRY_DSN` (a DSN is the project's public address,
+  not a secret); an empty DSN turns sending off, and `feedback.dsn` in the
+  settings file can point it at a self-hosted Sentry or GlitchTip. The
+  daemon does the upload (only it talks to the network, §9); Katna Mail
+  only writes the setting, and the daemon reads the reports from the
+  crash folder.
 
 **Server side.** The Sentry cloud project exists (organization
 `invenia-systems`, project ID `4512156171698256`, created by the owner on

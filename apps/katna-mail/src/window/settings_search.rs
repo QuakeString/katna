@@ -207,9 +207,9 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Feedback,
-        "Sharing",
-        "Nothing is shared; sending reports and anonymous usage statistics comes later, off unless you turn it on",
-        "telemetry analytics statistics anonymous sentry send share privacy opt in",
+        "Help improve Katna",
+        "Send crash reports to help fix what went wrong; off unless you turn it on",
+        "telemetry analytics anonymous sentry send share privacy opt in improve",
     ),
     entry(
         Section::Experimental,

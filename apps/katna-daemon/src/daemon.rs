@@ -159,6 +159,8 @@ pub struct Daemon {
     /// Asks the [`crate::Instance`] to delete the files and exit; it
     /// answers on the sender inside.
     delete_requests: (Sender<DeleteDone>, Receiver<DeleteDone>),
+    /// Tells the crash report sender that settings changed.
+    crash_uploads: (Sender<()>, Receiver<()>),
 }
 
 /// Where the [`crate::Instance`] reports whether it deleted every file.
@@ -194,6 +196,7 @@ impl Daemon {
             desktop: OnceLock::new(),
             closing: AtomicBool::new(false),
             delete_requests: async_channel::bounded(1),
+            crash_uploads: async_channel::bounded(1),
         });
         Ok((daemon, receiver))
     }
@@ -235,7 +238,21 @@ impl Daemon {
             self.start_account(&account).await;
         }
         self.start_outbox()?;
+        smol::spawn(crate::crash_upload::run(
+            Arc::downgrade(self),
+            self.crash_uploads.1.clone(),
+        ))
+        .detach();
         Ok(())
+    }
+
+    pub(crate) fn paths(&self) -> &Paths {
+        &self.paths
+    }
+
+    /// All data is being deleted.
+    pub(crate) fn closing(&self) -> bool {
+        self.closing.load(Ordering::SeqCst)
     }
 
     /// Stops the outbox and every worker; each logs out.
@@ -583,8 +600,8 @@ impl Daemon {
 
     /// Reads the settings file again and applies what the daemon uses from
     /// it (`sync.metered`, `sync.offline_days`, `notifications.new_mail`,
-    /// the `general` tray and badge switches). Katna Mail calls this after
-    /// saving settings.
+    /// the `general` tray and badge switches, `feedback.send_crash_reports`).
+    /// Katna Mail calls this after saving settings.
     pub fn reload_config(&self) -> Result<(), CommandError> {
         let config = Config::load(&self.paths.config_file())
             .map_err(|err| CommandError::InvalidArgs(err.to_string()))?;
@@ -608,6 +625,8 @@ impl Daemon {
             desktop.settings(config.general.clone());
         }
         self.apply_metered();
+        // Sending crash reports may have been turned on.
+        let _ = self.crash_uploads.0.try_send(());
         Ok(())
     }
 

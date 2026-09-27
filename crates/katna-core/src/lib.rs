@@ -12,6 +12,7 @@ pub mod ids;
 pub mod image;
 pub mod logging;
 pub mod paths;
+pub mod sentry;
 pub mod subject;
 
 pub use account::{Account, AccountId, AccountKind, AccountSettings, Pop3Keep, Security, Server};
