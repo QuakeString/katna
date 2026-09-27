@@ -332,11 +332,13 @@ impl MailWindow {
     /// up the room they leave, or give back.
     fn slide_rows(&mut self, top: f32, open: bool, first: bool, window: &Window, reduce: bool) {
         let slides = matches!(window.window_decorations(), Decorations::Server);
+        // Settings cover the list on a phone: its rows come back.
+        let covered = self.settings_open || self.settings_page.is_some();
         let layout = &mut self.layout;
         let phone = layout.size == Some(Size::Phone);
         let rows_height = TOOLBAR_HEIGHT + if slides { super::TOP_BAR_HEIGHT } else { 0.0 };
         let at_top = top <= 1.0;
-        let listing = phone && !open && !layout.drawer;
+        let listing = phone && !open && !covered && !layout.drawer;
         if !listing || at_top || -layout.list_run >= ROWS_RETURN_AFTER {
             layout.rows.set(1.0);
         } else if layout.list_run >= FAB_FOLD_AFTER && top > rows_height {
@@ -518,6 +520,7 @@ impl MailWindow {
         if shown <= 0.001
             || compose_open
             || self.settings_open
+            || self.settings_page.is_some()
             || self.app != RailApp::Mail
             || self.mail.is_err()
             || self.accounts.is_empty()
