@@ -316,7 +316,9 @@ impl MailWindow {
                                 this.close_settings_page(window, cx)
                             })),
                     )
-                    .child(div().text_size(px(22.0)).child("Settings")),
+                    .child(div().text_size(px(22.0)).child("Settings"))
+                    .child(div().flex_1())
+                    .child(self.version_button(th, cx)),
             )
             // The tabs wrap onto more lines on a wide page; on a phone they
             // stay on one line that scrolls sideways, as a phone's tabs do.

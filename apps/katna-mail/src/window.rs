@@ -15,6 +15,7 @@
 //! (a walk through the window), `whats_new` (after an update) and `layout` (phone, tablet and desktop
 //! layouts, by the window's width).
 
+mod about;
 mod account_view;
 mod accounts;
 mod add_account;
@@ -129,6 +130,8 @@ actions!(
         GoToAllMail,
         OpenSettings,
         ShowShortcuts,
+        ShowWhatsNew,
+        ShowAbout,
     ]
 );
 
@@ -387,6 +390,8 @@ pub struct MailWindow {
     onboarding: Option<onboarding::Onboarding>,
     /// The What's new dialog, after an update or from quick settings.
     whats_new: Option<whats_new::WhatsNew>,
+    /// The About Katna dialog.
+    about: Option<about::About>,
     tour: Option<tour::Tour>,
     tour_marks: tour::Marks,
     /// Where the parts the tour shows were in the last frame.
@@ -544,6 +549,7 @@ impl MailWindow {
             add_account: None,
             onboarding: None,
             whats_new: None,
+            about: None,
             tour: None,
             tour_marks: Default::default(),
             tour_seen: HashMap::new(),
@@ -2259,6 +2265,7 @@ impl Render for MailWindow {
         let danger = self.render_danger(&th, window, reduce, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
+        let about = self.render_about(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let tour = self.render_tour(&th, window, cx);
@@ -2291,6 +2298,8 @@ impl Render for MailWindow {
             .on_action(cx.listener(Self::go_to_all_mail))
             .on_action(cx.listener(Self::open_settings))
             .on_action(cx.listener(Self::show_shortcuts))
+            .on_action(cx.listener(Self::show_whats_new_action))
+            .on_action(cx.listener(Self::show_about))
             .child(content)
             .children(floating_settings)
             .children(fab)
@@ -2304,6 +2313,7 @@ impl Render for MailWindow {
             .children(danger)
             .children(new_label)
             .children(whats_new)
+            .children(about)
             .children(snackbar)
             .children(tour)
             .into_any_element();

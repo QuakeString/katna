@@ -83,6 +83,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                popovers turn to frosted glass.",
         animation: None,
     },
+    Highlight {
+        id: 6,
+        title: "About Katna",
+        text: "Help > About Katna, also in Quick settings, shows the version, \
+               the changelog and the free software Katna is built on. The \
+               version in the Settings header opens it too.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.

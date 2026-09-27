@@ -2,8 +2,8 @@
 
 //! Quick settings: a panel that slides in from the right with the reading
 //! pane (three or two panes), density, theme, app names, inbox tabs, undo
-//! send, the signature, conversation view, the tour and What's new. Changes
-//! apply at once and are saved to `config.toml`.
+//! send, the signature, conversation view, the tour, What's new and About.
+//! Changes apply at once and are saved to `config.toml`.
 
 use std::time::Duration;
 
@@ -248,56 +248,21 @@ impl MailWindow {
                             ))
                             .child(divider(th))
                             .child(heading("Help", th))
+                            .child(help_row("take-tour", "tour", "Take the tour", th).on_click(
+                                cx.listener(|this, _, window, cx| {
+                                    this.start_tour(false, window, cx)
+                                }),
+                            ))
                             .child(
-                                div()
-                                    .id("take-tour")
-                                    .relative()
-                                    .overflow_hidden()
-                                    .h(px(40.0))
-                                    .px(px(8.0))
-                                    .flex()
-                                    .flex_row()
-                                    .items_center()
-                                    .gap(px(14.0))
-                                    .rounded(px(8.0))
-                                    .text_size(px(14.0))
-                                    .cursor_pointer()
-                                    .hover(|s| s.bg(rgba(th.hover)))
-                                    .on_click(cx.listener(|this, _, window, cx| {
-                                        this.start_tour(false, window, cx)
-                                    }))
-                                    .child(
-                                        Ripple::new("take-tour-ripple", rgba(th.ripple))
-                                            .rounded(8.0),
-                                    )
-                                    .child(icon("tour", th.text_dim, 20.0))
-                                    .child("Take the tour"),
-                            )
-                            .child(
-                                div()
-                                    .id("whats-new")
-                                    .relative()
-                                    .overflow_hidden()
-                                    .h(px(40.0))
-                                    .px(px(8.0))
-                                    .flex()
-                                    .flex_row()
-                                    .items_center()
-                                    .gap(px(14.0))
-                                    .rounded(px(8.0))
-                                    .text_size(px(14.0))
-                                    .cursor_pointer()
-                                    .hover(|s| s.bg(rgba(th.hover)))
-                                    .on_click(cx.listener(|this, _, window, cx| {
+                                help_row("whats-new", "sparkle", "What\u{2019}s new", th).on_click(
+                                    cx.listener(|this, _, window, cx| {
                                         this.show_whats_new(window, cx)
-                                    }))
-                                    .child(
-                                        Ripple::new("whats-new-ripple", rgba(th.ripple))
-                                            .rounded(8.0),
-                                    )
-                                    .child(icon("sparkle", th.text_dim, 20.0))
-                                    .child("What\u{2019}s new"),
-                            ),
+                                    }),
+                                ),
+                            )
+                            .child(help_row("about", "info", "About Katna", th).on_click(
+                                cx.listener(|this, _, window, cx| this.open_about(window, cx)),
+                            )),
                     ),
             )
             .children(card_outline(
@@ -845,4 +810,30 @@ pub(super) fn heading(text: &'static str, th: &Theme) -> Div {
 
 pub(super) fn divider(th: &Theme) -> Div {
     div().mt(px(12.0)).h(px(1.0)).bg(rgba(th.divider))
+}
+
+/// A line under Help: an icon and what it opens.
+fn help_row(
+    id: &'static str,
+    name: &str,
+    label: &'static str,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    div()
+        .id(id)
+        .relative()
+        .overflow_hidden()
+        .h(px(40.0))
+        .px(px(8.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(14.0))
+        .rounded(px(8.0))
+        .text_size(px(14.0))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .child(Ripple::new((id, 0usize), rgba(th.ripple)).rounded(8.0))
+        .child(icon(name, th.text_dim, 20.0))
+        .child(label)
 }
