@@ -522,7 +522,7 @@ self-hosting.
 
 Started 27 September 2026, ahead of Phases 2, 5 and 6, at the owner's
 request. The owner wants the ten features of Mailspring Pro, backed by Katna
-Server on his own server (`server.katna.invenia.in`, tracking on a
+Server on the owner's own server (`server.katna.invenia.in`, tracking on a
 separate domain; the owner deploys the container, ARCHITECTURE.md §16). Not all
 of them need the server: most work in the daemon on this computer, and the
 server adds only what a computer that is switched off cannot do. Nothing
