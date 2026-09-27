@@ -54,6 +54,11 @@ search-options-show = Show search options
 settings = Settings
 account-add = Add an account
 
+## Message text (right-click menu in the reading pane)
+
+text-copy = Copy
+text-select-all = Select all
+
 ## Attachment viewer
 
 # Shown in place of a file the viewer cannot show.

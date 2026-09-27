@@ -231,6 +231,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 24,
+        title: "Select and copy text in mail",
+        text: "Drag across a message to select its text, double-click for a word \
+               or triple-click for a paragraph. Ctrl+C or a right-click copies it, \
+               and Ctrl+A selects the whole conversation.",
+        animation: None,
+    },
+    Highlight {
+        id: 25,
         title: "Old Word files and slides",
         text: "Word 97–2003 documents (.doc) now open in the viewer with their \
                headings, lists and tables, and PowerPoint (.pptx, .ppt) and \
