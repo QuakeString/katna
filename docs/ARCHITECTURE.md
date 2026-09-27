@@ -2587,6 +2587,25 @@ Everything is deleted after 180 days, and an install can delete its data.
 One server process (events are ordered within it). The API is in
 `server/katna-server/README.md`.
 
+**Implemented (daemon, `katna-sync::tracking`, `apps/katna-daemon/src/tracking.rs`):**
+a message queued with tracking (D-Bus `QueueTrackedSend`) that has an HTML
+part, is not signed or encrypted, and has at most 50 recipients (To, Cc and
+Bcc) goes out as one copy per recipient, each in its own SMTP transaction
+with the headers unchanged. Each copy's HTML gets the pixel before the
+first `<blockquote` and its links outside quotes rewritten; plain-text
+parts are left alone. A refused recipient does not stop the others and the
+send retries only the rest. Sent keeps one clean copy; on Gmail the
+tracked copies Gmail filed are found by `rfc822msgid:` plus a marker in the
+body and moved to Trash and deleted there (op `PurgeTracked`). Anything
+that stops tracking (no server, server error, too many recipients) sends
+the message once, untracked. The recipient mapping and events live in
+`pim.db` (schema v3). Tracking uses the Katna account token
+(`katna_account::Session::token`, §16.2) and server (`server_url`); the
+server takes it only while this computer is signed in to an account with a
+confirmed address, and otherwise the message goes out untracked. The first
+open or click by a person raises a notification whose Open shows the Sent
+copy.
+
 ### 16.2 Katna accounts
 
 Every server feature needs a **Katna account**, like a Mailspring ID

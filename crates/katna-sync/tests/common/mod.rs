@@ -399,6 +399,19 @@ impl MailBackend for FakeConnection {
         if !state.gmail {
             return Ok(None);
         }
+        if let Some(id) = query.strip_prefix("rfc822msgid:") {
+            let wanted = format!("message-id: <{}>", id.to_ascii_lowercase());
+            return Ok(Some(
+                range(&state.folders[self.selected()], first, None)
+                    .filter(|(_, m)| {
+                        String::from_utf8_lossy(&m.header)
+                            .to_ascii_lowercase()
+                            .contains(&wanted)
+                    })
+                    .map(|(uid, _)| *uid)
+                    .collect(),
+            ));
+        }
         let category = query.strip_prefix("category:").expect("a category search");
         Ok(Some(
             range(&state.folders[self.selected()], first, None)

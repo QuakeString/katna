@@ -21,6 +21,15 @@ notify-no-subject = (no subject)
 # The title of a notification about a message with no sender.
 notify-unknown-sender = Unknown sender
 
+## Open and click tracking (only for mail sent with "Track opens and clicks")
+
+# The title when a recipient first opens a tracked message. $who is the
+# recipient's name or address, $subject the message's subject.
+notify-tracking-opened = { $who } opened { $subject }
+# The title when a recipient first follows a link in a tracked message;
+# the text under it is the link.
+notify-tracking-clicked = { $who } clicked a link in { $subject }
+
 ## Its buttons
 
 notify-open = Open

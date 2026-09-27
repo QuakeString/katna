@@ -195,6 +195,32 @@ impl Notifier {
             .await
     }
 
+    /// Shows a quiet notification that a tracked message was opened or a
+    /// link in it followed (`docs/ARCHITECTURE.md` §16.1), with an Open
+    /// button for Katna Mail. Returns its ID.
+    pub async fn tracking(&self, summary: &str, body: &str) -> zbus::Result<u32> {
+        let open = tr!("notify-open");
+        let actions = [action::OPEN, open.as_str()];
+        let hints = HashMap::from([
+            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("category", Value::from("email")),
+            ("urgency", Value::U8(1)),
+            ("suppress-sound", Value::Bool(true)),
+        ]);
+        self.proxy
+            .notify(
+                "Katna Mail",
+                0,
+                ids::MAIL_APP_ID,
+                summary,
+                body,
+                &actions,
+                hints,
+                -1,
+            )
+            .await
+    }
+
     pub async fn close(&self, id: u32) -> zbus::Result<()> {
         self.proxy.close_notification(id).await
     }

@@ -68,10 +68,12 @@ pub struct OutboxEntry {
     /// When scheduled mail goes out (Unix seconds), if later than
     /// `send_at`. A `Sent` entry with it is held by the server until then.
     pub hold_until: Option<i64>,
+    /// Sent as one tracked copy per recipient (§11, §16.1).
+    pub per_recipient: bool,
 }
 
 const ENTRY_QUERY: &str = "SELECT o.id, m.account_id, o.draft_message_id, m.subject,
-                                  o.send_at, o.state, o.attempts, o.hold_until
+                                  o.send_at, o.state, o.attempts, o.hold_until, o.per_recipient
                            FROM outbox o JOIN message m ON m.id = o.draft_message_id";
 
 fn entry(row: &rusqlite::Row<'_>) -> rusqlite::Result<OutboxEntry> {
@@ -84,6 +86,7 @@ fn entry(row: &rusqlite::Row<'_>) -> rusqlite::Result<OutboxEntry> {
         state: SendState::parse(&row.get::<_, String>(5)?),
         attempts: row.get(6)?,
         hold_until: row.get(7)?,
+        per_recipient: row.get(8)?,
     })
 }
 
@@ -187,7 +190,7 @@ impl MailBatch<'_> {
 
     /// Queues `message` to be sent at `send_at`. Returns the entry's ID.
     pub fn queue_send(&mut self, message: MessageId, send_at: i64) -> Result<i64> {
-        self.queue_held(message, send_at, None)
+        self.queue_entry(message, send_at, None, false)
     }
 
     /// Queues `message` to be handed over at `send_at` and to go out at
@@ -198,11 +201,33 @@ impl MailBatch<'_> {
         send_at: i64,
         hold_until: Option<i64>,
     ) -> Result<i64> {
+        self.queue_entry(message, send_at, hold_until, false)
+    }
+
+    /// Like [`Self::queue_send`]; with `per_recipient`, the message goes
+    /// out as one tracked copy per recipient.
+    pub fn queue_send_as(
+        &mut self,
+        message: MessageId,
+        send_at: i64,
+        per_recipient: bool,
+    ) -> Result<i64> {
+        self.queue_entry(message, send_at, None, per_recipient)
+    }
+
+    fn queue_entry(
+        &mut self,
+        message: MessageId,
+        send_at: i64,
+        hold_until: Option<i64>,
+        per_recipient: bool,
+    ) -> Result<i64> {
         let tx = self.tx();
         tx.prepare_cached(
-            "INSERT INTO outbox (draft_message_id, send_at, hold_until) VALUES (?1, ?2, ?3)",
+            "INSERT INTO outbox (draft_message_id, send_at, hold_until, per_recipient)
+             VALUES (?1, ?2, ?3, ?4)",
         )?
-        .execute(params![message.0, send_at, hold_until])?;
+        .execute(params![message.0, send_at, hold_until, per_recipient])?;
         Ok(tx.last_insert_rowid())
     }
 
