@@ -1572,11 +1572,15 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
   with up to four "Sender: Subject" lines.
 - Mail already stored when the daemon starts, and a new account's first
   sync, are not news.
-- Buttons: Open (click), Mark as read / Mark all as read, Archive. Open
-  calls `ActivateAction("open-message", [id])` on the app's
-  `org.freedesktop.Application` object (`/in/invenia/katna/Mail`) with the
-  activation token, and starts `katna-mail` with `XDG_ACTIVATION_TOKEN` when
-  the app does not answer.
+- Buttons: Open (click), Reply all (one message only), Mark as read / Mark
+  all as read, Archive. Open calls `ActivateAction("open-message", [id])`
+  on the app's `org.freedesktop.Application` object
+  (`/in/invenia/katna/Mail`) with the activation token; Reply all calls
+  `reply-all`, which opens the message with an inline reply to all. When
+  the app does not answer, the daemon starts `katna-mail --message ID` (or
+  `--reply-all ID`) with `XDG_ACTIVATION_TOKEN`. The app looks for the
+  message in every inbox tab. The Plasma inline-reply field in the table
+  above is not built yet.
 - A notification closes when all its mail is read or out of the inbox, from
   a sync or from a change made in the app.
 - Setting `notifications.new_mail` (default on); `ReloadConfig` applies it.
@@ -1614,8 +1618,8 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   saving so the daemon applies them at once.
 - **Single instance and actions**: Katna Mail owns `in.invenia.katna.Mail`
   and serves `org.freedesktop.Application` at `/in/invenia/katna/Mail` with
-  the actions `open-inbox`, `compose`, `preferences`, `open-message` (a
-  message ID) and `quit` (`katna_dbus::app_action`). A second `katna-mail`
+  the actions `open-inbox`, `compose`, `preferences`, `open-message` and
+  `reply-all` (a message ID) and `quit` (`katna_dbus::app_action`). A second `katna-mail`
   hands its request to the first and exits. The tray, notifications and
   the desktop file use this: its actions New Message, Open Inbox and
   Preferences (right-click on the taskbar icon in Plasma and GNOME) run

@@ -2,8 +2,8 @@
 
 //! New-mail notifications (`docs/ARCHITECTURE.md` §15.1): after each sync,
 //! unread mail that reached an account's inbox (Primary tab) since the last
-//! look becomes one notification per account and sync, with Open, Mark as
-//! read and Archive. Notifications close when their mail is read or leaves
+//! look becomes one notification per account and sync, with Open, Reply all
+//! (for one message), Mark as read and Archive. Notifications close when their mail is read or leaves
 //! the inbox anywhere.
 
 use std::{
@@ -286,7 +286,11 @@ impl NewMailNotices {
                             .archive_messages(&shown.messages)
                             .map_err(|e| e.to_string()),
                         action::OPEN => {
-                            notices.open(shown.messages[0], token).await;
+                            notices.open(shown.messages[0], false, token).await;
+                            Ok(())
+                        }
+                        action::REPLY_ALL => {
+                            notices.open(shown.messages[0], true, token).await;
                             Ok(())
                         }
                         _ => Ok(()),
@@ -300,12 +304,16 @@ impl NewMailNotices {
         }
     }
 
-    /// Opens Katna Mail on `message`: through its
-    /// `org.freedesktop.Application` interface when it is running and has
-    /// one, else by starting it.
-    async fn open(&self, message: MessageId, token: Option<String>) {
+    /// Opens Katna Mail on `message`, with a reply to all started if
+    /// `reply_all`: through its `org.freedesktop.Application` interface when
+    /// it is running and has one, else by starting it.
+    async fn open(&self, message: MessageId, reply_all: bool, token: Option<String>) {
         let params = vec![Value::from(message.0)];
-        let action = Some(katna_dbus::app_action::OPEN_MESSAGE);
+        let action = Some(if reply_all {
+            katna_dbus::app_action::REPLY_ALL
+        } else {
+            katna_dbus::app_action::OPEN_MESSAGE
+        });
         crate::mail_app::run(&self.connection, action, params, token).await;
     }
 }

@@ -5,7 +5,7 @@
 //!
 //! Talks to the desktop's `org.freedesktop.Notifications` server directly
 //! (Plasma, GNOME Shell, mako, dunst, …). So far: new-mail notifications
-//! with Open, Mark as read and Archive. Inline reply comes later.
+//! with Open, Reply all, Mark as read and Archive.
 
 use std::collections::HashMap;
 
@@ -16,6 +16,8 @@ use zbus::zvariant::Value;
 pub mod action {
     /// A click on the notification itself.
     pub const OPEN: &str = "default";
+    /// Only on a notification about one message.
+    pub const REPLY_ALL: &str = "reply-all";
     pub const MARK_READ: &str = "mark-read";
     pub const ARCHIVE: &str = "archive";
 }
@@ -147,14 +149,11 @@ impl Notifier {
         } else {
             "Mark all as read"
         };
-        let actions = [
-            action::OPEN,
-            "Open",
-            action::MARK_READ,
-            mark_read,
-            action::ARCHIVE,
-            "Archive",
-        ];
+        let mut actions = vec![action::OPEN, "Open"];
+        if mails.len() == 1 {
+            actions.extend([action::REPLY_ALL, "Reply all"]);
+        }
+        actions.extend([action::MARK_READ, mark_read, action::ARCHIVE, "Archive"]);
         let hints = HashMap::from([
             ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
             ("category", Value::from("email.arrived")),
