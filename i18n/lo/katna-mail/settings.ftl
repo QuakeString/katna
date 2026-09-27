@@ -153,7 +153,7 @@ settings-default-apps-show-folder-detail = ເປີດຕົວຈັດກາ�
 ## Settings > Compose
 
 settings-compose-send-from = ສົ່ງຂໍ້ຄວາມໃໝ່ຈາກ
-settings-compose-send-from-detail = ການຕອບກັບ ແລະ ການສົ່ງຕໍ່ຈະສົ່ງອອກຈາກບັນຊີທີ່ທ່ານຢູ່ສະເໝີ.
+settings-compose-send-from-detail = ຂໍ້ຄວາມໃໝ່ຈະເລີ່ມຈາກບັນຊີນີ້; ແຖວ ຈາກ ຈະເລືອກບັນຊີອື່ນ. ການຕອບກັບ ແລະ ການສົ່ງຕໍ່ຈະສົ່ງອອກຈາກບັນຊີທີ່ໄດ້ຮັບຂໍ້ຄວາມຕົ້ນສະບັບສະເໝີ.
 settings-compose-send-from-current = ບັນຊີທີ່ທ່ານຢູ່
 settings-compose-send-on-replies = ການສົ່ງເມື່ອຕອບກັບ
 settings-compose-send-on-replies-detail = ສິ່ງທີ່ປຸ່ມສົ່ງເຮັດເມື່ອຕອບກັບ ຫຼື ສົ່ງຕໍ່. ເມນູຂ້າງປຸ່ມສົ່ງມີອີກຕົວເລືອກໜຶ່ງ.
@@ -229,7 +229,7 @@ settings-default-apps-text-summary = ບ່ອນທີ່ຂໍ້ຄວາມ�
 settings-default-apps-sheets-summary = ບ່ອນທີ່ໄຟລ໌ Excel, OpenDocument ແລະ CSV ຈະເປີດ
 settings-default-apps-documents-summary = ບ່ອນທີ່ Word, ຂໍ້ຄວາມ OpenDocument ແລະ ສະໄລ້ ຈະເປີດ
 settings-default-apps-after-saving-summary = ສະແດງໄຟລ໌ແນບທີ່ບັນທຶກແລ້ວໃນໂຟນເດີຂອງມັນ
-settings-compose-send-from-summary = ບັນຊີທີ່ອີເມວໃໝ່ຈະສົ່ງອອກ: ບັນຊີທີ່ທ່ານຢູ່, ຫຼື ບັນຊີດຽວກັນສະເໝີ
+settings-compose-send-from-summary = ບັນຊີທີ່ອີເມວໃໝ່ຈະສົ່ງອອກ: ບັນຊີທຳອິດ, ບັນຊີອື່ນ, ຫຼື ບັນຊີທີ່ທ່ານຢູ່
 settings-compose-send-on-replies-summary = ສົ່ງ, ຫຼື ສົ່ງ ແລະ ຈັດເກັບການສົນທະນາ, ເມື່ອຕອບກັບ ແລະ ສົ່ງຕໍ່
 settings-compose-signatures-summary = ເພີ່ມໄວ້ລຸ່ມຂໍ້ຄວາມຂອງທ່ານ, ຫຼັງແຖວ “--”
 settings-compose-for-new-mail-summary = ລາຍເຊັນທີ່ອີເມວໃໝ່ເລີ່ມຕົ້ນດ້ວຍ

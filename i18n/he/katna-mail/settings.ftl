@@ -161,7 +161,7 @@ settings-default-apps-show-folder-detail = פותח את מנהל הקבצים �
 ## Settings > Compose
 
 settings-compose-send-from = שליחת הודעות חדשות מהחשבון
-settings-compose-send-from-detail = תשובות והעברות תמיד יוצאות מהחשבון שבו נמצאים.
+settings-compose-send-from-detail = הודעות חדשות מתחילות מהחשבון הזה; בשורה מאת אפשר לבחור חשבון אחר. תשובות והעברות תמיד יוצאות מהחשבון שאליו הגיעה ההודעה המקורית.
 settings-compose-send-from-current = החשבון שבו נמצאים
 settings-compose-send-on-replies = שליחה בתשובות
 settings-compose-send-on-replies-detail = מה „שליחה” עושה בתשובה או בהעברה. התפריט שליד „שליחה” מציע את האפשרות השנייה.
@@ -237,7 +237,7 @@ settings-default-apps-text-summary = איפה נפתחים טקסט פשוט, י
 settings-default-apps-sheets-summary = איפה נפתחים קובצי Excel, OpenDocument ו־CSV
 settings-default-apps-documents-summary = איפה נפתחים Word, טקסט OpenDocument ומצגות
 settings-default-apps-after-saving-summary = הצגת קבצים מצורפים שנשמרו בתיקייה שלהם
-settings-compose-send-from-summary = החשבון שממנו יוצא דואר חדש: החשבון שבו נמצאים, או תמיד אותו חשבון
+settings-compose-send-from-summary = החשבון שממנו יוצא דואר חדש: הראשון, חשבון אחר, או החשבון שבו נמצאים
 settings-compose-send-on-replies-summary = „שליחה” או „שליחה והעברה לארכיון” של השיחה, בתשובות ובהעברות
 settings-compose-signatures-summary = נוספת מתחת להודעה, אחרי שורת „--”
 settings-compose-for-new-mail-summary = החתימה שבה מתחיל דואר חדש

@@ -167,7 +167,7 @@ settings-default-apps-show-folder-detail = يفتح مدير الملفات مع
 ## Settings > Compose
 
 settings-compose-send-from = إرسال الرسائل الجديدة من
-settings-compose-send-from-detail = يتم دائمًا إرسال الردود وإعادات التوجيه من الحساب الذي تستخدمه.
+settings-compose-send-from-detail = تبدأ الرسائل الجديدة من هذا الحساب، ويختار صف «من» حسابًا آخر. تُرسَل الردود وإعادات التوجيه دائمًا من الحساب الذي وصلت إليه الرسالة الأصلية.
 settings-compose-send-from-current = الحساب الذي تستخدمه
 settings-compose-send-on-replies = الإرسال في الردود
 settings-compose-send-on-replies-detail = ما يفعله زر «إرسال» في الرد أو إعادة التوجيه. وتوفّر القائمة بجانب «إرسال» الخيار الآخر.
@@ -243,7 +243,7 @@ settings-default-apps-text-summary = مكان فتح النص العادي وا�
 settings-default-apps-sheets-summary = مكان فتح ملفات Excel وOpenDocument وCSV
 settings-default-apps-documents-summary = مكان فتح مستندات Word ونصوص OpenDocument والعروض التقديمية
 settings-default-apps-after-saving-summary = عرض المرفقات المحفوظة في مجلدها
-settings-compose-send-from-summary = الحساب الذي يُرسَل منه البريد الجديد: الحساب الذي تستخدمه، أو الحساب نفسه دائمًا
+settings-compose-send-from-summary = الحساب الذي يُرسَل منه البريد الجديد: الأول، أو حساب آخر، أو الحساب الذي تستخدمه
 settings-compose-send-on-replies-summary = «إرسال» أو «إرسال وأرشفة» المحادثة، في الردود وإعادة التوجيه
 settings-compose-signatures-summary = يُضاف أسفل رسالتك، بعد سطر «--»
 settings-compose-for-new-mail-summary = التوقيع الذي يبدأ به البريد الجديد

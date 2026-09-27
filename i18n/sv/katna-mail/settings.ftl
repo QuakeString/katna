@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = Öppnar filhanteraren med de sparade 
 ## Settings > Compose
 
 settings-compose-send-from = Skicka nya meddelanden från
-settings-compose-send-from-detail = Svar och vidarebefordringar skickas alltid från kontot du befinner dig i.
+settings-compose-send-from-detail = Nya meddelanden börjar från det här kontot; raden Från väljer ett annat. Svar och vidarebefordringar skickas alltid från kontot som tog emot originalmeddelandet.
 settings-compose-send-from-current = Kontot du befinner dig i
 settings-compose-send-on-replies = Skicka vid svar
 settings-compose-send-on-replies-detail = Vad Skicka gör vid ett svar eller en vidarebefordran. Menyn bredvid Skicka erbjuder det andra.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = Var oformaterad text, loggar och kod öppna
 settings-default-apps-sheets-summary = Var Excel-, OpenDocument- och CSV-filer öppnas
 settings-default-apps-documents-summary = Var Word- och OpenDocument-text och presentationer öppnas
 settings-default-apps-after-saving-summary = Visa sparade bilagor i deras mapp
-settings-compose-send-from-summary = Kontot som ny e-post skickas från: det du befinner dig i, eller alltid samma
+settings-compose-send-from-summary = Kontot som ny e-post skickas från: det första, ett annat, eller det du befinner dig i
 settings-compose-send-on-replies-summary = Skicka, eller Skicka och arkivera konversationen, vid svar och vidarebefordringar
 settings-compose-signatures-summary = Läggs till under ditt meddelande, efter en rad med ”--”
 settings-compose-for-new-mail-summary = Signaturen som ny e-post börjar med

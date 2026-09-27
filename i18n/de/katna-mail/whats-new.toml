@@ -466,3 +466,12 @@ Wenn Katna Ihnen nützlich ist: Unter Über Katna gibt es jetzt den Knopf
 Spendieren Sie mir einen Kaffee und einen QR-Code, der dieselbe Seite
 auf Ihrem Handy öffnet.
 """
+
+["2026-09-27-1615-from-row"]
+title = "Wählen Sie, von wem eine Nachricht kommt"
+text = """
+Neue Nachrichten zeigen jetzt unter An eine Zeile Von. Klicken Sie auf
+ihren Pfeil, um von einem anderen Ihrer Konten zu senden. Neue E-Mails
+beginnen mit Ihrem ersten Konto, außer Sie wählen unter Einstellungen >
+Verfassen > Neue Nachrichten senden von ein anderes Standardkonto.
+"""

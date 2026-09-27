@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = Binubuksan ang file manager na nakapi
 ## Settings > Compose
 
 settings-compose-send-from = Ipadala ang mga bagong mensahe mula sa
-settings-compose-send-from-detail = Palaging ipinapadala ang mga sagot at pagpapasa mula sa account na kinaroroonan mo.
+settings-compose-send-from-detail = Nagsisimula ang mga bagong mensahe sa account na ito; pumipili ng iba ang row na Mula kay. Palaging ipinapadala ang mga sagot at pagpapasa mula sa account na pinadalhan ng orihinal na mensahe.
 settings-compose-send-from-current = Ang account na kinaroroonan mo
 settings-compose-send-on-replies = Ipadala sa mga sagot
 settings-compose-send-on-replies-detail = Ang ginagawa ng Ipadala sa isang sagot o pagpapasa. Iniaalok ng menu sa tabi ng Ipadala ang isa pa.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = Kung saan bumubukas ang plain text, mga log
 settings-default-apps-sheets-summary = Kung saan bumubukas ang mga Excel, OpenDocument at CSV file
 settings-default-apps-documents-summary = Kung saan bumubukas ang Word, OpenDocument text at mga slide
 settings-default-apps-after-saving-summary = Ipakita ang mga na-save na attachment sa folder nila
-settings-compose-send-from-summary = Ang account na pinagpapadalhan ng bagong mail: ang kinaroroonan mo, o palaging iisa
+settings-compose-send-from-summary = Ang account na pinagpapadalhan ng bagong mail: ang una, iba pa, o ang kinaroroonan mo
 settings-compose-send-on-replies-summary = Ipadala, o Ipadala at i-archive ang pag-uusap, sa mga sagot at pagpapasa
 settings-compose-signatures-summary = Idinaragdag sa ibaba ng iyong mensahe, pagkatapos ng linyang “--”
 settings-compose-for-new-mail-summary = Ang lagdang pinagsisimulan ng bagong mail

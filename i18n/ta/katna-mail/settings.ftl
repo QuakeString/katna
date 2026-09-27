@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = சேமித்த இணைப்
 ## Settings > Compose
 
 settings-compose-send-from = புதிய மெசேஜ்களை இதிலிருந்து அனுப்பு
-settings-compose-send-from-detail = பதில்களும் முன்னனுப்பல்களும் எப்போதும் நீங்கள் இருக்கும் கணக்கிலிருந்தே செல்லும்.
+settings-compose-send-from-detail = புதிய மெசேஜ்கள் இந்தக் கணக்கிலிருந்து தொடங்கும்; அனுப்புநர் வரிசையில் வேறொன்றைத் தேர்வுசெய்யலாம். பதில்களும் முன்னனுப்பல்களும் எப்போதும் மூல மெசேஜ் வந்த கணக்கிலிருந்தே செல்லும்.
 settings-compose-send-from-current = நீங்கள் இருக்கும் கணக்கு
 settings-compose-send-on-replies = பதில்களில் அனுப்பு பட்டன்
 settings-compose-send-on-replies-detail = பதிலிலோ முன்னனுப்பலிலோ அனுப்பு பட்டன் என்ன செய்யும். அனுப்பு பட்டனுக்கு அருகிலுள்ள மெனுவில் மற்றொன்று இருக்கும்.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = வெற்று உரை, பதிவ�
 settings-default-apps-sheets-summary = Excel, OpenDocument, CSV ஃபைல்கள் எங்கே திறக்கும்
 settings-default-apps-documents-summary = Word, OpenDocument உரை, ஸ்லைடுகள் எங்கே திறக்கும்
 settings-default-apps-after-saving-summary = சேமித்த இணைப்புகளை அவற்றின் ஃபோல்டரில் காட்டு
-settings-compose-send-from-summary = புதிய அஞ்சல் அனுப்பப்படும் கணக்கு: நீங்கள் இருக்கும் கணக்கு, அல்லது எப்போதும் ஒரே கணக்கு
+settings-compose-send-from-summary = புதிய அஞ்சல் அனுப்பப்படும் கணக்கு: முதல் கணக்கு, வேறொரு கணக்கு, அல்லது நீங்கள் இருக்கும் கணக்கு
 settings-compose-send-on-replies-summary = பதில்களிலும் முன்னனுப்பல்களிலும் அனுப்பு, அல்லது அனுப்பி உரையாடலைக் காப்பகப்படுத்து
 settings-compose-signatures-summary = உங்கள் மெசேஜுக்குக் கீழே, “--” வரிக்குப் பிறகு சேர்க்கப்படும்
 settings-compose-for-new-mail-summary = புதிய அஞ்சல் தொடங்கும் கையொப்பம்

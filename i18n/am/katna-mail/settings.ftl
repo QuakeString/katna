@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = የፋይል አቀናባሪውን �
 ## Settings > Compose
 
 settings-compose-send-from = አዲስ መልዕክቶችን ላክ ከ
-settings-compose-send-from-detail = ምላሾች እና ማስተላለፎች ሁልጊዜ ካሉበት መለያ ይወጣሉ።
+settings-compose-send-from-detail = አዲስ መልዕክቶች ከዚህ መለያ ይጀምራሉ፤ የ«ከ» ረድፍ ሌላ መለያ ይመርጣል። ምላሾች እና ማስተላለፎች ሁልጊዜ የመጀመሪያው መልዕክት ከደረሰበት መለያ ይወጣሉ።
 settings-compose-send-from-current = ያሉበት መለያ
 settings-compose-send-on-replies = በምላሾች ላይ መላክ
 settings-compose-send-on-replies-detail = ላክ በምላሽ ወይም በማስተላለፍ ላይ የሚያደርገው። ከላክ አጠገብ ያለው ምናሌ ሌላውን ያቀርባል።
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = ግልጽ ጽሑፍ፣ ምዝግብ ማስ�
 settings-default-apps-sheets-summary = የExcel፣ OpenDocument እና CSV ፋይሎች የሚከፈቱበት ቦታ
 settings-default-apps-documents-summary = Word፣ የOpenDocument ጽሑፍ እና ስላይዶች የሚከፈቱበት ቦታ
 settings-default-apps-after-saving-summary = የተቀመጡ አባሪዎችን በአቃፊያቸው ውስጥ አሳይ
-settings-compose-send-from-summary = አዲስ ደብዳቤ የሚወጣበት መለያ፦ ያሉበት፣ ወይም ሁልጊዜ ያው
+settings-compose-send-from-summary = አዲስ ደብዳቤ የሚወጣበት መለያ፦ የመጀመሪያው፣ ሌላ፣ ወይም ያሉበት
 settings-compose-send-on-replies-summary = በምላሾች እና በማስተላለፎች ላይ ላክ፣ ወይም ላክ እና ውይይቱን ወደ ማህደር አስቀምጥ
 settings-compose-signatures-summary = ከመልዕክትዎ በታች፣ ከ«--» መስመር በኋላ ይታከላል
 settings-compose-for-new-mail-summary = አዲስ ደብዳቤ የሚጀምርበት ፊርማ

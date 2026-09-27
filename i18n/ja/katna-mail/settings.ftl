@@ -153,7 +153,7 @@ settings-default-apps-show-folder-detail = 保存した添付ファイルを選�
 ## Settings > Compose
 
 settings-compose-send-from = 新規メールの送信元
-settings-compose-send-from-detail = 返信と転送は、常に表示中のアカウントから送信します。
+settings-compose-send-from-detail = 新規メールはこのアカウントから始まります。From 行で別のアカウントを選べます。返信と転送は、常に元のメールを受信したアカウントから送信します。
 settings-compose-send-from-current = 表示中のアカウント
 settings-compose-send-on-replies = 返信時の送信
 settings-compose-send-on-replies-detail = 返信や転送で「送信」ボタンが行う操作です。「送信」の横のメニューからもう一方を選べます。
@@ -229,7 +229,7 @@ settings-default-apps-text-summary = プレーンテキスト、ログ、コー�
 settings-default-apps-sheets-summary = Excel、OpenDocument、CSV ファイルを開くアプリ
 settings-default-apps-documents-summary = Word、OpenDocument テキスト、スライドを開くアプリ
 settings-default-apps-after-saving-summary = 保存した添付ファイルをフォルダで表示
-settings-compose-send-from-summary = 新規メールを送信するアカウント: 表示中のアカウントか、常に同じアカウント
+settings-compose-send-from-summary = 新規メールを送信するアカウント: 最初のアカウント、別のアカウント、または表示中のアカウント
 settings-compose-send-on-replies-summary = 返信や転送で「送信」か「送信してアーカイブ」か
 settings-compose-signatures-summary = メール本文の下、「--」の行の後に追加
 settings-compose-for-new-mail-summary = 新規メールに最初から入れる署名

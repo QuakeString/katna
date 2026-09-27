@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = సేవ్ చేసిన అట�
 ## Settings > Compose
 
 settings-compose-send-from = కొత్త మెసేజ్‌లను దీని నుండి పంపండి
-settings-compose-send-from-detail = రిప్లయిలు, ఫార్వర్డ్‌లు ఎల్లప్పుడూ మీరు ఉన్న ఖాతా నుండే వెళ్తాయి.
+settings-compose-send-from-detail = కొత్త మెసేజ్‌లు ఈ ఖాతా నుండి మొదలవుతాయి; పంపినవారు వరుసలో మరొకటి ఎంచుకోవచ్చు. రిప్లయిలు, ఫార్వర్డ్‌లు ఎల్లప్పుడూ అసలు మెసేజ్ వచ్చిన ఖాతా నుండే వెళ్తాయి.
 settings-compose-send-from-current = మీరు ఉన్న ఖాతా
 settings-compose-send-on-replies = రిప్లయిలపై పంపు బటన్
 settings-compose-send-on-replies-detail = రిప్లయి లేదా ఫార్వర్డ్‌లో పంపు బటన్ ఏమి చేస్తుంది. పంపు పక్కన ఉన్న మెనూలో మరొకటి ఉంటుంది.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = సాధారణ టెక్స్ట్
 settings-default-apps-sheets-summary = Excel, OpenDocument, CSV ఫైల్‌లు ఎక్కడ తెరవబడతాయి
 settings-default-apps-documents-summary = Word, OpenDocument టెక్స్ట్, స్లయిడ్‌లు ఎక్కడ తెరవబడతాయి
 settings-default-apps-after-saving-summary = సేవ్ చేసిన అటాచ్‌మెంట్‌లను వాటి ఫోల్డర్‌లో చూపండి
-settings-compose-send-from-summary = కొత్త మెయిల్ వెళ్లే ఖాతా: మీరు ఉన్న ఖాతా, లేదా ఎల్లప్పుడూ ఒకే ఖాతా
+settings-compose-send-from-summary = కొత్త మెయిల్ వెళ్లే ఖాతా: మొదటిది, మరొకటి, లేదా మీరు ఉన్న ఖాతా
 settings-compose-send-on-replies-summary = రిప్లయిలు, ఫార్వర్డ్‌లపై పంపండి, లేదా పంపి సంభాషణను ఆర్కైవ్ చేయండి
 settings-compose-signatures-summary = మీ మెసేజ్ కింద, “--” లైన్ తర్వాత జోడించబడుతుంది
 settings-compose-for-new-mail-summary = కొత్త మెయిల్ మొదలయ్యే సంతకం

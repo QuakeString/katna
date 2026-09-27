@@ -153,7 +153,7 @@ settings-default-apps-show-folder-detail = Membuka pengurus fail dengan lampiran
 ## Settings > Compose
 
 settings-compose-send-from = Hantar mesej baharu daripada
-settings-compose-send-from-detail = Balasan dan majuan sentiasa dihantar daripada akaun yang sedang anda gunakan.
+settings-compose-send-from-detail = Mesej baharu bermula daripada akaun ini; baris Daripada memilih akaun lain. Balasan dan majuan sentiasa dihantar daripada akaun yang menerima mesej asal.
 settings-compose-send-from-current = Akaun yang sedang anda gunakan
 settings-compose-send-on-replies = Hantar pada balasan
 settings-compose-send-on-replies-detail = Apa yang dilakukan oleh Hantar pada balasan atau majuan. Menu di sebelah Hantar menawarkan pilihan yang satu lagi.
@@ -229,7 +229,7 @@ settings-default-apps-text-summary = Tempat teks biasa, log dan kod dibuka
 settings-default-apps-sheets-summary = Tempat fail Excel, OpenDocument dan CSV dibuka
 settings-default-apps-documents-summary = Tempat teks Word dan OpenDocument serta slaid dibuka
 settings-default-apps-after-saving-summary = Tunjukkan lampiran yang disimpan dalam foldernya
-settings-compose-send-from-summary = Akaun yang menghantar mel baharu: akaun yang sedang anda gunakan, atau sentiasa akaun yang sama
+settings-compose-send-from-summary = Akaun yang menghantar mel baharu: akaun pertama, akaun lain, atau akaun yang sedang anda gunakan
 settings-compose-send-on-replies-summary = Hantar, atau Hantar dan arkibkan perbualan, pada balasan dan majuan
 settings-compose-signatures-summary = Ditambah di bawah mesej anda, selepas baris “--”
 settings-compose-for-new-mail-summary = Tandatangan yang memulakan mel baharu
