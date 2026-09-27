@@ -323,3 +323,32 @@ title = "Yang baru dalam bahasa Anda"
 text = """
 Catatan ini kini tampil dalam bahasa yang dipilih di Katna Mail. Terjemahannya masih draf, jadi beri tahu kami bagian mana yang kata-katanya bisa lebih baik.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Urungkan apa saja dengan Ctrl+Z"
+text = """
+Tidak sengaja mengarsipkan, menghapus, memindahkan, atau memberi bintang
+pada sesuatu? Tekan Ctrl+Z, atau Urungkan pada catatan di bawah, untuk
+membatalkannya, termasuk dari hasil penelusuran dan percakapan yang
+terbuka di jendelanya sendiri. Ctrl+Z terus mundur melalui apa yang Anda
+lakukan, termasuk menandai sudah atau belum dibaca, dan menarik kembali
+pesan terkirim selama jeda urungkan kirimnya masih berjalan.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Salin dari lampiran"
+text = """
+Teks di PDF, dokumen, slide, dan file teks yang dibuka di Katna kini
+bisa dipilih dan disalin seperti teks pesan. Di spreadsheet, seret
+melintasi sel, atau klik huruf kolom atau nomor baris, lalu Ctrl+C
+menyalinnya agar tertempel sebagai sel.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Tulis pindah ke folder"
+text = """
+Tulis kini ada di bagian atas folder Anda. Lipat folder dan tombol itu
+bergeser ke bilah di kiri, tempat menahan penunjuk di atasnya
+menampilkan folder lagi. Kiri atas menampilkan Katna Mail, dan namanya
+bergulir ke Kalender, Kontak, dan lainnya saat Anda berpindah aplikasi.
+"""

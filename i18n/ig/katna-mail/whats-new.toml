@@ -316,3 +316,32 @@ title = "Ihe ọhụrụ n'asụsụ gị"
 text = """
 Ndetu ndị a na-apụta ugbu a n'asụsụ e setịpụrụ Katna Mail. Ntụgharị ndị a bụ draftị, ya mere gwa anyị ebe okwu nwere ike ịka mma.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Megharịa ihe ọ bụla site na Ctrl+Z"
+text = """
+I chekwara, hichapụ, bugharịa ma ọ bụ tinye kpakpando n'ihe na mberede?
+Pịa Ctrl+Z, ma ọ bụ Megharịa na ndetu dị n'okpuru, iji weghachi ya,
+gụnyere site na nsonaazụ ọchụchọ na mkparịta ụka mepere na windo nke ha.
+Ctrl+Z na-aga n'ihu na-alaghachi azụ n'ihe i mere, gụnyere ịka akara dị
+ka agụrụ ma ọ bụ a gụghị, ma weghachite ozi e zipuru mgbe oge maka
+Megharịa izipu ya ka na-aga.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Detuo site na mgbakwunye"
+text = """
+Ederede dị na PDF, akwụkwọ, slaịdị na faịlụ ederede e mepere na Katna
+nwere ike ịhọrọ ma detuo ugbu a dị ka ederede ozi. Na spredshiit, dọrọ
+gafee sel, ma ọ bụ pịa mkpụrụedemede kọlụm ma ọ bụ nọmba ahịrị, Ctrl+C
+na-edetuokwa ha ka ha wee mado dị ka sel.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Dee akwagala na folda"
+text = """
+Dee dị ugbu a n'elu folda gị. Kechie ha, ọ ga-amị banye n'ogwe dị n'aka
+ekpe, ebe idowe ntụnye n'elu ya na-egosi folda ọzọ. N'elu aka ekpe
+na-egosi Katna Mail, aha ahụ na-agbanwekwa gaa Kalịnda, Kọntaktị na ndị
+ọzọ ka ị na-agbanwe ngwa.
+"""

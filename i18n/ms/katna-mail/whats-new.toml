@@ -326,3 +326,34 @@ title = "Apa yang baharu dalam bahasa anda"
 text = """
 Nota ini kini dipaparkan dalam bahasa yang ditetapkan untuk Katna Mail. Terjemahannya masih draf, jadi beritahu kami di mana perkataannya boleh diperbaik.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Buat asal apa sahaja dengan Ctrl+Z"
+text = """
+Terarkibkan, terpadam, teralih atau tertambah bintang pada sesuatu
+secara tidak sengaja? Tekan Ctrl+Z, atau Buat asal pada nota di bahagian
+bawah, untuk mengembalikannya, termasuk dari hasil carian dan perbualan
+yang dibuka dalam tetingkapnya sendiri. Ctrl+Z terus berundur melalui
+apa yang anda lakukan, termasuk tandai sebagai dibaca atau belum dibaca,
+dan menarik balik mesej yang dihantar selagi tempoh buat asal
+penghantarannya masih berjalan.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Salin daripada lampiran"
+text = """
+Teks dalam PDF, dokumen, slaid dan fail teks yang dibuka dalam Katna
+kini boleh dipilih dan disalin seperti teks mesej. Dalam hamparan, seret
+merentasi sel, atau klik huruf lajur atau nombor baris, dan Ctrl+C
+menyalinnya supaya ia ditampal sebagai sel.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Karang berpindah ke folder"
+text = """
+Karang kini berada di bahagian atas folder anda. Lipat folder dan ia
+menggelongsor ke bar di sebelah kiri, dan meletakkan penuding padanya
+akan menunjukkan folder semula. Bahagian atas kiri menunjukkan
+Katna Mail, dan nama itu bertukar kepada Kalendar, Kenalan dan yang lain
+apabila anda bertukar apl.
+"""

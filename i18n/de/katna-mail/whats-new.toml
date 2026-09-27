@@ -330,3 +330,35 @@ title = "Neuigkeiten in Ihrer Sprache"
 text = """
 Diese Hinweise erscheinen jetzt in der Sprache, auf die Katna Mail eingestellt ist. Die Übersetzungen sind Entwürfe – sagen Sie uns, wo die Formulierung besser sein könnte.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Alles rückgängig machen mit Strg+Z"
+text = """
+Versehentlich etwas archiviert, gelöscht, verschoben oder markiert?
+Drücken Sie Strg+Z oder Rückgängig im Hinweis unten, um es
+zurückzunehmen, auch in Suchergebnissen und in Unterhaltungen, die in
+einem eigenen Fenster geöffnet sind. Strg+Z geht immer weiter zurück
+durch das, was Sie getan haben, auch Als gelesen oder ungelesen
+markieren, und holt eine gesendete Nachricht zurück, solange die Frist
+zum Rückgängigmachen noch läuft.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Aus Anhängen kopieren"
+text = """
+Text in PDFs, Dokumenten, Folien und Textdateien, die in Katna geöffnet
+sind, lässt sich jetzt markieren und kopieren wie der Text einer
+Nachricht. Ziehen Sie in einer Tabelle über Zellen oder klicken Sie auf
+einen Spaltenbuchstaben oder eine Zeilennummer, und Strg+C kopiert sie
+so, dass sie als Zellen eingefügt werden.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Schreiben wandert zu den Ordnern"
+text = """
+Schreiben steht jetzt über Ihren Ordnern. Blenden Sie die Ordner aus,
+gleitet es in die Leiste links, und wenn Sie mit dem Mauszeiger darauf
+verweilen, erscheinen die Ordner wieder. Oben links steht Katna Mail,
+und der Name rollt zu Kalender, Kontakte und den anderen, wenn Sie die
+App wechseln.
+"""

@@ -318,3 +318,32 @@ title = "Có gì mới bằng ngôn ngữ của bạn"
 text = """
 Các ghi chú này giờ hiển thị bằng ngôn ngữ đã đặt cho Katna Mail. Bản dịch vẫn là bản nháp, hãy cho chúng tôi biết chỗ nào cách diễn đạt có thể tốt hơn.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Hoàn tác mọi thứ bằng Ctrl+Z"
+text = """
+Lỡ tay lưu trữ, xóa, di chuyển hay thêm dấu sao cho thứ gì đó? Nhấn
+Ctrl+Z, hoặc Hoàn tác trên thông báo ở phía dưới, để lấy lại, kể cả từ
+kết quả tìm kiếm và các cuộc hội thoại đang mở trong cửa sổ riêng.
+Ctrl+Z tiếp tục lùi lại qua những gì bạn đã làm, kể cả đánh dấu là đã
+đọc hay chưa đọc, và lấy lại một thư đã gửi khi thời gian chờ hủy gửi
+của nó vẫn còn.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Sao chép từ tệp đính kèm"
+text = """
+Văn bản trong PDF, tài liệu, trang chiếu và tệp văn bản mở trong Katna
+giờ có thể chọn và sao chép như văn bản của một thư. Trong bảng tính,
+kéo qua các ô, hoặc nhấp vào chữ cái của cột hay số của hàng, và Ctrl+C
+sẽ sao chép chúng để dán vào dưới dạng ô.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Soạn thư chuyển lên trên thư mục"
+text = """
+Soạn thư giờ nằm ở đầu danh sách thư mục của bạn. Thu gọn thư mục thì
+nút này trượt vào thanh bên trái, nơi chỉ cần để con trỏ trên nó là các
+thư mục hiện lại. Góc trên bên trái hiện Katna Mail, và tên sẽ lần lượt
+chuyển thành Lịch, Danh bạ và các ứng dụng khác khi bạn chuyển ứng dụng.
+"""

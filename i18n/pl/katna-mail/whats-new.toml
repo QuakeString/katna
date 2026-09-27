@@ -325,3 +325,33 @@ title = "Nowości w Twoim języku"
 text = """
 Te informacje wyświetlają się teraz w języku ustawionym w Katna Mail. Tłumaczenia są wersjami roboczymi, więc daj nam znać, gdzie sformułowania mogą być lepsze.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Cofnij wszystko skrótem Ctrl+Z"
+text = """
+Coś przez pomyłkę zarchiwizowane, usunięte, przeniesione albo oznaczone
+gwiazdką? Naciśnij Ctrl+Z lub Cofnij w komunikacie na dole, aby to
+odwrócić, także w wynikach wyszukiwania i w rozmowach otwartych we
+własnym oknie. Ctrl+Z cofa kolejne twoje działania, łącznie z
+oznaczaniem jako przeczytane lub nieprzeczytane, i zatrzymuje wysłaną
+wiadomość, dopóki trwa jeszcze czas na cofnięcie wysłania.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Kopiowanie z załączników"
+text = """
+Tekst w plikach PDF, dokumentach, slajdach i plikach tekstowych
+otwartych w Katna można teraz zaznaczać i kopiować jak tekst wiadomości.
+W arkuszu kalkulacyjnym przeciągnij po komórkach albo kliknij literę
+kolumny lub numer wiersza, a Ctrl+C skopiuje je tak, że wkleją się jako
+komórki.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Utwórz przenosi się do folderów"
+text = """
+Utwórz jest teraz na górze listy folderów. Zwiń foldery, a przycisk
+wsunie się na pasek po lewej, gdzie przytrzymanie na nim wskaźnika znów
+pokaże foldery. W lewym górnym rogu widać Katna Mail, a nazwa przewija
+się na Kalendarz, Kontakty i pozostałe, gdy przełączasz aplikacje.
+"""

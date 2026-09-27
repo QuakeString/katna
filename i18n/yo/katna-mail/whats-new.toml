@@ -321,3 +321,32 @@ title = "Ohun tuntun ní èdè rẹ"
 text = """
 Àwọn àkọsílẹ̀ yìí ń hàn báyìí ní èdè tí a ṣètò Katna Mail sí. Àwọn ìtúmọ̀ jẹ́ àkọ́kọ, nítorí náà sọ fún wa ibi tí ọ̀rọ̀ lè dára sí i.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Dá ohunkóhun padà pẹ̀lú Ctrl+Z"
+text = """
+Ṣé o fi nǹkan pamọ́, pa á rẹ́, gbé e lọ sí ibòmíràn tàbí fi ìràwọ̀ sí i
+láìmọ̀? Tẹ Ctrl+Z, tàbí Dá padà lórí àkíyèsí tó wà nísàlẹ̀, láti gbà á
+padà, títí kan láti inú àbájáde ìwádìí àti ìjíròrò tó ṣí sílẹ̀ nínú
+fèrèsé tirẹ̀. Ctrl+Z máa ń bá a lọ láti padà sẹ́yìn nínú ohun tí o ṣe,
+títí kan sísàmì sí bí kíkà tàbí àìkà, ó sì máa ń gba lẹ́tà tí o fi
+ránṣẹ́ padà nígbà tí àkókò fún Dá fífiránṣẹ́ padà ṣì ń lọ.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Ṣẹ̀dà láti inú àfikún"
+text = """
+Báyìí o lè yan ọ̀rọ̀ inú PDF, ìwé, sílááìdì àti fáìlì ọ̀rọ̀ tí o ṣí nínú
+Katna kí o sì ṣẹ̀dà rẹ̀ bí ọ̀rọ̀ inú lẹ́tà. Nínú spreadsheet, fà kọjá
+àwọn sẹ́ẹ̀lì, tàbí tẹ lẹ́tà ọwọ̀n kan tàbí nọ́ńbà ìlà kan, Ctrl+C yóò sì
+ṣẹ̀dà wọn kí wọ́n lè lẹ̀ mọ́ bí sẹ́ẹ̀lì.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Kọ̀wé ti lọ sọ́dọ̀ àwọn fódà"
+text = """
+Kọ̀wé wà lókè àwọn fódà rẹ báyìí. Ká wọn kúrò, yóò sì yọ́ wọ inú ọ̀pá tó
+wà lápá òsì, níbi tí fífi atọ́ka dúró lórí rẹ̀ yóò tún fi àwọn fódà hàn.
+Lókè lápá òsì ń fi Katna Mail hàn, orúkọ náà sì ń yí padà sí Kàlẹ́ńdà,
+Olùbásọ̀rọ̀ àti àwọn yòókù bí o ṣe ń yí áàpù padà.
+"""

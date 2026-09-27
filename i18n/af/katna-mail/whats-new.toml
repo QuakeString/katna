@@ -323,3 +323,32 @@ title = "Wat's nuut in jou taal"
 text = """
 Hierdie notas verskyn nou in die taal waarop Katna Mail gestel is. Die vertalings is konsepte, so laat weet ons waar die bewoording beter kan wees.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Ontdoen enigiets met Ctrl+Z"
+text = """
+Iets per ongeluk geargiveer, uitgevee, geskuif of 'n ster gegee? Druk
+Ctrl+Z, of Ontdoen op die nota onderaan, om dit terug te neem, ook uit
+soekresultate en gesprekke wat in hul eie venster oop is. Ctrl+Z gaan al
+verder terug deur wat jy gedoen het, merk as gelees of ongelees
+ingesluit, en neem 'n gestuurde boodskap terug solank sy
+ontdoen-vertraging nog loop.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Kopieer uit aanhegsels"
+text = """
+Teks in PDF's, dokumente, skyfies en tekslêers wat in Katna oopgemaak
+is, kan nou gekies en gekopieer word soos die teks van 'n boodskap.
+Sleep in 'n sigblad oor selle, of klik op 'n kolomletter of rynommer, en
+Ctrl+C kopieer hulle sodat hulle as selle geplak word.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Skryf skuif na die vouers"
+text = """
+Skryf staan nou bo-aan jou vouers. Vou hulle weg en dit gly in die balk
+aan die linkerkant, waar jy net met die wyser daarop hoef te rus om die
+vouers weer te sien. Links bo staan Katna Mail, en die naam rol na
+Kalender, Kontakte en die res soos jy tussen programme wissel.
+"""

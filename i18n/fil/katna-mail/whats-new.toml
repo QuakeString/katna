@@ -338,3 +338,35 @@ title = "Ano'ng bago sa iyong wika"
 text = """
 Lumalabas na ngayon ang mga talang ito sa wikang nakatakda sa Katna Mail. Mga draft pa ang mga salin, kaya sabihin sa amin kung saan puwedeng pagandahin ang pananalita.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "I-undo ang kahit ano gamit ang Ctrl+Z"
+text = """
+Na-archive, na-delete, nailipat o nalagyan ng star ang isang bagay nang
+hindi sinasadya? Pindutin ang Ctrl+Z, o ang I-undo sa abiso sa ibaba,
+para bawiin ito, pati mula sa mga resulta ng paghahanap at sa mga
+usapang bukas sa sarili nilang window. Patuloy na bumabalik ang Ctrl+Z
+sa mga ginawa mo, kasama ang pagmarka bilang nabasa na o hindi pa
+nabasa, at binabawi nito ang naipadalang mensahe habang tumatakbo pa ang
+palugit nito para sa pag-undo.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Kumopya mula sa mga attachment"
+text = """
+Puwede na ngayong piliin at kopyahin ang text sa mga PDF, dokumento,
+slide at text file na binuksan sa Katna, gaya ng text ng isang mensahe.
+Sa isang spreadsheet, mag-drag sa mga cell, o mag-click ng letra ng
+column o numero ng row, at kinokopya sila ng Ctrl+C para ma-paste bilang
+mga cell.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Lumipat ang Mag-compose sa mga folder"
+text = """
+Nasa itaas na ng mga folder mo ang Mag-compose. Kapag itinago mo ang mga
+folder, dumudulas ito sa bar sa kaliwa, kung saan lumilitaw ulit ang mga
+folder kapag itinapat mo ang pointer dito. Katna Mail ang nasa kaliwang
+itaas, at umiikot ang pangalan sa Kalendaryo, Mga Contact at iba pa
+habang lumilipat ka ng app.
+"""

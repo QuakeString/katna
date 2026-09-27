@@ -319,3 +319,32 @@ title = "Nyheter på ditt språk"
 text = """
 De här anteckningarna visas nu på det språk Katna Mail är inställt på. Översättningarna är utkast, så berätta för oss var formuleringen kan bli bättre.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Ångra vad som helst med Ctrl+Z"
+text = """
+Arkiverat, raderat, flyttat eller stjärnmärkt något av misstag? Tryck på
+Ctrl+Z, eller Ångra i meddelandet längst ner, för att ta tillbaka det,
+även från sökresultat och konversationer som är öppna i ett eget
+fönster. Ctrl+Z fortsätter bakåt genom det du gjort, markera som läst
+eller oläst inräknat, och tar tillbaka ett skickat meddelande medan
+tiden för Ångra skicka fortfarande löper.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Kopiera från bilagor"
+text = """
+Text i PDF-filer, dokument, presentationer och textfiler som öppnats i
+Katna kan nu markeras och kopieras som texten i ett meddelande. I ett
+kalkylblad drar du över celler, eller klickar på en kolumnbokstav eller
+ett radnummer, och Ctrl+C kopierar dem så att de klistras in som celler.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Skriv flyttar till mapparna"
+text = """
+Skriv sitter nu överst bland dina mappar. Fäll ihop dem så glider den in
+i fältet till vänster, där mapparna visas igen när du vilar pekaren på
+den. Uppe till vänster står Katna Mail, och namnet rullar över till
+Kalender, Kontakter och resten när du byter app.
+"""

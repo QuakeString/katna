@@ -328,3 +328,33 @@ title = "Nieuw in uw taal"
 text = """
 Deze notities verschijnen nu in de taal waarop Katna Mail is ingesteld. De vertalingen zijn concepten, dus laat ons weten waar de formulering beter kan.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Alles ongedaan maken met Ctrl+Z"
+text = """
+Per ongeluk iets gearchiveerd, verwijderd, verplaatst of een ster
+gegeven? Druk op Ctrl+Z, of op Ongedaan maken in de melding onderaan, om
+het terug te draaien, ook vanuit zoekresultaten en gesprekken die in een
+eigen venster openstaan. Ctrl+Z blijft teruggaan door wat je deed,
+markeren als gelezen of ongelezen inbegrepen, en haalt een verzonden
+bericht terug zolang de tijd om het verzenden ongedaan te maken nog
+loopt.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Kopiëren uit bijlagen"
+text = """
+Tekst in pdf's, documenten, dia's en tekstbestanden die in Katna geopend
+zijn, kun je nu selecteren en kopiëren zoals de tekst van een bericht.
+Sleep in een spreadsheet over cellen, of klik op een kolomletter of
+rijnummer, en Ctrl+C kopieert ze zodat ze als cellen worden geplakt.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Opstellen verhuist naar de mappen"
+text = """
+Opstellen staat nu boven je mappen. Klap ze in en het schuift in de balk
+aan de linkerkant, waar de mappen weer verschijnen als je de aanwijzer
+erop laat rusten. Linksboven staat Katna Mail, en de naam rolt door naar
+Agenda, Contacten en de rest als je van app wisselt.
+"""

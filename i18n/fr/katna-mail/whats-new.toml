@@ -336,3 +336,35 @@ title = "Nouveautés dans votre langue"
 text = """
 Ces notes s'affichent désormais dans la langue choisie pour Katna Mail. Les traductions sont des brouillons : dites-nous où la formulation pourrait être meilleure.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Annulez n’importe quoi avec Ctrl+Z"
+text = """
+Vous avez archivé, supprimé, déplacé ou suivi un message par erreur ?
+Appuyez sur Ctrl+Z, ou sur Annuler dans la note en bas, pour revenir en
+arrière, y compris depuis les résultats de recherche et les
+conversations ouvertes dans leur propre fenêtre. Ctrl+Z continue de
+remonter dans ce que vous avez fait, marquer comme lu ou non lu compris,
+et récupère un message envoyé tant que son délai d’annulation court
+encore.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Copier depuis les pièces jointes"
+text = """
+Le texte des PDF, documents, diapositives et fichiers texte ouverts dans
+Katna peut maintenant être sélectionné et copié comme le texte d’un
+message. Dans une feuille de calcul, faites glisser sur des cellules, ou
+cliquez sur la lettre d’une colonne ou le numéro d’une ligne, et Ctrl+C
+les copie pour qu’elles se collent en cellules.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Nouveau message passe aux dossiers"
+text = """
+Nouveau message se trouve désormais en haut de vos dossiers. Repliez-les
+et il glisse dans la barre de gauche, où il suffit d’y poser le pointeur
+pour revoir les dossiers. En haut à gauche s’affiche Katna Mail, et le
+nom défile vers Calendrier, Contacts et les autres quand vous changez
+d’application.
+"""

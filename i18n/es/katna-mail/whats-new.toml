@@ -333,3 +333,34 @@ title = "Novedades en tu idioma"
 text = """
 Estas notas ahora aparecen en el idioma configurado en Katna Mail. Las traducciones son borradores, así que dinos dónde se puede mejorar la redacción.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Deshaz lo que sea con Ctrl+Z"
+text = """
+¿Has archivado, eliminado, movido o marcado con estrella algo por error?
+Pulsa Ctrl+Z, o Deshacer en el aviso de abajo, para recuperarlo, también
+desde los resultados de búsqueda y desde conversaciones abiertas en su
+propia ventana. Ctrl+Z sigue retrocediendo por lo que has hecho,
+incluido marcar como leído o no leído, y recupera un mensaje enviado
+mientras aún corre su plazo para deshacer el envío.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Copia desde los adjuntos"
+text = """
+El texto de los PDF, documentos, diapositivas y archivos de texto
+abiertos en Katna ahora se puede seleccionar y copiar como el texto de
+un mensaje. En una hoja de cálculo, arrastra sobre las celdas, o haz
+clic en la letra de una columna o el número de una fila, y Ctrl+C las
+copia para que se peguen como celdas.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Redactar se muda a las carpetas"
+text = """
+Redactar está ahora arriba de tus carpetas. Pliégalas y se desliza a la
+barra de la izquierda, donde al dejar el puntero encima vuelven a
+aparecer las carpetas. Arriba a la izquierda pone Katna Mail, y el
+nombre rueda a Calendario, Contactos y los demás al cambiar de
+aplicación.
+"""

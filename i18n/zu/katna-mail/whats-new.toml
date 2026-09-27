@@ -337,3 +337,35 @@ title = "Okusha ngolimi lwakho"
 text = """
 Lawa manothi manje avela ngolimi olusethelwe i-Katna Mail. Ukuhumusha kusengumbhalo wokuqala, ngakho sitshele lapho amagama angaba ngcono khona.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Hlehlisa noma yini nge-Ctrl+Z"
+text = """
+Ufake okuthile kungobo yomlando, wakususa, wakuhambisa noma wakufaka
+inkanyezi ngephutha? Cindezela u-Ctrl+Z, noma u-Hlehlisa kunothi
+elingezansi, ukuze ukubuyise, ngisho nasemiphumeleni yosesho
+nasezingxoxweni ezivulwe ewindini lazo. U-Ctrl+Z uqhubeka ubuyela emuva
+kulokho okwenzile, kuhlanganise nokumaka njengokufundiwe noma
+okungafundiwe, futhi ubuyisa umlayezo othunyelwe ngesikhathi isikhathi
+sokuhlehlisa ukuthumela kwawo sisaqhubeka.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Kopisha kokunamathiselwe"
+text = """
+Umbhalo osema-PDF, emadokhumentini, emaslayidini nasemafayeleni ombhalo
+avulwe ku-Katna manje ungakhethwa futhi ukopishwe njengombhalo
+womlayezo. Kuspredishithi, hudula phezu kwamaseli, noma uchofoze uhlamvu
+lwekholomu noma inombolo yomugqa, bese u-Ctrl+C uwakopisha ukuze
+anamathiselwe njengamaseli.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "U-Bhala uthuthela kumafolda"
+text = """
+U-Bhala manje usephezulu kwamafolda akho. Wagoqe, uzoshelela ungene
+kubha engakwesokunxele, lapho ukubeka isikhombi phezu kwawo kubonisa
+amafolda futhi. Phezulu ngakwesokunxele kubonisa i-Katna Mail, futhi
+igama lishintshela ku-Ikhalenda, ku-Oxhumana nabo nakwezinye njengoba
+ushintsha ama-app.
+"""

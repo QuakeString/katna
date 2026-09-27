@@ -322,3 +322,33 @@ title = "Yenilikler kendi dilinizde"
 text = """
 Bu notlar artık Katna Mail'in ayarlandığı dilde görünüyor. Çeviriler taslak; ifadelerin nerede daha iyi olabileceğini bize bildirin.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Ctrl+Z ile her şeyi geri alın"
+text = """
+Bir şeyi yanlışlıkla arşivlediniz, sildiniz, taşıdınız ya da yıldız
+eklediniz mi? Geri almak için Ctrl+Z'ye ya da alttaki bildirimde Geri
+al'a basın; bu, arama sonuçlarında ve kendi penceresinde açık
+konuşmalarda da çalışır. Ctrl+Z, okundu ya da okunmadı olarak işaretleme
+dahil, yaptıklarınızda geriye gitmeyi sürdürür ve gönderilmiş bir
+iletiyi, göndermeyi geri alma süresi dolmadığı sürece geri çeker.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Eklerden kopyalayın"
+text = """
+Katna'da açılan PDF'lerdeki, belgelerdeki, slaytlardaki ve metin
+dosyalarındaki metin artık bir iletinin metni gibi seçilip
+kopyalanabilir. Bir elektronik tabloda hücrelerin üzerinde sürükleyin ya
+da bir sütun harfine veya satır numarasına tıklayın; Ctrl+C onları hücre
+olarak yapıştırılacak şekilde kopyalar.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Oluştur klasörlere taşındı"
+text = """
+Oluştur artık klasörlerinizin en üstünde. Klasörleri daralttığınızda
+soldaki çubuğa kayar; orada imleci üzerinde bekletince klasörler yeniden
+görünür. Sol üstte Katna Mail yazar ve uygulama değiştirdikçe ad Takvim,
+Kişiler ve diğerlerine döner.
+"""

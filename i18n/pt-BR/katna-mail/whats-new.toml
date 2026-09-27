@@ -326,3 +326,34 @@ title = "Novidades no seu idioma"
 text = """
 Estas notas agora aparecem no idioma configurado no Katna Mail. As traduções são rascunhos, então diga onde o texto pode ficar melhor.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Desfaça qualquer coisa com Ctrl+Z"
+text = """
+Arquivou, excluiu, moveu ou marcou algo com estrela por engano?
+Pressione Ctrl+Z, ou Desfazer no aviso lá embaixo, para voltar atrás,
+inclusive nos resultados de pesquisa e nas conversas abertas em janela
+própria. O Ctrl+Z continua voltando pelo que você fez, incluindo marcar
+como lida ou não lida, e recupera uma mensagem enviada enquanto o prazo
+para cancelar o envio ainda está correndo.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Copie dos anexos"
+text = """
+O texto de PDFs, documentos, slides e arquivos de texto abertos no Katna
+agora pode ser selecionado e copiado como o texto de uma mensagem. Numa
+planilha, arraste sobre as células, ou clique na letra de uma coluna ou
+no número de uma linha, e o Ctrl+C as copia para que sejam coladas como
+células.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Escrever vai para as pastas"
+text = """
+Escrever agora fica no topo das suas pastas. Recolha as pastas e ele
+desliza para a barra à esquerda, onde basta parar o ponteiro sobre ele
+para ver as pastas de novo. No canto superior esquerdo aparece
+Katna Mail, e o nome vai rolando para Agenda, Contatos e os demais
+conforme você troca de app.
+"""

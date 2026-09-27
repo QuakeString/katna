@@ -320,3 +320,32 @@ title = "Sabbin abubuwa a harshenku"
 text = """
 Waɗannan bayanai yanzu suna bayyana a harshen da aka saita Katna Mail. Fassarorin daftari ne, don haka ku gaya mana inda za a iya inganta kalmomin.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Janye komai da Ctrl+Z"
+text = """
+Ka adana wani abu a ma'ajiya, ka share shi, ka matsar da shi ko ka saka
+masa tauraro bisa kuskure? Danna Ctrl+Z, ko Janye a kan sanarwar da ke
+ƙasa, don mayar da shi, har ma daga sakamakon bincike da tattaunawar da
+ke buɗe a tagarsu. Ctrl+Z yana ci gaba da komawa baya cikin abubuwan da
+ka yi, har da yin alama an karanta ko ba a karanta ba, kuma yana dawo da
+saƙon da aka aika muddin lokacin janye aikawarsa bai ƙare ba.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Kwafa daga haɗe-haɗe"
+text = """
+Yanzu ana iya zaɓar da kwafa rubutu a cikin PDF, takardu, faifai da
+fayilolin rubutu da aka buɗe a Katna kamar rubutun saƙo. A cikin
+maƙunsar bayanai, ja a kan sel, ko danna harafin shafi ko lambar layi,
+kuma Ctrl+C yana kwafa su don su liƙu a matsayin sel.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Rubuta ya koma wurin folda"
+text = """
+Rubuta yanzu yana saman foldarka. Ka naɗe su kuma zai zame zuwa sandar
+da ke hagu, inda riƙe alamar linzamin kwamfuta a kansa zai sake nuna
+folda. Saman hagu yana nuna Katna Mail, kuma sunan yana juyawa zuwa
+Kalanda, Lambobin sadarwa da sauransu yayin da kake sauya manhaja.
+"""

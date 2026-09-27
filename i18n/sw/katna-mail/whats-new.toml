@@ -326,3 +326,34 @@ title = "Mapya kwa lugha yako"
 text = """
 Maelezo haya sasa yanaonekana kwa lugha iliyowekwa kwenye Katna Mail. Tafsiri ni rasimu, kwa hivyo tuambie wapi maneno yanaweza kuboreshwa.
 """
+
+["2026-09-27-1126-undo-anything"]
+title = "Tendua chochote kwa Ctrl+Z"
+text = """
+Umeweka kwenye kumbukumbu, umefuta, umehamisha au umewekea kitu nyota
+kwa bahati mbaya? Bonyeza Ctrl+Z, au Tendua kwenye ujumbe ulio chini,
+ili kukirudisha, hata kutoka kwenye matokeo ya utafutaji na mazungumzo
+yaliyofunguliwa katika dirisha lao. Ctrl+Z huendelea kurudi nyuma katika
+ulichofanya, pamoja na kutia alama kuwa imesomwa au haijasomwa, na
+hurudisha ujumbe uliotumwa wakati muda wake wa kutendua kutuma bado
+unaendelea.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Nakili kutoka kwenye viambatisho"
+text = """
+Maandishi katika PDF, hati, slaidi na faili za maandishi zilizofunguliwa
+katika Katna sasa yanaweza kuchaguliwa na kunakiliwa kama maandishi ya
+ujumbe. Katika lahajedwali, buruta juu ya visanduku, au bofya herufi ya
+safu wima au nambari ya safu mlalo, na Ctrl+C huvinakili ili vibandikwe
+kama visanduku.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Tunga kinahamia kwenye folda"
+text = """
+Tunga sasa kiko juu ya folda zako. Zikunje na kitateleza hadi kwenye
+upau ulio kushoto, ambapo kuweka kiashiria juu yake huonyesha folda
+tena. Juu kushoto kunaonyesha Katna Mail, na jina hubadilika kwenda
+Kalenda, Anwani na nyinginezo unapobadilisha programu.
+"""
