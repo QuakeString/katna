@@ -19,6 +19,7 @@ pub mod classify;
 pub mod config;
 pub mod db;
 pub mod ids;
+pub mod limits;
 pub mod routes;
 pub mod stream;
 

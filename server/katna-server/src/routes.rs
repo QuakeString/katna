@@ -14,11 +14,10 @@
 //! - `GET /api/v1/events`: server-sent events after `Last-Event-ID` (or
 //!   `?after=`).
 
-use std::collections::HashMap;
 use std::convert::Infallible;
 use std::net::{IpAddr, SocketAddr};
-use std::sync::{Arc, Mutex};
-use std::time::{Duration, Instant};
+use std::sync::Arc;
+use std::time::Duration;
 
 use axum::extract::{ConnectInfo, FromRequestParts, Path, Query, State};
 use axum::http::header::{self, HeaderMap, HeaderValue};
@@ -35,6 +34,7 @@ use crate::classify::{self, Kind, Source};
 use crate::config::Config;
 use crate::db::{Db, DbError, Event, now_ms};
 use crate::ids;
+use crate::limits::WindowLimit;
 
 /// Most IDs one request may create (one per recipient).
 pub const MAX_IDS_PER_REQUEST: u32 = 100;
@@ -44,10 +44,6 @@ pub const MAX_LINKS: usize = 500;
 
 /// Longest link target accepted.
 pub const MAX_LINK_LEN: usize = 4096;
-
-/// New installs per client address in the current hour: count and the
-/// hour's start.
-type Registrations = HashMap<Option<IpAddr>, (u32, Instant)>;
 
 /// Shared state of the routes.
 #[derive(Clone)]
@@ -59,25 +55,31 @@ pub struct AppState {
     /// stream in the order of their numbers and a resuming stream misses
     /// none. One server process; the load is small.
     record: Arc<tokio::sync::Mutex<()>>,
-    registrations: Arc<Mutex<Registrations>>,
+    registrations: Arc<WindowLimit<Option<IpAddr>>>,
 }
 
 impl AppState {
     /// State for `config` over `db`.
     pub fn new(db: Db, config: Config) -> Self {
         let (events, _) = broadcast::channel(1024);
+        let registrations = WindowLimit::new(config.installs_per_hour, Duration::from_secs(3600));
         Self {
             db,
             config: Arc::new(config),
             events,
             record: Arc::default(),
-            registrations: Arc::default(),
+            registrations: Arc::new(registrations),
         }
     }
 
     /// The database.
     pub fn db(&self) -> &Db {
         &self.db
+    }
+
+    /// The settings.
+    pub fn config(&self) -> &Config {
+        &self.config
     }
 }
 
@@ -133,7 +135,8 @@ impl IntoResponse for ApiError {
     }
 }
 
-/// The install a request's bearer token belongs to.
+/// The install a request's bearer token belongs to. A route for the
+/// daemon takes this as an argument to require a token.
 pub struct Install(pub String);
 
 impl FromRequestParts<AppState> for Install {
@@ -378,25 +381,8 @@ async fn register(
     ClientAddr(connection): ClientAddr,
 ) -> Result<(StatusCode, Json<Registered>), ApiError> {
     let ip = client_ip(&state, &headers, connection);
-    {
-        let mut registrations = state
-            .registrations
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
-        let now = Instant::now();
-        if registrations.len() > 10_000 {
-            registrations
-                .retain(|_, (_, start)| now.duration_since(*start) < Duration::from_secs(3600));
-        }
-        let (count, start) = registrations.entry(ip).or_insert((0, now));
-        if now.duration_since(*start) >= Duration::from_secs(3600) {
-            *count = 0;
-            *start = now;
-        }
-        if *count >= state.config.installs_per_hour {
-            return Err(ApiError::TooMany("too many new installs from this address"));
-        }
-        *count += 1;
+    if !state.registrations.allow(ip) {
+        return Err(ApiError::TooMany("too many new installs from this address"));
     }
     let install = ids::new_id();
     let token = ids::new_token();
