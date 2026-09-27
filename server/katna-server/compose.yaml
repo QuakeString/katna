@@ -24,6 +24,8 @@ services:
       # LibreTranslate below, reached only on this compose network.
       KATNA_SERVER_TRANSLATE_URL: http://translate:5000
       KATNA_SERVER_TRANSLATIONS_PER_DAY: ${KATNA_SERVER_TRANSLATIONS_PER_DAY:-2000}
+      KATNA_SERVER_SMTP_URL: ${KATNA_SERVER_SMTP_URL:-}
+      KATNA_SERVER_MAIL_FROM: ${KATNA_SERVER_MAIL_FROM:-Katna <no-reply@katna.invenia.in>}
       RUST_LOG: ${RUST_LOG:-info}
     depends_on:
       - db

@@ -459,7 +459,7 @@ pub struct MailView {
 }
 
 /// Automatic translation (Settings > General > Translation;
-/// `docs/ARCHITECTURE.md` §16.3). Languages are LibreTranslate codes
+/// `docs/ARCHITECTURE.md` §16.4). Languages are LibreTranslate codes
 /// (`es`, `zh`, `zt`).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]

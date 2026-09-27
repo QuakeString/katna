@@ -1036,7 +1036,7 @@ impl MailWindow {
     /// A Material outlined text field: the label sits in the box and moves
     /// onto its frame once there is text or focus.
     #[allow(clippy::too_many_arguments)]
-    fn outlined_field(
+    pub(super) fn outlined_field(
         &self,
         id: impl Into<gpui::ElementId>,
         label: String,

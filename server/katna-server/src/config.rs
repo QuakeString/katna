@@ -29,10 +29,29 @@ pub struct Config {
     /// `http://translate:5000` (`KATNA_SERVER_TRANSLATE_URL`); empty turns
     /// translation off.
     pub translate_url: String,
-    /// Translation requests one install may make per 24 hours
+    /// Translation requests one account may make per 24 hours
     /// (`KATNA_SERVER_TRANSLATIONS_PER_DAY`, default 2000; a long message
     /// takes one per 4000 characters).
     pub translations_per_day: u32,
+    /// Where the mail with Katna account codes goes out
+    /// (`KATNA_SERVER_SMTP_URL`, for example
+    /// `smtps://user:password@smtp.example.com` or
+    /// `smtp://user:password@smtp.example.com:587?tls=required`). Without
+    /// it the codes are only written to the log, for local testing.
+    pub smtp_url: Option<Secret>,
+    /// The sender of that mail (`KATNA_SERVER_MAIL_FROM`, default
+    /// `Katna <no-reply@katna.invenia.in>`).
+    pub mail_from: String,
+}
+
+/// A setting that holds a password, kept out of debug output.
+#[derive(Clone)]
+pub struct Secret(pub String);
+
+impl std::fmt::Debug for Secret {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("<hidden>")
+    }
 }
 
 impl Default for Config {
@@ -46,6 +65,8 @@ impl Default for Config {
             installs_per_hour: 10,
             translate_url: String::new(),
             translations_per_day: 2000,
+            smtp_url: None,
+            mail_from: "Katna <no-reply@katna.invenia.in>".into(),
         }
     }
 }
@@ -103,6 +124,12 @@ impl Config {
         if let Some(value) = lookup("KATNA_SERVER_TRANSLATIONS_PER_DAY") {
             config.translations_per_day = parse("KATNA_SERVER_TRANSLATIONS_PER_DAY", &value)?;
         }
+        config.smtp_url = lookup("KATNA_SERVER_SMTP_URL")
+            .filter(|url| !url.trim().is_empty())
+            .map(|url| Secret(url.trim().to_owned()));
+        if let Some(value) = lookup("KATNA_SERVER_MAIL_FROM").filter(|v| !v.trim().is_empty()) {
+            config.mail_from = value.trim().to_owned();
+        }
         Ok(config)
     }
 }
@@ -138,6 +165,18 @@ mod tests {
         assert_eq!(config.daily_limit, 5000);
         assert_eq!(config.translate_url, "http://translate:5000");
         assert_eq!(config.translations_per_day, 2000);
+        assert!(config.smtp_url.is_none());
+    }
+
+    #[test]
+    fn hides_the_smtp_password() {
+        let config = Config::from_lookup(|name| match name {
+            "DATABASE_URL" => Some("postgres://x".into()),
+            "KATNA_SERVER_SMTP_URL" => Some("smtps://me:hunter2@smtp.example.com".into()),
+            _ => None,
+        })
+        .unwrap();
+        assert!(!format!("{config:?}").contains("hunter2"));
     }
 
     #[test]

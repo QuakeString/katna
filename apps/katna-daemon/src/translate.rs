@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Automatic translation (`docs/ARCHITECTURE.md` §16.3): the plain text of
+//! Automatic translation (`docs/ARCHITECTURE.md` §16.4): the plain text of
 //! a message the user asked to translate goes to LibreTranslate behind
 //! Katna Server, and the answer is kept in the store.
 //!
@@ -16,7 +16,12 @@ use std::sync::Mutex;
 use std::time::{Duration, Instant};
 
 use katna_store::Translation;
+use katna_sync::autoconfig::http;
+use katna_sync::net::Tls;
 use katna_translate::{ServerLanguage, TranslateRequest, TranslateResponse};
+
+use crate::katna_account::{self, Session};
+use crate::secrets::Secrets;
 
 /// How long the server's list of languages is trusted.
 const LANGUAGES_FOR: Duration = Duration::from_secs(6 * 3600);
@@ -36,9 +41,10 @@ pub enum TranslateError {
     /// Over the server's limit for now.
     #[error("too many translations for now; try again later")]
     TooMany,
-    /// The server refused this install; signing in may be needed.
-    #[error("the server did not accept this computer")]
-    Refused,
+    /// This computer is not signed in to a Katna account with a
+    /// confirmed address.
+    #[error("sign in to a Katna account to translate")]
+    SignIn,
     /// The server could not be reached or answered badly.
     #[error("{0}")]
     Server(String),
@@ -55,6 +61,55 @@ pub trait Server {
         path: &str,
         body: &[u8],
     ) -> impl Future<Output = Result<(u16, Vec<u8>), String>>;
+}
+
+/// How long one request may take. Translating a long piece takes a while
+/// on a small server.
+const TIMEOUT: Duration = Duration::from_secs(60);
+
+/// Katna Server with the token of this computer's Katna account
+/// ([`Session::token`]).
+pub struct KatnaServer {
+    base: String,
+    token: String,
+    tls: Tls,
+}
+
+impl KatnaServer {
+    /// The server, or why it cannot be used: [`TranslateError::Off`] when
+    /// the build has none, [`TranslateError::SignIn`] before this computer
+    /// signed in.
+    pub async fn connect(secrets: &Secrets) -> Result<Self, TranslateError> {
+        let base = katna_account::server_url();
+        if base.is_empty() {
+            return Err(TranslateError::Off);
+        }
+        let token = Session::new(secrets)
+            .map_err(|err| TranslateError::Server(err.to_string()))?
+            .token()
+            .await
+            .map_err(|err| TranslateError::Server(err.to_string()))?
+            .filter(|token| !token.is_empty())
+            .ok_or(TranslateError::SignIn)?;
+        let tls = Tls::system().map_err(|err| TranslateError::Server(format!("TLS: {err}")))?;
+        Ok(Self { base, token, tls })
+    }
+}
+
+impl Server for KatnaServer {
+    async fn call(&self, method: &str, path: &str, body: &[u8]) -> Result<(u16, Vec<u8>), String> {
+        let authorization = format!("Bearer {}", self.token);
+        http::request(
+            method,
+            &format!("{}{path}", self.base),
+            &[("Authorization", &authorization)],
+            (!body.is_empty()).then_some(body),
+            &self.tls,
+            TIMEOUT,
+        )
+        .await
+        .map_err(|err| err.to_string())
+    }
 }
 
 /// Each language the server knows, with those it translates it into.
@@ -158,7 +213,8 @@ pub async fn translate(
 fn answer(result: Result<(u16, Vec<u8>), String>) -> Result<Vec<u8>, TranslateError> {
     match result {
         Ok((200, body)) => Ok(body),
-        Ok((401 | 403, _)) => Err(TranslateError::Refused),
+        // An unknown token, or not signed in (`sign_in`, `not_verified`).
+        Ok((401 | 403, _)) => Err(TranslateError::SignIn),
         Ok((429, _)) => Err(TranslateError::TooMany),
         Ok((status, _)) => Err(TranslateError::Server(format!(
             "the server answered {status}"
@@ -302,7 +358,8 @@ mod tests {
     fn refusals_say_why() {
         smol::block_on(async {
             for (status, error) in [
-                (401, TranslateError::Refused),
+                (401, TranslateError::SignIn),
+                (403, TranslateError::SignIn),
                 (429, TranslateError::TooMany),
                 (
                     502,

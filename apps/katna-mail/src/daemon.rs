@@ -236,7 +236,8 @@ pub async fn translate(
     }
 }
 
-/// The languages the translation server can translate into `target`.
+/// The languages the translation server can translate into `target`, or
+/// a [`katna_dbus::translate_problem`].
 pub async fn translation_sources(
     connection: &Connection,
     target: &str,
@@ -244,9 +245,15 @@ pub async fn translation_sources(
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
-    pim.translation_sources(target)
+    let (sources, problem) = pim
+        .translation_sources(target)
         .await
-        .map_err(|err| describe(&err))
+        .map_err(|err| describe(&err))?;
+    if problem.is_empty() {
+        Ok(sources)
+    } else {
+        Err(problem)
+    }
 }
 
 /// Deletes every saved copy of the draft `message_id` of `account`.

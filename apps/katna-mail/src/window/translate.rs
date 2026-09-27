@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Automatic translation in the reading pane (`docs/ARCHITECTURE.md`
-//! §16.3).
+//! §16.4).
 //!
 //! A message whose language (found on this computer) is not the reading
 //! language gets a bar above its text: "Translate to English". Pressing
@@ -23,6 +23,7 @@ use katna_ui::px;
 
 use super::MailWindow;
 use super::settings::Change;
+use super::settings_page::Section;
 use crate::daemon;
 use crate::theme::Theme;
 use crate::widgets::icon;
@@ -58,8 +59,24 @@ pub(crate) struct Translations {
     sources: RefCell<HashMap<String, Option<Answered>>>,
 }
 
-/// The languages the server said it translates, and when.
-type Answered = (Instant, Vec<String>);
+/// What the server said it translates, and when.
+struct Answered {
+    at: Instant,
+    /// Its languages; empty when it could not be asked.
+    sources: Vec<String>,
+    /// It could not be asked because this computer is not signed in to a
+    /// Katna account.
+    sign_in: bool,
+}
+
+/// Whether to offer translating a message.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Offer {
+    No,
+    Yes,
+    /// Yes, once signed in to a Katna account.
+    SignIn,
+}
 
 /// How long to wait before asking a server that offered nothing (it was
 /// unreachable, or translation is off) again.
@@ -131,19 +148,40 @@ impl MailWindow {
             .entry(id)
             .or_insert_with(|| katna_translate::detect(text));
         let target = self.reading_code();
-        let has_state = self.translations.states.borrow().contains_key(&id);
+        let signed_in = self.katna_signed_in();
+        let mut has_state = false;
+        self.translations
+            .states
+            .borrow_mut()
+            .retain(|message, state| {
+                // Signed in since: offer it again.
+                let stale =
+                    signed_in && matches!(state, State::Failed(why) if why == problem::SIGN_IN);
+                has_state |= *message == id && !stale;
+                !stale
+            });
         if !has_state {
             // Not offered, or nothing to translate.
             let source = source?;
             if !settings.offer
                 || katna_translate::same_language(source, &target)
                 || settings.never.iter().any(|l| l == source)
-                || !self.server_translates(source, &target, cx)
             {
                 return None;
             }
-            if settings.always.iter().any(|l| l == source) {
-                self.start_translation(id, text, source, &target, cx);
+            match self.server_translates(source, &target, cx) {
+                Offer::No => return None,
+                Offer::SignIn => {
+                    self.translations
+                        .states
+                        .borrow_mut()
+                        .insert(id, State::Failed(problem::SIGN_IN.to_owned()));
+                }
+                Offer::Yes => {
+                    if settings.always.iter().any(|l| l == source) {
+                        self.start_translation(id, text, source, &target, cx);
+                    }
+                }
             }
         }
         let source_name = source.map(language_name).unwrap_or_default();
@@ -169,7 +207,9 @@ impl MailWindow {
                 let note = match failed.as_deref() {
                     None => tr!("translate-offer", language = source_name.clone()),
                     Some(problem::TOO_MANY) => tr!("translate-too-many"),
-                    Some(problem::REFUSED) => tr!("translate-refused"),
+                    Some(problem::SIGN_IN) => {
+                        tr!("translate-sign-in", language = source_name.clone())
+                    }
                     Some(problem::UNSUPPORTED) => {
                         tr!("translate-unsupported", language = source_name.clone())
                     }
@@ -179,7 +219,14 @@ impl MailWindow {
                 let text = text_owned.clone();
                 let target_code = target.clone();
                 let source_code = source.unwrap_or("auto");
-                let mut links = vec![
+                let signed_out = failed.as_deref() == Some(problem::SIGN_IN);
+                let mut links = vec![if signed_out {
+                    link(tr!("katna-sign-in"), "translate-sign-in")
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            this.open_settings_page(Section::KatnaAccount, window, cx);
+                        }))
+                        .into_any_element()
+                } else {
                     link(
                         if failed.is_some() {
                             tr!("translate-retry")
@@ -193,8 +240,8 @@ impl MailWindow {
                         this.start_translation(id, &text, source_code, &target_code, cx);
                         cx.notify();
                     }))
-                    .into_any_element(),
-                ];
+                    .into_any_element()
+                }];
                 if let (None, Some(source)) = (&failed, source) {
                     links.push(
                         link(
@@ -277,12 +324,26 @@ impl MailWindow {
 
     /// Whether the server translates `source` into `target`. Asks it the
     /// first time; until it answers, nothing is offered.
-    fn server_translates(&self, source: &str, target: &str, cx: &mut Context<Self>) -> bool {
+    fn server_translates(&self, source: &str, target: &str, cx: &mut Context<Self>) -> Offer {
         match self.translations.sources.borrow().get(target) {
             // Still asking.
-            Some(None) => return false,
-            Some(Some((at, sources))) if !sources.is_empty() || at.elapsed() < ASK_AGAIN => {
-                return sources.iter().any(|s| s == source);
+            Some(None) => return Offer::No,
+            Some(Some(answered)) if answered.sign_in && !self.katna_signed_in() => {
+                return if katna_translate::known_code(source).is_some() {
+                    Offer::SignIn
+                } else {
+                    Offer::No
+                };
+            }
+            Some(Some(answered))
+                if !answered.sign_in
+                    && (!answered.sources.is_empty() || answered.at.elapsed() < ASK_AGAIN) =>
+            {
+                return if answered.sources.iter().any(|s| s == source) {
+                    Offer::Yes
+                } else {
+                    Offer::No
+                };
             }
             _ => {}
         }
@@ -294,7 +355,7 @@ impl MailWindow {
         let target = target.to_owned();
         cx.spawn(async move |this, cx| {
             let asked = target.clone();
-            let sources = cx
+            let answer = cx
                 .background_executor()
                 .spawn(async move {
                     let connection = match connection {
@@ -303,22 +364,29 @@ impl MailWindow {
                     };
                     daemon::translation_sources(&connection, &asked).await
                 })
-                .await
-                .unwrap_or_else(|err| {
-                    tracing::info!(%err, "asking which languages can be translated");
-                    Vec::new()
-                });
+                .await;
+            let (sources, sign_in) = match answer {
+                Ok(sources) => (sources, false),
+                Err(why) => {
+                    tracing::info!(%why, "asking which languages can be translated");
+                    (Vec::new(), why == problem::SIGN_IN)
+                }
+            };
             this.update(cx, |this, cx| {
-                this.translations
-                    .sources
-                    .borrow_mut()
-                    .insert(target, Some((Instant::now(), sources)));
+                this.translations.sources.borrow_mut().insert(
+                    target,
+                    Some(Answered {
+                        at: Instant::now(),
+                        sources,
+                        sign_in,
+                    }),
+                );
                 cx.notify();
             })
             .ok();
         })
         .detach();
-        false
+        Offer::No
     }
 
     /// Asks the daemon to translate message `id`, whose text `text` is in

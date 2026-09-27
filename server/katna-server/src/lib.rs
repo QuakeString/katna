@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Katna Server: open and click tracking for mail sent with Katna
+//! Katna Server: Katna accounts ([`accounts`]) and open and click tracking
+//! for mail sent with Katna
 //! (`docs/ARCHITECTURE.md` §16.1).
 //!
 //! The daemon asks for one random tracking ID per recipient and puts
@@ -15,11 +16,14 @@
 //! subjects, recipients or message content, and it does not keep IP
 //! addresses or user agents; they are only read to pick the label.
 
+pub mod accounts;
+pub mod auth;
 pub mod classify;
 pub mod config;
 pub mod db;
 pub mod ids;
 pub mod limits;
+pub mod mailer;
 pub mod routes;
 pub mod stream;
 pub mod translate;

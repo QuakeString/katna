@@ -8,6 +8,7 @@
 settings-tab-general = General
 settings-tab-inbox = Inbox
 settings-tab-accounts = Accounts
+settings-tab-katna-account = Katna account
 # The tab listing newsletters and mailing lists, to unsubscribe from.
 settings-tab-subscriptions = Subscription
 settings-tab-appearance = Appearance

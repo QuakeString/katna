@@ -29,6 +29,9 @@ async fn main() -> ExitCode {
 
 async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let config = Config::from_env()?;
+    if !katna_server::mailer::Mailer::from_config(&config)?.sends_mail() {
+        tracing::warn!("KATNA_SERVER_SMTP_URL not set: Katna account codes go to this log only");
+    }
     let db = Db::connect(&config.database_url)?;
     // PostgreSQL may still be starting next to us.
     let mut attempt = 0;
@@ -61,10 +64,19 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-/// Deletes old tracking IDs, events and unused installs every hour.
+/// Deletes old tracking IDs, events, unused installs and unconfirmed
+/// accounts every hour.
 async fn purge(db: Db, retention_days: u32) {
     let retention = i64::from(retention_days) * 86_400_000;
     loop {
+        // Accounts whose address was never confirmed go after a week.
+        match db.purge_accounts(now_ms() - 7 * 86_400_000, now_ms()).await {
+            Ok(accounts) if accounts > 0 => {
+                tracing::info!(accounts, "deleted unconfirmed accounts")
+            }
+            Ok(_) => {}
+            Err(error) => tracing::warn!(%error, "could not delete unconfirmed accounts"),
+        }
         match db.purge(now_ms() - retention).await {
             Ok((tracks, installs)) if tracks + installs > 0 => {
                 tracing::info!(tracks, installs, "deleted old records");

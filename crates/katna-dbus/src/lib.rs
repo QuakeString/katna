@@ -113,6 +113,56 @@ pub mod send_state {
     pub const CANCELLED: &str = "cancelled";
 }
 
+/// The Katna account this computer is signed in to, from `KatnaAccount`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct KatnaAccount {
+    /// Signed in; the fields below are empty otherwise.
+    pub signed_in: bool,
+    pub email: String,
+    /// The address is confirmed with the mailed code. Server features
+    /// work only then.
+    pub verified: bool,
+}
+
+/// A computer signed in to the Katna account, from `KatnaDevices`.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct KatnaDevice {
+    pub id: String,
+    /// Its host name.
+    pub name: String,
+    /// When it signed in and when it was last seen (Unix seconds).
+    pub signed_in_at: i64,
+    pub last_seen: i64,
+    /// It is this computer.
+    pub this: bool,
+}
+
+/// Why a Katna account command failed: the message of its D-Bus error,
+/// so the app can say it in the user's language.
+pub mod katna_error {
+    /// Wrong address or password (`AuthFailed`).
+    pub const WRONG_PASSWORD: &str = "wrong_password";
+    /// The address already has a Katna account.
+    pub const EXISTS: &str = "exists";
+    pub const BAD_EMAIL: &str = "bad_email";
+    /// Fewer than 8 characters.
+    pub const SHORT_PASSWORD: &str = "short_password";
+    pub const LONG_PASSWORD: &str = "long_password";
+    pub const WRONG_CODE: &str = "wrong_code";
+    /// The code expired or had too many wrong tries; ask for a new one.
+    pub const CODE_EXPIRED: &str = "code_expired";
+    /// Too many tries; wait a while.
+    pub const TOO_MANY: &str = "too_many";
+    /// The server could not mail the code.
+    pub const MAIL_FAILED: &str = "mail_failed";
+    /// Not signed in (any more).
+    pub const SIGN_IN: &str = "sign_in";
+    /// Katna Server could not be reached.
+    pub const OFFLINE: &str = "offline";
+    /// Anything else.
+    pub const SERVER: &str = "server";
+}
+
 /// Actions Katna Mail serves through `org.freedesktop.Application`
 /// (`ActivateAction`) under its app ID, and the command-line flags that do
 /// the same when it has to be started.
@@ -162,8 +212,9 @@ pub mod translate_problem {
     pub const UNSUPPORTED: &str = "unsupported";
     /// Over the server's limit for now.
     pub const TOO_MANY: &str = "too-many";
-    /// The server did not accept this computer (signing in may be needed).
-    pub const REFUSED: &str = "refused";
+    /// This computer is not signed in to a Katna account with a confirmed
+    /// address.
+    pub const SIGN_IN: &str = "sign-in";
     /// The server could not be reached, or failed.
     pub const FAILED: &str = "failed";
 }
@@ -326,10 +377,10 @@ macro_rules! pim_proxy {
                 target: &str,
             ) -> zbus::Result<(String, String, String)>;
 
-            /// The languages Katna Server can translate into `target`;
-            /// empty when translation is off or the server cannot be
-            /// reached.
-            fn translation_sources(&self, target: &str) -> zbus::Result<Vec<String>>;
+            /// The languages Katna Server can translate into `target`, and
+            /// a [`translate_problem`] when it could not be asked (`sign-in`
+            /// while this computer is not signed in to a Katna account).
+            fn translation_sources(&self, target: &str) -> zbus::Result<(Vec<String>, String)>;
 
             /// Reads the settings file again; call after saving settings
             /// the daemon uses (`sync.metered`).
@@ -338,6 +389,56 @@ macro_rules! pim_proxy {
             /// Whether the daemon saves data as on a metered network (no
             /// bodies downloaded ahead of time).
             fn metered(&self) -> zbus::Result<bool>;
+
+            /// The Katna account (for Katna Server's features) this
+            /// computer is signed in to. Asks the server, so it also
+            /// notices a sign-out from another computer; offline it answers
+            /// what it last knew.
+            fn katna_account(&self) -> zbus::Result<KatnaAccount>;
+
+            /// Creates a Katna account and signs this computer in; the
+            /// server mails a code for `KatnaVerify`. Errors carry a
+            /// [`katna_error`] name as their message, like every Katna
+            /// account command.
+            fn katna_sign_up(&self, email: &str, password: &str) -> zbus::Result<KatnaAccount>;
+
+            /// Signs this computer in to a Katna account.
+            fn katna_sign_in(&self, email: &str, password: &str) -> zbus::Result<KatnaAccount>;
+
+            /// Confirms the account's address with the mailed code.
+            fn katna_verify(&self, code: &str) -> zbus::Result<KatnaAccount>;
+
+            /// Mails a new code for `KatnaVerify`.
+            fn katna_resend_code(&self) -> zbus::Result<()>;
+
+            /// Signs this computer out. It stays registered with the server.
+            fn katna_sign_out(&self) -> zbus::Result<()>;
+
+            /// The computers signed in to the account.
+            fn katna_devices(&self) -> zbus::Result<Vec<KatnaDevice>>;
+
+            /// Signs another computer out.
+            fn katna_sign_out_device(&self, id: &str) -> zbus::Result<()>;
+
+            /// Changes the password; other computers are signed out.
+            fn katna_change_password(&self, current: &str, new: &str) -> zbus::Result<()>;
+
+            /// Mails a code for `KatnaConfirmReset` to `email`, if it has an
+            /// account.
+            fn katna_reset_password(&self, email: &str) -> zbus::Result<()>;
+
+            /// Sets a new password with the mailed code and signs this
+            /// computer in; other computers are signed out.
+            fn katna_confirm_reset(&self, email: &str, code: &str, password: &str)
+            -> zbus::Result<KatnaAccount>;
+
+            /// Deletes the Katna account and everything the server keeps for
+            /// it. Mail on this computer is not touched.
+            fn katna_delete_account(&self, password: &str) -> zbus::Result<()>;
+
+            /// `KatnaAccount` changed.
+            #[zbus(signal)]
+            fn katna_account_changed(&self) -> zbus::Result<()>;
 
             /// Accounts were added or removed.
             #[zbus(signal)]

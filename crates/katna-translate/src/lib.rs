@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Automatic translation (`docs/ARCHITECTURE.md` §16.3, plan 7.8).
+//! Automatic translation (`docs/ARCHITECTURE.md` §16.4, plan 7.8).
 //!
 //! Katna Mail offers to translate a message that is not in the reading
 //! language. Which language a message is in is found here, on this

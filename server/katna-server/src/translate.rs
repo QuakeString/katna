@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Automatic translation (`docs/ARCHITECTURE.md` §16.3): LibreTranslate
+//! Automatic translation (`docs/ARCHITECTURE.md` §16.4): LibreTranslate
 //! runs in its own container on the compose file's internal network, and
-//! these routes pass its API through for installs, with their token and a
-//! daily limit:
+//! these routes pass its API through for computers signed in to a
+//! confirmed Katna account, with a daily limit per account:
 //!
 //! - `GET /api/v1/languages`: the languages it translates between.
 //! - `POST /api/v1/translate` `{"q", "source", "target"}`: plain text only.
@@ -24,7 +24,8 @@ use http_body_util::{BodyExt, Full};
 use hyper_util::rt::TokioIo;
 use serde::{Deserialize, Serialize};
 
-use crate::routes::{AppState, Install};
+use crate::auth::SignedIn;
+use crate::routes::AppState;
 
 /// Longest request body passed on. The daemon sends at most 4000
 /// characters a request.
@@ -59,23 +60,23 @@ fn refuse(status: StatusCode, message: &'static str) -> Response {
     (status, Json(serde_json::json!({ "error": message }))).into_response()
 }
 
-/// Counts one use by `install`, or the answer when there is none left.
-fn over_limit(state: &AppState, install: &str) -> Option<Response> {
+/// Counts one use by `account`, or the answer when there is none left.
+fn over_limit(state: &AppState, account: &str) -> Option<Response> {
     if state.config().translate_url.is_empty() {
         return Some(refuse(
             StatusCode::SERVICE_UNAVAILABLE,
             "translation is not set up on this server",
         ));
     }
-    (!state.translations().allow(install.to_owned()))
+    (!state.translations().allow(account.to_owned()))
         .then(|| refuse(StatusCode::TOO_MANY_REQUESTS, "too many translations today"))
 }
 
 pub(crate) async fn languages(
     State(state): State<AppState>,
-    Install(install): Install,
+    SignedIn { account, .. }: SignedIn,
 ) -> Response {
-    if let Some(refused) = over_limit(&state, &install) {
+    if let Some(refused) = over_limit(&state, &account) {
         return refused;
     }
     pass_on(&state, "GET", "/languages", None).await
@@ -83,7 +84,7 @@ pub(crate) async fn languages(
 
 pub(crate) async fn translate(
     State(state): State<AppState>,
-    Install(install): Install,
+    SignedIn { account, .. }: SignedIn,
     body: Bytes,
 ) -> Response {
     if body.len() > MAX_REQUEST {
@@ -95,7 +96,7 @@ pub(crate) async fn translate(
     if request.q.is_empty() || !is_code(&request.source) || !is_code(&request.target) {
         return refuse(StatusCode::BAD_REQUEST, "expected q, source and target");
     }
-    if let Some(refused) = over_limit(&state, &install) {
+    if let Some(refused) = over_limit(&state, &account) {
         return refused;
     }
     let body = serde_json::json!({
@@ -109,7 +110,7 @@ pub(crate) async fn translate(
 
 pub(crate) async fn detect(
     State(state): State<AppState>,
-    Install(install): Install,
+    SignedIn { account, .. }: SignedIn,
     body: Bytes,
 ) -> Response {
     if body.len() > MAX_REQUEST {
@@ -118,7 +119,7 @@ pub(crate) async fn detect(
     let Ok(request) = serde_json::from_slice::<DetectBody>(&body) else {
         return refuse(StatusCode::BAD_REQUEST, "expected q");
     };
-    if let Some(refused) = over_limit(&state, &install) {
+    if let Some(refused) = over_limit(&state, &account) {
         return refused;
     }
     pass_on(

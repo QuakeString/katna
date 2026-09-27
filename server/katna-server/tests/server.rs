@@ -4,6 +4,7 @@
 //! `KATNA_SERVER_TEST_DATABASE_URL` (CI's `server` job does) and run with
 //! `--include-ignored`.
 
+use std::sync::{Arc, LazyLock, Mutex};
 use std::time::Duration;
 
 use axum::Router;
@@ -11,12 +12,28 @@ use axum::body::Body;
 use axum::http::{Request, StatusCode, header};
 use http_body_util::BodyExt;
 use katna_server::db::Db;
+use katna_server::mailer::{Mailer, Purpose, SentCode};
 use katna_server::{AppState, Config, router};
 use serde_json::{Value, json};
 use tower::ServiceExt;
 
 const NEEDS_DB: &str = "needs PostgreSQL in KATNA_SERVER_TEST_DATABASE_URL";
 const FIREFOX: &str = "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0";
+
+/// Codes "mailed" by every test's server.
+static OUTBOX: LazyLock<Arc<Mutex<Vec<SentCode>>>> = LazyLock::new(Arc::default);
+
+/// The last code mailed to `to` for `purpose`.
+fn code_for(to: &str, purpose: Purpose) -> String {
+    OUTBOX
+        .lock()
+        .unwrap()
+        .iter()
+        .rev()
+        .find(|sent| sent.to == to && sent.purpose == purpose)
+        .map(|sent| sent.code.clone())
+        .expect("a code was mailed")
+}
 
 async fn app() -> Router {
     let url = std::env::var("KATNA_SERVER_TEST_DATABASE_URL").expect(NEEDS_DB);
@@ -28,7 +45,11 @@ async fn app() -> Router {
         daily_limit: 50,
         ..Config::default()
     };
-    router(AppState::new(db, config))
+    router(AppState::with_mailer(
+        db,
+        config,
+        Mailer::Memory(OUTBOX.clone()),
+    ))
 }
 
 async fn send(
@@ -48,7 +69,44 @@ async fn send(
     (status, headers, body)
 }
 
+/// A new install token, signed in to a new account with a confirmed
+/// address.
 async fn register(app: &Router) -> String {
+    let token = new_install(app).await;
+    let email = format!("{}@example.com", katna_server::ids::new_id());
+    let (status, _, body) = send(
+        app,
+        authed(
+            "POST",
+            "/api/v1/account",
+            &token,
+            Some(json!({ "email": email, "password": "correct horse", "device": "test" })),
+        ),
+    )
+    .await;
+    assert_eq!(
+        status,
+        StatusCode::CREATED,
+        "{}",
+        String::from_utf8_lossy(&body)
+    );
+    let code = code_for(&email, Purpose::Verify);
+    let (status, _, _) = send(
+        app,
+        authed(
+            "POST",
+            "/api/v1/account/verify",
+            &token,
+            Some(json!({ "code": code })),
+        ),
+    )
+    .await;
+    assert_eq!(status, StatusCode::NO_CONTENT);
+    token
+}
+
+/// A new install token, not signed in.
+async fn new_install(app: &Router) -> String {
     let (status, _, body) = send(
         app,
         Request::post("/api/v1/installs")
@@ -374,12 +432,12 @@ async fn fake_libretranslate() -> (String, std::sync::Arc<std::sync::Mutex<Vec<V
 
 #[tokio::test]
 #[ignore = "needs PostgreSQL in KATNA_SERVER_TEST_DATABASE_URL"]
-async fn translation_passes_through_for_installs_only() {
+async fn translation_passes_through_for_signed_in_accounts_only() {
     let (translate_url, seen) = fake_libretranslate().await;
     let url = std::env::var("KATNA_SERVER_TEST_DATABASE_URL").expect(NEEDS_DB);
     let db = Db::connect(&url).unwrap();
     db.migrate().await.unwrap();
-    let app = router(AppState::new(
+    let app = router(AppState::with_mailer(
         db,
         Config {
             database_url: url,
@@ -388,6 +446,7 @@ async fn translation_passes_through_for_installs_only() {
             translations_per_day: 3,
             ..Config::default()
         },
+        Mailer::Memory(OUTBOX.clone()),
     ));
     let request =
         json!({"q": "Hola", "source": "es", "target": "en", "format": "html", "api_key": "x"});
@@ -402,6 +461,25 @@ async fn translation_passes_through_for_installs_only() {
     )
     .await;
     assert_eq!(status, StatusCode::UNAUTHORIZED);
+
+    // A computer not signed in to an account is asked to sign in.
+    let signed_out = new_install(&app).await;
+    let (status, _, body) = send(
+        &app,
+        authed(
+            "POST",
+            "/api/v1/translate",
+            &signed_out,
+            Some(request.clone()),
+        ),
+    )
+    .await;
+    assert_eq!(status, StatusCode::FORBIDDEN);
+    assert_eq!(
+        serde_json::from_slice::<Value>(&body).unwrap()["code"],
+        "sign_in"
+    );
+    assert!(seen.lock().unwrap().is_empty());
 
     let token = register(&app).await;
     let (status, _, body) = send(&app, authed("GET", "/api/v1/languages", &token, None)).await;

@@ -221,7 +221,7 @@ notification     (notif_id, message_ids, account_id, created_at)   -- to close/u
 pop3_uidl        (account_id, uidl, message_id NULL, first_seen)   -- POP3 downloads (v3)
 pin              (message_id, pinned_at)   -- pinned to the top of the list (v5)
 translation      (message_id, target, source, source_hash, text, created_at)
-                                            -- kept translations (v6, §16.3)
+                                            -- kept translations (v6, §16.4)
 ```
 
 `participant` is the key table for organizations (§8) and address search.
@@ -2523,12 +2523,39 @@ Everything is deleted after 180 days, and an install can delete its data.
 One server process (events are ordered within it). The API is in
 `server/katna-server/README.md`.
 
-### 16.2 Stack
+### 16.2 Katna accounts
+
+Every server feature needs a **Katna account**, like a Mailspring ID
+(decided September 2026). It is an email address and a password of its
+own on Katna Server; mail logins never go to the server.
+
+- **Server:** accounts with Argon2id password hashes; a six-digit code
+  mailed through an SMTP relay the owner sets (`KATNA_SERVER_SMTP_URL`)
+  confirms the address and resets a forgotten password (30 minutes, 5
+  wrong tries, stored hashed). An install signed in to an account is one
+  of its **devices**; any device can sign the others out, and changing or
+  resetting the password signs them out. Feature routes take the
+  `SignedIn` extractor, which needs a confirmed address. Unconfirmed
+  accounts go after a week; deleting an account deletes its devices and
+  their data. No plans or payments yet.
+- **Daemon:** `katna_account::Session` registers the install once, signs
+  in and out, and keeps the token and account address in the Secret
+  Service (`Secrets::server_token`). Other server features take their token
+  from `Session::token`. D-Bus: `KatnaAccount`, `KatnaSignUp`,
+  `KatnaSignIn`, `KatnaVerify`, `KatnaResendCode`, `KatnaSignOut`,
+  `KatnaDevices`, `KatnaSignOutDevice`, `KatnaChangePassword`,
+  `KatnaResetPassword`, `KatnaConfirmReset`, `KatnaDeleteAccount`, signal
+  `KatnaAccountChanged`; errors carry `katna_dbus::katna_error` names.
+- **App:** Settings > Katna account. Features check
+  `MailWindow::katna_signed_in` and show `katna_sign_in_needed` ("Sign in
+  to use this") when not.
+
+### 16.3 Stack
 
 `axum` + PostgreSQL; WebSocket/SSE delta stream to `katna-daemon`; a
 scheduler for server-side actions; shared crates with the apps where useful.
 
-### 16.3 Automatic translation
+### 16.4 Automatic translation
 
 Katna Mail offers to translate a message that is not in the reading
 language (plan 7.8; decided 27 September 2026: LibreTranslate on the
@@ -2538,9 +2565,10 @@ owner's server, over on-device models or DeepL).
   its own container beside `katna-server`, on the compose file's internal
   network only; which language models load is set there
   (`LT_LOAD_ONLY`). `katna-server` passes `GET /api/v1/languages` and
-  `POST /api/v1/translate` / `/api/v1/detect` through with the same bearer
-  token as tracking and a per-install daily limit, and logs and keeps
-  neither the text nor the translation.
+  `POST /api/v1/translate` / `/api/v1/detect` through for computers signed
+  in to a Katna account with a confirmed address (§16.2), with a daily
+  limit per account, and logs and keeps neither the text nor the
+  translation.
 - **Daemon:** `Translate(message, text, source, target)` on D-Bus. Katna
   Mail finds the message's language on this computer (`katna-translate`,
   whatlang; in the app, as its models would crowd the daemon's size
@@ -2549,12 +2577,15 @@ owner's server, over on-device models or DeepL).
   reading language is never sent, and the daemon refuses it too. It sends
   the text in
   pieces of at most 4000 characters (40,000 in all) over rustls to
-  `katna_core::ids::TRACKING_SERVER_URL` (empty turns translation off) and
+  `katna_core::ids::TRACKING_SERVER_URL` (empty turns translation off),
+  with the Katna account's token (`katna_account::Session::token`), and
   keeps the translation in `mail.db` (`translation`, keyed by message,
   target and a hash of the text). Reset cache forgets them. Encrypted mail
   is never offered for translation.
 - **App:** a bar above a message in another language: "Translate to
-  <reading language>", then "Show original". Settings > General >
+  <reading language>", then "Show original"; while signed out it says to
+  sign in to a Katna account, with a button to Settings > Katna account.
+  Settings > General >
   Translation: offer translations (on), the reading language (the UI
   language by default), languages always translated (none by default, one
   click from the bar) and languages never offered. The Settings text says

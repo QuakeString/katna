@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Translations of messages, kept so a message is translated once
-//! (`docs/ARCHITECTURE.md` §16.3).
+//! (`docs/ARCHITECTURE.md` §16.4).
 
 use rusqlite::{OptionalExtension, params};
 

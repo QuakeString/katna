@@ -67,6 +67,8 @@ pub(super) enum Section {
     General,
     Inbox,
     Accounts,
+    /// Katna account: sign-in for Katna Server's features.
+    KatnaAccount,
     Subscriptions,
     Appearance,
     Shortcuts,
@@ -81,10 +83,11 @@ pub(super) enum Section {
 }
 
 impl Section {
-    pub(super) const ALL: [Self; 12] = [
+    pub(super) const ALL: [Self; 13] = [
         Self::General,
         Self::Inbox,
         Self::Accounts,
+        Self::KatnaAccount,
         Self::Subscriptions,
         Self::Appearance,
         Self::Shortcuts,
@@ -101,6 +104,7 @@ impl Section {
             Self::General => tr!("settings-tab-general"),
             Self::Inbox => tr!("settings-tab-inbox"),
             Self::Accounts => tr!("settings-tab-accounts"),
+            Self::KatnaAccount => tr!("settings-tab-katna-account"),
             Self::Subscriptions => tr!("settings-tab-subscriptions"),
             Self::Appearance => tr!("settings-tab-appearance"),
             Self::Shortcuts => tr!("settings-tab-shortcuts"),
@@ -322,6 +326,7 @@ impl MailWindow {
     pub(super) fn render_settings_page(
         &mut self,
         th: &Theme,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let Some(page) = &self.settings_page else {
@@ -376,6 +381,7 @@ impl MailWindow {
             Section::General => self.general_section(th, cx),
             Section::Inbox => self.inbox_section(th, cx),
             Section::Accounts => self.accounts_section(th, cx),
+            Section::KatnaAccount => self.katna_section(th, window, cx),
             Section::Appearance => self.appearance_section(th, cx),
             Section::Signatures => self.signatures_section(th, cx),
             Section::DefaultApps => self.default_apps_section(th, cx),

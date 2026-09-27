@@ -38,8 +38,7 @@ use katna_sync::{
     worker::{self, Connector, Event, ImapConnector, Pop3Connector, WorkerConfig},
 };
 
-use crate::katna_server::KatnaServer;
-use crate::translate::{self, TranslateError};
+use crate::translate::{self, KatnaServer, TranslateError};
 use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secrets};
 
 /// The longest account name taken.
@@ -58,6 +57,8 @@ pub enum Notice {
     OutboxChanged(i64),
     /// Workers now act metered, or stopped doing so.
     MeteredChanged(bool),
+    /// The Katna account this computer is signed in to changed.
+    KatnaAccountChanged,
 }
 
 /// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
@@ -475,6 +476,16 @@ impl Daemon {
             .map_err(|err| CommandError::Failed(err.to_string()))
     }
 
+    /// This computer's Katna account on Katna Server.
+    pub fn katna(&self) -> Result<crate::katna_account::Session<'_>, CommandError> {
+        crate::katna_account::Session::new(&self.secrets)
+    }
+
+    /// Tells the apps the Katna account changed.
+    pub fn katna_changed(&self) {
+        let _ = self.notices.try_send(Notice::KatnaAccountChanged);
+    }
+
     /// The picture of the sender `address`, or empty.
     pub async fn sender_picture(&self, address: &str) -> Result<Vec<u8>, CommandError> {
         let pictures = Pictures::system(self.paths.cache_dir())
@@ -522,19 +533,9 @@ impl Daemon {
                 return Ok(cached);
             }
         }
-        let mut again = true;
-        let done = loop {
-            let server = KatnaServer::connect(&self.secrets).await?;
-            let languages = &self.translation_languages;
-            match translate::translate(&server, languages, text, source, target).await {
-                // The server forgot this install: register again, once.
-                Err(TranslateError::Refused) if again => {
-                    again = false;
-                    KatnaServer::forget(&self.secrets).await;
-                }
-                done => break done?,
-            }
-        };
+        let server = KatnaServer::connect(&self.secrets).await?;
+        let done = translate::translate(&server, &self.translation_languages, text, source, target)
+            .await?;
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .map_or(0, |d| d.as_secs().try_into().unwrap_or(i64::MAX));
@@ -548,27 +549,13 @@ impl Daemon {
         Ok(done)
     }
 
-    /// The languages Katna Server can translate into `target`; empty when
-    /// translation is off or the server cannot be reached.
-    pub async fn translation_sources(&self, target: &str) -> Vec<String> {
-        let server = match KatnaServer::connect(&self.secrets).await {
-            Ok(server) => server,
-            Err(err) => {
-                tracing::info!(%err, "no translation server");
-                return Vec::new();
-            }
-        };
-        match self.translation_languages.sources(&server, target).await {
-            Ok(sources) => sources,
-            Err(TranslateError::Refused) => {
-                KatnaServer::forget(&self.secrets).await;
-                Vec::new()
-            }
-            Err(err) => {
-                tracing::info!(%err, "asking the server for its languages");
-                Vec::new()
-            }
-        }
+    /// The languages Katna Server can translate into `target`.
+    pub async fn translation_sources(&self, target: &str) -> Result<Vec<String>, TranslateError> {
+        let server = KatnaServer::connect(&self.secrets).await?;
+        self.translation_languages
+            .sources(&server, target)
+            .await
+            .inspect_err(|err| tracing::info!(%err, "asking the server for its languages"))
     }
 
     /// Renames an account. An empty name goes back to the name its own

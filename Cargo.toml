@@ -114,6 +114,9 @@ tokio = { version = "1.53", features = ["macros", "net", "rt-multi-thread", "sig
 tokio-postgres = { version = "0.7.18", default-features = false, features = ["runtime"] }
 sha2 = "0.10.9"
 getrandom = "0.3"
+# Katna accounts: password hashes and the mail with sign-up and reset codes.
+argon2 = { version = "0.5.3", default-features = false, features = ["std"] }
+lettre = { version = "0.11.23", default-features = false, features = ["builder", "hostname", "pool", "smtp-transport", "tokio1-rustls-tls"] }
 http-body-util = "0.1.5"
 # Katna Server passing translation requests to LibreTranslate.
 hyper = { version = "1.11", features = ["client", "http1"] }
