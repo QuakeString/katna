@@ -2024,11 +2024,16 @@ impl MailWindow {
                         .bg(rgba(th.divider))
                         .group_hover("split", |s| s.bg(rgba(th.text_faint))),
                 );
+            // Clipped only from the side it slides in from, and a little
+            // wider than the card, so the card's shadow is never cut.
+            let room = crate::widgets::CARD_SHADOW_ROOM;
             let pane = div()
                 .flex_none()
                 .h_full()
-                .w(px(pane_width * pane_t))
-                .overflow_hidden()
+                .w(px(pane_width * pane_t + 2.0 * room))
+                .mx(px(-room))
+                .px(px(room))
+                .overflow_x_hidden()
                 .child(
                     div()
                         .w(px(pane_width))

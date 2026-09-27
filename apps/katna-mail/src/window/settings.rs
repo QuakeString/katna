@@ -21,7 +21,9 @@ use katna_ui::motion;
 use super::{MailWindow, SETTINGS_WIDTH};
 use crate::theme::{Theme, mix};
 use crate::widgets::FocusRing;
-use crate::widgets::{card_outline, elevation, icon, icon_button, radio, switch, tip};
+use crate::widgets::{
+    CARD_SHADOW_ROOM, card_outline, card_shadow, icon, icon_button, radio, switch, tip,
+};
 
 /// One loop of the reading-pane demo.
 const PANE_DEMO: Duration = Duration::from_millis(2600);
@@ -64,7 +66,10 @@ impl MailWindow {
             .relative()
             .rounded(px(super::PANEL_RADIUS))
             .bg(rgba(th.surface))
-            .shadow(elevation(th, 1.0 * t.min(1.0)))
+            .shadow(card_shadow(
+                th,
+                t.min(1.0) * self.layout.shape.card_outline(),
+            ))
             .child(
                 div()
                     .flex_none()
@@ -270,11 +275,18 @@ impl MailWindow {
                 self.layout.shape.card_outline(),
             ));
         // The panel keeps its width and slides out from under the edge.
+        // The clip reaches a little past its left and top edges, so its
+        // shadow is never cut.
+        let room = CARD_SHADOW_ROOM;
         div()
             .flex_none()
             .h_full()
-            .w(px(SETTINGS_WIDTH * t.clamp(0.0, 1.0)))
-            .pb(px(16.0))
+            .w(px(SETTINGS_WIDTH * t.clamp(0.0, 1.0) + room))
+            .ml(px(-room))
+            .mt(px(-room))
+            .pl(px(room))
+            .pt(px(room))
+            .pb(px(16.0 - room))
             .overflow_hidden()
             .child(
                 div()

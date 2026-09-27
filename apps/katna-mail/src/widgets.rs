@@ -125,6 +125,24 @@ pub fn pill_button(
         )
 }
 
+/// How far a card's shadow reaches past its edges.
+pub const CARD_SHADOW_ROOM: f32 = 4.0;
+
+/// The very short, soft shadow under a card, for a little depth. `t`
+/// fades it away (0 on a phone, whose cards run edge to edge).
+pub fn card_shadow(th: &Theme, t: f32) -> Vec<BoxShadow> {
+    if t <= 0.001 {
+        return Vec::new();
+    }
+    vec![BoxShadow {
+        color: rgba(fade(th.shadow, 0.3 * t.min(1.0))).into(),
+        offset: point(px(0.0), px(1.0)),
+        blur_radius: px(3.0),
+        spread_radius: px(0.0),
+        inset: false,
+    }]
+}
+
 /// A faint line around a card (the list, the reading pane, Quick
 /// settings). It is drawn over the card's content, so lines of the list
 /// that fill the card's width do not hide it; the card keeps `t` px of

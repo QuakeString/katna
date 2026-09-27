@@ -28,7 +28,7 @@ use crate::data::{self, EntryKey, Mail, Row};
 use crate::format;
 use crate::theme::{Theme, fade};
 use crate::widgets::{
-    card_outline, icon, icon_button, icon_button_colored, placeholder, tip, toolbar,
+    card_outline, card_shadow, icon, icon_button, icon_button_colored, placeholder, tip, toolbar,
 };
 
 mod security;
@@ -328,6 +328,7 @@ impl MailWindow {
             .rounded(px(radius))
             .overflow_hidden()
             .bg(rgba(th.surface))
+            .shadow(card_shadow(th, outline))
             .p(px(outline))
             .child(self.render_reader_toolbar(th, cx))
             .child(div().flex_1().min_h_0().child(self.render_reader(th, cx)))

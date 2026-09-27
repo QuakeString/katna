@@ -36,8 +36,8 @@ use crate::data::{EntryKey, Row, RowFile};
 use crate::format;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
-    card_outline, icon, icon_button, icon_button_colored, menu, menu_item, placeholder, tip,
-    toolbar,
+    card_outline, card_shadow, icon, icon_button, icon_button_colored, menu, menu_item,
+    placeholder, tip, toolbar,
 };
 
 const TAB_HEIGHT: f32 = 56.0;
@@ -128,6 +128,7 @@ impl MailWindow {
             .rounded(px(radius))
             .overflow_hidden()
             .bg(rgba(th.surface))
+            .shadow(card_shadow(th, outline))
             .p(px(outline))
             .on_mouse_down(
                 gpui::MouseButton::Left,
