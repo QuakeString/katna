@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A calmer reply"
+text = """
+Reply in the reading pane keeps Send and the formatting at the bottom,
+folds the quoted mail behind "...", and Pop out opens the reply in its
+own window. On a phone, writing takes the whole window.
+"""

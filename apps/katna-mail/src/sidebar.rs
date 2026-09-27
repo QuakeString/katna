@@ -6,6 +6,7 @@
 use std::collections::{BTreeMap, HashMap, HashSet};
 
 use katna_core::{Account, AccountId};
+use katna_i18n::tr;
 use katna_store::{FolderId, FolderRole, FolderSummary};
 
 /// Folder paths are split at this separator. Stalwart, Gmail and the
@@ -64,6 +65,24 @@ impl Role {
     pub fn shows_recipients(self) -> bool {
         matches!(self, Self::Sent | Self::Drafts)
     }
+
+    /// The name a special folder shows in the current language, whatever
+    /// the server calls it; `None` for the user's own folders, which keep
+    /// their name.
+    pub fn title(self) -> Option<String> {
+        let id = match self {
+            Self::Inbox => "folder-inbox",
+            Self::Flagged => "folder-starred",
+            Self::Drafts => "folder-drafts",
+            Self::Sent => "folder-sent",
+            Self::Archive => "folder-archive",
+            Self::Junk => "folder-spam",
+            Self::Trash => "folder-trash",
+            Self::All => "folder-all-mail",
+            Self::Other => return None,
+        };
+        Some(tr!(id))
+    }
 }
 
 impl AccountNode {
@@ -96,6 +115,14 @@ pub struct Node {
     pub total: u64,
     pub unread: u64,
     pub children: Vec<Node>,
+}
+
+impl Node {
+    /// What the folder shows as: a special folder's name in the current
+    /// language, else its own name.
+    pub fn label(&self) -> String {
+        self.role.title().unwrap_or_else(|| self.name.clone())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -159,7 +186,7 @@ impl Tree {
                         a.display_name.clone()
                     }
                 })
-                .unwrap_or_else(|| format!("Account {}", id.0))
+                .unwrap_or_else(|| tr!("nav-account-unnamed", number = id.0.to_string()))
         };
         let unread_of = |id: FolderId| unread.get(&id).copied().unwrap_or(0);
         // Accounts in the order of the account list, unknown ones last.
@@ -261,13 +288,13 @@ impl Tree {
             .and_then(|n| n.folder)
     }
 
-    /// The folders of `account` in tree order, with their full names.
+    /// The folders of `account` in tree order, with the names they show as.
     pub fn folders_of(&self, account: AccountId) -> Vec<(FolderId, String, Role)> {
         self.accounts
             .iter()
             .filter(|a| a.id == account)
             .flat_map(|a| a.folders())
-            .filter_map(|n| Some((n.folder?, n.name.clone(), n.role)))
+            .filter_map(|n| Some((n.folder?, n.label(), n.role)))
             .collect()
     }
 

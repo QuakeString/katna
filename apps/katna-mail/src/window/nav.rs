@@ -456,9 +456,9 @@ impl MailWindow {
                     .text_size(px(15.0))
                     .font_weight(FontWeight::MEDIUM)
                     .child(div().flex_1().min_w_0().truncate().child(if gmail {
-                        "Labels"
+                        tr!("nav-labels")
                     } else {
-                        "Folders"
+                        tr!("nav-folders")
                     }))
                     .when(imap, |d| {
                         d.child(
@@ -466,9 +466,9 @@ impl MailWindow {
                                 .size(px(32.0))
                                 .tooltip(tip(
                                     if gmail {
-                                        "Create new label"
+                                        tr!("nav-label-new")
                                     } else {
-                                        "Create new folder"
+                                        tr!("nav-folder-new")
                                     },
                                     th,
                                 ))
@@ -500,6 +500,13 @@ impl MailWindow {
                     th.text
                 };
                 let bold = selected || *unread > 0;
+                // Special folders show their name in the current language;
+                // the user's own keep theirs.
+                let label = if scheduled {
+                    tr!("folder-scheduled")
+                } else {
+                    role.title().unwrap_or_else(|| label.clone())
+                };
                 let chevron = div()
                     .id(("nav-chevron", ix))
                     .absolute()
@@ -566,7 +573,7 @@ impl MailWindow {
                             .min_w_0()
                             .pl(px(18.0))
                             .truncate()
-                            .child(label.clone()),
+                            .child(label),
                     )
                     .when(*unread > 0, |d| {
                         d.child(

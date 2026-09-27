@@ -741,6 +741,55 @@ pub fn people(paths: &Paths) -> Result<Vec<katna_store::Person>, String> {
         .map_err(|err| format!("Reading people from the mail failed: {err}"))
 }
 
+/// The address book for recipient suggestions, read from the store (a
+/// few seconds on a big mailbox). Opens its own connection, for a
+/// background thread.
+pub fn address_book(paths: &Paths) -> Result<katna_search::contacts::ContactBook, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.correspondents())
+        .map(katna_search::contacts::ContactBook::new)
+        .map_err(|err| format!("Reading addresses from the mail failed: {err}"))
+}
+
+/// Where the address book is kept between runs, so suggestions work at
+/// once while it is read again.
+fn address_book_file(paths: &Paths) -> PathBuf {
+    paths.cache_dir().join("addresses.json")
+}
+
+/// The address book saved by [`save_address_book`], if any.
+pub fn cached_address_book(paths: &Paths) -> Option<katna_search::contacts::ContactBook> {
+    let bytes = std::fs::read(address_book_file(paths)).ok()?;
+    let contacts = serde_json::from_slice(&bytes)
+        .inspect_err(|err| tracing::warn!("reading the saved address book: {err}"))
+        .ok()?;
+    Some(katna_search::contacts::ContactBook::from_contacts(contacts))
+}
+
+/// Saves the address book for the next run, readable only by the user.
+pub fn save_address_book(paths: &Paths, book: &katna_search::contacts::ContactBook) {
+    use std::io::Write;
+    use std::os::unix::fs::OpenOptionsExt;
+    let file = address_book_file(paths);
+    let partial = file.with_extension("json.part");
+    let saved = serde_json::to_vec(book.contacts())
+        .map_err(std::io::Error::other)
+        .and_then(|bytes| {
+            std::fs::create_dir_all(paths.cache_dir())?;
+            std::fs::OpenOptions::new()
+                .write(true)
+                .create(true)
+                .truncate(true)
+                .mode(0o600)
+                .open(&partial)?
+                .write_all(&bytes)?;
+            std::fs::rename(&partial, &file)
+        });
+    if let Err(err) = saved {
+        tracing::warn!("saving the address book: {err}");
+    }
+}
+
 /// Runs a search typed into the search box. With `correct`, a text with a
 /// word that is not in the mail is corrected to the nearest words that are,
 /// as a web search does, and the corrected text is returned with the

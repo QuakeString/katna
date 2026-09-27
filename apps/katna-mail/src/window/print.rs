@@ -18,6 +18,7 @@ use ashpd::desktop::print::{
     Orientation, PageSetup, PreparePrintOptions, PrintOptions, PrintProxy,
 };
 use gpui::Context;
+use katna_i18n::tr;
 use katna_render::Address;
 use katna_render::print::{Paper, PrintFont, PrintMessage, conversation_pdf};
 
@@ -70,7 +71,7 @@ impl MailWindow {
                 Ok(path) => path,
                 Err(err) => {
                     this.update(cx, |this, cx| {
-                        this.show_snackbar(format!("Could not print: {err}"), None, cx)
+                        this.show_snackbar(tr!("print-failed", error = err.as_str()), None, cx)
                     })
                     .ok();
                     return;
@@ -85,7 +86,7 @@ impl MailWindow {
             // No print dialog to hand it to: open it to print from there.
             cx.update(|cx| cx.open_with_system(&path));
             this.update(cx, |this, cx| {
-                this.show_snackbar("Opened as a PDF to print from there.", None, cx)
+                this.show_snackbar(tr!("print-opened-as-pdf"), None, cx)
             })
             .ok();
         })
@@ -115,24 +116,24 @@ impl MailWindow {
             return PrintMessage {
                 from: row.map(|r| r.sender.clone()).unwrap_or_default(),
                 date: date(row.and_then(|r| r.date)),
-                body: "(Not downloaded yet.)".to_owned(),
+                body: tr!("print-not-downloaded"),
                 ..PrintMessage::default()
             };
         };
-        let label = |label: &str, list: &[Address]| {
+        let label = |list: &[Address], text: fn(String) -> String| {
             if list.is_empty() {
                 String::new()
             } else {
-                format!("{label}: {}", addresses(list))
+                text(addresses(list))
             }
         };
         PrintMessage {
             from: addresses(&view.from),
             date: date(view.date.or(message.row.as_ref().and_then(|r| r.date))),
-            to: label("To", &view.to),
-            cc: label("Cc", &view.cc),
+            to: label(&view.to, |list| tr!("print-to", addresses = list)),
+            cc: label(&view.cc, |list| tr!("print-cc", addresses = list)),
             body: if message.sealed {
-                "(Encrypted. Open it in Katna Mail to print its text.)".to_owned()
+                tr!("print-encrypted")
             } else {
                 view.body
             },
@@ -202,7 +203,7 @@ fn write_pdf(
     paper: Paper,
     family: Option<&str>,
 ) -> Result<PathBuf, String> {
-    let (regular, bold) = fonts(family).ok_or("no font was found")?;
+    let (regular, bold) = fonts(family).ok_or_else(|| tr!("print-no-font"))?;
     let pdf = conversation_pdf(subject, messages, paper, &regular, bold.as_ref())
         .map_err(|err| err.to_string())?;
     let now = SystemTime::now();

@@ -14,6 +14,7 @@ use gpui::{
     AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, div, prelude::*, rgba,
     uniform_list,
 };
+use katna_i18n::tr;
 use katna_store::Person;
 use katna_ui::Ripple;
 use katna_ui::motion;
@@ -47,15 +48,15 @@ impl App {
         Self::Feeds,
     ];
 
-    pub(super) fn label(self) -> &'static str {
-        match self {
-            Self::Mail => "Mail",
-            Self::Calendar => "Calendar",
-            Self::Contacts => "Contacts",
-            Self::Tasks => "Tasks",
-            Self::Notes => "Notes",
-            Self::Feeds => "Feeds",
-        }
+    pub(super) fn label(self) -> String {
+        tr!(match self {
+            Self::Mail => "rail-mail",
+            Self::Calendar => "rail-calendar",
+            Self::Contacts => "rail-contacts",
+            Self::Tasks => "rail-tasks",
+            Self::Notes => "rail-notes",
+            Self::Feeds => "rail-feeds",
+        })
     }
 
     pub(super) fn icon(self) -> &'static str {
@@ -70,16 +71,13 @@ impl App {
     }
 
     /// What the app will do, for its "coming soon" page.
-    fn promise(self) -> &'static str {
+    fn promise(self) -> String {
         match self {
-            Self::Mail | Self::Contacts => "",
-            Self::Calendar => {
-                "Your CalDAV calendars, meeting invitations from your mail and \
-                 reminders, next to your inbox."
-            }
-            Self::Tasks => "To-do lists that sync with CalDAV, and tasks made from mail.",
-            Self::Notes => "Quick notes, and notes on a mail or conversation for later.",
-            Self::Feeds => "Read RSS and Atom feeds beside your mail.",
+            Self::Mail | Self::Contacts => String::new(),
+            Self::Calendar => tr!("app-calendar-promise"),
+            Self::Tasks => tr!("app-tasks-promise"),
+            Self::Notes => tr!("app-notes-promise"),
+            Self::Feeds => tr!("app-feeds-promise"),
         }
     }
 }
@@ -235,7 +233,7 @@ impl MailWindow {
                     },
                     th,
                 )
-                .tooltip(tip("Settings", th))
+                .tooltip(tip(tr!("settings"), th))
                 .on_click(cx.listener(|this, _, window, cx| {
                     if this.settings_page.is_some() && this.app == App::Mail {
                         this.close_settings_page(window, cx);
@@ -273,7 +271,7 @@ impl MailWindow {
                         .pt(px(8.0))
                         .text_size(px(22.0))
                         .text_color(rgba(th.text))
-                        .child(format!("Katna {}", app.label())),
+                        .child(tr!("app-page-title", app = app.label())),
                 )
                 .child(
                     div()
@@ -284,7 +282,7 @@ impl MailWindow {
                         .text_size(px(12.0))
                         .font_weight(FontWeight::MEDIUM)
                         .text_color(rgba(th.text_dim))
-                        .child("Coming soon"),
+                        .child(tr!("app-coming-soon")),
                 )
                 .child(
                     div()
@@ -323,13 +321,13 @@ impl MailWindow {
     fn render_contacts(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let people = match &self.people {
             None | Some(People::Loading) => {
-                return placeholder("Gathering people from your mail…", th);
+                return placeholder(&tr!("app-contacts-loading"), th);
             }
             Some(People::Failed(err)) => return placeholder(err, th),
             Some(People::Loaded(people)) => people.clone(),
         };
         if people.is_empty() {
-            return placeholder("People you write with show up here.", th);
+            return placeholder(&tr!("app-contacts-empty"), th);
         }
         let header = div()
             .flex_none()
@@ -341,20 +339,16 @@ impl MailWindow {
             .gap(px(12.0))
             .border_b_1()
             .border_color(rgba(th.divider))
-            .child(div().text_size(px(20.0)).child("Contacts"))
+            .child(div().text_size(px(20.0)).child(tr!("rail-contacts")))
             .child(
                 div()
                     .text_size(px(13.0))
                     .text_color(rgba(th.text_faint))
-                    .child(format!(
-                        "{}{} people from your mail, most written with first",
-                        if people.len() >= crate::data::PEOPLE_LIMIT as usize {
-                            "The top "
-                        } else {
-                            ""
-                        },
-                        format::thousands(people.len() as u64)
-                    )),
+                    .child(if people.len() >= crate::data::PEOPLE_LIMIT as usize {
+                        tr!("app-contacts-top", count = people.len())
+                    } else {
+                        tr!("app-contacts-count", count = people.len())
+                    }),
             );
         let count = people.len();
         let list = uniform_list(
@@ -396,7 +390,7 @@ fn render_person(
         .last
         .and_then(|d| format::local(d, &this.tz))
         .zip(format::local(now, &this.tz))
-        .map(|(d, now)| format!("last {}", format::list_date(d, now)))
+        .map(|(d, now)| tr!("app-contacts-last", date = format::list_date(d, now)))
         .unwrap_or_default();
     let email = person.email.clone();
     div()
@@ -452,7 +446,7 @@ fn render_person(
                 .items_end()
                 .text_size(px(12.0))
                 .text_color(rgba(th.text_faint))
-                .child(format!("{} messages", format::thousands(person.messages)))
+                .child(tr!("app-contacts-messages", count = person.messages))
                 .child(last),
         )
         .into_any_element()

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A new folder pane button"
+text = """
+The button at the top left shows and hides the folder pane, and its left
+side is filled while the folders show.
+"""

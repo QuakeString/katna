@@ -1204,7 +1204,7 @@ impl MailWindow {
                     20.0,
                 ))
                 .child(icon(tab.icon, th.tabs[tab.color], 18.0))
-                .child(tab.label)
+                .child(tab.label())
         });
         div()
             .flex()
@@ -1221,7 +1221,7 @@ impl MailWindow {
                         .text_color(rgba(th.text_faint))
                         .child(format!(
                             "Tabs shown. Mail of a tab you turn off stays in {}.",
-                            all[0].label
+                            all[0].label()
                         )),
                 )
                 .children(checks)

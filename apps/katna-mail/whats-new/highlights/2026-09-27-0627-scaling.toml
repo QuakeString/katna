@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Make everything bigger or smaller"
+text = """
+Settings > Appearance > Scaling sizes the whole window, text, icons and
+spacing alike, from 75% to 200% on top of your desktop's scale.
+"""

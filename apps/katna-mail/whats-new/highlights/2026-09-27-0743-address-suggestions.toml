@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Addresses suggested as you type"
+text = """
+To, Cc and Bcc suggest the people you write to most as you type, even
+with a typo. Pick one with the arrow keys and Enter, Tab or a click.
+"""
