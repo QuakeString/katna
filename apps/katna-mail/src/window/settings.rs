@@ -85,6 +85,7 @@ pub(super) enum Change {
     Language(&'static str),
     /// Grammar mistakes underlined while writing (English only).
     GrammarCheck(bool),
+    WritingSuggestions(bool),
 }
 
 impl MailWindow {
@@ -555,6 +556,13 @@ impl MailWindow {
                 self.config.sending.grammar_check = on;
                 self.save_config();
                 self.grammar_changed(cx);
+                cx.notify();
+                return;
+            }
+            Change::WritingSuggestions(on) => {
+                self.config.sending.writing_suggestions = on;
+                self.save_config();
+                self.suggestions_changed(cx);
                 cx.notify();
                 return;
             }

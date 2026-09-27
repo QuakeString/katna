@@ -1426,7 +1426,7 @@ impl MailWindow {
     }
 
     /// Which account new mail goes out from, and what Send does on a reply.
-    fn sending_rows(&self, th: &Theme, cx: &mut Context<Self>) -> [Div; 3] {
+    fn sending_rows(&self, th: &Theme, cx: &mut Context<Self>) -> [Div; 4] {
         let sending = &self.config.sending;
         let chosen = &sending.send_from;
         // An address no longer set up counts as the open account.
@@ -1495,6 +1495,22 @@ impl MailWindow {
                     "Underline grammar mistakes while writing, in English",
                     sending.grammar_check,
                     Change::GrammarCheck(!sending.grammar_check),
+                    th,
+                    cx,
+                ),
+                th,
+            ),
+            self.row(
+                "Writing suggestions",
+                Some(
+                    "Learned on this computer from the mail you sent; nothing leaves it. Press Tab to take a suggestion, or keep typing.",
+                ),
+                self.switch_row(
+                    "page-suggestions",
+                    "Suggest while writing",
+                    "Show the likely rest of a phrase in grey as you type",
+                    sending.writing_suggestions,
+                    Change::WritingSuggestions(!sending.writing_suggestions),
                     th,
                     cx,
                 ),

@@ -280,6 +280,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Signatures,
+        "Writing suggestions",
+        "Show the likely rest of a phrase in grey as you type",
+        "writing suggestions autocomplete complete predict phrase ghost text tab smart compose",
+    ),
+    entry(
+        Section::Signatures,
         "Signatures",
         "Added below your message, after a \u{201c}--\u{201d} line",
         "signature sign-off",

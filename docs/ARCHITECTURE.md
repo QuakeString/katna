@@ -1404,6 +1404,20 @@ Gemini or confidential mode):
   and is stopped when the last one closes (or grammar checking is turned
   off), so the app itself stays small. The app binary grows about 10 MB.
   Other languages are for Harper upstream.
+- **Writing suggestions.** While the cursor is at the end of a paragraph
+  the user writes (not a quote or the signature), the likely rest of the
+  phrase shows in grey after it, laid out and wrapped like text but not
+  in the document; Tab (or Right) takes it, Escape or typing on drops it
+  (`suggest.rs`, `RichEditor::set_suggest`). It is a table of which word
+  followed which one or two words, learned in the background on the
+  first message written from the newest 3,000 sent messages (the user's
+  own text only: quotes, "On … wrote:" and the signature are cut) plus
+  about forty phrases common in mail. A word is offered only when it
+  followed its context at least twice and at least 60% of the time, up
+  to five words, so it stays quiet when unsure and in languages it has
+  not seen. Looking up is a few hash lookups per keystroke on the UI
+  thread; nothing leaves the computer and no model is downloaded. On by
+  default, Settings → Compose → Writing suggestions.
 - **Sending account, Send and archive.** Settings → Compose picks the
   account new mail goes out from: the one whose mail is open (default) or
   always the same address (`sending.send_from`). Replies and forwards go

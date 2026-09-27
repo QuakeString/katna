@@ -44,7 +44,7 @@ use katna_store::MessageId;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 use katna_ui::rich::{
-    Block, Doc, GrammarCheck, Palette, Para, RichEditor, RichEvent, SpellCheck, html,
+    Block, Doc, GrammarCheck, Palette, Para, RichEditor, RichEvent, SpellCheck, Suggest, html,
 };
 use katna_ui::unpx;
 use katna_ui::{InputEvent, InputGrammarMenu, TextInput};
@@ -57,6 +57,7 @@ use crate::grammar;
 use crate::outgoing::{self, Mailbox, Outgoing, Part};
 use crate::signatures;
 use crate::spell::{self, Speller};
+use crate::suggest::Phrases;
 use crate::theme::{Theme, fade};
 use crate::widgets::{elevation, icon, tip};
 
@@ -215,6 +216,10 @@ pub(super) struct Writing {
     /// Harper's grammar rules, in their helper process while a message is
     /// open.
     grammar: Option<Arc<dyn GrammarCheck>>,
+    /// Phrases learned from the sent mail, loaded on the first message
+    /// written.
+    phrases: Option<Rc<Phrases>>,
+    phrases_loading: bool,
     /// Messages waiting for their scheduled time, soonest first.
     scheduled: Vec<OutboxItem>,
     /// The list of scheduled mail shows.
@@ -738,6 +743,7 @@ impl MailWindow {
         let subject = input("Subject", &draft.subject, cx);
         let speller = self.speller(cx);
         let grammar = self.grammar();
+        let suggest = self.suggestions(cx);
         subject.update(cx, |input, cx| {
             input.set_grammar_check(grammar.clone(), grammar_color(&th), cx)
         });
@@ -747,6 +753,7 @@ impl MailWindow {
             editor.set_doc(draft.body.clone(), draft.body.start(), cx);
             editor.set_spell_check(speller, cx);
             editor.set_grammar_check(grammar, cx);
+            editor.set_suggest(suggest, cx);
             editor
         });
         let mut subscriptions = Vec::new();
@@ -927,6 +934,42 @@ impl MailWindow {
             compose
                 .subject
                 .update(cx, |input, cx| input.set_grammar_check(grammar, color, cx));
+        }
+    }
+
+    /// Writing suggestions if they are on; starts learning the phrases the
+    /// first time.
+    fn suggestions(&mut self, cx: &mut Context<Self>) -> Option<Rc<dyn Suggest>> {
+        if !self.config.sending.writing_suggestions {
+            return None;
+        }
+        if self.writing.phrases.is_none() && !self.writing.phrases_loading {
+            self.writing.phrases_loading = true;
+            let paths = self.paths.clone();
+            cx.spawn(async move |this, cx| {
+                let phrases = cx
+                    .background_executor()
+                    .spawn(async move { Phrases::learn(&paths) })
+                    .await;
+                this.update(cx, |this, cx| {
+                    this.writing.phrases = Some(Rc::new(phrases));
+                    this.writing.phrases_loading = false;
+                    this.suggestions_changed(cx);
+                })
+                .ok();
+            })
+            .detach();
+        }
+        self.writing.phrases.clone().map(|p| p as Rc<dyn Suggest>)
+    }
+
+    /// The open message suggests, or stops, as Settings says.
+    pub(super) fn suggestions_changed(&mut self, cx: &mut Context<Self>) {
+        let suggest = self.suggestions(cx);
+        if let Some(compose) = &self.compose {
+            compose
+                .body
+                .update(cx, |editor, cx| editor.set_suggest(suggest, cx));
         }
     }
 
