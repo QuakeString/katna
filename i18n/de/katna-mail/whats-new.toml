@@ -566,3 +566,31 @@ Unterhaltung, um sie anzuzeigen. Die Angaben stammen nur aus Ihren E-Mails
 auf diesem Computer. Der Kontaktknopf in der Leiste des Lesebereichs
 blendet die Karte aus.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Belegter Speicher"
+text = """
+Unten im Ordnerbereich steht, wie voll der E-Mail-Speicher des Kontos ist,
+etwa „34 % von 15 GB belegt“, wenn sein Mailserver das mitteilt.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "E-Mails aus KRunner und der GNOME-Suche finden"
+text = """
+Tippen Sie in KRunner (Alt+Leertaste) oder in der Aktivitäten-Suche einen
+Namen ein, um dieser Person zu schreiben, ihre Adresse zu kopieren oder
+ihre E-Mails zu finden. Nachrichten erscheinen, wenn ihr Betreff oder
+Absender jedes eingetippte Wort enthält; beginnen Sie mit mail:, um alle
+Ihre E-Mails zu durchsuchen, wie im Suchfeld von Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Vorlagen für E-Mails, die Sie oft schreiben"
+text = """
+Schreiben Sie eine Nachricht einmal und speichern Sie sie mit dem neuen
+Knopf Vorlagen im Fenster zum Verfassen; danach fügen Sie sie mit einem
+Klick in jede neue E-Mail oder Antwort ein. Schreiben Sie {first name},
+{name} oder {my name}, und Katna füllt sie für jeden Empfänger aus.
+Vorlagen bearbeiten, umbenennen oder löschen Sie unter Einstellungen >
+Verfassen.
+"""

@@ -561,3 +561,30 @@ para abri-lo, ou em outra pessoa da conversa para vê-la. Tudo vem só do
 seu e-mail neste computador. O botão de contato na barra de ferramentas
 do painel de leitura oculta o cartão.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Armazenamento usado"
+text = """
+O rodapé do painel de pastas mostra quanto do armazenamento de e-mail da
+conta está ocupado, como “34% de 15 GB usados”, quando o servidor de e-mail
+informa.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Encontre e-mails pelo KRunner e pela pesquisa do GNOME"
+text = """
+Digite um nome no KRunner (Alt+Space) ou na pesquisa de Atividades para
+escrever para essa pessoa, copiar o endereço dela ou encontrar os e-mails
+dela. As mensagens aparecem quando o assunto ou o remetente tem todas as
+palavras digitadas; comece com mail: para pesquisar todos os seus e-mails,
+como na caixa de pesquisa do Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Modelos para os e-mails que você escreve sempre"
+text = """
+Escreva uma mensagem uma vez e salve-a com o novo botão Modelos ao escrever,
+depois coloque-a em qualquer e-mail novo ou resposta com um clique. Escreva
+{first name}, {name} ou {my name} e o Katna preenche para cada destinatário.
+Edite, renomeie ou exclua modelos em Configurações > Escrever.
+"""

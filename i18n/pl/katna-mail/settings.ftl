@@ -192,6 +192,19 @@ settings-compose-spell-check-detail = Błędnie napisane słowa są podkreślane
 settings-compose-spell-desktop = Język pulpitu ({ $language })
 settings-compose-templates = Szablony
 settings-compose-templates-detail = Zapisuj często pisane wiadomości i zaczynaj od nich nową wiadomość lub odpowiedź.
+settings-compose-no-templates = Brak szablonów. W wiadomości wybierz Szablony, a potem Zapisz jako szablon.
+settings-compose-template-new = Utwórz nowy
+settings-compose-template-new-name = Nowy szablon
+settings-compose-template-subject = Temat
+settings-compose-template-text = Treść szablonu
+settings-compose-template-fields = W miejsce {"{"}first name{"}"}, {"{"}name{"}"} i {"{"}my name{"}"} wstawiane są imię odbiorcy, jego imię i nazwisko oraz Twoje imię i nazwisko.
+settings-compose-template-remove-file = Usuń załącznik
+settings-compose-template-save = Zapisz
+settings-compose-template-saved = Szablon zapisany
+settings-compose-template-needs-name = Nadaj szablonowi nazwę
+settings-compose-template-delete = Usuń szablon
+settings-compose-template-deleted = Szablon usunięty
+settings-compose-template-delete-failed = Nie udało się usunąć szablonu: { $error }
 
 ## Settings > Shortcuts
 
@@ -246,7 +259,7 @@ settings-compose-for-new-mail-summary = Podpis, od którego zaczyna się nowa wi
 settings-compose-for-replies-summary = Podpis, od którego zaczynają się odpowiedzi i przekazywane wiadomości
 settings-compose-format-summary = Pisz nowe wiadomości zwykłym tekstem
 settings-compose-spelling-summary = Sprawdzanie pisowni podczas pisania i język słownika
-settings-compose-templates-summary = Wkrótce: zapisuj często pisane wiadomości i zaczynaj od nich nową wiadomość lub odpowiedź
+settings-compose-templates-summary = Zapisuj często pisane wiadomości i zaczynaj od nich nową wiadomość lub odpowiedź
 settings-feedback-crash-reports-summary = Zapisuj raporty o awariach na tym komputerze, gdy Katna Mail lub jej usługa w tle ulegnie awarii
 settings-feedback-saved-summary = Wyświetl, skopiuj lub usuń raporty o awariach zapisane na tym komputerze
 settings-feedback-help-improve-summary = Wysyłaj raporty o awariach, aby pomóc naprawić błędy; wyłączone, dopóki tego nie włączysz

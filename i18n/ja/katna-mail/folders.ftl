@@ -13,6 +13,8 @@ nav-all-accounts = すべてのアカウント
 nav-expand = フォルダを表示
 nav-collapse = フォルダを隠す
 nav-tab-new = 新着 { $count } 件
+storage-used = { $total } 中 { $percent }% 使用
+storage-used-detail = { $address }: { $total } 中 { $used } 使用
 
 ## Special folders (the user's own folders keep their names)
 

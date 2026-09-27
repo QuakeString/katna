@@ -182,6 +182,19 @@ settings-compose-spell-check-detail = A ń fa ìlà sí abẹ́ àwọn ọ̀r�
 settings-compose-spell-desktop = Èdè déskítọ́ọ̀pù ({ $language })
 settings-compose-templates = Àwọn àwòṣe
 settings-compose-templates-detail = Fi lẹ́tà tí o máa ń kọ lọ́pọ̀ ìgbà pamọ́, kí o sì bẹ̀rẹ̀ lẹ́tà tuntun tàbí èsì láti inú rẹ̀.
+settings-compose-no-templates = Kò sí àwòṣe kankan síbẹ̀. Nínú lẹ́tà kan, yan Àwọn àwòṣe, lẹ́yìn náà yan Fi pamọ́ bí àwòṣe.
+settings-compose-template-new = Ṣẹ̀dá tuntun
+settings-compose-template-new-name = Àwòṣe tuntun
+settings-compose-template-subject = Àkọlé
+settings-compose-template-text = Ọ̀rọ̀ àwòṣe
+settings-compose-template-fields = A máa fi orúkọ olùgbà àti orúkọ rẹ kún {"{"}first name{"}"}, {"{"}name{"}"} àti {"{"}my name{"}"}.
+settings-compose-template-remove-file = Yọ àfikún kúrò
+settings-compose-template-save = Fi pamọ́
+settings-compose-template-saved = A ti fi àwòṣe pamọ́
+settings-compose-template-needs-name = Fún àwòṣe náà ní orúkọ
+settings-compose-template-delete = Pa àwòṣe rẹ́
+settings-compose-template-deleted = A ti pa àwòṣe rẹ́
+settings-compose-template-delete-failed = Kò lè pa àwòṣe náà rẹ́: { $error }
 
 ## Settings > Shortcuts
 
@@ -236,7 +249,7 @@ settings-compose-for-new-mail-summary = Ìbuwọ́lù tí lẹ́tà tuntun fi ń
 settings-compose-for-replies-summary = Ìbuwọ́lù tí èsì àti ìfiránṣẹ́-síwájú fi ń bẹ̀rẹ̀
 settings-compose-format-summary = Kọ lẹ́tà tuntun ní ọ̀rọ̀ lásán
 settings-compose-spelling-summary = Ṣàyẹ̀wò ìsípẹ́lì nígbà kíkọ̀wé, àti èdè ìwé-atúmọ̀
-settings-compose-templates-summary = Ó ń bọ̀ láìpẹ́: fi lẹ́tà tí o máa ń kọ lọ́pọ̀ ìgbà pamọ́, kí o sì bẹ̀rẹ̀ lẹ́tà tuntun tàbí èsì láti inú rẹ̀
+settings-compose-templates-summary = Fi lẹ́tà tí o máa ń kọ lọ́pọ̀ ìgbà pamọ́, kí o sì bẹ̀rẹ̀ lẹ́tà tuntun tàbí èsì láti inú rẹ̀
 settings-feedback-crash-reports-summary = Fi ìjábọ̀ ìjákulẹ̀ pamọ́ sórí kọ̀ǹpútà yìí nígbà tí Katna Mail tàbí iṣẹ́ ẹ̀yìn rẹ̀ bá jákulẹ̀
 settings-feedback-saved-summary = Wo, ṣẹ̀dà tàbí pa ìjábọ̀ ìjákulẹ̀ tí a fi pamọ́ sórí kọ̀ǹpútà yìí rẹ́
 settings-feedback-help-improve-summary = Fi ìjábọ̀ ìjákulẹ̀ ránṣẹ́ láti ṣèrànwọ́ láti tún ohun tó bàjẹ́ ṣe; ó wà ní pípa àyàfi tí o bá tàn án

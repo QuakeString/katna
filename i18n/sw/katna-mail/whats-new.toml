@@ -561,3 +561,31 @@ kuvifungua, au mtu mwingine wa mazungumzo ili kumwona. Maelezo husomwa
 kutoka kwenye barua zako kwenye kompyuta hii pekee. Kitufe cha
 mwasiliani kwenye upau wa zana wa kidirisha cha kusoma hukificha.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Nafasi iliyotumika"
+text = """
+Seva ya barua ikieleza, sehemu ya chini ya kidirisha cha folda huonyesha
+jinsi hifadhi ya barua ya akaunti ilivyojaa, kama vile “Imetumika 34% ya
+15 GB”.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Tafuta barua kutoka KRunner na utafutaji wa GNOME"
+text = """
+Andika jina katika KRunner (Alt+Space) au utafutaji wa Activities ili
+kumwandikia mtu huyo, kunakili anwani yake au kupata barua zake. Ujumbe
+huonekana wakati mada au mtumaji wake ana kila neno unaloandika; anza na
+mail: ili kutafuta katika barua zako zote, kama kwenye kisanduku cha
+kutafuta cha Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Violezo vya barua unazoandika mara kwa mara"
+text = """
+Andika ujumbe mara moja na uuhifadhi kwa kitufe kipya cha Violezo katika
+dirisha la kutunga, kisha uuweke katika barua mpya au jibu lolote kwa
+kubofya mara moja. Andika {first name}, {name} au {my name} na Katna
+itavijaza kwa kila mpokeaji. Hariri, badilisha jina au futa violezo
+katika Mipangilio > Tunga.
+"""

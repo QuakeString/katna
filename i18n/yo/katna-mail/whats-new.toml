@@ -549,3 +549,30 @@ fáìlì kan láti ṣí i, tàbí ẹlòmíì nínú ìjíròrò náà láti r�
 láti inú lẹ́tà rẹ lórí kọ̀ǹpútà yìí nìkan. Bọ́tìnnì olùbásọ̀rọ̀ lórí
 ọ̀pá irinṣẹ́ pánẹ́ẹ̀lì kíkà ń fi í pamọ́.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Àyè ìpamọ́ tí a ti lò"
+text = """
+Nígbà tí sáfà lẹ́tà bá sọ ọ́, ìsàlẹ̀ pánẹ́ẹ̀lì fódà máa ń fi bí àyè
+ìpamọ́ lẹ́tà àkáǹtì náà ṣe kún tó hàn, bíi “A ti lo 34% nínú 15 GB”.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Wá lẹ́tà láti KRunner àti ìṣàwárí GNOME"
+text = """
+Tẹ orúkọ kan sínú KRunner (Alt+Space) tàbí ìṣàwárí Activities láti kọ̀wé
+sí ẹni náà, ṣe ẹ̀dà àdírẹ́sì rẹ̀ tàbí wá lẹ́tà rẹ̀. Àwọn lẹ́tà máa ń hàn
+nígbà tí àkọlé tàbí olùfiránṣẹ́ wọn bá ní gbogbo ọ̀rọ̀ tí o tẹ̀; bẹ̀rẹ̀
+pẹ̀lú mail: láti ṣàwárí gbogbo lẹ́tà rẹ, bí nínú àpótí ìṣàwárí Katna
+Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Àwọn àwòṣe fún lẹ́tà tí o máa ń kọ lọ́pọ̀ ìgbà"
+text = """
+Kọ lẹ́tà kan lẹ́ẹ̀kan kí o sì fi pamọ́ pẹ̀lú bọ́tìnnì tuntun Àwọn àwòṣe
+nínú fèrèsé kíkọ̀wé, lẹ́yìn náà fi sínú lẹ́tà tuntun tàbí èsì èyíkéyìí
+pẹ̀lú títẹ̀ kan. Kọ {first name}, {name} tàbí {my name}, Katna yóò sì
+kún wọn fún olùgbà kọ̀ọ̀kan. Ṣàtúnṣe, tún orúkọ sọ tàbí pa àwọn àwòṣe
+rẹ́ nínú Ètò > Kíkọ̀wé.
+"""

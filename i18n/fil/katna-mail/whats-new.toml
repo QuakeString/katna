@@ -576,3 +576,32 @@ ibang tao sa usapan para makita sila. Binabasa lang ito mula sa mail mo sa
 computer na ito. Itinatago ito ng contact button sa toolbar ng pane ng
 pagbabasa.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Nagamit na storage"
+text = """
+Ipinapakita sa ibaba ng pane ng folder kung gaano na kapuno ang mail
+storage ng account, gaya ng “34% ng 15 GB ang nagamit”, kapag sinasabi ito
+ng mail server nito.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Maghanap ng mail mula sa KRunner at sa GNOME search"
+text = """
+Mag-type ng pangalan sa KRunner (Alt+Space) o sa search ng Activities para
+sumulat sa taong iyon, kopyahin ang address niya o hanapin ang mail niya.
+Lumalabas ang mga mensahe kapag nasa paksa o nagpadala nito ang bawat
+salitang tina-type mo; magsimula sa mail: para maghanap sa lahat ng mail
+mo, gaya sa search box ng Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Mga template para sa mail na madalas mong isinusulat"
+text = """
+Isulat nang isang beses ang mensahe at i-save ito gamit ang bagong button
+na Mga template sa window ng pag-compose, pagkatapos ay ilagay ito sa
+anumang bagong mail o sagot sa isang click. Isulat ang {first name},
+{name} o {my name} at pupunan ito ng Katna para sa bawat tatanggap.
+I-edit, palitan ang pangalan o i-delete ang mga template sa Mga setting >
+Mag-compose.
+"""

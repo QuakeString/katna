@@ -190,6 +190,19 @@ settings-compose-spell-check-detail = מילים עם שגיאות איות מס
 settings-compose-spell-desktop = השפה של שולחן העבודה ({ $language })
 settings-compose-templates = תבניות
 settings-compose-templates-detail = שמירת הודעות שכותבים לעיתים קרובות, והתחלת הודעה חדשה או תשובה מהן.
+settings-compose-no-templates = אין עדיין תבניות. בהודעה, בוחרים „תבניות” ואז „שמירה כתבנית”.
+settings-compose-template-new = יצירת תבנית חדשה
+settings-compose-template-new-name = תבנית חדשה
+settings-compose-template-subject = נושא
+settings-compose-template-text = טקסט התבנית
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} ו-{"{"}my name{"}"} ימולאו בשם הנמען ובשם שלך.
+settings-compose-template-remove-file = הסרת הקובץ המצורף
+settings-compose-template-save = שמירה
+settings-compose-template-saved = התבנית נשמרה
+settings-compose-template-needs-name = יש לתת שם לתבנית
+settings-compose-template-delete = מחיקת התבנית
+settings-compose-template-deleted = התבנית נמחקה
+settings-compose-template-delete-failed = לא ניתן היה למחוק את התבנית: { $error }
 
 ## Settings > Shortcuts
 
@@ -244,7 +257,7 @@ settings-compose-for-new-mail-summary = החתימה שבה מתחיל דואר 
 settings-compose-for-replies-summary = החתימה שבה מתחילות תשובות והעברות
 settings-compose-format-summary = כתיבת דואר חדש בטקסט פשוט
 settings-compose-spelling-summary = בדיקת איות בזמן הכתיבה, ושפת המילון
-settings-compose-templates-summary = בקרוב: שמירת הודעות שכותבים לעיתים קרובות, והתחלת הודעה חדשה או תשובה מהן
+settings-compose-templates-summary = שמירת הודעות שכותבים לעיתים קרובות, והתחלת הודעה חדשה או תשובה מהן
 settings-feedback-crash-reports-summary = שמירת דוחות קריסה במחשב הזה כש־Katna Mail או שירות הרקע שלה קורסים
 settings-feedback-saved-summary = הצגה, העתקה או מחיקה של דוחות הקריסה שנשמרו במחשב הזה
 settings-feedback-help-improve-summary = שליחת דוחות קריסה כדי לעזור לתקן את מה שהשתבש; כבוי אלא אם מפעילים אותו

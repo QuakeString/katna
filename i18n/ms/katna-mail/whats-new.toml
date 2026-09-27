@@ -562,3 +562,29 @@ untuk melihat mereka. Ia dibaca daripada mel anda pada komputer ini
 sahaja. Butang kenalan pada bar alat anak tetingkap bacaan
 menyembunyikannya.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Storan yang digunakan"
+text = """
+Bahagian bawah anak tetingkap folder menunjukkan setakat mana storan mel
+akaun sudah penuh, seperti “34% daripada 15 GB digunakan”, apabila pelayan
+melnya memberitahu.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Cari mel daripada KRunner dan carian GNOME"
+text = """
+Taip nama dalam KRunner (Alt+Space) atau carian Aktiviti untuk menulis kepada
+orang itu, menyalin alamatnya atau mencari melnya. Mesej muncul apabila subjek
+atau pengirimnya mengandungi setiap perkataan yang anda taip; mulakan dengan
+mail: untuk mencari semua mel anda, seperti dalam kotak carian Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Templat untuk mel yang kerap anda tulis"
+text = """
+Tulis mesej sekali dan simpan dengan butang Templat baharu semasa mengarang,
+kemudian masukkan ke dalam mana-mana mel baharu atau balasan dengan satu klik.
+Tulis {first name}, {name} atau {my name} dan Katna mengisinya untuk setiap
+penerima. Sunting, namakan semula atau padam templat dalam Tetapan > Karang.
+"""

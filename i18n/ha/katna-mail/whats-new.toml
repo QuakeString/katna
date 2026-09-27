@@ -550,3 +550,31 @@ don buɗe shi, ko wani mutum a cikin tattaunawar don ganin sa. Ana
 karanta wannan daga wasiƙun da ke wannan kwamfuta kawai. Maɓallin lambar
 sadarwa a sandar kayan aiki ta Wurin karatu yana ɓoye shi.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Ma'ajiyar da aka yi amfani da ita"
+text = """
+Ƙasan Wurin folda yanzu yana nuna yadda ma'ajiyar wasiƙun asusun ta
+cika, kamar “An yi amfani da 34% na 15 GB”, idan sabar wasiƙunsa ta
+faɗa.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Nemo wasiƙu daga KRunner da binciken GNOME"
+text = """
+Rubuta suna a KRunner (Alt+Space) ko binciken Activities don rubuta wa
+wannan mutumin, kwafi adireshinsa ko nemo wasiƙunsa. Saƙonni suna
+bayyana idan jigonsu ko mai aikawa yana da kowace kalma da kuka rubuta;
+fara da mail: don bincika dukan wasiƙunku, kamar a akwatin bincike na
+Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Samfura don wasiƙun da kuke yawan rubutawa"
+text = """
+Rubuta saƙo sau ɗaya ku ajiye shi da sabon maɓallin Samfura a wurin
+rubutu, sannan ku saka shi a kowace sabuwar wasiƙa ko amsa da danna
+ɗaya. Rubuta {first name}, {name} ko {my name} kuma Katna zai cike su
+ga kowane mai karɓa. Gyara, sake suna ko share samfura a Saituna >
+Rubutu.
+"""

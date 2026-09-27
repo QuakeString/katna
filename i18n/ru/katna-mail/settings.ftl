@@ -192,6 +192,19 @@ settings-compose-spell-check-detail = Слова с ошибками подчё�
 settings-compose-spell-desktop = Язык рабочего стола ({ $language })
 settings-compose-templates = Шаблоны
 settings-compose-templates-detail = Сохраняйте письма, которые часто пишете, и начинайте с них новое письмо или ответ.
+settings-compose-no-templates = Шаблонов пока нет. В письме выберите «Шаблоны», затем «Сохранить как шаблон».
+settings-compose-template-new = Создать
+settings-compose-template-new-name = Новый шаблон
+settings-compose-template-subject = Тема
+settings-compose-template-text = Текст шаблона
+settings-compose-template-fields = Вместо {"{"}first name{"}"}, {"{"}name{"}"} и {"{"}my name{"}"} подставляются имя получателя и ваше имя.
+settings-compose-template-remove-file = Удалить вложение
+settings-compose-template-save = Сохранить
+settings-compose-template-saved = Шаблон сохранён
+settings-compose-template-needs-name = Дайте шаблону название
+settings-compose-template-delete = Удалить шаблон
+settings-compose-template-deleted = Шаблон удалён
+settings-compose-template-delete-failed = Не удалось удалить шаблон: { $error }
 
 ## Settings > Shortcuts
 
@@ -246,7 +259,7 @@ settings-compose-for-new-mail-summary = Подпись, с которой нач
 settings-compose-for-replies-summary = Подпись, с которой начинаются ответы и пересылки
 settings-compose-format-summary = Писать новые письма обычным текстом
 settings-compose-spelling-summary = Проверка орфографии при вводе и язык словаря
-settings-compose-templates-summary = Скоро: сохраняйте письма, которые часто пишете, и начинайте с них новое письмо или ответ
+settings-compose-templates-summary = Сохраняйте письма, которые часто пишете, и начинайте с них новое письмо или ответ
 settings-feedback-crash-reports-summary = Сохранять отчёты о сбоях на этом компьютере, когда Katna Mail или её фоновая служба аварийно завершается
 settings-feedback-saved-summary = Просмотр, копирование и удаление отчётов о сбоях, сохранённых на этом компьютере
 settings-feedback-help-improve-summary = Отправлять отчёты о сбоях, чтобы помочь исправить ошибки; выключено, пока вы не включите

@@ -564,3 +564,31 @@ vederla. I dati sono letti solo dalla posta su questo computer. Il
 pulsante del contatto nella barra degli strumenti del riquadro di
 lettura la nasconde.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Spazio utilizzato"
+text = """
+In fondo al riquadro delle cartelle ora compare quanto è pieno lo spazio
+per la posta dell'account, ad esempio «34% di 15 GB in uso», quando il
+server di posta lo comunica.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Trova la posta da KRunner e dalla ricerca di GNOME"
+text = """
+Digita un nome in KRunner (Alt+Space) o nella ricerca di Attività per
+scrivere a quella persona, copiarne l'indirizzo o trovarne la posta. I
+messaggi compaiono quando l'oggetto o il mittente contiene ogni parola
+digitata; inizia con mail: per cercare in tutta la posta, come nella
+casella di ricerca di Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Modelli per la posta che scrivi spesso"
+text = """
+Scrivi un messaggio una volta e salvalo con il nuovo pulsante Modelli
+nella finestra di scrittura, poi inseriscilo in un nuovo messaggio o in
+una risposta con un clic. Scrivi {first name}, {name} o {my name} e
+Katna li compila per ogni destinatario. Modifica, rinomina o elimina i
+modelli in Impostazioni > Scrittura.
+"""

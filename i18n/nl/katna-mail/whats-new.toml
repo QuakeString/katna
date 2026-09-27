@@ -563,3 +563,29 @@ bestand om het te openen, of op een andere persoon uit het gesprek om
 die te bekijken. Alles komt alleen uit je e-mail op deze computer. De
 contactknop op de werkbalk van het leesvenster verbergt de kaart.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Gebruikte opslag"
+text = """
+Onderaan het mappenvenster zie je hoe vol de e-mailopslag van het account
+is, zoals ‘34% van 15 GB gebruikt’, als de mailserver dat doorgeeft.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "E-mail vinden vanuit KRunner en GNOME-zoeken"
+text = """
+Typ een naam in KRunner (Alt+Space) of het zoekveld van Activiteiten om die
+persoon te mailen, het adres te kopiëren of de e-mail te vinden. Berichten
+verschijnen als het onderwerp of de afzender elk woord bevat dat je typt; begin
+met mail: om in al je e-mail te zoeken, zoals in het zoekvak van Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Sjablonen voor e-mail die je vaak schrijft"
+text = """
+Schrijf een bericht één keer en sla het op met de nieuwe knop Sjablonen bij
+het opstellen, en zet het daarna met één klik in elke nieuwe e-mail of elk
+antwoord. Schrijf {first name}, {name} of {my name} en Katna vult ze voor elke
+ontvanger in. Bewerk, hernoem of verwijder sjablonen in
+Instellingen > Opstellen.
+"""

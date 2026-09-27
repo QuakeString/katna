@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = गलत हिज्जे भएका 
 settings-compose-spell-desktop = डेस्कटपको भाषा ({ $language })
 settings-compose-templates = टेम्प्लेटहरू
 settings-compose-templates-detail = तपाईंले प्रायः लेख्ने मेल सेभ गर्नुहोस्, र त्यसबाट नयाँ मेल वा जवाफ सुरु गर्नुहोस्।
+settings-compose-no-templates = अहिलेसम्म कुनै टेम्प्लेट छैन। सन्देशमा टेम्प्लेटहरू छान्नुहोस्, त्यसपछि टेम्प्लेटको रूपमा सेभ गर्नुहोस्।
+settings-compose-template-new = नयाँ बनाउनुहोस्
+settings-compose-template-new-name = नयाँ टेम्प्लेट
+settings-compose-template-subject = विषय
+settings-compose-template-text = टेम्प्लेटको पाठ
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} र {"{"}my name{"}"} मा प्रापकको र तपाईंको नाम भरिन्छ।
+settings-compose-template-remove-file = संलग्नक हटाउनुहोस्
+settings-compose-template-save = सेभ गर्नुहोस्
+settings-compose-template-saved = टेम्प्लेट सेभ गरियो
+settings-compose-template-needs-name = टेम्प्लेटलाई नाम दिनुहोस्
+settings-compose-template-delete = टेम्प्लेट मेटाउनुहोस्
+settings-compose-template-deleted = टेम्प्लेट मेटाइयो
+settings-compose-template-delete-failed = टेम्प्लेट मेटाउन सकिएन: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = नयाँ मेल सुरु ह�
 settings-compose-for-replies-summary = जवाफ र फर्वार्ड सुरु हुने हस्ताक्षर
 settings-compose-format-summary = नयाँ मेल सादा पाठमा लेख्नुहोस्
 settings-compose-spelling-summary = लेख्दै गर्दा हिज्जे जाँच, र शब्दकोशको भाषा
-settings-compose-templates-summary = छिट्टै आउँदैछ: तपाईंले प्रायः लेख्ने मेल सेभ गर्नुहोस्, र त्यसबाट नयाँ मेल वा जवाफ सुरु गर्नुहोस्
+settings-compose-templates-summary = तपाईंले प्रायः लेख्ने मेल सेभ गर्नुहोस्, र त्यसबाट नयाँ मेल वा जवाफ सुरु गर्नुहोस्
 settings-feedback-crash-reports-summary = Katna Mail वा यसको पृष्ठभूमि सेवा क्र्यास हुँदा क्र्यास रिपोर्टहरू यो कम्प्युटरमा सेभ गर्नुहोस्
 settings-feedback-saved-summary = यो कम्प्युटरमा सेभ गरिएका क्र्यास रिपोर्टहरू हेर्नुहोस्, प्रतिलिपि गर्नुहोस् वा मेटाउनुहोस्
 settings-feedback-help-improve-summary = के बिग्रियो भनी सुधार्न मद्दत गर्न क्र्यास रिपोर्टहरू पठाउनुहोस्; तपाईंले नखोलेसम्म बन्द

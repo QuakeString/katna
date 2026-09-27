@@ -557,3 +557,31 @@ ileti dizisindeki başka bir kişiye tıklayın. Bilgiler yalnızca bu
 bilgisayardaki postalarınızdan okunur. Okuma bölmesinin araç çubuğundaki
 kişi düğmesi kartı gizler.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Kullanılan depolama alanı"
+text = """
+Posta sunucusu bildirdiğinde, klasör bölmesinin altında hesabın posta
+depolama alanının ne kadar dolu olduğu görünür; örneğin “15 GB alanın
+%34 kadarı kullanılıyor”.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "KRunner ve GNOME aramasından posta bulun"
+text = """
+KRunner'a (Alt+Space) ya da Etkinlikler aramasına bir ad yazarak o
+kişiye posta yazın, adresini kopyalayın ya da postalarını bulun.
+Konusunda veya göndereninde yazdığınız her kelime geçen iletiler çıkar;
+Katna Mail'in arama kutusunda olduğu gibi tüm postalarınızda aramak için
+mail: ile başlayın.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Sık yazdığınız postalar için şablonlar"
+text = """
+Bir iletiyi bir kez yazın, oluşturma penceresindeki yeni Şablonlar
+düğmesiyle kaydedin, sonra tek tıkla herhangi bir yeni postaya ya da
+yanıta ekleyin. {first name}, {name} veya {my name} yazın, Katna bunları
+her alıcı için doldursun. Şablonları Ayarlar > Oluşturma bölümünde
+düzenleyin, yeniden adlandırın ya da silin.
+"""

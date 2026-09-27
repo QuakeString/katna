@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = चुकीच्या शब्दा�
 settings-compose-spell-desktop = डेस्कटॉपची भाषा ({ $language })
 settings-compose-templates = टेम्पलेट
 settings-compose-templates-detail = तुम्ही वारंवार लिहिता तो मेल सेव्ह करा, आणि त्यावरून नवीन मेल किंवा उत्तर सुरू करा.
+settings-compose-no-templates = अद्याप कोणतेही टेम्पलेट नाहीत. संदेशामध्ये टेम्पलेट निवडा, नंतर टेम्पलेट म्हणून सेव्ह करा निवडा.
+settings-compose-template-new = नवीन तयार करा
+settings-compose-template-new-name = नवीन टेम्पलेट
+settings-compose-template-subject = विषय
+settings-compose-template-text = टेम्पलेटचा मजकूर
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} आणि {"{"}my name{"}"} यांच्या जागी प्राप्तकर्त्याचे आणि तुमचे नाव भरले जाते.
+settings-compose-template-remove-file = अटॅचमेंट काढा
+settings-compose-template-save = सेव्ह करा
+settings-compose-template-saved = टेम्पलेट सेव्ह केले
+settings-compose-template-needs-name = टेम्पलेटला नाव द्या
+settings-compose-template-delete = टेम्पलेट हटवा
+settings-compose-template-deleted = टेम्पलेट हटवले
+settings-compose-template-delete-failed = टेम्पलेट हटवता आले नाही: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = नवीन मेल ज्या स�
 settings-compose-for-replies-summary = उत्तरे आणि फॉरवर्ड ज्या स्वाक्षरीने सुरू होतात
 settings-compose-format-summary = नवीन मेल साध्या मजकुरात लिहा
 settings-compose-spelling-summary = लिहिताना शुद्धलेखन तपासा, आणि शब्दकोशाची भाषा
-settings-compose-templates-summary = लवकरच येत आहे: तुम्ही वारंवार लिहिता तो मेल सेव्ह करा, आणि त्यावरून नवीन मेल किंवा उत्तर सुरू करा
+settings-compose-templates-summary = तुम्ही वारंवार लिहिता तो मेल सेव्ह करा, आणि त्यावरून नवीन मेल किंवा उत्तर सुरू करा
 settings-feedback-crash-reports-summary = Katna Mail किंवा त्याची बॅकग्राउंड सेवा क्रॅश झाल्यावर क्रॅश अहवाल या कॉम्प्युटरवर सेव्ह करा
 settings-feedback-saved-summary = या कॉम्प्युटरवर सेव्ह केलेले क्रॅश अहवाल पाहा, कॉपी करा किंवा हटवा
 settings-feedback-help-improve-summary = काय चुकले ते दुरुस्त करण्यात मदत म्हणून क्रॅश अहवाल पाठवा; तुम्ही चालू करेपर्यंत बंद

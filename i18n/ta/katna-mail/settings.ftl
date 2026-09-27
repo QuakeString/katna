@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = தவறான சொற்கள் அ�
 settings-compose-spell-desktop = டெஸ்க்டாப்பின் மொழி ({ $language })
 settings-compose-templates = டெம்ப்ளேட்கள்
 settings-compose-templates-detail = அடிக்கடி எழுதும் அஞ்சலைச் சேமித்து, அதிலிருந்து புதிய அஞ்சலையோ பதிலையோ தொடங்குங்கள்.
+settings-compose-no-templates = இன்னும் டெம்ப்ளேட்கள் இல்லை. ஒரு மெசேஜில் டெம்ப்ளேட்கள் என்பதைத் தேர்ந்தெடுத்து, பின்னர் டெம்ப்ளேட்டாகச் சேமி என்பதைத் தேர்ந்தெடுக்கவும்.
+settings-compose-template-new = புதிதாக உருவாக்கு
+settings-compose-template-new-name = புதிய டெம்ப்ளேட்
+settings-compose-template-subject = பொருள்
+settings-compose-template-text = டெம்ப்ளேட் உரை
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"}, {"{"}my name{"}"} ஆகியவை பெறுநரின் பெயராலும் உங்கள் பெயராலும் நிரப்பப்படும்.
+settings-compose-template-remove-file = இணைப்பை அகற்று
+settings-compose-template-save = சேமி
+settings-compose-template-saved = டெம்ப்ளேட் சேமிக்கப்பட்டது
+settings-compose-template-needs-name = டெம்ப்ளேட்டுக்கு ஒரு பெயர் கொடுங்கள்
+settings-compose-template-delete = டெம்ப்ளேட்டை நீக்கு
+settings-compose-template-deleted = டெம்ப்ளேட் நீக்கப்பட்டது
+settings-compose-template-delete-failed = டெம்ப்ளேட்டை நீக்க முடியவில்லை: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = புதிய அஞ்சல் த�
 settings-compose-for-replies-summary = பதில்களும் முன்னனுப்பல்களும் தொடங்கும் கையொப்பம்
 settings-compose-format-summary = புதிய அஞ்சலை வெற்று உரையில் எழுது
 settings-compose-spelling-summary = எழுதும்போது எழுத்துப்பிழை சரிபார்ப்பு, அகராதியின் மொழி
-settings-compose-templates-summary = விரைவில்: அடிக்கடி எழுதும் அஞ்சலைச் சேமித்து, அதிலிருந்து புதிய அஞ்சலையோ பதிலையோ தொடங்குங்கள்
+settings-compose-templates-summary = அடிக்கடி எழுதும் அஞ்சலைச் சேமித்து, அதிலிருந்து புதிய அஞ்சலையோ பதிலையோ தொடங்குங்கள்
 settings-feedback-crash-reports-summary = Katna Mail அல்லது அதன் பின்னணிச் சேவை செயலிழக்கும்போது செயலிழப்பு அறிக்கைகளை இந்தக் கணினியில் சேமி
 settings-feedback-saved-summary = இந்தக் கணினியில் சேமித்த செயலிழப்பு அறிக்கைகளைப் பார், நகலெடு அல்லது நீக்கு
 settings-feedback-help-improve-summary = என்ன தவறு நடந்தது என்பதைச் சரிசெய்ய உதவ, செயலிழப்பு அறிக்கைகளை அனுப்பு; நீங்கள் இயக்கும் வரை முடக்கத்தில் இருக்கும்

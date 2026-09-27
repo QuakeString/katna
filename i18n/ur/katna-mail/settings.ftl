@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = غلط املا والے الفاظ کے �
 settings-compose-spell-desktop = ڈیسک ٹاپ کی زبان ({ $language })
 settings-compose-templates = ٹیمپلیٹس
 settings-compose-templates-detail = اکثر لکھی جانے والی میل محفوظ کریں، اور اس سے نئی میل یا جواب شروع کریں۔
+settings-compose-no-templates = ابھی کوئی ٹیمپلیٹ نہیں۔ کسی پیغام میں ٹیمپلیٹس منتخب کریں، پھر بطور ٹیمپلیٹ محفوظ کریں۔
+settings-compose-template-new = نیا بنائیں
+settings-compose-template-new-name = نیا ٹیمپلیٹ
+settings-compose-template-subject = موضوع
+settings-compose-template-text = ٹیمپلیٹ کا متن
+settings-compose-template-fields = {"{"}first name{"}"}، {"{"}name{"}"} اور {"{"}my name{"}"} وصول کنندہ کے اور آپ کے نام سے بھر دیے جاتے ہیں۔
+settings-compose-template-remove-file = اٹیچمنٹ ہٹائیں
+settings-compose-template-save = محفوظ کریں
+settings-compose-template-saved = ٹیمپلیٹ محفوظ ہو گیا
+settings-compose-template-needs-name = ٹیمپلیٹ کو نام دیں
+settings-compose-template-delete = ٹیمپلیٹ حذف کریں
+settings-compose-template-deleted = ٹیمپلیٹ حذف کر دیا گیا
+settings-compose-template-delete-failed = ٹیمپلیٹ حذف نہیں ہو سکا: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = وہ دستخط جس سے نئی میل 
 settings-compose-for-replies-summary = وہ دستخط جس سے جوابات اور فارورڈز شروع ہوتے ہیں
 settings-compose-format-summary = نئی میل سادہ متن میں لکھیں
 settings-compose-spelling-summary = لکھتے وقت املا کی جانچ، اور لغت کی زبان
-settings-compose-templates-summary = جلد آ رہا ہے: اکثر لکھی جانے والی میل محفوظ کریں، اور اس سے نئی میل یا جواب شروع کریں
+settings-compose-templates-summary = اکثر لکھی جانے والی میل محفوظ کریں، اور اس سے نئی میل یا جواب شروع کریں
 settings-feedback-crash-reports-summary = جب Katna Mail یا اس کی بیک گراؤنڈ سروس کریش ہو تو اس کمپیوٹر پر کریش رپورٹس محفوظ کریں
 settings-feedback-saved-summary = اس کمپیوٹر پر محفوظ کریش رپورٹس دیکھیں، کاپی کریں یا حذف کریں
 settings-feedback-help-improve-summary = خرابی ٹھیک کرنے میں مدد کے لیے کریش رپورٹس بھیجیں؛ جب تک آپ آن نہ کریں بند رہتا ہے

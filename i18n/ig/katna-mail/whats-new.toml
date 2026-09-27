@@ -542,3 +542,29 @@ iji mepee ya, ma ọ bụ onye ọzọ nọ na mkparịta ụka ahụ iji hụ y
 na-agụ ya naanị site na ozi gị dị na kọmputa a. Bọtịnụ kọntaktị dị na
 ogwe ngwaọrụ nke Paịn ọgụgụ na-ezo ya.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Nchekwa ejirila"
+text = """
+Ala Paịn folda na-egosi ugbu a otú nchekwa ozi nke akaụntụ ahụ si
+jupụta, dịka “Ejirila 34% nke 15 GB”, mgbe sava ozi ya kwuru ya.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Chọta ozi site na KRunner na ọchụchọ GNOME"
+text = """
+Pịnye aha na KRunner (Alt+Space) ma ọ bụ ọchụchọ Activities iji degara
+onye ahụ ozi, detuo adreesị ya ma ọ bụ chọta ozi ya. Ozi na-apụta mgbe
+isiokwu ha ma ọ bụ onye zitere ha nwere okwu ọ bụla ị pịnyere; malite
+na mail: iji chọọ ozi gị niile, dịka n'igbe ọchụchọ Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Ndebiri ụkpụrụ maka ozi ị na-edekarị"
+text = """
+Dee ozi otu ugboro ma chekwaa ya site na bọtịnụ Ndebiri ụkpụrụ ọhụrụ
+n'ide ozi, wee tinye ya n'ozi ọhụrụ ma ọ bụ nzaghachi ọ bụla site na
+otu pịa. Dee {first name}, {name} ma ọ bụ {my name} ma Katna ga-edejupụta
+ha maka onye nnata ọ bụla. Dezie, gbanwee aha ma ọ bụ hichapụ ndebiri
+ụkpụrụ na Ntọala > Ide ozi.
+"""

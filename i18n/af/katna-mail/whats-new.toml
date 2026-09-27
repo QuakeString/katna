@@ -546,3 +546,30 @@ ander persoon in die gesprek om hulle te sien. Dit word net uit jou e-pos
 op hierdie rekenaar gelees. Die kontakknoppie op die leesvenster se
 nutsbalk versteek dit.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Berging gebruik"
+text = """
+Die voet van die vouerpaneel wys hoe vol die rekening se e-posberging is,
+soos “34% van 15 GB gebruik”, wanneer sy e-posbediener dit meedeel.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Vind e-pos vanuit KRunner en GNOME-soektog"
+text = """
+Tik 'n naam in KRunner (Alt+Space) of die Aktiwiteite-soektog om aan
+daardie persoon te skryf, hul adres te kopieer of hul e-pos te vind.
+Boodskappe verskyn wanneer hul onderwerp of sender elke woord bevat wat jy
+tik; begin met mail: om al jou e-pos te deursoek, soos in Katna Mail se
+soekveld.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Sjablone vir e-pos wat jy gereeld skryf"
+text = """
+Skryf 'n boodskap een keer en stoor dit met die nuwe Sjablone-knoppie in
+die skryfvenster, en plaas dit dan met een klik in enige nuwe e-pos of
+antwoord. Skryf {first name}, {name} of {my name} en Katna vul dit vir
+elke ontvanger in. Wysig, hernoem of vee sjablone uit in Instellings >
+Skryf.
+"""

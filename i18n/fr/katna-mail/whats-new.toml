@@ -577,3 +577,31 @@ personne de la conversation pour l’afficher. Tout provient uniquement de
 vos messages sur cet ordinateur. Le bouton de contact dans la barre
 d’outils du volet de lecture masque la carte.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Espace utilisé"
+text = """
+Le bas du volet des dossiers indique à quel point l’espace de messagerie
+du compte est rempli, par exemple « 34 % utilisés sur 15 Go », quand son
+serveur de messagerie le communique.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Trouver des messages depuis KRunner et la recherche GNOME"
+text = """
+Tapez un nom dans KRunner (Alt+Space) ou dans la recherche des Activités
+pour écrire à cette personne, copier son adresse ou trouver ses messages.
+Les messages apparaissent quand leur objet ou leur expéditeur contient
+chaque mot tapé ; commencez par mail: pour chercher dans tous vos
+messages, comme dans le champ de recherche de Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Des modèles pour les messages que vous écrivez souvent"
+text = """
+Écrivez un message une fois et enregistrez-le avec le nouveau bouton
+Modèles de la fenêtre de rédaction, puis insérez-le en un clic dans
+n’importe quel nouveau message ou réponse. Écrivez {first name}, {name} ou
+{my name} et Katna les remplit pour chaque destinataire. Modifiez,
+renommez ou supprimez les modèles dans Paramètres > Rédaction.
+"""

@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = తప్పు పదాల కింద 
 settings-compose-spell-desktop = డెస్క్‌టాప్ భాష ({ $language })
 settings-compose-templates = టెంప్లేట్‌లు
 settings-compose-templates-detail = మీరు తరచుగా రాసే మెయిల్‌ను సేవ్ చేసి, దాని నుండి కొత్త మెయిల్ లేదా రిప్లయిని మొదలుపెట్టండి.
+settings-compose-no-templates = ఇంకా టెంప్లేట్‌లు లేవు. ఒక మెసేజ్‌లో టెంప్లేట్‌లు ఎంచుకుని, ఆపై టెంప్లేట్‌గా సేవ్ చేయండి ఎంచుకోండి.
+settings-compose-template-new = కొత్తది క్రియేట్ చేయండి
+settings-compose-template-new-name = కొత్త టెంప్లేట్
+settings-compose-template-subject = సబ్జెక్ట్
+settings-compose-template-text = టెంప్లేట్ టెక్స్ట్
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"}, {"{"}my name{"}"} గ్రహీత పేరుతో మరియు మీ పేరుతో నింపబడతాయి.
+settings-compose-template-remove-file = అటాచ్‌మెంట్‌ను తీసివేయండి
+settings-compose-template-save = సేవ్ చేయండి
+settings-compose-template-saved = టెంప్లేట్ సేవ్ చేయబడింది
+settings-compose-template-needs-name = టెంప్లేట్‌కు ఒక పేరు ఇవ్వండి
+settings-compose-template-delete = టెంప్లేట్‌ను తొలగించండి
+settings-compose-template-deleted = టెంప్లేట్ తొలగించబడింది
+settings-compose-template-delete-failed = టెంప్లేట్‌ను తొలగించడం సాధ్యం కాలేదు: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = కొత్త మెయిల్ మ�
 settings-compose-for-replies-summary = రిప్లయిలు, ఫార్వర్డ్‌లు మొదలయ్యే సంతకం
 settings-compose-format-summary = కొత్త మెయిల్‌ను సాధారణ టెక్స్ట్‌లో రాయండి
 settings-compose-spelling-summary = రాస్తున్నప్పుడు స్పెల్లింగ్ చెక్, డిక్షనరీ భాష
-settings-compose-templates-summary = త్వరలో: మీరు తరచుగా రాసే మెయిల్‌ను సేవ్ చేసి, దాని నుండి కొత్త మెయిల్ లేదా రిప్లయిని మొదలుపెట్టండి
+settings-compose-templates-summary = మీరు తరచుగా రాసే మెయిల్‌ను సేవ్ చేసి, దాని నుండి కొత్త మెయిల్ లేదా రిప్లయిని మొదలుపెట్టండి
 settings-feedback-crash-reports-summary = Katna Mail లేదా దాని బ్యాక్‌గ్రౌండ్ సర్వీస్ క్రాష్ అయినప్పుడు క్రాష్ రిపోర్ట్‌లను ఈ కంప్యూటర్‌లో సేవ్ చేయండి
 settings-feedback-saved-summary = ఈ కంప్యూటర్‌లో సేవ్ చేసిన క్రాష్ రిపోర్ట్‌లను చూడండి, కాపీ చేయండి లేదా తొలగించండి
 settings-feedback-help-improve-summary = ఏమి తప్పు జరిగిందో సరిచేయడంలో సహాయపడటానికి క్రాష్ రిపోర్ట్‌లను పంపండి; మీరు ఆన్ చేస్తే తప్ప ఆఫ్‌లో ఉంటుంది

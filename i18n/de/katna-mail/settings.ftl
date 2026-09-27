@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = Falsch geschriebene Wörter werden unterst
 settings-compose-spell-desktop = Sprache der Arbeitsumgebung ({ $language })
 settings-compose-templates = Vorlagen
 settings-compose-templates-detail = Speichern Sie E-Mails, die Sie oft schreiben, und beginnen Sie damit eine neue E-Mail oder eine Antwort.
+settings-compose-no-templates = Noch keine Vorlagen. Wählen Sie in einer Nachricht Vorlagen und dann Als Vorlage speichern.
+settings-compose-template-new = Neu erstellen
+settings-compose-template-new-name = Neue Vorlage
+settings-compose-template-subject = Betreff
+settings-compose-template-text = Text der Vorlage
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} und {"{"}my name{"}"} werden mit dem Namen des Empfängers und Ihrem Namen ausgefüllt.
+settings-compose-template-remove-file = Anhang entfernen
+settings-compose-template-save = Speichern
+settings-compose-template-saved = Vorlage gespeichert
+settings-compose-template-needs-name = Geben Sie der Vorlage einen Namen
+settings-compose-template-delete = Vorlage löschen
+settings-compose-template-deleted = Vorlage gelöscht
+settings-compose-template-delete-failed = Die Vorlage konnte nicht gelöscht werden: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = Die Signatur, mit der neue E-Mails begin
 settings-compose-for-replies-summary = Die Signatur, mit der Antworten und Weiterleitungen beginnen
 settings-compose-format-summary = Neue E-Mails in reinem Text schreiben
 settings-compose-spelling-summary = Rechtschreibung beim Schreiben prüfen und die Sprache des Wörterbuchs
-settings-compose-templates-summary = Demnächst: E-Mails speichern, die Sie oft schreiben, und damit eine neue E-Mail oder eine Antwort beginnen
+settings-compose-templates-summary = E-Mails speichern, die Sie oft schreiben, und damit eine neue E-Mail oder eine Antwort beginnen
 settings-feedback-crash-reports-summary = Absturzberichte auf diesem Computer speichern, wenn Katna Mail oder sein Hintergrunddienst abstürzt
 settings-feedback-saved-summary = Die auf diesem Computer gespeicherten Absturzberichte ansehen, kopieren oder löschen
 settings-feedback-help-improve-summary = Absturzberichte senden, um bei der Fehlerbehebung zu helfen; aus, solange Sie es nicht einschalten

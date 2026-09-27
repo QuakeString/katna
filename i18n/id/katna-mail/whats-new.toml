@@ -556,3 +556,31 @@ percakapan untuk melihatnya. Informasi ini hanya dibaca dari email Anda
 di komputer ini. Tombol kontak di bilah alat panel baca
 menyembunyikannya.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Penyimpanan terpakai"
+text = """
+Bagian bawah panel folder kini menampilkan seberapa penuh penyimpanan
+email akun, misalnya “34% dari 15 GB terpakai”, jika server emailnya
+memberitahukannya.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Cari email dari KRunner dan penelusuran GNOME"
+text = """
+Ketik nama di KRunner (Alt+Space) atau penelusuran Aktivitas untuk
+menulis kepada orang itu, menyalin alamatnya, atau mencari emailnya.
+Pesan muncul jika subjek atau pengirimnya memuat setiap kata yang Anda
+ketik; awali dengan mail: untuk menelusuri semua email Anda, seperti di
+kotak penelusuran Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Template untuk email yang sering Anda tulis"
+text = """
+Tulis pesan sekali, lalu simpan dengan tombol Template yang baru di
+jendela tulis, lalu masukkan ke email baru atau balasan mana pun dengan
+sekali klik. Tulis {first name}, {name}, atau {my name} dan Katna
+mengisinya untuk setiap penerima. Edit, ganti nama, atau hapus template
+di Setelan > Tulis.
+"""

@@ -562,3 +562,31 @@ archivo para abrirlo, o en otra persona de la conversación para verla.
 Todo sale solo de tu correo en este ordenador. El botón de contacto de la
 barra del panel de lectura la oculta.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Almacenamiento usado"
+text = """
+El pie del panel de carpetas muestra cuánto se ha llenado el
+almacenamiento de correo de la cuenta, por ejemplo «34 % de 15 GB usado»,
+cuando su servidor de correo lo indica.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Busca correo desde KRunner y la búsqueda de GNOME"
+text = """
+Escribe un nombre en KRunner (Alt+Space) o en la búsqueda de Actividades
+para escribir a esa persona, copiar su dirección o buscar su correo.
+Aparecen los mensajes cuyo asunto o remitente contiene todas las palabras
+que escribes; empieza con mail: para buscar en todo tu correo, como en el
+cuadro de búsqueda de Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Plantillas para el correo que escribes a menudo"
+text = """
+Escribe un mensaje una vez y guárdalo con el nuevo botón Plantillas de la
+ventana de redacción; luego ponlo en cualquier correo nuevo o respuesta
+con un clic. Escribe {first name}, {name} o {my name} y Katna los rellena
+para cada destinatario. Edita, cambia de nombre o elimina plantillas en
+Ajustes > Redacción.
+"""

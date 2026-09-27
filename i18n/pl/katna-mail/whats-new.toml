@@ -562,3 +562,29 @@ lub plik, aby go otworzyć, albo inną osobę z wątku, aby ją zobaczyć.
 Dane pochodzą wyłącznie z poczty na tym komputerze. Przycisk kontaktu na
 pasku narzędzi okienka odczytu ukrywa kartę.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Wykorzystane miejsce"
+text = """
+Na dole panelu folderów widać, jak bardzo zapełnione jest miejsce na pocztę
+konta, np. „Wykorzystano 34% z 15 GB”, jeśli serwer poczty to podaje.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Szukaj poczty w KRunnerze i wyszukiwaniu GNOME"
+text = """
+Wpisz imię w KRunnerze (Alt+Space) lub w wyszukiwaniu Podglądu GNOME, aby
+napisać do tej osoby, skopiować jej adres lub znaleźć jej pocztę. Wiadomości
+pojawiają się, gdy temat lub nadawca zawiera każde wpisane słowo; zacznij od
+mail:, aby przeszukać całą pocztę, tak jak w polu wyszukiwania Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Szablony często pisanych wiadomości"
+text = """
+Napisz wiadomość raz i zapisz ją nowym przyciskiem Szablony podczas pisania,
+a potem jednym kliknięciem wstaw ją do dowolnej nowej wiadomości lub
+odpowiedzi. Wpisz {first name}, {name} lub {my name}, a Katna uzupełni je dla
+każdego odbiorcy. Szablony edytujesz, zmieniasz ich nazwy i usuwasz w sekcji
+Ustawienia > Tworzenie.
+"""

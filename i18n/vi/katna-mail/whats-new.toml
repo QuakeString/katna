@@ -544,3 +544,31 @@ hoặc tệp để mở, hoặc vào một người khác trong cuộc hội tho
 người đó. Thông tin chỉ được đọc từ thư của bạn trên máy tính này. Nút
 liên hệ trên thanh công cụ của Ngăn đọc sẽ ẩn thẻ này.
 """
+
+["2026-09-27-1640-storage-used"]
+title = "Dung lượng đã dùng"
+text = """
+Khi máy chủ thư cho biết, phần dưới cùng của Ngăn thư mục sẽ hiện dung
+lượng lưu trữ thư của tài khoản đã đầy đến đâu, chẳng hạn “Đã dùng 34%
+trong 15 GB”.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Tìm thư từ KRunner và tìm kiếm của GNOME"
+text = """
+Gõ một tên vào KRunner (Alt+Space) hoặc ô tìm kiếm Activities để viết
+thư cho người đó, sao chép địa chỉ hoặc tìm thư của họ. Những thư có
+tiêu đề hoặc người gửi chứa mọi từ bạn gõ sẽ hiện ra; hãy bắt đầu bằng
+mail: để tìm trong toàn bộ thư, giống như trong ô tìm kiếm của Katna
+Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Mẫu cho những thư bạn hay viết"
+text = """
+Viết thư một lần rồi lưu lại bằng nút Mẫu thư mới trong cửa sổ soạn thư,
+sau đó chèn nó vào bất kỳ thư mới hay thư trả lời nào chỉ với một cú
+nhấp. Viết {first name}, {name} hoặc {my name} và Katna sẽ điền chúng
+cho từng người nhận. Sửa, đổi tên hoặc xóa mẫu thư trong Cài đặt > Soạn
+thư.
+"""

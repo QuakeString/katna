@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = ખોટી જોડણીવાળા �
 settings-compose-spell-desktop = ડેસ્કટૉપની ભાષા ({ $language })
 settings-compose-templates = ટેમ્પ્લેટ
 settings-compose-templates-detail = તમે વારંવાર લખો તે મેઇલ સેવ કરો, અને તેમાંથી નવો મેઇલ કે જવાબ શરૂ કરો.
+settings-compose-no-templates = હજી કોઈ ટેમ્પ્લેટ નથી. મેસેજમાં ટેમ્પ્લેટ પસંદ કરો, પછી ટેમ્પ્લેટ તરીકે સેવ કરો.
+settings-compose-template-new = નવું બનાવો
+settings-compose-template-new-name = નવું ટેમ્પ્લેટ
+settings-compose-template-subject = વિષય
+settings-compose-template-text = ટેમ્પ્લેટ ટેક્સ્ટ
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} અને {"{"}my name{"}"} મેળવનારના અને તમારા નામથી ભરાય છે.
+settings-compose-template-remove-file = જોડાણ દૂર કરો
+settings-compose-template-save = સેવ કરો
+settings-compose-template-saved = ટેમ્પ્લેટ સેવ કર્યું
+settings-compose-template-needs-name = ટેમ્પ્લેટને નામ આપો
+settings-compose-template-delete = ટેમ્પ્લેટ ડિલીટ કરો
+settings-compose-template-deleted = ટેમ્પ્લેટ ડિલીટ કર્યું
+settings-compose-template-delete-failed = ટેમ્પ્લેટ ડિલીટ કરી શકાયું નથી: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = નવા મેઇલ જે હસ્�
 settings-compose-for-replies-summary = જવાબ અને ફૉરવર્ડ જે હસ્તાક્ષરથી શરૂ થાય
 settings-compose-format-summary = નવા મેઇલ સાદા લખાણમાં લખો
 settings-compose-spelling-summary = લખતી વખતે જોડણી તપાસો, અને શબ્દકોશની ભાષા
-settings-compose-templates-summary = ટૂંક સમયમાં: તમે વારંવાર લખો તે મેઇલ સેવ કરો, અને તેમાંથી નવો મેઇલ કે જવાબ શરૂ કરો
+settings-compose-templates-summary = તમે વારંવાર લખો તે મેઇલ સેવ કરો, અને તેમાંથી નવો મેઇલ કે જવાબ શરૂ કરો
 settings-feedback-crash-reports-summary = Katna Mail કે તેની બૅકગ્રાઉન્ડ સેવા ક્રેશ થાય ત્યારે ક્રેશ રિપોર્ટ આ કમ્પ્યુટર પર સેવ કરો
 settings-feedback-saved-summary = આ કમ્પ્યુટર પર સેવ કરેલા ક્રેશ રિપોર્ટ જુઓ, કૉપિ કરો કે ડિલીટ કરો
 settings-feedback-help-improve-summary = શું ખોટું થયું તે સુધારવામાં સહાય માટે ક્રેશ રિપોર્ટ મોકલો; તમે ચાલુ ન કરો ત્યાં સુધી બંધ

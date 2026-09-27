@@ -182,6 +182,19 @@ settings-compose-spell-check-detail = ຄຳທີ່ສະກົດຜິດຈ
 settings-compose-spell-desktop = ພາສາຂອງເດັສທັອບ ({ $language })
 settings-compose-templates = ແມ່ແບບ
 settings-compose-templates-detail = ບັນທຶກອີເມວທີ່ທ່ານຂຽນເລື້ອຍໆ, ແລະ ໃຊ້ມັນເລີ່ມອີເມວໃໝ່ ຫຼື ການຕອບກັບ.
+settings-compose-no-templates = ຍັງບໍ່ມີແມ່ແບບ. ໃນຂໍ້ຄວາມ, ເລືອກ ແມ່ແບບ, ແລ້ວເລືອກ ບັນທຶກເປັນແມ່ແບບ.
+settings-compose-template-new = ສ້າງໃໝ່
+settings-compose-template-new-name = ແມ່ແບບໃໝ່
+settings-compose-template-subject = ຫົວເລື່ອງ
+settings-compose-template-text = ຂໍ້ຄວາມແມ່ແບບ
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} ແລະ {"{"}my name{"}"} ຈະຖືກຕື່ມດ້ວຍຊື່ຜູ້ຮັບ ແລະ ຊື່ຂອງທ່ານ.
+settings-compose-template-remove-file = ລຶບໄຟລ໌ແນບ
+settings-compose-template-save = ບັນທຶກ
+settings-compose-template-saved = ບັນທຶກແມ່ແບບແລ້ວ
+settings-compose-template-needs-name = ຕັ້ງຊື່ໃຫ້ແມ່ແບບ
+settings-compose-template-delete = ລຶບແມ່ແບບ
+settings-compose-template-deleted = ລຶບແມ່ແບບແລ້ວ
+settings-compose-template-delete-failed = ບໍ່ສາມາດລຶບແມ່ແບບໄດ້: { $error }
 
 ## Settings > Shortcuts
 
@@ -236,7 +249,7 @@ settings-compose-for-new-mail-summary = ລາຍເຊັນທີ່ອີເ�
 settings-compose-for-replies-summary = ລາຍເຊັນທີ່ການຕອບກັບ ແລະ ການສົ່ງຕໍ່ເລີ່ມຕົ້ນດ້ວຍ
 settings-compose-format-summary = ຂຽນອີເມວໃໝ່ເປັນຂໍ້ຄວາມທຳມະດາ
 settings-compose-spelling-summary = ກວດການສະກົດຄຳຂະນະຂຽນ, ແລະ ພາສາຂອງວັດຈະນານຸກົມ
-settings-compose-templates-summary = ມີມາໄວໆນີ້: ບັນທຶກອີເມວທີ່ທ່ານຂຽນເລື້ອຍໆ, ແລະ ໃຊ້ມັນເລີ່ມອີເມວໃໝ່ ຫຼື ການຕອບກັບ
+settings-compose-templates-summary = ບັນທຶກອີເມວທີ່ທ່ານຂຽນເລື້ອຍໆ, ແລະ ໃຊ້ມັນເລີ່ມອີເມວໃໝ່ ຫຼື ການຕອບກັບ
 settings-feedback-crash-reports-summary = ບັນທຶກລາຍງານການຂັດຂ້ອງໄວ້ໃນຄອມພິວເຕີນີ້ເມື່ອ Katna Mail ຫຼື ບໍລິການເບື້ອງຫຼັງຂອງມັນຂັດຂ້ອງ
 settings-feedback-saved-summary = ເບິ່ງ, ສຳເນົາ ຫຼື ລຶບລາຍງານການຂັດຂ້ອງທີ່ບັນທຶກໄວ້ໃນຄອມພິວເຕີນີ້
 settings-feedback-help-improve-summary = ສົ່ງລາຍງານການຂັດຂ້ອງເພື່ອຊ່ວຍແກ້ໄຂບັນຫາ; ປິດໄວ້ຈົນກວ່າທ່ານຈະເປີດ
