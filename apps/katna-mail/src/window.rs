@@ -35,6 +35,7 @@ mod look;
 mod nav;
 mod onboarding;
 mod popovers;
+mod print;
 mod reader;
 mod remote;
 mod reply_row;
@@ -329,9 +330,6 @@ pub struct MailWindow {
     /// the snackbar (and its Undo) when the conversation moves away and
     /// this window closes.
     main: Option<WeakEntity<Self>>,
-    /// When a line was last opened by a click, and which: the second click
-    /// of a double-click lands on the conversation that replaced the list.
-    clicked: Option<(std::time::Instant, usize)>,
     /// Remote images and sender pictures of the open conversation.
     remote: remote::Remote,
     /// Whether a conversation is open: in place of the list with two
@@ -511,7 +509,6 @@ impl MailWindow {
             reader: None,
             detached: false,
             main: None,
-            clicked: None,
             reading: false,
             card_seq: 0,
             search,

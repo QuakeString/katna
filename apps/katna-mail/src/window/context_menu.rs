@@ -300,6 +300,19 @@ impl MailWindow {
             .child(separator())
             .child(move_to)
             .when_some(find, |d, find| d.child(separator()).child(find))
+            // A conversation window has no list to right-click.
+            .child(separator())
+            .child(
+                plain("context-new-window", "open-external", "Open in new window").on_click(
+                    cx.listener(|this, _, _, cx| {
+                        let key = this.context_menu.as_ref().map(|m| m.key);
+                        this.close_context_menu(cx);
+                        if let Some(ix) = this.entries.iter().position(|e| Some(e.key) == key) {
+                            this.open_in_window(ix, cx);
+                        }
+                    }),
+                ),
+            )
             .with_animation(
                 ("context-menu", menu.ix),
                 Animation::new(Duration::from_millis(140)).with_easing(ease_out_quint()),
