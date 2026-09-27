@@ -20,7 +20,7 @@ use katna_ui::Ripple;
 use katna_ui::motion;
 use katna_ui::px;
 
-use super::{MailWindow, SETTINGS_WIDTH};
+use super::{CARD_GAP, MailWindow, SETTINGS_WIDTH};
 use crate::theme::{Theme, mix};
 use crate::widgets::FocusRing;
 use crate::widgets::{
@@ -95,7 +95,7 @@ impl MailWindow {
         // On a phone the panel is a page of its own, over the whole window
         // below the top bar.
         let phone = self.layout.shape.is_phone();
-        let inner = SETTINGS_WIDTH - 16.0;
+        let inner = SETTINGS_WIDTH - CARD_GAP;
         let panel = div()
             .id("settings")
             .map(|d| if phone { d.w_full() } else { d.w(px(inner)) })
@@ -334,12 +334,12 @@ impl MailWindow {
             .mt(px(-room))
             .pl(px(room))
             .pt(px(room))
-            .pb(px(16.0 - room))
+            .pb(px(CARD_GAP - room))
             .overflow_hidden()
             .child(
                 div()
                     .h_full()
-                    .pr(px(16.0))
+                    .pr(px(CARD_GAP))
                     .ml(px(24.0 * (1.0 - t)))
                     .opacity(t)
                     .child(panel),
