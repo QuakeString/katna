@@ -29,6 +29,10 @@ const SUPPORT_URL: Option<&str> = None;
 /// The source of Katna.
 const SOURCE_URL: &str = env!("CARGO_PKG_REPOSITORY");
 
+/// GPUI and the Zed project, thanked in a box of their own.
+const ZED_URL: &str = "https://zed.dev";
+const GPUI_URL: &str = "https://github.com/zed-industries/zed";
+
 /// KDE's donation page.
 const KDE_DONATE_URL: &str = "https://kde.org/donate/";
 
@@ -47,12 +51,6 @@ const FOLLOW: &[(&str, Option<&str>)] = &[
 /// its license and its home. It matches the credits in README.md; every
 /// library is in [`LIBRARIES`].
 const CREDITS: &[(&str, &str, &str, &str)] = &[
-    (
-        "GPUI",
-        "The whole interface, from Zed Industries' Zed editor",
-        "Apache-2.0",
-        "https://github.com/zed-industries/zed",
-    ),
     (
         "Pimalaya",
         "IMAP, SMTP and sign-in (io-imap, io-smtp, io-sasl)",
@@ -479,6 +477,51 @@ impl MailWindow {
                     ))),
             );
 
+        let gpui = div()
+            .flex_none()
+            .mx(px(24.0))
+            .mt(px(24.0))
+            .p(px(16.0))
+            .flex()
+            .flex_col()
+            .gap(px(4.0))
+            .rounded(px(12.0))
+            .bg(rgba(fade(th.accent, if th.dark { 0.16 } else { 0.07 })))
+            .child(
+                div()
+                    .text_size(px(15.0))
+                    .font_weight(FontWeight::MEDIUM)
+                    .child("Built on GPUI, from the Zed project"),
+            )
+            .child(
+                div()
+                    .text_size(px(14.0))
+                    .line_height(px(21.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(
+                        "Katna Mail's whole interface is built on GPUI, the fast, \
+                         GPU-accelerated UI framework that Zed Industries made for \
+                         the Zed editor. Every pixel, animation and window you see \
+                         is drawn by it. Thank you, Zed team, for building it in \
+                         the open. Apache-2.0.",
+                    ),
+            )
+            .child(
+                div()
+                    .mt(px(8.0))
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(8.0))
+                    .child(link_button("about-zed", "zed.dev", ZED_URL.to_owned(), th))
+                    .child(link_button(
+                        "about-gpui",
+                        "GPUI on GitHub",
+                        GPUI_URL.to_owned(),
+                        th,
+                    )),
+            );
+
         let personal = div()
             .flex_none()
             .px(px(24.0))
@@ -671,6 +714,7 @@ impl MailWindow {
             .children(follow)
             .child(love)
             .child(personal)
+            .child(gpui)
             .child(built_on)
             .child(libraries);
 
@@ -795,6 +839,7 @@ mod tests {
         }
         assert!(SOURCE_URL.starts_with("https://github.com/"));
         assert!(KDE_DONATE_URL.starts_with("https://kde.org/"));
+        assert!(ZED_URL.starts_with("https://") && GPUI_URL.starts_with("https://github.com/"));
         for (site, url) in FOLLOW {
             assert!(url.is_none_or(|url| url.starts_with("https://")), "{site}");
         }
