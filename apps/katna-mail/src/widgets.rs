@@ -440,6 +440,27 @@ pub fn menu_item(id: impl Into<gpui::ElementId>, label: &str, th: &Theme) -> Sta
         .child(label.to_owned())
 }
 
+/// A [`menu_item`] with an icon before its label.
+pub fn menu_item_icon(
+    id: impl Into<gpui::ElementId>,
+    name: &str,
+    label: &str,
+    th: &Theme,
+) -> Stateful<Div> {
+    div()
+        .id(id)
+        .h(px(36.0))
+        .pl(px(16.0))
+        .pr(px(24.0))
+        .flex()
+        .items_center()
+        .gap(px(16.0))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .child(icon(name, th.text_dim, 20.0))
+        .child(label.to_owned())
+}
+
 /// A two-state switch drawn at `t` (0 off, 1 on), for animating.
 pub fn switch(t: f32, th: &Theme) -> AnyElement {
     let track = crate::theme::mix(th.switch_off, th.accent, t);

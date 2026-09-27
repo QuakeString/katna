@@ -2,9 +2,75 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+## Compose window: title bar
+
+compose-new-message = 新規メッセージ
+compose-restore = 元のサイズに戻す
+compose-minimize = 最小化
+compose-exit-full-screen = 全画面表示を終了
+compose-open-window = 新しいウィンドウで開く
+compose-save-close = 保存して閉じる
+compose-back-to-mail = メールのウィンドウに戻る
+compose-pop-out-reply = 返信を別ウィンドウで開く
+compose-show-trimmed = 省略されたコンテンツを表示
+
+## Recipients and subject
+
+compose-to = To
+compose-cc = Cc
+compose-bcc = Bcc
+compose-recipients = 宛先
+compose-subject = 件名
+
+## Sending (the notes at the bottom of the window)
+
+compose-open-elsewhere = 先に開いているメッセージを送信するか破棄してください。
+compose-bad-address = 「{ $address }」はメールアドレスではありません。
+compose-no-recipients = 宛先を 1 人以上追加してください。
+compose-attachments-too-large = 添付ファイルの合計は { $size } です。メールサーバーが受け付けるのは { $limit } までです。
+compose-no-account = メールを送信するアカウントを追加してください。
+compose-past-time = 未来の日時を選んでください。
+compose-scheduling = 予約しています…
+compose-sending = 送信しています…
+compose-scheduled = { $when } に送信予約しました
+compose-sent-archived = 送信してアーカイブしました
+compose-sent = メッセージを送信しました
+compose-discarded = 下書きを破棄しました
+
+## Attachments
+
+compose-picker-insert = 挿入
+compose-picker-attach = 添付
+compose-file-too-large = { $name } は大きすぎます。1 通のメッセージに添付できるのは { $limit } までです。
+compose-attachment-size = （{ $size }）
+compose-remove-attachment = 添付ファイルを削除
+compose-drop-files = ここにファイルをドロップ
+
+## Encryption and signing (the toggles by the recipients)
+
+compose-encrypt = 暗号化
+compose-encrypted = 暗号化済み: 受信者だけが読めます
+compose-sign = 署名
+compose-signed = 署名済み: あなたからのメールであることを受信者が確認できます
+
+## Spelling
+
+spell-no-dictionary = { $language } のスペル辞書がインストールされていません（例: hunspell-en_us）。
+spell-dictionary-error = スペル辞書: { $error }
+
 ## Grammar checking (the right-click menu on a grammar mistake)
 
 grammar-replace = 「{ $words }」
 grammar-add = 「{ $words }」を追加
 grammar-remove = 「{ $words }」を削除
 grammar-ignore = 無視
+
+## Send checks (asked before a message goes out)
+
+send-check-attachment-title = ファイルを添付するつもりでしたか？
+send-check-attachment-text = 本文で添付ファイルに触れていますが、何も添付されていません。
+send-check-attach = ファイルを添付
+send-check-subject-title = 件名なしで送信しますか？
+send-check-subject-text = このメッセージには件名がありません。
+send-check-add-subject = 件名を追加
+send-check-send-anyway = このまま送信

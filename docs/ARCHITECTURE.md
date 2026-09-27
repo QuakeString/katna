@@ -1236,17 +1236,22 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   `MailChanged` itself. Archiving, deleting or moving the conversation
   closes it, and the main window shows the snackbar with Undo.
 - **Printing.** "Print all" on the open conversation's toolbar (and its
-  More menu) prints every message: the desktop's print dialog (XDG print
-  portal) asks for printer and paper first, then `katna_render::print`
-  lays the conversation out as a PDF on that paper (krilla, text shaped
-  and measured with rustybuzz, in the desktop's UI font found with
-  fontdb) and hands it back to the dialog. The text of each message is
-  printed, with sender, date, recipients and attachment names; pictures
-  and HTML styling are not, and there is no font fallback for scripts the
-  UI font lacks. Without a print portal the PDF opens in the default app.
-  PDFs are written to `$XDG_RUNTIME_DIR/katna/print` and removed after an
-  hour. Print and In new window sit right of the actions and move to the
-  More menu when the reading pane is under 600 px.
+  More menu) prints every message. Katna's own print preview opens first
+  (`window/print_preview.rs`): `katna_render::print` lays the conversation
+  out as a PDF (krilla, text shaped and measured with rustybuzz, in the
+  desktop's UI font found with fontdb) on A4, or Letter where the locale
+  uses it (`LC_PAPER`), and hayro (`katna_preview::pdf`) draws the pages;
+  an A4 or Letter switch lays them out again. Print hands off to the
+  desktop's print dialog (XDG print portal), which starts on the previewed
+  paper; if a different paper is picked there, the pages are laid out
+  again on it. The text of each message is printed, with sender, date,
+  recipients and attachment names; pictures and HTML styling are not, and
+  there is no font fallback for scripts the UI font lacks. Without a print
+  portal the PDF opens in the default app. PDFs are written to
+  `$XDG_RUNTIME_DIR/katna/print` and removed after an hour. Print and In
+  new window sit right of the actions and move to the More menu when the
+  reading pane is under 600 px. The More menus open right under their
+  button, with an icon beside each item.
 - **Reading options.** Settings > General > Reading, taken from
   Mailspring: *Newest message first* shows a conversation's latest reply on
   top, with a reply written above it (`mail.newest_first`); *Show full

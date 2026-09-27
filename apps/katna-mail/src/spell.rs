@@ -7,6 +7,7 @@
 use std::cell::RefCell;
 use std::path::{Path, PathBuf};
 
+use katna_i18n::tr;
 use katna_ui::rich::SpellCheck;
 
 /// Where distributions put Hunspell dictionaries.
@@ -147,15 +148,14 @@ pub fn find(language: &str) -> Option<(PathBuf, PathBuf)> {
 /// `personal`. Slow (a large dictionary takes a moment): call it off the
 /// main thread.
 pub fn load(language: &str, personal: PathBuf) -> Result<Speller, String> {
-    let (aff, dic) = find(language).ok_or_else(|| {
-        format!("No spelling dictionary for {language} is installed (for example hunspell-en_us).")
-    })?;
+    let (aff, dic) =
+        find(language).ok_or_else(|| tr!("spell-no-dictionary", language = language.to_owned()))?;
     let read = |p: &Path| std::fs::read(p).map_err(|e| format!("{}: {e}", p.display()));
     // Some dictionaries are in legacy encodings; keep what reads.
     let aff = String::from_utf8_lossy(&read(&aff)?).into_owned();
     let dic = String::from_utf8_lossy(&read(&dic)?).into_owned();
-    let mut dictionary =
-        spellbook::Dictionary::new(&aff, &dic).map_err(|e| format!("Dictionary: {e}"))?;
+    let mut dictionary = spellbook::Dictionary::new(&aff, &dic)
+        .map_err(|e| tr!("spell-dictionary-error", error = e.to_string()))?;
     if let Ok(words) = std::fs::read_to_string(&personal) {
         for word in words.lines().map(str::trim).filter(|w| !w.is_empty()) {
             let _ = dictionary.add(word);

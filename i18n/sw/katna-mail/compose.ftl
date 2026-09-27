@@ -2,9 +2,75 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+## Compose window: title bar
+
+compose-new-message = Ujumbe Mpya
+compose-restore = Rejesha
+compose-minimize = Punguza
+compose-exit-full-screen = Toka kwenye skrini nzima
+compose-open-window = Fungua katika dirisha jipya
+compose-save-close = Hifadhi na ufunge
+compose-back-to-mail = Rudi kwenye dirisha la barua
+compose-pop-out-reply = Fungua jibu nje
+compose-show-trimmed = Onyesha maudhui yaliyofupishwa
+
+## Recipients and subject
+
+compose-to = Kwa
+compose-cc = Nakala
+compose-bcc = Nakala fiche
+compose-recipients = Wapokeaji
+compose-subject = Mada
+
+## Sending (the notes at the bottom of the window)
+
+compose-open-elsewhere = Tuma au tupa ujumbe ulio wazi kwanza.
+compose-bad-address = “{ $address }” si anwani ya barua pepe.
+compose-no-recipients = Ongeza angalau mpokeaji mmoja.
+compose-attachments-too-large = Viambatisho ni { $size }; seva za barua hupokea hadi { $limit }.
+compose-no-account = Ongeza akaunti ya kutumia kutuma barua.
+compose-past-time = Chagua wakati ujao.
+compose-scheduling = Inaratibu…
+compose-sending = Inatuma…
+compose-scheduled = Kutuma kumeratibiwa { $when }
+compose-sent-archived = Umetumwa na kuwekwa kwenye kumbukumbu
+compose-sent = Ujumbe umetumwa
+compose-discarded = Rasimu imetupwa
+
+## Attachments
+
+compose-picker-insert = Weka
+compose-picker-attach = Ambatisha
+compose-file-too-large = { $name } ni kubwa mno: ujumbe unaweza kubeba hadi { $limit }.
+compose-attachment-size = ({ $size })
+compose-remove-attachment = Ondoa kiambatisho
+compose-drop-files = Dondosha faili hapa
+
+## Encryption and signing (the toggles by the recipients)
+
+compose-encrypt = Simba
+compose-encrypted = Umesimbwa: wapokeaji pekee wanaweza kuusoma
+compose-sign = Weka sahihi
+compose-signed = Una sahihi: wapokeaji wanaweza kuthibitisha kuwa umetoka kwako
+
+## Spelling
+
+spell-no-dictionary = Hakuna kamusi ya tahajia ya { $language } iliyosakinishwa (kwa mfano hunspell-en_us).
+spell-dictionary-error = Kamusi ya tahajia: { $error }
+
 ## Grammar checking (the right-click menu on a grammar mistake)
 
 grammar-replace = “{ $words }”
 grammar-add = Ongeza “{ $words }”
 grammar-remove = Ondoa “{ $words }”
 grammar-ignore = Puuza
+
+## Send checks (asked before a message goes out)
+
+send-check-attachment-title = Ulikusudia kuambatisha faili?
+send-check-attachment-text = Uliandika kuhusu kiambatisho, lakini hakuna kilichoambatishwa.
+send-check-attach = Ambatisha faili
+send-check-subject-title = Tuma bila mada?
+send-check-subject-text = Ujumbe huu hauna mada.
+send-check-add-subject = Ongeza mada
+send-check-send-anyway = Tuma hata hivyo
