@@ -438,3 +438,10 @@ Kryssrutan, stjärnan och Viktigt-markeringen för varje mejl är nu
 dämpade och syns fullt ut när du pekar på raden, som i Gmail. Ett
 markerat, stjärnmärkt eller viktigt mejl visas alltid i full färg.
 """
+
+["2026-09-27-1512-buy-me-a-coffee"]
+title = "Bjud mig på en kaffe"
+text = """
+Om du har nytta av Katna har Om Katna nu knappen Bjud mig på en kaffe
+och en QR-kod som öppnar samma sida på telefonen.
+"""

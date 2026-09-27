@@ -454,3 +454,10 @@ email ora restano attenuati e si illuminano del tutto quando passi il
 puntatore sulla riga, come in Gmail. Un'email selezionata, speciale o
 importante si vede sempre a colori pieni.
 """
+
+["2026-09-27-1512-buy-me-a-coffee"]
+title = "Offrimi un caffè"
+text = """
+Se Katna ti è utile, Informazioni su Katna ora ha un pulsante Offrimi un
+caffè e un codice QR per aprire la stessa pagina sul telefono.
+"""

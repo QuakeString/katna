@@ -438,3 +438,10 @@ text = """
 và rõ hẳn lên khi bạn trỏ vào dòng đó, giống như trong Gmail. Thư đã
 chọn, gắn dấu sao hoặc quan trọng luôn hiện đủ màu.
 """
+
+["2026-09-27-1512-buy-me-a-coffee"]
+title = "Mời tôi một ly cà phê"
+text = """
+Nếu Katna có ích với bạn, Giới thiệu về Katna giờ có nút Mời tôi một ly
+cà phê và mã QR để mở cùng trang đó trên điện thoại của bạn.
+"""

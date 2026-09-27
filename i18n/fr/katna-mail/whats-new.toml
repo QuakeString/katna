@@ -467,3 +467,11 @@ restent maintenant estompés et s’affichent pleinement quand vous pointez
 sur la ligne, comme dans Gmail. Un message coché, suivi ou important
 s’affiche toujours en pleine couleur.
 """
+
+["2026-09-27-1512-buy-me-a-coffee"]
+title = "Offrez-moi un café"
+text = """
+Si Katna vous est utile, À propos de Katna propose désormais un bouton
+Offrez-moi un café et un code QR pour ouvrir la même page sur votre
+téléphone.
+"""

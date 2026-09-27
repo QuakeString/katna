@@ -11,6 +11,7 @@ about-changelog = Registro delle modifiche
 about-source = Codice sorgente
 about-coffee = Offrimi un caffè
 about-coming-soon = Prossimamente
+about-coffee-scan = Oppure inquadra il codice con il telefono.
 about-follow = Segui l’autore
 about-love-title = Fatto con amore per Rust, KDE e Linux
 about-love-text = Con Rust scrivere un’app di posta veloce e sicura è un piacere: Katna non contiene codice unsafe. Il desktop Plasma di KDE e la sua suite PIM hanno ispirato Katna, e Linux e la comunità del software libero sono le fondamenta su cui poggia. Grazie, e grazie alle librerie qui sotto.
