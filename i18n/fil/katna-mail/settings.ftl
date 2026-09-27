@@ -7,6 +7,7 @@
 settings-tab-general = Pangkalahatan
 settings-tab-inbox = Inbox
 settings-tab-accounts = Mga Account
+settings-tab-katna-account = Katna account
 settings-tab-subscriptions = Mga Subscription
 settings-tab-appearance = Hitsura
 settings-tab-shortcuts = Mga Shortcut

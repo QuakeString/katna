@@ -7,6 +7,7 @@
 settings-tab-general = Okuvamile
 settings-tab-inbox = Ibhokisi lokungenayo
 settings-tab-accounts = Ama-akhawunti
+settings-tab-katna-account = I-akhawunti ye-Katna
 settings-tab-subscriptions = Okubhaliselwe
 settings-tab-appearance = Ukubukeka
 settings-tab-shortcuts = Izinqamuleli

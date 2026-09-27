@@ -7,6 +7,7 @@
 settings-tab-general = အထွေထွေ
 settings-tab-inbox = ဝင်စာ
 settings-tab-accounts = အကောင့်များ
+settings-tab-katna-account = Katna အကောင့်
 settings-tab-subscriptions = စာရင်းသွင်းမှုများ
 settings-tab-appearance = အသွင်အပြင်
 settings-tab-shortcuts = ဖြတ်လမ်းများ

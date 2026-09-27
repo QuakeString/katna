@@ -613,3 +613,22 @@ Arraste um chip de endereço para outro campo para movê-lo; Cc e Cco abrem
 enquanto você arrasta, mesmo quando ocultos. Apontar para um chip mostra
 um x que o remove.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "Conta Katna"
+text = """
+Em Configurações > Conta Katna você cria uma conta no servidor do
+próprio Katna, com senha própria, nunca uma senha de e-mail. Os recursos
+on-line do Katna, como confirmações de leitura e rastreamento de links,
+vão precisar dela. Você vê os computadores conectados e pode desconectar
+qualquer um deles.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "De volta onde você parou"
+text = """
+Ao fechar o Katna Mail e abri-lo de novo, voltam o app, a pasta e a guia
+da Caixa de entrada que estavam abertos, as pastas que você tinha
+expandido e se o painel de pastas estava recolhido. Sair do Katna pela
+bandeja do sistema o reinicia do zero.
+"""

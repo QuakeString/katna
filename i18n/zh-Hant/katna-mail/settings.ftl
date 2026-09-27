@@ -7,6 +7,7 @@
 settings-tab-general = 一般
 settings-tab-inbox = 收件匣
 settings-tab-accounts = 帳戶
+settings-tab-katna-account = Katna 帳戶
 settings-tab-subscriptions = 訂閱
 settings-tab-appearance = 外觀
 settings-tab-shortcuts = 快速鍵

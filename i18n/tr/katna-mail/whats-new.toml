@@ -610,3 +610,22 @@ Bir adres çipini taşımak için başka bir alana sürükleyin; siz
 sürüklerken Bilgi ve Gizli, gizli olsalar bile açılır. Bir çipin üzerine
 gelince onu kaldıran bir x görünür.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "Katna hesabı"
+text = """
+Ayarlar > Katna hesabı, Katna'nın kendi sunucusunda, asla bir posta
+parolası olmayan kendi parolasıyla bir hesap oluşturmanızı sağlar.
+Okundu bilgisi ve bağlantı izleme gibi çevrimiçi Katna özellikleri buna
+ihtiyaç duyacak. Oturum açmış bilgisayarları görebilir, istediğinizin
+oturumunu kapatabilirsiniz.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Kaldığınız yerde"
+text = """
+Katna Mail'i kapatıp yeniden açmak, açık olan uygulamayı, klasörü ve
+Gelen Kutusu sekmesini, genişlettiğiniz klasörleri ve klasör bölmesinin
+daraltılmış olup olmadığını geri getirir. Katna'dan sistem tepsisinden
+çıkmak onu sıfırdan başlatır.
+"""

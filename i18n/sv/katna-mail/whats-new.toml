@@ -597,3 +597,22 @@ Dra en adressbricka till ett annat fält för att flytta den; Kopia och Dold
 kopia öppnas medan du drar, även när de är dolda. När du pekar på en
 bricka visas ett x som tar bort den.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "Katna-konto"
+text = """
+Under Inställningar > Katna-konto kan du skapa ett konto på Katnas egen
+server, med ett eget lösenord, aldrig ett e-postlösenord. Katnas
+onlinefunktioner, som läskvitton och länkspårning, kommer att behöva
+det. Du ser vilka datorer som är inloggade och kan logga ut vilken som
+helst av dem.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Tillbaka där du var"
+text = """
+När du stänger Katna Mail och öppnar det igen kommer appen, mappen och
+inkorgsfliken du hade öppna tillbaka, liksom mapparna du hade fällt ut
+och om mappfönstret var hopfällt. Avslutar du Katna från systemfältet
+startar det från början.
+"""

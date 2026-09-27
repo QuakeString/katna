@@ -7,6 +7,7 @@
 settings-tab-general = सामान्य
 settings-tab-inbox = इनबॉक्स
 settings-tab-accounts = खाती
+settings-tab-katna-account = Katna खाते
 settings-tab-subscriptions = सदस्यता
 settings-tab-appearance = स्वरूप
 settings-tab-shortcuts = शॉर्टकट

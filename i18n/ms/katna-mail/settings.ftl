@@ -7,6 +7,7 @@
 settings-tab-general = Umum
 settings-tab-inbox = Peti Masuk
 settings-tab-accounts = Akaun
+settings-tab-katna-account = Akaun Katna
 settings-tab-subscriptions = Langganan
 settings-tab-appearance = Penampilan
 settings-tab-shortcuts = Pintasan

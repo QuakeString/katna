@@ -617,3 +617,21 @@ Trascina il chip di un indirizzo in un altro campo per spostarlo; Cc e
 Ccn si aprono mentre trascini, anche se nascosti. Puntando un chip compare
 una x che lo rimuove.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "Account Katna"
+text = """
+Impostazioni > Account Katna ti permette di creare un account sul server di
+Katna, con una password sua, mai quella della posta. Le funzioni online di
+Katna, come le conferme di lettura e il tracciamento dei link, ne avranno
+bisogno. Puoi vedere i computer connessi e disconnetterne uno qualsiasi.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Di nuovo dove eri"
+text = """
+Chiudendo e riaprendo Katna Mail ritrovi l’app, la cartella e la scheda
+della posta in arrivo che avevi aperto, le cartelle espanse e il riquadro
+delle cartelle compresso o no. Se esci da Katna dall’area di notifica,
+riparte da zero.
+"""

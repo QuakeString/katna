@@ -615,3 +615,22 @@ Arrastra la ficha de una dirección a otro campo para moverla; Cc y Cco se
 abren mientras arrastras, aunque estén ocultos. Al señalar una ficha
 aparece una x que la quita.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "Cuenta de Katna"
+text = """
+Ajustes > Cuenta de Katna te permite crear una cuenta en el propio
+servidor de Katna, con su propia contraseña, nunca la de tu correo. Las
+funciones en línea de Katna, como las confirmaciones de lectura y el
+seguimiento de enlaces, la necesitarán. Puedes ver los ordenadores con
+sesión iniciada y cerrar la sesión en cualquiera de ellos.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "De vuelta donde estabas"
+text = """
+Al cerrar Katna Mail y volver a abrirlo, recupera la aplicación, la
+carpeta y la pestaña de Recibidos que tenías abiertas, las carpetas que
+habías desplegado y si el panel de carpetas estaba plegado. Salir de Katna
+desde la bandeja del sistema lo hace empezar de cero.
+"""

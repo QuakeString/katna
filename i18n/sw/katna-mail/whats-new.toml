@@ -613,3 +613,22 @@ Buruta kipande cha anwani hadi sehemu nyingine ili kukihamisha; Nakala
 na Nakala fiche hufunguka unapoburuta, hata zikiwa zimefichwa. Kuelekeza
 kwenye kipande huonyesha x inayokiondoa.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "Akaunti ya Katna"
+text = """
+Mipangilio > Akaunti ya Katna hukuwezesha kufungua akaunti kwenye seva
+ya Katna yenyewe, yenye nenosiri lake, kamwe si nenosiri la barua.
+Vipengele vya mtandaoni vya Katna, kama stakabadhi za kusoma na
+ufuatiliaji wa viungo, vitaihitaji. Unaweza kuona kompyuta zilizoingia
+na kutoa yoyote kati yake.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Rudi pale ulipokuwa"
+text = """
+Kufunga Katna Mail na kuifungua tena hurudisha programu, folda na
+kichupo cha kikasha ulichokuwa umefungua, folda ulizokuwa umezipanua na
+iwapo kidirisha cha folda kilikuwa kimekunjwa. Kuondoka Katna kutoka
+trei ya mfumo huianzisha upya kabisa.
+"""

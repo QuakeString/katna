@@ -7,6 +7,7 @@
 settings-tab-general = Generali
 settings-tab-inbox = Posta in arrivo
 settings-tab-accounts = Account
+settings-tab-katna-account = Account Katna
 settings-tab-subscriptions = Iscrizioni
 settings-tab-appearance = Aspetto
 settings-tab-shortcuts = Scorciatoie

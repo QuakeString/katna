@@ -7,6 +7,7 @@
 settings-tab-general = Genel
 settings-tab-inbox = Gelen Kutusu
 settings-tab-accounts = Hesaplar
+settings-tab-katna-account = Katna hesabı
 settings-tab-subscriptions = Abonelikler
 settings-tab-appearance = Görünüm
 settings-tab-shortcuts = Kısayollar

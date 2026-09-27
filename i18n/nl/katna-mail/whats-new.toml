@@ -614,3 +614,22 @@ Sleep een adreschip naar een ander veld om het te verplaatsen; Cc en Bcc
 gaan open terwijl je sleept, ook als ze verborgen zijn. Als je naar een
 chip wijst, verschijnt een x die het verwijdert.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "Katna-account"
+text = """
+Met Instellingen > Katna-account maak je een account op de eigen server
+van Katna, met een eigen wachtwoord, nooit een e-mailwachtwoord. De
+onlinefuncties van Katna, zoals leesbevestigingen en linktracking,
+hebben het nodig. Je ziet welke computers zijn aangemeld en kunt elk
+ervan afmelden.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Terug waar je was"
+text = """
+Als je Katna Mail sluit en weer opent, komen de app, de map en het
+inbox-tabblad die je open had terug, net als de mappen die je had
+uitgeklapt en of het mappenvenster was ingeklapt. Afsluiten van Katna
+vanuit het systeemvak start het opnieuw.
+"""

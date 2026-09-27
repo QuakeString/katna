@@ -631,3 +631,22 @@ Faites glisser la pastille d’une adresse vers un autre champ pour la
 déplacer ; Cc et Cci s’ouvrent pendant le glissement, même masqués.
 Pointer une pastille affiche un x qui la retire.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "Compte Katna"
+text = """
+Paramètres > Compte Katna vous permet de créer un compte sur le serveur de
+Katna lui-même, avec son propre mot de passe, jamais celui d’une
+messagerie. Les fonctions en ligne de Katna, comme les accusés de lecture
+et le suivi des liens, en auront besoin. Vous voyez les ordinateurs
+connectés et pouvez déconnecter n’importe lequel d’entre eux.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Là où vous en étiez"
+text = """
+Fermer Katna Mail puis le rouvrir rétablit l’application, le dossier et
+l’onglet de la boîte de réception que vous aviez ouverts, les dossiers que
+vous aviez dépliés et l’état replié ou non du volet des dossiers. Quitter
+Katna depuis la zone de notification le fait repartir de zéro.
+"""

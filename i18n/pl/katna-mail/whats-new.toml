@@ -612,3 +612,22 @@ Przeciągnij plakietkę adresu do innego pola, aby ją przenieść; DW i UDW
 otwierają się podczas przeciągania, nawet gdy są ukryte. Wskazanie
 plakietki pokazuje x, które ją usuwa.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "Konto Katna"
+text = """
+Ustawienia > Konto Katna pozwalają utworzyć konto na własnym serwerze
+Katna, z osobnym hasłem, nigdy hasłem do poczty. Będą go potrzebować
+funkcje online Katna, takie jak potwierdzenia przeczytania i śledzenie
+linków. Widać tam komputery, na których się zalogowano, i każdy z nich
+można wylogować.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Wszystko tam, gdzie było"
+text = """
+Po zamknięciu i ponownym otwarciu Katna Mail wraca aplikacja, folder i
+karta skrzynki odbiorczej, które były otwarte, a także rozwinięte
+foldery i to, czy panel folderów był zwinięty. Zakończenie Katna z
+zasobnika systemowego uruchamia go od nowa.
+"""
