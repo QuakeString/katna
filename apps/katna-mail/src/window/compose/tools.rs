@@ -23,7 +23,7 @@ use super::super::MailWindow;
 use super::checks::{Passed, SendCheck};
 use super::recipients::Field;
 use super::{Mode, schedule};
-use crate::theme::{Theme, fade};
+use crate::theme::{Theme, fade, mix};
 use crate::widgets::{filled_button, icon, icon_button, icon_button_colored, menu, menu_item, tip};
 
 /// The open menu or dialog of the compose window.
@@ -256,9 +256,29 @@ pub(super) fn format_button(
         .justify_center()
         .rounded(px(4.0))
         .cursor_pointer()
-        .when(active, |d| d.bg(rgba(th.chip)))
+        .when(active, |d| d.bg(rgba(format_active(th))))
         .hover(|s| s.bg(rgba(th.hover)))
-        .child(icon(name, if active { th.text } else { th.text_dim }, 18.0))
+        .child(icon(
+            name,
+            if active {
+                th.nav_selected_text
+            } else {
+                th.text_dim
+            },
+            18.0,
+        ))
+}
+
+/// The formatting bar's background: the card's color tinted with the
+/// accent, so it stands apart from the text under it.
+pub(super) fn format_bar_bg(th: &Theme) -> u32 {
+    mix(th.surface, th.accent, if th.dark { 0.16 } else { 0.10 })
+}
+
+/// A format that is on (Bold, a list, the alignment): the selection color,
+/// stronger than the bar's tint.
+fn format_active(th: &Theme) -> u32 {
+    mix(th.surface, th.accent, if th.dark { 0.42 } else { 0.30 })
 }
 
 /// A dropdown of the formatting bar: its content and a small arrow.
@@ -487,13 +507,13 @@ impl MailWindow {
             "format-text",
             20.0,
             if compose.format_bar {
-                th.text
+                th.nav_selected_text
             } else {
                 th.text_dim
             },
             th,
         )
-        .when(compose.format_bar, |d| d.bg(rgba(th.chip)))
+        .when(compose.format_bar, |d| d.bg(rgba(format_active(th))))
         .tooltip(tip(tr!("compose-tool-formatting"), th))
         .on_click(cx.listener(|this, _, window, cx| {
             if let Some(c) = &mut this.compose {
@@ -817,7 +837,7 @@ impl MailWindow {
                         // Tinted apart from the text under it; on a narrow
                         // window its buttons scroll sideways.
                         .rounded(px(8.0))
-                        .bg(rgba(th.search))
+                        .bg(rgba(format_bar_bg(th)))
                         .shadow(crate::widgets::elevation(th, 1.0))
                         .overflow_x_scroll()
                         .child(
@@ -936,9 +956,19 @@ impl MailWindow {
             .relative()
             .child(
                 format_dropdown("format-align", th)
+                    // Centred or right-aligned text shows as on, like Bold.
+                    .when(para.align != Align::Left, |d| d.bg(rgba(format_active(th))))
                     .tooltip(tip(tr!("compose-tool-align"), th))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Align, cx)))
-                    .child(icon(align_icon, th.text_dim, 18.0))
+                    .child(icon(
+                        align_icon,
+                        if para.align == Align::Left {
+                            th.text_dim
+                        } else {
+                            th.nav_selected_text
+                        },
+                        18.0,
+                    ))
                     .child(icon("drop-down", th.text_dim, 18.0)),
             )
             .when(open(Popup::Align), |d| {

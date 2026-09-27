@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Clearer formatting bar"
+text = """
+The formatting bar is tinted with your accent color, and the formats that
+are on, such as Bold or a list, show in the selection color. In a reply,
+Send and its tools stay at the bottom as you scroll.
+"""
