@@ -1,0 +1,5 @@
+# Lengths go through katna_ui::px, which applies Settings > Appearance >
+# Scaling (crates/katna-ui/src/scale.rs).
+disallowed-methods = [
+    { path = "gpui::px", reason = "use katna_ui::px, which applies the interface scale" },
+]

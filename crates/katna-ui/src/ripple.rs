@@ -13,9 +13,11 @@ use std::cell::Cell;
 use std::rc::Rc;
 use std::time::Duration;
 
+use crate::scale::px;
+use crate::scale::unpx;
 use gpui::{
     Animation, AnimationExt, App, Bounds, ElementId, Hsla, IntoElement, MouseButton, Pixels, Point,
-    RenderOnce, Window, canvas, div, ease_out_quint, prelude::*, px,
+    RenderOnce, Window, canvas, div, ease_out_quint, prelude::*,
 };
 
 /// How long one ripple lasts.
@@ -127,8 +129,8 @@ impl RenderOnce for Ripple {
 
         let wave = press.map(|(origin, n)| {
             let size = bounds.get().size;
-            let (w, h) = (f32::from(size.width), f32::from(size.height));
-            let (x, y) = (f32::from(origin.x), f32::from(origin.y));
+            let (w, h) = (unpx(size.width), unpx(size.height));
+            let (x, y) = (unpx(origin.x), unpx(origin.y));
             // Reach the farthest corner.
             let radius = [(0.0, 0.0), (w, 0.0), (0.0, h), (w, h)]
                 .iter()

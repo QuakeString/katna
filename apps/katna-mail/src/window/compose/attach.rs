@@ -6,7 +6,8 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use gpui::{AnyElement, Context, ExternalPaths, PathPromptOptions, div, prelude::*, px, rgba};
+use gpui::{AnyElement, Context, ExternalPaths, PathPromptOptions, div, prelude::*, rgba};
+use katna_ui::px;
 
 use super::super::MailWindow;
 use crate::format;

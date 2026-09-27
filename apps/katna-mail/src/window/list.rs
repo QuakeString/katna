@@ -10,12 +10,13 @@ use std::time::Duration;
 use gpui::{
     Animation, AnimationExt, AnyElement, BoxShadow, Context, Div, FontWeight, HighlightStyle,
     ListOffset, SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, anchored,
-    deferred, div, ease_out_quint, linear_color_stop, linear_gradient, list, point, prelude::*, px,
+    deferred, div, ease_out_quint, linear_color_stop, linear_gradient, list, point, prelude::*,
     relative, rgba,
 };
 use katna_core::config::Density;
 use katna_ui::Ripple;
 use katna_ui::motion;
+use katna_ui::px;
 
 /// The lift of the line under the pointer: critically damped and slower
 /// than other hover feedback, so it rises and settles without a jolt.

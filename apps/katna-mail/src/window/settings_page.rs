@@ -19,12 +19,13 @@ use std::time::Duration;
 
 use gpui::{
     AnyElement, App, Context, Div, Entity, FocusHandle, Focusable, FontWeight, Keystroke,
-    ScrollHandle, SharedString, Stateful, Subscription, Task, Window, div, prelude::*, px, rgba,
+    ScrollHandle, SharedString, Stateful, Subscription, Task, Window, div, prelude::*, rgba,
 };
 use katna_core::config::{
     AccountTabs, Density, FileGroup, OpenIn, ReadingPane, TabStyle, Theme as ThemeChoice,
 };
 use katna_ui::motion::lerp;
+use katna_ui::px;
 use katna_ui::rich::RichEvent;
 use katna_ui::{InputEvent, RichEditor, Ripple, TextInput};
 
@@ -127,6 +128,8 @@ pub(super) struct SettingsPage {
     pub(super) flash: Option<super::settings_search::Flash>,
     /// The row whose (i) line is shown under its name.
     pub(super) info: Rc<RefCell<Option<SharedString>>>,
+    /// A drag on the Scaling slider.
+    pub(super) scale: super::scale_slider::ScaleDrag,
 }
 
 impl SettingsPage {
@@ -181,6 +184,7 @@ impl MailWindow {
             query: SharedString::default(),
             flash: None,
             info: Rc::default(),
+            scale: Default::default(),
         });
         if fresh {
             window.focus(&page.focus, cx);
@@ -516,6 +520,12 @@ impl MailWindow {
                 th,
             ))
             .child(self.row("Density", None, density, th))
+            .child(self.row(
+                "Scaling",
+                Some("Makes everything in Katna Mail bigger or smaller, on top of the desktop's own scale: text, icons, spacing and dividers. Mail you send keeps its own font size. Very small sizes can make icons hard to click."),
+                self.scale_control(th, cx),
+                th,
+            ))
             .child(self.row("Theme", None, theme, th))
             .child(self.row(
                 "Desktop colors",

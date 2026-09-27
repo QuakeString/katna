@@ -7,11 +7,13 @@
 
 use gpui::{
     AnyElement, Context, Div, Entity, Focusable, FontWeight, Stateful, Subscription, Window, div,
-    prelude::*, px, rgba,
+    prelude::*, rgba,
 };
 use katna_core::config::AccountsShown;
 use katna_core::{Account, AccountKind, Config};
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
+use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
 
 use super::settings::Change;
@@ -641,7 +643,7 @@ impl MailWindow {
                     ),
             );
         let viewport = window.viewport_size();
-        let (vw, vh) = (f32::from(viewport.width), f32::from(viewport.height));
+        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let card = div()
             .id("danger")
             .occlude()

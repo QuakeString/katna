@@ -12,10 +12,11 @@ use std::collections::HashMap;
 use std::ops::Range;
 use std::rc::Rc;
 
+use crate::scale::px;
 use gpui::{
     App, AvailableSpace, Bounds, ElementId, Entity, FontStyle, FontWeight, GlobalElementId, Hsla,
     LayoutId, Pixels, Point, ShapedLine, SharedString, StrikethroughStyle, Style, TextAlign,
-    TextRun, UnderlineStyle, Window, fill, point, prelude::*, px, relative, size,
+    TextRun, UnderlineStyle, Window, fill, point, prelude::*, relative, size,
 };
 use unicode_segmentation::UnicodeSegmentation;
 

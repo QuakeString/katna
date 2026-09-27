@@ -11,9 +11,10 @@ use std::rc::Rc;
 
 use gpui::{
     Anchor, AnyElement, Context, Entity, Focusable, FontWeight, Hsla, MouseButton, Pixels, Point,
-    Stateful, Subscription, Window, anchored, deferred, div, point, prelude::*, px, rgba,
+    Stateful, Subscription, Window, anchored, deferred, div, point, prelude::*, rgba,
 };
 use jiff::civil::Date;
+use katna_ui::px;
 use katna_ui::rich::{Align, Font, List, RichEditor, Size, TableEdit, html};
 use katna_ui::{InputEvent, TextInput};
 

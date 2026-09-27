@@ -10,10 +10,11 @@
 //! an estimate from the attachment's size and completes when it is done.
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, FontWeight, Window, div, prelude::*, px,
-    relative, rgba,
+    Animation, AnimationExt, AnyElement, Context, FontWeight, Window, div, prelude::*, relative,
+    rgba,
 };
 use katna_store::MessageId;
+use katna_ui::px;
 use std::time::{Duration, Instant};
 
 use super::MailWindow;
