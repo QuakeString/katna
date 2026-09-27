@@ -6,7 +6,10 @@ use std::sync::Arc;
 
 use async_channel::Receiver;
 use katna_core::{AccountId, ids};
-use katna_dbus::{AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, TemplateItem, flag};
+use katna_dbus::{
+    AccountStatus, KatnaAccount, KatnaDevice, NewImapAccount, NewPop3Account, OutboxItem,
+    TemplateItem, flag,
+};
 use katna_store::{FolderId, MessageFlags, MessageId};
 use zbus::{fdo, object_server::SignalEmitter};
 
@@ -224,6 +227,86 @@ macro_rules! pim_interface {
                 Ok(self.daemon.sender_picture(&address).await?)
             }
 
+            async fn katna_account(&self) -> fdo::Result<KatnaAccount> {
+                Ok(self.daemon.katna()?.account().await?)
+            }
+
+            async fn katna_sign_up(
+                &self,
+                email: &str,
+                password: &str,
+            ) -> fdo::Result<KatnaAccount> {
+                let account = self.daemon.katna()?.sign_up(email, password).await?;
+                self.daemon.katna_changed();
+                Ok(account)
+            }
+
+            async fn katna_sign_in(
+                &self,
+                email: &str,
+                password: &str,
+            ) -> fdo::Result<KatnaAccount> {
+                let account = self.daemon.katna()?.sign_in(email, password).await?;
+                self.daemon.katna_changed();
+                Ok(account)
+            }
+
+            async fn katna_verify(&self, code: &str) -> fdo::Result<KatnaAccount> {
+                let account = self.daemon.katna()?.verify(code).await?;
+                self.daemon.katna_changed();
+                Ok(account)
+            }
+
+            async fn katna_resend_code(&self) -> fdo::Result<()> {
+                Ok(self.daemon.katna()?.resend_code().await?)
+            }
+
+            async fn katna_sign_out(&self) -> fdo::Result<()> {
+                self.daemon.katna()?.sign_out().await?;
+                self.daemon.katna_changed();
+                Ok(())
+            }
+
+            async fn katna_devices(&self) -> fdo::Result<Vec<KatnaDevice>> {
+                Ok(self.daemon.katna()?.devices().await?)
+            }
+
+            async fn katna_sign_out_device(&self, id: &str) -> fdo::Result<()> {
+                Ok(self.daemon.katna()?.sign_out_device(id).await?)
+            }
+
+            async fn katna_change_password(&self, current: &str, new: &str) -> fdo::Result<()> {
+                Ok(self.daemon.katna()?.change_password(current, new).await?)
+            }
+
+            async fn katna_reset_password(&self, email: &str) -> fdo::Result<()> {
+                Ok(self.daemon.katna()?.reset_password(email).await?)
+            }
+
+            async fn katna_confirm_reset(
+                &self,
+                email: &str,
+                code: &str,
+                password: &str,
+            ) -> fdo::Result<KatnaAccount> {
+                let account = self
+                    .daemon
+                    .katna()?
+                    .confirm_reset(email, code, password)
+                    .await?;
+                self.daemon.katna_changed();
+                Ok(account)
+            }
+
+            async fn katna_delete_account(&self, password: &str) -> fdo::Result<()> {
+                self.daemon.katna()?.delete_account(password).await?;
+                self.daemon.katna_changed();
+                Ok(())
+            }
+
+            #[zbus(signal)]
+            async fn katna_account_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
+
             #[zbus(signal)]
             async fn accounts_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
 
@@ -293,6 +376,7 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::MailChanged(id) => PimService::mail_changed(&emitter, id.0).await,
             Notice::OutboxChanged(id) => PimService::outbox_changed(&emitter, id).await,
             Notice::MeteredChanged(on) => PimService::metered_changed(&emitter, on).await,
+            Notice::KatnaAccountChanged => PimService::katna_account_changed(&emitter).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");

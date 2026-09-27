@@ -25,6 +25,25 @@ pub struct Config {
     /// New installs one address may register per hour
     /// (`KATNA_SERVER_INSTALLS_PER_HOUR`, default 10).
     pub installs_per_hour: u32,
+    /// Where the mail with Katna account codes goes out
+    /// (`KATNA_SERVER_SMTP_URL`, for example
+    /// `smtps://user:password@smtp.example.com` or
+    /// `smtp://user:password@smtp.example.com:587?tls=required`). Without
+    /// it the codes are only written to the log, for local testing.
+    pub smtp_url: Option<Secret>,
+    /// The sender of that mail (`KATNA_SERVER_MAIL_FROM`, default
+    /// `Katna <no-reply@katna.invenia.in>`).
+    pub mail_from: String,
+}
+
+/// A setting that holds a password, kept out of debug output.
+#[derive(Clone)]
+pub struct Secret(pub String);
+
+impl std::fmt::Debug for Secret {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("<hidden>")
+    }
 }
 
 impl Default for Config {
@@ -36,6 +55,8 @@ impl Default for Config {
             retention_days: 180,
             daily_limit: 5000,
             installs_per_hour: 10,
+            smtp_url: None,
+            mail_from: "Katna <no-reply@katna.invenia.in>".into(),
         }
     }
 }
@@ -80,6 +101,12 @@ impl Config {
         if let Some(value) = lookup("KATNA_SERVER_INSTALLS_PER_HOUR") {
             config.installs_per_hour = parse("KATNA_SERVER_INSTALLS_PER_HOUR", &value)?;
         }
+        config.smtp_url = lookup("KATNA_SERVER_SMTP_URL")
+            .filter(|url| !url.trim().is_empty())
+            .map(|url| Secret(url.trim().to_owned()));
+        if let Some(value) = lookup("KATNA_SERVER_MAIL_FROM").filter(|v| !v.trim().is_empty()) {
+            config.mail_from = value.trim().to_owned();
+        }
         Ok(config)
     }
 }
@@ -112,6 +139,18 @@ mod tests {
         assert!(config.trust_forwarded);
         assert_eq!(config.retention_days, 30);
         assert_eq!(config.daily_limit, 5000);
+        assert!(config.smtp_url.is_none());
+    }
+
+    #[test]
+    fn hides_the_smtp_password() {
+        let config = Config::from_lookup(|name| match name {
+            "DATABASE_URL" => Some("postgres://x".into()),
+            "KATNA_SERVER_SMTP_URL" => Some("smtps://me:hunter2@smtp.example.com".into()),
+            _ => None,
+        })
+        .unwrap();
+        assert!(!format!("{config:?}").contains("hunter2"));
     }
 
     #[test]

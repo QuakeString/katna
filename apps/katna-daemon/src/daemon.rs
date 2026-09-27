@@ -79,6 +79,8 @@ pub enum Notice {
     OutboxChanged(i64),
     /// Workers now act metered, or stopped doing so.
     MeteredChanged(bool),
+    /// The Katna account this computer is signed in to changed.
+    KatnaAccountChanged,
 }
 
 /// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
@@ -495,6 +497,16 @@ impl Daemon {
             .image(url)
             .await
             .map_err(|err| CommandError::Failed(err.to_string()))
+    }
+
+    /// This computer's Katna account on Katna Server.
+    pub fn katna(&self) -> Result<crate::katna_account::Session<'_>, CommandError> {
+        crate::katna_account::Session::new(&self.secrets)
+    }
+
+    /// Tells the apps the Katna account changed.
+    pub fn katna_changed(&self) {
+        let _ = self.notices.try_send(Notice::KatnaAccountChanged);
     }
 
     /// The picture of the sender `address`, or empty.

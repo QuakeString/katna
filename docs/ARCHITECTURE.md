@@ -2587,7 +2587,34 @@ Everything is deleted after 180 days, and an install can delete its data.
 One server process (events are ordered within it). The API is in
 `server/katna-server/README.md`.
 
-### 16.2 Stack
+### 16.2 Katna accounts
+
+Every server feature needs a **Katna account**, like a Mailspring ID
+(decided September 2026). It is an email address and a password of its
+own on Katna Server; mail logins never go to the server.
+
+- **Server:** accounts with Argon2id password hashes; a six-digit code
+  mailed through an SMTP relay the owner sets (`KATNA_SERVER_SMTP_URL`)
+  confirms the address and resets a forgotten password (30 minutes, 5
+  wrong tries, stored hashed). An install signed in to an account is one
+  of its **devices**; any device can sign the others out, and changing or
+  resetting the password signs them out. Feature routes take the
+  `SignedIn` extractor, which needs a confirmed address. Unconfirmed
+  accounts go after a week; deleting an account deletes its devices and
+  their data. No plans or payments yet.
+- **Daemon:** `katna_account::Session` registers the install once, signs
+  in and out, and keeps the token and account address in the Secret
+  Service (`Secrets::server_token`). Other server features take their token
+  from `Session::token`. D-Bus: `KatnaAccount`, `KatnaSignUp`,
+  `KatnaSignIn`, `KatnaVerify`, `KatnaResendCode`, `KatnaSignOut`,
+  `KatnaDevices`, `KatnaSignOutDevice`, `KatnaChangePassword`,
+  `KatnaResetPassword`, `KatnaConfirmReset`, `KatnaDeleteAccount`, signal
+  `KatnaAccountChanged`; errors carry `katna_dbus::katna_error` names.
+- **App:** Settings > Katna account. Features check
+  `MailWindow::katna_signed_in` and show `katna_sign_in_needed` ("Sign in
+  to use this") when not.
+
+### 16.3 Stack
 
 `axum` + PostgreSQL; WebSocket/SSE delta stream to `katna-daemon`; a
 scheduler for server-side actions; shared crates with the apps where useful.

@@ -31,6 +31,7 @@ mod desktop;
 mod detached;
 mod download;
 mod feedback_page;
+mod katna_account;
 mod keymap;
 mod labels;
 mod language;
@@ -515,6 +516,8 @@ pub struct MailWindow {
     crash_notice: Option<crash_notice::CrashNotice>,
     /// Settings > User feedback's list of crash reports, as last read.
     saved_reports: Option<feedback_page::SavedReports>,
+    /// Settings > Katna account, once shown.
+    katna: Option<katna_account::KatnaPage>,
     compose: Option<compose::Compose>,
     /// Attachment thumbnails and the attachment viewer.
     files: attachments::Files,
@@ -716,6 +719,7 @@ impl MailWindow {
             undo_history: Vec::new(),
             crash_notice: None,
             saved_reports: None,
+            katna: None,
             compose: None,
             files: attachments::Files::default(),
             add_account: None,
@@ -2667,7 +2671,7 @@ impl Render for MailWindow {
                 .flex_row_reverse()
                 .children(docked_settings)
                 .child(if self.settings_page.is_some() {
-                    self.render_settings_page(&th, cx)
+                    self.render_settings_page(&th, window, cx)
                 } else {
                     self.render_cards(&th, available, cx)
                 })

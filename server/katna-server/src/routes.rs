@@ -9,6 +9,10 @@
 //! For the daemon, with `Authorization: Bearer <install token>`:
 //! - `POST /api/v1/installs` (no token): register, get an install token.
 //! - `DELETE /api/v1/installs/me`: forget the install and all its data.
+//! - `/api/v1/account/...`: Katna accounts ([`crate::accounts`]).
+//!
+//! The rest need the install to be signed in to a Katna account
+//! ([`SignedIn`]):
 //! - `POST /api/v1/tracks` `{"count": n, "links": [...]}`: `n` new IDs.
 //! - `DELETE /api/v1/tracks/<id>`: forget one ID and its events.
 //! - `GET /api/v1/events`: server-sent events after `Last-Event-ID` (or
@@ -30,11 +34,14 @@ use axum::{Json, Router};
 use serde::{Deserialize, Serialize};
 use tokio::sync::broadcast;
 
+use crate::accounts::{self, AccountLimits};
+use crate::auth::SignedIn;
 use crate::classify::{self, Kind, Source};
 use crate::config::Config;
 use crate::db::{Db, DbError, Event, now_ms};
 use crate::ids;
 use crate::limits::WindowLimit;
+use crate::mailer::Mailer;
 
 /// Most IDs one request may create (one per recipient).
 pub const MAX_IDS_PER_REQUEST: u32 = 100;
@@ -56,11 +63,24 @@ pub struct AppState {
     /// none. One server process; the load is small.
     record: Arc<tokio::sync::Mutex<()>>,
     registrations: Arc<WindowLimit<Option<IpAddr>>>,
+    mailer: Mailer,
+    account_limits: Arc<AccountLimits>,
 }
 
 impl AppState {
-    /// State for `config` over `db`.
+    /// State for `config` over `db`, with the mailer the settings ask for.
     pub fn new(db: Db, config: Config) -> Self {
+        // `main` checks the mail settings before this, so the fallback is
+        // for tests.
+        let mailer = Mailer::from_config(&config).unwrap_or_else(|error| {
+            tracing::error!(%error, "mail settings unusable; codes go to the log");
+            Mailer::Log
+        });
+        Self::with_mailer(db, config, mailer)
+    }
+
+    /// State for `config` over `db`, sending account mail with `mailer`.
+    pub fn with_mailer(db: Db, config: Config, mailer: Mailer) -> Self {
         let (events, _) = broadcast::channel(1024);
         let registrations = WindowLimit::new(config.installs_per_hour, Duration::from_secs(3600));
         Self {
@@ -69,7 +89,18 @@ impl AppState {
             events,
             record: Arc::default(),
             registrations: Arc::new(registrations),
+            mailer,
+            account_limits: Arc::default(),
         }
+    }
+
+    /// Sends account mail.
+    pub fn mailer(&self) -> &Mailer {
+        &self.mailer
+    }
+
+    pub(crate) fn account_limits(&self) -> &AccountLimits {
+        &self.account_limits
     }
 
     /// The database.
@@ -95,6 +126,7 @@ pub fn router(state: AppState) -> Router {
         .route("/api/v1/tracks", post(create_tracks))
         .route("/api/v1/tracks/{id}", delete(delete_track))
         .route("/api/v1/events", get(events))
+        .merge(accounts::routes())
         .with_state(state)
 }
 
@@ -103,8 +135,22 @@ pub fn router(state: AppState) -> Router {
 pub enum ApiError {
     /// Missing or unknown install token.
     Unauthorized,
+    /// The install is not signed in to a Katna account.
+    SignInNeeded,
+    /// The account's address is not confirmed yet.
+    NotVerified,
+    /// Wrong address or password.
+    WrongPassword,
+    /// Already there (an account for the address).
+    Conflict(&'static str),
+    /// Mail with a code could not be sent.
+    MailFailed,
+    /// A password could not be hashed.
+    Hash,
     /// A malformed request.
     BadRequest(&'static str),
+    /// A request a person can correct: a code for programs and a message.
+    Invalid(&'static str, &'static str),
     /// Nothing there.
     NotFound,
     /// Over a limit.
@@ -121,42 +167,62 @@ impl From<DbError> for ApiError {
 
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
-        let (status, message) = match self {
-            ApiError::Unauthorized => (StatusCode::UNAUTHORIZED, "unknown install token"),
-            ApiError::BadRequest(message) => (StatusCode::BAD_REQUEST, message),
-            ApiError::NotFound => (StatusCode::NOT_FOUND, "not found"),
-            ApiError::TooMany(message) => (StatusCode::TOO_MANY_REQUESTS, message),
+        // `code` is for programs; `error` for people reading logs.
+        let (status, code, message) = match self {
+            ApiError::Unauthorized => (
+                StatusCode::UNAUTHORIZED,
+                "unknown_install",
+                "unknown install token",
+            ),
+            ApiError::SignInNeeded => (
+                StatusCode::FORBIDDEN,
+                "sign_in",
+                "sign in to a Katna account",
+            ),
+            ApiError::NotVerified => (
+                StatusCode::FORBIDDEN,
+                "not_verified",
+                "confirm the Katna account's address first",
+            ),
+            ApiError::WrongPassword => (
+                StatusCode::UNAUTHORIZED,
+                "wrong_password",
+                "wrong address or password",
+            ),
+            ApiError::Conflict(message) => (StatusCode::CONFLICT, "exists", message),
+            ApiError::BadRequest(message) => (StatusCode::BAD_REQUEST, "bad_request", message),
+            ApiError::Invalid(code, message) => (StatusCode::BAD_REQUEST, code, message),
+            ApiError::NotFound => (StatusCode::NOT_FOUND, "not_found", "not found"),
+            ApiError::TooMany(message) => (StatusCode::TOO_MANY_REQUESTS, "too_many", message),
+            ApiError::MailFailed => (
+                StatusCode::BAD_GATEWAY,
+                "mail_failed",
+                "the mail with the code could not be sent",
+            ),
+            ApiError::Hash => (StatusCode::INTERNAL_SERVER_ERROR, "server", "server error"),
             ApiError::Internal(error) => {
                 tracing::error!(%error, "request failed");
-                (StatusCode::INTERNAL_SERVER_ERROR, "server error")
+                (StatusCode::INTERNAL_SERVER_ERROR, "server", "server error")
             }
         };
-        (status, Json(serde_json::json!({ "error": message }))).into_response()
+        (
+            status,
+            Json(serde_json::json!({ "error": message, "code": code })),
+        )
+            .into_response()
     }
 }
 
-/// The install a request's bearer token belongs to. A route for the
-/// daemon takes this as an argument to require a token.
+/// The install a request's bearer token belongs to, signed in or not.
+/// Only the install and account routes take this; a server feature takes
+/// [`SignedIn`] instead.
 pub struct Install(pub String);
 
 impl FromRequestParts<AppState> for Install {
     type Rejection = ApiError;
 
     async fn from_request_parts(parts: &mut Parts, state: &AppState) -> Result<Self, ApiError> {
-        let token = parts
-            .headers
-            .get(header::AUTHORIZATION)
-            .and_then(|value| value.to_str().ok())
-            .and_then(|value| value.strip_prefix("Bearer "))
-            .map(str::trim)
-            .filter(|token| ids::is_valid_token(token))
-            .ok_or(ApiError::Unauthorized)?;
-        state
-            .db
-            .install_for_token(&ids::token_hash(token), now_ms())
-            .await?
-            .map(Install)
-            .ok_or(ApiError::Unauthorized)
+        Ok(Install(crate::auth::install_auth(parts, state).await?.id))
     }
 }
 
@@ -179,7 +245,7 @@ impl<S: Send + Sync> FromRequestParts<S> for ClientAddr {
 
 /// The client's address: the connection's, or the last `X-Forwarded-For`
 /// entry (the one our own reverse proxy added) when that is trusted.
-fn client_ip(
+pub(crate) fn client_ip(
     state: &AppState,
     headers: &HeaderMap,
     connection: Option<SocketAddr>,
@@ -428,7 +494,7 @@ pub fn is_allowed_target(target: &str) -> bool {
 
 async fn create_tracks(
     State(state): State<AppState>,
-    Install(install): Install,
+    SignedIn { install, .. }: SignedIn,
     Json(request): Json<NewTracks>,
 ) -> Result<(StatusCode, Json<Created>), ApiError> {
     if request.count == 0 || request.count > MAX_IDS_PER_REQUEST {
@@ -457,7 +523,7 @@ async fn create_tracks(
 
 async fn delete_track(
     State(state): State<AppState>,
-    Install(install): Install,
+    SignedIn { install, .. }: SignedIn,
     Path(id): Path<String>,
 ) -> Result<StatusCode, ApiError> {
     if ids::is_valid_id(&id) && state.db.delete_track(&install, &id).await? {
@@ -476,7 +542,7 @@ pub struct After {
 
 async fn events(
     State(state): State<AppState>,
-    Install(install): Install,
+    SignedIn { install, .. }: SignedIn,
     Query(query): Query<After>,
     headers: HeaderMap,
 ) -> Sse<impl futures_lite::Stream<Item = Result<axum::response::sse::Event, Infallible>>> {

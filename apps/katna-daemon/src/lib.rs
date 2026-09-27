@@ -13,6 +13,7 @@ pub mod daemon;
 mod desktop;
 mod desktop_search;
 pub mod install;
+pub mod katna_account;
 mod mail_app;
 mod notify;
 mod on_demand;

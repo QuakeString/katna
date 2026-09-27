@@ -2,6 +2,16 @@
   "generated_by": "ci/gen-credits.sh",
   "crates": [
     {
+      "name": "argon2",
+      "version": "0.5.3",
+      "description": "Pure Rust implementation of the Argon2 password hashing function with support for the Argon2d, Argon2i, and Argon2id algorithmic variants",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "RustCrypto Developers"
+      ],
+      "repository": "https://github.com/RustCrypto/password-hashes/tree/master/argon2"
+    },
+    {
       "name": "ashpd",
       "version": "0.13.13",
       "description": "XDG portals wrapper in Rust using zbus",
@@ -385,6 +395,17 @@
         "Laurenz Stampfl"
       ],
       "repository": "https://github.com/LaurenzV/krilla"
+    },
+    {
+      "name": "lettre",
+      "version": "0.11.23",
+      "description": "Email client",
+      "license": "MIT",
+      "authors": [
+        "Alexis Mousset",
+        "Paolo Barbolini"
+      ],
+      "repository": "https://github.com/lettre/lettre"
     },
     {
       "name": "levenshtein_automata",
