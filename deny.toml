@@ -41,6 +41,8 @@ allow = [
     # libbz2-rs-sys (via GPUI's HTTP client): permissive, GPL-compatible.
     "bzip2-1.0.6",
     "CDLA-Permissive-2.0",
+    # quoted_printable (via lettre, Katna Server's mail): public-domain-like.
+    "0BSD",
 ]
 
 [licenses.private]
