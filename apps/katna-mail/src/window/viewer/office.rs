@@ -15,10 +15,12 @@ use gpui::ListHorizontalSizingBehavior;
 use gpui::{
     AnyElement, Context, FontStyle, FontWeight, HighlightStyle, ListAlignment, ListState,
     SharedString, StrikethroughStyle, StyledText, UnderlineStyle, UniformListScrollHandle, div,
-    list, prelude::*, px, rgba, uniform_list,
+    list, prelude::*, rgba, uniform_list,
 };
 use katna_preview::document::{Align, Block, Document, Paragraph, Style};
 use katna_preview::sheet::{self, MAX_ROWS, Sheet, Workbook};
+use katna_ui::px;
+use katna_ui::unpx;
 
 use super::{BAR_HEIGHT, Viewer};
 
@@ -143,7 +145,7 @@ impl Viewer {
         let number_width = ((last_row.to_string().len() as f32) * 8.0 + 20.0) * zoom;
         let total_width = number_width + widths.iter().sum::<f32>();
         let margin = side_margin(vw);
-        let scroll_x = f32::from(view.scroll.0.borrow().base_handle.offset().x);
+        let scroll_x = unpx(view.scroll.0.borrow().base_handle.offset().x);
 
         // Column letters, moved with the grid's sideways scrolling.
         let first_col = sheet.origin.1;

@@ -15,7 +15,7 @@ use std::time::{Duration, SystemTime};
 use gpui::{
     AnyElement, Context, Entity, FocusHandle, FontWeight, ImageSource, ObjectFit,
     PathPromptOptions, RenderImage, SharedString, Subscription, Task, Window, div, img, prelude::*,
-    px, rgba,
+    rgba,
 };
 use katna_core::config::{FileGroup, OpenIn};
 use katna_preview::Kind;
@@ -23,6 +23,7 @@ use katna_preview::glance::{Glance, glance};
 use katna_preview::image::{Frame, RgbaImage, imageops};
 use katna_render::{Attachment, AttachmentFile};
 use katna_store::MessageId;
+use katna_ui::px;
 
 use super::MailWindow;
 use super::reader::AttachmentSource;

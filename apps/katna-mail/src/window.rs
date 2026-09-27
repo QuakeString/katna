@@ -43,6 +43,7 @@ mod reader;
 mod remote;
 mod reply_row;
 mod rich;
+mod scale_slider;
 mod search_panel;
 mod settings;
 mod settings_page;
@@ -62,7 +63,7 @@ use futures_lite::StreamExt;
 use gpui::{
     AnyElement, App, Context, Entity, FocusHandle, Focusable, FontWeight, Hsla, ListAlignment,
     ListState, MouseButton, MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task,
-    TextRun, UniformListScrollHandle, WeakEntity, Window, actions, div, prelude::*, px, rgba,
+    TextRun, UniformListScrollHandle, WeakEntity, Window, actions, div, prelude::*, rgba,
 };
 use jiff::tz::TimeZone;
 use katna_chrome::{Bar, ChromeColors, Environment, WindowChrome};
@@ -72,6 +73,8 @@ use katna_dbus::zbus::Connection;
 use katna_search::SearchResults;
 use katna_store::{FolderId, MessageFlags, MessageId};
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
+use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
 
 use crate::daemon::{self, Command};
@@ -196,7 +199,7 @@ fn compose_text_width(font: Option<&SharedString>, window: &Window) -> f32 {
         window
             .text_system()
             .shape_line(COMPOSE_LABEL.into(), px(COMPOSE_TEXT_SIZE), &[run], None);
-    f32::from(line.width).ceil() + 1.0
+    unpx(line.width).ceil() + 1.0
 }
 /// Corners of cards that float: menus aside, dialogs and panels.
 const PANEL_RADIUS: f32 = 15.0;
@@ -1091,7 +1094,7 @@ impl MailWindow {
     }
 
     fn reader_page(&self) -> f32 {
-        (f32::from(self.reader_scroll.bounds().size.height) - LINE_SCROLL).max(LINE_SCROLL)
+        (unpx(self.reader_scroll.bounds().size.height) - LINE_SCROLL).max(LINE_SCROLL)
     }
 
     fn scroll_down(&mut self, _: &ScrollDown, _: &mut Window, cx: &mut Context<Self>) {
@@ -1607,12 +1610,24 @@ impl MailWindow {
     /// Applies `act` to the lines `keys`: at once in the window, then in
     /// the store and on the server through the daemon.
     fn act(&mut self, act: Act, keys: Vec<EntryKey>, cx: &mut Context<Self>) {
+        self.act_with(act, keys, true, cx);
+    }
+
+    /// Does `act` to the lines `keys`, saying so with an Undo when
+    /// `announce`. Returns what undoes it.
+    fn act_with(
+        &mut self,
+        act: Act,
+        keys: Vec<EntryKey>,
+        announce: bool,
+        cx: &mut Context<Self>,
+    ) -> Option<Command> {
         self.menu = None;
         if keys.is_empty() {
-            return;
+            return None;
         }
         let Ok(mail) = &self.mail else {
-            return;
+            return None;
         };
         let what = match (keys.len(), self.config.mail.conversations) {
             (1, true) => "Conversation".to_owned(),
@@ -1694,7 +1709,7 @@ impl MailWindow {
                             Some(junk) => Some(junk),
                             None => {
                                 self.show_snackbar("This account has no spam folder.", None, cx);
-                                return;
+                                return None;
                             }
                         }
                     }
@@ -1705,7 +1720,7 @@ impl MailWindow {
                     (Act::Archive, _) => Command::Archive(ids.clone()),
                     (Act::Delete, _) => Command::Delete(ids.clone()),
                     (_, Some(target)) => Command::Move(ids.clone(), target),
-                    _ => return,
+                    _ => return None,
                 };
                 // Deleting on an account without a Trash folder, or in
                 // Trash itself, is for good (as the daemon does it), so
@@ -1718,6 +1733,7 @@ impl MailWindow {
             }
         };
         let done = match act {
+            _ if !announce => None,
             Act::Spam => Some(format!("{what} reported as spam.")),
             Act::Delete if for_good => Some(format!("{what} deleted forever.")),
             _ => command.done_text(&what),
@@ -1728,12 +1744,15 @@ impl MailWindow {
             && self.reader.is_none()
             && let Some(main) = self.main.as_ref().and_then(WeakEntity::upgrade)
         {
-            main.update(cx, |main, cx| main.send(command, done, undo, false, cx));
+            main.update(cx, |main, cx| {
+                main.send(command, done, undo.clone(), false, cx)
+            });
             cx.notify();
-            return;
+            return undo;
         }
-        self.send(command, done, undo, false, cx);
+        self.send(command, done, undo.clone(), false, cx);
         cx.notify();
+        undo
     }
 
     /// Takes lines out of the list, keeping the cursor on the next one.
@@ -1829,6 +1848,11 @@ impl MailWindow {
                     .await;
                 this.update_in(cx, |this, window, cx| match result {
                     Ok(()) => {
+                        // Send and archive: the conversation comes back too.
+                        let unarchive = this.unsent.as_mut().and_then(|u| u.unarchive.take());
+                        if let Some(command) = unarchive {
+                            this.send(command, None, None, false, cx);
+                        }
                         this.reopen_unsent(window, cx);
                         this.show_snackbar("Sending undone.", None, cx);
                     }
@@ -1923,7 +1947,7 @@ impl MailWindow {
             return;
         }
         let width = (self.cards_width - SPLIT_GAP).max(1.0);
-        let dx = f32::from(event.position.x) - start_x;
+        let dx = unpx(event.position.x) - start_x;
         let share = (start_share - dx / width).clamp(0.25, 0.75);
         self.config.mail.reading_pane_share = share;
         cx.notify();
@@ -2050,10 +2074,8 @@ impl MailWindow {
                 .on_mouse_down(
                     MouseButton::Left,
                     cx.listener(|this, event: &gpui::MouseDownEvent, _, cx| {
-                        this.split_drag = Some((
-                            f32::from(event.position.x),
-                            this.config.mail.reading_pane_share,
-                        ));
+                        this.split_drag =
+                            Some((unpx(event.position.x), this.config.mail.reading_pane_share));
                         cx.stop_propagation();
                     }),
                 )
@@ -2102,6 +2124,8 @@ impl MailWindow {
 
 impl Render for MailWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        // Text without a size of its own follows Settings > Appearance > Scaling.
+        window.set_rem_size(px(16.0));
         self.chrome.sync_look(window, cx);
         if self.detached {
             let detached = self.render_detached(window, cx);

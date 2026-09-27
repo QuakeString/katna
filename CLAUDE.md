@@ -52,3 +52,7 @@ The toolchain is always the latest stable Rust (`rust-toolchain.toml`).
 - A change people will notice in Katna Mail appends a highlight to
   `apps/katna-mail/src/whats_new.rs` (next id; an animated WebP only for a
   major feature), so What's new shows it after the update.
+- Lengths in the GPUI crates use `katna_ui::px` and read GPUI's back with
+  `katna_ui::unpx`, never `gpui::px` or `f32::from(Pixels)`, so Settings >
+  Appearance > Scaling applies everywhere (`crates/katna-ui/src/scale.rs`;
+  clippy's `disallowed-methods` stops `gpui::px`).

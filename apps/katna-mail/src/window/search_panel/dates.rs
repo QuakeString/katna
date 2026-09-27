@@ -12,11 +12,13 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, Bounds, Context, Div, Entity, Focusable, FontWeight, MouseButton, Pixels,
-    Transformation, Window, anchored, deferred, div, point, prelude::*, px, radians, rgba, svg,
+    Transformation, Window, anchored, deferred, div, point, prelude::*, radians, rgba, svg,
 };
 use jiff::civil::{Date, Time};
 use jiff::tz::TimeZone;
 use katna_ui::TextInput;
+use katna_ui::px;
+use katna_ui::unpx;
 
 use super::{MailWindow, chip};
 use crate::theme::Theme;
@@ -234,11 +236,8 @@ enum Side {
 fn place(chip: Bounds<Pixels>, size: (f32, f32), viewport: (f32, f32)) -> (f32, f32, Side, f32) {
     let (w, h) = size;
     let (vw, vh) = viewport;
-    let (left, top) = (f32::from(chip.origin.x), f32::from(chip.origin.y));
-    let (right, bottom) = (
-        left + f32::from(chip.size.width),
-        top + f32::from(chip.size.height),
-    );
+    let (left, top) = (unpx(chip.origin.x), unpx(chip.origin.y));
+    let (right, bottom) = (left + unpx(chip.size.width), top + unpx(chip.size.height));
     let (cx, cy) = ((left + right) / 2.0, (top + bottom) / 2.0);
     let away = NOTCH + SPACE;
     let clamp = |v: f32, lo: f32, hi: f32| v.min(hi).max(lo);
@@ -388,7 +387,7 @@ impl MailWindow {
         let error = custom.error.map_or(0.0, |_| ERROR + GAP);
         let height = 2.0 * PAD + CHIPS + fields + calendar + BUTTONS + 3.0 * GAP + error;
         let viewport = window.viewport_size();
-        let (vw, vh) = (f32::from(viewport.width), f32::from(viewport.height));
+        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let (x, y, side, along) = place(chip_bounds, (WIDTH, height), (vw, vh));
 
         let span = custom.span;

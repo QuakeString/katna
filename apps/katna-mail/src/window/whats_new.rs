@@ -12,11 +12,13 @@ use std::sync::Arc;
 
 use gpui::{
     AnyElement, Context, FocusHandle, FontWeight, ImageSource, KeyDownEvent, MouseButton,
-    ObjectFit, RenderImage, Task, Window, div, img, prelude::*, px, rgba,
+    ObjectFit, RenderImage, Task, Window, div, img, prelude::*, rgba,
 };
 use katna_preview::image::codecs::webp::WebPDecoder;
 use katna_preview::image::{AnimationDecoder, Frame};
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
+use katna_ui::unpx;
 
 use super::add_account::text_button;
 use super::{MailWindow, PANEL_RADIUS};
@@ -203,7 +205,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let dialog = self.whats_new.as_ref()?;
         let phone = self.layout.shape.is_phone();
-        let vw = f32::from(window.viewport_size().width);
+        let vw = unpx(window.viewport_size().width);
         let width = if phone { vw } else { WIDTH.min(vw - 48.0) };
         // Room for the animations: the card less its padding.
         let inner = width - 48.0;

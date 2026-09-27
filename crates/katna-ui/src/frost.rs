@@ -6,7 +6,8 @@
 //! colour is its marker. That renderer also draws drop shadows only
 //! outside their element, so a frosted panel keeps its usual box shadow.
 
-use gpui::{BorderStyle, Hsla, IntoElement, Pixels, Styled, canvas, px, quad};
+use crate::scale::px;
+use gpui::{BorderStyle, Hsla, IntoElement, Pixels, Styled, canvas, quad};
 
 /// Whether the renderer can blur behind a panel. False before the first
 /// frame is drawn and where the window's surface cannot be copied from.
