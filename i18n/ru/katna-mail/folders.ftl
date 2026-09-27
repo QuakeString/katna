@@ -25,6 +25,7 @@ storage-used-detail = { $address }: занято { $used } из { $total }
 
 folder-inbox = Входящие
 folder-starred = Помеченные
+folder-snoozed = Отложенные
 folder-unread = Непрочитанные
 folder-important = Важные
 folder-drafts = Черновики

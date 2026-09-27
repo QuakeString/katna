@@ -8,6 +8,9 @@ notify-new-emails = 新着メール { $count } 件
 notify-and-more = ほか { $count } 件
 notify-no-subject = （件名なし）
 notify-unknown-sender = 不明な送信者
+notify-snooze-back = スヌーズから戻りました
+notify-no-reply = まだ返信がありません
+notify-no-reply-to = 「{ $subject }」に誰も返信していません。
 
 ## Its buttons
 

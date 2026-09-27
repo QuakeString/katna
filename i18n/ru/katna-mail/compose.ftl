@@ -94,6 +94,7 @@ send-check-add-subject = Добавить тему
 send-check-send-anyway = Всё равно отправить
 recipient-not-valid = Недопустимый адрес электронной почты
 recipient-show-address = Показать адрес
+recipient-remove = Удалить
 recipient-bad-title = Проверьте адрес
 recipient-bad-text = «{ $address }» — недопустимый адрес электронной почты. Исправьте или удалите его перед отправкой.
 recipient-bad-fix = Исправить

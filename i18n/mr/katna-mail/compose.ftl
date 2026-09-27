@@ -92,6 +92,7 @@ send-check-add-subject = विषय जोडा
 send-check-send-anyway = तरीही पाठवा
 recipient-not-valid = वैध ईमेल पत्ता नाही
 recipient-show-address = पत्ता दाखवा
+recipient-remove = काढा
 recipient-bad-title = पत्ता तपासा
 recipient-bad-text = “{ $address }” हा वैध ईमेल पत्ता नाही. पाठवण्यापूर्वी तो दुरुस्त करा किंवा काढून टाका.
 recipient-bad-fix = दुरुस्त करा

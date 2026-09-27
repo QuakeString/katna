@@ -28,6 +28,8 @@ list-move-to = Matsar zuwa
 list-archive = Adana a ma'ajiya
 list-spam = Rahoto saƙon banza
 list-delete = Share
+list-snooze = Jinkirta
+list-unsnooze = Soke jinkiri
 list-newer = Sababbi
 list-older = Tsofaffi
 list-range = { $first }–{ $last } cikin { $total }
@@ -348,6 +350,7 @@ row-mark-important = Yi alama muhimmi
 row-pinned = An maƙala a sama
 row-pin = Maƙala a sama
 row-unpin = Cire maƙalawa
+row-snoozed-until = An jinkirta har zuwa { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = Yi alama muhimmi
 menu-not-important = Yi alama ba muhimmi ba
 menu-pin = Maƙala a sama
 menu-unpin = Cire maƙalawa
+menu-snooze = Jinkirta
+menu-unsnooze = Soke jinkiri
 menu-print-all = Buga duka
 menu-new-window = Buɗe a sabuwar taga
 menu-move-to = Matsar zuwa
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] An cire maƙalawar saƙo.
        *[other] An cire maƙalawar saƙonni { $count }.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] An jinkirta tattaunawa har zuwa { $when }.
+       *[other] An jinkirta tattaunawa { $count } har zuwa { $when }.
+    }
+   *[message] { $count ->
+        [one] An jinkirta saƙo har zuwa { $when }.
+       *[other] An jinkirta saƙonni { $count } har zuwa { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Tattaunawa ta dawo cikin akwatin saƙo.
+       *[other] Tattaunawa { $count } sun dawo cikin akwatin saƙo.
+    }
+   *[message] { $count ->
+        [one] Saƙo ya dawo cikin akwatin saƙo.
+       *[other] Saƙonni { $count } sun dawo cikin akwatin saƙo.
     }
 }
 toast-spam = { $kind ->

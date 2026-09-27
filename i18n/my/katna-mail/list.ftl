@@ -28,6 +28,8 @@ list-move-to = သို့ ရွှေ့ရန်
 list-archive = မှတ်တမ်းသိမ်းရန်
 list-spam = စပမ်းအဖြစ် တိုင်ကြားရန်
 list-delete = ဖျက်ရန်
+list-snooze = ခဏဆိုင်းရန်
+list-unsnooze = ခဏဆိုင်းခြင်း ပယ်ရန်
 list-newer = ပိုသစ်သော
 list-older = ပိုဟောင်းသော
 list-range = { $total } ခုအနက် { $first }–{ $last }
@@ -198,6 +200,7 @@ row-mark-important = အရေးကြီးအဖြစ် မှတ်ရန�
 row-pinned = ထိပ်တွင် ပင်ထိုးထားသည်
 row-pin = ထိပ်တွင် ပင်ထိုးရန်
 row-unpin = ပင်ဖြုတ်ရန်
+row-snoozed-until = { $when } အထိ ခဏဆိုင်းထားသည်
 
 ## Mail list: More menu and right-click menu
 
@@ -219,6 +222,8 @@ menu-important = အရေးကြီးအဖြစ် မှတ်ရန်
 menu-not-important = အရေးမကြီးအဖြစ် မှတ်ရန်
 menu-pin = ထိပ်တွင် ပင်ထိုးရန်
 menu-unpin = ပင်ဖြုတ်ရန်
+menu-snooze = ခဏဆိုင်းရန်
+menu-unsnooze = ခဏဆိုင်းခြင်း ပယ်ရန်
 menu-print-all = အားလုံးကို ပုံနှိပ်ရန်
 menu-new-window = ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်
 menu-move-to = သို့ ရွှေ့ရန်
@@ -262,6 +267,14 @@ toast-pinned = { $kind ->
 toast-unpinned = { $kind ->
     [conversation] စကားဝိုင်း { $count } ခုကို ပင်ဖြုတ်လိုက်ပြီ။
    *[message] မက်ဆေ့ဂျ် { $count } စောင်ကို ပင်ဖြုတ်လိုက်ပြီ။
+}
+toast-snoozed = { $kind ->
+    [conversation] စကားဝိုင်း { $count } ခုကို { $when } အထိ ခဏဆိုင်းလိုက်ပြီ။
+   *[message] မက်ဆေ့ဂျ် { $count } စောင်ကို { $when } အထိ ခဏဆိုင်းလိုက်ပြီ။
+}
+toast-unsnoozed = { $kind ->
+    [conversation] စကားဝိုင်း { $count } ခု ဝင်စာသို့ ပြန်ရောက်လာပြီ။
+   *[message] မက်ဆေ့ဂျ် { $count } စောင် ဝင်စာသို့ ပြန်ရောက်လာပြီ။
 }
 toast-spam = { $kind ->
     [conversation] စကားဝိုင်း { $count } ခုကို စပမ်းအဖြစ် တိုင်ကြားလိုက်ပြီ။

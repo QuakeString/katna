@@ -11,6 +11,8 @@ schedule-scheduled-messages = 예약된 메일({ $count })
 
 schedule-title = 예약 전송
 schedule-zone-note = { $zone }. 앱이 닫혀 있어도 Katna가 그 시간에 보냅니다.
+schedule-zone-note-server = { $zone }. 이 컴퓨터가 꺼져 있어도 메일 서버가 그 시간에 보냅니다. 실행취소가 사라진 뒤에는 취소할 수 없습니다.
+schedule-zone-note-local = { $zone }. 이 컴퓨터가 켜져 있으면 Katna가 그 시간에 보냅니다.
 schedule-local-time = 현지 시간
 schedule-this-morning = 오늘 오전
 schedule-this-afternoon = 오늘 오후
@@ -28,6 +30,7 @@ schedule-no-such-time = 이 지역에는 해당 시간이 없습니다.
 
 schedule-no-subject = (제목 없음)
 schedule-sends-at = { $when }에 전송
+schedule-server-sends-at = { $when }에 메일 서버가 전송
 schedule-cancel-send = 전송 취소
 schedule-nothing = 예약된 메일이 없습니다.
 schedule-close = 닫기

@@ -834,6 +834,19 @@ impl MailBackend for ImapBackend {
             .unwrap_or_default())
     }
 
+    async fn copy_messages(&mut self, uids: &[u32], folder: &str) -> Result<Vec<(u32, u32)>> {
+        if uids.is_empty() {
+            return Ok(Vec::new());
+        }
+        let set = SequenceSet::try_from(uid_set(uids).as_str()).map_err(protocol)?;
+        let mailbox = Mailbox::try_from(folder.to_owned()).map_err(protocol)?;
+        let opts = ImapMessageCopyOptions { uid: true };
+        let copied = self.run(ImapMessageCopy::new(set, mailbox, opts)).await?;
+        Ok(copied
+            .map(|(_, from, to)| from.into_iter().zip(to).collect())
+            .unwrap_or_default())
+    }
+
     async fn expunge(&mut self, uids: &[u32]) -> Result<()> {
         if uids.is_empty() {
             return Ok(());

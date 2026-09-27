@@ -21,6 +21,10 @@ pub enum Command {
     Archive(Vec<MessageId>),
     Delete(Vec<MessageId>),
     Move(Vec<MessageId>, FolderId),
+    /// Snoozes messages until then (Unix seconds).
+    Snooze(Vec<MessageId>, i64),
+    /// Brings snoozed messages back now.
+    Unsnooze(Vec<MessageId>),
     SyncNow,
     /// Takes back the queued message with this outbox ID.
     UndoSend(i64),
@@ -59,6 +63,10 @@ impl Command {
             Self::Archive(ids) if ids.len() > size => split(ids, &Self::Archive),
             Self::Delete(ids) if ids.len() > size => split(ids, &Self::Delete),
             Self::Move(ids, to) if ids.len() > size => split(ids, &|ids| Self::Move(ids, *to)),
+            Self::Snooze(ids, until) if ids.len() > size => {
+                split(ids, &|ids| Self::Snooze(ids, *until))
+            }
+            Self::Unsnooze(ids) if ids.len() > size => split(ids, &Self::Unsnooze),
             _ => vec![self.clone()],
         }
     }
@@ -83,6 +91,9 @@ impl Command {
             Self::Important(_, false) => tr!("toast-not-important", count = count, kind = kind),
             Self::Pin(_, true) => tr!("toast-pinned", count = count, kind = kind),
             Self::Pin(_, false) => tr!("toast-unpinned", count = count, kind = kind),
+            Self::Unsnooze(_) => tr!("toast-unsnoozed", count = count, kind = kind),
+            // The window says until when.
+            Self::Snooze(..) => return None,
             Self::MarkRead(..)
             | Self::SyncNow
             | Self::UndoSend(_)
@@ -162,6 +173,8 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::Archive(messages) => pim.archive_messages(&ids(messages)).await,
         Command::Delete(messages) => pim.delete_messages(&ids(messages)).await,
         Command::Move(messages, folder) => pim.move_messages(&ids(messages), folder.0).await,
+        Command::Snooze(messages, until) => pim.snooze(&ids(messages), *until).await,
+        Command::Unsnooze(messages) => pim.unsnooze(&ids(messages)).await,
         Command::SyncNow => pim.sync_now(0).await,
         Command::ReloadConfig => pim.reload_config().await,
         Command::UndoSend(id) => match pim.undo_send(*id).await {
@@ -217,6 +230,17 @@ pub async fn queue_send(
         .await
         .map_err(|err| describe(&err))?;
     pim.queue_send(account, message, delay)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Reminds the user `after` seconds after outbox entry `id` goes out if
+/// nobody replied by then.
+pub async fn set_follow_up(connection: &Connection, id: i64, after: i64) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.set_follow_up(id, after)
         .await
         .map_err(|err| describe(&err))
 }

@@ -28,6 +28,8 @@ list-move-to = Verschieben nach
 list-archive = Archivieren
 list-spam = Spam melden
 list-delete = Löschen
+list-snooze = Zurückstellen
+list-unsnooze = Nicht mehr zurückstellen
 list-newer = Neuer
 list-older = Älter
 list-range = { $first }–{ $last } von { $total }
@@ -348,6 +350,7 @@ row-mark-important = Als wichtig markieren
 row-pinned = Oben angeheftet
 row-pin = Oben anheften
 row-unpin = Nicht mehr anheften
+row-snoozed-until = Zurückgestellt bis { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = Als wichtig markieren
 menu-not-important = Als nicht wichtig markieren
 menu-pin = Oben anheften
 menu-unpin = Nicht mehr anheften
+menu-snooze = Zurückstellen
+menu-unsnooze = Nicht mehr zurückstellen
 menu-print-all = Alle drucken
 menu-new-window = In neuem Fenster öffnen
 menu-move-to = Verschieben nach
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] Nachricht nicht mehr angeheftet.
        *[other] { $count } Nachrichten nicht mehr angeheftet.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation bis { $when } zurückgestellt.
+       *[other] { $count } Konversationen bis { $when } zurückgestellt.
+    }
+   *[message] { $count ->
+        [one] Nachricht bis { $when } zurückgestellt.
+       *[other] { $count } Nachrichten bis { $when } zurückgestellt.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation wieder im Posteingang.
+       *[other] { $count } Konversationen wieder im Posteingang.
+    }
+   *[message] { $count ->
+        [one] Nachricht wieder im Posteingang.
+       *[other] { $count } Nachrichten wieder im Posteingang.
     }
 }
 toast-spam = { $kind ->

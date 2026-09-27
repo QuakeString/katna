@@ -589,3 +589,57 @@ kubofya mara moja. Andika {first name}, {name} au {my name} na Katna
 itavijaza kwa kila mpokeaji. Hariri, badilisha jina au futa violezo
 katika Mipangilio > Tunga.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Barua zilizoratibiwa hutumwa kompyuta yako ikiwa imezimwa"
+text = """
+Seva yako ya barua inapoweza kushikilia barua hadi wakati uliowekwa, kama
+Stalwart inavyoweza, Ratibu kutuma sasa huikabidhi ujumbe baada ya Tendua
+kuondoka, ili utumwe kwa wakati hata kompyuta hii ikiwa imezimwa. Menyu
+ya ratiba inaonyesha kama seva yako ya barua au Katna ndiyo itakayoutuma.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Kuelekeza kwa wepesi zaidi"
+text = """
+Mstari ulio chini ya kielekezi katika orodha ya barua sasa huinuka kwa
+kivuli hafifu, kama katika Gmail, badala ya ukanda mweusi chini yake.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Buruta anwani kati ya Kwa, Nakala na Nakala fiche"
+text = """
+Buruta kipande cha anwani hadi sehemu nyingine ili kukihamisha; Nakala
+na Nakala fiche hufunguka unapoburuta, hata zikiwa zimefichwa. Kuelekeza
+kwenye kipande huonyesha x inayokiondoa.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Akaunti ya Katna"
+text = """
+Mipangilio > Akaunti ya Katna hukuwezesha kufungua akaunti kwenye seva
+ya Katna yenyewe, yenye nenosiri lake, kamwe si nenosiri la barua.
+Vipengele vya mtandaoni vya Katna, kama stakabadhi za kusoma na
+ufuatiliaji wa viungo, vitaihitaji. Unaweza kuona kompyuta zilizoingia
+na kutoa yoyote kati yake.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Rudi pale ulipokuwa"
+text = """
+Kufunga Katna Mail na kuifungua tena hurudisha programu, folda na
+kichupo cha kikasha ulichokuwa umefungua, folda ulizokuwa umezipanua na
+iwapo kidirisha cha folda kilikuwa kimekunjwa. Kuondoka Katna kutoka
+trei ya mfumo huianzisha upya kabisa.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Ahirisha na vikumbusho vya majibu"
+text = """
+Ahirisha mazungumzo kwa aikoni ya saa kwenye mstari wake au kutoka
+kwenye menyu ya kubofya kulia: yanasubiri kwenye folda ya
+Zilizoahirishwa na kurudi kwenye Kikasha, yakiwa hayajasomwa, wakati
+uliouchagua. Unapotuma, mshale ulio kando ya Tuma unaweza kukukumbusha
+ikiwa hakuna atakayejibu ndani ya siku 1, 3 au 7. Vyote hufanya kazi
+kompyuta yako ikiwa imewashwa, na hufidia vilivyokosa baada ya kuamka.
+"""

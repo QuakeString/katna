@@ -590,3 +590,57 @@ con un clic. Escribe {first name}, {name} o {my name} y Katna los rellena
 para cada destinatario. Edita, cambia de nombre o elimina plantillas en
 Ajustes > Redacción.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "El correo programado sale con el ordenador apagado"
+text = """
+Cuando tu servidor de correo puede retener el correo hasta una hora
+fijada, como hace Stalwart, Programar envío ahora le entrega el mensaje en
+cuanto desaparece Deshacer, así que sale a su hora aunque este ordenador
+esté apagado. El menú de programación indica si lo enviará tu servidor de
+correo o Katna.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Un resaltado más ligero"
+text = """
+La línea bajo el puntero en la lista de correos ahora se eleva con una
+sombra tenue, como en Gmail, en lugar de una franja oscura debajo.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Arrastra direcciones entre Para, Cc y Cco"
+text = """
+Arrastra la ficha de una dirección a otro campo para moverla; Cc y Cco se
+abren mientras arrastras, aunque estén ocultos. Al señalar una ficha
+aparece una x que la quita.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Cuenta de Katna"
+text = """
+Ajustes > Cuenta de Katna te permite crear una cuenta en el propio
+servidor de Katna, con su propia contraseña, nunca la de tu correo. Las
+funciones en línea de Katna, como las confirmaciones de lectura y el
+seguimiento de enlaces, la necesitarán. Puedes ver los ordenadores con
+sesión iniciada y cerrar la sesión en cualquiera de ellos.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "De vuelta donde estabas"
+text = """
+Al cerrar Katna Mail y volver a abrirlo, recupera la aplicación, la
+carpeta y la pestaña de Recibidos que tenías abiertas, las carpetas que
+habías desplegado y si el panel de carpetas estaba plegado. Salir de Katna
+desde la bandeja del sistema lo hace empezar de cero.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Posponer y recordatorios de respuesta"
+text = """
+Pospón una conversación con el reloj de su línea o desde el menú del clic
+derecho: espera en la carpeta Pospuestos y vuelve a Recibidos, sin leer,
+a la hora que elegiste. Al enviar, la flecha junto a Enviar puede
+recordártelo si nadie responde en 1, 3 o 7 días. Ambas funciones van
+mientras el ordenador está encendido y se ponen al día cuando se reactiva.
+"""

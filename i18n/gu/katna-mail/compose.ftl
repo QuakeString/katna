@@ -92,6 +92,7 @@ send-check-add-subject = વિષય ઉમેરો
 send-check-send-anyway = તો પણ મોકલો
 recipient-not-valid = માન્ય ઇમેઇલ સરનામું નથી
 recipient-show-address = સરનામું બતાવો
+recipient-remove = કાઢી નાખો
 recipient-bad-title = સરનામું તપાસો
 recipient-bad-text = “{ $address }” માન્ય ઇમેઇલ સરનામું નથી. મોકલતા પહેલાં તેને સુધારો અથવા કાઢી નાખો.
 recipient-bad-fix = સુધારો

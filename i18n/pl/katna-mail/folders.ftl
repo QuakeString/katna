@@ -25,6 +25,7 @@ storage-used-detail = { $address }: wykorzystano { $used } z { $total }
 
 folder-inbox = Odebrane
 folder-starred = Oznaczone gwiazdką
+folder-snoozed = Odłożone
 folder-unread = Nieprzeczytane
 folder-important = Ważne
 folder-drafts = Wersje robocze

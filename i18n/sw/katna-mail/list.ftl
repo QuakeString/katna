@@ -28,6 +28,8 @@ list-move-to = Hamishia
 list-archive = Weka kwenye kumbukumbu
 list-spam = Ripoti taka
 list-delete = Futa
+list-snooze = Ahirisha
+list-unsnooze = Acha kuahirisha
 list-newer = Mpya zaidi
 list-older = Za zamani zaidi
 list-range = { $first }–{ $last } kati ya { $total }
@@ -348,6 +350,7 @@ row-mark-important = Tia alama kuwa muhimu
 row-pinned = Imebandikwa juu
 row-pin = Bandika juu
 row-unpin = Bandua
+row-snoozed-until = Imeahirishwa hadi { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = Tia alama kuwa muhimu
 menu-not-important = Tia alama kuwa si muhimu
 menu-pin = Bandika juu
 menu-unpin = Bandua
+menu-snooze = Ahirisha
+menu-unsnooze = Acha kuahirisha
 menu-print-all = Chapisha zote
 menu-new-window = Fungua katika dirisha jipya
 menu-move-to = Hamishia
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] Ujumbe umebanduliwa.
        *[other] Jumbe { $count } zimebanduliwa.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Mazungumzo yameahirishwa hadi { $when }.
+       *[other] Mazungumzo { $count } yameahirishwa hadi { $when }.
+    }
+   *[message] { $count ->
+        [one] Ujumbe umeahirishwa hadi { $when }.
+       *[other] Jumbe { $count } zimeahirishwa hadi { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Mazungumzo yamerudi kwenye Kikasha.
+       *[other] Mazungumzo { $count } yamerudi kwenye Kikasha.
+    }
+   *[message] { $count ->
+        [one] Ujumbe umerudi kwenye Kikasha.
+       *[other] Jumbe { $count } zimerudi kwenye Kikasha.
     }
 }
 toast-spam = { $kind ->

@@ -576,3 +576,56 @@ pẹ̀lú títẹ̀ kan. Kọ {first name}, {name} tàbí {my name}, Katna yóò
 kún wọn fún olùgbà kọ̀ọ̀kan. Ṣàtúnṣe, tún orúkọ sọ tàbí pa àwọn àwòṣe
 rẹ́ nínú Ètò > Kíkọ̀wé.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Lẹ́tà tí a ṣètò ń lọ bí kọ̀ǹpútà rẹ tilẹ̀ wà ní pípa"
+text = """
+Nígbà tí sáfà lẹ́tà rẹ bá lè di lẹ́tà mú títí di àkókò kan, bí Stalwart
+ṣe lè ṣe, Ṣètò fífiránṣẹ́ yóò fi ìfiránṣẹ́ náà lé e lọ́wọ́ báyìí lẹ́yìn tí
+Dá padà bá ti lọ, kí ó lè lọ lásìkò bí kọ̀ǹpútà yìí bá tilẹ̀ wà ní pípa.
+Mẹ́nù ìṣètò máa ń sọ bóyá sáfà lẹ́tà rẹ ni tàbí Katna ni yóò fi ránṣẹ́.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Ìtọ́ka tó fúyẹ́ jù"
+text = """
+Ìlà tó wà lábẹ́ atọ́ka nínú àkójọ lẹ́tà ti ń gbéra sókè báyìí pẹ̀lú
+òjìji bàìbàì, bí ó ṣe rí nínú Gmail, dípò ẹ̀gbẹ́ dúdú kan nísàlẹ̀ rẹ̀.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Fa àwọn àdírẹ́sì láàrin Sí, Ẹ̀dà àti Ẹ̀dà àṣírí"
+text = """
+Fa ṣíìpù àdírẹ́sì kan lọ sí pápá mìíràn láti gbé e lọ; Ẹ̀dà àti Ẹ̀dà
+àṣírí máa ń ṣí nígbà tí o bá ń fà á, kódà bí wọ́n bá farapamọ́. Títọ́ka
+sí ṣíìpù kan máa ń fi x kan hàn tí ó ń yọ ọ́ kúrò.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Àkáǹtì Katna"
+text = """
+Ètò > Àkáǹtì Katna ń jẹ́ kí o ṣẹ̀dá àkáǹtì lórí sáfà Katna fúnra rẹ̀,
+pẹ̀lú ọ̀rọ̀ aṣínà tirẹ̀, kì í ṣe ọ̀rọ̀ aṣínà lẹ́tà láé. Àwọn ẹ̀yà orí
+ayélujára Katna, bí ìwé-ẹ̀rí kíkà àti títọpa ìjápọ̀, máa nílò rẹ̀. O lè
+rí àwọn kọ̀ǹpútà tó ti wọlé, kí o sì mú èyíkéyìí nínú wọn jáde.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Padà sí ibi tí o wà"
+text = """
+Pípa Katna Mail dé àti ṣíṣí i padà máa ń dá ohun èlò, fódà àti táàbù
+àpótí-ìwọlé tí o ṣí padà, pẹ̀lú àwọn fódà tí o ti ṣí sílẹ̀ àti bóyá
+pánẹ́ẹ̀lì fódà ti ká. Jíjáde kúrò nínú Katna láti inú tìréè máa ń bẹ̀rẹ̀
+rẹ̀ lọ́tun.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Sún síwájú àti ìránnilétí èsì"
+text = """
+Sún ìjíròrò síwájú pẹ̀lú aago tó wà lórí ìlà rẹ̀ tàbí láti inú mẹ́nù
+títẹ̀ apá ọ̀tún: ó máa dúró nínú fódà Tí a sún síwájú, á sì padà sí
+Àpótí-ìwọlé, láìkà, ní àkókò tí o yàn. Nígbà tí o bá ń fi ránṣẹ́, ọfà
+tó wà lẹ́gbẹ̀ẹ́ Fi ránṣẹ́ lè rán ọ létí tí kò bá sí ẹni tó fèsì láàárín
+ọjọ́ 1, 3 tàbí 7. Méjèèjì ń ṣiṣẹ́ nígbà tí kọ̀ǹpútà rẹ bá wà ní títàn,
+wọ́n sì máa ń ṣe ohun tí wọ́n pàdánù lẹ́yìn tí ó bá jí.
+"""

@@ -20,6 +20,7 @@ storage-used-detail = { $address }: ໃຊ້ໄປ { $used } ຈາກ { $total
 
 folder-inbox = ກ່ອງຈົດໝາຍເຂົ້າ
 folder-starred = ຕິດດາວແລ້ວ
+folder-snoozed = ເລື່ອນເວລາໄວ້
 folder-unread = ຍັງບໍ່ໄດ້ອ່ານ
 folder-important = ສຳຄັນ
 folder-drafts = ສະບັບຮ່າງ

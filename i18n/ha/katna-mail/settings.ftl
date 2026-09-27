@@ -7,6 +7,7 @@
 settings-tab-general = Gabaɗaya
 settings-tab-inbox = Akwatin saƙo
 settings-tab-accounts = Asusu
+settings-tab-katna-account = Asusun Katna
 settings-tab-subscriptions = Rajista
 settings-tab-appearance = Bayyanar
 settings-tab-shortcuts = Gajerun hanyoyi

@@ -32,6 +32,8 @@ list-move-to = Déplacer vers
 list-archive = Archiver
 list-spam = Signaler comme spam
 list-delete = Supprimer
+list-snooze = Mettre en attente
+list-unsnooze = Annuler la mise en attente
 list-newer = Plus récents
 list-older = Plus anciens
 list-range = { $first }–{ $last } sur { $total }
@@ -402,6 +404,7 @@ row-mark-important = Marquer comme important
 row-pinned = Épinglé en haut
 row-pin = Épingler en haut
 row-unpin = Désépingler
+row-snoozed-until = En attente jusqu’à { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -423,6 +426,8 @@ menu-important = Marquer comme important
 menu-not-important = Marquer comme non important
 menu-pin = Épingler en haut
 menu-unpin = Désépingler
+menu-snooze = Mettre en attente
+menu-unsnooze = Annuler la mise en attente
 menu-print-all = Tout imprimer
 menu-new-window = Ouvrir dans une nouvelle fenêtre
 menu-move-to = Déplacer vers
@@ -537,6 +542,30 @@ toast-unpinned = { $kind ->
         [one] Message désépinglé.
         [many] { $count } de messages désépinglés.
        *[other] { $count } messages désépinglés.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation mise en attente jusqu’à { $when }.
+        [many] { $count } de conversations mises en attente jusqu’à { $when }.
+       *[other] { $count } conversations mises en attente jusqu’à { $when }.
+    }
+   *[message] { $count ->
+        [one] Message mis en attente jusqu’à { $when }.
+        [many] { $count } de messages mis en attente jusqu’à { $when }.
+       *[other] { $count } messages mis en attente jusqu’à { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation de retour dans la boîte de réception.
+        [many] { $count } de conversations de retour dans la boîte de réception.
+       *[other] { $count } conversations de retour dans la boîte de réception.
+    }
+   *[message] { $count ->
+        [one] Message de retour dans la boîte de réception.
+        [many] { $count } de messages de retour dans la boîte de réception.
+       *[other] { $count } messages de retour dans la boîte de réception.
     }
 }
 toast-spam = { $kind ->

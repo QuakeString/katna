@@ -759,7 +759,58 @@ impl MailWindow {
                     })),
                 )
             })
+            .child(menu_divider(th))
+            .child(self.render_follow_up_choice(th, cx))
             .into_any_element()
+    }
+
+    /// "Remind me if no reply" in the send menu: when to bring the
+    /// conversation back if nobody answers (`docs/ARCHITECTURE.md` §10.1).
+    fn render_follow_up_choice(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Div {
+        const DAY: u32 = 24 * 60 * 60;
+        let chosen = self.compose.as_ref().map_or(0, |c| c.follow_up);
+        let choices = [
+            (0, tr!("follow-up-off")),
+            (DAY, tr!("follow-up-days", days = 1)),
+            (3 * DAY, tr!("follow-up-days", days = 3)),
+            (7 * DAY, tr!("follow-up-days", days = 7)),
+        ];
+        div()
+            .child(
+                div()
+                    .px(px(16.0))
+                    .py(px(6.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(14.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(icon("reply", th.text_dim, 20.0))
+                    .child(tr!("follow-up-title")),
+            )
+            .children(choices.into_iter().map(|(after, label)| {
+                div()
+                    .id(("compose-follow-up", after))
+                    .h(px(32.0))
+                    .pl(px(50.0))
+                    .pr(px(16.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .child(div().flex_1().child(label))
+                    .when(after == chosen, |d| {
+                        d.child(icon("check", th.text_dim, 18.0))
+                    })
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        if let Some(c) = &mut this.compose {
+                            c.follow_up = after;
+                            c.popup = None;
+                        }
+                        cx.notify();
+                    }))
+            }))
     }
 
     fn render_schedule_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {

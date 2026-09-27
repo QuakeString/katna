@@ -89,6 +89,7 @@ send-check-add-subject = Thêm tiêu đề
 send-check-send-anyway = Vẫn gửi
 recipient-not-valid = Không phải địa chỉ email hợp lệ
 recipient-show-address = Hiện địa chỉ
+recipient-remove = Xóa
 recipient-bad-title = Kiểm tra địa chỉ
 recipient-bad-text = “{ $address }” không phải là địa chỉ email hợp lệ. Hãy sửa hoặc xóa nó trước khi gửi.
 recipient-bad-fix = Sửa

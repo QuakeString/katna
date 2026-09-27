@@ -11,6 +11,8 @@ schedule-scheduled-messages = திட்டமிடப்பட்ட மெ�
 
 schedule-title = அனுப்புவதைத் திட்டமிடு
 schedule-zone-note = { $zone }. ஆப் மூடப்பட்டிருந்தாலும் Katna அந்த நேரத்தில் அனுப்பும்.
+schedule-zone-note-server = { $zone }. இந்தக் கணினி அணைக்கப்பட்டிருந்தாலும் உங்கள் அஞ்சல் சர்வர் அந்த நேரத்தில் அனுப்பும். செயல்தவிர் மறைந்த பிறகு அதை ரத்துசெய்ய முடியாது.
+schedule-zone-note-local = { $zone }. இந்தக் கணினி இயங்கிக்கொண்டிருக்கும்போது Katna அந்த நேரத்தில் அனுப்பும்.
 schedule-local-time = உள்ளூர் நேரம்
 schedule-this-morning = இன்று காலை
 schedule-this-afternoon = இன்று மதியம்
@@ -28,6 +30,7 @@ schedule-no-such-time = அந்த நேரம் இங்கே இல்�
 
 schedule-no-subject = (பொருள் இல்லை)
 schedule-sends-at = { $when } அன்று அனுப்பப்படும்
+schedule-server-sends-at = உங்கள் அஞ்சல் சர்வர் இதை { $when } அன்று அனுப்பும்
 schedule-cancel-send = அனுப்புவதை ரத்துசெய்
 schedule-nothing = எதுவும் திட்டமிடப்படவில்லை.
 schedule-close = மூடு

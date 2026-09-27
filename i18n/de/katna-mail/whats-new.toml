@@ -594,3 +594,59 @@ Klick in jede neue E-Mail oder Antwort ein. Schreiben Sie {first name},
 Vorlagen bearbeiten, umbenennen oder löschen Sie unter Einstellungen >
 Verfassen.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Geplante E-Mails gehen auch bei ausgeschaltetem Computer raus"
+text = """
+Wenn Ihr Mailserver E-Mails bis zu einem festgelegten Zeitpunkt
+zurückhalten kann, wie Stalwart, übergibt Senden planen die Nachricht
+jetzt an ihn, sobald Rückgängig verschwunden ist. So geht sie pünktlich
+hinaus, auch wenn dieser Computer aus ist. Das Menü zum Planen zeigt, ob
+Ihr Mailserver oder Katna sie sendet.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Eine leichtere Hervorhebung"
+text = """
+Die Zeile unter dem Mauszeiger in der E-Mail-Liste hebt sich jetzt mit
+einem zarten Schatten ab, wie in Gmail, statt mit einem dunklen Band
+darunter.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Adressen zwischen An, Cc und Bcc ziehen"
+text = """
+Ziehen Sie einen Adress-Chip in ein anderes Feld, um ihn zu verschieben;
+Cc und Bcc öffnen sich beim Ziehen, auch wenn sie ausgeblendet sind.
+Zeigen Sie auf einen Chip, erscheint ein x, das ihn entfernt.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Katna-Konto"
+text = """
+Unter Einstellungen > Katna-Konto erstellen Sie ein Konto auf dem eigenen
+Server von Katna, mit eigenem Passwort, nie einem E-Mail-Passwort. Die
+Online-Funktionen von Katna, etwa Lesebestätigungen und Link-Tracking,
+werden es brauchen. Sie sehen die angemeldeten Computer und können jeden
+davon abmelden.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Wieder da, wo Sie waren"
+text = """
+Wenn Sie Katna Mail schließen und wieder öffnen, kommen die App, der
+Ordner und der Posteingangs-Tab zurück, die Sie offen hatten, dazu die
+aufgeklappten Ordner und ob der Ordnerbereich eingeklappt war. Wird Katna
+über das Symbol im Systemabschnitt beendet, startet es frisch.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Zurückstellen und Erinnerungen an Antworten"
+text = """
+Stellen Sie eine Konversation mit der Uhr in ihrer Zeile oder über das
+Kontextmenü zurück: Sie wartet im Ordner Zurückgestellt und kommt zur
+gewählten Zeit ungelesen in den Posteingang zurück. Beim Senden kann Sie
+der Pfeil neben Senden erinnern, wenn innerhalb von 1, 3 oder 7 Tagen
+niemand antwortet. Beides funktioniert, solange Ihr Computer an ist, und
+holt Verpasstes nach, wenn er aufwacht.
+"""

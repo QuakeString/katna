@@ -20,6 +20,7 @@ storage-used-detail = { $address }: ejirila { $used } nke { $total }
 
 folder-inbox = Igbe ozi mbata
 folder-starred = Nwere kpakpando
+folder-snoozed = Ndị e yigharịrị
 folder-unread = A gụghị
 folder-important = Dị mkpa
 folder-drafts = Ndebiri

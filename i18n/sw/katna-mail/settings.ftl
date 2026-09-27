@@ -7,6 +7,7 @@
 settings-tab-general = Jumla
 settings-tab-inbox = Kikasha
 settings-tab-accounts = Akaunti
+settings-tab-katna-account = Akaunti ya Katna
 settings-tab-subscriptions = Usajili
 settings-tab-appearance = Mwonekano
 settings-tab-shortcuts = Njia za mkato

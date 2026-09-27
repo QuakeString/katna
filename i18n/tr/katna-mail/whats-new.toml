@@ -585,3 +585,58 @@ yanıta ekleyin. {first name}, {name} veya {my name} yazın, Katna bunları
 her alıcı için doldursun. Şablonları Ayarlar > Oluşturma bölümünde
 düzenleyin, yeniden adlandırın ya da silin.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Planlanan postalar bilgisayarınız kapalıyken de gider"
+text = """
+Posta sunucunuz, Stalwart'ın yapabildiği gibi postayı belirli bir saate
+kadar bekletebiliyorsa, Gönderimi planla artık Geri al kaybolunca iletiyi
+ona teslim eder; böylece ileti, bu bilgisayar kapalı olsa bile zamanında
+gider. Planlama menüsü, iletiyi posta sunucunuzun mu yoksa Katna'nın mı
+göndereceğini söyler.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Daha hafif bir vurgulama"
+text = """
+Posta listesinde işaretçinin altındaki satır artık altında koyu bir
+şerit yerine, Gmail'deki gibi hafif bir gölgeyle yükselir.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Adresleri Kime, Bilgi ve Gizli arasında sürükleyin"
+text = """
+Bir adres çipini taşımak için başka bir alana sürükleyin; siz
+sürüklerken Bilgi ve Gizli, gizli olsalar bile açılır. Bir çipin üzerine
+gelince onu kaldıran bir x görünür.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Katna hesabı"
+text = """
+Ayarlar > Katna hesabı, Katna'nın kendi sunucusunda, asla bir posta
+parolası olmayan kendi parolasıyla bir hesap oluşturmanızı sağlar.
+Okundu bilgisi ve bağlantı izleme gibi çevrimiçi Katna özellikleri buna
+ihtiyaç duyacak. Oturum açmış bilgisayarları görebilir, istediğinizin
+oturumunu kapatabilirsiniz.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Kaldığınız yerde"
+text = """
+Katna Mail'i kapatıp yeniden açmak, açık olan uygulamayı, klasörü ve
+Gelen Kutusu sekmesini, genişlettiğiniz klasörleri ve klasör bölmesinin
+daraltılmış olup olmadığını geri getirir. Katna'dan sistem tepsisinden
+çıkmak onu sıfırdan başlatır.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Erteleme ve yanıt hatırlatıcıları"
+text = """
+Bir ileti dizisini satırındaki saat simgesiyle veya sağ tık menüsünden
+erteleyin: Ertelenenler klasöründe bekler ve seçtiğiniz saatte okunmamış
+olarak Gelen Kutusu'na döner. Gönderirken, Gönder'in yanındaki ok, 1, 3
+veya 7 gün içinde kimse yanıt vermezse size hatırlatabilir. İkisi de
+bilgisayarınız açıkken çalışır ve uyku modundan çıktığında kaçırdıklarını
+tamamlar.
+"""

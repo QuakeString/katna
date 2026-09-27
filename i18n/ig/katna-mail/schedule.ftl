@@ -11,6 +11,8 @@ schedule-scheduled-messages = Ozi ahaziri ahazi ({ $count })
 
 schedule-title = Hazie oge izipu
 schedule-zone-note = { $zone }. Katna na-ezipu ya n'oge ahụ, ọbụlagodi mgbe emechiri ngwa ahụ.
+schedule-zone-note-server = { $zone }. Sava ozi gị ga-ezipu ya n'oge ahụ, ọbụlagodi mgbe kọmputa a gbanyụrụ. Ozugbo Megharịa pụrụ, a gaghị enwe ike ịkagbu ya.
+schedule-zone-note-local = { $zone }. Katna ga-ezipu ya n'oge ahụ ma ọ bụrụ na kọmputa a gbanyere.
 schedule-local-time = Oge mpaghara
 schedule-this-morning = Ụtụtụ a
 schedule-this-afternoon = Ehihie a
@@ -28,6 +30,7 @@ schedule-no-such-time = Oge ahụ adịghị ebe a.
 
 schedule-no-subject = (enweghị isiokwu)
 schedule-sends-at = Ọ ga-apụ { $when }
+schedule-server-sends-at = Sava ozi gị ga-ezipu ya { $when }
 schedule-cancel-send = Kagbuo izipu
 schedule-nothing = Ọ dịghị ihe ahaziri.
 schedule-close = Mechie

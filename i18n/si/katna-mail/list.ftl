@@ -28,6 +28,8 @@ list-move-to = වෙත ගෙන යන්න
 list-archive = සංරක්ෂණය කරන්න
 list-spam = අයාචිත තැපැල් ලෙස වාර්තා කරන්න
 list-delete = මකන්න
+list-snooze = කල් දමන්න
+list-unsnooze = කල් දැමීම ඉවත් කරන්න
 list-newer = අලුත්
 list-older = පැරණි
 list-range = { $total } න් { $first }–{ $last }
@@ -348,6 +350,7 @@ row-mark-important = වැදගත් ලෙස සලකුණු කරන�
 row-pinned = ඉහළට ඇමිණූ
 row-pin = ඉහළට අමුණන්න
 row-unpin = ඇමිණීම ඉවත් කරන්න
+row-snoozed-until = { $when } දක්වා කල් දමා ඇත
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = වැදගත් ලෙස සලකුණු කරන්න
 menu-not-important = වැදගත් නොවන ලෙස සලකුණු කරන්න
 menu-pin = ඉහළට අමුණන්න
 menu-unpin = ඇමිණීම ඉවත් කරන්න
+menu-snooze = කල් දමන්න
+menu-unsnooze = කල් දැමීම ඉවත් කරන්න
 menu-print-all = සියල්ල මුද්‍රණය කරන්න
 menu-new-window = නව කවුළුවක විවෘත කරන්න
 menu-move-to = වෙත ගෙන යන්න
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] පණිවිඩයේ ඇමිණීම ඉවත් කරන ලදී.
        *[other] පණිවිඩ { $count } ක ඇමිණීම ඉවත් කරන ලදී.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] සංවාදය { $when } දක්වා කල් දමන ලදී.
+       *[other] සංවාද { $count } ක් { $when } දක්වා කල් දමන ලදී.
+    }
+   *[message] { $count ->
+        [one] පණිවිඩය { $when } දක්වා කල් දමන ලදී.
+       *[other] පණිවිඩ { $count } ක් { $when } දක්වා කල් දමන ලදී.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] සංවාදය නැවත එන ලිපි වෙත පැමිණියේය.
+       *[other] සංවාද { $count } ක් නැවත එන ලිපි වෙත පැමිණියේය.
+    }
+   *[message] { $count ->
+        [one] පණිවිඩය නැවත එන ලිපි වෙත පැමිණියේය.
+       *[other] පණිවිඩ { $count } ක් නැවත එන ලිපි වෙත පැමිණියේය.
     }
 }
 toast-spam = { $kind ->

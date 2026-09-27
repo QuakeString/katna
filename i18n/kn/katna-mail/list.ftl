@@ -28,6 +28,8 @@ list-move-to = ಇಲ್ಲಿಗೆ ಸರಿಸಿ
 list-archive = ಆರ್ಕೈವ್ ಮಾಡಿ
 list-spam = ಸ್ಪ್ಯಾಮ್ ಎಂದು ವರದಿ ಮಾಡಿ
 list-delete = ಅಳಿಸಿ
+list-snooze = ಸ್ನೂಜ್ ಮಾಡಿ
+list-unsnooze = ಸ್ನೂಜ್ ರದ್ದುಮಾಡಿ
 list-newer = ಹೊಸದು
 list-older = ಹಳೆಯದು
 list-range = { $total } ರಲ್ಲಿ { $first }–{ $last }
@@ -348,6 +350,7 @@ row-mark-important = ಪ್ರಮುಖ ಎಂದು ಗುರುತಿಸಿ
 row-pinned = ಮೇಲ್ಭಾಗಕ್ಕೆ ಪಿನ್ ಮಾಡಲಾಗಿದೆ
 row-pin = ಮೇಲ್ಭಾಗಕ್ಕೆ ಪಿನ್ ಮಾಡಿ
 row-unpin = ಅನ್‌ಪಿನ್ ಮಾಡಿ
+row-snoozed-until = { $when } ವರೆಗೆ ಸ್ನೂಜ್ ಮಾಡಲಾಗಿದೆ
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = ಪ್ರಮುಖ ಎಂದು ಗುರುತಿಸಿ
 menu-not-important = ಪ್ರಮುಖವಲ್ಲ ಎಂದು ಗುರುತಿಸಿ
 menu-pin = ಮೇಲ್ಭಾಗಕ್ಕೆ ಪಿನ್ ಮಾಡಿ
 menu-unpin = ಅನ್‌ಪಿನ್ ಮಾಡಿ
+menu-snooze = ಸ್ನೂಜ್ ಮಾಡಿ
+menu-unsnooze = ಸ್ನೂಜ್ ರದ್ದುಮಾಡಿ
 menu-print-all = ಎಲ್ಲವನ್ನೂ ಮುದ್ರಿಸಿ
 menu-new-window = ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ
 menu-move-to = ಇಲ್ಲಿಗೆ ಸರಿಸಿ
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] ಸಂದೇಶವನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಲಾಗಿದೆ.
        *[other] { $count } ಸಂದೇಶಗಳನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಲಾಗಿದೆ.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] ಸಂವಾದವನ್ನು { $when } ವರೆಗೆ ಸ್ನೂಜ್ ಮಾಡಲಾಗಿದೆ.
+       *[other] { $count } ಸಂವಾದಗಳನ್ನು { $when } ವರೆಗೆ ಸ್ನೂಜ್ ಮಾಡಲಾಗಿದೆ.
+    }
+   *[message] { $count ->
+        [one] ಸಂದೇಶವನ್ನು { $when } ವರೆಗೆ ಸ್ನೂಜ್ ಮಾಡಲಾಗಿದೆ.
+       *[other] { $count } ಸಂದೇಶಗಳನ್ನು { $when } ವರೆಗೆ ಸ್ನೂಜ್ ಮಾಡಲಾಗಿದೆ.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] ಸಂವಾದ ಇನ್‌ಬಾಕ್ಸ್‌ಗೆ ಮರಳಿದೆ.
+       *[other] { $count } ಸಂವಾದಗಳು ಇನ್‌ಬಾಕ್ಸ್‌ಗೆ ಮರಳಿವೆ.
+    }
+   *[message] { $count ->
+        [one] ಸಂದೇಶ ಇನ್‌ಬಾಕ್ಸ್‌ಗೆ ಮರಳಿದೆ.
+       *[other] { $count } ಸಂದೇಶಗಳು ಇನ್‌ಬಾಕ್ಸ್‌ಗೆ ಮರಳಿವೆ.
     }
 }
 toast-spam = { $kind ->

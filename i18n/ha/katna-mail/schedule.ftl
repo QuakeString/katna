@@ -11,6 +11,8 @@ schedule-scheduled-messages = Saƙonnin da aka tsara ({ $count })
 
 schedule-title = Tsara lokacin aikawa
 schedule-zone-note = { $zone }. Katna za ta aika shi a wannan lokaci, ko da an rufe manhajar.
+schedule-zone-note-server = { $zone }. Sabar wasiƙunka za ta aika shi a wannan lokaci, ko da wannan kwamfuta a kashe take. Da zarar Janye ya tafi, ba za a iya soke shi ba.
+schedule-zone-note-local = { $zone }. Katna za ta aika shi a wannan lokaci muddin wannan kwamfuta a kunne take.
 schedule-local-time = Lokacin gida
 schedule-this-morning = Safiyar yau
 schedule-this-afternoon = Yammacin yau
@@ -28,6 +30,7 @@ schedule-no-such-time = Wannan lokacin babu shi a nan.
 
 schedule-no-subject = (babu jigo)
 schedule-sends-at = Za a aika { $when }
+schedule-server-sends-at = Sabar wasiƙunka za ta aika shi { $when }
 schedule-cancel-send = Soke aikawa
 schedule-nothing = Babu abin da aka tsara.
 schedule-close = Rufe

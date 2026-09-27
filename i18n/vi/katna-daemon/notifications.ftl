@@ -8,6 +8,9 @@ notify-new-emails = { $count } email mới
 notify-and-more = và { $count } thư khác
 notify-no-subject = (không có tiêu đề)
 notify-unknown-sender = Người gửi không xác định
+notify-snooze-back = Thư tạm ẩn đã quay lại
+notify-no-reply = Chưa có trả lời
+notify-no-reply-to = Chưa ai trả lời “{ $subject }”.
 
 ## Its buttons
 

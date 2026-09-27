@@ -11,6 +11,8 @@ schedule-scheduled-messages = Jumbe zilizoratibiwa ({ $count })
 
 schedule-title = Ratibu kutuma
 schedule-zone-note = { $zone }. Katna huutuma wakati huo, hata programu ikiwa imefungwa.
+schedule-zone-note-server = { $zone }. Seva yako ya barua itautuma wakati huo, hata kompyuta hii ikiwa imezimwa. Tendua ikishaondoka, hauwezi kughairiwa tena.
+schedule-zone-note-local = { $zone }. Katna itautuma wakati huo kompyuta hii ikiwa imewashwa.
 schedule-local-time = Saa za eneo lako
 schedule-this-morning = Asubuhi hii
 schedule-this-afternoon = Mchana huu
@@ -28,6 +30,7 @@ schedule-no-such-time = Saa hiyo haipo hapa.
 
 schedule-no-subject = (hakuna mada)
 schedule-sends-at = Utatumwa { $when }
+schedule-server-sends-at = Seva yako ya barua itautuma { $when }
 schedule-cancel-send = Ghairi kutuma
 schedule-nothing = Hakuna kilichoratibiwa.
 schedule-close = Funga

@@ -314,6 +314,15 @@ pub trait MailBackend: Send + 'static {
         folder: &str,
     ) -> impl Future<Output = Result<Vec<(u32, u32)>>> + Send;
 
+    /// Copies `uids` of the selected folder to `folder` (on Gmail: adds
+    /// its label). Returns `(old UID, new UID)` pairs when the server
+    /// reports them (UIDPLUS).
+    fn copy_messages(
+        &mut self,
+        uids: &[u32],
+        folder: &str,
+    ) -> impl Future<Output = Result<Vec<(u32, u32)>>> + Send;
+
     /// Deletes `uids` of the selected folder for good. Without UIDPLUS
     /// they are only marked `\Deleted`, so other clients' marks are kept.
     fn expunge(&mut self, uids: &[u32]) -> impl Future<Output = Result<()>> + Send;

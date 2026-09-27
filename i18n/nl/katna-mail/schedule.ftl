@@ -11,6 +11,8 @@ schedule-scheduled-messages = Geplande berichten ({ $count })
 
 schedule-title = Verzending plannen
 schedule-zone-note = { $zone }. Katna verzendt het op dat tijdstip, ook als de app gesloten is.
+schedule-zone-note-server = { $zone }. Je mailserver verzendt het op dat tijdstip, ook als deze computer uit staat. Zodra Ongedaan maken weg is, kan het niet meer worden geannuleerd.
+schedule-zone-note-local = { $zone }. Katna verzendt het op dat tijdstip zolang deze computer aan staat.
 schedule-local-time = Lokale tijd
 schedule-this-morning = Vanochtend
 schedule-this-afternoon = Vanmiddag
@@ -28,6 +30,7 @@ schedule-no-such-time = Dat tijdstip bestaat hier niet.
 
 schedule-no-subject = (geen onderwerp)
 schedule-sends-at = Wordt verzonden { $when }
+schedule-server-sends-at = Je mailserver verzendt het { $when }
 schedule-cancel-send = Verzending annuleren
 schedule-nothing = Er is niets gepland.
 schedule-close = Sluiten

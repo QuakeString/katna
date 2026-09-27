@@ -7,6 +7,7 @@
 settings-tab-general = Izugbe
 settings-tab-inbox = Igbe ozi mbata
 settings-tab-accounts = Akaụntụ
+settings-tab-katna-account = Akaụntụ Katna
 settings-tab-subscriptions = Ndenye aha
 settings-tab-appearance = Ọdịdị
 settings-tab-shortcuts = Ụzọ mkpirisi

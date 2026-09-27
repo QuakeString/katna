@@ -20,6 +20,7 @@ storage-used-detail = { $address }៖ បានប្រើ { $used } នៃ { $
 
 folder-inbox = ប្រអប់ទទួល
 folder-starred = មានផ្កាយ
+folder-snoozed = បានពន្យារពេល
 folder-unread = មិនទាន់អាន
 folder-important = សំខាន់
 folder-drafts = សេចក្ដីព្រាង

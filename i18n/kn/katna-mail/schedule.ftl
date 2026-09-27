@@ -11,6 +11,8 @@ schedule-scheduled-messages = ನಿಗದಿಪಡಿಸಿದ ಸಂದೇಶ�
 
 schedule-title = ಕಳುಹಿಸುವಿಕೆಯನ್ನು ನಿಗದಿಪಡಿಸಿ
 schedule-zone-note = { $zone }. ಆ್ಯಪ್ ಮುಚ್ಚಿದ್ದರೂ Katna ಅದನ್ನು ಆ ಸಮಯದಲ್ಲಿ ಕಳುಹಿಸುತ್ತದೆ.
+schedule-zone-note-server = { $zone }. ಈ ಕಂಪ್ಯೂಟರ್ ಆಫ್ ಆಗಿದ್ದರೂ ನಿಮ್ಮ ಮೇಲ್ ಸರ್ವರ್ ಅದನ್ನು ಆ ಸಮಯದಲ್ಲಿ ಕಳುಹಿಸುತ್ತದೆ. “ರದ್ದುಗೊಳಿಸಿ” ಹೋದ ನಂತರ ಅದನ್ನು ರದ್ದುಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.
+schedule-zone-note-local = { $zone }. ಈ ಕಂಪ್ಯೂಟರ್ ಆನ್ ಆಗಿರುವಾಗ Katna ಅದನ್ನು ಆ ಸಮಯದಲ್ಲಿ ಕಳುಹಿಸುತ್ತದೆ.
 schedule-local-time = ಸ್ಥಳೀಯ ಸಮಯ
 schedule-this-morning = ಇಂದು ಬೆಳಿಗ್ಗೆ
 schedule-this-afternoon = ಇಂದು ಮಧ್ಯಾಹ್ನ
@@ -28,6 +30,7 @@ schedule-no-such-time = ಆ ಸಮಯ ಇಲ್ಲಿ ಅಸ್ತಿತ್ವ�
 
 schedule-no-subject = (ವಿಷಯವಿಲ್ಲ)
 schedule-sends-at = { $when } ಕ್ಕೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ
+schedule-server-sends-at = ನಿಮ್ಮ ಮೇಲ್ ಸರ್ವರ್ ಅದನ್ನು { $when } ಕ್ಕೆ ಕಳುಹಿಸುತ್ತದೆ
 schedule-cancel-send = ಕಳುಹಿಸುವುದನ್ನು ರದ್ದುಮಾಡಿ
 schedule-nothing = ಏನನ್ನೂ ನಿಗದಿಪಡಿಸಲಾಗಿಲ್ಲ.
 schedule-close = ಮುಚ್ಚಿ

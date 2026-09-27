@@ -28,6 +28,8 @@ list-move-to = ផ្លាស់ទីទៅ
 list-archive = ទុកក្នុងបណ្ណសារ
 list-spam = រាយការណ៍ថាជាសារឥតបានការ
 list-delete = លុប
+list-snooze = ពន្យារពេល
+list-unsnooze = ឈប់ពន្យារពេល
 list-newer = ថ្មីជាង
 list-older = ចាស់ជាង
 list-range = { $first }–{ $last } នៃ { $total }
@@ -198,6 +200,7 @@ row-mark-important = សម្គាល់ថាសំខាន់
 row-pinned = បានខ្ទាស់នៅខាងលើ
 row-pin = ខ្ទាស់នៅខាងលើ
 row-unpin = ឈប់ខ្ទាស់
+row-snoozed-until = បានពន្យារពេលរហូតដល់ { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -219,6 +222,8 @@ menu-important = សម្គាល់ថាសំខាន់
 menu-not-important = សម្គាល់ថាមិនសំខាន់
 menu-pin = ខ្ទាស់នៅខាងលើ
 menu-unpin = ឈប់ខ្ទាស់
+menu-snooze = ពន្យារពេល
+menu-unsnooze = ឈប់ពន្យារពេល
 menu-print-all = បោះពុម្ពទាំងអស់
 menu-new-window = បើកក្នុងបង្អួចថ្មី
 menu-move-to = ផ្លាស់ទីទៅ
@@ -262,6 +267,14 @@ toast-pinned = { $kind ->
 toast-unpinned = { $kind ->
     [conversation] បានឈប់ខ្ទាស់ការសន្ទនា { $count }។
    *[message] បានឈប់ខ្ទាស់សារ { $count }។
+}
+toast-snoozed = { $kind ->
+    [conversation] បានពន្យារពេលការសន្ទនា { $count } រហូតដល់ { $when }។
+   *[message] បានពន្យារពេលសារ { $count } រហូតដល់ { $when }។
+}
+toast-unsnoozed = { $kind ->
+    [conversation] ការសន្ទនា { $count } បានត្រឡប់មកប្រអប់ទទួលវិញ។
+   *[message] សារ { $count } បានត្រឡប់មកប្រអប់ទទួលវិញ។
 }
 toast-spam = { $kind ->
     [conversation] បានរាយការណ៍ការសន្ទនា { $count } ថាជាសារឥតបានការ។

@@ -23,6 +23,7 @@ storage-used-detail = { $address }: imetumika { $used } ya { $total }
 
 folder-inbox = Kikasha
 folder-starred = Zenye nyota
+folder-snoozed = Zilizoahirishwa
 folder-unread = Ambazo hazijasomwa
 folder-important = Muhimu
 folder-drafts = Rasimu

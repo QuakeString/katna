@@ -96,6 +96,7 @@ send-check-add-subject = إضافة موضوع
 send-check-send-anyway = الإرسال على أي حال
 recipient-not-valid = ليس عنوان بريد إلكتروني صالحًا
 recipient-show-address = إظهار العنوان
+recipient-remove = إزالة
 recipient-bad-title = تحقّق من العنوان
 recipient-bad-text = «{ $address }» ليس عنوان بريد إلكتروني صالحًا. صحّحه أو أزِله قبل الإرسال.
 recipient-bad-fix = تصحيح

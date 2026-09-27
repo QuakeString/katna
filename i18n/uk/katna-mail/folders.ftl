@@ -25,6 +25,7 @@ storage-used-detail = { $address }: використано { $used } із { $tot
 
 folder-inbox = Вхідні
 folder-starred = Із зірочкою
+folder-snoozed = Відкладені
 folder-unread = Непрочитані
 folder-important = Важливі
 folder-drafts = Чернетки

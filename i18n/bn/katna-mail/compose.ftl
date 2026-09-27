@@ -92,6 +92,7 @@ send-check-add-subject = বিষয় যোগ করুন
 send-check-send-anyway = তবুও পাঠান
 recipient-not-valid = বৈধ ইমেল ঠিকানা নয়
 recipient-show-address = ঠিকানা দেখান
+recipient-remove = সরান
 recipient-bad-title = ঠিকানাটি যাচাই করুন
 recipient-bad-text = “{ $address }” কোনো বৈধ ইমেল ঠিকানা নয়। পাঠানোর আগে এটি ঠিক করুন বা সরিয়ে দিন।
 recipient-bad-fix = ঠিক করুন

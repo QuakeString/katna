@@ -33,6 +33,8 @@ list-move-to = Przenieś do
 list-archive = Archiwizuj
 list-spam = Zgłoś spam
 list-delete = Usuń
+list-snooze = Odłóż
+list-unsnooze = Anuluj odłożenie
 list-newer = Nowsze
 list-older = Starsze
 list-range = { $first }–{ $last } z { $total }
@@ -453,6 +455,7 @@ row-mark-important = Oznacz jako ważne
 row-pinned = Przypięte na górze
 row-pin = Przypnij na górze
 row-unpin = Odepnij
+row-snoozed-until = Odłożone do { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -474,6 +477,8 @@ menu-important = Oznacz jako ważne
 menu-not-important = Oznacz jako nieważne
 menu-pin = Przypnij na górze
 menu-unpin = Odepnij
+menu-snooze = Odłóż
+menu-unsnooze = Anuluj odłożenie
 menu-print-all = Drukuj wszystko
 menu-new-window = Otwórz w nowym oknie
 menu-move-to = Przenieś do
@@ -606,6 +611,34 @@ toast-unpinned = { $kind ->
         [few] Odpięto { $count } wiadomości.
         [many] Odpięto { $count } wiadomości.
        *[other] Odpięto { $count } wiadomości.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Wątek odłożony do { $when }.
+        [few] Odłożono { $count } wątki do { $when }.
+        [many] Odłożono { $count } wątków do { $when }.
+       *[other] Odłożono { $count } wątku do { $when }.
+    }
+   *[message] { $count ->
+        [one] Wiadomość odłożona do { $when }.
+        [few] Odłożono { $count } wiadomości do { $when }.
+        [many] Odłożono { $count } wiadomości do { $when }.
+       *[other] Odłożono { $count } wiadomości do { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Wątek wrócił do Odebranych.
+        [few] Przywrócono { $count } wątki do Odebranych.
+        [many] Przywrócono { $count } wątków do Odebranych.
+       *[other] Przywrócono { $count } wątku do Odebranych.
+    }
+   *[message] { $count ->
+        [one] Wiadomość wróciła do Odebranych.
+        [few] Przywrócono { $count } wiadomości do Odebranych.
+        [many] Przywrócono { $count } wiadomości do Odebranych.
+       *[other] Przywrócono { $count } wiadomości do Odebranych.
     }
 }
 toast-spam = { $kind ->

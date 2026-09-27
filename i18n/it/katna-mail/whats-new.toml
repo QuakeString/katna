@@ -592,3 +592,57 @@ una risposta con un clic. Scrivi {first name}, {name} o {my name} e
 Katna li compila per ogni destinatario. Modifica, rinomina o elimina i
 modelli in Impostazioni > Scrittura.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "La posta programmata parte anche a computer spento"
+text = """
+Quando il tuo server di posta può trattenere la posta fino a un'ora
+stabilita, come fa Stalwart, Programma invio ora gli consegna il messaggio
+appena sparisce Annulla, così parte in orario anche con questo computer
+spento. Il menu di programmazione dice se lo invierà il tuo server di
+posta o Katna.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Un passaggio del puntatore più leggero"
+text = """
+La riga sotto il puntatore nell'elenco della posta ora si solleva con
+un'ombra leggera, come in Gmail, invece di una fascia scura sotto.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Trascina gli indirizzi tra A, Cc e Ccn"
+text = """
+Trascina il chip di un indirizzo in un altro campo per spostarlo; Cc e
+Ccn si aprono mentre trascini, anche se nascosti. Puntando un chip compare
+una x che lo rimuove.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Account Katna"
+text = """
+Impostazioni > Account Katna ti permette di creare un account sul server di
+Katna, con una password sua, mai quella della posta. Le funzioni online di
+Katna, come le conferme di lettura e il tracciamento dei link, ne avranno
+bisogno. Puoi vedere i computer connessi e disconnetterne uno qualsiasi.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Di nuovo dove eri"
+text = """
+Chiudendo e riaprendo Katna Mail ritrovi l’app, la cartella e la scheda
+della posta in arrivo che avevi aperto, le cartelle espanse e il riquadro
+delle cartelle compresso o no. Se esci da Katna dall’area di notifica,
+riparte da zero.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Posticipa e promemoria di risposta"
+text = """
+Posticipa una conversazione con l'orologio sulla sua riga o dal menu del
+clic destro: resta nella cartella Posticipati e torna in Posta in arrivo,
+da leggere, all'ora che hai scelto. Quando invii, la freccia accanto a
+Invia può ricordartelo se nessuno risponde entro 1, 3 o 7 giorni.
+Entrambi funzionano mentre il computer è acceso e recuperano quando si
+riattiva.
+"""

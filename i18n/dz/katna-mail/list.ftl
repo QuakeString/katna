@@ -28,6 +28,8 @@ list-move-to = ལུ་སྤོ།
 list-archive = ཡིག་མཛོད་ནང་བཙུགས།
 list-spam = སྤེམ་སྦེ་སྙན་ཞུ་འབད།
 list-delete = བཏོན་གཏང་།
+list-snooze = ཤུལ་མར་བཞག།
+list-unsnooze = ཤུལ་མར་བཞག་མི་བཏོན།
 list-newer = དེ་ལས་གསརཔ།
 list-older = དེ་ལས་རྙིངམ།
 list-range = { $total } ལས་ { $first }–{ $last }
@@ -278,6 +280,7 @@ row-mark-important = གལ་ཅན་སྦེ་རྟགས་བཀལ།
 row-pinned = ཡར་སྟོད་ལུ་བཙུགས་ཡོདཔ
 row-pin = ཡར་སྟོད་ལུ་བཙུགས།
 row-unpin = བཙུགས་མི་བཏོན།
+row-snoozed-until = { $when } ཚུན་ཚོད་ ཤུལ་མར་བཞག་ཡོདཔ
 
 ## Mail list: More menu and right-click menu
 
@@ -299,6 +302,8 @@ menu-important = གལ་ཅན་སྦེ་རྟགས་བཀལ།
 menu-not-important = གལ་ཅན་མེན་པ་སྦེ་རྟགས་བཀལ།
 menu-pin = ཡར་སྟོད་ལུ་བཙུགས།
 menu-unpin = བཙུགས་མི་བཏོན།
+menu-snooze = ཤུལ་མར་བཞག།
+menu-unsnooze = ཤུལ་མར་བཞག་མི་བཏོན།
 menu-print-all = ཆ་མཉམ་དཔར་བསྐྲུན་འབད།
 menu-new-window = སྒོ་སྒྲིག་གསརཔ་ནང་ཁ་ཕྱེ།
 menu-move-to = ལུ་སྤོ།
@@ -342,6 +347,14 @@ toast-pinned = { $kind ->
 toast-unpinned = { $kind ->
     [conversation] གླེང་མོལ་ { $count } གི་བཙུགས་མི་བཏོན་ཡི།
    *[message] འཕྲིན་དོན་ { $count } གི་བཙུགས་མི་བཏོན་ཡི།
+}
+toast-snoozed = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } { $when } ཚུན་ཚོད་ ཤུལ་མར་བཞག་ཡི།
+   *[message] འཕྲིན་དོན་ { $count } { $when } ཚུན་ཚོད་ ཤུལ་མར་བཞག་ཡི།
+}
+toast-unsnoozed = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } ནང་འབྱོར་སྒྲོམ་ལུ་ ལོག་འོང་ཡི།
+   *[message] འཕྲིན་དོན་ { $count } ནང་འབྱོར་སྒྲོམ་ལུ་ ལོག་འོང་ཡི།
 }
 toast-spam = { $kind ->
     [conversation] གླེང་མོལ་ { $count } སྤེམ་སྦེ་སྙན་ཞུ་འབད་ཡི།

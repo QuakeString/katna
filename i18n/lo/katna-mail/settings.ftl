@@ -7,6 +7,7 @@
 settings-tab-general = ທົ່ວໄປ
 settings-tab-inbox = ກ່ອງຈົດໝາຍເຂົ້າ
 settings-tab-accounts = ບັນຊີ
+settings-tab-katna-account = ບັນຊີ Katna
 settings-tab-subscriptions = ການສະໝັກຮັບ
 settings-tab-appearance = ລັກສະນະ
 settings-tab-shortcuts = ປຸ່ມລັດ

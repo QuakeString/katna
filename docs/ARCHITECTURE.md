@@ -898,6 +898,39 @@ Features built on it:
 | Reminder | `{remind_at, if_no_reply: true}` | Notify if nobody replied. |
 | Tracking | `{tracking_id, links[], events[]}` | — (events arrive from the server) |
 
+### 10.1 What runs today: snooze and follow-up reminders
+
+Decided September 2026: snooze, reminders and send later run **only while
+the computer is on**, and no server ever holds a mail password. So all of
+this is local; Katna Server only adds opened/clicked events (§16).
+
+- `katna-meta` types the values and runs the scheduler: it sleeps until
+  the next `expires_at`, but never more than a minute, because timers stop
+  while the computer sleeps and the wall clock does not; resuming also
+  wakes it. Values are in `pim.db`, so they survive restarts; one that fell
+  due while the computer was off fires when the daemon starts.
+- **Snooze** (`message`/`snooze`: `{until, back_to, snoozed_in}`): the
+  messages of the conversation in the folder it was snoozed from (the
+  Inbox, a label or Archive, never Sent, Drafts, Trash, Spam or All Mail)
+  move to the account's `Snoozed` folder, made on the server the first
+  time (a label on Gmail; a local folder for POP3). The folder is always
+  called `Snoozed` on the server so any language finds it; the app shows
+  its name translated. At `until` the messages that are still there move
+  back, unread, with one notification per account. `Unsnooze` (Undo)
+  moves them back at once without marking them unread. Gmail, Outlook.com,
+  Zoho and Yahoo do not share their own snooze over IMAP, so a snooze set
+  on their websites stays there.
+- **Follow-up** (`outbox`/`follow-up`: `{account, message_id, subject,
+  remind_at, after}`): set on an outbox entry right after `QueueSend`,
+  `after` seconds from when it is sent (1, 3, 7 days or custom). When due,
+  it finds the sent copy by `Message-ID`; if its conversation has anything
+  newer (a reply, or another message of the user's), it is dropped.
+  Otherwise the message is copied into the Inbox too (a label on Gmail),
+  marked unread and notified. `UndoSend` drops it.
+- **Surfaced** (`message`/`surfaced`: `{at}`, expires after 14 days): mail
+  back from snooze or a reminder is listed as if it arrived at `at`, so it
+  sits on top of the Inbox like new mail.
+
 ## 11. Sending (outbox)
 
 - Every send goes through the persistent `outbox` table in the daemon.
@@ -2285,6 +2318,8 @@ their body, bytes deleted; see Settings above), `SyncNow(id)` (0 for every accou
 `flagged`, `draft`, `forwarded`, `important`), `SetPinned(ax messages, b
 on)` (local only; more than ten pinned conversations is an error),
 `MoveMessages(ax, folder)`,
+`Snooze(ax messages, x until)`, `Unsnooze(ax messages)` and
+`SetFollowUp(x outbox, x after)` (§10.1),
 `DeleteMessages(ax)`, `ArchiveMessages(ax)`, `QueueSend(x account, ay
 message, u delay) → id`, `UndoSend(id) → b`, `DiscardSend(id) → b`,
 `Outbox() → a(xxxsxss)` (id, account, message, subject, send at, state,

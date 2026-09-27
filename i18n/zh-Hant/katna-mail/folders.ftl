@@ -20,6 +20,7 @@ storage-used-detail = { $address }：已使用 { $total } 中的 { $used }
 
 folder-inbox = 收件匣
 folder-starred = 已加星號
+folder-snoozed = 已延後
 folder-unread = 未讀取
 folder-important = 重要
 folder-drafts = 草稿

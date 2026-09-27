@@ -33,6 +33,8 @@ list-move-to = Переместить в
 list-archive = Архивировать
 list-spam = В спам
 list-delete = Удалить
+list-snooze = Отложить
+list-unsnooze = Вернуть сейчас
 list-newer = Более новые
 list-older = Более старые
 list-range = { $first }–{ $last } из { $total }
@@ -453,6 +455,7 @@ row-mark-important = Отметить как важное
 row-pinned = Закреплено вверху
 row-pin = Закрепить вверху
 row-unpin = Открепить
+row-snoozed-until = Отложено до { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -474,6 +477,8 @@ menu-important = Отметить как важное
 menu-not-important = Отметить как неважное
 menu-pin = Закрепить вверху
 menu-unpin = Открепить
+menu-snooze = Отложить
+menu-unsnooze = Вернуть сейчас
 menu-print-all = Распечатать все
 menu-new-window = Открыть в новом окне
 menu-move-to = Переместить в
@@ -606,6 +611,34 @@ toast-unpinned = { $kind ->
         [few] { $count } письма откреплены.
         [many] { $count } писем откреплены.
        *[other] { $count } письма откреплены.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } цепочка отложена до { $when }.
+        [few] { $count } цепочки отложены до { $when }.
+        [many] { $count } цепочек отложены до { $when }.
+       *[other] { $count } цепочки отложены до { $when }.
+    }
+   *[message] { $count ->
+        [one] { $count } письмо отложено до { $when }.
+        [few] { $count } письма отложены до { $when }.
+        [many] { $count } писем отложены до { $when }.
+       *[other] { $count } письма отложены до { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } цепочка снова во входящих.
+        [few] { $count } цепочки снова во входящих.
+        [many] { $count } цепочек снова во входящих.
+       *[other] { $count } цепочки снова во входящих.
+    }
+   *[message] { $count ->
+        [one] { $count } письмо снова во входящих.
+        [few] { $count } письма снова во входящих.
+        [many] { $count } писем снова во входящих.
+       *[other] { $count } письма снова во входящих.
     }
 }
 toast-spam = { $kind ->

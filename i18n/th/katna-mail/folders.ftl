@@ -20,6 +20,7 @@ storage-used-detail = { $address }: ใช้ไป { $used } จาก { $total
 
 folder-inbox = กล่องจดหมาย
 folder-starred = ที่ติดดาว
+folder-snoozed = เลื่อนเวลาแล้ว
 folder-unread = ยังไม่อ่าน
 folder-important = สำคัญ
 folder-drafts = ฉบับร่าง

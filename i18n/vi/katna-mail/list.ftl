@@ -28,6 +28,8 @@ list-move-to = Di chuyển tới
 list-archive = Lưu trữ
 list-spam = Báo cáo thư rác
 list-delete = Xóa
+list-snooze = Tạm ẩn
+list-unsnooze = Bỏ tạm ẩn
 list-newer = Mới hơn
 list-older = Cũ hơn
 list-range = { $first }–{ $last } trong số { $total }
@@ -198,6 +200,7 @@ row-mark-important = Đánh dấu là quan trọng
 row-pinned = Đã ghim lên đầu
 row-pin = Ghim lên đầu
 row-unpin = Bỏ ghim
+row-snoozed-until = Tạm ẩn đến { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -219,6 +222,8 @@ menu-important = Đánh dấu là quan trọng
 menu-not-important = Đánh dấu là không quan trọng
 menu-pin = Ghim lên đầu
 menu-unpin = Bỏ ghim
+menu-snooze = Tạm ẩn
+menu-unsnooze = Bỏ tạm ẩn
 menu-print-all = In tất cả
 menu-new-window = Mở trong cửa sổ mới
 menu-move-to = Di chuyển tới
@@ -262,6 +267,14 @@ toast-pinned = { $kind ->
 toast-unpinned = { $kind ->
     [conversation] Đã bỏ ghim { $count } cuộc hội thoại.
    *[message] Đã bỏ ghim { $count } thư.
+}
+toast-snoozed = { $kind ->
+    [conversation] Đã tạm ẩn { $count } cuộc hội thoại đến { $when }.
+   *[message] Đã tạm ẩn { $count } thư đến { $when }.
+}
+toast-unsnoozed = { $kind ->
+    [conversation] Đã đưa { $count } cuộc hội thoại trở lại Hộp thư đến.
+   *[message] Đã đưa { $count } thư trở lại Hộp thư đến.
 }
 toast-spam = { $kind ->
     [conversation] Đã báo cáo { $count } cuộc hội thoại là thư rác.

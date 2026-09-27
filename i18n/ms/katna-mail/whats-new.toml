@@ -588,3 +588,58 @@ kemudian masukkan ke dalam mana-mana mel baharu atau balasan dengan satu klik.
 Tulis {first name}, {name} atau {my name} dan Katna mengisinya untuk setiap
 penerima. Sunting, namakan semula atau padam templat dalam Tetapan > Karang.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Mel berjadual dihantar walaupun komputer anda dimatikan"
+text = """
+Apabila pelayan mel anda boleh menahan mel hingga masa yang ditetapkan,
+seperti Stalwart, Jadualkan penghantaran kini menyerahkan mesej kepadanya
+sebaik sahaja Buat asal hilang, jadi ia dihantar tepat pada masanya
+walaupun komputer ini dimatikan. Menu jadual memberitahu sama ada pelayan
+mel anda atau Katna yang akan menghantarnya.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Tudingan yang lebih ringan"
+text = """
+Baris di bawah penuding dalam senarai mel kini terangkat dengan bayang
+samar, seperti dalam Gmail, dan bukan jalur gelap di bawahnya.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Seret alamat antara Kepada, Sk dan Skt"
+text = """
+Seret cip alamat ke medan lain untuk memindahkannya; Sk dan Skt terbuka
+semasa anda menyeret, walaupun tersembunyi. Menuding pada cip
+menunjukkan x yang mengalih keluarnya.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Akaun Katna"
+text = """
+Tetapan > Akaun Katna membolehkan anda mencipta akaun pada pelayan Katna
+sendiri, dengan kata laluannya sendiri, bukan kata laluan mel. Ciri
+dalam talian Katna, seperti resit baca dan penjejakan pautan, akan
+memerlukannya. Anda boleh melihat komputer yang telah log masuk dan
+melog keluar mana-mana daripadanya.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Kembali di tempat anda tadi"
+text = """
+Menutup Katna Mail dan membukanya semula mengembalikan apl, folder dan
+tab peti masuk yang anda buka, folder yang anda kembangkan dan sama ada
+anak tetingkap folder dilipat. Keluar daripada Katna melalui dulang
+sistem memulakannya semula dari awal.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Tunda dan peringatan balasan"
+text = """
+Tunda perbualan dengan jam pada barisnya atau dari menu klik kanan: ia
+menunggu dalam folder Ditunda dan kembali ke Peti Masuk, belum dibaca,
+pada masa yang anda pilih. Semasa menghantar, anak panah di sebelah
+Hantar boleh mengingatkan anda jika tiada sesiapa membalas dalam 1, 3
+atau 7 hari. Kedua-duanya berfungsi semasa komputer anda hidup, dan
+menyusul selepas ia bangun semula.
+"""

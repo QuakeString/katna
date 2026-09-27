@@ -11,6 +11,8 @@ schedule-scheduled-messages = الرسائل المُجدوَلة ({ $count })
 
 schedule-title = جدولة الإرسال
 schedule-zone-note = { $zone }. يرسلها Katna في ذلك الوقت، حتى لو كان التطبيق مغلقًا.
+schedule-zone-note-server = { $zone }. سيرسلها خادم بريدك في ذلك الوقت، حتى لو كان هذا الكمبيوتر مطفأً. بعد اختفاء «تراجع» لا يمكن إلغاؤها.
+schedule-zone-note-local = { $zone }. سيرسلها Katna في ذلك الوقت ما دام هذا الكمبيوتر يعمل.
 schedule-local-time = التوقيت المحلي
 schedule-this-morning = صباح اليوم
 schedule-this-afternoon = بعد ظهر اليوم
@@ -28,6 +30,7 @@ schedule-no-such-time = هذا الوقت غير موجود هنا.
 
 schedule-no-subject = (بلا موضوع)
 schedule-sends-at = تُرسَل { $when }
+schedule-server-sends-at = يرسلها خادم بريدك { $when }
 schedule-cancel-send = إلغاء الإرسال
 schedule-nothing = لا يوجد شيء مُجدوَل.
 schedule-close = إغلاق

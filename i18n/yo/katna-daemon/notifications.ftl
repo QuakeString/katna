@@ -8,6 +8,9 @@ notify-new-emails = Ímeèlì tuntun { $count }
 notify-and-more = àti { $count } míì
 notify-no-subject = (kò sí àkọlé)
 notify-unknown-sender = Olùfiránṣẹ́ àìmọ̀
+notify-snooze-back = Àwọn lẹ́tà tí a sún síwájú ti padà
+notify-no-reply = Kò tíì sí èsì
+notify-no-reply-to = Kò sí ẹni tó fèsì sí “{ $subject }”.
 
 ## Its buttons
 

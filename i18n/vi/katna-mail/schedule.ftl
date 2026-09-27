@@ -11,6 +11,8 @@ schedule-scheduled-messages = Thư đã lên lịch ({ $count })
 
 schedule-title = Lên lịch gửi
 schedule-zone-note = { $zone }. Katna sẽ gửi vào thời điểm đó, kể cả khi ứng dụng đã đóng.
+schedule-zone-note-server = { $zone }. Máy chủ thư của bạn sẽ gửi vào thời điểm đó, kể cả khi máy tính này đã tắt. Khi nút Hoàn tác biến mất thì không thể hủy nữa.
+schedule-zone-note-local = { $zone }. Katna sẽ gửi vào thời điểm đó nếu máy tính này đang bật.
 schedule-local-time = Giờ địa phương
 schedule-this-morning = Sáng nay
 schedule-this-afternoon = Chiều nay
@@ -28,6 +30,7 @@ schedule-no-such-time = Thời điểm đó không tồn tại ở đây.
 
 schedule-no-subject = (không có tiêu đề)
 schedule-sends-at = Gửi lúc { $when }
+schedule-server-sends-at = Máy chủ thư của bạn gửi lúc { $when }
 schedule-cancel-send = Hủy gửi
 schedule-nothing = Không có thư nào được lên lịch.
 schedule-close = Đóng

@@ -28,6 +28,8 @@ list-move-to = Skuif na
 list-archive = Argiveer
 list-spam = Rapporteer strooipos
 list-delete = Vee uit
+list-snooze = Sluimer
+list-unsnooze = Ontsluimer
 list-newer = Nuwer
 list-older = Ouer
 list-range = { $first }–{ $last } van { $total }
@@ -348,6 +350,7 @@ row-mark-important = Merk as belangrik
 row-pinned = Bo vasgespeld
 row-pin = Speld bo vas
 row-unpin = Ontspeld
+row-snoozed-until = Gesluimer tot { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = Merk as belangrik
 menu-not-important = Merk as nie belangrik nie
 menu-pin = Speld bo vas
 menu-unpin = Ontspeld
+menu-snooze = Sluimer
+menu-unsnooze = Ontsluimer
 menu-print-all = Druk alles
 menu-new-window = Maak oop in nuwe venster
 menu-move-to = Skuif na
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] Boodskap ontspeld.
        *[other] { $count } boodskappe ontspeld.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek gesluimer tot { $when }.
+       *[other] { $count } gesprekke gesluimer tot { $when }.
+    }
+   *[message] { $count ->
+        [one] Boodskap gesluimer tot { $when }.
+       *[other] { $count } boodskappe gesluimer tot { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek terug in die Inkassie.
+       *[other] { $count } gesprekke terug in die Inkassie.
+    }
+   *[message] { $count ->
+        [one] Boodskap terug in die Inkassie.
+       *[other] { $count } boodskappe terug in die Inkassie.
     }
 }
 toast-spam = { $kind ->

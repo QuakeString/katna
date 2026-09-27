@@ -7,6 +7,7 @@
 settings-tab-general = Загальні
 settings-tab-inbox = Вхідні
 settings-tab-accounts = Облікові записи
+settings-tab-katna-account = Обліковий запис Katna
 settings-tab-subscriptions = Підписки
 settings-tab-appearance = Вигляд
 settings-tab-shortcuts = Комбінації клавіш

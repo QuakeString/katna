@@ -32,6 +32,8 @@ list-move-to = Mover para
 list-archive = Arquivar
 list-spam = Denunciar spam
 list-delete = Excluir
+list-snooze = Adiar
+list-unsnooze = Cancelar adiamento
 list-newer = Mais recentes
 list-older = Mais antigas
 list-range = { $first }–{ $last } de { $total }
@@ -402,6 +404,7 @@ row-mark-important = Marcar como importante
 row-pinned = Fixada no topo
 row-pin = Fixar no topo
 row-unpin = Desafixar
+row-snoozed-until = Adiado até { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -423,6 +426,8 @@ menu-important = Marcar como importante
 menu-not-important = Marcar como não importante
 menu-pin = Fixar no topo
 menu-unpin = Desafixar
+menu-snooze = Adiar
+menu-unsnooze = Cancelar adiamento
 menu-print-all = Imprimir tudo
 menu-new-window = Abrir em nova janela
 menu-move-to = Mover para
@@ -537,6 +542,30 @@ toast-unpinned = { $kind ->
         [one] Mensagem desafixada.
         [many] { $count } de mensagens desafixadas.
        *[other] { $count } mensagens desafixadas.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Conversa adiada até { $when }.
+        [many] { $count } de conversas adiadas até { $when }.
+       *[other] { $count } conversas adiadas até { $when }.
+    }
+   *[message] { $count ->
+        [one] Mensagem adiada até { $when }.
+        [many] { $count } de mensagens adiadas até { $when }.
+       *[other] { $count } mensagens adiadas até { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Conversa de volta na Caixa de entrada.
+        [many] { $count } de conversas de volta na Caixa de entrada.
+       *[other] { $count } conversas de volta na Caixa de entrada.
+    }
+   *[message] { $count ->
+        [one] Mensagem de volta na Caixa de entrada.
+        [many] { $count } de mensagens de volta na Caixa de entrada.
+       *[other] { $count } mensagens de volta na Caixa de entrada.
     }
 }
 toast-spam = { $kind ->

@@ -7,6 +7,7 @@
 settings-tab-general = አጠቃላይ
 settings-tab-inbox = ገቢ መልዕክት ሳጥን
 settings-tab-accounts = መለያዎች
+settings-tab-katna-account = የKatna መለያ
 settings-tab-subscriptions = ምዝገባዎች
 settings-tab-appearance = መልክ
 settings-tab-shortcuts = አቋራጮች

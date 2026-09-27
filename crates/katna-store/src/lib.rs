@@ -17,6 +17,7 @@ pub mod journal;
 pub mod mail;
 mod mail_read;
 mod mail_view;
+pub mod meta;
 pub mod ops;
 pub mod outbox;
 mod people;
@@ -47,6 +48,7 @@ pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
 pub use mail_view::{
     FlagFilter, FolderMarks, FolderSummary, Marks, ThreadEntry, ThreadSender, ThreadSummary,
 };
+pub use meta::MetaRow;
 pub use ops::{Location, PinnedMessage, QueuedOp};
 pub use outbox::{OutboxEntry, SendState};
 pub use people::{Correspondent, Person};

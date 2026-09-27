@@ -352,6 +352,25 @@ macro_rules! pim_proxy {
             /// Moves messages to the account's archive folder.
             fn archive_messages(&self, messages: &[i64]) -> zbus::Result<()>;
 
+            /// Snoozes messages until `until` (Unix seconds, at least a
+            /// minute ahead): they move to their account's `Snoozed` folder
+            /// (made on the server the first time, so that needs it once)
+            /// and come back where they were, unread, at that time, with a
+            /// notification. Messages already snoozed get the new time;
+            /// messages only in Sent, Drafts, Trash, Spam or All Mail stay.
+            /// The times are in `pim.db`'s `meta` table (`katna-meta`).
+            fn snooze(&self, messages: &[i64], until: i64) -> zbus::Result<()>;
+
+            /// Brings snoozed messages back where they were now, as they
+            /// are; others are left alone.
+            fn unsnooze(&self, messages: &[i64]) -> zbus::Result<()>;
+
+            /// Reminds the user `after` seconds after outbox entry `id` is
+            /// sent if nobody replied by then: the message then shows in
+            /// the Inbox too, unread and on top, with a notification. 0
+            /// takes the reminder back; `UndoSend` does too.
+            fn set_follow_up(&self, id: i64, after: i64) -> zbus::Result<()>;
+
             /// Queues `message` (RFC 5322, with `Bcc` if any) from `account`
             /// to be sent in `delay` seconds; `UndoSend` works until then.
             /// Adds `Date` and `Message-ID` when missing. Once sent it is

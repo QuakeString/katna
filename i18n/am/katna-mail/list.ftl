@@ -28,6 +28,8 @@ list-move-to = ውሰድ ወደ
 list-archive = ወደ ማህደር አስቀምጥ
 list-spam = አይፈለጌ መልዕክት ሪፖርት አድርግ
 list-delete = ሰርዝ
+list-snooze = አሸልብ
+list-unsnooze = ማሸለብ ሰርዝ
 list-newer = አዲስ
 list-older = የቆየ
 list-range = { $first }–{ $last } ከ{ $total }
@@ -348,6 +350,7 @@ row-mark-important = እንደ አስፈላጊ ምልክት አድርግ
 row-pinned = ከላይ ተሰክቷል
 row-pin = ከላይ ሰካ
 row-unpin = ንቀል
+row-snoozed-until = እስከ { $when } አሸልቧል
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = እንደ አስፈላጊ ምልክት አድርግ
 menu-not-important = አስፈላጊ እንዳልሆነ ምልክት አድርግ
 menu-pin = ከላይ ሰካ
 menu-unpin = ንቀል
+menu-snooze = አሸልብ
+menu-unsnooze = ማሸለብ ሰርዝ
 menu-print-all = ሁሉንም አትም
 menu-new-window = በአዲስ መስኮት ክፈት
 menu-move-to = ውሰድ ወደ
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] መልዕክቱ ተነቅሏል።
        *[other] { $count } መልዕክቶች ተነቅለዋል።
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] ውይይቱ እስከ { $when } አሸልቧል።
+       *[other] { $count } ውይይቶች እስከ { $when } አሸልበዋል።
+    }
+   *[message] { $count ->
+        [one] መልዕክቱ እስከ { $when } አሸልቧል።
+       *[other] { $count } መልዕክቶች እስከ { $when } አሸልበዋል።
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] ውይይቱ ወደ ገቢ መልዕክት ሳጥን ተመልሷል።
+       *[other] { $count } ውይይቶች ወደ ገቢ መልዕክት ሳጥን ተመልሰዋል።
+    }
+   *[message] { $count ->
+        [one] መልዕክቱ ወደ ገቢ መልዕክት ሳጥን ተመልሷል።
+       *[other] { $count } መልዕክቶች ወደ ገቢ መልዕክት ሳጥን ተመልሰዋል።
     }
 }
 toast-spam = { $kind ->

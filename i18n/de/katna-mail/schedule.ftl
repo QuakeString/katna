@@ -11,6 +11,8 @@ schedule-scheduled-messages = Geplante Nachrichten ({ $count })
 
 schedule-title = Senden planen
 schedule-zone-note = { $zone }. Katna sendet sie zu diesem Zeitpunkt, auch wenn die App geschlossen ist.
+schedule-zone-note-server = { $zone }. Ihr Mailserver sendet sie zu diesem Zeitpunkt, auch wenn dieser Computer aus ist. Sobald Rückgängig verschwunden ist, lässt sie sich nicht mehr abbrechen.
+schedule-zone-note-local = { $zone }. Katna sendet sie zu diesem Zeitpunkt, solange dieser Computer an ist.
 schedule-local-time = Ortszeit
 schedule-this-morning = Heute Vormittag
 schedule-this-afternoon = Heute Nachmittag
@@ -28,6 +30,7 @@ schedule-no-such-time = Diese Uhrzeit gibt es hier nicht.
 
 schedule-no-subject = (kein Betreff)
 schedule-sends-at = Wird gesendet: { $when }
+schedule-server-sends-at = Ihr Mailserver sendet sie { $when }
 schedule-cancel-send = Senden abbrechen
 schedule-nothing = Nichts ist geplant.
 schedule-close = Schließen

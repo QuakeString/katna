@@ -7,6 +7,7 @@
 settings-tab-general = عمومی
 settings-tab-inbox = ان باکس
 settings-tab-accounts = اکاؤنٹس
+settings-tab-katna-account = Katna اکاؤنٹ
 settings-tab-subscriptions = سبسکرپشنز
 settings-tab-appearance = ظاہری شکل
 settings-tab-shortcuts = شارٹ کٹس

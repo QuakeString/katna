@@ -31,6 +31,8 @@ list-move-to = Flytta till
 list-archive = Arkivera
 list-spam = Rapportera som skräppost
 list-delete = Radera
+list-snooze = Snooza
+list-unsnooze = Avbryt snooze
 list-newer = Nyare
 list-older = Äldre
 list-range = { $first }–{ $last } av { $total }
@@ -351,6 +353,7 @@ row-mark-important = Markera som viktigt
 row-pinned = Fäst högst upp
 row-pin = Fäst högst upp
 row-unpin = Lossa
+row-snoozed-until = Snoozad till { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -372,6 +375,8 @@ menu-important = Markera som viktigt
 menu-not-important = Markera som inte viktigt
 menu-pin = Fäst högst upp
 menu-unpin = Lossa
+menu-snooze = Snooza
+menu-unsnooze = Avbryt snooze
 menu-print-all = Skriv ut alla
 menu-new-window = Öppna i nytt fönster
 menu-move-to = Flytta till
@@ -468,6 +473,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] Meddelandet har lossats.
        *[other] { $count } meddelanden har lossats.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har snoozats till { $when }.
+       *[other] { $count } konversationer har snoozats till { $when }.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har snoozats till { $when }.
+       *[other] { $count } meddelanden har snoozats till { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen är tillbaka i Inkorgen.
+       *[other] { $count } konversationer är tillbaka i Inkorgen.
+    }
+   *[message] { $count ->
+        [one] Meddelandet är tillbaka i Inkorgen.
+       *[other] { $count } meddelanden är tillbaka i Inkorgen.
     }
 }
 toast-spam = { $kind ->

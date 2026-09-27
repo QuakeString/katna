@@ -40,6 +40,7 @@ use super::reader::Squeeze;
 use super::{Act, LIST_CONTEXT, Listing, MailWindow, Menu, READER_CONTEXT, Reload, STACKED_BELOW};
 use crate::data::{EntryKey, Row, RowFile};
 use crate::format;
+use crate::sidebar::Role;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     TOOLBAR_HEIGHT, card_outline, card_shadow, icon, icon_button, icon_button_colored, menu,
@@ -1490,8 +1491,10 @@ impl MailWindow {
             );
         };
         let now = jiff::Timestamp::now().as_second();
+        // Snoozed mail shows when it comes back instead.
         let date = row
-            .date
+            .snoozed_until
+            .or(row.date)
             .and_then(|d| format::local(d, &self.tz))
             .zip(format::local(now, &self.tz))
             .map(|(d, now)| format::list_date(d, now))
@@ -1647,7 +1650,26 @@ impl MailWindow {
                         .child(icon("pin-filled", th.accent, 16.0)),
                 )
             })
-            .child(date);
+            .map(|d| match row.snoozed_until {
+                Some(until) => d.text_color(rgba(th.accent)).child(
+                    div()
+                        .id(("row-snoozed", ix))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(4.0))
+                        .tooltip(tip(
+                            tr!(
+                                "row-snoozed-until",
+                                when = super::snooze::describe(until, &self.tz)
+                            ),
+                            th,
+                        ))
+                        .child(icon("schedule", th.accent, 16.0))
+                        .child(date),
+                ),
+                None => d.child(date),
+            });
 
         if stacked {
             let line_h = (line_height - 16.0) / 3.0;
@@ -2030,8 +2052,8 @@ impl MailWindow {
         [scrim, popover]
     }
 
-    /// Archive, delete, read/unread and pin buttons shown on the hovered
-    /// line in place of its date.
+    /// Archive, delete, read/unread, pin and snooze buttons shown on the
+    /// hovered line in place of its date.
     fn hover_actions(
         &self,
         ix: usize,
@@ -2042,7 +2064,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let button = |id: usize, name: &str, label: String| {
-            icon_button_colored(("row-action", ix * 4 + id), name, 18.0, th.text_dim, th)
+            icon_button_colored(("row-action", ix * 5 + id), name, 18.0, th.text_dim, th)
                 .size(px(32.0))
                 .tooltip(tip(label, th))
         };
@@ -2094,6 +2116,23 @@ impl MailWindow {
                     this.act(Act::Pin(!pinned), vec![key], cx);
                 })),
             )
+            .map(|d| match self.folder_role() {
+                Role::Snoozed => d.child(button(4, "inbox", tr!("list-unsnooze")).on_click(
+                    cx.listener(move |this, _, _, cx| {
+                        cx.stop_propagation();
+                        this.act(Act::Unsnooze, vec![key], cx);
+                    }),
+                )),
+                Role::Drafts | Role::Sent | Role::Trash | Role::Junk => d,
+                _ => d.child(
+                    button(4, "schedule", tr!("list-snooze")).on_click(cx.listener(
+                        move |this, event: &gpui::ClickEvent, _, cx| {
+                            cx.stop_propagation();
+                            this.open_snooze_menu(vec![key], event.position(), cx);
+                        },
+                    )),
+                ),
+            })
             .with_animation(
                 ("row-actions", ix),
                 Animation::new(Duration::from_millis(140)).with_easing(ease_out_quint()),

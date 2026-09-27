@@ -589,3 +589,58 @@ antwoord. Schrijf {first name}, {name} of {my name} en Katna vult ze voor elke
 ontvanger in. Bewerk, hernoem of verwijder sjablonen in
 Instellingen > Opstellen.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Geplande e-mail gaat ook weg als je computer uit staat"
+text = """
+Als je mailserver e-mail kan vasthouden tot een ingesteld tijdstip, zoals
+Stalwart dat kan, geeft Verzending plannen het bericht nu aan de server
+zodra Ongedaan maken weg is, zodat het op tijd weggaat, ook als deze
+computer uit staat. Het planningsmenu zegt of je mailserver of Katna het
+verzendt.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Een lichtere hover"
+text = """
+De regel onder de aanwijzer in de e-maillijst komt nu omhoog met een
+vage schaduw, net als in Gmail, in plaats van een donkere band eronder.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Adressen slepen tussen Aan, Cc en Bcc"
+text = """
+Sleep een adreschip naar een ander veld om het te verplaatsen; Cc en Bcc
+gaan open terwijl je sleept, ook als ze verborgen zijn. Als je naar een
+chip wijst, verschijnt een x die het verwijdert.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Katna-account"
+text = """
+Met Instellingen > Katna-account maak je een account op de eigen server
+van Katna, met een eigen wachtwoord, nooit een e-mailwachtwoord. De
+onlinefuncties van Katna, zoals leesbevestigingen en linktracking,
+hebben het nodig. Je ziet welke computers zijn aangemeld en kunt elk
+ervan afmelden.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Terug waar je was"
+text = """
+Als je Katna Mail sluit en weer opent, komen de app, de map en het
+inbox-tabblad die je open had terug, net als de mappen die je had
+uitgeklapt en of het mappenvenster was ingeklapt. Afsluiten van Katna
+vanuit het systeemvak start het opnieuw.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Snoozen en herinneringen bij geen antwoord"
+text = """
+Snooze een gesprek met de klok op de regel of vanuit het rechtsklikmenu:
+het wacht in de map Gesnoozed en komt op het gekozen tijdstip ongelezen
+terug in de Inbox. Bij het verzenden kan de pijl naast Verzenden je
+herinneren als niemand binnen 1, 3 of 7 dagen antwoordt. Beide werken
+terwijl je computer aan staat, en halen de achterstand in zodra hij weer
+wakker wordt.
+"""

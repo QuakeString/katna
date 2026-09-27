@@ -20,6 +20,7 @@ storage-used-detail = { $address }: { $total } ལས་ { $used } ལག་ལ�
 
 folder-inbox = ནང་འབྱོར་སྒྲོམ
 folder-starred = སྐར་མ་བཀལ་ཡོདཔ
+folder-snoozed = ཤུལ་མར་བཞག་ཡོདཔ
 folder-unread = མ་ལྷག་པ
 folder-important = གལ་ཅན
 folder-drafts = ཟིན་བྲིས
