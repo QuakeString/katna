@@ -34,6 +34,7 @@ mod list;
 mod look;
 mod nav;
 mod onboarding;
+mod popovers;
 mod reader;
 mod remote;
 mod reply_row;
@@ -476,7 +477,7 @@ impl MailWindow {
             Config::default()
         });
         let desktop_colors = colors::DesktopColors::new(&env.desktop);
-        let this = Self {
+        let mut this = Self {
             chrome: WindowChrome::new(env, "Katna Mail", window, cx),
             app: RailApp::Mail,
             people: None,
@@ -569,6 +570,7 @@ impl MailWindow {
             tz: TimeZone::try_system().unwrap_or(TimeZone::UTC),
             _subscriptions: subscriptions,
         };
+        this.watch_escape(window, cx);
         let weak = cx.entity().downgrade();
         // The toolbar's "1–50 of N" follows the scrolling.
         this.list_state.set_scroll_handler(move |_, _, cx| {
@@ -2204,8 +2206,10 @@ impl Render for MailWindow {
             div()
                 .absolute()
                 .top_0()
+                .left_0()
                 .right_0()
                 .bottom(px(shape.bottom_bar()))
+                .overflow_hidden()
                 .child(panel)
                 .into_any_element()
         });
@@ -2234,8 +2238,9 @@ impl Render for MailWindow {
         let search_width = lerp(regular, pill, shape.phone);
         let search_panel_width = lerp(regular, width - 16.0, shape.phone);
         let search_panel_left = lerp(search_left, 8.0, shape.phone);
-        let search_panel =
-            self.render_search_panel(&th, search_panel_left, search_panel_width, window, cx);
+        let search_panel = self
+            .render_search_panel(&th, search_panel_left, search_panel_width, window, cx)
+            .map(|panel| self.search_panel_layer(panel, cx));
         let fab = if onboarding {
             None
         } else {
