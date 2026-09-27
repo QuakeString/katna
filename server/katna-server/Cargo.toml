@@ -1,6 +1,6 @@
 [package]
 name = "katna-server"
-description = "Katna Server: open and click tracking for mail sent with Katna."
+description = "Katna Server: server-side features for Katna, starting with open and click tracking."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

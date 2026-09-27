@@ -1,6 +1,9 @@
 # Katna Server
 
-Open and click tracking for mail sent with Katna
+The server behind Katna's features that need one. Installs register once
+and use their token for every feature; `/api/v1/` has room for more, and
+periodic work runs in the server's own tasks (today: deleting old records).
+The first feature is open and click tracking for mail sent with Katna
 (`docs/ARCHITECTURE.md` §16.1). Tracking is off unless the sender turns it
 on for a message.
 
