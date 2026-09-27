@@ -1249,7 +1249,10 @@ Gemini or confidential mode):
   Experimental. Subscription, Mail rules, Folders, Templates and MCP server
   are still to come: their tabs are fainter and each shows a "Coming soon"
   page saying what it will do. The tabs wrap onto a second line on a
-  desktop, as Gmail's do, and scroll sideways on a phone.
+  desktop, as Gmail's do, and scroll sideways on a phone. A setting's
+  line that would take more than one line under its name (over about 40
+  characters) sits behind an (i) button beside the name: its tooltip on
+  hover, and shown under the name after a click, Enter or a tap.
 - **Searching settings.** While the Settings page is open the top bar's
   search box searches settings ("Search settings"; `window/settings_search.rs`):
   matching rows from every tab replace the open tab, each with its tab and

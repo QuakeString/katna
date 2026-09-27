@@ -407,7 +407,12 @@ impl MailWindow {
     ) -> Div {
         let label = label.into();
         let flash = self.flash_mark(&label, th);
-        setting_row(label, detail, content, flash, th)
+        let info = self
+            .settings_page
+            .as_ref()
+            .map(|p| p.info.clone())
+            .unwrap_or_default();
+        setting_row(label, detail, content, &info, flash, th)
     }
 
     /// Under the row named `label` when a search has just led to it: a

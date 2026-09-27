@@ -12,6 +12,8 @@
 //! the page is open (`settings_search.rs`). Changes apply at once and are
 //! saved to `config.toml`.
 
+use std::cell::RefCell;
+use std::rc::Rc;
 use std::time::Duration;
 
 use gpui::{
@@ -32,7 +34,7 @@ use super::{
 };
 use crate::tabs::{self, Provider};
 use crate::theme::Theme;
-use crate::widgets::{FocusRing, TabStops, icon, icon_button, outlined_button};
+use crate::widgets::{FocusRing, TabStops, icon, icon_button, outlined_button, tip};
 
 /// A signature edit is saved this long after the last key.
 const SAVE_DELAY: Duration = Duration::from_millis(600);
@@ -40,6 +42,9 @@ const SAVE_DELAY: Duration = Duration::from_millis(600);
 /// "g i".
 const SEQUENCE_WAIT: Duration = Duration::from_millis(900);
 const LABEL_WIDTH: f32 = 220.0;
+/// About as many characters of a setting's line as fit on one line under
+/// its name; a longer line goes behind an (i) button.
+const ONE_LINE: usize = 40;
 /// The least room the controls of a row take beside its name; with less,
 /// they go below it.
 const CONTROL_WIDTH: f32 = 300.0;
@@ -119,6 +124,8 @@ pub(super) struct SettingsPage {
     pub(super) query: SharedString,
     /// The row a search has just led to.
     pub(super) flash: Option<super::settings_search::Flash>,
+    /// The row whose (i) line is shown under its name.
+    pub(super) info: Rc<RefCell<Option<SharedString>>>,
 }
 
 impl SettingsPage {
@@ -172,6 +179,7 @@ impl MailWindow {
             tabs: ScrollHandle::new(),
             query: SharedString::default(),
             flash: None,
+            info: Rc::default(),
         });
         if fresh {
             window.focus(&page.focus, cx);
@@ -1528,15 +1536,56 @@ fn style_name(style: TabStyle) -> &'static str {
 
 /// A setting: its name (and a line on it) on the left, the controls on the
 /// right. Where the two don't fit side by side, as on a phone, the name
-/// goes above the controls and both take the whole width.
-/// `flash` goes under it when a search has just led here.
+/// goes above the controls and both take the whole width. A line on it that
+/// would take more than one line under the name goes behind an (i) button
+/// beside the name instead: its tooltip on hover, or shown under the name
+/// while `open` (a click, Enter or a tap). `flash` goes under the row when a
+/// search has just led here.
 pub(super) fn setting_row(
     label: SharedString,
     detail: Option<&'static str>,
     content: impl IntoElement,
+    info: &Rc<RefCell<Option<SharedString>>>,
     flash: Option<AnyElement>,
     th: &Theme,
 ) -> Div {
+    let long = detail.filter(|d| d.chars().count() > ONE_LINE);
+    let open = long.is_some() && info.borrow().as_ref() == Some(&label);
+    let button = long.map(|text| {
+        let info = info.clone();
+        let name = label.clone();
+        div()
+            .id(SharedString::from(format!("setting-info-{label}")))
+            .focus_ring(th)
+            .flex_none()
+            .size(px(24.0))
+            .flex()
+            .items_center()
+            .justify_center()
+            .rounded_full()
+            .cursor_pointer()
+            .hover(|d| d.bg(rgba(th.hover)))
+            .tooltip(tip(text, th))
+            .on_click(move |_, window, _| {
+                let mut shown = info.borrow_mut();
+                *shown = if shown.as_ref() == Some(&name) {
+                    None
+                } else {
+                    Some(name.clone())
+                };
+                window.refresh();
+            })
+            .child(icon(
+                "info",
+                if open { th.accent } else { th.text_faint },
+                16.0,
+            ))
+    });
+    let shown = if long.is_some() {
+        detail.filter(|_| open)
+    } else {
+        detail
+    };
     div()
         .relative()
         .children(flash)
@@ -1555,11 +1604,20 @@ pub(super) fn setting_row(
                 .gap(px(4.0))
                 .child(
                     div()
-                        .text_size(px(14.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .child(label),
+                        .min_h(px(20.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(4.0))
+                        .child(
+                            div()
+                                .text_size(px(14.0))
+                                .font_weight(FontWeight::MEDIUM)
+                                .child(label),
+                        )
+                        .children(button),
                 )
-                .children(detail.map(|d| {
+                .children(shown.map(|d| {
                     div()
                         .text_size(px(12.0))
                         .line_height(px(17.0))
