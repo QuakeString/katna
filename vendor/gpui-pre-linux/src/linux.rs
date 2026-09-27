@@ -8,6 +8,7 @@ mod platform;
 mod system_notifications;
 #[cfg(any(feature = "wayland", feature = "x11"))]
 mod text_system;
+mod transfer;
 #[cfg(feature = "wayland")]
 mod wayland;
 #[cfg(feature = "x11")]
@@ -16,16 +17,17 @@ mod x11;
 #[cfg(any(feature = "wayland", feature = "x11"))]
 mod xdg_desktop_portal;
 
-pub use appmenu::set_kde_appmenu;
-pub use effects::{compositor_blur, set_client_corner_radius};
-pub use placement::{Placement, placement_session, restore_placement};
 pub(crate) use appmenu::kde_appmenu;
+pub use appmenu::set_kde_appmenu;
 pub use dispatcher::*;
+pub use effects::{compositor_blur, set_client_corner_radius};
 pub(crate) use headless::*;
 pub(crate) use keyboard::*;
+pub use placement::{Placement, placement_session, restore_placement};
 pub(crate) use platform::*;
 #[cfg(any(feature = "wayland", feature = "x11"))]
 pub(crate) use text_system::*;
+pub use transfer::{DroppedContent, clipboard_html, dropped_content, html_item, read_rich};
 #[cfg(feature = "wayland")]
 pub(crate) use wayland::*;
 #[cfg(feature = "x11")]

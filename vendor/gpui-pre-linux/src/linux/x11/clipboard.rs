@@ -48,6 +48,8 @@ use x11rb::{
 };
 
 use gpui::{ClipboardItem, Image, ImageFormat, hash};
+
+use crate::linux::transfer::{self, Transfer};
 use strum::IntoEnumIterator;
 
 type Result<T, E = Error> = std::result::Result<T, E>;
@@ -77,8 +79,7 @@ x11rb::atom_manager! {
         TEXT,
         TEXT_MIME_UNKNOWN: b"text/plain",
 
-        // HTML: b"text/html",
-        // URI_LIST: b"text/uri-list",
+        HTML: b"text/html",
 
         PNG__MIME: ImageFormat::mime_type(ImageFormat::Png ).as_bytes(),
         JPEG_MIME: ImageFormat::mime_type(ImageFormat::Jpeg).as_bytes(),
@@ -361,6 +362,32 @@ impl Inner {
         }
         log::trace!("All conversions to supported formats failed.");
         Err(Error::ContentNotAvailable)
+    }
+
+    /// Everything Katna can use (see `transfer`), read with one
+    /// connection: the formats the owner offers, then each wanted one.
+    fn read_rich(&self, selection: ClipboardKind) -> Result<Transfer> {
+        let reader = XContext::new()?;
+        let targets = self.read_single(&reader, selection, self.atoms.TARGETS)?;
+        if targets.format != self.atoms.ATOM {
+            return Err(Error::ConversionFailure);
+        }
+        let offered = Self::parse_formats(&targets.bytes)
+            .into_iter()
+            .map(|atom| (self.atom_name(atom), atom))
+            .collect::<Vec<_>>();
+        let names = offered.iter().map(|(name, _)| *name).collect::<Vec<_>>();
+        let mut transfer = Transfer::default();
+        for mime in transfer::wanted_mimes(&names) {
+            let Some(&(_, atom)) = offered.iter().find(|(name, _)| *name == mime) else {
+                continue;
+            };
+            match self.read_single(&reader, selection, atom) {
+                Ok(data) => transfer.add(mime, data.bytes),
+                Err(err) => log::trace!("Clipboard read as {mime} failed: {err}"),
+            }
+        }
+        Ok(transfer)
     }
 
     fn parse_formats(bytes: &[u8]) -> Vec<Atom> {
@@ -977,6 +1004,7 @@ impl Clipboard {
         Ok(Self { inner: ctx })
     }
 
+    #[allow(unused)]
     pub(crate) fn set_text(
         &self,
         message: Cow<'_, str>,
@@ -988,6 +1016,45 @@ impl Clipboard {
             format: self.inner.atoms.UTF8_STRING,
         }];
         self.inner.write(data, selection, wait)
+    }
+
+    /// Offers `item`'s text, and its HTML if it has some (Katna).
+    pub(crate) fn set_item(
+        &self,
+        item: &ClipboardItem,
+        selection: ClipboardKind,
+        wait: WaitConfig,
+    ) -> Result<()> {
+        let text = item.text().unwrap_or_default().into_bytes();
+        let atoms = &self.inner.atoms;
+        // TARGETS lists the MIME names of UTF8_STRING too, so they must be
+        // there to read.
+        let mut data = [
+            atoms.UTF8_STRING,
+            atoms.UTF8_MIME_0,
+            atoms.TEXT_MIME_UNKNOWN,
+        ]
+        .into_iter()
+        .map(|format| ClipboardData {
+            bytes: text.clone(),
+            format,
+        })
+        .collect::<Vec<_>>();
+        if let Some(html) = transfer::clipboard_html(item) {
+            data.push(ClipboardData {
+                bytes: html.as_bytes().to_owned(),
+                format: atoms.HTML,
+            });
+        }
+        self.inner.write(data, selection, wait)
+    }
+
+    /// The clipboard with everything Katna can use (see `transfer`).
+    pub(crate) fn get_rich(&self, selection: ClipboardKind) -> Result<ClipboardItem> {
+        self.inner
+            .read_rich(selection)?
+            .into_item()
+            .ok_or(Error::ContentNotAvailable)
     }
 
     fn image_format_atom(&self, format: ImageFormat) -> Atom {

@@ -50,6 +50,29 @@ It also opens the main window where it was (`src/linux/placement.rs`):
   `_NET_WM_STATE` before it is mapped, as window managers ignore requests
   for unmapped windows.
 
+It also carries clipboard and drag-and-drop content beyond plain text
+(`src/linux/transfer.rs`, exported from the crate root):
+
+- `read_rich(|| cx.read_from_clipboard())` reads, on Wayland
+  (`wayland/clipboard.rs`) and X11 (`x11/clipboard.rs`, one connection,
+  TARGETS then each type), the owner's HTML (in the string entry's
+  metadata, `clipboard_html`), plain text, one picture and copied files
+  (`text/uri-list`, `x-special/gnome-copied-files`) as `ExternalPaths`.
+  Outside `read_rich` reads are unchanged. UTF-16 HTML (with a byte order
+  mark) and Windows' "HTML Format" header are handled.
+- `html_item(plain, html)` offers `text/html` beside the text types
+  (Wayland `send` answers by MIME type; X11 `set_item` also stores the text
+  under the `text/plain` names TARGETS lists, which upstream advertised
+  but could not serve).
+- Drops: Wayland accepts the offer on enter with the enter serial (upstream
+  accepted `text/uri-list` on the offer event, before any serial of the
+  drag) and reads files or content in one go; X11 reads the whole type
+  list, asks for each wanted type in a property of its own name, reads
+  whole properties (upstream read 4 KB, which cut long file lists) and
+  only accepts drags it can take. Files arrive as before; content (HTML,
+  text, a picture) arrives as a drop of one made-up path, and
+  `dropped_content(paths)` gives it.
+
 The first commit that added this directory holds the crate unchanged, so
 `git diff` against it shows the whole patch. When GPUI is upgraded, copy the
 new version here and apply the same change, or drop the patch once upstream

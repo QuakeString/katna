@@ -7,6 +7,7 @@ use std::{
     time::{Duration, Instant},
 };
 
+use super::session::xdg_session_manager_v1;
 use ashpd::WindowIdentifier;
 use calloop::{
     EventLoop, LoopHandle,
@@ -18,7 +19,6 @@ use collections::HashMap;
 use filedescriptor::Pipe;
 use gpui_util::ResultExt as _;
 use http_client::Url;
-use smallvec::SmallVec;
 use wayland_backend::client::ObjectId;
 use wayland_backend::protocol::WEnum;
 use wayland_client::event_created_child;
@@ -36,6 +36,9 @@ use wayland_client::{
         wl_buffer, wl_compositor, wl_keyboard, wl_pointer, wl_registry, wl_seat, wl_shm,
         wl_shm_pool, wl_surface,
     },
+};
+use wayland_protocols::ext::background_effect::v1::client::{
+    ext_background_effect_manager_v1, ext_background_effect_surface_v1,
 };
 use wayland_protocols::wp::pointer_gestures::zv1::client::{
     zwp_pointer_gesture_pinch_v1, zwp_pointer_gestures_v1,
@@ -70,10 +73,8 @@ use wayland_protocols::{
     wp::fractional_scale::v1::client::{wp_fractional_scale_manager_v1, wp_fractional_scale_v1},
     xdg::dialog::v1::client::xdg_dialog_v1::XdgDialogV1,
 };
-use wayland_protocols_plasma::appmenu::client::{org_kde_kwin_appmenu, org_kde_kwin_appmenu_manager};
-use super::session::xdg_session_manager_v1;
-use wayland_protocols::ext::background_effect::v1::client::{
-    ext_background_effect_manager_v1, ext_background_effect_surface_v1,
+use wayland_protocols_plasma::appmenu::client::{
+    org_kde_kwin_appmenu, org_kde_kwin_appmenu_manager,
 };
 use wayland_protocols_plasma::blur::client::{org_kde_kwin_blur, org_kde_kwin_blur_manager};
 use wayland_protocols_wlr::layer_shell::v1::client::{zwlr_layer_shell_v1, zwlr_layer_surface_v1};
@@ -91,6 +92,7 @@ use crate::linux::{
     is_within_click_distance, keystroke_from_xkb, keystroke_underlying_dead_key,
     modifiers_from_xkb, new_xkb_context, open_uri_internal, read_fd_with_timeout,
     reveal_path_internal,
+    transfer::{self, Transfer},
     wayland::{
         clipboard::{Clipboard, DataOffer, FILE_LIST_MIME_TYPE, TEXT_MIME_TYPES},
         cursor::Cursor,
@@ -1322,6 +1324,7 @@ impl LinuxClient for WaylandClient {
             return;
         };
         if state.mouse_focused_window.is_some() || state.keyboard_focused_window.is_some() {
+            let html = crate::linux::transfer::clipboard_html(&item).is_some();
             state.clipboard.set_primary(item);
             let Some(serial) = state.serial_tracker.selection_serial() else {
                 log::warn!(
@@ -1332,6 +1335,9 @@ impl LinuxClient for WaylandClient {
             let data_source = primary_selection_manager.create_source(&state.globals.qh, ());
             for mime_type in TEXT_MIME_TYPES {
                 data_source.offer(mime_type.to_string());
+            }
+            if html {
+                data_source.offer(crate::linux::transfer::HTML_MIME.to_string());
             }
             data_source.offer(state.clipboard.self_mime());
             primary_selection.set_selection(Some(&data_source), serial.as_raw());
@@ -1347,6 +1353,7 @@ impl LinuxClient for WaylandClient {
             return;
         };
         if state.mouse_focused_window.is_some() || state.keyboard_focused_window.is_some() {
+            let html = crate::linux::transfer::clipboard_html(&item).is_some();
             state.clipboard.set(item);
             let Some(serial) = state.serial_tracker.selection_serial() else {
                 log::warn!(
@@ -1358,6 +1365,9 @@ impl LinuxClient for WaylandClient {
                 .create_data_source(&state.globals.qh, DataSourceKind::Clipboard);
             for mime_type in TEXT_MIME_TYPES {
                 data_source.offer(mime_type.to_string());
+            }
+            if html {
+                data_source.offer(crate::linux::transfer::HTML_MIME.to_string());
             }
             data_source.offer(state.clipboard.self_mime());
             data_device.set_selection(Some(&data_source), serial.as_raw());
@@ -2731,17 +2741,47 @@ impl Dispatch<wl_data_device::WlDataDevice, ()> for WaylandClientStatePtr {
                     const ACTIONS: DndAction = DndAction::Copy;
                     data_offer.set_actions(ACTIONS, ACTIONS);
 
-                    let pipe = Pipe::new().unwrap();
-                    data_offer.receive(FILE_LIST_MIME_TYPE.to_string(), unsafe {
-                        BorrowedFd::borrow_raw(pipe.write.as_raw_fd())
-                    });
-                    let fd = pipe.read;
-                    drop(pipe.write);
+                    // Files, or content (cells, text, a picture) Katna can
+                    // take: see `transfer`.
+                    let offered = state
+                        .data_offers
+                        .iter()
+                        .find(|wrapper| wrapper.inner.id() == data_offer.id())
+                        .map(|offer| {
+                            transfer::wanted_mimes(&offer.mime_types())
+                                .into_iter()
+                                .map(str::to_owned)
+                                .collect::<Vec<_>>()
+                        })
+                        .unwrap_or_else(|| vec![FILE_LIST_MIME_TYPE.to_owned()]);
+                    let Some(first) = offered.first() else {
+                        data_offer.destroy();
+                        return;
+                    };
+                    data_offer.accept(serial, Some(first.clone()));
+
+                    let reads = offered
+                        .into_iter()
+                        .map(|mime| {
+                            let pipe = Pipe::new().unwrap();
+                            data_offer.receive(mime.clone(), unsafe {
+                                BorrowedFd::borrow_raw(pipe.write.as_raw_fd())
+                            });
+                            (mime, pipe.read)
+                        })
+                        .collect::<Vec<_>>();
 
                     let read_task = state.common.background_executor.spawn(async {
-                        let buffer = read_fd_with_timeout(fd, PIPE_READ_TIMEOUT)?;
-                        let text = String::from_utf8(buffer)?;
-                        anyhow::Ok(text)
+                        let mut transfer = Transfer::default();
+                        for (mime, fd) in reads {
+                            match read_fd_with_timeout(fd, PIPE_READ_TIMEOUT) {
+                                Ok(bytes) => transfer.add(&mime, bytes),
+                                Err(err) => {
+                                    log::error!("error reading drag and drop pipe: {err:?}")
+                                }
+                            }
+                        }
+                        transfer
                     });
 
                     let this = this.clone();
@@ -2749,32 +2789,18 @@ impl Dispatch<wl_data_device::WlDataDevice, ()> for WaylandClientStatePtr {
                         .common
                         .foreground_executor
                         .spawn(async move {
-                            let file_list = match read_task.await {
-                                Ok(list) => list,
-                                Err(err) => {
-                                    log::error!("error reading drag and drop pipe: {err:?}");
-                                    return;
-                                }
-                            };
-
-                            let paths: SmallVec<[_; 2]> = file_list
-                                .lines()
-                                .filter_map(|path| Url::parse(path).log_err())
-                                .filter_map(|url| match url.to_file_path() {
-                                    Ok(url) => Some(url),
-                                    Err(()) => {
-                                        log::error!("Failed turn {url:?} into a file path");
-                                        None
-                                    }
-                                })
-                                .collect();
+                            let mut transfer = read_task.await;
+                            let files = std::mem::take(&mut transfer.files);
                             let position = Point::new(x.into(), y.into());
 
-                            // Prevent dropping text from other programs.
-                            if paths.is_empty() {
+                            let paths = if !files.is_empty() {
+                                gpui::ExternalPaths(files.into_iter().collect())
+                            } else if let Some(content) = transfer.into_dropped() {
+                                transfer::enter_content(content)
+                            } else {
                                 data_offer.destroy();
                                 return;
-                            }
+                            };
                             let client = this.get_client();
                             let mut state = client.borrow_mut();
                             let input = state.drag.complete_uri_read(
@@ -2782,7 +2808,7 @@ impl Dispatch<wl_data_device::WlDataDevice, ()> for WaylandClientStatePtr {
                                 data_offer,
                                 drag_window,
                                 position,
-                                gpui::ExternalPaths(paths),
+                                paths,
                             );
 
                             drop(state);
@@ -3016,6 +3042,8 @@ impl Dispatch<XdgDialogV1, ()> for WaylandClientStatePtr {
 #[cfg(test)]
 mod tests {
     use std::cell::Cell;
+
+    use smallvec::SmallVec;
 
     use super::*;
 

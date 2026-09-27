@@ -20,6 +20,18 @@ use crate::widgets::{icon, tip};
 /// pictures in the text.
 pub(in crate::window) const MAX_TOTAL: usize = 25 * 1024 * 1024;
 
+/// Where added files go.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum Place {
+    /// All attached (the attach picker).
+    Attach,
+    /// Pictures in the text (the insert-photo picker).
+    Insert,
+    /// Pasted or dropped: pictures in the text when `inline`, else
+    /// attached, with the choice between the two under them.
+    Choose { inline: bool },
+}
+
 /// A file attached to the message.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::window) struct Attachment {
@@ -116,22 +128,21 @@ impl MailWindow {
             let Ok(Ok(Some(paths))) = chosen.await else {
                 return;
             };
-            this.update(cx, |this, cx| this.add_files(paths, pictures, cx))
+            let place = if pictures {
+                Place::Insert
+            } else {
+                Place::Attach
+            };
+            this.update(cx, |this, cx| this.add_files(paths, place, cx))
                 .ok();
         })
         .detach();
     }
 
-    /// Files dropped on the message: pictures go in the text, other files
-    /// are attached.
-    pub(in crate::window) fn drop_files(&mut self, paths: Vec<PathBuf>, cx: &mut Context<Self>) {
-        self.add_files(paths, true, cx);
-    }
-
-    /// Reads `paths` off the main thread and adds them. With `pictures`,
-    /// images go in the text (unless it is plain text); everything else is
-    /// attached.
-    fn add_files(&mut self, paths: Vec<PathBuf>, pictures: bool, cx: &mut Context<Self>) {
+    /// Reads `paths` off the main thread and adds them where `place` says:
+    /// pictures may go in the text (unless it is plain text); everything
+    /// else is attached.
+    pub(super) fn add_files(&mut self, paths: Vec<PathBuf>, place: Place, cx: &mut Context<Self>) {
         let read = cx.background_executor().spawn(async move {
             paths
                 .into_iter()
@@ -155,6 +166,8 @@ impl MailWindow {
                 let plain = compose.plain(cx);
                 let mut total = compose.used_bytes(cx);
                 let mut problem = None;
+                // Pictures to place with a choice, after the rest.
+                let mut chosen = Vec::new();
                 for (name, data) in files {
                     let data = match data {
                         Ok(data) => data,
@@ -171,9 +184,16 @@ impl MailWindow {
                         ));
                         continue;
                     }
-                    total += data.len();
                     let mime = mime_of(&name);
-                    if pictures && !plain && katna_ui::rich::image_mime(&name).is_some() {
+                    if matches!(place, Place::Choose { .. }) && mime.starts_with("image/") {
+                        chosen.push(katna_ui::rich::Picture { name, mime, data });
+                        continue;
+                    }
+                    total += data.len();
+                    if place == Place::Insert
+                        && !plain
+                        && katna_ui::rich::image_mime(&name).is_some()
+                    {
                         let (n, m) = (name.clone(), mime.clone());
                         let inserted = compose
                             .body
@@ -187,6 +207,11 @@ impl MailWindow {
                         mime,
                         data: Arc::new(data),
                     });
+                }
+                if let Place::Choose { inline } = place
+                    && !chosen.is_empty()
+                {
+                    this.place_pictures(chosen, inline, cx);
                 }
                 if let Some(problem) = problem {
                     this.show_snackbar(problem, None, cx);
@@ -275,10 +300,44 @@ impl MailWindow {
             .into_any_element()
     }
 
-    /// The "Drop files here" cover: unseen until files are dragged over
-    /// the message.
+    /// The "Drop files here" cover: unseen until files, or text, cells or
+    /// a picture from another app ("Drop here"), are dragged over the
+    /// message.
     pub(in crate::window) fn render_drop_target(&self, th: &Theme) -> AnyElement {
         let (surface, accent) = (th.surface, th.accent);
+        let content = |paths: &ExternalPaths| gpui_linux::dropped_content(paths).is_some();
+        // One label over the other; the drag shows the one that fits it.
+        let label = |id: &'static str, text: String, for_content: bool| {
+            div()
+                .id(id)
+                .absolute()
+                .top_0()
+                .left_0()
+                .size_full()
+                .flex()
+                .flex_col()
+                .items_center()
+                .justify_center()
+                .gap(px(8.0))
+                .opacity(if for_content { 0.0 } else { 1.0 })
+                .drag_over::<ExternalPaths>(move |s, paths, _, _| {
+                    if content(paths) == for_content {
+                        s.opacity(1.0)
+                    } else {
+                        s.opacity(0.0)
+                    }
+                })
+                .child(icon(
+                    if for_content {
+                        "format-text"
+                    } else {
+                        "attachment"
+                    },
+                    accent,
+                    32.0,
+                ))
+                .child(text)
+        };
         div()
             .absolute()
             .top_0()
@@ -289,12 +348,8 @@ impl MailWindow {
             .drag_over::<ExternalPaths>(|s, _, _, _| s.opacity(1.0))
             .child(
                 div()
+                    .relative()
                     .size_full()
-                    .flex()
-                    .flex_col()
-                    .items_center()
-                    .justify_center()
-                    .gap(px(8.0))
                     .rounded(px(12.0))
                     .border_2()
                     .border_dashed()
@@ -302,8 +357,8 @@ impl MailWindow {
                     .bg(rgba(crate::theme::fade(surface, 0.92)))
                     .text_color(rgba(accent))
                     .text_size(px(16.0))
-                    .child(icon("attachment", accent, 32.0))
-                    .child(tr!("compose-drop-files")),
+                    .child(label("drop-files", tr!("compose-drop-files"), false))
+                    .child(label("drop-content", tr!("compose-drop-here"), true)),
             )
             .into_any_element()
     }

@@ -2,6 +2,7 @@
 mod linux;
 
 pub use linux::{
-    Placement, compositor_blur, current_platform, placement_session, restore_placement,
-    set_client_corner_radius, set_kde_appmenu,
+    DroppedContent, Placement, clipboard_html, compositor_blur, current_platform, dropped_content,
+    html_item, placement_session, read_rich, restore_placement, set_client_corner_radius,
+    set_kde_appmenu,
 };

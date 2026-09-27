@@ -4,13 +4,14 @@
 //! writes (signatures are stored that way) and from plain text. The HTML
 //! uses inline styles only, which mail readers keep. No GPUI here.
 
+use std::collections::HashMap;
 use std::fmt::Write as _;
 use std::ops::Range;
 use std::sync::Arc;
 
 use super::doc::{
-    Align, Block, CharStyle, Doc, Font, Image, ImageSize, List, Para, ParaStyle, Size, Table,
-    image_size, list_marker, list_numbers,
+    Align, Block, CharStyle, Doc, Font, Image, ImageSize, List, MAX_INDENT, Para, ParaStyle, Size,
+    Table, image_size, list_marker, list_numbers,
 };
 
 /// Widest an image is sent at when it fits the text.
@@ -180,7 +181,12 @@ impl Writer<'_> {
                     Align::Center => ";text-align:center",
                     Align::Right => ";text-align:right",
                 };
-                let _ = write!(self.out, "<td style=\"{CELL_STYLE}{align}\">");
+                let fill = cell
+                    .style
+                    .fill
+                    .map(|c| format!(";background-color:#{c:06x}"))
+                    .unwrap_or_default();
+                let _ = write!(self.out, "<td style=\"{CELL_STYLE}{align}{fill}\">");
                 inline(self.out, cell);
                 self.out.push_str("</td>");
             }
@@ -435,6 +441,18 @@ pub fn from_plain(text: &str) -> Doc {
 /// inline ones), so a stored signature comes back as it was. Images must
 /// be `data:` URIs; `next_id` numbers them.
 pub fn from_html(html: &str, next_id: &mut u64) -> Doc {
+    read_html(html, next_id, false)
+}
+
+/// Reads HTML pasted or dropped from another app: a word processor, a
+/// spreadsheet or a web page. Beyond [`from_html`], pictures may come
+/// from local files (Word puts them there), and the page's own near-black
+/// text and white background are left out so the text follows the theme.
+pub fn from_pasted_html(html: &str, next_id: &mut u64) -> Doc {
+    read_html(html, next_id, true)
+}
+
+fn read_html(html: &str, next_id: &mut u64, pasted: bool) -> Doc {
     let mut reader = Reader {
         blocks: Vec::new(),
         para: Para::default(),
@@ -442,9 +460,13 @@ pub fn from_html(html: &str, next_id: &mut u64) -> Doc {
         styles: vec![CharStyle::default()],
         para_style: vec![ParaStyle::default()],
         lists: Vec::new(),
-        divs: Vec::new(),
+        elements: Vec::new(),
         table: None,
+        inner_tables: 0,
+        sheet: HashMap::new(),
+        marker: None,
         next_id,
+        pasted,
     };
     let mut rest = html;
     while !rest.is_empty() {
@@ -455,8 +477,17 @@ pub fn from_html(html: &str, next_id: &mut u64) -> Doc {
         if rest.starts_with('<')
             && let Some(end) = rest.find('>')
         {
-            reader.tag(&rest[1..end]);
+            let raw = &rest[1..end];
             rest = &rest[end + 1..];
+            if let Some(name) = reader.tag(raw) {
+                // What a style sheet or script holds is not text.
+                let close = find_ascii_ci(rest, &format!("</{name}"));
+                let (content, after) = close.map_or((rest, ""), |at| rest.split_at(at));
+                if name == "style" {
+                    reader.style_sheet(content);
+                }
+                rest = after;
+            }
             continue;
         }
         // Past the first character, which may be a lone '<' or take more
@@ -466,6 +497,7 @@ pub fn from_html(html: &str, next_id: &mut u64) -> Doc {
         reader.text(&decode_entities(&rest[..end]));
         rest = &rest[end..];
     }
+    reader.close_all();
     reader.flush(false);
     if reader.blocks.is_empty() {
         reader.blocks.push(Block::Para(Para::default()));
@@ -475,18 +507,131 @@ pub fn from_html(html: &str, next_id: &mut u64) -> Doc {
     }
 }
 
+/// The byte offset of `needle` (ASCII) in `text`, ignoring ASCII case.
+fn find_ascii_ci(text: &str, needle: &str) -> Option<usize> {
+    let (hay, needle) = (text.as_bytes(), needle.as_bytes());
+    (0..hay.len().saturating_sub(needle.len() - 1))
+        .find(|&at| hay[at..at + needle.len()].eq_ignore_ascii_case(needle))
+}
+
+/// Elements without content or an end tag.
+const VOID: &[&str] = &[
+    "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "wbr",
+];
+/// Elements whose content is not HTML.
+const RAW: &[&str] = &["style", "script", "title", "xml", "template", "textarea"];
+const BLOCKS: &[&str] = &[
+    "div", "p", "h1", "h2", "h3", "h4", "h5", "h6", "pre", "address",
+];
+/// Other elements whose background is a box's, not the text's.
+const BOXES: &[&str] = &[
+    "html",
+    "body",
+    "table",
+    "tbody",
+    "thead",
+    "tfoot",
+    "tr",
+    "td",
+    "th",
+    "ul",
+    "ol",
+    "li",
+    "blockquote",
+];
+
+/// An element being read, and what it changed that its end undoes.
+struct Element {
+    name: String,
+    /// It added a paragraph style.
+    block: bool,
+}
+
+/// A table being read. Cells are placed on a grid so that merged cells
+/// (`colspan`, `rowspan`) keep the rest in their columns; the cells they
+/// cover stay empty.
+struct TableReader {
+    rows: Vec<Vec<Option<Para>>>,
+    /// Rows started (`tr`).
+    started: usize,
+    /// The cell being read: its row, spans and style.
+    cell: Option<(usize, usize, usize, ParaStyle)>,
+}
+
+impl TableReader {
+    /// Places a cell in the first free column of `row`.
+    fn place(&mut self, row: usize, cols: usize, rows: usize, cell: Para) {
+        if self.rows.len() <= row {
+            self.rows.resize_with(row + 1, Vec::new);
+        }
+        let col = self.rows[row]
+            .iter()
+            .position(Option::is_none)
+            .unwrap_or(self.rows[row].len());
+        // Huge spans are mistakes; they would make a huge table.
+        let (cols, rows) = (cols.clamp(1, 64), rows.clamp(1, 256));
+        let fill = cell.style;
+        for r in row..row + rows {
+            if self.rows.len() <= r {
+                self.rows.resize_with(r + 1, Vec::new);
+            }
+            let cells = &mut self.rows[r];
+            if cells.len() < col + cols {
+                cells.resize(col + cols, None);
+            }
+            for slot in &mut cells[col..col + cols] {
+                if slot.is_none() {
+                    *slot = Some(Para::default().with_style(ParaStyle {
+                        fill: fill.fill,
+                        ..ParaStyle::default()
+                    }));
+                }
+            }
+        }
+        self.rows[row][col] = Some(cell);
+    }
+
+    fn finish(self) -> Option<Table> {
+        let rows: Vec<Vec<Option<Para>>> =
+            self.rows.into_iter().filter(|r| !r.is_empty()).collect();
+        let cols = rows.iter().map(Vec::len).max().unwrap_or(0);
+        if cols == 0 {
+            return None;
+        }
+        Some(Table {
+            rows: rows
+                .into_iter()
+                .map(|row| {
+                    let mut row: Vec<Para> =
+                        row.into_iter().map(Option::unwrap_or_default).collect();
+                    row.resize(cols, Para::default());
+                    row
+                })
+                .collect(),
+        })
+    }
+}
+
 struct Reader<'a> {
     blocks: Vec<Block>,
     para: Para,
     /// A block element started this paragraph: it is kept even if empty.
     open: bool,
+    /// The character style of each open element, over the default.
     styles: Vec<CharStyle>,
     para_style: Vec<ParaStyle>,
     lists: Vec<List>,
-    /// Whether each open `div` was a signature.
-    divs: Vec<bool>,
-    table: Option<Table>,
+    elements: Vec<Element>,
+    table: Option<TableReader>,
+    /// Tables inside the table being read: their cells are read as text.
+    inner_tables: usize,
+    /// Style sheet rules by selector: `tag`, `.class` or `tag.class`.
+    sheet: HashMap<String, String>,
+    /// Word's list marker being read (the bullet or number it writes as
+    /// text).
+    marker: Option<String>,
     next_id: &'a mut u64,
+    pasted: bool,
 }
 
 impl Reader<'_> {
@@ -499,18 +644,26 @@ impl Reader<'_> {
     }
 
     fn text(&mut self, text: &str) {
+        if let Some(marker) = &mut self.marker {
+            marker.push_str(text);
+            return;
+        }
         // Layout whitespace between tags is not text.
         let collapsed = collapse(text);
-        if collapsed.trim_matches(' ').is_empty() && (self.para.is_empty() || self.table.is_some())
-        {
-            if !self.para.is_empty() && collapsed.contains(' ') {
+        let in_cell = self.table.as_ref().is_some_and(|t| t.cell.is_some());
+        let between_cells = self.table.is_some() && !in_cell;
+        if between_cells {
+            return;
+        }
+        if collapsed.trim_matches(' ').is_empty() && (self.para.is_empty() || in_cell) {
+            if !self.para.is_empty() && collapsed.contains(' ') && !self.para.text.ends_with(' ') {
                 let style = self.style();
                 self.para.insert(self.para.len(), " ", &style);
             }
             return;
         }
         let style = self.style();
-        let text = if self.para.is_empty() {
+        let text = if self.para.is_empty() || self.para.text.ends_with(['\n', ' ']) {
             collapsed.trim_start_matches(' ').to_owned()
         } else {
             collapsed
@@ -521,23 +674,37 @@ impl Reader<'_> {
 
     /// Ends the paragraph being read. `keep` keeps it even when empty.
     fn flush(&mut self, keep: bool) {
+        if self.table.is_some() {
+            // In a cell, paragraphs are lines.
+            self.cell_line();
+            return;
+        }
         let mut para = finish(std::mem::take(&mut self.para), &[' ']);
+        if self.pasted && para.text.trim().is_empty() {
+            // Word's empty lines hold a no-break space.
+            para.remove(0..para.len());
+        }
         let wanted = keep || self.open || !para.is_empty();
         self.open = false;
         if !wanted {
             return;
         }
-        if let Some(table) = &mut self.table {
-            // Text in a table outside a cell: into the last cell.
-            if let Some(cell) = table.rows.last_mut().and_then(|r| r.last_mut()) {
-                cell.append(para);
-            }
-            return;
-        }
         if para.style == ParaStyle::default() {
             para.style = self.block_style();
         }
+        para.style.fill = None;
         self.blocks.push(Block::Para(para));
+    }
+
+    /// A new line in the cell being read, unless it is at the start of one.
+    fn cell_line(&mut self) {
+        if !self.para.is_empty() && !self.para.text.ends_with('\n') {
+            let style = self.style();
+            let len = self.para.len();
+            let trimmed = self.para.text.trim_end_matches(' ').len();
+            self.para.remove(trimmed..len);
+            self.para.insert(trimmed, "\n", &style);
+        }
     }
 
     /// A block opening inside an empty one replaces it.
@@ -554,108 +721,231 @@ impl Reader<'_> {
         self.open = true;
     }
 
-    fn tag(&mut self, raw: &str) {
+    /// The CSS for an element: its rules from the style sheet, then its
+    /// own `style`.
+    fn css_of(&self, name: &str, attrs: &str) -> String {
+        let mut css = String::new();
+        if !self.sheet.is_empty() {
+            let mut add = |selector: &str| {
+                if let Some(rule) = self.sheet.get(selector) {
+                    css.push_str(rule);
+                    css.push(';');
+                }
+            };
+            add(name);
+            for class in attr(attrs, "class").unwrap_or_default().split_whitespace() {
+                add(&format!(".{class}"));
+                add(&format!("{name}.{class}"));
+            }
+        }
+        if let Some(own) = attr(attrs, "style") {
+            css.push_str(&own);
+        }
+        css
+    }
+
+    /// Reads a style sheet's simple rules: by tag, class, or tag and class.
+    fn style_sheet(&mut self, sheet: &str) {
+        let mut text = sheet.replace("<!--", " ").replace("-->", " ");
+        while let Some(start) = text.find("/*") {
+            let end = text[start..]
+                .find("*/")
+                .map_or(text.len(), |e| start + e + 2);
+            text.replace_range(start..end, " ");
+        }
+        for rule in text.split('}') {
+            let Some((selectors, body)) = rule.split_once('{') else {
+                continue;
+            };
+            // Past an at-rule's own opening brace (`@media x {`).
+            let selectors = selectors.rsplit('{').next().unwrap_or_default();
+            for selector in selectors.split(',') {
+                let selector = selector.trim();
+                let (tag, class) = selector.split_once('.').unwrap_or((selector, ""));
+                let simple = |s: &str| {
+                    s.chars()
+                        .all(|c| c.is_alphanumeric() || c == '-' || c == '_')
+                };
+                if selector.is_empty()
+                    || selector.starts_with('@')
+                    || !simple(tag)
+                    || !simple(class)
+                {
+                    continue;
+                }
+                let key = if class.is_empty() {
+                    tag.to_ascii_lowercase()
+                } else {
+                    format!("{}.{class}", tag.to_ascii_lowercase())
+                };
+                let entry = self.sheet.entry(key).or_default();
+                entry.push_str(body.trim());
+                entry.push(';');
+            }
+        }
+    }
+
+    /// Reads a tag. For an element whose content is not HTML, gives its
+    /// name, so the caller skips to its end.
+    fn tag(&mut self, raw: &str) -> Option<String> {
         let raw = raw.trim().trim_end_matches('/').trim();
+        // Word's list markers: `<![if !supportLists]>1.<![endif]>`.
+        if let Some(cond) = raw.strip_prefix("![if") {
+            if cond.contains("supportLists") {
+                self.marker = Some(String::new());
+            }
+            return None;
+        }
+        if raw.starts_with("![endif") {
+            if let Some(marker) = self.marker.take()
+                && self.para.style.list != List::None
+            {
+                let marker = marker.trim_matches(|c: char| c.is_whitespace() || c == '\u{a0}');
+                if marker.starts_with(|c: char| c.is_ascii_alphanumeric()) {
+                    self.para.style.list = List::Numbered;
+                }
+            }
+            return None;
+        }
         let (closing, raw) = match raw.strip_prefix('/') {
             Some(r) => (true, r),
             None => (false, raw),
         };
         let name_end = raw.find(|c: char| c.is_whitespace()).unwrap_or(raw.len());
         let name = raw[..name_end].to_ascii_lowercase();
+        if name.is_empty() || name.starts_with('!') || name.starts_with('?') {
+            return None;
+        }
         let attrs = &raw[name_end..];
-        match (name.as_str(), closing) {
-            ("br", _) => self.line_break(),
-            ("b" | "strong", false) => self.push_style(|s| s.bold = true),
-            ("i" | "em", false) => self.push_style(|s| s.italic = true),
-            ("u" | "ins", false) => self.push_style(|s| s.underline = true),
-            ("s" | "strike" | "del", false) => self.push_style(|s| s.strike = true),
-            ("a", false) => {
-                let href = attr(attrs, "href").map(|h| Arc::<str>::from(decode_entities(&h)));
-                self.push_style(|s| s.link = href.clone());
+        if closing {
+            if name == "br" {
+                self.line_break();
+            } else {
+                self.close(&name);
             }
-            ("span" | "font", false) => {
-                let css = attr(attrs, "style").unwrap_or_default();
-                let color = attr(attrs, "color");
-                let face = attr(attrs, "face");
-                let size = attr(attrs, "size");
-                self.push_style(|s| {
-                    apply_css(s, &css);
-                    if let Some(c) = color.as_deref().and_then(parse_color) {
-                        s.color = Some(c);
-                    }
-                    if let Some(f) = face.as_deref() {
-                        s.font = font_named(f);
-                    }
-                    match size.as_deref() {
-                        Some("1" | "2") => s.size = Size::Small,
-                        Some("4" | "5") => s.size = Size::Large,
-                        Some("6" | "7") => s.size = Size::Huge,
-                        _ => {}
-                    }
-                });
+            return None;
+        }
+        if RAW.contains(&name.as_str()) {
+            return Some(name);
+        }
+        match name.as_str() {
+            "br" => {
+                self.line_break();
+                return None;
             }
-            (
-                "b" | "strong" | "i" | "em" | "u" | "ins" | "s" | "strike" | "del" | "a" | "span"
-                | "font",
-                true,
-            ) => {
-                if self.styles.len() > 1 {
-                    self.styles.pop();
+            "img" => {
+                self.image(attrs);
+                return None;
+            }
+            "hr" => {
+                self.start_para(self.block_style());
+                self.flush(true);
+                return None;
+            }
+            n if VOID.contains(&n) => return None,
+            _ => {}
+        }
+        // Elements that end the one of their kind still open.
+        match name.as_str() {
+            "p" => self.close_open("p", &["div", "td", "th", "li", "blockquote", "table"]),
+            "li" => self.close_open("li", &["ul", "ol"]),
+            "td" | "th" => self.close_open("td", &["tr", "table"]),
+            "tr" => self.close_open("tr", &["table"]),
+            _ => {}
+        }
+        if matches!(name.as_str(), "td" | "th") {
+            self.close_open("th", &["tr", "table"]);
+        }
+        let css = self.css_of(&name, attrs);
+        let mut element = Element {
+            name: name.clone(),
+            block: false,
+        };
+        // The character style inside the element.
+        let mut style = self.style();
+        match name.as_str() {
+            "b" | "strong" | "th" => style.bold = true,
+            "i" | "em" | "cite" | "var" => style.italic = true,
+            "u" | "ins" => style.underline = true,
+            "s" | "strike" | "del" => style.strike = true,
+            "code" | "tt" | "kbd" | "samp" | "pre" => style.font = Font::Fixed,
+            "a" => style.link = attr(attrs, "href").map(|h| Arc::<str>::from(decode_entities(&h))),
+            "font" => {
+                if let Some(c) = attr(attrs, "color").as_deref().and_then(parse_color) {
+                    style.color = Some(c);
+                }
+                if let Some(f) = attr(attrs, "face").as_deref() {
+                    style.font = font_named(f);
+                }
+                match attr(attrs, "size").as_deref() {
+                    Some("1" | "2") => style.size = Size::Small,
+                    Some("4" | "5") => style.size = Size::Large,
+                    Some("6" | "7") => style.size = Size::Huge,
+                    _ => {}
                 }
             }
-            ("div" | "p" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6", false) => {
-                let css = attr(attrs, "style").unwrap_or_default();
-                let class = attr(attrs, "class").unwrap_or_default();
-                let signature = class.contains("signature");
-                self.divs.push(signature);
-                let mut style = self.block_style();
-                style.signature |= signature;
-                apply_block_css(&mut style, &css);
-                if name.starts_with('h') {
-                    let size = if name == "h1" {
-                        Size::Huge
-                    } else {
-                        Size::Large
-                    };
-                    self.push_style(|s| {
-                        s.bold = true;
-                        s.size = size;
-                    });
+            "h1" => {
+                style.bold = true;
+                style.size = Size::Huge;
+            }
+            "h2" | "h3" | "h4" | "h5" | "h6" => {
+                style.bold = true;
+                style.size = Size::Large;
+            }
+            _ => {}
+        }
+        apply_css(&mut style, &css);
+        if BOXES.contains(&name.as_str()) || BLOCKS.contains(&name.as_str()) {
+            // A box's background fills the box (a table cell), not the
+            // text in it.
+            style.background = self.style().background;
+        }
+        if self.pasted {
+            // The page's own text and background colors, not the writer's.
+            if style.color.is_some_and(is_default_text) {
+                style.color = None;
+            }
+            if style.background.is_some_and(is_default_page) {
+                style.background = None;
+            }
+        }
+        // Paragraphs, lists, quotes and tables.
+        match name.as_str() {
+            n if BLOCKS.contains(&n) => {
+                let signature = attr(attrs, "class").is_some_and(|c| c.contains("signature"));
+                let mut block = self.block_style();
+                block.signature |= signature;
+                apply_block_css(&mut block, &css);
+                if let Some(level) = word_list_level(&css) {
+                    block.list = List::Bullet;
+                    block.indent = level;
+                } else if self.open && self.para.is_empty() && self.para.style.list != List::None {
+                    // A paragraph opening a list item (`<li><p>`, as
+                    // LibreOffice writes) is the item.
+                    block.list = self.para.style.list;
+                    block.indent = self.para.style.indent;
                 }
                 self.para_style.push(ParaStyle {
                     align: Align::Left,
+                    list: List::None,
                     indent: self.block_style().indent,
-                    ..style
+                    ..block
                 });
+                element.block = true;
                 if self.table.is_none() {
-                    self.start_para(style);
+                    self.start_para(block);
+                } else {
+                    self.cell_line();
                 }
             }
-            ("div" | "p" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6", true) => {
-                if self.table.is_none() {
-                    self.flush(false);
-                }
-                self.divs.pop();
-                if self.para_style.len() > 1 {
-                    self.para_style.pop();
-                }
-                if name.starts_with('h') && self.styles.len() > 1 {
-                    self.styles.pop();
-                }
-            }
-            ("blockquote", false) => {
+            "blockquote" => {
                 self.flush(false);
-                let mut style = self.block_style();
-                style.quote = style.quote.saturating_add(1);
-                self.para_style.push(style);
+                let mut block = self.block_style();
+                block.quote = block.quote.saturating_add(1);
+                self.para_style.push(block);
+                element.block = true;
             }
-            ("blockquote", true) => {
-                self.flush(false);
-                if self.para_style.len() > 1 {
-                    self.para_style.pop();
-                }
-            }
-            ("ul" | "ol", false) => {
+            "ul" | "ol" => {
                 self.flush(false);
                 self.lists.push(if name == "ol" {
                     List::Numbered
@@ -663,91 +953,191 @@ impl Reader<'_> {
                     List::Bullet
                 });
             }
-            ("ul" | "ol", true) => {
+            "li" => {
+                let mut block = self.block_style();
+                block.list = self.lists.last().copied().unwrap_or(List::Bullet);
+                block.indent = self.lists.len().saturating_sub(1).min(8) as u8;
+                apply_block_css(&mut block, &css);
+                if self.table.is_none() {
+                    self.start_para(block);
+                } else {
+                    self.cell_line();
+                }
+            }
+            "table" => {
+                if self.table.is_some() {
+                    self.inner_tables += 1;
+                } else {
+                    self.drop_empty();
+                    self.flush(false);
+                    self.table = Some(TableReader {
+                        rows: Vec::new(),
+                        started: 0,
+                        cell: None,
+                    });
+                    let mut block = ParaStyle::default();
+                    apply_block_css(&mut block, &css);
+                    self.para_style.push(ParaStyle {
+                        fill: block.fill,
+                        ..ParaStyle::default()
+                    });
+                    element.block = true;
+                }
+            }
+            "tr" if self.inner_tables == 0 => {
+                if let Some(table) = &mut self.table {
+                    table.started += 1;
+                }
+                let mut block = self.block_style();
+                apply_block_css(&mut block, &css);
+                if let Some(c) = attr(attrs, "bgcolor").as_deref().and_then(parse_color) {
+                    block.fill = Some(c);
+                }
+                self.para_style.push(block);
+                element.block = true;
+            }
+            "td" | "th" if self.inner_tables == 0 && self.table.is_some() => {
+                let mut block = ParaStyle {
+                    fill: self.block_style().fill,
+                    ..ParaStyle::default()
+                };
+                if let Some(a) = attr(attrs, "align") {
+                    apply_block_css(&mut block, &format!("text-align:{a}"));
+                }
+                if let Some(c) = attr(attrs, "bgcolor").as_deref().and_then(parse_color) {
+                    block.fill = Some(c);
+                }
+                apply_block_css(&mut block, &css);
+                if self.pasted && block.fill.is_some_and(is_default_page) {
+                    block.fill = None;
+                }
+                let span = |n: &str| {
+                    attr(attrs, n)
+                        .and_then(|v| v.trim().parse().ok())
+                        .unwrap_or(1)
+                };
+                let (cols, rows) = (span("colspan"), span("rowspan"));
+                if let Some(table) = &mut self.table {
+                    // A cell outside any row starts one.
+                    table.started = table.started.max(1);
+                    table.cell = Some((table.started - 1, cols, rows, block));
+                }
+                self.para = Para::default();
+            }
+            _ => {}
+        }
+        self.styles.push(style);
+        self.elements.push(element);
+        None
+    }
+
+    /// Closes the innermost open `name`, unless one of `stop` is open
+    /// inside it.
+    fn close_open(&mut self, name: &str, stop: &[&str]) {
+        for element in self.elements.iter().rev() {
+            if element.name == name {
+                self.close(name);
+                return;
+            }
+            if stop.contains(&element.name.as_str()) {
+                return;
+            }
+        }
+    }
+
+    /// Ends the innermost open `name` and all open inside it.
+    fn close(&mut self, name: &str) {
+        let Some(at) = self.elements.iter().rposition(|e| e.name == name) else {
+            return;
+        };
+        while self.elements.len() > at {
+            let Some(element) = self.elements.pop() else {
+                break;
+            };
+            self.end(&element);
+            if self.styles.len() > 1 {
+                self.styles.pop();
+            }
+            if element.block && self.para_style.len() > 1 {
+                self.para_style.pop();
+            }
+        }
+    }
+
+    fn close_all(&mut self) {
+        if let Some(first) = self.elements.first().map(|e| e.name.clone()) {
+            self.close(&first);
+        }
+    }
+
+    /// What ending an element does.
+    fn end(&mut self, element: &Element) {
+        match element.name.as_str() {
+            n if BLOCKS.contains(&n) => {
+                if self.table.is_none() {
+                    self.flush(false);
+                }
+            }
+            "blockquote" | "li" => self.flush(false),
+            "ul" | "ol" => {
                 self.flush(false);
                 self.lists.pop();
             }
-            ("li", false) => {
-                let mut style = self.block_style();
-                style.list = self.lists.last().copied().unwrap_or(List::Bullet);
-                style.indent = self.lists.len().saturating_sub(1).min(8) as u8;
-                if let Some(css) = attr(attrs, "style") {
-                    apply_block_css(&mut style, &css);
+            "td" | "th" if self.inner_tables > 0 => {
+                if !self.para.is_empty() && !self.para.text.ends_with([' ', '\n']) {
+                    let style = self.style();
+                    let len = self.para.len();
+                    self.para.insert(len, " ", &style);
                 }
-                self.start_para(style);
             }
-            ("li", true) => self.flush(false),
-            ("table", false) => {
-                self.drop_empty();
-                self.flush(false);
-                self.table = Some(Table { rows: Vec::new() });
+            "tr" if self.inner_tables > 0 => self.cell_line(),
+            "td" | "th" => {
+                let mut cell = finish(std::mem::take(&mut self.para), &[' ', '\n']);
+                if let Some(table) = &mut self.table
+                    && let Some((row, cols, rows, style)) = table.cell.take()
+                {
+                    cell.style = style;
+                    table.place(row, cols, rows, cell);
+                }
             }
-            ("table", true) => {
-                if let Some(mut table) = self.table.take() {
-                    table.rows.retain(|r| !r.is_empty());
-                    let cols = table.rows.iter().map(Vec::len).max().unwrap_or(0);
-                    if cols > 0 {
-                        for row in &mut table.rows {
-                            row.resize(cols, Para::default());
-                        }
-                        self.blocks.push(Block::Table(table));
-                    }
+            "table" if self.inner_tables > 0 => {
+                self.inner_tables -= 1;
+                self.cell_line();
+            }
+            "table" => {
+                if let Some(table) = self.table.take()
+                    && let Some(table) = table.finish()
+                {
+                    self.blocks.push(Block::Table(table));
                 }
                 self.para = Para::default();
                 self.open = false;
             }
-            ("tr", false) => {
-                if let Some(table) = &mut self.table {
-                    table.rows.push(Vec::new());
-                }
-            }
-            ("td" | "th", false) => {
-                let mut style = ParaStyle::default();
-                if let Some(css) = attr(attrs, "style") {
-                    apply_block_css(&mut style, &css);
-                }
-                self.para = Para::default().with_style(style);
-                if name == "th" {
-                    self.push_style(|s| s.bold = true);
-                }
-            }
-            ("td" | "th", true) => {
-                let cell = std::mem::take(&mut self.para);
-                if let Some(table) = &mut self.table {
-                    if table.rows.is_empty() {
-                        table.rows.push(Vec::new());
-                    }
-                    if let Some(row) = table.rows.last_mut() {
-                        row.push(finish(cell, &[' ', '\n']));
-                    }
-                }
-                if name == "th" && self.styles.len() > 1 {
-                    self.styles.pop();
-                }
-            }
-            ("img", false) => {
-                if let Some(image) = attr(attrs, "src").and_then(|src| {
-                    image_from_data_uri(
-                        &src,
-                        attr(attrs, "alt").unwrap_or_default(),
-                        attr(attrs, "width").and_then(|w| w.parse().ok()),
-                        self.next_id,
-                    )
-                }) {
-                    self.drop_empty();
-                    self.flush(false);
-                    self.blocks.push(Block::Image(image));
-                }
-            }
-            ("style" | "script" | "head" | "title", false) => {}
             _ => {}
         }
     }
 
-    fn push_style(&mut self, f: impl Fn(&mut CharStyle)) {
-        let mut style = self.style();
-        f(&mut style);
-        self.styles.push(style);
+    fn image(&mut self, attrs: &str) {
+        let Some(src) = attr(attrs, "src") else {
+            return;
+        };
+        let name = attr(attrs, "alt").unwrap_or_default();
+        let width = attr(attrs, "width").and_then(|w| w.trim_end_matches("px").parse().ok());
+        let image = if self.pasted && src.starts_with("file://") {
+            image_from_file(&src, name, self.next_id)
+        } else {
+            image_from_data_uri(&src, name, width, self.next_id)
+        };
+        let Some(image) = image else {
+            return;
+        };
+        if self.table.is_some() {
+            // Tables hold text only.
+            return;
+        }
+        self.drop_empty();
+        self.flush(false);
+        self.blocks.push(Block::Image(image));
     }
 
     fn line_break(&mut self) {
@@ -762,6 +1152,28 @@ impl Reader<'_> {
         self.flush(true);
         self.para.style = style;
     }
+}
+
+/// The list level (from 0) of a paragraph Word wrote as a list item
+/// (`mso-list:l0 level2 lfo1`).
+fn word_list_level(css: &str) -> Option<u8> {
+    let (_, value) = css_pairs(css).find(|(k, _)| k == "mso-list")?;
+    let level = value
+        .split_whitespace()
+        .find_map(|w| w.strip_prefix("level")?.parse::<u8>().ok())?;
+    Some(level.saturating_sub(1).min(MAX_INDENT))
+}
+
+/// Near-black grey: a page's ordinary text color.
+fn is_default_text(color: u32) -> bool {
+    let (r, g, b) = ((color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff);
+    r.max(g).max(b) < 0x50 && r.max(g).max(b) - r.min(g).min(b) < 0x18
+}
+
+/// White or near it: a page's ordinary background.
+fn is_default_page(color: u32) -> bool {
+    let (r, g, b) = ((color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff);
+    r.min(g).min(b) >= 0xf8
 }
 
 /// A paragraph as read: collapsed spaces trimmed from its end, and kept
@@ -809,6 +1221,51 @@ fn image_from_data_uri(
     })
 }
 
+/// A picture from a local file (Word puts the pictures it copies in
+/// temporary files).
+fn image_from_file(src: &str, name: String, next_id: &mut u64) -> Option<Image> {
+    let path = percent_decode(src.strip_prefix("file://")?.trim_start_matches("localhost"));
+    let meta = std::fs::metadata(&path).ok()?;
+    // Larger than any message can carry.
+    if !meta.is_file() || meta.len() > 25 * 1024 * 1024 {
+        return None;
+    }
+    let data = std::fs::read(&path).ok()?;
+    let (width, height) = image_size(&data)?;
+    let file = path.rsplit('/').next().unwrap_or("image").to_owned();
+    let mime = super::editor::image_mime(&file)?.to_owned();
+    *next_id += 1;
+    Some(Image {
+        id: *next_id,
+        name: if name.is_empty() { file } else { name },
+        mime,
+        data: Arc::new(data),
+        width,
+        height,
+        size: ImageSize::BestFit,
+    })
+}
+
+/// `%XX` escapes decoded.
+fn percent_decode(text: &str) -> String {
+    let bytes = text.as_bytes();
+    let mut out = Vec::with_capacity(bytes.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i] == b'%'
+            && let Some(hex) = text.get(i + 1..i + 3)
+            && let Ok(byte) = u8::from_str_radix(hex, 16)
+        {
+            out.push(byte);
+            i += 3;
+        } else {
+            out.push(bytes[i]);
+            i += 1;
+        }
+    }
+    String::from_utf8_lossy(&out).into_owned()
+}
+
 /// The value of attribute `name` in the attributes of a tag.
 fn attr(attrs: &str, name: &str) -> Option<String> {
     let lower = attrs.to_ascii_lowercase();
@@ -842,9 +1299,10 @@ fn apply_css(style: &mut CharStyle, css: &str) {
     for (key, value) in css_pairs(css) {
         match key.as_str() {
             "font-weight" => {
-                style.bold = value == "bold" || value.parse::<u32>().is_ok_and(|w| w >= 600)
+                style.bold = matches!(value.as_str(), "bold" | "bolder")
+                    || value.parse::<u32>().is_ok_and(|w| w >= 600)
             }
-            "font-style" => style.italic = value == "italic",
+            "font-style" => style.italic = value == "italic" || value == "oblique",
             "text-decoration" | "text-decoration-line" => {
                 style.underline |= value.contains("underline");
                 style.strike |= value.contains("line-through");
@@ -855,39 +1313,69 @@ fn apply_css(style: &mut CharStyle, css: &str) {
                     "x-small" | "xx-small" | "small" | "smaller" => Size::Small,
                     "large" | "larger" | "x-large" => Size::Large,
                     "xx-large" | "xxx-large" => Size::Huge,
-                    v => match v.trim_end_matches("px").parse::<f32>() {
-                        Ok(px) if px < 12.0 => Size::Small,
-                        Ok(px) if px >= 24.0 => Size::Huge,
-                        Ok(px) if px >= 17.0 => Size::Large,
+                    v => match css_px(v) {
+                        Some(px) if px < 12.0 => Size::Small,
+                        Some(px) if px >= 24.0 => Size::Huge,
+                        Some(px) if px >= 17.0 => Size::Large,
                         _ => Size::Normal,
                     },
                 }
             }
             "color" => style.color = parse_color(&value),
-            "background-color" | "background" => style.background = parse_color(&value),
+            "background-color" | "background" | "mso-highlight" => {
+                style.background = background_color(&value)
+            }
             _ => {}
         }
     }
+}
+
+/// The color a `background` value paints, if one.
+fn background_color(value: &str) -> Option<u32> {
+    parse_color(value).or_else(|| value.split_whitespace().find_map(parse_color))
+}
+
+/// A CSS length as pixels: `px`, `pt`, `in`, `cm`, `mm`, `em`, `rem` or
+/// `%` (of 16 px text).
+fn css_px(value: &str) -> Option<f32> {
+    let value = value.trim().to_ascii_lowercase();
+    let split = value
+        .find(|c: char| !(c.is_ascii_digit() || c == '.' || c == '-'))
+        .unwrap_or(value.len());
+    let (number, unit) = value.split_at(split);
+    let number: f32 = number.parse().ok()?;
+    let scale = match unit.trim() {
+        "" | "px" => 1.0,
+        "pt" => 4.0 / 3.0,
+        "in" => 96.0,
+        "cm" => 96.0 / 2.54,
+        "mm" => 96.0 / 25.4,
+        "em" | "rem" => 16.0,
+        "%" => 0.16,
+        _ => return None,
+    };
+    Some(number * scale)
 }
 
 fn apply_block_css(style: &mut ParaStyle, css: &str) {
     for (key, value) in css_pairs(css) {
         match key.as_str() {
             "text-align" => {
-                style.align = match value.as_str() {
-                    "center" => Align::Center,
-                    "right" => Align::Right,
+                style.align = match value.to_ascii_lowercase().as_str() {
+                    "center" | "middle" => Align::Center,
+                    "right" | "end" => Align::Right,
                     _ => Align::Left,
                 }
             }
             "margin-left" => {
-                if let Ok(px) = value.trim_end_matches("px").parse::<f32>()
+                if let Some(px) = css_px(&value)
                     && px >= 40.0
                     && style.list == List::None
                 {
-                    style.indent = ((px / 40.0).round() as u8).min(8);
+                    style.indent = ((px / 40.0).round() as u8).min(MAX_INDENT);
                 }
             }
+            "background-color" | "background" => style.fill = background_color(&value),
             _ => {}
         }
     }
@@ -911,15 +1399,53 @@ fn font_named(family: &str) -> Font {
         .or(match first.as_str() {
             "serif" | "times" => Some(Font::Serif),
             "monospace" | "courier" | "courier new" => Some(Font::Fixed),
+            // Families named after their kind ("Liberation Serif", "DejaVu
+            // Sans Mono", "Times New Roman").
+            f if f.contains("mono") || f.contains("courier") || f.contains("consol") => {
+                Some(Font::Fixed)
+            }
+            f if (f.contains("serif") && !f.contains("sans")) || f.starts_with("times") => {
+                Some(Font::Serif)
+            }
             _ => None,
         })
         .unwrap_or(Font::Sans)
 }
 
-/// `#rgb`, `#rrggbb` or `rgb(r, g, b)` as `0xRRGGBB`.
+/// `#rgb`, `#rrggbb`, `rgb(r, g, b)` or a basic color name as
+/// `0xRRGGBB`.
 pub fn parse_color(value: &str) -> Option<u32> {
-    let value = value.trim();
+    let value = value
+        .trim()
+        .trim_end_matches("!important")
+        .trim()
+        .to_ascii_lowercase();
+    let value = value.as_str();
+    let named = match value {
+        "black" => Some(0x000000),
+        "white" => Some(0xffffff),
+        "red" => Some(0xff0000),
+        "green" => Some(0x008000),
+        "lime" => Some(0x00ff00),
+        "blue" => Some(0x0000ff),
+        "yellow" => Some(0xffff00),
+        "orange" => Some(0xffa500),
+        "purple" => Some(0x800080),
+        "gray" | "grey" => Some(0x808080),
+        "silver" => Some(0xc0c0c0),
+        "maroon" => Some(0x800000),
+        "navy" => Some(0x000080),
+        "teal" => Some(0x008080),
+        "olive" => Some(0x808000),
+        "aqua" | "cyan" => Some(0x00ffff),
+        "fuchsia" | "magenta" => Some(0xff00ff),
+        _ => None,
+    };
+    if named.is_some() {
+        return named;
+    }
     if let Some(hex) = value.strip_prefix('#') {
+        let hex = if hex.len() == 8 { &hex[..6] } else { hex };
         return match hex.len() {
             3 => {
                 let v = u32::from_str_radix(hex, 16).ok()?;
@@ -934,7 +1460,10 @@ pub fn parse_color(value: &str) -> Option<u32> {
         .strip_prefix("rgb(")
         .or_else(|| value.strip_prefix("rgba("))?
         .strip_suffix(')')?;
-    let mut parts = inner.split(',').map(|p| p.trim().parse::<u32>().ok());
+    let mut parts = inner
+        .split([',', ' ', '/'])
+        .filter(|p| !p.trim().is_empty())
+        .map(|p| p.trim().parse::<f32>().ok().map(|v| v.round() as u32));
     let (r, g, b) = (parts.next()??, parts.next()??, parts.next()??);
     Some((r.min(255)) << 16 | (g.min(255)) << 8 | b.min(255))
 }
@@ -1231,6 +1760,193 @@ mod tests {
         assert_eq!(p.style_at(p.len()).color, Some(0xff0000));
     }
 
+    fn texts(d: &Doc) -> Vec<String> {
+        d.blocks
+            .iter()
+            .map(|b| match b {
+                Block::Para(p) => p.text.clone(),
+                Block::Table(t) => t
+                    .rows
+                    .iter()
+                    .map(|r| {
+                        r.iter()
+                            .map(|c| c.text.as_str())
+                            .collect::<Vec<_>>()
+                            .join("|")
+                    })
+                    .collect::<Vec<_>>()
+                    .join("/"),
+                Block::Image(i) => format!("[{}]", i.name),
+            })
+            .collect()
+    }
+
+    #[test]
+    fn reads_excel_cells() {
+        let html = "<html xmlns:o=\"urn:schemas-microsoft-com:office:office\"><head>\
+            <meta name=ProgId content=Excel.Sheet><style>\n<!--table\n\t{mso-displayed-decimal-separator:\"\\.\";}\n\
+            @page\n\t{margin:.75in .7in .75in .7in;}\ntd\n\t{padding-top:1px;\n\tcolor:black;\n\tfont-size:11.0pt;\n\t\
+            font-weight:400;\n\tfont-family:Calibri, sans-serif;}\n.xl65\n\t{font-weight:700;\n\tbackground:yellow;\n\t\
+            mso-pattern:black none;}\n.xl66\n\t{text-align:right;}\n-->\n</style></head><body link=\"#0563C1\">\
+            <table border=0 cellpadding=0 cellspacing=0 width=128 style='border-collapse:collapse;width:96pt'>\
+            <!--StartFragment-->\n <col width=64 span=2 style='width:48pt'>\n <tr height=20 style='height:15.0pt'>\n  \
+            <td height=20 class=xl65 width=64 style='height:15.0pt;width:48pt'>Name</td>\n  \
+            <td class=xl65 width=64 style='width:48pt'>Amount</td>\n </tr>\n <tr height=20>\n  \
+            <td height=20>Tea &amp; cake</td>\n  <td class=xl66 align=right>1,200</td>\n </tr>\n \
+            <tr><td colspan=2 style='mso-ignore:colspan'>Total</td></tr>\n<!--EndFragment-->\n</table></body></html>";
+        let mut next = 0;
+        let d = from_pasted_html(html, &mut next);
+        assert_eq!(texts(&d), ["Name|Amount/Tea & cake|1,200/Total|"]);
+        let Block::Table(t) = &d.blocks[0] else {
+            panic!()
+        };
+        assert!(t.rows[0][1].style_at(1).bold);
+        assert_eq!(t.rows[0][0].style.fill, Some(0xffff00));
+        assert_eq!(t.rows[0][0].style_at(1).background, None);
+        assert!(!t.rows[1][0].style_at(1).bold);
+        assert_eq!(t.rows[1][0].style_at(1).color, None);
+        assert_eq!(t.rows[1][1].style.align, Align::Right);
+    }
+
+    #[test]
+    fn reads_libreoffice_cells() {
+        let html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">\n<html><head>\
+            <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"/><title>x</title>\
+            <style type=\"text/css\">\n\t\tbody,div,table,thead,tbody,tfoot,tr,th,td,p { font-family:\"Liberation Sans\"; font-size:x-small }\n\
+            \t\ta.comment-indicator:hover + comment { background:#ffd; position:absolute; display:block; border:1px solid black; padding:0.5em;  }\n\
+            \t</style></head><body>\n<table cellspacing=\"0\" border=\"0\">\n\t<colgroup width=\"85\"></colgroup>\n\t<tr>\n\
+            \t\t<td height=\"17\" align=\"left\" bgcolor=\"#FFFF00\"><b><font color=\"#000000\">Name</font></b></td>\n\
+            \t\t<td align=\"right\" sdval=\"12\" sdnum=\"1033;\"><font color=\"#C9211E\">12</font></td>\n\t</tr>\n\
+            \t<tr>\n\t\t<td rowspan=2 valign=middle>Tall</td>\n\t\t<td>a</td>\n\t</tr>\n\t<tr>\n\t\t<td>b</td>\n\t</tr>\n</table>\n</body>\n</html>";
+        let mut next = 0;
+        let d = from_pasted_html(html, &mut next);
+        assert_eq!(texts(&d), ["Name|12/Tall|a/|b"]);
+        let Block::Table(t) = &d.blocks[0] else {
+            panic!()
+        };
+        assert_eq!(t.rows[0][0].style.fill, Some(0xffff00));
+        assert!(t.rows[0][0].style_at(1).bold);
+        assert_eq!(t.rows[0][1].style_at(1).color, Some(0xc9211e));
+        assert_eq!(t.rows[0][1].style.align, Align::Right);
+    }
+
+    #[test]
+    fn reads_libreoffice_writer_lists() {
+        let html = "<html><head><style type=\"text/css\">\n\t\th2.western { font-family: \"Liberation Serif\", serif; font-size: 18pt; font-weight: bold }\n\
+            \t\tp { background: transparent }\n\t</style></head><body lang=\"en-US\"><h2 class=\"western\">\nPlan</h2>\n\
+            <p>Some <b>bold</b> text.</p>\n<ul>\n\t<li><p style=\"margin-bottom: 0in\">First</p></li>\n\t<li><p>Second</p></li>\n</ul>\n\
+            <ol><li><p>One</p></li></ol>\n</body></html>";
+        let mut next = 0;
+        let d = from_pasted_html(html, &mut next);
+        assert_eq!(
+            texts(&d),
+            ["Plan", "Some bold text.", "First", "Second", "One"]
+        );
+        let lists: Vec<List> = d
+            .blocks
+            .iter()
+            .map(|b| match b {
+                Block::Para(p) => p.style.list,
+                _ => List::None,
+            })
+            .collect();
+        assert_eq!(
+            lists,
+            [
+                List::None,
+                List::None,
+                List::Bullet,
+                List::Bullet,
+                List::Numbered
+            ]
+        );
+    }
+
+    #[test]
+    fn reads_google_sheets_cells() {
+        let html = "<google-sheets-html-origin><style type=\"text/css\"><!--td {border: 1px solid #cccccc;}br {mso-data-placement:same-cell;}--></style>\
+            <table xmlns=\"http://www.w3.org/1999/xhtml\" cellspacing=\"0\" cellpadding=\"0\" dir=\"ltr\" border=\"1\" style=\"table-layout:fixed;font-size:10pt;font-family:Arial;width:0px;border-collapse:collapse;border:none\">\
+            <colgroup><col width=\"100\"/><col width=\"100\"/></colgroup><tbody><tr style=\"height:21px;\">\
+            <td style=\"overflow:hidden;padding:2px 3px 2px 3px;vertical-align:bottom;background-color:#ffff00;font-weight:bold;\">A</td>\
+            <td style=\"overflow:hidden;text-align:right;\" data-sheets-value=\"{&quot;1&quot;:3,&quot;3&quot;:1}\">1</td></tr></tbody></table>";
+        let mut next = 0;
+        let d = from_pasted_html(html, &mut next);
+        assert_eq!(texts(&d), ["A|1"]);
+        let Block::Table(t) = &d.blocks[0] else {
+            panic!()
+        };
+        assert_eq!(t.rows[0][0].style.fill, Some(0xffff00));
+        assert!(t.rows[0][0].style_at(1).bold);
+        assert_eq!(t.rows[0][1].style.align, Align::Right);
+    }
+
+    #[test]
+    fn reads_word_text_and_lists() {
+        let html = "<html xmlns:o=\"urn:schemas-microsoft-com:office:office\"><head><style><!--\n /* Style Definitions */\n\
+            p.MsoNormal, li.MsoNormal, div.MsoNormal\n\t{margin:0in;\n\tfont-size:11.0pt;\n\tfont-family:\"Calibri\",sans-serif;}\n\
+            -->\n</style><!--[if gte mso 10]><style>table.MsoNormalTable{}</style><![endif]--></head>\
+            <body lang=EN-US style='tab-interval:.5in'>\n<!--StartFragment-->\n\
+            <p class=MsoNormal><b>Hello</b> <span style='color:#C00000'>world</span><o:p></o:p></p>\n\
+            <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in;mso-list:l0 level1 lfo1'><![if !supportLists]>\
+            <span style='font-family:Symbol'><span style='mso-list:Ignore'>\u{b7}<span style='font:7.0pt \"Times New Roman\"'>&nbsp;&nbsp;&nbsp; </span></span></span><![endif]>First<o:p></o:p></p>\n\
+            <p class=MsoListParagraphCxSpLast style='margin-left:1.0in;text-indent:-.25in;mso-list:l1 level2 lfo2'><![if !supportLists]>\
+            <span style='mso-list:Ignore'>a.<span style='font:7.0pt \"Times New Roman\"'>&nbsp;&nbsp; </span></span><![endif]>Second<o:p></o:p></p>\n\
+            <p class=MsoNormal><o:p>&nbsp;</o:p></p>\n<p class=MsoNormal>End<o:p></o:p></p>\n<!--EndFragment-->\n</body></html>";
+        let mut next = 0;
+        let d = from_pasted_html(html, &mut next);
+        assert_eq!(texts(&d), ["Hello world", "First", "Second", "", "End"]);
+        let para = |ix: usize| match &d.blocks[ix] {
+            Block::Para(p) => p.clone(),
+            _ => panic!(),
+        };
+        assert!(para(0).style_at(1).bold);
+        assert_eq!(para(0).style_at(8).color, Some(0xc00000));
+        assert_eq!(
+            (para(1).style.list, para(1).style.indent),
+            (List::Bullet, 0)
+        );
+        assert_eq!(
+            (para(2).style.list, para(2).style.indent),
+            (List::Numbered, 1)
+        );
+    }
+
+    #[test]
+    fn reads_web_pages() {
+        let html = "<meta charset='utf-8'><h2 style=\"color: rgb(32, 33, 36); font-family: Roboto, Arial; \
+            background-color: rgb(255, 255, 255);\">Title</h2><p style=\"color: rgb(32, 33, 36); font-size: 16px;\">\
+            Some <a href=\"https://x.org\">link</a> <b style=\"font-weight:normal\">plain</b> <span style=\"color:#1a73e8\">blue</span>.</p>\
+            <ul><li>one<ul><li>two</li></ul></li><li>three</li></ul><table><tr><td><table><tr><td>in</td><td>ner</td></tr></table></td><td>x</td></tr></table>\
+            <script>var a = '<b>no</b>';</script>";
+        let mut next = 0;
+        let d = from_pasted_html(html, &mut next);
+        assert_eq!(
+            texts(&d),
+            [
+                "Title",
+                "Some link plain blue.",
+                "one",
+                "two",
+                "three",
+                "in ner|x"
+            ]
+        );
+        let para = |ix: usize| match &d.blocks[ix] {
+            Block::Para(p) => p.clone(),
+            _ => panic!(),
+        };
+        let title = para(0).style_at(1);
+        assert!(title.bold);
+        assert_eq!((title.color, title.background), (None, None));
+        let body = para(1);
+        assert_eq!(body.style_at(1).color, None);
+        assert!(body.style_at(6).link.is_some());
+        assert!(!body.style_at(12).bold);
+        assert_eq!(body.style_at(18).color, Some(0x1a73e8));
+        assert_eq!(para(3).style.indent, 1);
+        assert_eq!(para(4).style.indent, 0);
+    }
+
     #[test]
     fn plain_text_quotes_become_quote_depth() {
         let d = from_plain("hi\n> a\n>> b\n");
@@ -1267,6 +1983,8 @@ mod tests {
     fn colors() {
         assert_eq!(parse_color("#abc"), Some(0xaabbcc));
         assert_eq!(parse_color("rgb(1, 2, 3)"), Some(0x010203));
-        assert_eq!(parse_color("red"), None);
+        assert_eq!(parse_color("Red"), Some(0xff0000));
+        assert_eq!(parse_color("windowtext"), None);
+        assert_eq!(parse_color("rgb(1 2 3 / 50%)"), Some(0x010203));
     }
 }
