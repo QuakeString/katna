@@ -49,6 +49,10 @@ compose-picker-attach = צירוף
 compose-file-too-large = { $name } גדול מדי: הודעה יכולה להכיל עד { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = הסרת הקובץ המצורף
+compose-attachments-total = { $count ->
+    [one] קובץ אחד, { $size }
+   *[other] { $count } קבצים, { $size }
+}
 compose-drop-files = אפשר לשחרר קבצים כאן
 compose-drop-here = אפשר לשחרר כאן
 compose-paste-keep-formatting = שמירת העיצוב

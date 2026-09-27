@@ -503,3 +503,57 @@ Taslaklar'a, posta sunucunuza da kaydedilir. Yazmaya devam etmek için
 Taslaklar'dan açın. Onu yalnızca çöp kutusu düğmesi atar ve Geri al geri
 getirir.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Çok sayıda ek için yer"
+text = """
+Kaç dosya eklerseniz ekleyin, liste artık Gönder çubuğunun üzerine
+taşmak yerine onun üstünde kayar, en yeni dosyayı gösterir ve kaç dosya
+olduğunu ve toplam boyutlarını söyler.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Okunmamış ya da yıldızlı postaları Gmail gibi seçin"
+text = """
+Seç menüsündeki Okunmuş, Okunmamış, Yıldızlı ve Yıldızsız yeniden
+ekrandaki eşleşen postaları işaretler. Listenin üstündeki bir satır
+klasördeki eşleşen her ileti dizisini seçmeyi önerir ve Seçimi temizle
+bunu geri alır.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Klasörler sizi Ayarlar'dan çıkarır"
+text = """
+Ayarlar açıkken bir klasöre ya da Posta simgesine tıklamak artık
+Gmail'deki gibi Ayarlar'ı kapatıp o klasörü açar. Geri oku da çalışmaya
+devam eder.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Resimleri metnin içine bırakın"
+text = """
+Bir resmi iletinin üzerine sürüklediğinizde nereye yerleşeceğini
+gösteren bir imleç çıkar; böylece onu bir cümlenin ortasına
+bırakabilirsiniz. Diğer dosyalar yine ekler için bırakma alanını
+gösterir ve bırakma artık siz yazdıktan sonra da çalışır.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Çık hemen kapatır"
+text = """
+Tepsi simgesinin menüsündeki Çık artık hâlâ eşitlenen ya da dizinlenen
+postaları beklemiyor: Katna ve tepsi simgesi hemen kapanır, geri kalanı
+Katna bir sonraki başladığında sürer.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Postanızın yanında kişi ayrıntıları"
+text = """
+Geniş bir pencerede, açık ileti dizisinin yanındaki bir kart artık
+göndereni gösterir: imzalarından telefonunu, unvanını ve şirketini, onun
+saatini, ne kadar yazıştığınızı, son ileti dizilerinizi ve aranızdaki
+dosyaları. Açmak için bir ileti dizisine ya da dosyaya, görmek için
+ileti dizisindeki başka bir kişiye tıklayın. Bilgiler yalnızca bu
+bilgisayardaki postalarınızdan okunur. Okuma bölmesinin araç çubuğundaki
+kişi düğmesi kartı gizler.
+"""

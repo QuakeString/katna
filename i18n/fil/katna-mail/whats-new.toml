@@ -526,3 +526,53 @@ Mga Draft, pati sa iyong mail server, gaya sa Gmail. Buksan ito mula sa
 Mga Draft para ituloy ang pagsusulat. Ang button ng basurahan lang ang
 nagtatapon nito, at ibinabalik ito ng I-undo.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "May puwang para sa maraming attachment"
+text = """
+Gaano man karami ang file na i-attach mo, nag-i-scroll na ngayon ang listahan sa itaas ng bar ng Ipadala sa halip na matakpan ito, ipinapakita ang pinakabagong file, at sinasabi kung ilan ang file at ang kabuuang laki nila.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Piliin ang hindi pa nabasa o naka-star, gaya ng sa Gmail"
+text = """
+Tsine-check na ulit ng Nabasa na, Hindi pa nabasa, Naka-star at Walang
+star sa menu na Piliin ang tumutugmang mail sa screen. Nag-aalok ang isang
+linya sa itaas ng listahan na piliin ang bawat tumutugmang usapan sa
+folder, at ina-undo ito ng I-clear ang pagpili.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Inaalis ka ng mga folder sa Mga setting"
+text = """
+Kapag bukas ang Mga setting, isinasara na ngayon ng pag-click sa isang
+folder o sa icon ng Mail ang Mga setting at binubuksan ang folder na iyon,
+gaya ng sa Gmail. Gumagana pa rin ang back arrow.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "I-drop ang mga larawan sa text"
+text = """
+Kapag nag-drag ka ng larawan sa ibabaw ng mensahe, may lumalabas na caret kung saan ito lalapag, kaya maaari mo itong i-drop sa gitna ng pangungusap. Ipinapakita pa rin ng ibang file ang drop area para sa mga attachment, at gumagana na ang pag-drop kahit nakapag-type ka na.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Agad na nagsasara ang Umalis"
+text = """
+Hindi na naghihintay ang Umalis sa menu ng icon sa system tray sa mail na
+nagsi-sync o ini-index pa: agad na nagsasara ang Katna at ang icon nito sa
+tray, at itutuloy ang natitira sa susunod na pagbukas ng Katna.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Detalye ng contact sa tabi ng iyong mail"
+text = """
+Sa malapad na window, may card na ngayon sa tabi ng bukas na usapan na
+nagpapakita ng nagpadala: ang kanilang phone, titulo at kumpanya mula sa
+kanilang mga signature, ang oras nila ngayon, gaano karaming mail ang
+napagpalitan ninyo, ang mga kamakailang usapan ninyo at ang mga file sa
+pagitan ninyo. I-click ang isang usapan o file para buksan ito, o ang
+ibang tao sa usapan para makita sila. Binabasa lang ito mula sa mail mo sa
+computer na ito. Itinatago ito ng contact button sa toolbar ng pane ng
+pagbabasa.
+"""

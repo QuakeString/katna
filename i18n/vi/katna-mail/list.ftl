@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] Chọn tất cả { $count } cuộc hội thoại trong { $folder }
    *[message] Chọn tất cả { $count } thư trong { $folder }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại đã đọc trên trang này.
+       *[message] Đã chọn tất cả { $count } thư đã đọc trên trang này.
+    }
+   *[unread] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại chưa đọc trên trang này.
+       *[message] Đã chọn tất cả { $count } thư chưa đọc trên trang này.
+    }
+    [starred] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại có gắn dấu sao trên trang này.
+       *[message] Đã chọn tất cả { $count } thư có gắn dấu sao trên trang này.
+    }
+    [unstarred] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại không có dấu sao trên trang này.
+       *[message] Đã chọn tất cả { $count } thư không có dấu sao trên trang này.
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại đã đọc
+       *[message] Chọn tất cả { $count } thư đã đọc
+    }
+   *[unread] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại chưa đọc
+       *[message] Chọn tất cả { $count } thư chưa đọc
+    }
+    [starred] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại có gắn dấu sao
+       *[message] Chọn tất cả { $count } thư có gắn dấu sao
+    }
+    [unstarred] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại không có dấu sao
+       *[message] Chọn tất cả { $count } thư không có dấu sao
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại đã đọc trong { $folder }
+       *[message] Chọn tất cả { $count } thư đã đọc trong { $folder }
+    }
+   *[unread] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại chưa đọc trong { $folder }
+       *[message] Chọn tất cả { $count } thư chưa đọc trong { $folder }
+    }
+    [starred] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại có gắn dấu sao trong { $folder }
+       *[message] Chọn tất cả { $count } thư có gắn dấu sao trong { $folder }
+    }
+    [unstarred] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại không có dấu sao trong { $folder }
+       *[message] Chọn tất cả { $count } thư không có dấu sao trong { $folder }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] Đã chọn tất cả { $count } cuộc hội thoại đã đọc.

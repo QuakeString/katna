@@ -507,3 +507,58 @@ pelayan mel anda juga, seperti dalam Gmail. Bukanya dari Draf untuk
 terus menulis. Hanya butang sampah yang membuangnya, dan Buat asal
 mengembalikannya.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Ruang untuk banyak lampiran"
+text = """
+Walau berapa banyak fail yang anda lampirkan, senarai kini menatal di
+atas bar Hantar dan tidak lagi melimpahinya, menunjukkan fail terbaharu,
+serta memberitahu bilangan fail dan jumlah saiznya.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Pilih mel belum dibaca atau dibintangi, gaya Gmail"
+text = """
+Dibaca, Belum dibaca, Dibintangi dan Tidak dibintangi dalam menu pilih
+menanda semula mel yang sepadan pada skrin. Satu baris di atas senarai
+menawarkan untuk memilih setiap perbualan yang sepadan dalam folder, dan
+Kosongkan pilihan membatalkannya.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Folder membawa anda keluar dari Tetapan"
+text = """
+Semasa Tetapan dibuka, klik folder atau ikon Mel kini menutup Tetapan
+dan membuka folder itu, seperti dalam Gmail. Anak panah kembali masih
+berfungsi juga.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Lepaskan gambar ke dalam teks"
+text = """
+Menyeret gambar ke atas mesej menunjukkan kursor di tempat ia akan
+mendarat, jadi anda boleh melepaskannya di tengah ayat. Fail lain masih
+menunjukkan kawasan lepas untuk lampiran, dan lepasan kini berfungsi
+selepas anda menaip.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Keluar menutup serta-merta"
+text = """
+Keluar dalam menu ikon dulang tidak lagi menunggu mel yang masih
+disegerakkan atau diindeks: Katna dan ikon dulangnya ditutup
+serta-merta, dan selebihnya diteruskan apabila Katna dimulakan lagi.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Butiran kenalan di sebelah mel anda"
+text = """
+Dalam tetingkap yang lebar, sebuah kad di sebelah perbualan yang dibuka
+kini menunjukkan pengirim: telefon, jawatan dan syarikat mereka daripada
+tandatangan mereka, waktu mereka sekarang, berapa banyak mel yang telah
+anda bertukar, perbualan terkini anda dan fail antara anda. Klik
+perbualan atau fail untuk membukanya, atau orang lain dalam perbualan
+untuk melihat mereka. Ia dibaca daripada mel anda pada komputer ini
+sahaja. Butang kenalan pada bar alat anak tetingkap bacaan
+menyembunyikannya.
+"""

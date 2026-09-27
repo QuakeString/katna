@@ -49,6 +49,7 @@ compose-picker-attach = ភ្ជាប់
 compose-file-too-large = { $name } ធំពេក៖ សារមួយអាចផ្ទុកបានត្រឹម { $limit }។
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ដកឯកសារភ្ជាប់ចេញ
+compose-attachments-total = ឯកសារ { $count }, { $size }
 compose-drop-files = ទម្លាក់ឯកសារនៅទីនេះ
 compose-drop-here = ទម្លាក់នៅទីនេះ
 compose-paste-keep-formatting = រក្សាទម្រង់

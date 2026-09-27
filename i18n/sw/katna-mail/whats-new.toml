@@ -507,3 +507,57 @@ seva yako ya barua, kama ilivyo kwenye Gmail. Ufungue kutoka Rasimu ili
 uendelee kuandika. Kitufe cha tupio pekee ndicho huutupa, na Tendua
 huurudisha.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Nafasi kwa viambatisho vingi"
+text = """
+Hata ukiambatisha faili ngapi, orodha sasa husogezwa juu ya upau wa Tuma
+badala ya kuupita, huonyesha faili jipya zaidi, na husema kuna faili
+ngapi na ukubwa wake wote.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Chagua barua ambazo hazijasomwa au zenye nyota, kama Gmail"
+text = """
+Zilizosomwa, Ambazo hazijasomwa, Zenye nyota na Zisizo na nyota kwenye
+menyu ya Chagua hutia tena alama barua zinazolingana zilizo kwenye
+skrini. Mstari juu ya orodha hutoa kuchagua kila mazungumzo
+yanayolingana kwenye folda, na Futa uteuzi hutendua hilo.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Folda hukutoa kwenye Mipangilio"
+text = """
+Mipangilio ikiwa wazi, kubofya folda au aikoni ya Barua sasa hufunga
+Mipangilio na kufungua folda hiyo, kama ilivyo kwenye Gmail. Mshale wa
+kurudi bado unafanya kazi pia.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Dondosha picha ndani ya maandishi"
+text = """
+Kuburuta picha juu ya ujumbe huonyesha kishale mahali itakapotua, ili
+uweze kuidondosha katikati ya sentensi. Faili nyingine bado huonyesha
+eneo la kudondosha viambatisho, na kudondosha sasa hufanya kazi hata
+baada ya kuandika.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Ondoka hufunga mara moja"
+text = """
+Ondoka kwenye menyu ya aikoni ya trei haisubiri tena barua ambazo bado
+zinasawazishwa au kuorodheshwa: Katna na aikoni yake ya trei hufungwa
+papo hapo, na kilichobaki huendelea Katna itakapoanza tena.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Maelezo ya mwasiliani kando ya barua zako"
+text = """
+Katika dirisha pana, kadi kando ya mazungumzo yaliyo wazi sasa
+humwonyesha mtumaji: simu yake, cheo na kampuni kutoka kwenye sahihi
+zake, saa ya mahali alipo, kiasi cha barua mlizobadilishana, mazungumzo
+yenu ya hivi karibuni na faili kati yenu. Bofya mazungumzo au faili ili
+kuvifungua, au mtu mwingine wa mazungumzo ili kumwona. Maelezo husomwa
+kutoka kwenye barua zako kwenye kompyuta hii pekee. Kitufe cha
+mwasiliani kwenye upau wa zana wa kidirisha cha kusoma hukificha.
+"""

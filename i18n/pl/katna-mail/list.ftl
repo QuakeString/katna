@@ -123,6 +123,180 @@ list-select-all-in = { $kind ->
        *[other] Zaznacz wszystkie wiadomości ({ $count }) w folderze { $folder }
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznaczono { $count } przeczytany wątek na tej stronie.
+            [few] Zaznaczono wszystkie { $count } przeczytane wątki na tej stronie.
+            [many] Zaznaczono wszystkie { $count } przeczytanych wątków na tej stronie.
+           *[other] Zaznaczono wszystkie przeczytane wątki ({ $count }) na tej stronie.
+        }
+       *[message] { $count ->
+            [one] Zaznaczono { $count } przeczytaną wiadomość na tej stronie.
+            [few] Zaznaczono wszystkie { $count } przeczytane wiadomości na tej stronie.
+            [many] Zaznaczono wszystkie { $count } przeczytanych wiadomości na tej stronie.
+           *[other] Zaznaczono wszystkie przeczytane wiadomości ({ $count }) na tej stronie.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznaczono { $count } nieprzeczytany wątek na tej stronie.
+            [few] Zaznaczono wszystkie { $count } nieprzeczytane wątki na tej stronie.
+            [many] Zaznaczono wszystkie { $count } nieprzeczytanych wątków na tej stronie.
+           *[other] Zaznaczono wszystkie nieprzeczytane wątki ({ $count }) na tej stronie.
+        }
+       *[message] { $count ->
+            [one] Zaznaczono { $count } nieprzeczytaną wiadomość na tej stronie.
+            [few] Zaznaczono wszystkie { $count } nieprzeczytane wiadomości na tej stronie.
+            [many] Zaznaczono wszystkie { $count } nieprzeczytanych wiadomości na tej stronie.
+           *[other] Zaznaczono wszystkie nieprzeczytane wiadomości ({ $count }) na tej stronie.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznaczono { $count } wątek oznaczony gwiazdką na tej stronie.
+            [few] Zaznaczono wszystkie { $count } wątki oznaczone gwiazdką na tej stronie.
+            [many] Zaznaczono wszystkie { $count } wątków oznaczonych gwiazdką na tej stronie.
+           *[other] Zaznaczono wszystkie wątki oznaczone gwiazdką ({ $count }) na tej stronie.
+        }
+       *[message] { $count ->
+            [one] Zaznaczono { $count } wiadomość oznaczoną gwiazdką na tej stronie.
+            [few] Zaznaczono wszystkie { $count } wiadomości oznaczone gwiazdką na tej stronie.
+            [many] Zaznaczono wszystkie { $count } wiadomości oznaczonych gwiazdką na tej stronie.
+           *[other] Zaznaczono wszystkie wiadomości oznaczone gwiazdką ({ $count }) na tej stronie.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznaczono { $count } wątek bez gwiazdki na tej stronie.
+            [few] Zaznaczono wszystkie { $count } wątki bez gwiazdki na tej stronie.
+            [many] Zaznaczono wszystkie { $count } wątków bez gwiazdki na tej stronie.
+           *[other] Zaznaczono wszystkie wątki bez gwiazdki ({ $count }) na tej stronie.
+        }
+       *[message] { $count ->
+            [one] Zaznaczono { $count } wiadomość bez gwiazdki na tej stronie.
+            [few] Zaznaczono wszystkie { $count } wiadomości bez gwiazdki na tej stronie.
+            [many] Zaznaczono wszystkie { $count } wiadomości bez gwiazdki na tej stronie.
+           *[other] Zaznaczono wszystkie wiadomości bez gwiazdki ({ $count }) na tej stronie.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznacz { $count } przeczytany wątek
+            [few] Zaznacz wszystkie { $count } przeczytane wątki
+            [many] Zaznacz wszystkie { $count } przeczytanych wątków
+           *[other] Zaznacz wszystkie przeczytane wątki ({ $count })
+        }
+       *[message] { $count ->
+            [one] Zaznacz { $count } przeczytaną wiadomość
+            [few] Zaznacz wszystkie { $count } przeczytane wiadomości
+            [many] Zaznacz wszystkie { $count } przeczytanych wiadomości
+           *[other] Zaznacz wszystkie przeczytane wiadomości ({ $count })
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznacz { $count } nieprzeczytany wątek
+            [few] Zaznacz wszystkie { $count } nieprzeczytane wątki
+            [many] Zaznacz wszystkie { $count } nieprzeczytanych wątków
+           *[other] Zaznacz wszystkie nieprzeczytane wątki ({ $count })
+        }
+       *[message] { $count ->
+            [one] Zaznacz { $count } nieprzeczytaną wiadomość
+            [few] Zaznacz wszystkie { $count } nieprzeczytane wiadomości
+            [many] Zaznacz wszystkie { $count } nieprzeczytanych wiadomości
+           *[other] Zaznacz wszystkie nieprzeczytane wiadomości ({ $count })
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznacz { $count } wątek oznaczony gwiazdką
+            [few] Zaznacz wszystkie { $count } wątki oznaczone gwiazdką
+            [many] Zaznacz wszystkie { $count } wątków oznaczonych gwiazdką
+           *[other] Zaznacz wszystkie wątki oznaczone gwiazdką ({ $count })
+        }
+       *[message] { $count ->
+            [one] Zaznacz { $count } wiadomość oznaczoną gwiazdką
+            [few] Zaznacz wszystkie { $count } wiadomości oznaczone gwiazdką
+            [many] Zaznacz wszystkie { $count } wiadomości oznaczonych gwiazdką
+           *[other] Zaznacz wszystkie wiadomości oznaczone gwiazdką ({ $count })
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznacz { $count } wątek bez gwiazdki
+            [few] Zaznacz wszystkie { $count } wątki bez gwiazdki
+            [many] Zaznacz wszystkie { $count } wątków bez gwiazdki
+           *[other] Zaznacz wszystkie wątki bez gwiazdki ({ $count })
+        }
+       *[message] { $count ->
+            [one] Zaznacz { $count } wiadomość bez gwiazdki
+            [few] Zaznacz wszystkie { $count } wiadomości bez gwiazdki
+            [many] Zaznacz wszystkie { $count } wiadomości bez gwiazdki
+           *[other] Zaznacz wszystkie wiadomości bez gwiazdki ({ $count })
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznacz { $count } przeczytany wątek w folderze { $folder }
+            [few] Zaznacz wszystkie { $count } przeczytane wątki w folderze { $folder }
+            [many] Zaznacz wszystkie { $count } przeczytanych wątków w folderze { $folder }
+           *[other] Zaznacz wszystkie przeczytane wątki ({ $count }) w folderze { $folder }
+        }
+       *[message] { $count ->
+            [one] Zaznacz { $count } przeczytaną wiadomość w folderze { $folder }
+            [few] Zaznacz wszystkie { $count } przeczytane wiadomości w folderze { $folder }
+            [many] Zaznacz wszystkie { $count } przeczytanych wiadomości w folderze { $folder }
+           *[other] Zaznacz wszystkie przeczytane wiadomości ({ $count }) w folderze { $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznacz { $count } nieprzeczytany wątek w folderze { $folder }
+            [few] Zaznacz wszystkie { $count } nieprzeczytane wątki w folderze { $folder }
+            [many] Zaznacz wszystkie { $count } nieprzeczytanych wątków w folderze { $folder }
+           *[other] Zaznacz wszystkie nieprzeczytane wątki ({ $count }) w folderze { $folder }
+        }
+       *[message] { $count ->
+            [one] Zaznacz { $count } nieprzeczytaną wiadomość w folderze { $folder }
+            [few] Zaznacz wszystkie { $count } nieprzeczytane wiadomości w folderze { $folder }
+            [many] Zaznacz wszystkie { $count } nieprzeczytanych wiadomości w folderze { $folder }
+           *[other] Zaznacz wszystkie nieprzeczytane wiadomości ({ $count }) w folderze { $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznacz { $count } wątek oznaczony gwiazdką w folderze { $folder }
+            [few] Zaznacz wszystkie { $count } wątki oznaczone gwiazdką w folderze { $folder }
+            [many] Zaznacz wszystkie { $count } wątków oznaczonych gwiazdką w folderze { $folder }
+           *[other] Zaznacz wszystkie wątki oznaczone gwiazdką ({ $count }) w folderze { $folder }
+        }
+       *[message] { $count ->
+            [one] Zaznacz { $count } wiadomość oznaczoną gwiazdką w folderze { $folder }
+            [few] Zaznacz wszystkie { $count } wiadomości oznaczone gwiazdką w folderze { $folder }
+            [many] Zaznacz wszystkie { $count } wiadomości oznaczonych gwiazdką w folderze { $folder }
+           *[other] Zaznacz wszystkie wiadomości oznaczone gwiazdką ({ $count }) w folderze { $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznacz { $count } wątek bez gwiazdki w folderze { $folder }
+            [few] Zaznacz wszystkie { $count } wątki bez gwiazdki w folderze { $folder }
+            [many] Zaznacz wszystkie { $count } wątków bez gwiazdki w folderze { $folder }
+           *[other] Zaznacz wszystkie wątki bez gwiazdki ({ $count }) w folderze { $folder }
+        }
+       *[message] { $count ->
+            [one] Zaznacz { $count } wiadomość bez gwiazdki w folderze { $folder }
+            [few] Zaznacz wszystkie { $count } wiadomości bez gwiazdki w folderze { $folder }
+            [many] Zaznacz wszystkie { $count } wiadomości bez gwiazdki w folderze { $folder }
+           *[other] Zaznacz wszystkie wiadomości bez gwiazdki ({ $count }) w folderze { $folder }
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->

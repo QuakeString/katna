@@ -112,6 +112,156 @@ list-select-all-in = { $kind ->
        *[other] Seleziona tutti i { $count } messaggi in { $folder }
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversazione già letta in questa pagina selezionata.
+            [many] Tutte le { $count } di conversazioni già lette in questa pagina sono selezionate.
+           *[other] Tutte le { $count } conversazioni già lette in questa pagina sono selezionate.
+        }
+       *[message] { $count ->
+            [one] { $count } messaggio già letto in questa pagina selezionato.
+            [many] Tutti i { $count } di messaggi già letti in questa pagina sono selezionati.
+           *[other] Tutti i { $count } messaggi già letti in questa pagina sono selezionati.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversazione da leggere in questa pagina selezionata.
+            [many] Tutte le { $count } di conversazioni da leggere in questa pagina sono selezionate.
+           *[other] Tutte le { $count } conversazioni da leggere in questa pagina sono selezionate.
+        }
+       *[message] { $count ->
+            [one] { $count } messaggio da leggere in questa pagina selezionato.
+            [many] Tutti i { $count } di messaggi da leggere in questa pagina sono selezionati.
+           *[other] Tutti i { $count } messaggi da leggere in questa pagina sono selezionati.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversazione speciale in questa pagina selezionata.
+            [many] Tutte le { $count } di conversazioni speciali in questa pagina sono selezionate.
+           *[other] Tutte le { $count } conversazioni speciali in questa pagina sono selezionate.
+        }
+       *[message] { $count ->
+            [one] { $count } messaggio speciale in questa pagina selezionato.
+            [many] Tutti i { $count } di messaggi speciali in questa pagina sono selezionati.
+           *[other] Tutti i { $count } messaggi speciali in questa pagina sono selezionati.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversazione non speciale in questa pagina selezionata.
+            [many] Tutte le { $count } di conversazioni non speciali in questa pagina sono selezionate.
+           *[other] Tutte le { $count } conversazioni non speciali in questa pagina sono selezionate.
+        }
+       *[message] { $count ->
+            [one] { $count } messaggio non speciale in questa pagina selezionato.
+            [many] Tutti i { $count } di messaggi non speciali in questa pagina sono selezionati.
+           *[other] Tutti i { $count } messaggi non speciali in questa pagina sono selezionati.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Seleziona { $count } conversazione già letta
+            [many] Seleziona tutte le { $count } di conversazioni già lette
+           *[other] Seleziona tutte le { $count } conversazioni già lette
+        }
+       *[message] { $count ->
+            [one] Seleziona { $count } messaggio già letto
+            [many] Seleziona tutti i { $count } di messaggi già letti
+           *[other] Seleziona tutti i { $count } messaggi già letti
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Seleziona { $count } conversazione da leggere
+            [many] Seleziona tutte le { $count } di conversazioni da leggere
+           *[other] Seleziona tutte le { $count } conversazioni da leggere
+        }
+       *[message] { $count ->
+            [one] Seleziona { $count } messaggio da leggere
+            [many] Seleziona tutti i { $count } di messaggi da leggere
+           *[other] Seleziona tutti i { $count } messaggi da leggere
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Seleziona { $count } conversazione speciale
+            [many] Seleziona tutte le { $count } di conversazioni speciali
+           *[other] Seleziona tutte le { $count } conversazioni speciali
+        }
+       *[message] { $count ->
+            [one] Seleziona { $count } messaggio speciale
+            [many] Seleziona tutti i { $count } di messaggi speciali
+           *[other] Seleziona tutti i { $count } messaggi speciali
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Seleziona { $count } conversazione non speciale
+            [many] Seleziona tutte le { $count } di conversazioni non speciali
+           *[other] Seleziona tutte le { $count } conversazioni non speciali
+        }
+       *[message] { $count ->
+            [one] Seleziona { $count } messaggio non speciale
+            [many] Seleziona tutti i { $count } di messaggi non speciali
+           *[other] Seleziona tutti i { $count } messaggi non speciali
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Seleziona { $count } conversazione già letta in { $folder }
+            [many] Seleziona tutte le { $count } di conversazioni già lette in { $folder }
+           *[other] Seleziona tutte le { $count } conversazioni già lette in { $folder }
+        }
+       *[message] { $count ->
+            [one] Seleziona { $count } messaggio già letto in { $folder }
+            [many] Seleziona tutti i { $count } di messaggi già letti in { $folder }
+           *[other] Seleziona tutti i { $count } messaggi già letti in { $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Seleziona { $count } conversazione da leggere in { $folder }
+            [many] Seleziona tutte le { $count } di conversazioni da leggere in { $folder }
+           *[other] Seleziona tutte le { $count } conversazioni da leggere in { $folder }
+        }
+       *[message] { $count ->
+            [one] Seleziona { $count } messaggio da leggere in { $folder }
+            [many] Seleziona tutti i { $count } di messaggi da leggere in { $folder }
+           *[other] Seleziona tutti i { $count } messaggi da leggere in { $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Seleziona { $count } conversazione speciale in { $folder }
+            [many] Seleziona tutte le { $count } di conversazioni speciali in { $folder }
+           *[other] Seleziona tutte le { $count } conversazioni speciali in { $folder }
+        }
+       *[message] { $count ->
+            [one] Seleziona { $count } messaggio speciale in { $folder }
+            [many] Seleziona tutti i { $count } di messaggi speciali in { $folder }
+           *[other] Seleziona tutti i { $count } messaggi speciali in { $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Seleziona { $count } conversazione non speciale in { $folder }
+            [many] Seleziona tutte le { $count } di conversazioni non speciali in { $folder }
+           *[other] Seleziona tutte le { $count } conversazioni non speciali in { $folder }
+        }
+       *[message] { $count ->
+            [one] Seleziona { $count } messaggio non speciale in { $folder }
+            [many] Seleziona tutti i { $count } di messaggi non speciali in { $folder }
+           *[other] Seleziona tutti i { $count } messaggi non speciali in { $folder }
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->

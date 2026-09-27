@@ -49,6 +49,7 @@ compose-picker-attach = แนบ
 compose-file-too-large = { $name } ใหญ่เกินไป: ข้อความหนึ่งรับได้สูงสุด { $limit }
 compose-attachment-size = ({ $size })
 compose-remove-attachment = นำไฟล์แนบออก
+compose-attachments-total = { $count } ไฟล์ รวม { $size }
 compose-drop-files = วางไฟล์ที่นี่
 compose-drop-here = วางที่นี่
 compose-paste-keep-formatting = คงการจัดรูปแบบไว้

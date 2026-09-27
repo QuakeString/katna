@@ -489,3 +489,56 @@ Imechi ozi ị na-ede ugbu a na-echekwa ya na Ndebiri, na sava ozi gị kwa,
 dị ka na Gmail. Mepee ya site na Ndebiri ka ị gaa n'ihu na-ede. Naanị
 bọtịnụ ihe mkpofu na-atụfu ya, Megharịa na-eweghachikwa ya.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Ohere maka ọtụtụ mgbakwunye"
+text = """
+N'agbanyeghị faịlụ ole ị gbakwunyere, ndepụta ahụ na-apịgharị ugbu a
+n'elu ogwe Zipu kama ịkpuchi ya, na-egosi faịlụ kachasị ọhụrụ, ma
+na-ekwu ọnụọgụ faịlụ na ngụkọta nha ha.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Họrọ ozi a gụghị ma ọ bụ nwere kpakpando, dịka Gmail"
+text = """
+Agụrụ, A gụghị, Nwere kpakpando na Enweghị kpakpando na menu Họrọ
+na-akara ozi kwekọrọ dị na ihuenyo ọzọ. Otu ahịrị n'elu ndepụta ahụ
+na-enye ohere ịhọrọ mkparịta ụka niile kwekọrọ na folda ahụ, ma Kpochapụ
+nhọrọ na-agbanwe ya azụ.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Folda na-ewepụta gị na Ntọala"
+text = """
+Mgbe Ntọala mepere emepe, ịpị folda ma ọ bụ akara ngosi Ozi na-emechi
+Ntọala ugbu a ma mepee folda ahụ, dịka na Gmail. Akụ azụ ka na-arụ ọrụ
+kwa.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Dobe foto n'ime ederede"
+text = """
+Ịdọrọ foto n'elu ozi na-egosi cursor n'ebe ọ ga-ada, ka i wee nwee ike
+idobe ya n'etiti ahịrịokwu. Faịlụ ndị ọzọ ka na-egosi mpaghara idobe
+maka mgbakwunye, ma idobe na-arụ ọrụ ugbu a mgbe i dechara ihe.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Pụọ na-emechi ozugbo"
+text = """
+Pụọ na menu akara ngosi tree anaghịzi eche ozi a ka na-emekọrịta ma ọ bụ
+na-etinye na ndeksi: Katna na akara ngosi tree ya na-emechi ozugbo, ihe
+fọdụrụ na-aga n'ihu oge ọzọ Katna malitere.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Nkọwa kọntaktị n'akụkụ ozi gị"
+text = """
+Na windo sara mbara, kaadị n'akụkụ mkparịta ụka mepere emepe na-egosi
+onye zitere ya ugbu a: ekwentị ya, ọkwa ya na ụlọ ọrụ ya site na mbinye
+aka ya, oge ọ bụ n'ebe ọ nọ, ole ozi unu gbanwere, mkparịta ụka unu
+na-adịbeghị anya na faịlụ dị n'etiti unu. Pịa mkparịta ụka ma ọ bụ faịlụ
+iji mepee ya, ma ọ bụ onye ọzọ nọ na mkparịta ụka ahụ iji hụ ya. A
+na-agụ ya naanị site na ozi gị dị na kọmputa a. Bọtịnụ kọntaktị dị na
+ogwe ngwaọrụ nke Paịn ọgụgụ na-ezo ya.
+"""

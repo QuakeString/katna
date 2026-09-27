@@ -509,3 +509,58 @@ sul tuo server di posta, come in Gmail. Aprilo da Bozze per continuare a
 scrivere. Solo il pulsante del cestino lo elimina, e Annulla lo
 recupera.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Spazio per tanti allegati"
+text = """
+Per quanti file tu alleghi, l'elenco ora scorre sopra la barra di Invia
+invece di coprirla, mostra il file più recente e indica quanti file ci
+sono e la loro dimensione totale.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Seleziona la posta da leggere o speciale, come in Gmail"
+text = """
+Già letti, Da leggere, Speciali e Non speciali nel menu Seleziona
+tornano a spuntare la posta corrispondente in questa pagina. Una riga
+sopra l'elenco propone di selezionare tutte le conversazioni
+corrispondenti nella cartella, e Annulla selezione torna indietro.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Le cartelle ti portano fuori dalle Impostazioni"
+text = """
+Con le Impostazioni aperte, un clic su una cartella o sull'icona Posta
+ora chiude le Impostazioni e apre quella cartella, come in Gmail. Anche
+la freccia indietro continua a funzionare.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Trascina le immagini nel testo"
+text = """
+Trascinando un'immagine sopra un messaggio compare un cursore nel punto
+in cui finirà, così puoi rilasciarla a metà di una frase. Gli altri file
+mostrano ancora l'area di rilascio per gli allegati, e ora il rilascio
+funziona anche dopo che hai scritto.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Esci chiude subito"
+text = """
+Esci nel menu dell'icona nell'area di notifica non aspetta più la posta
+ancora in sincronizzazione o in indicizzazione: Katna e la sua icona si
+chiudono subito, e il resto prosegue al prossimo avvio di Katna.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Dettagli del contatto accanto alla posta"
+text = """
+In una finestra larga, una scheda accanto alla conversazione aperta ora
+mostra il mittente: telefono, qualifica e azienda presi dalle sue firme,
+la sua ora locale, quanta posta vi siete scambiati, le vostre
+conversazioni recenti e i file tra voi. Fai clic su una conversazione o
+un file per aprirlo, o su un'altra persona della conversazione per
+vederla. I dati sono letti solo dalla posta su questo computer. Il
+pulsante del contatto nella barra degli strumenti del riquadro di
+lettura la nasconde.
+"""

@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] Kies al { $count } boodskappe in { $folder }
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gelese gesprek op hierdie bladsy is gekies.
+           *[other] Al { $count } gelese gesprekke op hierdie bladsy is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } gelese boodskap op hierdie bladsy is gekies.
+           *[other] Al { $count } gelese boodskappe op hierdie bladsy is gekies.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ongelese gesprek op hierdie bladsy is gekies.
+           *[other] Al { $count } ongelese gesprekke op hierdie bladsy is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } ongelese boodskap op hierdie bladsy is gekies.
+           *[other] Al { $count } ongelese boodskappe op hierdie bladsy is gekies.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gesterde gesprek op hierdie bladsy is gekies.
+           *[other] Al { $count } gesterde gesprekke op hierdie bladsy is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } gesterde boodskap op hierdie bladsy is gekies.
+           *[other] Al { $count } gesterde boodskappe op hierdie bladsy is gekies.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ongesterde gesprek op hierdie bladsy is gekies.
+           *[other] Al { $count } ongesterde gesprekke op hierdie bladsy is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } ongesterde boodskap op hierdie bladsy is gekies.
+           *[other] Al { $count } ongesterde boodskappe op hierdie bladsy is gekies.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } gelese gesprek
+           *[other] Kies al { $count } gelese gesprekke
+        }
+       *[message] { $count ->
+            [one] Kies { $count } gelese boodskap
+           *[other] Kies al { $count } gelese boodskappe
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } ongelese gesprek
+           *[other] Kies al { $count } ongelese gesprekke
+        }
+       *[message] { $count ->
+            [one] Kies { $count } ongelese boodskap
+           *[other] Kies al { $count } ongelese boodskappe
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } gesterde gesprek
+           *[other] Kies al { $count } gesterde gesprekke
+        }
+       *[message] { $count ->
+            [one] Kies { $count } gesterde boodskap
+           *[other] Kies al { $count } gesterde boodskappe
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } ongesterde gesprek
+           *[other] Kies al { $count } ongesterde gesprekke
+        }
+       *[message] { $count ->
+            [one] Kies { $count } ongesterde boodskap
+           *[other] Kies al { $count } ongesterde boodskappe
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } gelese gesprek in { $folder }
+           *[other] Kies al { $count } gelese gesprekke in { $folder }
+        }
+       *[message] { $count ->
+            [one] Kies { $count } gelese boodskap in { $folder }
+           *[other] Kies al { $count } gelese boodskappe in { $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } ongelese gesprek in { $folder }
+           *[other] Kies al { $count } ongelese gesprekke in { $folder }
+        }
+       *[message] { $count ->
+            [one] Kies { $count } ongelese boodskap in { $folder }
+           *[other] Kies al { $count } ongelese boodskappe in { $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } gesterde gesprek in { $folder }
+           *[other] Kies al { $count } gesterde gesprekke in { $folder }
+        }
+       *[message] { $count ->
+            [one] Kies { $count } gesterde boodskap in { $folder }
+           *[other] Kies al { $count } gesterde boodskappe in { $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } ongesterde gesprek in { $folder }
+           *[other] Kies al { $count } ongesterde gesprekke in { $folder }
+        }
+       *[message] { $count ->
+            [one] Kies { $count } ongesterde boodskap in { $folder }
+           *[other] Kies al { $count } ongesterde boodskappe in { $folder }
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->

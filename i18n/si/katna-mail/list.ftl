@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] { $folder } හි පණිවිඩ { $count } ම තෝරන්න
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] තිරයේ ඇති කියවූ සංවාද { $count } තෝරා ඇත.
+           *[other] තිරයේ ඇති කියවූ සංවාද { $count } ම තෝරා ඇත.
+        }
+       *[message] { $count ->
+            [one] තිරයේ ඇති කියවූ පණිවිඩ { $count } තෝරා ඇත.
+           *[other] තිරයේ ඇති කියවූ පණිවිඩ { $count } ම තෝරා ඇත.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] තිරයේ ඇති නොකියවූ සංවාද { $count } තෝරා ඇත.
+           *[other] තිරයේ ඇති නොකියවූ සංවාද { $count } ම තෝරා ඇත.
+        }
+       *[message] { $count ->
+            [one] තිරයේ ඇති නොකියවූ පණිවිඩ { $count } තෝරා ඇත.
+           *[other] තිරයේ ඇති නොකියවූ පණිවිඩ { $count } ම තෝරා ඇත.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] තිරයේ ඇති තරු යෙදූ සංවාද { $count } තෝරා ඇත.
+           *[other] තිරයේ ඇති තරු යෙදූ සංවාද { $count } ම තෝරා ඇත.
+        }
+       *[message] { $count ->
+            [one] තිරයේ ඇති තරු යෙදූ පණිවිඩ { $count } තෝරා ඇත.
+           *[other] තිරයේ ඇති තරු යෙදූ පණිවිඩ { $count } ම තෝරා ඇත.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] තිරයේ ඇති තරු නොයෙදූ සංවාද { $count } තෝරා ඇත.
+           *[other] තිරයේ ඇති තරු නොයෙදූ සංවාද { $count } ම තෝරා ඇත.
+        }
+       *[message] { $count ->
+            [one] තිරයේ ඇති තරු නොයෙදූ පණිවිඩ { $count } තෝරා ඇත.
+           *[other] තිරයේ ඇති තරු නොයෙදූ පණිවිඩ { $count } ම තෝරා ඇත.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] කියවූ සංවාද { $count } තෝරන්න
+           *[other] කියවූ සංවාද { $count } ම තෝරන්න
+        }
+       *[message] { $count ->
+            [one] කියවූ පණිවිඩ { $count } තෝරන්න
+           *[other] කියවූ පණිවිඩ { $count } ම තෝරන්න
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] නොකියවූ සංවාද { $count } තෝරන්න
+           *[other] නොකියවූ සංවාද { $count } ම තෝරන්න
+        }
+       *[message] { $count ->
+            [one] නොකියවූ පණිවිඩ { $count } තෝරන්න
+           *[other] නොකියවූ පණිවිඩ { $count } ම තෝරන්න
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] තරු යෙදූ සංවාද { $count } තෝරන්න
+           *[other] තරු යෙදූ සංවාද { $count } ම තෝරන්න
+        }
+       *[message] { $count ->
+            [one] තරු යෙදූ පණිවිඩ { $count } තෝරන්න
+           *[other] තරු යෙදූ පණිවිඩ { $count } ම තෝරන්න
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] තරු නොයෙදූ සංවාද { $count } තෝරන්න
+           *[other] තරු නොයෙදූ සංවාද { $count } ම තෝරන්න
+        }
+       *[message] { $count ->
+            [one] තරු නොයෙදූ පණිවිඩ { $count } තෝරන්න
+           *[other] තරු නොයෙදූ පණිවිඩ { $count } ම තෝරන්න
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } හි කියවූ සංවාද { $count } තෝරන්න
+           *[other] { $folder } හි කියවූ සංවාද { $count } ම තෝරන්න
+        }
+       *[message] { $count ->
+            [one] { $folder } හි කියවූ පණිවිඩ { $count } තෝරන්න
+           *[other] { $folder } හි කියවූ පණිවිඩ { $count } ම තෝරන්න
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } හි නොකියවූ සංවාද { $count } තෝරන්න
+           *[other] { $folder } හි නොකියවූ සංවාද { $count } ම තෝරන්න
+        }
+       *[message] { $count ->
+            [one] { $folder } හි නොකියවූ පණිවිඩ { $count } තෝරන්න
+           *[other] { $folder } හි නොකියවූ පණිවිඩ { $count } ම තෝරන්න
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } හි තරු යෙදූ සංවාද { $count } තෝරන්න
+           *[other] { $folder } හි තරු යෙදූ සංවාද { $count } ම තෝරන්න
+        }
+       *[message] { $count ->
+            [one] { $folder } හි තරු යෙදූ පණිවිඩ { $count } තෝරන්න
+           *[other] { $folder } හි තරු යෙදූ පණිවිඩ { $count } ම තෝරන්න
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } හි තරු නොයෙදූ සංවාද { $count } තෝරන්න
+           *[other] { $folder } හි තරු නොයෙදූ සංවාද { $count } ම තෝරන්න
+        }
+       *[message] { $count ->
+            [one] { $folder } හි තරු නොයෙදූ පණිවිඩ { $count } තෝරන්න
+           *[other] { $folder } හි තරු නොයෙදූ පණිවිඩ { $count } ම තෝරන්න
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->

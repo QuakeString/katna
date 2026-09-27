@@ -112,6 +112,156 @@ list-select-all-in = { $kind ->
        *[other] Selecionar todas as { $count } mensagens em { $folder }
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversa lida nesta página está selecionada.
+            [many] Todas as { $count } de conversas lidas nesta página estão selecionadas.
+           *[other] Todas as { $count } conversas lidas nesta página estão selecionadas.
+        }
+       *[message] { $count ->
+            [one] { $count } mensagem lida nesta página está selecionada.
+            [many] Todas as { $count } de mensagens lidas nesta página estão selecionadas.
+           *[other] Todas as { $count } mensagens lidas nesta página estão selecionadas.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversa não lida nesta página está selecionada.
+            [many] Todas as { $count } de conversas não lidas nesta página estão selecionadas.
+           *[other] Todas as { $count } conversas não lidas nesta página estão selecionadas.
+        }
+       *[message] { $count ->
+            [one] { $count } mensagem não lida nesta página está selecionada.
+            [many] Todas as { $count } de mensagens não lidas nesta página estão selecionadas.
+           *[other] Todas as { $count } mensagens não lidas nesta página estão selecionadas.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversa com estrela nesta página está selecionada.
+            [many] Todas as { $count } de conversas com estrela nesta página estão selecionadas.
+           *[other] Todas as { $count } conversas com estrela nesta página estão selecionadas.
+        }
+       *[message] { $count ->
+            [one] { $count } mensagem com estrela nesta página está selecionada.
+            [many] Todas as { $count } de mensagens com estrela nesta página estão selecionadas.
+           *[other] Todas as { $count } mensagens com estrela nesta página estão selecionadas.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversa sem estrela nesta página está selecionada.
+            [many] Todas as { $count } de conversas sem estrela nesta página estão selecionadas.
+           *[other] Todas as { $count } conversas sem estrela nesta página estão selecionadas.
+        }
+       *[message] { $count ->
+            [one] { $count } mensagem sem estrela nesta página está selecionada.
+            [many] Todas as { $count } de mensagens sem estrela nesta página estão selecionadas.
+           *[other] Todas as { $count } mensagens sem estrela nesta página estão selecionadas.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Selecionar { $count } conversa lida
+            [many] Selecionar todas as { $count } de conversas lidas
+           *[other] Selecionar todas as { $count } conversas lidas
+        }
+       *[message] { $count ->
+            [one] Selecionar { $count } mensagem lida
+            [many] Selecionar todas as { $count } de mensagens lidas
+           *[other] Selecionar todas as { $count } mensagens lidas
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Selecionar { $count } conversa não lida
+            [many] Selecionar todas as { $count } de conversas não lidas
+           *[other] Selecionar todas as { $count } conversas não lidas
+        }
+       *[message] { $count ->
+            [one] Selecionar { $count } mensagem não lida
+            [many] Selecionar todas as { $count } de mensagens não lidas
+           *[other] Selecionar todas as { $count } mensagens não lidas
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Selecionar { $count } conversa com estrela
+            [many] Selecionar todas as { $count } de conversas com estrela
+           *[other] Selecionar todas as { $count } conversas com estrela
+        }
+       *[message] { $count ->
+            [one] Selecionar { $count } mensagem com estrela
+            [many] Selecionar todas as { $count } de mensagens com estrela
+           *[other] Selecionar todas as { $count } mensagens com estrela
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Selecionar { $count } conversa sem estrela
+            [many] Selecionar todas as { $count } de conversas sem estrela
+           *[other] Selecionar todas as { $count } conversas sem estrela
+        }
+       *[message] { $count ->
+            [one] Selecionar { $count } mensagem sem estrela
+            [many] Selecionar todas as { $count } de mensagens sem estrela
+           *[other] Selecionar todas as { $count } mensagens sem estrela
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Selecionar { $count } conversa lida em { $folder }
+            [many] Selecionar todas as { $count } de conversas lidas em { $folder }
+           *[other] Selecionar todas as { $count } conversas lidas em { $folder }
+        }
+       *[message] { $count ->
+            [one] Selecionar { $count } mensagem lida em { $folder }
+            [many] Selecionar todas as { $count } de mensagens lidas em { $folder }
+           *[other] Selecionar todas as { $count } mensagens lidas em { $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Selecionar { $count } conversa não lida em { $folder }
+            [many] Selecionar todas as { $count } de conversas não lidas em { $folder }
+           *[other] Selecionar todas as { $count } conversas não lidas em { $folder }
+        }
+       *[message] { $count ->
+            [one] Selecionar { $count } mensagem não lida em { $folder }
+            [many] Selecionar todas as { $count } de mensagens não lidas em { $folder }
+           *[other] Selecionar todas as { $count } mensagens não lidas em { $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Selecionar { $count } conversa com estrela em { $folder }
+            [many] Selecionar todas as { $count } de conversas com estrela em { $folder }
+           *[other] Selecionar todas as { $count } conversas com estrela em { $folder }
+        }
+       *[message] { $count ->
+            [one] Selecionar { $count } mensagem com estrela em { $folder }
+            [many] Selecionar todas as { $count } de mensagens com estrela em { $folder }
+           *[other] Selecionar todas as { $count } mensagens com estrela em { $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Selecionar { $count } conversa sem estrela em { $folder }
+            [many] Selecionar todas as { $count } de conversas sem estrela em { $folder }
+           *[other] Selecionar todas as { $count } conversas sem estrela em { $folder }
+        }
+       *[message] { $count ->
+            [one] Selecionar { $count } mensagem sem estrela em { $folder }
+            [many] Selecionar todas as { $count } de mensagens sem estrela em { $folder }
+           *[other] Selecionar todas as { $count } mensagens sem estrela em { $folder }
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->

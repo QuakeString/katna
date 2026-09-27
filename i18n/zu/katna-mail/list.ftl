@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] Khetha yonke imilayezo engu-{ $count } ku-{ $folder }
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Ingxoxo efundiwe engu-{ $count } esesikrinini ikhethiwe.
+           *[other] Zonke izingxoxo ezifundiwe ezingu-{ $count } ezisesikrinini zikhethiwe.
+        }
+       *[message] { $count ->
+            [one] Umlayezo ofundiwe ongu-{ $count } osesikrinini ukhethiwe.
+           *[other] Yonke imilayezo efundiwe engu-{ $count } esesikrinini ikhethiwe.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Ingxoxo engafundiwe engu-{ $count } esesikrinini ikhethiwe.
+           *[other] Zonke izingxoxo ezingafundiwe ezingu-{ $count } ezisesikrinini zikhethiwe.
+        }
+       *[message] { $count ->
+            [one] Umlayezo ongafundiwe ongu-{ $count } osesikrinini ukhethiwe.
+           *[other] Yonke imilayezo engafundiwe engu-{ $count } esesikrinini ikhethiwe.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Ingxoxo enenkanyezi engu-{ $count } esesikrinini ikhethiwe.
+           *[other] Zonke izingxoxo ezinenkanyezi ezingu-{ $count } ezisesikrinini zikhethiwe.
+        }
+       *[message] { $count ->
+            [one] Umlayezo onenkanyezi ongu-{ $count } osesikrinini ukhethiwe.
+           *[other] Yonke imilayezo enenkanyezi engu-{ $count } esesikrinini ikhethiwe.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Ingxoxo engenankanyezi engu-{ $count } esesikrinini ikhethiwe.
+           *[other] Zonke izingxoxo ezingenankanyezi ezingu-{ $count } ezisesikrinini zikhethiwe.
+        }
+       *[message] { $count ->
+            [one] Umlayezo ongenankanyezi ongu-{ $count } osesikrinini ukhethiwe.
+           *[other] Yonke imilayezo engenankanyezi engu-{ $count } esesikrinini ikhethiwe.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Khetha ingxoxo efundiwe engu-{ $count }
+           *[other] Khetha zonke izingxoxo ezifundiwe ezingu-{ $count }
+        }
+       *[message] { $count ->
+            [one] Khetha umlayezo ofundiwe ongu-{ $count }
+           *[other] Khetha yonke imilayezo efundiwe engu-{ $count }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Khetha ingxoxo engafundiwe engu-{ $count }
+           *[other] Khetha zonke izingxoxo ezingafundiwe ezingu-{ $count }
+        }
+       *[message] { $count ->
+            [one] Khetha umlayezo ongafundiwe ongu-{ $count }
+           *[other] Khetha yonke imilayezo engafundiwe engu-{ $count }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Khetha ingxoxo enenkanyezi engu-{ $count }
+           *[other] Khetha zonke izingxoxo ezinenkanyezi ezingu-{ $count }
+        }
+       *[message] { $count ->
+            [one] Khetha umlayezo onenkanyezi ongu-{ $count }
+           *[other] Khetha yonke imilayezo enenkanyezi engu-{ $count }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Khetha ingxoxo engenankanyezi engu-{ $count }
+           *[other] Khetha zonke izingxoxo ezingenankanyezi ezingu-{ $count }
+        }
+       *[message] { $count ->
+            [one] Khetha umlayezo ongenankanyezi ongu-{ $count }
+           *[other] Khetha yonke imilayezo engenankanyezi engu-{ $count }
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Khetha ingxoxo efundiwe engu-{ $count } ku-{ $folder }
+           *[other] Khetha zonke izingxoxo ezifundiwe ezingu-{ $count } ku-{ $folder }
+        }
+       *[message] { $count ->
+            [one] Khetha umlayezo ofundiwe ongu-{ $count } ku-{ $folder }
+           *[other] Khetha yonke imilayezo efundiwe engu-{ $count } ku-{ $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Khetha ingxoxo engafundiwe engu-{ $count } ku-{ $folder }
+           *[other] Khetha zonke izingxoxo ezingafundiwe ezingu-{ $count } ku-{ $folder }
+        }
+       *[message] { $count ->
+            [one] Khetha umlayezo ongafundiwe ongu-{ $count } ku-{ $folder }
+           *[other] Khetha yonke imilayezo engafundiwe engu-{ $count } ku-{ $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Khetha ingxoxo enenkanyezi engu-{ $count } ku-{ $folder }
+           *[other] Khetha zonke izingxoxo ezinenkanyezi ezingu-{ $count } ku-{ $folder }
+        }
+       *[message] { $count ->
+            [one] Khetha umlayezo onenkanyezi ongu-{ $count } ku-{ $folder }
+           *[other] Khetha yonke imilayezo enenkanyezi engu-{ $count } ku-{ $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Khetha ingxoxo engenankanyezi engu-{ $count } ku-{ $folder }
+           *[other] Khetha zonke izingxoxo ezingenankanyezi ezingu-{ $count } ku-{ $folder }
+        }
+       *[message] { $count ->
+            [one] Khetha umlayezo ongenankanyezi ongu-{ $count } ku-{ $folder }
+           *[other] Khetha yonke imilayezo engenankanyezi engu-{ $count } ku-{ $folder }
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->

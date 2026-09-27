@@ -49,6 +49,10 @@ compose-picker-attach = Bijvoegen
 compose-file-too-large = { $name } is te groot: een bericht kan maximaal { $limit } bevatten.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Bijlage verwijderen
+compose-attachments-total = { $count ->
+    [one] { $count } bestand, { $size }
+   *[other] { $count } bestanden, { $size }
+}
 compose-drop-files = Zet bestanden hier neer
 compose-drop-here = Hier neerzetten
 compose-paste-keep-formatting = Opmaak behouden

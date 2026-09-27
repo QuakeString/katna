@@ -49,6 +49,10 @@ compose-picker-attach = Namathisela
 compose-file-too-large = { $name } likhulu kakhulu: umlayezo ungathwala kufika ku-{ $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Susa okunamathiselwe
+compose-attachments-total = { $count ->
+    [one] Ifayela elingu-{ $count }, { $size }
+   *[other] Amafayela angu-{ $count }, { $size }
+}
 compose-drop-files = Yehlisela amafayela lapha
 compose-drop-here = Yehlisela lapha
 compose-paste-keep-formatting = Gcina ukufometha

@@ -49,6 +49,7 @@ compose-picker-attach = 첨부
 compose-file-too-large = { $name } 파일이 너무 큽니다. 메일 한 통에는 최대 { $limit }까지 담을 수 있습니다.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = 첨부파일 삭제
+compose-attachments-total = 파일 { $count }개, { $size }
 compose-drop-files = 여기에 파일을 놓으세요
 compose-drop-here = 여기에 놓으세요
 compose-paste-keep-formatting = 서식 유지

@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] เลือกการสนทนาทั้ง { $count } รายการใน { $folder }
    *[message] เลือกข้อความทั้ง { $count } รายการใน { $folder }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] เลือกการสนทนาที่อ่านแล้วทั้ง { $count } รายการบนหน้าจอแล้ว
+       *[message] เลือกข้อความที่อ่านแล้วทั้ง { $count } รายการบนหน้าจอแล้ว
+    }
+   *[unread] { $kind ->
+        [conversation] เลือกการสนทนาที่ยังไม่อ่านทั้ง { $count } รายการบนหน้าจอแล้ว
+       *[message] เลือกข้อความที่ยังไม่อ่านทั้ง { $count } รายการบนหน้าจอแล้ว
+    }
+    [starred] { $kind ->
+        [conversation] เลือกการสนทนาที่ติดดาวทั้ง { $count } รายการบนหน้าจอแล้ว
+       *[message] เลือกข้อความที่ติดดาวทั้ง { $count } รายการบนหน้าจอแล้ว
+    }
+    [unstarred] { $kind ->
+        [conversation] เลือกการสนทนาที่ไม่ติดดาวทั้ง { $count } รายการบนหน้าจอแล้ว
+       *[message] เลือกข้อความที่ไม่ติดดาวทั้ง { $count } รายการบนหน้าจอแล้ว
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] เลือกการสนทนาที่อ่านแล้วทั้ง { $count } รายการ
+       *[message] เลือกข้อความที่อ่านแล้วทั้ง { $count } รายการ
+    }
+   *[unread] { $kind ->
+        [conversation] เลือกการสนทนาที่ยังไม่อ่านทั้ง { $count } รายการ
+       *[message] เลือกข้อความที่ยังไม่อ่านทั้ง { $count } รายการ
+    }
+    [starred] { $kind ->
+        [conversation] เลือกการสนทนาที่ติดดาวทั้ง { $count } รายการ
+       *[message] เลือกข้อความที่ติดดาวทั้ง { $count } รายการ
+    }
+    [unstarred] { $kind ->
+        [conversation] เลือกการสนทนาที่ไม่ติดดาวทั้ง { $count } รายการ
+       *[message] เลือกข้อความที่ไม่ติดดาวทั้ง { $count } รายการ
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] เลือกการสนทนาที่อ่านแล้วทั้ง { $count } รายการใน { $folder }
+       *[message] เลือกข้อความที่อ่านแล้วทั้ง { $count } รายการใน { $folder }
+    }
+   *[unread] { $kind ->
+        [conversation] เลือกการสนทนาที่ยังไม่อ่านทั้ง { $count } รายการใน { $folder }
+       *[message] เลือกข้อความที่ยังไม่อ่านทั้ง { $count } รายการใน { $folder }
+    }
+    [starred] { $kind ->
+        [conversation] เลือกการสนทนาที่ติดดาวทั้ง { $count } รายการใน { $folder }
+       *[message] เลือกข้อความที่ติดดาวทั้ง { $count } รายการใน { $folder }
+    }
+    [unstarred] { $kind ->
+        [conversation] เลือกการสนทนาที่ไม่ติดดาวทั้ง { $count } รายการใน { $folder }
+       *[message] เลือกข้อความที่ไม่ติดดาวทั้ง { $count } รายการใน { $folder }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] เลือกการสนทนาที่อ่านแล้วทั้ง { $count } รายการแล้ว

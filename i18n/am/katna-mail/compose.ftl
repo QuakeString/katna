@@ -49,6 +49,10 @@ compose-picker-attach = አያይዝ
 compose-file-too-large = { $name } በጣም ትልቅ ነው፦ አንድ መልዕክት እስከ { $limit } መያዝ ይችላል።
 compose-attachment-size = ({ $size })
 compose-remove-attachment = አባሪውን አስወግድ
+compose-attachments-total = { $count ->
+    [one] { $count } ፋይል፣ { $size }
+   *[other] { $count } ፋይሎች፣ { $size }
+}
 compose-drop-files = ፋይሎችን እዚህ ይጣሉ
 compose-drop-here = እዚህ ይጣሉ
 compose-paste-keep-formatting = ቅርጸቱን አቆይ

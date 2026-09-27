@@ -49,6 +49,7 @@ compose-picker-attach = Gbakwunye
 compose-file-too-large = { $name } buru oke ibu: ozi nwere ike ibu ruo { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Wepụ mgbakwunye
+compose-attachments-total = faịlụ { $count }, { $size }
 compose-drop-files = Dobe faịlụ ebe a
 compose-drop-here = Dobe ebe a
 compose-paste-keep-formatting = Debe nhazi

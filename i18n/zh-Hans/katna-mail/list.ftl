@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] 选择“{ $folder }”中的全部 { $count } 个会话
    *[message] 选择“{ $folder }”中的全部 { $count } 封邮件
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] 已选择此页上的全部 { $count } 个已读会话。
+       *[message] 已选择此页上的全部 { $count } 封已读邮件。
+    }
+   *[unread] { $kind ->
+        [conversation] 已选择此页上的全部 { $count } 个未读会话。
+       *[message] 已选择此页上的全部 { $count } 封未读邮件。
+    }
+    [starred] { $kind ->
+        [conversation] 已选择此页上的全部 { $count } 个已加星标的会话。
+       *[message] 已选择此页上的全部 { $count } 封已加星标的邮件。
+    }
+    [unstarred] { $kind ->
+        [conversation] 已选择此页上的全部 { $count } 个未加星标的会话。
+       *[message] 已选择此页上的全部 { $count } 封未加星标的邮件。
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] 选择全部 { $count } 个已读会话
+       *[message] 选择全部 { $count } 封已读邮件
+    }
+   *[unread] { $kind ->
+        [conversation] 选择全部 { $count } 个未读会话
+       *[message] 选择全部 { $count } 封未读邮件
+    }
+    [starred] { $kind ->
+        [conversation] 选择全部 { $count } 个已加星标的会话
+       *[message] 选择全部 { $count } 封已加星标的邮件
+    }
+    [unstarred] { $kind ->
+        [conversation] 选择全部 { $count } 个未加星标的会话
+       *[message] 选择全部 { $count } 封未加星标的邮件
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] 选择“{ $folder }”中的全部 { $count } 个已读会话
+       *[message] 选择“{ $folder }”中的全部 { $count } 封已读邮件
+    }
+   *[unread] { $kind ->
+        [conversation] 选择“{ $folder }”中的全部 { $count } 个未读会话
+       *[message] 选择“{ $folder }”中的全部 { $count } 封未读邮件
+    }
+    [starred] { $kind ->
+        [conversation] 选择“{ $folder }”中的全部 { $count } 个已加星标的会话
+       *[message] 选择“{ $folder }”中的全部 { $count } 封已加星标的邮件
+    }
+    [unstarred] { $kind ->
+        [conversation] 选择“{ $folder }”中的全部 { $count } 个未加星标的会话
+       *[message] 选择“{ $folder }”中的全部 { $count } 封未加星标的邮件
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] 已选择全部 { $count } 个已读会话。

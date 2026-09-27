@@ -49,6 +49,7 @@ compose-picker-attach = ပူးတွဲရန်
 compose-file-too-large = { $name } သည် ကြီးလွန်းသည်- မက်ဆေ့ဂျ်တစ်ခုတွင် { $limit } အထိသာ ပါနိုင်သည်။
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ပူးတွဲဖိုင်ကို ဖယ်ရှားရန်
+compose-attachments-total = ဖိုင် { $count } ခု၊ { $size }
 compose-drop-files = ဖိုင်များကို ဤနေရာတွင် ချပါ
 compose-drop-here = ဤနေရာတွင် ချပါ
 compose-paste-keep-formatting = ပုံစံချမှုကို ထားရန်

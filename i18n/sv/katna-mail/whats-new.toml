@@ -491,3 +491,58 @@ din e-postserver, som i Gmail. Öppna det från Utkast för att skriva
 vidare. Bara papperskorgsknappen slänger det, och Ångra tar tillbaka
 det.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Plats för många bilagor"
+text = """
+Hur många filer du än bifogar rullar listan nu ovanför fältet med Skicka
+i stället för att gå över det, visar den nyaste filen och anger hur
+många filer det är och deras sammanlagda storlek.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Markera olästa eller stjärnmärkta mejl som i Gmail"
+text = """
+Lästa, Olästa, Stjärnmärkta och Utan stjärna i markeringsmenyn bockar
+åter för matchande mejl på skärmen. En rad ovanför listan erbjuder att
+markera alla matchande konversationer i mappen, och Rensa markering
+ångrar det.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Mappar tar dig ut ur Inställningar"
+text = """
+När Inställningar är öppet stänger ett klick på en mapp eller på ikonen
+E-post nu Inställningar och öppnar den mappen, som i Gmail. Bakåtpilen
+fungerar också fortfarande.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Släpp bilder i texten"
+text = """
+När du drar en bild över ett meddelande visar en markör var den hamnar,
+så att du kan släppa den mitt i en mening. Andra filer visar fortfarande
+släppytan för bilagor, och att släppa fungerar nu även efter att du har
+skrivit.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Avsluta stänger direkt"
+text = """
+Avsluta i systemfältsikonens meny väntar inte längre på mejl som
+fortfarande synkroniseras eller indexeras: Katna och dess ikon i
+systemfältet stängs direkt, och resten fortsätter nästa gång Katna
+startar.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Kontaktuppgifter bredvid dina mejl"
+text = """
+I ett brett fönster visar ett kort bredvid den öppna konversationen nu
+avsändaren: telefon, titel och företag från deras signaturer, vad
+klockan är hos dem, hur mycket mejl ni har utbytt, era senaste
+konversationer och filerna mellan er. Klicka på en konversation eller
+fil för att öppna den, eller på en annan person i konversationen för att
+se den personen. Allt läses bara från din e-post på den här datorn.
+Kontaktknappen i läsrutans verktygsfält döljer kortet.
+"""

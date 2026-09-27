@@ -49,6 +49,7 @@ compose-picker-attach = 添付
 compose-file-too-large = { $name } は大きすぎます。1 通のメッセージに添付できるのは { $limit } までです。
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 添付ファイルを削除
+compose-attachments-total = ファイル { $count } 個、{ $size }
 compose-drop-files = ここにファイルをドロップ
 compose-drop-here = ここにドロップ
 compose-paste-keep-formatting = 書式を保持

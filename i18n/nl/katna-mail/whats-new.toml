@@ -508,3 +508,58 @@ bewaard, ook op je mailserver, zoals in Gmail. Open het vanuit Concepten
 om verder te schrijven. Alleen de prullenbakknop gooit het weg, en
 Ongedaan maken haalt het terug.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Ruimte voor veel bijlagen"
+text = """
+Hoeveel bestanden je ook bijvoegt, de lijst scrolt nu boven de balk met
+Verzenden in plaats van eroverheen te lopen, toont het nieuwste bestand
+en vermeldt hoeveel bestanden het zijn en hun totale grootte.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Ongelezen e-mail of e-mail met ster selecteren, als in Gmail"
+text = """
+Gelezen, Ongelezen, Met ster en Zonder ster in het selectiemenu vinken
+weer de passende e-mail op het scherm aan. Een regel boven de lijst
+biedt aan om elk passend gesprek in de map te selecteren, en Selectie
+wissen maakt dat ongedaan.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Mappen brengen je uit Instellingen"
+text = """
+Met Instellingen open sluit een klik op een map of op het pictogram
+E-mail nu Instellingen en opent die map, zoals in Gmail. De terugpijl
+werkt ook nog steeds.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Afbeeldingen in de tekst neerzetten"
+text = """
+Als je een afbeelding over een bericht sleept, toont een cursor waar die
+terechtkomt, zodat je hem midden in een zin kunt neerzetten. Andere
+bestanden tonen nog steeds het neerzetvlak voor bijlagen, en neerzetten
+werkt nu ook nadat je hebt getypt.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Afsluiten sluit meteen"
+text = """
+Afsluiten in het menu van het pictogram in het systeemvak wacht niet
+langer op e-mail die nog wordt gesynchroniseerd of geïndexeerd: Katna en
+het pictogram in het systeemvak sluiten meteen, en de rest gaat verder
+wanneer Katna de volgende keer start.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Contactgegevens naast je e-mail"
+text = """
+In een breed venster toont een kaart naast het geopende gesprek nu de
+afzender: telefoon, functie en bedrijf uit hun handtekeningen, hoe laat
+het bij hen is, hoeveel e-mail jullie hebben uitgewisseld, jullie
+recente gesprekken en de bestanden tussen jullie. Klik op een gesprek of
+bestand om het te openen, of op een andere persoon uit het gesprek om
+die te bekijken. Alles komt alleen uit je e-mail op deze computer. De
+contactknop op de werkbalk van het leesvenster verbergt de kaart.
+"""

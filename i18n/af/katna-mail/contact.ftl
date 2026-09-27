@@ -1,0 +1,17 @@
+# Katna Mail, Afrikaans (Afrikaans).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+contact-panel-show = Wys kontakbesonderhede
+contact-panel-hide = Versteek kontakbesonderhede
+contact-messages = { $count ->
+    [one] { $count } boodskap
+   *[other] { $count } boodskappe
+}
+contact-from-to = { $from } van hulle, { $to } van jou
+contact-first = Eerste
+contact-latest = Jongste
+contact-local-time = { $time } hul tyd ({ $offset })
+contact-conversations = Onlangse gesprekke
+contact-files = Lêers
+contact-people = In hierdie gesprek
+contact-local-only = Slegs uit jou e-pos op hierdie rekenaar

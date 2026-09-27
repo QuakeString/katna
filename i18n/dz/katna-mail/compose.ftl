@@ -49,6 +49,9 @@ compose-picker-attach = མཉམ་སྦྲགས།
 compose-file-too-large = { $name } འདི་ སྦོམ་དྲགས་པས། འཕྲིན་དོན་ཅིག་ནང་ { $limit } ཚུན་འབག་ཚུགས།
 compose-attachment-size = ({ $size })
 compose-remove-attachment = མཉམ་སྦྲགས་རྩ་བསྐྲད་གཏང་།
+compose-attachments-total = { $count ->
+   *[other] ཡིག་སྣོད་ { $count }། { $size }
+}
 compose-drop-files = ཡིག་སྣོད་ཚུ་ ནཱ་ལུ་བཀོག
 compose-drop-here = ནཱ་ལུ་བཀོག
 compose-paste-keep-formatting = རྩ་སྒྲིག་བཞག

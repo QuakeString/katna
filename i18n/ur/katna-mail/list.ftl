@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] { $folder } میں تمام { $count } پیغامات منتخب کریں
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] اسکرین پر { $count } پڑھی ہوئی گفتگو منتخب ہے۔
+           *[other] اسکرین پر تمام { $count } پڑھی ہوئی گفتگوئیں منتخب ہیں۔
+        }
+       *[message] { $count ->
+            [one] اسکرین پر { $count } پڑھا ہوا پیغام منتخب ہے۔
+           *[other] اسکرین پر تمام { $count } پڑھے ہوئے پیغامات منتخب ہیں۔
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] اسکرین پر { $count } ناخواندہ گفتگو منتخب ہے۔
+           *[other] اسکرین پر تمام { $count } ناخواندہ گفتگوئیں منتخب ہیں۔
+        }
+       *[message] { $count ->
+            [one] اسکرین پر { $count } ناخواندہ پیغام منتخب ہے۔
+           *[other] اسکرین پر تمام { $count } ناخواندہ پیغامات منتخب ہیں۔
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] اسکرین پر { $count } ستارے والی گفتگو منتخب ہے۔
+           *[other] اسکرین پر تمام { $count } ستارے والی گفتگوئیں منتخب ہیں۔
+        }
+       *[message] { $count ->
+            [one] اسکرین پر { $count } ستارے والا پیغام منتخب ہے۔
+           *[other] اسکرین پر تمام { $count } ستارے والے پیغامات منتخب ہیں۔
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] اسکرین پر { $count } بغیر ستارے والی گفتگو منتخب ہے۔
+           *[other] اسکرین پر تمام { $count } بغیر ستارے والی گفتگوئیں منتخب ہیں۔
+        }
+       *[message] { $count ->
+            [one] اسکرین پر { $count } بغیر ستارے والا پیغام منتخب ہے۔
+           *[other] اسکرین پر تمام { $count } بغیر ستارے والے پیغامات منتخب ہیں۔
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } پڑھی ہوئی گفتگو منتخب کریں
+           *[other] تمام { $count } پڑھی ہوئی گفتگوئیں منتخب کریں
+        }
+       *[message] { $count ->
+            [one] { $count } پڑھا ہوا پیغام منتخب کریں
+           *[other] تمام { $count } پڑھے ہوئے پیغامات منتخب کریں
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ناخواندہ گفتگو منتخب کریں
+           *[other] تمام { $count } ناخواندہ گفتگوئیں منتخب کریں
+        }
+       *[message] { $count ->
+            [one] { $count } ناخواندہ پیغام منتخب کریں
+           *[other] تمام { $count } ناخواندہ پیغامات منتخب کریں
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ستارے والی گفتگو منتخب کریں
+           *[other] تمام { $count } ستارے والی گفتگوئیں منتخب کریں
+        }
+       *[message] { $count ->
+            [one] { $count } ستارے والا پیغام منتخب کریں
+           *[other] تمام { $count } ستارے والے پیغامات منتخب کریں
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } بغیر ستارے والی گفتگو منتخب کریں
+           *[other] تمام { $count } بغیر ستارے والی گفتگوئیں منتخب کریں
+        }
+       *[message] { $count ->
+            [one] { $count } بغیر ستارے والا پیغام منتخب کریں
+           *[other] تمام { $count } بغیر ستارے والے پیغامات منتخب کریں
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } میں { $count } پڑھی ہوئی گفتگو منتخب کریں
+           *[other] { $folder } میں تمام { $count } پڑھی ہوئی گفتگوئیں منتخب کریں
+        }
+       *[message] { $count ->
+            [one] { $folder } میں { $count } پڑھا ہوا پیغام منتخب کریں
+           *[other] { $folder } میں تمام { $count } پڑھے ہوئے پیغامات منتخب کریں
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } میں { $count } ناخواندہ گفتگو منتخب کریں
+           *[other] { $folder } میں تمام { $count } ناخواندہ گفتگوئیں منتخب کریں
+        }
+       *[message] { $count ->
+            [one] { $folder } میں { $count } ناخواندہ پیغام منتخب کریں
+           *[other] { $folder } میں تمام { $count } ناخواندہ پیغامات منتخب کریں
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } میں { $count } ستارے والی گفتگو منتخب کریں
+           *[other] { $folder } میں تمام { $count } ستارے والی گفتگوئیں منتخب کریں
+        }
+       *[message] { $count ->
+            [one] { $folder } میں { $count } ستارے والا پیغام منتخب کریں
+           *[other] { $folder } میں تمام { $count } ستارے والے پیغامات منتخب کریں
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } میں { $count } بغیر ستارے والی گفتگو منتخب کریں
+           *[other] { $folder } میں تمام { $count } بغیر ستارے والی گفتگوئیں منتخب کریں
+        }
+       *[message] { $count ->
+            [one] { $folder } میں { $count } بغیر ستارے والا پیغام منتخب کریں
+           *[other] { $folder } میں تمام { $count } بغیر ستارے والے پیغامات منتخب کریں
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->
