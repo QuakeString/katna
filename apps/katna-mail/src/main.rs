@@ -25,13 +25,14 @@ mod window;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-use gpui::{App, AppContext, SharedString, px, size};
+use gpui::{App, AppContext, SharedString, size};
 use katna_chrome::{Desktop, Environment, window_options};
 use katna_core::Paths;
 use katna_core::config::Config;
 use katna_core::ids::{MAIL_APP_ID, MAIL_MENU_BAR_PATH};
 use katna_platform::dbusmenu::Menu;
 use katna_platform::font;
+use katna_ui::scale::desktop_px;
 
 const USAGE: &str = "\
 Usage: katna-mail [--data-dir DIR] [--search QUERY] [--compose | --inbox | --settings |
@@ -135,7 +136,10 @@ fn main() -> ExitCode {
                 serve_menu_bar(connection, sender, cx);
             }
             // Settings > Experimental > Look & Feel, before the first window.
-            let look = window::look(&Config::load(&paths.config_file()).unwrap_or_default());
+            let config = Config::load(&paths.config_file()).unwrap_or_default();
+            // Settings > Appearance > Scaling, before any length is made.
+            katna_ui::scale::set_scale(f32::from(config.mail.scale) / 100.0);
+            let look = window::look(&config);
             cx.set_global(look);
             let mut env = Environment::from_env();
             env.own_frame = look.own_frame;
@@ -147,7 +151,7 @@ fn main() -> ExitCode {
                 &env,
                 MAIL_APP_ID,
                 "Katna Mail",
-                size(px(1280.0), px(800.0)),
+                size(desktop_px(1280.0), desktop_px(800.0)),
                 cx,
             );
             let opened = cx.open_window(options, |window, cx| {

@@ -11,9 +11,10 @@ use std::rc::Rc;
 
 use gpui::{
     Anchor, AnyElement, Context, Entity, Focusable, FontWeight, Hsla, MouseButton, Pixels, Point,
-    Stateful, Subscription, Window, anchored, deferred, div, point, prelude::*, px, rgba,
+    Stateful, Subscription, Window, anchored, deferred, div, point, prelude::*, rgba,
 };
 use jiff::civil::Date;
+use katna_ui::px;
 use katna_ui::rich::{Align, Font, List, RichEditor, Size, TableEdit, html};
 use katna_ui::{InputEvent, TextInput};
 
@@ -375,6 +376,9 @@ impl MailWindow {
         let popup = compose.popup.clone();
         let plain = compose.plain(cx);
         let open = |p: Popup| popup.as_ref() == Some(&p);
+        // A reply or forward archives its conversation too when that is
+        // the default; the Send menu offers the other way.
+        let archives = compose.answering.is_some() && self.config.sending.send_and_archive;
         let send = div()
             .relative()
             .flex_none()
@@ -395,13 +399,22 @@ impl MailWindow {
                     .pr(px(14.0))
                     .flex()
                     .items_center()
+                    .gap(px(6.0))
                     .rounded_l_full()
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(0xffffff1f)))
-                    .tooltip(tip("Send (Ctrl+Enter)", th))
+                    .tooltip(tip(
+                        if archives {
+                            "Send and archive (Ctrl+Enter)"
+                        } else {
+                            "Send (Ctrl+Enter)"
+                        },
+                        th,
+                    ))
                     .on_click(
-                        cx.listener(|this, _, window, cx| this.send_compose(None, window, cx)),
+                        cx.listener(|this, _, window, cx| this.send_compose_default(window, cx)),
                     )
+                    .when(archives, |d| d.child(icon("archive", th.on_accent, 18.0)))
                     .child("Send"),
             )
             .child(div().w(px(1.0)).h(px(20.0)).bg(rgba(0xffffff66)))
@@ -482,7 +495,8 @@ impl MailWindow {
         // dropping the calendar, photo, emoji and link buttons in turn;
         // links still come with Ctrl+K. Formatting, attaching, the
         // signature and More always stay.
-        let fit = ((width - ACTIONS_FIXED) / TOOL_WIDTH).floor() as i32 - 4;
+        let pill = if archives { 24.0 } else { 0.0 };
+        let fit = ((width - ACTIONS_FIXED - pill) / TOOL_WIDTH).floor() as i32 - 4;
         let (link, emoji_fits, image, event) = (fit >= 1, fit >= 2, fit >= 3, fit >= 4);
         div()
             .flex_none()
@@ -583,8 +597,22 @@ impl MailWindow {
 
     fn render_send_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let count = self.writing.scheduled.len();
+        let answering = self.compose.as_ref().is_some_and(|c| c.answering.is_some());
+        let archives = self.config.sending.send_and_archive;
         menu(th)
             .w(px(240.0))
+            .when(answering, |d| {
+                let (name, label) = if archives {
+                    ("send", "Send without archiving")
+                } else {
+                    ("archive", "Send and archive")
+                };
+                d.child(
+                    tool_item("compose-send-other", name, label, th).on_click(cx.listener(
+                        move |this, _, window, cx| this.send_compose(None, !archives, window, cx),
+                    )),
+                )
+            })
             .child(
                 tool_item("compose-schedule", "schedule", "Schedule send", th).on_click(
                     cx.listener(|this, _, _, cx| {
@@ -635,9 +663,9 @@ impl MailWindow {
                         .text_color(rgba(th.text_dim))
                         .child(schedule::short(&preset.at)),
                 )
-                .on_click(
-                    cx.listener(move |this, _, window, cx| this.send_compose(Some(at), window, cx)),
-                )
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    this.send_compose(Some(at), false, window, cx)
+                }))
         });
         menu(th)
             .w(px(340.0))
@@ -705,7 +733,7 @@ impl MailWindow {
             self.show_snackbar("That time does not exist here.", None, cx);
             return;
         };
-        self.send_compose(Some(at), window, cx);
+        self.send_compose(Some(at), false, window, cx);
     }
 
     // Formatting.

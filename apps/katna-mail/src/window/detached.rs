@@ -11,13 +11,15 @@
 //! the conversation is archived, deleted or moved from it.
 
 use gpui::{
-    AnyElement, Context, Decorations, FontWeight, SharedString, Window, div, prelude::*, px, rgba,
-    size,
+    AnyElement, Context, Decorations, FontWeight, SharedString, Window, div, prelude::*, rgba, size,
 };
 use katna_chrome::{Bar, Environment, window_options};
 use katna_core::Paths;
 use katna_core::ids::MAIL_APP_ID;
 use katna_store::FolderId;
+use katna_ui::px;
+use katna_ui::scale::desktop_px;
+use katna_ui::unpx;
 
 use super::{Listing, MailWindow, READER_CONTEXT, WINDOW_CONTEXT};
 use crate::data::Entry;
@@ -62,7 +64,7 @@ impl MailWindow {
             &env,
             MAIL_APP_ID,
             title.clone(),
-            size(px(WIDTH), px(HEIGHT)),
+            size(desktop_px(WIDTH), desktop_px(HEIGHT)),
             cx,
         );
         let this = cx.entity();
@@ -142,7 +144,7 @@ impl MailWindow {
             viewer.update(cx, |viewer, _| viewer.th = th);
         }
         let reduce = cx.reduce_motion();
-        self.update_reply_row(f32::from(window.viewport_size().width), window, reduce);
+        self.update_reply_row(unpx(window.viewport_size().width), window, reduce);
         let title = self
             .reader
             .as_ref()

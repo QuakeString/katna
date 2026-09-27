@@ -181,6 +181,29 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 18,
+        title: "Read conversations your way",
+        text: "Settings > General > Reading can show the newest message first, open \
+               the full headers of every message, and name recipients in full \
+               instead of by first name.",
+        animation: None,
+    },
+    Highlight {
+        id: 19,
+        title: "Send and archive",
+        text: "The menu beside Send on a reply sends it and archives the \
+               conversation. Settings > Compose can make that what Send does, and \
+               can send new mail from the same account every time.",
+        animation: None,
+    },
+    Highlight {
+        id: 20,
+        title: "Make everything bigger or smaller",
+        text: "Settings > Appearance > Scaling sizes the whole window, text, icons \
+               and spacing alike, from 75% to 200% on top of your desktop's scale.",
+        animation: None,
+    },
+    Highlight {
+        id: 21,
         title: "Katna as your mail app",
         text: "Email links in other apps and on websites can open a new message in \
                Katna Mail, with the address, subject and text filled in. Turn it on \

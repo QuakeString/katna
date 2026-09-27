@@ -9,8 +9,9 @@ mod dates;
 
 use gpui::{
     AnyElement, Context, Div, Entity, Focusable, FontWeight, Stateful, Subscription, Window,
-    canvas, div, prelude::*, px, rgba,
+    canvas, div, prelude::*, rgba,
 };
+use katna_ui::px;
 use katna_ui::{InputEvent, TextInput};
 
 use super::MailWindow;
