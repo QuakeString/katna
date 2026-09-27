@@ -99,10 +99,12 @@ pub fn init(config_filter: &str) -> Result<()> {
         .map_err(|err| Error::Logging(err.to_string()))
 }
 
-/// Libraries whose warnings are about the user's system rather than Katna,
-/// such as one line per broken font file. The config filter hides them
-/// unless it names them; `$KATNA_LOG` shows them as asked.
-const QUIET: &[&str] = &["fontdb"];
+/// Libraries whose warnings are about the user's system or a server rather
+/// than Katna, such as one line per broken font file, or one per slightly
+/// malformed IMAP response Gmail sends ("Rectified missing `text`"). The
+/// config filter hides them unless it names them; `$KATNA_LOG` shows them
+/// as asked.
+const QUIET: &[&str] = &["fontdb", "imap_codec"];
 
 /// Chooses the filter: `env_filter` if set and not empty, else `config_filter`
 /// with [`QUIET`] libraries kept to errors.
@@ -131,13 +133,16 @@ mod tests {
     #[test]
     fn uses_config_filter_without_env() {
         let filter = build_filter("warn,katna_sync=debug", None).unwrap();
-        assert_eq!(filter.to_string(), "katna_sync=debug,fontdb=error,warn");
+        assert_eq!(
+            filter.to_string(),
+            "katna_sync=debug,imap_codec=error,fontdb=error,warn"
+        );
     }
 
     #[test]
     fn keeps_font_complaints_quiet_unless_asked() {
         let filter = build_filter("info,fontdb=debug", None).unwrap();
-        assert_eq!(filter.to_string(), "fontdb=debug,info");
+        assert_eq!(filter.to_string(), "imap_codec=error,fontdb=debug,info");
         let filter = build_filter("info", Some("debug")).unwrap();
         assert_eq!(filter.to_string(), "debug");
     }
@@ -147,7 +152,7 @@ mod tests {
         let filter = build_filter("warn", Some("trace")).unwrap();
         assert_eq!(filter.to_string(), "trace");
         let filter = build_filter("warn", Some("  ")).unwrap();
-        assert_eq!(filter.to_string(), "fontdb=error,warn");
+        assert_eq!(filter.to_string(), "imap_codec=error,fontdb=error,warn");
     }
 
     #[test]
