@@ -9,12 +9,17 @@ nav-folders = Folda
 nav-label-new = Mepụta leebụl ọhụrụ
 nav-folder-new = Mepụta folda ọhụrụ
 nav-account-unnamed = Akaụntụ { $number }
+nav-all-accounts = Akaụntụ niile
+nav-expand = Gosi folda
+nav-collapse = Zoo folda
 nav-tab-new = { $count } ọhụrụ
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = Igbe ozi mbata
 folder-starred = Nwere kpakpando
+folder-unread = A gụghị
+folder-important = Dị mkpa
 folder-drafts = Ndebiri
 folder-sent = Ezigara
 folder-archive = Ebe nchekwa

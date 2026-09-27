@@ -38,6 +38,9 @@ compose-scheduled = { $when } کو بھیجنے کے لیے شیڈول کیا گ
 compose-sent-archived = بھیج کر آرکائیو کر دیا گیا
 compose-sent = پیغام بھیج دیا گیا
 compose-discarded = ڈرافٹ رد کر دیا گیا
+compose-draft-saved = ڈرافٹ محفوظ ہو گیا
+compose-draft-failed = ڈرافٹ محفوظ نہیں ہو سکا: { $error }
+compose-draft-not-opened = ڈرافٹ کھولا نہیں جا سکا۔
 
 ## Attachments
 

@@ -9,12 +9,17 @@ nav-folders = Thư mục
 nav-label-new = Tạo nhãn mới
 nav-folder-new = Tạo thư mục mới
 nav-account-unnamed = Tài khoản { $number }
+nav-all-accounts = Tất cả tài khoản
+nav-expand = Hiện thư mục
+nav-collapse = Ẩn thư mục
 nav-tab-new = { $count } thư mới
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = Hộp thư đến
 folder-starred = Có gắn dấu sao
+folder-unread = Chưa đọc
+folder-important = Quan trọng
 folder-drafts = Thư nháp
 folder-sent = Đã gửi
 folder-archive = Lưu trữ

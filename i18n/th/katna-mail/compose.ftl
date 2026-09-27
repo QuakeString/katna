@@ -38,6 +38,9 @@ compose-scheduled = กำหนดเวลาส่งไว้ที่ { $wh
 compose-sent-archived = ส่งและเก็บถาวรแล้ว
 compose-sent = ส่งข้อความแล้ว
 compose-discarded = ทิ้งฉบับร่างแล้ว
+compose-draft-saved = บันทึกฉบับร่างแล้ว
+compose-draft-failed = บันทึกฉบับร่างไม่ได้: { $error }
+compose-draft-not-opened = เปิดฉบับร่างไม่ได้
 
 ## Attachments
 

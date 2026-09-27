@@ -9,12 +9,17 @@ nav-folders = ໂຟນເດີ
 nav-label-new = ສ້າງປ້າຍກຳກັບໃໝ່
 nav-folder-new = ສ້າງໂຟນເດີໃໝ່
 nav-account-unnamed = ບັນຊີ { $number }
+nav-all-accounts = ທຸກບັນຊີ
+nav-expand = ສະແດງໂຟນເດີ
+nav-collapse = ເຊື່ອງໂຟນເດີ
 nav-tab-new = ໃໝ່ { $count }
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = ກ່ອງຈົດໝາຍເຂົ້າ
 folder-starred = ຕິດດາວແລ້ວ
+folder-unread = ຍັງບໍ່ໄດ້ອ່ານ
+folder-important = ສຳຄັນ
 folder-drafts = ສະບັບຮ່າງ
 folder-sent = ສົ່ງແລ້ວ
 folder-archive = ຈັດເກັບ

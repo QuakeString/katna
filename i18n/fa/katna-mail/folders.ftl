@@ -9,6 +9,9 @@ nav-folders = پوشه‌ها
 nav-label-new = ایجاد برچسب جدید
 nav-folder-new = ایجاد پوشهٔ جدید
 nav-account-unnamed = حساب { $number }
+nav-all-accounts = همهٔ حساب‌ها
+nav-expand = نمایش پوشه‌ها
+nav-collapse = پنهان کردن پوشه‌ها
 nav-tab-new = { $count ->
     [one] { $count } جدید
    *[other] { $count } جدید
@@ -18,6 +21,8 @@ nav-tab-new = { $count ->
 
 folder-inbox = صندوق ورودی
 folder-starred = ستاره‌دار
+folder-unread = خوانده‌نشده
+folder-important = مهم
 folder-drafts = پیش‌نویس‌ها
 folder-sent = ارسال‌شده
 folder-archive = بایگانی

@@ -38,6 +38,9 @@ compose-scheduled = { $when } တွင် ပို့ရန် အချိန
 compose-sent-archived = ပို့ပြီး မှတ်တမ်းသိမ်းပြီး
 compose-sent = မက်ဆေ့ဂျ် ပို့ပြီး
 compose-discarded = မူကြမ်းကို ပယ်လိုက်ပြီ
+compose-draft-saved = မူကြမ်းကို သိမ်းလိုက်ပြီ
+compose-draft-failed = မူကြမ်းကို သိမ်း၍ မရပါ- { $error }
+compose-draft-not-opened = မူကြမ်းကို ဖွင့်၍ မရပါ။
 
 ## Attachments
 

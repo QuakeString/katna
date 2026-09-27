@@ -230,7 +230,10 @@ menu-reply-all = ለሁሉም መልስ
 menu-forward = አስተላልፍ
 menu-archive = ወደ ማህደር አስቀምጥ
 menu-delete = ሰርዝ
+menu-delete-forever = እስከመጨረሻው ሰርዝ
+menu-move-to-inbox = ወደ ገቢ መልዕክት ሳጥን ውሰድ
 menu-spam = አይፈለጌ መልዕክት ሪፖርት አድርግ
+menu-not-spam = አይፈለጌ መልዕክት አይደለም
 menu-mark-read = እንደተነበበ ምልክት አድርግ
 menu-mark-unread = እንዳልተነበበ ምልክት አድርግ
 menu-mark-all-read = ሁሉንም እንደተነበቡ ምልክት አድርግ
@@ -346,6 +349,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] መልዕክቱ አይፈለጌ መልዕክት ተብሎ ሪፖርት ተደርጓል።
        *[other] { $count } መልዕክቶች አይፈለጌ መልዕክት ተብለው ሪፖርት ተደርገዋል።
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] ውይይቱ አይፈለጌ መልዕክት አይደለም ተብሎ ወደ ገቢ መልዕክት ሳጥን ተወስዷል።
+       *[other] { $count } ውይይቶች አይፈለጌ መልዕክት አይደሉም ተብለው ወደ ገቢ መልዕክት ሳጥን ተወስደዋል።
+    }
+   *[message] { $count ->
+        [one] መልዕክቱ አይፈለጌ መልዕክት አይደለም ተብሎ ወደ ገቢ መልዕክት ሳጥን ተወስዷል።
+       *[other] { $count } መልዕክቶች አይፈለጌ መልዕክት አይደሉም ተብለው ወደ ገቢ መልዕክት ሳጥን ተወስደዋል።
     }
 }
 toast-deleted-forever = { $kind ->

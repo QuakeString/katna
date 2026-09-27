@@ -9,12 +9,17 @@ nav-folders = Àwọn fódà
 nav-label-new = Ṣẹ̀dá àmì tuntun
 nav-folder-new = Ṣẹ̀dá fódà tuntun
 nav-account-unnamed = Àkáǹtì { $number }
+nav-all-accounts = Gbogbo àkáǹtì
+nav-expand = Fi àwọn fódà hàn
+nav-collapse = Fi àwọn fódà pamọ́
 nav-tab-new = { $count } tuntun
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = Àpótí-ìwọlé
 folder-starred = Oní ìràwọ̀
+folder-unread = Àìkà
+folder-important = Pàtàkì
 folder-drafts = Àwọn àkọ̀pamọ́
 folder-sent = Tí a fi ránṣẹ́
 folder-archive = Ibi ìpamọ́

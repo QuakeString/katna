@@ -152,7 +152,10 @@ menu-reply-all = Balas semua
 menu-forward = Teruskan
 menu-archive = Arsipkan
 menu-delete = Hapus
+menu-delete-forever = Hapus selamanya
+menu-move-to-inbox = Pindahkan ke Kotak Masuk
 menu-spam = Laporkan spam
+menu-not-spam = Bukan spam
 menu-mark-read = Tandai sudah dibaca
 menu-mark-unread = Tandai belum dibaca
 menu-mark-all-read = Tandai semua sudah dibaca
@@ -209,6 +212,10 @@ toast-unpinned = { $kind ->
 toast-spam = { $kind ->
     [conversation] { $count } percakapan dilaporkan sebagai spam.
    *[message] { $count } pesan dilaporkan sebagai spam.
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count } percakapan ditandai bukan spam dan dipindahkan ke kotak masuk.
+   *[message] { $count } pesan ditandai bukan spam dan dipindahkan ke kotak masuk.
 }
 toast-deleted-forever = { $kind ->
     [conversation] { $count } percakapan dihapus selamanya.

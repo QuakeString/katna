@@ -38,6 +38,9 @@ compose-scheduled = { $when } ରେ ପଠାଇବା ପାଇଁ ସମୟ �
 compose-sent-archived = ପଠାଗଲା ଓ ଆର୍କାଇଭ ହେଲା
 compose-sent = ମେସେଜ ପଠାଗଲା
 compose-discarded = ଡ୍ରାଫ୍ଟ ବାତିଲ ହେଲା
+compose-draft-saved = ଡ୍ରାଫ୍ଟ ସେଭ ହେଲା
+compose-draft-failed = ଡ୍ରାଫ୍ଟ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ: { $error }
+compose-draft-not-opened = ଡ୍ରାଫ୍ଟ ଖୋଲାଯାଇପାରିଲା ନାହିଁ।
 
 ## Attachments
 

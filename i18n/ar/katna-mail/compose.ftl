@@ -38,6 +38,9 @@ compose-scheduled = تمت جدولة الإرسال في { $when }
 compose-sent-archived = تم الإرسال والأرشفة
 compose-sent = تم إرسال الرسالة
 compose-discarded = تم تجاهل المسودة
+compose-draft-saved = تم حفظ المسودة
+compose-draft-failed = تعذّر حفظ المسودة: { $error }
+compose-draft-not-opened = تعذّر فتح المسودة.
 
 ## Attachments
 

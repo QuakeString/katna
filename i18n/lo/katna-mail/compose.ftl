@@ -38,6 +38,9 @@ compose-scheduled = ຕັ້ງເວລາສົ່ງໄວ້ທີ່ { $wh
 compose-sent-archived = ສົ່ງ ແລະ ຈັດເກັບແລ້ວ
 compose-sent = ສົ່ງຂໍ້ຄວາມແລ້ວ
 compose-discarded = ຖິ້ມສະບັບຮ່າງແລ້ວ
+compose-draft-saved = ບັນທຶກສະບັບຮ່າງແລ້ວ
+compose-draft-failed = ບໍ່ສາມາດບັນທຶກສະບັບຮ່າງໄດ້: { $error }
+compose-draft-not-opened = ບໍ່ສາມາດເປີດສະບັບຮ່າງໄດ້.
 
 ## Attachments
 

@@ -230,7 +230,10 @@ menu-reply-all = সকলোকে উত্তৰ দিয়ক
 menu-forward = ফৰৱাৰ্ড কৰক
 menu-archive = আৰ্কাইভ কৰক
 menu-delete = মচক
+menu-delete-forever = চিৰদিনৰ বাবে মচক
+menu-move-to-inbox = ইনবক্সলৈ স্থানান্তৰ কৰক
 menu-spam = স্পাম বুলি ৰিপৰ্ট কৰক
+menu-not-spam = স্পাম নহয়
 menu-mark-read = পঢ়া বুলি চিহ্নিত কৰক
 menu-mark-unread = নপঢ়া বুলি চিহ্নিত কৰক
 menu-mark-all-read = সকলোবোৰ পঢ়া বুলি চিহ্নিত কৰক
@@ -346,6 +349,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] বাৰ্তাটো স্পাম বুলি ৰিপৰ্ট কৰা হ'ল।
        *[other] { $count }টা বাৰ্তা স্পাম বুলি ৰিপৰ্ট কৰা হ'ল।
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো স্পাম নহয় বুলি চিহ্নিত কৰি ইনবক্সলৈ নিয়া হ'ল।
+       *[other] { $count }টা কথোপকথন স্পাম নহয় বুলি চিহ্নিত কৰি ইনবক্সলৈ নিয়া হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো স্পাম নহয় বুলি চিহ্নিত কৰি ইনবক্সলৈ নিয়া হ'ল।
+       *[other] { $count }টা বাৰ্তা স্পাম নহয় বুলি চিহ্নিত কৰি ইনবক্সলৈ নিয়া হ'ল।
     }
 }
 toast-deleted-forever = { $kind ->

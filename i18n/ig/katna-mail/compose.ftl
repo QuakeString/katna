@@ -38,6 +38,9 @@ compose-scheduled = Ahaziri izipu maka { $when }
 compose-sent-archived = Ezigara ma chekwaa
 compose-sent = Ezigara ozi
 compose-discarded = Atụfuru ndebiri
+compose-draft-saved = Echekwala ndebiri
+compose-draft-failed = Enweghị ike ịchekwa ndebiri ahụ: { $error }
+compose-draft-not-opened = Enweghị ike imeghe ndebiri ahụ.
 
 ## Attachments
 

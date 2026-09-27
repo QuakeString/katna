@@ -230,7 +230,10 @@ menu-reply-all = Amsa wa kowa
 menu-forward = Tura
 menu-archive = Adana a ma'ajiya
 menu-delete = Share
+menu-delete-forever = Share har abada
+menu-move-to-inbox = Matsar zuwa Akwatin saƙo
 menu-spam = Rahoto saƙon banza
+menu-not-spam = Ba saƙon banza ba ne
 menu-mark-read = Yi alama an karanta
 menu-mark-unread = Yi alama ba a karanta ba
 menu-mark-all-read = Yi wa duka alama an karanta
@@ -346,6 +349,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] An kai rahoton saƙo a matsayin saƙon banza.
        *[other] An kai rahoton saƙonni { $count } a matsayin saƙonnin banza.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] An yi wa tattaunawa alama cewa ba saƙon banza ba ce kuma an matsar da ita zuwa akwatin saƙo.
+       *[other] An yi wa tattaunawa { $count } alama cewa ba saƙonnin banza ba ne kuma an matsar da su zuwa akwatin saƙo.
+    }
+   *[message] { $count ->
+        [one] An yi wa saƙo alama cewa ba saƙon banza ba ne kuma an matsar da shi zuwa akwatin saƙo.
+       *[other] An yi wa saƙonni { $count } alama cewa ba saƙonnin banza ba ne kuma an matsar da su zuwa akwatin saƙo.
     }
 }
 toast-deleted-forever = { $kind ->

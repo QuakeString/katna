@@ -9,6 +9,9 @@ nav-folders = Ordner
 nav-label-new = Neues Label erstellen
 nav-folder-new = Neuen Ordner erstellen
 nav-account-unnamed = Konto { $number }
+nav-all-accounts = Alle Konten
+nav-expand = Ordner anzeigen
+nav-collapse = Ordner ausblenden
 nav-tab-new = { $count ->
     [one] { $count } neu
    *[other] { $count } neu
@@ -18,6 +21,8 @@ nav-tab-new = { $count ->
 
 folder-inbox = Posteingang
 folder-starred = Markiert
+folder-unread = Ungelesen
+folder-important = Wichtig
 folder-drafts = Entwürfe
 folder-sent = Gesendet
 folder-archive = Archiv

@@ -38,6 +38,9 @@ compose-scheduled = Đã lên lịch gửi vào { $when }
 compose-sent-archived = Đã gửi và lưu trữ
 compose-sent = Đã gửi thư
 compose-discarded = Đã hủy thư nháp
+compose-draft-saved = Đã lưu thư nháp
+compose-draft-failed = Không lưu được thư nháp: { $error }
+compose-draft-not-opened = Không mở được thư nháp.
 
 ## Attachments
 

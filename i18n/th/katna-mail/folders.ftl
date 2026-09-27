@@ -9,12 +9,17 @@ nav-folders = โฟลเดอร์
 nav-label-new = สร้างป้ายกำกับใหม่
 nav-folder-new = สร้างโฟลเดอร์ใหม่
 nav-account-unnamed = บัญชี { $number }
+nav-all-accounts = ทุกบัญชี
+nav-expand = แสดงโฟลเดอร์
+nav-collapse = ซ่อนโฟลเดอร์
 nav-tab-new = ใหม่ { $count } รายการ
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = กล่องจดหมาย
 folder-starred = ที่ติดดาว
+folder-unread = ยังไม่อ่าน
+folder-important = สำคัญ
 folder-drafts = ฉบับร่าง
 folder-sent = ส่งแล้ว
 folder-archive = เก็บถาวร

@@ -9,12 +9,17 @@ nav-folders = ဖိုင်တွဲများ
 nav-label-new = အညွှန်းအသစ် ပြုလုပ်ရန်
 nav-folder-new = ဖိုင်တွဲအသစ် ပြုလုပ်ရန်
 nav-account-unnamed = အကောင့် { $number }
+nav-all-accounts = အကောင့်အားလုံး
+nav-expand = ဖိုင်တွဲများ ပြရန်
+nav-collapse = ဖိုင်တွဲများ ဝှက်ရန်
 nav-tab-new = အသစ် { $count }
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = ဝင်စာ
 folder-starred = ကြယ်ပွင့်တပ်ထားသည်
+folder-unread = မဖတ်ရသေး
+folder-important = အရေးကြီး
 folder-drafts = မူကြမ်းများ
 folder-sent = ပို့ပြီး
 folder-archive = မှတ်တမ်း
