@@ -38,6 +38,9 @@ compose-scheduled = បានកំណត់ពេលផ្ញើនៅ { $when 
 compose-sent-archived = បានផ្ញើ និងទុកក្នុងបណ្ណសារ
 compose-sent = បានផ្ញើសារ
 compose-discarded = បានបោះបង់សេចក្ដីព្រាង
+compose-draft-saved = បានរក្សាទុកសេចក្ដីព្រាង
+compose-draft-failed = មិនអាចរក្សាទុកសេចក្ដីព្រាងបានទេ៖ { $error }
+compose-draft-not-opened = មិនអាចបើកសេចក្ដីព្រាងបានទេ។
 
 ## Attachments
 

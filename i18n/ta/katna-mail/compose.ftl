@@ -38,6 +38,9 @@ compose-scheduled = { $when } அன்று அனுப்பத் திட
 compose-sent-archived = அனுப்பிக் காப்பகப்படுத்தப்பட்டது
 compose-sent = மெசேஜ் அனுப்பப்பட்டது
 compose-discarded = வரைவு நிராகரிக்கப்பட்டது
+compose-draft-saved = வரைவு சேமிக்கப்பட்டது
+compose-draft-failed = வரைவைச் சேமிக்க முடியவில்லை: { $error }
+compose-draft-not-opened = வரைவைத் திறக்க முடியவில்லை.
 
 ## Attachments
 

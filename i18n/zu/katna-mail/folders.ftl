@@ -9,6 +9,9 @@ nav-folders = Amafolda
 nav-label-new = Dala ilebula entsha
 nav-folder-new = Dala ifolda entsha
 nav-account-unnamed = I-akhawunti { $number }
+nav-all-accounts = Wonke Ama-akhawunti
+nav-expand = Bonisa amafolda
+nav-collapse = Fihla amafolda
 nav-tab-new = { $count ->
     [one] { $count } okusha
    *[other] { $count } okusha
@@ -18,6 +21,8 @@ nav-tab-new = { $count ->
 
 folder-inbox = Ibhokisi lokungenayo
 folder-starred = Okunenkanyezi
+folder-unread = Okungafundiwe
+folder-important = Okubalulekile
 folder-drafts = Okusalungiswa
 folder-sent = Okuthunyelwe
 folder-archive = Ingobo yomlando

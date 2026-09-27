@@ -38,6 +38,9 @@ compose-scheduled = { $when } に送信予約しました
 compose-sent-archived = 送信してアーカイブしました
 compose-sent = メッセージを送信しました
 compose-discarded = 下書きを破棄しました
+compose-draft-saved = 下書きを保存しました
+compose-draft-failed = 下書きを保存できませんでした: { $error }
+compose-draft-not-opened = 下書きを開けませんでした。
 
 ## Attachments
 

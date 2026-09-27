@@ -230,7 +230,10 @@ menu-reply-all = Jibu wote
 menu-forward = Sambaza
 menu-archive = Weka kwenye kumbukumbu
 menu-delete = Futa
+menu-delete-forever = Futa kabisa
+menu-move-to-inbox = Hamishia Kikasha
 menu-spam = Ripoti taka
+menu-not-spam = Si taka
 menu-mark-read = Tia alama kuwa imesomwa
 menu-mark-unread = Tia alama kuwa haijasomwa
 menu-mark-all-read = Tia alama zote kuwa zimesomwa
@@ -346,6 +349,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] Ujumbe umeripotiwa kuwa taka.
        *[other] Jumbe { $count } zimeripotiwa kuwa taka.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Mazungumzo yamewekwa alama kuwa si taka na kuhamishiwa kikasha.
+       *[other] Mazungumzo { $count } yamewekwa alama kuwa si taka na kuhamishiwa kikasha.
+    }
+   *[message] { $count ->
+        [one] Ujumbe umewekwa alama kuwa si taka na kuhamishiwa kikasha.
+       *[other] Jumbe { $count } zimewekwa alama kuwa si taka na kuhamishiwa kikasha.
     }
 }
 toast-deleted-forever = { $kind ->

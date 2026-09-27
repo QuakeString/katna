@@ -38,6 +38,9 @@ compose-scheduled = Надсилання заплановано на { $when }
 compose-sent-archived = Надіслано й заархівовано
 compose-sent = Лист надіслано
 compose-discarded = Чернетку відкинуто
+compose-draft-saved = Чернетку збережено
+compose-draft-failed = Не вдалося зберегти чернетку: { $error }
+compose-draft-not-opened = Не вдалося відкрити чернетку.
 
 ## Attachments
 

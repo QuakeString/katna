@@ -38,6 +38,9 @@ compose-scheduled = Pengiriman dijadwalkan pada { $when }
 compose-sent-archived = Terkirim dan diarsipkan
 compose-sent = Pesan terkirim
 compose-discarded = Draf dibuang
+compose-draft-saved = Draf disimpan
+compose-draft-failed = Draf tidak dapat disimpan: { $error }
+compose-draft-not-opened = Draf tidak dapat dibuka.
 
 ## Attachments
 

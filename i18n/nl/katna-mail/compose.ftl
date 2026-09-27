@@ -38,6 +38,9 @@ compose-scheduled = Verzending gepland voor { $when }
 compose-sent-archived = Verzonden en gearchiveerd
 compose-sent = Bericht verzonden
 compose-discarded = Concept verwijderd
+compose-draft-saved = Concept opgeslagen
+compose-draft-failed = Het concept kon niet worden opgeslagen: { $error }
+compose-draft-not-opened = Het concept kon niet worden geopend.
 
 ## Attachments
 

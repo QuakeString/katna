@@ -152,7 +152,10 @@ menu-reply-all = 全部回覆
 menu-forward = 轉寄
 menu-archive = 封存
 menu-delete = 刪除
+menu-delete-forever = 永久刪除
+menu-move-to-inbox = 移至收件匣
 menu-spam = 檢舉垃圾郵件
+menu-not-spam = 非垃圾郵件
 menu-mark-read = 標示為已讀取
 menu-mark-unread = 標示為未讀取
 menu-mark-all-read = 全部標示為已讀取
@@ -209,6 +212,10 @@ toast-unpinned = { $kind ->
 toast-spam = { $kind ->
     [conversation] 已將 { $count } 個會話群組檢舉為垃圾郵件。
    *[message] 已將 { $count } 封郵件檢舉為垃圾郵件。
+}
+toast-not-spam = { $kind ->
+    [conversation] 已將 { $count } 個會話群組標示為非垃圾郵件並移至收件匣。
+   *[message] 已將 { $count } 封郵件標示為非垃圾郵件並移至收件匣。
 }
 toast-deleted-forever = { $kind ->
     [conversation] 已永久刪除 { $count } 個會話群組。

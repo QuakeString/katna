@@ -469,3 +469,42 @@ vanaf een ander account van je te verzenden. Nieuwe e-mail begint vanaf
 je eerste account, tenzij je een andere standaard kiest in
 Instellingen > Opstellen > Nieuwe berichten verzenden vanaf.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Gecombineerde inbox"
+text = """
+Zet Instellingen > Accounts > Gecombineerde inbox aan om de mail van al
+je accounts samen te zien. ‘Alle accounts’ staat boven in het
+mappenvenster met één Inbox, Ongelezen, Met ster, Belangrijk, Verzonden,
+Concepten en meer voor alle accounts; het pijltje ernaast opent één
+regel per account. De naam van elk account heeft nu een pijltje dat de
+mappen inklapt.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Rechtsklikmenu’s passen bij elke map"
+text = """
+Een map of label kiezen onder Verplaatsen naar in het rechtsklikmenu
+verplaatst de mail nu echt, met Ongedaan maken, ook vanuit
+zoekresultaten. In Spam wordt Spam melden Geen spam. Prullenbak biedt
+Verplaatsen naar Inbox en Definitief verwijderen, Archief biedt
+Verplaatsen naar Inbox, en Concepten en Verzonden laten items weg die
+daar niet van toepassing zijn.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Accounts op volgorde slepen"
+text = """
+In Instellingen > Accounts tilt het slepen van een account nu de hele
+rij op, en schuiven de andere accounts opzij om plaats te maken. Omhoog
+en Omlaag verschijnen als je naar een rij wijst.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Concepten blijven bewaard"
+text = """
+Als je een bericht sluit waaraan je schrijft, wordt het nu in Concepten
+bewaard, ook op je mailserver, zoals in Gmail. Open het vanuit Concepten
+om verder te schrijven. Alleen de prullenbakknop gooit het weg, en
+Ongedaan maken haalt het terug.
+"""

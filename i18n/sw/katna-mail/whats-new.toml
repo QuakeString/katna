@@ -469,3 +469,41 @@ wake ili kutuma kutoka akaunti yako nyingine. Barua mpya huanza kutoka
 akaunti yako ya kwanza, isipokuwa uchague chaguomsingi nyingine katika
 Mipangilio > Tunga > Tuma jumbe mpya kutoka.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Kikasha kilichounganishwa"
+text = """
+Washa Mipangilio > Akaunti > Kikasha kilichounganishwa ili kuona barua
+za akaunti zako zote pamoja. “Akaunti Zote” iko juu ya kidirisha cha
+folda, ikiwa na Kikasha, Ambazo hazijasomwa, Zenye nyota, Muhimu,
+Zilizotumwa, Rasimu na zaidi, kimoja kwa akaunti zote; mshale ulio kando
+ya kila kimoja hufungua mstari mmoja kwa kila akaunti. Jina la kila
+akaunti sasa lina mshale unaokunja folda zake.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menyu za kubofya kulia zinazofaa kila folda"
+text = """
+Kuchagua folda au lebo chini ya Hamishia kwenye menyu ya kubofya kulia
+sasa huhamisha barua, pamoja na Tendua, hata kutoka kwenye matokeo ya
+utafutaji. Katika Taka, Ripoti taka inakuwa Si taka. Tupio lina Hamishia
+Kikasha na Futa kabisa, Kumbukumbu ina Hamishia Kikasha, na Rasimu na
+Zilizotumwa huacha vipengee visivyohusika hapo.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Buruta akaunti kuzipanga"
+text = """
+Katika Mipangilio > Akaunti, kuburuta akaunti sasa huinua safu yake
+yote, na akaunti nyingine husogea kando kutoa nafasi. Sogeza juu na
+Sogeza chini huonekana unapoelekeza kwenye safu.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Rasimu huhifadhiwa"
+text = """
+Kufunga ujumbe unaouandika sasa huuhifadhi kwenye Rasimu, hata kwenye
+seva yako ya barua, kama ilivyo kwenye Gmail. Ufungue kutoka Rasimu ili
+uendelee kuandika. Kitufe cha tupio pekee ndicho huutupa, na Tendua
+huurudisha.
+"""

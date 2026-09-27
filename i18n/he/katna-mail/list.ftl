@@ -256,7 +256,10 @@ menu-reply-all = תשובה לכולם
 menu-forward = העברה
 menu-archive = העברה לארכיון
 menu-delete = מחיקה
+menu-delete-forever = מחיקה לצמיתות
+menu-move-to-inbox = העברה לדואר הנכנס
 menu-spam = דיווח על ספאם
+menu-not-spam = לא ספאם
 menu-mark-read = סימון כנקראו
 menu-mark-unread = סימון כלא נקראו
 menu-mark-all-read = סימון של הכול כנקרא
@@ -392,6 +395,18 @@ toast-spam = { $kind ->
         [one] ההודעה דווחה כספאם.
         [two] { $count } הודעות דווחו כספאם.
        *[other] { $count } הודעות דווחו כספאם.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] השיחה סומנה כלא ספאם והועברה לדואר הנכנס.
+        [two] { $count } שיחות סומנו כלא ספאם והועברו לדואר הנכנס.
+       *[other] { $count } שיחות סומנו כלא ספאם והועברו לדואר הנכנס.
+    }
+   *[message] { $count ->
+        [one] ההודעה סומנה כלא ספאם והועברה לדואר הנכנס.
+        [two] { $count } הודעות סומנו כלא ספאם והועברו לדואר הנכנס.
+       *[other] { $count } הודעות סומנו כלא ספאם והועברו לדואר הנכנס.
     }
 }
 toast-deleted-forever = { $kind ->

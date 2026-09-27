@@ -38,6 +38,9 @@ compose-scheduled = ارسال برای { $when } زمان‌بندی شد
 compose-sent-archived = ارسال و بایگانی شد
 compose-sent = پیام ارسال شد
 compose-discarded = پیش‌نویس دور انداخته شد
+compose-draft-saved = پیش‌نویس ذخیره شد
+compose-draft-failed = پیش‌نویس ذخیره نشد: { $error }
+compose-draft-not-opened = پیش‌نویس باز نشد.
 
 ## Attachments
 

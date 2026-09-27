@@ -230,7 +230,10 @@ menu-reply-all = සියල්ලන්ට පිළිතුරු දෙන�
 menu-forward = ඉදිරියට යවන්න
 menu-archive = සංරක්ෂණය කරන්න
 menu-delete = මකන්න
+menu-delete-forever = සදහටම මකන්න
+menu-move-to-inbox = එන ලිපි වෙත ගෙන යන්න
 menu-spam = අයාචිත තැපැල් ලෙස වාර්තා කරන්න
+menu-not-spam = අයාචිත තැපැල් නොවේ
 menu-mark-read = කියවූ ලෙස සලකුණු කරන්න
 menu-mark-unread = නොකියවූ ලෙස සලකුණු කරන්න
 menu-mark-all-read = සියල්ල කියවූ ලෙස සලකුණු කරන්න
@@ -346,6 +349,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] පණිවිඩය අයාචිත තැපැල් ලෙස වාර්තා කරන ලදී.
        *[other] පණිවිඩ { $count } ක් අයාචිත තැපැල් ලෙස වාර්තා කරන ලදී.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] සංවාදය අයාචිත තැපැල් නොවන ලෙස සලකුණු කර එන ලිපි වෙත ගෙන යන ලදී.
+       *[other] සංවාද { $count } ක් අයාචිත තැපැල් නොවන ලෙස සලකුණු කර එන ලිපි වෙත ගෙන යන ලදී.
+    }
+   *[message] { $count ->
+        [one] පණිවිඩය අයාචිත තැපැල් නොවන ලෙස සලකුණු කර එන ලිපි වෙත ගෙන යන ලදී.
+       *[other] පණිවිඩ { $count } ක් අයාචිත තැපැල් නොවන ලෙස සලකුණු කර එන ලිපි වෙත ගෙන යන ලදී.
     }
 }
 toast-deleted-forever = { $kind ->

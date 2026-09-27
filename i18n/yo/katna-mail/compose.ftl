@@ -38,6 +38,9 @@ compose-scheduled = A ti ṣètò fífiránṣẹ́ fún { $when }
 compose-sent-archived = A ti fi ránṣẹ́, a sì ti fi pamọ́
 compose-sent = A ti fi ìfiránṣẹ́ ránṣẹ́
 compose-discarded = A ti ju àkọ̀pamọ́ nù
+compose-draft-saved = A ti fi àkọ̀pamọ́ pamọ́
+compose-draft-failed = A kò lè fi àkọ̀pamọ́ náà pamọ́: { $error }
+compose-draft-not-opened = A kò lè ṣí àkọ̀pamọ́ náà.
 
 ## Attachments
 

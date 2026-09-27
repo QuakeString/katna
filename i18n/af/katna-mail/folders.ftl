@@ -9,6 +9,9 @@ nav-folders = Vouers
 nav-label-new = Skep nuwe etiket
 nav-folder-new = Skep nuwe vouer
 nav-account-unnamed = Rekening { $number }
+nav-all-accounts = Alle rekeninge
+nav-expand = Wys vouers
+nav-collapse = Versteek vouers
 nav-tab-new = { $count ->
     [one] { $count } nuut
    *[other] { $count } nuut
@@ -18,6 +21,8 @@ nav-tab-new = { $count ->
 
 folder-inbox = Inkassie
 folder-starred = Gester
+folder-unread = Ongelees
+folder-important = Belangrik
 folder-drafts = Konsepte
 folder-sent = Gestuur
 folder-archive = Argief

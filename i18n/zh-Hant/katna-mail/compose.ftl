@@ -38,6 +38,9 @@ compose-scheduled = 已排定於 { $when } 傳送
 compose-sent-archived = 已傳送並封存
 compose-sent = 郵件已傳送
 compose-discarded = 已捨棄草稿
+compose-draft-saved = 草稿已儲存
+compose-draft-failed = 無法儲存草稿：{ $error }
+compose-draft-not-opened = 無法開啟草稿。
 
 ## Attachments
 

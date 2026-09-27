@@ -38,6 +38,9 @@ compose-scheduled = { $when } ਨੂੰ ਭੇਜਣਾ ਤੈਅ ਕੀਤਾ �
 compose-sent-archived = ਭੇਜਿਆ ਅਤੇ ਪੁਰਾਲੇਖਬੱਧ ਕੀਤਾ
 compose-sent = ਸੁਨੇਹਾ ਭੇਜਿਆ ਗਿਆ
 compose-discarded = ਡਰਾਫਟ ਰੱਦ ਕੀਤਾ ਗਿਆ
+compose-draft-saved = ਡਰਾਫਟ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ
+compose-draft-failed = ਡਰਾਫਟ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ: { $error }
+compose-draft-not-opened = ਡਰਾਫਟ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ।
 
 ## Attachments
 

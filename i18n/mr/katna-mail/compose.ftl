@@ -38,6 +38,9 @@ compose-scheduled = { $when } ला पाठवणे शेड्यूल �
 compose-sent-archived = पाठवले आणि संग्रहित केले
 compose-sent = मेसेज पाठवला
 compose-discarded = मसुदा टाकून दिला
+compose-draft-saved = मसुदा सेव्ह केला
+compose-draft-failed = मसुदा सेव्ह करता आला नाही: { $error }
+compose-draft-not-opened = मसुदा उघडता आला नाही.
 
 ## Attachments
 

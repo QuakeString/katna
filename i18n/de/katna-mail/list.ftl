@@ -230,7 +230,10 @@ menu-reply-all = Allen antworten
 menu-forward = Weiterleiten
 menu-archive = Archivieren
 menu-delete = Löschen
+menu-delete-forever = Endgültig löschen
+menu-move-to-inbox = In den Posteingang verschieben
 menu-spam = Spam melden
+menu-not-spam = Kein Spam
 menu-mark-read = Als gelesen markieren
 menu-mark-unread = Als ungelesen markieren
 menu-mark-all-read = Alle als gelesen markieren
@@ -346,6 +349,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] Nachricht als Spam gemeldet.
        *[other] { $count } Nachrichten als Spam gemeldet.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation als kein Spam markiert und in den Posteingang verschoben.
+       *[other] { $count } Konversationen als kein Spam markiert und in den Posteingang verschoben.
+    }
+   *[message] { $count ->
+        [one] Nachricht als kein Spam markiert und in den Posteingang verschoben.
+       *[other] { $count } Nachrichten als kein Spam markiert und in den Posteingang verschoben.
     }
 }
 toast-deleted-forever = { $kind ->

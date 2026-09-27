@@ -184,7 +184,10 @@ menu-reply-all = ཆ་མཉམ་ལུ་ལན་སློག
 menu-forward = མདུན་སྐྱེལ་འབད།
 menu-archive = ཡིག་མཛོད་ནང་བཙུགས།
 menu-delete = བཏོན་གཏང་།
+menu-delete-forever = ཨ་རྟག་གི་དོན་ལུ་བཏོན་གཏང་།
+menu-move-to-inbox = ནང་འབྱོར་སྒྲོམ་ལུ་སྤོ།
 menu-spam = སྤེམ་སྦེ་སྙན་ཞུ་འབད།
+menu-not-spam = སྤེམ་མེན།
 menu-mark-read = ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ།
 menu-mark-unread = མ་ལྷག་པ་སྦེ་རྟགས་བཀལ།
 menu-mark-all-read = ཆ་མཉམ་ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ།
@@ -241,6 +244,10 @@ toast-unpinned = { $kind ->
 toast-spam = { $kind ->
     [conversation] གླེང་མོལ་ { $count } སྤེམ་སྦེ་སྙན་ཞུ་འབད་ཡི།
    *[message] འཕྲིན་དོན་ { $count } སྤེམ་སྦེ་སྙན་ཞུ་འབད་ཡི།
+}
+toast-not-spam = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } སྤེམ་མེན་པའི་རྟགས་བཀལ་ཏེ་ ནང་འབྱོར་སྒྲོམ་ལུ་སྤོ་ཡི།
+   *[message] འཕྲིན་དོན་ { $count } སྤེམ་མེན་པའི་རྟགས་བཀལ་ཏེ་ ནང་འབྱོར་སྒྲོམ་ལུ་སྤོ་ཡི།
 }
 toast-deleted-forever = { $kind ->
     [conversation] གླེང་མོལ་ { $count } ཨ་རྟག་གི་དོན་ལུ་བཏོན་གཏང་ཡི།
