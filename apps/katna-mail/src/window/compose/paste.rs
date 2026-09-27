@@ -219,13 +219,10 @@ impl MailWindow {
             PasteOption::Attachment if !choice.inline.is_empty() => {
                 let pictures =
                     body.update(cx, |editor, cx| editor.remove_images(&choice.inline, cx));
-                let attached: Vec<Attachment> = pictures.into_iter().map(attachment).collect();
-                compose.attachments.extend(attached.iter().cloned());
+                compose
+                    .attachments
+                    .extend(pictures.into_iter().map(attachment));
                 compose.attach_scroll.scroll_to_bottom();
-                compose.picture_choice = Some(PictureChoice {
-                    inline: Vec::new(),
-                    attached,
-                });
             }
             PasteOption::Inline if !choice.attached.is_empty() => {
                 compose.attachments.retain(|a| {
@@ -243,24 +240,11 @@ impl MailWindow {
                         data: a.data.to_vec(),
                     })
                     .collect();
-                let inline = body.update(cx, |editor, cx| editor.insert_pictures(pictures, cx));
-                compose.picture_choice = Some(PictureChoice {
-                    inline,
-                    attached: Vec::new(),
-                });
+                body.update(cx, |editor, cx| editor.insert_pictures(pictures, cx));
             }
-            _ => {
-                compose.picture_choice = Some(choice);
-                return;
-            }
+            _ => {}
         }
-        body.update(cx, |editor, cx| {
-            editor.offer_choice(
-                vec![PasteOption::Inline, PasteOption::Attachment],
-                option,
-                cx,
-            )
-        });
+        // The choice is made: the options have closed.
         cx.notify();
     }
 }

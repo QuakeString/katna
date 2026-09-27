@@ -384,23 +384,21 @@ impl RichEditor {
         self.table_picture = Some(draw);
     }
 
+    /// A paste option clicked: carries it out and closes the options.
     fn choose_paste(&mut self, option: PasteOption, cx: &mut Context<Self>) {
         let Some(offer) = self.paste_offer.take() else {
             return;
         };
-        if offer.owner {
-            let chosen = offer.chosen;
-            self.paste_offer = Some(offer);
-            if chosen != option {
-                cx.emit(RichEvent::PasteChoice(option));
-            }
+        cx.notify();
+        if offer.chosen == option {
             return;
         }
-        if offer.chosen == option {
-            self.paste_offer = Some(offer);
+        if offer.owner {
+            cx.emit(RichEvent::PasteChoice(option));
             return;
         }
         self.apply_paste(offer, option, cx);
+        self.paste_offer = None;
     }
 
     /// Puts pictures in the text at the cursor; gives their ids (none in
