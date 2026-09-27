@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] { $folder } का सबै { $count } सन्देशहरू चयन गर्नुहोस्
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } पढिएको वार्तालाप चयन गरियो।
+           *[other] सबै { $count } पढिएका वार्तालापहरू चयन गरिए।
+        }
+       *[message] { $count ->
+            [one] { $count } पढिएको सन्देश चयन गरियो।
+           *[other] सबै { $count } पढिएका सन्देशहरू चयन गरिए।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } नपढिएको वार्तालाप चयन गरियो।
+           *[other] सबै { $count } नपढिएका वार्तालापहरू चयन गरिए।
+        }
+       *[message] { $count ->
+            [one] { $count } नपढिएको सन्देश चयन गरियो।
+           *[other] सबै { $count } नपढिएका सन्देशहरू चयन गरिए।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } तारा लगाइएको वार्तालाप चयन गरियो।
+           *[other] सबै { $count } तारा लगाइएका वार्तालापहरू चयन गरिए।
+        }
+       *[message] { $count ->
+            [one] { $count } तारा लगाइएको सन्देश चयन गरियो।
+           *[other] सबै { $count } तारा लगाइएका सन्देशहरू चयन गरिए।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } तारा नलगाइएको वार्तालाप चयन गरियो।
+           *[other] सबै { $count } तारा नलगाइएका वार्तालापहरू चयन गरिए।
+        }
+       *[message] { $count ->
+            [one] { $count } तारा नलगाइएको सन्देश चयन गरियो।
+           *[other] सबै { $count } तारा नलगाइएका सन्देशहरू चयन गरिए।
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } को { $count } पढिएको वार्तालाप चयन गरियो।
+           *[other] { $folder } का सबै { $count } पढिएका वार्तालापहरू चयन गरिए।
+        }
+       *[message] { $count ->
+            [one] { $folder } को { $count } पढिएको सन्देश चयन गरियो।
+           *[other] { $folder } का सबै { $count } पढिएका सन्देशहरू चयन गरिए।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } को { $count } नपढिएको वार्तालाप चयन गरियो।
+           *[other] { $folder } का सबै { $count } नपढिएका वार्तालापहरू चयन गरिए।
+        }
+       *[message] { $count ->
+            [one] { $folder } को { $count } नपढिएको सन्देश चयन गरियो।
+           *[other] { $folder } का सबै { $count } नपढिएका सन्देशहरू चयन गरिए।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } को { $count } तारा लगाइएको वार्तालाप चयन गरियो।
+           *[other] { $folder } का सबै { $count } तारा लगाइएका वार्तालापहरू चयन गरिए।
+        }
+       *[message] { $count ->
+            [one] { $folder } को { $count } तारा लगाइएको सन्देश चयन गरियो।
+           *[other] { $folder } का सबै { $count } तारा लगाइएका सन्देशहरू चयन गरिए।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } को { $count } तारा नलगाइएको वार्तालाप चयन गरियो।
+           *[other] { $folder } का सबै { $count } तारा नलगाइएका वार्तालापहरू चयन गरिए।
+        }
+       *[message] { $count ->
+            [one] { $folder } को { $count } तारा नलगाइएको सन्देश चयन गरियो।
+           *[other] { $folder } का सबै { $count } तारा नलगाइएका सन्देशहरू चयन गरिए।
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] यहाँ कुनै पढिएका वार्तालापहरू छैनन्।
+       *[message] यहाँ कुनै पढिएका सन्देशहरू छैनन्।
+    }
+   *[unread] { $kind ->
+        [conversation] यहाँ कुनै नपढिएका वार्तालापहरू छैनन्।
+       *[message] यहाँ कुनै नपढिएका सन्देशहरू छैनन्।
+    }
+    [starred] { $kind ->
+        [conversation] यहाँ कुनै तारा लगाइएका वार्तालापहरू छैनन्।
+       *[message] यहाँ कुनै तारा लगाइएका सन्देशहरू छैनन्।
+    }
+    [unstarred] { $kind ->
+        [conversation] यहाँ कुनै तारा नलगाइएका वार्तालापहरू छैनन्।
+       *[message] यहाँ कुनै तारा नलगाइएका सन्देशहरू छैनन्।
+    }
+}
 list-clear-selection = चयन हटाउनुहोस्
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count } सन्देशहरू सधैँका लागि मेटाइए।
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालाप पढिएको भनी चिन्ह लगाइयो।
+       *[other] { $count } वार्तालापहरू पढिएको भनी चिन्ह लगाइए।
+    }
+   *[message] { $count ->
+        [one] सन्देश पढिएको भनी चिन्ह लगाइयो।
+       *[other] { $count } सन्देशहरू पढिएको भनी चिन्ह लगाइए।
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालाप नपढिएको भनी चिन्ह लगाइयो।
+       *[other] { $count } वार्तालापहरू नपढिएको भनी चिन्ह लगाइए।
+    }
+   *[message] { $count ->
+        [one] सन्देश नपढिएको भनी चिन्ह लगाइयो।
+       *[other] { $count } सन्देशहरू नपढिएको भनी चिन्ह लगाइए।
+    }
+}
 toast-undone = कार्य पूर्ववत गरियो।
+toast-nothing-to-undo = पूर्ववत गर्न केही छैन।
+toast-cannot-undo-delete-forever = सधैँका लागि मेटाइएको मेल फिर्ता ल्याउन सकिँदैन।
+toast-send-undone = पठाउने कार्य पूर्ववत गरियो।
+toast-too-late-to-undo-send = पूर्ववत गर्न ढिलो भयो: सन्देश पहिल्यै पठाइसकिएको छ।
 toast-undo = पूर्ववत गर्नुहोस्
 toast-no-spam-folder = यो खातामा स्प्याम फोल्डर छैन।

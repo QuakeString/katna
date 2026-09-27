@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] { $folder }ত থকা সকলো { $count }টা বাৰ্তা বাছনি কৰক
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টা পঢ়া কথোপকথন বাছনি কৰা হৈছে।
+           *[other] সকলো { $count }টা পঢ়া কথোপকথন বাছনি কৰা হৈছে।
+        }
+       *[message] { $count ->
+            [one] { $count }টা পঢ়া বাৰ্তা বাছনি কৰা হৈছে।
+           *[other] সকলো { $count }টা পঢ়া বাৰ্তা বাছনি কৰা হৈছে।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টা নপঢ়া কথোপকথন বাছনি কৰা হৈছে।
+           *[other] সকলো { $count }টা নপঢ়া কথোপকথন বাছনি কৰা হৈছে।
+        }
+       *[message] { $count ->
+            [one] { $count }টা নপঢ়া বাৰ্তা বাছনি কৰা হৈছে।
+           *[other] সকলো { $count }টা নপঢ়া বাৰ্তা বাছনি কৰা হৈছে।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টা তৰাচিহ্নিত কথোপকথন বাছনি কৰা হৈছে।
+           *[other] সকলো { $count }টা তৰাচিহ্নিত কথোপকথন বাছনি কৰা হৈছে।
+        }
+       *[message] { $count ->
+            [one] { $count }টা তৰাচিহ্নিত বাৰ্তা বাছনি কৰা হৈছে।
+           *[other] সকলো { $count }টা তৰাচিহ্নিত বাৰ্তা বাছনি কৰা হৈছে।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টা তৰাচিহ্নবিহীন কথোপকথন বাছনি কৰা হৈছে।
+           *[other] সকলো { $count }টা তৰাচিহ্নবিহীন কথোপকথন বাছনি কৰা হৈছে।
+        }
+       *[message] { $count ->
+            [one] { $count }টা তৰাচিহ্নবিহীন বাৰ্তা বাছনি কৰা হৈছে।
+           *[other] সকলো { $count }টা তৰাচিহ্নবিহীন বাৰ্তা বাছনি কৰা হৈছে।
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }ত থকা { $count }টা পঢ়া কথোপকথন বাছনি কৰা হৈছে।
+           *[other] { $folder }ত থকা সকলো { $count }টা পঢ়া কথোপকথন বাছনি কৰা হৈছে।
+        }
+       *[message] { $count ->
+            [one] { $folder }ত থকা { $count }টা পঢ়া বাৰ্তা বাছনি কৰা হৈছে।
+           *[other] { $folder }ত থকা সকলো { $count }টা পঢ়া বাৰ্তা বাছনি কৰা হৈছে।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }ত থকা { $count }টা নপঢ়া কথোপকথন বাছনি কৰা হৈছে।
+           *[other] { $folder }ত থকা সকলো { $count }টা নপঢ়া কথোপকথন বাছনি কৰা হৈছে।
+        }
+       *[message] { $count ->
+            [one] { $folder }ত থকা { $count }টা নপঢ়া বাৰ্তা বাছনি কৰা হৈছে।
+           *[other] { $folder }ত থকা সকলো { $count }টা নপঢ়া বাৰ্তা বাছনি কৰা হৈছে।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }ত থকা { $count }টা তৰাচিহ্নিত কথোপকথন বাছনি কৰা হৈছে।
+           *[other] { $folder }ত থকা সকলো { $count }টা তৰাচিহ্নিত কথোপকথন বাছনি কৰা হৈছে।
+        }
+       *[message] { $count ->
+            [one] { $folder }ত থকা { $count }টা তৰাচিহ্নিত বাৰ্তা বাছনি কৰা হৈছে।
+           *[other] { $folder }ত থকা সকলো { $count }টা তৰাচিহ্নিত বাৰ্তা বাছনি কৰা হৈছে।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }ত থকা { $count }টা তৰাচিহ্নবিহীন কথোপকথন বাছনি কৰা হৈছে।
+           *[other] { $folder }ত থকা সকলো { $count }টা তৰাচিহ্নবিহীন কথোপকথন বাছনি কৰা হৈছে।
+        }
+       *[message] { $count ->
+            [one] { $folder }ত থকা { $count }টা তৰাচিহ্নবিহীন বাৰ্তা বাছনি কৰা হৈছে।
+           *[other] { $folder }ত থকা সকলো { $count }টা তৰাচিহ্নবিহীন বাৰ্তা বাছনি কৰা হৈছে।
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] ইয়াত কোনো পঢ়া কথোপকথন নাই।
+       *[message] ইয়াত কোনো পঢ়া বাৰ্তা নাই।
+    }
+   *[unread] { $kind ->
+        [conversation] ইয়াত কোনো নপঢ়া কথোপকথন নাই।
+       *[message] ইয়াত কোনো নপঢ়া বাৰ্তা নাই।
+    }
+    [starred] { $kind ->
+        [conversation] ইয়াত কোনো তৰাচিহ্নিত কথোপকথন নাই।
+       *[message] ইয়াত কোনো তৰাচিহ্নিত বাৰ্তা নাই।
+    }
+    [unstarred] { $kind ->
+        [conversation] ইয়াত কোনো তৰাচিহ্নবিহীন কথোপকথন নাই।
+       *[message] ইয়াত কোনো তৰাচিহ্নবিহীন বাৰ্তা নাই।
+    }
+}
 list-clear-selection = বাছনি আঁতৰাওক
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count }টা বাৰ্তা চিৰদিনৰ বাবে মচা হ'ল।
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো পঢ়া বুলি চিহ্নিত কৰা হ'ল।
+       *[other] { $count }টা কথোপকথন পঢ়া বুলি চিহ্নিত কৰা হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো পঢ়া বুলি চিহ্নিত কৰা হ'ল।
+       *[other] { $count }টা বাৰ্তা পঢ়া বুলি চিহ্নিত কৰা হ'ল।
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো নপঢ়া বুলি চিহ্নিত কৰা হ'ল।
+       *[other] { $count }টা কথোপকথন নপঢ়া বুলি চিহ্নিত কৰা হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো নপঢ়া বুলি চিহ্নিত কৰা হ'ল।
+       *[other] { $count }টা বাৰ্তা নপঢ়া বুলি চিহ্নিত কৰা হ'ল।
+    }
+}
 toast-undone = কাৰ্যটো পূৰ্বাৱস্থালৈ অনা হ'ল।
+toast-nothing-to-undo = আনডু কৰিবলৈ একো নাই।
+toast-cannot-undo-delete-forever = চিৰদিনৰ বাবে মচা মেইল ঘূৰাই অনা নাযায়।
+toast-send-undone = পঠিওৱাটো আনডু কৰা হ'ল।
+toast-too-late-to-undo-send = আনডু কৰিবলৈ বহুত পলম হ'ল: বাৰ্তাটো ইতিমধ্যে পঠিওৱা হৈছে।
 toast-undo = আনডু কৰক
 toast-no-spam-folder = এই একাউণ্টত কোনো স্পাম ফ'ল্ডাৰ নাই।

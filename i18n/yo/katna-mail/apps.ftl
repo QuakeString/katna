@@ -28,3 +28,4 @@ app-contacts-count = Ènìyàn { $count } láti inú lẹ́tà rẹ, àwọn tí
 app-contacts-top = Ènìyàn { $count } tó ga jù láti inú lẹ́tà rẹ, àwọn tí o bá kọ̀wé jù lọ ní àkọ́kọ́
 app-contacts-messages = ìfiránṣẹ́ { $count }
 app-contacts-last = ìgbẹ̀yìn { $date }
+top-brand = Katna

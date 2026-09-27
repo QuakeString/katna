@@ -126,6 +126,24 @@ attachment-encrypted-open = הקובץ הזה הגיע מוצפן. יש לשמו
 print-failed = לא ניתן היה להדפיס: { $error }
 print-no-font = לא נמצא גופן
 print-opened-as-pdf = נפתח כקובץ PDF כדי להדפיס ממנו.
+print-preview-title = תצוגה לפני הדפסה
+print-preview-laying-out = העמודים מסודרים…
+print-preview-pages = { $count ->
+    [one] עמוד אחד
+    [two] { $count } עמודים
+   *[other] { $count } עמודים
+}
+print-preview-more = { $count ->
+    [one] ועוד עמוד אחד
+    [two] ועוד { $count } עמודים
+   *[other] ועוד { $count } עמודים
+}
+print-preview-failed = לא ניתן היה להציג את העמודים
+print-preview-paper = נייר
+print-preview-a4 = A4
+print-preview-letter = Letter
+print-preview-cancel = ביטול
+print-preview-print = הדפסה
 print-not-downloaded = (עדיין לא הורדה.)
 print-encrypted = (מוצפנת. יש לפתוח אותה ב־Katna Mail כדי להדפיס את הטקסט שלה.)
 print-to = אל: { $addresses }

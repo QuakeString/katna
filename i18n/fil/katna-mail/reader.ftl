@@ -123,6 +123,22 @@ attachment-encrypted-open = Dumating nang naka-encrypt ang file na ito. I-save i
 print-failed = Hindi makapag-print: { $error }
 print-no-font = walang nakitang font
 print-opened-as-pdf = Binuksan bilang PDF para i-print mula roon.
+print-preview-title = Preview ng pag-print
+print-preview-laying-out = Inaayos ang mga pahina…
+print-preview-pages = { $count ->
+    [one] { $count } pahina
+   *[other] { $count } na pahina
+}
+print-preview-more = { $count ->
+    [one] at { $count } pang pahina
+   *[other] at { $count } pang pahina
+}
+print-preview-failed = hindi maipakita ang mga pahina
+print-preview-paper = Papel
+print-preview-a4 = A4
+print-preview-letter = Letter
+print-preview-cancel = Kanselahin
+print-preview-print = I-print
 print-not-downloaded = (Hindi pa na-download.)
 print-encrypted = (Naka-encrypt. Buksan ito sa Katna Mail para i-print ang text nito.)
 print-to = Para kay: { $addresses }

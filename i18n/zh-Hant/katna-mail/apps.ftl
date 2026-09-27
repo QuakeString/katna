@@ -28,3 +28,4 @@ app-contacts-count = 來自你郵件的 { $count } 位聯絡人，往來最多�
 app-contacts-top = 來自你郵件的前 { $count } 位聯絡人，往來最多的排在最前面
 app-contacts-messages = { $count } 封郵件
 app-contacts-last = 最近：{ $date }
+top-brand = Katna

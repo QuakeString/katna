@@ -62,6 +62,10 @@ settings-general-new-mail-detail = ພ້ອມປຸ່ມຕອບກັບທ
 settings-general-new-mail-sound = ຫຼິ້ນສຽງ
 settings-general-new-mail-sound-detail = ສຽງອີເມວໃໝ່ຂອງເດັສທັອບ
 settings-general-desktop = ເດັສທັອບ
+settings-general-start-at-login = ເລີ່ມ Katna ເມື່ອເຂົ້າສູ່ລະບົບ
+settings-general-start-at-login-detail = ຊິງຄ໌ອີເມວ ແລະ ສະແດງການແຈ້ງເຕືອນອີເມວໃໝ່ ແລະ ໄອຄອນໃນຖາດ ໂດຍບໍ່ເປີດໜ້າຕ່າງ
+settings-general-login-window = ເປີດໜ້າຕ່າງ Katna Mail ນຳ
+settings-general-login-window-detail = ໜ້າຕ່າງກໍເປີດເມື່ອເຂົ້າສູ່ລະບົບເຊັ່ນກັນ
 settings-general-tray = ສະແດງ Katna ໃນຖາດລະບົບ
 settings-general-tray-detail = ພ້ອມຈຳນວນທີ່ຍັງບໍ່ໄດ້ອ່ານ ແລະ ເມນູ
 settings-general-unread-badge = ຈຳນວນທີ່ຍັງບໍ່ໄດ້ອ່ານເທິງໄອຄອນແຖບໜ້າວຽກ
@@ -199,7 +203,7 @@ settings-general-remote-images-summary = ສະແດງຮູບພາບຂອ
 settings-general-sending-summary = ຍົກເລີກການສົ່ງ: ຂໍ້ຄວາມທີ່ສົ່ງແລ້ວຈະລໍຖ້າດົນປານໃດ, ເພື່ອໃຫ້ຍົກເລີກໄດ້
 settings-general-offline-summary = ອີເມວຫຼ້າສຸດຈັກມື້ທີ່ຈະຖືກດາວໂຫຼດທັງໝົດ, ເພື່ອອ່ານໄດ້ໂດຍບໍ່ຕ້ອງເຊື່ອມຕໍ່
 settings-general-notifications-summary = ການແຈ້ງເຕືອນອີເມວໃໝ່ ແລະ ສຽງຂອງມັນ
-settings-general-desktop-summary = ເປີດ Katna Mail ເມື່ອເຂົ້າສູ່ລະບົບ, ໄອຄອນໃນຖາດລະບົບ ແລະ ຈຳນວນທີ່ຍັງບໍ່ໄດ້ອ່ານເທິງໄອຄອນແຖບໜ້າວຽກ
+settings-general-desktop-summary = ເລີ່ມ Katna ເມື່ອເຂົ້າສູ່ລະບົບ, ໄອຄອນໃນຖາດລະບົບ ແລະ ຈຳນວນທີ່ຍັງບໍ່ໄດ້ອ່ານເທິງໄອຄອນແຖບໜ້າວຽກ
 settings-accounts-accounts-summary = ເພີ່ມ ຫຼື ລຶບບັນຊີອອກ, ຫຼື ປ່ຽນຮູບຂອງມັນ
 settings-appearance-density-summary = ແຖວໃນລາຍການແບບຄ່າເລີ່ມຕົ້ນ ຫຼື ກະທັດຮັດ
 settings-appearance-scaling-summary = ເຮັດໃຫ້ທຸກຢ່າງໃຫຍ່ຂຶ້ນ ຫຼື ນ້ອຍລົງ: ຂໍ້ຄວາມ, ໄອຄອນ, ໄລຍະຫ່າງ ແລະ ເສັ້ນແບ່ງ
@@ -235,7 +239,7 @@ settings-search-results = ການຕັ້ງຄ່າທີ່ກົງກັ
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = ບໍ່ສາມາດປ່ຽນການເປີດເມື່ອເຂົ້າສູ່ລະບົບໄດ້: { $error }
+settings-open-at-login-failed = ບໍ່ສາມາດປ່ຽນການເລີ່ມເມື່ອເຂົ້າສູ່ລະບົບໄດ້: { $error }
 
 ## Settings > General > Time
 
@@ -258,4 +262,9 @@ settings-compose-grammar = ໄວຍາກອນ
 settings-compose-grammar-detail = ກວດຢູ່ໃນຄອມພິວເຕີນີ້ດ້ວຍ Harper. ຕອນນີ້ຮອງຮັບສະເພາະພາສາອັງກິດ: ຂໍ້ຄວາມໃນພາສາອື່ນຈະບໍ່ຖືກແຕະຕ້ອງ.
 settings-compose-grammar-check = ກວດໄວຍາກອນ
 settings-compose-grammar-check-detail = ຂີດເສັ້ນກ້ອງຂໍ້ຜິດພາດທາງໄວຍາກອນຂະນະຂຽນ, ເປັນພາສາອັງກິດ
+settings-compose-suggestions = ຄຳແນະນຳໃນການຂຽນ
+settings-compose-suggestions-detail = ຮຽນຮູ້ຢູ່ໃນຄອມພິວເຕີນີ້ ຈາກອີເມວທີ່ທ່ານສົ່ງ ແລະ ອີເມວທີ່ທ່ານກຳລັງຕອບ; ບໍ່ມີຫຍັງອອກໄປຈາກມັນ. ກົດ Tab ເພື່ອຮັບເອົາຄຳແນະນຳ ຫຼື ພິມຕໍ່ໄປ.
+settings-compose-suggestions-on = ແນະນຳຂະນະຂຽນ
+settings-compose-suggestions-on-detail = ສະແດງສ່ວນທີ່ເຫຼືອຂອງວະລີທີ່ອາດຈະມາ ເປັນສີເທົາ ຂະນະທີ່ທ່ານພິມ
 settings-compose-grammar-summary = ຂີດເສັ້ນກ້ອງຂໍ້ຜິດພາດທາງໄວຍາກອນຂະນະຂຽນ, ເປັນພາສາອັງກິດ
+settings-compose-suggestions-summary = ສະແດງສ່ວນທີ່ເຫຼືອຂອງວະລີທີ່ອາດຈະມາ ເປັນສີເທົາ ຂະນະທີ່ທ່ານພິມ

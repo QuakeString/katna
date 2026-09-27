@@ -68,6 +68,92 @@ list-select-all-in = { $kind ->
     [conversation] { $folder } ནང་གི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ།
    *[message] { $folder } ནང་གི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ།
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+           *[other] ལྷག་ཡོད་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+       *[message] { $count ->
+           *[other] ལྷག་ཡོད་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+           *[other] མ་ལྷག་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+       *[message] { $count ->
+           *[other] མ་ལྷག་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+           *[other] སྐར་མ་བཀལ་ཡོད་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+       *[message] { $count ->
+           *[other] སྐར་མ་བཀལ་ཡོད་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+           *[other] སྐར་མ་མ་བཀལ་བའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+       *[message] { $count ->
+           *[other] སྐར་མ་མ་བཀལ་བའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+           *[other] { $folder } ནང་གི་ལྷག་ཡོད་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+       *[message] { $count ->
+           *[other] { $folder } ནང་གི་ལྷག་ཡོད་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+           *[other] { $folder } ནང་གི་མ་ལྷག་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+       *[message] { $count ->
+           *[other] { $folder } ནང་གི་མ་ལྷག་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+           *[other] { $folder } ནང་གི་སྐར་མ་བཀལ་ཡོད་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+       *[message] { $count ->
+           *[other] { $folder } ནང་གི་སྐར་མ་བཀལ་ཡོད་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+           *[other] { $folder } ནང་གི་སྐར་མ་མ་བཀལ་བའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+       *[message] { $count ->
+           *[other] { $folder } ནང་གི་སྐར་མ་མ་བཀལ་བའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] ནཱ་ལུ་ ལྷག་ཡོད་པའི་གླེང་མོལ་མེད།
+       *[message] ནཱ་ལུ་ ལྷག་ཡོད་པའི་འཕྲིན་དོན་མེད།
+    }
+   *[unread] { $kind ->
+        [conversation] ནཱ་ལུ་ མ་ལྷག་པའི་གླེང་མོལ་མེད།
+       *[message] ནཱ་ལུ་ མ་ལྷག་པའི་འཕྲིན་དོན་མེད།
+    }
+    [starred] { $kind ->
+        [conversation] ནཱ་ལུ་ སྐར་མ་བཀལ་ཡོད་པའི་གླེང་མོལ་མེད།
+       *[message] ནཱ་ལུ་ སྐར་མ་བཀལ་ཡོད་པའི་འཕྲིན་དོན་མེད།
+    }
+    [unstarred] { $kind ->
+        [conversation] ནཱ་ལུ་ སྐར་མ་མ་བཀལ་བའི་གླེང་མོལ་མེད།
+       *[message] ནཱ་ལུ་ སྐར་མ་མ་བཀལ་བའི་འཕྲིན་དོན་མེད།
+    }
+}
 list-clear-selection = གདམ་ཁ་བསལ།
 
 ## Mail list: empty states
@@ -160,6 +246,26 @@ toast-deleted-forever = { $kind ->
     [conversation] གླེང་མོལ་ { $count } ཨ་རྟག་གི་དོན་ལུ་བཏོན་གཏང་ཡི།
    *[message] འཕྲིན་དོན་ { $count } ཨ་རྟག་གི་དོན་ལུ་བཏོན་གཏང་ཡི།
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+       *[other] གླེང་མོལ་ { $count } ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ་ཡི།
+    }
+   *[message] { $count ->
+       *[other] འཕྲིན་དོན་ { $count } ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ་ཡི།
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+       *[other] གླེང་མོལ་ { $count } མ་ལྷག་པ་སྦེ་རྟགས་བཀལ་ཡི།
+    }
+   *[message] { $count ->
+       *[other] འཕྲིན་དོན་ { $count } མ་ལྷག་པ་སྦེ་རྟགས་བཀལ་ཡི།
+    }
+}
 toast-undone = བྱ་བ་འབད་བཤོལ་འབད་ཡི།
+toast-nothing-to-undo = འབད་བཤོལ་ནི་ག་ནི་ཡང་མེད།
+toast-cannot-undo-delete-forever = ཨ་རྟག་གི་དོན་ལུ་བཏོན་གཏང་ཡོད་པའི་གློག་འཕྲིན་ ལོག་ལེན་མི་ཚུགས།
+toast-send-undone = གཏང་ནི་ འབད་བཤོལ་འབད་ཡི།
+toast-too-late-to-undo-send = འབད་བཤོལ་ནི་ལུ་ ཕྱི་རུ་སོང་ཡི: འཕྲིན་དོན་འདི་ ཧེ་མ་ལས་རང་ གཏང་ཚར་ཡི།
 toast-undo = འབད་བཤོལ།
 toast-no-spam-folder = རྩིས་ཐོ་འདི་ལུ་ སྤེམ་སྣོད་འཛིན་མིན་འདུག

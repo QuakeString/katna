@@ -28,3 +28,4 @@ app-contacts-count = { $count } người từ thư của bạn, người trao đ
 app-contacts-top = { $count } người hàng đầu từ thư của bạn, người trao đổi nhiều nhất ở trên cùng
 app-contacts-messages = { $count } thư
 app-contacts-last = lần cuối { $date }
+top-brand = Katna

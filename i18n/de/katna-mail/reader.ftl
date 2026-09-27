@@ -123,6 +123,22 @@ attachment-encrypted-open = Diese Datei wurde verschlüsselt empfangen. Speicher
 print-failed = Drucken nicht möglich: { $error }
 print-no-font = keine Schriftart gefunden
 print-opened-as-pdf = Als PDF geöffnet, um von dort aus zu drucken.
+print-preview-title = Druckvorschau
+print-preview-laying-out = Seiten werden aufgebaut…
+print-preview-pages = { $count ->
+    [one] { $count } Seite
+   *[other] { $count } Seiten
+}
+print-preview-more = { $count ->
+    [one] und { $count } weitere Seite
+   *[other] und { $count } weitere Seiten
+}
+print-preview-failed = die Seiten konnten nicht angezeigt werden
+print-preview-paper = Papier
+print-preview-a4 = A4
+print-preview-letter = US-Letter
+print-preview-cancel = Abbrechen
+print-preview-print = Drucken
 print-not-downloaded = (Noch nicht heruntergeladen.)
 print-encrypted = (Verschlüsselt. Öffnen Sie die Nachricht in Katna Mail, um ihren Text zu drucken.)
 print-to = An: { $addresses }

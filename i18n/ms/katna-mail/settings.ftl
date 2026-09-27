@@ -62,6 +62,10 @@ settings-general-new-mail-detail = Dengan Balas semua, Tandai sebagai dibaca dan
 settings-general-new-mail-sound = Mainkan bunyi
 settings-general-new-mail-sound-detail = Bunyi mel baharu desktop
 settings-general-desktop = Desktop
+settings-general-start-at-login = Mulakan Katna semasa log masuk
+settings-general-start-at-login-detail = Menyegerakkan mel dan menunjukkan pemberitahuan mel baharu serta ikon dulang, tanpa membuka tetingkap
+settings-general-login-window = Buka tetingkap Katna Mail juga
+settings-general-login-window-detail = Tetingkap turut dibuka semasa log masuk
 settings-general-tray = Tunjukkan Katna dalam dulang sistem
 settings-general-tray-detail = Dengan kiraan belum dibaca dan menu
 settings-general-unread-badge = Kiraan belum dibaca pada ikon bar tugas
@@ -199,7 +203,7 @@ settings-general-remote-images-summary = Sentiasa tunjukkan imej dalam setiap me
 settings-general-sending-summary = Buat asal penghantaran: berapa lama mesej yang dihantar menunggu, supaya ia boleh ditarik balik
 settings-general-offline-summary = Berapa hari mel terkini dimuat turun sepenuhnya, untuk dibaca tanpa sambungan
 settings-general-notifications-summary = Pemberitahuan mel baharu dan bunyinya
-settings-general-desktop-summary = Buka Katna Mail semasa log masuk, ikon dulang sistem dan kiraan belum dibaca pada ikon bar tugas
+settings-general-desktop-summary = Mulakan Katna semasa log masuk, ikon dulang sistem dan kiraan belum dibaca pada ikon bar tugas
 settings-accounts-accounts-summary = Tambah atau alih keluar akaun, atau tukar gambarnya
 settings-appearance-density-summary = Baris lalai atau padat dalam senarai
 settings-appearance-scaling-summary = Jadikan segala-galanya lebih besar atau lebih kecil: teks, ikon, jarak dan pembahagi
@@ -235,7 +239,7 @@ settings-search-results = Tetapan yang sepadan dengan “{ $query }”
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Tidak dapat menukar pembukaan semasa log masuk: { $error }
+settings-open-at-login-failed = Tidak dapat menukar permulaan semasa log masuk: { $error }
 
 ## Settings > General > Time
 
@@ -258,4 +262,9 @@ settings-compose-grammar = Tatabahasa
 settings-compose-grammar-detail = Disemak pada komputer ini dengan Harper. Buat masa ini bahasa Inggeris sahaja: teks dalam bahasa lain dibiarkan seperti asal.
 settings-compose-grammar-check = Semak tatabahasa
 settings-compose-grammar-check-detail = Gariskan kesilapan tatabahasa semasa menulis, dalam bahasa Inggeris
+settings-compose-suggestions = Cadangan penulisan
+settings-compose-suggestions-detail = Dipelajari pada komputer ini daripada mel yang anda hantar dan mel yang anda balas; tiada apa-apa yang keluar daripadanya. Tekan Tab untuk menerima cadangan, atau teruskan menaip.
+settings-compose-suggestions-on = Cadangkan semasa menulis
+settings-compose-suggestions-on-detail = Tunjukkan kemungkinan baki frasa dalam warna kelabu semasa anda menaip
 settings-compose-grammar-summary = Gariskan kesilapan tatabahasa semasa menulis, dalam bahasa Inggeris
+settings-compose-suggestions-summary = Tunjukkan kemungkinan baki frasa dalam warna kelabu semasa anda menaip

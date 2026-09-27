@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] Alle { $count } berichten in { $folder } selecteren
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gelezen gesprek is geselecteerd.
+           *[other] Alle { $count } gelezen gesprekken zijn geselecteerd.
+        }
+       *[message] { $count ->
+            [one] { $count } gelezen bericht is geselecteerd.
+           *[other] Alle { $count } gelezen berichten zijn geselecteerd.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ongelezen gesprek is geselecteerd.
+           *[other] Alle { $count } ongelezen gesprekken zijn geselecteerd.
+        }
+       *[message] { $count ->
+            [one] { $count } ongelezen bericht is geselecteerd.
+           *[other] Alle { $count } ongelezen berichten zijn geselecteerd.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gesprek met ster is geselecteerd.
+           *[other] Alle { $count } gesprekken met ster zijn geselecteerd.
+        }
+       *[message] { $count ->
+            [one] { $count } bericht met ster is geselecteerd.
+           *[other] Alle { $count } berichten met ster zijn geselecteerd.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gesprek zonder ster is geselecteerd.
+           *[other] Alle { $count } gesprekken zonder ster zijn geselecteerd.
+        }
+       *[message] { $count ->
+            [one] { $count } bericht zonder ster is geselecteerd.
+           *[other] Alle { $count } berichten zonder ster zijn geselecteerd.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gelezen gesprek in { $folder } is geselecteerd.
+           *[other] Alle { $count } gelezen gesprekken in { $folder } zijn geselecteerd.
+        }
+       *[message] { $count ->
+            [one] { $count } gelezen bericht in { $folder } is geselecteerd.
+           *[other] Alle { $count } gelezen berichten in { $folder } zijn geselecteerd.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ongelezen gesprek in { $folder } is geselecteerd.
+           *[other] Alle { $count } ongelezen gesprekken in { $folder } zijn geselecteerd.
+        }
+       *[message] { $count ->
+            [one] { $count } ongelezen bericht in { $folder } is geselecteerd.
+           *[other] Alle { $count } ongelezen berichten in { $folder } zijn geselecteerd.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gesprek met ster in { $folder } is geselecteerd.
+           *[other] Alle { $count } gesprekken met ster in { $folder } zijn geselecteerd.
+        }
+       *[message] { $count ->
+            [one] { $count } bericht met ster in { $folder } is geselecteerd.
+           *[other] Alle { $count } berichten met ster in { $folder } zijn geselecteerd.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gesprek zonder ster in { $folder } is geselecteerd.
+           *[other] Alle { $count } gesprekken zonder ster in { $folder } zijn geselecteerd.
+        }
+       *[message] { $count ->
+            [one] { $count } bericht zonder ster in { $folder } is geselecteerd.
+           *[other] Alle { $count } berichten zonder ster in { $folder } zijn geselecteerd.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] Geen gelezen gesprekken hier.
+       *[message] Geen gelezen berichten hier.
+    }
+   *[unread] { $kind ->
+        [conversation] Geen ongelezen gesprekken hier.
+       *[message] Geen ongelezen berichten hier.
+    }
+    [starred] { $kind ->
+        [conversation] Geen gesprekken met ster hier.
+       *[message] Geen berichten met ster hier.
+    }
+    [unstarred] { $kind ->
+        [conversation] Geen gesprekken zonder ster hier.
+       *[message] Geen berichten zonder ster hier.
+    }
+}
 list-clear-selection = Selectie wissen
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count } berichten definitief verwijderd.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek gemarkeerd als gelezen.
+       *[other] { $count } gesprekken gemarkeerd als gelezen.
+    }
+   *[message] { $count ->
+        [one] Bericht gemarkeerd als gelezen.
+       *[other] { $count } berichten gemarkeerd als gelezen.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek gemarkeerd als ongelezen.
+       *[other] { $count } gesprekken gemarkeerd als ongelezen.
+    }
+   *[message] { $count ->
+        [one] Bericht gemarkeerd als ongelezen.
+       *[other] { $count } berichten gemarkeerd als ongelezen.
+    }
+}
 toast-undone = Actie ongedaan gemaakt.
+toast-nothing-to-undo = Niets om ongedaan te maken.
+toast-cannot-undo-delete-forever = Definitief verwijderde e-mail kan niet worden teruggehaald.
+toast-send-undone = Verzenden ongedaan gemaakt.
+toast-too-late-to-undo-send = Te laat om ongedaan te maken: het bericht is al verzonden.
 toast-undo = Ongedaan maken
 toast-no-spam-folder = Dit account heeft geen spammap.

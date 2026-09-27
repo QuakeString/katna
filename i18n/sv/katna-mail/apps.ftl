@@ -37,3 +37,4 @@ app-contacts-messages = { $count ->
    *[other] { $count } meddelanden
 }
 app-contacts-last = senast { $date }
+top-brand = Katna

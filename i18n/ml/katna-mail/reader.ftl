@@ -123,6 +123,22 @@ attachment-encrypted-open = ഈ ഫയൽ എൻക്രിപ്റ്റ് �
 print-failed = പ്രിന്റ് ചെയ്യാനായില്ല: { $error }
 print-no-font = ഫോണ്ടൊന്നും കണ്ടെത്തിയില്ല
 print-opened-as-pdf = അവിടെ നിന്ന് പ്രിന്റ് ചെയ്യാൻ PDF ആയി തുറന്നു.
+print-preview-title = പ്രിന്റ് പ്രിവ്യൂ
+print-preview-laying-out = പേജുകൾ ക്രമീകരിക്കുന്നു…
+print-preview-pages = { $count ->
+    [one] { $count } പേജ്
+   *[other] { $count } പേജുകൾ
+}
+print-preview-more = { $count ->
+    [one] കൂടാതെ { $count } പേജ് കൂടി
+   *[other] കൂടാതെ { $count } പേജുകൾ കൂടി
+}
+print-preview-failed = പേജുകൾ കാണിക്കാനായില്ല
+print-preview-paper = പേപ്പർ
+print-preview-a4 = A4
+print-preview-letter = ലെറ്റർ
+print-preview-cancel = റദ്ദാക്കുക
+print-preview-print = പ്രിന്റ് ചെയ്യുക
 print-not-downloaded = (ഇതുവരെ ഡൗൺലോഡ് ചെയ്‌തിട്ടില്ല.)
 print-encrypted = (എൻക്രിപ്റ്റ് ചെയ്‌തത്. ഇതിന്റെ ടെക്സ്റ്റ് പ്രിന്റ് ചെയ്യാൻ Katna Mail-ൽ തുറക്കുക.)
 print-to = സ്വീകർത്താവ്: { $addresses }

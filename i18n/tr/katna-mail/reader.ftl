@@ -123,6 +123,22 @@ attachment-encrypted-open = Bu dosya şifreli geldi. Başka bir yerde açmak iç
 print-failed = Yazdırılamadı: { $error }
 print-no-font = yazı tipi bulunamadı
 print-opened-as-pdf = Oradan yazdırmak için PDF olarak açıldı.
+print-preview-title = Baskı önizlemesi
+print-preview-laying-out = Sayfalar düzenleniyor…
+print-preview-pages = { $count ->
+    [one] { $count } sayfa
+   *[other] { $count } sayfa
+}
+print-preview-more = { $count ->
+    [one] ve { $count } sayfa daha
+   *[other] ve { $count } sayfa daha
+}
+print-preview-failed = sayfalar gösterilemedi
+print-preview-paper = Kâğıt
+print-preview-a4 = A4
+print-preview-letter = Letter
+print-preview-cancel = İptal
+print-preview-print = Yazdır
 print-not-downloaded = (Henüz indirilmedi.)
 print-encrypted = (Şifreli. Metnini yazdırmak için Katna Mail'de açın.)
 print-to = Kime: { $addresses }

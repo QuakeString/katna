@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] ជ្រើសរើសការសន្ទនាទាំង { $count } ក្នុង { $folder }
    *[message] ជ្រើសរើសសារទាំង { $count } ក្នុង { $folder }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] ការសន្ទនាដែលបានអានទាំង { $count } ត្រូវបានជ្រើសរើស។
+       *[message] សារដែលបានអានទាំង { $count } ត្រូវបានជ្រើសរើស។
+    }
+   *[unread] { $kind ->
+        [conversation] ការសន្ទនាដែលមិនទាន់អានទាំង { $count } ត្រូវបានជ្រើសរើស។
+       *[message] សារដែលមិនទាន់អានទាំង { $count } ត្រូវបានជ្រើសរើស។
+    }
+    [starred] { $kind ->
+        [conversation] ការសន្ទនាដែលមានផ្កាយទាំង { $count } ត្រូវបានជ្រើសរើស។
+       *[message] សារដែលមានផ្កាយទាំង { $count } ត្រូវបានជ្រើសរើស។
+    }
+    [unstarred] { $kind ->
+        [conversation] ការសន្ទនាដែលគ្មានផ្កាយទាំង { $count } ត្រូវបានជ្រើសរើស។
+       *[message] សារដែលគ្មានផ្កាយទាំង { $count } ត្រូវបានជ្រើសរើស។
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] ការសន្ទនាដែលបានអានទាំង { $count } ក្នុង { $folder } ត្រូវបានជ្រើសរើស។
+       *[message] សារដែលបានអានទាំង { $count } ក្នុង { $folder } ត្រូវបានជ្រើសរើស។
+    }
+   *[unread] { $kind ->
+        [conversation] ការសន្ទនាដែលមិនទាន់អានទាំង { $count } ក្នុង { $folder } ត្រូវបានជ្រើសរើស។
+       *[message] សារដែលមិនទាន់អានទាំង { $count } ក្នុង { $folder } ត្រូវបានជ្រើសរើស។
+    }
+    [starred] { $kind ->
+        [conversation] ការសន្ទនាដែលមានផ្កាយទាំង { $count } ក្នុង { $folder } ត្រូវបានជ្រើសរើស។
+       *[message] សារដែលមានផ្កាយទាំង { $count } ក្នុង { $folder } ត្រូវបានជ្រើសរើស។
+    }
+    [unstarred] { $kind ->
+        [conversation] ការសន្ទនាដែលគ្មានផ្កាយទាំង { $count } ក្នុង { $folder } ត្រូវបានជ្រើសរើស។
+       *[message] សារដែលគ្មានផ្កាយទាំង { $count } ក្នុង { $folder } ត្រូវបានជ្រើសរើស។
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] គ្មានការសន្ទនាដែលបានអាននៅទីនេះទេ។
+       *[message] គ្មានសារដែលបានអាននៅទីនេះទេ។
+    }
+   *[unread] { $kind ->
+        [conversation] គ្មានការសន្ទនាដែលមិនទាន់អាននៅទីនេះទេ។
+       *[message] គ្មានសារដែលមិនទាន់អាននៅទីនេះទេ។
+    }
+    [starred] { $kind ->
+        [conversation] គ្មានការសន្ទនាដែលមានផ្កាយនៅទីនេះទេ។
+       *[message] គ្មានសារដែលមានផ្កាយនៅទីនេះទេ។
+    }
+    [unstarred] { $kind ->
+        [conversation] គ្មានការសន្ទនាដែលគ្មានផ្កាយនៅទីនេះទេ។
+       *[message] គ្មានសារដែលគ្មានផ្កាយនៅទីនេះទេ។
+    }
+}
 list-clear-selection = សម្អាតការជ្រើសរើស
 
 ## Mail list: empty states
@@ -160,6 +214,18 @@ toast-deleted-forever = { $kind ->
     [conversation] បានលុបការសន្ទនា { $count } ជារៀងរហូត។
    *[message] បានលុបសារ { $count } ជារៀងរហូត។
 }
+toast-marked-read = { $kind ->
+    [conversation] បានសម្គាល់ការសន្ទនា { $count } ថាបានអាន។
+   *[message] បានសម្គាល់សារ { $count } ថាបានអាន។
+}
+toast-marked-unread = { $kind ->
+    [conversation] បានសម្គាល់ការសន្ទនា { $count } ថាមិនទាន់អាន។
+   *[message] បានសម្គាល់សារ { $count } ថាមិនទាន់អាន។
+}
 toast-undone = បានត្រឡប់សកម្មភាពវិញ។
+toast-nothing-to-undo = គ្មានអ្វីត្រូវមិនធ្វើវិញទេ។
+toast-cannot-undo-delete-forever = សំបុត្រដែលបានលុបជារៀងរហូត មិនអាចយកមកវិញបានទេ។
+toast-send-undone = បានមិនធ្វើការផ្ញើវិញ។
+toast-too-late-to-undo-send = យឺតពេលហើយក្នុងការមិនធ្វើវិញ៖ សារត្រូវបានផ្ញើរួចហើយ។
 toast-undo = មិនធ្វើវិញ
 toast-no-spam-folder = គណនីនេះគ្មានថតសារឥតបានការទេ។

@@ -68,6 +68,10 @@ settings-general-new-mail-detail = Met Allen beantwoorden, Markeren als gelezen 
 settings-general-new-mail-sound = Geluid afspelen
 settings-general-new-mail-sound-detail = Het geluid van de desktop voor nieuwe e-mail
 settings-general-desktop = Desktop
+settings-general-start-at-login = Katna starten bij inloggen
+settings-general-start-at-login-detail = Synchroniseert e-mail en toont meldingen voor nieuwe e-mail en het pictogram in het systeemvak, zonder het venster te openen
+settings-general-login-window = Ook het venster van Katna Mail openen
+settings-general-login-window-detail = Het venster opent ook bij inloggen
 settings-general-tray = Katna tonen in het systeemvak
 settings-general-tray-detail = Met het aantal ongelezen berichten en een menu
 settings-general-unread-badge = Aantal ongelezen op het taakbalkpictogram
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = De afbeeldingen van elk bericht altijd 
 settings-general-sending-summary = Verzenden ongedaan maken: hoelang een verzonden bericht wacht, zodat je het nog kunt terughalen
 settings-general-offline-summary = Hoeveel dagen recente e-mail volledig worden gedownload, om zonder verbinding te lezen
 settings-general-notifications-summary = Meldingen voor nieuwe e-mail en het geluid ervan
-settings-general-desktop-summary = Katna Mail openen bij inloggen, het pictogram in het systeemvak en het aantal ongelezen op het taakbalkpictogram
+settings-general-desktop-summary = Katna starten bij inloggen, het pictogram in het systeemvak en het aantal ongelezen op het taakbalkpictogram
 settings-accounts-accounts-summary = Een account toevoegen of verwijderen, of de afbeelding ervan wijzigen
 settings-appearance-density-summary = Standaard of compacte regels in de lijst
 settings-appearance-scaling-summary = Alles groter of kleiner maken: tekst, pictogrammen, witruimte en scheidingslijnen
@@ -241,7 +245,7 @@ settings-search-results = Instellingen die overeenkomen met ‘{ $query }’
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Kan openen bij inloggen niet wijzigen: { $error }
+settings-open-at-login-failed = Kan starten bij inloggen niet wijzigen: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = Grammatica
 settings-compose-grammar-detail = Gecontroleerd op deze computer met Harper. Voorlopig alleen Engels: tekst in andere talen blijft ongemoeid.
 settings-compose-grammar-check = Grammatica controleren
 settings-compose-grammar-check-detail = Grammaticafouten onderstrepen tijdens het schrijven, in het Engels
+settings-compose-suggestions = Schrijfsuggesties
+settings-compose-suggestions-detail = Geleerd op deze computer uit de e-mail die je hebt verzonden en de e-mail die je beantwoordt; er gaat niets naar buiten. Druk op Tab om een suggestie over te nemen, of typ gewoon verder.
+settings-compose-suggestions-on = Suggesties geven tijdens het schrijven
+settings-compose-suggestions-on-detail = Het waarschijnlijke vervolg van een zin in grijs tonen terwijl je typt
 settings-compose-grammar-summary = Grammaticafouten onderstrepen tijdens het schrijven, in het Engels
+settings-compose-suggestions-summary = Het waarschijnlijke vervolg van een zin in grijs tonen terwijl je typt

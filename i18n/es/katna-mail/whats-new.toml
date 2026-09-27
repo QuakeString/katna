@@ -364,3 +364,40 @@ aparecer las carpetas. Arriba a la izquierda pone Katna Mail, y el
 nombre rueda a Calendario, Contactos y los demás al cambiar de
 aplicación.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Selecciona todo lo no leído o destacado"
+text = """
+Leídos, No leídos, Destacados y No destacados en el menú Seleccionar
+marcan ahora todas las conversaciones de la carpeta que coinciden, no
+solo las que hay en pantalla. Una línea encima de la lista dice cuántas
+hay seleccionadas, y archivar, eliminar, mover o marcar se aplica a
+todas.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Correcciones sin clic derecho"
+text = """
+Deja el puntero sobre una palabra subrayada, o haz clic en ella, y sus
+correcciones aparecen justo debajo: sugerencias de ortografía,
+correcciones gramaticales e Ignorar, en el texto y en el asunto. El clic
+derecho sigue abriendo el menú completo.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "Destinatarios como fichas"
+text = """
+Las direcciones en Para, Cc y Cco se convierten en fichas que muestran
+solo el nombre. La flecha de una ficha muestra su dirección, y con un
+doble clic puedes editarla. Lo que no sea una dirección válida se marca en
+rojo, y Enviar te pide que lo corrijas primero.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna se inicia al iniciar sesión"
+text = """
+Katna ahora se inicia en silencio al iniciar sesión: el correo se
+sincroniza, y las notificaciones de correo nuevo y el icono de la bandeja
+aparecen sin abrir la ventana. Desactívalo, o haz que también se abra la
+ventana, en Ajustes > General > Escritorio.
+"""

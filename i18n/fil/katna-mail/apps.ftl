@@ -37,3 +37,4 @@ app-contacts-messages = { $count ->
    *[other] { $count } mensahe
 }
 app-contacts-last = huli noong { $date }
+top-brand = Katna

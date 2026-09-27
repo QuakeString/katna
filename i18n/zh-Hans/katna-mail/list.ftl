@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] 选择“{ $folder }”中的全部 { $count } 个会话
    *[message] 选择“{ $folder }”中的全部 { $count } 封邮件
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] 已选择全部 { $count } 个已读会话。
+       *[message] 已选择全部 { $count } 封已读邮件。
+    }
+   *[unread] { $kind ->
+        [conversation] 已选择全部 { $count } 个未读会话。
+       *[message] 已选择全部 { $count } 封未读邮件。
+    }
+    [starred] { $kind ->
+        [conversation] 已选择全部 { $count } 个已加星标的会话。
+       *[message] 已选择全部 { $count } 封已加星标的邮件。
+    }
+    [unstarred] { $kind ->
+        [conversation] 已选择全部 { $count } 个未加星标的会话。
+       *[message] 已选择全部 { $count } 封未加星标的邮件。
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] 已选择“{ $folder }”中的全部 { $count } 个已读会话。
+       *[message] 已选择“{ $folder }”中的全部 { $count } 封已读邮件。
+    }
+   *[unread] { $kind ->
+        [conversation] 已选择“{ $folder }”中的全部 { $count } 个未读会话。
+       *[message] 已选择“{ $folder }”中的全部 { $count } 封未读邮件。
+    }
+    [starred] { $kind ->
+        [conversation] 已选择“{ $folder }”中的全部 { $count } 个已加星标的会话。
+       *[message] 已选择“{ $folder }”中的全部 { $count } 封已加星标的邮件。
+    }
+    [unstarred] { $kind ->
+        [conversation] 已选择“{ $folder }”中的全部 { $count } 个未加星标的会话。
+       *[message] 已选择“{ $folder }”中的全部 { $count } 封未加星标的邮件。
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] 这里没有已读会话。
+       *[message] 这里没有已读邮件。
+    }
+   *[unread] { $kind ->
+        [conversation] 这里没有未读会话。
+       *[message] 这里没有未读邮件。
+    }
+    [starred] { $kind ->
+        [conversation] 这里没有已加星标的会话。
+       *[message] 这里没有已加星标的邮件。
+    }
+    [unstarred] { $kind ->
+        [conversation] 这里没有未加星标的会话。
+       *[message] 这里没有未加星标的邮件。
+    }
+}
 list-clear-selection = 清除选择
 
 ## Mail list: empty states
@@ -160,6 +214,18 @@ toast-deleted-forever = { $kind ->
     [conversation] 已永久删除 { $count } 个会话。
    *[message] 已永久删除 { $count } 封邮件。
 }
+toast-marked-read = { $kind ->
+    [conversation] 已将 { $count } 个会话标记为已读。
+   *[message] 已将 { $count } 封邮件标记为已读。
+}
+toast-marked-unread = { $kind ->
+    [conversation] 已将 { $count } 个会话标记为未读。
+   *[message] 已将 { $count } 封邮件标记为未读。
+}
 toast-undone = 已撤消操作。
+toast-nothing-to-undo = 没有可撤消的操作。
+toast-cannot-undo-delete-forever = 永久删除的邮件无法恢复。
+toast-send-undone = 已撤消发送。
+toast-too-late-to-undo-send = 来不及撤消：邮件已经发出。
 toast-undo = 撤消
 toast-no-spam-folder = 此账号没有垃圾邮件文件夹。

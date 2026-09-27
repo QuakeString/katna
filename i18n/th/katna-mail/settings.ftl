@@ -62,6 +62,10 @@ settings-general-new-mail-detail = พร้อมปุ่มตอบกลั
 settings-general-new-mail-sound = เล่นเสียง
 settings-general-new-mail-sound-detail = เสียงอีเมลใหม่ของเดสก์ท็อป
 settings-general-desktop = เดสก์ท็อป
+settings-general-start-at-login = เริ่ม Katna เมื่อเข้าสู่ระบบ
+settings-general-start-at-login-detail = ซิงค์อีเมล แสดงการแจ้งเตือนอีเมลใหม่และไอคอนในถาด โดยไม่เปิดหน้าต่าง
+settings-general-login-window = เปิดหน้าต่าง Katna Mail ด้วย
+settings-general-login-window-detail = หน้าต่างจะเปิดขึ้นเมื่อเข้าสู่ระบบด้วย
 settings-general-tray = แสดง Katna ในถาดระบบ
 settings-general-tray-detail = พร้อมจำนวนที่ยังไม่อ่านและเมนู
 settings-general-unread-badge = จำนวนที่ยังไม่อ่านบนไอคอนในแถบงาน
@@ -199,7 +203,7 @@ settings-general-remote-images-summary = แสดงรูปภาพในท
 settings-general-sending-summary = ยกเลิกการส่ง: ระยะเวลาที่ข้อความที่ส่งจะรอ เพื่อให้ยกเลิกได้
 settings-general-offline-summary = จำนวนวันของอีเมลล่าสุดที่ดาวน์โหลดไว้ทั้งหมด เพื่ออ่านได้โดยไม่ต้องเชื่อมต่อ
 settings-general-notifications-summary = การแจ้งเตือนอีเมลใหม่และเสียง
-settings-general-desktop-summary = เปิด Katna Mail เมื่อเข้าสู่ระบบ ไอคอนในถาดระบบ และจำนวนที่ยังไม่อ่านบนไอคอนในแถบงาน
+settings-general-desktop-summary = เริ่ม Katna เมื่อเข้าสู่ระบบ ไอคอนในถาดระบบ และจำนวนที่ยังไม่อ่านบนไอคอนในแถบงาน
 settings-accounts-accounts-summary = เพิ่มหรือนำบัญชีออก หรือเปลี่ยนรูปภาพของบัญชี
 settings-appearance-density-summary = บรรทัดในรายการแบบค่าเริ่มต้นหรือกะทัดรัด
 settings-appearance-scaling-summary = ทำให้ทุกอย่างใหญ่ขึ้นหรือเล็กลง: ข้อความ ไอคอน ระยะห่าง และเส้นแบ่ง
@@ -235,7 +239,7 @@ settings-search-results = การตั้งค่าที่ตรงกั
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = เปลี่ยนการเปิดเมื่อเข้าสู่ระบบไม่ได้: { $error }
+settings-open-at-login-failed = เปลี่ยนการเริ่มเมื่อเข้าสู่ระบบไม่ได้: { $error }
 
 ## Settings > General > Time
 
@@ -258,4 +262,9 @@ settings-compose-grammar = ไวยากรณ์
 settings-compose-grammar-detail = ตรวจบนคอมพิวเตอร์เครื่องนี้ด้วย Harper ขณะนี้รองรับเฉพาะภาษาอังกฤษ ข้อความในภาษาอื่นจะไม่ถูกเปลี่ยน
 settings-compose-grammar-check = ตรวจไวยากรณ์
 settings-compose-grammar-check-detail = ขีดเส้นใต้ข้อผิดพลาดทางไวยากรณ์ขณะเขียน (ภาษาอังกฤษ)
+settings-compose-suggestions = คำแนะนำขณะเขียน
+settings-compose-suggestions-detail = เรียนรู้บนคอมพิวเตอร์เครื่องนี้จากอีเมลที่คุณส่งและอีเมลที่คุณกำลังตอบ ไม่มีสิ่งใดออกไปจากเครื่อง กด Tab เพื่อใช้คำแนะนำ หรือพิมพ์ต่อไป
+settings-compose-suggestions-on = แนะนำขณะเขียน
+settings-compose-suggestions-on-detail = แสดงส่วนที่เหลือของวลีที่น่าจะตามมาเป็นสีเทาขณะพิมพ์
 settings-compose-grammar-summary = ขีดเส้นใต้ข้อผิดพลาดทางไวยากรณ์ขณะเขียน (ภาษาอังกฤษ)
+settings-compose-suggestions-summary = แสดงส่วนที่เหลือของวลีที่น่าจะตามมาเป็นสีเทาขณะพิมพ์

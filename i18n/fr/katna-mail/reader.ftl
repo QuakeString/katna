@@ -126,6 +126,24 @@ attachment-encrypted-open = Ce fichier a été reçu chiffré. Enregistrez-le po
 print-failed = Impossible d’imprimer : { $error }
 print-no-font = aucune police trouvée
 print-opened-as-pdf = Ouvert au format PDF pour être imprimé depuis celui-ci.
+print-preview-title = Aperçu avant impression
+print-preview-laying-out = Mise en page…
+print-preview-pages = { $count ->
+    [one] { $count } page
+    [many] { $count } de pages
+   *[other] { $count } pages
+}
+print-preview-more = { $count ->
+    [one] et { $count } page de plus
+    [many] et { $count } de pages de plus
+   *[other] et { $count } pages de plus
+}
+print-preview-failed = les pages n’ont pas pu être affichées
+print-preview-paper = Papier
+print-preview-a4 = A4
+print-preview-letter = Lettre US
+print-preview-cancel = Annuler
+print-preview-print = Imprimer
 print-not-downloaded = (Pas encore téléchargé.)
 print-encrypted = (Chiffré. Ouvrez-le dans Katna Mail pour imprimer son texte.)
 print-to = À : { $addresses }

@@ -68,6 +68,10 @@ settings-general-new-mail-detail = ಎಲ್ಲರಿಗೂ ಪ್ರತ್ಯ�
 settings-general-new-mail-sound = ಧ್ವನಿಯನ್ನು ಪ್ಲೇ ಮಾಡಿ
 settings-general-new-mail-sound-detail = ಡೆಸ್ಕ್‌ಟಾಪ್‌ನ ಹೊಸ ಮೇಲ್ ಧ್ವನಿ
 settings-general-desktop = ಡೆಸ್ಕ್‌ಟಾಪ್
+settings-general-start-at-login = ಲಾಗಿನ್ ಆದಾಗ Katna ಆರಂಭಿಸಿ
+settings-general-start-at-login-detail = ವಿಂಡೋ ತೆರೆಯದೆಯೇ ಮೇಲ್ ಸಿಂಕ್ ಮಾಡುತ್ತದೆ ಮತ್ತು ಹೊಸ ಮೇಲ್ ಅಧಿಸೂಚನೆಗಳು ಹಾಗೂ ಟ್ರೇ ಐಕಾನ್ ತೋರಿಸುತ್ತದೆ
+settings-general-login-window = Katna Mail ವಿಂಡೋವನ್ನೂ ತೆರೆಯಿರಿ
+settings-general-login-window-detail = ಲಾಗಿನ್ ಆದಾಗ ವಿಂಡೋ ಕೂಡ ತೆರೆಯುತ್ತದೆ
 settings-general-tray = ಸಿಸ್ಟಂ ಟ್ರೇಯಲ್ಲಿ Katna ತೋರಿಸಿ
 settings-general-tray-detail = ಓದದಿರುವವುಗಳ ಸಂಖ್ಯೆ ಮತ್ತು ಒಂದು ಮೆನುವಿನೊಂದಿಗೆ
 settings-general-unread-badge = ಟಾಸ್ಕ್‌ಬಾರ್ ಐಕಾನ್‌ನಲ್ಲಿ ಓದದಿರುವವುಗಳ ಸಂಖ್ಯೆ
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = ಪ್ರತಿ ಸಂದೇಶದ ಚ�
 settings-general-sending-summary = ಕಳುಹಿಸುವುದನ್ನು ರದ್ದುಗೊಳಿಸಿ: ಕಳುಹಿಸಿದ ಸಂದೇಶವನ್ನು ಹಿಂಪಡೆಯಲು ಸಾಧ್ಯವಾಗುವಂತೆ ಅದು ಎಷ್ಟು ಹೊತ್ತು ಕಾಯುತ್ತದೆ
 settings-general-offline-summary = ಸಂಪರ್ಕವಿಲ್ಲದೆ ಓದಲು, ಎಷ್ಟು ದಿನಗಳ ಇತ್ತೀಚಿನ ಮೇಲ್ ಅನ್ನು ಪೂರ್ತಿಯಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತದೆ
 settings-general-notifications-summary = ಹೊಸ ಮೇಲ್ ಅಧಿಸೂಚನೆಗಳು ಮತ್ತು ಅವುಗಳ ಧ್ವನಿ
-settings-general-desktop-summary = ಲಾಗಿನ್ ಆದಾಗ Katna Mail ತೆರೆಯುವುದು, ಸಿಸ್ಟಂ ಟ್ರೇ ಐಕಾನ್ ಮತ್ತು ಟಾಸ್ಕ್‌ಬಾರ್ ಐಕಾನ್‌ನಲ್ಲಿ ಓದದಿರುವವುಗಳ ಸಂಖ್ಯೆ
+settings-general-desktop-summary = ಲಾಗಿನ್ ಆದಾಗ Katna ಆರಂಭಿಸುವುದು, ಸಿಸ್ಟಂ ಟ್ರೇ ಐಕಾನ್ ಮತ್ತು ಟಾಸ್ಕ್‌ಬಾರ್ ಐಕಾನ್‌ನಲ್ಲಿ ಓದದಿರುವವುಗಳ ಸಂಖ್ಯೆ
 settings-accounts-accounts-summary = ಖಾತೆಯನ್ನು ಸೇರಿಸಿ ಅಥವಾ ತೆಗೆದುಹಾಕಿ, ಅಥವಾ ಅದರ ಚಿತ್ರವನ್ನು ಬದಲಾಯಿಸಿ
 settings-appearance-density-summary = ಪಟ್ಟಿಯಲ್ಲಿ ಡೀಫಾಲ್ಟ್ ಅಥವಾ ಕಾಂಪ್ಯಾಕ್ಟ್ ಸಾಲುಗಳು
 settings-appearance-scaling-summary = ಎಲ್ಲವನ್ನೂ ದೊಡ್ಡದಾಗಿ ಅಥವಾ ಚಿಕ್ಕದಾಗಿ ಮಾಡಿ: ಪಠ್ಯ, ಐಕಾನ್‌ಗಳು, ಅಂತರ ಮತ್ತು ವಿಭಾಜಕಗಳು
@@ -241,7 +245,7 @@ settings-search-results = “{ $query }” ಗೆ ಹೊಂದಿಕೆಯಾಗ
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = ಲಾಗಿನ್ ಆದಾಗ ತೆರೆಯುವುದನ್ನು ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: { $error }
+settings-open-at-login-failed = ಲಾಗಿನ್ ಆದಾಗ ಆರಂಭಿಸುವುದನ್ನು ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = ವ್ಯಾಕರಣ
 settings-compose-grammar-detail = ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲೇ Harper ಮೂಲಕ ಪರಿಶೀಲಿಸಲಾಗುತ್ತದೆ. ಸದ್ಯಕ್ಕೆ ಇಂಗ್ಲಿಷ್ ಮಾತ್ರ: ಇತರ ಭಾಷೆಗಳ ಪಠ್ಯವನ್ನು ಬದಲಾಯಿಸುವುದಿಲ್ಲ.
 settings-compose-grammar-check = ವ್ಯಾಕರಣ ಪರಿಶೀಲಿಸಿ
 settings-compose-grammar-check-detail = ಬರೆಯುವಾಗ ವ್ಯಾಕರಣ ತಪ್ಪುಗಳಿಗೆ ಅಡಿಗೆರೆ ಹಾಕಿ, ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ
+settings-compose-suggestions = ಬರವಣಿಗೆಯ ಸಲಹೆಗಳು
+settings-compose-suggestions-detail = ನೀವು ಕಳುಹಿಸಿದ ಮೇಲ್ ಮತ್ತು ನೀವು ಉತ್ತರಿಸುತ್ತಿರುವ ಮೇಲ್‌ನಿಂದ ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲೇ ಕಲಿಯಲಾಗುತ್ತದೆ; ಏನೂ ಹೊರಗೆ ಹೋಗುವುದಿಲ್ಲ. ಸಲಹೆಯನ್ನು ಸ್ವೀಕರಿಸಲು Tab ಒತ್ತಿ, ಅಥವಾ ಟೈಪ್ ಮಾಡುವುದನ್ನು ಮುಂದುವರಿಸಿ.
+settings-compose-suggestions-on = ಬರೆಯುವಾಗ ಸಲಹೆ ನೀಡಿ
+settings-compose-suggestions-on-detail = ನೀವು ಟೈಪ್ ಮಾಡುತ್ತಿದ್ದಂತೆ ಪದಗುಚ್ಛದ ಸಂಭಾವ್ಯ ಉಳಿದ ಭಾಗವನ್ನು ಬೂದು ಬಣ್ಣದಲ್ಲಿ ತೋರಿಸಿ
 settings-compose-grammar-summary = ಬರೆಯುವಾಗ ವ್ಯಾಕರಣ ತಪ್ಪುಗಳಿಗೆ ಅಡಿಗೆರೆ ಹಾಕಿ, ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ
+settings-compose-suggestions-summary = ನೀವು ಟೈಪ್ ಮಾಡುತ್ತಿದ್ದಂತೆ ಪದಗುಚ್ಛದ ಸಂಭಾವ್ಯ ಉಳಿದ ಭಾಗವನ್ನು ಬೂದು ಬಣ್ಣದಲ್ಲಿ ತೋರಿಸಿ

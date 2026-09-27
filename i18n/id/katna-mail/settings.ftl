@@ -62,6 +62,10 @@ settings-general-new-mail-detail = Dengan Balas semua, Tandai sudah dibaca, dan 
 settings-general-new-mail-sound = Putar suara
 settings-general-new-mail-sound-detail = Suara email baru dari desktop
 settings-general-desktop = Desktop
+settings-general-start-at-login = Mulai Katna saat login
+settings-general-start-at-login-detail = Menyinkronkan email serta menampilkan notifikasi email baru dan ikon baki, tanpa membuka jendela
+settings-general-login-window = Buka juga jendela Katna Mail
+settings-general-login-window-detail = Jendela juga terbuka saat login
 settings-general-tray = Tampilkan Katna di baki sistem
 settings-general-tray-detail = Dengan jumlah belum dibaca dan menu
 settings-general-unread-badge = Jumlah belum dibaca di ikon taskbar
@@ -199,7 +203,7 @@ settings-general-remote-images-summary = Selalu tampilkan gambar di setiap pesan
 settings-general-sending-summary = Urungkan kirim: berapa lama pesan terkirim menunggu, agar bisa ditarik kembali
 settings-general-offline-summary = Berapa hari email terbaru didownload seluruhnya, untuk dibaca tanpa koneksi
 settings-general-notifications-summary = Notifikasi email baru dan suaranya
-settings-general-desktop-summary = Buka Katna Mail saat login, ikon baki sistem, dan jumlah belum dibaca di ikon taskbar
+settings-general-desktop-summary = Mulai Katna saat login, ikon baki sistem, dan jumlah belum dibaca di ikon taskbar
 settings-accounts-accounts-summary = Tambahkan atau hapus akun, atau ubah gambarnya
 settings-appearance-density-summary = Baris default atau ringkas di daftar
 settings-appearance-scaling-summary = Buat semuanya lebih besar atau lebih kecil: teks, ikon, jarak, dan garis pemisah
@@ -235,7 +239,7 @@ settings-search-results = Setelan yang cocok dengan “{ $query }”
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Tidak dapat mengubah pembukaan saat login: { $error }
+settings-open-at-login-failed = Tidak dapat mengubah pengaturan mulai saat login: { $error }
 
 ## Settings > General > Time
 
@@ -258,4 +262,9 @@ settings-compose-grammar = Tata bahasa
 settings-compose-grammar-detail = Diperiksa di komputer ini dengan Harper. Untuk saat ini hanya bahasa Inggris: teks dalam bahasa lain dibiarkan apa adanya.
 settings-compose-grammar-check = Periksa tata bahasa
 settings-compose-grammar-check-detail = Garis bawahi kesalahan tata bahasa saat menulis, dalam bahasa Inggris
+settings-compose-suggestions = Saran penulisan
+settings-compose-suggestions-detail = Dipelajari di komputer ini dari email yang Anda kirim dan email yang sedang Anda balas; tidak ada yang keluar dari komputer ini. Tekan Tab untuk memakai saran, atau terus saja mengetik.
+settings-compose-suggestions-on = Beri saran saat menulis
+settings-compose-suggestions-on-detail = Tampilkan kemungkinan lanjutan frasa dengan warna abu-abu saat Anda mengetik
 settings-compose-grammar-summary = Garis bawahi kesalahan tata bahasa saat menulis, dalam bahasa Inggris
+settings-compose-suggestions-summary = Tampilkan kemungkinan lanjutan frasa dengan warna abu-abu saat Anda mengetik

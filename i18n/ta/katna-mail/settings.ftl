@@ -68,6 +68,10 @@ settings-general-new-mail-detail = அனைவருக்கும் பத�
 settings-general-new-mail-sound = ஒலியை இயக்கு
 settings-general-new-mail-sound-detail = டெஸ்க்டாப்பின் புதிய அஞ்சல் ஒலி
 settings-general-desktop = டெஸ்க்டாப்
+settings-general-start-at-login = உள்நுழையும்போது Katna ஐத் தொடங்கு
+settings-general-start-at-login-detail = சாளரத்தைத் திறக்காமலேயே மெயிலை ஒத்திசைத்து, புதிய மெயில் அறிவிப்புகளையும் ட்ரே ஐகானையும் காட்டும்
+settings-general-login-window = Katna Mail சாளரத்தையும் திற
+settings-general-login-window-detail = உள்நுழையும்போது சாளரமும் திறக்கும்
 settings-general-tray = சிஸ்டம் ட்ரேயில் Katna ஐக் காட்டு
 settings-general-tray-detail = படிக்காதவற்றின் எண்ணிக்கையுடனும் ஒரு மெனுவுடனும்
 settings-general-unread-badge = டாஸ்க்பார் ஐகானில் படிக்காதவற்றின் எண்ணிக்கை
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = ஒவ்வொரு மெசேஜ�
 settings-general-sending-summary = அனுப்புவதைச் செயல்தவிர்: அனுப்பிய மெசேஜைத் திரும்பப் பெற முடியும்படி அது எவ்வளவு நேரம் காத்திருக்கும்
 settings-general-offline-summary = இணைப்பு இல்லாமல் படிக்க, எத்தனை நாட்களின் சமீபத்திய அஞ்சல் முழுமையாகப் பதிவிறக்கப்படும்
 settings-general-notifications-summary = புதிய அஞ்சல் அறிவிப்புகளும் அவற்றின் ஒலியும்
-settings-general-desktop-summary = உள்நுழையும்போது Katna Mail ஐத் திறத்தல், சிஸ்டம் ட்ரே ஐகான், டாஸ்க்பார் ஐகானில் படிக்காதவற்றின் எண்ணிக்கை
+settings-general-desktop-summary = உள்நுழையும்போது Katna ஐத் தொடங்குதல், சிஸ்டம் ட்ரே ஐகான், டாஸ்க்பார் ஐகானில் படிக்காதவற்றின் எண்ணிக்கை
 settings-accounts-accounts-summary = கணக்கைச் சேர்க்கவும் அல்லது அகற்றவும், அல்லது அதன் படத்தை மாற்றவும்
 settings-appearance-density-summary = பட்டியலில் இயல்புநிலை அல்லது கச்சிதமான வரிகள்
 settings-appearance-scaling-summary = அனைத்தையும் பெரிதாகவோ சிறிதாகவோ ஆக்கு: உரை, ஐகான்கள், இடைவெளி, பிரிப்புக் கோடுகள்
@@ -241,7 +245,7 @@ settings-search-results = “{ $query }” உடன் பொருந்து
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = உள்நுழையும்போது திறப்பதை மாற்ற முடியவில்லை: { $error }
+settings-open-at-login-failed = உள்நுழையும்போது தொடங்குவதை மாற்ற முடியவில்லை: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = இலக்கணம்
 settings-compose-grammar-detail = இந்தக் கணினியிலேயே Harper மூலம் சரிபார்க்கப்படும். இப்போதைக்கு ஆங்கிலம் மட்டும்: பிற மொழிகளில் உள்ள உரை மாற்றப்படாது.
 settings-compose-grammar-check = இலக்கணத்தைச் சரிபார்
 settings-compose-grammar-check-detail = எழுதும்போது இலக்கணப் பிழைகளை அடிக்கோடிடு, ஆங்கிலத்தில்
+settings-compose-suggestions = எழுதும் பரிந்துரைகள்
+settings-compose-suggestions-detail = நீங்கள் அனுப்பிய மெயிலிலிருந்தும் நீங்கள் பதிலளிக்கும் மெயிலிலிருந்தும் இந்தக் கணினியிலேயே கற்றுக்கொள்ளப்படுகிறது; எதுவும் இதை விட்டு வெளியே செல்லாது. பரிந்துரையை ஏற்க Tab ஐ அழுத்தவும், அல்லது தொடர்ந்து தட்டச்சு செய்யவும்.
+settings-compose-suggestions-on = எழுதும்போது பரிந்துரை செய்
+settings-compose-suggestions-on-detail = தட்டச்சு செய்யும்போது ஒரு சொற்றொடரின் சாத்தியமான மீதிப் பகுதியைச் சாம்பல் நிறத்தில் காட்டு
 settings-compose-grammar-summary = எழுதும்போது இலக்கணப் பிழைகளை அடிக்கோடிடு, ஆங்கிலத்தில்
+settings-compose-suggestions-summary = தட்டச்சு செய்யும்போது ஒரு சொற்றொடரின் சாத்தியமான மீதிப் பகுதியைச் சாம்பல் நிறத்தில் காட்டு

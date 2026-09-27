@@ -349,3 +349,39 @@ da ke hagu, inda riƙe alamar linzamin kwamfuta a kansa zai sake nuna
 folda. Saman hagu yana nuna Katna Mail, kuma sunan yana juyawa zuwa
 Kalanda, Lambobin sadarwa da sauransu yayin da kake sauya manhaja.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Zaɓi duk saƙonnin da ba a karanta ba ko masu tauraro"
+text = """
+An karanta, Ba a karanta ba, Masu tauraro da Marasa tauraro a menu na
+Zaɓi yanzu suna yi wa kowace tattaunawa da ta dace a cikin folda alama,
+ba waɗanda ke kan allo kaɗai ba. Layi a saman jerin yana faɗin yawan
+waɗanda aka zaɓa, kuma adanawa a ma'ajiya, sharewa, matsarwa ko yin
+alama yana aiki a kan dukkansu.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Gyara ba tare da danna dama ba"
+text = """
+Riƙe alamar linzamin kwamfuta a kan kalmar da ke da layin ƙasa, ko danna
+ta, kuma gyaranta za su bayyana daidai a ƙarƙashinta: shawarwarin
+rubutun kalma, gyaran nahawu da Yi watsi, a cikin rubutu da jigo. Danna
+dama har yanzu yana buɗe cikakken menu.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "Masu karɓa a matsayin ƙananan katuna"
+text = """
+Adireshi a Zuwa, Kwafi da Kwafi a ɓoye suna zama ƙananan katuna masu nuna
+suna kawai. Kibiyar da ke kan kati tana nuna adireshinsa, kuma danna sau
+biyu yana ba ka damar gyara shi. Duk abin da ba adireshi mai inganci ba
+ana yi masa alama da ja, kuma Aika yana neman ka gyara shi tukuna.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna yana farawa lokacin shiga"
+text = """
+Yanzu Katna yana farawa a hankali idan ka shiga: wasiƙu suna daidaitawa,
+kuma sanarwar sababbin wasiƙu da gunkin tire suna bayyana ba tare da buɗe
+taga ba. Kashe shi, ko sa taga ma ta buɗe, a Saituna > Gabaɗaya > Tebur.
+"""

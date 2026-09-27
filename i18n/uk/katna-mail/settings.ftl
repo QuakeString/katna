@@ -72,6 +72,10 @@ settings-general-new-mail-detail = З кнопками «Відповісти в
 settings-general-new-mail-sound = Відтворювати звук
 settings-general-new-mail-sound-detail = Звук нової пошти стільниці
 settings-general-desktop = Стільниця
+settings-general-start-at-login = Запускати Katna під час входу
+settings-general-start-at-login-detail = Синхронізує пошту й показує сповіщення про нові листи та значок у лотку, не відкриваючи вікна
+settings-general-login-window = Відкривати також вікно Katna Mail
+settings-general-login-window-detail = Вікно теж відкривається під час входу
 settings-general-tray = Показувати Katna в системному лотку
 settings-general-tray-detail = Із лічильником непрочитаних і меню
 settings-general-unread-badge = Лічильник непрочитаних на значку панелі завдань
@@ -209,7 +213,7 @@ settings-general-remote-images-summary = Завжди показувати зо�
 settings-general-sending-summary = Скасування надсилання: скільки надісланий лист чекає, щоб його можна було скасувати
 settings-general-offline-summary = За скільки днів нещодавні листи завантажуються повністю, щоб читати їх без з’єднання
 settings-general-notifications-summary = Сповіщення про нові листи та їхній звук
-settings-general-desktop-summary = Відкриття Katna Mail під час входу, значок у системному лотку й лічильник непрочитаних на значку панелі завдань
+settings-general-desktop-summary = Запуск Katna під час входу, значок у системному лотку й лічильник непрочитаних на значку панелі завдань
 settings-accounts-accounts-summary = Додати чи вилучити обліковий запис або змінити його зображення
 settings-appearance-density-summary = Типові чи компактні рядки в списку
 settings-appearance-scaling-summary = Зробити все більшим або меншим: текст, значки, відступи й роздільники
@@ -245,7 +249,7 @@ settings-search-results = Налаштування за запитом «{ $quer
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Не вдалося змінити відкриття під час входу: { $error }
+settings-open-at-login-failed = Не вдалося змінити запуск під час входу: { $error }
 
 ## Settings > General > Time
 
@@ -268,4 +272,9 @@ settings-compose-grammar = Граматика
 settings-compose-grammar-detail = Перевіряється на цьому комп’ютері за допомогою Harper. Поки що лише англійська: текст іншими мовами лишається без змін.
 settings-compose-grammar-check = Перевіряти граматику
 settings-compose-grammar-check-detail = Підкреслювати граматичні помилки під час введення, англійською
+settings-compose-suggestions = Підказки під час письма
+settings-compose-suggestions-detail = Навчаються на цьому комп’ютері з листів, які ви надіслали, і листів, на які ви відповідаєте; ніщо не залишає комп’ютер. Натисніть Tab, щоб прийняти підказку, або друкуйте далі.
+settings-compose-suggestions-on = Підказувати під час письма
+settings-compose-suggestions-on-detail = Показувати ймовірне продовження фрази сірим під час введення
 settings-compose-grammar-summary = Підкреслювати граматичні помилки під час введення, англійською
+settings-compose-suggestions-summary = Показувати ймовірне продовження фрази сірим під час введення

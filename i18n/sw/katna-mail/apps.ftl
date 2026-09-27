@@ -37,3 +37,4 @@ app-contacts-messages = { $count ->
    *[other] jumbe { $count }
 }
 app-contacts-last = mara ya mwisho { $date }
+top-brand = Katna

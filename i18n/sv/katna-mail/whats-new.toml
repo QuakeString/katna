@@ -348,3 +348,39 @@ i fältet till vänster, där mapparna visas igen när du vilar pekaren på
 den. Uppe till vänster står Katna Mail, och namnet rullar över till
 Kalender, Kontakter och resten när du byter app.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Markera all oläst eller stjärnmärkt post"
+text = """
+Lästa, Olästa, Stjärnmärkta och Utan stjärna i menyn Markera bockar nu
+för varje matchande konversation i mappen, inte bara de som syns på
+skärmen. En rad ovanför listan säger hur många som är markerade, och att
+arkivera, radera, flytta eller markera gäller alla.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Rättningar utan högerklick"
+text = """
+Vila pekaren på ett understruket ord, eller klicka på det, så visas dess
+rättningar precis under: stavningsförslag, grammatikrättningar och
+Ignorera, i texten och i ämnet. Högerklick öppnar fortfarande hela
+menyn.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "Mottagare som brickor"
+text = """
+Adresser i Till, Kopia och Dold kopia blir brickor som bara visar
+namnet. Pilen på en bricka visar adressen, och med ett dubbelklick kan
+du redigera den. Allt som inte är en giltig adress markeras med rött,
+och Skicka ber dig rätta det först.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna startar vid inloggning"
+text = """
+Katna startar nu tyst när du loggar in: e-posten synkroniseras, och
+aviseringar om ny e-post och ikonen i systemfältet kommer upp utan att
+fönstret öppnas. Stäng av det, eller låt fönstret öppnas också, under
+Inställningar > Allmänt > Skrivbord.
+"""

@@ -68,6 +68,10 @@ settings-general-new-mail-detail = Nezinkinobho ezithi Phendula bonke, Maka njen
 settings-general-new-mail-sound = Dlala umsindo
 settings-general-new-mail-sound-detail = Umsindo wemeyili entsha wedeskithophu
 settings-general-desktop = Ideskithophu
+settings-general-start-at-login = Qala i-Katna lapho ungena
+settings-general-start-at-login-detail = Ivumelanisa imeyili futhi ibonise izaziso zemeyili entsha nesithonjana sethileyi, ngaphandle kokuvula iwindi
+settings-general-login-window = Vula newindi le-Katna Mail
+settings-general-login-window-detail = Iwindi nalo liyavuleka lapho ungena
 settings-general-tray = Bonisa i-Katna kuthileyi yesistimu
 settings-general-tray-detail = Nesibalo sokungafundiwe nemenyu
 settings-general-unread-badge = Isibalo sokungafundiwe esithonjaneni sebha yemisebenzi
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = Hlala ubonisa izithombe zawo wonke umla
 settings-general-sending-summary = Hlehlisa ukuthumela: isikhathi umlayezo othunyelwe olinda ngaso, ukuze ukwazi ukuhoxiswa
 settings-general-offline-summary = Zingaki izinsuku zemeyili yakamuva ezilandwa ziphelele, ukuze ifundwe ngaphandle koxhumano
 settings-general-notifications-summary = Izaziso zemeyili entsha nomsindo wazo
-settings-general-desktop-summary = Vula i-Katna Mail lapho ungena, isithonjana sethileyi yesistimu nesibalo sokungafundiwe esithonjaneni sebha yemisebenzi
+settings-general-desktop-summary = Qala i-Katna lapho ungena, isithonjana sethileyi yesistimu nesibalo sokungafundiwe esithonjaneni sebha yemisebenzi
 settings-accounts-accounts-summary = Engeza noma ususe i-akhawunti, noma ushintshe isithombe sayo
 settings-appearance-density-summary = Imigqa ezenzakalelayo noma eminyene ohlwini
 settings-appearance-scaling-summary = Yenza konke kube kukhulu noma kube kuncane: umbhalo, izithonjana, izikhala nemigqa ehlukanisayo
@@ -241,7 +245,7 @@ settings-search-results = Izilungiselelo ezihambisana nokuthi “{ $query }”
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Ayikwazanga ukushintsha ukuvula lapho ungena: { $error }
+settings-open-at-login-failed = Ayikwazanga ukushintsha ukuqala lapho ungena: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = Uhlelo lolimi
 settings-compose-grammar-detail = Kuhlolwa kule khompyutha nge-Harper. IsiNgisi kuphela okwamanje: umbhalo ngezinye izilimi awuthintwa.
 settings-compose-grammar-check = Hlola uhlelo lolimi
 settings-compose-grammar-check-detail = Dwebela amaphutha ohlelo lolimi ngenkathi ubhala, ngesiNgisi
+settings-compose-suggestions = Iziphakamiso zokubhala
+settings-compose-suggestions-detail = Zifundwa kule khompyutha emeyilini oyithumele nasemeyilini oyiphendulayo; akukho okuphuma kuyo. Cindezela u-Tab ukuze uthathe isiphakamiso, noma uqhubeke uthayipha.
+settings-compose-suggestions-on = Phakamisa ngenkathi ubhala
+settings-compose-suggestions-on-detail = Bonisa ingxenye esele yebinzana okungenzeka ilandele ngokumpunga njengoba uthayipha
 settings-compose-grammar-summary = Dwebela amaphutha ohlelo lolimi ngenkathi ubhala, ngesiNgisi
+settings-compose-suggestions-summary = Bonisa ingxenye esele yebinzana okungenzeka ilandele ngokumpunga njengoba uthayipha

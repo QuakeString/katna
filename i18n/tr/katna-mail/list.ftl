@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] { $folder } klasöründeki { $count } iletinin tümünü seç
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } okunmuş ileti dizisi seçildi.
+           *[other] { $count } okunmuş ileti dizisinin tümü seçildi.
+        }
+       *[message] { $count ->
+            [one] { $count } okunmuş ileti seçildi.
+           *[other] { $count } okunmuş iletinin tümü seçildi.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } okunmamış ileti dizisi seçildi.
+           *[other] { $count } okunmamış ileti dizisinin tümü seçildi.
+        }
+       *[message] { $count ->
+            [one] { $count } okunmamış ileti seçildi.
+           *[other] { $count } okunmamış iletinin tümü seçildi.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } yıldızlı ileti dizisi seçildi.
+           *[other] { $count } yıldızlı ileti dizisinin tümü seçildi.
+        }
+       *[message] { $count ->
+            [one] { $count } yıldızlı ileti seçildi.
+           *[other] { $count } yıldızlı iletinin tümü seçildi.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } yıldızsız ileti dizisi seçildi.
+           *[other] { $count } yıldızsız ileti dizisinin tümü seçildi.
+        }
+       *[message] { $count ->
+            [one] { $count } yıldızsız ileti seçildi.
+           *[other] { $count } yıldızsız iletinin tümü seçildi.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } klasöründeki { $count } okunmuş ileti dizisi seçildi.
+           *[other] { $folder } klasöründeki { $count } okunmuş ileti dizisinin tümü seçildi.
+        }
+       *[message] { $count ->
+            [one] { $folder } klasöründeki { $count } okunmuş ileti seçildi.
+           *[other] { $folder } klasöründeki { $count } okunmuş iletinin tümü seçildi.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } klasöründeki { $count } okunmamış ileti dizisi seçildi.
+           *[other] { $folder } klasöründeki { $count } okunmamış ileti dizisinin tümü seçildi.
+        }
+       *[message] { $count ->
+            [one] { $folder } klasöründeki { $count } okunmamış ileti seçildi.
+           *[other] { $folder } klasöründeki { $count } okunmamış iletinin tümü seçildi.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } klasöründeki { $count } yıldızlı ileti dizisi seçildi.
+           *[other] { $folder } klasöründeki { $count } yıldızlı ileti dizisinin tümü seçildi.
+        }
+       *[message] { $count ->
+            [one] { $folder } klasöründeki { $count } yıldızlı ileti seçildi.
+           *[other] { $folder } klasöründeki { $count } yıldızlı iletinin tümü seçildi.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } klasöründeki { $count } yıldızsız ileti dizisi seçildi.
+           *[other] { $folder } klasöründeki { $count } yıldızsız ileti dizisinin tümü seçildi.
+        }
+       *[message] { $count ->
+            [one] { $folder } klasöründeki { $count } yıldızsız ileti seçildi.
+           *[other] { $folder } klasöründeki { $count } yıldızsız iletinin tümü seçildi.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] Burada okunmuş ileti dizisi yok.
+       *[message] Burada okunmuş ileti yok.
+    }
+   *[unread] { $kind ->
+        [conversation] Burada okunmamış ileti dizisi yok.
+       *[message] Burada okunmamış ileti yok.
+    }
+    [starred] { $kind ->
+        [conversation] Burada yıldızlı ileti dizisi yok.
+       *[message] Burada yıldızlı ileti yok.
+    }
+    [unstarred] { $kind ->
+        [conversation] Burada yıldızsız ileti dizisi yok.
+       *[message] Burada yıldızsız ileti yok.
+    }
+}
 list-clear-selection = Seçimi temizle
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count } ileti kalıcı olarak silindi.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] İleti dizisi okundu olarak işaretlendi.
+       *[other] { $count } ileti dizisi okundu olarak işaretlendi.
+    }
+   *[message] { $count ->
+        [one] İleti okundu olarak işaretlendi.
+       *[other] { $count } ileti okundu olarak işaretlendi.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] İleti dizisi okunmadı olarak işaretlendi.
+       *[other] { $count } ileti dizisi okunmadı olarak işaretlendi.
+    }
+   *[message] { $count ->
+        [one] İleti okunmadı olarak işaretlendi.
+       *[other] { $count } ileti okunmadı olarak işaretlendi.
+    }
+}
 toast-undone = İşlem geri alındı.
+toast-nothing-to-undo = Geri alınacak bir şey yok.
+toast-cannot-undo-delete-forever = Kalıcı olarak silinen postalar geri getirilemez.
+toast-send-undone = Gönderme geri alındı.
+toast-too-late-to-undo-send = Geri almak için çok geç: ileti zaten gönderildi.
 toast-undo = Geri al
 toast-no-spam-folder = Bu hesabın spam klasörü yok.

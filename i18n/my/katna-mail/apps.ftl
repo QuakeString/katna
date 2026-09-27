@@ -28,3 +28,4 @@ app-contacts-count = သင့်မေးလ်မှ လူ { $count } ဦး�
 app-contacts-top = သင့်မေးလ်မှ ထိပ်ဆုံး လူ { $count } ဦး၊ အများဆုံး စာပေးစာယူလုပ်သူ ရှေ့ဆုံးတွင်
 app-contacts-messages = မက်ဆေ့ဂျ် { $count } စောင်
 app-contacts-last = နောက်ဆုံး { $date }
+top-brand = Katna

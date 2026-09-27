@@ -68,6 +68,10 @@ settings-general-new-mail-detail = બધાને જવાબ આપો, વ�
 settings-general-new-mail-sound = અવાજ વગાડો
 settings-general-new-mail-sound-detail = ડેસ્કટૉપનો નવા મેઇલનો અવાજ
 settings-general-desktop = ડેસ્કટૉપ
+settings-general-start-at-login = લૉગિન વખતે Katna શરૂ કરો
+settings-general-start-at-login-detail = વિન્ડો ખોલ્યા વિના મેઇલ સિંક કરે છે અને નવા મેઇલનાં નોટિફિકેશન અને સિસ્ટમ ટ્રે આઇકન બતાવે છે
+settings-general-login-window = Katna Mailની વિન્ડો પણ ખોલો
+settings-general-login-window-detail = લૉગિન વખતે વિન્ડો પણ ખૂલે છે
 settings-general-tray = સિસ્ટમ ટ્રેમાં Katna બતાવો
 settings-general-tray-detail = નહીં વાંચેલાની સંખ્યા અને મેનૂ સાથે
 settings-general-unread-badge = ટાસ્કબાર આઇકન પર નહીં વાંચેલાની સંખ્યા
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = દરેક મેસેજની છ�
 settings-general-sending-summary = મોકલવાનું પૂર્વવત્ કરો: મોકલેલો મેસેજ કેટલો સમય રાહ જુએ, જેથી તેને પાછો ખેંચી શકાય
 settings-general-offline-summary = કનેક્શન વગર વાંચવા માટે કેટલા દિવસના તાજેતરના મેઇલ પૂરેપૂરા ડાઉનલોડ થાય
 settings-general-notifications-summary = નવા મેઇલનાં નોટિફિકેશન અને તેમનો અવાજ
-settings-general-desktop-summary = લૉગિન વખતે Katna Mail ખોલો, સિસ્ટમ ટ્રે આઇકન અને ટાસ્કબાર આઇકન પર નહીં વાંચેલાની સંખ્યા
+settings-general-desktop-summary = લૉગિન વખતે Katna શરૂ કરો, સિસ્ટમ ટ્રે આઇકન અને ટાસ્કબાર આઇકન પર નહીં વાંચેલાની સંખ્યા
 settings-accounts-accounts-summary = એકાઉન્ટ ઉમેરો કે કાઢી નાખો, અથવા તેનું ચિત્ર બદલો
 settings-appearance-density-summary = સૂચિમાં ડિફૉલ્ટ કે સઘન લાઇનો
 settings-appearance-scaling-summary = બધું મોટું કે નાનું કરો: લખાણ, આઇકન, અંતર અને વિભાજકો
@@ -241,7 +245,7 @@ settings-search-results = “{ $query }” સાથે મેળ ખાતા�
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = લૉગિન વખતે ખોલવાનું બદલી શકાયું નથી: { $error }
+settings-open-at-login-failed = લૉગિન વખતે શરૂ થવાનું બદલી શકાયું નથી: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = વ્યાકરણ
 settings-compose-grammar-detail = આ કમ્પ્યુટર પર જ Harper વડે તપાસાય છે. હાલ ફક્ત અંગ્રેજી: બીજી ભાષાઓનું લખાણ જેમ છે તેમ રહે છે.
 settings-compose-grammar-check = વ્યાકરણ તપાસો
 settings-compose-grammar-check-detail = લખતી વખતે વ્યાકરણની ભૂલો નીચે લીટી દોરો, અંગ્રેજીમાં
+settings-compose-suggestions = લખાણનાં સૂચનો
+settings-compose-suggestions-detail = તમે મોકલેલી મેઇલ અને તમે જેનો જવાબ આપો છો તે મેઇલમાંથી આ કમ્પ્યુટર પર જ શીખેલાં; કંઈ પણ તેની બહાર જતું નથી. સૂચન સ્વીકારવા Tab દબાવો, અથવા ટાઇપ કરવાનું ચાલુ રાખો.
+settings-compose-suggestions-on = લખતી વખતે સૂચન કરો
+settings-compose-suggestions-on-detail = તમે ટાઇપ કરો ત્યારે વાક્યાંશનો સંભવિત બાકીનો ભાગ ભૂખરા રંગમાં બતાવો
 settings-compose-grammar-summary = લખતી વખતે વ્યાકરણની ભૂલો નીચે લીટી દોરો, અંગ્રેજીમાં
+settings-compose-suggestions-summary = તમે ટાઇપ કરો ત્યારે વાક્યાંશનો સંભવિત બાકીનો ભાગ ભૂખરા રંગમાં બતાવો

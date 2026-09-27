@@ -62,6 +62,10 @@ settings-general-new-mail-detail = Ya na Zaa mmadụ niile, Kaa akara dị ka ag
 settings-general-new-mail-sound = Kpọọ ụda
 settings-general-new-mail-sound-detail = Ụda ozi ọhụrụ nke desktọpụ
 settings-general-desktop = Desktọpụ
+settings-general-start-at-login = Malite Katna mgbe ị banyere
+settings-general-start-at-login-detail = Na-emekọrịta ozi ma na-egosi ọkwa ozi ọhụrụ na akara ngosi tree, na-emepeghị windo
+settings-general-login-window = Mepekwa windo Katna Mail
+settings-general-login-window-detail = Windo na-emepekwa mgbe ị banyere
 settings-general-tray = Gosi Katna na tree sistemụ
 settings-general-tray-detail = Ya na ọnụọgụ ndị a gụghị na menu
 settings-general-unread-badge = Ọnụọgụ ndị a gụghị na akara ngosi ogwe ọrụ
@@ -199,7 +203,7 @@ settings-general-remote-images-summary = Na-egosi foto nke ozi ọ bụla mgbe n
 settings-general-sending-summary = Megharịa izipu: ogologo oge ozi e zigara na-echere, ka e wee nwee ike iweghachi ya
 settings-general-offline-summary = Ụbọchị ole nke ozi ọhụrụ a na-ebudata n'uju, ka ị gụọ ya na-enweghị njikọ
 settings-general-notifications-summary = Ọkwa ozi ọhụrụ na ụda ha
-settings-general-desktop-summary = Mepee Katna Mail mgbe ị banyere, akara ngosi tree sistemụ na ọnụọgụ ndị a gụghị na akara ngosi ogwe ọrụ
+settings-general-desktop-summary = Malite Katna mgbe ị banyere, akara ngosi tree sistemụ na ọnụọgụ ndị a gụghị na akara ngosi ogwe ọrụ
 settings-accounts-accounts-summary = Tinye ma ọ bụ wepụ akaụntụ, ma ọ bụ gbanwee foto ya
 settings-appearance-density-summary = Ahịrị ndabara ma ọ bụ kpakọrọ akpakọ na ndepụta
 settings-appearance-scaling-summary = Mee ka ihe niile buo ibu ma ọ bụ pere mpe: ederede, akara ngosi, oghere na ahịrị nkewa
@@ -235,7 +239,7 @@ settings-search-results = Ntọala dabara na “{ $query }”
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Enweghị ike ịgbanwe imepe mgbe ị banyere: { $error }
+settings-open-at-login-failed = Enweghị ike ịgbanwe ịmalite mgbe ị banyere: { $error }
 
 ## Settings > General > Time
 
@@ -258,4 +262,9 @@ settings-compose-grammar = Ụtọ asụsụ
 settings-compose-grammar-detail = A na-enyocha ya na kọmputa a site na Harper. Naanị Bekee ugbu a: a naghị emetụ ederede n'asụsụ ndị ọzọ aka.
 settings-compose-grammar-check = Nyochaa ụtọ asụsụ
 settings-compose-grammar-check-detail = Kpaa ahịrị n'okpuru mmejọ ụtọ asụsụ ka ị na-ede, na Bekee
+settings-compose-suggestions = Aro ide ihe
+settings-compose-suggestions-detail = A na-amụta ha na kọmputa a site na ozi i zipụrụ na ozi ị na-aza; ọ dịghị ihe na-apụ na ya. Pịa Tab iji nara aro, ma ọ bụ gaa n'ihu na-ede.
+settings-compose-suggestions-on = Tụọ aro ka ị na-ede
+settings-compose-suggestions-on-detail = Gosi ihe fọdụrụ nke nkebi ahịrịokwu nwere ike ịbịa, na agba ntụ, ka ị na-ede
 settings-compose-grammar-summary = Kpaa ahịrị n'okpuru mmejọ ụtọ asụsụ ka ị na-ede, na Bekee
+settings-compose-suggestions-summary = Gosi ihe fọdụrụ nke nkebi ahịrịokwu nwere ike ịbịa, na agba ntụ, ka ị na-ede

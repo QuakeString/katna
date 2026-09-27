@@ -37,3 +37,4 @@ app-contacts-messages = { $count ->
    *[other] { $count } ileti
 }
 app-contacts-last = son: { $date }
+top-brand = Katna

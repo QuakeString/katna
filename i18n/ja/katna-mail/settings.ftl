@@ -62,6 +62,10 @@ settings-general-new-mail-detail = 「全員に返信」「既読にする」「
 settings-general-new-mail-sound = 通知音を鳴らす
 settings-general-new-mail-sound-detail = デスクトップの新着メールの通知音
 settings-general-desktop = デスクトップ
+settings-general-start-at-login = ログイン時に Katna を起動
+settings-general-start-at-login-detail = ウィンドウを開かずに、メールを同期し、新着メールの通知とトレイアイコンを表示します
+settings-general-login-window = Katna Mail のウィンドウも開く
+settings-general-login-window-detail = ログイン時にウィンドウも開きます
 settings-general-tray = システムトレイに Katna を表示
 settings-general-tray-detail = 未読数とメニュー付き
 settings-general-unread-badge = タスクバーのアイコンに未読数を表示
@@ -199,7 +203,7 @@ settings-general-remote-images-summary = すべてのメールの画像を常に
 settings-general-sending-summary = 送信取り消し: 送信したメールを取り消せるよう、送信を待つ時間
 settings-general-offline-summary = オフラインで読めるよう、最近のメールを何日分ダウンロードするか
 settings-general-notifications-summary = 新着メールの通知と通知音
-settings-general-desktop-summary = ログイン時に Katna Mail を開く、システムトレイのアイコン、タスクバーのアイコンの未読数
+settings-general-desktop-summary = ログイン時に Katna を起動、システムトレイのアイコン、タスクバーのアイコンの未読数
 settings-accounts-accounts-summary = アカウントの追加や削除、画像の変更
 settings-appearance-density-summary = リストの行をデフォルトまたはコンパクトで表示
 settings-appearance-scaling-summary = 文字、アイコン、余白、区切り線をすべて大きくまたは小さくします
@@ -235,7 +239,7 @@ settings-search-results = 「{ $query }」に一致する設定
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = ログイン時に開く設定を変更できませんでした: { $error }
+settings-open-at-login-failed = ログイン時の起動設定を変更できませんでした: { $error }
 
 ## Settings > General > Time
 
@@ -258,4 +262,9 @@ settings-compose-grammar = 文法
 settings-compose-grammar-detail = このパソコン上で Harper がチェックします。現在は英語のみに対応し、ほかの言語のテキストはそのままです。
 settings-compose-grammar-check = 文法をチェック
 settings-compose-grammar-check-detail = 入力中に文法の誤りに下線を引く（英語）
+settings-compose-suggestions = 入力候補
+settings-compose-suggestions-detail = このコンピューター上で、送信したメールと返信中のメールから学習します。外部には何も送られません。Tab キーで候補を確定するか、そのまま入力を続けてください。
+settings-compose-suggestions-on = 入力中に候補を表示
+settings-compose-suggestions-on-detail = 入力中に、続きそうな語句をグレーで表示
 settings-compose-grammar-summary = 入力中に文法の誤りに下線を引く（英語）
+settings-compose-suggestions-summary = 入力中に、続きそうな語句をグレーで表示
