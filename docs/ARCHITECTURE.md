@@ -3690,8 +3690,8 @@ menu.
 |---|---|
 | XDG base directories | settings in `%APPDATA%\Katna`, everything else in `%LOCALAPPDATA%\Katna\{Data,Cache,State}` (`Paths::from_windows_lookup`) |
 | Secret Service (`oo7`) | Credential Manager, generic credentials `<user>.in.invenia.katna`, kept on this computer |
-| D-Bus session bus | the same `in.invenia.katna.Pim1` interface over a peer-to-peer zbus connection on a local socket in `%LOCALAPPDATA%\Katna` (AF_UNIX, Windows 10 1803+) |
-| systemd user unit, D-Bus activation | the `HKCU\…\Run` key starts the daemon at login; the app starts it when it is not running |
+| D-Bus session bus | Katna's own: the reference `dbus-daemon.exe` (built with vcpkg, `ci/windows-dbus.ps1`) beside Katna's programs, started by the first Katna program that needs it (`katna_dbus::session`), on nonce-TCP at 127.0.0.1; its address in `%LOCALAPPDATA%\Katna\State\bus\address`. Every name, call and signal stays as on Linux |
+| systemd user unit, D-Bus activation | the `Katna` value of `HKCU\…\Run` runs `katna-mail.exe --background` at login; the bus starts `katna-daemon.exe` on demand from the activation file Katna writes beside its configuration |
 | SNI tray, badge on the launcher | notification-area icon with the same menu; unread count as the taskbar button's overlay |
 | freedesktop notifications | toasts, under the AppUserModelID Setup gives the Start menu shortcut |
 | XDG mimeapps (mailto, .eml) | registered for mailto and .eml under `HKCU\Software\Classes`, listed in Default apps |
