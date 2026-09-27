@@ -67,7 +67,8 @@ pub(super) fn by_open_rate(mut list: Vec<MessageActivity>) -> Vec<MessageActivit
 }
 
 impl MailWindow {
-    pub(super) fn open_activity(&mut self, cx: &mut Context<Self>) {
+    pub(super) fn open_activity(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        self.katna_load(window, cx);
         self.activity = Some(self.read_activity());
         cx.notify();
     }
@@ -315,6 +316,16 @@ impl MailWindow {
                                         })),
                                 ),
                         )
+                        // New opens and clicks arrive only while signed in.
+                        .when(!self.katna_signed_in(), |d| {
+                            d.child(
+                                div()
+                                    .flex_none()
+                                    .px(px(24.0))
+                                    .pb(px(12.0))
+                                    .child(self.katna_sign_in_needed(th, cx)),
+                            )
+                        })
                         .when(!list.is_empty(), |d| {
                             d.child(summary).child(
                                 div()

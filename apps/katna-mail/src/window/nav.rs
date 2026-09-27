@@ -897,7 +897,7 @@ impl MailWindow {
             }
             sidebar::Row::Folder { key, .. } if key == super::activity::NAV_KEY => {
                 self.leave_settings(window, cx);
-                self.open_activity(cx);
+                self.open_activity(window, cx);
             }
             _ => self.toggle_nav_row(ix, cx),
         }

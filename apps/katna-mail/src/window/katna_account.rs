@@ -100,7 +100,6 @@ impl MailWindow {
 
     /// "Sign in to use this", with a button to Settings > Katna account,
     /// for a server feature while signed out.
-    #[allow(dead_code)]
     pub(super) fn katna_sign_in_needed(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         div()
             .flex()
