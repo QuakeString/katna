@@ -171,6 +171,7 @@ impl MailWindow {
                 cx,
             ));
         }
+        let unified = self.config.mail.unified_inbox;
         div()
             .flex()
             .flex_col()
@@ -178,6 +179,20 @@ impl MailWindow {
                 tr!("accounts-folder-pane"),
                 Some(tr!("accounts-folder-pane-detail").as_str()),
                 pane,
+                th,
+            ))
+            .child(self.row(
+                tr!("accounts-unified"),
+                None,
+                self.switch_row(
+                    "page-accounts-unified",
+                    tr!("accounts-unified-switch"),
+                    tr!("accounts-unified-switch-detail"),
+                    unified,
+                    Change::UnifiedInbox(!unified),
+                    th,
+                    cx,
+                ),
                 th,
             ))
             .child(self.row(
@@ -660,7 +675,12 @@ impl MailWindow {
         let listed = self
             .folder
             .is_some_and(|f| self.tree.account_of(f) == Some(account.id));
-        if listed || matches!(self.listing, Some(Listing::Search { .. })) {
+        if listed
+            || matches!(
+                self.listing,
+                Some(Listing::Search { .. } | Listing::Unified { .. })
+            )
+        {
             self.close_listing(cx);
         }
         self.refresh(true, cx);
@@ -703,6 +723,7 @@ impl MailWindow {
     fn close_listing(&mut self, cx: &mut Context<Self>) {
         self.listing = None;
         self.folder = None;
+        self.unified = None;
         self.reader = None;
         self.reading = false;
         self.entries.clear();

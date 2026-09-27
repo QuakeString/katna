@@ -48,6 +48,8 @@ pub(super) enum Change {
     SingleKeys(bool),
     OpenIn(FileGroup, OpenIn),
     AccountsShown(AccountsShown),
+    /// The unified inbox over the accounts in the folder pane.
+    UnifiedInbox(bool),
     /// The tray icon, shown by the daemon.
     Tray(bool),
     /// The unread count on the taskbar icon, shown by the daemon.
@@ -578,6 +580,10 @@ impl MailWindow {
                 cx.notify();
                 return;
             }
+            Change::UnifiedInbox(on) => {
+                self.set_unified_inbox(on, cx);
+                return;
+            }
             Change::Tray(on) | Change::UnreadBadge(on) => {
                 let general = &mut self.config.general;
                 if matches!(change, Change::Tray(_)) {
@@ -602,9 +608,9 @@ impl MailWindow {
     pub(super) fn relist(&mut self, cx: &mut Context<Self>) {
         self.reader = None;
         self.reading = false;
-        if let Some(folder) = self.folder {
+        if self.folder.is_some() || self.unified.is_some() {
             self.card_seq += 1;
-            self.open_folder(folder, cx);
+            self.open_listed(cx);
         }
         cx.notify();
     }

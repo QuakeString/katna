@@ -23,7 +23,7 @@ use gpui::{
 };
 use katna_core::config::{
     AccountTabs, AutoAdvance, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane,
-    ShortcutSet, TabStyle, Theme as ThemeChoice,
+    SEND_FROM_CURRENT, ShortcutSet, TabStyle, Theme as ThemeChoice,
 };
 use katna_i18n::tr;
 use katna_ui::motion::lerp;
@@ -1511,31 +1511,39 @@ impl MailWindow {
     fn sending_rows(&self, th: &Theme, cx: &mut Context<Self>) -> [Div; 4] {
         let sending = &self.config.sending;
         let chosen = &sending.send_from;
-        // An address no longer set up counts as the open account.
-        let known = self
+        // Unset, or an address no longer set up, counts as the first
+        // account.
+        let current = chosen == SEND_FROM_CURRENT;
+        let fixed = self
             .accounts
             .iter()
-            .any(|a| a.address.eq_ignore_ascii_case(chosen));
-        let choices = std::iter::once((String::new(), tr!("settings-compose-send-from-current")))
-            .chain(
-                self.accounts
-                    .iter()
-                    .map(|a| (a.address.clone(), a.address.clone())),
-            );
+            .position(|a| a.address.eq_ignore_ascii_case(chosen))
+            .unwrap_or(0);
+        let choices = self
+            .accounts
+            .iter()
+            .enumerate()
+            .map(|(ix, a)| {
+                (
+                    a.address.clone(),
+                    a.address.clone(),
+                    !current && ix == fixed,
+                )
+            })
+            .chain(std::iter::once((
+                SEND_FROM_CURRENT.to_owned(),
+                tr!("settings-compose-send-from-current"),
+                current,
+            )));
         let from =
             div()
                 .flex()
                 .flex_row()
                 .flex_wrap()
                 .gap(px(6.0))
-                .children(choices.enumerate().map(|(n, (address, label))| {
-                    let on = if address.is_empty() {
-                        !known
-                    } else {
-                        address.eq_ignore_ascii_case(chosen)
-                    };
+                .children(choices.enumerate().map(|(n, (address, label, on))| {
                     // The whole address on hover, where the chip cuts it short.
-                    let full = (!address.is_empty()).then(|| tip(label.clone(), th));
+                    let full = (address != SEND_FROM_CURRENT).then(|| tip(label.clone(), th));
                     chip(("page-send-from", n), label, on, th)
                         .map(|d| self.page_control(d, th, cx))
                         .when_some(full, |d, full| d.tooltip(full))

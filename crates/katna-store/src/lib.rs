@@ -40,7 +40,9 @@ pub use mail::{
     ParticipantRole, ThreadId,
 };
 pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
-pub use mail_view::{FolderMarks, FolderSummary, Marks, ThreadEntry, ThreadSender, ThreadSummary};
+pub use mail_view::{
+    FlagFilter, FolderMarks, FolderSummary, Marks, ThreadEntry, ThreadSender, ThreadSummary,
+};
 pub use ops::{Location, PinnedMessage, QueuedOp};
 pub use outbox::{OutboxEntry, SendState};
 pub use people::{Correspondent, Person};
@@ -302,6 +304,27 @@ impl Store {
         categories: Option<&[MailCategory]>,
     ) -> Result<Vec<ThreadEntry>> {
         mail_view::folder_threads(&self.mail, folder, categories)
+    }
+
+    /// The conversations with a message in any of `folders` that `filter`
+    /// keeps, newest first, each with its newest such message: the lists
+    /// of the unified inbox, over the folders of several accounts.
+    pub fn spread_threads(
+        &self,
+        folders: &[FolderId],
+        filter: FlagFilter,
+    ) -> Result<Vec<ThreadEntry>> {
+        mail_view::spread_threads(&self.mail, folders, filter)
+    }
+
+    /// The messages in any of `folders` that `filter` keeps, newest first,
+    /// server copies of one message once.
+    pub fn spread_message_ids(
+        &self,
+        folders: &[FolderId],
+        filter: FlagFilter,
+    ) -> Result<Vec<MessageId>> {
+        mail_view::spread_message_ids(&self.mail, folders, filter)
     }
 
     /// `messages` and every other stored copy of them (the same
