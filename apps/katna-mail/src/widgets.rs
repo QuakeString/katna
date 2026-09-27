@@ -413,20 +413,17 @@ const FROST_ALPHA: f32 = 0.78;
 /// The surface of a floating panel (menu, popover, dropdown): `th.menu`
 /// with corners of `radius` and a shadow of `level`. When
 /// [`Theme::frost`] is on it is frosted glass: the color translucent over
-/// a blur of what is behind, and the shadow only outside, where it cannot
-/// darken the glass. Call it before adding the panel's children, which
-/// must draw over the glass, and keep a frosted panel from clipping its
-/// children (`overflow_hidden`), or its shadow is lost.
+/// a blur of what is behind. Call it before adding the panel's children,
+/// which must draw over the glass.
 pub fn raised<E: Styled + ParentElement>(panel: E, th: &Theme, radius: f32, level: f32) -> E {
-    let panel = panel.rounded(px(radius));
+    let panel = panel.rounded(px(radius)).shadow(elevation(th, level));
     if th.frost == 0 {
-        return panel.bg(rgba(th.menu)).shadow(elevation(th, level));
+        return panel.bg(rgba(th.menu));
     }
     panel.child(katna_ui::frost::glass(
         rgba(fade(th.menu, FROST_ALPHA)).into(),
         px(radius),
         th.frost as f32,
-        elevation(th, level),
     ))
 }
 

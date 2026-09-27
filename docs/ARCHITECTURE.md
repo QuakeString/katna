@@ -1009,8 +1009,10 @@ GPUI global):
   filter, so Katna's copy of its renderer (`vendor/gpui-pre-wgpu`) adds
   one: a quad marked through its border color is drawn over a dual Kawase
   blur of the frame under it, clamped to the quad (as CSS
-  `backdrop-filter`). The panel's shadow is painted only outside it. Where
-  the window's surface cannot be copied from, panels stay opaque.
+  `backdrop-filter`). The same renderer draws every drop shadow only
+  outside its element, as CSS does, so a translucent panel or frame keeps
+  one plain box shadow that follows its rounded corners. Where the
+  window's surface cannot be copied from, panels stay opaque.
 
 ### 13.2 Look and feel
 
