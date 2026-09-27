@@ -156,6 +156,10 @@ pub(super) struct SettingsPage {
     /// Whether email links open in Katna Mail, as of the page opening;
     /// `None` outside a desktop session.
     mail_app: Option<bool>,
+    /// The words that search the mail from KRunner or GNOME's search
+    /// (`general.search_triggers`).
+    triggers: Entity<TextInput>,
+    _triggers: Subscription,
 }
 
 /// Katna Mail's desktop file, which `mailto:` links name to open in it.
@@ -209,25 +213,43 @@ impl MailWindow {
         self.menu = None;
         let fresh = self.settings_page.is_none();
         let scroll = ScrollHandle::new();
-        let page = self.settings_page.get_or_insert_with(|| SettingsPage {
-            section,
-            editing: None,
-            template: None,
-            save: None,
-            recording: None,
-            scroll: scroll.clone(),
-            focus: cx.focus_handle().tab_stop(true),
-            stops: TabStops::new(scroll),
-            tabs: TabStrip::default(),
-            query: SharedString::default(),
-            flash: None,
-            info: Rc::default(),
-            scale: Default::default(),
-            renaming: None,
-            reorder: Default::default(),
-            start_at_login: crate::autostart::get(),
-            dictionaries: crate::spell::installed(),
-            mail_app: None,
+        let accent = rgba(self.theme(window).accent).into();
+        let words = self.config.general.search_triggers.join(", ");
+        let page = self.settings_page.get_or_insert_with(|| {
+            let triggers = cx.new(|cx| {
+                let mut input = TextInput::new(tr!("settings-general-search-triggers-none"), cx);
+                input.set_text(words, cx);
+                input.set_accent(accent);
+                input
+            });
+            let subscription = cx.subscribe(&triggers, |this, input, event: &InputEvent, cx| {
+                if *event == InputEvent::Changed {
+                    let text = input.read(cx).text().to_owned();
+                    this.set_search_triggers(&text, cx);
+                }
+            });
+            SettingsPage {
+                section,
+                editing: None,
+                template: None,
+                save: None,
+                recording: None,
+                scroll: scroll.clone(),
+                focus: cx.focus_handle().tab_stop(true),
+                stops: TabStops::new(scroll),
+                tabs: TabStrip::default(),
+                query: SharedString::default(),
+                flash: None,
+                info: Rc::default(),
+                scale: Default::default(),
+                renaming: None,
+                reorder: Default::default(),
+                start_at_login: crate::autostart::get(),
+                dictionaries: crate::spell::installed(),
+                mail_app: None,
+                triggers,
+                _triggers: subscription,
+            }
         });
         page.mail_app = opens_mail_links();
         if fresh {
@@ -283,7 +305,13 @@ impl MailWindow {
     }
 
     pub(super) fn close_settings_page(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        self.settings_page = None;
+        // A change still waiting for typing to pause is saved now.
+        if let Some(page) = self.settings_page.take()
+            && page.save.is_some()
+        {
+            self.save_config();
+            self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+        }
         self.card_seq += 1;
         window.focus(&self.list_focus, cx);
         cx.notify();
@@ -580,6 +608,12 @@ impl MailWindow {
                 self.desktop_switches(th, cx),
                 th,
             ))
+            .child(self.row(
+                tr!("settings-general-search-triggers"),
+                Some(&tr!("settings-general-search-triggers-detail")),
+                self.search_triggers_field(th, cx),
+                th,
+            ))
             .when_some(
                 self.settings_page.as_ref().and_then(|p| p.mail_app),
                 |d, default| {
@@ -592,6 +626,49 @@ impl MailWindow {
                 },
             )
             .into_any_element()
+    }
+
+    /// The words typed first in KRunner or GNOME's search to search the
+    /// mail, in a field.
+    fn search_triggers_field(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(page) = &self.settings_page else {
+            return div().into_any_element();
+        };
+        let input = page.triggers.clone();
+        let focus = input.focus_handle(cx);
+        control_column(240.0)
+            .child(
+                field_box("page-search-triggers", th)
+                    .h(px(40.0))
+                    .flex()
+                    .items_center()
+                    .on_click(move |_, window, cx| window.focus(&focus, cx))
+                    .child(div().flex_1().child(input)),
+            )
+            .into_any_element()
+    }
+
+    /// Saves new trigger words once typing pauses, and tells the daemon,
+    /// which answers the desktop's search.
+    fn set_search_triggers(&mut self, text: &str, cx: &mut Context<Self>) {
+        let triggers = katna_core::config::General::parse_search_triggers(text);
+        if triggers == self.config.general.search_triggers {
+            return;
+        }
+        self.config.general.search_triggers = triggers;
+        let task = cx.spawn(async move |this, cx| {
+            cx.background_executor().timer(SAVE_DELAY).await;
+            this.update(cx, |this, cx| {
+                this.save_config();
+                this.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+            })
+            .ok();
+        });
+        if let Some(page) = &mut self.settings_page {
+            page.save = Some(task);
+        } else {
+            task.detach();
+        }
     }
 
     /// Whether Katna Mail opens email links, with a button to make it so.

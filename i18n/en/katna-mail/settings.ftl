@@ -107,6 +107,12 @@ settings-general-tray = Show Katna in the system tray
 settings-general-tray-detail = With the unread count and a menu
 settings-general-unread-badge = Unread count on the taskbar icon
 settings-general-unread-badge-detail = How many Inbox messages are unread
+# The row with the words that, typed first in KRunner or GNOME's search,
+# search the mail. The field holds words like "k, m".
+settings-general-search-triggers = Search from the desktop
+settings-general-search-triggers-detail = Type one of these words and a space in KRunner or the GNOME search, then what to find, to search your mail as the search box here does. Separate words with commas.
+# Shown in the empty field.
+settings-general-search-triggers-none = No words; only "mail:" works
 # The row saying which app opens email (mailto:) links.
 settings-general-mail-app = Default mail app
 settings-general-mail-app-detail = Email links in other apps and on websites open a new message here.
@@ -319,6 +325,7 @@ settings-compose-for-new-mail-summary = The signature new mail starts with
 settings-compose-for-replies-summary = The signature replies and forwards start with
 settings-compose-format-summary = Write new mail in plain text
 settings-compose-spelling-summary = Check spelling while writing, and the dictionary's language
+settings-general-search-triggers-summary = Words that search your mail from KRunner or the GNOME search
 settings-general-mail-app-summary = Open email links from other apps and websites in Katna Mail
 settings-compose-grammar-summary = Underline grammar mistakes while writing, in English
 settings-compose-suggestions-summary = Show the likely rest of a phrase in grey as you type

@@ -24,8 +24,9 @@ use zbus::zvariant::Value;
 
 use crate::mail_app;
 
-/// What searches everything in the mail: with this prefix, a query is
-/// Katna Mail's search box's.
+/// What searches everything in the mail: with this prefix, or one of the
+/// trigger words from Settings (`general.search_triggers`) and a space, a
+/// query is Katna Mail's search box's.
 const MAIL_PREFIX: &str = "mail:";
 /// Shorter queries find nothing (KRunner asks from three letters too).
 const MIN_CHARS: usize = 3;
@@ -82,6 +83,8 @@ pub(crate) struct Finder {
     recent: Mutex<HashMap<String, Found>>,
     /// KRunner's token for the window the next `Run` opens (Wayland).
     token: Mutex<Option<String>>,
+    /// Words that search all the mail (`general.search_triggers`).
+    triggers: Mutex<Vec<String>>,
 }
 
 #[derive(Default)]
@@ -92,8 +95,9 @@ struct Book {
 }
 
 impl Finder {
-    pub(crate) fn new(paths: Paths) -> Arc<Self> {
+    pub(crate) fn new(paths: Paths, triggers: Vec<String>) -> Arc<Self> {
         Arc::new(Self {
+            triggers: Mutex::new(triggers),
             paths,
             store: Mutex::default(),
             index: Mutex::default(),
@@ -110,6 +114,16 @@ impl Finder {
         self.book();
     }
 
+    /// The trigger words changed in Settings.
+    pub(crate) fn set_triggers(&self, triggers: Vec<String>) {
+        *lock(&self.triggers) = triggers;
+    }
+
+    /// What follows `mail:` or a trigger word at the start of `text`.
+    fn strip_trigger<'a>(&self, text: &'a str) -> Option<&'a str> {
+        strip_trigger(text, &lock(&self.triggers))
+    }
+
     /// Mail changed: the book is read again at the next search, once it is
     /// [`BOOK_AGE`] old.
     pub(crate) fn mail_changed(&self) {
@@ -121,7 +135,7 @@ impl Finder {
         let started = Instant::now();
         let text = text.trim();
         let mut found = Vec::new();
-        if let Some(rest) = strip_mail_prefix(text) {
+        if let Some(rest) = self.strip_trigger(text) {
             if rest.chars().count() >= MIN_CHARS {
                 found = self.mail(rest, true);
             }
@@ -408,7 +422,7 @@ impl Finder {
     /// desktop's search.
     pub(crate) async fn launch_search(&self, connection: &zbus::Connection, text: &str) {
         let token = lock(&self.token).take();
-        let text = strip_mail_prefix(text.trim()).unwrap_or(text.trim());
+        let text = self.strip_trigger(text.trim()).unwrap_or(text.trim());
         search(connection, text, token).await;
     }
 
@@ -458,10 +472,25 @@ fn parse_id(id: &str) -> Option<Target> {
     }
 }
 
-fn strip_mail_prefix(text: &str) -> Option<&str> {
-    let head = text.get(..MAIL_PREFIX.len())?;
-    head.eq_ignore_ascii_case(MAIL_PREFIX)
-        .then(|| text[MAIL_PREFIX.len()..].trim())
+/// What follows `mail:`, or one of `triggers` and a space or a colon, at
+/// the start of `text`, in any case.
+fn strip_trigger<'a>(text: &'a str, triggers: &[String]) -> Option<&'a str> {
+    let starts = |word: &str| {
+        let head = text.get(..word.len())?;
+        (head.to_lowercase() == word.to_lowercase()).then(|| &text[word.len()..])
+    };
+    if let Some(rest) = starts(MAIL_PREFIX) {
+        return Some(rest.trim());
+    }
+    triggers
+        .iter()
+        .map(|word| word.trim_end_matches(':'))
+        .filter(|word| !word.is_empty())
+        .find_map(|word| {
+            let rest = starts(word)?;
+            rest.starts_with(|c: char| c.is_whitespace() || c == ':')
+                .then(|| rest.trim_start_matches(':').trim())
+        })
 }
 
 /// Messages with every word of `text` in the subject or the sender, not in
@@ -727,13 +756,26 @@ mod tests {
     }
 
     #[test]
-    fn mail_prefix_is_found_in_any_case() {
-        assert_eq!(strip_mail_prefix("mail: budget"), Some("budget"));
-        assert_eq!(strip_mail_prefix("Mail:budget"), Some("budget"));
-        assert_eq!(strip_mail_prefix("mai"), None);
-        assert_eq!(strip_mail_prefix("budget"), None);
+    fn mail_prefix_and_trigger_words_are_found_in_any_case() {
+        let none: &[String] = &[];
+        assert_eq!(strip_trigger("mail: budget", none), Some("budget"));
+        assert_eq!(strip_trigger("Mail:budget", none), Some("budget"));
+        assert_eq!(strip_trigger("mai", none), None);
+        assert_eq!(strip_trigger("budget", none), None);
         // Not a character boundary at the prefix's length.
-        assert_eq!(strip_mail_prefix("মেইল"), None);
+        assert_eq!(strip_trigger("মেইল", none), None);
+
+        let triggers = ["k".to_owned(), "m".to_owned(), "মেইল".to_owned()];
+        assert_eq!(strip_trigger("k budget", &triggers), Some("budget"));
+        assert_eq!(strip_trigger("K  budget ", &triggers), Some("budget"));
+        assert_eq!(strip_trigger("m:budget", &triggers), Some("budget"));
+        assert_eq!(strip_trigger("মেইল বাজেট", &triggers), Some("বাজেট"));
+        assert_eq!(strip_trigger("mail: budget", &triggers), Some("budget"));
+        // A word that only starts with a trigger is a plain search.
+        assert_eq!(strip_trigger("kenneth", &triggers), None);
+        assert_eq!(strip_trigger("mark", &triggers), None);
+        assert_eq!(strip_trigger("k", &triggers), None);
+        assert_eq!(strip_trigger("k ", &triggers), Some(""));
     }
 
     #[test]
