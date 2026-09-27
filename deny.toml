@@ -12,6 +12,8 @@ ignore = [
     { id = "RUSTSEC-2024-0436", reason = "paste: via gpui-pre (image/exr, metal); unmaintained, no known vulnerability" },
     { id = "RUSTSEC-2026-0206", reason = "rustybuzz: via gpui-pre (usvg); unmaintained, no known vulnerability" },
     { id = "RUSTSEC-2026-0192", reason = "ttf-parser: via gpui-pre (fontdb, rustybuzz); unmaintained, no known vulnerability" },
+    # Unmaintained (not vulnerable) crate pulled in by Harper's grammar rules.
+    { id = "RUSTSEC-2025-0141", reason = "bincode 2: via harper-core (harper-brill, burn); unmaintained, no known vulnerability" },
 ]
 
 [licenses]
