@@ -17,6 +17,7 @@ use std::{
 
 use futures_lite::{FutureExt, StreamExt};
 use katna_core::AccountId;
+use katna_core::config::Notifications;
 use katna_notify::{NewMail, Notifier, action};
 use katna_store::{FolderRole, MessageFlags, MessageId, ParticipantRole, Store};
 use zbus::zvariant::Value;
@@ -58,6 +59,8 @@ pub(crate) struct NewMailNotices {
     notifier: Notifier,
     connection: zbus::Connection,
     enabled: AtomicBool,
+    /// Notifications play the new-mail sound.
+    sound: AtomicBool,
     seen: Mutex<HashMap<AccountId, Seen>>,
     shown: Mutex<HashMap<u32, Shown>>,
     /// Activation tokens, sent by the server just before an action.
@@ -65,19 +68,25 @@ pub(crate) struct NewMailNotices {
 }
 
 impl NewMailNotices {
-    pub(crate) async fn new(connection: &zbus::Connection, enabled: bool) -> zbus::Result<Self> {
+    pub(crate) async fn new(
+        connection: &zbus::Connection,
+        settings: &Notifications,
+    ) -> zbus::Result<Self> {
         Ok(Self {
             notifier: Notifier::new(connection).await?,
             connection: connection.clone(),
-            enabled: AtomicBool::new(enabled),
+            enabled: AtomicBool::new(settings.new_mail),
+            sound: AtomicBool::new(settings.sound),
             seen: Mutex::default(),
             shown: Mutex::default(),
             tokens: Mutex::default(),
         })
     }
 
-    pub(crate) fn set_enabled(&self, enabled: bool) {
-        self.enabled.store(enabled, Ordering::Relaxed);
+    /// Applies the `notifications` settings.
+    pub(crate) fn set(&self, settings: &Notifications) {
+        self.enabled.store(settings.new_mail, Ordering::Relaxed);
+        self.sound.store(settings.sound, Ordering::Relaxed);
     }
 
     /// Starts watching `account`: mail stored from now on is news. An
@@ -112,7 +121,11 @@ impl NewMailNotices {
                 origin,
                 mails,
                 messages,
-            })) => match self.notifier.new_mail(&origin, &mails, 0).await {
+            })) => match self
+                .notifier
+                .new_mail(&origin, &mails, 0, self.sound.load(Ordering::Relaxed))
+                .await
+            {
                 Ok(id) => {
                     tracing::info!(%account, count = messages.len(), "new mail notified");
                     self.shown

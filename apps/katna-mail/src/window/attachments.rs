@@ -357,6 +357,12 @@ impl MailWindow {
     /// Makes the thumbnails of the open messages' attachments in the
     /// background, and forgets those of messages no longer open.
     pub(super) fn request_thumbnails(&mut self, cx: &mut Context<Self>) {
+        // Settings > Appearance > Attachment previews: none are made, and
+        // those made are let go.
+        if !self.config.mail.attachment_previews {
+            self.files.keep_only(&HashSet::new());
+            return;
+        }
         let open: Vec<(MessageId, Vec<(usize, Kind)>)> = self
             .reader
             .iter()
@@ -442,7 +448,12 @@ impl MailWindow {
         let cards = list.iter().map(|&(ix, attachment)| {
             let item = Item::new(ix, attachment);
             let group = SharedString::from(format!("attachment-{}-{ix}", id.0));
-            let thumb = self.files.thumbs.get(&(id, ix)).cloned();
+            let thumb = self
+                .files
+                .thumbs
+                .get(&(id, ix))
+                .filter(|_| self.config.mail.attachment_previews)
+                .cloned();
             let name = item.name.clone();
             let inner = px(CARD_RADIUS - 1.0);
             let frost = match &thumb {
@@ -878,6 +889,10 @@ impl MailWindow {
                     }
                 };
                 this.show_snackbar(text, None, cx);
+                // Settings > Default apps > After saving.
+                if saved > 0 && this.config.mail.open_saved_folder {
+                    cx.open_with_system(&dir);
+                }
             })
             .ok();
         })
@@ -903,7 +918,13 @@ impl MailWindow {
                 .await;
             this.update(cx, |this, cx| {
                 let text = match saved {
-                    Ok(path) => format!("Saved to {}", path.display()),
+                    Ok(path) => {
+                        // Settings > Default apps > After saving.
+                        if this.config.mail.open_saved_folder {
+                            cx.reveal_path(&path);
+                        }
+                        format!("Saved to {}", path.display())
+                    }
                     Err(err) => format!("Could not save {}: {err}", file.name),
                 };
                 this.show_snackbar(text, None, cx);
