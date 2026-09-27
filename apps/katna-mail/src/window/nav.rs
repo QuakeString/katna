@@ -27,11 +27,14 @@ use crate::widgets::{elevation, icon, icon_button, icon_button_colored, tip};
 const NAV_ROW_HEIGHT: f32 = 32.0;
 const SEARCH_HEIGHT: f32 = 40.0;
 const COMPOSE_RADIUS: f32 = 12.0;
-/// Room for the word "Compose" on the top bar's Compose button.
-const COMPOSE_LABEL_WIDTH: f32 = super::COMPOSE_TEXT_WIDTH;
 
 impl MailWindow {
-    pub(super) fn render_top_start(&self, th: &Theme, cx: &mut Context<Self>) -> Vec<AnyElement> {
+    pub(super) fn render_top_start(
+        &self,
+        th: &Theme,
+        compose_text: f32,
+        cx: &mut Context<Self>,
+    ) -> Vec<AnyElement> {
         // Compose sits beside the menu button on a desktop and a tablet;
         // a phone has it floating over the list.
         let shown = 1.0 - self.layout.shape.phone;
@@ -82,7 +85,7 @@ impl MailWindow {
             // As tall as the search box beside it; folded, a square. A set
             // width, so the search box can keep an exact gap after it.
             .h(px(SEARCH_HEIGHT))
-            .w(px(super::compose_width(label)))
+            .w(px(super::compose_width(label, compose_text)))
             .flex_none()
             .flex()
             .flex_row()
@@ -105,14 +108,14 @@ impl MailWindow {
             .child(
                 div()
                     .pl(px(12.0 * label))
-                    .max_w(px((12.0 + COMPOSE_LABEL_WIDTH) * label))
+                    .max_w(px((12.0 + compose_text) * label))
                     .min_w_0()
                     .overflow_hidden()
                     .opacity(label)
-                    .text_size(px(14.0))
+                    .text_size(px(super::COMPOSE_TEXT_SIZE))
                     .font_weight(FontWeight::MEDIUM)
                     .whitespace_nowrap()
-                    .child("Compose"),
+                    .child(super::COMPOSE_LABEL),
             )
             .into_any_element();
         let mut start = vec![menu];
