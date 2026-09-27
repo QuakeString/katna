@@ -173,6 +173,16 @@ impl MailWindow {
         self.katna.as_mut().expect("just made")
     }
 
+    /// Reads the account from the daemon (again), for a server feature
+    /// about to be shown.
+    pub(super) fn katna_load(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if self.katna.is_some() {
+            self.katna_refresh(cx);
+        } else {
+            self.katna_page(window, cx);
+        }
+    }
+
     /// Reads the account (and its devices) from the daemon again.
     pub(super) fn katna_refresh(&mut self, cx: &mut Context<Self>) {
         self.katna_run(cx, |pim| async move {

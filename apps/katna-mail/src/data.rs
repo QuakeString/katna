@@ -83,6 +83,26 @@ pub struct Row {
     /// before attachment lists were read, POP3 and imported mail).
     pub files: Vec<RowFile>,
     pub snippet: String,
+    /// For mail sent with open and click tracking, what its recipients did.
+    pub tracking: Option<Tracked>,
+}
+
+/// What the recipients of a tracked message did, for its line.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Tracked {
+    pub recipients: usize,
+    pub opened: usize,
+    pub clicked: usize,
+}
+
+impl From<&katna_store::MessageActivity> for Tracked {
+    fn from(activity: &katna_store::MessageActivity) -> Self {
+        Self {
+            recipients: activity.recipients.len(),
+            opened: activity.opened(),
+            clicked: activity.clicked(),
+        }
+    }
 }
 
 /// An attachment shown on a line of the list.
@@ -199,6 +219,7 @@ impl Row {
             snoozed_until: None,
             attachments: message.has_attachments,
             files: Vec::new(),
+            tracking: None,
             snippet: message
                 .snippet
                 .as_deref()
@@ -829,11 +850,16 @@ impl Mail {
                 HashMap::new()
             })
         };
+        let activity = self.store.tracking_activity(&latest).unwrap_or_else(|err| {
+            tracing::warn!("reading tracking: {err}");
+            HashMap::new()
+        });
         for entry in entries {
             let Some(message) = messages.get(&entry.latest) else {
                 continue;
             };
             let mut row = Row::new(message, show_recipients);
+            row.tracking = activity.get(&entry.latest).map(Tracked::from);
             if let Some(ids) = attached.get(&entry.key) {
                 row.files = row_files(ids, &lists);
             }
@@ -904,6 +930,36 @@ impl Mail {
     pub fn message_rows(&mut self, ids: &[MessageId]) -> Vec<Option<Rc<Row>>> {
         let entries: Vec<Entry> = ids.iter().copied().map(Entry::message).collect();
         self.rows(&entries, None, false)
+    }
+
+    /// What the recipients of `message` did, if it was sent with tracking.
+    pub fn activity(&self, message: MessageId) -> Option<katna_store::MessageActivity> {
+        self.store
+            .tracking_activity(&[message])
+            .unwrap_or_else(|err| {
+                tracing::warn!("reading tracking: {err}");
+                HashMap::new()
+            })
+            .remove(&message)
+    }
+
+    /// Whether `email` is one of the accounts' addresses.
+    pub fn is_me(&self, email: &str) -> bool {
+        self.me.iter().any(|me| me.eq_ignore_ascii_case(email))
+    }
+
+    /// Message `id` as a read receipt, if it is one.
+    pub fn receipt(&self, id: MessageId) -> Option<crate::receipts::Receipt> {
+        let message = self.store.messages_by_id(&[id]).ok()?.pop()?;
+        if message.size > crate::receipts::MAX_SIZE {
+            return None;
+        }
+        crate::receipts::parse(&self.store.blobs().get(&message.blob_hash?).ok()??)
+    }
+
+    /// The `Message-ID` of message `id`, without angle brackets.
+    pub fn message_id_header(&self, id: MessageId) -> Option<String> {
+        self.store.message_id_header(id).ok().flatten()
     }
 
     /// Forgets cached rows, for example when the sender/recipient column
@@ -1334,6 +1390,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
                 attachments: false,
                 files: Vec::new(),
                 snippet: "The budget is final.".into(),
+                tracking: None,
             }
         );
         assert_eq!(rows[1], None);

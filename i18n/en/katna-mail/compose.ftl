@@ -111,6 +111,18 @@ compose-encrypted = Encrypted: only the recipients can read it
 compose-sign = Sign
 compose-signed = Signed: recipients can check it is from you
 
+## Open and click tracking and read receipts (toggles after Sign)
+
+# Tooltips: the short texts turn it on; the longer ones say it is on.
+compose-track = Track opens and clicks
+compose-tracked = Tracked: you see when each recipient opens it or follows a link
+# Shown instead when tracking can't be used for this message.
+compose-track-unavailable = Signed, encrypted and plain-text mail can't be tracked
+# Shown instead while not signed in; clicking opens Settings > Katna account.
+compose-track-sign-in = Sign in to a Katna account to track opens and clicks
+compose-receipt = Request a read receipt
+compose-receipt-on = Read receipt requested: the recipient's app may ask them to send one
+
 ## Spelling
 
 # $language: a language code such as "de_DE". "hunspell-en_us" is the

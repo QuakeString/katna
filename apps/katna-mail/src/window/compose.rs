@@ -34,6 +34,7 @@ mod security;
 mod signature_editor;
 mod templates;
 mod tools;
+mod tracking;
 
 use std::cell::Cell;
 use std::rc::Rc;
@@ -988,6 +989,8 @@ impl MailWindow {
         window.focus(&focus, cx);
         let dialog = tools::Dialog::new(accent, cx);
         subscriptions.extend(dialog.subscribe(window, cx));
+        // Whether Track can be used: the Katna account, read again.
+        self.katna_load(window, cx);
         self.compose = Some(Compose {
             to,
             show_cc: !draft.cc.is_empty(),
@@ -1263,6 +1266,8 @@ impl MailWindow {
         let attachments = compose.attachments.clone();
         let plain = compose.plain(cx);
         let follow_up = i64::from(compose.follow_up);
+        // Tracking needs a Katna account with a confirmed address.
+        let track = sealing.track && !sealing.any() && !plain && self.katna_signed_in();
         if let Some((field, address)) = self.bad_recipient(cx) {
             if let Some(c) = &mut self.compose {
                 c.popup = Some(Popup::BadAddress { field, address });
@@ -1399,16 +1404,25 @@ impl MailWindow {
                 .background_executor()
                 .spawn(async move {
                     // Signed and encrypted before the outbox sees it.
-                    let raw = security::seal(raw, sealing, sender, visible, hidden)?;
+                    let raw = security::seal(raw, sealing, sender.clone(), visible, hidden)?;
+                    let raw = if sealing.receipt {
+                        tracking::with_receipt(raw, &sender)
+                    } else {
+                        raw
+                    };
                     let connection = match connection {
                         Some(connection) => connection,
                         None => daemon::connect().await?,
                     };
                     let id = match at {
                         // Undo works for the undo delay; then it may go
-                        // to the mail server to hold.
+                        // to the mail server to hold. Scheduled mail is
+                        // not tracked.
                         Some(at) => {
                             daemon::schedule_send(&connection, account, &raw, undo, at).await?
+                        }
+                        None if track => {
+                            daemon::queue_tracked_send(&connection, account, &raw, delay).await?
                         }
                         None => daemon::queue_send(&connection, account, &raw, delay).await?,
                     };
@@ -1826,6 +1840,7 @@ impl MailWindow {
                 )
             })
             .children(self.render_sealing(th, cx))
+            .children(self.render_tracking(th, cx))
             .child(
                 small_button("inline-pop-out", "open-full", th)
                     .tooltip(tip(tr!("compose-pop-out-reply"), th))
@@ -2097,7 +2112,8 @@ impl MailWindow {
                             )),
                         )
                     })
-                    .children(self.render_sealing(th, cx)),
+                    .children(self.render_sealing(th, cx))
+                    .children(self.render_tracking(th, cx)),
             );
         div()
             .flex_none()
