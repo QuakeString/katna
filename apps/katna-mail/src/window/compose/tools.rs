@@ -32,6 +32,8 @@ use crate::widgets::{filled_button, icon, icon_button, icon_button_colored, menu
 pub(in crate::window) enum Popup {
     /// The arrow beside Send.
     Send,
+    /// The accounts to send from, under the From row.
+    From,
     /// Schedule send's suggested times.
     Schedule,
     /// Schedule send's date and time picker.
@@ -343,6 +345,20 @@ const FORMAT_BAR_GAP: f32 = 4.0;
 /// How much of the text the open formatting bar covers.
 pub(super) const FORMAT_BAR_COVER: f32 = 40.0 + FORMAT_BAR_GAP + 8.0;
 
+/// `popup` just under its parent's bottom left corner.
+pub(super) fn below(popup: impl IntoElement) -> AnyElement {
+    deferred(
+        div().absolute().bottom_0().left_0().child(
+            anchored()
+                .offset(point(px(0.0), px(4.0)))
+                .snap_to_window_with_margin(px(8.0))
+                .child(div().occlude().child(popup)),
+        ),
+    )
+    .with_priority(2)
+    .into_any_element()
+}
+
 pub(super) fn above(popup: impl IntoElement) -> AnyElement {
     // Anchored to the parent's top left corner.
     deferred(
@@ -393,7 +409,7 @@ fn shortcut(text: &'static str, th: &Theme) -> gpui::Div {
 }
 
 impl MailWindow {
-    fn toggle_popup(&mut self, popup: Popup, cx: &mut Context<Self>) {
+    pub(super) fn toggle_popup(&mut self, popup: Popup, cx: &mut Context<Self>) {
         if let Some(c) = &mut self.compose {
             c.popup = if c.popup.as_ref() == Some(&popup) {
                 None
@@ -634,7 +650,7 @@ impl MailWindow {
             .child(
                 icon_button_colored("compose-discard", "trash", 20.0, th.text_dim, th)
                     .tooltip(tip(tr!("compose-tool-discard"), th))
-                    .on_click(cx.listener(|this, _, _, cx| this.close_compose(true, cx))),
+                    .on_click(cx.listener(|this, _, _, cx| this.discard_compose(cx))),
             )
             .children(self.render_popup_scrim(cx))
             .children(self.render_context_popup(th, cx))

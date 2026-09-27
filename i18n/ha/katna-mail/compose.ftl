@@ -19,6 +19,8 @@ compose-show-trimmed = Nuna abin da aka taƙaita
 compose-to = Zuwa
 compose-cc = Kwafi
 compose-bcc = Kwafi a ɓoye
+compose-from = Daga
+compose-from-choose = Aika daga wani asusu
 compose-recipients = Masu karɓa
 compose-subject = Jigo
 

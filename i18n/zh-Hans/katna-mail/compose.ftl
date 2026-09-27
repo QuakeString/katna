@@ -19,6 +19,8 @@ compose-show-trimmed = 显示被截去的内容
 compose-to = 收件人
 compose-cc = 抄送
 compose-bcc = 密送
+compose-from = 发件人
+compose-from-choose = 从其他账号发送
 compose-recipients = 收件人
 compose-subject = 主题
 

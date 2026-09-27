@@ -30,6 +30,10 @@ compose-show-trimmed = Show trimmed content
 compose-to = To
 compose-cc = Cc
 compose-bcc = Bcc
+# Label of the row showing the account the message goes out from.
+compose-from = From
+# Tooltip of the From row's button: lists the other accounts.
+compose-from-choose = Send from another account
 # Placeholder of the To field.
 compose-recipients = Recipients
 # Placeholder of the subject field.
@@ -56,6 +60,12 @@ compose-scheduled = Send scheduled for { $when }
 compose-sent-archived = Sent and archived
 compose-sent = Message sent
 compose-discarded = Draft discarded
+# The message was closed and kept in the Drafts folder.
+compose-draft-saved = Draft saved
+# $error: why, such as "The Katna background service is not running."
+compose-draft-failed = The draft could not be saved: { $error }
+# A draft picked in the Drafts folder could not be read or downloaded.
+compose-draft-not-opened = The draft could not be opened.
 
 ## Attachments
 
@@ -68,6 +78,11 @@ compose-file-too-large = { $name } is too large: a message can carry up to { $li
 # An attached file's size, after its name. $size: such as "1.2 MB".
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Remove attachment
+# Above the attachments when there are two or more. $size: such as "18.4 MB".
+compose-attachments-total = { $count ->
+    [one] { $count } file, { $size }
+   *[other] { $count } files, { $size }
+}
 # Shown over the message while files are dragged over it.
 compose-drop-files = Drop files here
 # Shown over the message while text, cells or a picture from another app

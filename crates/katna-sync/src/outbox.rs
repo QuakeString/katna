@@ -101,7 +101,24 @@ pub fn queue(
         .rsplit_once('@')
         .map_or("katna.invalid", |(_, domain)| domain);
     let raw = complete_headers(raw, now, domain);
-    let parsed = katna_import::parse_message(&raw).unwrap_or_default();
+    with_message(&raw, now, MessageFlags::SEEN, |message| {
+        let mut batch = store.mail_batch()?;
+        let id = batch.add_outgoing(account, message)?;
+        let entry = batch.queue_send(id, now + i64::from(delay))?;
+        batch.commit()?;
+        Ok(entry)
+    })
+}
+
+/// Reads `raw` (with `Date` and `Message-ID`) into the message the store
+/// keeps, with `flags`, and hands it to `f`.
+pub(crate) fn with_message<R>(
+    raw: &[u8],
+    now: i64,
+    flags: MessageFlags,
+    f: impl FnOnce(&NewMessage<'_>) -> R,
+) -> R {
+    let parsed = katna_import::parse_message(raw).unwrap_or_default();
     let participants: Vec<NewParticipant<'_>> = parsed
         .participants
         .iter()
@@ -115,11 +132,11 @@ pub fn queue(
     // A reply joins its conversation.
     let references: Vec<&str> = parsed.references.iter().map(String::as_str).collect();
     let message = NewMessage {
-        raw: &raw,
+        raw,
         message_id_hdr: parsed.message_id.as_deref(),
         subject: parsed.subject.as_deref(),
         date: parsed.date.or(Some(now)),
-        flags: MessageFlags::SEEN,
+        flags,
         has_attachments: parsed.has_attachments,
         list_id: None,
         snippet: parsed.snippet.as_deref(),
@@ -128,11 +145,7 @@ pub fn queue(
         references: &references,
         category: Some(parsed.category),
     };
-    let mut batch = store.mail_batch()?;
-    let id = batch.add_outgoing(account, &message)?;
-    let entry = batch.queue_send(id, now + i64::from(delay))?;
-    batch.commit()?;
-    Ok(entry)
+    f(&message)
 }
 
 /// Cancels a queued message. Returns `false` when it is already being
@@ -221,7 +234,7 @@ pub fn without_bcc(raw: &[u8]) -> Vec<u8> {
 }
 
 /// Adds `Date` and `Message-ID` headers when `raw` has none.
-fn complete_headers(raw: &[u8], now: i64, domain: &str) -> Vec<u8> {
+pub(crate) fn complete_headers(raw: &[u8], now: i64, domain: &str) -> Vec<u8> {
     let header_end = raw
         .windows(4)
         .position(|w| w == b"\r\n\r\n")

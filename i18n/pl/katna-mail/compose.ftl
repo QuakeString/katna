@@ -19,6 +19,8 @@ compose-show-trimmed = Pokaż przyciętą treść
 compose-to = Do
 compose-cc = DW
 compose-bcc = UDW
+compose-from = Od
+compose-from-choose = Wyślij z innego konta
 compose-recipients = Odbiorcy
 compose-subject = Temat
 

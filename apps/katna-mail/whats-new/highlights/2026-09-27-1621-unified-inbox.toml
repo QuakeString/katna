@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Unified inbox"
+text = """
+Turn on Settings > Accounts > Unified inbox to see the mail of all your
+accounts together. "All Accounts" heads the folder pane with one Inbox,
+Unread, Starred, Important, Sent, Drafts and more for every account; the
+arrow beside each opens one line per account. Each account's name now has
+an arrow that folds its folders away.
+"""

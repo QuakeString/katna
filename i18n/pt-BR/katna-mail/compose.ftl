@@ -19,6 +19,8 @@ compose-show-trimmed = Mostrar conteúdo cortado
 compose-to = Para
 compose-cc = Cc
 compose-bcc = Cco
+compose-from = De
+compose-from-choose = Enviar de outra conta
 compose-recipients = Destinatários
 compose-subject = Assunto
 

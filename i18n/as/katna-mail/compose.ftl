@@ -19,6 +19,8 @@ compose-show-trimmed = চুটি কৰা অংশ দেখুৱাওক
 compose-to = প্ৰাপক
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = প্ৰেৰক
+compose-from-choose = আন একাউণ্টৰ পৰা পঠিয়াওক
 compose-recipients = প্ৰাপকসকল
 compose-subject = বিষয়
 

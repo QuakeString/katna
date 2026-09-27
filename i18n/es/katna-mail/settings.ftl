@@ -161,7 +161,7 @@ settings-default-apps-show-folder-detail = Abre el gestor de archivos con los ad
 ## Settings > Compose
 
 settings-compose-send-from = Enviar mensajes nuevos desde
-settings-compose-send-from-detail = Las respuestas y los reenvíos siempre salen de la cuenta en la que estás.
+settings-compose-send-from-detail = Los mensajes nuevos empiezan desde esta cuenta; la fila De elige otra. Las respuestas y los reenvíos siempre salen de la cuenta a la que llegó el mensaje original.
 settings-compose-send-from-current = La cuenta en la que estás
 settings-compose-send-on-replies = Enviar en respuestas
 settings-compose-send-on-replies-detail = Qué hace Enviar en una respuesta o un reenvío. El menú junto a Enviar ofrece la otra opción.
@@ -237,7 +237,7 @@ settings-default-apps-text-summary = Dónde se abren el texto sin formato, los r
 settings-default-apps-sheets-summary = Dónde se abren los archivos de Excel, OpenDocument y CSV
 settings-default-apps-documents-summary = Dónde se abren los textos de Word y OpenDocument y las presentaciones
 settings-default-apps-after-saving-summary = Mostrar los adjuntos guardados en su carpeta
-settings-compose-send-from-summary = La cuenta desde la que sale el correo nuevo: aquella en la que estás o siempre la misma
+settings-compose-send-from-summary = La cuenta desde la que sale el correo nuevo: la primera, otra o aquella en la que estás
 settings-compose-send-on-replies-summary = Enviar, o Enviar y archivar la conversación, en respuestas y reenvíos
 settings-compose-signatures-summary = Se añade debajo de tu mensaje, tras una línea «--»
 settings-compose-for-new-mail-summary = La firma con la que empieza el correo nuevo

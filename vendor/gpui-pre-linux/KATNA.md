@@ -72,6 +72,10 @@ It also carries clipboard and drag-and-drop content beyond plain text
   only accepts drags it can take. Files arrive as before; content (HTML,
   text, a picture) arrives as a drop of one made-up path, and
   `dropped_content(paths)` gives it.
+- A drag moving over the window is sent as a mouse move with the button
+  held (`drag_move`), not `FileDropEvent::Pending`: GPUI notes the input
+  kind before it turns Pending into a move, so after typing nothing counted
+  as hovered and the drop landed nowhere.
 
 The first commit that added this directory holds the crate unchanged, so
 `git diff` against it shows the whole patch. When GPUI is upgraded, copy the

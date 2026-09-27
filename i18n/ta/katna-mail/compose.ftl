@@ -19,6 +19,8 @@ compose-show-trimmed = சுருக்கிய உள்ளடக்கத�
 compose-to = பெறுநர்
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = அனுப்புநர்
+compose-from-choose = வேறு கணக்கிலிருந்து அனுப்பு
 compose-recipients = பெறுநர்கள்
 compose-subject = பொருள்
 

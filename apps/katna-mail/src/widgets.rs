@@ -339,6 +339,15 @@ impl TabStops {
             .clone()
     }
 
+    /// Whether the control `id` has the keyboard focus.
+    pub fn focused(&self, id: &ElementId, window: &Window) -> bool {
+        self.0
+            .handles
+            .borrow()
+            .get(id)
+            .is_some_and(|handle| handle.is_focused(window))
+    }
+
     /// Scrolls the control Tab moves to into view on the next frame.
     pub fn reveal_focus(&self) {
         self.0.reveal.set(true);

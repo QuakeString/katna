@@ -19,6 +19,8 @@ compose-show-trimmed = کاٹا گیا مواد دکھائیں
 compose-to = بنام
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = منجانب
+compose-from-choose = کسی اور اکاؤنٹ سے بھیجیں
 compose-recipients = وصول کنندگان
 compose-subject = موضوع
 

@@ -19,6 +19,8 @@ compose-show-trimmed = عرض المحتوى المقتطع
 compose-to = إلى
 compose-cc = نسخة
 compose-bcc = نسخة مخفية
+compose-from = من
+compose-from-choose = إرسال من حساب آخر
 compose-recipients = المستلمون
 compose-subject = الموضوع
 
