@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Attachments of older mail open at once"
+text = """
+Clicking an attachment of older mail that is not on this computer yet
+downloads it: the attachment fills up while it does, then opens.
+"""

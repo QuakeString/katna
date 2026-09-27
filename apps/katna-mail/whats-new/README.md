@@ -1,5 +1,34 @@
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 
+# What's new highlights
+
+What's new shows these after an update (`src/whats_new.rs`,
+`docs/ARCHITECTURE.md` §13.6). Each highlight is one file in
+`highlights/`, which `build.rs` builds into the app:
+
+- Name it `YYYY-MM-DD-HHMM-slug.toml`: the UTC date and time you write it,
+  then a few lowercase words joined by `-`
+  (`2026-09-27-0444-about-katna.toml`). Highlights are shown newest first
+  by that name, and the settings file remembers the names shown, so one
+  that merges after newer ones still shows.
+- Never rename, renumber or edit another change's file to make room.
+
+```toml
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "About Katna"
+text = """
+Help > About Katna, also in Quick settings, shows the version, the
+changelog and every library Katna is built on.
+"""
+# Only for a major feature: whats-new/<name>-light.webp and -dark.webp.
+animation = "reply-row"
+```
+
+The text is one paragraph; line breaks in the file become spaces. The
+build stops on a bad name, an unknown key, a missing title or text, or a
+missing animation file.
+
 # What's new animations
 
 Short looping clips of major features, built into Katna Mail and shown in
