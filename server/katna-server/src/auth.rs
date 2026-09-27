@@ -121,12 +121,16 @@ pub fn normalize_email(email: &str) -> Option<String> {
 pub fn check_password(password: &str) -> Result<(), ApiError> {
     let chars = password.chars().count();
     if chars < MIN_PASSWORD {
-        return Err(ApiError::BadRequest(
+        return Err(ApiError::Invalid(
+            "short_password",
             "the password needs at least 8 characters",
         ));
     }
     if password.len() > MAX_PASSWORD {
-        return Err(ApiError::BadRequest("the password is too long"));
+        return Err(ApiError::Invalid(
+            "long_password",
+            "the password is too long",
+        ));
     }
     Ok(())
 }

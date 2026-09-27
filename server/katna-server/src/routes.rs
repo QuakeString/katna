@@ -149,6 +149,8 @@ pub enum ApiError {
     Hash,
     /// A malformed request.
     BadRequest(&'static str),
+    /// A request a person can correct: a code for programs and a message.
+    Invalid(&'static str, &'static str),
     /// Nothing there.
     NotFound,
     /// Over a limit.
@@ -189,6 +191,7 @@ impl IntoResponse for ApiError {
             ),
             ApiError::Conflict(message) => (StatusCode::CONFLICT, "exists", message),
             ApiError::BadRequest(message) => (StatusCode::BAD_REQUEST, "bad_request", message),
+            ApiError::Invalid(code, message) => (StatusCode::BAD_REQUEST, code, message),
             ApiError::NotFound => (StatusCode::NOT_FOUND, "not_found", "not found"),
             ApiError::TooMany(message) => (StatusCode::TOO_MANY_REQUESTS, "too_many", message),
             ApiError::MailFailed => (

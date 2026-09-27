@@ -101,7 +101,8 @@ routes (`/api/v1/tracks`, `/api/v1/events`) also need the install signed in
 to an account with a confirmed address. Errors are
 `{"error": "…", "code": "…"}`; `code` is `unknown_install` (401, register
 again), `sign_in` or `not_verified` (403), `wrong_password` (401),
-`exists` (409), `bad_request`, `not_found`, `too_many` (429),
+`exists` (409), `bad_email`, `short_password`, `long_password`,
+`wrong_code`, `code_expired`, `bad_request` (400), `not_found`, `too_many` (429),
 `mail_failed` (502) or `server`.
 
 ## Running it

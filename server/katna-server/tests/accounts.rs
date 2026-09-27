@@ -431,7 +431,7 @@ async fn wrong_codes_run_out() {
             Some(json!({ "code": code })),
         )
         .await;
-    assert_eq!(body["code"], "bad_request");
+    assert_eq!(body["code"], "code_expired");
     let (status, _) = app
         .call("POST", "/api/v1/account/verify/resend", &token, None)
         .await;

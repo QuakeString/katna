@@ -146,7 +146,8 @@ async fn create(
     Json(body): Json<Credentials>,
 ) -> Result<(StatusCode, Json<AccountInfo>), ApiError> {
     limited(&state, &headers, addr)?;
-    let email = normalize_email(&body.email).ok_or(ApiError::BadRequest("not an email address"))?;
+    let email = normalize_email(&body.email)
+        .ok_or(ApiError::Invalid("bad_email", "not an email address"))?;
     check_password(&body.password)?;
     let hash = hash_password(body.password).await?;
     let account = ids::new_id();
@@ -204,8 +205,9 @@ async fn check(
         .await?
     {
         CodeCheck::Right => Ok(()),
-        CodeCheck::Wrong => Err(ApiError::BadRequest("wrong code")),
-        CodeCheck::Gone => Err(ApiError::BadRequest(
+        CodeCheck::Wrong => Err(ApiError::Invalid("wrong_code", "wrong code")),
+        CodeCheck::Gone => Err(ApiError::Invalid(
+            "code_expired",
             "the code has expired; ask for a new one",
         )),
     }
@@ -398,7 +400,8 @@ async fn reset(
     Json(body): Json<Email>,
 ) -> Result<StatusCode, ApiError> {
     limited(&state, &headers, addr)?;
-    let email = normalize_email(&body.email).ok_or(ApiError::BadRequest("not an email address"))?;
+    let email = normalize_email(&body.email)
+        .ok_or(ApiError::Invalid("bad_email", "not an email address"))?;
     // The same answer whether or not the address has an account.
     if let Some(account) = state.db().account_by_email(&email).await? {
         mail_code(&state, &account.id, &email, Purpose::Reset).await?;
@@ -429,12 +432,13 @@ async fn confirm_reset(
 ) -> Result<Json<AccountInfo>, ApiError> {
     limited(&state, &headers, addr)?;
     check_password(&body.password)?;
-    let email = normalize_email(&body.email).ok_or(ApiError::BadRequest("wrong code"))?;
+    let email =
+        normalize_email(&body.email).ok_or(ApiError::Invalid("wrong_code", "wrong code"))?;
     let account = state
         .db()
         .account_by_email(&email)
         .await?
-        .ok_or(ApiError::BadRequest("wrong code"))?;
+        .ok_or(ApiError::Invalid("wrong_code", "wrong code"))?;
     check(&state, &account.id, Purpose::Reset, &body.code).await?;
     let hash = hash_password(body.password).await?;
     let now = now_ms();
