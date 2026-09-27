@@ -550,6 +550,9 @@ impl MailWindow {
         self.fetch_remote(cx);
         self.download_bodies(cx);
         self.request_thumbnails(cx);
+        if let Some(key) = self.reader.as_ref().map(|r| r.key) {
+            self.text.begin(key);
+        }
         let Some(reader) = &self.reader else {
             return placeholder("", th);
         };
@@ -693,6 +696,7 @@ impl MailWindow {
                             .children(reply_above)
                             .children(parts)
                             .children(reply_below)
+                            .map(|d| self.text_area(d, cx))
                             .with_animation(
                                 ("open-conversation", key_number(key)),
                                 Animation::new(Duration::from_millis(280))
@@ -708,6 +712,7 @@ impl MailWindow {
                     .border_color(rgba(th.divider))
                     .child(footer)
             }))
+            .children(self.render_text_menu(th, cx))
             .into_any_element()
     }
 
@@ -1059,27 +1064,38 @@ impl MailWindow {
                             .child(note)
                     }))
                     .children(banner)
-                    .when_some(doc.as_ref(), |d, doc| {
-                        let painter = Painter::new(
-                            th,
-                            &self.remote.images,
-                            allowed,
-                            self.remote.mono(),
-                            self.config.mail.dark_mail,
-                        );
-                        d.child(painter.document(doc))
-                    })
-                    .when(doc.is_none(), |d| {
-                        d.children(blocks.iter().map(|(quoted, text)| {
-                            div()
-                                .when(*quoted, |d| {
-                                    d.pl(px(12.0))
-                                        .border_l_2()
-                                        .border_color(rgba(th.divider))
-                                        .text_color(rgba(th.text_faint))
-                                })
-                                .child(text.clone())
-                        }))
+                    .child({
+                        // Selection follows the order messages are shown in.
+                        let slot = match self.reader.as_ref() {
+                            Some(r) if self.config.mail.newest_first => r.parts.len() - 1 - ix,
+                            _ => ix,
+                        };
+                        let mut pieces = self.text.pieces(slot, th);
+                        let text = match doc.as_ref() {
+                            Some(doc) => div().child(
+                                Painter::new(
+                                    th,
+                                    &self.remote.images,
+                                    allowed,
+                                    self.remote.mono(),
+                                    self.config.mail.dark_mail,
+                                    pieces,
+                                )
+                                .document(doc),
+                            ),
+                            None => div().children(blocks.iter().map(|(quoted, text)| {
+                                let (styled, holder) = pieces.piece(text.clone(), Vec::new());
+                                holder
+                                    .when(*quoted, |d| {
+                                        d.pl(px(12.0))
+                                            .border_l_2()
+                                            .border_color(rgba(th.divider))
+                                            .text_color(rgba(th.text_faint))
+                                    })
+                                    .child(styled)
+                            })),
+                        };
+                        self.selectable_body(slot, text, cx)
                     })
                     .children(attachments)
                     .into_any_element()
