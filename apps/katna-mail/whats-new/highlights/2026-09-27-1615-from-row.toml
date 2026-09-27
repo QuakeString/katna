@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Pick who a message is from"
+text = """
+New messages now show a From row under To. Click its arrow to send from
+another of your accounts. New mail starts from your first account unless you
+pick a different default in Settings > Compose > Send new messages from.
+"""
