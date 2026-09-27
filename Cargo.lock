@@ -5871,6 +5871,8 @@ dependencies = [
  "katna-store",
  "katna-sync",
  "oo7",
+ "serde",
+ "serde_json",
  "smol",
  "tempfile",
  "thiserror 2.0.21",

@@ -321,9 +321,7 @@ pub async fn request(
             Some(rest) => {
                 let parts = parse_url_loopback(rest)?;
                 if !matches!(parts.host, "localhost" | "127.0.0.1") {
-                    return Err(Error::Protocol(format!(
-                        "{url}: http only to localhost"
-                    )));
+                    return Err(Error::Protocol(format!("{url}: http only to localhost")));
                 }
                 (parts, true)
             }
@@ -494,9 +492,15 @@ mod tests {
         let refused = b"HTTP/1.1 403 Forbidden\r\nContent-Length: 18\r\n\r\n{\"code\":\"sign_in\"}";
         let head = parse_head(refused).unwrap();
         assert_eq!(head.status, 403);
-        assert_eq!(parse_body(&head, MAX_BODY, false).unwrap(), b"{\"code\":\"sign_in\"}");
+        assert_eq!(
+            parse_body(&head, MAX_BODY, false).unwrap(),
+            b"{\"code\":\"sign_in\"}"
+        );
         let url = parse_url_loopback("127.0.0.1:8080/api/v1/account").unwrap();
-        assert_eq!((url.host, url.port, url.path), ("127.0.0.1", 8080, "/api/v1/account"));
+        assert_eq!(
+            (url.host, url.port, url.path),
+            ("127.0.0.1", 8080, "/api/v1/account")
+        );
     }
 
     #[test]

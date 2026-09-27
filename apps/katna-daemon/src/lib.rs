@@ -11,6 +11,7 @@ mod crash_upload;
 pub mod daemon;
 mod desktop;
 pub mod install;
+pub mod katna_account;
 mod mail_app;
 mod notify;
 mod on_demand;
