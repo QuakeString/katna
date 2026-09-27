@@ -19,6 +19,7 @@
 //! in a window of its own.
 
 mod attach;
+mod checks;
 mod popout;
 mod recipients;
 mod schedule;
@@ -60,6 +61,7 @@ use crate::theme::{Theme, fade};
 use crate::widgets::{elevation, icon, tip};
 
 pub(super) use attach::Attachment;
+use checks::Passed;
 use recipients::{Field, Suggestions};
 pub(super) use scheduled::NAV_KEY as SCHEDULED_NAV_KEY;
 use security::Sealing;
@@ -998,16 +1000,18 @@ impl MailWindow {
     /// also archives its conversation when Send and archive is the default.
     pub(super) fn send_compose_default(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let archive = self.config.sending.send_and_archive;
-        self.send_compose(None, archive, window, cx);
+        self.send_compose(None, archive, Passed::default(), window, cx);
     }
 
     /// Sends the open message, now (after the undo delay) or at `at`. With
     /// `archive`, a reply or forward also archives the conversation it
-    /// answers once the message is on its way.
+    /// answers once the message is on its way. First it asks about a
+    /// missing attachment or subject, unless `passed`.
     fn send_compose(
         &mut self,
         at: Option<jiff::Timestamp>,
         archive: bool,
+        passed: Passed,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
@@ -1053,6 +1057,19 @@ impl MailWindow {
                 None,
                 cx,
             );
+            return;
+        }
+        let attached = attachments.len() + draft.body.images().count();
+        if let Some(check) = checks::check(&draft.subject, &draft.body, attached, passed) {
+            if let Some(c) = &mut self.compose {
+                c.popup = Some(Popup::SendCheck {
+                    check,
+                    at,
+                    archive,
+                    passed,
+                });
+            }
+            cx.notify();
             return;
         }
         let account = chosen

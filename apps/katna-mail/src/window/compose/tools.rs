@@ -11,7 +11,7 @@ use std::rc::Rc;
 
 use gpui::{
     Anchor, AnyElement, Context, Entity, Focusable, FontWeight, Hsla, MouseButton, Pixels, Point,
-    Stateful, Subscription, Window, anchored, deferred, div, point, prelude::*, rgba,
+    SharedString, Stateful, Subscription, Window, anchored, deferred, div, point, prelude::*, rgba,
 };
 use jiff::civil::Date;
 use katna_ui::px;
@@ -19,6 +19,7 @@ use katna_ui::rich::{Align, Font, GrammarIssue, List, RichEditor, Size, TableEdi
 use katna_ui::{InputEvent, TextInput};
 
 use super::super::MailWindow;
+use super::checks::{Passed, SendCheck};
 use super::{Mode, schedule};
 use crate::theme::{Theme, fade};
 use crate::widgets::{filled_button, icon, icon_button, icon_button_colored, menu, menu_item, tip};
@@ -49,6 +50,14 @@ pub(in crate::window) enum Popup {
     Label,
     /// Asks before plain text mode drops the formatting.
     PlainText,
+    /// Send asks before a message goes out; the answers so far and how
+    /// it was sending.
+    SendCheck {
+        check: SendCheck,
+        at: Option<jiff::Timestamp>,
+        archive: bool,
+        passed: Passed,
+    },
     /// The right-click menu.
     Context {
         position: Point<Pixels>,
@@ -578,7 +587,10 @@ impl MailWindow {
     fn render_popup_scrim(&self, cx: &mut Context<Self>) -> Option<AnyElement> {
         let popup = self.compose.as_ref()?.popup.as_ref()?;
         // The dialogs close with their own buttons.
-        if matches!(popup, Popup::Link | Popup::PickTime | Popup::PlainText) {
+        if matches!(
+            popup,
+            Popup::Link | Popup::PickTime | Popup::PlainText | Popup::SendCheck { .. }
+        ) {
             return None;
         }
         Some(
@@ -619,7 +631,9 @@ impl MailWindow {
                 };
                 d.child(
                     tool_item("compose-send-other", name, label, th).on_click(cx.listener(
-                        move |this, _, window, cx| this.send_compose(None, !archives, window, cx),
+                        move |this, _, window, cx| {
+                            this.send_compose(None, !archives, Passed::default(), window, cx)
+                        },
                     )),
                 )
             })
@@ -674,7 +688,7 @@ impl MailWindow {
                         .child(schedule::short(&preset.at)),
                 )
                 .on_click(cx.listener(move |this, _, window, cx| {
-                    this.send_compose(Some(at), false, window, cx)
+                    this.send_compose(Some(at), false, Passed::default(), window, cx)
                 }))
         });
         menu(th)
@@ -743,7 +757,7 @@ impl MailWindow {
             self.show_snackbar("That time does not exist here.", None, cx);
             return;
         };
-        self.send_compose(Some(at), false, window, cx);
+        self.send_compose(Some(at), false, Passed::default(), window, cx);
     }
 
     // Formatting.
@@ -1954,6 +1968,12 @@ impl MailWindow {
             Popup::Link => self.render_link_dialog(th, cx),
             Popup::PickTime => self.render_time_picker(th, cx),
             Popup::PlainText => self.render_plain_dialog(th, cx),
+            Popup::SendCheck {
+                check,
+                at,
+                archive,
+                passed,
+            } => self.render_send_check(*check, *at, *archive, *passed, th, cx),
             _ => return None,
         };
         Some(
@@ -2006,7 +2026,7 @@ impl MailWindow {
             )
     }
 
-    fn dialog_card(th: &Theme, width: f32, title: &'static str) -> gpui::Div {
+    fn dialog_card(th: &Theme, width: f32, title: impl Into<SharedString>) -> gpui::Div {
         div()
             .w(px(width))
             .p(px(24.0))
@@ -2016,7 +2036,7 @@ impl MailWindow {
             .bg(rgba(th.menu))
             .shadow(crate::widgets::elevation(th, 3.0))
             .text_color(rgba(th.text))
-            .child(div().mb(px(16.0)).text_size(px(20.0)).child(title))
+            .child(div().mb(px(16.0)).text_size(px(20.0)).child(title.into()))
     }
 
     fn render_link_dialog(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
@@ -2087,6 +2107,80 @@ impl MailWindow {
             .child(self.dialog_buttons(th, "Switch", cx, |this, window, cx| {
                 this.make_plain(window, cx)
             }))
+            .into_any_element()
+    }
+
+    /// Asks before sending a message that speaks of an attachment without
+    /// one, or has no subject.
+    fn render_send_check(
+        &self,
+        check: SendCheck,
+        at: Option<jiff::Timestamp>,
+        archive: bool,
+        passed: Passed,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        use katna_i18n::tr;
+        let (title, text, fix) = match check {
+            SendCheck::Attachment => (
+                tr!("send-check-attachment-title"),
+                tr!("send-check-attachment-text"),
+                tr!("send-check-attach"),
+            ),
+            SendCheck::Subject => (
+                tr!("send-check-subject-title"),
+                tr!("send-check-subject-text"),
+                tr!("send-check-add-subject"),
+            ),
+        };
+        Self::dialog_card(th, 380.0, title)
+            .child(
+                div()
+                    .text_size(px(14.0))
+                    .line_height(px(20.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(text),
+            )
+            .child(
+                div()
+                    .mt(px(20.0))
+                    .flex()
+                    .flex_row()
+                    .justify_end()
+                    .gap(px(8.0))
+                    .child(
+                        div()
+                            .id("send-check-fix")
+                            .h(px(36.0))
+                            .px(px(16.0))
+                            .flex()
+                            .items_center()
+                            .rounded_full()
+                            .text_size(px(14.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .text_color(rgba(th.accent))
+                            .cursor_pointer()
+                            .hover(|s| s.bg(rgba(th.hover)))
+                            .on_click(cx.listener(move |this, _, window, cx| match check {
+                                SendCheck::Attachment => this.pick_files(false, cx),
+                                SendCheck::Subject => {
+                                    if let Some(c) = &mut this.compose {
+                                        c.popup = None;
+                                        window.focus(&c.subject.focus_handle(cx), cx);
+                                    }
+                                    cx.notify();
+                                }
+                            }))
+                            .child(fix),
+                    )
+                    .child(
+                        filled_button("send-check-send", tr!("send-check-send-anyway"), th)
+                            .on_click(cx.listener(move |this, _, window, cx| {
+                                this.send_compose(at, archive, passed.with(check), window, cx)
+                            })),
+                    ),
+            )
             .into_any_element()
     }
 
