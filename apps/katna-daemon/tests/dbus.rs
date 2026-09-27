@@ -271,6 +271,145 @@ fn indexes_the_store_for_search() {
     });
 }
 
+/// KRunner and GNOME Shell find people as they are typed, and mail whose
+/// subject or sender has every word; `mail:` searches everything.
+#[test]
+fn answers_krunner_and_gnome_search() {
+    use std::collections::HashMap;
+    use zbus::zvariant::OwnedValue;
+
+    type Match = (
+        String,
+        String,
+        String,
+        i32,
+        f64,
+        HashMap<String, OwnedValue>,
+    );
+
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    let account = StoreSink::local_account(&mut store, "enron").unwrap();
+    let messages: Vec<IncomingMessage> = [
+        (
+            "Kenneth Lay <kenneth.lay@enron.com>",
+            "2001 budget",
+            "The numbers.",
+        ),
+        (
+            "jeff.skilling@enron.com",
+            "Lunch",
+            "The budget, over lunch.",
+        ),
+    ]
+    .into_iter()
+    .map(|(from, subject, body)| {
+        let raw = format!(
+            "From: {from}\r\nTo: me@enron.com\r\nSubject: {subject}\r\n\
+             Date: Mon, 14 May 2001 16:39:00 -0700\r\n\r\n{body}\r\n"
+        );
+        IncomingMessage {
+            folder: "inbox".into(),
+            flags: Flags::default(),
+            parsed: parse_message(raw.as_bytes()).unwrap(),
+            raw: raw.into_bytes(),
+        }
+    })
+    .collect();
+    StoreSink::new(&mut store, account.id)
+        .write(&messages)
+        .unwrap();
+    drop(store);
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let connection = bus.connect().await;
+        let krunner = |query: &'static str| {
+            let connection = connection.clone();
+            async move {
+                let reply = connection
+                    .call_method(
+                        Some(katna_core::ids::DAEMON_BUS_NAME),
+                        katna_core::ids::RUNNER_OBJECT_PATH,
+                        Some("org.kde.krunner1"),
+                        "Match",
+                        &(query,),
+                    )
+                    .await
+                    .unwrap();
+                reply.body().deserialize::<Vec<Match>>().unwrap()
+            }
+        };
+        // The index and the address book fill in the background.
+        let people = within("people", 20, async {
+            loop {
+                let found = krunner("kenn").await;
+                if found.iter().any(|m| m.0.starts_with('c')) {
+                    break found;
+                }
+                Timer::after(Duration::from_millis(100)).await;
+            }
+        })
+        .await;
+        assert_eq!(people[0].0, "ckenneth.lay@enron.com");
+        assert_eq!(people[0].1, "Kenneth Lay");
+        let subtext = String::try_from(people[0].5["subtext"].try_clone().unwrap()).unwrap();
+        assert_eq!(subtext, "kenneth.lay@enron.com");
+
+        let mail = within("mail", 20, async {
+            loop {
+                let found = krunner("budget").await;
+                if !found.is_empty() {
+                    break found;
+                }
+                Timer::after(Duration::from_millis(100)).await;
+            }
+        })
+        .await;
+        // Only the message with "budget" in its subject.
+        assert_eq!(mail.len(), 1, "{mail:?}");
+        assert_eq!(mail[0].1, "2001 budget");
+        assert_eq!(mail[0].2, "mail-unread");
+        // Too short, or not plain words: nothing.
+        assert!(krunner("bu").await.is_empty());
+        // `mail:` searches the text too, as Katna Mail's search box does.
+        assert_eq!(krunner("mail: budget").await.len(), 2);
+
+        let gnome = |method: &'static str, body: Vec<String>| {
+            let connection = connection.clone();
+            async move {
+                connection
+                    .call_method(
+                        Some(katna_core::ids::DAEMON_BUS_NAME),
+                        katna_core::ids::SEARCH_PROVIDER_OBJECT_PATH,
+                        Some("org.gnome.Shell.SearchProvider2"),
+                        method,
+                        &(body,),
+                    )
+                    .await
+                    .unwrap()
+            }
+        };
+        let ids: Vec<String> = gnome("GetInitialResultSet", vec!["2001".into(), "budget".into()])
+            .await
+            .body()
+            .deserialize()
+            .unwrap();
+        assert_eq!(ids.len(), 1, "{ids:?}");
+        let metas: Vec<HashMap<String, OwnedValue>> = gnome("GetResultMetas", ids.clone())
+            .await
+            .body()
+            .deserialize()
+            .unwrap();
+        let name = String::try_from(metas[0]["name"].try_clone().unwrap()).unwrap();
+        let description = String::try_from(metas[0]["description"].try_clone().unwrap()).unwrap();
+        assert_eq!(name, "2001 budget");
+        assert_eq!(description, "From Kenneth Lay");
+        instance.shutdown().await;
+    });
+}
+
 #[test]
 fn changes_imported_mail_in_the_store() {
     let bus = Bus::start();

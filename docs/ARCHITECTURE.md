@@ -2356,6 +2356,18 @@ Served by the daemon, pure Rust, from the same search index.
 | Organization | name, alias | Open organization view |
 | Event | title, attendees, location | Open event |
 
+As built (`apps/katna-daemon/src/desktop_search.rs`): people come from the
+addresses in the mail (the recipient-suggestion `ContactBook`, read in the
+background 20 s after start and again when mail changed, at most every 10
+minutes). Mail shows only when every word (three letters or more) starts a
+word of its subject or sender, outside Trash and Spam, one message per
+conversation; `mail:` runs the search box's query instead. Enter on a
+person writes to them (a `mailto:` link to Katna Mail); KRunner's buttons
+are Reply all on mail, Copy address (through Klipper) and Find mail on
+people. GNOME's "search in app" opens Katna Mail with the words in its
+search box (app action `search`). Organization results come with Phase 2.
+Answers take a few milliseconds on 60,000 messages.
+
 Flatpak: KRunner D-Bus runners are designed to work with sandboxed apps;
 verify that Flatpak exports the `krunner/dbusplugins` file. Distro
 packages install it directly.

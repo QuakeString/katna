@@ -242,6 +242,7 @@ impl MailWindow {
                 self.run_action(&name, window, cx);
                 return;
             }
+            Request::Search(text) => self.search_for(text, window, cx),
             Request::Action { name, message } => match name.as_str() {
                 app_action::OPEN_INBOX => {
                     if !self.run_action("katna_mail::GoToInbox", window, cx) {

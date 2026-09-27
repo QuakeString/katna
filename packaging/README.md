@@ -9,6 +9,8 @@ Files that distribution packages install, and the Arch Linux package.
 | `systemd/katna-daemon.service` | `/usr/lib/systemd/user/katna-daemon.service` (systemd user unit) |
 | `dbus/<daemon bus name>.service` | `/usr/share/dbus-1/services/` (D-Bus activation, starts the unit) |
 | `desktop/<mail app ID>.desktop` | `/usr/share/applications/` |
+| `krunner/<mail app ID>.desktop` | `/usr/share/krunner/dbusplugins/` (KRunner results from the daemon) |
+| `gnome-shell/<mail app ID>.search-provider.ini` | `/usr/share/gnome-shell/search-providers/` (GNOME search results from the daemon) |
 | `icons/<mail app ID>.svg` | `/usr/share/icons/hicolor/scalable/apps/` |
 | `icons/hicolor/<N>x<N>/apps/<mail app ID>.png` | `/usr/share/icons/hicolor/<N>x<N>/apps/` |
 | `arch/PKGBUILD` | Arch Linux package `katna-git` |
@@ -17,7 +19,8 @@ The file names are the IDs from `katna_core::ids` (`in.invenia.katna.Mail`,
 `in.invenia.katna.Daemon`). `crates/katna-core/tests/packaging.rs` checks
 the names and the `Name`, `Exec`, `Icon`, `StartupWMClass` and `BusName`
 lines against them, and a test in `apps/katna-daemon/src/install.rs` checks
-that the unit and activation file match what
+that the unit, the activation file and the KRunner and GNOME search
+files match what
 `katna-daemon install-user-service` writes. Other files in these folders
 must not spell out an ID: install them with globs.
 
