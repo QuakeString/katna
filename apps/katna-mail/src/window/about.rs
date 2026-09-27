@@ -11,7 +11,7 @@ use std::sync::LazyLock;
 
 use gpui::{
     AnyElement, Context, FocusHandle, FontWeight, KeyDownEvent, MouseButton, SharedString, Window,
-    div, linear_color_stop, linear_gradient, prelude::*, rgba,
+    div, prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
@@ -802,21 +802,9 @@ fn link_button(
         .on_click(move |_, _, cx| cx.open_url(&url))
 }
 
-/// The Katna mark, larger than the one on the account pages.
+/// Katna's logo, larger than the one on the account pages.
 fn logo() -> AnyElement {
-    div()
-        .size(px(64.0))
-        .flex()
-        .items_center()
-        .justify_center()
-        .rounded(px(18.0))
-        .bg(linear_gradient(
-            135.0,
-            linear_color_stop(rgba(0x4f8df7ff), 0.0),
-            linear_color_stop(rgba(0x3949c9ff), 1.0),
-        ))
-        .child(icon("mail", 0xffffffff, 40.0))
-        .into_any_element()
+    crate::widgets::katna_mark(64.0)
 }
 
 #[cfg(test)]
