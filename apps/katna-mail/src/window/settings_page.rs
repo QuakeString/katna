@@ -22,8 +22,8 @@ use gpui::{
     ScrollHandle, SharedString, Stateful, Subscription, Task, Window, div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountTabs, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane, ShortcutSet, TabStyle,
-    Theme as ThemeChoice,
+    AccountTabs, AutoAdvance, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane,
+    ShortcutSet, TabStyle, Theme as ThemeChoice,
 };
 use katna_i18n::tr;
 use katna_ui::motion::lerp;
@@ -496,6 +496,12 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
+                tr!("settings-general-auto-advance"),
+                Some(&tr!("settings-general-auto-advance-detail")),
+                self.auto_advance_choice(th, cx),
+                th,
+            ))
+            .child(self.row(
                 tr!("settings-general-reply-button"),
                 None,
                 self.switch_row(
@@ -637,6 +643,38 @@ impl MailWindow {
                 label,
                 now == when,
                 Change::MarkRead(when),
+                th,
+                cx,
+            ));
+        }
+        choices.into_any_element()
+    }
+
+    /// What opens after the open conversation is deleted, archived or
+    /// moved away (`mail.auto_advance`).
+    fn auto_advance_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let now = self.config.mail.auto_advance;
+        let mut choices = div().flex().flex_col().gap(px(2.0));
+        for then in AutoAdvance::ALL {
+            let (id, label) = match then {
+                AutoAdvance::Next => (
+                    "page-advance-next",
+                    tr!("settings-general-auto-advance-next"),
+                ),
+                AutoAdvance::Previous => (
+                    "page-advance-previous",
+                    tr!("settings-general-auto-advance-previous"),
+                ),
+                AutoAdvance::List => (
+                    "page-advance-list",
+                    tr!("settings-general-auto-advance-list"),
+                ),
+            };
+            choices = choices.child(self.radio_row(
+                id,
+                label,
+                now == then,
+                Change::AutoAdvance(then),
                 th,
                 cx,
             ));

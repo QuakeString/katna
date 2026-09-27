@@ -1279,6 +1279,14 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   line names recipients by first name ("to me, Ada", as Gmail does) unless
   *Full names of recipients* is on or two share a first name
   (`mail.full_names`). All three are off by default.
+- **Auto-advance.** Deleting, archiving, moving or reporting the open
+  conversation opens the next one in its place, in the same frame, so the
+  reading pane never closes and reopens (the owner, 2026-09-27). Settings >
+  General > Auto-advance (`mail.auto_advance`, as Gmail's) picks the line
+  below (the default; the one above when it was the last), the line above
+  (the one below when it was the first), or the list. Undo, on the
+  snackbar or with Ctrl+Z, brings the conversation back and opens it again
+  once it is back in the list.
 - **Motion.** Springs (`katna_ui::motion::Spring`, on GPUI's spring
   solver) drive values that shape several elements: the navigation width,
   the search box turning white with a shadow when focused, the snackbar.

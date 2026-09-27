@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The next mail opens by itself"
+text = """
+Delete, archive or move the mail you are reading and the next one opens
+in its place, instead of the reading pane closing. Undo brings the mail
+back and opens it again. Settings > General > Auto-advance can open the
+previous one instead, or go back to the list.
+"""
