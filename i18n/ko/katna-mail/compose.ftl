@@ -45,6 +45,13 @@ compose-file-too-large = { $name } 파일이 너무 큽니다. 메일 한 통에
 compose-attachment-size = ({ $size })
 compose-remove-attachment = 첨부파일 삭제
 compose-drop-files = 여기에 파일을 놓으세요
+compose-drop-here = 여기에 놓으세요
+compose-paste-keep-formatting = 서식 유지
+compose-paste-table = 표
+compose-paste-picture = 그림
+compose-paste-plain-text = 일반 텍스트
+compose-paste-inline = 본문에 넣기
+compose-paste-attachment = 첨부파일
 
 ## Encryption and signing (the toggles by the recipients)
 

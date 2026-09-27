@@ -45,6 +45,13 @@ compose-file-too-large = { $name } ya yi girma sosai: saƙo zai iya ɗaukar har 
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Cire abin haɗawa
 compose-drop-files = Saki fayiloli a nan
+compose-drop-here = Saki a nan
+compose-paste-keep-formatting = Riƙe tsari
+compose-paste-table = Tebur
+compose-paste-picture = Hoto
+compose-paste-plain-text = Rubutu mara ado
+compose-paste-inline = A cikin rubutu
+compose-paste-attachment = Abin haɗawa
 
 ## Encryption and signing (the toggles by the recipients)
 

@@ -45,6 +45,13 @@ compose-file-too-large = { $name } is te groot: een bericht kan maximaal { $limi
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Bijlage verwijderen
 compose-drop-files = Zet bestanden hier neer
+compose-drop-here = Hier neerzetten
+compose-paste-keep-formatting = Opmaak behouden
+compose-paste-table = Tabel
+compose-paste-picture = Afbeelding
+compose-paste-plain-text = Platte tekst
+compose-paste-inline = In de tekst
+compose-paste-attachment = Bijlage
 
 ## Encryption and signing (the toggles by the recipients)
 

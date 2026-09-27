@@ -45,6 +45,13 @@ compose-file-too-large = { $name } è troppo grande: un messaggio può contenere
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Rimuovi allegato
 compose-drop-files = Trascina qui i file
+compose-drop-here = Rilascia qui
+compose-paste-keep-formatting = Mantieni formattazione
+compose-paste-table = Tabella
+compose-paste-picture = Immagine
+compose-paste-plain-text = Testo semplice
+compose-paste-inline = Nel testo
+compose-paste-attachment = Allegato
 
 ## Encryption and signing (the toggles by the recipients)
 

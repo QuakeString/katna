@@ -45,6 +45,13 @@ compose-file-too-large = { $name } ತುಂಬಾ ದೊಡ್ಡದಾಗಿ�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ಲಗತ್ತನ್ನು ತೆಗೆದುಹಾಕಿ
 compose-drop-files = ಫೈಲ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಬಿಡಿ
+compose-drop-here = ಇಲ್ಲಿ ಬಿಡಿ
+compose-paste-keep-formatting = ಫಾರ್ಮ್ಯಾಟಿಂಗ್ ಉಳಿಸಿಕೊಳ್ಳಿ
+compose-paste-table = ಟೇಬಲ್
+compose-paste-picture = ಚಿತ್ರ
+compose-paste-plain-text = ಸಾದಾ ಪಠ್ಯ
+compose-paste-inline = ಪಠ್ಯದೊಳಗೆ
+compose-paste-attachment = ಲಗತ್ತು
 
 ## Encryption and signing (the toggles by the recipients)
 

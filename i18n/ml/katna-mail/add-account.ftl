@@ -62,6 +62,7 @@ add-account-address-empty = ഒരു ഇമെയിൽ വിലാസം ന�
 add-account-address-invalid = { $example } പോലെയുള്ള ഒരു ഇമെയിൽ വിലാസം നൽകുക.
 add-account-not-found = Katna-യ്ക്ക് { $address }-ന്റെ സെർവറുകൾ കണ്ടെത്താനായില്ല, അതിനാൽ സാധാരണ പേരുകൾ പൂരിപ്പിച്ചു. നിങ്ങളുടെ ദാതാവുമായി അവ പരിശോധിക്കുക.
 add-account-password-empty = പാസ്‌വേഡ് നൽകുക.
+add-account-name-is-password = പേര് പാസ്‌വേഡിന് തുല്യമാണ്. പകരം അവിടെ നിങ്ങളുടെ പേര്, ആളുകൾ കാണേണ്ട രീതിയിൽ, ടൈപ്പ് ചെയ്യുക.
 add-account-added = { $address } ചേർത്തു. നിങ്ങളുടെ മെയിൽ കൊണ്ടുവരുന്നു…
 add-account-app-password-refused = { $provider } പാസ്‌വേഡ് നിരസിച്ചു. അതിന് ഒരു ആപ്പ് പാസ്‌വേഡ് വേണം, വെബിൽ നിങ്ങൾ ഉപയോഗിക്കുന്നതല്ല.
 add-account-password-refused = സെർവർ പാസ്‌വേഡ് നിരസിച്ചു. അത് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.

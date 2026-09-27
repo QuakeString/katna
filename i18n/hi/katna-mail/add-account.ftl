@@ -62,6 +62,7 @@ add-account-address-empty = ईमेल पता डालें।
 add-account-address-invalid = { $example } जैसा ईमेल पता डालें।
 add-account-not-found = Katna को { $address } के सर्वर नहीं मिले, इसलिए उसने आम तौर पर इस्तेमाल होने वाले नाम भर दिए हैं। अपने प्रोवाइडर से इनकी पुष्टि करें।
 add-account-password-empty = पासवर्ड डालें।
+add-account-name-is-password = नाम और पासवर्ड एक जैसे हैं। वहां अपना नाम लिखें, जैसा लोगों को दिखना चाहिए।
 add-account-added = { $address } जोड़ा गया। आपका मेल लाया जा रहा है…
 add-account-app-password-refused = { $provider } ने पासवर्ड अस्वीकार कर दिया। इसके लिए ऐप पासवर्ड चाहिए, वह नहीं जो आप वेब पर इस्तेमाल करते हैं।
 add-account-password-refused = सर्वर ने पासवर्ड अस्वीकार कर दिया। उसे जाँचें और फिर से कोशिश करें।

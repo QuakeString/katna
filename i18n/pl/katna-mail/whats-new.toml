@@ -393,3 +393,34 @@ synchronizuje, a powiadomienia o nowej poczcie i ikona w zasobniku
 pojawiają się bez otwierania okna. Wyłącz to albo każ otwierać też okno
 w Ustawienia > Ogólne > Pulpit.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Wklejaj i upuszczaj w wiadomości, co chcesz"
+text = """
+Tekst skopiowany z aplikacji Word, LibreOffice lub ze strony
+internetowej zachowuje czcionki, kolory i listy, a komórki z aplikacji
+Excel, LibreOffice Calc lub Google Sheets trafiają do wiadomości jako
+tabela. Mały pasek pod tym, co wkleisz, pozwala zamiast tego wstawić to
+jako tabelę, obraz lub zwykły tekst; Ctrl+Shift+V wkleja zwykły tekst.
+Pliki skopiowane w programie Dolphin lub przeciągnięte na wiadomość są
+załączane, a przy obrazach Katna pyta, czy mają trafić do treści, czy
+jako załącznik.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Nowe logo Katna"
+text = """
+Katna ma teraz własne logo: কাটনা na karcie nad kopertą. Zobaczysz je w
+menu aplikacji, na panelu, w zasobniku, na górnym pasku i w oknie O
+Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Twoje konta, po twojemu"
+text = """
+Każde konto pokazuje teraz własną kolorową literę zamiast tego samego
+zdjęcia dla wszystkich. W Ustawienia > Konta możesz wybrać zdjęcie dla
+każdego z nich, zmienić jego nazwę i ułożyć konta w wybranej kolejności
+strzałkami lub przeciągając; panel folderów i menu kont stosują tę
+kolejność.
+"""

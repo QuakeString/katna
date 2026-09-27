@@ -388,3 +388,34 @@ posta bildirimleri ve tepsi simgesi pencere açılmadan gelir. Bunu
 kapatmak ya da pencerenin de açılmasını sağlamak için Ayarlar > Genel >
 Masaüstü'ne gidin.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "İletiye her şeyi yapıştırın ya da bırakın"
+text = """
+Word, LibreOffice ya da bir web sayfasından kopyalanan metin yazı
+tiplerini, renklerini ve listelerini korur; Excel, LibreOffice Calc ya
+da Google Sheets'ten gelen hücreler tablo olarak eklenir.
+Yapıştırdığınız şeyin altındaki küçük bir çubuk, onu bunun yerine tablo,
+resim ya da düz metin olarak almanızı sağlar; Ctrl+Shift+V düz metin
+yapıştırır. Dolphin'de kopyalanan ya da iletinin üzerine sürüklenen
+dosyalar eklenir; resimler ise metnin içine mi yoksa ek olarak mı
+gideceklerini sorar.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Yeni bir Katna logosu"
+text = """
+Katna'nın artık kendi logosu var: bir zarfın üzerindeki kartta কাটনা.
+Onu uygulama menüsünde, panelde, tepside, üst çubukta ve Katna hakkında
+penceresinde göreceksiniz.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Hesaplarınız, sizin tarzınızda"
+text = """
+Her hesap artık hepsi için aynı resim yerine kendi renkli harfini
+gösterir. Ayarlar > Hesaplar'da her biri için bir resim seçebilir, adını
+değiştirebilir ve hesapları oklarla ya da sürükleyerek istediğiniz
+sıraya koyabilirsiniz; klasör bölmesi ve hesap menüsü de bu sırayı
+izler.
+"""

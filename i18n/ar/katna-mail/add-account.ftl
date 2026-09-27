@@ -62,6 +62,7 @@ add-account-address-empty = أدخل عنوان بريد إلكتروني.
 add-account-address-invalid = أدخل عنوان بريد إلكتروني مثل { $example }.
 add-account-not-found = تعذّر على Katna العثور على خوادم { $address }، فملأ الأسماء المعتادة. تحقّق منها لدى مزوّدك.
 add-account-password-empty = أدخل كلمة المرور.
+add-account-name-is-password = الاسم هو نفسه كلمة المرور. اكتب اسمك هناك بدلًا منها، كما ينبغي أن يراه الناس.
 add-account-added = تمت إضافة { $address }. جارٍ جلب بريدك…
 add-account-app-password-refused = رفض { $provider } كلمة المرور. يحتاج إلى كلمة مرور للتطبيقات، لا كلمة المرور التي تستخدمها على الويب.
 add-account-password-refused = رفض الخادم كلمة المرور. تحقّق منها وحاول مجددًا.

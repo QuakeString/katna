@@ -62,6 +62,7 @@ add-account-address-empty = Bir e-posta adresi girin.
 add-account-address-invalid = { $example } gibi bir e-posta adresi girin.
 add-account-not-found = Katna, { $address } için sunucuları bulamadı, bu yüzden olağan adları doldurdu. Sağlayıcınızla denetleyin.
 add-account-password-empty = Parolayı girin.
+add-account-name-is-password = Ad, parolayla aynı. Oraya bunun yerine adınızı, insanların görmesi gereken biçimde yazın.
 add-account-added = { $address } eklendi. Postalarınız alınıyor…
 add-account-app-password-refused = { $provider } parolayı reddetti. Web'de kullandığınız parola değil, bir uygulama parolası gerekiyor.
 add-account-password-refused = Sunucu parolayı reddetti. Denetleyip yeniden deneyin.

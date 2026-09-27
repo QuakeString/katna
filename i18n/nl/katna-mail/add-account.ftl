@@ -62,6 +62,7 @@ add-account-address-empty = Voer een e-mailadres in.
 add-account-address-invalid = Voer een e-mailadres in zoals { $example }.
 add-account-not-found = Katna kon de servers voor { $address } niet vinden en heeft daarom de gebruikelijke namen ingevuld. Controleer ze bij je provider.
 add-account-password-empty = Voer het wachtwoord in.
+add-account-name-is-password = De naam is hetzelfde als het wachtwoord. Typ daar liever je naam, zoals anderen die moeten zien.
 add-account-added = { $address } toegevoegd. Je e-mail wordt opgehaald…
 add-account-app-password-refused = { $provider } heeft het wachtwoord geweigerd. Er is een app-wachtwoord nodig, niet het wachtwoord dat je op het web gebruikt.
 add-account-password-refused = De server heeft het wachtwoord geweigerd. Controleer het en probeer het opnieuw.

@@ -399,3 +399,33 @@ im Systemabschnitt erscheinen, ohne das Fenster zu öffnen. Schalten Sie
 es aus oder lassen Sie auch das Fenster öffnen, unter Einstellungen >
 Allgemein > Arbeitsumgebung.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Alles in eine Nachricht einfügen und ziehen"
+text = """
+Text aus Word, LibreOffice oder einer Webseite behält seine Schriften,
+Farben und Listen, und Zellen aus Excel, LibreOffice Calc oder Google
+Sheets kommen als Tabelle an. Über eine kleine Leiste unter dem
+Eingefügten erhalten Sie es stattdessen als Tabelle, Bild oder Nur-Text;
+Strg+Umschalt+V fügt Nur-Text ein. Dateien, die Sie in Dolphin kopieren
+oder auf die Nachricht ziehen, werden angehängt, und bei Bildern fragt
+Katna, ob sie in den Text oder als Anhang kommen.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Ein neues Katna-Logo"
+text = """
+Katna hat jetzt ein eigenes Logo: কাটনা auf einer Karte über einem
+Briefumschlag. Sie sehen es im Anwendungsmenü, im Panel, im
+Systemabschnitt, in der oberen Leiste und unter Über Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Ihre Konten, wie Sie sie wollen"
+text = """
+Jedes Konto zeigt jetzt seinen eigenen farbigen Buchstaben statt
+desselben Bildes für alle. Unter Einstellungen > Konten können Sie für
+jedes ein Bild wählen, es umbenennen und die Konten mit den Pfeilen oder
+durch Ziehen in die gewünschte Reihenfolge bringen; der Ordnerbereich und
+das Kontomenü folgen ihr.
+"""

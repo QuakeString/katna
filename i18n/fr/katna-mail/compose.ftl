@@ -45,6 +45,13 @@ compose-file-too-large = { $name } est trop volumineux : un message peut conteni
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Retirer la pièce jointe
 compose-drop-files = Déposez les fichiers ici
+compose-drop-here = Déposez ici
+compose-paste-keep-formatting = Conserver la mise en forme
+compose-paste-table = Tableau
+compose-paste-picture = Image
+compose-paste-plain-text = Texte brut
+compose-paste-inline = Dans le texte
+compose-paste-attachment = Pièce jointe
 
 ## Encryption and signing (the toggles by the recipients)
 

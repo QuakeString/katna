@@ -45,6 +45,13 @@ compose-file-too-large = { $name } terlalu besar: mesej boleh membawa sehingga {
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Alih keluar lampiran
 compose-drop-files = Lepaskan fail di sini
+compose-drop-here = Lepaskan di sini
+compose-paste-keep-formatting = Kekalkan pemformatan
+compose-paste-table = Jadual
+compose-paste-picture = Gambar
+compose-paste-plain-text = Teks biasa
+compose-paste-inline = Dalam teks
+compose-paste-attachment = Lampiran
 
 ## Encryption and signing (the toggles by the recipients)
 

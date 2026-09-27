@@ -383,3 +383,32 @@ thông báo thư mới và biểu tượng ở khay xuất hiện mà không c�
 Tắt tính năng này, hoặc cho cửa sổ mở cùng, trong Cài đặt > Chung > Môi
 trường máy tính.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Dán và thả mọi thứ vào thư"
+text = """
+Văn bản sao chép từ Word, LibreOffice hay một trang web giữ nguyên phông
+chữ, màu sắc và danh sách, còn các ô từ Excel, LibreOffice Calc hay
+Google Sheets được đưa vào dưới dạng bảng. Một thanh nhỏ bên dưới phần
+bạn vừa dán cho phép đổi nó thành bảng, ảnh hoặc văn bản thuần;
+Ctrl+Shift+V dán văn bản thuần. Tệp được sao chép trong Dolphin hoặc kéo
+vào thư sẽ được đính kèm, còn ảnh sẽ hỏi bạn muốn chèn vào nội dung hay
+đính kèm.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Logo mới của Katna"
+text = """
+Katna giờ đã có logo riêng: chữ কাটনা trên một tấm thẻ đặt trên phong
+bì. Bạn sẽ thấy nó trong menu ứng dụng, bảng điều khiển, khay, thanh
+trên cùng và Giới thiệu về Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Tài khoản của bạn, theo cách của bạn"
+text = """
+Mỗi tài khoản giờ hiện chữ cái có màu riêng thay vì cùng một ảnh cho tất
+cả. Trong Cài đặt > Tài khoản, bạn có thể chọn ảnh cho từng tài khoản,
+đổi tên và sắp xếp các tài khoản theo thứ tự mình muốn bằng mũi tên hoặc
+bằng cách kéo; ngăn thư mục và menu tài khoản sẽ theo thứ tự đó.
+"""

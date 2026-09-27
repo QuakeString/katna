@@ -408,3 +408,34 @@ mail, at lumalabas ang mga notification ng bagong mail at ang icon sa
 system tray nang hindi binubuksan ang window. I-off ito, o ipabukas din
 ang window, sa Mga setting > Pangkalahatan > Desktop.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "I-paste at i-drop ang kahit ano sa mensahe"
+text = """
+Napapanatili ng text na kinopya mula sa Word, LibreOffice o isang web
+page ang mga font, kulay at listahan nito, at pumapasok bilang
+talahanayan ang mga cell mula sa Excel, LibreOffice Calc o Google Sheets.
+Sa isang maliit na bar sa ilalim ng in-paste mo, puwede mo itong gawing
+talahanayan, larawan o plain text; nagpe-paste ng plain text ang
+Ctrl+Shift+V. Ina-attach ang mga file na kinopya sa Dolphin o dinrag
+papunta sa mensahe, at tinatanong ng mga larawan kung sa text sila
+ilalagay o bilang attachment.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Bagong logo ng Katna"
+text = """
+May sariling logo na ang Katna: কাটনা sa isang card sa ibabaw ng sobre.
+Makikita mo ito sa menu ng app, sa panel, sa system tray, sa itaas na bar
+at sa Tungkol sa Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Ang mga account mo, sa paraang gusto mo"
+text = """
+Ipinapakita na ng bawat account ang sarili nitong may-kulay na titik sa
+halip na iisang larawan para sa lahat. Sa Mga setting > Mga Account,
+puwede kang pumili ng larawan para sa bawat isa, palitan ang pangalan
+nito, at iayos ang mga account ayon sa gusto mo gamit ang mga arrow o sa
+pag-drag; sumusunod ang pane ng folder at ang menu ng account.
+"""

@@ -45,6 +45,13 @@ compose-file-too-large = { $name } çok büyük: bir ileti en fazla { $limit } t
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Eki kaldır
 compose-drop-files = Dosyaları buraya bırakın
+compose-drop-here = Buraya bırakın
+compose-paste-keep-formatting = Biçimlendirmeyi koru
+compose-paste-table = Tablo
+compose-paste-picture = Resim
+compose-paste-plain-text = Düz metin
+compose-paste-inline = Metin içinde
+compose-paste-attachment = Ek
 
 ## Encryption and signing (the toggles by the recipients)
 

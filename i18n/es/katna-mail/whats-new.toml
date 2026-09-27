@@ -401,3 +401,33 @@ sincroniza, y las notificaciones de correo nuevo y el icono de la bandeja
 aparecen sin abrir la ventana. Desactívalo, o haz que también se abra la
 ventana, en Ajustes > General > Escritorio.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Pega y suelta cualquier cosa en un mensaje"
+text = """
+El texto copiado de Word, LibreOffice o una página web mantiene sus
+fuentes, colores y listas, y las celdas de Excel, LibreOffice Calc o
+Google Sheets entran como una tabla. Una pequeña barra bajo lo que has
+pegado te deja tenerlo como tabla, imagen o texto sin formato;
+Ctrl+Shift+V pega texto sin formato. Los archivos copiados en Dolphin o
+arrastrados al mensaje se adjuntan, y las imágenes preguntan si van en el
+texto o como archivo adjunto.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Un nuevo logotipo de Katna"
+text = """
+Katna ya tiene su propio logotipo: কাটনা en una tarjeta sobre un sobre.
+Lo verás en el menú de aplicaciones, el panel, la bandeja del sistema, la
+barra superior y Acerca de Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Tus cuentas, a tu manera"
+text = """
+Cada cuenta muestra ahora su propia letra de color en lugar de la misma
+imagen para todas. En Ajustes > Cuentas puedes elegir una imagen para
+cada una, cambiarle el nombre y poner las cuentas en el orden que quieras
+con las flechas o arrastrándolas; el panel de carpetas y el menú de la
+cuenta siguen ese orden.
+"""

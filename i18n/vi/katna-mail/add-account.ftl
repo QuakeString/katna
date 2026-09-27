@@ -62,6 +62,7 @@ add-account-address-empty = Nhập địa chỉ email.
 add-account-address-invalid = Nhập địa chỉ email, ví dụ { $example }.
 add-account-not-found = Katna không tìm thấy máy chủ của { $address }, nên đã điền các tên thường dùng. Hãy kiểm tra lại với nhà cung cấp của bạn.
 add-account-password-empty = Nhập mật khẩu.
+add-account-name-is-password = Tên trùng với mật khẩu. Hãy nhập tên của bạn vào đó, theo cách mọi người sẽ thấy.
 add-account-added = Đã thêm { $address }. Đang nhận thư của bạn…
 add-account-app-password-refused = { $provider } đã từ chối mật khẩu. Cần mật khẩu ứng dụng, không phải mật khẩu bạn dùng trên web.
 add-account-password-refused = Máy chủ đã từ chối mật khẩu. Hãy kiểm tra và thử lại.

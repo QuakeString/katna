@@ -62,6 +62,7 @@ add-account-address-empty = ఈమెయిల్ అడ్రస్‌ను �
 add-account-address-invalid = { $example } వంటి ఈమెయిల్ అడ్రస్‌ను ఎంటర్ చేయండి.
 add-account-not-found = Katna { $address } కోసం సర్వర్‌లను కనుగొనలేకపోయింది, కాబట్టి సాధారణ పేర్లను నింపింది. వాటిని మీ ప్రొవైడర్‌తో తనిఖీ చేయండి.
 add-account-password-empty = పాస్‌వర్డ్‌ను ఎంటర్ చేయండి.
+add-account-name-is-password = పేరు పాస్‌వర్డ్‌లాగే ఉంది. బదులుగా అక్కడ మీ పేరును, ఇతరులు చూడాల్సిన విధంగా టైప్ చేయండి.
 add-account-added = { $address } జోడించబడింది. మీ మెయిల్‌ను తెస్తోంది…
 add-account-app-password-refused = { $provider } పాస్‌వర్డ్‌ను తిరస్కరించింది. దానికి యాప్ పాస్‌వర్డ్ అవసరం, వెబ్‌లో మీరు ఉపయోగించేది కాదు.
 add-account-password-refused = సర్వర్ పాస్‌వర్డ్‌ను తిరస్కరించింది. దాన్ని తనిఖీ చేసి మళ్లీ ప్రయత్నించండి.

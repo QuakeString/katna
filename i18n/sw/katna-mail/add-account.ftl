@@ -62,6 +62,7 @@ add-account-address-empty = Weka anwani ya barua pepe.
 add-account-address-invalid = Weka anwani ya barua pepe kama { $example }.
 add-account-not-found = Katna haikuweza kupata seva za { $address }, kwa hivyo imejaza majina ya kawaida. Yakague na mtoa huduma wako.
 add-account-password-empty = Weka nenosiri.
+add-account-name-is-password = Jina ni sawa na nenosiri. Andika jina lako hapo badala yake, kama watu wanavyopaswa kuliona.
 add-account-added = { $address } imeongezwa. Inapokea barua zako…
 add-account-app-password-refused = { $provider } imekataa nenosiri. Inahitaji nenosiri la programu, si lile unalotumia kwenye wavuti.
 add-account-password-refused = Seva imekataa nenosiri. Likague na ujaribu tena.

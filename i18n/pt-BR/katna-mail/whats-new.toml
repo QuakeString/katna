@@ -393,3 +393,33 @@ sincronizados, e as notificações de novos e-mails e o ícone da bandeja
 aparecem sem abrir a janela. Desative isso, ou faça a janela abrir
 também, em Configurações > Geral > Área de trabalho.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Cole e solte qualquer coisa em uma mensagem"
+text = """
+Texto copiado do Word, do LibreOffice ou de uma página da web mantém as
+fontes, cores e listas, e células do Excel, do LibreOffice Calc ou do
+Google Sheets entram como tabela. Uma pequena barra abaixo do que você
+colou permite usá-lo como tabela, imagem ou texto simples; Ctrl+Shift+V
+cola texto simples. Arquivos copiados no Dolphin ou arrastados para a
+mensagem são anexados, e para imagens você escolhe se vão no texto ou
+como anexo.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Um novo logotipo do Katna"
+text = """
+O Katna agora tem seu próprio logotipo: কাটনা em um cartão sobre um
+envelope. Você o verá no menu de aplicativos, no painel, na bandeja, na
+barra superior e em Sobre o Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Suas contas, do seu jeito"
+text = """
+Cada conta agora mostra sua própria letra colorida, em vez da mesma
+imagem para todas. Em Configurações > Contas, você pode escolher uma
+imagem para cada uma, renomeá-la e colocar as contas na ordem que quiser
+com as setas ou arrastando; o painel de pastas e o menu de contas seguem
+essa ordem.
+"""

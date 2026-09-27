@@ -45,6 +45,13 @@ compose-file-too-large = { $name } ni kubwa mno: ujumbe unaweza kubeba hadi { $l
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Ondoa kiambatisho
 compose-drop-files = Dondosha faili hapa
+compose-drop-here = Dondosha hapa
+compose-paste-keep-formatting = Dumisha uumbizaji
+compose-paste-table = Jedwali
+compose-paste-picture = Picha
+compose-paste-plain-text = Maandishi matupu
+compose-paste-inline = Ndani ya maandishi
+compose-paste-attachment = Kiambatisho
 
 ## Encryption and signing (the toggles by the recipients)
 

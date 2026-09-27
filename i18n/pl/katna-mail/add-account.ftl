@@ -62,6 +62,7 @@ add-account-address-empty = Wpisz adres e-mail.
 add-account-address-invalid = Wpisz adres e-mail, na przykład { $example }.
 add-account-not-found = Katna nie znalazła serwerów dla { $address }, więc wpisała typowe nazwy. Sprawdź je u swojego dostawcy.
 add-account-password-empty = Wpisz hasło.
+add-account-name-is-password = Nazwa jest taka sama jak hasło. Wpisz tam zamiast tego swoje imię i nazwisko, tak jak mają je widzieć inni.
 add-account-added = Dodano { $address }. Pobieranie poczty…
 add-account-app-password-refused = { $provider } odrzucił hasło. Wymagane jest hasło do aplikacji, a nie to, którego używasz w przeglądarce.
 add-account-password-refused = Serwer odrzucił hasło. Sprawdź je i spróbuj ponownie.

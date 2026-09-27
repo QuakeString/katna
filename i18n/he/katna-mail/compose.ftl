@@ -45,6 +45,13 @@ compose-file-too-large = { $name } גדול מדי: הודעה יכולה להכ
 compose-attachment-size = ({ $size })
 compose-remove-attachment = הסרת הקובץ המצורף
 compose-drop-files = אפשר לשחרר קבצים כאן
+compose-drop-here = אפשר לשחרר כאן
+compose-paste-keep-formatting = שמירת העיצוב
+compose-paste-table = טבלה
+compose-paste-picture = תמונה
+compose-paste-plain-text = טקסט פשוט
+compose-paste-inline = בתוך הטקסט
+compose-paste-attachment = קובץ מצורף
 
 ## Encryption and signing (the toggles by the recipients)
 

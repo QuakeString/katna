@@ -45,6 +45,13 @@ compose-file-too-large = Masyadong malaki ang { $name }: hanggang { $limit } lan
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Alisin ang attachment
 compose-drop-files = I-drop dito ang mga file
+compose-drop-here = I-drop dito
+compose-paste-keep-formatting = Panatilihin ang format
+compose-paste-table = Talahanayan
+compose-paste-picture = Larawan
+compose-paste-plain-text = Plain text
+compose-paste-inline = Sa text
+compose-paste-attachment = Attachment
 
 ## Encryption and signing (the toggles by the recipients)
 

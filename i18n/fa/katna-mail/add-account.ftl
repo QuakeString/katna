@@ -62,6 +62,7 @@ add-account-address-empty = یک نشانی ایمیل وارد کنید.
 add-account-address-invalid = یک نشانی ایمیل مانند { $example } وارد کنید.
 add-account-not-found = Katna نتوانست سرورهای { $address } را پیدا کند، پس نام‌های معمول را وارد کرد. آن‌ها را با سرویس‌دهندهٔ خود بررسی کنید.
 add-account-password-empty = گذرواژه را وارد کنید.
+add-account-name-is-password = نام با گذرواژه یکی است. به‌جای آن، نام خود را همان‌طور که دیگران باید ببینند آنجا بنویسید.
 add-account-added = { $address } افزوده شد. در حال دریافت ایمیل‌های شما…
 add-account-app-password-refused = { $provider } گذرواژه را نپذیرفت. به گذرواژهٔ برنامه نیاز دارد، نه گذرواژه‌ای که در وب به کار می‌برید.
 add-account-password-refused = سرور گذرواژه را نپذیرفت. آن را بررسی کنید و دوباره امتحان کنید.

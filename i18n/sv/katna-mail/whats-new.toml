@@ -384,3 +384,31 @@ aviseringar om ny e-post och ikonen i systemfältet kommer upp utan att
 fönstret öppnas. Stäng av det, eller låt fönstret öppnas också, under
 Inställningar > Allmänt > Skrivbord.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Klistra in och släpp vad som helst i ett meddelande"
+text = """
+Text som kopierats från Word, LibreOffice eller en webbsida behåller
+sina typsnitt, färger och listor, och celler från Excel, LibreOffice
+Calc eller Google Sheets kommer in som en tabell. Ett litet fält under
+det du klistrade in låter dig få det som tabell, bild eller oformaterad
+text i stället; Ctrl+Shift+V klistrar in oformaterad text. Filer som
+kopierats i Dolphin eller dragits till meddelandet bifogas, och för
+bilder får du välja om de ska in i texten eller som bilaga.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "En ny Katna-logotyp"
+text = """
+Katna har nu en egen logotyp: কাটনা på ett kort över ett kuvert. Du ser
+den i programmenyn, panelen, systemfältet, den övre raden och Om Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Dina konton, på ditt sätt"
+text = """
+Varje konto visar nu sin egen färgade bokstav i stället för samma bild
+för alla. I Inställningar > Konton kan du välja en bild för varje konto,
+byta namn på det och ordna kontona som du vill med pilarna eller genom
+att dra; mappfönstret och kontomenyn följer med.
+"""

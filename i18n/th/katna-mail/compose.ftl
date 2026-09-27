@@ -45,6 +45,13 @@ compose-file-too-large = { $name } ใหญ่เกินไป: ข้อค�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = นำไฟล์แนบออก
 compose-drop-files = วางไฟล์ที่นี่
+compose-drop-here = วางที่นี่
+compose-paste-keep-formatting = คงการจัดรูปแบบไว้
+compose-paste-table = ตาราง
+compose-paste-picture = รูปภาพ
+compose-paste-plain-text = ข้อความธรรมดา
+compose-paste-inline = ในเนื้อความ
+compose-paste-attachment = ไฟล์แนบ
 
 ## Encryption and signing (the toggles by the recipients)
 

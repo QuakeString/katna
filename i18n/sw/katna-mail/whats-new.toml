@@ -394,3 +394,33 @@ za barua mpya na aikoni ya trei huonekana bila kufungua dirisha. Izime,
 au fanya dirisha lifunguke pia, katika Mipangilio > Jumla > Kompyuta ya
 mezani.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Bandika na udondoshe chochote kwenye ujumbe"
+text = """
+Maandishi yaliyonakiliwa kutoka Word, LibreOffice au ukurasa wa wavuti
+huhifadhi fonti, rangi na orodha zake, na visanduku kutoka Excel,
+LibreOffice Calc au Google Sheets huingia kama jedwali. Upau mdogo chini
+ya ulichobandika hukuruhusu kukipata kama jedwali, picha au maandishi
+matupu badala yake; Ctrl+Shift+V hubandika maandishi matupu. Faili
+zilizonakiliwa katika Dolphin au kuburutwa kwenye ujumbe huambatishwa,
+na picha huuliza kama ziende ndani ya maandishi au kama kiambatisho.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Nembo mpya ya Katna"
+text = """
+Sasa Katna ina nembo yake yenyewe: কাটনা kwenye kadi juu ya bahasha.
+Utaiona kwenye menyu ya programu, paneli, trei, upau wa juu na Kuhusu
+Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Akaunti zako, kwa njia yako"
+text = """
+Kila akaunti sasa inaonyesha herufi yake yenye rangi badala ya picha
+ileile kwa zote. Katika Mipangilio > Akaunti unaweza kuchagua picha kwa
+kila moja, kuibadilisha jina, na kupanga akaunti kwa mpangilio
+unaoupenda kwa mishale au kwa kuburuta; kidirisha cha folda na menyu ya
+akaunti hufuata.
+"""

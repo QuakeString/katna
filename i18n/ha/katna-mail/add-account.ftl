@@ -62,6 +62,7 @@ add-account-address-empty = Shigar da adireshin imel.
 add-account-address-invalid = Shigar da adireshin imel kamar { $example }.
 add-account-not-found = Katna ba ta iya samo sabobin { $address } ba, don haka ta cike sunayen da aka saba. Ku tabbatar da su wurin mai ba ku sabis.
 add-account-password-empty = Shigar da kalmar sirri.
+add-account-name-is-password = Sunan daidai yake da kalmar sirri. Rubuta sunanku a can maimakon haka, yadda mutane za su gan shi.
 add-account-added = An ƙara { $address }. Ana karɓo wasiƙunku…
 add-account-app-password-refused = { $provider } ya ƙi kalmar sirrin. Yana buƙatar kalmar sirrin manhaja, ba wadda kuke amfani da ita a yanar gizo ba.
 add-account-password-refused = Sabar ta ƙi kalmar sirrin. Ku duba ta kuma ku sake gwadawa.

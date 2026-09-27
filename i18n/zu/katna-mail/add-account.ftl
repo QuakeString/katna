@@ -62,6 +62,7 @@ add-account-address-empty = Faka ikheli le-imeyili.
 add-account-address-invalid = Faka ikheli le-imeyili elifana no-{ $example }.
 add-account-not-found = I-Katna ayikwazanga ukuthola amaseva ka-{ $address }, ngakho igcwalise amagama ajwayelekile. Wahlole nomhlinzeki wakho.
 add-account-password-empty = Faka iphasiwedi.
+add-account-name-is-password = Igama liyafana nephasiwedi. Esikhundleni salokho, bhala igama lakho lapho, njengoba abantu kufanele balibone.
 add-account-added = Kwengezwe u-{ $address }. Kulandwa imeyili yakho…
 add-account-app-password-refused = I-{ $provider } yenqabe iphasiwedi. Idinga iphasiwedi yohlelo lokusebenza, hhayi leyo oyisebenzisa kuwebhu.
 add-account-password-refused = Iseva yenqabe iphasiwedi. Yihlole bese uzama futhi.

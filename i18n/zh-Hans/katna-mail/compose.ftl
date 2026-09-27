@@ -45,6 +45,13 @@ compose-file-too-large = { $name } 太大：一封邮件最多可携带 { $limit
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 移除附件
 compose-drop-files = 将文件拖放到此处
+compose-drop-here = 拖放到此处
+compose-paste-keep-formatting = 保留格式
+compose-paste-table = 表格
+compose-paste-picture = 图片
+compose-paste-plain-text = 纯文本
+compose-paste-inline = 嵌入正文
+compose-paste-attachment = 附件
 
 ## Encryption and signing (the toggles by the recipients)
 
