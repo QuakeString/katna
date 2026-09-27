@@ -244,6 +244,13 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                with a typo. Pick one with the arrow keys and Enter, Tab or a click.",
         animation: None,
     },
+    Highlight {
+        id: 26,
+        title: "The main window in your language",
+        text: "The app rail, folders, tabs, list, menus and reading pane now follow \
+               the language you pick. Folders you made keep their own names.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.

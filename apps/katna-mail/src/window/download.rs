@@ -13,6 +13,7 @@ use gpui::{
     Animation, AnimationExt, AnyElement, Context, FontWeight, Window, div, prelude::*, relative,
     rgba,
 };
+use katna_i18n::tr;
 use katna_store::MessageId;
 use katna_ui::px;
 use std::time::{Duration, Instant};
@@ -269,7 +270,7 @@ impl MailWindow {
                         .child(
                             div()
                                 .text_color(rgba(th.text))
-                                .child("Could not download this message."),
+                                .child(tr!("reader-download-failed")),
                         )
                         .child(div().text_size(px(12.0)).child(format::sentence(reason))),
                 )
@@ -289,7 +290,7 @@ impl MailWindow {
                             this.download_bodies(cx);
                             cx.notify();
                         }))
-                        .child("Try again"),
+                        .child(tr!("reader-try-again")),
                 )
                 .into_any_element(),
             // Starting, or started on the next frame.
@@ -306,7 +307,7 @@ impl MailWindow {
                             |icon, t| icon.opacity(t),
                         ),
                 )
-                .child("Downloading this message from the server\u{2026}")
+                .child(tr!("reader-downloading"))
                 .into_any_element(),
         }
     }
