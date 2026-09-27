@@ -458,3 +458,12 @@ text = """
 Se o Katna é útil para você, Sobre o Katna agora tem um botão Me pague
 um café e um código QR para abrir a mesma página no seu celular.
 """
+
+["2026-09-27-1615-from-row"]
+title = "Escolha de quem é a mensagem"
+text = """
+Novas mensagens agora mostram uma linha De abaixo de Para. Clique na
+seta dela para enviar de outra das suas contas. Novos e-mails começam
+pela sua primeira conta, a menos que você escolha outra padrão em
+Configurações > Escrever > Enviar novas mensagens de.
+"""

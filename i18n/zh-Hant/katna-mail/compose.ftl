@@ -19,6 +19,8 @@ compose-show-trimmed = 顯示已省略的內容
 compose-to = 收件者
 compose-cc = 副本
 compose-bcc = 密件副本
+compose-from = 寄件者
+compose-from-choose = 從其他帳戶寄送
 compose-recipients = 收件者
 compose-subject = 主旨
 

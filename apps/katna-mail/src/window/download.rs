@@ -87,7 +87,11 @@ impl MailWindow {
 
     /// Starts downloading message `id`, unless it is being downloaded.
     /// Returns what closes when the download ends.
-    fn download(&mut self, id: MessageId, cx: &mut Context<Self>) -> async_channel::Receiver<()> {
+    pub(super) fn download(
+        &mut self,
+        id: MessageId,
+        cx: &mut Context<Self>,
+    ) -> async_channel::Receiver<()> {
         if let Some(Download::Running { done, .. }) = self.downloads.get(&id) {
             return done.clone();
         }

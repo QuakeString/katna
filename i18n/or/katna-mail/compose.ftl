@@ -19,6 +19,8 @@ compose-show-trimmed = କଟାଯାଇଥିବା ବିଷୟବସ୍ତ�
 compose-to = ପ୍ରାପକ
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = ପ୍ରେରକ
+compose-from-choose = ଅନ୍ୟ ଆକାଉଣ୍ଟରୁ ପଠାନ୍ତୁ
 compose-recipients = ପ୍ରାପକମାନେ
 compose-subject = ବିଷୟ
 

@@ -445,3 +445,12 @@ text = """
 Om du har nytta av Katna har Om Katna nu knappen Bjud mig på en kaffe
 och en QR-kod som öppnar samma sida på telefonen.
 """
+
+["2026-09-27-1615-from-row"]
+title = "Välj vem ett meddelande är från"
+text = """
+Nya meddelanden visar nu en Från-rad under Till. Klicka på dess pil för
+att skicka från ett annat av dina konton. Ny e-post börjar från ditt
+första konto, om du inte väljer ett annat standardkonto i
+Inställningar > Skriva > Skicka nya meddelanden från.
+"""

@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = مدیر فایل را با پیوس�
 ## Settings > Compose
 
 settings-compose-send-from = ارسال پیام‌های جدید از
-settings-compose-send-from-detail = پاسخ‌ها و بازارسال‌ها همیشه از حسابی که در آن هستید ارسال می‌شوند.
+settings-compose-send-from-detail = پیام‌های جدید از این حساب شروع می‌شوند؛ ردیف «از» حساب دیگری را انتخاب می‌کند. پاسخ‌ها و بازارسال‌ها همیشه از حسابی ارسال می‌شوند که پیام اصلی به آن رسیده است.
 settings-compose-send-from-current = حسابی که در آن هستید
 settings-compose-send-on-replies = ارسال در پاسخ‌ها
 settings-compose-send-on-replies-detail = کاری که «ارسال» در پاسخ یا بازارسال انجام می‌دهد. منوی کنار «ارسال» گزینهٔ دیگر را ارائه می‌کند.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = جایی که متن ساده، گزارش�
 settings-default-apps-sheets-summary = جایی که فایل‌های Excel، OpenDocument و CSV باز می‌شوند
 settings-default-apps-documents-summary = جایی که Word، متن OpenDocument و اسلایدها باز می‌شوند
 settings-default-apps-after-saving-summary = نمایش پیوست‌های ذخیره‌شده در پوشه‌شان
-settings-compose-send-from-summary = حسابی که ایمیل جدید از آن ارسال می‌شود: حسابی که در آن هستید، یا همیشه همان حساب
+settings-compose-send-from-summary = حسابی که ایمیل جدید از آن ارسال می‌شود: اولین حساب، حسابی دیگر، یا حسابی که در آن هستید
 settings-compose-send-on-replies-summary = «ارسال» یا «ارسال و بایگانی» مکالمه، در پاسخ‌ها و بازارسال‌ها
 settings-compose-signatures-summary = زیر پیامتان، پس از سطر «--» اضافه می‌شود
 settings-compose-for-new-mail-summary = امضایی که ایمیل جدید با آن شروع می‌شود

@@ -2826,7 +2826,7 @@ impl Dispatch<wl_data_device::WlDataDevice, ()> for WaylandClientStatePtr {
                 let position = Point::new(x.into(), y.into());
                 state.drag.position = position;
 
-                let input = PlatformInput::FileDrop(FileDropEvent::Pending { position });
+                let input = transfer::drag_move(position);
                 drop(state);
                 drag_window.handle_input(input);
             }

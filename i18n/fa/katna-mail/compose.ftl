@@ -19,6 +19,8 @@ compose-show-trimmed = نمایش محتوای کوتاه‌شده
 compose-to = به
 compose-cc = رونوشت
 compose-bcc = رونوشت پنهان
+compose-from = از
+compose-from-choose = ارسال از حسابی دیگر
 compose-recipients = گیرندگان
 compose-subject = موضوع
 

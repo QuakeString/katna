@@ -461,3 +461,12 @@ text = """
 Se Katna ti è utile, Informazioni su Katna ora ha un pulsante Offrimi un
 caffè e un codice QR per aprire la stessa pagina sul telefono.
 """
+
+["2026-09-27-1615-from-row"]
+title = "Scegli da chi parte un messaggio"
+text = """
+I nuovi messaggi ora mostrano una riga Da sotto A. Fai clic sulla sua
+freccia per inviare da un altro dei tuoi account. La nuova posta parte
+dal tuo primo account, a meno che tu non scelga un altro predefinito in
+Impostazioni > Scrittura > Invia nuovi messaggi da.
+"""

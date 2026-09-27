@@ -19,6 +19,8 @@ compose-show-trimmed = 생략된 내용 표시
 compose-to = 받는사람
 compose-cc = 참조
 compose-bcc = 숨은참조
+compose-from = 보낸사람
+compose-from-choose = 다른 계정에서 보내기
 compose-recipients = 받는사람
 compose-subject = 제목
 

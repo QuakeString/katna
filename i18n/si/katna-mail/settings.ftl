@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = සුරැකි ඇමුණුම
 ## Settings > Compose
 
 settings-compose-send-from = නව පණිවිඩ යැවිය යුත්තේ
-settings-compose-send-from-detail = පිළිතුරු සහ ඉදිරියට යැවීම් සැමවිටම ඔබ සිටින ගිණුමෙන් යවයි.
+settings-compose-send-from-detail = නව පණිවිඩ මෙම ගිණුමෙන් ආරම්භ වේ; වෙතින් පේළියෙන් වෙනත් එකක් තෝරා ගත හැක. පිළිතුරු සහ ඉදිරියට යැවීම් සැමවිටම මුල් පණිවිඩය ලැබුණු ගිණුමෙන් යවයි.
 settings-compose-send-from-current = ඔබ සිටින ගිණුම
 settings-compose-send-on-replies = පිළිතුරුවලදී යවන්න
 settings-compose-send-on-replies-detail = පිළිතුරක හෝ ඉදිරියට යැවීමක යවන්න බොත්තම කරන දේ. යවන්න අසල ඇති මෙනුව අනෙක ලබා දෙයි.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = සරල පෙළ, ලොග සහ ක�
 settings-default-apps-sheets-summary = Excel, OpenDocument සහ CSV ගොනු විවෘත වන තැන
 settings-default-apps-documents-summary = Word, OpenDocument පෙළ සහ ස්ලයිඩ විවෘත වන තැන
 settings-default-apps-after-saving-summary = සුරැකි ඇමුණුම් ඒවායේ ෆෝල්ඩරයේ පෙන්වන්න
-settings-compose-send-from-summary = නව තැපැල් යවන ගිණුම: ඔබ සිටින එක, නැතහොත් සැමවිටම එකම එක
+settings-compose-send-from-summary = නව තැපැල් යවන ගිණුම: පළමු එක, වෙනත් එකක්, නැතහොත් ඔබ සිටින එක
 settings-compose-send-on-replies-summary = පිළිතුරු සහ ඉදිරියට යැවීම්වලදී යවන්න, නැතහොත් යවා සංවාදය සංරක්ෂණය කරන්න
 settings-compose-signatures-summary = ඔබේ පණිවිඩයට පහළින්, “--” පේළියකට පසුව එක් කෙරේ
 settings-compose-for-new-mail-summary = නව තැපැල් ආරම්භ වන අත්සන

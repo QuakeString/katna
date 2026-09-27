@@ -316,6 +316,8 @@ pub struct RichEditor {
     /// What was copied, to paste it back with its formatting.
     copied: Option<(String, Vec<Block>)>,
     paste_offer: Option<PasteOffer>,
+    /// Where a picture dragged over the text would land.
+    pub(crate) drop_caret: Option<(Pos, bool)>,
     paste_labels: Option<PasteLabels>,
     table_picture: Option<TablePicture>,
     images: HashMap<u64, Arc<gpui::Image>>,
@@ -371,6 +373,7 @@ impl RichEditor {
             families: RefCell::new(None),
             copied: None,
             paste_offer: None,
+            drop_caret: None,
             paste_labels: None,
             table_picture: None,
             images: HashMap::new(),
