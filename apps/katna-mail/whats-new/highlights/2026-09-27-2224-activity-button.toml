@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Activity beside the search box"
+text = """
+The Activity button beside the search box counts new opens and clicks of
+your tracked mail and lists who opened what and which links they
+followed; click one to open that message. Details shows the open and
+click rates, opens by day and your best subject lines for the last 7 or
+30 days, all time or dates you choose. A sent message now shows how
+many times each person opened it and followed a link.
+"""

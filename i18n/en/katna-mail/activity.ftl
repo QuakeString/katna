@@ -1,8 +1,34 @@
-# Katna Mail, English: Activity, how mail sent with open and click
-# tracking did (opened from "Activity" in the folder pane).
+# Katna Mail, English: Activity, who opened mail sent with open and click
+# tracking and who followed its links (the button beside the search box),
+# and the Details report over a period.
 # Guide: i18n/README.md. Keep ids stable; change the text freely.
 # In plural forms, write { $count } rather than the digit, so languages
 # with their own digits show them.
+
+## The list under the Activity button
+
+# Opens the report.
+activity-details = Details
+# $who: a recipient's name or address. $subject: the message's subject.
+activity-feed-opened = { $who } opened “{ $subject }”
+activity-feed-clicked = { $who } clicked a link in “{ $subject }”
+# Apple Mail fetches pictures for privacy whether or not the mail is read.
+activity-feed-maybe = { $who } may have opened “{ $subject }”
+activity-feed-empty = No opens or clicks yet. Turn on the eye when you write a message to see when it's read.
+# The sent message is no longer on this computer.
+activity-message-gone = That message is no longer in Sent.
+
+## The Details report
+
+activity-report = Activity report
+# The period the report covers.
+activity-range-week = Last 7 days
+activity-range-month = Last 30 days
+activity-range-all = All time
+activity-range-custom = Custom
+activity-range-from = From
+activity-range-to = To
+activity-range-apply = Apply
 
 ## Totals at the top
 
@@ -15,6 +41,15 @@ activity-click-rate = Click rate
 # $percent: a whole number, already in the language's digits.
 activity-percent = { $percent }%
 
+## Opens and clicks over time
+
+activity-by-day = Opens and clicks
+# The key of the chart. $count: the total, already in the language's digits.
+activity-opens = Opens: { $count }
+activity-clicks = Clicks: { $count }
+# Long periods have one bar a week.
+activity-by-week = One bar per week
+
 ## The messages
 
 # Heading of the list, best first.
@@ -23,5 +58,5 @@ activity-by-open-rate = Subject lines by open rate
 activity-opened = Opened by { $opened } of { $recipients }
 activity-clicked = Link followed by { $clicked } of { $recipients }
 activity-no-subject = (no subject)
-activity-nothing = No tracked mail yet. Turn on the eye by the recipients when you write.
+activity-nothing-period = No tracked mail was sent in this period.
 activity-close = Close

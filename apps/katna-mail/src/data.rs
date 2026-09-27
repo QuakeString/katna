@@ -975,6 +975,31 @@ impl Mail {
             .collect()
     }
 
+    /// Opens and clicks since `since` (Unix milliseconds), newest first.
+    pub fn activity_feed(&self, since: i64, limit: u32) -> Vec<katna_store::ActivityItem> {
+        self.store
+            .activity_feed(since, limit)
+            .unwrap_or_else(|err| {
+                tracing::warn!("reading tracking: {err}");
+                Vec::new()
+            })
+    }
+
+    /// Opens and clicks by people after event `seq`.
+    pub fn activity_after(&self, seq: i64) -> usize {
+        self.store.activity_after(seq).unwrap_or(0)
+    }
+
+    /// The number of the newest open or click kept.
+    pub fn last_activity(&self) -> i64 {
+        self.store.last_tracking_seq().unwrap_or(0)
+    }
+
+    /// The stored copy of the sent message `message_id` of `account`.
+    pub fn sent_copy(&self, account: AccountId, message_id: &str) -> Option<MessageId> {
+        self.store.filed_message(account, message_id).ok().flatten()
+    }
+
     /// Whether any mail was sent with tracking.
     pub fn has_tracking(&self) -> bool {
         self.store.has_tracking().unwrap_or(false)

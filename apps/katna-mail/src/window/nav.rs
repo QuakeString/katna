@@ -666,13 +666,10 @@ impl MailWindow {
                 expanded,
             } => {
                 let scheduled = key == compose::SCHEDULED_NAV_KEY;
-                let activity = key == super::activity::NAV_KEY;
                 // Special folders show their name in the current language;
                 // the user's own keep theirs.
                 let label = if scheduled {
                     tr!("folder-scheduled")
-                } else if activity {
-                    tr!("folder-activity")
                 } else {
                     role.title().unwrap_or_else(|| label.clone())
                 };
@@ -683,8 +680,6 @@ impl MailWindow {
                         depth: *depth,
                         icon: if scheduled {
                             "schedule"
-                        } else if activity {
-                            "activity"
                         } else {
                             role_icon(*role)
                         },
@@ -894,10 +889,6 @@ impl MailWindow {
             sidebar::Row::Folder { key, .. } if key == compose::SCHEDULED_NAV_KEY => {
                 self.leave_settings(window, cx);
                 self.open_scheduled(cx);
-            }
-            sidebar::Row::Folder { key, .. } if key == super::activity::NAV_KEY => {
-                self.leave_settings(window, cx);
-                self.open_activity(window, cx);
             }
             _ => self.toggle_nav_row(ix, cx),
         }

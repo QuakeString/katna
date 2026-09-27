@@ -97,6 +97,7 @@ icons!(
     "pin",
     "plain-text",
     "print",
+    "pulse",
     "quote",
     "read-receipt",
     "redo",

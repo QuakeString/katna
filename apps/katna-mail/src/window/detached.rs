@@ -52,7 +52,7 @@ impl MailWindow {
         }
     }
 
-    fn open_entry_in_window(&mut self, entry: Entry, cx: &mut Context<Self>) {
+    pub(super) fn open_entry_in_window(&mut self, entry: Entry, cx: &mut Context<Self>) {
         let title = self.line_subject(entry);
         let env = self.chrome.environment();
         let paths = self.paths.clone();

@@ -111,14 +111,24 @@ impl MailWindow {
             .zip(format::local(now, &self.tz))
             .map(|(at, now)| format::list_date(at, now))
             .unwrap_or_default();
-        if recipient.clicks > 0 {
+        if recipient.clicks > 0 && recipient.opens > 0 {
             let text = tr!(
-                "tracking-opened-clicked",
+                "tracking-opens-clicks",
                 who = who,
-                count = recipient.clicks,
+                opens = recipient.opens,
+                clicks = recipient.clicks,
                 when = when
             );
-            ("eye", th.accent, text)
+            ("link", th.accent, text)
+        } else if recipient.clicks > 0 {
+            // Pictures turned off: the link shows it was read.
+            let text = tr!(
+                "tracking-clicked",
+                who = who,
+                clicks = recipient.clicks,
+                when = when
+            );
+            ("link", th.accent, text)
         } else if recipient.opens > 0 {
             let text = tr!(
                 "tracking-opened",

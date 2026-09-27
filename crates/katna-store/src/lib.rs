@@ -58,8 +58,8 @@ pub use quota::StorageQuota;
 pub use remote::{FolderRole, NewAttachment, RemoteMessage, StoredAttachment, StoredFolder};
 pub use templates::{Template, TemplateFile, TemplateSummary};
 pub use tracking::{
-    MessageActivity, NewRecipient, RecipientActivity, TrackedMessage, TrackedRecipient,
-    TrackingEvent, TrackingNews,
+    ActivityItem, MessageActivity, NewRecipient, RecipientActivity, TrackedMessage,
+    TrackedRecipient, TrackingEvent, TrackingNews,
 };
 pub use translation::Translation;
 

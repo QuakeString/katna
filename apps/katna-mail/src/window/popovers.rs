@@ -97,7 +97,8 @@ impl MailWindow {
         } else if self.about_open() {
             self.close_about(window, cx);
             true
-        } else if self.menu.take().is_some()
+        } else if self.dismiss_activity(cx)
+            || self.menu.take().is_some()
             || self.files_menu.take().is_some()
             || std::mem::take(&mut self.account_menu)
             || self.language_picker.take().is_some()
