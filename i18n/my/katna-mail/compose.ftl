@@ -19,6 +19,8 @@ compose-show-trimmed = ဖြတ်ထားသော အကြောင်း�
 compose-to = သို့
 compose-cc = မိတ္တူ
 compose-bcc = လျှို့ဝှက်မိတ္တူ
+compose-from = မှ
+compose-from-choose = အခြားအကောင့်မှ ပို့ရန်
 compose-recipients = လက်ခံသူများ
 compose-subject = ခေါင်းစဉ်
 

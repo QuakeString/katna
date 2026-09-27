@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = ছেভ কৰা সংলগ্�
 ## Settings > Compose
 
 settings-compose-send-from = নতুন বাৰ্তা ইয়াৰ পৰা পঠিয়াওক
-settings-compose-send-from-detail = উত্তৰ আৰু ফৰৱাৰ্ড সদায় আপুনি থকা একাউণ্টৰ পৰা যায়।
+settings-compose-send-from-detail = নতুন বাৰ্তা এই একাউণ্টৰ পৰা আৰম্ভ হয়; প্ৰেৰক শাৰীত আন এটা বাছিব পাৰি। উত্তৰ আৰু ফৰৱাৰ্ড সদায় মূল বাৰ্তাটো অহা একাউণ্টৰ পৰা যায়।
 settings-compose-send-from-current = আপুনি থকা একাউণ্ট
 settings-compose-send-on-replies = উত্তৰত পঠিয়াওক
 settings-compose-send-on-replies-detail = উত্তৰ বা ফৰৱাৰ্ডত পঠিয়াওকে কি কৰে। পঠিয়াওকৰ কাষৰ মেনুৱে আনটো দিয়ে।
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = সাধাৰণ পাঠ, লগ আৰ
 settings-default-apps-sheets-summary = Excel, OpenDocument আৰু CSV ফাইল ক'ত খোল খায়
 settings-default-apps-documents-summary = Word, OpenDocument পাঠ আৰু স্লাইড ক'ত খোল খায়
 settings-default-apps-after-saving-summary = ছেভ কৰা সংলগ্নক সেইবোৰৰ ফ'ল্ডাৰত দেখুৱাওক
-settings-compose-send-from-summary = নতুন মেইল যি একাউণ্টৰ পৰা যায়: আপুনি থকাটো, বা সদায় একেটা
+settings-compose-send-from-summary = নতুন মেইল যি একাউণ্টৰ পৰা যায়: প্ৰথমটো, আন এটা, বা আপুনি থকাটো
 settings-compose-send-on-replies-summary = উত্তৰ আৰু ফৰৱাৰ্ডত পঠিয়াওক, বা পঠিয়াওক আৰু কথোপকথন আৰ্কাইভ কৰক
 settings-compose-signatures-summary = আপোনাৰ বাৰ্তাৰ তলত, এটা “--” শাৰীৰ পিছত যোগ কৰা হয়
 settings-compose-for-new-mail-summary = নতুন মেইল যি স্বাক্ষৰেৰে আৰম্ভ হয়

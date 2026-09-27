@@ -19,6 +19,8 @@ compose-show-trimmed = បង្ហាញខ្លឹមសារដែលបា
 compose-to = ទៅ
 compose-cc = ចម្លងជូន
 compose-bcc = ចម្លងជូនសម្ងាត់
+compose-from = ពី
+compose-from-choose = ផ្ញើពីគណនីផ្សេង
 compose-recipients = អ្នកទទួល
 compose-subject = ប្រធានបទ
 

@@ -8,6 +8,11 @@
 //!   [`archive_messages`] edit the store and queue one operation per
 //!   message. They never touch the network. Imported (`local`) accounts
 //!   only change in the store.
+//! - [`save_draft`] keeps a draft in the Drafts folder and queues its
+//!   upload; [`discard_draft`] throws every saved copy of it away. A draft
+//!   is known by its `Message-ID`, which stays the same while it is
+//!   edited, so each save replaces the copy before it, here and on the
+//!   server.
 //! - [`replay`] runs the due operations on a connection. A refused
 //!   operation is tried again later; after [`MAX_ATTEMPTS`] it is dropped
 //!   and the local change undone, so the store matches the server again.
@@ -21,7 +26,7 @@ use katna_core::{AccountId, AccountKind};
 use katna_store::{FolderId, FolderRole, MessageFlags, MessageId, Store, StoredFolder, ThreadId};
 use serde::{Deserialize, Serialize};
 
-use crate::{Error, Flags, MailBackend, Result};
+use crate::{Error, Flags, MailBackend, Result, outbox};
 
 /// Tries before an operation is given up.
 pub const MAX_ATTEMPTS: u32 = 3;
@@ -69,6 +74,22 @@ enum Op {
         message: i64,
         folder: i64,
         path: String,
+    },
+    /// Upload the draft `message` to `folder` (Drafts) with `\Draft` and
+    /// `\Seen`, after deleting the server's older copies of it (the same
+    /// `message_id`). The next sync of the folder brings the new copy.
+    SaveDraft {
+        message: i64,
+        folder: i64,
+        path: String,
+        message_id: String,
+    },
+    /// Delete every copy of the draft `message_id` in `folder` (Drafts) on
+    /// the server.
+    DropDraft {
+        folder: i64,
+        path: String,
+        message_id: String,
     },
 }
 
@@ -391,6 +412,171 @@ pub fn file_sent(store: &mut Store, message: MessageId) -> Result<bool, ChangeEr
     Ok(queued)
 }
 
+/// Saves a draft of `account`: stores `raw` in its Drafts folder in place
+/// of the copies saved before (the same `Message-ID`) and, for accounts on
+/// a server, queues its upload. Adds `Date` and `Message-ID` if they are
+/// missing. Returns the new message and whether the worker has something
+/// to replay.
+pub fn save_draft(
+    store: &mut Store,
+    account: AccountId,
+    raw: &[u8],
+    now: i64,
+) -> Result<(MessageId, bool), ChangeError> {
+    let synced = is_synced(store, account)?;
+    let drafts = drafts_folder(store, account, synced)?;
+    let domain = outbox::envelope(raw)
+        .ok()
+        .and_then(|e| e.from.rsplit_once('@').map(|(_, d)| d.to_owned()))
+        .unwrap_or_else(|| "katna.invalid".to_owned());
+    let raw = outbox::complete_headers(raw, now, &domain);
+    let flags = MessageFlags::SEEN | MessageFlags::DRAFT;
+    outbox::with_message(&raw, now, flags, |message| {
+        let message_id = message
+            .message_id_hdr
+            .map(bare_message_id)
+            .filter(|id| !id.is_empty())
+            .ok_or_else(|| ChangeError::NotPossible("the draft has no Message-ID".to_owned()))?;
+        let mut batch = store.mail_batch()?;
+        let (folder, path) = match drafts {
+            Some(drafts) => (drafts.id, drafts.path),
+            None => {
+                let path = "Drafts";
+                let id = batch.upsert_folder(account, path, Some(FolderRole::Drafts))?;
+                (id, path.to_owned())
+            }
+        };
+        forget_copies(&mut batch, account, folder, &message_id)?;
+        let id = batch.add_outgoing(account, message)?;
+        // In the folder with no UID until the server's copy replaces it.
+        batch.file_outgoing(id, folder)?;
+        if synced {
+            let op = Op::SaveDraft {
+                message: id.0,
+                folder: folder.0,
+                path,
+                message_id,
+            };
+            batch.enqueue_op(account, &encode(&op))?;
+        }
+        batch.commit()?;
+        Ok((id, synced))
+    })
+}
+
+/// Throws away every saved copy of the draft `message_id` of `account`,
+/// here and, for accounts on a server, there. Returns whether the worker
+/// has something to replay.
+pub fn discard_draft(
+    store: &mut Store,
+    account: AccountId,
+    message_id: &str,
+) -> Result<bool, ChangeError> {
+    let message_id = bare_message_id(message_id);
+    if message_id.is_empty() {
+        return Ok(false);
+    }
+    let synced = is_synced(store, account)?;
+    let Some(drafts) = drafts_folder(store, account, synced)? else {
+        return Ok(false);
+    };
+    let mut batch = store.mail_batch()?;
+    forget_copies(&mut batch, account, drafts.id, &message_id)?;
+    if synced {
+        let op = Op::DropDraft {
+            folder: drafts.id.0,
+            path: drafts.path,
+            message_id,
+        };
+        batch.enqueue_op(account, &encode(&op))?;
+    }
+    batch.commit()?;
+    Ok(synced)
+}
+
+/// Removes the saved copies of the draft `message_id` from `folder`, and
+/// the queued uploads of those not on the server yet.
+fn forget_copies(
+    batch: &mut katna_store::MailBatch<'_>,
+    account: AccountId,
+    folder: FolderId,
+    message_id: &str,
+) -> katna_store::Result<()> {
+    for queued in batch.pending_ops(account)? {
+        if let Ok(Op::SaveDraft { message_id: id, .. }) = serde_json::from_str(&queued.op_json)
+            && id == message_id
+        {
+            batch.finish_op(queued.id)?;
+        }
+    }
+    for old in batch.with_message_id_in(folder, message_id)? {
+        batch.remove_from_folder(old, folder)?;
+    }
+    Ok(())
+}
+
+/// The Drafts folder of `account`. An account on a server must have one;
+/// a local one without it gets one when a draft is saved (`None`).
+fn drafts_folder(
+    store: &Store,
+    account: AccountId,
+    synced: bool,
+) -> Result<Option<StoredFolder>, ChangeError> {
+    let mut folders: Vec<StoredFolder> = folders_of(store, account)?.into_values().collect();
+    folders.sort_by_key(|f| f.id);
+    // Servers without special-use folders name it.
+    let drafts = folders
+        .iter()
+        .position(|f| f.role == Some(FolderRole::Drafts))
+        .or_else(|| {
+            folders.iter().position(|f| {
+                f.role.is_none() && FolderRole::from_name(&f.path) == Some(FolderRole::Drafts)
+            })
+        })
+        .map(|ix| folders.swap_remove(ix));
+    match drafts {
+        None if synced => Err(ChangeError::NotPossible(
+            "this account has no Drafts folder".to_owned(),
+        )),
+        drafts => Ok(drafts),
+    }
+}
+
+/// A `Message-ID` without spaces and angle brackets.
+fn bare_message_id(id: &str) -> String {
+    id.trim()
+        .trim_start_matches('<')
+        .trim_end_matches('>')
+        .trim()
+        .to_owned()
+}
+
+/// Deletes the messages of the selected `path` whose `Message-ID` is
+/// `message_id`. Drafts folders are small, so every header is read.
+async fn drop_drafts<B: MailBackend>(
+    backend: &mut B,
+    selected: &mut Option<String>,
+    path: &str,
+    message_id: &str,
+) -> Result<()> {
+    select(backend, selected, path).await?;
+    let uids: Vec<u32> = backend
+        .fetch_headers(1, None)
+        .await?
+        .into_iter()
+        .filter(|m| {
+            katna_import::parse_message(&m.header)
+                .and_then(|parsed| parsed.message_id)
+                .is_some_and(|id| bare_message_id(&id) == message_id)
+        })
+        .map(|m| m.uid)
+        .collect();
+    if !uids.is_empty() {
+        backend.expunge(&uids).await?;
+    }
+    Ok(())
+}
+
 /// Runs the due operations of `account` on `backend`. Returns `Err` only
 /// when the connection broke; the operation it was running stays queued.
 /// Leaves some folder selected.
@@ -582,6 +768,59 @@ async fn run<B: MailBackend>(
                 report.resync.push((folder, path.clone()));
             }
         }
+        Op::SaveDraft {
+            message,
+            folder,
+            path,
+            message_id,
+        } => {
+            drop_drafts(backend, selected, path, message_id).await?;
+            let message = MessageId(*message);
+            let folder = FolderId(*folder);
+            let raw = store
+                .messages_by_id(&[message])?
+                .into_iter()
+                .next()
+                .and_then(|m| m.blob_hash)
+                .map(|hash| store.blobs().get(&hash))
+                .transpose()?
+                .flatten();
+            // Replaced or discarded meanwhile (its ID may be another
+            // message's by now): a later operation has it.
+            let same = |raw: &Vec<u8>| {
+                katna_import::parse_message(raw)
+                    .and_then(|parsed| parsed.message_id)
+                    .is_some_and(|id| bare_message_id(&id) == *message_id)
+            };
+            if let Some(raw) = raw.filter(same) {
+                let flags = Flags {
+                    seen: true,
+                    draft: true,
+                    ..Flags::default()
+                };
+                backend.append_with_flags(path, raw, &flags).await?;
+                // The server's copy, which the sync brings, takes its place.
+                let mut batch = store.mail_batch()?;
+                if batch.unconfirmed_in(message, folder)? {
+                    batch.remove_from_folder(message, folder)?;
+                }
+                batch.commit()?;
+            }
+            if !report.resync.iter().any(|(id, _)| *id == folder) {
+                report.resync.push((folder, path.clone()));
+            }
+        }
+        Op::DropDraft {
+            folder,
+            path,
+            message_id,
+        } => {
+            drop_drafts(backend, selected, path, message_id).await?;
+            let folder = FolderId(*folder);
+            if !report.resync.iter().any(|(id, _)| *id == folder) {
+                report.resync.push((folder, path.clone()));
+            }
+        }
     }
     Ok(())
 }
@@ -635,6 +874,10 @@ fn undo(batch: &mut katna_store::MailBatch<'_>, op: &Op) -> katna_store::Result<
         Op::Expunge { .. } => Ok(()),
         // It was sent; only the copy in Sent is missing.
         Op::Append { message, .. } => batch.forget_outgoing(MessageId(*message)),
+        // The draft stays here; the next save tries again.
+        Op::SaveDraft { .. } => Ok(()),
+        // The next sync of Drafts shows what is still there.
+        Op::DropDraft { folder, .. } => batch.forget_modseq(FolderId(*folder)),
     }
 }
 

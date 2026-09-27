@@ -163,7 +163,7 @@ settings-default-apps-show-folder-detail = Открывает файловый �
 ## Settings > Compose
 
 settings-compose-send-from = Отправлять новые письма с
-settings-compose-send-from-detail = Ответы и пересылки всегда уходят с аккаунта, в котором вы находитесь.
+settings-compose-send-from-detail = Новые письма начинаются с этого аккаунта; в строке «От» можно выбрать другой. Ответы и пересылки всегда уходят с аккаунта, на который пришло исходное письмо.
 settings-compose-send-from-current = Текущего аккаунта
 settings-compose-send-on-replies = Отправка ответов
 settings-compose-send-on-replies-detail = Что делает кнопка «Отправить» при ответе или пересылке. Другой вариант — в меню рядом с ней.
@@ -239,7 +239,7 @@ settings-default-apps-text-summary = Где открываются обычны�
 settings-default-apps-sheets-summary = Где открываются файлы Excel, OpenDocument и CSV
 settings-default-apps-documents-summary = Где открываются документы Word и OpenDocument и презентации
 settings-default-apps-after-saving-summary = Показывать сохранённые вложения в их папке
-settings-compose-send-from-summary = Аккаунт, с которого уходят новые письма: текущий или всегда один и тот же
+settings-compose-send-from-summary = Аккаунт, с которого уходят новые письма: первый, другой или текущий
 settings-compose-send-on-replies-summary = «Отправить» или «Отправить и архивировать» цепочку при ответах и пересылках
 settings-compose-signatures-summary = Добавляется под вашим письмом после строки «--»
 settings-compose-for-new-mail-summary = Подпись, с которой начинаются новые письма

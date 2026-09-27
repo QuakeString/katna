@@ -886,6 +886,7 @@ impl MailWindow {
                 self.picked_from_nav(window, cx);
             }
             sidebar::Row::Folder { key, .. } if key == compose::SCHEDULED_NAV_KEY => {
+                self.leave_settings(window, cx);
                 self.open_scheduled(cx);
             }
             _ => self.toggle_nav_row(ix, cx),
@@ -904,12 +905,21 @@ impl MailWindow {
 
     /// After a line of the folder pane opened a list.
     fn picked_from_nav(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
+        self.leave_settings(window, cx);
         self.reader = None;
         // A folder picked from the opened navigation closes it.
         self.nav_peek = false;
         self.layout.drawer = false;
         self.peek_task = None;
         window.focus(&self.list_focus, cx);
+    }
+
+    /// A list picked in the folder pane while Settings is open takes its
+    /// place, as in Gmail; folding a line does not.
+    fn leave_settings(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
+        if self.settings_page.is_some() {
+            self.close_settings_page(window, cx);
+        }
     }
 
     /// The arrow of line `ix`: folds or opens what is under it.

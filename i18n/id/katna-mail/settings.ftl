@@ -153,7 +153,7 @@ settings-default-apps-show-folder-detail = Membuka pengelola file dengan lampira
 ## Settings > Compose
 
 settings-compose-send-from = Kirim pesan baru dari
-settings-compose-send-from-detail = Balasan dan penerusan selalu dikirim dari akun yang sedang Anda buka.
+settings-compose-send-from-detail = Pesan baru dimulai dari akun ini; baris Dari memilih akun lain. Balasan dan penerusan selalu dikirim dari akun yang menerima pesan aslinya.
 settings-compose-send-from-current = Akun yang sedang Anda buka
 settings-compose-send-on-replies = Kirim pada balasan
 settings-compose-send-on-replies-detail = Apa yang dilakukan Kirim pada balasan atau penerusan. Menu di samping Kirim menawarkan pilihan lainnya.
@@ -229,7 +229,7 @@ settings-default-apps-text-summary = Tempat teks biasa, log, dan kode dibuka
 settings-default-apps-sheets-summary = Tempat file Excel, OpenDocument, dan CSV dibuka
 settings-default-apps-documents-summary = Tempat teks Word dan OpenDocument serta slide dibuka
 settings-default-apps-after-saving-summary = Tampilkan lampiran yang disimpan di foldernya
-settings-compose-send-from-summary = Akun pengirim email baru: akun yang sedang Anda buka, atau selalu akun yang sama
+settings-compose-send-from-summary = Akun pengirim email baru: akun pertama, akun lain, atau akun yang sedang Anda buka
 settings-compose-send-on-replies-summary = Kirim, atau Kirim dan arsipkan percakapan, pada balasan dan penerusan
 settings-compose-signatures-summary = Ditambahkan di bawah pesan Anda, setelah baris “--”
 settings-compose-for-new-mail-summary = Tanda tangan untuk email baru

@@ -153,7 +153,7 @@ settings-default-apps-show-folder-detail = Mở trình quản lý tệp với c�
 ## Settings > Compose
 
 settings-compose-send-from = Gửi thư mới từ
-settings-compose-send-from-detail = Thư trả lời và chuyển tiếp luôn được gửi từ tài khoản bạn đang dùng.
+settings-compose-send-from-detail = Thư mới bắt đầu từ tài khoản này; hàng Từ cho phép chọn tài khoản khác. Thư trả lời và chuyển tiếp luôn được gửi từ tài khoản đã nhận thư gốc.
 settings-compose-send-from-current = Tài khoản bạn đang dùng
 settings-compose-send-on-replies = Gửi khi trả lời
 settings-compose-send-on-replies-detail = Nút Gửi làm gì khi trả lời hoặc chuyển tiếp. Menu bên cạnh nút Gửi có lựa chọn còn lại.
@@ -229,7 +229,7 @@ settings-default-apps-text-summary = Nơi mở văn bản thuần, nhật ký v�
 settings-default-apps-sheets-summary = Nơi mở tệp Excel, OpenDocument và CSV
 settings-default-apps-documents-summary = Nơi mở văn bản Word, OpenDocument và trang chiếu
 settings-default-apps-after-saving-summary = Hiện tệp đính kèm đã lưu trong thư mục của chúng
-settings-compose-send-from-summary = Tài khoản gửi thư mới: tài khoản bạn đang dùng, hoặc luôn cùng một tài khoản
+settings-compose-send-from-summary = Tài khoản gửi thư mới: tài khoản đầu tiên, tài khoản khác, hoặc tài khoản bạn đang dùng
 settings-compose-send-on-replies-summary = Gửi, hoặc Gửi và lưu trữ cuộc hội thoại, khi trả lời và chuyển tiếp
 settings-compose-signatures-summary = Được thêm bên dưới thư của bạn, sau dòng “--”
 settings-compose-for-new-mail-summary = Chữ ký mở đầu cho thư mới

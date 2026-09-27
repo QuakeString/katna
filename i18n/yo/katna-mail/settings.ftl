@@ -153,7 +153,7 @@ settings-default-apps-show-folder-detail = Ó ń ṣí olùṣàkóso fáìlì p
 ## Settings > Compose
 
 settings-compose-send-from = Fi àwọn ìfiránṣẹ́ tuntun ránṣẹ́ láti
-settings-compose-send-from-detail = Àwọn èsì àti ìfiránṣẹ́-síwájú máa ń jáde láti inú àkáǹtì tí o wà nínú rẹ̀ nígbà gbogbo.
+settings-compose-send-from-detail = Àwọn ìfiránṣẹ́ tuntun máa ń bẹ̀rẹ̀ láti àkáǹtì yìí; ìlà Láti ń yan òmíràn. Àwọn èsì àti ìfiránṣẹ́-síwájú máa ń jáde nígbà gbogbo láti àkáǹtì tí ìfiránṣẹ́ àkọ́kọ́ dé sí.
 settings-compose-send-from-current = Àkáǹtì tí o wà nínú rẹ̀
 settings-compose-send-on-replies = Fífiránṣẹ́ lórí àwọn èsì
 settings-compose-send-on-replies-detail = Ohun tí Fi ránṣẹ́ ń ṣe lórí èsì tàbí ìfiránṣẹ́-síwájú. Mẹ́nù lẹ́gbẹ̀ẹ́ Fi ránṣẹ́ ń pèsè èkejì.
@@ -229,7 +229,7 @@ settings-default-apps-text-summary = Ibi tí ọ̀rọ̀ lásán, àkọsílẹ�
 settings-default-apps-sheets-summary = Ibi tí àwọn fáìlì Excel, OpenDocument àti CSV ti ń ṣí
 settings-default-apps-documents-summary = Ibi tí Word, ọ̀rọ̀ OpenDocument àti àwọn sìláìdì ti ń ṣí
 settings-default-apps-after-saving-summary = Fi àwọn àfikún tí a fi pamọ́ hàn nínú fódà wọn
-settings-compose-send-from-summary = Àkáǹtì tí lẹ́tà tuntun ń jáde láti inú rẹ̀: èyí tí o wà nínú rẹ̀, tàbí èyí kan náà nígbà gbogbo
+settings-compose-send-from-summary = Àkáǹtì tí lẹ́tà tuntun ń jáde láti inú rẹ̀: èyí àkọ́kọ́, òmíràn, tàbí èyí tí o wà nínú rẹ̀
 settings-compose-send-on-replies-summary = Fi ránṣẹ́, tàbí Fi ránṣẹ́ kí o sì fi ìjíròrò pamọ́, lórí èsì àti ìfiránṣẹ́-síwájú
 settings-compose-signatures-summary = A ń fi kún un lábẹ́ ìfiránṣẹ́ rẹ, lẹ́yìn ìlà “--” kan
 settings-compose-for-new-mail-summary = Ìbuwọ́lù tí lẹ́tà tuntun fi ń bẹ̀rẹ̀

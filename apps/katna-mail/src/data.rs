@@ -825,6 +825,17 @@ impl Mail {
         people
     }
 
+    /// The drafts among `ids`: messages flagged `\Draft`.
+    pub fn drafts(&self, ids: &[MessageId]) -> Vec<MessageId> {
+        self.store
+            .messages_by_id(ids)
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|m| m.flags.contains(MessageFlags::DRAFT))
+            .map(|m| m.id)
+            .collect()
+    }
+
     /// The raw message `id`, if its body is stored.
     pub fn raw(&self, id: MessageId) -> Option<Vec<u8>> {
         let message = self.store.messages_by_id(&[id]).ok()?.pop()?;

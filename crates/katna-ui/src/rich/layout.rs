@@ -643,6 +643,7 @@ impl Element for ParaElement {
             return;
         };
         let layout = ParaLayout { bounds, lines };
+        let dragging = cx.has_active_drag();
         let editor = self.editor.read(cx);
         let placeholder =
             editor.doc.para(self.path).is_some_and(Para::is_empty) && self.placeholder.is_some();
@@ -650,6 +651,14 @@ impl Element for ParaElement {
         editor.drawn_focused.set(focused);
         let selection = editor.selection_in(self.path);
         let cursor = editor.cursor_in(self.path);
+        // While a picture is dragged over the text, the caret shows where
+        // it will land instead of where the typing is.
+        let caret = match editor.drop_caret {
+            Some((at, upstream)) if dragging => {
+                (at.path == self.path).then_some((at.offset, upstream))
+            }
+            _ => cursor.filter(|_| focused),
+        };
         let marker = editor.marker(self.path).map(|marker| {
             let style = editor
                 .doc
@@ -724,7 +733,7 @@ impl Element for ParaElement {
                 cx,
             );
         }
-        if focused && let Some((offset, upstream)) = cursor {
+        if let Some((offset, upstream)) = caret {
             let offset = if placeholder { 0 } else { offset };
             let (at, height) = layout.caret(offset, upstream);
             window.paint_quad(fill(
