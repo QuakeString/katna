@@ -231,6 +231,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 24,
+        title: "Select and copy text in mail",
+        text: "Drag across a message to select its text, double-click for a word \
+               or triple-click for a paragraph. Ctrl+C or a right-click copies it, \
+               and Ctrl+A selects the whole conversation.",
+        animation: None,
+    },
+    Highlight {
+        id: 25,
         title: "Katna as your mail app",
         text: "Email links in other apps and on websites can open a new message in \
                Katna Mail, with the address, subject and text filled in. Turn it on \
