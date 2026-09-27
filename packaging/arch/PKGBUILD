@@ -74,7 +74,8 @@ prepare() {
 build() {
   cd katna
   export RUSTUP_TOOLCHAIN=stable
-  export CARGO_TARGET_DIR=target
+  # CI builds in a cached directory outside the clone.
+  export CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-target}"
   # Katna Mail names this version in What's new after an update.
   export KATNA_VERSION="$pkgver"
   # Two builds: in one, Cargo would give katna-daemon and katnactl the
@@ -87,7 +88,7 @@ package() {
   cd katna
   local bin
   for bin in "${_bins[@]}"; do
-    install -Dm755 "target/release/$bin" "$pkgdir/usr/bin/$bin"
+    install -Dm755 "${CARGO_TARGET_DIR:-target}/release/$bin" "$pkgdir/usr/bin/$bin"
   done
 
   # The file names are the IDs from katna_core::ids; globs keep them out

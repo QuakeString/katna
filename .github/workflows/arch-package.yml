@@ -8,6 +8,12 @@ name: Arch package
 on:
   push:
     branches: [main]
+    # Nothing under docs/ goes into the package except the credits the
+    # About dialog embeds, so docs-only pushes keep the current package.
+    paths:
+      - "**"
+      - "!docs/**"
+      - "docs/credits.json"
   pull_request:
     paths:
       - "packaging/**"
@@ -23,6 +29,12 @@ jobs:
     runs-on: ubuntu-latest
     container: archlinux:latest
     timeout-minutes: 120
+    env:
+      # Shared by the build user and root, so rust-cache (which runs as
+      # root) sees the toolchain and the downloaded crates. The build
+      # directory is set below, beside the checkout.
+      RUSTUP_HOME: /opt/rustup
+      CARGO_HOME: /opt/cargo
     steps:
       # The package's depends and makedepends (rustup provides cargo), so
       # makepkg finds them all installed and needs no sudo.
@@ -39,13 +51,37 @@ jobs:
       - name: Create the build user
         run: |
           useradd --create-home builder
-          chown -R builder: "$GITHUB_WORKSPACE"
+          # packaging/arch/PKGBUILD builds here instead of in its own
+          # fresh clone, so the cache below applies.
+          target=$(realpath -m ../katna-target)
+          echo "CARGO_TARGET_DIR=$target" >> "$GITHUB_ENV"
+          mkdir -p "$RUSTUP_HOME" "$CARGO_HOME" "$target"
+          chown -R builder: "$GITHUB_WORKSPACE" "$RUSTUP_HOME" "$CARGO_HOME" "$target"
           git config --system --add safe.directory '*'
-      - name: Build the package
+      - name: Install Rust
         run: |
-          runuser -u builder -- env HOME=/home/builder bash -euc '
+          runuser -u builder -- env HOME=/home/builder \
+              RUSTUP_HOME="$RUSTUP_HOME" CARGO_HOME="$CARGO_HOME" bash -euc '
             rustup toolchain install stable --profile minimal
             rustup default stable
+            # The components rust-toolchain.toml names, so rust-cache (run
+            # as root in the checkout) has nothing to install.
+            rustup toolchain install
+          '
+      # Dependencies built on main; Katna's own crates are always rebuilt.
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: arch-package
+          save-if: ${{ github.ref == 'refs/heads/main' || github.head_ref == 'claude/faster-ci-ftmbqn' }}
+          workspaces: ". -> ../katna-target"
+      - name: Hand the restored cache to the build user
+        run: |
+          chown -R builder: "$RUSTUP_HOME" "$CARGO_HOME" "$CARGO_TARGET_DIR"
+      - name: Build the package
+        run: |
+          runuser -u builder -- env HOME=/home/builder \
+              RUSTUP_HOME="$RUSTUP_HOME" CARGO_HOME="$CARGO_HOME" \
+              CARGO_TARGET_DIR="$CARGO_TARGET_DIR" bash -euc '
             # makepkg clones the checked-out branch; pull request
             # checkouts have none.
             git checkout -B makepkg-ci
