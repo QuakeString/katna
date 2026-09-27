@@ -21,6 +21,7 @@ pub mod outbox;
 mod people;
 pub mod pop3;
 pub mod remote;
+pub mod templates;
 mod thread;
 
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths};
@@ -47,6 +48,7 @@ pub use outbox::{OutboxEntry, SendState};
 pub use people::{Correspondent, Person};
 pub use pop3::Pop3Uidl;
 pub use remote::{FolderRole, NewAttachment, RemoteMessage, StoredAttachment, StoredFolder};
+pub use templates::{Template, TemplateFile, TemplateSummary};
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.
 #[derive(Debug)]

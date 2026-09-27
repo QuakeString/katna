@@ -235,6 +235,21 @@ settings-compose-suggestions-on = Suggest while writing
 settings-compose-suggestions-on-detail = Show the likely rest of a phrase in grey as you type
 settings-compose-templates = Templates
 settings-compose-templates-detail = Save mail you write often, and start new mail or a reply from it.
+settings-compose-no-templates = No templates yet. In a message, choose Templates, then Save as template.
+settings-compose-template-new = Create new
+# The name a new template starts with.
+settings-compose-template-new-name = New template
+settings-compose-template-subject = Subject
+settings-compose-template-text = Template text
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} and {"{"}my name{"}"} are filled in with the recipient's and your name.
+settings-compose-template-remove-file = Remove attachment
+settings-compose-template-save = Save
+settings-compose-template-saved = Template saved
+settings-compose-template-needs-name = Give the template a name
+settings-compose-template-delete = Delete template
+settings-compose-template-deleted = Template deleted
+# $error: why it failed.
+settings-compose-template-delete-failed = Could not delete the template: { $error }
 
 ## Settings > Shortcuts
 
@@ -296,7 +311,7 @@ settings-compose-spelling-summary = Check spelling while writing, and the dictio
 settings-general-mail-app-summary = Open email links from other apps and websites in Katna Mail
 settings-compose-grammar-summary = Underline grammar mistakes while writing, in English
 settings-compose-suggestions-summary = Show the likely rest of a phrase in grey as you type
-settings-compose-templates-summary = Coming soon: save mail you write often, and start new mail or a reply from it
+settings-compose-templates-summary = Save mail you write often, and start new mail or a reply from it
 settings-feedback-crash-reports-summary = Save crash reports on this computer when Katna Mail or its background service crashes
 settings-feedback-saved-summary = View, copy or delete the crash reports saved on this computer
 settings-feedback-help-improve-summary = Send crash reports to help fix what went wrong; off unless you turn it on

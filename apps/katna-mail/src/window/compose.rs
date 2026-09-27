@@ -28,6 +28,7 @@ mod schedule;
 mod scheduled;
 mod security;
 mod signature_editor;
+mod templates;
 mod tools;
 
 use std::cell::Cell;
@@ -161,6 +162,8 @@ pub(super) struct Compose {
     /// Pictures just pasted or dropped, while the choice between the text
     /// and the attachments shows.
     picture_choice: Option<paste::PictureChoice>,
+    /// A template was put in, so its fields are filled again on Send.
+    from_template: bool,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -267,6 +270,8 @@ pub(super) struct Writing {
     compose_window: Option<popout::Handle>,
     /// That window has the desktop's title bar rather than Katna's.
     popout_server_frame: bool,
+    /// The saved templates, as last read.
+    templates: Vec<katna_store::TemplateSummary>,
 }
 
 impl Writing {
@@ -962,6 +967,7 @@ impl MailWindow {
             stick: Rc::default(),
             grammar_color: grammar_color(&th),
             picture_choice: None,
+            from_template: false,
             _subscriptions: subscriptions,
         });
         cx.notify();
@@ -1188,7 +1194,7 @@ impl MailWindow {
             return;
         };
         compose.popup = None;
-        let draft = compose.fields(cx);
+        let mut draft = compose.fields(cx);
         let thread = compose.thread.clone();
         let sealing = compose.sealing;
         let kind = compose.kind;
@@ -1216,6 +1222,11 @@ impl MailWindow {
         if to.is_empty() && cc.is_empty() && bcc.is_empty() {
             self.show_snackbar(tr!("compose-no-recipients"), None, cx);
             return;
+        }
+        if self.fill_template_fields(to.first().or(cc.first()), cx)
+            && let Some(c) = &self.compose
+        {
+            draft = c.fields(cx);
         }
         let total: usize = attachments.iter().map(|a| a.data.len()).sum::<usize>()
             + draft.body.images().map(|i| i.data.len()).sum::<usize>();
@@ -2186,7 +2197,7 @@ fn grammar_color(th: &Theme) -> Hsla {
 }
 
 /// The editor's colors from the window's theme.
-fn palette(th: &Theme) -> Palette {
+pub(in crate::window) fn palette(th: &Theme) -> Palette {
     let color = |c: u32| -> Hsla { rgba(c).into() };
     Palette {
         accent: color(th.accent),

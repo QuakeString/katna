@@ -84,6 +84,27 @@ pub mod state {
     pub const AUTH_FAILED: &str = "auth-failed";
 }
 
+/// A mail template for `SaveTemplate`; `id` 0 saves a new one.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct TemplateItem {
+    pub id: i64,
+    pub name: String,
+    pub subject: String,
+    /// The formatted body, pictures inside as `data:` URIs.
+    pub html: String,
+    /// The same body as plain text.
+    pub text: String,
+    pub attachments: Vec<TemplateFileItem>,
+}
+
+/// A file that goes with a template.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct TemplateFileItem {
+    pub name: String,
+    pub mime: String,
+    pub data: Vec<u8>,
+}
+
 /// A message waiting to be sent, or recently sent, from `Outbox`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 pub struct OutboxItem {
@@ -266,6 +287,18 @@ macro_rules! pim_proxy {
 
             /// Messages waiting to be sent, failed or cancelled.
             fn outbox(&self) -> zbus::Result<Vec<OutboxItem>>;
+
+            /// Saves a mail template on this computer, in place of the one
+            /// with its ID (0: a new one). Its name must not be empty, and
+            /// its attachments are at most 20 MB. Returns its ID. Apps read
+            /// templates from the store.
+            fn save_template(&self, template: &TemplateItem) -> zbus::Result<i64>;
+
+            /// Renames a template. Returns whether it exists.
+            fn rename_template(&self, id: i64, name: &str) -> zbus::Result<bool>;
+
+            /// Deletes a template. Returns whether it existed.
+            fn delete_template(&self, id: i64) -> zbus::Result<bool>;
 
             /// Downloads a remote image of a message the user chose to show
             /// (`https`; `http` is upgraded), at most 8 MB. Fails for

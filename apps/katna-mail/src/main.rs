@@ -21,6 +21,7 @@ mod signatures;
 mod spell;
 mod suggest;
 mod tabs;
+mod templates;
 mod theme;
 mod whats_new;
 mod widgets;
