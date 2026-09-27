@@ -727,6 +727,7 @@ impl MailWindow {
                         if let Some(c) = &mut this.compose {
                             c.popup = Some(Popup::Schedule);
                         }
+                        this.ask_hold_limit(cx);
                         cx.notify();
                     }),
                 ),
@@ -791,14 +792,19 @@ impl MailWindow {
                     .pb(px(8.0))
                     .text_size(px(12.0))
                     .text_color(rgba(th.text_dim))
-                    .child(tr!(
-                        "schedule-zone-note",
-                        zone = self
+                    .child({
+                        let zone = self
                             .tz
                             .iana_name()
                             .map(str::to_owned)
-                            .unwrap_or_else(|| tr!("schedule-local-time"))
-                    )),
+                            .unwrap_or_else(|| tr!("schedule-local-time"));
+                        // Who sends it: the mail server, or Katna here.
+                        match self.server_holds_mail() {
+                            Some(true) => tr!("schedule-zone-note-server", zone = zone),
+                            Some(false) => tr!("schedule-zone-note-local", zone = zone),
+                            None => tr!("schedule-zone-note", zone = zone),
+                        }
+                    }),
             )
             .children(items)
             .child(menu_divider(th))

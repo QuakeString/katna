@@ -876,7 +876,7 @@ Features built on it:
 | Feature | Metadata | On expiry |
 |---|---|---|
 | Undo send | `{send_at: now + N s, undo: true}` on the draft (N = 5/10/20/30 s) | Send the draft. Undo = delete the metadata. The draft stays saved, so a crash does not lose it. |
-| Send later | `{send_at}` | Send the draft (daemon, or Katna Server if enabled and the machine is off). |
+| Send later | `{send_at}` | Send the draft (the SMTP server holds it when it has `FUTURERELEASE`; else the daemon, or Katna Server if enabled and the machine is off). |
 | Snooze | `{until}`, thread moved to a "Snoozed" folder | Move back to inbox, mark unread, notify. |
 | Reminder | `{remind_at, if_no_reply: true}` | Notify if nobody replied. |
 | Tracking | `{tracking_id, links[], events[]}` | — (events arrive from the server) |
@@ -921,12 +921,26 @@ Features built on it:
   brings the server's. Gmail files sent mail itself, so for an IMAP host
   under `gmail.com` or `googlemail.com` the copy is only forgotten. With
   no Sent folder, nothing is filed.
-- **Send later.** Schedule send queues the message with a delay until
-  the chosen time; the daemon holds it like an undo-send delay and sends
-  it on time with or without the app. The app lists queued messages
-  (`Outbox`, `OutboxChanged`) and counts one as scheduled when it is
-  still queued, has no error and is due later than the undo-send delay
-  would put it. Cancel is `UndoSend`, as for undo send.
+- **Send later.** The mail service's own feature comes first (plan 7.7):
+  `ScheduleSend(account, raw, delay, at)` queues the message for the
+  undo-send delay (`send_at`) with the chosen time in `hold_until`. After
+  the delay the outbox logs in to the SMTP server; one that lists
+  `FUTURERELEASE` (RFC 4865; Stalwart does, Gmail does not; some list it
+  only after login, so the daemon says EHLO again) gets it at once with
+  `MAIL FROM … HOLDUNTIL=<UTC time>` and sends it on time with this
+  computer off. The entry is then `sent` with `hold_until` kept, shown as
+  `held`, filed in Sent when that time passes, and it can no longer be
+  cancelled: SMTP cannot take mail back. A time beyond the server's
+  longest hold is handed over once it is within it; a server without
+  `FUTURERELEASE`, or a time less than a minute away, keeps the message
+  here, sent at `hold_until` while the daemon runs (the old path).
+  `ServerHoldLimit(account)` tells the schedule menu which applies: "Your
+  mail server will send it…" or "Katna will send it … while this
+  computer is on". The app lists queued and held messages (`Outbox`,
+  `OutboxChanged`, `send_at` being when it goes out) and counts one as
+  scheduled when it is held, or still queued with no error and due later
+  than the undo-send delay would put it. Cancel is `UndoSend`, as for
+  undo send, for mail not handed over yet.
 - **Drafts.** Closing a message saves it (`SaveDraft(account, raw)`): the
   app keeps one `Message-ID` for a message while it is written, and the
   daemon replaces every copy in the Drafts folder with that `Message-ID`,

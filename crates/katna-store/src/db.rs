@@ -47,6 +47,7 @@ impl DbKind {
                 include_str!("schema/mail_v3.sql"),
                 include_str!("schema/mail_v4.sql"),
                 include_str!("schema/mail_v5.sql"),
+                include_str!("schema/mail_v6.sql"),
             ],
             Self::Pim => &[include_str!("schema/pim_v1.sql")],
             Self::Blobs => &[include_str!("schema/blobs_v1.sql")],

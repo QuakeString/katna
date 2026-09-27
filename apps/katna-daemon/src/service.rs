@@ -157,6 +157,22 @@ macro_rules! pim_interface {
                     .queue_send(AccountId(account), &message, delay)?)
             }
 
+            async fn schedule_send(
+                &self,
+                account: i64,
+                message: Vec<u8>,
+                delay: u32,
+                at: i64,
+            ) -> fdo::Result<i64> {
+                Ok(self
+                    .daemon
+                    .schedule_send(AccountId(account), &message, delay, at)?)
+            }
+
+            async fn server_hold_limit(&self, account: i64) -> fdo::Result<u64> {
+                Ok(self.daemon.server_hold_limit(AccountId(account)).await?)
+            }
+
             async fn undo_send(&self, id: i64) -> fdo::Result<bool> {
                 Ok(self.daemon.undo_send(id)?)
             }
