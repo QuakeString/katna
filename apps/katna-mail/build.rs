@@ -9,7 +9,9 @@
 //!   `whats-new/highlights/`, in `$OUT_DIR/highlights.rs` for
 //!   `src/whats_new.rs`. One file per highlight, so changes merged side by
 //!   side never touch the same lines. `whats-new/README.md` says how to
-//!   write one.
+//!   write one. Their translations, one `whats-new.toml` per language
+//!   beside its `.ftl` files (`i18n/<language>/katna-mail/`), with a table
+//!   per highlight named by its file, go in with them.
 
 use std::fmt::Write as _;
 use std::path::Path;
@@ -79,6 +81,11 @@ fn highlights() {
         .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
         .collect();
     names.sort();
+    let stems: Vec<&str> = names
+        .iter()
+        .map(|file| file.strip_suffix(".toml").unwrap_or(file))
+        .collect();
+    let translated = translated_highlights(&stems);
 
     let mut out = String::from(
         "/// Every highlight, oldest first (in name order).\npub static HIGHLIGHTS: &[Highlight] = &[\n",
@@ -109,7 +116,7 @@ fn highlights() {
                     panic!("whats-new/highlights/{file}: {key} must be a string")
                 });
                 // Written across lines in the file, shown as one paragraph.
-                text.split_whitespace().collect::<Vec<_>>().join(" ")
+                paragraph(text)
             })
         };
         let title = field("title").filter(|t| !t.is_empty());
@@ -136,9 +143,19 @@ fn highlights() {
                 )
             }
         };
+        let mut translations = String::from("&[");
+        for (folder, title, text) in translated.get(name).into_iter().flatten() {
+            write!(
+                translations,
+                "Translation {{ folder: {folder:?}, title: {title:?}, text: {text:?} }}, "
+            )
+            .unwrap();
+        }
+        translations.push(']');
         writeln!(
             out,
-            "    Highlight {{ name: {name:?}, title: {title:?}, text: {text:?}, animation: {animation} }},"
+            "    Highlight {{ name: {name:?}, title: {title:?}, text: {text:?}, \
+             translations: {translations}, animation: {animation} }},"
         )
         .unwrap();
     }
@@ -146,6 +163,64 @@ fn highlights() {
 
     let dest = Path::new(&std::env::var("OUT_DIR").unwrap()).join("highlights.rs");
     std::fs::write(dest, out).unwrap();
+}
+
+/// The highlights' translations, `i18n/<folder>/katna-mail/whats-new.toml`
+/// (a table per highlight, named by its file: `title` and `text`), by
+/// highlight: (folder, title, text), in folder order. A table for a
+/// highlight that does not exist stops the build.
+fn translated_highlights(
+    stems: &[&str],
+) -> std::collections::HashMap<String, Vec<(String, String, String)>> {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../i18n");
+    let mut folders: Vec<_> = std::fs::read_dir(&root)
+        .expect("i18n exists")
+        .filter_map(Result::ok)
+        .filter(|e| e.path().is_dir() && e.file_name() != "en")
+        .map(|e| e.file_name().to_string_lossy().into_owned())
+        .collect();
+    folders.sort();
+    let mut translated = std::collections::HashMap::<_, Vec<_>>::new();
+    for folder in folders {
+        let path = root.join(&folder).join("katna-mail/whats-new.toml");
+        println!("cargo:rerun-if-changed={}", path.display());
+        let Ok(source) = std::fs::read_to_string(&path) else {
+            continue;
+        };
+        let file = format!("i18n/{folder}/katna-mail/whats-new.toml");
+        let table: toml::Table = source.parse().unwrap_or_else(|e| panic!("{file}: {e}"));
+        for (stem, value) in table {
+            assert!(
+                stems.contains(&stem.as_str()),
+                "{file}: [{stem:?}] is not a highlight \
+                 (apps/katna-mail/whats-new/highlights/{stem}.toml)"
+            );
+            let Some(entry) = value.as_table() else {
+                panic!("{file}: {stem:?} must be a table with a title and a text");
+            };
+            for key in entry.keys() {
+                assert!(
+                    matches!(key.as_str(), "title" | "text"),
+                    "{file}: [{stem:?}]: unknown key {key:?}"
+                );
+            }
+            let [title, text] = ["title", "text"].map(|key| {
+                let text = entry
+                    .get(key)
+                    .and_then(toml::Value::as_str)
+                    .unwrap_or_else(|| panic!("{file}: [{stem:?}]: needs a {key} string"));
+                // Written across lines in the file, shown as one paragraph.
+                let text = paragraph(text);
+                assert!(!text.is_empty(), "{file}: [{stem:?}]: {key} is empty");
+                text
+            });
+            translated
+                .entry(stem)
+                .or_default()
+                .push((folder.clone(), title, text));
+        }
+    }
+    translated
 }
 
 /// `2026-09-27-0444-about-katna`: a date, a UTC time and a slug.
@@ -172,4 +247,27 @@ fn is_name(name: &str) -> bool {
         && slug
             .bytes()
             .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
+}
+
+/// `text`'s lines joined into one paragraph: with a space, except between
+/// two Chinese or Japanese characters, which are written without spaces.
+/// (Thai, Lao, Khmer and Burmese put a space between phrases, and their
+/// lines break there, so they keep it.)
+fn paragraph(text: &str) -> String {
+    fn unspaced(c: char) -> bool {
+        matches!(c as u32,
+            0x3000..=0x30FF // CJK punctuation, kana
+            | 0x3400..=0x4DBF | 0x4E00..=0x9FFF // CJK ideographs
+            | 0xFF00..=0xFFEF) // full-width forms
+    }
+    let mut out = String::new();
+    for word in text.split_whitespace() {
+        let joins = out.chars().next_back().is_some_and(unspaced)
+            && word.chars().next().is_some_and(unspaced);
+        if !out.is_empty() && !joins {
+            out.push(' ');
+        }
+        out.push_str(word);
+    }
+    out
 }

@@ -1,0 +1,361 @@
+# Katna Mail, Italian (Italiano).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-27-0319-whats-new"]
+title = "Le novità, dopo ogni aggiornamento"
+text = """
+Dopo un aggiornamento Katna Mail mostra una volta cosa è cambiato, al
+posto del tour di benvenuto. Puoi riaprirlo da Impostazioni rapide.
+"""
+
+["2026-09-27-0320-reply-buttons-fit"]
+title = "Pulsanti di risposta che ci stanno sempre"
+text = """
+Rispondi, Rispondi a tutti e Inoltra restano su una riga: quando la
+finestra si stringe diventano icone uno alla volta. Sul telefono si
+dividono la larghezza.
+"""
+
+["2026-09-27-0321-notifications-open-mail"]
+title = "Le notifiche aprono la loro email"
+text = """
+Fai clic sulla notifica di una nuova email per aprire quel messaggio,
+anche con Katna Mail chiuso. Le notifiche hanno anche Rispondi a tutti.
+"""
+
+["2026-09-27-0322-attachment-previews"]
+title = "Anteprime di più allegati"
+text = """
+Fogli di calcolo, CSV, file di testo e documenti mostrano un'anteprima
+sulla loro scheda, e lo sfondo del visualizzatore è più chiaro.
+"""
+
+["2026-09-27-0323-frosted-menus"]
+title = "Menu smerigliati"
+text = """
+Con Impostazioni > Sperimentali > Sfondo sfocato attivo, menu e popup
+diventano di vetro smerigliato.
+"""
+
+["2026-09-27-0346-settings-search"]
+title = "Cerca nelle impostazioni"
+text = """
+Con le Impostazioni aperte, la casella di ricerca trova qualsiasi
+impostazione e ti ci porta. Le Impostazioni hanno più schede, in un
+ordine più chiaro, e le spiegazioni lunghe stanno dietro un pulsante (i).
+"""
+
+["2026-09-27-0410-crash-reports-kept"]
+title = "I rapporti di arresto restano sul tuo computer"
+text = """
+Se Katna Mail o il suo servizio in background si arresta, all'avvio
+successivo te lo dice, con il rapporto da vedere o copiare per segnalare
+il problema. Impostazioni > Feedback degli utenti li elenca.
+"""
+
+["2026-09-27-0438-calmer-reply"]
+title = "Una risposta più tranquilla"
+text = """
+Rispondendo nel riquadro di lettura, Invia e la formattazione restano in
+basso, l'email citata si nasconde dietro "..." e Apri la risposta in una
+finestra la apre in una finestra a parte. Sul telefono, la scrittura
+occupa tutta la finestra.
+"""
+
+["2026-09-27-0439-mail-in-own-window"]
+title = "L'email nella sua finestra"
+text = """
+Maiusc+clic su un messaggio, un clic destro o In una nuova finestra
+nella barra del lettore lo aprono in una finestra tutta sua. Stampa
+tutto stampa l'intera conversazione.
+"""
+
+["2026-09-27-0440-settings-on-phone"]
+title = "Impostazioni sul telefono"
+text = """
+Su uno schermo stretto Impostazioni e Impostazioni rapide riempiono la
+finestra, e ogni menu e popup si chiude con Esc o con un clic fuori.
+"""
+
+["2026-09-27-0441-offline-mail"]
+title = "Scegli quanta posta resta offline"
+text = """
+Impostazioni > Generali > Posta offline tiene su questo computer una
+settimana, un mese, tre mesi, un anno o tutta la tua posta. La posta più
+vecchia si scarica quando la apri.
+"""
+
+["2026-09-27-0442-folder-pane-button"]
+title = "Un nuovo pulsante per il riquadro cartelle"
+text = """
+Il pulsante in alto a sinistra mostra e nasconde il riquadro delle
+cartelle, e il suo lato sinistro è pieno mentre le cartelle sono visibili.
+"""
+
+["2026-09-27-0443-cards-and-phone-rows"]
+title = "Schede più pulite, telefono più tranquillo"
+text = """
+L'elenco e il lettore stanno su schede con un contorno leggero e
+un'ombra corta, i menu restano sempre dentro la finestra e, sul
+telefono, le righe di ricerca e della barra degli strumenti scivolano
+via mentre scorri.
+"""
+
+["2026-09-27-0444-about-katna"]
+title = "Informazioni su Katna"
+text = """
+Aiuto > Informazioni su Katna, anche in Impostazioni rapide, mostra la
+versione, il registro delle modifiche e ogni libreria su cui Katna è
+costruito, con autori e licenza. Si apre anche dalla versione
+nell'intestazione delle Impostazioni.
+"""
+
+["2026-09-27-0457-settings-tabs-one-line"]
+title = "Le schede delle Impostazioni su una riga"
+text = """
+Le schede delle Impostazioni restano su una riga: quando non ci stanno,
+le frecce ai bordi e la rotellina fanno scorrere le altre in vista. Firme
+e modelli condividono la scheda Scrittura, e cartelle e regole ne
+condividono un'altra.
+"""
+
+["2026-09-27-0515-send-crash-reports"]
+title = "Aiuta a migliorare Katna, se vuoi"
+text = """
+Katna chiede una sola volta se inviare i rapporti di arresto per aiutare
+a correggere cosa è andato storto. Partono senza il tuo indirizzo IP, i
+messaggi o gli indirizzi email, e solo se dici di sì. Puoi cambiare idea
+quando vuoi in Impostazioni > Feedback degli utenti.
+"""
+
+["2026-09-27-0536-older-attachments-open"]
+title = "Gli allegati della posta vecchia si aprono subito"
+text = """
+Un clic sull'allegato di un'email vecchia che non è ancora su questo
+computer lo scarica: l'allegato si riempie mentre scarica, poi si apre.
+"""
+
+["2026-09-27-0556-reading-options"]
+title = "Leggi le conversazioni a modo tuo"
+text = """
+Impostazioni > Generali > Lettura può mostrare prima il messaggio più
+recente, aprire le intestazioni complete di ogni messaggio e scrivere i
+destinatari per intero invece che col solo nome.
+"""
+
+["2026-09-27-0609-send-and-archive"]
+title = "Invia e archivia"
+text = """
+Il menu accanto a Invia in una risposta la invia e archivia la
+conversazione. Impostazioni > Scrittura può farlo diventare il
+comportamento di Invia, e può inviare la nuova posta sempre dallo stesso
+account.
+"""
+
+["2026-09-27-0627-scaling"]
+title = "Tutto più grande o più piccolo"
+text = """
+Impostazioni > Aspetto > Scala ridimensiona tutta la finestra, testo,
+icone e spaziature insieme, dal 75% al 200% oltre alla scala del tuo
+desktop.
+"""
+
+["2026-09-27-0645-shortcut-sets"]
+title = "Le scorciatoie dell'app di posta che conosci"
+text = """
+Impostazioni > Scorciatoie può partire dai tasti di Gmail, Inbox by
+Gmail, Apple Mail, Outlook o Thunderbird, li elenca su due colonne, e
+Ripristina predefinite annulla le tue modifiche.
+"""
+
+["2026-09-27-0646-more-settings"]
+title = "Più impostazioni"
+text = """
+Apri Katna Mail all'accesso, scegli quando la posta risulta letta, fai
+rispondere a tutti il pulsante di risposta, mostra sempre le immagini,
+silenzia il suono della nuova posta, nascondi i segni di Importante,
+restringi le righe lunghe, mantieni i colori dell'email in modalità
+scura, disattiva le anteprime degli allegati, scrivi in testo semplice,
+scegli la lingua del correttore e trova i file salvati nella loro
+cartella.
+"""
+
+["2026-09-27-0706-your-language"]
+title = "La tua lingua"
+text = """
+Scegli una di 51 lingue dal pulsante con la bandiera nella barra in
+alto, oppure segui quella del desktop. Date e numeri la seguono già; il
+resto dell'app viene tradotto nei prossimi aggiornamenti. Le traduzioni
+sono state abbozzate da un'IA, e le correzioni sono benvenute.
+"""
+
+["2026-09-27-0723-select-and-copy-text"]
+title = "Seleziona e copia il testo delle email"
+text = """
+Trascina su un messaggio per selezionarne il testo, fai doppio clic per
+una parola o triplo clic per un paragrafo. Ctrl+C o un clic destro lo
+copia, e Ctrl+A seleziona l'intera conversazione.
+"""
+
+["2026-09-27-0743-address-suggestions"]
+title = "Indirizzi suggeriti mentre scrivi"
+text = """
+A, Cc e Ccn suggeriscono le persone a cui scrivi di più mentre digiti,
+anche con un errore di battitura. Scegline una con le frecce e Invio,
+Tab o un clic.
+"""
+
+["2026-09-27-0804-main-window-translated"]
+title = "La finestra principale nella tua lingua"
+text = """
+La barra delle app, le cartelle, le schede, l'elenco, i menu e il
+riquadro di lettura ora seguono la lingua che scegli. Le cartelle che
+hai creato tu mantengono il loro nome.
+"""
+
+["2026-09-27-0824-24-hour-clock"]
+title = "Orologio a 12 o 24 ore"
+text = """
+Impostazioni > Generali > Ora mostra gli orari con l'orologio a 12 o a
+24 ore, qualunque sia l'uso della lingua.
+"""
+
+["2026-09-27-0824-settings-translated"]
+title = "Le Impostazioni nella tua lingua"
+text = """
+Impostazioni, Impostazioni rapide, i tuoi account e i nomi delle
+scorciatoie da tastiera ora seguono la lingua che scegli, e la ricerca
+nelle Impostazioni trova le righe con i loro nomi tradotti.
+"""
+
+["2026-09-27-0825-default-mail-app"]
+title = "Katna come app di posta"
+text = """
+I link email in altre app e nei siti possono aprire un nuovo messaggio
+in Katna Mail, con indirizzo, oggetto e testo già compilati. Attivalo in
+Impostazioni > Generali > App di posta predefinita.
+"""
+
+["2026-09-27-0825-old-word-files-and-slides"]
+title = "Vecchi file Word e presentazioni"
+text = """
+I documenti Word 97–2003 (.doc) ora si aprono nel visualizzatore con
+titoli, elenchi e tabelle, e le presentazioni PowerPoint (.pptx, .ppt) e
+OpenDocument (.odp) mostrano il testo di ogni diapositiva. Anche le loro
+schede mostrano le prime righe. I file che Katna non sa mostrare si
+aprono subito nella tua app predefinita.
+"""
+
+["2026-09-27-0825-opens-where-you-left-it"]
+title = "Si riapre dove l'hai lasciato"
+text = """
+Katna Mail si apre con la dimensione e nella posizione che aveva quando
+l'hai chiuso, ingrandito se lo era. Uscire da Katna dall'area di notifica
+lo fa ripartire da capo. Su Wayland la posizione torna dove il desktop lo
+permette (Plasma 6.7 e successivi).
+"""
+
+["2026-09-27-0826-grammar-checking"]
+title = "Controllo grammaticale"
+text = """
+Mentre scrivi in inglese, nel testo e nell'oggetto, gli errori di
+grammatica vengono sottolineati in ambra. Fai clic destro su uno per
+correggerlo o ignorarlo. Funziona sul tuo computer, con Harper; puoi
+disattivarlo in Impostazioni > Scrittura.
+"""
+
+["2026-09-27-0828-check-before-sending"]
+title = "Un controllo prima di inviare"
+text = """
+Se il messaggio parla di un allegato ma non ne ha, o non ha l'oggetto,
+Katna te lo chiede prima di inviarlo, anche per la posta programmata.
+"""
+
+["2026-09-27-0831-writing-suggestions"]
+title = "Suggerimenti di scrittura"
+text = """
+Mentre scrivi, il probabile seguito di una frase appare in grigio. Premi
+Tab per accettarlo, o continua a scrivere. Katna impara le frasi dalla
+posta che hai inviato e dalla conversazione a cui rispondi, sul tuo
+computer; puoi disattivarlo in Impostazioni > Scrittura.
+"""
+
+["2026-09-27-1043-dialogs-translated"]
+title = "Le finestre di dialogo nella tua lingua"
+text = """
+Informazioni, Novità, le pagine di benvenuto e il tour, l'aggiunta di un
+account, le opzioni di ricerca e l'avviso di arresto ora seguono la
+lingua che scegli.
+"""
+
+["2026-09-27-1129-compose-translated"]
+title = "Scrivere email nella tua lingua"
+text = """
+La finestra di scrittura, la sua barra di formattazione, l'invio
+programmato e l'editor delle firme ora seguono la lingua che scegli, e
+gli orari di invio suggeriti usano il suo modo di scrivere le date e
+l'orologio a 12 o 24 ore che hai scelto. Il tema che segue il desktop
+ora si chiama semplicemente Sistema.
+"""
+
+["2026-09-27-1132-print-preview"]
+title = "Un'anteprima prima di stampare"
+text = """
+Stampa ora apre prima un'anteprima delle pagine, in A4 o Letter, prima
+della finestra della stampante. I menu Altro si aprono subito sotto il
+loro pulsante, con un'icona accanto a ogni voce.
+"""
+
+["2026-09-27-1137-formatting-bar-colors"]
+title = "Barra di formattazione più chiara"
+text = """
+La barra di formattazione prende una tinta del tuo colore di risalto, e i
+formati attivi, come Grassetto o un elenco, appaiono nel colore di
+selezione. In una risposta, Invia e i suoi strumenti restano in basso
+mentre scorri.
+"""
+
+["2026-09-27-1200-notifications-translated"]
+title = "Le notifiche nella tua lingua"
+text = """
+Le notifiche di nuova posta e i loro pulsanti, e il menu e il
+suggerimento dell'icona nell'area di notifica, ora seguono la lingua che
+scegli, e cambiano appena la cambi.
+"""
+
+["2026-09-27-1242-whats-new-translated"]
+title = "Novità nella tua lingua"
+text = """
+Queste note ora compaiono nella lingua impostata in Katna Mail. Le traduzioni sono bozze: dicci dove la formulazione potrebbe essere migliore.
+"""
+
+["2026-09-27-1126-undo-anything"]
+title = "Annulla qualsiasi cosa con Ctrl+Z"
+text = """
+Hai archiviato, eliminato, spostato o aggiunto a Speciali qualcosa per
+errore? Premi Ctrl+Z, o Annulla nell'avviso in basso, per tornare
+indietro, anche dai risultati di ricerca e dalle conversazioni aperte in
+una finestra a parte. Ctrl+Z continua a risalire tra le tue azioni,
+compreso segnare come già letto o da leggere, e recupera un messaggio
+inviato finché il tempo per annullare l'invio non è scaduto.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Copia dagli allegati"
+text = """
+Il testo di PDF, documenti, presentazioni e file di testo aperti in
+Katna ora si può selezionare e copiare come il testo di un messaggio. In
+un foglio di calcolo, trascina sulle celle, o fai clic sulla lettera di
+una colonna o sul numero di una riga, e Ctrl+C le copia in modo che si
+incollino come celle.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Scrivi si sposta tra le cartelle"
+text = """
+Scrivi ora sta in cima alle tue cartelle. Chiudile e scivola nella barra
+a sinistra, dove basta fermarci sopra con il puntatore per rivedere le
+cartelle. In alto a sinistra c'è Katna Mail, e il nome scorre su
+Calendario, Contatti e gli altri quando cambi app.
+"""

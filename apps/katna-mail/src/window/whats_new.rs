@@ -336,14 +336,14 @@ impl MailWindow {
                                         .text_size(px(15.0))
                                         .line_height(px(22.0))
                                         .font_weight(FontWeight::MEDIUM)
-                                        .child(highlight.title),
+                                        .child(highlight.title()),
                                 )
                                 .child(
                                     div()
                                         .text_size(px(14.0))
                                         .line_height(px(21.0))
                                         .text_color(rgba(th.text_dim))
-                                        .child(highlight.text),
+                                        .child(highlight.text()),
                                 ),
                         ),
                 )
@@ -521,11 +521,11 @@ mod tests {
                 continue;
             };
             for bytes in [animation.light, animation.dark] {
-                let image = decode(bytes).expect(highlight.title);
+                let image = decode(bytes).expect(highlight.name);
                 assert!(
                     image.frame_count() > 1,
                     "{} is not animated",
-                    highlight.title
+                    highlight.name
                 );
                 assert_eq!(webp_size(bytes), webp_size(animation.light));
             }

@@ -94,15 +94,25 @@ fn parse_mailbox(entry: &str) -> Option<Mailbox> {
     })
 }
 
-/// Whether `email` looks like `local@domain`.
+/// Whether `email` looks like `local@domain.tld`: something before the @,
+/// and a domain of dot-separated names of letters, digits and hyphens.
 pub fn valid_email(email: &str) -> bool {
     let Some((local, domain)) = email.rsplit_once('@') else {
         return false;
     };
+    let labels: Vec<&str> = domain.split('.').collect();
     !local.is_empty()
-        && !domain.is_empty()
-        && !domain.starts_with('.')
-        && !domain.ends_with('.')
+        && !local.starts_with('.')
+        && !local.ends_with('.')
+        && !local.contains("..")
+        && labels.len() >= 2
+        && labels.iter().all(|label| {
+            !label.is_empty()
+                && !label.starts_with('-')
+                && !label.ends_with('-')
+                && label.chars().all(|c| c.is_alphanumeric() || c == '-')
+        })
+        && labels.last().is_some_and(|tld| tld.chars().count() >= 2)
         && !email
             .chars()
             .any(|c| c.is_whitespace() || c.is_control() || "<>(),;:\"[]\\".contains(c))
@@ -391,6 +401,30 @@ mod tests {
         assert_eq!(parse_addresses("  "), Ok(vec![]));
         assert_eq!(parse_addresses("kay@enron.com, bob"), Err("bob".to_owned()));
         assert_eq!(parse_addresses("a b@x.org"), Err("a b@x.org".to_owned()));
+    }
+
+    #[test]
+    fn checks_the_address_format() {
+        for good in ["kay@enron.com", "k.m+news@mail.x-y.org", "jo@münchen.de"] {
+            assert!(valid_email(good), "{good}");
+        }
+        for bad in [
+            "xyz",
+            "kay@",
+            "@x.org",
+            "kay@x",
+            "kay@x.",
+            "kay@.x.org",
+            "kay@x..org",
+            "kay@x.o",
+            "kay@-x.org",
+            "kay@x_y.org",
+            ".kay@x.org",
+            "k..m@x.org",
+            "kay mann@x.org",
+        ] {
+            assert!(!valid_email(bad), "{bad}");
+        }
     }
 
     #[test]

@@ -1,0 +1,370 @@
+# Katna Mail, French (Français).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-27-0319-whats-new"]
+title = "Les nouveautés, après chaque mise à jour"
+text = """
+Après une mise à jour, Katna Mail montre une fois ce qui a changé, au lieu
+de la visite d’accueil. Les Paramètres rapides permettent de le rouvrir.
+"""
+
+["2026-09-27-0320-reply-buttons-fit"]
+title = "Des boutons de réponse qui tiennent toujours"
+text = """
+Répondre, Répondre à tous et Transférer restent sur une ligne : quand la
+fenêtre rétrécit, ils se replient en icônes un par un. Sur un téléphone,
+ils se partagent la largeur.
+"""
+
+["2026-09-27-0321-notifications-open-mail"]
+title = "Les notifications ouvrent leur message"
+text = """
+Cliquez sur une notification de nouveau message pour l’ouvrir, même quand
+Katna Mail est fermé. Les notifications proposent aussi Répondre à tous.
+"""
+
+["2026-09-27-0322-attachment-previews"]
+title = "Aperçu de plus de pièces jointes"
+text = """
+Les feuilles de calcul, les CSV, les fichiers texte et les documents
+affichent un aperçu sur leur carte, et le fond de la visionneuse est plus
+clair.
+"""
+
+["2026-09-27-0323-frosted-menus"]
+title = "Menus en verre dépoli"
+text = """
+Avec Paramètres > Expérimental > Arrière-plan flouté activé, les menus et
+les fenêtres contextuelles prennent un effet de verre dépoli.
+"""
+
+["2026-09-27-0346-settings-search"]
+title = "Cherchez dans vos paramètres"
+text = """
+Dans les Paramètres, le champ de recherche trouve n’importe quel réglage
+et vous y emmène. Les Paramètres ont plus d’onglets, dans un ordre plus
+clair, et les longues explications se cachent derrière un bouton (i).
+"""
+
+["2026-09-27-0410-crash-reports-kept"]
+title = "Les rapports de plantage restent sur votre ordinateur"
+text = """
+Si Katna Mail ou son service d’arrière-plan plante, le démarrage suivant
+le signale, avec le rapport à consulter ou à copier pour un rapport de
+bogue. Paramètres > Retours des utilisateurs les liste.
+"""
+
+["2026-09-27-0438-calmer-reply"]
+title = "Une réponse plus sereine"
+text = """
+Répondre dans le volet de lecture garde Envoyer et la mise en forme en
+bas, replie le message cité derrière « ... », et Ouvrir la réponse dans
+une fenêtre l’ouvre à part. Sur un téléphone, l’écriture occupe toute la
+fenêtre.
+"""
+
+["2026-09-27-0439-mail-in-own-window"]
+title = "Un message dans sa propre fenêtre"
+text = """
+Maj+clic sur un message, un clic droit ou Dans une nouvelle fenêtre dans
+la barre du lecteur l’ouvre dans sa propre fenêtre. Tout imprimer
+imprime toute la conversation.
+"""
+
+["2026-09-27-0440-settings-on-phone"]
+title = "Les paramètres sur téléphone"
+text = """
+Sur un écran étroit, les Paramètres et les Paramètres rapides occupent
+toute la fenêtre, et chaque menu ou fenêtre contextuelle se ferme avec
+Échap ou un clic à côté.
+"""
+
+["2026-09-27-0441-offline-mail"]
+title = "Choisissez combien de messages restent hors connexion"
+text = """
+Paramètres > Général > Messages hors connexion garde une semaine, un
+mois, trois mois, un an ou tous vos messages sur cet ordinateur. Les plus
+anciens se téléchargent quand vous les ouvrez.
+"""
+
+["2026-09-27-0442-folder-pane-button"]
+title = "Un nouveau bouton pour le volet des dossiers"
+text = """
+Le bouton en haut à gauche affiche ou masque le volet des dossiers, et
+son côté gauche est plein tant que les dossiers sont visibles.
+"""
+
+["2026-09-27-0443-cards-and-phone-rows"]
+title = "Des cartes plus nettes, un téléphone plus calme"
+text = """
+La liste et le lecteur reposent sur des cartes au contour léger et à
+l’ombre courte, les menus restent toujours dans la fenêtre, et sur un
+téléphone les barres de recherche et d’outils s’effacent quand vous
+faites défiler.
+"""
+
+["2026-09-27-0444-about-katna"]
+title = "À propos de Katna"
+text = """
+Aide > À propos de Katna, aussi dans les Paramètres rapides, montre la
+version, le journal des modifications et chaque bibliothèque sur laquelle
+Katna repose, avec ses auteurs et sa licence. La version dans l’en-tête
+des Paramètres l’ouvre aussi.
+"""
+
+["2026-09-27-0457-settings-tabs-one-line"]
+title = "Les onglets des Paramètres sur une ligne"
+text = """
+Les onglets des Paramètres restent sur une ligne : quand ils ne tiennent
+pas, des flèches sur les bords et la molette font glisser le reste. Les
+signatures et les modèles partagent l’onglet Rédaction, et les dossiers
+et les règles de messagerie en partagent un aussi.
+"""
+
+["2026-09-27-0515-send-crash-reports"]
+title = "Aidez à améliorer Katna, si vous le voulez"
+text = """
+Katna demande une fois s’il doit envoyer les rapports de plantage pour
+aider à corriger ce qui n’a pas marché. Ils partent sans votre adresse IP,
+vos messages ni vos adresses e-mail, et seulement si vous dites oui.
+Changez d’avis à tout moment dans Paramètres > Retours des utilisateurs.
+"""
+
+["2026-09-27-0536-older-attachments-open"]
+title = "Les pièces jointes des anciens messages s’ouvrent d’un clic"
+text = """
+Cliquer sur une pièce jointe d’un ancien message qui n’est pas encore sur
+cet ordinateur la télécharge : la pièce jointe se remplit pendant ce
+temps, puis s’ouvre.
+"""
+
+["2026-09-27-0556-reading-options"]
+title = "Lisez les conversations à votre façon"
+text = """
+Paramètres > Général > Lecture peut afficher le message le plus récent en
+premier, déplier les en-têtes complets de chaque message et nommer les
+destinataires en entier plutôt que par leur prénom.
+"""
+
+["2026-09-27-0609-send-and-archive"]
+title = "Envoyer et archiver"
+text = """
+Le menu à côté d’Envoyer dans une réponse l’envoie et archive la
+conversation. Paramètres > Rédaction peut en faire l’action d’Envoyer,
+et peut envoyer les nouveaux messages toujours depuis le même compte.
+"""
+
+["2026-09-27-0627-scaling"]
+title = "Tout plus grand ou plus petit"
+text = """
+Paramètres > Apparence > Mise à l’échelle agrandit ou réduit toute la
+fenêtre, texte, icônes et espacements compris, de 75 % à 200 %, en plus
+de l’échelle de votre bureau.
+"""
+
+["2026-09-27-0645-shortcut-sets"]
+title = "Les raccourcis de la messagerie que vous connaissez"
+text = """
+Paramètres > Raccourcis peut partir des touches de Gmail, Inbox by
+Gmail, Apple Mail, Outlook ou Thunderbird, les présente sur deux colonnes,
+et Rétablir les valeurs par défaut annule vos changements.
+"""
+
+["2026-09-27-0646-more-settings"]
+title = "Plus de réglages"
+text = """
+Ouvrir Katna Mail à la connexion, choisir quand un message est marqué lu,
+faire répondre à tous le bouton de réponse, toujours afficher les images,
+couper le son des nouveaux messages, masquer les marqueurs Important,
+réduire la largeur des longues lignes, garder les couleurs des messages
+en mode sombre, désactiver l’aperçu des pièces jointes, écrire en texte
+brut, choisir la langue de l’orthographe et voir les fichiers enregistrés
+dans leur dossier.
+"""
+
+["2026-09-27-0706-your-language"]
+title = "Votre langue"
+text = """
+Choisissez l’une des 51 langues avec le bouton du drapeau dans la barre
+du haut, ou suivez celle de votre bureau. Les dates et les nombres la
+suivent déjà ; le reste de l’application sera traduit au fil des
+prochaines mises à jour. Les traductions ont été rédigées par une IA, et
+les corrections sont les bienvenues.
+"""
+
+["2026-09-27-0723-select-and-copy-text"]
+title = "Sélectionner et copier le texte des messages"
+text = """
+Faites glisser sur un message pour sélectionner son texte, double-cliquez
+pour un mot ou triple-cliquez pour un paragraphe. Ctrl+C ou un clic droit
+le copie, et Ctrl+A sélectionne toute la conversation.
+"""
+
+["2026-09-27-0743-address-suggestions"]
+title = "Des adresses suggérées pendant la saisie"
+text = """
+À, Cc et Cci suggèrent les personnes à qui vous écrivez le plus pendant
+la saisie, même avec une faute de frappe. Choisissez avec les flèches et
+Entrée, Tab ou un clic.
+"""
+
+["2026-09-27-0804-main-window-translated"]
+title = "La fenêtre principale dans votre langue"
+text = """
+La barre des applications, les dossiers, les onglets, la liste, les
+menus et le volet de lecture suivent désormais la langue choisie. Les
+dossiers que vous avez créés gardent leur nom.
+"""
+
+["2026-09-27-0824-24-hour-clock"]
+title = "Horloge sur 12 ou 24 heures"
+text = """
+Paramètres > Général > Heure affiche les heures sur 12 ou 24 heures,
+quelle que soit l’écriture de la langue.
+"""
+
+["2026-09-27-0824-settings-translated"]
+title = "Les Paramètres dans votre langue"
+text = """
+Les Paramètres, les Paramètres rapides, vos comptes et les noms des
+raccourcis clavier suivent désormais la langue choisie, et la recherche
+dans les Paramètres trouve les lignes par leur nom traduit.
+"""
+
+["2026-09-27-0825-default-mail-app"]
+title = "Katna comme messagerie"
+text = """
+Les liens e-mail dans d’autres applications et sur les sites web peuvent
+ouvrir un nouveau message dans Katna Mail, avec l’adresse, l’objet et le
+texte déjà remplis. Activez-le dans Paramètres > Général > Application
+de messagerie par défaut.
+"""
+
+["2026-09-27-0825-old-word-files-and-slides"]
+title = "Anciens fichiers Word et diapositives"
+text = """
+Les documents Word 97–2003 (.doc) s’ouvrent maintenant dans la
+visionneuse avec leurs titres, listes et tableaux, et les diapositives
+PowerPoint (.pptx, .ppt) et OpenDocument (.odp) montrent le texte de
+chaque diapositive. Leurs cartes montrent aussi les premières lignes. Les
+fichiers que Katna ne sait pas afficher s’ouvrent directement dans votre
+application par défaut.
+"""
+
+["2026-09-27-0825-opens-where-you-left-it"]
+title = "S’ouvre là où vous l’avez laissé"
+text = """
+Katna Mail s’ouvre à la taille et à l’endroit qu’il avait à la
+fermeture, agrandi s’il l’était. Quitter Katna depuis la zone de
+notification le fait repartir de zéro. Sous Wayland, la position revient
+là où le bureau le permet (Plasma 6.7 et plus récent).
+"""
+
+["2026-09-27-0826-grammar-checking"]
+title = "Vérification grammaticale"
+text = """
+Quand vous écrivez en anglais, dans le texte et l’objet, les fautes de
+grammaire sont soulignées en ambre. Faites un clic droit pour une
+correction ou pour l’ignorer. Elle tourne sur votre ordinateur, avec
+Harper ; désactivez-la dans Paramètres > Rédaction.
+"""
+
+["2026-09-27-0828-check-before-sending"]
+title = "Une vérification avant l’envoi"
+text = """
+Si votre message parle d’une pièce jointe mais n’en a pas, ou n’a pas
+d’objet, Katna vous demande avant de l’envoyer, y compris pour les
+envois programmés.
+"""
+
+["2026-09-27-0831-writing-suggestions"]
+title = "Suggestions d’écriture"
+text = """
+Pendant que vous écrivez, la suite probable d’une phrase apparaît en
+gris. Appuyez sur Tab pour la prendre, ou continuez à taper. Katna apprend
+les tournures dans les messages que vous avez envoyés et dans la
+conversation à laquelle vous répondez, sur votre ordinateur ;
+désactivez-le dans Paramètres > Rédaction.
+"""
+
+["2026-09-27-1043-dialogs-translated"]
+title = "Les boîtes de dialogue dans votre langue"
+text = """
+À propos, Nouveautés, les pages d’accueil et la visite, l’ajout d’un
+compte, les options de recherche et l’avis de plantage suivent désormais
+la langue choisie.
+"""
+
+["2026-09-27-1129-compose-translated"]
+title = "Écrire vos messages dans votre langue"
+text = """
+La fenêtre de rédaction, sa barre de mise en forme, l’envoi programmé et
+l’éditeur de signature suivent désormais la langue choisie, et les heures
+d’envoi suggérées utilisent sa façon d’écrire les dates et l’horloge sur
+12 ou 24 heures que vous avez choisie. Le thème qui suit le bureau
+s’appelle désormais simplement Système.
+"""
+
+["2026-09-27-1132-print-preview"]
+title = "Voyez avant d’imprimer"
+text = """
+Imprimer ouvre maintenant d’abord un aperçu des pages, en A4 ou Letter,
+avant la boîte de dialogue de l’imprimante. Les menus Plus s’ouvrent
+juste sous leur bouton, avec une icône à côté de chaque élément.
+"""
+
+["2026-09-27-1137-formatting-bar-colors"]
+title = "Une barre de mise en forme plus claire"
+text = """
+La barre de mise en forme prend une teinte de votre couleur d’accent, et
+les formats actifs, comme Gras ou une liste, apparaissent dans la couleur
+de sélection. Dans une réponse, Envoyer et ses outils restent en bas
+pendant le défilement.
+"""
+
+["2026-09-27-1200-notifications-translated"]
+title = "Les notifications dans votre langue"
+text = """
+Les notifications de nouveau message et leurs boutons, ainsi que le menu
+et l’info-bulle de l’icône dans la zone de notification, suivent
+désormais la langue choisie, et changent dès que vous la modifiez.
+"""
+
+["2026-09-27-1242-whats-new-translated"]
+title = "Nouveautés dans votre langue"
+text = """
+Ces notes s'affichent désormais dans la langue choisie pour Katna Mail. Les traductions sont des brouillons : dites-nous où la formulation pourrait être meilleure.
+"""
+
+["2026-09-27-1126-undo-anything"]
+title = "Annulez n’importe quoi avec Ctrl+Z"
+text = """
+Vous avez archivé, supprimé, déplacé ou suivi un message par erreur ?
+Appuyez sur Ctrl+Z, ou sur Annuler dans la note en bas, pour revenir en
+arrière, y compris depuis les résultats de recherche et les
+conversations ouvertes dans leur propre fenêtre. Ctrl+Z continue de
+remonter dans ce que vous avez fait, marquer comme lu ou non lu compris,
+et récupère un message envoyé tant que son délai d’annulation court
+encore.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Copier depuis les pièces jointes"
+text = """
+Le texte des PDF, documents, diapositives et fichiers texte ouverts dans
+Katna peut maintenant être sélectionné et copié comme le texte d’un
+message. Dans une feuille de calcul, faites glisser sur des cellules, ou
+cliquez sur la lettre d’une colonne ou le numéro d’une ligne, et Ctrl+C
+les copie pour qu’elles se collent en cellules.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Nouveau message passe aux dossiers"
+text = """
+Nouveau message se trouve désormais en haut de vos dossiers. Repliez-les
+et il glisse dans la barre de gauche, où il suffit d’y poser le pointeur
+pour revoir les dossiers. En haut à gauche s’affiche Katna Mail, et le
+nom défile vers Calendrier, Contacts et les autres quand vous changez
+d’application.
+"""

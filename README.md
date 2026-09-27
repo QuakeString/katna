@@ -129,12 +129,15 @@ SigLevel = Optional TrustAll
 Server = https://github.com/QuakeString/katna/releases/download/arch-latest
 ```
 
-Then install, and start the background service now and at every login:
+Then install:
 
 ```sh
 sudo pacman -Syu katna-git
-systemctl --user enable --now katna-daemon
 ```
+
+Open Katna Mail once. From then on Katna starts at every login, quietly:
+mail syncs and new-mail notifications and the tray icon come up without
+the window (Settings > General > Desktop turns that off).
 
 To update later:
 

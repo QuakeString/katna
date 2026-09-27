@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Recipients as chips"
+text = """
+Addresses in To, Cc and Bcc become chips that show just the name. The
+arrow on a chip shows its address, and a double-click lets you edit it.
+Anything that isn't a valid address is marked in red, and Send asks you
+to fix it first.
+"""

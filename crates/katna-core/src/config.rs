@@ -204,6 +204,10 @@ pub struct General {
     pub language: String,
     /// 12- or 24-hour times, or as the language writes them.
     pub clock: Clock,
+    /// Katna Mail has set up starting at login once (on by default). The
+    /// autostart entry is the setting itself; this only stops the default
+    /// from coming back after it was turned off.
+    pub start_at_login_set: bool,
 }
 
 /// How times show ([`General::clock`]).
@@ -229,6 +233,7 @@ impl Default for General {
             unread_badge: true,
             language: String::new(),
             clock: Clock::Language,
+            start_at_login_set: false,
         }
     }
 }

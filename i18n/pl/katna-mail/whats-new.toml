@@ -1,0 +1,357 @@
+# Katna Mail, Polish (Polski).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-27-0319-whats-new"]
+title = "Co nowego, po każdej aktualizacji"
+text = """
+Po aktualizacji Katna Mail raz pokazuje, co się zmieniło, zamiast
+powitalnej wycieczki. Szybkie ustawienia otwierają to ponownie.
+"""
+
+["2026-09-27-0320-reply-buttons-fit"]
+title = "Przyciski odpowiedzi, które zawsze się mieszczą"
+text = """
+Odpowiedz, Odpowiedz wszystkim i Przekaż dalej zostają w jednym wierszu:
+gdy okno się zwęża, po kolei zamieniają się w ikony. Na telefonie dzielą
+się szerokością.
+"""
+
+["2026-09-27-0321-notifications-open-mail"]
+title = "Powiadomienia otwierają swoją wiadomość"
+text = """
+Kliknij powiadomienie o nowej poczcie, aby otworzyć tę wiadomość, nawet
+gdy Katna Mail jest zamknięta. Powiadomienia mają też Odpowiedz
+wszystkim.
+"""
+
+["2026-09-27-0322-attachment-previews"]
+title = "Podgląd większej liczby załączników"
+text = """
+Arkusze kalkulacyjne, CSV, pliki tekstowe i dokumenty pokazują podgląd
+na swojej karcie, a tło przeglądarki jest jaśniejsze.
+"""
+
+["2026-09-27-0323-frosted-menus"]
+title = "Menu z matowego szkła"
+text = """
+Po włączeniu Ustawienia > Eksperymentalne > Rozmyte tło menu i okienka
+wyskakujące wyglądają jak matowe szkło.
+"""
+
+["2026-09-27-0346-settings-search"]
+title = "Przeszukuj ustawienia"
+text = """
+Gdy Ustawienia są otwarte, pole wyszukiwania znajdzie każde ustawienie i
+zaprowadzi cię do niego. Ustawienia mają więcej kart, w jaśniejszej
+kolejności, a długie objaśnienia kryją się za przyciskiem (i).
+"""
+
+["2026-09-27-0410-crash-reports-kept"]
+title = "Raporty awarii zostają na twoim komputerze"
+text = """
+Jeśli Katna Mail lub jej usługa w tle ulegnie awarii, przy następnym
+uruchomieniu zobaczysz o tym informację, z raportem do obejrzenia lub
+skopiowania do zgłoszenia błędu. Ustawienia > Opinie pokazują ich listę.
+"""
+
+["2026-09-27-0438-calmer-reply"]
+title = "Spokojniejsza odpowiedź"
+text = """
+Odpowiedź w okienku odczytu trzyma Wyślij i formatowanie na dole, chowa
+cytowaną wiadomość za "...", a Otwórz odpowiedź w osobnym oknie robi
+dokładnie to. Na telefonie pisanie zajmuje całe okno.
+"""
+
+["2026-09-27-0439-mail-in-own-window"]
+title = "Wiadomość we własnym oknie"
+text = """
+Kliknij wiadomość z Shift, kliknij ją prawym przyciskiem lub użyj W
+nowym oknie na pasku czytnika, aby otworzyć ją w osobnym oknie. Drukuj
+wszystko drukuje całą rozmowę.
+"""
+
+["2026-09-27-0440-settings-on-phone"]
+title = "Ustawienia na telefonie"
+text = """
+Na wąskim ekranie Ustawienia i Szybkie ustawienia wypełniają okno, a
+każde menu i okienko zamyka się klawiszem Escape lub kliknięciem obok.
+"""
+
+["2026-09-27-0441-offline-mail"]
+title = "Wybierz, ile poczty zostaje offline"
+text = """
+Ustawienia > Ogólne > Poczta offline trzyma na tym komputerze tydzień,
+miesiąc, trzy miesiące, rok albo całą twoją pocztę. Starsze wiadomości
+pobierają się, gdy je otworzysz.
+"""
+
+["2026-09-27-0442-folder-pane-button"]
+title = "Nowy przycisk panelu folderów"
+text = """
+Przycisk w lewym górnym rogu pokazuje i ukrywa panel folderów, a jego
+lewa strona jest wypełniona, gdy foldery są widoczne.
+"""
+
+["2026-09-27-0443-cards-and-phone-rows"]
+title = "Czystsze karty, spokojniejszy telefon"
+text = """
+Lista i czytnik leżą na kartach z delikatnym obrysem i krótkim cieniem,
+menu zawsze mieszczą się w oknie, a na telefonie wiersze wyszukiwania i
+paska narzędzi chowają się podczas przewijania.
+"""
+
+["2026-09-27-0444-about-katna"]
+title = "O Katna"
+text = """
+Pomoc > O Katna, dostępne też w Szybkich ustawieniach, pokazuje wersję,
+listę zmian i każdą bibliotekę, na której zbudowano Katna, z jej
+autorami i licencją. Otwiera je też wersja w nagłówku Ustawień.
+"""
+
+["2026-09-27-0457-settings-tabs-one-line"]
+title = "Karty ustawień w jednym wierszu"
+text = """
+Karty Ustawień zostają w jednym wierszu: gdy się nie mieszczą, strzałki
+na krawędziach i kółko myszy przesuwają resztę do widoku. Podpisy i
+szablony dzielą kartę Tworzenie, a foldery i reguły poczty też dzielą
+jedną.
+"""
+
+["2026-09-27-0515-send-crash-reports"]
+title = "Pomóż ulepszyć Katna, jeśli chcesz"
+text = """
+Katna raz pyta, czy wysyłać raporty awarii, aby pomóc naprawić to, co
+poszło nie tak. Wysyła je bez twojego adresu IP, wiadomości i adresów
+e-mail, i tylko jeśli się zgodzisz. Zmienisz to w każdej chwili w
+Ustawienia > Opinie.
+"""
+
+["2026-09-27-0536-older-attachments-open"]
+title = "Załączniki starszych wiadomości otwierają się od razu"
+text = """
+Kliknięcie załącznika starszej wiadomości, której nie ma jeszcze na tym
+komputerze, pobiera go: załącznik wypełnia się w trakcie, a potem się
+otwiera.
+"""
+
+["2026-09-27-0556-reading-options"]
+title = "Czytaj rozmowy po swojemu"
+text = """
+Ustawienia > Ogólne > Czytanie mogą pokazywać najnowszą wiadomość jako
+pierwszą, otwierać pełne nagłówki każdej wiadomości i podawać pełne
+nazwy odbiorców zamiast samych imion.
+"""
+
+["2026-09-27-0609-send-and-archive"]
+title = "Wyślij i zarchiwizuj"
+text = """
+Menu obok Wyślij w odpowiedzi wysyła ją i archiwizuje rozmowę.
+Ustawienia > Tworzenie mogą sprawić, że tak będzie działać Wyślij, i
+mogą za każdym razem wysyłać nową pocztę z tego samego konta.
+"""
+
+["2026-09-27-0627-scaling"]
+title = "Wszystko większe albo mniejsze"
+text = """
+Ustawienia > Wygląd > Skalowanie zmienia rozmiar całego okna, tekstu,
+ikon i odstępów jednakowo, od 75% do 200% ponad skalę twojego pulpitu.
+"""
+
+["2026-09-27-0645-shortcut-sets"]
+title = "Skróty z programu pocztowego, który znasz"
+text = """
+Ustawienia > Skróty mogą zacząć od klawiszy Gmaila, Inbox by Gmail,
+Apple Mail, Outlooka lub Thunderbirda, pokazują je w dwóch kolumnach, a
+Przywróć domyślne cofa twoje zmiany.
+"""
+
+["2026-09-27-0646-more-settings"]
+title = "Więcej ustawień"
+text = """
+Otwieraj Katna Mail po zalogowaniu, wybierz, kiedy wiadomość oznacza się
+jako przeczytana, niech przycisk odpowiedzi odpowiada wszystkim, zawsze
+pokazuj obrazy, wycisz dźwięk nowej poczty, ukryj znaczniki Ważne,
+zwężaj długie wiersze, zachowaj własne kolory wiadomości w trybie
+ciemnym, wyłącz podgląd załączników, pisz zwykłym tekstem, wybierz język
+sprawdzania pisowni i zobacz zapisane pliki w ich folderze.
+"""
+
+["2026-09-27-0706-your-language"]
+title = "Twój język"
+text = """
+Wybierz jeden z 51 języków przyciskiem z flagą na górnym pasku albo
+używaj języka pulpitu. Daty i liczby już się do niego dostosowują;
+reszta aplikacji zostanie przetłumaczona w kolejnych aktualizacjach.
+Tłumaczenia przygotowała AI, a poprawki są mile widziane.
+"""
+
+["2026-09-27-0723-select-and-copy-text"]
+title = "Zaznaczaj i kopiuj tekst w wiadomościach"
+text = """
+Przeciągnij po wiadomości, aby zaznaczyć tekst, kliknij dwukrotnie, aby
+zaznaczyć słowo, lub trzykrotnie, aby zaznaczyć akapit. Ctrl+C lub
+prawy przycisk myszy kopiuje, a Ctrl+A zaznacza całą rozmowę.
+"""
+
+["2026-09-27-0743-address-suggestions"]
+title = "Podpowiedzi adresów podczas pisania"
+text = """
+Do, DW i UDW podpowiadają osoby, do których piszesz najczęściej, już
+podczas pisania, nawet z literówką. Wybierz jedną strzałkami i klawiszem
+Enter, Tab lub kliknięciem.
+"""
+
+["2026-09-27-0804-main-window-translated"]
+title = "Główne okno w twoim języku"
+text = """
+Pasek aplikacji, foldery, karty, lista, menu i okienko odczytu są teraz
+w wybranym przez ciebie języku. Foldery, które utworzyłeś, zachowują
+swoje nazwy.
+"""
+
+["2026-09-27-0824-24-hour-clock"]
+title = "Zegar 12- lub 24-godzinny"
+text = """
+Ustawienia > Ogólne > Godzina pokazuje czas w zegarze 12- lub
+24-godzinnym, niezależnie od tego, jak zapisuje go dany język.
+"""
+
+["2026-09-27-0824-settings-translated"]
+title = "Ustawienia w twoim języku"
+text = """
+Ustawienia, Szybkie ustawienia, twoje konta i nazwy skrótów klawiszowych
+są teraz w wybranym przez ciebie języku, a wyszukiwanie w Ustawieniach
+znajduje wiersze po ich przetłumaczonych nazwach.
+"""
+
+["2026-09-27-0825-default-mail-app"]
+title = "Katna jako twój program pocztowy"
+text = """
+Linki e-mail w innych aplikacjach i na stronach mogą otwierać nową
+wiadomość w Katna Mail, z wypełnionym adresem, tematem i treścią. Włącz
+to w Ustawienia > Ogólne > Domyślna aplikacja pocztowa.
+"""
+
+["2026-09-27-0825-old-word-files-and-slides"]
+title = "Stare pliki Worda i slajdy"
+text = """
+Dokumenty Word 97–2003 (.doc) otwierają się teraz w przeglądarce z
+nagłówkami, listami i tabelami, a slajdy PowerPoint (.pptx, .ppt) i
+OpenDocument (.odp) pokazują tekst każdego slajdu. Ich karty też
+pokazują pierwsze wiersze. Pliki, których Katna nie potrafi pokazać,
+otwierają się od razu w domyślnej aplikacji.
+"""
+
+["2026-09-27-0825-opens-where-you-left-it"]
+title = "Otwiera się tam, gdzie ją zostawiłeś"
+text = """
+Katna Mail otwiera się w rozmiarze i miejscu, w jakim była przy
+zamknięciu, zmaksymalizowana, jeśli taka była. Zamknięcie Katna z
+zasobnika uruchamia ją od nowa. Na Waylandzie miejsce wraca tam, gdzie
+pulpit to obsługuje (Plasma 6.7 i nowsze).
+"""
+
+["2026-09-27-0826-grammar-checking"]
+title = "Sprawdzanie gramatyki"
+text = """
+Gdy piszesz po angielsku, w treści i w temacie, błędy gramatyczne
+dostają bursztynowe podkreślenie. Kliknij błąd prawym przyciskiem, aby
+go poprawić lub zignorować. Działa to na twoim komputerze, z Harperem;
+wyłączysz to w Ustawienia > Tworzenie.
+"""
+
+["2026-09-27-0828-check-before-sending"]
+title = "Sprawdzenie przed wysłaniem"
+text = """
+Jeśli wiadomość wspomina o załączniku, ale go nie ma, albo nie ma
+tematu, Katna zapyta przed wysłaniem, także przy wysyłce zaplanowanej.
+"""
+
+["2026-09-27-0831-writing-suggestions"]
+title = "Podpowiedzi podczas pisania"
+text = """
+Podczas pisania prawdopodobna reszta frazy pojawia się na szaro. Naciśnij
+Tab, aby ją przyjąć, albo pisz dalej. Katna uczy się fraz z wysłanych
+przez ciebie wiadomości i z rozmowy, na którą odpowiadasz, na twoim
+komputerze; wyłączysz to w Ustawienia > Tworzenie.
+"""
+
+["2026-09-27-1043-dialogs-translated"]
+title = "Okna dialogowe w twoim języku"
+text = """
+O programie, Co nowego, strony powitalne i wycieczka, dodawanie konta,
+opcje wyszukiwania i komunikat o awarii są teraz w wybranym przez
+ciebie języku.
+"""
+
+["2026-09-27-1129-compose-translated"]
+title = "Pisanie wiadomości w twoim języku"
+text = """
+Okno tworzenia wiadomości, pasek formatowania, zaplanowana wysyłka i
+edytor podpisów są teraz w wybranym przez ciebie języku, a proponowane
+godziny wysyłki zapisują daty po jego sposobie i w wybranym zegarze 12-
+lub 24-godzinnym. Motyw, który podąża za pulpitem, nazywa się teraz po
+prostu Systemowy.
+"""
+
+["2026-09-27-1132-print-preview"]
+title = "Zobacz, zanim wydrukujesz"
+text = """
+Drukuj otwiera teraz najpierw podgląd stron, w formacie A4 lub Letter,
+przed oknem drukarki. Menu Więcej otwierają się tuż pod swoim
+przyciskiem, z ikoną obok każdej pozycji.
+"""
+
+["2026-09-27-1137-formatting-bar-colors"]
+title = "Czytelniejszy pasek formatowania"
+text = """
+Pasek formatowania ma odcień twojego koloru akcentu, a włączone formaty,
+na przykład Pogrubienie lub lista, pokazują się w kolorze zaznaczenia.
+W odpowiedzi Wyślij i jego narzędzia zostają na dole podczas
+przewijania.
+"""
+
+["2026-09-27-1200-notifications-translated"]
+title = "Powiadomienia w twoim języku"
+text = """
+Powiadomienia o nowej poczcie i ich przyciski oraz menu i podpowiedź
+ikony w zasobniku są teraz w wybranym przez ciebie języku i zmieniają
+się, gdy tylko go zmienisz.
+"""
+
+["2026-09-27-1242-whats-new-translated"]
+title = "Nowości w Twoim języku"
+text = """
+Te informacje wyświetlają się teraz w języku ustawionym w Katna Mail. Tłumaczenia są wersjami roboczymi, więc daj nam znać, gdzie sformułowania mogą być lepsze.
+"""
+
+["2026-09-27-1126-undo-anything"]
+title = "Cofnij wszystko skrótem Ctrl+Z"
+text = """
+Coś przez pomyłkę zarchiwizowane, usunięte, przeniesione albo oznaczone
+gwiazdką? Naciśnij Ctrl+Z lub Cofnij w komunikacie na dole, aby to
+odwrócić, także w wynikach wyszukiwania i w rozmowach otwartych we
+własnym oknie. Ctrl+Z cofa kolejne twoje działania, łącznie z
+oznaczaniem jako przeczytane lub nieprzeczytane, i zatrzymuje wysłaną
+wiadomość, dopóki trwa jeszcze czas na cofnięcie wysłania.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Kopiowanie z załączników"
+text = """
+Tekst w plikach PDF, dokumentach, slajdach i plikach tekstowych
+otwartych w Katna można teraz zaznaczać i kopiować jak tekst wiadomości.
+W arkuszu kalkulacyjnym przeciągnij po komórkach albo kliknij literę
+kolumny lub numer wiersza, a Ctrl+C skopiuje je tak, że wkleją się jako
+komórki.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Utwórz przenosi się do folderów"
+text = """
+Utwórz jest teraz na górze listy folderów. Zwiń foldery, a przycisk
+wsunie się na pasek po lewej, gdzie przytrzymanie na nim wskaźnika znów
+pokaże foldery. W lewym górnym rogu widać Katna Mail, a nazwa przewija
+się na Kalendarz, Kontakty i pozostałe, gdy przełączasz aplikacje.
+"""
