@@ -19,6 +19,8 @@ about-source = Source code
 about-coffee = Buy me a coffee
 # Tooltip on "Buy me a coffee" while it does nothing yet.
 about-coming-soon = Coming soon
+# Beside the "Buy me a coffee" button, next to a QR code for the same page.
+about-coffee-scan = Or scan the code with your phone.
 # Above links to the author's social media accounts.
 about-follow = Follow the author
 # Rust is a programming language; KDE is a free software community and its
