@@ -91,6 +91,15 @@ pub(super) enum Change {
     /// Grammar mistakes underlined while writing (English only).
     GrammarCheck(bool),
     WritingSuggestions(bool),
+    /// Offer to translate mail in other languages.
+    TranslateOffer(bool),
+    /// A language (a LibreTranslate code) always translated, or no longer.
+    TranslateAlways(&'static str, bool),
+    /// A language never offered for translation, or offered again.
+    TranslateNever(&'static str, bool),
+    /// The language mail is translated into, a tag; empty follows the
+    /// interface.
+    ReadingLanguage(&'static str),
 }
 
 impl MailWindow {
@@ -583,6 +592,26 @@ impl MailWindow {
             Change::UnifiedInbox(on) => {
                 self.set_unified_inbox(on, cx);
                 return;
+            }
+            Change::TranslateOffer(on) => view.translation.offer = on,
+            Change::TranslateAlways(code, on) | Change::TranslateNever(code, on) => {
+                let translation = &mut view.translation;
+                let (list, other) = if matches!(change, Change::TranslateAlways(..)) {
+                    (&mut translation.always, &mut translation.never)
+                } else {
+                    (&mut translation.never, &mut translation.always)
+                };
+                list.retain(|l| l != code);
+                if on {
+                    list.push(code.to_owned());
+                    // A language is either always translated or never
+                    // offered.
+                    other.retain(|l| l != code);
+                }
+            }
+            Change::ReadingLanguage(tag) => {
+                view.translation.reading_language = tag.to_owned();
+                self.translations.forget_sources();
             }
             Change::Tray(on) | Change::UnreadBadge(on) => {
                 let general = &mut self.config.general;

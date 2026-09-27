@@ -13,6 +13,8 @@
 //! - `DELETE /api/v1/tracks/<id>`: forget one ID and its events.
 //! - `GET /api/v1/events`: server-sent events after `Last-Event-ID` (or
 //!   `?after=`).
+//! - `GET /api/v1/languages`, `POST /api/v1/translate`, `POST
+//!   /api/v1/detect`: LibreTranslate, passed through ([`crate::translate`]).
 
 use std::convert::Infallible;
 use std::net::{IpAddr, SocketAddr};
@@ -35,6 +37,7 @@ use crate::config::Config;
 use crate::db::{Db, DbError, Event, now_ms};
 use crate::ids;
 use crate::limits::WindowLimit;
+use crate::translate;
 
 /// Most IDs one request may create (one per recipient).
 pub const MAX_IDS_PER_REQUEST: u32 = 100;
@@ -56,6 +59,8 @@ pub struct AppState {
     /// none. One server process; the load is small.
     record: Arc<tokio::sync::Mutex<()>>,
     registrations: Arc<WindowLimit<Option<IpAddr>>>,
+    /// Translation requests per install and day.
+    translations: Arc<WindowLimit<String>>,
 }
 
 impl AppState {
@@ -63,12 +68,15 @@ impl AppState {
     pub fn new(db: Db, config: Config) -> Self {
         let (events, _) = broadcast::channel(1024);
         let registrations = WindowLimit::new(config.installs_per_hour, Duration::from_secs(3600));
+        let translations =
+            WindowLimit::new(config.translations_per_day, Duration::from_secs(86_400));
         Self {
             db,
             config: Arc::new(config),
             events,
             record: Arc::default(),
             registrations: Arc::new(registrations),
+            translations: Arc::new(translations),
         }
     }
 
@@ -80,6 +88,11 @@ impl AppState {
     /// The settings.
     pub fn config(&self) -> &Config {
         &self.config
+    }
+
+    /// Translation requests per install and day.
+    pub(crate) fn translations(&self) -> &WindowLimit<String> {
+        &self.translations
     }
 }
 
@@ -95,6 +108,9 @@ pub fn router(state: AppState) -> Router {
         .route("/api/v1/tracks", post(create_tracks))
         .route("/api/v1/tracks/{id}", delete(delete_track))
         .route("/api/v1/events", get(events))
+        .route("/api/v1/languages", get(translate::languages))
+        .route("/api/v1/translate", post(translate::translate))
+        .route("/api/v1/detect", post(translate::detect))
         .with_state(state)
 }
 

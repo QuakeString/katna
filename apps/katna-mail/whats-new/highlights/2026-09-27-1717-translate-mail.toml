@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Read mail in your language"
+text = """
+A message in another language now shows a Translate button above it, and
+Show original brings it back. Katna finds the language on your computer;
+only when you ask does the message's text go to Katna's own server to be
+translated. Settings > General > Translation picks your language and the
+ones to always translate.
+"""

@@ -493,6 +493,12 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
+                tr!("settings-translation"),
+                Some(&tr!("settings-translation-detail")),
+                self.translation_settings(th, cx),
+                th,
+            ))
+            .child(self.row(
                 tr!("settings-general-mark-read"),
                 None,
                 self.mark_read_choice(th, cx),

@@ -22,6 +22,7 @@ mod people;
 pub mod pop3;
 pub mod remote;
 mod thread;
+mod translation;
 
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths};
 use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
@@ -47,6 +48,7 @@ pub use outbox::{OutboxEntry, SendState};
 pub use people::{Correspondent, Person};
 pub use pop3::Pop3Uidl;
 pub use remote::{FolderRole, NewAttachment, RemoteMessage, StoredAttachment, StoredFolder};
+pub use translation::Translation;
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.
 #[derive(Debug)]

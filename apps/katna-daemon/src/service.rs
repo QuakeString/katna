@@ -11,6 +11,7 @@ use katna_store::{FolderId, MessageFlags, MessageId};
 use zbus::{fdo, object_server::SignalEmitter};
 
 use crate::daemon::{CommandError, Daemon, Notice};
+use crate::translate::TranslateError;
 
 /// The object at `/in/invenia/katna/Pim1`.
 pub struct PimService {
@@ -33,6 +34,22 @@ impl From<CommandError> for fdo::Error {
             | CommandError::UnknownMessage(_)
             | CommandError::UnknownFolder(_) => Self::UnknownObject(message),
             CommandError::Failed(_) => Self::Failed(message),
+        }
+    }
+}
+
+/// The [`katna_dbus::translate_problem`] of a failed translation.
+fn problem(err: &TranslateError) -> &'static str {
+    use katna_dbus::translate_problem as p;
+    match err {
+        TranslateError::Off => p::OFF,
+        TranslateError::SameLanguage => p::SAME_LANGUAGE,
+        TranslateError::Unsupported(..) => p::UNSUPPORTED,
+        TranslateError::TooMany => p::TOO_MANY,
+        TranslateError::Refused => p::REFUSED,
+        TranslateError::Server(err) => {
+            tracing::info!(%err, "translation failed");
+            p::FAILED
         }
     }
 }
@@ -194,6 +211,25 @@ macro_rules! pim_interface {
 
             async fn sender_picture(&self, address: String) -> fdo::Result<Vec<u8>> {
                 Ok(self.daemon.sender_picture(&address).await?)
+            }
+
+            async fn translate(
+                &self,
+                message: i64,
+                text: String,
+                target: String,
+            ) -> (String, String, String) {
+                self.daemon
+                    .translate(MessageId(message), &text, &target)
+                    .await
+                    .map_or_else(
+                        |err| (String::new(), String::new(), problem(&err).to_owned()),
+                        |done| (done.source, done.text, String::new()),
+                    )
+            }
+
+            async fn translation_sources(&self, target: String) -> Vec<String> {
+                self.daemon.translation_sources(&target).await
             }
 
             #[zbus(signal)]

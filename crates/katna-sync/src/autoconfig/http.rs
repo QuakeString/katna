@@ -2,7 +2,8 @@
 
 //! Just enough HTTPS to fetch a configuration file or an image: `GET`,
 //! `Connection: close`, `Content-Length` or chunked bodies, and a few
-//! redirects; and a `POST` for crash reports. Only `https` URLs, so a
+//! redirects; a `POST` for crash reports; and [`exchange`], a request
+//! with a body whose answer is read whole. Only `https` URLs, so a
 //! network in the middle cannot hand us its servers or see what is
 //! fetched or sent.
 
@@ -119,6 +120,103 @@ pub async fn post(
         Err(Error::Timeout(timeout))
     })
     .await
+}
+
+/// Sends a `method` request with `headers` and `body` (none when empty) to
+/// `url` and returns the answer's status and body, whatever the status,
+/// for small JSON APIs. Redirects are not followed; a body over
+/// `max_body` bytes is an error.
+pub async fn exchange(
+    method: &str,
+    url: &str,
+    headers: &[(&str, &str)],
+    body: &[u8],
+    tls: &Tls,
+    timeout: Duration,
+    max_body: usize,
+) -> Result<(u16, Vec<u8>)> {
+    let exchange = async {
+        let parts = parse_url(url)?;
+        if !method.bytes().all(|b| b.is_ascii_uppercase()) {
+            return Err(Error::Protocol(format!("{url}: bad method {method}")));
+        }
+        let mut request = format!(
+            "{method} {} HTTP/1.1\r\nHost: {}\r\nUser-Agent: Katna\r\nAccept: */*\r\n\
+             Connection: close\r\n",
+            parts.path, parts.host
+        );
+        if !body.is_empty() {
+            request.push_str(&format!("Content-Length: {}\r\n", body.len()));
+        }
+        for (name, value) in headers {
+            if name.contains(['\r', '\n', ':']) || value.contains(['\r', '\n']) {
+                return Err(Error::Protocol(format!("{url}: bad header {name}")));
+            }
+            request.push_str(&format!("{name}: {value}\r\n"));
+        }
+        request.push_str("\r\n");
+        let mut conn = Conn::new(tls.clone());
+        conn.connect_tls(parts.host, parts.port).await?;
+        conn.write_all(request.as_bytes()).await?;
+        conn.write_all(body).await?;
+        let mut response = Vec::new();
+        loop {
+            let chunk = conn.read().await?;
+            if chunk.is_empty() {
+                break;
+            }
+            response.extend_from_slice(chunk);
+            if response.len() > max_body + 64 * 1024 {
+                return Err(Error::Protocol(format!("{url}: answer too large")));
+            }
+        }
+        let _ = conn.close().await;
+        parse_any(&response, max_body)
+    };
+    exchange
+        .or(async {
+            async_io::Timer::after(timeout).await;
+            Err(Error::Timeout(timeout))
+        })
+        .await
+}
+
+/// The status and body of a whole HTTP/1.1 response, whatever the status.
+fn parse_any(response: &[u8], max_body: usize) -> Result<(u16, Vec<u8>)> {
+    let bad = |what: &str| Error::Protocol(format!("HTTP: {what}"));
+    let end = response
+        .windows(4)
+        .position(|w| w == b"\r\n\r\n")
+        .ok_or_else(|| bad("no end of header"))?;
+    let head = std::str::from_utf8(&response[..end]).map_err(|_| bad("header is not UTF-8"))?;
+    let rest = &response[end + 4..];
+    let status = status(head.as_bytes()).ok_or_else(|| bad("no status"))?;
+    let mut chunked = false;
+    let mut length = None;
+    for line in head.split("\r\n").skip(1) {
+        let Some((name, value)) = line.split_once(':') else {
+            continue;
+        };
+        let value = value.trim();
+        match name.trim().to_ascii_lowercase().as_str() {
+            "transfer-encoding" => chunked = value.eq_ignore_ascii_case("chunked"),
+            "content-length" => length = value.parse::<usize>().ok(),
+            _ => {}
+        }
+    }
+    let body = if chunked {
+        dechunk(rest, false).ok_or_else(|| bad("broken chunked body"))?
+    } else {
+        match length {
+            Some(length) if length <= rest.len() => rest[..length].to_vec(),
+            Some(_) => return Err(bad("body shorter than Content-Length")),
+            None => rest.to_vec(),
+        }
+    };
+    if body.len() > max_body {
+        return Err(bad("body too large"));
+    }
+    Ok((status, body))
 }
 
 /// The code of an `HTTP/1.1 200 OK` line.
@@ -311,6 +409,17 @@ fn dechunk(mut data: &[u8], cut: bool) -> Option<Vec<u8>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn any_answer_with_its_body() {
+        let ok = b"HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\nhello";
+        assert_eq!(parse_any(ok, 100).unwrap(), (200, b"hello".to_vec()));
+        let chunked =
+            b"HTTP/1.1 429 Too Many\r\nTransfer-Encoding: chunked\r\n\r\n2\r\n{}\r\n0\r\n\r\n";
+        assert_eq!(parse_any(chunked, 100).unwrap(), (429, b"{}".to_vec()));
+        assert!(parse_any(ok, 3).is_err());
+        assert!(parse_any(b"HTTP/1.1 200 OK\r\n", 100).is_err());
+    }
 
     #[test]
     fn status_lines() {

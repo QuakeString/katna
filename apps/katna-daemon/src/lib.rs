@@ -11,12 +11,14 @@ mod crash_upload;
 pub mod daemon;
 mod desktop;
 pub mod install;
+mod katna_server;
 mod mail_app;
 mod notify;
 mod on_demand;
 pub mod secrets;
 pub mod service;
 pub mod system;
+pub mod translate;
 pub mod update;
 
 use std::sync::Arc;

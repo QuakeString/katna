@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Account passwords. They live only in the Secret Service (KWallet, GNOME
-//! Keyring, or the secret portal inside Flatpak), never in files
-//! (`docs/ARCHITECTURE.md` §5.1).
+//! Account passwords and Katna Server's install token. They live only in
+//! the Secret Service (KWallet, GNOME Keyring, or the secret portal inside
+//! Flatpak), never in files (`docs/ARCHITECTURE.md` §5.1).
 
 use std::{
     collections::HashMap,
@@ -35,6 +35,17 @@ fn attributes(account: AccountId) -> [(&'static str, String); 2] {
     [
         ("application", ids::PREFIX.to_owned()),
         ("account", account.to_string()),
+    ]
+}
+
+/// The key [`Secrets::Memory`] keeps the server token under; account IDs
+/// start at 1.
+const SERVER_TOKEN_KEY: AccountId = AccountId(0);
+
+fn server_token_attributes() -> [(&'static str, String); 2] {
+    [
+        ("application", ids::PREFIX.to_owned()),
+        ("katna-server", "install".to_owned()),
     ]
 }
 
@@ -121,6 +132,53 @@ impl Secrets {
             }
             Self::Memory(map) => {
                 map.lock().unwrap().remove(&account);
+            }
+        }
+        Ok(())
+    }
+
+    /// The token Katna Server gave this install, if one is saved.
+    pub async fn server_token(&self) -> Result<Option<String>, Error> {
+        match self {
+            Self::Keyring(keyring) => {
+                keyring.unlock().await?;
+                let Some(item) = keyring
+                    .search_items(&server_token_attributes())
+                    .await?
+                    .into_iter()
+                    .next()
+                else {
+                    return Ok(None);
+                };
+                let secret = item.secret().await?;
+                String::from_utf8(secret.to_vec())
+                    .map(Some)
+                    .map_err(|_| Error("the saved server token is not UTF-8".into()))
+            }
+            Self::Memory(map) => Ok(map.lock().unwrap().get(&SERVER_TOKEN_KEY).cloned()),
+        }
+    }
+
+    /// Saves Katna Server's token for this install; `None` forgets it.
+    pub async fn set_server_token(&self, token: Option<&str>) -> Result<(), Error> {
+        match (self, token) {
+            (Self::Keyring(keyring), Some(token)) => {
+                keyring.unlock().await?;
+                keyring
+                    .create_item("Katna Server", &server_token_attributes(), token, true)
+                    .await?;
+            }
+            (Self::Keyring(keyring), None) => {
+                keyring.unlock().await?;
+                keyring.delete(&server_token_attributes()).await?;
+            }
+            (Self::Memory(map), Some(token)) => {
+                map.lock()
+                    .unwrap()
+                    .insert(SERVER_TOKEN_KEY, token.to_owned());
+            }
+            (Self::Memory(map), None) => {
+                map.lock().unwrap().remove(&SERVER_TOKEN_KEY);
             }
         }
         Ok(())

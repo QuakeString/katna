@@ -122,6 +122,7 @@ icons!(
     "text-color",
     "text-size",
     "tour",
+    "translate",
     "trash",
     "tune",
     "undo",

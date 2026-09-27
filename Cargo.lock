@@ -5816,7 +5816,10 @@ dependencies = [
  "katna-search",
  "katna-store",
  "katna-sync",
+ "katna-translate",
  "oo7",
+ "serde",
+ "serde_json",
  "smol",
  "tempfile",
  "thiserror 2.0.21",
@@ -5897,6 +5900,7 @@ dependencies = [
  "katna-render",
  "katna-search",
  "katna-store",
+ "katna-translate",
  "katna-ui",
  "mail-parser",
  "serde_json",
@@ -6005,6 +6009,8 @@ dependencies = [
  "futures-lite",
  "getrandom 0.3.4",
  "http-body-util",
+ "hyper",
+ "hyper-util",
  "serde",
  "serde_json",
  "sha2 0.10.9",
@@ -6057,6 +6063,15 @@ dependencies = [
  "thiserror 2.0.21",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "katna-translate"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "whatlang",
 ]
 
 [[package]]
@@ -11414,6 +11429,15 @@ dependencies = [
  "log",
  "raw-window-handle",
  "web-sys",
+]
+
+[[package]]
+name = "whatlang"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f5e8f38b596e2a359b755342473520a99421e43658548c79489ee221b728c107"
+dependencies = [
+ "hashbrown 0.15.5",
 ]
 
 [[package]]

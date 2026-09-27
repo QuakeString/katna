@@ -44,6 +44,14 @@ settings-general-full-headers-detail = From, to, cc, date and subject open on ev
 settings-general-full-names = Full names of recipients
 # An example of the recipients line with and without full names.
 settings-general-full-names-detail = “to me, Ada Lovelace” rather than “to me, Ada”
+settings-translation = Translation
+settings-translation-detail = Mail in another language can be read in yours.
+settings-translation-offer = Offer to translate
+settings-translation-offer-detail = A message's text goes to Katna's server to be translated, only when you ask or always translate its language. Attachments never go.
+settings-translation-reading = Translate into
+settings-translation-always = Always translate
+settings-translation-never = Never offer for
+settings-translation-none = None yet. Choose from a message's Translate bar.
 settings-general-mark-read = Mark as read
 settings-general-mark-read-now = As soon as it opens
 settings-general-mark-read-1s = After it is open for 1 second
@@ -105,6 +113,7 @@ mail-app-is-default = Katna Mail is your default mail app.
 mail-app-is-other = Email links open in another app.
 mail-app-make-default = Make default
 mail-app-make-default-failed = Couldn't change the default mail app.
+
 
 ## Settings > Inbox
 
@@ -261,6 +270,7 @@ settings-shortcuts-restored = Every shortcut has its set's keys again.
 
 settings-general-language-summary = Language of the app, dates and numbers
 settings-general-reading-summary = Newest message first, full headers, full names of recipients
+settings-translation-summary = Translate mail in other languages with Katna's server, into the language you pick
 settings-general-mark-read-summary = When an opened conversation is marked read: at once, after 1 or 3 seconds, or by hand
 settings-general-auto-advance-summary = What opens after you delete, archive or move the open conversation: the next one, the previous one, or the list
 settings-general-reply-button-summary = The reply button beside each message replies to everyone
