@@ -13,13 +13,28 @@ accounts-shown-one = One account at a time; switch in the account card
 accounts-shown-all = All accounts, one after another
 # Settings row: the list of accounts.
 accounts-row = Accounts
-accounts-row-detail = Removing an account deletes Katna's copy of its mail on this computer. The mail stays on the server.
+accounts-row-detail = The folder pane and the account menu list accounts in this order; the first is the default. Removing an account deletes Katna's copy of its mail on this computer. The mail stays on the server.
 accounts-none = No accounts yet.
 # Account type shown after the address, for mail imported from files (mbox, Maildir…).
 accounts-kind-imported = Imported
-# Button: the account uses the picture of the desktop's user account again.
+# Button: the account uses the picture of the desktop's user account.
 accounts-picture-reset = Use desktop picture
 accounts-picture-change = Change picture
+# Button: the account shows its coloured letter again instead of a picture.
+accounts-picture-remove = Remove picture
+# Button: changes the name the account is shown with.
+accounts-rename = Rename
+# Buttons beside the field for the account's name.
+accounts-name-save = Save
+accounts-name-cancel = Cancel
+# Placeholder in the empty name field; left empty, the account takes the name its sent mail uses.
+accounts-name-placeholder = Your name
+# $error: the system's error, in English.
+accounts-rename-failed = Could not rename the account: { $error }
+# Tooltips on the arrows and the handle that change the order of accounts.
+accounts-move-up = Move up
+accounts-move-down = Move down
+accounts-drag = Drag to change the order
 # Button: removes the account from Katna.
 accounts-remove = Remove
 # Settings row: deletes everything Katna stores.

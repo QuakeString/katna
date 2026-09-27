@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] Pilih semua { $count } percakapan di { $folder }
    *[message] Pilih semua { $count } pesan di { $folder }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] Semua { $count } percakapan yang sudah dibaca dipilih.
+       *[message] Semua { $count } pesan yang sudah dibaca dipilih.
+    }
+   *[unread] { $kind ->
+        [conversation] Semua { $count } percakapan yang belum dibaca dipilih.
+       *[message] Semua { $count } pesan yang belum dibaca dipilih.
+    }
+    [starred] { $kind ->
+        [conversation] Semua { $count } percakapan berbintang dipilih.
+       *[message] Semua { $count } pesan berbintang dipilih.
+    }
+    [unstarred] { $kind ->
+        [conversation] Semua { $count } percakapan tidak berbintang dipilih.
+       *[message] Semua { $count } pesan tidak berbintang dipilih.
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] Semua { $count } percakapan yang sudah dibaca di { $folder } dipilih.
+       *[message] Semua { $count } pesan yang sudah dibaca di { $folder } dipilih.
+    }
+   *[unread] { $kind ->
+        [conversation] Semua { $count } percakapan yang belum dibaca di { $folder } dipilih.
+       *[message] Semua { $count } pesan yang belum dibaca di { $folder } dipilih.
+    }
+    [starred] { $kind ->
+        [conversation] Semua { $count } percakapan berbintang di { $folder } dipilih.
+       *[message] Semua { $count } pesan berbintang di { $folder } dipilih.
+    }
+    [unstarred] { $kind ->
+        [conversation] Semua { $count } percakapan tidak berbintang di { $folder } dipilih.
+       *[message] Semua { $count } pesan tidak berbintang di { $folder } dipilih.
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] Tidak ada percakapan yang sudah dibaca di sini.
+       *[message] Tidak ada pesan yang sudah dibaca di sini.
+    }
+   *[unread] { $kind ->
+        [conversation] Tidak ada percakapan yang belum dibaca di sini.
+       *[message] Tidak ada pesan yang belum dibaca di sini.
+    }
+    [starred] { $kind ->
+        [conversation] Tidak ada percakapan berbintang di sini.
+       *[message] Tidak ada pesan berbintang di sini.
+    }
+    [unstarred] { $kind ->
+        [conversation] Tidak ada percakapan tidak berbintang di sini.
+       *[message] Tidak ada pesan tidak berbintang di sini.
+    }
+}
 list-clear-selection = Hapus pilihan
 
 ## Mail list: empty states
@@ -160,6 +214,18 @@ toast-deleted-forever = { $kind ->
     [conversation] { $count } percakapan dihapus selamanya.
    *[message] { $count } pesan dihapus selamanya.
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count } percakapan ditandai sudah dibaca.
+   *[message] { $count } pesan ditandai sudah dibaca.
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count } percakapan ditandai belum dibaca.
+   *[message] { $count } pesan ditandai belum dibaca.
+}
 toast-undone = Tindakan diurungkan.
+toast-nothing-to-undo = Tidak ada yang bisa diurungkan.
+toast-cannot-undo-delete-forever = Email yang dihapus selamanya tidak bisa dikembalikan.
+toast-send-undone = Pengiriman diurungkan.
+toast-too-late-to-undo-send = Terlambat untuk mengurungkan: pesan sudah terkirim.
 toast-undo = Urungkan
 toast-no-spam-folder = Akun ini tidak memiliki folder spam.

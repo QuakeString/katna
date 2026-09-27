@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] Chagua jumbe zote { $count } katika { $folder }
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Mazungumzo { $count } yaliyosomwa yamechaguliwa.
+           *[other] Mazungumzo yote { $count } yaliyosomwa yamechaguliwa.
+        }
+       *[message] { $count ->
+            [one] Ujumbe { $count } uliosomwa umechaguliwa.
+           *[other] Jumbe zote { $count } zilizosomwa zimechaguliwa.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Mazungumzo { $count } ambayo hayajasomwa yamechaguliwa.
+           *[other] Mazungumzo yote { $count } ambayo hayajasomwa yamechaguliwa.
+        }
+       *[message] { $count ->
+            [one] Ujumbe { $count } ambao haujasomwa umechaguliwa.
+           *[other] Jumbe zote { $count } ambazo hazijasomwa zimechaguliwa.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Mazungumzo { $count } yenye nyota yamechaguliwa.
+           *[other] Mazungumzo yote { $count } yenye nyota yamechaguliwa.
+        }
+       *[message] { $count ->
+            [one] Ujumbe { $count } wenye nyota umechaguliwa.
+           *[other] Jumbe zote { $count } zenye nyota zimechaguliwa.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Mazungumzo { $count } yasiyo na nyota yamechaguliwa.
+           *[other] Mazungumzo yote { $count } yasiyo na nyota yamechaguliwa.
+        }
+       *[message] { $count ->
+            [one] Ujumbe { $count } usio na nyota umechaguliwa.
+           *[other] Jumbe zote { $count } zisizo na nyota zimechaguliwa.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Mazungumzo { $count } yaliyosomwa katika { $folder } yamechaguliwa.
+           *[other] Mazungumzo yote { $count } yaliyosomwa katika { $folder } yamechaguliwa.
+        }
+       *[message] { $count ->
+            [one] Ujumbe { $count } uliosomwa katika { $folder } umechaguliwa.
+           *[other] Jumbe zote { $count } zilizosomwa katika { $folder } zimechaguliwa.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Mazungumzo { $count } ambayo hayajasomwa katika { $folder } yamechaguliwa.
+           *[other] Mazungumzo yote { $count } ambayo hayajasomwa katika { $folder } yamechaguliwa.
+        }
+       *[message] { $count ->
+            [one] Ujumbe { $count } ambao haujasomwa katika { $folder } umechaguliwa.
+           *[other] Jumbe zote { $count } ambazo hazijasomwa katika { $folder } zimechaguliwa.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Mazungumzo { $count } yenye nyota katika { $folder } yamechaguliwa.
+           *[other] Mazungumzo yote { $count } yenye nyota katika { $folder } yamechaguliwa.
+        }
+       *[message] { $count ->
+            [one] Ujumbe { $count } wenye nyota katika { $folder } umechaguliwa.
+           *[other] Jumbe zote { $count } zenye nyota katika { $folder } zimechaguliwa.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Mazungumzo { $count } yasiyo na nyota katika { $folder } yamechaguliwa.
+           *[other] Mazungumzo yote { $count } yasiyo na nyota katika { $folder } yamechaguliwa.
+        }
+       *[message] { $count ->
+            [one] Ujumbe { $count } usio na nyota katika { $folder } umechaguliwa.
+           *[other] Jumbe zote { $count } zisizo na nyota katika { $folder } zimechaguliwa.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] Hakuna mazungumzo yaliyosomwa hapa.
+       *[message] Hakuna jumbe zilizosomwa hapa.
+    }
+   *[unread] { $kind ->
+        [conversation] Hakuna mazungumzo ambayo hayajasomwa hapa.
+       *[message] Hakuna jumbe ambazo hazijasomwa hapa.
+    }
+    [starred] { $kind ->
+        [conversation] Hakuna mazungumzo yenye nyota hapa.
+       *[message] Hakuna jumbe zenye nyota hapa.
+    }
+    [unstarred] { $kind ->
+        [conversation] Hakuna mazungumzo yasiyo na nyota hapa.
+       *[message] Hakuna jumbe zisizo na nyota hapa.
+    }
+}
 list-clear-selection = Futa uteuzi
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] Jumbe { $count } zimefutwa kabisa.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] Mazungumzo yamewekwa alama kuwa yamesomwa.
+       *[other] Mazungumzo { $count } yamewekwa alama kuwa yamesomwa.
+    }
+   *[message] { $count ->
+        [one] Ujumbe umewekwa alama kuwa umesomwa.
+       *[other] Jumbe { $count } zimewekwa alama kuwa zimesomwa.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] Mazungumzo yamewekwa alama kuwa hayajasomwa.
+       *[other] Mazungumzo { $count } yamewekwa alama kuwa hayajasomwa.
+    }
+   *[message] { $count ->
+        [one] Ujumbe umewekwa alama kuwa haujasomwa.
+       *[other] Jumbe { $count } zimewekwa alama kuwa hazijasomwa.
+    }
+}
 toast-undone = Kitendo kimetenduliwa.
+toast-nothing-to-undo = Hakuna cha kutendua.
+toast-cannot-undo-delete-forever = Barua iliyofutwa kabisa haiwezi kurejeshwa.
+toast-send-undone = Kutuma kumetenduliwa.
+toast-too-late-to-undo-send = Imechelewa mno kutendua: ujumbe tayari umetumwa.
 toast-undo = Tendua
 toast-no-spam-folder = Akaunti hii haina folda ya taka.

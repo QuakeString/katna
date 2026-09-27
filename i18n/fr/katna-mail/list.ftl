@@ -112,6 +112,124 @@ list-select-all-in = { $kind ->
        *[other] Sélectionner les { $count } messages dans { $folder }
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversation lue est sélectionnée.
+            [many] Les { $count } de conversations lues sont sélectionnées.
+           *[other] Les { $count } conversations lues sont sélectionnées.
+        }
+       *[message] { $count ->
+            [one] { $count } message lu est sélectionné.
+            [many] Les { $count } de messages lus sont sélectionnés.
+           *[other] Les { $count } messages lus sont sélectionnés.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversation non lue est sélectionnée.
+            [many] Les { $count } de conversations non lues sont sélectionnées.
+           *[other] Les { $count } conversations non lues sont sélectionnées.
+        }
+       *[message] { $count ->
+            [one] { $count } message non lu est sélectionné.
+            [many] Les { $count } de messages non lus sont sélectionnés.
+           *[other] Les { $count } messages non lus sont sélectionnés.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversation suivie est sélectionnée.
+            [many] Les { $count } de conversations suivies sont sélectionnées.
+           *[other] Les { $count } conversations suivies sont sélectionnées.
+        }
+       *[message] { $count ->
+            [one] { $count } message suivi est sélectionné.
+            [many] Les { $count } de messages suivis sont sélectionnés.
+           *[other] Les { $count } messages suivis sont sélectionnés.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversation non suivie est sélectionnée.
+            [many] Les { $count } de conversations non suivies sont sélectionnées.
+           *[other] Les { $count } conversations non suivies sont sélectionnées.
+        }
+       *[message] { $count ->
+            [one] { $count } message non suivi est sélectionné.
+            [many] Les { $count } de messages non suivis sont sélectionnés.
+           *[other] Les { $count } messages non suivis sont sélectionnés.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversation lue dans { $folder } est sélectionnée.
+            [many] Les { $count } de conversations lues dans { $folder } sont sélectionnées.
+           *[other] Les { $count } conversations lues dans { $folder } sont sélectionnées.
+        }
+       *[message] { $count ->
+            [one] { $count } message lu dans { $folder } est sélectionné.
+            [many] Les { $count } de messages lus dans { $folder } sont sélectionnés.
+           *[other] Les { $count } messages lus dans { $folder } sont sélectionnés.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversation non lue dans { $folder } est sélectionnée.
+            [many] Les { $count } de conversations non lues dans { $folder } sont sélectionnées.
+           *[other] Les { $count } conversations non lues dans { $folder } sont sélectionnées.
+        }
+       *[message] { $count ->
+            [one] { $count } message non lu dans { $folder } est sélectionné.
+            [many] Les { $count } de messages non lus dans { $folder } sont sélectionnés.
+           *[other] Les { $count } messages non lus dans { $folder } sont sélectionnés.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversation suivie dans { $folder } est sélectionnée.
+            [many] Les { $count } de conversations suivies dans { $folder } sont sélectionnées.
+           *[other] Les { $count } conversations suivies dans { $folder } sont sélectionnées.
+        }
+       *[message] { $count ->
+            [one] { $count } message suivi dans { $folder } est sélectionné.
+            [many] Les { $count } de messages suivis dans { $folder } sont sélectionnés.
+           *[other] Les { $count } messages suivis dans { $folder } sont sélectionnés.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } conversation non suivie dans { $folder } est sélectionnée.
+            [many] Les { $count } de conversations non suivies dans { $folder } sont sélectionnées.
+           *[other] Les { $count } conversations non suivies dans { $folder } sont sélectionnées.
+        }
+       *[message] { $count ->
+            [one] { $count } message non suivi dans { $folder } est sélectionné.
+            [many] Les { $count } de messages non suivis dans { $folder } sont sélectionnés.
+           *[other] Les { $count } messages non suivis dans { $folder } sont sélectionnés.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] Aucune conversation lue ici.
+       *[message] Aucun message lu ici.
+    }
+   *[unread] { $kind ->
+        [conversation] Aucune conversation non lue ici.
+       *[message] Aucun message non lu ici.
+    }
+    [starred] { $kind ->
+        [conversation] Aucune conversation suivie ici.
+       *[message] Aucun message suivi ici.
+    }
+    [unstarred] { $kind ->
+        [conversation] Aucune conversation non suivie ici.
+       *[message] Aucun message non suivi ici.
+    }
+}
 list-clear-selection = Effacer la sélection
 
 ## Mail list: empty states
@@ -292,6 +410,34 @@ toast-deleted-forever = { $kind ->
        *[other] { $count } messages supprimés définitivement.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation marquée comme lue.
+        [many] { $count } de conversations marquées comme lues.
+       *[other] { $count } conversations marquées comme lues.
+    }
+   *[message] { $count ->
+        [one] Message marqué comme lu.
+        [many] { $count } de messages marqués comme lus.
+       *[other] { $count } messages marqués comme lus.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation marquée comme non lue.
+        [many] { $count } de conversations marquées comme non lues.
+       *[other] { $count } conversations marquées comme non lues.
+    }
+   *[message] { $count ->
+        [one] Message marqué comme non lu.
+        [many] { $count } de messages marqués comme non lus.
+       *[other] { $count } messages marqués comme non lus.
+    }
+}
 toast-undone = Action annulée.
+toast-nothing-to-undo = Rien à annuler.
+toast-cannot-undo-delete-forever = Les messages supprimés définitivement ne peuvent pas être récupérés.
+toast-send-undone = Envoi annulé.
+toast-too-late-to-undo-send = Trop tard pour annuler : le message a déjà été envoyé.
 toast-undo = Annuler
 toast-no-spam-folder = Ce compte n’a pas de dossier de spam.

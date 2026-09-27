@@ -84,6 +84,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
+        "settings-general-auto-advance",
+        "settings-general-auto-advance-summary",
+        "auto advance next previous older newer after delete archive move back list",
+    ),
+    entry(
+        Section::General,
         "settings-general-reply-button",
         "settings-general-reply-button-summary",
         "reply all default behaviour behavior",

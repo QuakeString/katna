@@ -70,6 +70,10 @@ settings-general-new-mail-detail = עם „תשובה לכולם”, „סימו
 settings-general-new-mail-sound = השמעת צליל
 settings-general-new-mail-sound-detail = צליל הדואר החדש של שולחן העבודה
 settings-general-desktop = שולחן העבודה
+settings-general-start-at-login = הפעלת Katna בכניסה למערכת
+settings-general-start-at-login-detail = מסנכרן דואר ומציג התראות על דואר חדש ואת הסמל במגש המערכת, בלי לפתוח את החלון
+settings-general-login-window = פתיחה גם של החלון של Katna Mail
+settings-general-login-window-detail = גם החלון נפתח בכניסה למערכת
 settings-general-tray = הצגת Katna במגש המערכת
 settings-general-tray-detail = עם מספר ההודעות שלא נקראו ותפריט
 settings-general-unread-badge = מספר ההודעות שלא נקראו על סמל שורת המשימות
@@ -207,7 +211,7 @@ settings-general-remote-images-summary = תמיד להציג את התמונות
 settings-general-sending-summary = ביטול שליחה: כמה זמן הודעה שנשלחה ממתינה, כדי שאפשר יהיה לבטל את שליחתה
 settings-general-offline-summary = כמה ימים של דואר אחרון מורדים במלואם, לקריאה ללא חיבור
 settings-general-notifications-summary = התראות על דואר חדש והצליל שלהן
-settings-general-desktop-summary = פתיחת Katna Mail בכניסה למערכת, הסמל במגש המערכת ומספר ההודעות שלא נקראו על סמל שורת המשימות
+settings-general-desktop-summary = הפעלת Katna בכניסה למערכת, הסמל במגש המערכת ומספר ההודעות שלא נקראו על סמל שורת המשימות
 settings-accounts-accounts-summary = הוספה או הסרה של חשבון, או החלפת התמונה שלו
 settings-appearance-density-summary = שורות ברירת מחדל או דחוסות ברשימה
 settings-appearance-scaling-summary = הגדלה או הקטנה של הכול: טקסט, סמלים, ריווח וקווים מפרידים
@@ -243,7 +247,7 @@ settings-search-results = הגדרות שתואמות את „{ $query }”
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = לא ניתן היה לשנות את הפתיחה בכניסה למערכת: { $error }
+settings-open-at-login-failed = לא ניתן היה לשנות את ההפעלה בכניסה למערכת: { $error }
 
 ## Settings > General > Time
 
@@ -266,4 +270,9 @@ settings-compose-grammar = דקדוק
 settings-compose-grammar-detail = הבדיקה נעשית במחשב הזה עם Harper. בינתיים רק באנגלית: טקסט בשפות אחרות נשאר כמו שהוא.
 settings-compose-grammar-check = בדיקת דקדוק
 settings-compose-grammar-check-detail = סימון שגיאות דקדוק בקו תחתון בזמן הכתיבה, באנגלית
+settings-compose-suggestions = הצעות כתיבה
+settings-compose-suggestions-detail = נלמדות במחשב הזה מהדואר שנשלח ממנו ומהדואר שעונים עליו; שום דבר לא יוצא ממנו. יש ללחוץ על Tab כדי לקבל הצעה, או פשוט להמשיך להקליד.
+settings-compose-suggestions-on = הצעות בזמן הכתיבה
+settings-compose-suggestions-on-detail = הצגת ההמשך הסביר של הביטוי באפור בזמן ההקלדה
 settings-compose-grammar-summary = סימון שגיאות דקדוק בקו תחתון בזמן הכתיבה, באנגלית
+settings-compose-suggestions-summary = הצגת ההמשך הסביר של הביטוי באפור בזמן ההקלדה

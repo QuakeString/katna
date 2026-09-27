@@ -117,6 +117,29 @@ impl Store {
         })
     }
 
+    /// Renames an account. Returns whether it existed.
+    pub fn rename_account(&mut self, id: AccountId, display_name: &str) -> Result<bool> {
+        self.check_writable()?;
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let updated = tx.execute(
+            "UPDATE account SET display_name = ?2 WHERE id = ?1",
+            params![id.0, display_name],
+        )? > 0;
+        if updated {
+            journal::record(&tx, ObjectKind::Account, id.0, ChangeOp::Update)?;
+        }
+        tx.commit()?;
+        Ok(updated)
+    }
+
+    /// The name `account` writes its mail under: the display name its own
+    /// messages from `address` most often carry, if any has one.
+    pub fn name_in_own_mail(&self, account: AccountId, address: &str) -> Result<Option<String>> {
+        people::name_in_own_mail(&self.mail, account, address)
+    }
+
     /// Removes an account. Returns whether it existed.
     ///
     /// Its mail is removed separately by the daemon (Phase 1), because it

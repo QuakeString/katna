@@ -62,6 +62,10 @@ settings-general-new-mail-detail = ཆ་མཉམ་ལུ་ལན་སློ
 settings-general-new-mail-sound = སྒྲ་གཏང་།
 settings-general-new-mail-sound-detail = ཌེཀསི་ཊོཔ་གི་གློག་འཕྲིན་གསརཔ་གི་སྒྲ
 settings-general-desktop = ཌེཀསི་ཊོཔ
+settings-general-start-at-login = ནང་བསྐྱོད་འབད་བའི་སྐབས་ Katna འགོ་བཙུགས།
+settings-general-start-at-login-detail = སྒོ་སྒྲིག་ཁ་མ་ཕྱེ་བར་ གློག་འཕྲིན་མཉམ་སྡེབ་འབདཝ་ཨིན་ དེ་ལས་ གློག་འཕྲིན་གསརཔ་གི་བརྡ་བསྐུལ་དང་ རིམ་ལུགས་སྡེར་མའི་ངོས་དཔར་སྟོནམ་ཨིན
+settings-general-login-window = Katna Mail གི་སྒོ་སྒྲིག་ཡང་ཁ་ཕྱེ།
+settings-general-login-window-detail = ནང་བསྐྱོད་འབད་བའི་སྐབས་ སྒོ་སྒྲིག་ཡང་ཁ་ཕྱེཝ་ཨིན
 settings-general-tray = Katna རིམ་ལུགས་སྡེར་མ་ནང་སྟོན།
 settings-general-tray-detail = མ་ལྷག་པའི་གྱངས་ཁ་དང་ དཀར་ཆག་དང་བཅས
 settings-general-unread-badge = ལཱ་གི་ཕྲ་རིང་ངོས་དཔར་གུ་ མ་ལྷག་པའི་གྱངས་ཁ
@@ -199,7 +203,7 @@ settings-general-remote-images-summary = འཕྲིན་དོན་ག་ར
 settings-general-sending-summary = གཏང་མི་འབད་བཤོལ: བཏང་ཡོད་པའི་འཕྲིན་དོན་ལོག་ལེན་ཚུགས་ནིའི་དོན་ལུ་ སྒུག་སྡོད་པའི་དུས་ཡུན
 settings-general-offline-summary = མཐུད་ལམ་མེད་རུང་ལྷག་ནིའི་དོན་ལུ་ ཉེ་གྡང་གི་གློག་འཕྲིན་ ཉིནམ་ག་དེམ་ཅིག་གི་ཆ་ཚང་ཕབ་ལེན་འབདཝ་ཨིན་ན
 settings-general-notifications-summary = གློག་འཕྲིན་གསརཔ་གི་བརྡ་བསྐུལ་དང་ དེ་ཚུ་གི་སྒྲ
-settings-general-desktop-summary = ནང་བསྐྱོད་འབད་བའི་སྐབས་ Katna Mail ཁ་ཕྱེ་ནི་ རིམ་ལུགས་སྡེར་མའི་ངོས་དཔར་དང་ ལཱ་གི་ཕྲ་རིང་ངོས་དཔར་གུ་ མ་ལྷག་པའི་གྱངས་ཁ
+settings-general-desktop-summary = ནང་བསྐྱོད་འབད་བའི་སྐབས་ Katna འགོ་བཙུགས་ནི་ རིམ་ལུགས་སྡེར་མའི་ངོས་དཔར་དང་ ལཱ་གི་ཕྲ་རིང་ངོས་དཔར་གུ་ མ་ལྷག་པའི་གྱངས་ཁ
 settings-accounts-accounts-summary = རྩིས་ཐོ་ཅིག་ ཁ་སྐོང་ ཡང་ན་བཏོན་ ཡང་ན་ དེ་གི་པར་བསྒྱུར།
 settings-appearance-density-summary = ཐོ་ཡིག་ནང་ སྔོན་སྒྲིག་ ཡང་ན་བསྡམ་ཏོག་ཏོ་གི་གྲལ་ཐིག་ཚུ
 settings-appearance-scaling-summary = ཅ་ཆས་ཆ་མཉམ་ སྦོམ་ ཡང་ན་ཆུང་བཟོ: ཚིག་ཡིག་ ངོས་དཔར་ བར་སྟོང་དང་ བར་ཐིག་ཚུ
@@ -235,7 +239,7 @@ settings-search-results = “{ $query }” དང་མཐུན་པའི་�
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = ནང་བསྐྱོད་སྐབས་ཁ་ཕྱེ་ནི་ བསྒྱུར་མ་ཚུགས: { $error }
+settings-open-at-login-failed = ནང་བསྐྱོད་སྐབས་འགོ་བཙུགས་ནི་ བསྒྱུར་མ་ཚུགས: { $error }
 
 ## Settings > General > Time
 
@@ -258,4 +262,9 @@ settings-compose-grammar = བརྡ་སྤྲོད
 settings-compose-grammar-detail = གློག་རིག་འདི་གུ་ Harper གིས་ཞིབ་དཔྱད་འབདཝ་ཨིན། ད་ལྟོ་ཨིན་ཇི་ཁ་རྐྱངམ་ཅིག: སྐད་ཡིག་གཞན་གྱི་ཚིག་ཡིག་ལུ་ ག་ནི་ཡང་མི་བསྒྱུར།
 settings-compose-grammar-check = བརྡ་སྤྲོད་ཞིབ་དཔྱད་འབད།
 settings-compose-grammar-check-detail = བྲི་བའི་སྐབས་ བརྡ་སྤྲོད་འཛོལ་བ་ཚུ་ལུ་ འོག་ཐིག་བཀལ་ ཨིན་ཇི་ཁ་ནང་
+settings-compose-suggestions = བྲི་ནིའི་བསམ་འཆར་ཚུ
+settings-compose-suggestions-detail = ཁྱོད་ཀྱིས་གཏང་ཡོད་པའི་གློག་འཕྲིན་དང་ ཁྱོད་ཀྱིས་ལན་སློག་འབད་དོ་བའི་གློག་འཕྲིན་ལས་ གློག་རིག་འདི་གུ་རང་ལྷབ་ཡོདཔ་ཨིན། ག་ནི་ཡང་ ཕྱི་ཁར་མི་འགྱོ། བསམ་འཆར་ལེན་ནི་ལུ་ Tab ཨེབ་ ཡང་ན་ ཡིག་དཔར་རྐྱབ་སྟེ་སྡོད།
+settings-compose-suggestions-on = བྲི་བའི་སྐབས་ བསམ་འཆར་བཀོད།
+settings-compose-suggestions-on-detail = ཡིག་དཔར་རྐྱབ་པའི་སྐབས་ ཚིག་ཚོགས་ཀྱི་ལྷག་ལུས་ཡོང་ནི་ཨིན་མི་འདི་ སྐྱ་བོའི་ཚོས་གཞི་ནང་སྟོན
 settings-compose-grammar-summary = བྲི་བའི་སྐབས་ བརྡ་སྤྲོད་འཛོལ་བ་ཚུ་ལུ་ འོག་ཐིག་བཀལ་ ཨིན་ཇི་ཁ་ནང་
+settings-compose-suggestions-summary = ཡིག་དཔར་རྐྱབ་པའི་སྐབས་ ཚིག་ཚོགས་ཀྱི་ལྷག་ལུས་ཡོང་ནི་ཨིན་མི་འདི་ སྐྱ་བོའི་ཚོས་གཞི་ནང་སྟོན

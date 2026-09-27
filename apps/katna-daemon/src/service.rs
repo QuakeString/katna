@@ -78,6 +78,10 @@ macro_rules! pim_interface {
                     .await?)
             }
 
+            async fn rename_account(&self, account: i64, name: String) -> fdo::Result<()> {
+                Ok(self.daemon.rename_account(AccountId(account), &name)?)
+            }
+
             async fn remove_account(&self, account: i64) -> fdo::Result<bool> {
                 Ok(self.daemon.remove_account(AccountId(account)).await?)
             }

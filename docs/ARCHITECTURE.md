@@ -995,10 +995,18 @@ a tile of one color sits on a disc of that color, and a see-through glyph
 sits on a white disc, or a dark one when the glyph is light.
 
 The user's own accounts show the picture picked in Settings → Accounts
-(kept in `$XDG_DATA_HOME/katna/account-pictures/<account id>`), else the
-desktop user's picture (`~/.face.icon`, the AccountsService icon, or
-`~/.face`). There is no OAuth, so a provider's profile photo is out of
-reach; Libravatar or Gravatar could come later as an opt-in.
+(kept in `$XDG_DATA_HOME/katna/account-pictures/<account id>`), else each
+its own coloured letter, so accounts tell apart. "Use desktop picture"
+copies the desktop user's picture (`~/.face.icon`, the AccountsService
+icon, or `~/.face`) in as the account's picture; it is not the default,
+because it made every account look the same. There is no OAuth, so a
+provider's profile photo (Google's needs a Google sign-in) is out of
+reach; when OAuth2 comes, it goes after the picked picture in
+`own_picture` (`window/remote.rs`). Libravatar or Gravatar could come
+later as an opt-in. Settings → Accounts also renames an account and sets
+the order accounts are listed in everywhere (Move up, Move down, or a
+drag by the handle; `mail.account_order` in `config.toml`), the first
+being the default.
 
 Size: this renderer added 2.7 MB to the release app (31.3 → 34.0 MB). For
 comparison, a minimal program with Blitz (`blitz-html` + `blitz-paint` +
@@ -1271,6 +1279,14 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   line names recipients by first name ("to me, Ada", as Gmail does) unless
   *Full names of recipients* is on or two share a first name
   (`mail.full_names`). All three are off by default.
+- **Auto-advance.** Deleting, archiving, moving or reporting the open
+  conversation opens the next one in its place, in the same frame, so the
+  reading pane never closes and reopens (the owner, 2026-09-27). Settings >
+  General > Auto-advance (`mail.auto_advance`, as Gmail's) picks the line
+  below (the default; the one above when it was the last), the line above
+  (the one below when it was the first), or the list. Undo, on the
+  snackbar or with Ctrl+Z, brings the conversation back and opens it again
+  once it is back in the list.
 - **Motion.** Springs (`katna_ui::motion::Spring`, on GPUI's spring
   solver) drive values that shape several elements: the navigation width,
   the search box turning white with a shadow when focused, the snackbar.
@@ -1522,6 +1538,25 @@ Gemini or confidential mode):
   Esc or when typing resumes. Mail waiting to be sent
   later gets a *Scheduled* row in the folder list after Sent, which opens
   a list with Cancel send; a cancelled message opens again as written.
+  Paste and drop work as in a desktop mail app (`compose/paste.rs`,
+  `katna-ui` `rich/editor/paste.rs`): the clipboard is read with its HTML,
+  copied files and pictures (`gpui_linux::read_rich`, a Katna patch to
+  GPUI's Linux clipboard, vendor/gpui-pre-linux/KATNA.md), so text from
+  Word, LibreOffice or a browser keeps its formatting (`html::from_pasted_html`:
+  style sheet classes, Word's lists, merged cells, cell colors; the page's
+  own near-black text and white background are dropped so the text follows
+  the theme), and spreadsheet cells (or tab-separated rows) become a
+  table. A bar under the paste offers Keep formatting or Plain text, or for
+  cells Table, Picture (the source app's picture, else one drawn with
+  `katna_preview::table`) or Plain text, until the next edit; Ctrl+Shift+V
+  pastes plain text. Copying offers HTML too. Files copied in a file
+  manager or dropped are attached; pictures pasted or dropped go in the
+  text (attached when dropped outside the text or in plain text mode) with
+  an Inline / Attachment choice under them. Text, cells or a picture
+  dragged from another app arrive as a content drop
+  (`gpui_linux::dropped_content`) and go in where they are dropped; the
+  dashed drop cover says "Drop here" for those and "Drop files here" for
+  files. The 25 MB total counts pasted and dropped pictures.
   The expand button in the compose title bar moves the message into a
   normal window of its own (`compose/popout.rs`), framed like the mail
   window: Katna's header bar with the window buttons, rounded corners and
@@ -2154,7 +2189,9 @@ Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssx)`
 `DiscoverAccount(address) → (account, source)`, `AddImapAccount(account,
 password) → id`, `AddPop3Account(account, password) → id` (with
 leave-on-server, days to keep, and delete-with-local),
-`SetPassword(id, password)`, `RemoveAccount(id) → b`,
+`SetPassword(id, password)`, `RenameAccount(id, name)` (an empty name
+goes back to the name the account's own sent mail uses, which a name-less
+account also takes after its first sync), `RemoveAccount(id) → b`,
 `DeleteAllData()` (stops every account, deletes every saved password,
 the data directory, the cache and `config.toml`, then the daemon exits;
 the next call starts a new one), `ResetCache() → (tt)` (messages that lost

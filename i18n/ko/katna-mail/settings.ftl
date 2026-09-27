@@ -62,6 +62,10 @@ settings-general-new-mail-detail = 전체답장, 읽음으로 표시, 보관처�
 settings-general-new-mail-sound = 소리 재생
 settings-general-new-mail-sound-detail = 데스크톱의 새 메일 알림음
 settings-general-desktop = 데스크톱
+settings-general-start-at-login = 로그인할 때 Katna 시작
+settings-general-start-at-login-detail = 창을 열지 않고 메일을 동기화하며 새 메일 알림과 트레이 아이콘을 표시합니다
+settings-general-login-window = Katna Mail 창도 열기
+settings-general-login-window-detail = 로그인할 때 창도 함께 열립니다
 settings-general-tray = 시스템 트레이에 Katna 표시
 settings-general-tray-detail = 읽지 않은 메일 수와 메뉴 포함
 settings-general-unread-badge = 작업 표시줄 아이콘에 읽지 않은 메일 수 표시
@@ -199,7 +203,7 @@ settings-general-remote-images-summary = 모든 메일의 이미지 항상 표�
 settings-general-sending-summary = 보내기 취소: 보낸 메일을 취소할 수 있도록 대기하는 시간
 settings-general-offline-summary = 인터넷 연결 없이 읽도록 최근 며칠간의 메일을 전체 다운로드할지
 settings-general-notifications-summary = 새 메일 알림과 알림음
-settings-general-desktop-summary = 로그인할 때 Katna Mail 열기, 시스템 트레이 아이콘, 작업 표시줄 아이콘의 읽지 않은 메일 수
+settings-general-desktop-summary = 로그인할 때 Katna 시작, 시스템 트레이 아이콘, 작업 표시줄 아이콘의 읽지 않은 메일 수
 settings-accounts-accounts-summary = 계정 추가 또는 삭제, 계정 사진 변경
 settings-appearance-density-summary = 목록 줄을 기본값 또는 간단히 표시
 settings-appearance-scaling-summary = 텍스트, 아이콘, 간격, 구분선을 모두 크게 또는 작게
@@ -235,7 +239,7 @@ settings-search-results = “{ $query }”에 해당하는 설정
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = 로그인할 때 열기 설정을 변경할 수 없습니다: { $error }
+settings-open-at-login-failed = 로그인할 때 시작 설정을 변경할 수 없습니다: { $error }
 
 ## Settings > General > Time
 
@@ -258,4 +262,9 @@ settings-compose-grammar = 문법
 settings-compose-grammar-detail = 이 컴퓨터에서 Harper로 검사합니다. 현재는 영어만 지원하며, 다른 언어로 쓴 텍스트는 그대로 둡니다.
 settings-compose-grammar-check = 문법 검사
 settings-compose-grammar-check-detail = 작성하는 동안 문법 오류에 밑줄 표시(영어)
+settings-compose-suggestions = 글쓰기 추천
+settings-compose-suggestions-detail = 보낸 메일과 답장 중인 메일을 바탕으로 이 컴퓨터에서 학습하며, 어떤 내용도 외부로 나가지 않습니다. Tab 키를 눌러 추천을 받거나 계속 입력하세요.
+settings-compose-suggestions-on = 작성 중 추천
+settings-compose-suggestions-on-detail = 입력하는 동안 이어질 만한 문구를 회색으로 표시
 settings-compose-grammar-summary = 작성하는 동안 문법 오류에 밑줄 표시(영어)
+settings-compose-suggestions-summary = 입력하는 동안 이어질 만한 문구를 회색으로 표시

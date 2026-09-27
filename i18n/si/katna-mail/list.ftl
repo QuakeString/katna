@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] { $folder } හි පණිවිඩ { $count } ම තෝරන්න
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] කියවූ සංවාද { $count } ක් තෝරා ඇත.
+           *[other] කියවූ සංවාද { $count } ම තෝරා ඇත.
+        }
+       *[message] { $count ->
+            [one] කියවූ පණිවිඩ { $count } ක් තෝරා ඇත.
+           *[other] කියවූ පණිවිඩ { $count } ම තෝරා ඇත.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] නොකියවූ සංවාද { $count } ක් තෝරා ඇත.
+           *[other] නොකියවූ සංවාද { $count } ම තෝරා ඇත.
+        }
+       *[message] { $count ->
+            [one] නොකියවූ පණිවිඩ { $count } ක් තෝරා ඇත.
+           *[other] නොකියවූ පණිවිඩ { $count } ම තෝරා ඇත.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] තරු යෙදූ සංවාද { $count } ක් තෝරා ඇත.
+           *[other] තරු යෙදූ සංවාද { $count } ම තෝරා ඇත.
+        }
+       *[message] { $count ->
+            [one] තරු යෙදූ පණිවිඩ { $count } ක් තෝරා ඇත.
+           *[other] තරු යෙදූ පණිවිඩ { $count } ම තෝරා ඇත.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] තරු නොයෙදූ සංවාද { $count } ක් තෝරා ඇත.
+           *[other] තරු නොයෙදූ සංවාද { $count } ම තෝරා ඇත.
+        }
+       *[message] { $count ->
+            [one] තරු නොයෙදූ පණිවිඩ { $count } ක් තෝරා ඇත.
+           *[other] තරු නොයෙදූ පණිවිඩ { $count } ම තෝරා ඇත.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } හි කියවූ සංවාද { $count } ක් තෝරා ඇත.
+           *[other] { $folder } හි කියවූ සංවාද { $count } ම තෝරා ඇත.
+        }
+       *[message] { $count ->
+            [one] { $folder } හි කියවූ පණිවිඩ { $count } ක් තෝරා ඇත.
+           *[other] { $folder } හි කියවූ පණිවිඩ { $count } ම තෝරා ඇත.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } හි නොකියවූ සංවාද { $count } ක් තෝරා ඇත.
+           *[other] { $folder } හි නොකියවූ සංවාද { $count } ම තෝරා ඇත.
+        }
+       *[message] { $count ->
+            [one] { $folder } හි නොකියවූ පණිවිඩ { $count } ක් තෝරා ඇත.
+           *[other] { $folder } හි නොකියවූ පණිවිඩ { $count } ම තෝරා ඇත.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } හි තරු යෙදූ සංවාද { $count } ක් තෝරා ඇත.
+           *[other] { $folder } හි තරු යෙදූ සංවාද { $count } ම තෝරා ඇත.
+        }
+       *[message] { $count ->
+            [one] { $folder } හි තරු යෙදූ පණිවිඩ { $count } ක් තෝරා ඇත.
+           *[other] { $folder } හි තරු යෙදූ පණිවිඩ { $count } ම තෝරා ඇත.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } හි තරු නොයෙදූ සංවාද { $count } ක් තෝරා ඇත.
+           *[other] { $folder } හි තරු නොයෙදූ සංවාද { $count } ම තෝරා ඇත.
+        }
+       *[message] { $count ->
+            [one] { $folder } හි තරු නොයෙදූ පණිවිඩ { $count } ක් තෝරා ඇත.
+           *[other] { $folder } හි තරු නොයෙදූ පණිවිඩ { $count } ම තෝරා ඇත.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] මෙහි කියවූ සංවාද නැත.
+       *[message] මෙහි කියවූ පණිවිඩ නැත.
+    }
+   *[unread] { $kind ->
+        [conversation] මෙහි නොකියවූ සංවාද නැත.
+       *[message] මෙහි නොකියවූ පණිවිඩ නැත.
+    }
+    [starred] { $kind ->
+        [conversation] මෙහි තරු යෙදූ සංවාද නැත.
+       *[message] මෙහි තරු යෙදූ පණිවිඩ නැත.
+    }
+    [unstarred] { $kind ->
+        [conversation] මෙහි තරු නොයෙදූ සංවාද නැත.
+       *[message] මෙහි තරු නොයෙදූ පණිවිඩ නැත.
+    }
+}
 list-clear-selection = තේරීම හිස් කරන්න
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] පණිවිඩ { $count } ක් සදහටම මකන ලදී.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] සංවාදය කියවූ ලෙස සලකුණු කරන ලදී.
+       *[other] සංවාද { $count } ක් කියවූ ලෙස සලකුණු කරන ලදී.
+    }
+   *[message] { $count ->
+        [one] පණිවිඩය කියවූ ලෙස සලකුණු කරන ලදී.
+       *[other] පණිවිඩ { $count } ක් කියවූ ලෙස සලකුණු කරන ලදී.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] සංවාදය නොකියවූ ලෙස සලකුණු කරන ලදී.
+       *[other] සංවාද { $count } ක් නොකියවූ ලෙස සලකුණු කරන ලදී.
+    }
+   *[message] { $count ->
+        [one] පණිවිඩය නොකියවූ ලෙස සලකුණු කරන ලදී.
+       *[other] පණිවිඩ { $count } ක් නොකියවූ ලෙස සලකුණු කරන ලදී.
+    }
+}
 toast-undone = ක්‍රියාව අහෝසි කරන ලදී.
+toast-nothing-to-undo = අහෝසි කිරීමට කිසිවක් නැත.
+toast-cannot-undo-delete-forever = සදහටම මැකූ තැපැල් ආපසු ගෙන ආ නොහැක.
+toast-send-undone = යැවීම අහෝසි කරන ලදී.
+toast-too-late-to-undo-send = අහෝසි කිරීමට ප්‍රමාද වැඩියි: පණිවිඩය දැනටමත් යවා ඇත.
 toast-undo = අහෝසි කරන්න
 toast-no-spam-folder = මෙම ගිණුමට අයාචිත තැපැල් ෆෝල්ඩරයක් නැත.

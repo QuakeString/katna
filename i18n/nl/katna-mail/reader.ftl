@@ -123,6 +123,22 @@ attachment-encrypted-open = Dit bestand is versleuteld ontvangen. Sla het op om 
 print-failed = Kan niet afdrukken: { $error }
 print-no-font = er is geen lettertype gevonden
 print-opened-as-pdf = Geopend als pdf om vanaf daar af te drukken.
+print-preview-title = Afdrukvoorbeeld
+print-preview-laying-out = Pagina's opmaken…
+print-preview-pages = { $count ->
+    [one] { $count } pagina
+   *[other] { $count } pagina's
+}
+print-preview-more = { $count ->
+    [one] en nog { $count } pagina
+   *[other] en nog { $count } pagina's
+}
+print-preview-failed = de pagina's konden niet worden getoond
+print-preview-paper = Papier
+print-preview-a4 = A4
+print-preview-letter = Letter
+print-preview-cancel = Annuleren
+print-preview-print = Afdrukken
 print-not-downloaded = (Nog niet gedownload.)
 print-encrypted = (Versleuteld. Open het in Katna Mail om de tekst af te drukken.)
 print-to = Aan: { $addresses }

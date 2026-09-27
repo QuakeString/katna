@@ -37,3 +37,4 @@ app-contacts-messages = { $count ->
    *[other] imilayezo engu-{ $count }
 }
 app-contacts-last = okokugcina { $date }
+top-brand = Katna

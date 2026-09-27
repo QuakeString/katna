@@ -70,6 +70,10 @@ settings-general-new-mail-detail = Avec Répondre à tous, Marquer comme lu et A
 settings-general-new-mail-sound = Émettre un son
 settings-general-new-mail-sound-detail = Le son de nouveau message du bureau
 settings-general-desktop = Bureau
+settings-general-start-at-login = Démarrer Katna à la connexion
+settings-general-start-at-login-detail = Synchronise les messages et affiche les notifications de nouveaux messages et l’icône de la zone de notification, sans ouvrir la fenêtre
+settings-general-login-window = Ouvrir aussi la fenêtre de Katna Mail
+settings-general-login-window-detail = La fenêtre s’ouvre également à la connexion
 settings-general-tray = Afficher Katna dans la zone de notification
 settings-general-tray-detail = Avec le nombre de messages non lus et un menu
 settings-general-unread-badge = Nombre de non-lus sur l’icône de la barre des tâches
@@ -207,7 +211,7 @@ settings-general-remote-images-summary = Toujours afficher les images de tous le
 settings-general-sending-summary = Annuler l’envoi : délai pendant lequel un message envoyé patiente, pour pouvoir être annulé
 settings-general-offline-summary = Nombre de jours de messages récents téléchargés en entier, pour les lire sans connexion
 settings-general-notifications-summary = Notifications de nouveaux messages et leur son
-settings-general-desktop-summary = Ouvrir Katna Mail à la connexion, l’icône de la zone de notification et le nombre de non-lus sur l’icône de la barre des tâches
+settings-general-desktop-summary = Démarrer Katna à la connexion, l’icône de la zone de notification et le nombre de non-lus sur l’icône de la barre des tâches
 settings-accounts-accounts-summary = Ajouter ou supprimer un compte, ou changer sa photo
 settings-appearance-density-summary = Lignes par défaut ou compactes dans la liste
 settings-appearance-scaling-summary = Tout agrandir ou réduire : texte, icônes, espacements et séparateurs
@@ -243,7 +247,7 @@ settings-search-results = Paramètres correspondant à « { $query } »
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Impossible de modifier l’ouverture à la connexion : { $error }
+settings-open-at-login-failed = Impossible de modifier le démarrage à la connexion : { $error }
 
 ## Settings > General > Time
 
@@ -266,4 +270,9 @@ settings-compose-grammar = Grammaire
 settings-compose-grammar-detail = Vérifiée sur cet ordinateur avec Harper. En anglais uniquement pour l’instant : le texte dans d’autres langues n’est pas modifié.
 settings-compose-grammar-check = Vérifier la grammaire
 settings-compose-grammar-check-detail = Souligner les fautes de grammaire pendant la saisie, en anglais
+settings-compose-suggestions = Suggestions d’écriture
+settings-compose-suggestions-detail = Apprises sur cet ordinateur à partir des messages que vous avez envoyés et de ceux auxquels vous répondez ; rien n’en sort. Appuyez sur Tab pour accepter une suggestion, ou continuez à écrire.
+settings-compose-suggestions-on = Suggérer pendant la saisie
+settings-compose-suggestions-on-detail = Afficher en gris la suite probable d’une phrase pendant la saisie
 settings-compose-grammar-summary = Souligner les fautes de grammaire pendant la saisie, en anglais
+settings-compose-suggestions-summary = Afficher en gris la suite probable d’une phrase pendant la saisie

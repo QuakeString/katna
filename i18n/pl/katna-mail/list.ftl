@@ -123,6 +123,140 @@ list-select-all-in = { $kind ->
        *[other] Zaznacz wszystkie wiadomości ({ $count }) w folderze { $folder }
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznaczono { $count } przeczytany wątek.
+            [few] Zaznaczono wszystkie { $count } przeczytane wątki.
+            [many] Zaznaczono wszystkie { $count } przeczytanych wątków.
+           *[other] Zaznaczono wszystkie przeczytane wątki ({ $count }).
+        }
+       *[message] { $count ->
+            [one] Zaznaczono { $count } przeczytaną wiadomość.
+            [few] Zaznaczono wszystkie { $count } przeczytane wiadomości.
+            [many] Zaznaczono wszystkie { $count } przeczytanych wiadomości.
+           *[other] Zaznaczono wszystkie przeczytane wiadomości ({ $count }).
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznaczono { $count } nieprzeczytany wątek.
+            [few] Zaznaczono wszystkie { $count } nieprzeczytane wątki.
+            [many] Zaznaczono wszystkie { $count } nieprzeczytanych wątków.
+           *[other] Zaznaczono wszystkie nieprzeczytane wątki ({ $count }).
+        }
+       *[message] { $count ->
+            [one] Zaznaczono { $count } nieprzeczytaną wiadomość.
+            [few] Zaznaczono wszystkie { $count } nieprzeczytane wiadomości.
+            [many] Zaznaczono wszystkie { $count } nieprzeczytanych wiadomości.
+           *[other] Zaznaczono wszystkie nieprzeczytane wiadomości ({ $count }).
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznaczono { $count } wątek oznaczony gwiazdką.
+            [few] Zaznaczono wszystkie { $count } wątki oznaczone gwiazdką.
+            [many] Zaznaczono wszystkie { $count } wątków oznaczonych gwiazdką.
+           *[other] Zaznaczono wszystkie wątki oznaczone gwiazdką ({ $count }).
+        }
+       *[message] { $count ->
+            [one] Zaznaczono { $count } wiadomość oznaczoną gwiazdką.
+            [few] Zaznaczono wszystkie { $count } wiadomości oznaczone gwiazdką.
+            [many] Zaznaczono wszystkie { $count } wiadomości oznaczonych gwiazdką.
+           *[other] Zaznaczono wszystkie wiadomości oznaczone gwiazdką ({ $count }).
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznaczono { $count } wątek bez gwiazdki.
+            [few] Zaznaczono wszystkie { $count } wątki bez gwiazdki.
+            [many] Zaznaczono wszystkie { $count } wątków bez gwiazdki.
+           *[other] Zaznaczono wszystkie wątki bez gwiazdki ({ $count }).
+        }
+       *[message] { $count ->
+            [one] Zaznaczono { $count } wiadomość bez gwiazdki.
+            [few] Zaznaczono wszystkie { $count } wiadomości bez gwiazdki.
+            [many] Zaznaczono wszystkie { $count } wiadomości bez gwiazdki.
+           *[other] Zaznaczono wszystkie wiadomości bez gwiazdki ({ $count }).
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznaczono { $count } przeczytany wątek w folderze { $folder }.
+            [few] Zaznaczono wszystkie { $count } przeczytane wątki w folderze { $folder }.
+            [many] Zaznaczono wszystkie { $count } przeczytanych wątków w folderze { $folder }.
+           *[other] Zaznaczono wszystkie przeczytane wątki ({ $count }) w folderze { $folder }.
+        }
+       *[message] { $count ->
+            [one] Zaznaczono { $count } przeczytaną wiadomość w folderze { $folder }.
+            [few] Zaznaczono wszystkie { $count } przeczytane wiadomości w folderze { $folder }.
+            [many] Zaznaczono wszystkie { $count } przeczytanych wiadomości w folderze { $folder }.
+           *[other] Zaznaczono wszystkie przeczytane wiadomości ({ $count }) w folderze { $folder }.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznaczono { $count } nieprzeczytany wątek w folderze { $folder }.
+            [few] Zaznaczono wszystkie { $count } nieprzeczytane wątki w folderze { $folder }.
+            [many] Zaznaczono wszystkie { $count } nieprzeczytanych wątków w folderze { $folder }.
+           *[other] Zaznaczono wszystkie nieprzeczytane wątki ({ $count }) w folderze { $folder }.
+        }
+       *[message] { $count ->
+            [one] Zaznaczono { $count } nieprzeczytaną wiadomość w folderze { $folder }.
+            [few] Zaznaczono wszystkie { $count } nieprzeczytane wiadomości w folderze { $folder }.
+            [many] Zaznaczono wszystkie { $count } nieprzeczytanych wiadomości w folderze { $folder }.
+           *[other] Zaznaczono wszystkie nieprzeczytane wiadomości ({ $count }) w folderze { $folder }.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznaczono { $count } wątek oznaczony gwiazdką w folderze { $folder }.
+            [few] Zaznaczono wszystkie { $count } wątki oznaczone gwiazdką w folderze { $folder }.
+            [many] Zaznaczono wszystkie { $count } wątków oznaczonych gwiazdką w folderze { $folder }.
+           *[other] Zaznaczono wszystkie wątki oznaczone gwiazdką ({ $count }) w folderze { $folder }.
+        }
+       *[message] { $count ->
+            [one] Zaznaczono { $count } wiadomość oznaczoną gwiazdką w folderze { $folder }.
+            [few] Zaznaczono wszystkie { $count } wiadomości oznaczone gwiazdką w folderze { $folder }.
+            [many] Zaznaczono wszystkie { $count } wiadomości oznaczonych gwiazdką w folderze { $folder }.
+           *[other] Zaznaczono wszystkie wiadomości oznaczone gwiazdką ({ $count }) w folderze { $folder }.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaznaczono { $count } wątek bez gwiazdki w folderze { $folder }.
+            [few] Zaznaczono wszystkie { $count } wątki bez gwiazdki w folderze { $folder }.
+            [many] Zaznaczono wszystkie { $count } wątków bez gwiazdki w folderze { $folder }.
+           *[other] Zaznaczono wszystkie wątki bez gwiazdki ({ $count }) w folderze { $folder }.
+        }
+       *[message] { $count ->
+            [one] Zaznaczono { $count } wiadomość bez gwiazdki w folderze { $folder }.
+            [few] Zaznaczono wszystkie { $count } wiadomości bez gwiazdki w folderze { $folder }.
+            [many] Zaznaczono wszystkie { $count } wiadomości bez gwiazdki w folderze { $folder }.
+           *[other] Zaznaczono wszystkie wiadomości bez gwiazdki ({ $count }) w folderze { $folder }.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] Brak tu przeczytanych wątków.
+       *[message] Brak tu przeczytanych wiadomości.
+    }
+   *[unread] { $kind ->
+        [conversation] Brak tu nieprzeczytanych wątków.
+       *[message] Brak tu nieprzeczytanych wiadomości.
+    }
+    [starred] { $kind ->
+        [conversation] Brak tu wątków oznaczonych gwiazdką.
+       *[message] Brak tu wiadomości oznaczonych gwiazdką.
+    }
+    [unstarred] { $kind ->
+        [conversation] Brak tu wątków bez gwiazdki.
+       *[message] Brak tu wiadomości bez gwiazdki.
+    }
+}
 list-clear-selection = Wyczyść zaznaczenie
 
 ## Mail list: empty states
@@ -325,6 +459,38 @@ toast-deleted-forever = { $kind ->
        *[other] Trwale usunięto { $count } wiadomości.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] Wątek oznaczony jako przeczytany.
+        [few] Oznaczono { $count } wątki jako przeczytane.
+        [many] Oznaczono { $count } wątków jako przeczytane.
+       *[other] Oznaczono { $count } wątku jako przeczytane.
+    }
+   *[message] { $count ->
+        [one] Wiadomość oznaczona jako przeczytana.
+        [few] Oznaczono { $count } wiadomości jako przeczytane.
+        [many] Oznaczono { $count } wiadomości jako przeczytane.
+       *[other] Oznaczono { $count } wiadomości jako przeczytane.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] Wątek oznaczony jako nieprzeczytany.
+        [few] Oznaczono { $count } wątki jako nieprzeczytane.
+        [many] Oznaczono { $count } wątków jako nieprzeczytane.
+       *[other] Oznaczono { $count } wątku jako nieprzeczytane.
+    }
+   *[message] { $count ->
+        [one] Wiadomość oznaczona jako nieprzeczytana.
+        [few] Oznaczono { $count } wiadomości jako nieprzeczytane.
+        [many] Oznaczono { $count } wiadomości jako nieprzeczytane.
+       *[other] Oznaczono { $count } wiadomości jako nieprzeczytane.
+    }
+}
 toast-undone = Cofnięto działanie.
+toast-nothing-to-undo = Nie ma nic do cofnięcia.
+toast-cannot-undo-delete-forever = Trwale usuniętej poczty nie da się przywrócić.
+toast-send-undone = Cofnięto wysłanie.
+toast-too-late-to-undo-send = Za późno na cofnięcie: wiadomość została już wysłana.
 toast-undo = Cofnij
 toast-no-spam-folder = To konto nie ma folderu spamu.

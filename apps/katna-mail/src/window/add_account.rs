@@ -188,6 +188,18 @@ fn guess(address: &str) -> NewImapAccount {
     }
 }
 
+/// Whether `name` is `password` (app passwords are shown in groups, so
+/// spaces don't count).
+fn is_password(name: &str, password: &str) -> bool {
+    let bare = |text: &str| {
+        text.chars()
+            .filter(|c| !c.is_whitespace())
+            .collect::<String>()
+    };
+    let name = bare(name);
+    !name.is_empty() && name == bare(password)
+}
+
 /// Providers that refuse the everyday password for IMAP.
 fn app_password_provider(address: &str) -> Option<&'static str> {
     let domain = address.rsplit_once('@')?.1.trim().to_lowercase();
@@ -550,6 +562,15 @@ impl MailWindow {
         let password = dialog.password.read(cx).text().to_owned();
         if password.is_empty() {
             self.add_account_error(tr!("add-account-password-empty"), cx);
+            return;
+        }
+        // The name is shown and stored in the open, so a password typed or
+        // pasted into it by mistake must not go through.
+        if is_password(&account.display_name, &password) {
+            let name = dialog.name.clone();
+            name.update(cx, |n, cx| n.select_all_text(cx));
+            window.focus(&name.focus_handle(cx), cx);
+            self.add_account_error(tr!("add-account-name-is-password"), cx);
             return;
         }
         dialog.busy = true;
@@ -1437,6 +1458,14 @@ mod tests {
         assert_eq!(Security::StartTls.port(Kind::Smtp), 587);
         assert_eq!(Security::parse("starttls"), Security::StartTls);
         assert_eq!(Security::parse("tls").as_str(), "tls");
+    }
+
+    #[test]
+    fn a_password_is_not_a_name() {
+        assert!(is_password("abcdefghijklmnop", "abcd efgh ijkl mnop"));
+        assert!(is_password(" abcd efgh ijkl mnop", "abcdefghijklmnop"));
+        assert!(!is_password("", ""));
+        assert!(!is_password("Kay Example", "hunter2"));
     }
 
     #[test]

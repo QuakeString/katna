@@ -352,3 +352,39 @@ soldaki çubuğa kayar; orada imleci üzerinde bekletince klasörler yeniden
 görünür. Sol üstte Katna Mail yazar ve uygulama değiştirdikçe ad Takvim,
 Kişiler ve diğerlerine döner.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Okunmamış ya da yıldızlı tüm postaları seçin"
+text = """
+Seç menüsündeki Okunmuş, Okunmamış, Yıldızlı ve Yıldızsız artık yalnızca
+ekrandakileri değil, klasördeki eşleşen her konuşmayı işaretler.
+Listenin üstündeki bir satır kaç tanesinin seçildiğini söyler;
+arşivleme, silme, taşıma ya da işaretleme hepsine uygulanır.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Sağ tıklamadan düzeltmeler"
+text = """
+İmleci altı çizili bir sözcüğün üzerinde bekletin ya da ona tıklayın;
+düzeltmeleri hemen altında görünür: yazım önerileri, dil bilgisi
+düzeltmeleri ve Yok say, metinde ve konuda. Sağ tıklama hâlâ menünün
+tamamını açar.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "Çip olarak alıcılar"
+text = """
+Kime, Bilgi ve Gizli alanlarındaki adresler yalnızca adı gösteren
+çiplere dönüşür. Bir çipteki ok, çipin adresini gösterir; çift
+tıklayarak onu düzenleyebilirsiniz. Geçerli bir adres olmayan her şey
+kırmızıyla işaretlenir ve Gönder önce onu düzeltmenizi ister.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna oturum açılışında başlar"
+text = """
+Katna artık oturum açtığınızda sessizce başlar: postalar eşitlenir, yeni
+posta bildirimleri ve tepsi simgesi pencere açılmadan gelir. Bunu
+kapatmak ya da pencerenin de açılmasını sağlamak için Ayarlar > Genel >
+Masaüstü'ne gidin.
+"""

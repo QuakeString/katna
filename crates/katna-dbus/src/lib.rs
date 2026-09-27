@@ -190,6 +190,10 @@ macro_rules! pim_proxy {
             /// Checks and saves a new password, then syncs.
             fn set_password(&self, account: i64, password: &str) -> zbus::Result<()>;
 
+            /// Renames an account; an empty name goes back to the name its
+            /// own mail is sent under, else its address.
+            fn rename_account(&self, account: i64, name: &str) -> zbus::Result<()>;
+
             /// Stops syncing an account and deletes it, its mail and its
             /// password. Returns whether it existed.
             fn remove_account(&self, account: i64) -> zbus::Result<bool>;

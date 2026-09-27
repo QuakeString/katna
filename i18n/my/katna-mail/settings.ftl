@@ -62,6 +62,10 @@ settings-general-new-mail-detail = အားလုံးကို ပြန်�
 settings-general-new-mail-sound = အသံဖွင့်ရန်
 settings-general-new-mail-sound-detail = ဒက်စ်တော့၏ မေးလ်အသစ် အသံ
 settings-general-desktop = ဒက်စ်တော့
+settings-general-start-at-login = ဝင်ရောက်သည့်အခါ Katna ကို စတင်ရန်
+settings-general-start-at-login-detail = ဝင်းဒိုးကို မဖွင့်ဘဲ မေးလ်ကို စင့်ခ်လုပ်ပြီး မေးလ်အသစ် အကြောင်းကြားချက်များနှင့် ဗန်း အိုင်ကွန်ကို ပြသည်
+settings-general-login-window = Katna Mail ဝင်းဒိုးကိုလည်း ဖွင့်ရန်
+settings-general-login-window-detail = ဝင်ရောက်သည့်အခါ ဝင်းဒိုးလည်း ပွင့်လာသည်
 settings-general-tray = Katna ကို စနစ်ဗန်းတွင် ပြရန်
 settings-general-tray-detail = မဖတ်ရသေး အရေအတွက်နှင့် မီနူးဖြင့်
 settings-general-unread-badge = တာစ်ဘား အိုင်ကွန်ပေါ်တွင် မဖတ်ရသေး အရေအတွက်
@@ -199,7 +203,7 @@ settings-general-remote-images-summary = မက်ဆေ့ဂျ်တိုင
 settings-general-sending-summary = ပို့ခြင်းကို ပြန်ဖျက်ရန်- ပို့လိုက်သော မက်ဆေ့ဂျ်ကို ပြန်ရုပ်သိမ်းနိုင်ရန် စောင့်ဆိုင်းမည့် အချိန်
 settings-general-offline-summary = ချိတ်ဆက်မှုမရှိဘဲ ဖတ်နိုင်ရန် မကြာသေးမီ မေးလ်ကို အပြည့်အစုံ ဒေါင်းလုဒ်လုပ်မည့် ရက်အရေအတွက်
 settings-general-notifications-summary = မေးလ်အသစ် အကြောင်းကြားချက်များနှင့် ၎င်းတို့၏ အသံ
-settings-general-desktop-summary = ဝင်ရောက်သည့်အခါ Katna Mail ကို ဖွင့်ခြင်း၊ စနစ်ဗန်း အိုင်ကွန်နှင့် တာစ်ဘား အိုင်ကွန်ပေါ်ရှိ မဖတ်ရသေး အရေအတွက်
+settings-general-desktop-summary = ဝင်ရောက်သည့်အခါ Katna ကို စတင်ခြင်း၊ စနစ်ဗန်း အိုင်ကွန်နှင့် တာစ်ဘား အိုင်ကွန်ပေါ်ရှိ မဖတ်ရသေး အရေအတွက်
 settings-accounts-accounts-summary = အကောင့်ထည့်ရန် သို့မဟုတ် ဖယ်ရှားရန်၊ သို့မဟုတ် ၎င်း၏ ပုံကို ပြောင်းရန်
 settings-appearance-density-summary = စာရင်းတွင် မူရင်း သို့မဟုတ် ကျစ်လစ်သော စာကြောင်းများ
 settings-appearance-scaling-summary = အရာအားလုံးကို ပိုကြီး သို့မဟုတ် ပိုသေးစေရန်- စာသား၊ အိုင်ကွန်များ၊ အကွာအဝေးနှင့် ပိုင်းခြားမျဉ်းများ
@@ -235,7 +239,7 @@ settings-search-results = “{ $query }” နှင့် ကိုက်ညီ
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = ဝင်ရောက်သည့်အခါ ဖွင့်ခြင်းကို ပြောင်း၍ မရပါ- { $error }
+settings-open-at-login-failed = ဝင်ရောက်သည့်အခါ စတင်ခြင်းကို ပြောင်း၍ မရပါ- { $error }
 
 ## Settings > General > Time
 
@@ -258,4 +262,9 @@ settings-compose-grammar = သဒ္ဒါ
 settings-compose-grammar-detail = ဤကွန်ပျူတာပေါ်တွင် Harper ဖြင့် စစ်ဆေးသည်။ ယခုအတွက် အင်္ဂလိပ်ဘာသာသာ- အခြားဘာသာစကားများဖြင့် ရေးထားသော စာသားကို မပြောင်းလဲပါ။
 settings-compose-grammar-check = သဒ္ဒါ စစ်ဆေးရန်
 settings-compose-grammar-check-detail = ရေးနေစဉ် သဒ္ဒါအမှားများကို မျဉ်းသားရန်၊ အင်္ဂလိပ်ဘာသာဖြင့်
+settings-compose-suggestions = စာရေးရာတွင် အကြံပြုချက်များ
+settings-compose-suggestions-detail = သင်ပို့ခဲ့သော မေးလ်နှင့် သင်ပြန်စာရေးနေသော မေးလ်မှ ဤကွန်ပျူတာပေါ်တွင်သာ သင်ယူထားသည်၊ မည်သည့်အရာမျှ အပြင်သို့ မထွက်ပါ။ အကြံပြုချက်ကို ယူရန် Tab ကို နှိပ်ပါ သို့မဟုတ် ဆက်ရိုက်ပါ။
+settings-compose-suggestions-on = ရေးနေစဉ် အကြံပြုရန်
+settings-compose-suggestions-on-detail = သင်ရိုက်နေစဉ် စကားစု၏ ဖြစ်နိုင်ဖွယ် ကျန်အပိုင်းကို မီးခိုးရောင်ဖြင့် ပြရန်
 settings-compose-grammar-summary = ရေးနေစဉ် သဒ္ဒါအမှားများကို မျဉ်းသားရန်၊ အင်္ဂလိပ်ဘာသာဖြင့်
+settings-compose-suggestions-summary = သင်ရိုက်နေစဉ် စကားစု၏ ဖြစ်နိုင်ဖွယ် ကျန်အပိုင်းကို မီးခိုးရောင်ဖြင့် ပြရန်

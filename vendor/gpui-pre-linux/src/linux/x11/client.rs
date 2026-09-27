@@ -8,9 +8,7 @@ use collections::HashMap;
 use core::str;
 use gpui::{Capslock, profiler};
 use gpui_util::ResultExt as _;
-use http_client::Url;
 use log::Level;
-use smallvec::SmallVec;
 use std::{
     cell::{RefCell, RefMut},
     collections::{BTreeMap, HashSet},
@@ -48,6 +46,7 @@ use super::{
     pressed_button_from_mask, xcb_flush,
 };
 
+use crate::linux::transfer::{self, Transfer};
 use crate::linux::{
     DEFAULT_CURSOR_ICON_NAME, LinuxClient, capslock_from_xkb, cursor_style_to_icon_names,
     get_xkb_compose_state, is_within_click_distance, keystroke_from_xkb,
@@ -154,7 +153,13 @@ impl From<xim::ClientError> for EventHandlerError {
 #[derive(Debug, Default)]
 pub struct Xdnd {
     other_window: xproto::Window,
-    drag_type: u32,
+    /// The types to read (Katna: files, or content; see `transfer`), and
+    /// their names.
+    wanted: Vec<(u32, String)>,
+    /// Asked for the data; the types still to arrive.
+    requested: bool,
+    pending: Vec<u32>,
+    transfer: Transfer,
     retrieved: bool,
     position: Point<Pixels>,
 }
@@ -859,21 +864,36 @@ impl X11Client {
                 }
 
                 if event.type_ == state.atoms.XdndEnter {
-                    state.xdnd_state.other_window = atom;
-                    if (arg1 & 0x1) == 0x1 {
-                        state.xdnd_state.drag_type = xdnd_get_supported_atom(
-                            &state.xcb_connection,
-                            &state.atoms,
-                            state.xdnd_state.other_window,
-                        );
+                    state.xdnd_state = Xdnd {
+                        other_window: atom,
+                        ..Xdnd::default()
+                    };
+                    let types = if (arg1 & 0x1) == 0x1 {
+                        xdnd_type_list(&state.xcb_connection, &state.atoms, atom)
                     } else {
-                        if let Some(atom) = [arg2, arg3, arg4]
-                            .into_iter()
-                            .find(|atom| xdnd_is_atom_supported(*atom, &state.atoms))
-                        {
-                            state.xdnd_state.drag_type = atom;
-                        }
-                    }
+                        [arg2, arg3, arg4].into_iter().filter(|&t| t != 0).collect()
+                    };
+                    let named = types
+                        .into_iter()
+                        .filter_map(|atom| {
+                            let name = get_reply(
+                                || "Failed to get an XDnD type's name",
+                                state.xcb_connection.get_atom_name(atom),
+                            )
+                            .log_err()?;
+                            Some((atom, String::from_utf8(name.name).ok()?))
+                        })
+                        .collect::<Vec<_>>();
+                    let names = named.iter().map(|(_, n)| n.as_str()).collect::<Vec<_>>();
+                    let wanted = transfer::wanted_mimes(&names)
+                        .into_iter()
+                        .map(str::to_owned)
+                        .collect::<Vec<_>>();
+                    state.xdnd_state.wanted = named
+                        .iter()
+                        .filter(|(_, n)| wanted.contains(n))
+                        .cloned()
+                        .collect();
                 } else if event.type_ == state.atoms.XdndLeave {
                     let position = state.xdnd_state.position;
                     drop(state);
@@ -889,24 +909,31 @@ impl X11Client {
                         state.xdnd_state.position =
                             Point::new(px(pos.win_x as f32), px(pos.win_y as f32));
                     }
-                    if !state.xdnd_state.retrieved {
-                        check_reply(
-                            || "Failed to convert selection for drag and drop",
-                            state.xcb_connection.convert_selection(
-                                event.window,
-                                state.atoms.XdndSelection,
-                                state.xdnd_state.drag_type,
-                                state.atoms.XDND_DATA,
-                                arg3,
-                            ),
-                        )
-                        .log_err();
+                    if !state.xdnd_state.requested {
+                        state.xdnd_state.requested = true;
+                        // Each type into a property of its own name.
+                        let wanted = state.xdnd_state.wanted.clone();
+                        for (target, _) in wanted {
+                            check_reply(
+                                || "Failed to convert selection for drag and drop",
+                                state.xcb_connection.convert_selection(
+                                    event.window,
+                                    state.atoms.XdndSelection,
+                                    target,
+                                    target,
+                                    arg3,
+                                ),
+                            )
+                            .log_err();
+                            state.xdnd_state.pending.push(target);
+                        }
                     }
                     xdnd_send_status(
                         &state.xcb_connection,
                         &state.atoms,
                         event.window,
                         state.xdnd_state.other_window,
+                        !state.xdnd_state.wanted.is_empty(),
                         arg4,
                     );
                     let position = state.xdnd_state.position;
@@ -929,42 +956,54 @@ impl X11Client {
             }
             Event::SelectionNotify(event) => {
                 let window = self.get_window(event.requestor)?;
-                let state = self.0.borrow_mut();
-                let reply = get_reply(
-                    || "Failed to get XDND_DATA",
-                    state.xcb_connection.get_property(
-                        false,
-                        event.requestor,
-                        state.atoms.XDND_DATA,
-                        AtomEnum::ANY,
-                        0,
-                        1024,
-                    ),
-                )
-                .log_err();
-                let Some(reply) = reply else {
+                let mut state = self.0.borrow_mut();
+                let target = event.target;
+                let Some(at) = state.xdnd_state.pending.iter().position(|&t| t == target) else {
                     return Some(());
                 };
-                if let Ok(file_list) = str::from_utf8(&reply.value) {
-                    let paths: SmallVec<[_; 2]> = file_list
-                        .lines()
-                        .filter_map(|path| Url::parse(path).log_err())
-                        .filter_map(|url| match url.to_file_path() {
-                            Ok(url) => Some(url),
-                            Err(()) => {
-                                log::error!("Failed turn {url:?} into a file path");
-                                None
-                            }
-                        })
-                        .collect();
-                    let input = PlatformInput::FileDrop(FileDropEvent::Entered {
-                        position: state.xdnd_state.position,
-                        paths: gpui::ExternalPaths(paths),
-                    });
-                    drop(state);
-                    window.handle_input(input);
-                    self.0.borrow_mut().xdnd_state.retrieved = true;
+                state.xdnd_state.pending.remove(at);
+                if event.property != u32::from(AtomEnum::NONE) {
+                    let reply = get_reply(
+                        || "Failed to get dropped data",
+                        state.xcb_connection.get_property(
+                            true,
+                            event.requestor,
+                            event.property,
+                            AtomEnum::ANY,
+                            0,
+                            u32::MAX / 4,
+                        ),
+                    )
+                    .log_err();
+                    let name = state
+                        .xdnd_state
+                        .wanted
+                        .iter()
+                        .find(|(t, _)| *t == target)
+                        .map(|(_, n)| n.clone());
+                    if let (Some(reply), Some(name)) = (reply, name) {
+                        state.xdnd_state.transfer.add(&name, reply.value);
+                    }
                 }
+                if !state.xdnd_state.pending.is_empty() || state.xdnd_state.retrieved {
+                    return Some(());
+                }
+                state.xdnd_state.retrieved = true;
+                let mut transfer = std::mem::take(&mut state.xdnd_state.transfer);
+                let files = std::mem::take(&mut transfer.files);
+                let paths = if !files.is_empty() {
+                    gpui::ExternalPaths(files.into_iter().collect())
+                } else if let Some(content) = transfer.into_dropped() {
+                    transfer::enter_content(content)
+                } else {
+                    return Some(());
+                };
+                let input = PlatformInput::FileDrop(FileDropEvent::Entered {
+                    position: state.xdnd_state.position,
+                    paths,
+                });
+                drop(state);
+                window.handle_input(input);
             }
             Event::ConfigureNotify(event) => {
                 let bounds = Bounds {
@@ -1765,8 +1804,8 @@ impl LinuxClient for X11Client {
         let state = self.0.borrow_mut();
         state
             .clipboard
-            .set_text(
-                std::borrow::Cow::Owned(item.text().unwrap_or_default()),
+            .set_item(
+                &item,
                 clipboard::ClipboardKind::Primary,
                 clipboard::WaitConfig::None,
             )
@@ -1778,8 +1817,8 @@ impl LinuxClient for X11Client {
         let mut state = self.0.borrow_mut();
         state
             .clipboard
-            .set_text(
-                std::borrow::Cow::Owned(item.text().unwrap_or_default()),
+            .set_item(
+                &item,
                 clipboard::ClipboardKind::Clipboard,
                 clipboard::WaitConfig::None,
             )
@@ -1806,6 +1845,13 @@ impl LinuxClient for X11Client {
             .is_owner(clipboard::ClipboardKind::Clipboard)
         {
             return state.clipboard_item.clone();
+        }
+        if crate::linux::transfer::rich_wanted() {
+            return state
+                .clipboard
+                .get_rich(clipboard::ClipboardKind::Clipboard)
+                .context("X11: Failed to read from clipboard (clipboard)")
+                .log_with_level(log::Level::Debug);
         }
         state
             .clipboard
@@ -2335,41 +2381,20 @@ fn check_kde_blur_supported(
     .is_some_and(|reply| reply.atoms.contains(&atoms._KDE_NET_WM_BLUR_BEHIND_REGION))
 }
 
-fn xdnd_is_atom_supported(atom: u32, atoms: &XcbAtoms) -> bool {
-    atom == atoms.TEXT
-        || atom == atoms.STRING
-        || atom == atoms.UTF8_STRING
-        || atom == atoms.TEXT_PLAIN
-        || atom == atoms.TEXT_PLAIN_UTF8
-        || atom == atoms.TextUriList
-}
-
-fn xdnd_get_supported_atom(
+/// All the types a drag offers (XdndTypeList, when there are more than
+/// three).
+fn xdnd_type_list(
     xcb_connection: &XCBConnection,
-    supported_atoms: &XcbAtoms,
-    target: xproto::Window,
-) -> u32 {
-    if let Some(reply) = get_reply(
+    atoms: &XcbAtoms,
+    source: xproto::Window,
+) -> Vec<u32> {
+    get_reply(
         || "Failed to get XDnD supported atoms",
-        xcb_connection.get_property(
-            false,
-            target,
-            supported_atoms.XdndTypeList,
-            AtomEnum::ANY,
-            0,
-            1024,
-        ),
+        xcb_connection.get_property(false, source, atoms.XdndTypeList, AtomEnum::ANY, 0, 1024),
     )
     .log_with_level(Level::Warn)
-        && let Some(atoms) = reply.value32()
-    {
-        for atom in atoms {
-            if xdnd_is_atom_supported(atom, supported_atoms) {
-                return atom;
-            }
-        }
-    }
-    0
+    .and_then(|reply| Some(reply.value32()?.collect()))
+    .unwrap_or_default()
 }
 
 fn xdnd_send_finished(
@@ -2399,13 +2424,14 @@ fn xdnd_send_status(
     atoms: &XcbAtoms,
     source: xproto::Window,
     target: xproto::Window,
+    accept: bool,
     action: u32,
 ) {
     let message = ClientMessageEvent {
         format: 32,
         window: target,
         type_: atoms.XdndStatus,
-        data: ClientMessageData::from([source, 1, 0, 0, action]),
+        data: ClientMessageData::from([source, u32::from(accept), 0, 0, action]),
         sequence: 0,
         response_type: xproto::CLIENT_MESSAGE_EVENT,
     };

@@ -368,3 +368,41 @@ pour revoir les dossiers. En haut à gauche s’affiche Katna Mail, et le
 nom défile vers Calendrier, Contacts et les autres quand vous changez
 d’application.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Sélectionner tous les messages non lus ou suivis"
+text = """
+Lus, Non lus, Suivis et Non suivis dans le menu Sélectionner cochent
+maintenant toutes les conversations correspondantes du dossier, pas
+seulement celles à l’écran. Une ligne au-dessus de la liste indique
+combien sont sélectionnées, et archiver, supprimer, déplacer ou marquer
+s’applique à toutes.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Des corrections sans clic droit"
+text = """
+Posez le pointeur sur un mot souligné, ou cliquez dessus, et ses
+corrections s’affichent juste en dessous : suggestions d’orthographe,
+corrections grammaticales et Ignorer, dans le texte et l’objet. Le clic
+droit ouvre toujours le menu complet.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "Des destinataires en pastilles"
+text = """
+Les adresses des champs À, Cc et Cci deviennent des pastilles qui
+n’affichent que le nom. La flèche d’une pastille montre son adresse, et un
+double-clic permet de la modifier. Ce qui n’est pas une adresse valide est
+signalé en rouge, et Envoyer vous demande d’abord de le corriger.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna démarre à la connexion"
+text = """
+Katna démarre désormais discrètement quand vous vous connectez : les
+messages se synchronisent, et les notifications de nouveaux messages et
+l’icône de la zone de notification apparaissent sans ouvrir la fenêtre.
+Désactivez-le, ou faites aussi ouvrir la fenêtre, dans Paramètres >
+Général > Bureau.
+"""

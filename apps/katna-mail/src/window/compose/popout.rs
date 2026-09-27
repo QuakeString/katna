@@ -176,7 +176,7 @@ impl MailWindow {
             .bg(rgba(th.surface))
             .text_color(rgba(th.text))
             .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| {
-                this.drop_files(paths.paths().to_vec(), cx);
+                this.drop_on_compose(paths, cx);
             }))
             .child(self.render_compose_fields(th, cx))
             .child(self.render_compose_body(th, width, cx))

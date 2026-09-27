@@ -38,6 +38,9 @@ use katna_sync::{
 
 use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secrets};
 
+/// The longest account name taken.
+const MAX_ACCOUNT_NAME: usize = 200;
+
 /// How long a stopping worker may take to log out.
 const STOP_TIMEOUT: Duration = Duration::from_secs(10);
 
@@ -470,6 +473,47 @@ impl Daemon {
         let pictures = Pictures::system(self.paths.cache_dir())
             .map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
         Ok(pictures.sender(address).await)
+    }
+
+    /// Renames an account. An empty name goes back to the name its own
+    /// mail carries, else its address.
+    pub fn rename_account(&self, id: AccountId, name: &str) -> Result<(), CommandError> {
+        let account = self.account(id)?;
+        let name = match name.trim() {
+            "" => self
+                .store()
+                .name_in_own_mail(id, &account.address)?
+                .unwrap_or_else(|| account.address.clone()),
+            name if name.chars().count() > MAX_ACCOUNT_NAME => {
+                return Err(CommandError::InvalidArgs(format!(
+                    "an account name is at most {MAX_ACCOUNT_NAME} characters"
+                )));
+            }
+            name => name.to_owned(),
+        };
+        self.store().rename_account(id, &name)?;
+        tracing::info!(account = %id, "account renamed");
+        let _ = self.notices.try_send(Notice::AccountsChanged);
+        Ok(())
+    }
+
+    /// An account known only by its address takes the name its own mail
+    /// is sent under, once there is some.
+    fn name_from_mail(&self, id: AccountId) {
+        let Ok(account) = self.account(id) else {
+            return;
+        };
+        let name = account.display_name.trim();
+        if !name.is_empty() && !name.eq_ignore_ascii_case(account.address.trim()) {
+            return;
+        }
+        let found = self.store().name_in_own_mail(id, &account.address);
+        let Ok(Some(name)) = found else {
+            return;
+        };
+        if self.store().rename_account(id, &name).is_ok() {
+            let _ = self.notices.try_send(Notice::AccountsChanged);
+        }
     }
 
     /// Checks and saves a new password, then restarts the account's worker.
@@ -1137,6 +1181,9 @@ impl Daemon {
                     });
                     if changed || first {
                         let _ = self.notices.try_send(Notice::MailChanged(id));
+                    }
+                    if first {
+                        self.name_from_mail(id);
                     }
                     if let Some(notices) = self.new_mail_notices() {
                         notices.synced(&self.store, id).await;

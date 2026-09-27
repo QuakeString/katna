@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] { $folder }లోని మొత్తం { $count } మెసేజ్‌లను ఎంచుకోండి
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } చదివిన సంభాషణ ఎంచుకోబడింది.
+           *[other] మొత్తం { $count } చదివిన సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] { $count } చదివిన మెసేజ్ ఎంచుకోబడింది.
+           *[other] మొత్తం { $count } చదివిన మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } చదవని సంభాషణ ఎంచుకోబడింది.
+           *[other] మొత్తం { $count } చదవని సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] { $count } చదవని మెసేజ్ ఎంచుకోబడింది.
+           *[other] మొత్తం { $count } చదవని మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } నక్షత్రం ఉంచిన సంభాషణ ఎంచుకోబడింది.
+           *[other] మొత్తం { $count } నక్షత్రం ఉంచిన సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] { $count } నక్షత్రం ఉంచిన మెసేజ్ ఎంచుకోబడింది.
+           *[other] మొత్తం { $count } నక్షత్రం ఉంచిన మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } నక్షత్రం ఉంచని సంభాషణ ఎంచుకోబడింది.
+           *[other] మొత్తం { $count } నక్షత్రం ఉంచని సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] { $count } నక్షత్రం ఉంచని మెసేజ్ ఎంచుకోబడింది.
+           *[other] మొత్తం { $count } నక్షత్రం ఉంచని మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }లోని { $count } చదివిన సంభాషణ ఎంచుకోబడింది.
+           *[other] { $folder }లోని మొత్తం { $count } చదివిన సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] { $folder }లోని { $count } చదివిన మెసేజ్ ఎంచుకోబడింది.
+           *[other] { $folder }లోని మొత్తం { $count } చదివిన మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }లోని { $count } చదవని సంభాషణ ఎంచుకోబడింది.
+           *[other] { $folder }లోని మొత్తం { $count } చదవని సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] { $folder }లోని { $count } చదవని మెసేజ్ ఎంచుకోబడింది.
+           *[other] { $folder }లోని మొత్తం { $count } చదవని మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }లోని { $count } నక్షత్రం ఉంచిన సంభాషణ ఎంచుకోబడింది.
+           *[other] { $folder }లోని మొత్తం { $count } నక్షత్రం ఉంచిన సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] { $folder }లోని { $count } నక్షత్రం ఉంచిన మెసేజ్ ఎంచుకోబడింది.
+           *[other] { $folder }లోని మొత్తం { $count } నక్షత్రం ఉంచిన మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }లోని { $count } నక్షత్రం ఉంచని సంభాషణ ఎంచుకోబడింది.
+           *[other] { $folder }లోని మొత్తం { $count } నక్షత్రం ఉంచని సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] { $folder }లోని { $count } నక్షత్రం ఉంచని మెసేజ్ ఎంచుకోబడింది.
+           *[other] { $folder }లోని మొత్తం { $count } నక్షత్రం ఉంచని మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] ఇక్కడ చదివిన సంభాషణలు ఏవీ లేవు.
+       *[message] ఇక్కడ చదివిన మెసేజ్‌లు ఏవీ లేవు.
+    }
+   *[unread] { $kind ->
+        [conversation] ఇక్కడ చదవని సంభాషణలు ఏవీ లేవు.
+       *[message] ఇక్కడ చదవని మెసేజ్‌లు ఏవీ లేవు.
+    }
+    [starred] { $kind ->
+        [conversation] ఇక్కడ నక్షత్రం ఉంచిన సంభాషణలు ఏవీ లేవు.
+       *[message] ఇక్కడ నక్షత్రం ఉంచిన మెసేజ్‌లు ఏవీ లేవు.
+    }
+    [unstarred] { $kind ->
+        [conversation] ఇక్కడ నక్షత్రం ఉంచని సంభాషణలు ఏవీ లేవు.
+       *[message] ఇక్కడ నక్షత్రం ఉంచని మెసేజ్‌లు ఏవీ లేవు.
+    }
+}
 list-clear-selection = ఎంపికను క్లియర్ చేయండి
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count } మెసేజ్‌లు శాశ్వతంగా తొలగించబడ్డాయి.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ చదివినట్లు గుర్తు పెట్టబడింది.
+       *[other] { $count } సంభాషణలు చదివినట్లు గుర్తు పెట్టబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ చదివినట్లు గుర్తు పెట్టబడింది.
+       *[other] { $count } మెసేజ్‌లు చదివినట్లు గుర్తు పెట్టబడ్డాయి.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ చదవనట్లు గుర్తు పెట్టబడింది.
+       *[other] { $count } సంభాషణలు చదవనట్లు గుర్తు పెట్టబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ చదవనట్లు గుర్తు పెట్టబడింది.
+       *[other] { $count } మెసేజ్‌లు చదవనట్లు గుర్తు పెట్టబడ్డాయి.
+    }
+}
 toast-undone = చర్య రద్దు చేయబడింది.
+toast-nothing-to-undo = అన్‌డూ చేయడానికి ఏమీ లేదు.
+toast-cannot-undo-delete-forever = శాశ్వతంగా తొలగించిన మెయిల్‌ను తిరిగి తీసుకురాలేము.
+toast-send-undone = పంపడం రద్దు చేయబడింది.
+toast-too-late-to-undo-send = అన్‌డూ చేయడానికి ఆలస్యమైంది: మెసేజ్ ఇప్పటికే పంపబడింది.
 toast-undo = చర్య రద్దు చేయండి
 toast-no-spam-folder = ఈ ఖాతాలో స్పామ్ ఫోల్డర్ లేదు.

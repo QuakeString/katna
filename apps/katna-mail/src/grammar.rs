@@ -72,6 +72,9 @@ impl GrammarCheck for Grammar {
             .lint(&document)
             .into_iter()
             .filter(|lint| lint.span.end <= chars.len() && lint.span.start < lint.span.end)
+            // Tabs are deliberate (pasted cells as plain text, say), not
+            // spacing mistakes.
+            .filter(|lint| !chars[lint.span.start..lint.span.end].contains(&'\t'))
             .map(|lint| {
                 let flagged: String = chars[lint.span.start..lint.span.end].iter().collect();
                 let fixes = lint
@@ -314,6 +317,13 @@ mod tests {
             .find(|i| &text[i.range.clone()] == "an")
             .unwrap();
         assert_eq!(article.fixes[0].replacement, "a");
+    }
+
+    #[test]
+    fn leaves_tabs_alone() {
+        let grammar = Grammar::load("en_US");
+        let text = "Name\tAmount\tNote\nTea\t12\thot\nCake\t1200\tsweet";
+        assert!(grammar.check(text).is_empty(), "{:?}", grammar.check(text));
     }
 
     #[test]

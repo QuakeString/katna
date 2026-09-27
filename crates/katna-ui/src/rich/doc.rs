@@ -215,6 +215,8 @@ pub struct ParaStyle {
     pub quote: u8,
     /// Part of the signature, which the signature menu swaps as a whole.
     pub signature: bool,
+    /// The background of a table cell, `0xRRGGBB`.
+    pub fill: Option<u32>,
 }
 
 pub const MAX_INDENT: u8 = 8;

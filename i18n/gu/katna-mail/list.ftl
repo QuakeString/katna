@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] { $folder } માંના બધા { $count } મેસેજ પસંદ કરો
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } વાંચેલો વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] બધા { $count } વાંચેલા વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] { $count } વાંચેલો મેસેજ પસંદ કરેલ છે.
+           *[other] બધા { $count } વાંચેલા મેસેજ પસંદ કરેલા છે.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } નહીં વાંચેલો વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] બધા { $count } નહીં વાંચેલા વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] { $count } નહીં વાંચેલો મેસેજ પસંદ કરેલ છે.
+           *[other] બધા { $count } નહીં વાંચેલા મેસેજ પસંદ કરેલા છે.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } તારાંકિત વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] બધા { $count } તારાંકિત વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] { $count } તારાંકિત મેસેજ પસંદ કરેલ છે.
+           *[other] બધા { $count } તારાંકિત મેસેજ પસંદ કરેલા છે.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } તારાંકન વિનાનો વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] બધા { $count } તારાંકન વિનાના વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] { $count } તારાંકન વિનાનો મેસેજ પસંદ કરેલ છે.
+           *[other] બધા { $count } તારાંકન વિનાના મેસેજ પસંદ કરેલા છે.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } માંનો { $count } વાંચેલો વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] { $folder } માંના બધા { $count } વાંચેલા વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] { $folder } માંનો { $count } વાંચેલો મેસેજ પસંદ કરેલ છે.
+           *[other] { $folder } માંના બધા { $count } વાંચેલા મેસેજ પસંદ કરેલા છે.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } માંનો { $count } નહીં વાંચેલો વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] { $folder } માંના બધા { $count } નહીં વાંચેલા વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] { $folder } માંનો { $count } નહીં વાંચેલો મેસેજ પસંદ કરેલ છે.
+           *[other] { $folder } માંના બધા { $count } નહીં વાંચેલા મેસેજ પસંદ કરેલા છે.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } માંનો { $count } તારાંકિત વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] { $folder } માંના બધા { $count } તારાંકિત વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] { $folder } માંનો { $count } તારાંકિત મેસેજ પસંદ કરેલ છે.
+           *[other] { $folder } માંના બધા { $count } તારાંકિત મેસેજ પસંદ કરેલા છે.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } માંનો { $count } તારાંકન વિનાનો વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] { $folder } માંના બધા { $count } તારાંકન વિનાના વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] { $folder } માંનો { $count } તારાંકન વિનાનો મેસેજ પસંદ કરેલ છે.
+           *[other] { $folder } માંના બધા { $count } તારાંકન વિનાના મેસેજ પસંદ કરેલા છે.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] અહીં કોઈ વાંચેલા વાર્તાલાપ નથી.
+       *[message] અહીં કોઈ વાંચેલા મેસેજ નથી.
+    }
+   *[unread] { $kind ->
+        [conversation] અહીં કોઈ નહીં વાંચેલા વાર્તાલાપ નથી.
+       *[message] અહીં કોઈ નહીં વાંચેલા મેસેજ નથી.
+    }
+    [starred] { $kind ->
+        [conversation] અહીં કોઈ તારાંકિત વાર્તાલાપ નથી.
+       *[message] અહીં કોઈ તારાંકિત મેસેજ નથી.
+    }
+    [unstarred] { $kind ->
+        [conversation] અહીં કોઈ તારાંકન વિનાના વાર્તાલાપ નથી.
+       *[message] અહીં કોઈ તારાંકન વિનાના મેસેજ નથી.
+    }
+}
 list-clear-selection = પસંદગી સાફ કરો
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count } મેસેજ કાયમ માટે ડિલીટ કર્યા.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] વાર્તાલાપ વાંચેલા તરીકે ચિહ્નિત કર્યો.
+       *[other] { $count } વાર્તાલાપ વાંચેલા તરીકે ચિહ્નિત કર્યા.
+    }
+   *[message] { $count ->
+        [one] મેસેજ વાંચેલા તરીકે ચિહ્નિત કર્યો.
+       *[other] { $count } મેસેજ વાંચેલા તરીકે ચિહ્નિત કર્યા.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] વાર્તાલાપ નહીં વાંચેલા તરીકે ચિહ્નિત કર્યો.
+       *[other] { $count } વાર્તાલાપ નહીં વાંચેલા તરીકે ચિહ્નિત કર્યા.
+    }
+   *[message] { $count ->
+        [one] મેસેજ નહીં વાંચેલા તરીકે ચિહ્નિત કર્યો.
+       *[other] { $count } મેસેજ નહીં વાંચેલા તરીકે ચિહ્નિત કર્યા.
+    }
+}
 toast-undone = ક્રિયા પૂર્વવત્ કરી.
+toast-nothing-to-undo = પૂર્વવત્ કરવા માટે કંઈ નથી.
+toast-cannot-undo-delete-forever = કાયમ માટે ડિલીટ કરેલી મેઇલ પાછી લાવી શકાતી નથી.
+toast-send-undone = મોકલવાનું પૂર્વવત્ કર્યું.
+toast-too-late-to-undo-send = પૂર્વવત્ કરવામાં મોડું થઈ ગયું: મેસેજ પહેલેથી મોકલાઈ ગયો છે.
 toast-undo = પૂર્વવત્ કરો
 toast-no-spam-folder = આ એકાઉન્ટમાં કોઈ સ્પામ ફોલ્ડર નથી.

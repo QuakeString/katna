@@ -68,6 +68,10 @@ settings-general-new-mail-detail = എല്ലാവർക്കും മറ�
 settings-general-new-mail-sound = ശബ്‌ദം പ്ലേ ചെയ്യുക
 settings-general-new-mail-sound-detail = ഡെസ്‌ക്‌ടോപ്പിന്റെ പുതിയ മെയിൽ ശബ്‌ദം
 settings-general-desktop = ഡെസ്‌ക്‌ടോപ്പ്
+settings-general-start-at-login = ലോഗിൻ ചെയ്യുമ്പോൾ Katna ആരംഭിക്കുക
+settings-general-start-at-login-detail = വിൻഡോ തുറക്കാതെ തന്നെ മെയിൽ സിങ്ക് ചെയ്യുകയും പുതിയ മെയിൽ അറിയിപ്പുകളും ട്രേ ഐക്കണും കാണിക്കുകയും ചെയ്യുന്നു
+settings-general-login-window = Katna Mail വിൻഡോയും തുറക്കുക
+settings-general-login-window-detail = ലോഗിൻ ചെയ്യുമ്പോൾ വിൻഡോയും തുറക്കും
 settings-general-tray = സിസ്റ്റം ട്രേയിൽ Katna കാണിക്കുക
 settings-general-tray-detail = വായിക്കാത്തവയുടെ എണ്ണവും ഒരു മെനുവും സഹിതം
 settings-general-unread-badge = ടാസ്‌ക്‌ബാർ ഐക്കണിൽ വായിക്കാത്തവയുടെ എണ്ണം
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = എല്ലാ സന്ദേശത�
 settings-general-sending-summary = അയയ്ക്കൽ പഴയപടിയാക്കുക: അയച്ച സന്ദേശം തിരിച്ചെടുക്കാൻ കഴിയുന്ന തരത്തിൽ അത് എത്ര നേരം കാത്തിരിക്കണം
 settings-general-offline-summary = കണക്ഷനില്ലാതെ വായിക്കാൻ, എത്ര ദിവസത്തെ സമീപകാല മെയിൽ പൂർണ്ണമായി ഡൗൺലോഡ് ചെയ്യണം
 settings-general-notifications-summary = പുതിയ മെയിൽ അറിയിപ്പുകളും അവയുടെ ശബ്‌ദവും
-settings-general-desktop-summary = ലോഗിൻ ചെയ്യുമ്പോൾ Katna Mail തുറക്കൽ, സിസ്റ്റം ട്രേ ഐക്കൺ, ടാസ്‌ക്‌ബാർ ഐക്കണിലെ വായിക്കാത്തവയുടെ എണ്ണം
+settings-general-desktop-summary = ലോഗിൻ ചെയ്യുമ്പോൾ Katna ആരംഭിക്കൽ, സിസ്റ്റം ട്രേ ഐക്കൺ, ടാസ്‌ക്‌ബാർ ഐക്കണിലെ വായിക്കാത്തവയുടെ എണ്ണം
 settings-accounts-accounts-summary = ഒരു അക്കൗണ്ട് ചേർക്കുകയോ നീക്കം ചെയ്യുകയോ അതിന്റെ ചിത്രം മാറ്റുകയോ ചെയ്യുക
 settings-appearance-density-summary = ലിസ്റ്റിൽ ഡിഫോൾട്ട് അല്ലെങ്കിൽ ഒതുക്കമുള്ള വരികൾ
 settings-appearance-scaling-summary = എല്ലാം വലുതോ ചെറുതോ ആക്കുക: ടെക്സ്റ്റ്, ഐക്കണുകൾ, സ്പേസിംഗ്, ഡിവൈഡറുകൾ
@@ -241,7 +245,7 @@ settings-search-results = “{ $query }” എന്നതുമായി പൊ
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = ലോഗിൻ ചെയ്യുമ്പോൾ തുറക്കുന്നത് മാറ്റാനായില്ല: { $error }
+settings-open-at-login-failed = ലോഗിൻ ചെയ്യുമ്പോൾ ആരംഭിക്കുന്നത് മാറ്റാനായില്ല: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = വ്യാകരണം
 settings-compose-grammar-detail = ഈ കമ്പ്യൂട്ടറിൽ തന്നെ Harper ഉപയോഗിച്ച് പരിശോധിക്കുന്നു. ഇപ്പോൾ ഇംഗ്ലീഷ് മാത്രം: മറ്റ് ഭാഷകളിലെ ടെക്സ്റ്റിൽ മാറ്റം വരുത്തില്ല.
 settings-compose-grammar-check = വ്യാകരണം പരിശോധിക്കുക
 settings-compose-grammar-check-detail = എഴുതുമ്പോൾ വ്യാകരണത്തെറ്റുകൾക്ക് അടിവരയിടുക, ഇംഗ്ലീഷിൽ
+settings-compose-suggestions = എഴുത്ത് നിർദ്ദേശങ്ങൾ
+settings-compose-suggestions-detail = നിങ്ങൾ അയച്ച മെയിലിൽ നിന്നും മറുപടി നൽകുന്ന മെയിലിൽ നിന്നും ഈ കമ്പ്യൂട്ടറിൽ തന്നെ പഠിക്കുന്നു; ഒന്നും പുറത്തുപോകുന്നില്ല. നിർദ്ദേശം സ്വീകരിക്കാൻ Tab അമർത്തുക, അല്ലെങ്കിൽ ടൈപ്പ് ചെയ്യുന്നത് തുടരുക.
+settings-compose-suggestions-on = എഴുതുമ്പോൾ നിർദ്ദേശിക്കുക
+settings-compose-suggestions-on-detail = ടൈപ്പ് ചെയ്യുമ്പോൾ വാക്യാംശത്തിന്റെ സാധ്യതയുള്ള ബാക്കി ഭാഗം ചാരനിറത്തിൽ കാണിക്കുക
 settings-compose-grammar-summary = എഴുതുമ്പോൾ വ്യാകരണത്തെറ്റുകൾക്ക് അടിവരയിടുക, ഇംഗ്ലീഷിൽ
+settings-compose-suggestions-summary = ടൈപ്പ് ചെയ്യുമ്പോൾ വാക്യാംശത്തിന്റെ സാധ്യതയുള്ള ബാക്കി ഭാഗം ചാരനിറത്തിൽ കാണിക്കുക
