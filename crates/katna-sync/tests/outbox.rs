@@ -616,16 +616,18 @@ fn signed_in_token(url: &str, client: &tracking::Client, log: &str) -> String {
         format!(r#"{{"email":"{email}","password":"correct horse","device":"ci"}}"#),
     );
     assert_eq!(status, 201, "{}", String::from_utf8_lossy(&body));
-    // The newest six-digit number after "code" in the log.
+    // The server logs `… code not mailed to=… purpose=… code="123456"`:
+    // the code is the line's last run of six digits (the address before it
+    // holds hex digits too).
     let text = std::fs::read_to_string(log).unwrap();
     let line = text
         .lines()
         .rev()
-        .find(|line| line.contains("code not mailed"))
+        .find(|line| line.contains("code not mailed") && line.contains(&email))
         .expect("the code in the server's log");
-    let after = &line[line.find("code").unwrap()..];
-    let code: String = after
+    let code: String = line
         .split(|c: char| !c.is_ascii_digit())
+        .rev()
         .find(|run| run.len() == 6)
         .expect("a six-digit code")
         .to_owned();
