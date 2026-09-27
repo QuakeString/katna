@@ -451,14 +451,6 @@ impl WindowChrome {
             Vec::new()
         };
         let border = |is_tiled: bool| if is_tiled { px(0.0) } else { px(1.0) };
-        // A shadow is painted whole, under the window too; seen through a
-        // translucent window it would darken it. It goes around the frame
-        // instead.
-        let translucent = self.blurred.get();
-        let outer_shadow = (translucent && !shadows.is_empty()).then(|| {
-            let corners = [r_tl, r_tr, r_br, r_bl];
-            shadow_around(geometry, f32::from(radius), corners, shadows.clone())
-        });
 
         let frame = div()
             .id("katna-window-frame")
@@ -477,7 +469,9 @@ impl WindowChrome {
             .border_r(border(tiled.right))
             .border_b(border(tiled.bottom))
             .border_l(border(tiled.left))
-            .when(!translucent, |d| d.shadow(shadows))
+            // Katna's renderer draws it only outside the frame, so it does
+            // not darken a translucent window (vendor/gpui-pre-wgpu).
+            .shadow(shadows)
             // Keep pointer motion inside the frame from refreshing the
             // resize-cursor logic of the shadow area.
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
@@ -503,7 +497,6 @@ impl WindowChrome {
             .when(!tiled.bottom, |d| d.pb(px(inset)))
             .when(!tiled.left, |d| d.pl(px(inset)))
             .child(resize_cursor_layer(geometry))
-            .children(outer_shadow)
             .on_mouse_move(|_, window, _| window.refresh())
             .on_mouse_down(MouseButton::Left, move |e, window, _| {
                 if let Some(edge) =
@@ -686,45 +679,6 @@ fn resize_cursor_layer(geometry: FrameGeometry) -> impl IntoElement {
     )
     .absolute()
     .size_full()
-}
-
-/// The frame's shadow, painted only outside the frame
-/// ([`FrameGeometry::outside`]): each piece clips a copy of it.
-fn shadow_around(
-    geometry: FrameGeometry,
-    radius: f32,
-    [top_left, top_right, bottom_right, bottom_left]: [Pixels; 4],
-    shadows: Vec<BoxShadow>,
-) -> Div {
-    let frame = geometry.frame();
-    let pieces = geometry.outside(radius).into_iter().map(move |piece| {
-        div()
-            .absolute()
-            .left(px(piece.x))
-            .top(px(piece.y))
-            .w(px(piece.width))
-            .h(px(piece.height))
-            .overflow_hidden()
-            .child(
-                div()
-                    .absolute()
-                    .left(px(frame.x - piece.x))
-                    .top(px(frame.y - piece.y))
-                    .w(px(frame.width))
-                    .h(px(frame.height))
-                    .rounded_tl(top_left)
-                    .rounded_tr(top_right)
-                    .rounded_br(bottom_right)
-                    .rounded_bl(bottom_left)
-                    .shadow(shadows.clone()),
-            )
-    });
-    div()
-        .absolute()
-        .top_0()
-        .left_0()
-        .size_full()
-        .children(pieces)
 }
 
 fn resize_edge(edge: Edge) -> ResizeEdge {

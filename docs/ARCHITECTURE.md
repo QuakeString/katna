@@ -1009,8 +1009,10 @@ GPUI global):
   filter, so Katna's copy of its renderer (`vendor/gpui-pre-wgpu`) adds
   one: a quad marked through its border color is drawn over a dual Kawase
   blur of the frame under it, clamped to the quad (as CSS
-  `backdrop-filter`). The panel's shadow is painted only outside it. Where
-  the window's surface cannot be copied from, panels stay opaque.
+  `backdrop-filter`). The same renderer draws every drop shadow only
+  outside its element, as CSS does, so a translucent panel or frame keeps
+  one plain box shadow that follows its rounded corners. Where the
+  window's surface cannot be copied from, panels stay opaque.
 
 ### 13.2 Look and feel
 
@@ -1405,9 +1407,13 @@ desktop's own app stays one click away.
 
 - **Cards.** Under each open message, one card per attachment (the
   webmail layout): a thumbnail (pictures, and the top of a PDF's first
-  page) or a colored type badge, and the file name. Hovering shows the
-  name, the size and a Save button. Thumbnails are made in the background
-  from the stored raw message and freed when the conversation closes.
+  page), a glance drawn small on a white page (the top-left cells of a
+  spreadsheet or CSV, the first lines of a text file or document;
+  `katna_preview::glance`, skipped above 20 MB), or a colored type badge,
+  and the file name. Hovering shows the name, the size and a Save button
+  on frosted glass; "Save all" saves every attachment to a folder.
+  Thumbnails are made in the background from the stored raw message and
+  freed when the conversation closes.
 - **Viewer.** Clicking a card opens the viewer over the window below the
   top bar (the window's own controls stay usable): a dark page with a bar
   naming the file, "Open with another app" and Save; arrows (and ←/→) go
@@ -1593,11 +1599,15 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
   with up to four "Sender: Subject" lines.
 - Mail already stored when the daemon starts, and a new account's first
   sync, are not news.
-- Buttons: Open (click), Mark as read / Mark all as read, Archive. Open
-  calls `ActivateAction("open-message", [id])` on the app's
-  `org.freedesktop.Application` object (`/in/invenia/katna/Mail`) with the
-  activation token, and starts `katna-mail` with `XDG_ACTIVATION_TOKEN` when
-  the app does not answer.
+- Buttons: Open (click), Reply all (one message only), Mark as read / Mark
+  all as read, Archive. Open calls `ActivateAction("open-message", [id])`
+  on the app's `org.freedesktop.Application` object
+  (`/in/invenia/katna/Mail`) with the activation token; Reply all calls
+  `reply-all`, which opens the message with an inline reply to all. When
+  the app does not answer, the daemon starts `katna-mail --message ID` (or
+  `--reply-all ID`) with `XDG_ACTIVATION_TOKEN`. The app looks for the
+  message in every inbox tab. The Plasma inline-reply field in the table
+  above is not built yet.
 - A notification closes when all its mail is read or out of the inbox, from
   a sync or from a change made in the app.
 - Setting `notifications.new_mail` (default on); `ReloadConfig` applies it.
@@ -1635,8 +1645,8 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   saving so the daemon applies them at once.
 - **Single instance and actions**: Katna Mail owns `in.invenia.katna.Mail`
   and serves `org.freedesktop.Application` at `/in/invenia/katna/Mail` with
-  the actions `open-inbox`, `compose`, `preferences`, `open-message` (a
-  message ID) and `quit` (`katna_dbus::app_action`). A second `katna-mail`
+  the actions `open-inbox`, `compose`, `preferences`, `open-message` and
+  `reply-all` (a message ID) and `quit` (`katna_dbus::app_action`). A second `katna-mail`
   hands its request to the first and exits. The tray, notifications and
   the desktop file use this: its actions New Message, Open Inbox and
   Preferences (right-click on the taskbar icon in Plasma and GNOME) run

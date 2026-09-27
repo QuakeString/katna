@@ -41,6 +41,17 @@ impl Request {
         .map(Self::action)
     }
 
+    /// The request that `flag` followed by message ID `id` stands for.
+    pub fn for_message(flag: &str, id: i64) -> Option<Self> {
+        [app_action::OPEN_MESSAGE, app_action::REPLY_ALL]
+            .into_iter()
+            .find(|action| app_action::flag(action) == Some(flag))
+            .map(|name| Self::Action {
+                name: name.to_owned(),
+                message: Some(id),
+            })
+    }
+
     pub fn action(name: &str) -> Self {
         Self::Action {
             name: name.to_owned(),
@@ -226,5 +237,23 @@ mod tests {
             Some(Request::action("open-inbox"))
         );
         assert_eq!(Request::from_flag("--open"), None);
+        assert_eq!(Request::from_flag("--message"), None);
+    }
+
+    #[test]
+    fn message_flags_carry_the_id() {
+        let request = |name: &str| Request::Action {
+            name: name.to_owned(),
+            message: Some(42),
+        };
+        assert_eq!(
+            Request::for_message("--message", 42),
+            Some(request("open-message"))
+        );
+        assert_eq!(
+            Request::for_message("--reply-all", 42),
+            Some(request("reply-all"))
+        );
+        assert_eq!(Request::for_message("--inbox", 42), None);
     }
 }
