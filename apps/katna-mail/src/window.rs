@@ -1026,6 +1026,16 @@ impl MailWindow {
         }
     }
 
+    /// "Report spam", or "Not spam" in the Spam folder, where the same
+    /// button takes mail back to the inbox.
+    fn spam_label(&self, menu: bool) -> String {
+        match (self.folder_role() == Role::Junk, menu) {
+            (true, _) => katna_i18n::tr!("menu-not-spam"),
+            (false, true) => katna_i18n::tr!("menu-spam"),
+            (false, false) => katna_i18n::tr!("list-spam"),
+        }
+    }
+
     fn folder_role(&self) -> Role {
         match &self.listing {
             Some(Listing::Folder(folder)) => {
@@ -1864,6 +1874,7 @@ impl MailWindow {
             mail.with_copies(&ids)
         };
         let account = self.account();
+        let in_spam = self.folder_role() == Role::Junk;
         let trash = account.and_then(|a| mail.trash_folder(a));
         let for_good = matches!(act, Act::Delete)
             && match (trash, folder) {
@@ -1925,6 +1936,10 @@ impl MailWindow {
             Act::Archive | Act::Delete | Act::Spam | Act::MoveTo(_) => {
                 let ids: Vec<MessageId> = keys.iter().flat_map(|k| messages_in(*k)).collect();
                 let target = match act {
+                    // In Spam, "Not spam" takes it back to the inbox.
+                    Act::Spam if in_spam => {
+                        Some(account.and_then(|a| self.tree.role_folder(a, Role::Inbox))?)
+                    }
                     Act::Spam => {
                         let junk = self
                             .account()
@@ -1989,6 +2004,11 @@ impl MailWindow {
             } else {
                 katna_i18n::tr!("toast-marked-unread", count = count as u64, kind = kind)
             }),
+            Act::Spam if in_spam => Some(katna_i18n::tr!(
+                "toast-not-spam",
+                count = count as u64,
+                kind = kind
+            )),
             Act::Spam => Some(katna_i18n::tr!(
                 "toast-spam",
                 count = count as u64,
