@@ -9,6 +9,7 @@ use gpui::{
     AnyElement, Context, Entity, Focusable, FontWeight, Subscription, Window, div, prelude::*, rgba,
 };
 use katna_core::AccountId;
+use katna_i18n::tr;
 use katna_store::FolderId;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
@@ -48,7 +49,14 @@ impl MailWindow {
         let gmail = self.tree.is_gmail(account);
         let accent = rgba(self.theme(window).accent).into();
         let name = cx.new(|cx| {
-            let mut input = TextInput::new(if gmail { "Label name" } else { "Folder name" }, cx);
+            let mut input = TextInput::new(
+                if gmail {
+                    tr!("label-name-hint")
+                } else {
+                    tr!("label-folder-name-hint")
+                },
+                cx,
+            );
             input.set_accent(accent);
             input
         });
@@ -116,7 +124,7 @@ impl MailWindow {
         let account = dialog.account.0;
         let name = dialog.name.read(cx).text().trim().to_owned();
         let parent = dialog.parent.filter(|_| dialog.nest).map(|f| f.0);
-        let what = if dialog.gmail { "Label" } else { "Folder" };
+        let gmail = dialog.gmail;
         let connection = self.daemon.clone();
         cx.spawn(async move |this, cx| {
             let created = name.clone();
@@ -137,7 +145,12 @@ impl MailWindow {
                     }
                     this.close_new_label(cx);
                     this.refresh(false, cx);
-                    this.show_snackbar(format!("{what} \u{201c}{name}\u{201d} created."), None, cx);
+                    let text = if gmail {
+                        tr!("label-created", name = name.as_str())
+                    } else {
+                        tr!("label-folder-created", name = name.as_str())
+                    };
+                    this.show_snackbar(text, None, cx);
                 }
                 Err(err) => {
                     if let Some(dialog) = &mut this.new_label {
@@ -169,7 +182,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let ready = self.new_label_ready(cx);
         let dialog = self.new_label.as_ref()?;
-        let word = if dialog.gmail { "label" } else { "folder" };
+        let gmail = dialog.gmail;
         let focus = dialog.name.focus_handle(cx);
         let focused = focus.is_focused(window);
         let field = div()
@@ -218,7 +231,11 @@ impl MailWindow {
                 if dialog.nest { th.accent } else { th.text_dim },
                 20.0,
             ))
-            .child(format!("Nest {word} under:"));
+            .child(if gmail {
+                tr!("label-nest")
+            } else {
+                tr!("label-folder-nest")
+            });
         let parents = dialog.nest.then(|| {
             div()
                 .id("new-label-parents")
@@ -278,10 +295,10 @@ impl MailWindow {
                 div()
                     .text_size(px(22.0))
                     .line_height(px(30.0))
-                    .child(if dialog.gmail {
-                        "New label"
+                    .child(if gmail {
+                        tr!("label-new-title")
                     } else {
-                        "New folder"
+                        tr!("label-folder-new-title")
                     }),
             )
             .child(
@@ -289,7 +306,11 @@ impl MailWindow {
                     .mt(px(20.0))
                     .text_size(px(14.0))
                     .text_color(rgba(th.text_dim))
-                    .child(format!("Please enter a new {word} name:")),
+                    .child(if gmail {
+                        tr!("label-prompt")
+                    } else {
+                        tr!("label-folder-prompt")
+                    }),
             )
             .child(field)
             .when(nest, |d| d.child(checkbox))
@@ -317,12 +338,16 @@ impl MailWindow {
                             .cursor_pointer()
                             .hover(|s| s.bg(rgba(fade(th.accent, 0.08))))
                             .on_click(cx.listener(|this, _, _, cx| this.close_new_label(cx)))
-                            .child("Cancel"),
+                            .child(tr!("label-cancel")),
                     )
                     .child(
                         filled_button(
                             "new-label-create",
-                            if busy { "Creating\u{2026}" } else { "Create" },
+                            if busy {
+                                tr!("label-creating")
+                            } else {
+                                tr!("label-create")
+                            },
                             th,
                         )
                         .when(!ready, |d| d.opacity(0.45).cursor_default())

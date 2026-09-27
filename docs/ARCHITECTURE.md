@@ -1475,7 +1475,7 @@ Gemini or confidential mode):
   so one merged after newer ones still shows) and
   `onboarding.last_version`, both written as soon as the window opens, so
   nothing shows twice. Files from when the highlights were numbered have
-  `onboarding.whats_new_seen` instead: the first 25 names, in their old
+  `onboarding.whats_new_seen` instead: the first 26 names, in their old
   order, stand for those numbers, and it is replaced on the next start. A first start (no account, or no settings file yet)
   gets onboarding or the tour and marks every highlight seen. Settings
   written by versions before What's new count as an update, which is why
