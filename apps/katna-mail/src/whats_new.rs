@@ -222,6 +222,15 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 23,
+        title: "Your language",
+        text: "Pick one of 51 languages from the flag button in the top bar, or \
+               follow your desktop's. Dates and numbers follow it now; the rest of \
+               the app is translated over the next updates. The translations were \
+               drafted by AI, and corrections are welcome.",
+        animation: None,
+    },
+    Highlight {
+        id: 24,
         title: "Select and copy text in mail",
         text: "Drag across a message to select its text, double-click for a word \
                or triple-click for a paragraph. Ctrl+C or a right-click copies it, \

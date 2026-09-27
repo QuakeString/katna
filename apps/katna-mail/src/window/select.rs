@@ -22,6 +22,7 @@ use gpui::{
     StyledText, TextLayout, Window, actions, anchored, canvas, deferred, div, prelude::*, rgba,
 };
 
+use katna_i18n::tr;
 use katna_ui::{px, unpx};
 
 use super::MailWindow;
@@ -464,7 +465,7 @@ impl MailWindow {
             .text_size(px(14.0))
             .text_color(rgba(th.text))
             .child(
-                menu_item("text-copy", "Copy", th)
+                menu_item("text-copy", &tr!("text-copy"), th)
                     .when(!has_selection, |d| d.text_color(rgba(th.text_faint)))
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.text.menu = None;
@@ -473,7 +474,7 @@ impl MailWindow {
                     })),
             )
             .child(
-                menu_item("text-select-all", "Select all", th).on_click(cx.listener(
+                menu_item("text-select-all", &tr!("text-select-all"), th).on_click(cx.listener(
                     |this, _, _, cx| {
                         this.text.menu = None;
                         this.text.select_all();

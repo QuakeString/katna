@@ -52,6 +52,12 @@ const fn entry(
 const ENTRIES: &[Entry] = &[
     entry(
         Section::General,
+        "Language",
+        "Language of the app, dates and numbers",
+        "language translation locale english hindi bengali arabic system",
+    ),
+    entry(
+        Section::General,
         "Conversation view",
         "Group replies to the same mail",
         "threads threading group",
@@ -493,14 +499,14 @@ impl MailWindow {
             self.search_panel = None;
             self.mail_query = Some(self.search.read(cx).text().to_owned());
             self.search.update(cx, |search, cx| {
-                search.set_placeholder("Search settings");
+                search.set_placeholder(katna_i18n::tr!("search-settings"));
                 search.set_text("", cx);
             });
         } else {
             let query = self.mail_query.take().unwrap_or_default();
             let searching = matches!(self.listing, Some(super::Listing::Search { .. }));
             self.search.update(cx, |search, cx| {
-                search.set_placeholder("Search mail");
+                search.set_placeholder(katna_i18n::tr!("search-mail"));
                 search.set_text(if searching { query } else { String::new() }, cx);
             });
         }
