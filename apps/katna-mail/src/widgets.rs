@@ -12,6 +12,7 @@ use gpui::{
     ScrollHandle, SharedString, Stateful, StyleRefinement, Window, canvas, div, point, prelude::*,
     px, rgba, svg,
 };
+use katna_ui::motion::lerp;
 use katna_ui::{Ripple, Tooltip};
 
 use crate::theme::{Theme, avatar_color, fade, initial};
@@ -80,25 +81,30 @@ fn id_hash(id: &gpui::ElementId) -> usize {
     hasher.finish() as usize
 }
 
-/// An outlined button with an icon and a label.
+/// An outlined button with an icon and a label. The label folds away as
+/// `shown` goes from 1 to 0, leaving a round button with the icon alone;
+/// `word` is the label's width, measured in the font it shows in.
 pub fn pill_button(
     id: impl Into<gpui::ElementId>,
     name: &str,
     label: impl Into<SharedString>,
+    word: f32,
+    shown: f32,
     th: &Theme,
 ) -> Stateful<Div> {
     let id = id.into();
+    let t = shown.clamp(0.0, 1.0);
     div()
         .id(id.clone())
         .relative()
         .overflow_hidden()
         .h(px(36.0))
-        .pl(px(16.0))
-        .pr(px(22.0))
+        .pl(px(lerp(17.0, 16.0, t)))
+        .pr(px(lerp(17.0, 22.0, t)))
         .flex()
         .flex_row()
         .items_center()
-        .gap(px(8.0))
+        .gap(px(8.0 * t))
         .rounded_full()
         .border_1()
         .border_color(rgba(fade(th.text_faint, 0.7)))
@@ -109,7 +115,14 @@ pub fn pill_button(
         .hover(|s| s.bg(rgba(th.hover)))
         .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)))
         .child(icon(name, th.text_dim, 20.0))
-        .child(label.into())
+        .child(
+            div()
+                .flex_none()
+                .whitespace_nowrap()
+                .overflow_hidden()
+                .when(t < 0.999, |d| d.w(px(word * t)).opacity(t))
+                .child(label.into()),
+        )
 }
 
 /// A filled, rounded button (the primary action of a panel).

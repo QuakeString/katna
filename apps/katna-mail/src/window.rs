@@ -36,6 +36,7 @@ mod nav;
 mod onboarding;
 mod reader;
 mod remote;
+mod reply_row;
 mod rich;
 mod search_panel;
 mod settings;
@@ -341,6 +342,8 @@ pub struct MailWindow {
     split_drag: Option<(f32, f32)>,
     /// Width available to the list and the reading pane, at the last frame.
     cards_width: f32,
+    /// Reply, Reply all and Forward at the foot of a conversation.
+    reply_row: reply_row::ReplyRow,
     /// The same once the layout's motion settles, so the lines change
     /// shape once rather than midway through it.
     cards_target: f32,
@@ -503,6 +506,7 @@ impl MailWindow {
             pane_spring: Spring::new(motion::SLIDE, 0.0),
             split_drag: None,
             cards_width: 0.0,
+            reply_row: reply_row::ReplyRow::new(),
             cards_target: 0.0,
             settings_open: false,
             pane_hover: None,
@@ -2102,6 +2106,12 @@ impl Render for MailWindow {
         let available =
             (width - shape.rail() - nav_width - shape.card_margin() - settings_width).max(200.0);
         self.cards_width = available;
+        let reader_width = if self.split() {
+            ((available - SPLIT_GAP) * self.config.mail.reading_pane_share).max(0.0)
+        } else {
+            available
+        };
+        self.update_reply_row(reader_width, window, reduce);
         let (rail, margin) = if shape.is_phone() {
             (0.0, 0.0)
         } else {

@@ -27,9 +27,7 @@ use crate::daemon::Command;
 use crate::data::{self, EntryKey, Mail, Row};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{
-    icon, icon_button, icon_button_colored, pill_button, placeholder, tip, toolbar,
-};
+use crate::widgets::{icon, icon_button, icon_button_colored, placeholder, tip, toolbar};
 
 mod security;
 use security::Secured;
@@ -39,6 +37,11 @@ const MAX_BODY_LINES: usize = 4000;
 /// Fold the middle of a conversation when this many messages in a row are
 /// folded.
 const FOLD_AT: usize = 3;
+/// The column the sender's picture sits in, centered, beside an open
+/// message; the text starts at its right edge.
+const PICTURE_COLUMN: f32 = 72.0;
+/// From the picture's left edge to the text's.
+const PICTURE_COLUMN_INSET: f32 = PICTURE_COLUMN - (PICTURE_COLUMN - 40.0) / 2.0;
 
 /// An open conversation (or a single message).
 pub(super) struct Conversation {
@@ -514,32 +517,7 @@ impl MailWindow {
         // scrolls with the messages.
         let key = reader.key;
         let reply = self.render_inline_reply(key, th, cx);
-        let footer = reply.is_none().then(|| {
-            div()
-                .flex()
-                .flex_row()
-                .flex_wrap()
-                .gap(px(12.0))
-                .pl(px(self.layout.shape.reader_indent()))
-                .pr(px(24.0))
-                .py(px(14.0))
-                .child(
-                    pill_button("reply", "reply", "Reply", th).on_click(cx.listener(
-                        |this, _, window, cx| this.open_compose(Kind::Reply, None, window, cx),
-                    )),
-                )
-                .child(
-                    pill_button("reply-all", "reply-all", "Reply all", th).on_click(cx.listener(
-                        |this, _, window, cx| this.open_compose(Kind::ReplyAll, None, window, cx),
-                    )),
-                )
-                .child(
-                    pill_button("forward", "forward", "Forward", th).on_click(cx.listener(
-                        |this, _, window, cx| this.open_compose(Kind::Forward, None, window, cx),
-                    )),
-                )
-                .into_any_element()
-        });
+        let footer = reply.is_none().then(|| self.render_reply_row(th, cx));
         div()
             .size_full()
             .flex()
@@ -946,7 +924,7 @@ impl MailWindow {
             .when(ix > 0, |d| d.border_t_1().border_color(rgba(th.divider)))
             .child(
                 div()
-                    .w(px(72.0))
+                    .w(px(PICTURE_COLUMN))
                     .flex_none()
                     .flex()
                     .justify_center()
@@ -958,9 +936,15 @@ impl MailWindow {
                     .min_w_0()
                     .max_w(px(960.0))
                     .child(header)
-                    .children(details_box)
-                    .children(self.security_banner(part, th, cx))
-                    .child(body),
+                    .child(
+                        // On a phone the message takes the room under the
+                        // picture too, from the picture's left edge.
+                        div()
+                            .ml(px(-PICTURE_COLUMN_INSET * self.layout.shape.phone))
+                            .children(details_box)
+                            .children(self.security_banner(part, th, cx))
+                            .child(body),
+                    ),
                 turn,
             ))
             .into_any_element()
