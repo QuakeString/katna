@@ -73,6 +73,8 @@ build() {
   cd katna
   export RUSTUP_TOOLCHAIN=stable
   export CARGO_TARGET_DIR=target
+  # Katna Mail names this version in What's new after an update.
+  export KATNA_VERSION="$pkgver"
   # Two builds: in one, Cargo would give katna-daemon and katnactl the
   # features GPUI turns on in shared crates, making them bigger for nothing.
   cargo build --frozen --release --package katna-mail

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Quick settings: a panel that slides in from the right with the reading
-//! pane (three or two panes), density, theme, app names, inbox tabs, undo send, the
-//! signature, conversation view and the tour. Changes apply at once and are saved to
-//! `config.toml`.
+//! pane (three or two panes), density, theme, app names, inbox tabs, undo
+//! send, the signature, conversation view, the tour and What's new. Changes
+//! apply at once and are saved to `config.toml`.
 
 use std::time::Duration;
 
@@ -260,6 +260,31 @@ impl MailWindow {
                                     )
                                     .child(icon("tour", th.text_dim, 20.0))
                                     .child("Take the tour"),
+                            )
+                            .child(
+                                div()
+                                    .id("whats-new")
+                                    .relative()
+                                    .overflow_hidden()
+                                    .h(px(40.0))
+                                    .px(px(8.0))
+                                    .flex()
+                                    .flex_row()
+                                    .items_center()
+                                    .gap(px(14.0))
+                                    .rounded(px(8.0))
+                                    .text_size(px(14.0))
+                                    .cursor_pointer()
+                                    .hover(|s| s.bg(rgba(th.hover)))
+                                    .on_click(cx.listener(|this, _, window, cx| {
+                                        this.show_whats_new(window, cx)
+                                    }))
+                                    .child(
+                                        Ripple::new("whats-new-ripple", rgba(th.ripple))
+                                            .rounded(8.0),
+                                    )
+                                    .child(icon("sparkle", th.text_dim, 20.0))
+                                    .child("What\u{2019}s new"),
                             ),
                     ),
             );

@@ -12,7 +12,7 @@
 //! (quick settings), `search_panel` (search options), `compose`, `apps`
 //! (the app rail), `add_account` (adding an account), `context_menu`
 //! (the list's right-click menu), `onboarding` (the first start), `tour`
-//! (a walk through the window) and `layout` (phone, tablet and desktop
+//! (a walk through the window), `whats_new` (after an update) and `layout` (phone, tablet and desktop
 //! layouts, by the window's width).
 
 mod account_view;
@@ -43,6 +43,7 @@ mod settings;
 mod settings_page;
 mod tour;
 mod viewer;
+mod whats_new;
 
 use std::collections::{HashMap, HashSet};
 use std::ops::Range;
@@ -385,6 +386,8 @@ pub struct MailWindow {
     add_account: Option<add_account::AddAccount>,
     /// The first-start pages, until the first account is in and set up.
     onboarding: Option<onboarding::Onboarding>,
+    /// The What's new dialog, after an update or from quick settings.
+    whats_new: Option<whats_new::WhatsNew>,
     tour: Option<tour::Tour>,
     tour_marks: tour::Marks,
     /// Where the parts the tour shows were in the last frame.
@@ -436,6 +439,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Self {
         let started = std::time::Instant::now();
+        let config_existed = paths.config_file().exists();
         let mut this = Self::build(env, paths, font, window, cx);
         keymap::bind(&this.config.shortcuts, cx);
         this.load_tree();
@@ -453,9 +457,8 @@ impl MailWindow {
         window.focus(&this.list_focus, cx);
         if this.needs_account() {
             this.onboarding = Some(onboarding::Onboarding::new());
-        } else if !this.config.onboarding.done {
-            this.start_tour(true, window, cx);
         }
+        this.welcome_or_whats_new(config_existed, window, cx);
         tracing::info!(elapsed = ?started.elapsed(), lines = this.entries.len(), "mail loaded");
         this
     }
@@ -542,6 +545,7 @@ impl MailWindow {
             files: attachments::Files::default(),
             add_account: None,
             onboarding: None,
+            whats_new: None,
             tour: None,
             tour_marks: Default::default(),
             tour_seen: HashMap::new(),
@@ -2247,6 +2251,7 @@ impl Render for MailWindow {
         let add_account = self.render_add_account(&th, window, reduce, cx);
         let danger = self.render_danger(&th, window, reduce, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
+        let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let tour = self.render_tour(&th, window, cx);
@@ -2291,6 +2296,7 @@ impl Render for MailWindow {
             .children(context_menu)
             .children(danger)
             .children(new_label)
+            .children(whats_new)
             .children(snackbar)
             .children(tour)
             .into_any_element();
