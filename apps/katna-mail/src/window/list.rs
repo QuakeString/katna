@@ -1341,32 +1341,35 @@ impl MailWindow {
                 icon("star", th.text_faint, 20.0)
             });
         let important = row.important;
-        let marker = div()
-            .id(("row-important", ix))
-            .tooltip(tip(
-                if important {
-                    "Important. Click to mark as not important."
+        // Settings > Appearance > Important markers.
+        let marker = self.config.mail.important_markers.then(|| {
+            div()
+                .id(("row-important", ix))
+                .tooltip(tip(
+                    if important {
+                        "Important. Click to mark as not important."
+                    } else {
+                        "Mark as important"
+                    },
+                    th,
+                ))
+                .size(px(32.0))
+                .flex_none()
+                .flex()
+                .items_center()
+                .justify_center()
+                .rounded_full()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    cx.stop_propagation();
+                    this.act(Act::Important(!important), vec![key], cx);
+                }))
+                .child(if important {
+                    icon("important-filled", th.important, 18.0)
                 } else {
-                    "Mark as important"
-                },
-                th,
-            ))
-            .size(px(32.0))
-            .flex_none()
-            .flex()
-            .items_center()
-            .justify_center()
-            .rounded_full()
-            .hover(|s| s.bg(rgba(th.hover)))
-            .on_click(cx.listener(move |this, _, _, cx| {
-                cx.stop_propagation();
-                this.act(Act::Important(!important), vec![key], cx);
-            }))
-            .child(if important {
-                icon("important-filled", th.important, 18.0)
-            } else {
-                icon("important", th.text_faint, 18.0)
-            });
+                    icon("important", th.text_faint, 18.0)
+                })
+        });
         let correspondent = div()
             .flex()
             .flex_row()
@@ -1483,7 +1486,7 @@ impl MailWindow {
                     .items_center()
                     .child(cell(check))
                     .child(cell(star))
-                    .child(cell(marker));
+                    .children(marker.map(cell));
                 (lead, None)
             };
             return lifted(
@@ -1510,7 +1513,7 @@ impl MailWindow {
                                 .flex_row()
                                 .items_center()
                                 .gap(px(8.0))
-                                .child(marker)
+                                .children(marker)
                                 .child(star)
                         })))
                         .child(line(snippet).when(row.attachments && !has_chips, |d| {
@@ -1560,7 +1563,7 @@ impl MailWindow {
             .pl(px(8.0))
             .child(check)
             .child(star)
-            .child(marker)
+            .children(marker)
             .child(
                 div()
                     .w(px(name_width))

@@ -5,7 +5,8 @@
 //! Loading an image of a message from the web tells its server that the
 //! message was opened, and when, and from where. So none is loaded until
 //! the user says so: "Show images" for one message, or "Always show from"
-//! a sender (kept one per line in `$XDG_CONFIG_HOME/katna/trusted-senders`).
+//! a sender (kept one per line in `$XDG_CONFIG_HOME/katna/trusted-senders`),
+//! or for all mail with Settings > General > Images from the web.
 //!
 //! A sender's picture is their organization's BIMI logo or website icon.
 //! It is looked up by domain, not by message, and kept for a week, so it
@@ -50,6 +51,8 @@ pub(crate) struct Remote {
     trusted: BTreeSet<String>,
     /// Messages whose images the user chose to show, this session.
     shown: HashSet<MessageId>,
+    /// Every message's images load (`mail.remote_images`).
+    pub(super) always: bool,
     pub(super) images: HashMap<String, Fetch>,
     /// Sender pictures made to fill a circle, by lower-case domain;
     /// `None` while loading or when there is none.
@@ -91,6 +94,7 @@ impl Remote {
             path,
             trusted,
             shown: HashSet::new(),
+            always: false,
             images: HashMap::new(),
             pictures: HashMap::new(),
             wanted: RefCell::default(),
@@ -107,7 +111,7 @@ impl Remote {
 
     /// Whether remote content of `message` from `sender` may load.
     pub(super) fn allowed(&self, message: MessageId, sender: &str) -> bool {
-        self.shown.contains(&message) || self.trusts(sender)
+        self.always || self.shown.contains(&message) || self.trusts(sender)
     }
 
     fn trust(&mut self, sender: &str) {
