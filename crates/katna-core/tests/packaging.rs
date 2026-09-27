@@ -59,7 +59,9 @@ fn desktop_entry_matches_app_id() {
     let text = read("desktop", &format!("{MAIL_APP_ID}.desktop"));
     assert!(text.contains("\n[Desktop Entry]\n"), "{text}");
     assert_eq!(value(&text, "Name"), Some("Katna Mail"));
-    assert_eq!(value(&text, "Exec"), Some("katna-mail"));
+    // `%u`: a `mailto:` link when Katna Mail is the default mail app.
+    assert_eq!(value(&text, "Exec"), Some("katna-mail %u"));
+    assert_eq!(value(&text, "MimeType"), Some("x-scheme-handler/mailto;"));
     assert_eq!(value(&text, "Icon"), Some(MAIL_APP_ID));
     assert_eq!(value(&text, "StartupWMClass"), Some(MAIL_APP_ID));
 }
