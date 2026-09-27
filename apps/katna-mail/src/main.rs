@@ -6,6 +6,9 @@
 //! list, reading pane (plain text) and search. Accounts, sync and sending
 //! come with `katna-daemon`.
 
+// No console window on Windows.
+#![cfg_attr(windows, windows_subsystem = "windows")]
+
 mod assets;
 mod autostart;
 mod daemon;

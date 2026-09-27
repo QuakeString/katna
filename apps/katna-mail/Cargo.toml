@@ -41,6 +41,10 @@ serde_json.workspace = true
 [target.'cfg(not(windows))'.dependencies]
 ashpd.workspace = true
 
+# The Run key (start at login) and the other registrations on Windows.
+[target.'cfg(windows)'.dependencies]
+winreg.workspace = true
+
 [build-dependencies]
 toml.workspace = true
 

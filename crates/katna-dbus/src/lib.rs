@@ -15,6 +15,9 @@ use zbus::zvariant::Type;
 
 pub use zbus;
 
+mod session;
+pub use session::session;
+
 /// One server of a new account. An empty `host` means "none".
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
 pub struct ServerSpec {

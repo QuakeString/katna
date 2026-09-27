@@ -2,6 +2,9 @@
 
 //! Katna background service. See `docs/ARCHITECTURE.md` §9.
 
+// No console window on Windows.
+#![cfg_attr(windows, windows_subsystem = "windows")]
+
 use std::process::ExitCode;
 
 use futures_lite::{FutureExt, StreamExt};
@@ -64,14 +67,16 @@ fn run() -> ExitCode {
     katna_i18n::init(TRANSLATIONS, Some(paths.data_dir().join("i18n")));
     katna_i18n::apply(&config.general.language);
     smol::block_on(async {
-        let mut signals = match async_signal::Signals::new([
-            async_signal::Signal::Term,
-            async_signal::Signal::Int,
-        ]) {
+        // Windows has only Ctrl+C; the tray, Setup and logout stop it there.
+        #[cfg(unix)]
+        let stop_signals = [async_signal::Signal::Term, async_signal::Signal::Int];
+        #[cfg(windows)]
+        let stop_signals = [async_signal::Signal::Int];
+        let mut signals = match async_signal::Signals::new(stop_signals) {
             Ok(signals) => signals,
             Err(err) => return fail(format!("signal handlers: {err}")),
         };
-        let connection = match zbus::Connection::session().await {
+        let connection = match katna_dbus::session().await {
             Ok(connection) => connection,
             Err(err) => return fail(format!("session bus: {err}")),
         };
