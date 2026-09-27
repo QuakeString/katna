@@ -954,6 +954,7 @@ mod tests {
                 "# ada@example.org +",
                 "# kay@example.org",
                 "Inbox",
+                "Spam",
                 "## Labels"
             ]
         );

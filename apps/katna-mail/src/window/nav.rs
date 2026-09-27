@@ -260,7 +260,10 @@ impl MailWindow {
     /// The height of the account's name over the folders, when there is
     /// one: it stays put while the folders scroll.
     fn nav_header(&self) -> f32 {
-        if matches!(self.nav_rows.first(), Some(sidebar::Row::Account { .. })) {
+        if matches!(
+            self.nav_rows.first(),
+            Some(sidebar::Row::Account { .. } | sidebar::Row::AllAccounts { .. })
+        ) {
             NAV_ROW_HEIGHT
         } else {
             0.0
@@ -610,6 +613,7 @@ impl MailWindow {
                         label: view.title(),
                         unread: *unread,
                         selected: self.listing == listing,
+                        bold: true,
                         chevron: Some(*expanded),
                     },
                     th,
@@ -642,6 +646,8 @@ impl MailWindow {
                         label: name.clone(),
                         unread: *unread,
                         selected,
+                        // Addresses are long; the count tells of new mail.
+                        bold: false,
                         chevron: None,
                     },
                     th,
@@ -679,6 +685,7 @@ impl MailWindow {
                         label,
                         unread: *unread,
                         selected: folder.is_some_and(|f| self.listing == Some(Listing::Folder(f))),
+                        bold: true,
                         chevron: has_children.then_some(*expanded),
                     },
                     th,
@@ -750,6 +757,7 @@ impl MailWindow {
             label,
             unread,
             selected,
+            bold,
             chevron,
         } = pill;
         let indent = 12.0 * depth as f32;
@@ -758,7 +766,7 @@ impl MailWindow {
         } else {
             th.text
         };
-        let bold = selected || unread > 0;
+        let bold = bold && (selected || unread > 0);
         let chevron = chevron.map(|expanded| {
             div()
                 .id(("nav-chevron", ix))
@@ -933,6 +941,8 @@ struct Pill {
     label: String,
     unread: u64,
     selected: bool,
+    /// Whether it may show in bold, when selected or with unread mail.
+    bold: bool,
     /// The arrow, pointing down when what it holds shows.
     chevron: Option<bool>,
 }
