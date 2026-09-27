@@ -217,8 +217,19 @@ fn coming(section: Section) -> Option<&'static str> {
         Section::McpServer => {
             "Let AI assistants on this computer search, read and draft your mail, with your say."
         }
+        Section::Feedback => {
+            "Choose whether Katna Mail sends anonymous crash reports and asks for feedback, and turn either off at any time."
+        }
         _ => return None,
     })
+}
+
+/// More words a tab is found by, besides its name and its line.
+fn tab_words(section: Section) -> &'static str {
+    match section {
+        Section::Feedback => "crash report feedback privacy anonymous sentry telemetry",
+        _ => "",
+    }
 }
 
 /// A result: a row of a tab, or the tab itself.
@@ -270,7 +281,7 @@ fn search(query: &str) -> Vec<Found> {
                     .into(),
                 row: None,
             },
-            "",
+            tab_words(section),
         )
     });
     let query = words.join(" ");
@@ -586,6 +597,7 @@ mod tests {
         assert!(titles("undo").contains(&"Sending".to_owned()));
         assert!(titles("rules").contains(&"Mail rules".to_owned()));
         assert!(titles("archive").iter().any(|t| t.contains("Archive")));
+        assert!(titles("sentry").contains(&"User feedback".to_owned()));
         assert!(titles("zzzz").is_empty());
         assert!(titles("  ").is_empty());
         // The Accounts tab and its Accounts row come once.

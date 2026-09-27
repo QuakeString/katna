@@ -1245,9 +1245,10 @@ Gemini or confidential mode):
   place of the list (`window/settings_page.rs`). Its tabs, in the owner's
   order: General, Inbox, Accounts, Subscription, Appearance (reading pane,
   density, theme, desktop colors, app names, sender pictures), Shortcuts,
-  Default apps, Mail rules, Folders, Signature, Templates, MCP server and
-  Experimental. Subscription, Mail rules, Folders, Templates and MCP server
-  are still to come: their tabs are fainter and each shows a "Coming soon"
+  Default apps, Mail rules, Folders, Signature, Templates, MCP server,
+  User feedback (turning crash reports and feedback off at any time) and
+  Experimental, always last. Subscription, Mail rules, Folders, Templates,
+  MCP server and, until its switches land, User feedback are still to come: their tabs are fainter and each shows a "Coming soon"
   page saying what it will do. The tabs wrap onto a second line on a
   desktop, as Gmail's do, and scroll sideways on a phone. A setting's
   line that would take more than one line under its name (over about 40

@@ -7,7 +7,8 @@
 //! delete all data), Appearance (reading pane, density, theme, pictures),
 //! Shortcuts (every one, each can be changed by pressing the new keys),
 //! Default apps (where each kind of attachment opens), Signature (several,
-//! with defaults for new mail and replies) and Experimental, with pages for
+//! with defaults for new mail and replies), User feedback (crash reports
+//! and feedback) and Experimental, with pages for
 //! the tabs still to come. The top bar's search box finds settings while
 //! the page is open (`settings_search.rs`). Changes apply at once and are
 //! saved to `config.toml`.
@@ -66,11 +67,12 @@ pub(super) enum Section {
     Signatures,
     Templates,
     McpServer,
+    Feedback,
     Experimental,
 }
 
 impl Section {
-    pub(super) const ALL: [Self; 13] = [
+    pub(super) const ALL: [Self; 14] = [
         Self::General,
         Self::Inbox,
         Self::Accounts,
@@ -83,6 +85,7 @@ impl Section {
         Self::Signatures,
         Self::Templates,
         Self::McpServer,
+        Self::Feedback,
         Self::Experimental,
     ];
 
@@ -100,6 +103,7 @@ impl Section {
             Self::Signatures => "Signature",
             Self::Templates => "Templates",
             Self::McpServer => "MCP server",
+            Self::Feedback => "User feedback",
             Self::Experimental => "Experimental",
         }
     }
@@ -345,7 +349,8 @@ impl MailWindow {
             | Section::MailRules
             | Section::Folders
             | Section::Templates
-            | Section::McpServer => self.coming_soon_section(section, th),
+            | Section::McpServer
+            | Section::Feedback => self.coming_soon_section(section, th),
         };
         // On a phone the page fills the window below the top bar, like the
         // list, and its sides come in closer.
