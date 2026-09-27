@@ -102,6 +102,11 @@ impl MailWindow {
             || self.dismiss_search_panel(window, cx)
         {
             true
+        } else if self.nav_peek {
+            // The folders opened over the list from the rail.
+            self.nav_peek = false;
+            self.peek_task = None;
+            true
         } else if self.settings_open && !self.covered() {
             self.settings_open = false;
             true
