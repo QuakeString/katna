@@ -174,6 +174,7 @@ impl MailWindow {
         };
         let attached: Vec<Attachment> = attach.into_iter().map(attachment).collect();
         compose.attachments.extend(attached.iter().cloned());
+        compose.attach_scroll.scroll_to_bottom();
         // Only pictures that could show in the text get the choice.
         let choosable =
             !plain && (!inline_ids.is_empty() || attached.iter().any(|a| shows_inline(&a.mime)));
@@ -220,6 +221,7 @@ impl MailWindow {
                     body.update(cx, |editor, cx| editor.remove_images(&choice.inline, cx));
                 let attached: Vec<Attachment> = pictures.into_iter().map(attachment).collect();
                 compose.attachments.extend(attached.iter().cloned());
+                compose.attach_scroll.scroll_to_bottom();
                 compose.picture_choice = Some(PictureChoice {
                     inline: Vec::new(),
                     attached,

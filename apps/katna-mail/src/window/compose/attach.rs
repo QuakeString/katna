@@ -20,6 +20,10 @@ use crate::widgets::{icon, tip};
 /// pictures in the text.
 pub(in crate::window) const MAX_TOTAL: usize = 25 * 1024 * 1024;
 
+/// An attachment chip's height, and the gap between chips.
+const ROW: f32 = 36.0;
+const GAP: f32 = 8.0;
+
 /// Where added files go.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Place {
@@ -208,6 +212,8 @@ impl MailWindow {
                         data: Arc::new(data),
                     });
                 }
+                // The newest file shows, however long the list.
+                compose.attach_scroll.scroll_to_bottom();
                 if let Place::Choose { inline } = place
                     && !chosen.is_empty()
                 {
@@ -247,7 +253,7 @@ impl MailWindow {
         let chips = compose.attachments.iter().enumerate().map(|(ix, a)| {
             div()
                 .id(("attachment", ix))
-                .h(px(36.0))
+                .h(px(ROW))
                 .max_w(px(240.0))
                 .pl(px(10.0))
                 .pr(px(4.0))
@@ -287,16 +293,39 @@ impl MailWindow {
                         .child(icon("close", th.text_dim, 16.0)),
                 )
         });
-        div()
-            .flex_none()
-            .max_h(px(96.0))
-            .px(px(16.0))
-            .py(px(4.0))
+        let total: usize = compose.attachments.iter().map(|a| a.data.len()).sum();
+        // Two rows and part of a third show; the rest scrolls, so the list
+        // never reaches the Send bar however many files there are.
+        let list = div()
+            .id("attachments")
+            .max_h(px(ROW * 2.5 + GAP * 2.0))
+            .overflow_y_scroll()
+            .track_scroll(&compose.attach_scroll)
             .flex()
             .flex_row()
             .flex_wrap()
-            .gap(px(8.0))
-            .children(chips)
+            .gap(px(GAP))
+            .children(chips);
+        div()
+            .flex_none()
+            .px(px(16.0))
+            .py(px(4.0))
+            .flex()
+            .flex_col()
+            .gap(px(4.0))
+            .when(compose.attachments.len() > 1, |d| {
+                d.child(
+                    div()
+                        .text_size(px(12.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(tr!(
+                            "compose-attachments-total",
+                            count = compose.attachments.len() as u64,
+                            size = format::size(total as u64)
+                        )),
+                )
+            })
+            .child(list)
             .into_any_element()
     }
 

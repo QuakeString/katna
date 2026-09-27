@@ -160,6 +160,8 @@ pub(super) struct Compose {
     /// Pictures just pasted or dropped, while the choice between the text
     /// and the attachments shows.
     picture_choice: Option<paste::PictureChoice>,
+    /// The attachment list, which scrolls when it holds many files.
+    attach_scroll: ScrollHandle,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -961,6 +963,7 @@ impl MailWindow {
             stick: Rc::default(),
             grammar_color: grammar_color(&th),
             picture_choice: None,
+            attach_scroll: ScrollHandle::new(),
             _subscriptions: subscriptions,
         });
         cx.notify();
