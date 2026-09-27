@@ -1477,6 +1477,25 @@ Gemini or confidential mode):
   suggestions, clipboard, link and table actions. Mail waiting to be sent
   later gets a *Scheduled* row in the folder list after Sent, which opens
   a list with Cancel send; a cancelled message opens again as written.
+  Paste and drop work as in a desktop mail app (`compose/paste.rs`,
+  `katna-ui` `rich/editor/paste.rs`): the clipboard is read with its HTML,
+  copied files and pictures (`gpui_linux::read_rich`, a Katna patch to
+  GPUI's Linux clipboard, vendor/gpui-pre-linux/KATNA.md), so text from
+  Word, LibreOffice or a browser keeps its formatting (`html::from_pasted_html`:
+  style sheet classes, Word's lists, merged cells, cell colors; the page's
+  own near-black text and white background are dropped so the text follows
+  the theme), and spreadsheet cells (or tab-separated rows) become a
+  table. A bar under the paste offers Keep formatting or Plain text, or for
+  cells Table, Picture (the source app's picture, else one drawn with
+  `katna_preview::table`) or Plain text, until the next edit; Ctrl+Shift+V
+  pastes plain text. Copying offers HTML too. Files copied in a file
+  manager or dropped are attached; pictures pasted or dropped go in the
+  text (attached when dropped outside the text or in plain text mode) with
+  an Inline / Attachment choice under them. Text, cells or a picture
+  dragged from another app arrive as a content drop
+  (`gpui_linux::dropped_content`) and go in where they are dropped; the
+  dashed drop cover says "Drop here" for those and "Drop files here" for
+  files. The 25 MB total counts pasted and dropped pictures.
   The expand button in the compose title bar moves the message into a
   normal window of its own (`compose/popout.rs`), framed like the mail
   window: Katna's header bar with the window buttons, rounded corners and

@@ -17,6 +17,7 @@ use wayland_client::{
     Proxy,
     protocol::{wl_callback, wl_output, wl_seat, wl_surface},
 };
+use wayland_protocols::ext::background_effect::v1::client::ext_background_effect_surface_v1;
 use wayland_protocols::wp::viewporter::client::wp_viewport;
 use wayland_protocols::xdg::decoration::zv1::client::zxdg_toplevel_decoration_v1;
 use wayland_protocols::xdg::shell::client::xdg_popup;
@@ -28,7 +29,6 @@ use wayland_protocols::{
     xdg::dialog::v1::client::xdg_dialog_v1::XdgDialogV1,
 };
 use wayland_protocols_plasma::appmenu::client::org_kde_kwin_appmenu;
-use wayland_protocols::ext::background_effect::v1::client::ext_background_effect_surface_v1;
 use wayland_protocols_plasma::blur::client::org_kde_kwin_blur;
 use wayland_protocols_wlr::layer_shell::v1::client::zwlr_layer_surface_v1;
 
@@ -2315,9 +2315,8 @@ fn blur_rects(state: &WaylandWindowState) -> Vec<(i32, i32, i32, i32)> {
         f32::from(frame.size.height) as i32,
     );
     let tiling = state.tiling;
-    let rounded = state.decorations == WindowDecorations::Client
-        && !state.maximized
-        && !state.fullscreen;
+    let rounded =
+        state.decorations == WindowDecorations::Client && !state.maximized && !state.fullscreen;
     let radius = if rounded {
         crate::linux::effects::client_corner_radius().round() as i32
     } else {

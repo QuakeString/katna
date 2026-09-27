@@ -15,6 +15,7 @@ pub use doc::{
 };
 pub(crate) use editor::GRAMMAR_WAIT;
 pub use editor::{
-    GrammarCheck, GrammarFix, GrammarIssue, Palette, RICH_TEXT_CONTEXT, RichEditor, RichEvent,
-    SpellCheck, Suggest, TableEdit, bind_keys, image_mime, insert_signature_doc,
+    GrammarCheck, GrammarFix, GrammarIssue, Palette, PasteLabels, PasteOption, Picture,
+    RICH_TEXT_CONTEXT, RichEditor, RichEvent, SpellCheck, Suggest, TableEdit, TablePicture,
+    Transfer, bind_keys, image_mime, insert_signature_doc,
 };

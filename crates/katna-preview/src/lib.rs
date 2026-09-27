@@ -18,6 +18,7 @@ pub mod pdf;
 pub mod picture;
 pub mod sheet;
 pub mod slides;
+pub mod table;
 pub mod text;
 pub mod word;
 

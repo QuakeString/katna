@@ -5875,6 +5875,7 @@ name = "katna-ui"
 version = "0.0.0"
 dependencies = [
  "gpui-pre",
+ "gpui-pre-linux",
  "gpui-pre-wgpu",
  "katna-core",
  "unicode-segmentation",

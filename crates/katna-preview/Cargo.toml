@@ -13,7 +13,8 @@ calamine.workspace = true
 cfb.workspace = true
 hayro.workspace = true
 image.workspace = true
-resvg.workspace = true
+# Text, with the system fonts: pictures of table cells (`table`).
+resvg = { workspace = true, features = ["text", "system-fonts"] }
 quick-xml.workspace = true
 zip.workspace = true
 

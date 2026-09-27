@@ -32,12 +32,15 @@ use super::doc::{
 use super::html;
 use super::layout::{Deco, ParaElement, ParaLayout, TextBase};
 use crate::TEXT_AREA_CONTEXT;
+mod paste;
 use crate::text_area::{
     Backspace, Cancel, Copy, Cut, Delete, DeleteWordLeft, DeleteWordRight, DocEnd, DocStart, Down,
     End, Home, Left, Newline, PageDown, PageUp, Paste, Right, SelectAll, SelectDocEnd,
     SelectDocStart, SelectDown, SelectEnd, SelectHome, SelectLeft, SelectPageDown, SelectPageUp,
     SelectRight, SelectUp, SelectWordLeft, SelectWordRight, Submit, Up, WordLeft, WordRight,
 };
+use paste::PasteOffer;
+pub use paste::{PasteLabels, PasteOption, Picture, TablePicture, Transfer};
 
 actions!(
     rich_text,
@@ -62,6 +65,8 @@ actions!(
         PrevCell,
         AcceptSuggestion,
         DismissSuggestion,
+        /// Pastes as plain text.
+        PastePlain,
     ]
 );
 
@@ -97,6 +102,7 @@ pub fn bind_keys(cx: &mut App) {
         KeyBinding::new("ctrl-y", Redo, context),
         KeyBinding::new("ctrl-shift-z", Redo, context),
         KeyBinding::new("ctrl-k", InsertLink, context),
+        KeyBinding::new("ctrl-shift-v", PastePlain, context),
         KeyBinding::new("tab", NextCell, context),
         KeyBinding::new("shift-tab", PrevCell, context),
         // Last, so they win over Tab and Right while a suggestion shows.
@@ -125,6 +131,15 @@ pub enum RichEvent {
         misspelled: Option<String>,
         grammar: Option<GrammarIssue>,
     },
+    /// Files were pasted (copied in a file manager): the owner attaches
+    /// them.
+    PasteFiles(Vec<std::path::PathBuf>),
+    /// Pictures were pasted or dropped: the owner puts them in the text or
+    /// attaches them.
+    PastePictures(Vec<Picture>),
+    /// A paste option the owner carries out was chosen (see
+    /// [`RichEditor::offer_choice`]).
+    PasteChoice(PasteOption),
 }
 
 /// A spelling dictionary the owner provides.
@@ -277,6 +292,9 @@ pub struct RichEditor {
     families: RefCell<Option<Rc<HashMap<Font, SharedString>>>>,
     /// What was copied, to paste it back with its formatting.
     copied: Option<(String, Vec<Block>)>,
+    paste_offer: Option<PasteOffer>,
+    paste_labels: Option<PasteLabels>,
+    table_picture: Option<TablePicture>,
     images: HashMap<u64, Arc<gpui::Image>>,
     next_image_id: u64,
     /// The editor's width at the last paint, for sizing images.
@@ -322,6 +340,9 @@ impl RichEditor {
             ghost: None,
             families: RefCell::new(None),
             copied: None,
+            paste_offer: None,
+            paste_labels: None,
+            table_picture: None,
             images: HashMap::new(),
             drawn_focused: std::cell::Cell::new(false),
             next_image_id: 0,
@@ -862,6 +883,7 @@ impl RichEditor {
         }
         self.redo.clear();
         self.ghost = None;
+        self.paste_offer = None;
         self.last_edit = Some((kind, now));
         let selection = self.ordered();
         let cursor = f(&mut self.doc, selection);
@@ -1040,6 +1062,10 @@ impl RichEditor {
     }
 
     fn cancel(&mut self, _: &Cancel, _: &mut Window, cx: &mut Context<Self>) {
+        if self.paste_offer.take().is_some() {
+            cx.notify();
+            return;
+        }
         if self.selected_image.take().is_some() {
             cx.notify();
             return;
@@ -1061,7 +1087,14 @@ impl RichEditor {
         })
         .trim_end_matches('\n')
         .to_owned();
-        cx.write_to_clipboard(ClipboardItem::new_string(text.clone()));
+        // Other apps get the HTML form too, with pictures inside it.
+        let html = html::to_html(
+            &Doc {
+                blocks: fragment.clone(),
+            },
+            &html::data_uri,
+        );
+        cx.write_to_clipboard(gpui_linux::html_item(text.clone(), html));
         self.copied = Some((text, fragment));
     }
 
@@ -1069,44 +1102,6 @@ impl RichEditor {
         self.copy(&Copy, window, cx);
         if self.has_selection() || self.selected_image.is_some() {
             self.delete_selection_or(cx, |this| this.head);
-        }
-    }
-
-    fn paste(&mut self, _: &Paste, _: &mut Window, cx: &mut Context<Self>) {
-        let Some(item) = cx.read_from_clipboard() else {
-            return;
-        };
-        for entry in item.entries() {
-            if let ClipboardEntry::Image(image) = entry {
-                let (mime, ext) = mime_of(image.format);
-                self.insert_image(
-                    format!("image.{ext}"),
-                    mime.to_owned(),
-                    image.bytes.clone(),
-                    cx,
-                );
-                return;
-            }
-        }
-        let Some(text) = item.text() else {
-            return;
-        };
-        let text = text.replace("\r\n", "\n").replace('\r', "\n");
-        match &self.copied {
-            Some((copied, fragment)) if *copied == text && !self.plain => {
-                let fragment = fragment.clone();
-                self.edit(EditKind::Other, cx, |doc, (start, end)| {
-                    let at = doc.delete(start, end);
-                    doc.insert_fragment(at, fragment)
-                });
-            }
-            _ => {
-                let style = self.style_for_typing();
-                self.edit(EditKind::Other, cx, |doc, (start, end)| {
-                    let at = doc.delete(start, end);
-                    doc.insert_text(at, &text, &style)
-                });
-            }
         }
     }
 
@@ -1860,6 +1855,7 @@ impl RichEditor {
 
     fn restore(&mut self, snapshot: Snapshot, cx: &mut Context<Self>) {
         self.doc = snapshot.doc;
+        self.paste_offer = None;
         self.anchor = self.doc.clamp(snapshot.anchor);
         self.head = self.doc.clamp(snapshot.head);
         self.last_edit = None;
@@ -1963,7 +1959,7 @@ impl RichEditor {
                         .flex()
                         .flex_row()
                         .w_full()
-                        .children(row.iter().enumerate().map(|(c, _)| {
+                        .children(row.iter().enumerate().map(|(c, cell)| {
                             div()
                                 .flex_1()
                                 .min_w(px(40.0))
@@ -1971,6 +1967,12 @@ impl RichEditor {
                                 .py(px(4.0))
                                 .border_1()
                                 .border_color(palette.rule)
+                                .when_some(cell.style.fill, |d, fill| {
+                                    // Dimmed under light text (a dark
+                                    // theme), so the text stays readable.
+                                    let dim = if palette.text.l > 0.5 { 0.35 } else { 1.0 };
+                                    d.bg(super::layout::rgb(fill).opacity(dim))
+                                })
                                 .child(ParaElement {
                                     editor: editor.clone(),
                                     path: Path::cell(ix, r, c),
@@ -2576,7 +2578,19 @@ impl Render for RichEditor {
             .clone()
             .iter()
             .enumerate()
-            .map(|(ix, block)| self.render_block(ix, block, cx))
+            .map(|(ix, block)| {
+                let el = self.render_block(ix, block, cx);
+                match self.render_paste_options(ix, cx) {
+                    Some(options) => div()
+                        .relative()
+                        .w_full()
+                        .min_w_0()
+                        .child(el)
+                        .child(options)
+                        .into_any_element(),
+                    None => el,
+                }
+            })
             .collect();
         let suggesting = if self.showing_suggestion() {
             format!(" {SUGGESTING_CONTEXT}")
@@ -2623,6 +2637,7 @@ impl Render for RichEditor {
             .on_action(cx.listener(Self::select_page_down))
             .on_action(cx.listener(Self::select_all))
             .on_action(cx.listener(Self::paste))
+            .on_action(cx.listener(Self::paste_plain))
             .on_action(cx.listener(Self::cut))
             .on_action(cx.listener(Self::copy))
             .on_action(cx.listener(Self::submit))

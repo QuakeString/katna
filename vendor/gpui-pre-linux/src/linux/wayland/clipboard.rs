@@ -13,6 +13,7 @@ use wayland_protocols::wp::primary_selection::zv1::client::zwp_primary_selection
 use crate::linux::{
     WaylandClientStatePtr,
     platform::{PIPE_READ_TIMEOUT, read_fd_with_timeout},
+    transfer::{self, HTML_MIME, Transfer},
 };
 use gpui::{ClipboardEntry, ClipboardItem, Image, ImageFormat, hash};
 
@@ -77,6 +78,21 @@ impl<T: ReceiveData> DataOffer<T> {
 
     fn has_mime_type(&self, mime_type: &str) -> bool {
         self.mime_types.iter().any(|t| t == mime_type)
+    }
+
+    pub fn mime_types(&self) -> Vec<&str> {
+        self.mime_types.iter().map(String::as_str).collect()
+    }
+
+    /// Everything Katna can use (see `transfer`).
+    fn read_rich(&self, connection: &Connection) -> Option<ClipboardItem> {
+        let mut transfer = Transfer::default();
+        for mime in transfer::wanted_mimes(&self.mime_types()) {
+            if let Some(bytes) = self.read_bytes(connection, mime) {
+                transfer.add(mime, bytes);
+            }
+        }
+        transfer.into_item()
     }
 
     fn read_bytes(&self, connection: &Connection, mime_type: &str) -> Option<Vec<u8>> {
@@ -180,19 +196,19 @@ impl Clipboard {
         self.self_mime.clone()
     }
 
-    pub fn send(&self, _mime_type: String, fd: OwnedFd) {
-        if let Some(text) = self.contents.as_ref().and_then(|contents| contents.text()) {
-            self.send_bytes(fd, text.as_bytes().to_owned());
+    pub fn send(&self, mime_type: String, fd: OwnedFd) {
+        if let Some(bytes) = self.contents.as_ref().and_then(|c| bytes_as(c, &mime_type)) {
+            self.send_bytes(fd, bytes);
         }
     }
 
-    pub fn send_primary(&self, _mime_type: String, fd: OwnedFd) {
-        if let Some(text) = self
+    pub fn send_primary(&self, mime_type: String, fd: OwnedFd) {
+        if let Some(bytes) = self
             .primary_contents
             .as_ref()
-            .and_then(|contents| contents.text())
+            .and_then(|c| bytes_as(c, &mime_type))
         {
-            self.send_bytes(fd, text.as_bytes().to_owned());
+            self.send_bytes(fd, bytes);
         }
     }
 
@@ -204,6 +220,9 @@ impl Clipboard {
 
         if offer.has_mime_type(&self.self_mime) {
             return self.contents.clone();
+        }
+        if transfer::rich_wanted() {
+            return offer.read_rich(&self.connection);
         }
 
         let item = offer
@@ -231,7 +250,20 @@ impl Clipboard {
         self.cached_primary_read = Some(item.clone());
         Some(item)
     }
+}
 
+/// An item's content as `mime_type`: its HTML when asked for HTML and it
+/// has some, else its text.
+fn bytes_as(item: &ClipboardItem, mime_type: &str) -> Option<Vec<u8>> {
+    if mime_type == HTML_MIME
+        && let Some(html) = transfer::clipboard_html(item)
+    {
+        return Some(html.as_bytes().to_owned());
+    }
+    item.text().map(String::into_bytes)
+}
+
+impl Clipboard {
     pub fn send_bytes(&self, fd: OwnedFd, bytes: Vec<u8>) {
         let mut written = 0;
         self.loop_handle
