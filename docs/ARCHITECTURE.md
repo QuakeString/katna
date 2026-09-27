@@ -1347,8 +1347,8 @@ Gemini or confidential mode):
   start. After an update the window shows What's new once
   (`window/whats_new.rs`): the version now running (the package version,
   `0.0.0.r90.gabc1234` until there are tagged releases; the PKGBUILD
-  passes it as `KATNA_VERSION`), the highlights not shown before, newest
-  first and at most six, and Full changelog (GitHub's comparison of the
+  passes it as `KATNA_VERSION`), the highlights not shown before (at
+  most six: a major one first even when older, then the newest), and Full changelog (GitHub's comparison of the
   previous build's commit with this one). The highlights are curated in
   `apps/katna-mail/src/whats_new.rs` and built into the app: a change
   people will notice appends one with the next id. A major feature may
