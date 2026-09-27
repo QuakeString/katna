@@ -81,9 +81,16 @@ tracking-opened = { $who } hat sie { $count ->
     [one] einmal
    *[other] { $count }-mal
 } geöffnet, zuletzt { $when }
-tracking-opened-clicked = { $who } hat sie geöffnet und { $count ->
+tracking-opens-clicks = { $who } hat sie { $opens ->
     [one] einmal
-   *[other] { $count }-mal
+   *[other] { $opens }-mal
+} geöffnet und { $clicks ->
+    [one] einmal
+   *[other] { $clicks }-mal
+} einen Link aufgerufen, zuletzt { $when }
+tracking-clicked = { $who } hat { $clicks ->
+    [one] einmal
+   *[other] { $clicks }-mal
 } einen Link aufgerufen, zuletzt { $when }
 tracking-maybe-opened = { $who } hat sie vielleicht geöffnet (Apple Mail lädt Bilder zum Schutz der Privatsphäre)
 tracking-not-opened = { $who } hat sie noch nicht geöffnet

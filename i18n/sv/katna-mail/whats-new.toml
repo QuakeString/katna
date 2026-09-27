@@ -650,9 +650,9 @@ spårning kräver ett Katna-konto (Inställningar > Katna-konto).
 ["2026-09-27-2042-activity"]
 title = "Aktivitet för spårad e-post"
 text = """
-Aktivitet under Skickat visar hur många av dina spårade meddelanden som
-har öppnats och hur ofta deras länkar har följts, med dina ämnesrader
-rangordnade efter hur ofta de öppnas.
+Aktivitet bredvid sökrutan visar hur många av dina spårade meddelanden
+som har öppnats och hur ofta deras länkar har följts, med dina
+ämnesrader rangordnade efter hur ofta de öppnas.
 """
 
 ["2026-09-27-2204-search-trigger-words"]
@@ -662,4 +662,25 @@ Skriv k eller m, ett mellanslag och sedan det du letar efter i KRunner
 eller GNOME-sökningen för att få samma resultat som i sökrutan i
 Katna Mail, till exempel ”k budget”. Välj dina egna ord under
 Inställningar > Allmänt.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Aktivitet bredvid sökrutan"
+text = """
+Knappen Aktivitet bredvid sökrutan räknar nya öppningar och klick i din
+spårade e-post och listar vem som öppnade vad och vilka länkar de
+följde; klicka på en för att öppna meddelandet. Detaljer visar
+öppnings- och klickfrekvens, öppningar per dag och dina bästa ämnesrader
+för de senaste 7 eller 30 dagarna, all tid eller datum du väljer. Ett
+skickat meddelande visar nu hur många gånger varje person har öppnat det
+och följt en länk.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Insikter om brevlådan"
+text = """
+Aktivitet > Detaljer visar nu också hur mycket e-post du skickade och
+tog emot under perioden, hur ofta och hur snabbt du och andra svarar,
+vilka du skriver mest med och vilka dagar och timmar din e-post kommer
+in. Det räknas på din dator från den e-post som Katna redan har.
 """

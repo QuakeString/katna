@@ -81,9 +81,16 @@ tracking-opened = { $who } ya buɗe shi { $count ->
     [one] sau ɗaya
    *[other] sau { $count }
 }, na ƙarshe { $when }
-tracking-opened-clicked = { $who } ya buɗe shi kuma ya bi mahaɗi { $count ->
+tracking-opens-clicks = { $who } ya buɗe shi { $opens ->
     [one] sau ɗaya
-   *[other] sau { $count }
+   *[other] sau { $opens }
+} kuma ya bi mahaɗi { $clicks ->
+    [one] sau ɗaya
+   *[other] sau { $clicks }
+}, na ƙarshe { $when }
+tracking-clicked = { $who } ya bi mahaɗi { $clicks ->
+    [one] sau ɗaya
+   *[other] sau { $clicks }
 }, na ƙarshe { $when }
 tracking-maybe-opened = Wataƙila { $who } ya buɗe shi (Apple Mail yana loda hotuna don sirri)
 tracking-not-opened = { $who } bai buɗe shi ba tukuna

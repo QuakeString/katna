@@ -649,9 +649,9 @@ tiên. Cả hai đều tắt với mọi thư mới, và việc theo dõi cần 
 ["2026-09-27-2042-activity"]
 title = "Hoạt động của thư được theo dõi"
 text = """
-Hoạt động bên dưới Đã gửi cho thấy bao nhiêu thư được theo dõi của bạn đã
-được mở và các liên kết trong đó được mở thường xuyên đến đâu, kèm các
-tiêu đề của bạn xếp theo mức độ thường được mở.
+Hoạt động bên cạnh ô tìm kiếm cho thấy bao nhiêu thư được theo dõi của
+bạn đã được mở và các liên kết trong đó được mở thường xuyên đến đâu,
+kèm các tiêu đề của bạn xếp theo mức độ thường được mở.
 """
 
 ["2026-09-27-2204-search-trigger-words"]
@@ -660,4 +660,26 @@ text = """
 Gõ k hoặc m, một dấu cách, rồi điều cần tìm trong KRunner hoặc ô tìm
 kiếm của GNOME để có cùng kết quả như ô tìm kiếm của Katna Mail, ví dụ
 “k budget”. Chọn từ của riêng bạn trong Cài đặt > Chung.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Hoạt động bên cạnh ô tìm kiếm"
+text = """
+Nút Hoạt động bên cạnh ô tìm kiếm đếm các lượt mở và lượt nhấp mới
+trên thư được theo dõi của bạn, đồng thời liệt kê ai đã mở thư nào và
+đã mở những liên kết nào; nhấp vào một mục để mở thư đó. Chi tiết cho
+thấy tỷ lệ mở và tỷ lệ nhấp, lượt mở theo ngày và các tiêu đề hiệu quả
+nhất của bạn trong 7 hoặc 30 ngày qua, mọi lúc hoặc những ngày bạn
+chọn. Thư đã gửi giờ cho thấy mỗi người đã mở thư và mở liên kết bao
+nhiêu lần.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Thông tin về hộp thư"
+text = """
+Hoạt động > Chi tiết giờ còn cho thấy bạn đã gửi và nhận bao nhiêu thư
+trong khoảng thời gian đó, bạn và người khác trả lời thường xuyên và
+nhanh đến đâu, những người bạn viết thư nhiều nhất, và thư của bạn đến
+vào những ngày và giờ nào. Mọi thứ được đếm trên máy tính của bạn từ
+những thư Katna đã có.
 """

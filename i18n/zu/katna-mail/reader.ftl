@@ -81,9 +81,16 @@ tracking-opened = U-{ $who } uwuvule { $count ->
     [one] kanye
    *[other] izikhathi ezingu-{ $count }
 }, okokugcina { $when }
-tracking-opened-clicked = U-{ $who } uwuvule walandela isixhumanisi { $count ->
+tracking-opens-clicks = U-{ $who } uwuvule { $opens ->
     [one] kanye
-   *[other] izikhathi ezingu-{ $count }
+   *[other] izikhathi ezingu-{ $opens }
+} futhi walandela isixhumanisi { $clicks ->
+    [one] kanye
+   *[other] izikhathi ezingu-{ $clicks }
+}, okokugcina { $when }
+tracking-clicked = U-{ $who } ulandele isixhumanisi { $clicks ->
+    [one] kanye
+   *[other] izikhathi ezingu-{ $clicks }
 }, okokugcina { $when }
 tracking-maybe-opened = Kungenzeka ukuthi u-{ $who } uwuvulile (i-Apple Mail ilayisha izithombe ngenxa yobumfihlo)
 tracking-not-opened = U-{ $who } akakawuvuli

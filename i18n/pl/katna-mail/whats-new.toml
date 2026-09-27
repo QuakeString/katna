@@ -666,9 +666,9 @@ wyłączone dla każdej nowej wiadomości, a śledzenie wymaga konta Katna
 ["2026-09-27-2042-activity"]
 title = "Aktywność śledzonej poczty"
 text = """
-Aktywność pod Wysłanymi pokazuje, ile twoich śledzonych wiadomości
-otwarto i jak często klikano ich linki, a tematy są uszeregowane według
-tego, jak często są otwierane.
+Aktywność obok pola wyszukiwania pokazuje, ile twoich śledzonych
+wiadomości otwarto i jak często klikano ich linki, a tematy są
+uszeregowane według tego, jak często są otwierane.
 """
 
 ["2026-09-27-2204-search-trigger-words"]
@@ -678,4 +678,26 @@ Wpisz k lub m, spację, a potem to, czego szukasz, w KRunnerze lub
 wyszukiwarce GNOME, aby dostać te same wyniki co w polu wyszukiwania
 Katna Mail, na przykład „k budget”. Własne słowa wybierzesz w
 Ustawienia > Ogólne.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Aktywność obok pola wyszukiwania"
+text = """
+Przycisk Aktywność obok pola wyszukiwania liczy nowe otwarcia i
+kliknięcia śledzonej poczty i pokazuje, kto co otworzył i w które linki
+kliknięto; kliknij pozycję, aby otworzyć tę wiadomość. Szczegóły pokazują
+wskaźniki otwarć i kliknięć, otwarcia według dni i najlepsze tematy z
+ostatnich 7 lub 30 dni, z całego okresu lub z wybranych dat. Wysłana
+wiadomość pokazuje teraz, ile razy każda osoba ją otworzyła i kliknęła
+link.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Statystyki skrzynki"
+text = """
+Aktywność > Szczegóły pokazuje teraz także, ile poczty wysłano i
+odebrano w danym okresie, jak często i jak szybko odpowiadasz ty i inni,
+osoby, z którymi piszesz najczęściej, oraz w jakie dni i o jakich
+godzinach przychodzi poczta. Wszystko jest liczone na twoim komputerze z
+poczty, którą Katna już ma.
 """

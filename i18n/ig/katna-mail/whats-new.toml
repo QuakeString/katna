@@ -644,7 +644,7 @@ Ha abụọ gbanyụrụ maka ozi ọhụrụ ọ bụla, ịsochi chọkwara ak
 ["2026-09-27-2042-activity"]
 title = "Ihe omume maka ozi a na-esochi"
 text = """
-Ihe omume n'okpuru Ezigara na-egosi ole n'ime ozi gị a na-esochi e
+Ihe omume n'akụkụ igbe ọchụchọ na-egosi ole n'ime ozi gị a na-esochi e
 mepere na ugboro ole e sochiri njikọ ha, ya na isiokwu gị ahazi dịka
 ugboro ole e mepere ha.
 """
@@ -655,4 +655,24 @@ text = """
 Pịnye k ma ọ bụ m, oghere, wee pịnye ihe ị na-achọ na KRunner ma ọ bụ
 ọchụchọ GNOME iji nweta otu nsonaazụ ahụ igbe ọchụchọ Katna Mail na-enye,
 dịka “k budget”. Họrọ okwu nke gị na Ntọala n'okpuru Izugbe.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Ihe omume n'akụkụ igbe ọchụchọ"
+text = """
+Bọtịnụ Ihe omume dị n'akụkụ igbe ọchụchọ na-agụ mmeghe na mpị ọhụrụ
+nke ozi gị a na-esochi, na-egosikwa onye mepere gịnị na njikọ ndị ha
+soro; pịa otu iji mepee ozi ahụ. Nkọwa zuru ezu na-egosi ọnụ ọgụgụ
+mmeghe na mpị, mmeghe kwa ụbọchị na isiokwu gị kacha mma maka ụbọchị 7
+ma ọ bụ 30 gara aga, oge niile ma ọ bụ ụbọchị ndị ị họọrọ. Ozi ezigara
+na-egosizi ugboro ole onye ọ bụla mepere ya ma soro njikọ.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Nghọta banyere igbe ozi gị"
+text = """
+Ihe omume > Nkọwa zuru ezu na-egosikwa ugbu a ole ozi ị zigara na nke ị
+natara n'oge ahụ, ugboro ole na otú gị na ndị ọzọ si aza ngwa ngwa, ndị
+gị na ha na-edekọrịta ozi karịa, na ụbọchị na awa ozi gị na-abata. A
+na-agụ ya na kọmputa gị site n'ozi Katna nweburu.
 """

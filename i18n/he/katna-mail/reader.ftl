@@ -82,10 +82,19 @@ tracking-opened = נפתחה אצל { $who } { $count ->
     [two] פעמיים
    *[other] { $count } פעמים
 }, לאחרונה { $when }
-tracking-opened-clicked = נפתחה אצל { $who } וקישור בה נפתח { $count ->
+tracking-opens-clicks = נפתחה אצל { $who } { $opens ->
     [one] פעם אחת
     [two] פעמיים
-   *[other] { $count } פעמים
+   *[other] { $opens } פעמים
+} וקישור בה נפתח { $clicks ->
+    [one] פעם אחת
+    [two] פעמיים
+   *[other] { $clicks } פעמים
+}, לאחרונה { $when }
+tracking-clicked = קישור בה נפתח אצל { $who } { $clicks ->
+    [one] פעם אחת
+    [two] פעמיים
+   *[other] { $clicks } פעמים
 }, לאחרונה { $when }
 tracking-maybe-opened = ייתכן שנפתחה אצל { $who } (Apple Mail טוען תמונות לשמירה על הפרטיות)
 tracking-not-opened = עדיין לא נפתחה אצל { $who }

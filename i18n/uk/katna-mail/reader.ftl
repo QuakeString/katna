@@ -83,11 +83,22 @@ tracking-opened = { $who }: лист відкрито { $count ->
     [many] { $count } разів
    *[other] { $count } раза
 }, востаннє { $when }
-tracking-opened-clicked = { $who }: лист відкрито й перейдено за посиланням { $count ->
-    [one] { $count } раз
-    [few] { $count } рази
-    [many] { $count } разів
-   *[other] { $count } раза
+tracking-opens-clicks = { $who }: лист відкрито { $opens ->
+    [one] { $opens } раз
+    [few] { $opens } рази
+    [many] { $opens } разів
+   *[other] { $opens } раза
+} і перейдено за посиланням { $clicks ->
+    [one] { $clicks } раз
+    [few] { $clicks } рази
+    [many] { $clicks } разів
+   *[other] { $clicks } раза
+}, востаннє { $when }
+tracking-clicked = { $who }: перехід за посиланням { $clicks ->
+    [one] { $clicks } раз
+    [few] { $clicks } рази
+    [many] { $clicks } разів
+   *[other] { $clicks } раза
 }, востаннє { $when }
 tracking-maybe-opened = { $who }: лист, можливо, відкрито (Apple Mail завантажує зображення задля приватності)
 tracking-not-opened = { $who }: лист ще не відкрито

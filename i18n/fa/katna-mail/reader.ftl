@@ -81,9 +81,16 @@ tracking-opened = { $who } آن را { $count ->
     [one] یک بار
    *[other] { $count } بار
 } باز کرد، آخرین بار { $when }
-tracking-opened-clicked = { $who } آن را باز کرد و { $count ->
+tracking-opens-clicks = { $who } آن را { $opens ->
     [one] یک بار
-   *[other] { $count } بار
+   *[other] { $opens } بار
+} باز کرد و { $clicks ->
+    [one] یک بار
+   *[other] { $clicks } بار
+} پیوندی را دنبال کرد، آخرین بار { $when }
+tracking-clicked = { $who } { $clicks ->
+    [one] یک بار
+   *[other] { $clicks } بار
 } پیوندی را دنبال کرد، آخرین بار { $when }
 tracking-maybe-opened = شاید { $who } آن را باز کرده باشد (Apple Mail برای حفظ حریم خصوصی تصاویر را بارگیری می‌کند)
 tracking-not-opened = { $who } هنوز آن را باز نکرده است

@@ -663,9 +663,9 @@ nonaktif untuk setiap pesan baru, dan pelacakan memerlukan akun Katna
 ["2026-09-27-2042-activity"]
 title = "Aktivitas untuk email yang dilacak"
 text = """
-Aktivitas di bawah Terkirim menunjukkan berapa banyak pesan terlacak Anda
-yang dibuka dan seberapa sering link-nya diikuti, dengan subjek diurutkan
-menurut seberapa sering dibuka.
+Aktivitas di samping kotak penelusuran menunjukkan berapa banyak pesan
+terlacak Anda yang dibuka dan seberapa sering link-nya diikuti, dengan
+subjek diurutkan menurut seberapa sering dibuka.
 """
 
 ["2026-09-27-2204-search-trigger-words"]
@@ -675,4 +675,26 @@ Ketik k atau m, spasi, lalu yang ingin dicari di KRunner atau penelusuran
 GNOME untuk mendapatkan hasil yang sama dengan kotak penelusuran
 Katna Mail, seperti “k budget”. Pilih kata Anda sendiri di Setelan, di
 bawah Umum.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Aktivitas di samping kotak penelusuran"
+text = """
+Tombol Aktivitas di samping kotak penelusuran menghitung pembukaan dan
+klik baru pada email terlacak Anda serta menampilkan siapa membuka apa
+dan link mana yang diikuti; klik salah satunya untuk membuka pesan itu.
+Detail menampilkan tingkat dibuka dan tingkat klik, jumlah dibuka per
+hari, dan subjek terbaik Anda untuk 7 atau 30 hari terakhir, sepanjang
+waktu, atau tanggal pilihan Anda. Pesan terkirim kini menunjukkan berapa
+kali setiap orang membukanya dan mengikuti link.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Wawasan kotak surat"
+text = """
+Aktivitas > Detail kini juga menampilkan berapa banyak email yang Anda
+kirim dan terima dalam periode itu, seberapa sering dan seberapa cepat
+Anda dan orang lain membalas, orang yang paling sering berkirim email
+dengan Anda, serta hari dan jam email Anda masuk. Semuanya dihitung di
+komputer Anda dari email yang sudah ada di Katna.
 """

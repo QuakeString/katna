@@ -670,9 +670,10 @@ tracciamento richiede un account Katna (Impostazioni > Account Katna).
 ["2026-09-27-2042-activity"]
 title = "Attività per le email tracciate"
 text = """
-Attività, sotto Inviati, mostra quanti dei tuoi messaggi tracciati sono
-stati aperti e quanto spesso sono stati seguiti i loro link, con gli
-oggetti ordinati in base a quanto spesso vengono aperti.
+Attività, accanto alla casella di ricerca, mostra quanti
+dei tuoi messaggi tracciati sono stati aperti e quanto
+spesso sono stati seguiti i loro link, con gli oggetti
+ordinati in base a quanto spesso vengono aperti.
 """
 
 ["2026-09-27-2204-search-trigger-words"]
@@ -682,4 +683,26 @@ Digita k o m, uno spazio, poi ciò che vuoi trovare in KRunner o nella
 ricerca di GNOME per ottenere gli stessi risultati della casella di
 ricerca di Katna Mail, come «k budget». Scegli le tue parole in
 Impostazioni, sotto Generali.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Attività accanto alla casella di ricerca"
+text = """
+Il pulsante Attività accanto alla casella di ricerca conta le nuove
+aperture e i nuovi clic della posta tracciata e mostra chi ha aperto
+cosa e quali link ha seguito; fai clic su una voce per aprire quel
+messaggio. Dettagli mostra i tassi di apertura e di clic, le aperture
+per giorno e i tuoi oggetti migliori degli ultimi 7 o 30 giorni, di
+sempre o delle date che scegli. Un messaggio inviato ora mostra quante
+volte ogni persona l’ha aperto e ha seguito un link.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Statistiche della casella di posta"
+text = """
+Attività > Dettagli ora mostra anche quanta posta hai inviato e ricevuto
+nel periodo, quanto spesso e quanto in fretta rispondi tu e rispondono
+gli altri, le persone con cui scrivi di più e in quali giorni e a quali
+ore arriva la tua posta. Il conteggio avviene sul tuo computer, a
+partire dalla posta che Katna ha già.
 """

@@ -82,10 +82,19 @@ tracking-opened = { $who } l’a ouvert { $count ->
     [many] { $count } de fois
    *[other] { $count } fois
 }, la dernière fois { $when }
-tracking-opened-clicked = { $who } l’a ouvert et a suivi un lien { $count ->
+tracking-opens-clicks = { $who } l’a ouvert { $opens ->
     [one] une fois
-    [many] { $count } de fois
-   *[other] { $count } fois
+    [many] { $opens } de fois
+   *[other] { $opens } fois
+} et a suivi un lien { $clicks ->
+    [one] une fois
+    [many] { $clicks } de fois
+   *[other] { $clicks } fois
+}, la dernière fois { $when }
+tracking-clicked = { $who } a suivi un lien { $clicks ->
+    [one] une fois
+    [many] { $clicks } de fois
+   *[other] { $clicks } fois
 }, la dernière fois { $when }
 tracking-maybe-opened = { $who } l’a peut-être ouvert (Apple Mail charge les images pour protéger la vie privée)
 tracking-not-opened = { $who } ne l’a pas encore ouvert

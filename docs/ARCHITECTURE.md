@@ -31,7 +31,8 @@ Merkuro).
 
 ### Non-goals (for now)
 
-- Windows / macOS builds.
+- macOS builds. Windows 10 and later is planned (owner, 27 September
+  2026; the Windows track in `IMPLEMENTATION_PLAN.md` §5).
 - Android / iOS builds for now; the design for later is §26.
 - Being a general Akonadi replacement that other apps plug into.
 - Exchange (EWS) support in the first releases.

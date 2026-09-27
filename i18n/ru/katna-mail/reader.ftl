@@ -83,11 +83,22 @@ tracking-opened = { $who }: открыто { $count ->
     [many] { $count } раз
    *[other] { $count } раза
 }, последний раз { $when }
-tracking-opened-clicked = { $who }: открыто, переход по ссылке { $count ->
-    [one] { $count } раз
-    [few] { $count } раза
-    [many] { $count } раз
-   *[other] { $count } раза
+tracking-opens-clicks = { $who }: открыто { $opens ->
+    [one] { $opens } раз
+    [few] { $opens } раза
+    [many] { $opens } раз
+   *[other] { $opens } раза
+}, по ссылке перешли { $clicks ->
+    [one] { $clicks } раз
+    [few] { $clicks } раза
+    [many] { $clicks } раз
+   *[other] { $clicks } раза
+}, последний раз { $when }
+tracking-clicked = { $who }: по ссылке перешли { $clicks ->
+    [one] { $clicks } раз
+    [few] { $clicks } раза
+    [many] { $clicks } раз
+   *[other] { $clicks } раза
 }, последний раз { $when }
 tracking-maybe-opened = { $who }: возможно, открыто (Apple Mail загружает изображения ради конфиденциальности)
 tracking-not-opened = { $who }: ещё не открыто
