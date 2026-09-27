@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Folders take you out of Settings"
+text = """
+With Settings open, clicking a folder or the Mail icon now closes
+Settings and opens that folder, as in Gmail. The back arrow still works
+too.
+"""
