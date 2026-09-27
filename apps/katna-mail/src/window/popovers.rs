@@ -87,6 +87,9 @@ impl MailWindow {
         } else if self.whats_new_open() {
             self.close_whats_new(window, cx);
             true
+        } else if self.about_open() {
+            self.close_about(window, cx);
+            true
         } else if self.menu.take().is_some()
             || self.files_menu.take().is_some()
             || std::mem::take(&mut self.account_menu)
@@ -113,6 +116,7 @@ impl MailWindow {
             || self.danger.is_some()
             || self.new_label.is_some()
             || self.whats_new.is_some()
+            || self.about.is_some()
             || self.tour.is_some()
             || self.files.viewer.is_some()
     }

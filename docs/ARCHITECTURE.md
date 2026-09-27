@@ -1368,8 +1368,8 @@ Gemini or confidential mode):
   start. After an update the window shows What's new once
   (`window/whats_new.rs`): the version now running (the package version,
   `0.0.0.r90.gabc1234` until there are tagged releases; the PKGBUILD
-  passes it as `KATNA_VERSION`), the highlights not shown before, newest
-  first and at most six, and Full changelog (GitHub's comparison of the
+  passes it as `KATNA_VERSION`), the highlights not shown before (at
+  most six: a major one first even when older, then the newest), and Full changelog (GitHub's comparison of the
   previous build's commit with this one). The highlights are curated in
   `apps/katna-mail/src/whats_new.rs` and built into the app: a change
   people will notice appends one with the next id. A major feature may
@@ -1386,6 +1386,21 @@ Gemini or confidential mode):
   such a user no longer sees the tour again. Updates without new
   highlights show nothing. Quick settings > Help > What's new opens the
   newest highlights at any time. On a phone the dialog fills the window.
+- **About Katna.** Help > About Katna in the global menu, Quick settings >
+  Help > About Katna, and the version pill at the top right of the
+  Settings header open the About dialog (`window/about.rs`): the version,
+  What's new, the changelog and source links, "Buy me a coffee", a Follow
+  row, a line of thanks to Rust, KDE and Linux, and the free software
+  Katna is built on, each with its license. The coffee link and each
+  Follow link are one constant (`SUPPORT_URL`, `FOLLOW`); unset ones show
+  as "Coming soon" or stay hidden. `CREDITS` in the same file picks the
+  heart of Katna by hand; "Every library Katna uses" below it lists each
+  direct dependency with its version, authors, license and repository
+  from `docs/credits.json`, which `ci/gen-credits.sh` writes from
+  `cargo metadata` together with CREDITS.md. A short "A personal project"
+  note says where Katna's ideas come from (Gmail, Mailspring,
+  Thunderbird) and that LLMs made it possible. On a phone it fills the
+  window.
 - **After the first real install.** The owner's first run on KDE brought
   these changes. Compose sits in the top bar in place of the app name, so
   it shows whether the folders are open or not; the account picture moved

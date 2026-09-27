@@ -33,6 +33,7 @@ emojis.workspace = true
 spellbook.workspace = true
 mail-parser.workspace = true
 fontdb.workspace = true
+serde_json.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true
