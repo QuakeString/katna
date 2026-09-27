@@ -239,6 +239,31 @@ impl MailWindow {
                 }
             }
             Request::Menu(name) => {
+                // The menu bar also serves the conversation windows: what
+                // the one in front can do happens there, the rest here.
+                let main = window.window_handle().downcast::<MailWindow>();
+                if let Some((other, main)) = cx
+                    .active_window()
+                    .filter(|w| *w != window.window_handle())
+                    .and_then(|w| w.downcast::<MailWindow>())
+                    .zip(main)
+                {
+                    cx.defer(move |cx| {
+                        let ran = other.update(cx, |view, window, cx| {
+                            let available = cx.build_action(&name, None).is_ok_and(|action| {
+                                window.is_action_available(&*action, cx)
+                                    || window.is_action_available_in(&*action, &view.window_focus)
+                            });
+                            available && view.run_action(&name, window, cx)
+                        });
+                        if !matches!(ran, Ok(true)) {
+                            let _ = main.update(cx, |view, window, cx| {
+                                view.run_action(&name, window, cx);
+                            });
+                        }
+                    });
+                    return;
+                }
                 self.run_action(&name, window, cx);
                 return;
             }
@@ -281,10 +306,17 @@ impl MailWindow {
     }
 
     /// Runs the action named `name` where the keyboard focus is; `false`
-    /// if this build has no such action.
+    /// if this build has no such action. Focus left on something no longer
+    /// drawn (the list, once Settings or a conversation fills the page)
+    /// would send it nowhere, so the window takes the focus first.
     fn run_action(&mut self, name: &str, window: &mut Window, cx: &mut Context<Self>) -> bool {
         match cx.build_action(name, None) {
             Ok(action) => {
+                if !window.is_action_available(&*action, cx)
+                    && window.is_action_available_in(&*action, &self.window_focus)
+                {
+                    window.focus(&self.window_focus, cx);
+                }
                 window.dispatch_action(action, cx);
                 true
             }
