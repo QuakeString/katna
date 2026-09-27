@@ -1494,9 +1494,10 @@ Gemini or confidential mode):
   marking read after 1 or 3 seconds only happens if the conversation is
   still open then; with "Always show images" off, each message's images
   still wait to be asked for; and the new-mail sound is the notification's
-  `sound-name` hint, or `suppress-sound` when off. Katna never tracks
-  whether others open mail, so Mailspring's open and click tracking
-  settings have no counterpart.
+  `sound-name` hint, or `suppress-sound` when off. Open and click
+  tracking is not a setting: it is off for every new message and turned
+  on per message in compose (§16.1), so Mailspring's tracking defaults
+  have no counterpart.
 - **Searching settings.** While the Settings page is open the top bar's
   search box searches settings ("Search settings"; `window/settings_search.rs`):
   matching rows from every tab replace the open tab, each with its tab and

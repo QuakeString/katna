@@ -380,6 +380,12 @@ row-important = Important. Click to mark as not important.
 row-mark-important = Mark as important
 # Tooltip of the pin icon on a pinned line.
 row-pinned = Pinned to the top
+# Tooltips of the eye on a line of mail sent with open and click tracking.
+# $opened and $clicked: how many of its $recipients opened it or followed
+# a link in it.
+row-tracking-none = Tracked. Not opened yet
+row-tracking-opened = Opened by { $opened } of { $recipients }
+row-tracking-clicked = Opened by { $opened } of { $recipients }, a link followed by { $clicked }
 # Tooltips of the pin button shown on a line under the pointer.
 row-pin = Pin to top
 row-unpin = Unpin
