@@ -531,6 +531,7 @@ says so and the owner has decided it.
 
 | Task | Where it runs | Deliverable | Status |
 |---|---|---|---|
+| 7.0 Katna accounts | Server + app | A Katna account on the server, like Mailspring ID (owner, 27 September 2026): sign-up with an email address and password, address verification, per-device tokens that replace the per-install token, a Katna account page in Settings, and every server feature (7.1–7.3, 7.8) behind sign-in. No payments yet. The account holds no mail logins (7.10) | Building |
 | 7.1 Read receipts | Server + daemon + app | Opens per recipient through a tracking picture; per-recipient sending (ARCHITECTURE.md §11); Apple Mail Privacy Protection shown as "maybe", scanners as "scanner"; off by default, per message | Building |
 | 7.2 Link tracking | Server + daemon + app | Clicks through `/l/<id>/<n>` redirects stored on the server (never an open redirect); shown per recipient and link | Building, with 7.1 |
 | 7.3 Mailbox insights | App, with 7.1–7.2 events | An Activity view: open and click rates of tracked mail, reply rates and times, busiest senders and hours, subject lines that got replies; counted from the local store, only tracking events come from the server | After 7.1–7.2 |
