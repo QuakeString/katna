@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 856 more of their own. Each keeps its own license.
+bring in 853 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -34,6 +34,9 @@ bring in 856 more of their own. Each keeps its own license.
 | [harper-core](https://github.com/automattic/harper) 2.11.0 | automattic | Apache-2.0 | The language checker for developers. |
 | [hayro](https://github.com/LaurenzV/hayro) 0.7.1 | Laurenz Stampfl | Apache-2.0 OR MIT | A rasterizer for PDF files. |
 | [html5ever](https://github.com/servo/html5ever) 0.40.1 | The html5ever Project Developers | MIT OR Apache-2.0 | High-performance browser-grade HTML5 parser |
+| [http-body-util](https://github.com/hyperium/http-body) 0.1.5 | Carl Lerche, Lucio Franco, Sean McArthur | MIT | Combinators and adapters for HTTP request or response bodies. |
+| [hyper](https://github.com/hyperium/hyper) 1.11.1 | Sean McArthur | MIT | A protective and efficient HTTP library for all. |
+| [hyper-util](https://github.com/hyperium/hyper-util) 0.1.21 | Sean McArthur | MIT | hyper utilities |
 | [icu_calendar](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | Date APIs for Gregorian and non-Gregorian calendars |
 | [icu_datetime](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | Human-readable formatting of dates, times, and time zones in hundreds of locales |
 | [icu_decimal](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | API for formatting basic decimal numbers in a locale-sensitive way |
@@ -75,6 +78,7 @@ bring in 856 more of their own. Each keeps its own license.
 | [tracing-subscriber](https://github.com/tokio-rs/tracing) 0.3.23 | David Barsky, Eliza Weisman, Tokio Contributors | MIT | Utilities for implementing and composing `tracing` subscribers. |
 | [unic-langid](https://github.com/zbraniecki/unic-locale) 0.9.6 | Zibi Braniecki | MIT OR Apache-2.0 | API for managing Unicode Language Identifiers |
 | [unicode-segmentation](https://github.com/unicode-rs/unicode-segmentation) 1.13.3 | Manish Goregaokar, kwantam | MIT OR Apache-2.0 | This crate provides Grapheme Cluster, Word and Sentence boundaries according to Unicode Standard Annex #29 rules. |
+| [whatlang](https://github.com/greyblake/whatlang-rs) 0.18.0 | Serhii Potapov | MIT | Fast and lightweight language identification library for Rust. |
 | [writeable](https://github.com/unicode-org/icu4x) 0.6.4 | The ICU4X Project Developers | Unicode-3.0 | A more efficient alternative to fmt::Display |
 | [zbus](https://github.com/z-galaxy/zbus) 5.19.0 | Zeeshan Ali Khan | MIT | API for D-Bus communication |
 | [zip](https://github.com/zip-rs/zip2) 8.6.0 | Chris Hennick, Marli Frost, Mathijs van de Nes, Ryan Levick | MIT | Library to support the reading and writing of zip files. |

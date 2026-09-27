@@ -4,7 +4,8 @@
 //! left of Settings in the top bar, the popover it opens (search, System
 //! default, then every language with its flag, own name and English name),
 //! and the phone drawer's Language row, which opens the same list over the
-//! window. Settings > General opens it too.
+//! window. Settings > General opens it too, and Settings > General >
+//! Translation opens it to pick the language mail is translated into.
 
 use std::time::Duration;
 
@@ -39,6 +40,9 @@ pub(super) struct LanguagePicker {
     /// Where it was opened from, when not the top bar's button (Settings):
     /// it opens under that point.
     at: Option<Point<Pixels>>,
+    /// It picks the reading language for translations, not the
+    /// interface's; its first row is "Same as Katna".
+    reading: bool,
     scroll: ScrollHandle,
     _subscription: Subscription,
 }
@@ -106,14 +110,45 @@ impl MailWindow {
             .map(|p| p.query.clone())
             .unwrap_or_default();
         let folded = katna_i18n::fold(query.trim());
-        let system = katna_i18n::fold(&tr!("language-system-default"));
-        ordered(&self.config.general.language)
+        let system = katna_i18n::fold(&self.system_row_name());
+        ordered(self.picked_language())
             .into_iter()
             .filter(|entry| match entry {
                 Entry::System => folded.is_empty() || system.contains(&folded),
                 Entry::Language(language) => language.matches(&query),
             })
             .collect()
+    }
+
+    /// The tag the open picker has picked: the interface's language, or
+    /// the reading language.
+    fn picked_language(&self) -> &str {
+        match &self.language_picker {
+            Some(picker) if picker.reading => &self.config.mail.translation.reading_language,
+            _ => &self.config.general.language,
+        }
+    }
+
+    /// The name of the first row: System default, or Same as Katna.
+    fn system_row_name(&self) -> String {
+        match &self.language_picker {
+            Some(picker) if picker.reading => tr!("translate-reading-same"),
+            _ => tr!("language-system-default"),
+        }
+    }
+
+    /// Opens the picker for the reading language of translations, under
+    /// `at`, or closes it.
+    pub(super) fn toggle_reading_language_picker(
+        &mut self,
+        at: Point<Pixels>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.toggle_language_picker(Some(at), window, cx);
+        if let Some(picker) = &mut self.language_picker {
+            picker.reading = true;
+        }
     }
 
     pub(super) fn language_picker_open(&self) -> bool {
@@ -171,6 +206,7 @@ impl MailWindow {
             query: String::new(),
             highlight,
             at,
+            reading: false,
             scroll,
             _subscription: subscription,
         });
@@ -178,8 +214,15 @@ impl MailWindow {
     }
 
     fn pick_language(&mut self, tag: &'static str, _window: &mut Window, cx: &mut Context<Self>) {
-        self.language_picker = None;
-        self.apply(Change::Language(tag), cx);
+        let reading = self.language_picker.take().is_some_and(|p| p.reading);
+        self.apply(
+            if reading {
+                Change::ReadingLanguage(tag)
+            } else {
+                Change::Language(tag)
+            },
+            cx,
+        );
     }
 
     fn move_language_highlight(&mut self, by: isize, cx: &mut Context<Self>) {
@@ -251,7 +294,7 @@ impl MailWindow {
     ) -> Option<AnyElement> {
         let picker = self.language_picker.as_ref()?;
         let phone = self.layout.shape.is_phone();
-        let current = self.config.general.language.as_str();
+        let current = self.picked_language();
         let entries = self.language_entries();
         let viewport = window.viewport_size();
         let bottom_room = self.layout.shape.bottom_bar();
@@ -260,6 +303,20 @@ impl MailWindow {
             let on = entry.tag() == current;
             let lit = ix == picker.highlight;
             let (flag_el, name, english): (AnyElement, SharedString, SharedString) = match entry {
+                Entry::System if picker.reading => (
+                    div()
+                        .w(px(24.0))
+                        .flex()
+                        .justify_center()
+                        .child(icon("translate", th.text_dim, 22.0))
+                        .into_any_element(),
+                    tr!("translate-reading-same").into(),
+                    tr!(
+                        "translate-reading-same-now",
+                        language = katna_i18n::current().language.name.as_str()
+                    )
+                    .into(),
+                ),
                 Entry::System => {
                     let now = katna_i18n::system_language();
                     (

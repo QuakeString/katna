@@ -27,6 +27,7 @@ pub mod remote;
 pub mod templates;
 mod thread;
 pub mod tracking;
+mod translation;
 
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths};
 use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
@@ -60,6 +61,7 @@ pub use tracking::{
     MessageActivity, NewRecipient, RecipientActivity, TrackedMessage, TrackedRecipient,
     TrackingEvent, TrackingNews,
 };
+pub use translation::Translation;
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.
 #[derive(Debug)]

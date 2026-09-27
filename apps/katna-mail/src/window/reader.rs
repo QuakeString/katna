@@ -1118,6 +1118,8 @@ impl MailWindow {
                     })
                     .collect();
                 let attachments = self.attachment_cards(id, &listed, th, cx);
+                let translation = self.translation_bar(ix, id, &view.body, encrypted, th, cx);
+                let translated = self.translated_blocks(id);
                 div()
                     .flex()
                     .flex_col()
@@ -1138,6 +1140,7 @@ impl MailWindow {
                             .child(note)
                     }))
                     .children(banner)
+                    .children(translation)
                     .child({
                         // Selection follows the order messages are shown in.
                         let slot = match self.reader.as_ref() {
@@ -1145,7 +1148,8 @@ impl MailWindow {
                             _ => ix,
                         };
                         let mut pieces = self.text.pieces(slot, th);
-                        let text = match doc.as_ref() {
+                        let blocks = translated.as_ref().unwrap_or(blocks);
+                        let text = match doc.as_ref().filter(|_| translated.is_none()) {
                             Some(doc) => div().child(
                                 Painter::new(
                                     th,
@@ -1473,7 +1477,7 @@ fn shown(raw: &[u8], security: Option<Secured>) -> Body {
 
 /// Splits a body into runs of quoted (`>`) and unquoted lines, at most
 /// `max_lines` lines in all. Returns whether lines were left out.
-fn body_blocks(body: &str, max_lines: usize) -> (Vec<(bool, SharedString)>, bool) {
+pub(super) fn body_blocks(body: &str, max_lines: usize) -> (Vec<(bool, SharedString)>, bool) {
     let mut blocks: Vec<(bool, String)> = Vec::new();
     let mut lines = body.lines();
     for line in lines.by_ref().take(max_lines) {

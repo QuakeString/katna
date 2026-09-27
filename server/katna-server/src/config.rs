@@ -25,6 +25,14 @@ pub struct Config {
     /// New installs one address may register per hour
     /// (`KATNA_SERVER_INSTALLS_PER_HOUR`, default 10).
     pub installs_per_hour: u32,
+    /// LibreTranslate on the internal network, such as
+    /// `http://translate:5000` (`KATNA_SERVER_TRANSLATE_URL`); empty turns
+    /// translation off.
+    pub translate_url: String,
+    /// Translation requests one account may make per 24 hours
+    /// (`KATNA_SERVER_TRANSLATIONS_PER_DAY`, default 2000; a long message
+    /// takes one per 4000 characters).
+    pub translations_per_day: u32,
     /// Where the mail with Katna account codes goes out
     /// (`KATNA_SERVER_SMTP_URL`, for example
     /// `smtps://user:password@smtp.example.com` or
@@ -55,6 +63,8 @@ impl Default for Config {
             retention_days: 180,
             daily_limit: 5000,
             installs_per_hour: 10,
+            translate_url: String::new(),
+            translations_per_day: 2000,
             smtp_url: None,
             mail_from: "Katna <no-reply@katna.invenia.in>".into(),
         }
@@ -101,6 +111,19 @@ impl Config {
         if let Some(value) = lookup("KATNA_SERVER_INSTALLS_PER_HOUR") {
             config.installs_per_hour = parse("KATNA_SERVER_INSTALLS_PER_HOUR", &value)?;
         }
+        if let Some(value) = lookup("KATNA_SERVER_TRANSLATE_URL") {
+            let value = value.trim();
+            if !value.is_empty() && !value.starts_with("http://") {
+                return Err(ConfigError {
+                    name: "KATNA_SERVER_TRANSLATE_URL",
+                    problem: format!("{value:?}: an http:// address on the internal network"),
+                });
+            }
+            config.translate_url = value.to_owned();
+        }
+        if let Some(value) = lookup("KATNA_SERVER_TRANSLATIONS_PER_DAY") {
+            config.translations_per_day = parse("KATNA_SERVER_TRANSLATIONS_PER_DAY", &value)?;
+        }
         config.smtp_url = lookup("KATNA_SERVER_SMTP_URL")
             .filter(|url| !url.trim().is_empty())
             .map(|url| Secret(url.trim().to_owned()));
@@ -133,12 +156,15 @@ mod tests {
             ("KATNA_SERVER_LISTEN", "127.0.0.1:9000"),
             ("KATNA_SERVER_TRUST_FORWARDED", "1"),
             ("KATNA_SERVER_RETENTION_DAYS", "30"),
+            ("KATNA_SERVER_TRANSLATE_URL", "http://translate:5000"),
         ]);
         let config = Config::from_lookup(|name| env.get(name).map(|v| v.to_string())).unwrap();
         assert_eq!(config.listen.port(), 9000);
         assert!(config.trust_forwarded);
         assert_eq!(config.retention_days, 30);
         assert_eq!(config.daily_limit, 5000);
+        assert_eq!(config.translate_url, "http://translate:5000");
+        assert_eq!(config.translations_per_day, 2000);
         assert!(config.smtp_url.is_none());
     }
 

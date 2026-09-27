@@ -32,6 +32,7 @@ katna-platform = { path = "crates/katna-platform" }
 katna-chrome = { path = "crates/katna-chrome" }
 katna-ui = { path = "crates/katna-ui" }
 katna-i18n = { path = "crates/katna-i18n" }
+katna-translate = { path = "crates/katna-translate" }
 
 # Third-party crates. Pin minor versions; upgrade deliberately.
 async-channel = "2.5"
@@ -84,6 +85,8 @@ toml = "1.1"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 unicode-segmentation = "1.13"
+# Which language a message is in, for automatic translation (katna-translate).
+whatlang = "0.18"
 # async-io, so zbus runs on the same executor family as katna-sync.
 zbus = { version = "5.19", default-features = false, features = ["async-io"] }
 ashpd = { version = "0.13", default-features = false, features = ["async-io", "open_uri", "print"] }
@@ -115,6 +118,9 @@ getrandom = "0.3"
 argon2 = { version = "0.5.3", default-features = false, features = ["std"] }
 lettre = { version = "0.11.23", default-features = false, features = ["builder", "hostname", "pool", "smtp-transport", "tokio1-rustls-tls"] }
 http-body-util = "0.1.5"
+# Katna Server passing translation requests to LibreTranslate.
+hyper = { version = "1.11", features = ["client", "http1"] }
+hyper-util = { version = "0.1.21", features = ["tokio"] }
 tower = { version = "0.5.3", features = ["util"] }
 
 # Pimalaya protocol crates: exact versions, because they break often

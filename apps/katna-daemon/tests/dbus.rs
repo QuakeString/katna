@@ -271,6 +271,80 @@ fn indexes_the_store_for_search() {
     });
 }
 
+/// Translation without a server: mail in the reading language, unknown
+/// messages and stored translations need no network.
+#[test]
+fn translates_from_the_store_and_never_sends_mail_in_the_reading_language() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    let account = store
+        .add_account(AccountKind::Local, "enron", "enron@local")
+        .unwrap()
+        .id;
+    let mut batch = store.mail_batch().unwrap();
+    let inbox = batch.ensure_folder(account, "inbox").unwrap();
+    let spanish = "Hola Ana, gracias por tu mensaje. Nos vemos el martes en la oficina \
+                   para hablar del nuevo proyecto.";
+    let raw = format!("Subject: Hola\r\n\r\n{spanish}\r\n");
+    let added = batch
+        .add_message(
+            account,
+            inbox,
+            &NewMessage {
+                raw: raw.as_bytes(),
+                message_id_hdr: None,
+                subject: Some("Hola"),
+                date: None,
+                flags: MessageFlags::empty(),
+                has_attachments: false,
+                list_id: None,
+                snippet: None,
+                participants: &[],
+                in_reply_to: None,
+                references: &[],
+                category: None,
+            },
+        )
+        .unwrap();
+    batch.commit().unwrap();
+    let Added::Message(id) = added else {
+        unreachable!()
+    };
+    let kept = katna_store::Translation {
+        source: "es".into(),
+        text: "Hi Ana, thanks for your message.".into(),
+    };
+    store
+        .save_translation(id, "en", spanish, &kept, 1_790_000_000)
+        .unwrap();
+    drop(store);
+
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let pim = PimProxy::new(&bus.connect().await).await.unwrap();
+        let (source, text, problem) = pim.translate(id.0, spanish, "es", "en").await.unwrap();
+        assert_eq!((source.as_str(), text.as_str()), ("es", kept.text.as_str()));
+        assert_eq!(problem, "");
+
+        let english = "Hi Sam, thanks for the notes from the meeting yesterday. I will send \
+                       the plan to the whole team before Friday.";
+        let (_, text, problem) = pim.translate(id.0, english, "en", "en").await.unwrap();
+        assert_eq!(problem, katna_dbus::translate_problem::SAME_LANGUAGE);
+        assert!(text.is_empty());
+
+        let (_, _, problem) = pim.translate(999_999, spanish, "es", "en").await.unwrap();
+        assert_eq!(problem, katna_dbus::translate_problem::FAILED);
+        let (_, _, problem) = pim
+            .translate(id.0, spanish, "es", "EN; drop")
+            .await
+            .unwrap();
+        assert_eq!(problem, katna_dbus::translate_problem::FAILED);
+        instance.shutdown().await;
+    });
+}
+
 /// KRunner and GNOME Shell find people as they are typed, and mail whose
 /// subject or sender has every word; `mail:` searches everything.
 #[test]

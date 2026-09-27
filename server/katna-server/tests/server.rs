@@ -395,3 +395,127 @@ async fn about_page_and_health() {
     assert_eq!(status, StatusCode::OK);
     assert_eq!(body, b"ok");
 }
+
+/// A stand-in for LibreTranslate: "translates" by putting the target's
+/// code in front, and remembers what it was sent.
+async fn fake_libretranslate() -> (String, std::sync::Arc<std::sync::Mutex<Vec<Value>>>) {
+    use axum::routing::{get, post};
+    let seen = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+    let kept = seen.clone();
+    let app = Router::new()
+        .route(
+            "/languages",
+            get(|| async {
+                axum::Json(json!([{"code": "es", "name": "Spanish", "targets": ["en"]}]))
+            }),
+        )
+        .route(
+            "/translate",
+            post(move |axum::Json(body): axum::Json<Value>| {
+                let kept = kept.clone();
+                async move {
+                    kept.lock().unwrap().push(body.clone());
+                    let text = format!(
+                        "[{}] {}",
+                        body["target"].as_str().unwrap(),
+                        body["q"].as_str().unwrap()
+                    );
+                    axum::Json(json!({ "translatedText": text }))
+                }
+            }),
+        );
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
+    (format!("http://{address}"), seen)
+}
+
+#[tokio::test]
+#[ignore = "needs PostgreSQL in KATNA_SERVER_TEST_DATABASE_URL"]
+async fn translation_passes_through_for_signed_in_accounts_only() {
+    let (translate_url, seen) = fake_libretranslate().await;
+    let url = std::env::var("KATNA_SERVER_TEST_DATABASE_URL").expect(NEEDS_DB);
+    let db = Db::connect(&url).unwrap();
+    db.migrate().await.unwrap();
+    let app = router(AppState::with_mailer(
+        db,
+        Config {
+            database_url: url,
+            installs_per_hour: 1000,
+            translate_url,
+            translations_per_day: 3,
+            ..Config::default()
+        },
+        Mailer::Memory(OUTBOX.clone()),
+    ));
+    let request =
+        json!({"q": "Hola", "source": "es", "target": "en", "format": "html", "api_key": "x"});
+
+    // No token, no translation.
+    let (status, _, _) = send(
+        &app,
+        Request::post("/api/v1/translate")
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(request.to_string()))
+            .unwrap(),
+    )
+    .await;
+    assert_eq!(status, StatusCode::UNAUTHORIZED);
+
+    // A computer not signed in to an account is asked to sign in.
+    let signed_out = new_install(&app).await;
+    let (status, _, body) = send(
+        &app,
+        authed(
+            "POST",
+            "/api/v1/translate",
+            &signed_out,
+            Some(request.clone()),
+        ),
+    )
+    .await;
+    assert_eq!(status, StatusCode::FORBIDDEN);
+    assert_eq!(
+        serde_json::from_slice::<Value>(&body).unwrap()["code"],
+        "sign_in"
+    );
+    assert!(seen.lock().unwrap().is_empty());
+
+    let token = register(&app).await;
+    let (status, _, body) = send(&app, authed("GET", "/api/v1/languages", &token, None)).await;
+    assert_eq!(status, StatusCode::OK);
+    let languages: Value = serde_json::from_slice(&body).unwrap();
+    assert_eq!(languages[0]["targets"][0], "en");
+
+    let (status, _, body) = send(
+        &app,
+        authed("POST", "/api/v1/translate", &token, Some(request.clone())),
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK, "{}", String::from_utf8_lossy(&body));
+    let answer: Value = serde_json::from_slice(&body).unwrap();
+    assert_eq!(answer["translatedText"], "[en] Hola");
+    // Plain text only, and nothing but the text and the languages.
+    assert_eq!(
+        seen.lock().unwrap()[0],
+        json!({"q": "Hola", "source": "es", "target": "en", "format": "text"})
+    );
+
+    let bad = json!({"q": "Hola", "source": "es; x", "target": "en"});
+    let (status, _, _) = send(&app, authed("POST", "/api/v1/translate", &token, Some(bad))).await;
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+
+    // Three a day in this test.
+    let (status, _, _) = send(
+        &app,
+        authed("POST", "/api/v1/translate", &token, Some(request.clone())),
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK);
+    let (status, _, _) = send(
+        &app,
+        authed("POST", "/api/v1/translate", &token, Some(request)),
+    )
+    .await;
+    assert_eq!(status, StatusCode::TOO_MANY_REQUESTS);
+}
