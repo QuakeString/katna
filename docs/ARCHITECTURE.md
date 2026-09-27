@@ -1654,7 +1654,7 @@ Gemini or confidential mode):
   to the top right, beside the settings gear, with its card below it; the
   search box is 40 px tall. Compose first sat in the top bar in place of
   the app name; the owner later moved it (2026-09-27): it is a 56 px
-  pill at the top of the folders, under the account's name when there is
+  pill at the very top of the folders, above the account's name when there is
   one, and while the folders are folded (and always on a tablet or on
   another app's page) it is a 56 px square at the top of the app rail.
   It slides between the two as the folders open or fold, while the
