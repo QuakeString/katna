@@ -108,6 +108,21 @@ jobs:
           save-if: ${{ github.ref == 'refs/heads/main' }}
       - run: cargo clippy --workspace --exclude katna-server --all-targets --locked -- -D warnings
       - run: cargo test --workspace --exclude katna-server --locked
+      - uses: actions/cache@v4
+        with:
+          path: target/dbus
+          key: windows-dbus-${{ hashFiles('ci/windows-dbus.ps1') }}
+      - name: Build dbus-daemon
+        run: ci/windows-dbus.ps1
+      - name: Katna's session bus starts katna-daemon
+        shell: pwsh
+        run: |
+          cargo build --locked -p katna-daemon
+          Copy-Item target\dbus\* target\debug\deps
+          Copy-Item target\debug\katna-daemon.exe target\debug\deps
+          $env:APPDATA = New-Item -ItemType Directory -Force "$env:RUNNER_TEMP\katna\Roaming"
+          $env:LOCALAPPDATA = New-Item -ItemType Directory -Force "$env:RUNNER_TEMP\katna\Local"
+          cargo test --locked -p katna-dbus --test windows_bus -- --ignored
 
   # Katna Server's tests against a real PostgreSQL.
   server:
