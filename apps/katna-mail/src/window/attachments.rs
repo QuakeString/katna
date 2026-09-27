@@ -19,6 +19,7 @@ use gpui::{
 };
 use katna_core::config::{FileGroup, OpenIn};
 use katna_preview::Kind;
+use katna_preview::glance::{Glance, glance};
 use katna_preview::image::{Frame, RgbaImage, imageops};
 use katna_render::{Attachment, AttachmentFile};
 use katna_store::MessageId;
@@ -62,12 +63,29 @@ impl Item {
     }
 }
 
-/// A card's thumbnail, and a blurred copy of it shown like frosted glass
-/// behind the name and Save button when the pointer is over the card.
+/// What the top of a card shows.
 #[derive(Clone)]
-struct Thumb {
-    sharp: Arc<RenderImage>,
-    frosted: Arc<RenderImage>,
+enum Thumb {
+    /// A PDF's first page or a picture, and a blurred copy of it shown like
+    /// frosted glass behind the name and Save button when the pointer is
+    /// over the card.
+    Picture {
+        sharp: Arc<RenderImage>,
+        frosted: Arc<RenderImage>,
+    },
+    /// The first cells or lines of a spreadsheet, text file or document,
+    /// drawn small on a white page.
+    Glance(Arc<Glance>),
+}
+
+impl Thumb {
+    /// Its bitmaps, to free when it is no longer drawn.
+    fn bitmaps(self) -> Vec<Arc<RenderImage>> {
+        match self {
+            Thumb::Picture { sharp, frosted } => vec![sharp, frosted],
+            Thumb::Glance(_) => Vec::new(),
+        }
+    }
 }
 
 /// The window's attachment state.
@@ -98,7 +116,7 @@ impl Files {
             .collect();
         for key in gone {
             if let Some(thumb) = self.thumbs.remove(&key) {
-                self.released.extend([thumb.sharp, thumb.frosted]);
+                self.released.extend(thumb.bitmaps());
             }
         }
     }
@@ -165,9 +183,9 @@ pub(super) fn kind_badge(kind: Kind, size: f32) -> AnyElement {
 /// Whether the cards show a thumbnail of this kind.
 fn has_thumbnail(kind: Kind) -> bool {
     match kind {
-        Kind::Pdf => true,
+        Kind::Pdf | Kind::Text | Kind::Sheet { .. } | Kind::Document => true,
         Kind::Picture(picture) => picture.decodable(),
-        Kind::Text | Kind::Sheet { .. } | Kind::Document | Kind::Other => false,
+        Kind::Other => false,
     }
 }
 
@@ -184,16 +202,130 @@ fn group(kind: Kind) -> Option<FileGroup> {
     }
 }
 
+/// Files larger than this get no glance: reading a whole workbook for a
+/// few cells is not worth it.
+const GLANCE_MAX_BYTES: usize = 20 * 1024 * 1024;
+
 /// The thumbnail of attachment `index` of `raw`.
-fn thumbnail(raw: &[u8], index: usize, kind: Kind) -> Option<RgbaImage> {
+fn thumbnail(raw: &[u8], index: usize, kind: Kind) -> Option<Thumb> {
     let file = katna_render::attachment_file(raw, index)?;
     let (w, h) = THUMB_PIXELS;
-    match kind {
-        Kind::Pdf => katna_preview::pdf::thumbnail(file.bytes, w, h),
-        Kind::Picture(picture) => {
-            katna_preview::picture::thumbnail(&file.bytes, picture, w, h).ok()
+    let picture = |sharp: RgbaImage| {
+        let frosted = bitmap(frosted(&sharp));
+        Thumb::Picture {
+            sharp: bitmap(sharp),
+            frosted,
         }
-        Kind::Text | Kind::Sheet { .. } | Kind::Document | Kind::Other => None,
+    };
+    match kind {
+        Kind::Pdf => katna_preview::pdf::thumbnail(file.bytes, w, h).map(picture),
+        Kind::Picture(format) => katna_preview::picture::thumbnail(&file.bytes, format, w, h)
+            .ok()
+            .map(picture),
+        Kind::Text | Kind::Sheet { .. } | Kind::Document => {
+            if file.bytes.len() > GLANCE_MAX_BYTES {
+                return None;
+            }
+            let tabs = file.name.to_ascii_lowercase().ends_with(".tsv")
+                || file.mime.to_ascii_lowercase().contains("tab-separated");
+            glance(kind, file.bytes, &file.name, tabs).map(|g| Thumb::Glance(Arc::new(g)))
+        }
+        Kind::Other => None,
+    }
+}
+
+/// Ink of a glance: it sits on a white page in every theme, like a PDF.
+const PAGE_INK: u32 = 0x3c4043ff;
+const GRID_LINE: u32 = 0xe0e3e7ff;
+const GRID_HEADER: u32 = 0xf1f3f4ff;
+const GRID_HEADER_INK: u32 = 0x80868bff;
+
+/// A glance drawn on a white page the size of a card's top.
+fn glance_page(glance: &Glance, radius: gpui::Pixels) -> AnyElement {
+    let page = div()
+        .size_full()
+        .overflow_hidden()
+        .rounded_t(radius)
+        .bg(rgba(0xffffffff))
+        .text_color(rgba(PAGE_INK))
+        .text_size(px(7.0))
+        .line_height(px(9.0));
+    match glance {
+        Glance::Cells(rows) => {
+            let columns = rows.first().map_or(1, Vec::len).max(1);
+            let numbers = 14.0;
+            let width = ((CARD_WIDTH - numbers) / columns as f32).max(28.0);
+            let cell = |text: SharedString, header: bool| {
+                div()
+                    .w(px(width))
+                    .flex_none()
+                    .h_full()
+                    .px(px(2.0))
+                    .flex()
+                    .items_center()
+                    .border_r_1()
+                    .border_color(rgba(GRID_LINE))
+                    .overflow_hidden()
+                    .whitespace_nowrap()
+                    .when(header, |c| {
+                        c.justify_center().text_color(rgba(GRID_HEADER_INK))
+                    })
+                    .child(text)
+            };
+            let row = |number: SharedString, header: bool| {
+                div()
+                    .h(px(11.0))
+                    .flex_none()
+                    .flex()
+                    .flex_row()
+                    .border_b_1()
+                    .border_color(rgba(GRID_LINE))
+                    .when(header, |r| r.bg(rgba(GRID_HEADER)))
+                    .child(
+                        div()
+                            .w(px(numbers))
+                            .flex_none()
+                            .h_full()
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .bg(rgba(GRID_HEADER))
+                            .text_color(rgba(GRID_HEADER_INK))
+                            .border_r_1()
+                            .border_color(rgba(GRID_LINE))
+                            .child(number),
+                    )
+            };
+            let header = row(SharedString::default(), true).children(
+                (0..columns)
+                    .map(|ix| cell(katna_preview::sheet::column_name(ix as u32).into(), true)),
+            );
+            page.flex()
+                .flex_col()
+                .child(header)
+                .children(rows.iter().enumerate().map(|(n, cells)| {
+                    row((n + 1).to_string().into(), false)
+                        .children(cells.iter().map(|c| cell(c.clone().into(), false)))
+                }))
+                .into_any_element()
+        }
+        Glance::Lines(lines) => page
+            .px(px(10.0))
+            .py(px(8.0))
+            .flex()
+            .flex_col()
+            .children(lines.iter().map(|line| {
+                div()
+                    .whitespace_nowrap()
+                    .overflow_hidden()
+                    .when(line.heading, |l| {
+                        l.font_weight(FontWeight::BOLD).text_size(px(8.0))
+                    })
+                    // Keeps blank lines.
+                    .min_h(px(9.0))
+                    .child(line.text.clone())
+            }))
+            .into_any_element(),
     }
 }
 
@@ -233,12 +365,7 @@ impl MailWindow {
                     .background_executor()
                     .spawn(async move {
                         list.into_iter()
-                            .filter_map(|(ix, kind)| {
-                                let sharp = thumbnail(&raw, ix, kind)?;
-                                let frosted = bitmap(frosted(&sharp));
-                                let sharp = bitmap(sharp);
-                                Some((ix, Thumb { sharp, frosted }))
-                            })
+                            .filter_map(|(ix, kind)| Some((ix, thumbnail(&raw, ix, kind)?)))
                             .collect()
                     })
                     .await;
@@ -253,7 +380,7 @@ impl MailWindow {
                         // The message closed meanwhile.
                         files
                             .released
-                            .extend(thumbs.into_iter().flat_map(|(_, t)| [t.sharp, t.frosted]));
+                            .extend(thumbs.into_iter().flat_map(|(_, t)| t.bitmaps()));
                     }
                     cx.notify();
                 })
@@ -294,14 +421,18 @@ impl MailWindow {
             let thumb = self.files.thumbs.get(&(id, ix)).cloned();
             let name = item.name.clone();
             let inner = px(CARD_RADIUS - 1.0);
-            let frost = thumb.as_ref().map(|t| t.frosted.clone());
+            let frost = match &thumb {
+                Some(Thumb::Picture { frosted, .. }) => Some(frosted.clone()),
+                _ => None,
+            };
             let top = match thumb {
-                Some(thumb) => div().size_full().child(
-                    img(ImageSource::Render(thumb.sharp))
+                Some(Thumb::Picture { sharp, .. }) => div().size_full().child(
+                    img(ImageSource::Render(sharp))
                         .size_full()
                         .rounded_t(inner)
                         .object_fit(ObjectFit::Cover),
                 ),
+                Some(Thumb::Glance(glance)) => div().size_full().child(glance_page(&glance, inner)),
                 None => div()
                     .size_full()
                     .flex()

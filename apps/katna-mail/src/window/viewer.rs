@@ -48,7 +48,10 @@ const BAR_HEIGHT: f32 = 64.0;
 const LINE_SCROLL: f32 = 48.0;
 
 // The viewer is dark in light and dark themes alike, like a photo viewer.
-const SCRIM: u32 = 0x0c0d0ef5;
+// The window shows faintly through its backdrop, or blurred when menus
+// are frosted (Settings > Experimental).
+const SCRIM: u32 = 0x0c0d0ecc;
+const SCRIM_FROSTED: u32 = 0x0c0d0e99;
 const BAR: u32 = 0x161718f0;
 const INK: u32 = 0xffffffff;
 const INK_DIM: u32 = 0xffffffb3;
@@ -822,7 +825,18 @@ impl Render for Viewer {
             .left_0()
             .size_full()
             .occlude()
-            .bg(rgba(SCRIM))
+            .map(|el| {
+                if self.th.frost == 0 {
+                    el.bg(rgba(SCRIM))
+                } else {
+                    el.child(katna_ui::frost::glass(
+                        rgba(SCRIM_FROSTED).into(),
+                        px(0.0),
+                        self.th.frost as f32,
+                        Vec::new(),
+                    ))
+                }
+            })
             .child(body)
             .child(top_bar)
             .children(arrows.into_iter().flatten())
