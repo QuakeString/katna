@@ -1,0 +1,165 @@
+# Katna Mail, Afrikaans (Afrikaans).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## About Katna (the dialog from the "i" button on the top bar)
+
+about-tooltip = Meer oor Katna
+about-tagline = E-pos en kalender vir die Linux-werkskerm
+about-whats-new = Wat's nuut
+about-changelog = Veranderingslog
+about-source = Bronkode
+about-coffee = Koop vir my 'n koffie
+about-coming-soon = Kom binnekort
+about-follow = Volg die outeur
+about-love-title = Met liefde gemaak vir Rust, KDE en Linux
+about-love-text = Rust maak dit 'n plesier om 'n vinnige en veilige e-posprogram te skryf: Katna het geen unsafe-kode nie. KDE se Plasma-werkskerm en sy PIM-suite het Katna geïnspireer, en Linux en die vryesagteware-gemeenskap bou die grond waarop dit staan. Dankie, en dankie aan die biblioteke hieronder.
+about-kde-text = KDE bou die werkskerm waarop Katna die meeste tuis voel, en dit word deur vrywilligers gemaak en deur mense soos jy befonds. As jy van Plasma of KDE se programme hou, oorweeg asseblief 'n skenking aan KDE.
+about-donate-kde = Skenk aan KDE
+about-gpui-title = Gebou op GPUI, van die Zed-projek
+about-gpui-text = Katna Mail se hele koppelvlak is gebou op GPUI, die vinnige, GPU-versnelde UI-raamwerk wat Zed Industries vir die Zed-redigeerder gemaak het. Elke pixel, animasie en venster wat jy sien, word daardeur geteken. Dankie, Zed-span, dat julle dit in die openbaar bou. Apache-2.0.
+about-gpui-github = GPUI op GitHub
+about-personal-title = 'n Persoonlike projek
+about-personal-text = Katna Mail probeer nie nuut of revolusionêr wees nie. Dit is die e-posprogram wat sy outeur wou hê, en sy funksies en voorkoms is by Gmail, Mailspring en Thunderbird geleen. Dit was net moontlik omdat LLM's so ver gekom het.
+about-built-on = GEBOU OP VRYE SAGTEWARE
+about-credit-pimalaya = IMAP, SMTP en aanmelding (io-imap, io-smtp, io-sasl)
+about-credit-imap-codec = IMAP lees en skryf
+about-credit-tantivy = Soek
+about-credit-sqlite = Die e-posstoor
+about-credit-rustls = Veilige verbindings
+about-credit-mail-parser = E-pos lees, van Stalwart Labs
+about-credit-html5ever = HTML-e-pos, van die Servo-projek
+about-credit-zbus = Praat met die werkskerm oor D-Bus en portale
+about-credit-oo7 = Wagwoorde in die werkskerm se sleutelring
+about-credit-hayro = PDF's bekyk en druk
+about-credit-calamine = Voorskoue van sigblaaie
+about-credit-resvg = SVG-prente
+about-credit-jiff = Datums en tydsones
+about-credit-spellbook = Speltoets, van die Helix-redigeerder
+about-credit-smol = Baie dinge gelyk doen
+about-all-libraries = Elke biblioteek wat Katna gebruik ({ $count })
+about-library-authors = deur { $authors }
+about-license = Katna is vrye sagteware onder die GNU GPL, weergawe 3 of later.
+about-close = Maak toe
+
+## What’s new (shown after an update)
+
+whats-new-title = Wat's nuut in Katna Mail
+whats-new-updated = Opgedateer na weergawe { $version }
+whats-new-version = Weergawe { $version }
+whats-new-more = { $count ->
+    [one] En nog een in die volledige veranderingslog.
+   *[other] En nog { $count } in die volledige veranderingslog.
+}
+whats-new-changelog = Volledige veranderingslog
+whats-new-got-it = Reg so
+
+## First run: welcome page
+
+onboarding-welcome-title = Welkom by Katna Mail
+onboarding-welcome-lead = Jou e-pos op jou eie rekenaar: vinnig om te deursoek, leesbaar vanlyn en privaat.
+onboarding-fast-title = Vinnig, selfs vanlyn
+onboarding-fast-text = Katna hou 'n kopie van jou e-pos hier, sodat dit oombliklik oopmaak en deursoek word, met of sonder 'n verbinding.
+onboarding-providers-title = Werk met jou e-pos
+onboarding-providers-text = Gmail, Outlook, Yahoo, iCloud en enige ander IMAP- of POP-rekening.
+onboarding-private-title = Privaat
+onboarding-private-text = Jou e-pos gaan reguit van jou verskaffer na hierdie rekenaar. Geen Katna-bediener sien dit nie.
+onboarding-get-started = Begin
+
+## First run: adding an account
+
+onboarding-service-checking = Kontroleer tans die Katna-agtergronddiens…
+onboarding-service-running = Die Katna-agtergronddiens loop.
+onboarding-service-missing = Die Katna-agtergronddiens loop nie
+onboarding-service-start = Dit haal en stuur jou e-pos. Begin dit vanuit 'n terminaal en kontroleer dan weer:
+onboarding-check-again = Kontroleer weer
+onboarding-account-title = Voeg jou e-posrekening by
+onboarding-account-lead = Tik jou e-posadres en wagwoord, en Katna vind die bedienerinstellings. Gmail, Yahoo en iCloud het 'n programwagwoord nodig, wat jy in jou rekening se sekuriteitsinstellings maak.
+onboarding-add-account = Voeg 'n rekening by
+onboarding-back = Terug
+
+## First run: choosing the look
+
+onboarding-look-title = Maak dit joune
+onboarding-look-lead = Kies hoe e-pos oopmaak en hoe Katna lyk. Jy kan dit enige tyd in vinnige instellings verander.
+onboarding-reading-pane = Leesvenster
+onboarding-pane-right = Regs van die lys
+onboarding-pane-none = Geen verdeling
+onboarding-theme = Tema
+onboarding-theme-system = Dieselfde as die werkskerm
+onboarding-theme-light = Lig
+onboarding-theme-dark = Donker
+onboarding-density = Digtheid
+onboarding-density-default = Verstek
+onboarding-density-compact = Kompak
+onboarding-continue = Gaan voort
+
+## First run: done
+
+onboarding-ready-title = Jy is gereed
+onboarding-ready-lead = Katna haal tans jou e-pos. Dit verskyn soos dit aankom, en nuwe e-pos verskyn vanself.
+onboarding-ready-lead-address = Katna haal tans die e-pos van { $address }. Dit verskyn soos dit aankom, en nuwe e-pos verskyn vanself.
+onboarding-ready-tour = Neem 'n toer van een minuut om te sien waar alles is?
+onboarding-skip = Slaan nou oor
+onboarding-take-tour = Neem die toer
+
+## Asking to send crash reports (on its own and on the first-run pages)
+
+share-title = Help om Katna te verbeter
+share-lead = Wanneer Katna omval, stoor dit 'n verslag op hierdie rekenaar. Om hierdie verslae te stuur, help om reg te maak wat verkeerd geloop het. Jy kan dit enige tyd in Instellings > Gebruikersterugvoer verander.
+share-sent = Wat gestuur word
+share-sent-detail = Die omvalverslag soos jy dit in Instellings kan bekyk: wat omgeval het en waar in Katna, die weergawe, jou Linux-stelsel en werkskerm, en Katna se laaste loglyne, wat e-posvouers kan noem.
+share-never-sent = Wat nooit gestuur word nie
+share-never-sent-detail = Jou boodskappe, kontakte, wagwoorde, IP-adres, gebruikersnaam of rekenaarnaam. E-posadresse word uit die verslag verwyder.
+share-where = Waarheen dit gaan
+share-where-detail = Katna se omvalspoorder by Sentry, gestoor in die EU. Geen ID koppel verslae aan jou nie.
+share-dont-send = Moenie stuur nie
+share-send = Stuur omvalverslae
+share-sending = Omvalverslae sal gestuur word. Dankie.
+share-local = Omvalverslae bly op hierdie rekenaar.
+
+## The tour (cards pointing at each part of the window)
+
+tour-welcome-title = Welkom by Katna Mail
+tour-welcome-text = 'n Toer van een minuut wys waar alles is.
+tour-not-now = Nie nou nie
+tour-start = Neem die toer
+tour-close = Maak toe
+tour-skip = Slaan toer oor
+tour-back = Terug
+tour-done = Klaar
+tour-next = Volgende
+tour-step = { $step } van { $total }
+tour-compose-title = Skryf 'n boodskap
+tour-compose-text = Skryf maak 'n nuwe boodskap regs onder oop, sodat jy kan aanhou lees terwyl jy skryf.
+tour-search-title = Deursoek al jou e-pos
+tour-search-text = Soek werk ook vanlyn. Die knoppie heel regs voeg filters by: sender, ontvanger, onderwerp, datums en aanhegsels.
+tour-menu-title = Wys of versteek die vouers
+tour-menu-text = Hierdie knoppie vou die vouerlys weg. Terwyl dit versteek is, laat die wyser op E-pos links rus om die vouers te sien.
+tour-apps-title = Jou programme
+tour-apps-text = E-pos woon nou hier. Kalender, Kontakte, Take, Notas en Voere sal in hierdie balk daarby aansluit.
+tour-tabs-title = Inkassie-oortjies
+tour-tabs-text = Nuwe e-pos word in Primêr, Promosies, Sosiaal, Opdaterings en Forums gesorteer. Jy kan die oortjies in vinnige instellings afskakel.
+tour-list-title = Jou boodskappe
+tour-list-text = Klik op 'n boodskap om dit te lees. Beweeg daaroor vir vinnige aksies, regsklik vir meer, of merk verskeie om saam daarop te reageer.
+tour-settings-title = Vinnige instellings
+tour-settings-text = Verander die leesvenster, digtheid en tema hier. Die toer kan ook weer van daar af begin word.
+tour-account-title = Jou rekening
+tour-account-text = Sien in watter rekening jy is, en voeg nog een by.
+
+## Crash notice (a bar at the bottom after a crash)
+
+crash-daemon = { $more ->
+    [0] Katna se agtergronddiens het onverwags gestop.
+    [one] Katna se agtergronddiens het onverwags gestop. Nog een omvalverslag is gestoor.
+   *[other] Katna se agtergronddiens het onverwags gestop. Nog { $more } omvalverslae is gestoor.
+}
+crash-mail = { $more ->
+    [0] Katna Mail het laas onverwags toegemaak.
+    [one] Katna Mail het laas onverwags toegemaak. Nog een omvalverslag is gestoor.
+   *[other] Katna Mail het laas onverwags toegemaak. Nog { $more } omvalverslae is gestoor.
+}
+crash-view = Bekyk verslag
+crash-view-tooltip = Maak die verslag oop, gestoor op hierdie rekenaar
+crash-copy = Kopieer verslag
+crash-close = Maak toe

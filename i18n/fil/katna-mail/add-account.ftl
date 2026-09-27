@@ -1,0 +1,72 @@
+# Katna Mail, Filipino (Filipino).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Add a mail account: titles and steps
+
+add-account-title = Magdagdag ng mail account
+add-account-looking = Hinahanap ang mga mail server ng { $address }…
+add-account-address-intro = Ilagay ang iyong email address. Hahanapin ng Katna ang mga server para sa iyo.
+add-account-servers-title = Mga setting ng server
+add-account-servers-intro = Kung saan nagbabasa at nagpapadala ang Katna ng mail para sa { $address }.
+add-account-password-title = Ilagay ang iyong password
+add-account-signing-in = Nagsa-sign in…
+
+## Add a mail account: fields
+
+add-account-field-address = Email address
+add-account-incoming = Papasok na mail ({ $protocol })
+add-account-outgoing = Papalabas na mail ({ $protocol })
+add-account-field-server = Server
+add-account-field-port = Port
+add-account-security-none = Wala
+add-account-field-username = Username
+add-account-field-password = Password
+add-account-show-password = Ipakita ang password
+add-account-app-password-hint = Kailangan ng { $provider } ng app password dito, hindi ang ginagamit mo sa web. Gumawa ng isa sa mga setting ng seguridad ng iyong { $provider } account.
+add-account-field-name = Ang pangalan mo (opsyonal)
+add-account-name-hint = Ipinapakita sa mga taong sinusulatan mo.
+add-account-servers-pair = { $imap } at { $smtp }
+add-account-servers-found = { $source ->
+    [built-in] Mga server: { $servers }, nakita sa listahan ng mga provider ng Katna.
+    [provider] Mga server: { $servers }, nakita sa mga setting ng iyong provider.
+    [ispdb] Mga server: { $servers }, nakita sa listahan ng mga provider ng Thunderbird.
+    [dns] Mga server: { $servers }, nakita sa mga DNS record ng iyong domain.
+   *[other] Mga server: { $servers }, hula lang; tingnan ang mga ito kung pumalya ang pag-sign in.
+}
+add-account-servers-entered = Mga server: { $servers }, gaya ng inilagay.
+
+## Add a mail account: buttons
+
+add-account-servers-button = Mga setting ng server
+add-account-back = Bumalik
+add-account-add = Idagdag ang account
+add-account-next = Susunod
+add-account-cancel = Kanselahin
+
+## Add a mail account: problems
+
+add-account-server-missing = { $kind ->
+    [incoming] Ilagay ang papasok na server.
+   *[outgoing] Ilagay ang papalabas na server.
+}
+add-account-server-space = { $kind ->
+    [incoming] May espasyo ang pangalan ng papasok na server.
+   *[outgoing] May espasyo ang pangalan ng papalabas na server.
+}
+add-account-port-invalid = { $kind ->
+    [incoming] Dapat na numero mula { $min } hanggang { $max } ang papasok na port.
+   *[outgoing] Dapat na numero mula { $min } hanggang { $max } ang papalabas na port.
+}
+add-account-address-empty = Maglagay ng email address.
+add-account-address-invalid = Maglagay ng email address gaya ng { $example }.
+add-account-not-found = Hindi mahanap ng Katna ang mga server para sa { $address }, kaya inilagay nito ang mga karaniwang pangalan. Tingnan ang mga ito sa iyong provider.
+add-account-password-empty = Ilagay ang password.
+add-account-added = Naidagdag ang { $address }. Kinukuha ang mail mo…
+add-account-app-password-refused = Tinanggihan ng { $provider } ang password. Kailangan nito ng app password, hindi ang ginagamit mo sa web.
+add-account-password-refused = Tinanggihan ng server ang password. Tingnan ito at subukang muli.
+
+## The account menu (from the account button on the top bar)
+
+add-account-menu-another = Magdagdag ng isa pang account
+add-account-menu-manage = Pamahalaan ang mga account
