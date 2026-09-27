@@ -181,6 +181,22 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 18,
+        title: "Read conversations your way",
+        text: "Settings > General > Reading can show the newest message first, open \
+               the full headers of every message, and name recipients in full \
+               instead of by first name.",
+        animation: None,
+    },
+    Highlight {
+        id: 19,
+        title: "Send and archive",
+        text: "The menu beside Send on a reply sends it and archives the \
+               conversation. Settings > Compose can make that what Send does, and \
+               can send new mail from the same account every time.",
+        animation: None,
+    },
+    Highlight {
+        id: 20,
         title: "Select and copy text in mail",
         text: "Drag across a message to select its text, double-click for a word \
                or triple-click for a paragraph. Ctrl+C or a right-click copies it, \

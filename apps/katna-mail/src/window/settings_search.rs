@@ -57,6 +57,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
+        "Reading",
+        "Newest message first, full headers, full names of recipients",
+        "order oldest descending chronological reverse headers details from to cc names recipients first last",
+    ),
+    entry(
+        Section::General,
         "Sending",
         "Undo send: how long a sent message waits, so it can be taken back",
         "undo send delay cancel",
@@ -168,6 +174,18 @@ const ENTRIES: &[Entry] = &[
         "Documents",
         "Where Word and OpenDocument text open",
         "open attachment viewer app docx odt word",
+    ),
+    entry(
+        Section::Signatures,
+        "Send new messages from",
+        "The account new mail goes out from: the one you are in, or always the same one",
+        "from sender default account address identity",
+    ),
+    entry(
+        Section::Signatures,
+        "Send on replies",
+        "Send, or Send and archive the conversation, on replies and forwards",
+        "send archive default behavior behaviour reply forward",
     ),
     entry(
         Section::Signatures,
