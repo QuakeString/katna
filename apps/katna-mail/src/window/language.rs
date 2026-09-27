@@ -6,7 +6,6 @@
 //! and the phone drawer's Language row, which opens the same list over the
 //! window. Settings > General opens it too.
 
-use std::cell::Cell;
 use std::time::Duration;
 
 use gpui::{
@@ -41,9 +40,6 @@ pub(super) struct LanguagePicker {
     /// it opens under that point.
     at: Option<Point<Pixels>>,
     scroll: ScrollHandle,
-    /// Scroll the current language into view once the list has its size:
-    /// on the first frame it has none, and GPUI scrolls by it anyway.
-    reveal: Cell<bool>,
     _subscription: Subscription,
 }
 
@@ -62,6 +58,26 @@ impl Entry {
         }
     }
 }
+
+/// Every row: the current choice first, then English (India), then System
+/// default, then the rest in `i18n/languages.toml` order. None is listed
+/// twice.
+fn ordered(current: &str) -> Vec<Entry> {
+    let current = katna_i18n::find(current).map_or("", |l| l.tag.as_str());
+    let mut entries: Vec<Entry> = std::iter::once(Entry::System)
+        .chain(katna_i18n::picker().map(Entry::Language))
+        .collect();
+    entries.sort_by_key(|entry| match entry.tag() {
+        tag if tag == current => 0,
+        PINNED => 1,
+        "" => 2,
+        _ => 3,
+    });
+    entries
+}
+
+/// The language listed right after the current one.
+const PINNED: &str = "en-IN";
 
 /// A language's flag, 24 × 18 with rounded corners.
 pub(super) fn flag(code: &str, th: &Theme) -> AnyElement {
@@ -82,25 +98,22 @@ pub(super) fn flag(code: &str, th: &Theme) -> AnyElement {
 }
 
 impl MailWindow {
-    /// The rows the search box lets through.
+    /// The rows the search box lets through, in [`ordered`] order.
     fn language_entries(&self) -> Vec<Entry> {
         let query = self
             .language_picker
             .as_ref()
             .map(|p| p.query.clone())
             .unwrap_or_default();
-        let system = tr!("language-system-default");
-        let mut entries = Vec::new();
         let folded = katna_i18n::fold(query.trim());
-        if folded.is_empty() || katna_i18n::fold(&system).contains(&folded) {
-            entries.push(Entry::System);
-        }
-        entries.extend(
-            katna_i18n::picker()
-                .filter(|l| l.matches(&query))
-                .map(Entry::Language),
-        );
-        entries
+        let system = katna_i18n::fold(&tr!("language-system-default"));
+        ordered(&self.config.general.language)
+            .into_iter()
+            .filter(|entry| match entry {
+                Entry::System => folded.is_empty() || system.contains(&folded),
+                Entry::Language(language) => language.matches(&query),
+            })
+            .collect()
     }
 
     pub(super) fn language_picker_open(&self) -> bool {
@@ -147,12 +160,8 @@ impl MailWindow {
                 }
             },
         );
-        // The current choice is highlighted, and in view.
-        let current = self.config.general.language.clone();
-        let highlight = std::iter::once("")
-            .chain(katna_i18n::picker().map(|l| l.tag.as_str()))
-            .position(|tag| tag == current)
-            .unwrap_or(0);
+        // The current choice is the first row, and highlighted.
+        let highlight = 0;
         let scroll = ScrollHandle::new();
         let accent: gpui::Hsla = rgba(self.theme(window).accent).into();
         search.update(cx, |input, _| input.set_accent(accent));
@@ -163,7 +172,6 @@ impl MailWindow {
             highlight,
             at,
             scroll,
-            reveal: Cell::new(true),
             _subscription: subscription,
         });
         cx.notify();
@@ -242,13 +250,6 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let picker = self.language_picker.as_ref()?;
-        if picker.reveal.get() {
-            if picker.scroll.bounds().size.height > px(0.0) {
-                picker.scroll.scroll_to_item(picker.highlight);
-                picker.reveal.set(false);
-            }
-            window.request_animation_frame();
-        }
         let phone = self.layout.shape.is_phone();
         let current = self.config.general.language.as_str();
         let entries = self.language_entries();
@@ -477,5 +478,35 @@ impl MailWindow {
                 .child(deferred(card).with_priority(2))
                 .into_any_element(),
         )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Entry, ordered};
+
+    fn tags(current: &str) -> Vec<&'static str> {
+        ordered(current).into_iter().map(Entry::tag).collect()
+    }
+
+    #[test]
+    fn current_first_then_english_india_then_system() {
+        assert_eq!(tags("bn")[..3], ["bn", "en-IN", ""]);
+        assert_eq!(tags("en-IN")[..3], ["en-IN", "", "en-GB"]);
+        assert_eq!(tags("")[..3], ["", "en-IN", "en-GB"]);
+        // An unknown saved tag means System default.
+        assert_eq!(tags("xx")[..2], ["", "en-IN"]);
+    }
+
+    #[test]
+    fn every_row_once() {
+        for current in ["", "bn", "en-IN", "ar", "en-US"] {
+            let mut all = tags(current);
+            let len = all.len();
+            all.sort_unstable();
+            all.dedup();
+            assert_eq!(all.len(), len);
+            assert_eq!(len, katna_i18n::picker().count() + 1);
+        }
     }
 }
