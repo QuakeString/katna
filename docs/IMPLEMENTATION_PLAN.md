@@ -32,7 +32,7 @@ they become the plan.
 | D4 | Rust toolchain | **Decided: latest stable** — `rust-toolchain.toml` with `channel = "stable"`; `rust-version` in `Cargo.toml` records the minimum and is raised deliberately | CI, contributors |
 | D5 | Supported systems for CI | **Decided: Arch Linux and Ubuntu 26.04 LTS** — Arch = latest Plasma and GNOME; Ubuntu = GNOME, Kubuntu 26.04 = older Plasma | Test matrix, Plasma versions |
 | D6 | App ID / D-Bus prefix | **Decided: `in.invenia.katna`** (domain `katna.invenia.in`): `in.invenia.katna.Mail`, `in.invenia.katna.Calendar`, `in.invenia.katna.Daemon`, interface `in.invenia.katna.Pim1` | Flatpak IDs, D-Bus names, desktop files |
-| D7 | Where crash reports and feedback go | **Decided: a Sentry cloud project** (owner, 27 September 2026), only after the user opts in; DSN empty until the project exists (`ARCHITECTURE.md` §19.2) | Crash-report track C.5–C.8 |
+| D7 | Where crash reports and feedback go | **Decided: a Sentry cloud project now, our own server later** (owner, 27 September 2026): self-hosted GlitchTip or Sentry on `katna.invenia.in` replaces it by changing the DSN. Only after the user opts in; DSN empty until the project exists (`ARCHITECTURE.md` §19.2) | Crash-report track C.5–C.9 |
 
 D6 matters for Flathub: its app IDs must match a domain or code-hosting
 account you control.
@@ -256,6 +256,7 @@ Nothing leaves the machine before the user opts in.
 | C.6 Usage statistics | One enum of features, weekly `info` event with yes/no feature tags and bucketed facts, release-health sessions, random install ID rotated every 90 days and resettable; Settings shows what is counted |
 | C.7 Feedback form | Help > Send feedback (global menu, Quick settings > Help): form, optional reply address, preview of exactly what is sent, Sentry User Feedback item |
 | C.8 Sentry project | Project created, IP storage off, server-side scrubbing on, GitHub integration; DSN filled in `katna_core::ids` |
+| C.9 Own server (later) | GlitchTip or self-hosted Sentry on `katna.invenia.in` with the same settings as C.8; CI uploads debug files there; the DSN constant switches to it; the cloud project is closed once no supported version sends to it |
 
 **Done when:** a panic and a segfault in Katna Mail and in the daemon each
 leave a readable report with a stack and no personal data, and Katna Mail

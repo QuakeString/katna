@@ -2100,8 +2100,11 @@ cloud project (decided by the owner on 27 September 2026, §25).
   are read as weekly totals per version and may be published on the
   website so users see what their data is used for.
 
-A self-hosted receiver at `crash.katna.invenia.in` stays possible later:
-the envelope format is the same, so only the DSN changes.
+**Later: our own server.** The owner plans to move from Sentry cloud to a
+self-hosted receiver on `katna.invenia.in` (GlitchTip or self-hosted
+Sentry, for example at `crash.katna.invenia.in`). The envelope format is the
+same, so the move changes only the DSN constant and the debug-file upload
+target; reports already sent stay in the cloud project until it is closed.
 
 ## 20. Dependency policy
 
@@ -2412,9 +2415,10 @@ Decided:
   files only for large attachments (§5.2).
 - Rust toolchain: latest stable (`channel = "stable"`).
 - Crash reports and feedback (§19.2): sent, only after the user opts in,
-  to a Sentry cloud project (owner's choice, 27 September 2026, over our
-  own receiver and GitHub issues only). The DSN stays empty until the
-  project exists.
+  to a Sentry cloud project for now (owner's choice, 27 September 2026,
+  over our own receiver and GitHub issues only), moving later to a
+  self-hosted GlitchTip or Sentry on `katna.invenia.in`. The DSN stays
+  empty until the cloud project exists.
 - Test and support matrix: Arch Linux (latest Plasma and GNOME) and
   Ubuntu 26.04 LTS (GNOME) / Kubuntu 26.04 (Plasma). The Plasma
   integration supports the Plasma versions of these two.
