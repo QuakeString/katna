@@ -358,3 +358,21 @@ aan de linkerkant, waar de mappen weer verschijnen als je de aanwijzer
 erop laat rusten. Linksboven staat Katna Mail, en de naam rolt door naar
 Agenda, Contacten en de rest als je van app wisselt.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Alle ongelezen mail of mail met ster selecteren"
+text = """
+Gelezen, Ongelezen, Met ster en Zonder ster in het menu Selecteren
+vinken nu elk passend gesprek in de map aan, niet alleen die op het
+scherm. Een regel boven de lijst zegt hoeveel er geselecteerd zijn, en
+archiveren, verwijderen, verplaatsen of markeren werkt op allemaal.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Verbeteringen zonder rechtsklik"
+text = """
+Laat de aanwijzer op een onderstreept woord rusten, of klik erop, en de
+verbeteringen verschijnen er vlak onder: spellingsuggesties,
+grammaticaverbeteringen en Negeren, in de tekst en het onderwerp. Met
+rechts klikken opent nog steeds het volledige menu.
+"""

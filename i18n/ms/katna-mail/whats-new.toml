@@ -357,3 +357,22 @@ akan menunjukkan folder semula. Bahagian atas kiri menunjukkan
 Katna Mail, dan nama itu bertukar kepada Kalendar, Kenalan dan yang lain
 apabila anda bertukar apl.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Pilih semua mel yang belum dibaca atau dibintangi"
+text = """
+Dibaca, Belum dibaca, Dibintangi dan Tidak dibintangi dalam menu Pilih
+kini menanda setiap perbualan yang sepadan dalam folder, bukan hanya
+yang ada di skrin. Satu baris di atas senarai menyatakan berapa yang
+dipilih, dan mengarkibkan, memadam, mengalih atau menandai berlaku pada
+kesemuanya.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Pembetulan tanpa klik kanan"
+text = """
+Letakkan penuding pada perkataan bergaris bawah, atau kliknya, dan
+pembetulannya muncul betul-betul di bawahnya: cadangan ejaan, pembetulan
+tatabahasa dan Abaikan, dalam teks dan subjek. Klik kanan masih membuka
+menu penuh.
+"""

@@ -357,3 +357,22 @@ upau ulio kushoto, ambapo kuweka kiashiria juu yake huonyesha folda
 tena. Juu kushoto kunaonyesha Katna Mail, na jina hubadilika kwenda
 Kalenda, Anwani na nyinginezo unapobadilisha programu.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Chagua barua pepe zote ambazo hazijasomwa au zenye nyota"
+text = """
+Zilizosomwa, Ambazo hazijasomwa, Zenye nyota na Zisizo na nyota kwenye
+menyu ya Chagua sasa hutia alama kila mazungumzo yanayolingana kwenye
+folda, si yale yaliyo kwenye skrini pekee. Mstari juu ya orodha unasema
+ngapi zimechaguliwa, na kuweka kwenye kumbukumbu, kufuta, kuhamisha au
+kutia alama hufanya kazi kwa zote.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Marekebisho bila kubofya kulia"
+text = """
+Weka kiashiria juu ya neno lililopigiwa mstari, au libofye, na
+marekebisho yake huonekana chini yake moja kwa moja: mapendekezo ya
+tahajia, marekebisho ya sarufi na Puuza, kwenye maandishi na mada.
+Kubofya kulia bado hufungua menyu kamili.
+"""

@@ -370,3 +370,22 @@ folder kapag itinapat mo ang pointer dito. Katna Mail ang nasa kaliwang
 itaas, at umiikot ang pangalan sa Kalendaryo, Mga Contact at iba pa
 habang lumilipat ka ng app.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Piliin ang lahat ng hindi pa nabasa o naka-star"
+text = """
+Tsine-check na ngayon ng Nabasa na, Hindi pa nabasa, Naka-star at Walang
+star sa menu na Piliin ang bawat tumutugmang usapan sa folder, hindi
+lang ang mga nasa screen. Sinasabi ng isang linya sa itaas ng listahan
+kung ilan ang napili, at gumagana sa lahat ng ito ang pag-archive,
+pag-delete, paglipat o pagmarka.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Mga pagtatama nang walang right-click"
+text = """
+Itapat ang pointer sa salitang may salungguhit, o i-click ito, at
+lalabas ang mga pagtatama nito sa mismong ilalim: mga mungkahi sa
+baybay, mga pagtatama sa grammar at Balewalain, sa text at sa subject.
+Binubuksan pa rin ng right-click ang buong menu.
+"""

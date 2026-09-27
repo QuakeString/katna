@@ -357,3 +357,21 @@ para ver as pastas de novo. No canto superior esquerdo aparece
 Katna Mail, e o nome vai rolando para Agenda, Contatos e os demais
 conforme você troca de app.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Selecione todos os e-mails não lidos ou com estrela"
+text = """
+Lidas, Não lidas, Com estrela e Sem estrela no menu Selecionar agora
+marcam todas as conversas correspondentes da pasta, não só as que estão
+na tela. Uma linha acima da lista diz quantas estão selecionadas, e
+arquivar, excluir, mover ou marcar vale para todas elas.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Correções sem clique direito"
+text = """
+Pare o ponteiro sobre uma palavra sublinhada, ou clique nela, e as
+correções aparecem logo abaixo: sugestões de ortografia, correções
+gramaticais e Ignorar, no texto e no assunto. O clique direito continua
+abrindo o menu completo.
+"""

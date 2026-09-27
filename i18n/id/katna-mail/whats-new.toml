@@ -352,3 +352,22 @@ bergeser ke bilah di kiri, tempat menahan penunjuk di atasnya
 menampilkan folder lagi. Kiri atas menampilkan Katna Mail, dan namanya
 bergulir ke Kalender, Kontak, dan lainnya saat Anda berpindah aplikasi.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Pilih semua email yang belum dibaca atau berbintang"
+text = """
+Sudah dibaca, Belum dibaca, Berbintang, dan Tidak berbintang di menu
+Pilih kini mencentang setiap percakapan yang cocok di folder, bukan
+hanya yang ada di layar. Sebaris teks di atas daftar menyebutkan berapa
+yang dipilih, dan mengarsipkan, menghapus, memindahkan, atau menandai
+berlaku untuk semuanya.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Perbaikan tanpa klik kanan"
+text = """
+Tahan penunjuk di atas kata yang bergaris bawah, atau kliklah, dan
+perbaikannya muncul tepat di bawahnya: saran ejaan, perbaikan tata
+bahasa, dan Abaikan, di teks dan subjek. Klik kanan tetap membuka menu
+lengkap.
+"""

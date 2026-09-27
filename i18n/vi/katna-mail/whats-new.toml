@@ -347,3 +347,21 @@ nút này trượt vào thanh bên trái, nơi chỉ cần để con trỏ trên
 thư mục hiện lại. Góc trên bên trái hiện Katna Mail, và tên sẽ lần lượt
 chuyển thành Lịch, Danh bạ và các ứng dụng khác khi bạn chuyển ứng dụng.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Chọn mọi thư chưa đọc hoặc có gắn dấu sao"
+text = """
+Đã đọc, Chưa đọc, Có gắn dấu sao và Không có dấu sao trong menu Chọn giờ
+đánh dấu chọn mọi cuộc hội thoại khớp trong thư mục, không chỉ những
+cuộc trên màn hình. Một dòng phía trên danh sách cho biết đã chọn bao
+nhiêu, và thao tác lưu trữ, xóa, di chuyển hay đánh dấu áp dụng cho tất
+cả.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Sửa lỗi không cần nhấp chuột phải"
+text = """
+Để con trỏ trên một từ bị gạch chân, hoặc nhấp vào nó, và các gợi ý sửa
+hiện ngay bên dưới: gợi ý chính tả, sửa ngữ pháp và Bỏ qua, trong nội
+dung và tiêu đề. Nhấp chuột phải vẫn mở menu đầy đủ.
+"""

@@ -369,3 +369,22 @@ amafolda futhi. Phezulu ngakwesokunxele kubonisa i-Katna Mail, futhi
 igama lishintshela ku-Ikhalenda, ku-Oxhumana nabo nakwezinye njengoba
 ushintsha ama-app.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Khetha yonke imeyili engafundiwe noma enenkanyezi"
+text = """
+Okufundiwe, Okungafundiwe, Okunenkanyezi kanye no-Okungenankanyezi
+kumenyu ethi Khetha manje kumaka yonke ingxoxo efanayo kufolda, hhayi
+nje lezo ezisesikrinini. Umugqa ongaphezu kohlu usho ukuthi zingaki
+ezikhethiwe, futhi ukufaka kungobo yomlando, ukususa, ukuhambisa noma
+ukumaka kusebenza kuzo zonke.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Ukulungiswa ngaphandle kokuchofoza ngakwesokudla"
+text = """
+Beka isikhombi egameni elinomugqa ongezansi, noma ulichofoze, futhi
+ukulungiswa kwalo kuvela ngaphansi kwalo khona lapho: iziphakamiso
+zokupela, ukulungiswa kohlelo lolimi kanye no-Ziba, embhalweni
+nasesihlokweni. Ukuchofoza ngakwesokudla kusavula imenyu egcwele.
+"""

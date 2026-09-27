@@ -362,3 +362,21 @@ verweilen, erscheinen die Ordner wieder. Oben links steht Katna Mail,
 und der Name rollt zu Kalender, Kontakte und den anderen, wenn Sie die
 App wechseln.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Alle ungelesenen oder markierten Mails auswählen"
+text = """
+Gelesen, Ungelesen, Markiert und Nicht markiert im Menü Auswählen haken
+jetzt jede passende Unterhaltung im Ordner an, nicht nur die auf dem
+Bildschirm. Eine Zeile über der Liste sagt, wie viele ausgewählt sind,
+und Archivieren, Löschen, Verschieben oder Markieren wirkt auf alle.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Korrekturen ohne Rechtsklick"
+text = """
+Verweilen Sie mit dem Mauszeiger auf einem unterstrichenen Wort oder
+klicken Sie darauf, und seine Korrekturen erscheinen direkt darunter:
+Rechtschreibvorschläge, Grammatikkorrekturen und Ignorieren, im Text und
+im Betreff. Ein Rechtsklick öffnet weiterhin das ganze Menü.
+"""

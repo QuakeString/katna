@@ -345,3 +345,20 @@ ekpe, ebe idowe ntụnye n'elu ya na-egosi folda ọzọ. N'elu aka ekpe
 na-egosi Katna Mail, aha ahụ na-agbanwekwa gaa Kalịnda, Kọntaktị na ndị
 ọzọ ka ị na-agbanwe ngwa.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Họrọ ozi niile a gụghị ma ọ bụ nwere kpakpando"
+text = """
+Agụrụ, A gụghị, Nwere kpakpando na Enweghị kpakpando na menu Họrọ na-aka
+akara ugbu a na mkparịta ụka ọ bụla dabara na folda, ọ bụghị naanị ndị
+nọ na ihuenyo. Otu ahịrị dị n'elu ndepụta na-ekwu ole a họọrọ, na
+ichekwa, ihichapụ, ibugharịa ma ọ bụ ịka akara na-arụ ọrụ na ha niile.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Mmezi na-enweghị ịpị aka nri"
+text = """
+Dowe ntụnye n'elu okwu nwere ahịrị n'okpuru, ma ọ bụ pịa ya, mmezi ya
+ga-apụta n'okpuru ya ozugbo: aro nsụpe, mmezi ụtọasụsụ na Leghara ya
+anya, n'ederede na n'isiokwu. Ịpị aka nri ka na-emepe menu zuru ezu.
+"""

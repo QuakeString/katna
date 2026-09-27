@@ -352,3 +352,21 @@ aan die linkerkant, waar jy net met die wyser daarop hoef te rus om die
 vouers weer te sien. Links bo staan Katna Mail, en die naam rol na
 Kalender, Kontakte en die res soos jy tussen programme wissel.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Kies elke ongelese of gesterde e-pos"
+text = """
+Gelees, Ongelees, Gester en Ongester in die Kies-kieslys merk nou elke
+gesprek in die vouer wat pas, nie net dié op die skerm nie. 'n Reël bo
+die lys sê hoeveel gekies is, en argiveer, uitvee, skuif of merk werk op
+almal.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Regstellings sonder 'n regsklik"
+text = """
+Laat die wyser op 'n onderstreepte woord rus, of klik daarop, en sy
+regstellings verskyn net daaronder: spelvoorstelle,
+grammatikaregstellings en Ignoreer, in die teks en die onderwerp.
+Regsklik maak steeds die volle kieslys oop.
+"""

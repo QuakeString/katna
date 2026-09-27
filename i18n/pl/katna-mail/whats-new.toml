@@ -355,3 +355,22 @@ wsunie się na pasek po lewej, gdzie przytrzymanie na nim wskaźnika znów
 pokaże foldery. W lewym górnym rogu widać Katna Mail, a nazwa przewija
 się na Kalendarz, Kontakty i pozostałe, gdy przełączasz aplikacje.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Zaznacz całą nieprzeczytaną lub oznaczoną gwiazdką pocztę"
+text = """
+Przeczytane, Nieprzeczytane, Oznaczone gwiazdką i Bez gwiazdki w menu
+Zaznacz zaznaczają teraz każdą pasującą rozmowę w folderze, nie tylko te
+widoczne na ekranie. Wiersz nad listą mówi, ile jest zaznaczonych, a
+archiwizowanie, usuwanie, przenoszenie czy oznaczanie działa na
+wszystkie.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Poprawki bez prawego kliknięcia"
+text = """
+Przytrzymaj wskaźnik na podkreślonym słowie albo je kliknij, a jego
+poprawki pojawią się tuż pod nim: podpowiedzi pisowni, poprawki
+gramatyczne i Ignoruj, w treści i w temacie. Prawy przycisk nadal
+otwiera pełne menu.
+"""
