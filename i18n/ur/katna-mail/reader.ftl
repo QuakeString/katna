@@ -81,9 +81,16 @@ tracking-opened = { $who } نے اسے { $count ->
     [one] ایک بار
    *[other] { $count } بار
 } کھولا، آخری بار { $when }
-tracking-opened-clicked = { $who } نے اسے کھولا اور لنک { $count ->
+tracking-opens-clicks = { $who } نے اسے { $opens ->
     [one] ایک بار
-   *[other] { $count } بار
+   *[other] { $opens } بار
+} کھولا اور لنک { $clicks ->
+    [one] ایک بار
+   *[other] { $clicks } بار
+} کھولا، آخری بار { $when }
+tracking-clicked = { $who } نے لنک { $clicks ->
+    [one] ایک بار
+   *[other] { $clicks } بار
 } کھولا، آخری بار { $when }
 tracking-maybe-opened = { $who } نے شاید اسے کھولا ہو (Apple Mail پرائیویسی کے لیے تصاویر لوڈ کرتا ہے)
 tracking-not-opened = { $who } نے ابھی اسے نہیں کھولا

@@ -85,13 +85,28 @@ tracking-opened = فتحها { $who } { $count ->
     [many] { $count } مرة
    *[other] { $count } مرة
 }، آخرها { $when }
-tracking-opened-clicked = فتحها { $who } وتابع رابطًا { $count ->
-    [zero] { $count } مرة
+tracking-opens-clicks = فتحها { $who } { $opens ->
+    [zero] { $opens } مرة
     [one] مرة واحدة
     [two] مرتين
-    [few] { $count } مرات
-    [many] { $count } مرة
-   *[other] { $count } مرة
+    [few] { $opens } مرات
+    [many] { $opens } مرة
+   *[other] { $opens } مرة
+} وتابع رابطًا { $clicks ->
+    [zero] { $clicks } مرة
+    [one] مرة واحدة
+    [two] مرتين
+    [few] { $clicks } مرات
+    [many] { $clicks } مرة
+   *[other] { $clicks } مرة
+}، آخرها { $when }
+tracking-clicked = تابع { $who } رابطًا { $clicks ->
+    [zero] { $clicks } مرة
+    [one] مرة واحدة
+    [two] مرتين
+    [few] { $clicks } مرات
+    [many] { $clicks } مرة
+   *[other] { $clicks } مرة
 }، آخرها { $when }
 tracking-maybe-opened = ربما فتحها { $who } (يحمّل Apple Mail الصور حفاظًا على الخصوصية)
 tracking-not-opened = لم يفتحها { $who } بعد

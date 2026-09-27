@@ -81,9 +81,16 @@ tracking-opened = { $who } het dit { $count ->
     [one] een keer
    *[other] { $count } keer
 } oopgemaak, laas { $when }
-tracking-opened-clicked = { $who } het dit oopgemaak en { $count ->
+tracking-opens-clicks = { $who } het dit { $opens ->
     [one] een keer
-   *[other] { $count } keer
+   *[other] { $opens } keer
+} oopgemaak en { $clicks ->
+    [one] een keer
+   *[other] { $clicks } keer
+} 'n skakel gevolg, laas { $when }
+tracking-clicked = { $who } het { $clicks ->
+    [one] een keer
+   *[other] { $clicks } keer
 } 'n skakel gevolg, laas { $when }
 tracking-maybe-opened = { $who } het dit dalk oopgemaak (Apple Mail laai prente vir privaatheid)
 tracking-not-opened = { $who } het dit nog nie oopgemaak nie

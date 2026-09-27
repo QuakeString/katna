@@ -81,9 +81,16 @@ tracking-opened = { $who } iletiyi { $count ->
     [one] bir kez
    *[other] { $count } kez
 } açtı, son olarak { $when }
-tracking-opened-clicked = { $who } iletiyi açıp bir bağlantıyı { $count ->
+tracking-opens-clicks = { $who } iletiyi { $opens ->
     [one] bir kez
-   *[other] { $count } kez
+   *[other] { $opens } kez
+} açtı ve bir bağlantıyı { $clicks ->
+    [one] bir kez
+   *[other] { $clicks } kez
+} izledi, son olarak { $when }
+tracking-clicked = { $who } bir bağlantıyı { $clicks ->
+    [one] bir kez
+   *[other] { $clicks } kez
 } izledi, son olarak { $when }
 tracking-maybe-opened = { $who } iletiyi açmış olabilir (Apple Mail gizlilik için resimleri yükler)
 tracking-not-opened = { $who } iletiyi henüz açmadı

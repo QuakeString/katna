@@ -81,10 +81,17 @@ tracking-opened = { $who }એ તેને { $count ->
     [one] એક વાર
    *[other] { $count } વાર
 } ખોલ્યો, છેલ્લે { $when }
-tracking-opened-clicked = { $who }એ તેને ખોલીને લિંક { $count ->
+tracking-opens-clicks = { $who }એ તેને { $opens ->
     [one] એક વાર
-   *[other] { $count } વાર
-} ખોલી, છેલ્લે { $when }
+   *[other] { $opens } વાર
+} ખોલ્યો અને { $clicks ->
+    [one] એક વાર
+   *[other] { $clicks } વાર
+} લિંક ખોલી, છેલ્લે { $when }
+tracking-clicked = { $who }એ { $clicks ->
+    [one] એક વાર
+   *[other] { $clicks } વાર
+} લિંક ખોલી, છેલ્લે { $when }
 tracking-maybe-opened = { $who }એ કદાચ તેને ખોલ્યો હશે (Apple Mail ગોપનીયતા માટે છબીઓ લોડ કરે છે)
 tracking-not-opened = { $who }એ હજી તેને ખોલ્યો નથી
 tracking-receipt = { $who }એ વાંચ્યાની રસીદ મોકલી

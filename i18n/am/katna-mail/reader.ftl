@@ -81,10 +81,17 @@ tracking-opened = { $who } { $count ->
     [one] አንድ ጊዜ
    *[other] { $count } ጊዜ
 } ከፍቶታል፣ መጨረሻ { $when }
-tracking-opened-clicked = { $who } ከፍቶ አገናኝ ተከትሏል { $count ->
+tracking-opens-clicks = { $who } { $opens ->
     [one] አንድ ጊዜ
-   *[other] { $count } ጊዜ
-}፣ መጨረሻ { $when }
+   *[other] { $opens } ጊዜ
+} ከፍቶታል፣ አገናኝም { $clicks ->
+    [one] አንድ ጊዜ
+   *[other] { $clicks } ጊዜ
+} ተከትሏል፣ መጨረሻ { $when }
+tracking-clicked = { $who } አገናኝ { $clicks ->
+    [one] አንድ ጊዜ
+   *[other] { $clicks } ጊዜ
+} ተከትሏል፣ መጨረሻ { $when }
 tracking-maybe-opened = { $who } ከፍቶት ሊሆን ይችላል (Apple Mail ለግላዊነት ሲባል ምስሎችን ይጭናል)
 tracking-not-opened = { $who } እስካሁን አልከፈተውም
 tracking-receipt = { $who } የንባብ ማረጋገጫ ልኳል

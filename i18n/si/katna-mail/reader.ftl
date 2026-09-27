@@ -81,9 +81,16 @@ tracking-opened = { $who } එය { $count ->
     [one] එක් වරක්
    *[other] වාර { $count }ක්
 } විවෘත කළා, අවසන් වරට { $when }
-tracking-opened-clicked = { $who } එය විවෘත කර සබැඳියක් { $count ->
+tracking-opens-clicks = { $who } එය { $opens ->
     [one] එක් වරක්
-   *[other] වාර { $count }ක්
+   *[other] වාර { $opens }ක්
+} විවෘත කර සබැඳියක් { $clicks ->
+    [one] එක් වරක්
+   *[other] වාර { $clicks }ක්
+} විවෘත කළා, අවසන් වරට { $when }
+tracking-clicked = { $who } සබැඳියක් { $clicks ->
+    [one] එක් වරක්
+   *[other] වාර { $clicks }ක්
 } විවෘත කළා, අවසන් වරට { $when }
 tracking-maybe-opened = { $who } එය විවෘත කළා විය හැක (Apple Mail පෞද්ගලිකත්වය සඳහා පින්තූර පූරණය කරයි)
 tracking-not-opened = { $who } තවම එය විවෘත කර නැත

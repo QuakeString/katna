@@ -81,9 +81,16 @@ tracking-opened = { $who } ଏହାକୁ { $count ->
     [one] ଥରେ
    *[other] { $count } ଥର
 } ଖୋଲିଛନ୍ତି, ଶେଷ ଥର { $when }
-tracking-opened-clicked = { $who } ଏହାକୁ ଖୋଲି ଲିଙ୍କ { $count ->
+tracking-opens-clicks = { $who } ଏହାକୁ { $opens ->
     [one] ଥରେ
-   *[other] { $count } ଥର
+   *[other] { $opens } ଥର
+} ଖୋଲିଛନ୍ତି ଓ ଲିଙ୍କ { $clicks ->
+    [one] ଥରେ
+   *[other] { $clicks } ଥର
+} ଖୋଲିଛନ୍ତି, ଶେଷ ଥର { $when }
+tracking-clicked = { $who } ଲିଙ୍କ { $clicks ->
+    [one] ଥରେ
+   *[other] { $clicks } ଥର
 } ଖୋଲିଛନ୍ତି, ଶେଷ ଥର { $when }
 tracking-maybe-opened = { $who } ହୁଏତ ଏହାକୁ ଖୋଲିଥିବେ (Apple Mail ଗୋପନୀୟତା ପାଇଁ ଛବି ଲୋଡ କରେ)
 tracking-not-opened = { $who } ଏପର୍ଯ୍ୟନ୍ତ ଏହାକୁ ଖୋଲିନାହାନ୍ତି

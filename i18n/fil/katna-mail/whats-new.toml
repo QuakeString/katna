@@ -688,7 +688,7 @@ account).
 ["2026-09-27-2042-activity"]
 title = "Aktibidad ng naka-track na mail"
 text = """
-Ipinapakita ng Aktibidad sa ilalim ng Naipadala kung ilan sa mga
+Ipinapakita ng Aktibidad sa tabi ng search box kung ilan sa mga
 naka-track mong mensahe ang nabuksan at kung gaano kadalas sinundan ang
 mga link nila, kasama ang mga subject line mo na nakaayos ayon sa kung
 gaano kadalas binubuksan ang mga ito.
@@ -701,4 +701,27 @@ I-type ang k o m, isang space, at pagkatapos ang hahanapin sa KRunner o sa
 GNOME search para makuha ang parehong resulta ng search box ng Katna Mail,
 gaya ng “k budget”. Pumili ng sarili mong mga salita sa Mga setting sa
 ilalim ng Pangkalahatan.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Aktibidad sa tabi ng search box"
+text = """
+Binibilang ng button na Aktibidad sa tabi ng search box ang mga bagong
+pagbukas at pag-click sa naka-track mong mail, at inililista kung sino ang
+nagbukas ng ano at aling mga link ang sinundan nila; i-click ang isa para
+buksan ang mensaheng iyon. Ipinapakita ng Mga detalye ang open rate at
+click rate, ang mga pagbukas bawat araw at ang pinakamahuhusay mong
+subject line para sa huling 7 o 30 araw, lahat ng panahon o mga petsang
+pipiliin mo. Ipinapakita na ngayon ng naipadalang mensahe kung ilang
+beses ito binuksan ng bawat tao at sinundan ang isang link.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Mga insight sa mailbox"
+text = """
+Ipinapakita na rin ngayon ng Aktibidad > Mga detalye kung gaano karaming
+mail ang ipinadala at natanggap mo sa panahong iyon, kung gaano kadalas at
+kabilis sumasagot ka at ang iba, ang mga taong pinakamadalas mong
+sinusulatan, at kung anong mga araw at oras dumarating ang mail mo.
+Binibilang ito sa computer mo mula sa mail na nasa Katna na.
 """

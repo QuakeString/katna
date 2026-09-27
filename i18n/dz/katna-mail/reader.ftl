@@ -80,8 +80,13 @@ security-signature-error = མིང་རྟགས་ཞིབ་དཔྱད�
 tracking-opened = { $who } གིས་ འདི་ { $count ->
    *[other] ཚར་ { $count }
 } ཁ་ཕྱེ་ཡི། མཇུག་མཐའ་ { $when }
-tracking-opened-clicked = { $who } གིས་ འདི་ཁ་ཕྱེ་སྟེ་ འབྲེལ་མཐུད་ { $count ->
-   *[other] ཚར་ { $count }
+tracking-opens-clicks = { $who } གིས་ འདི་ { $opens ->
+   *[other] ཚར་ { $opens }
+} ཁ་ཕྱེ་སྟེ་ འབྲེལ་མཐུད་ཅིག་ { $clicks ->
+   *[other] ཚར་ { $clicks }
+} ཁ་ཕྱེ་ཡི། མཇུག་མཐའ་ { $when }
+tracking-clicked = { $who } གིས་ འབྲེལ་མཐུད་ཅིག་ { $clicks ->
+   *[other] ཚར་ { $clicks }
 } ཁ་ཕྱེ་ཡི། མཇུག་མཐའ་ { $when }
 tracking-maybe-opened = { $who } གིས་ འདི་ཁ་ཕྱེ་ཡོདཔ་འོང་ (Apple Mail གིས་ སྒེར་དོན་གྱི་དོན་ལུ་ པར་ཚུ་མངོན་གསལ་འབདཝ་ཨིན)
 tracking-not-opened = { $who } གིས་ ད་ཚུན་ འདི་ཁ་མ་ཕྱེ་བས

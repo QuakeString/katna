@@ -668,9 +668,10 @@ Katna).
 ["2026-09-27-2042-activity"]
 title = "Shughuli ya barua zinazofuatiliwa"
 text = """
-Shughuli chini ya Zilizotumwa inaonyesha ni ujumbe wako mingapi
-unaofuatiliwa imefunguliwa na mara ngapi viungo vyake vimefuatwa, pamoja
-na mada zako zikiwa zimepangwa kwa jinsi zinavyofunguliwa mara nyingi.
+Shughuli karibu na kisanduku cha utafutaji inaonyesha ni ujumbe wako
+mingapi unaofuatiliwa imefunguliwa na mara ngapi viungo vyake
+vimefuatwa, pamoja na mada zako zikiwa zimepangwa kwa jinsi
+zinavyofunguliwa mara nyingi.
 """
 
 ["2026-09-27-2204-search-trigger-words"]
@@ -680,4 +681,26 @@ Andika k au m, nafasi, kisha unachotafuta katika KRunner au utafutaji wa
 GNOME ili upate matokeo yale yale ya kisanduku cha utafutaji cha
 Katna Mail, kama “k budget”. Chagua maneno yako mwenyewe katika
 Mipangilio > Jumla.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Shughuli karibu na kisanduku cha utafutaji"
+text = """
+Kitufe cha Shughuli karibu na kisanduku cha utafutaji kinahesabu
+kufunguliwa na kubofya kwa mara mpya kwa barua zako zinazofuatiliwa na
+kuorodhesha nani alifungua nini na viungo gani alifuata; bofya kimoja
+kufungua ujumbe huo. Maelezo inaonyesha viwango vya kufunguliwa na
+kubofya, kufunguliwa kwa kila siku na mada zako bora kwa siku 7 au 30
+zilizopita, wakati wote au tarehe unazochagua. Ujumbe uliotumwa sasa
+unaonyesha mara ngapi kila mtu aliufungua na kufuata kiungo.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Maarifa kuhusu kisanduku cha barua"
+text = """
+Shughuli > Maelezo sasa pia inaonyesha kiasi cha barua ulizotuma na
+kupokea katika kipindi hicho, mara ngapi wewe na wengine mnajibu na kwa
+kasi gani, watu unaowaandikia zaidi, na siku na saa gani barua zako
+zinafika. Inahesabiwa kwenye kompyuta yako kutoka kwa barua ambazo
+Katna tayari inazo.
 """

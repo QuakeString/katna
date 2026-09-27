@@ -649,9 +649,9 @@ het 'n Katna-rekening nodig (Instellings > Katna-rekening).
 ["2026-09-27-2042-activity"]
 title = "Aktiwiteit vir nagespoorde e-pos"
 text = """
-Aktiwiteit onder Gestuur wys hoeveel van jou nagespoorde boodskappe
-oopgemaak is en hoe dikwels hul skakels gevolg is, met jou onderwerpreëls
-gerangskik volgens hoe dikwels hulle oopgemaak word.
+Aktiwiteit langs die soekkassie wys hoeveel van jou nagespoorde
+boodskappe oopgemaak is en hoe dikwels hul skakels gevolg is, met jou
+onderwerpreëls gerangskik volgens hoe dikwels hulle oopgemaak word.
 """
 
 ["2026-09-27-2204-search-trigger-words"]
@@ -660,4 +660,25 @@ text = """
 Tik k of m, 'n spasie en dan wat jy wil vind in KRunner of die
 GNOME-soektog om dieselfde resultate as Katna Mail se soekkassie te kry,
 soos “k budget”. Kies jou eie woorde in Instellings onder Algemeen.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Aktiwiteit langs die soekkassie"
+text = """
+Die Aktiwiteit-knoppie langs die soekkassie tel nuwe oopmaak en klikke van
+jou nagespoorde e-pos en wys wie wat oopgemaak het en watter skakels hulle
+gevolg het; klik op een om daardie boodskap oop te maak. Besonderhede wys
+die oopmaak- en klikkoerse, oopmaak per dag en jou beste onderwerpreëls vir
+die laaste 7 of 30 dae, alle tye of datums wat jy kies. 'n Gestuurde
+boodskap wys nou hoeveel keer elke persoon dit oopgemaak en 'n skakel
+gevolg het.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Insigte in jou posbus"
+text = """
+Aktiwiteit > Besonderhede wys nou ook hoeveel e-pos jy in die tydperk
+gestuur en ontvang het, hoe dikwels en hoe vinnig jy en ander antwoord, die
+mense met wie jy die meeste skryf, en op watter dae en ure jou e-pos
+aankom. Dit word op jou rekenaar getel uit die e-pos wat Katna reeds het.
 """

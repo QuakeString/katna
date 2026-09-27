@@ -653,9 +653,9 @@ tuntun, títọpa sì nílò àkáǹtì Katna (Ètò > Àkáǹtì Katna).
 ["2026-09-27-2042-activity"]
 title = "Ìgbòkègbodò fún lẹ́tà tí a ń tọpa"
 text = """
-Ìgbòkègbodò lábẹ́ Tí a fi ránṣẹ́ máa ń fi iye ìfiránṣẹ́ rẹ tí a ń tọpa tí
-a ti ṣí hàn, àti bí a ṣe ń tẹ̀lé àwọn ìjápọ̀ wọn tó, pẹ̀lú àwọn àkọlé rẹ
-tí a tò lẹ́sẹẹsẹ gẹ́gẹ́ bí a ṣe ń ṣí wọn tó.
+Ìgbòkègbodò lẹ́gbẹ̀ẹ́ àpótí àwárí máa ń fi iye ìfiránṣẹ́ rẹ tí a ń tọpa
+tí a ti ṣí hàn, àti bí a ṣe ń tẹ̀lé àwọn ìjápọ̀ wọn tó, pẹ̀lú àwọn àkọlé
+rẹ tí a tò lẹ́sẹẹsẹ gẹ́gẹ́ bí a ṣe ń ṣí wọn tó.
 """
 
 ["2026-09-27-2204-search-trigger-words"]
@@ -664,4 +664,24 @@ text = """
 Tẹ k tàbí m, àlàfo kan, lẹ́yìn náà ohun tí o fẹ́ wá nínú KRunner tàbí
 àwárí GNOME láti rí àbájáde kan náà bí ti àpótí àwárí Katna Mail, bí
 àpẹẹrẹ “k budget”. Yan àwọn ọ̀rọ̀ tìrẹ nínú Ètò > Gbogbogbò.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Ìgbòkègbodò lẹ́gbẹ̀ẹ́ àpótí àwárí"
+text = """
+Bọ́tìnnì Ìgbòkègbodò lẹ́gbẹ̀ẹ́ àpótí àwárí máa ń ka ṣíṣí àti títẹ̀ tuntun
+lórí lẹ́tà rẹ tí a ń tọpa, ó sì máa ń fi ẹni tó ṣí kí ni àti àwọn ìjápọ̀
+tí wọ́n tẹ̀lé hàn; tẹ ọ̀kan láti ṣí ìfiránṣẹ́ yẹn. Àlàyé máa ń fi ìwọ̀n
+ṣíṣí àti títẹ̀, ṣíṣí lójoojúmọ́ àti àwọn àkọlé rẹ tó dára jù hàn fún ọjọ́
+7 tàbí 30 sẹ́yìn, gbogbo ìgbà tàbí àwọn ọjọ́ tí o yàn. Ìfiránṣẹ́ tí a fi
+ránṣẹ́ ti ń fi iye ìgbà tí ẹnìkọ̀ọ̀kan ṣí i àti tẹ̀lé ìjápọ̀ hàn báyìí.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Òye nípa àpótí lẹ́tà"
+text = """
+Ìgbòkègbodò > Àlàyé tún ń fi iye lẹ́tà tí o fi ránṣẹ́ àti tí o gbà ní
+àkókò náà hàn báyìí, bí ìwọ àti àwọn míì ṣe ń dáhùn lóòrèkóòrè àti bí ó
+ṣe yára tó, àwọn tí o ń kọ̀wé sí jù, àti àwọn ọjọ́ àti wákàtí tí lẹ́tà rẹ
+máa ń dé. A ń kà á lórí kọ̀ǹpútà rẹ láti inú lẹ́tà tí Katna ti ní tẹ́lẹ̀.
 """

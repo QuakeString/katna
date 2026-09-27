@@ -692,7 +692,7 @@ I-akhawunti ye-Katna).
 ["2026-09-27-2042-activity"]
 title = "Umsebenzi wemeyili elandelelwayo"
 text = """
-Umsebenzi ngaphansi kokuthi Okuthunyelwe ubonisa ukuthi mingaki
+Umsebenzi eduze nebhokisi lokusesha ubonisa ukuthi mingaki
 imilayezo yakho elandelelwayo evuliwe nokuthi izixhumanisi zayo
 zilandelwe kangaki, izihloko zakho zihlelwe ngokuthi zivulwa kangaki.
 """
@@ -704,4 +704,27 @@ Thayipha k noma m, isikhala, bese uthayipha okufunayo ku-KRunner noma
 ekusesheni kwe-GNOME ukuze uthole imiphumela efanayo nebhokisi lokusesha
 le-Katna Mail, njengokuthi “k budget”. Khetha awakho amagama
 ku-Izilungiselelo > Okuvamile.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Umsebenzi eduze nebhokisi lokusesha"
+text = """
+Inkinobho ethi Umsebenzi eduze nebhokisi lokusesha ibala ukuvulwa
+nokuchofozwa okusha kwemeyili yakho elandelelwayo futhi ibonise ukuthi
+ubani ovule ini nokuthi yiziphi izixhumanisi azilandele; chofoza okukodwa
+ukuze uvule lowo mlayezo. Imininingwane ibonisa amazinga okuvulwa
+nokuchofozwa, ukuvulwa ngosuku nezihloko zakho ezihamba phambili
+ezinsukwini ezi-7 noma ezingu-30 ezedlule, sonke isikhathi noma izinsuku
+ozikhethayo. Umlayezo othunyelwe manje ubonisa ukuthi umuntu ngamunye
+uwuvule kangaki futhi walandela isixhumanisi kangaki.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Ukuqonda ibhokisi lemeyili"
+text = """
+Umsebenzi > Imininingwane manje ibonisa nokuthi uthumele futhi wamukela
+imeyili engakanani kuleso sikhathi, ukuthi wena nabanye niphendula
+kangaki futhi ngokushesha kangakanani, abantu obabhalela kakhulu,
+nokuthi imeyili yakho ifika ngaziphi izinsuku nangamaphi amahora.
+Kubalwa kukhompyutha yakho kusuka kumeyili i-Katna esenayo kakade.
 """

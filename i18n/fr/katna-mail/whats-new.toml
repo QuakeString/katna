@@ -686,9 +686,9 @@ Compte Katna).
 ["2026-09-27-2042-activity"]
 title = "Activité des messages suivis"
 text = """
-Activité, sous Messages envoyés, montre combien de vos messages suivis
-ont été ouverts et combien de fois leurs liens ont été suivis, avec vos
-objets classés selon leur taux d’ouverture.
+Activité, à côté du champ de recherche, montre combien de vos messages
+suivis ont été ouverts et combien de fois leurs liens ont été suivis,
+avec vos objets classés selon leur taux d’ouverture.
 """
 
 ["2026-09-27-2204-search-trigger-words"]
@@ -698,4 +698,27 @@ Tapez k ou m, une espace, puis ce que vous cherchez dans KRunner ou la
 recherche de GNOME pour obtenir les mêmes résultats que dans le champ de
 recherche de Katna Mail, par exemple « k budget ». Choisissez vos propres
 mots dans Paramètres, sous Général.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Activité à côté du champ de recherche"
+text = """
+Le bouton Activité, à côté du champ de recherche, compte les nouvelles
+ouvertures et les nouveaux clics de vos messages suivis et indique qui a
+ouvert quoi et quels liens ont été suivis ; cliquez sur un élément pour
+ouvrir ce message. Détails montre les taux d’ouverture et de clics, les
+ouvertures par jour et vos meilleurs objets sur les 7 ou 30 derniers
+jours, depuis le début ou entre les dates de votre choix. Un message
+envoyé indique désormais combien de fois chaque personne l’a ouvert et a
+suivi un lien.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Statistiques de votre boîte aux lettres"
+text = """
+Activité > Détails montre aussi désormais combien de messages vous avez
+envoyés et reçus sur la période, à quelle fréquence et à quelle vitesse
+vous et les autres répondez, les personnes avec qui vous échangez le plus
+et quels jours et à quelles heures arrivent vos messages. Le calcul se
+fait sur votre ordinateur, à partir des messages que Katna a déjà.
 """

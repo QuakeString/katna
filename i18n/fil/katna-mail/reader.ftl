@@ -81,9 +81,16 @@ tracking-opened = Binuksan ito ni { $who } nang { $count ->
     [one] isang beses
    *[other] { $count } beses
 }, huli noong { $when }
-tracking-opened-clicked = Binuksan ito ni { $who } at sinundan ang isang link nang { $count ->
+tracking-opens-clicks = Binuksan ito ni { $who } nang { $opens ->
     [one] isang beses
-   *[other] { $count } beses
+   *[other] { $opens } beses
+} at sinundan ang isang link nang { $clicks ->
+    [one] isang beses
+   *[other] { $clicks } beses
+}, huli noong { $when }
+tracking-clicked = Sinundan ni { $who } ang isang link nang { $clicks ->
+    [one] isang beses
+   *[other] { $clicks } beses
 }, huli noong { $when }
 tracking-maybe-opened = Maaaring binuksan ito ni { $who } (naglo-load ng mga larawan ang Apple Mail para sa privacy)
 tracking-not-opened = Hindi pa ito binubuksan ni { $who }
