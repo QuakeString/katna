@@ -12,3 +12,13 @@ grammar-add = Add “{ $words }”
 # A fix that removes the marked words.
 grammar-remove = Remove “{ $words }”
 grammar-ignore = Ignore
+
+## Send checks (asked before a message goes out)
+
+send-check-attachment-title = Did you mean to attach files?
+send-check-attachment-text = You wrote about an attachment, but nothing is attached.
+send-check-attach = Attach a file
+send-check-subject-title = Send without a subject?
+send-check-subject-text = This message has no subject.
+send-check-add-subject = Add subject
+send-check-send-anyway = Send anyway

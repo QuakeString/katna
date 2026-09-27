@@ -1412,6 +1412,15 @@ Gemini or confidential mode):
   the conversation (`sending.send_and_archive`); the menu beside Send
   offers the other way. The archive happens once the message is queued,
   and Undo on "Sent and archived" brings the conversation back as well.
+- **Send checks.** Before any send (Send, Send and archive, schedule
+  send) the compose window asks, as webmail does
+  (`window/compose/checks.rs`): when the subject or the user's own words
+  (not the quoted or forwarded message, not the signature) speak of an
+  attachment ("attached", "attachment", "enclosed", "PFA") and no file or
+  picture is attached, "Did you mean to attach files?" with Attach a
+  file or Send anyway; then, for an empty subject, "Send without a
+  subject?" with Add subject (the cursor goes to Subject) or Send
+  anyway. English words only for now.
 - **Keyboard shortcuts.** Every action has one (`window/keymap.rs`), with
   Gmail's keys as defaults: j/k, o, u, c, r, a, f, e, #, !, v, s, x,
   Shift+I/U, `* a`, `* n`, z, `g i`/`g s`/`g t`/`g d`/`g a`, /, ?, and Ctrl
