@@ -20,7 +20,8 @@ quick-density-default = Default
 quick-density-compact = Compact
 # Section heading: light or dark colors.
 quick-theme = Theme
-quick-theme-system = Same as the desktop
+# A theme choice: light or dark, following the desktop.
+quick-theme-system = System
 quick-theme-light = Light
 quick-theme-dark = Dark
 quick-desktop-colors = Desktop colors
