@@ -216,6 +216,48 @@ impl BlobStore {
         Ok(storage.is_some())
     }
 
+    /// Deletes every blob but those in `keep`, in the transaction started
+    /// by [`begin`](Self::begin), and ends it. Returns how many it deleted
+    /// and their size.
+    pub(crate) fn retain(&self, keep: &[BlobHash]) -> Result<(usize, u64)> {
+        let deleted = (|| -> Result<Vec<(Vec<u8>, i64, i64)>> {
+            self.conn
+                .execute_batch("CREATE TEMP TABLE IF NOT EXISTS kept (hash BLOB PRIMARY KEY)")?;
+            self.conn.execute("DELETE FROM temp.kept", [])?;
+            let mut insert = self
+                .conn
+                .prepare_cached("INSERT OR IGNORE INTO temp.kept (hash) VALUES (?1)")?;
+            for hash in keep {
+                insert.execute([hash.as_bytes()])?;
+            }
+            let mut delete = self.conn.prepare(
+                "DELETE FROM blob WHERE hash NOT IN (SELECT hash FROM temp.kept)
+                 RETURNING hash, storage, size",
+            )?;
+            let rows = delete.query_map([], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)))?;
+            Ok(rows.collect::<rusqlite::Result<_>>()?)
+        })();
+        self.end(deleted.is_ok())?;
+        let deleted = deleted?;
+        // The rows are gone first, as in `remove`.
+        let mut bytes = 0u64;
+        for (hash, storage, size) in &deleted {
+            bytes += u64::try_from(*size).unwrap_or(0);
+            let Ok(hash) = <[u8; 32]>::try_from(hash.as_slice()) else {
+                continue;
+            };
+            if *storage == STORAGE_FILE {
+                let path = self.file_path(&BlobHash::from_bytes(hash));
+                match fs::remove_file(&path) {
+                    Ok(()) => {}
+                    Err(err) if err.kind() == io::ErrorKind::NotFound => {}
+                    Err(err) => return Err(Error::io(path, err)),
+                }
+            }
+        }
+        Ok((deleted.len(), bytes))
+    }
+
     /// Returns up to `max_pages` free pages to the filesystem
     /// (`PRAGMA incremental_vacuum`). `None` frees all of them.
     pub fn incremental_vacuum(&self, max_pages: Option<u32>) -> Result<()> {
@@ -331,6 +373,29 @@ mod tests {
         let blobs = store(tmp.path(), Mode::ReadWrite);
         let hash = blobs.put(b"").unwrap();
         assert_eq!(blobs.get(&hash).unwrap().unwrap(), b"");
+    }
+
+    #[test]
+    fn retain_deletes_the_rest_and_their_files() {
+        let tmp = tempfile::tempdir().unwrap();
+        let blobs = store(tmp.path(), Mode::ReadWrite);
+        let large: Vec<u8> = (0..FILE_THRESHOLD + 1).map(|i| (i % 13) as u8).collect();
+        let kept = blobs.put(b"kept").unwrap();
+        let small = blobs.put(b"small").unwrap();
+        let big = blobs.put(&large).unwrap();
+        let path = blobs.file_path(&big);
+        assert!(path.is_file());
+
+        blobs.begin().unwrap();
+        let (deleted, bytes) = blobs.retain(&[kept]).unwrap();
+        assert_eq!(deleted, 2);
+        assert_eq!(bytes, 5 + large.len() as u64);
+        assert!(!path.exists());
+        assert!(!blobs.contains(&small).unwrap());
+        assert_eq!(blobs.get(&kept).unwrap().unwrap(), b"kept");
+        // Again, with nothing left to delete.
+        blobs.begin().unwrap();
+        assert_eq!(blobs.retain(&[kept]).unwrap(), (0, 0));
     }
 
     #[test]

@@ -1715,3 +1715,86 @@ fn downloads_old_mail_when_opened() {
         instance.shutdown().await;
     });
 }
+
+/// Reset cache deletes downloaded mail and sender pictures, keeps the
+/// account, and downloads the mail again.
+#[test]
+#[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
+fn resets_the_cache_on_dev_servers() {
+    let imap_port = port("KATNA_STALWART_IMAPS_PORT", 10993);
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    std::fs::create_dir_all(paths.config_dir()).unwrap();
+    std::fs::write(paths.config_file(), "[sync]\noffline_days = 0\n").unwrap();
+    let pictures = paths.cache_dir().join("pictures");
+    std::fs::create_dir_all(&pictures).unwrap();
+    std::fs::write(pictures.join("katna.test.pic"), "picture").unwrap();
+    smol::block_on(async {
+        let mut other = ImapBackend::connect(
+            &Endpoint::new("127.0.0.1", imap_port, Security::Tls),
+            &Credentials::new("alice@katna.test", "katna-dev"),
+            Tls::insecure_for_local_tests(),
+        )
+        .await
+        .unwrap();
+        let subjects: Vec<String> = (0..2).map(|i| unique(&format!("cache{i}"))).collect();
+        for subject in &subjects {
+            let message = format!(
+                "From: <bob@katna.test>\r\nTo: <alice@katna.test>\r\nSubject: {subject}\r\n\
+                 Message-ID: <{subject}@katna.test>\r\n\r\nKept on the server.\r\n"
+            );
+            other.append("INBOX", message.into_bytes()).await.unwrap();
+        }
+        other.logout().await.unwrap();
+
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let client = bus.connect().await;
+        let pim = PimProxy::new(&client).await.unwrap();
+        let account = imap("127.0.0.1", imap_port, "tls");
+        let id = pim.add_imap_account(&account, "katna-dev").await.unwrap();
+        wait_until_online(&pim, id).await;
+        let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
+        let inbox = reader
+            .folders(katna_core::AccountId(id))
+            .unwrap()
+            .into_iter()
+            .find(|f| f.path == "INBOX")
+            .unwrap();
+        let ours = || -> Vec<_> {
+            reader
+                .messages_in_folder(inbox.id)
+                .unwrap()
+                .into_iter()
+                .filter(|m| subjects.contains(&m.subject))
+                .collect()
+        };
+        let downloaded = || ours().iter().all(|m| m.blob_hash.is_some());
+        within("bodies downloaded", 30, async {
+            while !downloaded() {
+                Timer::after(Duration::from_millis(50)).await;
+            }
+        })
+        .await;
+        let ids: Vec<_> = ours().iter().map(|m| m.id).collect();
+        assert_eq!(ids.len(), 2);
+
+        let (messages, bytes) = pim.reset_cache().await.unwrap();
+        assert!(messages >= 2, "{messages}");
+        assert!(bytes > 0);
+        assert!(!pictures.exists());
+        // The same messages, now without their bodies at first.
+        let after: Vec<_> = ours().iter().map(|m| m.id).collect();
+        assert_eq!(after, ids);
+        assert_eq!(pim.accounts().await.unwrap().len(), 1);
+        within("bodies downloaded again", 30, async {
+            while !downloaded() {
+                Timer::after(Duration::from_millis(50)).await;
+            }
+        })
+        .await;
+
+        assert!(pim.remove_account(id).await.unwrap());
+        instance.shutdown().await;
+    });
+}

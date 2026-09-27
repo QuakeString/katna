@@ -251,6 +251,23 @@ impl SearchIndex {
         }
     }
 
+    /// Empties the index in place, so the next [`update`](Self::update)
+    /// indexes every message again. Unlike [`delete`](Self::delete) it can
+    /// run while apps have the index open: they see it empty, then filling.
+    pub fn clear(&self) -> Result<()> {
+        let mut writer: IndexWriter = self.index.writer_with_num_threads(1, 15_000_000)?;
+        writer.delete_all_documents()?;
+        commit(
+            &mut writer,
+            &IndexState {
+                schema_version: SCHEMA_VERSION,
+                ..IndexState::default()
+            },
+        )?;
+        drop(writer);
+        self.reload()
+    }
+
     /// The directory of the index.
     pub fn dir(&self) -> &Path {
         &self.dir
@@ -749,6 +766,30 @@ mod tests {
         ));
         let index = SearchIndex::open(&dir).unwrap();
         assert_eq!(index.num_docs(), 0);
+        assert_eq!(index.state().unwrap().schema_version, SCHEMA_VERSION);
+    }
+
+    #[test]
+    fn clear_empties_the_index_and_starts_over() {
+        let tmp = tempfile::tempdir().unwrap();
+        let index = SearchIndex::open(&tmp.path().join("index")).unwrap();
+        let mut writer: IndexWriter = index.index.writer_with_num_threads(1, 15_000_000).unwrap();
+        writer
+            .add_document(tantivy::doc!(index.fields.msg_id => 7u64))
+            .unwrap();
+        let done = IndexState {
+            schema_version: SCHEMA_VERSION,
+            change_seq: Some(42),
+            ..IndexState::default()
+        };
+        commit(&mut writer, &done).unwrap();
+        drop(writer);
+        index.reload().unwrap();
+        assert_eq!(index.num_docs(), 1);
+
+        index.clear().unwrap();
+        assert_eq!(index.num_docs(), 0);
+        assert_eq!(index.state().unwrap().change_seq, None);
         assert_eq!(index.state().unwrap().schema_version, SCHEMA_VERSION);
     }
 }

@@ -29,6 +29,7 @@ usage: katnactl status
        katnactl password ACCOUNT
        katnactl remove ACCOUNT
        katnactl sync [ACCOUNT]
+       katnactl reset-cache
        katnactl watch
        katnactl folders ACCOUNT
        katnactl list ACCOUNT [--folder PATH] [--limit N]
@@ -64,6 +65,10 @@ discover   Shows the servers the daemon finds for an address, and where
 password   Changes an account's saved password.
 remove     Deletes an account, its synced mail and its password.
 sync       Syncs every folder now, of one account or of all.
+reset-cache
+           Deletes downloaded mail that is still on the IMAP server, the
+           search index and sender pictures, then syncs to download recent
+           mail again. Accounts, settings and local-only mail stay.
 watch      Prints the daemon's change signals until interrupted.
 folders    The synced folders of an account.
 list       The newest messages in a folder (default: INBOX, 20), with their
@@ -195,6 +200,16 @@ fn run(command: &str, args: &[String]) -> Result<()> {
             };
             with_daemon(|pim| async move { Ok(pim.sync_now(id).await?) })
         }
+        "reset-cache" => no_args(args).and_then(|()| {
+            with_daemon(|pim| async move {
+                let (messages, bytes) = pim.reset_cache().await?;
+                println!(
+                    "Deleted {messages} downloaded messages ({:.1} MB); downloading recent mail again.",
+                    bytes as f64 / 1_000_000.0
+                );
+                Ok(())
+            })
+        }),
         "watch" => no_args(args).and_then(|()| with_daemon(watch)),
         "crashes" => crashes(args),
         "folders" => folders(one_account(args)?),
