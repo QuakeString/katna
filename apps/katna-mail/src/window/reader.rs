@@ -397,7 +397,7 @@ impl MailWindow {
         let phone = self.layout.shape.is_phone();
         // A conversation window has no list beside it to share with.
         let pane = (!self.detached && self.split())
-            .then(|| self.cards_width * self.config.mail.reading_pane_share);
+            .then_some(self.cards_width * self.config.mail.reading_pane_share);
         let narrow = phone || pane.is_some_and(|w| w < 520.0);
         // Print and In new window need 80 px more.
         let roomy = !phone && pane.is_none_or(|w| w >= 600.0);
