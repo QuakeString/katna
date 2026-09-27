@@ -54,12 +54,18 @@ pub enum WindowFrame {
     Katna,
 }
 
-/// First-run help in Katna Mail.
+/// First-run help in Katna Mail, and What's new after an update.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Onboarding {
     /// The welcome and the offer of a tour of the window have been seen.
     pub done: bool,
+    /// The newest What's new highlight shown, or offered by the first
+    /// start. `None` in files written before What's new existed.
+    pub whats_new_seen: Option<u32>,
+    /// The version of Katna Mail that started last, as its package names
+    /// it, for the link to the changes since.
+    pub last_version: Option<String>,
 }
 
 /// Desktop notifications from `katna-daemon` (`docs/ARCHITECTURE.md` §15.1).
@@ -752,6 +758,19 @@ mod tests {
         assert!(!Config::default().onboarding.done);
         let config = Config::parse("[onboarding]\ndone = true\n").unwrap();
         assert!(config.onboarding.done);
+        assert_eq!(config.onboarding.whats_new_seen, None);
+    }
+
+    #[test]
+    fn whats_new_state_round_trips() {
+        let mut config = Config::default();
+        config.onboarding.whats_new_seen = Some(3);
+        config.onboarding.last_version = Some("0.0.0.r90.gabc1234".to_owned());
+        let text = toml::to_string_pretty(&config).unwrap();
+        assert_eq!(Config::parse(&text).unwrap(), config);
+        // Unset values stay out of the file.
+        let text = toml::to_string_pretty(&Config::default()).unwrap();
+        assert!(!text.contains("whats_new_seen"));
     }
 
     #[test]

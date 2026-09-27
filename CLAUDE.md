@@ -48,3 +48,6 @@ The toolchain is always the latest stable Rust (`rust-toolchain.toml`).
 - Keep binary sizes within `ci/size-budgets.txt`.
 - Commit messages: `area: summary` (for example `search: add date filters`).
 - Update `docs/` when a design decision changes.
+- A change people will notice in Katna Mail appends a highlight to
+  `apps/katna-mail/src/whats_new.rs` (next id; an animated WebP only for a
+  major feature), so What's new shows it after the update.

@@ -1343,6 +1343,28 @@ Gemini or confidential mode):
   follows the first-start pages; people who already had an account get an
   offer of it once (`onboarding.done` in `config.toml`), and quick
   settings starts it again.
+- **What's new.** The owner asked that an update not look like a first
+  start. After an update the window shows What's new once
+  (`window/whats_new.rs`): the version now running (the package version,
+  `0.0.0.r90.gabc1234` until there are tagged releases; the PKGBUILD
+  passes it as `KATNA_VERSION`), the highlights not shown before, newest
+  first and at most six, and Full changelog (GitHub's comparison of the
+  previous build's commit with this one). The highlights are curated in
+  `apps/katna-mail/src/whats_new.rs` and built into the app: a change
+  people will notice appends one with the next id. A major feature may
+  carry a short looping animation: two animated WebPs, light and dark
+  theme (`apps/katna-mail/whats-new/`, at most 600 KB each, recorded at
+  the size they are drawn, 560 px wide), shown across the top of the
+  dialog. Its frames are decoded only while the dialog is open (about
+  20 MB for a 50-frame clip) and freed when it closes. `config.toml`
+  keeps `onboarding.whats_new_seen` (the newest highlight shown) and
+  `onboarding.last_version`, both written as soon as the window opens, so
+  nothing shows twice. A first start (no account, or no settings file yet)
+  gets onboarding or the tour and marks every highlight seen. Settings
+  written by versions before What's new count as an update, which is why
+  such a user no longer sees the tour again. Updates without new
+  highlights show nothing. Quick settings > Help > What's new opens the
+  newest highlights at any time. On a phone the dialog fills the window.
 - **After the first real install.** The owner's first run on KDE brought
   these changes. Compose sits in the top bar in place of the app name, so
   it shows whether the folders are open or not; the account picture moved

@@ -104,6 +104,7 @@ icons!(
     "shield",
     "signature",
     "snooze",
+    "sparkle",
     "spell-check",
     "star-filled",
     "star",

@@ -17,6 +17,7 @@ mod signatures;
 mod spell;
 mod tabs;
 mod theme;
+mod whats_new;
 mod widgets;
 mod window;
 
@@ -88,7 +89,7 @@ fn main() -> ExitCode {
                 return ExitCode::SUCCESS;
             }
             Some("-V" | "--version") => {
-                println!("katna-mail {}", env!("CARGO_PKG_VERSION"));
+                println!("katna-mail {}", whats_new::VERSION);
                 return ExitCode::SUCCESS;
             }
             _ => return usage_error(),

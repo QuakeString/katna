@@ -95,7 +95,7 @@ pub(super) struct Files {
     /// Messages whose thumbnails were made or are being made.
     asked: HashMap<MessageId, Option<Task<()>>>,
     /// Bitmaps no longer drawn, freed at the next frame.
-    released: Vec<Arc<RenderImage>>,
+    pub(super) released: Vec<Arc<RenderImage>>,
     pub(super) viewer: Option<Entity<Viewer>>,
     /// What had the keyboard before the viewer opened.
     restore: Option<FocusHandle>,
