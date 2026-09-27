@@ -1185,6 +1185,14 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   PDFs are written to `$XDG_RUNTIME_DIR/katna/print` and removed after an
   hour. Print and In new window sit right of the actions and move to the
   More menu when the reading pane is under 600 px.
+- **Reading options.** Settings > General > Reading, taken from
+  Mailspring: *Newest message first* shows a conversation's latest reply on
+  top, with a reply written above it (`mail.newest_first`); *Show full
+  headers* opens the from, to, cc, date and subject box on every message,
+  and clicking "to" turns it the other way (`mail.full_headers`); the "to"
+  line names recipients by first name ("to me, Ada", as Gmail does) unless
+  *Full names of recipients* is on or two share a first name
+  (`mail.full_names`). All three are off by default.
 - **Motion.** Springs (`katna_ui::motion::Spring`, on GPUI's spring
   solver) drive values that shape several elements: the navigation width,
   the search box turning white with a shadow when focused, the snackbar.
@@ -1310,6 +1318,14 @@ Gemini or confidential mode):
   user signed their newest message in the conversation with, found by
   comparing the text after its `-- ` line (`signatures.rs`); otherwise the
   reply default. The single signature of older versions becomes the first.
+- **Sending account, Send and archive.** Settings → Compose picks the
+  account new mail goes out from: the one whose mail is open (default) or
+  always the same address (`sending.send_from`). Replies and forwards go
+  out from the account whose mail is open. The account is fixed when the message
+  opens. "Send on replies" makes Send on a reply or forward also archive
+  the conversation (`sending.send_and_archive`); the menu beside Send
+  offers the other way. The archive happens once the message is queued,
+  and Undo on "Sent and archived" brings the conversation back as well.
 - **Keyboard shortcuts.** Every action has one (`window/keymap.rs`), with
   Gmail's keys as defaults: j/k, o, u, c, r, a, f, e, #, !, v, s, x,
   Shift+I/U, `* a`, `* n`, z, `g i`/`g s`/`g t`/`g d`/`g a`, /, ?, and Ctrl

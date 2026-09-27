@@ -623,19 +623,28 @@ impl MailWindow {
                 )
             });
 
-        // Fold runs of collapsed messages in the middle.
-        let mut shown = Vec::new();
+        // Fold runs of collapsed messages in the middle. `order` is the
+        // messages as shown: oldest first, or newest first by the setting.
+        let newest_first = self.config.mail.newest_first;
         let n = reader.parts.len();
-        let mut ix = 0;
-        while ix < n {
-            let run_end = (ix..n).find(|&j| reader.parts[j].expanded).unwrap_or(n);
-            let run = run_end - ix;
-            if !reader.show_all && ix > 0 && run >= FOLD_AT && run_end < n {
+        let order: Vec<usize> = if newest_first {
+            (0..n).rev().collect()
+        } else {
+            (0..n).collect()
+        };
+        let mut shown = Vec::new();
+        let mut at = 0;
+        while at < n {
+            let run_end = (at..n)
+                .find(|&j| reader.parts[order[j]].expanded)
+                .unwrap_or(n);
+            let run = run_end - at;
+            if !reader.show_all && at > 0 && run >= FOLD_AT && run_end < n {
                 shown.push(Shown::Fold(run));
-                ix = run_end;
+                at = run_end;
             } else {
-                shown.push(Shown::Part(ix));
-                ix += 1;
+                shown.push(Shown::Part(order[at]));
+                at += 1;
             }
         }
         let parts: Vec<AnyElement> = shown
@@ -653,6 +662,12 @@ impl MailWindow {
         let key = reader.key;
         let reply = self.render_inline_reply(key, th, cx);
         let footer = reply.is_none().then(|| self.render_reply_row(th, cx));
+        // A reply goes next to the message it answers, the newest.
+        let (reply_above, reply_below) = if newest_first {
+            (reply, None)
+        } else {
+            (None, reply)
+        };
         div()
             .size_full()
             .flex()
@@ -670,8 +685,9 @@ impl MailWindow {
                             .flex_col()
                             .pb(px(24.0))
                             .child(title)
+                            .children(reply_above)
                             .children(parts)
-                            .children(reply)
+                            .children(reply_below)
                             .with_animation(
                                 ("open-conversation", key_number(key)),
                                 Animation::new(Duration::from_millis(280))
@@ -798,26 +814,24 @@ impl MailWindow {
                 })
             })
             .unwrap_or_default();
+        let full_names = self.config.mail.full_names;
         let names = |list: &[katna_render::Address]| {
             let mut seen = std::collections::HashSet::new();
-            list.iter()
+            let people: Vec<(bool, &katna_render::Address)> = list
+                .iter()
                 .filter(|a| seen.insert(a.email.to_lowercase()))
-                .map(|a| {
-                    if self.is_me(&a.email) {
-                        "me".to_owned()
-                    } else {
-                        a.label().to_owned()
-                    }
-                })
-                .collect::<Vec<_>>()
-                .join(", ")
+                .map(|a| (self.is_me(&a.email), a))
+                .collect();
+            recipient_names(&people, full_names).join(", ")
         };
         let recipients = view.map(|v| {
             let mut all = v.to.clone();
             all.extend(v.cc.iter().cloned());
             format!("to {}", names(&all))
         });
-        let details = part.details;
+        // Clicking \u{201c}to\u{201d} turns the details the other way from the
+        // Full headers setting.
+        let details = part.details != self.config.mail.full_headers;
         // A very narrow pane leaves starring to the toolbar's More menu and
         // the date to the details under "to", and lets the name shrink
         // further.
@@ -1173,6 +1187,52 @@ impl MailWindow {
     }
 }
 
+/// The names of a message's recipients for its \u{201c}to\u{201d} line, each
+/// with whether it is one of the user's addresses: \u{201c}me\u{201d}, and
+/// others by first name unless `full` (or two share a first name).
+/// Recipients without a name show their address.
+fn recipient_names(people: &[(bool, &katna_render::Address)], full: bool) -> Vec<String> {
+    fn first(a: &katna_render::Address) -> Option<&str> {
+        a.name.as_deref().map(first_name)
+    }
+    people
+        .iter()
+        .map(|(me, a)| {
+            if *me {
+                return "me".to_owned();
+            }
+            match first(a) {
+                Some(short)
+                    if !full
+                        && people
+                            .iter()
+                            .filter(|(me, b)| !me && first(b) == Some(short))
+                            .count()
+                            == 1 =>
+                {
+                    short.to_owned()
+                }
+                _ => a.label().to_owned(),
+            }
+        })
+        .collect()
+}
+
+/// The first name in a display name: \u{201c}Ada\u{201d} from \u{201c}Ada Lovelace\u{201d} or
+/// \u{201c}Lovelace, Ada\u{201d}. A name it cannot split (one word, or a title
+/// such as \u{201c}Dr.\u{201d} first) stays whole.
+fn first_name(name: &str) -> &str {
+    let name = name.trim().trim_matches(['"', '\'']).trim();
+    let given = match name.split_once(',') {
+        Some((_, given)) => given.trim(),
+        None => name,
+    };
+    match given.split_whitespace().next() {
+        Some(word) if !word.ends_with('.') && word.chars().count() > 1 => word,
+        _ => name,
+    }
+}
+
 /// "4 older messages": a line with a round count that unfolds them.
 fn fold(count: usize, th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
     div()
@@ -1332,6 +1392,42 @@ fn body_blocks(body: &str, max_lines: usize) -> (Vec<(bool, SharedString)>, bool
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn first_names() {
+        assert_eq!(first_name("Ada Lovelace"), "Ada");
+        assert_eq!(first_name("Lovelace, Ada"), "Ada");
+        assert_eq!(first_name("\"Ada Lovelace\""), "Ada");
+        assert_eq!(first_name("Dr. Ada Lovelace"), "Dr. Ada Lovelace");
+        assert_eq!(first_name("Ada"), "Ada");
+        assert_eq!(first_name("J Smith"), "J Smith");
+    }
+
+    #[test]
+    fn recipients_by_first_name_unless_full_or_shared() {
+        let address = |name: Option<&str>, email: &str| katna_render::Address {
+            name: name.map(str::to_owned),
+            email: email.to_owned(),
+        };
+        let me = address(Some("Sam Roy"), "sam@example.org");
+        let ada = address(Some("Ada Lovelace"), "ada@example.org");
+        let ada_b = address(Some("Ada Byron"), "byron@example.org");
+        let bare = address(None, "ops@example.org");
+        let people = [(true, &me), (false, &ada), (false, &bare)];
+        assert_eq!(
+            recipient_names(&people, false),
+            ["me", "Ada", "ops@example.org"]
+        );
+        assert_eq!(
+            recipient_names(&people, true),
+            ["me", "Ada Lovelace", "ops@example.org"]
+        );
+        let twins = [(false, &ada), (false, &ada_b)];
+        assert_eq!(
+            recipient_names(&twins, false),
+            ["Ada Lovelace", "Ada Byron"]
+        );
+    }
 
     #[test]
     fn quoted_blocks() {

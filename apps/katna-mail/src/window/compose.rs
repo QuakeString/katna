@@ -34,6 +34,7 @@ use gpui::{
     AnyElement, Context, Entity, ExternalPaths, FocusHandle, Focusable, FontWeight, Hsla,
     ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, px, rgba,
 };
+use katna_core::AccountId;
 use katna_dbus::OutboxItem;
 use katna_render::{Address, MessageView};
 use katna_store::MessageId;
@@ -104,6 +105,11 @@ pub(super) struct Compose {
     kind: Kind,
     /// The conversation an inline reply belongs to.
     conversation: Option<EntryKey>,
+    /// The conversation a reply or forward answers, which Send and
+    /// archive archives.
+    answering: Option<EntryKey>,
+    /// The account the message goes out from, chosen when it opened.
+    from: Option<AccountId>,
     show_cc: bool,
     show_bcc: bool,
     mode: Mode,
@@ -268,6 +274,10 @@ pub(super) struct Unsent {
     signature: Option<u32>,
     attachments: Vec<Attachment>,
     plain: bool,
+    from: Option<AccountId>,
+    answering: Option<EntryKey>,
+    /// Puts back the conversation Send and archive archived.
+    pub(super) unarchive: Option<Command>,
 }
 
 fn address(a: &Address) -> String {
@@ -491,11 +501,19 @@ impl MailWindow {
             Mode::Open
         };
         let plain = self.config.sending.plain_text;
+        let answering = self
+            .reader
+            .as_ref()
+            .filter(|_| kind != Kind::New)
+            .map(|r| r.key);
+        let from = self.compose_account(kind).map(|a| a.id);
         self.show_compose(draft, start, thread, signature, reply, window, cx);
         if let Some(compose) = &mut self.compose {
             compose.kind = kind;
             compose.mode = mode;
             compose.conversation = conversation;
+            compose.answering = answering;
+            compose.from = from;
             if plain {
                 let doc = compose.body.read(cx).doc().clone();
                 let plain_doc = html::from_plain(&html::to_plain(&doc));
@@ -687,7 +705,7 @@ impl MailWindow {
             &body,
             window,
             |this, _, event: &RichEvent, window, cx| match event {
-                RichEvent::Submit => this.send_compose(None, window, cx),
+                RichEvent::Submit => this.send_compose_default(window, cx),
                 RichEvent::Changed => {
                     this.keep_cursor_in_view(cx);
                     cx.notify();
@@ -728,6 +746,8 @@ impl MailWindow {
             thread,
             kind: Kind::New,
             conversation: None,
+            answering: None,
+            from: None,
             mode: Mode::Open,
             sealing: Sealing::default(),
             signature,
@@ -838,19 +858,40 @@ impl MailWindow {
         .detach();
     }
 
-    /// The account new mail goes out from: that of the open folder, or the
-    /// first.
-    fn compose_account(&self) -> Option<&katna_core::Account> {
+    /// The account a message goes out from: for new mail the one chosen in
+    /// Settings, if any; else that of the open folder (the one a reply
+    /// answers in), or the first.
+    fn compose_account(&self, kind: Kind) -> Option<&katna_core::Account> {
+        let chosen = &self.config.sending.send_from;
+        let fixed = (kind == Kind::New && !chosen.is_empty())
+            .then(|| {
+                self.accounts
+                    .iter()
+                    .find(|a| a.address.eq_ignore_ascii_case(chosen))
+            })
+            .flatten();
         let open = self.folder.and_then(|folder| self.tree.account_of(folder));
-        open.or_else(|| self.shown_account())
-            .and_then(|id| self.accounts.iter().find(|a| a.id == id))
-            .or_else(|| self.accounts.first())
+        fixed.or_else(|| {
+            open.or_else(|| self.shown_account())
+                .and_then(|id| self.accounts.iter().find(|a| a.id == id))
+                .or_else(|| self.accounts.first())
+        })
     }
 
-    /// Sends the open message, now (after the undo delay) or at `at`.
+    /// Sends the open message the way Settings chooses: a reply or forward
+    /// also archives its conversation when Send and archive is the default.
+    pub(super) fn send_compose_default(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let archive = self.config.sending.send_and_archive;
+        self.send_compose(None, archive, window, cx);
+    }
+
+    /// Sends the open message, now (after the undo delay) or at `at`. With
+    /// `archive`, a reply or forward also archives the conversation it
+    /// answers once the message is on its way.
     fn send_compose(
         &mut self,
         at: Option<jiff::Timestamp>,
+        archive: bool,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
@@ -861,6 +902,10 @@ impl MailWindow {
         let draft = compose.fields(cx);
         let thread = compose.thread.clone();
         let sealing = compose.sealing;
+        let kind = compose.kind;
+        let chosen = compose.from;
+        let answered = compose.answering;
+        let answering = answered.filter(|_| archive && at.is_none());
         let signature = compose.signature;
         let attachments = compose.attachments.clone();
         let plain = compose.plain(cx);
@@ -894,7 +939,10 @@ impl MailWindow {
             );
             return;
         }
-        let Some(account) = self.compose_account() else {
+        let account = chosen
+            .and_then(|id| self.accounts.iter().find(|a| a.id == id))
+            .or_else(|| self.compose_account(kind));
+        let Some(account) = account else {
             self.show_snackbar("Add an account to send mail from.", None, cx);
             self.open_add_account(window, cx);
             return;
@@ -963,6 +1011,7 @@ impl MailWindow {
             attachments: attachments.iter().map(Attachment::part).collect(),
             date: at.map(|at| schedule::rfc2822(at, &self.tz)),
         });
+        let from = Some(account.id);
         let account = account.id.0;
         self.unsent = Some(Unsent {
             draft,
@@ -971,6 +1020,9 @@ impl MailWindow {
             signature,
             attachments,
             plain,
+            from,
+            answering: answered,
+            unarchive: None,
         });
         self.close_compose(false, cx);
         self.show_snackbar(
@@ -1001,8 +1053,15 @@ impl MailWindow {
                 Ok(id) => {
                     let text = match &when {
                         Some(when) => format!("Send scheduled for {when}"),
+                        None if answering.is_some() => "Sent and archived".to_owned(),
                         None => "Message sent".to_owned(),
                     };
+                    if let Some(key) = answering {
+                        let unarchive = this.act_with(super::Act::Archive, vec![key], false, cx);
+                        if let Some(unsent) = &mut this.unsent {
+                            unsent.unarchive = unarchive;
+                        }
+                    }
                     let undo = (delay > 0).then_some(Command::UndoSend(id));
                     let time = if when.is_some() {
                         SNACKBAR_TIME * 2
@@ -1035,6 +1094,9 @@ impl MailWindow {
             signature,
             attachments,
             plain,
+            from,
+            answering,
+            unarchive: _,
         }) = self.unsent.take()
         else {
             return;
@@ -1053,6 +1115,8 @@ impl MailWindow {
                 .body
                 .update(cx, |editor, cx| editor.set_plain(plain, cx));
             compose.sealing = sealing;
+            compose.from = from;
+            compose.answering = answering;
         }
     }
 
@@ -1317,14 +1381,18 @@ impl MailWindow {
             Kind::Forward => ("forward", "Forward"),
             Kind::Reply | Kind::New => ("reply", "Reply"),
         };
-        let me = self.compose_account().map(|a| {
-            let name = if a.display_name.trim().is_empty() {
-                a.address.clone()
-            } else {
-                a.display_name.clone()
-            };
-            self.person_avatar(&name, &a.address, 40.0)
-        });
+        let me = compose
+            .from
+            .and_then(|id| self.accounts.iter().find(|a| a.id == id))
+            .or_else(|| self.compose_account(compose.kind))
+            .map(|a| {
+                let name = if a.display_name.trim().is_empty() {
+                    a.address.clone()
+                } else {
+                    a.display_name.clone()
+                };
+                self.person_avatar(&name, &a.address, 40.0)
+            });
         let header = div()
             .flex_none()
             .h(px(44.0))
