@@ -23,7 +23,7 @@ use katna_ui::unpx;
 use super::add_account::text_button;
 use super::{MailWindow, PANEL_RADIUS};
 use crate::theme::{Theme, fade};
-use crate::whats_new::{self, Highlight, Start};
+use crate::whats_new::{self, Highlight, Seen, Start};
 use crate::widgets::{elevation, filled_button, icon};
 
 const WIDTH: f32 = 560.0;
@@ -38,8 +38,8 @@ pub(super) struct WhatsNew {
     from: Option<String>,
     /// The theme was dark when it opened: which animations to show.
     dark: bool,
-    /// Decoded animations by highlight id.
-    animations: HashMap<u32, Arc<RenderImage>>,
+    /// Decoded animations by highlight name.
+    animations: HashMap<&'static str, Arc<RenderImage>>,
     _decode: Option<Task<()>>,
     focus: FocusHandle,
     closing: bool,
@@ -56,16 +56,16 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         let onboarding = &self.config.onboarding;
-        let seen = onboarding.whats_new_seen;
+        let seen = Seen::new(&onboarding.whats_new_shown, onboarding.whats_new_seen);
         let from = onboarding.last_version.clone();
-        let start = whats_new::start(onboarding.done, seen, config_existed);
+        let start = whats_new::start(onboarding.done, seen.any(), config_existed);
         let first_run = self.needs_account() || start == Start::FirstRun;
         if first_run {
             if !self.needs_account() {
                 self.start_tour(true, window, cx);
             }
         } else {
-            let (highlights, more) = whats_new::unseen(seen);
+            let (highlights, more) = whats_new::unseen(&seen);
             let shown = !highlights.is_empty();
             if shown {
                 self.open_whats_new(highlights, more, true, from, window, cx);
@@ -82,11 +82,13 @@ impl MailWindow {
         }
         // Shown once: a start that ends before the dialog or the tour is
         // closed does not bring them back.
-        let latest = whats_new::latest();
+        let names = whats_new::names();
         let onboarding = &mut self.config.onboarding;
-        let changed = onboarding.whats_new_seen != Some(latest)
+        let changed = onboarding.whats_new_shown != names
+            || onboarding.whats_new_seen.is_some()
             || onboarding.last_version.as_deref() != Some(whats_new::VERSION);
-        onboarding.whats_new_seen = Some(latest);
+        onboarding.whats_new_shown = names;
+        onboarding.whats_new_seen = None;
         onboarding.last_version = Some(whats_new::VERSION.to_owned());
         if changed {
             self.save_config();
@@ -114,7 +116,7 @@ impl MailWindow {
         let dark = self.theme(window).dark;
         let wanted: Vec<_> = highlights
             .iter()
-            .filter_map(|h| Some((h.id, h.animation.as_ref()?.for_theme(dark))))
+            .filter_map(|h| Some((h.name, h.animation.as_ref()?.for_theme(dark))))
             .collect();
         let decode = (!wanted.is_empty()).then(|| {
             cx.spawn(async move |this, cx| {
@@ -213,7 +215,7 @@ impl MailWindow {
         let hero = dialog
             .highlights
             .first()
-            .and_then(|h| Some((h.id, h.animation.as_ref()?.for_theme(dialog.dark))))
+            .and_then(|h| Some((h.name, h.animation.as_ref()?.for_theme(dialog.dark))))
             .map(|(id, bytes)| {
                 let (w, h) = size(bytes, width);
                 div()
@@ -225,7 +227,7 @@ impl MailWindow {
                     .bg(rgba(th.backdrop))
                     .border_b_1()
                     .border_color(rgba(th.divider))
-                    .child(animation(id, dialog.animations.get(&id), w, h))
+                    .child(animation(id, dialog.animations.get(id), w, h))
             });
 
         let has_hero = hero.is_some();
@@ -290,8 +292,8 @@ impl MailWindow {
                     .border_1()
                     .border_color(rgba(th.divider))
                     .child(animation(
-                        highlight.id,
-                        dialog.animations.get(&highlight.id),
+                        highlight.name,
+                        dialog.animations.get(highlight.name),
                         w,
                         h,
                     ))
@@ -443,7 +445,7 @@ impl MailWindow {
 }
 
 /// An animation at `w` by `h`, or its room while it is decoded.
-fn animation(id: u32, image: Option<&Arc<RenderImage>>, w: f32, h: f32) -> gpui::Div {
+fn animation(name: &'static str, image: Option<&Arc<RenderImage>>, w: f32, h: f32) -> gpui::Div {
     div()
         .flex_none()
         .w(px(w))
@@ -452,7 +454,7 @@ fn animation(id: u32, image: Option<&Arc<RenderImage>>, w: f32, h: f32) -> gpui:
             // GPUI keeps an image's frame in its element state, so only an
             // image with an id plays.
             img(ImageSource::Render(image.clone()))
-                .id(("whats-new-animation", id as usize))
+                .id(name)
                 .size_full()
                 .object_fit(ObjectFit::Contain)
         }))

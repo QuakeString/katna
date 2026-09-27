@@ -14,6 +14,7 @@ use gpui::{
     relative, rgba,
 };
 use katna_core::config::Density;
+use katna_i18n::tr;
 use katna_ui::Ripple;
 use katna_ui::motion;
 use katna_ui::px;
@@ -286,7 +287,7 @@ impl MailWindow {
             .child(
                 div()
                     .id("select-box")
-                    .tooltip(tip("Select", th))
+                    .tooltip(tip(tr!("list-select"), th))
                     .size(px(28.0))
                     .flex()
                     .items_center()
@@ -315,14 +316,14 @@ impl MailWindow {
             bar = bar
                 .child(
                     icon_button("refresh", "refresh", 20.0, th)
-                        .tooltip(tip("Refresh", th))
+                        .tooltip(tip(tr!("list-refresh"), th))
                         .on_click(
                             cx.listener(|this, _, window, cx| this.reload(&Reload, window, cx)),
                         ),
                 )
                 .child({
                     let more = icon_button("list-more", "more", 20.0, th)
-                        .tooltip(tip("More", th))
+                        .tooltip(tip(tr!("list-more"), th))
                         .on_click(
                             cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)),
                         );
@@ -332,13 +333,13 @@ impl MailWindow {
             let any_unread = self.checked_rows().iter().any(|r| r.unread);
             let read_button = if any_unread {
                 icon_button("mark-read", "mark-read", 20.0, th)
-                    .tooltip(tip("Mark as read", th))
+                    .tooltip(tip(tr!("list-mark-read"), th))
                     .on_click(
                         cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)),
                     )
             } else {
                 icon_button("mark-unread", "mail", 20.0, th)
-                    .tooltip(tip("Mark as unread", th))
+                    .tooltip(tip(tr!("list-mark-unread"), th))
                     .on_click(
                         cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(false), cx)),
                     )
@@ -349,13 +350,13 @@ impl MailWindow {
                 .child(read_button)
                 .child({
                     let move_to = icon_button("list-move", "move-to", 20.0, th)
-                        .tooltip(tip("Move to", th))
+                        .tooltip(tip(tr!("list-move-to"), th))
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)));
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
                 })
                 .child({
                     let more = icon_button("list-more", "more", 20.0, th)
-                        .tooltip(tip("More", th))
+                        .tooltip(tip(tr!("list-more"), th))
                         .on_click(
                             cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)),
                         );
@@ -370,9 +371,9 @@ impl MailWindow {
                     corrected: Some(corrected),
                     ..
                 }),
-            ) => Some(format!("Showing results for “{corrected}”").into()),
+            ) => Some(tr!("list-results-corrected", query = corrected.as_str()).into()),
             (None, Some(Listing::Search { query, .. })) => {
-                Some(format!("Results for “{query}”").into())
+                Some(tr!("list-results", query = query.as_str()).into())
             }
             _ => None,
         };
@@ -381,19 +382,22 @@ impl MailWindow {
         } else {
             let start = self.visible.start.min(count - 1) + 1;
             let end = self.visible.end.clamp(start, count);
-            let total = match &self.listing {
+            match &self.listing {
                 Some(Listing::Search {
                     total: Some(total), ..
-                }) if *total > count && !self.config.mail.conversations => {
-                    format!("about {}", format::thousands(*total as u64))
-                }
-                _ => format::thousands(count as u64),
-            };
-            format!(
-                "{}–{} of {total}",
-                format::thousands(start as u64),
-                format::thousands(end as u64)
-            )
+                }) if *total > count && !self.config.mail.conversations => tr!(
+                    "list-range-about",
+                    first = start as u64,
+                    last = end as u64,
+                    total = *total as u64
+                ),
+                _ => tr!(
+                    "list-range",
+                    first = start as u64,
+                    last = end as u64,
+                    total = count as u64
+                ),
+            }
         };
         let search_instead = match (&self.search_error, &self.listing) {
             (
@@ -436,7 +440,7 @@ impl MailWindow {
                         .truncate()
                         .cursor_pointer()
                         .text_color(rgba(th.accent))
-                        .child(format!("Search instead for “{query}”"))
+                        .child(tr!("list-search-instead", query = query.as_str()))
                         .on_click(cx.listener(move |this, _, _, cx| {
                             this.search_verbatim(query.clone(), cx);
                         }))
@@ -452,7 +456,7 @@ impl MailWindow {
         )
         .child(
             icon_button("page-up", "chevron-left", 20.0, th)
-                .tooltip(tip("Newer", th))
+                .tooltip(tip(tr!("list-newer"), th))
                 .when(at_top, |d| d.opacity(0.4))
                 .on_click(cx.listener(|this, _, _, cx| {
                     let page = this.visible.len().max(1);
@@ -463,7 +467,7 @@ impl MailWindow {
         )
         .child(
             icon_button("page-down", "chevron-right", 20.0, th)
-                .tooltip(tip("Older", th))
+                .tooltip(tip(tr!("list-older"), th))
                 .when(at_end, |d| d.opacity(0.4))
                 .on_click(cx.listener(|this, _, _, cx| {
                     let ix = this.visible.end.min(this.entries.len().saturating_sub(1));
@@ -479,15 +483,17 @@ impl MailWindow {
     fn render_phone_list_bar(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let label: SharedString = match (&self.search_error, &self.listing) {
             (Some(err), _) => err.clone(),
-            (None, Some(Listing::Search { query, .. })) => format!("Results for “{query}”").into(),
+            (None, Some(Listing::Search { query, .. })) => {
+                tr!("list-results", query = query.as_str()).into()
+            }
             _ if self.shows_tabs() => self
                 .tabs
                 .get(self.tab)
-                .map_or_else(SharedString::default, |t| t.label.into()),
+                .map_or_else(SharedString::default, |t| t.label().into()),
             _ => self.folder_name().unwrap_or_default().into(),
         };
         let more = icon_button("list-more", "more", 20.0, th)
-            .tooltip(tip("More", th))
+            .tooltip(tip(tr!("list-more"), th))
             .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)));
         toolbar(th)
             .pl(px(16.0))
@@ -503,7 +509,7 @@ impl MailWindow {
             )
             .child(
                 icon_button("refresh", "refresh", 20.0, th)
-                    .tooltip(tip("Refresh", th))
+                    .tooltip(tip(tr!("list-refresh"), th))
                     .on_click(cx.listener(|this, _, window, cx| this.reload(&Reload, window, cx))),
             )
             .child(self.with_menu(more, Menu::ListMore, th, cx))
@@ -526,20 +532,20 @@ impl MailWindow {
             .flex_row()
             .child(
                 icon_button((prefix, 1_usize), "archive", 20.0, th)
-                    .tooltip(tip("Archive", th))
+                    .tooltip(tip(tr!("list-archive"), th))
                     .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Archive, cx))),
             )
             .when(!squeeze.spam, |d| {
                 d.child(
                     icon_button((prefix, 2_usize), "junk", 20.0, th)
-                        .tooltip(tip("Report spam", th))
+                        .tooltip(tip(tr!("list-spam"), th))
                         .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Spam, cx))),
                 )
             })
             .when(!squeeze.delete, |d| {
                 d.child(
                     icon_button((prefix, 3_usize), "trash", 20.0, th)
-                        .tooltip(tip("Delete", th))
+                        .tooltip(tip(tr!("list-delete"), th))
                         .on_click(
                             cx.listener(|this, _, _, cx| this.act_on_targets(Act::Delete, cx)),
                         ),
@@ -664,16 +670,16 @@ impl MailWindow {
         match which {
             Menu::Select => menu(th).children(
                 [
-                    (Pick::All, "All"),
-                    (Pick::None, "None"),
-                    (Pick::Read, "Read"),
-                    (Pick::Unread, "Unread"),
-                    (Pick::Starred, "Starred"),
-                    (Pick::Unstarred, "Unstarred"),
+                    (Pick::All, tr!("list-pick-all")),
+                    (Pick::None, tr!("list-pick-none")),
+                    (Pick::Read, tr!("list-pick-read")),
+                    (Pick::Unread, tr!("list-pick-unread")),
+                    (Pick::Starred, tr!("list-pick-starred")),
+                    (Pick::Unstarred, tr!("list-pick-unstarred")),
                 ]
                 .into_iter()
                 .map(|(pick, label)| {
-                    menu_item(("pick", pick as usize), label, th)
+                    menu_item(("pick", pick as usize), &label, th)
                         .on_click(cx.listener(move |this, _, _, cx| this.pick(pick, cx)))
                 }),
             ),
@@ -684,20 +690,20 @@ impl MailWindow {
                     Some(())
                 };
                 match targets {
-                    None => {
-                        menu(th).child(menu_item("mark-all-read", "Mark all as read", th).on_click(
+                    None => menu(th).child(
+                        menu_item("mark-all-read", &tr!("menu-mark-all-read"), th).on_click(
                             cx.listener(|this, _, _, cx| {
                                 let keys = this.entries.iter().map(|e| e.key).collect();
                                 this.act(Act::Read(true), keys, cx);
                             }),
-                        ))
-                    }
+                        ),
+                    ),
                     Some(()) => menu(th)
                         // What a narrow reading pane leaves off its toolbar.
                         .when(
                             which == Menu::ReaderMore && self.reader_squeeze().spam,
                             |d| {
-                                d.child(menu_item("more-spam", "Report spam", th).on_click(
+                                d.child(menu_item("more-spam", &tr!("menu-spam"), th).on_click(
                                     cx.listener(|this, _, _, cx| {
                                         this.act_on_targets(Act::Spam, cx)
                                     }),
@@ -707,58 +713,61 @@ impl MailWindow {
                         .when(
                             which == Menu::ReaderMore && self.reader_squeeze().delete,
                             |d| {
-                                d.child(menu_item("more-delete", "Delete", th).on_click(
+                                d.child(menu_item("more-delete", &tr!("menu-delete"), th).on_click(
                                     cx.listener(|this, _, _, cx| {
                                         this.act_on_targets(Act::Delete, cx)
                                     }),
                                 ))
                             },
                         )
-                        .child(menu_item("more-read", "Mark as read", th).on_click(
+                        .child(menu_item("more-read", &tr!("menu-mark-read"), th).on_click(
                             cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)),
                         ))
-                        .child(menu_item("more-unread", "Mark as unread", th).on_click(
-                            cx.listener(|this, _, window, cx| {
-                                this.mark_unread(&super::MarkUnread, window, cx)
-                            }),
-                        ))
-                        .child(menu_item("more-star", "Add star", th).on_click(
+                        .child(
+                            menu_item("more-unread", &tr!("menu-mark-unread"), th).on_click(
+                                cx.listener(|this, _, window, cx| {
+                                    this.mark_unread(&super::MarkUnread, window, cx)
+                                }),
+                            ),
+                        )
+                        .child(menu_item("more-star", &tr!("menu-star"), th).on_click(
                             cx.listener(|this, _, _, cx| this.act_on_targets(Act::Star(true), cx)),
                         ))
-                        .child(menu_item("more-unstar", "Remove star", th).on_click(
+                        .child(menu_item("more-unstar", &tr!("menu-unstar"), th).on_click(
                             cx.listener(|this, _, _, cx| this.act_on_targets(Act::Star(false), cx)),
                         ))
                         .child(
-                            menu_item("more-important", "Mark as important", th).on_click(
+                            menu_item("more-important", &tr!("menu-important"), th).on_click(
                                 cx.listener(|this, _, _, cx| {
                                     this.act_on_targets(Act::Important(true), cx)
                                 }),
                             ),
                         )
                         .child(
-                            menu_item("more-not-important", "Mark as not important", th).on_click(
-                                cx.listener(|this, _, _, cx| {
+                            menu_item("more-not-important", &tr!("menu-not-important"), th)
+                                .on_click(cx.listener(|this, _, _, cx| {
                                     this.act_on_targets(Act::Important(false), cx)
-                                }),
-                            ),
+                                })),
                         )
-                        .child(menu_item("more-pin", "Pin to top", th).on_click(
+                        .child(menu_item("more-pin", &tr!("menu-pin"), th).on_click(
                             cx.listener(|this, _, _, cx| this.act_on_targets(Act::Pin(true), cx)),
                         ))
-                        .child(menu_item("more-unpin", "Unpin", th).on_click(
+                        .child(menu_item("more-unpin", &tr!("menu-unpin"), th).on_click(
                             cx.listener(|this, _, _, cx| this.act_on_targets(Act::Pin(false), cx)),
                         ))
                         .when(which == Menu::ReaderMore, |d| {
                             d.child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
-                                .child(menu_item("more-print", "Print all", th).on_click(
-                                    cx.listener(|this, _, _, cx| {
-                                        this.menu = None;
-                                        this.print_conversation(cx);
-                                    }),
-                                ))
+                                .child(
+                                    menu_item("more-print", &tr!("menu-print-all"), th).on_click(
+                                        cx.listener(|this, _, _, cx| {
+                                            this.menu = None;
+                                            this.print_conversation(cx);
+                                        }),
+                                    ),
+                                )
                                 .when(!self.detached, |d| {
                                     d.child(
-                                        menu_item("more-new-window", "Open in new window", th)
+                                        menu_item("more-new-window", &tr!("menu-new-window"), th)
                                             .on_click(cx.listener(|this, _, _, cx| {
                                                 this.menu = None;
                                                 this.open_reader_in_window(cx);
@@ -781,7 +790,7 @@ impl MailWindow {
                             .pb(px(6.0))
                             .text_size(px(12.0))
                             .text_color(rgba(th.text_faint))
-                            .child("Move to:"),
+                            .child(tr!("menu-move-to-heading")),
                     )
                     .child(
                         div()
@@ -910,26 +919,43 @@ impl MailWindow {
         if !(self.checked_all || page_checked) {
             return None;
         }
-        let noun = if self.config.mail.conversations {
-            "conversations"
+        let kind = if self.config.mail.conversations {
+            "conversation"
         } else {
-            "messages"
+            "message"
         };
-        let place = self
-            .folder_name()
-            .map(|f| format!(" in {f}"))
-            .unwrap_or_default();
-        let total = format::thousands(self.entries.len() as u64);
-        let (text, link) = if self.checked_all {
-            (
-                format!("All {total} {noun}{place} are selected."),
-                "Clear selection".to_owned(),
-            )
-        } else {
-            (
-                format!("All {on_screen} {noun} on screen are selected."),
-                format!("Select all {total} {noun}{place}"),
-            )
+        let folder = self.folder_name();
+        let total = self.entries.len() as u64;
+        let (text, link) = match (self.checked_all, folder) {
+            (true, Some(folder)) => (
+                tr!(
+                    "list-selected-all-in",
+                    count = total,
+                    kind = kind,
+                    folder = folder
+                ),
+                tr!("list-clear-selection"),
+            ),
+            (true, None) => (
+                tr!("list-selected-all", count = total, kind = kind),
+                tr!("list-clear-selection"),
+            ),
+            (false, folder) => (
+                tr!(
+                    "list-selected-screen",
+                    count = on_screen as u64,
+                    kind = kind
+                ),
+                match folder {
+                    Some(folder) => tr!(
+                        "list-select-all-in",
+                        count = total,
+                        kind = kind,
+                        folder = folder
+                    ),
+                    None => tr!("list-select-all", count = total, kind = kind),
+                },
+            ),
         };
         Some(
             div()
@@ -1016,7 +1042,7 @@ impl MailWindow {
                             .flex_col()
                             .items_start()
                             .min_w_0()
-                            .child(div().truncate().child(tab.label))
+                            .child(div().truncate().child(tab.label()))
                             .when(unread > 0 && !on && ix != 0, |d| {
                                 d.child(
                                     div()
@@ -1028,7 +1054,7 @@ impl MailWindow {
                                         .text_size(px(11.0))
                                         .line_height(px(16.0))
                                         .truncate()
-                                        .child(format!("{} new", format::thousands(unread))),
+                                        .child(tr!("tab-new", count = unread)),
                                 )
                             }),
                     )
@@ -1064,18 +1090,18 @@ impl MailWindow {
     fn render_list(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         if self.entries.is_empty() {
             let text = match &self.listing {
-                Some(Listing::Search { .. }) => "No messages matched your search.".to_owned(),
+                Some(Listing::Search { .. }) => tr!("list-empty-search"),
                 Some(Listing::Folder(_)) if self.first_sync => {
                     return first_sync_placeholder(th);
                 }
-                Some(Listing::Folder(_)) if self.shows_tabs() => {
-                    let tab = self.tabs.get(self.tab).map_or("this tab", |t| t.label);
-                    format!("No mail in {tab}.")
-                }
-                Some(Listing::Folder(_)) => format!(
-                    "No messages in {}.",
-                    self.folder_name().unwrap_or_else(|| "this folder".into())
-                ),
+                Some(Listing::Folder(_)) if self.shows_tabs() => match self.tabs.get(self.tab) {
+                    Some(tab) => tr!("list-empty-tab", tab = tab.label()),
+                    None => tr!("list-empty-tab-unknown"),
+                },
+                Some(Listing::Folder(_)) => match self.folder_name() {
+                    Some(folder) => tr!("list-empty-folder", folder = folder),
+                    None => tr!("list-empty-folder-unknown"),
+                },
                 None => String::new(),
             };
             return placeholder(&text, th);
@@ -1275,7 +1301,7 @@ impl MailWindow {
                 base.items_center()
                     .pl(px(96.0))
                     .text_color(rgba(th.text_faint))
-                    .child("This message was removed."),
+                    .child(tr!("row-removed")),
             );
         };
         let now = jiff::Timestamp::now().as_second();
@@ -1318,9 +1344,9 @@ impl MailWindow {
             .id(("row-star", ix))
             .tooltip(tip(
                 if row.flagged {
-                    "Starred"
+                    tr!("row-starred")
                 } else {
-                    "Not starred"
+                    tr!("row-not-starred")
                 },
                 th,
             ))
@@ -1347,9 +1373,9 @@ impl MailWindow {
                 .id(("row-important", ix))
                 .tooltip(tip(
                     if important {
-                        "Important. Click to mark as not important."
+                        tr!("row-important")
                     } else {
-                        "Mark as important"
+                        tr!("row-mark-important")
                     },
                     th,
                 ))
@@ -1417,7 +1443,7 @@ impl MailWindow {
                 d.child(
                     div()
                         .id(("row-pinned", ix))
-                        .tooltip(tip("Pinned to the top", th))
+                        .tooltip(tip(tr!("row-pinned"), th))
                         .child(icon("pin-filled", th.accent, 16.0)),
                 )
             })
@@ -1684,7 +1710,7 @@ impl MailWindow {
                 .hover(|s| s.bg(rgba(th.hover)))
                 .text_size(px(12.0))
                 .text_color(rgba(th.text_dim))
-                .child(format!("+{}", rest.len()))
+                .child(tr!("list-files-more", count = rest.len() as u64))
                 .when(!open, |d| d.tooltip(tip(names, th)))
                 .on_click(cx.listener(move |this, _, _, cx| {
                     cx.stop_propagation();
@@ -1815,7 +1841,7 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let button = |id: usize, name: &str, label: &'static str| {
+        let button = |id: usize, name: &str, label: String| {
             icon_button_colored(("row-action", ix * 4 + id), name, 18.0, th.text_dim, th)
                 .size(px(32.0))
                 .tooltip(tip(label, th))
@@ -1825,25 +1851,27 @@ impl MailWindow {
             .flex_row()
             .items_center()
             .child(
-                button(0, "archive", "Archive").on_click(cx.listener(move |this, _, _, cx| {
-                    cx.stop_propagation();
-                    this.act(Act::Archive, vec![key], cx);
-                })),
+                button(0, "archive", tr!("list-archive")).on_click(cx.listener(
+                    move |this, _, _, cx| {
+                        cx.stop_propagation();
+                        this.act(Act::Archive, vec![key], cx);
+                    },
+                )),
             )
-            .child(
-                button(1, "trash", "Delete").on_click(cx.listener(move |this, _, _, cx| {
+            .child(button(1, "trash", tr!("list-delete")).on_click(cx.listener(
+                move |this, _, _, cx| {
                     cx.stop_propagation();
                     this.act(Act::Delete, vec![key], cx);
-                })),
-            )
+                },
+            )))
             .child(
                 button(
                     2,
                     if unread { "mark-read" } else { "mail" },
                     if unread {
-                        "Mark as read"
+                        tr!("list-mark-read")
                     } else {
-                        "Mark as unread"
+                        tr!("list-mark-unread")
                     },
                 )
                 .on_click(cx.listener(move |this, _, _, cx| {
@@ -1855,7 +1883,11 @@ impl MailWindow {
                 button(
                     3,
                     if pinned { "pin-filled" } else { "pin" },
-                    if pinned { "Unpin" } else { "Pin to top" },
+                    if pinned {
+                        tr!("row-unpin")
+                    } else {
+                        tr!("row-pin")
+                    },
                 )
                 .on_click(cx.listener(move |this, _, _, cx| {
                     cx.stop_propagation();
@@ -1932,13 +1964,13 @@ fn first_sync_placeholder(th: &Theme) -> AnyElement {
             div()
                 .text_size(px(14.0))
                 .text_color(rgba(th.text_dim))
-                .child("Getting your mail\u{2026}"),
+                .child(tr!("list-first-sync")),
         )
         .child(
             div()
                 .text_size(px(13.0))
                 .text_color(rgba(th.text_faint))
-                .child("It shows up here as it arrives."),
+                .child(tr!("list-first-sync-detail")),
         )
         .into_any_element()
 }

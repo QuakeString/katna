@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Reply buttons that always fit"
+text = """
+Reply, Reply all and Forward stay on one line: as the window narrows
+they fold into icons one at a time. On a phone they share the width.
+"""
+animation = "reply-row"

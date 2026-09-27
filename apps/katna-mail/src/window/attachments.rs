@@ -18,6 +18,7 @@ use gpui::{
     rgba,
 };
 use katna_core::config::{FileGroup, OpenIn};
+use katna_i18n::tr;
 use katna_preview::Kind;
 use katna_preview::glance::{Glance, glance};
 use katna_preview::image::{Frame, RgbaImage, imageops};
@@ -550,7 +551,7 @@ impl MailWindow {
                                 .rounded_full()
                                 .bg(rgba(button))
                                 .hover(move |s| s.bg(rgba(button_hover)))
-                                .tooltip(tip("Save", th))
+                                .tooltip(tip(tr!("attachment-save"), th))
                                 .on_click(cx.listener(move |this, _, _, cx| {
                                     cx.stop_propagation();
                                     this.save_from_message(id, ix, &save_name, cx);
@@ -617,11 +618,7 @@ impl MailWindow {
                                 .text_size(px(13.0))
                                 .font_weight(FontWeight::MEDIUM)
                                 .text_color(rgba(th.text_dim))
-                                .child(if count == 1 {
-                                    "One attachment".to_owned()
-                                } else {
-                                    format!("{count} attachments")
-                                }),
+                                .child(tr!("attachment-count", count = count)),
                         )
                         .when(count > 1, |row| {
                             row.child(
@@ -639,13 +636,13 @@ impl MailWindow {
                                     .font_weight(FontWeight::MEDIUM)
                                     .text_color(rgba(th.text_dim))
                                     .hover(|s| s.bg(rgba(th.hover)))
-                                    .tooltip(tip("Save every attachment to a folder", th))
+                                    .tooltip(tip(tr!("attachment-save-all-tooltip"), th))
                                     .on_click(cx.listener(move |this, _, _, cx| {
                                         cx.stop_propagation();
                                         this.save_all(id, indices.clone(), cx);
                                     }))
                                     .child(icon("download", th.text_dim, 18.0))
-                                    .child("Save all"),
+                                    .child(tr!("attachment-save-all")),
                             )
                         }),
                 )
@@ -687,7 +684,7 @@ impl MailWindow {
             return;
         }
         let Some((raw, encrypted)) = self.attachment_raw(id) else {
-            self.show_snackbar("This message is not downloaded.", None, cx);
+            self.show_snackbar(tr!("attachment-not-downloaded"), None, cx);
             return;
         };
         self.show_viewer(raw, encrypted, items, index, window, cx);
@@ -707,7 +704,7 @@ impl MailWindow {
             .map(|r| r.attachment_source(file.message))
         {
             self.files_menu = None;
-            self.show_snackbar("Open this message to read its attachments.", None, cx);
+            self.show_snackbar(tr!("attachment-open-message"), None, cx);
             return;
         }
         let Some((raw, encrypted)) = self.attachment_raw(file.message) else {
@@ -718,11 +715,7 @@ impl MailWindow {
         self.files_menu = None;
         let view = katna_render::message_view(&raw);
         let Some(index) = row_file_index(&view.attachments, file) else {
-            self.show_snackbar(
-                "This attachment could not be found in the message.",
-                None,
-                cx,
-            );
+            self.show_snackbar(tr!("attachment-not-found"), None, cx);
             return;
         };
         let items: Vec<Item> = view
@@ -821,7 +814,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         let Some((raw, _)) = self.attachment_raw(id) else {
-            self.show_snackbar("This message is not downloaded.", None, cx);
+            self.show_snackbar(tr!("attachment-not-downloaded"), None, cx);
             return;
         };
         let name = name.to_owned();
@@ -832,7 +825,11 @@ impl MailWindow {
                 .await;
             this.update(cx, |this, cx| match file {
                 Some(file) => this.save_attachment(Arc::new(file), cx),
-                None => this.show_snackbar(format!("Could not read {name}"), None, cx),
+                None => this.show_snackbar(
+                    tr!("attachment-read-failed", name = name.as_str()),
+                    None,
+                    cx,
+                ),
             })
             .ok();
         })
@@ -845,14 +842,14 @@ impl MailWindow {
     /// is saved as "name (1).ext".
     fn save_all(&mut self, id: MessageId, indices: Vec<usize>, cx: &mut Context<Self>) {
         let Some((raw, _)) = self.attachment_raw(id) else {
-            self.show_snackbar("This message is not downloaded.", None, cx);
+            self.show_snackbar(tr!("attachment-not-downloaded"), None, cx);
             return;
         };
         let prompt = cx.prompt_for_paths(PathPromptOptions {
             files: false,
             directories: true,
             multiple: false,
-            prompt: Some("Save here".into()),
+            prompt: Some(tr!("attachment-save-here").into()),
         });
         cx.spawn(async move |this, cx| {
             let dir = match prompt.await {
@@ -869,7 +866,7 @@ impl MailWindow {
                     let mut failed = Vec::new();
                     for index in indices {
                         let Some(file) = katna_render::attachment_file(&raw, index) else {
-                            failed.push(format!("attachment {}", index + 1));
+                            failed.push(tr!("attachment-numbered", number = index + 1));
                             continue;
                         };
                         match save_new(&dir, &safe_name(&file.name), &file.bytes) {
@@ -883,10 +880,14 @@ impl MailWindow {
             this.update(cx, |this, cx| {
                 let place = folder_label(&dir);
                 let text = match failed.first() {
-                    None => format!("Saved {saved} files to {place}"),
-                    Some(first) => {
-                        format!("Saved {saved} of {total} files to {place}. Could not save {first}")
-                    }
+                    None => tr!("attachment-saved-all", count = saved, place = place),
+                    Some(first) => tr!(
+                        "attachment-saved-some",
+                        saved = saved,
+                        total = total,
+                        place = place,
+                        failed = first.as_str()
+                    ),
                 };
                 this.show_snackbar(text, None, cx);
                 // Settings > Default apps > After saving.
@@ -923,9 +924,13 @@ impl MailWindow {
                         if this.config.mail.open_saved_folder {
                             cx.reveal_path(&path);
                         }
-                        format!("Saved to {}", path.display())
+                        tr!("attachment-saved-to", path = path.display().to_string())
                     }
-                    Err(err) => format!("Could not save {}: {err}", file.name),
+                    Err(err) => tr!(
+                        "attachment-save-failed",
+                        name = file.name.as_str(),
+                        error = err.to_string()
+                    ),
                 };
                 this.show_snackbar(text, None, cx);
             })
@@ -945,7 +950,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         let Some((raw, encrypted)) = self.attachment_raw(id) else {
-            self.show_snackbar("This message is not downloaded.", None, cx);
+            self.show_snackbar(tr!("attachment-not-downloaded"), None, cx);
             return;
         };
         let name = name.to_owned();
@@ -956,7 +961,11 @@ impl MailWindow {
                 .await;
             this.update(cx, |this, cx| match file {
                 Some(file) => this.open_attachment_with(Arc::new(file), ask, encrypted, cx),
-                None => this.show_snackbar(format!("Could not read {name}"), None, cx),
+                None => this.show_snackbar(
+                    tr!("attachment-read-failed", name = name.as_str()),
+                    None,
+                    cx,
+                ),
             })
             .ok();
         })
@@ -976,22 +985,14 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         if katna_preview::risky(&file.mime, &file.name) {
-            self.show_snackbar(
-                "This file could run a program, so Katna does not open it. Save it instead.",
-                None,
-                cx,
-            );
+            self.show_snackbar(tr!("attachment-risky"), None, cx);
             return;
         }
         let dir = if encrypted {
             match memory_dir() {
                 Some(dir) => dir,
                 None => {
-                    self.show_snackbar(
-                        "This file came encrypted. Save it to open it elsewhere.",
-                        None,
-                        cx,
-                    );
+                    self.show_snackbar(tr!("attachment-encrypted-open"), None, cx);
                     return;
                 }
             }
@@ -1007,10 +1008,13 @@ impl MailWindow {
             let path = match written {
                 Ok(path) => path,
                 Err(err) => {
-                    this.update(cx, |this, cx| {
-                        this.show_snackbar(format!("Could not open {name}: {err}"), None, cx)
-                    })
-                    .ok();
+                    let text = tr!(
+                        "attachment-open-failed",
+                        name = name.as_str(),
+                        error = err.to_string()
+                    );
+                    this.update(cx, |this, cx| this.show_snackbar(text, None, cx))
+                        .ok();
                     return;
                 }
             };

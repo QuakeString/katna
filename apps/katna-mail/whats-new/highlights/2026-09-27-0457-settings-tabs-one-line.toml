@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Settings tabs on one line"
+text = """
+The Settings tabs stay on one line: when they don't fit, arrows at the
+edges and the scroll wheel glide the rest into view. Signatures and
+templates share a Compose tab, and folders and mail rules share one too.
+"""

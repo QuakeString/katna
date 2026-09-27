@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "About Katna"
+text = """
+Help > About Katna, also in Quick settings, shows the version, the
+changelog and every library Katna is built on, with its authors and
+license. The version in the Settings header opens it too.
+"""

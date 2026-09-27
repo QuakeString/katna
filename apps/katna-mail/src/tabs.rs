@@ -9,6 +9,7 @@
 
 use katna_core::MailCategory;
 use katna_core::config::{AccountTabs, TabStyle};
+use katna_i18n::tr;
 
 /// Who runs an account's mail server, as far as tabs care.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -67,12 +68,12 @@ impl Provider {
         }
     }
 
-    pub fn name(self) -> &'static str {
+    pub fn name(self) -> String {
         match self {
-            Self::Gmail => "Gmail",
-            Self::Microsoft => "Outlook",
-            Self::Zoho => "Zoho Mail",
-            Self::Other => "sorted by Katna",
+            Self::Gmail => "Gmail".to_owned(),
+            Self::Microsoft => "Outlook".to_owned(),
+            Self::Zoho => "Zoho Mail".to_owned(),
+            Self::Other => tr!("tab-provider-other"),
         }
     }
 }
@@ -82,7 +83,6 @@ impl Provider {
 pub struct Tab {
     /// Stable name, as in [`AccountTabs::hidden`].
     pub key: &'static str,
-    pub label: &'static str,
     pub icon: &'static str,
     /// Index into the theme's tab colors.
     pub color: usize,
@@ -93,17 +93,32 @@ pub struct Tab {
 impl Tab {
     fn new(
         key: &'static str,
-        label: &'static str,
         icon: &'static str,
         color: usize,
         categories: &[MailCategory],
     ) -> Self {
         Self {
             key,
-            label,
             icon,
             color,
             categories: categories.to_vec(),
+        }
+    }
+
+    /// The tab's name, in the current language.
+    pub fn label(&self) -> String {
+        match self.key {
+            "primary" => tr!("tab-primary"),
+            "promotions" => tr!("tab-promotions"),
+            "social" => tr!("tab-social"),
+            "updates" => tr!("tab-updates"),
+            "forums" => tr!("tab-forums"),
+            "focused" => tr!("tab-focused"),
+            "other" => tr!("tab-other"),
+            "inbox" => tr!("tab-inbox"),
+            "newsletters" => tr!("tab-newsletters"),
+            "notifications" => tr!("tab-notifications"),
+            key => key.to_owned(),
         }
     }
 }
@@ -115,38 +130,25 @@ pub fn all_tabs(style: TabStyle) -> Vec<Tab> {
     use MailCategory::*;
     match style {
         TabStyle::Auto | TabStyle::Gmail => vec![
-            Tab::new("primary", "Primary", "inbox", 0, &[Primary]),
-            Tab::new("promotions", "Promotions", "tag", 1, &[Promotions]),
-            Tab::new("social", "Social", "people", 2, &[Social]),
-            Tab::new("updates", "Updates", "info", 3, &[Updates]),
-            Tab::new("forums", "Forums", "forum", 4, &[Forums]),
+            Tab::new("primary", "inbox", 0, &[Primary]),
+            Tab::new("promotions", "tag", 1, &[Promotions]),
+            Tab::new("social", "people", 2, &[Social]),
+            Tab::new("updates", "info", 3, &[Updates]),
+            Tab::new("forums", "forum", 4, &[Forums]),
         ],
         TabStyle::Focused => vec![
-            Tab::new("focused", "Focused", "inbox", 0, &[Primary]),
+            Tab::new("focused", "inbox", 0, &[Primary]),
             Tab::new(
                 "other",
-                "Other",
                 "all-mail",
                 3,
                 &[Promotions, Social, Updates, Forums],
             ),
         ],
         TabStyle::Zoho => vec![
-            Tab::new("inbox", "Inbox", "inbox", 0, &[Primary]),
-            Tab::new(
-                "newsletters",
-                "Newsletters",
-                "tag",
-                1,
-                &[Promotions, Forums],
-            ),
-            Tab::new(
-                "notifications",
-                "Notifications",
-                "info",
-                3,
-                &[Updates, Social],
-            ),
+            Tab::new("inbox", "inbox", 0, &[Primary]),
+            Tab::new("newsletters", "tag", 1, &[Promotions, Forums]),
+            Tab::new("notifications", "info", 3, &[Updates, Social]),
         ],
         TabStyle::Off => Vec::new(),
     }

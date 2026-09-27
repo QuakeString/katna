@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "What's new, after every update"
+text = """
+After an update Katna Mail shows what changed, once, instead of the
+welcome tour. Quick settings opens it again.
+"""

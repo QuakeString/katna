@@ -15,6 +15,8 @@ use gpui::{
 use katna_ui::px;
 use katna_ui::unpx;
 
+use katna_i18n::tr;
+
 use super::compose::Kind;
 use super::{Act, MailWindow};
 use crate::data::{EntryKey, Row};
@@ -222,7 +224,7 @@ impl MailWindow {
                         ),
                 )
         });
-        let move_to = item("context-move-to", "move-to", "Move to".into())
+        let move_to = item("context-move-to", "move-to", tr!("menu-move-to").into())
             .relative()
             .when(menu.move_to, |d| d.bg(rgba(th.hover)))
             .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
@@ -246,7 +248,7 @@ impl MailWindow {
             item(
                 "context-find",
                 "search",
-                format!("Find emails from {name}").into(),
+                tr!("menu-find-from", name = name.as_str()).into(),
             )
             .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
                 if *hovered {
@@ -267,37 +269,46 @@ impl MailWindow {
             .map(|d| raised(d, th, 8.0, 3.0))
             .text_size(px(14.0))
             .text_color(rgba(th.text))
-            .child(plain("context-reply", "reply", "Reply").on_click(reply(Kind::Reply)))
+            .child(plain("context-reply", "reply", &tr!("menu-reply")).on_click(reply(Kind::Reply)))
             .child(
-                plain("context-reply-all", "reply-all", "Reply all")
+                plain("context-reply-all", "reply-all", &tr!("menu-reply-all"))
                     .on_click(reply(Kind::ReplyAll)),
             )
-            .child(plain("context-forward", "forward", "Forward").on_click(reply(Kind::Forward)))
+            .child(
+                plain("context-forward", "forward", &tr!("menu-forward"))
+                    .on_click(reply(Kind::Forward)),
+            )
             .child(separator())
-            .child(plain("context-archive", "archive", "Archive").on_click(act(Act::Archive)))
-            .child(plain("context-delete", "trash", "Delete").on_click(act(Act::Delete)))
-            .child(plain("context-spam", "junk", "Report spam").on_click(act(Act::Spam)))
+            .child(
+                plain("context-archive", "archive", &tr!("menu-archive"))
+                    .on_click(act(Act::Archive)),
+            )
+            .child(plain("context-delete", "trash", &tr!("menu-delete")).on_click(act(Act::Delete)))
+            .child(plain("context-spam", "junk", &tr!("menu-spam")).on_click(act(Act::Spam)))
             .child(if row.unread {
-                plain("context-read", "mark-read", "Mark as read").on_click(act(Act::Read(true)))
+                plain("context-read", "mark-read", &tr!("menu-mark-read"))
+                    .on_click(act(Act::Read(true)))
             } else {
-                plain("context-read", "mail", "Mark as unread").on_click(act(Act::Read(false)))
+                plain("context-read", "mail", &tr!("menu-mark-unread"))
+                    .on_click(act(Act::Read(false)))
             })
             .child(if row.flagged {
-                plain("context-star", "star", "Remove star").on_click(act(Act::Star(false)))
+                plain("context-star", "star", &tr!("menu-unstar")).on_click(act(Act::Star(false)))
             } else {
-                plain("context-star", "star", "Add star").on_click(act(Act::Star(true)))
+                plain("context-star", "star", &tr!("menu-star")).on_click(act(Act::Star(true)))
             })
             .child(if row.important {
-                plain("context-important", "important", "Mark as not important")
+                plain("context-important", "important", &tr!("menu-not-important"))
                     .on_click(act(Act::Important(false)))
             } else {
-                plain("context-important", "important", "Mark as important")
+                plain("context-important", "important", &tr!("menu-important"))
                     .on_click(act(Act::Important(true)))
             })
             .child(if row.pinned {
-                plain("context-pin", "pin-filled", "Unpin").on_click(act(Act::Pin(false)))
+                plain("context-pin", "pin-filled", &tr!("menu-unpin"))
+                    .on_click(act(Act::Pin(false)))
             } else {
-                plain("context-pin", "pin", "Pin to top").on_click(act(Act::Pin(true)))
+                plain("context-pin", "pin", &tr!("menu-pin")).on_click(act(Act::Pin(true)))
             })
             .child(separator())
             .child(move_to)
@@ -305,15 +316,18 @@ impl MailWindow {
             // A conversation window has no list to right-click.
             .child(separator())
             .child(
-                plain("context-new-window", "open-external", "Open in new window").on_click(
-                    cx.listener(|this, _, _, cx| {
-                        let key = this.context_menu.as_ref().map(|m| m.key);
-                        this.close_context_menu(cx);
-                        if let Some(ix) = this.entries.iter().position(|e| Some(e.key) == key) {
-                            this.open_in_window(ix, cx);
-                        }
-                    }),
-                ),
+                plain(
+                    "context-new-window",
+                    "open-external",
+                    &tr!("menu-new-window"),
+                )
+                .on_click(cx.listener(|this, _, _, cx| {
+                    let key = this.context_menu.as_ref().map(|m| m.key);
+                    this.close_context_menu(cx);
+                    if let Some(ix) = this.entries.iter().position(|e| Some(e.key) == key) {
+                        this.open_in_window(ix, cx);
+                    }
+                })),
             )
             .with_animation(
                 ("context-menu", menu.ix),

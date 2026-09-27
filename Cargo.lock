@@ -4004,6 +4004,7 @@ dependencies = [
  "serde_json",
  "spellbook",
  "tempfile",
+ "toml 1.1.6+spec-1.1.0",
  "tracing",
  "zbus",
 ]
