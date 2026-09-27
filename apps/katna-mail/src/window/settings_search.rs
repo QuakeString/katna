@@ -74,6 +74,12 @@ const ENTRIES: &[Entry] = &[
         "tray badge unread count taskbar dock panel",
     ),
     entry(
+        Section::General,
+        "Default mail app",
+        "Open email links from other apps and websites in Katna Mail",
+        "default client mailto links handler email program",
+    ),
+    entry(
         Section::Inbox,
         "Inbox tabs",
         "Sort the inbox into tabs, as your mail provider's website does",

@@ -2011,6 +2011,15 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   Preferences (right-click on the taskbar icon in Plasma and GNOME) run
   `katna-mail --compose`, `--inbox` and `--settings`. With `--data-dir` the
   app stands alone.
+- **Default mail app**: the desktop file declares
+  `MimeType=x-scheme-handler/mailto;` and `Exec=katna-mail %u`. A `mailto:`
+  link (RFC 6068: to, cc, bcc, subject, body) opens a new message filled
+  in; a running app gets it through `org.freedesktop.Application.Open`.
+  Settings > General > Default mail app shows whether the desktop's
+  `mimeapps.list` names Katna Mail for `x-scheme-handler/mailto` and can
+  set it (`katna_platform::mimeapps`, in the user's `mimeapps.list` and any
+  desktop-specific list that names another app). Plasma and GNOME read
+  these files. Under Flatpak this needs the OpenURI portal instead (later).
 - **KDE global menu**: the app serves its menu bar (File, Edit, View, Go,
   Message, Settings, Help) with `com.canonical.dbusmenu` at
   `/in/invenia/katna/Mail/MenuBar`, built from its GPUI actions and their

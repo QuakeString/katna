@@ -172,6 +172,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                and only if you say yes. Change it any time in Settings > User feedback.",
         animation: None,
     },
+    Highlight {
+        id: 17,
+        title: "Katna as your mail app",
+        text: "Email links in other apps and on websites can open a new message in \
+               Katna Mail, with the address, subject and text filled in. Turn it on \
+               in Settings > General > Default mail app.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.

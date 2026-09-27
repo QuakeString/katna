@@ -230,6 +230,11 @@ impl MailWindow {
     ) {
         match request {
             Request::Activate => {}
+            Request::Mailto(uri) => {
+                if let Some(mail) = crate::mailto::Mailto::parse(&uri) {
+                    self.open_mailto(mail, window, cx);
+                }
+            }
             Request::Menu(name) => {
                 self.run_action(&name, window, cx);
                 return;
