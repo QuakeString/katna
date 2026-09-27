@@ -611,3 +611,17 @@ settings-time = Time
 settings-clock-language = As the language writes it
 settings-clock-12 = 12-hour, like 2:05 PM
 settings-clock-24 = 24-hour, like 14:05
+
+## Attachment viewer
+
+# Shown in place of a file the viewer cannot show.
+viewer-unreadable = This attachment could not be read.
+viewer-pdf-locked = This PDF is protected with a password.
+viewer-pdf-unreadable = This PDF could not be read.
+viewer-picture-unreadable = This picture could not be read.
+viewer-sheet-unreadable = This spreadsheet could not be read.
+viewer-document-unreadable = This document could not be read.
+viewer-slides-unreadable = These slides could not be read.
+viewer-no-preview = No preview available
+# Above each slide of a presentation. $number: the slide's number.
+viewer-slide = Slide { $number }

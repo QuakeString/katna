@@ -25,7 +25,7 @@ use gpui::{
     div, ease_out_quint, img, prelude::*, rgba, uniform_list,
 };
 use katna_preview::pdf::{self, Document};
-use katna_preview::{Kind, Picture, document, picture, sheet, text};
+use katna_preview::{Kind, Picture, document, picture, sheet, slides, text};
 use katna_render::AttachmentFile;
 use katna_ui::Ripple;
 use katna_ui::px;
@@ -65,6 +65,9 @@ pub(super) enum ViewerEvent {
     Close,
     Save(Arc<AttachmentFile>),
     OpenWith(Arc<AttachmentFile>),
+    /// The file the viewer was opened on has no preview after all (a
+    /// damaged, protected or unsupported file): open it elsewhere.
+    Unreadable(Arc<AttachmentFile>),
 }
 
 pub(super) struct Viewer {
@@ -117,6 +120,8 @@ enum Loaded {
     Text(Vec<SharedString>, bool),
     Sheet(sheet::Workbook),
     Document(document::Document),
+    /// Why there is nothing to show: a message id, translated on the
+    /// main thread.
     Nothing(&'static str),
 }
 
@@ -187,6 +192,10 @@ impl Viewer {
         self.release(old);
         let item = self.items[ix].clone();
         let raw = self.raw.clone();
+        // Only the file the viewer was opened on is handed to another app
+        // when it cannot be shown; paging through never launches one.
+        let first = self.seq == 1;
+        let risky = item.risky;
         self._load = Some(cx.spawn(async move |this, cx| {
             let (file, loaded) = cx
                 .background_executor()
@@ -194,6 +203,13 @@ impl Viewer {
                 .await;
             this.update(cx, |this, cx| {
                 this.file = file.map(Arc::new);
+                if first
+                    && matches!(loaded, Loaded::Nothing(_))
+                    && !risky
+                    && let Some(file) = &this.file
+                {
+                    cx.emit(ViewerEvent::Unreadable(file.clone()));
+                }
                 this.content = match loaded {
                     Loaded::Pdf(doc) => Content::Pdf(PdfView {
                         doc: Arc::new(doc),
@@ -204,7 +220,7 @@ impl Viewer {
                     Loaded::Text(lines, cut) => Content::Text(Rc::new(lines), cut),
                     Loaded::Sheet(book) => Content::Sheet(SheetView::new(book)),
                     Loaded::Document(doc) => Content::Document(DocumentView::new(doc)),
-                    Loaded::Nothing(why) => Content::Nothing(why.into()),
+                    Loaded::Nothing(why) => Content::Nothing(katna_i18n::tr!(why).into()),
                 };
                 cx.notify();
             })
@@ -369,13 +385,13 @@ impl Viewer {
 /// Extracts `item` from the raw message and decodes it for showing.
 fn load(raw: &[u8], item: &Item) -> (Option<AttachmentFile>, Loaded) {
     let Some(file) = katna_render::attachment_file(raw, item.index) else {
-        return (None, Loaded::Nothing("This attachment could not be read."));
+        return (None, Loaded::Nothing("viewer-unreadable"));
     };
     let loaded = match katna_preview::kind(&file.mime, &file.name) {
         Kind::Pdf => match Document::open(file.bytes.clone()) {
             Ok(doc) => Loaded::Pdf(doc),
-            Err(pdf::Error::Locked) => Loaded::Nothing("This PDF is protected with a password."),
-            Err(pdf::Error::Invalid) => Loaded::Nothing("This PDF could not be read."),
+            Err(pdf::Error::Locked) => Loaded::Nothing("viewer-pdf-locked"),
+            Err(pdf::Error::Invalid) => Loaded::Nothing("viewer-pdf-unreadable"),
         },
         Kind::Picture(Picture::Svg) => Loaded::Drawn(
             Arc::new(gpui::Image::from_bytes(
@@ -398,7 +414,7 @@ fn load(raw: &[u8], item: &Item) -> (Option<AttachmentFile>, Loaded) {
                     let size = image.dimensions();
                     Loaded::Bitmap(bitmap(image), size)
                 }
-                Err(_) => Loaded::Nothing("This picture could not be read."),
+                Err(_) => Loaded::Nothing("viewer-picture-unreadable"),
             }
         }
         Kind::Text => {
@@ -412,27 +428,19 @@ fn load(raw: &[u8], item: &Item) -> (Option<AttachmentFile>, Loaded) {
         }
         Kind::Sheet { csv: false } => match sheet::open(file.bytes.clone()) {
             Ok(book) => Loaded::Sheet(book),
-            Err(_) => Loaded::Nothing("This spreadsheet could not be read."),
+            Err(_) => Loaded::Nothing("viewer-sheet-unreadable"),
         },
         Kind::Document => match document::open(file.bytes.clone()) {
             Ok(doc) => Loaded::Document(doc),
-            Err(_) => Loaded::Nothing("This document could not be read."),
+            Err(_) => Loaded::Nothing("viewer-document-unreadable"),
         },
-        Kind::Other if is_old_office(&file.name) => {
-            Loaded::Nothing("Old Word files (.doc) and slides have no preview yet.")
-        }
-        Kind::Other => Loaded::Nothing("No preview available"),
+        Kind::Slides => match slides::open(file.bytes.clone()) {
+            Ok(doc) => Loaded::Document(doc),
+            Err(_) => Loaded::Nothing("viewer-slides-unreadable"),
+        },
+        Kind::Other => Loaded::Nothing("viewer-no-preview"),
     };
     (Some(file), loaded)
-}
-
-/// Word 97–2003 and RTF documents and slides, which have no preview.
-fn is_old_office(name: &str) -> bool {
-    name.rsplit_once('.').is_some_and(|(_, ext)| {
-        ["doc", "dot", "ppt", "pps", "pptx", "rtf"]
-            .iter()
-            .any(|e| ext.eq_ignore_ascii_case(e))
-    })
 }
 
 fn fit_step() -> usize {

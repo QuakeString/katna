@@ -968,7 +968,7 @@ impl MailWindow {
                 ),
                 FileGroup::Documents => (
                     "Documents",
-                    "Word (docx) and OpenDocument text (odt).",
+                    "Word (docx, doc), OpenDocument text (odt) and slides (pptx, ppt, odp).",
                     ["open-doc-katna", "open-doc-system", "open-doc-ask"],
                 ),
             };

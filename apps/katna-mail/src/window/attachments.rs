@@ -52,6 +52,8 @@ pub(super) struct Item {
     pub name: String,
     pub size: u64,
     pub kind: Kind,
+    /// Opening it in another app could run a program.
+    pub risky: bool,
 }
 
 impl Item {
@@ -61,6 +63,7 @@ impl Item {
             name: attachment.name.clone(),
             size: attachment.size,
             kind: katna_preview::kind(&attachment.mime, &attachment.name),
+            risky: katna_preview::risky(&attachment.mime, &attachment.name),
         }
     }
 }
@@ -168,6 +171,7 @@ pub(super) fn kind_badge(kind: Kind, size: f32) -> AnyElement {
         Kind::Text => (0x5f6368ff, "notes"),
         Kind::Sheet { .. } => (0x188038ff, "sheet"),
         Kind::Document => (0x1a73e8ff, "document"),
+        Kind::Slides => (0xe8710aff, "slides"),
         Kind::Other => (0x5f6368ff, "file"),
     };
     div()
@@ -185,7 +189,7 @@ pub(super) fn kind_badge(kind: Kind, size: f32) -> AnyElement {
 /// Whether the cards show a thumbnail of this kind.
 fn has_thumbnail(kind: Kind) -> bool {
     match kind {
-        Kind::Pdf | Kind::Text | Kind::Sheet { .. } | Kind::Document => true,
+        Kind::Pdf | Kind::Text | Kind::Sheet { .. } | Kind::Document | Kind::Slides => true,
         Kind::Picture(picture) => picture.decodable(),
         Kind::Other => false,
     }
@@ -199,7 +203,7 @@ fn group(kind: Kind) -> Option<FileGroup> {
         Kind::Picture(_) => Some(FileGroup::Pictures),
         Kind::Text => Some(FileGroup::Text),
         Kind::Sheet { .. } => Some(FileGroup::Spreadsheets),
-        Kind::Document => Some(FileGroup::Documents),
+        Kind::Document | Kind::Slides => Some(FileGroup::Documents),
         Kind::Other => None,
     }
 }
@@ -224,7 +228,7 @@ fn thumbnail(raw: &[u8], index: usize, kind: Kind) -> Option<Thumb> {
         Kind::Picture(format) => katna_preview::picture::thumbnail(&file.bytes, format, w, h)
             .ok()
             .map(picture),
-        Kind::Text | Kind::Sheet { .. } | Kind::Document => {
+        Kind::Text | Kind::Sheet { .. } | Kind::Document | Kind::Slides => {
             if file.bytes.len() > GLANCE_MAX_BYTES {
                 return None;
             }
@@ -325,6 +329,25 @@ fn glance_page(glance: &Glance, radius: gpui::Pixels) -> AnyElement {
                     })
                     // Keeps blank lines.
                     .min_h(px(9.0))
+                    .child(line.text.clone())
+            }))
+            .into_any_element(),
+        Glance::Slide(lines) => page
+            .p(px(12.0))
+            .flex()
+            .flex_col()
+            .items_center()
+            .justify_center()
+            .gap(px(2.0))
+            .text_center()
+            .children(lines.iter().map(|line| {
+                div()
+                    .max_w_full()
+                    .whitespace_nowrap()
+                    .overflow_hidden()
+                    .when(line.heading, |l| {
+                        l.font_weight(FontWeight::BOLD).text_size(px(10.0))
+                    })
                     .child(line.text.clone())
             }))
             .into_any_element(),
@@ -654,8 +677,7 @@ impl MailWindow {
             .collect();
         let open_in = items
             .get(index)
-            .and_then(|item| group(item.kind))
-            .map_or(OpenIn::Katna, |g| self.config.mail.open.get(g));
+            .map_or(OpenIn::Katna, |item| self.open_in(item));
         if open_in != OpenIn::Katna {
             let name = items.get(index).map(|i| i.name.clone()).unwrap_or_default();
             self.open_elsewhere(id, index, &name, open_in == OpenIn::Ask, cx);
@@ -702,14 +724,25 @@ impl MailWindow {
             .enumerate()
             .map(|(ix, a)| Item::new(ix, a))
             .collect();
-        let open_in =
-            group(items[index].kind).map_or(OpenIn::Katna, |g| self.config.mail.open.get(g));
+        let open_in = self.open_in(&items[index]);
         if open_in != OpenIn::Katna {
             let name = items[index].name.clone();
             self.open_elsewhere(file.message, index, &name, open_in == OpenIn::Ask, cx);
             return;
         }
         self.show_viewer(raw, encrypted, items, index, window, cx);
+    }
+
+    /// Where a click opens `item`: as Default apps says for its type; a
+    /// file Katna has no preview for goes straight to the desktop's default
+    /// app, unless it could run a program (the viewer then offers only
+    /// Save).
+    fn open_in(&self, item: &Item) -> OpenIn {
+        match group(item.kind) {
+            Some(group) => self.config.mail.open.get(group),
+            None if item.risky => OpenIn::Katna,
+            None => OpenIn::System,
+        }
     }
 
     fn show_viewer(
@@ -744,6 +777,16 @@ impl MailWindow {
             ViewerEvent::OpenWith(file) => {
                 let encrypted = self.files.viewer_encrypted;
                 self.open_attachment_with(file.clone(), true, encrypted, cx)
+            }
+            ViewerEvent::Unreadable(file) => {
+                // Katna could not show the file it was asked to open: the
+                // desktop's app gets it instead (or the choice of app, when
+                // Default apps asks for this type).
+                let encrypted = self.files.viewer_encrypted;
+                let kind = katna_preview::kind(&file.mime, &file.name);
+                let ask = group(kind).is_some_and(|g| self.config.mail.open.get(g) == OpenIn::Ask);
+                self.close_viewer(window, cx);
+                self.open_attachment_with(file.clone(), ask, encrypted, cx)
             }
         }
     }

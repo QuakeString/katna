@@ -17,6 +17,7 @@ bring in 624 more of their own. Each keeps its own license.
 | [backtrace](https://github.com/rust-lang/backtrace-rs) 0.3.76 | The Rust Project Developers | MIT OR Apache-2.0 | A library to acquire a stack trace (backtrace) at runtime in a Rust program. |
 | [blake3](https://github.com/BLAKE3-team/BLAKE3) 1.8.7 | Jack O'Connor, Samuel Neves | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception | the BLAKE3 hash function |
 | [calamine](https://github.com/tafia/calamine) 0.36.1 | Johann Tuffe | MIT | An Excel/OpenDocument Spreadsheet reader and deserializer in pure Rust |
+| [cfb](https://github.com/mdsteele/rust-cfb) 0.15.0 | Matthew D. Steele | MIT | Read/write Compound File Binary (structured storage) files |
 | [emojis](https://github.com/rossmacarthur/emojis) 0.9.0 | Ross MacArthur | (MIT OR Apache-2.0) AND Unicode-3.0 | ✨ Lookup emoji in *O(1)* time, access metadata and GitHub shortcodes, iterate over all emoji, and more! |
 | [fluent-bundle](https://github.com/projectfluent/fluent-rs) 0.16.0 | Bruce Mitchener <bruce.mitchener@gmail.com, Caleb Maclennan, Staś Małolepszy, Zibi Braniecki | Apache-2.0 OR MIT | A low-level implementation of a collection of localization messages for a single locale for Project Fluent, a localization system designed to unleash the entire expressive power of natural language translations. |
 | [fontdb](https://github.com/RazrFalcon/fontdb) 0.23.0 | Yevhenii Reizner | MIT | A simple, in-memory font database with CSS-like queries. |
