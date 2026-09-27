@@ -260,7 +260,10 @@ menu-reply-all = Responder a todos
 menu-forward = Reenviar
 menu-archive = Archivar
 menu-delete = Eliminar
+menu-delete-forever = Eliminar definitivamente
+menu-move-to-inbox = Mover a Recibidos
 menu-spam = Marcar como spam
+menu-not-spam = No es spam
 menu-mark-read = Marcar como leído
 menu-mark-unread = Marcar como no leído
 menu-mark-all-read = Marcar todo como leído
@@ -396,6 +399,18 @@ toast-spam = { $kind ->
         [one] Se ha marcado el mensaje como spam.
         [many] Se han marcado { $count } de mensajes como spam.
        *[other] Se han marcado { $count } mensajes como spam.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Se ha marcado la conversación como no spam y se ha movido a Recibidos.
+        [many] Se han marcado { $count } de conversaciones como no spam y se han movido a Recibidos.
+       *[other] Se han marcado { $count } conversaciones como no spam y se han movido a Recibidos.
+    }
+   *[message] { $count ->
+        [one] Se ha marcado el mensaje como no spam y se ha movido a Recibidos.
+        [many] Se han marcado { $count } de mensajes como no spam y se han movido a Recibidos.
+       *[other] Se han marcado { $count } mensajes como no spam y se han movido a Recibidos.
     }
 }
 toast-deleted-forever = { $kind ->

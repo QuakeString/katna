@@ -1743,6 +1743,22 @@ Gemini or confidential mode):
   portal's `SettingChanged`, and when `kdeglobals` or `gtk.css` change
   (checked every 2 s). A quick setting, *Desktop colors* (on by default,
   `mail.desktop_colors`), turns this off.
+- **Contact panel.** On a desktop, a card beside the open conversation
+  (300 px, the usual 16 px card gap, sliding in with the reading pane's
+  spring) shows one of its people: the newest sender other than the user,
+  or whoever is picked under "In this conversation". It shows their
+  picture (the sender pictures above), name and address; phone, title and
+  company from the signatures of their newest stored messages
+  (`profile.rs`: after a `-- ` line or a sign-off such as "Best regards",
+  never in quoted text); their time of day from the UTC offset of their
+  latest `Date` header; the mail exchanged over all accounts (server
+  copies counted once by `Message-ID`); the five newest conversations and
+  six newest files, which open the conversation or the viewer. Everything
+  is local (`katna_store::Store::contact_*`); outside data (LinkedIn, X,
+  company facts) is left for the Katna Server plan. It shows only while
+  the list and reader keep 900 px (600 px with the reader alone), never on
+  tablets and phones or in a conversation window; a button on the reader
+  toolbar turns it off (`mail.contact_panel`).
 - **Not there yet.** Drafts are not saved (closing a written message
   discards it and says so). Labels on a message being written and
   calendar invitations wait for their features.

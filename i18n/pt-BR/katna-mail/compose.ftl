@@ -38,6 +38,9 @@ compose-scheduled = Envio programado para { $when }
 compose-sent-archived = Enviada e arquivada
 compose-sent = Mensagem enviada
 compose-discarded = Rascunho descartado
+compose-draft-saved = Rascunho salvo
+compose-draft-failed = Não foi possível salvar o rascunho: { $error }
+compose-draft-not-opened = Não foi possível abrir o rascunho.
 
 ## Attachments
 

@@ -38,6 +38,9 @@ compose-scheduled = Schemalagt att skickas { $when }
 compose-sent-archived = Skickat och arkiverat
 compose-sent = Meddelandet har skickats
 compose-discarded = Utkastet har slängts
+compose-draft-saved = Utkastet har sparats
+compose-draft-failed = Utkastet kunde inte sparas: { $error }
+compose-draft-not-opened = Utkastet kunde inte öppnas.
 
 ## Attachments
 

@@ -230,7 +230,10 @@ menu-reply-all = Antwoord almal
 menu-forward = Stuur aan
 menu-archive = Argiveer
 menu-delete = Vee uit
+menu-delete-forever = Vee permanent uit
+menu-move-to-inbox = Skuif na Inkassie
 menu-spam = Rapporteer strooipos
+menu-not-spam = Nie strooipos nie
 menu-mark-read = Merk as gelees
 menu-mark-unread = Merk as ongelees
 menu-mark-all-read = Merk almal as gelees
@@ -346,6 +349,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] Boodskap as strooipos gerapporteer.
        *[other] { $count } boodskappe as strooipos gerapporteer.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek as nie-strooipos gemerk en na die inkassie geskuif.
+       *[other] { $count } gesprekke as nie-strooipos gemerk en na die inkassie geskuif.
+    }
+   *[message] { $count ->
+        [one] Boodskap as nie-strooipos gemerk en na die inkassie geskuif.
+       *[other] { $count } boodskappe as nie-strooipos gemerk en na die inkassie geskuif.
     }
 }
 toast-deleted-forever = { $kind ->

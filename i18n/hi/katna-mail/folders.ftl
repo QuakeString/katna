@@ -9,6 +9,9 @@ nav-folders = फ़ोल्डर
 nav-label-new = नया लेबल बनाएं
 nav-folder-new = नया फ़ोल्डर बनाएं
 nav-account-unnamed = खाता { $number }
+nav-all-accounts = सभी खाते
+nav-expand = फ़ोल्डर दिखाएं
+nav-collapse = फ़ोल्डर छिपाएं
 nav-tab-new = { $count ->
     [one] { $count } नया
    *[other] { $count } नए
@@ -18,6 +21,8 @@ nav-tab-new = { $count ->
 
 folder-inbox = इनबॉक्स
 folder-starred = तारांकित
+folder-unread = नहीं पढ़े गए
+folder-important = ज़रूरी
 folder-drafts = ड्राफ़्ट
 folder-sent = भेजे गए
 folder-archive = संग्रह

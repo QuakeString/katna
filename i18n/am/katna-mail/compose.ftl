@@ -38,6 +38,9 @@ compose-scheduled = ለ{ $when } እንዲላክ መርሐግብር ተይዟል
 compose-sent-archived = ተልኳል እና ወደ ማህደር ተቀምጧል
 compose-sent = መልዕክቱ ተልኳል
 compose-discarded = ረቂቁ ተጥሏል
+compose-draft-saved = ረቂቁ ተቀምጧል
+compose-draft-failed = ረቂቁን ማስቀመጥ አልተቻለም፦ { $error }
+compose-draft-not-opened = ረቂቁን መክፈት አልተቻለም።
 
 ## Attachments
 

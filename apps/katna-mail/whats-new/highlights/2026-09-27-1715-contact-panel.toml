@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Contact details beside your mail"
+text = """
+In a wide window, a card beside the open conversation now shows the
+sender: their phone, title and company from their signatures, their time
+of day, how much mail you have exchanged, your recent conversations and
+the files between you. Click a conversation or a file to open it, or
+another person of the conversation to see them. It is read from your mail
+on this computer only. The contact button on the reading pane's toolbar
+hides it.
+"""

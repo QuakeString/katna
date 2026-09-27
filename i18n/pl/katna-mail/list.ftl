@@ -287,7 +287,10 @@ menu-reply-all = Odpowiedz wszystkim
 menu-forward = Przekaż dalej
 menu-archive = Archiwizuj
 menu-delete = Usuń
+menu-delete-forever = Usuń trwale
+menu-move-to-inbox = Przenieś do Odebranych
 menu-spam = Zgłoś spam
+menu-not-spam = To nie spam
 menu-mark-read = Oznacz jako przeczytane
 menu-mark-unread = Oznacz jako nieprzeczytane
 menu-mark-all-read = Oznacz wszystkie jako przeczytane
@@ -443,6 +446,20 @@ toast-spam = { $kind ->
         [few] Zgłoszono { $count } wiadomości jako spam.
         [many] Zgłoszono { $count } wiadomości jako spam.
        *[other] Zgłoszono { $count } wiadomości jako spam.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Wątek oznaczony jako niebędący spamem i przeniesiony do Odebranych.
+        [few] Oznaczono { $count } wątki jako niebędące spamem i przeniesiono do Odebranych.
+        [many] Oznaczono { $count } wątków jako niebędące spamem i przeniesiono do Odebranych.
+       *[other] Oznaczono { $count } wątku jako niebędące spamem i przeniesiono do Odebranych.
+    }
+   *[message] { $count ->
+        [one] Wiadomość oznaczona jako niebędąca spamem i przeniesiona do Odebranych.
+        [few] Oznaczono { $count } wiadomości jako niebędące spamem i przeniesiono do Odebranych.
+        [many] Oznaczono { $count } wiadomości jako niebędące spamem i przeniesiono do Odebranych.
+       *[other] Oznaczono { $count } wiadomości jako niebędące spamem i przeniesiono do Odebranych.
     }
 }
 toast-deleted-forever = { $kind ->

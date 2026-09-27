@@ -38,6 +38,9 @@ compose-scheduled = { $when }ত পঠিয়াবলৈ নিৰ্ধা�
 compose-sent-archived = পঠিওৱা আৰু আৰ্কাইভ কৰা হ'ল
 compose-sent = বাৰ্তা পঠিওৱা হ'ল
 compose-discarded = ড্ৰাফ্ট বাতিল কৰা হ'ল
+compose-draft-saved = ড্ৰাফ্ট ছেভ কৰা হ'ল
+compose-draft-failed = ড্ৰাফ্টটো ছেভ কৰিব পৰা নগ'ল: { $error }
+compose-draft-not-opened = ড্ৰাফ্টটো খুলিব পৰা নগ'ল।
 
 ## Attachments
 

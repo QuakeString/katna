@@ -38,6 +38,9 @@ compose-scheduled = Envoi programmé pour { $when }
 compose-sent-archived = Envoyé et archivé
 compose-sent = Message envoyé
 compose-discarded = Brouillon supprimé
+compose-draft-saved = Brouillon enregistré
+compose-draft-failed = Impossible d’enregistrer le brouillon : { $error }
+compose-draft-not-opened = Impossible d’ouvrir le brouillon.
 
 ## Attachments
 

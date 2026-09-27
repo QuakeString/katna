@@ -463,3 +463,43 @@ hesabınızdan göndermek için okuna tıklayın. Ayarlar > Oluşturma > Yeni
 iletileri şu hesaptan gönder bölümünde başka bir varsayılan seçmediğiniz
 sürece yeni posta ilk hesabınızdan başlar.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Birleşik gelen kutusu"
+text = """
+Tüm hesaplarınızın postalarını birlikte görmek için
+Ayarlar > Hesaplar > Birleşik gelen kutusu seçeneğini açın. “Tüm
+Hesaplar” klasör bölmesinin en üstünde yer alır ve tüm hesaplar için tek
+bir Gelen Kutusu, Okunmamış, Yıldızlı, Önemli, Gönderilmiş Postalar,
+Taslaklar ve daha fazlasını içerir; her birinin yanındaki ok, her hesap
+için bir satır açar. Artık her hesabın adında, klasörlerini daraltan bir
+ok var.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Her klasöre uygun sağ tık menüleri"
+text = """
+Sağ tık menüsünde Taşı altında bir klasör veya etiket seçmek artık
+postayı Geri al seçeneğiyle taşıyor, arama sonuçlarından da. Spam
+klasöründe Spam bildir yerine Spam değil çıkar. Çöp Kutusu'nda Gelen
+Kutusu'na taşı ve Kalıcı olarak sil, Arşiv'de Gelen Kutusu'na taşı
+bulunur; Taslaklar ve Gönderilmiş Postalar'da ise orada geçerli olmayan
+öğeler gösterilmez.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Hesapları sürükleyerek sıralayın"
+text = """
+Ayarlar > Hesaplar bölümünde bir hesabı sürüklemek artık satırın
+tamamını kaldırıyor ve diğer hesaplar yer açmak için kenara kayıyor.
+Yukarı taşı ve Aşağı taşı, bir satırın üzerine geldiğinizde görünür.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Taslaklar saklanır"
+text = """
+Yazmakta olduğunuz bir iletiyi kapattığınızda artık Gmail'deki gibi
+Taslaklar'a, posta sunucunuza da kaydedilir. Yazmaya devam etmek için
+Taslaklar'dan açın. Onu yalnızca çöp kutusu düğmesi atar ve Geri al geri
+getirir.
+"""

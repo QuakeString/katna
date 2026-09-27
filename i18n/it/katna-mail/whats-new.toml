@@ -470,3 +470,42 @@ freccia per inviare da un altro dei tuoi account. La nuova posta parte
 dal tuo primo account, a meno che tu non scelga un altro predefinito in
 Impostazioni > Scrittura > Invia nuovi messaggi da.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Posta in arrivo unificata"
+text = """
+Attiva Impostazioni > Account > Posta in arrivo unificata per vedere
+insieme la posta di tutti i tuoi account. «Tutti gli account» apre il
+riquadro delle cartelle con un’unica Posta in arrivo, Da leggere,
+Speciali, Importanti, Inviati, Bozze e altro per tutti gli account; la
+freccia accanto a ciascuna apre una riga per account. Ora il nome di
+ogni account ha una freccia che ne richiude le cartelle.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menu del clic destro su misura per ogni cartella"
+text = """
+Scegliere una cartella o un'etichetta in Sposta in nel menu del clic
+destro ora sposta la posta, con Annulla, anche dai risultati di ricerca.
+In Spam, Segnala come spam diventa Non è spam. Cestino offre Sposta in
+Posta in arrivo ed Elimina definitivamente, Archivio offre Sposta in
+Posta in arrivo, e Bozze e Inviati tralasciano le voci che lì non
+servono.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Trascina gli account per ordinarli"
+text = """
+In Impostazioni > Account, trascinare un account ora solleva tutta la
+sua riga, e gli altri account si spostano di lato per fargli posto.
+Sposta su e Sposta giù compaiono quando punti una riga.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Le bozze restano"
+text = """
+Chiudere un messaggio che stai scrivendo ora lo salva in Bozze, anche
+sul tuo server di posta, come in Gmail. Aprilo da Bozze per continuare a
+scrivere. Solo il pulsante del cestino lo elimina, e Annulla lo
+recupera.
+"""

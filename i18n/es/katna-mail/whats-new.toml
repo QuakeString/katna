@@ -475,3 +475,41 @@ en su flecha para enviar desde otra de tus cuentas. El correo nuevo
 empieza desde tu primera cuenta, salvo que elijas otra predeterminada en
 Ajustes > Redacción > Enviar mensajes nuevos desde.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Bandeja de entrada unificada"
+text = """
+Activa Ajustes > Cuentas > Bandeja de entrada unificada para ver juntos
+los correos de todas tus cuentas. «Todas las cuentas» encabeza el panel
+de carpetas con un solo Recibidos, No leídos, Destacados, Importantes,
+Enviados, Borradores y más para todas las cuentas; la flecha junto a
+cada uno abre una línea por cuenta. Ahora el nombre de cada cuenta tiene
+una flecha que pliega sus carpetas.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menús del clic derecho para cada carpeta"
+text = """
+Elegir una carpeta o etiqueta en Mover a del menú del clic derecho ahora
+mueve el correo, con Deshacer, también desde los resultados de búsqueda.
+En Spam, Marcar como spam pasa a ser No es spam. Papelera ofrece Mover a
+Recibidos y Eliminar definitivamente, Archivo ofrece Mover a Recibidos,
+y Borradores y Enviados omiten las opciones que no tienen sentido allí.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Arrastra las cuentas para ordenarlas"
+text = """
+En Ajustes > Cuentas, al arrastrar una cuenta ahora se levanta toda su
+fila y las demás cuentas se apartan para dejarle sitio. Subir y Bajar
+aparecen al señalar una fila.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Los borradores se guardan"
+text = """
+Al cerrar un mensaje que estás escribiendo, ahora se guarda en
+Borradores, también en tu servidor de correo, como en Gmail. Ábrelo
+desde Borradores para seguir escribiendo. Solo el botón de la papelera
+lo descarta, y Deshacer lo recupera.
+"""

@@ -230,7 +230,10 @@ menu-reply-all = सभी को जवाब दें
 menu-forward = फ़ॉरवर्ड करें
 menu-archive = संग्रह करें
 menu-delete = मिटाएं
+menu-delete-forever = हमेशा के लिए मिटाएं
+menu-move-to-inbox = इनबॉक्स में ले जाएं
 menu-spam = स्पैम की शिकायत करें
+menu-not-spam = स्पैम नहीं है
 menu-mark-read = पढ़ा गया के रूप में मार्क करें
 menu-mark-unread = नहीं पढ़ा गया के रूप में मार्क करें
 menu-mark-all-read = सभी को पढ़ा गया के रूप में मार्क करें
@@ -346,6 +349,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] मैसेज की स्पैम के रूप में शिकायत की गई।
        *[other] { $count } मैसेज की स्पैम के रूप में शिकायत की गई।
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] बातचीत को स्पैम नहीं के रूप में मार्क करके इनबॉक्स में ले जाया गया।
+       *[other] { $count } बातचीत को स्पैम नहीं के रूप में मार्क करके इनबॉक्स में ले जाया गया।
+    }
+   *[message] { $count ->
+        [one] मैसेज को स्पैम नहीं के रूप में मार्क करके इनबॉक्स में ले जाया गया।
+       *[other] { $count } मैसेज को स्पैम नहीं के रूप में मार्क करके इनबॉक्स में ले जाया गया।
     }
 }
 toast-deleted-forever = { $kind ->

@@ -781,6 +781,50 @@ impl Mail {
         self.rows.clear();
     }
 
+    /// The people on messages `ids` other than the user, each once: for
+    /// each message in turn its sender, then its recipients. Addresses
+    /// are lower case.
+    pub fn message_people(&self, ids: &[MessageId]) -> Vec<(String, Option<String>)> {
+        use katna_store::ParticipantRole as Role;
+        let messages = self.store.messages_by_id(ids).unwrap_or_else(|err| {
+            tracing::warn!("reading the people of a conversation: {err}");
+            Vec::new()
+        });
+        let mut people: Vec<(String, Option<String>)> = Vec::new();
+        for id in ids {
+            let Some(message) = messages.iter().find(|m| m.id == *id) else {
+                continue;
+            };
+            for role in [Role::From, Role::To, Role::Cc] {
+                for p in message.participants.iter().filter(|p| p.role == role) {
+                    let email = p.email_norm.trim().to_lowercase();
+                    let mine = self
+                        .me
+                        .iter()
+                        .any(|me| me.trim().eq_ignore_ascii_case(&email));
+                    if mine || !email.contains('@') {
+                        continue;
+                    }
+                    let name = p
+                        .display_name
+                        .as_deref()
+                        .map(str::trim)
+                        .filter(|n| !n.is_empty() && !n.eq_ignore_ascii_case(&email))
+                        .map(str::to_owned);
+                    match people.iter_mut().find(|(e, _)| *e == email) {
+                        Some((_, known)) => {
+                            if known.is_none() {
+                                *known = name;
+                            }
+                        }
+                        None => people.push((email, name)),
+                    }
+                }
+            }
+        }
+        people
+    }
+
     /// The drafts among `ids`: messages flagged `\Draft`.
     pub fn drafts(&self, ids: &[MessageId]) -> Vec<MessageId> {
         self.store

@@ -38,6 +38,9 @@ compose-scheduled = { $when } ന് അയയ്ക്കാൻ ഷെഡ്യ
 compose-sent-archived = അയച്ചു, ആർക്കൈവ് ചെയ്തു
 compose-sent = സന്ദേശം അയച്ചു
 compose-discarded = ഡ്രാഫ്റ്റ് നിരസിച്ചു
+compose-draft-saved = ഡ്രാഫ്റ്റ് സംരക്ഷിച്ചു
+compose-draft-failed = ഡ്രാഫ്റ്റ് സംരക്ഷിക്കാനായില്ല: { $error }
+compose-draft-not-opened = ഡ്രാഫ്റ്റ് തുറക്കാനായില്ല.
 
 ## Attachments
 

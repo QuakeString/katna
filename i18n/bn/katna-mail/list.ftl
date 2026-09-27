@@ -230,7 +230,10 @@ menu-reply-all = সবাইকে উত্তর দিন
 menu-forward = ফরোয়ার্ড করুন
 menu-archive = আর্কাইভ করুন
 menu-delete = মুছুন
+menu-delete-forever = চিরতরে মুছুন
+menu-move-to-inbox = ইনবক্সে সরান
 menu-spam = স্প্যাম হিসেবে রিপোর্ট করুন
+menu-not-spam = স্প্যাম নয়
 menu-mark-read = পঠিত হিসেবে চিহ্নিত করুন
 menu-mark-unread = অপঠিত হিসেবে চিহ্নিত করুন
 menu-mark-all-read = সবগুলি পঠিত হিসেবে চিহ্নিত করুন
@@ -346,6 +349,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] মেসেজ স্প্যাম হিসেবে রিপোর্ট করা হয়েছে।
        *[other] { $count }টি মেসেজ স্প্যাম হিসেবে রিপোর্ট করা হয়েছে।
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথন স্প্যাম নয় হিসেবে চিহ্নিত করে ইনবক্সে সরানো হয়েছে।
+       *[other] { $count }টি কথোপকথন স্প্যাম নয় হিসেবে চিহ্নিত করে ইনবক্সে সরানো হয়েছে।
+    }
+   *[message] { $count ->
+        [one] মেসেজ স্প্যাম নয় হিসেবে চিহ্নিত করে ইনবক্সে সরানো হয়েছে।
+       *[other] { $count }টি মেসেজ স্প্যাম নয় হিসেবে চিহ্নিত করে ইনবক্সে সরানো হয়েছে।
     }
 }
 toast-deleted-forever = { $kind ->

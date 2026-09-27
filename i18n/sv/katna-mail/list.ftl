@@ -233,7 +233,10 @@ menu-reply-all = Svara alla
 menu-forward = Vidarebefordra
 menu-archive = Arkivera
 menu-delete = Radera
+menu-delete-forever = Radera permanent
+menu-move-to-inbox = Flytta till Inkorgen
 menu-spam = Rapportera som skräppost
+menu-not-spam = Inte skräppost
 menu-mark-read = Markera som läst
 menu-mark-unread = Markera som oläst
 menu-mark-all-read = Markera alla som lästa
@@ -349,6 +352,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] Meddelandet har rapporterats som skräppost.
        *[other] { $count } meddelanden har rapporterats som skräppost.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har markerats som inte skräppost och flyttats till inkorgen.
+       *[other] { $count } konversationer har markerats som inte skräppost och flyttats till inkorgen.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har markerats som inte skräppost och flyttats till inkorgen.
+       *[other] { $count } meddelanden har markerats som inte skräppost och flyttats till inkorgen.
     }
 }
 toast-deleted-forever = { $kind ->

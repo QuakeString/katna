@@ -122,7 +122,7 @@ pub(crate) async fn run(
             smol::Timer::after(SETTLE).await;
             while let Ok(event) = events.try_recv() {
                 if !handle_now(&connection, &mut general, event, &quit).await {
-                    return;
+                    return hide(tray).await;
                 }
             }
             let appeared = follow_setting(&connection, &handle, &mut tray, &general).await;
@@ -151,7 +151,7 @@ pub(crate) async fn run(
             }
             event => {
                 if !handle_now(&connection, &mut general, event, &quit).await {
-                    return;
+                    return hide(tray).await;
                 }
             }
         }
@@ -193,6 +193,16 @@ async fn follow_language(tray: Option<&Tray>, general: &General, language: &mut 
         tracing::warn!(%err, "could not translate the tray menu");
     }
     true
+}
+
+/// Takes the tray icon away at once after Quit, while the rest of the
+/// daemon shuts down.
+async fn hide(tray: Option<Tray>) {
+    if let Some(tray) = tray
+        && let Err(err) = tray.hide().await
+    {
+        tracing::debug!(%err, "hiding the tray icon");
+    }
 }
 
 /// Handles an event while counting is on hold; `false` after Quit.

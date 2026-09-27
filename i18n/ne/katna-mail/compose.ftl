@@ -38,6 +38,9 @@ compose-scheduled = { $when } मा पठाउने तालिका ब�
 compose-sent-archived = पठाइयो र संग्रह गरियो
 compose-sent = सन्देश पठाइयो
 compose-discarded = ड्राफ्ट खारेज गरियो
+compose-draft-saved = ड्राफ्ट सेभ गरियो
+compose-draft-failed = ड्राफ्ट सेभ गर्न सकिएन: { $error }
+compose-draft-not-opened = ड्राफ्ट खोल्न सकिएन।
 
 ## Attachments
 
