@@ -1117,6 +1117,13 @@ impl MailWindow {
         if ix >= self.entries.len() {
             return;
         }
+        // A draft is written on, as in Gmail.
+        if self.folder_role() == Role::Drafts {
+            self.selected = Some(ix);
+            self.open_draft(self.entries[ix].latest, window, cx);
+            cx.notify();
+            return;
+        }
         if !self.reading && !self.split() {
             self.card_seq += 1;
         }
@@ -2123,6 +2130,10 @@ impl MailWindow {
     fn run_undo(&mut self, undo: Command, window: &mut Window, cx: &mut Context<Self>) {
         if let Some(ix) = self.undo_reopens.iter().rposition(|(u, _)| *u == undo) {
             self.reopen_after_undo = Some(self.undo_reopens.remove(ix).1);
+        }
+        if undo == Command::ReopenDraft {
+            self.reopen_closed_draft(window, cx);
+            return;
         }
         if let Command::UndoSend(_) = undo {
             // Taken back from the outbox: the message opens again.

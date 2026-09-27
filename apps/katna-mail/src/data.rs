@@ -748,6 +748,11 @@ impl Mail {
         self.rows.clear();
     }
 
+    /// The account of message `id`.
+    pub fn account_of(&self, id: MessageId) -> Option<AccountId> {
+        Some(self.store.messages_by_id(&[id]).ok()?.pop()?.account)
+    }
+
     /// The raw message `id`, if its body is stored.
     pub fn raw(&self, id: MessageId) -> Option<Vec<u8>> {
         let message = self.store.messages_by_id(&[id]).ok()?.pop()?;
