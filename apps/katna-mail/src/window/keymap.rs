@@ -406,6 +406,17 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
             }
         }
     }
+    // Clicked text of a message copies and selects as it does anywhere.
+    bindings.push(KeyBinding::new(
+        "ctrl-c",
+        super::select::CopyText,
+        Some(super::select::TEXT_CONTEXT),
+    ));
+    bindings.push(KeyBinding::new(
+        "ctrl-a",
+        super::select::SelectAllText,
+        Some(super::select::TEXT_CONTEXT),
+    ));
     // Down in the search box goes to the list; not a shortcut to change.
     bindings.push(KeyBinding::new("down", FocusList, Some(SEARCH_CONTEXT)));
     // Tab and Shift+Tab move between fields and buttons, as in any desktop

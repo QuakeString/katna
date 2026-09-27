@@ -155,6 +155,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                it too.",
         animation: None,
     },
+    Highlight {
+        id: 15,
+        title: "Select and copy text in mail",
+        text: "Drag across a message to select its text, double-click for a word \
+               or triple-click for a paragraph. Ctrl+C or a right-click copies it, \
+               and Ctrl+A selects the whole conversation.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.
