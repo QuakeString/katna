@@ -7,6 +7,7 @@
 //! to date and serves `in.invenia.katna.Pim1` on the session bus; owning
 //! the bus name keeps it to a single instance.
 
+mod crash_upload;
 pub mod daemon;
 mod desktop;
 pub mod install;

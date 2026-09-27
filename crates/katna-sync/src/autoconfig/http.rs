@@ -2,8 +2,9 @@
 
 //! Just enough HTTPS to fetch a configuration file or an image: `GET`,
 //! `Connection: close`, `Content-Length` or chunked bodies, and a few
-//! redirects. Only `https` URLs, so a network in the middle cannot hand us
-//! its servers or see what is fetched.
+//! redirects; and a `POST` for crash reports. Only `https` URLs, so a
+//! network in the middle cannot hand us its servers or see what is
+//! fetched or sent.
 
 use std::time::Duration;
 
@@ -70,6 +71,63 @@ async fn fetch(
             Err(Error::Timeout(timeout))
         })
         .await
+}
+
+/// Posts `body` to `url` with the headers `headers` and returns the answer's
+/// status code. Redirects are not followed.
+pub async fn post(
+    url: &str,
+    headers: &[(&str, &str)],
+    body: &[u8],
+    tls: &Tls,
+    timeout: Duration,
+) -> Result<u16> {
+    let post = async {
+        let parts = parse_url(url)?;
+        let mut request = format!(
+            "POST {} HTTP/1.1\r\nHost: {}\r\nUser-Agent: Katna\r\nContent-Length: {}\r\n\
+             Connection: close\r\n",
+            parts.path,
+            parts.host,
+            body.len()
+        );
+        for (name, value) in headers {
+            if name.contains(['\r', '\n', ':']) || value.contains(['\r', '\n']) {
+                return Err(Error::Protocol(format!("{url}: bad header {name}")));
+            }
+            request.push_str(&format!("{name}: {value}\r\n"));
+        }
+        request.push_str("\r\n");
+        let mut conn = Conn::new(tls.clone());
+        conn.connect_tls(parts.host, parts.port).await?;
+        conn.write_all(request.as_bytes()).await?;
+        conn.write_all(body).await?;
+        let mut response = Vec::new();
+        // The status line is all that is needed.
+        while !response.windows(2).any(|w| w == b"\r\n") {
+            let chunk = conn.read().await?;
+            if chunk.is_empty() || response.len() > 64 * 1024 {
+                break;
+            }
+            response.extend_from_slice(chunk);
+        }
+        let _ = conn.close().await;
+        status(&response).ok_or_else(|| Error::Protocol(format!("{url}: no HTTP status")))
+    };
+    post.or(async {
+        async_io::Timer::after(timeout).await;
+        Err(Error::Timeout(timeout))
+    })
+    .await
+}
+
+/// The code of an `HTTP/1.1 200 OK` line.
+fn status(response: &[u8]) -> Option<u16> {
+    let line = response.split(|b| *b == b'\r').next()?;
+    let line = std::str::from_utf8(line).ok()?;
+    let mut words = line.split(' ');
+    words.next()?.starts_with("HTTP/").then_some(())?;
+    words.next()?.parse().ok()
 }
 
 enum Answer {
@@ -253,6 +311,14 @@ fn dechunk(mut data: &[u8], cut: bool) -> Option<Vec<u8>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn status_lines() {
+        assert_eq!(status(b"HTTP/1.1 200 OK\r\nServer: x\r\n"), Some(200));
+        assert_eq!(status(b"HTTP/1.1 429 Too Many Requests\r\n"), Some(429));
+        assert_eq!(status(b"garbage"), None);
+        assert_eq!(status(b""), None);
+    }
 
     #[test]
     fn urls() {

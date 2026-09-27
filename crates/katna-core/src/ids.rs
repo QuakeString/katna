@@ -44,6 +44,12 @@ pub const MAIL_MENU_BAR_PATH: &str = "/in/invenia/katna/Mail/MenuBar";
 /// unread count on Katna Mail's taskbar icon.
 pub const LAUNCHER_ENTRY_PATH: &str = "/in/invenia/katna/Daemon/LauncherEntry";
 
+/// Katna's crash tracker: the Sentry project crash reports are sent to,
+/// only after the user agrees (`docs/ARCHITECTURE.md` §19.2). A DSN is
+/// the project's public address, not a secret. Empty turns sending off;
+/// `feedback.dsn` in the settings file can point somewhere else.
+pub const SENTRY_DSN: &str = "https://1ebb96bdfbca71ddd5a26968b39d5e47@o4512156164096000.ingest.de.sentry.io/4512156171698256";
+
 /// Returns whether `id` is usable as an application ID, D-Bus well-known name
 /// and D-Bus interface name at the same time.
 ///

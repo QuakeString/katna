@@ -18,7 +18,7 @@
 //! account still checks the login.
 
 pub(crate) mod dns;
-pub(crate) mod http;
+pub mod http;
 
 use std::{future::Future, net::SocketAddr, pin::Pin, time::Duration};
 
