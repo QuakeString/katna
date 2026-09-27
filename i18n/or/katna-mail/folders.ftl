@@ -1,0 +1,43 @@
+# Katna Mail, Odia (ଓଡ଼ିଆ).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Navigation (the folders pane)
+
+nav-labels = ଲେବଲ
+nav-folders = ଫୋଲ୍ଡର
+nav-label-new = ନୂଆ ଲେବଲ ତିଆରି କରନ୍ତୁ
+nav-folder-new = ନୂଆ ଫୋଲ୍ଡର ତିଆରି କରନ୍ତୁ
+nav-account-unnamed = ଆକାଉଣ୍ଟ { $number }
+nav-tab-new = { $count ->
+    [one] { $count }ଟି ନୂଆ
+   *[other] { $count }ଟି ନୂଆ
+}
+
+## Special folders (the user's own folders keep their names)
+
+folder-inbox = ଇନବକ୍ସ
+folder-starred = ତାରାଙ୍କିତ
+folder-drafts = ଡ୍ରାଫ୍ଟ
+folder-sent = ପଠାଯାଇଛି
+folder-archive = ଆର୍କାଇଭ
+folder-spam = ସ୍ପାମ
+folder-trash = ଟ୍ରାସ
+folder-all-mail = ସମସ୍ତ ମେଲ
+folder-scheduled = ନିର୍ଦ୍ଧାରିତ
+
+## New label / new folder dialog (Gmail accounts have labels, others folders)
+
+label-new-title = ନୂଆ ଲେବଲ
+label-folder-new-title = ନୂଆ ଫୋଲ୍ଡର
+label-prompt = ଦୟାକରି ଏକ ନୂଆ ଲେବଲ ନାମ ଲେଖନ୍ତୁ:
+label-folder-prompt = ଦୟାକରି ଏକ ନୂଆ ଫୋଲ୍ଡର ନାମ ଲେଖନ୍ତୁ:
+label-name-hint = ଲେବଲ ନାମ
+label-folder-name-hint = ଫୋଲ୍ଡର ନାମ
+label-nest = ଲେବଲକୁ ଏହା ତଳେ ରଖନ୍ତୁ:
+label-folder-nest = ଫୋଲ୍ଡରକୁ ଏହା ତଳେ ରଖନ୍ତୁ:
+label-cancel = ବାତିଲ କରନ୍ତୁ
+label-create = ତିଆରି କରନ୍ତୁ
+label-creating = ତିଆରି କରାଯାଉଛି…
+label-created = “{ $name }” ଲେବଲ ତିଆରି ହେଲା।
+label-folder-created = “{ $name }” ଫୋଲ୍ଡର ତିଆରି ହେଲା।

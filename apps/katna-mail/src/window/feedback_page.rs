@@ -8,6 +8,7 @@ use std::time::{Duration, Instant};
 
 use gpui::{AnyElement, ClipboardItem, Context, FontWeight, div, prelude::*, rgba};
 use katna_core::crash::{self, Report};
+use katna_i18n::tr;
 use katna_ui::px;
 
 use super::MailWindow;
@@ -28,17 +29,12 @@ pub(super) struct SavedReports {
     read: Instant,
 }
 
-/// What sending crash reports means, under its switch.
-pub(super) const SEND_DETAIL: &str = "The saved report, exactly as you can view it here, goes \
-     to Katna's crash tracker (Sentry, in the EU). No IP address, messages or email addresses";
-
 /// "Katna Mail" for `katna-mail`.
-fn app_name(app: &str) -> &str {
+fn app_name(app: &str) -> String {
     match app {
-        "katna-mail" => "Katna Mail",
-        "katna-daemon" => "Background service",
-        "katnactl" => "katnactl",
-        other => other,
+        "katna-mail" => "Katna Mail".to_owned(),
+        "katna-daemon" => tr!("feedback-app-daemon"),
+        other => other.to_owned(),
     }
 }
 
@@ -74,7 +70,7 @@ impl MailWindow {
                     .py(px(8.0))
                     .text_size(px(14.0))
                     .text_color(rgba(th.text_faint))
-                    .child("No crash reports are saved."),
+                    .child(tr!("feedback-none-saved")),
             );
         }
         for (i, report) in reports.iter().enumerate() {
@@ -84,7 +80,7 @@ impl MailWindow {
         if !reports.is_empty() {
             list = list.child(
                 div().pt(px(8.0)).pl(px(8.0)).flex().child(
-                    outlined_button("feedback-delete-all", "Delete all", th)
+                    outlined_button("feedback-delete-all", tr!("feedback-delete-all"), th)
                         .text_color(rgba(th.error))
                         .on_click(cx.listener(|this, _, _, cx| this.delete_crash_reports(cx))),
                 ),
@@ -100,20 +96,18 @@ impl MailWindow {
                     .text_size(px(13.0))
                     .text_color(rgba(th.text_dim))
                     .child(if send {
-                        "New crash reports are sent to help fix what went wrong. Nothing else \
-                         leaves this computer."
+                        tr!("feedback-intro-sending")
                     } else {
-                        "Katna sends nothing anywhere. Crash reports stay on this computer, \
-                         for you to look at or attach to a bug report."
+                        tr!("feedback-intro-local")
                     }),
             )
             .child(self.row(
-                "Crash reports",
-                Some("Written when Katna Mail or its background service crashes."),
+                tr!("feedback-crash-reports"),
+                Some(&tr!("feedback-crash-reports-detail")),
                 self.switch_row(
                     "page-save-crash-reports",
-                    "Save crash reports on this computer",
-                    "Your home folder, user and computer names and email addresses are left out",
+                    tr!("feedback-save"),
+                    tr!("feedback-save-detail"),
                     save,
                     Change::SaveCrashReports(!save),
                     th,
@@ -122,18 +116,18 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
-                "Saved crash reports",
-                Some("The newest 20 are kept."),
+                tr!("feedback-saved"),
+                Some(&tr!("feedback-saved-detail", count = 20)),
                 list,
                 th,
             ))
             .child(self.row(
-                "Help improve Katna",
-                Some("Off unless you turn it on, and you can turn it off here at any time."),
+                tr!("feedback-help-improve"),
+                Some(&tr!("feedback-help-improve-detail")),
                 self.switch_row(
                     "page-send-crash-reports",
-                    "Send crash reports",
-                    SEND_DETAIL,
+                    tr!("feedback-send"),
+                    tr!("feedback-send-detail"),
                     send,
                     Change::SendCrashReports(!send),
                     th,
@@ -158,7 +152,7 @@ impl MailWindow {
             .map(format::long_date)
             .unwrap_or_default();
         if sent {
-            when.push_str(" \u{b7} Sent");
+            when = tr!("feedback-report-sent", date = when);
         }
         let link = |id: &'static str| {
             div()
@@ -204,25 +198,25 @@ impl MailWindow {
             )
             .child(
                 link("feedback-view")
-                    .tooltip(tip("Open the report", th))
+                    .tooltip(tip(tr!("feedback-view-tooltip"), th))
                     .on_click(cx.listener(move |_, _, _, cx| cx.open_with_system(&view.path)))
-                    .child("View"),
+                    .child(tr!("feedback-view")),
             )
             .child(
                 link("feedback-copy")
-                    .tooltip(tip("Copy it to paste into a bug report", th))
+                    .tooltip(tip(tr!("feedback-copy-tooltip"), th))
                     .on_click(cx.listener(move |this, _, _, cx| match copy.read() {
                         Ok(text) => {
                             cx.write_to_clipboard(ClipboardItem::new_string(text));
-                            this.show_snackbar("Crash report copied.", None, cx);
+                            this.show_snackbar(tr!("feedback-copied"), None, cx);
                         }
                         Err(err) => this.show_snackbar(
-                            format!("Could not read the crash report: {err}"),
+                            tr!("feedback-read-failed", error = err.to_string()),
                             None,
                             cx,
                         ),
                     }))
-                    .child("Copy"),
+                    .child(tr!("text-copy")),
             )
             .child(
                 link("feedback-delete")
@@ -230,7 +224,7 @@ impl MailWindow {
                     .on_click(cx.listener(move |this, _, _, cx| {
                         if let Err(err) = std::fs::remove_file(&delete.path) {
                             this.show_snackbar(
-                                format!("Could not delete the crash report: {err}"),
+                                tr!("feedback-delete-failed", error = err.to_string()),
                                 None,
                                 cx,
                             );
@@ -238,16 +232,16 @@ impl MailWindow {
                         this.saved_reports = None;
                         cx.notify();
                     }))
-                    .child("Delete"),
+                    .child(tr!("list-delete")),
             )
             .into_any_element()
     }
 
     fn delete_crash_reports(&mut self, cx: &mut Context<Self>) {
         match crash::delete_all(&self.paths.crash_dir()) {
-            Ok(()) => self.show_snackbar("Crash reports deleted.", None, cx),
+            Ok(()) => self.show_snackbar(tr!("feedback-deleted-all"), None, cx),
             Err(err) => self.show_snackbar(
-                format!("Could not delete the crash reports: {err}"),
+                tr!("feedback-delete-all-failed", error = err.to_string()),
                 None,
                 cx,
             ),

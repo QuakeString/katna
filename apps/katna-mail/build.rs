@@ -2,8 +2,8 @@
 
 //! Builds two lists into Katna Mail:
 //!
-//! - the translations (`i18n/<language>/katna-mail.ftl` and `katna-ui.ftl`)
-//!   for `katna_i18n::init`, in `$OUT_DIR/translations.rs`; English is in
+//! - the translations (`i18n/<language>/katna-mail/*.ftl` and
+//!   `katna-ui.ftl`) for `katna_i18n::init`, in `$OUT_DIR/translations.rs`; English is in
 //!   `katna-i18n`;
 //! - the What's new highlights, one TOML file each in
 //!   `whats-new/highlights/`, in `$OUT_DIR/highlights.rs` for
@@ -14,7 +14,9 @@
 use std::fmt::Write as _;
 use std::path::Path;
 
-const FILES: &[&str] = &["katna-ui.ftl", "katna-mail.ftl"];
+/// The binaries whose text Katna Mail shows: `<binary>.ftl` or the files
+/// in `<binary>/` of each language folder.
+const BINARIES: &[&str] = &["katna-ui", "katna-mail"];
 
 fn main() {
     translations();
@@ -35,9 +37,23 @@ fn translations() {
     for folder in folders {
         println!("cargo:rerun-if-changed={}", folder.display());
         let name = folder.file_name().unwrap().to_string_lossy().into_owned();
-        for file in FILES {
-            let path = folder.join(file);
-            if path.is_file() {
+        for binary in BINARIES {
+            let mut paths = Vec::new();
+            let single = folder.join(format!("{binary}.ftl"));
+            if single.is_file() {
+                paths.push(single);
+            }
+            if let Ok(entries) = std::fs::read_dir(folder.join(binary)) {
+                let mut files: Vec<_> = entries
+                    .flatten()
+                    .map(|e| e.path())
+                    .filter(|p| p.extension().is_some_and(|e| e == "ftl"))
+                    .collect();
+                files.sort();
+                paths.extend(files);
+            }
+            for path in paths {
+                println!("cargo:rerun-if-changed={}", path.display());
                 let path = path.canonicalize().unwrap();
                 writeln!(
                     out,

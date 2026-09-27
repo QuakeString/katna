@@ -4,9 +4,10 @@
 //! of the desktop's, and a blurred, translucent window background. Both
 //! apply at once to every open window (`katna_chrome::Look`).
 
-use gpui::{AnyElement, Context, FontWeight, div, prelude::*, rgba};
+use gpui::{AnyElement, Context, FontWeight, SharedString, div, prelude::*, rgba};
 use katna_chrome::{DecorationMode, Desktop, Look, Session};
 use katna_core::config::{Config, WindowFrame};
+use katna_i18n::tr;
 use katna_ui::px;
 
 use super::MailWindow;
@@ -33,21 +34,18 @@ impl MailWindow {
                     .pb(px(4.0))
                     .text_size(px(13.0))
                     .text_color(rgba(th.text_dim))
-                    .child("Features still being tried out. They may change or go away."),
+                    .child(tr!("look-intro")),
             )
-            .child(div().pt(px(12.0)).child(heading("Look & Feel", th)))
+            .child(div().pt(px(12.0)).child(heading(tr!("look-heading"), th)))
             .child(self.row(
-                "Window frame",
-                Some("Who draws the title bar, the window buttons, the corners and the shadow."),
+                tr!("look-window-frame"),
+                Some(&tr!("look-window-frame-detail")),
                 self.frame_choice(th, cx),
                 th,
             ))
             .child(self.row(
-                "Blurred background",
-                Some(
-                    "The desktop shows through the top bar and the folders, blurred, and \
-                     menus and popovers are frosted glass.",
-                ),
+                tr!("look-blurred-background"),
+                Some(&tr!("look-blurred-background-detail")),
                 self.blur_switch(th, cx),
                 th,
             ))
@@ -59,15 +57,12 @@ impl MailWindow {
         // GNOME on Wayland leaves every frame to the app: Native already is
         // Katna's frame there.
         if env.native_decorations() == DecorationMode::Client {
-            return explain(
-                "Your desktop leaves the frame to each app, so Katna already draws its own.",
-                th,
-            );
+            return explain(tr!("look-frame-client-side"), th);
         }
-        let desktop = match env.desktop {
-            Desktop::Kde => "KDE",
-            Desktop::Gnome => "GNOME",
-            Desktop::Other(_) => "the desktop",
+        let note = match env.desktop {
+            Desktop::Kde => tr!("look-frame-katna-note-named", desktop = "KDE"),
+            Desktop::Gnome => tr!("look-frame-katna-note-named", desktop = "GNOME"),
+            Desktop::Other(_) => tr!("look-frame-katna-note"),
         };
         let frame = self.config.experimental.window_frame;
         div()
@@ -77,8 +72,8 @@ impl MailWindow {
             .child(self.radio_row(
                 "page-frame-native",
                 match env.desktop {
-                    Desktop::Kde => "Native: KDE's frame, in your Plasma theme",
-                    _ => "Native: the desktop's frame",
+                    Desktop::Kde => tr!("look-frame-native-kde"),
+                    _ => tr!("look-frame-native"),
                 },
                 frame == WindowFrame::Native,
                 Change::WindowFrame(WindowFrame::Native),
@@ -87,21 +82,13 @@ impl MailWindow {
             ))
             .child(self.radio_row(
                 "page-frame-katna",
-                "Katna: the top bar becomes the title bar",
+                tr!("look-frame-katna"),
                 frame == WindowFrame::Katna,
                 Change::WindowFrame(WindowFrame::Katna),
                 th,
                 cx,
             ))
-            .when(frame == WindowFrame::Katna, |d| {
-                d.child(explain_owned(
-                    format!(
-                        "Katna draws rounded corners and its own shadow. The frame no longer \
-                         follows the {desktop} theme; window rules still apply."
-                    ),
-                    th,
-                ))
-            })
+            .when(frame == WindowFrame::Katna, |d| d.child(explain(note, th)))
             .into_any_element()
     }
 
@@ -109,8 +96,8 @@ impl MailWindow {
         if Look::blur_available() {
             return self.switch_row(
                 "page-blur",
-                "Blur what is behind the window",
-                "Mail stays on solid cards, so text keeps its contrast",
+                tr!("look-blur"),
+                tr!("look-blur-detail"),
                 self.config.experimental.blur,
                 Change::Blur(!self.config.experimental.blur),
                 th,
@@ -119,13 +106,10 @@ impl MailWindow {
         }
         let env = self.chrome.environment();
         let why = match (&env.desktop, env.session) {
-            (Desktop::Kde, _) => {
-                "KDE's blur effect is off. Turn on Blur in System Settings, Window Management, \
-                 Desktop Effects, then open Katna Mail again."
-            }
-            (Desktop::Gnome, _) => "GNOME does not blur what is behind windows.",
-            (_, Session::X11) => "Your window manager does not blur what is behind windows.",
-            (_, Session::Wayland) => "Your compositor does not blur what is behind windows.",
+            (Desktop::Kde, _) => tr!("look-blur-off-kde"),
+            (Desktop::Gnome, _) => tr!("look-blur-none-gnome"),
+            (_, Session::X11) => tr!("look-blur-none-x11"),
+            (_, Session::Wayland) => tr!("look-blur-none-wayland"),
         };
         div()
             .flex()
@@ -145,7 +129,7 @@ impl MailWindow {
                             .flex_1()
                             .min_w_0()
                             .text_size(px(14.0))
-                            .child("Blur what is behind the window"),
+                            .child(tr!("look-blur")),
                     )
                     .child(switch(0.0, th)),
             )
@@ -154,11 +138,7 @@ impl MailWindow {
     }
 }
 
-fn explain(text: &'static str, th: &Theme) -> AnyElement {
-    explain_owned(text.to_owned(), th)
-}
-
-fn explain_owned(text: String, th: &Theme) -> AnyElement {
+fn explain(text: impl Into<SharedString>, th: &Theme) -> AnyElement {
     div()
         .px(px(8.0))
         .pt(px(4.0))
@@ -166,6 +146,6 @@ fn explain_owned(text: String, th: &Theme) -> AnyElement {
         .line_height(px(17.0))
         .font_weight(FontWeight::NORMAL)
         .text_color(rgba(th.text_faint))
-        .child(text)
+        .child(text.into())
         .into_any_element()
 }

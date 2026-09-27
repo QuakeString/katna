@@ -1,0 +1,261 @@
+# Katna Mail, German (Deutsch).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Mail list: inbox tabs (Gmail's categories, Outlook's and Zoho's)
+
+tab-primary = Allgemein
+tab-promotions = Werbung
+tab-social = Soziale Netzwerke
+tab-updates = Benachrichtigungen
+tab-forums = Foren
+tab-focused = Relevant
+tab-other = Sonstige
+tab-inbox = Posteingang
+tab-newsletters = Newsletter
+tab-notifications = Benachrichtigungen
+tab-new = { $count } neu
+tab-provider-other = von Katna sortiert
+
+## Mail list: toolbar
+
+list-select = Auswählen
+list-refresh = Aktualisieren
+list-more = Mehr
+list-mark-read = Als gelesen markieren
+list-mark-unread = Als ungelesen markieren
+list-move-to = Verschieben nach
+list-archive = Archivieren
+list-spam = Spam melden
+list-delete = Löschen
+list-newer = Neuer
+list-older = Älter
+list-range = { $first }–{ $last } von { $total }
+list-range-about = { $first }–{ $last } von ungefähr { $total }
+list-results = Ergebnisse für „{ $query }“
+list-results-corrected = Ergebnisse für „{ $query }“ werden angezeigt
+list-search-instead = Stattdessen nach „{ $query }“ suchen
+list-files-more = +{ $count }
+
+## Mail list: Select menu (which lines to tick)
+
+list-pick-all = Alle
+list-pick-none = Keine
+list-pick-read = Gelesen
+list-pick-unread = Ungelesen
+list-pick-starred = Markiert
+list-pick-unstarred = Nicht markiert
+
+## Mail list: banner when every line is ticked
+
+list-selected-all = { $kind ->
+    [conversation] { $count ->
+        [one] Die { $count } Konversation ist ausgewählt.
+       *[other] Alle { $count } Konversationen sind ausgewählt.
+    }
+   *[message] { $count ->
+        [one] Die { $count } Nachricht ist ausgewählt.
+       *[other] Alle { $count } Nachrichten sind ausgewählt.
+    }
+}
+list-selected-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] Die { $count } Konversation in { $folder } ist ausgewählt.
+       *[other] Alle { $count } Konversationen in { $folder } sind ausgewählt.
+    }
+   *[message] { $count ->
+        [one] Die { $count } Nachricht in { $folder } ist ausgewählt.
+       *[other] Alle { $count } Nachrichten in { $folder } sind ausgewählt.
+    }
+}
+list-selected-screen = { $kind ->
+    [conversation] { $count ->
+        [one] Die { $count } Konversation auf dieser Seite ist ausgewählt.
+       *[other] Alle { $count } Konversationen auf dieser Seite sind ausgewählt.
+    }
+   *[message] { $count ->
+        [one] Die { $count } Nachricht auf dieser Seite ist ausgewählt.
+       *[other] Alle { $count } Nachrichten auf dieser Seite sind ausgewählt.
+    }
+}
+list-select-all = { $kind ->
+    [conversation] { $count ->
+        [one] Die { $count } Konversation auswählen
+       *[other] Alle { $count } Konversationen auswählen
+    }
+   *[message] { $count ->
+        [one] Die { $count } Nachricht auswählen
+       *[other] Alle { $count } Nachrichten auswählen
+    }
+}
+list-select-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] Die { $count } Konversation in { $folder } auswählen
+       *[other] Alle { $count } Konversationen in { $folder } auswählen
+    }
+   *[message] { $count ->
+        [one] Die { $count } Nachricht in { $folder } auswählen
+       *[other] Alle { $count } Nachrichten in { $folder } auswählen
+    }
+}
+list-clear-selection = Auswahl aufheben
+
+## Mail list: empty states
+
+list-empty-search = Keine Nachrichten entsprechen Ihrer Suche.
+list-empty-tab = Keine E-Mails in { $tab }.
+list-empty-tab-unknown = Keine E-Mails in diesem Tab.
+list-empty-folder = Keine Nachrichten in { $folder }.
+list-empty-folder-unknown = Keine Nachrichten in diesem Ordner.
+list-first-sync = Ihre E-Mails werden abgerufen…
+list-first-sync-detail = Sie werden hier angezeigt, sobald sie eintreffen.
+
+## Mail list: lines
+
+row-removed = Diese Nachricht wurde entfernt.
+row-starred = Markiert
+row-not-starred = Nicht markiert
+row-important = Wichtig. Klicken, um als nicht wichtig zu markieren.
+row-mark-important = Als wichtig markieren
+row-pinned = Oben angeheftet
+row-pin = Oben anheften
+row-unpin = Nicht mehr anheften
+
+## Mail list: More menu and right-click menu
+
+menu-reply = Antworten
+menu-reply-all = Allen antworten
+menu-forward = Weiterleiten
+menu-archive = Archivieren
+menu-delete = Löschen
+menu-spam = Spam melden
+menu-mark-read = Als gelesen markieren
+menu-mark-unread = Als ungelesen markieren
+menu-mark-all-read = Alle als gelesen markieren
+menu-star = Markierung hinzufügen
+menu-unstar = Markierung entfernen
+menu-important = Als wichtig markieren
+menu-not-important = Als nicht wichtig markieren
+menu-pin = Oben anheften
+menu-unpin = Nicht mehr anheften
+menu-print-all = Alle drucken
+menu-new-window = In neuem Fenster öffnen
+menu-move-to = Verschieben nach
+menu-move-to-heading = Verschieben nach:
+menu-find-from = E-Mails von { $name } suchen
+
+## Snackbar after an action on mail in the list
+
+toast-archived = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation archiviert.
+       *[other] { $count } Konversationen archiviert.
+    }
+   *[message] { $count ->
+        [one] Nachricht archiviert.
+       *[other] { $count } Nachrichten archiviert.
+    }
+}
+toast-trashed = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation in den Papierkorb verschoben.
+       *[other] { $count } Konversationen in den Papierkorb verschoben.
+    }
+   *[message] { $count ->
+        [one] Nachricht in den Papierkorb verschoben.
+       *[other] { $count } Nachrichten in den Papierkorb verschoben.
+    }
+}
+toast-moved = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation verschoben.
+       *[other] { $count } Konversationen verschoben.
+    }
+   *[message] { $count ->
+        [one] Nachricht verschoben.
+       *[other] { $count } Nachrichten verschoben.
+    }
+}
+toast-starred = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation markiert.
+       *[other] { $count } Konversationen markiert.
+    }
+   *[message] { $count ->
+        [one] Nachricht markiert.
+       *[other] { $count } Nachrichten markiert.
+    }
+}
+toast-unstarred = { $kind ->
+    [conversation] { $count ->
+        [one] Markierung der Konversation entfernt.
+       *[other] Markierung von { $count } Konversationen entfernt.
+    }
+   *[message] { $count ->
+        [one] Markierung der Nachricht entfernt.
+       *[other] Markierung von { $count } Nachrichten entfernt.
+    }
+}
+toast-important = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation als wichtig markiert.
+       *[other] { $count } Konversationen als wichtig markiert.
+    }
+   *[message] { $count ->
+        [one] Nachricht als wichtig markiert.
+       *[other] { $count } Nachrichten als wichtig markiert.
+    }
+}
+toast-not-important = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation als nicht wichtig markiert.
+       *[other] { $count } Konversationen als nicht wichtig markiert.
+    }
+   *[message] { $count ->
+        [one] Nachricht als nicht wichtig markiert.
+       *[other] { $count } Nachrichten als nicht wichtig markiert.
+    }
+}
+toast-pinned = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation oben angeheftet.
+       *[other] { $count } Konversationen oben angeheftet.
+    }
+   *[message] { $count ->
+        [one] Nachricht oben angeheftet.
+       *[other] { $count } Nachrichten oben angeheftet.
+    }
+}
+toast-unpinned = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation nicht mehr angeheftet.
+       *[other] { $count } Konversationen nicht mehr angeheftet.
+    }
+   *[message] { $count ->
+        [one] Nachricht nicht mehr angeheftet.
+       *[other] { $count } Nachrichten nicht mehr angeheftet.
+    }
+}
+toast-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation als Spam gemeldet.
+       *[other] { $count } Konversationen als Spam gemeldet.
+    }
+   *[message] { $count ->
+        [one] Nachricht als Spam gemeldet.
+       *[other] { $count } Nachrichten als Spam gemeldet.
+    }
+}
+toast-deleted-forever = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation endgültig gelöscht.
+       *[other] { $count } Konversationen endgültig gelöscht.
+    }
+   *[message] { $count ->
+        [one] Nachricht endgültig gelöscht.
+       *[other] { $count } Nachrichten endgültig gelöscht.
+    }
+}
+toast-undone = Aktion rückgängig gemacht.
+toast-undo = Rückgängig
+toast-no-spam-folder = Dieses Konto hat keinen Spam-Ordner.

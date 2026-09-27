@@ -1,0 +1,43 @@
+# Katna Mail, Punjabi (ਪੰਜਾਬੀ).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Navigation (the folders pane)
+
+nav-labels = ਲੇਬਲ
+nav-folders = ਫੋਲਡਰ
+nav-label-new = ਨਵਾਂ ਲੇਬਲ ਬਣਾਓ
+nav-folder-new = ਨਵਾਂ ਫੋਲਡਰ ਬਣਾਓ
+nav-account-unnamed = ਖਾਤਾ { $number }
+nav-tab-new = { $count ->
+    [one] { $count } ਨਵਾਂ
+   *[other] { $count } ਨਵੇਂ
+}
+
+## Special folders (the user's own folders keep their names)
+
+folder-inbox = ਇਨਬਾਕਸ
+folder-starred = ਤਾਰਾਬੱਧ
+folder-drafts = ਡਰਾਫਟ
+folder-sent = ਭੇਜੀਆਂ ਗਈਆਂ
+folder-archive = ਪੁਰਾਲੇਖ
+folder-spam = ਸਪੈਮ
+folder-trash = ਰੱਦੀ
+folder-all-mail = ਸਾਰੀਆਂ ਮੇਲਾਂ
+folder-scheduled = ਅਨੁਸੂਚਿਤ
+
+## New label / new folder dialog (Gmail accounts have labels, others folders)
+
+label-new-title = ਨਵਾਂ ਲੇਬਲ
+label-folder-new-title = ਨਵਾਂ ਫੋਲਡਰ
+label-prompt = ਕਿਰਪਾ ਕਰਕੇ ਨਵੇਂ ਲੇਬਲ ਦਾ ਨਾਮ ਦਾਖਲ ਕਰੋ:
+label-folder-prompt = ਕਿਰਪਾ ਕਰਕੇ ਨਵੇਂ ਫੋਲਡਰ ਦਾ ਨਾਮ ਦਾਖਲ ਕਰੋ:
+label-name-hint = ਲੇਬਲ ਦਾ ਨਾਮ
+label-folder-name-hint = ਫੋਲਡਰ ਦਾ ਨਾਮ
+label-nest = ਲੇਬਲ ਨੂੰ ਇਸ ਹੇਠਾਂ ਰੱਖੋ:
+label-folder-nest = ਫੋਲਡਰ ਨੂੰ ਇਸ ਹੇਠਾਂ ਰੱਖੋ:
+label-cancel = ਰੱਦ ਕਰੋ
+label-create = ਬਣਾਓ
+label-creating = ਬਣਾਇਆ ਜਾ ਰਿਹਾ ਹੈ…
+label-created = “{ $name }” ਲੇਬਲ ਬਣਾਇਆ ਗਿਆ।
+label-folder-created = “{ $name }” ਫੋਲਡਰ ਬਣਾਇਆ ਗਿਆ।

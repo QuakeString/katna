@@ -135,8 +135,9 @@ mod tests {
     fn every_translation_has_its_files() {
         let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../i18n");
         for language in picker() {
-            let file = root.join(&language.translation).join("katna-mail.ftl");
-            assert!(file.is_file(), "{}", file.display());
+            let folder = root.join(&language.translation).join("katna-mail");
+            let files = std::fs::read_dir(&folder).map_or(0, |e| e.count());
+            assert!(files > 0, "{}", folder.display());
         }
     }
 

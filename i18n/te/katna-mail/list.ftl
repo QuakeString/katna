@@ -1,0 +1,261 @@
+# Katna Mail, Telugu (తెలుగు).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Mail list: inbox tabs (Gmail's categories, Outlook's and Zoho's)
+
+tab-primary = ప్రాథమికం
+tab-promotions = ప్రమోషన్‌లు
+tab-social = సామాజికం
+tab-updates = అప్‌డేట్‌లు
+tab-forums = ఫోరమ్‌లు
+tab-focused = ఫోకస్ చేసినవి
+tab-other = ఇతరాలు
+tab-inbox = ఇన్‌బాక్స్
+tab-newsletters = న్యూస్‌లెటర్‌లు
+tab-notifications = నోటిఫికేషన్‌లు
+tab-new = { $count } కొత్తవి
+tab-provider-other = Katna క్రమబద్ధీకరించింది
+
+## Mail list: toolbar
+
+list-select = ఎంచుకోండి
+list-refresh = రిఫ్రెష్ చేయండి
+list-more = మరిన్ని
+list-mark-read = చదివినట్లు గుర్తు పెట్టండి
+list-mark-unread = చదవనట్లు గుర్తు పెట్టండి
+list-move-to = దీనికి తరలించండి
+list-archive = ఆర్కైవ్ చేయండి
+list-spam = స్పామ్‌గా రిపోర్ట్ చేయండి
+list-delete = తొలగించండి
+list-newer = కొత్తవి
+list-older = పాతవి
+list-range = { $total }లో { $first }–{ $last }
+list-range-about = సుమారు { $total }లో { $first }–{ $last }
+list-results = “{ $query }” కోసం ఫలితాలు
+list-results-corrected = “{ $query }” కోసం ఫలితాలను చూపుతోంది
+list-search-instead = దానికి బదులుగా “{ $query }” కోసం వెతకండి
+list-files-more = +{ $count }
+
+## Mail list: Select menu (which lines to tick)
+
+list-pick-all = అన్నీ
+list-pick-none = ఏవీ వద్దు
+list-pick-read = చదివినవి
+list-pick-unread = చదవనివి
+list-pick-starred = నక్షత్రం ఉంచినవి
+list-pick-unstarred = నక్షత్రం ఉంచనివి
+
+## Mail list: banner when every line is ticked
+
+list-selected-all = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } సంభాషణ ఎంచుకోబడింది.
+       *[other] మొత్తం { $count } సంభాషణలు ఎంచుకోబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] { $count } మెసేజ్ ఎంచుకోబడింది.
+       *[other] మొత్తం { $count } మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+    }
+}
+list-selected-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] { $folder }లోని { $count } సంభాషణ ఎంచుకోబడింది.
+       *[other] { $folder }లోని మొత్తం { $count } సంభాషణలు ఎంచుకోబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] { $folder }లోని { $count } మెసేజ్ ఎంచుకోబడింది.
+       *[other] { $folder }లోని మొత్తం { $count } మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+    }
+}
+list-selected-screen = { $kind ->
+    [conversation] { $count ->
+        [one] స్క్రీన్‌పై ఉన్న { $count } సంభాషణ ఎంచుకోబడింది.
+       *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } సంభాషణలు ఎంచుకోబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] స్క్రీన్‌పై ఉన్న { $count } మెసేజ్ ఎంచుకోబడింది.
+       *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+    }
+}
+list-select-all = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } సంభాషణను ఎంచుకోండి
+       *[other] మొత్తం { $count } సంభాషణలను ఎంచుకోండి
+    }
+   *[message] { $count ->
+        [one] { $count } మెసేజ్‌ను ఎంచుకోండి
+       *[other] మొత్తం { $count } మెసేజ్‌లను ఎంచుకోండి
+    }
+}
+list-select-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] { $folder }లోని { $count } సంభాషణను ఎంచుకోండి
+       *[other] { $folder }లోని మొత్తం { $count } సంభాషణలను ఎంచుకోండి
+    }
+   *[message] { $count ->
+        [one] { $folder }లోని { $count } మెసేజ్‌ను ఎంచుకోండి
+       *[other] { $folder }లోని మొత్తం { $count } మెసేజ్‌లను ఎంచుకోండి
+    }
+}
+list-clear-selection = ఎంపికను క్లియర్ చేయండి
+
+## Mail list: empty states
+
+list-empty-search = మీ సెర్చ్‌కు సరిపోలే మెసేజ్‌లు ఏవీ లేవు.
+list-empty-tab = { $tab }లో మెయిల్ ఏదీ లేదు.
+list-empty-tab-unknown = ఈ ట్యాబ్‌లో మెయిల్ ఏదీ లేదు.
+list-empty-folder = { $folder }లో మెసేజ్‌లు ఏవీ లేవు.
+list-empty-folder-unknown = ఈ ఫోల్డర్‌లో మెసేజ్‌లు ఏవీ లేవు.
+list-first-sync = మీ మెయిల్‌ను పొందుతోంది…
+list-first-sync-detail = మెయిల్ వచ్చే కొద్దీ ఇక్కడ కనిపిస్తుంది.
+
+## Mail list: lines
+
+row-removed = ఈ మెసేజ్ తీసివేయబడింది.
+row-starred = నక్షత్రం ఉంచబడింది
+row-not-starred = నక్షత్రం ఉంచలేదు
+row-important = ముఖ్యమైనది. ముఖ్యమైనది కాదని గుర్తు పెట్టడానికి క్లిక్ చేయండి.
+row-mark-important = ముఖ్యమైనదిగా గుర్తు పెట్టండి
+row-pinned = పైన పిన్ చేయబడింది
+row-pin = పైన పిన్ చేయండి
+row-unpin = అన్‌పిన్ చేయండి
+
+## Mail list: More menu and right-click menu
+
+menu-reply = రిప్లయి ఇవ్వండి
+menu-reply-all = అందరికీ రిప్లయి ఇవ్వండి
+menu-forward = ఫార్వర్డ్ చేయండి
+menu-archive = ఆర్కైవ్ చేయండి
+menu-delete = తొలగించండి
+menu-spam = స్పామ్‌గా రిపోర్ట్ చేయండి
+menu-mark-read = చదివినట్లు గుర్తు పెట్టండి
+menu-mark-unread = చదవనట్లు గుర్తు పెట్టండి
+menu-mark-all-read = అన్నింటినీ చదివినట్లు గుర్తు పెట్టండి
+menu-star = నక్షత్రం ఉంచండి
+menu-unstar = నక్షత్రాన్ని తీసివేయండి
+menu-important = ముఖ్యమైనదిగా గుర్తు పెట్టండి
+menu-not-important = ముఖ్యమైనది కాదని గుర్తు పెట్టండి
+menu-pin = పైన పిన్ చేయండి
+menu-unpin = అన్‌పిన్ చేయండి
+menu-print-all = అన్నీ ప్రింట్ చేయండి
+menu-new-window = కొత్త విండోలో తెరవండి
+menu-move-to = దీనికి తరలించండి
+menu-move-to-heading = దీనికి తరలించండి:
+menu-find-from = { $name } నుండి వచ్చిన ఈమెయిల్స్‌ను కనుగొనండి
+
+## Snackbar after an action on mail in the list
+
+toast-archived = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ ఆర్కైవ్ చేయబడింది.
+       *[other] { $count } సంభాషణలు ఆర్కైవ్ చేయబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ ఆర్కైవ్ చేయబడింది.
+       *[other] { $count } మెసేజ్‌లు ఆర్కైవ్ చేయబడ్డాయి.
+    }
+}
+toast-trashed = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ ట్రాష్‌కు తరలించబడింది.
+       *[other] { $count } సంభాషణలు ట్రాష్‌కు తరలించబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ ట్రాష్‌కు తరలించబడింది.
+       *[other] { $count } మెసేజ్‌లు ట్రాష్‌కు తరలించబడ్డాయి.
+    }
+}
+toast-moved = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ తరలించబడింది.
+       *[other] { $count } సంభాషణలు తరలించబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ తరలించబడింది.
+       *[other] { $count } మెసేజ్‌లు తరలించబడ్డాయి.
+    }
+}
+toast-starred = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణకు నక్షత్రం ఉంచబడింది.
+       *[other] { $count } సంభాషణలకు నక్షత్రం ఉంచబడింది.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్‌కు నక్షత్రం ఉంచబడింది.
+       *[other] { $count } మెసేజ్‌లకు నక్షత్రం ఉంచబడింది.
+    }
+}
+toast-unstarred = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ నుండి నక్షత్రం తీసివేయబడింది.
+       *[other] { $count } సంభాషణల నుండి నక్షత్రం తీసివేయబడింది.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ నుండి నక్షత్రం తీసివేయబడింది.
+       *[other] { $count } మెసేజ్‌ల నుండి నక్షత్రం తీసివేయబడింది.
+    }
+}
+toast-important = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ ముఖ్యమైనదిగా గుర్తు పెట్టబడింది.
+       *[other] { $count } సంభాషణలు ముఖ్యమైనవిగా గుర్తు పెట్టబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ ముఖ్యమైనదిగా గుర్తు పెట్టబడింది.
+       *[other] { $count } మెసేజ్‌లు ముఖ్యమైనవిగా గుర్తు పెట్టబడ్డాయి.
+    }
+}
+toast-not-important = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ ముఖ్యమైనది కాదని గుర్తు పెట్టబడింది.
+       *[other] { $count } సంభాషణలు ముఖ్యమైనవి కాదని గుర్తు పెట్టబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ ముఖ్యమైనది కాదని గుర్తు పెట్టబడింది.
+       *[other] { $count } మెసేజ్‌లు ముఖ్యమైనవి కాదని గుర్తు పెట్టబడ్డాయి.
+    }
+}
+toast-pinned = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ పైన పిన్ చేయబడింది.
+       *[other] { $count } సంభాషణలు పైన పిన్ చేయబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ పైన పిన్ చేయబడింది.
+       *[other] { $count } మెసేజ్‌లు పైన పిన్ చేయబడ్డాయి.
+    }
+}
+toast-unpinned = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ అన్‌పిన్ చేయబడింది.
+       *[other] { $count } సంభాషణలు అన్‌పిన్ చేయబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ అన్‌పిన్ చేయబడింది.
+       *[other] { $count } మెసేజ్‌లు అన్‌పిన్ చేయబడ్డాయి.
+    }
+}
+toast-spam = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ స్పామ్‌గా రిపోర్ట్ చేయబడింది.
+       *[other] { $count } సంభాషణలు స్పామ్‌గా రిపోర్ట్ చేయబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ స్పామ్‌గా రిపోర్ట్ చేయబడింది.
+       *[other] { $count } మెసేజ్‌లు స్పామ్‌గా రిపోర్ట్ చేయబడ్డాయి.
+    }
+}
+toast-deleted-forever = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ శాశ్వతంగా తొలగించబడింది.
+       *[other] { $count } సంభాషణలు శాశ్వతంగా తొలగించబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ శాశ్వతంగా తొలగించబడింది.
+       *[other] { $count } మెసేజ్‌లు శాశ్వతంగా తొలగించబడ్డాయి.
+    }
+}
+toast-undone = చర్య రద్దు చేయబడింది.
+toast-undo = చర్య రద్దు చేయండి
+toast-no-spam-folder = ఈ ఖాతాలో స్పామ్ ఫోల్డర్ లేదు.

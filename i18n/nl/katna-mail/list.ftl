@@ -1,0 +1,261 @@
+# Katna Mail, Dutch (Nederlands).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Mail list: inbox tabs (Gmail's categories, Outlook's and Zoho's)
+
+tab-primary = Primair
+tab-promotions = Reclame
+tab-social = Sociaal
+tab-updates = Updates
+tab-forums = Forums
+tab-focused = Prioriteit
+tab-other = Overige
+tab-inbox = Inbox
+tab-newsletters = Nieuwsbrieven
+tab-notifications = Meldingen
+tab-new = { $count } nieuw
+tab-provider-other = gesorteerd door Katna
+
+## Mail list: toolbar
+
+list-select = Selecteren
+list-refresh = Vernieuwen
+list-more = Meer
+list-mark-read = Markeren als gelezen
+list-mark-unread = Markeren als ongelezen
+list-move-to = Verplaatsen naar
+list-archive = Archiveren
+list-spam = Spam melden
+list-delete = Verwijderen
+list-newer = Nieuwer
+list-older = Ouder
+list-range = { $first }–{ $last } van { $total }
+list-range-about = { $first }–{ $last } van ongeveer { $total }
+list-results = Resultaten voor ‘{ $query }’
+list-results-corrected = Resultaten weergegeven voor ‘{ $query }’
+list-search-instead = In plaats daarvan zoeken naar ‘{ $query }’
+list-files-more = +{ $count }
+
+## Mail list: Select menu (which lines to tick)
+
+list-pick-all = Alle
+list-pick-none = Geen
+list-pick-read = Gelezen
+list-pick-unread = Ongelezen
+list-pick-starred = Met ster
+list-pick-unstarred = Zonder ster
+
+## Mail list: banner when every line is ticked
+
+list-selected-all = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } gesprek is geselecteerd.
+       *[other] Alle { $count } gesprekken zijn geselecteerd.
+    }
+   *[message] { $count ->
+        [one] { $count } bericht is geselecteerd.
+       *[other] Alle { $count } berichten zijn geselecteerd.
+    }
+}
+list-selected-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } gesprek in { $folder } is geselecteerd.
+       *[other] Alle { $count } gesprekken in { $folder } zijn geselecteerd.
+    }
+   *[message] { $count ->
+        [one] { $count } bericht in { $folder } is geselecteerd.
+       *[other] Alle { $count } berichten in { $folder } zijn geselecteerd.
+    }
+}
+list-selected-screen = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } gesprek op deze pagina is geselecteerd.
+       *[other] Alle { $count } gesprekken op deze pagina zijn geselecteerd.
+    }
+   *[message] { $count ->
+        [one] { $count } bericht op deze pagina is geselecteerd.
+       *[other] Alle { $count } berichten op deze pagina zijn geselecteerd.
+    }
+}
+list-select-all = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } gesprek selecteren
+       *[other] Alle { $count } gesprekken selecteren
+    }
+   *[message] { $count ->
+        [one] { $count } bericht selecteren
+       *[other] Alle { $count } berichten selecteren
+    }
+}
+list-select-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } gesprek in { $folder } selecteren
+       *[other] Alle { $count } gesprekken in { $folder } selecteren
+    }
+   *[message] { $count ->
+        [one] { $count } bericht in { $folder } selecteren
+       *[other] Alle { $count } berichten in { $folder } selecteren
+    }
+}
+list-clear-selection = Selectie wissen
+
+## Mail list: empty states
+
+list-empty-search = Er zijn geen berichten die overeenkomen met je zoekopdracht.
+list-empty-tab = Geen e-mail in { $tab }.
+list-empty-tab-unknown = Geen e-mail op dit tabblad.
+list-empty-folder = Geen berichten in { $folder }.
+list-empty-folder-unknown = Geen berichten in deze map.
+list-first-sync = Je e-mail ophalen…
+list-first-sync-detail = Berichten verschijnen hier zodra ze binnenkomen.
+
+## Mail list: lines
+
+row-removed = Dit bericht is verwijderd.
+row-starred = Met ster
+row-not-starred = Zonder ster
+row-important = Belangrijk. Klik om als niet belangrijk te markeren.
+row-mark-important = Markeren als belangrijk
+row-pinned = Bovenaan vastgezet
+row-pin = Bovenaan vastzetten
+row-unpin = Losmaken
+
+## Mail list: More menu and right-click menu
+
+menu-reply = Beantwoorden
+menu-reply-all = Allen beantwoorden
+menu-forward = Doorsturen
+menu-archive = Archiveren
+menu-delete = Verwijderen
+menu-spam = Spam melden
+menu-mark-read = Markeren als gelezen
+menu-mark-unread = Markeren als ongelezen
+menu-mark-all-read = Alles markeren als gelezen
+menu-star = Ster toevoegen
+menu-unstar = Ster verwijderen
+menu-important = Markeren als belangrijk
+menu-not-important = Markeren als niet belangrijk
+menu-pin = Bovenaan vastzetten
+menu-unpin = Losmaken
+menu-print-all = Alles afdrukken
+menu-new-window = Openen in nieuw venster
+menu-move-to = Verplaatsen naar
+menu-move-to-heading = Verplaatsen naar:
+menu-find-from = E-mails van { $name } zoeken
+
+## Snackbar after an action on mail in the list
+
+toast-archived = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek gearchiveerd.
+       *[other] { $count } gesprekken gearchiveerd.
+    }
+   *[message] { $count ->
+        [one] Bericht gearchiveerd.
+       *[other] { $count } berichten gearchiveerd.
+    }
+}
+toast-trashed = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek naar Prullenbak verplaatst.
+       *[other] { $count } gesprekken naar Prullenbak verplaatst.
+    }
+   *[message] { $count ->
+        [one] Bericht naar Prullenbak verplaatst.
+       *[other] { $count } berichten naar Prullenbak verplaatst.
+    }
+}
+toast-moved = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek verplaatst.
+       *[other] { $count } gesprekken verplaatst.
+    }
+   *[message] { $count ->
+        [one] Bericht verplaatst.
+       *[other] { $count } berichten verplaatst.
+    }
+}
+toast-starred = { $kind ->
+    [conversation] { $count ->
+        [one] Ster toegevoegd aan gesprek.
+       *[other] Ster toegevoegd aan { $count } gesprekken.
+    }
+   *[message] { $count ->
+        [one] Ster toegevoegd aan bericht.
+       *[other] Ster toegevoegd aan { $count } berichten.
+    }
+}
+toast-unstarred = { $kind ->
+    [conversation] { $count ->
+        [one] Ster verwijderd van gesprek.
+       *[other] Ster verwijderd van { $count } gesprekken.
+    }
+   *[message] { $count ->
+        [one] Ster verwijderd van bericht.
+       *[other] Ster verwijderd van { $count } berichten.
+    }
+}
+toast-important = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek gemarkeerd als belangrijk.
+       *[other] { $count } gesprekken gemarkeerd als belangrijk.
+    }
+   *[message] { $count ->
+        [one] Bericht gemarkeerd als belangrijk.
+       *[other] { $count } berichten gemarkeerd als belangrijk.
+    }
+}
+toast-not-important = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek gemarkeerd als niet belangrijk.
+       *[other] { $count } gesprekken gemarkeerd als niet belangrijk.
+    }
+   *[message] { $count ->
+        [one] Bericht gemarkeerd als niet belangrijk.
+       *[other] { $count } berichten gemarkeerd als niet belangrijk.
+    }
+}
+toast-pinned = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek bovenaan vastgezet.
+       *[other] { $count } gesprekken bovenaan vastgezet.
+    }
+   *[message] { $count ->
+        [one] Bericht bovenaan vastgezet.
+       *[other] { $count } berichten bovenaan vastgezet.
+    }
+}
+toast-unpinned = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek losgemaakt.
+       *[other] { $count } gesprekken losgemaakt.
+    }
+   *[message] { $count ->
+        [one] Bericht losgemaakt.
+       *[other] { $count } berichten losgemaakt.
+    }
+}
+toast-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek gemeld als spam.
+       *[other] { $count } gesprekken gemeld als spam.
+    }
+   *[message] { $count ->
+        [one] Bericht gemeld als spam.
+       *[other] { $count } berichten gemeld als spam.
+    }
+}
+toast-deleted-forever = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek definitief verwijderd.
+       *[other] { $count } gesprekken definitief verwijderd.
+    }
+   *[message] { $count ->
+        [one] Bericht definitief verwijderd.
+       *[other] { $count } berichten definitief verwijderd.
+    }
+}
+toast-undone = Actie ongedaan gemaakt.
+toast-undo = Ongedaan maken
+toast-no-spam-folder = Dit account heeft geen spammap.

@@ -1,0 +1,60 @@
+# Katna Mail, Persian (فارسی).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Settings > Keyboard shortcuts: the groups of the list
+
+shortcut-group-moving = جابه‌جایی
+shortcut-group-actions = عملیات
+shortcut-group-go-to = رفتن به
+shortcut-group-app = برنامه
+
+## Settings > Keyboard shortcuts: what each shortcut does
+
+shortcut-next = مکالمهٔ بعدی
+shortcut-previous = مکالمهٔ قبلی
+shortcut-down = پایین رفتن در فهرست
+shortcut-up = بالا رفتن در فهرست
+shortcut-first = اولین مورد فهرست
+shortcut-last = آخرین مورد فهرست
+shortcut-page-down = یک صفحه پایین در فهرست
+shortcut-page-up = یک صفحه بالا در فهرست
+shortcut-open = باز کردن مکالمه
+shortcut-back = بازگشت به فهرست
+shortcut-scroll-down = پیمایش به پایین
+shortcut-scroll-up = پیمایش به بالا
+shortcut-scroll-page-down = پیمایش یک صفحه به پایین
+shortcut-scroll-page-up = پیمایش یک صفحه به بالا
+shortcut-compose = نوشتن
+shortcut-reply = پاسخ
+shortcut-reply-all = پاسخ به همه
+shortcut-forward = بازارسال
+shortcut-archive = بایگانی
+shortcut-delete = حذف
+shortcut-spam = گزارش هرزنامه
+shortcut-move-to = انتقال به
+shortcut-mark-read = علامت‌گذاری به‌عنوان خوانده‌شده
+shortcut-mark-unread = علامت‌گذاری به‌عنوان خوانده‌نشده
+shortcut-star = افزودن یا برداشتن ستاره
+shortcut-important = علامت‌گذاری به‌عنوان مهم
+shortcut-not-important = علامت‌گذاری به‌عنوان غیرمهم
+shortcut-check = علامت زدن مکالمه
+shortcut-select-all = علامت زدن همهٔ مکالمه‌ها
+shortcut-select-none = برداشتن علامت همهٔ مکالمه‌ها
+shortcut-undo = واگرد آخرین کار
+shortcut-go-inbox = صندوق ورودی
+shortcut-go-starred = ستاره‌دار
+shortcut-go-sent = ارسال‌شده
+shortcut-go-drafts = پیش‌نویس‌ها
+shortcut-go-all = همهٔ ایمیل‌ها
+shortcut-search = جستجوی ایمیل
+shortcut-navigation = نمایش یا جمع کردن منو
+shortcut-quick-settings = تنظیمات سریع
+shortcut-settings = همهٔ تنظیمات
+shortcut-shortcuts = میان‌برهای صفحه‌کلید
+shortcut-reload = بررسی ایمیل جدید
+shortcut-quit = خروج
+
+## Keys pressed one after another, as a shortcut shows them ("G then I")
+
+shortcut-sequence = { $first } سپس { $second }

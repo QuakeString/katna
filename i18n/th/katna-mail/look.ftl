@@ -1,0 +1,30 @@
+# Katna Mail, Thai (ไทย).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Settings > Appearance > Scaling
+
+scale-letter = ก
+scale-percent = { $percent }%
+scale-reset = กลับไปที่ { $percent }%
+
+## Settings > Experimental > Look & Feel
+
+look-intro = ฟีเจอร์ที่ยังอยู่ระหว่างทดลอง อาจเปลี่ยนแปลงหรือถูกนำออก
+look-heading = รูปลักษณ์และความรู้สึก
+look-window-frame = กรอบหน้าต่าง
+look-window-frame-detail = ผู้วาดแถบชื่อเรื่อง ปุ่มหน้าต่าง มุม และเงา
+look-frame-native-kde = ดั้งเดิม: กรอบของ KDE ตามธีม Plasma ของคุณ
+look-frame-native = ดั้งเดิม: กรอบของเดสก์ท็อป
+look-frame-katna = Katna: แถบด้านบนกลายเป็นแถบชื่อเรื่อง
+look-frame-katna-note-named = Katna จะวาดมุมโค้งมนและเงาของตัวเอง กรอบจะไม่ใช้ธีมของ { $desktop } อีกต่อไป แต่กฎหน้าต่างยังคงมีผล
+look-frame-katna-note = Katna จะวาดมุมโค้งมนและเงาของตัวเอง กรอบจะไม่ใช้ธีมของเดสก์ท็อปอีกต่อไป แต่กฎหน้าต่างยังคงมีผล
+look-frame-client-side = เดสก์ท็อปของคุณให้แต่ละแอปวาดกรอบเอง Katna จึงวาดกรอบของตัวเองอยู่แล้ว
+look-blurred-background = พื้นหลังแบบเบลอ
+look-blurred-background-detail = มองเห็นเดสก์ท็อปผ่านแถบด้านบนและโฟลเดอร์แบบเบลอ และเมนูกับป๊อปโอเวอร์เป็นแบบกระจกฝ้า
+look-blur = เบลอสิ่งที่อยู่ด้านหลังหน้าต่าง
+look-blur-detail = อีเมลยังคงอยู่บนการ์ดทึบ ข้อความจึงยังคงมีความคมชัด
+look-blur-off-kde = เอฟเฟกต์เบลอของ KDE ปิดอยู่ เปิด “เบลอ” ใน “การตั้งค่าระบบ” > “การจัดการหน้าต่าง” > “ลูกเล่นพื้นโต๊ะ” แล้วเปิด Katna Mail อีกครั้ง
+look-blur-none-gnome = GNOME ไม่เบลอสิ่งที่อยู่ด้านหลังหน้าต่าง
+look-blur-none-x11 = ตัวจัดการหน้าต่างของคุณไม่เบลอสิ่งที่อยู่ด้านหลังหน้าต่าง
+look-blur-none-wayland = คอมโพสิเตอร์ของคุณไม่เบลอสิ่งที่อยู่ด้านหลังหน้าต่าง

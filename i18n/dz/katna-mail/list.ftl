@@ -1,0 +1,165 @@
+# Katna Mail, Dzongkha (རྫོང་ཁ).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Mail list: inbox tabs (Gmail's categories, Outlook's and Zoho's)
+
+tab-primary = གཙོ་བོ
+tab-promotions = ཁྱབ་བསྒྲགས
+tab-social = མི་སྡེ
+tab-updates = གསར་བསྒྱུར
+tab-forums = གྲོས་བསྡུར་ས་སྒོ
+tab-focused = དམིགས་གཏད
+tab-other = གཞན
+tab-inbox = ནང་འབྱོར་སྒྲོམ
+tab-newsletters = གསར་ཤོག
+tab-notifications = བརྡ་བསྐུལ
+tab-new = གསརཔ་ { $count }
+tab-provider-other = Katna གིས་དབྱེ་སེལ་འབད་ཡོདཔ
+
+## Mail list: toolbar
+
+list-select = གདམ།
+list-refresh = གསར་བཟོ།
+list-more = གཞན་ཡང་།
+list-mark-read = ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ།
+list-mark-unread = མ་ལྷག་པ་སྦེ་རྟགས་བཀལ།
+list-move-to = ལུ་སྤོ།
+list-archive = ཡིག་མཛོད་ནང་བཙུགས།
+list-spam = སྤེམ་སྦེ་སྙན་ཞུ་འབད།
+list-delete = བཏོན་གཏང་།
+list-newer = དེ་ལས་གསརཔ།
+list-older = དེ་ལས་རྙིངམ།
+list-range = { $total } ལས་ { $first }–{ $last }
+list-range-about = ཧ་ལམ་ { $total } ལས་ { $first }–{ $last }
+list-results = “{ $query }” གི་གྲུབ་འབྲས་ཚུ
+list-results-corrected = “{ $query }” གི་གྲུབ་འབྲས་ཚུ་སྟོན་དོ
+list-search-instead = དེ་གི་ཚབ་ལུ་ “{ $query }” འཚོལ།
+list-files-more = +{ $count }
+
+## Mail list: Select menu (which lines to tick)
+
+list-pick-all = ཆ་མཉམ
+list-pick-none = ག་ནི་ཡང་མེད
+list-pick-read = ལྷག་ཡོདཔ
+list-pick-unread = མ་ལྷག་པ
+list-pick-starred = སྐར་མ་བཀལ་ཡོདཔ
+list-pick-unstarred = སྐར་མ་མ་བཀལ་བ
+
+## Mail list: banner when every line is ticked
+
+list-selected-all = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+   *[message] འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+}
+list-selected-all-in = { $kind ->
+    [conversation] { $folder } ནང་གི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+   *[message] { $folder } ནང་གི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+}
+list-selected-screen = { $kind ->
+    [conversation] གསལ་གཞི་གུ་ཡོད་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+   *[message] གསལ་གཞི་གུ་ཡོད་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+}
+list-select-all = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ།
+   *[message] འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ།
+}
+list-select-all-in = { $kind ->
+    [conversation] { $folder } ནང་གི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ།
+   *[message] { $folder } ནང་གི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ།
+}
+list-clear-selection = གདམ་ཁ་བསལ།
+
+## Mail list: empty states
+
+list-empty-search = ཁྱོད་ཀྱི་འཚོལ་ཞིབ་དང་མཐུན་པའི་འཕྲིན་དོན་མིན་འདུག
+list-empty-tab = { $tab } ནང་གློག་འཕྲིན་མིན་འདུག
+list-empty-tab-unknown = ཤོག་མཚན་འདི་ནང་གློག་འཕྲིན་མིན་འདུག
+list-empty-folder = { $folder } ནང་འཕྲིན་དོན་མིན་འདུག
+list-empty-folder-unknown = སྣོད་འཛིན་འདི་ནང་འཕྲིན་དོན་མིན་འདུག
+list-first-sync = ཁྱོད་ཀྱི་གློག་འཕྲིན་ལེན་དོ…
+list-first-sync-detail = གློག་འཕྲིན་འབྱོར་བའི་བསྒང་ ནཱ་ལུ་སྟོནམ་ཨིན།
+
+## Mail list: lines
+
+row-removed = འཕྲིན་དོན་འདི་བཏོན་གཏང་ཡི།
+row-starred = སྐར་མ་བཀལ་ཡོདཔ
+row-not-starred = སྐར་མ་མ་བཀལ་བ
+row-important = གལ་ཅན། གལ་ཅན་མེན་པ་སྦེ་རྟགས་བཀལ་ནི་ལུ་ ཨེབ་གཏང་འབད།
+row-mark-important = གལ་ཅན་སྦེ་རྟགས་བཀལ།
+row-pinned = ཡར་སྟོད་ལུ་བཙུགས་ཡོདཔ
+row-pin = ཡར་སྟོད་ལུ་བཙུགས།
+row-unpin = བཙུགས་མི་བཏོན།
+
+## Mail list: More menu and right-click menu
+
+menu-reply = ལན་སློག
+menu-reply-all = ཆ་མཉམ་ལུ་ལན་སློག
+menu-forward = མདུན་སྐྱེལ་འབད།
+menu-archive = ཡིག་མཛོད་ནང་བཙུགས།
+menu-delete = བཏོན་གཏང་།
+menu-spam = སྤེམ་སྦེ་སྙན་ཞུ་འབད།
+menu-mark-read = ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ།
+menu-mark-unread = མ་ལྷག་པ་སྦེ་རྟགས་བཀལ།
+menu-mark-all-read = ཆ་མཉམ་ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ།
+menu-star = སྐར་མ་བཀལ།
+menu-unstar = སྐར་མ་བཏོན།
+menu-important = གལ་ཅན་སྦེ་རྟགས་བཀལ།
+menu-not-important = གལ་ཅན་མེན་པ་སྦེ་རྟགས་བཀལ།
+menu-pin = ཡར་སྟོད་ལུ་བཙུགས།
+menu-unpin = བཙུགས་མི་བཏོན།
+menu-print-all = ཆ་མཉམ་དཔར་བསྐྲུན་འབད།
+menu-new-window = སྒོ་སྒྲིག་གསརཔ་ནང་ཁ་ཕྱེ།
+menu-move-to = ལུ་སྤོ།
+menu-move-to-heading = ལུ་སྤོ:
+menu-find-from = { $name } ལས་འོང་མི་གློག་འཕྲིན་ཚུ་འཚོལ།
+
+## Snackbar after an action on mail in the list
+
+toast-archived = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } ཡིག་མཛོད་ནང་བཙུགས་ཡི།
+   *[message] འཕྲིན་དོན་ { $count } ཡིག་མཛོད་ནང་བཙུགས་ཡི།
+}
+toast-trashed = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } གད་སྙིགས་ནང་སྤོ་ཡི།
+   *[message] འཕྲིན་དོན་ { $count } གད་སྙིགས་ནང་སྤོ་ཡི།
+}
+toast-moved = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } སྤོ་ཡི།
+   *[message] འཕྲིན་དོན་ { $count } སྤོ་ཡི།
+}
+toast-starred = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } ལུ་སྐར་མ་བཀལ་ཡི།
+   *[message] འཕྲིན་དོན་ { $count } ལུ་སྐར་མ་བཀལ་ཡི།
+}
+toast-unstarred = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } ལས་སྐར་མ་བཏོན་ཡི།
+   *[message] འཕྲིན་དོན་ { $count } ལས་སྐར་མ་བཏོན་ཡི།
+}
+toast-important = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } གལ་ཅན་སྦེ་རྟགས་བཀལ་ཡི།
+   *[message] འཕྲིན་དོན་ { $count } གལ་ཅན་སྦེ་རྟགས་བཀལ་ཡི།
+}
+toast-not-important = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } གལ་ཅན་མེན་པ་སྦེ་རྟགས་བཀལ་ཡི།
+   *[message] འཕྲིན་དོན་ { $count } གལ་ཅན་མེན་པ་སྦེ་རྟགས་བཀལ་ཡི།
+}
+toast-pinned = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } ཡར་སྟོད་ལུ་བཙུགས་ཡི།
+   *[message] འཕྲིན་དོན་ { $count } ཡར་སྟོད་ལུ་བཙུགས་ཡི།
+}
+toast-unpinned = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } གི་བཙུགས་མི་བཏོན་ཡི།
+   *[message] འཕྲིན་དོན་ { $count } གི་བཙུགས་མི་བཏོན་ཡི།
+}
+toast-spam = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } སྤེམ་སྦེ་སྙན་ཞུ་འབད་ཡི།
+   *[message] འཕྲིན་དོན་ { $count } སྤེམ་སྦེ་སྙན་ཞུ་འབད་ཡི།
+}
+toast-deleted-forever = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } ཨ་རྟག་གི་དོན་ལུ་བཏོན་གཏང་ཡི།
+   *[message] འཕྲིན་དོན་ { $count } ཨ་རྟག་གི་དོན་ལུ་བཏོན་གཏང་ཡི།
+}
+toast-undone = བྱ་བ་འབད་བཤོལ་འབད་ཡི།
+toast-undo = འབད་བཤོལ།
+toast-no-spam-folder = རྩིས་ཐོ་འདི་ལུ་ སྤེམ་སྣོད་འཛིན་མིན་འདུག
