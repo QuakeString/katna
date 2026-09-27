@@ -283,6 +283,32 @@ repositories (release track U.9, U.10); a Katna logo and brand look;
 languages; and no trackers or third-party analytics, to match Katna's
 privacy promise.
 
+### Later: Katna on phones (not scheduled yet)
+
+Asked about by the owner on 27 September 2026; design only, in
+`ARCHITECTURE.md` §26. Nothing starts until the owner asks for it. M.1 and
+M.2 also help the desktop (a daemon-free engine is easier to test), so they
+may start earlier if a desktop task needs them.
+
+| Task | Deliverable |
+|---|---|
+| M.1 Engine split | `katna-engine` library out of `katna-daemon` (no D-Bus, systemd or GPUI); `PimClient` trait with the D-Bus client and an in-process one; `sync_once(deadline)` |
+| M.2 Portability | Sandbox paths in `katna-core`; `SecretStore` trait (Secret Service, Android Keystore, iOS Keychain); network and metered events behind a trait; OpenPGP without `gpg` |
+| M.3 Spike: GPUI on Android | Time-boxed (1–2 weeks). `gpui-mobile` on Katna's GPUI 0.3.6; Katna Mail's phone layout on an emulator and a real phone. Measure start time, scrolling, APK size, idle battery, and typing in English and Bengali. Result in `docs/spikes/` |
+| M.4 Android app | Host activity, lifecycle and state restore, touch gestures, IME, insets, notifications with actions, share sheet, file and photo pickers, OAuth in the browser |
+| M.5 Android new mail | Foreground IDLE service (`specialUse`), WorkManager timer and Manual; Settings → New mail with honest costs |
+| M.6 Push | Web Push (RFC 8030/8291) receiver; UnifiedPush on Android; JMAP push subscriptions; "Wake my phone" in `katna-daemon`; the watcher in Katna Server |
+| M.7 Push gateway and iOS spike | Stateless gateway (sealed APNs tokens, no logs); `gpui_ios` or `gpui-mobile` on iOS; Notification Service Extension |
+| M.8 iOS app | After the licensing decision (§26.6): TestFlight build with push, background refresh and the same features as M.4 |
+| M.9 Distribution | GitHub APKs and F-Droid, then Google Play; App Store |
+
+**Done when:** on an Android phone without Google services, with Katna
+swiped away, new mail in a Stalwart account and a Gmail account raises a
+notification within a minute, and a day of idle costs no more battery than
+FairEmail on the same phone; on an iPhone a JMAP account notifies within a
+minute through server push and a Gmail account through the owner's Katna
+desktop; no Katna-run server ever holds a password, a token or a message.
+
 ### Phase 5 — Gmail-class features (≈ 8 weeks)
 
 Labels (IMAP keywords, Gmail labels), snooze, send later, follow-up

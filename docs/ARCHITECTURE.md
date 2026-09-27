@@ -32,6 +32,7 @@ Merkuro).
 ### Non-goals (for now)
 
 - Windows / macOS builds.
+- Android / iOS builds for now; the design for later is §26.
 - Being a general Akonadi replacement that other apps plug into.
 - Exchange (EWS) support in the first releases.
 
@@ -2476,6 +2477,8 @@ Packaging (Flatpak, deb, rpm, AUR) starts from Phase 3; the
 | Background daemon drains battery or leaks memory | Users disable it | Event-driven design, CI resource budgets, power/metered awareness |
 | GPU/Vulkan missing on old hardware | High CPU from software rendering | Test early on old machines; document requirements |
 | An update corrupts or loses local data, or leaves Katna unable to start | Users lose mail they cannot re-download and stop trusting updates | Channels with a beta soak, upgrade and migration tests, backup before migrating, expand-then-contract schema changes, health check and safe mode (§21.2) |
+| No official GPUI phone backend (§26.2) | A phone port rests on an experimental community backend | Vendor and patch it like `gpui-pre-linux`, contribute upstream, Android first |
+| Phones stop background mail (§26.4) | Late or missing new-mail notifications | Foreground service or push per platform; say the delay plainly in Settings |
 | Scope | Burnout, never shipping | Strict phases with "done when" criteria |
 
 ## 25. Open decisions
@@ -2485,6 +2488,8 @@ Packaging (Flatpak, deb, rpm, AUR) starts from Phase 3; the
 3. Updates (§21.2): where the update manifests and package repositories are
    hosted (`katna.invenia.in` or GitHub releases only), who holds the signing
    keys, and how long the beta soak is.
+4. Phones (§26.7): GPUI phone base, Android first, iOS licensing, the push
+   gateway, and never holding mail logins on a Katna-run server.
 
 Decided:
 
@@ -2503,3 +2508,295 @@ Decided:
 - Test and support matrix: Arch Linux (latest Plasma and GNOME) and
   Ubuntu 26.04 LTS (GNOME) / Kubuntu 26.04 (Plasma). The Plasma
   integration supports the Plasma versions of these two.
+
+## 26. Katna on phones (planned, not built)
+
+Asked about by the owner on 27 September 2026. This is design only: nothing
+here is built or scheduled, and the Linux desktop apps come first. The work
+is in `IMPLEMENTATION_PLAN.md`, "Later: Katna on phones".
+
+The goal is Katna Mail on Android and iOS with the same look (the phone
+layout of §13.9 already follows Gmail's mobile app), the same local-first
+store and instant search, and the same privacy promise: no trackers, no
+analytics, no Google-only features, and no server that reads the user's
+mail.
+
+Two things stand in the way. GPUI has no official phone backend (§26.2),
+and phones do not let an app keep a background service like `katna-daemon`
+running (§26.3, §26.4).
+
+### 26.1 What carries over
+
+Most of Katna is plain Rust with no desktop ties and builds for Android and
+iOS as it is.
+
+| Part | On a phone |
+|---|---|
+| `katna-store` (SQLite, bundled), `katna-search` (tantivy), `katna-import`, `katna-meta`, `katna-org` | As is |
+| `katna-render` (HTML mail drawn with GPUI elements, §12), `katna-preview` (pure-Rust PDF, sheets, pictures) | As is |
+| `katna-sync` (IMAP, SMTP, POP3, JMAP over rustls; `rustls-platform-verifier` already supports Android and iOS) | As is, plus a "sync once before a deadline" entry point (§26.3) |
+| `katna-core` | Paths come from the app's sandbox instead of XDG directories |
+| Sync workers, op queue, outbox, scheduler, indexer inside `katna-daemon` | Move into a `katna-engine` library (§26.3) |
+| `katna-daemon` shell: systemd unit, D-Bus name, `/proc/self/exe` re-exec, logind and NetworkManager events | Desktop only |
+| `katna-dbus` | Desktop only; the phone app calls the engine in-process |
+| Passwords in the Secret Service (`oo7`) | Android Keystore (a key that encrypts the secrets) and the iOS Keychain, behind a small `SecretStore` trait |
+| `katna-notify` (freedesktop notifications) | Android notification channels and iOS `UserNotifications`, with the same actions (Reply, Mark read, Archive) |
+| `katna-crypto` (runs the user's `gpg` and `gpgsm`) | Phones have no GnuPG. OpenPGP through a Rust library (rPGP or Sequoia) or OpenKeychain on Android; S/MIME later |
+| `katna-platform`, `katna-chrome` (window frames, blur, tray, KDE global menu, portals) | Desktop only |
+| `katna-ui`, `katna-mail` views | Carry over through GPUI; the phone layout exists, touch and text input are new (§26.2, §26.5) |
+
+### 26.2 What GPUI is missing
+
+**State in September 2026.** Zed's GPUI ships backends for macOS, Linux
+(X11 and Wayland) and Windows only. Katna's copy (`vendor/gpui-pre-wgpu`,
+`vendor/gpui-pre-linux`, 0.3.6) draws through wgpu, and wgpu runs on
+Android (Vulkan, GLES) and iOS (Metal), so drawing is not the problem. The
+missing part is everything around it.
+
+- **Upstream iOS:** Zed pull request
+  [#63068](https://github.com/zed-industries/zed/pull/63068) adds a
+  `gpui_ios` crate: UIKit scenes and window lifecycle, CoreText, Metal,
+  safe-area and keyboard insets, native text input, keychain credentials,
+  touch and drag scrolling, and a simulator example. It was opened on
+  22 August 2026, is still open, and its author calls it a side project.
+  It leaves out momentum scrolling, edit menus and keyboard accessories.
+  Nothing for Android upstream.
+- **Community:** [`longbridge/gpui-mobile`](https://github.com/longbridge/gpui-mobile),
+  from the authors of GPUI Kit (which Katna uses), is published as
+  `gpui-pre-mobile` against `gpui-pre` 0.3.4 (Katna uses 0.3.6). It covers
+  iOS (Metal, CoreText) and Android (Vulkan or GLES, cosmic-text), touch with
+  momentum scrolling, safe areas, dark mode, an Android input activity for
+  IME composition, and a file picker. It calls itself experimental;
+  accessibility, full IME composition and lifecycle hooks are not done.
+  Several forks of it exist.
+
+What Katna would need from a phone backend, whichever one it starts from:
+
+1. **Lifecycle.** Android destroys the drawing surface whenever the app
+   leaves the screen and may kill the process at any time; iOS suspends it
+   seconds after it is backgrounded. The backend drops and recreates the
+   wgpu surface; the app saves what is open (conversation, draft, scroll
+   position) and restores it after the process was killed.
+2. **Touch.** GPUI's input model is mouse and keyboard. Phones need tap,
+   long press (selection mode), fling with momentum, pull to refresh, swipe
+   on a row to archive or delete (as in Gmail), the system back gesture
+   (Android predictive back, iOS edge swipe) and pinch zoom in the viewers
+   and HTML mail. Anything only reachable by hover (row hover actions,
+   tooltips) needs a touch path; the phone layout already hides the hover
+   toolbar (§13.9).
+3. **Text input.** The hardest part: the on-screen keyboard, IME composition
+   (Bengali, Hindi, Chinese and others), autocorrect and suggestions,
+   selection handles, the copy and paste menu, and moving the compose field
+   above the keyboard.
+4. **Screen insets.** Status bar, notch or camera cut-out, gesture bar and
+   keyboard.
+5. **Accessibility.** TalkBack and VoiceOver through AccessKit, which GPUI
+   already uses on the desktop.
+6. **Fonts.** System fonts, emoji and complex-script shaping, honouring the
+   system text size.
+7. **Platform services.** Notifications, the share sheet (share a file into
+   Katna as an attachment, share an attachment out), the system file and
+   photo pickers, opening an attachment in another app (instead of
+   "Open with", §13.8), `mailto:` links, network and metered-network state
+   (instead of NetworkManager), OAuth in the system browser, and the unread
+   badge.
+
+**Recommendation.** Do not write a phone backend from scratch. Start from
+`gpui-mobile`, vendored and patched the way `gpui-pre-linux` is, and move to
+upstream `gpui_ios` for iOS if it lands. Send fixes upstream. **Android
+first**: it builds and tests from Linux (cargo-ndk, Gradle and an emulator),
+it allows real background mail on the device (§26.4), and F-Droid users are
+the audience most likely to want a private mail app. iOS needs a Mac with
+Xcode for building and signing, an Apple developer account, and a push
+gateway (§26.4).
+
+### 26.3 The engine without a daemon
+
+On the desktop, `katna-daemon` owns the network and every write, and the
+apps read the store and send commands over D-Bus (§2). On a phone there is
+one app process (plus, on iOS, small extension processes), and the system
+decides when it may run.
+
+The same rules still hold; only the process boundary moves:
+
+- **`katna-engine`.** The sync workers, op queue, outbox, scheduler,
+  indexer and new-mail policy move out of `katna-daemon` into a library
+  with no D-Bus, systemd or GPUI. `katna-daemon` becomes that engine plus
+  its desktop shell (D-Bus, systemd, tray, updates). The phone app runs the
+  engine on its own threads.
+- **One client API, two transports.** The app talks to the engine through
+  a `PimClient` trait: today's commands (`apps/katna-mail/src/daemon.rs`)
+  and change signals. On the desktop it is the D-Bus proxy; on a phone it
+  is an in-process channel. The views do not know which one they have.
+- **One writer.** The engine's thread is still the only writer; the views
+  read the store read-only. All SQL stays in `katna-store`.
+- **Killed at any moment is normal.** The op queue and outbox are already
+  on disk, so a killed process loses nothing. The engine must also start
+  in well under a second, because on a phone it starts every time the app
+  or a background task runs.
+- **Sync once, with a deadline.** Besides "run until stopped" (the app is on
+  screen: IDLE on each account, as on the desktop), the engine gets
+  `sync_once(deadline)`: send what is queued in the outbox, fetch new
+  headers for the Inbox and the folders that notify, raise notifications,
+  then stop. Background runs are short (Android WorkManager work is limited
+  to about 10 minutes; iOS background refresh gives about 30 seconds).
+  Large jobs (indexing a first sync, downloading old bodies) wait for the
+  app to be open or for the phone to be charging (Android WorkManager
+  constraints, iOS `BGProcessingTask`).
+- **iOS notification extension.** The Notification Service Extension that
+  finishes a push (§26.4) is a separate process with a small memory limit
+  (about 24 MB) and a few seconds of time. It reads the store read-only
+  from the shared App Group folder, fetches the new message's headers
+  itself, and never writes `mail.db`; it leaves a small note the engine
+  picks up on its next start. The app must also end every write
+  transaction before it is suspended: iOS terminates a suspended app that
+  holds a file lock in a shared folder.
+- **Send later and snooze with the app closed.** Android can run work at a
+  set time (exact alarms need the user's permission from Android 14 on;
+  WorkManager is late by minutes in Doze). iOS cannot run code at a set
+  time at all. Scheduled sends there go out when the app next runs, or
+  from Katna Server when the user has one (§16 already plans "send later
+  while the machine is off"). Undo send is fine on both: the app is open
+  during the delay, and a send started just before the app is closed
+  finishes in expedited work (Android) or a background task (iOS).
+- **Phone defaults.** Bodies are downloaded for fewer days than on the
+  desktop, nothing big is downloaded on a metered network (the
+  `sync.metered` setting, §6), and the first sync fetches recent mail first.
+
+### 26.4 How new mail reaches a phone
+
+On the desktop, the daemon keeps an IMAP IDLE connection open and the
+server tells it at once about new mail. A phone app cannot count on staying
+alive to hold that connection. iOS suspends it within seconds; Android
+allows it only in a foreground service with a permanent notification, and
+some phone makers kill even that. So something has to wake the app.
+
+#### How other mail apps do it
+
+| App | How new mail arrives | Does a server hold your mail login? |
+|---|---|---|
+| **Gmail** (Android and iOS), Gmail accounts | Google's mail servers see the message arrive and send a push through Firebase Cloud Messaging (Android: one shared connection that Google Play services keeps open for every app) or Apple's push service (iOS); the app then syncs. | No extra one: Google runs the mailbox and the push sender. This is what only a mail provider can do. |
+| **Gmail**, other IMAP accounts | Checked on a timer ("Sync frequency"), or Gmailify, where Google's servers fetch the other account. | With Gmailify, yes: Google's. |
+| **Apple Mail** (iOS) | Push only for providers Apple supports (iCloud, Exchange). Other IMAP accounts, Gmail included, are fetched every 15, 30 or 60 minutes or by hand. | No; it simply is not instant. |
+| **Spark, Outlook and similar** | Their servers hold an OAuth token (or password), watch the mailbox, and push through APNs or FCM. Spark says it copies the subject and part of the message, encrypted, and deletes it 4 hours after notifying. | **Yes.** |
+| **FairEmail, Thunderbird for Android (K-9)** | No server. A foreground service with a permanent "monitoring" notification keeps IMAP IDLE open; periodic sync as a fallback. FairEmail uses the `specialUse` foreground-service type because `dataSync` is limited to 6 hours a day from Android 15. Missed or late mail on aggressive phones is the most common complaint in both projects. | No |
+| **Delta Chat** (chat over email) | The app stores an encrypted device token on its mail server with IMAP METADATA. When mail arrives the server sends that token to Delta Chat's notification proxy, which decrypts it and forwards an empty wake-up to Apple or Google; the app then fetches the mail itself. Only works with servers that cooperate (chatmail). | No. The proxy sees no mail data and forgets the token at once. |
+| **Tuta** (Android) | Its own server-sent-events connection instead of Firebase, with a 15-minute job as backup. | Tuta is the mail provider. |
+
+The lesson: Gmail's instant, battery-free notifications come from being the
+mail provider *and* using the phone maker's push service. A third-party app
+gets instant mail on iOS only if some server sends it an Apple push, and
+that server must know when the mail arrived. Either the mail server says so
+itself, or something has to watch the mailbox, which means holding the
+login.
+
+#### Katna's design: one wake-up format, several sources
+
+Every device gets one **push address**, a standard Web Push URL (RFC 8030,
+payloads encrypted to the device with RFC 8291, so nothing in between can
+read them). Anything that knows about new mail sends a wake-up to that
+address. What sits behind the address differs per platform:
+
+- **Android:** a UnifiedPush distributor the user picks (ntfy, Sunup,
+  NextPush, or a Google-based one on phones with Google services). No Katna
+  server, no Firebase library in the app, fine for F-Droid.
+- **iOS:** only a sender holding Katna's Apple push key can reach the app,
+  so the address points at the **Katna push gateway**, a tiny Rust service
+  (part of Katna Server, run by the project at `katna.invenia.in`). The
+  device token is sealed inside the URL, encrypted to the gateway's key, as
+  in Delta Chat, so the gateway stores nothing. It unwraps the token and
+  forwards the still-encrypted payload as a mutable-content Apple push. The
+  Notification Service Extension decrypts it on the phone and fetches the
+  headers from the mail server directly. The gateway sees an opaque token,
+  the time and the sender's IP address. It never sees credentials,
+  addresses, subjects or content, and it keeps no logs of tokens.
+
+The wake-up sources, from most to least private:
+
+1. **The mail server itself.** JMAP servers with push subscriptions
+   (RFC 8620 §7.2 with RFC 8291 encryption; Stalwart and Fastmail have them)
+   post straight to the push address. Nobody but the provider is involved.
+   Dovecot-based servers with METADATA push, as chatmail uses, can follow
+   later. Gmail offers no push to other apps over IMAP (its API push needs
+   Google Cloud Pub/Sub, a Google-only feature Katna does not use).
+2. **The user's own Katna desktop.** `katna-daemon` already holds an IDLE
+   connection to every account. With "Wake my phone" on, it sends a wake-up
+   (optionally with the sender and subject, encrypted to the phone) when new
+   mail arrives. No new place holds a password, and it works for every
+   provider, Gmail included. It only works while that computer is on and
+   awake.
+3. **A Katna Server the user hosts** (§16): the same IDLE watcher in a
+   container on the user's own server or VPS. The login stays on hardware
+   the user controls. The same server can send later and snooze while the
+   phone is off.
+4. **On the phone alone.** Android: a foreground service holding IDLE
+   ("Instant", with its permanent notification, which the user can hide by
+   turning off that notification channel), or a timer (every 15, 30 or 60
+   minutes via WorkManager), or by hand. iOS: background app refresh, when
+   the system allows it (Apple warns that it may run rarely, or in common
+   cases not at all), plus a full sync whenever the app opens.
+
+**Not offered: a Katna-hosted server that holds logins** (Spark's model).
+It works with every provider without any setup, which is why most
+commercial apps do it. But it makes Katna a store of thousands of mail
+passwords or tokens, costs money to run forever, and breaks "your data stays
+on your machine". If it is ever reconsidered, it must be opt-in per account,
+use app passwords or narrow OAuth scopes, send content-free wake-ups only,
+forget the login on disconnect, and be open source and audited.
+
+#### Recommendation per platform
+
+- **Android:** default to "Instant" through the on-phone foreground service
+  (the FairEmail model), because it needs no server and works with every
+  provider on day one. Settings → New mail offers Instant, every 15 / 30 /
+  60 minutes, or Manual, and "Use push" once a UnifiedPush distributor is
+  installed, which switches JMAP accounts to server push and IMAP accounts
+  to the desktop or self-hosted watcher and lets the permanent notification
+  go away. The Settings page says plainly what each choice costs in battery
+  and delay, and links to the phone's battery-optimization setting.
+- **iOS:** instant mail only through push, so the push gateway ships with
+  the first iOS build. JMAP accounts use server push; IMAP accounts (Gmail
+  included) use the user's Katna desktop or self-hosted Katna Server; any
+  account without either says, in Settings → New mail, "Checked when iOS
+  allows it; may be delayed", and syncs fully whenever the app is opened.
+
+### 26.5 Phone-specific UI work
+
+The phone layout (§13.9) is the starting point. Still to do: 48 dp touch
+targets; swipe actions on list rows (set in Settings, as in Gmail); long
+press to select; pull to refresh; bottom sheets for menus; the system back
+gesture closing the conversation, drawer or sheet in that order; attaching
+from the camera and photo library; the system share sheet; the system font
+size; tablets and foldables switching between the phone and tablet layouts
+as they already do on the desktop. Desktop-only features are hidden: the
+window frame and blur, tray, global menu, KRunner, and opening mail in a
+new window.
+
+### 26.6 Distribution and licensing
+
+- **Android:** APKs on GitHub releases and F-Droid first (no Google
+  libraries, so F-Droid accepts it), Google Play later (Play asks why an app
+  uses a `specialUse` foreground service; FairEmail's reason was accepted).
+  Built on Linux CI with cargo-ndk and Gradle; the Android host code
+  (activity, services, notification actions, `rustls-platform-verifier`'s
+  helper) is a few hundred lines of Kotlin, like the Plasma C++ in §15.6.
+- **iOS:** TestFlight, then the App Store. Needs macOS CI runners, an Apple
+  developer account and a small Swift or `objc2` shim for the notification
+  extension. **Licensing needs a decision first:** the App Store's terms are
+  widely held to conflict with the GPL (VLC was removed in 2011 over this).
+  The owner, as copyright holder, can publish their own GPL code there, but
+  outside contributions and any GPL code taken from Mailspring would need
+  their authors' permission, a contributor agreement, or an App Store
+  exception added to the license. This should be settled before Katna
+  takes outside contributions.
+- Crash reports on phones follow the desktop plan (opt-in, Sentry, no
+  tracking).
+
+### 26.7 Open questions
+
+1. Which GPUI phone base: `gpui-mobile` now, or wait for upstream?
+2. Android first (recommended) or both at once?
+3. The iOS licensing path (§26.6).
+4. Who runs the push gateway and where (`katna.invenia.in` recommended).
+5. Whether a Katna-hosted login-holding watcher is ever offered
+   (recommended: no).
