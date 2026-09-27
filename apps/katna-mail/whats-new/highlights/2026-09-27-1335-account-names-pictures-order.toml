@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Your accounts, your way"
+text = """
+Each account now shows its own coloured letter instead of the same
+picture for all. In Settings > Accounts you can pick a picture for each
+one, rename it, and put the accounts in the order you like with the
+arrows or by dragging; the folder pane and the account menu follow.
+"""

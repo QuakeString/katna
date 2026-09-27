@@ -10,7 +10,7 @@ use gpui::{
     Window, div, prelude::*, rgba,
 };
 use katna_core::config::AccountsShown;
-use katna_core::{Account, AccountKind, Config};
+use katna_core::{Account, AccountId, AccountKind, Config};
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
@@ -35,6 +35,40 @@ pub(super) struct Danger {
     shown: Spring,
 }
 
+/// An account's name being changed in Settings > Accounts.
+pub(super) struct Renaming {
+    account: AccountId,
+    input: Entity<TextInput>,
+    _subscription: Subscription,
+}
+
+/// An account being dragged to a new place in Settings > Accounts, drawn
+/// as a chip with its name under the pointer.
+#[derive(Clone)]
+struct AccountDrag {
+    ix: usize,
+    name: SharedString,
+    th: Theme,
+}
+
+impl Render for AccountDrag {
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        let th = &self.th;
+        div()
+            .h(px(36.0))
+            .px(px(16.0))
+            .flex()
+            .items_center()
+            .rounded_full()
+            .bg(rgba(th.surface))
+            .shadow(elevation(th, 2.0))
+            .text_size(px(14.0))
+            .font_weight(FontWeight::MEDIUM)
+            .text_color(rgba(th.text))
+            .child(self.name.clone())
+    }
+}
+
 enum What {
     RemoveAccount(Account),
     DeleteAll {
@@ -55,99 +89,14 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(4.0))
-            .children(accounts.into_iter().enumerate().map(|(ix, account)| {
-                let name = if account.display_name.trim().is_empty() {
-                    account.address.clone()
-                } else {
-                    account.display_name.clone()
-                };
-                let about = div()
-                    .flex_grow(1.0)
-                    .flex_basis(px(180.0))
-                    .min_w_0()
-                    .flex()
-                    .flex_col()
-                    .child(
-                        div()
-                            .truncate()
-                            .text_size(px(14.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .child(name.clone()),
-                    )
-                    .child(
-                        div()
-                            .truncate()
-                            .text_size(px(12.0))
-                            .text_color(rgba(th.text_faint))
-                            .child(format!(
-                                "{} \u{b7} {}",
-                                account.address,
-                                kind_name(account.kind)
-                            )),
-                    );
-                let id = account.id;
-                let avatar = self.person_avatar(&name, &account.address, 36.0);
-                let buttons = div()
-                    .flex()
-                    .flex_row()
-                    .flex_wrap()
-                    .items_center()
-                    .gap(px(8.0))
-                    .when(self.remote.has_own_picture(id), |d| {
-                        d.child(
-                            text_button(
-                                ("account-picture-reset", ix),
-                                tr!("accounts-picture-reset"),
-                                th,
-                            )
-                            .map(|d| self.page_control(d, th, cx))
-                            .on_click(
-                                cx.listener(move |this, _, _, cx| {
-                                    this.reset_account_picture(id, cx)
-                                }),
-                            ),
-                        )
-                    })
-                    .child(
-                        text_button(("account-picture", ix), tr!("accounts-picture-change"), th)
-                            .map(|d| self.page_control(d, th, cx))
-                            .on_click(
-                                cx.listener(move |this, _, _, cx| {
-                                    this.pick_account_picture(id, cx)
-                                }),
-                            ),
-                    )
-                    .child(
-                        danger_button(("account-remove", ix), tr!("accounts-remove"), false, th)
-                            .map(|d| self.page_control(d, th, cx))
-                            .on_click(cx.listener(move |this, _, _, cx| {
-                                this.ask(What::RemoveAccount(account.clone()), cx)
-                            })),
-                    );
-                // The buttons go below the name, together, where the row is
-                // narrow.
-                div()
-                    .py(px(10.0))
-                    .flex()
-                    .flex_row()
-                    .items_start()
-                    .gap(px(12.0))
-                    .child(avatar)
-                    .child(
-                        div()
-                            .flex_1()
-                            .min_w_0()
-                            .min_h(px(36.0))
-                            .flex()
-                            .flex_row()
-                            .flex_wrap()
-                            .items_center()
-                            .gap_x(px(12.0))
-                            .gap_y(px(4.0))
-                            .child(about)
-                            .child(buttons),
-                    )
-            }))
+            .children({
+                let count = accounts.len();
+                accounts
+                    .iter()
+                    .enumerate()
+                    .map(|(ix, account)| self.account_row(ix, count, account, th, cx))
+                    .collect::<Vec<_>>()
+            })
             .when(self.accounts.is_empty(), |d| {
                 d.child(
                     div()
@@ -233,6 +182,306 @@ impl MailWindow {
                 th,
             ))
             .into_any_element()
+    }
+
+    /// One account in Settings > Accounts: a handle to drag it, its
+    /// picture, its name (or the field renaming it), the buttons for its
+    /// name and picture, Remove, and Move up and Move down.
+    fn account_row(
+        &self,
+        ix: usize,
+        count: usize,
+        account: &Account,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let name = if account.display_name.trim().is_empty() {
+            account.address.clone()
+        } else {
+            account.display_name.clone()
+        };
+        let id = account.id;
+        let renaming = self
+            .settings_page
+            .as_ref()
+            .and_then(|p| p.renaming.as_ref())
+            .filter(|r| r.account == id);
+        let about = div()
+            .flex_grow(1.0)
+            .flex_basis(px(180.0))
+            .min_w_0()
+            .flex()
+            .flex_col()
+            .map(|d| match renaming {
+                Some(renaming) => d.child(
+                    div()
+                        .id(("account-name-field", ix))
+                        .h(px(36.0))
+                        .px(px(12.0))
+                        .flex()
+                        .items_center()
+                        .rounded(px(8.0))
+                        .border_2()
+                        .border_color(rgba(th.accent))
+                        .text_size(px(14.0))
+                        .child(div().flex_1().min_w_0().child(renaming.input.clone())),
+                ),
+                None => d.child(
+                    div()
+                        .truncate()
+                        .text_size(px(14.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .child(name.clone()),
+                ),
+            })
+            .child(
+                div()
+                    .truncate()
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(format!(
+                        "{} \u{b7} {}",
+                        account.address,
+                        kind_name(account.kind)
+                    )),
+            );
+        let own = self.remote.has_own_picture(id);
+        let desktop = self.remote.has_desktop_picture();
+        let buttons = div()
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .items_center()
+            .gap(px(4.0))
+            .map(|d| match renaming {
+                Some(_) => d
+                    .child(
+                        text_button(("account-name-save", ix), tr!("accounts-name-save"), th)
+                            .map(|d| self.page_control(d, th, cx))
+                            .on_click(cx.listener(|this, _, _, cx| this.finish_rename(true, cx))),
+                    )
+                    .child(
+                        text_button(("account-name-cancel", ix), tr!("accounts-name-cancel"), th)
+                            .map(|d| self.page_control(d, th, cx))
+                            .on_click(cx.listener(|this, _, _, cx| this.finish_rename(false, cx))),
+                    ),
+                None => d.child(
+                    text_button(("account-rename", ix), tr!("accounts-rename"), th)
+                        .map(|d| self.page_control(d, th, cx))
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            this.start_rename(id, window, cx)
+                        })),
+                ),
+            })
+            .child(
+                text_button(("account-picture", ix), tr!("accounts-picture-change"), th)
+                    .map(|d| self.page_control(d, th, cx))
+                    .on_click(cx.listener(move |this, _, _, cx| this.pick_account_picture(id, cx))),
+            )
+            .when(!own && desktop, |d| {
+                d.child(
+                    text_button(
+                        ("account-picture-desktop", ix),
+                        tr!("accounts-picture-reset"),
+                        th,
+                    )
+                    .map(|d| self.page_control(d, th, cx))
+                    .on_click(cx.listener(move |this, _, _, cx| this.use_desktop_picture(id, cx))),
+                )
+            })
+            .when(own, |d| {
+                d.child(
+                    text_button(
+                        ("account-picture-remove", ix),
+                        tr!("accounts-picture-remove"),
+                        th,
+                    )
+                    .map(|d| self.page_control(d, th, cx))
+                    .on_click(
+                        cx.listener(move |this, _, _, cx| this.reset_account_picture(id, cx)),
+                    ),
+                )
+            })
+            .child({
+                let account = account.clone();
+                danger_button(("account-remove", ix), tr!("accounts-remove"), false, th)
+                    .map(|d| self.page_control(d, th, cx))
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.ask(What::RemoveAccount(account.clone()), cx)
+                    }))
+            });
+        let arrow = |dir: &'static str, to: Option<usize>, label: String| {
+            let button = crate::widgets::icon_button(
+                (dir, ix),
+                if dir == "account-up" {
+                    "chevron-up"
+                } else {
+                    "chevron-down"
+                },
+                20.0,
+                th,
+            )
+            .tooltip(crate::widgets::tip(label, th));
+            match to {
+                Some(to) => button
+                    .map(|d| self.page_control(d, th, cx))
+                    .on_click(cx.listener(move |this, _, _, cx| this.move_account(ix, to, cx))),
+                None => button.opacity(0.3).cursor_default(),
+            }
+        };
+        let drag = AccountDrag {
+            ix,
+            name: name.clone().into(),
+            th: *th,
+        };
+        let handle = div()
+            .id(("account-drag", ix))
+            .flex_none()
+            .size(px(36.0))
+            .flex()
+            .items_center()
+            .justify_center()
+            .rounded_full()
+            .cursor_grab()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .tooltip(crate::widgets::tip(tr!("accounts-drag"), th))
+            .on_drag(drag, |drag, _, _, cx| cx.new(|_| drag.clone()))
+            .child(icon("drag-handle", th.text_faint, 20.0));
+        let avatar = self.person_avatar(&name, &account.address, 36.0);
+        // The buttons go below the name, together, where the row is
+        // narrow.
+        div()
+            .id(("account-row", ix))
+            .py(px(6.0))
+            .rounded(px(12.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(8.0))
+            .drag_over::<AccountDrag>({
+                let tint = fade(th.accent, 0.10);
+                move |s, _, _, _| s.bg(rgba(tint))
+            })
+            .on_drop(cx.listener(move |this, drag: &AccountDrag, _, cx| {
+                this.move_account(drag.ix, ix, cx)
+            }))
+            .child(handle)
+            .child(avatar)
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .min_h(px(36.0))
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .items_center()
+                    .gap_x(px(12.0))
+                    .gap_y(px(4.0))
+                    .child(about)
+                    .child(buttons),
+            )
+            .child(
+                div()
+                    .flex_none()
+                    .flex()
+                    .flex_col()
+                    .child(arrow(
+                        "account-up",
+                        ix.checked_sub(1),
+                        tr!("accounts-move-up"),
+                    ))
+                    .child(arrow(
+                        "account-down",
+                        (ix + 1 < count).then_some(ix + 1),
+                        tr!("accounts-move-down"),
+                    )),
+            )
+            .into_any_element()
+    }
+
+    /// Moves the mail account at `from` to `to` in Settings > Accounts;
+    /// the folder pane, the account menu and every other list follow.
+    fn move_account(&mut self, from: usize, to: usize, cx: &mut Context<Self>) {
+        if from == to {
+            return;
+        }
+        let accounts: Vec<Account> = self
+            .accounts
+            .iter()
+            .filter(|a| a.kind.is_mail())
+            .cloned()
+            .collect();
+        self.config.mail.move_account(&accounts, from, to);
+        self.save_config();
+        self.load_tree();
+        cx.notify();
+    }
+
+    fn start_rename(&mut self, account: AccountId, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(current) = self.accounts.iter().find(|a| a.id == account) else {
+            return;
+        };
+        let accent = rgba(self.theme(window).accent).into();
+        let text = current.display_name.clone();
+        let input = cx.new(|cx| {
+            let mut input = TextInput::new(tr!("accounts-name-placeholder"), cx);
+            input.set_accent(accent);
+            input.set_text(text, cx);
+            input.select_all_text(cx);
+            input
+        });
+        let subscription = cx.subscribe(&input, |this, _, event: &InputEvent, cx| match event {
+            InputEvent::Submit => this.finish_rename(true, cx),
+            InputEvent::Cancel => this.finish_rename(false, cx),
+            InputEvent::Changed => {}
+        });
+        window.focus(&input.focus_handle(cx), cx);
+        if let Some(page) = self.settings_page.as_mut() {
+            page.renaming = Some(Renaming {
+                account,
+                input,
+                _subscription: subscription,
+            });
+        }
+        cx.notify();
+    }
+
+    /// Saves the typed name (`save`), or leaves the old one.
+    fn finish_rename(&mut self, save: bool, cx: &mut Context<Self>) {
+        let Some(renaming) = self.settings_page.as_mut().and_then(|p| p.renaming.take()) else {
+            return;
+        };
+        cx.notify();
+        if !save {
+            return;
+        }
+        let name = renaming.input.read(cx).text().trim().to_owned();
+        let id = renaming.account.0;
+        let connection = self.daemon.clone();
+        cx.spawn(async move |this, cx| {
+            let result = cx
+                .background_executor()
+                .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await?,
+                    };
+                    daemon::rename_account(&connection, id, &name).await
+                })
+                .await;
+            this.update(cx, |this, cx| {
+                match result {
+                    Ok(()) => this.load_tree(),
+                    Err(err) => {
+                        this.show_snackbar(tr!("accounts-rename-failed", error = err), None, cx)
+                    }
+                }
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
     }
 
     fn ask(&mut self, what: What, cx: &mut Context<Self>) {

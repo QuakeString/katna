@@ -87,6 +87,8 @@ add-account-address-invalid = Enter an email address such as { $example }.
 # $address: the email address being added.
 add-account-not-found = Katna could not find the servers for { $address }, so it filled in the usual names. Check them with your provider.
 add-account-password-empty = Enter the password.
+# Shown when the name field holds the same text as the password field.
+add-account-name-is-password = The name is the same as the password. Type your name there instead, as people should see it.
 # Shown briefly after the account is added. $address: its email address.
 add-account-added = Added { $address }. Getting your mail…
 # $provider: the mail provider's name, such as Gmail. An app password is a
