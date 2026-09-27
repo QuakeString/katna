@@ -6,43 +6,97 @@ on:
   pull_request:
   workflow_dispatch:
 
+# A newer push to a pull request cancels its older run; runs on main all
+# finish, since they save the build caches pull requests start from.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   CARGO_TERM_COLOR: always
+  # Nobody reads CI's debug info; without it builds are faster and the
+  # caches smaller.
+  CARGO_PROFILE_DEV_DEBUG: 0
+  CARGO_PROFILE_TEST_DEBUG: 0
 
 jobs:
+  # Whether the pull request changes anything that is built or tested. A
+  # pull request that only edits docs/ (except docs/credits.json, which the
+  # app embeds) skips the builds; every job still reports, so required
+  # checks pass.
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      code: ${{ steps.diff.outputs.code }}
+    steps:
+      - id: diff
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          code=true
+          if [[ -n "$PR" ]] && files=$(gh pr diff "$PR" --name-only) && [[ -n "$files" ]]; then
+            if ! grep -qvE '^docs/' <<<"$files" && ! grep -qx 'docs/credits.json' <<<"$files"; then
+              code=false
+            fi
+          fi
+          echo "code=$code" | tee -a "$GITHUB_OUTPUT"
+
   check:
     name: check (${{ matrix.image }})
+    needs: changes
     runs-on: ubuntu-latest
     container: ${{ matrix.image }}
     strategy:
       fail-fast: false
       matrix:
         image: ["archlinux:latest", "ubuntu:26.04"]
+    env:
+      CODE: ${{ needs.changes.outputs.code }}
     steps:
       - name: Install system packages (Arch)
-        if: startsWith(matrix.image, 'archlinux')
-        run: pacman -Syu --noconfirm --needed base-devel git curl libxkbcommon libxkbcommon-x11 fontconfig freetype2 dbus gnupg jq
+        if: startsWith(matrix.image, 'archlinux') && env.CODE == 'true'
+        run: pacman -Syu --noconfirm --needed base-devel git curl zstd libxkbcommon libxkbcommon-x11 fontconfig freetype2 dbus gnupg jq
       - name: Install system packages (Ubuntu)
-        if: startsWith(matrix.image, 'ubuntu')
+        if: startsWith(matrix.image, 'ubuntu') && env.CODE == 'true'
         run: |
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-            build-essential ca-certificates curl git pkg-config \
+            build-essential ca-certificates curl git pkg-config zstd \
             libxkbcommon-dev libxkbcommon-x11-dev libfontconfig-dev libfreetype-dev \
             dbus-daemon gnupg gpgsm jq
       - uses: actions/checkout@v4
+        if: env.CODE == 'true'
       - name: Install Rust (version from rust-toolchain.toml)
+        if: env.CODE == 'true'
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
       - run: rustup toolchain install
+        if: env.CODE == 'true'
+      # Dependencies built on main; our own crates are always rebuilt.
+      - uses: Swatinem/rust-cache@v2
+        if: env.CODE == 'true'
+        with:
+          key: ${{ matrix.image }}
+          save-if: ${{ github.ref == 'refs/heads/main' }}
       - run: cargo fmt --all --check
+        if: env.CODE == 'true'
       - run: ci/gen-credits.sh --check
+        if: env.CODE == 'true'
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+        if: env.CODE == 'true'
       - run: cargo test --workspace --locked
+        if: env.CODE == 'true'
 
   # Katna Server's tests against a real PostgreSQL.
   server:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -63,6 +117,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
       - run: cargo test --locked -p katna-server -- --include-ignored
       - name: Tracked sending against a running server
         env:
@@ -83,21 +140,63 @@ jobs:
       - uses: actions/checkout@v4
       - uses: EmbarkStudios/cargo-deny-action@v2
 
-  size:
+  # The release binaries, built in two jobs side by side: every binary of
+  # the workspace (Katna Mail and Katna Calendar are measured from this
+  # one), and the non-GUI binaries on their own, as the Arch package builds
+  # them. In a whole-workspace build they get the extra features GPUI turns
+  # on in shared crates (zbus portals, regex, log), which they never use.
+  size-build:
+    name: size build (${{ matrix.part }})
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - part: workspace
+            args: --workspace --bins
+            keep: katna-mail katna-calendar
+          - part: non-GUI
+            args: -p katna-daemon -p katnactl -p katna-search-cli -p katna-bench
+            keep: katna-daemon katnactl katna-search-cli katna-bench
     steps:
       - uses: actions/checkout@v4
       - name: Install GPUI build dependencies
+        if: matrix.part == 'workspace'
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             pkg-config libxkbcommon-dev libxkbcommon-x11-dev \
             libfontconfig-dev libfreetype-dev
       - run: rustup toolchain install
-      - run: cargo build --release --workspace --bins --locked
-      # Build the non-GUI binaries again on their own, as the Arch package
-      # does: in a whole-workspace build they get the extra features GPUI
-      # turns on in shared crates (zbus portals, regex, log), which they
-      # never use.
-      - run: cargo build --release --locked -p katna-daemon -p katnactl -p katna-search-cli -p katna-bench
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: release-${{ matrix.part }}
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+      - run: cargo build --release --locked ${{ matrix.args }}
+      - name: Keep the measured binaries
+        run: mkdir bins && for bin in ${{ matrix.keep }}; do cp "target/release/$bin" bins/; done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: size-${{ matrix.part }}
+          path: bins/
+          retention-days: 1
+
+  size:
+    needs: [changes, size-build]
+    if: always() && needs.changes.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Builds failed
+        if: needs.size-build.result != 'success' && needs.changes.outputs.code == 'true'
+        run: exit 1
+      - uses: actions/checkout@v4
+        if: needs.changes.outputs.code == 'true'
+      - uses: actions/download-artifact@v4
+        if: needs.changes.outputs.code == 'true'
+        with:
+          pattern: size-*
+          merge-multiple: true
+          path: target/release
       - run: ci/check-sizes.sh
+        if: needs.changes.outputs.code == 'true'
