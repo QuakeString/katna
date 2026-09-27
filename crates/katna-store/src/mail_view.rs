@@ -172,6 +172,120 @@ pub(crate) fn folder_threads(
         .collect())
 }
 
+/// Which messages a list across folders keeps, by their flags: those with
+/// every flag of `set` and none of `unset`. The default keeps all.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+pub struct FlagFilter {
+    pub set: MessageFlags,
+    pub unset: MessageFlags,
+}
+
+impl FlagFilter {
+    /// Unread messages.
+    pub const UNREAD: Self = Self {
+        set: MessageFlags::empty(),
+        unset: MessageFlags::SEEN,
+    };
+    /// Starred messages.
+    pub const STARRED: Self = Self {
+        set: MessageFlags::FLAGGED,
+        unset: MessageFlags::empty(),
+    };
+    /// Messages marked important.
+    pub const IMPORTANT: Self = Self {
+        set: MessageFlags::IMPORTANT,
+        unset: MessageFlags::empty(),
+    };
+}
+
+/// One message of a list across folders.
+struct SpreadRow {
+    row: FolderRow,
+    account: i64,
+    message_id_hdr: Option<String>,
+}
+
+/// Every message in any of `folders` that `filter` keeps, each once, newest
+/// first (undated last).
+fn spread_rows(
+    conn: &Connection,
+    folders: &[FolderId],
+    filter: FlagFilter,
+) -> Result<Vec<SpreadRow>> {
+    if folders.is_empty() {
+        return Ok(Vec::new());
+    }
+    let marks = vec!["?"; folders.len()].join(",");
+    let mut stmt = conn.prepare_cached(&format!(
+        "SELECT m.id, m.thread_id, m.category, m.flags, m.account_id, m.message_id_hdr
+         FROM message m
+         WHERE m.id IN (SELECT message_id FROM message_location WHERE folder_id IN ({marks}))
+           AND (m.flags & ?) = ?
+         ORDER BY m.date IS NULL, m.date DESC, m.id DESC"
+    ))?;
+    let mask = i64::from((filter.set | filter.unset).bits());
+    let want = i64::from(filter.set.bits());
+    let params = folders
+        .iter()
+        .map(|f| f.0)
+        .chain([mask, want])
+        .collect::<Vec<i64>>();
+    let rows = stmt.query_map(rusqlite::params_from_iter(params), |row| {
+        let flags: i64 = row.get(3)?;
+        Ok(SpreadRow {
+            row: FolderRow {
+                id: row.get(0)?,
+                thread: row.get(1)?,
+                category: row
+                    .get::<_, Option<i64>>(2)?
+                    .and_then(MailCategory::from_storage),
+                unread: flags & i64::from(MessageFlags::SEEN.bits()) == 0,
+            },
+            account: row.get(4)?,
+            message_id_hdr: row.get(5)?,
+        })
+    })?;
+    Ok(rows.collect::<rusqlite::Result<_>>()?)
+}
+
+/// The conversations with a message in any of `folders` that `filter`
+/// keeps, newest first, each with its newest such message: the lists of
+/// the unified inbox, over the folders of several accounts.
+pub(crate) fn spread_threads(
+    conn: &Connection,
+    folders: &[FolderId],
+    filter: FlagFilter,
+) -> Result<Vec<ThreadEntry>> {
+    let mut seen = HashSet::new();
+    Ok(spread_rows(conn, folders, filter)?
+        .into_iter()
+        .filter(|r| r.row.thread.is_none_or(|thread| seen.insert(thread)))
+        .map(|r| ThreadEntry {
+            thread: r.row.thread.map(ThreadId),
+            latest: MessageId(r.row.id),
+        })
+        .collect())
+}
+
+/// The messages in any of `folders` that `filter` keeps, newest first;
+/// server copies of one message (the same `Message-ID` in one account,
+/// such as Gmail's Inbox and All Mail copies) show once.
+pub(crate) fn spread_message_ids(
+    conn: &Connection,
+    folders: &[FolderId],
+    filter: FlagFilter,
+) -> Result<Vec<MessageId>> {
+    let mut seen = HashSet::new();
+    Ok(spread_rows(conn, folders, filter)?
+        .into_iter()
+        .filter(|r| match &r.message_id_hdr {
+            Some(hdr) => seen.insert((r.account, hdr.clone())),
+            None => true,
+        })
+        .map(|r| MessageId(r.row.id))
+        .collect())
+}
+
 /// The messages of `thread` that are in `folder`, oldest first.
 pub(crate) fn folder_thread_messages(
     conn: &Connection,
@@ -539,5 +653,93 @@ mod tests {
         assert_eq!(reader.folder_message_ids(archive).unwrap(), [old]);
         assert!(reader.folder_message_ids(empty).unwrap().is_empty());
         assert!(reader.folder_message_ids(FolderId(999)).unwrap().is_empty());
+    }
+
+    #[test]
+    fn lists_across_folders_and_accounts() {
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+        let work = store.add_account(AccountKind::Local, "w", "w").unwrap().id;
+        let home = store.add_account(AccountKind::Local, "h", "h").unwrap().id;
+
+        let mut batch = store.mail_batch().unwrap();
+        let work_inbox = batch.ensure_folder(work, "INBOX").unwrap();
+        let work_all = batch.ensure_folder(work, "All Mail").unwrap();
+        let home_inbox = batch.ensure_folder(home, "INBOX").unwrap();
+        let mut add = |account, folder, raw: &'static [u8], hdr, date, flags| {
+            let mut new = message(raw, Some(date), flags);
+            new.message_id_hdr = hdr;
+            match batch.add_message(account, folder, &new).unwrap() {
+                crate::Added::Message(id) | crate::Added::Location(id) => id,
+                crate::Added::Duplicate(_) => panic!("unexpected duplicate"),
+            }
+        };
+        let a = add(
+            work,
+            work_inbox,
+            b"a",
+            Some("<a@x>"),
+            100,
+            MessageFlags::SEEN,
+        );
+        // A server copy of `a` in All Mail, unread there.
+        let a_copy = add(
+            work,
+            work_all,
+            b"a2",
+            Some("<a@x>"),
+            100,
+            MessageFlags::empty(),
+        );
+        let b = add(
+            home,
+            home_inbox,
+            b"b",
+            Some("<b@x>"),
+            300,
+            MessageFlags::FLAGGED,
+        );
+        let c = add(work, work_inbox, b"c", None, 200, MessageFlags::IMPORTANT);
+        batch.commit().unwrap();
+        assert_ne!(a, a_copy);
+
+        let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
+        let all = FlagFilter::default();
+        let inboxes = [work_inbox, home_inbox];
+        assert_eq!(reader.spread_message_ids(&inboxes, all).unwrap(), [b, c, a]);
+        // Copies of one message show once (the newer copy).
+        assert_eq!(
+            reader
+                .spread_message_ids(&[work_inbox, work_all, home_inbox], all)
+                .unwrap(),
+            [b, c, a_copy]
+        );
+        assert_eq!(
+            reader
+                .spread_message_ids(&[work_all, work_inbox], FlagFilter::UNREAD)
+                .unwrap(),
+            [c, a_copy]
+        );
+        assert_eq!(
+            reader
+                .spread_message_ids(&inboxes, FlagFilter::STARRED)
+                .unwrap(),
+            [b]
+        );
+        assert_eq!(
+            reader
+                .spread_message_ids(&inboxes, FlagFilter::IMPORTANT)
+                .unwrap(),
+            [c]
+        );
+        let latest: Vec<MessageId> = reader
+            .spread_threads(&inboxes, all)
+            .unwrap()
+            .into_iter()
+            .map(|t| t.latest)
+            .collect();
+        assert_eq!(latest, [b, c, a]);
+        assert!(reader.spread_message_ids(&[], all).unwrap().is_empty());
     }
 }

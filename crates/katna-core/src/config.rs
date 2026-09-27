@@ -18,6 +18,10 @@ use crate::error::{Error, Result};
 /// Allowed undo-send delays in seconds (`docs/ARCHITECTURE.md` §10).
 pub const UNDO_SEND_CHOICES: [u32; 5] = [0, 5, 10, 20, 30];
 
+/// [`Sending::send_from`] when new mail goes out from the account whose mail
+/// is open.
+pub const SEND_FROM_CURRENT: &str = "current";
+
 /// All user settings.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
@@ -284,8 +288,9 @@ pub struct Sending {
     /// The likely rest of a phrase shows grey ahead of the cursor while
     /// writing, learned on this computer from the user's sent mail.
     pub writing_suggestions: bool,
-    /// The address new mail is sent from; empty for the account whose
-    /// mail is open. Replies go out from the account they answer.
+    /// The address new mail is sent from by default; empty for the first
+    /// account, [`SEND_FROM_CURRENT`] for the account whose mail is open.
+    /// Replies go out from the account they answer.
     pub send_from: String,
     /// Send on replies and forwards also archives the conversation; the
     /// Send menu offers the other way.
@@ -433,6 +438,10 @@ pub struct MailView {
     /// With several accounts: the folder pane shows one account, picked in
     /// the account card, or all of them one after another.
     pub accounts_shown: AccountsShown,
+    /// With several accounts: an "All Accounts" section heads the folder
+    /// pane, with each special folder (Inbox, Sent, ...) of every account
+    /// in one list, and the accounts below it start folded.
+    pub unified_inbox: bool,
     /// The account on show with [`AccountsShown::One`], by lower-case
     /// address; empty for the first.
     #[serde(skip_serializing_if = "String::is_empty")]
@@ -472,6 +481,7 @@ impl Default for MailView {
             attachment_previews: true,
             open_saved_folder: false,
             accounts_shown: AccountsShown::One,
+            unified_inbox: false,
             current_account: String::new(),
             account_order: Vec::new(),
         }

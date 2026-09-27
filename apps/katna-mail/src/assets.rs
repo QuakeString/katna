@@ -125,6 +125,7 @@ icons!(
     "trash",
     "tune",
     "undo",
+    "unread",
     "warning",
     "window-restore",
     "zoom-in",

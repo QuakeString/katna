@@ -1204,7 +1204,7 @@ impl MailWindow {
                     Some(tab) => tr!("list-empty-tab", tab = tab.label()),
                     None => tr!("list-empty-tab-unknown"),
                 },
-                Some(Listing::Folder(_)) => match self.folder_name() {
+                Some(Listing::Folder(_) | Listing::Unified { .. }) => match self.folder_name() {
                     Some(folder) => tr!("list-empty-folder", folder = folder),
                     None => tr!("list-empty-folder-unknown"),
                 },
