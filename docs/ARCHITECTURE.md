@@ -995,10 +995,18 @@ a tile of one color sits on a disc of that color, and a see-through glyph
 sits on a white disc, or a dark one when the glyph is light.
 
 The user's own accounts show the picture picked in Settings → Accounts
-(kept in `$XDG_DATA_HOME/katna/account-pictures/<account id>`), else the
-desktop user's picture (`~/.face.icon`, the AccountsService icon, or
-`~/.face`). There is no OAuth, so a provider's profile photo is out of
-reach; Libravatar or Gravatar could come later as an opt-in.
+(kept in `$XDG_DATA_HOME/katna/account-pictures/<account id>`), else each
+its own coloured letter, so accounts tell apart. "Use desktop picture"
+copies the desktop user's picture (`~/.face.icon`, the AccountsService
+icon, or `~/.face`) in as the account's picture; it is not the default,
+because it made every account look the same. There is no OAuth, so a
+provider's profile photo (Google's needs a Google sign-in) is out of
+reach; when OAuth2 comes, it goes after the picked picture in
+`own_picture` (`window/remote.rs`). Libravatar or Gravatar could come
+later as an opt-in. Settings → Accounts also renames an account and sets
+the order accounts are listed in everywhere (Move up, Move down, or a
+drag by the handle; `mail.account_order` in `config.toml`), the first
+being the default.
 
 Size: this renderer added 2.7 MB to the release app (31.3 → 34.0 MB). For
 comparison, a minimal program with Blitz (`blitz-html` + `blitz-paint` +
@@ -2144,7 +2152,9 @@ Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssx)`
 `DiscoverAccount(address) → (account, source)`, `AddImapAccount(account,
 password) → id`, `AddPop3Account(account, password) → id` (with
 leave-on-server, days to keep, and delete-with-local),
-`SetPassword(id, password)`, `RemoveAccount(id) → b`,
+`SetPassword(id, password)`, `RenameAccount(id, name)` (an empty name
+goes back to the name the account's own sent mail uses, which a name-less
+account also takes after its first sync), `RemoveAccount(id) → b`,
 `DeleteAllData()` (stops every account, deletes every saved password,
 the data directory, the cache and `config.toml`, then the daemon exits;
 the next call starts a new one), `SyncNow(id)` (0 for every account), `FetchBody(message)`,

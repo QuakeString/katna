@@ -13,8 +13,11 @@
 //! cannot tell anyone that a message was read; it is shown for every
 //! sender unless the "Sender pictures" setting is off (then only for
 //! trusted senders). The user's own accounts show the picture picked for
-//! the account in Settings, else the desktop user's picture. The daemon
-//! does all fetching; the app never uses the network.
+//! the account in Settings (which can be the desktop user's picture),
+//! else a coloured letter, so each account looks different. A provider's
+//! profile photo (Google's needs a Google sign-in, which Katna does not
+//! do yet) would go in [`MailWindow::own_picture`] after the picked one.
+//! The daemon does all fetching; the app never uses the network.
 
 use std::cell::RefCell;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
@@ -61,7 +64,7 @@ pub(crate) struct Remote {
     /// Domains whose picture was asked for while drawing, each with an
     /// address there; fetched once the frame is built.
     wanted: RefCell<BTreeMap<String, String>>,
-    /// The desktop user's picture, shown for their own accounts.
+    /// The desktop user's picture, offered for an account in Settings.
     desktop: Option<Arc<gpui::Image>>,
     /// Pictures picked for accounts, by account ID.
     own: HashMap<i64, Arc<gpui::Image>>,
@@ -99,7 +102,7 @@ impl Remote {
             images: HashMap::new(),
             pictures: HashMap::new(),
             wanted: RefCell::default(),
-            desktop: desktop_picture(),
+            desktop: desktop_picture().map(|(_, picture)| picture),
             own,
             own_dir,
             mono: None,
@@ -131,10 +134,15 @@ impl Remote {
         }
     }
 
-    /// Whether a picture was picked for `account` (else the desktop's is
-    /// used).
+    /// Whether a picture was picked for `account` (else it shows a
+    /// letter).
     pub(super) fn has_own_picture(&self, account: AccountId) -> bool {
         self.own.contains_key(&account.0)
+    }
+
+    /// Whether the desktop's user has a picture to use for an account.
+    pub(super) fn has_desktop_picture(&self) -> bool {
+        self.desktop.is_some()
     }
 
     /// The monospace font found by [`Self::find_mono`].
@@ -180,7 +188,7 @@ fn read_picture(path: &Path) -> Option<Arc<gpui::Image>> {
 
 /// The picture of the desktop's user: `~/.face.icon` (KDE), the one the
 /// system's user settings keep (AccountsService), or `~/.face`.
-fn desktop_picture() -> Option<Arc<gpui::Image>> {
+fn desktop_picture() -> Option<(PathBuf, Arc<gpui::Image>)> {
     let home = std::env::var_os("HOME").map(PathBuf::from);
     let user = std::env::var("USER")
         .or_else(|_| std::env::var("LOGNAME"))
@@ -194,7 +202,7 @@ fn desktop_picture() -> Option<Arc<gpui::Image>> {
     candidates
         .into_iter()
         .flatten()
-        .find_map(|p| read_picture(&p))
+        .find_map(|p| Some((p.clone(), read_picture(&p)?)))
 }
 
 /// The domain of `email`, when it looks like one.
@@ -357,11 +365,7 @@ impl MailWindow {
             .accounts
             .iter()
             .find(|a| !email.is_empty() && a.address.eq_ignore_ascii_case(email))?;
-        self.remote
-            .own
-            .get(&account.id.0)
-            .or(self.remote.desktop.as_ref())
-            .cloned()
+        self.remote.own.get(&account.id.0).cloned()
     }
 
     /// Asks for a picture file and uses it for `account`.
@@ -428,7 +432,28 @@ impl MailWindow {
         .detach();
     }
 
-    /// Goes back to the desktop's picture for `account`.
+    /// Uses the desktop user's picture for `account`, as a copy, so the
+    /// account keeps it if the desktop's changes.
+    pub(super) fn use_desktop_picture(&mut self, account: AccountId, cx: &mut Context<Self>) {
+        let Some((path, picture)) = desktop_picture() else {
+            return;
+        };
+        let dir = self.remote.own_dir.clone();
+        if let Err(err) = std::fs::create_dir_all(&dir)
+            .and_then(|()| std::fs::copy(&path, dir.join(account.0.to_string())).map(drop))
+        {
+            self.show_snackbar(
+                tr!("remote-picture-keep-failed", error = err.to_string()),
+                None,
+                cx,
+            );
+            return;
+        }
+        self.remote.own.insert(account.0, picture);
+        cx.notify();
+    }
+
+    /// Takes away the picture of `account`, which shows its letter again.
     pub(super) fn reset_account_picture(&mut self, account: AccountId, cx: &mut Context<Self>) {
         let path = self.remote.own_dir.join(account.0.to_string());
         match std::fs::remove_file(&path) {
