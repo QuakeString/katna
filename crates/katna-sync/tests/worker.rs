@@ -325,6 +325,74 @@ fn downloads_bodies_and_fetches_on_request() {
 }
 
 #[test]
+fn a_longer_offline_window_downloads_older_mail_at_once() {
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    server.deliver_header(
+        "INBOX",
+        "Subject: old\r\nFrom: bob@example.org\r\n\
+         Date: Tue, 1 May 2001 10:00:00 +0000\r\nMessage-ID: <old@example.org>\r\n\r\n",
+        "From long ago.",
+    );
+    let config = WorkerConfig {
+        offline: OfflineWindow {
+            days: Some(30),
+            max_size: u64::MAX,
+        },
+        ..config()
+    };
+    let (tmp, store, account) = common::store();
+    let (events_tx, events) = async_channel::unbounded();
+    let (handle, control) = worker::control();
+    let task = smol::spawn(worker::run(
+        server.clone(),
+        store,
+        account,
+        config,
+        events_tx,
+        control,
+    ));
+    let worker = Running {
+        events,
+        handle,
+        task,
+        _tmp: tmp,
+    };
+    smol::block_on(async {
+        assert!(matches!(worker.next_any().await, Event::Connected));
+        assert!(matches!(worker.next_any().await, Event::Synced(_)));
+        let reader = worker.store();
+        let downloaded = || {
+            let folder = reader.folders(account).unwrap()[0].id;
+            let ids: Vec<_> = reader
+                .messages_in_folder(folder)
+                .unwrap()
+                .iter()
+                .map(|m| m.id)
+                .collect();
+            reader.messages_by_id(&ids).unwrap()[0].blob_hash.is_some()
+        };
+        Timer::after(Duration::from_millis(100)).await;
+        assert!(!downloaded(), "older than 30 days");
+
+        // All mail: the worker syncs at once and downloads it.
+        worker.handle.set_offline_days(None);
+        loop {
+            if let Event::BodiesStored(1) = worker.next_any().await {
+                break;
+            }
+        }
+        assert!(downloaded());
+
+        // A shorter window again keeps what is downloaded.
+        worker.handle.set_offline_days(Some(7));
+        Timer::after(Duration::from_millis(200)).await;
+        assert!(downloaded());
+        worker.stop().await;
+    });
+}
+
+#[test]
 fn metered_network_waits_with_bodies() {
     let server = FakeServer::default();
     server.create("INBOX", 1);

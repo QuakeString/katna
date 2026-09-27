@@ -2,7 +2,7 @@
 
 //! The Settings page, shown in place of the list as in webmail's "See all
 //! settings": General (reading pane, density, theme, conversations, undo
-//! send), Inbox (tabs per account), Accounts (remove one, or delete all
+//! send, offline mail), Inbox (tabs per account), Accounts (remove one, or delete all
 //! data), Signatures (several, with defaults for new mail and replies),
 //! Default apps (where each kind of attachment opens) and Keyboard shortcuts (every one, each can be changed by pressing the new
 //! keys). Changes apply at once and are saved
@@ -424,11 +424,63 @@ impl MailWindow {
                 th,
             ))
             .child(row(
+                "Offline mail",
+                Some("Recent mail is downloaded whole, to read without a connection. Older mail downloads when you open it."),
+                self.offline_choice(th, cx),
+                th,
+            ))
+            .child(row(
                 "Desktop",
                 Some("Shown even while Katna Mail is closed."),
                 self.desktop_switches(th, cx),
                 th,
             ))
+            .into_any_element()
+    }
+
+    /// How many days of mail the daemon keeps downloaded (`sync.offline_days`).
+    fn offline_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let now = self.config.sync.offline_days;
+        let chips = OFFLINE_CHOICES.into_iter().map(|(days, label)| {
+            self.page_control(
+                chip(
+                    ("offline-days", days as usize),
+                    label.to_owned(),
+                    days == now,
+                    th,
+                ),
+                th,
+                cx,
+            )
+            .on_click(cx.listener(move |this, _, _, cx| this.apply(Change::OfflineDays(days), cx)))
+        });
+        // A number set in the file by hand shows too.
+        let other = (!OFFLINE_CHOICES.iter().any(|(days, _)| *days == now))
+            .then(|| chip("offline-days-other", format!("{now} days"), true, th));
+        div()
+            .flex()
+            .flex_col()
+            .px(px(8.0))
+            .gap(px(8.0))
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(6.0))
+                    .children(chips)
+                    .children(other),
+            )
+            .child(
+                div()
+                    .text_size(px(12.0))
+                    .line_height(px(17.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(
+                        "Choosing fewer days keeps mail already downloaded. \
+                         Nothing changes on the server.",
+                    ),
+            )
             .into_any_element()
     }
 
@@ -1337,6 +1389,15 @@ impl MailWindow {
             .child(label)
     }
 }
+
+/// The offline mail choices: days (0 for all mail) and their names.
+const OFFLINE_CHOICES: [(u32, &str); 5] = [
+    (7, "7 days"),
+    (30, "30 days"),
+    (90, "90 days"),
+    (365, "1 year"),
+    (0, "All mail"),
+];
 
 fn style_name(style: TabStyle) -> &'static str {
     match style {

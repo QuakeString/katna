@@ -77,12 +77,32 @@ impl Default for Notifications {
 }
 
 /// How `katna-daemon` syncs (`docs/ARCHITECTURE.md` §6.1).
-#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct SyncConfig {
     /// Whether to save data as on a metered network: no bodies downloaded
     /// ahead of time.
     pub metered: Metered,
+    /// Mail of the last this many days is downloaded whole ahead of time,
+    /// for reading offline; 0 for all mail. Older mail downloads when it
+    /// is opened. Lowering it keeps what is already downloaded.
+    pub offline_days: u32,
+}
+
+impl Default for SyncConfig {
+    fn default() -> Self {
+        Self {
+            metered: Metered::default(),
+            offline_days: 30,
+        }
+    }
+}
+
+impl SyncConfig {
+    /// [`Self::offline_days`] as a window: `None` for all mail.
+    pub fn offline_window(&self) -> Option<u32> {
+        (self.offline_days > 0).then_some(self.offline_days)
+    }
 }
 
 /// [`SyncConfig::metered`].
@@ -739,6 +759,17 @@ mod tests {
         assert!(Config::default().notifications.new_mail);
         let config = Config::parse("[notifications]\nnew_mail = false\n").unwrap();
         assert!(!config.notifications.new_mail);
+    }
+
+    #[test]
+    fn offline_days_setting() {
+        assert_eq!(Config::default().sync.offline_window(), Some(30));
+        let config = Config::parse("[sync]\nmetered = \"never\"\n").unwrap();
+        assert_eq!(config.sync.offline_window(), Some(30));
+        let config = Config::parse("[sync]\noffline_days = 0\n").unwrap();
+        assert_eq!(config.sync.offline_window(), None);
+        let config = Config::parse("[sync]\noffline_days = 365\n").unwrap();
+        assert_eq!(config.sync.offline_window(), Some(365));
     }
 
     #[test]

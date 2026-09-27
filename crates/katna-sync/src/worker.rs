@@ -40,7 +40,7 @@ use std::{
     future::Future,
     sync::{
         Arc,
-        atomic::{AtomicBool, Ordering},
+        atomic::{AtomicBool, AtomicU32, Ordering},
     },
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
@@ -178,6 +178,7 @@ pub struct Handle {
     wake: Sender<()>,
     reconnect: Sender<()>,
     metered: Arc<AtomicBool>,
+    offline_days: Arc<AtomicU32>,
     changes: Sender<()>,
     bodies: Sender<BodyRequest>,
 }
@@ -206,6 +207,17 @@ impl Handle {
     pub fn set_metered(&self, metered: bool) {
         let was = self.metered.swap(metered, Ordering::Relaxed);
         if was && !metered {
+            self.sync_now();
+        }
+    }
+
+    /// Sets how many days of mail are downloaded ahead of time, `None` for
+    /// all of it, instead of [`WorkerConfig::offline`]. Mail already
+    /// downloaded stays; a longer window is filled in by a sync started at
+    /// once.
+    pub fn set_offline_days(&self, days: Option<u32>) {
+        let days = days.unwrap_or(ALL_MAIL).min(ALL_MAIL);
+        if self.offline_days.swap(days, Ordering::Relaxed) != days {
             self.sync_now();
         }
     }
@@ -252,9 +264,16 @@ pub struct Control {
     wake: Receiver<()>,
     reconnect: Receiver<()>,
     metered: Arc<AtomicBool>,
+    offline_days: Arc<AtomicU32>,
     changes: Receiver<()>,
     bodies: Receiver<BodyRequest>,
 }
+
+/// [`Handle::set_offline_days`] was never called: the worker keeps
+/// [`WorkerConfig::offline`].
+const UNSET: u32 = u32::MAX;
+/// [`Handle::set_offline_days`] with `None`.
+const ALL_MAIL: u32 = u32::MAX - 1;
 
 /// What ended a wait on a [`Control`].
 enum Signal {
@@ -272,12 +291,14 @@ pub fn control() -> (Handle, Control) {
     let (changes, changes_rx) = async_channel::bounded(1);
     let (bodies, bodies_rx) = async_channel::unbounded();
     let metered = Arc::new(AtomicBool::new(false));
+    let offline_days = Arc::new(AtomicU32::new(UNSET));
     (
         Handle {
             _stop: stop_tx,
             wake,
             reconnect,
             metered: metered.clone(),
+            offline_days: offline_days.clone(),
             changes,
             bodies,
         },
@@ -286,6 +307,7 @@ pub fn control() -> (Handle, Control) {
             wake: wake_rx,
             reconnect: reconnect_rx,
             metered,
+            offline_days,
             changes: changes_rx,
             bodies: bodies_rx,
         },
@@ -358,6 +380,20 @@ impl Control {
     /// Whether bodies should wait for an unmetered network.
     fn metered(&self) -> bool {
         self.metered.load(Ordering::Relaxed)
+    }
+
+    /// The messages to keep offline: `config` with the days the handle
+    /// set, if it did.
+    fn offline(&self, config: &OfflineWindow) -> OfflineWindow {
+        let days = match self.offline_days.load(Ordering::Relaxed) {
+            UNSET => config.days,
+            ALL_MAIL => None,
+            days => Some(days),
+        };
+        OfflineWindow {
+            days,
+            ..config.clone()
+        }
     }
 
     fn is_stopped(&self) -> bool {
@@ -654,7 +690,8 @@ async fn session<B: MailBackend>(
             last_full = Instant::now();
             stale.clear();
             if !control.metered() {
-                download_all(backend, store, account, config, events).await?;
+                let window = control.offline(&config.offline);
+                download_all(backend, store, account, &window, events).await?;
             }
         } else {
             // Moves the server gave no new UIDs for.
@@ -684,7 +721,7 @@ async fn session<B: MailBackend>(
                         store,
                         folder,
                         &path,
-                        &config.offline,
+                        &control.offline(&config.offline),
                         now,
                     )
                     .await
@@ -741,7 +778,7 @@ async fn session<B: MailBackend>(
                 store,
                 inbox.id,
                 &inbox.path,
-                &config.offline,
+                &control.offline(&config.offline),
                 unix_now(),
             )
             .await?;
@@ -881,7 +918,7 @@ async fn download_all<B: MailBackend>(
     backend: &mut B,
     store: &mut Store,
     account: AccountId,
-    config: &WorkerConfig,
+    window: &OfflineWindow,
     events: &Sender<Event>,
 ) -> Result<()> {
     let mut folders = store.folders(account)?;
@@ -889,16 +926,7 @@ async fn download_all<B: MailBackend>(
     let now = unix_now();
     let mut stored = 0;
     for folder in folders {
-        match bodies::download_bodies(
-            backend,
-            store,
-            folder.id,
-            &folder.path,
-            &config.offline,
-            now,
-        )
-        .await
-        {
+        match bodies::download_bodies(backend, store, folder.id, &folder.path, window, now).await {
             Ok(count) => stored += count,
             Err(Error::Rejected(reason)) => {
                 tracing::info!(path = folder.path, %reason, "skipping bodies");
