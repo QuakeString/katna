@@ -1,0 +1,351 @@
+# Katna Mail, Hausa (Hausa).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-27-0319-whats-new"]
+title = "Me ke sabo, bayan kowane sabuntawa"
+text = """
+Bayan sabuntawa, Katna Mail yana nuna abin da ya canza sau ɗaya, maimakon
+rangadin maraba. Saituna masu sauri suna sake buɗe shi.
+"""
+
+["2026-09-27-0320-reply-buttons-fit"]
+title = "Maɓallan amsa da kullum suke dacewa"
+text = """
+Amsa, Amsa wa kowa da Tura suna kan layi ɗaya: idan taga ta ƙunce, suna
+komawa gumaka ɗaya bayan ɗaya. A waya suna raba faɗin a tsakaninsu.
+"""
+
+["2026-09-27-0321-notifications-open-mail"]
+title = "Sanarwa tana buɗe wasiƙarta"
+text = """
+Danna sanarwar sabuwar wasiƙa don buɗe wannan saƙon, ko da Katna Mail a
+rufe yake. Sanarwa kuma tana da Amsa wa kowa.
+"""
+
+["2026-09-27-0322-attachment-previews"]
+title = "Samfoti na ƙarin haɗe-haɗe"
+text = """
+Maƙunsar bayanai, CSV, fayilolin rubutu da takardu suna nuna samfoti a
+katinsu, kuma bayan mai kallo ya fi haske.
+"""
+
+["2026-09-27-0323-frosted-menus"]
+title = "Menu masu kamar gilashi mai hazo"
+text = """
+Idan Saituna > Na gwaji > Bango mai dushewa a kunne yake, menu da ƙananan
+tagogi suna zama kamar gilashi mai hazo.
+"""
+
+["2026-09-27-0346-settings-search"]
+title = "Bincika saitunanka"
+text = """
+Idan Saituna a buɗe suke, akwatin bincike yana samo kowane saiti ya kai
+ka gare shi. Saituna suna da ƙarin shafuka, a tsari mafi bayyana, kuma
+dogayen bayanai suna bayan maɓallin (i).
+"""
+
+["2026-09-27-0410-crash-reports-kept"]
+title = "Rahotannin faɗuwa suna zama a kwamfutarka"
+text = """
+Idan Katna Mail ko sabis ɗinsa na bango ya faɗi, farawa na gaba zai
+sanar da kai, tare da rahoton da za ka gani ko ka kwafa don rahoton
+matsala. Saituna > Ra'ayin mai amfani suna jera su.
+"""
+
+["2026-09-27-0438-calmer-reply"]
+title = "Amsa mai natsuwa"
+text = """
+Amsa a Wurin karatu tana ajiye Aika da tsarin rubutu a ƙasa, tana naɗe
+wasiƙar da aka ambato a bayan "...", kuma Buɗe amsar a taga ta daban
+tana buɗe amsar a tagarta. A waya, rubutu yana ɗaukar dukan taga.
+"""
+
+["2026-09-27-0439-mail-in-own-window"]
+title = "Wasiƙa a tagarta"
+text = """
+Shift+danna saƙo, danna shi da dama, ko yi amfani da A sabuwar taga a
+sandar kayan aikin mai karatu don buɗe shi a tagarsa. Buga duka yana
+buga dukan tattaunawar.
+"""
+
+["2026-09-27-0440-settings-on-phone"]
+title = "Saituna a waya"
+text = """
+A kan allo mai ƙunci, Saituna da Saituna masu sauri suna cika taga, kuma
+kowane menu da ƙaramar taga suna rufewa da Esc ko danna a waje.
+"""
+
+["2026-09-27-0441-offline-mail"]
+title = "Zaɓi yawan wasiƙun da za su zauna ba tare da intanet ba"
+text = """
+Saituna > Gabaɗaya > Wasiƙu ba tare da intanet ba suna ajiye mako ɗaya,
+wata ɗaya, watanni uku, shekara ɗaya ko dukan wasiƙunka a wannan
+kwamfuta. Tsofaffin wasiƙu suna saukowa idan ka buɗe su.
+"""
+
+["2026-09-27-0442-folder-pane-button"]
+title = "Sabon maɓallin wurin folda"
+text = """
+Maɓallin da ke saman hagu yana nunawa da ɓoye wurin folda, kuma gefensa
+na hagu yana cike yayin da folda suke nunawa.
+"""
+
+["2026-09-27-0443-cards-and-phone-rows"]
+title = "Katuna masu tsafta, waya mai natsuwa"
+text = """
+Jerin da mai karatu suna kan katuna masu siraran iyaka da gajeriyar
+inuwa, menu kullum suna cikin taga, kuma a waya layukan bincike da
+sandar kayan aiki suna zamewa su ɓace yayin da kake gungurawa.
+"""
+
+["2026-09-27-0444-about-katna"]
+title = "Game da Katna"
+text = """
+Taimako > Game da Katna, wanda kuma yake a Saituna masu sauri, yana nuna
+sigar, jerin canje-canje da kowane ɗakin karatu da aka gina Katna a kai,
+tare da marubutansa da lasisinsa. Sigar da ke kan Saituna ma tana buɗe
+shi.
+"""
+
+["2026-09-27-0457-settings-tabs-one-line"]
+title = "Shafukan Saituna a layi ɗaya"
+text = """
+Shafukan Saituna suna kan layi ɗaya: idan ba su isa ba, kibiyoyi a gefe
+da ƙafafun gungurawa suna kawo sauran cikin gani. Sa hannu da samfura
+suna raba shafin Rubutu, haka ma folda da ƙa'idojin wasiƙa suna raba
+shafi ɗaya.
+"""
+
+["2026-09-27-0515-send-crash-reports"]
+title = "Taimaka inganta Katna, idan ka so"
+text = """
+Katna yana tambaya sau ɗaya ko zai aika rahotannin faɗuwa don taimakawa
+gyara abin da ya lalace. Suna tafiya ba tare da adireshin IP ɗinka,
+saƙonninka ko adiresoshin imel ba, kuma sai idan ka amince. Canza shi a
+kowane lokaci a Saituna > Ra'ayin mai amfani.
+"""
+
+["2026-09-27-0536-older-attachments-open"]
+title = "Haɗe-haɗen tsofaffin wasiƙu suna buɗewa nan take"
+text = """
+Danna haɗe-haɗen tsohuwar wasiƙa da babu a wannan kwamfuta tukuna yana
+sauke shi: haɗe-haɗen yana cika yayin da ake saukewa, sannan ya buɗe.
+"""
+
+["2026-09-27-0556-reading-options"]
+title = "Karanta tattaunawa yadda kake so"
+text = """
+Saituna > Gabaɗaya > Karatu na iya nuna sabon saƙo da farko, buɗe cikakkun
+kanun kowane saƙo, da rubuta cikakken sunan masu karɓa maimakon sunan
+farko kawai.
+"""
+
+["2026-09-27-0609-send-and-archive"]
+title = "Aika kuma adana a ma'ajiya"
+text = """
+Menu da ke gefen Aika a cikin amsa yana aika ta kuma ya adana tattaunawar
+a ma'ajiya. Saituna > Rubutu na iya mayar da wannan aikin Aika, kuma na
+iya aika sabuwar wasiƙa daga asusu ɗaya kowane lokaci.
+"""
+
+["2026-09-27-0627-scaling"]
+title = "Ƙara ko rage girman komai"
+text = """
+Saituna > Bayyanar > Girman nuni yana canza girman dukan taga, rubutu,
+gumaka da tazara tare, daga 75% zuwa 200% bisa girman tebur ɗinka.
+"""
+
+["2026-09-27-0645-shortcut-sets"]
+title = "Gajerun hanyoyi daga manhajar imel da ka sani"
+text = """
+Saituna > Gajerun hanyoyi na iya farawa daga maɓallan Gmail, Inbox by
+Gmail, Apple Mail, Outlook ko Thunderbird, suna jera su a ginshiƙai
+biyu, kuma Maido da na asali yana soke canje-canjenka.
+"""
+
+["2026-09-27-0646-more-settings"]
+title = "Ƙarin saituna"
+text = """
+Buɗe Katna Mail lokacin shiga, zaɓi lokacin da ake alamta wasiƙa an
+karanta, sa maɓallin amsa ya amsa wa kowa, kullum nuna hotuna, kashe
+ƙarar sabuwar wasiƙa, ɓoye alamun Muhimmi, rage faɗin dogayen layuka,
+ajiye launukan wasiƙa a yanayin duhu, kashe samfotin haɗe-haɗe, rubuta
+da rubutu mara ado, zaɓi harshen rubutun kalmomi kuma ga fayilolin da
+aka ajiye a foldarsu.
+"""
+
+["2026-09-27-0706-your-language"]
+title = "Harshenka"
+text = """
+Zaɓi ɗaya daga cikin harsuna 51 daga maɓallin tuta a sandar sama, ko bi
+na tebur ɗinka. Kwanaki da lambobi suna bin sa yanzu; sauran manhajar za
+a fassara ta a sabuntawa masu zuwa. AI ne ya tsara fassarorin, kuma ana
+maraba da gyare-gyare.
+"""
+
+["2026-09-27-0723-select-and-copy-text"]
+title = "Zaɓi ka kwafi rubutu a wasiƙa"
+text = """
+Ja a kan saƙo don zaɓar rubutunsa, danna sau biyu don kalma ko sau uku
+don sakin layi. Ctrl+C ko danna da dama yana kwafa shi, kuma Ctrl+A yana
+zaɓar dukan tattaunawar.
+"""
+
+["2026-09-27-0743-address-suggestions"]
+title = "Ana ba da shawarar adireshi yayin da kake rubutu"
+text = """
+Zuwa, Kwafi da Kwafi a ɓoye suna ba da shawarar mutanen da kake yawan
+rubuta wa yayin da kake bugawa, ko da akwai kuskure. Zaɓi ɗaya da
+maɓallan kibiya da Enter, Tab ko danna.
+"""
+
+["2026-09-27-0804-main-window-translated"]
+title = "Babban taga a harshenka"
+text = """
+Layin manhajoji, folda, shafuka, jeri, menu da Wurin karatu yanzu suna
+bin harshen da ka zaɓa. Folda da ka ƙirƙira suna riƙe da sunayensu.
+"""
+
+["2026-09-27-0824-24-hour-clock"]
+title = "Agogon awa 12 ko awa 24"
+text = """
+Saituna > Gabaɗaya > Lokaci yana nuna lokuta da agogon awa 12 ko awa 24,
+ko yaya harshen yake rubutawa.
+"""
+
+["2026-09-27-0824-settings-translated"]
+title = "Saituna a harshenka"
+text = """
+Saituna, Saituna masu sauri, asusunka da sunayen gajerun hanyoyin
+madannai yanzu suna bin harshen da ka zaɓa, kuma bincike a Saituna yana
+samun layuka ta sunayensu da aka fassara.
+"""
+
+["2026-09-27-0825-default-mail-app"]
+title = "Katna a matsayin manhajar imel ɗinka"
+text = """
+Hanyoyin imel a wasu manhajoji da shafukan yanar gizo na iya buɗe sabon
+saƙo a Katna Mail, tare da adireshi, jigo da rubutu a cike. Kunna shi a
+Saituna > Gabaɗaya > Manhajar imel ta asali.
+"""
+
+["2026-09-27-0825-old-word-files-and-slides"]
+title = "Tsofaffin fayilolin Word da faifai"
+text = """
+Takardun Word 97–2003 (.doc) yanzu suna buɗewa a mai kallo tare da
+kanunsu, jerinsu da tebura, kuma faifan PowerPoint (.pptx, .ppt) da
+OpenDocument (.odp) suna nuna rubutun kowane faifai. Katunansu ma suna
+nuna layukan farko. Fayilolin da Katna ba zai iya nunawa ba suna buɗewa
+kai tsaye a manhajarka ta asali.
+"""
+
+["2026-09-27-0825-opens-where-you-left-it"]
+title = "Yana buɗewa inda ka bar shi"
+text = """
+Katna Mail yana buɗewa da girma da wurin da yake lokacin da ka rufe shi,
+a faɗaɗe idan haka yake. Fita daga Katna ta tire yana sake farawa sabo.
+A Wayland wurin yana dawowa inda tebur ke goyon baya (Plasma 6.7 zuwa
+gaba).
+"""
+
+["2026-09-27-0826-grammar-checking"]
+title = "Duba nahawu"
+text = """
+Yayin da kake rubutu da Turanci, a cikin rubutu da jigo, kurakuran nahawu
+suna samun layin ƙasa mai launin ruwan zuma. Danna ɗaya da dama don gyara
+ko don ƙyale shi. Yana aiki a kwamfutarka, da Harper; kashe shi a
+Saituna > Rubutu.
+"""
+
+["2026-09-27-0828-check-before-sending"]
+title = "Dubawa kafin aikawa"
+text = """
+Idan saƙonka ya ambaci haɗe-haɗe amma babu, ko ba shi da jigo, Katna
+yana tambaya kafin ya aika, har ma da wasiƙun da aka tsara lokacinsu.
+"""
+
+["2026-09-27-0831-writing-suggestions"]
+title = "Shawarwarin rubutu"
+text = """
+Yayin da kake rubutu, abin da wataƙila zai cika jimla yana bayyana da
+launin toka. Danna Tab don karɓa, ko ci gaba da bugawa. Katna yana koyon
+jimlolin daga wasiƙun da ka aika da tattaunawar da kake amsawa, a
+kwamfutarka; kashe shi a Saituna > Rubutu.
+"""
+
+["2026-09-27-1043-dialogs-translated"]
+title = "Akwatunan magana a harshenka"
+text = """
+Game da, Me ke sabo, shafukan maraba da rangadi, ƙara asusu, zaɓuɓɓukan
+bincike da sanarwar faɗuwa yanzu suna bin harshen da ka zaɓa.
+"""
+
+["2026-09-27-1129-compose-translated"]
+title = "Rubuta wasiƙa a harshenka"
+text = """
+Tagar rubutu, sandar tsarinta, tsara lokacin aikawa da editan sa hannu
+yanzu suna bin harshen da ka zaɓa, kuma lokutan aikawa da aka ba da
+shawara suna amfani da hanyar rubuta kwanan wata na harshen da agogon
+awa 12 ko 24 da ka zaɓa. Jigon launi da ke bin tebur yanzu ana kiransa
+Tsarin kawai.
+"""
+
+["2026-09-27-1132-print-preview"]
+title = "Gani kafin ka buga"
+text = """
+Buga yanzu yana fara buɗe samfotin shafukan, a A4 ko Letter, kafin
+akwatin firintarka. Menu na Ƙari suna buɗewa daidai ƙarƙashin maɓallinsu,
+da gunki a gefen kowane abu.
+"""
+
+["2026-09-27-1137-formatting-bar-colors"]
+title = "Sandar tsari mafi bayyana"
+text = """
+Sandar tsari tana da ɗan launin ƙawa naka, kuma tsarin da ke a kunne,
+kamar Mai kauri ko jeri, suna bayyana da launin zaɓi. A cikin amsa, Aika
+da kayan aikinsa suna zama a ƙasa yayin da kake gungurawa.
+"""
+
+["2026-09-27-1200-notifications-translated"]
+title = "Sanarwa a harshenka"
+text = """
+Sanarwar sabuwar wasiƙa da maɓallansu, da menu da bayanin gunkin tire,
+yanzu suna bin harshen da ka zaɓa, kuma suna canzawa da zarar ka canza
+shi.
+"""
+
+["2026-09-27-1242-whats-new-translated"]
+title = "Sabbin abubuwa a harshenku"
+text = """
+Waɗannan bayanai yanzu suna bayyana a harshen da aka saita Katna Mail. Fassarorin daftari ne, don haka ku gaya mana inda za a iya inganta kalmomin.
+"""
+
+["2026-09-27-1126-undo-anything"]
+title = "Janye komai da Ctrl+Z"
+text = """
+Ka adana wani abu a ma'ajiya, ka share shi, ka matsar da shi ko ka saka
+masa tauraro bisa kuskure? Danna Ctrl+Z, ko Janye a kan sanarwar da ke
+ƙasa, don mayar da shi, har ma daga sakamakon bincike da tattaunawar da
+ke buɗe a tagarsu. Ctrl+Z yana ci gaba da komawa baya cikin abubuwan da
+ka yi, har da yin alama an karanta ko ba a karanta ba, kuma yana dawo da
+saƙon da aka aika muddin lokacin janye aikawarsa bai ƙare ba.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Kwafa daga haɗe-haɗe"
+text = """
+Yanzu ana iya zaɓar da kwafa rubutu a cikin PDF, takardu, faifai da
+fayilolin rubutu da aka buɗe a Katna kamar rubutun saƙo. A cikin
+maƙunsar bayanai, ja a kan sel, ko danna harafin shafi ko lambar layi,
+kuma Ctrl+C yana kwafa su don su liƙu a matsayin sel.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Rubuta ya koma wurin folda"
+text = """
+Rubuta yanzu yana saman foldarka. Ka naɗe su kuma zai zame zuwa sandar
+da ke hagu, inda riƙe alamar linzamin kwamfuta a kansa zai sake nuna
+folda. Saman hagu yana nuna Katna Mail, kuma sunan yana juyawa zuwa
+Kalanda, Lambobin sadarwa da sauransu yayin da kake sauya manhaja.
+"""

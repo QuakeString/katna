@@ -23,6 +23,8 @@ i18n/
   en/katna-daemon/        the background service: notifications, the
                           tray icon
   bn/katna-mail/          Bengali, the same files
+  bn/katna-mail/whats-new.toml
+                          Katna Mail's What's new highlights in Bengali
   ar/katna-mail/          Arabic
   …
 ```
@@ -51,6 +53,13 @@ ago-hours = { $count ->
   your language's digits.
 - A message missing from your file shows in English, so a partial file is
   fine.
+
+What's new, shown after an update, is written in English in
+`apps/katna-mail/whats-new/highlights/`, one file per highlight. Each
+language translates them in `<folder>/katna-mail/whats-new.toml`, a table
+per highlight named by its file (`["2026-09-27-0444-about-katna"]`) with
+a `title` and a `text`; one without a table shows in English. See
+`apps/katna-mail/whats-new/README.md`.
 
 ## Correcting a translation
 
