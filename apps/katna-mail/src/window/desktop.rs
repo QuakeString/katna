@@ -10,6 +10,7 @@
 
 use gpui::{Action, App, AppContext, Context, Global, Window};
 use katna_dbus::app_action;
+use katna_i18n::tr;
 use katna_platform::dbusmenu::{Menu, MenuItem};
 use katna_store::MessageId;
 
@@ -20,88 +21,90 @@ use crate::instance::Request;
 
 /// One entry of a menu of the menu bar.
 enum Entry {
-    /// A label (`_` marks the mnemonic) and the action it runs.
+    /// The id of its label's message (`_` marks the mnemonic) and the
+    /// action it runs.
     Item(&'static str, &'static str),
     Separator,
 }
 
 use Entry::{Item, Separator};
 
-/// The menu bar, as KDE apps lay it out.
+/// The menu bar, as KDE apps lay it out: each menu's message id and its
+/// entries.
 const MENU_BAR: &[(&str, &[Entry])] = &[
     (
-        "_File",
+        "desktop-menu-file",
         &[
-            Item("_New Message", "katna_mail::Compose"),
+            Item("desktop-menu-new-message", "katna_mail::Compose"),
             Separator,
-            Item("_Quit", "katna_mail::Quit"),
+            Item("desktop-menu-quit", "katna_mail::Quit"),
         ],
     ),
     (
-        "_Edit",
+        "desktop-menu-edit",
         &[
-            Item("_Undo", "katna_mail::Undo"),
+            Item("desktop-menu-undo", "katna_mail::Undo"),
             Separator,
-            Item("Select _All", "katna_mail::SelectAll"),
-            Item("Select _None", "katna_mail::SelectNone"),
+            Item("desktop-menu-select-all", "katna_mail::SelectAll"),
+            Item("desktop-menu-select-none", "katna_mail::SelectNone"),
             Separator,
-            Item("_Find…", "katna_mail::FocusSearch"),
+            Item("desktop-menu-find", "katna_mail::FocusSearch"),
         ],
     ),
     (
-        "_View",
+        "desktop-menu-view",
         &[
-            Item("Show _Folder List", "katna_mail::ToggleNavigation"),
-            Item("_Refresh", "katna_mail::Reload"),
+            Item("desktop-menu-folder-list", "katna_mail::ToggleNavigation"),
+            Item("desktop-menu-refresh", "katna_mail::Reload"),
         ],
     ),
     (
-        "_Go",
+        "desktop-menu-go",
         &[
-            Item("_Inbox", "katna_mail::GoToInbox"),
-            Item("_Starred", "katna_mail::GoToStarred"),
-            Item("S_ent", "katna_mail::GoToSent"),
-            Item("_Drafts", "katna_mail::GoToDrafts"),
-            Item("_All Mail", "katna_mail::GoToAllMail"),
+            Item("desktop-menu-inbox", "katna_mail::GoToInbox"),
+            Item("desktop-menu-starred", "katna_mail::GoToStarred"),
+            Item("desktop-menu-sent", "katna_mail::GoToSent"),
+            Item("desktop-menu-drafts", "katna_mail::GoToDrafts"),
+            Item("desktop-menu-all-mail", "katna_mail::GoToAllMail"),
             Separator,
-            Item("_Next Conversation", "katna_mail::SelectNext"),
-            Item("_Previous Conversation", "katna_mail::SelectPrevious"),
+            Item("desktop-menu-next", "katna_mail::SelectNext"),
+            Item("desktop-menu-previous", "katna_mail::SelectPrevious"),
         ],
     ),
     (
-        "_Message",
+        "desktop-menu-message",
         &[
-            Item("_Open", "katna_mail::OpenMessage"),
-            Item("_Reply", "katna_mail::Reply"),
-            Item("Reply _All", "katna_mail::ReplyAll"),
-            Item("_Forward", "katna_mail::Forward"),
+            Item("desktop-menu-open", "katna_mail::OpenMessage"),
+            Item("desktop-menu-reply", "katna_mail::Reply"),
+            Item("desktop-menu-reply-all", "katna_mail::ReplyAll"),
+            Item("desktop-menu-forward", "katna_mail::Forward"),
             Separator,
-            Item("Arc_hive", "katna_mail::Archive"),
-            Item("_Delete", "katna_mail::Delete"),
-            Item("Report _Spam", "katna_mail::ReportSpam"),
-            Item("_Move To…", "katna_mail::MoveTo"),
+            Item("desktop-menu-archive", "katna_mail::Archive"),
+            Item("desktop-menu-delete", "katna_mail::Delete"),
+            Item("desktop-menu-spam", "katna_mail::ReportSpam"),
+            Item("desktop-menu-move-to", "katna_mail::MoveTo"),
             Separator,
-            Item("Mark as R_ead", "katna_mail::MarkRead"),
-            Item("Mark as _Unread", "katna_mail::MarkUnread"),
-            Item("S_tar", "katna_mail::ToggleStar"),
-            Item("Mark as Im_portant", "katna_mail::MarkImportant"),
-            Item("Mark as _Not Important", "katna_mail::MarkNotImportant"),
+            Item("desktop-menu-mark-read", "katna_mail::MarkRead"),
+            Item("desktop-menu-mark-unread", "katna_mail::MarkUnread"),
+            Item("desktop-menu-star", "katna_mail::ToggleStar"),
+            Item("desktop-menu-important", "katna_mail::MarkImportant"),
+            Item("desktop-menu-not-important", "katna_mail::MarkNotImportant"),
         ],
     ),
     (
-        "_Settings",
+        "desktop-menu-settings",
         &[
-            Item("_Quick Settings", "katna_mail::ToggleSettings"),
-            Item("_Configure Katna Mail…", "katna_mail::OpenSettings"),
+            Item("desktop-menu-quick-settings", "katna_mail::ToggleSettings"),
+            Item("desktop-menu-configure", "katna_mail::OpenSettings"),
         ],
     ),
     (
-        "_Help",
+        "desktop-menu-help",
         &[
-            Item("_Keyboard Shortcuts", "katna_mail::ShowShortcuts"),
-            Item("_What's New", "katna_mail::ShowWhatsNew"),
+            Item("desktop-menu-shortcuts", "katna_mail::ShowShortcuts"),
+            Item("desktop-menu-whats-new", "katna_mail::ShowWhatsNew"),
             Separator,
-            Item("_About Katna", "katna_mail::ShowAbout"),
+            Item("desktop-menu-about", "katna_mail::ShowAbout"),
         ],
     ),
 ];
@@ -117,12 +120,12 @@ pub fn menu_bar(cx: &App) -> Vec<MenuItem> {
                     Separator => Some(MenuItem::Separator),
                     Item(label, name) => {
                         let action = cx.build_action(name, None).ok()?;
-                        Some(MenuItem::action(*label, *name).shortcut(shortcut(&*action, cx)))
+                        Some(MenuItem::action(tr!(*label), *name).shortcut(shortcut(&*action, cx)))
                     }
                 })
                 .collect();
             let items = tidy(items);
-            (!items.is_empty()).then(|| MenuItem::submenu(*label, items))
+            (!items.is_empty()).then(|| MenuItem::submenu(tr!(*label), items))
         })
         .collect()
 }
@@ -388,6 +391,7 @@ mod tests {
         for (_, entries) in MENU_BAR {
             for entry in *entries {
                 if let Item(label, name) = entry {
+                    let label = tr!(*label);
                     assert!(name.starts_with("katna_mail::"), "{name}");
                     assert_eq!(label.matches('_').count(), 1, "{label} has one mnemonic");
                 }

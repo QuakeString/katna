@@ -13,6 +13,7 @@ use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, FontWeight, SharedString, Window, canvas,
     div, point, prelude::*, rgba,
 };
+use katna_i18n::tr;
 use katna_ui::px;
 use katna_ui::{InputEvent, Ripple};
 
@@ -24,8 +25,9 @@ use crate::theme::{Theme, fade};
 /// How long a row found by a search stays lit.
 const FLASH: Duration = Duration::from_millis(1800);
 
-/// A setting a search can find: the row's name on its tab, a line on it and
-/// more words it answers to.
+/// A setting a search can find: the message ids of the row's name on its
+/// tab (the same as the row's own) and of a line on it, and more words it
+/// answers to, in English.
 struct Entry {
     section: Section,
     title: &'static str,
@@ -47,305 +49,299 @@ const fn entry(
     }
 }
 
-/// Every row of every tab. The titles are the rows' names, so a result can
-/// find its row.
+/// Every row of every tab. The titles are the ids of the rows' names, so a
+/// result can find its row.
 const ENTRIES: &[Entry] = &[
     entry(
         Section::General,
-        "Language",
-        "Language of the app, dates and numbers",
+        "language-setting",
+        "settings-general-language-summary",
         "language translation locale english hindi bengali arabic system",
     ),
     entry(
         Section::General,
-        "Conversation view",
-        "Group replies to the same mail",
+        "settings-general-conversations",
+        "settings-general-conversations-group",
         "threads threading group",
     ),
     entry(
         Section::General,
-        "Reading",
-        "Newest message first, full headers, full names of recipients",
+        "settings-general-reading",
+        "settings-general-reading-summary",
         "order oldest descending chronological reverse headers details from to cc names recipients first last",
     ),
     entry(
         Section::General,
-        "Mark as read",
-        "When an opened conversation is marked read: at once, after 1 or 3 seconds, or by hand",
+        "settings-general-mark-read",
+        "settings-general-mark-read-summary",
         "read unread seen delay mark",
     ),
     entry(
         Section::General,
-        "Reply button",
-        "The reply button beside each message replies to everyone",
+        "settings-general-reply-button",
+        "settings-general-reply-button-summary",
         "reply all default behaviour behavior",
     ),
     entry(
         Section::General,
-        "Images from the web",
-        "Always show the images of every message",
+        "settings-general-remote-images",
+        "settings-general-remote-images-summary",
         "remote images pictures load external content tracking privacy",
     ),
     entry(
         Section::General,
-        "Sending",
-        "Undo send: how long a sent message waits, so it can be taken back",
+        "settings-general-sending",
+        "settings-general-sending-summary",
         "undo send delay cancel",
     ),
     entry(
         Section::General,
-        "Offline mail",
-        "How many days of recent mail are downloaded whole, to read without a connection",
+        "settings-general-offline",
+        "settings-general-offline-summary",
         "offline download sync days cache disk storage",
     ),
     entry(
         Section::General,
-        "Notifications",
-        "New-mail notifications and their sound",
+        "settings-general-notifications",
+        "settings-general-notifications-summary",
         "notify alert sound chime popup new mail",
     ),
     entry(
         Section::General,
-        "Desktop",
-        "Open Katna Mail at login, the system tray icon and the unread count on the taskbar icon",
+        "settings-general-desktop",
+        "settings-general-desktop-summary",
         "tray badge unread count taskbar dock panel startup start login autostart launch boot",
     ),
     entry(
         Section::Inbox,
-        "Inbox tabs",
-        "Sort the inbox into tabs, as your mail provider's website does",
+        "settings-inbox-tabs",
+        "settings-inbox-tabs-detail",
         "primary promotions social updates forums focused other categories",
     ),
     entry(
         Section::Accounts,
-        "Folder pane",
-        "Which accounts' folders the pane on the left shows",
+        "accounts-folder-pane",
+        "accounts-folder-pane-detail",
         "one account all accounts switch",
     ),
     entry(
         Section::Accounts,
-        "Accounts",
-        "Add or remove an account, or change its picture",
+        "accounts-row",
+        "settings-accounts-accounts-summary",
         "add remove delete account picture photo avatar",
     ),
     entry(
         Section::Accounts,
-        "Delete all data",
-        "Start over, as on a new install",
+        "accounts-delete-all-row",
+        "accounts-delete-all-row-detail",
         "reset wipe erase remove everything",
     ),
     entry(
         Section::Appearance,
-        "Reading pane",
-        "Where an opened conversation shows",
+        "settings-appearance-reading-pane",
+        "settings-appearance-reading-pane-detail",
         "split preview right no split layout panes",
     ),
     entry(
         Section::Appearance,
-        "Density",
-        "Default or compact lines in the list",
+        "settings-appearance-density",
+        "settings-appearance-density-summary",
         "compact spacing comfortable",
     ),
     entry(
         Section::Appearance,
-        "Scaling",
-        "Make everything bigger or smaller: text, icons, spacing and dividers",
+        "settings-appearance-scaling",
+        "settings-appearance-scaling-summary",
         "scale zoom size bigger smaller larger font text dpi magnify",
     ),
     entry(
         Section::Appearance,
-        "Theme",
-        "Same as the desktop, light or dark",
+        "settings-appearance-theme",
+        "settings-appearance-theme-summary",
         "dark mode light mode night",
     ),
     entry(
         Section::Appearance,
-        "Desktop colors",
-        "The color scheme and accent color of the desktop",
+        "settings-appearance-desktop-colors",
+        "settings-appearance-desktop-colors-use-detail",
         "accent colour color scheme",
     ),
     entry(
         Section::Appearance,
-        "App names",
-        "Names under the app icons at the far left",
+        "settings-appearance-app-names",
+        "settings-appearance-app-names-show-detail",
         "rail labels",
     ),
     entry(
         Section::Appearance,
-        "Sender pictures",
-        "Company logos, looked up by the sender's domain",
+        "settings-appearance-sender-pictures",
+        "settings-appearance-sender-pictures-summary",
         "logo avatar picture image photo",
     ),
     entry(
         Section::Appearance,
-        "Important markers",
-        "The Important marker beside each message in the list",
+        "settings-appearance-important",
+        "settings-appearance-important-summary",
         "important label chevron flag priority",
     ),
     entry(
         Section::Appearance,
-        "Message width",
-        "Limit the width of messages",
+        "settings-appearance-message-width",
+        "settings-appearance-message-width-limit",
         "narrow wide lines readable column",
     ),
     entry(
         Section::Appearance,
-        "Mail colors",
-        "Dark colors for HTML mail in a dark theme, or its sender's colors",
+        "settings-appearance-mail-colors",
+        "settings-appearance-mail-colors-summary",
         "dark mode night html colors colours invert",
     ),
     entry(
         Section::Appearance,
-        "Attachment previews",
-        "A small picture of each attachment's content",
+        "settings-appearance-attachment-previews",
+        "settings-appearance-attachment-previews-summary",
         "thumbnails attachments files preview",
     ),
     entry(
         Section::Shortcuts,
-        "Shortcut set",
-        "Start from the keys of Gmail, Inbox by Gmail, Apple Mail, Outlook or Thunderbird",
+        "settings-shortcuts-set",
+        "settings-shortcuts-set-summary",
         "keyboard keys hotkeys keymap preset outlook thunderbird apple gmail inbox restore defaults",
     ),
     entry(
         Section::Shortcuts,
-        "Single-key shortcuts",
-        "Keys without Ctrl or Alt, as in webmail",
+        "settings-shortcuts-single",
+        "settings-shortcuts-single-summary",
         "keyboard keys hotkeys",
     ),
     entry(
         Section::DefaultApps,
-        "PDF files",
-        "Where PDF attachments open",
+        "settings-default-apps-pdf",
+        "settings-default-apps-pdf-summary",
         "open attachment viewer app pdf",
     ),
     entry(
         Section::DefaultApps,
-        "Pictures",
-        "Where photos and pictures open",
+        "settings-default-apps-pictures",
+        "settings-default-apps-pictures-summary",
         "open attachment viewer app image photo png jpeg",
     ),
     entry(
         Section::DefaultApps,
-        "Text files",
-        "Where plain text, logs and code open",
+        "settings-default-apps-text",
+        "settings-default-apps-text-summary",
         "open attachment viewer app txt",
     ),
     entry(
         Section::DefaultApps,
-        "Spreadsheets",
-        "Where Excel, OpenDocument and CSV files open",
+        "settings-default-apps-sheets",
+        "settings-default-apps-sheets-summary",
         "open attachment viewer app xlsx xls ods csv",
     ),
     entry(
         Section::DefaultApps,
-        "Documents",
-        "Where Word and OpenDocument text open",
+        "settings-default-apps-documents",
+        "settings-default-apps-documents-summary",
         "open attachment viewer app docx odt word",
     ),
     entry(
         Section::DefaultApps,
-        "After saving",
-        "Show saved attachments in their folder",
+        "settings-default-apps-after-saving",
+        "settings-default-apps-after-saving-summary",
         "save download folder file manager reveal show dolphin",
     ),
     entry(
         Section::Signatures,
-        "Send new messages from",
-        "The account new mail goes out from: the one you are in, or always the same one",
+        "settings-compose-send-from",
+        "settings-compose-send-from-summary",
         "from sender default account address identity",
     ),
     entry(
         Section::Signatures,
-        "Send on replies",
-        "Send, or Send and archive the conversation, on replies and forwards",
+        "settings-compose-send-on-replies",
+        "settings-compose-send-on-replies-summary",
         "send archive default behavior behaviour reply forward",
     ),
     entry(
         Section::Signatures,
-        "Signatures",
-        "Added below your message, after a \u{201c}--\u{201d} line",
+        "settings-compose-signatures",
+        "settings-compose-signatures-summary",
         "signature sign-off",
     ),
     entry(
         Section::Signatures,
-        "For new mail",
-        "The signature new mail starts with",
+        "settings-compose-for-new-mail",
+        "settings-compose-for-new-mail-summary",
         "default signature",
     ),
     entry(
         Section::Signatures,
-        "For replies and forwards",
-        "The signature replies and forwards start with",
+        "settings-compose-for-replies",
+        "settings-compose-for-replies-summary",
         "default signature reply forward",
     ),
     entry(
         Section::Signatures,
-        "Format",
-        "Write new mail in plain text",
+        "settings-compose-format",
+        "settings-compose-format-summary",
         "plain text html rich formatting",
     ),
     entry(
         Section::Signatures,
-        "Spelling",
-        "Check spelling while writing, and the dictionary's language",
+        "settings-compose-spelling",
+        "settings-compose-spelling-summary",
         "spell check spellcheck dictionary language hunspell typos",
     ),
     entry(
         Section::Signatures,
-        "Templates",
-        "Coming soon: save mail you write often, and start new mail or a reply from it",
+        "settings-compose-templates",
+        "settings-compose-templates-summary",
         "template canned reply snippet",
     ),
     entry(
         Section::Feedback,
-        "Crash reports",
-        "Save crash reports on this computer when Katna Mail or its background service crashes",
+        "feedback-crash-reports",
+        "settings-feedback-crash-reports-summary",
         "crash report bug panic traceback stack privacy",
     ),
     entry(
         Section::Feedback,
-        "Saved crash reports",
-        "View, copy or delete the crash reports saved on this computer",
+        "feedback-saved",
+        "settings-feedback-saved-summary",
         "crash report bug delete copy view",
     ),
     entry(
         Section::Feedback,
-        "Help improve Katna",
-        "Send crash reports to help fix what went wrong; off unless you turn it on",
+        "feedback-help-improve",
+        "settings-feedback-help-improve-summary",
         "telemetry analytics anonymous sentry send share privacy opt in improve",
     ),
     entry(
         Section::Experimental,
-        "Window frame",
-        "Who draws the title bar, the window buttons, the corners and the shadow",
+        "look-window-frame",
+        "look-window-frame-detail",
         "decoration csd title bar look feel",
     ),
     entry(
         Section::Experimental,
-        "Blurred background",
-        "The desktop shows through the top bar, blurred, and menus are frosted",
+        "look-blurred-background",
+        "settings-experimental-blur-summary",
         "blur transparency frosted glass look feel",
     ),
 ];
 
 /// What a tab that is still to come will do.
-fn coming(section: Section) -> Option<&'static str> {
+fn coming(section: Section) -> Option<String> {
     Some(match section {
-        Section::Subscriptions => {
-            "See the newsletters and mailing lists you get, and unsubscribe in one click."
-        }
-        Section::MailRules => {
-            "Create, rename, move and hide folders and labels, and choose which ones sync. \
-             Rules sort, label, forward or delete new mail by itself, by sender, subject or words."
-        }
-        Section::McpServer => {
-            "Let AI assistants on this computer search, read and draft your mail, with your say."
-        }
+        Section::Subscriptions => tr!("settings-tab-subscriptions-coming"),
+        Section::MailRules => tr!("settings-tab-folders-rules-coming"),
+        Section::McpServer => tr!("settings-tab-mcp-server-coming"),
         _ => return None,
     })
 }
 
-/// More words a tab is found by, besides its name and its line.
+/// More words a tab is found by, besides its name and its line (English
+/// for now).
 fn tab_words(section: Section) -> &'static str {
     match section {
         Section::MailRules => "mail rules filters folders labels",
@@ -366,19 +362,22 @@ struct Found {
 }
 
 /// The settings that have every word of `query`, the best first: those
-/// whose name starts with it, then whose name has it, then the rest.
+/// whose name starts with it, then whose name has it, then the rest. Names
+/// and lines are matched in the current language, the extra words in
+/// English.
 fn search(query: &str) -> Vec<Found> {
     let words: Vec<String> = query.split_whitespace().map(str::to_lowercase).collect();
     if words.is_empty() {
         return Vec::new();
     }
     let rows = ENTRIES.iter().map(|e| {
+        let title: SharedString = tr!(e.title).into();
         (
             Found {
                 section: e.section,
-                title: e.title.into(),
-                detail: e.detail.into(),
-                row: Some(e.title.into()),
+                title: title.clone(),
+                detail: tr!(e.detail).into(),
+                row: Some(title),
             },
             e.words,
         )
@@ -387,9 +386,9 @@ fn search(query: &str) -> Vec<Found> {
         (
             Found {
                 section: Section::Shortcuts,
-                title: s.label.into(),
-                detail: "Keyboard shortcut".into(),
-                row: Some(s.label.into()),
+                title: s.title().into(),
+                detail: tr!("settings-search-shortcut").into(),
+                row: Some(s.title().into()),
             },
             "keyboard key shortcut",
         )
@@ -399,9 +398,12 @@ fn search(query: &str) -> Vec<Found> {
             Found {
                 section,
                 title: section.label().into(),
-                detail: coming(section)
-                    .map_or("Settings tab", |_| "Coming soon")
-                    .into(),
+                detail: if is_coming(section) {
+                    tr!("app-coming-soon")
+                } else {
+                    tr!("settings-search-tab")
+                }
+                .into(),
                 row: None,
             },
             tab_words(section),
@@ -535,11 +537,12 @@ impl MailWindow {
     pub(super) fn row(
         &self,
         label: impl Into<SharedString>,
-        detail: Option<&'static str>,
+        detail: Option<&str>,
         content: impl IntoElement,
         th: &Theme,
     ) -> Div {
         let label = label.into();
+        let detail = detail.map(|d| SharedString::from(d.to_owned()));
         let flash = self.flash_mark(&label, th);
         let info = self
             .settings_page
@@ -656,9 +659,9 @@ impl MailWindow {
                     .text_size(px(13.0))
                     .text_color(rgba(th.text_dim))
                     .child(if empty {
-                        format!("No settings match \u{201c}{query}\u{201d}.")
+                        tr!("settings-search-none", query = query)
                     } else {
-                        format!("Settings that match \u{201c}{query}\u{201d}")
+                        tr!("settings-search-results", query = query)
                     }),
             )
             .children(rows)
@@ -699,7 +702,7 @@ pub(super) fn coming_pill(th: &Theme) -> Div {
         .text_color(rgba(th.nav_selected_text))
         .text_size(px(12.0))
         .font_weight(FontWeight::SEMIBOLD)
-        .child("Coming soon")
+        .child(tr!("app-coming-soon"))
 }
 
 /// Whether `section` is a tab still to come.
@@ -737,5 +740,28 @@ mod tests {
                 .count(),
             1
         );
+    }
+
+    /// Every row's name and line, and every tab, has an English message.
+    #[test]
+    fn every_entry_has_english() {
+        for e in ENTRIES {
+            for id in [e.title, e.detail] {
+                assert_ne!(
+                    katna_i18n::lookup(id, None),
+                    id,
+                    "no English message for {id}"
+                );
+            }
+        }
+        for section in Section::ALL {
+            let title = section.label();
+            assert_ne!(title, "", "{section:?}");
+            assert!(
+                !title.starts_with("settings-tab-"),
+                "no English for {section:?}"
+            );
+            assert!(coming(section).is_none_or(|c| !c.starts_with("settings-")));
+        }
     }
 }

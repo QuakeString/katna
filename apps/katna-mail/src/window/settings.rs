@@ -15,6 +15,7 @@ use katna_core::config::{
     AccountsShown, Density, FileGroup, MarkRead, OpenIn, ReadingPane, Theme as ThemeChoice,
     UNDO_SEND_CHOICES, WindowFrame,
 };
+use katna_i18n::tr;
 use katna_ui::Ripple;
 use katna_ui::motion;
 use katna_ui::px;
@@ -118,11 +119,11 @@ impl MailWindow {
                             .flex_1()
                             .text_size(px(16.0))
                             .font_weight(FontWeight::MEDIUM)
-                            .child("Quick settings"),
+                            .child(tr!("quick-title")),
                     )
                     .child(
                         icon_button("settings-close", "close", 20.0, th)
-                            .tooltip(tip("Close", th))
+                            .tooltip(tip(tr!("reader-close"), th))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.toggle_settings(&super::ToggleSettings, window, cx)
                             })),
@@ -148,7 +149,7 @@ impl MailWindow {
                                 div().pt(px(4.0)).pb(px(8.0)).flex().child(
                                     crate::widgets::outlined_button(
                                         "see-all-settings",
-                                        "See all settings",
+                                        tr!("quick-see-all"),
                                         th,
                                     )
                                     .flex_1()
@@ -164,7 +165,7 @@ impl MailWindow {
                                     )),
                                 ),
                             )
-                            .child(heading("Reading pane", th))
+                            .child(heading(tr!("quick-reading-pane"), th))
                             .child(
                                 div()
                                     .flex()
@@ -172,17 +173,22 @@ impl MailWindow {
                                     .gap(px(12.0))
                                     .child(self.pane_choice(
                                         ReadingPane::Right,
-                                        "Right of the list",
+                                        tr!("quick-pane-right"),
                                         th,
                                         cx,
                                     ))
-                                    .child(self.pane_choice(ReadingPane::None, "No split", th, cx)),
+                                    .child(self.pane_choice(
+                                        ReadingPane::None,
+                                        tr!("quick-pane-none"),
+                                        th,
+                                        cx,
+                                    )),
                             )
                             .child(divider(th))
-                            .child(heading("Density", th))
+                            .child(heading(tr!("quick-density"), th))
                             .child(self.radio_row(
                                 "density-default",
-                                "Default",
+                                tr!("quick-density-default"),
                                 view.density == Density::Default,
                                 Change::Density(Density::Default),
                                 th,
@@ -190,24 +196,24 @@ impl MailWindow {
                             ))
                             .child(self.radio_row(
                                 "density-compact",
-                                "Compact",
+                                tr!("quick-density-compact"),
                                 view.density == Density::Compact,
                                 Change::Density(Density::Compact),
                                 th,
                                 cx,
                             ))
                             .child(divider(th))
-                            .child(heading("Theme", th))
+                            .child(heading(tr!("quick-theme"), th))
                             .children(
                                 [
-                                    (ThemeChoice::System, "theme-system", "Same as the desktop"),
-                                    (ThemeChoice::Light, "theme-light", "Light"),
-                                    (ThemeChoice::Dark, "theme-dark", "Dark"),
+                                    (ThemeChoice::System, "theme-system", "quick-theme-system"),
+                                    (ThemeChoice::Light, "theme-light", "quick-theme-light"),
+                                    (ThemeChoice::Dark, "theme-dark", "quick-theme-dark"),
                                 ]
                                 .map(|(choice, id, label)| {
                                     self.radio_row(
                                         id,
-                                        label,
+                                        tr!(label),
                                         view.theme == choice,
                                         Change::Theme(choice),
                                         th,
@@ -217,8 +223,8 @@ impl MailWindow {
                             )
                             .child(self.switch_row(
                                 "desktop-colors",
-                                "Desktop colors",
-                                "The color scheme and accent color of the desktop",
+                                tr!("quick-desktop-colors"),
+                                tr!("quick-desktop-colors-detail"),
                                 view.desktop_colors,
                                 Change::DesktopColors(!view.desktop_colors),
                                 th,
@@ -226,19 +232,19 @@ impl MailWindow {
                             ))
                             .child(self.switch_row(
                                 "app-labels",
-                                "App names",
-                                "Names under the app icons at the far left",
+                                tr!("quick-app-names"),
+                                tr!("quick-app-names-detail"),
                                 view.app_labels,
                                 Change::AppLabels(!view.app_labels),
                                 th,
                                 cx,
                             ))
                             .child(divider(th))
-                            .child(heading("Inbox", th))
+                            .child(heading(tr!("folder-inbox"), th))
                             .child(self.switch_row(
                                 "tabs",
-                                "Inbox tabs",
-                                "The tabs of each account's mail provider",
+                                tr!("quick-inbox-tabs"),
+                                tr!("quick-inbox-tabs-detail"),
                                 view.inbox_tabs,
                                 Change::Tabs(!view.inbox_tabs),
                                 th,
@@ -246,49 +252,50 @@ impl MailWindow {
                             ))
                             .child(self.link_row(
                                 "quick-tabs",
-                                "Choose tabs",
-                                "Per account, in Settings".into(),
+                                tr!("quick-choose-tabs"),
+                                tr!("quick-choose-tabs-detail").into(),
                                 super::settings_page::Section::Inbox,
                                 th,
                                 cx,
                             ))
                             .child(divider(th))
-                            .child(heading("Sending", th))
+                            .child(heading(tr!("quick-sending"), th))
                             .child(self.undo_send_choice(th, cx))
                             .child(self.link_row(
                                 "quick-signatures",
-                                "Signatures",
+                                tr!("quick-signatures"),
                                 self.signature_summary(),
                                 super::settings_page::Section::Signatures,
                                 th,
                                 cx,
                             ))
                             .child(divider(th))
-                            .child(heading("Email threading", th))
+                            .child(heading(tr!("quick-threading"), th))
                             .child(self.switch_row(
                                 "conversations",
-                                "Conversation view",
-                                "Group replies to the same mail",
+                                tr!("quick-conversation-view"),
+                                tr!("quick-conversation-view-detail"),
                                 view.conversations,
                                 Change::Conversations(!view.conversations),
                                 th,
                                 cx,
                             ))
                             .child(divider(th))
-                            .child(heading("Help", th))
-                            .child(help_row("take-tour", "tour", "Take the tour", th).on_click(
-                                cx.listener(|this, _, window, cx| {
-                                    this.start_tour(false, window, cx)
-                                }),
-                            ))
+                            .child(heading(tr!("quick-help"), th))
                             .child(
-                                help_row("whats-new", "sparkle", "What\u{2019}s new", th).on_click(
+                                help_row("take-tour", "tour", tr!("quick-tour"), th).on_click(
                                     cx.listener(|this, _, window, cx| {
-                                        this.show_whats_new(window, cx)
+                                        this.start_tour(false, window, cx)
                                     }),
                                 ),
                             )
-                            .child(help_row("about", "info", "About Katna", th).on_click(
+                            .child(
+                                help_row("whats-new", "sparkle", tr!("quick-whats-new"), th)
+                                    .on_click(cx.listener(|this, _, window, cx| {
+                                        this.show_whats_new(window, cx)
+                                    })),
+                            )
+                            .child(help_row("about", "info", tr!("quick-about"), th).on_click(
                                 cx.listener(|this, _, window, cx| this.open_about(window, cx)),
                             )),
                     ),
@@ -361,9 +368,9 @@ impl MailWindow {
                     cx.listener(move |this, _, _, cx| this.apply(Change::UndoSend(seconds), cx)),
                 )
                 .child(if seconds == 0 {
-                    "Off".to_owned()
+                    tr!("quick-undo-send-off")
                 } else {
-                    format!("{seconds} s")
+                    tr!("quick-undo-send-seconds", seconds = seconds)
                 })
         });
         div()
@@ -371,7 +378,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(8.0))
-            .child(div().text_size(px(14.0)).child("Undo send"))
+            .child(div().text_size(px(14.0)).child(tr!("quick-undo-send")))
             .child(
                 div()
                     .flex()
@@ -471,7 +478,7 @@ impl MailWindow {
                 if let Err(err) = crate::autostart::set(on) {
                     tracing::warn!(%err, "cannot change opening at login");
                     self.show_snackbar(
-                        format!("Could not change opening at login: {err}"),
+                        tr!("settings-open-at-login-failed", error = err.to_string()),
                         None,
                         cx,
                     );
@@ -531,6 +538,8 @@ impl MailWindow {
                 self.search
                     .update(cx, |search, _| search.set_placeholder(placeholder));
                 self.save_config();
+                // The menu bar is built from text too.
+                super::refresh_menu_bar(cx);
                 // The daemon's notifications, tray and dock menu follow.
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
                 cx.notify();
@@ -571,7 +580,7 @@ impl MailWindow {
     pub(super) fn pane_choice(
         &self,
         pane: ReadingPane,
-        label: &'static str,
+        label: impl Into<SharedString>,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -631,7 +640,7 @@ impl MailWindow {
                 .pb(px(2.0))
                 .text_size(px(13.0))
                 .child(animated_radio(("pane-radio", pane as usize), on, th))
-                .child(label),
+                .child(label.into()),
         )
         .with_spring(
             ("pane-border", pane as usize),
@@ -661,7 +670,7 @@ impl MailWindow {
     pub(super) fn radio_row(
         &self,
         id: &'static str,
-        label: &'static str,
+        label: impl Into<SharedString>,
         on: bool,
         change: Change,
         th: &Theme,
@@ -685,7 +694,7 @@ impl MailWindow {
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
             .child(Ripple::new((id, 1_usize), rgba(th.ripple)).rounded(8.0))
             .child(animated_radio((id, 2_usize), on, th))
-            .child(div().flex_1().min_w_0().child(label))
+            .child(div().flex_1().min_w_0().child(label.into()))
             .into_any_element()
     }
 
@@ -693,7 +702,7 @@ impl MailWindow {
     fn link_row(
         &self,
         id: &'static str,
-        label: &'static str,
+        label: impl Into<SharedString>,
         detail: SharedString,
         section: super::settings_page::Section,
         th: &Theme,
@@ -723,7 +732,7 @@ impl MailWindow {
                     .min_w_0()
                     .flex()
                     .flex_col()
-                    .child(div().text_size(px(14.0)).child(label))
+                    .child(div().text_size(px(14.0)).child(label.into()))
                     .child(
                         div()
                             .text_size(px(12.0))
@@ -743,20 +752,20 @@ impl MailWindow {
             sending.signatures.len(),
             sending.signature(sending.new_mail_signature),
         ) {
-            (0, _) => "None yet".into(),
+            (0, _) => tr!("quick-signatures-none").into(),
             (n, Some(default)) => {
                 let name = if default.name.trim().is_empty() {
-                    "Untitled"
+                    tr!("quick-signature-untitled")
                 } else {
-                    default.name.as_str()
+                    default.name.clone()
                 };
                 if n == 1 {
-                    format!("{name}, used by default").into()
+                    tr!("quick-signatures-one", name = name).into()
                 } else {
-                    format!("{n} signatures; {name} by default").into()
+                    tr!("quick-signatures-many", count = n, name = name).into()
                 }
             }
-            (n, None) => format!("{n}, none by default").into(),
+            (n, None) => tr!("quick-signatures-no-default", count = n).into(),
         }
     }
 
@@ -764,8 +773,8 @@ impl MailWindow {
     pub(super) fn switch_row(
         &self,
         id: &'static str,
-        label: &'static str,
-        detail: &'static str,
+        label: impl Into<SharedString>,
+        detail: impl Into<SharedString>,
         on: bool,
         change: Change,
         th: &Theme,
@@ -791,12 +800,12 @@ impl MailWindow {
                     .min_w_0()
                     .flex()
                     .flex_col()
-                    .child(div().text_size(px(14.0)).child(label))
+                    .child(div().text_size(px(14.0)).child(label.into()))
                     .child(
                         div()
                             .text_size(px(12.0))
                             .text_color(rgba(th.text_faint))
-                            .child(detail),
+                            .child(detail.into()),
                     ),
             )
             .child(div().with_spring(
@@ -914,14 +923,14 @@ fn pane_picture(pane: ReadingPane, open: f32, th: &Theme) -> Div {
     }
 }
 
-pub(super) fn heading(text: &'static str, th: &Theme) -> Div {
+pub(super) fn heading(text: impl Into<SharedString>, th: &Theme) -> Div {
     div()
         .pt(px(12.0))
         .pb(px(8.0))
         .text_size(px(12.0))
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(th.text_dim))
-        .child(text.to_uppercase())
+        .child(text.into().to_uppercase())
 }
 
 pub(super) fn divider(th: &Theme) -> Div {
@@ -932,7 +941,7 @@ pub(super) fn divider(th: &Theme) -> Div {
 fn help_row(
     id: &'static str,
     name: &str,
-    label: &'static str,
+    label: impl Into<SharedString>,
     th: &Theme,
 ) -> gpui::Stateful<gpui::Div> {
     div()
@@ -951,5 +960,5 @@ fn help_row(
         .hover(|s| s.bg(rgba(th.hover)))
         .child(Ripple::new((id, 0usize), rgba(th.ripple)).rounded(8.0))
         .child(icon(name, th.text_dim, 20.0))
-        .child(label)
+        .child(label.into())
 }
