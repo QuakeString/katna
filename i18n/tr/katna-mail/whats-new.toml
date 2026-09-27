@@ -419,3 +419,38 @@ değiştirebilir ve hesapları oklarla ya da sürükleyerek istediğiniz
 sıraya koyabilirsiniz; klasör bölmesi ve hesap menüsü de bu sırayı
 izler.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Önbelleği sıfırla"
+text = """
+Ayarlar > Genel > Önbelleği sıfırla, Katna'nın indirdiği postaları,
+gönderen resimlerini ve arama dizinini siler, ardından son postaları
+yeniden indirir. Bir şey güncel görünmediğinde veya disk alanı açmak
+istediğinizde işe yarar; hesaplar, ayarlar, taslaklar ve sunucudaki
+postalarınız kalır.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "Sonraki posta kendiliğinden açılır"
+text = """
+Okuduğunuz postayı silin, arşivleyin ya da taşıyın; okuma bölmesi
+kapanmak yerine onun yerinde sonraki posta açılır. Geri al, postayı geri
+getirir ve yeniden açar. Ayarlar > Genel > Otomatik ilerleme ile bunun
+yerine öncekini açabilir ya da listeye geri dönebilirsiniz.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "Daha sakin bir posta listesi"
+text = """
+Her postanın onay kutusu, yıldızı ve Önemli işaretçisi artık soluk durur
+ve Gmail'deki gibi satırın üzerine geldiğinizde tam belirginleşir.
+Seçili, yıldızlı veya önemli bir posta her zaman tam renkli görünür.
+"""
+
+["2026-09-27-1512-buy-me-a-coffee"]
+title = "Bana bir kahve ısmarla"
+text = """
+Katna işinize yarıyorsa, Katna hakkında penceresinde artık Bana bir
+kahve ısmarla düğmesi ve aynı sayfayı telefonunuzda açan bir QR kodu
+var.
+"""

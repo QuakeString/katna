@@ -425,3 +425,38 @@ untuk setiap satu, menamakannya semula dan menyusun akaun mengikut
 susunan yang anda suka dengan anak panah atau dengan menyeret; anak
 tetingkap folder dan menu akaun turut mengikutinya.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Tetapkan semula cache"
+text = """
+Tetapan > Umum > Tetapkan semula cache memadamkan mel yang dimuat turun
+oleh Katna, gambar pengirim dan indeks carian, kemudian memuat turun mel
+terkini semula. Berguna apabila sesuatu kelihatan lapuk atau untuk
+mengosongkan ruang cakera; akaun, tetapan, draf dan mel anda pada
+pelayan kekal.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "Mel seterusnya dibuka sendiri"
+text = """
+Padam, arkibkan atau alihkan mel yang sedang anda baca dan mel
+seterusnya dibuka di tempatnya, bukannya anak tetingkap bacaan ditutup.
+Buat asal mengembalikan mel itu dan membukanya semula. Tetapan > Umum >
+Auto-maju boleh membuka mel sebelumnya pula, atau kembali ke senarai.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "Senarai mel yang lebih tenang"
+text = """
+Kotak pilihan, bintang dan penanda Penting setiap mel kini malap dan
+menjadi terang sepenuhnya apabila anda menuding pada barisnya, seperti
+dalam Gmail. Mel yang dipilih, dibintangi atau penting sentiasa
+dipaparkan dengan warna penuh.
+"""
+
+["2026-09-27-1512-buy-me-a-coffee"]
+title = "Belanja saya kopi"
+text = """
+Jika Katna berguna kepada Anda, Perihal Katna kini ada butang Belanja
+saya kopi dan kod QR untuk membuka halaman yang sama pada telefon Anda.
+"""
