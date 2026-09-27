@@ -28,6 +28,8 @@ list-move-to = 移動
 list-archive = アーカイブ
 list-spam = 迷惑メールを報告
 list-delete = 削除
+list-snooze = スヌーズ
+list-unsnooze = スヌーズを解除
 list-newer = 新しい
 list-older = 古い
 list-range = { $total } 件中 { $first }–{ $last } 件
@@ -198,6 +200,7 @@ row-mark-important = 重要マークを付ける
 row-pinned = 上部に固定済み
 row-pin = 上部に固定
 row-unpin = 固定を解除
+row-snoozed-until = { $when } までスヌーズ中
 
 ## Mail list: More menu and right-click menu
 
@@ -219,6 +222,8 @@ menu-important = 重要マークを付ける
 menu-not-important = 重要ではないとマーク
 menu-pin = 上部に固定
 menu-unpin = 固定を解除
+menu-snooze = スヌーズ
+menu-unsnooze = スヌーズを解除
 menu-print-all = すべて印刷
 menu-new-window = 新しいウィンドウで開く
 menu-move-to = 移動
@@ -262,6 +267,14 @@ toast-pinned = { $kind ->
 toast-unpinned = { $kind ->
     [conversation] { $count } 件のスレッドの固定を解除しました。
    *[message] { $count } 件のメールの固定を解除しました。
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count } 件のスレッドを { $when } までスヌーズしました。
+   *[message] { $count } 件のメールを { $when } までスヌーズしました。
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count } 件のスレッドを受信トレイに戻しました。
+   *[message] { $count } 件のメールを受信トレイに戻しました。
 }
 toast-spam = { $kind ->
     [conversation] { $count } 件のスレッドを迷惑メールとして報告しました。

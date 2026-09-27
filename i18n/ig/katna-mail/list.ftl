@@ -28,6 +28,8 @@ list-move-to = Bugharịa gaa
 list-archive = Chekwaa
 list-spam = Kọọ dị ka spam
 list-delete = Hichapụ
+list-snooze = Yigharịa
+list-unsnooze = Kagbuo iyigharị
 list-newer = Nke ọhụrụ
 list-older = Nke ochie
 list-range = { $first }–{ $last } n'ime { $total }
@@ -198,6 +200,7 @@ row-mark-important = Kaa akara dị ka ọ dị mkpa
 row-pinned = Akwụnyere n'elu
 row-pin = Kwụnye n'elu
 row-unpin = Wepụ n'elu
+row-snoozed-until = E yigharịrị ruo { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -219,6 +222,8 @@ menu-important = Kaa akara dị ka ọ dị mkpa
 menu-not-important = Kaa akara dị ka ọ dịghị mkpa
 menu-pin = Kwụnye n'elu
 menu-unpin = Wepụ n'elu
+menu-snooze = Yigharịa
+menu-unsnooze = Kagbuo iyigharị
 menu-print-all = Bipụta niile
 menu-new-window = Mepee na windo ọhụrụ
 menu-move-to = Bugharịa gaa
@@ -262,6 +267,14 @@ toast-pinned = { $kind ->
 toast-unpinned = { $kind ->
     [conversation] Ewepụla mkparịta ụka { $count } n'elu.
    *[message] Ewepụla ozi { $count } n'elu.
+}
+toast-snoozed = { $kind ->
+    [conversation] E yigharịla mkparịta ụka { $count } ruo { $when }.
+   *[message] E yigharịla ozi { $count } ruo { $when }.
+}
+toast-unsnoozed = { $kind ->
+    [conversation] Mkparịta ụka { $count } alọghachila n'Igbe ozi mbata.
+   *[message] Ozi { $count } alọghachila n'Igbe ozi mbata.
 }
 toast-spam = { $kind ->
     [conversation] Akọọla mkparịta ụka { $count } dị ka spam.

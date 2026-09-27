@@ -92,6 +92,7 @@ send-check-add-subject = Voeg onderwerp by
 send-check-send-anyway = Stuur in elk geval
 recipient-not-valid = Nie 'n geldige e-posadres nie
 recipient-show-address = Wys adres
+recipient-remove = Verwyder
 recipient-bad-title = Gaan die adres na
 recipient-bad-text = “{ $address }” is nie 'n geldige e-posadres nie. Maak dit reg of verwyder dit voor jy stuur.
 recipient-bad-fix = Maak reg

@@ -588,3 +588,56 @@ odpowiedzi. Wpisz {first name}, {name} lub {my name}, a Katna uzupełni je dla
 każdego odbiorcy. Szablony edytujesz, zmieniasz ich nazwy i usuwasz w sekcji
 Ustawienia > Tworzenie.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Zaplanowana poczta wychodzi przy wyłączonym komputerze"
+text = """
+Gdy serwer poczty potrafi przetrzymać wiadomość do ustalonej pory, jak
+Stalwart, Zaplanuj wysłanie przekazuje mu ją teraz, gdy tylko zniknie
+Cofnij, więc wychodzi na czas nawet przy wyłączonym komputerze. Menu
+planowania mówi, czy wyśle ją serwer poczty, czy Katna.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Lżejsze podświetlenie"
+text = """
+Wiersz pod wskaźnikiem na liście wiadomości unosi się teraz z delikatnym
+cieniem, jak w Gmailu, zamiast ciemnego pasa pod spodem.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Przeciągaj adresy między Do, DW i UDW"
+text = """
+Przeciągnij plakietkę adresu do innego pola, aby ją przenieść; DW i UDW
+otwierają się podczas przeciągania, nawet gdy są ukryte. Wskazanie
+plakietki pokazuje x, które ją usuwa.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Konto Katna"
+text = """
+Ustawienia > Konto Katna pozwalają utworzyć konto na własnym serwerze
+Katna, z osobnym hasłem, nigdy hasłem do poczty. Będą go potrzebować
+funkcje online Katna, takie jak potwierdzenia przeczytania i śledzenie
+linków. Widać tam komputery, na których się zalogowano, i każdy z nich
+można wylogować.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Wszystko tam, gdzie było"
+text = """
+Po zamknięciu i ponownym otwarciu Katna Mail wraca aplikacja, folder i
+karta skrzynki odbiorczej, które były otwarte, a także rozwinięte
+foldery i to, czy panel folderów był zwinięty. Zakończenie Katna z
+zasobnika systemowego uruchamia go od nowa.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Odkładanie i przypomnienia o odpowiedzi"
+text = """
+Odłóż wątek zegarem w jego wierszu albo z menu pod prawym przyciskiem:
+czeka w folderze Odłożone i wraca do Odebranych jako nieprzeczytany o
+wybranej porze. Przy wysyłaniu strzałka obok Wyślij może przypomnieć, jeśli
+nikt nie odpowie w ciągu 1, 3 lub 7 dni. Oba działają, gdy komputer jest
+włączony, i nadrabiają zaległości po jego wybudzeniu.
+"""

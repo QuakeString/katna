@@ -573,3 +573,55 @@ antwoord. Skryf {first name}, {name} of {my name} en Katna vul dit vir
 elke ontvanger in. Wysig, hernoem of vee sjablone uit in Instellings >
 Skryf.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Geskeduleerde e-pos gaan uit met jou rekenaar af"
+text = """
+Wanneer jou e-posbediener e-pos tot 'n vasgestelde tyd kan hou, soos
+Stalwart kan, gee Skeduleer stuur die boodskap nou aan hom sodra Ontdoen
+weg is, sodat dit betyds uitgaan selfs as hierdie rekenaar af is. Die
+skeduleerkieslys sê of jou e-posbediener of Katna dit sal stuur.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "'n Ligter sweefeffek"
+text = """
+Die reël onder die wyser in die e-poslys lig nou op met 'n dowwe skaduwee,
+soos in Gmail, in plaas van 'n donker band daaronder.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Sleep adresse tussen Aan, Cc en Bcc"
+text = """
+Sleep 'n adresskyfie na 'n ander veld om dit te skuif; Cc en Bcc gaan oop
+terwyl jy sleep, selfs as hulle versteek is. As jy na 'n skyfie wys,
+verskyn 'n x wat dit verwyder.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Katna-rekening"
+text = """
+Instellings > Katna-rekening laat jou 'n rekening op Katna se eie bediener
+skep, met sy eie wagwoord, nooit 'n e-poswagwoord nie. Katna se aanlyn
+funksies, soos leesbewyse en skakelnasporing, sal dit nodig hê. Jy kan die
+aangemelde rekenaars sien en enigeen van hulle afmeld.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Terug waar jy was"
+text = """
+As jy Katna Mail toemaak en weer oopmaak, kom die toep, die vouer en die
+inkassie-oortjie wat jy oop gehad het terug, asook die vouers wat jy
+oopgemaak het en of die vouerpaneel ingevou was. As jy Katna uit die
+stelselbalk afsluit, begin dit weer van voor af.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Sluimer en antwoordherinneringe"
+text = """
+Sluimer 'n gesprek met die horlosie op sy reël of uit die regsklikmenu:
+dit wag in die Gesluimer-vouer en kom ongelees terug na die Inkassie op
+die tyd wat jy gekies het. Wanneer jy stuur, kan die pyltjie langs Stuur
+jou herinner as niemand binne 1, 3 of 7 dae antwoord nie. Albei werk
+terwyl jou rekenaar aan is, en haal in nadat dit wakker word.
+"""

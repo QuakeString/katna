@@ -92,6 +92,7 @@ send-check-add-subject = Onderwerp toevoegen
 send-check-send-anyway = Toch verzenden
 recipient-not-valid = Geen geldig e-mailadres
 recipient-show-address = Adres tonen
+recipient-remove = Verwijderen
 recipient-bad-title = Controleer het adres
 recipient-bad-text = ‘{ $address }’ is geen geldig e-mailadres. Verbeter of verwijder het voordat je verzendt.
 recipient-bad-fix = Verbeteren

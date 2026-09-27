@@ -28,6 +28,8 @@ list-move-to = Gbé lọ sí
 list-archive = Fi pamọ́
 list-spam = Jábọ̀ àwúrúju
 list-delete = Pa rẹ́
+list-snooze = Sún síwájú
+list-unsnooze = Mú padà báyìí
 list-newer = Tuntun
 list-older = Àtijọ́
 list-range = { $first }–{ $last } nínú { $total }
@@ -198,6 +200,7 @@ row-mark-important = Sàmì sí bí pàtàkì
 row-pinned = A ti lẹ̀ ẹ́ mọ́ òkè
 row-pin = Lẹ̀ mọ́ òkè
 row-unpin = Yọ kúrò ní òkè
+row-snoozed-until = A sún un síwájú di { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -219,6 +222,8 @@ menu-important = Sàmì sí bí pàtàkì
 menu-not-important = Sàmì sí bí kò ṣe pàtàkì
 menu-pin = Lẹ̀ mọ́ òkè
 menu-unpin = Yọ kúrò ní òkè
+menu-snooze = Sún síwájú
+menu-unsnooze = Mú padà báyìí
 menu-print-all = Tẹ gbogbo rẹ̀ jáde
 menu-new-window = Ṣí ní fèrèsé tuntun
 menu-move-to = Gbé lọ sí
@@ -262,6 +267,14 @@ toast-pinned = { $kind ->
 toast-unpinned = { $kind ->
     [conversation] A ti yọ ìjíròrò { $count } kúrò ní òkè.
    *[message] A ti yọ ìfiránṣẹ́ { $count } kúrò ní òkè.
+}
+toast-snoozed = { $kind ->
+    [conversation] A ti sún ìjíròrò { $count } síwájú di { $when }.
+   *[message] A ti sún ìfiránṣẹ́ { $count } síwájú di { $when }.
+}
+toast-unsnoozed = { $kind ->
+    [conversation] Ìjíròrò { $count } ti padà sí Àpótí-ìwọlé.
+   *[message] Ìfiránṣẹ́ { $count } ti padà sí Àpótí-ìwọlé.
 }
 toast-spam = { $kind ->
     [conversation] A ti jábọ̀ ìjíròrò { $count } bí àwúrúju.

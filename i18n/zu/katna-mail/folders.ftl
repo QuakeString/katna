@@ -23,6 +23,7 @@ storage-used-detail = { $address }: kusetshenziswe { $used } ku-{ $total }
 
 folder-inbox = Ibhokisi lokungenayo
 folder-starred = Okunenkanyezi
+folder-snoozed = Okulibazisiwe
 folder-unread = Okungafundiwe
 folder-important = Okubalulekile
 folder-drafts = Okusalungiswa

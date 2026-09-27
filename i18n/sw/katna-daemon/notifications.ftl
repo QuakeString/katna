@@ -8,6 +8,9 @@ notify-new-emails = Barua pepe { $count } mpya
 notify-and-more = na { $count } zaidi
 notify-no-subject = (hakuna mada)
 notify-unknown-sender = Mtumaji asiyejulikana
+notify-snooze-back = Zimerudi baada ya kuahirishwa
+notify-no-reply = Bado hakuna jibu
+notify-no-reply-to = Hakuna aliyejibu “{ $subject }”.
 
 ## Its buttons
 

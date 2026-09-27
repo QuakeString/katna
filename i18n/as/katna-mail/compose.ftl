@@ -92,6 +92,7 @@ send-check-add-subject = বিষয় যোগ কৰক
 send-check-send-anyway = তথাপি পঠিয়াওক
 recipient-not-valid = বৈধ ইমেইল ঠিকনা নহয়
 recipient-show-address = ঠিকনা দেখুৱাওক
+recipient-remove = আঁতৰাওক
 recipient-bad-title = ঠিকনাটো পৰীক্ষা কৰক
 recipient-bad-text = “{ $address }” কোনো বৈধ ইমেইল ঠিকনা নহয়। পঠিওৱাৰ আগতে ইয়াক শুধৰাওক বা আঁতৰাওক।
 recipient-bad-fix = শুধৰাওক

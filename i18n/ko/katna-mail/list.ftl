@@ -28,6 +28,8 @@ list-move-to = 이동
 list-archive = 보관처리
 list-spam = 스팸신고
 list-delete = 삭제
+list-snooze = 다시 알림
+list-unsnooze = 다시 알림 취소
 list-newer = 최신
 list-older = 이전
 list-range = { $first }–{ $last } / { $total }
@@ -198,6 +200,7 @@ row-mark-important = 중요 표시
 row-pinned = 상단에 고정됨
 row-pin = 상단에 고정
 row-unpin = 고정 해제
+row-snoozed-until = { $when }에 다시 알림
 
 ## Mail list: More menu and right-click menu
 
@@ -219,6 +222,8 @@ menu-important = 중요 표시
 menu-not-important = 중요하지 않음으로 표시
 menu-pin = 상단에 고정
 menu-unpin = 고정 해제
+menu-snooze = 다시 알림
+menu-unsnooze = 다시 알림 취소
 menu-print-all = 모두 인쇄
 menu-new-window = 새 창에서 열기
 menu-move-to = 이동
@@ -262,6 +267,14 @@ toast-pinned = { $kind ->
 toast-unpinned = { $kind ->
     [conversation] 대화 { $count }개의 고정을 해제했습니다.
    *[message] 메일 { $count }개의 고정을 해제했습니다.
+}
+toast-snoozed = { $kind ->
+    [conversation] 대화 { $count }개를 { $when }에 다시 알림으로 설정했습니다.
+   *[message] 메일 { $count }개를 { $when }에 다시 알림으로 설정했습니다.
+}
+toast-unsnoozed = { $kind ->
+    [conversation] 대화 { $count }개가 받은편지함으로 돌아왔습니다.
+   *[message] 메일 { $count }개가 받은편지함으로 돌아왔습니다.
 }
 toast-spam = { $kind ->
     [conversation] 대화 { $count }개를 스팸으로 신고했습니다.

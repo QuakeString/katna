@@ -28,6 +28,8 @@ list-move-to = இதற்கு நகர்த்து
 list-archive = காப்பகப்படுத்து
 list-spam = ஸ்பேம் எனப் புகாரளி
 list-delete = நீக்கு
+list-snooze = உறக்கநிலையில் வை
+list-unsnooze = உறக்கநிலையை நீக்கு
 list-newer = புதியவை
 list-older = பழையவை
 list-range = { $total } இல் { $first }–{ $last }
@@ -348,6 +350,7 @@ row-mark-important = முக்கியமானது எனக் குற
 row-pinned = மேலே பின் செய்யப்பட்டது
 row-pin = மேலே பின் செய்
 row-unpin = பின்னை அகற்று
+row-snoozed-until = { $when } வரை உறக்கநிலையில்
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = முக்கியமானது எனக் குறி
 menu-not-important = முக்கியமில்லாதது எனக் குறி
 menu-pin = மேலே பின் செய்
 menu-unpin = பின்னை அகற்று
+menu-snooze = உறக்கநிலையில் வை
+menu-unsnooze = உறக்கநிலையை நீக்கு
 menu-print-all = அனைத்தையும் அச்சிடு
 menu-new-window = புதிய சாளரத்தில் திற
 menu-move-to = இதற்கு நகர்த்து
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] மெசேஜின் பின் அகற்றப்பட்டது.
        *[other] { $count } மெசேஜ்களின் பின் அகற்றப்பட்டது.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடல் { $when } வரை உறக்கநிலையில் வைக்கப்பட்டது.
+       *[other] { $count } உரையாடல்கள் { $when } வரை உறக்கநிலையில் வைக்கப்பட்டன.
+    }
+   *[message] { $count ->
+        [one] மெசேஜ் { $when } வரை உறக்கநிலையில் வைக்கப்பட்டது.
+       *[other] { $count } மெசேஜ்கள் { $when } வரை உறக்கநிலையில் வைக்கப்பட்டன.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடல் இன்பாக்ஸுக்குத் திரும்பியது.
+       *[other] { $count } உரையாடல்கள் இன்பாக்ஸுக்குத் திரும்பின.
+    }
+   *[message] { $count ->
+        [one] மெசேஜ் இன்பாக்ஸுக்குத் திரும்பியது.
+       *[other] { $count } மெசேஜ்கள் இன்பாக்ஸுக்குத் திரும்பின.
     }
 }
 toast-spam = { $kind ->

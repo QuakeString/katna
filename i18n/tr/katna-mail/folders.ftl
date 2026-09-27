@@ -23,6 +23,7 @@ storage-used-detail = { $address }: { $total } alanın { $used } kadarı kullan�
 
 folder-inbox = Gelen Kutusu
 folder-starred = Yıldızlı
+folder-snoozed = Ertelenenler
 folder-unread = Okunmamış
 folder-important = Önemli
 folder-drafts = Taslaklar

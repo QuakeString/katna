@@ -11,6 +11,8 @@ schedule-scheduled-messages = ข้อความที่กำหนดเ�
 
 schedule-title = กำหนดเวลาส่ง
 schedule-zone-note = { $zone } Katna จะส่งในเวลานั้น แม้ปิดแอปอยู่ก็ตาม
+schedule-zone-note-server = { $zone } เซิร์ฟเวอร์อีเมลของคุณจะส่งในเวลานั้น แม้คอมพิวเตอร์เครื่องนี้ปิดอยู่ก็ตาม เมื่อปุ่มเลิกทำหายไปแล้วจะยกเลิกไม่ได้
+schedule-zone-note-local = { $zone } Katna จะส่งในเวลานั้นขณะที่คอมพิวเตอร์เครื่องนี้เปิดอยู่
 schedule-local-time = เวลาท้องถิ่น
 schedule-this-morning = เช้านี้
 schedule-this-afternoon = บ่ายนี้
@@ -28,6 +30,7 @@ schedule-no-such-time = เวลานั้นไม่มีอยู่จ�
 
 schedule-no-subject = (ไม่มีหัวเรื่อง)
 schedule-sends-at = ส่ง { $when }
+schedule-server-sends-at = เซิร์ฟเวอร์อีเมลของคุณจะส่ง { $when }
 schedule-cancel-send = ยกเลิกการส่ง
 schedule-nothing = ไม่มีรายการที่กำหนดเวลาไว้
 schedule-close = ปิด

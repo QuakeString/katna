@@ -578,3 +578,57 @@ rubutu, sannan ku saka shi a kowace sabuwar wasiƙa ko amsa da danna
 ga kowane mai karɓa. Gyara, sake suna ko share samfura a Saituna >
 Rubutu.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Wasiƙar da aka tsara tana tafiya ko da kwamfutarka a kashe"
+text = """
+Idan sabar wasiƙunka za ta iya riƙe wasiƙa har zuwa lokacin da aka saita,
+kamar yadda Stalwart ke yi, Tsara lokacin aikawa yanzu yana ba ta saƙon da
+zarar Janye ya tafi, don haka yana tafiya a kan lokaci ko da wannan kwamfuta
+a kashe take. Menu na tsara lokaci yana faɗin ko sabar wasiƙunka ce ko
+Katna za ta aika shi.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Nuni mai sauƙi"
+text = """
+Layin da ke ƙarƙashin mai nuni a jerin wasiƙu yanzu yana ɗagawa da ɗan
+inuwa, kamar a Gmail, maimakon wani duhun ɗamara a ƙarƙashinsa.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Ja adireshi tsakanin Zuwa, Kwafi da Kwafi a ɓoye"
+text = """
+Ja ƙaramin katin adireshi zuwa wani fili don matsar da shi; Kwafi da Kwafi
+a ɓoye suna buɗewa yayin da kake ja, ko da a ɓoye suke. Nuna kati yana
+bayyana x da ke cire shi.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Asusun Katna"
+text = """
+Saituna > Asusun Katna yana ba ku damar ƙirƙirar asusu a sabar Katna ta
+kanta, da kalmar sirrinsa ta kansa, ba kalmar sirrin wasiƙa ba. Fasalolin
+Katna na intanet, kamar rasidin karantawa da bin diddigin hanyoyin haɗi,
+za su buƙace shi. Kuna iya ganin kwamfutocin da suka shiga kuma ku fitar da
+kowace ɗaya daga cikinsu.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Koma inda kuka tsaya"
+text = """
+Rufe Katna Mail da sake buɗe shi yana dawo da manhajar, folda da shafin
+akwatin saƙo da kuka buɗe, foldojin da kuka buɗe da ko wurin folda yana
+naɗe. Fita daga Katna ta tiren tsarin yana sake fara shi sabo.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Jinkiri da tunatarwar amsa"
+text = """
+Jinkirta tattaunawa da agogon da ke kan layinta ko daga menu na
+danna-dama: tana jira a folda Waɗanda aka jinkirta, sannan ta dawo cikin
+Akwatin saƙo, ba a karanta ba, a lokacin da ka zaɓa. Lokacin aikawa,
+kibiyar da ke gefen Aika na iya tunatar da kai idan babu wanda ya amsa
+cikin kwana 1, 3 ko 7. Dukansu suna aiki yayin da kwamfutarka ke kunne,
+kuma suna cim ma abin da ya wuce bayan ta farka.
+"""

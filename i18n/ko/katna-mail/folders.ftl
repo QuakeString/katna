@@ -20,6 +20,7 @@ storage-used-detail = { $address }: { $total } 중 { $used } 사용
 
 folder-inbox = 받은편지함
 folder-starred = 별표편지함
+folder-snoozed = 다시 알림 항목
 folder-unread = 읽지 않음
 folder-important = 중요
 folder-drafts = 임시보관함

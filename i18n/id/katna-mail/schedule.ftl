@@ -11,6 +11,8 @@ schedule-scheduled-messages = Pesan terjadwal ({ $count })
 
 schedule-title = Jadwalkan pengiriman
 schedule-zone-note = { $zone }. Katna mengirimnya pada waktu itu, bahkan saat aplikasi ditutup.
+schedule-zone-note-server = { $zone }. Server email Anda akan mengirimnya pada waktu itu, bahkan saat komputer ini mati. Setelah Urungkan hilang, pengiriman tidak bisa dibatalkan.
+schedule-zone-note-local = { $zone }. Katna akan mengirimnya pada waktu itu selama komputer ini menyala.
 schedule-local-time = Waktu setempat
 schedule-this-morning = Pagi ini
 schedule-this-afternoon = Siang ini
@@ -28,6 +30,7 @@ schedule-no-such-time = Waktu itu tidak ada di sini.
 
 schedule-no-subject = (tanpa subjek)
 schedule-sends-at = Dikirim { $when }
+schedule-server-sends-at = Server email Anda mengirimnya { $when }
 schedule-cancel-send = Batalkan pengiriman
 schedule-nothing = Tidak ada yang dijadwalkan.
 schedule-close = Tutup

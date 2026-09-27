@@ -7,6 +7,7 @@
 settings-tab-general = སྤྱིར་བཏང
 settings-tab-inbox = ནང་འབྱོར་སྒྲོམ
 settings-tab-accounts = རྩིས་ཐོ་ཚུ
+settings-tab-katna-account = Katna རྩིས་ཐོ
 settings-tab-subscriptions = མངགས་ཉོ་ཚུ
 settings-tab-appearance = མཐོང་སྣང
 settings-tab-shortcuts = མགྱོགས་ཐབས་ཚུ

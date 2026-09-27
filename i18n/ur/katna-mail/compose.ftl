@@ -92,6 +92,7 @@ send-check-add-subject = موضوع شامل کریں
 send-check-send-anyway = پھر بھی بھیجیں
 recipient-not-valid = درست ای میل پتہ نہیں
 recipient-show-address = پتہ دکھائیں
+recipient-remove = ہٹائیں
 recipient-bad-title = پتہ چیک کریں
 recipient-bad-text = ”{ $address }“ درست ای میل پتہ نہیں ہے۔ بھیجنے سے پہلے اسے درست کریں یا ہٹا دیں۔
 recipient-bad-fix = درست کریں

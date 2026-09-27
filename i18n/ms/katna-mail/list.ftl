@@ -28,6 +28,8 @@ list-move-to = Alih ke
 list-archive = Arkibkan
 list-spam = Laporkan spam
 list-delete = Padam
+list-snooze = Tunda
+list-unsnooze = Nyahtunda
 list-newer = Lebih baharu
 list-older = Lebih lama
 list-range = { $first }–{ $last } daripada { $total }
@@ -198,6 +200,7 @@ row-mark-important = Tandai sebagai penting
 row-pinned = Disematkan di atas
 row-pin = Sematkan di atas
 row-unpin = Nyahsemat
+row-snoozed-until = Ditunda hingga { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -219,6 +222,8 @@ menu-important = Tandai sebagai penting
 menu-not-important = Tandai sebagai tidak penting
 menu-pin = Sematkan di atas
 menu-unpin = Nyahsemat
+menu-snooze = Tunda
+menu-unsnooze = Nyahtunda
 menu-print-all = Cetak semua
 menu-new-window = Buka dalam tetingkap baharu
 menu-move-to = Alih ke
@@ -262,6 +267,14 @@ toast-pinned = { $kind ->
 toast-unpinned = { $kind ->
     [conversation] { $count } perbualan dinyahsemat.
    *[message] { $count } mesej dinyahsemat.
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count } perbualan ditunda hingga { $when }.
+   *[message] { $count } mesej ditunda hingga { $when }.
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count } perbualan kembali ke Peti Masuk.
+   *[message] { $count } mesej kembali ke Peti Masuk.
 }
 toast-spam = { $kind ->
     [conversation] { $count } perbualan dilaporkan sebagai spam.

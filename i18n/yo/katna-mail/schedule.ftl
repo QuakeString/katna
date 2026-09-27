@@ -11,6 +11,8 @@ schedule-scheduled-messages = Àwọn ìfiránṣẹ́ tí a ṣètò ({ $count 
 
 schedule-title = Ṣètò fífiránṣẹ́
 schedule-zone-note = { $zone }. Katna yóò fi ránṣẹ́ ní àkókò náà, bí áàpù bá tilẹ̀ ti wà ní pípa.
+schedule-zone-note-server = { $zone }. Sáfà lẹ́tà rẹ yóò fi ránṣẹ́ ní àkókò náà, bí kọ̀ǹpútà yìí bá tilẹ̀ wà ní pípa. Lẹ́yìn tí Dá padà bá ti lọ, a kò lè fagilé e mọ́.
+schedule-zone-note-local = { $zone }. Katna yóò fi ránṣẹ́ ní àkókò náà nígbà tí kọ̀ǹpútà yìí bá wà ní títàn.
 schedule-local-time = Àkókò àdúgbò
 schedule-this-morning = Àárọ̀ yìí
 schedule-this-afternoon = Ọ̀sán yìí
@@ -28,6 +30,7 @@ schedule-no-such-time = Àkókò yẹn kò sí níbí.
 
 schedule-no-subject = (kò sí àkọlé)
 schedule-sends-at = Yóò lọ ní { $when }
+schedule-server-sends-at = Sáfà lẹ́tà rẹ yóò fi ránṣẹ́ ní { $when }
 schedule-cancel-send = Fagilé fífiránṣẹ́
 schedule-nothing = Kò sí nǹkan tí a ṣètò.
 schedule-close = Pa á dé

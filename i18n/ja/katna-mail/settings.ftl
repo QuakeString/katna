@@ -7,6 +7,7 @@
 settings-tab-general = 全般
 settings-tab-inbox = 受信トレイ
 settings-tab-accounts = アカウント
+settings-tab-katna-account = Katna アカウント
 settings-tab-subscriptions = 登録
 settings-tab-appearance = 外観
 settings-tab-shortcuts = ショートカット

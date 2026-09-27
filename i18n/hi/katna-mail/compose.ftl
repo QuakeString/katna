@@ -92,6 +92,7 @@ send-check-add-subject = विषय जोड़ें
 send-check-send-anyway = फिर भी भेजें
 recipient-not-valid = यह मान्य ईमेल पता नहीं है
 recipient-show-address = पता दिखाएं
+recipient-remove = हटाएं
 recipient-bad-title = पता जांचें
 recipient-bad-text = “{ $address }” मान्य ईमेल पता नहीं है। भेजने से पहले इसे ठीक करें या हटा दें।
 recipient-bad-fix = ठीक करें

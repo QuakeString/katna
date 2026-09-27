@@ -8,6 +8,9 @@ notify-new-emails = { $count } 封新郵件
 notify-and-more = 另外 { $count } 封
 notify-no-subject = （無主旨）
 notify-unknown-sender = 不明寄件者
+notify-snooze-back = 延後的郵件已返回
+notify-no-reply = 尚無回覆
+notify-no-reply-to = 沒有人回覆「{ $subject }」。
 
 ## Its buttons
 

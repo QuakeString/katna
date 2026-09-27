@@ -7,6 +7,7 @@
 settings-tab-general = பொது
 settings-tab-inbox = இன்பாக்ஸ்
 settings-tab-accounts = கணக்குகள்
+settings-tab-katna-account = Katna கணக்கு
 settings-tab-subscriptions = சந்தாக்கள்
 settings-tab-appearance = தோற்றம்
 settings-tab-shortcuts = ஷார்ட்கட்கள்

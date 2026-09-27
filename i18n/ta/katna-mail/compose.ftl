@@ -92,6 +92,7 @@ send-check-add-subject = பொருளைச் சேர்
 send-check-send-anyway = பரவாயில்லை, அனுப்பு
 recipient-not-valid = சரியான மின்னஞ்சல் முகவரி அல்ல
 recipient-show-address = முகவரியைக் காட்டு
+recipient-remove = அகற்று
 recipient-bad-title = முகவரியைச் சரிபார்க்கவும்
 recipient-bad-text = “{ $address }” சரியான மின்னஞ்சல் முகவரி அல்ல. அனுப்பும் முன் அதைச் சரிசெய்யவும் அல்லது அகற்றவும்.
 recipient-bad-fix = சரிசெய்

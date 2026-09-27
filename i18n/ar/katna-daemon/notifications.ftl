@@ -21,6 +21,9 @@ notify-and-more = { $count ->
 }
 notify-no-subject = (بلا موضوع)
 notify-unknown-sender = مُرسِل غير معروف
+notify-snooze-back = عاد من التأجيل
+notify-no-reply = لا رد بعد
+notify-no-reply-to = لم يرد أحد على «{ $subject }».
 
 ## Its buttons
 

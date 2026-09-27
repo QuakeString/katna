@@ -588,3 +588,58 @@ depois coloque-a em qualquer e-mail novo ou resposta com um clique. Escreva
 {first name}, {name} ou {my name} e o Katna preenche para cada destinatário.
 Edite, renomeie ou exclua modelos em Configurações > Escrever.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "E-mail programado sai com o computador desligado"
+text = """
+Quando o seu servidor de e-mail consegue segurar mensagens até um horário
+definido, como o Stalwart, Programar envio agora entrega a mensagem a
+ele assim que o Desfazer some, então ela sai na hora certa mesmo com
+este computador desligado. O menu de programação diz se quem vai enviar
+é o seu servidor de e-mail ou o Katna.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Um destaque mais leve"
+text = """
+A linha sob o ponteiro na lista de e-mails agora se ergue com uma sombra
+suave, como no Gmail, em vez de uma faixa escura embaixo dela.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Arraste endereços entre Para, Cc e Cco"
+text = """
+Arraste um chip de endereço para outro campo para movê-lo; Cc e Cco abrem
+enquanto você arrasta, mesmo quando ocultos. Apontar para um chip mostra
+um x que o remove.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Conta Katna"
+text = """
+Em Configurações > Conta Katna você cria uma conta no servidor do
+próprio Katna, com senha própria, nunca uma senha de e-mail. Os recursos
+on-line do Katna, como confirmações de leitura e rastreamento de links,
+vão precisar dela. Você vê os computadores conectados e pode desconectar
+qualquer um deles.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "De volta onde você parou"
+text = """
+Ao fechar o Katna Mail e abri-lo de novo, voltam o app, a pasta e a guia
+da Caixa de entrada que estavam abertos, as pastas que você tinha
+expandido e se o painel de pastas estava recolhido. Sair do Katna pela
+bandeja do sistema o reinicia do zero.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Adiar e lembretes de resposta"
+text = """
+Adie uma conversa com o relógio na linha dela ou pelo menu do botão
+direito: ela espera na pasta Adiados e volta para a Caixa de entrada, não
+lida, no horário que você escolheu. Ao enviar, a seta ao lado de Enviar
+pode lembrar você se ninguém responder em 1, 3 ou 7 dias. Os dois
+funcionam enquanto o computador está ligado e põem tudo em dia quando ele
+volta do modo de suspensão.
+"""

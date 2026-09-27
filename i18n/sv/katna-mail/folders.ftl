@@ -23,6 +23,7 @@ storage-used-detail = { $address }: { $used } av { $total } används
 
 folder-inbox = Inkorgen
 folder-starred = Stjärnmärkt
+folder-snoozed = Snoozade
 folder-unread = Olästa
 folder-important = Viktigt
 folder-drafts = Utkast

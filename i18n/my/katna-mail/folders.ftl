@@ -20,6 +20,7 @@ storage-used-detail = { $address }- { $total } အနက် { $used } သုံ�
 
 folder-inbox = ဝင်စာ
 folder-starred = ကြယ်ပွင့်တပ်ထားသည်
+folder-snoozed = ခဏဆိုင်းထားသည်
 folder-unread = မဖတ်ရသေး
 folder-important = အရေးကြီး
 folder-drafts = မူကြမ်းများ

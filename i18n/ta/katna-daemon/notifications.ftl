@@ -11,6 +11,9 @@ notify-new-emails = { $count ->
 notify-and-more = மேலும் { $count }
 notify-no-subject = (பொருள் இல்லை)
 notify-unknown-sender = அறியாத அனுப்புநர்
+notify-snooze-back = உறக்கநிலையிலிருந்து திரும்பியவை
+notify-no-reply = இன்னும் பதில் இல்லை
+notify-no-reply-to = “{ $subject }” என்பதற்கு யாரும் பதிலளிக்கவில்லை.
 
 ## Its buttons
 

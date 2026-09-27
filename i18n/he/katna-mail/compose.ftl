@@ -92,6 +92,7 @@ send-check-add-subject = הוספת נושא
 send-check-send-anyway = לשלוח בכל זאת
 recipient-not-valid = זו אינה כתובת אימייל תקינה
 recipient-show-address = הצגת הכתובת
+recipient-remove = הסרה
 recipient-bad-title = בדיקת הכתובת
 recipient-bad-text = „{ $address }” אינה כתובת אימייל תקינה. יש לתקן או להסיר אותה לפני השליחה.
 recipient-bad-fix = תיקון

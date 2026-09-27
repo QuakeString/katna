@@ -25,6 +25,8 @@ const EXPAND_ALL_UP_TO: usize = 40;
 pub enum Role {
     Inbox,
     Flagged,
+    /// Katna's `Snoozed` folder (`katna-daemon`'s snooze).
+    Snoozed,
     Drafts,
     Sent,
     Archive,
@@ -56,6 +58,7 @@ impl Role {
             Some(FolderRole::Junk) => Self::Junk,
             Some(FolderRole::Trash) => Self::Trash,
             Some(FolderRole::All) => Self::All,
+            None if name.eq_ignore_ascii_case("snoozed") => Self::Snoozed,
             None => Self::Other,
         })
     }
@@ -73,6 +76,7 @@ impl Role {
         let id = match self {
             Self::Inbox => "folder-inbox",
             Self::Flagged => "folder-starred",
+            Self::Snoozed => "folder-snoozed",
             Self::Drafts => "folder-drafts",
             Self::Sent => "folder-sent",
             Self::Archive => "folder-archive",

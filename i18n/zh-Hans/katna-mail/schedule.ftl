@@ -11,6 +11,8 @@ schedule-scheduled-messages = 已安排的邮件（{ $count }）
 
 schedule-title = 定时发送
 schedule-zone-note = { $zone }。即使应用已关闭，Katna 也会在该时间发送。
+schedule-zone-note-server = { $zone }。即使这台电脑已关机，你的邮件服务器也会在该时间发送。撤消按钮消失后就无法取消了。
+schedule-zone-note-local = { $zone }。只要这台电脑开着，Katna 就会在该时间发送。
 schedule-local-time = 当地时间
 schedule-this-morning = 今天上午
 schedule-this-afternoon = 今天下午
@@ -28,6 +30,7 @@ schedule-no-such-time = 该时间在本地不存在。
 
 schedule-no-subject = （无主题）
 schedule-sends-at = 将于 { $when } 发送
+schedule-server-sends-at = 你的邮件服务器将于 { $when } 发送
 schedule-cancel-send = 取消发送
 schedule-nothing = 没有已安排的邮件。
 schedule-close = 关闭

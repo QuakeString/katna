@@ -555,6 +555,35 @@ impl MailBackend for FakeConnection {
         Ok(moved)
     }
 
+    async fn copy_messages(&mut self, uids: &[u32], folder: &str) -> Result<Vec<(u32, u32)>> {
+        let mut state = self.state(format!("COPY {uids:?} {folder}"))?;
+        if state.refuse_changes {
+            return Err(Error::Rejected("NO not today".into()));
+        }
+        if !state.folders.contains_key(folder) {
+            return Err(Error::Rejected(format!("NO no folder {folder}")));
+        }
+        state.modseq += 1;
+        let modseq = state.modseq;
+        let from = self.selected().to_owned();
+        let mut copied = Vec::new();
+        for uid in uids {
+            let Some(mut message) = state.folders[&from].messages.get(uid).cloned() else {
+                continue;
+            };
+            message.modseq = modseq;
+            let target = state.folders.get_mut(folder).unwrap();
+            let new = target.uid_next;
+            target.uid_next += 1;
+            target.messages.insert(new, message);
+            copied.push((*uid, new));
+        }
+        if state.no_uidplus {
+            copied.clear();
+        }
+        Ok(copied)
+    }
+
     async fn expunge(&mut self, uids: &[u32]) -> Result<()> {
         let mut state = self.state(format!("EXPUNGE {uids:?}"))?;
         if state.refuse_changes {

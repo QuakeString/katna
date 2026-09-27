@@ -172,6 +172,37 @@ impl NewMailNotices {
         self.close(handled).await;
     }
 
+    /// Shows a reminder about `messages` of `account` (not empty): mail
+    /// back from snooze, or a message nobody replied to. Its buttons act on
+    /// `messages`, and it closes once they are read or out of the inbox.
+    pub(crate) async fn remind(
+        &self,
+        store: &Mutex<Store>,
+        account: AccountId,
+        summary: &str,
+        lines: &[String],
+        messages: Vec<MessageId>,
+    ) {
+        let origin = store
+            .lock()
+            .unwrap()
+            .accounts()
+            .ok()
+            .and_then(|accounts| accounts.into_iter().find(|a| a.id == account))
+            .map(|a| a.address)
+            .unwrap_or_default();
+        let sound = self.sound.load(Ordering::Relaxed);
+        match self.notifier.reminder(&origin, summary, lines, sound).await {
+            Ok(id) => {
+                self.shown
+                    .lock()
+                    .unwrap()
+                    .insert(id, Shown { account, messages });
+            }
+            Err(err) => tracing::warn!(%err, "could not show a reminder"),
+        }
+    }
+
     /// The account's address, its new mail and their IDs, if any.
     fn find_new(&self, store: &Store, account: AccountId) -> katna_store::Result<Option<Found>> {
         let latest = store.latest_message(account)?;

@@ -7,6 +7,7 @@
 settings-tab-general = ਆਮ
 settings-tab-inbox = ਇਨਬਾਕਸ
 settings-tab-accounts = ਖਾਤੇ
+settings-tab-katna-account = Katna ਖਾਤਾ
 settings-tab-subscriptions = ਸਬਸਕ੍ਰਿਪਸ਼ਨ
 settings-tab-appearance = ਦਿੱਖ
 settings-tab-shortcuts = ਸ਼ਾਰਟਕੱਟ

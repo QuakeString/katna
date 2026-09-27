@@ -27,6 +27,7 @@ storage-used-detail = { $address }: مُستخدَم { $used } من { $total }
 
 folder-inbox = البريد الوارد
 folder-starred = المميّزة بنجمة
+folder-snoozed = المؤجَّلة
 folder-unread = غير المقروءة
 folder-important = المهمة
 folder-drafts = المسودات

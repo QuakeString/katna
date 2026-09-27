@@ -89,6 +89,7 @@ send-check-add-subject = 添加主题
 send-check-send-anyway = 仍然发送
 recipient-not-valid = 不是有效的电子邮件地址
 recipient-show-address = 显示地址
+recipient-remove = 移除
 recipient-bad-title = 检查地址
 recipient-bad-text = “{ $address }”不是有效的电子邮件地址。请在发送前修正或移除它。
 recipient-bad-fix = 修正

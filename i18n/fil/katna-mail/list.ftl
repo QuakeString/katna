@@ -28,6 +28,8 @@ list-move-to = Ilipat sa
 list-archive = I-archive
 list-spam = Iulat bilang spam
 list-delete = I-delete
+list-snooze = I-snooze
+list-unsnooze = I-unsnooze
 list-newer = Mas bago
 list-older = Mas luma
 list-range = { $first }–{ $last } ng { $total }
@@ -348,6 +350,7 @@ row-mark-important = Markahan bilang mahalaga
 row-pinned = Naka-pin sa itaas
 row-pin = I-pin sa itaas
 row-unpin = I-unpin
+row-snoozed-until = Naka-snooze hanggang { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = Markahan bilang mahalaga
 menu-not-important = Markahan bilang hindi mahalaga
 menu-pin = I-pin sa itaas
 menu-unpin = I-unpin
+menu-snooze = I-snooze
+menu-unsnooze = I-unsnooze
 menu-print-all = I-print lahat
 menu-new-window = Buksan sa bagong window
 menu-move-to = Ilipat sa
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] Na-unpin ang { $count } mensahe.
        *[other] Na-unpin ang { $count } mensahe.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Na-snooze ang { $count } pag-uusap hanggang { $when }.
+       *[other] Na-snooze ang { $count } pag-uusap hanggang { $when }.
+    }
+   *[message] { $count ->
+        [one] Na-snooze ang { $count } mensahe hanggang { $when }.
+       *[other] Na-snooze ang { $count } mensahe hanggang { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Bumalik sa Inbox ang { $count } pag-uusap.
+       *[other] Bumalik sa Inbox ang { $count } pag-uusap.
+    }
+   *[message] { $count ->
+        [one] Bumalik sa Inbox ang { $count } mensahe.
+       *[other] Bumalik sa Inbox ang { $count } mensahe.
     }
 }
 toast-spam = { $kind ->

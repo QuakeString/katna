@@ -4,8 +4,8 @@
 //! to the store at once and replayed on the server by the account's worker
 //! (`docs/ARCHITECTURE.md` §6.1).
 //!
-//! - [`set_flags`], [`move_messages`], [`delete_messages`] and
-//!   [`archive_messages`] edit the store and queue one operation per
+//! - [`set_flags`], [`move_messages`], [`copy_messages`],
+//!   [`delete_messages`] and [`archive_messages`] edit the store and queue one operation per
 //!   message. They never touch the network. Imported (`local`) accounts
 //!   only change in the store.
 //! - [`save_draft`] keeps a draft in the Drafts folder and queues its
@@ -55,6 +55,16 @@ enum Op {
     /// server has not confirmed it yet (an undo right after an archive); it
     /// is looked up at replay time, after that earlier move has run.
     Move {
+        message: i64,
+        from: i64,
+        from_path: String,
+        uid: Option<u32>,
+        to: i64,
+        to_path: String,
+    },
+    /// Copy `message` from `from` (where its UID is `uid`, or looked up
+    /// at replay time) to `to` as well; on Gmail this adds a label.
+    Copy {
         message: i64,
         from: i64,
         from_path: String,
@@ -244,6 +254,18 @@ pub fn move_messages(
     messages: &[MessageId],
     to: FolderId,
 ) -> Result<Vec<AccountId>, ChangeError> {
+    move_messages_from(store, messages, None, to)
+}
+
+/// Moves messages out of folder `from` (any of theirs when `None`) to
+/// `to`. Messages not in `from` stay. Returns the accounts whose workers
+/// must replay.
+pub fn move_messages_from(
+    store: &mut Store,
+    messages: &[MessageId],
+    from: Option<FolderId>,
+    to: FolderId,
+) -> Result<Vec<AccountId>, ChangeError> {
     let mut plans = Vec::new();
     for &id in messages {
         let account = account_of(store, id)?;
@@ -258,6 +280,7 @@ pub fn move_messages(
             .locations(id)?
             .into_iter()
             .filter(|location| location.folder != to)
+            .filter(|location| from.is_none_or(|from| location.folder == from))
             .min_by_key(|location| {
                 folders
                     .get(&location.folder)
@@ -294,6 +317,59 @@ pub fn move_messages(
             unreachable!("only moves are planned here");
         };
         batch.move_location(MessageId(*message), FolderId(*from), FolderId(*to), None)?;
+        if synced {
+            batch.enqueue_op(account, &encode(&op))?;
+        }
+        push_unique(&mut accounts, account);
+    }
+    batch.commit()?;
+    Ok(accounts)
+}
+
+/// Copies messages into `to` as well (on Gmail: adds its label), keeping
+/// them where they are. Returns the accounts whose workers must replay.
+pub fn copy_messages(
+    store: &mut Store,
+    messages: &[MessageId],
+    to: FolderId,
+) -> Result<Vec<AccountId>, ChangeError> {
+    let mut plans = Vec::new();
+    for &id in messages {
+        let account = account_of(store, id)?;
+        let folders = folders_of(store, account)?;
+        let target = folders
+            .get(&to)
+            .ok_or(ChangeError::UnknownFolder(to.0))?
+            .clone();
+        let locations = store.locations(id)?;
+        if locations.iter().any(|location| location.folder == to) {
+            continue; // already there
+        }
+        // One whose UID is known, so the copy need not wait.
+        let Some(source) = locations.into_iter().min_by_key(|l| l.uid.is_none()) else {
+            continue;
+        };
+        let from = &folders[&source.folder];
+        plans.push((
+            account,
+            is_synced(store, account)?,
+            Op::Copy {
+                message: id.0,
+                from: from.id.0,
+                from_path: from.path.clone(),
+                uid: source.uid,
+                to: target.id.0,
+                to_path: target.path.clone(),
+            },
+        ));
+    }
+    let mut batch = store.mail_batch()?;
+    let mut accounts = Vec::new();
+    for (account, synced, op) in plans {
+        let Op::Copy { message, to, .. } = &op else {
+            unreachable!("only copies are planned here");
+        };
+        batch.add_location(MessageId(*message), FolderId(*to), None)?;
         if synced {
             batch.enqueue_op(account, &encode(&op))?;
         }
@@ -784,6 +860,45 @@ async fn run<B: MailBackend>(
             }
             batch.commit()?;
         }
+        Op::Copy {
+            message,
+            from,
+            from_path,
+            uid,
+            to,
+            to_path,
+        } => {
+            let uid = match uid {
+                Some(uid) => *uid,
+                None => store
+                    .locations(MessageId(*message))?
+                    .into_iter()
+                    .find(|l| l.folder == FolderId(*from))
+                    .and_then(|l| l.uid)
+                    .ok_or_else(|| {
+                        Error::Rejected("the message's earlier move is not confirmed yet".into())
+                    })?,
+            };
+            select(backend, selected, from_path).await?;
+            let copied = backend.copy_messages(&[uid], to_path).await?;
+            let mut batch = store.mail_batch()?;
+            let (message, to) = (MessageId(*message), FolderId(*to));
+            match copied.iter().find(|(old, _)| *old == uid) {
+                Some(&(_, new)) => {
+                    batch.move_location(message, to, to, Some(new))?;
+                }
+                // Without UIDPLUS the next sync of `to` adds it again.
+                None => {
+                    if batch.unconfirmed_in(message, to)? {
+                        batch.remove_from_folder(message, to)?;
+                    }
+                    if !report.resync.iter().any(|(id, _)| *id == to) {
+                        report.resync.push((to, to_path.clone()));
+                    }
+                }
+            }
+            batch.commit()?;
+        }
         Op::Expunge { path, uid, .. } => {
             select(backend, selected, path).await?;
             backend.expunge(&[*uid]).await?;
@@ -973,6 +1088,13 @@ fn undo(batch: &mut katna_store::MailBatch<'_>, op: &Op) -> katna_store::Result<
             ..
         } => {
             batch.move_location(MessageId(*message), FolderId(*to), FolderId(*from), *uid)?;
+            Ok(())
+        }
+        Op::Copy { message, to, .. } => {
+            let (message, to) = (MessageId(*message), FolderId(*to));
+            if batch.unconfirmed_in(message, to)? {
+                batch.remove_from_folder(message, to)?;
+            }
             Ok(())
         }
         // Gone locally; it stays on the server and in other clients.

@@ -20,6 +20,7 @@ storage-used-detail = { $address }: đã dùng { $used } trong { $total }
 
 folder-inbox = Hộp thư đến
 folder-starred = Có gắn dấu sao
+folder-snoozed = Đã tạm ẩn
 folder-unread = Chưa đọc
 folder-important = Quan trọng
 folder-drafts = Thư nháp

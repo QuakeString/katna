@@ -28,6 +28,8 @@ list-move-to = ย้ายไปที่
 list-archive = เก็บถาวร
 list-spam = รายงานสแปม
 list-delete = ลบ
+list-snooze = เลื่อนเวลา
+list-unsnooze = ยกเลิกการเลื่อนเวลา
 list-newer = ใหม่กว่า
 list-older = เก่ากว่า
 list-range = { $first }–{ $last } จาก { $total }
@@ -198,6 +200,7 @@ row-mark-important = ทำเครื่องหมายว่าสำค�
 row-pinned = ปักหมุดไว้ด้านบน
 row-pin = ปักหมุดไว้ด้านบน
 row-unpin = เลิกปักหมุด
+row-snoozed-until = เลื่อนเวลาไว้จนถึง { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -219,6 +222,8 @@ menu-important = ทำเครื่องหมายว่าสำคัญ
 menu-not-important = ทำเครื่องหมายว่าไม่สำคัญ
 menu-pin = ปักหมุดไว้ด้านบน
 menu-unpin = เลิกปักหมุด
+menu-snooze = เลื่อนเวลา
+menu-unsnooze = ยกเลิกการเลื่อนเวลา
 menu-print-all = พิมพ์ทั้งหมด
 menu-new-window = เปิดในหน้าต่างใหม่
 menu-move-to = ย้ายไปที่
@@ -262,6 +267,14 @@ toast-pinned = { $kind ->
 toast-unpinned = { $kind ->
     [conversation] เลิกปักหมุดการสนทนา { $count } รายการแล้ว
    *[message] เลิกปักหมุดข้อความ { $count } รายการแล้ว
+}
+toast-snoozed = { $kind ->
+    [conversation] เลื่อนเวลาการสนทนา { $count } รายการไว้จนถึง { $when } แล้ว
+   *[message] เลื่อนเวลาข้อความ { $count } รายการไว้จนถึง { $when } แล้ว
+}
+toast-unsnoozed = { $kind ->
+    [conversation] การสนทนา { $count } รายการกลับมาที่กล่องจดหมายแล้ว
+   *[message] ข้อความ { $count } รายการกลับมาที่กล่องจดหมายแล้ว
 }
 toast-spam = { $kind ->
     [conversation] รายงานการสนทนา { $count } รายการว่าเป็นสแปมแล้ว

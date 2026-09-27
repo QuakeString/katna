@@ -605,3 +605,59 @@ anumang bagong mail o sagot sa isang click. Isulat ang {first name},
 I-edit, palitan ang pangalan o i-delete ang mga template sa Mga setting >
 Mag-compose.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Naipapadala ang naka-iskedyul na mail kahit naka-off ang computer mo"
+text = """
+Kapag kayang hawakan ng iyong mail server ang mail hanggang sa itinakdang
+oras, gaya ng Stalwart, ipinapasa na ngayon ng I-iskedyul ang pagpapadala
+ang mensahe rito kapag nawala na ang I-undo, kaya naipapadala ito sa oras
+kahit naka-off ang computer na ito. Sinasabi ng menu ng iskedyul kung ang
+iyong mail server o ang Katna ang magpapadala nito.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Mas magaan na hover"
+text = """
+Umaangat na ngayon nang may malabong anino ang linyang nasa ilalim ng
+pointer sa listahan ng mail, gaya sa Gmail, sa halip na madilim na guhit
+sa ilalim nito.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "I-drag ang mga address sa pagitan ng Para kay, Cc at Bcc"
+text = """
+I-drag ang chip ng address sa ibang field para ilipat ito; bumubukas ang
+Cc at Bcc habang nagda-drag ka, kahit nakatago ang mga ito. Kapag itinuro
+mo ang isang chip, may lalabas na x na nag-aalis dito.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Katna account"
+text = """
+Sa Mga setting > Katna account, makakagawa ka ng account sa sariling
+server ng Katna, na may sariling password, hindi kailanman password ng
+mail. Kakailanganin ito ng mga online na feature ng Katna, gaya ng mga
+read receipt at pag-track ng link. Makikita mo ang mga computer na
+naka-sign in at mai-sign out ang alinman sa mga ito.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Balik kung nasaan ka"
+text = """
+Kapag isinara at binuksan ulit ang Katna Mail, babalik ang app, ang folder
+at ang tab ng inbox na bukas mo, ang mga folder na binuksan mo at kung
+nakatupi ang pane ng folder. Kapag ini-quit ang Katna mula sa system tray,
+magsisimula ito nang bago.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Snooze at mga paalala sa sagot"
+text = """
+I-snooze ang isang pag-uusap gamit ang orasan sa linya nito o mula sa
+right-click menu: maghihintay ito sa folder na Naka-snooze at babalik sa
+Inbox, hindi pa nababasa, sa oras na pinili mo. Kapag nagpapadala, ang
+arrow sa tabi ng Ipadala ay puwedeng magpaalala sa iyo kung walang sumagot
+sa loob ng 1, 3 o 7 araw. Parehong gumagana habang naka-on ang computer
+mo, at humahabol pagkagising nito.
+"""

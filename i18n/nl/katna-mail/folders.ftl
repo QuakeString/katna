@@ -23,6 +23,7 @@ storage-used-detail = { $address }: { $used } van { $total } gebruikt
 
 folder-inbox = Inbox
 folder-starred = Met ster
+folder-snoozed = Gesnoozed
 folder-unread = Ongelezen
 folder-important = Belangrijk
 folder-drafts = Concepten

@@ -11,6 +11,8 @@ schedule-scheduled-messages = Mga naka-iskedyul na mensahe ({ $count })
 
 schedule-title = I-iskedyul ang pagpapadala
 schedule-zone-note = { $zone }. Ipapadala ito ng Katna sa oras na iyon, kahit nakasara ang app.
+schedule-zone-note-server = { $zone }. Ipapadala ito ng iyong mail server sa oras na iyon, kahit naka-off ang computer na ito. Kapag nawala na ang I-undo, hindi na ito makakansela.
+schedule-zone-note-local = { $zone }. Ipapadala ito ng Katna sa oras na iyon habang naka-on ang computer na ito.
 schedule-local-time = Lokal na oras
 schedule-this-morning = Ngayong umaga
 schedule-this-afternoon = Ngayong hapon
@@ -28,6 +30,7 @@ schedule-no-such-time = Walang ganoong oras dito.
 
 schedule-no-subject = (walang paksa)
 schedule-sends-at = Ipapadala { $when }
+schedule-server-sends-at = Ipapadala ito ng iyong mail server { $when }
 schedule-cancel-send = Kanselahin ang pagpapadala
 schedule-nothing = Walang naka-iskedyul.
 schedule-close = Isara

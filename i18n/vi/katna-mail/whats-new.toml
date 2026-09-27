@@ -572,3 +572,56 @@ nhấp. Viết {first name}, {name} hoặc {my name} và Katna sẽ điền chú
 cho từng người nhận. Sửa, đổi tên hoặc xóa mẫu thư trong Cài đặt > Soạn
 thư.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Thư hẹn giờ vẫn được gửi khi máy tính đã tắt"
+text = """
+Khi máy chủ thư của bạn có thể giữ thư đến một thời điểm định sẵn, như
+Stalwart, Lên lịch gửi giờ sẽ giao thư cho máy chủ ngay khi Hoàn tác biến
+mất, để thư đi đúng giờ kể cả khi máy tính này đã tắt. Menu lên lịch cho
+biết máy chủ thư của bạn hay Katna sẽ gửi thư.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Hiệu ứng trỏ chuột nhẹ nhàng hơn"
+text = """
+Dòng dưới con trỏ trong danh sách thư giờ nổi lên với một bóng mờ nhạt,
+giống như trong Gmail, thay cho một dải tối bên dưới.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Kéo địa chỉ giữa Tới, Cc và Bcc"
+text = """
+Kéo thẻ địa chỉ sang trường khác để chuyển nó; Cc và Bcc sẽ mở ra khi
+bạn kéo, kể cả khi đang ẩn. Trỏ vào thẻ sẽ hiện dấu x để xóa nó.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Tài khoản Katna"
+text = """
+Cài đặt > Tài khoản Katna cho phép bạn tạo tài khoản trên máy chủ riêng
+của Katna, với mật khẩu riêng, không bao giờ là mật khẩu thư. Các tính
+năng trực tuyến của Katna, như xác nhận đã đọc và theo dõi liên kết, sẽ
+cần đến tài khoản này. Bạn có thể xem các máy tính đang đăng nhập và
+đăng xuất bất kỳ máy nào.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Trở lại đúng chỗ cũ"
+text = """
+Đóng Katna Mail rồi mở lại sẽ đưa trở lại ứng dụng, thư mục và tab hộp
+thư đến bạn đang mở, các thư mục bạn đã mở rộng và việc ngăn thư mục có
+đang thu gọn hay không. Thoát Katna từ khay hệ thống sẽ khởi động lại từ
+đầu.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Tạm ẩn và nhắc khi chưa có trả lời"
+text = """
+Tạm ẩn một cuộc hội thoại bằng biểu tượng đồng hồ trên dòng của nó hoặc
+từ menu chuột phải: cuộc hội thoại chờ trong thư mục Đã tạm ẩn và quay
+lại Hộp thư đến, ở trạng thái chưa đọc, vào thời điểm bạn chọn. Khi gửi,
+mũi tên bên cạnh nút Gửi có thể nhắc bạn nếu không ai trả lời trong vòng
+1, 3 hoặc 7 ngày. Cả hai hoạt động khi máy tính đang bật, và làm bù phần
+còn lại sau khi máy thức dậy.
+"""

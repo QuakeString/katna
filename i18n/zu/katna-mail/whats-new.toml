@@ -610,3 +610,60 @@ entsha noma impendulo ngokuchofoza kanye. Bhala {first name}, {name}
 noma {my name} bese i-Katna ikugcwalisela umamukeli ngamunye. Hlela,
 qamba kabusha noma susa izifanekiso ku-Izilungiselelo > Bhala.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Imeyili ehleliwe iyahamba ngisho noma ikhompyutha yakho icishiwe"
+text = """
+Uma iseva yakho yemeyili ingayibamba imeyili kuze kube yisikhathi
+esibekiwe, njengoba i-Stalwart ikwazi, u-Hlela ukuthumela manje unikeza
+iseva umlayezo uma u-Hlehlisa esenyamalele, ukuze uhambe ngesikhathi
+ngisho noma le khompyutha icishiwe. Imenyu yokuhlela ikutshela ukuthi
+uzothunyelwa iseva yakho yemeyili noma i-Katna.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Ukukhomba okulula kakhulu"
+text = """
+Umugqa ongaphansi kwesikhombi ohlwini lwemeyili manje uyaphakama
+nesithunzi esifiphele, njengaku-Gmail, esikhundleni somugqa omnyama
+ngaphansi kwawo.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Hudula amakheli phakathi kuka-Ku, Cc no-Bcc"
+text = """
+Hudula i-chip yekheli uyise kwenye inkambu ukuze uyihambise; u-Cc
+no-Bcc bayavuleka ngenkathi uhudula, ngisho noma bafihliwe. Ukukhomba
+i-chip kubonisa u-x oyisusayo.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "I-akhawunti ye-Katna"
+text = """
+Izilungiselelo > I-akhawunti ye-Katna ikuvumela ukuthi udale i-akhawunti
+kuseva ye-Katna uqobo, enephasiwedi yayo, hhayi neze iphasiwedi yemeyili.
+Izici ze-inthanethi ze-Katna, njengezaziso zokufunda nokulandelela
+izixhumanisi, zizoyidinga. Ungabona amakhompyutha angenile futhi ukhiphe
+noma iyiphi yawo.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Ubuyela lapho ubukhona"
+text = """
+Ukuvala i-Katna Mail bese uyivula futhi kubuyisa uhlelo lokusebenza,
+ifolda nethebhu yebhokisi lokungenayo obekuvulile, amafolda obuwavulile
+nokuthi iphaneli yamafolda ibigoqiwe yini. Ukuphuma ku-Katna usuka
+kuthreyi kuyiqala kabusha.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Libazisa nezikhumbuzi zezimpendulo"
+text = """
+Libazisa ingxoxo ngewashi elisemugqeni wayo noma kumenyu yokuchofoza
+ngakwesokudla: ilinda kufolda ethi Okulibazisiwe bese ibuyela
+kubhokisi lokungenayo, ingafundiwe, ngesikhathi osikhethile. Uma
+uthumela, umcibisholo oseduze no-Thumela ungakukhumbuza uma kungekho
+ophendulayo zingakapheli izinsuku ezingu-1, 3 noma 7. Kokubili
+kuyasebenza uma ikhompyutha yakho ivuliwe, futhi kuqhubeka nalokho
+okusele ngemva kokuba ivuke.
+"""

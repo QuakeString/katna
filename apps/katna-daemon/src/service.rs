@@ -149,6 +149,18 @@ macro_rules! pim_interface {
                 Ok(self.daemon.archive_messages(&ids(&messages))?)
             }
 
+            async fn snooze(&self, messages: Vec<i64>, until: i64) -> fdo::Result<()> {
+                Ok(self.daemon.snooze(&ids(&messages), until).await?)
+            }
+
+            async fn unsnooze(&self, messages: Vec<i64>) -> fdo::Result<()> {
+                Ok(self.daemon.unsnooze(&ids(&messages))?)
+            }
+
+            async fn set_follow_up(&self, id: i64, after: i64) -> fdo::Result<()> {
+                Ok(self.daemon.set_follow_up(id, after)?)
+            }
+
             async fn queue_send(
                 &self,
                 account: i64,

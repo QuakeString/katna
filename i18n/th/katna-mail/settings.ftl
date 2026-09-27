@@ -7,6 +7,7 @@
 settings-tab-general = ทั่วไป
 settings-tab-inbox = กล่องจดหมาย
 settings-tab-accounts = บัญชี
+settings-tab-katna-account = บัญชี Katna
 settings-tab-subscriptions = การสมัครรับข้อมูล
 settings-tab-appearance = ลักษณะที่ปรากฏ
 settings-tab-shortcuts = แป้นพิมพ์ลัด

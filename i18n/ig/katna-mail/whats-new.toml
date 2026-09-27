@@ -568,3 +568,55 @@ otu pịa. Dee {first name}, {name} ma ọ bụ {my name} ma Katna ga-edejupụt
 ha maka onye nnata ọ bụla. Dezie, gbanwee aha ma ọ bụ hichapụ ndebiri
 ụkpụrụ na Ntọala > Ide ozi.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Ozi a haziri oge ya na-apụ ọbụlagodi na kọmputa gị gbanyụrụ"
+text = """
+Mgbe sava ozi gị nwere ike ijide ozi ruo oge a kara aka, dị ka Stalwart
+na-eme, Hazie oge izipu na-enyefe ya ozi ahụ ugbu a ozugbo Megharịa pụrụ,
+ka o wee pụọ n'oge ọbụlagodi mgbe kọmputa a gbanyụrụ. Menu nhazi oge
+na-ekwu ma ọ bụ sava ozi gị ka ọ bụ Katna ga-ezipu ya.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Ntụ aka dị nro karị"
+text = """
+Ahịrị dị n'okpuru ihe ntụ aka na ndepụta ozi na-ebuli ugbu a na obere
+onyinyo, dị ka na Gmail, kama eriri gbara ọchịchịrị n'okpuru ya.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Dọrọ adreesị n'etiti Gaa, Cc na Bcc"
+text = """
+Dọrọ mpekere adreesị gaa n'ogige ọzọ iji bugharịa ya; Cc na Bcc na-emepe
+ka ị na-adọrọ, ọbụlagodi mgbe ha zoro ezo. Ịtụ aka na mpekere na-egosi x
+na-ewepụ ya.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Akaụntụ Katna"
+text = """
+Ntọala > Akaụntụ Katna na-enye gị ohere imepụta akaụntụ na sava nke Katna
+n'onwe ya, nwere okwuntughe nke ya, ọ bụghị okwuntughe ozi. Atụmatụ
+ịntanetị nke Katna, dịka akara na-egosi na a gụrụ ozi na nsochi njikọ, ga-achọ
+ya. Ị nwere ike ịhụ kọmputa ndị banyere ma pụpụ nke ọ bụla n'ime ha.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Laghachi ebe ị kwụsịrị"
+text = """
+Imechi Katna Mail ma mepee ya ọzọ na-eweghachi ngwa ahụ, folda na taabụ igbe
+ozi mbata ị mepere, folda ndị ị gbasaara na ma paịn folda ọ pịajiri
+apịaji. Ịpụ na Katna site na tree sistemụ na-amalite ya ọhụrụ.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Yigharịa na ncheta azịza"
+text = """
+Yigharịa mkparịta ụka site na elekere dị n'ahịrị ya ma ọ bụ site na menu
+ịpị aka nri: ọ na-eche na folda Ndị e yigharịrị wee laghachi n'Igbe ozi
+mbata, dị ka a gụghị ya, n'oge ị họrọrọ. Mgbe ị na-ezipu, akụ dị n'akụkụ
+Zipu nwere ike ịchetara gị ma ọ bụrụ na onye ọ bụla azaghị n'ime ụbọchị
+1, 3 ma ọ bụ 7. Ha abụọ na-arụ ọrụ mgbe kọmputa gị gbanyere, ma na-emezu
+ihe fọdụrụ mgbe ọ tetara.
+"""

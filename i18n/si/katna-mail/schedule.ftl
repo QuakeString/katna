@@ -11,6 +11,8 @@ schedule-scheduled-messages = කාලසටහන් කළ පණිවිඩ
 
 schedule-title = යැවීම කාලසටහන් කරන්න
 schedule-zone-note = { $zone }. යෙදුම වසා තිබුණත් Katna එය එම වේලාවට යවයි.
+schedule-zone-note-server = { $zone }. මෙම පරිගණකය ක්‍රියා විරහිත වුවත් ඔබේ තැපැල් සේවාදායකය එය එම වේලාවට යවනු ඇත. අහෝසි කරන්න නැති වූ පසු එය අවලංගු කළ නොහැක.
+schedule-zone-note-local = { $zone }. මෙම පරිගණකය ක්‍රියාත්මකව ඇති විට Katna එය එම වේලාවට යවනු ඇත.
 schedule-local-time = දේශීය වේලාව
 schedule-this-morning = අද උදේ
 schedule-this-afternoon = අද දහවල්
@@ -28,6 +30,7 @@ schedule-no-such-time = එම වේලාව මෙහි නොපවතී.
 
 schedule-no-subject = (විෂයක් නැත)
 schedule-sends-at = { $when } ට යවයි
+schedule-server-sends-at = ඔබේ තැපැල් සේවාදායකය එය { $when } ට යවයි
 schedule-cancel-send = යැවීම අවලංගු කරන්න
 schedule-nothing = කිසිවක් කාලසටහන් කර නැත.
 schedule-close = වසන්න

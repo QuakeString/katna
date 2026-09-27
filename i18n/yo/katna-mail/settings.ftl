@@ -7,6 +7,7 @@
 settings-tab-general = Gbogbogbò
 settings-tab-inbox = Àpótí-ìwọlé
 settings-tab-accounts = Àwọn àkáǹtì
+settings-tab-katna-account = Àkáǹtì Katna
 settings-tab-subscriptions = Ìforúkọsílẹ̀
 settings-tab-appearance = Ìrísí
 settings-tab-shortcuts = Ọ̀nà àbùjá

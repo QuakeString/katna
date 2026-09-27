@@ -11,6 +11,8 @@ schedule-scheduled-messages = Planlanmış iletiler ({ $count })
 
 schedule-title = Gönderimi planla
 schedule-zone-note = { $zone }. Katna, uygulama kapalı olsa bile iletiyi o saatte gönderir.
+schedule-zone-note-server = { $zone }. Posta sunucunuz, bu bilgisayar kapalı olsa bile iletiyi o saatte gönderir. Geri al kaybolduktan sonra iptal edilemez.
+schedule-zone-note-local = { $zone }. Katna, bu bilgisayar açıkken iletiyi o saatte gönderir.
 schedule-local-time = Yerel saat
 schedule-this-morning = Bu sabah
 schedule-this-afternoon = Bu öğleden sonra
@@ -28,6 +30,7 @@ schedule-no-such-time = Bu saat burada mevcut değil.
 
 schedule-no-subject = (konu yok)
 schedule-sends-at = Gönderim: { $when }
+schedule-server-sends-at = Posta sunucunuz gönderecek: { $when }
 schedule-cancel-send = Gönderimi iptal et
 schedule-nothing = Planlanmış bir şey yok.
 schedule-close = Kapat
