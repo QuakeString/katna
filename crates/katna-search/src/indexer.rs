@@ -135,8 +135,9 @@ impl Indexer {
         IndexerWaker(self.wake.clone())
     }
 
-    /// Stops the indexer: a running update commits what it has done (at most
-    /// one batch of messages more) and the thread exits. Blocks until then.
+    /// Stops the indexer: a running update stops at once (a batch it had not
+    /// committed is indexed again at the next start) and the thread exits.
+    /// Blocks until then.
     pub fn stop(mut self) {
         self.shut_down();
     }

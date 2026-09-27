@@ -333,12 +333,16 @@ impl Instance {
         if let Err(err) = self.connection.release_name(ids::DAEMON_BUS_NAME).await {
             tracing::debug!(%err, "releasing the bus name");
         }
+        let started = Instant::now();
         self.backfill.stop().await;
+        tracing::debug!(ms = started.elapsed().as_millis(), "backfill stopped");
         self.daemon.shutdown().await;
+        tracing::debug!(ms = started.elapsed().as_millis(), "accounts stopped");
         if let Some(indexer) = self.indexer {
             // Commits what it has indexed; at most one batch more.
             smol::unblock(move || indexer.stop()).await;
         }
+        tracing::debug!(ms = started.elapsed().as_millis(), "indexer stopped");
     }
 }
 

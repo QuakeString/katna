@@ -424,6 +424,12 @@ async fn woken(control: &Control, statuses: &Receiver<Vec<(String, FolderStatus)
 /// Why a connection was dropped on [`Handle::reconnect`].
 const RECONNECTING: &str = "reconnecting after a network change";
 
+/// Why a connection was dropped when its [`Handle`] was.
+const STOPPING: &str = "stopping";
+
+/// How long a stopping worker waits for the server to answer its logout.
+const LOGOUT_TIMEOUT: Duration = Duration::from_secs(1);
+
 /// Runs the worker for `account` until its [`Handle`] is dropped.
 pub async fn run<C: Connector>(
     connector: C,
@@ -487,15 +493,32 @@ pub async fn run<C: Connector>(
                     reconnecting = true;
                     Err(Error::Closed(RECONNECTING.into()))
                 })
+                .or(async {
+                    // Stopping drops a sync or download half way, like a
+                    // reconnect does, so quitting never waits for it.
+                    control.stopped().await;
+                    Err(Error::Closed(STOPPING.into()))
+                })
                 .or(watch_folders(&connector, &config, statuses_tx))
                 .await;
-                match result {
-                    Ok(()) => {
-                        if let Err(error) = backend.logout().await {
+                if control.is_stopped() {
+                    // A clean logout when the session was idle; a busy or
+                    // slow server does not hold the quit up.
+                    if result.is_ok() {
+                        let logout = async { Some(backend.logout().await) }
+                            .or(async {
+                                Timer::after(LOGOUT_TIMEOUT).await;
+                                None
+                            })
+                            .await;
+                        if let Some(Err(error)) = logout {
                             tracing::debug!(%error, "logout on stop");
                         }
-                        return;
                     }
+                    return;
+                }
+                match result {
+                    Ok(()) => return,
                     Err(error) => {
                         // A session that got as far as a full sync counts
                         // as a success: start the next wait short again.
