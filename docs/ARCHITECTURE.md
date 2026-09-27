@@ -2056,50 +2056,62 @@ consent.
   thread that the app survives is still reported.
 - **Native crashes** (a segfault in a GPU driver, `wgpu`, a C library, an
   abort). Katna forbids `unsafe`, so it does not install signal handlers.
-  Instead each process keeps a small **run marker**
-  (`$XDG_RUNTIME_DIR/katna/<app>.run`: PID, version, start time) and
-  removes it on a clean exit. On the next start, a marker whose process is
-  gone means the last run ended without saying goodbye; Katna then asks
-  `systemd-coredump` (`coredumpctl --json=short`, `coredumpctl info <pid>`)
-  whether that PID dumped core. If it did, the report gets the signal and
-  the stack `coredumpctl` printed. A marker without a core dump (killed at
-  logout, out of memory, power loss) is not reported: Katna only claims a
-  crash it can show. Systems without `systemd-coredump` (Ubuntu uses
-  apport) get "closed unexpectedly (signal unknown)" only when the journal
-  of the last run holds a matching "dumped core" line.
+  Instead, when Katna Mail starts (and on `katnactl crashes`),
+  `katna_core::crash::collect_core_dumps` asks `systemd-coredump` for core
+  dumps of `katna-mail` and `katna-daemon` newer than the last look
+  (`coredumpctl --json=short list COREDUMP_COMM=<app>`, then
+  `coredumpctl info` for each), on a background thread with a 10 s limit.
+  Each becomes a report with the signal, the package line and the modules
+  and stacks `coredumpctl` printed (at most 400 lines); the host name, boot
+  and machine IDs, units and command line are left out. A process that
+  ended without a core dump (killed at logout, out of memory, power loss)
+  is not reported: Katna only claims a crash it can show. The first look
+  goes three days back; the time of the newest dump seen is kept in
+  `crashes/last-core`. Systems without `systemd-coredump` (Ubuntu uses
+  apport) get panic reports only.
 - **Report file.** One plain-text file per crash in
-  `$XDG_STATE_HOME/katna/crashes/<app>-<UTC time>.txt`, at most 20 kept
-  (oldest removed). Contents: app and version (`KATNA_VERSION`, git hash),
-  Rust version, OS release (`/etc/os-release` `PRETTY_NAME`), desktop and
-  session type (`XDG_CURRENT_DESKTOP`, `XDG_SESSION_TYPE`), GPU adapter
-  name when the app knows it, thread name, panic message and location,
-  the backtrace, and the last 50 log lines of that process kept in memory.
-  Never: mail content, subjects, addresses, account names, file names of
-  attachments, passwords.
+  `$XDG_STATE_HOME/katna/crashes/<UTC time>-<app>-<pid>.txt` (for example
+  `20260927T031603Z-katna-mail-4242.txt`, so names sort by time), at most
+  20 kept (oldest removed), at most three per run so a panic loop cannot
+  fill the folder. Contents: app and version (`KATNA_VERSION` at build
+  time), kind (panic, or native crash and signal), time, OS release
+  (`/etc/os-release` `PRETTY_NAME`), desktop and session type
+  (`XDG_CURRENT_DESKTOP`, `XDG_SESSION_TYPE`); for a panic the thread name,
+  location, message, backtrace, raw frames and the last 50 log lines of
+  that process (kept in memory by `katna_core::logging`). Never: mail
+  content, subjects, account names, file names of attachments, passwords.
 - **Scrubbing.** Before a report is written, the home directory becomes
   `~`, the user name, host name and machine ID become `<user>`,
   `<host>`, `<machine>`, and anything shaped like an email address becomes
   `<email>`. The same scrubber runs again before anything is sent (Part 2),
   so a report edited by hand is checked twice.
-- **Readable tracebacks.** Release binaries are stripped today, which
-  leaves backtraces as bare addresses. Each frame is written with its
-  module's build ID and offset, so any report can be turned into function
-  names and lines later with the matching debug file. CI keeps the debug
-  files of every published build (the `-debug` package of `makepkg`, or a
-  separate release asset) for this. Whether release binaries keep their
-  symbol names (`strip = "debuginfo"`) depends on what that costs against
-  the size budgets (§17); it is measured before it is switched.
+- **Readable tracebacks.** Release binaries are stripped, which leaves
+  Rust's backtrace as `<unknown>` frames. So a panic report also lists
+  every frame as `module + 0xoffset` (the `backtrace` crate's return
+  addresses against `/proc/self/maps`) and the executable's GNU build ID;
+  `addr2line -f -C -e <unstripped binary> <offset - 1>` turns them into
+  functions and lines, and later Sentry does the same with the debug files
+  CI uploads. Keeping symbol names in the daemon costs 3.1 MB and would
+  break its 20 MB budget (§17), so it stays stripped. Katna Mail keeps its
+  function names (`strip = "debuginfo"` for that package only: 48 MB to
+  56 MB of its 100 MB budget, no change in memory use since the symbol
+  table is not loaded), so its panic backtraces and `coredumpctl` stacks
+  name functions without any debug file.
 - **Telling the user.** On the next start after a crash of Katna Mail or
   of the daemon, Katna Mail shows a quiet notice: "Katna Mail closed
   unexpectedly last time" (or "Katna's background service stopped
   unexpectedly") with **View report** (opens the text file) and
   **Copy report** (to paste into a GitHub issue). Dismissing it marks the
-  report as seen. `katnactl crashes` lists and prints them.
+  report as seen; View and Copy do too. Older unseen reports are counted
+  in the same note. `katnactl crashes` lists them, `crashes show [NAME]`
+  prints one and `crashes delete` deletes them all.
 - **Settings > User feedback** (a tab of its own, just before
   Experimental, asked for by the owner so all of this can be turned off at
   any time). Now: "Save crash reports on this computer" (on by default,
-  since nothing leaves the machine; off means the panic hook and the
-  core-dump check write nothing), and the list of saved reports with
+  since nothing leaves the machine; config key
+  `feedback.save_crash_reports`, read at the moment of a panic, so it
+  takes effect at once; off means the panic hook and the core-dump check
+  write nothing), and the list of saved reports with
   **View**, **Copy** and **Delete** (and Delete all). Later (Part 2): the
   sending switches and **Send feedback**.
 
@@ -2112,8 +2124,8 @@ cloud project (decided by the owner on 27 September 2026, §25).
   before this existed are asked once in the same words after updating.
   Settings > User feedback has the same two switches afterwards, "Send
   crash reports" and "Send anonymous usage statistics", each off unless the
-  user turned it on, and changeable at any time. The daemon reads the same config keys and sends nothing on metered
-  connections.
+  user turned it on, and changeable at any time. The daemon reads the
+  same config keys and sends nothing on metered connections.
 - **Crash reports.** With consent, a new report is shown to the user and
   sent when they click **Send** (or automatically, if they chose "Always
   send" in the notice). The text sent is exactly the file they can read.
@@ -2137,12 +2149,16 @@ cloud project (decided by the owner on 27 September 2026, §25).
   exactly what will be sent before sending. This is independent of the
   switches: sending feedback is itself the consent for that one message.
 - **Protocol and SDK.** Everything uses Sentry's envelope format
-  (`POST /api/<project>/envelope/`). Capture builds Sentry `Event`s with
-  the official crates (`sentry-backtrace` frames, `sentry-debug-images`
-  build IDs, the `sentry-panic` message) but without a Sentry client: a
-  report is the event JSON next to its readable text, so the later upload
-  sends exactly what the user could read. Native crashes become events
-  from the `coredumpctl` stack (module build ID plus offset per frame);
+  (`POST /api/<project>/envelope/`). Capture (Part 1) needs no Sentry
+  code: the local report already holds what an event needs (message,
+  location, frames as module + offset, build ID, system). When sending
+  (C.5), the daemon turns a report into a Sentry `Event` (frames with
+  `instruction_addr` relative to the image, `debug_meta` from the build
+  ID), so the upload holds exactly what the user could read. The Sentry
+  crates come in with that step, built without default features, and
+  only if the daemon stays within its budget; the envelope is simple
+  enough to write by hand otherwise. Native crashes become events from
+  the `coredumpctl` stack (module build ID plus offset per frame);
   Sentry's minidump handler (`sentry-rust-minidump`, an extra process) is
   not used unless the stacks from core dumps turn out not to be enough.
   Crash reports are error events; feedback uses Sentry's User Feedback

@@ -41,6 +41,7 @@ usage: katnactl status
        katnactl outbox
        katnactl undo ID
        katnactl discard ID
+       katnactl crashes [show [NAME] | delete]
 
 Talks to katna-daemon, which syncs your accounts in the background.
 
@@ -80,6 +81,10 @@ send       Sends a message (RFC 5322 text, from FILE or standard input)
 outbox     Messages waiting to be sent, failed or undone.
 undo       Takes a message back while it waits for its delay.
 discard    Forgets a failed or undone message.
+crashes    Crash reports saved on this computer, newest first (a native
+           crash is picked up from systemd-coredump first). `show` prints
+           the newest report or the one named; `delete` deletes them all.
+           Nothing is sent anywhere.
 
 Changes show at once and reach the server when the account is online.
 Mail waits in the outbox while offline.";
@@ -95,7 +100,12 @@ fn main() -> ExitCode {
             println!("katnactl {}", env!("CARGO_PKG_VERSION"));
             return ExitCode::SUCCESS;
         }
-        Some(command) => run(command, &args[1..]),
+        Some(command) => {
+            if let Ok(paths) = Paths::from_env() {
+                katna_core::crash::install("katnactl", &paths);
+            }
+            run(command, &args[1..])
+        }
     };
     match result {
         Ok(()) => ExitCode::SUCCESS,
@@ -186,6 +196,7 @@ fn run(command: &str, args: &[String]) -> Result<()> {
             with_daemon(|pim| async move { Ok(pim.sync_now(id).await?) })
         }
         "watch" => no_args(args).and_then(|()| with_daemon(watch)),
+        "crashes" => crashes(args),
         "folders" => folders(one_account(args)?),
         "list" => list(args),
         "show" => match args {
@@ -378,6 +389,44 @@ fn folder_by_path(message: i64, path: &str) -> Result<i64> {
         .find(|folder| folder.path == path)
         .map(|folder| folder.id.0)
         .ok_or_else(|| error(format!("no folder {path:?} in account {account}")))
+}
+
+/// Programs whose crashes are looked for in `systemd-coredump`.
+const CRASH_APPS: [&str; 3] = ["katna-mail", "katna-daemon", "katnactl"];
+
+fn crashes(args: &[String]) -> Result<()> {
+    let paths = Paths::from_env().map_err(error)?;
+    let dir = paths.crash_dir();
+    match args {
+        [] => {
+            katna_core::crash::collect_core_dumps(&paths, &CRASH_APPS);
+            let reports = katna_core::crash::reports(&dir);
+            if reports.is_empty() {
+                println!("no crash reports in {}", dir.display());
+            }
+            for report in reports {
+                println!("{}", report.name);
+            }
+            Ok(())
+        }
+        [show, name @ ..] if show == "show" && name.len() <= 1 => {
+            katna_core::crash::collect_core_dumps(&paths, &CRASH_APPS);
+            let reports = katna_core::crash::reports(&dir);
+            let report = match name {
+                [name] => reports.into_iter().find(|r| &r.name == name),
+                _ => reports.into_iter().next(),
+            };
+            let report = report.ok_or_else(|| error("no such crash report"))?;
+            print!("{}", report.read().map_err(error)?);
+            Ok(())
+        }
+        [delete] if delete == "delete" => {
+            katna_core::crash::delete_all(&dir).map_err(error)?;
+            println!("deleted the crash reports");
+            Ok(())
+        }
+        _ => Err(usage("crashes takes `show [NAME]` or `delete`")),
+    }
 }
 
 fn no_args(args: &[String]) -> Result<()> {

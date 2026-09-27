@@ -38,6 +38,8 @@ async-io = "2.6"
 async-net = "2.0"
 async-signal = "0.2"
 blake3 = "1.8"
+# Frame addresses for crash reports of stripped binaries (katna-core).
+backtrace = "0.3.76"
 emojis = "0.9"
 futures-lite = "2.6"
 futures-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12"] }
@@ -113,6 +115,12 @@ todo = "warn"
 lto = "fat"
 codegen-units = 1
 strip = true
+
+# Katna Mail keeps its function names (not line tables), so crash reports
+# and `coredumpctl` stacks are readable (docs/ARCHITECTURE.md §19.2): about
+# 8 MB within its budget. The daemon cannot afford it and stays stripped.
+[profile.release.package.katna-mail]
+strip = "debuginfo"
 
 # D-Bus plumbing is not hot; build it for size to keep katna-daemon within
 # its budget (ci/size-budgets.txt).

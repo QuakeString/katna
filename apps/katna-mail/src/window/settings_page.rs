@@ -345,12 +345,12 @@ impl MailWindow {
             Section::DefaultApps => self.default_apps_section(th, cx),
             Section::Shortcuts => self.shortcuts_section(th, cx),
             Section::Experimental => self.experimental_section(th, cx),
+            Section::Feedback => self.feedback_section(th, cx),
             Section::Subscriptions
             | Section::MailRules
             | Section::Folders
             | Section::Templates
-            | Section::McpServer
-            | Section::Feedback => self.coming_soon_section(section, th),
+            | Section::McpServer => self.coming_soon_section(section, th),
         };
         // On a phone the page fills the window below the top bar, like the
         // list, and its sides come in closer.

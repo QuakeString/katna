@@ -53,6 +53,8 @@ pub(super) enum Change {
     Blur(bool),
     /// Days of mail the daemon downloads ahead of time; 0 for all mail.
     OfflineDays(u32),
+    /// Crash reports written on this computer (Settings > User feedback).
+    SaveCrashReports(bool),
 }
 
 impl MailWindow {
@@ -405,6 +407,7 @@ impl MailWindow {
                 self.config.experimental.blur = on;
                 cx.set_global(super::look(&self.config));
             }
+            Change::SaveCrashReports(on) => self.config.feedback.save_crash_reports = on,
             Change::SingleKeys(on) => {
                 self.config.shortcuts.single_keys = on;
                 self.shortcuts_changed(cx);

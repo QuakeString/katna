@@ -93,6 +93,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 7,
+        title: "Crash reports stay on your computer",
+        text: "If Katna Mail or its background service crashes, the next start says so, \
+               with the report to view or copy for a bug report. Nothing is sent. \
+               Settings > User feedback lists them.",
+        animation: None,
+    },
+    Highlight {
+        id: 8,
         title: "A calmer reply",
         text: "Reply in the reading pane keeps Send and the formatting at the \
                bottom, folds the quoted mail behind \"...\", and Pop out opens \
@@ -101,7 +109,7 @@ pub const HIGHLIGHTS: &[Highlight] = &[
         animation: None,
     },
     Highlight {
-        id: 8,
+        id: 9,
         title: "Mail in its own window",
         text: "Shift+click a message, right-click it or use In new window on the \
                reader toolbar to open it in a window of its own. Print all prints \
@@ -109,14 +117,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
         animation: None,
     },
     Highlight {
-        id: 9,
+        id: 10,
         title: "Settings on a phone",
         text: "On a narrow screen Settings and Quick settings fill the window, \
                and every menu and popover closes with Escape or a click outside.",
         animation: None,
     },
     Highlight {
-        id: 10,
+        id: 11,
         title: "Choose how much mail stays offline",
         text: "Settings > General > Offline mail keeps a week, a month, three \
                months, a year or all of your mail on this computer. Older mail \
@@ -124,14 +132,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
         animation: None,
     },
     Highlight {
-        id: 11,
+        id: 12,
         title: "A new folder pane button",
         text: "The button at the top left shows and hides the folder pane, and \
                its left side is filled while the folders show.",
         animation: None,
     },
     Highlight {
-        id: 12,
+        id: 13,
         title: "Cleaner cards, calmer phone",
         text: "The list and reader sit on cards with a faint outline and a short \
                shadow, menus always stay inside the window, and on a phone the \
@@ -139,7 +147,7 @@ pub const HIGHLIGHTS: &[Highlight] = &[
         animation: None,
     },
     Highlight {
-        id: 13,
+        id: 14,
         title: "About Katna",
         text: "Help > About Katna, also in Quick settings, shows the version, \
                the changelog and every library Katna is built on, with its \
