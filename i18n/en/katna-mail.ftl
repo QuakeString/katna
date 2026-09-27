@@ -54,6 +54,11 @@ search-options-show = Show search options
 settings = Settings
 account-add = Add an account
 
+## Message text (right-click menu in the reading pane)
+
+text-copy = Copy
+text-select-all = Select all
+
 ## Grammar checking (the right-click menu on a grammar mistake)
 
 # A fix that puts other words in place of the marked ones.
