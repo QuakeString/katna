@@ -709,6 +709,31 @@ from or adds to the sketch above:
   than 10 % (and 1 ms) slower than the last good run; the nightly `fuzz`
   job runs `fuzz/` (query parser and compiler) for 10 minutes.
 
+### 7.8 Recipient suggestions
+
+To, Cc and Bcc suggest addresses as the user types, like Gmail.
+
+- **Source.** `Store::correspondents` counts, per account and address, the
+  mail the user sent to it, received from it and was copied on with it,
+  with the newest date of each. Mail counts as sent when its From is the
+  account's own address or it sits in a folder with the `sent` role. The
+  app builds a `katna_search::contacts::ContactBook` from it in the
+  background, keeps a copy in `cache_dir/addresses.json` (mode 0600) so the
+  next start has it at once, rebuilds it after 10 minutes, and counts each
+  message the moment it is sent.
+- **Matching.** Each typed word must match the start of a word in the name
+  or address (address words split on `.`, `_`, `-`, `@` and the like). From
+  three letters on one typo is allowed, from six two, never in the first
+  letter. A match at the very start beats a word start, which beats a typo.
+- **Ranking.** score = fit × (1 + affinity), where affinity adds, over the
+  user's accounts, 3 × sent + received + 0.3 × copied, each as
+  ln(1 + count) halved for every year since the last such mail. Accounts
+  other than the one writing count half. Eight rows are shown; people
+  already in To, Cc or Bcc are left out.
+- **Speed.** Candidates come from an index by first letter, and the marks
+  that bold the matched text are worked out for the shown rows only: under
+  6 ms a key on 100,000 contacts in a release build.
+
 ## 8. Organizations (`katna-org`)
 
 ### 8.1 Model
@@ -1451,17 +1476,24 @@ Gemini or confidential mode):
   `0.0.0.r90.gabc1234` until there are tagged releases; the PKGBUILD
   passes it as `KATNA_VERSION`), the highlights not shown before (at
   most six: a major one first even when older, then the newest), and Full changelog (GitHub's comparison of the
-  previous build's commit with this one). The highlights are curated in
-  `apps/katna-mail/src/whats_new.rs` and built into the app: a change
-  people will notice appends one with the next id. A major feature may
+  previous build's commit with this one). The highlights are curated one
+  TOML file each in `apps/katna-mail/whats-new/highlights/`, named
+  `YYYY-MM-DD-HHMM-slug` by the time they were written, and `build.rs`
+  builds them into the app in name order: a change people will notice
+  adds a file. A file per highlight means changes merged side by side
+  never touch the same lines (a shared list with numbered entries made
+  every pair of pull requests conflict). A major feature may
   carry a short looping animation: two animated WebPs, light and dark
   theme (`apps/katna-mail/whats-new/`, at most 600 KB each, recorded at
   the size they are drawn, 560 px wide), shown across the top of the
   dialog. Its frames are decoded only while the dialog is open (about
   20 MB for a 50-frame clip) and freed when it closes. `config.toml`
-  keeps `onboarding.whats_new_seen` (the newest highlight shown) and
+  keeps `onboarding.whats_new_shown` (the names of the highlights shown,
+  so one merged after newer ones still shows) and
   `onboarding.last_version`, both written as soon as the window opens, so
-  nothing shows twice. A first start (no account, or no settings file yet)
+  nothing shows twice. Files from when the highlights were numbered have
+  `onboarding.whats_new_seen` instead: the first 26 names, in their old
+  order, stand for those numbers, and it is replaced on the next start. A first start (no account, or no settings file yet)
   gets onboarding or the tour and marks every highlight seen. Settings
   written by versions before What's new count as an update, which is why
   such a user no longer sees the tour again. Updates without new

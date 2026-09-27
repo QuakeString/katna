@@ -276,13 +276,17 @@ mod tests {
                     && !path.starts_with(env!("CARGO_MANIFEST_DIR"))
                 {
                     let text = std::fs::read_to_string(&path).unwrap_or_default();
-                    for (at, _) in text.match_indices("tr!(\"") {
+                    for (at, _) in text.match_indices("tr!(") {
                         // Not `include_str!(` and the like.
                         let before = text[..at].chars().next_back();
                         if before.is_some_and(|c| c.is_alphanumeric() || c == '_') {
                             continue;
                         }
-                        let id = text[at + 5..].split('"').next().unwrap_or_default();
+                        // rustfmt may put the id on the next line.
+                        let Some(rest) = text[at + 4..].trim_start().strip_prefix('"') else {
+                            continue;
+                        };
+                        let id = rest.split('"').next().unwrap_or_default();
                         if english().get_message(id).is_none() {
                             missing.push(format!("{}: {id}", path.display()));
                         }
