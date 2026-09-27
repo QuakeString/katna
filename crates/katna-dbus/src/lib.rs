@@ -205,6 +205,15 @@ macro_rules! pim_proxy {
             /// the next call starts a new one with nothing stored.
             fn delete_all_data(&self) -> zbus::Result<()>;
 
+            /// Deletes what was downloaded and can be downloaded again: the
+            /// bodies and attachments of mail still on its IMAP server, the
+            /// search index (rebuilt at once) and sender pictures, then
+            /// syncs. Accounts, settings, flags, labels, pins and mail that
+            /// exists only on this computer stay; servers are not touched.
+            /// Returns how many messages lost their body and how many bytes
+            /// of mail were deleted.
+            fn reset_cache(&self) -> zbus::Result<(u64, u64)>;
+
             /// Syncs every folder of `account` now (0: every account).
             fn sync_now(&self, account: i64) -> zbus::Result<()>;
 

@@ -3,7 +3,9 @@
 //! The Accounts part of the Settings page: the accounts Katna syncs, with
 //! a way to remove each one, and a way to delete everything Katna keeps.
 //! Both ask first in a dialog that says in red what goes, and that mail on
-//! the server stays. The daemon does the deleting.
+//! the server stays. The daemon does the deleting. Resetting the cache (in
+//! General) asks in the same dialog, saying what is downloaded again and
+//! what is kept.
 
 use gpui::{
     AnyElement, Context, Div, Entity, Focusable, FontWeight, SharedString, Stateful, Subscription,
@@ -75,6 +77,15 @@ enum What {
         typed: Entity<TextInput>,
         _subscription: Subscription,
     },
+    ResetCache,
+}
+
+/// What the daemon did for the dialog.
+enum Done {
+    Removed(Account),
+    DeletedAll,
+    /// Messages that lost their body, and bytes deleted.
+    CacheReset(u64, u64),
 }
 
 impl MailWindow {
@@ -400,6 +411,29 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// The General row's button and what it does.
+    pub(super) fn reset_cache_control(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        div()
+            .px(px(8.0))
+            .flex()
+            .flex_col()
+            .items_start()
+            .gap(px(12.0))
+            .child(
+                div()
+                    .text_size(px(14.0))
+                    .line_height(px(20.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(tr!("reset-cache-about")),
+            )
+            .child(
+                crate::widgets::outlined_button("reset-cache-open", tr!("reset-cache-button"), th)
+                    .map(|d| self.page_control(d, th, cx))
+                    .on_click(cx.listener(|this, _, _, cx| this.ask(What::ResetCache, cx))),
+            )
+            .into_any_element()
+    }
+
     /// Moves the mail account at `from` to `to` in Settings > Accounts;
     /// the folder pane, the account menu and every other list follow.
     fn move_account(&mut self, from: usize, to: usize, cx: &mut Context<Self>) {
@@ -562,11 +596,11 @@ impl MailWindow {
         danger.error = None;
         let remove = match &danger.what {
             What::RemoveAccount(account) => Some(account.clone()),
-            What::DeleteAll { .. } => None,
+            What::DeleteAll { .. } | What::ResetCache => None,
         };
+        let reset = matches!(danger.what, What::ResetCache);
         let connection = self.daemon.clone();
         cx.spawn(async move |this, cx| {
-            let account = remove.as_ref().map(|a| a.id.0);
             let result = cx
                 .background_executor()
                 .spawn(async move {
@@ -574,21 +608,29 @@ impl MailWindow {
                         Some(connection) => connection,
                         None => daemon::connect().await?,
                     };
-                    match account {
-                        Some(id) => daemon::remove_account(&connection, id).await,
-                        None => daemon::delete_all_data(&connection).await,
+                    match remove {
+                        Some(account) => daemon::remove_account(&connection, account.id.0)
+                            .await
+                            .map(|()| Done::Removed(account)),
+                        None if reset => daemon::reset_cache(&connection)
+                            .await
+                            .map(|(messages, bytes)| Done::CacheReset(messages, bytes)),
+                        None => daemon::delete_all_data(&connection)
+                            .await
+                            .map(|()| Done::DeletedAll),
                     }
                 })
                 .await;
             this.update(cx, |this, cx| match result {
-                Ok(()) => {
+                Ok(done) => {
                     if let Some(danger) = &mut this.danger {
                         danger.busy = false;
                     }
                     this.close_danger(cx);
-                    match remove {
-                        Some(account) => this.account_removed(&account, cx),
-                        None => this.all_data_deleted(cx),
+                    match done {
+                        Done::Removed(account) => this.account_removed(&account, cx),
+                        Done::DeletedAll => this.all_data_deleted(cx),
+                        Done::CacheReset(messages, bytes) => this.cache_reset(messages, bytes, cx),
                     }
                 }
                 Err(err) => {
@@ -646,6 +688,17 @@ impl MailWindow {
         self.show_snackbar(tr!("accounts-all-deleted"), None, cx);
     }
 
+    /// The daemon deleted what it downloaded and is downloading it again.
+    fn cache_reset(&mut self, messages: u64, bytes: u64, cx: &mut Context<Self>) {
+        self.refresh(true, cx);
+        let text = if messages == 0 {
+            tr!("reset-cache-done")
+        } else {
+            tr!("reset-cache-done-freed", size = crate::format::size(bytes))
+        };
+        self.show_snackbar(text, None, cx);
+    }
+
     /// Lists nothing, so the next refresh opens the first inbox.
     fn close_listing(&mut self, cx: &mut Context<Self>) {
         self.listing = None;
@@ -678,6 +731,16 @@ impl MailWindow {
         let danger = self.danger.as_ref()?;
         let (title, action, busy_text, items): (String, String, String, Vec<String>) =
             match &danger.what {
+                What::ResetCache => (
+                    tr!("reset-cache-title"),
+                    tr!("reset-cache-confirm"),
+                    tr!("reset-cache-busy"),
+                    vec![
+                        tr!("reset-cache-mail"),
+                        tr!("reset-cache-index"),
+                        tr!("reset-cache-pictures"),
+                    ],
+                ),
                 What::RemoveAccount(account) => {
                     let folders = self.tree.folders_of(account.id).len();
                     (
@@ -710,13 +773,17 @@ impl MailWindow {
                     ],
                 ),
             };
+        let reset = matches!(danger.what, What::ResetCache);
+        // Resetting deletes nothing that cannot be downloaded again, so it
+        // is not red.
+        let tone = if reset { th.accent } else { th.error };
         let warning = div()
             .mt(px(20.0))
             .p(px(16.0))
             .rounded(px(12.0))
             .border_1()
-            .border_color(rgba(fade(th.error, 0.45)))
-            .bg(rgba(fade(th.error, 0.1)))
+            .border_color(rgba(fade(tone, 0.45)))
+            .bg(rgba(fade(tone, 0.1)))
             .flex()
             .flex_col()
             .gap(px(6.0))
@@ -724,8 +791,12 @@ impl MailWindow {
                 div()
                     .text_size(px(14.0))
                     .font_weight(FontWeight::SEMIBOLD)
-                    .text_color(rgba(th.error))
-                    .child(tr!("accounts-deleted-heading")),
+                    .text_color(rgba(tone))
+                    .child(if reset {
+                        tr!("reset-cache-deleted")
+                    } else {
+                        tr!("accounts-deleted-heading")
+                    }),
             )
             .children(items.into_iter().map(|item| {
                 div()
@@ -734,17 +805,19 @@ impl MailWindow {
                     .gap(px(8.0))
                     .text_size(px(14.0))
                     .line_height(px(20.0))
-                    .child(div().text_color(rgba(th.error)).child("\u{2022}"))
+                    .child(div().text_color(rgba(tone)).child("\u{2022}"))
                     .child(div().flex_1().min_w_0().child(item))
             }))
-            .child(
-                div()
-                    .pt(px(4.0))
-                    .text_size(px(14.0))
-                    .font_weight(FontWeight::SEMIBOLD)
-                    .text_color(rgba(th.error))
-                    .child(tr!("accounts-cannot-undo")),
-            );
+            .when(!reset, |d| {
+                d.child(
+                    div()
+                        .pt(px(4.0))
+                        .text_size(px(14.0))
+                        .font_weight(FontWeight::SEMIBOLD)
+                        .text_color(rgba(tone))
+                        .child(tr!("accounts-cannot-undo")),
+                )
+            });
         let server = div()
             .mt(px(12.0))
             .p(px(12.0))
@@ -762,6 +835,7 @@ impl MailWindow {
                     .line_height(px(19.0))
                     .text_color(rgba(th.text_dim))
                     .child(match &danger.what {
+                        What::ResetCache => tr!("reset-cache-kept"),
                         What::DeleteAll { .. } => tr!("accounts-server-delete-all"),
                         What::RemoveAccount(account) if account.kind == AccountKind::Local => {
                             tr!("accounts-server-local")
@@ -804,7 +878,7 @@ impl MailWindow {
                         ),
                 )
             }
-            What::RemoveAccount(_) => None,
+            What::RemoveAccount(_) | What::ResetCache => None,
         };
         let error = danger.error.clone().map(|err| {
             div()
@@ -829,8 +903,12 @@ impl MailWindow {
                     .items_center()
                     .justify_center()
                     .rounded_full()
-                    .bg(rgba(fade(th.error, 0.14)))
-                    .child(icon("warning", th.error, 28.0)),
+                    .bg(rgba(fade(tone, 0.14)))
+                    .child(if reset {
+                        icon("refresh", tone, 28.0)
+                    } else {
+                        icon("warning", tone, 28.0)
+                    }),
             )
             .child(
                 div()
@@ -869,12 +947,14 @@ impl MailWindow {
                             .child(tr!("accounts-cancel")),
                     )
                     .child(
-                        danger_button(
-                            "danger-confirm",
-                            if busy { busy_text } else { action },
-                            true,
-                            th,
-                        )
+                        {
+                            let label = if busy { busy_text } else { action };
+                            if reset {
+                                crate::widgets::filled_button("danger-confirm", label, th)
+                            } else {
+                                danger_button("danger-confirm", label, true, th)
+                            }
+                        }
                         .focus_ring(th)
                         .when(!ready, |d| d.opacity(0.45).cursor_default())
                         .on_click(cx.listener(|this, _, _, cx| this.confirm_danger(cx))),

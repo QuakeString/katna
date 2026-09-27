@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Reset cache"
+text = """
+Settings > General > Reset cache deletes the mail Katna downloaded, sender
+pictures and the search index, then downloads recent mail again. Handy when
+something looks out of date or to free disk space; accounts, settings,
+drafts and your mail on the server stay.
+"""

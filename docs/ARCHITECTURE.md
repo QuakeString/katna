@@ -1426,6 +1426,16 @@ Gemini or confidential mode):
   "delete" typed. The daemon does the work (`RemoveAccount`,
   `DeleteAllData`); after deleting everything the app starts over with
   the default settings.
+- **Reset cache.** Settings → General has "Reset cache", as in Mailspring:
+  it deletes what Katna downloaded and can download again (bodies and
+  attachments of mail still on an IMAP server, sender pictures, the
+  search index) and syncs, so the offline window downloads again and older
+  mail downloads when opened. A dialog says what goes and what stays:
+  accounts, settings, flags, labels, pins, drafts, the outbox, changes not
+  yet on the server, and POP3 or imported mail, which may have no other
+  copy. The daemon stops the workers meanwhile (`ResetCache`,
+  `Store::forget_downloaded_mail`); the indexer empties the index in place
+  so apps searching it never lose it.
 - **Signatures.** Any number, each with a name; one default for new mail
   and one for replies and forwards. Each is edited with the rich editor
   and its own small toolbar (font, size, colors, link, picture, table,
@@ -2184,7 +2194,8 @@ goes back to the name the account's own sent mail uses, which a name-less
 account also takes after its first sync), `RemoveAccount(id) → b`,
 `DeleteAllData()` (stops every account, deletes every saved password,
 the data directory, the cache and `config.toml`, then the daemon exits;
-the next call starts a new one), `SyncNow(id)` (0 for every account), `FetchBody(message)`,
+the next call starts a new one), `ResetCache() → (tt)` (messages that lost
+their body, bytes deleted; see Settings above), `SyncNow(id)` (0 for every account), `FetchBody(message)`,
 `SetFlags(ax messages, as add, as remove)` (flag names `seen`, `answered`,
 `flagged`, `draft`, `forwarded`, `important`), `SetPinned(ax messages, b
 on)` (local only; more than ten pinned conversations is an error),

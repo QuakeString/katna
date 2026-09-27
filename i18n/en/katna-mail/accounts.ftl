@@ -94,3 +94,20 @@ accounts-confirm-word = delete
 accounts-confirm-placeholder = Type “{ accounts-confirm-word }”
 accounts-confirm-prompt = To confirm, type “{ accounts-confirm-word }”:
 accounts-cancel = Cancel
+
+## Reset cache (Settings > General), in the same dialog
+
+reset-cache-about = Deletes the mail and attachments Katna downloaded, sender pictures and the search index, then downloads recent mail again. Accounts, settings and mail that is only on this computer stay.
+reset-cache-button = Reset cache
+reset-cache-title = Reset the cache?
+# Heading of the list of what goes; it all downloads again.
+reset-cache-deleted = Deleted, then downloaded again:
+reset-cache-mail = Mail and attachments downloaded from your IMAP servers: recent mail downloads again now, older mail when you open it
+reset-cache-index = The search index, which is rebuilt right away
+reset-cache-pictures = Sender pictures
+reset-cache-kept = Kept: your accounts, passwords and settings; stars, labels, read marks and pins; drafts, the outbox and changes not yet on the server; and mail from POP3 accounts or imported files, which may have no other copy. Nothing changes on your mail servers.
+reset-cache-confirm = Reset cache
+reset-cache-busy = Resetting…
+reset-cache-done = The cache was reset. Recent mail is downloading again.
+# $size: the disk space freed, such as “12 MB”.
+reset-cache-done-freed = The cache was reset and { $size } freed. Recent mail is downloading again.

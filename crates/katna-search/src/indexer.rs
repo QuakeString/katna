@@ -48,6 +48,8 @@ impl Default for IndexerOptions {
 
 enum Wake {
     Changed,
+    /// Empty the index first, then index everything again.
+    Rebuild,
     Stop,
 }
 
@@ -81,7 +83,14 @@ impl Indexer {
             .spawn(move || {
                 let mut store = None;
                 let mut indexed_seq = None;
+                let mut rebuild = false;
                 loop {
+                    if std::mem::take(&mut rebuild) {
+                        match index.clear() {
+                            Ok(()) => indexed_seq = None,
+                            Err(err) => events(IndexEvent::Failed(err.to_string())),
+                        }
+                    }
                     run_once(
                         &paths,
                         &index,
@@ -92,12 +101,14 @@ impl Indexer {
                     );
                     match woken.recv_timeout(options.poll_every) {
                         Ok(Wake::Stop) | Err(RecvTimeoutError::Disconnected) => break,
+                        Ok(Wake::Rebuild) => rebuild = true,
                         Ok(Wake::Changed) | Err(RecvTimeoutError::Timeout) => {}
                     }
                     // Many changes in a row make one update.
                     loop {
                         match woken.try_recv() {
                             Ok(Wake::Changed) => {}
+                            Ok(Wake::Rebuild) => rebuild = true,
                             Ok(Wake::Stop) | Err(mpsc::TryRecvError::Disconnected) => return,
                             Err(mpsc::TryRecvError::Empty) => break,
                         }
@@ -147,6 +158,12 @@ impl IndexerWaker {
     /// See [`Indexer::changed`].
     pub fn changed(&self) {
         let _ = self.0.send(Wake::Changed);
+    }
+
+    /// Has the indexer empty the index and index every message again, for
+    /// example after downloaded mail was deleted.
+    pub fn rebuild(&self) {
+        let _ = self.0.send(Wake::Rebuild);
     }
 }
 

@@ -548,6 +548,12 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
+                tr!("settings-general-reset-cache"),
+                Some(&tr!("settings-general-reset-cache-detail")),
+                self.reset_cache_control(th, cx),
+                th,
+            ))
+            .child(self.row(
                 tr!("settings-general-desktop"),
                 None,
                 self.desktop_switches(th, cx),

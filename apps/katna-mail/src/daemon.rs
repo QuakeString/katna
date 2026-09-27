@@ -285,6 +285,16 @@ pub async fn delete_all_data(connection: &Connection) -> Result<(), String> {
     pim.delete_all_data().await.map_err(|err| describe(&err))
 }
 
+/// Has the daemon delete the mail it downloaded, the search index and
+/// sender pictures, and download recent mail again. Returns how many
+/// messages lost their body and the bytes deleted.
+pub async fn reset_cache(connection: &Connection) -> Result<(u64, u64), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.reset_cache().await.map_err(|err| describe(&err))
+}
+
 /// Why an account could not be added.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum AddError {

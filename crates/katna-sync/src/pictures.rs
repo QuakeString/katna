@@ -82,8 +82,13 @@ impl Pictures {
             tls: Tls::system()?,
             resolvers: dns::system_resolvers(),
             timeout: Duration::from_secs(6),
-            cache: cache_dir.join("pictures"),
+            cache: Self::cache_dir(cache_dir),
         })
+    }
+
+    /// Where [`system`](Self::system) keeps sender pictures.
+    pub fn cache_dir(cache_dir: &Path) -> PathBuf {
+        cache_dir.join("pictures")
     }
 
     /// Fetches the image at `url` (`http` is upgraded to `https`).

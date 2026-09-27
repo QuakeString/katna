@@ -205,6 +205,9 @@ impl Instance {
         }
         // Only the daemon that owns the bus name may write the index.
         let indexer = start_indexer(&index_paths);
+        if let Some(indexer) = &indexer {
+            daemon.set_indexer(indexer.waker());
+        }
         let (desktop, desktop_events) = desktop::channel();
         let (quit_sender, quit) = async_channel::bounded(1);
         daemon.set_desktop(desktop.clone());

@@ -120,6 +120,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
+        "settings-general-reset-cache",
+        "settings-general-reset-cache-summary",
+        "cache clear local data storage disk space rebuild index redownload fix",
+    ),
+    entry(
+        Section::General,
         "settings-general-desktop",
         "settings-general-desktop-summary",
         "tray badge unread count taskbar dock panel startup start login autostart launch boot",

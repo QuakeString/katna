@@ -85,6 +85,8 @@ settings-general-new-mail = Notify me about new mail
 settings-general-new-mail-detail = With Reply all, Mark as read and Archive
 settings-general-new-mail-sound = Play a sound
 settings-general-new-mail-sound-detail = The desktop's new-mail sound
+settings-general-reset-cache = Reset cache
+settings-general-reset-cache-detail = When mail looks wrong or out of date, or to free disk space. Nothing changes on your mail servers.
 # The row of settings about the desktop: login, tray and taskbar.
 settings-general-desktop = Desktop
 settings-general-start-at-login = Start Katna at login
@@ -266,6 +268,7 @@ settings-general-remote-images-summary = Always show the images of every message
 settings-general-sending-summary = Undo send: how long a sent message waits, so it can be taken back
 settings-general-offline-summary = How many days of recent mail are downloaded whole, to read without a connection
 settings-general-notifications-summary = New-mail notifications and their sound
+settings-general-reset-cache-summary = Delete downloaded mail, sender pictures and the search index, and download them again
 settings-general-desktop-summary = Start Katna at login, the system tray icon and the unread count on the taskbar icon
 settings-accounts-accounts-summary = Add or remove an account, or change its picture
 settings-appearance-density-summary = Default or compact lines in the list

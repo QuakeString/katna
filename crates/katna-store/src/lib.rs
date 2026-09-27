@@ -8,6 +8,7 @@
 mod attachments;
 mod backfill;
 pub mod blob;
+mod cache;
 mod db;
 pub mod error;
 mod gmail_merge;
@@ -27,6 +28,7 @@ use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 
 pub use backfill::Backfill;
 pub use blob::{BlobHash, BlobStore};
+pub use cache::Forgotten;
 pub use db::{DbKind, Mode};
 pub use error::{Error, Result};
 pub use gmail_merge::Adopted;
