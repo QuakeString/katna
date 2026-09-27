@@ -394,6 +394,55 @@ repositories (release track U.9, U.10); a Katna logo and brand look;
 languages; and no trackers or third-party analytics, to match Katna's
 privacy promise.
 
+### Later: check that a recipient's address exists (not scheduled yet)
+
+Asked for by the owner on 27 September 2026 so it is kept for later;
+nothing is built. The owner wants to run
+[check-if-email-exists](https://github.com/reacherhq/check-if-email-exists)
+(Reacher) on our own server to check that a recipient's mailbox really
+exists before sending, so a typo does not send mail to the wrong person.
+It checks the syntax, the domain's MX records, then asks the recipient's
+mail server over SMTP whether the mailbox exists, without sending a
+message. It also flags disposable, role, catch-all, full and disabled
+mailboxes. It is a Rust crate, a CLI, and an HTTP backend in Docker
+(`POST /v0/check_email`).
+
+Where it would sit: recipient chips (#130) already check the address
+format as it is typed and show invalid addresses in red, blocking Send.
+This check would add a second, slower step after a chip is made: the
+daemon (the only part that talks to the network) asks our server and the
+chip gets a quiet mark for "address not found" or "could not check".
+Before sending, the send checks (#117) would ask "This address may not
+exist. Send anyway?", as they do for a missing attachment, and never block
+the send, because the answer is often "unknown". Addresses already in the
+user's own mail (address suggestions, #110) would not be checked again.
+
+Open questions:
+
+- **Licence.** AGPL-3.0, or a paid commercial licence. Katna is
+  GPL-3.0-or-later, which may be combined with AGPL-3.0 code. Running it
+  as a separate server we host keeps its source obligations on that
+  server (we publish our changes to it). Linking the crate into
+  `katna-daemon` would put AGPL terms on the daemon, so the server route
+  is preferred.
+- **What the server needs.** Outbound port 25 open, which many cloud hosts
+  block; a clean IP address with reverse DNS. Large providers rate-limit
+  or block servers that probe many mailboxes. The README says anything
+  beyond small volumes needs SMTP proxies (a paid third-party service).
+- **How reliable.** Gmail, Outlook and Yahoo often answer "unknown" or
+  accept every address (catch-all), so a "not found" is a hint, never a
+  hard error.
+- **Privacy.** Every checked address would reach our server and the
+  recipient's mail server would see our server asking. It must be off
+  until the user turns it on (like crash reports, C.4). The request should
+  carry only the address, with no logs kept. The Gravatar and Have I Been
+  Pwned lookups stay off.
+- **Abuse.** The endpoint must only answer Katna users (a per-install
+  token and rate limits), or it becomes a free address-harvesting service.
+- **Hosting.** Probably on `katna.invenia.in` next to the self-hosted
+  crash server (C.9) and Katna Server (Phase 7), whose accounts could
+  authenticate it.
+
 ### Later: Katna on phones (not scheduled yet)
 
 Asked about by the owner on 27 September 2026; design only (#94), in
