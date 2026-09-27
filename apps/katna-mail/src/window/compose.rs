@@ -26,12 +26,13 @@ mod security;
 mod signature_editor;
 mod tools;
 
+use std::cell::Cell;
 use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
     AnyElement, Context, Entity, ExternalPaths, FocusHandle, Focusable, FontWeight, Hsla,
-    ScrollHandle, SharedString, Subscription, Task, Window, div, prelude::*, px, rgba,
+    ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, px, rgba,
 };
 use katna_dbus::OutboxItem;
 use katna_render::{Address, MessageView};
@@ -119,6 +120,12 @@ pub(super) struct Compose {
     shown: Spring,
     closing: bool,
     body_scroll: ScrollHandle,
+    /// The quoted message a reply answers, kept out of the text behind a
+    /// "..." button until it is opened, as in Gmail. It is still sent.
+    trimmed: Option<Vec<Block>>,
+    /// Where an inline reply was last drawn, to keep its Send row at the
+    /// bottom of the conversation while the rest scrolls under it.
+    stick: Rc<Cell<Stick>>,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -131,7 +138,11 @@ impl Compose {
             cc: text(&self.cc),
             bcc: text(&self.bcc),
             subject: text(&self.subject),
-            body: self.body.read(cx).doc().clone(),
+            body: {
+                let mut body = self.body.read(cx).doc().clone();
+                body.blocks.extend(self.trimmed.iter().flatten().cloned());
+                body
+            },
         }
     }
 
@@ -152,6 +163,15 @@ impl Compose {
     fn plain(&self, cx: &gpui::App) -> bool {
         self.body.read(cx).is_plain()
     }
+}
+
+/// Where an inline reply's card and its Send row sit in the conversation,
+/// in pixels from the top of its content (so scrolling leaves them be).
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
+struct Stick {
+    card_top: f32,
+    footer_top: f32,
+    footer_height: f32,
 }
 
 /// What the compose windows share: the spelling dictionary, loaded once,
@@ -283,6 +303,32 @@ fn quoted(body: &str) -> Vec<Block> {
         }
     }
     doc.blocks
+}
+
+/// Takes the quoted message off the end of a reply's `doc`: the "On ...
+/// wrote:" line, the blank line before it and the quote after it.
+fn trim_quote(doc: &mut Doc) -> Option<Vec<Block>> {
+    fn para(b: &Block) -> Option<&Para> {
+        match b {
+            Block::Para(p) => Some(p),
+            _ => None,
+        }
+    }
+    let at = doc.blocks.iter().rposition(|b| {
+        para(b).is_some_and(|p| p.style.quote == 0 && p.text.trim_end().ends_with("wrote:"))
+    })?;
+    let quote = &doc.blocks[at + 1..];
+    if quote.is_empty()
+        || !quote
+            .iter()
+            .all(|b| para(b).is_some_and(|p| p.style.quote > 0))
+    {
+        return None;
+    }
+    let blank = at > 1
+        && para(&doc.blocks[at - 1])
+            .is_some_and(|p| p.text.is_empty() && !p.style.signature && p.style.quote == 0);
+    Some(doc.blocks.split_off(if blank { at - 1 } else { at }))
 }
 
 fn draft(
@@ -449,6 +495,15 @@ impl MailWindow {
                 compose.start.body = plain_doc;
             }
             compose.sealing = sealing;
+            if matches!(kind, Kind::Reply | Kind::ReplyAll) {
+                let mut doc = compose.body.read(cx).doc().clone();
+                compose.trimmed = trim_quote(&mut doc);
+                if compose.trimmed.is_some() {
+                    compose.body.update(cx, |editor, cx| {
+                        editor.set_doc(doc.clone(), doc.start(), cx)
+                    });
+                }
+            }
         }
         if mode == Mode::Inline {
             self.reveal_inline_reply(cx);
@@ -671,6 +726,8 @@ impl MailWindow {
             shown: Spring::new(motion::SLIDE, 0.0),
             closing: false,
             body_scroll: ScrollHandle::new(),
+            trimmed: None,
+            stick: Rc::default(),
             _subscriptions: subscriptions,
         });
         cx.notify();
@@ -1317,8 +1374,19 @@ impl MailWindow {
             .line_height(px(20.0))
             .cursor_text()
             .on_click(move |_, window, cx| window.focus(&focus, cx))
-            .child(div().flex_none().child(compose.body.clone()));
+            .child(div().flex_none().child(compose.body.clone()))
+            .children(self.render_trimmed(th, cx));
         let card_width = f32::from(self.reader_scroll.bounds().size.width) - 100.0;
+        // Like Gmail, the Send row stays at the bottom of the conversation
+        // while the text runs on below it, and moves up with the card.
+        let stuck = {
+            let at = compose.stick.get();
+            let view = self.reader_scroll.bounds().size.height;
+            let bottom = f32::from(view - self.reader_scroll.offset().y);
+            let highest = at.card_top + STICK_BELOW;
+            (at.footer_top + at.footer_height - bottom)
+                .clamp(0.0, (at.footer_top - highest).max(0.0))
+        };
         let card = div()
             .id("inline-reply")
             .key_context("Compose")
@@ -1335,14 +1403,51 @@ impl MailWindow {
             .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| {
                 this.drop_files(paths.paths().to_vec(), cx);
             }))
+            .child(measure(
+                &self.reader_scroll,
+                &compose.stick,
+                |stick, top, _| {
+                    stick.card_top = top;
+                },
+            ))
             .child(header)
             .children(cc)
             .child(body)
             .child(self.render_attachments(th, cx))
-            .when(compose.format_bar, |d| {
-                d.child(self.render_format_bar(th, card_width.max(320.0) - 24.0, cx))
-            })
-            .child(self.render_compose_actions(th, card_width.max(320.0), cx))
+            .child(
+                div()
+                    .relative()
+                    .flex_none()
+                    .child(measure(
+                        &self.reader_scroll,
+                        &compose.stick,
+                        |stick, top, height| {
+                            stick.footer_top = top;
+                            stick.footer_height = height;
+                        },
+                    ))
+                    .child(
+                        div()
+                            .relative()
+                            .top(px(-stuck))
+                            .rounded_b(px(12.0))
+                            .bg(rgba(th.surface))
+                            .border_t_1()
+                            .border_color(if stuck > 0.0 {
+                                rgba(th.divider)
+                            } else {
+                                rgba(0)
+                            })
+                            .when(compose.format_bar, |d| {
+                                d.child(self.render_format_bar(
+                                    th,
+                                    card_width.max(320.0) - 24.0,
+                                    cx,
+                                ))
+                            })
+                            .child(self.render_compose_actions(th, card_width.max(320.0), cx)),
+                    ),
+            )
             .child(self.render_drop_target(th))
             .children(self.render_compose_dialog(th, cx));
         Some(
@@ -1359,6 +1464,50 @@ impl MailWindow {
                 .child(card)
                 .into_any_element(),
         )
+    }
+
+    /// The "..." button under a reply's text that shows the quoted message.
+    fn render_trimmed(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        self.compose.as_ref()?.trimmed.as_ref()?;
+        let dot = || div().size(px(4.0)).rounded_full().bg(rgba(th.text_dim));
+        Some(
+            div()
+                .id("show-trimmed")
+                .mt(px(12.0))
+                .w(px(30.0))
+                .h(px(16.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .justify_center()
+                .gap(px(3.0))
+                .rounded(px(8.0))
+                .bg(rgba(th.chip))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .tooltip(tip("Show trimmed content", th))
+                .on_click(cx.listener(|this, _, _, cx| {
+                    cx.stop_propagation();
+                    this.show_trimmed(cx);
+                }))
+                .child(dot())
+                .child(dot())
+                .child(dot())
+                .into_any_element(),
+        )
+    }
+
+    /// Puts the quoted message back into the text of the reply.
+    fn show_trimmed(&mut self, cx: &mut Context<Self>) {
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        if let Some(blocks) = compose.trimmed.take() {
+            compose
+                .body
+                .update(cx, |editor, cx| editor.append_blocks(blocks, cx));
+        }
+        cx.notify();
     }
 
     fn render_compose_fields(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
@@ -1461,8 +1610,39 @@ impl MailWindow {
                     .w(px((width - 32.0).max(80.0)))
                     .child(body),
             )
+            .children(self.render_trimmed(th, cx))
             .into_any_element()
     }
+}
+
+/// How far below the top of an inline reply its stuck Send row stops: the
+/// recipients and a line or two of text stay above it.
+const STICK_BELOW: f32 = 96.0;
+
+/// Records where its parent is drawn in the conversation `scroll`, in
+/// pixels from the top of the content, and draws again when that moved.
+fn measure(
+    scroll: &ScrollHandle,
+    stick: &Rc<Cell<Stick>>,
+    set: impl Fn(&mut Stick, f32, f32) + 'static,
+) -> impl IntoElement {
+    let (scroll, stick) = (scroll.clone(), stick.clone());
+    canvas(
+        move |bounds, window, _| {
+            let top = f32::from(bounds.top() - scroll.bounds().top() - scroll.offset().y);
+            let mut at = stick.get();
+            set(&mut at, top, f32::from(bounds.size.height));
+            if at != stick.get() {
+                stick.set(at);
+                window.refresh();
+            }
+        },
+        |_, _, _, _| {},
+    )
+    .absolute()
+    .top_0()
+    .left_0()
+    .size_full()
 }
 
 /// The editor's colors from the window's theme.
