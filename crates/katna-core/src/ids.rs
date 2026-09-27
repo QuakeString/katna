@@ -50,6 +50,11 @@ pub const LAUNCHER_ENTRY_PATH: &str = "/in/invenia/katna/Daemon/LauncherEntry";
 /// `feedback.dsn` in the settings file can point somewhere else.
 pub const SENTRY_DSN: &str = "https://1ebb96bdfbca71ddd5a26968b39d5e47@o4512156164096000.ingest.de.sentry.io/4512156171698256";
 
+/// Katna Server, which records opens and clicks of mail the user chose to
+/// track (`docs/ARCHITECTURE.md` §16.1, `server/katna-server`). Empty
+/// turns tracking off.
+pub const TRACKING_SERVER_URL: &str = "https://server.katna.invenia.in";
+
 /// Returns whether `id` is usable as an application ID, D-Bus well-known name
 /// and D-Bus interface name at the same time.
 ///

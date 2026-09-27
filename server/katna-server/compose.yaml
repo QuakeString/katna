@@ -1,0 +1,57 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Katna Server with PostgreSQL behind Caddy, which gets the TLS certificate
+# for the tracking domain by itself. See README.md next to this file.
+#
+#   cp env.example .env   # then set KATNA_TRACKING_DOMAIN and the password
+#   docker compose up -d
+
+name: katna-server
+
+services:
+  server:
+    image: ${KATNA_SERVER_IMAGE:-ghcr.io/quakestring/katna-server:latest}
+    build:
+      context: ../..
+      dockerfile: server/katna-server/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://katna:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db/katna
+      # Caddy adds the visitor's address as the last X-Forwarded-For entry.
+      KATNA_SERVER_TRUST_FORWARDED: "1"
+      KATNA_SERVER_RETENTION_DAYS: ${KATNA_SERVER_RETENTION_DAYS:-180}
+      KATNA_SERVER_DAILY_LIMIT: ${KATNA_SERVER_DAILY_LIMIT:-5000}
+      RUST_LOG: ${RUST_LOG:-info}
+    depends_on:
+      - db
+
+  db:
+    image: docker.io/library/postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: katna
+      POSTGRES_DB: katna
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  caddy:
+    image: docker.io/library/caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      KATNA_TRACKING_DOMAIN: ${KATNA_TRACKING_DOMAIN:?set KATNA_TRACKING_DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - server
+
+volumes:
+  db-data:
+  caddy-data:
+  caddy-config:
