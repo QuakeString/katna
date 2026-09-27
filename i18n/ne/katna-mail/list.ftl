@@ -1,0 +1,261 @@
+# Katna Mail, Nepali (नेपाली).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Mail list: inbox tabs (Gmail's categories, Outlook's and Zoho's)
+
+tab-primary = प्राथमिक
+tab-promotions = प्रमोसनहरू
+tab-social = सामाजिक
+tab-updates = अपडेटहरू
+tab-forums = फोरमहरू
+tab-focused = केन्द्रित
+tab-other = अन्य
+tab-inbox = इनबक्स
+tab-newsletters = न्यूजलेटरहरू
+tab-notifications = सूचनाहरू
+tab-new = { $count } नयाँ
+tab-provider-other = Katna द्वारा क्रमबद्ध
+
+## Mail list: toolbar
+
+list-select = चयन गर्नुहोस्
+list-refresh = रिफ्रेस गर्नुहोस्
+list-more = थप
+list-mark-read = पढिएको भनी चिन्ह लगाउनुहोस्
+list-mark-unread = नपढिएको भनी चिन्ह लगाउनुहोस्
+list-move-to = यहाँ सार्नुहोस्
+list-archive = संग्रह गर्नुहोस्
+list-spam = स्प्याम भनी रिपोर्ट गर्नुहोस्
+list-delete = मेटाउनुहोस्
+list-newer = नयाँ
+list-older = पुरानो
+list-range = { $total } मध्ये { $first }–{ $last }
+list-range-about = लगभग { $total } मध्ये { $first }–{ $last }
+list-results = “{ $query }” का लागि नतिजाहरू
+list-results-corrected = “{ $query }” का लागि नतिजाहरू देखाउँदै
+list-search-instead = यसको सट्टा “{ $query }” खोज्नुहोस्
+list-files-more = +{ $count }
+
+## Mail list: Select menu (which lines to tick)
+
+list-pick-all = सबै
+list-pick-none = कुनै पनि होइन
+list-pick-read = पढिएको
+list-pick-unread = नपढिएको
+list-pick-starred = तारा लगाइएको
+list-pick-unstarred = तारा नलगाइएको
+
+## Mail list: banner when every line is ticked
+
+list-selected-all = { $kind ->
+    [conversation] { $count ->
+        [one] सबै { $count } वार्तालाप चयन गरिएको छ।
+       *[other] सबै { $count } वार्तालापहरू चयन गरिएका छन्।
+    }
+   *[message] { $count ->
+        [one] सबै { $count } सन्देश चयन गरिएको छ।
+       *[other] सबै { $count } सन्देशहरू चयन गरिएका छन्।
+    }
+}
+list-selected-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] { $folder } का सबै { $count } वार्तालाप चयन गरिएको छ।
+       *[other] { $folder } का सबै { $count } वार्तालापहरू चयन गरिएका छन्।
+    }
+   *[message] { $count ->
+        [one] { $folder } का सबै { $count } सन्देश चयन गरिएको छ।
+       *[other] { $folder } का सबै { $count } सन्देशहरू चयन गरिएका छन्।
+    }
+}
+list-selected-screen = { $kind ->
+    [conversation] { $count ->
+        [one] स्क्रिनमा भएका सबै { $count } वार्तालाप चयन गरिएको छ।
+       *[other] स्क्रिनमा भएका सबै { $count } वार्तालापहरू चयन गरिएका छन्।
+    }
+   *[message] { $count ->
+        [one] स्क्रिनमा भएका सबै { $count } सन्देश चयन गरिएको छ।
+       *[other] स्क्रिनमा भएका सबै { $count } सन्देशहरू चयन गरिएका छन्।
+    }
+}
+list-select-all = { $kind ->
+    [conversation] { $count ->
+        [one] सबै { $count } वार्तालाप चयन गर्नुहोस्
+       *[other] सबै { $count } वार्तालापहरू चयन गर्नुहोस्
+    }
+   *[message] { $count ->
+        [one] सबै { $count } सन्देश चयन गर्नुहोस्
+       *[other] सबै { $count } सन्देशहरू चयन गर्नुहोस्
+    }
+}
+list-select-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] { $folder } का सबै { $count } वार्तालाप चयन गर्नुहोस्
+       *[other] { $folder } का सबै { $count } वार्तालापहरू चयन गर्नुहोस्
+    }
+   *[message] { $count ->
+        [one] { $folder } का सबै { $count } सन्देश चयन गर्नुहोस्
+       *[other] { $folder } का सबै { $count } सन्देशहरू चयन गर्नुहोस्
+    }
+}
+list-clear-selection = चयन हटाउनुहोस्
+
+## Mail list: empty states
+
+list-empty-search = तपाईंको खोजसँग मिल्ने कुनै सन्देश भेटिएन।
+list-empty-tab = { $tab } मा कुनै मेल छैन।
+list-empty-tab-unknown = यो ट्याबमा कुनै मेल छैन।
+list-empty-folder = { $folder } मा कुनै सन्देश छैन।
+list-empty-folder-unknown = यो फोल्डरमा कुनै सन्देश छैन।
+list-first-sync = तपाईंको मेल ल्याउँदै…
+list-first-sync-detail = मेल आइपुग्दै गर्दा यहाँ देखिन्छ।
+
+## Mail list: lines
+
+row-removed = यो सन्देश हटाइयो।
+row-starred = तारा लगाइएको
+row-not-starred = तारा नलगाइएको
+row-important = महत्त्वपूर्ण। महत्त्वपूर्ण होइन भनी चिन्ह लगाउन क्लिक गर्नुहोस्।
+row-mark-important = महत्त्वपूर्ण भनी चिन्ह लगाउनुहोस्
+row-pinned = माथि पिन गरिएको
+row-pin = माथि पिन गर्नुहोस्
+row-unpin = अनपिन गर्नुहोस्
+
+## Mail list: More menu and right-click menu
+
+menu-reply = जवाफ दिनुहोस्
+menu-reply-all = सबैलाई जवाफ दिनुहोस्
+menu-forward = फर्वार्ड गर्नुहोस्
+menu-archive = संग्रह गर्नुहोस्
+menu-delete = मेटाउनुहोस्
+menu-spam = स्प्याम भनी रिपोर्ट गर्नुहोस्
+menu-mark-read = पढिएको भनी चिन्ह लगाउनुहोस्
+menu-mark-unread = नपढिएको भनी चिन्ह लगाउनुहोस्
+menu-mark-all-read = सबैलाई पढिएको भनी चिन्ह लगाउनुहोस्
+menu-star = तारा लगाउनुहोस्
+menu-unstar = तारा हटाउनुहोस्
+menu-important = महत्त्वपूर्ण भनी चिन्ह लगाउनुहोस्
+menu-not-important = महत्त्वपूर्ण होइन भनी चिन्ह लगाउनुहोस्
+menu-pin = माथि पिन गर्नुहोस्
+menu-unpin = अनपिन गर्नुहोस्
+menu-print-all = सबै प्रिन्ट गर्नुहोस्
+menu-new-window = नयाँ विन्डोमा खोल्नुहोस्
+menu-move-to = यहाँ सार्नुहोस्
+menu-move-to-heading = यहाँ सार्नुहोस्:
+menu-find-from = { $name } बाट आएका इमेलहरू खोज्नुहोस्
+
+## Snackbar after an action on mail in the list
+
+toast-archived = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालाप संग्रह गरियो।
+       *[other] { $count } वार्तालापहरू संग्रह गरिए।
+    }
+   *[message] { $count ->
+        [one] सन्देश संग्रह गरियो।
+       *[other] { $count } सन्देशहरू संग्रह गरिए।
+    }
+}
+toast-trashed = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालाप ट्र्यासमा सारियो।
+       *[other] { $count } वार्तालापहरू ट्र्यासमा सारिए।
+    }
+   *[message] { $count ->
+        [one] सन्देश ट्र्यासमा सारियो।
+       *[other] { $count } सन्देशहरू ट्र्यासमा सारिए।
+    }
+}
+toast-moved = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालाप सारियो।
+       *[other] { $count } वार्तालापहरू सारिए।
+    }
+   *[message] { $count ->
+        [one] सन्देश सारियो।
+       *[other] { $count } सन्देशहरू सारिए।
+    }
+}
+toast-starred = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालापमा तारा लगाइयो।
+       *[other] { $count } वार्तालापहरूमा तारा लगाइयो।
+    }
+   *[message] { $count ->
+        [one] सन्देशमा तारा लगाइयो।
+       *[other] { $count } सन्देशहरूमा तारा लगाइयो।
+    }
+}
+toast-unstarred = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालापबाट तारा हटाइयो।
+       *[other] { $count } वार्तालापहरूबाट तारा हटाइयो।
+    }
+   *[message] { $count ->
+        [one] सन्देशबाट तारा हटाइयो।
+       *[other] { $count } सन्देशहरूबाट तारा हटाइयो।
+    }
+}
+toast-important = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालापलाई महत्त्वपूर्ण भनी चिन्ह लगाइयो।
+       *[other] { $count } वार्तालापहरूलाई महत्त्वपूर्ण भनी चिन्ह लगाइयो।
+    }
+   *[message] { $count ->
+        [one] सन्देशलाई महत्त्वपूर्ण भनी चिन्ह लगाइयो।
+       *[other] { $count } सन्देशहरूलाई महत्त्वपूर्ण भनी चिन्ह लगाइयो।
+    }
+}
+toast-not-important = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालापलाई महत्त्वपूर्ण होइन भनी चिन्ह लगाइयो।
+       *[other] { $count } वार्तालापहरूलाई महत्त्वपूर्ण होइन भनी चिन्ह लगाइयो।
+    }
+   *[message] { $count ->
+        [one] सन्देशलाई महत्त्वपूर्ण होइन भनी चिन्ह लगाइयो।
+       *[other] { $count } सन्देशहरूलाई महत्त्वपूर्ण होइन भनी चिन्ह लगाइयो।
+    }
+}
+toast-pinned = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालाप माथि पिन गरियो।
+       *[other] { $count } वार्तालापहरू माथि पिन गरिए।
+    }
+   *[message] { $count ->
+        [one] सन्देश माथि पिन गरियो।
+       *[other] { $count } सन्देशहरू माथि पिन गरिए।
+    }
+}
+toast-unpinned = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालाप अनपिन गरियो।
+       *[other] { $count } वार्तालापहरू अनपिन गरिए।
+    }
+   *[message] { $count ->
+        [one] सन्देश अनपिन गरियो।
+       *[other] { $count } सन्देशहरू अनपिन गरिए।
+    }
+}
+toast-spam = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालापलाई स्प्याम भनी रिपोर्ट गरियो।
+       *[other] { $count } वार्तालापहरूलाई स्प्याम भनी रिपोर्ट गरियो।
+    }
+   *[message] { $count ->
+        [one] सन्देशलाई स्प्याम भनी रिपोर्ट गरियो।
+       *[other] { $count } सन्देशहरूलाई स्प्याम भनी रिपोर्ट गरियो।
+    }
+}
+toast-deleted-forever = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालाप सधैँका लागि मेटाइयो।
+       *[other] { $count } वार्तालापहरू सधैँका लागि मेटाइए।
+    }
+   *[message] { $count ->
+        [one] सन्देश सधैँका लागि मेटाइयो।
+       *[other] { $count } सन्देशहरू सधैँका लागि मेटाइए।
+    }
+}
+toast-undone = कार्य पूर्ववत गरियो।
+toast-undo = पूर्ववत गर्नुहोस्
+toast-no-spam-folder = यो खातामा स्प्याम फोल्डर छैन।

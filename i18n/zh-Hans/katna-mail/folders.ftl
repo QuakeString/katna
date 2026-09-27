@@ -1,0 +1,40 @@
+# Katna Mail, Chinese (Simplified) (简体中文).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Navigation (the folders pane)
+
+nav-labels = 标签
+nav-folders = 文件夹
+nav-label-new = 新建标签
+nav-folder-new = 新建文件夹
+nav-account-unnamed = 账号 { $number }
+nav-tab-new = { $count } 封新邮件
+
+## Special folders (the user's own folders keep their names)
+
+folder-inbox = 收件箱
+folder-starred = 已加星标
+folder-drafts = 草稿
+folder-sent = 已发送
+folder-archive = 归档
+folder-spam = 垃圾邮件
+folder-trash = 已删除邮件
+folder-all-mail = 所有邮件
+folder-scheduled = 已安排
+
+## New label / new folder dialog (Gmail accounts have labels, others folders)
+
+label-new-title = 新建标签
+label-folder-new-title = 新建文件夹
+label-prompt = 请输入新标签名称：
+label-folder-prompt = 请输入新文件夹名称：
+label-name-hint = 标签名称
+label-folder-name-hint = 文件夹名称
+label-nest = 将标签嵌套在以下标签之下：
+label-folder-nest = 将文件夹嵌套在以下文件夹之下：
+label-cancel = 取消
+label-create = 创建
+label-creating = 正在创建…
+label-created = 已创建标签“{ $name }”。
+label-folder-created = 已创建文件夹“{ $name }”。

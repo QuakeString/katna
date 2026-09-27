@@ -13,12 +13,19 @@ your corrections are very welcome, even a single word.
 ```
 i18n/
   languages.toml          the picker's list: names, flags, status
-  en/katna-mail.ftl       English, the source
-  en/katna-ui.ftl
-  bn/katna-mail.ftl       Bengali
-  ar/katna-mail.ftl       Arabic
+  en/katna-mail/          English, the source, one file per area:
+    common.ftl              top bar, language picker, dates and sizes
+    list.ftl                the mail list
+    reader.ftl              the reading pane
+    settings.ftl            the Settings page
+    …
+  en/katna-ui.ftl         shared widgets
+  bn/katna-mail/          Bengali, the same files
+  ar/katna-mail/          Arabic
   …
 ```
+
+Each language has the same files as English, holding the same messages.
 
 The files use [Fluent](https://projectfluent.org/). A message is an id,
 `=`, and the text:
@@ -46,7 +53,7 @@ ago-hours = { $count ->
 ## Correcting a translation
 
 1. Open your language's file on GitHub, for example
-   [`i18n/bn/katna-mail.ftl`](bn/katna-mail.ftl), and press the pencil
+   [`i18n/bn/katna-mail/list.ftl`](bn/katna-mail/list.ftl), and press the pencil
    (Edit). GitHub makes a copy for you.
 2. Change the text, then press **Propose changes** and open a pull
    request. Say which language you speak natively.
@@ -55,7 +62,8 @@ ago-hours = { $count ->
 
 To see your change in Katna before sending it, put the file in
 `~/.local/share/katna/i18n/<folder>/` (for example
-`~/.local/share/katna/i18n/bn/katna-mail.ftl`) and restart Katna Mail. It
+`~/.local/share/katna/i18n/bn/katna-mail/list.ftl`) and restart Katna
+Mail. It
 is loaded over the built-in text, message by message.
 
 Once a native speaker has reviewed a whole language, its entry in
@@ -82,8 +90,12 @@ let label = tr!("compose");
 let unread = tr!("unread-count", count = n);
 ```
 
-Add the English message to `i18n/en/<binary>.ftl` in the same pull
-request. The other languages are drafted in a follow-up; until then they
+Add the English message to the area's file in `i18n/en/<binary>/` (for
+example `i18n/en/katna-mail/settings.ftl`) in the same pull request, next
+to the messages it belongs with rather than at the end of the file, so
+changes made side by side rarely touch the same lines. A new area gets a
+new file (`compose.ftl`); the build picks up every `.ftl` file in the
+folder. A message's id must be unique across the binary's files. The other languages are drafted in a follow-up; until then they
 show the English text. `cargo test -p katna-i18n` checks that every id in
 the code has an English message and that each translation's variables
 match English.

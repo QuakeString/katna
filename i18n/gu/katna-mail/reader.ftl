@@ -1,0 +1,135 @@
+# Katna Mail, Gujarati (ગુજરાતી).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Reading pane: toolbar
+
+reader-close = બંધ કરો
+reader-back = પાછળ
+reader-mark-unread = નહીં વાંચેલા તરીકે ચિહ્નિત કરો
+reader-move-to = આમાં ખસેડો
+reader-more = વધુ
+reader-print-all = બધું પ્રિન્ટ કરો
+reader-new-window = નવી વિન્ડોમાં
+reader-position = { $total } માંથી { $position }
+reader-newer = નવો
+reader-older = જૂનો
+
+## Reading pane: the conversation
+
+reader-removed = આ વાર્તાલાપ કાઢી નાખવામાં આવ્યો.
+reader-no-subject = (કોઈ વિષય નથી)
+reader-collapse-all = બધું સંકુચિત કરો
+reader-expand-all = બધું વિસ્તૃત કરો
+reader-unknown-sender = (અજાણ્યા મોકલનાર)
+reader-date-ago = { $date } ({ $ago })
+reader-me = મને
+reader-to = પ્રતિ { $names }
+reader-starred = તારાંકિત
+reader-not-starred = તારાંકિત નથી
+reader-too-long = મેસેજ એટલો લાંબો છે કે પૂરો બતાવી શકાતો નથી.
+reader-encrypted-images = એન્ક્રિપ્ટ કરેલા મેઇલમાં વેબ પરથી છબીઓ ક્યારેય લોડ થતી નથી.
+reader-window-failed = નવી વિન્ડો ખોલી શકાઈ નથી.
+
+## Reading pane: message details (opened from "to me")
+
+reader-details-from = મોકલનાર:
+reader-details-to = પ્રતિ:
+reader-details-cc = cc:
+reader-details-date = તારીખ:
+reader-details-subject = વિષય:
+
+## Reading pane: downloading a message
+
+reader-downloading = સર્વર પરથી આ મેસેજ ડાઉનલોડ કરી રહ્યાં છીએ…
+reader-download-failed = આ મેસેજ ડાઉનલોડ કરી શકાયો નથી.
+reader-try-again = ફરી પ્રયાસ કરો
+
+## Reply row
+
+reply-reply = જવાબ આપો
+reply-reply-all = બધાને જવાબ આપો
+reply-forward = ફૉરવર્ડ કરો
+
+## Encrypted and signed mail
+
+security-decrypting = ડિક્રિપ્ટ કરી રહ્યાં છીએ…
+security-checking = હસ્તાક્ષર તપાસી રહ્યાં છીએ…
+security-partly-encrypted = આ મેસેજનો માત્ર અમુક ભાગ એન્ક્રિપ્ટ કરેલો છે. બાકીનો ભાગ સુરક્ષાની બહાર ઉમેરાયો હતો અને કોઈ પણ વ્યક્તિએ મોકલ્યો હોઈ શકે છે.
+security-partly-signed = આ મેસેજના માત્ર અમુક ભાગ પર હસ્તાક્ષર છે. બાકીનો ભાગ સુરક્ષાની બહાર ઉમેરાયો હતો અને કોઈ પણ વ્યક્તિએ મોકલ્યો હોઈ શકે છે.
+security-encrypted = એન્ક્રિપ્ટ કરેલો મેસેજ
+security-encrypted-smime = એન્ક્રિપ્ટ કરેલો મેસેજ (S/MIME)
+security-no-key = આ મેસેજ ડિક્રિપ્ટ કરી શકાતો નથી: તે એવી કી માટે એન્ક્રિપ્ટ કરવામાં આવ્યો હતો જે તમારી પાસે નથી.
+security-cancelled = ડિક્રિપ્ટ કરવાનું રદ કર્યું.
+security-damaged = આ મેસેજ ડિક્રિપ્ટ કરી શકાતો નથી: એન્ક્રિપ્ટ કરેલો ડેટા બગડેલો છે અથવા બદલાયેલો છે.
+security-decrypt-unavailable = આ મેસેજ ડિક્રિપ્ટ કરી શકાતો નથી: એન્ક્રિપ્ટ કરેલા મેઇલ વાંચવા માટે { $tool } ઇન્સ્ટૉલ કરો.
+security-decrypt-failed = આ મેસેજ ડિક્રિપ્ટ કરી શકાતો નથી: { $reason }
+security-unknown-signer = અજાણ્યા હસ્તાક્ષરકર્તા
+security-signed-verified = { $signer } દ્વારા હસ્તાક્ષરિત · ચકાસાયેલ
+security-signed-not-sender = { $signer } દ્વારા હસ્તાક્ષરિત, જેઓ મોકલનાર નથી
+security-signed-untrusted = { $signer } દ્વારા હસ્તાક્ષરિત, એવી કી વડે જેને તમે વિશ્વસનીય નથી તરીકે ચિહ્નિત કરી છે
+security-signed-unverified = { $signer } દ્વારા હસ્તાક્ષરિત · કી ચકાસાયેલ નથી
+security-bad-signature = ખોટા હસ્તાક્ષર: હસ્તાક્ષર પછી આ મેસેજ બદલવામાં આવ્યો છે, અથવા હસ્તાક્ષર બનાવટી છે.
+security-signature-expired = { $signer } દ્વારા હસ્તાક્ષરિત · હસ્તાક્ષરની મુદત પૂરી થઈ ગઈ છે
+security-key-expired = { $signer } દ્વારા હસ્તાક્ષરિત · ત્યાર પછી કીની મુદત પૂરી થઈ ગઈ છે
+security-key-revoked = { $signer } દ્વારા હસ્તાક્ષરિત, રદ કરાયેલી કી વડે
+security-missing-key = તમારી પાસે ન હોય એવી કી વડે હસ્તાક્ષરિત, તેથી તપાસી શકાતું નથી
+security-missing-key-id = તમારી પાસે ન હોય એવી કી ({ $key }) વડે હસ્તાક્ષરિત, તેથી તપાસી શકાતું નથી
+security-signature-unavailable = હસ્તાક્ષરિત; હસ્તાક્ષર તપાસવા માટે { $tool } ઇન્સ્ટૉલ કરો
+security-signature-error = હસ્તાક્ષર તપાસી શકાયા નથી.
+
+## Remote images and pictures
+
+remote-hidden = આ મેસેજમાંની છબીઓ છુપાવેલી છે.
+remote-show = છબીઓ બતાવો
+remote-always-show = આ મોકલનાર તરફથી હંમેશાં બતાવો
+remote-picture-use = ઉપયોગ કરો
+remote-picture-too-big = 8 MB કે તેથી નાનું ચિત્ર પસંદ કરો.
+remote-picture-type = PNG, JPEG, GIF, WebP અથવા SVG ચિત્ર પસંદ કરો.
+remote-picture-read-failed = ચિત્ર વાંચી શકાતું નથી: { $error }
+remote-picture-keep-failed = ચિત્ર રાખી શકાતું નથી: { $error }
+remote-picture-remove-failed = ચિત્ર કાઢી શકાતું નથી: { $error }
+
+## Attachments
+
+attachment-count = { $count ->
+    [one] એક જોડાણ
+   *[other] { $count } જોડાણ
+}
+attachment-save = સેવ કરો
+attachment-save-all = બધા સેવ કરો
+attachment-save-all-tooltip = બધાં જોડાણ એક ફોલ્ડરમાં સેવ કરો
+attachment-save-here = અહીં સેવ કરો
+attachment-not-downloaded = આ મેસેજ ડાઉનલોડ કરેલો નથી.
+attachment-not-found = આ જોડાણ મેસેજમાં મળ્યું નથી.
+attachment-read-failed = { $name } વાંચી શકાઈ નથી
+attachment-numbered = જોડાણ { $number }
+attachment-saved-all = { $count ->
+    [one] { $count } ફાઇલ { $place } માં સેવ કરી
+   *[other] { $count } ફાઇલો { $place } માં સેવ કરી
+}
+attachment-saved-some = { $total ->
+    [one] { $total } માંથી { $saved } ફાઇલ { $place } માં સેવ કરી. { $failed } સેવ કરી શકાઈ નથી
+   *[other] { $total } માંથી { $saved } ફાઇલો { $place } માં સેવ કરી. { $failed } સેવ કરી શકાઈ નથી
+}
+attachment-saved-to = { $path } માં સેવ કર્યું
+attachment-save-failed = { $name } સેવ કરી શકાઈ નથી: { $error }
+attachment-open-failed = { $name } ખોલી શકાઈ નથી: { $error }
+attachment-risky = આ ફાઇલ કોઈ પ્રોગ્રામ ચલાવી શકે છે, તેથી Katna તેને ખોલતું નથી. તેના બદલે તેને સેવ કરો.
+attachment-encrypted-open = આ ફાઇલ એન્ક્રિપ્ટ થઈને આવી હતી. તેને બીજે ક્યાંક ખોલવા માટે સેવ કરો.
+
+## Printing
+
+print-failed = પ્રિન્ટ કરી શકાયું નથી: { $error }
+print-no-font = કોઈ ફૉન્ટ મળ્યો નથી
+print-opened-as-pdf = ત્યાંથી પ્રિન્ટ કરવા માટે PDF તરીકે ખોલ્યું.
+print-not-downloaded = (હજી ડાઉનલોડ થયું નથી.)
+print-encrypted = (એન્ક્રિપ્ટ કરેલું. તેનું લખાણ પ્રિન્ટ કરવા માટે તેને Katna Mail માં ખોલો.)
+print-to = પ્રતિ: { $addresses }
+print-cc = Cc: { $addresses }
+
+## Leftovers from earlier areas (reading pane and its right-click menu)
+
+attachment-open-message = આ મેસેજનાં જોડાણ વાંચવા માટે તેને ખોલો.
+text-copy = કૉપિ કરો
+text-select-all = બધું પસંદ કરો

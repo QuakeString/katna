@@ -1,0 +1,264 @@
+# Katna Mail, Swedish (Svenska).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Mail list: inbox tabs (Gmail's categories, Outlook's and Zoho's)
+
+tab-primary = Primär
+tab-promotions = Kampanjer
+tab-social = Socialt
+tab-updates = Uppdateringar
+tab-forums = Forum
+tab-focused = Prioriterat
+tab-other = Övrigt
+tab-inbox = Inkorgen
+tab-newsletters = Nyhetsbrev
+tab-notifications = Aviseringar
+tab-new = { $count ->
+    [one] { $count } nytt
+   *[other] { $count } nya
+}
+tab-provider-other = sorteras av Katna
+
+## Mail list: toolbar
+
+list-select = Markera
+list-refresh = Uppdatera
+list-more = Mer
+list-mark-read = Markera som läst
+list-mark-unread = Markera som oläst
+list-move-to = Flytta till
+list-archive = Arkivera
+list-spam = Rapportera som skräppost
+list-delete = Radera
+list-newer = Nyare
+list-older = Äldre
+list-range = { $first }–{ $last } av { $total }
+list-range-about = { $first }–{ $last } av cirka { $total }
+list-results = Resultat för ”{ $query }”
+list-results-corrected = Visar resultat för ”{ $query }”
+list-search-instead = Sök i stället efter ”{ $query }”
+list-files-more = +{ $count }
+
+## Mail list: Select menu (which lines to tick)
+
+list-pick-all = Alla
+list-pick-none = Inga
+list-pick-read = Lästa
+list-pick-unread = Olästa
+list-pick-starred = Stjärnmärkta
+list-pick-unstarred = Utan stjärna
+
+## Mail list: banner when every line is ticked
+
+list-selected-all = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } konversation har markerats.
+       *[other] Alla { $count } konversationer har markerats.
+    }
+   *[message] { $count ->
+        [one] { $count } meddelande har markerats.
+       *[other] Alla { $count } meddelanden har markerats.
+    }
+}
+list-selected-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } konversation i { $folder } har markerats.
+       *[other] Alla { $count } konversationer i { $folder } har markerats.
+    }
+   *[message] { $count ->
+        [one] { $count } meddelande i { $folder } har markerats.
+       *[other] Alla { $count } meddelanden i { $folder } har markerats.
+    }
+}
+list-selected-screen = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } konversation på den här sidan har markerats.
+       *[other] Alla { $count } konversationer på den här sidan har markerats.
+    }
+   *[message] { $count ->
+        [one] { $count } meddelande på den här sidan har markerats.
+       *[other] Alla { $count } meddelanden på den här sidan har markerats.
+    }
+}
+list-select-all = { $kind ->
+    [conversation] { $count ->
+        [one] Markera { $count } konversation
+       *[other] Markera alla { $count } konversationer
+    }
+   *[message] { $count ->
+        [one] Markera { $count } meddelande
+       *[other] Markera alla { $count } meddelanden
+    }
+}
+list-select-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] Markera { $count } konversation i { $folder }
+       *[other] Markera alla { $count } konversationer i { $folder }
+    }
+   *[message] { $count ->
+        [one] Markera { $count } meddelande i { $folder }
+       *[other] Markera alla { $count } meddelanden i { $folder }
+    }
+}
+list-clear-selection = Rensa markering
+
+## Mail list: empty states
+
+list-empty-search = Inga meddelanden matchade sökningen.
+list-empty-tab = Ingen e-post i { $tab }.
+list-empty-tab-unknown = Ingen e-post på den här fliken.
+list-empty-folder = Inga meddelanden i { $folder }.
+list-empty-folder-unknown = Inga meddelanden i den här mappen.
+list-first-sync = Hämtar din e-post…
+list-first-sync-detail = Den visas här allt eftersom den kommer in.
+
+## Mail list: lines
+
+row-removed = Meddelandet har tagits bort.
+row-starred = Stjärnmärkt
+row-not-starred = Inte stjärnmärkt
+row-important = Viktigt. Klicka för att markera som inte viktigt.
+row-mark-important = Markera som viktigt
+row-pinned = Fäst högst upp
+row-pin = Fäst högst upp
+row-unpin = Lossa
+
+## Mail list: More menu and right-click menu
+
+menu-reply = Svara
+menu-reply-all = Svara alla
+menu-forward = Vidarebefordra
+menu-archive = Arkivera
+menu-delete = Radera
+menu-spam = Rapportera som skräppost
+menu-mark-read = Markera som läst
+menu-mark-unread = Markera som oläst
+menu-mark-all-read = Markera alla som lästa
+menu-star = Lägg till stjärna
+menu-unstar = Ta bort stjärna
+menu-important = Markera som viktigt
+menu-not-important = Markera som inte viktigt
+menu-pin = Fäst högst upp
+menu-unpin = Lossa
+menu-print-all = Skriv ut alla
+menu-new-window = Öppna i nytt fönster
+menu-move-to = Flytta till
+menu-move-to-heading = Flytta till:
+menu-find-from = Hitta e-post från { $name }
+
+## Snackbar after an action on mail in the list
+
+toast-archived = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har arkiverats.
+       *[other] { $count } konversationer har arkiverats.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har arkiverats.
+       *[other] { $count } meddelanden har arkiverats.
+    }
+}
+toast-trashed = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har flyttats till papperskorgen.
+       *[other] { $count } konversationer har flyttats till papperskorgen.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har flyttats till papperskorgen.
+       *[other] { $count } meddelanden har flyttats till papperskorgen.
+    }
+}
+toast-moved = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har flyttats.
+       *[other] { $count } konversationer har flyttats.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har flyttats.
+       *[other] { $count } meddelanden har flyttats.
+    }
+}
+toast-starred = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har stjärnmärkts.
+       *[other] { $count } konversationer har stjärnmärkts.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har stjärnmärkts.
+       *[other] { $count } meddelanden har stjärnmärkts.
+    }
+}
+toast-unstarred = { $kind ->
+    [conversation] { $count ->
+        [one] Stjärnan har tagits bort från konversationen.
+       *[other] Stjärnan har tagits bort från { $count } konversationer.
+    }
+   *[message] { $count ->
+        [one] Stjärnan har tagits bort från meddelandet.
+       *[other] Stjärnan har tagits bort från { $count } meddelanden.
+    }
+}
+toast-important = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har markerats som viktig.
+       *[other] { $count } konversationer har markerats som viktiga.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har markerats som viktigt.
+       *[other] { $count } meddelanden har markerats som viktiga.
+    }
+}
+toast-not-important = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har markerats som inte viktig.
+       *[other] { $count } konversationer har markerats som inte viktiga.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har markerats som inte viktigt.
+       *[other] { $count } meddelanden har markerats som inte viktiga.
+    }
+}
+toast-pinned = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har fästs högst upp.
+       *[other] { $count } konversationer har fästs högst upp.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har fästs högst upp.
+       *[other] { $count } meddelanden har fästs högst upp.
+    }
+}
+toast-unpinned = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har lossats.
+       *[other] { $count } konversationer har lossats.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har lossats.
+       *[other] { $count } meddelanden har lossats.
+    }
+}
+toast-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har rapporterats som skräppost.
+       *[other] { $count } konversationer har rapporterats som skräppost.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har rapporterats som skräppost.
+       *[other] { $count } meddelanden har rapporterats som skräppost.
+    }
+}
+toast-deleted-forever = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har raderats permanent.
+       *[other] { $count } konversationer har raderats permanent.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har raderats permanent.
+       *[other] { $count } meddelanden har raderats permanent.
+    }
+}
+toast-undone = Åtgärden har ångrats.
+toast-undo = Ångra
+toast-no-spam-folder = Det här kontot har ingen skräppostmapp.

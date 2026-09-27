@@ -251,16 +251,27 @@ fn read_dir(dir: &Path) -> Vec<String> {
         .collect()
 }
 
-/// The `.ftl` files in `dir`, sorted.
+/// The `.ftl` files in `dir` and in its folders (one per binary), sorted.
 fn read_dir_paths(dir: &Path) -> Vec<PathBuf> {
     let Ok(entries) = std::fs::read_dir(dir) else {
         return Vec::new();
     };
-    let mut paths: Vec<PathBuf> = entries
-        .filter_map(Result::ok)
-        .map(|e| e.path())
-        .filter(|p| p.extension().is_some_and(|e| e == "ftl"))
-        .collect();
+    let is_ftl = |p: &Path| p.extension().is_some_and(|e| e == "ftl");
+    let mut paths = Vec::new();
+    for path in entries.filter_map(Result::ok).map(|e| e.path()) {
+        if path.is_dir() {
+            if let Ok(inner) = std::fs::read_dir(&path) {
+                paths.extend(
+                    inner
+                        .filter_map(Result::ok)
+                        .map(|e| e.path())
+                        .filter(|p| is_ftl(p)),
+                );
+            }
+        } else if is_ftl(&path) {
+            paths.push(path);
+        }
+    }
     paths.sort();
     paths
 }
@@ -393,14 +404,22 @@ mod tests {
             let dir = root.join(&language.translation);
             for path in read_dir_paths(&dir) {
                 let text = std::fs::read_to_string(&path).unwrap();
-                let file = path.file_stem().unwrap().to_string_lossy().into_owned();
+                // `<binary>.ftl`, or any file in `<binary>/`.
+                let file = if path.parent() == Some(dir.as_path()) {
+                    path.file_stem()
+                } else {
+                    path.parent().and_then(Path::file_name)
+                }
+                .unwrap()
+                .to_string_lossy()
+                .into_owned();
                 for (id, vars) in messages(&text) {
                     match english.get(&id) {
                         None => {
                             problems.push(format!("{}: {id} is not in English", path.display()))
                         }
                         Some((name, _)) if *name != file => {
-                            problems.push(format!("{}: {id} belongs in {name}.ftl", path.display()))
+                            problems.push(format!("{}: {id} belongs to {name}", path.display()))
                         }
                         Some((_, english_vars)) if *english_vars != vars => problems.push(format!(
                             "{}: {id} uses {vars:?}, English {english_vars:?}",
@@ -412,6 +431,28 @@ mod tests {
             }
         }
         assert!(problems.is_empty(), "{problems:#?}");
+    }
+
+    /// An id is in one English file only: files load one over another, so
+    /// a second copy would silently win.
+    #[test]
+    fn english_ids_are_unique() {
+        let mut seen = std::collections::BTreeSet::new();
+        let mut twice = Vec::new();
+        for (name, text) in ENGLISH {
+            for line in text.lines() {
+                if let Some((id, _)) = line.split_once(" =")
+                    && !id.is_empty()
+                    && id
+                        .chars()
+                        .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-')
+                    && !seen.insert(id.to_owned())
+                {
+                    twice.push(format!("{name}: {id}"));
+                }
+            }
+        }
+        assert!(twice.is_empty(), "ids in two English files: {twice:#?}");
     }
 
     #[test]

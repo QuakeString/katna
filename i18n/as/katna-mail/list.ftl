@@ -1,0 +1,261 @@
+# Katna Mail, Assamese (অসমীয়া).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Mail list: inbox tabs (Gmail's categories, Outlook's and Zoho's)
+
+tab-primary = মুখ্য
+tab-promotions = প্ৰচাৰ
+tab-social = সামাজিক
+tab-updates = আপডেট
+tab-forums = ফ'ৰাম
+tab-focused = কেন্দ্ৰীভূত
+tab-other = অন্যান্য
+tab-inbox = ইনবক্স
+tab-newsletters = বাতৰি-পত্ৰ
+tab-notifications = জাননী
+tab-new = { $count }টা নতুন
+tab-provider-other = Katnaই সজোৱা
+
+## Mail list: toolbar
+
+list-select = বাছনি কৰক
+list-refresh = ৰিফ্ৰেছ কৰক
+list-more = অধিক
+list-mark-read = পঢ়া বুলি চিহ্নিত কৰক
+list-mark-unread = নপঢ়া বুলি চিহ্নিত কৰক
+list-move-to = ইয়ালৈ স্থানান্তৰ কৰক
+list-archive = আৰ্কাইভ কৰক
+list-spam = স্পাম বুলি ৰিপৰ্ট কৰক
+list-delete = মচক
+list-newer = নতুন
+list-older = পুৰণি
+list-range = { $total }ৰ { $first }–{ $last }
+list-range-about = প্ৰায় { $total }ৰ { $first }–{ $last }
+list-results = “{ $query }”ৰ ফলাফল
+list-results-corrected = “{ $query }”ৰ ফলাফল দেখুওৱা হৈছে
+list-search-instead = ইয়াৰ সলনি “{ $query }” সন্ধান কৰক
+list-files-more = +{ $count }
+
+## Mail list: Select menu (which lines to tick)
+
+list-pick-all = সকলো
+list-pick-none = এটাও নহয়
+list-pick-read = পঢ়া
+list-pick-unread = নপঢ়া
+list-pick-starred = তৰাচিহ্নিত
+list-pick-unstarred = তৰাচিহ্নবিহীন
+
+## Mail list: banner when every line is ticked
+
+list-selected-all = { $kind ->
+    [conversation] { $count ->
+        [one] সকলো { $count }টা কথোপকথন বাছনি কৰা হৈছে।
+       *[other] সকলো { $count }টা কথোপকথন বাছনি কৰা হৈছে।
+    }
+   *[message] { $count ->
+        [one] সকলো { $count }টা বাৰ্তা বাছনি কৰা হৈছে।
+       *[other] সকলো { $count }টা বাৰ্তা বাছনি কৰা হৈছে।
+    }
+}
+list-selected-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] { $folder }ত থকা সকলো { $count }টা কথোপকথন বাছনি কৰা হৈছে।
+       *[other] { $folder }ত থকা সকলো { $count }টা কথোপকথন বাছনি কৰা হৈছে।
+    }
+   *[message] { $count ->
+        [one] { $folder }ত থকা সকলো { $count }টা বাৰ্তা বাছনি কৰা হৈছে।
+       *[other] { $folder }ত থকা সকলো { $count }টা বাৰ্তা বাছনি কৰা হৈছে।
+    }
+}
+list-selected-screen = { $kind ->
+    [conversation] { $count ->
+        [one] স্ক্ৰীনত থকা সকলো { $count }টা কথোপকথন বাছনি কৰা হৈছে।
+       *[other] স্ক্ৰীনত থকা সকলো { $count }টা কথোপকথন বাছনি কৰা হৈছে।
+    }
+   *[message] { $count ->
+        [one] স্ক্ৰীনত থকা সকলো { $count }টা বাৰ্তা বাছনি কৰা হৈছে।
+       *[other] স্ক্ৰীনত থকা সকলো { $count }টা বাৰ্তা বাছনি কৰা হৈছে।
+    }
+}
+list-select-all = { $kind ->
+    [conversation] { $count ->
+        [one] সকলো { $count }টা কথোপকথন বাছনি কৰক
+       *[other] সকলো { $count }টা কথোপকথন বাছনি কৰক
+    }
+   *[message] { $count ->
+        [one] সকলো { $count }টা বাৰ্তা বাছনি কৰক
+       *[other] সকলো { $count }টা বাৰ্তা বাছনি কৰক
+    }
+}
+list-select-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] { $folder }ত থকা সকলো { $count }টা কথোপকথন বাছনি কৰক
+       *[other] { $folder }ত থকা সকলো { $count }টা কথোপকথন বাছনি কৰক
+    }
+   *[message] { $count ->
+        [one] { $folder }ত থকা সকলো { $count }টা বাৰ্তা বাছনি কৰক
+       *[other] { $folder }ত থকা সকলো { $count }টা বাৰ্তা বাছনি কৰক
+    }
+}
+list-clear-selection = বাছনি আঁতৰাওক
+
+## Mail list: empty states
+
+list-empty-search = আপোনাৰ সন্ধানৰ সৈতে কোনো বাৰ্তা মিলা নাই।
+list-empty-tab = { $tab }ত কোনো মেইল নাই।
+list-empty-tab-unknown = এই টেবত কোনো মেইল নাই।
+list-empty-folder = { $folder }ত কোনো বাৰ্তা নাই।
+list-empty-folder-unknown = এই ফ'ল্ডাৰত কোনো বাৰ্তা নাই।
+list-first-sync = আপোনাৰ মেইল অনা হৈছে…
+list-first-sync-detail = মেইল অহাৰ লগে লগে ইয়াত দেখা যাব।
+
+## Mail list: lines
+
+row-removed = এই বাৰ্তাটো আঁতৰোৱা হ'ল।
+row-starred = তৰাচিহ্নিত
+row-not-starred = তৰাচিহ্নিত নহয়
+row-important = গুৰুত্বপূৰ্ণ। গুৰুত্বপূৰ্ণ নহয় বুলি চিহ্নিত কৰিবলৈ ক্লিক কৰক।
+row-mark-important = গুৰুত্বপূৰ্ণ বুলি চিহ্নিত কৰক
+row-pinned = ওপৰত পিন কৰা হৈছে
+row-pin = ওপৰত পিন কৰক
+row-unpin = আনপিন কৰক
+
+## Mail list: More menu and right-click menu
+
+menu-reply = উত্তৰ দিয়ক
+menu-reply-all = সকলোকে উত্তৰ দিয়ক
+menu-forward = ফৰৱাৰ্ড কৰক
+menu-archive = আৰ্কাইভ কৰক
+menu-delete = মচক
+menu-spam = স্পাম বুলি ৰিপৰ্ট কৰক
+menu-mark-read = পঢ়া বুলি চিহ্নিত কৰক
+menu-mark-unread = নপঢ়া বুলি চিহ্নিত কৰক
+menu-mark-all-read = সকলোবোৰ পঢ়া বুলি চিহ্নিত কৰক
+menu-star = তৰাচিহ্ন যোগ কৰক
+menu-unstar = তৰাচিহ্ন আঁতৰাওক
+menu-important = গুৰুত্বপূৰ্ণ বুলি চিহ্নিত কৰক
+menu-not-important = গুৰুত্বপূৰ্ণ নহয় বুলি চিহ্নিত কৰক
+menu-pin = ওপৰত পিন কৰক
+menu-unpin = আনপিন কৰক
+menu-print-all = সকলো প্ৰিণ্ট কৰক
+menu-new-window = নতুন ৱিণ্ড'ত খোলক
+menu-move-to = ইয়ালৈ স্থানান্তৰ কৰক
+menu-move-to-heading = ইয়ালৈ স্থানান্তৰ কৰক:
+menu-find-from = { $name }ৰ পৰা অহা ইমেইল বিচাৰক
+
+## Snackbar after an action on mail in the list
+
+toast-archived = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো আৰ্কাইভ কৰা হ'ল।
+       *[other] { $count }টা কথোপকথন আৰ্কাইভ কৰা হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো আৰ্কাইভ কৰা হ'ল।
+       *[other] { $count }টা বাৰ্তা আৰ্কাইভ কৰা হ'ল।
+    }
+}
+toast-trashed = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো ট্ৰেছলৈ স্থানান্তৰ কৰা হ'ল।
+       *[other] { $count }টা কথোপকথন ট্ৰেছলৈ স্থানান্তৰ কৰা হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো ট্ৰেছলৈ স্থানান্তৰ কৰা হ'ল।
+       *[other] { $count }টা বাৰ্তা ট্ৰেছলৈ স্থানান্তৰ কৰা হ'ল।
+    }
+}
+toast-moved = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো স্থানান্তৰ কৰা হ'ল।
+       *[other] { $count }টা কথোপকথন স্থানান্তৰ কৰা হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো স্থানান্তৰ কৰা হ'ল।
+       *[other] { $count }টা বাৰ্তা স্থানান্তৰ কৰা হ'ল।
+    }
+}
+toast-starred = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো তৰাচিহ্নিত কৰা হ'ল।
+       *[other] { $count }টা কথোপকথন তৰাচিহ্নিত কৰা হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো তৰাচিহ্নিত কৰা হ'ল।
+       *[other] { $count }টা বাৰ্তা তৰাচিহ্নিত কৰা হ'ল।
+    }
+}
+toast-unstarred = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটোৰ তৰাচিহ্ন আঁতৰোৱা হ'ল।
+       *[other] { $count }টা কথোপকথনৰ তৰাচিহ্ন আঁতৰোৱা হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটোৰ তৰাচিহ্ন আঁতৰোৱা হ'ল।
+       *[other] { $count }টা বাৰ্তাৰ তৰাচিহ্ন আঁতৰোৱা হ'ল।
+    }
+}
+toast-important = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো গুৰুত্বপূৰ্ণ বুলি চিহ্নিত কৰা হ'ল।
+       *[other] { $count }টা কথোপকথন গুৰুত্বপূৰ্ণ বুলি চিহ্নিত কৰা হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো গুৰুত্বপূৰ্ণ বুলি চিহ্নিত কৰা হ'ল।
+       *[other] { $count }টা বাৰ্তা গুৰুত্বপূৰ্ণ বুলি চিহ্নিত কৰা হ'ল।
+    }
+}
+toast-not-important = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো গুৰুত্বপূৰ্ণ নহয় বুলি চিহ্নিত কৰা হ'ল।
+       *[other] { $count }টা কথোপকথন গুৰুত্বপূৰ্ণ নহয় বুলি চিহ্নিত কৰা হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো গুৰুত্বপূৰ্ণ নহয় বুলি চিহ্নিত কৰা হ'ল।
+       *[other] { $count }টা বাৰ্তা গুৰুত্বপূৰ্ণ নহয় বুলি চিহ্নিত কৰা হ'ল।
+    }
+}
+toast-pinned = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো ওপৰত পিন কৰা হ'ল।
+       *[other] { $count }টা কথোপকথন ওপৰত পিন কৰা হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো ওপৰত পিন কৰা হ'ল।
+       *[other] { $count }টা বাৰ্তা ওপৰত পিন কৰা হ'ল।
+    }
+}
+toast-unpinned = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো আনপিন কৰা হ'ল।
+       *[other] { $count }টা কথোপকথন আনপিন কৰা হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো আনপিন কৰা হ'ল।
+       *[other] { $count }টা বাৰ্তা আনপিন কৰা হ'ল।
+    }
+}
+toast-spam = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো স্পাম বুলি ৰিপৰ্ট কৰা হ'ল।
+       *[other] { $count }টা কথোপকথন স্পাম বুলি ৰিপৰ্ট কৰা হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো স্পাম বুলি ৰিপৰ্ট কৰা হ'ল।
+       *[other] { $count }টা বাৰ্তা স্পাম বুলি ৰিপৰ্ট কৰা হ'ল।
+    }
+}
+toast-deleted-forever = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো চিৰদিনৰ বাবে মচা হ'ল।
+       *[other] { $count }টা কথোপকথন চিৰদিনৰ বাবে মচা হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো চিৰদিনৰ বাবে মচা হ'ল।
+       *[other] { $count }টা বাৰ্তা চিৰদিনৰ বাবে মচা হ'ল।
+    }
+}
+toast-undone = কাৰ্যটো পূৰ্বাৱস্থালৈ অনা হ'ল।
+toast-undo = আনডু কৰক
+toast-no-spam-folder = এই একাউণ্টত কোনো স্পাম ফ'ল্ডাৰ নাই।

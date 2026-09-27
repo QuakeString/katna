@@ -1,0 +1,165 @@
+# Katna Mail, Lao (ລາວ).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Mail list: inbox tabs (Gmail's categories, Outlook's and Zoho's)
+
+tab-primary = ຫຼັກ
+tab-promotions = ໂປຣໂມຊັນ
+tab-social = ສັງຄົມ
+tab-updates = ອັບເດດ
+tab-forums = ຟໍຣັມ
+tab-focused = ໂຟກັສ
+tab-other = ອື່ນໆ
+tab-inbox = ກ່ອງຈົດໝາຍເຂົ້າ
+tab-newsletters = ຈົດໝາຍຂ່າວ
+tab-notifications = ການແຈ້ງເຕືອນ
+tab-new = ໃໝ່ { $count }
+tab-provider-other = ຈັດຮຽງໂດຍ Katna
+
+## Mail list: toolbar
+
+list-select = ເລືອກ
+list-refresh = ໂຫຼດຄືນໃໝ່
+list-more = ເພີ່ມເຕີມ
+list-mark-read = ໝາຍວ່າອ່ານແລ້ວ
+list-mark-unread = ໝາຍວ່າຍັງບໍ່ໄດ້ອ່ານ
+list-move-to = ຍ້າຍໄປທີ່
+list-archive = ຈັດເກັບ
+list-spam = ລາຍງານສະແປມ
+list-delete = ລຶບ
+list-newer = ໃໝ່ກວ່າ
+list-older = ເກົ່າກວ່າ
+list-range = { $first }–{ $last } ຈາກ { $total }
+list-range-about = { $first }–{ $last } ຈາກປະມານ { $total }
+list-results = ຜົນການຊອກຫາ “{ $query }”
+list-results-corrected = ກຳລັງສະແດງຜົນການຊອກຫາ “{ $query }”
+list-search-instead = ຊອກຫາ “{ $query }” ແທນ
+list-files-more = +{ $count }
+
+## Mail list: Select menu (which lines to tick)
+
+list-pick-all = ທັງໝົດ
+list-pick-none = ບໍ່ເລືອກ
+list-pick-read = ອ່ານແລ້ວ
+list-pick-unread = ຍັງບໍ່ໄດ້ອ່ານ
+list-pick-starred = ຕິດດາວແລ້ວ
+list-pick-unstarred = ບໍ່ໄດ້ຕິດດາວ
+
+## Mail list: banner when every line is ticked
+
+list-selected-all = { $kind ->
+    [conversation] ເລືອກການສົນທະນາທັງໝົດ { $count } ລາຍການແລ້ວ.
+   *[message] ເລືອກຂໍ້ຄວາມທັງໝົດ { $count } ລາຍການແລ້ວ.
+}
+list-selected-all-in = { $kind ->
+    [conversation] ເລືອກການສົນທະນາທັງໝົດ { $count } ລາຍການໃນ { $folder } ແລ້ວ.
+   *[message] ເລືອກຂໍ້ຄວາມທັງໝົດ { $count } ລາຍການໃນ { $folder } ແລ້ວ.
+}
+list-selected-screen = { $kind ->
+    [conversation] ເລືອກການສົນທະນາທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+   *[message] ເລືອກຂໍ້ຄວາມທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+}
+list-select-all = { $kind ->
+    [conversation] ເລືອກການສົນທະນາທັງໝົດ { $count } ລາຍການ
+   *[message] ເລືອກຂໍ້ຄວາມທັງໝົດ { $count } ລາຍການ
+}
+list-select-all-in = { $kind ->
+    [conversation] ເລືອກການສົນທະນາທັງໝົດ { $count } ລາຍການໃນ { $folder }
+   *[message] ເລືອກຂໍ້ຄວາມທັງໝົດ { $count } ລາຍການໃນ { $folder }
+}
+list-clear-selection = ລຶບການເລືອກ
+
+## Mail list: empty states
+
+list-empty-search = ບໍ່ມີຂໍ້ຄວາມທີ່ກົງກັບການຊອກຫາຂອງທ່ານ.
+list-empty-tab = ບໍ່ມີອີເມວໃນ { $tab }.
+list-empty-tab-unknown = ບໍ່ມີອີເມວໃນແຖບນີ້.
+list-empty-folder = ບໍ່ມີຂໍ້ຄວາມໃນ { $folder }.
+list-empty-folder-unknown = ບໍ່ມີຂໍ້ຄວາມໃນໂຟນເດີນີ້.
+list-first-sync = ກຳລັງດຶງອີເມວຂອງທ່ານ…
+list-first-sync-detail = ອີເມວຈະສະແດງຢູ່ບ່ອນນີ້ເມື່ອມາຮອດ.
+
+## Mail list: lines
+
+row-removed = ຂໍ້ຄວາມນີ້ຖືກລຶບອອກແລ້ວ.
+row-starred = ຕິດດາວແລ້ວ
+row-not-starred = ບໍ່ໄດ້ຕິດດາວ
+row-important = ສຳຄັນ. ຄລິກເພື່ອໝາຍວ່າບໍ່ສຳຄັນ.
+row-mark-important = ໝາຍວ່າສຳຄັນ
+row-pinned = ປັກໝຸດໄວ້ເທິງສຸດແລ້ວ
+row-pin = ປັກໝຸດໄວ້ເທິງສຸດ
+row-unpin = ຖອນປັກໝຸດ
+
+## Mail list: More menu and right-click menu
+
+menu-reply = ຕອບກັບ
+menu-reply-all = ຕອບກັບທັງໝົດ
+menu-forward = ສົ່ງຕໍ່
+menu-archive = ຈັດເກັບ
+menu-delete = ລຶບ
+menu-spam = ລາຍງານສະແປມ
+menu-mark-read = ໝາຍວ່າອ່ານແລ້ວ
+menu-mark-unread = ໝາຍວ່າຍັງບໍ່ໄດ້ອ່ານ
+menu-mark-all-read = ໝາຍທັງໝົດວ່າອ່ານແລ້ວ
+menu-star = ເພີ່ມດາວ
+menu-unstar = ລຶບດາວອອກ
+menu-important = ໝາຍວ່າສຳຄັນ
+menu-not-important = ໝາຍວ່າບໍ່ສຳຄັນ
+menu-pin = ປັກໝຸດໄວ້ເທິງສຸດ
+menu-unpin = ຖອນປັກໝຸດ
+menu-print-all = ພິມທັງໝົດ
+menu-new-window = ເປີດໃນໜ້າຕ່າງໃໝ່
+menu-move-to = ຍ້າຍໄປທີ່
+menu-move-to-heading = ຍ້າຍໄປທີ່:
+menu-find-from = ຊອກຫາອີເມວຈາກ { $name }
+
+## Snackbar after an action on mail in the list
+
+toast-archived = { $kind ->
+    [conversation] ຈັດເກັບການສົນທະນາ { $count } ລາຍການແລ້ວ.
+   *[message] ຈັດເກັບຂໍ້ຄວາມ { $count } ລາຍການແລ້ວ.
+}
+toast-trashed = { $kind ->
+    [conversation] ຍ້າຍການສົນທະນາ { $count } ລາຍການໄປໃສ່ຖັງຂີ້ເຫຍື້ອແລ້ວ.
+   *[message] ຍ້າຍຂໍ້ຄວາມ { $count } ລາຍການໄປໃສ່ຖັງຂີ້ເຫຍື້ອແລ້ວ.
+}
+toast-moved = { $kind ->
+    [conversation] ຍ້າຍການສົນທະນາ { $count } ລາຍການແລ້ວ.
+   *[message] ຍ້າຍຂໍ້ຄວາມ { $count } ລາຍການແລ້ວ.
+}
+toast-starred = { $kind ->
+    [conversation] ຕິດດາວໃຫ້ການສົນທະນາ { $count } ລາຍການແລ້ວ.
+   *[message] ຕິດດາວໃຫ້ຂໍ້ຄວາມ { $count } ລາຍການແລ້ວ.
+}
+toast-unstarred = { $kind ->
+    [conversation] ລຶບດາວອອກຈາກການສົນທະນາ { $count } ລາຍການແລ້ວ.
+   *[message] ລຶບດາວອອກຈາກຂໍ້ຄວາມ { $count } ລາຍການແລ້ວ.
+}
+toast-important = { $kind ->
+    [conversation] ໝາຍການສົນທະນາ { $count } ລາຍການວ່າສຳຄັນແລ້ວ.
+   *[message] ໝາຍຂໍ້ຄວາມ { $count } ລາຍການວ່າສຳຄັນແລ້ວ.
+}
+toast-not-important = { $kind ->
+    [conversation] ໝາຍການສົນທະນາ { $count } ລາຍການວ່າບໍ່ສຳຄັນແລ້ວ.
+   *[message] ໝາຍຂໍ້ຄວາມ { $count } ລາຍການວ່າບໍ່ສຳຄັນແລ້ວ.
+}
+toast-pinned = { $kind ->
+    [conversation] ປັກໝຸດການສົນທະນາ { $count } ລາຍການໄວ້ເທິງສຸດແລ້ວ.
+   *[message] ປັກໝຸດຂໍ້ຄວາມ { $count } ລາຍການໄວ້ເທິງສຸດແລ້ວ.
+}
+toast-unpinned = { $kind ->
+    [conversation] ຖອນປັກໝຸດການສົນທະນາ { $count } ລາຍການແລ້ວ.
+   *[message] ຖອນປັກໝຸດຂໍ້ຄວາມ { $count } ລາຍການແລ້ວ.
+}
+toast-spam = { $kind ->
+    [conversation] ລາຍງານການສົນທະນາ { $count } ລາຍການວ່າເປັນສະແປມແລ້ວ.
+   *[message] ລາຍງານຂໍ້ຄວາມ { $count } ລາຍການວ່າເປັນສະແປມແລ້ວ.
+}
+toast-deleted-forever = { $kind ->
+    [conversation] ລຶບການສົນທະນາ { $count } ລາຍການຖາວອນແລ້ວ.
+   *[message] ລຶບຂໍ້ຄວາມ { $count } ລາຍການຖາວອນແລ້ວ.
+}
+toast-undone = ຍ້ອນກັບການກະທຳແລ້ວ.
+toast-undo = ຍ້ອນກັບ
+toast-no-spam-folder = ບັນຊີນີ້ບໍ່ມີໂຟນເດີສະແປມ.
