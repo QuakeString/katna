@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Install system packages (Arch)
         if: startsWith(matrix.image, 'archlinux')
-        run: pacman -Syu --noconfirm --needed base-devel git curl libxkbcommon libxkbcommon-x11 fontconfig freetype2 dbus gnupg
+        run: pacman -Syu --noconfirm --needed base-devel git curl libxkbcommon libxkbcommon-x11 fontconfig freetype2 dbus gnupg jq
       - name: Install system packages (Ubuntu)
         if: startsWith(matrix.image, 'ubuntu')
         run: |
@@ -29,7 +29,7 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             build-essential ca-certificates curl git pkg-config \
             libxkbcommon-dev libxkbcommon-x11-dev libfontconfig-dev libfreetype-dev \
-            dbus-daemon gnupg gpgsm
+            dbus-daemon gnupg gpgsm jq
       - uses: actions/checkout@v4
       - name: Install Rust (version from rust-toolchain.toml)
         run: |
@@ -37,6 +37,7 @@ jobs:
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
       - run: rustup toolchain install
       - run: cargo fmt --all --check
+      - run: ci/gen-credits.sh --check
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - run: cargo test --workspace --locked
 
