@@ -7,6 +7,7 @@
 
 use gpui::{AnyElement, Context, prelude::*, rgba};
 use katna_crypto::{Gnupg, Protect, Recipients, Security, Standard};
+use katna_i18n::tr;
 use katna_ui::px;
 
 use crate::theme::{Theme, fade};
@@ -99,7 +100,7 @@ impl MailWindow {
     /// The Encrypt and Sign toggles, at the end of the recipients row.
     pub(super) fn render_sealing(&self, th: &Theme, cx: &mut Context<Self>) -> [AnyElement; 2] {
         let sealing = self.compose.as_ref().map(|c| c.sealing).unwrap_or_default();
-        let toggle = |id: &'static str, name: &'static str, on: bool, label: &'static str| {
+        let toggle = |id: &'static str, name: &'static str, on: bool, label: String| {
             icon_button_colored(id, name, 18.0, if on { th.accent } else { th.text_dim }, th)
                 .size(px(28.0))
                 .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
@@ -111,9 +112,9 @@ impl MailWindow {
                 "lock",
                 sealing.encrypt,
                 if sealing.encrypt {
-                    "Encrypted: only the recipients can read it"
+                    tr!("compose-encrypted")
                 } else {
-                    "Encrypt"
+                    tr!("compose-encrypt")
                 },
             )
             .on_click(cx.listener(|this, _, _, cx| {
@@ -131,9 +132,9 @@ impl MailWindow {
                 "shield-check",
                 sealing.sign,
                 if sealing.sign {
-                    "Signed: recipients can check it is from you"
+                    tr!("compose-signed")
                 } else {
-                    "Sign"
+                    tr!("compose-sign")
                 },
             )
             .on_click(cx.listener(|this, _, _, cx| {

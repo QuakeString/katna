@@ -2,9 +2,75 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+## Compose window: title bar
+
+compose-new-message = رسالة جديدة
+compose-restore = استعادة
+compose-minimize = تصغير
+compose-exit-full-screen = الخروج من وضع ملء الشاشة
+compose-open-window = فتح في نافذة جديدة
+compose-save-close = حفظ وإغلاق
+compose-back-to-mail = العودة إلى نافذة البريد
+compose-pop-out-reply = فتح الرد في نافذة منفصلة
+compose-show-trimmed = عرض المحتوى المقتطع
+
+## Recipients and subject
+
+compose-to = إلى
+compose-cc = نسخة
+compose-bcc = نسخة مخفية
+compose-recipients = المستلمون
+compose-subject = الموضوع
+
+## Sending (the notes at the bottom of the window)
+
+compose-open-elsewhere = أرسل الرسالة المفتوحة أو تجاهلها أولًا.
+compose-bad-address = «{ $address }» ليس عنوان بريد إلكتروني.
+compose-no-recipients = أضف مستلمًا واحدًا على الأقل.
+compose-attachments-too-large = حجم المرفقات { $size }، وتقبل خوادم البريد حتى { $limit }.
+compose-no-account = أضف حسابًا لإرسال البريد منه.
+compose-past-time = اختر وقتًا في المستقبل.
+compose-scheduling = جارٍ الجدولة…
+compose-sending = جارٍ الإرسال…
+compose-scheduled = تمت جدولة الإرسال في { $when }
+compose-sent-archived = تم الإرسال والأرشفة
+compose-sent = تم إرسال الرسالة
+compose-discarded = تم تجاهل المسودة
+
+## Attachments
+
+compose-picker-insert = إدراج
+compose-picker-attach = إرفاق
+compose-file-too-large = الملف { $name } كبير جدًا: يمكن أن تحمل الرسالة حتى { $limit }.
+compose-attachment-size = ({ $size })
+compose-remove-attachment = إزالة المرفق
+compose-drop-files = أفلت الملفات هنا
+
+## Encryption and signing (the toggles by the recipients)
+
+compose-encrypt = تشفير
+compose-encrypted = مشفّرة: لا يقرؤها إلا المستلمون
+compose-sign = توقيع
+compose-signed = موقّعة: يمكن للمستلمين التحقق من أنها منك
+
+## Spelling
+
+spell-no-dictionary = لا يوجد قاموس إملائي مثبّت للغة { $language } (مثل hunspell-en_us).
+spell-dictionary-error = القاموس الإملائي: { $error }
+
 ## Grammar checking (the right-click menu on a grammar mistake)
 
 grammar-replace = «{ $words }»
 grammar-add = إضافة «{ $words }»
 grammar-remove = إزالة «{ $words }»
 grammar-ignore = تجاهل
+
+## Send checks (asked before a message goes out)
+
+send-check-attachment-title = هل كنت تنوي إرفاق ملفات؟
+send-check-attachment-text = ذكرت مرفقًا في رسالتك، لكن لا يوجد شيء مرفق.
+send-check-attach = إرفاق ملف
+send-check-subject-title = الإرسال بلا موضوع؟
+send-check-subject-text = هذه الرسالة بلا موضوع.
+send-check-add-subject = إضافة موضوع
+send-check-send-anyway = الإرسال على أي حال

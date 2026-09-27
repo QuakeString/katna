@@ -212,23 +212,29 @@ impl MailWindow {
         let width = if phone { vw } else { WIDTH.min(vw - 48.0) };
         // Room for the animations: the card less its padding.
         let inner = width - 48.0;
-        // The first highlight's animation spans the top of the card.
+        // The first highlight's animation spans the top of the card, with
+        // the card's top corners, and stays put while the highlights scroll
+        // (scrolled under the card's corners, it would show square ones).
+        let corner = if phone { 0.0 } else { PANEL_RADIUS };
         let hero = dialog
             .highlights
             .first()
             .and_then(|h| Some((h.name, h.animation.as_ref()?.for_theme(dialog.dark))))
             .map(|(id, bytes)| {
                 let (w, h) = size(bytes, width);
+                // A narrower animation sits clear of the corners.
+                let r = if w + 0.5 >= width { corner } else { 0.0 };
                 div()
                     .flex_none()
                     .w_full()
                     .h(px(h))
                     .flex()
                     .justify_center()
+                    .rounded_t(px(corner))
                     .bg(rgba(th.backdrop))
                     .border_b_1()
                     .border_color(rgba(th.divider))
-                    .child(animation(id, dialog.animations.get(id), w, h))
+                    .child(animation(id, dialog.animations.get(id), (w, h), (r, 0.0)))
             });
 
         let has_hero = hero.is_some();
@@ -295,8 +301,9 @@ impl MailWindow {
                     .child(animation(
                         highlight.name,
                         dialog.animations.get(highlight.name),
-                        w,
-                        h,
+                        (w, h),
+                        // Inside the 12 px frame and its 1 px border.
+                        (11.0, 11.0),
                     ))
             });
             div()
@@ -357,7 +364,6 @@ impl MailWindow {
             .pb(px(8.0))
             .flex()
             .flex_col()
-            .children(hero)
             .child(header)
             .children(items)
             .children(more);
@@ -401,6 +407,7 @@ impl MailWindow {
             .bg(rgba(th.surface))
             .text_color(rgba(th.text))
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .children(hero)
             .child(body)
             .child(footer);
         Some(
@@ -442,8 +449,15 @@ impl MailWindow {
     }
 }
 
-/// An animation at `w` by `h`, or its room while it is decoded.
-fn animation(name: &'static str, image: Option<&Arc<RenderImage>>, w: f32, h: f32) -> gpui::Div {
+/// An animation at `w` by `h`, or its room while it is decoded, with its
+/// top and bottom corners rounded by `top` and `bottom`: GPUI clips a child
+/// to a square, so the image rounds itself to fit a rounded frame.
+fn animation(
+    name: &'static str,
+    image: Option<&Arc<RenderImage>>,
+    (w, h): (f32, f32),
+    (top, bottom): (f32, f32),
+) -> gpui::Div {
     div()
         .flex_none()
         .w(px(w))
@@ -455,6 +469,8 @@ fn animation(name: &'static str, image: Option<&Arc<RenderImage>>, w: f32, h: f3
                 .id(name)
                 .size_full()
                 .object_fit(ObjectFit::Contain)
+                .rounded_t(px(top))
+                .rounded_b(px(bottom))
         }))
 }
 

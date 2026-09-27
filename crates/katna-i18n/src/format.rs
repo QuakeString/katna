@@ -10,7 +10,7 @@ use icu_calendar::Date;
 use icu_calendar::cal::Gregorian;
 use icu_calendar::types::Weekday;
 use icu_calendar::week::WeekInformation;
-use icu_datetime::fieldsets::{E, M, MD, T, YMD, YMDE, YMDET};
+use icu_datetime::fieldsets::{E, M, MD, MDT, T, YM, YMD, YMDE, YMDET};
 use icu_datetime::pattern::{DateTimePattern, FixedCalendarDateTimeNames};
 use icu_datetime::{DateTimeFormatter, FixedCalendarDateTimeFormatter, NoCalendarFormatter};
 use icu_decimal::DecimalFormatter;
@@ -68,6 +68,7 @@ pub(crate) struct Formats {
     time: Option<NoCalendarFormatter<T>>,
     weekday: Option<DateTimeFormatter<E>>,
     day_month: Option<DateTimeFormatter<MD>>,
+    day_month_time: Option<DateTimeFormatter<MDT>>,
     date: Option<DateTimeFormatter<YMD>>,
     long: Option<DateTimeFormatter<YMDET>>,
     decimal: Option<DecimalFormatter>,
@@ -76,6 +77,7 @@ pub(crate) struct Formats {
     /// years without grouping.
     medium_date: Option<DateTimeFormatter<YMD>>,
     month: Option<FixedCalendarDateTimeFormatter<Gregorian, M>>,
+    month_year: Option<FixedCalendarDateTimeFormatter<Gregorian, YM>>,
     /// CLDR's short weekday names (`Su`), which no field set gives.
     weekday_short: Option<(FixedCalendarDateTimeNames<Gregorian>, DateTimePattern)>,
     first_weekday: Option<Weekday>,
@@ -95,11 +97,13 @@ impl Formats {
             time: NoCalendarFormatter::try_new(prefs(), T::hm()).ok(),
             weekday: DateTimeFormatter::try_new(prefs(), E::medium()).ok(),
             day_month: DateTimeFormatter::try_new(prefs(), MD::medium()).ok(),
+            day_month_time: DateTimeFormatter::try_new(prefs(), MD::medium().with_time_hm()).ok(),
             date: DateTimeFormatter::try_new(prefs(), YMD::short()).ok(),
             long: DateTimeFormatter::try_new(prefs(), YMDE::medium().with_time_hm()).ok(),
             decimal: DecimalFormatter::try_new((&locale).into(), Default::default()).ok(),
             medium_date: DateTimeFormatter::try_new(prefs(), YMD::medium()).ok(),
             month: FixedCalendarDateTimeFormatter::try_new(prefs(), M::long()).ok(),
+            month_year: FixedCalendarDateTimeFormatter::try_new(prefs(), YM::long()).ok(),
             weekday_short: "cccccc".parse().ok().and_then(|pattern: DateTimePattern| {
                 let mut names = FixedCalendarDateTimeNames::try_new(prefs()).ok()?;
                 names.include_for_pattern(&pattern).ok()?;
@@ -168,6 +172,20 @@ pub fn day_month(date: jiff::civil::DateTime) -> String {
     .unwrap_or_else(fallback)
 }
 
+/// Day, month and time: `Sep 27, 8:00 AM`, `27 Sept, 08:00`.
+pub fn day_month_time(date: jiff::civil::DateTime) -> String {
+    let fallback = || date.strftime("%b %-d, %H:%M").to_string();
+    let Some(input) = convert(date) else {
+        return fallback();
+    };
+    crate::catalog::with_formats(|f| {
+        f.day_month_time
+            .as_ref()
+            .map(|w| plain(w.format(&input).to_string()))
+    })
+    .unwrap_or_else(fallback)
+}
+
 /// A short full date: `9/27/26`, `27/09/2026`, `2026/09/27`.
 pub fn date(date: jiff::civil::DateTime) -> String {
     let fallback = || date.strftime("%Y-%m-%d").to_string();
@@ -219,6 +237,21 @@ pub fn month_name(month: i8) -> String {
     };
     crate::catalog::with_formats(|f| f.month.as_ref().map(|m| plain(m.format(&date).to_string())))
         .unwrap_or_else(fallback)
+}
+
+/// A month of the Gregorian calendar with its year, for a calendar's
+/// title: `September 2026`, `2026年9月`.
+pub fn month_year(date: jiff::civil::Date) -> String {
+    let fallback = || date.strftime("%B %Y").to_string();
+    let Ok(input) = Date::try_new_gregorian(i32::from(date.year()), date.month() as u8, 1) else {
+        return fallback();
+    };
+    crate::catalog::with_formats(|f| {
+        f.month_year
+            .as_ref()
+            .map(|m| plain(m.format(&input).to_string()))
+    })
+    .unwrap_or_else(fallback)
 }
 
 /// The first day of the week: Sunday in the US, Monday in most of
@@ -381,6 +414,22 @@ mod tests {
     }
 
     #[test]
+    fn months_with_years_and_days_with_times() {
+        let f = Formats::new("en-US", Clock::Language);
+        let september = Date::try_new_gregorian(2026, 9, 1).unwrap();
+        let month = f.month_year.as_ref().unwrap().format(&september);
+        assert_eq!(plain(month.to_string()), "September 2026");
+        let at = plain(
+            f.day_month_time
+                .as_ref()
+                .unwrap()
+                .format(&sample())
+                .to_string(),
+        );
+        assert!(at.starts_with("Sep 27, 2:05"), "{at}");
+    }
+
+    #[test]
     fn every_language_has_formats() {
         let d = sample();
         for language in crate::all() {
@@ -390,6 +439,8 @@ mod tests {
             assert!(f.decimal.is_some(), "{}", language.tag);
             assert!(f.medium_date.is_some(), "{}", language.tag);
             assert!(f.month.is_some(), "{}", language.tag);
+            assert!(f.month_year.is_some(), "{}", language.tag);
+            assert!(f.day_month_time.is_some(), "{}", language.tag);
             assert!(f.weekday_short.is_some(), "{}", language.tag);
             assert!(f.first_weekday.is_some(), "{}", language.tag);
             assert!(f.year.is_some(), "{}", language.tag);
