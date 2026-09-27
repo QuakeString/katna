@@ -52,6 +52,13 @@ const SEEN_FILE: &str = "seen";
 /// Name of the file holding the time of the newest core dump looked at.
 const LAST_CORE_FILE: &str = "last-core";
 
+/// Name of the file listing the reports sent to the crash tracker.
+const SENT_FILE: &str = "sent";
+
+/// Reports older than this are not sent: they were written before the
+/// user could have agreed, or tried long enough.
+pub const SEND_WITHIN: Duration = Duration::from_secs(7 * 24 * 60 * 60);
+
 struct Installed {
     app: &'static str,
     dir: PathBuf,
@@ -414,7 +421,48 @@ pub fn delete_all(dir: &Path) -> io::Result<()> {
     for report in reports(dir) {
         fs::remove_file(report.path)?;
     }
+    let _ = fs::remove_file(dir.join(SENT_FILE));
     Ok(())
+}
+
+/// The names of the reports sent to the crash tracker (or given up on).
+pub fn sent(dir: &Path) -> Vec<String> {
+    fs::read_to_string(dir.join(SENT_FILE))
+        .unwrap_or_default()
+        .lines()
+        .map(str::to_string)
+        .collect()
+}
+
+/// Reports not sent yet and at most [`SEND_WITHIN`] old at `now`, oldest
+/// first.
+pub fn unsent(dir: &Path, now: SystemTime) -> Vec<Report> {
+    let sent = sent(dir);
+    let oldest = now
+        .checked_sub(SEND_WITHIN)
+        .unwrap_or(UNIX_EPOCH)
+        .duration_since(UNIX_EPOCH)
+        .map_or(0, |d| d.as_secs() as i64);
+    let mut unsent: Vec<Report> = reports(dir)
+        .into_iter()
+        .filter(|report| !sent.contains(&report.name))
+        .filter(|report| report.unix_time().is_some_and(|t| t >= oldest))
+        .collect();
+    unsent.reverse();
+    unsent
+}
+
+/// Remembers that `report` was sent, so it is not sent again. Names of
+/// reports that are gone are dropped from the list.
+pub fn mark_sent(dir: &Path, report: &Report) -> io::Result<()> {
+    let present: Vec<String> = reports(dir).into_iter().map(|r| r.name).collect();
+    let mut sent: Vec<String> = sent(dir)
+        .into_iter()
+        .filter(|name| present.contains(name) && *name != report.name)
+        .collect();
+    sent.push(report.name.clone());
+    fs::create_dir_all(dir)?;
+    fs::write(dir.join(SENT_FILE), sent.join("\n") + "\n")
 }
 
 /// Turns the core dumps `systemd-coredump` has of the programs `apps`
@@ -599,6 +647,12 @@ fn utc(when: SystemTime) -> String {
     format!("{y:04}-{mo:02}-{d:02} {h:02}:{mi:02}:{s:02} UTC")
 }
 
+/// `2026-09-27T03:16:03Z`
+pub(crate) fn rfc3339(when: SystemTime) -> String {
+    let (y, mo, d, h, mi, s) = civil(when);
+    format!("{y:04}-{mo:02}-{d:02}T{h:02}:{mi:02}:{s:02}Z")
+}
+
 /// `20260927T031603Z`, for file names.
 fn file_time(when: SystemTime) -> String {
     let (y, mo, d, h, mi, s) = civil(when);
@@ -775,6 +829,7 @@ mod tests {
         // 2026-09-27 03:16:03 UTC
         assert_eq!(utc(at(1_790_478_963)), "2026-09-27 03:16:03 UTC");
         assert_eq!(file_time(at(1_790_478_963)), "20260927T031603Z");
+        assert_eq!(rfc3339(at(1_790_478_963)), "2026-09-27T03:16:03Z");
         // A leap day.
         assert_eq!(utc(at(1_709_164_800)), "2024-02-29 00:00:00 UTC");
     }
@@ -842,6 +897,36 @@ mod tests {
         delete_all(&dir).unwrap();
         assert!(reports(&dir).is_empty());
         assert!(dir.join("notes.txt").exists());
+    }
+
+    #[test]
+    fn remembers_what_was_sent() {
+        let tmp = tempfile::tempdir().unwrap();
+        let dir = tmp.path().join("crashes");
+        let now = at(1_790_478_963);
+        let day = 24 * 60 * 60;
+        write_report(&dir, "katna-mail", at(1_790_478_963 - 8 * day), 1, "old").unwrap();
+        write_report(&dir, "katna-mail", at(1_790_478_963 - day), 2, "a").unwrap();
+        write_report(&dir, "katna-daemon", at(1_790_478_963 - 60), 3, "b").unwrap();
+
+        // Oldest first, and not the one from before the last week.
+        let unsent = unsent(&dir, now);
+        let apps: Vec<&str> = unsent.iter().map(|r| r.app.as_str()).collect();
+        assert_eq!(apps, ["katna-mail", "katna-daemon"]);
+
+        mark_sent(&dir, &unsent[0]).unwrap();
+        mark_sent(&dir, &unsent[0]).unwrap();
+        assert_eq!(super::unsent(&dir, now), vec![unsent[1].clone()]);
+        assert_eq!(sent(&dir), vec![unsent[0].name.clone()]);
+
+        // Names of deleted reports are dropped.
+        fs::remove_file(&unsent[0].path).unwrap();
+        mark_sent(&dir, &unsent[1]).unwrap();
+        assert_eq!(sent(&dir), vec![unsent[1].name.clone()]);
+        assert!(super::unsent(&dir, now).is_empty());
+
+        delete_all(&dir).unwrap();
+        assert!(sent(&dir).is_empty());
     }
 
     #[test]

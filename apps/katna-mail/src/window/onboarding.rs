@@ -3,7 +3,8 @@
 //! The first start: a few pages that fill the window until the first
 //! account is added. Welcome says what Katna is; Account checks the
 //! background service and adds the account; Look picks the layout and
-//! colors; Ready offers the tour of the window (`tour`).
+//! colors; Share asks whether to send crash reports (`share_ask`); Ready
+//! offers the tour of the window (`tour`).
 
 use std::time::Duration;
 
@@ -16,7 +17,7 @@ use katna_ui::motion::{self, lerp};
 
 use super::add_account::{logo, text_button};
 use super::settings::Change;
-use super::{MailWindow, PANEL_RADIUS};
+use super::{MailWindow, PANEL_RADIUS, share_ask};
 use crate::daemon;
 use crate::theme::{Theme, fade};
 use crate::widgets::{filled_button, icon};
@@ -38,11 +39,18 @@ pub(super) enum Step {
     Welcome,
     Account,
     Look,
+    Share,
     Ready,
 }
 
 impl Step {
-    const ALL: [Step; 4] = [Step::Welcome, Step::Account, Step::Look, Step::Ready];
+    const ALL: [Step; 5] = [
+        Step::Welcome,
+        Step::Account,
+        Step::Look,
+        Step::Share,
+        Step::Ready,
+    ];
 
     fn index(self) -> usize {
         Self::ALL.iter().position(|s| *s == self).unwrap_or(0)
@@ -165,6 +173,7 @@ impl MailWindow {
             Step::Welcome => self.welcome_page(th, cx),
             Step::Account => self.account_page(th, window, cx),
             Step::Look => self.look_page(th, cx),
+            Step::Share => self.share_page(th, cx),
             Step::Ready => self.ready_page(th, cx),
         };
         let page = div()
@@ -465,8 +474,38 @@ impl MailWindow {
         let actions = actions_row(
             None,
             filled_button("onboarding-look-done", "Continue", th)
-                .on_click(cx.listener(|this, _, _, cx| this.onboarding_step(Step::Ready, cx))),
+                .on_click(cx.listener(|this, _, _, cx| this.onboarding_step(Step::Share, cx))),
         );
+        (body.into_any_element(), actions)
+    }
+
+    fn share_page(&self, th: &Theme, cx: &mut Context<Self>) -> (AnyElement, AnyElement) {
+        let body = div()
+            .flex()
+            .flex_col()
+            .gap(px(24.0))
+            .child(
+                div()
+                    .flex()
+                    .flex_col()
+                    .items_center()
+                    .gap(px(12.0))
+                    .child(title(share_ask::TITLE, th))
+                    .child(lead(share_ask::LEAD, th)),
+            )
+            .child(share_ask::points(th));
+        let actions = div()
+            .pt(px(8.0))
+            .child(share_ask::answers(
+                "onboarding-share",
+                |this, send, _, cx| {
+                    this.apply(Change::SendCrashReports(send), cx);
+                    this.onboarding_step(Step::Ready, cx);
+                },
+                th,
+                cx,
+            ))
+            .into_any_element();
         (body.into_any_element(), actions)
     }
 
@@ -554,7 +593,7 @@ fn step_dots(step: Step, th: &Theme) -> AnyElement {
         .into_any_element()
 }
 
-fn title(text: &'static str, th: &Theme) -> AnyElement {
+pub(super) fn title(text: &'static str, th: &Theme) -> AnyElement {
     div()
         .text_size(px(24.0))
         .line_height(px(32.0))
@@ -564,7 +603,7 @@ fn title(text: &'static str, th: &Theme) -> AnyElement {
         .into_any_element()
 }
 
-fn lead(text: &str, th: &Theme) -> AnyElement {
+pub(super) fn lead(text: &str, th: &Theme) -> AnyElement {
     div()
         .max_w(px(460.0))
         .text_size(px(14.0))
@@ -588,7 +627,12 @@ fn label(text: &'static str, th: &Theme) -> AnyElement {
 
 /// One line of what Katna does: an icon in a round tint, a name and a
 /// sentence.
-fn feature(name: &str, heading: &'static str, text: &'static str, th: &Theme) -> AnyElement {
+pub(super) fn feature(
+    name: &str,
+    heading: &'static str,
+    text: &'static str,
+    th: &Theme,
+) -> AnyElement {
     div()
         .flex()
         .flex_row()

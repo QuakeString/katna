@@ -84,6 +84,9 @@ impl MailWindow {
         let closed = if self.context_menu.is_some() {
             self.close_context_menu(cx);
             true
+        } else if self.share_ask_open() {
+            self.close_share_ask(window, cx);
+            true
         } else if self.whats_new_open() {
             self.close_whats_new(window, cx);
             true
@@ -116,6 +119,7 @@ impl MailWindow {
             || self.danger.is_some()
             || self.new_label.is_some()
             || self.whats_new.is_some()
+            || self.share_ask.is_some()
             || self.about.is_some()
             || self.tour.is_some()
             || self.files.viewer.is_some()
