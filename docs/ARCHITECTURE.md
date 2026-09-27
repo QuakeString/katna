@@ -2086,14 +2086,20 @@ cloud project (decided by the owner on 27 September 2026, §25).
   network, §9); the app hands it reports over D-Bus. The daemon's 20 MB
   budget is checked with the SDK in.
 
-**Server side.** A Sentry cloud project, set up once:
+**Server side.** The Sentry cloud project exists (organization
+`invenia-systems`, project ID `4512156171698256`, created by the owner on
+27 September 2026). Its settings, under Project Settings > Security &
+Privacy:
 
-- data scrubbing on, IP addresses not stored, default PII off, and the
-  Katna scrubber's placeholders added to the safe fields;
+- **Prevent Storing of IP Addresses** on and the **Data Scrubber** on
+  (with "Use Default Scrubbers"), so the server drops IPs and scrubs again
+  whatever the client missed; the Katna scrubber's placeholders (`<user>`,
+  `<host>`, `<email>`) need no safe-field entries;
 - CI uploads each published build's debug files (`sentry-cli
   debug-files upload`, keyed by build ID) so native and panic stacks get
-  function names and lines; the auth token lives only in the release
-  environment;
+  function names and lines; the auth token (scope `project:write`) is a
+  GitHub Actions secret, `SENTRY_AUTH_TOKEN`, that the owner adds, and only
+  the package workflow reads it;
 - the Sentry GitHub integration links crash groups to GitHub issues, so
   crashes land where bugs are already tracked;
 - retention at the plan's default (90 days) for events; usage statistics
