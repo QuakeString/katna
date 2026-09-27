@@ -172,6 +172,13 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                and only if you say yes. Change it any time in Settings > User feedback.",
         animation: None,
     },
+    Highlight {
+        id: 17,
+        title: "Attachments of older mail open at once",
+        text: "Clicking an attachment of older mail that is not on this computer yet \
+               downloads it: the attachment fills up while it does, then opens.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.
