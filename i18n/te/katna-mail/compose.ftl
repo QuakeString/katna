@@ -19,6 +19,8 @@ compose-show-trimmed = కత్తిరించిన కంటెంట్�
 compose-to = స్వీకర్త
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = పంపినవారు
+compose-from-choose = మరో ఖాతా నుండి పంపండి
 compose-recipients = స్వీకర్తలు
 compose-subject = సబ్జెక్ట్
 

@@ -19,6 +19,8 @@ compose-show-trimmed = कापलेला मजकूर दाखवा
 compose-to = प्रति
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = प्रेषक
+compose-from-choose = दुसऱ्या खात्यावरून पाठवा
 compose-recipients = प्राप्तकर्ते
 compose-subject = विषय
 

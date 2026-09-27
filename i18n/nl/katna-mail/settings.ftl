@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = Opent de bestandsbeheerder met de opg
 ## Settings > Compose
 
 settings-compose-send-from = Nieuwe berichten verzenden vanaf
-settings-compose-send-from-detail = Antwoorden en doorgestuurde berichten gaan altijd uit vanaf het account waarin je bent.
+settings-compose-send-from-detail = Nieuwe berichten beginnen vanaf dit account; de rij Van kiest een ander. Antwoorden en doorgestuurde berichten gaan altijd uit vanaf het account waarop het oorspronkelijke bericht binnenkwam.
 settings-compose-send-from-current = Het account waarin je bent
 settings-compose-send-on-replies = Verzenden bij antwoorden
 settings-compose-send-on-replies-detail = Wat Verzenden doet bij een antwoord of doorgestuurd bericht. Het menu naast Verzenden biedt de andere keuze.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = Waar platte tekst, logboeken en code worden
 settings-default-apps-sheets-summary = Waar Excel-, OpenDocument- en CSV-bestanden worden geopend
 settings-default-apps-documents-summary = Waar Word- en OpenDocument-tekst en presentaties worden geopend
 settings-default-apps-after-saving-summary = Opgeslagen bijlagen tonen in hun map
-settings-compose-send-from-summary = Het account waarvandaan nieuwe e-mail uitgaat: het account waarin je bent, of altijd hetzelfde
+settings-compose-send-from-summary = Het account waarvandaan nieuwe e-mail uitgaat: het eerste, een ander, of het account waarin je bent
 settings-compose-send-on-replies-summary = Verzenden, of Verzenden en het gesprek archiveren, bij antwoorden en doorsturen
 settings-compose-signatures-summary = Toegevoegd onder je bericht, na een regel ‘--’
 settings-compose-for-new-mail-summary = De handtekening waarmee nieuwe e-mail begint

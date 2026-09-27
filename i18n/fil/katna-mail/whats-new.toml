@@ -475,3 +475,13 @@ Kung nakatutulong sa iyo ang Katna, may button na Ilibre ako ng kape na
 ngayon sa Tungkol sa Katna, at QR code para buksan ang parehong page sa
 phone mo.
 """
+
+["2026-09-27-1615-from-row"]
+title = "Piliin kung kanino galing ang mensahe"
+text = """
+May row na Mula kay na ngayon ang mga bagong mensahe sa ilalim ng Para
+kay. I-click ang arrow nito para magpadala mula sa isa pa sa mga account
+mo. Nagsisimula ang bagong mail sa una mong account, maliban kung pumili
+ka ng ibang default sa Mga setting > Mag-compose > Ipadala ang mga
+bagong mensahe mula sa.
+"""

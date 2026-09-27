@@ -19,6 +19,8 @@ compose-show-trimmed = Bonisa okuqukethwe okufinyeziwe
 compose-to = Ku
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = Kusuka ku
+compose-from-choose = Thumela kusuka kwenye i-akhawunti
 compose-recipients = Abamukeli
 compose-subject = Isihloko
 

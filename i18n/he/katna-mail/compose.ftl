@@ -19,6 +19,8 @@ compose-show-trimmed = הצגת התוכן שקוצץ
 compose-to = אל
 compose-cc = עותק
 compose-bcc = עותק מוסתר
+compose-from = מאת
+compose-from-choose = שליחה מחשבון אחר
 compose-recipients = נמענים
 compose-subject = נושא
 

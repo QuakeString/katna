@@ -19,6 +19,8 @@ compose-show-trimmed = བཅད་ཡོད་པའི་ནང་དོན་
 compose-to = ལུ
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = ལས
+compose-from-choose = རྩིས་ཐོ་གཞན་ཅིག་ལས་གཏང་།
 compose-recipients = ལེན་མི་ཚུ
 compose-subject = དོན་ཚན
 

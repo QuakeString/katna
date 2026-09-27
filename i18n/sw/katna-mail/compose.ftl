@@ -19,6 +19,8 @@ compose-show-trimmed = Onyesha maudhui yaliyofupishwa
 compose-to = Kwa
 compose-cc = Nakala
 compose-bcc = Nakala fiche
+compose-from = Kutoka
+compose-from-choose = Tuma kutoka akaunti nyingine
 compose-recipients = Wapokeaji
 compose-subject = Mada
 

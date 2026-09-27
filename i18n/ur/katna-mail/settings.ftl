@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = محفوظ کردہ اٹیچمنٹس 
 ## Settings > Compose
 
 settings-compose-send-from = نئے پیغامات اس سے بھیجیں
-settings-compose-send-from-detail = جوابات اور فارورڈز ہمیشہ اسی اکاؤنٹ سے جاتے ہیں جس میں آپ ہیں۔
+settings-compose-send-from-detail = نئے پیغامات اسی اکاؤنٹ سے شروع ہوتے ہیں؛ منجانب کی قطار سے کوئی اور چنا جا سکتا ہے۔ جوابات اور فارورڈز ہمیشہ اسی اکاؤنٹ سے جاتے ہیں جس میں اصل پیغام آیا تھا۔
 settings-compose-send-from-current = وہ اکاؤنٹ جس میں آپ ہیں
 settings-compose-send-on-replies = جوابات پر بھیجیں
 settings-compose-send-on-replies-detail = جواب یا فارورڈ پر ”بھیجیں“ کیا کرتا ہے۔ ”بھیجیں“ کے ساتھ والا مینیو دوسرا اختیار دیتا ہے۔
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = سادہ متن، لاگز اور کوڈ ک
 settings-default-apps-sheets-summary = Excel، OpenDocument اور CSV فائلیں کہاں کھلتی ہیں
 settings-default-apps-documents-summary = Word، OpenDocument متن اور سلائیڈز کہاں کھلتے ہیں
 settings-default-apps-after-saving-summary = محفوظ کردہ اٹیچمنٹس ان کے فولڈر میں دکھائیں
-settings-compose-send-from-summary = وہ اکاؤنٹ جس سے نئی میل جاتی ہے: جس میں آپ ہیں، یا ہمیشہ ایک ہی
+settings-compose-send-from-summary = وہ اکاؤنٹ جس سے نئی میل جاتی ہے: پہلا، کوئی اور، یا جس میں آپ ہیں
 settings-compose-send-on-replies-summary = جوابات اور فارورڈز پر ”بھیجیں“، یا ”بھیجیں اور آرکائیو کریں“
 settings-compose-signatures-summary = آپ کے پیغام کے نیچے، ”--“ لائن کے بعد شامل کیا جاتا ہے
 settings-compose-for-new-mail-summary = وہ دستخط جس سے نئی میل شروع ہوتی ہے

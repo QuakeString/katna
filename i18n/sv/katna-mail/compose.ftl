@@ -19,6 +19,8 @@ compose-show-trimmed = Visa förkortat innehåll
 compose-to = Till
 compose-cc = Kopia
 compose-bcc = Dold kopia
+compose-from = Från
+compose-from-choose = Skicka från ett annat konto
 compose-recipients = Mottagare
 compose-subject = Ämne
 
