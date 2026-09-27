@@ -2446,6 +2446,15 @@ logic lives there.
 
 Optional. Self-hostable (container image) and offered as a hosted Pro service.
 
+Where a feature lives (owner, 27 September 2026): first the mail
+service's own feature when Katna can reach it over the protocols it speaks
+(IMAP, SMTP, Sieve, CardDAV, later JMAP; for example SMTP FUTURERELEASE for
+send later); otherwise locally in `katna-daemon`; Katna Server only for
+what can work neither way (open and link tracking, translation, Katna
+accounts). The server never holds mail logins or tokens; send later,
+snooze and reminders without server support run while the computer is on.
+Plan: `IMPLEMENTATION_PLAN.md` Phase 7.
+
 | Function | Needs user mail credentials? |
 |---|---|
 | Open/link tracking + event stream | No |
