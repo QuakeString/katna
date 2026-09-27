@@ -14,8 +14,9 @@ use gpui::{
     AnyElement, App, Bounds, Context, Div, Entity, Focusable, FontWeight, MouseButton, Pixels,
     Transformation, Window, anchored, deferred, div, point, prelude::*, radians, rgba, svg,
 };
-use jiff::civil::{Date, Time};
+use jiff::civil::{Date, Time, Weekday};
 use jiff::tz::TimeZone;
+use katna_i18n::{format, tr};
 use katna_ui::TextInput;
 use katna_ui::px;
 use katna_ui::unpx;
@@ -37,12 +38,36 @@ pub(super) enum Span {
     Between,
 }
 
-const SPANS: [(Span, &str); 4] = [
-    (Span::On, "On"),
-    (Span::Before, "Before"),
-    (Span::Since, "Since"),
-    (Span::Between, "Between"),
-];
+const SPANS: [Span; 4] = [Span::On, Span::Before, Span::Since, Span::Between];
+
+impl Span {
+    fn label(self) -> String {
+        match self {
+            Span::On => tr!("search-dates-on"),
+            Span::Before => tr!("search-dates-before"),
+            Span::Since => tr!("search-dates-since"),
+            Span::Between => tr!("search-dates-between"),
+        }
+    }
+}
+
+/// Why custom dates can't be searched.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub(super) enum DateError {
+    Missing,
+    Unreadable,
+    OutOfRange,
+}
+
+impl DateError {
+    fn text(self) -> String {
+        match self {
+            DateError::Missing => tr!("search-dates-missing"),
+            DateError::Unreadable => tr!("search-dates-unreadable"),
+            DateError::OutOfRange => tr!("search-dates-out-of-range"),
+        }
+    }
+}
 
 /// `after:`/`before:` for a custom span in `tz`, from typed dates
 /// (`2026-09-01`), each meaning that whole local day. The last date is
@@ -52,17 +77,17 @@ pub(super) fn custom_dates(
     first: &str,
     last: &str,
     tz: &TimeZone,
-) -> Result<String, &'static str> {
+) -> Result<String, DateError> {
     let day = |text: &str| match text.trim() {
-        "" => Err("Pick a date"),
-        text => parse_day(text).ok_or("Use a date like 2026-09-01"),
+        "" => Err(DateError::Missing),
+        text => parse_day(text).ok_or(DateError::Unreadable),
     };
     // Local midnight, with its offset.
-    let at = |day: Date| -> Result<String, &'static str> {
+    let at = |day: Date| -> Result<String, DateError> {
         let zoned = day
             .to_datetime(Time::midnight())
             .to_zoned(tz.clone())
-            .map_err(|_| "That date is out of range")?;
+            .map_err(|_| DateError::OutOfRange)?;
         let offset = zoned.offset().seconds();
         let sign = if offset < 0 { '-' } else { '+' };
         let offset = offset.unsigned_abs();
@@ -72,7 +97,7 @@ pub(super) fn custom_dates(
             offset / 60 % 60
         ))
     };
-    let next = |day: Date| day.tomorrow().map_err(|_| "That date is out of range");
+    let next = |day: Date| day.tomorrow().map_err(|_| DateError::OutOfRange);
     let first = day(first)?;
     Ok(match span {
         Span::On => format!("after:{} before:{}", at(first)?, at(next(first)?)?),
@@ -114,7 +139,7 @@ pub(super) struct CustomDates {
     month: i8,
     pub open: bool,
     /// Why the dates can't be searched.
-    pub error: Option<&'static str>,
+    pub error: Option<DateError>,
     /// The "Date within" choice before Custom, back on Cancel if the
     /// dates are incomplete.
     pub before: usize,
@@ -124,7 +149,9 @@ pub(super) struct CustomDates {
 
 impl CustomDates {
     pub fn new(cx: &mut Context<MailWindow>) -> Self {
-        let date = |cx: &mut Context<MailWindow>| cx.new(|cx| TextInput::new("YYYY-MM-DD", cx));
+        let date = |cx: &mut Context<MailWindow>| {
+            cx.new(|cx| TextInput::new(tr!("search-dates-placeholder"), cx))
+        };
         let today = jiff::Zoned::now().date();
         Self {
             span: Span::On,
@@ -145,7 +172,7 @@ impl CustomDates {
     }
 
     /// `after:`/`before:` for the dates, in the local time zone.
-    pub fn query(&self, cx: &App) -> Result<String, &'static str> {
+    pub fn query(&self, cx: &App) -> Result<String, DateError> {
         let [first, last] = self.texts(cx);
         custom_dates(self.span, &first, &last, &TimeZone::system())
     }
@@ -161,12 +188,13 @@ impl CustomDates {
 
 /// The chip text for good custom dates (see [`CustomDates::label`]).
 fn custom_label(span: Span, first: &str, last: &str) -> Option<String> {
-    let long = |d: Date| d.strftime("%b %-d, %Y").to_string();
+    let midnight = |d: Date| d.to_datetime(Time::midnight());
+    let long = |d: Date| format::day_month_year(midnight(d));
     let first = parse_day(first)?;
     Some(match span {
         Span::On => long(first),
-        Span::Before => format!("Before {}", long(first)),
-        Span::Since => format!("Since {}", long(first)),
+        Span::Before => tr!("search-dates-chip-before", date = long(first)),
+        Span::Since => tr!("search-dates-chip-since", date = long(first)),
         Span::Between => {
             let last = parse_day(last)?;
             let (a, b) = if last < first {
@@ -174,30 +202,15 @@ fn custom_label(span: Span, first: &str, last: &str) -> Option<String> {
             } else {
                 (first, last)
             };
-            if a.year() == b.year() {
-                format!("{} – {}", a.strftime("%b %-d"), long(b))
+            let first = if a.year() == b.year() {
+                format::day_month(midnight(a))
             } else {
-                format!("{} – {}", long(a), long(b))
-            }
+                long(a)
+            };
+            tr!("search-dates-chip-between", first = first, last = long(b))
         }
     })
 }
-
-const WEEKDAYS: [&str; 7] = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-const MONTHS: [&str; 12] = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-];
 
 /// Popover sizes, in px. The days make the width; every row has a set
 /// height so the popover's height is known before it is laid out.
@@ -265,9 +278,9 @@ fn place(chip: Bounds<Pixels>, size: (f32, f32), viewport: (f32, f32)) -> (f32, 
     (x_centered, y, Side::Below, along_x(x_centered))
 }
 
-/// Weeks the calendar shows for a month, Monday first.
-fn weeks(first: Date) -> usize {
-    let lead = first.weekday().to_monday_zero_offset() as usize;
+/// Weeks the calendar shows for a month, weeks starting on `start`.
+fn weeks(first: Date, start: Weekday) -> usize {
+    let lead = first.weekday().since(start) as usize;
     (lead + first.days_in_month() as usize).div_ceil(7)
 }
 
@@ -383,7 +396,7 @@ impl MailWindow {
         } else {
             FIELD
         };
-        let calendar = HEADER + WEEKDAY_ROW + weeks(first) as f32 * ROW;
+        let calendar = HEADER + WEEKDAY_ROW + weeks(first, format::first_weekday()) as f32 * ROW;
         let error = custom.error.map_or(0.0, |_| ERROR + GAP);
         let height = 2.0 * PAD + CHIPS + fields + calendar + BUTTONS + 3.0 * GAP + error;
         let viewport = window.viewport_size();
@@ -393,9 +406,9 @@ impl MailWindow {
         let span = custom.span;
         let spans: Vec<_> = SPANS
             .iter()
-            .map(|&(value, label)| {
-                chip(("span", value as usize), label, value == span, th).on_click(cx.listener(
-                    move |this, _, _, cx| {
+            .map(|&value| {
+                chip(("span", value as usize), &value.label(), value == span, th).on_click(
+                    cx.listener(move |this, _, _, cx| {
                         if let Some(custom) = this.custom_mut() {
                             custom.span = value;
                             custom.error = None;
@@ -404,8 +417,8 @@ impl MailWindow {
                             }
                         }
                         cx.notify();
-                    },
-                ))
+                    }),
+                )
             })
             .collect();
         // One date across, or From and To side by side.
@@ -444,7 +457,11 @@ impl MailWindow {
                     .h(px(CAPTION))
                     .text_size(px(12.0))
                     .text_color(rgba(if active { th.accent } else { th.text_dim }))
-                    .child(if ix == 0 { "From" } else { "To" })
+                    .child(if ix == 0 {
+                        tr!("search-dates-from")
+                    } else {
+                        tr!("search-dates-to")
+                    })
             });
             div()
                 .flex_1()
@@ -464,7 +481,7 @@ impl MailWindow {
                 .h(px(ERROR))
                 .text_size(px(13.0))
                 .text_color(rgba(th.error))
-                .child(error)
+                .child(error.text())
         });
         let buttons = div()
             .h(px(BUTTONS))
@@ -487,10 +504,10 @@ impl MailWindow {
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
                     .on_click(cx.listener(|this, _, window, cx| this.custom_cancel(window, cx)))
-                    .child("Cancel"),
+                    .child(tr!("search-dates-cancel")),
             )
             .child(
-                filled_button("custom-done", "Done", th)
+                filled_button("custom-done", tr!("search-dates-done"), th)
                     .on_click(cx.listener(|this, _, window, cx| this.custom_done(window, cx))),
             );
         let popover = div()
@@ -541,7 +558,8 @@ impl MailWindow {
         )
     }
 
-    /// A month of days, Monday first, with the month and year to turn.
+    /// A month of days, from the language's first day of the week, with
+    /// the month and year to turn.
     fn render_calendar(
         &self,
         custom: &CustomDates,
@@ -555,7 +573,7 @@ impl MailWindow {
             (Span::Between, [Some(a), Some(b)]) => Some((a.min(b), a.max(b))),
             _ => None,
         };
-        let turn = |id: &'static str, name: &'static str, months: i32, label: &'static str| {
+        let turn = |id: &'static str, name: &'static str, months: i32, label: String| {
             icon_button(id, name, 18.0, th)
                 .tooltip(tip(label, th))
                 .on_click(cx.listener(move |this, _, _, cx| this.turn_calendar(months, cx)))
@@ -568,38 +586,56 @@ impl MailWindow {
             .items_center()
             .text_size(px(14.0))
             .font_weight(FontWeight::MEDIUM)
-            .child(turn("month-back", "chevron-left", -1, "Previous month"))
+            .child(turn(
+                "month-back",
+                "chevron-left",
+                -1,
+                tr!("search-dates-month-back"),
+            ))
             .child(
                 div()
                     .w(px(90.0))
                     .flex()
                     .justify_center()
-                    .child(MONTHS[custom.month as usize - 1]),
+                    .child(format::month_name(custom.month)),
             )
-            .child(turn("month-on", "chevron-right", 1, "Next month"))
-            .child(turn("year-back", "chevron-left", -12, "Previous year"))
+            .child(turn(
+                "month-on",
+                "chevron-right",
+                1,
+                tr!("search-dates-month-on"),
+            ))
+            .child(turn(
+                "year-back",
+                "chevron-left",
+                -12,
+                tr!("search-dates-year-back"),
+            ))
             .child(
                 div()
                     .w(px(44.0))
                     .flex()
                     .justify_center()
-                    .child(custom.year.to_string()),
+                    .child(format::year(custom.year)),
             )
-            .child(turn("year-on", "chevron-right", 12, "Next year"));
+            .child(turn(
+                "year-on",
+                "chevron-right",
+                12,
+                tr!("search-dates-year-on"),
+            ));
         let cell = || div().w(px(DAY)).flex().items_center().justify_center();
-        let weekdays = div()
-            .h(px(WEEKDAY_ROW))
-            .flex()
-            .flex_row()
-            .children(WEEKDAYS.iter().map(|day| {
+        let weekdays = div().h(px(WEEKDAY_ROW)).flex().flex_row().children(
+            format::weekdays_short().into_iter().map(|(_, day)| {
                 cell()
                     .h(px(WEEKDAY_ROW))
                     .text_size(px(12.0))
                     .text_color(rgba(th.text_faint))
-                    .child(*day)
-            }));
+                    .child(day)
+            }),
+        );
         let (th_accent, th_hover) = (th.accent, th.hover);
-        let lead = first.weekday().to_monday_zero_offset();
+        let lead = first.weekday().since(format::first_weekday());
         let mut rows = Vec::new();
         let mut week = Vec::new();
         for _ in 0..lead {
@@ -731,8 +767,11 @@ mod tests {
             dates(Span::Between, "2026-09-10", "2026-09-01").unwrap(),
             "after:2026-09-01T00:00+06:00 before:2026-09-11T00:00+06:00"
         );
-        assert_eq!(dates(Span::On, "", ""), Err("Pick a date"));
-        assert_eq!(dates(Span::Between, "2026-09-01", ""), Err("Pick a date"));
+        assert_eq!(dates(Span::On, "", ""), Err(DateError::Missing));
+        assert_eq!(
+            dates(Span::Between, "2026-09-01", ""),
+            Err(DateError::Missing)
+        );
         assert!(dates(Span::Since, "2026-13-01", "").is_err());
 
         // The search parser reads them as the right instants.
@@ -792,8 +831,11 @@ mod tests {
 
     #[test]
     fn counts_weeks() {
-        assert_eq!(weeks(jiff::civil::date(2002, 5, 1)), 5);
-        assert_eq!(weeks(jiff::civil::date(2026, 3, 1)), 6);
-        assert_eq!(weeks(jiff::civil::date(2027, 2, 1)), 4);
+        let monday = Weekday::Monday;
+        assert_eq!(weeks(jiff::civil::date(2002, 5, 1), monday), 5);
+        assert_eq!(weeks(jiff::civil::date(2026, 3, 1), monday), 6);
+        assert_eq!(weeks(jiff::civil::date(2027, 2, 1), monday), 4);
+        // March 2026 starts on a Sunday.
+        assert_eq!(weeks(jiff::civil::date(2026, 3, 1), Weekday::Sunday), 5);
     }
 }

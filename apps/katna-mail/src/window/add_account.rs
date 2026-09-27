@@ -12,10 +12,11 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, EntityId, Focusable, FontWeight, Hsla,
-    MouseButton, MouseDownEvent, Subscription, Task, Window, deferred, div, linear_color_stop,
-    linear_gradient, prelude::*, relative, rgba,
+    MouseButton, MouseDownEvent, SharedString, Subscription, Task, Window, deferred, div,
+    linear_color_stop, linear_gradient, prelude::*, relative, rgba,
 };
 use katna_dbus::{NewImapAccount, ServerSpec};
+use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 use katna_ui::unpx;
@@ -65,11 +66,11 @@ impl Security {
         }
     }
 
-    fn label(self) -> &'static str {
+    fn label(self) -> String {
         match self {
-            Self::Tls => "SSL/TLS",
-            Self::StartTls => "STARTTLS",
-            Self::Plain => "None",
+            Self::Tls => "SSL/TLS".to_owned(),
+            Self::StartTls => "STARTTLS".to_owned(),
+            Self::Plain => tr!("add-account-security-none"),
         }
     }
 
@@ -144,14 +145,21 @@ fn server_spec(
 ) -> Result<ServerSpec, String> {
     let host = host.trim();
     if host.is_empty() {
-        return Err(format!("Enter the {what} server."));
+        return Err(tr!("add-account-server-missing", kind = what));
     }
     if host.contains(char::is_whitespace) {
-        return Err(format!("The {what} server name has a space in it."));
+        return Err(tr!("add-account-server-space", kind = what));
     }
     let port = match port.trim().parse::<u16>() {
         Ok(port) if port > 0 => port,
-        _ => return Err(format!("The {what} port must be a number from 1 to 65535.")),
+        _ => {
+            return Err(tr!(
+                "add-account-port-invalid",
+                kind = what,
+                min = "1",
+                max = "65535"
+            ));
+        }
     };
     Ok(ServerSpec {
         host: host.to_owned(),
@@ -192,14 +200,15 @@ fn app_password_provider(address: &str) -> Option<&'static str> {
     }
 }
 
-/// Where the daemon found the servers, for "found in …".
-fn source_text(source: &str) -> &'static str {
+/// Where the daemon found the servers, as the variant of "found in …"
+/// (`add-account-servers-found`) to pick.
+fn source_key(source: &str) -> &'static str {
     match source {
-        "built-in" => "Katna's list of providers",
-        "provider" => "your provider's settings",
-        "ispdb" => "Thunderbird's list of providers",
-        "dns-srv" | "mx" => "your domain's DNS records",
-        _ => "a guess; check them if signing in fails",
+        "built-in" => "built-in",
+        "provider" => "provider",
+        "ispdb" => "ispdb",
+        "dns-srv" | "mx" => "dns",
+        _ => "other",
     }
 }
 
@@ -379,9 +388,12 @@ impl MailWindow {
         };
         let address = dialog.address.read(cx).text().trim().to_owned();
         if address.is_empty() {
-            Err("Enter an email address.".to_owned())
+            Err(tr!("add-account-address-empty"))
         } else if !outgoing::valid_email(&address) {
-            Err("Enter an email address such as kay@example.org.".to_owned())
+            Err(tr!(
+                "add-account-address-invalid",
+                example = "kay@example.org"
+            ))
         } else {
             Ok(address)
         }
@@ -484,10 +496,7 @@ impl MailWindow {
                         this.fill_servers(&guess(&address), None, cx);
                         this.add_account_step(Step::Servers, window, cx);
                         this.add_account_error(
-                            format!(
-                                "Katna could not find the servers for {address}, so \
-                                 it filled in the usual names. Check them with your provider."
-                            ),
+                            tr!("add-account-not-found", address = address.as_str()),
                             cx,
                         );
                     }
@@ -540,7 +549,7 @@ impl MailWindow {
         };
         let password = dialog.password.read(cx).text().to_owned();
         if password.is_empty() {
-            self.add_account_error("Enter the password.".to_owned(), cx);
+            self.add_account_error(tr!("add-account-password-empty"), cx);
             return;
         }
         dialog.busy = true;
@@ -562,7 +571,7 @@ impl MailWindow {
                 Ok(_) => {
                     this.close_add_account(cx);
                     this.show_snackbar(
-                        format!("Added {address}. Getting your mail\u{2026}"),
+                        tr!("add-account-added", address = address.as_str()),
                         None,
                         cx,
                     );
@@ -571,13 +580,10 @@ impl MailWindow {
                 Err(AddError::Password(detail)) => {
                     tracing::info!(%detail, "login refused");
                     let hint = match app_password_provider(&address) {
-                        Some(provider) => format!(
-                            "{provider} refused the password. It needs an app password, \
-                             not the one you use on the web."
-                        ),
-                        None => {
-                            "The server refused the password. Check it and try again.".to_owned()
+                        Some(provider) => {
+                            tr!("add-account-app-password-refused", provider = provider)
                         }
+                        None => tr!("add-account-password-refused"),
                     };
                     this.add_account_error(hint, cx);
                     if let Some(dialog) = &this.add_account {
@@ -616,23 +622,24 @@ impl MailWindow {
         let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let address = dialog.address.read(cx).text().trim().to_owned();
 
-        let (title, subtitle): (&str, Option<String>) = match dialog.step {
+        let (title, subtitle): (String, Option<String>) = match dialog.step {
             Step::Address if dialog.busy => (
-                "Add a mail account",
-                Some(format!("Looking for the mail servers of {address}\u{2026}")),
+                tr!("add-account-title"),
+                Some(tr!("add-account-looking", address = address.as_str())),
             ),
             Step::Address => (
-                "Add a mail account",
-                Some("Enter your email address. Katna finds the servers for you.".to_owned()),
+                tr!("add-account-title"),
+                Some(tr!("add-account-address-intro")),
             ),
             Step::Servers => (
-                "Server settings",
-                Some(format!("Where Katna reads and sends mail for {address}.")),
+                tr!("add-account-servers-title"),
+                Some(tr!("add-account-servers-intro", address = address.as_str())),
             ),
-            Step::Password if dialog.busy => {
-                ("Enter your password", Some("Signing in\u{2026}".to_owned()))
-            }
-            Step::Password => ("Enter your password", None),
+            Step::Password if dialog.busy => (
+                tr!("add-account-password-title"),
+                Some(tr!("add-account-signing-in")),
+            ),
+            Step::Password => (tr!("add-account-password-title"), None),
         };
         let error = dialog.error.clone();
         let mut body = div()
@@ -665,7 +672,7 @@ impl MailWindow {
             Step::Address => {
                 body = body.child(div().mt(px(24.0)).child(self.outlined_field(
                     "field-address",
-                    "Email address",
+                    tr!("add-account-field-address"),
                     &dialog.address,
                     error.is_some(),
                     th,
@@ -675,13 +682,19 @@ impl MailWindow {
             }
             Step::Servers => {
                 body = body
-                    .child(section_title("Incoming mail (IMAP)", th))
+                    .child(section_title(
+                        tr!("add-account-incoming", protocol = "IMAP"),
+                        th,
+                    ))
                     .child(self.server_fields(Kind::Imap, error.is_some(), th, window, cx))
-                    .child(section_title("Outgoing mail (SMTP)", th))
+                    .child(section_title(
+                        tr!("add-account-outgoing", protocol = "SMTP"),
+                        th,
+                    ))
                     .child(self.server_fields(Kind::Smtp, false, th, window, cx))
                     .child(div().mt(px(16.0)).child(self.outlined_field(
                         "field-username",
-                        "Username",
+                        tr!("add-account-field-username"),
                         &dialog.username,
                         false,
                         th,
@@ -719,7 +732,7 @@ impl MailWindow {
                     )
                     .child(div().mt(px(24.0)).child(self.outlined_field(
                         "field-password",
-                        "Password",
+                        tr!("add-account-field-password"),
                         &dialog.password,
                         error.is_some(),
                         th,
@@ -758,28 +771,24 @@ impl MailWindow {
                                 },
                                 20.0,
                             ))
-                            .child("Show password"),
+                            .child(tr!("add-account-show-password")),
                     )
                     .children(app_password_provider(&address).map(|provider| {
                         hint(
-                            format!(
-                                "{provider} needs an app password here, not the one you use \
-                                 on the web. Make one in the security settings of your \
-                                 {provider} account."
-                            ),
+                            tr!("add-account-app-password-hint", provider = provider),
                             th,
                         )
                     }))
                     .child(div().mt(px(20.0)).child(self.outlined_field(
                         "field-name",
-                        "Your name (optional)",
+                        tr!("add-account-field-name"),
                         &dialog.name,
                         false,
                         th,
                         window,
                         cx,
                     )))
-                    .child(hint("Shown to the people you write to.".to_owned(), th))
+                    .child(hint(tr!("add-account-name-hint"), th))
                     .child(hint(self.servers_summary(cx), th));
             }
         }
@@ -790,12 +799,14 @@ impl MailWindow {
         }
 
         let (secondary, secondary_label) = match dialog.step {
-            Step::Address | Step::Password => ("add-account-servers", "Server settings"),
-            Step::Servers => ("add-account-back", "Back"),
+            Step::Address | Step::Password => {
+                ("add-account-servers", tr!("add-account-servers-button"))
+            }
+            Step::Servers => ("add-account-back", tr!("add-account-back")),
         };
         let next_label = match dialog.step {
-            Step::Password => "Add account",
-            _ => "Next",
+            Step::Password => tr!("add-account-add"),
+            _ => tr!("add-account-next"),
         };
         let busy = dialog.busy;
         body = body.child(
@@ -821,7 +832,7 @@ impl MailWindow {
                 )
                 .child(div().flex_1())
                 .child(
-                    text_button("add-account-cancel", "Cancel", th)
+                    text_button("add-account-cancel", tr!("add-account-cancel"), th)
                         .on_click(cx.listener(|this, _, _, cx| this.close_add_account(cx))),
                 )
                 .child(
@@ -883,11 +894,15 @@ impl MailWindow {
         let servers = if imap == smtp {
             imap
         } else {
-            format!("{imap} and {smtp}")
+            tr!("add-account-servers-pair", imap = imap, smtp = smtp)
         };
         match &dialog.source {
-            Some(source) => format!("Servers: {servers}, found in {}.", source_text(source)),
-            None => format!("Servers: {servers}, as entered."),
+            Some(source) => tr!(
+                "add-account-servers-found",
+                servers = servers,
+                source = source_key(source)
+            ),
+            None => tr!("add-account-servers-entered", servers = servers),
         }
     }
 
@@ -941,7 +956,7 @@ impl MailWindow {
             .gap(px(12.0))
             .child(self.outlined_field(
                 (prefix, 100usize),
-                "Server",
+                tr!("add-account-field-server"),
                 &fields.host,
                 error,
                 th,
@@ -956,7 +971,7 @@ impl MailWindow {
                     .gap(px(12.0))
                     .child(div().w(px(96.0)).flex_none().child(self.outlined_field(
                         (prefix, 101usize),
-                        "Port",
+                        tr!("add-account-field-port"),
                         &fields.port,
                         false,
                         th,
@@ -1003,7 +1018,7 @@ impl MailWindow {
     fn outlined_field(
         &self,
         id: impl Into<gpui::ElementId>,
-        label: &'static str,
+        label: String,
         input: &Entity<TextInput>,
         error: bool,
         th: &Theme,
@@ -1184,9 +1199,9 @@ impl MailWindow {
                     .child(icon("person-add", th.text_dim, 22.0)),
             )
             .child(if self.accounts.is_empty() {
-                "Add an account"
+                tr!("account-add")
             } else {
-                "Add another account"
+                tr!("add-account-menu-another")
             });
         let card = div()
             .id("account-menu")
@@ -1243,7 +1258,7 @@ impl MailWindow {
                                 .justify_center()
                                 .child(icon("settings", th.text_dim, 22.0)),
                         )
-                        .child("Manage accounts"),
+                        .child(tr!("add-account-menu-manage")),
                 )
             })
             .with_animation(
@@ -1318,7 +1333,7 @@ fn error_line(error: String, th: &Theme) -> AnyElement {
         .into_any_element()
 }
 
-fn section_title(text: &'static str, th: &Theme) -> AnyElement {
+fn section_title(text: String, th: &Theme) -> AnyElement {
     div()
         .mt(px(24.0))
         .mb(px(12.0))
@@ -1343,9 +1358,10 @@ fn hint(text: String, th: &Theme) -> AnyElement {
 /// A borderless button with an accent label.
 pub(super) fn text_button(
     id: &'static str,
-    label: &'static str,
+    label: impl Into<SharedString>,
     th: &Theme,
 ) -> gpui::Stateful<gpui::Div> {
+    let label: SharedString = label.into();
     div()
         .id(id)
         .h(px(36.0))

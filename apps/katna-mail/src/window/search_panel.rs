@@ -11,25 +11,31 @@ use gpui::{
     AnyElement, Context, Div, Entity, Focusable, FontWeight, Stateful, Subscription, Window,
     canvas, div, prelude::*, rgba,
 };
+use katna_i18n::tr;
 use katna_ui::px;
 use katna_ui::{InputEvent, TextInput};
 
 use super::MailWindow;
 use crate::theme::Theme;
 use crate::widgets::{filled_button, icon, icon_button, raised, tip};
-use dates::CustomDates;
+use dates::{CustomDates, DateError};
 
-/// "Date within" choices: label and `newer_than:` value.
-const WITHIN: [(&str, &str); 8] = [
-    ("Any time", ""),
-    ("1 day", "1d"),
-    ("3 days", "3d"),
-    ("1 week", "1w"),
-    ("2 weeks", "2w"),
-    ("1 month", "1m"),
-    ("6 months", "6m"),
-    ("1 year", "1y"),
-];
+/// "Date within" choices: `newer_than:` values, labeled by
+/// [`within_label`].
+const WITHIN: [&str; 8] = ["", "1d", "3d", "1w", "2w", "1m", "6m", "1y"];
+
+/// What a "Date within" chip says: "Any time", "3 days".
+fn within_label(age: &str) -> String {
+    let (count, unit) = age.split_at(age.len().saturating_sub(1));
+    let count: u32 = count.parse().unwrap_or(0);
+    match unit {
+        "d" => tr!("search-within-days", count = count),
+        "w" => tr!("search-within-weeks", count = count),
+        "m" => tr!("search-within-months", count = count),
+        "y" => tr!("search-within-years", count = count),
+        _ => tr!("search-within-any"),
+    }
+}
 
 /// The "Custom" chip, after [`WITHIN`].
 const CUSTOM: usize = WITHIN.len();
@@ -48,7 +54,7 @@ pub(super) struct SearchPanel {
 
 impl SearchPanel {
     /// The search query the fields make, or why the custom dates are wrong.
-    fn query(&self, cx: &gpui::App) -> Result<String, &'static str> {
+    fn query(&self, cx: &gpui::App) -> Result<String, DateError> {
         let text = |input: &Entity<TextInput>| input.read(cx).text().trim().to_owned();
         let quote = |value: &str| {
             if value.contains(char::is_whitespace) {
@@ -58,8 +64,8 @@ impl SearchPanel {
             }
         };
         let dates = match WITHIN.get(self.within) {
-            Some((_, "")) => String::new(),
-            Some((_, age)) => format!("newer_than:{age}"),
+            Some(&"") => String::new(),
+            Some(age) => format!("newer_than:{age}"),
             None => self.custom.query(cx)?,
         };
         Ok(build_query(
@@ -215,7 +221,7 @@ impl MailWindow {
     ) -> Option<AnyElement> {
         let t = self.search_panel_spring.value().clamp(0.0, 1.0);
         let panel = self.search_panel.as_ref()?;
-        let field = |label: &'static str, input: &Entity<TextInput>| {
+        let field = |label: String, input: &Entity<TextInput>| {
             div()
                 .flex()
                 .flex_row()
@@ -246,8 +252,8 @@ impl MailWindow {
         let mut chips: Vec<AnyElement> = WITHIN
             .iter()
             .enumerate()
-            .map(|(ix, (label, _))| {
-                chip(("within", ix), label, ix == within, th)
+            .map(|(ix, age)| {
+                chip(("within", ix), &within_label(age), ix == within, th)
                     .on_click(cx.listener(move |this, _, _, cx| {
                         if let Some(panel) = &mut this.search_panel {
                             panel.within = ix;
@@ -262,7 +268,7 @@ impl MailWindow {
         let label = (within == CUSTOM)
             .then(|| panel.custom.label(cx))
             .flatten()
-            .unwrap_or_else(|| "Custom".to_owned());
+            .unwrap_or_else(|| tr!("search-within-custom"));
         let chip_bounds = panel.custom.chip.clone();
         chips.push(
             div()
@@ -307,25 +313,25 @@ impl MailWindow {
                             .flex_1()
                             .text_size(px(16.0))
                             .font_weight(FontWeight::MEDIUM)
-                            .child("Search options"),
+                            .child(tr!("search-options")),
                     )
                     .child(
                         // Out into the side padding, so the button sits as
                         // far from the right edge as from the top.
                         icon_button("search-panel-close", "close", 20.0, th)
                             .mr(px(-12.0))
-                            .tooltip(tip("Close", th))
+                            .tooltip(tip(tr!("search-options-close"), th))
                             .on_click(cx.listener(|this, _, _, cx| {
                                 this.search_panel = None;
                                 cx.notify();
                             })),
                     ),
             )
-            .child(field("From", &panel.from))
-            .child(field("To", &panel.to))
-            .child(field("Subject", &panel.subject))
-            .child(field("Has the words", &panel.words))
-            .child(field("Doesn't have", &panel.without))
+            .child(field(tr!("search-from"), &panel.from))
+            .child(field(tr!("search-to"), &panel.to))
+            .child(field(tr!("search-subject"), &panel.subject))
+            .child(field(tr!("search-has-words"), &panel.words))
+            .child(field(tr!("search-without"), &panel.without))
             .child(
                 div()
                     .pt(px(8.0))
@@ -340,7 +346,7 @@ impl MailWindow {
                             .flex_none()
                             .text_size(px(14.0))
                             .text_color(rgba(th.text_dim))
-                            .child("Date within"),
+                            .child(tr!("search-date-within")),
                     )
                     .child(
                         div()
@@ -373,7 +379,7 @@ impl MailWindow {
                     } else {
                         icon("checkbox", th.text_dim, 20.0)
                     })
-                    .child("Has attachment"),
+                    .child(tr!("search-has-attachment")),
             )
             .child(
                 div()
@@ -400,11 +406,13 @@ impl MailWindow {
                                 this.search_panel = None;
                                 this.toggle_search_panel(window, cx);
                             }))
-                            .child("Clear filter"),
+                            .child(tr!("search-clear-filter")),
                     )
-                    .child(filled_button("search-panel-go", "Search", th).on_click(
-                        cx.listener(|this, _, window, cx| this.run_search_panel(window, cx)),
-                    )),
+                    .child(
+                        filled_button("search-panel-go", tr!("search"), th).on_click(
+                            cx.listener(|this, _, window, cx| this.run_search_panel(window, cx)),
+                        ),
+                    ),
             );
         Some(
             div()
@@ -469,5 +477,14 @@ mod tests {
             "from:kay subject:\"gas deal\" price -draft -old newer_than:1w has:attachment"
         );
         assert_eq!(build_query("", "", "", "", "", "", false, quote), "");
+    }
+
+    #[test]
+    fn labels_within() {
+        let labels: Vec<String> = WITHIN.iter().map(|age| within_label(age)).collect();
+        assert_eq!(labels[0], "Any time");
+        assert_eq!(labels[1], "1 day");
+        assert_eq!(labels[2], "3 days");
+        assert_eq!(labels[7], "1 year");
     }
 }

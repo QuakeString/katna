@@ -16,6 +16,7 @@ use gpui::{
     AnyElement, Bounds, Context, FocusHandle, FontWeight, KeyDownEvent, MouseButton, PathBuilder,
     Pixels, Window, anchored, canvas, deferred, div, point, prelude::*, rgba,
 };
+use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 use katna_ui::unpx;
@@ -44,55 +45,17 @@ pub(super) enum Spot {
     Account,
 }
 
-/// The stops, in order: the part, a title and what to say.
+/// The stops, in order: the part, and the message ids of a title and of
+/// what to say.
 const STOPS: [(Spot, &str, &str); 8] = [
-    (
-        Spot::Compose,
-        "Write a message",
-        "Compose opens a new message at the bottom right, so you can keep \
-         reading while you write.",
-    ),
-    (
-        Spot::Search,
-        "Search all your mail",
-        "Search works offline too. The button at the right end adds filters: \
-         sender, recipient, subject, dates and attachments.",
-    ),
-    (
-        Spot::Menu,
-        "Show or hide the folders",
-        "This button folds the folder list away. While it is hidden, rest the \
-         pointer on Mail at the left to see the folders.",
-    ),
-    (
-        Spot::Apps,
-        "Your apps",
-        "Mail lives here now. Calendar, Contacts, Tasks, Notes and Feeds will \
-         join it in this bar.",
-    ),
-    (
-        Spot::Tabs,
-        "Inbox tabs",
-        "New mail is sorted into Primary, Promotions, Social, Updates and \
-         Forums. You can turn the tabs off in quick settings.",
-    ),
-    (
-        Spot::List,
-        "Your messages",
-        "Click a message to read it. Hover it for quick actions, right-click it \
-         for more, or tick several to act on them together.",
-    ),
-    (
-        Spot::Settings,
-        "Quick settings",
-        "Change the reading pane, density and theme here. The tour can be \
-         started again from there too.",
-    ),
-    (
-        Spot::Account,
-        "Your account",
-        "See which account you are in, and add another one.",
-    ),
+    (Spot::Compose, "tour-compose-title", "tour-compose-text"),
+    (Spot::Search, "tour-search-title", "tour-search-text"),
+    (Spot::Menu, "tour-menu-title", "tour-menu-text"),
+    (Spot::Apps, "tour-apps-title", "tour-apps-text"),
+    (Spot::Tabs, "tour-tabs-title", "tour-tabs-text"),
+    (Spot::List, "tour-list-title", "tour-list-text"),
+    (Spot::Settings, "tour-settings-title", "tour-settings-text"),
+    (Spot::Account, "tour-account-title", "tour-account-text"),
 ];
 
 /// Where each part is drawn in this frame, in window coordinates.
@@ -295,11 +258,8 @@ impl MailWindow {
         });
 
         let (title, text) = match stop {
-            Some(s) => (STOPS[s].1, STOPS[s].2),
-            None => (
-                "Welcome to Katna Mail",
-                "A one-minute tour shows where everything is.",
-            ),
+            Some(s) => (tr!(STOPS[s].1), tr!(STOPS[s].2)),
+            None => (tr!("tour-welcome-title"), tr!("tour-welcome-text")),
         };
         let buttons = match stop {
             None => div()
@@ -308,11 +268,11 @@ impl MailWindow {
                 .items_center()
                 .child(div().flex_1())
                 .child(
-                    text_button("tour-skip", "Not now", th)
+                    text_button("tour-skip", tr!("tour-not-now"), th)
                         .on_click(cx.listener(|this, _, _, cx| this.end_tour(cx))),
                 )
                 .child(
-                    filled_button("tour-start", "Take the tour", th)
+                    filled_button("tour-start", tr!("tour-start"), th)
                         .ml(px(8.0))
                         .on_click(cx.listener(|this, _, _, cx| this.tour_step(1, cx))),
                 ),
@@ -321,20 +281,36 @@ impl MailWindow {
                 .flex_row()
                 .items_center()
                 .child(
-                    text_button("tour-end", if last { "Close" } else { "Skip tour" }, th)
-                        .on_click(cx.listener(|this, _, _, cx| this.end_tour(cx))),
+                    text_button(
+                        "tour-end",
+                        if last {
+                            tr!("tour-close")
+                        } else {
+                            tr!("tour-skip")
+                        },
+                        th,
+                    )
+                    .on_click(cx.listener(|this, _, _, cx| this.end_tour(cx))),
                 )
                 .child(div().flex_1())
                 .when(number > 1, |d| {
                     d.child(
-                        text_button("tour-back", "Back", th)
+                        text_button("tour-back", tr!("tour-back"), th)
                             .on_click(cx.listener(|this, _, _, cx| this.tour_step(-1, cx))),
                     )
                 })
                 .child(
-                    filled_button("tour-next", if last { "Done" } else { "Next" }, th)
-                        .ml(px(8.0))
-                        .on_click(cx.listener(|this, _, _, cx| this.tour_step(1, cx))),
+                    filled_button(
+                        "tour-next",
+                        if last {
+                            tr!("tour-done")
+                        } else {
+                            tr!("tour-next")
+                        },
+                        th,
+                    )
+                    .ml(px(8.0))
+                    .on_click(cx.listener(|this, _, _, cx| this.tour_step(1, cx))),
                 ),
         };
         let card = div()
@@ -353,7 +329,7 @@ impl MailWindow {
                         .text_size(px(12.0))
                         .font_weight(FontWeight::MEDIUM)
                         .text_color(rgba(th.accent))
-                        .child(format!("{number} of {count}")),
+                        .child(tr!("tour-step", step = number, total = count)),
                 )
             })
             .child(div().text_size(px(18.0)).line_height(px(24.0)).child(title))

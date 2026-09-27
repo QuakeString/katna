@@ -9,10 +9,11 @@
 use std::time::Duration;
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, Task, Window, div,
-    ease_out_quint, prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, Context, FontWeight, SharedString, SpringAnimation, Task,
+    Window, div, ease_out_quint, prelude::*, rgba,
 };
 use katna_core::config::{Density, ReadingPane, Theme as ThemeChoice};
+use katna_i18n::tr;
 use katna_ui::motion::{self, lerp};
 use katna_ui::px;
 
@@ -238,12 +239,8 @@ impl MailWindow {
             .items_center()
             .gap(px(12.0))
             .child(div().pb(px(4.0)).child(logo()))
-            .child(title("Welcome to Katna Mail", th))
-            .child(lead(
-                "Your mail on your own computer: quick to search, readable offline and \
-                 private.",
-                th,
-            ))
+            .child(title(tr!("onboarding-welcome-title"), th))
+            .child(lead(&tr!("onboarding-welcome-lead"), th))
             .child(
                 div()
                     .pt(px(12.0))
@@ -253,28 +250,26 @@ impl MailWindow {
                     .gap(px(16.0))
                     .child(feature(
                         "bolt",
-                        "Fast, even offline",
-                        "Katna keeps a copy of your mail here, so opening and searching it \
-                         is instant, with or without a connection.",
+                        tr!("onboarding-fast-title"),
+                        tr!("onboarding-fast-text"),
                         th,
                     ))
                     .child(feature(
                         "inbox",
-                        "Works with your mail",
-                        "Gmail, Outlook, Yahoo, iCloud and any other IMAP or POP account.",
+                        tr!("onboarding-providers-title"),
+                        tr!("onboarding-providers-text"),
                         th,
                     ))
                     .child(feature(
                         "lock",
-                        "Private",
-                        "Your mail goes straight from your provider to this computer. No \
-                         Katna server sees it.",
+                        tr!("onboarding-private-title"),
+                        tr!("onboarding-private-text"),
                         th,
                     )),
             );
         let actions = actions_row(
             None,
-            filled_button("onboarding-start", "Get started", th)
+            filled_button("onboarding-start", tr!("onboarding-get-started"), th)
                 .on_click(cx.listener(|this, _, _, cx| this.onboarding_step(Step::Account, cx))),
         );
         (body.into_any_element(), actions)
@@ -293,13 +288,13 @@ impl MailWindow {
         let status = match &service {
             Service::Checking => status_line(
                 "refresh",
-                "Checking the Katna background service\u{2026}",
+                tr!("onboarding-service-checking"),
                 th.text_faint,
                 th,
             ),
             Service::Running => status_line(
                 "check-circle",
-                "The Katna background service is running.",
+                tr!("onboarding-service-running"),
                 th.accent,
                 th,
             ),
@@ -321,17 +316,14 @@ impl MailWindow {
                         .font_weight(FontWeight::MEDIUM)
                         .text_color(rgba(th.error))
                         .child(icon("info", th.error, 20.0))
-                        .child("The Katna background service is not running"),
+                        .child(tr!("onboarding-service-missing")),
                 )
                 .child(
                     div()
                         .text_size(px(13.0))
                         .line_height(px(20.0))
                         .text_color(rgba(th.text_dim))
-                        .child(
-                            "It fetches and sends your mail. Start it from a terminal, \
-                             then check again:",
-                        ),
+                        .child(tr!("onboarding-service-start")),
                 )
                 .child(
                     div()
@@ -350,12 +342,12 @@ impl MailWindow {
                         .child(detail.clone()),
                 )
                 .child(div().child(
-                    text_button("onboarding-recheck", "Check again", th).on_click(cx.listener(
-                        |this, _, _, cx| {
+                    text_button("onboarding-recheck", tr!("onboarding-check-again"), th).on_click(
+                        cx.listener(|this, _, _, cx| {
                             this.check_service(cx);
                             cx.notify();
-                        },
-                    )),
+                        }),
+                    ),
                 ))
                 .into_any_element(),
         };
@@ -365,22 +357,17 @@ impl MailWindow {
             .items_center()
             .gap(px(12.0))
             .child(icon("person-add", th.accent, 48.0))
-            .child(title("Add your mail account", th))
-            .child(lead(
-                "Type your email address and password, and Katna finds the server \
-                 settings. Gmail, Yahoo and iCloud need an app password, made in your \
-                 account's security settings.",
-                th,
-            ))
+            .child(title(tr!("onboarding-account-title"), th))
+            .child(lead(&tr!("onboarding-account-lead"), th))
             .child(div().pt(px(12.0)).w_full().child(status));
         let ready = service == Service::Running;
-        let add = filled_button("onboarding-add", "Add an account", th)
+        let add = filled_button("onboarding-add", tr!("onboarding-add-account"), th)
             .when(!ready, |d| d.opacity(0.5))
             .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx)));
         let _ = window;
         let actions = actions_row(
             Some(
-                text_button("onboarding-back", "Back", th)
+                text_button("onboarding-back", tr!("onboarding-back"), th)
                     .on_click(cx.listener(|this, _, _, cx| this.onboarding_step(Step::Welcome, cx)))
                     .into_any_element(),
             ),
@@ -401,21 +388,27 @@ impl MailWindow {
                     .flex_col()
                     .items_center()
                     .gap(px(12.0))
-                    .child(title("Make it yours", th))
-                    .child(lead(
-                        "Pick how mail opens and how Katna looks. You can change these \
-                         any time in quick settings.",
-                        th,
-                    )),
+                    .child(title(tr!("onboarding-look-title"), th))
+                    .child(lead(&tr!("onboarding-look-lead"), th)),
             )
-            .child(label("Reading pane", th))
+            .child(label(&tr!("onboarding-reading-pane"), th))
             .child(
                 div()
                     .flex()
                     .flex_row()
                     .gap(px(12.0))
-                    .child(self.pane_choice(ReadingPane::Right, "Right of the list", th, cx))
-                    .child(self.pane_choice(ReadingPane::None, "No split", th, cx)),
+                    .child(self.pane_choice(
+                        ReadingPane::Right,
+                        tr!("onboarding-pane-right"),
+                        th,
+                        cx,
+                    ))
+                    .child(self.pane_choice(
+                        ReadingPane::None,
+                        tr!("onboarding-pane-none"),
+                        th,
+                        cx,
+                    )),
             )
             .child(
                 div()
@@ -428,12 +421,24 @@ impl MailWindow {
                             .flex_1()
                             .flex()
                             .flex_col()
-                            .child(label("Theme", th))
+                            .child(label(&tr!("onboarding-theme"), th))
                             .children(
                                 [
-                                    (ThemeChoice::System, "theme-system", "Same as the desktop"),
-                                    (ThemeChoice::Light, "theme-light", "Light"),
-                                    (ThemeChoice::Dark, "theme-dark", "Dark"),
+                                    (
+                                        ThemeChoice::System,
+                                        "theme-system",
+                                        tr!("onboarding-theme-system"),
+                                    ),
+                                    (
+                                        ThemeChoice::Light,
+                                        "theme-light",
+                                        tr!("onboarding-theme-light"),
+                                    ),
+                                    (
+                                        ThemeChoice::Dark,
+                                        "theme-dark",
+                                        tr!("onboarding-theme-dark"),
+                                    ),
                                 ]
                                 .into_iter()
                                 .map(|(choice, id, text)| {
@@ -453,10 +458,10 @@ impl MailWindow {
                             .flex_1()
                             .flex()
                             .flex_col()
-                            .child(label("Density", th))
+                            .child(label(&tr!("onboarding-density"), th))
                             .child(self.radio_row(
                                 "density-default",
-                                "Default",
+                                tr!("onboarding-density-default"),
                                 view.density == Density::Default,
                                 Change::Density(Density::Default),
                                 th,
@@ -464,7 +469,7 @@ impl MailWindow {
                             ))
                             .child(self.radio_row(
                                 "density-compact",
-                                "Compact",
+                                tr!("onboarding-density-compact"),
                                 view.density == Density::Compact,
                                 Change::Density(Density::Compact),
                                 th,
@@ -474,7 +479,7 @@ impl MailWindow {
             );
         let actions = actions_row(
             None,
-            filled_button("onboarding-look-done", "Continue", th)
+            filled_button("onboarding-look-done", tr!("onboarding-continue"), th)
                 .on_click(cx.listener(|this, _, _, cx| this.onboarding_step(Step::Share, cx))),
         );
         (body.into_any_element(), actions)
@@ -491,8 +496,8 @@ impl MailWindow {
                     .flex_col()
                     .items_center()
                     .gap(px(12.0))
-                    .child(title(share_ask::TITLE, th))
-                    .child(lead(share_ask::LEAD, th)),
+                    .child(title(share_ask::title_text(), th))
+                    .child(lead(&share_ask::lead_text(), th)),
             )
             .child(share_ask::points(th));
         let actions = div()
@@ -536,34 +541,26 @@ impl MailWindow {
                         |el, t| el.size(px(64.0 * lerp(0.6, 1.0, t))),
                     ),
             )
-            .child(title("You're all set", th))
+            .child(title(tr!("onboarding-ready-title"), th))
             .child(lead(
                 &if address.is_empty() {
-                    "Katna is getting your mail. It shows up as it arrives, and new mail \
-                     appears on its own."
-                        .to_owned()
+                    tr!("onboarding-ready-lead")
                 } else {
-                    format!(
-                        "Katna is getting the mail of {address}. It shows up as it \
-                         arrives, and new mail appears on its own."
-                    )
+                    tr!("onboarding-ready-lead-address", address = address.as_str())
                 },
                 th,
             ))
-            .child(lead(
-                "Take a one-minute tour to see where everything is?",
-                th,
-            ));
+            .child(lead(&tr!("onboarding-ready-tour"), th));
         let actions =
             actions_row(
                 Some(
-                    text_button("onboarding-skip", "Skip for now", th)
+                    text_button("onboarding-skip", tr!("onboarding-skip"), th)
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.finish_onboarding(false, window, cx)
                         }))
                         .into_any_element(),
                 ),
-                filled_button("onboarding-tour", "Take the tour", th).on_click(
+                filled_button("onboarding-tour", tr!("onboarding-take-tour"), th).on_click(
                     cx.listener(|this, _, window, cx| this.finish_onboarding(true, window, cx)),
                 ),
             );
@@ -594,13 +591,13 @@ fn step_dots(step: Step, th: &Theme) -> AnyElement {
         .into_any_element()
 }
 
-pub(super) fn title(text: &'static str, th: &Theme) -> AnyElement {
+pub(super) fn title(text: impl Into<SharedString>, th: &Theme) -> AnyElement {
     div()
         .text_size(px(24.0))
         .line_height(px(32.0))
         .text_color(rgba(th.text))
         .text_center()
-        .child(text)
+        .child(text.into())
         .into_any_element()
 }
 
@@ -615,7 +612,7 @@ pub(super) fn lead(text: &str, th: &Theme) -> AnyElement {
         .into_any_element()
 }
 
-fn label(text: &'static str, th: &Theme) -> AnyElement {
+fn label(text: &str, th: &Theme) -> AnyElement {
     div()
         .px(px(8.0))
         .pb(px(4.0))
@@ -630,8 +627,8 @@ fn label(text: &'static str, th: &Theme) -> AnyElement {
 /// sentence.
 pub(super) fn feature(
     name: &str,
-    heading: &'static str,
-    text: &'static str,
+    heading: impl Into<SharedString>,
+    text: impl Into<SharedString>,
     th: &Theme,
 ) -> AnyElement {
     div()
@@ -662,20 +659,20 @@ pub(super) fn feature(
                         .text_size(px(15.0))
                         .font_weight(FontWeight::MEDIUM)
                         .text_color(rgba(th.text))
-                        .child(heading),
+                        .child(heading.into()),
                 )
                 .child(
                     div()
                         .text_size(px(13.0))
                         .line_height(px(19.0))
                         .text_color(rgba(th.text_dim))
-                        .child(text),
+                        .child(text.into()),
                 ),
         )
         .into_any_element()
 }
 
-fn status_line(name: &str, text: &'static str, color: u32, th: &Theme) -> AnyElement {
+fn status_line(name: &str, text: impl Into<SharedString>, color: u32, th: &Theme) -> AnyElement {
     div()
         .w_full()
         .flex()
@@ -686,7 +683,7 @@ fn status_line(name: &str, text: &'static str, color: u32, th: &Theme) -> AnyEle
         .text_size(px(13.0))
         .text_color(rgba(th.text_dim))
         .child(icon(name, color, 18.0))
-        .child(text)
+        .child(text.into())
         .into_any_element()
 }
 
