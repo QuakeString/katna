@@ -208,6 +208,26 @@ struct Stick {
     card_top: f32,
     footer_top: f32,
     footer_height: f32,
+    /// How far the Send row was drawn above its place, to see after
+    /// layout whether that is still right.
+    stuck: f32,
+}
+
+impl Stick {
+    /// How far the Send row goes up from its place so it stays at the
+    /// bottom of the conversation `scroll`, but no higher than a little
+    /// below the top of the card.
+    fn stuck(&self, scroll: &ScrollHandle) -> f32 {
+        // A scroll past either end is only put back when the conversation
+        // is laid out, after the window drew; the offset it ends up with
+        // is what counts.
+        let max = unpx(scroll.max_offset().y).max(0.0);
+        let offset = unpx(scroll.offset().y).clamp(-max, 0.0);
+        let bottom = unpx(scroll.bounds().size.height) - offset;
+        let highest = self.card_top + STICK_BELOW;
+        (self.footer_top + self.footer_height - bottom)
+            .clamp(0.0, (self.footer_top - highest).max(0.0))
+    }
 }
 
 /// What the compose windows share: the spelling dictionary, loaded once,
@@ -1687,11 +1707,9 @@ impl MailWindow {
         // while the text runs on below it, and moves up with the card.
         let stuck = {
             let at = compose.stick.get();
-            let view = self.reader_scroll.bounds().size.height;
-            let bottom = unpx(view - self.reader_scroll.offset().y);
-            let highest = at.card_top + STICK_BELOW;
-            (at.footer_top + at.footer_height - bottom)
-                .clamp(0.0, (at.footer_top - highest).max(0.0))
+            let stuck = at.stuck(&self.reader_scroll);
+            compose.stick.set(Stick { stuck, ..at });
+            stuck
         };
         let card = div()
             .id("inline-reply")
@@ -1944,7 +1962,8 @@ impl MailWindow {
 const STICK_BELOW: f32 = 96.0;
 
 /// Records where its parent is drawn in the conversation `scroll`, in
-/// pixels from the top of the content, and draws again when that moved.
+/// pixels from the top of the content, and draws again when that moved or
+/// the Send row is no longer at the bottom of the pane.
 fn measure(
     scroll: &ScrollHandle,
     stick: &Rc<Cell<Stick>>,
@@ -1957,7 +1976,10 @@ fn measure(
             let top = unpx(bounds.top() - scroll.bounds().top() - scroll.offset().y);
             let mut at = stick.get();
             set(&mut at, top, unpx(bounds.size.height));
-            if at != stick.get() {
+            // Also when the pane changed size or a scroll went past its
+            // end since the Send row was placed.
+            let placed = (at.stuck(&scroll) - at.stuck).abs() < 0.5;
+            if at != stick.get() || !placed {
                 stick.set(at);
                 // After this frame: a change asked for while drawing is lost.
                 let this = this.clone();
