@@ -139,6 +139,8 @@ pub(super) struct SettingsPage {
     pub(super) scale: super::scale_slider::ScaleDrag,
     /// The account whose name is being changed in Settings > Accounts.
     pub(super) renaming: Option<super::accounts::Renaming>,
+    /// An account being dragged to a new place, and rows gliding to theirs.
+    pub(super) reorder: super::accounts::Reorder,
     /// What Katna starts at login, read when the page opened.
     pub(super) start_at_login: Option<crate::autostart::Start>,
     /// The spelling dictionaries installed, read when the page opened.
@@ -213,6 +215,7 @@ impl MailWindow {
             info: Rc::default(),
             scale: Default::default(),
             renaming: None,
+            reorder: Default::default(),
             start_at_login: crate::autostart::get(),
             dictionaries: crate::spell::installed(),
             mail_app: None,

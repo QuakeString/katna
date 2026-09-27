@@ -2531,6 +2531,7 @@ impl Render for MailWindow {
         let settings_t = self.settings_spring.tick(window, reduce);
         self.search_panel_spring.tick(window, reduce);
         self.tab_spring.tick(window, reduce);
+        self.tick_reorder(window, reduce, cx);
         // Forget the closed conversation once its pane has slid away.
         if !self.reading
             && self.reader.is_some()
