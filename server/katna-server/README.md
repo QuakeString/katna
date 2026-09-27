@@ -62,14 +62,19 @@ provider's SMTP server, or a service such as Postmark, Mailgun or Amazon
 SES). Set in `.env`:
 
 ```sh
-# smtps:// for TLS on port 465; smtp://…:587?tls=required for STARTTLS.
-# Letters like @ or / in the user or password are written %40, %2F.
-KATNA_SERVER_SMTP_URL=smtps://user:password@smtp.example.com
-KATNA_SERVER_MAIL_FROM=Katna <no-reply@katna.invenia.in>
+KATNA_SERVER_SMTP_HOST=smtppro.zoho.in      # your provider's SMTP server
+KATNA_SERVER_SMTP_PORT=465                  # 465 (TLS) or 587 (STARTTLS)
+KATNA_SERVER_SMTP_USERNAME=no-reply@example.com
+KATNA_SERVER_SMTP_PASSWORD=app-password
+KATNA_SERVER_MAIL_FROM=                     # empty: the username
 ```
 
+Instead of the four lines, `KATNA_SERVER_SMTP_URL` can hold them as one
+URL (`smtps://user:password@host:465`, with `@` and `/` in the user or
+password written `%40`, `%2F`); it wins when both are set.
+
 The sender's domain needs the relay's SPF and DKIM records, or the codes
-land in spam. Without `KATNA_SERVER_SMTP_URL` the codes are only written
+land in spam. Without an SMTP host the codes are only written
 to the server's log (`docker compose logs server`), which is fine for
 trying it out alone.
 
@@ -133,8 +138,9 @@ Settings (environment): `DATABASE_URL`, `KATNA_SERVER_LISTEN`
 (`0.0.0.0:8080`), `KATNA_SERVER_TRUST_FORWARDED` (read the client address
 from the proxy's `X-Forwarded-For`; only behind a proxy),
 `KATNA_SERVER_RETENTION_DAYS` (180), `KATNA_SERVER_DAILY_LIMIT` (5000),
-`KATNA_SERVER_INSTALLS_PER_HOUR` (10), `KATNA_SERVER_SMTP_URL`,
-`KATNA_SERVER_MAIL_FROM` (`Katna <no-reply@katna.invenia.in>`), `RUST_LOG`.
+`KATNA_SERVER_INSTALLS_PER_HOUR` (10), `KATNA_SERVER_SMTP_HOST`, `_PORT`
+(465), `_USERNAME`, `_PASSWORD` or `KATNA_SERVER_SMTP_URL`,
+`KATNA_SERVER_MAIL_FROM` (the username), `RUST_LOG`.
 
 Run one server process: events are numbered and streamed in order within
 the process.

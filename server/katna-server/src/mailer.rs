@@ -2,8 +2,8 @@
 
 //! The mail Katna Server sends itself: the codes that confirm a Katna
 //! account's address and reset its password. It goes out through the SMTP
-//! relay in `KATNA_SERVER_SMTP_URL`; without one the codes are written to
-//! the log, which is enough for local testing.
+//! relay set in `KATNA_SERVER_SMTP_HOST` and the lines after it; without
+//! one the codes are written to the log, which is enough for local testing.
 
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -71,7 +71,7 @@ impl Mailer {
             return Ok(Mailer::Log);
         };
         let transport = AsyncSmtpTransport::<Tokio1Executor>::from_url(&url.0)
-            .map_err(|error| MailError(format!("KATNA_SERVER_SMTP_URL: {error}")))?
+            .map_err(|error| MailError(format!("SMTP settings: {error}")))?
             .timeout(Some(Duration::from_secs(20)))
             .build();
         let from = config

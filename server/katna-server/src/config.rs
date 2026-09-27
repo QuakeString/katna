@@ -25,13 +25,15 @@ pub struct Config {
     /// New installs one address may register per hour
     /// (`KATNA_SERVER_INSTALLS_PER_HOUR`, default 10).
     pub installs_per_hour: u32,
-    /// Where the mail with Katna account codes goes out
-    /// (`KATNA_SERVER_SMTP_URL`, for example
+    /// Where the mail with Katna account codes goes out: made from
+    /// `KATNA_SERVER_SMTP_HOST`, `_PORT` (465), `_USERNAME` and `_PASSWORD`,
+    /// or given whole as `KATNA_SERVER_SMTP_URL` (for example
     /// `smtps://user:password@smtp.example.com` or
     /// `smtp://user:password@smtp.example.com:587?tls=required`). Without
-    /// it the codes are only written to the log, for local testing.
+    /// either the codes are only written to the log, for local testing.
     pub smtp_url: Option<Secret>,
-    /// The sender of that mail (`KATNA_SERVER_MAIL_FROM`, default
+    /// The sender of that mail (`KATNA_SERVER_MAIL_FROM`; default the SMTP
+    /// username when it is an address, else
     /// `Katna <no-reply@katna.invenia.in>`).
     pub mail_from: String,
 }
@@ -101,14 +103,64 @@ impl Config {
         if let Some(value) = lookup("KATNA_SERVER_INSTALLS_PER_HOUR") {
             config.installs_per_hour = parse("KATNA_SERVER_INSTALLS_PER_HOUR", &value)?;
         }
-        config.smtp_url = lookup("KATNA_SERVER_SMTP_URL")
-            .filter(|url| !url.trim().is_empty())
-            .map(|url| Secret(url.trim().to_owned()));
-        if let Some(value) = lookup("KATNA_SERVER_MAIL_FROM").filter(|v| !v.trim().is_empty()) {
-            config.mail_from = value.trim().to_owned();
+        let set = |name: &str| {
+            lookup(name)
+                .map(|v| v.trim().to_owned())
+                .filter(|v| !v.is_empty())
+        };
+        let username = set("KATNA_SERVER_SMTP_USERNAME");
+        config.smtp_url = match (set("KATNA_SERVER_SMTP_URL"), set("KATNA_SERVER_SMTP_HOST")) {
+            (Some(url), _) => Some(Secret(url)),
+            (None, Some(host)) => {
+                let port: u16 = match set("KATNA_SERVER_SMTP_PORT") {
+                    Some(port) => parse("KATNA_SERVER_SMTP_PORT", &port)?,
+                    None => 465,
+                };
+                // The password is taken as written: spaces are part of it.
+                let password = lookup("KATNA_SERVER_SMTP_PASSWORD").unwrap_or_default();
+                Some(Secret(smtp_url(
+                    &host,
+                    port,
+                    username.as_deref(),
+                    &password,
+                )))
+            }
+            (None, None) => None,
+        };
+        if let Some(value) = set("KATNA_SERVER_MAIL_FROM") {
+            config.mail_from = value;
+        } else if let Some(address) = username.filter(|u| u.contains('@')) {
+            config.mail_from = format!("Katna <{address}>");
         }
         Ok(config)
     }
+}
+
+/// The SMTP URL for `host` and `port`: TLS from the start on 465, else
+/// STARTTLS, required. The username and password are percent-encoded.
+fn smtp_url(host: &str, port: u16, username: Option<&str>, password: &str) -> String {
+    let login = match username {
+        Some(user) => format!("{}:{}@", encode(user), encode(password)),
+        None => String::new(),
+    };
+    if port == 465 {
+        format!("smtps://{login}{host}:{port}")
+    } else {
+        format!("smtp://{login}{host}:{port}?tls=required")
+    }
+}
+
+/// Percent-encodes all but letters, digits and `-._~`.
+fn encode(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    for byte in text.bytes() {
+        if byte.is_ascii_alphanumeric() || b"-._~".contains(&byte) {
+            out.push(char::from(byte));
+        } else {
+            out.push_str(&format!("%{byte:02X}"));
+        }
+    }
+    out
 }
 
 fn parse<T: std::str::FromStr>(name: &'static str, value: &str) -> Result<T, ConfigError>
@@ -151,6 +203,37 @@ mod tests {
         })
         .unwrap();
         assert!(!format!("{config:?}").contains("hunter2"));
+    }
+
+    #[test]
+    fn builds_the_smtp_url_from_parts() {
+        let env: HashMap<&str, &str> = HashMap::from([
+            ("DATABASE_URL", "postgres://x"),
+            ("KATNA_SERVER_SMTP_HOST", "smtppro.zoho.in"),
+            ("KATNA_SERVER_SMTP_USERNAME", "no-reply@invenia.in"),
+            ("KATNA_SERVER_SMTP_PASSWORD", "p@ss/word 1"),
+        ]);
+        let config = Config::from_lookup(|name| env.get(name).map(|v| v.to_string())).unwrap();
+        assert_eq!(
+            config.smtp_url.unwrap().0,
+            "smtps://no-reply%40invenia.in:p%40ss%2Fword%201@smtppro.zoho.in:465"
+        );
+        assert_eq!(config.mail_from, "Katna <no-reply@invenia.in>");
+
+        let env: HashMap<&str, &str> = HashMap::from([
+            ("DATABASE_URL", "postgres://x"),
+            ("KATNA_SERVER_SMTP_HOST", "smtp.example.com"),
+            ("KATNA_SERVER_SMTP_PORT", "587"),
+            ("KATNA_SERVER_SMTP_USERNAME", "katna"),
+            ("KATNA_SERVER_SMTP_PASSWORD", "secret"),
+            ("KATNA_SERVER_MAIL_FROM", "Katna <codes@example.com>"),
+        ]);
+        let config = Config::from_lookup(|name| env.get(name).map(|v| v.to_string())).unwrap();
+        assert_eq!(
+            config.smtp_url.unwrap().0,
+            "smtp://katna:secret@smtp.example.com:587?tls=required"
+        );
+        assert_eq!(config.mail_from, "Katna <codes@example.com>");
     }
 
     #[test]
