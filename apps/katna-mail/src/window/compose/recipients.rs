@@ -12,8 +12,8 @@
 use std::time::{Duration, Instant};
 
 use gpui::{
-    AnyElement, Context, Div, FontWeight, Global, HighlightStyle, KeyDownEvent, SharedString,
-    StyledText, anchored, deferred, div, point, prelude::*, rgba,
+    AnyElement, Context, Div, DragMoveEvent, FontWeight, Global, HighlightStyle, KeyDownEvent,
+    SharedString, StyledText, anchored, deferred, div, point, prelude::*, rgba,
 };
 use katna_search::contacts::{ContactBook, Suggestion};
 use katna_ui::px;
@@ -21,6 +21,7 @@ use katna_ui::text_input::{Backspace, Cancel, Delete, Down, Submit, Up};
 
 use super::super::FocusNext;
 use super::MailWindow;
+use super::chips::ChipDrag;
 use crate::data;
 use crate::outgoing;
 use crate::theme::Theme;
@@ -142,6 +143,16 @@ impl MailWindow {
         let Some(input) = self.recipient_input(field) else {
             return;
         };
+        // A space after a chip's comma starts nothing, so the placeholder
+        // can come back once the chips are gone.
+        let text = input.read(cx).text();
+        if text.starts_with(char::is_whitespace) {
+            let trimmed = text.trim_start().to_owned();
+            input
+                .clone()
+                .update(cx, |input, cx| input.set_text(trimmed, cx));
+            return;
+        }
         if last_entry(input.read(cx).text()).0 > 0 {
             // Changing the text again brings this back for the rest.
             self.commit_recipients(field, false, cx);
@@ -233,7 +244,21 @@ impl MailWindow {
                 false
             }
         };
+        let target = rgba(th.nav_selected);
         row.relative()
+            // An address chip dragged from another field lands here.
+            .on_drag_move(cx.listener(|this, event: &DragMoveEvent<ChipDrag>, _, cx| {
+                let drag = event.drag(cx).clone();
+                this.chip_drag_moved(&drag, cx)
+            }))
+            .drag_over::<ChipDrag>(
+                move |s, drag, _, _| {
+                    if drag.field == field { s } else { s.bg(target) }
+                },
+            )
+            .on_drop(
+                cx.listener(move |this, drag: &ChipDrag, _, cx| this.drop_chip(drag, field, cx)),
+            )
             .capture_key_down(cx.listener(|this, _: &KeyDownEvent, _, cx| this.chip_other_key(cx)))
             .capture_action(cx.listener(move |this, _: &Backspace, _, cx| {
                 if this.chip_backspace(field, false, cx) {

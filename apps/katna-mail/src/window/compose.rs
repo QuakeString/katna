@@ -1814,7 +1814,9 @@ impl MailWindow {
             );
         let header = self.recipient_row(header, Field::To, th, cx);
         let cc_field = self.render_recipient_field(Field::Cc, th, cx);
-        let cc = compose.show_cc.then(|| {
+        // A chip being dragged can land in Cc even while it is hidden.
+        let show_cc = compose.show_cc || self.chip_dragging(cx).is_some();
+        let cc = show_cc.then(|| {
             div()
                 .flex_none()
                 .mx(px(12.0))
@@ -2038,6 +2040,8 @@ impl MailWindow {
                 .hover(|s| s.text_color(rgba(th.text)).bg(rgba(th.hover)))
                 .child(label)
         };
+        // A chip being dragged can land in Cc or Bcc even while hidden.
+        let dragging = self.chip_dragging(cx).is_some();
         let to = self
             .recipient_row(row(tr!("compose-to"), to_field), Field::To, th, cx)
             .child(
@@ -2079,10 +2083,10 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(to)
-            .when(compose.show_cc, |d| {
+            .when(compose.show_cc || dragging, |d| {
                 d.child(self.recipient_row(row(tr!("compose-cc"), cc_field), Field::Cc, th, cx))
             })
-            .when(compose.show_bcc, |d| {
+            .when(compose.show_bcc || dragging, |d| {
                 d.child(self.recipient_row(row(tr!("compose-bcc"), bcc_field), Field::Bcc, th, cx))
             })
             .children(
