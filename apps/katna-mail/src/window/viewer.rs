@@ -22,12 +22,14 @@ use std::time::Duration;
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, EventEmitter, FocusHandle, FontWeight,
     ImageSource, KeyDownEvent, ObjectFit, RenderImage, ScrollHandle, SharedString, Task, Window,
-    div, ease_out_quint, img, prelude::*, px, rgba, uniform_list,
+    div, ease_out_quint, img, prelude::*, rgba, uniform_list,
 };
 use katna_preview::pdf::{self, Document};
 use katna_preview::{Kind, Picture, document, picture, sheet, text};
 use katna_render::AttachmentFile;
 use katna_ui::Ripple;
+use katna_ui::px;
+use katna_ui::unpx;
 
 use self::office::{DocumentView, SheetView};
 use super::attachments::{Item, bitmap, kind_badge};
@@ -251,7 +253,7 @@ impl Viewer {
                 let handle = view.scroll.0.borrow().base_handle.clone();
                 let offset = handle.offset();
                 let max = handle.max_offset();
-                let y = (f32::from(offset.y) - dy).clamp(-f32::from(max.y), 0.0);
+                let y = (unpx(offset.y) - dy).clamp(-unpx(max.y), 0.0);
                 handle.set_offset(gpui::point(offset.x, px(y)));
                 cx.notify();
                 return;
@@ -260,7 +262,7 @@ impl Viewer {
         }
         let offset = self.scroll.offset();
         let max = self.scroll.max_offset();
-        let y = (f32::from(offset.y) - dy).clamp(-f32::from(max.y), 0.0);
+        let y = (unpx(offset.y) - dy).clamp(-unpx(max.y), 0.0);
         self.scroll.set_offset(gpui::point(offset.x, px(y)));
         cx.notify();
     }
@@ -273,7 +275,7 @@ impl Viewer {
             Content::Document(doc) => doc.state.viewport_bounds(),
             _ => self.scroll.bounds(),
         };
-        let page = (f32::from(view.size.height) - LINE_SCROLL).max(LINE_SCROLL);
+        let page = (unpx(view.size.height) - LINE_SCROLL).max(LINE_SCROLL);
         match keystroke.key.as_str() {
             "escape" => self.close(cx),
             "left" => self.show(self.current + self.items.len() - 1, cx),
@@ -471,18 +473,17 @@ fn tooltip_for(id: &str) -> &'static str {
 
 impl Render for Viewer {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        // Text without a size of its own follows Settings > Appearance > Scaling.
+        window.set_rem_size(px(16.0));
         let th = self.th;
         let viewport = window.viewport_size();
         // The room the viewer had at the last frame: the window below the
         // app's top bar (the window itself before the first frame).
         let area = self.scroll.bounds().size;
         let (vw, vh) = if area.height > px(0.0) {
-            (f32::from(area.width), f32::from(area.height))
+            (unpx(area.width), unpx(area.height))
         } else {
-            (
-                f32::from(viewport.width),
-                f32::from(viewport.height) - BAR_HEIGHT,
-            )
+            (unpx(viewport.width), unpx(viewport.height) - BAR_HEIGHT)
         };
         let zoom = ZOOMS[self.zoom];
         let item = self.items.get(self.current).cloned();

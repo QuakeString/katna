@@ -13,10 +13,12 @@ use std::time::Duration;
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, EntityId, Focusable, FontWeight, Hsla,
     MouseButton, MouseDownEvent, Subscription, Task, Window, deferred, div, linear_color_stop,
-    linear_gradient, prelude::*, px, relative, rgba,
+    linear_gradient, prelude::*, relative, rgba,
 };
 use katna_dbus::{NewImapAccount, ServerSpec};
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
+use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
 
 use super::{MailWindow, RailApp};
@@ -611,7 +613,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let dialog = self.add_account.as_ref()?;
         let viewport = window.viewport_size();
-        let (vw, vh) = (f32::from(viewport.width), f32::from(viewport.height));
+        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let address = dialog.address.read(cx).text().trim().to_owned();
 
         let (title, subtitle): (&str, Option<String>) = match dialog.step {

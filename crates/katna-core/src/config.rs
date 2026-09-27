@@ -345,6 +345,9 @@ pub struct MailView {
     /// Accounts not listed use [`TabStyle::Auto`].
     pub account_tabs: BTreeMap<String, AccountTabs>,
     pub density: Density,
+    /// The size of everything in the windows, in percent, on top of the
+    /// desktop's own scale (75 to 200).
+    pub scale: u16,
     pub theme: Theme,
     /// Use the desktop's color scheme and accent color instead of Katna's
     /// own colors.
@@ -382,6 +385,7 @@ impl Default for MailView {
             inbox_tabs: true,
             account_tabs: BTreeMap::new(),
             density: Density::Default,
+            scale: 100,
             theme: Theme::System,
             desktop_colors: true,
             app_labels: true,

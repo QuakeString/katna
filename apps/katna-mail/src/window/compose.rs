@@ -33,23 +33,25 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     AnyElement, Context, Entity, ExternalPaths, FocusHandle, Focusable, FontWeight, Hsla,
-    ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, px, rgba,
+    ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, rgba,
 };
 use katna_core::AccountId;
 use katna_dbus::OutboxItem;
 use katna_render::{Address, MessageView};
 use katna_store::MessageId;
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
 use katna_ui::rich::{
     Block, Doc, GrammarCheck, Palette, Para, RichEditor, RichEvent, SpellCheck, html,
 };
+use katna_ui::unpx;
 use katna_ui::{InputEvent, InputGrammarMenu, TextInput};
 
 use super::{MailWindow, SNACKBAR_TIME};
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::format;
-use crate::grammar::Grammar;
+use crate::grammar;
 use crate::outgoing::{self, Mailbox, Outgoing, Part};
 use crate::signatures;
 use crate::spell::{self, Speller};
@@ -204,9 +206,9 @@ pub(super) struct Writing {
     speller: Option<Rc<Speller>>,
     /// Loading, or why it could not be loaded.
     speller_state: SpellerState,
-    /// Harper's grammar rules, loaded on the first message written.
-    grammar: Option<Arc<Grammar>>,
-    grammar_loading: bool,
+    /// Harper's grammar rules, in their helper process while a message is
+    /// open.
+    grammar: Option<Arc<dyn GrammarCheck>>,
     /// Messages waiting for their scheduled time, soonest first.
     scheduled: Vec<OutboxItem>,
     /// The list of scheduled mail shows.
@@ -685,7 +687,7 @@ impl MailWindow {
         let bcc = input("", &draft.bcc, cx);
         let subject = input("Subject", &draft.subject, cx);
         let speller = self.speller(cx);
-        let grammar = self.grammar(cx);
+        let grammar = self.grammar();
         subject.update(cx, |input, cx| {
             input.set_grammar_check(grammar.clone(), grammar_color(&th), cx)
         });
@@ -839,38 +841,30 @@ impl MailWindow {
             .map(|s| s as Rc<dyn SpellCheck>)
     }
 
-    /// Harper's grammar rules if grammar checking is on; starts loading
-    /// them the first time.
-    pub(super) fn grammar(&mut self, cx: &mut Context<Self>) -> Option<Arc<dyn GrammarCheck>> {
+    /// Harper's grammar rules if grammar checking is on; starts their
+    /// helper process for the first message open.
+    pub(super) fn grammar(&mut self) -> Option<Arc<dyn GrammarCheck>> {
         if !self.config.sending.grammar_check {
+            self.writing.grammar = None;
             return None;
         }
-        if self.writing.grammar.is_none() && !self.writing.grammar_loading {
-            self.writing.grammar_loading = true;
+        if self.writing.grammar.is_none() {
             let language = spell::language(&self.config.sending.spell_language);
-            cx.spawn(async move |this, cx| {
-                let grammar = cx
-                    .background_executor()
-                    .spawn(async move { Arc::new(Grammar::load(&language)) })
-                    .await;
-                this.update(cx, |this, cx| {
-                    this.writing.grammar = Some(grammar);
-                    this.writing.grammar_loading = false;
-                    this.grammar_changed(cx);
-                })
-                .ok();
-            })
-            .detach();
+            match grammar::Helper::start(&language) {
+                Ok(helper) => self.writing.grammar = Some(Arc::new(helper)),
+                Err(err) => tracing::warn!("grammar checking: {err}"),
+            }
         }
-        self.writing
-            .grammar
-            .clone()
-            .map(|g| g as Arc<dyn GrammarCheck>)
+        self.writing.grammar.clone()
     }
 
     /// The open message checks grammar, or stops, as Settings says.
     pub(super) fn grammar_changed(&mut self, cx: &mut Context<Self>) {
-        let grammar = self.grammar(cx);
+        if self.compose.is_none() {
+            self.writing.grammar = None;
+            return;
+        }
+        let grammar = self.grammar();
         if let Some(compose) = &self.compose {
             let color = compose.grammar_color;
             compose.body.update(cx, |editor, cx| {
@@ -1224,6 +1218,10 @@ impl MailWindow {
         reduce: bool,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // Harper's helper is large: it runs only while a message is open.
+        if self.compose.is_none() && self.writing.grammar.is_some() {
+            self.writing.grammar = None;
+        }
         let (mode, conversation, closing) = self
             .compose
             .as_ref()
@@ -1265,7 +1263,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let compose = self.compose.as_ref()?;
         let viewport = window.viewport_size();
-        let (vw, vh) = (f32::from(viewport.width), f32::from(viewport.height));
+        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let mode = compose.mode;
         let title = compose.title(cx);
 
@@ -1535,13 +1533,13 @@ impl MailWindow {
             .on_click(move |_, window, cx| window.focus(&focus, cx))
             .child(div().flex_none().child(compose.body.clone()))
             .children(self.render_trimmed(th, cx));
-        let card_width = f32::from(self.reader_scroll.bounds().size.width) - 100.0;
+        let card_width = unpx(self.reader_scroll.bounds().size.width) - 100.0;
         // Like Gmail, the Send row stays at the bottom of the conversation
         // while the text runs on below it, and moves up with the card.
         let stuck = {
             let at = compose.stick.get();
             let view = self.reader_scroll.bounds().size.height;
-            let bottom = f32::from(view - self.reader_scroll.offset().y);
+            let bottom = unpx(view - self.reader_scroll.offset().y);
             let highest = at.card_top + STICK_BELOW;
             (at.footer_top + at.footer_height - bottom)
                 .clamp(0.0, (at.footer_top - highest).max(0.0))
@@ -1794,9 +1792,9 @@ fn measure(
     let (scroll, stick, this) = (scroll.clone(), stick.clone(), cx.entity().downgrade());
     canvas(
         move |bounds, _, cx| {
-            let top = f32::from(bounds.top() - scroll.bounds().top() - scroll.offset().y);
+            let top = unpx(bounds.top() - scroll.bounds().top() - scroll.offset().y);
             let mut at = stick.get();
-            set(&mut at, top, f32::from(bounds.size.height));
+            set(&mut at, top, unpx(bounds.size.height));
             if at != stick.get() {
                 stick.set(at);
                 // After this frame: a change asked for while drawing is lost.

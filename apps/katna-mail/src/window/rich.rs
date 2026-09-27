@@ -9,13 +9,14 @@ use std::sync::Arc;
 
 use gpui::{
     AnyElement, App, FontStyle, FontWeight, HighlightStyle, InteractiveText, ObjectFit,
-    SharedString, StrikethroughStyle, StyledText, UnderlineStyle, div, img, prelude::*, px,
-    relative, rgba,
+    SharedString, StrikethroughStyle, StyledText, UnderlineStyle, div, img, prelude::*, relative,
+    rgba,
 };
 use katna_render::html::{
     Align, Block, BoxBlock, BoxKind, Document, Image, ImageKind, ImageSource, Inline, Length,
     TextBlock,
 };
+use katna_ui::px;
 
 use super::dark::Dark;
 use super::remote::Fetch;

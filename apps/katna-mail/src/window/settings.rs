@@ -9,7 +9,7 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, App, Context, Div, FontWeight, SharedString,
-    SpringAnimation, Stateful, div, prelude::*, px, rgba,
+    SpringAnimation, Stateful, div, prelude::*, rgba,
 };
 use katna_core::config::{
     AccountsShown, Density, FileGroup, OpenIn, ReadingPane, Theme as ThemeChoice,
@@ -17,6 +17,7 @@ use katna_core::config::{
 };
 use katna_ui::Ripple;
 use katna_ui::motion;
+use katna_ui::px;
 
 use super::{MailWindow, SETTINGS_WIDTH};
 use crate::theme::{Theme, mix};
@@ -60,6 +61,8 @@ pub(super) enum Change {
     SaveCrashReports(bool),
     /// Crash reports sent to Katna's crash tracker: "Help improve Katna".
     SendCrashReports(bool),
+    /// The interface scale, in percent.
+    Scale(u16),
     /// Grammar mistakes underlined while writing (English only).
     GrammarCheck(bool),
 }
@@ -385,6 +388,16 @@ impl MailWindow {
             }
             Change::UndoSend(seconds) => sending.undo_send_seconds = seconds,
             Change::Density(density) => view.density = density,
+            Change::Scale(percent) => {
+                if view.scale == percent {
+                    return;
+                }
+                view.scale = percent;
+                katna_ui::scale::set_scale(f32::from(percent) / 100.0);
+                // Every row is a new height, and every window a new size.
+                self.list_state.remeasure();
+                cx.refresh_windows();
+            }
             Change::Theme(theme) => view.theme = theme,
             Change::DesktopColors(on) => view.desktop_colors = on,
             Change::AppLabels(on) => view.app_labels = on,

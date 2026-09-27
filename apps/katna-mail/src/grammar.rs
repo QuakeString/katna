@@ -4,8 +4,17 @@
 //! (<https://github.com/automattic/harper>). English only: paragraphs
 //! that do not look English are left alone. Spelling stays with
 //! `spell.rs`. No GPUI here.
+//!
+//! Harper's dictionary takes about 135 MB and, once loaded, stays for
+//! the life of the process. So it runs in a helper process, this binary
+//! started with [`HELPER_FLAG`], which lives while a message is being
+//! written: [`Helper`] starts it and stops it when dropped.
 
+use std::io::{BufRead, BufReader, Write};
+use std::process::{Child, ChildStdin, ChildStdout, Command, ExitCode, Stdio};
 use std::sync::Mutex;
+
+use serde_json::{Value, json};
 
 use harper_core::linting::{LintGroup, Linter, Suggestion};
 use harper_core::parsers::PlainEnglish;
@@ -15,6 +24,9 @@ use katna_ui::rich::{GrammarCheck, GrammarFix, GrammarIssue};
 
 /// At most this many fixes in the menu.
 const FIXES: usize = 4;
+
+/// Starts the grammar helper, with the spelling language after it.
+pub const HELPER_FLAG: &str = "--grammar-helper";
 
 /// Harper's rules, set up for one kind of English.
 pub struct Grammar {
@@ -139,6 +151,145 @@ fn dialect(language: &str) -> Dialect {
     }
 }
 
+/// Harper in a helper process; stops it when dropped.
+pub struct Helper {
+    io: Mutex<Option<HelperIo>>,
+}
+
+struct HelperIo {
+    child: Child,
+    input: ChildStdin,
+    output: BufReader<ChildStdout>,
+}
+
+impl Helper {
+    /// Starts the helper; it loads the rules while the first paragraph
+    /// waits.
+    pub fn start(language: &str) -> std::io::Result<Self> {
+        // After an update replaced the binary, the new one.
+        let exe = std::env::current_exe()?;
+        let exe = exe
+            .to_str()
+            .and_then(|p| p.strip_suffix(" (deleted)"))
+            .map_or(exe.clone(), std::path::PathBuf::from);
+        let mut child = Command::new(exe)
+            .arg(HELPER_FLAG)
+            .arg(language)
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .spawn()?;
+        let (Some(input), Some(output)) = (child.stdin.take(), child.stdout.take()) else {
+            let _ = child.kill();
+            return Err(std::io::Error::other("no pipes to the grammar helper"));
+        };
+        Ok(Self {
+            io: Mutex::new(Some(HelperIo {
+                child,
+                input,
+                output: BufReader::new(output),
+            })),
+        })
+    }
+}
+
+impl GrammarCheck for Helper {
+    fn check(&self, text: &str) -> Vec<GrammarIssue> {
+        let Ok(mut io) = self.io.lock() else {
+            return Vec::new();
+        };
+        let Some(pipes) = io.as_mut() else {
+            return Vec::new();
+        };
+        let mut line = String::new();
+        let asked = writeln!(pipes.input, "{}", Value::from(text))
+            .and_then(|()| pipes.input.flush())
+            .and_then(|()| pipes.output.read_line(&mut line));
+        match asked {
+            Ok(n) if n > 0 => from_wire(&line),
+            _ => {
+                // It is gone; the message goes on without grammar.
+                tracing::warn!("grammar helper stopped");
+                *io = None;
+                Vec::new()
+            }
+        }
+    }
+}
+
+impl Drop for Helper {
+    fn drop(&mut self) {
+        if let Ok(mut io) = self.io.lock()
+            && let Some(mut pipes) = io.take()
+        {
+            let _ = pipes.child.kill();
+            let _ = pipes.child.wait();
+        }
+    }
+}
+
+/// The helper's life: a paragraph in, as a JSON string on a line, its
+/// mistakes out, as a JSON array on a line, until the app closes the pipe.
+pub fn run_helper(language: &str) -> ExitCode {
+    let grammar = Grammar::load(language);
+    let mut out = std::io::stdout().lock();
+    for line in std::io::stdin().lock().lines() {
+        let Ok(line) = line else {
+            break;
+        };
+        let text = serde_json::from_str::<String>(&line).unwrap_or_default();
+        let answer = to_wire(&grammar.check(&text));
+        if writeln!(out, "{answer}")
+            .and_then(|()| out.flush())
+            .is_err()
+        {
+            break;
+        }
+    }
+    ExitCode::SUCCESS
+}
+
+fn to_wire(issues: &[GrammarIssue]) -> Value {
+    issues
+        .iter()
+        .map(|i| {
+            json!({
+                "start": i.range.start,
+                "end": i.range.end,
+                "message": i.message,
+                "fixes": i.fixes.iter().map(|f| json!([f.label, f.replacement])).collect::<Vec<_>>(),
+            })
+        })
+        .collect()
+}
+
+fn from_wire(line: &str) -> Vec<GrammarIssue> {
+    let Ok(Value::Array(issues)) = serde_json::from_str(line) else {
+        return Vec::new();
+    };
+    let number = |v: &Value| v.as_u64().map(|n| n as usize);
+    let text = |v: &Value| v.as_str().map(str::to_owned);
+    issues
+        .iter()
+        .filter_map(|i| {
+            let fixes = i["fixes"]
+                .as_array()?
+                .iter()
+                .filter_map(|f| {
+                    Some(GrammarFix {
+                        label: text(&f[0])?,
+                        replacement: text(&f[1])?,
+                    })
+                })
+                .collect();
+            Some(GrammarIssue {
+                range: number(&i["start"])?..number(&i["end"])?,
+                message: text(&i["message"])?,
+                fixes,
+            })
+        })
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -176,6 +327,22 @@ mod tests {
             plain_message("Did you mean `they're`?"),
             "Did you mean \u{201c}they're\u{201d}?"
         );
+    }
+
+    #[test]
+    fn mistakes_cross_the_pipe_unchanged() {
+        let issues = vec![GrammarIssue {
+            range: 5..11,
+            message: "Use \u{201c}have\u{201d} here.".into(),
+            fixes: vec![GrammarFix {
+                label: "\u{201c}have\u{201d}".into(),
+                replacement: "have".into(),
+            }],
+        }];
+        assert_eq!(from_wire(&to_wire(&issues).to_string()), issues);
+        assert_eq!(from_wire("not json"), Vec::new());
+        // One line each way, whatever the text holds.
+        assert!(!Value::from("a\nb").to_string().contains('\n'));
     }
 
     #[test]

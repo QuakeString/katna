@@ -11,8 +11,9 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     Animation, AnimationExt, AnyElement, ElementId, IntoElement, Pixels, ScrollHandle, canvas, div,
-    ease_out_quint, linear_color_stop, linear_gradient, point, prelude::*, px, rgba,
+    ease_out_quint, linear_color_stop, linear_gradient, point, prelude::*, rgba,
 };
+use katna_ui::px;
 
 use crate::theme::{Theme, fade};
 use crate::widgets::icon_button;

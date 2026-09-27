@@ -1258,6 +1258,17 @@ Gemini or confidential mode):
   included), inbox tabs, undo-send delay, signatures and conversation view.
   Changes apply at once and are saved to `config.toml` (`[mail]`,
   `[sending]` and `[shortcuts]`).
+- **Scaling.** Settings > Appearance > Scaling makes the whole interface
+  75% to 200% of its size, on top of the desktop's scale, and applies at
+  once. GPUI takes the display's scale from the desktop and cannot add to
+  it, so Katna scales its own lengths: every length goes through
+  `katna_ui::px`, which multiplies by the scale, and every length read
+  back from GPUI (layout bounds, the window's size, the pointer) through
+  `katna_ui::unpx`, which divides by it (`crates/katna-ui/src/scale.rs`).
+  The layouts follow the scaled width, as a web page's do when zoomed:
+  at 200% a 1400 px window lays out as a 700 px one. The slider previews
+  while dragged and applies when let go, so it doesn't grow under the
+  pointer. Mail you send keeps its own font size.
 - **Settings page.** "See all settings", the rail's gear or `?` open it in
   place of the list (`window/settings_page.rs`). Its tabs, in the owner's
   order: General, Inbox, Accounts, Subscription, Appearance (reading pane,
@@ -1317,10 +1328,14 @@ Gemini or confidential mode):
   get a straight amber underline, apart from spelling's red wave; a right
   click shows the message, up to four fixes and Ignore (for that draft).
   The dialect follows the spelling language (British, Canadian,
-  Australian, Indian, else American). Harper's rules and dictionary load
-  in the background on the first message written and take about 130 MB
-  of memory from then on; the app binary grows about 10 MB. Other
-  languages are for Harper upstream.
+  Australian, Indian, else American). Harper's dictionary takes about
+  135 MB and stays loaded for the life of a process once any rule touches
+  it, so Harper runs in a helper process: the app binary started with
+  `--grammar-helper <language>`, one paragraph in and its mistakes out
+  as a JSON line each way over its pipes. It starts when a message opens
+  and is stopped when the last one closes (or grammar checking is turned
+  off), so the app itself stays small. The app binary grows about 10 MB.
+  Other languages are for Harper upstream.
 - **Sending account, Send and archive.** Settings → Compose picks the
   account new mail goes out from: the one whose mail is open (default) or
   always the same address (`sending.send_from`). Replies and forwards go

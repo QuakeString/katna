@@ -5355,6 +5355,7 @@ dependencies = [
  "gpui-pre-linux",
  "gpui-pre-platform",
  "katna-core",
+ "katna-ui",
 ]
 
 [[package]]

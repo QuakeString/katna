@@ -11,8 +11,9 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, FontWeight, SharedString, Window, canvas,
-    div, point, prelude::*, px, rgba,
+    div, point, prelude::*, rgba,
 };
+use katna_ui::px;
 use katna_ui::{InputEvent, Ripple};
 
 use super::MailWindow;
@@ -114,6 +115,12 @@ const ENTRIES: &[Entry] = &[
         "Density",
         "Default or compact lines in the list",
         "compact spacing comfortable",
+    ),
+    entry(
+        Section::Appearance,
+        "Scaling",
+        "Make everything bigger or smaller: text, icons, spacing and dividers",
+        "scale zoom size bigger smaller larger font text dpi magnify",
     ),
     entry(
         Section::Appearance,

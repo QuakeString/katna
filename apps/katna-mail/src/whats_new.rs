@@ -197,6 +197,13 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 20,
+        title: "Make everything bigger or smaller",
+        text: "Settings > Appearance > Scaling sizes the whole window, text, icons \
+               and spacing alike, from 75% to 200% on top of your desktop's scale.",
+        animation: None,
+    },
+    Highlight {
+        id: 21,
         title: "Grammar checking",
         text: "While you write in English, in the text and the subject, grammar \
                mistakes get an amber underline. \

@@ -10,12 +10,13 @@ use std::collections::HashSet;
 use std::ops::Range;
 use std::sync::Arc;
 
+use crate::scale::px;
 use gpui::{
     App, Bounds, ClipboardItem, Context, CursorStyle, ElementId, ElementInputHandler, Entity,
     EntityInputHandler, EventEmitter, FocusHandle, Focusable, GlobalElementId, Hsla, KeyBinding,
     LayoutId, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent, PaintQuad, Pixels, Point,
     ShapedLine, SharedString, Style, Task, TextRun, UTF16Selection, UnderlineStyle, Window,
-    actions, div, fill, point, prelude::*, px, relative, size,
+    actions, div, fill, point, prelude::*, relative, size,
 };
 use unicode_segmentation::UnicodeSegmentation;
 
