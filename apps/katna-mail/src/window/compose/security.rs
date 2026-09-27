@@ -5,8 +5,9 @@
 //! and GnuPG run on the finished message before it goes to the outbox, so
 //! the outbox and Sent hold only what was sent.
 
-use gpui::{AnyElement, Context, prelude::*, px, rgba};
+use gpui::{AnyElement, Context, prelude::*, rgba};
 use katna_crypto::{Gnupg, Protect, Recipients, Security, Standard};
+use katna_ui::px;
 
 use crate::theme::{Theme, fade};
 use crate::widgets::{icon_button_colored, tip};

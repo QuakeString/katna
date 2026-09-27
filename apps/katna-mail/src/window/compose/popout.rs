@@ -9,10 +9,13 @@
 
 use gpui::{
     AnyElement, App, Context, Decorations, Entity, ExternalPaths, FocusHandle, Focusable,
-    FontWeight, Window, WindowBounds, WindowHandle, div, point, prelude::*, px, rgba, size,
+    FontWeight, Window, WindowBounds, WindowHandle, div, point, prelude::*, rgba, size,
 };
 use katna_chrome::{Bar, WindowChrome, window_options};
 use katna_core::ids::MAIL_APP_ID;
+use katna_ui::px;
+use katna_ui::scale::desktop_px;
+use katna_ui::unpx;
 
 use super::super::MailWindow;
 use super::Mode;
@@ -54,7 +57,7 @@ impl MailWindow {
             &env,
             MAIL_APP_ID,
             compose.title(cx),
-            size(px(WIDTH), px(HEIGHT)),
+            size(desktop_px(WIDTH), desktop_px(HEIGHT)),
             cx,
         );
         // Over the middle of the mail window, where the message was. On
@@ -154,7 +157,7 @@ impl MailWindow {
         if compose.mode != Mode::Window || compose.closing {
             return None;
         }
-        let width = f32::from(window.viewport_size().width).max(360.0);
+        let width = unpx(window.viewport_size().width).max(360.0);
         // With the desktop's own title bar the back button moves to the
         // bottom bar (`tools`).
         self.writing.popout_server_frame =
@@ -191,6 +194,8 @@ impl Focusable for ComposeWindow {
 
 impl Render for ComposeWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        // Text without a size of its own follows Settings > Appearance > Scaling.
+        window.set_rem_size(px(16.0));
         self.chrome.sync_look(window, cx);
         let chrome = &self.chrome;
         let drawn = self.mail.update(cx, |mail, cx| {

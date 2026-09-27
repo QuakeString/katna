@@ -8,11 +8,13 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use futures_lite::StreamExt;
-use gpui::{AnyElement, Context, FontWeight, Window, div, prelude::*, px, rgba};
+use gpui::{AnyElement, Context, FontWeight, Window, div, prelude::*, rgba};
 use katna_dbus::OutboxItem;
 use katna_dbus::zbus::Connection;
 use katna_store::MessageId;
+use katna_ui::px;
 use katna_ui::rich::html;
+use katna_ui::unpx;
 use mail_parser::{MessageParser, MimeHeaders};
 
 use super::super::MailWindow;
@@ -169,7 +171,7 @@ impl MailWindow {
             return None;
         }
         let viewport = window.viewport_size();
-        let height = (f32::from(viewport.height) - 160.0).clamp(200.0, 560.0);
+        let height = (unpx(viewport.height) - 160.0).clamp(200.0, 560.0);
         let rows = self.writing.scheduled.iter().enumerate().map(|(ix, item)| {
             let subject = if item.subject.trim().is_empty() {
                 "(no subject)".to_owned()
@@ -263,7 +265,7 @@ impl MailWindow {
                     div()
                         .id("scheduled-dialog")
                         .occlude()
-                        .w(px(560.0_f32.min(f32::from(viewport.width) - 32.0)))
+                        .w(px(560.0_f32.min(unpx(viewport.width) - 32.0)))
                         .h(px(height))
                         .flex()
                         .flex_col()

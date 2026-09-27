@@ -5,13 +5,14 @@
 //! banner above the body says what protected it and whether that held.
 //! Decrypted text stays in memory only; it is never stored or indexed.
 
-use gpui::{AnyElement, Context, FontWeight, div, prelude::*, px, rgba};
+use gpui::{AnyElement, Context, FontWeight, div, prelude::*, rgba};
 use katna_crypto::{
     Decryption, Failure, Gnupg, Opened, Protection, Security, Signature, SignatureState, Standard,
     Validity,
 };
 use katna_render::MessageView;
 use katna_store::MessageId;
+use katna_ui::px;
 
 use super::{Body, Part, shown};
 use crate::theme::{Theme, fade};

@@ -14,12 +14,14 @@ use std::rc::Rc;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
+use crate::scale::px;
+use crate::scale::unpx;
 use gpui::{
     AnyElement, App, Bounds, ClipboardEntry, ClipboardItem, Context, CursorStyle, DispatchPhase,
     ElementId, ElementInputHandler, Entity, EntityInputHandler, EventEmitter, FocusHandle,
     Focusable, GlobalElementId, Hsla, ImageFormat, KeyBinding, LayoutId, MouseButton,
     MouseDownEvent, MouseMoveEvent, MouseUpEvent, ObjectFit, Pixels, Point, Position, SharedString,
-    Style, UTF16Selection, Window, actions, div, img, point, prelude::*, px, relative, size,
+    Style, UTF16Selection, Window, actions, div, img, point, prelude::*, relative, size,
 };
 
 use super::doc::{
@@ -1700,7 +1702,7 @@ impl RichEditor {
     }
 
     fn render_image(&self, ix: usize, image: &Image, cx: &mut Context<Self>) -> AnyElement {
-        let room = f32::from(self.width).max(120.0);
+        let room = unpx(self.width).max(120.0);
         let width = image.display_width(room);
         let height = if image.width > 0 {
             width * image.height as f32 / image.width as f32
@@ -1902,11 +1904,11 @@ fn distance(bounds: Bounds<Pixels>, p: Point<Pixels>) -> f32 {
     } else {
         px(0.0)
     };
-    f32::from(dy) * 4.0 + horizontal(bounds, p.x)
+    unpx(dy) * 4.0 + horizontal(bounds, p.x)
 }
 
 fn horizontal(bounds: Bounds<Pixels>, x: Pixels) -> f32 {
-    f32::from(if x < bounds.left() {
+    unpx(if x < bounds.left() {
         bounds.left() - x
     } else if x > bounds.right() {
         x - bounds.right()

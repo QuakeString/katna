@@ -11,9 +11,11 @@ use std::sync::LazyLock;
 
 use gpui::{
     AnyElement, Context, FocusHandle, FontWeight, KeyDownEvent, MouseButton, SharedString, Window,
-    div, linear_color_stop, linear_gradient, prelude::*, px, rgba,
+    div, linear_color_stop, linear_gradient, prelude::*, rgba,
 };
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
+use katna_ui::unpx;
 
 use super::{MailWindow, PANEL_RADIUS, ShowAbout, ShowWhatsNew};
 use crate::theme::{Theme, fade};
@@ -288,7 +290,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let about = self.about.as_ref()?;
         let phone = self.layout.shape.is_phone();
-        let vw = f32::from(window.viewport_size().width);
+        let vw = unpx(window.viewport_size().width);
         let width = if phone { vw } else { WIDTH.min(vw - 48.0) };
 
         let header = div()

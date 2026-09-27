@@ -195,6 +195,13 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                can send new mail from the same account every time.",
         animation: None,
     },
+    Highlight {
+        id: 20,
+        title: "Make everything bigger or smaller",
+        text: "Settings > Appearance > Scaling sizes the whole window, text, icons \
+               and spacing alike, from 75% to 200% on top of your desktop's scale.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.

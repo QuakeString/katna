@@ -32,14 +32,16 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     AnyElement, Context, Entity, ExternalPaths, FocusHandle, Focusable, FontWeight, Hsla,
-    ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, px, rgba,
+    ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, rgba,
 };
 use katna_core::AccountId;
 use katna_dbus::OutboxItem;
 use katna_render::{Address, MessageView};
 use katna_store::MessageId;
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
 use katna_ui::rich::{Block, Doc, Palette, Para, RichEditor, RichEvent, SpellCheck, html};
+use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
 
 use super::{MailWindow, SNACKBAR_TIME};
@@ -1195,7 +1197,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let compose = self.compose.as_ref()?;
         let viewport = window.viewport_size();
-        let (vw, vh) = (f32::from(viewport.width), f32::from(viewport.height));
+        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let mode = compose.mode;
         let title = compose.title(cx);
 
@@ -1465,13 +1467,13 @@ impl MailWindow {
             .on_click(move |_, window, cx| window.focus(&focus, cx))
             .child(div().flex_none().child(compose.body.clone()))
             .children(self.render_trimmed(th, cx));
-        let card_width = f32::from(self.reader_scroll.bounds().size.width) - 100.0;
+        let card_width = unpx(self.reader_scroll.bounds().size.width) - 100.0;
         // Like Gmail, the Send row stays at the bottom of the conversation
         // while the text runs on below it, and moves up with the card.
         let stuck = {
             let at = compose.stick.get();
             let view = self.reader_scroll.bounds().size.height;
-            let bottom = f32::from(view - self.reader_scroll.offset().y);
+            let bottom = unpx(view - self.reader_scroll.offset().y);
             let highest = at.card_top + STICK_BELOW;
             (at.footer_top + at.footer_height - bottom)
                 .clamp(0.0, (at.footer_top - highest).max(0.0))
@@ -1724,9 +1726,9 @@ fn measure(
     let (scroll, stick, this) = (scroll.clone(), stick.clone(), cx.entity().downgrade());
     canvas(
         move |bounds, _, cx| {
-            let top = f32::from(bounds.top() - scroll.bounds().top() - scroll.offset().y);
+            let top = unpx(bounds.top() - scroll.bounds().top() - scroll.offset().y);
             let mut at = stick.get();
-            set(&mut at, top, f32::from(bounds.size.height));
+            set(&mut at, top, unpx(bounds.size.height));
             if at != stick.get() {
                 stick.set(at);
                 // After this frame: a change asked for while drawing is lost.

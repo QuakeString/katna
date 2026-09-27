@@ -8,9 +8,10 @@
 //! Settings > User feedback changes it later.
 
 use gpui::{
-    AnyElement, Context, FocusHandle, KeyDownEvent, MouseButton, Window, div, prelude::*, px, rgba,
+    AnyElement, Context, FocusHandle, KeyDownEvent, MouseButton, Window, div, prelude::*, rgba,
 };
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::{px, unpx};
 
 use super::onboarding::{feature, lead, title};
 use super::settings::Change;
@@ -164,7 +165,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let focus = dialog.focus.clone();
         let phone = self.layout.shape.is_phone();
-        let vw = f32::from(window.viewport_size().width);
+        let vw = unpx(window.viewport_size().width);
         let width = if phone { vw } else { WIDTH.min(vw - 48.0) };
         let body = div()
             .id("share-ask-body")

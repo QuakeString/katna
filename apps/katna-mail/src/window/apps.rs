@@ -11,12 +11,13 @@ use std::ops::Range;
 use std::rc::Rc;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, div, prelude::*, px, rgba,
+    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, div, prelude::*, rgba,
     uniform_list,
 };
 use katna_store::Person;
 use katna_ui::Ripple;
 use katna_ui::motion;
+use katna_ui::px;
 
 use super::{MailWindow, OpenSettings};
 use crate::format;
