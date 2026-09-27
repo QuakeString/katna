@@ -538,7 +538,7 @@ says so and the owner has decided it.
 | 7.5 Follow-up reminders | Daemon (local) | "Remind me if nobody replies in N days" in compose; `katna-meta` (task 1.9) with the reply check, a notification and the thread back on top of the Inbox. Works while the computer is on; 7.10 covers a switched-off computer | Ready to build; no server |
 | 7.6 Snooze | Daemon (local) | Snooze a conversation until a time; it moves to a "Snoozed" label and comes back unread (ARCHITECTURE.md §10, Phase 5). Same `katna-meta` scheduler as 7.5 | Ready to build; no server |
 | 7.7 Send later | Daemon (local) ✅ #53 | Scheduled send exists; it sends while the computer is on. Sending while it is off is 7.10 | Done locally |
-| 7.8 Automatic translation | Decision needed | Translate a message into the reading language, with the original one click away | Engine to decide (below) |
+| 7.8 Automatic translation | Server + daemon + app | Translate a message into the reading language, with the original one click away. LibreTranslate (AGPL-3.0, its own container) on the owner's server, chosen 27 September 2026; the daemon sends only the text of a message the user asks to translate (or of languages the user chose to always translate), over TLS with the install's token; no logs kept | Decided; ready to build |
 | 7.9 Rich contact profiles | App (local) + decision | A right-hand panel for the sender: picture, all mail exchanged, attachments, first and last contact, signature details (phone, title) read from their mail. Outside profiles (LinkedIn, X) need a data source | Local part ready to build; outside data to decide |
 | 7.10 While the computer is off | Server + decision | Send later, snooze and follow-up reminders happen on time even when the computer is off. Needs the server to hold sending rights or an IMAP login | To decide |
 | 7.11 Company overviews | App + Phase 2 | A company page: people, mail and files exchanged, and the local time from their mail. It is the organization view of Phase 2 (2.1–2.4, 3.9). Size and funding need a data source | After Phase 2; outside data to decide |
@@ -549,11 +549,8 @@ Open decisions for the owner (asked in the plan thread, 27 September 2026):
 - **7.10:** whether the server may hold a send-only token or an IMAP
   password so scheduled mail and snoozes work while the computer is off,
   or whether they wait for the computer.
-- **7.8:** which translation engine. On this computer, with small
-  downloaded models (Firefox's Bergamot/translateLocally models, MPL-2.0,
-  about 20–40 MB per language pair; nothing leaves the machine). On our
-  server with LibreTranslate (AGPL-3.0; mail text goes to our server). Or a
-  paid cloud service such as DeepL (mail text goes to a third party).
+- **7.8 (decided):** LibreTranslate on the owner's server, over
+  on-device models or DeepL.
 - **7.9 and 7.11:** where outside profile and company data would come
   from. LinkedIn and X offer no API for this and forbid scraping, and
   paid data services (such as People Data Labs or Crunchbase) send the
