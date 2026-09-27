@@ -171,6 +171,18 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Signatures,
+        "Send new messages from",
+        "The account new mail goes out from: the one you are in, or always the same one",
+        "from sender default account address identity",
+    ),
+    entry(
+        Section::Signatures,
+        "Send on replies",
+        "Send, or Send and archive the conversation, on replies and forwards",
+        "send archive default behavior behaviour reply forward",
+    ),
+    entry(
+        Section::Signatures,
         "Signatures",
         "Added below your message, after a \u{201c}--\u{201d} line",
         "signature sign-off",

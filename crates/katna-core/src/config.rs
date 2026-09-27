@@ -242,6 +242,12 @@ pub struct Sending {
     pub spell_check: bool,
     /// The dictionary, as `en_US`; empty for the desktop's language.
     pub spell_language: String,
+    /// The address new mail is sent from; empty for the account whose
+    /// mail is open. Replies go out from the account they answer.
+    pub send_from: String,
+    /// Send on replies and forwards also archives the conversation; the
+    /// Send menu offers the other way.
+    pub send_and_archive: bool,
 }
 
 impl Default for Sending {
@@ -256,6 +262,8 @@ impl Default for Sending {
             plain_text: false,
             spell_check: true,
             spell_language: String::new(),
+            send_from: String::new(),
+            send_and_archive: false,
         }
     }
 }

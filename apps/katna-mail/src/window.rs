@@ -1603,12 +1603,24 @@ impl MailWindow {
     /// Applies `act` to the lines `keys`: at once in the window, then in
     /// the store and on the server through the daemon.
     fn act(&mut self, act: Act, keys: Vec<EntryKey>, cx: &mut Context<Self>) {
+        self.act_with(act, keys, true, cx);
+    }
+
+    /// Does `act` to the lines `keys`, saying so with an Undo when
+    /// `announce`. Returns what undoes it.
+    fn act_with(
+        &mut self,
+        act: Act,
+        keys: Vec<EntryKey>,
+        announce: bool,
+        cx: &mut Context<Self>,
+    ) -> Option<Command> {
         self.menu = None;
         if keys.is_empty() {
-            return;
+            return None;
         }
         let Ok(mail) = &self.mail else {
-            return;
+            return None;
         };
         let what = match (keys.len(), self.config.mail.conversations) {
             (1, true) => "Conversation".to_owned(),
@@ -1690,7 +1702,7 @@ impl MailWindow {
                             Some(junk) => Some(junk),
                             None => {
                                 self.show_snackbar("This account has no spam folder.", None, cx);
-                                return;
+                                return None;
                             }
                         }
                     }
@@ -1701,7 +1713,7 @@ impl MailWindow {
                     (Act::Archive, _) => Command::Archive(ids.clone()),
                     (Act::Delete, _) => Command::Delete(ids.clone()),
                     (_, Some(target)) => Command::Move(ids.clone(), target),
-                    _ => return,
+                    _ => return None,
                 };
                 // Deleting on an account without a Trash folder, or in
                 // Trash itself, is for good (as the daemon does it), so
@@ -1714,6 +1726,7 @@ impl MailWindow {
             }
         };
         let done = match act {
+            _ if !announce => None,
             Act::Spam => Some(format!("{what} reported as spam.")),
             Act::Delete if for_good => Some(format!("{what} deleted forever.")),
             _ => command.done_text(&what),
@@ -1724,12 +1737,15 @@ impl MailWindow {
             && self.reader.is_none()
             && let Some(main) = self.main.as_ref().and_then(WeakEntity::upgrade)
         {
-            main.update(cx, |main, cx| main.send(command, done, undo, false, cx));
+            main.update(cx, |main, cx| {
+                main.send(command, done, undo.clone(), false, cx)
+            });
             cx.notify();
-            return;
+            return undo;
         }
-        self.send(command, done, undo, false, cx);
+        self.send(command, done, undo.clone(), false, cx);
         cx.notify();
+        undo
     }
 
     /// Takes lines out of the list, keeping the cursor on the next one.
@@ -1825,6 +1841,11 @@ impl MailWindow {
                     .await;
                 this.update_in(cx, |this, window, cx| match result {
                     Ok(()) => {
+                        // Send and archive: the conversation comes back too.
+                        let unarchive = this.unsent.as_mut().and_then(|u| u.unarchive.take());
+                        if let Some(command) = unarchive {
+                            this.send(command, None, None, false, cx);
+                        }
                         this.reopen_unsent(window, cx);
                         this.show_snackbar("Sending undone.", None, cx);
                     }

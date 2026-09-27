@@ -172,6 +172,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                and only if you say yes. Change it any time in Settings > User feedback.",
         animation: None,
     },
+    Highlight {
+        id: 17,
+        title: "Send and archive",
+        text: "The menu beside Send on a reply sends it and archives the \
+               conversation. Settings > Compose can make that what Send does, and \
+               can send new mail from the same account every time.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.
