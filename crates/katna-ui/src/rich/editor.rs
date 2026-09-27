@@ -1199,7 +1199,7 @@ impl RichEditor {
             },
             &html::data_uri,
         );
-        cx.write_to_clipboard(gpui_linux::html_item(text.clone(), html));
+        cx.write_to_clipboard(crate::native::html_item(text.clone(), html));
         self.copied = Some((text, fragment));
     }
 

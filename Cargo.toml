@@ -66,6 +66,9 @@ levenshtein_automata = "0.2.1"
 mail-parser = "0.11.9"
 # Secret Service client; async-std selects zbus/async-io, not tokio.
 oo7 = { version = "0.6", default-features = false, features = ["async-std", "native_crypto"] }
+# Windows Credential Manager, where the daemon keeps passwords on Windows.
+keyring-core = "1.0"
+windows-native-keyring-store = "1.1"
 rusqlite = { version = "0.40", features = ["bundled"] }
 # Password prompts without echo (katnactl).
 rpassword = "7.5"

@@ -28,13 +28,21 @@ async-channel.workspace = true
 async-io.workspace = true
 async-signal.workspace = true
 futures-lite.workspace = true
-oo7.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 smol.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 zbus.workspace = true
+
+# The Secret Service keyring exists only on Linux and the BSDs; Windows keeps
+# passwords in its Credential Manager.
+[target.'cfg(unix)'.dependencies]
+oo7.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+keyring-core.workspace = true
+windows-native-keyring-store.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

@@ -264,7 +264,7 @@ fn serve_menu_bar(
     match served {
         Ok(menu) => {
             cx.set_global(window::MenuBar(menu));
-            gpui_linux::set_kde_appmenu(service, MAIL_MENU_BAR_PATH);
+            katna_ui::native::set_kde_appmenu(service, MAIL_MENU_BAR_PATH);
         }
         Err(err) => tracing::warn!(%err, "no menu bar for the global menu"),
     }

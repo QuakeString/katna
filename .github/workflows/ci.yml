@@ -93,6 +93,22 @@ jobs:
       - run: cargo test --workspace --locked
         if: env.CODE == 'true'
 
+  # Katna on Windows 10 and later (docs/ARCHITECTURE.md §27): the whole
+  # workspace except Katna Server builds with GPUI's Windows backend, and
+  # the tests run there.
+  windows:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+      - run: cargo clippy --workspace --exclude katna-server --all-targets --locked -- -D warnings
+      - run: cargo test --workspace --exclude katna-server --locked
+
   # Katna Server's tests against a real PostgreSQL.
   server:
     needs: changes

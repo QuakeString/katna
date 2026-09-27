@@ -1071,6 +1071,7 @@ fn in_memory(path: &Path, mounts: &str) -> bool {
 
 /// Asks the desktop to open `path` with an app the user picks (the "Open
 /// with" portal). False when there is no portal to ask.
+#[cfg(not(windows))]
 async fn choose_app(path: &Path) -> bool {
     let Ok(file) = std::fs::File::open(path) else {
         return false;
@@ -1080,6 +1081,16 @@ async fn choose_app(path: &Path) -> bool {
         .writeable(false)
         .send_file(&file)
         .await
+        .is_ok()
+}
+
+/// Windows' "Open with" dialog, from `rundll32 shell32.dll,OpenAs_RunDLL`.
+#[cfg(windows)]
+async fn choose_app(path: &Path) -> bool {
+    std::process::Command::new("rundll32.exe")
+        .arg("shell32.dll,OpenAs_RunDLL")
+        .arg(path)
+        .spawn()
         .is_ok()
 }
 

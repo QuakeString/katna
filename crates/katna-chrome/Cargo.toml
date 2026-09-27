@@ -12,7 +12,6 @@ publish.workspace = true
 katna-core.workspace = true
 katna-ui.workspace = true
 gpui.workspace = true
-gpui-linux.workspace = true
 
 [dev-dependencies]
 gpui-platform.workspace = true

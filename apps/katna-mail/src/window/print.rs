@@ -11,15 +11,10 @@
 //! The PDF is written to `$XDG_RUNTIME_DIR/katna/print`, which is private
 //! and emptied at logout; copies older than an hour are removed.
 
-use std::os::fd::AsFd;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
-use ashpd::desktop::ResponseError;
-use ashpd::desktop::print::{
-    Orientation, PageSetup, PreparePrintOptions, PrintOptions, PrintProxy,
-};
 use gpui::{Context, Window};
 use katna_i18n::tr;
 use katna_render::Address;
@@ -89,18 +84,14 @@ impl MailWindow {
         let dir = print_dir();
         cx.spawn(async move |this, cx| {
             let subject = job.subject.clone();
-            let proxy = PrintProxy::new().await.ok();
-            let mut prepared = None;
-            if let Some(proxy) = &proxy {
-                match ask(proxy, &subject, paper).await {
-                    Ok(setup) => prepared = Some(setup),
-                    Err(ashpd::Error::Response(ResponseError::Cancelled)) => return,
-                    Err(err) => tracing::warn!("print dialog failed: {err}"),
-                }
-            }
+            let prepared = match portal::prepare(&subject, paper).await {
+                portal::Dialog::Cancelled => return,
+                portal::Dialog::Prepared(prepared) => Some(prepared),
+                portal::Dialog::None => None,
+            };
             let picked = prepared
                 .as_ref()
-                .and_then(|(setup, _)| paper_of(setup))
+                .and_then(portal::Prepared::paper)
                 .unwrap_or(paper);
             let written = cx
                 .background_executor()
@@ -124,8 +115,8 @@ impl MailWindow {
                     return;
                 }
             };
-            if let (Some(proxy), Some((_, token))) = (&proxy, prepared) {
-                match send(proxy, &subject, &path, token).await {
+            if let Some(prepared) = prepared {
+                match prepared.print(&subject, &path).await {
                     Ok(()) => return,
                     Err(err) => tracing::warn!("printing failed: {err}"),
                 }
@@ -189,55 +180,6 @@ impl MailWindow {
     }
 }
 
-/// Shows the print dialog, set to `paper`. Returns the page setup picked
-/// there and the token to print with.
-async fn ask(proxy: &PrintProxy, title: &str, paper: Paper) -> ashpd::Result<(PageSetup, u32)> {
-    let prepared = proxy
-        .prepare_print(
-            None,
-            title,
-            Default::default(),
-            page_setup(paper),
-            PreparePrintOptions::default().set_modal(false),
-        )
-        .await?
-        .response()?;
-    Ok((prepared.page_setup, prepared.token))
-}
-
-/// Hands the PDF at `path` to the print dialog, which prints it.
-async fn send(proxy: &PrintProxy, title: &str, path: &Path, token: u32) -> ashpd::Result<()> {
-    let file = std::fs::File::open(path).map_err(ashpd::Error::IO)?;
-    proxy
-        .print(
-            None,
-            title,
-            &file.as_fd(),
-            PrintOptions::default().set_token(token).set_modal(false),
-        )
-        .await?;
-    Ok(())
-}
-
-/// The print dialog's page setup for `paper`, upright.
-fn page_setup(paper: Paper) -> PageSetup {
-    let (ppd, name) = if paper == Paper::LETTER {
-        ("Letter", "na_letter")
-    } else {
-        ("A4", "iso_a4")
-    };
-    let mm = |points: f32| f64::from(points) * 25.4 / 72.0;
-    PageSetup {
-        ppdname: Some(ppd.to_owned()),
-        name: Some(name.to_owned()),
-        display_name: Some(ppd.to_owned()),
-        width: Some(mm(paper.width)),
-        height: Some(mm(paper.height)),
-        orientation: Some(Orientation::Portrait),
-        ..PageSetup::default()
-    }
-}
-
 /// The paper people print on where Katna runs: Letter in the Americas that
 /// use it, A4 elsewhere. `LC_PAPER` decides, else the language settings.
 pub(super) fn local_paper() -> Paper {
@@ -265,19 +207,6 @@ fn paper_for_locale(locale: &str) -> Paper {
 /// Whether two papers are the same size, give or take a rounding.
 fn same_paper(a: Paper, b: Paper) -> bool {
     (a.width - b.width).abs() < 1.0 && (a.height - b.height).abs() < 1.0
-}
-
-/// The paper the dialog picked, turned when it prints across.
-fn paper_of(setup: &PageSetup) -> Option<Paper> {
-    let (mut width, mut height) = (setup.width?, setup.height?);
-    let across = matches!(
-        setup.orientation,
-        Some(Orientation::Landscape | Orientation::ReverseLandscape)
-    );
-    if across == (width < height) {
-        std::mem::swap(&mut width, &mut height);
-    }
-    Paper::from_mm(width, height)
 }
 
 /// Where printed PDFs are written.
@@ -324,7 +253,13 @@ fn fonts(family: Option<&str>) -> Option<(PrintFont, Option<PrintFont>)> {
     db.load_system_fonts();
     let families: Vec<fontdb::Family> = family
         .into_iter()
-        .chain(["Noto Sans", "DejaVu Sans", "Cantarell", "Liberation Sans"])
+        .chain([
+            "Noto Sans",
+            "DejaVu Sans",
+            "Cantarell",
+            "Liberation Sans",
+            "Segoe UI",
+        ])
         .map(fontdb::Family::Name)
         .chain([fontdb::Family::SansSerif])
         .collect();
@@ -346,9 +281,168 @@ fn fonts(family: Option<&str>) -> Option<(PrintFont, Option<PrintFont>)> {
     Some((load(regular)?, bold.and_then(load)))
 }
 
+/// The desktop's print dialog (the print portal).
+#[cfg(not(windows))]
+mod portal {
+    use std::os::fd::AsFd;
+    use std::path::Path;
+
+    use ashpd::desktop::ResponseError;
+    use ashpd::desktop::print::{
+        Orientation, PageSetup, PreparePrintOptions, PrintOptions, PrintProxy,
+    };
+    use katna_render::print::Paper;
+
+    /// What the print dialog said.
+    pub(super) enum Dialog {
+        /// The user closed it.
+        Cancelled,
+        /// The user picked a printer.
+        Prepared(Prepared),
+        /// There is no dialog to ask.
+        None,
+    }
+
+    /// A printer and paper picked in the dialog.
+    pub(super) struct Prepared {
+        proxy: PrintProxy,
+        setup: PageSetup,
+        token: u32,
+    }
+
+    impl Prepared {
+        /// The paper picked in the dialog, if it says.
+        pub(super) fn paper(&self) -> Option<Paper> {
+            paper_of(&self.setup)
+        }
+
+        /// Prints the PDF at `path`.
+        pub(super) async fn print(&self, title: &str, path: &Path) -> ashpd::Result<()> {
+            send(&self.proxy, title, path, self.token).await
+        }
+    }
+
+    /// Shows the print dialog for `title`, set to `paper`.
+    pub(super) async fn prepare(title: &str, paper: Paper) -> Dialog {
+        let Ok(proxy) = PrintProxy::new().await else {
+            return Dialog::None;
+        };
+        match ask(&proxy, title, paper).await {
+            Ok((setup, token)) => Dialog::Prepared(Prepared {
+                proxy,
+                setup,
+                token,
+            }),
+            Err(ashpd::Error::Response(ResponseError::Cancelled)) => Dialog::Cancelled,
+            Err(err) => {
+                tracing::warn!("print dialog failed: {err}");
+                Dialog::None
+            }
+        }
+    }
+
+    /// Shows the print dialog, set to `paper`. Returns the page setup picked
+    /// there and the token to print with.
+    async fn ask(proxy: &PrintProxy, title: &str, paper: Paper) -> ashpd::Result<(PageSetup, u32)> {
+        let prepared = proxy
+            .prepare_print(
+                None,
+                title,
+                Default::default(),
+                page_setup(paper),
+                PreparePrintOptions::default().set_modal(false),
+            )
+            .await?
+            .response()?;
+        Ok((prepared.page_setup, prepared.token))
+    }
+
+    /// Hands the PDF at `path` to the print dialog, which prints it.
+    async fn send(proxy: &PrintProxy, title: &str, path: &Path, token: u32) -> ashpd::Result<()> {
+        let file = std::fs::File::open(path).map_err(ashpd::Error::IO)?;
+        proxy
+            .print(
+                None,
+                title,
+                &file.as_fd(),
+                PrintOptions::default().set_token(token).set_modal(false),
+            )
+            .await?;
+        Ok(())
+    }
+
+    /// The print dialog's page setup for `paper`, upright.
+    pub(super) fn page_setup(paper: Paper) -> PageSetup {
+        let (ppd, name) = if paper == Paper::LETTER {
+            ("Letter", "na_letter")
+        } else {
+            ("A4", "iso_a4")
+        };
+        let mm = |points: f32| f64::from(points) * 25.4 / 72.0;
+        PageSetup {
+            ppdname: Some(ppd.to_owned()),
+            name: Some(name.to_owned()),
+            display_name: Some(ppd.to_owned()),
+            width: Some(mm(paper.width)),
+            height: Some(mm(paper.height)),
+            orientation: Some(Orientation::Portrait),
+            ..PageSetup::default()
+        }
+    }
+
+    /// The paper the dialog picked, turned when it prints across.
+    pub(super) fn paper_of(setup: &PageSetup) -> Option<Paper> {
+        let (mut width, mut height) = (setup.width?, setup.height?);
+        let across = matches!(
+            setup.orientation,
+            Some(Orientation::Landscape | Orientation::ReverseLandscape)
+        );
+        if across == (width < height) {
+            std::mem::swap(&mut width, &mut height);
+        }
+        Paper::from_mm(width, height)
+    }
+}
+
+/// On Windows the PDF opens in the default PDF app, which prints it.
+#[cfg(windows)]
+mod portal {
+    use std::path::Path;
+
+    use katna_render::print::Paper;
+
+    pub(super) enum Dialog {
+        #[allow(dead_code)]
+        Cancelled,
+        #[allow(dead_code)]
+        Prepared(Prepared),
+        None,
+    }
+
+    pub(super) enum Prepared {}
+
+    impl Prepared {
+        pub(super) fn paper(&self) -> Option<Paper> {
+            match *self {}
+        }
+
+        pub(super) async fn print(&self, _title: &str, _path: &Path) -> Result<(), String> {
+            match *self {}
+        }
+    }
+
+    pub(super) async fn prepare(_title: &str, _paper: Paper) -> Dialog {
+        Dialog::None
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    #[cfg(not(windows))]
+    use super::portal::{page_setup, paper_of};
     use super::*;
+    #[cfg(not(windows))]
+    use ashpd::desktop::print::{Orientation, PageSetup};
 
     #[test]
     fn writes_a_pdf_in_a_system_font() {
@@ -381,6 +475,7 @@ mod tests {
         assert_eq!(paper_for_locale("C"), Paper::A4);
     }
 
+    #[cfg(not(windows))]
     #[test]
     fn the_dialog_starts_on_the_previewed_paper() {
         let setup = page_setup(Paper::LETTER);
@@ -389,6 +484,7 @@ mod tests {
         assert!(!same_paper(Paper::A4, Paper::LETTER));
     }
 
+    #[cfg(not(windows))]
     #[test]
     fn paper_turns_for_landscape() {
         let setup = PageSetup {
@@ -406,6 +502,7 @@ mod tests {
         assert!(turned(&setup).width < turned(&setup).height);
     }
 
+    #[cfg(not(windows))]
     fn turned(setup: &PageSetup) -> Paper {
         paper_of(setup).unwrap()
     }
