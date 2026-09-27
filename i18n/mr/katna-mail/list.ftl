@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] { $folder } मधील सर्व { $count } मेसेज निवडा
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रीनवरील { $count } वाचलेले संभाषण निवडले आहे.
+           *[other] स्क्रीनवरील सर्व { $count } वाचलेली संभाषणे निवडली आहेत.
+        }
+       *[message] { $count ->
+            [one] स्क्रीनवरील { $count } वाचलेला मेसेज निवडला आहे.
+           *[other] स्क्रीनवरील सर्व { $count } वाचलेले मेसेज निवडले आहेत.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रीनवरील { $count } न वाचलेले संभाषण निवडले आहे.
+           *[other] स्क्रीनवरील सर्व { $count } न वाचलेली संभाषणे निवडली आहेत.
+        }
+       *[message] { $count ->
+            [one] स्क्रीनवरील { $count } न वाचलेला मेसेज निवडला आहे.
+           *[other] स्क्रीनवरील सर्व { $count } न वाचलेले मेसेज निवडले आहेत.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रीनवरील { $count } तारांकित संभाषण निवडले आहे.
+           *[other] स्क्रीनवरील सर्व { $count } तारांकित संभाषणे निवडली आहेत.
+        }
+       *[message] { $count ->
+            [one] स्क्रीनवरील { $count } तारांकित मेसेज निवडला आहे.
+           *[other] स्क्रीनवरील सर्व { $count } तारांकित मेसेज निवडले आहेत.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रीनवरील { $count } तारांकित नसलेले संभाषण निवडले आहे.
+           *[other] स्क्रीनवरील सर्व { $count } तारांकित नसलेली संभाषणे निवडली आहेत.
+        }
+       *[message] { $count ->
+            [one] स्क्रीनवरील { $count } तारांकित नसलेला मेसेज निवडला आहे.
+           *[other] स्क्रीनवरील सर्व { $count } तारांकित नसलेले मेसेज निवडले आहेत.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } वाचलेले संभाषण निवडा
+           *[other] सर्व { $count } वाचलेली संभाषणे निवडा
+        }
+       *[message] { $count ->
+            [one] { $count } वाचलेला मेसेज निवडा
+           *[other] सर्व { $count } वाचलेले मेसेज निवडा
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } न वाचलेले संभाषण निवडा
+           *[other] सर्व { $count } न वाचलेली संभाषणे निवडा
+        }
+       *[message] { $count ->
+            [one] { $count } न वाचलेला मेसेज निवडा
+           *[other] सर्व { $count } न वाचलेले मेसेज निवडा
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } तारांकित संभाषण निवडा
+           *[other] सर्व { $count } तारांकित संभाषणे निवडा
+        }
+       *[message] { $count ->
+            [one] { $count } तारांकित मेसेज निवडा
+           *[other] सर्व { $count } तारांकित मेसेज निवडा
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } तारांकित नसलेले संभाषण निवडा
+           *[other] सर्व { $count } तारांकित नसलेली संभाषणे निवडा
+        }
+       *[message] { $count ->
+            [one] { $count } तारांकित नसलेला मेसेज निवडा
+           *[other] सर्व { $count } तारांकित नसलेले मेसेज निवडा
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } मधील { $count } वाचलेले संभाषण निवडा
+           *[other] { $folder } मधील सर्व { $count } वाचलेली संभाषणे निवडा
+        }
+       *[message] { $count ->
+            [one] { $folder } मधील { $count } वाचलेला मेसेज निवडा
+           *[other] { $folder } मधील सर्व { $count } वाचलेले मेसेज निवडा
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } मधील { $count } न वाचलेले संभाषण निवडा
+           *[other] { $folder } मधील सर्व { $count } न वाचलेली संभाषणे निवडा
+        }
+       *[message] { $count ->
+            [one] { $folder } मधील { $count } न वाचलेला मेसेज निवडा
+           *[other] { $folder } मधील सर्व { $count } न वाचलेले मेसेज निवडा
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } मधील { $count } तारांकित संभाषण निवडा
+           *[other] { $folder } मधील सर्व { $count } तारांकित संभाषणे निवडा
+        }
+       *[message] { $count ->
+            [one] { $folder } मधील { $count } तारांकित मेसेज निवडा
+           *[other] { $folder } मधील सर्व { $count } तारांकित मेसेज निवडा
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } मधील { $count } तारांकित नसलेले संभाषण निवडा
+           *[other] { $folder } मधील सर्व { $count } तारांकित नसलेली संभाषणे निवडा
+        }
+       *[message] { $count ->
+            [one] { $folder } मधील { $count } तारांकित नसलेला मेसेज निवडा
+           *[other] { $folder } मधील सर्व { $count } तारांकित नसलेले मेसेज निवडा
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->
@@ -230,7 +356,10 @@ menu-reply-all = सर्वांना उत्तर द्या
 menu-forward = फॉरवर्ड करा
 menu-archive = संग्रहित करा
 menu-delete = हटवा
+menu-delete-forever = कायमचे हटवा
+menu-move-to-inbox = इनबॉक्समध्ये हलवा
 menu-spam = स्पॅमचा अहवाल द्या
+menu-not-spam = स्पॅम नाही
 menu-mark-read = वाचलेले म्हणून खूण करा
 menu-mark-unread = न वाचलेले म्हणून खूण करा
 menu-mark-all-read = सर्व वाचलेले म्हणून खूण करा
@@ -346,6 +475,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] मेसेजचा स्पॅम म्हणून अहवाल दिला.
        *[other] { $count } मेसेजचा स्पॅम म्हणून अहवाल दिला.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] संभाषण स्पॅम नाही म्हणून चिन्हांकित करून इनबॉक्समध्ये हलवले.
+       *[other] { $count } संभाषणे स्पॅम नाही म्हणून चिन्हांकित करून इनबॉक्समध्ये हलवली.
+    }
+   *[message] { $count ->
+        [one] मेसेज स्पॅम नाही म्हणून चिन्हांकित करून इनबॉक्समध्ये हलवला.
+       *[other] { $count } मेसेज स्पॅम नाही म्हणून चिन्हांकित करून इनबॉक्समध्ये हलवले.
     }
 }
 toast-deleted-forever = { $kind ->

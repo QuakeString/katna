@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = በስህተት የተጻፉ ቃላት ከ
 settings-compose-spell-desktop = የዴስክቶፑ ቋንቋ ({ $language })
 settings-compose-templates = አብነቶች
 settings-compose-templates-detail = ብዙ ጊዜ የሚጽፉትን ደብዳቤ ያስቀምጡ፣ እና አዲስ ደብዳቤ ወይም ምላሽ ከእሱ ይጀምሩ።
+settings-compose-no-templates = እስካሁን ምንም አብነት የለም። በመልዕክት ውስጥ አብነቶችን፣ ከዚያ እንደ አብነት አስቀምጥን ይምረጡ።
+settings-compose-template-new = አዲስ ፍጠር
+settings-compose-template-new-name = አዲስ አብነት
+settings-compose-template-subject = ርዕሰ ጉዳይ
+settings-compose-template-text = የአብነት ጽሑፍ
+settings-compose-template-fields = {"{"}first name{"}"}፣ {"{"}name{"}"} እና {"{"}my name{"}"} በተቀባዩ እና በእርስዎ ስም ይሞላሉ።
+settings-compose-template-remove-file = አባሪውን አስወግድ
+settings-compose-template-save = አስቀምጥ
+settings-compose-template-saved = አብነቱ ተቀምጧል
+settings-compose-template-needs-name = ለአብነቱ ስም ይስጡት
+settings-compose-template-delete = አብነቱን ሰርዝ
+settings-compose-template-deleted = አብነቱ ተሰርዟል
+settings-compose-template-delete-failed = አብነቱን መሰረዝ አልተቻለም፦ { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = አዲስ ደብዳቤ የሚጀምር�
 settings-compose-for-replies-summary = ምላሾች እና ማስተላለፎች የሚጀምሩበት ፊርማ
 settings-compose-format-summary = አዲስ ደብዳቤን በግልጽ ጽሑፍ ጻፍ
 settings-compose-spelling-summary = በሚጽፉበት ጊዜ ፊደል አጻጻፍን ማረጋገጥ፣ እና የመዝገበ ቃላቱ ቋንቋ
-settings-compose-templates-summary = በቅርቡ ይመጣል፦ ብዙ ጊዜ የሚጽፉትን ደብዳቤ ያስቀምጡ፣ እና አዲስ ደብዳቤ ወይም ምላሽ ከእሱ ይጀምሩ
+settings-compose-templates-summary = ብዙ ጊዜ የሚጽፉትን ደብዳቤ ያስቀምጡ፣ እና አዲስ ደብዳቤ ወይም ምላሽ ከእሱ ይጀምሩ
 settings-feedback-crash-reports-summary = Katna Mail ወይም የጀርባ አገልግሎቱ ሲበላሽ የብልሽት ሪፖርቶችን በዚህ ኮምፒውተር ላይ አስቀምጥ
 settings-feedback-saved-summary = በዚህ ኮምፒውተር ላይ የተቀመጡ የብልሽት ሪፖርቶችን ይመልከቱ፣ ይቅዱ ወይም ይሰርዙ
 settings-feedback-help-improve-summary = የተበላሸውን ለማስተካከል እንዲያግዙ የብልሽት ሪፖርቶችን ላክ፤ ካላበሩት በስተቀር ጠፍቷል

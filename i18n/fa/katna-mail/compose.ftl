@@ -38,6 +38,9 @@ compose-scheduled = ارسال برای { $when } زمان‌بندی شد
 compose-sent-archived = ارسال و بایگانی شد
 compose-sent = پیام ارسال شد
 compose-discarded = پیش‌نویس دور انداخته شد
+compose-draft-saved = پیش‌نویس ذخیره شد
+compose-draft-failed = پیش‌نویس ذخیره نشد: { $error }
+compose-draft-not-opened = پیش‌نویس باز نشد.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = پیوست
 compose-file-too-large = { $name } بیش از حد بزرگ است: هر پیام تا { $limit } جا دارد.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = حذف پیوست
+compose-attachments-total = { $count ->
+    [one] { $count } پرونده، { $size }
+   *[other] { $count } پرونده، { $size }
+}
 compose-drop-files = پرونده‌ها را اینجا رها کنید
 compose-drop-here = اینجا رها کنید
 compose-paste-keep-formatting = حفظ قالب‌بندی

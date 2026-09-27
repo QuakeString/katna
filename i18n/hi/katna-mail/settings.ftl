@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = गलत वर्तनी वाले 
 settings-compose-spell-desktop = डेस्कटॉप की भाषा ({ $language })
 settings-compose-templates = टेम्प्लेट
 settings-compose-templates-detail = जो मेल आप अक्सर लिखते हैं उसे सेव करें, और उससे नया मेल या जवाब शुरू करें।
+settings-compose-no-templates = अभी कोई टेम्प्लेट नहीं है। किसी मैसेज में “टेम्प्लेट” चुनें, फिर “टेम्प्लेट के तौर पर सेव करें”।
+settings-compose-template-new = नया बनाएं
+settings-compose-template-new-name = नया टेम्प्लेट
+settings-compose-template-subject = विषय
+settings-compose-template-text = टेम्प्लेट का टेक्स्ट
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} और {"{"}my name{"}"} की जगह पाने वाले का और आपका नाम भर दिया जाता है।
+settings-compose-template-remove-file = अटैचमेंट हटाएं
+settings-compose-template-save = सेव करें
+settings-compose-template-saved = टेम्प्लेट सेव किया गया
+settings-compose-template-needs-name = टेम्प्लेट को नाम दें
+settings-compose-template-delete = टेम्प्लेट मिटाएं
+settings-compose-template-deleted = टेम्प्लेट मिटाया गया
+settings-compose-template-delete-failed = टेम्प्लेट मिटाया नहीं जा सका: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = नया मेल किस हस्�
 settings-compose-for-replies-summary = जवाब और फ़ॉरवर्ड किस हस्ताक्षर से शुरू हों
 settings-compose-format-summary = नया मेल सादे टेक्स्ट में लिखें
 settings-compose-spelling-summary = लिखते समय वर्तनी जांचें, और शब्दकोश की भाषा
-settings-compose-templates-summary = जल्द आ रहा है: जो मेल आप अक्सर लिखते हैं उसे सेव करें, और उससे नया मेल या जवाब शुरू करें
+settings-compose-templates-summary = जो मेल आप अक्सर लिखते हैं उसे सेव करें, और उससे नया मेल या जवाब शुरू करें
 settings-feedback-crash-reports-summary = Katna Mail या उसकी बैकग्राउंड सेवा के क्रैश होने पर क्रैश रिपोर्ट इस कंप्यूटर पर सेव करें
 settings-feedback-saved-summary = इस कंप्यूटर पर सेव की गई क्रैश रिपोर्ट देखें, कॉपी करें या मिटाएं
 settings-feedback-help-improve-summary = जो गड़बड़ हुई उसे ठीक करने में मदद के लिए क्रैश रिपोर्ट भेजें; जब तक आप चालू न करें, यह बंद रहता है

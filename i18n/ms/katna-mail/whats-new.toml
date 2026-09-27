@@ -469,3 +469,122 @@ panahnya untuk menghantar daripada akaun anda yang lain. Mel baharu
 bermula daripada akaun pertama anda, melainkan anda memilih lalai lain
 dalam Tetapan > Karang > Hantar mesej baharu daripada.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Peti masuk bersatu"
+text = """
+Hidupkan Tetapan > Akaun > Peti masuk bersatu untuk melihat mel semua
+akaun anda bersama-sama. “Semua Akaun” mengetuai anak tetingkap folder
+dengan satu Peti Masuk, Belum dibaca, Dibintangi, Penting, Dihantar,
+Draf dan banyak lagi untuk semua akaun; anak panah di sebelah setiap
+satu membuka satu baris bagi setiap akaun. Nama setiap akaun kini
+mempunyai anak panah yang melipat foldernya.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menu klik kanan yang sesuai dengan setiap folder"
+text = """
+Memilih folder atau label di bawah Alih ke dalam menu klik kanan kini
+mengalihkan mel, dengan Buat asal, termasuk dari hasil carian. Dalam
+Spam, Laporkan spam menjadi Bukan spam. Sampah menawarkan Alih ke Peti
+Masuk dan Padam selama-lamanya, Arkib menawarkan Alih ke Peti Masuk, dan
+Draf serta Dihantar tidak menunjukkan item yang tidak berkaitan di situ.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Seret akaun untuk menyusunnya"
+text = """
+Dalam Tetapan > Akaun, menyeret akaun kini mengangkat seluruh barisnya,
+dan akaun lain beralih ke tepi untuk memberi ruang. Alih ke atas dan
+Alih ke bawah muncul apabila anda menuding pada baris.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Draf kekal tersimpan"
+text = """
+Menutup mesej yang sedang anda tulis kini menyimpannya dalam Draf, di
+pelayan mel anda juga, seperti dalam Gmail. Bukanya dari Draf untuk
+terus menulis. Hanya butang sampah yang membuangnya, dan Buat asal
+mengembalikannya.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "Ruang untuk banyak lampiran"
+text = """
+Walau berapa banyak fail yang anda lampirkan, senarai kini menatal di
+atas bar Hantar dan tidak lagi melimpahinya, menunjukkan fail terbaharu,
+serta memberitahu bilangan fail dan jumlah saiznya.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Pilih mel belum dibaca atau dibintangi, gaya Gmail"
+text = """
+Dibaca, Belum dibaca, Dibintangi dan Tidak dibintangi dalam menu pilih
+menanda semula mel yang sepadan pada skrin. Satu baris di atas senarai
+menawarkan untuk memilih setiap perbualan yang sepadan dalam folder, dan
+Kosongkan pilihan membatalkannya.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Folder membawa anda keluar dari Tetapan"
+text = """
+Semasa Tetapan dibuka, klik folder atau ikon Mel kini menutup Tetapan
+dan membuka folder itu, seperti dalam Gmail. Anak panah kembali masih
+berfungsi juga.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Lepaskan gambar ke dalam teks"
+text = """
+Menyeret gambar ke atas mesej menunjukkan kursor di tempat ia akan
+mendarat, jadi anda boleh melepaskannya di tengah ayat. Fail lain masih
+menunjukkan kawasan lepas untuk lampiran, dan lepasan kini berfungsi
+selepas anda menaip.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Keluar menutup serta-merta"
+text = """
+Keluar dalam menu ikon dulang tidak lagi menunggu mel yang masih
+disegerakkan atau diindeks: Katna dan ikon dulangnya ditutup
+serta-merta, dan selebihnya diteruskan apabila Katna dimulakan lagi.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Butiran kenalan di sebelah mel anda"
+text = """
+Dalam tetingkap yang lebar, sebuah kad di sebelah perbualan yang dibuka
+kini menunjukkan pengirim: telefon, jawatan dan syarikat mereka daripada
+tandatangan mereka, waktu mereka sekarang, berapa banyak mel yang telah
+anda bertukar, perbualan terkini anda dan fail antara anda. Klik
+perbualan atau fail untuk membukanya, atau orang lain dalam perbualan
+untuk melihat mereka. Ia dibaca daripada mel anda pada komputer ini
+sahaja. Butang kenalan pada bar alat anak tetingkap bacaan
+menyembunyikannya.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Storan yang digunakan"
+text = """
+Bahagian bawah anak tetingkap folder menunjukkan setakat mana storan mel
+akaun sudah penuh, seperti “34% daripada 15 GB digunakan”, apabila pelayan
+melnya memberitahu.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Cari mel daripada KRunner dan carian GNOME"
+text = """
+Taip nama dalam KRunner (Alt+Space) atau carian Aktiviti untuk menulis kepada
+orang itu, menyalin alamatnya atau mencari melnya. Mesej muncul apabila subjek
+atau pengirimnya mengandungi setiap perkataan yang anda taip; mulakan dengan
+mail: untuk mencari semua mel anda, seperti dalam kotak carian Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Templat untuk mel yang kerap anda tulis"
+text = """
+Tulis mesej sekali dan simpan dengan butang Templat baharu semasa mengarang,
+kemudian masukkan ke dalam mana-mana mel baharu atau balasan dengan satu klik.
+Tulis {first name}, {name} atau {my name} dan Katna mengisinya untuk setiap
+penerima. Sunting, namakan semula atau padam templat dalam Tetapan > Karang.
+"""

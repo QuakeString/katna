@@ -225,7 +225,11 @@ impl Daemon {
             account: entry.account.0,
             message_id,
             subject: entry.subject,
-            remind_at: entry.send_at.saturating_add(after),
+            // Scheduled mail the server holds counts from when it goes out.
+            remind_at: entry
+                .hold_until
+                .map_or(entry.send_at, |hold| hold.max(entry.send_at))
+                .saturating_add(after),
             after,
         };
         katna_meta::set_follow_up(&mut store, outbox, &follow_up)?;

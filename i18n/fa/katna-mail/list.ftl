@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] انتخاب همه { $count } پیام در { $folder }
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } مکالمهٔ خوانده‌شده روی صفحه انتخاب شده است.
+           *[other] همه { $count } مکالمهٔ خوانده‌شده روی صفحه انتخاب شده‌اند.
+        }
+       *[message] { $count ->
+            [one] { $count } پیام خوانده‌شده روی صفحه انتخاب شده است.
+           *[other] همه { $count } پیام خوانده‌شده روی صفحه انتخاب شده‌اند.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } مکالمهٔ خوانده‌نشده روی صفحه انتخاب شده است.
+           *[other] همه { $count } مکالمهٔ خوانده‌نشده روی صفحه انتخاب شده‌اند.
+        }
+       *[message] { $count ->
+            [one] { $count } پیام خوانده‌نشده روی صفحه انتخاب شده است.
+           *[other] همه { $count } پیام خوانده‌نشده روی صفحه انتخاب شده‌اند.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } مکالمهٔ ستاره‌دار روی صفحه انتخاب شده است.
+           *[other] همه { $count } مکالمهٔ ستاره‌دار روی صفحه انتخاب شده‌اند.
+        }
+       *[message] { $count ->
+            [one] { $count } پیام ستاره‌دار روی صفحه انتخاب شده است.
+           *[other] همه { $count } پیام ستاره‌دار روی صفحه انتخاب شده‌اند.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } مکالمهٔ بدون ستاره روی صفحه انتخاب شده است.
+           *[other] همه { $count } مکالمهٔ بدون ستاره روی صفحه انتخاب شده‌اند.
+        }
+       *[message] { $count ->
+            [one] { $count } پیام بدون ستاره روی صفحه انتخاب شده است.
+           *[other] همه { $count } پیام بدون ستاره روی صفحه انتخاب شده‌اند.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] انتخاب { $count } مکالمهٔ خوانده‌شده
+           *[other] انتخاب همه { $count } مکالمهٔ خوانده‌شده
+        }
+       *[message] { $count ->
+            [one] انتخاب { $count } پیام خوانده‌شده
+           *[other] انتخاب همه { $count } پیام خوانده‌شده
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] انتخاب { $count } مکالمهٔ خوانده‌نشده
+           *[other] انتخاب همه { $count } مکالمهٔ خوانده‌نشده
+        }
+       *[message] { $count ->
+            [one] انتخاب { $count } پیام خوانده‌نشده
+           *[other] انتخاب همه { $count } پیام خوانده‌نشده
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] انتخاب { $count } مکالمهٔ ستاره‌دار
+           *[other] انتخاب همه { $count } مکالمهٔ ستاره‌دار
+        }
+       *[message] { $count ->
+            [one] انتخاب { $count } پیام ستاره‌دار
+           *[other] انتخاب همه { $count } پیام ستاره‌دار
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] انتخاب { $count } مکالمهٔ بدون ستاره
+           *[other] انتخاب همه { $count } مکالمهٔ بدون ستاره
+        }
+       *[message] { $count ->
+            [one] انتخاب { $count } پیام بدون ستاره
+           *[other] انتخاب همه { $count } پیام بدون ستاره
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] انتخاب { $count } مکالمهٔ خوانده‌شده در { $folder }
+           *[other] انتخاب همه { $count } مکالمهٔ خوانده‌شده در { $folder }
+        }
+       *[message] { $count ->
+            [one] انتخاب { $count } پیام خوانده‌شده در { $folder }
+           *[other] انتخاب همه { $count } پیام خوانده‌شده در { $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] انتخاب { $count } مکالمهٔ خوانده‌نشده در { $folder }
+           *[other] انتخاب همه { $count } مکالمهٔ خوانده‌نشده در { $folder }
+        }
+       *[message] { $count ->
+            [one] انتخاب { $count } پیام خوانده‌نشده در { $folder }
+           *[other] انتخاب همه { $count } پیام خوانده‌نشده در { $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] انتخاب { $count } مکالمهٔ ستاره‌دار در { $folder }
+           *[other] انتخاب همه { $count } مکالمهٔ ستاره‌دار در { $folder }
+        }
+       *[message] { $count ->
+            [one] انتخاب { $count } پیام ستاره‌دار در { $folder }
+           *[other] انتخاب همه { $count } پیام ستاره‌دار در { $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] انتخاب { $count } مکالمهٔ بدون ستاره در { $folder }
+           *[other] انتخاب همه { $count } مکالمهٔ بدون ستاره در { $folder }
+        }
+       *[message] { $count ->
+            [one] انتخاب { $count } پیام بدون ستاره در { $folder }
+           *[other] انتخاب همه { $count } پیام بدون ستاره در { $folder }
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->
@@ -230,7 +356,10 @@ menu-reply-all = پاسخ به همه
 menu-forward = بازارسال
 menu-archive = بایگانی
 menu-delete = حذف
+menu-delete-forever = حذف برای همیشه
+menu-move-to-inbox = انتقال به صندوق ورودی
 menu-spam = گزارش هرزنامه
+menu-not-spam = هرزنامه نیست
 menu-mark-read = علامت‌گذاری به‌عنوان خوانده‌شده
 menu-mark-unread = علامت‌گذاری به‌عنوان خوانده‌نشده
 menu-mark-all-read = علامت‌گذاری همه به‌عنوان خوانده‌شده
@@ -346,6 +475,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] پیام به‌عنوان هرزنامه گزارش شد.
        *[other] { $count } پیام به‌عنوان هرزنامه گزارش شد.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] مکالمه به‌عنوان غیرهرزنامه علامت خورد و به صندوق ورودی منتقل شد.
+       *[other] { $count } مکالمه به‌عنوان غیرهرزنامه علامت خورد و به صندوق ورودی منتقل شد.
+    }
+   *[message] { $count ->
+        [one] پیام به‌عنوان غیرهرزنامه علامت خورد و به صندوق ورودی منتقل شد.
+       *[other] { $count } پیام به‌عنوان غیرهرزنامه علامت خورد و به صندوق ورودی منتقل شد.
     }
 }
 toast-deleted-forever = { $kind ->

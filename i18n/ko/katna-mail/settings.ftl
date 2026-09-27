@@ -182,6 +182,19 @@ settings-compose-spell-check-detail = 맞춤법이 틀린 단어에 밑줄이 �
 settings-compose-spell-desktop = 데스크톱 언어({ $language })
 settings-compose-templates = 템플릿
 settings-compose-templates-detail = 자주 쓰는 메일을 저장하고, 새 메일이나 답장을 템플릿으로 시작하세요.
+settings-compose-no-templates = 아직 템플릿이 없습니다. 메일에서 템플릿을 선택한 다음 템플릿으로 저장을 선택하세요.
+settings-compose-template-new = 새로 만들기
+settings-compose-template-new-name = 새 템플릿
+settings-compose-template-subject = 제목
+settings-compose-template-text = 템플릿 본문
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"}, {"{"}my name{"}"}은(는) 받는사람의 이름과 내 이름으로 채워집니다.
+settings-compose-template-remove-file = 첨부파일 삭제
+settings-compose-template-save = 저장
+settings-compose-template-saved = 템플릿을 저장했습니다
+settings-compose-template-needs-name = 템플릿 이름을 입력하세요
+settings-compose-template-delete = 템플릿 삭제
+settings-compose-template-deleted = 템플릿을 삭제했습니다
+settings-compose-template-delete-failed = 템플릿을 삭제할 수 없습니다: { $error }
 
 ## Settings > Shortcuts
 
@@ -236,7 +249,7 @@ settings-compose-for-new-mail-summary = 새 메일에 처음부터 들어가는 
 settings-compose-for-replies-summary = 답장과 전달에 처음부터 들어가는 서명
 settings-compose-format-summary = 새 메일을 일반 텍스트로 작성
 settings-compose-spelling-summary = 작성하는 동안 맞춤법 검사, 사전 언어
-settings-compose-templates-summary = 곧 제공: 자주 쓰는 메일을 저장하고, 새 메일이나 답장을 템플릿으로 시작
+settings-compose-templates-summary = 자주 쓰는 메일을 저장하고, 새 메일이나 답장을 템플릿으로 시작
 settings-feedback-crash-reports-summary = Katna Mail이나 백그라운드 서비스가 비정상 종료되면 이 컴퓨터에 오류 보고서 저장
 settings-feedback-saved-summary = 이 컴퓨터에 저장된 오류 보고서 보기, 복사, 삭제
 settings-feedback-help-improve-summary = 문제 해결에 도움이 되도록 오류 보고서 보내기(직접 사용 설정하기 전에는 사용 중지)

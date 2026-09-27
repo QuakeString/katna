@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# TLS for the tracking domain (certificate from Let's Encrypt) in front of
+# Katna Server. Access logs stay off: the server keeps no addresses, and
+# neither should its proxy.
+
+{$KATNA_TRACKING_DOMAIN} {
+	encode gzip
+	reverse_proxy server:8080 {
+		# Event streams stay open; send events as they come.
+		flush_interval -1
+	}
+}

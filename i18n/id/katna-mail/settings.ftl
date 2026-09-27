@@ -182,6 +182,19 @@ settings-compose-spell-check-detail = Kata yang salah eja digarisbawahi, dengan 
 settings-compose-spell-desktop = Bahasa desktop ({ $language })
 settings-compose-templates = Template
 settings-compose-templates-detail = Simpan email yang sering Anda tulis, lalu mulai email baru atau balasan darinya.
+settings-compose-no-templates = Belum ada template. Di sebuah pesan, pilih Template, lalu Simpan sebagai template.
+settings-compose-template-new = Buat baru
+settings-compose-template-new-name = Template baru
+settings-compose-template-subject = Subjek
+settings-compose-template-text = Teks template
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"}, dan {"{"}my name{"}"} diisi dengan nama penerima dan nama Anda.
+settings-compose-template-remove-file = Hapus lampiran
+settings-compose-template-save = Simpan
+settings-compose-template-saved = Template disimpan
+settings-compose-template-needs-name = Beri nama template
+settings-compose-template-delete = Hapus template
+settings-compose-template-deleted = Template dihapus
+settings-compose-template-delete-failed = Tidak dapat menghapus template: { $error }
 
 ## Settings > Shortcuts
 
@@ -236,7 +249,7 @@ settings-compose-for-new-mail-summary = Tanda tangan untuk email baru
 settings-compose-for-replies-summary = Tanda tangan untuk balasan dan penerusan
 settings-compose-format-summary = Tulis email baru dalam teks biasa
 settings-compose-spelling-summary = Periksa ejaan saat menulis, dan bahasa kamus
-settings-compose-templates-summary = Segera hadir: simpan email yang sering Anda tulis, lalu mulai email baru atau balasan darinya
+settings-compose-templates-summary = Simpan email yang sering Anda tulis, lalu mulai email baru atau balasan darinya
 settings-feedback-crash-reports-summary = Simpan laporan error di komputer ini saat Katna Mail atau layanan latar belakangnya error
 settings-feedback-saved-summary = Lihat, salin, atau hapus laporan error yang disimpan di komputer ini
 settings-feedback-help-improve-summary = Kirim laporan error untuk membantu memperbaiki masalah; nonaktif kecuali Anda mengaktifkannya

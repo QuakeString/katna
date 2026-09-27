@@ -38,6 +38,9 @@ compose-scheduled = Gönderim { $when } için planlandı
 compose-sent-archived = Gönderildi ve arşivlendi
 compose-sent = İleti gönderildi
 compose-discarded = Taslak silindi
+compose-draft-saved = Taslak kaydedildi
+compose-draft-failed = Taslak kaydedilemedi: { $error }
+compose-draft-not-opened = Taslak açılamadı.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = Ekle
 compose-file-too-large = { $name } çok büyük: bir ileti en fazla { $limit } taşıyabilir.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Eki kaldır
+compose-attachments-total = { $count ->
+    [one] { $count } dosya, { $size }
+   *[other] { $count } dosya, { $size }
+}
 compose-drop-files = Dosyaları buraya bırakın
 compose-drop-here = Buraya bırakın
 compose-paste-keep-formatting = Biçimlendirmeyi koru

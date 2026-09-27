@@ -38,6 +38,9 @@ compose-scheduled = Pengiriman dijadwalkan pada { $when }
 compose-sent-archived = Terkirim dan diarsipkan
 compose-sent = Pesan terkirim
 compose-discarded = Draf dibuang
+compose-draft-saved = Draf disimpan
+compose-draft-failed = Draf tidak dapat disimpan: { $error }
+compose-draft-not-opened = Draf tidak dapat dibuka.
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = Lampirkan
 compose-file-too-large = { $name } terlalu besar: satu pesan hanya dapat memuat hingga { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Hapus lampiran
+compose-attachments-total = { $count } file, { $size }
 compose-drop-files = Letakkan file di sini
 compose-drop-here = Letakkan di sini
 compose-paste-keep-formatting = Pertahankan format

@@ -38,6 +38,9 @@ compose-scheduled = { $when }ত পঠিয়াবলৈ নিৰ্ধা�
 compose-sent-archived = পঠিওৱা আৰু আৰ্কাইভ কৰা হ'ল
 compose-sent = বাৰ্তা পঠিওৱা হ'ল
 compose-discarded = ড্ৰাফ্ট বাতিল কৰা হ'ল
+compose-draft-saved = ড্ৰাফ্ট ছেভ কৰা হ'ল
+compose-draft-failed = ড্ৰাফ্টটো ছেভ কৰিব পৰা নগ'ল: { $error }
+compose-draft-not-opened = ড্ৰাফ্টটো খুলিব পৰা নগ'ল।
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = সংলগ্ন কৰক
 compose-file-too-large = { $name } বহুত ডাঙৰ: এটা বাৰ্তাত সৰ্বাধিক { $limit } ৰাখিব পাৰি।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = সংলগ্নক আঁতৰাওক
+compose-attachments-total = { $count ->
+    [one] { $count }টা ফাইল, { $size }
+   *[other] { $count }টা ফাইল, { $size }
+}
 compose-drop-files = ফাইলসমূহ ইয়াত এৰক
 compose-drop-here = ইয়াত এৰক
 compose-paste-keep-formatting = ফৰ্মেটিং ৰাখক

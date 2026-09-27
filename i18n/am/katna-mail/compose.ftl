@@ -38,6 +38,9 @@ compose-scheduled = ለ{ $when } እንዲላክ መርሐግብር ተይዟል
 compose-sent-archived = ተልኳል እና ወደ ማህደር ተቀምጧል
 compose-sent = መልዕክቱ ተልኳል
 compose-discarded = ረቂቁ ተጥሏል
+compose-draft-saved = ረቂቁ ተቀምጧል
+compose-draft-failed = ረቂቁን ማስቀመጥ አልተቻለም፦ { $error }
+compose-draft-not-opened = ረቂቁን መክፈት አልተቻለም።
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = አያይዝ
 compose-file-too-large = { $name } በጣም ትልቅ ነው፦ አንድ መልዕክት እስከ { $limit } መያዝ ይችላል።
 compose-attachment-size = ({ $size })
 compose-remove-attachment = አባሪውን አስወግድ
+compose-attachments-total = { $count ->
+    [one] { $count } ፋይል፣ { $size }
+   *[other] { $count } ፋይሎች፣ { $size }
+}
 compose-drop-files = ፋይሎችን እዚህ ይጣሉ
 compose-drop-here = እዚህ ይጣሉ
 compose-paste-keep-formatting = ቅርጸቱን አቆይ

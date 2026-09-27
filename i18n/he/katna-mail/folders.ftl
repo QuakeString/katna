@@ -9,16 +9,23 @@ nav-folders = תיקיות
 nav-label-new = יצירת תווית חדשה
 nav-folder-new = יצירת תיקייה חדשה
 nav-account-unnamed = חשבון { $number }
+nav-all-accounts = כל החשבונות
+nav-expand = הצגת תיקיות
+nav-collapse = הסתרת תיקיות
 nav-tab-new = { $count ->
     [one] { $count } חדשה
     [two] { $count } חדשות
    *[other] { $count } חדשות
 }
+storage-used = { $percent }% מתוך { $total } בשימוש
+storage-used-detail = { $address }: { $used } מתוך { $total } בשימוש
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = דואר נכנס
 folder-starred = מסומנות בכוכב
+folder-unread = לא נקראו
+folder-important = חשובות
 folder-drafts = טיוטות
 folder-sent = נשלחו
 folder-archive = ארכיון

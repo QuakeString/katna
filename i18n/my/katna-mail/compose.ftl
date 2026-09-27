@@ -38,6 +38,9 @@ compose-scheduled = { $when } တွင် ပို့ရန် အချိန
 compose-sent-archived = ပို့ပြီး မှတ်တမ်းသိမ်းပြီး
 compose-sent = မက်ဆေ့ဂျ် ပို့ပြီး
 compose-discarded = မူကြမ်းကို ပယ်လိုက်ပြီ
+compose-draft-saved = မူကြမ်းကို သိမ်းလိုက်ပြီ
+compose-draft-failed = မူကြမ်းကို သိမ်း၍ မရပါ- { $error }
+compose-draft-not-opened = မူကြမ်းကို ဖွင့်၍ မရပါ။
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = ပူးတွဲရန်
 compose-file-too-large = { $name } သည် ကြီးလွန်းသည်- မက်ဆေ့ဂျ်တစ်ခုတွင် { $limit } အထိသာ ပါနိုင်သည်။
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ပူးတွဲဖိုင်ကို ဖယ်ရှားရန်
+compose-attachments-total = ဖိုင် { $count } ခု၊ { $size }
 compose-drop-files = ဖိုင်များကို ဤနေရာတွင် ချပါ
 compose-drop-here = ဤနေရာတွင် ချပါ
 compose-paste-keep-formatting = ပုံစံချမှုကို ထားရန်

@@ -1,0 +1,17 @@
+# Katna Mail, Turkish (Türkçe).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+contact-panel-show = Kişi ayrıntılarını göster
+contact-panel-hide = Kişi ayrıntılarını gizle
+contact-messages = { $count ->
+    [one] { $count } ileti
+   *[other] { $count } ileti
+}
+contact-from-to = { $from } ondan, { $to } sizden
+contact-first = İlk
+contact-latest = En son
+contact-local-time = Onun saatiyle { $time } ({ $offset })
+contact-conversations = Son ileti dizileri
+contact-files = Dosyalar
+contact-people = Bu ileti dizisinde
+contact-local-only = Yalnızca bu bilgisayardaki postalarınızdan

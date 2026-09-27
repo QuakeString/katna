@@ -29,6 +29,8 @@ The toolchain is always the latest stable Rust (`rust-toolchain.toml`).
 - `crates/` — libraries (`katna-core`, `katna-store`, `katna-search`, …).
 - `apps/` — `katna-daemon`, `katna-mail`, `katna-calendar`.
 - `tools/` — `katna-search-cli`, `katna-bench`, `katnactl`.
+- `server/` — `katna-server` (open and click tracking; tokio, axum,
+  PostgreSQL; never a dependency of the daemon or the apps).
 - `docs/` — architecture and plan. `ci/` — CI helper scripts.
 
 ## Rules

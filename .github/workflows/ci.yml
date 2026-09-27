@@ -41,6 +41,30 @@ jobs:
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - run: cargo test --workspace --locked
 
+  # Katna Server's tests against a real PostgreSQL.
+  server:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: katna
+          POSTGRES_PASSWORD: katna
+          POSTGRES_DB: katna_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U katna"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 30
+    env:
+      KATNA_SERVER_TEST_DATABASE_URL: postgres://katna:katna@localhost:5432/katna_test
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install
+      - run: cargo test --locked -p katna-server -- --include-ignored
+
   deny:
     runs-on: ubuntu-latest
     steps:

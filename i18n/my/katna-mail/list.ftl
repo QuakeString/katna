@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] { $folder } ရှိ စကားဝိုင်း { $count } ခုလုံးကို ရွေးရန်
    *[message] { $folder } ရှိ မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးရန်
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] မျက်နှာပြင်ပေါ်ရှိ ဖတ်ပြီးသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးထားသည်။
+       *[message] မျက်နှာပြင်ပေါ်ရှိ ဖတ်ပြီးသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးထားသည်။
+    }
+   *[unread] { $kind ->
+        [conversation] မျက်နှာပြင်ပေါ်ရှိ မဖတ်ရသေးသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးထားသည်။
+       *[message] မျက်နှာပြင်ပေါ်ရှိ မဖတ်ရသေးသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးထားသည်။
+    }
+    [starred] { $kind ->
+        [conversation] မျက်နှာပြင်ပေါ်ရှိ ကြယ်ပွင့်တပ်ထားသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးထားသည်။
+       *[message] မျက်နှာပြင်ပေါ်ရှိ ကြယ်ပွင့်တပ်ထားသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးထားသည်။
+    }
+    [unstarred] { $kind ->
+        [conversation] မျက်နှာပြင်ပေါ်ရှိ ကြယ်ပွင့်မတပ်ထားသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးထားသည်။
+       *[message] မျက်နှာပြင်ပေါ်ရှိ ကြယ်ပွင့်မတပ်ထားသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးထားသည်။
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] ဖတ်ပြီးသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးရန်
+       *[message] ဖတ်ပြီးသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးရန်
+    }
+   *[unread] { $kind ->
+        [conversation] မဖတ်ရသေးသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးရန်
+       *[message] မဖတ်ရသေးသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးရန်
+    }
+    [starred] { $kind ->
+        [conversation] ကြယ်ပွင့်တပ်ထားသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးရန်
+       *[message] ကြယ်ပွင့်တပ်ထားသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးရန်
+    }
+    [unstarred] { $kind ->
+        [conversation] ကြယ်ပွင့်မတပ်ထားသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးရန်
+       *[message] ကြယ်ပွင့်မတပ်ထားသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးရန်
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $folder } ရှိ ဖတ်ပြီးသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးရန်
+       *[message] { $folder } ရှိ ဖတ်ပြီးသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးရန်
+    }
+   *[unread] { $kind ->
+        [conversation] { $folder } ရှိ မဖတ်ရသေးသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးရန်
+       *[message] { $folder } ရှိ မဖတ်ရသေးသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးရန်
+    }
+    [starred] { $kind ->
+        [conversation] { $folder } ရှိ ကြယ်ပွင့်တပ်ထားသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးရန်
+       *[message] { $folder } ရှိ ကြယ်ပွင့်တပ်ထားသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးရန်
+    }
+    [unstarred] { $kind ->
+        [conversation] { $folder } ရှိ ကြယ်ပွင့်မတပ်ထားသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးရန်
+       *[message] { $folder } ရှိ ကြယ်ပွင့်မတပ်ထားသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးရန်
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] ဖတ်ပြီးသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးထားသည်။
@@ -152,7 +206,10 @@ menu-reply-all = အားလုံးကို ပြန်စာရေးရ�
 menu-forward = ထပ်ဆင့်ပို့ရန်
 menu-archive = မှတ်တမ်းသိမ်းရန်
 menu-delete = ဖျက်ရန်
+menu-delete-forever = အပြီးဖျက်ရန်
+menu-move-to-inbox = ဝင်စာသို့ ရွှေ့ရန်
 menu-spam = စပမ်းအဖြစ် တိုင်ကြားရန်
+menu-not-spam = စပမ်း မဟုတ်ပါ
 menu-mark-read = ဖတ်ပြီးအဖြစ် မှတ်ရန်
 menu-mark-unread = မဖတ်ရသေးအဖြစ် မှတ်ရန်
 menu-mark-all-read = အားလုံးကို ဖတ်ပြီးအဖြစ် မှတ်ရန်
@@ -209,6 +266,10 @@ toast-unpinned = { $kind ->
 toast-spam = { $kind ->
     [conversation] စကားဝိုင်း { $count } ခုကို စပမ်းအဖြစ် တိုင်ကြားလိုက်ပြီ။
    *[message] မက်ဆေ့ဂျ် { $count } စောင်ကို စပမ်းအဖြစ် တိုင်ကြားလိုက်ပြီ။
+}
+toast-not-spam = { $kind ->
+    [conversation] စကားဝိုင်း { $count } ခုကို စပမ်း မဟုတ်ဟု မှတ်ပြီး ဝင်စာသို့ ရွှေ့လိုက်ပြီ။
+   *[message] မက်ဆေ့ဂျ် { $count } စောင်ကို စပမ်း မဟုတ်ဟု မှတ်ပြီး ဝင်စာသို့ ရွှေ့လိုက်ပြီ။
 }
 toast-deleted-forever = { $kind ->
     [conversation] စကားဝိုင်း { $count } ခုကို အပြီးဖျက်လိုက်ပြီ။

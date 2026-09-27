@@ -182,6 +182,19 @@ settings-compose-spell-check-detail = Từ sai chính tả được gạch chân
 settings-compose-spell-desktop = Ngôn ngữ của môi trường máy tính ({ $language })
 settings-compose-templates = Mẫu thư
 settings-compose-templates-detail = Lưu những thư bạn hay viết, rồi bắt đầu thư mới hoặc thư trả lời từ đó.
+settings-compose-no-templates = Chưa có mẫu thư nào. Trong một thư, hãy chọn Mẫu thư, rồi chọn Lưu làm mẫu thư.
+settings-compose-template-new = Tạo mới
+settings-compose-template-new-name = Mẫu thư mới
+settings-compose-template-subject = Tiêu đề
+settings-compose-template-text = Nội dung mẫu thư
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} và {"{"}my name{"}"} sẽ được điền bằng tên người nhận và tên của bạn.
+settings-compose-template-remove-file = Xóa tệp đính kèm
+settings-compose-template-save = Lưu
+settings-compose-template-saved = Đã lưu mẫu thư
+settings-compose-template-needs-name = Hãy đặt tên cho mẫu thư
+settings-compose-template-delete = Xóa mẫu thư
+settings-compose-template-deleted = Đã xóa mẫu thư
+settings-compose-template-delete-failed = Không xóa được mẫu thư: { $error }
 
 ## Settings > Shortcuts
 
@@ -236,7 +249,7 @@ settings-compose-for-new-mail-summary = Chữ ký mở đầu cho thư mới
 settings-compose-for-replies-summary = Chữ ký mở đầu cho thư trả lời và chuyển tiếp
 settings-compose-format-summary = Viết thư mới bằng văn bản thuần
 settings-compose-spelling-summary = Kiểm tra chính tả khi viết, và ngôn ngữ của từ điển
-settings-compose-templates-summary = Sắp ra mắt: lưu những thư bạn hay viết, rồi bắt đầu thư mới hoặc thư trả lời từ đó
+settings-compose-templates-summary = Lưu những thư bạn hay viết, rồi bắt đầu thư mới hoặc thư trả lời từ đó
 settings-feedback-crash-reports-summary = Lưu báo cáo sự cố trên máy tính này khi Katna Mail hoặc dịch vụ nền của nó gặp sự cố
 settings-feedback-saved-summary = Xem, sao chép hoặc xóa báo cáo sự cố đã lưu trên máy tính này
 settings-feedback-help-improve-summary = Gửi báo cáo sự cố để giúp khắc phục lỗi; tắt trừ khi bạn bật

@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = Felstavade ord stryks under, med förslag 
 settings-compose-spell-desktop = Skrivbordets språk ({ $language })
 settings-compose-templates = Mallar
 settings-compose-templates-detail = Spara e-post du ofta skriver, och börja nya meddelanden eller svar utifrån den.
+settings-compose-no-templates = Inga mallar än. Välj Mallar i ett meddelande och sedan Spara som mall.
+settings-compose-template-new = Skapa ny
+settings-compose-template-new-name = Ny mall
+settings-compose-template-subject = Ämne
+settings-compose-template-text = Malltext
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} och {"{"}my name{"}"} fylls i med mottagarens och ditt namn.
+settings-compose-template-remove-file = Ta bort bilaga
+settings-compose-template-save = Spara
+settings-compose-template-saved = Mallen har sparats
+settings-compose-template-needs-name = Ge mallen ett namn
+settings-compose-template-delete = Radera mall
+settings-compose-template-deleted = Mallen har raderats
+settings-compose-template-delete-failed = Det gick inte att radera mallen: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = Signaturen som ny e-post börjar med
 settings-compose-for-replies-summary = Signaturen som svar och vidarebefordringar börjar med
 settings-compose-format-summary = Skriv ny e-post med oformaterad text
 settings-compose-spelling-summary = Kontrollera stavningen medan du skriver, och ordlistans språk
-settings-compose-templates-summary = Kommer snart: spara e-post du ofta skriver, och börja nya meddelanden eller svar utifrån den
+settings-compose-templates-summary = Spara e-post du ofta skriver, och börja nya meddelanden eller svar utifrån den
 settings-feedback-crash-reports-summary = Spara kraschrapporter på den här datorn när Katna Mail eller dess bakgrundstjänst kraschar
 settings-feedback-saved-summary = Visa, kopiera eller radera kraschrapporterna som har sparats på den här datorn
 settings-feedback-help-improve-summary = Skicka kraschrapporter för att hjälpa till att rätta det som gick fel; av om du inte slår på det

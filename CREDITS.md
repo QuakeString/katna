@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 829 more of their own. Each keeps its own license.
+bring in 849 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -14,15 +14,18 @@ bring in 829 more of their own. Each keeps its own license.
 | [async-io](https://github.com/smol-rs/async-io) 2.6.0 | Stjepan Glavina | Apache-2.0 OR MIT | Async I/O and timers |
 | [async-net](https://github.com/smol-rs/async-net) 2.0.0 | Stjepan Glavina | Apache-2.0 OR MIT | Async networking primitives for TCP/UDP/Unix communication |
 | [async-signal](https://github.com/smol-rs/async-signal) 0.2.14 | John Nunley | Apache-2.0 OR MIT | Async signal handling |
+| [axum](https://github.com/tokio-rs/axum) 0.8.9 | tokio-rs | MIT | HTTP routing and request handling library that focuses on ergonomics and modularity |
 | [backtrace](https://github.com/rust-lang/backtrace-rs) 0.3.76 | The Rust Project Developers | MIT OR Apache-2.0 | A library to acquire a stack trace (backtrace) at runtime in a Rust program. |
 | [blake3](https://github.com/BLAKE3-team/BLAKE3) 1.8.7 | Jack O'Connor, Samuel Neves | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception | the BLAKE3 hash function |
 | [calamine](https://github.com/tafia/calamine) 0.36.1 | Johann Tuffe | MIT | An Excel/OpenDocument Spreadsheet reader and deserializer in pure Rust |
 | [cfb](https://github.com/mdsteele/rust-cfb) 0.15.0 | Matthew D. Steele | MIT | Read/write Compound File Binary (structured storage) files |
+| [deadpool-postgres](https://github.com/deadpool-rs/deadpool) 0.14.2 | Michael P. Jung | MIT OR Apache-2.0 | Dead simple async pool for tokio-postgres |
 | [emojis](https://github.com/rossmacarthur/emojis) 0.9.0 | Ross MacArthur | (MIT OR Apache-2.0) AND Unicode-3.0 | ✨ Lookup emoji in *O(1)* time, access metadata and GitHub shortcodes, iterate over all emoji, and more! |
 | [fluent-bundle](https://github.com/projectfluent/fluent-rs) 0.16.0 | Bruce Mitchener <bruce.mitchener@gmail.com, Caleb Maclennan, Staś Małolepszy, Zibi Braniecki | Apache-2.0 OR MIT | A low-level implementation of a collection of localization messages for a single locale for Project Fluent, a localization system designed to unleash the entire expressive power of natural language translations. |
 | [fontdb](https://github.com/RazrFalcon/fontdb) 0.23.0 | Yevhenii Reizner | MIT | A simple, in-memory font database with CSS-like queries. |
 | [futures-lite](https://github.com/smol-rs/futures-lite) 2.6.1 | Contributors to futures-rs, Stjepan Glavina | Apache-2.0 OR MIT | Futures, streams, and async I/O combinators |
 | [futures-rustls](https://github.com/quininer/futures-rustls) 0.26.0 | quininer kel | MIT/Apache-2.0 | Asynchronous TLS/SSL streams for futures using Rustls. |
+| [getrandom](https://github.com/rust-random/getrandom) 0.3.4 | The Rand Project Developers | MIT OR Apache-2.0 | A small cross-platform library for retrieving random data from system source |
 | [gpui-pre](https://github.com/zed-industries/zed) 0.3.6 | Nathan Sobo | Apache-2.0 | Zed's GPU-accelerated UI framework (gpui-pre snapshot of zed@bcf6582) |
 | [gpui-pre-linux](https://github.com/zed-industries/zed) 0.3.6 | zed-industries | Apache-2.0 | Zed's `gpui_linux` crate (gpui-pre snapshot of zed@bcf6582) |
 | [gpui-pre-platform](https://github.com/zed-industries/zed) 0.3.6 | zed-industries | Apache-2.0 | Zed's `gpui_platform` crate (gpui-pre snapshot of zed@bcf6582) |
@@ -56,12 +59,15 @@ bring in 829 more of their own. Each keeps its own license.
 | [rustybuzz](https://github.com/harfbuzz/rustybuzz) 0.20.1 | Caleb Maclennan, Laurenz Stampfl, Yevhenii Reizner, خالد حسني (Khaled Hosny) | MIT | A complete harfbuzz shaping algorithm port to Rust. |
 | [serde](https://github.com/serde-rs/serde) 1.0.229 | David Tolnay, Erick Tryzelaar | MIT OR Apache-2.0 | A generic serialization/deserialization framework |
 | [serde_json](https://github.com/serde-rs/json) 1.0.151 | David Tolnay, Erick Tryzelaar | MIT OR Apache-2.0 | A JSON serialization file format |
+| [sha2](https://github.com/RustCrypto/hashes) 0.10.9 | RustCrypto Developers | MIT OR Apache-2.0 | Pure Rust implementation of the SHA-2 hash function family including SHA-224, SHA-256, SHA-384, and SHA-512. |
 | [smol](https://github.com/smol-rs/smol) 2.0.2 | Stjepan Glavina | Apache-2.0 OR MIT | A small and fast async runtime |
 | [spellbook](https://github.com/helix-editor/spellbook) 0.4.2 | Michael Davis | MPL-2.0 | A spellchecking library compatible with Hunspell dictionaries |
 | [tantivy](https://github.com/quickwit-oss/tantivy) 0.26.2 | Paul Masurel | MIT | Search engine library |
 | [tantivy-fst](https://github.com/quickwit-inc/fst) 0.5.0 | Andrew Gallant | Unlicense/MIT | This is a tantivy-specific fork from the fst crate from Burntsushi. (Please use the fst crate instead.) |
 | [tempfile](https://github.com/Stebalien/tempfile) 3.27.0 | Ashley Mannix, Jason White, Steven Allen, The Rust Project Developers | MIT OR Apache-2.0 | A library for managing temporary files and directories. |
 | [thiserror](https://github.com/dtolnay/thiserror) 2.0.21 | David Tolnay | MIT OR Apache-2.0 | derive(Error) |
+| [tokio](https://github.com/tokio-rs/tokio) 1.53.1 | Tokio Contributors | MIT | An event-driven, non-blocking I/O platform for writing asynchronous I/O backed applications. |
+| [tokio-postgres](https://github.com/rust-postgres/rust-postgres) 0.7.18 | Steven Fackler | MIT OR Apache-2.0 | A native, asynchronous PostgreSQL client |
 | [toml](https://github.com/toml-rs/toml) 1.1.6+spec-1.1.0 | toml-rs | MIT OR Apache-2.0 | A native Rust encoder and decoder of TOML-formatted files and streams. Provides implementations of the standard Serialize/Deserialize traits for TOML data to facilitate deserializing and serializing Rust structures. |
 | [tracing](https://github.com/tokio-rs/tracing) 0.1.44 | Eliza Weisman, Tokio Contributors | MIT | Application-level tracing for Rust. |
 | [tracing-subscriber](https://github.com/tokio-rs/tracing) 0.3.23 | David Barsky, Eliza Weisman, Tokio Contributors | MIT | Utilities for implementing and composing `tracing` subscribers. |

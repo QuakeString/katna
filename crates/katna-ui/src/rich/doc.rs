@@ -1201,6 +1201,37 @@ impl Doc {
         pos
     }
 
+    /// Puts `to` in place of every `from` in the text, keeping the style
+    /// of each place. Returns whether there was one.
+    pub fn replace_text(&mut self, from: &str, to: &str) -> bool {
+        if from.is_empty() {
+            return false;
+        }
+        let mut found = false;
+        for path in self.paths() {
+            let Some(para) = self.para_mut(path) else {
+                continue;
+            };
+            let mut after = 0;
+            while let Some(at) = para.text[after..].find(from).map(|at| at + after) {
+                let style = para.style_at(at + 1);
+                para.remove(at..at + from.len());
+                para.insert(at, to, &style);
+                after = at + to.len();
+                found = true;
+            }
+        }
+        found
+    }
+
+    /// Nothing but empty paragraphs before the signature (or in all).
+    pub fn is_blank_above_signature(&self) -> bool {
+        self.blocks
+            .iter()
+            .take_while(|b| !matches!(b, Block::Para(p) if p.style.signature))
+            .all(|b| matches!(b, Block::Para(p) if p.text.trim().is_empty()))
+    }
+
     /// Removes the signature: its paragraphs and the pictures and tables
     /// between them. Returns where it was.
     pub fn remove_signature(&mut self) -> Option<usize> {
@@ -1772,5 +1803,21 @@ mod tests {
         ];
         assert_eq!(image_size(&jpeg), Some((512, 256)));
         assert_eq!(image_size(b"nope"), None);
+    }
+
+    #[test]
+    fn replaces_text_keeping_its_style() {
+        let bold = CharStyle {
+            bold: true,
+            ..CharStyle::default()
+        };
+        let mut doc = Doc {
+            blocks: vec![Block::Para(Para::new("Hi {name}, {name}!", bold.clone()))],
+        };
+        assert!(doc.replace_text("{name}", "Ada"));
+        let para = doc.para(Path::top(0)).unwrap();
+        assert_eq!(para.text, "Hi Ada, Ada!");
+        assert!(para.all(0..para.len(), &|s| s.bold));
+        assert!(!doc.replace_text("{name}", "Ada"));
     }
 }

@@ -38,6 +38,9 @@ compose-scheduled = { $when }에 전송 예약됨
 compose-sent-archived = 보내고 보관처리함
 compose-sent = 메일을 보냈습니다
 compose-discarded = 임시보관 메일을 삭제했습니다
+compose-draft-saved = 임시보관함에 저장했습니다
+compose-draft-failed = 임시보관 메일을 저장하지 못했습니다: { $error }
+compose-draft-not-opened = 임시보관 메일을 열지 못했습니다.
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = 첨부
 compose-file-too-large = { $name } 파일이 너무 큽니다. 메일 한 통에는 최대 { $limit }까지 담을 수 있습니다.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = 첨부파일 삭제
+compose-attachments-total = 파일 { $count }개, { $size }
 compose-drop-files = 여기에 파일을 놓으세요
 compose-drop-here = 여기에 놓으세요
 compose-paste-keep-formatting = 서식 유지

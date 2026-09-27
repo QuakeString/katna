@@ -9,15 +9,22 @@ nav-folders = ফ'ল্ডাৰসমূহ
 nav-label-new = নতুন লেবেল সৃষ্টি কৰক
 nav-folder-new = নতুন ফ'ল্ডাৰ সৃষ্টি কৰক
 nav-account-unnamed = একাউণ্ট { $number }
+nav-all-accounts = সকলো একাউণ্ট
+nav-expand = ফ'ল্ডাৰ দেখুৱাওক
+nav-collapse = ফ'ল্ডাৰ লুকুৱাওক
 nav-tab-new = { $count ->
     [one] { $count }টা নতুন
    *[other] { $count }টা নতুন
 }
+storage-used = { $total }ৰ { $percent }% ব্যৱহৃত
+storage-used-detail = { $address }: { $total }ৰ { $used } ব্যৱহৃত
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = ইনবক্স
 folder-starred = তৰাচিহ্নিত
+folder-unread = নপঢ়া
+folder-important = গুৰুত্বপূৰ্ণ
 folder-drafts = ড্ৰাফ্ট
 folder-sent = প্ৰেৰিত
 folder-archive = আৰ্কাইভ

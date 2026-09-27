@@ -9,15 +9,22 @@ nav-folders = Klasörler
 nav-label-new = Yeni etiket oluştur
 nav-folder-new = Yeni klasör oluştur
 nav-account-unnamed = Hesap { $number }
+nav-all-accounts = Tüm Hesaplar
+nav-expand = Klasörleri göster
+nav-collapse = Klasörleri gizle
 nav-tab-new = { $count ->
     [one] { $count } yeni
    *[other] { $count } yeni
 }
+storage-used = { $total } alanın %{ $percent } kadarı kullanılıyor
+storage-used-detail = { $address }: { $total } alanın { $used } kadarı kullanılıyor
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = Gelen Kutusu
 folder-starred = Yıldızlı
+folder-unread = Okunmamış
+folder-important = Önemli
 folder-drafts = Taslaklar
 folder-sent = Gönderilmiş Postalar
 folder-archive = Arşiv

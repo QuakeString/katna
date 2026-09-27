@@ -22,7 +22,7 @@ use super::MailWindow;
 use super::recipients::{Field, last_entry, mailbox};
 use crate::outgoing;
 use crate::theme::Theme;
-use crate::widgets::{filled_button, icon, raised, tip};
+use crate::widgets::{elevation, filled_button, icon, raised, tip};
 
 const HEIGHT: f32 = 26.0;
 /// The widest a chip gets before its label is cut short.
@@ -80,6 +80,14 @@ impl Chip {
         }]
     }
 
+    /// The recipient, for a chip that is an address.
+    pub(super) fn mailbox(&self) -> Option<crate::outgoing::Mailbox> {
+        self.valid.then(|| crate::outgoing::Mailbox {
+            name: self.name.clone(),
+            email: self.email.clone(),
+        })
+    }
+
     /// What the chip shows: the name, else the address.
     fn label(&self) -> &str {
         if !self.valid {
@@ -109,6 +117,40 @@ pub(in crate::window) struct Chips {
     open: Option<(Field, usize)>,
     /// Where the address being fixed after a double-click goes back.
     editing: Option<(Field, usize)>,
+    /// The chip being dragged to another field, while a drag is under way.
+    dragging: Option<(Field, usize)>,
+}
+
+/// A chip on its way to another field: a lifted copy follows the pointer
+/// while the chip itself fades where it was.
+#[derive(Clone)]
+pub(super) struct ChipDrag {
+    pub field: Field,
+    ix: usize,
+    label: SharedString,
+    valid: bool,
+    th: Theme,
+}
+
+impl Render for ChipDrag {
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        let th = &self.th;
+        div()
+            .max_w(px(MAX_WIDTH))
+            .h(px(HEIGHT))
+            .px(px(10.0))
+            .flex()
+            .items_center()
+            .rounded_full()
+            .border_1()
+            .border_color(rgba(if self.valid { th.divider } else { th.error }))
+            .bg(rgba(th.surface))
+            .shadow(elevation(th, 3.0))
+            .text_size(px(14.0))
+            .text_color(rgba(if self.valid { th.text } else { th.error }))
+            .cursor_grabbing()
+            .child(div().min_w_0().truncate().child(self.label.clone()))
+    }
 }
 
 impl Chips {
@@ -344,6 +386,58 @@ impl MailWindow {
         }
     }
 
+    /// The chip the x on it removes.
+    fn remove_chip(&mut self, field: Field, ix: usize, cx: &mut Context<Self>) {
+        if let Some(compose) = &mut self.compose {
+            compose.chips.remove(field, ix);
+        }
+        self.chips_changed(field, cx);
+    }
+
+    /// The chip being dragged, while a drag is under way.
+    pub(super) fn chip_dragging(&self, cx: &gpui::App) -> Option<(Field, usize)> {
+        let compose = self.compose.as_ref()?;
+        compose.chips.dragging.filter(|_| cx.has_active_drag())
+    }
+
+    /// Notes which chip a drag carries, so it fades and the hidden Cc and
+    /// Bcc rows open to take it.
+    pub(super) fn chip_drag_moved(&mut self, drag: &ChipDrag, cx: &mut Context<Self>) {
+        if let Some(compose) = &mut self.compose
+            && compose.chips.dragging != Some((drag.field, drag.ix))
+        {
+            compose.chips.dragging = Some((drag.field, drag.ix));
+            cx.notify();
+        }
+    }
+
+    /// Moves a dragged chip to the end of `to`.
+    pub(super) fn drop_chip(&mut self, drag: &ChipDrag, to: Field, cx: &mut Context<Self>) {
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        compose.chips.dragging = None;
+        let from = drag.field;
+        if from != to
+            && compose
+                .chips
+                .get(from)
+                .get(drag.ix)
+                .is_some_and(|c| c.label() == drag.label.as_ref())
+            && let Some(chip) = compose.chips.remove(from, drag.ix)
+        {
+            compose.chips.lists[to.ix()].push(chip);
+            match to {
+                Field::Cc => compose.show_cc = true,
+                Field::Bcc => compose.show_bcc = true,
+                Field::To => {}
+            }
+            self.chips_changed(from, cx);
+            self.chips_changed(to, cx);
+        }
+        cx.notify();
+    }
+
     /// Backspace (or Delete, when `delete`) on chips, before the field
     /// sees it: in an empty field Backspace selects the chip before the
     /// cursor, and a second one removes it. Whether it was taken.
@@ -469,17 +563,29 @@ impl MailWindow {
         let chips = &self.compose.as_ref().map(|c| &c.chips);
         let selected = chips.is_some_and(|c| c.selected == Some((field, ix)));
         let open = chips.is_some_and(|c| c.open == Some((field, ix)));
+        let dragged = self.chip_dragging(cx) == Some((field, ix));
         let id = field.ix() * 10_000 + ix;
         let arrow = chip.valid && chip.name.is_some();
         let color = if chip.valid { th.text } else { th.error };
+        let group = SharedString::from(format!("recipient-chip-{id}"));
+        let drag = ChipDrag {
+            field,
+            ix,
+            label: SharedString::from(chip.label().to_owned()),
+            valid: chip.valid,
+            th: *th,
+        };
         div()
             .id(("recipient-chip", id))
+            .group(group.clone())
             .relative()
             .flex_none()
             .max_w(px(MAX_WIDTH))
             .h(px(HEIGHT))
             .pl(px(10.0))
-            .pr(px(if arrow { 2.0 } else { 10.0 }))
+            .pr(px(2.0))
+            .when(dragged, |d| d.opacity(0.4))
+            .on_drag(drag, |drag, _, _, cx| cx.new(|_| drag.clone()))
             .flex()
             .flex_row()
             .items_center()
@@ -527,6 +633,26 @@ impl MailWindow {
                         .child(icon("chevron-down", th.text_dim, 18.0)),
                 )
             })
+            // Shows on hover; the room stays so the chip keeps its width.
+            .child(
+                div()
+                    .id(("recipient-chip-remove", id))
+                    .flex_none()
+                    .size(px(20.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded_full()
+                    .opacity(if selected { 1.0 } else { 0.0 })
+                    .group_hover(group, |s| s.opacity(1.0))
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .tooltip(tip(tr!("recipient-remove"), th))
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        cx.stop_propagation();
+                        this.remove_chip(field, ix, cx);
+                    }))
+                    .child(icon("close", th.text_dim, 16.0)),
+            )
             .when(open, |d| d.child(self.render_chip_card(chip, th, cx)))
             .into_any_element()
     }

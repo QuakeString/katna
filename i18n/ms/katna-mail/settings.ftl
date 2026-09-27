@@ -182,6 +182,19 @@ settings-compose-spell-check-detail = Perkataan yang salah eja digariskan, denga
 settings-compose-spell-desktop = Bahasa desktop ({ $language })
 settings-compose-templates = Templat
 settings-compose-templates-detail = Simpan mel yang kerap anda tulis, dan mulakan mel baharu atau balasan daripadanya.
+settings-compose-no-templates = Belum ada templat. Dalam mesej, pilih Templat, kemudian Simpan sebagai templat.
+settings-compose-template-new = Cipta baharu
+settings-compose-template-new-name = Templat baharu
+settings-compose-template-subject = Subjek
+settings-compose-template-text = Teks templat
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} dan {"{"}my name{"}"} diisi dengan nama penerima dan nama anda.
+settings-compose-template-remove-file = Alih keluar lampiran
+settings-compose-template-save = Simpan
+settings-compose-template-saved = Templat disimpan
+settings-compose-template-needs-name = Beri templat itu nama
+settings-compose-template-delete = Padam templat
+settings-compose-template-deleted = Templat dipadamkan
+settings-compose-template-delete-failed = Tidak dapat memadam templat: { $error }
 
 ## Settings > Shortcuts
 
@@ -236,7 +249,7 @@ settings-compose-for-new-mail-summary = Tandatangan yang memulakan mel baharu
 settings-compose-for-replies-summary = Tandatangan yang memulakan balasan dan majuan
 settings-compose-format-summary = Tulis mel baharu dalam teks biasa
 settings-compose-spelling-summary = Semak ejaan semasa menulis, dan bahasa kamus
-settings-compose-templates-summary = Akan datang: simpan mel yang kerap anda tulis, dan mulakan mel baharu atau balasan daripadanya
+settings-compose-templates-summary = Simpan mel yang kerap anda tulis, dan mulakan mel baharu atau balasan daripadanya
 settings-feedback-crash-reports-summary = Simpan laporan ranap pada komputer ini apabila Katna Mail atau perkhidmatan latar belakangnya ranap
 settings-feedback-saved-summary = Lihat, salin atau padam laporan ranap yang disimpan pada komputer ini
 settings-feedback-help-improve-summary = Hantar laporan ranap untuk membantu membaiki masalah; dimatikan melainkan anda menghidupkannya

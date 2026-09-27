@@ -38,6 +38,9 @@ compose-scheduled = { $when } に送信予約しました
 compose-sent-archived = 送信してアーカイブしました
 compose-sent = メッセージを送信しました
 compose-discarded = 下書きを破棄しました
+compose-draft-saved = 下書きを保存しました
+compose-draft-failed = 下書きを保存できませんでした: { $error }
+compose-draft-not-opened = 下書きを開けませんでした。
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = 添付
 compose-file-too-large = { $name } は大きすぎます。1 通のメッセージに添付できるのは { $limit } までです。
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 添付ファイルを削除
+compose-attachments-total = ファイル { $count } 個、{ $size }
 compose-drop-files = ここにファイルをドロップ
 compose-drop-here = ここにドロップ
 compose-paste-keep-formatting = 書式を保持

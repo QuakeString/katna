@@ -52,6 +52,16 @@
       "repository": "https://github.com/smol-rs/async-signal"
     },
     {
+      "name": "axum",
+      "version": "0.8.9",
+      "description": "HTTP routing and request handling library that focuses on ergonomics and modularity",
+      "license": "MIT",
+      "authors": [
+        "tokio-rs"
+      ],
+      "repository": "https://github.com/tokio-rs/axum"
+    },
+    {
       "name": "backtrace",
       "version": "0.3.76",
       "description": "A library to acquire a stack trace (backtrace) at runtime in a Rust program.",
@@ -91,6 +101,16 @@
         "Matthew D. Steele"
       ],
       "repository": "https://github.com/mdsteele/rust-cfb"
+    },
+    {
+      "name": "deadpool-postgres",
+      "version": "0.14.2",
+      "description": "Dead simple async pool for tokio-postgres",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Michael P. Jung"
+      ],
+      "repository": "https://github.com/deadpool-rs/deadpool"
     },
     {
       "name": "emojis",
@@ -145,6 +165,16 @@
         "quininer kel"
       ],
       "repository": "https://github.com/quininer/futures-rustls"
+    },
+    {
+      "name": "getrandom",
+      "version": "0.3.4",
+      "description": "A small cross-platform library for retrieving random data from system source",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "The Rand Project Developers"
+      ],
+      "repository": "https://github.com/rust-random/getrandom"
     },
     {
       "name": "gpui-pre",
@@ -484,6 +514,16 @@
       "repository": "https://github.com/serde-rs/json"
     },
     {
+      "name": "sha2",
+      "version": "0.10.9",
+      "description": "Pure Rust implementation of the SHA-2 hash function family including SHA-224, SHA-256, SHA-384, and SHA-512.",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "RustCrypto Developers"
+      ],
+      "repository": "https://github.com/RustCrypto/hashes"
+    },
+    {
       "name": "smol",
       "version": "2.0.2",
       "description": "A small and fast async runtime",
@@ -545,6 +585,26 @@
         "David Tolnay"
       ],
       "repository": "https://github.com/dtolnay/thiserror"
+    },
+    {
+      "name": "tokio",
+      "version": "1.53.1",
+      "description": "An event-driven, non-blocking I/O platform for writing asynchronous I/O backed applications.",
+      "license": "MIT",
+      "authors": [
+        "Tokio Contributors"
+      ],
+      "repository": "https://github.com/tokio-rs/tokio"
+    },
+    {
+      "name": "tokio-postgres",
+      "version": "0.7.18",
+      "description": "A native, asynchronous PostgreSQL client",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Steven Fackler"
+      ],
+      "repository": "https://github.com/rust-postgres/rust-postgres"
     },
     {
       "name": "toml",

@@ -182,6 +182,19 @@ settings-compose-spell-check-detail = စာလုံးပေါင်းမှ
 settings-compose-spell-desktop = ဒက်စ်တော့၏ ဘာသာစကား ({ $language })
 settings-compose-templates = ပုံစံခွက်များ
 settings-compose-templates-detail = မကြာခဏရေးသော မေးလ်ကို သိမ်းပြီး ၎င်းမှ မေးလ်အသစ် သို့မဟုတ် ပြန်စာကို စတင်ပါ။
+settings-compose-no-templates = ပုံစံခွက် မရှိသေးပါ။ စာတစ်စောင်တွင် ပုံစံခွက်များ ကို ရွေးပြီး ပုံစံခွက်အဖြစ် သိမ်းရန် ကို ရွေးပါ။
+settings-compose-template-new = အသစ်ပြုလုပ်ရန်
+settings-compose-template-new-name = ပုံစံခွက်အသစ်
+settings-compose-template-subject = ခေါင်းစဉ်
+settings-compose-template-text = ပုံစံခွက် စာသား
+settings-compose-template-fields = {"{"}first name{"}"}၊ {"{"}name{"}"} နှင့် {"{"}my name{"}"} တို့ကို လက်ခံသူ၏ အမည်နှင့် သင့်အမည်ဖြင့် ဖြည့်ပေးပါသည်။
+settings-compose-template-remove-file = ပူးတွဲဖိုင်ကို ဖယ်ရှားရန်
+settings-compose-template-save = သိမ်းရန်
+settings-compose-template-saved = ပုံစံခွက်ကို သိမ်းလိုက်ပြီ
+settings-compose-template-needs-name = ပုံစံခွက်ကို အမည်ပေးပါ
+settings-compose-template-delete = ပုံစံခွက်ကို ဖျက်ရန်
+settings-compose-template-deleted = ပုံစံခွက်ကို ဖျက်လိုက်ပြီ
+settings-compose-template-delete-failed = ပုံစံခွက်ကို ဖျက်၍ မရပါ- { $error }
 
 ## Settings > Shortcuts
 
@@ -236,7 +249,7 @@ settings-compose-for-new-mail-summary = မေးလ်အသစ် စတင်
 settings-compose-for-replies-summary = ပြန်စာနှင့် ထပ်ဆင့်ပို့ချက်များ စတင်မည့် လက်မှတ်
 settings-compose-format-summary = မေးလ်အသစ်ကို စာသားသက်သက်ဖြင့် ရေးရန်
 settings-compose-spelling-summary = ရေးနေစဉ် စာလုံးပေါင်း စစ်ဆေးခြင်းနှင့် အဘိဓာန်၏ ဘာသာစကား
-settings-compose-templates-summary = မကြာမီ လာမည်- မကြာခဏရေးသော မေးလ်ကို သိမ်းပြီး ၎င်းမှ မေးလ်အသစ် သို့မဟုတ် ပြန်စာကို စတင်ပါ
+settings-compose-templates-summary = မကြာခဏရေးသော မေးလ်ကို သိမ်းပြီး ၎င်းမှ မေးလ်အသစ် သို့မဟုတ် ပြန်စာကို စတင်ပါ
 settings-feedback-crash-reports-summary = Katna Mail သို့မဟုတ် ၎င်း၏ နောက်ခံဝန်ဆောင်မှု ပျက်ကျသည့်အခါ ပျက်ကျမှု အစီရင်ခံစာများကို ဤကွန်ပျူတာတွင် သိမ်းရန်
 settings-feedback-saved-summary = ဤကွန်ပျူတာတွင် သိမ်းထားသော ပျက်ကျမှု အစီရင်ခံစာများကို ကြည့်ရန်၊ မိတ္တူကူးရန် သို့မဟုတ် ဖျက်ရန်
 settings-feedback-help-improve-summary = ပြဿနာကို ပြင်ရန် ကူညီနိုင်ရန် ပျက်ကျမှု အစီရင်ခံစာများ ပို့ရန်။ သင်ဖွင့်မှသာ ဖွင့်မည်

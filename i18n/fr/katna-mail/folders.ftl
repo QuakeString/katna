@@ -9,16 +9,23 @@ nav-folders = Dossiers
 nav-label-new = Créer un libellé
 nav-folder-new = Créer un dossier
 nav-account-unnamed = Compte { $number }
+nav-all-accounts = Tous les comptes
+nav-expand = Afficher les dossiers
+nav-collapse = Masquer les dossiers
 nav-tab-new = { $count ->
     [one] { $count } nouveau
     [many] { $count } de nouveaux
    *[other] { $count } nouveaux
 }
+storage-used = { $percent } % utilisés sur { $total }
+storage-used-detail = { $address } : { $used } utilisés sur { $total }
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = Boîte de réception
 folder-starred = Messages suivis
+folder-unread = Non lus
+folder-important = Importants
 folder-drafts = Brouillons
 folder-sent = Messages envoyés
 folder-archive = Archives

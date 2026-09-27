@@ -32,6 +32,7 @@ pub(super) mod schedule;
 mod scheduled;
 mod security;
 mod signature_editor;
+mod templates;
 mod tools;
 
 use std::cell::Cell;
@@ -172,6 +173,8 @@ pub(super) struct Compose {
     /// Pictures just pasted or dropped, while the choice between the text
     /// and the attachments shows.
     picture_choice: Option<paste::PictureChoice>,
+    /// A template was put in, so its fields are filled again on Send.
+    from_template: bool,
     /// The attachment list, which scrolls when it holds many files.
     attach_scroll: ScrollHandle,
     _subscriptions: Vec<Subscription>,
@@ -280,9 +283,14 @@ pub(super) struct Writing {
     compose_window: Option<popout::Handle>,
     /// That window has the desktop's title bar rather than Katna's.
     popout_server_frame: bool,
+    /// The saved templates, as last read.
+    templates: Vec<katna_store::TemplateSummary>,
     /// The message just discarded, or closed without being saved, for
     /// Undo to open again.
     closed_draft: Option<Unsent>,
+    /// How long each account's mail server holds scheduled mail, in
+    /// seconds (0: it cannot), once asked.
+    hold_limits: std::collections::HashMap<AccountId, u64>,
 }
 
 impl Writing {
@@ -1014,6 +1022,7 @@ impl MailWindow {
             stick: Rc::default(),
             grammar_color: grammar_color(&th),
             picture_choice: None,
+            from_template: false,
             attach_scroll: ScrollHandle::new(),
             _subscriptions: subscriptions,
         });
@@ -1241,7 +1250,7 @@ impl MailWindow {
             return;
         };
         compose.popup = None;
-        let draft = compose.fields(cx);
+        let mut draft = compose.fields(cx);
         let thread = compose.thread.clone();
         let sealing = compose.sealing;
         let kind = compose.kind;
@@ -1272,6 +1281,11 @@ impl MailWindow {
         if to.is_empty() && cc.is_empty() && bcc.is_empty() {
             self.show_snackbar(tr!("compose-no-recipients"), None, cx);
             return;
+        }
+        if self.fill_template_fields(to.first().or(cc.first()), cx)
+            && let Some(c) = &self.compose
+        {
+            draft = c.fields(cx);
         }
         let total: usize = attachments.iter().map(|a| a.data.len()).sum::<usize>()
             + draft.body.images().map(|i| i.data.len()).sum::<usize>();
@@ -1378,6 +1392,8 @@ impl MailWindow {
         );
         let connection = self.daemon.clone();
         let when = at.map(|at| schedule::describe(at, &self.tz));
+        let undo = self.config.sending.undo_send_seconds;
+        let at = at.map(|at| at.as_second());
         cx.spawn_in(window, async move |this, cx| {
             let result = cx
                 .background_executor()
@@ -1388,7 +1404,14 @@ impl MailWindow {
                         Some(connection) => connection,
                         None => daemon::connect().await?,
                     };
-                    let id = daemon::queue_send(&connection, account, &raw, delay).await?;
+                    let id = match at {
+                        // Undo works for the undo delay; then it may go
+                        // to the mail server to hold.
+                        Some(at) => {
+                            daemon::schedule_send(&connection, account, &raw, undo, at).await?
+                        }
+                        None => daemon::queue_send(&connection, account, &raw, delay).await?,
+                    };
                     if follow_up > 0
                         && let Err(err) = daemon::set_follow_up(&connection, id, follow_up).await
                     {
@@ -1812,7 +1835,9 @@ impl MailWindow {
             );
         let header = self.recipient_row(header, Field::To, th, cx);
         let cc_field = self.render_recipient_field(Field::Cc, th, cx);
-        let cc = compose.show_cc.then(|| {
+        // A chip being dragged can land in Cc even while it is hidden.
+        let show_cc = compose.show_cc || self.chip_dragging(cx).is_some();
+        let cc = show_cc.then(|| {
             div()
                 .flex_none()
                 .mx(px(12.0))
@@ -2036,6 +2061,8 @@ impl MailWindow {
                 .hover(|s| s.text_color(rgba(th.text)).bg(rgba(th.hover)))
                 .child(label)
         };
+        // A chip being dragged can land in Cc or Bcc even while hidden.
+        let dragging = self.chip_dragging(cx).is_some();
         let to = self
             .recipient_row(row(tr!("compose-to"), to_field), Field::To, th, cx)
             .child(
@@ -2077,10 +2104,10 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(to)
-            .when(compose.show_cc, |d| {
+            .when(compose.show_cc || dragging, |d| {
                 d.child(self.recipient_row(row(tr!("compose-cc"), cc_field), Field::Cc, th, cx))
             })
-            .when(compose.show_bcc, |d| {
+            .when(compose.show_bcc || dragging, |d| {
                 d.child(self.recipient_row(row(tr!("compose-bcc"), bcc_field), Field::Bcc, th, cx))
             })
             .children(
@@ -2256,7 +2283,7 @@ fn grammar_color(th: &Theme) -> Hsla {
 }
 
 /// The editor's colors from the window's theme.
-fn palette(th: &Theme) -> Palette {
+pub(in crate::window) fn palette(th: &Theme) -> Palette {
     let color = |c: u32| -> Hsla { rgba(c).into() };
     Palette {
         accent: color(th.accent),

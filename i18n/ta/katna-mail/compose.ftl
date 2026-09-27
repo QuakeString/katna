@@ -38,6 +38,9 @@ compose-scheduled = { $when } அன்று அனுப்பத் திட
 compose-sent-archived = அனுப்பிக் காப்பகப்படுத்தப்பட்டது
 compose-sent = மெசேஜ் அனுப்பப்பட்டது
 compose-discarded = வரைவு நிராகரிக்கப்பட்டது
+compose-draft-saved = வரைவு சேமிக்கப்பட்டது
+compose-draft-failed = வரைவைச் சேமிக்க முடியவில்லை: { $error }
+compose-draft-not-opened = வரைவைத் திறக்க முடியவில்லை.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = இணை
 compose-file-too-large = { $name } மிகப் பெரியது: ஒரு மெசேஜ் { $limit } வரை மட்டுமே கொண்டு செல்லும்.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = இணைப்பை அகற்று
+compose-attachments-total = { $count ->
+    [one] { $count } கோப்பு, { $size }
+   *[other] { $count } கோப்புகள், { $size }
+}
 compose-drop-files = கோப்புகளை இங்கே விடவும்
 compose-drop-here = இங்கே விடவும்
 compose-paste-keep-formatting = வடிவமைப்பை வைத்திரு

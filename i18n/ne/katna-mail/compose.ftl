@@ -38,6 +38,9 @@ compose-scheduled = { $when } मा पठाउने तालिका ब�
 compose-sent-archived = पठाइयो र संग्रह गरियो
 compose-sent = सन्देश पठाइयो
 compose-discarded = ड्राफ्ट खारेज गरियो
+compose-draft-saved = ड्राफ्ट सेभ गरियो
+compose-draft-failed = ड्राफ्ट सेभ गर्न सकिएन: { $error }
+compose-draft-not-opened = ड्राफ्ट खोल्न सकिएन।
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = संलग्न गर्नुहोस्
 compose-file-too-large = { $name } धेरै ठूलो छ: एउटा सन्देशमा { $limit } सम्म मात्र पठाउन सकिन्छ।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = संलग्नक हटाउनुहोस्
+compose-attachments-total = { $count ->
+    [one] { $count } फाइल, { $size }
+   *[other] { $count } फाइलहरू, { $size }
+}
 compose-drop-files = फाइलहरू यहाँ छोड्नुहोस्
 compose-drop-here = यहाँ छोड्नुहोस्
 compose-paste-keep-formatting = ढाँचा राख्नुहोस्

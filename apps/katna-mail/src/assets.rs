@@ -90,6 +90,7 @@ icons!(
     "open-full",
     "people",
     "person-add",
+    "phone",
     "pin-filled",
     "pin",
     "plain-text",
@@ -119,6 +120,7 @@ icons!(
     "table",
     "tag",
     "tasks",
+    "template",
     "text-color",
     "text-size",
     "tour",
@@ -128,6 +130,7 @@ icons!(
     "unread",
     "warning",
     "window-restore",
+    "work",
     "zoom-in",
     "zoom-out",
 );

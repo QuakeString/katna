@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] Pilih semua { $count } percakapan di { $folder }
    *[message] Pilih semua { $count } pesan di { $folder }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] Semua { $count } percakapan yang sudah dibaca di layar dipilih.
+       *[message] Semua { $count } pesan yang sudah dibaca di layar dipilih.
+    }
+   *[unread] { $kind ->
+        [conversation] Semua { $count } percakapan yang belum dibaca di layar dipilih.
+       *[message] Semua { $count } pesan yang belum dibaca di layar dipilih.
+    }
+    [starred] { $kind ->
+        [conversation] Semua { $count } percakapan berbintang di layar dipilih.
+       *[message] Semua { $count } pesan berbintang di layar dipilih.
+    }
+    [unstarred] { $kind ->
+        [conversation] Semua { $count } percakapan tidak berbintang di layar dipilih.
+       *[message] Semua { $count } pesan tidak berbintang di layar dipilih.
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] Pilih semua { $count } percakapan yang sudah dibaca
+       *[message] Pilih semua { $count } pesan yang sudah dibaca
+    }
+   *[unread] { $kind ->
+        [conversation] Pilih semua { $count } percakapan yang belum dibaca
+       *[message] Pilih semua { $count } pesan yang belum dibaca
+    }
+    [starred] { $kind ->
+        [conversation] Pilih semua { $count } percakapan berbintang
+       *[message] Pilih semua { $count } pesan berbintang
+    }
+    [unstarred] { $kind ->
+        [conversation] Pilih semua { $count } percakapan tidak berbintang
+       *[message] Pilih semua { $count } pesan tidak berbintang
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] Pilih semua { $count } percakapan yang sudah dibaca di { $folder }
+       *[message] Pilih semua { $count } pesan yang sudah dibaca di { $folder }
+    }
+   *[unread] { $kind ->
+        [conversation] Pilih semua { $count } percakapan yang belum dibaca di { $folder }
+       *[message] Pilih semua { $count } pesan yang belum dibaca di { $folder }
+    }
+    [starred] { $kind ->
+        [conversation] Pilih semua { $count } percakapan berbintang di { $folder }
+       *[message] Pilih semua { $count } pesan berbintang di { $folder }
+    }
+    [unstarred] { $kind ->
+        [conversation] Pilih semua { $count } percakapan tidak berbintang di { $folder }
+       *[message] Pilih semua { $count } pesan tidak berbintang di { $folder }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] Semua { $count } percakapan yang sudah dibaca dipilih.
@@ -152,7 +206,10 @@ menu-reply-all = Balas semua
 menu-forward = Teruskan
 menu-archive = Arsipkan
 menu-delete = Hapus
+menu-delete-forever = Hapus selamanya
+menu-move-to-inbox = Pindahkan ke Kotak Masuk
 menu-spam = Laporkan spam
+menu-not-spam = Bukan spam
 menu-mark-read = Tandai sudah dibaca
 menu-mark-unread = Tandai belum dibaca
 menu-mark-all-read = Tandai semua sudah dibaca
@@ -209,6 +266,10 @@ toast-unpinned = { $kind ->
 toast-spam = { $kind ->
     [conversation] { $count } percakapan dilaporkan sebagai spam.
    *[message] { $count } pesan dilaporkan sebagai spam.
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count } percakapan ditandai bukan spam dan dipindahkan ke kotak masuk.
+   *[message] { $count } pesan ditandai bukan spam dan dipindahkan ke kotak masuk.
 }
 toast-deleted-forever = { $kind ->
     [conversation] { $count } percakapan dihapus selamanya.

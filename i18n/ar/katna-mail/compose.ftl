@@ -38,6 +38,9 @@ compose-scheduled = تمت جدولة الإرسال في { $when }
 compose-sent-archived = تم الإرسال والأرشفة
 compose-sent = تم إرسال الرسالة
 compose-discarded = تم تجاهل المسودة
+compose-draft-saved = تم حفظ المسودة
+compose-draft-failed = تعذّر حفظ المسودة: { $error }
+compose-draft-not-opened = تعذّر فتح المسودة.
 
 ## Attachments
 
@@ -46,6 +49,14 @@ compose-picker-attach = إرفاق
 compose-file-too-large = الملف { $name } كبير جدًا: يمكن أن تحمل الرسالة حتى { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = إزالة المرفق
+compose-attachments-total = { $count ->
+    [zero] { $count } ملف، { $size }
+    [one] ملف واحد، { $size }
+    [two] ملفان، { $size }
+    [few] { $count } ملفات، { $size }
+    [many] { $count } ملفًا، { $size }
+   *[other] { $count } ملف، { $size }
+}
 compose-drop-files = أفلت الملفات هنا
 compose-drop-here = أفلت هنا
 compose-paste-keep-formatting = الإبقاء على التنسيق

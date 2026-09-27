@@ -38,6 +38,9 @@ compose-scheduled = ຕັ້ງເວລາສົ່ງໄວ້ທີ່ { $wh
 compose-sent-archived = ສົ່ງ ແລະ ຈັດເກັບແລ້ວ
 compose-sent = ສົ່ງຂໍ້ຄວາມແລ້ວ
 compose-discarded = ຖິ້ມສະບັບຮ່າງແລ້ວ
+compose-draft-saved = ບັນທຶກສະບັບຮ່າງແລ້ວ
+compose-draft-failed = ບໍ່ສາມາດບັນທຶກສະບັບຮ່າງໄດ້: { $error }
+compose-draft-not-opened = ບໍ່ສາມາດເປີດສະບັບຮ່າງໄດ້.
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = ແນບ
 compose-file-too-large = { $name } ໃຫຍ່ເກີນໄປ: ຂໍ້ຄວາມໜຶ່ງສາມາດແນບໄດ້ສູງສຸດ { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ລຶບໄຟລ໌ແນບ
+compose-attachments-total = { $count } ໄຟລ໌, { $size }
 compose-drop-files = ວາງໄຟລ໌ໄວ້ບ່ອນນີ້
 compose-drop-here = ວາງໄວ້ບ່ອນນີ້
 compose-paste-keep-formatting = ຮັກສາການຈັດຮູບແບບ

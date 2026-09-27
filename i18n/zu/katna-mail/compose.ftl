@@ -38,6 +38,9 @@ compose-scheduled = Ukuthumela kuhlelelwe { $when }
 compose-sent-archived = Kuthunyelwe futhi kwafakwa kungobo yomlando
 compose-sent = Umlayezo uthunyelwe
 compose-discarded = Okusalungiswa kulahliwe
+compose-draft-saved = Okusalungiswa kulondoloziwe
+compose-draft-failed = Okusalungiswa akukwazanga ukulondolozwa: { $error }
+compose-draft-not-opened = Okusalungiswa akukwazanga ukuvulwa.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = Namathisela
 compose-file-too-large = { $name } likhulu kakhulu: umlayezo ungathwala kufika ku-{ $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Susa okunamathiselwe
+compose-attachments-total = { $count ->
+    [one] Ifayela elingu-{ $count }, { $size }
+   *[other] Amafayela angu-{ $count }, { $size }
+}
 compose-drop-files = Yehlisela amafayela lapha
 compose-drop-here = Yehlisela lapha
 compose-paste-keep-formatting = Gcina ukufometha

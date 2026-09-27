@@ -363,12 +363,23 @@ impl SearchIndex {
             }
             let before = stats.indexed;
             let mut pending = ids.chunks(READ_BATCH as usize);
+            let mut cut_short = false;
             self.add_documents(&writer, store, options, &mut stats, |store| {
+                if options.stopped() {
+                    cut_short = pending.len() > 0;
+                    return Ok(Vec::new());
+                }
                 Ok(match pending.next() {
                     Some(chunk) => store.messages_by_id(chunk)?,
                     None => Vec::new(),
                 })
             })?;
+            if cut_short {
+                // Stopping: leave this batch uncommitted (dropping the writer
+                // discards it) so the next start indexes it from `seq` again.
+                stats.indexed = before;
+                return Ok(stats);
+            }
             stats.removed += ids.len() as u64 - (stats.indexed - before);
             state = IndexState {
                 schema_version: SCHEMA_VERSION,

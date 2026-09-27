@@ -470,3 +470,125 @@ freccia per inviare da un altro dei tuoi account. La nuova posta parte
 dal tuo primo account, a meno che tu non scelga un altro predefinito in
 Impostazioni > Scrittura > Invia nuovi messaggi da.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Posta in arrivo unificata"
+text = """
+Attiva Impostazioni > Account > Posta in arrivo unificata per vedere
+insieme la posta di tutti i tuoi account. «Tutti gli account» apre il
+riquadro delle cartelle con un’unica Posta in arrivo, Da leggere,
+Speciali, Importanti, Inviati, Bozze e altro per tutti gli account; la
+freccia accanto a ciascuna apre una riga per account. Ora il nome di
+ogni account ha una freccia che ne richiude le cartelle.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menu del clic destro su misura per ogni cartella"
+text = """
+Scegliere una cartella o un'etichetta in Sposta in nel menu del clic
+destro ora sposta la posta, con Annulla, anche dai risultati di ricerca.
+In Spam, Segnala come spam diventa Non è spam. Cestino offre Sposta in
+Posta in arrivo ed Elimina definitivamente, Archivio offre Sposta in
+Posta in arrivo, e Bozze e Inviati tralasciano le voci che lì non
+servono.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Trascina gli account per ordinarli"
+text = """
+In Impostazioni > Account, trascinare un account ora solleva tutta la
+sua riga, e gli altri account si spostano di lato per fargli posto.
+Sposta su e Sposta giù compaiono quando punti una riga.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Le bozze restano"
+text = """
+Chiudere un messaggio che stai scrivendo ora lo salva in Bozze, anche
+sul tuo server di posta, come in Gmail. Aprilo da Bozze per continuare a
+scrivere. Solo il pulsante del cestino lo elimina, e Annulla lo
+recupera.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "Spazio per tanti allegati"
+text = """
+Per quanti file tu alleghi, l'elenco ora scorre sopra la barra di Invia
+invece di coprirla, mostra il file più recente e indica quanti file ci
+sono e la loro dimensione totale.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Seleziona la posta da leggere o speciale, come in Gmail"
+text = """
+Già letti, Da leggere, Speciali e Non speciali nel menu Seleziona
+tornano a spuntare la posta corrispondente in questa pagina. Una riga
+sopra l'elenco propone di selezionare tutte le conversazioni
+corrispondenti nella cartella, e Annulla selezione torna indietro.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Le cartelle ti portano fuori dalle Impostazioni"
+text = """
+Con le Impostazioni aperte, un clic su una cartella o sull'icona Posta
+ora chiude le Impostazioni e apre quella cartella, come in Gmail. Anche
+la freccia indietro continua a funzionare.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Trascina le immagini nel testo"
+text = """
+Trascinando un'immagine sopra un messaggio compare un cursore nel punto
+in cui finirà, così puoi rilasciarla a metà di una frase. Gli altri file
+mostrano ancora l'area di rilascio per gli allegati, e ora il rilascio
+funziona anche dopo che hai scritto.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Esci chiude subito"
+text = """
+Esci nel menu dell'icona nell'area di notifica non aspetta più la posta
+ancora in sincronizzazione o in indicizzazione: Katna e la sua icona si
+chiudono subito, e il resto prosegue al prossimo avvio di Katna.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Dettagli del contatto accanto alla posta"
+text = """
+In una finestra larga, una scheda accanto alla conversazione aperta ora
+mostra il mittente: telefono, qualifica e azienda presi dalle sue firme,
+la sua ora locale, quanta posta vi siete scambiati, le vostre
+conversazioni recenti e i file tra voi. Fai clic su una conversazione o
+un file per aprirlo, o su un'altra persona della conversazione per
+vederla. I dati sono letti solo dalla posta su questo computer. Il
+pulsante del contatto nella barra degli strumenti del riquadro di
+lettura la nasconde.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Spazio utilizzato"
+text = """
+In fondo al riquadro delle cartelle ora compare quanto è pieno lo spazio
+per la posta dell'account, ad esempio «34% di 15 GB in uso», quando il
+server di posta lo comunica.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Trova la posta da KRunner e dalla ricerca di GNOME"
+text = """
+Digita un nome in KRunner (Alt+Space) o nella ricerca di Attività per
+scrivere a quella persona, copiarne l'indirizzo o trovarne la posta. I
+messaggi compaiono quando l'oggetto o il mittente contiene ogni parola
+digitata; inizia con mail: per cercare in tutta la posta, come nella
+casella di ricerca di Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Modelli per la posta che scrivi spesso"
+text = """
+Scrivi un messaggio una volta e salvalo con il nuovo pulsante Modelli
+nella finestra di scrittura, poi inseriscilo in un nuovo messaggio o in
+una risposta con un clic. Scrivi {first name}, {name} o {my name} e
+Katna li compila per ogni destinatario. Modifica, rinomina o elimina i
+modelli in Impostazioni > Scrittura.
+"""

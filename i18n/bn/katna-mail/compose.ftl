@@ -38,6 +38,9 @@ compose-scheduled = { $when }-এ পাঠানোর জন্য শিড�
 compose-sent-archived = পাঠানো ও আর্কাইভ করা হয়েছে
 compose-sent = মেসেজ পাঠানো হয়েছে
 compose-discarded = খসড়া বাতিল করা হয়েছে
+compose-draft-saved = খসড়া সেভ করা হয়েছে
+compose-draft-failed = খসড়া সেভ করা যায়নি: { $error }
+compose-draft-not-opened = খসড়া খোলা যায়নি।
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = সংযুক্ত করুন
 compose-file-too-large = { $name } খুব বড়: একটি মেসেজে সর্বোচ্চ { $limit } রাখা যায়।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = সংযুক্তি সরান
+compose-attachments-total = { $count ->
+    [one] { $count }টি ফাইল, { $size }
+   *[other] { $count }টি ফাইল, { $size }
+}
 compose-drop-files = ফাইলগুলি এখানে ছাড়ুন
 compose-drop-here = এখানে ছাড়ুন
 compose-paste-keep-formatting = ফরম্যাটিং রাখুন

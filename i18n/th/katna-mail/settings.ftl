@@ -182,6 +182,19 @@ settings-compose-spell-check-detail = คำที่สะกดผิดจะ
 settings-compose-spell-desktop = ภาษาของเดสก์ท็อป ({ $language })
 settings-compose-templates = เทมเพลต
 settings-compose-templates-detail = บันทึกอีเมลที่คุณเขียนบ่อย และใช้เริ่มอีเมลใหม่หรือการตอบกลับ
+settings-compose-no-templates = ยังไม่มีเทมเพลต ในข้อความ ให้เลือก “เทมเพลต” แล้วเลือก “บันทึกเป็นเทมเพลต”
+settings-compose-template-new = สร้างใหม่
+settings-compose-template-new-name = เทมเพลตใหม่
+settings-compose-template-subject = หัวเรื่อง
+settings-compose-template-text = ข้อความเทมเพลต
+settings-compose-template-fields = {"{"}first name{"}"} {"{"}name{"}"} และ {"{"}my name{"}"} จะถูกเติมด้วยชื่อของผู้รับและชื่อของคุณ
+settings-compose-template-remove-file = นำไฟล์แนบออก
+settings-compose-template-save = บันทึก
+settings-compose-template-saved = บันทึกเทมเพลตแล้ว
+settings-compose-template-needs-name = ตั้งชื่อให้เทมเพลต
+settings-compose-template-delete = ลบเทมเพลต
+settings-compose-template-deleted = ลบเทมเพลตแล้ว
+settings-compose-template-delete-failed = ลบเทมเพลตไม่ได้: { $error }
 
 ## Settings > Shortcuts
 
@@ -236,7 +249,7 @@ settings-compose-for-new-mail-summary = ลายเซ็นที่ใช้�
 settings-compose-for-replies-summary = ลายเซ็นที่ใช้เริ่มการตอบกลับและการส่งต่อ
 settings-compose-format-summary = เขียนอีเมลใหม่เป็นข้อความธรรมดา
 settings-compose-spelling-summary = ตรวจการสะกดขณะเขียน และภาษาของพจนานุกรม
-settings-compose-templates-summary = เร็วๆ นี้: บันทึกอีเมลที่คุณเขียนบ่อย และใช้เริ่มอีเมลใหม่หรือการตอบกลับ
+settings-compose-templates-summary = บันทึกอีเมลที่คุณเขียนบ่อย และใช้เริ่มอีเมลใหม่หรือการตอบกลับ
 settings-feedback-crash-reports-summary = บันทึกรายงานข้อขัดข้องไว้ในคอมพิวเตอร์เครื่องนี้เมื่อ Katna Mail หรือบริการเบื้องหลังขัดข้อง
 settings-feedback-saved-summary = ดู คัดลอก หรือลบรายงานข้อขัดข้องที่บันทึกไว้ในคอมพิวเตอร์เครื่องนี้
 settings-feedback-help-improve-summary = ส่งรายงานข้อขัดข้องเพื่อช่วยแก้ไขปัญหา ปิดอยู่จนกว่าคุณจะเปิด

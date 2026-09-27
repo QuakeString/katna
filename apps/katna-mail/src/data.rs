@@ -470,6 +470,15 @@ impl Mail {
         })
     }
 
+    /// How full each account's mail storage is, for the accounts whose
+    /// server reports it.
+    pub fn quotas(&self) -> HashMap<katna_core::AccountId, katna_store::StorageQuota> {
+        self.accounts()
+            .iter()
+            .filter_map(|a| Some((a.id, self.store.quota(a.id).ok()??)))
+            .collect()
+    }
+
     /// The IMAP server of an account, to tell its provider.
     pub fn incoming_host(&self, account: katna_core::AccountId) -> Option<String> {
         let settings = self.store.account_settings(account).ok()??;
@@ -903,6 +912,50 @@ impl Mail {
         self.rows.clear();
     }
 
+    /// The people on messages `ids` other than the user, each once: for
+    /// each message in turn its sender, then its recipients. Addresses
+    /// are lower case.
+    pub fn message_people(&self, ids: &[MessageId]) -> Vec<(String, Option<String>)> {
+        use katna_store::ParticipantRole as Role;
+        let messages = self.store.messages_by_id(ids).unwrap_or_else(|err| {
+            tracing::warn!("reading the people of a conversation: {err}");
+            Vec::new()
+        });
+        let mut people: Vec<(String, Option<String>)> = Vec::new();
+        for id in ids {
+            let Some(message) = messages.iter().find(|m| m.id == *id) else {
+                continue;
+            };
+            for role in [Role::From, Role::To, Role::Cc] {
+                for p in message.participants.iter().filter(|p| p.role == role) {
+                    let email = p.email_norm.trim().to_lowercase();
+                    let mine = self
+                        .me
+                        .iter()
+                        .any(|me| me.trim().eq_ignore_ascii_case(&email));
+                    if mine || !email.contains('@') {
+                        continue;
+                    }
+                    let name = p
+                        .display_name
+                        .as_deref()
+                        .map(str::trim)
+                        .filter(|n| !n.is_empty() && !n.eq_ignore_ascii_case(&email))
+                        .map(str::to_owned);
+                    match people.iter_mut().find(|(e, _)| *e == email) {
+                        Some((_, known)) => {
+                            if known.is_none() {
+                                *known = name;
+                            }
+                        }
+                        None => people.push((email, name)),
+                    }
+                }
+            }
+        }
+        people
+    }
+
     /// The drafts among `ids`: messages flagged `\Draft`.
     pub fn drafts(&self, ids: &[MessageId]) -> Vec<MessageId> {
         self.store
@@ -957,6 +1010,21 @@ pub fn people(paths: &Paths) -> Result<Vec<katna_store::Person>, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.people(PEOPLE_LIMIT))
         .map_err(|err| format!("Reading people from the mail failed: {err}"))
+}
+
+/// The mail templates, by name. Opens its own connection, for a
+/// background thread.
+pub fn templates(paths: &Paths) -> Result<Vec<katna_store::TemplateSummary>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.templates())
+        .map_err(|err| format!("Reading templates failed: {err}"))
+}
+
+/// Template `id` with its body and attachments.
+pub fn template(paths: &Paths, id: i64) -> Result<Option<katna_store::Template>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.template(id))
+        .map_err(|err| format!("Reading a template failed: {err}"))
 }
 
 /// The address book for recipient suggestions, read from the store (a

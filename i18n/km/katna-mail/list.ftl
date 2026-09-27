@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] ជ្រើសរើសការសន្ទនាទាំង { $count } ក្នុង { $folder }
    *[message] ជ្រើសរើសសារទាំង { $count } ក្នុង { $folder }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] ការសន្ទនាដែលបានអានទាំង { $count } នៅលើអេក្រង់ត្រូវបានជ្រើសរើស។
+       *[message] សារដែលបានអានទាំង { $count } នៅលើអេក្រង់ត្រូវបានជ្រើសរើស។
+    }
+   *[unread] { $kind ->
+        [conversation] ការសន្ទនាដែលមិនទាន់អានទាំង { $count } នៅលើអេក្រង់ត្រូវបានជ្រើសរើស។
+       *[message] សារដែលមិនទាន់អានទាំង { $count } នៅលើអេក្រង់ត្រូវបានជ្រើសរើស។
+    }
+    [starred] { $kind ->
+        [conversation] ការសន្ទនាដែលមានផ្កាយទាំង { $count } នៅលើអេក្រង់ត្រូវបានជ្រើសរើស។
+       *[message] សារដែលមានផ្កាយទាំង { $count } នៅលើអេក្រង់ត្រូវបានជ្រើសរើស។
+    }
+    [unstarred] { $kind ->
+        [conversation] ការសន្ទនាដែលគ្មានផ្កាយទាំង { $count } នៅលើអេក្រង់ត្រូវបានជ្រើសរើស។
+       *[message] សារដែលគ្មានផ្កាយទាំង { $count } នៅលើអេក្រង់ត្រូវបានជ្រើសរើស។
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] ជ្រើសរើសការសន្ទនាដែលបានអានទាំង { $count }
+       *[message] ជ្រើសរើសសារដែលបានអានទាំង { $count }
+    }
+   *[unread] { $kind ->
+        [conversation] ជ្រើសរើសការសន្ទនាដែលមិនទាន់អានទាំង { $count }
+       *[message] ជ្រើសរើសសារដែលមិនទាន់អានទាំង { $count }
+    }
+    [starred] { $kind ->
+        [conversation] ជ្រើសរើសការសន្ទនាដែលមានផ្កាយទាំង { $count }
+       *[message] ជ្រើសរើសសារដែលមានផ្កាយទាំង { $count }
+    }
+    [unstarred] { $kind ->
+        [conversation] ជ្រើសរើសការសន្ទនាដែលគ្មានផ្កាយទាំង { $count }
+       *[message] ជ្រើសរើសសារដែលគ្មានផ្កាយទាំង { $count }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] ជ្រើសរើសការសន្ទនាដែលបានអានទាំង { $count } ក្នុង { $folder }
+       *[message] ជ្រើសរើសសារដែលបានអានទាំង { $count } ក្នុង { $folder }
+    }
+   *[unread] { $kind ->
+        [conversation] ជ្រើសរើសការសន្ទនាដែលមិនទាន់អានទាំង { $count } ក្នុង { $folder }
+       *[message] ជ្រើសរើសសារដែលមិនទាន់អានទាំង { $count } ក្នុង { $folder }
+    }
+    [starred] { $kind ->
+        [conversation] ជ្រើសរើសការសន្ទនាដែលមានផ្កាយទាំង { $count } ក្នុង { $folder }
+       *[message] ជ្រើសរើសសារដែលមានផ្កាយទាំង { $count } ក្នុង { $folder }
+    }
+    [unstarred] { $kind ->
+        [conversation] ជ្រើសរើសការសន្ទនាដែលគ្មានផ្កាយទាំង { $count } ក្នុង { $folder }
+       *[message] ជ្រើសរើសសារដែលគ្មានផ្កាយទាំង { $count } ក្នុង { $folder }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] ការសន្ទនាដែលបានអានទាំង { $count } ត្រូវបានជ្រើសរើស។
@@ -152,7 +206,10 @@ menu-reply-all = ឆ្លើយតបទាំងអស់
 menu-forward = បញ្ជូនបន្ត
 menu-archive = ទុកក្នុងបណ្ណសារ
 menu-delete = លុប
+menu-delete-forever = លុបជារៀងរហូត
+menu-move-to-inbox = ផ្លាស់ទីទៅប្រអប់ទទួល
 menu-spam = រាយការណ៍ថាជាសារឥតបានការ
+menu-not-spam = មិនមែនសារឥតបានការ
 menu-mark-read = សម្គាល់ថាបានអាន
 menu-mark-unread = សម្គាល់ថាមិនទាន់អាន
 menu-mark-all-read = សម្គាល់ទាំងអស់ថាបានអាន
@@ -209,6 +266,10 @@ toast-unpinned = { $kind ->
 toast-spam = { $kind ->
     [conversation] បានរាយការណ៍ការសន្ទនា { $count } ថាជាសារឥតបានការ។
    *[message] បានរាយការណ៍សារ { $count } ថាជាសារឥតបានការ។
+}
+toast-not-spam = { $kind ->
+    [conversation] បានសម្គាល់ការសន្ទនា { $count } ថាមិនមែនសារឥតបានការ ហើយផ្លាស់ទីទៅប្រអប់ទទួល។
+   *[message] បានសម្គាល់សារ { $count } ថាមិនមែនសារឥតបានការ ហើយផ្លាស់ទីទៅប្រអប់ទទួល។
 }
 toast-deleted-forever = { $kind ->
     [conversation] បានលុបការសន្ទនា { $count } ជារៀងរហូត។

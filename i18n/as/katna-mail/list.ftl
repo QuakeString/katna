@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] { $folder }ত থকা সকলো { $count }টা বাৰ্তা বাছনি কৰক
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] স্ক্ৰীনত থকা { $count }টা পঢ়া কথোপকথন বাছনি কৰা হৈছে।
+           *[other] স্ক্ৰীনত থকা সকলো { $count }টা পঢ়া কথোপকথন বাছনি কৰা হৈছে।
+        }
+       *[message] { $count ->
+            [one] স্ক্ৰীনত থকা { $count }টা পঢ়া বাৰ্তা বাছনি কৰা হৈছে।
+           *[other] স্ক্ৰীনত থকা সকলো { $count }টা পঢ়া বাৰ্তা বাছনি কৰা হৈছে।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] স্ক্ৰীনত থকা { $count }টা নপঢ়া কথোপকথন বাছনি কৰা হৈছে।
+           *[other] স্ক্ৰীনত থকা সকলো { $count }টা নপঢ়া কথোপকথন বাছনি কৰা হৈছে।
+        }
+       *[message] { $count ->
+            [one] স্ক্ৰীনত থকা { $count }টা নপঢ়া বাৰ্তা বাছনি কৰা হৈছে।
+           *[other] স্ক্ৰীনত থকা সকলো { $count }টা নপঢ়া বাৰ্তা বাছনি কৰা হৈছে।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] স্ক্ৰীনত থকা { $count }টা তৰাচিহ্নিত কথোপকথন বাছনি কৰা হৈছে।
+           *[other] স্ক্ৰীনত থকা সকলো { $count }টা তৰাচিহ্নিত কথোপকথন বাছনি কৰা হৈছে।
+        }
+       *[message] { $count ->
+            [one] স্ক্ৰীনত থকা { $count }টা তৰাচিহ্নিত বাৰ্তা বাছনি কৰা হৈছে।
+           *[other] স্ক্ৰীনত থকা সকলো { $count }টা তৰাচিহ্নিত বাৰ্তা বাছনি কৰা হৈছে।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] স্ক্ৰীনত থকা { $count }টা তৰাচিহ্নবিহীন কথোপকথন বাছনি কৰা হৈছে।
+           *[other] স্ক্ৰীনত থকা সকলো { $count }টা তৰাচিহ্নবিহীন কথোপকথন বাছনি কৰা হৈছে।
+        }
+       *[message] { $count ->
+            [one] স্ক্ৰীনত থকা { $count }টা তৰাচিহ্নবিহীন বাৰ্তা বাছনি কৰা হৈছে।
+           *[other] স্ক্ৰীনত থকা সকলো { $count }টা তৰাচিহ্নবিহীন বাৰ্তা বাছনি কৰা হৈছে।
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টা পঢ়া কথোপকথন বাছনি কৰক
+           *[other] সকলো { $count }টা পঢ়া কথোপকথন বাছনি কৰক
+        }
+       *[message] { $count ->
+            [one] { $count }টা পঢ়া বাৰ্তা বাছনি কৰক
+           *[other] সকলো { $count }টা পঢ়া বাৰ্তা বাছনি কৰক
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টা নপঢ়া কথোপকথন বাছনি কৰক
+           *[other] সকলো { $count }টা নপঢ়া কথোপকথন বাছনি কৰক
+        }
+       *[message] { $count ->
+            [one] { $count }টা নপঢ়া বাৰ্তা বাছনি কৰক
+           *[other] সকলো { $count }টা নপঢ়া বাৰ্তা বাছনি কৰক
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টা তৰাচিহ্নিত কথোপকথন বাছনি কৰক
+           *[other] সকলো { $count }টা তৰাচিহ্নিত কথোপকথন বাছনি কৰক
+        }
+       *[message] { $count ->
+            [one] { $count }টা তৰাচিহ্নিত বাৰ্তা বাছনি কৰক
+           *[other] সকলো { $count }টা তৰাচিহ্নিত বাৰ্তা বাছনি কৰক
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টা তৰাচিহ্নবিহীন কথোপকথন বাছনি কৰক
+           *[other] সকলো { $count }টা তৰাচিহ্নবিহীন কথোপকথন বাছনি কৰক
+        }
+       *[message] { $count ->
+            [one] { $count }টা তৰাচিহ্নবিহীন বাৰ্তা বাছনি কৰক
+           *[other] সকলো { $count }টা তৰাচিহ্নবিহীন বাৰ্তা বাছনি কৰক
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }ত থকা { $count }টা পঢ়া কথোপকথন বাছনি কৰক
+           *[other] { $folder }ত থকা সকলো { $count }টা পঢ়া কথোপকথন বাছনি কৰক
+        }
+       *[message] { $count ->
+            [one] { $folder }ত থকা { $count }টা পঢ়া বাৰ্তা বাছনি কৰক
+           *[other] { $folder }ত থকা সকলো { $count }টা পঢ়া বাৰ্তা বাছনি কৰক
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }ত থকা { $count }টা নপঢ়া কথোপকথন বাছনি কৰক
+           *[other] { $folder }ত থকা সকলো { $count }টা নপঢ়া কথোপকথন বাছনি কৰক
+        }
+       *[message] { $count ->
+            [one] { $folder }ত থকা { $count }টা নপঢ়া বাৰ্তা বাছনি কৰক
+           *[other] { $folder }ত থকা সকলো { $count }টা নপঢ়া বাৰ্তা বাছনি কৰক
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }ত থকা { $count }টা তৰাচিহ্নিত কথোপকথন বাছনি কৰক
+           *[other] { $folder }ত থকা সকলো { $count }টা তৰাচিহ্নিত কথোপকথন বাছনি কৰক
+        }
+       *[message] { $count ->
+            [one] { $folder }ত থকা { $count }টা তৰাচিহ্নিত বাৰ্তা বাছনি কৰক
+           *[other] { $folder }ত থকা সকলো { $count }টা তৰাচিহ্নিত বাৰ্তা বাছনি কৰক
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }ত থকা { $count }টা তৰাচিহ্নবিহীন কথোপকথন বাছনি কৰক
+           *[other] { $folder }ত থকা সকলো { $count }টা তৰাচিহ্নবিহীন কথোপকথন বাছনি কৰক
+        }
+       *[message] { $count ->
+            [one] { $folder }ত থকা { $count }টা তৰাচিহ্নবিহীন বাৰ্তা বাছনি কৰক
+           *[other] { $folder }ত থকা সকলো { $count }টা তৰাচিহ্নবিহীন বাৰ্তা বাছনি কৰক
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->
@@ -230,7 +356,10 @@ menu-reply-all = সকলোকে উত্তৰ দিয়ক
 menu-forward = ফৰৱাৰ্ড কৰক
 menu-archive = আৰ্কাইভ কৰক
 menu-delete = মচক
+menu-delete-forever = চিৰদিনৰ বাবে মচক
+menu-move-to-inbox = ইনবক্সলৈ স্থানান্তৰ কৰক
 menu-spam = স্পাম বুলি ৰিপৰ্ট কৰক
+menu-not-spam = স্পাম নহয়
 menu-mark-read = পঢ়া বুলি চিহ্নিত কৰক
 menu-mark-unread = নপঢ়া বুলি চিহ্নিত কৰক
 menu-mark-all-read = সকলোবোৰ পঢ়া বুলি চিহ্নিত কৰক
@@ -346,6 +475,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] বাৰ্তাটো স্পাম বুলি ৰিপৰ্ট কৰা হ'ল।
        *[other] { $count }টা বাৰ্তা স্পাম বুলি ৰিপৰ্ট কৰা হ'ল।
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো স্পাম নহয় বুলি চিহ্নিত কৰি ইনবক্সলৈ নিয়া হ'ল।
+       *[other] { $count }টা কথোপকথন স্পাম নহয় বুলি চিহ্নিত কৰি ইনবক্সলৈ নিয়া হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো স্পাম নহয় বুলি চিহ্নিত কৰি ইনবক্সলৈ নিয়া হ'ল।
+       *[other] { $count }টা বাৰ্তা স্পাম নহয় বুলি চিহ্নিত কৰি ইনবক্সলৈ নিয়া হ'ল।
     }
 }
 toast-deleted-forever = { $kind ->

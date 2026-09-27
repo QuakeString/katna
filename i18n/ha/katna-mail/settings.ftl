@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = Ana ja layi a ƙarƙashin kalmomin da aka 
 settings-compose-spell-desktop = Harshen tebur ({ $language })
 settings-compose-templates = Samfura
 settings-compose-templates-detail = Ajiye wasiƙun da kuke yawan rubutawa, kuma fara sabuwar wasiƙa ko amsa daga gare su.
+settings-compose-no-templates = Babu samfura tukuna. A cikin saƙo, zaɓi Samfura, sannan Ajiye a matsayin samfuri.
+settings-compose-template-new = Ƙirƙiri sabo
+settings-compose-template-new-name = Sabon samfuri
+settings-compose-template-subject = Jigo
+settings-compose-template-text = Rubutun samfuri
+settings-compose-template-fields = Ana cike {"{"}first name{"}"}, {"{"}name{"}"} da {"{"}my name{"}"} da sunan mai karɓa da naku.
+settings-compose-template-remove-file = Cire abin haɗawa
+settings-compose-template-save = Ajiye
+settings-compose-template-saved = An ajiye samfuri
+settings-compose-template-needs-name = Ba samfurin suna
+settings-compose-template-delete = Share samfuri
+settings-compose-template-deleted = An share samfuri
+settings-compose-template-delete-failed = Ba a iya share samfurin ba: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = Sa hannun da sababbin wasiƙu suke faraw
 settings-compose-for-replies-summary = Sa hannun da amsoshi da turawa suke farawa da shi
 settings-compose-format-summary = Rubuta sababbin wasiƙu da rubutu mara ado
 settings-compose-spelling-summary = Duba rubutun kalmomi yayin rubutu, da harshen ƙamus
-settings-compose-templates-summary = Yana zuwa nan ba da daɗewa ba: ajiye wasiƙun da kuke yawan rubutawa, kuma fara sabuwar wasiƙa ko amsa daga gare su
+settings-compose-templates-summary = Ajiye wasiƙun da kuke yawan rubutawa, kuma fara sabuwar wasiƙa ko amsa daga gare su
 settings-feedback-crash-reports-summary = Ajiye rahotannin faɗuwa a wannan kwamfuta lokacin da Katna Mail ko sabis ɗinta na bango ya faɗi
 settings-feedback-saved-summary = Duba, kwafa ko share rahotannin faɗuwa da aka ajiye a wannan kwamfuta
 settings-feedback-help-improve-summary = Aika rahotannin faɗuwa don taimakawa gyara abin da ya lalace; a kashe sai idan kun kunna

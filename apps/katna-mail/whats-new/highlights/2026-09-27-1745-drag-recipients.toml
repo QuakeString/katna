@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Drag addresses between To, Cc and Bcc"
+text = """
+Drag an address chip to another field to move it; Cc and Bcc open while
+you drag, even when hidden. Pointing at a chip shows an x that removes it.
+"""

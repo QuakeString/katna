@@ -190,6 +190,19 @@ settings-compose-spell-check-detail = Les mots mal orthographiés sont souligné
 settings-compose-spell-desktop = Langue du bureau ({ $language })
 settings-compose-templates = Modèles
 settings-compose-templates-detail = Enregistrez les messages que vous écrivez souvent, et partez-en pour un nouveau message ou une réponse.
+settings-compose-no-templates = Aucun modèle pour l’instant. Dans un message, choisissez Modèles, puis Enregistrer comme modèle.
+settings-compose-template-new = Créer
+settings-compose-template-new-name = Nouveau modèle
+settings-compose-template-subject = Objet
+settings-compose-template-text = Texte du modèle
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} et {"{"}my name{"}"} sont remplis avec le nom du destinataire et le vôtre.
+settings-compose-template-remove-file = Retirer la pièce jointe
+settings-compose-template-save = Enregistrer
+settings-compose-template-saved = Modèle enregistré
+settings-compose-template-needs-name = Donnez un nom au modèle
+settings-compose-template-delete = Supprimer le modèle
+settings-compose-template-deleted = Modèle supprimé
+settings-compose-template-delete-failed = Impossible de supprimer le modèle : { $error }
 
 ## Settings > Shortcuts
 
@@ -244,7 +257,7 @@ settings-compose-for-new-mail-summary = La signature par laquelle commencent les
 settings-compose-for-replies-summary = La signature par laquelle commencent les réponses et les transferts
 settings-compose-format-summary = Écrire les nouveaux messages en texte brut
 settings-compose-spelling-summary = Vérifier l’orthographe pendant la saisie, et la langue du dictionnaire
-settings-compose-templates-summary = Bientôt : enregistrer les messages que vous écrivez souvent, et en partir pour un nouveau message ou une réponse
+settings-compose-templates-summary = Enregistrer les messages que vous écrivez souvent, et en partir pour un nouveau message ou une réponse
 settings-feedback-crash-reports-summary = Enregistrer des rapports de plantage sur cet ordinateur quand Katna Mail ou son service d’arrière-plan plante
 settings-feedback-saved-summary = Afficher, copier ou supprimer les rapports de plantage enregistrés sur cet ordinateur
 settings-feedback-help-improve-summary = Envoyer les rapports de plantage pour aider à corriger le problème ; désactivé sauf si vous l’activez

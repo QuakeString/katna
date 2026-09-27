@@ -38,6 +38,9 @@ compose-scheduled = Надсилання заплановано на { $when }
 compose-sent-archived = Надіслано й заархівовано
 compose-sent = Лист надіслано
 compose-discarded = Чернетку відкинуто
+compose-draft-saved = Чернетку збережено
+compose-draft-failed = Не вдалося зберегти чернетку: { $error }
+compose-draft-not-opened = Не вдалося відкрити чернетку.
 
 ## Attachments
 
@@ -46,6 +49,12 @@ compose-picker-attach = Вкласти
 compose-file-too-large = { $name } завеликий: лист може містити до { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Вилучити вкладення
+compose-attachments-total = { $count ->
+    [one] { $count } файл, { $size }
+    [few] { $count } файли, { $size }
+    [many] { $count } файлів, { $size }
+   *[other] { $count } файлу, { $size }
+}
 compose-drop-files = Перетягніть файли сюди
 compose-drop-here = Перетягніть сюди
 compose-paste-keep-formatting = Зберегти форматування

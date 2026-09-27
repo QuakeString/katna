@@ -454,3 +454,121 @@ att skicka från ett annat av dina konton. Ny e-post börjar från ditt
 första konto, om du inte väljer ett annat standardkonto i
 Inställningar > Skriva > Skicka nya meddelanden från.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Gemensam inkorg"
+text = """
+Slå på Inställningar > Konton > Gemensam inkorg för att se e-posten från
+alla dina konton tillsammans. ”Alla konton” står överst i mappfönstret
+med Inkorgen, Olästa, Stjärnmärkt, Viktigt, Skickat, Utkast och mer, en
+av varje för alla konton; pilen bredvid var och en öppnar en rad per
+konto. Varje kontos namn har nu en pil som fäller ihop dess mappar.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Högerklicksmenyer som passar varje mapp"
+text = """
+Att välja en mapp eller etikett under Flytta till i högerklicksmenyn
+flyttar nu mejlet, med Ångra, även från sökresultat. I Skräppost blir
+Rapportera som skräppost Inte skräppost. Papperskorgen erbjuder Flytta
+till Inkorgen och Radera permanent, Arkiv erbjuder Flytta till Inkorgen,
+och Utkast och Skickat utelämnar det som inte gäller där.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Dra konton i ordning"
+text = """
+I Inställningar > Konton lyfts nu hela raden när du drar ett konto, och
+de andra kontona glider undan för att ge plats. Flytta upp och Flytta
+ned visas när du pekar på en rad.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Utkast sparas"
+text = """
+När du stänger ett meddelande du skriver sparas det nu i Utkast, även på
+din e-postserver, som i Gmail. Öppna det från Utkast för att skriva
+vidare. Bara papperskorgsknappen slänger det, och Ångra tar tillbaka
+det.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "Plats för många bilagor"
+text = """
+Hur många filer du än bifogar rullar listan nu ovanför fältet med Skicka
+i stället för att gå över det, visar den nyaste filen och anger hur
+många filer det är och deras sammanlagda storlek.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Markera olästa eller stjärnmärkta mejl som i Gmail"
+text = """
+Lästa, Olästa, Stjärnmärkta och Utan stjärna i markeringsmenyn bockar
+åter för matchande mejl på skärmen. En rad ovanför listan erbjuder att
+markera alla matchande konversationer i mappen, och Rensa markering
+ångrar det.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Mappar tar dig ut ur Inställningar"
+text = """
+När Inställningar är öppet stänger ett klick på en mapp eller på ikonen
+E-post nu Inställningar och öppnar den mappen, som i Gmail. Bakåtpilen
+fungerar också fortfarande.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Släpp bilder i texten"
+text = """
+När du drar en bild över ett meddelande visar en markör var den hamnar,
+så att du kan släppa den mitt i en mening. Andra filer visar fortfarande
+släppytan för bilagor, och att släppa fungerar nu även efter att du har
+skrivit.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Avsluta stänger direkt"
+text = """
+Avsluta i systemfältsikonens meny väntar inte längre på mejl som
+fortfarande synkroniseras eller indexeras: Katna och dess ikon i
+systemfältet stängs direkt, och resten fortsätter nästa gång Katna
+startar.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Kontaktuppgifter bredvid dina mejl"
+text = """
+I ett brett fönster visar ett kort bredvid den öppna konversationen nu
+avsändaren: telefon, titel och företag från deras signaturer, vad
+klockan är hos dem, hur mycket mejl ni har utbytt, era senaste
+konversationer och filerna mellan er. Klicka på en konversation eller
+fil för att öppna den, eller på en annan person i konversationen för att
+se den personen. Allt läses bara från din e-post på den här datorn.
+Kontaktknappen i läsrutans verktygsfält döljer kortet.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Använt lagringsutrymme"
+text = """
+Längst ned i mappfönstret syns hur fullt kontots lagringsutrymme för e-post
+är, till exempel ”34 % av 15 GB används”, när e-postservern berättar det.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Hitta e-post från KRunner och GNOME-sökningen"
+text = """
+Skriv ett namn i KRunner (Alt+Space) eller sökningen i Aktiviteter för att
+skriva till den personen, kopiera adressen eller hitta mejlen. Meddelanden
+visas när ämnet eller avsändaren innehåller varje ord du skriver; börja med
+mail: för att söka i all din e-post, som i Katna Mails sökruta.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Mallar för mejl du ofta skriver"
+text = """
+Skriv ett meddelande en gång och spara det med den nya knappen Mallar när du
+skriver, och lägg sedan in det i vilket nytt mejl eller svar som helst med ett
+klick. Skriv {first name}, {name} eller {my name} så fyller Katna i dem för
+varje mottagare. Redigera, byt namn på eller radera mallar i
+Inställningar > Skriva.
+"""

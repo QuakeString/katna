@@ -9,15 +9,22 @@ nav-folders = ෆෝල්ඩර
 nav-label-new = නව ලේබලයක් සාදන්න
 nav-folder-new = නව ෆෝල්ඩරයක් සාදන්න
 nav-account-unnamed = ගිණුම { $number }
+nav-all-accounts = සියලු ගිණුම්
+nav-expand = ෆෝල්ඩර පෙන්වන්න
+nav-collapse = ෆෝල්ඩර සඟවන්න
 nav-tab-new = { $count ->
     [one] නව { $count }
    *[other] නව { $count }
 }
+storage-used = { $total } න් { $percent }% භාවිත කර ඇත
+storage-used-detail = { $address }: { $total } න් { $used } භාවිත කර ඇත
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = එන ලිපි
 folder-starred = තරු යෙදූ
+folder-unread = නොකියවූ
+folder-important = වැදගත්
 folder-drafts = කෙටුම්පත්
 folder-sent = යැවූ
 folder-archive = සංරක්ෂිත

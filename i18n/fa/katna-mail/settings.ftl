@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = زیر واژه‌های غلط خط کش�
 settings-compose-spell-desktop = زبان میزکار ({ $language })
 settings-compose-templates = الگوها
 settings-compose-templates-detail = ایمیل‌هایی را که زیاد می‌نویسید ذخیره کنید و ایمیل جدید یا پاسخ را از آن‌ها شروع کنید.
+settings-compose-no-templates = هنوز الگویی نیست. در یک پیام، «الگوها» و سپس «ذخیره به‌عنوان الگو» را انتخاب کنید.
+settings-compose-template-new = ایجاد جدید
+settings-compose-template-new-name = الگوی جدید
+settings-compose-template-subject = موضوع
+settings-compose-template-text = متن الگو
+settings-compose-template-fields = {"{"}first name{"}"}، {"{"}name{"}"} و {"{"}my name{"}"} با نام گیرنده و نام شما پر می‌شوند.
+settings-compose-template-remove-file = حذف پیوست
+settings-compose-template-save = ذخیره
+settings-compose-template-saved = الگو ذخیره شد
+settings-compose-template-needs-name = برای الگو نامی بگذارید
+settings-compose-template-delete = حذف الگو
+settings-compose-template-deleted = الگو حذف شد
+settings-compose-template-delete-failed = حذف الگو ممکن نشد: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = امضایی که ایمیل جدید ب
 settings-compose-for-replies-summary = امضایی که پاسخ‌ها و بازارسال‌ها با آن شروع می‌شوند
 settings-compose-format-summary = نوشتن ایمیل جدید با متن ساده
 settings-compose-spelling-summary = بررسی املا هنگام نوشتن، و زبان واژه‌نامه
-settings-compose-templates-summary = به‌زودی: ایمیل‌هایی را که زیاد می‌نویسید ذخیره کنید و ایمیل جدید یا پاسخ را از آن‌ها شروع کنید
+settings-compose-templates-summary = ایمیل‌هایی را که زیاد می‌نویسید ذخیره کنید و ایمیل جدید یا پاسخ را از آن‌ها شروع کنید
 settings-feedback-crash-reports-summary = ذخیرهٔ گزارش‌های خرابی روی این رایانه هنگام از کار افتادن Katna Mail یا سرویس پس‌زمینهٔ آن
 settings-feedback-saved-summary = مشاهده، کپی یا حذف گزارش‌های خرابی ذخیره‌شده روی این رایانه
 settings-feedback-help-improve-summary = ارسال گزارش‌های خرابی برای کمک به رفع مشکل؛ خاموش مگر اینکه روشنش کنید

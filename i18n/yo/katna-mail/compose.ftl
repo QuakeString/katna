@@ -38,6 +38,9 @@ compose-scheduled = A ti ṣètò fífiránṣẹ́ fún { $when }
 compose-sent-archived = A ti fi ránṣẹ́, a sì ti fi pamọ́
 compose-sent = A ti fi ìfiránṣẹ́ ránṣẹ́
 compose-discarded = A ti ju àkọ̀pamọ́ nù
+compose-draft-saved = A ti fi àkọ̀pamọ́ pamọ́
+compose-draft-failed = A kò lè fi àkọ̀pamọ́ náà pamọ́: { $error }
+compose-draft-not-opened = A kò lè ṣí àkọ̀pamọ́ náà.
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = So mọ́ ọn
 compose-file-too-large = { $name } ti tóbi jù: ìfiránṣẹ́ kan lè gbé tó { $limit } nìkan.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Yọ àfikún kúrò
+compose-attachments-total = Fáìlì { $count }, { $size }
 compose-drop-files = Ju àwọn fáìlì sí ibí
 compose-drop-here = Ju sí ibí
 compose-paste-keep-formatting = Pa ìgúnrege mọ́

@@ -469,3 +469,123 @@ vanaf een ander account van je te verzenden. Nieuwe e-mail begint vanaf
 je eerste account, tenzij je een andere standaard kiest in
 Instellingen > Opstellen > Nieuwe berichten verzenden vanaf.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Gecombineerde inbox"
+text = """
+Zet Instellingen > Accounts > Gecombineerde inbox aan om de mail van al
+je accounts samen te zien. ‘Alle accounts’ staat boven in het
+mappenvenster met één Inbox, Ongelezen, Met ster, Belangrijk, Verzonden,
+Concepten en meer voor alle accounts; het pijltje ernaast opent één
+regel per account. De naam van elk account heeft nu een pijltje dat de
+mappen inklapt.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Rechtsklikmenu’s passen bij elke map"
+text = """
+Een map of label kiezen onder Verplaatsen naar in het rechtsklikmenu
+verplaatst de mail nu echt, met Ongedaan maken, ook vanuit
+zoekresultaten. In Spam wordt Spam melden Geen spam. Prullenbak biedt
+Verplaatsen naar Inbox en Definitief verwijderen, Archief biedt
+Verplaatsen naar Inbox, en Concepten en Verzonden laten items weg die
+daar niet van toepassing zijn.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Accounts op volgorde slepen"
+text = """
+In Instellingen > Accounts tilt het slepen van een account nu de hele
+rij op, en schuiven de andere accounts opzij om plaats te maken. Omhoog
+en Omlaag verschijnen als je naar een rij wijst.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Concepten blijven bewaard"
+text = """
+Als je een bericht sluit waaraan je schrijft, wordt het nu in Concepten
+bewaard, ook op je mailserver, zoals in Gmail. Open het vanuit Concepten
+om verder te schrijven. Alleen de prullenbakknop gooit het weg, en
+Ongedaan maken haalt het terug.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "Ruimte voor veel bijlagen"
+text = """
+Hoeveel bestanden je ook bijvoegt, de lijst scrolt nu boven de balk met
+Verzenden in plaats van eroverheen te lopen, toont het nieuwste bestand
+en vermeldt hoeveel bestanden het zijn en hun totale grootte.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Ongelezen e-mail of e-mail met ster selecteren, als in Gmail"
+text = """
+Gelezen, Ongelezen, Met ster en Zonder ster in het selectiemenu vinken
+weer de passende e-mail op het scherm aan. Een regel boven de lijst
+biedt aan om elk passend gesprek in de map te selecteren, en Selectie
+wissen maakt dat ongedaan.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Mappen brengen je uit Instellingen"
+text = """
+Met Instellingen open sluit een klik op een map of op het pictogram
+E-mail nu Instellingen en opent die map, zoals in Gmail. De terugpijl
+werkt ook nog steeds.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Afbeeldingen in de tekst neerzetten"
+text = """
+Als je een afbeelding over een bericht sleept, toont een cursor waar die
+terechtkomt, zodat je hem midden in een zin kunt neerzetten. Andere
+bestanden tonen nog steeds het neerzetvlak voor bijlagen, en neerzetten
+werkt nu ook nadat je hebt getypt.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Afsluiten sluit meteen"
+text = """
+Afsluiten in het menu van het pictogram in het systeemvak wacht niet
+langer op e-mail die nog wordt gesynchroniseerd of geïndexeerd: Katna en
+het pictogram in het systeemvak sluiten meteen, en de rest gaat verder
+wanneer Katna de volgende keer start.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Contactgegevens naast je e-mail"
+text = """
+In een breed venster toont een kaart naast het geopende gesprek nu de
+afzender: telefoon, functie en bedrijf uit hun handtekeningen, hoe laat
+het bij hen is, hoeveel e-mail jullie hebben uitgewisseld, jullie
+recente gesprekken en de bestanden tussen jullie. Klik op een gesprek of
+bestand om het te openen, of op een andere persoon uit het gesprek om
+die te bekijken. Alles komt alleen uit je e-mail op deze computer. De
+contactknop op de werkbalk van het leesvenster verbergt de kaart.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Gebruikte opslag"
+text = """
+Onderaan het mappenvenster zie je hoe vol de e-mailopslag van het account
+is, zoals ‘34% van 15 GB gebruikt’, als de mailserver dat doorgeeft.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "E-mail vinden vanuit KRunner en GNOME-zoeken"
+text = """
+Typ een naam in KRunner (Alt+Space) of het zoekveld van Activiteiten om die
+persoon te mailen, het adres te kopiëren of de e-mail te vinden. Berichten
+verschijnen als het onderwerp of de afzender elk woord bevat dat je typt; begin
+met mail: om in al je e-mail te zoeken, zoals in het zoekvak van Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Sjablonen voor e-mail die je vaak schrijft"
+text = """
+Schrijf een bericht één keer en sla het op met de nieuwe knop Sjablonen bij
+het opstellen, en zet het daarna met één klik in elke nieuwe e-mail of elk
+antwoord. Schrijf {first name}, {name} of {my name} en Katna vult ze voor elke
+ontvanger in. Bewerk, hernoem of verwijder sjablonen in
+Instellingen > Opstellen.
+"""
