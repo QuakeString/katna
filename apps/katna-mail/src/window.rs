@@ -414,10 +414,10 @@ pub struct MailWindow {
     /// the ticked ones. The banner offering the whole list follows this
     /// rather than the lines on screen, which the banner itself changes.
     page_pick: Option<usize>,
-    /// What the select menu ticked in the whole list ("Unread") and how
-    /// many lines, while those are still the ticked ones: the banner says
-    /// so.
-    picked: Option<(list::Pick, usize)>,
+    /// What Read, Unread, Starred or Unstarred in the select menu ticked,
+    /// while those are still the ticked ones: the banner says so and offers
+    /// the rest.
+    picked: Option<list::Picked>,
     pending: HashMap<EntryKey, Pending>,
     /// Rows of the list on screen at the last layout.
     visible: Range<usize>,

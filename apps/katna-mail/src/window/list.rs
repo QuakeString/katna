@@ -49,6 +49,31 @@ use crate::widgets::{
 const TAB_HEIGHT: f32 = 56.0;
 const TAB_MAX_WIDTH: f32 = 240.0;
 
+/// What Read, Unread, Starred or Unstarred in the select menu ticked: the
+/// matching lines on screen, then, from the banner's link, every matching
+/// line of the list, as Gmail does.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct Picked {
+    pub pick: Pick,
+    /// Matching lines on screen, ticked first.
+    pub on_screen: usize,
+    /// Every matching line of the list, loaded or not, for the link.
+    pub all: Vec<EntryKey>,
+    /// `all` is ticked, not only the lines on screen.
+    pub whole: bool,
+}
+
+impl Picked {
+    /// How many lines are ticked while this pick still holds.
+    fn ticked(&self) -> usize {
+        if self.whole {
+            self.all.len()
+        } else {
+            self.on_screen
+        }
+    }
+}
+
 /// What the select menu ticks.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Pick {
@@ -955,7 +980,8 @@ impl MailWindow {
                     self.checked_all = true;
                 }
             }
-            // Every matching line of the list, loaded on screen or not.
+            // The matching lines on screen; the banner offers every
+            // matching line of the list, loaded or not.
             Pick::Read | Pick::Unread | Pick::Starred | Pick::Unstarred => {
                 let folder = self.listed_folder();
                 let show_recipients = self.show_recipients;
@@ -963,7 +989,10 @@ impl MailWindow {
                     Ok(mail) => mail.marks(&self.entries, folder, show_recipients),
                     Err(_) => Vec::new(),
                 };
-                for (entry, marks) in self.entries.iter().zip(marks) {
+                let visible = self.visible.start.min(self.entries.len())
+                    ..self.visible.end.min(self.entries.len());
+                let mut all = Vec::new();
+                for (ix, (entry, marks)) in self.entries.iter().zip(marks).enumerate() {
                     let pending = self.pending.get(&entry.key);
                     let unread = pending.and_then(|p| p.unread).unwrap_or(marks.unread);
                     let flagged = pending.and_then(|p| p.flagged).unwrap_or(marks.flagged);
@@ -974,17 +1003,31 @@ impl MailWindow {
                         _ => !flagged,
                     };
                     if take {
-                        self.checked.insert(entry.key);
+                        all.push(entry.key);
+                        if visible.contains(&ix) {
+                            self.checked.insert(entry.key);
+                        }
                     }
                 }
-                if self.checked.is_empty() {
+                if all.is_empty() {
                     self.show_snackbar(
                         pick_none_text(pick, self.config.mail.conversations),
                         None,
                         cx,
                     );
                 } else {
-                    self.picked = Some((pick, self.checked.len()));
+                    // None on screen: nothing to offer beyond, so take
+                    // them all at once.
+                    let whole = self.checked.is_empty() || self.checked.len() == all.len();
+                    if whole {
+                        self.checked.extend(all.iter().copied());
+                    }
+                    self.picked = Some(Picked {
+                        pick,
+                        on_screen: self.checked.len(),
+                        all,
+                        whole,
+                    });
                 }
             }
         }
@@ -998,8 +1041,8 @@ impl MailWindow {
         let page_checked = on_screen > 0 && self.page_pick == Some(on_screen);
         let picked = self
             .picked
-            .filter(|&(_, count)| count > 0 && count == on_screen)
-            .map(|(pick, _)| pick);
+            .as_ref()
+            .filter(|p| p.ticked() > 0 && p.ticked() == on_screen);
         if !(self.checked_all || page_checked || picked.is_some()) {
             return None;
         }
@@ -1011,24 +1054,51 @@ impl MailWindow {
         let folder = self.folder_name();
         let total = self.entries.len() as u64;
         let (text, link) = match (self.checked_all, folder) {
-            (false, folder) if let Some(pick) = picked => (
-                match folder {
-                    Some(folder) => tr!(
-                        "list-selected-picked-in",
-                        pick = pick_name(pick),
-                        count = on_screen as u64,
-                        kind = kind,
-                        folder = folder
+            (false, folder) if let Some(picked) = picked => {
+                let pick = pick_name(picked.pick);
+                let all = picked.all.len() as u64;
+                match (picked.whole, folder) {
+                    (true, Some(folder)) => (
+                        tr!(
+                            "list-selected-picked-in",
+                            pick = pick,
+                            count = all,
+                            kind = kind,
+                            folder = folder
+                        ),
+                        tr!("list-clear-selection"),
                     ),
-                    None => tr!(
-                        "list-selected-picked",
-                        pick = pick_name(pick),
-                        count = on_screen as u64,
-                        kind = kind
+                    (true, None) => (
+                        tr!(
+                            "list-selected-picked",
+                            pick = pick,
+                            count = all,
+                            kind = kind
+                        ),
+                        tr!("list-clear-selection"),
                     ),
-                },
-                tr!("list-clear-selection"),
-            ),
+                    (false, folder) => (
+                        tr!(
+                            "list-selected-picked-screen",
+                            pick = pick,
+                            count = on_screen as u64,
+                            kind = kind
+                        ),
+                        match folder {
+                            Some(folder) => tr!(
+                                "list-select-picked-in",
+                                pick = pick,
+                                count = all,
+                                kind = kind,
+                                folder = folder
+                            ),
+                            None => {
+                                tr!("list-select-picked", pick = pick, count = all, kind = kind)
+                            }
+                        },
+                    ),
+                }
+            }
             (true, Some(folder)) => (
                 tr!(
                     "list-selected-all-in",
@@ -1080,10 +1150,19 @@ impl MailWindow {
                         .text_color(rgba(th.accent))
                         .cursor_pointer()
                         .on_click(cx.listener(|this, _, _, cx| {
+                            let ticked = this.checked.len();
                             let picked = this
                                 .picked
-                                .is_some_and(|(_, count)| count == this.checked.len());
-                            if this.checked_all || picked {
+                                .as_ref()
+                                .filter(|p| p.ticked() == ticked)
+                                .map(|p| p.whole);
+                            if picked == Some(false)
+                                && let Some(picked) = this.picked.as_mut()
+                            {
+                                // "Select all 2,000 unread conversations".
+                                this.checked.extend(picked.all.iter().copied());
+                                picked.whole = true;
+                            } else if this.checked_all || picked.is_some() {
                                 this.checked.clear();
                                 this.checked_all = false;
                                 this.page_pick = None;
