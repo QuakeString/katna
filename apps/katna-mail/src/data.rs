@@ -962,6 +962,24 @@ impl Mail {
         self.store.message_id_header(id).ok().flatten()
     }
 
+    /// Recent mail sent with tracking, newest first, with what its
+    /// recipients did.
+    pub fn tracked(&self, limit: u32) -> Vec<katna_store::MessageActivity> {
+        let tracked = self.store.tracked_messages(limit).unwrap_or_else(|err| {
+            tracing::warn!("reading tracking: {err}");
+            Vec::new()
+        });
+        tracked
+            .into_iter()
+            .filter_map(|t| self.store.activity(t).ok())
+            .collect()
+    }
+
+    /// Whether any mail was sent with tracking.
+    pub fn has_tracking(&self) -> bool {
+        self.store.has_tracking().unwrap_or(false)
+    }
+
     /// Forgets cached rows, for example when the sender/recipient column
     /// changes.
     pub fn clear_rows(&mut self) {
