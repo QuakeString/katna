@@ -7,6 +7,7 @@
 //! come with `katna-daemon`.
 
 mod assets;
+mod autostart;
 mod daemon;
 mod data;
 mod format;

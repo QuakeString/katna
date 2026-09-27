@@ -22,7 +22,8 @@ use gpui::{
     ScrollHandle, SharedString, Stateful, Subscription, Task, Window, div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountTabs, Density, FileGroup, OpenIn, ReadingPane, TabStyle, Theme as ThemeChoice,
+    AccountTabs, Density, FileGroup, MarkRead, OpenIn, ReadingPane, ShortcutSet, TabStyle,
+    Theme as ThemeChoice,
 };
 use katna_ui::motion::lerp;
 use katna_ui::px;
@@ -53,6 +54,10 @@ const ONE_LINE: usize = 40;
 const CONTROL_WIDTH: f32 = 300.0;
 /// The same for the keys of a shortcut.
 const KEYS_WIDTH: f32 = 160.0;
+/// A shortcut's name, and the width a column of shortcuts takes before
+/// the next column wraps under it.
+const SHORTCUT_LABEL_WIDTH: f32 = 160.0;
+const SHORTCUT_COLUMN: f32 = 440.0;
 
 /// A part of the page.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -130,6 +135,10 @@ pub(super) struct SettingsPage {
     pub(super) info: Rc<RefCell<Option<SharedString>>>,
     /// A drag on the Scaling slider.
     pub(super) scale: super::scale_slider::ScaleDrag,
+    /// Whether Katna Mail opens at login, read when the page opened.
+    pub(super) open_at_login: bool,
+    /// The spelling dictionaries installed, read when the page opened.
+    dictionaries: Vec<String>,
     /// Whether email links open in Katna Mail, as of the page opening;
     /// `None` outside a desktop session.
     mail_app: Option<bool>,
@@ -199,6 +208,8 @@ impl MailWindow {
             flash: None,
             info: Rc::default(),
             scale: Default::default(),
+            open_at_login: crate::autostart::is_on(),
+            dictionaries: crate::spell::installed(),
             mail_app: None,
         });
         page.mail_app = opens_mail_links();
@@ -461,6 +472,35 @@ impl MailWindow {
                 th,
             ))
             .child(self.row("Reading", None, self.reading_switches(th, cx), th))
+            .child(self.row("Mark as read", None, self.mark_read_choice(th, cx), th))
+            .child(self.row(
+                "Reply button",
+                None,
+                self.switch_row(
+                    "page-reply-all",
+                    "Reply to everyone",
+                    "The reply button beside each message replies to all, not only the sender",
+                    view.reply_all,
+                    Change::ReplyAll(!view.reply_all),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row(
+                "Images from the web",
+                Some("Loading a message's images tells its sender that you opened it, when, and roughly where. Off, each message asks first, and you can always show a sender's images."),
+                self.switch_row(
+                    "page-remote-images",
+                    "Always show images",
+                    "In every message, not only from senders you trust",
+                    view.remote_images,
+                    Change::RemoteImages(!view.remote_images),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
             .child(self.row(
                 "Sending",
                 Some("How long a sent message waits, so it can be taken back."),
@@ -474,8 +514,14 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
+                "Notifications",
+                Some("For new mail in the Inbox, even while Katna Mail is closed."),
+                self.notification_switches(th, cx),
+                th,
+            ))
+            .child(self.row(
                 "Desktop",
-                Some("Shown even while Katna Mail is closed."),
+                None,
                 self.desktop_switches(th, cx),
                 th,
             ))
@@ -520,6 +566,59 @@ impl MailWindow {
                         .map(|b| self.page_control(b, th, cx))
                         .on_click(cx.listener(|this, _, _, cx| this.make_default_mail_app(cx))),
                 )
+            })
+            .into_any_element()
+    }
+
+    /// When an opened conversation is marked read (`mail.mark_read`).
+    fn mark_read_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let now = self.config.mail.mark_read;
+        let mut choices = div().flex().flex_col().gap(px(2.0));
+        for when in MarkRead::ALL {
+            let (id, label) = match when {
+                MarkRead::Instantly => ("page-read-now", "As soon as it opens"),
+                MarkRead::AfterOneSecond => ("page-read-1s", "After it is open for 1 second"),
+                MarkRead::AfterThreeSeconds => ("page-read-3s", "After it is open for 3 seconds"),
+                MarkRead::Manually => ("page-read-never", "Only when I mark it read"),
+            };
+            choices = choices.child(self.radio_row(
+                id,
+                label,
+                now == when,
+                Change::MarkRead(when),
+                th,
+                cx,
+            ));
+        }
+        choices.into_any_element()
+    }
+
+    /// New-mail notifications and their sound, which the daemon shows.
+    fn notification_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let notifications = &self.config.notifications;
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(2.0))
+            .child(self.switch_row(
+                "page-new-mail",
+                "Notify me about new mail",
+                "With Reply all, Mark as read and Archive",
+                notifications.new_mail,
+                Change::NewMailNotices(!notifications.new_mail),
+                th,
+                cx,
+            ))
+            .when(notifications.new_mail, |d| {
+                d.child(self.switch_row(
+                    "page-new-mail-sound",
+                    "Play a sound",
+                    "The desktop's new-mail sound",
+                    notifications.sound,
+                    Change::NotificationSound(!notifications.sound),
+                    th,
+                    cx,
+                ))
             })
             .into_any_element()
     }
@@ -650,6 +749,62 @@ impl MailWindow {
                 ),
                 th,
             ))
+            .child(self.row(
+                "Important markers",
+                None,
+                self.switch_row(
+                    "page-important-markers",
+                    "Show Important markers",
+                    "Beside each message in the list",
+                    view.important_markers,
+                    Change::ImportantMarkers(!view.important_markers),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row(
+                "Message width",
+                None,
+                self.switch_row(
+                    "page-limit-width",
+                    "Limit the width of messages",
+                    "Long lines are easier to read in a wide window",
+                    view.limit_width,
+                    Change::LimitWidth(!view.limit_width),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row(
+                "Mail colors",
+                Some("Most mail is designed for a white page. With a dark theme its colors are changed to dark ones that read well; off, it keeps its sender's colors on a light page."),
+                self.switch_row(
+                    "page-dark-mail",
+                    "Dark colors for mail too",
+                    "Only while the theme is dark",
+                    view.dark_mail,
+                    Change::DarkMail(!view.dark_mail),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row(
+                "Attachment previews",
+                None,
+                self.switch_row(
+                    "page-attachment-previews",
+                    "Show previews of attachments",
+                    "A small picture of each file's content on its card",
+                    view.attachment_previews,
+                    Change::AttachmentPreviews(!view.attachment_previews),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
             .into_any_element()
     }
 
@@ -739,10 +894,20 @@ impl MailWindow {
 
     fn desktop_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let general = &self.config.general;
+        let open_at_login = self.settings_page.as_ref().is_some_and(|p| p.open_at_login);
         div()
             .flex()
             .flex_col()
             .gap(px(2.0))
+            .child(self.switch_row(
+                "page-open-at-login",
+                "Open Katna Mail at login",
+                "Mail syncs at login either way, while the service runs",
+                open_at_login,
+                Change::OpenAtLogin(!open_at_login),
+                th,
+                cx,
+            ))
             .child(self.switch_row(
                 "page-tray",
                 "Show Katna in the system tray",
@@ -829,6 +994,20 @@ impl MailWindow {
                     ),
             )
             .children(groups)
+            .child(self.row(
+                "After saving",
+                None,
+                self.switch_row(
+                    "page-open-saved-folder",
+                    "Show saved files in their folder",
+                    "Opens the file manager with the saved attachments picked",
+                    self.config.mail.open_saved_folder,
+                    Change::OpenSavedFolder(!self.config.mail.open_saved_folder),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
             .into_any_element()
     }
 
@@ -1366,6 +1545,21 @@ impl MailWindow {
                 ))
             })
             .child(self.row(
+                "Format",
+                None,
+                self.switch_row(
+                    "page-plain-text",
+                    "Write in plain text",
+                    "New mail starts without formatting; the compose window can switch",
+                    sending.plain_text,
+                    Change::PlainText(!sending.plain_text),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row("Spelling", None, self.spelling_choice(th, cx), th))
+            .child(self.row(
                 "Templates",
                 Some("Save mail you write often, and start new mail or a reply from it."),
                 div()
@@ -1374,6 +1568,85 @@ impl MailWindow {
                 th,
             ))
             .into_any_element()
+    }
+
+    /// Spell checking and its dictionary (`sending.spell_check`,
+    /// `sending.spell_language`).
+    fn spelling_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let sending = &self.config.sending;
+        let dictionaries = self
+            .settings_page
+            .as_ref()
+            .map(|p| p.dictionaries.clone())
+            .unwrap_or_default();
+        let chosen = sending.spell_language.trim().to_owned();
+        let desktop = crate::spell::language("");
+        let mut chips = vec![
+            self.page_control(
+                chip(
+                    "spell-desktop",
+                    format!("Desktop's language ({desktop})"),
+                    chosen.is_empty(),
+                    th,
+                ),
+                th,
+                cx,
+            )
+            .on_click(cx.listener(|this, _, _, cx| this.set_spell_language(String::new(), cx)))
+            .into_any_element(),
+        ];
+        // A language set in the file by hand shows too, even without its
+        // dictionary.
+        let mut names = dictionaries;
+        if !chosen.is_empty() && !names.contains(&chosen) {
+            names.push(chosen.clone());
+        }
+        for (n, name) in names.into_iter().enumerate() {
+            let on = name == chosen;
+            chips.push(
+                self.page_control(chip(("spell-language", n), name.clone(), on, th), th, cx)
+                    .on_click(
+                        cx.listener(move |this, _, _, cx| {
+                            this.set_spell_language(name.clone(), cx)
+                        }),
+                    )
+                    .into_any_element(),
+            );
+        }
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(8.0))
+            .child(self.switch_row(
+                "page-spell-check",
+                "Check spelling while I write",
+                "Misspelled words are underlined, with suggestions on right-click",
+                sending.spell_check,
+                Change::SpellCheck(!sending.spell_check),
+                th,
+                cx,
+            ))
+            .when(sending.spell_check, |d| {
+                d.child(
+                    div()
+                        .px(px(8.0))
+                        .flex()
+                        .flex_row()
+                        .flex_wrap()
+                        .gap(px(6.0))
+                        .children(chips),
+                )
+            })
+            .into_any_element()
+    }
+
+    fn set_spell_language(&mut self, language: String, cx: &mut Context<Self>) {
+        if self.config.sending.spell_language == language {
+            return;
+        }
+        self.config.sending.spell_language = language;
+        self.save_config();
+        cx.notify();
     }
 
     // Shortcuts
@@ -1436,9 +1709,17 @@ impl MailWindow {
                             .gap_y(px(4.0))
                             .border_b_1()
                             .border_color(rgba(th.divider))
-                            .child(label_column(LABEL_WIDTH).text_size(px(14.0)).child(s.label))
                             .child(
-                                control_column(KEYS_WIDTH)
+                                div()
+                                    .w(px(SHORTCUT_LABEL_WIDTH))
+                                    .flex_none()
+                                    .text_size(px(14.0))
+                                    .child(s.label),
+                            )
+                            .child(
+                                div()
+                                    .flex_1()
+                                    .min_w(px(KEYS_WIDTH))
                                     .flex()
                                     .flex_row()
                                     .flex_wrap()
@@ -1479,10 +1760,41 @@ impl MailWindow {
                 .child(heading(group.label(), th))
                 .children(rows)
         });
+        let [moving, actions, go_to, app] = groups;
+        // Two columns side by side where there is room, as in Mailspring;
+        // one under the other on a narrow page.
+        let column = || {
+            div()
+                .flex_basis(px(SHORTCUT_COLUMN))
+                .flex_grow(1.0)
+                .min_w_0()
+                .flex()
+                .flex_col()
+        };
+        let columns = div()
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .gap_x(px(40.0))
+            .child(column().child(moving).child(go_to))
+            .child(column().child(actions).child(app));
+        let sets = div().flex().flex_row().flex_wrap().gap(px(6.0)).children(
+            keymap::SETS.iter().enumerate().map(|(n, &(set, name))| {
+                chip(("shortcut-set", n), name.to_owned(), config.set == set, th)
+                    .map(|d| self.page_control(d, th, cx))
+                    .on_click(cx.listener(move |this, _, _, cx| this.choose_shortcut_set(set, cx)))
+            }),
+        );
         let single = config.single_keys;
         div()
             .flex()
             .flex_col()
+            .child(self.row(
+                "Shortcut set",
+                Some("Start from the keys of a mail app you know. Cmd is Ctrl here. Your own changes stay on top of the set, and Restore defaults goes back to the set's keys."),
+                sets,
+                th,
+            ))
             .child(self.row(
                 "Single-key shortcuts",
                 Some("Keys without Ctrl or Alt, as in webmail: e archives, j and k move, / searches. They work in the list and the open conversation, never while typing."),
@@ -1503,15 +1815,21 @@ impl MailWindow {
                             .text_color(rgba(th.text_faint))
                             .child("Click a key to change it, or + to add one, then press the new keys. Esc cancels."),
                     )
-                    .when(changed, |d| {
-                        d.child(
-                            outlined_button("keys-reset-all", "Restore all defaults", th)
-                                .map(|d| self.page_control(d, th, cx))
-                                .on_click(cx.listener(|this, _, _, cx| this.reset_all_keys(cx))),
-                        )
-                    }),
+                    .child(div().flex_1())
+                    .child(
+                        outlined_button("keys-reset-all", "Restore defaults", th)
+                            .map(|d| self.page_control(d, th, cx))
+                            .when(!changed, |d| {
+                                d.text_color(rgba(th.text_faint)).cursor_default()
+                            })
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                if changed {
+                                    this.reset_all_keys(cx)
+                                }
+                            })),
+                    ),
             )
-            .children(groups)
+            .child(columns)
             .into_any_element()
     }
 
@@ -1667,7 +1985,8 @@ impl MailWindow {
     }
 
     fn store_keys(&mut self, name: &str, keys: Vec<String>) {
-        let defaults = keymap::find(name).map(|s| s.defaults).unwrap_or_default();
+        let set = self.config.shortcuts.set;
+        let defaults = keymap::find(name).map_or(&[][..], |s| keymap::set_keys(s, set));
         if keys.iter().map(String::as_str).eq(defaults.iter().copied()) {
             self.config.shortcuts.keys.remove(name);
         } else {
@@ -1678,7 +1997,23 @@ impl MailWindow {
     fn reset_all_keys(&mut self, cx: &mut Context<Self>) {
         self.config.shortcuts.keys.clear();
         self.shortcuts_changed(cx);
-        self.show_snackbar("Every shortcut has its default keys again.", None, cx);
+        self.show_snackbar("Every shortcut has its set's keys again.", None, cx);
+    }
+
+    /// Starts the shortcuts from `set`'s keys; the user's changes stay.
+    fn choose_shortcut_set(&mut self, set: ShortcutSet, cx: &mut Context<Self>) {
+        if self.config.shortcuts.set == set {
+            return;
+        }
+        self.config.shortcuts.set = set;
+        // A change that now matches the set is no change.
+        let changed: Vec<(String, Vec<String>)> = std::mem::take(&mut self.config.shortcuts.keys)
+            .into_iter()
+            .collect();
+        for (name, keys) in changed {
+            self.store_keys(&name, keys);
+        }
+        self.shortcuts_changed(cx);
     }
 
     pub(super) fn shortcuts_changed(&mut self, cx: &mut Context<Self>) {
