@@ -9,16 +9,17 @@ use std::sync::Arc;
 
 use gpui::{
     AnyElement, App, FontStyle, FontWeight, HighlightStyle, InteractiveText, ObjectFit,
-    SharedString, StrikethroughStyle, StyledText, UnderlineStyle, div, img, prelude::*, px,
-    relative, rgba,
+    SharedString, StrikethroughStyle, UnderlineStyle, div, img, prelude::*, relative, rgba,
 };
 use katna_render::html::{
     Align, Block, BoxBlock, BoxKind, Document, Image, ImageKind, ImageSource, Inline, Length,
     TextBlock,
 };
+use katna_ui::px;
 
 use super::dark::Dark;
 use super::remote::Fetch;
+use super::select::Pieces;
 use crate::theme::Theme;
 use crate::widgets::icon;
 
@@ -49,6 +50,8 @@ pub(super) struct Painter<'a> {
     dark: Option<Dark>,
     /// The background under what is being drawn, as drawn.
     bg: u32,
+    /// Its text, selectable.
+    pieces: Pieces<'a>,
 }
 
 impl<'a> Painter<'a> {
@@ -57,6 +60,8 @@ impl<'a> Painter<'a> {
         images: &'a HashMap<String, Fetch>,
         remote: bool,
         mono: Option<SharedString>,
+        dark_mail: bool,
+        pieces: Pieces<'a>,
     ) -> Self {
         Self {
             ink: Ink {
@@ -71,8 +76,10 @@ impl<'a> Painter<'a> {
             remote,
             mono,
             next_id: 0,
-            dark: th.dark.then(|| Dark::new(th.surface)),
+            // Without `dark_mail`, mail keeps its colors, as in a light theme.
+            dark: (th.dark && dark_mail).then(|| Dark::new(th.surface)),
             bg: th.surface,
+            pieces,
         }
     }
 
@@ -368,7 +375,7 @@ impl<'a> Painter<'a> {
         let size = if size > 0.0 { size } else { 16.0 };
         // Scaled like the app's text, but small print stays readable.
         let size = (size * SCALE).max(size.min(11.0));
-        let styled = StyledText::new(SharedString::from(text)).with_highlights(highlights);
+        let (styled, holder) = self.pieces.piece(SharedString::from(text), highlights);
         let body: AnyElement = if links.is_empty() {
             styled.into_any_element()
         } else {
@@ -382,7 +389,7 @@ impl<'a> Painter<'a> {
                 })
                 .into_any_element()
         };
-        div()
+        holder
             .min_w_0()
             .text_size(px(size))
             .line_height(relative(1.45))

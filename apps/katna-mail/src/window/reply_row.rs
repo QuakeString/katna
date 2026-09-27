@@ -8,9 +8,12 @@
 //! the width equally, as in Gmail's app, and fold together.
 
 use gpui::{
-    AnyElement, Context, FontWeight, SharedString, TextRun, Window, black, div, prelude::*, px,
+    AnyElement, Context, FontWeight, SharedString, TextRun, Window, black, div, prelude::*,
 };
+use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
+use katna_ui::unpx;
 
 use super::MailWindow;
 use super::compose::Kind;
@@ -18,11 +21,19 @@ use crate::data::EntryKey;
 use crate::theme::Theme;
 use crate::widgets::{pill_button, tip};
 
+/// A button's word, in the current language.
+type Word = fn() -> String;
+
 /// The buttons: id, icon, word and what they write.
-const BUTTONS: [(&str, &str, &str, Kind); 3] = [
-    ("reply", "reply", "Reply", Kind::Reply),
-    ("reply-all", "reply-all", "Reply all", Kind::ReplyAll),
-    ("forward", "forward", "Forward", Kind::Forward),
+const BUTTONS: [(&str, &str, Word, Kind); 3] = [
+    ("reply", "reply", || tr!("reply-reply"), Kind::Reply),
+    (
+        "reply-all",
+        "reply-all",
+        || tr!("reply-reply-all"),
+        Kind::ReplyAll,
+    ),
+    ("forward", "forward", || tr!("reply-forward"), Kind::Forward),
 ];
 /// Which buttons lose their words first.
 const FOLD_ORDER: [usize; 3] = [1, 0, 2];
@@ -123,6 +134,7 @@ impl MailWindow {
         font.weight = FontWeight::MEDIUM;
         let system = window.text_system();
         for (width, (_, _, word, _)) in self.reply_row.words.iter_mut().zip(BUTTONS) {
+            let word = word();
             let run = TextRun {
                 len: word.len(),
                 font: font.clone(),
@@ -131,9 +143,9 @@ impl MailWindow {
                 underline: None,
                 strikethrough: None,
             };
-            *width = f32::from(
+            *width = unpx(
                 system
-                    .shape_line(SharedString::new_static(word), px(14.0), &[run], None)
+                    .shape_line(SharedString::from(word), px(14.0), &[run], None)
                     .width,
             );
         }
@@ -198,7 +210,8 @@ impl MailWindow {
                     .enumerate()
                     .map(|(ix, (id, name, word, kind))| {
                         let shown = self.reply_row.shown[ix].value();
-                        pill_button(id, name, word, self.reply_row.words[ix], shown, th)
+                        let word = word();
+                        pill_button(id, name, word.clone(), self.reply_row.words[ix], shown, th)
                             .flex_none()
                             .when(shared, |d| {
                                 d.flex_1()

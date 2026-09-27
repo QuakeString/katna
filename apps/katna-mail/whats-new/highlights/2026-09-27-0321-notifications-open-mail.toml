@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Notifications open their mail"
+text = """
+Click a new-mail notification to open that message, even when Katna Mail
+is closed. Notifications also have Reply all.
+"""

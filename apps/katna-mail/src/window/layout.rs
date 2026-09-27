@@ -14,14 +14,15 @@
 
 use gpui::{
     AnimationExt, AnyElement, Context, Decorations, FontWeight, SpringAnimation, Window, div,
-    prelude::*, px, rgba,
+    prelude::*, rgba,
 };
 use katna_ui::Ripple;
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
+use katna_ui::unpx;
 
 use super::apps::{APP_RAIL_WIDTH, App as RailApp};
 use super::{Compose, MailWindow, NAV_ROW_INSET, NAV_WIDTH, ToggleSettings};
-use crate::format;
 use crate::theme::{Theme, fade};
 use crate::widgets::{TOOLBAR_HEIGHT, elevation, icon, tip};
 
@@ -305,7 +306,7 @@ impl MailWindow {
         layout.shape.page = layout.page.tick(window, reduce);
         layout.scrim.set(if layout.drawer { 1.0 } else { 0.0 });
         layout.scrim.tick(window, reduce);
-        let top = -f32::from(self.list_state.scroll_px_offset_for_scrollbar().y);
+        let top = -unpx(self.list_state.scroll_px_offset_for_scrollbar().y);
         let layout = &mut self.layout;
         layout.fold_fab(top);
         if first {
@@ -544,7 +545,9 @@ impl MailWindow {
                         .text_size(px(14.0))
                         .font_weight(FontWeight::MEDIUM)
                         .shadow(elevation(th, 3.0))
-                        .when(label < 0.5, |d| d.tooltip(tip("Compose", th)))
+                        .when(label < 0.5, |d| {
+                            d.tooltip(tip(katna_i18n::tr!("compose"), th))
+                        })
                         .on_click(
                             cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)),
                         )
@@ -556,7 +559,7 @@ impl MailWindow {
                                 .overflow_hidden()
                                 .whitespace_nowrap()
                                 .opacity(label)
-                                .child("Compose"),
+                                .child(katna_i18n::tr!("compose")),
                         ),
                 )
                 .into_any_element(),
@@ -628,7 +631,7 @@ impl MailWindow {
                             .min_w_0()
                             .pl(px(18.0))
                             .truncate()
-                            .child(tab.label),
+                            .child(tab.label()),
                     )
                     .when(unread > 0 && ix != 0, |d| {
                         d.child(
@@ -640,7 +643,7 @@ impl MailWindow {
                                 .text_color(rgba(th.on_accent))
                                 .text_size(px(11.0))
                                 .line_height(px(18.0))
-                                .child(format!("{} new", format::thousands(unread))),
+                                .child(katna_i18n::tr!("nav-tab-new", count = unread)),
                         )
                     })
             });
@@ -700,7 +703,33 @@ impl MailWindow {
                             this.toggle_settings(&ToggleSettings, window, cx);
                         }))
                         .child(icon("settings", th.text, 20.0))
-                        .child(div().pl(px(18.0)).child("Settings")),
+                        .child(div().pl(px(18.0)).child(katna_i18n::tr!("settings"))),
+                )
+                .child(
+                    drawer_row("drawer-language", self.language_picker_open(), th)
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            this.layout.drawer = false;
+                            this.toggle_language_picker(None, window, cx);
+                        }))
+                        .child(super::language::flag(
+                            &katna_i18n::current().language.flag,
+                            th,
+                        ))
+                        .child(
+                            div()
+                                .flex_1()
+                                .min_w_0()
+                                .pl(px(14.0))
+                                .truncate()
+                                .child(katna_i18n::tr!("language-setting")),
+                        )
+                        .child(
+                            div()
+                                .flex_none()
+                                .pr(px(8.0))
+                                .text_color(rgba(th.text_dim))
+                                .child(katna_i18n::current().language.name.clone()),
+                        ),
                 )
                 .into_any_element(),
         )

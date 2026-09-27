@@ -6,9 +6,8 @@
 //! whole window; Escape is caught before any shortcut, so it works with
 //! nothing focused and never also goes back to the list.
 
-use gpui::{
-    AnyElement, Context, MouseButton, MouseDownEvent, Window, deferred, div, prelude::*, px,
-};
+use gpui::{AnyElement, Context, MouseButton, MouseDownEvent, Window, deferred, div, prelude::*};
+use katna_ui::px;
 
 use super::MailWindow;
 
@@ -96,6 +95,7 @@ impl MailWindow {
         } else if self.menu.take().is_some()
             || self.files_menu.take().is_some()
             || std::mem::take(&mut self.account_menu)
+            || self.language_picker.take().is_some()
             || self.dismiss_search_panel(window, cx)
         {
             true

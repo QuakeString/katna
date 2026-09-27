@@ -7,6 +7,7 @@
 //! come with `katna-daemon`.
 
 mod assets;
+mod autostart;
 mod daemon;
 mod data;
 mod format;
@@ -24,13 +25,14 @@ mod window;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-use gpui::{App, AppContext, SharedString, px, size};
+use gpui::{App, AppContext, SharedString, size};
 use katna_chrome::{Desktop, Environment, window_options};
 use katna_core::Paths;
 use katna_core::config::Config;
 use katna_core::ids::{MAIL_APP_ID, MAIL_MENU_BAR_PATH};
 use katna_platform::dbusmenu::Menu;
 use katna_platform::font;
+use katna_ui::scale::desktop_px;
 
 const USAGE: &str = "\
 Usage: katna-mail [--data-dir DIR] [--search QUERY] [--compose | --inbox | --settings |
@@ -57,6 +59,9 @@ Escape closes, r replies, e archives, # deletes, s stars, x ticks, / or
 Ctrl+F searches, ? lists every shortcut, Ctrl+Q quits. Settings, Keyboard
 shortcuts changes them.
 ";
+
+/// Katna Mail's translations, embedded by `build.rs`.
+const TRANSLATIONS: katna_i18n::Sources = include!(concat!(env!("OUT_DIR"), "/translations.rs"));
 
 fn main() -> ExitCode {
     let mut data_dir: Option<PathBuf> = None;
@@ -111,6 +116,14 @@ fn main() -> ExitCode {
     if let Err(err) = katna_core::logging::init("warn") {
         eprintln!("katna-mail: {err}");
     }
+    // The language, before any text is drawn (§13.10).
+    katna_i18n::init(TRANSLATIONS, Some(paths.data_dir().join("i18n")));
+    katna_i18n::apply(
+        &Config::load(&paths.config_file())
+            .unwrap_or_default()
+            .general
+            .language,
+    );
     let (connection, sender, requests) = match instance::start(request, single) {
         instance::Started::HandedOff => return ExitCode::SUCCESS,
         instance::Started::First {
@@ -128,7 +141,10 @@ fn main() -> ExitCode {
                 serve_menu_bar(connection, sender, cx);
             }
             // Settings > Experimental > Look & Feel, before the first window.
-            let look = window::look(&Config::load(&paths.config_file()).unwrap_or_default());
+            let config = Config::load(&paths.config_file()).unwrap_or_default();
+            // Settings > Appearance > Scaling, before any length is made.
+            katna_ui::scale::set_scale(f32::from(config.mail.scale) / 100.0);
+            let look = window::look(&config);
             cx.set_global(look);
             let mut env = Environment::from_env();
             env.own_frame = look.own_frame;
@@ -140,7 +156,7 @@ fn main() -> ExitCode {
                 &env,
                 MAIL_APP_ID,
                 "Katna Mail",
-                size(px(1280.0), px(800.0)),
+                size(desktop_px(1280.0), desktop_px(800.0)),
                 cx,
             );
             let opened = cx.open_window(options, |window, cx| {

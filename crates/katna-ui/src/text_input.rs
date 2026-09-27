@@ -8,12 +8,13 @@
 
 use std::ops::Range;
 
+use crate::scale::px;
 use gpui::{
     App, Bounds, ClipboardItem, Context, CursorStyle, ElementId, ElementInputHandler, Entity,
     EntityInputHandler, EventEmitter, FocusHandle, Focusable, GlobalElementId, Hsla, KeyBinding,
     LayoutId, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent, PaintQuad, Pixels, Point,
     ShapedLine, SharedString, Style, TextRun, UTF16Selection, UnderlineStyle, Window, actions, div,
-    fill, point, prelude::*, px, relative, size,
+    fill, point, prelude::*, relative, size,
 };
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -34,6 +35,8 @@ actions!(
         Copy,
         Submit,
         Cancel,
+        Up,
+        Down,
     ]
 );
 
@@ -59,6 +62,10 @@ pub fn bind_keys(cx: &mut App) {
         KeyBinding::new("ctrl-x", Cut, context),
         KeyBinding::new("enter", Submit, context),
         KeyBinding::new("escape", Cancel, context),
+        // Not handled by the input: for a parent's list of suggestions.
+        // Unhandled, the keys go on to the next binding for them.
+        KeyBinding::new("up", Up, context),
+        KeyBinding::new("down", Down, context),
     ]);
 }
 

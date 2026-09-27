@@ -49,6 +49,18 @@ The toolchain is always the latest stable Rust (`rust-toolchain.toml`).
 - Keep binary sizes within `ci/size-budgets.txt`.
 - Commit messages: `area: summary` (for example `search: add date filters`).
 - Update `docs/` when a design decision changes.
-- A change people will notice in Katna Mail appends a highlight to
-  `apps/katna-mail/src/whats_new.rs` (next id; an animated WebP only for a
-  major feature), so What's new shows it after the update.
+- A change people will notice in Katna Mail adds a highlight file,
+  `apps/katna-mail/whats-new/highlights/YYYY-MM-DD-HHMM-slug.toml` (UTC time
+  of writing; format in `apps/katna-mail/whats-new/README.md`; an animated
+  WebP only for a major feature), so What's new shows it after the update.
+  Never renumber, rename or edit another PR's file to fit yours in.
+- Lengths in the GPUI crates use `katna_ui::px` and read GPUI's back with
+  `katna_ui::unpx`, never `gpui::px` or `f32::from(Pixels)`, so Settings >
+  Appearance > Scaling applies everywhere (`crates/katna-ui/src/scale.rs`;
+  clippy's `disallowed-methods` stops `gpui::px`).
+- Text people see goes through `katna_i18n::tr!("id")`, never a string
+  literal, with the English message added to `i18n/en/<binary>.ftl` in the
+  same PR (`cargo test -p katna-i18n` checks every id). Other languages fall
+  back to English until drafted; see `i18n/README.md`. Dates and numbers go
+  through `katna_i18n::format`, never `strftime` or `{}`. Existing literals
+  are converted area by area (plan L.4).

@@ -709,6 +709,31 @@ from or adds to the sketch above:
   than 10 % (and 1 ms) slower than the last good run; the nightly `fuzz`
   job runs `fuzz/` (query parser and compiler) for 10 minutes.
 
+### 7.8 Recipient suggestions
+
+To, Cc and Bcc suggest addresses as the user types, like Gmail.
+
+- **Source.** `Store::correspondents` counts, per account and address, the
+  mail the user sent to it, received from it and was copied on with it,
+  with the newest date of each. Mail counts as sent when its From is the
+  account's own address or it sits in a folder with the `sent` role. The
+  app builds a `katna_search::contacts::ContactBook` from it in the
+  background, keeps a copy in `cache_dir/addresses.json` (mode 0600) so the
+  next start has it at once, rebuilds it after 10 minutes, and counts each
+  message the moment it is sent.
+- **Matching.** Each typed word must match the start of a word in the name
+  or address (address words split on `.`, `_`, `-`, `@` and the like). From
+  three letters on one typo is allowed, from six two, never in the first
+  letter. A match at the very start beats a word start, which beats a typo.
+- **Ranking.** score = fit × (1 + affinity), where affinity adds, over the
+  user's accounts, 3 × sent + received + 0.3 × copied, each as
+  ln(1 + count) halved for every year since the last such mail. Accounts
+  other than the one writing count half. Eight rows are shown; people
+  already in To, Cc or Bcc are left out.
+- **Speed.** Candidates come from an index by first letter, and the marks
+  that bold the matched text are worked out for the shown rows only: under
+  6 ms a key on 100,000 contacts in a release build.
+
 ## 8. Organizations (`katna-org`)
 
 ### 8.1 Model
@@ -932,6 +957,13 @@ message) and "Always show from this sender" (kept in
 `$XDG_CONFIG_HOME/katna/trusted-senders`). Images are fetched by the daemon
 (`FetchImage`, `https` only, `http` upgraded, at most 8 MB, checked to be an
 image by its bytes); the app never uses the network.
+
+Message text can be selected and copied as in a browser (`window/select.rs`):
+each run of text a body draws records its layout, so a pointer position maps
+to a place in the text; the selection is drawn as a highlight on those runs.
+Drag, double- and triple-click, Shift+click, Ctrl+A and Ctrl+C (once the
+text was clicked) and a right-click Copy work in plain and HTML mail; the
+selection also goes to the primary selection for middle-click paste.
 
 Sender pictures load without asking, since they are looked up by domain,
 never by message, and kept for a week, so they cannot tell anyone that a
@@ -1258,12 +1290,30 @@ Gemini or confidential mode):
   included), inbox tabs, undo-send delay, signatures and conversation view.
   Changes apply at once and are saved to `config.toml` (`[mail]`,
   `[sending]` and `[shortcuts]`).
+- **Scaling.** Settings > Appearance > Scaling makes the whole interface
+  75% to 200% of its size, on top of the desktop's scale, and applies at
+  once. GPUI takes the display's scale from the desktop and cannot add to
+  it, so Katna scales its own lengths: every length goes through
+  `katna_ui::px`, which multiplies by the scale, and every length read
+  back from GPUI (layout bounds, the window's size, the pointer) through
+  `katna_ui::unpx`, which divides by it (`crates/katna-ui/src/scale.rs`).
+  The layouts follow the scaled width, as a web page's do when zoomed:
+  at 200% a 1400 px window lays out as a 700 px one. The slider previews
+  while dragged and applies when let go, so it doesn't grow under the
+  pointer. Mail you send keeps its own font size.
 - **Settings page.** "See all settings", the rail's gear or `?` open it in
   place of the list (`window/settings_page.rs`). Its tabs, in the owner's
-  order: General, Inbox, Accounts, Subscription, Appearance (reading pane,
-  density, theme, desktop colors, app names, sender pictures), Shortcuts,
-  Default apps, Folders & rules, Compose (signatures, templates to come),
-  MCP server, User feedback (turning crash reports and feedback off at any
+  order: General (conversation view, reading order and headers, when mail
+  is marked read, what the reply button does, images from the web, undo
+  send, offline mail,
+  new-mail notifications and their sound, opening at login, tray and
+  badge), Inbox, Accounts, Subscription, Appearance (reading pane,
+  density, scaling, theme, desktop colors, app names, sender pictures,
+  Important markers, message width, dark colors for HTML mail, attachment
+  previews), Shortcuts, Default apps (where each kind of attachment
+  opens, and showing saved files in their folder), Folders & rules,
+  Compose (signatures, plain text, spelling and its language, templates
+  to come), MCP server, User feedback (turning crash reports and feedback off at any
   time) and Experimental, always last. Subscription, Folders & rules and
   MCP server are still to come: their tabs are fainter and each shows a
   "Coming soon" page saying what it will do. The tabs always stay on one line (`window/tab_strip.rs`): when
@@ -1273,6 +1323,16 @@ Gemini or confidential mode):
   setting's line that would take more than one line under its name (over
   about 40 characters) sits behind an (i) button beside the name: its
   tooltip on hover, and shown under the name after a click, Enter or a tap.
+  The General, Appearance and Compose rows added after comparing with
+  Mailspring's settings each change real behaviour: "Open Katna Mail at
+  login" is a desktop entry in `$XDG_CONFIG_HOME/autostart` (the file is
+  the setting, so the desktop's own autostart settings agree with it);
+  marking read after 1 or 3 seconds only happens if the conversation is
+  still open then; with "Always show images" off, each message's images
+  still wait to be asked for; and the new-mail sound is the notification's
+  `sound-name` hint, or `suppress-sound` when off. Katna never tracks
+  whether others open mail, so Mailspring's open and click tracking
+  settings have no counterpart.
 - **Searching settings.** While the Settings page is open the top bar's
   search box searches settings ("Search settings"; `window/settings_search.rs`):
   matching rows from every tab replace the open tab, each with its tab and
@@ -1329,10 +1389,15 @@ Gemini or confidential mode):
 - **Keyboard shortcuts.** Every action has one (`window/keymap.rs`), with
   Gmail's keys as defaults: j/k, o, u, c, r, a, f, e, #, !, v, s, x,
   Shift+I/U, `* a`, `* n`, z, `g i`/`g s`/`g t`/`g d`/`g a`, /, ?, and Ctrl
-  keys for search, quick settings, reload and quit. The Settings page lists
-  them all; a click on a key (or +) and the new keys change it, a key used
-  elsewhere moves over with a note, and each shortcut or all can go back to
-  the defaults. Keys without Ctrl or Alt only work in the list and the
+  keys for search, quick settings, reload and quit. A shortcut set starts
+  them from another mail app's keys instead, as in Mailspring: Gmail,
+  Inbox by Gmail, Apple Mail (Ctrl for Cmd, Alt for Control), Outlook or
+  Thunderbird (`[shortcuts] set`); an action that app has no key for keeps
+  Katna's. The Settings page lists them all in two columns; a click on a
+  key (or +) and the new keys change it, a key used elsewhere moves over
+  with a note, and each shortcut or all ("Restore defaults") can go back
+  to the set's keys. The user's changes sit on top of the set and survive
+  a change of set. Keys without Ctrl or Alt only work in the list and the
   open conversation, never while typing, and a switch turns them off, as in
   Gmail. Only changes are saved (`[shortcuts.keys]`).
 - **Compose.** A "New Message" window docked at the bottom right, as in
@@ -1404,17 +1469,24 @@ Gemini or confidential mode):
   `0.0.0.r90.gabc1234` until there are tagged releases; the PKGBUILD
   passes it as `KATNA_VERSION`), the highlights not shown before (at
   most six: a major one first even when older, then the newest), and Full changelog (GitHub's comparison of the
-  previous build's commit with this one). The highlights are curated in
-  `apps/katna-mail/src/whats_new.rs` and built into the app: a change
-  people will notice appends one with the next id. A major feature may
+  previous build's commit with this one). The highlights are curated one
+  TOML file each in `apps/katna-mail/whats-new/highlights/`, named
+  `YYYY-MM-DD-HHMM-slug` by the time they were written, and `build.rs`
+  builds them into the app in name order: a change people will notice
+  adds a file. A file per highlight means changes merged side by side
+  never touch the same lines (a shared list with numbered entries made
+  every pair of pull requests conflict). A major feature may
   carry a short looping animation: two animated WebPs, light and dark
   theme (`apps/katna-mail/whats-new/`, at most 600 KB each, recorded at
   the size they are drawn, 560 px wide), shown across the top of the
   dialog. Its frames are decoded only while the dialog is open (about
   20 MB for a 50-frame clip) and freed when it closes. `config.toml`
-  keeps `onboarding.whats_new_seen` (the newest highlight shown) and
+  keeps `onboarding.whats_new_shown` (the names of the highlights shown,
+  so one merged after newer ones still shows) and
   `onboarding.last_version`, both written as soon as the window opens, so
-  nothing shows twice. A first start (no account, or no settings file yet)
+  nothing shows twice. Files from when the highlights were numbered have
+  `onboarding.whats_new_seen` instead: the first 26 names, in their old
+  order, stand for those numbers, and it is replaced on the next start. A first start (no account, or no settings file yet)
   gets onboarding or the tour and marks every highlight seen. Settings
   written by versions before What's new count as an update, which is why
   such a user no longer sees the tour again. Updates without new

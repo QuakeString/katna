@@ -5,13 +5,15 @@
 //! banner above the body says what protected it and whether that held.
 //! Decrypted text stays in memory only; it is never stored or indexed.
 
-use gpui::{AnyElement, Context, FontWeight, div, prelude::*, px, rgba};
+use gpui::{AnyElement, Context, FontWeight, div, prelude::*, rgba};
 use katna_crypto::{
     Decryption, Failure, Gnupg, Opened, Protection, Security, Signature, SignatureState, Standard,
     Validity,
 };
+use katna_i18n::tr;
 use katna_render::MessageView;
 use katna_store::MessageId;
+use katna_ui::px;
 
 use super::{Body, Part, shown};
 use crate::theme::{Theme, fade};
@@ -183,12 +185,12 @@ impl MailWindow {
             Secured::Opening(Protection::Encrypted(_)) => lines.push(Line {
                 icon: "lock",
                 color: th.text_faint,
-                text: "Decrypting…".into(),
+                text: tr!("security-decrypting"),
             }),
             Secured::Opening(Protection::Signed(_)) => lines.push(Line {
                 icon: "shield",
                 color: th.text_faint,
-                text: "Checking the signature…".into(),
+                text: tr!("security-checking"),
             }),
             Secured::Opened(security) => {
                 if let Some(decryption) = &security.decryption {
@@ -207,18 +209,14 @@ impl MailWindow {
                     lines.push(signature_line(signature, security.standard, green, th));
                 }
                 if !security.whole {
-                    let what = if security.encrypted() {
-                        "encrypted"
-                    } else {
-                        "signed"
-                    };
                     lines.push(Line {
                         icon: "info",
                         color: th.error,
-                        text: format!(
-                            "Only part of this message is {what}. The rest was added \
-                             outside the protection and could come from anyone."
-                        ),
+                        text: if security.encrypted() {
+                            tr!("security-partly-encrypted")
+                        } else {
+                            tr!("security-partly-signed")
+                        },
                     });
                 }
             }
@@ -266,7 +264,7 @@ impl MailWindow {
                             .text_color(rgba(th.accent))
                             .hover(|s| s.text_color(rgba(fade(th.accent, 0.8))))
                             .on_click(cx.listener(move |this, _, _, cx| this.retry_sealed(id, cx)))
-                            .child("Try again"),
+                            .child(tr!("reader-try-again")),
                     )
                 })
                 .into_any_element(),
@@ -291,26 +289,19 @@ fn decryption_line(decryption: &Decryption, standard: Standard, th: &Theme) -> (
     let failure = match decryption {
         Decryption::Decrypted => {
             let text = match standard {
-                Standard::OpenPgp => "Encrypted message",
-                Standard::Smime => "Encrypted message (S/MIME)",
+                Standard::OpenPgp => tr!("security-encrypted"),
+                Standard::Smime => tr!("security-encrypted-smime"),
             };
-            return (th.text_faint, text.to_owned());
+            return (th.text_faint, text);
         }
         Decryption::Failed(failure) => failure,
     };
     let text = match failure {
-        Failure::NoSecretKey => {
-            "Can't decrypt this message: it was encrypted for a key you don't have.".to_owned()
-        }
-        Failure::Cancelled => "Decrypting was cancelled.".to_owned(),
-        Failure::Damaged => {
-            "Can't decrypt this message: the encrypted data is damaged or was changed.".to_owned()
-        }
-        Failure::Unavailable => format!(
-            "Can't decrypt this message: install {} to read encrypted mail.",
-            tool(standard)
-        ),
-        Failure::Other(message) => format!("Can't decrypt this message: {message}"),
+        Failure::NoSecretKey => tr!("security-no-key"),
+        Failure::Cancelled => tr!("security-cancelled"),
+        Failure::Damaged => tr!("security-damaged"),
+        Failure::Unavailable => tr!("security-decrypt-unavailable", tool = tool(standard)),
+        Failure::Other(message) => tr!("security-decrypt-failed", reason = message.as_str()),
     };
     (th.error, text)
 }
@@ -319,74 +310,59 @@ fn signature_line(signature: &Signature, standard: Standard, green: u32, th: &Th
     let signer = signature
         .signer
         .clone()
-        .unwrap_or_else(|| "an unknown signer".to_owned());
+        .unwrap_or_else(|| tr!("security-unknown-signer"));
     let (icon, color, text) = match signature.state {
         SignatureState::Good if signature.verified() => (
             "shield-check",
             green,
-            format!("Signed by {signer} · verified"),
+            tr!("security-signed-verified", signer = signer),
         ),
         SignatureState::Good if !signature.from_sender => (
             "shield-alert",
             th.error,
-            format!("Signed by {signer}, who is not the sender"),
+            tr!("security-signed-not-sender", signer = signer),
         ),
         SignatureState::Good => match signature.validity {
             Validity::Never => (
                 "shield-alert",
                 th.error,
-                format!("Signed by {signer}, with a key you marked as not trusted"),
+                tr!("security-signed-untrusted", signer = signer),
             ),
             _ => (
                 "shield",
                 th.text_faint,
-                format!("Signed by {signer} · the key is not verified"),
+                tr!("security-signed-unverified", signer = signer),
             ),
         },
-        SignatureState::Bad => (
-            "shield-alert",
-            th.error,
-            "Bad signature: this message was changed after it was signed, or the signature \
-             is forged."
-                .to_owned(),
-        ),
+        SignatureState::Bad => ("shield-alert", th.error, tr!("security-bad-signature")),
         SignatureState::Expired => (
             "shield",
             th.text_faint,
-            format!("Signed by {signer} · the signature has expired"),
+            tr!("security-signature-expired", signer = signer),
         ),
         SignatureState::KeyExpired => (
             "shield",
             th.text_faint,
-            format!("Signed by {signer} · the key has expired since"),
+            tr!("security-key-expired", signer = signer),
         ),
         SignatureState::KeyRevoked => (
             "shield-alert",
             th.error,
-            format!("Signed by {signer} with a key that has been revoked"),
+            tr!("security-key-revoked", signer = signer),
         ),
         SignatureState::MissingKey => {
-            let key = signature
-                .key
-                .as_deref()
-                .map(|key| format!(" ({})", short_key(key)))
-                .unwrap_or_default();
-            (
-                "shield",
-                th.text_faint,
-                format!("Signed with a key you don't have{key}, so it can't be checked"),
-            )
+            let text = match signature.key.as_deref() {
+                Some(key) => tr!("security-missing-key-id", key = short_key(key)),
+                None => tr!("security-missing-key"),
+            };
+            ("shield", th.text_faint, text)
         }
         SignatureState::Unavailable => (
             "shield",
             th.text_faint,
-            format!("Signed; install {} to check the signature", tool(standard)),
+            tr!("security-signature-unavailable", tool = tool(standard)),
         ),
-        SignatureState::Error => (
-            "shield-alert",
-            th.error,
-            "The signature could not be checked.".to_owned(),
-        ),
+        SignatureState::Error => ("shield-alert", th.error, tr!("security-signature-error")),
     };
     Line { icon, color, text }
 }

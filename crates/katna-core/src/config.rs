@@ -100,8 +100,13 @@ pub enum WindowFrame {
 pub struct Onboarding {
     /// The welcome and the offer of a tour of the window have been seen.
     pub done: bool,
-    /// The newest What's new highlight shown, or offered by the first
-    /// start. `None` in files written before What's new existed.
+    /// The What's new highlights shown, or offered by the first start, by
+    /// name (`2026-09-27-0444-about-katna`), so one merged after newer ones
+    /// still shows.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub whats_new_shown: Vec<String>,
+    /// The number of the newest highlight shown, from the versions that
+    /// numbered them. Read once, then replaced by `whats_new_shown`.
     pub whats_new_seen: Option<u32>,
     /// The version of Katna Mail that started last, as its package names
     /// it, for the link to the changes since.
@@ -114,11 +119,16 @@ pub struct Onboarding {
 pub struct Notifications {
     /// Notify about new mail in the inbox (Primary tab).
     pub new_mail: bool,
+    /// New-mail notifications play the desktop's new-mail sound.
+    pub sound: bool,
 }
 
 impl Default for Notifications {
     fn default() -> Self {
-        Self { new_mail: true }
+        Self {
+            new_mail: true,
+            sound: true,
+        }
     }
 }
 
@@ -189,6 +199,9 @@ pub struct General {
     pub show_in_tray: bool,
     /// Show the Inbox unread count on Katna Mail's taskbar or dock icon.
     pub unread_badge: bool,
+    /// The language of the interface, a tag from `i18n/languages.toml`
+    /// (`bn`, `en-IN`); empty follows the desktop (§13.10).
+    pub language: String,
 }
 
 impl Default for General {
@@ -197,6 +210,7 @@ impl Default for General {
             run_in_background: true,
             show_in_tray: true,
             unread_badge: true,
+            language: String::new(),
         }
     }
 }
@@ -342,6 +356,9 @@ pub struct MailView {
     /// Accounts not listed use [`TabStyle::Auto`].
     pub account_tabs: BTreeMap<String, AccountTabs>,
     pub density: Density,
+    /// The size of everything in the windows, in percent, on top of the
+    /// desktop's own scale (75 to 200).
+    pub scale: u16,
     pub theme: Theme,
     /// Use the desktop's color scheme and accent color instead of Katna's
     /// own colors.
@@ -361,6 +378,25 @@ pub struct MailView {
     pub full_names: bool,
     /// Where each kind of attachment opens.
     pub open: OpenAttachments,
+    /// When an opened conversation is marked read.
+    pub mark_read: MarkRead,
+    /// Load the images of every message from the web, not only those of
+    /// trusted senders. Loading them tells senders that a message was read.
+    pub remote_images: bool,
+    /// The reply button of each message in a conversation replies to
+    /// everyone, not only the sender.
+    pub reply_all: bool,
+    /// Show the Important marker in the message list.
+    pub important_markers: bool,
+    /// Keep the lines of a message no wider than is easy to read.
+    pub limit_width: bool,
+    /// In a dark theme, give HTML mail dark colors too; off, mail keeps the
+    /// colors its sender picked, on a light page.
+    pub dark_mail: bool,
+    /// Show a small picture of each attachment's content on its card.
+    pub attachment_previews: bool,
+    /// Open the folder in the file manager after saving attachments.
+    pub open_saved_folder: bool,
     /// With several accounts: the folder pane shows one account, picked in
     /// the account card, or all of them one after another.
     pub accounts_shown: AccountsShown,
@@ -379,6 +415,7 @@ impl Default for MailView {
             inbox_tabs: true,
             account_tabs: BTreeMap::new(),
             density: Density::Default,
+            scale: 100,
             theme: Theme::System,
             desktop_colors: true,
             app_labels: true,
@@ -387,6 +424,14 @@ impl Default for MailView {
             full_headers: false,
             full_names: false,
             open: OpenAttachments::default(),
+            mark_read: MarkRead::Instantly,
+            remote_images: false,
+            reply_all: false,
+            important_markers: true,
+            limit_width: false,
+            dark_mail: true,
+            attachment_previews: true,
+            open_saved_folder: false,
             accounts_shown: AccountsShown::One,
             current_account: String::new(),
         }
@@ -400,6 +445,40 @@ impl MailView {
             .get(&address.to_lowercase())
             .cloned()
             .unwrap_or_default()
+    }
+}
+
+/// When an opened conversation is marked read ([`MailView::mark_read`]).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum MarkRead {
+    #[default]
+    Instantly,
+    /// After it has been open for a second.
+    AfterOneSecond,
+    /// After it has been open for three seconds.
+    AfterThreeSeconds,
+    /// Only with Mark as read.
+    Manually,
+}
+
+impl MarkRead {
+    pub const ALL: [Self; 4] = [
+        Self::Instantly,
+        Self::AfterOneSecond,
+        Self::AfterThreeSeconds,
+        Self::Manually,
+    ];
+
+    /// How long a conversation stays open before it is marked read;
+    /// `None` when it never is.
+    pub fn delay(self) -> Option<std::time::Duration> {
+        match self {
+            Self::Instantly => Some(std::time::Duration::ZERO),
+            Self::AfterOneSecond => Some(std::time::Duration::from_secs(1)),
+            Self::AfterThreeSeconds => Some(std::time::Duration::from_secs(3)),
+            Self::Manually => None,
+        }
     }
 }
 
@@ -509,7 +588,10 @@ pub enum OpenIn {
 pub struct Shortcuts {
     /// Shortcuts without Ctrl or Alt, such as `e` to archive, as in webmail.
     pub single_keys: bool,
-    /// Keys changed from the defaults, by shortcut name (`archive`,
+    /// Whose keys the shortcuts start from: Katna's own or another mail
+    /// app's. [`Shortcuts::keys`] changes them further.
+    pub set: ShortcutSet,
+    /// Keys changed from the set's, by shortcut name (`archive`,
     /// `reply`, ...): each a list of keystrokes such as `ctrl-shift-a` or
     /// `g i`. An empty list turns the shortcut off.
     pub keys: BTreeMap<String, Vec<String>>,
@@ -519,9 +601,25 @@ impl Default for Shortcuts {
     fn default() -> Self {
         Self {
             single_keys: true,
+            set: ShortcutSet::Katna,
             keys: BTreeMap::new(),
         }
     }
+}
+
+/// [`Shortcuts::set`]: the keys of a familiar mail app.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum ShortcutSet {
+    /// Gmail's keys, with the usual desktop keys as well.
+    #[default]
+    Katna,
+    Gmail,
+    InboxByGmail,
+    /// Apple Mail's, with Ctrl for Cmd.
+    AppleMail,
+    Outlook,
+    Thunderbird,
 }
 
 /// [`MailView::reading_pane`].
@@ -824,12 +922,14 @@ mod tests {
     fn whats_new_state_round_trips() {
         let mut config = Config::default();
         config.onboarding.whats_new_seen = Some(3);
+        config.onboarding.whats_new_shown = vec!["2026-09-27-0444-about-katna".to_owned()];
         config.onboarding.last_version = Some("0.0.0.r90.gabc1234".to_owned());
         let text = toml::to_string_pretty(&config).unwrap();
         assert_eq!(Config::parse(&text).unwrap(), config);
         // Unset values stay out of the file.
         let text = toml::to_string_pretty(&Config::default()).unwrap();
         assert!(!text.contains("whats_new_seen"));
+        assert!(!text.contains("whats_new_shown"));
     }
 
     #[test]

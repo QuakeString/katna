@@ -8,12 +8,15 @@
 //! what is kept.
 
 use gpui::{
-    AnyElement, Context, Div, Entity, Focusable, FontWeight, Stateful, Subscription, Window, div,
-    prelude::*, px, rgba,
+    AnyElement, Context, Div, Entity, Focusable, FontWeight, SharedString, Stateful, Subscription,
+    Window, div, prelude::*, rgba,
 };
 use katna_core::config::AccountsShown;
 use katna_core::{Account, AccountKind, Config};
+use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
+use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
 
 use super::settings::Change;
@@ -254,14 +257,10 @@ impl MailWindow {
                     .text_size(px(14.0))
                     .line_height(px(20.0))
                     .text_color(rgba(th.text_dim))
-                    .child(
-                        "Deletes the mail and attachments Katna downloaded, sender pictures \
-                         and the search index, then downloads recent mail again. Accounts, \
-                         settings and mail that is only on this computer stay.",
-                    ),
+                    .child(tr!("reset-cache-about")),
             )
             .child(
-                crate::widgets::outlined_button("reset-cache-open", "Reset cache", th)
+                crate::widgets::outlined_button("reset-cache-open", tr!("reset-cache-button"), th)
                     .map(|d| self.page_control(d, th, cx))
                     .on_click(cx.listener(|this, _, _, cx| this.ask(What::ResetCache, cx))),
             )
@@ -443,12 +442,9 @@ impl MailWindow {
     fn cache_reset(&mut self, messages: u64, bytes: u64, cx: &mut Context<Self>) {
         self.refresh(true, cx);
         let text = if messages == 0 {
-            "The cache was reset. Recent mail is downloading again.".to_owned()
+            tr!("reset-cache-done")
         } else {
-            format!(
-                "The cache was reset and {} freed. Recent mail is downloading again.",
-                size_text(bytes)
-            )
+            tr!("reset-cache-done-freed", size = crate::format::size(bytes))
         };
         self.show_snackbar(text, None, cx);
     }
@@ -485,16 +481,15 @@ impl MailWindow {
         let danger = self.danger.as_ref()?;
         let (title, action, busy_text, items): (String, &str, &str, Vec<String>) =
             match &danger.what {
+                // Its button's labels are translated below.
                 What::ResetCache => (
-                    "Reset the cache?".into(),
-                    "Reset cache",
-                    "Resetting\u{2026}",
+                    tr!("reset-cache-title"),
+                    "",
+                    "",
                     vec![
-                        "Mail and attachments downloaded from your IMAP servers: recent \
-                         mail downloads again now, older mail when you open it"
-                            .into(),
-                        "The search index, which is rebuilt right away".into(),
-                        "Sender pictures".into(),
+                        tr!("reset-cache-mail"),
+                        tr!("reset-cache-index"),
+                        tr!("reset-cache-pictures"),
                     ],
                 ),
                 What::RemoveAccount(account) => {
@@ -553,9 +548,9 @@ impl MailWindow {
                     .font_weight(FontWeight::SEMIBOLD)
                     .text_color(rgba(tone))
                     .child(if reset {
-                        "Deleted, then downloaded again:"
+                        SharedString::from(tr!("reset-cache-deleted"))
                     } else {
-                        "Deleted from this computer:"
+                        "Deleted from this computer:".into()
                     }),
             )
             .children(items.into_iter().map(|item| {
@@ -578,6 +573,7 @@ impl MailWindow {
                         .child("This cannot be undone."),
                 )
             });
+        let kept = tr!("reset-cache-kept");
         let server = div()
             .mt(px(12.0))
             .p(px(12.0))
@@ -594,28 +590,26 @@ impl MailWindow {
                     .text_size(px(13.0))
                     .line_height(px(19.0))
                     .text_color(rgba(th.text_dim))
-                    .child(match &danger.what {
-                        What::ResetCache => {
-                            "Kept: your accounts, passwords and settings; stars, labels, \
-                             read marks and pins; drafts, the outbox and changes not yet on \
-                             the server; and mail from POP3 accounts or imported files, which \
-                             may have no other copy. Nothing changes on your mail servers."
-                        }
-                        What::DeleteAll { .. } => {
-                            "Nothing changes on your mail servers: your mail stays there, \
+                    .child(SharedString::from(
+                        match &danger.what {
+                            What::ResetCache => kept.as_str(),
+                            What::DeleteAll { .. } => {
+                                "Nothing changes on your mail servers: your mail stays there, \
                              and adding an account again downloads it again. Mail imported \
                              from files is only in Katna; the files are not touched."
-                        }
-                        What::RemoveAccount(account) if account.kind == AccountKind::Local => {
-                            "This mail was imported from files, so Katna has the only copy. \
+                            }
+                            What::RemoveAccount(account) if account.kind == AccountKind::Local => {
+                                "This mail was imported from files, so Katna has the only copy. \
                              The files it came from are not touched; import them again to \
                              get it back."
-                        }
-                        What::RemoveAccount(_) => {
-                            "Nothing changes on the mail server: your mail stays there, and \
+                            }
+                            What::RemoveAccount(_) => {
+                                "Nothing changes on the mail server: your mail stays there, and \
                              adding the account again downloads it again."
+                            }
                         }
-                    }),
+                        .to_owned(),
+                    )),
             );
         let confirm = match &danger.what {
             What::DeleteAll { typed, .. } => {
@@ -724,7 +718,11 @@ impl MailWindow {
                         if reset {
                             crate::widgets::filled_button(
                                 "danger-confirm",
-                                if busy { busy_text } else { action },
+                                if busy {
+                                    tr!("reset-cache-busy")
+                                } else {
+                                    tr!("reset-cache-confirm")
+                                },
                                 th,
                             )
                         } else {
@@ -741,7 +739,7 @@ impl MailWindow {
                     ),
             );
         let viewport = window.viewport_size();
-        let (vw, vh) = (f32::from(viewport.width), f32::from(viewport.height));
+        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let card = div()
             .id("danger")
             .occlude()
@@ -840,18 +838,5 @@ fn kind_name(kind: AccountKind) -> &'static str {
         AccountKind::Local => "Imported",
         AccountKind::CalDav => "CalDAV",
         AccountKind::CardDav => "CardDAV",
-    }
-}
-
-/// `bytes` for people: "12 MB", "1.3 GB".
-fn size_text(bytes: u64) -> String {
-    const MB: f64 = 1_000_000.0;
-    let mb = bytes as f64 / MB;
-    if mb >= 1000.0 {
-        format!("{:.1} GB", mb / 1000.0)
-    } else if mb >= 10.0 {
-        format!("{mb:.0} MB")
-    } else {
-        format!("{mb:.1} MB")
     }
 }

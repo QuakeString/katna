@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Mail in its own window"
+text = """
+Shift+click a message, right-click it or use In new window on the reader
+toolbar to open it in a window of its own. Print all prints the whole
+conversation.
+"""

@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Keyboard shortcuts: every one Katna Mail has, with webmail's keys as
-//! defaults, and the user's changes from `[shortcuts]` in `config.toml`.
-//! The Settings page lists and edits them; [`bind`] loads them into GPUI.
+//! defaults, another mail app's keys if the user picks its set, and the
+//! user's changes from `[shortcuts]` in `config.toml`. The Settings page
+//! lists and edits them; [`bind`] loads them into GPUI.
 
 use gpui::{Action, App, KeyBinding, Keystroke};
-use katna_core::config::Shortcuts;
+use katna_core::config::{ShortcutSet, Shortcuts};
 
 use super::{
     Archive, CloseMessage, Compose, Delete, FocusList, FocusNext, FocusPrevious, FocusSearch,
@@ -330,11 +331,120 @@ pub(super) fn find(name: &str) -> Option<&'static Shortcut> {
     SHORTCUTS.iter().find(|s| s.name == name)
 }
 
-/// The keys of `shortcut` now: the user's, else the defaults.
+/// Keys a set gives shortcuts, in place of Katna's; a shortcut the other
+/// app has no key for keeps Katna's.
+type Preset = &'static [(&'static str, &'static [&'static str])];
+
+/// Gmail's own keys: Katna's, and D also writes a new message.
+const GMAIL: Preset = &[("compose", &["c", "d"])];
+
+/// Inbox by Gmail: Y marks done too, and nothing is important.
+const INBOX_BY_GMAIL: Preset = &[
+    ("archive", &["e", "y"]),
+    ("important", &[]),
+    ("not_important", &[]),
+];
+
+/// Apple Mail's, with Ctrl for Cmd and Alt for Control.
+const APPLE_MAIL: Preset = &[
+    ("compose", &["ctrl-n"]),
+    ("reply", &["ctrl-r"]),
+    ("reply_all", &["ctrl-shift-r"]),
+    ("forward", &["ctrl-shift-f"]),
+    ("archive", &["ctrl-alt-a"]),
+    ("delete", &["delete", "backspace"]),
+    ("back", &["escape"]),
+    ("spam", &["ctrl-shift-j"]),
+    ("mark_unread", &["ctrl-shift-u"]),
+    ("star", &["ctrl-shift-l"]),
+    ("select_all", &["ctrl-a"]),
+    ("undo", &["ctrl-z"]),
+    ("go_inbox", &["ctrl-1"]),
+    ("search", &["ctrl-alt-f"]),
+    ("reload", &["ctrl-shift-n"]),
+];
+
+/// Outlook's on Windows.
+const OUTLOOK: Preset = &[
+    ("next", &["ctrl-."]),
+    ("previous", &["ctrl-,"]),
+    ("open", &["enter"]),
+    ("back", &["escape"]),
+    ("compose", &["ctrl-n", "ctrl-shift-m"]),
+    ("reply", &["ctrl-r"]),
+    ("reply_all", &["ctrl-shift-r"]),
+    ("forward", &["ctrl-f"]),
+    ("archive", &["backspace"]),
+    ("delete", &["delete", "ctrl-d"]),
+    ("spam", &["ctrl-alt-j"]),
+    ("move_to", &["ctrl-shift-v"]),
+    ("mark_read", &["ctrl-q"]),
+    ("mark_unread", &["ctrl-u"]),
+    ("star", &["insert"]),
+    ("important", &[]),
+    ("not_important", &[]),
+    ("select_all", &["ctrl-a"]),
+    ("undo", &["ctrl-z"]),
+    ("go_inbox", &["ctrl-shift-i"]),
+    ("search", &["ctrl-e", "f3"]),
+    ("quick_settings", &[]),
+    ("reload", &["f9", "f5"]),
+    ("quit", &[]),
+];
+
+/// Thunderbird's.
+const THUNDERBIRD: Preset = &[
+    ("next", &["f"]),
+    ("previous", &["b"]),
+    ("compose", &["ctrl-n", "ctrl-m"]),
+    ("reply", &["ctrl-r"]),
+    ("reply_all", &["ctrl-shift-r"]),
+    ("forward", &["ctrl-l"]),
+    ("archive", &["a"]),
+    ("delete", &["delete"]),
+    ("spam", &["j"]),
+    ("mark_read", &["r"]),
+    ("mark_unread", &["m"]),
+    ("select_all", &["ctrl-a"]),
+    ("undo", &["ctrl-z"]),
+    ("search", &["ctrl-k", "ctrl-shift-k"]),
+    ("reload", &["f5", "ctrl-t"]),
+];
+
+/// Every set, in the order the Settings page offers them, with its name.
+pub(super) const SETS: [(ShortcutSet, &str); 6] = [
+    (ShortcutSet::Katna, "Katna Mail"),
+    (ShortcutSet::Gmail, "Gmail"),
+    (ShortcutSet::InboxByGmail, "Inbox by Gmail"),
+    (ShortcutSet::AppleMail, "Apple Mail"),
+    (ShortcutSet::Outlook, "Outlook"),
+    (ShortcutSet::Thunderbird, "Thunderbird"),
+];
+
+fn preset(set: ShortcutSet) -> Preset {
+    match set {
+        ShortcutSet::Katna => &[],
+        ShortcutSet::Gmail => GMAIL,
+        ShortcutSet::InboxByGmail => INBOX_BY_GMAIL,
+        ShortcutSet::AppleMail => APPLE_MAIL,
+        ShortcutSet::Outlook => OUTLOOK,
+        ShortcutSet::Thunderbird => THUNDERBIRD,
+    }
+}
+
+/// The keys `set` gives `shortcut`, before the user's changes.
+pub(super) fn set_keys(shortcut: &Shortcut, set: ShortcutSet) -> &'static [&'static str] {
+    preset(set)
+        .iter()
+        .find(|(name, _)| *name == shortcut.name)
+        .map_or(shortcut.defaults, |(_, keys)| keys)
+}
+
+/// The keys of `shortcut` now: the user's, else the set's.
 pub(super) fn keys<'a>(shortcut: &Shortcut, config: &'a Shortcuts) -> Vec<&'a str> {
     match config.keys.get(shortcut.name) {
         Some(keys) => keys.iter().map(String::as_str).collect(),
-        None => shortcut.defaults.to_vec(),
+        None => set_keys(shortcut, config.set).to_vec(),
     }
 }
 
@@ -406,6 +516,17 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
             }
         }
     }
+    // Clicked text of a message copies and selects as it does anywhere.
+    bindings.push(KeyBinding::new(
+        "ctrl-c",
+        super::select::CopyText,
+        Some(super::select::TEXT_CONTEXT),
+    ));
+    bindings.push(KeyBinding::new(
+        "ctrl-a",
+        super::select::SelectAllText,
+        Some(super::select::TEXT_CONTEXT),
+    ));
     // Down in the search box goes to the list; not a shortcut to change.
     bindings.push(KeyBinding::new("down", FocusList, Some(SEARCH_CONTEXT)));
     // Tab and Shift+Tab move between fields and buttons, as in any desktop
@@ -529,6 +650,46 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn sets_name_real_shortcuts_and_do_not_conflict() {
+        for (set, _) in SETS {
+            for (name, keys) in preset(set) {
+                assert!(find(name).is_some(), "{set:?}: no shortcut {name}");
+                for keys in *keys {
+                    assert!(valid(keys), "{set:?} {name}: {keys}");
+                }
+            }
+            let config = Shortcuts {
+                set,
+                ..Shortcuts::default()
+            };
+            for s in SHORTCUTS {
+                for keys in keys(s, &config) {
+                    assert!(
+                        conflict(s.name, keys, &config).is_none(),
+                        "{set:?}: {} {keys} conflicts with {:?}",
+                        s.name,
+                        conflict(s.name, keys, &config).map(|c| c.name)
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn user_keys_sit_on_the_set() {
+        let mut config = Shortcuts {
+            set: ShortcutSet::Outlook,
+            ..Shortcuts::default()
+        };
+        let reply = find("reply").unwrap();
+        assert_eq!(keys(reply, &config), ["ctrl-r"]);
+        // Katna's keys where Outlook has none.
+        assert_eq!(keys(find("go_sent").unwrap(), &config), ["g t"]);
+        config.keys.insert("reply".into(), vec!["r".into()]);
+        assert_eq!(keys(reply, &config), ["r"]);
     }
 
     #[test]

@@ -13,12 +13,15 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, FontWeight, SharedString, div, ease_out_quint,
-    prelude::*, px, rgba,
+    prelude::*, rgba,
 };
+use katna_i18n::tr;
 use katna_render::MessageView;
 use katna_render::html::Document;
 use katna_store::{MessageFlags, MessageId};
 use katna_ui::motion::lerp;
+use katna_ui::px;
+use katna_ui::unpx;
 
 use super::compose::Kind;
 use super::list::separator;
@@ -48,6 +51,9 @@ const PICTURE_COLUMN_INSET: f32 = PICTURE_COLUMN - (PICTURE_COLUMN - 40.0) / 2.0
 /// An open message shows its date and star button, and the subject its
 /// full size, in panes at least this wide.
 const STAR_FROM: f32 = 260.0;
+/// How wide a message's text gets with "Limit the width of messages":
+/// about 90 characters a line.
+const MESSAGE_WIDTH: f32 = 760.0;
 
 /// An open conversation (or a single message).
 pub(super) struct Conversation {
@@ -244,7 +250,7 @@ impl Conversation {
         let subject = parts
             .iter()
             .find_map(|p| p.row.as_ref().map(|r| r.subject.clone()))
-            .unwrap_or_else(|| "(no subject)".to_owned());
+            .unwrap_or_else(|| tr!("reader-no-subject"));
         Self {
             key,
             subject,
@@ -440,10 +446,11 @@ impl MailWindow {
             .as_ref()
             .and_then(|r| self.entries.iter().position(|e| e.key == r.key));
         let ix = position.or(self.selected).unwrap_or(0);
+        let (position, total) = (ix as u64 + 1, count as u64);
         let back = if self.split() {
-            icon_button("reader-close", "close", 20.0, th).tooltip(tip("Close", th))
+            icon_button("reader-close", "close", 20.0, th).tooltip(tip(tr!("reader-close"), th))
         } else {
-            icon_button("reader-back", "back", 20.0, th).tooltip(tip("Back", th))
+            icon_button("reader-back", "back", 20.0, th).tooltip(tip(tr!("reader-back"), th))
         }
         .on_click(
             cx.listener(|this, _, window, cx| this.close_message(&super::CloseMessage, window, cx)),
@@ -467,7 +474,7 @@ impl MailWindow {
             .when(!squeeze.unread, |d| {
                 d.child(
                     icon_button("reader-unread", "mail", 20.0, th)
-                        .tooltip(tip("Mark as unread", th))
+                        .tooltip(tip(tr!("reader-mark-unread"), th))
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.mark_unread(&super::MarkUnread, window, cx)
                         })),
@@ -476,14 +483,14 @@ impl MailWindow {
             .when(!narrow, |d| {
                 d.child({
                     let move_to = icon_button("reader-move", "move-to", 20.0, th)
-                        .tooltip(tip("Move to", th))
+                        .tooltip(tip(tr!("reader-move-to"), th))
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)));
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
                 })
             })
             .child({
                 let more = icon_button("reader-more", "more", 20.0, th)
-                    .tooltip(tip("More", th))
+                    .tooltip(tip(tr!("reader-more"), th))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ReaderMore, cx)));
                 self.with_menu(more, Menu::ReaderMore, th, cx)
             })
@@ -492,13 +499,13 @@ impl MailWindow {
             .when(roomy, |d| {
                 d.child(
                     icon_button("reader-print", "print", 20.0, th)
-                        .tooltip(tip("Print all", th))
+                        .tooltip(tip(tr!("reader-print-all"), th))
                         .on_click(cx.listener(|this, _, _, cx| this.print_conversation(cx))),
                 )
                 .when(!self.detached, |d| {
                     d.child(
                         icon_button("reader-new-window", "open-external", 20.0, th)
-                            .tooltip(tip("In new window", th))
+                            .tooltip(tip(tr!("reader-new-window"), th))
                             .on_click(cx.listener(|this, _, _, cx| this.open_reader_in_window(cx))),
                     )
                 })
@@ -510,11 +517,7 @@ impl MailWindow {
                         .px(px(8.0))
                         .text_size(px(12.0))
                         .text_color(rgba(th.text_faint))
-                        .child(format!(
-                            "{} of {}",
-                            format::thousands(ix as u64 + 1),
-                            format::thousands(count as u64)
-                        )),
+                        .child(tr!("reader-position", position = position, total = total)),
                 )
             })
             // A phone moves between conversations from the list; a
@@ -522,7 +525,7 @@ impl MailWindow {
             .when(!phone && !self.detached && !squeeze.steps, |d| {
                 d.child(
                     icon_button("newer", "chevron-left", 20.0, th)
-                        .tooltip(tip("Newer", th))
+                        .tooltip(tip(tr!("reader-newer"), th))
                         .when(ix == 0, |d| d.opacity(0.4))
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.select_previous(&SelectPrevious, window, cx)
@@ -530,7 +533,7 @@ impl MailWindow {
                 )
                 .child(
                     icon_button("older", "chevron-right", 20.0, th)
-                        .tooltip(tip("Older", th))
+                        .tooltip(tip(tr!("reader-older"), th))
                         .when(ix + 1 >= count, |d| d.opacity(0.4))
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.select_next(&SelectNext, window, cx)
@@ -545,11 +548,14 @@ impl MailWindow {
         self.fetch_remote(cx);
         self.download_bodies(cx);
         self.request_thumbnails(cx);
+        if let Some(key) = self.reader.as_ref().map(|r| r.key) {
+            self.text.begin(key);
+        }
         let Some(reader) = &self.reader else {
             return placeholder("", th);
         };
         if reader.parts.is_empty() {
-            return placeholder("This conversation was removed.", th);
+            return placeholder(&tr!("reader-removed"), th);
         }
         let all_expanded = reader.all_expanded();
         let title = div()
@@ -608,9 +614,9 @@ impl MailWindow {
                     )
                     .tooltip(tip(
                         if all_expanded {
-                            "Collapse all"
+                            tr!("reader-collapse-all")
                         } else {
-                            "Expand all"
+                            tr!("reader-expand-all")
                         },
                         th,
                     ))
@@ -688,6 +694,7 @@ impl MailWindow {
                             .children(reply_above)
                             .children(parts)
                             .children(reply_below)
+                            .map(|d| self.text_area(d, cx))
                             .with_animation(
                                 ("open-conversation", key_number(key)),
                                 Animation::new(Duration::from_millis(280))
@@ -703,6 +710,7 @@ impl MailWindow {
                     .border_color(rgba(th.divider))
                     .child(footer)
             }))
+            .children(self.render_text_menu(th, cx))
             .into_any_element()
     }
 
@@ -720,7 +728,7 @@ impl MailWindow {
             // Not read yet: the list line knows the sender, so the picture
             // (when one was already fetched) stays the same once it opens.
             (None, Some(row)) => (row.correspondent.clone(), row.sender.clone()),
-            (None, None) => ("(unknown sender)".to_owned(), String::new()),
+            (None, None) => (tr!("reader-unknown-sender"), String::new()),
         };
         let now = jiff::Timestamp::now().as_second();
         let date = row
@@ -809,7 +817,7 @@ impl MailWindow {
             .and_then(|d| {
                 let long = format::long_date(format::local(d, &self.tz)?);
                 Some(match format::ago(d, now) {
-                    Some(ago) => format!("{long} ({ago})"),
+                    Some(ago) => tr!("reader-date-ago", date = long, ago = ago),
                     None => long,
                 })
             })
@@ -827,7 +835,7 @@ impl MailWindow {
         let recipients = view.map(|v| {
             let mut all = v.to.clone();
             all.extend(v.cc.iter().cloned());
-            format!("to {}", names(&all))
+            tr!("reader-to", names = names(&all))
         });
         // Clicking \u{201c}to\u{201d} turns the details the other way from the
         // Full headers setting.
@@ -924,26 +932,39 @@ impl MailWindow {
                         th,
                     )
                     .size(px(32.0))
-                    .tooltip(tip(if flagged { "Starred" } else { "Not starred" }, th))
+                    .tooltip(tip(
+                        if flagged {
+                            tr!("reader-starred")
+                        } else {
+                            tr!("reader-not-starred")
+                        },
+                        th,
+                    ))
                     .on_click(cx.listener(move |this, _, _, cx| {
                         cx.stop_propagation();
                         this.star_message(ix, id, !flagged, cx);
                     })),
                 )
             })
-            .child(
-                icon_button(("part-reply", ix), "reply", 20.0, th)
-                    .tooltip(tip("Reply", th))
+            .child({
+                // Settings > General > Reply button.
+                let (kind, name, label) = if self.config.mail.reply_all {
+                    (Kind::ReplyAll, "reply-all", tr!("reply-reply-all"))
+                } else {
+                    (Kind::Reply, "reply", tr!("reply-reply"))
+                };
+                icon_button(("part-reply", ix), name, 20.0, th)
+                    .tooltip(tip(label, th))
                     .size(px(32.0))
                     .on_click(cx.listener(move |this, _, window, cx| {
                         cx.stop_propagation();
-                        this.open_compose(Kind::Reply, Some(id), window, cx);
-                    })),
-            );
+                        this.open_compose(kind, Some(id), window, cx);
+                    }))
+            });
 
         let details_box = (details && view.is_some()).then(|| {
             let view = view.expect("checked");
-            let line = |label: &str, value: String| {
+            let line = |label: String, value: String| {
                 div()
                     .flex()
                     .flex_row()
@@ -955,7 +976,7 @@ impl MailWindow {
                             .flex()
                             .justify_end()
                             .text_color(rgba(th.text_faint))
-                            .child(format!("{label}:")),
+                            .child(label),
                     )
                     .child(div().flex_1().min_w_0().child(value))
             };
@@ -979,11 +1000,15 @@ impl MailWindow {
                 .border_color(rgba(th.divider))
                 .text_size(px(12.0))
                 .text_color(rgba(th.text_dim))
-                .child(line("from", full(&view.from)))
-                .when(!view.to.is_empty(), |d| d.child(line("to", full(&view.to))))
-                .when(!view.cc.is_empty(), |d| d.child(line("cc", full(&view.cc))))
-                .child(line("date", long_date.clone()))
-                .child(line("subject", view.subject.clone()))
+                .child(line(tr!("reader-details-from"), full(&view.from)))
+                .when(!view.to.is_empty(), |d| {
+                    d.child(line(tr!("reader-details-to"), full(&view.to)))
+                })
+                .when(!view.cc.is_empty(), |d| {
+                    d.child(line(tr!("reader-details-cc"), full(&view.cc)))
+                })
+                .child(line(tr!("reader-details-date"), long_date.clone()))
+                .child(line(tr!("reader-details-subject"), view.subject.clone()))
                 .with_animation(
                     ("details", ix),
                     Animation::new(Duration::from_millis(180)).with_easing(ease_out_quint()),
@@ -1006,8 +1031,8 @@ impl MailWindow {
                 let encrypted = part.body.as_ref().is_some_and(Body::encrypted);
                 let blocked = encrypted && doc.as_ref().is_some_and(|d| d.remote_images > 0);
                 let notes = [
-                    too_long.then_some("The message is too long to show in full."),
-                    blocked.then_some("Images from the web are never loaded in encrypted mail."),
+                    too_long.then(|| tr!("reader-too-long")),
+                    blocked.then(|| tr!("reader-encrypted-images")),
                 ];
                 let allowed = !encrypted && self.remote.allowed(id, &email);
                 let banner = doc
@@ -1031,6 +1056,7 @@ impl MailWindow {
                 div()
                     .flex()
                     .flex_col()
+                    .when(self.config.mail.limit_width, |d| d.max_w(px(MESSAGE_WIDTH)))
                     .pt(px(16.0))
                     .text_size(px(14.0))
                     .line_height(px(21.0))
@@ -1047,22 +1073,38 @@ impl MailWindow {
                             .child(note)
                     }))
                     .children(banner)
-                    .when_some(doc.as_ref(), |d, doc| {
-                        let painter =
-                            Painter::new(th, &self.remote.images, allowed, self.remote.mono());
-                        d.child(painter.document(doc))
-                    })
-                    .when(doc.is_none(), |d| {
-                        d.children(blocks.iter().map(|(quoted, text)| {
-                            div()
-                                .when(*quoted, |d| {
-                                    d.pl(px(12.0))
-                                        .border_l_2()
-                                        .border_color(rgba(th.divider))
-                                        .text_color(rgba(th.text_faint))
-                                })
-                                .child(text.clone())
-                        }))
+                    .child({
+                        // Selection follows the order messages are shown in.
+                        let slot = match self.reader.as_ref() {
+                            Some(r) if self.config.mail.newest_first => r.parts.len() - 1 - ix,
+                            _ => ix,
+                        };
+                        let mut pieces = self.text.pieces(slot, th);
+                        let text = match doc.as_ref() {
+                            Some(doc) => div().child(
+                                Painter::new(
+                                    th,
+                                    &self.remote.images,
+                                    allowed,
+                                    self.remote.mono(),
+                                    self.config.mail.dark_mail,
+                                    pieces,
+                                )
+                                .document(doc),
+                            ),
+                            None => div().children(blocks.iter().map(|(quoted, text)| {
+                                let (styled, holder) = pieces.piece(text.clone(), Vec::new());
+                                holder
+                                    .when(*quoted, |d| {
+                                        d.pl(px(12.0))
+                                            .border_l_2()
+                                            .border_color(rgba(th.divider))
+                                            .text_color(rgba(th.text_faint))
+                                    })
+                                    .child(styled)
+                            })),
+                        };
+                        self.selectable_body(slot, text, cx)
                     })
                     .children(attachments)
                     .into_any_element()
@@ -1124,7 +1166,7 @@ impl MailWindow {
             .overflow_hidden()
             .on_children_prepainted(move |bounds, _, _| {
                 if let Some(bounds) = bounds.first() {
-                    measured.set(f32::from(bounds.size.height));
+                    measured.set(unpx(bounds.size.height));
                 }
             })
             .child(
@@ -1173,7 +1215,7 @@ impl MailWindow {
             Err(_) => vec![id],
         };
         let command = Command::Star(ids.clone(), on);
-        let done = command.done_text("Message");
+        let done = command.done_text(1, false);
         let undo = Command::Star(ids, !on);
         self.send(command, done, Some(undo), false, cx);
         cx.notify();
@@ -1199,7 +1241,7 @@ fn recipient_names(people: &[(bool, &katna_render::Address)], full: bool) -> Vec
         .iter()
         .map(|(me, a)| {
             if *me {
-                return "me".to_owned();
+                return tr!("reader-me");
             }
             match first(a) {
                 Some(short)
@@ -1280,7 +1322,7 @@ fn fold(count: usize, th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
                 .text_size(px(12.0))
                 .text_color(rgba(th.text_dim))
                 .hover(|s| s.bg(rgba(th.hover)))
-                .child(count.to_string()),
+                .child(format::thousands(count as u64)),
         )
         .into_any_element()
 }

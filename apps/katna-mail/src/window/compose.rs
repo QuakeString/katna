@@ -20,6 +20,7 @@
 
 mod attach;
 mod popout;
+mod recipients;
 mod schedule;
 mod scheduled;
 mod security;
@@ -32,14 +33,16 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     AnyElement, Context, Entity, ExternalPaths, FocusHandle, Focusable, FontWeight, Hsla,
-    ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, px, rgba,
+    ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, rgba,
 };
 use katna_core::AccountId;
 use katna_dbus::OutboxItem;
 use katna_render::{Address, MessageView};
 use katna_store::MessageId;
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
 use katna_ui::rich::{Block, Doc, Palette, Para, RichEditor, RichEvent, SpellCheck, html};
+use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
 
 use super::{MailWindow, SNACKBAR_TIME};
@@ -53,6 +56,7 @@ use crate::theme::{Theme, fade};
 use crate::widgets::{elevation, icon, tip};
 
 pub(super) use attach::Attachment;
+use recipients::{Field, Suggestions};
 pub(super) use scheduled::NAV_KEY as SCHEDULED_NAV_KEY;
 use security::Sealing;
 pub(super) use signature_editor::signature_content;
@@ -112,6 +116,8 @@ pub(super) struct Compose {
     from: Option<AccountId>,
     show_cc: bool,
     show_bcc: bool,
+    /// Addresses suggested for the recipient being typed.
+    suggest: Option<Suggestions>,
     mode: Mode,
     /// Sign and encrypt.
     sealing: Sealing,
@@ -684,23 +690,26 @@ impl MailWindow {
             editor
         });
         let mut subscriptions = Vec::new();
-        // Enter in a field moves on to the next one.
-        let fields: [(&Entity<TextInput>, FocusHandle); 4] = [
-            (&to, subject.focus_handle(cx)),
-            (&cc, subject.focus_handle(cx)),
-            (&bcc, subject.focus_handle(cx)),
-            (&subject, body.focus_handle(cx)),
+        // Enter in a field moves on to the next one; typing a recipient
+        // suggests addresses.
+        let fields: [(&Entity<TextInput>, FocusHandle, Option<Field>); 4] = [
+            (&to, subject.focus_handle(cx), Some(Field::To)),
+            (&cc, subject.focus_handle(cx), Some(Field::Cc)),
+            (&bcc, subject.focus_handle(cx), Some(Field::Bcc)),
+            (&subject, body.focus_handle(cx), None),
         ];
-        for (field, next) in fields {
+        for (input, next, field) in fields {
             subscriptions.push(cx.subscribe_in(
-                field,
+                input,
                 window,
-                move |_, _, event: &InputEvent, window, cx| match event {
-                    InputEvent::Submit => window.focus(&next, cx),
-                    InputEvent::Changed | InputEvent::Cancel => cx.notify(),
+                move |this, _, event: &InputEvent, window, cx| match (event, field) {
+                    (InputEvent::Submit, _) => window.focus(&next, cx),
+                    (InputEvent::Changed, Some(field)) => this.recipient_changed(field, cx),
+                    (InputEvent::Changed | InputEvent::Cancel, _) => cx.notify(),
                 },
             ));
         }
+        self.load_address_book(cx);
         subscriptions.push(cx.subscribe_in(
             &body,
             window,
@@ -739,6 +748,7 @@ impl MailWindow {
             cc,
             show_bcc: !draft.bcc.is_empty(),
             bcc,
+            suggest: None,
             subject,
             body,
             attachments: Vec::new(),
@@ -997,6 +1007,7 @@ impl MailWindow {
         let sender = account.address.clone();
         let visible = [emails(&to), emails(&cc)].concat();
         let hidden = emails(&bcc);
+        let recipients: Vec<Mailbox> = to.iter().chain(&cc).chain(&bcc).cloned().collect();
         let raw = outgoing::build(&Outgoing {
             from: Some(from),
             to,
@@ -1013,6 +1024,7 @@ impl MailWindow {
         });
         let from = Some(account.id);
         let account = account.id.0;
+        self.note_recipients(account, &recipients, cx);
         self.unsent = Some(Unsent {
             draft,
             thread,
@@ -1195,7 +1207,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let compose = self.compose.as_ref()?;
         let viewport = window.viewport_size();
-        let (vw, vh) = (f32::from(viewport.width), f32::from(viewport.height));
+        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let mode = compose.mode;
         let title = compose.title(cx);
 
@@ -1465,13 +1477,13 @@ impl MailWindow {
             .on_click(move |_, window, cx| window.focus(&focus, cx))
             .child(div().flex_none().child(compose.body.clone()))
             .children(self.render_trimmed(th, cx));
-        let card_width = f32::from(self.reader_scroll.bounds().size.width) - 100.0;
+        let card_width = unpx(self.reader_scroll.bounds().size.width) - 100.0;
         // Like Gmail, the Send row stays at the bottom of the conversation
         // while the text runs on below it, and moves up with the card.
         let stuck = {
             let at = compose.stick.get();
             let view = self.reader_scroll.bounds().size.height;
-            let bottom = f32::from(view - self.reader_scroll.offset().y);
+            let bottom = unpx(view - self.reader_scroll.offset().y);
             let highest = at.card_top + STICK_BELOW;
             (at.footer_top + at.footer_height - bottom)
                 .clamp(0.0, (at.footer_top - highest).max(0.0))
@@ -1631,43 +1643,49 @@ impl MailWindow {
                 .hover(|s| s.text_color(rgba(th.text)).bg(rgba(th.hover)))
                 .child(label)
         };
-        let to = row("To", &compose.to).child(
-            div()
-                .flex_none()
-                .flex()
-                .flex_row()
-                .gap(px(4.0))
-                .when(!compose.show_cc, |d| {
-                    d.child(link("compose-cc", "Cc").on_click(cx.listener(
-                        |this, _, window, cx| {
-                            if let Some(c) = &mut this.compose {
-                                c.show_cc = true;
-                                window.focus(&c.cc.focus_handle(cx), cx);
-                            }
-                            cx.notify();
-                        },
-                    )))
-                })
-                .when(!compose.show_bcc, |d| {
-                    d.child(link("compose-bcc", "Bcc").on_click(cx.listener(
-                        |this, _, window, cx| {
-                            if let Some(c) = &mut this.compose {
-                                c.show_bcc = true;
-                                window.focus(&c.bcc.focus_handle(cx), cx);
-                            }
-                            cx.notify();
-                        },
-                    )))
-                })
-                .children(self.render_sealing(th, cx)),
-        );
+        let to = self
+            .recipient_row(row("To", &compose.to), Field::To, th, cx)
+            .child(
+                div()
+                    .flex_none()
+                    .flex()
+                    .flex_row()
+                    .gap(px(4.0))
+                    .when(!compose.show_cc, |d| {
+                        d.child(link("compose-cc", "Cc").on_click(cx.listener(
+                            |this, _, window, cx| {
+                                if let Some(c) = &mut this.compose {
+                                    c.show_cc = true;
+                                    window.focus(&c.cc.focus_handle(cx), cx);
+                                }
+                                cx.notify();
+                            },
+                        )))
+                    })
+                    .when(!compose.show_bcc, |d| {
+                        d.child(link("compose-bcc", "Bcc").on_click(cx.listener(
+                            |this, _, window, cx| {
+                                if let Some(c) = &mut this.compose {
+                                    c.show_bcc = true;
+                                    window.focus(&c.bcc.focus_handle(cx), cx);
+                                }
+                                cx.notify();
+                            },
+                        )))
+                    })
+                    .children(self.render_sealing(th, cx)),
+            );
         div()
             .flex_none()
             .flex()
             .flex_col()
             .child(to)
-            .when(compose.show_cc, |d| d.child(row("Cc", &compose.cc)))
-            .when(compose.show_bcc, |d| d.child(row("Bcc", &compose.bcc)))
+            .when(compose.show_cc, |d| {
+                d.child(self.recipient_row(row("Cc", &compose.cc), Field::Cc, th, cx))
+            })
+            .when(compose.show_bcc, |d| {
+                d.child(self.recipient_row(row("Bcc", &compose.bcc), Field::Bcc, th, cx))
+            })
             .child(row("", &compose.subject))
             .into_any_element()
     }
@@ -1724,9 +1742,9 @@ fn measure(
     let (scroll, stick, this) = (scroll.clone(), stick.clone(), cx.entity().downgrade());
     canvas(
         move |bounds, _, cx| {
-            let top = f32::from(bounds.top() - scroll.bounds().top() - scroll.offset().y);
+            let top = unpx(bounds.top() - scroll.bounds().top() - scroll.offset().y);
             let mut at = stick.get();
-            set(&mut at, top, f32::from(bounds.size.height));
+            set(&mut at, top, unpx(bounds.size.height));
             if at != stick.get() {
                 stick.set(at);
                 // After this frame: a change asked for while drawing is lost.

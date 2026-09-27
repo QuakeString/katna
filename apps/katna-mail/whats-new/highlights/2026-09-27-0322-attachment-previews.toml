@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Previews of more attachments"
+text = """
+Spreadsheets, CSV, text files and documents show a preview on their
+card, and the viewer's backdrop is lighter.
+"""

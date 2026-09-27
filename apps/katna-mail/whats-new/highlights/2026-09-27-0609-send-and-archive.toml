@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Send and archive"
+text = """
+The menu beside Send on a reply sends it and archives the conversation.
+Settings > Compose can make that what Send does, and can send new mail
+from the same account every time.
+"""

@@ -11,12 +11,13 @@
 
 use std::ops::Range;
 
+use crate::scale::px;
 use gpui::{
     App, AvailableSpace, Bounds, ClipboardItem, Context, CursorStyle, DispatchPhase, ElementId,
     ElementInputHandler, Entity, EntityInputHandler, EventEmitter, FocusHandle, Focusable,
     GlobalElementId, Hsla, KeyBinding, LayoutId, MouseButton, MouseDownEvent, MouseMoveEvent,
     MouseUpEvent, PaintQuad, Pixels, Point, SharedString, Style, TextAlign, TextRun,
-    UTF16Selection, UnderlineStyle, Window, WrappedLine, actions, div, fill, point, prelude::*, px,
+    UTF16Selection, UnderlineStyle, Window, WrappedLine, actions, div, fill, point, prelude::*,
     relative, size,
 };
 use unicode_segmentation::{GraphemeCursor, UnicodeSegmentation};

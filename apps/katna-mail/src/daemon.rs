@@ -29,20 +29,30 @@ pub enum Command {
 }
 
 impl Command {
-    /// What the snackbar says once the change is sent, if anything.
-    pub fn done_text(&self, what: &str) -> Option<String> {
-        match self {
-            Self::Archive(_) => Some(format!("{what} archived.")),
-            Self::Delete(_) => Some(format!("{what} moved to Trash.")),
-            Self::Move(..) => Some(format!("{what} moved.")),
-            Self::Star(_, true) => Some(format!("{what} starred.")),
-            Self::Star(_, false) => Some(format!("{what} unstarred.")),
-            Self::Important(_, true) => Some(format!("{what} marked as important.")),
-            Self::Important(_, false) => Some(format!("{what} marked as not important.")),
-            Self::Pin(_, true) => Some(format!("{what} pinned to the top.")),
-            Self::Pin(_, false) => Some(format!("{what} unpinned.")),
-            Self::MarkRead(..) | Self::SyncNow | Self::UndoSend(_) | Self::ReloadConfig => None,
-        }
+    /// What the snackbar says once the change is sent, if anything:
+    /// `count` conversations, or messages when not `conversations`.
+    pub fn done_text(&self, count: usize, conversations: bool) -> Option<String> {
+        use katna_i18n::tr;
+        let count = count as u64;
+        let kind = if conversations {
+            "conversation"
+        } else {
+            "message"
+        };
+        Some(match self {
+            Self::Archive(_) => tr!("toast-archived", count = count, kind = kind),
+            Self::Delete(_) => tr!("toast-trashed", count = count, kind = kind),
+            Self::Move(..) => tr!("toast-moved", count = count, kind = kind),
+            Self::Star(_, true) => tr!("toast-starred", count = count, kind = kind),
+            Self::Star(_, false) => tr!("toast-unstarred", count = count, kind = kind),
+            Self::Important(_, true) => tr!("toast-important", count = count, kind = kind),
+            Self::Important(_, false) => tr!("toast-not-important", count = count, kind = kind),
+            Self::Pin(_, true) => tr!("toast-pinned", count = count, kind = kind),
+            Self::Pin(_, false) => tr!("toast-unpinned", count = count, kind = kind),
+            Self::MarkRead(..) | Self::SyncNow | Self::UndoSend(_) | Self::ReloadConfig => {
+                return None;
+            }
+        })
     }
 }
 
@@ -343,29 +353,27 @@ mod tests {
     fn snackbar_texts() {
         let ids = vec![MessageId(1)];
         assert_eq!(
-            Command::Archive(ids.clone())
-                .done_text("Conversation")
-                .as_deref(),
+            Command::Archive(ids.clone()).done_text(1, true).as_deref(),
             Some("Conversation archived.")
         );
         assert_eq!(
             Command::Important(ids.clone(), false)
-                .done_text("2 messages")
+                .done_text(2, false)
                 .as_deref(),
             Some("2 messages marked as not important.")
         );
         assert_eq!(
             Command::Pin(ids.clone(), true)
-                .done_text("Conversation")
+                .done_text(1, true)
                 .as_deref(),
             Some("Conversation pinned to the top.")
         );
         assert_eq!(
             Command::Star(ids.clone(), true)
-                .done_text("Message")
+                .done_text(1, false)
                 .as_deref(),
             Some("Message starred.")
         );
-        assert_eq!(Command::MarkRead(ids, true).done_text("x"), None);
+        assert_eq!(Command::MarkRead(ids, true).done_text(1, false), None);
     }
 }

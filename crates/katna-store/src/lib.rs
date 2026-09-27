@@ -42,7 +42,7 @@ pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
 pub use mail_view::{FolderSummary, ThreadEntry, ThreadSender, ThreadSummary};
 pub use ops::{Location, PinnedMessage, QueuedOp};
 pub use outbox::{OutboxEntry, SendState};
-pub use people::Person;
+pub use people::{Correspondent, Person};
 pub use pop3::Pop3Uidl;
 pub use remote::{FolderRole, NewAttachment, RemoteMessage, StoredAttachment, StoredFolder};
 
@@ -323,6 +323,11 @@ impl Store {
     /// The `limit` addresses on the most messages; see [`Person`].
     pub fn people(&self, limit: u32) -> Result<Vec<Person>> {
         people::people(&self.mail, limit)
+    }
+
+    /// Every address each account has written with; see [`Correspondent`].
+    pub fn correspondents(&self) -> Result<Vec<Correspondent>> {
+        people::correspondents(&self.mail, &self.accounts()?)
     }
 
     pub fn message_count(&self) -> Result<u64> {

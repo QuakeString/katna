@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Help improve Katna, if you like"
+text = """
+Katna asks once whether to send crash reports to help fix what went
+wrong. They go without your IP address, messages or email addresses, and
+only if you say yes. Change it any time in Settings > User feedback.
+"""

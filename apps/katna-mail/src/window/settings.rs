@@ -9,14 +9,15 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, App, Context, Div, FontWeight, SharedString,
-    SpringAnimation, Stateful, div, prelude::*, px, rgba,
+    SpringAnimation, Stateful, div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountsShown, Density, FileGroup, OpenIn, ReadingPane, Theme as ThemeChoice,
+    AccountsShown, Density, FileGroup, MarkRead, OpenIn, ReadingPane, Theme as ThemeChoice,
     UNDO_SEND_CHOICES, WindowFrame,
 };
 use katna_ui::Ripple;
 use katna_ui::motion;
+use katna_ui::px;
 
 use super::{MailWindow, SETTINGS_WIDTH};
 use crate::theme::{Theme, mix};
@@ -60,6 +61,26 @@ pub(super) enum Change {
     SaveCrashReports(bool),
     /// Crash reports sent to Katna's crash tracker: "Help improve Katna".
     SendCrashReports(bool),
+    /// The interface scale, in percent.
+    Scale(u16),
+    /// Katna Mail opens at login (an autostart entry).
+    OpenAtLogin(bool),
+    MarkRead(MarkRead),
+    RemoteImages(bool),
+    ReplyAll(bool),
+    ImportantMarkers(bool),
+    LimitWidth(bool),
+    DarkMail(bool),
+    AttachmentPreviews(bool),
+    OpenSavedFolder(bool),
+    /// New-mail notifications, shown by the daemon.
+    NewMailNotices(bool),
+    /// Their sound.
+    NotificationSound(bool),
+    PlainText(bool),
+    SpellCheck(bool),
+    /// The interface's language, a tag; empty follows the desktop.
+    Language(&'static str),
 }
 
 impl MailWindow {
@@ -383,6 +404,16 @@ impl MailWindow {
             }
             Change::UndoSend(seconds) => sending.undo_send_seconds = seconds,
             Change::Density(density) => view.density = density,
+            Change::Scale(percent) => {
+                if view.scale == percent {
+                    return;
+                }
+                view.scale = percent;
+                katna_ui::scale::set_scale(f32::from(percent) / 100.0);
+                // Every row is a new height, and every window a new size.
+                self.list_state.remeasure();
+                cx.refresh_windows();
+            }
             Change::Theme(theme) => view.theme = theme,
             Change::DesktopColors(on) => view.desktop_colors = on,
             Change::AppLabels(on) => view.app_labels = on,
@@ -416,6 +447,53 @@ impl MailWindow {
                 cx.set_global(super::look(&self.config));
             }
             Change::SaveCrashReports(on) => self.config.feedback.save_crash_reports = on,
+            Change::MarkRead(when) => view.mark_read = when,
+            Change::RemoteImages(on) => {
+                view.remote_images = on;
+                self.remote.always = on;
+                self.fetch_remote(cx);
+            }
+            Change::ReplyAll(on) => view.reply_all = on,
+            Change::ImportantMarkers(on) => {
+                view.important_markers = on;
+                self.list_state.remeasure();
+            }
+            Change::LimitWidth(on) => view.limit_width = on,
+            Change::DarkMail(on) => view.dark_mail = on,
+            Change::AttachmentPreviews(on) => {
+                view.attachment_previews = on;
+                self.request_thumbnails(cx);
+            }
+            Change::OpenSavedFolder(on) => view.open_saved_folder = on,
+            Change::PlainText(on) => sending.plain_text = on,
+            Change::SpellCheck(on) => sending.spell_check = on,
+            Change::OpenAtLogin(on) => {
+                if let Err(err) = crate::autostart::set(on) {
+                    tracing::warn!(%err, "cannot change opening at login");
+                    self.show_snackbar(
+                        format!("Could not change opening at login: {err}"),
+                        None,
+                        cx,
+                    );
+                }
+                if let Some(page) = self.settings_page.as_mut() {
+                    page.open_at_login = crate::autostart::is_on();
+                }
+                cx.notify();
+                return;
+            }
+            Change::NewMailNotices(on) | Change::NotificationSound(on) => {
+                let notifications = &mut self.config.notifications;
+                if matches!(change, Change::NewMailNotices(_)) {
+                    notifications.new_mail = on;
+                } else {
+                    notifications.sound = on;
+                }
+                self.save_config();
+                self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
+                return;
+            }
             Change::SingleKeys(on) => {
                 self.config.shortcuts.single_keys = on;
                 self.shortcuts_changed(cx);
@@ -434,6 +512,26 @@ impl MailWindow {
             Change::SendCrashReports(on) => {
                 self.config.feedback.send_crash_reports = Some(on);
                 self.save_config();
+                self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
+                return;
+            }
+            Change::Language(tag) => {
+                if self.config.general.language == tag {
+                    return;
+                }
+                self.config.general.language = tag.to_owned();
+                katna_i18n::apply(&self.config.general.language);
+                // Text set once rather than at every frame.
+                let placeholder = if self.settings_page.is_some() {
+                    katna_i18n::tr!("search-settings")
+                } else {
+                    katna_i18n::tr!("search-mail")
+                };
+                self.search
+                    .update(cx, |search, _| search.set_placeholder(placeholder));
+                self.save_config();
+                // The daemon's notifications, tray and dock menu follow.
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
                 cx.notify();
                 return;
