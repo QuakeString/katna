@@ -63,6 +63,9 @@ pub(super) enum ViewerEvent {
     Close,
     Save(Arc<AttachmentFile>),
     OpenWith(Arc<AttachmentFile>),
+    /// The file the viewer was opened on has no preview after all (a
+    /// damaged, protected or unsupported file): open it elsewhere.
+    Unreadable(Arc<AttachmentFile>),
 }
 
 pub(super) struct Viewer {
@@ -185,6 +188,10 @@ impl Viewer {
         self.release(old);
         let item = self.items[ix].clone();
         let raw = self.raw.clone();
+        // Only the file the viewer was opened on is handed to another app
+        // when it cannot be shown; paging through never launches one.
+        let first = self.seq == 1;
+        let risky = item.risky;
         self._load = Some(cx.spawn(async move |this, cx| {
             let (file, loaded) = cx
                 .background_executor()
@@ -192,6 +199,13 @@ impl Viewer {
                 .await;
             this.update(cx, |this, cx| {
                 this.file = file.map(Arc::new);
+                if first
+                    && matches!(loaded, Loaded::Nothing(_))
+                    && !risky
+                    && let Some(file) = &this.file
+                {
+                    cx.emit(ViewerEvent::Unreadable(file.clone()));
+                }
                 this.content = match loaded {
                     Loaded::Pdf(doc) => Content::Pdf(PdfView {
                         doc: Arc::new(doc),

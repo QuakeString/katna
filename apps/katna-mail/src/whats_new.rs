@@ -170,7 +170,8 @@ pub const HIGHLIGHTS: &[Highlight] = &[
         text: "Word 97–2003 documents (.doc) now open in the viewer with their \
                headings, lists and tables, and PowerPoint (.pptx, .ppt) and \
                OpenDocument (.odp) slides show the text of each slide. Their \
-               cards show the first lines too.",
+               cards show the first lines too. Files Katna can't show open \
+               straight in your default app.",
         animation: None,
     },
 ];

@@ -50,6 +50,8 @@ pub(super) struct Item {
     pub name: String,
     pub size: u64,
     pub kind: Kind,
+    /// Opening it in another app could run a program.
+    pub risky: bool,
 }
 
 impl Item {
@@ -59,6 +61,7 @@ impl Item {
             name: attachment.name.clone(),
             size: attachment.size,
             kind: katna_preview::kind(&attachment.mime, &attachment.name),
+            risky: katna_preview::risky(&attachment.mime, &attachment.name),
         }
     }
 }
@@ -665,8 +668,7 @@ impl MailWindow {
             .collect();
         let open_in = items
             .get(index)
-            .and_then(|item| group(item.kind))
-            .map_or(OpenIn::Katna, |g| self.config.mail.open.get(g));
+            .map_or(OpenIn::Katna, |item| self.open_in(item));
         if open_in != OpenIn::Katna {
             let name = items.get(index).map(|i| i.name.clone()).unwrap_or_default();
             self.open_elsewhere(id, index, &name, open_in == OpenIn::Ask, cx);
@@ -707,14 +709,25 @@ impl MailWindow {
             .enumerate()
             .map(|(ix, a)| Item::new(ix, a))
             .collect();
-        let open_in =
-            group(items[index].kind).map_or(OpenIn::Katna, |g| self.config.mail.open.get(g));
+        let open_in = self.open_in(&items[index]);
         if open_in != OpenIn::Katna {
             let name = items[index].name.clone();
             self.open_elsewhere(file.message, index, &name, open_in == OpenIn::Ask, cx);
             return;
         }
         self.show_viewer(raw, encrypted, items, index, window, cx);
+    }
+
+    /// Where a click opens `item`: as Default apps says for its type; a
+    /// file Katna has no preview for goes straight to the desktop's default
+    /// app, unless it could run a program (the viewer then offers only
+    /// Save).
+    fn open_in(&self, item: &Item) -> OpenIn {
+        match group(item.kind) {
+            Some(group) => self.config.mail.open.get(group),
+            None if item.risky => OpenIn::Katna,
+            None => OpenIn::System,
+        }
     }
 
     fn show_viewer(
@@ -749,6 +762,16 @@ impl MailWindow {
             ViewerEvent::OpenWith(file) => {
                 let encrypted = self.files.viewer_encrypted;
                 self.open_attachment_with(file.clone(), true, encrypted, cx)
+            }
+            ViewerEvent::Unreadable(file) => {
+                // Katna could not show the file it was asked to open: the
+                // desktop's app gets it instead (or the choice of app, when
+                // Default apps asks for this type).
+                let encrypted = self.files.viewer_encrypted;
+                let kind = katna_preview::kind(&file.mime, &file.name);
+                let ask = group(kind).is_some_and(|g| self.config.mail.open.get(g) == OpenIn::Ask);
+                self.close_viewer(window, cx);
+                self.open_attachment_with(file.clone(), ask, encrypted, cx)
             }
         }
     }

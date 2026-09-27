@@ -1539,14 +1539,19 @@ desktop's own app stays one click away.
     `draw:page`s. Pictures, charts, layout and speaker notes are left out.
     A slide without a title placeholder takes a short first line as its
     title.
-  - Anything else shows "No preview available" with Save and "Open
-    with…".
+  - Anything else opens straight in the desktop's default app, and so
+    does a file of a previewable type that turns out unreadable (damaged,
+    encrypted, Word 6/95; the viewer closes and hands it over, or asks
+    which app when Default apps says Ask). Files that could run a program
+    never do: they show "No preview available" with Save only. Paging to
+    such a file with the viewer's arrows shows that page with "Open with…"
+    rather than launching an app.
 - **Default apps** (Settings → Default apps, `[mail.open]` in
   `config.toml`): for PDFs, pictures, text, spreadsheets and documents
   (slides included),
   clicking a card opens Katna Mail's viewer (the default), the desktop's
   default app for the type, or asks which app each time. Files without a
-  preview always open in the viewer. Which app is the desktop's default
+  preview always open in the desktop's default app (see above). Which app is the desktop's default
   is set in the desktop's own settings.
 - **Save** asks where through the desktop's file chooser (portal),
   starting in the download folder (`XDG_DOWNLOAD_DIR`); without a portal
