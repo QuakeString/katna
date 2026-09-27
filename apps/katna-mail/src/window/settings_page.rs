@@ -1060,7 +1060,7 @@ impl MailWindow {
     }
 
     /// Which account new mail goes out from, and what Send does on a reply.
-    fn sending_rows(&self, th: &Theme, cx: &mut Context<Self>) -> [Div; 2] {
+    fn sending_rows(&self, th: &Theme, cx: &mut Context<Self>) -> [Div; 3] {
         let sending = &self.config.sending;
         let chosen = &sending.send_from;
         // An address no longer set up counts as the open account.
@@ -1116,6 +1116,22 @@ impl MailWindow {
                     "What Send does on a reply or forward. The menu beside Send offers the other.",
                 ),
                 archive,
+                th,
+            ),
+            self.row(
+                "Grammar",
+                Some(
+                    "Checked on this computer with Harper. English only for now: text in other languages is left alone.",
+                ),
+                self.switch_row(
+                    "page-grammar",
+                    "Check grammar",
+                    "Underline grammar mistakes while writing, in English",
+                    sending.grammar_check,
+                    Change::GrammarCheck(!sending.grammar_check),
+                    th,
+                    cx,
+                ),
                 th,
             ),
         ]

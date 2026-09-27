@@ -1308,6 +1308,19 @@ Gemini or confidential mode):
   user signed their newest message in the conversation with, found by
   comparing the text after its `-- ` line (`signatures.rs`); otherwise the
   reply default. The single signature of older versions becomes the first.
+- **Grammar.** Harper (`harper-core`, Apache-2.0) checks English drafts,
+  text and subject, on this computer as you write (`grammar.rs`), on by default, under
+  Settings → Compose → Grammar. Paragraphs are checked off the UI thread
+  half a second after typing pauses, cached by their text; paragraphs
+  that do not look English, quotes and the signature are skipped, and
+  Harper's own spelling rule is off (spelling is Hunspell's). Mistakes
+  get a straight amber underline, apart from spelling's red wave; a right
+  click shows the message, up to four fixes and Ignore (for that draft).
+  The dialect follows the spelling language (British, Canadian,
+  Australian, Indian, else American). Harper's rules and dictionary load
+  in the background on the first message written and take about 130 MB
+  of memory from then on; the app binary grows about 10 MB. Other
+  languages are for Harper upstream.
 - **Sending account, Send and archive.** Settings → Compose picks the
   account new mail goes out from: the one whose mail is open (default) or
   always the same address (`sending.send_from`). Replies and forwards go

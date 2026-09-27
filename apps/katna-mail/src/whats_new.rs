@@ -195,6 +195,15 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                can send new mail from the same account every time.",
         animation: None,
     },
+    Highlight {
+        id: 20,
+        title: "Grammar checking",
+        text: "While you write in English, in the text and the subject, grammar \
+               mistakes get an amber underline. \
+               Right-click one for a fix or to ignore it. It runs on your computer, \
+               with Harper; turn it off in Settings > Compose.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.

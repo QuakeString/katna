@@ -28,6 +28,7 @@ mod tools;
 
 use std::cell::Cell;
 use std::rc::Rc;
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use gpui::{
@@ -39,13 +40,16 @@ use katna_dbus::OutboxItem;
 use katna_render::{Address, MessageView};
 use katna_store::MessageId;
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::rich::{Block, Doc, Palette, Para, RichEditor, RichEvent, SpellCheck, html};
-use katna_ui::{InputEvent, TextInput};
+use katna_ui::rich::{
+    Block, Doc, GrammarCheck, Palette, Para, RichEditor, RichEvent, SpellCheck, html,
+};
+use katna_ui::{InputEvent, InputGrammarMenu, TextInput};
 
 use super::{MailWindow, SNACKBAR_TIME};
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::format;
+use crate::grammar::Grammar;
 use crate::outgoing::{self, Mailbox, Outgoing, Part};
 use crate::signatures;
 use crate::spell::{self, Speller};
@@ -132,6 +136,8 @@ pub(super) struct Compose {
     /// Where an inline reply was last drawn, to keep its Send row at the
     /// bottom of the conversation while the rest scrolls under it.
     stick: Rc<Cell<Stick>>,
+    /// The underline of grammar mistakes in the subject.
+    grammar_color: Hsla,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -198,6 +204,9 @@ pub(super) struct Writing {
     speller: Option<Rc<Speller>>,
     /// Loading, or why it could not be loaded.
     speller_state: SpellerState,
+    /// Harper's grammar rules, loaded on the first message written.
+    grammar: Option<Arc<Grammar>>,
+    grammar_loading: bool,
     /// Messages waiting for their scheduled time, soonest first.
     scheduled: Vec<OutboxItem>,
     /// The list of scheduled mail shows.
@@ -676,11 +685,16 @@ impl MailWindow {
         let bcc = input("", &draft.bcc, cx);
         let subject = input("Subject", &draft.subject, cx);
         let speller = self.speller(cx);
+        let grammar = self.grammar(cx);
+        subject.update(cx, |input, cx| {
+            input.set_grammar_check(grammar.clone(), grammar_color(&th), cx)
+        });
         let body = cx.new(|cx| {
             let mut editor = RichEditor::new("", cx);
             editor.set_palette(palette(&th));
             editor.set_doc(draft.body.clone(), draft.body.start(), cx);
             editor.set_spell_check(speller, cx);
+            editor.set_grammar_check(grammar, cx);
             editor
         });
         let mut subscriptions = Vec::new();
@@ -701,6 +715,17 @@ impl MailWindow {
                 },
             ));
         }
+        subscriptions.push(
+            cx.subscribe(&subject, |this, _, event: &InputGrammarMenu, cx| {
+                if let Some(c) = &mut this.compose {
+                    c.popup = Some(Popup::SubjectGrammar {
+                        position: event.position,
+                        issue: event.issue.clone(),
+                    });
+                    cx.notify();
+                }
+            }),
+        );
         subscriptions.push(cx.subscribe_in(
             &body,
             window,
@@ -722,7 +747,8 @@ impl MailWindow {
                 RichEvent::ContextMenu {
                     position,
                     misspelled,
-                } => this.open_compose_menu(*position, misspelled.clone(), cx),
+                    grammar,
+                } => this.open_compose_menu(*position, misspelled.clone(), grammar.clone(), cx),
             },
         ));
         let focus = if focus_body {
@@ -759,6 +785,7 @@ impl MailWindow {
             body_scroll: ScrollHandle::new(),
             trimmed: None,
             stick: Rc::default(),
+            grammar_color: grammar_color(&th),
             _subscriptions: subscriptions,
         });
         cx.notify();
@@ -810,6 +837,49 @@ impl MailWindow {
             .speller
             .clone()
             .map(|s| s as Rc<dyn SpellCheck>)
+    }
+
+    /// Harper's grammar rules if grammar checking is on; starts loading
+    /// them the first time.
+    pub(super) fn grammar(&mut self, cx: &mut Context<Self>) -> Option<Arc<dyn GrammarCheck>> {
+        if !self.config.sending.grammar_check {
+            return None;
+        }
+        if self.writing.grammar.is_none() && !self.writing.grammar_loading {
+            self.writing.grammar_loading = true;
+            let language = spell::language(&self.config.sending.spell_language);
+            cx.spawn(async move |this, cx| {
+                let grammar = cx
+                    .background_executor()
+                    .spawn(async move { Arc::new(Grammar::load(&language)) })
+                    .await;
+                this.update(cx, |this, cx| {
+                    this.writing.grammar = Some(grammar);
+                    this.writing.grammar_loading = false;
+                    this.grammar_changed(cx);
+                })
+                .ok();
+            })
+            .detach();
+        }
+        self.writing
+            .grammar
+            .clone()
+            .map(|g| g as Arc<dyn GrammarCheck>)
+    }
+
+    /// The open message checks grammar, or stops, as Settings says.
+    pub(super) fn grammar_changed(&mut self, cx: &mut Context<Self>) {
+        let grammar = self.grammar(cx);
+        if let Some(compose) = &self.compose {
+            let color = compose.grammar_color;
+            compose.body.update(cx, |editor, cx| {
+                editor.set_grammar_check(grammar.clone(), cx)
+            });
+            compose
+                .subject
+                .update(cx, |input, cx| input.set_grammar_check(grammar, color, cx));
+        }
     }
 
     /// Scrolls the body so the cursor stays in view while typing. The
@@ -1744,6 +1814,12 @@ fn measure(
     .size_full()
 }
 
+/// The underline of grammar mistakes: amber, apart from spelling's red
+/// and the blue of links.
+fn grammar_color(th: &Theme) -> Hsla {
+    rgba(if th.dark { 0xfdd663ff } else { 0xf9ab00ff }).into()
+}
+
 /// The editor's colors from the window's theme.
 fn palette(th: &Theme) -> Palette {
     let color = |c: u32| -> Hsla { rgba(c).into() };
@@ -1751,6 +1827,7 @@ fn palette(th: &Theme) -> Palette {
         accent: color(th.accent),
         link: color(if th.dark { 0x8ab4f8ff } else { 0x1a0dabff }),
         misspelled: color(th.error),
+        grammar: grammar_color(th),
         rule: color(if th.dark { 0x5f6368ff } else { 0xccccccff }),
         surface: color(th.menu),
         text: color(th.text),

@@ -71,6 +71,8 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 smol = "2.0"
 spellbook = "0.4"
+# Grammar checking. Without the thesaurus, which Katna does not use.
+harper-core = { version = "2.11", default-features = false, features = ["concurrent"] }
 tantivy-fst = "0.5.0"
 tantivy = { version = "0.26.2", default-features = false, features = ["mmap", "lz4-compression", "stemmer"] }
 tempfile = "3.27"

@@ -10,6 +10,7 @@ mod assets;
 mod daemon;
 mod data;
 mod format;
+mod grammar;
 mod instance;
 mod outgoing;
 mod sidebar;

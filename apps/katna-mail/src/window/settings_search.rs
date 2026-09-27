@@ -189,6 +189,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Signatures,
+        "Grammar",
+        "Underline grammar mistakes while writing, in English",
+        "grammar check harper english writing mistakes proofread",
+    ),
+    entry(
+        Section::Signatures,
         "Signatures",
         "Added below your message, after a \u{201c}--\u{201d} line",
         "signature sign-off",

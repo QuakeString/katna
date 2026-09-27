@@ -13,7 +13,8 @@ pub use doc::{
     Align, Block, CharStyle, Doc, Font, Image, ImageSize, List, Para, ParaStyle, Path, Pos, Size,
     Table,
 };
+pub(crate) use editor::GRAMMAR_WAIT;
 pub use editor::{
-    Palette, RICH_TEXT_CONTEXT, RichEditor, RichEvent, SpellCheck, TableEdit, bind_keys,
-    image_mime, insert_signature_doc,
+    GrammarCheck, GrammarFix, GrammarIssue, Palette, RICH_TEXT_CONTEXT, RichEditor, RichEvent,
+    SpellCheck, TableEdit, bind_keys, image_mime, insert_signature_doc,
 };

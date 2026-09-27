@@ -60,6 +60,8 @@ pub(super) enum Change {
     SaveCrashReports(bool),
     /// Crash reports sent to Katna's crash tracker: "Help improve Katna".
     SendCrashReports(bool),
+    /// Grammar mistakes underlined while writing (English only).
+    GrammarCheck(bool),
 }
 
 impl MailWindow {
@@ -435,6 +437,13 @@ impl MailWindow {
                 self.config.feedback.send_crash_reports = Some(on);
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
+                return;
+            }
+            Change::GrammarCheck(on) => {
+                self.config.sending.grammar_check = on;
+                self.save_config();
+                self.grammar_changed(cx);
                 cx.notify();
                 return;
             }

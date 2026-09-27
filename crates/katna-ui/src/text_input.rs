@@ -6,16 +6,20 @@
 //! The input draws only its text, selection and cursor; the parent gives it
 //! a frame and the text style (font, size, color), which it inherits.
 
+use std::collections::HashSet;
 use std::ops::Range;
+use std::sync::Arc;
 
 use gpui::{
     App, Bounds, ClipboardItem, Context, CursorStyle, ElementId, ElementInputHandler, Entity,
     EntityInputHandler, EventEmitter, FocusHandle, Focusable, GlobalElementId, Hsla, KeyBinding,
     LayoutId, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent, PaintQuad, Pixels, Point,
-    ShapedLine, SharedString, Style, TextRun, UTF16Selection, UnderlineStyle, Window, actions, div,
-    fill, point, prelude::*, px, relative, size,
+    ShapedLine, SharedString, Style, Task, TextRun, UTF16Selection, UnderlineStyle, Window,
+    actions, div, fill, point, prelude::*, px, relative, size,
 };
 use unicode_segmentation::UnicodeSegmentation;
+
+use crate::rich::{GRAMMAR_WAIT, GrammarCheck, GrammarFix, GrammarIssue};
 
 actions!(
     text_input,
@@ -73,6 +77,14 @@ pub enum InputEvent {
     Cancel,
 }
 
+/// A right click on a grammar mistake in a [`TextInput`] that checks
+/// grammar: the owner shows the fixes.
+#[derive(Debug, Clone, PartialEq)]
+pub struct InputGrammarMenu {
+    pub position: Point<Pixels>,
+    pub issue: GrammarIssue,
+}
+
 /// A single-line text input. Create it with [`TextInput::new`] inside
 /// `cx.new` and render the entity as a child.
 pub struct TextInput {
@@ -90,12 +102,22 @@ pub struct TextInput {
     is_selecting: bool,
     /// Draws a dot for each character, for passwords.
     masked: bool,
+    grammar: Option<Arc<dyn GrammarCheck>>,
+    /// The underline of grammar mistakes.
+    grammar_color: Hsla,
+    /// The text last checked, and its mistakes.
+    grammar_found: Option<(SharedString, Vec<GrammarIssue>)>,
+    grammar_asked: Option<SharedString>,
+    grammar_task: Option<Task<()>>,
+    /// Mistakes the user chose to ignore: the words and the message.
+    grammar_ignored: HashSet<(String, String)>,
 }
 
 /// What a masked input shows for each character.
 const MASK: char = '\u{2022}';
 
 impl EventEmitter<InputEvent> for TextInput {}
+impl EventEmitter<InputGrammarMenu> for TextInput {}
 
 impl TextInput {
     pub fn new(placeholder: impl Into<SharedString>, cx: &mut Context<Self>) -> Self {
@@ -113,6 +135,125 @@ impl TextInput {
             scroll_x: px(0.0),
             is_selecting: false,
             masked: false,
+            grammar: None,
+            grammar_color: gpui::blue(),
+            grammar_found: None,
+            grammar_asked: None,
+            grammar_task: None,
+            grammar_ignored: HashSet::new(),
+        }
+    }
+
+    /// Turns grammar checking on with `checker`, underlining mistakes in
+    /// `color`, or off.
+    pub fn set_grammar_check(
+        &mut self,
+        checker: Option<Arc<dyn GrammarCheck>>,
+        color: Hsla,
+        cx: &mut Context<Self>,
+    ) {
+        self.grammar = checker;
+        self.grammar_color = color;
+        self.grammar_found = None;
+        self.grammar_asked = None;
+        self.grammar_task = None;
+        cx.notify();
+    }
+
+    /// Checks the text once typing pauses. Called on every render.
+    fn request_grammar(&mut self, cx: &mut Context<Self>) {
+        let Some(checker) = self.grammar.clone() else {
+            return;
+        };
+        let text = self.content.clone();
+        let checked = self.grammar_found.as_ref().is_some_and(|(t, _)| *t == text);
+        if checked || self.grammar_asked.as_ref() == Some(&text) || self.masked {
+            return;
+        }
+        self.grammar_asked = Some(text.clone());
+        self.grammar_task = Some(cx.spawn(async move |this, cx| {
+            cx.background_executor().timer(GRAMMAR_WAIT).await;
+            let found = cx
+                .background_executor()
+                .spawn({
+                    let text = text.clone();
+                    async move { checker.check(&text) }
+                })
+                .await;
+            this.update(cx, |this, cx| {
+                this.grammar_found = Some((text, found));
+                this.grammar_asked = None;
+                this.grammar_task = None;
+                cx.notify();
+            })
+            .ok();
+        }));
+    }
+
+    /// Mistakes in the text as it is, without the ignored ones.
+    fn grammar_issues(&self) -> Vec<&GrammarIssue> {
+        let Some((text, issues)) = &self.grammar_found else {
+            return Vec::new();
+        };
+        if self.grammar.is_none() || *text != self.content {
+            return Vec::new();
+        }
+        issues
+            .iter()
+            .filter(|issue| {
+                self.content.get(issue.range.clone()).is_some_and(|words| {
+                    !self
+                        .grammar_ignored
+                        .contains(&(words.to_owned(), issue.message.clone()))
+                })
+            })
+            .collect()
+    }
+
+    /// Fixes grammar mistake `issue` with `fix`.
+    pub fn fix_grammar(&mut self, issue: &GrammarIssue, fix: &GrammarFix, cx: &mut Context<Self>) {
+        let range = issue.range.clone();
+        if self.content.get(range.clone()).is_none() {
+            return;
+        }
+        let mut text = self.content.to_string();
+        text.replace_range(range.clone(), &fix.replacement);
+        self.set_text(text, cx);
+        let at = range.start + fix.replacement.len();
+        self.move_to(at, cx);
+    }
+
+    /// Stops marking `issue`'s words with its message.
+    pub fn ignore_grammar(&mut self, issue: &GrammarIssue, cx: &mut Context<Self>) {
+        if let Some(words) = self.content.get(issue.range.clone()) {
+            self.grammar_ignored
+                .insert((words.to_owned(), issue.message.clone()));
+            cx.notify();
+        }
+    }
+
+    fn on_right_mouse_down(
+        &mut self,
+        event: &MouseDownEvent,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if self.grammar.is_none() {
+            return;
+        }
+        window.focus(&self.focus_handle, cx);
+        let at = self.index_for_mouse_position(event.position);
+        let issue = self
+            .grammar_issues()
+            .into_iter()
+            .find(|issue| issue.range.start <= at && at <= issue.range.end)
+            .cloned();
+        if let Some(issue) = issue {
+            self.move_to(at, cx);
+            cx.emit(InputGrammarMenu {
+                position: event.position,
+                issue,
+            });
         }
     }
 
@@ -593,7 +734,49 @@ impl Element for TextElement {
             .marked_range
             .as_ref()
             .map(|range| input.display_offset(range.start)..input.display_offset(range.end));
-        let runs = if let Some(marked_range) = marked_range.as_ref() {
+        let grammar: Vec<Range<usize>> = if input.content.is_empty() || input.masked {
+            Vec::new()
+        } else {
+            input
+                .grammar_issues()
+                .into_iter()
+                .map(|issue| issue.range.clone())
+                .filter(|range| {
+                    marked_range
+                        .as_ref()
+                        .is_none_or(|m| range.end <= m.start || m.end <= range.start)
+                })
+                .collect()
+        };
+        let runs = if !grammar.is_empty() {
+            let underline = UnderlineStyle {
+                color: Some(input.grammar_color),
+                thickness: px(2.0),
+                wavy: false,
+            };
+            let mut runs = Vec::new();
+            let mut at = 0;
+            for range in grammar {
+                if range.start < at || range.end > display_text.len() {
+                    continue;
+                }
+                runs.push(TextRun {
+                    len: range.start - at,
+                    ..run.clone()
+                });
+                runs.push(TextRun {
+                    len: range.end - range.start,
+                    underline: Some(underline),
+                    ..run.clone()
+                });
+                at = range.end;
+            }
+            runs.push(TextRun {
+                len: display_text.len() - at,
+                ..run
+            });
+            runs.into_iter().filter(|run| run.len > 0).collect()
+        } else if let Some(marked_range) = marked_range.as_ref() {
             vec![
                 TextRun {
                     len: marked_range.start,
@@ -731,6 +914,7 @@ impl Element for TextElement {
 
 impl Render for TextInput {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        self.request_grammar(cx);
         div()
             .flex()
             .flex_1()
@@ -754,6 +938,7 @@ impl Render for TextInput {
             .on_action(cx.listener(Self::submit))
             .on_action(cx.listener(Self::cancel))
             .on_mouse_down(MouseButton::Left, cx.listener(Self::on_mouse_down))
+            .on_mouse_down(MouseButton::Right, cx.listener(Self::on_right_mouse_down))
             .on_mouse_up(MouseButton::Left, cx.listener(Self::on_mouse_up))
             .on_mouse_up_out(MouseButton::Left, cx.listener(Self::on_mouse_up))
             .on_mouse_move(cx.listener(Self::on_mouse_move))

@@ -33,6 +33,7 @@ pub(crate) struct TextBase {
     pub link: Hsla,
     pub accent: Hsla,
     pub misspelled: Hsla,
+    pub grammar: Hsla,
     /// The installed family for each typeface, found once.
     pub families: Rc<HashMap<super::doc::Font, SharedString>>,
     /// Draw everything unformatted (plain text mode).
@@ -76,6 +77,13 @@ impl TextBase {
                 thickness: px(1.0),
                 wavy: true,
             })
+        } else if deco.grammar {
+            // Straight and thicker, so it reads apart from spelling.
+            Some(UnderlineStyle {
+                color: Some(self.grammar),
+                thickness: px(2.0),
+                wavy: false,
+            })
         } else if !plain && (style.underline || link) {
             Some(UnderlineStyle {
                 color: Some(color),
@@ -112,11 +120,13 @@ pub(crate) fn rgb(color: u32) -> Hsla {
     gpui::rgb(color).into()
 }
 
-/// Extra marks on text: the IME's composition, spelling mistakes.
+/// Extra marks on text: the IME's composition, spelling and grammar
+/// mistakes.
 #[derive(Clone, Copy, Default, PartialEq, Eq)]
 pub(crate) struct Deco {
     pub marked: bool,
     pub misspelled: bool,
+    pub grammar: bool,
 }
 
 /// Where a paragraph's text went on screen at the last paint.
