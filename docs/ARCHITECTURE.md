@@ -411,10 +411,12 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   raw commands on the connection. Progress lives in `folder.sync_state`.
 - **Level 3 so far (`katna_sync::bodies`):** after each full sync, and after
   each inbox catch-up, the worker fetches `BODY.PEEK[]` for messages in the
-  offline window (default: the last 30 days, up to 10 MB each), newest
+  offline window (`sync.offline_days`, Settings › General › Offline mail:
+  7, 30 (default), 90 or 365 days, or all mail; up to 10 MB each), newest
   first, 25 per command. The raw message goes to the blob store; the
   snippet and attachment flag are recomputed from it and `body_state` is
-  set to 2. `FetchBody(id)` on D-Bus downloads any other message at once
+  set to 2. A new window applies at once (`ReloadConfig`); a longer one
+  starts a sync, a shorter one keeps what is downloaded. `FetchBody(id)` on D-Bus downloads any other message at once
   on a second, on-demand connection per account (so it never waits behind
   a running sync), which closes after two idle minutes. Katna Mail calls it
   when the reader shows a message that has no body yet and shows
