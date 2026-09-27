@@ -343,6 +343,14 @@ pub struct MailView {
     /// Show the logo of each sender's organization (its BIMI logo or
     /// website icon) in place of their initial.
     pub sender_pictures: bool,
+    /// Show a conversation with its newest message at the top.
+    pub newest_first: bool,
+    /// Open each message with its full headers (from, to, cc, date and
+    /// subject) shown.
+    pub full_headers: bool,
+    /// Name every recipient in full in the "to" line, instead of by first
+    /// name.
+    pub full_names: bool,
     /// Where each kind of attachment opens.
     pub open: OpenAttachments,
     /// With several accounts: the folder pane shows one account, picked in
@@ -367,6 +375,9 @@ impl Default for MailView {
             desktop_colors: true,
             app_labels: true,
             sender_pictures: true,
+            newest_first: false,
+            full_headers: false,
+            full_names: false,
             open: OpenAttachments::default(),
             accounts_shown: AccountsShown::One,
             current_account: String::new(),

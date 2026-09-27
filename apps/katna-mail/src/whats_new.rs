@@ -181,6 +181,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 18,
+        title: "Read conversations your way",
+        text: "Settings > General > Reading can show the newest message first, open \
+               the full headers of every message, and name recipients in full \
+               instead of by first name.",
+        animation: None,
+    },
+    Highlight {
+        id: 19,
         title: "Addresses suggested as you type",
         text: "To, Cc and Bcc suggest the people you write to most as you type, even \
                with a typo. Pick one with the arrow keys and Enter, Tab or a click.",

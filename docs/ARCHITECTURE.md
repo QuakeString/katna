@@ -1210,6 +1210,14 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   PDFs are written to `$XDG_RUNTIME_DIR/katna/print` and removed after an
   hour. Print and In new window sit right of the actions and move to the
   More menu when the reading pane is under 600 px.
+- **Reading options.** Settings > General > Reading, taken from
+  Mailspring: *Newest message first* shows a conversation's latest reply on
+  top, with a reply written above it (`mail.newest_first`); *Show full
+  headers* opens the from, to, cc, date and subject box on every message,
+  and clicking "to" turns it the other way (`mail.full_headers`); the "to"
+  line names recipients by first name ("to me, Ada", as Gmail does) unless
+  *Full names of recipients* is on or two share a first name
+  (`mail.full_names`). All three are off by default.
 - **Motion.** Springs (`katna_ui::motion::Spring`, on GPUI's spring
   solver) drive values that shape several elements: the navigation width,
   the search box turning white with a shadow when focused, the snackbar.
