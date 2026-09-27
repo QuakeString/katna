@@ -438,6 +438,10 @@ pub struct MailView {
     /// With several accounts: the folder pane shows one account, picked in
     /// the account card, or all of them one after another.
     pub accounts_shown: AccountsShown,
+    /// With several accounts: an "All Accounts" section heads the folder
+    /// pane, with each special folder (Inbox, Sent, ...) of every account
+    /// in one list, and the accounts below it start folded.
+    pub unified_inbox: bool,
     /// The account on show with [`AccountsShown::One`], by lower-case
     /// address; empty for the first.
     #[serde(skip_serializing_if = "String::is_empty")]
@@ -477,6 +481,7 @@ impl Default for MailView {
             attachment_previews: true,
             open_saved_folder: false,
             accounts_shown: AccountsShown::One,
+            unified_inbox: false,
             current_account: String::new(),
             account_order: Vec::new(),
         }
