@@ -22,11 +22,12 @@ use std::sync::Arc;
 
 use gpui::{
     AnyElement, Context, ObjectFit, PathPromptOptions, RenderImage, SharedString, div, img,
-    prelude::*, px, rgba,
+    prelude::*, rgba,
 };
 use katna_core::image::ImageKind;
 use katna_core::{AccountId, Paths};
 use katna_store::MessageId;
+use katna_ui::px;
 
 use super::MailWindow;
 use super::attachments::bitmap;

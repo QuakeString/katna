@@ -6,8 +6,9 @@
 
 use std::time::{Duration, Instant};
 
-use gpui::{AnyElement, ClipboardItem, Context, FontWeight, div, prelude::*, px, rgba};
+use gpui::{AnyElement, ClipboardItem, Context, FontWeight, div, prelude::*, rgba};
 use katna_core::crash::{self, Report};
+use katna_ui::px;
 
 use super::MailWindow;
 use super::settings::Change;

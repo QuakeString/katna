@@ -19,12 +19,13 @@ use std::time::Duration;
 
 use gpui::{
     AnyElement, App, Context, Div, Entity, FocusHandle, Focusable, FontWeight, Keystroke,
-    ScrollHandle, SharedString, Stateful, Subscription, Task, Window, div, prelude::*, px, rgba,
+    ScrollHandle, SharedString, Stateful, Subscription, Task, Window, div, prelude::*, rgba,
 };
 use katna_core::config::{
     AccountTabs, Density, FileGroup, OpenIn, ReadingPane, TabStyle, Theme as ThemeChoice,
 };
 use katna_ui::motion::lerp;
+use katna_ui::px;
 use katna_ui::rich::RichEvent;
 use katna_ui::{InputEvent, RichEditor, Ripple, TextInput};
 
@@ -127,6 +128,8 @@ pub(super) struct SettingsPage {
     pub(super) flash: Option<super::settings_search::Flash>,
     /// The row whose (i) line is shown under its name.
     pub(super) info: Rc<RefCell<Option<SharedString>>>,
+    /// A drag on the Scaling slider.
+    pub(super) scale: super::scale_slider::ScaleDrag,
 }
 
 impl SettingsPage {
@@ -181,6 +184,7 @@ impl MailWindow {
             query: SharedString::default(),
             flash: None,
             info: Rc::default(),
+            scale: Default::default(),
         });
         if fresh {
             window.focus(&page.focus, cx);
@@ -446,6 +450,7 @@ impl MailWindow {
                 ),
                 th,
             ))
+            .child(self.row("Reading", None, self.reading_switches(th, cx), th))
             .child(self.row(
                 "Sending",
                 Some("How long a sent message waits, so it can be taken back."),
@@ -521,6 +526,12 @@ impl MailWindow {
                 th,
             ))
             .child(self.row("Density", None, density, th))
+            .child(self.row(
+                "Scaling",
+                Some("Makes everything in Katna Mail bigger or smaller, on top of the desktop's own scale: text, icons, spacing and dividers. Mail you send keeps its own font size. Very small sizes can make icons hard to click."),
+                self.scale_control(th, cx),
+                th,
+            ))
             .child(self.row("Theme", None, theme, th))
             .child(self.row(
                 "Desktop colors",
@@ -659,6 +670,43 @@ impl MailWindow {
     }
 
     /// The tray icon and the taskbar count, which the daemon shows.
+    /// How an opened conversation shows.
+    fn reading_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let view = &self.config.mail;
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(2.0))
+            .child(self.switch_row(
+                "page-newest-first",
+                "Newest message first",
+                "A conversation starts with its latest reply",
+                view.newest_first,
+                Change::NewestFirst(!view.newest_first),
+                th,
+                cx,
+            ))
+            .child(self.switch_row(
+                "page-full-headers",
+                "Show full headers",
+                "From, to, cc, date and subject open on every message",
+                view.full_headers,
+                Change::FullHeaders(!view.full_headers),
+                th,
+                cx,
+            ))
+            .child(self.switch_row(
+                "page-full-names",
+                "Full names of recipients",
+                "\u{201c}to me, Ada Lovelace\u{201d} rather than \u{201c}to me, Ada\u{201d}",
+                view.full_names,
+                Change::FullNames(!view.full_names),
+                th,
+                cx,
+            ))
+            .into_any_element()
+    }
+
     fn desktop_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let general = &self.config.general;
         div()
@@ -1060,7 +1108,82 @@ impl MailWindow {
         cx.notify();
     }
 
+    fn set_send_from(&mut self, address: String, cx: &mut Context<Self>) {
+        self.config.sending.send_from = address;
+        self.save_config();
+        cx.notify();
+    }
+
+    fn set_send_and_archive(&mut self, on: bool, cx: &mut Context<Self>) {
+        self.config.sending.send_and_archive = on;
+        self.save_config();
+        cx.notify();
+    }
+
+    /// Which account new mail goes out from, and what Send does on a reply.
+    fn sending_rows(&self, th: &Theme, cx: &mut Context<Self>) -> [Div; 2] {
+        let sending = &self.config.sending;
+        let chosen = &sending.send_from;
+        // An address no longer set up counts as the open account.
+        let known = self
+            .accounts
+            .iter()
+            .any(|a| a.address.eq_ignore_ascii_case(chosen));
+        let choices = std::iter::once((String::new(), "The account you are in".to_owned())).chain(
+            self.accounts
+                .iter()
+                .map(|a| (a.address.clone(), a.address.clone())),
+        );
+        let from =
+            div()
+                .flex()
+                .flex_row()
+                .flex_wrap()
+                .gap(px(6.0))
+                .children(choices.enumerate().map(|(n, (address, label))| {
+                    let on = if address.is_empty() {
+                        !known
+                    } else {
+                        address.eq_ignore_ascii_case(chosen)
+                    };
+                    chip(("page-send-from", n), label, on, th)
+                        .map(|d| self.page_control(d, th, cx))
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            this.set_send_from(address.clone(), cx)
+                        }))
+                }));
+        let archive = div().flex().flex_row().flex_wrap().gap(px(6.0)).children(
+            [(false, "Send"), (true, "Send and archive")].map(|(on, label)| {
+                chip(
+                    ("page-send-archive", usize::from(on)),
+                    label.to_owned(),
+                    sending.send_and_archive == on,
+                    th,
+                )
+                .map(|d| self.page_control(d, th, cx))
+                .on_click(cx.listener(move |this, _, _, cx| this.set_send_and_archive(on, cx)))
+            }),
+        );
+        [
+            self.row(
+                "Send new messages from",
+                Some("Replies and forwards always go out from the account you are in."),
+                from,
+                th,
+            ),
+            self.row(
+                "Send on replies",
+                Some(
+                    "What Send does on a reply or forward. The menu beside Send offers the other.",
+                ),
+                archive,
+                th,
+            ),
+        ]
+    }
+
     fn signatures_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let sending_rows = self.sending_rows(th, cx);
         let tools = self.render_signature_tools(th, cx);
         let sending = &self.config.sending;
         let editing = self.settings_page.as_ref().and_then(|p| p.editing.as_ref());
@@ -1167,6 +1290,7 @@ impl MailWindow {
         div()
             .flex()
             .flex_col()
+            .children(sending_rows)
             .child(self.row(
                 "Signatures",
                 Some("Added below your message, after a \u{201c}--\u{201d} line. Pick another one in the compose window."),

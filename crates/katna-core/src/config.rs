@@ -246,6 +246,12 @@ pub struct Sending {
     pub spell_check: bool,
     /// The dictionary, as `en_US`; empty for the desktop's language.
     pub spell_language: String,
+    /// The address new mail is sent from; empty for the account whose
+    /// mail is open. Replies go out from the account they answer.
+    pub send_from: String,
+    /// Send on replies and forwards also archives the conversation; the
+    /// Send menu offers the other way.
+    pub send_and_archive: bool,
 }
 
 impl Default for Sending {
@@ -260,6 +266,8 @@ impl Default for Sending {
             plain_text: false,
             spell_check: true,
             spell_language: String::new(),
+            send_from: String::new(),
+            send_and_archive: false,
         }
     }
 }
@@ -338,6 +346,9 @@ pub struct MailView {
     /// Accounts not listed use [`TabStyle::Auto`].
     pub account_tabs: BTreeMap<String, AccountTabs>,
     pub density: Density,
+    /// The size of everything in the windows, in percent, on top of the
+    /// desktop's own scale (75 to 200).
+    pub scale: u16,
     pub theme: Theme,
     /// Use the desktop's color scheme and accent color instead of Katna's
     /// own colors.
@@ -347,6 +358,14 @@ pub struct MailView {
     /// Show the logo of each sender's organization (its BIMI logo or
     /// website icon) in place of their initial.
     pub sender_pictures: bool,
+    /// Show a conversation with its newest message at the top.
+    pub newest_first: bool,
+    /// Open each message with its full headers (from, to, cc, date and
+    /// subject) shown.
+    pub full_headers: bool,
+    /// Name every recipient in full in the "to" line, instead of by first
+    /// name.
+    pub full_names: bool,
     /// Where each kind of attachment opens.
     pub open: OpenAttachments,
     /// With several accounts: the folder pane shows one account, picked in
@@ -367,10 +386,14 @@ impl Default for MailView {
             inbox_tabs: true,
             account_tabs: BTreeMap::new(),
             density: Density::Default,
+            scale: 100,
             theme: Theme::System,
             desktop_colors: true,
             app_labels: true,
             sender_pictures: true,
+            newest_first: false,
+            full_headers: false,
+            full_names: false,
             open: OpenAttachments::default(),
             accounts_shown: AccountsShown::One,
             current_account: String::new(),

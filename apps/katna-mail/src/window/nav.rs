@@ -6,11 +6,12 @@
 use std::ops::Range;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, div, prelude::*, px, rgba, svg,
+    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, div, prelude::*, rgba, svg,
     uniform_list,
 };
 use katna_ui::Ripple;
 use katna_ui::motion::{self, lerp};
+use katna_ui::px;
 
 use super::tour::Spot;
 use super::{

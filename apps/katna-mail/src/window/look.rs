@@ -4,9 +4,10 @@
 //! of the desktop's, and a blurred, translucent window background. Both
 //! apply at once to every open window (`katna_chrome::Look`).
 
-use gpui::{AnyElement, Context, FontWeight, div, prelude::*, px, rgba};
+use gpui::{AnyElement, Context, FontWeight, div, prelude::*, rgba};
 use katna_chrome::{DecorationMode, Desktop, Look, Session};
 use katna_core::config::{Config, WindowFrame};
+use katna_ui::px;
 
 use super::MailWindow;
 use super::settings::{Change, heading};

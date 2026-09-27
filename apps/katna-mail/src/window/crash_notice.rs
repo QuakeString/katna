@@ -5,9 +5,10 @@
 //! or copy (`docs/ARCHITECTURE.md` §19.2). The reports stay on this
 //! computer; nothing is sent.
 
-use gpui::{AnyElement, ClipboardItem, Context, Window, div, prelude::*, px, rgba};
+use gpui::{AnyElement, ClipboardItem, Context, Window, div, prelude::*, rgba};
 use katna_core::crash::{self, Report};
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
 
 use super::MailWindow;
 use crate::theme::Theme;

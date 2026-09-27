@@ -10,8 +10,10 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, MouseButton, Pixels, Point, SharedString,
-    Stateful, Window, anchored, deferred, div, ease_out_quint, prelude::*, px, rgba,
+    Stateful, Window, anchored, deferred, div, ease_out_quint, prelude::*, rgba,
 };
+use katna_ui::px;
+use katna_ui::unpx;
 
 use super::compose::Kind;
 use super::{Act, MailWindow};
@@ -123,9 +125,9 @@ impl MailWindow {
         // The folders open to the right and down, unless that leaves the
         // window.
         let viewport = window.viewport_size();
-        let at = (f32::from(menu.at.x), f32::from(menu.at.y));
-        let flip_x = at.0 + MENU_WIDTH + FOLDERS_WIDTH > f32::from(viewport.width);
-        let flip_y = at.1 > f32::from(viewport.height) / 2.0;
+        let at = (unpx(menu.at.x), unpx(menu.at.y));
+        let flip_x = at.0 + MENU_WIDTH + FOLDERS_WIDTH > unpx(viewport.width);
+        let flip_y = at.1 > unpx(viewport.height) / 2.0;
         let row = &menu.row;
         let item = |id: &'static str, name: &str, label: SharedString| -> Stateful<Div> {
             div()

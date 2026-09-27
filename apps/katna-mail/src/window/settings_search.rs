@@ -11,8 +11,9 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, FontWeight, SharedString, Window, canvas,
-    div, point, prelude::*, px, rgba,
+    div, point, prelude::*, rgba,
 };
+use katna_ui::px;
 use katna_ui::{InputEvent, Ripple};
 
 use super::MailWindow;
@@ -60,6 +61,12 @@ const ENTRIES: &[Entry] = &[
         "Conversation view",
         "Group replies to the same mail",
         "threads threading group",
+    ),
+    entry(
+        Section::General,
+        "Reading",
+        "Newest message first, full headers, full names of recipients",
+        "order oldest descending chronological reverse headers details from to cc names recipients first last",
     ),
     entry(
         Section::General,
@@ -114,6 +121,12 @@ const ENTRIES: &[Entry] = &[
         "Density",
         "Default or compact lines in the list",
         "compact spacing comfortable",
+    ),
+    entry(
+        Section::Appearance,
+        "Scaling",
+        "Make everything bigger or smaller: text, icons, spacing and dividers",
+        "scale zoom size bigger smaller larger font text dpi magnify",
     ),
     entry(
         Section::Appearance,
@@ -174,6 +187,18 @@ const ENTRIES: &[Entry] = &[
         "Documents",
         "Where Word and OpenDocument text open",
         "open attachment viewer app docx odt word",
+    ),
+    entry(
+        Section::Signatures,
+        "Send new messages from",
+        "The account new mail goes out from: the one you are in, or always the same one",
+        "from sender default account address identity",
+    ),
+    entry(
+        Section::Signatures,
+        "Send on replies",
+        "Send, or Send and archive the conversation, on replies and forwards",
+        "send archive default behavior behaviour reply forward",
     ),
     entry(
         Section::Signatures,

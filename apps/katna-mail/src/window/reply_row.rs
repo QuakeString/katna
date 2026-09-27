@@ -8,9 +8,11 @@
 //! the width equally, as in Gmail's app, and fold together.
 
 use gpui::{
-    AnyElement, Context, FontWeight, SharedString, TextRun, Window, black, div, prelude::*, px,
+    AnyElement, Context, FontWeight, SharedString, TextRun, Window, black, div, prelude::*,
 };
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
+use katna_ui::unpx;
 
 use super::MailWindow;
 use super::compose::Kind;
@@ -131,7 +133,7 @@ impl MailWindow {
                 underline: None,
                 strikethrough: None,
             };
-            *width = f32::from(
+            *width = unpx(
                 system
                     .shape_line(SharedString::new_static(word), px(14.0), &[run], None)
                     .width,

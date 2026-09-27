@@ -11,10 +11,10 @@ use std::time::Duration;
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, KeyDownEvent,
     MouseButton, MouseDownEvent, Pixels, Point, ScrollHandle, SharedString, Subscription, Window,
-    deferred, div, img, prelude::*, px, rgba,
+    deferred, div, img, prelude::*, rgba,
 };
 use katna_i18n::{Language, Status, tr};
-use katna_ui::{InputEvent, TextInput};
+use katna_ui::{InputEvent, TextInput, px};
 
 use super::settings::Change;
 use super::{BAR_ITEM_GAP, MailWindow, TOP_BAR_GAP};
