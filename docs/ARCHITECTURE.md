@@ -1390,9 +1390,13 @@ desktop's own app stays one click away.
 
 - **Cards.** Under each open message, one card per attachment (the
   webmail layout): a thumbnail (pictures, and the top of a PDF's first
-  page) or a colored type badge, and the file name. Hovering shows the
-  name, the size and a Save button. Thumbnails are made in the background
-  from the stored raw message and freed when the conversation closes.
+  page), a glance drawn small on a white page (the top-left cells of a
+  spreadsheet or CSV, the first lines of a text file or document;
+  `katna_preview::glance`, skipped above 20 MB), or a colored type badge,
+  and the file name. Hovering shows the name, the size and a Save button
+  on frosted glass; "Save all" saves every attachment to a folder.
+  Thumbnails are made in the background from the stored raw message and
+  freed when the conversation closes.
 - **Viewer.** Clicking a card opens the viewer over the window below the
   top bar (the window's own controls stay usable): a dark page with a bar
   naming the file, "Open with another app" and Save; arrows (and ←/→) go
