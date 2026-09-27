@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Settings in your language"
+text = """
+Settings, Quick settings, your accounts and the names of keyboard
+shortcuts now follow the language you pick, and searching Settings finds
+rows by their translated names.
+"""
