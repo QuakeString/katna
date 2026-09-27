@@ -40,6 +40,9 @@ pub(super) enum Change {
     Conversations(bool),
     AppLabels(bool),
     SenderPictures(bool),
+    NewestFirst(bool),
+    FullHeaders(bool),
+    FullNames(bool),
     SingleKeys(bool),
     OpenIn(FileGroup, OpenIn),
     AccountsShown(AccountsShown),
@@ -384,6 +387,9 @@ impl MailWindow {
             Change::DesktopColors(on) => view.desktop_colors = on,
             Change::AppLabels(on) => view.app_labels = on,
             Change::SenderPictures(on) => view.sender_pictures = on,
+            Change::NewestFirst(on) => view.newest_first = on,
+            Change::FullHeaders(on) => view.full_headers = on,
+            Change::FullNames(on) => view.full_names = on,
             Change::OpenIn(group, open) => view.open.set(group, open),
             Change::Tabs(on) => {
                 view.inbox_tabs = on;

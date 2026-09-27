@@ -428,8 +428,11 @@ pub struct MailWindow {
     /// The question before removing an account or deleting all data.
     danger: Option<accounts::Danger>,
     new_label: Option<labels::NewLabel>,
-    /// Bodies being downloaded because their message was opened.
+    /// Bodies being downloaded because their message or an attachment
+    /// chip of it was opened.
     downloads: HashMap<MessageId, download::Download>,
+    /// The attachment chip waiting for its message to download.
+    chip_download: Option<download::ChipDownload>,
     /// Navigation openness at this frame, for the folder rows.
     nav_t: f32,
     daemon: Option<Connection>,
@@ -586,6 +589,7 @@ impl MailWindow {
             danger: None,
             new_label: None,
             downloads: HashMap::new(),
+            chip_download: None,
             nav_t: 1.0,
             daemon: None,
             _listen: None,

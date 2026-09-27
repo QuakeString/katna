@@ -25,7 +25,7 @@ const ACTIONS_IN: Duration = Duration::from_millis(160);
 /// The attachment chips under a line: their line's extra height, their
 /// height, widest size and spacing, and the "+N" button's size.
 const CHIPS_LINE: f32 = 40.0;
-const CHIP_HEIGHT: f32 = 30.0;
+pub(super) const CHIP_HEIGHT: f32 = 30.0;
 const CHIP_WIDTH: f32 = 184.0;
 const CHIP_GAP: f32 = 8.0;
 const MORE_SIZE: f32 = 30.0;
@@ -1615,8 +1615,10 @@ impl MailWindow {
         let chip = |n: usize, file: &RowFile| {
             let kind = katna_preview::kind(&file.mime, &file.name);
             let open = file.clone();
+            let downloading = self.chip_downloading(file);
             div()
                 .id(("row-file", ix * 4 + n))
+                .relative()
                 .h(px(CHIP_HEIGHT))
                 .min_w(px(64.0))
                 .max_w(px(CHIP_WIDTH))
@@ -1630,13 +1632,16 @@ impl MailWindow {
                 .border_1()
                 .border_color(rgba(th.divider))
                 .bg(rgba(th.surface))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
-                .tooltip(tip(file.name.clone(), th))
+                .when(!downloading, |d| {
+                    d.cursor_pointer()
+                        .hover(|s| s.bg(rgba(th.hover)))
+                        .tooltip(tip(file.name.clone(), th))
+                })
                 .on_click(cx.listener(move |this, _, window, cx| {
                     cx.stop_propagation();
                     this.open_row_file(&open, window, cx);
                 }))
+                .children(self.chip_fill(file, true, th))
                 .child(kind_badge(kind, 18.0))
                 .child(
                     div()
@@ -1734,19 +1739,23 @@ impl MailWindow {
         let items = files.iter().enumerate().map(|(n, file)| {
             let kind = katna_preview::kind(&file.mime, &file.name);
             let open = file.clone();
+            let downloading = self.chip_downloading(file);
             div()
                 .id(("files-item", n))
+                .relative()
                 .h(px(40.0))
                 .px(px(16.0))
                 .flex()
                 .items_center()
                 .gap(px(12.0))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .when(!downloading, |d| {
+                    d.cursor_pointer().hover(|s| s.bg(rgba(th.hover)))
+                })
                 .on_click(cx.listener(move |this, _, window, cx| {
                     cx.stop_propagation();
                     this.open_row_file(&open, window, cx);
                 }))
+                .children(self.chip_fill(file, false, th))
                 .child(kind_badge(kind, 20.0))
                 .child(
                     div()

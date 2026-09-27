@@ -174,6 +174,21 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 17,
+        title: "Attachments of older mail open at once",
+        text: "Clicking an attachment of older mail that is not on this computer yet \
+               downloads it: the attachment fills up while it does, then opens.",
+        animation: None,
+    },
+    Highlight {
+        id: 18,
+        title: "Read conversations your way",
+        text: "Settings > General > Reading can show the newest message first, open \
+               the full headers of every message, and name recipients in full \
+               instead of by first name.",
+        animation: None,
+    },
+    Highlight {
+        id: 19,
         title: "Send and archive",
         text: "The menu beside Send on a reply sends it and archives the \
                conversation. Settings > Compose can make that what Send does, and \
