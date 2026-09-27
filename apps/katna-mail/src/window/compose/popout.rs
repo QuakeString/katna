@@ -101,7 +101,7 @@ impl MailWindow {
                     Ok(handle) => this.writing.compose_window = Some(handle),
                     Err(err) => {
                         if let Some(c) = &mut this.compose {
-                            c.mode = Mode::Open;
+                            c.mode = c.docked_mode();
                         }
                         tracing::warn!("cannot open a compose window: {err}");
                         this.show_snackbar("Could not open a new window.", None, cx);
@@ -112,14 +112,20 @@ impl MailWindow {
         });
     }
 
-    /// Puts the popped-out message back in the mail window.
+    /// Puts the popped-out message back in the mail window: a reply at the
+    /// end of its conversation, anything else in the compose window.
     pub(super) fn dock_compose(&mut self, cx: &mut Context<Self>) {
+        let mut inline = false;
         if let Some(c) = &mut self.compose {
-            c.mode = Mode::Open;
+            c.mode = c.docked_mode();
             c.popup = None;
             c.shown.snap(1.0);
+            inline = c.mode == Mode::Inline;
         }
         self.close_compose_window(cx);
+        if inline {
+            self.reveal_inline_reply(cx);
+        }
         cx.notify();
     }
 
@@ -169,9 +175,7 @@ impl MailWindow {
             .child(self.render_compose_fields(th, cx))
             .child(self.render_compose_body(th, width, cx))
             .child(self.render_attachments(th, cx))
-            .when(compose.format_bar, |d| {
-                d.child(self.render_format_bar(th, width - 32.0, cx))
-            })
+            .children(self.render_floating_format_bar(th, width - 24.0, cx))
             .child(self.render_compose_actions(th, width, cx))
             .child(self.render_drop_target(th))
             .children(self.render_compose_dialog(th, cx));

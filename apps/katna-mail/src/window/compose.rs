@@ -26,12 +26,13 @@ mod security;
 mod signature_editor;
 mod tools;
 
+use std::cell::Cell;
 use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
     AnyElement, Context, Entity, ExternalPaths, FocusHandle, Focusable, FontWeight, Hsla,
-    ScrollHandle, SharedString, Subscription, Task, Window, div, prelude::*, px, rgba,
+    ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, px, rgba,
 };
 use katna_dbus::OutboxItem;
 use katna_render::{Address, MessageView};
@@ -119,6 +120,12 @@ pub(super) struct Compose {
     shown: Spring,
     closing: bool,
     body_scroll: ScrollHandle,
+    /// The quoted message a reply answers, kept out of the text behind a
+    /// "..." button until it is opened, as in Gmail. It is still sent.
+    trimmed: Option<Vec<Block>>,
+    /// Where an inline reply was last drawn, to keep its Send row at the
+    /// bottom of the conversation while the rest scrolls under it.
+    stick: Rc<Cell<Stick>>,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -131,7 +138,11 @@ impl Compose {
             cc: text(&self.cc),
             bcc: text(&self.bcc),
             subject: text(&self.subject),
-            body: self.body.read(cx).doc().clone(),
+            body: {
+                let mut body = self.body.read(cx).doc().clone();
+                body.blocks.extend(self.trimmed.iter().flatten().cloned());
+                body
+            },
         }
     }
 
@@ -149,9 +160,29 @@ impl Compose {
         }
     }
 
+    /// Where the message goes back to from its own window: an answer to a
+    /// conversation to the end of it (or the compose window if that
+    /// conversation is no longer open), anything else the compose window.
+    fn docked_mode(&self) -> Mode {
+        if self.conversation.is_some() {
+            Mode::Inline
+        } else {
+            Mode::Open
+        }
+    }
+
     fn plain(&self, cx: &gpui::App) -> bool {
         self.body.read(cx).is_plain()
     }
+}
+
+/// Where an inline reply's card and its Send row sit in the conversation,
+/// in pixels from the top of its content (so scrolling leaves them be).
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
+struct Stick {
+    card_top: f32,
+    footer_top: f32,
+    footer_height: f32,
 }
 
 /// What the compose windows share: the spelling dictionary, loaded once,
@@ -283,6 +314,32 @@ fn quoted(body: &str) -> Vec<Block> {
         }
     }
     doc.blocks
+}
+
+/// Takes the quoted message off the end of a reply's `doc`: the "On ...
+/// wrote:" line, the blank line before it and the quote after it.
+fn trim_quote(doc: &mut Doc) -> Option<Vec<Block>> {
+    fn para(b: &Block) -> Option<&Para> {
+        match b {
+            Block::Para(p) => Some(p),
+            _ => None,
+        }
+    }
+    let at = doc.blocks.iter().rposition(|b| {
+        para(b).is_some_and(|p| p.style.quote == 0 && p.text.trim_end().ends_with("wrote:"))
+    })?;
+    let quote = &doc.blocks[at + 1..];
+    if quote.is_empty()
+        || !quote
+            .iter()
+            .all(|b| para(b).is_some_and(|p| p.style.quote > 0))
+    {
+        return None;
+    }
+    let blank = at > 1
+        && para(&doc.blocks[at - 1])
+            .is_some_and(|p| p.text.is_empty() && !p.style.signature && p.style.quote == 0);
+    Some(doc.blocks.split_off(if blank { at - 1 } else { at }))
 }
 
 fn draft(
@@ -449,6 +506,15 @@ impl MailWindow {
                 compose.start.body = plain_doc;
             }
             compose.sealing = sealing;
+            if matches!(kind, Kind::Reply | Kind::ReplyAll) {
+                let mut doc = compose.body.read(cx).doc().clone();
+                compose.trimmed = trim_quote(&mut doc);
+                if compose.trimmed.is_some() {
+                    compose.body.update(cx, |editor, cx| {
+                        editor.set_doc(doc.clone(), doc.start(), cx)
+                    });
+                }
+            }
         }
         if mode == Mode::Inline {
             self.reveal_inline_reply(cx);
@@ -459,7 +525,7 @@ impl MailWindow {
     /// its end, as Gmail does: to the end when the whole card fits, else
     /// just far enough that its first line, with the cursor, sits near the
     /// top.
-    fn reveal_inline_reply(&mut self, cx: &mut Context<Self>) {
+    pub(super) fn reveal_inline_reply(&mut self, cx: &mut Context<Self>) {
         let Some(body) = self.compose.as_ref().map(|c| c.body.clone()) else {
             return;
         };
@@ -671,6 +737,8 @@ impl MailWindow {
             shown: Spring::new(motion::SLIDE, 0.0),
             closing: false,
             body_scroll: ScrollHandle::new(),
+            trimmed: None,
+            stick: Rc::default(),
             _subscriptions: subscriptions,
         });
         cx.notify();
@@ -731,12 +799,19 @@ impl MailWindow {
         let Some(compose) = &self.compose else {
             return;
         };
-        // An inline reply has no scroll of its own: the conversation scrolls.
-        let scroll = if compose.mode == Mode::Inline {
-            self.reader_scroll.clone()
+        // An inline reply has no scroll of its own: the conversation scrolls,
+        // under its Send row.
+        let (scroll, mut covered) = if compose.mode == Mode::Inline {
+            (
+                self.reader_scroll.clone(),
+                compose.stick.get().footer_height,
+            )
         } else {
-            compose.body_scroll.clone()
+            (compose.body_scroll.clone(), 0.0)
         };
+        if compose.format_bar {
+            covered += tools::FORMAT_BAR_COVER;
+        }
         let body = compose.body.clone();
         cx.spawn(async move |_, cx| {
             cx.background_executor().timer(CURSOR_SETTLE).await;
@@ -744,7 +819,8 @@ impl MailWindow {
                 let Some(cursor) = body.read(cx).cursor_bounds() else {
                     return;
                 };
-                let view = scroll.bounds();
+                let mut view = scroll.bounds();
+                view.size.height -= px(covered);
                 let pad = px(12.0);
                 let mut offset = scroll.offset();
                 if cursor.bottom() + pad > view.bottom() {
@@ -1137,10 +1213,11 @@ impl MailWindow {
                     })),
             );
 
-        // On a phone the message is written on a sheet over the whole
-        // window, as mobile mail does; minimized, it is a strip at the foot.
+        // On a phone, and a tablet too narrow for the reading pane, the
+        // message is written on a sheet over the whole window, top bar and
+        // all, as mobile mail does; minimized, it is a strip at the foot.
         let shape = self.layout.shape;
-        let sheet = shape.is_phone() && mode != Mode::Minimized;
+        let sheet = !shape.size.splits(shape.width) && mode != Mode::Minimized;
         let (width, height) = match mode {
             _ if sheet => (shape.width, vh),
             Mode::Minimized if shape.is_phone() => (shape.width - 16.0, TITLE_HEIGHT),
@@ -1176,9 +1253,7 @@ impl MailWindow {
                 d.child(self.render_compose_fields(th, cx))
                     .child(self.render_compose_body(th, width, cx))
                     .child(self.render_attachments(th, cx))
-                    .when(compose.format_bar, |d| {
-                        d.child(self.render_format_bar(th, width - 32.0, cx))
-                    })
+                    .children(self.render_floating_format_bar(th, width - 24.0, cx))
                     .child(self.render_compose_actions(th, width, cx))
                     .child(self.render_drop_target(th))
                     .children(self.render_compose_dialog(th, cx))
@@ -1187,9 +1262,10 @@ impl MailWindow {
         Some(match mode {
             _ if sheet => div()
                 .absolute()
-                .top(px(lerp(48.0, 0.0, t)))
+                .top(px(lerp(48.0, 0.0, t) - super::TOP_BAR_HEIGHT))
+                .bottom(px(-lerp(48.0, 0.0, t)))
                 .left_0()
-                .size_full()
+                .right_0()
                 .opacity(t)
                 .child(panel)
                 .into_any_element(),
@@ -1290,7 +1366,9 @@ impl MailWindow {
             .child(
                 small_button("inline-pop-out", "open-full", th)
                     .tooltip(tip("Pop out reply", th))
-                    .on_click(cx.listener(|this, _, _, cx| this.compose_mode(Mode::Open, cx))),
+                    // Straight into a window of its own; docking it brings
+                    // it back here.
+                    .on_click(cx.listener(|this, _, window, cx| this.pop_out_compose(window, cx))),
             );
         let cc = compose.show_cc.then(|| {
             div()
@@ -1317,8 +1395,19 @@ impl MailWindow {
             .line_height(px(20.0))
             .cursor_text()
             .on_click(move |_, window, cx| window.focus(&focus, cx))
-            .child(div().flex_none().child(compose.body.clone()));
+            .child(div().flex_none().child(compose.body.clone()))
+            .children(self.render_trimmed(th, cx));
         let card_width = f32::from(self.reader_scroll.bounds().size.width) - 100.0;
+        // Like Gmail, the Send row stays at the bottom of the conversation
+        // while the text runs on below it, and moves up with the card.
+        let stuck = {
+            let at = compose.stick.get();
+            let view = self.reader_scroll.bounds().size.height;
+            let bottom = f32::from(view - self.reader_scroll.offset().y);
+            let highest = at.card_top + STICK_BELOW;
+            (at.footer_top + at.footer_height - bottom)
+                .clamp(0.0, (at.footer_top - highest).max(0.0))
+        };
         let card = div()
             .id("inline-reply")
             .key_context("Compose")
@@ -1335,14 +1424,51 @@ impl MailWindow {
             .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| {
                 this.drop_files(paths.paths().to_vec(), cx);
             }))
+            .child(measure(
+                &self.reader_scroll,
+                &compose.stick,
+                cx,
+                |stick, top, _| {
+                    stick.card_top = top;
+                },
+            ))
             .child(header)
             .children(cc)
             .child(body)
             .child(self.render_attachments(th, cx))
-            .when(compose.format_bar, |d| {
-                d.child(self.render_format_bar(th, card_width.max(320.0) - 24.0, cx))
-            })
-            .child(self.render_compose_actions(th, card_width.max(320.0), cx))
+            .child(
+                div()
+                    .relative()
+                    .flex_none()
+                    .child(measure(
+                        &self.reader_scroll,
+                        &compose.stick,
+                        cx,
+                        |stick, top, height| {
+                            stick.footer_top = top;
+                            stick.footer_height = height;
+                        },
+                    ))
+                    .child(
+                        div()
+                            .relative()
+                            .top(px(-stuck))
+                            .rounded_b(px(12.0))
+                            .bg(rgba(th.surface))
+                            .border_t_1()
+                            .border_color(if stuck > 0.0 {
+                                rgba(th.divider)
+                            } else {
+                                rgba(0)
+                            })
+                            .children(self.render_floating_format_bar(
+                                th,
+                                card_width.max(320.0) - 24.0,
+                                cx,
+                            ))
+                            .child(self.render_compose_actions(th, card_width.max(320.0), cx)),
+                    ),
+            )
             .child(self.render_drop_target(th))
             .children(self.render_compose_dialog(th, cx));
         Some(
@@ -1359,6 +1485,50 @@ impl MailWindow {
                 .child(card)
                 .into_any_element(),
         )
+    }
+
+    /// The "..." button under a reply's text that shows the quoted message.
+    fn render_trimmed(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        self.compose.as_ref()?.trimmed.as_ref()?;
+        let dot = || div().size(px(4.0)).rounded_full().bg(rgba(th.text_dim));
+        Some(
+            div()
+                .id("show-trimmed")
+                .mt(px(12.0))
+                .w(px(30.0))
+                .h(px(16.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .justify_center()
+                .gap(px(3.0))
+                .rounded(px(8.0))
+                .bg(rgba(th.chip))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .tooltip(tip("Show trimmed content", th))
+                .on_click(cx.listener(|this, _, _, cx| {
+                    cx.stop_propagation();
+                    this.show_trimmed(cx);
+                }))
+                .child(dot())
+                .child(dot())
+                .child(dot())
+                .into_any_element(),
+        )
+    }
+
+    /// Puts the quoted message back into the text of the reply.
+    fn show_trimmed(&mut self, cx: &mut Context<Self>) {
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        if let Some(blocks) = compose.trimmed.take() {
+            compose
+                .body
+                .update(cx, |editor, cx| editor.append_blocks(blocks, cx));
+        }
+        cx.notify();
     }
 
     fn render_compose_fields(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
@@ -1448,6 +1618,11 @@ impl MailWindow {
             .track_scroll(&compose.body_scroll)
             .px(px(16.0))
             .py(px(12.0))
+            // The end of the text can scroll up from under the floating
+            // formatting bar.
+            .when(compose.format_bar, |d| {
+                d.pb(px(12.0 + tools::FORMAT_BAR_COVER))
+            })
             .text_size(px(14.0))
             .line_height(px(20.0))
             .text_color(rgba(th.text))
@@ -1461,8 +1636,44 @@ impl MailWindow {
                     .w(px((width - 32.0).max(80.0)))
                     .child(body),
             )
+            .children(self.render_trimmed(th, cx))
             .into_any_element()
     }
+}
+
+/// How far below the top of an inline reply its stuck Send row stops: the
+/// recipients and a line or two of text stay above it.
+const STICK_BELOW: f32 = 96.0;
+
+/// Records where its parent is drawn in the conversation `scroll`, in
+/// pixels from the top of the content, and draws again when that moved.
+fn measure(
+    scroll: &ScrollHandle,
+    stick: &Rc<Cell<Stick>>,
+    cx: &Context<MailWindow>,
+    set: impl Fn(&mut Stick, f32, f32) + 'static,
+) -> impl IntoElement {
+    let (scroll, stick, this) = (scroll.clone(), stick.clone(), cx.entity().downgrade());
+    canvas(
+        move |bounds, _, cx| {
+            let top = f32::from(bounds.top() - scroll.bounds().top() - scroll.offset().y);
+            let mut at = stick.get();
+            set(&mut at, top, f32::from(bounds.size.height));
+            if at != stick.get() {
+                stick.set(at);
+                // After this frame: a change asked for while drawing is lost.
+                let this = this.clone();
+                cx.defer(move |cx| {
+                    this.update(cx, |_, cx| cx.notify()).ok();
+                });
+            }
+        },
+        |_, _, _, _| {},
+    )
+    .absolute()
+    .top_0()
+    .left_0()
+    .size_full()
 }
 
 /// The editor's colors from the window's theme.
@@ -1526,6 +1737,25 @@ mod tests {
 
     fn text(d: &Draft) -> String {
         html::to_plain(&d.body)
+    }
+
+    #[test]
+    fn a_reply_keeps_its_quote_behind_the_dots() {
+        let original = Original {
+            view: &view(),
+            date: "Tue, 25 Jun 2002, 22:23".to_owned(),
+        };
+        let signature = Some(html::from_plain("Kay\n"));
+        let mut body = draft(Kind::Reply, Some(&original), me, signature).body;
+        let full = body.clone();
+        let quote = trim_quote(&mut body).expect("the quote");
+        assert_eq!(html::to_plain(&body), "\n\n-- \nKay\n");
+        let mut back = body.clone();
+        back.blocks.extend(quote);
+        assert_eq!(back, full);
+        // Nothing to fold without a quote.
+        let mut new = draft(Kind::New, None, me, None).body;
+        assert!(trim_quote(&mut new).is_none());
     }
 
     #[test]
