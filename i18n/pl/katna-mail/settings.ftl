@@ -143,7 +143,7 @@ settings-default-apps-text-detail = Zwykły tekst, logi, kod i inny tekst.
 settings-default-apps-sheets = Arkusze kalkulacyjne
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) i CSV.
 settings-default-apps-documents = Dokumenty
-settings-default-apps-documents-detail = Word (docx) i tekst OpenDocument (odt).
+settings-default-apps-documents-detail = Word (docx, doc), tekst OpenDocument (odt) i prezentacje (pptx, ppt, odp).
 settings-default-apps-katna = Przeglądarka Katna Mail
 settings-default-apps-system = Domyślna aplikacja pulpitu
 settings-default-apps-ask = Pytaj za każdym razem
@@ -226,7 +226,7 @@ settings-default-apps-pdf-summary = Gdzie otwierają się załączniki PDF
 settings-default-apps-pictures-summary = Gdzie otwierają się zdjęcia i obrazy
 settings-default-apps-text-summary = Gdzie otwierają się zwykły tekst, logi i kod
 settings-default-apps-sheets-summary = Gdzie otwierają się pliki Excel, OpenDocument i CSV
-settings-default-apps-documents-summary = Gdzie otwierają się dokumenty Word i tekst OpenDocument
+settings-default-apps-documents-summary = Gdzie otwierają się dokumenty Word, tekst OpenDocument i prezentacje
 settings-default-apps-after-saving-summary = Pokazuj zapisane załączniki w ich folderze
 settings-compose-send-from-summary = Konto, z którego wychodzi nowa poczta: to, w którym jesteś, albo zawsze to samo
 settings-compose-send-on-replies-summary = Wyślij albo Wyślij i zarchiwizuj wątek przy odpowiedziach i przekazywaniu
@@ -256,3 +256,18 @@ settings-clock-language = Tak jak w danym języku
 settings-clock-12 = 12-godzinny, np. 2:05 PM
 settings-clock-24 = 24-godzinny, np. 14:05
 settings-time-summary = Zegar 12- lub 24-godzinny albo tak jak w danym języku
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = Domyślna aplikacja pocztowa
+settings-general-mail-app-detail = Linki e-mail w innych aplikacjach i na stronach internetowych otwierają tutaj nową wiadomość.
+mail-app-is-default = Katna Mail jest Twoją domyślną aplikacją pocztową.
+mail-app-is-other = Linki e-mail otwierają się w innej aplikacji.
+mail-app-make-default = Ustaw jako domyślną
+mail-app-make-default-failed = Nie udało się zmienić domyślnej aplikacji pocztowej.
+settings-general-mail-app-summary = Otwieraj linki e-mail z innych aplikacji i stron internetowych w Katna Mail
+settings-compose-grammar = Gramatyka
+settings-compose-grammar-detail = Sprawdzana na tym komputerze przez Harper. Na razie tylko po angielsku: tekst w innych językach pozostaje bez zmian.
+settings-compose-grammar-check = Sprawdzaj gramatykę
+settings-compose-grammar-check-detail = Podkreślaj błędy gramatyczne podczas pisania, po angielsku
+settings-compose-grammar-summary = Podkreślaj błędy gramatyczne podczas pisania, po angielsku

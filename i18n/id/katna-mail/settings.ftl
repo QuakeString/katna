@@ -133,7 +133,7 @@ settings-default-apps-text-detail = Teks biasa, log, kode, dan teks lainnya.
 settings-default-apps-sheets = Spreadsheet
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods), dan CSV.
 settings-default-apps-documents = Dokumen
-settings-default-apps-documents-detail = Word (docx) dan teks OpenDocument (odt).
+settings-default-apps-documents-detail = Word (docx, doc), teks OpenDocument (odt), dan slide (pptx, ppt, odp).
 settings-default-apps-katna = Penampil Katna Mail
 settings-default-apps-system = Aplikasi default desktop
 settings-default-apps-ask = Tanyakan aplikasi setiap kali
@@ -216,7 +216,7 @@ settings-default-apps-pdf-summary = Tempat lampiran PDF dibuka
 settings-default-apps-pictures-summary = Tempat foto dan gambar dibuka
 settings-default-apps-text-summary = Tempat teks biasa, log, dan kode dibuka
 settings-default-apps-sheets-summary = Tempat file Excel, OpenDocument, dan CSV dibuka
-settings-default-apps-documents-summary = Tempat teks Word dan OpenDocument dibuka
+settings-default-apps-documents-summary = Tempat teks Word dan OpenDocument serta slide dibuka
 settings-default-apps-after-saving-summary = Tampilkan lampiran yang disimpan di foldernya
 settings-compose-send-from-summary = Akun pengirim email baru: akun yang sedang Anda buka, atau selalu akun yang sama
 settings-compose-send-on-replies-summary = Kirim, atau Kirim dan arsipkan percakapan, pada balasan dan penerusan
@@ -246,3 +246,18 @@ settings-clock-language = Sesuai cara penulisan bahasa
 settings-clock-12 = 12 jam, misalnya 2.05 PM
 settings-clock-24 = 24 jam, misalnya 14.05
 settings-time-summary = Format 12 jam atau 24 jam, atau sesuai cara penulisan bahasa
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = Aplikasi email default
+settings-general-mail-app-detail = Tautan email di aplikasi lain dan di situs web membuka pesan baru di sini.
+mail-app-is-default = Katna Mail adalah aplikasi email default Anda.
+mail-app-is-other = Tautan email dibuka di aplikasi lain.
+mail-app-make-default = Jadikan default
+mail-app-make-default-failed = Tidak dapat mengubah aplikasi email default.
+settings-general-mail-app-summary = Buka tautan email dari aplikasi lain dan situs web di Katna Mail
+settings-compose-grammar = Tata bahasa
+settings-compose-grammar-detail = Diperiksa di komputer ini dengan Harper. Untuk saat ini hanya bahasa Inggris: teks dalam bahasa lain dibiarkan apa adanya.
+settings-compose-grammar-check = Periksa tata bahasa
+settings-compose-grammar-check-detail = Garis bawahi kesalahan tata bahasa saat menulis, dalam bahasa Inggris
+settings-compose-grammar-summary = Garis bawahi kesalahan tata bahasa saat menulis, dalam bahasa Inggris

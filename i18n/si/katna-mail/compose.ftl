@@ -1,0 +1,10 @@
+# Katna Mail, Sinhala (සිංහල).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Grammar checking (the right-click menu on a grammar mistake)
+
+grammar-replace = “{ $words }”
+grammar-add = “{ $words }” එක් කරන්න
+grammar-remove = “{ $words }” ඉවත් කරන්න
+grammar-ignore = නොසලකා හරින්න

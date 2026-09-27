@@ -133,7 +133,7 @@ settings-default-apps-text-detail = Văn bản thuần, nhật ký, mã nguồn 
 settings-default-apps-sheets = Bảng tính
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) và CSV.
 settings-default-apps-documents = Tài liệu
-settings-default-apps-documents-detail = Word (docx) và văn bản OpenDocument (odt).
+settings-default-apps-documents-detail = Word (docx, doc), văn bản OpenDocument (odt) và trang chiếu (pptx, ppt, odp).
 settings-default-apps-katna = Trình xem của Katna Mail
 settings-default-apps-system = Ứng dụng mặc định của môi trường máy tính
 settings-default-apps-ask = Hỏi dùng ứng dụng nào mỗi lần
@@ -216,7 +216,7 @@ settings-default-apps-pdf-summary = Nơi mở tệp đính kèm PDF
 settings-default-apps-pictures-summary = Nơi mở ảnh chụp và hình ảnh
 settings-default-apps-text-summary = Nơi mở văn bản thuần, nhật ký và mã nguồn
 settings-default-apps-sheets-summary = Nơi mở tệp Excel, OpenDocument và CSV
-settings-default-apps-documents-summary = Nơi mở văn bản Word và OpenDocument
+settings-default-apps-documents-summary = Nơi mở văn bản Word, OpenDocument và trang chiếu
 settings-default-apps-after-saving-summary = Hiện tệp đính kèm đã lưu trong thư mục của chúng
 settings-compose-send-from-summary = Tài khoản gửi thư mới: tài khoản bạn đang dùng, hoặc luôn cùng một tài khoản
 settings-compose-send-on-replies-summary = Gửi, hoặc Gửi và lưu trữ cuộc hội thoại, khi trả lời và chuyển tiếp
@@ -246,3 +246,18 @@ settings-clock-language = Theo cách viết của ngôn ngữ
 settings-clock-12 = 12 giờ, chẳng hạn 2:05 CH
 settings-clock-24 = 24 giờ, chẳng hạn 14:05
 settings-time-summary = Đồng hồ 12 giờ hoặc 24 giờ, hoặc theo cách viết của ngôn ngữ
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = Ứng dụng thư mặc định
+settings-general-mail-app-detail = Liên kết email trong ứng dụng khác và trên trang web sẽ mở một thư mới tại đây.
+mail-app-is-default = Katna Mail là ứng dụng thư mặc định của bạn.
+mail-app-is-other = Liên kết email mở trong một ứng dụng khác.
+mail-app-make-default = Đặt làm mặc định
+mail-app-make-default-failed = Không thể thay đổi ứng dụng thư mặc định.
+settings-general-mail-app-summary = Mở liên kết email từ ứng dụng khác và trang web trong Katna Mail
+settings-compose-grammar = Ngữ pháp
+settings-compose-grammar-detail = Được kiểm tra trên máy tính này bằng Harper. Hiện chỉ hỗ trợ tiếng Anh: văn bản bằng ngôn ngữ khác được giữ nguyên.
+settings-compose-grammar-check = Kiểm tra ngữ pháp
+settings-compose-grammar-check-detail = Gạch chân lỗi ngữ pháp khi viết, bằng tiếng Anh
+settings-compose-grammar-summary = Gạch chân lỗi ngữ pháp khi viết, bằng tiếng Anh

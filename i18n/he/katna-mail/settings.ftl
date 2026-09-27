@@ -141,7 +141,7 @@ settings-default-apps-text-detail = טקסט פשוט, יומנים, קוד וט
 settings-default-apps-sheets = גיליונות אלקטרוניים
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) ו־CSV.
 settings-default-apps-documents = מסמכים
-settings-default-apps-documents-detail = Word (docx) וטקסט OpenDocument (odt).
+settings-default-apps-documents-detail = Word (docx, doc), טקסט OpenDocument (odt) ומצגות (pptx, ppt, odp).
 settings-default-apps-katna = המציג של Katna Mail
 settings-default-apps-system = אפליקציית ברירת המחדל של שולחן העבודה
 settings-default-apps-ask = לשאול בכל פעם באיזו אפליקציה
@@ -224,7 +224,7 @@ settings-default-apps-pdf-summary = איפה נפתחים קבצים מצורפ�
 settings-default-apps-pictures-summary = איפה נפתחים צילומים ותמונות
 settings-default-apps-text-summary = איפה נפתחים טקסט פשוט, יומנים וקוד
 settings-default-apps-sheets-summary = איפה נפתחים קובצי Excel, OpenDocument ו־CSV
-settings-default-apps-documents-summary = איפה נפתחים Word וטקסט OpenDocument
+settings-default-apps-documents-summary = איפה נפתחים Word, טקסט OpenDocument ומצגות
 settings-default-apps-after-saving-summary = הצגת קבצים מצורפים שנשמרו בתיקייה שלהם
 settings-compose-send-from-summary = החשבון שממנו יוצא דואר חדש: החשבון שבו נמצאים, או תמיד אותו חשבון
 settings-compose-send-on-replies-summary = „שליחה” או „שליחה והעברה לארכיון” של השיחה, בתשובות ובהעברות
@@ -254,3 +254,18 @@ settings-clock-language = כפי שנהוג בשפה
 settings-clock-12 = 12 שעות, למשל 2:05 PM
 settings-clock-24 = 24 שעות, למשל 14:05
 settings-time-summary = שעון של 12 או 24 שעות, או כפי שנהוג בשפה
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = אפליקציית דואר ברירת מחדל
+settings-general-mail-app-detail = קישורי אימייל באפליקציות אחרות ובאתרים פותחים כאן הודעה חדשה.
+mail-app-is-default = Katna Mail היא אפליקציית הדואר שלך כברירת מחדל.
+mail-app-is-other = קישורי אימייל נפתחים באפליקציה אחרת.
+mail-app-make-default = הגדרה כברירת מחדל
+mail-app-make-default-failed = לא ניתן היה לשנות את אפליקציית הדואר שמוגדרת כברירת מחדל.
+settings-general-mail-app-summary = פתיחת קישורי אימייל מאפליקציות ומאתרים אחרים ב־Katna Mail
+settings-compose-grammar = דקדוק
+settings-compose-grammar-detail = הבדיקה נעשית במחשב הזה עם Harper. בינתיים רק באנגלית: טקסט בשפות אחרות נשאר כמו שהוא.
+settings-compose-grammar-check = בדיקת דקדוק
+settings-compose-grammar-check-detail = סימון שגיאות דקדוק בקו תחתון בזמן הכתיבה, באנגלית
+settings-compose-grammar-summary = סימון שגיאות דקדוק בקו תחתון בזמן הכתיבה, באנגלית

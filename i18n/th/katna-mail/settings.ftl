@@ -133,7 +133,7 @@ settings-default-apps-text-detail = ข้อความธรรมดา บ�
 settings-default-apps-sheets = สเปรดชีต
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) และ CSV
 settings-default-apps-documents = เอกสาร
-settings-default-apps-documents-detail = Word (docx) และข้อความ OpenDocument (odt)
+settings-default-apps-documents-detail = Word (docx, doc), ข้อความ OpenDocument (odt) และสไลด์ (pptx, ppt, odp)
 settings-default-apps-katna = ตัวแสดงไฟล์ของ Katna Mail
 settings-default-apps-system = แอปเริ่มต้นของเดสก์ท็อป
 settings-default-apps-ask = ถามทุกครั้งว่าจะใช้แอปใด
@@ -216,7 +216,7 @@ settings-default-apps-pdf-summary = แอปที่ใช้เปิดไ�
 settings-default-apps-pictures-summary = แอปที่ใช้เปิดรูปถ่ายและรูปภาพ
 settings-default-apps-text-summary = แอปที่ใช้เปิดข้อความธรรมดา บันทึก และโค้ด
 settings-default-apps-sheets-summary = แอปที่ใช้เปิดไฟล์ Excel, OpenDocument และ CSV
-settings-default-apps-documents-summary = แอปที่ใช้เปิด Word และข้อความ OpenDocument
+settings-default-apps-documents-summary = แอปที่ใช้เปิด Word, ข้อความ OpenDocument และสไลด์
 settings-default-apps-after-saving-summary = แสดงไฟล์แนบที่บันทึกในโฟลเดอร์
 settings-compose-send-from-summary = บัญชีที่ใช้ส่งอีเมลใหม่: บัญชีที่คุณใช้อยู่ หรือบัญชีเดิมเสมอ
 settings-compose-send-on-replies-summary = ส่ง หรือส่งและเก็บถาวรการสนทนา เมื่อตอบกลับและส่งต่อ
@@ -246,3 +246,18 @@ settings-clock-language = ตามรูปแบบของภาษา
 settings-clock-12 = 12 ชั่วโมง เช่น 2:05 PM
 settings-clock-24 = 24 ชั่วโมง เช่น 14:05
 settings-time-summary = นาฬิกา 12 ชั่วโมงหรือ 24 ชั่วโมง หรือตามรูปแบบของภาษา
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = แอปอีเมลเริ่มต้น
+settings-general-mail-app-detail = ลิงก์อีเมลในแอปอื่นและบนเว็บไซต์จะเปิดข้อความใหม่ที่นี่
+mail-app-is-default = Katna Mail เป็นแอปอีเมลเริ่มต้นของคุณ
+mail-app-is-other = ลิงก์อีเมลจะเปิดในแอปอื่น
+mail-app-make-default = ตั้งเป็นค่าเริ่มต้น
+mail-app-make-default-failed = เปลี่ยนแอปอีเมลเริ่มต้นไม่ได้
+settings-general-mail-app-summary = เปิดลิงก์อีเมลจากแอปอื่นและเว็บไซต์ใน Katna Mail
+settings-compose-grammar = ไวยากรณ์
+settings-compose-grammar-detail = ตรวจบนคอมพิวเตอร์เครื่องนี้ด้วย Harper ขณะนี้รองรับเฉพาะภาษาอังกฤษ ข้อความในภาษาอื่นจะไม่ถูกเปลี่ยน
+settings-compose-grammar-check = ตรวจไวยากรณ์
+settings-compose-grammar-check-detail = ขีดเส้นใต้ข้อผิดพลาดทางไวยากรณ์ขณะเขียน (ภาษาอังกฤษ)
+settings-compose-grammar-summary = ขีดเส้นใต้ข้อผิดพลาดทางไวยากรณ์ขณะเขียน (ภาษาอังกฤษ)

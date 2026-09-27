@@ -141,7 +141,7 @@ settings-default-apps-text-detail = Testo semplice, log, codice e altro testo.
 settings-default-apps-sheets = Fogli di calcolo
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) e CSV.
 settings-default-apps-documents = Documenti
-settings-default-apps-documents-detail = Word (docx) e testo OpenDocument (odt).
+settings-default-apps-documents-detail = Word (docx, doc), testo OpenDocument (odt) e presentazioni (pptx, ppt, odp).
 settings-default-apps-katna = Visualizzatore di Katna Mail
 settings-default-apps-system = App predefinita del desktop
 settings-default-apps-ask = Chiedi ogni volta quale app usare
@@ -224,7 +224,7 @@ settings-default-apps-pdf-summary = Dove si aprono gli allegati PDF
 settings-default-apps-pictures-summary = Dove si aprono foto e immagini
 settings-default-apps-text-summary = Dove si aprono testo semplice, log e codice
 settings-default-apps-sheets-summary = Dove si aprono i file Excel, OpenDocument e CSV
-settings-default-apps-documents-summary = Dove si aprono i testi Word e OpenDocument
+settings-default-apps-documents-summary = Dove si aprono i testi Word e OpenDocument e le presentazioni
 settings-default-apps-after-saving-summary = Mostra gli allegati salvati nella loro cartella
 settings-compose-send-from-summary = L’account da cui parte la nuova posta: quello in cui ti trovi o sempre lo stesso
 settings-compose-send-on-replies-summary = Invia, o Invia e archivia la conversazione, nelle risposte e negli inoltri
@@ -254,3 +254,18 @@ settings-clock-language = Come si scrive nella lingua
 settings-clock-12 = 12 ore, ad esempio 02:05 PM
 settings-clock-24 = 24 ore, ad esempio 14:05
 settings-time-summary = Formato 12 o 24 ore, o come si scrive nella lingua
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = App di posta predefinita
+settings-general-mail-app-detail = I link email in altre app e sui siti web aprono qui un nuovo messaggio.
+mail-app-is-default = Katna Mail è la tua app di posta predefinita.
+mail-app-is-other = I link email si aprono in un’altra app.
+mail-app-make-default = Imposta come predefinita
+mail-app-make-default-failed = Impossibile cambiare l’app di posta predefinita.
+settings-general-mail-app-summary = Apri in Katna Mail i link email di altre app e dei siti web
+settings-compose-grammar = Grammatica
+settings-compose-grammar-detail = Controllata su questo computer con Harper. Per ora solo in inglese: il testo in altre lingue non viene toccato.
+settings-compose-grammar-check = Controlla la grammatica
+settings-compose-grammar-check-detail = Sottolinea gli errori grammaticali durante la scrittura, in inglese
+settings-compose-grammar-summary = Sottolinea gli errori grammaticali durante la scrittura, in inglese

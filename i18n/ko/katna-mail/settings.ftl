@@ -133,7 +133,7 @@ settings-default-apps-text-detail = 일반 텍스트, 로그, 코드 및 기타 
 settings-default-apps-sheets = 스프레드시트
 settings-default-apps-sheets-detail = Excel(xlsx, xls), OpenDocument(ods), CSV.
 settings-default-apps-documents = 문서
-settings-default-apps-documents-detail = Word(docx) 및 OpenDocument 텍스트(odt).
+settings-default-apps-documents-detail = Word(docx, doc), OpenDocument 텍스트(odt) 및 슬라이드(pptx, ppt, odp).
 settings-default-apps-katna = Katna Mail 뷰어
 settings-default-apps-system = 데스크톱의 기본 앱
 settings-default-apps-ask = 매번 앱 선택
@@ -216,7 +216,7 @@ settings-default-apps-pdf-summary = PDF 첨부파일을 여는 앱
 settings-default-apps-pictures-summary = 사진과 이미지를 여는 앱
 settings-default-apps-text-summary = 일반 텍스트, 로그, 코드를 여는 앱
 settings-default-apps-sheets-summary = Excel, OpenDocument, CSV 파일을 여는 앱
-settings-default-apps-documents-summary = Word와 OpenDocument 텍스트를 여는 앱
+settings-default-apps-documents-summary = Word, OpenDocument 텍스트, 슬라이드를 여는 앱
 settings-default-apps-after-saving-summary = 저장한 첨부파일을 폴더에서 표시
 settings-compose-send-from-summary = 새 메일을 보내는 계정: 현재 사용 중인 계정 또는 항상 같은 계정
 settings-compose-send-on-replies-summary = 답장과 전달에서 보내기 또는 보내고 대화 보관처리
@@ -246,3 +246,18 @@ settings-clock-language = 언어의 표기 방식대로
 settings-clock-12 = 12시간제(예: 오후 2:05)
 settings-clock-24 = 24시간제(예: 14:05)
 settings-time-summary = 12시간제 또는 24시간제, 또는 언어의 표기 방식대로
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = 기본 메일 앱
+settings-general-mail-app-detail = 다른 앱과 웹사이트의 이메일 링크를 누르면 여기에서 새 메일이 열립니다.
+mail-app-is-default = Katna Mail이 기본 메일 앱입니다.
+mail-app-is-other = 이메일 링크가 다른 앱에서 열립니다.
+mail-app-make-default = 기본 앱으로 설정
+mail-app-make-default-failed = 기본 메일 앱을 변경할 수 없습니다.
+settings-general-mail-app-summary = 다른 앱과 웹사이트의 이메일 링크를 Katna Mail에서 열기
+settings-compose-grammar = 문법
+settings-compose-grammar-detail = 이 컴퓨터에서 Harper로 검사합니다. 현재는 영어만 지원하며, 다른 언어로 쓴 텍스트는 그대로 둡니다.
+settings-compose-grammar-check = 문법 검사
+settings-compose-grammar-check-detail = 작성하는 동안 문법 오류에 밑줄 표시(영어)
+settings-compose-grammar-summary = 작성하는 동안 문법 오류에 밑줄 표시(영어)

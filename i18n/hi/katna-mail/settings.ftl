@@ -139,7 +139,7 @@ settings-default-apps-text-detail = सादा टेक्स्ट, लॉ�
 settings-default-apps-sheets = स्प्रेडशीट
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) और CSV।
 settings-default-apps-documents = दस्तावेज़
-settings-default-apps-documents-detail = Word (docx) और OpenDocument टेक्स्ट (odt)।
+settings-default-apps-documents-detail = Word (docx, doc), OpenDocument टेक्स्ट (odt) और स्लाइड (pptx, ppt, odp)।
 settings-default-apps-katna = Katna Mail का व्यूअर
 settings-default-apps-system = डेस्कटॉप का डिफ़ॉल्ट ऐप
 settings-default-apps-ask = हर बार पूछें कि कौन-सा ऐप
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = PDF अटैचमेंट कहां �
 settings-default-apps-pictures-summary = फ़ोटो और तस्वीरें कहां खुलें
 settings-default-apps-text-summary = सादा टेक्स्ट, लॉग और कोड कहां खुलें
 settings-default-apps-sheets-summary = Excel, OpenDocument और CSV फ़ाइलें कहां खुलें
-settings-default-apps-documents-summary = Word और OpenDocument टेक्स्ट कहां खुलें
+settings-default-apps-documents-summary = Word, OpenDocument टेक्स्ट और स्लाइड कहां खुलें
 settings-default-apps-after-saving-summary = सेव किए गए अटैचमेंट उनके फ़ोल्डर में दिखाएं
 settings-compose-send-from-summary = नया मेल किस खाते से जाए: जिसमें आप हैं, या हमेशा एक ही खाते से
 settings-compose-send-on-replies-summary = जवाब और फ़ॉरवर्ड पर भेजें, या भेजें और बातचीत संग्रह करें
@@ -252,3 +252,18 @@ settings-clock-language = भाषा के अनुसार
 settings-clock-12 = 12 घंटे, जैसे 2:05 pm
 settings-clock-24 = 24 घंटे, जैसे 14:05
 settings-time-summary = 12 घंटे या 24 घंटे की घड़ी, या भाषा के अनुसार
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = डिफ़ॉल्ट मेल ऐप
+settings-general-mail-app-detail = दूसरे ऐप और वेबसाइटों पर ईमेल लिंक यहां नया मैसेज खोलते हैं।
+mail-app-is-default = Katna Mail आपका डिफ़ॉल्ट मेल ऐप है।
+mail-app-is-other = ईमेल लिंक किसी दूसरे ऐप में खुलते हैं।
+mail-app-make-default = डिफ़ॉल्ट बनाएं
+mail-app-make-default-failed = डिफ़ॉल्ट मेल ऐप नहीं बदला जा सका।
+settings-general-mail-app-summary = दूसरे ऐप और वेबसाइटों के ईमेल लिंक Katna Mail में खोलें
+settings-compose-grammar = व्याकरण
+settings-compose-grammar-detail = इसी कंप्यूटर पर Harper से जांचा जाता है। अभी सिर्फ़ अंग्रेज़ी: दूसरी भाषाओं के टेक्स्ट को नहीं छुआ जाता।
+settings-compose-grammar-check = व्याकरण जांचें
+settings-compose-grammar-check-detail = लिखते समय व्याकरण की गलतियों के नीचे लाइन दिखाएं, अंग्रेज़ी में
+settings-compose-grammar-summary = लिखते समय व्याकरण की गलतियों के नीचे लाइन दिखाएं, अंग्रेज़ी में

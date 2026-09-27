@@ -133,7 +133,7 @@ settings-default-apps-text-detail = စာသားသက်သက်၊ မှ�
 settings-default-apps-sheets = စာရင်းဇယားများ
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) နှင့် CSV။
 settings-default-apps-documents = စာရွက်စာတမ်းများ
-settings-default-apps-documents-detail = Word (docx) နှင့် OpenDocument စာသား (odt)။
+settings-default-apps-documents-detail = Word (docx, doc), OpenDocument စာသား (odt) နှင့် ဆလိုက်များ (pptx, ppt, odp)။
 settings-default-apps-katna = Katna Mail ၏ ကြည့်ရှုစနစ်
 settings-default-apps-system = ဒက်စ်တော့၏ မူရင်းအက်ပ်
 settings-default-apps-ask = အကြိမ်တိုင်း မည်သည့်အက်ပ်ကို သုံးမည် မေးရန်
@@ -216,7 +216,7 @@ settings-default-apps-pdf-summary = PDF ပူးတွဲဖိုင်မျ�
 settings-default-apps-pictures-summary = ဓာတ်ပုံများနှင့် ပုံများ ဖွင့်မည့်နေရာ
 settings-default-apps-text-summary = စာသားသက်သက်၊ မှတ်တမ်းများနှင့် ကုဒ် ဖွင့်မည့်နေရာ
 settings-default-apps-sheets-summary = Excel, OpenDocument နှင့် CSV ဖိုင်များ ဖွင့်မည့်နေရာ
-settings-default-apps-documents-summary = Word နှင့် OpenDocument စာသား ဖွင့်မည့်နေရာ
+settings-default-apps-documents-summary = Word၊ OpenDocument စာသား နှင့် ဆလိုက်များ ဖွင့်မည့်နေရာ
 settings-default-apps-after-saving-summary = သိမ်းထားသော ပူးတွဲဖိုင်များကို ၎င်းတို့၏ ဖိုင်တွဲတွင် ပြရန်
 settings-compose-send-from-summary = မေးလ်အသစ် ပို့မည့် အကောင့်- သင်ရောက်နေသော အကောင့် သို့မဟုတ် အမြဲတမ်း တူညီသော အကောင့်
 settings-compose-send-on-replies-summary = ပြန်စာနှင့် ထပ်ဆင့်ပို့ချက်များတွင် ပို့ရန် သို့မဟုတ် ပို့ပြီး စကားဝိုင်းကို မှတ်တမ်းသိမ်းရန်
@@ -246,3 +246,18 @@ settings-clock-language = ဘာသာစကားက ရေးသည့်အ�
 settings-clock-12 = ၁၂ နာရီစနစ်၊ ဥပမာ ညနေ ၂:၀၅
 settings-clock-24 = ၂၄ နာရီစနစ်၊ ဥပမာ ၁၄:၀၅
 settings-time-summary = ၁၂ နာရီ သို့မဟုတ် ၂၄ နာရီစနစ်၊ သို့မဟုတ် ဘာသာစကားက ရေးသည့်အတိုင်း
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = မူရင်း မေးလ် အက်ပ်
+settings-general-mail-app-detail = အခြားအက်ပ်များနှင့် ဝဘ်ဆိုက်များရှိ အီးမေးလ်လင့်ခ်များက ဤနေရာတွင် မက်ဆေ့ဂျ်အသစ်တစ်ခု ဖွင့်ပေးသည်။
+mail-app-is-default = Katna Mail သည် သင်၏ မူရင်း မေးလ် အက်ပ် ဖြစ်သည်။
+mail-app-is-other = အီးမေးလ်လင့်ခ်များကို အခြားအက်ပ်တွင် ဖွင့်သည်။
+mail-app-make-default = မူရင်းအဖြစ် သတ်မှတ်ရန်
+mail-app-make-default-failed = မူရင်း မေးလ် အက်ပ်ကို ပြောင်း၍ မရပါ။
+settings-general-mail-app-summary = အခြားအက်ပ်များနှင့် ဝဘ်ဆိုက်များမှ အီးမေးလ်လင့်ခ်များကို Katna Mail တွင် ဖွင့်ရန်
+settings-compose-grammar = သဒ္ဒါ
+settings-compose-grammar-detail = ဤကွန်ပျူတာပေါ်တွင် Harper ဖြင့် စစ်ဆေးသည်။ ယခုအတွက် အင်္ဂလိပ်ဘာသာသာ- အခြားဘာသာစကားများဖြင့် ရေးထားသော စာသားကို မပြောင်းလဲပါ။
+settings-compose-grammar-check = သဒ္ဒါ စစ်ဆေးရန်
+settings-compose-grammar-check-detail = ရေးနေစဉ် သဒ္ဒါအမှားများကို မျဉ်းသားရန်၊ အင်္ဂလိပ်ဘာသာဖြင့်
+settings-compose-grammar-summary = ရေးနေစဉ် သဒ္ဒါအမှားများကို မျဉ်းသားရန်၊ အင်္ဂလိပ်ဘာသာဖြင့်

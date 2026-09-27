@@ -133,7 +133,7 @@ settings-default-apps-text-detail = Teks biasa, log, kod dan teks lain.
 settings-default-apps-sheets = Hamparan
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) dan CSV.
 settings-default-apps-documents = Dokumen
-settings-default-apps-documents-detail = Word (docx) dan teks OpenDocument (odt).
+settings-default-apps-documents-detail = Word (docx, doc), teks OpenDocument (odt) dan slaid (pptx, ppt, odp).
 settings-default-apps-katna = Pemapar Katna Mail
 settings-default-apps-system = Apl lalai desktop
 settings-default-apps-ask = Tanya apl mana setiap kali
@@ -216,7 +216,7 @@ settings-default-apps-pdf-summary = Tempat lampiran PDF dibuka
 settings-default-apps-pictures-summary = Tempat foto dan gambar dibuka
 settings-default-apps-text-summary = Tempat teks biasa, log dan kod dibuka
 settings-default-apps-sheets-summary = Tempat fail Excel, OpenDocument dan CSV dibuka
-settings-default-apps-documents-summary = Tempat teks Word dan OpenDocument dibuka
+settings-default-apps-documents-summary = Tempat teks Word dan OpenDocument serta slaid dibuka
 settings-default-apps-after-saving-summary = Tunjukkan lampiran yang disimpan dalam foldernya
 settings-compose-send-from-summary = Akaun yang menghantar mel baharu: akaun yang sedang anda gunakan, atau sentiasa akaun yang sama
 settings-compose-send-on-replies-summary = Hantar, atau Hantar dan arkibkan perbualan, pada balasan dan majuan
@@ -246,3 +246,18 @@ settings-clock-language = Seperti yang ditulis dalam bahasa itu
 settings-clock-12 = 12 jam, seperti 2:05 PTG
 settings-clock-24 = 24 jam, seperti 14:05
 settings-time-summary = Format 12 jam atau 24 jam, atau seperti yang ditulis dalam bahasa itu
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = Apl mel lalai
+settings-general-mail-app-detail = Pautan e-mel dalam apl lain dan di laman web membuka mesej baharu di sini.
+mail-app-is-default = Katna Mail ialah apl mel lalai anda.
+mail-app-is-other = Pautan e-mel dibuka dalam apl lain.
+mail-app-make-default = Jadikan lalai
+mail-app-make-default-failed = Tidak dapat menukar apl mel lalai.
+settings-general-mail-app-summary = Buka pautan e-mel daripada apl lain dan laman web dalam Katna Mail
+settings-compose-grammar = Tatabahasa
+settings-compose-grammar-detail = Disemak pada komputer ini dengan Harper. Buat masa ini bahasa Inggeris sahaja: teks dalam bahasa lain dibiarkan seperti asal.
+settings-compose-grammar-check = Semak tatabahasa
+settings-compose-grammar-check-detail = Gariskan kesilapan tatabahasa semasa menulis, dalam bahasa Inggeris
+settings-compose-grammar-summary = Gariskan kesilapan tatabahasa semasa menulis, dalam bahasa Inggeris

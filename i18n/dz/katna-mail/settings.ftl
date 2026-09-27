@@ -133,7 +133,7 @@ settings-default-apps-text-detail = ཚིག་ཡིག་རྐྱང་པ�
 settings-default-apps-sheets = ཤོག་ཁྲམ་ཚུ
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) དང་ CSV།
 settings-default-apps-documents = ཡིག་ཆ་ཚུ
-settings-default-apps-documents-detail = Word (docx) དང་ OpenDocument ཚིག་ཡིག (odt)།
+settings-default-apps-documents-detail = Word (docx, doc), OpenDocument ཚིག་ཡིག (odt) དང་ བརྙན་ཤོག (pptx, ppt, odp)།
 settings-default-apps-katna = Katna Mail གི་བལྟ་བྱེད
 settings-default-apps-system = ཌེཀསི་ཊོཔ་གི་སྔོན་སྒྲིག་གློག་རིམ
 settings-default-apps-ask = ཚར་རེ་རེ་ལུ་ གློག་རིམ་ག་འདི་ཨིན་ན་དྲི།
@@ -216,7 +216,7 @@ settings-default-apps-pdf-summary = PDF མཉམ་སྦྲགས་ཚུ་�
 settings-default-apps-pictures-summary = པར་དང་པར་རིས་ཚུ་ཁ་ཕྱེ་ས
 settings-default-apps-text-summary = ཚིག་ཡིག་རྐྱང་པ་ དྲན་ཐོ་དང་ ཨང་རྟགས་ཚུ་ཁ་ཕྱེ་ས
 settings-default-apps-sheets-summary = Excel, OpenDocument དང་ CSV ཡིག་སྣོད་ཚུ་ཁ་ཕྱེ་ས
-settings-default-apps-documents-summary = Word དང་ OpenDocument ཚིག་ཡིག་ཁ་ཕྱེ་ས
+settings-default-apps-documents-summary = Word དང་ OpenDocument ཚིག་ཡིག་ བརྙན་ཤོག་ཚུ་ཁ་ཕྱེ་ས
 settings-default-apps-after-saving-summary = སྲུང་ཡོད་པའི་མཉམ་སྦྲགས་ཚུ་ དེ་ཚུ་གི་སྣོད་འཛིན་ནང་སྟོན།
 settings-compose-send-from-summary = གློག་འཕྲིན་གསརཔ་འགྱོ་སའི་རྩིས་ཐོ: ཁྱོད་ཡོད་པའི་རྩིས་ཐོ་ ཡང་ན་ ཨ་རྟག་ར་རྩིས་ཐོ་གཅིག་པ
 settings-compose-send-on-replies-summary = ལན་དང་མདུན་སྐྱེལ་གུ་ གཏང་ ཡང་ན་ གཏང་སྟེ་གླེང་མོལ་ཡིག་མཛོད་ནང་བཙུགས
@@ -246,3 +246,18 @@ settings-clock-language = སྐད་ཡིག་གིས་འབྲི་ས
 settings-clock-12 = ཆུ་ཚོད་ 12 དཔེར་ན་ 2:05 PM
 settings-clock-24 = ཆུ་ཚོད་ 24 དཔེར་ན་ 14:05
 settings-time-summary = ཆུ་ཚོད་ 12 ཡང་ན་ 24 གི་ཆུ་ཚོད་ ཡང་ན་ སྐད་ཡིག་གིས་འབྲི་སྲོལ་བཞིན
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = སྔོན་སྒྲིག་ཡིག་འཕྲིན་གློག་རིམ
+settings-general-mail-app-detail = གློག་རིམ་གཞན་དང་ ཝེབ་ས་ཚིགས་ཚུ་ནང་གི་ གློག་འཕྲིན་འབྲེལ་མཐུད་ཚུ་གིས་ ནཱ་ལུ་ འཕྲིན་དོན་གསརཔ་ཅིག་ཁ་ཕྱེཝ་ཨིན།
+mail-app-is-default = Katna Mail འདི་ ཁྱོད་ཀྱི་སྔོན་སྒྲིག་ཡིག་འཕྲིན་གློག་རིམ་ཨིན།
+mail-app-is-other = གློག་འཕྲིན་འབྲེལ་མཐུད་ཚུ་ གློག་རིམ་གཞན་ཅིག་ནང་ཁ་ཕྱེཝ་ཨིན།
+mail-app-make-default = སྔོན་སྒྲིག་བཟོ།
+mail-app-make-default-failed = སྔོན་སྒྲིག་ཡིག་འཕྲིན་གློག་རིམ་ བསྒྱུར་མ་ཚུགས།
+settings-general-mail-app-summary = གློག་རིམ་གཞན་དང་ ཝེབ་ས་ཚིགས་ཚུ་ནང་ལས་ གློག་འཕྲིན་འབྲེལ་མཐུད་ཚུ་ Katna Mail ནང་ཁ་ཕྱེ།
+settings-compose-grammar = བརྡ་སྤྲོད
+settings-compose-grammar-detail = གློག་རིག་འདི་གུ་ Harper གིས་ཞིབ་དཔྱད་འབདཝ་ཨིན། ད་ལྟོ་ཨིན་ཇི་ཁ་རྐྱངམ་ཅིག: སྐད་ཡིག་གཞན་གྱི་ཚིག་ཡིག་ལུ་ ག་ནི་ཡང་མི་བསྒྱུར།
+settings-compose-grammar-check = བརྡ་སྤྲོད་ཞིབ་དཔྱད་འབད།
+settings-compose-grammar-check-detail = བྲི་བའི་སྐབས་ བརྡ་སྤྲོད་འཛོལ་བ་ཚུ་ལུ་ འོག་ཐིག་བཀལ་ ཨིན་ཇི་ཁ་ནང་
+settings-compose-grammar-summary = བྲི་བའི་སྐབས་ བརྡ་སྤྲོད་འཛོལ་བ་ཚུ་ལུ་ འོག་ཐིག་བཀལ་ ཨིན་ཇི་ཁ་ནང་

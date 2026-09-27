@@ -133,7 +133,7 @@ settings-default-apps-text-detail = Ọ̀rọ̀ lásán, àkọsílẹ̀ ìṣ�
 settings-default-apps-sheets = Àwọn ìwé-ìṣirò
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) àti CSV.
 settings-default-apps-documents = Àwọn ìwé
-settings-default-apps-documents-detail = Word (docx) àti ọ̀rọ̀ OpenDocument (odt).
+settings-default-apps-documents-detail = Word (docx, doc), ọ̀rọ̀ OpenDocument (odt) àti àwọn sìláìdì (pptx, ppt, odp).
 settings-default-apps-katna = Olùwòran Katna Mail
 settings-default-apps-system = Áàpù àtilẹ̀wá déskítọ́ọ̀pù
 settings-default-apps-ask = Béèrè áàpù wo ní gbogbo ìgbà
@@ -216,7 +216,7 @@ settings-default-apps-pdf-summary = Ibi tí àwọn àfikún PDF ti ń ṣí
 settings-default-apps-pictures-summary = Ibi tí fọ́tò àti àwòrán ti ń ṣí
 settings-default-apps-text-summary = Ibi tí ọ̀rọ̀ lásán, àkọsílẹ̀ ìṣẹ̀lẹ̀ àti kóòdù ti ń ṣí
 settings-default-apps-sheets-summary = Ibi tí àwọn fáìlì Excel, OpenDocument àti CSV ti ń ṣí
-settings-default-apps-documents-summary = Ibi tí Word àti ọ̀rọ̀ OpenDocument ti ń ṣí
+settings-default-apps-documents-summary = Ibi tí Word, ọ̀rọ̀ OpenDocument àti àwọn sìláìdì ti ń ṣí
 settings-default-apps-after-saving-summary = Fi àwọn àfikún tí a fi pamọ́ hàn nínú fódà wọn
 settings-compose-send-from-summary = Àkáǹtì tí lẹ́tà tuntun ń jáde láti inú rẹ̀: èyí tí o wà nínú rẹ̀, tàbí èyí kan náà nígbà gbogbo
 settings-compose-send-on-replies-summary = Fi ránṣẹ́, tàbí Fi ránṣẹ́ kí o sì fi ìjíròrò pamọ́, lórí èsì àti ìfiránṣẹ́-síwájú
@@ -246,3 +246,18 @@ settings-clock-language = Bí èdè ṣe ń kọ ọ́
 settings-clock-12 = Wákàtí 12, bí 2:05 Ọ̀sán
 settings-clock-24 = Wákàtí 24, bí 14:05
 settings-time-summary = Aago wákàtí 12 tàbí wákàtí 24, tàbí bí èdè ṣe ń kọ ọ́
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = Áàpù ímeèlì àtilẹ̀wá
+settings-general-mail-app-detail = Àwọn ìjápọ̀ ímeèlì nínú àwọn áàpù mìíràn àti lórí àwọn ojú òpó wẹ́ẹ̀bù ń ṣí ìfiránṣẹ́ tuntun níbí.
+mail-app-is-default = Katna Mail ni áàpù ímeèlì àtilẹ̀wá rẹ.
+mail-app-is-other = Àwọn ìjápọ̀ ímeèlì ń ṣí nínú áàpù mìíràn.
+mail-app-make-default = Ṣe é ní àtilẹ̀wá
+mail-app-make-default-failed = Kò lè yí áàpù ímeèlì àtilẹ̀wá padà.
+settings-general-mail-app-summary = Ṣí àwọn ìjápọ̀ ímeèlì láti inú àwọn áàpù mìíràn àti ojú òpó wẹ́ẹ̀bù nínú Katna Mail
+settings-compose-grammar = Gírámà
+settings-compose-grammar-detail = A ń ṣàyẹ̀wò rẹ̀ lórí kọ̀ǹpútà yìí pẹ̀lú Harper. Gẹ̀ẹ́sì nìkan fún báyìí: a kò fọwọ́ kan ọ̀rọ̀ ní àwọn èdè mìíràn.
+settings-compose-grammar-check = Ṣàyẹ̀wò gírámà
+settings-compose-grammar-check-detail = Fa ìlà sí abẹ́ àṣìṣe gírámà bí o ṣe ń kọ̀wé, ní Gẹ̀ẹ́sì
+settings-compose-grammar-summary = Fa ìlà sí abẹ́ àṣìṣe gírámà bí o ṣe ń kọ̀wé, ní Gẹ̀ẹ́sì

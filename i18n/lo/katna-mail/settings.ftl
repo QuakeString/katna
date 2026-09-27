@@ -133,7 +133,7 @@ settings-default-apps-text-detail = ຂໍ້ຄວາມທຳມະດາ, ບ
 settings-default-apps-sheets = ສະເປຣດຊີດ
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) ແລະ CSV.
 settings-default-apps-documents = ເອກະສານ
-settings-default-apps-documents-detail = Word (docx) ແລະ ຂໍ້ຄວາມ OpenDocument (odt).
+settings-default-apps-documents-detail = Word (docx, doc), ຂໍ້ຄວາມ OpenDocument (odt) ແລະ ສະໄລ້ (pptx, ppt, odp).
 settings-default-apps-katna = ຕົວເບິ່ງໄຟລ໌ຂອງ Katna Mail
 settings-default-apps-system = ແອັບເລີ່ມຕົ້ນຂອງເດັສທັອບ
 settings-default-apps-ask = ຖາມທຸກເທື່ອວ່າຈະໃຊ້ແອັບໃດ
@@ -216,7 +216,7 @@ settings-default-apps-pdf-summary = ບ່ອນທີ່ໄຟລ໌ແນບ P
 settings-default-apps-pictures-summary = ບ່ອນທີ່ຮູບຖ່າຍ ແລະ ຮູບພາບຈະເປີດ
 settings-default-apps-text-summary = ບ່ອນທີ່ຂໍ້ຄວາມທຳມະດາ, ບັນທຶກລະບົບ ແລະ ໂຄ້ດຈະເປີດ
 settings-default-apps-sheets-summary = ບ່ອນທີ່ໄຟລ໌ Excel, OpenDocument ແລະ CSV ຈະເປີດ
-settings-default-apps-documents-summary = ບ່ອນທີ່ Word ແລະ ຂໍ້ຄວາມ OpenDocument ຈະເປີດ
+settings-default-apps-documents-summary = ບ່ອນທີ່ Word, ຂໍ້ຄວາມ OpenDocument ແລະ ສະໄລ້ ຈະເປີດ
 settings-default-apps-after-saving-summary = ສະແດງໄຟລ໌ແນບທີ່ບັນທຶກແລ້ວໃນໂຟນເດີຂອງມັນ
 settings-compose-send-from-summary = ບັນຊີທີ່ອີເມວໃໝ່ຈະສົ່ງອອກ: ບັນຊີທີ່ທ່ານຢູ່, ຫຼື ບັນຊີດຽວກັນສະເໝີ
 settings-compose-send-on-replies-summary = ສົ່ງ, ຫຼື ສົ່ງ ແລະ ຈັດເກັບການສົນທະນາ, ເມື່ອຕອບກັບ ແລະ ສົ່ງຕໍ່
@@ -246,3 +246,18 @@ settings-clock-language = ຕາມທີ່ພາສາຂຽນ
 settings-clock-12 = 12 ຊົ່ວໂມງ, ເຊັ່ນ 2:05 ຫຼັງທ່ຽງ
 settings-clock-24 = 24 ຊົ່ວໂມງ, ເຊັ່ນ 14:05
 settings-time-summary = ໂມງ 12 ຊົ່ວໂມງ ຫຼື 24 ຊົ່ວໂມງ, ຫຼື ຕາມທີ່ພາສາຂຽນ
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = ແອັບອີເມວເລີ່ມຕົ້ນ
+settings-general-mail-app-detail = ລິ້ງອີເມວໃນແອັບອື່ນ ແລະ ໃນເວັບໄຊຈະເປີດຂໍ້ຄວາມໃໝ່ຢູ່ບ່ອນນີ້.
+mail-app-is-default = Katna Mail ແມ່ນແອັບອີເມວເລີ່ມຕົ້ນຂອງທ່ານ.
+mail-app-is-other = ລິ້ງອີເມວຈະເປີດໃນແອັບອື່ນ.
+mail-app-make-default = ຕັ້ງເປັນຄ່າເລີ່ມຕົ້ນ
+mail-app-make-default-failed = ບໍ່ສາມາດປ່ຽນແອັບອີເມວເລີ່ມຕົ້ນໄດ້.
+settings-general-mail-app-summary = ເປີດລິ້ງອີເມວຈາກແອັບອື່ນ ແລະ ເວັບໄຊໃນ Katna Mail
+settings-compose-grammar = ໄວຍາກອນ
+settings-compose-grammar-detail = ກວດຢູ່ໃນຄອມພິວເຕີນີ້ດ້ວຍ Harper. ຕອນນີ້ຮອງຮັບສະເພາະພາສາອັງກິດ: ຂໍ້ຄວາມໃນພາສາອື່ນຈະບໍ່ຖືກແຕະຕ້ອງ.
+settings-compose-grammar-check = ກວດໄວຍາກອນ
+settings-compose-grammar-check-detail = ຂີດເສັ້ນກ້ອງຂໍ້ຜິດພາດທາງໄວຍາກອນຂະນະຂຽນ, ເປັນພາສາອັງກິດ
+settings-compose-grammar-summary = ຂີດເສັ້ນກ້ອງຂໍ້ຜິດພາດທາງໄວຍາກອນຂະນະຂຽນ, ເປັນພາສາອັງກິດ

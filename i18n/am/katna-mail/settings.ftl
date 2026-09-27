@@ -139,7 +139,7 @@ settings-default-apps-text-detail = ግልጽ ጽሑፍ፣ ምዝግብ ማስ�
 settings-default-apps-sheets = የተመን ሉሆች
 settings-default-apps-sheets-detail = Excel (xlsx፣ xls)፣ OpenDocument (ods) እና CSV።
 settings-default-apps-documents = ሰነዶች
-settings-default-apps-documents-detail = Word (docx) እና የOpenDocument ጽሑፍ (odt)።
+settings-default-apps-documents-detail = Word (docx፣ doc)፣ የOpenDocument ጽሑፍ (odt) እና ስላይዶች (pptx፣ ppt፣ odp)።
 settings-default-apps-katna = የKatna Mail ተመልካች
 settings-default-apps-system = የዴስክቶፑ ነባሪ መተግበሪያ
 settings-default-apps-ask = በእያንዳንዱ ጊዜ የትኛውን መተግበሪያ እንደሆነ ጠይቅ
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = የPDF አባሪዎች የሚከፈቱበት
 settings-default-apps-pictures-summary = ፎቶዎች እና ሥዕሎች የሚከፈቱበት ቦታ
 settings-default-apps-text-summary = ግልጽ ጽሑፍ፣ ምዝግብ ማስታወሻዎች እና ኮድ የሚከፈቱበት ቦታ
 settings-default-apps-sheets-summary = የExcel፣ OpenDocument እና CSV ፋይሎች የሚከፈቱበት ቦታ
-settings-default-apps-documents-summary = Word እና የOpenDocument ጽሑፍ የሚከፈቱበት ቦታ
+settings-default-apps-documents-summary = Word፣ የOpenDocument ጽሑፍ እና ስላይዶች የሚከፈቱበት ቦታ
 settings-default-apps-after-saving-summary = የተቀመጡ አባሪዎችን በአቃፊያቸው ውስጥ አሳይ
 settings-compose-send-from-summary = አዲስ ደብዳቤ የሚወጣበት መለያ፦ ያሉበት፣ ወይም ሁልጊዜ ያው
 settings-compose-send-on-replies-summary = በምላሾች እና በማስተላለፎች ላይ ላክ፣ ወይም ላክ እና ውይይቱን ወደ ማህደር አስቀምጥ
@@ -252,3 +252,18 @@ settings-clock-language = ቋንቋው በሚጽፈው መንገድ
 settings-clock-12 = የ12 ሰዓት፣ ለምሳሌ 2:05 ከሰዓት
 settings-clock-24 = የ24 ሰዓት፣ ለምሳሌ 14:05
 settings-time-summary = የ12 ወይም የ24 ሰዓት አቆጣጠር፣ ወይም ቋንቋው በሚጽፈው መንገድ
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = ነባሪ የኢሜይል መተግበሪያ
+settings-general-mail-app-detail = በሌሎች መተግበሪያዎች እና በድር ጣቢያዎች ላይ ያሉ የኢሜይል አገናኞች እዚህ አዲስ መልዕክት ይከፍታሉ።
+mail-app-is-default = Katna Mail ነባሪ የኢሜይል መተግበሪያዎ ነው።
+mail-app-is-other = የኢሜይል አገናኞች በሌላ መተግበሪያ ይከፈታሉ።
+mail-app-make-default = ነባሪ አድርግ
+mail-app-make-default-failed = ነባሪውን የኢሜይል መተግበሪያ መቀየር አልተቻለም።
+settings-general-mail-app-summary = ከሌሎች መተግበሪያዎች እና ድር ጣቢያዎች የሚመጡ የኢሜይል አገናኞችን በKatna Mail ክፈት
+settings-compose-grammar = ሰዋስው
+settings-compose-grammar-detail = በዚህ ኮምፒውተር ላይ በHarper ይፈተሻል። ለአሁን እንግሊዝኛ ብቻ፦ በሌሎች ቋንቋዎች የተጻፈ ጽሑፍ አይነካም።
+settings-compose-grammar-check = ሰዋስውን አረጋግጥ
+settings-compose-grammar-check-detail = በሚጽፉበት ጊዜ የሰዋስው ስህተቶችን አስምር፣ በእንግሊዝኛ
+settings-compose-grammar-summary = በሚጽፉበት ጊዜ የሰዋስው ስህተቶችን አስምር፣ በእንግሊዝኛ

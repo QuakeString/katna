@@ -139,7 +139,7 @@ settings-default-apps-text-detail = සරල පෙළ, ලොග, කේතය
 settings-default-apps-sheets = පැතුරුම්පත්
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) සහ CSV.
 settings-default-apps-documents = ලේඛන
-settings-default-apps-documents-detail = Word (docx) සහ OpenDocument පෙළ (odt).
+settings-default-apps-documents-detail = Word (docx, doc), OpenDocument පෙළ (odt) සහ ස්ලයිඩ (pptx, ppt, odp).
 settings-default-apps-katna = Katna Mail හි දර්ශකය
 settings-default-apps-system = ඩෙස්ක්ටොප් එකේ පෙරනිමි යෙදුම
 settings-default-apps-ask = සෑම විටම කුමන යෙදුමදැයි අසන්න
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = PDF ඇමුණුම් විවෘත �
 settings-default-apps-pictures-summary = ඡායාරූප සහ පින්තූර විවෘත වන තැන
 settings-default-apps-text-summary = සරල පෙළ, ලොග සහ කේතය විවෘත වන තැන
 settings-default-apps-sheets-summary = Excel, OpenDocument සහ CSV ගොනු විවෘත වන තැන
-settings-default-apps-documents-summary = Word සහ OpenDocument පෙළ විවෘත වන තැන
+settings-default-apps-documents-summary = Word, OpenDocument පෙළ සහ ස්ලයිඩ විවෘත වන තැන
 settings-default-apps-after-saving-summary = සුරැකි ඇමුණුම් ඒවායේ ෆෝල්ඩරයේ පෙන්වන්න
 settings-compose-send-from-summary = නව තැපැල් යවන ගිණුම: ඔබ සිටින එක, නැතහොත් සැමවිටම එකම එක
 settings-compose-send-on-replies-summary = පිළිතුරු සහ ඉදිරියට යැවීම්වලදී යවන්න, නැතහොත් යවා සංවාදය සංරක්ෂණය කරන්න
@@ -252,3 +252,18 @@ settings-clock-language = භාෂාව ලියන ආකාරයට
 settings-clock-12 = පැය 12, උදා: ප.ව. 2.05
 settings-clock-24 = පැය 24, උදා: 14:05
 settings-time-summary = පැය 12 හෝ පැය 24 ඔරලෝසුව, හෝ භාෂාව ලියන ආකාරයට
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = පෙරනිමි තැපැල් යෙදුම
+settings-general-mail-app-detail = වෙනත් යෙදුම්වල සහ වෙබ් අඩවිවල ඇති ඊමේල් සබැඳි මෙහි නව පණිවිඩයක් විවෘත කරයි.
+mail-app-is-default = Katna Mail ඔබේ පෙරනිමි තැපැල් යෙදුමයි.
+mail-app-is-other = ඊමේල් සබැඳි වෙනත් යෙදුමක විවෘත වේ.
+mail-app-make-default = පෙරනිමි කරන්න
+mail-app-make-default-failed = පෙරනිමි තැපැල් යෙදුම වෙනස් කළ නොහැකි විය.
+settings-general-mail-app-summary = වෙනත් යෙදුම් සහ වෙබ් අඩවිවලින් එන ඊමේල් සබැඳි Katna Mail හි විවෘත කරන්න
+settings-compose-grammar = ව්‍යාකරණ
+settings-compose-grammar-detail = මෙම පරිගණකයේම Harper මඟින් පරීක්ෂා කෙරේ. දැනට ඉංග්‍රීසි පමණි: වෙනත් භාෂාවල පෙළ වෙනස් නොකෙරේ.
+settings-compose-grammar-check = ව්‍යාකරණ පරීක්ෂා කරන්න
+settings-compose-grammar-check-detail = ලියන අතරතුර ව්‍යාකරණ දෝෂ යටින් ඉරි අඳින්න, ඉංග්‍රීසියෙන්
+settings-compose-grammar-summary = ලියන අතරතුර ව්‍යාකරණ දෝෂ යටින් ඉරි අඳින්න, ඉංග්‍රීසියෙන්

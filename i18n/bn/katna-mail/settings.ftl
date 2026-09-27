@@ -139,7 +139,7 @@ settings-default-apps-text-detail = সাধারণ টেক্সট, ল�
 settings-default-apps-sheets = স্প্রেডশিট
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) ও CSV।
 settings-default-apps-documents = ডকুমেন্ট
-settings-default-apps-documents-detail = Word (docx) ও OpenDocument টেক্সট (odt)।
+settings-default-apps-documents-detail = Word (docx, doc), OpenDocument টেক্সট (odt) ও স্লাইড (pptx, ppt, odp)।
 settings-default-apps-katna = Katna Mail-এর ভিউয়ার
 settings-default-apps-system = ডেস্কটপের ডিফল্ট অ্যাপ
 settings-default-apps-ask = প্রতিবার জিজ্ঞাসা করুন কোন অ্যাপ
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = PDF অ্যাটাচমেন্ট ক
 settings-default-apps-pictures-summary = ফটো ও ছবি কোথায় খুলবে
 settings-default-apps-text-summary = সাধারণ টেক্সট, লগ ও কোড কোথায় খুলবে
 settings-default-apps-sheets-summary = Excel, OpenDocument ও CSV ফাইল কোথায় খুলবে
-settings-default-apps-documents-summary = Word ও OpenDocument টেক্সট কোথায় খুলবে
+settings-default-apps-documents-summary = Word, OpenDocument টেক্সট ও স্লাইড কোথায় খুলবে
 settings-default-apps-after-saving-summary = সেভ করা অ্যাটাচমেন্ট তাদের ফোল্ডারে দেখান
 settings-compose-send-from-summary = নতুন মেল কোন অ্যাকাউন্ট থেকে যাবে: আপনি যেটিতে আছেন, বা সবসময় একই অ্যাকাউন্ট
 settings-compose-send-on-replies-summary = উত্তর ও ফরোয়ার্ডে পাঠান, অথবা পাঠান ও কথোপকথন আর্কাইভ করুন
@@ -252,3 +252,18 @@ settings-clock-language = ভাষা যেভাবে লেখে
 settings-clock-12 = ১২ ঘণ্টা, যেমন ২:০৫ PM
 settings-clock-24 = ২৪ ঘণ্টা, যেমন ১৪:০৫
 settings-time-summary = ১২ ঘণ্টা বা ২৪ ঘণ্টার ঘড়ি, বা ভাষা যেভাবে লেখে
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = ডিফল্ট মেল অ্যাপ
+settings-general-mail-app-detail = অন্য অ্যাপ ও ওয়েবসাইটের ইমেল লিঙ্ক এখানে নতুন মেসেজ খোলে।
+mail-app-is-default = Katna Mail আপনার ডিফল্ট মেল অ্যাপ।
+mail-app-is-other = ইমেল লিঙ্ক অন্য অ্যাপে খোলে।
+mail-app-make-default = ডিফল্ট করুন
+mail-app-make-default-failed = ডিফল্ট মেল অ্যাপ বদলানো যায়নি।
+settings-general-mail-app-summary = অন্য অ্যাপ ও ওয়েবসাইটের ইমেল লিঙ্ক Katna Mail-এ খুলুন
+settings-compose-grammar = ব্যাকরণ
+settings-compose-grammar-detail = এই কম্পিউটারেই Harper দিয়ে যাচাই করা হয়। আপাতত শুধু ইংরেজি: অন্য ভাষার লেখায় হাত দেওয়া হয় না।
+settings-compose-grammar-check = ব্যাকরণ যাচাই করুন
+settings-compose-grammar-check-detail = লেখার সময় ব্যাকরণের ভুলের নিচে দাগ দিন, ইংরেজিতে
+settings-compose-grammar-summary = লেখার সময় ব্যাকরণের ভুলের নিচে দাগ দিন, ইংরেজিতে

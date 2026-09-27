@@ -139,7 +139,7 @@ settings-default-apps-text-detail = Düz metin, günlükler, kod ve diğer metin
 settings-default-apps-sheets = E-tablolar
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) ve CSV.
 settings-default-apps-documents = Belgeler
-settings-default-apps-documents-detail = Word (docx) ve OpenDocument metni (odt).
+settings-default-apps-documents-detail = Word (docx, doc), OpenDocument metni (odt) ve slaytlar (pptx, ppt, odp).
 settings-default-apps-katna = Katna Mail görüntüleyicisi
 settings-default-apps-system = Masaüstünün varsayılan uygulaması
 settings-default-apps-ask = Her seferinde hangi uygulamanın kullanılacağını sor
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = PDF eklerinin açıldığı yer
 settings-default-apps-pictures-summary = Fotoğrafların ve resimlerin açıldığı yer
 settings-default-apps-text-summary = Düz metin, günlükler ve kodun açıldığı yer
 settings-default-apps-sheets-summary = Excel, OpenDocument ve CSV dosyalarının açıldığı yer
-settings-default-apps-documents-summary = Word ve OpenDocument metinlerinin açıldığı yer
+settings-default-apps-documents-summary = Word ve OpenDocument metinlerinin ve slaytların açıldığı yer
 settings-default-apps-after-saving-summary = Kaydedilen ekleri klasörlerinde göster
 settings-compose-send-from-summary = Yeni postaların gönderildiği hesap: içinde bulunduğunuz hesap ya da her zaman aynı hesap
 settings-compose-send-on-replies-summary = Yanıtlarda ve yönlendirmelerde Gönder ya da Gönder ve ileti dizisini arşivle
@@ -252,3 +252,18 @@ settings-clock-language = Dilin yazdığı gibi
 settings-clock-12 = 12 saatlik, örneğin 2:05 ÖS
 settings-clock-24 = 24 saatlik, örneğin 14:05
 settings-time-summary = 12 veya 24 saatlik biçim ya da dilin yazdığı gibi
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = Varsayılan e-posta uygulaması
+settings-general-mail-app-detail = Diğer uygulamalardaki ve web sitelerindeki e-posta bağlantıları burada yeni bir ileti açar.
+mail-app-is-default = Katna Mail varsayılan e-posta uygulamanız.
+mail-app-is-other = E-posta bağlantıları başka bir uygulamada açılır.
+mail-app-make-default = Varsayılan yap
+mail-app-make-default-failed = Varsayılan e-posta uygulaması değiştirilemedi.
+settings-general-mail-app-summary = Diğer uygulamalardan ve web sitelerinden gelen e-posta bağlantılarını Katna Mail'de aç
+settings-compose-grammar = Dil bilgisi
+settings-compose-grammar-detail = Bu bilgisayarda Harper ile denetlenir. Şimdilik yalnızca İngilizce: başka dillerdeki metinlere dokunulmaz.
+settings-compose-grammar-check = Dil bilgisini denetle
+settings-compose-grammar-check-detail = Yazarken dil bilgisi hatalarının altını çiz, İngilizce
+settings-compose-grammar-summary = Yazarken dil bilgisi hatalarının altını çiz, İngilizce

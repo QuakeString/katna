@@ -139,7 +139,7 @@ settings-default-apps-text-detail = Gewone teks, logboeke, kode en ander teks.
 settings-default-apps-sheets = Sigblaaie
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) en CSV.
 settings-default-apps-documents = Dokumente
-settings-default-apps-documents-detail = Word (docx) en OpenDocument-teks (odt).
+settings-default-apps-documents-detail = Word (docx, doc), OpenDocument-teks (odt) en skyfies (pptx, ppt, odp).
 settings-default-apps-katna = Katna Mail se kyker
 settings-default-apps-system = Die werkskerm se verstekprogram
 settings-default-apps-ask = Vra elke keer watter program
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = Waar PDF-aanhegsels oopmaak
 settings-default-apps-pictures-summary = Waar foto's en prente oopmaak
 settings-default-apps-text-summary = Waar gewone teks, logboeke en kode oopmaak
 settings-default-apps-sheets-summary = Waar Excel-, OpenDocument- en CSV-lêers oopmaak
-settings-default-apps-documents-summary = Waar Word- en OpenDocument-teks oopmaak
+settings-default-apps-documents-summary = Waar Word- en OpenDocument-teks en skyfies oopmaak
 settings-default-apps-after-saving-summary = Wys gestoorde aanhegsels in hul vouer
 settings-compose-send-from-summary = Die rekening waarvandaan nuwe e-pos uitgaan: die een waarin jy is, of altyd dieselfde een
 settings-compose-send-on-replies-summary = Stuur, of Stuur en argiveer die gesprek, op antwoorde en aangestuurde boodskappe
@@ -252,3 +252,18 @@ settings-clock-language = Soos die taal dit skryf
 settings-clock-12 = 12-uur, soos 02:05 nm.
 settings-clock-24 = 24-uur, soos 14:05
 settings-time-summary = 12-uur- of 24-uurhorlosie, of soos die taal dit skryf
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = Verstek-e-posprogram
+settings-general-mail-app-detail = E-posskakels in ander programme en op webwerwe maak hier 'n nuwe boodskap oop.
+mail-app-is-default = Katna Mail is jou verstek-e-posprogram.
+mail-app-is-other = E-posskakels maak in 'n ander program oop.
+mail-app-make-default = Stel as verstek
+mail-app-make-default-failed = Kon nie die verstek-e-posprogram verander nie.
+settings-general-mail-app-summary = Maak e-posskakels van ander programme en webwerwe in Katna Mail oop
+settings-compose-grammar = Grammatika
+settings-compose-grammar-detail = Word op hierdie rekenaar met Harper nagegaan. Tans net Engels: teks in ander tale word nie aangeraak nie.
+settings-compose-grammar-check = Kontroleer grammatika
+settings-compose-grammar-check-detail = Onderstreep grammatikafoute terwyl jy skryf, in Engels
+settings-compose-grammar-summary = Onderstreep grammatikafoute terwyl jy skryf, in Engels

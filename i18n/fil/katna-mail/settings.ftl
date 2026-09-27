@@ -139,7 +139,7 @@ settings-default-apps-text-detail = Plain text, mga log, code at iba pang text.
 settings-default-apps-sheets = Mga spreadsheet
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) at CSV.
 settings-default-apps-documents = Mga dokumento
-settings-default-apps-documents-detail = Word (docx) at OpenDocument text (odt).
+settings-default-apps-documents-detail = Word (docx, doc), OpenDocument text (odt) at mga slide (pptx, ppt, odp).
 settings-default-apps-katna = Viewer ng Katna Mail
 settings-default-apps-system = Default na app ng desktop
 settings-default-apps-ask = Itanong kung aling app sa bawat pagkakataon
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = Kung saan bumubukas ang mga PDF attachment
 settings-default-apps-pictures-summary = Kung saan bumubukas ang mga litrato at larawan
 settings-default-apps-text-summary = Kung saan bumubukas ang plain text, mga log at code
 settings-default-apps-sheets-summary = Kung saan bumubukas ang mga Excel, OpenDocument at CSV file
-settings-default-apps-documents-summary = Kung saan bumubukas ang Word at OpenDocument text
+settings-default-apps-documents-summary = Kung saan bumubukas ang Word, OpenDocument text at mga slide
 settings-default-apps-after-saving-summary = Ipakita ang mga na-save na attachment sa folder nila
 settings-compose-send-from-summary = Ang account na pinagpapadalhan ng bagong mail: ang kinaroroonan mo, o palaging iisa
 settings-compose-send-on-replies-summary = Ipadala, o Ipadala at i-archive ang pag-uusap, sa mga sagot at pagpapasa
@@ -252,3 +252,18 @@ settings-clock-language = Kung paano ito isinusulat ng wika
 settings-clock-12 = 12-oras, gaya ng 2:05 PM
 settings-clock-24 = 24-oras, gaya ng 14:05
 settings-time-summary = 12-oras o 24-oras na orasan, o kung paano ito isinusulat ng wika
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = Default na mail app
+settings-general-mail-app-detail = Nagbubukas dito ng bagong mensahe ang mga email link sa ibang app at sa mga website.
+mail-app-is-default = Ang Katna Mail ang iyong default na mail app.
+mail-app-is-other = Bumubukas sa ibang app ang mga email link.
+mail-app-make-default = Gawing default
+mail-app-make-default-failed = Hindi mabago ang default na mail app.
+settings-general-mail-app-summary = Buksan sa Katna Mail ang mga email link mula sa ibang app at website
+settings-compose-grammar = Grammar
+settings-compose-grammar-detail = Sinusuri sa computer na ito gamit ang Harper. English lang sa ngayon: hindi ginagalaw ang text sa ibang wika.
+settings-compose-grammar-check = Suriin ang grammar
+settings-compose-grammar-check-detail = Salungguhitan ang mga mali sa grammar habang sumusulat, sa English
+settings-compose-grammar-summary = Salungguhitan ang mga mali sa grammar habang sumusulat, sa English

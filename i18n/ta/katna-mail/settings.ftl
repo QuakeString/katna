@@ -139,7 +139,7 @@ settings-default-apps-text-detail = வெற்று உரை, பதிவ�
 settings-default-apps-sheets = விரிதாள்கள்
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods), CSV.
 settings-default-apps-documents = ஆவணங்கள்
-settings-default-apps-documents-detail = Word (docx), OpenDocument உரை (odt).
+settings-default-apps-documents-detail = Word (docx, doc), OpenDocument உரை (odt), ஸ்லைடுகள் (pptx, ppt, odp).
 settings-default-apps-katna = Katna Mail இன் வியூவர்
 settings-default-apps-system = டெஸ்க்டாப்பின் இயல்புநிலை ஆப்ஸ்
 settings-default-apps-ask = ஒவ்வொரு முறையும் எந்த ஆப்ஸ் எனக் கேள்
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = PDF இணைப்புகள் எங்
 settings-default-apps-pictures-summary = புகைப்படங்களும் படங்களும் எங்கே திறக்கும்
 settings-default-apps-text-summary = வெற்று உரை, பதிவுகள், நிரல் குறியீடு எங்கே திறக்கும்
 settings-default-apps-sheets-summary = Excel, OpenDocument, CSV ஃபைல்கள் எங்கே திறக்கும்
-settings-default-apps-documents-summary = Word, OpenDocument உரை எங்கே திறக்கும்
+settings-default-apps-documents-summary = Word, OpenDocument உரை, ஸ்லைடுகள் எங்கே திறக்கும்
 settings-default-apps-after-saving-summary = சேமித்த இணைப்புகளை அவற்றின் ஃபோல்டரில் காட்டு
 settings-compose-send-from-summary = புதிய அஞ்சல் அனுப்பப்படும் கணக்கு: நீங்கள் இருக்கும் கணக்கு, அல்லது எப்போதும் ஒரே கணக்கு
 settings-compose-send-on-replies-summary = பதில்களிலும் முன்னனுப்பல்களிலும் அனுப்பு, அல்லது அனுப்பி உரையாடலைக் காப்பகப்படுத்து
@@ -252,3 +252,18 @@ settings-clock-language = மொழி எழுதுவது போல
 settings-clock-12 = 12 மணிநேரம், எ.கா. 2:05 PM
 settings-clock-24 = 24 மணிநேரம், எ.கா. 14:05
 settings-time-summary = 12 மணிநேர அல்லது 24 மணிநேரக் கடிகாரம், அல்லது மொழி எழுதுவது போல
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = இயல்புநிலை மெயில் ஆப்
+settings-general-mail-app-detail = பிற ஆப்ஸிலும் இணையதளங்களிலும் உள்ள மின்னஞ்சல் லிங்க்குகள் இங்கே புதிய மெசேஜைத் திறக்கும்.
+mail-app-is-default = Katna Mail தான் உங்கள் இயல்புநிலை மெயில் ஆப்.
+mail-app-is-other = மின்னஞ்சல் லிங்க்குகள் வேறொரு ஆப்பில் திறக்கும்.
+mail-app-make-default = இயல்புநிலையாக்கு
+mail-app-make-default-failed = இயல்புநிலை மெயில் ஆப்பை மாற்ற முடியவில்லை.
+settings-general-mail-app-summary = பிற ஆப்ஸ், இணையதளங்களில் உள்ள மின்னஞ்சல் லிங்க்குகளை Katna Mail இல் திற
+settings-compose-grammar = இலக்கணம்
+settings-compose-grammar-detail = இந்தக் கணினியிலேயே Harper மூலம் சரிபார்க்கப்படும். இப்போதைக்கு ஆங்கிலம் மட்டும்: பிற மொழிகளில் உள்ள உரை மாற்றப்படாது.
+settings-compose-grammar-check = இலக்கணத்தைச் சரிபார்
+settings-compose-grammar-check-detail = எழுதும்போது இலக்கணப் பிழைகளை அடிக்கோடிடு, ஆங்கிலத்தில்
+settings-compose-grammar-summary = எழுதும்போது இலக்கணப் பிழைகளை அடிக்கோடிடு, ஆங்கிலத்தில்

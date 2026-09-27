@@ -139,7 +139,7 @@ settings-default-apps-text-detail = సాధారణ టెక్స్ట్,
 settings-default-apps-sheets = స్ప్రెడ్‌షీట్‌లు
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods), CSV.
 settings-default-apps-documents = డాక్యుమెంట్‌లు
-settings-default-apps-documents-detail = Word (docx), OpenDocument టెక్స్ట్ (odt).
+settings-default-apps-documents-detail = Word (docx, doc), OpenDocument టెక్స్ట్ (odt), స్లయిడ్‌లు (pptx, ppt, odp).
 settings-default-apps-katna = Katna Mail వ్యూయర్
 settings-default-apps-system = డెస్క్‌టాప్ డిఫాల్ట్ యాప్
 settings-default-apps-ask = ప్రతిసారీ ఏ యాప్ అని అడగండి
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = PDF అటాచ్‌మెంట్‌ల�
 settings-default-apps-pictures-summary = ఫోటోలు, చిత్రాలు ఎక్కడ తెరవబడతాయి
 settings-default-apps-text-summary = సాధారణ టెక్స్ట్, లాగ్‌లు, కోడ్ ఎక్కడ తెరవబడతాయి
 settings-default-apps-sheets-summary = Excel, OpenDocument, CSV ఫైల్‌లు ఎక్కడ తెరవబడతాయి
-settings-default-apps-documents-summary = Word, OpenDocument టెక్స్ట్ ఎక్కడ తెరవబడతాయి
+settings-default-apps-documents-summary = Word, OpenDocument టెక్స్ట్, స్లయిడ్‌లు ఎక్కడ తెరవబడతాయి
 settings-default-apps-after-saving-summary = సేవ్ చేసిన అటాచ్‌మెంట్‌లను వాటి ఫోల్డర్‌లో చూపండి
 settings-compose-send-from-summary = కొత్త మెయిల్ వెళ్లే ఖాతా: మీరు ఉన్న ఖాతా, లేదా ఎల్లప్పుడూ ఒకే ఖాతా
 settings-compose-send-on-replies-summary = రిప్లయిలు, ఫార్వర్డ్‌లపై పంపండి, లేదా పంపి సంభాషణను ఆర్కైవ్ చేయండి
@@ -252,3 +252,18 @@ settings-clock-language = భాష రాసే విధంగా
 settings-clock-12 = 12 గంటలు, ఉదా. 2:05 PM
 settings-clock-24 = 24 గంటలు, ఉదా. 14:05
 settings-time-summary = 12 గంటల లేదా 24 గంటల గడియారం, లేదా భాష రాసే విధంగా
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = డిఫాల్ట్ మెయిల్ యాప్
+settings-general-mail-app-detail = ఇతర యాప్‌లలో, వెబ్‌సైట్‌లలో ఉన్న ఈమెయిల్ లింక్‌లు ఇక్కడ కొత్త మెసేజ్‌ను తెరుస్తాయి.
+mail-app-is-default = Katna Mail మీ డిఫాల్ట్ మెయిల్ యాప్.
+mail-app-is-other = ఈమెయిల్ లింక్‌లు వేరే యాప్‌లో తెరుచుకుంటాయి.
+mail-app-make-default = డిఫాల్ట్‌గా చేయండి
+mail-app-make-default-failed = డిఫాల్ట్ మెయిల్ యాప్‌ను మార్చడం సాధ్యం కాలేదు.
+settings-general-mail-app-summary = ఇతర యాప్‌లు, వెబ్‌సైట్‌ల నుండి వచ్చే ఈమెయిల్ లింక్‌లను Katna Mailలో తెరవండి
+settings-compose-grammar = వ్యాకరణం
+settings-compose-grammar-detail = ఈ కంప్యూటర్‌లోనే Harperతో చెక్ చేయబడుతుంది. ప్రస్తుతానికి ఇంగ్లీష్ మాత్రమే: ఇతర భాషల్లోని టెక్స్ట్‌ను మార్చదు.
+settings-compose-grammar-check = వ్యాకరణం చెక్ చేయండి
+settings-compose-grammar-check-detail = రాస్తున్నప్పుడు వ్యాకరణ తప్పుల కింద గీత గీయండి, ఇంగ్లీష్‌లో
+settings-compose-grammar-summary = రాస్తున్నప్పుడు వ్యాకరణ తప్పుల కింద గీత గీయండి, ఇంగ్లీష్‌లో

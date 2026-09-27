@@ -133,7 +133,7 @@ settings-default-apps-text-detail = 純文字、記錄檔、程式碼和其他�
 settings-default-apps-sheets = 試算表
 settings-default-apps-sheets-detail = Excel（xlsx、xls）、OpenDocument（ods）和 CSV。
 settings-default-apps-documents = 文件
-settings-default-apps-documents-detail = Word（docx）和 OpenDocument 文字（odt）。
+settings-default-apps-documents-detail = Word（docx、doc）、OpenDocument 文字（odt）和簡報（pptx、ppt、odp）。
 settings-default-apps-katna = Katna Mail 的檢視器
 settings-default-apps-system = 桌面環境的預設應用程式
 settings-default-apps-ask = 每次詢問要用哪個應用程式
@@ -216,7 +216,7 @@ settings-default-apps-pdf-summary = PDF 附件要在哪裡開啟
 settings-default-apps-pictures-summary = 相片和圖片要在哪裡開啟
 settings-default-apps-text-summary = 純文字、記錄檔和程式碼要在哪裡開啟
 settings-default-apps-sheets-summary = Excel、OpenDocument 和 CSV 檔案要在哪裡開啟
-settings-default-apps-documents-summary = Word 和 OpenDocument 文字要在哪裡開啟
+settings-default-apps-documents-summary = Word、OpenDocument 文字和簡報要在哪裡開啟
 settings-default-apps-after-saving-summary = 在資料夾中顯示已儲存的附件
 settings-compose-send-from-summary = 新郵件的寄件帳戶：目前所在的帳戶，或一律使用同一個帳戶
 settings-compose-send-on-replies-summary = 回覆和轉寄時是「傳送」，還是「傳送並封存」會話群組
@@ -246,3 +246,18 @@ settings-clock-language = 依語言習慣
 settings-clock-12 = 12 小時制，例如下午2:05
 settings-clock-24 = 24 小時制，例如 14:05
 settings-time-summary = 12 小時制或 24 小時制，或依語言習慣
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = 預設郵件應用程式
+settings-general-mail-app-detail = 其他應用程式和網站中的電子郵件連結會在這裡開啟新郵件。
+mail-app-is-default = Katna Mail 是你的預設郵件應用程式。
+mail-app-is-other = 電子郵件連結會在其他應用程式中開啟。
+mail-app-make-default = 設為預設
+mail-app-make-default-failed = 無法變更預設郵件應用程式。
+settings-general-mail-app-summary = 在 Katna Mail 中開啟其他應用程式和網站的電子郵件連結
+settings-compose-grammar = 文法
+settings-compose-grammar-detail = 在這台電腦上以 Harper 檢查。目前僅支援英文：其他語言的文字不會更動。
+settings-compose-grammar-check = 檢查文法
+settings-compose-grammar-check-detail = 撰寫時為文法錯誤加上底線（英文）
+settings-compose-grammar-summary = 撰寫時為文法錯誤加上底線（英文）

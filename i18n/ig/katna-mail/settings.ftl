@@ -133,7 +133,7 @@ settings-default-apps-text-detail = Ederede nkịtị, ndekọ, koodu na ederede
 settings-default-apps-sheets = Mpempe mgbakọ
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) na CSV.
 settings-default-apps-documents = Akwụkwọ
-settings-default-apps-documents-detail = Word (docx) na ederede OpenDocument (odt).
+settings-default-apps-documents-detail = Word (docx, doc), ederede OpenDocument (odt) na slaịdị (pptx, ppt, odp).
 settings-default-apps-katna = Ihe nlele Katna Mail
 settings-default-apps-system = Ngwa ndabara nke desktọpụ
 settings-default-apps-ask = Jụọ ngwa m ga-eji oge ọ bụla
@@ -216,7 +216,7 @@ settings-default-apps-pdf-summary = Ebe mgbakwunye PDF na-emepe
 settings-default-apps-pictures-summary = Ebe foto na-emepe
 settings-default-apps-text-summary = Ebe ederede nkịtị, ndekọ na koodu na-emepe
 settings-default-apps-sheets-summary = Ebe faịlụ Excel, OpenDocument na CSV na-emepe
-settings-default-apps-documents-summary = Ebe Word na ederede OpenDocument na-emepe
+settings-default-apps-documents-summary = Ebe Word, ederede OpenDocument na slaịdị na-emepe
 settings-default-apps-after-saving-summary = Gosi mgbakwunye echekwara na folda ha
 settings-compose-send-from-summary = Akaụntụ ozi ọhụrụ na-apụ site na ya: nke ị nọ na ya, ma ọ bụ otu ahụ mgbe niile
 settings-compose-send-on-replies-summary = Zipu, ma ọ bụ Zipu ma chekwaa mkparịta ụka ahụ, na nzaghachi na nzigaa
@@ -246,3 +246,18 @@ settings-clock-language = Dịka asụsụ si ede ya
 settings-clock-12 = Awa 12, dịka 2:05 N’abalị
 settings-clock-24 = Awa 24, dịka 14:05
 settings-time-summary = Elekere awa 12 ma ọ bụ awa 24, ma ọ bụ dịka asụsụ si ede ya
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = Ngwa email ndabara
+settings-general-mail-app-detail = Njikọ email dị na ngwa ndị ọzọ na na weebụsaịtị na-emepe ozi ọhụrụ ebe a.
+mail-app-is-default = Katna Mail bụ ngwa email ndabara gị.
+mail-app-is-other = Njikọ email na-emepe na ngwa ọzọ.
+mail-app-make-default = Mee ya ndabara
+mail-app-make-default-failed = Enweghị ike ịgbanwe ngwa email ndabara.
+settings-general-mail-app-summary = Mepee njikọ email sitere na ngwa ndị ọzọ na weebụsaịtị na Katna Mail
+settings-compose-grammar = Ụtọ asụsụ
+settings-compose-grammar-detail = A na-enyocha ya na kọmputa a site na Harper. Naanị Bekee ugbu a: a naghị emetụ ederede n'asụsụ ndị ọzọ aka.
+settings-compose-grammar-check = Nyochaa ụtọ asụsụ
+settings-compose-grammar-check-detail = Kpaa ahịrị n'okpuru mmejọ ụtọ asụsụ ka ị na-ede, na Bekee
+settings-compose-grammar-summary = Kpaa ahịrị n'okpuru mmejọ ụtọ asụsụ ka ị na-ede, na Bekee

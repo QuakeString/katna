@@ -143,7 +143,7 @@ settings-default-apps-text-detail = Звичайний текст, журнал�
 settings-default-apps-sheets = Електронні таблиці
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) і CSV.
 settings-default-apps-documents = Документи
-settings-default-apps-documents-detail = Word (docx) і текст OpenDocument (odt).
+settings-default-apps-documents-detail = Word (docx, doc), текст OpenDocument (odt) і презентації (pptx, ppt, odp).
 settings-default-apps-katna = Переглядач Katna Mail
 settings-default-apps-system = Типова програма стільниці
 settings-default-apps-ask = Щоразу запитувати, якою програмою
@@ -226,7 +226,7 @@ settings-default-apps-pdf-summary = Де відкриваються вкладе
 settings-default-apps-pictures-summary = Де відкриваються фотографії та зображення
 settings-default-apps-text-summary = Де відкриваються звичайний текст, журнали й код
 settings-default-apps-sheets-summary = Де відкриваються файли Excel, OpenDocument і CSV
-settings-default-apps-documents-summary = Де відкриваються документи Word і текст OpenDocument
+settings-default-apps-documents-summary = Де відкриваються документи Word, текст OpenDocument і презентації
 settings-default-apps-after-saving-summary = Показувати збережені вкладення в їхній папці
 settings-compose-send-from-summary = Обліковий запис, з якого надсилаються нові листи: поточний або завжди той самий
 settings-compose-send-on-replies-summary = «Надіслати» або «Надіслати й архівувати» ланцюжок у відповідях і пересиланнях
@@ -256,3 +256,18 @@ settings-clock-language = Як прийнято в мові
 settings-clock-12 = 12-годинний, наприклад 2:05 пп
 settings-clock-24 = 24-годинний, наприклад 14:05
 settings-time-summary = 12- або 24-годинний формат чи як прийнято в мові
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = Типова поштова програма
+settings-general-mail-app-detail = Посилання на електронну пошту в інших програмах і на сайтах відкривають тут новий лист.
+mail-app-is-default = Katna Mail — ваша типова поштова програма.
+mail-app-is-other = Посилання на електронну пошту відкриваються в іншій програмі.
+mail-app-make-default = Зробити типовою
+mail-app-make-default-failed = Не вдалося змінити типову поштову програму.
+settings-general-mail-app-summary = Відкривати посилання на електронну пошту з інших програм і сайтів у Katna Mail
+settings-compose-grammar = Граматика
+settings-compose-grammar-detail = Перевіряється на цьому комп’ютері за допомогою Harper. Поки що лише англійська: текст іншими мовами лишається без змін.
+settings-compose-grammar-check = Перевіряти граматику
+settings-compose-grammar-check-detail = Підкреслювати граматичні помилки під час введення, англійською
+settings-compose-grammar-summary = Підкреслювати граматичні помилки під час введення, англійською

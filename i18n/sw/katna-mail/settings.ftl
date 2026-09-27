@@ -139,7 +139,7 @@ settings-default-apps-text-detail = Maandishi matupu, logi, msimbo na maandishi 
 settings-default-apps-sheets = Lahajedwali
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) na CSV.
 settings-default-apps-documents = Hati
-settings-default-apps-documents-detail = Word (docx) na maandishi ya OpenDocument (odt).
+settings-default-apps-documents-detail = Word (docx, doc), maandishi ya OpenDocument (odt) na slaidi (pptx, ppt, odp).
 settings-default-apps-katna = Kitazamaji cha Katna Mail
 settings-default-apps-system = Programu chaguomsingi ya kompyuta ya mezani
 settings-default-apps-ask = Uliza programu kila mara
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = Mahali viambatisho vya PDF vinapofunguka
 settings-default-apps-pictures-summary = Mahali picha za kamera na picha nyingine zinapofunguka
 settings-default-apps-text-summary = Mahali maandishi matupu, logi na msimbo vinapofunguka
 settings-default-apps-sheets-summary = Mahali faili za Excel, OpenDocument na CSV zinapofunguka
-settings-default-apps-documents-summary = Mahali maandishi ya Word na OpenDocument yanapofunguka
+settings-default-apps-documents-summary = Mahali maandishi ya Word na OpenDocument na slaidi yanapofunguka
 settings-default-apps-after-saving-summary = Onyesha viambatisho vilivyohifadhiwa katika folda yake
 settings-compose-send-from-summary = Akaunti ambayo barua mpya hutumwa kutoka kwayo: ile uliyomo, au ileile kila wakati
 settings-compose-send-on-replies-summary = Tuma, au Tuma na uweke mazungumzo kwenye kumbukumbu, kwenye majibu na barua zinazosambazwa
@@ -252,3 +252,18 @@ settings-clock-language = Kama lugha inavyoiandika
 settings-clock-12 = Mfumo wa saa 12, kama vile 2:05 PM
 settings-clock-24 = Mfumo wa saa 24, kama vile 14:05
 settings-time-summary = Mfumo wa saa 12 au saa 24, au kama lugha inavyoiandika
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = Programu chaguomsingi ya barua pepe
+settings-general-mail-app-detail = Viungo vya barua pepe katika programu nyingine na kwenye tovuti hufungua ujumbe mpya hapa.
+mail-app-is-default = Katna Mail ni programu yako chaguomsingi ya barua pepe.
+mail-app-is-other = Viungo vya barua pepe hufunguka katika programu nyingine.
+mail-app-make-default = Weka iwe chaguomsingi
+mail-app-make-default-failed = Imeshindwa kubadilisha programu chaguomsingi ya barua pepe.
+settings-general-mail-app-summary = Fungua viungo vya barua pepe kutoka programu nyingine na tovuti katika Katna Mail
+settings-compose-grammar = Sarufi
+settings-compose-grammar-detail = Hukaguliwa kwenye kompyuta hii kwa Harper. Kiingereza tu kwa sasa: maandishi ya lugha nyingine hayaguswi.
+settings-compose-grammar-check = Kagua sarufi
+settings-compose-grammar-check-detail = Pigia mstari makosa ya sarufi unapoandika, kwa Kiingereza
+settings-compose-grammar-summary = Pigia mstari makosa ya sarufi unapoandika, kwa Kiingereza

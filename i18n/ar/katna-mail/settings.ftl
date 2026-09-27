@@ -147,7 +147,7 @@ settings-default-apps-text-detail = النص العادي والسجلات وا�
 settings-default-apps-sheets = جداول البيانات
 settings-default-apps-sheets-detail = Excel (xlsx وxls) وOpenDocument (ods) وCSV.
 settings-default-apps-documents = المستندات
-settings-default-apps-documents-detail = Word (docx) ونصوص OpenDocument (odt).
+settings-default-apps-documents-detail = Word (docx وdoc) ونصوص OpenDocument (odt) والعروض التقديمية (pptx وppt وodp).
 settings-default-apps-katna = عارض Katna Mail
 settings-default-apps-system = التطبيق التلقائي لسطح المكتب
 settings-default-apps-ask = السؤال عن التطبيق في كل مرة
@@ -230,7 +230,7 @@ settings-default-apps-pdf-summary = مكان فتح مرفقات PDF
 settings-default-apps-pictures-summary = مكان فتح الصور الفوتوغرافية والصور
 settings-default-apps-text-summary = مكان فتح النص العادي والسجلات والتعليمات البرمجية
 settings-default-apps-sheets-summary = مكان فتح ملفات Excel وOpenDocument وCSV
-settings-default-apps-documents-summary = مكان فتح مستندات Word ونصوص OpenDocument
+settings-default-apps-documents-summary = مكان فتح مستندات Word ونصوص OpenDocument والعروض التقديمية
 settings-default-apps-after-saving-summary = عرض المرفقات المحفوظة في مجلدها
 settings-compose-send-from-summary = الحساب الذي يُرسَل منه البريد الجديد: الحساب الذي تستخدمه، أو الحساب نفسه دائمًا
 settings-compose-send-on-replies-summary = «إرسال» أو «إرسال وأرشفة» المحادثة، في الردود وإعادة التوجيه
@@ -260,3 +260,18 @@ settings-clock-language = كما تكتبه اللغة
 settings-clock-12 = نظام ١٢ ساعة، مثل ٢:٠٥ م
 settings-clock-24 = نظام ٢٤ ساعة، مثل ١٤:٠٥
 settings-time-summary = نظام ١٢ أو ٢٤ ساعة، أو كما تكتبه اللغة
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = تطبيق البريد التلقائي
+settings-general-mail-app-detail = تفتح روابط البريد الإلكتروني في التطبيقات الأخرى وعلى مواقع الويب رسالة جديدة هنا.
+mail-app-is-default = Katna Mail هو تطبيق البريد التلقائي لديك.
+mail-app-is-other = تُفتح روابط البريد الإلكتروني في تطبيق آخر.
+mail-app-make-default = تعيينه تطبيقًا تلقائيًا
+mail-app-make-default-failed = تعذّر تغيير تطبيق البريد التلقائي.
+settings-general-mail-app-summary = فتح روابط البريد الإلكتروني من التطبيقات الأخرى ومواقع الويب في Katna Mail
+settings-compose-grammar = القواعد النحوية
+settings-compose-grammar-detail = يجري التدقيق على هذا الكمبيوتر باستخدام Harper. الإنجليزية فقط حاليًا: لا يُمَسّ النص المكتوب بلغات أخرى.
+settings-compose-grammar-check = تدقيق القواعد النحوية
+settings-compose-grammar-check-detail = وضع خط تحت الأخطاء النحوية أثناء الكتابة، بالإنجليزية
+settings-compose-grammar-summary = وضع خط تحت الأخطاء النحوية أثناء الكتابة، بالإنجليزية

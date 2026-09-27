@@ -139,7 +139,7 @@ settings-default-apps-text-detail = Umbhalo osobala, amalogi, ikhodi nomunye umb
 settings-default-apps-sheets = Amaspredishithi
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) ne-CSV.
 settings-default-apps-documents = Amadokhumenti
-settings-default-apps-documents-detail = Word (docx) nombhalo we-OpenDocument (odt).
+settings-default-apps-documents-detail = Word (docx, doc), umbhalo we-OpenDocument (odt) namaslayidi (pptx, ppt, odp).
 settings-default-apps-katna = Isibukeli se-Katna Mail
 settings-default-apps-system = I-app ezenzakalelayo yedeskithophu
 settings-default-apps-ask = Buza ukuthi yiyiphi i-app njalo
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = Lapho okunamathiselwe kwe-PDF kuvuleka khona
 settings-default-apps-pictures-summary = Lapho izithombe zekhamera nezinye izithombe zivuleka khona
 settings-default-apps-text-summary = Lapho umbhalo osobala, amalogi nekhodi kuvuleka khona
 settings-default-apps-sheets-summary = Lapho amafayela e-Excel, OpenDocument ne-CSV avuleka khona
-settings-default-apps-documents-summary = Lapho umbhalo we-Word ne-OpenDocument uvuleka khona
+settings-default-apps-documents-summary = Lapho umbhalo we-Word ne-OpenDocument namaslayidi kuvuleka khona
 settings-default-apps-after-saving-summary = Bonisa okunamathiselwe okulondoloziwe kufolda yakho
 settings-compose-send-from-summary = I-akhawunti imeyili entsha ephuma kuyo: leyo okuyo, noma efanayo njalo
 settings-compose-send-on-replies-summary = Thumela, noma Thumela futhi ufake ingxoxo kungobo yomlando, ezimpendulweni nakokudluliselwayo
@@ -252,3 +252,18 @@ settings-clock-language = Njengoba ulimi lukubhala
 settings-clock-12 = Amahora angu-12, njengokuthi 2:05 PM
 settings-clock-24 = Amahora angu-24, njengokuthi 14:05
 settings-time-summary = Iwashi lamahora angu-12 noma angu-24, noma njengoba ulimi lukubhala
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = I-app yeposi ezenzakalelayo
+settings-general-mail-app-detail = Izixhumanisi ze-imeyili kwamanye ama-app nakumawebhusayithi zivula umlayezo omusha lapha.
+mail-app-is-default = I-Katna Mail iyi-app yakho yeposi ezenzakalelayo.
+mail-app-is-other = Izixhumanisi ze-imeyili zivuleka kwenye i-app.
+mail-app-make-default = Yenza ibe ezenzakalelayo
+mail-app-make-default-failed = Ayikwazanga ukushintsha i-app yeposi ezenzakalelayo.
+settings-general-mail-app-summary = Vula izixhumanisi ze-imeyili ezivela kwamanye ama-app namawebhusayithi ku-Katna Mail
+settings-compose-grammar = Uhlelo lolimi
+settings-compose-grammar-detail = Kuhlolwa kule khompyutha nge-Harper. IsiNgisi kuphela okwamanje: umbhalo ngezinye izilimi awuthintwa.
+settings-compose-grammar-check = Hlola uhlelo lolimi
+settings-compose-grammar-check-detail = Dwebela amaphutha ohlelo lolimi ngenkathi ubhala, ngesiNgisi
+settings-compose-grammar-summary = Dwebela amaphutha ohlelo lolimi ngenkathi ubhala, ngesiNgisi

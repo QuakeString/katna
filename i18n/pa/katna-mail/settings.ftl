@@ -139,7 +139,7 @@ settings-default-apps-text-detail = ਸਾਦੀ ਲਿਖਤ, ਲੌਗ, ਕੋ
 settings-default-apps-sheets = ਸਪ੍ਰੈਡਸ਼ੀਟਾਂ
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) ਅਤੇ CSV।
 settings-default-apps-documents = ਦਸਤਾਵੇਜ਼
-settings-default-apps-documents-detail = Word (docx) ਅਤੇ OpenDocument ਲਿਖਤ (odt)।
+settings-default-apps-documents-detail = Word (docx, doc), OpenDocument ਲਿਖਤ (odt) ਅਤੇ ਸਲਾਈਡਾਂ (pptx, ppt, odp)।
 settings-default-apps-katna = Katna Mail ਦਾ ਦਰਸ਼ਕ
 settings-default-apps-system = ਡੈਸਕਟਾਪ ਦੀ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਐਪ
 settings-default-apps-ask = ਹਰ ਵਾਰ ਪੁੱਛੋ ਕਿ ਕਿਹੜੀ ਐਪ
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = PDF ਅਟੈਚਮੈਂਟਾਂ ਕਿੱ
 settings-default-apps-pictures-summary = ਫ਼ੋਟੋਆਂ ਅਤੇ ਤਸਵੀਰਾਂ ਕਿੱਥੇ ਖੁੱਲ੍ਹਣ
 settings-default-apps-text-summary = ਸਾਦੀ ਲਿਖਤ, ਲੌਗ ਅਤੇ ਕੋਡ ਕਿੱਥੇ ਖੁੱਲ੍ਹਣ
 settings-default-apps-sheets-summary = Excel, OpenDocument ਅਤੇ CSV ਫ਼ਾਈਲਾਂ ਕਿੱਥੇ ਖੁੱਲ੍ਹਣ
-settings-default-apps-documents-summary = Word ਅਤੇ OpenDocument ਲਿਖਤ ਕਿੱਥੇ ਖੁੱਲ੍ਹੇ
+settings-default-apps-documents-summary = Word, OpenDocument ਲਿਖਤ ਅਤੇ ਸਲਾਈਡਾਂ ਕਿੱਥੇ ਖੁੱਲ੍ਹਣ
 settings-default-apps-after-saving-summary = ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਅਟੈਚਮੈਂਟਾਂ ਉਨ੍ਹਾਂ ਦੇ ਫੋਲਡਰ ਵਿੱਚ ਦਿਖਾਓ
 settings-compose-send-from-summary = ਨਵੀਂ ਮੇਲ ਜਿਸ ਖਾਤੇ ਤੋਂ ਜਾਂਦੀ ਹੈ: ਜਿਸ ਵਿੱਚ ਤੁਸੀਂ ਹੋ, ਜਾਂ ਹਮੇਸ਼ਾ ਇੱਕੋ
 settings-compose-send-on-replies-summary = ਜਵਾਬਾਂ ਅਤੇ ਅੱਗੇ ਭੇਜਣ ’ਤੇ ਭੇਜੋ, ਜਾਂ ਭੇਜੋ ਅਤੇ ਗੱਲਬਾਤ ਪੁਰਾਲੇਖਬੱਧ ਕਰੋ
@@ -252,3 +252,18 @@ settings-clock-language = ਜਿਵੇਂ ਭਾਸ਼ਾ ਲਿਖਦੀ ਹੈ
 settings-clock-12 = 12 ਘੰਟੇ, ਜਿਵੇਂ 2:05 PM
 settings-clock-24 = 24 ਘੰਟੇ, ਜਿਵੇਂ 14:05
 settings-time-summary = 12 ਘੰਟੇ ਜਾਂ 24 ਘੰਟੇ ਦੀ ਘੜੀ, ਜਾਂ ਜਿਵੇਂ ਭਾਸ਼ਾ ਲਿਖਦੀ ਹੈ
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਮੇਲ ਐਪ
+settings-general-mail-app-detail = ਹੋਰ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਵਿਚਲੇ ਈਮੇਲ ਲਿੰਕ ਇੱਥੇ ਨਵਾਂ ਸੁਨੇਹਾ ਖੋਲ੍ਹਦੇ ਹਨ।
+mail-app-is-default = Katna Mail ਤੁਹਾਡੀ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਮੇਲ ਐਪ ਹੈ।
+mail-app-is-other = ਈਮੇਲ ਲਿੰਕ ਕਿਸੇ ਹੋਰ ਐਪ ਵਿੱਚ ਖੁੱਲ੍ਹਦੇ ਹਨ।
+mail-app-make-default = ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬਣਾਓ
+mail-app-make-default-failed = ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਮੇਲ ਐਪ ਬਦਲੀ ਨਹੀਂ ਜਾ ਸਕੀ।
+settings-general-mail-app-summary = ਹੋਰ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਦੇ ਈਮੇਲ ਲਿੰਕ Katna Mail ਵਿੱਚ ਖੋਲ੍ਹੋ
+settings-compose-grammar = ਵਿਆਕਰਨ
+settings-compose-grammar-detail = ਇਸੇ ਕੰਪਿਊਟਰ ’ਤੇ Harper ਨਾਲ ਜਾਂਚਿਆ ਜਾਂਦਾ ਹੈ। ਫ਼ਿਲਹਾਲ ਸਿਰਫ਼ ਅੰਗਰੇਜ਼ੀ: ਹੋਰ ਭਾਸ਼ਾਵਾਂ ਦੀ ਲਿਖਤ ਨੂੰ ਛੇੜਿਆ ਨਹੀਂ ਜਾਂਦਾ।
+settings-compose-grammar-check = ਵਿਆਕਰਨ ਜਾਂਚੋ
+settings-compose-grammar-check-detail = ਲਿਖਦੇ ਸਮੇਂ ਵਿਆਕਰਨ ਦੀਆਂ ਗਲਤੀਆਂ ਹੇਠਾਂ ਲਕੀਰ ਲਾਓ, ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ
+settings-compose-grammar-summary = ਲਿਖਦੇ ਸਮੇਂ ਵਿਆਕਰਨ ਦੀਆਂ ਗਲਤੀਆਂ ਹੇਠਾਂ ਲਕੀਰ ਲਾਓ, ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ

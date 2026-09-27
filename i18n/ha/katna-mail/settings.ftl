@@ -139,7 +139,7 @@ settings-default-apps-text-detail = Rubutu mara ado, bayanan log, lamba da saura
 settings-default-apps-sheets = Maƙunsar bayanai
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) da CSV.
 settings-default-apps-documents = Takardu
-settings-default-apps-documents-detail = Word (docx) da rubutun OpenDocument (odt).
+settings-default-apps-documents-detail = Word (docx, doc), rubutun OpenDocument (odt) da silaidi (pptx, ppt, odp).
 settings-default-apps-katna = Mai dubawa na Katna Mail
 settings-default-apps-system = Manhajar asali ta tebur
 settings-default-apps-ask = Tambaye ni wace manhaja kowane lokaci
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = Inda abubuwan haɗawa na PDF suke buɗewa
 settings-default-apps-pictures-summary = Inda hotuna suke buɗewa
 settings-default-apps-text-summary = Inda rubutu mara ado, bayanan log da lamba suke buɗewa
 settings-default-apps-sheets-summary = Inda fayilolin Excel, OpenDocument da CSV suke buɗewa
-settings-default-apps-documents-summary = Inda Word da rubutun OpenDocument suke buɗewa
+settings-default-apps-documents-summary = Inda Word, rubutun OpenDocument da silaidi suke buɗewa
 settings-default-apps-after-saving-summary = Nuna abubuwan haɗawa da aka ajiye a cikin foldarsu
 settings-compose-send-from-summary = Asusun da sababbin wasiƙu suke fita daga gare shi: wanda kuke ciki, ko koyaushe iri ɗaya
 settings-compose-send-on-replies-summary = Aika, ko Aika kuma adana tattaunawar a ma'ajiya, a kan amsoshi da turawa
@@ -252,3 +252,18 @@ settings-clock-language = Yadda harshen ke rubuta shi
 settings-clock-12 = Awa 12, kamar 2:05 YM
 settings-clock-24 = Awa 24, kamar 14:05
 settings-time-summary = Agogon awa 12 ko awa 24, ko yadda harshen ke rubuta shi
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = Manhajar imel ta asali
+settings-general-mail-app-detail = Mahaɗan imel a wasu manhajoji da shafukan yanar gizo suna buɗe sabon saƙo a nan.
+mail-app-is-default = Katna Mail ce manhajar imel ɗinka ta asali.
+mail-app-is-other = Mahaɗan imel suna buɗewa a wata manhaja.
+mail-app-make-default = Mayar da ita ta asali
+mail-app-make-default-failed = Ba a iya canza manhajar imel ta asali ba.
+settings-general-mail-app-summary = Buɗe mahaɗan imel daga wasu manhajoji da shafukan yanar gizo a Katna Mail
+settings-compose-grammar = Nahawu
+settings-compose-grammar-detail = Ana dubawa a wannan kwamfuta da Harper. Turanci kawai a yanzu: ba a taɓa rubutu a wasu harsuna.
+settings-compose-grammar-check = Duba nahawu
+settings-compose-grammar-check-detail = Ja layi a ƙarƙashin kurakuran nahawu yayin rubutu, cikin Turanci
+settings-compose-grammar-summary = Ja layi a ƙarƙashin kurakuran nahawu yayin rubutu, cikin Turanci

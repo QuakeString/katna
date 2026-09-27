@@ -133,7 +133,7 @@ settings-default-apps-text-detail = プレーンテキスト、ログ、コー�
 settings-default-apps-sheets = スプレッドシート
 settings-default-apps-sheets-detail = Excel（xlsx、xls）、OpenDocument（ods）、CSV。
 settings-default-apps-documents = ドキュメント
-settings-default-apps-documents-detail = Word（docx）と OpenDocument テキスト（odt）。
+settings-default-apps-documents-detail = Word（docx、doc）、OpenDocument テキスト（odt）、スライド（pptx、ppt、odp）。
 settings-default-apps-katna = Katna Mail のビューア
 settings-default-apps-system = デスクトップのデフォルトのアプリ
 settings-default-apps-ask = 毎回アプリを選択
@@ -216,7 +216,7 @@ settings-default-apps-pdf-summary = PDF の添付ファイルを開くアプリ
 settings-default-apps-pictures-summary = 写真や画像を開くアプリ
 settings-default-apps-text-summary = プレーンテキスト、ログ、コードを開くアプリ
 settings-default-apps-sheets-summary = Excel、OpenDocument、CSV ファイルを開くアプリ
-settings-default-apps-documents-summary = Word と OpenDocument テキストを開くアプリ
+settings-default-apps-documents-summary = Word、OpenDocument テキスト、スライドを開くアプリ
 settings-default-apps-after-saving-summary = 保存した添付ファイルをフォルダで表示
 settings-compose-send-from-summary = 新規メールを送信するアカウント: 表示中のアカウントか、常に同じアカウント
 settings-compose-send-on-replies-summary = 返信や転送で「送信」か「送信してアーカイブ」か
@@ -246,3 +246,18 @@ settings-clock-language = 言語の表記に従う
 settings-clock-12 = 12時間制（例: 午後2:05）
 settings-clock-24 = 24時間制（例: 14:05）
 settings-time-summary = 12時間制、24時間制、または言語の表記に従う
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = デフォルトのメールアプリ
+settings-general-mail-app-detail = ほかのアプリやウェブサイトのメールリンクから、ここで新規メールが開きます。
+mail-app-is-default = Katna Mail がデフォルトのメールアプリです。
+mail-app-is-other = メールリンクはほかのアプリで開きます。
+mail-app-make-default = デフォルトにする
+mail-app-make-default-failed = デフォルトのメールアプリを変更できませんでした。
+settings-general-mail-app-summary = ほかのアプリやウェブサイトのメールリンクを Katna Mail で開く
+settings-compose-grammar = 文法
+settings-compose-grammar-detail = このパソコン上で Harper がチェックします。現在は英語のみに対応し、ほかの言語のテキストはそのままです。
+settings-compose-grammar-check = 文法をチェック
+settings-compose-grammar-check-detail = 入力中に文法の誤りに下線を引く（英語）
+settings-compose-grammar-summary = 入力中に文法の誤りに下線を引く（英語）

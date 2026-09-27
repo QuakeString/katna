@@ -139,7 +139,7 @@ settings-default-apps-text-detail = പ്ലെയിൻ ടെക്സ്റ�
 settings-default-apps-sheets = സ്‌പ്രെഡ്‌ഷീറ്റുകൾ
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods), CSV.
 settings-default-apps-documents = ഡോക്യുമെന്റുകൾ
-settings-default-apps-documents-detail = Word (docx), OpenDocument ടെക്സ്റ്റ് (odt).
+settings-default-apps-documents-detail = Word (docx, doc), OpenDocument ടെക്സ്റ്റ് (odt), സ്ലൈഡുകൾ (pptx, ppt, odp).
 settings-default-apps-katna = Katna Mail-ന്റെ വ്യൂവർ
 settings-default-apps-system = ഡെസ്‌ക്‌ടോപ്പിന്റെ ഡിഫോൾട്ട് ആപ്പ്
 settings-default-apps-ask = ഓരോ തവണയും ഏത് ആപ്പ് എന്ന് ചോദിക്കുക
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = PDF അറ്റാച്ച്‌മെന�
 settings-default-apps-pictures-summary = ഫോട്ടോകളും ചിത്രങ്ങളും എവിടെ തുറക്കണം
 settings-default-apps-text-summary = പ്ലെയിൻ ടെക്സ്റ്റ്, ലോഗുകൾ, കോഡ് എന്നിവ എവിടെ തുറക്കണം
 settings-default-apps-sheets-summary = Excel, OpenDocument, CSV ഫയലുകൾ എവിടെ തുറക്കണം
-settings-default-apps-documents-summary = Word, OpenDocument ടെക്സ്റ്റ് എന്നിവ എവിടെ തുറക്കണം
+settings-default-apps-documents-summary = Word, OpenDocument ടെക്സ്റ്റ്, സ്ലൈഡുകൾ എന്നിവ എവിടെ തുറക്കണം
 settings-default-apps-after-saving-summary = സംരക്ഷിച്ച അറ്റാച്ച്‌മെന്റുകൾ അവയുടെ ഫോൾഡറിൽ കാണിക്കുക
 settings-compose-send-from-summary = പുതിയ മെയിൽ പോകുന്ന അക്കൗണ്ട്: നിങ്ങൾ ഉള്ളത്, അല്ലെങ്കിൽ എപ്പോഴും ഒരേ അക്കൗണ്ട്
 settings-compose-send-on-replies-summary = മറുപടികളിലും ഫോർവേഡുകളിലും അയയ്ക്കുക, അല്ലെങ്കിൽ അയച്ച് സംഭാഷണം ആർക്കൈവ് ചെയ്യുക
@@ -252,3 +252,18 @@ settings-clock-language = ഭാഷ എഴുതുന്നതുപോലെ
 settings-clock-12 = 12 മണിക്കൂർ, ഉദാ. 2:05 PM
 settings-clock-24 = 24 മണിക്കൂർ, ഉദാ. 14:05
 settings-time-summary = 12 മണിക്കൂർ അല്ലെങ്കിൽ 24 മണിക്കൂർ ക്ലോക്ക്, അല്ലെങ്കിൽ ഭാഷ എഴുതുന്നതുപോലെ
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = ഡിഫോൾട്ട് മെയിൽ ആപ്പ്
+settings-general-mail-app-detail = മറ്റ് ആപ്പുകളിലെയും വെബ്‌സൈറ്റുകളിലെയും ഇമെയിൽ ലിങ്കുകൾ ഇവിടെ ഒരു പുതിയ സന്ദേശം തുറക്കുന്നു.
+mail-app-is-default = Katna Mail ആണ് നിങ്ങളുടെ ഡിഫോൾട്ട് മെയിൽ ആപ്പ്.
+mail-app-is-other = ഇമെയിൽ ലിങ്കുകൾ മറ്റൊരു ആപ്പിൽ തുറക്കുന്നു.
+mail-app-make-default = ഡിഫോൾട്ട് ആക്കുക
+mail-app-make-default-failed = ഡിഫോൾട്ട് മെയിൽ ആപ്പ് മാറ്റാനായില്ല.
+settings-general-mail-app-summary = മറ്റ് ആപ്പുകളിൽ നിന്നും വെബ്‌സൈറ്റുകളിൽ നിന്നുമുള്ള ഇമെയിൽ ലിങ്കുകൾ Katna Mail-ൽ തുറക്കുക
+settings-compose-grammar = വ്യാകരണം
+settings-compose-grammar-detail = ഈ കമ്പ്യൂട്ടറിൽ തന്നെ Harper ഉപയോഗിച്ച് പരിശോധിക്കുന്നു. ഇപ്പോൾ ഇംഗ്ലീഷ് മാത്രം: മറ്റ് ഭാഷകളിലെ ടെക്സ്റ്റിൽ മാറ്റം വരുത്തില്ല.
+settings-compose-grammar-check = വ്യാകരണം പരിശോധിക്കുക
+settings-compose-grammar-check-detail = എഴുതുമ്പോൾ വ്യാകരണത്തെറ്റുകൾക്ക് അടിവരയിടുക, ഇംഗ്ലീഷിൽ
+settings-compose-grammar-summary = എഴുതുമ്പോൾ വ്യാകരണത്തെറ്റുകൾക്ക് അടിവരയിടുക, ഇംഗ്ലീഷിൽ

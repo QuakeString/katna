@@ -139,7 +139,7 @@ settings-default-apps-text-detail = सादा पाठ, लगहरू, क
 settings-default-apps-sheets = स्प्रेडसिटहरू
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) र CSV।
 settings-default-apps-documents = कागजातहरू
-settings-default-apps-documents-detail = Word (docx) र OpenDocument पाठ (odt)।
+settings-default-apps-documents-detail = Word (docx, doc), OpenDocument पाठ (odt) र स्लाइड (pptx, ppt, odp)।
 settings-default-apps-katna = Katna Mail को दर्शक
 settings-default-apps-system = डेस्कटपको पूर्वनिर्धारित एप
 settings-default-apps-ask = हरेक पटक कुन एप भनी सोध्नुहोस्
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = PDF संलग्नकहरू कहा
 settings-default-apps-pictures-summary = फोटो र तस्बिरहरू कहाँ खुल्छन्
 settings-default-apps-text-summary = सादा पाठ, लग र कोड कहाँ खुल्छन्
 settings-default-apps-sheets-summary = Excel, OpenDocument र CSV फाइलहरू कहाँ खुल्छन्
-settings-default-apps-documents-summary = Word र OpenDocument पाठ कहाँ खुल्छन्
+settings-default-apps-documents-summary = Word, OpenDocument पाठ र स्लाइड कहाँ खुल्छन्
 settings-default-apps-after-saving-summary = सेभ गरिएका संलग्नकहरू तिनको फोल्डरमा देखाउनुहोस्
 settings-compose-send-from-summary = नयाँ मेल कुन खाताबाट जान्छ: तपाईं रहेको खाता, वा सधैँ एउटै खाता
 settings-compose-send-on-replies-summary = जवाफ र फर्वार्डमा पठाउनुहोस्, वा पठाउनुहोस् र वार्तालाप संग्रह गर्नुहोस्
@@ -252,3 +252,18 @@ settings-clock-language = भाषाले लेख्ने तरिका�
 settings-clock-12 = १२ घण्टा, जस्तै २:०५ अपराह्न
 settings-clock-24 = २४ घण्टा, जस्तै १४:०५
 settings-time-summary = १२ घण्टा वा २४ घण्टाको घडी, वा भाषाले लेख्ने तरिकाअनुसार
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = पूर्वनिर्धारित मेल एप
+settings-general-mail-app-detail = अन्य एप र वेबसाइटका इमेल लिङ्कहरूले यहाँ नयाँ सन्देश खोल्छन्।
+mail-app-is-default = Katna Mail तपाईंको पूर्वनिर्धारित मेल एप हो।
+mail-app-is-other = इमेल लिङ्कहरू अर्को एपमा खुल्छन्।
+mail-app-make-default = पूर्वनिर्धारित बनाउनुहोस्
+mail-app-make-default-failed = पूर्वनिर्धारित मेल एप बदल्न सकिएन।
+settings-general-mail-app-summary = अन्य एप र वेबसाइटका इमेल लिङ्कहरू Katna Mail मा खोल्नुहोस्
+settings-compose-grammar = व्याकरण
+settings-compose-grammar-detail = यही कम्प्युटरमा Harper ले जाँच गरिन्छ। अहिलेलाई अङ्ग्रेजी मात्र: अन्य भाषाका पाठलाई छोइँदैन।
+settings-compose-grammar-check = व्याकरण जाँच गर्नुहोस्
+settings-compose-grammar-check-detail = लेख्दै गर्दा व्याकरणका गल्तीमुनि रेखा लगाउनुहोस्, अङ्ग्रेजीमा
+settings-compose-grammar-summary = लेख्दै गर्दा व्याकरणका गल्तीमुनि रेखा लगाउनुहोस्, अङ्ग्रेजीमा

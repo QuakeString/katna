@@ -139,7 +139,7 @@ settings-default-apps-text-detail = متن ساده، گزارش‌ها، کد �
 settings-default-apps-sheets = صفحه‌گسترده‌ها
 settings-default-apps-sheets-detail = Excel (xlsx، xls)، OpenDocument (ods) و CSV.
 settings-default-apps-documents = سندها
-settings-default-apps-documents-detail = Word (docx) و متن OpenDocument (odt).
+settings-default-apps-documents-detail = Word (docx، doc)، متن OpenDocument (odt) و اسلایدها (pptx، ppt، odp).
 settings-default-apps-katna = نمایشگر Katna Mail
 settings-default-apps-system = برنامهٔ پیش‌فرض میزکار
 settings-default-apps-ask = هر بار پرسیدن که با کدام برنامه
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = جایی که پیوست‌های PDF باز
 settings-default-apps-pictures-summary = جایی که عکس‌ها و تصاویر باز می‌شوند
 settings-default-apps-text-summary = جایی که متن ساده، گزارش‌ها و کد باز می‌شوند
 settings-default-apps-sheets-summary = جایی که فایل‌های Excel، OpenDocument و CSV باز می‌شوند
-settings-default-apps-documents-summary = جایی که Word و متن OpenDocument باز می‌شوند
+settings-default-apps-documents-summary = جایی که Word، متن OpenDocument و اسلایدها باز می‌شوند
 settings-default-apps-after-saving-summary = نمایش پیوست‌های ذخیره‌شده در پوشه‌شان
 settings-compose-send-from-summary = حسابی که ایمیل جدید از آن ارسال می‌شود: حسابی که در آن هستید، یا همیشه همان حساب
 settings-compose-send-on-replies-summary = «ارسال» یا «ارسال و بایگانی» مکالمه، در پاسخ‌ها و بازارسال‌ها
@@ -252,3 +252,18 @@ settings-clock-language = همان‌طور که زبان می‌نویسد
 settings-clock-12 = ۱۲ ساعته، مثلاً ۲:۰۵ ب.ظ.
 settings-clock-24 = ۲۴ ساعته، مثلاً ۱۴:۰۵
 settings-time-summary = ساعت ۱۲ یا ۲۴ ساعته، یا همان‌طور که زبان می‌نویسد
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = برنامهٔ پیش‌فرض ایمیل
+settings-general-mail-app-detail = پیوندهای ایمیل در برنامه‌های دیگر و وب‌سایت‌ها، پیام تازه‌ای را همین‌جا باز می‌کنند.
+mail-app-is-default = Katna Mail برنامهٔ پیش‌فرض ایمیل شماست.
+mail-app-is-other = پیوندهای ایمیل در برنامهٔ دیگری باز می‌شوند.
+mail-app-make-default = پیش‌فرض کردن
+mail-app-make-default-failed = تغییر برنامهٔ پیش‌فرض ایمیل ممکن نشد.
+settings-general-mail-app-summary = باز کردن پیوندهای ایمیل برنامه‌ها و وب‌سایت‌های دیگر در Katna Mail
+settings-compose-grammar = دستور زبان
+settings-compose-grammar-detail = روی همین رایانه با Harper بررسی می‌شود. فعلاً فقط انگلیسی: متن به زبان‌های دیگر دست‌نخورده می‌ماند.
+settings-compose-grammar-check = بررسی دستور زبان
+settings-compose-grammar-check-detail = کشیدن خط زیر اشتباه‌های دستوری هنگام نوشتن، به انگلیسی
+settings-compose-grammar-summary = کشیدن خط زیر اشتباه‌های دستوری هنگام نوشتن، به انگلیسی

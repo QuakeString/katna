@@ -139,7 +139,7 @@ settings-default-apps-text-detail = سادہ متن، لاگز، کوڈ اور �
 settings-default-apps-sheets = اسپریڈشیٹس
 settings-default-apps-sheets-detail = Excel (xlsx، xls)، OpenDocument (ods) اور CSV۔
 settings-default-apps-documents = دستاویزات
-settings-default-apps-documents-detail = Word (docx) اور OpenDocument متن (odt)۔
+settings-default-apps-documents-detail = Word (docx، doc)، OpenDocument متن (odt) اور سلائیڈز (pptx، ppt، odp)۔
 settings-default-apps-katna = Katna Mail کا ویوئر
 settings-default-apps-system = ڈیسک ٹاپ کی ڈیفالٹ ایپ
 settings-default-apps-ask = ہر بار پوچھیں کہ کون سی ایپ
@@ -222,7 +222,7 @@ settings-default-apps-pdf-summary = PDF اٹیچمنٹس کہاں کھلتی ہ�
 settings-default-apps-pictures-summary = فوٹوز اور تصاویر کہاں کھلتی ہیں
 settings-default-apps-text-summary = سادہ متن، لاگز اور کوڈ کہاں کھلتے ہیں
 settings-default-apps-sheets-summary = Excel، OpenDocument اور CSV فائلیں کہاں کھلتی ہیں
-settings-default-apps-documents-summary = Word اور OpenDocument متن کہاں کھلتے ہیں
+settings-default-apps-documents-summary = Word، OpenDocument متن اور سلائیڈز کہاں کھلتے ہیں
 settings-default-apps-after-saving-summary = محفوظ کردہ اٹیچمنٹس ان کے فولڈر میں دکھائیں
 settings-compose-send-from-summary = وہ اکاؤنٹ جس سے نئی میل جاتی ہے: جس میں آپ ہیں، یا ہمیشہ ایک ہی
 settings-compose-send-on-replies-summary = جوابات اور فارورڈز پر ”بھیجیں“، یا ”بھیجیں اور آرکائیو کریں“
@@ -252,3 +252,18 @@ settings-clock-language = زبان کے مطابق
 settings-clock-12 = 12 گھنٹے، جیسے 2:05 PM
 settings-clock-24 = 24 گھنٹے، جیسے 14:05
 settings-time-summary = 12 گھنٹے یا 24 گھنٹے کی گھڑی، یا زبان کے مطابق
+
+## Settings > General > Default mail app, Settings > Compose > Grammar
+
+settings-general-mail-app = ڈیفالٹ میل ایپ
+settings-general-mail-app-detail = دوسری ایپس اور ویب سائٹس پر ای میل لنکس یہاں نیا پیغام کھولتے ہیں۔
+mail-app-is-default = Katna Mail آپ کی ڈیفالٹ میل ایپ ہے۔
+mail-app-is-other = ای میل لنکس کسی دوسری ایپ میں کھلتے ہیں۔
+mail-app-make-default = ڈیفالٹ بنائیں
+mail-app-make-default-failed = ڈیفالٹ میل ایپ تبدیل نہیں ہو سکی۔
+settings-general-mail-app-summary = دوسری ایپس اور ویب سائٹس کے ای میل لنکس Katna Mail میں کھولیں
+settings-compose-grammar = گرامر
+settings-compose-grammar-detail = اسی کمپیوٹر پر Harper سے جانچا جاتا ہے۔ فی الحال صرف انگریزی: دوسری زبانوں کے متن کو نہیں چھیڑا جاتا۔
+settings-compose-grammar-check = گرامر کی جانچ کریں
+settings-compose-grammar-check-detail = لکھتے وقت گرامر کی غلطیوں کے نیچے لکیر لگائیں، انگریزی میں
+settings-compose-grammar-summary = لکھتے وقت گرامر کی غلطیوں کے نیچے لکیر لگائیں، انگریزی میں
