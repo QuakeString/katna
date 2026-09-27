@@ -32,6 +32,7 @@ mod download;
 mod feedback_page;
 mod keymap;
 mod labels;
+mod language;
 mod layout;
 mod list;
 mod look;
@@ -161,12 +162,15 @@ const NAV_ROW_INSET: f32 = 8.0;
 /// account picture. The header bar itself spaces its items 6 px apart.
 const TOP_BAR_GAP: f32 = 16.0;
 const BAR_ITEM_GAP: f32 = 6.0;
-/// The room Settings and the account picture take at the top bar's end,
-/// up to the window buttons: both 40 px wide, with the gap between them,
-/// and 8 px after the picture plus the bar's own spacing.
-const TOP_END_WIDTH: f32 = 40.0 + TOP_BAR_GAP + 40.0 + 8.0 + BAR_ITEM_GAP;
-/// The word on the top bar's Compose button, and its size.
-const COMPOSE_LABEL: &str = "Compose";
+/// The room the language button, Settings and the account picture take at
+/// the top bar's end, up to the window buttons: 40 px wide each (the
+/// language button a flag and a chevron), with the gap between them, and
+/// 8 px after the picture plus the bar's own spacing.
+const TOP_END_WIDTH: f32 =
+    LANGUAGE_BUTTON_WIDTH + TOP_BAR_GAP + 40.0 + TOP_BAR_GAP + 40.0 + 8.0 + BAR_ITEM_GAP;
+/// The language button: its flag and chevron with 8 px either side.
+const LANGUAGE_BUTTON_WIDTH: f32 = 8.0 + 24.0 + 4.0 + 18.0 + 8.0;
+/// The size of the word on the top bar's Compose button.
 const COMPOSE_TEXT_SIZE: f32 = 14.0;
 /// Where Compose starts on the top bar: the bar's 6 px padding, the menu
 /// button (48 px with a 6 px margin) and the gap after it.
@@ -187,18 +191,18 @@ fn compose_text_width(font: Option<&SharedString>, window: &Window) -> f32 {
         style.family = family.clone();
     }
     style.weight = FontWeight::MEDIUM;
+    let label = katna_i18n::tr!("compose");
     let run = TextRun {
-        len: COMPOSE_LABEL.len(),
+        len: label.len(),
         font: style,
         color: Hsla::default(),
         background_color: None,
         underline: None,
         strikethrough: None,
     };
-    let line =
-        window
-            .text_system()
-            .shape_line(COMPOSE_LABEL.into(), px(COMPOSE_TEXT_SIZE), &[run], None);
+    let line = window
+        .text_system()
+        .shape_line(label.into(), px(COMPOSE_TEXT_SIZE), &[run], None);
     unpx(line.width).ceil() + 1.0
 }
 /// Corners of cards that float: menus aside, dialogs and panels.
@@ -416,12 +420,17 @@ pub struct MailWindow {
     tour_marks: tour::Marks,
     /// Where the parts the tour shows were in the last frame.
     tour_seen: HashMap<tour::Spot, gpui::Bounds<gpui::Pixels>>,
+    /// Marks the open conversation read once it has been open long
+    /// enough (`mail.mark_read`); replaced when another one opens.
+    read_timer: Option<Task<()>>,
     /// An account still waits for its first sync, so an empty folder may
     /// only be not fetched yet.
     first_sync: bool,
     _first_sync_check: Option<Task<()>>,
     /// The account card above the rail's account picture.
     account_menu: bool,
+    /// The language picker, open from the top bar, the drawer or Settings.
+    language_picker: Option<language::LanguagePicker>,
     /// The message last handed to the outbox, for Undo.
     unsent: Option<compose::Unsent>,
     /// The spelling dictionary and scheduled mail of compose.
@@ -499,7 +508,7 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Self {
-        let search = cx.new(|cx| TextInput::new("Search mail", cx));
+        let search = cx.new(|cx| TextInput::new(katna_i18n::tr!("search-mail"), cx));
         let subscriptions = vec![cx.subscribe_in(&search, window, Self::on_search_event)];
         let config_path = paths.config_file();
         let config = Config::load(&config_path).unwrap_or_else(|err| {
@@ -583,9 +592,11 @@ impl MailWindow {
             tour: None,
             tour_marks: Default::default(),
             tour_seen: HashMap::new(),
+            read_timer: None,
             first_sync: false,
             _first_sync_check: None,
             account_menu: false,
+            language_picker: None,
             unsent: None,
             writing: compose::Writing::default(),
             settings_page: None,
@@ -608,6 +619,7 @@ impl MailWindow {
             tz: TimeZone::try_system().unwrap_or(TimeZone::UTC),
             _subscriptions: subscriptions,
         };
+        this.remote.always = this.config.mail.remote_images;
         this.watch_escape(window, cx);
         let weak = cx.entity().downgrade();
         // The toolbar's "1–50 of N" follows the scrolling.
@@ -1023,13 +1035,37 @@ impl MailWindow {
         };
         let conversation = Conversation::load(mail, entry.key);
         self.reader_scroll.set_offset(gpui::point(px(0.0), px(0.0)));
-        // Opening marks the conversation read, as webmail does.
+        // Opening marks the conversation read, as webmail does: at once,
+        // after it has been open a moment, or never (`mail.mark_read`).
         let unread = conversation.unread_messages();
         self.reader = Some(conversation);
-        if !unread.is_empty() {
-            self.pending.entry(entry.key).or_default().unread = Some(false);
-            self.send(Command::MarkRead(unread, true), None, None, true, cx);
+        self.read_timer = None;
+        if unread.is_empty() {
+            return;
         }
+        match self.config.mail.mark_read.delay() {
+            Some(delay) if delay.is_zero() => self.mark_opened_read(entry.key, unread, cx),
+            Some(delay) => {
+                self.read_timer = Some(cx.spawn(async move |this, cx| {
+                    cx.background_executor().timer(delay).await;
+                    this.update(cx, |this, cx| {
+                        // Only if it is still the one open.
+                        if this.reading && this.reader.as_ref().is_some_and(|r| r.key == entry.key)
+                        {
+                            this.mark_opened_read(entry.key, unread, cx);
+                            cx.notify();
+                        }
+                    })
+                    .ok();
+                }));
+            }
+            None => {}
+        }
+    }
+
+    fn mark_opened_read(&mut self, key: EntryKey, unread: Vec<MessageId>, cx: &mut Context<Self>) {
+        self.pending.entry(key).or_default().unread = Some(false);
+        self.send(Command::MarkRead(unread, true), None, None, true, cx);
     }
 
     fn move_selection(&mut self, delta: isize, cx: &mut Context<Self>) {
@@ -2318,6 +2354,7 @@ impl Render for MailWindow {
         let compose = self.render_compose(&th, window, reduce, cx);
         let scheduled = self.render_scheduled(&th, window, cx);
         let account_menu = self.render_account_menu(&th, cx);
+        let language_picker = self.render_language_picker(&th, window, cx);
         let add_account = self.render_add_account(&th, window, reduce, cx);
         let danger = self.render_danger(&th, window, reduce, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
@@ -2375,6 +2412,7 @@ impl Render for MailWindow {
             .children(compose)
             .children(scheduled)
             .children(account_menu)
+            .children(language_picker)
             .children(add_account)
             .children(context_menu)
             .children(danger)

@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 608 more of their own. Each keeps its own license.
+bring in 624 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -18,6 +18,7 @@ bring in 608 more of their own. Each keeps its own license.
 | [blake3](https://github.com/BLAKE3-team/BLAKE3) 1.8.7 | Jack O'Connor, Samuel Neves | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception | the BLAKE3 hash function |
 | [calamine](https://github.com/tafia/calamine) 0.36.1 | Johann Tuffe | MIT | An Excel/OpenDocument Spreadsheet reader and deserializer in pure Rust |
 | [emojis](https://github.com/rossmacarthur/emojis) 0.9.0 | Ross MacArthur | (MIT OR Apache-2.0) AND Unicode-3.0 | ✨ Lookup emoji in *O(1)* time, access metadata and GitHub shortcodes, iterate over all emoji, and more! |
+| [fluent-bundle](https://github.com/projectfluent/fluent-rs) 0.16.0 | Bruce Mitchener <bruce.mitchener@gmail.com, Caleb Maclennan, Staś Małolepszy, Zibi Braniecki | Apache-2.0 OR MIT | A low-level implementation of a collection of localization messages for a single locale for Project Fluent, a localization system designed to unleash the entire expressive power of natural language translations. |
 | [fontdb](https://github.com/RazrFalcon/fontdb) 0.23.0 | Yevhenii Reizner | MIT | A simple, in-memory font database with CSS-like queries. |
 | [futures-lite](https://github.com/smol-rs/futures-lite) 2.6.1 | Contributors to futures-rs, Stjepan Glavina | Apache-2.0 OR MIT | Futures, streams, and async I/O combinators |
 | [futures-rustls](https://github.com/quininer/futures-rustls) 0.26.0 | quininer kel | MIT/Apache-2.0 | Asynchronous TLS/SSL streams for futures using Rustls. |
@@ -27,6 +28,12 @@ bring in 608 more of their own. Each keeps its own license.
 | [gpui-pre-wgpu](https://github.com/zed-industries/zed) 0.3.6 | zed-industries | Apache-2.0 | Zed's `gpui_wgpu` crate (gpui-pre snapshot of zed@bcf6582) |
 | [hayro](https://github.com/LaurenzV/hayro) 0.7.1 | Laurenz Stampfl | Apache-2.0 OR MIT | A rasterizer for PDF files. |
 | [html5ever](https://github.com/servo/html5ever) 0.40.1 | The html5ever Project Developers | MIT OR Apache-2.0 | High-performance browser-grade HTML5 parser |
+| [icu_calendar](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | Date APIs for Gregorian and non-Gregorian calendars |
+| [icu_datetime](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | Human-readable formatting of dates, times, and time zones in hundreds of locales |
+| [icu_decimal](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | API for formatting basic decimal numbers in a locale-sensitive way |
+| [icu_locale_core](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | API for managing Unicode Language and Locale Identifiers |
+| [icu_provider](https://github.com/unicode-org/icu4x) 2.3.1 | The ICU4X Project Developers | Unicode-3.0 | Trait and struct definitions for the ICU data provider |
+| [icu_time](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | Processing of dates, times, and time zones with a focus on i18n and interop |
 | [image](https://github.com/image-rs/image) 0.25.10 | The image-rs Developers | MIT OR Apache-2.0 | Imaging library. Provides basic image processing and encoders/decoders for common image formats. |
 | [imap-codec](https://github.com/duesee/imap-codec) 2.0.0-alpha.9 | Damian Poddebniak | MIT OR Apache-2.0 | Rock-solid and complete codec for IMAP |
 | [imap-types](https://github.com/duesee/imap-codec) 2.0.0-alpha.7 | Damian Poddebniak | MIT OR Apache-2.0 | Misuse-resistant data structures for IMAP |
@@ -56,6 +63,7 @@ bring in 608 more of their own. Each keeps its own license.
 | [toml](https://github.com/toml-rs/toml) 1.1.6+spec-1.1.0 | toml-rs | MIT OR Apache-2.0 | A native Rust encoder and decoder of TOML-formatted files and streams. Provides implementations of the standard Serialize/Deserialize traits for TOML data to facilitate deserializing and serializing Rust structures. |
 | [tracing](https://github.com/tokio-rs/tracing) 0.1.44 | Eliza Weisman, Tokio Contributors | MIT | Application-level tracing for Rust. |
 | [tracing-subscriber](https://github.com/tokio-rs/tracing) 0.3.23 | David Barsky, Eliza Weisman, Tokio Contributors | MIT | Utilities for implementing and composing `tracing` subscribers. |
+| [unic-langid](https://github.com/zbraniecki/unic-locale) 0.9.6 | Zibi Braniecki | MIT OR Apache-2.0 | API for managing Unicode Language Identifiers |
 | [unicode-segmentation](https://github.com/unicode-rs/unicode-segmentation) 1.13.3 | Manish Goregaokar, kwantam | MIT OR Apache-2.0 | This crate provides Grapheme Cluster, Word and Sentence boundaries according to Unicode Standard Annex #29 rules. |
 | [zbus](https://github.com/z-galaxy/zbus) 5.19.0 | Zeeshan Ali Khan | MIT | API for D-Bus communication |
 | [zip](https://github.com/zip-rs/zip2) 8.6.0 | Chris Hennick, Marli Frost, Mathijs van de Nes, Ryan Levick | MIT | Library to support the reading and writing of zip files. |

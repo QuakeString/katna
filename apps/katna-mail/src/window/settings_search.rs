@@ -52,6 +52,12 @@ const fn entry(
 const ENTRIES: &[Entry] = &[
     entry(
         Section::General,
+        "Language",
+        "Language of the app, dates and numbers",
+        "language translation locale english hindi bengali arabic system",
+    ),
+    entry(
+        Section::General,
         "Conversation view",
         "Group replies to the same mail",
         "threads threading group",
@@ -61,6 +67,24 @@ const ENTRIES: &[Entry] = &[
         "Reading",
         "Newest message first, full headers, full names of recipients",
         "order oldest descending chronological reverse headers details from to cc names recipients first last",
+    ),
+    entry(
+        Section::General,
+        "Mark as read",
+        "When an opened conversation is marked read: at once, after 1 or 3 seconds, or by hand",
+        "read unread seen delay mark",
+    ),
+    entry(
+        Section::General,
+        "Reply button",
+        "The reply button beside each message replies to everyone",
+        "reply all default behaviour behavior",
+    ),
+    entry(
+        Section::General,
+        "Images from the web",
+        "Always show the images of every message",
+        "remote images pictures load external content tracking privacy",
     ),
     entry(
         Section::General,
@@ -76,9 +100,15 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
+        "Notifications",
+        "New-mail notifications and their sound",
+        "notify alert sound chime popup new mail",
+    ),
+    entry(
+        Section::General,
         "Desktop",
-        "The system tray icon and the unread count on the taskbar icon",
-        "tray badge unread count taskbar dock panel",
+        "Open Katna Mail at login, the system tray icon and the unread count on the taskbar icon",
+        "tray badge unread count taskbar dock panel startup start login autostart launch boot",
     ),
     entry(
         Section::Inbox,
@@ -147,6 +177,36 @@ const ENTRIES: &[Entry] = &[
         "logo avatar picture image photo",
     ),
     entry(
+        Section::Appearance,
+        "Important markers",
+        "The Important marker beside each message in the list",
+        "important label chevron flag priority",
+    ),
+    entry(
+        Section::Appearance,
+        "Message width",
+        "Limit the width of messages",
+        "narrow wide lines readable column",
+    ),
+    entry(
+        Section::Appearance,
+        "Mail colors",
+        "Dark colors for HTML mail in a dark theme, or its sender's colors",
+        "dark mode night html colors colours invert",
+    ),
+    entry(
+        Section::Appearance,
+        "Attachment previews",
+        "A small picture of each attachment's content",
+        "thumbnails attachments files preview",
+    ),
+    entry(
+        Section::Shortcuts,
+        "Shortcut set",
+        "Start from the keys of Gmail, Inbox by Gmail, Apple Mail, Outlook or Thunderbird",
+        "keyboard keys hotkeys keymap preset outlook thunderbird apple gmail inbox restore defaults",
+    ),
+    entry(
         Section::Shortcuts,
         "Single-key shortcuts",
         "Keys without Ctrl or Alt, as in webmail",
@@ -183,6 +243,12 @@ const ENTRIES: &[Entry] = &[
         "open attachment viewer app docx odt word",
     ),
     entry(
+        Section::DefaultApps,
+        "After saving",
+        "Show saved attachments in their folder",
+        "save download folder file manager reveal show dolphin",
+    ),
+    entry(
         Section::Signatures,
         "Send new messages from",
         "The account new mail goes out from: the one you are in, or always the same one",
@@ -211,6 +277,18 @@ const ENTRIES: &[Entry] = &[
         "For replies and forwards",
         "The signature replies and forwards start with",
         "default signature reply forward",
+    ),
+    entry(
+        Section::Signatures,
+        "Format",
+        "Write new mail in plain text",
+        "plain text html rich formatting",
+    ),
+    entry(
+        Section::Signatures,
+        "Spelling",
+        "Check spelling while writing, and the dictionary's language",
+        "spell check spellcheck dictionary language hunspell typos",
     ),
     entry(
         Section::Signatures,
@@ -421,14 +499,14 @@ impl MailWindow {
             self.search_panel = None;
             self.mail_query = Some(self.search.read(cx).text().to_owned());
             self.search.update(cx, |search, cx| {
-                search.set_placeholder("Search settings");
+                search.set_placeholder(katna_i18n::tr!("search-settings"));
                 search.set_text("", cx);
             });
         } else {
             let query = self.mail_query.take().unwrap_or_default();
             let searching = matches!(self.listing, Some(super::Listing::Search { .. }));
             self.search.update(cx, |search, cx| {
-                search.set_placeholder("Search mail");
+                search.set_placeholder(katna_i18n::tr!("search-mail"));
                 search.set_text(if searching { query } else { String::new() }, cx);
             });
         }

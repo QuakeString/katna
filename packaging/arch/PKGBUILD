@@ -36,6 +36,8 @@ optdepends=(
   'org.freedesktop.secrets: keeps account passwords (GNOME Keyring, KWallet or KeePassXC)'
   'vulkan-driver: GPU rendering with Vulkan instead of the OpenGL fallback'
   'hunspell-en_us: spell check while writing mail (or another hunspell dictionary)'
+  'noto-fonts: letters of Indic, Thai, Khmer, Lao, Burmese, Tibetan, Ethiopic, Arabic and Hebrew mail and translations'
+  'noto-fonts-cjk: Chinese, Japanese and Korean mail and translations'
 )
 provides=('katna')
 conflicts=('katna')

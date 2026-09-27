@@ -204,6 +204,33 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 21,
+        title: "Shortcuts from the mail app you know",
+        text: "Settings > Shortcuts can start from the keys of Gmail, Inbox by Gmail, \
+               Apple Mail, Outlook or Thunderbird, lists them in two columns, and \
+               Restore defaults takes back your changes.",
+        animation: None,
+    },
+    Highlight {
+        id: 22,
+        title: "More settings",
+        text: "Open Katna Mail at login, choose when mail is marked read, make the \
+               reply button reply to everyone, always show images, mute the new-mail \
+               sound, hide Important markers, narrow long lines, keep mail's own \
+               colors in dark mode, turn off attachment previews, write in plain \
+               text, pick the spelling language and see saved files in their folder.",
+        animation: None,
+    },
+    Highlight {
+        id: 23,
+        title: "Your language",
+        text: "Pick one of 51 languages from the flag button in the top bar, or \
+               follow your desktop's. Dates and numbers follow it now; the rest of \
+               the app is translated over the next updates. The translations were \
+               drafted by AI, and corrections are welcome.",
+        animation: None,
+    },
+    Highlight {
+        id: 24,
         title: "Opens where you left it",
         text: "Katna Mail opens at the size and place it had when you closed it, \
                maximized if it was. Quitting Katna from the tray starts it afresh. \
