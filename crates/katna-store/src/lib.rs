@@ -13,6 +13,7 @@ mod contact;
 mod db;
 pub mod error;
 mod gmail_merge;
+pub mod insights;
 pub mod journal;
 pub mod mail;
 mod mail_read;
@@ -39,6 +40,7 @@ pub use contact::{ContactConversation, ContactFile, ContactSummary};
 pub use db::{DbKind, Mode};
 pub use error::{Error, Result};
 pub use gmail_merge::Adopted;
+pub use insights::{Insights, Partner, Replies};
 pub use journal::{Change, ChangeOp, ObjectKind};
 pub use katna_core::MailCategory;
 pub use mail::{
@@ -58,8 +60,8 @@ pub use quota::StorageQuota;
 pub use remote::{FolderRole, NewAttachment, RemoteMessage, StoredAttachment, StoredFolder};
 pub use templates::{Template, TemplateFile, TemplateSummary};
 pub use tracking::{
-    MessageActivity, NewRecipient, RecipientActivity, TrackedMessage, TrackedRecipient,
-    TrackingEvent, TrackingNews,
+    ActivityItem, MessageActivity, NewRecipient, RecipientActivity, TrackedMessage,
+    TrackedRecipient, TrackingEvent, TrackingNews,
 };
 pub use translation::Translation;
 

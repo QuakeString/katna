@@ -428,7 +428,12 @@ impl MailWindow {
 }
 
 /// A chip in a row of choices.
-fn chip(id: impl Into<gpui::ElementId>, label: &str, on: bool, th: &Theme) -> Stateful<Div> {
+pub(super) fn chip(
+    id: impl Into<gpui::ElementId>,
+    label: &str,
+    on: bool,
+    th: &Theme,
+) -> Stateful<Div> {
     div()
         .id(id)
         .px(px(10.0))

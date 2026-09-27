@@ -2,7 +2,7 @@
 
 title = "Activity for tracked mail"
 text = """
-Activity under Sent shows how many of your tracked messages were opened
-and how often their links were followed, with your subject lines ranked
-by how often they are opened.
+Activity beside the search box shows how many of your tracked messages
+were opened and how often their links were followed, with your subject
+lines ranked by how often they are opened.
 """

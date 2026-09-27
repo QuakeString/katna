@@ -476,6 +476,14 @@ pub struct MailView {
     pub account_order: Vec<String>,
     /// Translating mail into the reading language with Katna Server.
     pub translation: TranslationSettings,
+    /// The newest open or click seen in Activity (the server's event
+    /// number), so the Activity button can count the ones after it.
+    #[serde(skip_serializing_if = "is_zero")]
+    pub activity_seen: i64,
+}
+
+fn is_zero(n: &i64) -> bool {
+    *n == 0
 }
 
 /// Automatic translation (Settings > General > Translation;
@@ -542,6 +550,7 @@ impl Default for MailView {
             current_account: String::new(),
             account_order: Vec::new(),
             translation: TranslationSettings::default(),
+            activity_seen: 0,
         }
     }
 }

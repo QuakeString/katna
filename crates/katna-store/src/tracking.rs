@@ -96,6 +96,27 @@ impl RecipientActivity {
     }
 }
 
+/// One open or click by a person, for the Activity feed.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ActivityItem {
+    /// The server's event number: newer events have larger ones.
+    pub seq: i64,
+    /// `true` for a followed link, `false` for an open.
+    pub click: bool,
+    /// Through Apple's mail privacy proxy: "maybe opened".
+    pub maybe: bool,
+    /// For a click, the link's target.
+    pub link: Option<String>,
+    /// Unix milliseconds.
+    pub at: i64,
+    pub email: String,
+    pub name: Option<String>,
+    pub subject: String,
+    pub account: AccountId,
+    /// The message's `Message-ID`, without angle brackets.
+    pub message_id: String,
+}
+
 /// What the recipients of a tracked message did.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MessageActivity {
@@ -400,6 +421,58 @@ impl Store {
         })
     }
 
+    /// Opens and clicks by people (and Apple's proxy) at or after `since`
+    /// (Unix milliseconds), newest first, at most `limit`.
+    pub fn activity_feed(&self, since: i64, limit: u32) -> Result<Vec<ActivityItem>> {
+        let mut stmt = self.pim.prepare_cached(
+            "SELECT e.seq, e.kind, e.source, e.link, e.at, r.email, r.name,
+                    m.subject, m.account_id, m.message_id_hdr, m.links_json
+             FROM tracking_event e
+             JOIN tracked_recipient r ON r.tracking_id = e.tracking_id
+             JOIN tracked_message m ON m.id = r.tracked_id
+             WHERE e.source IN ('person', 'apple_proxy') AND e.at >= ?1
+             ORDER BY e.at DESC, e.seq DESC LIMIT ?2",
+        )?;
+        let rows = stmt.query_map(params![since, limit], |row| {
+            let kind: String = row.get(1)?;
+            let source: String = row.get(2)?;
+            let link: Option<i64> = row.get(3)?;
+            let links: String = row.get(10)?;
+            let link = link.and_then(|n| {
+                let links: Vec<String> = serde_json::from_str(&links).unwrap_or_default();
+                usize::try_from(n).ok().and_then(|n| links.get(n).cloned())
+            });
+            let click = kind == "click";
+            Ok(ActivityItem {
+                seq: row.get(0)?,
+                click,
+                // A followed link is a person, whoever fetched it.
+                maybe: !click && source == "apple_proxy",
+                link,
+                at: row.get(4)?,
+                email: row.get(5)?,
+                name: row.get(6)?,
+                subject: row.get(7)?,
+                account: AccountId(row.get(8)?),
+                message_id: row.get(9)?,
+            })
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// How many opens and clicks by people came after event `seq`.
+    pub fn activity_after(&self, seq: i64) -> Result<usize> {
+        let count: i64 = self.pim.query_row(
+            "SELECT count(*) FROM tracking_event e
+             WHERE e.seq > ?1 AND e.source = 'person'
+               AND EXISTS (SELECT 1 FROM tracked_recipient r
+                           WHERE r.tracking_id = e.tracking_id)",
+            [seq],
+            |row| row.get(0),
+        )?;
+        Ok(usize::try_from(count).unwrap_or(0))
+    }
+
     /// The events of `tracking_id`, oldest first.
     pub fn tracking_events(&self, tracking_id: &str) -> Result<Vec<TrackingEvent>> {
         let mut stmt = self.pim.prepare_cached(
@@ -549,6 +622,19 @@ mod tests {
         // The scanner's open does not count.
         assert_eq!((bea.opens, bea.clicks, bea.last), (2, 1, Some(4000)));
         assert!(!activity.recipients[1].opened());
+
+        // The feed: people only, newest first, with the link's target.
+        let feed = store.activity_feed(0, 10).unwrap();
+        let seqs: Vec<i64> = feed.iter().map(|item| item.seq).collect();
+        assert_eq!(seqs, [4, 3, 2]);
+        assert!(feed[0].click);
+        assert_eq!(feed[0].link.as_deref(), Some("https://example.com/"));
+        assert_eq!(feed[0].name.as_deref(), Some("Bea"));
+        assert_eq!(feed[0].message_id, "m1@x.org");
+        assert_eq!(store.activity_feed(3500, 10).unwrap().len(), 1);
+        assert_eq!(store.activity_feed(0, 1).unwrap().len(), 1);
+        assert_eq!(store.activity_after(0).unwrap(), 3);
+        assert_eq!(store.activity_after(3).unwrap(), 1);
 
         assert_eq!(store.forget_tracking(5).unwrap(), ["aa", "bb"]);
         assert!(store.tracking_for_outbox(5).unwrap().is_none());

@@ -106,9 +106,18 @@ tracking-opened = { $who } opened it { $count ->
     [one] once
    *[other] { $count } times
 }, last { $when }
-tracking-opened-clicked = { $who } opened it and followed a link { $count ->
+# $opens and $clicks: how many times, as $count above.
+tracking-opens-clicks = { $who } opened it { $opens ->
     [one] once
-   *[other] { $count } times
+   *[other] { $opens } times
+} and followed a link { $clicks ->
+    [one] once
+   *[other] { $clicks } times
+}, last { $when }
+# Followed a link with pictures turned off, so no open was seen.
+tracking-clicked = { $who } followed a link { $clicks ->
+    [one] once
+   *[other] { $clicks } times
 }, last { $when }
 # Apple Mail fetches pictures for privacy whether or not the mail is read.
 tracking-maybe-opened = { $who } may have opened it (Apple Mail loads pictures for privacy)

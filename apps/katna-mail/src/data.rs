@@ -975,6 +975,31 @@ impl Mail {
             .collect()
     }
 
+    /// Opens and clicks since `since` (Unix milliseconds), newest first.
+    pub fn activity_feed(&self, since: i64, limit: u32) -> Vec<katna_store::ActivityItem> {
+        self.store
+            .activity_feed(since, limit)
+            .unwrap_or_else(|err| {
+                tracing::warn!("reading tracking: {err}");
+                Vec::new()
+            })
+    }
+
+    /// Opens and clicks by people after event `seq`.
+    pub fn activity_after(&self, seq: i64) -> usize {
+        self.store.activity_after(seq).unwrap_or(0)
+    }
+
+    /// The number of the newest open or click kept.
+    pub fn last_activity(&self) -> i64 {
+        self.store.last_tracking_seq().unwrap_or(0)
+    }
+
+    /// The stored copy of the sent message `message_id` of `account`.
+    pub fn sent_copy(&self, account: AccountId, message_id: &str) -> Option<MessageId> {
+        self.store.filed_message(account, message_id).ok().flatten()
+    }
+
     /// Whether any mail was sent with tracking.
     pub fn has_tracking(&self) -> bool {
         self.store.has_tracking().unwrap_or(false)
@@ -1076,6 +1101,30 @@ pub fn unread_counts(paths: &Paths) -> HashMap<FolderId, u64> {
             HashMap::new()
         }
     }
+}
+
+/// Mailbox insights from `since` to before `until` (Unix seconds) for the
+/// user's addresses `me`, with hours in `tz`. Opens its own connection,
+/// for a background thread.
+pub fn insights(
+    paths: &Paths,
+    me: &[String],
+    since: i64,
+    until: i64,
+    tz: &jiff::tz::TimeZone,
+) -> Result<katna_store::Insights, String> {
+    let local = |unix: i64| {
+        jiff::Timestamp::from_second(unix).map_or((0, 0), |at| {
+            let at = at.to_zoned(tz.clone());
+            (
+                usize::try_from(at.weekday().to_monday_zero_offset()).unwrap_or(0),
+                usize::try_from(at.hour()).unwrap_or(0),
+            )
+        })
+    };
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.mailbox_insights(me, since, until, local))
+        .map_err(|err| format!("Counting mail failed: {err}"))
 }
 
 /// The people in the mail, most written with first. Opens its own

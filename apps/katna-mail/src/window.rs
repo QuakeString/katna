@@ -563,8 +563,14 @@ pub struct MailWindow {
     unsent: Option<compose::Unsent>,
     /// The spelling dictionary and scheduled mail of compose.
     writing: compose::Writing,
-    /// The Activity dialog of tracked mail, when open.
-    activity: Option<Vec<katna_store::MessageActivity>>,
+    /// The list of opens and clicks under the Activity button, when open.
+    activity: Option<activity::Menu>,
+    /// The Activity report, when open.
+    activity_report: Option<activity::Report>,
+    /// Opens and clicks not seen in Activity yet.
+    activity_unseen: usize,
+    /// Where the Activity button is.
+    activity_button: std::rc::Rc<std::cell::Cell<Option<gpui::Bounds<gpui::Pixels>>>>,
     /// The Settings page, when open in place of the list.
     settings_page: Option<settings_page::SettingsPage>,
     /// The question before removing an account or deleting all data.
@@ -620,6 +626,7 @@ impl MailWindow {
         }
         this.open_default_folder(cx);
         this.count_unread(cx);
+        this.count_activity();
         this.listen(cx);
         this.watch_colors(cx);
         if let Some(err) = this.mail.as_ref().ok().and_then(Mail::index_error) {
@@ -754,6 +761,9 @@ impl MailWindow {
             unsent: None,
             writing: compose::Writing::default(),
             activity: None,
+            activity_report: None,
+            activity_unseen: 0,
+            activity_button: std::rc::Rc::default(),
             settings_page: None,
             danger: None,
             new_label: None,
@@ -1053,43 +1063,6 @@ impl MailWindow {
                     role: Role::Other,
                     folder: None,
                     unread: scheduled as u64,
-                    has_children: false,
-                    expanded: false,
-                },
-            );
-        }
-        // Activity follows Sent (and Scheduled) once mail was tracked.
-        if self.has_activity() {
-            let at = rows
-                .iter()
-                .rposition(|r| {
-                    matches!(
-                        r,
-                        sidebar::Row::Folder {
-                            role: Role::Sent,
-                            ..
-                        } | sidebar::Row::Unified {
-                            view: sidebar::Unified::Sent,
-                            ..
-                        }
-                    ) || matches!(r, sidebar::Row::Folder { key, .. } if key == compose::SCHEDULED_NAV_KEY)
-                })
-                .map_or(rows.len(), |ix| {
-                    ix + 1
-                        + rows[ix + 1..]
-                            .iter()
-                            .take_while(|r| matches!(r, sidebar::Row::UnifiedAccount { .. }))
-                            .count()
-                });
-            rows.insert(
-                at,
-                sidebar::Row::Folder {
-                    key: activity::NAV_KEY.to_owned(),
-                    depth: 0,
-                    label: "Activity".to_owned(),
-                    role: Role::Other,
-                    folder: None,
-                    unread: 0,
                     has_children: false,
                     expanded: false,
                 },
@@ -2832,7 +2805,8 @@ impl Render for MailWindow {
         };
         let compose = self.render_compose(&th, window, reduce, cx);
         let scheduled = self.render_scheduled(&th, window, cx);
-        let activity = self.render_activity(&th, window, cx);
+        let activity = self.render_activity_report(&th, window, cx);
+        let activity_menu = self.render_activity_menu(&th, window, cx);
         let account_menu = self.render_account_menu(&th, cx);
         let language_picker = self.render_language_picker(&th, window, cx);
         let add_account = self.render_add_account(&th, window, reduce, cx);
@@ -2871,6 +2845,7 @@ impl Render for MailWindow {
             .children(compose)
             .children(scheduled)
             .children(activity)
+            .children(activity_menu)
             .children(account_menu)
             .children(language_picker)
             .children(add_account)
@@ -2898,7 +2873,14 @@ impl Render for MailWindow {
                 div()
                     .w_full()
                     .pl(px(lerp(search_left, 6.0 + room_start, shape.phone)))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(8.0))
                     .child(self.render_search(&th, search_width, search_t, cx))
+                    .when(shape.phone < 0.5, |d| {
+                        d.children(self.render_activity_button(&th, cx))
+                    })
                     .into_any_element()
             }),
             end: if onboarding {
