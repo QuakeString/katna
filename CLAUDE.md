@@ -56,3 +56,9 @@ The toolchain is always the latest stable Rust (`rust-toolchain.toml`).
   `katna_ui::unpx`, never `gpui::px` or `f32::from(Pixels)`, so Settings >
   Appearance > Scaling applies everywhere (`crates/katna-ui/src/scale.rs`;
   clippy's `disallowed-methods` stops `gpui::px`).
+- Text people see goes through `katna_i18n::tr!("id")`, never a string
+  literal, with the English message added to `i18n/en/<binary>.ftl` in the
+  same PR (`cargo test -p katna-i18n` checks every id). Other languages fall
+  back to English until drafted; see `i18n/README.md`. Dates and numbers go
+  through `katna_i18n::format`, never `strftime` or `{}`. Existing literals
+  are converted area by area (plan L.4).
