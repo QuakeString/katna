@@ -255,7 +255,7 @@ Nothing leaves the machine before the user opts in.
 | C.5 Sending crash reports | Daemon uploads envelopes to the DSN over `rustls` only when the switch is on and the network is not metered; Send / Always send in the crash notice; an empty DSN turns sending off |
 | C.6 Usage statistics | One enum of features, weekly `info` event with yes/no feature tags and bucketed facts, release-health sessions, random install ID rotated every 90 days and resettable; Settings shows what is counted |
 | C.7 Feedback form | Help > Send feedback (global menu, Quick settings > Help): form, optional reply address, preview of exactly what is sent, Sentry User Feedback item |
-| C.8 Sentry project | Project `invenia-systems/4512156171698256` created (owner, 27 September 2026); Prevent Storing of IP Addresses and Data Scrubber on; GitHub integration; DSN filled in `katna_core::ids`; `SENTRY_AUTH_TOKEN` secret added by the owner for C.3's debug-file upload |
+| C.8 Sentry project | Project `invenia-systems/4512156171698256` created (owner, 27 September 2026); organization-wide Require Data Scrubber, Require Using Default Scrubbers and Prevent Storing of IP Addresses on (done); GitHub integration; DSN filled in `katna_core::ids`; `SENTRY_AUTH_TOKEN` secret added by the owner for C.3's debug-file upload |
 | C.9 Own server (later) | GlitchTip or self-hosted Sentry on `katna.invenia.in` with the same settings as C.8; CI uploads debug files there; the DSN constant switches to it; the cloud project is closed once no supported version sends to it |
 
 **Done when:** a panic and a segfault in Katna Mail and in the daemon each

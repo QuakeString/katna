@@ -2088,11 +2088,12 @@ cloud project (decided by the owner on 27 September 2026, §25).
 
 **Server side.** The Sentry cloud project exists (organization
 `invenia-systems`, project ID `4512156171698256`, created by the owner on
-27 September 2026). Its settings, under Project Settings > Security &
-Privacy:
+27 September 2026). Its settings:
 
-- **Prevent Storing of IP Addresses** on and the **Data Scrubber** on
-  (with "Use Default Scrubbers"), so the server drops IPs and scrubs again
+- **Done** (owner, 27 September 2026), organization-wide under Security &
+  Privacy > Data Scrubbing, so every project must follow them: **Require
+  Data Scrubber**, **Require Using Default Scrubbers** and **Prevent
+  Storing of IP Addresses**. The server drops IPs and scrubs again
   whatever the client missed; the Katna scrubber's placeholders (`<user>`,
   `<host>`, `<email>`) need no safe-field entries;
 - CI uploads each published build's debug files (`sentry-cli
