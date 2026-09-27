@@ -1,6 +1,6 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 27 September 2026, through PR #133). Companion to
+> Status: **v0.2** (updated 27 September 2026, through PR #143). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
@@ -19,10 +19,14 @@ Mail that the phases did not name.
   package); notifications, badge, tray and global menu from Phase 4;
   local crash reports and opt-in sending; the language framework and most
   of the UI translated; reading and sending encrypted mail.
-- **In review:** select all matching (#127), recipient chips (#130),
-  Reset cache (#109), What's new in the chosen language (#134).
-- **In progress:** the new Katna logo, Autostart on by default, rich paste
-  and drag and drop into compose.
+- **Merged since the last refresh:** select all matching (#127),
+  recipient chips (#130), What's new in the chosen language (#134),
+  Autostart on by default (#136), rich paste and drag and drop (#137), the
+  new Katna logo (#138), the next conversation after delete, archive or
+  move (#139), account names, pictures and order (#140), translations of
+  the newer text (#141, #142), dimmed list markers until hover (#143) and
+  Reset cache (#109).
+- **In review:** Buy me a coffee in the README (#144) and in About (#145).
 - **Next:** usage statistics, feedback form and debug-file upload (C.3,
   C.6, C.7); right-to-left layout (L.2, L.3); OAuth2; organizations
   (Phase 2); KRunner and GNOME search (4.4, 4.5); the release track before
@@ -202,10 +206,10 @@ instantly for all old mail; suggestions have a documented precision test.
 | 3.1 App skeleton ✅ #18 | GPUI app (pinned `gpui-pre` + GPUI Kit), daemon client, read-only store access, change-signal handling |
 | 3.2 `katna-chrome` ✅ #7, #60, #75, #77, #83 | Production version of spike S1: SSD on KDE, CSD on GNOME, others; theme tokens; Breeze-like and Adwaita-like presets |
 | 3.3 `katna-platform` ✅ #40 | Portal settings (color scheme, accent), `kdeglobals`, system font, icon theme, file chooser |
-| 3.4 Main layout ◐ #18, #21, #25, #49, #57, #61, #68, #85, #90, #132; organizations in the sidebar wait for Phase 2 | Sidebar (accounts, unified inbox, folders, organizations), virtualized thread list, conversation view |
+| 3.4 Main layout ◐ #18, #21, #25, #49, #57, #61, #68, #85, #90, #127, #132, #139, #143; organizations in the sidebar wait for Phase 2 | Sidebar (accounts, unified inbox, folders, organizations), virtualized thread list, conversation view |
 | 3.5 Rendering ◐ #44, #73, #103; auth-result banners pending | Plain text + sanitized HTML (per spike S3 result), remote-content blocking, tracker removal, auth-result banners |
 | 3.6 Search UI ◐ #18, #50, #54, #88; organization facets and "More results on server" pending | Search-as-you-type, filter chips, organization facets, "More results on server" section |
-| 3.7 Composer v1 ✅ #25, #42, #53, #69, #84, #107, #110, #111, #117, #118, #126, #133 | Plain text + Markdown, reply/reply-all/forward, identities and signatures, attachments, spell check, undo-send toast |
+| 3.7 Composer v1 ✅ #25, #42, #53, #69, #84, #107, #110, #111, #117, #118, #126, #130, #133, #137 | Plain text + Markdown, reply/reply-all/forward, identities and signatures, attachments, spell check, undo-send toast |
 | 3.8 Account setup UI ✅ #29, #47, #51 | Wizard using Phase 1 autoconfiguration |
 | 3.9 Organizations UI | Organization pages, "Add to organization…", suggestion review |
 | 3.10 Keyboard + a11y ◐ shortcuts #42, #71, #112; command palette and AccessKit labels pending | Gmail-style shortcuts, command palette, AccessKit labels |
@@ -265,13 +269,17 @@ belong to Phase 3 tasks above; this track records them so none is lost.
 | D.5 Undo everywhere ✅ | Undo in the snackbar and Ctrl+Z for archive, delete, move, spam, read, star, important, pin and a send during its undo delay (#76, #125) |
 | D.6 Selecting text ✅ | Select and copy mail text (#103) and viewer text; spreadsheet cells copy as cells (#131) |
 | D.7 Compose placement ✅ | Compose under the account name in the folder pane, sliding into the rail when folded; "Katna Mail" at the top left with the app word changing on app switch (#132) |
-| D.8 Select all matching | Select menu choices tick every matching conversation in the folder or tab, count line and Clear, in batches of 500 (#127, in review) |
-| D.9 Recipient chips | Chips in To, Cc and Bcc, name first with the address on demand, double-click to edit, invalid addresses in red blocking Send (#130, in review) |
-| D.10 Rich paste and drag and drop | Paste keeps formatting; spreadsheet tables paste as Table, Picture or Plain; files pasted or dragged from Dolphin attach; pictures ask Inline or Attachment (in progress) |
-| D.11 New Katna logo | The owner's own logo everywhere: app, hicolor, window and tray icons, top bar, About, onboarding, README, and the website page (in progress) |
-| D.12 Autostart on by default | The daemon and tray start with the session unless turned off (in progress) |
-| D.13 Reset cache | Settings > Reset cache, as in Mailspring (#109, in review) |
+| D.8 Select all matching ✅ | Select menu choices tick every matching conversation in the folder or tab, count line and Clear, in batches of 500 (#127) |
+| D.9 Recipient chips ✅ | Chips in To, Cc and Bcc, name first with the address on demand, double-click to edit, invalid addresses in red blocking Send (#130) |
+| D.10 Rich paste and drag and drop ✅ | Paste keeps formatting; spreadsheet tables paste as Table, Picture or Plain; files pasted or dragged from Dolphin attach; pictures ask Inline or Attachment (#137) |
+| D.11 New Katna logo ✅ | The owner's own logo everywhere: app, hicolor, window and tray icons, top bar, About, onboarding, README (#138); the website page follows in `invenia_website` |
+| D.12 Autostart on by default ✅ | The daemon and tray start with the session unless turned off, quietly in the tray (#136) |
+| D.13 Reset cache ✅ | Settings > Reset cache, as in Mailspring (#109) |
 | D.14 Whole-sentence suggestions (later) | Optional, downloaded small local model in a helper process; nothing sent to a cloud service without asking |
+| D.15 Next conversation after an action ✅ | Delete, archive or move opens the next conversation instead of going back to the list (#139) |
+| D.16 Accounts in Settings ✅ | Account names, own pictures and order in Settings > Accounts (#140) |
+| D.17 Quiet list markers ✅ | Tick boxes, stars and Important markers dim until the row is hovered or they are on, as in Gmail (#143) |
+| D.18 Support links | Buy me a coffee and a GitHub Sponsor button in the README (#144), a button and QR code in About (#145) (in review) |
 
 Not yet checked on a real desktop: Open with (#55), Gmail Important sync
 (#56), scheduled send (#53), the badge count with one account (#61), the
@@ -349,7 +357,7 @@ merging `main` first, rather than in one large one.
 | L.1 Framework and picker ✅ #100 | `katna-i18n` crate: language list (`i18n/languages.toml`), system language (`LANGUAGE`, `LC_*`, `plasma-localerc`), `general.language` setting, Fluent bundles with English fallback, `tr!`, override folder, pseudo-locales, id and variable checks; ICU4X dates, numbers and plurals in `format.rs`; top-bar language button and picker popover, Settings > General row, phone drawer row; bundled flags; the top bar and the picker translated into all 48 languages; CLAUDE.md rule that new UI text goes through `tr!` |
 | L.2 GPUI patches | `gpui-pre` vendored with `KATNA.md`: window layout direction with mirrored bounds, start/end text alignment, `.layout_ltr()`, UAX #14 and grapheme-safe line breaking with dictionary breaks for Thai, Lao, Khmer and Burmese, Han forms from Katna's language, bidi-aware carets |
 | L.3 Mirroring | RTL switch in `window/layout.rs` `Shape`; mirrored directional icons; drawer, conversation and menus from the right; arrow keys; checked with `qps-plocm` |
-| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134 in review; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
+| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134; account settings, paste and drop and newer text #141, #142; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
 | L.5 Mail content | Per-message and per-paragraph direction in the reader and list; compose direction buttons and `dir` in sent HTML; quote and forward headers in the UI language; shortcuts by key position on non-Latin layouts; input method check (Fcitx5, IBus) |
 | L.6 Search in unspaced scripts | Thai, Lao, Khmer and Burmese word splitting in `katna-search` with the shared segmenter |
 | L.7 Corrections | Translation guide (`i18n/README.md`), "Translation correction" issue template, coverage report in CI; later hosted Weblate on the same files (owner applies) |
