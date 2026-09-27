@@ -1592,7 +1592,7 @@ impl MailWindow {
             }
             items = items
                 .child(
-                    menu_item("grammar-ignore", "Ignore", th)
+                    menu_item("grammar-ignore", &katna_i18n::tr!("grammar-ignore"), th)
                         .on_click(self.on_body(cx, move |e, cx| e.ignore_grammar(&issue, cx))),
                 )
                 .child(menu_divider(th));
@@ -1691,11 +1691,16 @@ impl MailWindow {
             );
         }
         let ignored = issue.clone();
-        items = items.child(menu_item("subject-grammar-ignore", "Ignore", th).on_click(
-            on_subject(Box::new(move |input, cx| {
+        items = items.child(
+            menu_item(
+                "subject-grammar-ignore",
+                &katna_i18n::tr!("grammar-ignore"),
+                th,
+            )
+            .on_click(on_subject(Box::new(move |input, cx| {
                 input.ignore_grammar(&ignored, cx)
-            })),
-        ));
+            }))),
+        );
         Some(
             deferred(
                 anchored()

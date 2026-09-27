@@ -79,6 +79,8 @@ pub(super) enum Change {
     NotificationSound(bool),
     PlainText(bool),
     SpellCheck(bool),
+    /// The interface's language, a tag; empty follows the desktop.
+    Language(&'static str),
     /// Grammar mistakes underlined while writing (English only).
     GrammarCheck(bool),
 }
@@ -512,6 +514,26 @@ impl MailWindow {
             Change::SendCrashReports(on) => {
                 self.config.feedback.send_crash_reports = Some(on);
                 self.save_config();
+                self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
+                return;
+            }
+            Change::Language(tag) => {
+                if self.config.general.language == tag {
+                    return;
+                }
+                self.config.general.language = tag.to_owned();
+                katna_i18n::apply(&self.config.general.language);
+                // Text set once rather than at every frame.
+                let placeholder = if self.settings_page.is_some() {
+                    katna_i18n::tr!("search-settings")
+                } else {
+                    katna_i18n::tr!("search-mail")
+                };
+                self.search
+                    .update(cx, |search, _| search.set_placeholder(placeholder));
+                self.save_config();
+                // The daemon's notifications, tray and dock menu follow.
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
                 cx.notify();
                 return;

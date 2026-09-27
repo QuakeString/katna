@@ -1411,6 +1411,7 @@ impl MailWindow {
             .gap(px(6.0))
             .text_size(px(12.0))
             .font_weight(weight)
+            .whitespace_nowrap()
             .text_color(rgba(if row.unread { th.text } else { th.text_faint }))
             .when(row.pinned, |d| {
                 d.child(

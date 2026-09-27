@@ -850,7 +850,7 @@ impl MailWindow {
         }
         if self.writing.grammar.is_none() {
             let language = spell::language(&self.config.sending.spell_language);
-            match grammar::Helper::start(&language) {
+            match grammar::Helper::start(&language, &self.config.general.language) {
                 Ok(helper) => self.writing.grammar = Some(Arc::new(helper)),
                 Err(err) => tracing::warn!("grammar checking: {err}"),
             }

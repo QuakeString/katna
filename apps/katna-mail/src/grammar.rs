@@ -14,6 +14,7 @@ use std::io::{BufRead, BufReader, Write};
 use std::process::{Child, ChildStdin, ChildStdout, Command, ExitCode, Stdio};
 use std::sync::Mutex;
 
+use katna_i18n::tr;
 use serde_json::{Value, json};
 
 use harper_core::linting::{LintGroup, Linter, Suggestion};
@@ -25,7 +26,8 @@ use katna_ui::rich::{GrammarCheck, GrammarFix, GrammarIssue};
 /// At most this many fixes in the menu.
 const FIXES: usize = 4;
 
-/// Starts the grammar helper, with the spelling language after it.
+/// Starts the grammar helper, with the spelling language and the
+/// interface's language setting after it.
 pub const HELPER_FLAG: &str = "--grammar-helper";
 
 /// Harper's rules, set up for one kind of English.
@@ -106,19 +108,19 @@ fn fix(flagged: &str, suggestion: &Suggestion) -> GrammarFix {
         Suggestion::ReplaceWith(chars) => {
             let text: String = chars.iter().collect();
             GrammarFix {
-                label: format!("\u{201c}{}\u{201d}", text.trim()),
+                label: tr!("grammar-replace", words = text.trim().to_owned()),
                 replacement: text,
             }
         }
         Suggestion::InsertAfter(chars) => {
             let text: String = chars.iter().collect();
             GrammarFix {
-                label: format!("Add \u{201c}{}\u{201d}", text.trim()),
+                label: tr!("grammar-add", words = text.trim().to_owned()),
                 replacement: format!("{flagged}{text}"),
             }
         }
         Suggestion::Remove => GrammarFix {
-            label: format!("Remove \u{201c}{}\u{201d}", flagged.trim()),
+            label: tr!("grammar-remove", words = flagged.trim().to_owned()),
             replacement: String::new(),
         },
     }
@@ -163,9 +165,10 @@ struct HelperIo {
 }
 
 impl Helper {
-    /// Starts the helper; it loads the rules while the first paragraph
-    /// waits.
-    pub fn start(language: &str) -> std::io::Result<Self> {
+    /// Starts the helper for the spelling `language`, naming fixes in the
+    /// interface language `interface` (the setting; empty follows the
+    /// desktop). It loads the rules while the first paragraph waits.
+    pub fn start(language: &str, interface: &str) -> std::io::Result<Self> {
         // After an update replaced the binary, the new one.
         let exe = std::env::current_exe()?;
         let exe = exe
@@ -175,6 +178,7 @@ impl Helper {
         let mut child = Command::new(exe)
             .arg(HELPER_FLAG)
             .arg(language)
+            .arg(interface)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .spawn()?;
@@ -229,7 +233,8 @@ impl Drop for Helper {
 
 /// The helper's life: a paragraph in, as a JSON string on a line, its
 /// mistakes out, as a JSON array on a line, until the app closes the pipe.
-pub fn run_helper(language: &str) -> ExitCode {
+pub fn run_helper(language: &str, interface: &str) -> ExitCode {
+    katna_i18n::apply(interface);
     let grammar = Grammar::load(language);
     let mut out = std::io::stdout().lock();
     for line in std::io::stdin().lock().lines() {

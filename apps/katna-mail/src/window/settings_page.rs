@@ -442,6 +442,12 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(self.row(
+                "Language",
+                Some("The language of menus, buttons and messages, and the format of dates and numbers. System default follows the desktop."),
+                self.language_choice(th, cx),
+                th,
+            ))
+            .child(self.row(
                 "Conversation view",
                 None,
                 self.switch_row(
@@ -770,6 +776,51 @@ impl MailWindow {
                          Nothing changes on the server.",
                     ),
             )
+            .into_any_element()
+    }
+
+    /// The language row's button: the flag and name of the choice, which
+    /// opens the language picker under it.
+    fn language_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let resolved = katna_i18n::current();
+        let name: SharedString = if resolved.system {
+            format!(
+                "{} ({})",
+                katna_i18n::tr!("language-system-default"),
+                resolved.language.name
+            )
+            .into()
+        } else {
+            resolved.language.name.clone().into()
+        };
+        div()
+            .id("page-language")
+            .h(px(40.0))
+            .max_w(px(320.0))
+            .px(px(12.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(12.0))
+            .rounded(px(8.0))
+            .border_1()
+            .border_color(rgba(th.divider))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .on_click(cx.listener(|this, event: &gpui::ClickEvent, window, cx| {
+                let at = event.position();
+                this.toggle_language_picker(Some(at), window, cx);
+            }))
+            .child(super::language::flag(&resolved.language.flag, th))
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .truncate()
+                    .text_size(px(14.0))
+                    .child(name),
+            )
+            .child(icon("chevron-down", th.text_dim, 18.0))
             .into_any_element()
     }
 

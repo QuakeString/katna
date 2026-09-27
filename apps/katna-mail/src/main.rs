@@ -61,11 +61,15 @@ Ctrl+F searches, ? lists every shortcut, Ctrl+Q quits. Settings, Keyboard
 shortcuts changes them.
 ";
 
+/// Katna Mail's translations, embedded by `build.rs`.
+const TRANSLATIONS: katna_i18n::Sources = include!(concat!(env!("OUT_DIR"), "/translations.rs"));
+
 fn main() -> ExitCode {
     // Grammar checking runs in a copy of the app, started by the app.
     let mut given = std::env::args().skip(1);
     if given.next().as_deref() == Some(grammar::HELPER_FLAG) {
-        return grammar::run_helper(&given.next().unwrap_or_default());
+        let language = given.next().unwrap_or_default();
+        return grammar::run_helper(&language, &given.next().unwrap_or_default());
     }
     let mut data_dir: Option<PathBuf> = None;
     let mut search: Option<String> = None;
@@ -119,6 +123,14 @@ fn main() -> ExitCode {
     if let Err(err) = katna_core::logging::init("warn") {
         eprintln!("katna-mail: {err}");
     }
+    // The language, before any text is drawn (§13.10).
+    katna_i18n::init(TRANSLATIONS, Some(paths.data_dir().join("i18n")));
+    katna_i18n::apply(
+        &Config::load(&paths.config_file())
+            .unwrap_or_default()
+            .general
+            .language,
+    );
     let (connection, sender, requests) = match instance::start(request, single) {
         instance::Started::HandedOff => return ExitCode::SUCCESS,
         instance::Started::First {
