@@ -174,6 +174,13 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 17,
+        title: "Attachments of older mail open at once",
+        text: "Clicking an attachment of older mail that is not on this computer yet \
+               downloads it: the attachment fills up while it does, then opens.",
+        animation: None,
+    },
+    Highlight {
+        id: 18,
         title: "Your language",
         text: "Pick one of 51 languages from the flag button in the top bar, or \
                follow your desktop's. Dates and numbers follow it now; the rest of \
