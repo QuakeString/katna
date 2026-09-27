@@ -212,8 +212,12 @@ const PANEL_RADIUS: f32 = 15.0;
 const SEARCH_WIDTH: f32 = 720.0;
 /// Quick settings panel, with its right margin.
 const SETTINGS_WIDTH: f32 = 336.0;
+/// The space between cards side by side (the list, the reading pane,
+/// Quick settings) and between the cards and the window's edges: one
+/// value, so every gap is the same.
+const CARD_GAP: f32 = 16.0;
 /// Space between the list and the reading pane; also the handle to drag.
-const SPLIT_GAP: f32 = 12.0;
+const SPLIT_GAP: f32 = CARD_GAP;
 /// Narrower lists show each line as three (sender, subject, snippet).
 const STACKED_BELOW: f32 = 680.0;
 const PAGE: usize = 10;
@@ -2144,16 +2148,16 @@ impl MailWindow {
                         .bg(rgba(th.divider))
                         .group_hover("split", |s| s.bg(rgba(th.text_faint))),
                 );
-            // Clipped only from the side it slides in from, and a little
-            // wider than the card, so the card's shadow is never cut.
+            // Clipped a little outside the card on every side, so the
+            // card's shadow is never cut; the row stretches it to its height
+            // plus that room.
             let room = crate::widgets::CARD_SHADOW_ROOM;
             let pane = div()
                 .flex_none()
-                .h_full()
                 .w(px(pane_width * pane_t + 2.0 * room))
-                .mx(px(-room))
-                .px(px(room))
-                .overflow_x_hidden()
+                .m(px(-room))
+                .p(px(room))
+                .overflow_hidden()
                 .child(
                     div()
                         .w(px(pane_width))
@@ -2268,7 +2272,7 @@ impl Render for MailWindow {
         let (rail, margin) = if shape.is_phone() {
             (0.0, 0.0)
         } else {
-            (apps::APP_RAIL_WIDTH, 16.0)
+            (apps::APP_RAIL_WIDTH, CARD_GAP)
         };
         let nav = if self.nav_docked() { NAV_WIDTH } else { 0.0 };
         let settings = if self.settings_open && !settings_floats {

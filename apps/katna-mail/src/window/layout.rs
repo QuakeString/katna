@@ -149,7 +149,7 @@ impl Shape {
 
     /// The margin around the cards, which a phone does without.
     pub(super) fn card_margin(&self) -> f32 {
-        16.0 * (1.0 - self.phone)
+        super::CARD_GAP * (1.0 - self.phone)
     }
 
     /// How much of the word "Compose" the top bar's button shows: all of
