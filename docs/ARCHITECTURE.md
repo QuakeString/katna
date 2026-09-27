@@ -1271,10 +1271,17 @@ Gemini or confidential mode):
   pointer. Mail you send keeps its own font size.
 - **Settings page.** "See all settings", the rail's gear or `?` open it in
   place of the list (`window/settings_page.rs`). Its tabs, in the owner's
-  order: General, Inbox, Accounts, Subscription, Appearance (reading pane,
-  density, theme, desktop colors, app names, sender pictures), Shortcuts,
-  Default apps, Folders & rules, Compose (signatures, templates to come),
-  MCP server, User feedback (turning crash reports and feedback off at any
+  order: General (conversation view, reading order and headers, when mail
+  is marked read, what the reply button does, images from the web, undo
+  send, offline mail,
+  new-mail notifications and their sound, opening at login, tray and
+  badge), Inbox, Accounts, Subscription, Appearance (reading pane,
+  density, scaling, theme, desktop colors, app names, sender pictures,
+  Important markers, message width, dark colors for HTML mail, attachment
+  previews), Shortcuts, Default apps (where each kind of attachment
+  opens, and showing saved files in their folder), Folders & rules,
+  Compose (signatures, plain text, spelling and its language, templates
+  to come), MCP server, User feedback (turning crash reports and feedback off at any
   time) and Experimental, always last. Subscription, Folders & rules and
   MCP server are still to come: their tabs are fainter and each shows a
   "Coming soon" page saying what it will do. The tabs always stay on one line (`window/tab_strip.rs`): when
@@ -1284,6 +1291,16 @@ Gemini or confidential mode):
   setting's line that would take more than one line under its name (over
   about 40 characters) sits behind an (i) button beside the name: its
   tooltip on hover, and shown under the name after a click, Enter or a tap.
+  The General, Appearance and Compose rows added after comparing with
+  Mailspring's settings each change real behaviour: "Open Katna Mail at
+  login" is a desktop entry in `$XDG_CONFIG_HOME/autostart` (the file is
+  the setting, so the desktop's own autostart settings agree with it);
+  marking read after 1 or 3 seconds only happens if the conversation is
+  still open then; with "Always show images" off, each message's images
+  still wait to be asked for; and the new-mail sound is the notification's
+  `sound-name` hint, or `suppress-sound` when off. Katna never tracks
+  whether others open mail, so Mailspring's open and click tracking
+  settings have no counterpart.
 - **Searching settings.** While the Settings page is open the top bar's
   search box searches settings ("Search settings"; `window/settings_search.rs`):
   matching rows from every tab replace the open tab, each with its tab and
@@ -1347,10 +1364,15 @@ Gemini or confidential mode):
 - **Keyboard shortcuts.** Every action has one (`window/keymap.rs`), with
   Gmail's keys as defaults: j/k, o, u, c, r, a, f, e, #, !, v, s, x,
   Shift+I/U, `* a`, `* n`, z, `g i`/`g s`/`g t`/`g d`/`g a`, /, ?, and Ctrl
-  keys for search, quick settings, reload and quit. The Settings page lists
-  them all; a click on a key (or +) and the new keys change it, a key used
-  elsewhere moves over with a note, and each shortcut or all can go back to
-  the defaults. Keys without Ctrl or Alt only work in the list and the
+  keys for search, quick settings, reload and quit. A shortcut set starts
+  them from another mail app's keys instead, as in Mailspring: Gmail,
+  Inbox by Gmail, Apple Mail (Ctrl for Cmd, Alt for Control), Outlook or
+  Thunderbird (`[shortcuts] set`); an action that app has no key for keeps
+  Katna's. The Settings page lists them all in two columns; a click on a
+  key (or +) and the new keys change it, a key used elsewhere moves over
+  with a note, and each shortcut or all ("Restore defaults") can go back
+  to the set's keys. The user's changes sit on top of the set and survive
+  a change of set. Keys without Ctrl or Alt only work in the list and the
   open conversation, never while typing, and a switch turns them off, as in
   Gmail. Only changes are saved (`[shortcuts.keys]`).
 - **Compose.** A "New Message" window docked at the bottom right, as in
