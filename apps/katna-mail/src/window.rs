@@ -46,6 +46,7 @@ mod search_panel;
 mod settings;
 mod settings_page;
 mod settings_search;
+mod share_ask;
 mod tour;
 mod viewer;
 mod whats_new;
@@ -398,6 +399,10 @@ pub struct MailWindow {
     onboarding: Option<onboarding::Onboarding>,
     /// The What's new dialog, after an update or from quick settings.
     whats_new: Option<whats_new::WhatsNew>,
+    /// "Help improve Katna", asked once after an update.
+    share_ask: Option<share_ask::ShareAsk>,
+    /// Ask it once What's new is closed.
+    share_ask_later: bool,
     tour: Option<tour::Tour>,
     tour_marks: tour::Marks,
     /// Where the parts the tour shows were in the last frame.
@@ -560,6 +565,8 @@ impl MailWindow {
             add_account: None,
             onboarding: None,
             whats_new: None,
+            share_ask: None,
+            share_ask_later: false,
             tour: None,
             tour_marks: Default::default(),
             tour_seen: HashMap::new(),
@@ -2280,6 +2287,11 @@ impl Render for MailWindow {
         let danger = self.render_danger(&th, window, reduce, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
+        let share_ask = if onboarding {
+            None
+        } else {
+            self.render_share_ask(&th, window, reduce, cx)
+        };
         let context_menu = self.render_context_menu(&th, window, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let crash_notice = if onboarding {
@@ -2331,6 +2343,7 @@ impl Render for MailWindow {
             .children(new_label)
             .children(crash_notice)
             .children(whats_new)
+            .children(share_ask)
             .children(snackbar)
             .children(tour)
             .into_any_element();
