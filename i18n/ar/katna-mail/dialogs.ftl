@@ -11,6 +11,7 @@ about-changelog = سجل التغييرات
 about-source = الشيفرة المصدرية
 about-coffee = اشترِ لي فنجان قهوة
 about-coming-soon = قريبًا
+about-coffee-scan = أو امسح الرمز بهاتفك.
 about-follow = تابِع المطوّر
 about-love-title = صُنع بحب من أجل Rust وKDE وLinux
 about-love-text = تجعل Rust كتابة تطبيق بريد سريع وآمن متعة: لا يحتوي Katna على أي شيفرة unsafe. استلهم Katna فكرته من سطح مكتب Plasma من KDE ومجموعة PIM الخاصة به، ويشكّل Linux ومجتمع البرمجيات الحرة الأرض التي يقف عليها. شكرًا لكم، وشكرًا للمكتبات أدناه.

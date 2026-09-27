@@ -417,3 +417,37 @@ prent vir almal. In Instellings > Rekeninge kan jy vir elkeen 'n prent
 kies, dit hernoem, en die rekeninge met die pyltjies of deur te sleep in
 die volgorde sit wat jy wil; die vouerpaneel en die rekeningkieslys volg.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Herstel kas"
+text = """
+Instellings > Algemeen > Herstel kas vee die e-pos wat Katna afgelaai
+het, senderprente en die soekindeks uit, en laai dan onlangse e-pos weer
+af. Handig wanneer iets verouderd lyk of om skyfspasie vry te maak;
+rekeninge, instellings, konsepte en jou e-pos op die bediener bly.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "Die volgende e-pos maak vanself oop"
+text = """
+Vee die e-pos wat jy lees uit, argiveer of skuif dit, en die volgende
+een maak in sy plek oop, in plaas daarvan dat die leesvenster toegaan.
+Ontdoen bring die e-pos terug en maak dit weer oop. Instellings >
+Algemeen > Outo-vorder kan eerder die vorige een oopmaak, of teruggaan
+na die lys.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "'n Kalmer e-poslys"
+text = """
+Die merkblokkie, ster en Belangrik-merker van elke e-pos rus nou dof en
+kom tot volle sterkte wanneer jy na die reël wys, soos in Gmail. 'n
+Gemerkte, gesterde of belangrike e-pos wys altyd in volle kleur.
+"""
+
+["2026-09-27-1512-buy-me-a-coffee"]
+title = "Koop vir my 'n koffie"
+text = """
+As Katna vir jou nuttig is, het Meer oor Katna nou 'n knoppie Koop vir
+my 'n koffie en 'n QR-kode wat dieselfde bladsy op jou foon oopmaak.
+"""

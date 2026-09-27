@@ -11,6 +11,7 @@ about-changelog = Ndepụta mgbanwe
 about-source = Koodu isi mmalite
 about-coffee = Zụtara m kọfị
 about-coming-soon = Ọ na-abịa n'oge na-adịghị anya
+about-coffee-scan = Ma ọ bụ jiri ekwentị gị nyochaa koodu ahụ.
 about-follow = Soro onye dere ya
 about-love-title = E ji ịhụnanya mee ya maka Rust, KDE na Linux
 about-love-text = Rust na-eme ka ide ngwa ozi dị ọsọ ma dịkwa nchebe bụrụ ihe ọṅụ: Katna enweghị koodu unsafe ọ bụla. Desktọpụ Plasma nke KDE na ngwugwu PIM ya kpaliri Katna, Linux na obodo software nweere onwe ya na-ewukwa ala o guzo na ya. Daalụ, daalụkwa ọba akwụkwọ ndị dị n'okpuru.

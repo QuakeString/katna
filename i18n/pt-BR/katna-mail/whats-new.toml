@@ -423,3 +423,38 @@ imagem para cada uma, renomeá-la e colocar as contas na ordem que quiser
 com as setas ou arrastando; o painel de pastas e o menu de contas seguem
 essa ordem.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Redefinir cache"
+text = """
+Configurações > Geral > Redefinir cache exclui os e-mails que o Katna
+baixou, as imagens dos remetentes e o índice de pesquisa, e depois baixa
+de novo os e-mails recentes. Útil quando algo parece desatualizado ou
+para liberar espaço em disco; contas, configurações, rascunhos e seus
+e-mails no servidor continuam.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "O próximo e-mail abre sozinho"
+text = """
+Exclua, arquive ou mova o e-mail que você está lendo e o próximo abre no
+lugar dele, em vez de o painel de leitura fechar. Desfazer traz o e-mail
+de volta e o abre de novo. Em Configurações > Geral > Avanço automático,
+você pode abrir o anterior ou voltar para a lista.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "Uma lista de e-mails mais calma"
+text = """
+A caixa de seleção, a estrela e o marcador de importância de cada e-mail
+agora ficam esmaecidos e aparecem com força total quando você aponta
+para a linha, como no Gmail. Um e-mail selecionado, com estrela ou
+importante sempre aparece em cor total.
+"""
+
+["2026-09-27-1512-buy-me-a-coffee"]
+title = "Me pague um café"
+text = """
+Se o Katna é útil para você, Sobre o Katna agora tem um botão Me pague
+um café e um código QR para abrir a mesma página no seu celular.
+"""
