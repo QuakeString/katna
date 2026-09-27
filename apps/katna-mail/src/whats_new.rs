@@ -155,6 +155,15 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                it too.",
         animation: None,
     },
+    Highlight {
+        id: 15,
+        title: "Your language",
+        text: "Pick one of 51 languages from the flag button in the top bar, or \
+               follow your desktop's. Dates and numbers follow it now; the rest of \
+               the app is translated over the next updates. The translations were \
+               drafted by AI, and corrections are welcome.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.

@@ -700,7 +700,33 @@ impl MailWindow {
                             this.toggle_settings(&ToggleSettings, window, cx);
                         }))
                         .child(icon("settings", th.text, 20.0))
-                        .child(div().pl(px(18.0)).child("Settings")),
+                        .child(div().pl(px(18.0)).child(katna_i18n::tr!("settings"))),
+                )
+                .child(
+                    drawer_row("drawer-language", self.language_picker_open(), th)
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            this.layout.drawer = false;
+                            this.toggle_language_picker(None, window, cx);
+                        }))
+                        .child(super::language::flag(
+                            &katna_i18n::current().language.flag,
+                            th,
+                        ))
+                        .child(
+                            div()
+                                .flex_1()
+                                .min_w_0()
+                                .pl(px(14.0))
+                                .truncate()
+                                .child(katna_i18n::tr!("language-setting")),
+                        )
+                        .child(
+                            div()
+                                .flex_none()
+                                .pr(px(8.0))
+                                .text_color(rgba(th.text_dim))
+                                .child(katna_i18n::current().language.name.clone()),
+                        ),
                 )
                 .into_any_element(),
         )
