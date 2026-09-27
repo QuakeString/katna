@@ -837,7 +837,11 @@ impl MailWindow {
                     }
                     (InputEvent::Submit, None) => window.focus(&next, cx),
                     (InputEvent::Changed, Some(field)) => this.recipient_changed(field, cx),
-                    (InputEvent::Changed | InputEvent::Cancel, _) => cx.notify(),
+                    (InputEvent::Changed | InputEvent::Cancel, _) => {
+                        // Typing or Esc closes a card of fixes.
+                        this.close_hint(cx);
+                        cx.notify()
+                    }
                 },
             ));
             if let Some(field) = field {
@@ -852,11 +856,15 @@ impl MailWindow {
         }
         subscriptions.push(
             cx.subscribe(&subject, |this, _, event: &InputGrammarMenu, cx| {
-                if let Some(c) = &mut this.compose {
-                    c.popup = Some(Popup::SubjectGrammar {
-                        position: event.position,
-                        issue: event.issue.clone(),
-                    });
+                let popup = Popup::SubjectGrammar {
+                    position: event.position,
+                    issue: event.issue.clone(),
+                    word: event.word,
+                };
+                if event.word.is_some() {
+                    this.show_hint(popup, cx);
+                } else if let Some(c) = &mut this.compose {
+                    c.popup = Some(popup);
                     cx.notify();
                 }
             }),
@@ -868,6 +876,7 @@ impl MailWindow {
             |this, _, event: &RichEvent, window, cx| match event {
                 RichEvent::Submit => this.send_compose_default(window, cx),
                 RichEvent::Changed => {
+                    this.close_hint(cx);
                     this.keep_cursor_in_view(cx);
                     cx.notify();
                 }
@@ -885,6 +894,22 @@ impl MailWindow {
                     misspelled,
                     grammar,
                 } => this.open_compose_menu(*position, misspelled.clone(), grammar.clone(), cx),
+                RichEvent::Hint {
+                    word,
+                    at,
+                    misspelled,
+                    suggestions,
+                    grammar,
+                } => this.show_hint(
+                    Popup::Hint {
+                        word: *word,
+                        at: *at,
+                        misspelled: misspelled.clone(),
+                        suggestions: suggestions.clone(),
+                        grammar: grammar.clone(),
+                    },
+                    cx,
+                ),
             },
         ));
         let focus = if focus_body {

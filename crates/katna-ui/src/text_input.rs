@@ -20,7 +20,7 @@ use gpui::{
 };
 use unicode_segmentation::UnicodeSegmentation;
 
-use crate::rich::{GRAMMAR_WAIT, GrammarCheck, GrammarFix, GrammarIssue};
+use crate::rich::{GRAMMAR_WAIT, GrammarCheck, GrammarFix, GrammarIssue, HINT_WAIT};
 
 actions!(
     text_input,
@@ -85,11 +85,15 @@ pub enum InputEvent {
 }
 
 /// A right click on a grammar mistake in a [`TextInput`] that checks
-/// grammar: the owner shows the fixes.
+/// grammar, or the pointer resting or a left click on one: the owner shows
+/// the fixes.
 #[derive(Debug, Clone, PartialEq)]
 pub struct InputGrammarMenu {
     pub position: Point<Pixels>,
     pub issue: GrammarIssue,
+    /// For a rest or a left click, the mistake's window bounds: the card
+    /// shows under them and closes when the pointer leaves both.
+    pub word: Option<Bounds<Pixels>>,
 }
 
 /// A single-line text input. Create it with [`TextInput::new`] inside
@@ -118,6 +122,11 @@ pub struct TextInput {
     grammar_task: Option<Task<()>>,
     /// Mistakes the user chose to ignore: the words and the message.
     grammar_ignored: HashSet<(String, String)>,
+    /// The mistake under the pointer, and the wait before its fixes show.
+    hover: Option<Range<usize>>,
+    hover_task: Option<Task<()>>,
+    /// The mistake a left click went down on.
+    clicked: Option<Range<usize>>,
 }
 
 /// What a masked input shows for each character.
@@ -148,6 +157,9 @@ impl TextInput {
             grammar_asked: None,
             grammar_task: None,
             grammar_ignored: HashSet::new(),
+            hover: None,
+            hover_task: None,
+            clicked: None,
         }
     }
 
@@ -260,8 +272,65 @@ impl TextInput {
             cx.emit(InputGrammarMenu {
                 position: event.position,
                 issue,
+                word: None,
             });
         }
+    }
+
+    /// The grammar mistake under window point `p`, and its bounds.
+    fn mistake_at(&self, p: Point<Pixels>) -> Option<(GrammarIssue, Bounds<Pixels>)> {
+        if self.grammar.is_none() || self.masked {
+            return None;
+        }
+        let (bounds, line) = (self.last_bounds?, self.last_layout.as_ref()?);
+        let at = self.index_for_mouse_position(p);
+        let issue = self
+            .grammar_issues()
+            .into_iter()
+            .find(|issue| issue.range.start <= at && at <= issue.range.end)?;
+        let left = bounds.left() - self.scroll_x;
+        let x = |offset| left + line.x_for_index(self.display_offset(offset));
+        let word = Bounds::from_corners(
+            point(x(issue.range.start), bounds.top()),
+            point(x(issue.range.end), bounds.bottom()),
+        );
+        word.contains(&p).then(|| (issue.clone(), word))
+    }
+
+    /// Resting the pointer on a grammar mistake shows its fixes after a
+    /// wait.
+    fn hover_mistake(&mut self, p: Point<Pixels>, window: &mut Window, cx: &mut Context<Self>) {
+        let key = self.mistake_at(p).map(|(issue, _)| issue.range);
+        if key == self.hover {
+            return;
+        }
+        self.hover = key.clone();
+        self.hover_task = key.map(|key| {
+            cx.spawn_in(window, async move |this, cx| {
+                cx.background_executor().timer(HINT_WAIT).await;
+                this.update_in(cx, |this, window, cx| {
+                    this.hover_task = None;
+                    let position = window.mouse_position();
+                    match this.mistake_at(position) {
+                        Some((issue, word)) if issue.range == key => cx.emit(InputGrammarMenu {
+                            position,
+                            issue,
+                            word: Some(word),
+                        }),
+                        // The pointer left meanwhile.
+                        _ => this.hover = None,
+                    }
+                })
+                .ok();
+            })
+        });
+    }
+
+    /// Forgets the mistake the pointer was on, so resting on it again shows
+    /// its fixes again (the owner calls it on closing the card).
+    pub fn end_hint(&mut self) {
+        self.hover = None;
+        self.hover_task = None;
     }
 
     pub fn text(&self) -> &str {
@@ -425,6 +494,10 @@ impl TextInput {
     ) {
         window.focus(&self.focus_handle, cx);
         self.is_selecting = true;
+        self.clicked = (!event.modifiers.shift)
+            .then(|| self.mistake_at(event.position))
+            .flatten()
+            .map(|(issue, _)| issue.range);
         if event.modifiers.shift {
             self.select_to(self.index_for_mouse_position(event.position), cx);
         } else {
@@ -432,13 +505,39 @@ impl TextInput {
         }
     }
 
-    fn on_mouse_up(&mut self, _: &MouseUpEvent, _: &mut Window, _: &mut Context<Self>) {
+    /// A left click that came up where it went down on a grammar mistake
+    /// shows its fixes.
+    fn on_mouse_up(&mut self, event: &MouseUpEvent, _: &mut Window, cx: &mut Context<Self>) {
         self.is_selecting = false;
+        let Some(clicked) = self.clicked.take() else {
+            return;
+        };
+        if !self.selected_range.is_empty() {
+            return;
+        }
+        if let Some((issue, word)) = self.mistake_at(event.position)
+            && issue.range == clicked
+        {
+            self.hover = Some(clicked);
+            self.hover_task = None;
+            cx.emit(InputGrammarMenu {
+                position: event.position,
+                issue,
+                word: Some(word),
+            });
+        }
     }
 
-    fn on_mouse_move(&mut self, event: &MouseMoveEvent, _: &mut Window, cx: &mut Context<Self>) {
+    fn on_mouse_move(
+        &mut self,
+        event: &MouseMoveEvent,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
         if self.is_selecting {
             self.select_to(self.index_for_mouse_position(event.position), cx);
+        } else if event.pressed_button.is_none() {
+            self.hover_mistake(event.position, window, cx);
         }
     }
 

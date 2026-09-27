@@ -31,7 +31,35 @@ pub enum Command {
     Several(Vec<Command>),
 }
 
+/// Most messages one call to the daemon changes. A large selection ("all
+/// 20,000 in Inbox") goes in several calls, so each is short and the
+/// daemon keeps serving the app, sync and other calls in between.
+const BATCH: usize = 500;
+
 impl Command {
+    /// `self` split into commands of at most `size` messages each, in order.
+    pub fn batches(&self, size: usize) -> Vec<Command> {
+        let split = |ids: &[MessageId], make: &dyn Fn(Vec<MessageId>) -> Command| {
+            ids.chunks(size.max(1))
+                .map(|chunk| make(chunk.to_vec()))
+                .collect::<Vec<_>>()
+        };
+        match self {
+            Self::MarkRead(ids, on) if ids.len() > size => {
+                split(ids, &|ids| Self::MarkRead(ids, *on))
+            }
+            Self::Star(ids, on) if ids.len() > size => split(ids, &|ids| Self::Star(ids, *on)),
+            Self::Important(ids, on) if ids.len() > size => {
+                split(ids, &|ids| Self::Important(ids, *on))
+            }
+            Self::Pin(ids, on) if ids.len() > size => split(ids, &|ids| Self::Pin(ids, *on)),
+            Self::Archive(ids) if ids.len() > size => split(ids, &Self::Archive),
+            Self::Delete(ids) if ids.len() > size => split(ids, &Self::Delete),
+            Self::Move(ids, to) if ids.len() > size => split(ids, &|ids| Self::Move(ids, *to)),
+            _ => vec![self.clone()],
+        }
+    }
+
     /// What the snackbar says once the change is sent, if anything:
     /// `count` conversations, or messages when not `conversations`.
     pub fn done_text(&self, count: usize, conversations: bool) -> Option<String> {
@@ -87,8 +115,16 @@ pub async fn connect() -> Result<Connection, String> {
         .map_err(|err| format!("No D-Bus session: {err}"))
 }
 
-/// Sends `command` and waits until the daemon has applied it to the store.
+/// Sends `command` and waits until the daemon has applied it to the store,
+/// in batches of [`BATCH`] messages.
 pub async fn send(connection: &Connection, command: &Command) -> Result<(), String> {
+    for part in command.batches(BATCH) {
+        send_one(connection, &part).await?;
+    }
+    Ok(())
+}
+
+async fn send_one(connection: &Connection, command: &Command) -> Result<(), String> {
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
@@ -349,6 +385,31 @@ pub async fn mail_changes(connection: &Connection) -> Result<impl Stream<Item = 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn large_changes_go_in_batches() {
+        let ids: Vec<MessageId> = (1..=1201).map(MessageId).collect();
+        let parts = Command::Move(ids.clone(), FolderId(7)).batches(500);
+        let sizes: Vec<usize> = parts
+            .iter()
+            .map(|p| match p {
+                Command::Move(ids, FolderId(7)) => ids.len(),
+                other => panic!("unexpected {other:?}"),
+            })
+            .collect();
+        assert_eq!(sizes, [500, 500, 201]);
+        let again: Vec<MessageId> = parts
+            .into_iter()
+            .flat_map(|p| match p {
+                Command::Move(ids, _) => ids,
+                _ => Vec::new(),
+            })
+            .collect();
+        assert_eq!(again, ids);
+        let small = Command::MarkRead(ids[..3].to_vec(), true);
+        assert_eq!(small.batches(500), std::slice::from_ref(&small));
+        assert_eq!(Command::SyncNow.batches(500), [Command::SyncNow]);
+    }
 
     #[test]
     fn snackbar_texts() {

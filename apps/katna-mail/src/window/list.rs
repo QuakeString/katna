@@ -48,7 +48,7 @@ const TAB_MAX_WIDTH: f32 = 240.0;
 
 /// What the select menu ticks.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Pick {
+pub(super) enum Pick {
     All,
     None,
     Read,
@@ -936,33 +936,54 @@ impl MailWindow {
         self.menu = None;
         self.checked_all = false;
         self.page_pick = None;
+        self.picked = None;
         self.checked.clear();
-        let range =
-            self.visible.start.min(self.entries.len())..self.visible.end.min(self.entries.len());
-        let entries = self.entries[range].to_vec();
-        let folder = self.listed_folder();
-        let rows: Vec<Option<Rc<Row>>> = match &mut self.mail {
-            Ok(mail) => mail.rows(&entries, folder, self.show_recipients),
-            Err(_) => Vec::new(),
-        };
-        for (entry, row) in entries.iter().zip(rows) {
-            let Some(row) = row.map(|r| self.with_pending(r)) else {
-                continue;
-            };
-            let take = match pick {
-                Pick::All => true,
-                Pick::None => false,
-                Pick::Read => !row.unread,
-                Pick::Unread => row.unread,
-                Pick::Starred => row.flagged,
-                Pick::Unstarred => !row.flagged,
-            };
-            if take {
-                self.checked.insert(entry.key);
+        match pick {
+            Pick::None => {}
+            // The lines on screen; the banner offers the whole list.
+            Pick::All => {
+                let range = self.visible.start.min(self.entries.len())
+                    ..self.visible.end.min(self.entries.len());
+                self.checked
+                    .extend(self.entries[range].iter().map(|e| e.key));
+                if self.checked.len() < self.entries.len() {
+                    self.page_pick = Some(self.checked.len());
+                } else if !self.checked.is_empty() {
+                    self.checked_all = true;
+                }
             }
-        }
-        if pick == Pick::All && self.checked.len() < self.entries.len() {
-            self.page_pick = Some(self.checked.len());
+            // Every matching line of the list, loaded on screen or not.
+            Pick::Read | Pick::Unread | Pick::Starred | Pick::Unstarred => {
+                let folder = self.listed_folder();
+                let show_recipients = self.show_recipients;
+                let marks = match &mut self.mail {
+                    Ok(mail) => mail.marks(&self.entries, folder, show_recipients),
+                    Err(_) => Vec::new(),
+                };
+                for (entry, marks) in self.entries.iter().zip(marks) {
+                    let pending = self.pending.get(&entry.key);
+                    let unread = pending.and_then(|p| p.unread).unwrap_or(marks.unread);
+                    let flagged = pending.and_then(|p| p.flagged).unwrap_or(marks.flagged);
+                    let take = match pick {
+                        Pick::Read => !unread,
+                        Pick::Unread => unread,
+                        Pick::Starred => flagged,
+                        _ => !flagged,
+                    };
+                    if take {
+                        self.checked.insert(entry.key);
+                    }
+                }
+                if self.checked.is_empty() {
+                    self.show_snackbar(
+                        pick_none_text(pick, self.config.mail.conversations),
+                        None,
+                        cx,
+                    );
+                } else {
+                    self.picked = Some((pick, self.checked.len()));
+                }
+            }
         }
         cx.notify();
     }
@@ -972,7 +993,11 @@ impl MailWindow {
     fn render_select_banner(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
         let on_screen = self.checked.len();
         let page_checked = on_screen > 0 && self.page_pick == Some(on_screen);
-        if !(self.checked_all || page_checked) {
+        let picked = self
+            .picked
+            .filter(|&(_, count)| count > 0 && count == on_screen)
+            .map(|(pick, _)| pick);
+        if !(self.checked_all || page_checked || picked.is_some()) {
             return None;
         }
         let kind = if self.config.mail.conversations {
@@ -983,6 +1008,24 @@ impl MailWindow {
         let folder = self.folder_name();
         let total = self.entries.len() as u64;
         let (text, link) = match (self.checked_all, folder) {
+            (false, folder) if let Some(pick) = picked => (
+                match folder {
+                    Some(folder) => tr!(
+                        "list-selected-picked-in",
+                        pick = pick_name(pick),
+                        count = on_screen as u64,
+                        kind = kind,
+                        folder = folder
+                    ),
+                    None => tr!(
+                        "list-selected-picked",
+                        pick = pick_name(pick),
+                        count = on_screen as u64,
+                        kind = kind
+                    ),
+                },
+                tr!("list-clear-selection"),
+            ),
             (true, Some(folder)) => (
                 tr!(
                     "list-selected-all-in",
@@ -1034,10 +1077,14 @@ impl MailWindow {
                         .text_color(rgba(th.accent))
                         .cursor_pointer()
                         .on_click(cx.listener(|this, _, _, cx| {
-                            if this.checked_all {
+                            let picked = this
+                                .picked
+                                .is_some_and(|(_, count)| count == this.checked.len());
+                            if this.checked_all || picked {
                                 this.checked.clear();
                                 this.checked_all = false;
                                 this.page_pick = None;
+                                this.picked = None;
                             } else {
                                 this.checked = this.entries.iter().map(|e| e.key).collect();
                                 this.checked_all = true;
@@ -1388,6 +1435,7 @@ impl MailWindow {
                 }
                 this.checked_all = false;
                 this.page_pick = None;
+                this.picked = None;
                 cx.notify();
             }))
             .child(if checked {
@@ -2029,4 +2077,25 @@ fn first_sync_placeholder(th: &Theme) -> AnyElement {
                 .child(tr!("list-first-sync-detail")),
         )
         .into_any_element()
+}
+
+/// The select menu's choice as the messages about it name it.
+fn pick_name(pick: Pick) -> &'static str {
+    match pick {
+        Pick::Read => "read",
+        Pick::Unread => "unread",
+        Pick::Starred => "starred",
+        Pick::Unstarred => "unstarred",
+        Pick::All | Pick::None => "other",
+    }
+}
+
+/// "No unread conversations here", when a pick matches nothing.
+fn pick_none_text(pick: Pick, conversations: bool) -> String {
+    let kind = if conversations {
+        "conversation"
+    } else {
+        "message"
+    };
+    tr!("list-picked-none", pick = pick_name(pick), kind = kind)
 }

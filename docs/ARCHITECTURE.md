@@ -1501,7 +1501,11 @@ Gemini or confidential mode):
   photo, calendar event (says it comes with Katna Calendar), signature,
   More (default to full screen, label (coming soon), plain text mode,
   print, check spelling) and discard. A right-click gives spelling
-  suggestions, clipboard, link and table actions. Mail waiting to be sent
+  suggestions, clipboard, link and table actions. Resting the pointer
+  on an underlined word (600 ms) or a left click on it shows just its
+  fixes in a card under it, in the text and the subject; the card closes
+  when the pointer leaves the word and the card, on a click outside, on
+  Esc or when typing resumes. Mail waiting to be sent
   later gets a *Scheduled* row in the folder list after Sent, which opens
   a list with Cancel send; a cancelled message opens again as written.
   The expand button in the compose title bar moves the message into a
