@@ -1089,7 +1089,8 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   with the folders open, and stays there when they fold (it does not
   follow the list). It moves left only when the window is too narrow for
   that place, and then always sits one gap after Compose, whose width is
-  set for this (whole or folded to its pencil). The top bar uses that one
+  set for this (whole or folded to its pencil; whole, it is measured from
+  its word in the desktop's font, so the word never clips). The top bar uses that one
   16 px gap between all its items: menu button, Compose, search box,
   Settings and account picture. `katna_chrome::Bar` gives the bar a center slot,
   height and background for this.
