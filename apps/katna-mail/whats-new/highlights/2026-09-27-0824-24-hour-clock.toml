@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "12-hour or 24-hour clock"
+text = """
+Settings > General > Time shows times with a 12-hour or 24-hour clock,
+whatever the language writes.
+"""

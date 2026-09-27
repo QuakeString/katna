@@ -17,6 +17,17 @@ pub fn local(unix: i64, tz: &TimeZone) -> Option<DateTime> {
     )
 }
 
+/// Shows times with the clock chosen in Settings > General > Time.
+pub fn set_clock(clock: katna_core::config::Clock) {
+    use katna_core::config::Clock;
+    use katna_i18n::format::Clock as Format;
+    katna_i18n::format::set_clock(match clock {
+        Clock::Language => Format::Language,
+        Clock::TwelveHour => Format::Twelve,
+        Clock::TwentyFourHour => Format::TwentyFour,
+    });
+}
+
 /// Short date for the message list, relative to `now` (both local):
 /// the time today, the weekday within the last six days, day and month
 /// this year, otherwise the full date. Each in the language's own format

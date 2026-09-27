@@ -64,6 +64,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
+        "Time",
+        "12-hour or 24-hour clock, or as the language writes it",
+        "clock 24-hour 12-hour am pm time format hours",
+    ),
+    entry(
+        Section::General,
         "Reading",
         "Newest message first, full headers, full names of recipients",
         "order oldest descending chronological reverse headers details from to cc names recipients first last",
