@@ -290,7 +290,11 @@ impl MailWindow {
             self.show_snackbar(tr!("compose-draft-not-opened"), None, cx);
             return;
         };
-        let account = self.mail.as_ref().ok().and_then(|mail| mail.account_of(id));
+        let account = self
+            .mail
+            .as_ref()
+            .ok()
+            .and_then(|mail| mail.message_account(id));
         unsent.from = account;
         unsent.saved = account;
         // Drafts from other apps without one are saved with a new one; the

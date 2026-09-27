@@ -1117,10 +1117,16 @@ impl MailWindow {
         if ix >= self.entries.len() {
             return;
         }
-        // A draft is written on, as in Gmail.
-        if self.folder_role() == Role::Drafts {
+        // A draft is written on, as in Gmail: in Drafts, or wherever a
+        // line holds nothing but drafts.
+        let entry = self.entries[ix];
+        let only_drafts = self.mail.as_ref().ok().is_some_and(|mail| {
+            let ids = mail.entry_messages(entry.key);
+            !ids.is_empty() && mail.drafts(&ids).len() == ids.len()
+        });
+        if self.folder_role() == Role::Drafts || only_drafts {
             self.selected = Some(ix);
-            self.open_draft(self.entries[ix].latest, window, cx);
+            self.open_draft(entry.latest, window, cx);
             cx.notify();
             return;
         }

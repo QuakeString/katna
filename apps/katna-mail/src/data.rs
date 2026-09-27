@@ -748,9 +748,15 @@ impl Mail {
         self.rows.clear();
     }
 
-    /// The account of message `id`.
-    pub fn account_of(&self, id: MessageId) -> Option<AccountId> {
-        Some(self.store.messages_by_id(&[id]).ok()?.pop()?.account)
+    /// The drafts among `ids`: messages flagged `\Draft`.
+    pub fn drafts(&self, ids: &[MessageId]) -> Vec<MessageId> {
+        self.store
+            .messages_by_id(ids)
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|m| m.flags.contains(MessageFlags::DRAFT))
+            .map(|m| m.id)
+            .collect()
     }
 
     /// The raw message `id`, if its body is stored.
