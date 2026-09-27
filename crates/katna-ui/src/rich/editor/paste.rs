@@ -384,23 +384,21 @@ impl RichEditor {
         self.table_picture = Some(draw);
     }
 
+    /// A paste option clicked: carries it out and closes the options.
     fn choose_paste(&mut self, option: PasteOption, cx: &mut Context<Self>) {
         let Some(offer) = self.paste_offer.take() else {
             return;
         };
-        if offer.owner {
-            let chosen = offer.chosen;
-            self.paste_offer = Some(offer);
-            if chosen != option {
-                cx.emit(RichEvent::PasteChoice(option));
-            }
+        cx.notify();
+        if offer.chosen == option {
             return;
         }
-        if offer.chosen == option {
-            self.paste_offer = Some(offer);
+        if offer.owner {
+            cx.emit(RichEvent::PasteChoice(option));
             return;
         }
         self.apply_paste(offer, option, cx);
+        self.paste_offer = None;
     }
 
     /// Puts pictures in the text at the cursor; gives their ids (none in
@@ -473,6 +471,16 @@ impl RichEditor {
         if let Some((pos, upstream)) = self.hit(p) {
             self.set_selection(pos, pos, cx);
             self.upstream = upstream;
+        }
+    }
+
+    /// Shows where something dragged over the text would land: a caret at
+    /// window point `p`, or none when `p` is `None` or off the text.
+    pub fn show_drop_caret(&mut self, p: Option<Point<Pixels>>, cx: &mut Context<Self>) {
+        let caret = p.and_then(|p| self.hit(p));
+        if caret != self.drop_caret {
+            self.drop_caret = caret;
+            cx.notify();
         }
     }
 

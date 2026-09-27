@@ -153,7 +153,7 @@ settings-default-apps-show-folder-detail = སྲུང་ཡོད་པའི�
 ## Settings > Compose
 
 settings-compose-send-from = འཕྲིན་དོན་གསརཔ་ཚུ་ འདི་ལས་གཏང་།
-settings-compose-send-from-detail = ལན་དང་མདུན་སྐྱེལ་ཚུ་ ཁྱོད་ཡོད་པའི་རྩིས་ཐོ་ལས་ ཨ་རྟག་ར་འགྱོཝ་ཨིན།
+settings-compose-send-from-detail = འཕྲིན་དོན་གསརཔ་ཚུ་ རྩིས་ཐོ་འདི་ལས་འགོ་བཙུགསཝ་ཨིན། ལས་ གྲལ་ཐིག་ནང་ རྩིས་ཐོ་གཞན་ཅིག་གདམ་ཚུགས། ལན་དང་མདུན་སྐྱེལ་ཚུ་ ཨ་རྟག་ར་ འཕྲིན་དོན་ངོ་མ་འོང་སའི་རྩིས་ཐོ་ལས་ འགྱོཝ་ཨིན།
 settings-compose-send-from-current = ཁྱོད་ཡོད་པའི་རྩིས་ཐོ
 settings-compose-send-on-replies = ལན་གུ་གཏང་ནི
 settings-compose-send-on-replies-detail = ལན་ ཡང་ན་མདུན་སྐྱེལ་གུ་ གཏང་ ཨེབ་རྟ་གིས་ག་ཅི་འབདཝ་ཨིན་ན། གཏང་ གི་སྦོ་ལོགས་ཀྱི་དཀར་ཆག་ནང་ གཞན་མི་དེ་ཡོདཔ་ཨིན།
@@ -229,7 +229,7 @@ settings-default-apps-text-summary = ཚིག་ཡིག་རྐྱང་པ�
 settings-default-apps-sheets-summary = Excel, OpenDocument དང་ CSV ཡིག་སྣོད་ཚུ་ཁ་ཕྱེ་ས
 settings-default-apps-documents-summary = Word དང་ OpenDocument ཚིག་ཡིག་ བརྙན་ཤོག་ཚུ་ཁ་ཕྱེ་ས
 settings-default-apps-after-saving-summary = སྲུང་ཡོད་པའི་མཉམ་སྦྲགས་ཚུ་ དེ་ཚུ་གི་སྣོད་འཛིན་ནང་སྟོན།
-settings-compose-send-from-summary = གློག་འཕྲིན་གསརཔ་འགྱོ་སའི་རྩིས་ཐོ: ཁྱོད་ཡོད་པའི་རྩིས་ཐོ་ ཡང་ན་ ཨ་རྟག་ར་རྩིས་ཐོ་གཅིག་པ
+settings-compose-send-from-summary = གློག་འཕྲིན་གསརཔ་འགྱོ་སའི་རྩིས་ཐོ: དང་པ་ གཞན་ཅིག་ ཡང་ན་ ཁྱོད་ཡོད་པའི་རྩིས་ཐོ
 settings-compose-send-on-replies-summary = ལན་དང་མདུན་སྐྱེལ་གུ་ གཏང་ ཡང་ན་ གཏང་སྟེ་གླེང་མོལ་ཡིག་མཛོད་ནང་བཙུགས
 settings-compose-signatures-summary = ཁྱོད་ཀྱི་འཕྲིན་དོན་གྱི་འོག་ལུ་ “--” གྲལ་ཐིག་གི་ཤུལ་ལས་ཁ་སྐོང་འབདཝ་ཨིན
 settings-compose-for-new-mail-summary = གློག་འཕྲིན་གསརཔ་འགོ་བཙུགས་མི་མིང་རྟགས

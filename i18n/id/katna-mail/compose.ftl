@@ -19,6 +19,8 @@ compose-show-trimmed = Tampilkan konten yang dipangkas
 compose-to = Kepada
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = Dari
+compose-from-choose = Kirim dari akun lain
 compose-recipients = Penerima
 compose-subject = Subjek
 

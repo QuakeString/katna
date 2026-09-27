@@ -19,6 +19,8 @@ compose-show-trimmed = ਕੱਟੀ ਗਈ ਸਮੱਗਰੀ ਦਿਖਾਓ
 compose-to = ਨੂੰ
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = ਵੱਲੋਂ
+compose-from-choose = ਕਿਸੇ ਹੋਰ ਖਾਤੇ ਤੋਂ ਭੇਜੋ
 compose-recipients = ਪ੍ਰਾਪਤਕਰਤਾ
 compose-subject = ਵਿਸ਼ਾ
 

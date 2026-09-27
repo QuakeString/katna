@@ -1036,6 +1036,31 @@ impl Daemon {
         Ok(discarded)
     }
 
+    /// Saves a draft of `account` in its Drafts folder, in place of the
+    /// copies saved before. Returns the saved message's ID.
+    pub fn save_draft(&self, account: AccountId, raw: &[u8]) -> Result<i64, CommandError> {
+        self.account(account)?;
+        let mut saved = None;
+        self.change(|store| {
+            let (id, _) = ops::save_draft(store, account, raw, unix_now())?;
+            saved = Some(id);
+            Ok(vec![account])
+        })?;
+        tracing::info!(%account, "draft saved");
+        Ok(saved.map_or(0, |id| id.0))
+    }
+
+    /// Deletes every saved copy of the draft `message_id` of `account`.
+    pub fn discard_draft(&self, account: AccountId, message_id: &str) -> Result<(), CommandError> {
+        self.account(account)?;
+        self.change(|store| {
+            ops::discard_draft(store, account, message_id)?;
+            Ok(vec![account])
+        })?;
+        tracing::info!(%account, "draft discarded");
+        Ok(())
+    }
+
     /// Every outbox entry.
     pub fn outbox(&self) -> Result<Vec<OutboxItem>, CommandError> {
         let entries = self.store().outbox()?;

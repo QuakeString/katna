@@ -19,6 +19,8 @@ compose-show-trimmed = छिपा हुआ कॉन्टेंट दिख
 compose-to = पाने वाले
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = भेजने वाला
+compose-from-choose = दूसरे खाते से भेजें
 compose-recipients = पाने वाले
 compose-subject = विषय
 

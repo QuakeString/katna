@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = સેવ કરેલાં જો�
 ## Settings > Compose
 
 settings-compose-send-from = નવા મેસેજ આમાંથી મોકલો
-settings-compose-send-from-detail = જવાબ અને ફૉરવર્ડ હંમેશાં તમે જે એકાઉન્ટમાં હો તેમાંથી જાય છે.
+settings-compose-send-from-detail = નવા મેસેજ આ એકાઉન્ટથી શરૂ થાય છે; મોકલનાર પંક્તિમાં બીજું પસંદ કરી શકાય છે. જવાબ અને ફૉરવર્ડ હંમેશાં મૂળ મેસેજ જે એકાઉન્ટમાં આવ્યો હોય તેમાંથી જાય છે.
 settings-compose-send-from-current = તમે જે એકાઉન્ટમાં છો તે
 settings-compose-send-on-replies = જવાબો પર મોકલો
 settings-compose-send-on-replies-detail = જવાબ કે ફૉરવર્ડ પર મોકલો બટન શું કરે. મોકલો ની બાજુનું મેનૂ બીજો વિકલ્પ આપે છે.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = સાદું લખાણ, લૉગ અ
 settings-default-apps-sheets-summary = Excel, OpenDocument અને CSV ફાઇલો ક્યાં ખૂલે
 settings-default-apps-documents-summary = Word, OpenDocument ટેક્સ્ટ અને સ્લાઇડ ક્યાં ખૂલે
 settings-default-apps-after-saving-summary = સેવ કરેલાં જોડાણ તેમના ફોલ્ડરમાં બતાવો
-settings-compose-send-from-summary = નવા મેઇલ જે એકાઉન્ટમાંથી જાય: તમે જેમાં હો તે, અથવા હંમેશાં એક જ
+settings-compose-send-from-summary = નવા મેઇલ જે એકાઉન્ટમાંથી જાય: પહેલું, બીજું કોઈ, અથવા તમે જેમાં હો તે
 settings-compose-send-on-replies-summary = જવાબ અને ફૉરવર્ડ પર મોકલો, અથવા મોકલો અને વાર્તાલાપ આર્કાઇવ કરો
 settings-compose-signatures-summary = તમારા મેસેજની નીચે, “--” લાઇન પછી ઉમેરાય છે
 settings-compose-for-new-mail-summary = નવા મેઇલ જે હસ્તાક્ષરથી શરૂ થાય

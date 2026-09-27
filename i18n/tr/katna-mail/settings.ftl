@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = Dosya yöneticisini kaydedilen ekler 
 ## Settings > Compose
 
 settings-compose-send-from = Yeni iletileri şu hesaptan gönder
-settings-compose-send-from-detail = Yanıtlar ve yönlendirmeler her zaman içinde bulunduğunuz hesaptan gönderilir.
+settings-compose-send-from-detail = Yeni iletiler bu hesaptan başlar; Kimden satırı başka bir hesap seçer. Yanıtlar ve yönlendirmeler her zaman özgün iletinin geldiği hesaptan gönderilir.
 settings-compose-send-from-current = İçinde bulunduğunuz hesap
 settings-compose-send-on-replies = Yanıtlarda gönderme
 settings-compose-send-on-replies-detail = Bir yanıtta veya yönlendirmede Gönder düğmesinin ne yaptığı. Gönder'in yanındaki menü diğerini sunar.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = Düz metin, günlükler ve kodun açıldı�
 settings-default-apps-sheets-summary = Excel, OpenDocument ve CSV dosyalarının açıldığı yer
 settings-default-apps-documents-summary = Word ve OpenDocument metinlerinin ve slaytların açıldığı yer
 settings-default-apps-after-saving-summary = Kaydedilen ekleri klasörlerinde göster
-settings-compose-send-from-summary = Yeni postaların gönderildiği hesap: içinde bulunduğunuz hesap ya da her zaman aynı hesap
+settings-compose-send-from-summary = Yeni postaların gönderildiği hesap: ilk hesap, başka bir hesap ya da içinde bulunduğunuz hesap
 settings-compose-send-on-replies-summary = Yanıtlarda ve yönlendirmelerde Gönder ya da Gönder ve ileti dizisini arşivle
 settings-compose-signatures-summary = İletinizin altına, “--” satırından sonra eklenir
 settings-compose-for-new-mail-summary = Yeni postaların başladığı imza

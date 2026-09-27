@@ -19,6 +19,8 @@ compose-show-trimmed = ສະແດງເນື້ອຫາທີ່ຖືກຕ
 compose-to = ເຖິງ
 compose-cc = ສຳເນົາ
 compose-bcc = ສຳເນົາລັບ
+compose-from = ຈາກ
+compose-from-choose = ສົ່ງຈາກບັນຊີອື່ນ
 compose-recipients = ຜູ້ຮັບ
 compose-subject = ຫົວເລື່ອງ
 

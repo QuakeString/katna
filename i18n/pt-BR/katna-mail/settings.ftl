@@ -161,7 +161,7 @@ settings-default-apps-show-folder-detail = Abre o gerenciador de arquivos com os
 ## Settings > Compose
 
 settings-compose-send-from = Enviar novas mensagens de
-settings-compose-send-from-detail = Respostas e encaminhamentos sempre saem da conta em que você está.
+settings-compose-send-from-detail = Novas mensagens começam por esta conta; a linha De escolhe outra. Respostas e encaminhamentos sempre saem da conta que recebeu a mensagem original.
 settings-compose-send-from-current = A conta em que você está
 settings-compose-send-on-replies = Enviar em respostas
 settings-compose-send-on-replies-detail = O que Enviar faz em uma resposta ou encaminhamento. O menu ao lado de Enviar oferece a outra opção.
@@ -237,7 +237,7 @@ settings-default-apps-text-summary = Onde texto simples, logs e código abrem
 settings-default-apps-sheets-summary = Onde arquivos Excel, OpenDocument e CSV abrem
 settings-default-apps-documents-summary = Onde documentos Word, texto OpenDocument e apresentações abrem
 settings-default-apps-after-saving-summary = Mostrar anexos salvos na pasta deles
-settings-compose-send-from-summary = A conta de onde saem os novos e-mails: aquela em que você está, ou sempre a mesma
+settings-compose-send-from-summary = A conta de onde saem os novos e-mails: a primeira, outra, ou aquela em que você está
 settings-compose-send-on-replies-summary = Enviar, ou Enviar e arquivar a conversa, em respostas e encaminhamentos
 settings-compose-signatures-summary = Adicionada abaixo da sua mensagem, depois de uma linha “--”
 settings-compose-for-new-mail-summary = A assinatura com que os novos e-mails começam

@@ -189,6 +189,14 @@ macro_rules! pim_interface {
                 Ok(self.daemon.discard_send(id)?)
             }
 
+            async fn save_draft(&self, account: i64, message: Vec<u8>) -> fdo::Result<i64> {
+                Ok(self.daemon.save_draft(AccountId(account), &message)?)
+            }
+
+            async fn discard_draft(&self, account: i64, message_id: String) -> fdo::Result<()> {
+                Ok(self.daemon.discard_draft(AccountId(account), &message_id)?)
+            }
+
             /// Reads the settings file again (after Katna Mail saved it).
             async fn reload_config(&self) -> fdo::Result<()> {
                 Ok(self.daemon.reload_config()?)

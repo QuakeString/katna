@@ -19,6 +19,8 @@ compose-show-trimmed = Kırpılan içeriği göster
 compose-to = Kime
 compose-cc = Bilgi
 compose-bcc = Gizli
+compose-from = Kimden
+compose-from-choose = Başka bir hesaptan gönder
 compose-recipients = Alıcılar
 compose-subject = Konu
 

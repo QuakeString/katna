@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = सेभ गरिएका सं�
 ## Settings > Compose
 
 settings-compose-send-from = नयाँ सन्देशहरू यहाँबाट पठाउनुहोस्
-settings-compose-send-from-detail = जवाफ र फर्वार्डहरू सधैँ तपाईं रहेको खाताबाटै जान्छन्।
+settings-compose-send-from-detail = नयाँ सन्देशहरू यही खाताबाट सुरु हुन्छन्; प्रेषक पङ्क्तिले अर्को खाता छान्छ। जवाफ र फर्वार्डहरू सधैँ मूल सन्देश आएको खाताबाटै जान्छन्।
 settings-compose-send-from-current = तपाईं रहेको खाता
 settings-compose-send-on-replies = जवाफहरूमा पठाउनुहोस्
 settings-compose-send-on-replies-detail = जवाफ वा फर्वार्डमा “पठाउनुहोस्” ले के गर्छ। “पठाउनुहोस्” छेउको मेनुमा अर्को विकल्प छ।
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = सादा पाठ, लग र को�
 settings-default-apps-sheets-summary = Excel, OpenDocument र CSV फाइलहरू कहाँ खुल्छन्
 settings-default-apps-documents-summary = Word, OpenDocument पाठ र स्लाइड कहाँ खुल्छन्
 settings-default-apps-after-saving-summary = सेभ गरिएका संलग्नकहरू तिनको फोल्डरमा देखाउनुहोस्
-settings-compose-send-from-summary = नयाँ मेल कुन खाताबाट जान्छ: तपाईं रहेको खाता, वा सधैँ एउटै खाता
+settings-compose-send-from-summary = नयाँ मेल कुन खाताबाट जान्छ: पहिलो खाता, अर्को खाता, वा तपाईं रहेको खाता
 settings-compose-send-on-replies-summary = जवाफ र फर्वार्डमा पठाउनुहोस्, वा पठाउनुहोस् र वार्तालाप संग्रह गर्नुहोस्
 settings-compose-signatures-summary = तपाईंको सन्देशको तल, “--” पङ्क्तिपछि थपिन्छ
 settings-compose-for-new-mail-summary = नयाँ मेल सुरु हुने हस्ताक्षर

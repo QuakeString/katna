@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = സംരക്ഷിച്ച അറ
 ## Settings > Compose
 
 settings-compose-send-from = പുതിയ സന്ദേശങ്ങൾ ഇതിൽ നിന്ന് അയയ്ക്കുക
-settings-compose-send-from-detail = മറുപടികളും ഫോർവേഡുകളും എപ്പോഴും നിങ്ങൾ ഉള്ള അക്കൗണ്ടിൽ നിന്നാണ് പോകുന്നത്.
+settings-compose-send-from-detail = പുതിയ സന്ദേശങ്ങൾ ഈ അക്കൗണ്ടിൽ നിന്ന് തുടങ്ങുന്നു; “അയച്ചയാൾ” വരിയിൽ മറ്റൊന്ന് തിരഞ്ഞെടുക്കാം. മറുപടികളും ഫോർവേഡുകളും എപ്പോഴും യഥാർത്ഥ സന്ദേശം വന്ന അക്കൗണ്ടിൽ നിന്നാണ് പോകുന്നത്.
 settings-compose-send-from-current = നിങ്ങൾ ഉള്ള അക്കൗണ്ട്
 settings-compose-send-on-replies = മറുപടികളിലെ അയയ്ക്കുക ബട്ടൺ
 settings-compose-send-on-replies-detail = മറുപടിയിലോ ഫോർവേഡിലോ അയയ്ക്കുക ബട്ടൺ എന്ത് ചെയ്യുന്നു. അയയ്ക്കുക ബട്ടണിന് അടുത്തുള്ള മെനുവിൽ മറ്റേത് ലഭ്യമാണ്.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = പ്ലെയിൻ ടെക്സ്റ
 settings-default-apps-sheets-summary = Excel, OpenDocument, CSV ഫയലുകൾ എവിടെ തുറക്കണം
 settings-default-apps-documents-summary = Word, OpenDocument ടെക്സ്റ്റ്, സ്ലൈഡുകൾ എന്നിവ എവിടെ തുറക്കണം
 settings-default-apps-after-saving-summary = സംരക്ഷിച്ച അറ്റാച്ച്‌മെന്റുകൾ അവയുടെ ഫോൾഡറിൽ കാണിക്കുക
-settings-compose-send-from-summary = പുതിയ മെയിൽ പോകുന്ന അക്കൗണ്ട്: നിങ്ങൾ ഉള്ളത്, അല്ലെങ്കിൽ എപ്പോഴും ഒരേ അക്കൗണ്ട്
+settings-compose-send-from-summary = പുതിയ മെയിൽ പോകുന്ന അക്കൗണ്ട്: ആദ്യത്തേത്, മറ്റൊന്ന്, അല്ലെങ്കിൽ നിങ്ങൾ ഉള്ളത്
 settings-compose-send-on-replies-summary = മറുപടികളിലും ഫോർവേഡുകളിലും അയയ്ക്കുക, അല്ലെങ്കിൽ അയച്ച് സംഭാഷണം ആർക്കൈവ് ചെയ്യുക
 settings-compose-signatures-summary = നിങ്ങളുടെ സന്ദേശത്തിന് താഴെ, ഒരു “--” വരിക്ക് ശേഷം ചേർക്കുന്നു
 settings-compose-for-new-mail-summary = പുതിയ മെയിൽ തുടങ്ങുന്ന ഒപ്പ്

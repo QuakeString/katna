@@ -6,9 +6,11 @@
 
 use std::ops::Range;
 
+use std::f32::consts::FRAC_PI_2;
+
 use gpui::{
-    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, div, prelude::*, rgba, svg,
-    uniform_list,
+    AnimationExt, AnyElement, Context, ElementId, FontWeight, SharedString, SpringAnimation,
+    Transformation, div, prelude::*, radians, rgba, svg, uniform_list,
 };
 use katna_ui::Ripple;
 use katna_ui::motion::{self, lerp};
@@ -24,7 +26,7 @@ use katna_core::AccountKind;
 use katna_i18n::tr;
 
 use crate::format;
-use crate::sidebar::{self, Role};
+use crate::sidebar::{self, Role, Unified};
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{elevation, icon, icon_button, icon_button_colored, katna_mark, tip};
 
@@ -258,7 +260,10 @@ impl MailWindow {
     /// The height of the account's name over the folders, when there is
     /// one: it stays put while the folders scroll.
     fn nav_header(&self) -> f32 {
-        if matches!(self.nav_rows.first(), Some(sidebar::Row::Account { .. })) {
+        if matches!(
+            self.nav_rows.first(),
+            Some(sidebar::Row::Account { .. } | sidebar::Row::AllAccounts { .. })
+        ) {
             NAV_ROW_HEIGHT
         } else {
             0.0
@@ -541,18 +546,12 @@ impl MailWindow {
 
     fn render_nav_row(&self, ix: usize, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         match &self.nav_rows[ix] {
-            sidebar::Row::Account { name, .. } => div()
-                .id(("nav-row", ix))
-                .h(px(NAV_ROW_HEIGHT))
-                .flex()
-                .items_end()
-                .pb(px(4.0))
-                .pl(px(26.0))
-                .text_size(px(12.0))
-                .font_weight(FontWeight::MEDIUM)
-                .text_color(rgba(th.text_faint))
-                .child(div().truncate().child(name.clone()))
-                .into_any_element(),
+            sidebar::Row::AllAccounts { expanded } => {
+                self.render_heading(ix, tr!("nav-all-accounts"), *expanded, th, cx)
+            }
+            sidebar::Row::Account { name, expanded, .. } => {
+                self.render_heading(ix, name.clone(), *expanded, th, cx)
+            }
             sidebar::Row::Labels { account } => {
                 let account = *account;
                 let gmail = self.tree.is_gmail(account);
@@ -596,6 +595,65 @@ impl MailWindow {
                     })
                     .into_any_element()
             }
+            sidebar::Row::Unified {
+                view,
+                unread,
+                expanded,
+            } => {
+                let listing = Some(Listing::Unified {
+                    view: *view,
+                    account: None,
+                });
+                self.render_pill(
+                    ix,
+                    Pill {
+                        key: view.key().into(),
+                        depth: 0,
+                        icon: unified_icon(*view),
+                        label: view.title(),
+                        unread: *unread,
+                        selected: self.listing == listing,
+                        bold: true,
+                        chevron: Some(*expanded),
+                    },
+                    th,
+                    cx,
+                )
+            }
+            sidebar::Row::UnifiedAccount {
+                view,
+                account,
+                name,
+                folder,
+                unread,
+            } => {
+                let selected = match folder {
+                    Some(f) => self.listing == Some(Listing::Folder(*f)),
+                    None => {
+                        self.listing
+                            == Some(Listing::Unified {
+                                view: *view,
+                                account: Some(*account),
+                            })
+                    }
+                };
+                self.render_pill(
+                    ix,
+                    Pill {
+                        key: format!("{}:{}", view.key(), account.0).into(),
+                        depth: 1,
+                        icon: unified_icon(*view),
+                        label: name.clone(),
+                        unread: *unread,
+                        selected,
+                        // Addresses are long; the count tells of new mail.
+                        bold: false,
+                        chevron: None,
+                    },
+                    th,
+                    cx,
+                )
+            }
             sidebar::Row::Folder {
                 key,
                 depth,
@@ -606,16 +664,7 @@ impl MailWindow {
                 has_children,
                 expanded,
             } => {
-                let selected = folder.is_some_and(|f| self.listing == Some(Listing::Folder(f)));
                 let scheduled = key == compose::SCHEDULED_NAV_KEY;
-                let key = key.clone();
-                let indent = 12.0 * *depth as f32;
-                let text = if selected {
-                    th.nav_selected_text
-                } else {
-                    th.text
-                };
-                let bold = selected || *unread > 0;
                 // Special folders show their name in the current language;
                 // the user's own keep theirs.
                 let label = if scheduled {
@@ -623,126 +672,264 @@ impl MailWindow {
                 } else {
                     role.title().unwrap_or_else(|| label.clone())
                 };
-                let chevron = div()
-                    .id(("nav-chevron", ix))
-                    .absolute()
-                    // Where it was before the highlight was inset: just
-                    // left of the pill's rounded end.
-                    .left(px(indent - 4.0))
-                    .top(px(6.0))
-                    .size(px(20.0))
+                self.render_pill(
+                    ix,
+                    Pill {
+                        key: key.clone().into(),
+                        depth: *depth,
+                        icon: if scheduled {
+                            "schedule"
+                        } else {
+                            role_icon(*role)
+                        },
+                        label,
+                        unread: *unread,
+                        selected: folder.is_some_and(|f| self.listing == Some(Listing::Folder(f))),
+                        bold: true,
+                        chevron: has_children.then_some(*expanded),
+                    },
+                    th,
+                    cx,
+                )
+            }
+        }
+    }
+
+    /// An account's name, or "All Accounts", over what it holds, with the
+    /// arrow that folds it away; the whole line folds it.
+    fn render_heading(
+        &self,
+        ix: usize,
+        name: String,
+        expanded: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        div()
+            .id(("nav-row", ix))
+            .h(px(NAV_ROW_HEIGHT))
+            .w(px(NAV_WIDTH - 16.0))
+            .flex()
+            .flex_row()
+            .items_end()
+            .pb(px(2.0))
+            .pl(px(26.0))
+            .text_size(px(12.0))
+            .font_weight(FontWeight::MEDIUM)
+            .text_color(rgba(th.text_faint))
+            .cursor_pointer()
+            .tooltip(tip(
+                if expanded {
+                    tr!("nav-collapse")
+                } else {
+                    tr!("nav-expand")
+                },
+                th,
+            ))
+            .on_click(cx.listener(move |this, _, _, cx| this.toggle_nav_row(ix, cx)))
+            .child(div().flex_1().min_w_0().pb(px(2.0)).truncate().child(name))
+            .child(
+                div()
+                    .id(("nav-heading-arrow", ix))
+                    .flex_none()
+                    .size(px(24.0))
                     .flex()
                     .items_center()
                     .justify_center()
                     .rounded_full()
                     .hover(|s| s.bg(rgba(th.hover)))
-                    .child(icon(
-                        if *expanded {
-                            "chevron-down"
-                        } else {
-                            "chevron-right"
-                        },
+                    .child(turning_chevron(
+                        SharedString::from(format!("heading:{ix}")),
+                        expanded,
                         th.text_dim,
-                        16.0,
-                    ))
-                    .on_click(cx.listener(move |this, _, _, cx| {
-                        cx.stop_propagation();
-                        this.toggle(&key, cx);
-                    }));
-                // A full pill, inset from the pane's edge; the icon and
-                // label stay where they were.
-                let row = div()
-                    .id(("nav-row", ix))
-                    .relative()
-                    .h(px(NAV_ROW_HEIGHT))
-                    .w(px(NAV_WIDTH - 16.0 - NAV_ROW_INSET))
-                    .pl(px(26.0 - NAV_ROW_INSET + indent))
-                    .pr(px(12.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .rounded_full()
-                    .text_size(px(14.0))
-                    .text_color(rgba(text))
-                    .when(bold, |d| d.font_weight(FontWeight::BOLD))
-                    .when(!selected, |d| d.hover(|s| s.bg(rgba(th.hover))))
-                    .cursor_pointer()
-                    .on_click(
-                        cx.listener(move |this, _, window, cx| this.click_nav_row(ix, window, cx)),
-                    )
-                    .child(
-                        Ripple::new(("nav-ripple", ix), rgba(th.ripple))
-                            .rounded(NAV_ROW_HEIGHT / 2.0),
-                    )
-                    .child(icon(
-                        if scheduled {
-                            "schedule"
-                        } else {
-                            role_icon(*role)
-                        },
-                        text,
-                        20.0,
-                    ))
-                    .child(
-                        div()
-                            .flex_1()
-                            .min_w_0()
-                            .pl(px(18.0))
-                            .truncate()
-                            .child(label),
-                    )
-                    .when(*unread > 0, |d| {
-                        d.child(
-                            div()
-                                .flex_none()
-                                .pl(px(8.0))
-                                .text_size(px(12.0))
-                                .child(format::thousands(*unread)),
-                        )
-                    })
-                    .when(*has_children, |d| d.child(chevron));
-                let row = row.with_spring(
-                    ("nav-selected", ix),
-                    SpringAnimation::new(motion::SMOOTH).to(if selected { 1.0 } else { 0.0 }),
-                    {
-                        let bg = th.nav_selected;
-                        move |row, s: f32| {
-                            if s > 0.001 {
-                                row.bg(rgba(fade(bg, s)))
-                            } else {
-                                row
-                            }
-                        }
-                    },
-                );
-                // The list lays lines out edge to edge, so the inset is
-                // padding around the pill rather than its margin.
-                div().pl(px(NAV_ROW_INSET)).child(row).into_any_element()
-            }
-        }
+                    )),
+            )
+            .into_any_element()
+    }
+
+    /// A folder's line: a pill with its icon, name and unread count, and
+    /// the arrow that shows what it holds, when it holds some.
+    fn render_pill(&self, ix: usize, pill: Pill, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Pill {
+            key,
+            depth,
+            icon: icon_name,
+            label,
+            unread,
+            selected,
+            bold,
+            chevron,
+        } = pill;
+        let indent = 12.0 * depth as f32;
+        let text = if selected {
+            th.nav_selected_text
+        } else {
+            th.text
+        };
+        let bold = bold && (selected || unread > 0);
+        let chevron = chevron.map(|expanded| {
+            div()
+                .id(("nav-chevron", ix))
+                .absolute()
+                // Where it was before the highlight was inset: just
+                // left of the pill's rounded end.
+                .left(px(indent - 4.0))
+                .top(px(6.0))
+                .size(px(20.0))
+                .flex()
+                .items_center()
+                .justify_center()
+                .rounded_full()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .child(turning_chevron(key.clone(), expanded, th.text_dim))
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    cx.stop_propagation();
+                    this.toggle_nav_row(ix, cx);
+                }))
+        });
+        // A full pill, inset from the pane's edge; the icon and
+        // label stay where they were.
+        let row = div()
+            .id(("nav-row", ix))
+            .relative()
+            .h(px(NAV_ROW_HEIGHT))
+            .w(px(NAV_WIDTH - 16.0 - NAV_ROW_INSET))
+            .pl(px(26.0 - NAV_ROW_INSET + indent))
+            .pr(px(12.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .rounded_full()
+            .text_size(px(14.0))
+            .text_color(rgba(text))
+            .when(bold, |d| d.font_weight(FontWeight::BOLD))
+            .when(!selected, |d| d.hover(|s| s.bg(rgba(th.hover))))
+            .cursor_pointer()
+            .on_click(cx.listener(move |this, _, window, cx| this.click_nav_row(ix, window, cx)))
+            .child(Ripple::new(("nav-ripple", ix), rgba(th.ripple)).rounded(NAV_ROW_HEIGHT / 2.0))
+            .child(icon(icon_name, text, 20.0))
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .pl(px(18.0))
+                    .truncate()
+                    .child(label),
+            )
+            .when(unread > 0, |d| {
+                d.child(
+                    div()
+                        .flex_none()
+                        .pl(px(8.0))
+                        .text_size(px(12.0))
+                        .child(format::thousands(unread)),
+                )
+            })
+            .children(chevron);
+        let row = row.with_spring(
+            ("nav-selected", ix),
+            SpringAnimation::new(motion::SMOOTH).to(if selected { 1.0 } else { 0.0 }),
+            {
+                let bg = th.nav_selected;
+                move |row, s: f32| {
+                    if s > 0.001 {
+                        row.bg(rgba(fade(bg, s)))
+                    } else {
+                        row
+                    }
+                }
+            },
+        );
+        // The list lays lines out edge to edge, so the inset is
+        // padding around the pill rather than its margin.
+        div().pl(px(NAV_ROW_INSET)).child(row).into_any_element()
     }
 
     fn click_nav_row(&mut self, ix: usize, window: &mut gpui::Window, cx: &mut Context<Self>) {
-        let Some(sidebar::Row::Folder { key, folder, .. }) = self.nav_rows.get(ix).cloned() else {
+        let Some(row) = self.nav_rows.get(ix).cloned() else {
             return;
         };
-        match folder {
-            Some(folder) => {
-                self.clear_search(cx);
-                self.search_panel = None;
-                if self.folder == Some(folder) && !self.reading {
-                    self.card_seq += 1;
-                }
-                self.open_folder(folder, cx);
-                self.reader = None;
-                // A folder picked from the opened navigation closes it.
-                self.nav_peek = false;
-                self.layout.drawer = false;
-                self.peek_task = None;
-                window.focus(&self.list_focus, cx);
+        match row {
+            sidebar::Row::Folder {
+                folder: Some(folder),
+                ..
             }
-            None if key == compose::SCHEDULED_NAV_KEY => self.open_scheduled(cx),
-            None => self.toggle(&key, cx),
+            | sidebar::Row::UnifiedAccount {
+                folder: Some(folder),
+                ..
+            } => {
+                self.leave_listing(Listing::Folder(folder), cx);
+                self.open_folder(folder, cx);
+                self.picked_from_nav(window, cx);
+            }
+            sidebar::Row::Unified { view, .. } => {
+                let listing = Listing::Unified {
+                    view,
+                    account: None,
+                };
+                self.leave_listing(listing, cx);
+                self.open_unified(view, None, cx);
+                self.picked_from_nav(window, cx);
+            }
+            sidebar::Row::UnifiedAccount {
+                view,
+                account,
+                folder: None,
+                ..
+            } => {
+                let listing = Listing::Unified {
+                    view,
+                    account: Some(account),
+                };
+                self.leave_listing(listing, cx);
+                self.open_unified(view, Some(account), cx);
+                self.picked_from_nav(window, cx);
+            }
+            sidebar::Row::Folder { key, .. } if key == compose::SCHEDULED_NAV_KEY => {
+                self.leave_settings(window, cx);
+                self.open_scheduled(cx);
+            }
+            _ => self.toggle_nav_row(ix, cx),
+        }
+    }
+
+    /// Before a line of the folder pane opens `next`: the search gives
+    /// way, and the list fades in again when it shows the same.
+    fn leave_listing(&mut self, next: Listing, cx: &mut Context<Self>) {
+        self.clear_search(cx);
+        self.search_panel = None;
+        if self.listing.as_ref() == Some(&next) && !self.reading {
+            self.card_seq += 1;
+        }
+    }
+
+    /// After a line of the folder pane opened a list.
+    fn picked_from_nav(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
+        self.leave_settings(window, cx);
+        self.reader = None;
+        // A folder picked from the opened navigation closes it.
+        self.nav_peek = false;
+        self.layout.drawer = false;
+        self.peek_task = None;
+        window.focus(&self.list_focus, cx);
+    }
+
+    /// A list picked in the folder pane while Settings is open takes its
+    /// place, as in Gmail; folding a line does not.
+    fn leave_settings(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
+        if self.settings_page.is_some() {
+            self.close_settings_page(window, cx);
+        }
+    }
+
+    /// The arrow of line `ix`: folds or opens what is under it.
+    fn toggle_nav_row(&mut self, ix: usize, cx: &mut Context<Self>) {
+        match self.nav_rows.get(ix).cloned() {
+            Some(sidebar::Row::AllAccounts { .. }) => self.toggle_all_accounts(cx),
+            Some(sidebar::Row::Account { id, .. }) => self.toggle_account(id, cx),
+            Some(sidebar::Row::Unified { view, .. }) => self.toggle(view.key(), cx),
+            Some(sidebar::Row::Folder { key, .. }) => self.toggle(&key, cx),
+            _ => {}
         }
     }
 
@@ -752,6 +939,48 @@ impl MailWindow {
         }
         self.rebuild_nav();
         cx.notify();
+    }
+}
+
+/// What [`MailWindow::render_pill`] draws.
+struct Pill {
+    /// Names the line's arrow, so it turns only when its own line folds.
+    key: SharedString,
+    depth: usize,
+    icon: &'static str,
+    label: String,
+    unread: u64,
+    selected: bool,
+    /// Whether it may show in bold, when selected or with unread mail.
+    bold: bool,
+    /// The arrow, pointing down when what it holds shows.
+    chevron: Option<bool>,
+}
+
+/// An arrow that turns from pointing right to down as its line opens.
+fn turning_chevron(key: SharedString, expanded: bool, color: u32) -> AnyElement {
+    svg()
+        .path("icons/chevron-right.svg")
+        .size(px(16.0))
+        .flex_none()
+        .text_color(rgba(color))
+        .with_spring(
+            ElementId::Name(format!("nav-turn:{key}").into()),
+            SpringAnimation::new(motion::SMOOTH).to(if expanded { 1.0 } else { 0.0 }),
+            |arrow, t: f32| {
+                arrow.with_transformation(Transformation::rotate(radians(FRAC_PI_2 * t)))
+            },
+        )
+        .into_any_element()
+}
+
+/// The icon of a list of the unified inbox.
+fn unified_icon(view: Unified) -> &'static str {
+    match view {
+        Unified::Unread => "unread",
+        Unified::Starred => "star",
+        Unified::Important => "important",
+        _ => view.role().map_or("label", role_icon),
     }
 }
 
