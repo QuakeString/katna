@@ -958,6 +958,13 @@ message) and "Always show from this sender" (kept in
 (`FetchImage`, `https` only, `http` upgraded, at most 8 MB, checked to be an
 image by its bytes); the app never uses the network.
 
+Message text can be selected and copied as in a browser (`window/select.rs`):
+each run of text a body draws records its layout, so a pointer position maps
+to a place in the text; the selection is drawn as a highlight on those runs.
+Drag, double- and triple-click, Shift+click, Ctrl+A and Ctrl+C (once the
+text was clicked) and a right-click Copy work in plain and HTML mail; the
+selection also goes to the primary selection for middle-click paste.
+
 Sender pictures load without asking, since they are looked up by domain,
 never by message, and kept for a week, so they cannot tell anyone that a
 message was read. The daemon's `SenderPicture` looks up the organization's

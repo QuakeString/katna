@@ -231,6 +231,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 24,
+        title: "Select and copy text in mail",
+        text: "Drag across a message to select its text, double-click for a word \
+               or triple-click for a paragraph. Ctrl+C or a right-click copies it, \
+               and Ctrl+A selects the whole conversation.",
+        animation: None,
+    },
+    Highlight {
+        id: 25,
         title: "Addresses suggested as you type",
         text: "To, Cc and Bcc suggest the people you write to most as you type, even \
                with a typo. Pick one with the arrow keys and Enter, Tab or a click.",

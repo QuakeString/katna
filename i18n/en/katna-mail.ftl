@@ -53,3 +53,8 @@ search-clear = Clear search
 search-options-show = Show search options
 settings = Settings
 account-add = Add an account
+
+## Message text (right-click menu in the reading pane)
+
+text-copy = Copy
+text-select-all = Select all
