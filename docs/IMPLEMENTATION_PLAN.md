@@ -525,22 +525,28 @@ request. The owner wants the ten features of Mailspring Pro, backed by Katna
 Server on the owner's own server (`server.katna.invenia.in`, tracking on a
 separate domain; the owner deploys the container, ARCHITECTURE.md §16). Not all
 of them need the server: most work in the daemon on this computer, and the
-server adds only what a computer that is switched off cannot do. Nothing
+server adds only what a computer that is switched off cannot do.
+
+**Rule (owner, 27 September 2026):** use the mail service's own feature
+when Katna can reach it over the protocols it speaks (IMAP, SMTP, Sieve,
+CardDAV, later JMAP). Otherwise do it locally on the user's computer. Use
+Katna Server only for what can work neither way: tracking, translation and
+Katna accounts. Nothing
 puts the user's mail, passwords or tokens on the server unless a row below
 says so and the owner has decided it.
 
 | Task | Where it runs | Deliverable | Status |
 |---|---|---|---|
 | 7.0 Katna accounts | Server + app | A Katna account on the server, like Mailspring ID (owner, 27 September 2026): sign-up with an email address and password, address verification, per-device tokens that replace the per-install token, a Katna account page in Settings, and every server feature (7.1–7.3, 7.8) behind sign-in. No payments yet. The account holds no mail logins (7.10) | Building |
-| 7.1 Read receipts | Server + daemon + app | Opens per recipient through a tracking picture; per-recipient sending (ARCHITECTURE.md §11); Apple Mail Privacy Protection shown as "maybe", scanners as "scanner"; off by default, per message | Building |
+| 7.1 Read receipts | Server + daemon + app | Opens per recipient through a tracking picture; a standard read-receipt request (MDN, RFC 8098) is offered as the no-server choice, which the recipient may decline; per-recipient sending (ARCHITECTURE.md §11); Apple Mail Privacy Protection shown as "maybe", scanners as "scanner"; off by default, per message | Building |
 | 7.2 Link tracking | Server + daemon + app | Clicks through `/l/<id>/<n>` redirects stored on the server (never an open redirect); shown per recipient and link | Building, with 7.1 |
 | 7.3 Mailbox insights | App, with 7.1–7.2 events | An Activity view: open and click rates of tracked mail, reply rates and times, busiest senders and hours, subject lines that got replies; counted from the local store, only tracking events come from the server | After 7.1–7.2 |
 | 7.4 Mail templates | App (local) | Save mail as a template, start new mail or a reply from one, fields such as the first name; Settings > Compose > Templates (the row says "Coming soon" today). Sync between devices later with 7.12 | Ready to build; no server |
 | 7.5 Follow-up reminders | Daemon (local) | "Remind me if nobody replies in N days" in compose; `katna-meta` (task 1.9) with the reply check, a notification and the thread back on top of the Inbox. Works while the computer is on; 7.10 covers a switched-off computer | Ready to build; no server |
-| 7.6 Snooze | Daemon (local) | Snooze a conversation until a time; it moves to a "Snoozed" label and comes back unread (ARCHITECTURE.md §10, Phase 5). Same `katna-meta` scheduler as 7.5 | Ready to build; no server |
-| 7.7 Send later | Daemon (local) ✅ #53 | Scheduled send exists; it sends while the computer is on. Sending while it is off is 7.10 | Done locally |
+| 7.6 Snooze | Daemon (local; Gmail, Outlook.com and Zoho offer no snooze over IMAP) | Snooze a conversation until a time; it moves to a "Snoozed" label and comes back unread (ARCHITECTURE.md §10, Phase 5). Same `katna-meta` scheduler as 7.5 | Ready to build; no server |
+| 7.7 Send later | Mail server, else daemon ◐ #53 | Scheduled send exists and sends while the computer is on. Where the account's SMTP server offers FUTURERELEASE (RFC 4865; Stalwart does, Gmail does not) or, later, JMAP's `sendAt`, hand the mail to the server so it goes out on time with the computer off | Local done; server hand-off to build |
 | 7.8 Automatic translation | Server + daemon + app | Translate a message into the reading language, with the original one click away. LibreTranslate (AGPL-3.0, its own container) on the owner's server, chosen 27 September 2026; the daemon sends only the text of a message the user asks to translate (or of languages the user chose to always translate), over TLS with the install's token; no logs kept | Decided; ready to build |
-| 7.9 Rich contact profiles | App (local) + decision | A right-hand panel for the sender: picture, all mail exchanged, attachments, first and last contact, signature details (phone, title) read from their mail. Outside profiles (LinkedIn, X) need a data source | Local part ready to build; outside data to decide |
+| 7.9 Rich contact profiles | App (local) + decision | A right-hand panel for the sender: picture, all mail exchanged, attachments, first and last contact, signature details (phone, title) read from their mail, and the account's own contacts over CardDAV once Phase 6 syncs them. Outside profiles (LinkedIn, X) need a data source | Local part ready to build; outside data to decide |
 | 7.10 While the computer is off | — | Send later, snooze and reminders run only while the computer is on; the server holds no logins or tokens (owner, 27 September 2026). Revisit later if wanted | Decided: computer only |
 | 7.11 Company overviews | App + Phase 2 | A company page: people, mail and files exchanged, and the local time from their mail. It is the organization view of Phase 2 (2.1–2.4, 3.9). Size and funding need a data source | After Phase 2; outside data to decide |
 | 7.12 Metadata sync | Server | Templates, reminders, snoozes and tracking IDs shared between the owner's devices, end-to-end encrypted (ARCHITECTURE.md §16) | Later |
