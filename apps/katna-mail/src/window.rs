@@ -52,6 +52,7 @@ mod settings;
 mod settings_page;
 mod settings_search;
 mod share_ask;
+mod sign_in_again;
 mod tab_strip;
 mod tour;
 mod viewer;
@@ -489,6 +490,8 @@ pub struct MailWindow {
     undo_history: Vec<UndoStep>,
     /// After a crash: the report to view or copy.
     crash_notice: Option<crash_notice::CrashNotice>,
+    /// "Sign in again" for accounts whose OAuth2 sign-in stopped working.
+    sign_in_again: sign_in_again::SignInAgain,
     /// Settings > User feedback's list of crash reports, as last read.
     saved_reports: Option<feedback_page::SavedReports>,
     compose: Option<compose::Compose>,
@@ -680,6 +683,7 @@ impl MailWindow {
             snackbar: None,
             undo_history: Vec::new(),
             crash_notice: None,
+            sign_in_again: sign_in_again::SignInAgain::default(),
             saved_reports: None,
             compose: None,
             files: attachments::Files::default(),
@@ -886,6 +890,7 @@ impl MailWindow {
                     this.watch_sending(connection.clone(), cx);
                     this.watch_scheduled(connection.clone(), cx);
                     this.check_first_sync(cx);
+                    this.check_signed_out(cx);
                 }
             })
             .ok();
@@ -902,6 +907,7 @@ impl MailWindow {
                     this.refresh(false, cx);
                     if !this.detached {
                         this.check_first_sync(cx);
+                        this.check_signed_out(cx);
                     }
                 });
                 if refreshed.is_err() {
@@ -2653,6 +2659,11 @@ impl Render for MailWindow {
         } else {
             self.render_crash_notice(&th, window, reduce, cx)
         };
+        let sign_in_again = if onboarding {
+            None
+        } else {
+            self.render_sign_in_again(&th, window, reduce, cx)
+        };
         let tour = self.render_tour(&th, window, cx);
         let content = div()
             .key_context(WINDOW_CONTEXT)
@@ -2699,6 +2710,7 @@ impl Render for MailWindow {
             .children(danger)
             .children(new_label)
             .children(crash_notice)
+            .children(sign_in_again)
             .children(whats_new)
             .children(share_ask)
             .children(about)

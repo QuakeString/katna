@@ -24,10 +24,11 @@ use katna_search::IndexerWaker;
 use katna_store::{FolderId, Forgotten, MessageFlags, MessageId, Mode, SendState, Store};
 use katna_sync::{
     Credentials, Endpoint, MailBackend,
-    autoconfig::Discovery,
+    autoconfig::{Discovered, Discovery},
     bodies,
     connection::Connection,
     net::Tls,
+    oauth::TokenSource,
     ops::{self, ChangeError},
     outbox::{self, OutboxConfig, OutboxEvent, OutboxHandle, Outgoing, QueueError},
     pictures::Pictures,
@@ -37,6 +38,8 @@ use katna_sync::{
 };
 
 use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secrets};
+
+mod sign_in;
 
 /// The longest account name taken.
 const MAX_ACCOUNT_NAME: usize = 200;
@@ -172,7 +175,17 @@ pub struct Daemon {
     delete_requests: (Sender<DeleteDone>, Receiver<DeleteDone>),
     /// Tells the crash report sender that settings changed.
     crash_uploads: (Sender<()>, Receiver<()>),
+    /// Access tokens of the accounts that sign in with OAuth2, shared by
+    /// their connections.
+    tokens: Mutex<HashMap<AccountId, Arc<TokenSource>>>,
+    /// Refresh tokens a provider replaced, to save in the Secret Service.
+    rotated: (Sender<Rotated>, Receiver<Rotated>),
+    /// Ends the browser sign-in under way, if any.
+    signing_in: Mutex<Option<Sender<()>>>,
 }
+
+/// A refresh token that replaced the account's old one.
+type Rotated = (AccountId, String);
 
 /// Where the [`crate::Instance`] reports whether it deleted every file.
 pub(crate) type DeleteDone = Sender<Result<(), String>>;
@@ -212,6 +225,9 @@ impl Daemon {
             indexer: OnceLock::new(),
             delete_requests: async_channel::bounded(1),
             crash_uploads: async_channel::bounded(1),
+            tokens: Mutex::default(),
+            rotated: async_channel::unbounded(),
+            signing_in: Mutex::default(),
         });
         Ok((daemon, receiver))
     }
@@ -258,6 +274,11 @@ impl Daemon {
             self.start_account(&account).await;
         }
         self.start_outbox()?;
+        smol::spawn(sign_in::save_rotated(
+            Arc::downgrade(self),
+            self.rotated.1.clone(),
+        ))
+        .detach();
         smol::spawn(crate::crash_upload::run(
             Arc::downgrade(self),
             self.crash_uploads.1.clone(),
@@ -299,11 +320,27 @@ impl Daemon {
 
     /// Every account with its sync state.
     pub fn accounts(&self) -> Result<Vec<AccountStatus>, CommandError> {
-        let accounts = self.store().accounts()?;
+        let accounts: Vec<(Account, String)> = {
+            let store = self.store();
+            store
+                .accounts()?
+                .into_iter()
+                .map(|account| {
+                    let sign_in = store
+                        .account_settings(account.id)
+                        .ok()
+                        .flatten()
+                        .and_then(|settings| settings.oauth)
+                        .map(|provider| provider.as_str().to_owned())
+                        .unwrap_or_default();
+                    (account, sign_in)
+                })
+                .collect()
+        };
         let status = self.status.lock().unwrap();
         Ok(accounts
             .into_iter()
-            .map(|account| {
+            .map(|(account, sign_in)| {
                 let current = status
                     .get(&account.id)
                     .cloned()
@@ -316,6 +353,7 @@ impl Daemon {
                     state: current.state.to_owned(),
                     detail: current.detail,
                     last_sync: current.last_sync,
+                    sign_in,
                 }
             })
             .collect())
@@ -347,6 +385,7 @@ impl Daemon {
             address,
             settings,
             password,
+            None,
         )
         .await
     }
@@ -383,6 +422,7 @@ impl Daemon {
             address,
             settings,
             password,
+            None,
         )
         .await
     }
@@ -395,6 +435,7 @@ impl Daemon {
         address: String,
         settings: AccountSettings,
         password: String,
+        grant: Option<&katna_sync::oauth::Grant>,
     ) -> Result<AccountId, CommandError> {
         if self.closing.load(Ordering::SeqCst) {
             // Katna Mail shows this in the add-account dialog.
@@ -427,6 +468,18 @@ impl Daemon {
             )));
         }
         tracing::info!(account = %account.id, %address, "account added");
+        if let (Some(grant), Some(provider)) = (grant, settings.oauth) {
+            // Its first connections use the token the sign-in brought.
+            match self.token_source(account.id, provider, password, Some(grant)) {
+                Ok(tokens) => {
+                    self.tokens
+                        .lock()
+                        .unwrap()
+                        .insert(account.id, Arc::new(tokens));
+                }
+                Err(err) => tracing::warn!(%err, "no token source"),
+            }
+        }
         let _ = self.notices.try_send(Notice::AccountsChanged);
         self.start_account(&account).await;
         Ok(account.id)
@@ -436,7 +489,7 @@ impl Daemon {
     pub async fn discover_account(
         &self,
         address: &str,
-    ) -> Result<(NewImapAccount, &'static str), CommandError> {
+    ) -> Result<(NewImapAccount, Discovered), CommandError> {
         let discovery =
             Discovery::system().map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
         let found = discovery
@@ -455,7 +508,7 @@ impl Daemon {
             imap: spec(&found.imap),
             smtp: found.smtp.as_ref().map(spec).unwrap_or_default(),
         };
-        Ok((account, found.source.as_str()))
+        Ok((account, found))
     }
 
     /// Downloads a remote image for the reading pane.
@@ -535,6 +588,13 @@ impl Daemon {
         self.secrets
             .set_password(id, &account.address, &password)
             .await?;
+        // A password replaces an OAuth2 sign-in.
+        if settings.oauth.is_some() {
+            let mut settings = self.store().account_settings(id)?.unwrap_or_default();
+            settings.oauth = None;
+            self.store().set_account_settings(id, &settings)?;
+            self.tokens.lock().unwrap().remove(&id);
+        }
         self.start_account(&account).await;
         Ok(())
     }
@@ -564,6 +624,8 @@ impl Daemon {
         if let Err(err) = self.secrets.delete(id).await {
             tracing::warn!(account = %id, %err, "could not delete the password");
         }
+        self.tokens.lock().unwrap().remove(&id);
+        let _ = std::fs::remove_file(sign_in::provider_picture(&self.paths, id));
         self.status.lock().unwrap().remove(&id);
         if let Some(notices) = self.new_mail_notices() {
             notices.forget(id);
@@ -1091,21 +1153,15 @@ impl Daemon {
             .map_err(|err| err.to_string())?
             .unwrap_or_default();
         let server = match account.kind {
-            AccountKind::Imap => settings.imap,
-            AccountKind::Pop3 => settings.pop3,
+            AccountKind::Imap => settings.imap.clone(),
+            AccountKind::Pop3 => settings.pop3.clone(),
             _ => None,
         };
         let Some(server) = server else {
             return Ok(None);
         };
-        let password = self
-            .secrets
-            .password(account.id)
-            .await
-            .map_err(|err| err.to_string())?
-            .ok_or("no password saved; set one with katnactl password")?;
+        let credentials = self.credentials(account.id, &server, &settings).await?;
         let (endpoint, tls) = endpoint(&server)?;
-        let credentials = Credentials::new(server.username.clone(), &password);
         Ok(Some(match account.kind {
             AccountKind::Pop3 => Link::Pop3(
                 Pop3Connector {
@@ -1353,18 +1409,15 @@ impl Outgoing for SmtpAccounts {
 
     async fn connect(&self, account: AccountId) -> katna_sync::Result<SmtpSender> {
         let (daemon, settings) = self.settings(account)?;
-        let smtp = settings.smtp.ok_or_else(|| {
+        let smtp = settings.smtp.clone().ok_or_else(|| {
             katna_sync::Error::Rejected(format!("account {account} has no SMTP server"))
         })?;
-        let password = daemon
-            .secrets
-            .password(account)
+        let credentials = daemon
+            .credentials(account, &smtp, &settings)
             .await
-            .map_err(|err| katna_sync::Error::Auth(err.to_string()))?
-            .ok_or_else(|| katna_sync::Error::Auth("no password saved".into()))?;
+            .map_err(katna_sync::Error::Auth)?;
         drop(daemon);
         let (endpoint, tls) = endpoint(&smtp).map_err(katna_sync::Error::Tls)?;
-        let credentials = Credentials::new(smtp.username.clone(), &password);
         SmtpSender::connect(&endpoint, &credentials, tls).await
     }
 
@@ -1387,8 +1440,17 @@ async fn check_login(
     server: &Server,
     password: &str,
 ) -> Result<(), CommandError> {
-    let (endpoint, tls) = endpoint(server).map_err(CommandError::Failed)?;
     let credentials = Credentials::new(server.username.clone(), password);
+    check_credentials(kind, server, credentials).await
+}
+
+/// Logs in once to check the server and the password or token.
+async fn check_credentials(
+    kind: AccountKind,
+    server: &Server,
+    credentials: Credentials,
+) -> Result<(), CommandError> {
+    let (endpoint, tls) = endpoint(server).map_err(CommandError::Failed)?;
     let result = match kind {
         AccountKind::Pop3 => match Pop3Client::connect(&endpoint, &credentials, tls).await {
             Ok(client) => {

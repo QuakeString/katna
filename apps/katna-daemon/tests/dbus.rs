@@ -153,8 +153,10 @@ fn discovers_servers() {
     smol::block_on(async {
         let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
         let pim = PimProxy::new(&bus.connect().await).await.unwrap();
-        let (account, source) = pim.discover_account(" ada@gmail.com ").await.unwrap();
+        let (account, source, sign_in, password) =
+            pim.discover_account(" ada@gmail.com ").await.unwrap();
         assert_eq!(source, "built-in");
+        assert_eq!((sign_in.as_str(), password), ("google", true));
         assert_eq!(account.address, "ada@gmail.com");
         assert_eq!(
             (
@@ -167,6 +169,19 @@ fn discovers_servers() {
         assert_eq!(account.smtp.host, "smtp.gmail.com");
         let err = pim.discover_account("not an address").await.unwrap_err();
         assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.Failed");
+
+        // Microsoft's own addresses only sign in in the browser.
+        let (account, _, sign_in, password) =
+            pim.discover_account("kay@outlook.com").await.unwrap();
+        assert_eq!((sign_in.as_str(), password), ("microsoft", false));
+        assert_eq!(account.imap.host, "outlook.office365.com");
+        let err = pim.sign_in("yahoo", 0, "").await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+        if !katna_core::OAuthProvider::Microsoft.available() {
+            let err = pim.sign_in("microsoft", 0, "").await.unwrap_err();
+            assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.Failed");
+        }
+        assert!(!pim.cancel_sign_in().await.unwrap());
         instance.shutdown().await;
     });
 }

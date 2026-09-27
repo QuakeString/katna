@@ -68,6 +68,10 @@ pub struct AccountStatus {
     pub detail: String,
     /// When the last sync finished (Unix seconds), or 0.
     pub last_sync: i64,
+    /// The provider it signs in to with OAuth2 (`google`, `microsoft`),
+    /// or empty for a password. With [`state::AUTH_FAILED`], `SignIn`
+    /// signs it in again.
+    pub sign_in: String,
 }
 
 /// Values of [`AccountStatus::state`].
@@ -80,7 +84,8 @@ pub mod state {
     pub const ONLINE: &str = "online";
     /// The connection failed; the daemon retries on its own.
     pub const OFFLINE: &str = "offline";
-    /// The server refused the password. `SetPassword` or `SyncNow` retries.
+    /// The server refused the password. `SetPassword` or `SyncNow` retries;
+    /// for an account that signs in with OAuth2, `SignIn`.
     pub const AUTH_FAILED: &str = "auth-failed";
 }
 
@@ -184,8 +189,27 @@ macro_rules! pim_proxy {
             /// settings, Thunderbird's ISPDB, DNS, then guesses), for
             /// `AddImapAccount`. Returns them and where they came from:
             /// `built-in`, `provider`, `ispdb`, `dns-srv`, `mx` or `guess`.
-            /// An SMTP server with an empty host was not found.
-            fn discover_account(&self, address: &str) -> zbus::Result<(NewImapAccount, String)>;
+            /// An SMTP server with an empty host was not found. Then the
+            /// provider to sign in to with `SignIn` (`google`, `microsoft`,
+            /// or empty), and whether a password works too (`false`: only
+            /// `SignIn`).
+            fn discover_account(
+                &self,
+                address: &str,
+            ) -> zbus::Result<(NewImapAccount, String, String, bool)>;
+
+            /// Signs in to `provider` (`google` or `microsoft`) with OAuth2
+            /// in the default browser, then adds the account that signed in,
+            /// or signs `account` (0: none; else the account with that
+            /// address, if any) in again. `address` fills in the provider's
+            /// page (may be empty). Returns once the browser comes back (at
+            /// most ten minutes), with the account's ID. `AuthFailed` when
+            /// the user did not allow access.
+            fn sign_in(&self, provider: &str, account: i64, address: &str) -> zbus::Result<i64>;
+
+            /// Ends a `SignIn` still waiting for the browser. Returns
+            /// whether one was.
+            fn cancel_sign_in(&self) -> zbus::Result<bool>;
 
             /// Checks and saves a new password, then syncs.
             fn set_password(&self, account: i64, password: &str) -> zbus::Result<()>;

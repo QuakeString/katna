@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 829 more of their own. Each keeps its own license.
+bring in 827 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -15,6 +15,7 @@ bring in 829 more of their own. Each keeps its own license.
 | [async-net](https://github.com/smol-rs/async-net) 2.0.0 | Stjepan Glavina | Apache-2.0 OR MIT | Async networking primitives for TCP/UDP/Unix communication |
 | [async-signal](https://github.com/smol-rs/async-signal) 0.2.14 | John Nunley | Apache-2.0 OR MIT | Async signal handling |
 | [backtrace](https://github.com/rust-lang/backtrace-rs) 0.3.76 | The Rust Project Developers | MIT OR Apache-2.0 | A library to acquire a stack trace (backtrace) at runtime in a Rust program. |
+| [base64](https://github.com/marshallpierce/rust-base64) 0.22.1 | Marshall Pierce | MIT OR Apache-2.0 | encodes and decodes base64 as bytes or utf8 |
 | [blake3](https://github.com/BLAKE3-team/BLAKE3) 1.8.7 | Jack O'Connor, Samuel Neves | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception | the BLAKE3 hash function |
 | [calamine](https://github.com/tafia/calamine) 0.36.1 | Johann Tuffe | MIT | An Excel/OpenDocument Spreadsheet reader and deserializer in pure Rust |
 | [cfb](https://github.com/mdsteele/rust-cfb) 0.15.0 | Matthew D. Steele | MIT | Read/write Compound File Binary (structured storage) files |
@@ -49,6 +50,7 @@ bring in 829 more of their own. Each keeps its own license.
 | [oo7](https://github.com/linux-credentials/oo7) 0.6.0 | Bilal Elmoussaoui, Maximiliano Sandoval, Sophie Herold | MIT | James Bond went on a new mission and this time as a Secret Service provider |
 | [quick-xml](https://github.com/tafia/quick-xml) 0.41.0 | tafia | MIT | High performance xml reader and writer |
 | [resvg](https://github.com/linebender/resvg) 0.46.0 | linebender | Apache-2.0 OR MIT | An SVG rendering library. |
+| [ring](https://github.com/briansmith/ring) 0.17.14 | briansmith | Apache-2.0 AND ISC | An experiment. |
 | [roxmltree](https://github.com/RazrFalcon/roxmltree) 0.21.1 | Yevhenii Reizner | MIT OR Apache-2.0 | Represent an XML as a read-only tree. |
 | [rpassword](https://github.com/conradkleinespel/rpassword) 7.5.4 | Conrad Kleinespel | Apache-2.0 | Read passwords in console applications (unix, windows, macos, wasm). |
 | [rusqlite](https://github.com/rusqlite/rusqlite) 0.40.2 | The rusqlite developers | MIT | Ergonomic wrapper for SQLite |

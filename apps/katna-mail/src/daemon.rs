@@ -6,6 +6,7 @@
 //! No GPUI here.
 
 use futures_lite::{Stream, StreamExt};
+use katna_core::OAuthProvider;
 use katna_dbus::zbus::Connection;
 use katna_dbus::{NewImapAccount, OutboxItem, PimProxy, flag, send_state, state};
 use katna_store::{FolderId, MessageId};
@@ -192,18 +193,74 @@ pub async fn queue_send(
         .map_err(|err| describe(&err))
 }
 
-/// Finds the servers of `address`. Returns them and where they came from
-/// (`built-in`, `provider`, `ispdb`, `dns-srv`, `mx` or `guess`).
-pub async fn discover(
-    connection: &Connection,
-    address: &str,
-) -> Result<(NewImapAccount, String), String> {
+/// What the daemon found for an address.
+#[derive(Debug, Clone)]
+pub struct Found {
+    pub account: NewImapAccount,
+    /// Where: `built-in`, `provider`, `ispdb`, `dns-srv`, `mx` or `guess`.
+    pub source: String,
+    /// The provider to sign in to in the browser, if the servers are
+    /// Google's or Microsoft's.
+    pub sign_in: Option<OAuthProvider>,
+    /// A password works too.
+    pub password: bool,
+}
+
+/// Finds the servers of `address`.
+pub async fn discover(connection: &Connection, address: &str) -> Result<Found, String> {
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
-    pim.discover_account(address)
+    let (account, source, sign_in, password) = pim
+        .discover_account(address)
         .await
-        .map_err(|err| describe(&err))
+        .map_err(|err| describe(&err))?;
+    Ok(Found {
+        account,
+        source,
+        sign_in: sign_in.parse().ok(),
+        password,
+    })
+}
+
+/// Signs in to `provider` in the browser and adds that account, or signs
+/// `account` in again. Returns once the browser comes back, with the
+/// account's ID.
+pub async fn sign_in(
+    connection: &Connection,
+    provider: OAuthProvider,
+    account: Option<i64>,
+    address: &str,
+) -> Result<i64, AddError> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| AddError::Other(describe(&err)))?;
+    pim.sign_in(provider.as_str(), account.unwrap_or(0), address)
+        .await
+        .map_err(|err| add_error(&err))
+}
+
+/// Ends a sign-in that still waits for the browser.
+pub async fn cancel_sign_in(connection: &Connection) {
+    if let Ok(pim) = PimProxy::new(connection).await {
+        let _ = pim.cancel_sign_in().await;
+    }
+}
+
+/// The accounts that signed in with a provider which now asks to sign in
+/// again: (ID, address, provider).
+pub async fn signed_out(
+    connection: &Connection,
+) -> Result<Vec<(i64, String, OAuthProvider)>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let accounts = pim.accounts().await.map_err(|err| describe(&err))?;
+    Ok(accounts
+        .into_iter()
+        .filter(|a| a.state == state::AUTH_FAILED)
+        .filter_map(|a| Some((a.id, a.address, a.sign_in.parse().ok()?)))
+        .collect())
 }
 
 /// Asks the daemon for a remote image of a message.
@@ -298,7 +355,8 @@ pub async fn reset_cache(connection: &Connection) -> Result<(u64, u64), String> 
 /// Why an account could not be added.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum AddError {
-    /// The server refused the password.
+    /// The server refused the password, or the user did not allow access
+    /// in the browser.
     Password(String),
     Other(String),
 }
@@ -314,14 +372,18 @@ pub async fn add_account(
         .map_err(|err| AddError::Other(describe(&err)))?;
     pim.add_imap_account(account, password)
         .await
-        .map_err(|err| match &err {
-            katna_dbus::zbus::Error::MethodError(name, _, _)
-                if name.as_str() == "org.freedesktop.DBus.Error.AuthFailed" =>
-            {
-                AddError::Password(describe(&err))
-            }
-            _ => AddError::Other(describe(&err)),
-        })
+        .map_err(|err| add_error(&err))
+}
+
+fn add_error(err: &katna_dbus::zbus::Error) -> AddError {
+    match err {
+        katna_dbus::zbus::Error::MethodError(name, _, _)
+            if name.as_str() == "org.freedesktop.DBus.Error.AuthFailed" =>
+        {
+            AddError::Password(describe(err))
+        }
+        _ => AddError::Other(describe(err)),
+    }
 }
 
 /// Yields the subject and reason of each message the server refused for

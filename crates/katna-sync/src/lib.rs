@@ -18,6 +18,8 @@
 //! - [`autoconfig`]: finds an address's IMAP and SMTP servers.
 //! - [`bodies`]: sync level 3, full messages for the offline window and on
 //!   request.
+//! - [`oauth`]: signing in to Google and Microsoft accounts with OAuth2,
+//!   and refreshing their access tokens.
 //! - [`ops`]: the operation queue; local flag changes, moves and deletes,
 //!   replayed on the server.
 //! - [`outbox`]: queued outgoing mail, undo send, SMTP delivery and
@@ -40,6 +42,7 @@ pub mod engine;
 mod error;
 pub mod imap;
 pub mod net;
+pub mod oauth;
 pub mod ops;
 pub mod outbox;
 pub mod pictures;
@@ -50,6 +53,6 @@ pub mod worker;
 pub use backend::{
     Address, AttachmentPart, Credentials, Endpoint, Envelope, FlagChanges, FlagState, Flags,
     Folder, FolderChange, FolderRole, FolderStatus, IMPORTANT, MailBackend, MailSender,
-    MessageHeaders, Security, Wait,
+    MessageHeaders, Secret, Security, Wait,
 };
 pub use error::{Error, Result};

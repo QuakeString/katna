@@ -4,8 +4,10 @@
 //! like a web sign-in: the address first, then the password. The daemon
 //! finds the servers from the address (`DiscoverAccount`), checks the login
 //! and saves the account (`AddImapAccount`). When it cannot find the
-//! servers, they are entered by hand. Also the account menu of the app
-//! rail, which leads here.
+//! servers, they are entered by hand. Google and Microsoft accounts can
+//! instead sign in in the browser (`SignIn`, OAuth2), the only way for
+//! Microsoft's; the buttons show when this build has the provider's client
+//! ID. Also the account menu of the app rail, which leads here.
 
 use std::collections::HashMap;
 use std::time::Duration;
@@ -15,6 +17,7 @@ use gpui::{
     MouseButton, MouseDownEvent, SharedString, Subscription, Task, Window, deferred, div,
     prelude::*, relative, rgba,
 };
+use katna_core::OAuthProvider;
 use katna_dbus::{NewImapAccount, ServerSpec};
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
@@ -37,6 +40,8 @@ enum Step {
     Address,
     Servers,
     Password,
+    /// Waiting for the provider's sign-in page in the browser.
+    Browser(OAuthProvider),
 }
 
 /// How a connection to a server is secured.
@@ -110,6 +115,10 @@ pub(super) struct AddAccount {
     servers_for: String,
     /// Where the daemon found the servers; `None` once they are edited.
     source: Option<String>,
+    /// The found servers are Google's or Microsoft's.
+    sign_in: Option<OAuthProvider>,
+    /// A password works for the found servers (not only `sign_in`).
+    password_works: bool,
     accept_invalid_certs: bool,
     show_password: bool,
     busy: bool,
@@ -286,6 +295,8 @@ impl MailWindow {
             username,
             servers_for: String::new(),
             source: None,
+            sign_in: None,
+            password_works: true,
             accept_invalid_certs: false,
             show_password: false,
             busy: false,
@@ -326,12 +337,118 @@ impl MailWindow {
     }
 
     fn close_add_account(&mut self, cx: &mut Context<Self>) {
+        self.cancel_browser_sign_in(cx);
         if let Some(dialog) = &mut self.add_account {
             // Stops a discovery or login that is under way.
             dialog._task = None;
             dialog.closing = true;
         }
         cx.notify();
+    }
+
+    /// Tells the daemon to stop waiting for the browser, if it is.
+    fn cancel_browser_sign_in(&mut self, cx: &mut Context<Self>) {
+        let waiting = self
+            .add_account
+            .as_ref()
+            .is_some_and(|d| matches!(d.step, Step::Browser(_)) && d.busy);
+        if let (true, Some(connection)) = (waiting, self.daemon.clone()) {
+            cx.background_executor()
+                .spawn(async move { daemon::cancel_sign_in(&connection).await })
+                .detach();
+        }
+    }
+
+    /// Signs in to `provider` in the browser; the daemon adds the account
+    /// that signed in.
+    fn start_sign_in(
+        &mut self,
+        provider: OAuthProvider,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let hint = self.add_account_address(cx).unwrap_or_default();
+        let Some(dialog) = &mut self.add_account else {
+            return;
+        };
+        if dialog.closing {
+            return;
+        }
+        dialog.step = Step::Browser(provider);
+        dialog.busy = true;
+        dialog.error = None;
+        let connection = self.daemon.clone();
+        let task = cx.spawn_in(window, async move |this, cx| {
+            let result = cx
+                .background_executor()
+                .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await.map_err(AddError::Other)?,
+                    };
+                    daemon::sign_in(&connection, provider, None, &hint).await
+                })
+                .await;
+            this.update_in(cx, |this, window, cx| {
+                if let Some(dialog) = &mut this.add_account {
+                    dialog.busy = false;
+                }
+                match result {
+                    Ok(_) => {
+                        this.close_add_account(cx);
+                        this.show_snackbar(
+                            tr!("add-account-signed-in", provider = provider.name()),
+                            None,
+                            cx,
+                        );
+                        this.account_added(window, cx);
+                    }
+                    Err(AddError::Password(detail)) => {
+                        tracing::info!(%detail, "sign-in refused");
+                        this.add_account_step(Step::Address, window, cx);
+                        this.add_account_error(
+                            tr!("add-account-sign-in-refused", provider = provider.name()),
+                            cx,
+                        );
+                    }
+                    Err(AddError::Other(err)) => {
+                        this.add_account_step(Step::Address, window, cx);
+                        this.add_account_error(err, cx);
+                    }
+                }
+            })
+            .ok();
+        });
+        if let Some(dialog) = &mut self.add_account {
+            dialog._task = Some(task);
+        }
+        cx.notify();
+    }
+
+    /// After discovery: signs in in the browser when the provider takes
+    /// nothing else, else asks for the password.
+    fn after_discovery(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(dialog) = &self.add_account else {
+            return;
+        };
+        if dialog.password_works {
+            // Some providers publish no SMTP server.
+            let step = if dialog.smtp.host.read(cx).text().trim().is_empty() {
+                Step::Servers
+            } else {
+                Step::Password
+            };
+            self.add_account_step(step, window, cx);
+            return;
+        }
+        match dialog.sign_in {
+            Some(provider) if provider.available() => self.start_sign_in(provider, window, cx),
+            provider => {
+                let name = provider.map_or("", |p| p.name());
+                self.add_account_step(Step::Address, window, cx);
+                self.add_account_error(tr!("add-account-sign-in-unavailable", provider = name), cx);
+            }
+        }
     }
 
     /// Fills the server fields from `account`.
@@ -376,6 +493,8 @@ impl MailWindow {
         dialog.accept_invalid_certs = account.imap.accept_invalid_certs;
         dialog.servers_for = account.address.clone();
         dialog.source = source;
+        dialog.sign_in = None;
+        dialog.password_works = true;
     }
 
     fn add_account_step(&mut self, step: Step, window: &mut Window, cx: &mut Context<Self>) {
@@ -385,7 +504,7 @@ impl MailWindow {
         dialog.step = step;
         dialog.error = None;
         let focus = match step {
-            Step::Address => dialog.address.focus_handle(cx),
+            Step::Address | Step::Browser(_) => dialog.address.focus_handle(cx),
             Step::Servers => dialog.imap.host.focus_handle(cx),
             Step::Password => dialog.password.focus_handle(cx),
         };
@@ -453,6 +572,7 @@ impl MailWindow {
                 Err(err) => self.add_account_error(err, cx),
             },
             Step::Password => self.sign_in(window, cx),
+            Step::Browser(_) => {}
         }
     }
 
@@ -469,7 +589,7 @@ impl MailWindow {
             return;
         };
         if dialog.servers_for == address {
-            self.add_account_step(Step::Password, window, cx);
+            self.after_discovery(window, cx);
             return;
         }
         dialog.busy = true;
@@ -492,15 +612,13 @@ impl MailWindow {
                     dialog.busy = false;
                 }
                 match result {
-                    Ok((account, source)) => {
-                        this.fill_servers(&account, Some(source), cx);
-                        // Some providers publish no SMTP server.
-                        let step = if account.smtp.host.trim().is_empty() {
-                            Step::Servers
-                        } else {
-                            Step::Password
-                        };
-                        this.add_account_step(step, window, cx);
+                    Ok(found) => {
+                        this.fill_servers(&found.account, Some(found.source), cx);
+                        if let Some(dialog) = &mut this.add_account {
+                            dialog.sign_in = found.sign_in;
+                            dialog.password_works = found.password;
+                        }
+                        this.after_discovery(window, cx);
                     }
                     Err(err) if err == daemon::NOT_RUNNING => this.add_account_error(err, cx),
                     Err(err) => {
@@ -661,6 +779,10 @@ impl MailWindow {
                 Some(tr!("add-account-signing-in")),
             ),
             Step::Password => (tr!("add-account-password-title"), None),
+            Step::Browser(provider) => (
+                tr!("add-account-browser-title"),
+                Some(tr!("add-account-browser-intro", provider = provider.name())),
+            ),
         };
         let error = dialog.error.clone();
         let mut body = div()
@@ -691,15 +813,35 @@ impl MailWindow {
 
         match dialog.step {
             Step::Address => {
-                body = body.child(div().mt(px(24.0)).child(self.outlined_field(
-                    "field-address",
-                    tr!("add-account-field-address"),
-                    &dialog.address,
-                    error.is_some(),
-                    th,
-                    window,
-                    cx,
-                )));
+                body = body
+                    .child(div().mt(px(24.0)).child(self.outlined_field(
+                        "field-address",
+                        tr!("add-account-field-address"),
+                        &dialog.address,
+                        error.is_some(),
+                        th,
+                        window,
+                        cx,
+                    )))
+                    .children(error.clone().map(|error| error_line(error, th)));
+                let providers: Vec<OAuthProvider> = OAuthProvider::ALL
+                    .into_iter()
+                    .filter(|p| p.available())
+                    .collect();
+                if !providers.is_empty() {
+                    body =
+                        body.child(or_line(th))
+                            .children(providers.into_iter().map(|provider| {
+                                provider_button(provider, th)
+                                    .on_click(cx.listener(move |this, _, window, cx| {
+                                        this.start_sign_in(provider, window, cx)
+                                    }))
+                                    .into_any_element()
+                            }));
+                }
+            }
+            Step::Browser(_) => {
+                body = body.child(hint(tr!("add-account-browser-hint"), th));
             }
             Step::Servers => {
                 body = body
@@ -800,6 +942,18 @@ impl MailWindow {
                             th,
                         )
                     }))
+                    .children(dialog.sign_in.filter(|p| p.available()).map(|provider| {
+                        div().mt(px(8.0)).flex().child(
+                            text_button(
+                                "add-account-sign-in-instead",
+                                tr!("add-account-sign-in-instead", provider = provider.name()),
+                                th,
+                            )
+                            .on_click(cx.listener(
+                                move |this, _, window, cx| this.start_sign_in(provider, window, cx),
+                            )),
+                        )
+                    }))
                     .child(div().mt(px(20.0)).child(self.outlined_field(
                         "field-name",
                         tr!("add-account-field-name"),
@@ -814,8 +968,9 @@ impl MailWindow {
             }
         }
 
-        // Under the password field on that step, else after the fields.
-        if dialog.step != Step::Password {
+        // Under the address or password field on those steps, else after
+        // the fields.
+        if matches!(dialog.step, Step::Servers | Step::Browser(_)) {
             body = body.children(error.map(|error| error_line(error, th)));
         }
 
@@ -823,47 +978,59 @@ impl MailWindow {
             Step::Address | Step::Password => {
                 ("add-account-servers", tr!("add-account-servers-button"))
             }
-            Step::Servers => ("add-account-back", tr!("add-account-back")),
+            Step::Servers | Step::Browser(_) => ("add-account-back", tr!("add-account-back")),
         };
+        let browser = matches!(dialog.step, Step::Browser(_));
         let next_label = match dialog.step {
             Step::Password => tr!("add-account-add"),
             _ => tr!("add-account-next"),
         };
         let busy = dialog.busy;
-        body = body.child(
-            div()
-                .mt(px(32.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(8.0))
-                .child(
-                    text_button(secondary, secondary_label, th).on_click(cx.listener(
-                        |this, _, window, cx| {
-                            let step = this.add_account.as_ref().map(|d| d.step);
-                            match step {
-                                Some(Step::Servers) => {
-                                    this.add_account_step(Step::Address, window, cx)
+        body =
+            body.child(
+                div()
+                    .mt(px(32.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(8.0))
+                    .child(
+                        text_button(secondary, secondary_label, th).on_click(cx.listener(
+                            |this, _, window, cx| {
+                                let step = this.add_account.as_ref().map(|d| d.step);
+                                match step {
+                                    Some(Step::Servers) => {
+                                        this.add_account_step(Step::Address, window, cx)
+                                    }
+                                    Some(Step::Browser(_)) => {
+                                        this.cancel_browser_sign_in(cx);
+                                        if let Some(dialog) = &mut this.add_account {
+                                            dialog._task = None;
+                                            dialog.busy = false;
+                                        }
+                                        this.add_account_step(Step::Address, window, cx)
+                                    }
+                                    Some(_) => this.add_account_servers(window, cx),
+                                    None => {}
                                 }
-                                Some(_) => this.add_account_servers(window, cx),
-                                None => {}
-                            }
-                        },
-                    )),
-                )
-                .child(div().flex_1())
-                .child(
-                    text_button("add-account-cancel", tr!("add-account-cancel"), th)
-                        .on_click(cx.listener(|this, _, _, cx| this.close_add_account(cx))),
-                )
-                .child(
-                    filled_button("add-account-next", next_label, th)
-                        .when(busy, |d| d.opacity(0.6))
-                        .on_click(
-                            cx.listener(|this, _, window, cx| this.add_account_next(window, cx)),
-                        ),
-                ),
-        );
+                            },
+                        )),
+                    )
+                    .child(div().flex_1())
+                    .child(
+                        text_button("add-account-cancel", tr!("add-account-cancel"), th)
+                            .on_click(cx.listener(|this, _, _, cx| this.close_add_account(cx))),
+                    )
+                    .when(!browser, |row| {
+                        row.child(
+                            filled_button("add-account-next", next_label, th)
+                                .when(busy, |d| d.opacity(0.6))
+                                .on_click(cx.listener(|this, _, window, cx| {
+                                    this.add_account_next(window, cx)
+                                })),
+                        )
+                    }),
+            );
 
         let card = div()
             .id("add-account")
@@ -1340,6 +1507,43 @@ fn error_line(error: String, th: &Theme) -> AnyElement {
         .child(icon("info", th.error, 16.0))
         .child(div().flex_1().min_w_0().child(error))
         .into_any_element()
+}
+
+/// A thin line with "or" in its middle, above the sign-in buttons.
+fn or_line(th: &Theme) -> AnyElement {
+    let line = || div().flex_1().h(px(1.0)).bg(rgba(fade(th.text_faint, 0.4)));
+    div()
+        .mt(px(24.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(12.0))
+        .text_size(px(12.0))
+        .text_color(rgba(th.text_faint))
+        .child(line())
+        .child(tr!("add-account-or"))
+        .child(line())
+        .into_any_element()
+}
+
+/// "Sign in with Google": an outlined button across the dialog.
+fn provider_button(provider: OAuthProvider, th: &Theme) -> gpui::Stateful<gpui::Div> {
+    div()
+        .id(SharedString::from(format!("sign-in-{}", provider.as_str())))
+        .mt(px(12.0))
+        .h(px(40.0))
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded_full()
+        .border_1()
+        .border_color(rgba(fade(th.text_faint, 0.6)))
+        .text_size(px(14.0))
+        .font_weight(FontWeight::MEDIUM)
+        .text_color(rgba(th.text))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .child(tr!("add-account-sign-in-with", provider = provider.name()))
 }
 
 fn section_title(text: String, th: &Theme) -> AnyElement {

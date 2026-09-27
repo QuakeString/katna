@@ -5,7 +5,7 @@
 
 use std::{borrow::Cow, fmt::Display};
 
-use io_sasl::rfc4616::plain::SaslPlainCreds;
+use io_sasl::{mechanism::Sasl, rfc4616::plain::SaslPlainCreds, xoauth2::SaslXoauth2Creds};
 use io_smtp::{
     coroutine::{SmtpCoroutine, SmtpCoroutineState as S, SmtpYield},
     message::SmtpMessageSend,
@@ -20,6 +20,7 @@ use io_smtp::{
 
 use crate::{
     Credentials, Endpoint, Error, MailSender, Result, Security,
+    backend::Login,
     net::{Conn, Tls},
 };
 
@@ -30,8 +31,18 @@ pub struct SmtpSender {
 }
 
 impl SmtpSender {
-    /// Connects, negotiates TLS, says EHLO and authenticates with PLAIN.
+    /// Connects, negotiates TLS, says EHLO and authenticates with PLAIN, or
+    /// XOAUTH2 for OAuth2 accounts. A refused access token is renewed once.
     pub async fn connect(endpoint: &Endpoint, creds: &Credentials, tls: Tls) -> Result<Self> {
+        match Self::connect_once(endpoint, creds, tls.clone()).await {
+            Err(Error::Auth(_)) if creds.retry_after_refusal() => {
+                Self::connect_once(endpoint, creds, tls).await
+            }
+            result => result,
+        }
+    }
+
+    async fn connect_once(endpoint: &Endpoint, creds: &Credentials, tls: Tls) -> Result<Self> {
         let transport = match endpoint.security {
             Security::Tls => SmtpSessionTransport::Tls {
                 host: endpoint.host.clone(),
@@ -45,10 +56,16 @@ impl SmtpSender {
         let opts = SmtpSessionOpenOptions {
             starttls: endpoint.security == Security::StartTls,
         };
-        let sasl = SaslPlainCreds {
-            authzid: None,
-            authcid: creds.user.clone(),
-            passwd: creds.password.clone().into(),
+        let sasl = match creds.login().await? {
+            Login::Password(password) => Sasl::Plain(SaslPlainCreds {
+                authzid: None,
+                authcid: creds.user.clone(),
+                passwd: password.into(),
+            }),
+            Login::Token(token) => Sasl::Xoauth2(SaslXoauth2Creds {
+                username: creds.user.clone(),
+                token: token.into(),
+            }),
         };
         // A real client sends its own FQDN or an address literal.
         let domain = SmtpEhloDomain::from(SmtpDomain(Cow::Borrowed("localhost")));

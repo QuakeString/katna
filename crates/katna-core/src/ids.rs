@@ -50,6 +50,19 @@ pub const LAUNCHER_ENTRY_PATH: &str = "/in/invenia/katna/Daemon/LauncherEntry";
 /// `feedback.dsn` in the settings file can point somewhere else.
 pub const SENTRY_DSN: &str = "https://1ebb96bdfbca71ddd5a26968b39d5e47@o4512156164096000.ingest.de.sentry.io/4512156171698256";
 
+/// OAuth2 client ID of Katna's "Desktop app" in Google Cloud, for "Sign in
+/// with Google" (`docs/ARCHITECTURE.md` §6.4). Empty hides the button.
+pub const GOOGLE_OAUTH_CLIENT_ID: &str = "";
+
+/// The client secret Google gives a desktop app. Google says it is not
+/// secret for installed apps (PKCE protects the sign-in); its token
+/// endpoint still asks for it.
+pub const GOOGLE_OAUTH_CLIENT_SECRET: &str = "";
+
+/// Application (client) ID of Katna's public client in Microsoft Entra,
+/// for "Sign in with Microsoft". Empty hides the button.
+pub const MICROSOFT_OAUTH_CLIENT_ID: &str = "";
+
 /// Returns whether `id` is usable as an application ID, D-Bus well-known name
 /// and D-Bus interface name at the same time.
 ///

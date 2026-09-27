@@ -3,9 +3,11 @@
 //! The protocol traits and the data types they exchange. Nothing here
 //! depends on a protocol library.
 
-use std::{collections::HashMap, fmt, future::Future, ops::RangeInclusive, time::Duration};
+use std::{
+    collections::HashMap, fmt, future::Future, ops::RangeInclusive, sync::Arc, time::Duration,
+};
 
-use crate::Result;
+use crate::{Result, oauth::TokenSource};
 
 /// How to reach a server.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -37,23 +39,64 @@ pub enum Security {
     Plain,
 }
 
-/// Password credentials (app passwords included). OAuth2 comes in Phase 5.
+/// How to log in: a user name with a password (app passwords included) or
+/// with OAuth2 access tokens.
 #[derive(Clone)]
 pub struct Credentials {
     pub user: String,
-    pub password: String,
+    pub secret: Secret,
+}
+
+/// What proves who the user is.
+#[derive(Clone)]
+pub enum Secret {
+    Password(String),
+    /// Sent with SASL XOAUTH2; the source refreshes them.
+    OAuth2(Arc<TokenSource>),
+}
+
+/// What to send for one login.
+pub(crate) enum Login {
+    Password(String),
+    Token(String),
 }
 
 impl Credentials {
+    /// A user name and password.
     pub fn new(user: impl Into<String>, password: impl Into<String>) -> Self {
         Self {
             user: user.into(),
-            password: password.into(),
+            secret: Secret::Password(password.into()),
+        }
+    }
+
+    /// A user name and the access tokens of `tokens`.
+    pub fn oauth2(user: impl Into<String>, tokens: Arc<TokenSource>) -> Self {
+        Self {
+            user: user.into(),
+            secret: Secret::OAuth2(tokens),
+        }
+    }
+
+    /// The password, or a fresh access token.
+    pub(crate) async fn login(&self) -> Result<Login> {
+        match &self.secret {
+            Secret::Password(password) => Ok(Login::Password(password.clone())),
+            Secret::OAuth2(tokens) => Ok(Login::Token(tokens.access_token().await?)),
+        }
+    }
+
+    /// After a refused login: whether trying once more may work, because
+    /// the access token was dropped and the next one is fresh.
+    pub(crate) fn retry_after_refusal(&self) -> bool {
+        match &self.secret {
+            Secret::Password(_) => false,
+            Secret::OAuth2(tokens) => tokens.forget_access_token(),
         }
     }
 }
 
-// Never print the password, not even in debug logs.
+// Never print the password or token, not even in debug logs.
 impl fmt::Debug for Credentials {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("Credentials")

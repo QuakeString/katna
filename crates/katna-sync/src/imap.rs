@@ -58,12 +58,13 @@ use io_imap::{
         ImapSessionTransport,
     },
 };
-use io_sasl::rfc4616::plain::SaslPlainCreds;
+use io_sasl::{mechanism::Sasl, rfc4616::plain::SaslPlainCreds, xoauth2::SaslXoauth2Creds};
 
 use crate::{
     Address, AttachmentPart, Credentials, Endpoint, Envelope, Error, FlagChanges, FlagState, Flags,
     Folder, FolderChange, FolderRole, FolderStatus, IMPORTANT, MailBackend, MessageHeaders, Result,
     Security, Wait,
+    backend::Login,
     net::{Conn, Tls},
 };
 
@@ -81,8 +82,18 @@ pub struct ImapBackend {
 }
 
 impl ImapBackend {
-    /// Connects, negotiates TLS and logs in with SASL PLAIN.
+    /// Connects, negotiates TLS and logs in with SASL PLAIN, or XOAUTH2
+    /// for OAuth2 accounts. A refused access token is renewed once.
     pub async fn connect(endpoint: &Endpoint, creds: &Credentials, tls: Tls) -> Result<Self> {
+        match Self::connect_once(endpoint, creds, tls.clone()).await {
+            Err(Error::Auth(_)) if creds.retry_after_refusal() => {
+                Self::connect_once(endpoint, creds, tls).await
+            }
+            result => result,
+        }
+    }
+
+    async fn connect_once(endpoint: &Endpoint, creds: &Credentials, tls: Tls) -> Result<Self> {
         let transport = match endpoint.security {
             Security::Tls => ImapSessionTransport::Tls {
                 host: endpoint.host.clone(),
@@ -97,10 +108,16 @@ impl ImapBackend {
             starttls: endpoint.security == Security::StartTls,
             ..Default::default()
         };
-        let sasl = SaslPlainCreds {
-            authzid: None,
-            authcid: creds.user.clone(),
-            passwd: creds.password.clone().into(),
+        let sasl = match creds.login().await? {
+            Login::Password(password) => Sasl::Plain(SaslPlainCreds {
+                authzid: None,
+                authcid: creds.user.clone(),
+                passwd: password.into(),
+            }),
+            Login::Token(token) => Sasl::Xoauth2(SaslXoauth2Creds {
+                username: creds.user.clone(),
+                token: token.into(),
+            }),
         };
         let mut co = ImapSessionOpen::new(transport, Some(sasl), opts);
 
