@@ -17,7 +17,13 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/mail-inbox.webp" alt="Katna Mail showing an inbox with category tabs">
+  <a href="#support-and-follow"><img src="https://img.shields.io/badge/%E2%98%95%20Buy%20me%20a%20coffee-coming%20soon-FF424D?style=for-the-badge&logo=patreon&logoColor=white" alt="Buy me a coffee on Patreon (coming soon)"></a>
+  <a href="https://x.com/QuakeString"><img src="https://img.shields.io/badge/Follow-@QuakeString-000000?style=for-the-badge&logo=x&logoColor=white" alt="Follow @QuakeString on X"></a>
+  <a href="https://www.linkedin.com/in/md-mozammel-hossain-97a20446/"><img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge" alt="Connect on LinkedIn"></a>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/desktop-light-dark.webp" alt="Katna Mail on a desktop-sized window, half in the light theme and half in the dark theme, with a conversation open beside the list">
 </p>
 
 > **Status: early development.** Katna Mail is usable day to day on real
@@ -32,9 +38,11 @@ desktop. Its features and look are openly borrowed from the mail apps they
 love, mainly Gmail, Mailspring and Thunderbird, and rebuilt in Rust with
 Katna's own name and icons.
 
-It has only been possible because of how far LLMs (large language models)
-have come. Much of Katna was written with AI coding assistants, then tried
-by hand every day on a real desktop with real mail.
+Katna has only been possible because of how far LLMs (large language
+models) have come. They turned a full mail client, long the work of a whole
+team, into something one person can build with care. Every screen is still
+designed, checked pixel by pixel and used every day by its author, on a
+real desktop with real mail.
 
 ## Highlights
 
@@ -52,22 +60,31 @@ by hand every day on a real desktop with real mail.
 
 ## Katna Mail today
 
+One app for every screen size, in light and dark. Desktop is shown above;
+tablet and phone below.
+
 <table>
+  <tr>
+    <td width="68%"><img src="docs/screenshots/tablet-light-dark.webp" alt="The tablet layout, half light and half dark, with a conversation open beside the list"></td>
+    <td width="32%" align="center"><img src="docs/screenshots/phone-light-dark.webp" width="210" alt="The phone layout, half light and half dark, with pictures beside each line and a Compose button"></td>
+  </tr>
+  <tr>
+    <td>Tablet: list and conversation side by side</td>
+    <td>Phone: laid out like a phone app</td>
+  </tr>
   <tr>
     <td width="50%"><img src="docs/screenshots/mail-reader.webp" alt="An encrypted, signed message open beside the list"></td>
     <td width="50%"><img src="docs/screenshots/pdf-viewer.webp" alt="A PDF attachment in the built-in viewer"></td>
   </tr>
   <tr>
-    <td>Reading pane with encrypted and signed mail</td>
+    <td>Encrypted and signed mail</td>
     <td>Built-in viewer for PDFs, pictures, sheets and documents</td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/kde-global-menu-tray.webp" alt="Katna Mail on KDE Plasma with the global menu, taskbar count and tray badge"></td>
-    <td align="center"><img src="docs/screenshots/phone.webp" width="200" alt="The phone-sized layout with a Compose button"></td>
+    <td colspan="2" align="center"><img src="docs/screenshots/kde-global-menu-tray.webp" width="70%" alt="Katna Mail on KDE Plasma with the global menu, taskbar count and tray badge"></td>
   </tr>
   <tr>
-    <td>KDE global menu, taskbar count and tray badge</td>
-    <td>The same app on a phone-sized screen</td>
+    <td colspan="2" align="center">KDE global menu, taskbar count and tray badge</td>
   </tr>
 </table>
 
@@ -200,11 +217,15 @@ or KDE's apps, please consider
 
 ## Support and follow
 
-Katna is free software, built in the open.
+Katna is free software, built in the open. If it helps you, a coffee keeps
+it going.
+
+<p>
+  <img src="https://img.shields.io/badge/%E2%98%95%20Buy%20me%20a%20coffee%20on%20Patreon-coming%20soon-FF424D?style=for-the-badge&logo=patreon&logoColor=white" alt="Buy me a coffee on Patreon (link coming soon)">
+</p>
 
 - ⭐ Star [the repository](https://github.com/QuakeString/katna) and
   [report issues](https://github.com/QuakeString/katna/issues).
-- ☕ Buy me a coffee on Patreon: link coming soon.
 - Follow the author, Mozammel:
   [GitHub](https://github.com/QuakeString) ·
   [X](https://x.com/QuakeString) ·
