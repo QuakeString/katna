@@ -31,7 +31,7 @@ const SOURCE_URL: &str = env!("CARGO_PKG_REPOSITORY");
 
 /// GPUI and the Zed project, thanked in a box of their own.
 const ZED_URL: &str = "https://zed.dev";
-const GPUI_URL: &str = "https://github.com/zed-industries/zed";
+const GPUI_URL: &str = "https://github.com/zed-industries/zed/tree/main/crates/gpui";
 
 /// KDE's donation page.
 const KDE_DONATE_URL: &str = "https://kde.org/donate/";
@@ -464,9 +464,10 @@ impl MailWindow {
                             .line_height(px(21.0))
                             .text_color(rgba(th.text_dim))
                             .child(
-                                "KDE is made by volunteers and funded by people like \
-                                 you. If you enjoy Plasma or KDE's apps, please \
-                                 consider supporting it.",
+                                "KDE builds the desktop Katna feels most at home on, \
+                                 and it is made by volunteers and funded by people \
+                                 like you. If you enjoy Plasma or KDE's apps, please \
+                                 consider donating to KDE.",
                             ),
                     )
                     .child(div().mt(px(8.0)).flex().flex_row().child(link_button(
