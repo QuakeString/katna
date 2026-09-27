@@ -1333,7 +1333,7 @@ Gemini or confidential mode):
   Reply, Reply all and Forward stay pinned at the foot of the open
   conversation. Answering writes inline at the end of the conversation,
   as in Gmail: a card with the recipients, the text and the Send row,
-  which can pop out into the window. The card grows with its text and
+  which pops out into a desktop window of its own; docking it there brings it back to the conversation. The card grows with its text and
   scrolls with the messages; opening it scrolls smoothly to its first
   line, and typing keeps the cursor in view. Its Send row sticks to the
   bottom of the pane while the text runs on under it. A reply's quoted

@@ -160,6 +160,17 @@ impl Compose {
         }
     }
 
+    /// Where the message goes back to from its own window: an answer to a
+    /// conversation to the end of it (or the compose window if that
+    /// conversation is no longer open), anything else the compose window.
+    fn docked_mode(&self) -> Mode {
+        if self.conversation.is_some() {
+            Mode::Inline
+        } else {
+            Mode::Open
+        }
+    }
+
     fn plain(&self, cx: &gpui::App) -> bool {
         self.body.read(cx).is_plain()
     }
@@ -514,7 +525,7 @@ impl MailWindow {
     /// its end, as Gmail does: to the end when the whole card fits, else
     /// just far enough that its first line, with the cursor, sits near the
     /// top.
-    fn reveal_inline_reply(&mut self, cx: &mut Context<Self>) {
+    pub(super) fn reveal_inline_reply(&mut self, cx: &mut Context<Self>) {
         let Some(body) = self.compose.as_ref().map(|c| c.body.clone()) else {
             return;
         };
@@ -1355,7 +1366,9 @@ impl MailWindow {
             .child(
                 small_button("inline-pop-out", "open-full", th)
                     .tooltip(tip("Pop out reply", th))
-                    .on_click(cx.listener(|this, _, _, cx| this.compose_mode(Mode::Open, cx))),
+                    // Straight into a window of its own; docking it brings
+                    // it back here.
+                    .on_click(cx.listener(|this, _, window, cx| this.pop_out_compose(window, cx))),
             );
         let cc = compose.show_cc.then(|| {
             div()
