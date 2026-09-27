@@ -28,6 +28,8 @@ const INK: u32 = 0x202124ff;
 const INK_DIM: u32 = 0x5f6368ff;
 const GRID: u32 = 0xe0e3e7ff;
 const HEADER: u32 = 0xf1f3f4ff;
+/// "Slide 3" above each slide's page, on the dark backdrop.
+const SLIDE_LABEL: u32 = 0xffffffb3;
 const SHEET_GREEN: u32 = 0x188038ff;
 
 /// A column is at least this wide at zoom 1, and at most...
@@ -334,11 +336,33 @@ impl Viewer {
             .pt(px(BAR_HEIGHT + 8.0))
             .child(
                 list(view.state.clone(), move |ix, _, _| {
-                    let top = ix == 0;
-                    let end = ix == count;
+                    // Slides are pages of their own, each under its label.
+                    if let Some(Block::Slide(n)) = doc.blocks.get(ix) {
+                        return div()
+                            .w_full()
+                            .flex()
+                            .justify_center()
+                            .child(
+                                div()
+                                    .w(px(page))
+                                    .pt(px(if ix == 0 { 8.0 } else { 28.0 } * zoom))
+                                    .pb(px(8.0 * zoom))
+                                    .text_size(px(13.0 * zoom))
+                                    .text_color(rgba(SLIDE_LABEL))
+                                    .child(SharedString::from(format!("Slide {n}"))),
+                            )
+                            .into_any_element();
+                    }
+                    let slide_edge = |ix: Option<usize>| {
+                        ix.and_then(|ix| doc.blocks.get(ix))
+                            .is_some_and(|b| matches!(b, Block::Slide(_)))
+                    };
+                    let top = ix == 0 || slide_edge(ix.checked_sub(1));
+                    let end = ix == count || slide_edge(Some(ix + 1));
                     let content: AnyElement = match doc.blocks.get(ix) {
                         Some(Block::Paragraph(p)) => paragraph(p, zoom, false),
                         Some(Block::Table(rows)) => table(rows, zoom),
+                        Some(Block::Slide(_)) => div().into_any_element(),
                         None if doc.cut => div()
                             .pt(px(16.0 * zoom))
                             .text_size(px(13.0 * zoom))
@@ -351,7 +375,7 @@ impl Viewer {
                         .w_full()
                         .flex()
                         .justify_center()
-                        .when(end, |d| d.pb(px(96.0)))
+                        .when(ix == count, |d| d.pb(px(96.0)))
                         .child(
                             div()
                                 .w(px(page))

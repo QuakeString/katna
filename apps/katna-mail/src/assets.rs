@@ -105,6 +105,7 @@ icons!(
     "shield-check",
     "shield",
     "signature",
+    "slides",
     "snooze",
     "sparkle",
     "spell-check",

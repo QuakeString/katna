@@ -1485,8 +1485,9 @@ desktop's own app stays one click away.
 - **Cards.** Under each open message, one card per attachment (the
   webmail layout): a thumbnail (pictures, and the top of a PDF's first
   page), a glance drawn small on a white page (the top-left cells of a
-  spreadsheet or CSV, the first lines of a text file or document;
-  `katna_preview::glance`, skipped above 20 MB), or a colored type badge,
+  spreadsheet or CSV, the first lines of a text file or document, the
+  first slide's text centered; `katna_preview::glance`, skipped above
+  20 MB), or a colored type badge,
   and the file name. Hovering shows the name, the size and a Save button
   on frosted glass; "Save all" saves every attachment to a folder.
   Thumbnails are made in the background from the stored raw message and
@@ -1520,12 +1521,29 @@ desktop's own app stays one click away.
     numbered and bulleted lists (Word numbering and list styles, ODF list
     styles), tables, alignment and bold/italic/underline/strike-through.
     Pictures, headers, footers, notes, comments and text boxes are left
-    out. Only paragraphs on screen are laid out. Old Word (.doc), RTF and
-    slides have no preview.
+    out. Only paragraphs on screen are laid out. Word 97–2003 (.doc) is
+    read into the same model (`katna_preview::word`): the OLE compound file
+    through `cfb` (MIT), then the FIB, the piece table (UTF-16 or
+    Windows-1252 text), the character and paragraph property pages, the
+    style sheet (built-in heading, title and subtitle styles) and the list
+    tables, giving the same headings, lists, tables, alignment and looks;
+    fields show their result, hidden text is dropped, and encrypted or
+    Word 6/95 files are not read. RTF has no preview.
+  - **Slides:** PowerPoint (pptx, ppt) and OpenDocument (odp),
+    `katna_preview::slides`, shown as text: each slide is its own white
+    page under a "Slide N" label, title first, then its text (bulleted
+    body placeholders, numbered lists), and its tables. pptx follows the
+    presentation's slide list; ppt follows the persist directory from the
+    last edit to the document's slide list and reads each slide's text
+    atoms, falling back to the texts kept in the slide list; odp reads
+    `draw:page`s. Pictures, charts, layout and speaker notes are left out.
+    A slide without a title placeholder takes a short first line as its
+    title.
   - Anything else shows "No preview available" with Save and "Open
     with…".
 - **Default apps** (Settings → Default apps, `[mail.open]` in
-  `config.toml`): for PDFs, pictures, text, spreadsheets and documents,
+  `config.toml`): for PDFs, pictures, text, spreadsheets and documents
+  (slides included),
   clicking a card opens Katna Mail's viewer (the default), the desktop's
   default app for the type, or asks which app each time. Files without a
   preview always open in the viewer. Which app is the desktop's default

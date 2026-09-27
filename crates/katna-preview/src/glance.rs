@@ -1,17 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! What an attachment card shows of a spreadsheet, text file or document:
-//! the top-left cells or the first lines, which the app draws small, like
-//! the page thumbnail of a PDF.
+//! What an attachment card shows of a spreadsheet, text file, document or
+//! slides: the top-left cells or the first lines (of the first slide),
+//! which the app draws small, like the page thumbnail of a PDF.
 
 use crate::Kind;
-use crate::{document, sheet, text};
+use crate::{document, sheet, slides, text};
 
 /// Rows and columns of a sheet a card shows.
 const ROWS: usize = 8;
 const COLUMNS: usize = 5;
-/// Lines of a text or document a card shows.
+/// Lines of a text or document a card shows...
 const LINES: usize = 10;
+/// ...and of a slide.
+const SLIDE_LINES: usize = 6;
 /// Characters of a cell or line worth keeping at card size.
 const CHARS: usize = 80;
 /// Bytes of a text file read for its first lines.
@@ -24,6 +26,8 @@ pub enum Glance {
     Cells(Vec<Vec<String>>),
     /// The first lines of a text file or document.
     Lines(Vec<Line>),
+    /// The lines of the first slide with text, drawn centered like a slide.
+    Slide(Vec<Line>),
 }
 
 /// A line of a [`Glance::Lines`].
@@ -53,11 +57,20 @@ pub fn glance(kind: Kind, bytes: Vec<u8>, name: &str, tabs: bool) -> Option<Glan
             (!lines.is_empty()).then_some(Glance::Lines(lines))
         }
         Kind::Document => paragraphs(&document::open(bytes).ok()?),
+        Kind::Slides => match paragraphs(&slides::open(bytes).ok()?)? {
+            Glance::Lines(mut lines) => {
+                lines.truncate(SLIDE_LINES);
+                Some(Glance::Slide(lines))
+            }
+            other => Some(other),
+        },
         Kind::Pdf | Kind::Picture(_) | Kind::Other => None,
     }?;
     let empty = match &glance {
         Glance::Cells(rows) => rows.iter().flatten().all(|c| c.trim().is_empty()),
-        Glance::Lines(lines) => lines.iter().all(|l| l.text.trim().is_empty()),
+        Glance::Lines(lines) | Glance::Slide(lines) => {
+            lines.iter().all(|l| l.text.trim().is_empty())
+        }
     };
     (!empty).then_some(glance)
 }
@@ -94,7 +107,7 @@ fn paragraphs(doc: &document::Document) -> Option<Glance> {
         match block {
             document::Block::Paragraph(p) => lines.push(Line {
                 text: short(&with_marker(p)),
-                heading: !matches!(p.style, document::Style::Normal),
+                heading: !matches!(p.style, document::Style::Normal | document::Style::Subtitle),
             }),
             document::Block::Table(rows) => lines.extend(rows.iter().map(|row| {
                 Line {
@@ -107,6 +120,9 @@ fn paragraphs(doc: &document::Document) -> Option<Glance> {
                     heading: false,
                 }
             })),
+            // A card shows the first slide with text.
+            document::Block::Slide(_) if lines.iter().any(|l| !l.text.trim().is_empty()) => break,
+            document::Block::Slide(_) => lines.clear(),
         }
         if lines.len() >= LINES {
             break;
@@ -181,6 +197,29 @@ mod tests {
         assert!(lines[0].heading);
         assert!(!lines[2].heading);
         assert!(lines.iter().any(|l| l.text == "1. One"), "{lines:?}");
+    }
+
+    #[test]
+    fn slides_show_their_first_slide() {
+        let glance = glance(Kind::Slides, crate::tests::pptx(), "a.pptx", false);
+        let Some(Glance::Slide(lines)) = glance else {
+            panic!("{glance:?}");
+        };
+        assert_eq!(lines[0].text, "Roadmap");
+        assert!(lines[0].heading);
+        assert_eq!(lines[1].text, "Q1   42");
+        assert_eq!(lines.len(), 2);
+    }
+
+    #[test]
+    fn old_word_documents_have_a_glance() {
+        let Some(Glance::Lines(lines)) =
+            glance(Kind::Document, crate::tests::doc(), "a.doc", false)
+        else {
+            panic!();
+        };
+        assert_eq!(lines[0].text, "Report");
+        assert!(lines[0].heading);
     }
 
     #[test]

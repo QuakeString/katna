@@ -166,6 +166,7 @@ pub(super) fn kind_badge(kind: Kind, size: f32) -> AnyElement {
         Kind::Text => (0x5f6368ff, "notes"),
         Kind::Sheet { .. } => (0x188038ff, "sheet"),
         Kind::Document => (0x1a73e8ff, "document"),
+        Kind::Slides => (0xe8710aff, "slides"),
         Kind::Other => (0x5f6368ff, "file"),
     };
     div()
@@ -183,7 +184,7 @@ pub(super) fn kind_badge(kind: Kind, size: f32) -> AnyElement {
 /// Whether the cards show a thumbnail of this kind.
 fn has_thumbnail(kind: Kind) -> bool {
     match kind {
-        Kind::Pdf | Kind::Text | Kind::Sheet { .. } | Kind::Document => true,
+        Kind::Pdf | Kind::Text | Kind::Sheet { .. } | Kind::Document | Kind::Slides => true,
         Kind::Picture(picture) => picture.decodable(),
         Kind::Other => false,
     }
@@ -197,7 +198,7 @@ fn group(kind: Kind) -> Option<FileGroup> {
         Kind::Picture(_) => Some(FileGroup::Pictures),
         Kind::Text => Some(FileGroup::Text),
         Kind::Sheet { .. } => Some(FileGroup::Spreadsheets),
-        Kind::Document => Some(FileGroup::Documents),
+        Kind::Document | Kind::Slides => Some(FileGroup::Documents),
         Kind::Other => None,
     }
 }
@@ -222,7 +223,7 @@ fn thumbnail(raw: &[u8], index: usize, kind: Kind) -> Option<Thumb> {
         Kind::Picture(format) => katna_preview::picture::thumbnail(&file.bytes, format, w, h)
             .ok()
             .map(picture),
-        Kind::Text | Kind::Sheet { .. } | Kind::Document => {
+        Kind::Text | Kind::Sheet { .. } | Kind::Document | Kind::Slides => {
             if file.bytes.len() > GLANCE_MAX_BYTES {
                 return None;
             }
@@ -323,6 +324,25 @@ fn glance_page(glance: &Glance, radius: gpui::Pixels) -> AnyElement {
                     })
                     // Keeps blank lines.
                     .min_h(px(9.0))
+                    .child(line.text.clone())
+            }))
+            .into_any_element(),
+        Glance::Slide(lines) => page
+            .p(px(12.0))
+            .flex()
+            .flex_col()
+            .items_center()
+            .justify_center()
+            .gap(px(2.0))
+            .text_center()
+            .children(lines.iter().map(|line| {
+                div()
+                    .max_w_full()
+                    .whitespace_nowrap()
+                    .overflow_hidden()
+                    .when(line.heading, |l| {
+                        l.font_weight(FontWeight::BOLD).text_size(px(10.0))
+                    })
                     .child(line.text.clone())
             }))
             .into_any_element(),

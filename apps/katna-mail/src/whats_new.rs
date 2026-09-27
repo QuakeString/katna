@@ -164,6 +164,15 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                share one too.",
         animation: None,
     },
+    Highlight {
+        id: 16,
+        title: "Old Word files and slides",
+        text: "Word 97–2003 documents (.doc) now open in the viewer with their \
+               headings, lists and tables, and PowerPoint (.pptx, .ppt) and \
+               OpenDocument (.odp) slides show the text of each slide. Their \
+               cards show the first lines too.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.

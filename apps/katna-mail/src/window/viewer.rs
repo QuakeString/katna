@@ -25,7 +25,7 @@ use gpui::{
     div, ease_out_quint, img, prelude::*, px, rgba, uniform_list,
 };
 use katna_preview::pdf::{self, Document};
-use katna_preview::{Kind, Picture, document, picture, sheet, text};
+use katna_preview::{Kind, Picture, document, picture, sheet, slides, text};
 use katna_render::AttachmentFile;
 use katna_ui::Ripple;
 
@@ -416,21 +416,13 @@ fn load(raw: &[u8], item: &Item) -> (Option<AttachmentFile>, Loaded) {
             Ok(doc) => Loaded::Document(doc),
             Err(_) => Loaded::Nothing("This document could not be read."),
         },
-        Kind::Other if is_old_office(&file.name) => {
-            Loaded::Nothing("Old Word files (.doc) and slides have no preview yet.")
-        }
+        Kind::Slides => match slides::open(file.bytes.clone()) {
+            Ok(doc) => Loaded::Document(doc),
+            Err(_) => Loaded::Nothing("These slides could not be read."),
+        },
         Kind::Other => Loaded::Nothing("No preview available"),
     };
     (Some(file), loaded)
-}
-
-/// Word 97–2003 and RTF documents and slides, which have no preview.
-fn is_old_office(name: &str) -> bool {
-    name.rsplit_once('.').is_some_and(|(_, ext)| {
-        ["doc", "dot", "ppt", "pps", "pptx", "rtf"]
-            .iter()
-            .any(|e| ext.eq_ignore_ascii_case(e))
-    })
 }
 
 fn fit_step() -> usize {

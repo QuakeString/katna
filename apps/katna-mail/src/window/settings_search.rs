@@ -166,8 +166,8 @@ const ENTRIES: &[Entry] = &[
     entry(
         Section::DefaultApps,
         "Documents",
-        "Where Word and OpenDocument text open",
-        "open attachment viewer app docx odt word",
+        "Where Word and OpenDocument text and slides open",
+        "open attachment viewer app docx doc odt word pptx ppt odp powerpoint slides presentation",
     ),
     entry(
         Section::Signatures,

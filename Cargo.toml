@@ -46,6 +46,8 @@ futures-rustls = { version = "0.26", default-features = false, features = ["ring
 # Pure-Rust PDF rasterizer for the attachment viewer (katna-preview).
 hayro = "0.7.1"
 calamine = "0.36.1"
+# Office 97–2003 compound files: Word (.doc) and PowerPoint (.ppt) previews.
+cfb = "0.15"
 quick-xml = "0.41"
 zip = { version = "8.6", default-features = false, features = ["deflate-flate2"] }
 # The version GPUI decodes pictures with; no extra formats of our own.
