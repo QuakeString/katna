@@ -9,6 +9,7 @@ mod attachments;
 mod backfill;
 pub mod blob;
 mod cache;
+mod contact;
 mod db;
 pub mod error;
 mod gmail_merge;
@@ -29,6 +30,7 @@ use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 pub use backfill::Backfill;
 pub use blob::{BlobHash, BlobStore};
 pub use cache::Forgotten;
+pub use contact::{ContactConversation, ContactFile, ContactSummary};
 pub use db::{DbKind, Mode};
 pub use error::{Error, Result};
 pub use gmail_merge::Adopted;
@@ -380,6 +382,33 @@ impl Store {
     /// Every address each account has written with; see [`Correspondent`].
     pub fn correspondents(&self) -> Result<Vec<Correspondent>> {
         people::correspondents(&self.mail, &self.accounts()?)
+    }
+
+    /// How much mail the user and `email` exchanged; see
+    /// [`ContactSummary`].
+    pub fn contact_summary(&self, email: &str) -> Result<ContactSummary> {
+        contact::summary(&self.mail, &self.accounts()?, email)
+    }
+
+    /// The `limit` newest conversations with `email`, newest first.
+    pub fn contact_conversations(
+        &self,
+        email: &str,
+        limit: usize,
+    ) -> Result<Vec<ContactConversation>> {
+        contact::conversations(&self.mail, email, limit)
+    }
+
+    /// The `limit` newest named attachments on mail with `email`, each
+    /// name and size once.
+    pub fn contact_files(&self, email: &str, limit: usize) -> Result<Vec<ContactFile>> {
+        contact::files(&self.mail, email, limit)
+    }
+
+    /// The `limit` newest messages from `email` whose body is stored, one
+    /// per server copy, newest first.
+    pub fn messages_from(&self, email: &str, limit: usize) -> Result<Vec<MessageId>> {
+        contact::messages_from(&self.mail, email, limit)
     }
 
     pub fn message_count(&self) -> Result<u64> {

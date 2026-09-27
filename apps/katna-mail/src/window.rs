@@ -23,6 +23,7 @@ mod apps;
 mod attachments;
 mod colors;
 mod compose;
+mod contact;
 mod context_menu;
 mod crash_notice;
 mod dark;
@@ -488,6 +489,8 @@ pub struct MailWindow {
     cards_width: f32,
     /// Reply, Reply all and Forward at the foot of a conversation.
     reply_row: reply_row::ReplyRow,
+    /// The contact panel beside the open conversation.
+    contact: contact::ContactPanel,
     /// The same once the layout's motion settles, so the lines change
     /// shape once rather than midway through it.
     cards_target: f32,
@@ -688,6 +691,7 @@ impl MailWindow {
             split_drag: None,
             cards_width: 0.0,
             reply_row: reply_row::ReplyRow::new(),
+            contact: contact::ContactPanel::new(),
             cards_target: 0.0,
             settings_open: false,
             pane_hover: None,
@@ -2496,7 +2500,10 @@ impl MailWindow {
             .h_full()
             .pr(px(margin))
             .pb(px(margin))
-            .child(row)
+            .flex()
+            .flex_row()
+            .child(div().flex_1().min_w_0().h_full().child(row))
+            .children(self.render_contact_panel(th, cx))
             .into_any_element()
     }
 }
@@ -2581,6 +2588,9 @@ impl Render for MailWindow {
         };
         let available =
             (width - shape.rail() - nav_width - shape.card_margin() - settings_width).max(200.0);
+        // The contact panel takes its room from the list and the reader.
+        let (contact_room, contact_target) = self.tick_contact(available, window, reduce);
+        let available = (available - contact_room).max(200.0);
         self.cards_width = available;
         let reader_width = if self.split() {
             ((available - SPLIT_GAP) * self.config.mail.reading_pane_share).max(0.0)
@@ -2599,7 +2609,7 @@ impl Render for MailWindow {
         } else {
             0.0
         };
-        self.cards_target = (width - rail - nav - margin - settings).max(200.0);
+        self.cards_target = (width - rail - nav - margin - settings - contact_target).max(200.0);
 
         let settings = (settings_t > 0.001).then(|| self.render_settings(&th, settings_t, cx));
         let (docked_settings, floating_settings) = if settings_floats {
