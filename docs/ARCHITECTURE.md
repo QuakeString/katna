@@ -1092,12 +1092,16 @@ GPUI global):
   window's surface cannot be copied from, panels stay opaque.
 
 **Window state.** The mail window opens as it closed: its size, maximized
-state and place (`katna_chrome::placement`, saved in
-`$XDG_STATE_HOME/katna/mail-window.toml` when the app quits). The state
+state and place (`katna_chrome::placement`), and what it showed: the app of
+the rail, the folder or unified list, the inbox tab, the folders opened in
+the folder pane and whether the pane was folded (`katna_core::window::
+ViewState`). Both are saved in `$XDG_STATE_HOME/katna/mail-window.toml`
+when the app quits, however it quits. Settings such as the reading pane,
+its width and the density live in the config file as before. The state
 belongs to one run of the Katna service, named by the daemon's process id
 and start time (which survive its re-exec after an update); once the
 service quits (the tray's Quit, logging out), the next start opens the
-window at its default size and place.
+window as on the first start.
 
 - Wayland does not let a window place itself. Katna's copy of GPUI
   (`vendor/gpui-pre-linux`) joins the window to an
