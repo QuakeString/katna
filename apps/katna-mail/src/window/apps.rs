@@ -151,7 +151,13 @@ impl MailWindow {
                         this.hover_navigation(super::Hover::Rail, *hovered, cx)
                     }))
                 })
-                .on_click(cx.listener(move |this, _, _, cx| this.open_app(app, cx)))
+                // Picking an app leaves Settings, as picking a folder does.
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    if this.settings_page.is_some() {
+                        this.close_settings_page(window, cx);
+                    }
+                    this.open_app(app, cx)
+                }))
                 .child(
                     div()
                         .relative()
