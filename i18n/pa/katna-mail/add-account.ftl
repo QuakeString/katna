@@ -62,6 +62,7 @@ add-account-address-empty = ਈਮੇਲ ਪਤਾ ਦਰਜ ਕਰੋ।
 add-account-address-invalid = { $example } ਵਰਗਾ ਈਮੇਲ ਪਤਾ ਦਰਜ ਕਰੋ।
 add-account-not-found = Katna ਨੂੰ { $address } ਲਈ ਸਰਵਰ ਨਹੀਂ ਮਿਲੇ, ਇਸ ਲਈ ਆਮ ਨਾਮ ਭਰ ਦਿੱਤੇ ਗਏ। ਆਪਣੇ ਪ੍ਰਦਾਤਾ ਤੋਂ ਇਹਨਾਂ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ।
 add-account-password-empty = ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ।
+add-account-name-is-password = ਨਾਮ ਪਾਸਵਰਡ ਵਰਗਾ ਹੀ ਹੈ। ਉੱਥੇ ਇਸਦੀ ਬਜਾਏ ਆਪਣਾ ਨਾਮ ਲਿਖੋ, ਜਿਵੇਂ ਲੋਕਾਂ ਨੂੰ ਦਿਖਣਾ ਚਾਹੀਦਾ ਹੈ।
 add-account-added = { $address } ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ। ਤੁਹਾਡੀ ਮੇਲ ਲਿਆਂਦੀ ਜਾ ਰਹੀ ਹੈ…
 add-account-app-password-refused = { $provider } ਨੇ ਪਾਸਵਰਡ ਅਸਵੀਕਾਰ ਕਰ ਦਿੱਤਾ। ਇਸਨੂੰ ਐਪ ਪਾਸਵਰਡ ਚਾਹੀਦਾ ਹੈ, ਉਹ ਨਹੀਂ ਜੋ ਤੁਸੀਂ ਵੈੱਬ ’ਤੇ ਵਰਤਦੇ ਹੋ।
 add-account-password-refused = ਸਰਵਰ ਨੇ ਪਾਸਵਰਡ ਅਸਵੀਕਾਰ ਕਰ ਦਿੱਤਾ। ਇਸਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।

@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] Yan gbogbo ìjíròrò { $count } nínú { $folder }
    *[message] Yan gbogbo ìfiránṣẹ́ { $count } nínú { $folder }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] A ti yan gbogbo ìjíròrò { $count } tí a ti kà.
+       *[message] A ti yan gbogbo ìfiránṣẹ́ { $count } tí a ti kà.
+    }
+   *[unread] { $kind ->
+        [conversation] A ti yan gbogbo ìjíròrò { $count } tí a kò tíì kà.
+       *[message] A ti yan gbogbo ìfiránṣẹ́ { $count } tí a kò tíì kà.
+    }
+    [starred] { $kind ->
+        [conversation] A ti yan gbogbo ìjíròrò { $count } oní ìràwọ̀.
+       *[message] A ti yan gbogbo ìfiránṣẹ́ { $count } oní ìràwọ̀.
+    }
+    [unstarred] { $kind ->
+        [conversation] A ti yan gbogbo ìjíròrò { $count } aláìní ìràwọ̀.
+       *[message] A ti yan gbogbo ìfiránṣẹ́ { $count } aláìní ìràwọ̀.
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] A ti yan gbogbo ìjíròrò { $count } tí a ti kà nínú { $folder }.
+       *[message] A ti yan gbogbo ìfiránṣẹ́ { $count } tí a ti kà nínú { $folder }.
+    }
+   *[unread] { $kind ->
+        [conversation] A ti yan gbogbo ìjíròrò { $count } tí a kò tíì kà nínú { $folder }.
+       *[message] A ti yan gbogbo ìfiránṣẹ́ { $count } tí a kò tíì kà nínú { $folder }.
+    }
+    [starred] { $kind ->
+        [conversation] A ti yan gbogbo ìjíròrò { $count } oní ìràwọ̀ nínú { $folder }.
+       *[message] A ti yan gbogbo ìfiránṣẹ́ { $count } oní ìràwọ̀ nínú { $folder }.
+    }
+    [unstarred] { $kind ->
+        [conversation] A ti yan gbogbo ìjíròrò { $count } aláìní ìràwọ̀ nínú { $folder }.
+       *[message] A ti yan gbogbo ìfiránṣẹ́ { $count } aláìní ìràwọ̀ nínú { $folder }.
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] Kò sí ìjíròrò tí a ti kà níbí.
+       *[message] Kò sí ìfiránṣẹ́ tí a ti kà níbí.
+    }
+   *[unread] { $kind ->
+        [conversation] Kò sí ìjíròrò tí a kò tíì kà níbí.
+       *[message] Kò sí ìfiránṣẹ́ tí a kò tíì kà níbí.
+    }
+    [starred] { $kind ->
+        [conversation] Kò sí ìjíròrò oní ìràwọ̀ níbí.
+       *[message] Kò sí ìfiránṣẹ́ oní ìràwọ̀ níbí.
+    }
+    [unstarred] { $kind ->
+        [conversation] Kò sí ìjíròrò aláìní ìràwọ̀ níbí.
+       *[message] Kò sí ìfiránṣẹ́ aláìní ìràwọ̀ níbí.
+    }
+}
 list-clear-selection = Pa àṣàyàn rẹ́
 
 ## Mail list: empty states
@@ -160,6 +214,18 @@ toast-deleted-forever = { $kind ->
     [conversation] A ti pa ìjíròrò { $count } rẹ́ títí láé.
    *[message] A ti pa ìfiránṣẹ́ { $count } rẹ́ títí láé.
 }
+toast-marked-read = { $kind ->
+    [conversation] A ti sàmì sí ìjíròrò { $count } bí kíkà.
+   *[message] A ti sàmì sí ìfiránṣẹ́ { $count } bí kíkà.
+}
+toast-marked-unread = { $kind ->
+    [conversation] A ti sàmì sí ìjíròrò { $count } bí àìkà.
+   *[message] A ti sàmì sí ìfiránṣẹ́ { $count } bí àìkà.
+}
 toast-undone = A ti dá ìgbésẹ̀ náà padà.
+toast-nothing-to-undo = Kò sí nǹkan láti dá padà.
+toast-cannot-undo-delete-forever = Lẹ́tà tí a ti pa rẹ́ títí láé kò ṣeé mú padà.
+toast-send-undone = A ti dá fífiránṣẹ́ padà.
+toast-too-late-to-undo-send = Ó ti pẹ́ jù láti dá a padà: a ti fi ìfiránṣẹ́ náà ránṣẹ́ tán.
 toast-undo = Dá padà
 toast-no-spam-folder = Àkáǹtì yìí kò ní fódà àwúrúju.

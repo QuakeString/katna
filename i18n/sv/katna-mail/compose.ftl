@@ -45,6 +45,13 @@ compose-file-too-large = { $name } är för stor: ett meddelande kan innehålla 
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Ta bort bilaga
 compose-drop-files = Släpp filer här
+compose-drop-here = Släpp här
+compose-paste-keep-formatting = Behåll formatering
+compose-paste-table = Tabell
+compose-paste-picture = Bild
+compose-paste-plain-text = Oformaterad text
+compose-paste-inline = I texten
+compose-paste-attachment = Bilaga
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = Skicka utan ämne?
 send-check-subject-text = Det här meddelandet har inget ämne.
 send-check-add-subject = Lägg till ämne
 send-check-send-anyway = Skicka ändå
+recipient-not-valid = Ingen giltig e-postadress
+recipient-show-address = Visa adress
+recipient-bad-title = Kontrollera adressen
+recipient-bad-text = ”{ $address }” är ingen giltig e-postadress. Rätta eller ta bort den innan du skickar.
+recipient-bad-fix = Rätta

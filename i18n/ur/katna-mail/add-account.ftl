@@ -62,6 +62,7 @@ add-account-address-empty = ای میل پتہ درج کریں۔
 add-account-address-invalid = { $example } جیسا ای میل پتہ درج کریں۔
 add-account-not-found = Katna کو { $address } کے سرورز نہیں ملے، اس لیے اس نے عام نام بھر دیے ہیں۔ اپنے فراہم کنندہ سے ان کی تصدیق کریں۔
 add-account-password-empty = پاس ورڈ درج کریں۔
+add-account-name-is-password = نام وہی ہے جو پاس ورڈ ہے۔ اس کے بجائے وہاں اپنا نام لکھیں، جیسا لوگوں کو نظر آنا چاہیے۔
 add-account-added = { $address } شامل ہو گیا۔ آپ کی میل لائی جا رہی ہے…
 add-account-app-password-refused = { $provider } نے پاس ورڈ مسترد کر دیا۔ اسے ایپ پاس ورڈ درکار ہے، وہ نہیں جو آپ ویب پر استعمال کرتے ہیں۔
 add-account-password-refused = سرور نے پاس ورڈ مسترد کر دیا۔ اسے جانچیں اور دوبارہ کوشش کریں۔

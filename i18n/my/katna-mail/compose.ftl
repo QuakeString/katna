@@ -45,6 +45,13 @@ compose-file-too-large = { $name } သည် ကြီးလွန်းသည�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ပူးတွဲဖိုင်ကို ဖယ်ရှားရန်
 compose-drop-files = ဖိုင်များကို ဤနေရာတွင် ချပါ
+compose-drop-here = ဤနေရာတွင် ချပါ
+compose-paste-keep-formatting = ပုံစံချမှုကို ထားရန်
+compose-paste-table = ဇယား
+compose-paste-picture = ပုံ
+compose-paste-plain-text = စာသားသက်သက်
+compose-paste-inline = စာထဲတွင်
+compose-paste-attachment = ပူးတွဲဖိုင်
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = ခေါင်းစဉ်မပါဘဲ ပို�
 send-check-subject-text = ဤမက်ဆေ့ဂျ်တွင် ခေါင်းစဉ်မရှိပါ။
 send-check-add-subject = ခေါင်းစဉ်ထည့်ရန်
 send-check-send-anyway = မည်သို့ပင်ဖြစ်စေ ပို့ရန်
+recipient-not-valid = မှန်ကန်သော အီးမေးလ်လိပ်စာ မဟုတ်ပါ
+recipient-show-address = လိပ်စာ ပြရန်
+recipient-bad-title = လိပ်စာကို စစ်ဆေးပါ
+recipient-bad-text = “{ $address }” သည် မှန်ကန်သော အီးမေးလ်လိပ်စာ မဟုတ်ပါ။ မပို့မီ ၎င်းကို ပြင်ပါ သို့မဟုတ် ဖယ်ရှားပါ။
+recipient-bad-fix = ပြင်ရန်

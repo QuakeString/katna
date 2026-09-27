@@ -45,6 +45,13 @@ compose-file-too-large = { $name } বহুত ডাঙৰ: এটা বা�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = সংলগ্নক আঁতৰাওক
 compose-drop-files = ফাইলসমূহ ইয়াত এৰক
+compose-drop-here = ইয়াত এৰক
+compose-paste-keep-formatting = ফৰ্মেটিং ৰাখক
+compose-paste-table = টেবুল
+compose-paste-picture = ছবি
+compose-paste-plain-text = সাধাৰণ পাঠ
+compose-paste-inline = পাঠৰ ভিতৰত
+compose-paste-attachment = সংলগ্নক
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = বিষয় নোহোৱাকৈ পঠিয
 send-check-subject-text = এই বাৰ্তাটোৰ কোনো বিষয় নাই।
 send-check-add-subject = বিষয় যোগ কৰক
 send-check-send-anyway = তথাপি পঠিয়াওক
+recipient-not-valid = বৈধ ইমেইল ঠিকনা নহয়
+recipient-show-address = ঠিকনা দেখুৱাওক
+recipient-bad-title = ঠিকনাটো পৰীক্ষা কৰক
+recipient-bad-text = “{ $address }” কোনো বৈধ ইমেইল ঠিকনা নহয়। পঠিওৱাৰ আগতে ইয়াক শুধৰাওক বা আঁতৰাওক।
+recipient-bad-fix = শুধৰাওক

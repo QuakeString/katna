@@ -45,6 +45,13 @@ compose-file-too-large = { $name } በጣም ትልቅ ነው፦ አንድ መ�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = አባሪውን አስወግድ
 compose-drop-files = ፋይሎችን እዚህ ይጣሉ
+compose-drop-here = እዚህ ይጣሉ
+compose-paste-keep-formatting = ቅርጸቱን አቆይ
+compose-paste-table = ሰንጠረዥ
+compose-paste-picture = ሥዕል
+compose-paste-plain-text = ግልጽ ጽሑፍ
+compose-paste-inline = በጽሑፉ ውስጥ
+compose-paste-attachment = አባሪ
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = ያለ ርዕሰ ጉዳይ ይላክ?
 send-check-subject-text = ይህ መልዕክት ርዕሰ ጉዳይ የለውም።
 send-check-add-subject = ርዕሰ ጉዳይ አክል
 send-check-send-anyway = ቢሆንም ላክ
+recipient-not-valid = ትክክለኛ የኢሜይል አድራሻ አይደለም
+recipient-show-address = አድራሻ አሳይ
+recipient-bad-title = አድራሻውን ያረጋግጡ
+recipient-bad-text = «{ $address }» ትክክለኛ የኢሜይል አድራሻ አይደለም። ከመላክዎ በፊት ያስተካክሉት ወይም ያስወግዱት።
+recipient-bad-fix = አስተካክል

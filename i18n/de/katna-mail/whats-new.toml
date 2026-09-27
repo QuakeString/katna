@@ -362,3 +362,70 @@ verweilen, erscheinen die Ordner wieder. Oben links steht Katna Mail,
 und der Name rollt zu Kalender, Kontakte und den anderen, wenn Sie die
 App wechseln.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Alle ungelesenen oder markierten Mails auswählen"
+text = """
+Gelesen, Ungelesen, Markiert und Nicht markiert im Menü Auswählen haken
+jetzt jede passende Unterhaltung im Ordner an, nicht nur die auf dem
+Bildschirm. Eine Zeile über der Liste sagt, wie viele ausgewählt sind,
+und Archivieren, Löschen, Verschieben oder Markieren wirkt auf alle.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Korrekturen ohne Rechtsklick"
+text = """
+Verweilen Sie mit dem Mauszeiger auf einem unterstrichenen Wort oder
+klicken Sie darauf, und seine Korrekturen erscheinen direkt darunter:
+Rechtschreibvorschläge, Grammatikkorrekturen und Ignorieren, im Text und
+im Betreff. Ein Rechtsklick öffnet weiterhin das ganze Menü.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "Empfänger als Chips"
+text = """
+Adressen in An, Cc und Bcc werden zu Chips, die nur den Namen zeigen. Der
+Pfeil auf einem Chip zeigt seine Adresse, und ein Doppelklick lässt Sie
+sie bearbeiten. Was keine gültige Adresse ist, wird rot markiert, und
+Senden bittet Sie, es zuerst zu korrigieren.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna startet bei der Anmeldung"
+text = """
+Katna startet jetzt still, wenn Sie sich anmelden: E-Mails werden
+synchronisiert, und Benachrichtigungen über neue E-Mails sowie das Symbol
+im Systemabschnitt erscheinen, ohne das Fenster zu öffnen. Schalten Sie
+es aus oder lassen Sie auch das Fenster öffnen, unter Einstellungen >
+Allgemein > Arbeitsumgebung.
+"""
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Alles in eine Nachricht einfügen und ziehen"
+text = """
+Text aus Word, LibreOffice oder einer Webseite behält seine Schriften,
+Farben und Listen, und Zellen aus Excel, LibreOffice Calc oder Google
+Sheets kommen als Tabelle an. Über eine kleine Leiste unter dem
+Eingefügten erhalten Sie es stattdessen als Tabelle, Bild oder Nur-Text;
+Strg+Umschalt+V fügt Nur-Text ein. Dateien, die Sie in Dolphin kopieren
+oder auf die Nachricht ziehen, werden angehängt, und bei Bildern fragt
+Katna, ob sie in den Text oder als Anhang kommen.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Ein neues Katna-Logo"
+text = """
+Katna hat jetzt ein eigenes Logo: কাটনা auf einer Karte über einem
+Briefumschlag. Sie sehen es im Anwendungsmenü, im Panel, im
+Systemabschnitt, in der oberen Leiste und unter Über Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Ihre Konten, wie Sie sie wollen"
+text = """
+Jedes Konto zeigt jetzt seinen eigenen farbigen Buchstaben statt
+desselben Bildes für alle. Unter Einstellungen > Konten können Sie für
+jedes ein Bild wählen, es umbenennen und die Konten mit den Pfeilen oder
+durch Ziehen in die gewünschte Reihenfolge bringen; der Ordnerbereich und
+das Kontomenü folgen ihr.
+"""

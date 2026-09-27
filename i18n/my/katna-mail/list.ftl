@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] { $folder } ရှိ စကားဝိုင်း { $count } ခုလုံးကို ရွေးရန်
    *[message] { $folder } ရှိ မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးရန်
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] ဖတ်ပြီးသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးထားသည်။
+       *[message] ဖတ်ပြီးသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးထားသည်။
+    }
+   *[unread] { $kind ->
+        [conversation] မဖတ်ရသေးသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးထားသည်။
+       *[message] မဖတ်ရသေးသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးထားသည်။
+    }
+    [starred] { $kind ->
+        [conversation] ကြယ်ပွင့်တပ်ထားသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးထားသည်။
+       *[message] ကြယ်ပွင့်တပ်ထားသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးထားသည်။
+    }
+    [unstarred] { $kind ->
+        [conversation] ကြယ်ပွင့်မတပ်ထားသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးထားသည်။
+       *[message] ကြယ်ပွင့်မတပ်ထားသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးထားသည်။
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $folder } ရှိ ဖတ်ပြီးသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးထားသည်။
+       *[message] { $folder } ရှိ ဖတ်ပြီးသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးထားသည်။
+    }
+   *[unread] { $kind ->
+        [conversation] { $folder } ရှိ မဖတ်ရသေးသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးထားသည်။
+       *[message] { $folder } ရှိ မဖတ်ရသေးသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးထားသည်။
+    }
+    [starred] { $kind ->
+        [conversation] { $folder } ရှိ ကြယ်ပွင့်တပ်ထားသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးထားသည်။
+       *[message] { $folder } ရှိ ကြယ်ပွင့်တပ်ထားသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးထားသည်။
+    }
+    [unstarred] { $kind ->
+        [conversation] { $folder } ရှိ ကြယ်ပွင့်မတပ်ထားသော စကားဝိုင်း { $count } ခုလုံးကို ရွေးထားသည်။
+       *[message] { $folder } ရှိ ကြယ်ပွင့်မတပ်ထားသော မက်ဆေ့ဂျ် { $count } စောင်လုံးကို ရွေးထားသည်။
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] ဤနေရာတွင် ဖတ်ပြီးသော စကားဝိုင်း မရှိပါ။
+       *[message] ဤနေရာတွင် ဖတ်ပြီးသော မက်ဆေ့ဂျ် မရှိပါ။
+    }
+   *[unread] { $kind ->
+        [conversation] ဤနေရာတွင် မဖတ်ရသေးသော စကားဝိုင်း မရှိပါ။
+       *[message] ဤနေရာတွင် မဖတ်ရသေးသော မက်ဆေ့ဂျ် မရှိပါ။
+    }
+    [starred] { $kind ->
+        [conversation] ဤနေရာတွင် ကြယ်ပွင့်တပ်ထားသော စကားဝိုင်း မရှိပါ။
+       *[message] ဤနေရာတွင် ကြယ်ပွင့်တပ်ထားသော မက်ဆေ့ဂျ် မရှိပါ။
+    }
+    [unstarred] { $kind ->
+        [conversation] ဤနေရာတွင် ကြယ်ပွင့်မတပ်ထားသော စကားဝိုင်း မရှိပါ။
+       *[message] ဤနေရာတွင် ကြယ်ပွင့်မတပ်ထားသော မက်ဆေ့ဂျ် မရှိပါ။
+    }
+}
 list-clear-selection = ရွေးချယ်မှု ရှင်းရန်
 
 ## Mail list: empty states
@@ -160,6 +214,18 @@ toast-deleted-forever = { $kind ->
     [conversation] စကားဝိုင်း { $count } ခုကို အပြီးဖျက်လိုက်ပြီ။
    *[message] မက်ဆေ့ဂျ် { $count } စောင်ကို အပြီးဖျက်လိုက်ပြီ။
 }
+toast-marked-read = { $kind ->
+    [conversation] စကားဝိုင်း { $count } ခုကို ဖတ်ပြီးအဖြစ် မှတ်လိုက်ပြီ။
+   *[message] မက်ဆေ့ဂျ် { $count } စောင်ကို ဖတ်ပြီးအဖြစ် မှတ်လိုက်ပြီ။
+}
+toast-marked-unread = { $kind ->
+    [conversation] စကားဝိုင်း { $count } ခုကို မဖတ်ရသေးအဖြစ် မှတ်လိုက်ပြီ။
+   *[message] မက်ဆေ့ဂျ် { $count } စောင်ကို မဖတ်ရသေးအဖြစ် မှတ်လိုက်ပြီ။
+}
 toast-undone = လုပ်ဆောင်ချက်ကို နောက်ပြန်ဆုတ်လိုက်ပြီ။
+toast-nothing-to-undo = နောက်ပြန်ရန် ဘာမျှ မရှိပါ။
+toast-cannot-undo-delete-forever = အပြီးဖျက်ထားသော မေးလ်ကို ပြန်ယူ၍ မရပါ။
+toast-send-undone = ပို့ခြင်းကို နောက်ပြန်ဆုတ်လိုက်ပြီ။
+toast-too-late-to-undo-send = နောက်ပြန်ရန် နောက်ကျသွားပြီ- မက်ဆေ့ဂျ်ကို ပို့ပြီးသွားပြီ။
 toast-undo = နောက်ပြန်ရန်
 toast-no-spam-folder = ဤအကောင့်တွင် စပမ်းဖိုင်တွဲ မရှိပါ။

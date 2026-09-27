@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] { $folder } ನಲ್ಲಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] ಓದಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ಓದಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+       *[message] { $count ->
+            [one] ಓದಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ಓದಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] ಓದದಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ಓದದಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+       *[message] { $count ->
+            [one] ಓದದಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ಓದದಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] ನಕ್ಷತ್ರ ಹಾಕಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ನಕ್ಷತ್ರ ಹಾಕಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+       *[message] { $count ->
+            [one] ನಕ್ಷತ್ರ ಹಾಕಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ನಕ್ಷತ್ರ ಹಾಕಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] ನಕ್ಷತ್ರ ಹಾಕದಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ನಕ್ಷತ್ರ ಹಾಕದಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+       *[message] { $count ->
+            [one] ನಕ್ಷತ್ರ ಹಾಕದಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ನಕ್ಷತ್ರ ಹಾಕದಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ನಲ್ಲಿ ಓದಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] { $folder } ನಲ್ಲಿ ಓದಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+       *[message] { $count ->
+            [one] { $folder } ನಲ್ಲಿ ಓದಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] { $folder } ನಲ್ಲಿ ಓದಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ನಲ್ಲಿ ಓದದಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] { $folder } ನಲ್ಲಿ ಓದದಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+       *[message] { $count ->
+            [one] { $folder } ನಲ್ಲಿ ಓದದಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] { $folder } ನಲ್ಲಿ ಓದದಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ನಲ್ಲಿ ನಕ್ಷತ್ರ ಹಾಕಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] { $folder } ನಲ್ಲಿ ನಕ್ಷತ್ರ ಹಾಕಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+       *[message] { $count ->
+            [one] { $folder } ನಲ್ಲಿ ನಕ್ಷತ್ರ ಹಾಕಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] { $folder } ನಲ್ಲಿ ನಕ್ಷತ್ರ ಹಾಕಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ನಲ್ಲಿ ನಕ್ಷತ್ರ ಹಾಕದಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] { $folder } ನಲ್ಲಿ ನಕ್ಷತ್ರ ಹಾಕದಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+       *[message] { $count ->
+            [one] { $folder } ನಲ್ಲಿ ನಕ್ಷತ್ರ ಹಾಕದಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] { $folder } ನಲ್ಲಿ ನಕ್ಷತ್ರ ಹಾಕದಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] ಇಲ್ಲಿ ಓದಿರುವ ಸಂವಾದಗಳಿಲ್ಲ.
+       *[message] ಇಲ್ಲಿ ಓದಿರುವ ಸಂದೇಶಗಳಿಲ್ಲ.
+    }
+   *[unread] { $kind ->
+        [conversation] ಇಲ್ಲಿ ಓದದಿರುವ ಸಂವಾದಗಳಿಲ್ಲ.
+       *[message] ಇಲ್ಲಿ ಓದದಿರುವ ಸಂದೇಶಗಳಿಲ್ಲ.
+    }
+    [starred] { $kind ->
+        [conversation] ಇಲ್ಲಿ ನಕ್ಷತ್ರ ಹಾಕಿರುವ ಸಂವಾದಗಳಿಲ್ಲ.
+       *[message] ಇಲ್ಲಿ ನಕ್ಷತ್ರ ಹಾಕಿರುವ ಸಂದೇಶಗಳಿಲ್ಲ.
+    }
+    [unstarred] { $kind ->
+        [conversation] ಇಲ್ಲಿ ನಕ್ಷತ್ರ ಹಾಕದಿರುವ ಸಂವಾದಗಳಿಲ್ಲ.
+       *[message] ಇಲ್ಲಿ ನಕ್ಷತ್ರ ಹಾಕದಿರುವ ಸಂದೇಶಗಳಿಲ್ಲ.
+    }
+}
 list-clear-selection = ಆಯ್ಕೆಯನ್ನು ತೆರವುಗೊಳಿಸಿ
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count } ಸಂದೇಶಗಳನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗಿದೆ.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] ಸಂವಾದವನ್ನು ಓದಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಲಾಗಿದೆ.
+       *[other] { $count } ಸಂವಾದಗಳನ್ನು ಓದಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಲಾಗಿದೆ.
+    }
+   *[message] { $count ->
+        [one] ಸಂದೇಶವನ್ನು ಓದಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಲಾಗಿದೆ.
+       *[other] { $count } ಸಂದೇಶಗಳನ್ನು ಓದಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಲಾಗಿದೆ.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] ಸಂವಾದವನ್ನು ಓದಿಲ್ಲ ಎಂದು ಗುರುತಿಸಲಾಗಿದೆ.
+       *[other] { $count } ಸಂವಾದಗಳನ್ನು ಓದಿಲ್ಲ ಎಂದು ಗುರುತಿಸಲಾಗಿದೆ.
+    }
+   *[message] { $count ->
+        [one] ಸಂದೇಶವನ್ನು ಓದಿಲ್ಲ ಎಂದು ಗುರುತಿಸಲಾಗಿದೆ.
+       *[other] { $count } ಸಂದೇಶಗಳನ್ನು ಓದಿಲ್ಲ ಎಂದು ಗುರುತಿಸಲಾಗಿದೆ.
+    }
+}
 toast-undone = ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ.
+toast-nothing-to-undo = ರದ್ದುಗೊಳಿಸಲು ಏನೂ ಇಲ್ಲ.
+toast-cannot-undo-delete-forever = ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಿದ ಮೇಲ್ ಅನ್ನು ಮರಳಿ ತರಲು ಸಾಧ್ಯವಿಲ್ಲ.
+toast-send-undone = ಕಳುಹಿಸುವುದನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ.
+toast-too-late-to-undo-send = ರದ್ದುಗೊಳಿಸಲು ತಡವಾಗಿದೆ: ಸಂದೇಶವನ್ನು ಈಗಾಗಲೇ ಕಳುಹಿಸಲಾಗಿದೆ.
 toast-undo = ರದ್ದುಗೊಳಿಸಿ
 toast-no-spam-folder = ಈ ಖಾತೆಯಲ್ಲಿ ಸ್ಪ್ಯಾಮ್ ಫೋಲ್ಡರ್ ಇಲ್ಲ.

@@ -45,6 +45,13 @@ compose-file-too-large = { $name } చాలా పెద్దది: ఒక �
 compose-attachment-size = ({ $size })
 compose-remove-attachment = అటాచ్‌మెంట్‌ను తీసివేయండి
 compose-drop-files = ఫైల్‌లను ఇక్కడ వదలండి
+compose-drop-here = ఇక్కడ వదలండి
+compose-paste-keep-formatting = ఫార్మాటింగ్‌ను ఉంచండి
+compose-paste-table = టేబుల్
+compose-paste-picture = చిత్రం
+compose-paste-plain-text = సాధారణ టెక్స్ట్
+compose-paste-inline = టెక్స్ట్‌లో
+compose-paste-attachment = అటాచ్‌మెంట్
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = సబ్జెక్ట్ లేకుండా ప
 send-check-subject-text = ఈ మెసేజ్‌కు సబ్జెక్ట్ లేదు.
 send-check-add-subject = సబ్జెక్ట్ జోడించండి
 send-check-send-anyway = అయినా పంపండి
+recipient-not-valid = చెల్లుబాటు అయ్యే ఈమెయిల్ అడ్రస్ కాదు
+recipient-show-address = అడ్రస్ చూపండి
+recipient-bad-title = అడ్రస్‌ను తనిఖీ చేయండి
+recipient-bad-text = “{ $address }” చెల్లుబాటు అయ్యే ఈమెయిల్ అడ్రస్ కాదు. పంపే ముందు దాన్ని సరిచేయండి లేదా తీసివేయండి.
+recipient-bad-fix = సరిచేయండి

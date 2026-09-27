@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="packaging/icons/in.invenia.katna.Mail.svg" width="96" height="96" alt="Katna Mail icon">
+  <img src="packaging/icons/src/katna.svg" width="96" height="96" alt="Katna logo">
 </p>
 
 <h1 align="center">Katna</h1>
@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <a href="#support-and-follow"><img src="https://img.shields.io/badge/%E2%98%95%20Buy%20me%20a%20coffee-coming%20soon-FF424D?style=for-the-badge&logo=patreon&logoColor=white" alt="Buy me a coffee on Patreon (coming soon)"></a>
+  <a href="https://buymeacoffee.com/quakestring"><img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy me a coffee"></a>
   <a href="https://x.com/QuakeString"><img src="https://img.shields.io/badge/Follow-@QuakeString-000000?style=for-the-badge&logo=x&logoColor=white" alt="Follow @QuakeString on X"></a>
   <a href="https://www.linkedin.com/in/md-mozammel-hossain-97a20446/"><img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge" alt="Connect on LinkedIn"></a>
 </p>
@@ -224,7 +224,7 @@ Katna is free software, built in the open. If it helps you, a coffee keeps
 it going.
 
 <p>
-  <img src="https://img.shields.io/badge/%E2%98%95%20Buy%20me%20a%20coffee%20on%20Patreon-coming%20soon-FF424D?style=for-the-badge&logo=patreon&logoColor=white" alt="Buy me a coffee on Patreon (link coming soon)">
+  <a href="https://buymeacoffee.com/quakestring"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="50" alt="Buy me a coffee"></a>
 </p>
 
 - ⭐ Star [the repository](https://github.com/QuakeString/katna) and
@@ -233,8 +233,6 @@ it going.
   [GitHub](https://github.com/QuakeString) ·
   [X](https://x.com/QuakeString) ·
   [LinkedIn](https://www.linkedin.com/in/md-mozammel-hossain-97a20446/)
-
-<!-- TODO: the Patreon URL, when Mozammel shares it. -->
 
 ## License
 

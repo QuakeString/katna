@@ -123,6 +123,22 @@ attachment-encrypted-open = Wannan fayil ya zo a ɓoye. Ajiye shi don buɗe shi 
 print-failed = Ba a iya bugawa ba: { $error }
 print-no-font = ba a sami rubutun haruffa ba
 print-opened-as-pdf = An buɗe shi a matsayin PDF don bugawa daga can.
+print-preview-title = Samfotin bugawa
+print-preview-laying-out = Ana tsara shafuka…
+print-preview-pages = { $count ->
+    [one] Shafi { $count }
+   *[other] Shafuka { $count }
+}
+print-preview-more = { $count ->
+    [one] da ƙarin shafi { $count }
+   *[other] da ƙarin shafuka { $count }
+}
+print-preview-failed = ba a iya nuna shafukan ba
+print-preview-paper = Takarda
+print-preview-a4 = A4
+print-preview-letter = Letter
+print-preview-cancel = Soke
+print-preview-print = Buga
 print-not-downloaded = (Har yanzu ba a sauke shi ba.)
 print-encrypted = (An ɓoye shi. Buɗe shi a cikin Katna Mail don buga rubutunsa.)
 print-to = Zuwa: { $addresses }

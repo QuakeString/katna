@@ -68,6 +68,10 @@ settings-general-new-mail-detail = ከ«ለሁሉም መልስ»፣ «እንደ�
 settings-general-new-mail-sound = ድምፅ አጫውት
 settings-general-new-mail-sound-detail = የዴስክቶፑ የአዲስ ደብዳቤ ድምፅ
 settings-general-desktop = ዴስክቶፕ
+settings-general-start-at-login = ሲገቡ Katnaን አስጀምር
+settings-general-start-at-login-detail = መስኮቱን ሳይከፍት ደብዳቤን ያመሳስላል እንዲሁም የአዲስ ደብዳቤ ማሳወቂያዎችን እና የሥርዓት ትሪ አዶን ያሳያል
+settings-general-login-window = የKatna Mail መስኮትንም ክፈት
+settings-general-login-window-detail = ሲገቡ መስኮቱም ይከፈታል
 settings-general-tray = Katnaን በሥርዓት ትሪ ውስጥ አሳይ
 settings-general-tray-detail = ካልተነበቡ መልዕክቶች ብዛት እና ከምናሌ ጋር
 settings-general-unread-badge = በተግባር አሞሌ አዶ ላይ ያልተነበቡ መልዕክቶች ብዛት
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = የእያንዳንዱን መልዕክ�
 settings-general-sending-summary = መላክን ቀልብስ፦ የተላከ መልዕክት እንዲመለስ ምን ያህል ጊዜ እንደሚጠብቅ
 settings-general-offline-summary = ያለ ግንኙነት እንዲነበብ የስንት ቀናት የቅርብ ጊዜ ደብዳቤ ሙሉ በሙሉ እንደሚወርድ
 settings-general-notifications-summary = የአዲስ ደብዳቤ ማሳወቂያዎች እና ድምፃቸው
-settings-general-desktop-summary = ሲገቡ Katna Mailን መክፈት፣ የሥርዓት ትሪ አዶ እና በተግባር አሞሌ አዶ ላይ ያልተነበቡ መልዕክቶች ብዛት
+settings-general-desktop-summary = ሲገቡ Katnaን ማስጀመር፣ የሥርዓት ትሪ አዶ እና በተግባር አሞሌ አዶ ላይ ያልተነበቡ መልዕክቶች ብዛት
 settings-accounts-accounts-summary = መለያ ያክሉ ወይም ያስወግዱ፣ ወይም ሥዕሉን ይቀይሩ
 settings-appearance-density-summary = በዝርዝሩ ውስጥ ነባሪ ወይም የታመቁ መስመሮች
 settings-appearance-scaling-summary = ሁሉንም ነገር ትልቅ ወይም ትንሽ ያድርጉ፦ ጽሑፍ፣ አዶዎች፣ ክፍተት እና መከፋፈያዎች
@@ -241,7 +245,7 @@ settings-search-results = ከ«{ $query }» ጋር የሚዛመዱ ቅንብሮ�
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = ሲገቡ መክፈትን መቀየር አልተቻለም፦ { $error }
+settings-open-at-login-failed = ሲገቡ ማስጀመርን መቀየር አልተቻለም፦ { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = ሰዋስው
 settings-compose-grammar-detail = በዚህ ኮምፒውተር ላይ በHarper ይፈተሻል። ለአሁን እንግሊዝኛ ብቻ፦ በሌሎች ቋንቋዎች የተጻፈ ጽሑፍ አይነካም።
 settings-compose-grammar-check = ሰዋስውን አረጋግጥ
 settings-compose-grammar-check-detail = በሚጽፉበት ጊዜ የሰዋስው ስህተቶችን አስምር፣ በእንግሊዝኛ
+settings-compose-suggestions = የአጻጻፍ ጥቆማዎች
+settings-compose-suggestions-detail = በዚህ ኮምፒውተር ላይ ከላኩት ደብዳቤ እና ከሚመልሱት ደብዳቤ የተማረ ነው፤ ምንም ነገር ከኮምፒውተሩ አይወጣም። ጥቆማን ለመቀበል Tabን ይጫኑ፣ ወይም መተየብዎን ይቀጥሉ።
+settings-compose-suggestions-on = በምጽፍበት ጊዜ ጠቁም
+settings-compose-suggestions-on-detail = ሲተይቡ የሐረጉን ሊሆን የሚችል ቀሪ ክፍል በግራጫ አሳይ
 settings-compose-grammar-summary = በሚጽፉበት ጊዜ የሰዋስው ስህተቶችን አስምር፣ በእንግሊዝኛ
+settings-compose-suggestions-summary = ሲተይቡ የሐረጉን ሊሆን የሚችል ቀሪ ክፍል በግራጫ አሳይ

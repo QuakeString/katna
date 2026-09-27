@@ -129,6 +129,26 @@ attachment-encrypted-open = Цей файл надійшов зашифрова�
 print-failed = Не вдалося надрукувати: { $error }
 print-no-font = не знайдено шрифту
 print-opened-as-pdf = Відкрито як PDF, щоб надрукувати звідти.
+print-preview-title = Попередній перегляд друку
+print-preview-laying-out = Розташування сторінок…
+print-preview-pages = { $count ->
+    [one] { $count } сторінка
+    [few] { $count } сторінки
+    [many] { $count } сторінок
+   *[other] { $count } сторінки
+}
+print-preview-more = { $count ->
+    [one] і ще { $count } сторінка
+    [few] і ще { $count } сторінки
+    [many] і ще { $count } сторінок
+   *[other] і ще { $count } сторінки
+}
+print-preview-failed = не вдалося показати сторінки
+print-preview-paper = Папір
+print-preview-a4 = A4
+print-preview-letter = Letter
+print-preview-cancel = Скасувати
+print-preview-print = Друкувати
 print-not-downloaded = (Ще не завантажено.)
 print-encrypted = (Зашифровано. Відкрийте лист у Katna Mail, щоб надрукувати його текст.)
 print-to = Кому: { $addresses }

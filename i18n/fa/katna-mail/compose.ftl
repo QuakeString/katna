@@ -45,6 +45,13 @@ compose-file-too-large = { $name } بیش از حد بزرگ است: هر پیا
 compose-attachment-size = ({ $size })
 compose-remove-attachment = حذف پیوست
 compose-drop-files = پرونده‌ها را اینجا رها کنید
+compose-drop-here = اینجا رها کنید
+compose-paste-keep-formatting = حفظ قالب‌بندی
+compose-paste-table = جدول
+compose-paste-picture = تصویر
+compose-paste-plain-text = متن ساده
+compose-paste-inline = درون متن
+compose-paste-attachment = پیوست
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = ارسال بدون موضوع؟
 send-check-subject-text = این پیام موضوع ندارد.
 send-check-add-subject = افزودن موضوع
 send-check-send-anyway = در هر صورت ارسال شود
+recipient-not-valid = نشانی ایمیل معتبری نیست
+recipient-show-address = نمایش نشانی
+recipient-bad-title = نشانی را بررسی کنید
+recipient-bad-text = «{ $address }» نشانی ایمیل معتبری نیست. پیش از ارسال آن را درست یا حذف کنید.
+recipient-bad-fix = درست کردن

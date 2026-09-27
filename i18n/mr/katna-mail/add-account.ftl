@@ -62,6 +62,7 @@ add-account-address-empty = ईमेल पत्ता टाका.
 add-account-address-invalid = { $example } सारखा ईमेल पत्ता टाका.
 add-account-not-found = Katna ला { $address } साठी सर्व्हर सापडले नाहीत, म्हणून नेहमीची नावे भरली आहेत. ती तुमच्या प्रदात्याकडे तपासा.
 add-account-password-empty = पासवर्ड टाका.
+add-account-name-is-password = नाव आणि पासवर्ड सारखेच आहेत. तिथे त्याऐवजी तुमचे नाव लिहा, लोकांना जसे दिसायला हवे तसे.
 add-account-added = { $address } जोडले. तुमचा मेल आणत आहे…
 add-account-app-password-refused = { $provider } ने पासवर्ड नाकारला. त्याला ॲप पासवर्ड लागतो, तुम्ही वेबवर वापरता तो नाही.
 add-account-password-refused = सर्व्हरने पासवर्ड नाकारला. तो तपासा आणि पुन्हा प्रयत्न करा.

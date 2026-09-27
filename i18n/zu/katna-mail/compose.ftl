@@ -45,6 +45,13 @@ compose-file-too-large = { $name } likhulu kakhulu: umlayezo ungathwala kufika k
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Susa okunamathiselwe
 compose-drop-files = Yehlisela amafayela lapha
+compose-drop-here = Yehlisela lapha
+compose-paste-keep-formatting = Gcina ukufometha
+compose-paste-table = Ithebula
+compose-paste-picture = Isithombe
+compose-paste-plain-text = Umbhalo osobala
+compose-paste-inline = Embhalweni
+compose-paste-attachment = Okunamathiselwe
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = Thumela ngaphandle kwesihloko?
 send-check-subject-text = Lo mlayezo awunaso isihloko.
 send-check-add-subject = Engeza isihloko
 send-check-send-anyway = Thumela noma kunjalo
+recipient-not-valid = Akulona ikheli le-imeyili elivumelekile
+recipient-show-address = Bonisa ikheli
+recipient-bad-title = Hlola ikheli
+recipient-bad-text = “{ $address }” akulona ikheli le-imeyili elivumelekile. Lilungise noma ulisuse ngaphambi kokuthumela.
+recipient-bad-fix = Lilungise

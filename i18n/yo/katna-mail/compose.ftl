@@ -45,6 +45,13 @@ compose-file-too-large = { $name } ti tóbi jù: ìfiránṣẹ́ kan lè gbé t
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Yọ àfikún kúrò
 compose-drop-files = Ju àwọn fáìlì sí ibí
+compose-drop-here = Ju sí ibí
+compose-paste-keep-formatting = Pa ìgúnrege mọ́
+compose-paste-table = Tábìlì
+compose-paste-picture = Àwòrán
+compose-paste-plain-text = Ọ̀rọ̀ lásán
+compose-paste-inline = Nínú ọ̀rọ̀
+compose-paste-attachment = Àfikún
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = Fi ránṣẹ́ láìsí àkọlé?
 send-check-subject-text = Ìfiránṣẹ́ yìí kò ní àkọlé.
 send-check-add-subject = Fi àkọlé kún un
 send-check-send-anyway = Fi ránṣẹ́ bẹ́ẹ̀
+recipient-not-valid = Kì í ṣe àdírẹ́sì ímeèlì tó tọ́
+recipient-show-address = Fi àdírẹ́sì hàn
+recipient-bad-title = Ṣàyẹ̀wò àdírẹ́sì náà
+recipient-bad-text = “{ $address }” kì í ṣe àdírẹ́sì ímeèlì tó tọ́. Ṣàtúnṣe rẹ̀ tàbí yọ ọ́ kúrò kí o tó fi ránṣẹ́.
+recipient-bad-fix = Ṣàtúnṣe rẹ̀

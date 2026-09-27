@@ -359,3 +359,69 @@ a sinistra, dove basta fermarci sopra con il puntatore per rivedere le
 cartelle. In alto a sinistra c'è Katna Mail, e il nome scorre su
 Calendario, Contatti e gli altri quando cambi app.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Seleziona tutta la posta da leggere o speciale"
+text = """
+Già letti, Da leggere, Speciali e Non speciali nel menu Seleziona ora
+spuntano ogni conversazione corrispondente nella cartella, non solo
+quelle sullo schermo. Una riga sopra l'elenco dice quante sono
+selezionate, e archiviare, eliminare, spostare o segnare vale per tutte.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Correzioni senza clic destro"
+text = """
+Fermati con il puntatore su una parola sottolineata, o fai clic su di
+essa, e le sue correzioni compaiono proprio sotto: suggerimenti
+ortografici, correzioni grammaticali e Ignora, nel testo e nell'oggetto.
+Il clic destro apre ancora il menu completo.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "I destinatari diventano chip"
+text = """
+Gli indirizzi in A, Cc e Ccn diventano chip che mostrano solo il nome. La
+freccia su un chip mostra il suo indirizzo, e con un doppio clic puoi
+modificarlo. Tutto ciò che non è un indirizzo valido è segnato in rosso, e
+Invia ti chiede di correggerlo prima.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna si avvia all'accesso"
+text = """
+Ora Katna si avvia in silenzio quando accedi: la posta si sincronizza, e
+le notifiche di nuova posta e l'icona nell'area di notifica compaiono
+senza aprire la finestra. Puoi disattivarlo, o far aprire anche la
+finestra, in Impostazioni > Generali > Desktop.
+"""
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Incolla e trascina di tutto in un messaggio"
+text = """
+Il testo copiato da Word, LibreOffice o da una pagina web mantiene
+caratteri, colori ed elenchi, e le celle di Excel, LibreOffice Calc o
+Google Sheets arrivano come tabella. Una piccola barra sotto ciò che hai
+incollato ti permette di averlo invece come tabella, immagine o testo
+semplice; Ctrl+Shift+V incolla testo semplice. I file copiati in
+Dolphin o trascinati sul messaggio vengono allegati, e per le immagini
+ti viene chiesto se vanno nel testo o come allegato.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Un nuovo logo per Katna"
+text = """
+Katna ora ha un logo tutto suo: কাটনা su un cartoncino sopra una busta.
+Lo vedrai nel menu delle applicazioni, nel pannello, nell'area di
+notifica, nella barra in alto e in Informazioni su Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "I tuoi account, a modo tuo"
+text = """
+Ogni account ora mostra la sua lettera colorata invece della stessa
+immagine per tutti. In Impostazioni > Account puoi scegliere un'immagine
+per ciascuno, rinominarlo e mettere gli account nell'ordine che
+preferisci con le frecce o trascinandoli; il riquadro delle cartelle e
+il menu dell'account si adeguano.
+"""

@@ -62,6 +62,7 @@ add-account-address-empty = የኢሜይል አድራሻ ያስገቡ።
 add-account-address-invalid = እንደ { $example } ያለ የኢሜይል አድራሻ ያስገቡ።
 add-account-not-found = Katna የ{ $address } አገልጋዮችን ማግኘት አልቻለም፣ ስለዚህ የተለመዱትን ስሞች ሞልቷል። ከአቅራቢዎ ጋር ያረጋግጧቸው።
 add-account-password-empty = የይለፍ ቃሉን ያስገቡ።
+add-account-name-is-password = ስሙ ከይለፍ ቃሉ ጋር አንድ ነው። በምትኩ ሰዎች እንዲያዩት በሚፈልጉት መንገድ ስምዎን እዚያ ይተይቡ።
 add-account-added = { $address } ታክሏል። ደብዳቤዎን በማምጣት ላይ…
 add-account-app-password-refused = { $provider } የይለፍ ቃሉን አልተቀበለም። በድር ላይ የሚጠቀሙበትን ሳይሆን የመተግበሪያ የይለፍ ቃል ያስፈልገዋል።
 add-account-password-refused = አገልጋዩ የይለፍ ቃሉን አልተቀበለም። ይፈትሹትና እንደገና ይሞክሩ።

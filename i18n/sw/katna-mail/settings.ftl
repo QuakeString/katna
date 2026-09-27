@@ -68,6 +68,10 @@ settings-general-new-mail-detail = Pamoja na Jibu wote, Tia alama kuwa imesomwa 
 settings-general-new-mail-sound = Cheza sauti
 settings-general-new-mail-sound-detail = Sauti ya barua mpya ya kompyuta ya mezani
 settings-general-desktop = Kompyuta ya mezani
+settings-general-start-at-login = Anzisha Katna wakati wa kuingia
+settings-general-start-at-login-detail = Husawazisha barua na kuonyesha arifa za barua mpya na aikoni ya trei, bila kufungua dirisha
+settings-general-login-window = Fungua pia dirisha la Katna Mail
+settings-general-login-window-detail = Dirisha pia hufunguka wakati wa kuingia
 settings-general-tray = Onyesha Katna kwenye trei ya mfumo
 settings-general-tray-detail = Pamoja na idadi ya ambazo hazijasomwa na menyu
 settings-general-unread-badge = Idadi ya ambazo hazijasomwa kwenye aikoni ya upau wa kazi
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = Onyesha picha za kila ujumbe kila wakat
 settings-general-sending-summary = Tendua kutuma: muda ambao ujumbe uliotumwa husubiri, ili uweze kurudishwa
 settings-general-offline-summary = Siku ngapi za barua za hivi karibuni hupakuliwa kikamilifu, ili zisomwe bila muunganisho
 settings-general-notifications-summary = Arifa za barua mpya na sauti yake
-settings-general-desktop-summary = Fungua Katna Mail wakati wa kuingia, aikoni ya trei ya mfumo na idadi ya ambazo hazijasomwa kwenye aikoni ya upau wa kazi
+settings-general-desktop-summary = Anzisha Katna wakati wa kuingia, aikoni ya trei ya mfumo na idadi ya ambazo hazijasomwa kwenye aikoni ya upau wa kazi
 settings-accounts-accounts-summary = Ongeza au ondoa akaunti, au ubadilishe picha yake
 settings-appearance-density-summary = Mistari chaguomsingi au iliyobanwa katika orodha
 settings-appearance-scaling-summary = Fanya kila kitu kiwe kikubwa au kidogo zaidi: maandishi, aikoni, nafasi na vigawanyaji
@@ -241,7 +245,7 @@ settings-search-results = Mipangilio inayolingana na “{ $query }”
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Imeshindwa kubadilisha kufungua wakati wa kuingia: { $error }
+settings-open-at-login-failed = Imeshindwa kubadilisha kuanzisha wakati wa kuingia: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = Sarufi
 settings-compose-grammar-detail = Hukaguliwa kwenye kompyuta hii kwa Harper. Kiingereza tu kwa sasa: maandishi ya lugha nyingine hayaguswi.
 settings-compose-grammar-check = Kagua sarufi
 settings-compose-grammar-check-detail = Pigia mstari makosa ya sarufi unapoandika, kwa Kiingereza
+settings-compose-suggestions = Mapendekezo ya uandishi
+settings-compose-suggestions-detail = Hujifunzwa kwenye kompyuta hii kutoka kwa barua ulizotuma na barua unazojibu; hakuna kinachotoka humo. Bonyeza Tab ili kuchukua pendekezo, au endelea kuandika.
+settings-compose-suggestions-on = Pendekeza wakati wa kuandika
+settings-compose-suggestions-on-detail = Onyesha sehemu iliyobaki inayowezekana ya kifungu kwa rangi ya kijivu unapoandika
 settings-compose-grammar-summary = Pigia mstari makosa ya sarufi unapoandika, kwa Kiingereza
+settings-compose-suggestions-summary = Onyesha sehemu iliyobaki inayowezekana ya kifungu kwa rangi ya kijivu unapoandika

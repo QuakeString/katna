@@ -224,6 +224,21 @@ pub async fn sender_picture(connection: &Connection, address: &str) -> Result<Ve
         .map_err(|err| describe(&err))
 }
 
+/// Renames `account`; an empty name goes back to the name its own mail
+/// is sent under.
+pub async fn rename_account(
+    connection: &Connection,
+    account: i64,
+    name: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.rename_account(account, name)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Stops syncing `account` and deletes its mail and password from this
 /// computer. Nothing changes on the server.
 pub async fn remove_account(connection: &Connection, account: i64) -> Result<(), String> {
@@ -268,6 +283,16 @@ pub async fn delete_all_data(connection: &Connection) -> Result<(), String> {
         .await
         .map_err(|err| describe(&err))?;
     pim.delete_all_data().await.map_err(|err| describe(&err))
+}
+
+/// Has the daemon delete the mail it downloaded, the search index and
+/// sender pictures, and download recent mail again. Returns how many
+/// messages lost their body and the bytes deleted.
+pub async fn reset_cache(connection: &Connection) -> Result<(u64, u64), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.reset_cache().await.map_err(|err| describe(&err))
 }
 
 /// Why an account could not be added.

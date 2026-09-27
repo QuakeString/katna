@@ -45,6 +45,13 @@ compose-file-too-large = { $name } ist zu groß: Eine Nachricht kann bis zu { $l
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Anhang entfernen
 compose-drop-files = Dateien hier ablegen
+compose-drop-here = Hier ablegen
+compose-paste-keep-formatting = Formatierung beibehalten
+compose-paste-table = Tabelle
+compose-paste-picture = Bild
+compose-paste-plain-text = Nur-Text
+compose-paste-inline = Im Text
+compose-paste-attachment = Anhang
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = Ohne Betreff senden?
 send-check-subject-text = Diese Nachricht hat keinen Betreff.
 send-check-add-subject = Betreff hinzufügen
 send-check-send-anyway = Trotzdem senden
+recipient-not-valid = Keine gültige E-Mail-Adresse
+recipient-show-address = Adresse anzeigen
+recipient-bad-title = Adresse prüfen
+recipient-bad-text = „{ $address }“ ist keine gültige E-Mail-Adresse. Korrigieren oder entfernen Sie sie vor dem Senden.
+recipient-bad-fix = Korrigieren

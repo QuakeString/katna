@@ -129,6 +129,26 @@ attachment-encrypted-open = Ten plik dotarł zaszyfrowany. Zapisz go, aby otworz
 print-failed = Nie udało się wydrukować: { $error }
 print-no-font = nie znaleziono czcionki
 print-opened-as-pdf = Otwarto jako PDF, aby wydrukować z tego miejsca.
+print-preview-title = Podgląd wydruku
+print-preview-laying-out = Układanie stron…
+print-preview-pages = { $count ->
+    [one] { $count } strona
+    [few] { $count } strony
+    [many] { $count } stron
+   *[other] { $count } strony
+}
+print-preview-more = { $count ->
+    [one] i jeszcze { $count } strona
+    [few] i jeszcze { $count } strony
+    [many] i jeszcze { $count } stron
+   *[other] i jeszcze { $count } strony
+}
+print-preview-failed = nie udało się pokazać stron
+print-preview-paper = Papier
+print-preview-a4 = A4
+print-preview-letter = Letter
+print-preview-cancel = Anuluj
+print-preview-print = Drukuj
 print-not-downloaded = (Jeszcze nie pobrano.)
 print-encrypted = (Zaszyfrowana. Otwórz ją w Katna Mail, aby wydrukować jej treść.)
 print-to = Do: { $addresses }

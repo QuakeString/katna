@@ -348,3 +348,67 @@ i fältet till vänster, där mapparna visas igen när du vilar pekaren på
 den. Uppe till vänster står Katna Mail, och namnet rullar över till
 Kalender, Kontakter och resten när du byter app.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Markera all oläst eller stjärnmärkt post"
+text = """
+Lästa, Olästa, Stjärnmärkta och Utan stjärna i menyn Markera bockar nu
+för varje matchande konversation i mappen, inte bara de som syns på
+skärmen. En rad ovanför listan säger hur många som är markerade, och att
+arkivera, radera, flytta eller markera gäller alla.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Rättningar utan högerklick"
+text = """
+Vila pekaren på ett understruket ord, eller klicka på det, så visas dess
+rättningar precis under: stavningsförslag, grammatikrättningar och
+Ignorera, i texten och i ämnet. Högerklick öppnar fortfarande hela
+menyn.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "Mottagare som brickor"
+text = """
+Adresser i Till, Kopia och Dold kopia blir brickor som bara visar
+namnet. Pilen på en bricka visar adressen, och med ett dubbelklick kan
+du redigera den. Allt som inte är en giltig adress markeras med rött,
+och Skicka ber dig rätta det först.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna startar vid inloggning"
+text = """
+Katna startar nu tyst när du loggar in: e-posten synkroniseras, och
+aviseringar om ny e-post och ikonen i systemfältet kommer upp utan att
+fönstret öppnas. Stäng av det, eller låt fönstret öppnas också, under
+Inställningar > Allmänt > Skrivbord.
+"""
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Klistra in och släpp vad som helst i ett meddelande"
+text = """
+Text som kopierats från Word, LibreOffice eller en webbsida behåller
+sina typsnitt, färger och listor, och celler från Excel, LibreOffice
+Calc eller Google Sheets kommer in som en tabell. Ett litet fält under
+det du klistrade in låter dig få det som tabell, bild eller oformaterad
+text i stället; Ctrl+Shift+V klistrar in oformaterad text. Filer som
+kopierats i Dolphin eller dragits till meddelandet bifogas, och för
+bilder får du välja om de ska in i texten eller som bilaga.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "En ny Katna-logotyp"
+text = """
+Katna har nu en egen logotyp: কাটনা på ett kort över ett kuvert. Du ser
+den i programmenyn, panelen, systemfältet, den övre raden och Om Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Dina konton, på ditt sätt"
+text = """
+Varje konto visar nu sin egen färgade bokstav i stället för samma bild
+för alla. I Inställningar > Konton kan du välja en bild för varje konto,
+byta namn på det och ordna kontona som du vill med pilarna eller genom
+att dra; mappfönstret och kontomenyn följer med.
+"""

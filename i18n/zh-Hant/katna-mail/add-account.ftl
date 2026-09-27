@@ -62,6 +62,7 @@ add-account-address-empty = 請輸入電子郵件地址。
 add-account-address-invalid = 請輸入電子郵件地址，例如 { $example }。
 add-account-not-found = Katna 找不到 { $address } 的伺服器，因此填入了常用名稱。請向你的郵件服務供應商確認。
 add-account-password-empty = 請輸入密碼。
+add-account-name-is-password = 姓名與密碼相同。請改在那裡輸入你希望別人看到的姓名。
 add-account-added = 已新增 { $address }。正在接收你的郵件…
 add-account-app-password-refused = { $provider } 拒絕了這組密碼。它需要應用程式密碼，而不是你在網頁上使用的密碼。
 add-account-password-refused = 伺服器拒絕了這組密碼。請檢查後再試一次。

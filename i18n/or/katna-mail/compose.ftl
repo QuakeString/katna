@@ -45,6 +45,13 @@ compose-file-too-large = { $name } ବହୁତ ବଡ଼: ଏକ ମେସେ�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ଆଟାଚମେଣ୍ଟ ହଟାନ୍ତୁ
 compose-drop-files = ଫାଇଲଗୁଡ଼ିକ ଏଠାରେ ଛାଡ଼ନ୍ତୁ
+compose-drop-here = ଏଠାରେ ଛାଡ଼ନ୍ତୁ
+compose-paste-keep-formatting = ଫର୍ମାଟିଂ ରଖନ୍ତୁ
+compose-paste-table = ଟେବୁଲ
+compose-paste-picture = ଛବି
+compose-paste-plain-text = ସାଧା ଟେକ୍ସଟ
+compose-paste-inline = ଟେକ୍ସଟ ଭିତରେ
+compose-paste-attachment = ଆଟାଚମେଣ୍ଟ
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = ବିଷୟ ବିନା ପଠାଇବେ କି?
 send-check-subject-text = ଏହି ମେସେଜର କୌଣସି ବିଷୟ ନାହିଁ।
 send-check-add-subject = ବିଷୟ ଯୋଗ କରନ୍ତୁ
 send-check-send-anyway = ତଥାପି ପଠାନ୍ତୁ
+recipient-not-valid = ବୈଧ ଇମେଲ ଠିକଣା ନୁହେଁ
+recipient-show-address = ଠିକଣା ଦେଖାନ୍ତୁ
+recipient-bad-title = ଠିକଣା ଯାଞ୍ଚ କରନ୍ତୁ
+recipient-bad-text = “{ $address }” ଏକ ବୈଧ ଇମେଲ ଠିକଣା ନୁହେଁ। ପଠାଇବା ପୂର୍ବରୁ ଏହାକୁ ଠିକ କରନ୍ତୁ କିମ୍ବା କାଢ଼ି ଦିଅନ୍ତୁ।
+recipient-bad-fix = ଠିକ କରନ୍ତୁ

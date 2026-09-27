@@ -62,6 +62,7 @@ add-account-address-empty = ປ້ອນທີ່ຢູ່ອີເມວ.
 add-account-address-invalid = ປ້ອນທີ່ຢູ່ອີເມວເຊັ່ນ { $example }.
 add-account-not-found = Katna ຊອກບໍ່ພົບເຊີບເວີຂອງ { $address }, ສະນັ້ນຈຶ່ງໃສ່ຊື່ທີ່ໃຊ້ທົ່ວໄປໄວ້. ກວດສອບກັບຜູ້ໃຫ້ບໍລິການຂອງທ່ານ.
 add-account-password-empty = ປ້ອນລະຫັດຜ່ານ.
+add-account-name-is-password = ຊື່ຄືກັນກັບລະຫັດຜ່ານ. ໃຫ້ພິມຊື່ຂອງທ່ານໃສ່ບ່ອນນັ້ນແທນ, ຕາມທີ່ຄົນອື່ນຄວນເຫັນ.
 add-account-added = ເພີ່ມ { $address } ແລ້ວ. ກຳລັງດຶງອີເມວຂອງທ່ານ…
 add-account-app-password-refused = { $provider } ປະຕິເສດລະຫັດຜ່ານ. ມັນຕ້ອງການລະຫັດຜ່ານແອັບ, ບໍ່ແມ່ນລະຫັດທີ່ທ່ານໃຊ້ໃນເວັບ.
 add-account-password-refused = ເຊີບເວີປະຕິເສດລະຫັດຜ່ານ. ກວດສອບແລ້ວລອງອີກຄັ້ງ.

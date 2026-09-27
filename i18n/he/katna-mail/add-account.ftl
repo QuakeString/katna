@@ -62,6 +62,7 @@ add-account-address-empty = יש להזין כתובת אימייל.
 add-account-address-invalid = יש להזין כתובת אימייל כמו { $example }.
 add-account-not-found = Katna לא הצליחה למצוא את השרתים של { $address }, ולכן מילאה את השמות הנפוצים. כדאי לבדוק אותם מול ספק הדואר.
 add-account-password-empty = יש להזין את הסיסמה.
+add-account-name-is-password = השם זהה לסיסמה. יש להקליד שם את השם שלך, כפי שאנשים אמורים לראות אותו.
 add-account-added = { $address } נוסף. מורידים את הדואר שלך…
 add-account-app-password-refused = { $provider } דחה את הסיסמה. נדרשת סיסמה לאפליקציה, ולא הסיסמה שבה משתמשים באתר.
 add-account-password-refused = השרת דחה את הסיסמה. כדאי לבדוק אותה ולנסות שוב.

@@ -7,11 +7,11 @@
 //! for Rust, KDE and Linux. Opened from Help in the menu bar, quick
 //! settings and the version in the Settings header.
 
-use std::sync::LazyLock;
+use std::sync::{Arc, LazyLock};
 
 use gpui::{
-    AnyElement, Context, FocusHandle, FontWeight, KeyDownEvent, MouseButton, SharedString, Window,
-    div, linear_color_stop, linear_gradient, prelude::*, rgba,
+    AnyElement, Context, FocusHandle, FontWeight, Image, ImageFormat, ImageSource, KeyDownEvent,
+    MouseButton, ObjectFit, SharedString, Window, div, img, prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
@@ -26,8 +26,20 @@ use crate::widgets::{elevation, filled_button, icon, outlined_button, tip};
 const WIDTH: f32 = 520.0;
 
 /// Where "Buy me a coffee" leads. `None` until the page exists; the
-/// button then shows, disabled, with "Coming soon".
-const SUPPORT_URL: Option<&str> = None;
+/// button then shows, disabled, with "Coming soon", and no QR code.
+const SUPPORT_URL: Option<&str> = Some("https://buymeacoffee.com/quakestring");
+
+/// The same page as a QR code, from Buy Me a Coffee, to open it on a phone.
+const SUPPORT_QR: &[u8] = include_bytes!("../../about/buymeacoffee-qr.png");
+
+/// Buy Me a Coffee's own button colours: black on yellow with a black
+/// outline.
+const COFFEE_YELLOW: u32 = 0xffdd00ff;
+const COFFEE_INK: u32 = 0x000000ff;
+
+/// [`SUPPORT_QR`], decoded once and kept while the app runs.
+static QR: LazyLock<Arc<Image>> =
+    LazyLock::new(|| Arc::new(Image::from_bytes(ImageFormat::Png, SUPPORT_QR.to_vec())));
 
 /// The source of Katna.
 const SOURCE_URL: &str = env!("CARGO_PKG_REPOSITORY");
@@ -358,32 +370,80 @@ impl MailWindow {
                 th,
             ));
 
-        let coffee = div()
+        // Drawn like Buy Me a Coffee's own button, in both themes.
+        let button = div()
             .id("about-coffee")
             .flex_none()
-            .mx(px(24.0))
-            .mt(px(12.0))
-            .h(px(40.0))
+            .h(px(44.0))
+            .px(px(20.0))
             .flex()
             .flex_row()
             .items_center()
             .justify_center()
             .gap(px(8.0))
-            .rounded_full()
-            .bg(rgba(fade(th.star, 0.22)))
-            .text_size(px(14.0))
-            .font_weight(FontWeight::MEDIUM)
-            .child(icon("coffee", th.text, 20.0))
+            .rounded(px(10.0))
+            .border_1()
+            .border_color(rgba(COFFEE_INK))
+            .bg(rgba(COFFEE_YELLOW))
+            .text_color(rgba(COFFEE_INK))
+            .text_size(px(16.0))
+            .font_weight(FontWeight::SEMIBOLD)
+            .child(icon("coffee", COFFEE_INK, 22.0))
             .child(tr!("about-coffee"));
-        let coffee = match SUPPORT_URL {
-            Some(url) => coffee
+        let button = match SUPPORT_URL {
+            Some(url) => button
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(fade(th.star, 0.34))))
+                .hover(|s| s.bg(rgba(0xffe433ff)))
+                .active(|s| s.bg(rgba(0xf2d200ff)))
                 .on_click(move |_, _, cx| cx.open_url(url)),
-            None => coffee
+            None => button
                 .opacity(0.55)
                 .tooltip(tip(tr!("about-coming-soon"), th)),
         };
+        let qr = SUPPORT_URL.map(|_| {
+            // On white in both themes, so any phone reads it.
+            div()
+                .flex_none()
+                .size(px(112.0))
+                .p(px(6.0))
+                .rounded(px(12.0))
+                .bg(rgba(0xffffffff))
+                .border_1()
+                .border_color(rgba(th.divider))
+                .child(
+                    img(ImageSource::Image(QR.clone()))
+                        .size_full()
+                        .object_fit(ObjectFit::Contain),
+                )
+        });
+        let coffee = div()
+            .flex_none()
+            .mx(px(24.0))
+            .mt(px(12.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(16.0))
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .flex()
+                    .flex_col()
+                    .items_start()
+                    .gap(px(8.0))
+                    .child(button)
+                    .when(qr.is_some(), |d| {
+                        d.child(
+                            div()
+                                .text_size(px(13.0))
+                                .line_height(px(18.0))
+                                .text_color(rgba(th.text_dim))
+                                .child(tr!("about-coffee-scan")),
+                        )
+                    }),
+            )
+            .children(qr);
 
         let follow = FOLLOW
             .iter()
@@ -802,21 +862,9 @@ fn link_button(
         .on_click(move |_, _, cx| cx.open_url(&url))
 }
 
-/// The Katna mark, larger than the one on the account pages.
+/// Katna's logo, larger than the one on the account pages.
 fn logo() -> AnyElement {
-    div()
-        .size(px(64.0))
-        .flex()
-        .items_center()
-        .justify_center()
-        .rounded(px(18.0))
-        .bg(linear_gradient(
-            135.0,
-            linear_color_stop(rgba(0x4f8df7ff), 0.0),
-            linear_color_stop(rgba(0x3949c9ff), 1.0),
-        ))
-        .child(icon("mail", 0xffffffff, 40.0))
-        .into_any_element()
+    crate::widgets::katna_mark(64.0)
 }
 
 #[cfg(test)]

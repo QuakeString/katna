@@ -62,6 +62,7 @@ add-account-address-empty = 이메일 주소를 입력하세요.
 add-account-address-invalid = { $example }와(과) 같은 이메일 주소를 입력하세요.
 add-account-not-found = Katna가 { $address }의 서버를 찾지 못해 일반적인 이름을 입력했습니다. 메일 제공업체에 확인하세요.
 add-account-password-empty = 비밀번호를 입력하세요.
+add-account-name-is-password = 이름이 비밀번호와 같습니다. 이 칸에는 다른 사람에게 보일 이름을 입력하세요.
 add-account-added = { $address }을(를) 추가했습니다. 메일을 가져오는 중…
 add-account-app-password-refused = { $provider }에서 비밀번호를 거부했습니다. 웹에서 쓰는 비밀번호가 아니라 앱 비밀번호가 필요합니다.
 add-account-password-refused = 서버에서 비밀번호를 거부했습니다. 확인한 후 다시 시도하세요.

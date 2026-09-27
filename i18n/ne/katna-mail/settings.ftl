@@ -68,6 +68,10 @@ settings-general-new-mail-detail = सबैलाई जवाफ दिनु�
 settings-general-new-mail-sound = आवाज बजाउनुहोस्
 settings-general-new-mail-sound-detail = डेस्कटपको नयाँ मेलको आवाज
 settings-general-desktop = डेस्कटप
+settings-general-start-at-login = लग इन गर्दा Katna सुरु गर्नुहोस्
+settings-general-start-at-login-detail = विन्डो नखोली मेल सिंक गर्छ र नयाँ मेलका सूचनाहरू तथा ट्रे आइकन देखाउँछ
+settings-general-login-window = Katna Mail को विन्डो पनि खोल्नुहोस्
+settings-general-login-window-detail = लग इन गर्दा विन्डो पनि खुल्छ
 settings-general-tray = प्रणाली ट्रेमा Katna देखाउनुहोस्
 settings-general-tray-detail = नपढिएका सन्देशको सङ्ख्या र एउटा मेनुसहित
 settings-general-unread-badge = टास्कबार आइकनमा नपढिएका सन्देशको सङ्ख्या
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = प्रत्येक सन्द�
 settings-general-sending-summary = पठाएको पूर्ववत गर्नुहोस्: पठाइएको सन्देश कति बेर पर्खन्छ, ताकि त्यसलाई फिर्ता लिन सकियोस्
 settings-general-offline-summary = हालका कति दिनको मेल पूरै डाउनलोड हुन्छ, ताकि जडानबिना पढ्न सकियोस्
 settings-general-notifications-summary = नयाँ मेलका सूचनाहरू र तिनको आवाज
-settings-general-desktop-summary = लग इन गर्दा Katna Mail खोल्ने, प्रणाली ट्रे आइकन र टास्कबार आइकनमा नपढिएका सन्देशको सङ्ख्या
+settings-general-desktop-summary = लग इन गर्दा Katna सुरु गर्ने, प्रणाली ट्रे आइकन र टास्कबार आइकनमा नपढिएका सन्देशको सङ्ख्या
 settings-accounts-accounts-summary = खाता थप्नुहोस् वा हटाउनुहोस्, वा यसको तस्बिर बदल्नुहोस्
 settings-appearance-density-summary = सूचीमा पूर्वनिर्धारित वा कम्प्याक्ट पङ्क्तिहरू
 settings-appearance-scaling-summary = सबै कुरा ठूला वा साना बनाउनुहोस्: पाठ, आइकन, खाली ठाउँ र विभाजकहरू
@@ -241,7 +245,7 @@ settings-search-results = “{ $query }” सँग मिल्ने से�
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = लग इनमा खुल्ने सेटिङ बदल्न सकिएन: { $error }
+settings-open-at-login-failed = लग इनमा सुरु हुने सेटिङ बदल्न सकिएन: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = व्याकरण
 settings-compose-grammar-detail = यही कम्प्युटरमा Harper ले जाँच गरिन्छ। अहिलेलाई अङ्ग्रेजी मात्र: अन्य भाषाका पाठलाई छोइँदैन।
 settings-compose-grammar-check = व्याकरण जाँच गर्नुहोस्
 settings-compose-grammar-check-detail = लेख्दै गर्दा व्याकरणका गल्तीमुनि रेखा लगाउनुहोस्, अङ्ग्रेजीमा
+settings-compose-suggestions = लेखन सुझावहरू
+settings-compose-suggestions-detail = तपाईंले पठाएका मेल र तपाईंले जवाफ दिँदै गरेको मेलबाट यही कम्प्युटरमा सिकिएको; केही पनि बाहिर जाँदैन। सुझाव लिन Tab थिच्नुहोस्, वा टाइप गरिरहनुहोस्।
+settings-compose-suggestions-on = लेख्दै गर्दा सुझाव दिनुहोस्
+settings-compose-suggestions-on-detail = टाइप गर्दै गर्दा वाक्यांशको सम्भावित बाँकी भाग खैरो रङमा देखाउनुहोस्
 settings-compose-grammar-summary = लेख्दै गर्दा व्याकरणका गल्तीमुनि रेखा लगाउनुहोस्, अङ्ग्रेजीमा
+settings-compose-suggestions-summary = टाइप गर्दै गर्दा वाक्यांशको सम्भावित बाँकी भाग खैरो रङमा देखाउनुहोस्

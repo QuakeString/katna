@@ -369,3 +369,71 @@ amafolda futhi. Phezulu ngakwesokunxele kubonisa i-Katna Mail, futhi
 igama lishintshela ku-Ikhalenda, ku-Oxhumana nabo nakwezinye njengoba
 ushintsha ama-app.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Khetha yonke imeyili engafundiwe noma enenkanyezi"
+text = """
+Okufundiwe, Okungafundiwe, Okunenkanyezi kanye no-Okungenankanyezi
+kumenyu ethi Khetha manje kumaka yonke ingxoxo efanayo kufolda, hhayi
+nje lezo ezisesikrinini. Umugqa ongaphezu kohlu usho ukuthi zingaki
+ezikhethiwe, futhi ukufaka kungobo yomlando, ukususa, ukuhambisa noma
+ukumaka kusebenza kuzo zonke.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Ukulungiswa ngaphandle kokuchofoza ngakwesokudla"
+text = """
+Beka isikhombi egameni elinomugqa ongezansi, noma ulichofoze, futhi
+ukulungiswa kwalo kuvela ngaphansi kwalo khona lapho: iziphakamiso
+zokupela, ukulungiswa kohlelo lolimi kanye no-Ziba, embhalweni
+nasesihlokweni. Ukuchofoza ngakwesokudla kusavula imenyu egcwele.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "Abamukeli njengama-chip"
+text = """
+Amakheli aku-Ku, Cc naku-Bcc aba ama-chip abonisa igama kuphela.
+Umcibisholo oku-chip ubonisa ikheli layo, futhi ukuchofoza kabili
+kukuvumela ukulihlela. Noma yini engelona ikheli elivumelekile imakwa
+ngokubomvu, futhi u-Thumela ukucela ukuthi ukulungise kuqala.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "I-Katna iqala lapho ungena"
+text = """
+Manje i-Katna iqala buthule lapho ungena: imeyili iyavumelaniswa, futhi
+izaziso zemeyili entsha nesithonjana sethileyi kuyavela ngaphandle
+kokuvula iwindi. Kuvale, noma wenze iwindi livuleke nalo,
+ku-Izilungiselelo > Okuvamile > Ideskithophu.
+"""
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Namathisela noma wehlisele noma yini emlayezweni"
+text = """
+Umbhalo okopishwe ku-Word, ku-LibreOffice noma ekhasini lewebhu ugcina
+amafonti awo, imibala nohlu, futhi amaseli avela ku-Excel,
+ku-LibreOffice Calc noma ku-Google Sheets angena njengethebula. Ibha
+encane ngaphansi kwalokho okunamathiselile ikuvumela ukuthi ukuthole
+njengethebula, isithombe noma umbhalo osobala esikhundleni salokho;
+u-Ctrl+Shift+V unamathisela umbhalo osobala. Amafayela akopishwe
+ku-Dolphin noma ahudulelwe emlayezweni ayanamathiselwa, futhi izithombe
+ziyabuza ukuthi zingena embhalweni noma njengokunamathiselwe.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Ilogo entsha ye-Katna"
+text = """
+I-Katna manje inelogo yayo: কাটনা ekhadini elingaphezu kwemvilophu.
+Uzoyibona kumenyu yama-app, kuphaneli, kuthileyi, kubha ephezulu
+naku-Mayelana ne-Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Ama-akhawunti akho, ngendlela yakho"
+text = """
+I-akhawunti ngayinye manje ibonisa uhlamvu lwayo olunombala esikhundleni
+sesithombe esifanayo kuzo zonke. Ku-Izilungiselelo > Ama-akhawunti
+ungakhetha isithombe sayo ngayinye, uyiqambe kabusha, futhi ubeke
+ama-akhawunti ngokulandelana okuthandayo ngemicibisholo noma
+ngokuhudula; iphaneli yamafolda nemenyu ye-akhawunti kuyalandela.
+"""

@@ -45,6 +45,13 @@ compose-file-too-large = { $name } ya yi girma sosai: saƙo zai iya ɗaukar har 
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Cire abin haɗawa
 compose-drop-files = Saki fayiloli a nan
+compose-drop-here = Saki a nan
+compose-paste-keep-formatting = Riƙe tsari
+compose-paste-table = Tebur
+compose-paste-picture = Hoto
+compose-paste-plain-text = Rubutu mara ado
+compose-paste-inline = A cikin rubutu
+compose-paste-attachment = Abin haɗawa
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = Aika ba tare da jigo ba?
 send-check-subject-text = Wannan saƙon ba shi da jigo.
 send-check-add-subject = Ƙara jigo
 send-check-send-anyway = Aika duk da haka
+recipient-not-valid = Ba adireshin imel mai inganci ba ne
+recipient-show-address = Nuna adireshi
+recipient-bad-title = Duba adireshin
+recipient-bad-text = “{ $address }” ba adireshin imel mai inganci ba ne. Gyara shi ko cire shi kafin aikawa.
+recipient-bad-fix = Gyara shi

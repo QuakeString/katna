@@ -62,6 +62,10 @@ settings-general-new-mail-detail = Pẹ̀lú Fèsì sí gbogbo, Sàmì sí bí k
 settings-general-new-mail-sound = Ṣe ohùn kan
 settings-general-new-mail-sound-detail = Ohùn lẹ́tà tuntun ti déskítọ́ọ̀pù
 settings-general-desktop = Déskítọ́ọ̀pù
+settings-general-start-at-login = Bẹ̀rẹ̀ Katna nígbà ìwọlé
+settings-general-start-at-login-detail = Ó ń mú lẹ́tà dọ́gba, ó sì ń fi ìfitónilétí lẹ́tà tuntun àti àmì-àwòrán àtẹ hàn, láìṣí fèrèsé
+settings-general-login-window = Ṣí fèrèsé Katna Mail pẹ̀lú
+settings-general-login-window-detail = Fèrèsé náà yóò ṣí pẹ̀lú nígbà ìwọlé
 settings-general-tray = Fi Katna hàn nínú àtẹ ètò
 settings-general-tray-detail = Pẹ̀lú iye àìkà àti mẹ́nù kan
 settings-general-unread-badge = Iye àìkà lórí àmì-àwòrán ọ̀pá iṣẹ́
@@ -199,7 +203,7 @@ settings-general-remote-images-summary = Máa fi àwọn àwòrán gbogbo ìfir�
 settings-general-sending-summary = Dá fífiránṣẹ́ padà: bí ìfiránṣẹ́ tí a fi ránṣẹ́ yóò ṣe dúró pẹ́ tó, kí a lè gbà á padà
 settings-general-offline-summary = Ọjọ́ mélòó ti lẹ́tà àìpẹ́ yìí ni a ń gbà sílẹ̀ lódindi, láti kà á láìsí ìsopọ̀
 settings-general-notifications-summary = Ìfitónilétí lẹ́tà tuntun àti ohùn wọn
-settings-general-desktop-summary = Ṣí Katna Mail nígbà ìwọlé, àmì-àwòrán àtẹ ètò àti iye àìkà lórí àmì-àwòrán ọ̀pá iṣẹ́
+settings-general-desktop-summary = Bẹ̀rẹ̀ Katna nígbà ìwọlé, àmì-àwòrán àtẹ ètò àti iye àìkà lórí àmì-àwòrán ọ̀pá iṣẹ́
 settings-accounts-accounts-summary = Ṣàfikún tàbí yọ àkáǹtì kan kúrò, tàbí yí àwòrán rẹ̀ padà
 settings-appearance-density-summary = Ìlà àtilẹ̀wá tàbí kíkún pọ̀ nínú àkójọ
 settings-appearance-scaling-summary = Mú kí gbogbo nǹkan tóbi sí i tàbí kéré sí i: ọ̀rọ̀, àmì-àwòrán, àyè àti ìlà ìpínyà
@@ -235,7 +239,7 @@ settings-search-results = Àwọn ètò tó bá “{ $query }” mu
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Kò lè yí ṣíṣí nígbà ìwọlé padà: { $error }
+settings-open-at-login-failed = Kò lè yí bíbẹ̀rẹ̀ nígbà ìwọlé padà: { $error }
 
 ## Settings > General > Time
 
@@ -258,4 +262,9 @@ settings-compose-grammar = Gírámà
 settings-compose-grammar-detail = A ń ṣàyẹ̀wò rẹ̀ lórí kọ̀ǹpútà yìí pẹ̀lú Harper. Gẹ̀ẹ́sì nìkan fún báyìí: a kò fọwọ́ kan ọ̀rọ̀ ní àwọn èdè mìíràn.
 settings-compose-grammar-check = Ṣàyẹ̀wò gírámà
 settings-compose-grammar-check-detail = Fa ìlà sí abẹ́ àṣìṣe gírámà bí o ṣe ń kọ̀wé, ní Gẹ̀ẹ́sì
+settings-compose-suggestions = Àbá ìkọ̀wé
+settings-compose-suggestions-detail = A kọ́ wọn lórí kọ̀ǹpútà yìí láti inú lẹ́tà tí o fi ránṣẹ́ àti lẹ́tà tí ò ń dáhùn; kò sí ohun tó ń kúrò níbẹ̀. Tẹ Tab láti gba àbá kan, tàbí máa tẹ̀wé lọ.
+settings-compose-suggestions-on = Dá àbá nígbà kíkọ̀wé
+settings-compose-suggestions-on-detail = Fi ìyókù gbólóhùn tó ṣeé ṣe hàn ní àwọ̀ eérú bí o ṣe ń tẹ̀wé
 settings-compose-grammar-summary = Fa ìlà sí abẹ́ àṣìṣe gírámà bí o ṣe ń kọ̀wé, ní Gẹ̀ẹ́sì
+settings-compose-suggestions-summary = Fi ìyókù gbólóhùn tó ṣeé ṣe hàn ní àwọ̀ eérú bí o ṣe ń tẹ̀wé

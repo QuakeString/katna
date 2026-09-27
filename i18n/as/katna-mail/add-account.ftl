@@ -62,6 +62,7 @@ add-account-address-empty = এটা ইমেইল ঠিকনা লিখ�
 add-account-address-invalid = { $example }ৰ দৰে এটা ইমেইল ঠিকনা লিখক।
 add-account-not-found = Katnaই { $address }ৰ ছাৰ্ভাৰ বিচাৰি নাপালে, সেয়ে সাধাৰণ নামবোৰ ভৰাই দিলে। আপোনাৰ প্ৰদানকাৰীৰ সৈতে পৰীক্ষা কৰক।
 add-account-password-empty = পাছৱৰ্ড লিখক।
+add-account-name-is-password = নামটো পাছৱৰ্ডৰ সৈতে একে। তাৰ সলনি তাত আপোনাৰ নাম লিখক, মানুহে যিদৰে দেখা উচিত।
 add-account-added = { $address } যোগ কৰা হ'ল। আপোনাৰ মেইল অনা হৈছে…
 add-account-app-password-refused = { $provider }এ পাছৱৰ্ডটো গ্ৰহণ নকৰিলে। ইয়াক এটা এপ পাছৱৰ্ড লাগে, ৱেবত ব্যৱহাৰ কৰা পাছৱৰ্ডটো নহয়।
 add-account-password-refused = ছাৰ্ভাৰে পাছৱৰ্ডটো গ্ৰহণ নকৰিলে। পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।

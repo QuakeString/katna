@@ -123,6 +123,22 @@ attachment-encrypted-open = මෙම ගොනුව සංකේතනය ක�
 print-failed = මුද්‍රණය කළ නොහැකි විය: { $error }
 print-no-font = අකුරු මුහුණතක් හමු නොවීය
 print-opened-as-pdf = එතැනින් මුද්‍රණය කිරීමට PDF ලෙස විවෘත කරන ලදී.
+print-preview-title = මුද්‍රණ පෙරදසුන
+print-preview-laying-out = පිටු සකසමින්…
+print-preview-pages = { $count ->
+    [one] පිටු { $count }
+   *[other] පිටු { $count }
+}
+print-preview-more = { $count ->
+    [one] සහ තවත් පිටු { $count }
+   *[other] සහ තවත් පිටු { $count }
+}
+print-preview-failed = පිටු පෙන්විය නොහැකි විය
+print-preview-paper = කඩදාසි
+print-preview-a4 = A4
+print-preview-letter = ලෙටර්
+print-preview-cancel = අවලංගු කරන්න
+print-preview-print = මුද්‍රණය කරන්න
 print-not-downloaded = (තවම බාගත කර නැත.)
 print-encrypted = (සංකේතනය කර ඇත. එහි පෙළ මුද්‍රණය කිරීමට එය Katna Mail හි විවෘත කරන්න.)
 print-to = ලබන්නා: { $addresses }

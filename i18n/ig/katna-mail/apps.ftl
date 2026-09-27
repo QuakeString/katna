@@ -28,3 +28,4 @@ app-contacts-count = Mmadụ { $count } site n'ozi gị, ndị i na-edegara kar�
 app-contacts-top = Mmadụ { $count } kacha elu site n'ozi gị, ndị i na-edegara karịa na mbụ
 app-contacts-messages = ozi { $count }
 app-contacts-last = nke ikpeazụ { $date }
+top-brand = Katna

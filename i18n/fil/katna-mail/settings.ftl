@@ -68,6 +68,10 @@ settings-general-new-mail-detail = May Sumagot sa lahat, Markahan bilang nabasa 
 settings-general-new-mail-sound = Magpatugtog ng tunog
 settings-general-new-mail-sound-detail = Ang tunog ng bagong mail ng desktop
 settings-general-desktop = Desktop
+settings-general-start-at-login = Simulan ang Katna sa pag-log in
+settings-general-start-at-login-detail = Nagsi-sync ng mail at nagpapakita ng mga notification ng bagong mail at ng icon sa system tray, nang hindi binubuksan ang window
+settings-general-login-window = Buksan din ang window ng Katna Mail
+settings-general-login-window-detail = Bubukas din ang window sa pag-log in
 settings-general-tray = Ipakita ang Katna sa system tray
 settings-general-tray-detail = May bilang ng hindi pa nabasa at isang menu
 settings-general-unread-badge = Bilang ng hindi pa nabasa sa icon sa taskbar
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = Palaging ipakita ang mga larawan ng baw
 settings-general-sending-summary = I-undo ang pagpapadala: gaano katagal naghihintay ang naipadalang mensahe, para mabawi pa ito
 settings-general-offline-summary = Ilang araw ng kamakailang mail ang buong dina-download, para mabasa nang walang koneksyon
 settings-general-notifications-summary = Mga notification ng bagong mail at ang tunog nito
-settings-general-desktop-summary = Buksan ang Katna Mail sa pag-log in, ang icon sa system tray at ang bilang ng hindi pa nabasa sa icon sa taskbar
+settings-general-desktop-summary = Simulan ang Katna sa pag-log in, ang icon sa system tray at ang bilang ng hindi pa nabasa sa icon sa taskbar
 settings-accounts-accounts-summary = Magdagdag o mag-alis ng account, o palitan ang larawan nito
 settings-appearance-density-summary = Default o compact na mga linya sa listahan
 settings-appearance-scaling-summary = Palakihin o paliitin ang lahat: text, mga icon, espasyo at mga divider
@@ -241,7 +245,7 @@ settings-search-results = Mga setting na tumutugma sa “{ $query }”
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Hindi mabago ang pagbubukas sa pag-log in: { $error }
+settings-open-at-login-failed = Hindi mabago ang pagsisimula sa pag-log in: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = Grammar
 settings-compose-grammar-detail = Sinusuri sa computer na ito gamit ang Harper. English lang sa ngayon: hindi ginagalaw ang text sa ibang wika.
 settings-compose-grammar-check = Suriin ang grammar
 settings-compose-grammar-check-detail = Salungguhitan ang mga mali sa grammar habang sumusulat, sa English
+settings-compose-suggestions = Mga mungkahi sa pagsulat
+settings-compose-suggestions-detail = Natutunan sa computer na ito mula sa mail na ipinadala mo at sa mail na sinasagot mo; walang lumalabas dito. Pindutin ang Tab para tanggapin ang mungkahi, o magpatuloy lang sa pag-type.
+settings-compose-suggestions-on = Magmungkahi habang nagsusulat
+settings-compose-suggestions-on-detail = Ipakita nang kulay abo ang malamang na karugtong ng parirala habang nagta-type
 settings-compose-grammar-summary = Salungguhitan ang mga mali sa grammar habang sumusulat, sa English
+settings-compose-suggestions-summary = Ipakita nang kulay abo ang malamang na karugtong ng parirala habang nagta-type

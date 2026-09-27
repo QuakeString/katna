@@ -45,6 +45,13 @@ compose-file-too-large = { $name } 파일이 너무 큽니다. 메일 한 통에
 compose-attachment-size = ({ $size })
 compose-remove-attachment = 첨부파일 삭제
 compose-drop-files = 여기에 파일을 놓으세요
+compose-drop-here = 여기에 놓으세요
+compose-paste-keep-formatting = 서식 유지
+compose-paste-table = 표
+compose-paste-picture = 그림
+compose-paste-plain-text = 일반 텍스트
+compose-paste-inline = 본문에 넣기
+compose-paste-attachment = 첨부파일
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = 제목 없이 보낼까요?
 send-check-subject-text = 이 메일에는 제목이 없습니다.
 send-check-add-subject = 제목 추가
 send-check-send-anyway = 그래도 보내기
+recipient-not-valid = 올바른 이메일 주소가 아닙니다
+recipient-show-address = 주소 보기
+recipient-bad-title = 주소를 확인하세요
+recipient-bad-text = “{ $address }”은(는) 올바른 이메일 주소가 아닙니다. 보내기 전에 수정하거나 삭제하세요.
+recipient-bad-fix = 수정

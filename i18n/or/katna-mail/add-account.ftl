@@ -62,6 +62,7 @@ add-account-address-empty = ଏକ ଇମେଲ ଠିକଣା ଦିଅନ୍�
 add-account-address-invalid = { $example } ପରି ଏକ ଇମେଲ ଠିକଣା ଦିଅନ୍ତୁ।
 add-account-not-found = Katna { $address } ପାଇଁ ସର୍ଭର ଖୋଜିପାଇଲା ନାହିଁ, ତେଣୁ ସାଧାରଣ ନାମଗୁଡ଼ିକ ଭରିଦେଲା। ଆପଣଙ୍କ ପ୍ରଦାତାଙ୍କ ସହ ସେଗୁଡ଼ିକ ଯାଞ୍ଚ କରନ୍ତୁ।
 add-account-password-empty = ପାସୱାର୍ଡ ଦିଅନ୍ତୁ।
+add-account-name-is-password = ନାମ ଓ ପାସୱାର୍ଡ ସମାନ। ସେଠାରେ ବରଂ ଲୋକମାନେ ଯେପରି ଦେଖିବା ଉଚିତ, ସେପରି ଆପଣଙ୍କ ନାମ ଟାଇପ କରନ୍ତୁ।
 add-account-added = { $address } ଯୋଗ ହେଲା। ଆପଣଙ୍କ ମେଲ ଅଣାଯାଉଛି…
 add-account-app-password-refused = { $provider } ପାସୱାର୍ଡ ପ୍ରତ୍ୟାଖ୍ୟାନ କଲା। ଏକ ଆପ ପାସୱାର୍ଡ ଦରକାର, ଆପଣ ୱେବରେ ବ୍ୟବହାର କରୁଥିବା ପାସୱାର୍ଡ ନୁହେଁ।
 add-account-password-refused = ସର୍ଭର ପାସୱାର୍ଡ ପ୍ରତ୍ୟାଖ୍ୟାନ କଲା। ଏହାକୁ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।

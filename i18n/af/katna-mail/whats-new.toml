@@ -352,3 +352,68 @@ aan die linkerkant, waar jy net met die wyser daarop hoef te rus om die
 vouers weer te sien. Links bo staan Katna Mail, en die naam rol na
 Kalender, Kontakte en die res soos jy tussen programme wissel.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Kies elke ongelese of gesterde e-pos"
+text = """
+Gelees, Ongelees, Gester en Ongester in die Kies-kieslys merk nou elke
+gesprek in die vouer wat pas, nie net dié op die skerm nie. 'n Reël bo
+die lys sê hoeveel gekies is, en argiveer, uitvee, skuif of merk werk op
+almal.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Regstellings sonder 'n regsklik"
+text = """
+Laat die wyser op 'n onderstreepte woord rus, of klik daarop, en sy
+regstellings verskyn net daaronder: spelvoorstelle,
+grammatikaregstellings en Ignoreer, in die teks en die onderwerp.
+Regsklik maak steeds die volle kieslys oop.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "Ontvangers as skyfies"
+text = """
+Adresse in Aan, Cc en Bcc word skyfies wat net die naam wys. Die pyltjie
+op 'n skyfie wys sy adres, en met 'n dubbelklik kan jy dit wysig. Enigiets
+wat nie 'n geldige adres is nie, word in rooi gemerk, en Stuur vra jou om
+dit eers reg te maak.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna begin by aanmelding"
+text = """
+Katna begin nou stil wanneer jy aanmeld: e-pos sinkroniseer, en
+kennisgewings van nuwe e-pos en die stelselbalkikoon verskyn sonder dat
+die venster oopmaak. Skakel dit af, of laat die venster ook oopmaak, in
+Instellings > Algemeen > Werkskerm.
+"""
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Plak en los enigiets in 'n boodskap"
+text = """
+Teks wat uit Word, LibreOffice of 'n webblad gekopieer is, behou sy
+lettertipes, kleure en lyste, en selle uit Excel, LibreOffice Calc of
+Google Sheets kom in as 'n tabel. 'n Klein balk onder wat jy geplak het,
+laat jou dit eerder as 'n tabel, 'n prent of gewone teks kry;
+Ctrl+Shift+V plak gewone teks. Lêers wat in Dolphin gekopieer of op die
+boodskap gesleep is, word aangeheg, en by prente vra Katna of hulle in
+die teks of as 'n aanhegsel gaan.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "'n Nuwe Katna-logo"
+text = """
+Katna het nou sy eie logo: কাটনা op 'n kaart oor 'n koevert. Jy sien dit
+in die toepassingskieslys, die paneel, die stelselbalk, die boonste balk
+en Meer oor Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Jou rekeninge, soos jy wil"
+text = """
+Elke rekening wys nou sy eie gekleurde letter in plaas van dieselfde
+prent vir almal. In Instellings > Rekeninge kan jy vir elkeen 'n prent
+kies, dit hernoem, en die rekeninge met die pyltjies of deur te sleep in
+die volgorde sit wat jy wil; die vouerpaneel en die rekeningkieslys volg.
+"""

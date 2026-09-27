@@ -45,6 +45,13 @@ compose-file-too-large = { $name } terlalu besar: mesej boleh membawa sehingga {
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Alih keluar lampiran
 compose-drop-files = Lepaskan fail di sini
+compose-drop-here = Lepaskan di sini
+compose-paste-keep-formatting = Kekalkan pemformatan
+compose-paste-table = Jadual
+compose-paste-picture = Gambar
+compose-paste-plain-text = Teks biasa
+compose-paste-inline = Dalam teks
+compose-paste-attachment = Lampiran
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = Hantar tanpa subjek?
 send-check-subject-text = Mesej ini tiada subjek.
 send-check-add-subject = Tambah subjek
 send-check-send-anyway = Hantar juga
+recipient-not-valid = Bukan alamat e-mel yang sah
+recipient-show-address = Tunjukkan alamat
+recipient-bad-title = Semak alamat
+recipient-bad-text = “{ $address }” bukan alamat e-mel yang sah. Betulkan atau alih keluarnya sebelum menghantar.
+recipient-bad-fix = Betulkan

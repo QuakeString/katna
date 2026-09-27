@@ -123,6 +123,22 @@ attachment-encrypted-open = এই ফাইলটো এনক্ৰিপ্�
 print-failed = প্ৰিণ্ট কৰিব পৰা নগ'ল: { $error }
 print-no-font = কোনো ফণ্ট পোৱা নগ'ল
 print-opened-as-pdf = তাৰ পৰা প্ৰিণ্ট কৰিবলৈ PDF হিচাপে খোলা হ'ল।
+print-preview-title = প্ৰিণ্ট পূৰ্বদৰ্শন
+print-preview-laying-out = পৃষ্ঠাবোৰ সজোৱা হৈছে…
+print-preview-pages = { $count ->
+    [one] { $count }টা পৃষ্ঠা
+   *[other] { $count }টা পৃষ্ঠা
+}
+print-preview-more = { $count ->
+    [one] আৰু { $count }টা পৃষ্ঠা
+   *[other] আৰু { $count }টা পৃষ্ঠা
+}
+print-preview-failed = পৃষ্ঠাবোৰ দেখুৱাব পৰা নগ'ল
+print-preview-paper = কাগজ
+print-preview-a4 = A4
+print-preview-letter = লেটাৰ
+print-preview-cancel = বাতিল কৰক
+print-preview-print = প্ৰিণ্ট কৰক
 print-not-downloaded = (এতিয়াও ডাউনল'ড কৰা হোৱা নাই।)
 print-encrypted = (এনক্ৰিপ্ট কৰা। ইয়াৰ পাঠ প্ৰিণ্ট কৰিবলৈ ইয়াক Katna Mailত খোলক।)
 print-to = প্ৰাপক: { $addresses }

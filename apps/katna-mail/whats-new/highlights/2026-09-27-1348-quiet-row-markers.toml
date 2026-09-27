@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A calmer mail list"
+text = """
+The tick box, star and Important marker of each mail now rest dim and
+come up to full strength when you point at the line, as in Gmail. A
+ticked, starred or important mail always shows in full colour.
+"""

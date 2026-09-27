@@ -84,6 +84,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
+        "settings-general-auto-advance",
+        "settings-general-auto-advance-summary",
+        "auto advance next previous older newer after delete archive move back list",
+    ),
+    entry(
+        Section::General,
         "settings-general-reply-button",
         "settings-general-reply-button-summary",
         "reply all default behaviour behavior",
@@ -111,6 +117,12 @@ const ENTRIES: &[Entry] = &[
         "settings-general-notifications",
         "settings-general-notifications-summary",
         "notify alert sound chime popup new mail",
+    ),
+    entry(
+        Section::General,
+        "settings-general-reset-cache",
+        "settings-general-reset-cache-summary",
+        "cache clear local data storage disk space rebuild index redownload fix",
     ),
     entry(
         Section::General,

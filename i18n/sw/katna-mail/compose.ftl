@@ -45,6 +45,13 @@ compose-file-too-large = { $name } ni kubwa mno: ujumbe unaweza kubeba hadi { $l
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Ondoa kiambatisho
 compose-drop-files = Dondosha faili hapa
+compose-drop-here = Dondosha hapa
+compose-paste-keep-formatting = Dumisha uumbizaji
+compose-paste-table = Jedwali
+compose-paste-picture = Picha
+compose-paste-plain-text = Maandishi matupu
+compose-paste-inline = Ndani ya maandishi
+compose-paste-attachment = Kiambatisho
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = Tuma bila mada?
 send-check-subject-text = Ujumbe huu hauna mada.
 send-check-add-subject = Ongeza mada
 send-check-send-anyway = Tuma hata hivyo
+recipient-not-valid = Si anwani sahihi ya barua pepe
+recipient-show-address = Onyesha anwani
+recipient-bad-title = Kagua anwani
+recipient-bad-text = “{ $address }” si anwani sahihi ya barua pepe. Irekebishe au uiondoe kabla ya kutuma.
+recipient-bad-fix = Irekebishe

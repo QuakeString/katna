@@ -45,6 +45,13 @@ compose-file-too-large = { $name } மிகப் பெரியது: ஒர
 compose-attachment-size = ({ $size })
 compose-remove-attachment = இணைப்பை அகற்று
 compose-drop-files = கோப்புகளை இங்கே விடவும்
+compose-drop-here = இங்கே விடவும்
+compose-paste-keep-formatting = வடிவமைப்பை வைத்திரு
+compose-paste-table = அட்டவணை
+compose-paste-picture = படம்
+compose-paste-plain-text = வெற்று உரை
+compose-paste-inline = உரையில்
+compose-paste-attachment = இணைப்பு
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = பொருள் இல்லாமல் அனு
 send-check-subject-text = இந்த மெசேஜுக்குப் பொருள் இல்லை.
 send-check-add-subject = பொருளைச் சேர்
 send-check-send-anyway = பரவாயில்லை, அனுப்பு
+recipient-not-valid = சரியான மின்னஞ்சல் முகவரி அல்ல
+recipient-show-address = முகவரியைக் காட்டு
+recipient-bad-title = முகவரியைச் சரிபார்க்கவும்
+recipient-bad-text = “{ $address }” சரியான மின்னஞ்சல் முகவரி அல்ல. அனுப்பும் முன் அதைச் சரிசெய்யவும் அல்லது அகற்றவும்.
+recipient-bad-fix = சரிசெய்

@@ -352,3 +352,69 @@ bergeser ke bilah di kiri, tempat menahan penunjuk di atasnya
 menampilkan folder lagi. Kiri atas menampilkan Katna Mail, dan namanya
 bergulir ke Kalender, Kontak, dan lainnya saat Anda berpindah aplikasi.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Pilih semua email yang belum dibaca atau berbintang"
+text = """
+Sudah dibaca, Belum dibaca, Berbintang, dan Tidak berbintang di menu
+Pilih kini mencentang setiap percakapan yang cocok di folder, bukan
+hanya yang ada di layar. Sebaris teks di atas daftar menyebutkan berapa
+yang dipilih, dan mengarsipkan, menghapus, memindahkan, atau menandai
+berlaku untuk semuanya.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Perbaikan tanpa klik kanan"
+text = """
+Tahan penunjuk di atas kata yang bergaris bawah, atau kliklah, dan
+perbaikannya muncul tepat di bawahnya: saran ejaan, perbaikan tata
+bahasa, dan Abaikan, di teks dan subjek. Klik kanan tetap membuka menu
+lengkap.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "Penerima sebagai chip"
+text = """
+Alamat di Kepada, Cc, dan Bcc menjadi chip yang hanya menampilkan nama.
+Panah pada chip menampilkan alamatnya, dan klik dua kali untuk
+mengeditnya. Apa pun yang bukan alamat valid ditandai merah, dan Kirim
+meminta Anda memperbaikinya dulu.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna mulai saat login"
+text = """
+Katna kini mulai diam-diam saat Anda login: email disinkronkan, serta
+notifikasi email baru dan ikon baki muncul tanpa membuka jendela.
+Matikan, atau buka juga jendelanya, di Setelan > Umum > Desktop.
+"""
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Tempel dan seret apa saja ke dalam pesan"
+text = """
+Teks yang disalin dari Word, LibreOffice, atau halaman web tetap
+mempertahankan font, warna, dan daftarnya, dan sel dari Excel,
+LibreOffice Calc, atau Google Sheets masuk sebagai tabel. Bilah kecil di
+bawah yang Anda tempel memungkinkan Anda menjadikannya tabel, gambar,
+atau teks biasa; Ctrl+Shift+V menempelkan teks biasa. File yang disalin
+di Dolphin atau diseret ke pesan akan dilampirkan, dan untuk gambar Anda
+akan ditanya apakah gambar masuk ke dalam teks atau sebagai lampiran.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Logo baru Katna"
+text = """
+Katna kini punya logonya sendiri: কাটনা di atas kartu di depan amplop.
+Anda akan melihatnya di menu aplikasi, panel, baki sistem, bilah atas,
+dan Tentang Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Akun Anda, sesuai keinginan Anda"
+text = """
+Setiap akun kini menampilkan huruf berwarnanya sendiri, bukan gambar
+yang sama untuk semua akun. Di Setelan > Akun, Anda dapat memilih gambar
+untuk setiap akun, mengganti namanya, dan menyusun akun sesuai urutan
+yang Anda suka dengan tombol panah atau dengan menyeret; panel folder
+dan menu akun mengikuti urutan ini.
+"""

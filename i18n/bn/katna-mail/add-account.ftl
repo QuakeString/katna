@@ -62,6 +62,7 @@ add-account-address-empty = একটি ইমেল ঠিকানা লি�
 add-account-address-invalid = { $example }-এর মতো একটি ইমেল ঠিকানা লিখুন।
 add-account-not-found = Katna { $address }-এর সার্ভার খুঁজে পায়নি, তাই সাধারণ নামগুলো বসিয়ে দিয়েছে। আপনার প্রোভাইডারের কাছে যাচাই করে নিন।
 add-account-password-empty = পাসওয়ার্ড লিখুন।
+add-account-name-is-password = নামটি পাসওয়ার্ডের মতোই। তার বদলে সেখানে আপনার নাম লিখুন, যেভাবে লোকে দেখবে।
 add-account-added = { $address } যোগ করা হয়েছে। আপনার মেল আনা হচ্ছে…
 add-account-app-password-refused = { $provider } পাসওয়ার্ডটি গ্রহণ করেনি। এর জন্য একটি অ্যাপ পাসওয়ার্ড লাগবে, ওয়েবে যেটি ব্যবহার করেন সেটি নয়।
 add-account-password-refused = সার্ভার পাসওয়ার্ডটি গ্রহণ করেনি। যাচাই করে আবার চেষ্টা করুন।

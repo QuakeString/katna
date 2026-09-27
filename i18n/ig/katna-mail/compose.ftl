@@ -45,6 +45,13 @@ compose-file-too-large = { $name } buru oke ibu: ozi nwere ike ibu ruo { $limit 
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Wepụ mgbakwunye
 compose-drop-files = Dobe faịlụ ebe a
+compose-drop-here = Dobe ebe a
+compose-paste-keep-formatting = Debe nhazi
+compose-paste-table = Tebụl
+compose-paste-picture = Foto
+compose-paste-plain-text = Ederede nkịtị
+compose-paste-inline = N'ime ederede
+compose-paste-attachment = Mgbakwunye
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = Zipu na-enweghị isiokwu?
 send-check-subject-text = Ozi a enweghị isiokwu.
 send-check-add-subject = Tinye isiokwu
 send-check-send-anyway = Zipu agbanyeghị
+recipient-not-valid = Ọ bụghị adreesị ozi-e ziri ezi
+recipient-show-address = Gosi adreesị
+recipient-bad-title = Lelee adreesị ahụ
+recipient-bad-text = “{ $address }” abụghị adreesị ozi-e ziri ezi. Dozie ya ma ọ bụ wepụ ya tupu i zipu.
+recipient-bad-fix = Dozie ya

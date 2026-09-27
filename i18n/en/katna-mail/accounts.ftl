@@ -13,13 +13,28 @@ accounts-shown-one = One account at a time; switch in the account card
 accounts-shown-all = All accounts, one after another
 # Settings row: the list of accounts.
 accounts-row = Accounts
-accounts-row-detail = Removing an account deletes Katna's copy of its mail on this computer. The mail stays on the server.
+accounts-row-detail = The folder pane and the account menu list accounts in this order; the first is the default. Removing an account deletes Katna's copy of its mail on this computer. The mail stays on the server.
 accounts-none = No accounts yet.
 # Account type shown after the address, for mail imported from files (mbox, Maildir…).
 accounts-kind-imported = Imported
-# Button: the account uses the picture of the desktop's user account again.
+# Button: the account uses the picture of the desktop's user account.
 accounts-picture-reset = Use desktop picture
 accounts-picture-change = Change picture
+# Button: the account shows its coloured letter again instead of a picture.
+accounts-picture-remove = Remove picture
+# Button: changes the name the account is shown with.
+accounts-rename = Rename
+# Buttons beside the field for the account's name.
+accounts-name-save = Save
+accounts-name-cancel = Cancel
+# Placeholder in the empty name field; left empty, the account takes the name its sent mail uses.
+accounts-name-placeholder = Your name
+# $error: the system's error, in English.
+accounts-rename-failed = Could not rename the account: { $error }
+# Tooltips on the arrows and the handle that change the order of accounts.
+accounts-move-up = Move up
+accounts-move-down = Move down
+accounts-drag = Drag to change the order
 # Button: removes the account from Katna.
 accounts-remove = Remove
 # Settings row: deletes everything Katna stores.
@@ -79,3 +94,20 @@ accounts-confirm-word = delete
 accounts-confirm-placeholder = Type “{ accounts-confirm-word }”
 accounts-confirm-prompt = To confirm, type “{ accounts-confirm-word }”:
 accounts-cancel = Cancel
+
+## Reset cache (Settings > General), in the same dialog
+
+reset-cache-about = Deletes the mail and attachments Katna downloaded, sender pictures and the search index, then downloads recent mail again. Accounts, settings and mail that is only on this computer stay.
+reset-cache-button = Reset cache
+reset-cache-title = Reset the cache?
+# Heading of the list of what goes; it all downloads again.
+reset-cache-deleted = Deleted, then downloaded again:
+reset-cache-mail = Mail and attachments downloaded from your IMAP servers: recent mail downloads again now, older mail when you open it
+reset-cache-index = The search index, which is rebuilt right away
+reset-cache-pictures = Sender pictures
+reset-cache-kept = Kept: your accounts, passwords and settings; stars, labels, read marks and pins; drafts, the outbox and changes not yet on the server; and mail from POP3 accounts or imported files, which may have no other copy. Nothing changes on your mail servers.
+reset-cache-confirm = Reset cache
+reset-cache-busy = Resetting…
+reset-cache-done = The cache was reset. Recent mail is downloading again.
+# $size: the disk space freed, such as “12 MB”.
+reset-cache-done-freed = The cache was reset and { $size } freed. Recent mail is downloading again.

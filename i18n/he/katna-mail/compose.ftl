@@ -45,6 +45,13 @@ compose-file-too-large = { $name } גדול מדי: הודעה יכולה להכ
 compose-attachment-size = ({ $size })
 compose-remove-attachment = הסרת הקובץ המצורף
 compose-drop-files = אפשר לשחרר קבצים כאן
+compose-drop-here = אפשר לשחרר כאן
+compose-paste-keep-formatting = שמירת העיצוב
+compose-paste-table = טבלה
+compose-paste-picture = תמונה
+compose-paste-plain-text = טקסט פשוט
+compose-paste-inline = בתוך הטקסט
+compose-paste-attachment = קובץ מצורף
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = לשלוח בלי נושא?
 send-check-subject-text = להודעה הזו אין נושא.
 send-check-add-subject = הוספת נושא
 send-check-send-anyway = לשלוח בכל זאת
+recipient-not-valid = זו אינה כתובת אימייל תקינה
+recipient-show-address = הצגת הכתובת
+recipient-bad-title = בדיקת הכתובת
+recipient-bad-text = „{ $address }” אינה כתובת אימייל תקינה. יש לתקן או להסיר אותה לפני השליחה.
+recipient-bad-fix = תיקון

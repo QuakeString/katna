@@ -45,6 +45,13 @@ compose-file-too-large = { $name } is te groot: een bericht kan maximaal { $limi
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Bijlage verwijderen
 compose-drop-files = Zet bestanden hier neer
+compose-drop-here = Hier neerzetten
+compose-paste-keep-formatting = Opmaak behouden
+compose-paste-table = Tabel
+compose-paste-picture = Afbeelding
+compose-paste-plain-text = Platte tekst
+compose-paste-inline = In de tekst
+compose-paste-attachment = Bijlage
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = Verzenden zonder onderwerp?
 send-check-subject-text = Dit bericht heeft geen onderwerp.
 send-check-add-subject = Onderwerp toevoegen
 send-check-send-anyway = Toch verzenden
+recipient-not-valid = Geen geldig e-mailadres
+recipient-show-address = Adres tonen
+recipient-bad-title = Controleer het adres
+recipient-bad-text = ‘{ $address }’ is geen geldig e-mailadres. Verbeter of verwijder het voordat je verzendt.
+recipient-bad-fix = Verbeteren

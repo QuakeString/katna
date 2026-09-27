@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] 「{ $folder }」の { $count } 件のスレッドをすべて選択
    *[message] 「{ $folder }」の { $count } 件のメールをすべて選択
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] 既読のスレッド { $count } 件がすべて選択されています。
+       *[message] 既読のメール { $count } 件がすべて選択されています。
+    }
+   *[unread] { $kind ->
+        [conversation] 未読のスレッド { $count } 件がすべて選択されています。
+       *[message] 未読のメール { $count } 件がすべて選択されています。
+    }
+    [starred] { $kind ->
+        [conversation] スター付きのスレッド { $count } 件がすべて選択されています。
+       *[message] スター付きのメール { $count } 件がすべて選択されています。
+    }
+    [unstarred] { $kind ->
+        [conversation] スターなしのスレッド { $count } 件がすべて選択されています。
+       *[message] スターなしのメール { $count } 件がすべて選択されています。
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] 「{ $folder }」の既読のスレッド { $count } 件がすべて選択されています。
+       *[message] 「{ $folder }」の既読のメール { $count } 件がすべて選択されています。
+    }
+   *[unread] { $kind ->
+        [conversation] 「{ $folder }」の未読のスレッド { $count } 件がすべて選択されています。
+       *[message] 「{ $folder }」の未読のメール { $count } 件がすべて選択されています。
+    }
+    [starred] { $kind ->
+        [conversation] 「{ $folder }」のスター付きのスレッド { $count } 件がすべて選択されています。
+       *[message] 「{ $folder }」のスター付きのメール { $count } 件がすべて選択されています。
+    }
+    [unstarred] { $kind ->
+        [conversation] 「{ $folder }」のスターなしのスレッド { $count } 件がすべて選択されています。
+       *[message] 「{ $folder }」のスターなしのメール { $count } 件がすべて選択されています。
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] ここに既読のスレッドはありません。
+       *[message] ここに既読のメールはありません。
+    }
+   *[unread] { $kind ->
+        [conversation] ここに未読のスレッドはありません。
+       *[message] ここに未読のメールはありません。
+    }
+    [starred] { $kind ->
+        [conversation] ここにスター付きのスレッドはありません。
+       *[message] ここにスター付きのメールはありません。
+    }
+    [unstarred] { $kind ->
+        [conversation] ここにスターなしのスレッドはありません。
+       *[message] ここにスターなしのメールはありません。
+    }
+}
 list-clear-selection = 選択を解除
 
 ## Mail list: empty states
@@ -160,6 +214,18 @@ toast-deleted-forever = { $kind ->
     [conversation] { $count } 件のスレッドを完全に削除しました。
    *[message] { $count } 件のメールを完全に削除しました。
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count } 件のスレッドを既読にしました。
+   *[message] { $count } 件のメールを既読にしました。
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count } 件のスレッドを未読にしました。
+   *[message] { $count } 件のメールを未読にしました。
+}
 toast-undone = 操作を元に戻しました。
+toast-nothing-to-undo = 元に戻す操作はありません。
+toast-cannot-undo-delete-forever = 完全に削除したメールは元に戻せません。
+toast-send-undone = 送信を取り消しました。
+toast-too-late-to-undo-send = 取り消すには遅すぎます: メールはすでに送信されました。
 toast-undo = 元に戻す
 toast-no-spam-folder = このアカウントには迷惑メールフォルダがありません。

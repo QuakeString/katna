@@ -45,6 +45,13 @@ compose-file-too-large = { $name } terlalu besar: satu pesan hanya dapat memuat 
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Hapus lampiran
 compose-drop-files = Letakkan file di sini
+compose-drop-here = Letakkan di sini
+compose-paste-keep-formatting = Pertahankan format
+compose-paste-table = Tabel
+compose-paste-picture = Gambar
+compose-paste-plain-text = Teks biasa
+compose-paste-inline = Dalam teks
+compose-paste-attachment = Lampiran
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = Kirim tanpa subjek?
 send-check-subject-text = Pesan ini tidak memiliki subjek.
 send-check-add-subject = Tambahkan subjek
 send-check-send-anyway = Tetap kirim
+recipient-not-valid = Bukan alamat email yang valid
+recipient-show-address = Tampilkan alamat
+recipient-bad-title = Periksa alamat
+recipient-bad-text = “{ $address }” bukan alamat email yang valid. Perbaiki atau hapus sebelum mengirim.
+recipient-bad-fix = Perbaiki

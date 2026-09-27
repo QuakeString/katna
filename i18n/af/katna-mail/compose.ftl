@@ -45,6 +45,13 @@ compose-file-too-large = { $name } is te groot: 'n boodskap kan tot { $limit } d
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Verwyder aanhegsel
 compose-drop-files = Los lêers hier
+compose-drop-here = Los hier
+compose-paste-keep-formatting = Behou formatering
+compose-paste-table = Tabel
+compose-paste-picture = Prent
+compose-paste-plain-text = Gewone teks
+compose-paste-inline = In die teks
+compose-paste-attachment = Aanhegsel
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = Stuur sonder onderwerp?
 send-check-subject-text = Hierdie boodskap het geen onderwerp nie.
 send-check-add-subject = Voeg onderwerp by
 send-check-send-anyway = Stuur in elk geval
+recipient-not-valid = Nie 'n geldige e-posadres nie
+recipient-show-address = Wys adres
+recipient-bad-title = Gaan die adres na
+recipient-bad-text = “{ $address }” is nie 'n geldige e-posadres nie. Maak dit reg of verwyder dit voor jy stuur.
+recipient-bad-fix = Maak reg

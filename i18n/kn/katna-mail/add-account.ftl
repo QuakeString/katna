@@ -62,6 +62,7 @@ add-account-address-empty = ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನ�
 add-account-address-invalid = { $example } ನಂತಹ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ.
 add-account-not-found = Katna ಗೆ { $address } ನ ಸರ್ವರ್‌ಗಳು ಸಿಗಲಿಲ್ಲ, ಆದ್ದರಿಂದ ಅದು ಸಾಮಾನ್ಯ ಹೆಸರುಗಳನ್ನು ತುಂಬಿದೆ. ನಿಮ್ಮ ಪೂರೈಕೆದಾರರೊಂದಿಗೆ ಅವುಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.
 add-account-password-empty = ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ.
+add-account-name-is-password = ಹೆಸರು ಪಾಸ್‌ವರ್ಡ್‌ನಂತೆಯೇ ಇದೆ. ಅದರ ಬದಲು ಅಲ್ಲಿ ನಿಮ್ಮ ಹೆಸರನ್ನು, ಜನರು ನೋಡಬೇಕಾದಂತೆ, ಟೈಪ್ ಮಾಡಿ.
 add-account-added = { $address } ಅನ್ನು ಸೇರಿಸಲಾಗಿದೆ. ನಿಮ್ಮ ಮೇಲ್ ತರಲಾಗುತ್ತಿದೆ…
 add-account-app-password-refused = { $provider } ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿರಾಕರಿಸಿದೆ. ಅದಕ್ಕೆ ಆ್ಯಪ್ ಪಾಸ್‌ವರ್ಡ್ ಬೇಕು, ನೀವು ವೆಬ್‌ನಲ್ಲಿ ಬಳಸುವುದಲ್ಲ.
 add-account-password-refused = ಸರ್ವರ್ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿರಾಕರಿಸಿದೆ. ಅದನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.

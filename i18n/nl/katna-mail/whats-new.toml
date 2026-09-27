@@ -358,3 +358,69 @@ aan de linkerkant, waar de mappen weer verschijnen als je de aanwijzer
 erop laat rusten. Linksboven staat Katna Mail, en de naam rolt door naar
 Agenda, Contacten en de rest als je van app wisselt.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Alle ongelezen mail of mail met ster selecteren"
+text = """
+Gelezen, Ongelezen, Met ster en Zonder ster in het menu Selecteren
+vinken nu elk passend gesprek in de map aan, niet alleen die op het
+scherm. Een regel boven de lijst zegt hoeveel er geselecteerd zijn, en
+archiveren, verwijderen, verplaatsen of markeren werkt op allemaal.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Verbeteringen zonder rechtsklik"
+text = """
+Laat de aanwijzer op een onderstreept woord rusten, of klik erop, en de
+verbeteringen verschijnen er vlak onder: spellingsuggesties,
+grammaticaverbeteringen en Negeren, in de tekst en het onderwerp. Met
+rechts klikken opent nog steeds het volledige menu.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "Ontvangers als chips"
+text = """
+Adressen in Aan, Cc en Bcc worden chips die alleen de naam tonen. Het
+pijltje op een chip toont het adres, en met dubbelklikken kun je het
+bewerken. Alles wat geen geldig adres is, wordt rood gemarkeerd, en
+Verzenden vraagt je het eerst te verbeteren.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna start bij inloggen"
+text = """
+Katna start nu stilletjes als je inlogt: e-mail wordt gesynchroniseerd,
+en meldingen voor nieuwe e-mail en het pictogram in het systeemvak
+verschijnen zonder dat het venster opent. Zet het uit, of laat ook het
+venster openen, in Instellingen > Algemeen > Desktop.
+"""
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Plak en sleep alles in een bericht"
+text = """
+Tekst die je kopieert uit Word, LibreOffice of een webpagina houdt zijn
+lettertypen, kleuren en lijsten, en cellen uit Excel, LibreOffice Calc
+of Google Sheets komen binnen als tabel. Met een kleine balk onder wat
+je hebt geplakt maak je er in plaats daarvan een tabel, afbeelding of
+platte tekst van; Ctrl+Shift+V plakt platte tekst. Bestanden die je in
+Dolphin kopieert of op het bericht sleept, worden bijgevoegd, en bij
+afbeeldingen kies je of ze in de tekst komen of als bijlage.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Een nieuw Katna-logo"
+text = """
+Katna heeft nu een eigen logo: কাটনা op een kaartje boven een envelop.
+Je ziet het in het appmenu, het paneel, het systeemvak, de bovenbalk en
+Over Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Jouw accounts, zoals jij wilt"
+text = """
+Elk account toont nu zijn eigen gekleurde letter in plaats van dezelfde
+afbeelding voor allemaal. In Instellingen > Accounts kun je voor elk
+account een afbeelding kiezen, het een andere naam geven en de accounts
+in de volgorde zetten die je wilt, met de pijlen of door te slepen; het
+mappenvenster en het accountmenu volgen die volgorde.
+"""

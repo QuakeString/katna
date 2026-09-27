@@ -28,3 +28,4 @@ app-contacts-count = 메일을 주고받은 사람 { $count }명, 많이 주고�
 app-contacts-top = 메일을 주고받은 상위 { $count }명, 많이 주고받은 순
 app-contacts-messages = 메일 { $count }개
 app-contacts-last = 최근 { $date }
+top-brand = Katna

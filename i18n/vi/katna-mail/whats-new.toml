@@ -347,3 +347,68 @@ nút này trượt vào thanh bên trái, nơi chỉ cần để con trỏ trên
 thư mục hiện lại. Góc trên bên trái hiện Katna Mail, và tên sẽ lần lượt
 chuyển thành Lịch, Danh bạ và các ứng dụng khác khi bạn chuyển ứng dụng.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Chọn mọi thư chưa đọc hoặc có gắn dấu sao"
+text = """
+Đã đọc, Chưa đọc, Có gắn dấu sao và Không có dấu sao trong menu Chọn giờ
+đánh dấu chọn mọi cuộc hội thoại khớp trong thư mục, không chỉ những
+cuộc trên màn hình. Một dòng phía trên danh sách cho biết đã chọn bao
+nhiêu, và thao tác lưu trữ, xóa, di chuyển hay đánh dấu áp dụng cho tất
+cả.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Sửa lỗi không cần nhấp chuột phải"
+text = """
+Để con trỏ trên một từ bị gạch chân, hoặc nhấp vào nó, và các gợi ý sửa
+hiện ngay bên dưới: gợi ý chính tả, sửa ngữ pháp và Bỏ qua, trong nội
+dung và tiêu đề. Nhấp chuột phải vẫn mở menu đầy đủ.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "Người nhận hiện dưới dạng thẻ"
+text = """
+Địa chỉ trong Tới, Cc và Bcc trở thành các thẻ chỉ hiện tên. Mũi tên
+trên thẻ cho xem địa chỉ của thẻ, và nhấp đúp để sửa. Những gì không
+phải là địa chỉ hợp lệ sẽ được đánh dấu màu đỏ, và Gửi sẽ yêu cầu bạn
+sửa trước.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna khởi động khi đăng nhập"
+text = """
+Giờ đây Katna khởi động lặng lẽ khi bạn đăng nhập: thư được đồng bộ,
+thông báo thư mới và biểu tượng ở khay xuất hiện mà không cần mở cửa sổ.
+Tắt tính năng này, hoặc cho cửa sổ mở cùng, trong Cài đặt > Chung > Môi
+trường máy tính.
+"""
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Dán và thả mọi thứ vào thư"
+text = """
+Văn bản sao chép từ Word, LibreOffice hay một trang web giữ nguyên phông
+chữ, màu sắc và danh sách, còn các ô từ Excel, LibreOffice Calc hay
+Google Sheets được đưa vào dưới dạng bảng. Một thanh nhỏ bên dưới phần
+bạn vừa dán cho phép đổi nó thành bảng, ảnh hoặc văn bản thuần;
+Ctrl+Shift+V dán văn bản thuần. Tệp được sao chép trong Dolphin hoặc kéo
+vào thư sẽ được đính kèm, còn ảnh sẽ hỏi bạn muốn chèn vào nội dung hay
+đính kèm.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Logo mới của Katna"
+text = """
+Katna giờ đã có logo riêng: chữ কাটনা trên một tấm thẻ đặt trên phong
+bì. Bạn sẽ thấy nó trong menu ứng dụng, bảng điều khiển, khay, thanh
+trên cùng và Giới thiệu về Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Tài khoản của bạn, theo cách của bạn"
+text = """
+Mỗi tài khoản giờ hiện chữ cái có màu riêng thay vì cùng một ảnh cho tất
+cả. Trong Cài đặt > Tài khoản, bạn có thể chọn ảnh cho từng tài khoản,
+đổi tên và sắp xếp các tài khoản theo thứ tự mình muốn bằng mũi tên hoặc
+bằng cách kéo; ngăn thư mục và menu tài khoản sẽ theo thứ tự đó.
+"""

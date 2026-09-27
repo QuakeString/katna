@@ -239,14 +239,26 @@ fn renews_idle_and_syncs_everything_periodically() {
         let worker = start(&server, config);
         assert!(matches!(worker.next().await, Event::Connected));
         assert!(matches!(worker.next().await, Event::Synced(_)));
-        // The second full sync.
+        // How many IDLEs fit before the next full sync depends on how busy
+        // the machine is, so wait for the renewals rather than counting
+        // them between two syncs.
+        let count = |name: &str| server.log().iter().filter(|c| *c == name).count();
+        let renewed = async {
+            while count("IDLE") < 4 {
+                Timer::after(Duration::from_millis(5)).await;
+            }
+            true
+        }
+        .or(async {
+            Timer::after(Duration::from_secs(10)).await;
+            false
+        });
+        assert!(renewed.await, "{:?}", server.log());
+        // The second full sync, waiting in the queue if it already ran.
         assert!(matches!(worker.next().await, Event::Synced(_)));
         worker.stop().await;
 
-        let log = server.log();
-        let count = |name: &str| log.iter().filter(|c| c.as_str() == name).count();
-        assert!(count("IDLE") >= 4, "{log:?}");
-        assert!(count("LIST") >= 2, "{log:?}");
+        assert!(count("LIST") >= 2, "{:?}", server.log());
         assert_eq!(server.state().connects, 1);
     });
 }

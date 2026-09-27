@@ -62,6 +62,7 @@ add-account-address-empty = Masukkan alamat email.
 add-account-address-invalid = Masukkan alamat email seperti { $example }.
 add-account-not-found = Katna tidak dapat menemukan server untuk { $address }, jadi Katna mengisi nama yang umum. Periksa dengan penyedia Anda.
 add-account-password-empty = Masukkan sandi.
+add-account-name-is-password = Nama sama dengan sandi. Ketik nama Anda di sana, seperti yang akan dilihat orang lain.
 add-account-added = { $address } ditambahkan. Mengambil email Anda…
 add-account-app-password-refused = { $provider } menolak sandi. Diperlukan sandi aplikasi, bukan sandi yang Anda gunakan di web.
 add-account-password-refused = Server menolak sandi. Periksa sandi, lalu coba lagi.

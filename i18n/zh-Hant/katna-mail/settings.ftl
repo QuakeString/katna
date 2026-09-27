@@ -62,6 +62,10 @@ settings-general-new-mail-detail = 附有「全部回覆」、「標示為已讀
 settings-general-new-mail-sound = 播放音效
 settings-general-new-mail-sound-detail = 桌面環境的新郵件音效
 settings-general-desktop = 桌面
+settings-general-start-at-login = 登入時啟動 Katna
+settings-general-start-at-login-detail = 同步郵件，並顯示新郵件通知和系統匣圖示，但不開啟視窗
+settings-general-login-window = 同時開啟 Katna Mail 視窗
+settings-general-login-window-detail = 登入時也會開啟視窗
 settings-general-tray = 在系統匣中顯示 Katna
 settings-general-tray-detail = 顯示未讀取郵件數和選單
 settings-general-unread-badge = 在工作列圖示上顯示未讀取郵件數
@@ -199,7 +203,7 @@ settings-general-remote-images-summary = 一律顯示所有郵件中的圖片
 settings-general-sending-summary = 取消傳送：已傳送的郵件要等候多久，以便你取消傳送
 settings-general-offline-summary = 要完整下載幾天內的近期郵件，以便離線閱讀
 settings-general-notifications-summary = 新郵件通知及其音效
-settings-general-desktop-summary = 登入時開啟 Katna Mail、系統匣圖示，以及工作列圖示上的未讀取郵件數
+settings-general-desktop-summary = 登入時啟動 Katna、系統匣圖示，以及工作列圖示上的未讀取郵件數
 settings-accounts-accounts-summary = 新增或移除帳戶，或變更帳戶圖片
 settings-appearance-density-summary = 清單中的列採用預設或精簡顯示
 settings-appearance-scaling-summary = 放大或縮小所有內容：文字、圖示、間距和分隔線
@@ -235,7 +239,7 @@ settings-search-results = 符合「{ $query }」的設定
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = 無法變更登入時開啟的設定：{ $error }
+settings-open-at-login-failed = 無法變更登入時啟動的設定：{ $error }
 
 ## Settings > General > Time
 
@@ -258,4 +262,9 @@ settings-compose-grammar = 文法
 settings-compose-grammar-detail = 在這台電腦上以 Harper 檢查。目前僅支援英文：其他語言的文字不會更動。
 settings-compose-grammar-check = 檢查文法
 settings-compose-grammar-check-detail = 撰寫時為文法錯誤加上底線（英文）
+settings-compose-suggestions = 寫作建議
+settings-compose-suggestions-detail = 在這台電腦上從你寄出的郵件和你正在回覆的郵件中學習，任何內容都不會離開這台電腦。按 Tab 採用建議，或繼續輸入。
+settings-compose-suggestions-on = 撰寫時提供建議
+settings-compose-suggestions-on-detail = 輸入時以灰色顯示詞組可能的後續內容
 settings-compose-grammar-summary = 撰寫時為文法錯誤加上底線（英文）
+settings-compose-suggestions-summary = 輸入時以灰色顯示詞組可能的後續內容

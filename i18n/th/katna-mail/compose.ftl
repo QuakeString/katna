@@ -45,6 +45,13 @@ compose-file-too-large = { $name } ใหญ่เกินไป: ข้อค�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = นำไฟล์แนบออก
 compose-drop-files = วางไฟล์ที่นี่
+compose-drop-here = วางที่นี่
+compose-paste-keep-formatting = คงการจัดรูปแบบไว้
+compose-paste-table = ตาราง
+compose-paste-picture = รูปภาพ
+compose-paste-plain-text = ข้อความธรรมดา
+compose-paste-inline = ในเนื้อความ
+compose-paste-attachment = ไฟล์แนบ
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = ส่งโดยไม่มีหัวเรื�
 send-check-subject-text = ข้อความนี้ไม่มีหัวเรื่อง
 send-check-add-subject = เพิ่มหัวเรื่อง
 send-check-send-anyway = ส่งเลย
+recipient-not-valid = ไม่ใช่ที่อยู่อีเมลที่ถูกต้อง
+recipient-show-address = แสดงที่อยู่
+recipient-bad-title = ตรวจสอบที่อยู่
+recipient-bad-text = “{ $address }” ไม่ใช่ที่อยู่อีเมลที่ถูกต้อง โปรดแก้ไขหรือนำออกก่อนส่ง
+recipient-bad-fix = แก้ไข

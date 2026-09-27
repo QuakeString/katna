@@ -68,6 +68,10 @@ settings-general-new-mail-detail = ”سب کو جواب دیں“، ”بطور
 settings-general-new-mail-sound = آواز چلائیں
 settings-general-new-mail-sound-detail = ڈیسک ٹاپ کی نئی میل کی آواز
 settings-general-desktop = ڈیسک ٹاپ
+settings-general-start-at-login = لاگ ان پر Katna شروع کریں
+settings-general-start-at-login-detail = ونڈو کھولے بغیر میل سنک کرتا ہے اور نئی میل کی اطلاعات اور ٹرے آئیکن دکھاتا ہے
+settings-general-login-window = Katna Mail کی ونڈو بھی کھولیں
+settings-general-login-window-detail = لاگ ان پر ونڈو بھی کھل جاتی ہے
 settings-general-tray = Katna کو سسٹم ٹرے میں دکھائیں
 settings-general-tray-detail = ناخواندہ تعداد اور ایک مینیو کے ساتھ
 settings-general-unread-badge = ٹاسک بار آئیکن پر ناخواندہ تعداد
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = ہر پیغام کی تصاویر ہم�
 settings-general-sending-summary = بھیجنا کالعدم کریں: بھیجا گیا پیغام کتنی دیر انتظار کرے، تاکہ اسے واپس لیا جا سکے
 settings-general-offline-summary = حالیہ میل کے کتنے دن پورے ڈاؤن لوڈ کیے جائیں، تاکہ کنکشن کے بغیر پڑھے جا سکیں
 settings-general-notifications-summary = نئی میل کی اطلاعات اور ان کی آواز
-settings-general-desktop-summary = لاگ ان پر Katna Mail کھولیں، سسٹم ٹرے آئیکن اور ٹاسک بار آئیکن پر ناخواندہ تعداد
+settings-general-desktop-summary = لاگ ان پر Katna شروع کریں، سسٹم ٹرے آئیکن اور ٹاسک بار آئیکن پر ناخواندہ تعداد
 settings-accounts-accounts-summary = اکاؤنٹ شامل کریں یا ہٹائیں، یا اس کی تصویر بدلیں
 settings-appearance-density-summary = فہرست میں ڈیفالٹ یا کمپیکٹ لائنیں
 settings-appearance-scaling-summary = ہر چیز بڑی یا چھوٹی کریں: متن، آئیکنز، فاصلہ اور تقسیم کار لائنیں
@@ -241,7 +245,7 @@ settings-search-results = ”{ $query }“ سے مماثل ترتیبات
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = لاگ ان پر کھولنے کی ترتیب نہیں بدل سکی: { $error }
+settings-open-at-login-failed = لاگ ان پر شروع ہونے کی ترتیب نہیں بدل سکی: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = گرامر
 settings-compose-grammar-detail = اسی کمپیوٹر پر Harper سے جانچا جاتا ہے۔ فی الحال صرف انگریزی: دوسری زبانوں کے متن کو نہیں چھیڑا جاتا۔
 settings-compose-grammar-check = گرامر کی جانچ کریں
 settings-compose-grammar-check-detail = لکھتے وقت گرامر کی غلطیوں کے نیچے لکیر لگائیں، انگریزی میں
+settings-compose-suggestions = لکھنے کی تجاویز
+settings-compose-suggestions-detail = اس کمپیوٹر پر آپ کی بھیجی ہوئی میل اور جس میل کا آپ جواب دے رہے ہیں، اس سے سیکھی جاتی ہیں؛ کچھ بھی اس کمپیوٹر سے باہر نہیں جاتا۔ تجویز لینے کے لیے Tab دبائیں، یا ٹائپ کرتے رہیں۔
+settings-compose-suggestions-on = لکھتے وقت تجویز دیں
+settings-compose-suggestions-on-detail = ٹائپ کرتے وقت جملے کا ممکنہ باقی حصہ سرمئی رنگ میں دکھائیں
 settings-compose-grammar-summary = لکھتے وقت گرامر کی غلطیوں کے نیچے لکیر لگائیں، انگریزی میں
+settings-compose-suggestions-summary = ٹائپ کرتے وقت جملے کا ممکنہ باقی حصہ سرمئی رنگ میں دکھائیں

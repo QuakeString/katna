@@ -62,6 +62,7 @@ add-account-address-empty = Geben Sie eine E-Mail-Adresse ein.
 add-account-address-invalid = Geben Sie eine E-Mail-Adresse wie { $example } ein.
 add-account-not-found = Katna konnte die Server für { $address } nicht finden und hat die üblichen Namen eingetragen. Prüfen Sie sie bei Ihrem Anbieter.
 add-account-password-empty = Geben Sie das Passwort ein.
+add-account-name-is-password = Der Name ist derselbe wie das Passwort. Geben Sie dort stattdessen Ihren Namen ein, so wie andere ihn sehen sollen.
 add-account-added = { $address } hinzugefügt. E-Mails werden abgerufen…
 add-account-app-password-refused = { $provider } hat das Passwort abgelehnt. Nötig ist ein App-Passwort, nicht das Passwort, das Sie im Web verwenden.
 add-account-password-refused = Der Server hat das Passwort abgelehnt. Prüfen Sie es und versuchen Sie es erneut.

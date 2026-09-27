@@ -995,10 +995,18 @@ a tile of one color sits on a disc of that color, and a see-through glyph
 sits on a white disc, or a dark one when the glyph is light.
 
 The user's own accounts show the picture picked in Settings → Accounts
-(kept in `$XDG_DATA_HOME/katna/account-pictures/<account id>`), else the
-desktop user's picture (`~/.face.icon`, the AccountsService icon, or
-`~/.face`). There is no OAuth, so a provider's profile photo is out of
-reach; Libravatar or Gravatar could come later as an opt-in.
+(kept in `$XDG_DATA_HOME/katna/account-pictures/<account id>`), else each
+its own coloured letter, so accounts tell apart. "Use desktop picture"
+copies the desktop user's picture (`~/.face.icon`, the AccountsService
+icon, or `~/.face`) in as the account's picture; it is not the default,
+because it made every account look the same. There is no OAuth, so a
+provider's profile photo (Google's needs a Google sign-in) is out of
+reach; when OAuth2 comes, it goes after the picked picture in
+`own_picture` (`window/remote.rs`). Libravatar or Gravatar could come
+later as an opt-in. Settings → Accounts also renames an account and sets
+the order accounts are listed in everywhere (Move up, Move down, or a
+drag by the handle; `mail.account_order` in `config.toml`), the first
+being the default.
 
 Size: this renderer added 2.7 MB to the release app (31.3 → 34.0 MB). For
 comparison, a minimal program with Blitz (`blitz-html` + `blitz-paint` +
@@ -1271,6 +1279,14 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   line names recipients by first name ("to me, Ada", as Gmail does) unless
   *Full names of recipients* is on or two share a first name
   (`mail.full_names`). All three are off by default.
+- **Auto-advance.** Deleting, archiving, moving or reporting the open
+  conversation opens the next one in its place, in the same frame, so the
+  reading pane never closes and reopens (the owner, 2026-09-27). Settings >
+  General > Auto-advance (`mail.auto_advance`, as Gmail's) picks the line
+  below (the default; the one above when it was the last), the line above
+  (the one below when it was the first), or the list. Undo, on the
+  snackbar or with Ctrl+Z, brings the conversation back and opens it again
+  once it is back in the list.
 - **Motion.** Springs (`katna_ui::motion::Spring`, on GPUI's spring
   solver) drive values that shape several elements: the navigation width,
   the search box turning white with a shadow when focused, the snackbar.
@@ -1410,6 +1426,16 @@ Gemini or confidential mode):
   "delete" typed. The daemon does the work (`RemoveAccount`,
   `DeleteAllData`); after deleting everything the app starts over with
   the default settings.
+- **Reset cache.** Settings → General has "Reset cache", as in Mailspring:
+  it deletes what Katna downloaded and can download again (bodies and
+  attachments of mail still on an IMAP server, sender pictures, the
+  search index) and syncs, so the offline window downloads again and older
+  mail downloads when opened. A dialog says what goes and what stays:
+  accounts, settings, flags, labels, pins, drafts, the outbox, changes not
+  yet on the server, and POP3 or imported mail, which may have no other
+  copy. The daemon stops the workers meanwhile (`ResetCache`,
+  `Store::forget_downloaded_mail`); the indexer empties the index in place
+  so apps searching it never lose it.
 - **Signatures.** Any number, each with a name; one default for new mail
   and one for replies and forwards. Each is edited with the rich editor
   and its own small toolbar (font, size, colors, link, picture, table,
@@ -2163,10 +2189,13 @@ Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssx)`
 `DiscoverAccount(address) → (account, source)`, `AddImapAccount(account,
 password) → id`, `AddPop3Account(account, password) → id` (with
 leave-on-server, days to keep, and delete-with-local),
-`SetPassword(id, password)`, `RemoveAccount(id) → b`,
+`SetPassword(id, password)`, `RenameAccount(id, name)` (an empty name
+goes back to the name the account's own sent mail uses, which a name-less
+account also takes after its first sync), `RemoveAccount(id) → b`,
 `DeleteAllData()` (stops every account, deletes every saved password,
 the data directory, the cache and `config.toml`, then the daemon exits;
-the next call starts a new one), `SyncNow(id)` (0 for every account), `FetchBody(message)`,
+the next call starts a new one), `ResetCache() → (tt)` (messages that lost
+their body, bytes deleted; see Settings above), `SyncNow(id)` (0 for every account), `FetchBody(message)`,
 `SetFlags(ax messages, as add, as remove)` (flag names `seen`, `answered`,
 `flagged`, `draft`, `forwarded`, `important`), `SetPinned(ax messages, b
 on)` (local only; more than ten pinned conversations is an error),
@@ -2264,9 +2293,10 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   (`org.kde.StatusNotifierItem-PID-N`), registered with
   `org.kde.StatusNotifierWatcher` again whenever the watcher restarts.
   Plasma shows it natively; GNOME needs the AppIndicator extension (on by
-  default on Ubuntu). The icon is drawn in code (the app icon's shapes plus
-  a red badge with the count, `99+` above 99), since the protocol takes
-  pixels and an SVG renderer would grow the daemon. Left click raises the
+  default on Ubuntu). The icon is the app icon pre-rendered at each tray
+  size (`crates/katna-platform/icons/`, from `packaging/icons/render.py`)
+  with a red badge drawn in code with the count, `99+` above 99, since the
+  protocol takes pixels and an SVG renderer would grow the daemon. Left click raises the
   app, middle click starts a new message. The right-click menu
   (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
   Quit. Quit closes the app and stops the daemon until the next login or

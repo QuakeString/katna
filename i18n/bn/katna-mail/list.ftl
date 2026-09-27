@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] { $folder }-এর সবকটি { $count }টি মেসেজ বেছে নিন
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টি পঠিত কথোপকথন বেছে নেওয়া হয়েছে।
+           *[other] সবকটি { $count }টি পঠিত কথোপকথন বেছে নেওয়া হয়েছে।
+        }
+       *[message] { $count ->
+            [one] { $count }টি পঠিত মেসেজ বেছে নেওয়া হয়েছে।
+           *[other] সবকটি { $count }টি পঠিত মেসেজ বেছে নেওয়া হয়েছে।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টি অপঠিত কথোপকথন বেছে নেওয়া হয়েছে।
+           *[other] সবকটি { $count }টি অপঠিত কথোপকথন বেছে নেওয়া হয়েছে।
+        }
+       *[message] { $count ->
+            [one] { $count }টি অপঠিত মেসেজ বেছে নেওয়া হয়েছে।
+           *[other] সবকটি { $count }টি অপঠিত মেসেজ বেছে নেওয়া হয়েছে।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টি তারকাচিহ্নিত কথোপকথন বেছে নেওয়া হয়েছে।
+           *[other] সবকটি { $count }টি তারকাচিহ্নিত কথোপকথন বেছে নেওয়া হয়েছে।
+        }
+       *[message] { $count ->
+            [one] { $count }টি তারকাচিহ্নিত মেসেজ বেছে নেওয়া হয়েছে।
+           *[other] সবকটি { $count }টি তারকাচিহ্নিত মেসেজ বেছে নেওয়া হয়েছে।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টি তারকাচিহ্নহীন কথোপকথন বেছে নেওয়া হয়েছে।
+           *[other] সবকটি { $count }টি তারকাচিহ্নহীন কথোপকথন বেছে নেওয়া হয়েছে।
+        }
+       *[message] { $count ->
+            [one] { $count }টি তারকাচিহ্নহীন মেসেজ বেছে নেওয়া হয়েছে।
+           *[other] সবকটি { $count }টি তারকাচিহ্নহীন মেসেজ বেছে নেওয়া হয়েছে।
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-এর { $count }টি পঠিত কথোপকথন বেছে নেওয়া হয়েছে।
+           *[other] { $folder }-এর সবকটি { $count }টি পঠিত কথোপকথন বেছে নেওয়া হয়েছে।
+        }
+       *[message] { $count ->
+            [one] { $folder }-এর { $count }টি পঠিত মেসেজ বেছে নেওয়া হয়েছে।
+           *[other] { $folder }-এর সবকটি { $count }টি পঠিত মেসেজ বেছে নেওয়া হয়েছে।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-এর { $count }টি অপঠিত কথোপকথন বেছে নেওয়া হয়েছে।
+           *[other] { $folder }-এর সবকটি { $count }টি অপঠিত কথোপকথন বেছে নেওয়া হয়েছে।
+        }
+       *[message] { $count ->
+            [one] { $folder }-এর { $count }টি অপঠিত মেসেজ বেছে নেওয়া হয়েছে।
+           *[other] { $folder }-এর সবকটি { $count }টি অপঠিত মেসেজ বেছে নেওয়া হয়েছে।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-এর { $count }টি তারকাচিহ্নিত কথোপকথন বেছে নেওয়া হয়েছে।
+           *[other] { $folder }-এর সবকটি { $count }টি তারকাচিহ্নিত কথোপকথন বেছে নেওয়া হয়েছে।
+        }
+       *[message] { $count ->
+            [one] { $folder }-এর { $count }টি তারকাচিহ্নিত মেসেজ বেছে নেওয়া হয়েছে।
+           *[other] { $folder }-এর সবকটি { $count }টি তারকাচিহ্নিত মেসেজ বেছে নেওয়া হয়েছে।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-এর { $count }টি তারকাচিহ্নহীন কথোপকথন বেছে নেওয়া হয়েছে।
+           *[other] { $folder }-এর সবকটি { $count }টি তারকাচিহ্নহীন কথোপকথন বেছে নেওয়া হয়েছে।
+        }
+       *[message] { $count ->
+            [one] { $folder }-এর { $count }টি তারকাচিহ্নহীন মেসেজ বেছে নেওয়া হয়েছে।
+           *[other] { $folder }-এর সবকটি { $count }টি তারকাচিহ্নহীন মেসেজ বেছে নেওয়া হয়েছে।
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] এখানে কোনো পঠিত কথোপকথন নেই।
+       *[message] এখানে কোনো পঠিত মেসেজ নেই।
+    }
+   *[unread] { $kind ->
+        [conversation] এখানে কোনো অপঠিত কথোপকথন নেই।
+       *[message] এখানে কোনো অপঠিত মেসেজ নেই।
+    }
+    [starred] { $kind ->
+        [conversation] এখানে কোনো তারকাচিহ্নিত কথোপকথন নেই।
+       *[message] এখানে কোনো তারকাচিহ্নিত মেসেজ নেই।
+    }
+    [unstarred] { $kind ->
+        [conversation] এখানে কোনো তারকাচিহ্নহীন কথোপকথন নেই।
+       *[message] এখানে কোনো তারকাচিহ্নহীন মেসেজ নেই।
+    }
+}
 list-clear-selection = বাছাই মুছুন
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count }টি মেসেজ চিরতরে মুছে ফেলা হয়েছে।
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথন পঠিত হিসেবে চিহ্নিত করা হয়েছে।
+       *[other] { $count }টি কথোপকথন পঠিত হিসেবে চিহ্নিত করা হয়েছে।
+    }
+   *[message] { $count ->
+        [one] মেসেজ পঠিত হিসেবে চিহ্নিত করা হয়েছে।
+       *[other] { $count }টি মেসেজ পঠিত হিসেবে চিহ্নিত করা হয়েছে।
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথন অপঠিত হিসেবে চিহ্নিত করা হয়েছে।
+       *[other] { $count }টি কথোপকথন অপঠিত হিসেবে চিহ্নিত করা হয়েছে।
+    }
+   *[message] { $count ->
+        [one] মেসেজ অপঠিত হিসেবে চিহ্নিত করা হয়েছে।
+       *[other] { $count }টি মেসেজ অপঠিত হিসেবে চিহ্নিত করা হয়েছে।
+    }
+}
 toast-undone = কাজটি পূর্বাবস্থায় ফেরানো হয়েছে।
+toast-nothing-to-undo = পূর্বাবস্থায় ফেরানোর মতো কিছু নেই।
+toast-cannot-undo-delete-forever = চিরতরে মুছে ফেলা মেল আর ফিরিয়ে আনা যায় না।
+toast-send-undone = পাঠানো পূর্বাবস্থায় ফেরানো হয়েছে।
+toast-too-late-to-undo-send = পূর্বাবস্থায় ফেরানোর সময় পেরিয়ে গেছে: মেসেজটি ইতিমধ্যে পাঠানো হয়েছে।
 toast-undo = পূর্বাবস্থায় ফেরান
 toast-no-spam-folder = এই অ্যাকাউন্টে কোনো স্প্যাম ফোল্ডার নেই।

@@ -28,3 +28,4 @@ app-contacts-count = { $count } orang dari email Anda, yang paling sering berkir
 app-contacts-top = { $count } orang teratas dari email Anda, yang paling sering berkirim email ditampilkan lebih dulu
 app-contacts-messages = { $count } pesan
 app-contacts-last = terakhir { $date }
+top-brand = Katna

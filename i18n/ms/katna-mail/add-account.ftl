@@ -62,6 +62,7 @@ add-account-address-empty = Masukkan alamat e-mel.
 add-account-address-invalid = Masukkan alamat e-mel seperti { $example }.
 add-account-not-found = Katna tidak dapat mencari pelayan untuk { $address }, jadi ia mengisi nama yang biasa. Semak dengan penyedia anda.
 add-account-password-empty = Masukkan kata laluan.
+add-account-name-is-password = Nama itu sama dengan kata laluan. Taipkan nama anda di situ, seperti yang patut dilihat oleh orang lain.
 add-account-added = { $address } telah ditambah. Mengambil mel anda…
 add-account-app-password-refused = { $provider } menolak kata laluan itu. Ia memerlukan kata laluan aplikasi, bukan kata laluan yang anda gunakan di web.
 add-account-password-refused = Pelayan menolak kata laluan itu. Semak dan cuba lagi.

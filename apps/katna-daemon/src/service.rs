@@ -78,12 +78,21 @@ macro_rules! pim_interface {
                     .await?)
             }
 
+            async fn rename_account(&self, account: i64, name: String) -> fdo::Result<()> {
+                Ok(self.daemon.rename_account(AccountId(account), &name)?)
+            }
+
             async fn remove_account(&self, account: i64) -> fdo::Result<bool> {
                 Ok(self.daemon.remove_account(AccountId(account)).await?)
             }
 
             async fn delete_all_data(&self) -> fdo::Result<()> {
                 Ok(self.daemon.delete_all_data().await?)
+            }
+
+            async fn reset_cache(&self) -> fdo::Result<(u64, u64)> {
+                let forgotten = self.daemon.reset_cache().await?;
+                Ok((forgotten.messages as u64, forgotten.bytes))
             }
 
             async fn sync_now(&self, account: i64) -> fdo::Result<()> {

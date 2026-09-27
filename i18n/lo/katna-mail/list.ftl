@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] ເລືອກການສົນທະນາທັງໝົດ { $count } ລາຍການໃນ { $folder }
    *[message] ເລືອກຂໍ້ຄວາມທັງໝົດ { $count } ລາຍການໃນ { $folder }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການແລ້ວ.
+    }
+   *[unread] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການແລ້ວ.
+    }
+    [starred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການແລ້ວ.
+    }
+    [unstarred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການແລ້ວ.
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການໃນ { $folder } ແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການໃນ { $folder } ແລ້ວ.
+    }
+   *[unread] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການໃນ { $folder } ແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການໃນ { $folder } ແລ້ວ.
+    }
+    [starred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການໃນ { $folder } ແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການໃນ { $folder } ແລ້ວ.
+    }
+    [unstarred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການໃນ { $folder } ແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການໃນ { $folder } ແລ້ວ.
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] ບໍ່ມີການສົນທະນາທີ່ອ່ານແລ້ວຢູ່ບ່ອນນີ້.
+       *[message] ບໍ່ມີຂໍ້ຄວາມທີ່ອ່ານແລ້ວຢູ່ບ່ອນນີ້.
+    }
+   *[unread] { $kind ->
+        [conversation] ບໍ່ມີການສົນທະນາທີ່ຍັງບໍ່ໄດ້ອ່ານຢູ່ບ່ອນນີ້.
+       *[message] ບໍ່ມີຂໍ້ຄວາມທີ່ຍັງບໍ່ໄດ້ອ່ານຢູ່ບ່ອນນີ້.
+    }
+    [starred] { $kind ->
+        [conversation] ບໍ່ມີການສົນທະນາທີ່ຕິດດາວແລ້ວຢູ່ບ່ອນນີ້.
+       *[message] ບໍ່ມີຂໍ້ຄວາມທີ່ຕິດດາວແລ້ວຢູ່ບ່ອນນີ້.
+    }
+    [unstarred] { $kind ->
+        [conversation] ບໍ່ມີການສົນທະນາທີ່ບໍ່ໄດ້ຕິດດາວຢູ່ບ່ອນນີ້.
+       *[message] ບໍ່ມີຂໍ້ຄວາມທີ່ບໍ່ໄດ້ຕິດດາວຢູ່ບ່ອນນີ້.
+    }
+}
 list-clear-selection = ລຶບການເລືອກ
 
 ## Mail list: empty states
@@ -160,6 +214,18 @@ toast-deleted-forever = { $kind ->
     [conversation] ລຶບການສົນທະນາ { $count } ລາຍການຖາວອນແລ້ວ.
    *[message] ລຶບຂໍ້ຄວາມ { $count } ລາຍການຖາວອນແລ້ວ.
 }
+toast-marked-read = { $kind ->
+    [conversation] ໝາຍການສົນທະນາ { $count } ລາຍການວ່າອ່ານແລ້ວ.
+   *[message] ໝາຍຂໍ້ຄວາມ { $count } ລາຍການວ່າອ່ານແລ້ວ.
+}
+toast-marked-unread = { $kind ->
+    [conversation] ໝາຍການສົນທະນາ { $count } ລາຍການວ່າຍັງບໍ່ໄດ້ອ່ານແລ້ວ.
+   *[message] ໝາຍຂໍ້ຄວາມ { $count } ລາຍການວ່າຍັງບໍ່ໄດ້ອ່ານແລ້ວ.
+}
 toast-undone = ຍ້ອນກັບການກະທຳແລ້ວ.
+toast-nothing-to-undo = ບໍ່ມີຫຍັງໃຫ້ຍ້ອນກັບ.
+toast-cannot-undo-delete-forever = ອີເມວທີ່ລຶບຖາວອນແລ້ວ ບໍ່ສາມາດກູ້ຄືນໄດ້.
+toast-send-undone = ຍົກເລີກການສົ່ງແລ້ວ.
+toast-too-late-to-undo-send = ສາຍເກີນໄປທີ່ຈະຍ້ອນກັບ: ຂໍ້ຄວາມຖືກສົ່ງໄປແລ້ວ.
 toast-undo = ຍ້ອນກັບ
 toast-no-spam-folder = ບັນຊີນີ້ບໍ່ມີໂຟນເດີສະແປມ.

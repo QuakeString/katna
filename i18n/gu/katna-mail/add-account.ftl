@@ -62,6 +62,7 @@ add-account-address-empty = ઇમેઇલ સરનામું દાખલ �
 add-account-address-invalid = { $example } જેવું ઇમેઇલ સરનામું દાખલ કરો.
 add-account-not-found = Katna ને { $address } માટે સર્વર મળ્યા નહીં, તેથી તેણે સામાન્ય નામો ભરી દીધાં. તમારા પ્રદાતા પાસેથી તેમની ખાતરી કરો.
 add-account-password-empty = પાસવર્ડ દાખલ કરો.
+add-account-name-is-password = નામ પાસવર્ડ જેવું જ છે. તેના બદલે ત્યાં તમારું નામ લખો, જેમ લોકોએ તે જોવું જોઈએ.
 add-account-added = { $address } ઉમેર્યું. તમારી મેઇલ લાવી રહ્યાં છીએ…
 add-account-app-password-refused = { $provider } એ પાસવર્ડ નકાર્યો. તેને ઍપ પાસવર્ડની જરૂર છે, તમે વેબ પર વાપરો છો તે નહીં.
 add-account-password-refused = સર્વરે પાસવર્ડ નકાર્યો. તેને તપાસો અને ફરી પ્રયાસ કરો.

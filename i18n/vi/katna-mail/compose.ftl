@@ -45,6 +45,13 @@ compose-file-too-large = { $name } quá lớn: một thư chỉ mang được t�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Xóa tệp đính kèm
 compose-drop-files = Thả tệp vào đây
+compose-drop-here = Thả vào đây
+compose-paste-keep-formatting = Giữ định dạng
+compose-paste-table = Bảng
+compose-paste-picture = Ảnh
+compose-paste-plain-text = Văn bản thuần
+compose-paste-inline = Trong nội dung
+compose-paste-attachment = Tệp đính kèm
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = Gửi mà không có tiêu đề?
 send-check-subject-text = Thư này không có tiêu đề.
 send-check-add-subject = Thêm tiêu đề
 send-check-send-anyway = Vẫn gửi
+recipient-not-valid = Không phải địa chỉ email hợp lệ
+recipient-show-address = Hiện địa chỉ
+recipient-bad-title = Kiểm tra địa chỉ
+recipient-bad-text = “{ $address }” không phải là địa chỉ email hợp lệ. Hãy sửa hoặc xóa nó trước khi gửi.
+recipient-bad-fix = Sửa

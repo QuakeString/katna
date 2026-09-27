@@ -45,6 +45,13 @@ compose-file-too-large = { $name } ໃຫຍ່ເກີນໄປ: ຂໍ້ຄ�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ລຶບໄຟລ໌ແນບ
 compose-drop-files = ວາງໄຟລ໌ໄວ້ບ່ອນນີ້
+compose-drop-here = ວາງໄວ້ບ່ອນນີ້
+compose-paste-keep-formatting = ຮັກສາການຈັດຮູບແບບ
+compose-paste-table = ຕາຕະລາງ
+compose-paste-picture = ຮູບພາບ
+compose-paste-plain-text = ຂໍ້ຄວາມທຳມະດາ
+compose-paste-inline = ໃນເນື້ອຫາ
+compose-paste-attachment = ໄຟລ໌ແນບ
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = ສົ່ງໂດຍບໍ່ມີຫົວເລ�
 send-check-subject-text = ຂໍ້ຄວາມນີ້ບໍ່ມີຫົວເລື່ອງ.
 send-check-add-subject = ເພີ່ມຫົວເລື່ອງ
 send-check-send-anyway = ສົ່ງຢູ່ດີ
+recipient-not-valid = ບໍ່ແມ່ນທີ່ຢູ່ອີເມວທີ່ຖືກຕ້ອງ
+recipient-show-address = ສະແດງທີ່ຢູ່
+recipient-bad-title = ກວດເບິ່ງທີ່ຢູ່
+recipient-bad-text = “{ $address }” ບໍ່ແມ່ນທີ່ຢູ່ອີເມວທີ່ຖືກຕ້ອງ. ແກ້ໄຂ ຫຼື ລຶບມັນອອກກ່ອນສົ່ງ.
+recipient-bad-fix = ແກ້ໄຂ

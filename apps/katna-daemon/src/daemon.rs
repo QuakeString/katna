@@ -20,7 +20,8 @@ use katna_core::{
 };
 use katna_dbus::{AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, state};
 use katna_i18n::tr;
-use katna_store::{FolderId, MessageFlags, MessageId, Mode, SendState, Store};
+use katna_search::IndexerWaker;
+use katna_store::{FolderId, Forgotten, MessageFlags, MessageId, Mode, SendState, Store};
 use katna_sync::{
     Credentials, Endpoint, MailBackend,
     autoconfig::Discovery,
@@ -36,6 +37,9 @@ use katna_sync::{
 };
 
 use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secrets};
+
+/// The longest account name taken.
+const MAX_ACCOUNT_NAME: usize = 200;
 
 /// How long a stopping worker may take to log out.
 const STOP_TIMEOUT: Duration = Duration::from_secs(10);
@@ -159,6 +163,10 @@ pub struct Daemon {
     desktop: OnceLock<desktop::Handle>,
     /// Set once all data is being deleted: nothing starts any more.
     closing: AtomicBool,
+    /// Set while the cache is being reset: workers start once it is done.
+    resetting: AtomicBool,
+    /// Asks the search indexer to start over, once it runs.
+    indexer: OnceLock<IndexerWaker>,
     /// Asks the [`crate::Instance`] to delete the files and exit; it
     /// answers on the sender inside.
     delete_requests: (Sender<DeleteDone>, Receiver<DeleteDone>),
@@ -200,6 +208,8 @@ impl Daemon {
             new_mail: OnceLock::new(),
             desktop: OnceLock::new(),
             closing: AtomicBool::new(false),
+            resetting: AtomicBool::new(false),
+            indexer: OnceLock::new(),
             delete_requests: async_channel::bounded(1),
             crash_uploads: async_channel::bounded(1),
         });
@@ -229,6 +239,11 @@ impl Daemon {
     /// Where settings changes for the taskbar count and the tray go.
     pub(crate) fn set_desktop(&self, handle: desktop::Handle) {
         let _ = self.desktop.set(handle);
+    }
+
+    /// The search indexer, for [`Daemon::reset_cache`].
+    pub(crate) fn set_indexer(&self, waker: IndexerWaker) {
+        let _ = self.indexer.set(waker);
     }
 
     pub(crate) fn new_mail_notices(&self) -> Option<Arc<NewMailNotices>> {
@@ -460,6 +475,47 @@ impl Daemon {
         Ok(pictures.sender(address).await)
     }
 
+    /// Renames an account. An empty name goes back to the name its own
+    /// mail carries, else its address.
+    pub fn rename_account(&self, id: AccountId, name: &str) -> Result<(), CommandError> {
+        let account = self.account(id)?;
+        let name = match name.trim() {
+            "" => self
+                .store()
+                .name_in_own_mail(id, &account.address)?
+                .unwrap_or_else(|| account.address.clone()),
+            name if name.chars().count() > MAX_ACCOUNT_NAME => {
+                return Err(CommandError::InvalidArgs(format!(
+                    "an account name is at most {MAX_ACCOUNT_NAME} characters"
+                )));
+            }
+            name => name.to_owned(),
+        };
+        self.store().rename_account(id, &name)?;
+        tracing::info!(account = %id, "account renamed");
+        let _ = self.notices.try_send(Notice::AccountsChanged);
+        Ok(())
+    }
+
+    /// An account known only by its address takes the name its own mail
+    /// is sent under, once there is some.
+    fn name_from_mail(&self, id: AccountId) {
+        let Ok(account) = self.account(id) else {
+            return;
+        };
+        let name = account.display_name.trim();
+        if !name.is_empty() && !name.eq_ignore_ascii_case(account.address.trim()) {
+            return;
+        }
+        let found = self.store().name_in_own_mail(id, &account.address);
+        let Ok(Some(name)) = found else {
+            return;
+        };
+        if self.store().rename_account(id, &name).is_ok() {
+            let _ = self.notices.try_send(Notice::AccountsChanged);
+        }
+    }
+
     /// Checks and saves a new password, then restarts the account's worker.
     pub async fn set_password(
         self: &Arc<Self>,
@@ -551,6 +607,50 @@ impl Daemon {
             .await
             .map_err(|_| CommandError::Failed("the service stopped".into()))?
             .map_err(CommandError::Failed)
+    }
+
+    /// Deletes what Katna downloaded and can download again: the bodies
+    /// and attachments of mail still on the server, the search index and
+    /// the sender pictures. Then syncs, which downloads the mail of the
+    /// offline window again; other mail downloads when opened. Accounts,
+    /// settings, flags, labels, pins and mail that exists only on this
+    /// computer (drafts, the outbox, changes not yet on the server) stay.
+    /// Nothing changes on the servers. Returns what was deleted.
+    pub async fn reset_cache(self: &Arc<Self>) -> Result<Forgotten, CommandError> {
+        if self.closing() {
+            return Err(CommandError::Failed("all data is being deleted".into()));
+        }
+        if self.resetting.swap(true, Ordering::SeqCst) {
+            return Err(CommandError::Failed(
+                "the cache is already being reset".into(),
+            ));
+        }
+        tracing::info!("resetting the cache, as the user asked");
+        // Workers store bodies; none may run while they are deleted.
+        let workers: Vec<_> = self.workers().drain().collect();
+        for (account, running) in workers {
+            stop(account, running).await;
+        }
+        let paths = self.paths.clone();
+        let forgotten = smol::unblock(move || forget_downloaded(&paths)).await;
+        if let Some(indexer) = self.indexer.get() {
+            indexer.rebuild();
+        }
+        self.resetting.store(false, Ordering::SeqCst);
+        match &forgotten {
+            Ok(forgotten) => tracing::info!(
+                messages = forgotten.messages,
+                bytes = forgotten.bytes,
+                "cache reset"
+            ),
+            Err(err) => tracing::warn!(%err, "resetting the cache"),
+        }
+        let accounts = self.store().accounts()?;
+        for account in &accounts {
+            self.start_account(account).await;
+            let _ = self.notices.try_send(Notice::MailChanged(account.id));
+        }
+        forgotten
     }
 
     /// Requests from [`Daemon::delete_all_data`].
@@ -964,7 +1064,8 @@ impl Daemon {
 
     /// Starts (or restarts) the worker of `account`.
     async fn start_account(self: &Arc<Self>, account: &Account) {
-        if self.closing.load(Ordering::SeqCst) {
+        // A reset starts every worker once it is done.
+        if self.closing.load(Ordering::SeqCst) || self.resetting.load(Ordering::SeqCst) {
             return;
         }
         let old = self.workers().remove(&account.id);
@@ -1081,6 +1182,9 @@ impl Daemon {
                     if changed || first {
                         let _ = self.notices.try_send(Notice::MailChanged(id));
                     }
+                    if first {
+                        self.name_from_mail(id);
+                    }
                     if let Some(notices) = self.new_mail_notices() {
                         notices.synced(&self.store, id).await;
                     }
@@ -1133,6 +1237,28 @@ enum Link {
 }
 
 /// Drops the handle and waits for the worker to log out.
+/// Forgets the downloaded mail of every IMAP account and deletes the
+/// sender pictures, for [`Daemon::reset_cache`]. POP3 servers may no longer
+/// have their mail, and imported mail has no server.
+fn forget_downloaded(paths: &Paths) -> Result<Forgotten, CommandError> {
+    let mut store = Store::open(paths, Mode::ReadWrite)?;
+    let accounts: Vec<AccountId> = store
+        .accounts()?
+        .into_iter()
+        .filter(|account| account.kind == AccountKind::Imap)
+        .map(|account| account.id)
+        .collect();
+    let forgotten = store.forget_downloaded_mail(&accounts)?;
+    let pictures = Pictures::cache_dir(paths.cache_dir());
+    match std::fs::remove_dir_all(&pictures) {
+        Err(err) if err.kind() != std::io::ErrorKind::NotFound => {
+            tracing::warn!(path = %pictures.display(), %err, "deleting sender pictures");
+        }
+        _ => {}
+    }
+    Ok(forgotten)
+}
+
 async fn stop(account: AccountId, running: Running) {
     drop(running.handle);
     wait_for(account, running.task).await;

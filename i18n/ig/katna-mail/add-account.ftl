@@ -62,6 +62,7 @@ add-account-address-empty = Tinye adreesị ozi-e.
 add-account-address-invalid = Tinye adreesị ozi-e dị ka { $example }.
 add-account-not-found = Katna enweghị ike ịchọta sava nke { $address }, ya mere o tinyere aha a na-ejikarị. Nyochaa ha n'aka onye na-enye gị ọrụ.
 add-account-password-empty = Tinye okwuntughe.
+add-account-name-is-password = Aha ahụ yiri okwuntughe. Pịnye aha gị ebe ahụ kama, dị ka ndị mmadụ kwesịrị ịhụ ya.
 add-account-added = Etinyela { $address }. Na-ebute ozi gị…
 add-account-app-password-refused = { $provider } jụrụ okwuntughe ahụ. Ọ chọrọ okwuntughe ngwa, ọ bụghị nke ị na-eji na weebụ.
 add-account-password-refused = Sava jụrụ okwuntughe ahụ. Nyochaa ya ma nwaa ọzọ.

@@ -45,6 +45,13 @@ compose-file-too-large = Файл { $name } слишком большой: пи�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Удалить вложение
 compose-drop-files = Перетащите файлы сюда
+compose-drop-here = Перетащите сюда
+compose-paste-keep-formatting = Сохранить форматирование
+compose-paste-table = Таблица
+compose-paste-picture = Изображение
+compose-paste-plain-text = Обычный текст
+compose-paste-inline = В тексте
+compose-paste-attachment = Вложение
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = Отправить без темы?
 send-check-subject-text = У этого письма нет темы.
 send-check-add-subject = Добавить тему
 send-check-send-anyway = Всё равно отправить
+recipient-not-valid = Недопустимый адрес электронной почты
+recipient-show-address = Показать адрес
+recipient-bad-title = Проверьте адрес
+recipient-bad-text = «{ $address }» — недопустимый адрес электронной почты. Исправьте или удалите его перед отправкой.
+recipient-bad-fix = Исправить

@@ -123,6 +123,22 @@ attachment-encrypted-open = ይህ ፋይል ተመስጥሮ ነው የመጣው
 print-failed = ማተም አልተቻለም፦ { $error }
 print-no-font = ምንም ቅርጸ-ቁምፊ አልተገኘም
 print-opened-as-pdf = ከዚያ ለማተም እንደ PDF ተከፍቷል።
+print-preview-title = የህትመት ቅድመ እይታ
+print-preview-laying-out = ገጾቹን በማዘጋጀት ላይ…
+print-preview-pages = { $count ->
+    [one] { $count } ገጽ
+   *[other] { $count } ገጾች
+}
+print-preview-more = { $count ->
+    [one] እና ተጨማሪ { $count } ገጽ
+   *[other] እና ተጨማሪ { $count } ገጾች
+}
+print-preview-failed = ገጾቹ ሊታዩ አልቻሉም
+print-preview-paper = ወረቀት
+print-preview-a4 = A4
+print-preview-letter = US Letter
+print-preview-cancel = ይቅር
+print-preview-print = አትም
 print-not-downloaded = (ገና አልወረደም።)
 print-encrypted = (የተመሰጠረ። ጽሑፉን ለማተም በKatna Mail ውስጥ ይክፈቱት።)
 print-to = ለ፦ { $addresses }

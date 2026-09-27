@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] 選取「{ $folder }」中的全部 { $count } 個會話群組
    *[message] 選取「{ $folder }」中的全部 { $count } 封郵件
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] 已選取全部 { $count } 個已讀取會話群組。
+       *[message] 已選取全部 { $count } 封已讀取郵件。
+    }
+   *[unread] { $kind ->
+        [conversation] 已選取全部 { $count } 個未讀取會話群組。
+       *[message] 已選取全部 { $count } 封未讀取郵件。
+    }
+    [starred] { $kind ->
+        [conversation] 已選取全部 { $count } 個已加星號的會話群組。
+       *[message] 已選取全部 { $count } 封已加星號的郵件。
+    }
+    [unstarred] { $kind ->
+        [conversation] 已選取全部 { $count } 個未加星號的會話群組。
+       *[message] 已選取全部 { $count } 封未加星號的郵件。
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] 已選取「{ $folder }」中的全部 { $count } 個已讀取會話群組。
+       *[message] 已選取「{ $folder }」中的全部 { $count } 封已讀取郵件。
+    }
+   *[unread] { $kind ->
+        [conversation] 已選取「{ $folder }」中的全部 { $count } 個未讀取會話群組。
+       *[message] 已選取「{ $folder }」中的全部 { $count } 封未讀取郵件。
+    }
+    [starred] { $kind ->
+        [conversation] 已選取「{ $folder }」中的全部 { $count } 個已加星號的會話群組。
+       *[message] 已選取「{ $folder }」中的全部 { $count } 封已加星號的郵件。
+    }
+    [unstarred] { $kind ->
+        [conversation] 已選取「{ $folder }」中的全部 { $count } 個未加星號的會話群組。
+       *[message] 已選取「{ $folder }」中的全部 { $count } 封未加星號的郵件。
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] 這裡沒有已讀取會話群組。
+       *[message] 這裡沒有已讀取郵件。
+    }
+   *[unread] { $kind ->
+        [conversation] 這裡沒有未讀取會話群組。
+       *[message] 這裡沒有未讀取郵件。
+    }
+    [starred] { $kind ->
+        [conversation] 這裡沒有已加星號的會話群組。
+       *[message] 這裡沒有已加星號的郵件。
+    }
+    [unstarred] { $kind ->
+        [conversation] 這裡沒有未加星號的會話群組。
+       *[message] 這裡沒有未加星號的郵件。
+    }
+}
 list-clear-selection = 清除選取
 
 ## Mail list: empty states
@@ -160,6 +214,18 @@ toast-deleted-forever = { $kind ->
     [conversation] 已永久刪除 { $count } 個會話群組。
    *[message] 已永久刪除 { $count } 封郵件。
 }
+toast-marked-read = { $kind ->
+    [conversation] 已將 { $count } 個會話群組標示為已讀取。
+   *[message] 已將 { $count } 封郵件標示為已讀取。
+}
+toast-marked-unread = { $kind ->
+    [conversation] 已將 { $count } 個會話群組標示為未讀取。
+   *[message] 已將 { $count } 封郵件標示為未讀取。
+}
 toast-undone = 已復原動作。
+toast-nothing-to-undo = 沒有可復原的動作。
+toast-cannot-undo-delete-forever = 永久刪除的郵件無法救回。
+toast-send-undone = 已復原傳送。
+toast-too-late-to-undo-send = 來不及復原：郵件已經寄出。
 toast-undo = 復原
 toast-no-spam-folder = 這個帳戶沒有垃圾郵件資料夾。

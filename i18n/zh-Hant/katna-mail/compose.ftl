@@ -45,6 +45,13 @@ compose-file-too-large = { $name } 太大：一封郵件最多只能夾帶 { $li
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 移除附件
 compose-drop-files = 將檔案拖放到這裡
+compose-drop-here = 拖放到這裡
+compose-paste-keep-formatting = 保留格式
+compose-paste-table = 表格
+compose-paste-picture = 圖片
+compose-paste-plain-text = 純文字
+compose-paste-inline = 內嵌於內文
+compose-paste-attachment = 附件
 
 ## Encryption and signing (the toggles by the recipients)
 
@@ -74,3 +81,8 @@ send-check-subject-title = 要在沒有主旨的情況下傳送嗎？
 send-check-subject-text = 這封郵件沒有主旨。
 send-check-add-subject = 新增主旨
 send-check-send-anyway = 仍要傳送
+recipient-not-valid = 不是有效的電子郵件地址
+recipient-show-address = 顯示地址
+recipient-bad-title = 檢查地址
+recipient-bad-text = 「{ $address }」不是有效的電子郵件地址。請在傳送前修正或移除。
+recipient-bad-fix = 修正

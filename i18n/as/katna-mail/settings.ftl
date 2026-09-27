@@ -68,6 +68,10 @@ settings-general-new-mail-detail = সকলোকে উত্তৰ দিয�
 settings-general-new-mail-sound = শব্দ বজাওক
 settings-general-new-mail-sound-detail = ডেস্কটপৰ নতুন মেইলৰ শব্দ
 settings-general-desktop = ডেস্কটপ
+settings-general-start-at-login = লগইনৰ সময়ত Katna আৰম্ভ কৰক
+settings-general-start-at-login-detail = উইণ্ড'ৰ নোখোলাকৈ মেইল ছিংক কৰে আৰু নতুন মেইলৰ জাননী আৰু ছিষ্টেম ট্ৰে আইকন দেখুৱায়
+settings-general-login-window = Katna Mail-ৰ উইণ্ড'টোও খোলক
+settings-general-login-window-detail = লগইনৰ সময়ত উইণ্ড'টোও খোল খায়
 settings-general-tray = ছিষ্টেম ট্ৰেত Katna দেখুৱাওক
 settings-general-tray-detail = নপঢ়াৰ সংখ্যা আৰু এটা মেনুৰ সৈতে
 settings-general-unread-badge = টাস্কবাৰ আইকনত নপঢ়াৰ সংখ্যা
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = প্ৰতিটো বাৰ্ত�
 settings-general-sending-summary = পঠোৱা আনডু কৰক: পঠোৱা বাৰ্তা এটাই কিমান সময় অপেক্ষা কৰে, যাতে ইয়াক ঘূৰাই আনিব পাৰি
 settings-general-offline-summary = সংযোগ নোহোৱাকৈ পঢ়িবলৈ কিমান দিনৰ শেহতীয়া মেইল সম্পূৰ্ণকৈ ডাউনল'ড হয়
 settings-general-notifications-summary = নতুন মেইলৰ জাননী আৰু সেইবোৰৰ শব্দ
-settings-general-desktop-summary = লগইনৰ সময়ত Katna Mail খোলক, ছিষ্টেম ট্ৰে আইকন আৰু টাস্কবাৰ আইকনত নপঢ়াৰ সংখ্যা
+settings-general-desktop-summary = লগইনৰ সময়ত Katna আৰম্ভ কৰক, ছিষ্টেম ট্ৰে আইকন আৰু টাস্কবাৰ আইকনত নপঢ়াৰ সংখ্যা
 settings-accounts-accounts-summary = একাউণ্ট যোগ কৰক বা আঁতৰাওক, বা ইয়াৰ ছবি সলনি কৰক
 settings-appearance-density-summary = তালিকাত ডিফ'ল্ট বা কম্পেক্ট শাৰী
 settings-appearance-scaling-summary = সকলোবোৰ ডাঙৰ বা সৰু কৰক: পাঠ, আইকন, ব্যৱধান আৰু বিভাজক
@@ -241,7 +245,7 @@ settings-search-results = “{ $query }”ৰ সৈতে মিলা ছে�
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = লগইনৰ সময়ত খোলাটো সলনি কৰিব পৰা নগ'ল: { $error }
+settings-open-at-login-failed = লগইনৰ সময়ত আৰম্ভ হোৱাটো সলনি কৰিব পৰা নগ'ল: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = ব্যাকৰণ
 settings-compose-grammar-detail = এই কম্পিউটাৰতে Harper-ৰে পৰীক্ষা কৰা হয়। এতিয়ালৈ কেৱল ইংৰাজী: আন ভাষাৰ পাঠ যেনেকৈ আছে তেনেকৈয়ে ৰখা হয়।
 settings-compose-grammar-check = ব্যাকৰণ পৰীক্ষা কৰক
 settings-compose-grammar-check-detail = লিখি থাকোঁতে ব্যাকৰণৰ ভুলৰ তলত ৰেখা টানক, ইংৰাজীত
+settings-compose-suggestions = লিখাৰ পৰামৰ্শ
+settings-compose-suggestions-detail = আপুনি পঠিওৱা মেইল আৰু আপুনি উত্তৰ দিয়া মেইলৰ পৰা এই কম্পিউটাৰতে শিকা; একোৱেই ইয়াৰ বাহিৰলৈ নাযায়। পৰামৰ্শ ল'বলৈ Tab টিপক, নহলে টাইপ কৰি থাকক।
+settings-compose-suggestions-on = লিখোঁতে পৰামৰ্শ দিয়ক
+settings-compose-suggestions-on-detail = টাইপ কৰোঁতে বাক্যাংশৰ সম্ভাব্য বাকী অংশ ধোঁৱা ৰঙত দেখুৱাওক
 settings-compose-grammar-summary = লিখি থাকোঁতে ব্যাকৰণৰ ভুলৰ তলত ৰেখা টানক, ইংৰাজীত
+settings-compose-suggestions-summary = টাইপ কৰোঁতে বাক্যাংশৰ সম্ভাব্য বাকী অংশ ধোঁৱা ৰঙত দেখুৱাওক
