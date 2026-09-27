@@ -9,8 +9,8 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, AnyView, App, Bounds, BoxShadow, Div, ElementId, FocusHandle, FontWeight, Pixels,
-    ScrollHandle, SharedString, Stateful, StyleRefinement, Window, canvas, div, linear_color_stop,
-    linear_gradient, point, prelude::*, rgba, svg,
+    ScrollHandle, SharedString, Stateful, StyleRefinement, Window, canvas, div, img, point,
+    prelude::*, rgba, svg,
 };
 use katna_ui::motion::lerp;
 use katna_ui::px;
@@ -29,22 +29,16 @@ pub fn icon(name: &str, color: u32, size: f32) -> AnyElement {
         .into_any_element()
 }
 
-/// The Katna Mail mark: the envelope on a rounded blue square, `size` px.
+/// Katna's logo, `size` px square. Below 48 px it takes the logo's small
+/// form, whose card carries only ক, since the whole word can't be read
+/// there (`packaging/icons/src/`).
 pub fn katna_mark(size: f32) -> AnyElement {
-    div()
-        .size(px(size))
-        .flex_none()
-        .flex()
-        .items_center()
-        .justify_center()
-        .rounded(px(size * 11.0 / 40.0))
-        .bg(linear_gradient(
-            135.0,
-            linear_color_stop(rgba(0x4f8df7ff), 0.0),
-            linear_color_stop(rgba(0x3949c9ff), 1.0),
-        ))
-        .child(icon("mail", 0xffffffff, size * 26.0 / 40.0))
-        .into_any_element()
+    img(SharedString::from(crate::assets::logo_path(
+        size * katna_ui::scale::scale(),
+    )))
+    .size(px(size))
+    .flex_none()
+    .into_any_element()
 }
 
 /// A tooltip saying `text`, for `.tooltip()`: it shows once the pointer
