@@ -210,6 +210,16 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                Restore defaults takes back your changes.",
         animation: None,
     },
+    Highlight {
+        id: 22,
+        title: "More settings",
+        text: "Open Katna Mail at login, choose when mail is marked read, make the \
+               reply button reply to everyone, always show images, mute the new-mail \
+               sound, hide Important markers, narrow long lines, keep mail's own \
+               colors in dark mode, turn off attachment previews, write in plain \
+               text, pick the spelling language and see saved files in their folder.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.

@@ -210,8 +210,8 @@ impl Daemon {
     /// server on `connection` (the session bus), as `notifications.new_mail`
     /// says. Call before [`Daemon::start`].
     pub async fn notify_new_mail(self: &Arc<Self>, connection: &zbus::Connection) {
-        let enabled = settings(&self.paths).notifications.new_mail;
-        match NewMailNotices::new(connection, enabled).await {
+        let notifications = settings(&self.paths).notifications;
+        match NewMailNotices::new(connection, &notifications).await {
             Ok(notices) => {
                 if self.new_mail.set(Arc::new(notices)).is_ok() {
                     smol::spawn(NewMailNotices::serve_actions(Arc::downgrade(self))).detach();
@@ -599,7 +599,7 @@ impl Daemon {
     }
 
     /// Reads the settings file again and applies what the daemon uses from
-    /// it (`sync.metered`, `sync.offline_days`, `notifications.new_mail`,
+    /// it (`sync.metered`, `sync.offline_days`, `notifications`,
     /// the `general` tray and badge switches, `feedback.send_crash_reports`).
     /// Katna Mail calls this after saving settings.
     pub fn reload_config(&self) -> Result<(), CommandError> {
@@ -609,6 +609,7 @@ impl Daemon {
             metered = ?config.sync.metered,
             offline_days = config.sync.offline_days,
             new_mail = config.notifications.new_mail,
+            sound = config.notifications.sound,
             "settings reloaded"
         );
         *self.metered_setting.lock().unwrap() = config.sync.metered;
@@ -619,7 +620,7 @@ impl Daemon {
             }
         }
         if let Some(notices) = self.new_mail_notices() {
-            notices.set_enabled(config.notifications.new_mail);
+            notices.set(&config.notifications);
         }
         if let Some(desktop) = self.desktop.get() {
             desktop.settings(config.general.clone());

@@ -136,12 +136,14 @@ impl Notifier {
     }
 
     /// Shows `mails` (not empty) of the account `origin` (its address),
-    /// replacing notification `replaces` if not 0. Returns its ID.
+    /// replacing notification `replaces` if not 0, with the new-mail sound
+    /// or, without `sound`, silently. Returns its ID.
     pub async fn new_mail(
         &self,
         origin: &str,
         mails: &[NewMail],
         replaces: u32,
+        sound: bool,
     ) -> zbus::Result<u32> {
         let (summary, body) = new_mail_text(mails);
         let mark_read = if mails.len() == 1 {
@@ -154,13 +156,17 @@ impl Notifier {
             actions.extend([action::REPLY_ALL, "Reply all"]);
         }
         actions.extend([action::MARK_READ, mark_read, action::ARCHIVE, "Archive"]);
-        let hints = HashMap::from([
+        let mut hints = HashMap::from([
             ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
             ("category", Value::from("email.arrived")),
-            ("sound-name", Value::from("message-new-email")),
             ("x-kde-origin-name", Value::from(origin)),
             ("urgency", Value::U8(1)),
         ]);
+        if sound {
+            hints.insert("sound-name", Value::from("message-new-email"));
+        } else {
+            hints.insert("suppress-sound", Value::Bool(true));
+        }
         self.proxy
             .notify(
                 "Katna Mail",

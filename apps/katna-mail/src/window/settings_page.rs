@@ -22,7 +22,7 @@ use gpui::{
     ScrollHandle, SharedString, Stateful, Subscription, Task, Window, div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountTabs, Density, FileGroup, OpenIn, ReadingPane, ShortcutSet, TabStyle,
+    AccountTabs, Density, FileGroup, MarkRead, OpenIn, ReadingPane, ShortcutSet, TabStyle,
     Theme as ThemeChoice,
 };
 use katna_ui::motion::lerp;
@@ -135,6 +135,10 @@ pub(super) struct SettingsPage {
     pub(super) info: Rc<RefCell<Option<SharedString>>>,
     /// A drag on the Scaling slider.
     pub(super) scale: super::scale_slider::ScaleDrag,
+    /// Whether Katna Mail opens at login, read when the page opened.
+    pub(super) open_at_login: bool,
+    /// The spelling dictionaries installed, read when the page opened.
+    dictionaries: Vec<String>,
 }
 
 impl SettingsPage {
@@ -190,6 +194,8 @@ impl MailWindow {
             flash: None,
             info: Rc::default(),
             scale: Default::default(),
+            open_at_login: crate::autostart::is_on(),
+            dictionaries: crate::spell::installed(),
         });
         if fresh {
             window.focus(&page.focus, cx);
@@ -450,6 +456,35 @@ impl MailWindow {
                 th,
             ))
             .child(self.row("Reading", None, self.reading_switches(th, cx), th))
+            .child(self.row("Mark as read", None, self.mark_read_choice(th, cx), th))
+            .child(self.row(
+                "Reply button",
+                None,
+                self.switch_row(
+                    "page-reply-all",
+                    "Reply to everyone",
+                    "The reply button beside each message replies to all, not only the sender",
+                    view.reply_all,
+                    Change::ReplyAll(!view.reply_all),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row(
+                "Images from the web",
+                Some("Loading a message's images tells its sender that you opened it, when, and roughly where. Off, each message asks first, and you can always show a sender's images."),
+                self.switch_row(
+                    "page-remote-images",
+                    "Always show images",
+                    "In every message, not only from senders you trust",
+                    view.remote_images,
+                    Change::RemoteImages(!view.remote_images),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
             .child(self.row(
                 "Sending",
                 Some("How long a sent message waits, so it can be taken back."),
@@ -463,11 +498,70 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
+                "Notifications",
+                Some("For new mail in the Inbox, even while Katna Mail is closed."),
+                self.notification_switches(th, cx),
+                th,
+            ))
+            .child(self.row(
                 "Desktop",
-                Some("Shown even while Katna Mail is closed."),
+                None,
                 self.desktop_switches(th, cx),
                 th,
             ))
+            .into_any_element()
+    }
+
+    /// When an opened conversation is marked read (`mail.mark_read`).
+    fn mark_read_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let now = self.config.mail.mark_read;
+        let mut choices = div().flex().flex_col().gap(px(2.0));
+        for when in MarkRead::ALL {
+            let (id, label) = match when {
+                MarkRead::Instantly => ("page-read-now", "As soon as it opens"),
+                MarkRead::AfterOneSecond => ("page-read-1s", "After it is open for 1 second"),
+                MarkRead::AfterThreeSeconds => ("page-read-3s", "After it is open for 3 seconds"),
+                MarkRead::Manually => ("page-read-never", "Only when I mark it read"),
+            };
+            choices = choices.child(self.radio_row(
+                id,
+                label,
+                now == when,
+                Change::MarkRead(when),
+                th,
+                cx,
+            ));
+        }
+        choices.into_any_element()
+    }
+
+    /// New-mail notifications and their sound, which the daemon shows.
+    fn notification_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let notifications = &self.config.notifications;
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(2.0))
+            .child(self.switch_row(
+                "page-new-mail",
+                "Notify me about new mail",
+                "With Reply all, Mark as read and Archive",
+                notifications.new_mail,
+                Change::NewMailNotices(!notifications.new_mail),
+                th,
+                cx,
+            ))
+            .when(notifications.new_mail, |d| {
+                d.child(self.switch_row(
+                    "page-new-mail-sound",
+                    "Play a sound",
+                    "The desktop's new-mail sound",
+                    notifications.sound,
+                    Change::NotificationSound(!notifications.sound),
+                    th,
+                    cx,
+                ))
+            })
             .into_any_element()
     }
 
@@ -574,6 +668,62 @@ impl MailWindow {
                 ),
                 th,
             ))
+            .child(self.row(
+                "Important markers",
+                None,
+                self.switch_row(
+                    "page-important-markers",
+                    "Show Important markers",
+                    "Beside each message in the list",
+                    view.important_markers,
+                    Change::ImportantMarkers(!view.important_markers),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row(
+                "Message width",
+                None,
+                self.switch_row(
+                    "page-limit-width",
+                    "Limit the width of messages",
+                    "Long lines are easier to read in a wide window",
+                    view.limit_width,
+                    Change::LimitWidth(!view.limit_width),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row(
+                "Mail colors",
+                Some("Most mail is designed for a white page. With a dark theme its colors are changed to dark ones that read well; off, it keeps its sender's colors on a light page."),
+                self.switch_row(
+                    "page-dark-mail",
+                    "Dark colors for mail too",
+                    "Only while the theme is dark",
+                    view.dark_mail,
+                    Change::DarkMail(!view.dark_mail),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row(
+                "Attachment previews",
+                None,
+                self.switch_row(
+                    "page-attachment-previews",
+                    "Show previews of attachments",
+                    "A small picture of each file's content on its card",
+                    view.attachment_previews,
+                    Change::AttachmentPreviews(!view.attachment_previews),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
             .into_any_element()
     }
 
@@ -663,10 +813,20 @@ impl MailWindow {
 
     fn desktop_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let general = &self.config.general;
+        let open_at_login = self.settings_page.as_ref().is_some_and(|p| p.open_at_login);
         div()
             .flex()
             .flex_col()
             .gap(px(2.0))
+            .child(self.switch_row(
+                "page-open-at-login",
+                "Open Katna Mail at login",
+                "Mail syncs at login either way, while the service runs",
+                open_at_login,
+                Change::OpenAtLogin(!open_at_login),
+                th,
+                cx,
+            ))
             .child(self.switch_row(
                 "page-tray",
                 "Show Katna in the system tray",
@@ -753,6 +913,20 @@ impl MailWindow {
                     ),
             )
             .children(groups)
+            .child(self.row(
+                "After saving",
+                None,
+                self.switch_row(
+                    "page-open-saved-folder",
+                    "Show saved files in their folder",
+                    "Opens the file manager with the saved attachments picked",
+                    self.config.mail.open_saved_folder,
+                    Change::OpenSavedFolder(!self.config.mail.open_saved_folder),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
             .into_any_element()
     }
 
@@ -1290,6 +1464,21 @@ impl MailWindow {
                 ))
             })
             .child(self.row(
+                "Format",
+                None,
+                self.switch_row(
+                    "page-plain-text",
+                    "Write in plain text",
+                    "New mail starts without formatting; the compose window can switch",
+                    sending.plain_text,
+                    Change::PlainText(!sending.plain_text),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row("Spelling", None, self.spelling_choice(th, cx), th))
+            .child(self.row(
                 "Templates",
                 Some("Save mail you write often, and start new mail or a reply from it."),
                 div()
@@ -1298,6 +1487,85 @@ impl MailWindow {
                 th,
             ))
             .into_any_element()
+    }
+
+    /// Spell checking and its dictionary (`sending.spell_check`,
+    /// `sending.spell_language`).
+    fn spelling_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let sending = &self.config.sending;
+        let dictionaries = self
+            .settings_page
+            .as_ref()
+            .map(|p| p.dictionaries.clone())
+            .unwrap_or_default();
+        let chosen = sending.spell_language.trim().to_owned();
+        let desktop = crate::spell::language("");
+        let mut chips = vec![
+            self.page_control(
+                chip(
+                    "spell-desktop",
+                    format!("Desktop's language ({desktop})"),
+                    chosen.is_empty(),
+                    th,
+                ),
+                th,
+                cx,
+            )
+            .on_click(cx.listener(|this, _, _, cx| this.set_spell_language(String::new(), cx)))
+            .into_any_element(),
+        ];
+        // A language set in the file by hand shows too, even without its
+        // dictionary.
+        let mut names = dictionaries;
+        if !chosen.is_empty() && !names.contains(&chosen) {
+            names.push(chosen.clone());
+        }
+        for (n, name) in names.into_iter().enumerate() {
+            let on = name == chosen;
+            chips.push(
+                self.page_control(chip(("spell-language", n), name.clone(), on, th), th, cx)
+                    .on_click(
+                        cx.listener(move |this, _, _, cx| {
+                            this.set_spell_language(name.clone(), cx)
+                        }),
+                    )
+                    .into_any_element(),
+            );
+        }
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(8.0))
+            .child(self.switch_row(
+                "page-spell-check",
+                "Check spelling while I write",
+                "Misspelled words are underlined, with suggestions on right-click",
+                sending.spell_check,
+                Change::SpellCheck(!sending.spell_check),
+                th,
+                cx,
+            ))
+            .when(sending.spell_check, |d| {
+                d.child(
+                    div()
+                        .px(px(8.0))
+                        .flex()
+                        .flex_row()
+                        .flex_wrap()
+                        .gap(px(6.0))
+                        .children(chips),
+                )
+            })
+            .into_any_element()
+    }
+
+    fn set_spell_language(&mut self, language: String, cx: &mut Context<Self>) {
+        if self.config.sending.spell_language == language {
+            return;
+        }
+        self.config.sending.spell_language = language;
+        self.save_config();
+        cx.notify();
     }
 
     // Shortcuts
