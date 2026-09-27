@@ -21,6 +21,11 @@ menus and popovers (`src/backdrop_blur.rs`, `src/backdrop_blur.wgsl`):
 - `backdrop_blur_supported()` says whether the blur is drawn. Without
   `COPY_SRC` marked quads are drawn as plain quads.
 
+It also changes drop shadows (`shaders.wgsl`, `fs_shadow`): a shadow is
+drawn only outside its element, as in CSS, so it does not darken a
+translucent element. Upstream draws it under the whole element, which an
+opaque element hides.
+
 `diff -r` against the published crate (in `~/.cargo/registry/src/` once
 fetched) shows the whole patch. When GPUI is upgraded, copy the new version
 here and apply the same change, or drop the patch once upstream GPUI can do
