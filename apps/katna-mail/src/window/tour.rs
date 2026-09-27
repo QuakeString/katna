@@ -14,9 +14,11 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, Bounds, Context, FocusHandle, FontWeight, KeyDownEvent, MouseButton, PathBuilder,
-    Pixels, Window, anchored, canvas, deferred, div, point, prelude::*, px, rgba,
+    Pixels, Window, anchored, canvas, deferred, div, point, prelude::*, rgba,
 };
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
+use katna_ui::unpx;
 
 use super::add_account::text_button;
 use super::{MailWindow, PANEL_RADIUS};
@@ -219,7 +221,7 @@ impl MailWindow {
         let from = tour.from;
         let focus = tour.focus.clone();
         let viewport = window.viewport_size();
-        let (vw, vh) = (f32::from(viewport.width), f32::from(viewport.height));
+        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let marks = self.tour_seen.clone();
         let scrim = fade(0x0000_00ff, 0.55);
 
@@ -399,10 +401,10 @@ impl MailWindow {
 fn lit_box(marks: &HashMap<Spot, Bounds<Pixels>>, spot: Spot) -> Option<[f32; 4]> {
     let b = marks.get(&spot)?;
     Some([
-        f32::from(b.origin.x) - PAD,
-        f32::from(b.origin.y) - PAD,
-        f32::from(b.size.width) + 2.0 * PAD,
-        f32::from(b.size.height) + 2.0 * PAD,
+        unpx(b.origin.x) - PAD,
+        unpx(b.origin.y) - PAD,
+        unpx(b.size.width) + 2.0 * PAD,
+        unpx(b.size.height) + 2.0 * PAD,
     ])
 }
 

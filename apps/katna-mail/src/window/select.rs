@@ -19,8 +19,10 @@ use std::rc::Rc;
 use gpui::{
     AnyElement, App, ClipboardItem, Context, DispatchPhase, Div, FocusHandle, HighlightStyle,
     MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent, Pixels, Point, SharedString,
-    StyledText, TextLayout, Window, actions, anchored, canvas, deferred, div, prelude::*, px, rgba,
+    StyledText, TextLayout, Window, actions, anchored, canvas, deferred, div, prelude::*, rgba,
 };
+
+use katna_ui::{px, unpx};
 
 use super::MailWindow;
 use crate::data::EntryKey;
@@ -149,8 +151,8 @@ impl TextSelection {
                 continue;
             }
             let b = piece.layout.bounds();
-            let dx = f32::from((b.left() - at.x).max(at.x - b.right())).max(0.0);
-            let dy = f32::from((b.top() - at.y).max(at.y - b.bottom())).max(0.0);
+            let dx = unpx((b.left() - at.x).max(at.x - b.right())).max(0.0);
+            let dy = unpx((b.top() - at.y).max(at.y - b.bottom())).max(0.0);
             // Beside a line counts as on it: rows beat columns.
             let distance = dy * 8.0 + dx;
             if best.is_none_or(|(d, _)| distance < d) {

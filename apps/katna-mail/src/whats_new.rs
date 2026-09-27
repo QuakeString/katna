@@ -197,6 +197,13 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 20,
+        title: "Make everything bigger or smaller",
+        text: "Settings > Appearance > Scaling sizes the whole window, text, icons \
+               and spacing alike, from 75% to 200% on top of your desktop's scale.",
+        animation: None,
+    },
+    Highlight {
+        id: 21,
         title: "Select and copy text in mail",
         text: "Drag across a message to select its text, double-click for a word \
                or triple-click for a paragraph. Ctrl+C or a right-click copies it, \

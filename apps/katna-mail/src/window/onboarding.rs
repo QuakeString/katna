@@ -10,10 +10,11 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, Task, Window, div,
-    ease_out_quint, prelude::*, px, rgba,
+    ease_out_quint, prelude::*, rgba,
 };
 use katna_core::config::{Density, ReadingPane, Theme as ThemeChoice};
 use katna_ui::motion::{self, lerp};
+use katna_ui::px;
 
 use super::add_account::{logo, text_button};
 use super::settings::Change;

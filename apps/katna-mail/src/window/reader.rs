@@ -13,12 +13,14 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, FontWeight, SharedString, div, ease_out_quint,
-    prelude::*, px, rgba,
+    prelude::*, rgba,
 };
 use katna_render::MessageView;
 use katna_render::html::Document;
 use katna_store::{MessageFlags, MessageId};
 use katna_ui::motion::lerp;
+use katna_ui::px;
+use katna_ui::unpx;
 
 use super::compose::Kind;
 use super::list::separator;
@@ -1144,7 +1146,7 @@ impl MailWindow {
             .overflow_hidden()
             .on_children_prepainted(move |bounds, _, _| {
                 if let Some(bounds) = bounds.first() {
-                    measured.set(f32::from(bounds.size.height));
+                    measured.set(unpx(bounds.size.height));
                 }
             })
             .child(

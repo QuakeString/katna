@@ -43,6 +43,7 @@ mod reader;
 mod remote;
 mod reply_row;
 mod rich;
+mod scale_slider;
 mod search_panel;
 mod select;
 mod settings;
@@ -63,7 +64,7 @@ use futures_lite::StreamExt;
 use gpui::{
     AnyElement, App, Context, Entity, FocusHandle, Focusable, FontWeight, Hsla, ListAlignment,
     ListState, MouseButton, MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task,
-    TextRun, UniformListScrollHandle, WeakEntity, Window, actions, div, prelude::*, px, rgba,
+    TextRun, UniformListScrollHandle, WeakEntity, Window, actions, div, prelude::*, rgba,
 };
 use jiff::tz::TimeZone;
 use katna_chrome::{Bar, ChromeColors, Environment, WindowChrome};
@@ -73,6 +74,8 @@ use katna_dbus::zbus::Connection;
 use katna_search::SearchResults;
 use katna_store::{FolderId, MessageFlags, MessageId};
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
+use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
 
 use crate::daemon::{self, Command};
@@ -197,7 +200,7 @@ fn compose_text_width(font: Option<&SharedString>, window: &Window) -> f32 {
         window
             .text_system()
             .shape_line(COMPOSE_LABEL.into(), px(COMPOSE_TEXT_SIZE), &[run], None);
-    f32::from(line.width).ceil() + 1.0
+    unpx(line.width).ceil() + 1.0
 }
 /// Corners of cards that float: menus aside, dialogs and panels.
 const PANEL_RADIUS: f32 = 15.0;
@@ -1095,7 +1098,7 @@ impl MailWindow {
     }
 
     fn reader_page(&self) -> f32 {
-        (f32::from(self.reader_scroll.bounds().size.height) - LINE_SCROLL).max(LINE_SCROLL)
+        (unpx(self.reader_scroll.bounds().size.height) - LINE_SCROLL).max(LINE_SCROLL)
     }
 
     fn scroll_down(&mut self, _: &ScrollDown, _: &mut Window, cx: &mut Context<Self>) {
@@ -1948,7 +1951,7 @@ impl MailWindow {
             return;
         }
         let width = (self.cards_width - SPLIT_GAP).max(1.0);
-        let dx = f32::from(event.position.x) - start_x;
+        let dx = unpx(event.position.x) - start_x;
         let share = (start_share - dx / width).clamp(0.25, 0.75);
         self.config.mail.reading_pane_share = share;
         cx.notify();
@@ -2075,10 +2078,8 @@ impl MailWindow {
                 .on_mouse_down(
                     MouseButton::Left,
                     cx.listener(|this, event: &gpui::MouseDownEvent, _, cx| {
-                        this.split_drag = Some((
-                            f32::from(event.position.x),
-                            this.config.mail.reading_pane_share,
-                        ));
+                        this.split_drag =
+                            Some((unpx(event.position.x), this.config.mail.reading_pane_share));
                         cx.stop_propagation();
                     }),
                 )
@@ -2127,6 +2128,8 @@ impl MailWindow {
 
 impl Render for MailWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        // Text without a size of its own follows Settings > Appearance > Scaling.
+        window.set_rem_size(px(16.0));
         self.chrome.sync_look(window, cx);
         if self.detached {
             let detached = self.render_detached(window, cx);

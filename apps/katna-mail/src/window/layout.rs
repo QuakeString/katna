@@ -14,10 +14,12 @@
 
 use gpui::{
     AnimationExt, AnyElement, Context, Decorations, FontWeight, SpringAnimation, Window, div,
-    prelude::*, px, rgba,
+    prelude::*, rgba,
 };
 use katna_ui::Ripple;
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
+use katna_ui::unpx;
 
 use super::apps::{APP_RAIL_WIDTH, App as RailApp};
 use super::{Compose, MailWindow, NAV_ROW_INSET, NAV_WIDTH, ToggleSettings};
@@ -305,7 +307,7 @@ impl MailWindow {
         layout.shape.page = layout.page.tick(window, reduce);
         layout.scrim.set(if layout.drawer { 1.0 } else { 0.0 });
         layout.scrim.tick(window, reduce);
-        let top = -f32::from(self.list_state.scroll_px_offset_for_scrollbar().y);
+        let top = -unpx(self.list_state.scroll_px_offset_for_scrollbar().y);
         let layout = &mut self.layout;
         layout.fold_fab(top);
         if first {

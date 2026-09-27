@@ -10,9 +10,10 @@ use std::rc::Rc;
 use gpui::{
     AnyElement, AnyView, App, Bounds, BoxShadow, Div, ElementId, FocusHandle, FontWeight, Pixels,
     ScrollHandle, SharedString, Stateful, StyleRefinement, Window, canvas, div, point, prelude::*,
-    px, rgba, svg,
+    rgba, svg,
 };
 use katna_ui::motion::lerp;
+use katna_ui::px;
 use katna_ui::{Ripple, Tooltip};
 
 use crate::theme::{Theme, avatar_color, fade, initial};

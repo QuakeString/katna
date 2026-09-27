@@ -6,12 +6,13 @@
 //! Gmail); the navigation shows it once the store has it.
 
 use gpui::{
-    AnyElement, Context, Entity, Focusable, FontWeight, Subscription, Window, div, prelude::*, px,
-    rgba,
+    AnyElement, Context, Entity, Focusable, FontWeight, Subscription, Window, div, prelude::*, rgba,
 };
 use katna_core::AccountId;
 use katna_store::FolderId;
 use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
+use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
 
 use super::MailWindow;
@@ -329,7 +330,7 @@ impl MailWindow {
                     ),
             );
         let viewport = window.viewport_size();
-        let (vw, vh) = (f32::from(viewport.width), f32::from(viewport.height));
+        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let card = div()
             .id("new-label")
             .occlude()
