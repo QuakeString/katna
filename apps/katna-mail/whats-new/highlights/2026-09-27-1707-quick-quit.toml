@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Quit closes at once"
+text = """
+Quit in the tray icon's menu no longer waits for mail that is still syncing
+or being indexed: Katna and its tray icon close straight away, and the rest
+carries on the next time Katna starts.
+"""

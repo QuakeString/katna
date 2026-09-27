@@ -78,6 +78,11 @@ compose-file-too-large = { $name } is too large: a message can carry up to { $li
 # An attached file's size, after its name. $size: such as "1.2 MB".
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Remove attachment
+# Above the attachments when there are two or more. $size: such as "18.4 MB".
+compose-attachments-total = { $count ->
+    [one] { $count } file, { $size }
+   *[other] { $count } files, { $size }
+}
 # Shown over the message while files are dragged over it.
 compose-drop-files = Drop files here
 # Shown over the message while text, cells or a picture from another app

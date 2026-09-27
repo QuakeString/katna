@@ -405,6 +405,9 @@ pub struct MailView {
     pub sender_pictures: bool,
     /// Show a conversation with its newest message at the top.
     pub newest_first: bool,
+    /// Show the contact panel beside an open conversation, in windows wide
+    /// enough for it: the sender's mail, files and signature details.
+    pub contact_panel: bool,
     /// Open each message with its full headers (from, to, cc, date and
     /// subject) shown.
     pub full_headers: bool,
@@ -501,6 +504,7 @@ impl Default for MailView {
             app_labels: true,
             sender_pictures: true,
             newest_first: false,
+            contact_panel: true,
             full_headers: false,
             full_names: false,
             open: OpenAttachments::default(),

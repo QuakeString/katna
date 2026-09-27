@@ -16,6 +16,7 @@ mod instance;
 mod mailto;
 mod outgoing;
 mod placement;
+mod profile;
 mod sidebar;
 mod signatures;
 mod spell;

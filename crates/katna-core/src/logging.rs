@@ -99,14 +99,28 @@ pub fn init(config_filter: &str) -> Result<()> {
         .map_err(|err| Error::Logging(err.to_string()))
 }
 
-/// Chooses the filter: `env_filter` if set and not empty, else `config_filter`.
+/// Libraries whose warnings are about the user's system rather than Katna,
+/// such as one line per broken font file. The config filter hides them
+/// unless it names them; `$KATNA_LOG` shows them as asked.
+const QUIET: &[&str] = &["fontdb"];
+
+/// Chooses the filter: `env_filter` if set and not empty, else `config_filter`
+/// with [`QUIET`] libraries kept to errors.
 fn build_filter(config_filter: &str, env_filter: Option<&str>) -> Result<EnvFilter> {
     let (source, directives) = match env_filter.map(str::trim) {
-        Some(env) if !env.is_empty() => (LOG_ENV, env),
-        _ => ("logging.filter", config_filter),
+        Some(env) if !env.is_empty() => (LOG_ENV, env.to_owned()),
+        _ => {
+            let mut directives = config_filter.trim().to_owned();
+            for target in QUIET {
+                if !directives.contains(target) {
+                    directives.push_str(&format!(",{target}=error"));
+                }
+            }
+            ("logging.filter", directives)
+        }
     };
     EnvFilter::builder()
-        .parse(directives)
+        .parse(&directives)
         .map_err(|err| Error::Logging(format!("{source} = {directives:?}: {err}")))
 }
 
@@ -117,7 +131,15 @@ mod tests {
     #[test]
     fn uses_config_filter_without_env() {
         let filter = build_filter("warn,katna_sync=debug", None).unwrap();
-        assert_eq!(filter.to_string(), "katna_sync=debug,warn");
+        assert_eq!(filter.to_string(), "katna_sync=debug,fontdb=error,warn");
+    }
+
+    #[test]
+    fn keeps_font_complaints_quiet_unless_asked() {
+        let filter = build_filter("info,fontdb=debug", None).unwrap();
+        assert_eq!(filter.to_string(), "fontdb=debug,info");
+        let filter = build_filter("info", Some("debug")).unwrap();
+        assert_eq!(filter.to_string(), "debug");
     }
 
     #[test]
@@ -125,7 +147,7 @@ mod tests {
         let filter = build_filter("warn", Some("trace")).unwrap();
         assert_eq!(filter.to_string(), "trace");
         let filter = build_filter("warn", Some("  ")).unwrap();
-        assert_eq!(filter.to_string(), "warn");
+        assert_eq!(filter.to_string(), "fontdb=error,warn");
     }
 
     #[test]
