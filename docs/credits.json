@@ -601,6 +601,16 @@
       "repository": "https://github.com/unicode-rs/unicode-segmentation"
     },
     {
+      "name": "writeable",
+      "version": "0.6.4",
+      "description": "A more efficient alternative to fmt::Display",
+      "license": "Unicode-3.0",
+      "authors": [
+        "The ICU4X Project Developers"
+      ],
+      "repository": "https://github.com/unicode-org/icu4x"
+    },
+    {
       "name": "zbus",
       "version": "5.19.0",
       "description": "API for D-Bus communication",

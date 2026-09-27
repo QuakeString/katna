@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 830 more of their own. Each keeps its own license.
+bring in 829 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -67,6 +67,7 @@ bring in 830 more of their own. Each keeps its own license.
 | [tracing-subscriber](https://github.com/tokio-rs/tracing) 0.3.23 | David Barsky, Eliza Weisman, Tokio Contributors | MIT | Utilities for implementing and composing `tracing` subscribers. |
 | [unic-langid](https://github.com/zbraniecki/unic-locale) 0.9.6 | Zibi Braniecki | MIT OR Apache-2.0 | API for managing Unicode Language Identifiers |
 | [unicode-segmentation](https://github.com/unicode-rs/unicode-segmentation) 1.13.3 | Manish Goregaokar, kwantam | MIT OR Apache-2.0 | This crate provides Grapheme Cluster, Word and Sentence boundaries according to Unicode Standard Annex #29 rules. |
+| [writeable](https://github.com/unicode-org/icu4x) 0.6.4 | The ICU4X Project Developers | Unicode-3.0 | A more efficient alternative to fmt::Display |
 | [zbus](https://github.com/z-galaxy/zbus) 5.19.0 | Zeeshan Ali Khan | MIT | API for D-Bus communication |
 | [zip](https://github.com/zip-rs/zip2) 8.6.0 | Chris Hennick, Marli Frost, Mathijs van de Nes, Ryan Levick | MIT | Library to support the reading and writing of zip files. |
 | [zstd](https://github.com/gyscos/zstd-rs) 0.14.0 | Alexandre Bury | BSD-3-Clause | Binding for the zstd compression library. |
