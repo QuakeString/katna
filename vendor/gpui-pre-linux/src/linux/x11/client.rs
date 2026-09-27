@@ -938,8 +938,7 @@ impl X11Client {
                     );
                     let position = state.xdnd_state.position;
                     drop(state);
-                    window
-                        .handle_input(PlatformInput::FileDrop(FileDropEvent::Pending { position }));
+                    window.handle_input(transfer::drag_move(position));
                 } else if event.type_ == state.atoms.XdndDrop {
                     xdnd_send_finished(
                         &state.xcb_connection,

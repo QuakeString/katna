@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = Hufungua kidhibiti faili huku viambat
 ## Settings > Compose
 
 settings-compose-send-from = Tuma jumbe mpya kutoka
-settings-compose-send-from-detail = Majibu na barua zinazosambazwa hutumwa kila wakati kutoka kwa akaunti uliyomo.
+settings-compose-send-from-detail = Jumbe mpya huanza kutoka akaunti hii; safu ya Kutoka huchagua nyingine. Majibu na barua zinazosambazwa hutumwa kila wakati kutoka kwa akaunti iliyopokea ujumbe asili.
 settings-compose-send-from-current = Akaunti uliyomo
 settings-compose-send-on-replies = Kutuma kwenye majibu
 settings-compose-send-on-replies-detail = Kile ambacho Tuma hufanya kwenye jibu au barua inayosambazwa. Menyu iliyo kando ya Tuma hutoa chaguo jingine.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = Mahali maandishi matupu, logi na msimbo vin
 settings-default-apps-sheets-summary = Mahali faili za Excel, OpenDocument na CSV zinapofunguka
 settings-default-apps-documents-summary = Mahali maandishi ya Word na OpenDocument na slaidi yanapofunguka
 settings-default-apps-after-saving-summary = Onyesha viambatisho vilivyohifadhiwa katika folda yake
-settings-compose-send-from-summary = Akaunti ambayo barua mpya hutumwa kutoka kwayo: ile uliyomo, au ileile kila wakati
+settings-compose-send-from-summary = Akaunti ambayo barua mpya hutumwa kutoka kwayo: ya kwanza, nyingine, au ile uliyomo
 settings-compose-send-on-replies-summary = Tuma, au Tuma na uweke mazungumzo kwenye kumbukumbu, kwenye majibu na barua zinazosambazwa
 settings-compose-signatures-summary = Huongezwa chini ya ujumbe wako, baada ya mstari wa “--”
 settings-compose-for-new-mail-summary = Sahihi ambayo barua mpya huanza nayo

@@ -19,6 +19,8 @@ compose-show-trimmed = แสดงเนื้อหาที่ตัดออ
 compose-to = ถึง
 compose-cc = สำเนา
 compose-bcc = สำเนาลับ
+compose-from = จาก
+compose-from-choose = ส่งจากบัญชีอื่น
 compose-recipients = ผู้รับ
 compose-subject = หัวเรื่อง
 

@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = ସେଭ ହୋଇଥିବା ଆ�
 ## Settings > Compose
 
 settings-compose-send-from = ନୂଆ ମେସେଜ ଏଠାରୁ ପଠାନ୍ତୁ
-settings-compose-send-from-detail = ଉତ୍ତର ଓ ଫରୱାର୍ଡ ସର୍ବଦା ଆପଣ ଥିବା ଆକାଉଣ୍ଟରୁ ଯାଏ।
+settings-compose-send-from-detail = ନୂଆ ମେସେଜ ଏହି ଆକାଉଣ୍ଟରୁ ଆରମ୍ଭ ହୁଏ; ପ୍ରେରକ ଧାଡ଼ିରେ ଅନ୍ୟ ଏକ ବାଛିହେବ। ଉତ୍ତର ଓ ଫରୱାର୍ଡ ସର୍ବଦା ମୂଳ ମେସେଜ ଆସିଥିବା ଆକାଉଣ୍ଟରୁ ଯାଏ।
 settings-compose-send-from-current = ଆପଣ ଥିବା ଆକାଉଣ୍ଟ
 settings-compose-send-on-replies = ଉତ୍ତରରେ ପଠାନ୍ତୁ
 settings-compose-send-on-replies-detail = ଉତ୍ତର କିମ୍ବା ଫରୱାର୍ଡରେ ପଠାନ୍ତୁ କ'ଣ କରେ। ପଠାନ୍ତୁ ପାଖରେ ଥିବା ମେନୁ ଅନ୍ୟଟି ଦିଏ।
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = ସାଧା ଟେକ୍ସଟ, ଲଗ ଓ
 settings-default-apps-sheets-summary = Excel, OpenDocument ଓ CSV ଫାଇଲ କେଉଁଠି ଖୋଲେ
 settings-default-apps-documents-summary = Word, OpenDocument ଟେକ୍ସଟ ଓ ସ୍ଲାଇଡ କେଉଁଠି ଖୋଲେ
 settings-default-apps-after-saving-summary = ସେଭ ହୋଇଥିବା ଆଟାଚମେଣ୍ଟକୁ ସେଗୁଡ଼ିକର ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ
-settings-compose-send-from-summary = ନୂଆ ମେଲ ଯେଉଁ ଆକାଉଣ୍ଟରୁ ଯାଏ: ଆପଣ ଥିବା ଆକାଉଣ୍ଟ, କିମ୍ବା ସର୍ବଦା ସେହି ଗୋଟିଏ
+settings-compose-send-from-summary = ନୂଆ ମେଲ ଯେଉଁ ଆକାଉଣ୍ଟରୁ ଯାଏ: ପ୍ରଥମଟି, ଅନ୍ୟ ଏକ, କିମ୍ବା ଆପଣ ଥିବା ଆକାଉଣ୍ଟ
 settings-compose-send-on-replies-summary = ଉତ୍ତର ଓ ଫରୱାର୍ଡରେ ପଠାନ୍ତୁ, କିମ୍ବା ପଠାନ୍ତୁ ଓ ବାର୍ତ୍ତାଳାପ ଆର୍କାଇଭ କରନ୍ତୁ
 settings-compose-signatures-summary = ଆପଣଙ୍କ ମେସେଜ ତଳେ, ଏକ “--” ଧାଡ଼ି ପରେ ଯୋଗ ହୁଏ
 settings-compose-for-new-mail-summary = ନୂଆ ମେଲ ଯେଉଁ ଦସ୍ତଖତରୁ ଆରମ୍ଭ ହୁଏ

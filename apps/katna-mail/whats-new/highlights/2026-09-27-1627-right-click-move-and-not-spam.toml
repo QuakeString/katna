@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Right-click menus fit each folder"
+text = """
+Choosing a folder or label under Move to in the right-click menu now moves
+the mail, with Undo, from search results too. In Spam, Report spam becomes
+Not spam. Trash offers Move to Inbox and Delete forever, Archive offers
+Move to Inbox, and Drafts and Sent leave out items that don't apply there.
+"""

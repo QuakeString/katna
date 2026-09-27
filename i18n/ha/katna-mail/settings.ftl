@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = Yana buɗe manajan fayiloli tare da z
 ## Settings > Compose
 
 settings-compose-send-from = Aika sababbin saƙonni daga
-settings-compose-send-from-detail = Amsoshi da turawa koyaushe suna fita daga asusun da kuke ciki.
+settings-compose-send-from-detail = Sababbin saƙonni suna farawa daga wannan asusu; layin Daga yana zaɓar wani. Amsoshi da turawa koyaushe suna fita daga asusun da saƙon asali ya zo masa.
 settings-compose-send-from-current = Asusun da kuke ciki
 settings-compose-send-on-replies = Aikawa a kan amsoshi
 settings-compose-send-on-replies-detail = Abin da Aika ke yi a kan amsa ko turawa. Menu da ke kusa da Aika yana ba da ɗayan.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = Inda rubutu mara ado, bayanan log da lamba 
 settings-default-apps-sheets-summary = Inda fayilolin Excel, OpenDocument da CSV suke buɗewa
 settings-default-apps-documents-summary = Inda Word, rubutun OpenDocument da silaidi suke buɗewa
 settings-default-apps-after-saving-summary = Nuna abubuwan haɗawa da aka ajiye a cikin foldarsu
-settings-compose-send-from-summary = Asusun da sababbin wasiƙu suke fita daga gare shi: wanda kuke ciki, ko koyaushe iri ɗaya
+settings-compose-send-from-summary = Asusun da sababbin wasiƙu suke fita daga gare shi: na farko, wani, ko wanda kuke ciki
 settings-compose-send-on-replies-summary = Aika, ko Aika kuma adana tattaunawar a ma'ajiya, a kan amsoshi da turawa
 settings-compose-signatures-summary = Ana ƙara shi a ƙasan saƙonku, bayan layin “--”
 settings-compose-for-new-mail-summary = Sa hannun da sababbin wasiƙu suke farawa da shi

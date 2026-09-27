@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = ফাইল ম্যানেজা
 ## Settings > Compose
 
 settings-compose-send-from = নতুন মেসেজ যেখান থেকে পাঠানো হবে
-settings-compose-send-from-detail = উত্তর ও ফরোয়ার্ড সবসময় আপনি যে অ্যাকাউন্টে আছেন সেখান থেকে যায়।
+settings-compose-send-from-detail = নতুন মেসেজ এই অ্যাকাউন্ট থেকে শুরু হয়; প্রেরক সারিতে অন্যটি বেছে নেওয়া যায়। উত্তর ও ফরোয়ার্ড সবসময় মূল মেসেজটি যে অ্যাকাউন্টে এসেছিল সেখান থেকে যায়।
 settings-compose-send-from-current = আপনি যে অ্যাকাউন্টে আছেন
 settings-compose-send-on-replies = উত্তরে পাঠান
 settings-compose-send-on-replies-detail = উত্তর বা ফরোয়ার্ডে “পাঠান” কী করে। “পাঠান”-এর পাশের মেনুতে অন্যটি পাবেন।
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = সাধারণ টেক্সট, ল�
 settings-default-apps-sheets-summary = Excel, OpenDocument ও CSV ফাইল কোথায় খুলবে
 settings-default-apps-documents-summary = Word, OpenDocument টেক্সট ও স্লাইড কোথায় খুলবে
 settings-default-apps-after-saving-summary = সেভ করা অ্যাটাচমেন্ট তাদের ফোল্ডারে দেখান
-settings-compose-send-from-summary = নতুন মেল কোন অ্যাকাউন্ট থেকে যাবে: আপনি যেটিতে আছেন, বা সবসময় একই অ্যাকাউন্ট
+settings-compose-send-from-summary = নতুন মেল কোন অ্যাকাউন্ট থেকে যাবে: প্রথমটি, অন্য একটি, বা আপনি যেটিতে আছেন
 settings-compose-send-on-replies-summary = উত্তর ও ফরোয়ার্ডে পাঠান, অথবা পাঠান ও কথোপকথন আর্কাইভ করুন
 settings-compose-signatures-summary = আপনার মেসেজের নিচে, একটি “--” লাইনের পরে যোগ করা হয়
 settings-compose-for-new-mail-summary = নতুন মেল যে স্বাক্ষর দিয়ে শুরু হয়

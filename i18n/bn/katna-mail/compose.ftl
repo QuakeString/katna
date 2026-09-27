@@ -19,6 +19,8 @@ compose-show-trimmed = ছাঁটা অংশ দেখান
 compose-to = প্রাপক
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = প্রেরক
+compose-from-choose = অন্য অ্যাকাউন্ট থেকে পাঠান
 compose-recipients = প্রাপকেরা
 compose-subject = বিষয়
 

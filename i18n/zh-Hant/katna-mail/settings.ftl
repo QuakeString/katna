@@ -153,7 +153,7 @@ settings-default-apps-show-folder-detail = 開啟檔案管理員並選取已儲�
 ## Settings > Compose
 
 settings-compose-send-from = 新郵件的寄件帳戶
-settings-compose-send-from-detail = 回覆和轉寄一律從你目前所在的帳戶寄出。
+settings-compose-send-from-detail = 新郵件從此帳戶開始，可在寄件者一列選擇其他帳戶。回覆和轉寄一律從收到原始郵件的帳戶寄出。
 settings-compose-send-from-current = 目前所在的帳戶
 settings-compose-send-on-replies = 回覆時的傳送方式
 settings-compose-send-on-replies-detail = 回覆或轉寄時「傳送」按鈕的動作。「傳送」旁的選單提供另一個選項。
@@ -229,7 +229,7 @@ settings-default-apps-text-summary = 純文字、記錄檔和程式碼要在哪�
 settings-default-apps-sheets-summary = Excel、OpenDocument 和 CSV 檔案要在哪裡開啟
 settings-default-apps-documents-summary = Word、OpenDocument 文字和簡報要在哪裡開啟
 settings-default-apps-after-saving-summary = 在資料夾中顯示已儲存的附件
-settings-compose-send-from-summary = 新郵件的寄件帳戶：目前所在的帳戶，或一律使用同一個帳戶
+settings-compose-send-from-summary = 新郵件的寄件帳戶：第一個帳戶、其他帳戶，或目前所在的帳戶
 settings-compose-send-on-replies-summary = 回覆和轉寄時是「傳送」，還是「傳送並封存」會話群組
 settings-compose-signatures-summary = 加在你的郵件下方「--」這一行之後
 settings-compose-for-new-mail-summary = 新郵件預設使用的簽名

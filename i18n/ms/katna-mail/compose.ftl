@@ -19,6 +19,8 @@ compose-show-trimmed = Tunjukkan kandungan yang dipangkas
 compose-to = Kepada
 compose-cc = Sk
 compose-bcc = Skt
+compose-from = Daripada
+compose-from-choose = Hantar daripada akaun lain
 compose-recipients = Penerima
 compose-subject = Subjek
 

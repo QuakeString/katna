@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = ਰੱਖਿਅਤ ਕੀਤੀਆਂ
 ## Settings > Compose
 
 settings-compose-send-from = ਨਵੇਂ ਸੁਨੇਹੇ ਇਸ ਤੋਂ ਭੇਜੋ
-settings-compose-send-from-detail = ਜਵਾਬ ਅਤੇ ਅੱਗੇ ਭੇਜੇ ਸੁਨੇਹੇ ਹਮੇਸ਼ਾ ਉਸ ਖਾਤੇ ਤੋਂ ਜਾਂਦੇ ਹਨ ਜਿਸ ਵਿੱਚ ਤੁਸੀਂ ਹੋ।
+settings-compose-send-from-detail = ਨਵੇਂ ਸੁਨੇਹੇ ਇਸ ਖਾਤੇ ਤੋਂ ਸ਼ੁਰੂ ਹੁੰਦੇ ਹਨ; ਵੱਲੋਂ ਵਾਲੀ ਕਤਾਰ ਵਿੱਚ ਕੋਈ ਹੋਰ ਚੁਣਿਆ ਜਾ ਸਕਦਾ ਹੈ। ਜਵਾਬ ਅਤੇ ਅੱਗੇ ਭੇਜੇ ਸੁਨੇਹੇ ਹਮੇਸ਼ਾ ਉਸ ਖਾਤੇ ਤੋਂ ਜਾਂਦੇ ਹਨ ਜਿਸ ਵਿੱਚ ਅਸਲ ਸੁਨੇਹਾ ਆਇਆ ਸੀ।
 settings-compose-send-from-current = ਜਿਸ ਖਾਤੇ ਵਿੱਚ ਤੁਸੀਂ ਹੋ
 settings-compose-send-on-replies = ਜਵਾਬਾਂ ’ਤੇ ਭੇਜੋ
 settings-compose-send-on-replies-detail = ਜਵਾਬ ਜਾਂ ਅੱਗੇ ਭੇਜਣ ’ਤੇ ਭੇਜੋ ਕੀ ਕਰਦਾ ਹੈ। ਭੇਜੋ ਦੇ ਨਾਲ ਵਾਲਾ ਮੀਨੂ ਦੂਜਾ ਵਿਕਲਪ ਦਿੰਦਾ ਹੈ।
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = ਸਾਦੀ ਲਿਖਤ, ਲੌਗ ਅਤ
 settings-default-apps-sheets-summary = Excel, OpenDocument ਅਤੇ CSV ਫ਼ਾਈਲਾਂ ਕਿੱਥੇ ਖੁੱਲ੍ਹਣ
 settings-default-apps-documents-summary = Word, OpenDocument ਲਿਖਤ ਅਤੇ ਸਲਾਈਡਾਂ ਕਿੱਥੇ ਖੁੱਲ੍ਹਣ
 settings-default-apps-after-saving-summary = ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਅਟੈਚਮੈਂਟਾਂ ਉਨ੍ਹਾਂ ਦੇ ਫੋਲਡਰ ਵਿੱਚ ਦਿਖਾਓ
-settings-compose-send-from-summary = ਨਵੀਂ ਮੇਲ ਜਿਸ ਖਾਤੇ ਤੋਂ ਜਾਂਦੀ ਹੈ: ਜਿਸ ਵਿੱਚ ਤੁਸੀਂ ਹੋ, ਜਾਂ ਹਮੇਸ਼ਾ ਇੱਕੋ
+settings-compose-send-from-summary = ਨਵੀਂ ਮੇਲ ਜਿਸ ਖਾਤੇ ਤੋਂ ਜਾਂਦੀ ਹੈ: ਪਹਿਲਾ, ਕੋਈ ਹੋਰ, ਜਾਂ ਜਿਸ ਵਿੱਚ ਤੁਸੀਂ ਹੋ
 settings-compose-send-on-replies-summary = ਜਵਾਬਾਂ ਅਤੇ ਅੱਗੇ ਭੇਜਣ ’ਤੇ ਭੇਜੋ, ਜਾਂ ਭੇਜੋ ਅਤੇ ਗੱਲਬਾਤ ਪੁਰਾਲੇਖਬੱਧ ਕਰੋ
 settings-compose-signatures-summary = ਤੁਹਾਡੇ ਸੁਨੇਹੇ ਦੇ ਹੇਠਾਂ, “--” ਲਾਈਨ ਤੋਂ ਬਾਅਦ ਜੋੜੇ ਜਾਂਦੇ ਹਨ
 settings-compose-for-new-mail-summary = ਉਹ ਦਸਤਖ਼ਤ ਜਿਨ੍ਹਾਂ ਨਾਲ ਨਵੀਂ ਮੇਲ ਸ਼ੁਰੂ ਹੁੰਦੀ ਹੈ

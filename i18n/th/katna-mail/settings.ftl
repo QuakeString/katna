@@ -153,7 +153,7 @@ settings-default-apps-show-folder-detail = เปิดตัวจัดกา�
 ## Settings > Compose
 
 settings-compose-send-from = ส่งข้อความใหม่จาก
-settings-compose-send-from-detail = การตอบกลับและการส่งต่อจะส่งจากบัญชีที่คุณใช้อยู่เสมอ
+settings-compose-send-from-detail = ข้อความใหม่จะเริ่มจากบัญชีนี้ และเลือกบัญชีอื่นได้ที่แถวจาก การตอบกลับและการส่งต่อจะส่งจากบัญชีที่ได้รับข้อความต้นฉบับเสมอ
 settings-compose-send-from-current = บัญชีที่คุณใช้อยู่
 settings-compose-send-on-replies = การส่งเมื่อตอบกลับ
 settings-compose-send-on-replies-detail = สิ่งที่ปุ่มส่งทำเมื่อตอบกลับหรือส่งต่อ เมนูข้างปุ่มส่งมีอีกตัวเลือกหนึ่ง
@@ -229,7 +229,7 @@ settings-default-apps-text-summary = แอปที่ใช้เปิดข�
 settings-default-apps-sheets-summary = แอปที่ใช้เปิดไฟล์ Excel, OpenDocument และ CSV
 settings-default-apps-documents-summary = แอปที่ใช้เปิด Word, ข้อความ OpenDocument และสไลด์
 settings-default-apps-after-saving-summary = แสดงไฟล์แนบที่บันทึกในโฟลเดอร์
-settings-compose-send-from-summary = บัญชีที่ใช้ส่งอีเมลใหม่: บัญชีที่คุณใช้อยู่ หรือบัญชีเดิมเสมอ
+settings-compose-send-from-summary = บัญชีที่ใช้ส่งอีเมลใหม่: บัญชีแรก บัญชีอื่น หรือบัญชีที่คุณใช้อยู่
 settings-compose-send-on-replies-summary = ส่ง หรือส่งและเก็บถาวรการสนทนา เมื่อตอบกลับและส่งต่อ
 settings-compose-signatures-summary = เพิ่มไว้ใต้ข้อความของคุณ หลังบรรทัด “--”
 settings-compose-for-new-mail-summary = ลายเซ็นที่ใช้เริ่มอีเมลใหม่

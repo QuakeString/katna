@@ -19,6 +19,8 @@ compose-show-trimmed = 省略されたコンテンツを表示
 compose-to = To
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = From
+compose-from-choose = 別のアカウントから送信
 compose-recipients = 宛先
 compose-subject = 件名
 

@@ -15,6 +15,12 @@ nav-label-new = Create new label
 nav-folder-new = Create new folder
 # An account whose name is unknown. $number: its number.
 nav-account-unnamed = Account { $number }
+# The heading of the unified inbox, over the accounts in the folder pane:
+# each special folder of every account in one list.
+nav-all-accounts = All Accounts
+# Tooltips of the arrow beside an account's name and beside "All Accounts".
+nav-expand = Show folders
+nav-collapse = Hide folders
 # The badge of an inbox tab in a phone's drawer: how many new messages it has.
 nav-tab-new = { $count ->
     [one] { $count } new
@@ -26,6 +32,10 @@ nav-tab-new = { $count ->
 folder-inbox = Inbox
 # Starred (flagged) messages.
 folder-starred = Starred
+# Unread messages of every account (in the unified inbox).
+folder-unread = Unread
+# Messages marked important (in the unified inbox).
+folder-important = Important
 folder-drafts = Drafts
 folder-sent = Sent
 folder-archive = Archive

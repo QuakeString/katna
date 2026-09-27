@@ -19,6 +19,8 @@ compose-show-trimmed = የተከረከመውን ይዘት አሳይ
 compose-to = ለ
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = ከ
+compose-from-choose = ከሌላ መለያ ላክ
 compose-recipients = ተቀባዮች
 compose-subject = ርዕሰ ጉዳይ
 

@@ -460,3 +460,12 @@ text = """
 Als je Katna nuttig vindt, heeft Over Katna nu een knop Trakteer me op
 een koffie en een QR-code die dezelfde pagina op je telefoon opent.
 """
+
+["2026-09-27-1615-from-row"]
+title = "Kies van wie een bericht komt"
+text = """
+Nieuwe berichten tonen nu een rij Van onder Aan. Klik op het pijltje om
+vanaf een ander account van je te verzenden. Nieuwe e-mail begint vanaf
+je eerste account, tenzij je een andere standaard kiest in
+Instellingen > Opstellen > Nieuwe berichten verzenden vanaf.
+"""

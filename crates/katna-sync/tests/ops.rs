@@ -336,3 +336,79 @@ fn impossible_changes_are_errors() {
     replay(&server, &mut store, account, NOW);
     assert!(server.uids("INBOX").is_empty());
 }
+
+/// A draft as Katna Mail saves it; every save keeps the `Message-ID`.
+fn draft(subject: &str) -> Vec<u8> {
+    format!(
+        "From: Alice <alice@example.org>\r\nTo: kay@example.org\r\nSubject: {subject}\r\n\
+         Message-ID: <draft-1@example.org>\r\n\r\nText of {subject}.\r\n"
+    )
+    .into_bytes()
+}
+
+fn subjects(store: &Store, folder: FolderId) -> Vec<String> {
+    store
+        .messages_in_folder(folder)
+        .unwrap()
+        .into_iter()
+        .map(|m| m.subject)
+        .collect()
+}
+
+#[test]
+fn drafts_replace_their_older_copies_here_and_on_the_server() {
+    let (_tmp, mut store, account) = setup();
+    let server = FakeServer::default();
+    for name in ["INBOX", "Drafts", "Trash"] {
+        server.create(name, 1);
+    }
+    sync(&server, &mut store, account);
+    let drafts = folder(&store, account, "Drafts");
+
+    let (first, queued) = ops::save_draft(&mut store, account, &draft("one"), NOW).unwrap();
+    assert!(queued);
+    assert_eq!(subjects(&store, drafts), ["one"]);
+    assert!(flags_of(&store, first).contains(MessageFlags::DRAFT | MessageFlags::SEEN));
+
+    // Saved again before the upload: only the newest goes up.
+    ops::save_draft(&mut store, account, &draft("two"), NOW).unwrap();
+    assert_eq!(subjects(&store, drafts), ["two"]);
+    assert_eq!(store.due_ops(account, NOW, 10).unwrap().len(), 1);
+    server.clear_log();
+    let report = replay(&server, &mut store, account, NOW);
+    assert_eq!(report.resync, [(drafts, "Drafts".to_owned())]);
+    let appends = server
+        .log()
+        .iter()
+        .filter(|l| l.starts_with("APPEND"))
+        .count();
+    assert_eq!(appends, 1);
+    assert_eq!(server.uids("Drafts").len(), 1);
+    assert!(server.flags("Drafts", server.uids("Drafts")[0]).draft);
+    sync(&server, &mut store, account);
+    assert_eq!(subjects(&store, drafts), ["two"]);
+
+    // Saved after the upload: the server's copy gives way too.
+    ops::save_draft(&mut store, account, &draft("three"), NOW).unwrap();
+    assert_eq!(subjects(&store, drafts), ["three"]);
+    replay(&server, &mut store, account, NOW);
+    sync(&server, &mut store, account);
+    assert_eq!(server.uids("Drafts").len(), 1);
+    assert_eq!(subjects(&store, drafts), ["three"]);
+
+    // Discarded: gone here and there.
+    let queued = ops::discard_draft(&mut store, account, "<draft-1@example.org>").unwrap();
+    assert!(queued);
+    assert!(subjects(&store, drafts).is_empty());
+    replay(&server, &mut store, account, NOW);
+    sync(&server, &mut store, account);
+    assert!(server.uids("Drafts").is_empty());
+    assert!(subjects(&store, drafts).is_empty());
+}
+
+#[test]
+fn drafts_need_a_drafts_folder_on_the_server() {
+    let (_tmp, mut store, account, _server) = setup_synced();
+    let err = ops::save_draft(&mut store, account, &draft("one"), NOW).unwrap_err();
+    assert!(matches!(err, ChangeError::NotPossible(_)), "{err}");
+}

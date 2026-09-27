@@ -150,6 +150,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Accounts,
+        "accounts-unified",
+        "accounts-unified-switch-detail",
+        "unified inbox all accounts combined merged together",
+    ),
+    entry(
+        Section::Accounts,
         "accounts-row",
         "settings-accounts-accounts-summary",
         "add remove delete account picture photo avatar",

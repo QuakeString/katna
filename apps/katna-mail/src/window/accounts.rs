@@ -7,9 +7,13 @@
 //! General) asks in the same dialog, saying what is downloaded again and
 //! what is kept.
 
+use std::cell::RefCell;
+use std::rc::Rc;
+
 use gpui::{
-    AnyElement, Context, Div, Entity, Focusable, FontWeight, SharedString, Stateful, Subscription,
-    Window, div, prelude::*, rgba,
+    AnyElement, Bounds, Context, Div, DragMoveEvent, ElementId, Entity, Focusable, FontWeight,
+    MouseButton, MouseDownEvent, Pixels, SharedString, Stateful, Subscription, Window, canvas,
+    deferred, div, prelude::*, rgba,
 };
 use katna_core::config::AccountsShown;
 use katna_core::{Account, AccountId, AccountKind, Config};
@@ -44,30 +48,119 @@ pub(super) struct Renaming {
     _subscription: Subscription,
 }
 
-/// An account being dragged to a new place in Settings > Accounts, drawn
-/// as a chip with its name under the pointer.
+/// An account being dragged to a new place in Settings > Accounts. The
+/// row itself follows the pointer, so what GPUI draws under it is empty.
 #[derive(Clone)]
 struct AccountDrag {
     ix: usize,
-    name: SharedString,
-    th: Theme,
 }
 
 impl Render for AccountDrag {
     fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
-        let th = &self.th;
         div()
-            .h(px(36.0))
-            .px(px(16.0))
-            .flex()
-            .items_center()
-            .rounded_full()
-            .bg(rgba(th.surface))
-            .shadow(elevation(th, 2.0))
-            .text_size(px(14.0))
-            .font_weight(FontWeight::MEDIUM)
-            .text_color(rgba(th.text))
-            .child(self.name.clone())
+    }
+}
+
+/// The space between two account rows.
+const ROW_GAP: f32 = 4.0;
+
+/// Reordering Settings > Accounts: the row being dragged lifts and follows
+/// the pointer, the rows it passes slide out of its way, and after a drop
+/// or a Move up or down every row glides from where it was to its place.
+#[derive(Default)]
+pub(super) struct Reorder {
+    /// Each row's bounds as last painted, offset included.
+    bounds: Rc<RefCell<Vec<Option<Bounds<Pixels>>>>>,
+    /// Where the pointer went down on a row's handle.
+    grab: Option<(usize, f32)>,
+    moving: Option<Moving>,
+    /// Rows gliding to their place after the order changed, by account.
+    gliding: Vec<(AccountId, Spring)>,
+    /// The row whose Move up or down has the keyboard focus.
+    focused: Option<usize>,
+}
+
+/// A drag under way.
+struct Moving {
+    from: usize,
+    /// Where the row would go if dropped now.
+    to: usize,
+    grab_y: f32,
+    pointer_y: f32,
+    /// The other rows moving aside.
+    slides: Vec<Spring>,
+    /// Each row's offset as drawn this frame.
+    drawn: Vec<f32>,
+}
+
+impl Reorder {
+    /// How far row `ix` is drawn from its place.
+    fn offset(&self, ix: usize, id: AccountId) -> f32 {
+        match &self.moving {
+            Some(moving) => moving.drawn.get(ix).copied().unwrap_or(0.0),
+            None => self
+                .gliding
+                .iter()
+                .find(|(g, _)| *g == id)
+                .map_or(0.0, |(_, spring)| spring.value()),
+        }
+    }
+
+    /// Whether row `ix` is drawn above the others: lifted or landing.
+    fn raised(&self, ix: usize, id: AccountId) -> bool {
+        match &self.moving {
+            Some(moving) => moving.from == ix,
+            None => self.gliding.first().is_some_and(|(g, _)| *g == id),
+        }
+    }
+
+    /// Every row's place and height as last painted, or `None` before
+    /// they all are.
+    fn places(&self, count: usize) -> Option<Vec<(f32, f32)>> {
+        let bounds = self.bounds.borrow();
+        (0..count)
+            .map(|ix| {
+                let b = (*bounds.get(ix)?)?;
+                Some((unpx(b.top()), unpx(b.size.height)))
+            })
+            .collect()
+    }
+
+    /// The order changed from `old` to `new` (accounts, first to last)
+    /// with the rows drawn at `places`: each row glides from there to its
+    /// new place, the first of `raised` above the rest.
+    fn glide(
+        &mut self,
+        old: &[AccountId],
+        new: &[AccountId],
+        places: &[(f32, f32)],
+        raised: Option<AccountId>,
+    ) {
+        let (Some(&first), Some(&(painted, _))) = (old.first(), places.first()) else {
+            return;
+        };
+        // Where the first row goes with no offset.
+        let mut top = painted - self.offset(0, first);
+        let mut gliding = Vec::new();
+        for id in new {
+            let Some(old_ix) = old.iter().position(|o| o == id) else {
+                continue;
+            };
+            let (was, height) = places[old_ix];
+            if (was - top).abs() > 0.5 {
+                let mut spring = Spring::new(motion::SLIDE, was - top);
+                spring.set(0.0);
+                gliding.push((*id, spring));
+            }
+            top += height + ROW_GAP;
+        }
+        if let Some(raised) = raised
+            && let Some(ix) = gliding.iter().position(|(g, _)| *g == raised)
+        {
+            let lifted = gliding.remove(ix);
+            gliding.insert(0, lifted);
+        }
+        self.gliding = gliding;
     }
 }
 
@@ -99,7 +192,14 @@ impl MailWindow {
         let list = div()
             .flex()
             .flex_col()
-            .gap(px(4.0))
+            .gap(px(ROW_GAP))
+            .on_drag_move(
+                cx.listener(|this, event: &DragMoveEvent<AccountDrag>, _, cx| {
+                    let from = event.drag(cx).ix;
+                    this.account_dragged(from, unpx(event.event.position.y), cx)
+                }),
+            )
+            .on_drop(cx.listener(|this, _: &AccountDrag, _, cx| this.drop_account(cx)))
             .children({
                 let count = accounts.len();
                 accounts
@@ -171,6 +271,7 @@ impl MailWindow {
                 cx,
             ));
         }
+        let unified = self.config.mail.unified_inbox;
         div()
             .flex()
             .flex_col()
@@ -178,6 +279,20 @@ impl MailWindow {
                 tr!("accounts-folder-pane"),
                 Some(tr!("accounts-folder-pane-detail").as_str()),
                 pane,
+                th,
+            ))
+            .child(self.row(
+                tr!("accounts-unified"),
+                None,
+                self.switch_row(
+                    "page-accounts-unified",
+                    tr!("accounts-unified-switch"),
+                    tr!("accounts-unified-switch-detail"),
+                    unified,
+                    Change::UnifiedInbox(!unified),
+                    th,
+                    cx,
+                ),
                 th,
             ))
             .child(self.row(
@@ -340,11 +455,17 @@ impl MailWindow {
                 None => button.opacity(0.3).cursor_default(),
             }
         };
-        let drag = AccountDrag {
-            ix,
-            name: name.clone().into(),
-            th: *th,
-        };
+        let reorder = self.settings_page.as_ref().map(|p| &p.reorder);
+        let offset = reorder.map_or(0.0, |r| r.offset(ix, id));
+        let raised = reorder.is_some_and(|r| r.raised(ix, id));
+        let dragging = reorder.and_then(|r| r.moving.as_ref());
+        let lifted = dragging.is_some_and(|m| m.from == ix);
+        // Move up and Move down show on the row the pointer is over, or
+        // whose button has the keyboard focus; not on the rows a drag
+        // passes over.
+        let arrows_shown =
+            lifted || (dragging.is_none() && reorder.is_some_and(|r| r.focused == Some(ix)));
+        let group = SharedString::from(format!("account-row-{ix}"));
         let handle = div()
             .id(("account-drag", ix))
             .flex_none()
@@ -356,26 +477,64 @@ impl MailWindow {
             .cursor_grab()
             .hover(|s| s.bg(rgba(th.hover)))
             .tooltip(crate::widgets::tip(tr!("accounts-drag"), th))
-            .on_drag(drag, |drag, _, _, cx| cx.new(|_| drag.clone()))
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(move |this, event: &MouseDownEvent, _, _| {
+                    if let Some(page) = this.settings_page.as_mut() {
+                        page.reorder.grab = Some((ix, unpx(event.position.y)));
+                    }
+                }),
+            )
+            .on_drag(AccountDrag { ix }, |drag, _, _, cx| {
+                cx.new(|_| drag.clone())
+            })
             .child(icon("drag-handle", th.text_faint, 20.0));
         let avatar = self.person_avatar(&name, &account.address, 36.0);
+        let bounds = reorder.map(|r| r.bounds.clone());
+        // The shadow of a lifted row, fading as it lands.
+        let lift = if lifted {
+            3.0
+        } else if raised {
+            (offset.abs() / 8.0).min(3.0)
+        } else {
+            0.0
+        };
         // The buttons go below the name, together, where the row is
         // narrow.
-        div()
+        let row = div()
             .id(("account-row", ix))
+            .group(group.clone())
+            .relative()
+            .top(px(offset))
+            .mx(px(-8.0))
+            .px(px(8.0))
             .py(px(6.0))
             .rounded(px(12.0))
             .flex()
             .flex_row()
             .items_center()
             .gap(px(8.0))
-            .drag_over::<AccountDrag>({
-                let tint = fade(th.accent, 0.10);
-                move |s, _, _, _| s.bg(rgba(tint))
+            .when(raised, |d| {
+                d.bg(rgba(th.surface)).shadow(elevation(th, lift))
             })
-            .on_drop(cx.listener(move |this, drag: &AccountDrag, _, cx| {
-                this.move_account(drag.ix, ix, cx)
-            }))
+            .when_some(bounds, |d, bounds| {
+                d.child(
+                    canvas(
+                        move |b, _, _| {
+                            let mut all = bounds.borrow_mut();
+                            if all.len() <= ix {
+                                all.resize(ix + 1, None);
+                            }
+                            all[ix] = Some(b);
+                        },
+                        |_, _, _, _| {},
+                    )
+                    .absolute()
+                    .top_0()
+                    .left_0()
+                    .size_full(),
+                )
+            })
             .child(handle)
             .child(avatar)
             .child(
@@ -397,6 +556,11 @@ impl MailWindow {
                     .flex_none()
                     .flex()
                     .flex_col()
+                    .when(!arrows_shown, |d| {
+                        d.opacity(0.0).when(dragging.is_none(), |d| {
+                            d.group_hover(group, |s| s.opacity(1.0))
+                        })
+                    })
                     .child(arrow(
                         "account-up",
                         ix.checked_sub(1),
@@ -407,8 +571,13 @@ impl MailWindow {
                         (ix + 1 < count).then_some(ix + 1),
                         tr!("accounts-move-down"),
                     )),
-            )
-            .into_any_element()
+            );
+        // Drawn over the rows after it while lifted or landing.
+        if raised {
+            deferred(row).with_priority(1).into_any_element()
+        } else {
+            row.into_any_element()
+        }
     }
 
     /// The General row's button and what it does.
@@ -435,21 +604,178 @@ impl MailWindow {
     }
 
     /// Moves the mail account at `from` to `to` in Settings > Accounts;
-    /// the folder pane, the account menu and every other list follow.
+    /// the folder pane, the account menu and every other list follow. The
+    /// rows glide to their new places, a dragged one from where it was
+    /// dropped.
     fn move_account(&mut self, from: usize, to: usize, cx: &mut Context<Self>) {
-        if from == to {
-            return;
-        }
         let accounts: Vec<Account> = self
             .accounts
             .iter()
             .filter(|a| a.kind.is_mail())
             .cloned()
             .collect();
-        self.config.mail.move_account(&accounts, from, to);
-        self.save_config();
-        self.load_tree();
+        let old: Vec<AccountId> = accounts.iter().map(|a| a.id).collect();
+        if let Some(page) = self.settings_page.as_mut() {
+            let reorder = &mut page.reorder;
+            reorder.grab = None;
+            if from < old.len() && to < old.len() {
+                let mut new = old.clone();
+                let moved = new.remove(from);
+                new.insert(to, moved);
+                if let Some(places) = reorder.places(old.len()) {
+                    reorder.glide(&old, &new, &places, Some(moved));
+                }
+            }
+            reorder.moving = None;
+        }
+        if from != to {
+            self.config.mail.move_account(&accounts, from, to);
+            self.save_config();
+            self.load_tree();
+        }
         cx.notify();
+    }
+
+    /// The pointer moved while dragging the account at `from` to `y`.
+    fn account_dragged(&mut self, from: usize, y: f32, cx: &mut Context<Self>) {
+        let count = self.accounts.iter().filter(|a| a.kind.is_mail()).count();
+        let ids: Vec<AccountId> = self
+            .accounts
+            .iter()
+            .filter(|a| a.kind.is_mail())
+            .map(|a| a.id)
+            .collect();
+        let Some(page) = self.settings_page.as_mut() else {
+            return;
+        };
+        let reorder = &mut page.reorder;
+        if from >= count {
+            return;
+        }
+        if reorder.moving.is_none() {
+            let grab_y = match reorder.grab.take() {
+                Some((ix, grab_y)) if ix == from => grab_y,
+                _ => y,
+            };
+            // Rows still gliding carry on from where they are.
+            let drawn: Vec<f32> = ids
+                .iter()
+                .enumerate()
+                .map(|(ix, id)| reorder.offset(ix, *id))
+                .collect();
+            let mut slides: Vec<Spring> = drawn
+                .iter()
+                .map(|&at| Spring::new(motion::SLIDE, at))
+                .collect();
+            for slide in &mut slides {
+                slide.set(0.0);
+            }
+            reorder.gliding.clear();
+            reorder.moving = Some(Moving {
+                from,
+                to: from,
+                grab_y,
+                pointer_y: y,
+                slides,
+                drawn,
+            });
+        }
+        let places = reorder.places(count);
+        let Some(moving) = reorder.moving.as_mut() else {
+            return;
+        };
+        moving.pointer_y = y;
+        if let Some(places) = places {
+            let natural: Vec<(f32, f32)> = places
+                .iter()
+                .zip(&moving.drawn)
+                .map(|(&(top, height), drawn)| (top - drawn, height))
+                .collect();
+            let (top, height) = natural[moving.from];
+            let center = top + height / 2.0 + (y - moving.grab_y);
+            let to = natural
+                .iter()
+                .enumerate()
+                .filter(|&(ix, &(top, height))| ix != moving.from && top + height / 2.0 < center)
+                .count();
+            if to != moving.to {
+                moving.to = to;
+                let step = height + ROW_GAP;
+                for (ix, slide) in moving.slides.iter_mut().enumerate() {
+                    slide.set(if ix > moving.from && ix <= to {
+                        -step
+                    } else if ix < moving.from && ix >= to {
+                        step
+                    } else {
+                        0.0
+                    });
+                }
+            }
+        }
+        cx.notify();
+    }
+
+    /// The dragged account was let go: it goes where the rows made room.
+    fn drop_account(&mut self, cx: &mut Context<Self>) {
+        let Some((from, to)) = self
+            .settings_page
+            .as_ref()
+            .and_then(|p| p.reorder.moving.as_ref())
+            .map(|m| (m.from, m.to))
+        else {
+            return;
+        };
+        self.move_account(from, to, cx);
+    }
+
+    /// Advances the rows sliding in Settings > Accounts for this frame.
+    pub(super) fn tick_reorder(&mut self, window: &Window, reduce: bool, cx: &mut Context<Self>) {
+        let dropped = self
+            .settings_page
+            .as_ref()
+            .is_some_and(|p| p.reorder.moving.is_some())
+            && !cx.has_active_drag();
+        if dropped {
+            // Let go somewhere with nowhere to drop it.
+            self.drop_account(cx);
+        }
+        let count = self.accounts.iter().filter(|a| a.kind.is_mail()).count();
+        let Some(page) = self.settings_page.as_mut() else {
+            return;
+        };
+        let stops = page.tab_stops().clone();
+        let reorder = &mut page.reorder;
+        reorder.focused = (0..count).find(|&ix| {
+            ["account-up", "account-down"]
+                .into_iter()
+                .any(|dir| stops.focused(&ElementId::from((dir, ix)), window))
+        });
+        reorder.bounds.borrow_mut().resize(count, None);
+        let places = reorder.places(count);
+        if let Some(moving) = reorder.moving.as_mut() {
+            for (ix, slide) in moving.slides.iter_mut().enumerate() {
+                if ix != moving.from {
+                    moving.drawn[ix] = slide.tick(window, reduce);
+                }
+            }
+            let mut lifted = moving.pointer_y - moving.grab_y;
+            // The lifted row stays between the first row's top and the
+            // last row's bottom.
+            if let Some(places) = places
+                && let Some(last) = places.last()
+            {
+                let at = |ix: usize| places[ix].0 - moving.drawn[ix];
+                let top = at(0);
+                let bottom = at(count - 1) + last.1;
+                let (own, height) = (at(moving.from), places[moving.from].1);
+                lifted = lifted.clamp(top - own, (bottom - height - own).max(top - own));
+            }
+            moving.drawn[moving.from] = lifted;
+        }
+        reorder.gliding.retain_mut(|(_, spring)| {
+            spring.tick(window, reduce);
+            !spring.settled()
+        });
     }
 
     fn start_rename(&mut self, account: AccountId, window: &mut Window, cx: &mut Context<Self>) {
@@ -660,7 +986,12 @@ impl MailWindow {
         let listed = self
             .folder
             .is_some_and(|f| self.tree.account_of(f) == Some(account.id));
-        if listed || matches!(self.listing, Some(Listing::Search { .. })) {
+        if listed
+            || matches!(
+                self.listing,
+                Some(Listing::Search { .. } | Listing::Unified { .. })
+            )
+        {
             self.close_listing(cx);
         }
         self.refresh(true, cx);
@@ -703,6 +1034,7 @@ impl MailWindow {
     fn close_listing(&mut self, cx: &mut Context<Self>) {
         self.listing = None;
         self.folder = None;
+        self.unified = None;
         self.reader = None;
         self.reading = false;
         self.entries.clear();

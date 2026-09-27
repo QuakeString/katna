@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = फ़ाइल मैनेजर �
 ## Settings > Compose
 
 settings-compose-send-from = नए मैसेज इस खाते से भेजें
-settings-compose-send-from-detail = जवाब और फ़ॉरवर्ड हमेशा उसी खाते से जाते हैं जिसमें आप हैं।
+settings-compose-send-from-detail = नए मैसेज इसी खाते से शुरू होते हैं; भेजने वाला पंक्ति से दूसरा खाता चुना जा सकता है। जवाब और फ़ॉरवर्ड हमेशा उसी खाते से जाते हैं जिसमें मूल मैसेज आया था।
 settings-compose-send-from-current = वह खाता जिसमें आप हैं
 settings-compose-send-on-replies = जवाबों पर भेजें
 settings-compose-send-on-replies-detail = जवाब या फ़ॉरवर्ड पर “भेजें” क्या करता है। “भेजें” के बगल वाले मेन्यू में दूसरा विकल्प मिलता है।
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = सादा टेक्स्ट, लॉ�
 settings-default-apps-sheets-summary = Excel, OpenDocument और CSV फ़ाइलें कहां खुलें
 settings-default-apps-documents-summary = Word, OpenDocument टेक्स्ट और स्लाइड कहां खुलें
 settings-default-apps-after-saving-summary = सेव किए गए अटैचमेंट उनके फ़ोल्डर में दिखाएं
-settings-compose-send-from-summary = नया मेल किस खाते से जाए: जिसमें आप हैं, या हमेशा एक ही खाते से
+settings-compose-send-from-summary = नया मेल किस खाते से जाए: पहले खाते से, किसी दूसरे खाते से, या जिसमें आप हैं
 settings-compose-send-on-replies-summary = जवाब और फ़ॉरवर्ड पर भेजें, या भेजें और बातचीत संग्रह करें
 settings-compose-signatures-summary = आपके मैसेज के नीचे, “--” लाइन के बाद जोड़ा जाता है
 settings-compose-for-new-mail-summary = नया मेल किस हस्ताक्षर से शुरू हो

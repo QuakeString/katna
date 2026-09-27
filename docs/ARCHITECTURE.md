@@ -927,7 +927,19 @@ Features built on it:
   (`Outbox`, `OutboxChanged`) and counts one as scheduled when it is
   still queued, has no error and is due later than the undo-send delay
   would put it. Cancel is `UndoSend`, as for undo send.
-- Not yet: per-recipient sending, drafts saved on the server.
+- **Drafts.** Closing a message saves it (`SaveDraft(account, raw)`): the
+  app keeps one `Message-ID` for a message while it is written, and the
+  daemon replaces every copy in the Drafts folder with that `Message-ID`,
+  stores the new one there (flags `\Draft \Seen`, no UID yet) and queues
+  a `SaveDraft` operation. Replayed, it deletes the server's copies with
+  that `Message-ID` (read from the folder's headers, since Drafts is
+  small), APPENDs the new one and forgets the local copy; the next sync
+  brings the server's. A newer save drops the older queued upload.
+  `DiscardDraft(account, message_id)` deletes the copies here and queues
+  `DropDraft` for the server; the app calls it for Discard and after
+  Send. A draft opened from Drafts opens in compose. Accounts without a
+  server (POP3) get a local Drafts folder.
+- Not yet: per-recipient sending.
 
 ## 12. Message rendering (`katna-render`)
 
@@ -1193,7 +1205,17 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   and the top-bar picture follow the shown account, and opening a message
   of another account (from a notification) switches to it. The taskbar
   badge, tray and notifications still count every account, so no new mail
-  goes unseen.
+  goes unseen. Each account heading has an arrow that folds its folders.
+  The unified inbox (Settings > Accounts, `mail.unified_inbox`, off by
+  default) puts an "All Accounts" section over the accounts, which then
+  start folded: Inbox, Unread, Starred, Important, Sent, All mail, Spam,
+  Trash and Drafts across every account (`window/unified.rs`). The special
+  folders list each account's folder of that role together; Unread,
+  Starred and Important list mail with that flag in every folder but trash
+  and spam. Each opens to one line per account. The lists are read like
+  search results (no one listed folder), merged by date in
+  `Store::spread_threads` and `spread_message_ids`, which show server
+  copies of one message once.
 - **One card.** The list and the open message share a white card with
   rounded corners on a tinted page. The list is one line per message:
   star, sender, subject in bold if unread with the snippet after it, and

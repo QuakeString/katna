@@ -19,6 +19,8 @@ compose-show-trimmed = Gosi ọdịnaya e wepụrụ
 compose-to = Gaa
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = Si
+compose-from-choose = Zipu site n'akaụntụ ọzọ
 compose-recipients = Ndị nnata
 compose-subject = Isiokwu
 

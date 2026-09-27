@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = सेव्ह केलेली �
 ## Settings > Compose
 
 settings-compose-send-from = नवीन मेसेज यावरून पाठवा
-settings-compose-send-from-detail = उत्तरे आणि फॉरवर्ड नेहमी तुम्ही ज्या खात्यात आहात त्यावरूनच जातात.
+settings-compose-send-from-detail = नवीन मेसेज या खात्यावरून सुरू होतात; प्रेषक ओळीत दुसरे खाते निवडता येते. उत्तरे आणि फॉरवर्ड नेहमी मूळ मेसेज ज्या खात्यात आला त्याच खात्यावरून जातात.
 settings-compose-send-from-current = तुम्ही ज्या खात्यात आहात ते
 settings-compose-send-on-replies = उत्तरांवर पाठवा
 settings-compose-send-on-replies-detail = उत्तर किंवा फॉरवर्डवर “पाठवा” काय करते. “पाठवा” शेजारील मेनूमध्ये दुसरा पर्याय मिळतो.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = साधा मजकूर, लॉग आ
 settings-default-apps-sheets-summary = Excel, OpenDocument आणि CSV फाइल कुठे उघडतात
 settings-default-apps-documents-summary = Word, OpenDocument मजकूर आणि स्लाइड कुठे उघडतात
 settings-default-apps-after-saving-summary = सेव्ह केलेली अटॅचमेंट त्यांच्या फोल्डरमध्ये दाखवा
-settings-compose-send-from-summary = नवीन मेल कोणत्या खात्यावरून जातो: तुम्ही ज्यात आहात ते, किंवा नेहमी एकच
+settings-compose-send-from-summary = नवीन मेल कोणत्या खात्यावरून जातो: पहिले, दुसरे एखादे, किंवा तुम्ही ज्यात आहात ते
 settings-compose-send-on-replies-summary = उत्तरे आणि फॉरवर्डवर पाठवा, किंवा पाठवा आणि संभाषण संग्रहित करा
 settings-compose-signatures-summary = तुमच्या मेसेजच्या खाली, “--” ओळीनंतर जोडली जाते
 settings-compose-for-new-mail-summary = नवीन मेल ज्या स्वाक्षरीने सुरू होतो

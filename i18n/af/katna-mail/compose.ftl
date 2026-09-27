@@ -19,6 +19,8 @@ compose-show-trimmed = Wys verkorte inhoud
 compose-to = Aan
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = Van
+compose-from-choose = Stuur van 'n ander rekening
 compose-recipients = Ontvangers
 compose-subject = Onderwerp
 
