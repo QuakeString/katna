@@ -188,6 +188,12 @@ const ENTRIES: &[Entry] = &[
         "default signature reply forward",
     ),
     entry(
+        Section::Signatures,
+        "Templates",
+        "Coming soon: save mail you write often, and start new mail or a reply from it",
+        "template canned reply snippet",
+    ),
+    entry(
         Section::Feedback,
         "Crash reports",
         "Save crash reports on this computer when Katna Mail or its background service crashes",
@@ -226,12 +232,9 @@ fn coming(section: Section) -> Option<&'static str> {
             "See the newsletters and mailing lists you get, and unsubscribe in one click."
         }
         Section::MailRules => {
-            "Sort, label, forward or delete new mail by itself, by sender, subject or words."
+            "Create, rename, move and hide folders and labels, and choose which ones sync. \
+             Rules sort, label, forward or delete new mail by itself, by sender, subject or words."
         }
-        Section::Folders => {
-            "Create, rename, move and hide folders and labels, and choose which ones sync."
-        }
-        Section::Templates => "Save mail you write often, and start new mail or a reply from it.",
         Section::McpServer => {
             "Let AI assistants on this computer search, read and draft your mail, with your say."
         }
@@ -242,6 +245,8 @@ fn coming(section: Section) -> Option<&'static str> {
 /// More words a tab is found by, besides its name and its line.
 fn tab_words(section: Section) -> &'static str {
     match section {
+        Section::MailRules => "mail rules filters folders labels",
+        Section::Signatures => "signature templates write",
         Section::Feedback => "crash report feedback privacy anonymous sentry telemetry",
         _ => "",
     }
@@ -565,19 +570,7 @@ impl MailWindow {
             .flex_col()
             .items_start()
             .gap(px(12.0))
-            .child(
-                div()
-                    .px(px(10.0))
-                    .h(px(24.0))
-                    .flex()
-                    .items_center()
-                    .rounded_full()
-                    .bg(rgba(th.nav_selected))
-                    .text_color(rgba(th.nav_selected_text))
-                    .text_size(px(12.0))
-                    .font_weight(FontWeight::SEMIBOLD)
-                    .child("Coming soon"),
-            )
+            .child(coming_pill(th))
             .child(div().text_size(px(20.0)).child(section.label()))
             .child(
                 div()
@@ -588,6 +581,22 @@ impl MailWindow {
             )
             .into_any_element()
     }
+}
+
+/// The "Coming soon" pill.
+pub(super) fn coming_pill(th: &Theme) -> Div {
+    div()
+        .flex_none()
+        .px(px(10.0))
+        .h(px(24.0))
+        .flex()
+        .items_center()
+        .rounded_full()
+        .bg(rgba(th.nav_selected))
+        .text_color(rgba(th.nav_selected_text))
+        .text_size(px(12.0))
+        .font_weight(FontWeight::SEMIBOLD)
+        .child("Coming soon")
 }
 
 /// Whether `section` is a tab still to come.
@@ -610,7 +619,9 @@ mod tests {
         assert_eq!(titles("dark")[0], "Theme");
         assert_eq!(titles("reading pane")[0], "Reading pane");
         assert!(titles("undo").contains(&"Sending".to_owned()));
-        assert!(titles("rules").contains(&"Mail rules".to_owned()));
+        assert!(titles("rules").contains(&"Folders & rules".to_owned()));
+        assert!(titles("folders").contains(&"Folders & rules".to_owned()));
+        assert!(titles("template").contains(&"Templates".to_owned()));
         assert!(titles("archive").iter().any(|t| t.contains("Archive")));
         assert!(titles("sentry").contains(&"User feedback".to_owned()));
         assert!(titles("zzzz").is_empty());
