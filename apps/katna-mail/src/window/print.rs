@@ -258,3 +258,47 @@ fn fonts(family: Option<&str>) -> Option<(PrintFont, Option<PrintFont>)> {
     };
     Some((load(regular)?, bold.and_then(load)))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn writes_a_pdf_in_a_system_font() {
+        let dir = std::env::temp_dir().join(format!("katna-print-{}", std::process::id()));
+        let messages = [PrintMessage {
+            from: "Ada <ada@example.org>".into(),
+            body: "Hello.".into(),
+            ..PrintMessage::default()
+        }];
+        let Ok(path) = write_pdf(&dir, "Hello", &messages, Paper::A4, Some("No Such Font")) else {
+            // A system without fonts (a bare CI image) cannot print.
+            assert!(fonts(None).is_none());
+            return;
+        };
+        let pdf = std::fs::read(&path).unwrap();
+        assert!(pdf.starts_with(b"%PDF-"));
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn paper_turns_for_landscape() {
+        let setup = PageSetup {
+            width: Some(210.0),
+            height: Some(297.0),
+            orientation: Some(Orientation::Landscape),
+            ..PageSetup::default()
+        };
+        let paper = paper(&setup).unwrap();
+        assert!(paper.width > paper.height);
+        let setup = PageSetup {
+            orientation: Some(Orientation::Portrait),
+            ..setup
+        };
+        assert!(paper_of(&setup).width < paper_of(&setup).height);
+    }
+
+    fn paper_of(setup: &PageSetup) -> Paper {
+        paper(setup).unwrap()
+    }
+}

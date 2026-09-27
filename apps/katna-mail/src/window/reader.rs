@@ -386,7 +386,7 @@ impl MailWindow {
             .as_ref()
             .and_then(|r| self.entries.iter().position(|e| e.key == r.key));
         let ix = position.or(self.selected).unwrap_or(0);
-        let back = if self.split() || self.detached {
+        let back = if self.split() {
             icon_button("reader-close", "close", 20.0, th).tooltip(tip("Close", th))
         } else {
             icon_button("reader-back", "back", 20.0, th).tooltip(tip("Back", th))
@@ -395,11 +395,17 @@ impl MailWindow {
             cx.listener(|this, _, window, cx| this.close_message(&super::CloseMessage, window, cx)),
         );
         let phone = self.layout.shape.is_phone();
-        let narrow =
-            phone || self.split() && self.cards_width * self.config.mail.reading_pane_share < 520.0;
+        // A conversation window has no list beside it to share with.
+        let pane = (!self.detached && self.split())
+            .then(|| self.cards_width * self.config.mail.reading_pane_share);
+        let narrow = phone || pane.is_some_and(|w| w < 520.0);
+        // Print and In new window need 80 px more.
+        let roomy = !phone && pane.is_none_or(|w| w >= 600.0);
         toolbar(th)
-            .child(back)
-            .when(!phone, |d| d.child(separator(th)))
+            // A conversation window closes from its own frame.
+            .when(!self.detached, |d| {
+                d.child(back).when(!phone, |d| d.child(separator(th)))
+            })
             .child(self.action_buttons("reader", th, cx))
             .when(!phone, |d| d.child(separator(th)))
             .child(
@@ -425,7 +431,7 @@ impl MailWindow {
             })
             .child(div().flex_1())
             // Where the toolbar is short, both are in the More menu.
-            .when(!narrow, |d| {
+            .when(roomy, |d| {
                 d.child(
                     icon_button("reader-print", "print", 20.0, th)
                         .tooltip(tip("Print all", th))

@@ -1143,13 +1143,28 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   the body, attachments as cards, and Reply/Forward buttons. Opening or
   folding a message of a conversation animates its height from the old
   one; the sender picture stays in place and only the text fades.
-- **Conversation windows.** Double-clicking a line opens its conversation
-  in a window of its own (without the reading pane, the second click lands
-  on the conversation that replaced the list, and moves it there). The
-  window is a second `MailWindow` in a detached mode that shows only the
-  reading view: it reads the store and follows `MailChanged` itself.
-  Archiving, deleting or moving the conversation closes it, and the main
-  window shows the snackbar with Undo.
+- **Conversation windows.** Shift+click on a line, "Open in new window"
+  on its right-click menu, or the "In new window" button on the open
+  conversation's toolbar opens it in a window of its own, as in Gmail. A
+  plain click or double-click always opens it in place (a double-click
+  opening a window felt like a glitch: its first click had already opened
+  the conversation). The window is a second `MailWindow` in a detached
+  mode that shows only the reading view, with no close button of its own
+  (the window frame has one): it reads the store and follows
+  `MailChanged` itself. Archiving, deleting or moving the conversation
+  closes it, and the main window shows the snackbar with Undo.
+- **Printing.** "Print all" on the open conversation's toolbar (and its
+  More menu) prints every message: the desktop's print dialog (XDG print
+  portal) asks for printer and paper first, then `katna_render::print`
+  lays the conversation out as a PDF on that paper (krilla, text shaped
+  and measured with rustybuzz, in the desktop's UI font found with
+  fontdb) and hands it back to the dialog. The text of each message is
+  printed, with sender, date, recipients and attachment names; pictures
+  and HTML styling are not, and there is no font fallback for scripts the
+  UI font lacks. Without a print portal the PDF opens in the default app.
+  PDFs are written to `$XDG_RUNTIME_DIR/katna/print` and removed after an
+  hour. Print and In new window sit right of the actions and move to the
+  More menu when the reading pane is under 600 px.
 - **Motion.** Springs (`katna_ui::motion::Spring`, on GPUI's spring
   solver) drive values that shape several elements: the navigation width,
   the search box turning white with a shadow when focused, the snackbar.
