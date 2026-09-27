@@ -439,3 +439,39 @@ puwede kang pumili ng larawan para sa bawat isa, palitan ang pangalan
 nito, at iayos ang mga account ayon sa gusto mo gamit ang mga arrow o sa
 pag-drag; sumusunod ang pane ng folder at ang menu ng account.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "I-reset ang cache"
+text = """
+Dine-delete ng Mga setting > Pangkalahatan > I-reset ang cache ang mail
+na na-download ng Katna, ang mga larawan ng nagpadala at ang search
+index, saka dina-download muli ang kamakailang mail. Magagamit kapag may
+mukhang luma o para magbakante ng espasyo sa disk; nananatili ang mga
+account, setting, draft at ang mail mo sa server.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "Kusang bumubukas ang susunod na mail"
+text = """
+I-delete, i-archive o ilipat ang mail na binabasa mo at bubukas ang
+susunod sa lugar nito, sa halip na magsara ang pane ng pagbabasa.
+Ibinabalik ng I-undo ang mail at binubuksan itong muli. Sa Mga setting >
+Pangkalahatan > Auto-advance, puwedeng buksan na lang ang nakaraan, o
+bumalik sa listahan.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "Mas tahimik na listahan ng mail"
+text = """
+Malamlam na ngayon ang check box, star at marker na Mahalaga ng bawat
+mail, at lumilitaw nang buo kapag itinuro mo ang linya, gaya sa Gmail.
+Laging buo ang kulay ng mail na may tsek, may star o mahalaga.
+"""
+
+["2026-09-27-1512-buy-me-a-coffee"]
+title = "Ilibre ako ng kape"
+text = """
+Kung nakatutulong sa iyo ang Katna, may button na Ilibre ako ng kape na
+ngayon sa Tungkol sa Katna, at QR code para buksan ang parehong page sa
+phone mo.
+"""

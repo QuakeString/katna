@@ -437,3 +437,41 @@ photo pour chacun, le renommer et ranger les comptes dans l’ordre voulu
 avec les flèches ou par glisser-déposer ; le volet des dossiers et le
 menu du compte suivent.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Réinitialiser le cache"
+text = """
+Paramètres > Général > Réinitialiser le cache supprime les messages
+téléchargés par Katna, les photos des expéditeurs et l’index de
+recherche, puis télécharge à nouveau les messages récents. Pratique
+quand quelque chose ne semble pas à jour ou pour libérer de l’espace
+disque ; les comptes, les paramètres, les brouillons et vos messages sur
+le serveur sont conservés.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "Le message suivant s’ouvre tout seul"
+text = """
+Supprimez, archivez ou déplacez le message que vous lisez et le suivant
+s’ouvre à sa place, au lieu que le volet de lecture se ferme. Annuler
+ramène le message et le rouvre. Paramètres > Général > Avance
+automatique permet d’ouvrir plutôt le précédent, ou de revenir à la
+liste.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "Une liste de messages plus calme"
+text = """
+La case à cocher, le suivi et le marqueur Important de chaque message
+restent maintenant estompés et s’affichent pleinement quand vous pointez
+sur la ligne, comme dans Gmail. Un message coché, suivi ou important
+s’affiche toujours en pleine couleur.
+"""
+
+["2026-09-27-1512-buy-me-a-coffee"]
+title = "Offrez-moi un café"
+text = """
+Si Katna vous est utile, À propos de Katna propose désormais un bouton
+Offrez-moi un café et un code QR pour ouvrir la même page sur votre
+téléphone.
+"""

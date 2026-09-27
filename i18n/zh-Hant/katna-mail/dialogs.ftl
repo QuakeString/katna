@@ -11,6 +11,7 @@ about-changelog = 變更記錄
 about-source = 原始碼
 about-coffee = 請我喝杯咖啡
 about-coming-soon = 即將推出
+about-coffee-scan = 或用手機掃描 QR 碼。
 about-follow = 追蹤作者
 about-love-title = 懷著對 Rust、KDE 和 Linux 的熱愛打造
 about-love-text = Rust 讓撰寫快速又安全的郵件應用程式成為一種樂趣：Katna 沒有任何 unsafe 程式碼。KDE 的 Plasma 桌面及其 PIM 套件啟發了 Katna，而 Linux 與自由軟體社群則是它賴以立足的基礎。謝謝你們，也感謝下方這些程式庫。

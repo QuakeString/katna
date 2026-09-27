@@ -414,3 +414,38 @@ duka. A Saituna > Asusu za ka iya zaɓar hoto ga kowanne, sake masa suna,
 kuma ka jera asusun a tsarin da kake so da kibiyoyi ko ta hanyar ja; wurin
 folda da menu na asusu suna bin wannan tsari.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Sake saita ma'ajiyar wucin gadi"
+text = """
+Saituna > Gabaɗaya > Sake saita ma'ajiyar wucin gadi yana share wasiƙun
+da Katna ta sauke, hotunan masu aikawa da fihirisar bincike, sannan ya
+sake sauke sababbin wasiƙu. Yana da amfani idan wani abu ya yi kamar ya
+tsufa ko don samun sararin faifai; asusu, saituna, zayyanai da wasiƙunka
+da ke kan sabar suna nan yadda suke.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "Wasiƙa ta gaba tana buɗewa da kanta"
+text = """
+Share, adana a ma'ajiya ko matsar da wasiƙar da kake karantawa, sai ta
+gaba ta buɗe a wurinta, maimakon wurin karatu ya rufe. Janye yana dawo
+da wasiƙar ya sake buɗe ta. Saituna > Gabaɗaya > Ci gaba kai tsaye na
+iya buɗe ta baya maimakon haka, ko ya koma cikin jerin.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "Jerin wasiƙu mafi natsuwa"
+text = """
+Akwatin zaɓi, tauraro da alamar Muhimmi na kowace wasiƙa yanzu suna nan
+a dushe, kuma suna haskakawa sosai idan ka nuna layin, kamar a Gmail.
+Wasiƙar da aka zaɓa, mai tauraro ko muhimmiya koyaushe tana nuna
+cikakken launi.
+"""
+
+["2026-09-27-1512-buy-me-a-coffee"]
+title = "Saya min kofi"
+text = """
+Idan Katna na da amfani a gare ka, yanzu Game da Katna yana da maɓallin
+Saya min kofi da lambar QR da ke buɗe wannan shafin a wayarka.
+"""

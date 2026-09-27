@@ -11,6 +11,7 @@ about-changelog = Orodha ya mabadiliko
 about-source = Msimbo chanzo
 about-coffee = Ninunulie kahawa
 about-coming-soon = Inakuja hivi karibuni
+about-coffee-scan = Au changanua msimbo kwa simu yako.
 about-follow = Mfuate mwandishi
 about-love-title = Imetengenezwa kwa upendo kwa Rust, KDE na Linux
 about-love-text = Rust hufanya kuandika programu ya barua yenye kasi na salama kuwa furaha: Katna haina msimbo usio salama (unsafe). Kompyuta ya mezani ya Plasma ya KDE na kifurushi chake cha PIM viliihamasisha Katna, na Linux pamoja na jumuiya ya programu huria hujenga msingi inaosimama juu yake. Asanteni, na asanteni kwa maktaba zilizo hapa chini.

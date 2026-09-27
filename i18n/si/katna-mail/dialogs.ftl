@@ -11,6 +11,7 @@ about-changelog = වෙනස්කම් ලැයිස්තුව
 about-source = මූලාශ්‍ර කේතය
 about-coffee = මට කෝපියක් ගෙන දෙන්න
 about-coming-soon = ළඟදීම
+about-coffee-scan = නැතහොත් ඔබගේ දුරකථනයෙන් කේතය ස්කෑන් කරන්න.
 about-follow = කතුවරයා අනුගමනය කරන්න
 about-love-title = Rust, KDE සහ Linux සඳහා ආදරයෙන් තැනූ
 about-love-text = Rust නිසා වේගවත් සහ ආරක්ෂිත තැපැල් යෙදුමක් ලිවීම සතුටක්: Katna හි unsafe කේත නැත. KDE හි Plasma ඩෙස්ක්ටොප් එක සහ එහි PIM කට්ටලය Katna ට ආභාසය දුන් අතර, Linux සහ නිදහස් මෘදුකාංග ප්‍රජාව එය සිටගෙන සිටින පදනම ගොඩනඟයි. ස්තූතියි, පහත පුස්තකාලවලටත් ස්තූතියි.
