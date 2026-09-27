@@ -16,11 +16,20 @@ pub const MAX_SIZE: u64 = 64 * 1024;
 pub struct Receipt {
     /// Who read it: the report's `Final-Recipient` address, else its sender.
     pub by: String,
+    /// The sender's name, when the sender is the one who read it.
+    pub name: Option<String>,
     /// The `Message-ID` it answers, without angle brackets.
     pub original: Option<String>,
     /// The message was shown ("displayed"); otherwise it was deleted or
     /// the like without being read.
     pub displayed: bool,
+}
+
+impl Receipt {
+    /// Who read it, by name when known.
+    pub fn who(&self) -> String {
+        self.name.clone().unwrap_or_else(|| self.by.clone())
+    }
 }
 
 /// `raw` as a read receipt, if it is one.
@@ -77,15 +86,18 @@ pub fn parse(raw: &[u8]) -> Option<Receipt> {
             _ => {}
         }
     }
-    let by = by.filter(|b| !b.is_empty()).or_else(|| {
-        message
-            .from()
-            .and_then(|from| from.first())
-            .and_then(|a| a.address())
-            .map(str::to_owned)
-    })?;
+    let from = message.from().and_then(|from| from.first());
+    let by = by
+        .filter(|b| !b.is_empty())
+        .or_else(|| from.and_then(|a| a.address()).map(str::to_owned))?;
+    let name = from
+        .filter(|a| a.address().is_some_and(|a| a.eq_ignore_ascii_case(&by)))
+        .and_then(|a| a.name())
+        .map(|n| n.trim().to_owned())
+        .filter(|n| !n.is_empty());
     Some(Receipt {
         by,
+        name,
         original: original.filter(|o| !o.is_empty()),
         displayed,
     })
@@ -140,6 +152,7 @@ Disposition: manual-action/MDN-sent-manually;\r\n\
             parse(THUNDERBIRD.as_bytes()),
             Some(Receipt {
                 by: "bea@example.org".into(),
+                name: Some("Bea".into()),
                 original: Some("m1@example.com".into()),
                 displayed: true,
             })

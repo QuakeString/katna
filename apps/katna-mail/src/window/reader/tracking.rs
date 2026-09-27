@@ -24,7 +24,7 @@ impl MailWindow {
         let green = if th.dark { 0x81c995ff } else { 0x188038ff };
         let mut lines: Vec<(&'static str, u32, String)> = Vec::new();
         if let Some(Some(receipt)) = &part.receipt {
-            let who = receipt.by.clone();
+            let who = receipt.who();
             lines.push(if receipt.displayed {
                 (
                     "read-receipt",
@@ -52,7 +52,7 @@ impl MailWindow {
             lines.push((
                 "read-receipt",
                 green,
-                tr!("tracking-receipt", who = receipt.by.clone()),
+                tr!("tracking-receipt", who = receipt.who()),
             ));
         }
         if lines.is_empty() {
