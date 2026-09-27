@@ -11,6 +11,7 @@ about-changelog = Log perubahan
 about-source = Kod sumber
 about-coffee = Belanja saya kopi
 about-coming-soon = Akan datang
+about-coffee-scan = Atau imbas kod itu dengan telefon Anda.
 about-follow = Ikuti pembangun
 about-love-title = Dibuat dengan kasih untuk Rust, KDE dan Linux
 about-love-text = Rust menjadikan penulisan aplikasi mel yang pantas dan selamat satu kegembiraan: Katna tiada kod unsafe. Desktop Plasma KDE dan suite PIMnya memberi inspirasi kepada Katna, dan Linux serta komuniti perisian bebas membina asas tempat ia berdiri. Terima kasih, dan terima kasih kepada pustaka di bawah.

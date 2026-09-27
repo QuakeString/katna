@@ -408,3 +408,37 @@ foto ahụ maka ha niile. Na Ntọala > Akaụntụ, ị nwere ike ịhọrọ f
 nke ọ bụla, gbanwee aha ya, ma hazie akaụntụ n'usoro ị chọrọ site na akụ
 ma ọ bụ site n'ịdọrọ; paịn folda na menu akaụntụ na-agbaso ya.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Tọgharịa cache"
+text = """
+Ntọala > Izugbe > Tọgharịa cache na-ehichapụ ozi Katna budatara, foto
+ndị zitere na ndeksi ọchụchọ, wee budata ozi ọhụrụ ọzọ. Ọ bara uru mgbe
+ihe yiri ka ọ dị ochie ma ọ bụ iji tọhapụ ohere diski; akaụntụ, ntọala,
+ndebiri na ozi gị dị na sava na-anọgide.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "Ozi na-esote na-emepe n'onwe ya"
+text = """
+Hichapụ, chekwaa ma ọ bụ bugharịa ozi ị na-agụ, ozi na-esote ga-emepe
+n'ọnọdụ ya, kama paịn ọgụgụ imechi. Megharịa na-eweghachi ozi ahụ ma
+mepee ya ọzọ. Ntọala > Izugbe > Ịga n'ihu na-akpaghị aka nwere ike imepe
+nke gara aga kama, ma ọ bụ laghachi na ndepụta.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "Ndepụta ozi dị jụụ karị"
+text = """
+Igbe akara, kpakpando na akara Dị mkpa nke ozi ọ bụla na-adị ugbu a nke
+nwayọọ, ma na-enwu n'uju mgbe ị tụrụ aka n'ahịrị ahụ, dị ka na Gmail.
+Ozi a kara akara, nwere kpakpando ma ọ bụ dị mkpa na-egosi mgbe niile
+n'agba zuru ezu.
+"""
+
+["2026-09-27-1512-buy-me-a-coffee"]
+title = "Zụtara m kọfị"
+text = """
+Ọ bụrụ na Katna bara uru nye gị, Maka Katna nwere bọtịnụ Zụtara m kọfị
+ugbu a, ya na koodu QR iji mepee otu ibe ahụ na ekwentị gị.
+"""

@@ -208,7 +208,7 @@ impl MailWindow {
             APP_RAIL_WIDTH + NAV_ROW_INSET,
             dock,
         ) - APP_RAIL_WIDTH * shape.phone;
-        let top = super::COMPOSE_TOP + self.nav_header() * dock;
+        let top = super::COMPOSE_TOP;
         Some(
             div()
                 .id("compose")
@@ -258,7 +258,7 @@ impl MailWindow {
     }
 
     /// The height of the account's name over the folders, when there is
-    /// one: Compose sits under it.
+    /// one: it stays put while the folders scroll.
     fn nav_header(&self) -> f32 {
         if matches!(self.nav_rows.first(), Some(sidebar::Row::Account { .. })) {
             NAV_ROW_HEIGHT
@@ -466,8 +466,8 @@ impl MailWindow {
         } else {
             NAV_WIDTH
         };
-        // The account's name heads the folders, with Compose under it
-        // while they are open beside the list; the folders scroll below.
+        // Compose heads the folders while they are open beside the list,
+        // with the account's name under it; the folders scroll below.
         let skip = usize::from(self.nav_header() > 0.0);
         let head = (skip > 0).then(|| self.render_nav_row(0, th, cx));
         let compose_room =
@@ -515,8 +515,8 @@ impl MailWindow {
                 this.hover_navigation(Hover::Panel, *hovered, cx)
             }))
             .children(self.render_drawer_head(th, cx))
-            .children(head)
             .child(div().flex_none().h(px(compose_room)))
+            .children(head)
             .child(list)
             .children(self.render_drawer_foot(th, cx));
         let scrim_width = shape.width - shape.rail();
