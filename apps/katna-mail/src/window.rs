@@ -36,6 +36,7 @@ mod nav;
 mod onboarding;
 mod reader;
 mod remote;
+mod reply_row;
 mod rich;
 mod search_panel;
 mod settings;
@@ -50,9 +51,9 @@ use std::time::Duration;
 
 use futures_lite::StreamExt;
 use gpui::{
-    AnyElement, App, Context, Entity, FocusHandle, Focusable, Hsla, ListAlignment, ListState,
-    MouseButton, MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task,
-    UniformListScrollHandle, WeakEntity, Window, actions, div, prelude::*, px, rgba,
+    AnyElement, App, Context, Entity, FocusHandle, Focusable, FontWeight, Hsla, ListAlignment,
+    ListState, MouseButton, MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task,
+    TextRun, UniformListScrollHandle, WeakEntity, Window, actions, div, prelude::*, px, rgba,
 };
 use jiff::tz::TimeZone;
 use katna_chrome::{Bar, ChromeColors, Environment, WindowChrome};
@@ -150,16 +151,41 @@ const BAR_ITEM_GAP: f32 = 6.0;
 /// up to the window buttons: both 40 px wide, with the gap between them,
 /// and 8 px after the picture plus the bar's own spacing.
 const TOP_END_WIDTH: f32 = 40.0 + TOP_BAR_GAP + 40.0 + 8.0 + BAR_ITEM_GAP;
-/// Room for the word "Compose" on the top bar's Compose button.
-const COMPOSE_TEXT_WIDTH: f32 = 60.0;
+/// The word on the top bar's Compose button, and its size.
+const COMPOSE_LABEL: &str = "Compose";
+const COMPOSE_TEXT_SIZE: f32 = 14.0;
 /// Where Compose starts on the top bar: the bar's 6 px padding, the menu
 /// button (48 px with a 6 px margin) and the gap after it.
 const COMPOSE_LEFT: f32 = 6.0 + 6.0 + 48.0 + TOP_BAR_GAP;
 
 /// Width of the top bar's Compose button: a 40 px square when folded to
-/// its pencil (`label` 0), the pencil and the word when `label` is 1.
-fn compose_width(label: f32) -> f32 {
-    lerp(40.0, 16.0 + 24.0 + 12.0 + COMPOSE_TEXT_WIDTH + 24.0, label)
+/// its pencil (`label` 0), the pencil and the word (`text` px wide) when
+/// `label` is 1.
+fn compose_width(label: f32, text: f32) -> f32 {
+    lerp(40.0, 16.0 + 24.0 + 12.0 + text + 24.0, label)
+}
+
+/// How wide the word on Compose is drawn in the window's font, so the
+/// button fits it whatever font and size the desktop uses.
+fn compose_text_width(font: Option<&SharedString>, window: &Window) -> f32 {
+    let mut style = window.text_style().font();
+    if let Some(family) = font {
+        style.family = family.clone();
+    }
+    style.weight = FontWeight::MEDIUM;
+    let run = TextRun {
+        len: COMPOSE_LABEL.len(),
+        font: style,
+        color: Hsla::default(),
+        background_color: None,
+        underline: None,
+        strikethrough: None,
+    };
+    let line =
+        window
+            .text_system()
+            .shape_line(COMPOSE_LABEL.into(), px(COMPOSE_TEXT_SIZE), &[run], None);
+    f32::from(line.width).ceil() + 1.0
 }
 /// Corners of cards that float: menus aside, dialogs and panels.
 const PANEL_RADIUS: f32 = 15.0;
@@ -341,6 +367,8 @@ pub struct MailWindow {
     split_drag: Option<(f32, f32)>,
     /// Width available to the list and the reading pane, at the last frame.
     cards_width: f32,
+    /// Reply, Reply all and Forward at the foot of a conversation.
+    reply_row: reply_row::ReplyRow,
     /// The same once the layout's motion settles, so the lines change
     /// shape once rather than midway through it.
     cards_target: f32,
@@ -503,6 +531,7 @@ impl MailWindow {
             pane_spring: Spring::new(motion::SLIDE, 0.0),
             split_drag: None,
             cards_width: 0.0,
+            reply_row: reply_row::ReplyRow::new(),
             cards_target: 0.0,
             settings_open: false,
             pane_hover: None,
@@ -2102,6 +2131,12 @@ impl Render for MailWindow {
         let available =
             (width - shape.rail() - nav_width - shape.card_margin() - settings_width).max(200.0);
         self.cards_width = available;
+        let reader_width = if self.split() {
+            ((available - SPLIT_GAP) * self.config.mail.reading_pane_share).max(0.0)
+        } else {
+            available
+        };
+        self.update_reply_row(reader_width, window, reduce);
         let (rail, margin) = if shape.is_phone() {
             (0.0, 0.0)
         } else {
@@ -2182,8 +2217,11 @@ impl Render for MailWindow {
         // never comes closer than that. It grows into a pill across the top
         // bar of a phone, under its menu button and account picture.
         let (room_start, room_end) = shape.room;
-        let after_compose =
-            room_start + COMPOSE_LEFT + compose_width(shape.compose_label()) + TOP_BAR_GAP;
+        let compose_text = compose_text_width(self.font.as_ref(), window);
+        let after_compose = room_start
+            + COMPOSE_LEFT
+            + compose_width(shape.compose_label(), compose_text)
+            + TOP_BAR_GAP;
         let list_left = if shape.is_desktop() {
             shape.rail() + NAV_WIDTH
         } else {
@@ -2262,7 +2300,7 @@ impl Render for MailWindow {
             start: if onboarding {
                 Vec::new()
             } else {
-                self.render_top_start(&th, cx)
+                self.render_top_start(&th, compose_text, cx)
             },
             center: (self.mail.is_ok() && !onboarding).then(|| {
                 div()

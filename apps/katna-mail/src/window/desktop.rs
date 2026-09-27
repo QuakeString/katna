@@ -14,6 +14,7 @@ use katna_platform::dbusmenu::{Menu, MenuItem};
 use katna_store::MessageId;
 
 use super::MailWindow;
+use super::compose::Kind;
 use crate::data::EntryKey;
 use crate::instance::Request;
 
@@ -249,6 +250,13 @@ impl MailWindow {
                         self.show_message(MessageId(id), window, cx);
                     }
                 }
+                app_action::REPLY_ALL => {
+                    if let Some(id) = message
+                        && self.show_message(MessageId(id), window, cx)
+                    {
+                        self.open_compose(Kind::ReplyAll, Some(MessageId(id)), window, cx);
+                    }
+                }
                 app_action::QUIT => {
                     cx.quit();
                     return;
@@ -282,9 +290,15 @@ impl MailWindow {
         self.open_folder(folder, cx);
     }
 
-    /// Opens the conversation of `message` from the Inbox list, or shows the
-    /// Inbox when it is not listed there.
-    fn show_message(&mut self, message: MessageId, window: &mut Window, cx: &mut Context<Self>) {
+    /// Opens the conversation of `message` from the Inbox list, looking in
+    /// every inbox tab; shows the Inbox and returns `false` when it is not
+    /// listed there.
+    fn show_message(
+        &mut self,
+        message: MessageId,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> bool {
         // Mail of another account: show that account.
         if let Some(account) = self
             .mail
@@ -297,12 +311,40 @@ impl MailWindow {
             self.rebuild_nav();
         }
         self.show_inbox(cx);
-        let found = self
-            .entries
-            .iter()
-            .position(|entry| entry.latest == message || entry.key == EntryKey::Message(message));
-        if let Some(ix) = found {
-            self.open(ix, window, cx);
+        let thread = self
+            .mail
+            .as_ref()
+            .ok()
+            .and_then(|m| m.message_thread(message));
+        let listed = |entries: &[crate::data::Entry]| {
+            entries.iter().position(|entry| {
+                entry.latest == message
+                    || entry.key == EntryKey::Message(message)
+                    || thread.is_some_and(|t| entry.key == EntryKey::Thread(t))
+            })
+        };
+        let mut found = listed(&self.entries);
+        // New mail is usually in the first tab, but a filter or the user
+        // may have put it in another one.
+        let (first, tabs) = (self.tab, self.tabs.len());
+        for tab in (0..tabs).filter(|&t| t != first) {
+            if found.is_some() {
+                break;
+            }
+            self.open_tab(tab, cx);
+            found = listed(&self.entries);
+        }
+        match found {
+            Some(ix) => {
+                self.open(ix, window, cx);
+                true
+            }
+            None => {
+                if tabs > 0 {
+                    self.open_tab(first, cx);
+                }
+                false
+            }
         }
     }
 }

@@ -11,6 +11,7 @@
 
 pub mod avatar;
 pub mod document;
+pub mod glance;
 pub mod pdf;
 pub mod picture;
 pub mod sheet;

@@ -125,18 +125,29 @@ pub mod app_action {
     pub const PREFERENCES: &str = "preferences";
     /// Open one message; the parameter is its ID (`x`).
     pub const OPEN_MESSAGE: &str = "open-message";
+    /// Open one message and start a reply to all; the parameter is its ID
+    /// (`x`).
+    pub const REPLY_ALL: &str = "reply-all";
     /// Close the app.
     pub const QUIT: &str = "quit";
 
     /// The command-line flag that starts Katna Mail doing `action`, if it
-    /// has one.
+    /// has one. The flags of [`takes_message`] actions are followed by the
+    /// message ID.
     pub fn flag(action: &str) -> Option<&'static str> {
         match action {
             OPEN_INBOX => Some("--inbox"),
             COMPOSE => Some("--compose"),
             PREFERENCES => Some("--settings"),
+            OPEN_MESSAGE => Some("--message"),
+            REPLY_ALL => Some("--reply-all"),
             _ => None,
         }
+    }
+
+    /// Whether `action`'s parameter is a message ID.
+    pub fn takes_message(action: &str) -> bool {
+        matches!(action, OPEN_MESSAGE | REPLY_ALL)
     }
 }
 

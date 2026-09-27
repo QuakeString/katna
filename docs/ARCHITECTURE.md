@@ -1089,7 +1089,8 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   with the folders open, and stays there when they fold (it does not
   follow the list). It moves left only when the window is too narrow for
   that place, and then always sits one gap after Compose, whose width is
-  set for this (whole or folded to its pencil). The top bar uses that one
+  set for this (whole or folded to its pencil; whole, it is measured from
+  its word in the desktop's font, so the word never clips). The top bar uses that one
   16 px gap between all its items: menu button, Compose, search box,
   Settings and account picture. `katna_chrome::Bar` gives the bar a center slot,
   height and background for this.
@@ -1395,9 +1396,13 @@ desktop's own app stays one click away.
 
 - **Cards.** Under each open message, one card per attachment (the
   webmail layout): a thumbnail (pictures, and the top of a PDF's first
-  page) or a colored type badge, and the file name. Hovering shows the
-  name, the size and a Save button. Thumbnails are made in the background
-  from the stored raw message and freed when the conversation closes.
+  page), a glance drawn small on a white page (the top-left cells of a
+  spreadsheet or CSV, the first lines of a text file or document;
+  `katna_preview::glance`, skipped above 20 MB), or a colored type badge,
+  and the file name. Hovering shows the name, the size and a Save button
+  on frosted glass; "Save all" saves every attachment to a folder.
+  Thumbnails are made in the background from the stored raw message and
+  freed when the conversation closes.
 - **Viewer.** Clicking a card opens the viewer over the window below the
   top bar (the window's own controls stay usable): a dark page with a bar
   naming the file, "Open with another app" and Save; arrows (and ←/→) go
@@ -1478,7 +1483,7 @@ one of three layouts by the width inside the window frame
 |---------|---------------|--------------|
 | Desktop | 1080 px and up | §13.6 as is. |
 | Tablet  | 600–1080 px   | The folders fold into a drawer the menu button opens over a dimmed list; Compose stays in the top bar beside the menu button (the owner's choice), folding down to its pencil below 760 px; the reading pane (three-pane setting) stays beside the list from 840 px, and narrower the conversation slides in over the list. |
-| Phone   | under 600 px  | No app rail: the apps sit in a bar along the bottom. The search box is a pill across the top bar with the menu button and account picture inside it (settings move to the drawer). The list is edge to edge, three lines a message with the sender's picture, which ticks the line when tapped; the inbox tabs move to the drawer. Compose floats at the bottom right; it folds to its pencil as the list scrolls down and grows back after a few steps up (or at the top). An open conversation slides in over the list and the bottom bar sinks away; composing takes a sheet over the whole window. |
+| Phone   | under 600 px  | No app rail: the apps sit in a bar along the bottom. The search box is a pill across the top bar with the menu button and account picture inside it (settings move to the drawer). The list is edge to edge, three lines a message with the sender's picture, which ticks the line when tapped; the inbox tabs move to the drawer. Compose floats at the bottom right; it folds to its pencil as the list scrolls down and grows back after a few steps up (or at the top). An open conversation slides in over the list and the bottom bar sinks away; its messages use the room under the sender's picture, from the picture's left edge, and Reply, Reply all and Forward share the width equally. Composing takes a sheet over the whole window. |
 
 A layout changes only 12 px past its threshold, so a window resized right
 at a threshold does not flicker between two layouts. The GNOME minimum
@@ -1489,6 +1494,11 @@ reads them rather than switching: the rail slides out as the bottom bar
 rises, the search box grows into the pill, the cards' margins and corners
 melt away, the top-bar Compose shrinks into the phone's floating one. A third spring
 slides the conversation over the list. All of them honor reduce motion.
+
+At every size, Reply, Reply all and Forward stay on one line at the foot
+of a conversation: as the pane narrows they drop their words one at a
+time (Reply all first, then Reply, then Forward) and keep their icons,
+with the word as a tooltip. The words are measured in the desktop's font.
 
 ## 14. D-Bus API (`katna-dbus`)
 
@@ -1578,11 +1588,15 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
   with up to four "Sender: Subject" lines.
 - Mail already stored when the daemon starts, and a new account's first
   sync, are not news.
-- Buttons: Open (click), Mark as read / Mark all as read, Archive. Open
-  calls `ActivateAction("open-message", [id])` on the app's
-  `org.freedesktop.Application` object (`/in/invenia/katna/Mail`) with the
-  activation token, and starts `katna-mail` with `XDG_ACTIVATION_TOKEN` when
-  the app does not answer.
+- Buttons: Open (click), Reply all (one message only), Mark as read / Mark
+  all as read, Archive. Open calls `ActivateAction("open-message", [id])`
+  on the app's `org.freedesktop.Application` object
+  (`/in/invenia/katna/Mail`) with the activation token; Reply all calls
+  `reply-all`, which opens the message with an inline reply to all. When
+  the app does not answer, the daemon starts `katna-mail --message ID` (or
+  `--reply-all ID`) with `XDG_ACTIVATION_TOKEN`. The app looks for the
+  message in every inbox tab. The Plasma inline-reply field in the table
+  above is not built yet.
 - A notification closes when all its mail is read or out of the inbox, from
   a sync or from a change made in the app.
 - Setting `notifications.new_mail` (default on); `ReloadConfig` applies it.
@@ -1620,8 +1634,8 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   saving so the daemon applies them at once.
 - **Single instance and actions**: Katna Mail owns `in.invenia.katna.Mail`
   and serves `org.freedesktop.Application` at `/in/invenia/katna/Mail` with
-  the actions `open-inbox`, `compose`, `preferences`, `open-message` (a
-  message ID) and `quit` (`katna_dbus::app_action`). A second `katna-mail`
+  the actions `open-inbox`, `compose`, `preferences`, `open-message` and
+  `reply-all` (a message ID) and `quit` (`katna_dbus::app_action`). A second `katna-mail`
   hands its request to the first and exits. The tray, notifications and
   the desktop file use this: its actions New Message, Open Inbox and
   Preferences (right-click on the taskbar icon in Plasma and GNOME) run
