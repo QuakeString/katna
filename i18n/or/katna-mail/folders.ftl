@@ -23,6 +23,7 @@ storage-used-detail = { $address }: { $total }ରୁ { $used } ବ୍ୟବହ�
 
 folder-inbox = ଇନବକ୍ସ
 folder-starred = ତାରାଙ୍କିତ
+folder-snoozed = ସ୍ନୁଜ କରାଯାଇଛି
 folder-unread = ପଢ଼ାଯାଇନାହିଁ
 folder-important = ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ
 folder-drafts = ଡ୍ରାଫ୍ଟ

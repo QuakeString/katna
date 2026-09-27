@@ -20,6 +20,7 @@ storage-used-detail = { $address }: a ti lo { $used } nínú { $total }
 
 folder-inbox = Àpótí-ìwọlé
 folder-starred = Oní ìràwọ̀
+folder-snoozed = Tí a sún síwájú
 folder-unread = Àìkà
 folder-important = Pàtàkì
 folder-drafts = Àwọn àkọ̀pamọ́

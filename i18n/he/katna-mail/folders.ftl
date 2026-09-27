@@ -24,6 +24,7 @@ storage-used-detail = { $address }: { $used } מתוך { $total } בשימוש
 
 folder-inbox = דואר נכנס
 folder-starred = מסומנות בכוכב
+folder-snoozed = מושהות
 folder-unread = לא נקראו
 folder-important = חשובות
 folder-drafts = טיוטות

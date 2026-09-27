@@ -627,3 +627,14 @@ dan tab kotak masuk yang Anda buka, folder yang Anda bentangkan, serta
 apakah panel folder dilipat. Keluar dari Katna lewat baki sistem akan
 memulainya dari awal.
 """
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Tunda dan pengingat balasan"
+text = """
+Tunda percakapan dengan jam di barisnya atau dari menu klik kanan:
+percakapan menunggu di folder Ditunda dan kembali ke Kotak Masuk, belum
+dibaca, pada waktu yang Anda pilih. Saat mengirim, panah di samping Kirim
+dapat mengingatkan Anda jika tidak ada yang membalas dalam 1, 3, atau 7
+hari. Keduanya bekerja selama komputer Anda menyala, dan menyusul setelah
+komputer bangun.
+"""

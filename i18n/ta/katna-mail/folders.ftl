@@ -23,6 +23,7 @@ storage-used-detail = { $address }: { $total } இல் { $used } பயன்�
 
 folder-inbox = இன்பாக்ஸ்
 folder-starred = நட்சத்திரமிட்டவை
+folder-snoozed = உறக்கநிலையில் உள்ளவை
 folder-unread = படிக்காதவை
 folder-important = முக்கியமானவை
 folder-drafts = வரைவுகள்

@@ -11,6 +11,9 @@ notify-new-emails = { $count ->
 notify-and-more = en nog { $count }
 notify-no-subject = (geen onderwerp)
 notify-unknown-sender = Onbekende sender
+notify-snooze-back = Terug uit sluimer
+notify-no-reply = Nog geen antwoord nie
+notify-no-reply-to = Niemand het nog op “{ $subject }” geantwoord nie.
 
 ## Its buttons
 

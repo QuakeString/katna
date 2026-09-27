@@ -8,6 +8,9 @@ notify-new-emails = { $count } email baru
 notify-and-more = dan { $count } lainnya
 notify-no-subject = (tanpa subjek)
 notify-unknown-sender = Pengirim tidak dikenal
+notify-snooze-back = Kembali dari penundaan
+notify-no-reply = Belum ada balasan
+notify-no-reply-to = Belum ada yang membalas “{ $subject }”.
 
 ## Its buttons
 

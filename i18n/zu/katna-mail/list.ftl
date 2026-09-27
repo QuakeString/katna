@@ -28,6 +28,8 @@ list-move-to = Hambisa ku-
 list-archive = Faka kungobo yomlando
 list-spam = Bika ugaxekile
 list-delete = Susa
+list-snooze = Libazisa
+list-unsnooze = Yeka ukulibazisa
 list-newer = Okusha
 list-older = Okudala
 list-range = { $first }–{ $last } kokungu-{ $total }
@@ -348,6 +350,7 @@ row-mark-important = Maka njengokubalulekile
 row-pinned = Kuphinwe phezulu
 row-pin = Phina phezulu
 row-unpin = Susa ukuphina
+row-snoozed-until = Kulibazisiwe kuze kube ngu-{ $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = Maka njengokubalulekile
 menu-not-important = Maka njengokungabalulekile
 menu-pin = Phina phezulu
 menu-unpin = Susa ukuphina
+menu-snooze = Libazisa
+menu-unsnooze = Yeka ukulibazisa
 menu-print-all = Phrinta konke
 menu-new-window = Vula ewindini elisha
 menu-move-to = Hambisa ku-
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] Ukuphina komlayezo kususiwe.
        *[other] Ukuphina kwemilayezo engu-{ $count } kususiwe.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Ingxoxo ilibazisiwe kuze kube ngu-{ $when }.
+       *[other] Izingxoxo ezingu-{ $count } zilibazisiwe kuze kube ngu-{ $when }.
+    }
+   *[message] { $count ->
+        [one] Umlayezo ulibazisiwe kuze kube ngu-{ $when }.
+       *[other] Imilayezo engu-{ $count } ilibazisiwe kuze kube ngu-{ $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Ingxoxo ibuyele ebhokisini lokungenayo.
+       *[other] Izingxoxo ezingu-{ $count } zibuyele ebhokisini lokungenayo.
+    }
+   *[message] { $count ->
+        [one] Umlayezo ubuyele ebhokisini lokungenayo.
+       *[other] Imilayezo engu-{ $count } ibuyele ebhokisini lokungenayo.
     }
 }
 toast-spam = { $kind ->

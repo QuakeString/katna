@@ -614,3 +614,14 @@ thư đến bạn đang mở, các thư mục bạn đã mở rộng và việc 
 đang thu gọn hay không. Thoát Katna từ khay hệ thống sẽ khởi động lại từ
 đầu.
 """
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Tạm ẩn và nhắc khi chưa có trả lời"
+text = """
+Tạm ẩn một cuộc hội thoại bằng biểu tượng đồng hồ trên dòng của nó hoặc
+từ menu chuột phải: cuộc hội thoại chờ trong thư mục Đã tạm ẩn và quay
+lại Hộp thư đến, ở trạng thái chưa đọc, vào thời điểm bạn chọn. Khi gửi,
+mũi tên bên cạnh nút Gửi có thể nhắc bạn nếu không ai trả lời trong vòng
+1, 3 hoặc 7 ngày. Cả hai hoạt động khi máy tính đang bật, và làm bù phần
+còn lại sau khi máy thức dậy.
+"""

@@ -28,6 +28,8 @@ list-move-to = 移至
 list-archive = 归档
 list-spam = 举报垃圾邮件
 list-delete = 删除
+list-snooze = 延后
+list-unsnooze = 取消延后
 list-newer = 较新
 list-older = 较早
 list-range = 第 { $first }–{ $last } 行，共 { $total } 行
@@ -198,6 +200,7 @@ row-mark-important = 标记为重要
 row-pinned = 已置顶
 row-pin = 置顶
 row-unpin = 取消置顶
+row-snoozed-until = 延后至 { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -219,6 +222,8 @@ menu-important = 标记为重要
 menu-not-important = 标记为不重要
 menu-pin = 置顶
 menu-unpin = 取消置顶
+menu-snooze = 延后
+menu-unsnooze = 取消延后
 menu-print-all = 全部打印
 menu-new-window = 在新窗口中打开
 menu-move-to = 移至
@@ -262,6 +267,14 @@ toast-pinned = { $kind ->
 toast-unpinned = { $kind ->
     [conversation] 已取消置顶 { $count } 个会话。
    *[message] 已取消置顶 { $count } 封邮件。
+}
+toast-snoozed = { $kind ->
+    [conversation] 已将 { $count } 个会话延后至 { $when }。
+   *[message] 已将 { $count } 封邮件延后至 { $when }。
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count } 个会话已返回收件箱。
+   *[message] { $count } 封邮件已返回收件箱。
 }
 toast-spam = { $kind ->
     [conversation] 已将 { $count } 个会话举报为垃圾邮件。

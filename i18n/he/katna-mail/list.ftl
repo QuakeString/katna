@@ -28,6 +28,8 @@ list-move-to = העברה אל
 list-archive = העברה לארכיון
 list-spam = דיווח על ספאם
 list-delete = מחיקה
+list-snooze = השהיה
+list-unsnooze = ביטול ההשהיה
 list-newer = חדשות יותר
 list-older = ישנות יותר
 list-range = { $first }–{ $last } מתוך { $total }
@@ -398,6 +400,7 @@ row-mark-important = סימון כחשובה
 row-pinned = מוצמדת למעלה
 row-pin = הצמדה למעלה
 row-unpin = ביטול ההצמדה
+row-snoozed-until = מושהית עד { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -419,6 +422,8 @@ menu-important = סימון כחשובה
 menu-not-important = סימון כלא חשובה
 menu-pin = הצמדה למעלה
 menu-unpin = ביטול ההצמדה
+menu-snooze = השהיה
+menu-unsnooze = ביטול ההשהיה
 menu-print-all = הדפסת הכול
 menu-new-window = פתיחה בחלון חדש
 menu-move-to = העברה אל
@@ -533,6 +538,30 @@ toast-unpinned = { $kind ->
         [one] הצמדת ההודעה בוטלה.
         [two] ההצמדה של { $count } הודעות בוטלה.
        *[other] ההצמדה של { $count } הודעות בוטלה.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] השיחה הושהתה עד { $when }.
+        [two] { $count } שיחות הושהו עד { $when }.
+       *[other] { $count } שיחות הושהו עד { $when }.
+    }
+   *[message] { $count ->
+        [one] ההודעה הושהתה עד { $when }.
+        [two] { $count } הודעות הושהו עד { $when }.
+       *[other] { $count } הודעות הושהו עד { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] השיחה חזרה לדואר הנכנס.
+        [two] { $count } שיחות חזרו לדואר הנכנס.
+       *[other] { $count } שיחות חזרו לדואר הנכנס.
+    }
+   *[message] { $count ->
+        [one] ההודעה חזרה לדואר הנכנס.
+        [two] { $count } הודעות חזרו לדואר הנכנס.
+       *[other] { $count } הודעות חזרו לדואר הנכנס.
     }
 }
 toast-spam = { $kind ->

@@ -12,6 +12,9 @@ notify-new-emails = { $count ->
 notify-and-more = y { $count } más
 notify-no-subject = (sin asunto)
 notify-unknown-sender = Remitente desconocido
+notify-snooze-back = Vuelve el correo pospuesto
+notify-no-reply = Aún sin respuesta
+notify-no-reply-to = Nadie ha respondido a «{ $subject }».
 
 ## Its buttons
 

@@ -639,3 +639,14 @@ Ordner und der Posteingangs-Tab zurück, die Sie offen hatten, dazu die
 aufgeklappten Ordner und ob der Ordnerbereich eingeklappt war. Wird Katna
 über das Symbol im Systemabschnitt beendet, startet es frisch.
 """
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Zurückstellen und Erinnerungen an Antworten"
+text = """
+Stellen Sie eine Konversation mit der Uhr in ihrer Zeile oder über das
+Kontextmenü zurück: Sie wartet im Ordner Zurückgestellt und kommt zur
+gewählten Zeit ungelesen in den Posteingang zurück. Beim Senden kann Sie
+der Pfeil neben Senden erinnern, wenn innerhalb von 1, 3 oder 7 Tagen
+niemand antwortet. Beides funktioniert, solange Ihr Computer an ist, und
+holt Verpasstes nach, wenn er aufwacht.
+"""

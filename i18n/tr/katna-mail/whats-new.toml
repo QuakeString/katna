@@ -629,3 +629,14 @@ Gelen Kutusu sekmesini, genişlettiğiniz klasörleri ve klasör bölmesinin
 daraltılmış olup olmadığını geri getirir. Katna'dan sistem tepsisinden
 çıkmak onu sıfırdan başlatır.
 """
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Erteleme ve yanıt hatırlatıcıları"
+text = """
+Bir ileti dizisini satırındaki saat simgesiyle veya sağ tık menüsünden
+erteleyin: Ertelenenler klasöründe bekler ve seçtiğiniz saatte okunmamış
+olarak Gelen Kutusu'na döner. Gönderirken, Gönder'in yanındaki ok, 1, 3
+veya 7 gün içinde kimse yanıt vermezse size hatırlatabilir. İkisi de
+bilgisayarınız açıkken çalışır ve uyku modundan çıktığında kaçırdıklarını
+tamamlar.
+"""

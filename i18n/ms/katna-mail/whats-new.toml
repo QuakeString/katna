@@ -632,3 +632,14 @@ tab peti masuk yang anda buka, folder yang anda kembangkan dan sama ada
 anak tetingkap folder dilipat. Keluar daripada Katna melalui dulang
 sistem memulakannya semula dari awal.
 """
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Tunda dan peringatan balasan"
+text = """
+Tunda perbualan dengan jam pada barisnya atau dari menu klik kanan: ia
+menunggu dalam folder Ditunda dan kembali ke Peti Masuk, belum dibaca,
+pada masa yang anda pilih. Semasa menghantar, anak panah di sebelah
+Hantar boleh mengingatkan anda jika tiada sesiapa membalas dalam 1, 3
+atau 7 hari. Kedua-duanya berfungsi semasa komputer anda hidup, dan
+menyusul selepas ia bangun semula.
+"""

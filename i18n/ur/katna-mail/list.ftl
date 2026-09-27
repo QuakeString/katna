@@ -28,6 +28,8 @@ list-move-to = یہاں منتقل کریں
 list-archive = آرکائیو کریں
 list-spam = سپام کی اطلاع دیں
 list-delete = حذف کریں
+list-snooze = اسنوز کریں
+list-unsnooze = اسنوز ختم کریں
 list-newer = نئی
 list-older = پرانی
 list-range = { $total } میں سے { $first }–{ $last }
@@ -348,6 +350,7 @@ row-mark-important = بطور اہم نشان زد کریں
 row-pinned = سب سے اوپر پن کیا گیا
 row-pin = سب سے اوپر پن کریں
 row-unpin = پن ہٹائیں
+row-snoozed-until = { $when } تک اسنوز شدہ
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = بطور اہم نشان زد کریں
 menu-not-important = بطور غیر اہم نشان زد کریں
 menu-pin = سب سے اوپر پن کریں
 menu-unpin = پن ہٹائیں
+menu-snooze = اسنوز کریں
+menu-unsnooze = اسنوز ختم کریں
 menu-print-all = سب پرنٹ کریں
 menu-new-window = نئی ونڈو میں کھولیں
 menu-move-to = یہاں منتقل کریں
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] پیغام سے پن ہٹا دیا گیا۔
        *[other] { $count } پیغامات سے پن ہٹا دیا گیا۔
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] گفتگو { $when } تک اسنوز کر دی گئی۔
+       *[other] { $count } گفتگوئیں { $when } تک اسنوز کر دی گئیں۔
+    }
+   *[message] { $count ->
+        [one] پیغام { $when } تک اسنوز کر دیا گیا۔
+       *[other] { $count } پیغامات { $when } تک اسنوز کر دیے گئے۔
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] گفتگو ان باکس میں واپس آ گئی۔
+       *[other] { $count } گفتگوئیں ان باکس میں واپس آ گئیں۔
+    }
+   *[message] { $count ->
+        [one] پیغام ان باکس میں واپس آ گیا۔
+       *[other] { $count } پیغامات ان باکس میں واپس آ گئے۔
     }
 }
 toast-spam = { $kind ->

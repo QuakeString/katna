@@ -11,6 +11,9 @@ notify-new-emails = { $count ->
 notify-and-more = nokunye okungu-{ $count }
 notify-no-subject = (asikho isihloko)
 notify-unknown-sender = Umthumeli ongaziwa
+notify-snooze-back = Kubuyile ngemva kokulibaziswa
+notify-no-reply = Ayikabikho impendulo
+notify-no-reply-to = Akekho ophendule “{ $subject }”.
 
 ## Its buttons
 

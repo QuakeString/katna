@@ -11,6 +11,9 @@ notify-new-emails = { $count ->
 notify-and-more = da ƙarin { $count }
 notify-no-subject = (babu jigo)
 notify-unknown-sender = Mai aikawa da ba a sani ba
+notify-snooze-back = Ya dawo daga jinkiri
+notify-no-reply = Babu amsa tukuna
+notify-no-reply-to = Babu wanda ya amsa “{ $subject }”.
 
 ## Its buttons
 

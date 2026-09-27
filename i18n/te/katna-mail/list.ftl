@@ -28,6 +28,8 @@ list-move-to = దీనికి తరలించండి
 list-archive = ఆర్కైవ్ చేయండి
 list-spam = స్పామ్‌గా రిపోర్ట్ చేయండి
 list-delete = తొలగించండి
+list-snooze = స్నూజ్ చేయండి
+list-unsnooze = స్నూజ్ తీసివేయండి
 list-newer = కొత్తవి
 list-older = పాతవి
 list-range = { $total }లో { $first }–{ $last }
@@ -348,6 +350,7 @@ row-mark-important = ముఖ్యమైనదిగా గుర్తు ప
 row-pinned = పైన పిన్ చేయబడింది
 row-pin = పైన పిన్ చేయండి
 row-unpin = అన్‌పిన్ చేయండి
+row-snoozed-until = { $when } వరకు స్నూజ్ చేయబడింది
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = ముఖ్యమైనదిగా గుర్తు పె�
 menu-not-important = ముఖ్యమైనది కాదని గుర్తు పెట్టండి
 menu-pin = పైన పిన్ చేయండి
 menu-unpin = అన్‌పిన్ చేయండి
+menu-snooze = స్నూజ్ చేయండి
+menu-unsnooze = స్నూజ్ తీసివేయండి
 menu-print-all = అన్నీ ప్రింట్ చేయండి
 menu-new-window = కొత్త విండోలో తెరవండి
 menu-move-to = దీనికి తరలించండి
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] మెసేజ్ అన్‌పిన్ చేయబడింది.
        *[other] { $count } మెసేజ్‌లు అన్‌పిన్ చేయబడ్డాయి.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ { $when } వరకు స్నూజ్ చేయబడింది.
+       *[other] { $count } సంభాషణలు { $when } వరకు స్నూజ్ చేయబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ { $when } వరకు స్నూజ్ చేయబడింది.
+       *[other] { $count } మెసేజ్‌లు { $when } వరకు స్నూజ్ చేయబడ్డాయి.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ ఇన్‌బాక్స్‌కు తిరిగి వచ్చింది.
+       *[other] { $count } సంభాషణలు ఇన్‌బాక్స్‌కు తిరిగి వచ్చాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ ఇన్‌బాక్స్‌కు తిరిగి వచ్చింది.
+       *[other] { $count } మెసేజ్‌లు ఇన్‌బాక్స్‌కు తిరిగి వచ్చాయి.
     }
 }
 toast-spam = { $kind ->

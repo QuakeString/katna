@@ -650,3 +650,14 @@ at ang tab ng inbox na bukas mo, ang mga folder na binuksan mo at kung
 nakatupi ang pane ng folder. Kapag ini-quit ang Katna mula sa system tray,
 magsisimula ito nang bago.
 """
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Snooze at mga paalala sa sagot"
+text = """
+I-snooze ang isang pag-uusap gamit ang orasan sa linya nito o mula sa
+right-click menu: maghihintay ito sa folder na Naka-snooze at babalik sa
+Inbox, hindi pa nababasa, sa oras na pinili mo. Kapag nagpapadala, ang
+arrow sa tabi ng Ipadala ay puwedeng magpaalala sa iyo kung walang sumagot
+sa loob ng 1, 3 o 7 araw. Parehong gumagana habang naka-on ang computer
+mo, at humahabol pagkagising nito.
+"""

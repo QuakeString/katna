@@ -28,6 +28,8 @@ list-move-to = نقل إلى
 list-archive = أرشفة
 list-spam = الإبلاغ عن محتوى غير مرغوب فيه
 list-delete = حذف
+list-snooze = تأجيل
+list-unsnooze = إلغاء التأجيل
 list-newer = أحدث
 list-older = أقدم
 list-range = { $first }–{ $last } من { $total }
@@ -548,6 +550,7 @@ row-mark-important = وضع علامة «مهمة»
 row-pinned = مثبّتة في الأعلى
 row-pin = تثبيت في الأعلى
 row-unpin = إلغاء التثبيت
+row-snoozed-until = مؤجَّلة حتى { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -569,6 +572,8 @@ menu-important = وضع علامة «مهمة»
 menu-not-important = وضع علامة «غير مهمة»
 menu-pin = تثبيت في الأعلى
 menu-unpin = إلغاء التثبيت
+menu-snooze = تأجيل
+menu-unsnooze = إلغاء التأجيل
 menu-print-all = طباعة الكل
 menu-new-window = فتح في نافذة جديدة
 menu-move-to = نقل إلى
@@ -737,6 +742,42 @@ toast-unpinned = { $kind ->
         [few] تم إلغاء تثبيت { $count } رسائل.
         [many] تم إلغاء تثبيت { $count } رسالة.
        *[other] تم إلغاء تثبيت { $count } رسالة.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [zero] تم تأجيل { $count } محادثة حتى { $when }.
+        [one] تم تأجيل المحادثة حتى { $when }.
+        [two] تم تأجيل محادثتين حتى { $when }.
+        [few] تم تأجيل { $count } محادثات حتى { $when }.
+        [many] تم تأجيل { $count } محادثة حتى { $when }.
+       *[other] تم تأجيل { $count } محادثة حتى { $when }.
+    }
+   *[message] { $count ->
+        [zero] تم تأجيل { $count } رسالة حتى { $when }.
+        [one] تم تأجيل الرسالة حتى { $when }.
+        [two] تم تأجيل رسالتين حتى { $when }.
+        [few] تم تأجيل { $count } رسائل حتى { $when }.
+        [many] تم تأجيل { $count } رسالة حتى { $when }.
+       *[other] تم تأجيل { $count } رسالة حتى { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [zero] عادت { $count } محادثة إلى البريد الوارد.
+        [one] عادت المحادثة إلى البريد الوارد.
+        [two] عادت محادثتان إلى البريد الوارد.
+        [few] عادت { $count } محادثات إلى البريد الوارد.
+        [many] عادت { $count } محادثة إلى البريد الوارد.
+       *[other] عادت { $count } محادثة إلى البريد الوارد.
+    }
+   *[message] { $count ->
+        [zero] عادت { $count } رسالة إلى البريد الوارد.
+        [one] عادت الرسالة إلى البريد الوارد.
+        [two] عادت رسالتان إلى البريد الوارد.
+        [few] عادت { $count } رسائل إلى البريد الوارد.
+        [many] عادت { $count } رسالة إلى البريد الوارد.
+       *[other] عادت { $count } رسالة إلى البريد الوارد.
     }
 }
 toast-spam = { $kind ->

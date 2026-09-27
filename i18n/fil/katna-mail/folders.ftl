@@ -23,6 +23,7 @@ storage-used-detail = { $address }: { $used } ng { $total } ang nagamit
 
 folder-inbox = Inbox
 folder-starred = Naka-star
+folder-snoozed = Naka-snooze
 folder-unread = Hindi pa nabasa
 folder-important = Mahalaga
 folder-drafts = Mga Draft

@@ -23,6 +23,7 @@ storage-used-detail = { $address }: { $total } න් { $used } භාවිත 
 
 folder-inbox = එන ලිපි
 folder-starred = තරු යෙදූ
+folder-snoozed = කල් දැමූ
 folder-unread = නොකියවූ
 folder-important = වැදගත්
 folder-drafts = කෙටුම්පත්
