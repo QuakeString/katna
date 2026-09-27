@@ -53,9 +53,15 @@ impl Write for Tee {
 impl Drop for Tee {
     fn drop(&mut self) {
         let text = without_colors(&String::from_utf8_lossy(&self.event));
+        // A line logged while another is being kept is left out rather than
+        // waited for. Tests wait, so parallel tests logging never drop the
+        // lines one of them checks.
+        #[cfg(not(test))]
         let Ok(mut lines) = RECENT_LINES.try_lock() else {
             return;
         };
+        #[cfg(test)]
+        let mut lines = RECENT_LINES.lock().unwrap_or_else(|err| err.into_inner());
         for line in text.lines().filter(|line| !line.trim().is_empty()) {
             if lines.len() == RECENT {
                 lines.pop_front();
@@ -170,11 +176,20 @@ mod tests {
         );
         for i in 0..RECENT + 5 {
             let mut tee = Tee::default();
-            writeln!(tee, "\u{1b}[32mline {i}\u{1b}[0m").unwrap();
+            writeln!(tee, "\u{1b}[32mrecent line {i}\u{1b}[0m").unwrap();
         }
         let lines = recent_lines();
         assert_eq!(lines.len(), RECENT);
-        assert_eq!(lines.last().unwrap(), &format!("line {}", RECENT + 4));
+        // Tests running alongside may log between these lines.
+        let ours: Vec<&String> = lines
+            .iter()
+            .filter(|l| l.starts_with("recent line "))
+            .collect();
+        assert_eq!(
+            ours.last().unwrap().as_str(),
+            format!("recent line {}", RECENT + 4)
+        );
+        assert!(ours.iter().all(|l| !l.contains('\u{1b}')));
     }
 
     #[test]
