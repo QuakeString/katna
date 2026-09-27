@@ -202,12 +202,15 @@ or KDE's apps, please consider
 
 Katna is free software, built in the open.
 
-- ⭐ Star the repository and [report issues](https://github.com/QuakeString/katna/issues).
+- ⭐ Star [the repository](https://github.com/QuakeString/katna) and
+  [report issues](https://github.com/QuakeString/katna/issues).
 - ☕ Buy me a coffee on Patreon: link coming soon.
-- Follow the author, Mozammel: [GitHub](https://github.com/QuakeString).
-  X and LinkedIn links are coming soon.
+- Follow the author, Mozammel:
+  [GitHub](https://github.com/QuakeString) ·
+  [X](https://x.com/QuakeString) ·
+  [LinkedIn](https://www.linkedin.com/in/md-mozammel-hossain-97a20446/)
 
-<!-- TODO: Patreon, X and LinkedIn URLs, when Mozammel shares them. -->
+<!-- TODO: the Patreon URL, when Mozammel shares it. -->
 
 ## License
 
