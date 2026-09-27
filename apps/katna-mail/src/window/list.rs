@@ -22,6 +22,9 @@ use katna_ui::px;
 /// The lift of the line under the pointer: critically damped and slower
 /// than other hover feedback, so it rises and settles without a jolt.
 const ROW_LIFT: SpringConfig = SpringConfig::new(500.0, 44.7, 1.0);
+/// How strongly a tick box, star or marker that is off shows while the
+/// pointer is not over its line.
+const OFF_REST: f32 = 0.45;
 /// How long the quick actions of a line take to fade in.
 const ACTIONS_IN: Duration = Duration::from_millis(160);
 /// The attachment chips under a line: their line's extra height, their
@@ -1419,6 +1422,20 @@ impl MailWindow {
         } else {
             FontWeight::NORMAL
         };
+        // As in Gmail, a tick box, star or marker that is off rests dim and
+        // comes up to full contrast while the pointer is over its line. A
+        // phone has no pointer, so there they stay as they are.
+        let rest = !hovered && !self.layout.shape.is_phone();
+        let off = |id: &'static str, name: &'static str, size: f32| {
+            div()
+                .with_spring(
+                    (id, ix),
+                    SpringAnimation::new(ROW_LIFT).to(if rest { 0.0 } else { 1.0 }),
+                    move |el, s: f32| el.opacity(OFF_REST + (1.0 - OFF_REST) * s.clamp(0.0, 1.0)),
+                )
+                .child(icon(name, th.text_dim, size))
+                .into_any_element()
+        };
         let check = div()
             .id(("row-check", ix))
             .size(px(32.0))
@@ -1441,7 +1458,7 @@ impl MailWindow {
             .child(if checked {
                 icon("checkbox-checked", th.text, 20.0)
             } else {
-                icon("checkbox", th.text_faint, 20.0)
+                off("row-check-rest", "checkbox", 20.0)
             });
         let flagged = row.flagged;
         let star = div()
@@ -1468,7 +1485,7 @@ impl MailWindow {
             .child(if row.flagged {
                 icon("star-filled", th.star, 20.0)
             } else {
-                icon("star", th.text_faint, 20.0)
+                off("row-star-rest", "star", 20.0)
             });
         let important = row.important;
         // Settings > Appearance > Important markers.
@@ -1497,7 +1514,7 @@ impl MailWindow {
                 .child(if important {
                     icon("important-filled", th.important, 18.0)
                 } else {
-                    icon("important", th.text_faint, 18.0)
+                    off("row-important-rest", "important", 18.0)
                 })
         });
         let correspondent = div()
