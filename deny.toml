@@ -61,6 +61,8 @@ deny = [
     { crate = "axum", wrappers = ["katna-server"], reason = "server only" },
     { crate = "tokio-postgres", wrappers = ["katna-server", "deadpool-postgres"], reason = "server only" },
     { crate = "deadpool-postgres", wrappers = ["katna-server"], reason = "server only" },
+    { crate = "lettre", wrappers = ["katna-server"], reason = "server only" },
+    { crate = "argon2", wrappers = ["katna-server"], reason = "server only" },
     # TLS is rustls only (docs/ARCHITECTURE.md §19).
     { crate = "openssl-sys", reason = "use rustls" },
     { crate = "native-tls", reason = "use rustls" },
