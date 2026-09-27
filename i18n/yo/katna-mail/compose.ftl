@@ -19,6 +19,8 @@ compose-show-trimmed = Fi àkóónú tí a gé kúrú hàn
 compose-to = Sí
 compose-cc = Ẹ̀dà
 compose-bcc = Ẹ̀dà àṣírí
+compose-from = Láti
+compose-from-choose = Fi ránṣẹ́ láti àkáǹtì mìíràn
 compose-recipients = Àwọn olùgbà
 compose-subject = Àkọlé
 

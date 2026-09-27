@@ -163,7 +163,7 @@ settings-default-apps-show-folder-detail = Відкриває файловий �
 ## Settings > Compose
 
 settings-compose-send-from = Надсилати нові листи з
-settings-compose-send-from-detail = Відповіді й пересилання завжди надсилаються з облікового запису, у якому ви перебуваєте.
+settings-compose-send-from-detail = Нові листи починаються з цього облікового запису; у рядку Від можна вибрати інший. Відповіді й пересилання завжди надсилаються з облікового запису, на який надійшов початковий лист.
 settings-compose-send-from-current = Поточного облікового запису
 settings-compose-send-on-replies = Надсилання відповідей
 settings-compose-send-on-replies-detail = Що робить «Надіслати» у відповіді чи пересиланні. Інший варіант — у меню біля кнопки «Надіслати».
@@ -239,7 +239,7 @@ settings-default-apps-text-summary = Де відкриваються звича�
 settings-default-apps-sheets-summary = Де відкриваються файли Excel, OpenDocument і CSV
 settings-default-apps-documents-summary = Де відкриваються документи Word, текст OpenDocument і презентації
 settings-default-apps-after-saving-summary = Показувати збережені вкладення в їхній папці
-settings-compose-send-from-summary = Обліковий запис, з якого надсилаються нові листи: поточний або завжди той самий
+settings-compose-send-from-summary = Обліковий запис, з якого надсилаються нові листи: перший, інший або поточний
 settings-compose-send-on-replies-summary = «Надіслати» або «Надіслати й архівувати» ланцюжок у відповідях і пересиланнях
 settings-compose-signatures-summary = Додається під вашим листом після рядка «--»
 settings-compose-for-new-mail-summary = Підпис, з якого починаються нові листи

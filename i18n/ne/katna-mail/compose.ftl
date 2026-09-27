@@ -19,6 +19,8 @@ compose-show-trimmed = काटिएको सामग्री देखा�
 compose-to = प्रापक
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = प्रेषक
+compose-from-choose = अर्को खाताबाट पठाउनुहोस्
 compose-recipients = प्रापकहरू
 compose-subject = विषय
 

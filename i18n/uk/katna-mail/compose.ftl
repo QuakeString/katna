@@ -19,6 +19,8 @@ compose-show-trimmed = Показати приховану частину
 compose-to = Кому
 compose-cc = Копія
 compose-bcc = Прихована копія
+compose-from = Від
+compose-from-choose = Надіслати з іншого облікового запису
 compose-recipients = Одержувачі
 compose-subject = Тема
 

@@ -19,6 +19,8 @@ compose-show-trimmed = කපා හැරි අන්තර්ගතය පෙ
 compose-to = වෙත
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = වෙතින්
+compose-from-choose = වෙනත් ගිණුමකින් යවන්න
 compose-recipients = ලබන්නන්
 compose-subject = විෂය
 

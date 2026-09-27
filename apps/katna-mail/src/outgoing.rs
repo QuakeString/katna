@@ -39,6 +39,10 @@ pub struct Outgoing {
     /// An RFC 5322 date for the `Date` header (scheduled mail carries the
     /// time it goes out).
     pub date: Option<String>,
+    /// The `Message-ID`, without angle brackets: a draft keeps one while it
+    /// is edited, so each save replaces the one before. Sent mail gets a
+    /// new one from the daemon.
+    pub message_id: Option<String>,
 }
 
 /// A file in a message.
@@ -135,6 +139,9 @@ pub fn build(message: &Outgoing) -> Vec<u8> {
         }
     }
     header(&mut out, "Subject", &encode_words(message.subject.trim()));
+    if let Some(id) = &message.message_id {
+        header(&mut out, "Message-ID", &format!("<{id}>"));
+    }
     if let Some(id) = &message.in_reply_to {
         header(&mut out, "In-Reply-To", &format!("<{id}>"));
     }

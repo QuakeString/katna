@@ -453,3 +453,12 @@ text = """
 Jika Katna berguna bagi Anda, Tentang Katna kini punya tombol Traktir
 saya kopi dan kode QR untuk membuka halaman yang sama di ponsel Anda.
 """
+
+["2026-09-27-1615-from-row"]
+title = "Pilih pengirim pesan"
+text = """
+Pesan baru kini menampilkan baris Dari di bawah Kepada. Klik panahnya
+untuk mengirim dari akun Anda yang lain. Email baru dimulai dari akun
+pertama Anda, kecuali Anda memilih default lain di Setelan > Tulis >
+Kirim pesan baru dari.
+"""

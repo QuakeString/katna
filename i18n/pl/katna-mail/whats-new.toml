@@ -460,3 +460,12 @@ text = """
 Jeśli Katna Ci się przydaje, w oknie O Katna jest teraz przycisk Postaw
 mi kawę i kod QR, który otwiera tę samą stronę na telefonie.
 """
+
+["2026-09-27-1615-from-row"]
+title = "Wybierz, od kogo jest wiadomość"
+text = """
+Nowe wiadomości mają teraz wiersz Od pod polem Do. Kliknij jego
+strzałkę, aby wysłać z innego ze swoich kont. Nowa poczta wychodzi z
+pierwszego konta, chyba że wybierzesz inne domyślne w Ustawienia >
+Tworzenie > Wysyłaj nowe wiadomości z.
+"""

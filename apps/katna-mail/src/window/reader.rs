@@ -673,7 +673,12 @@ impl MailWindow {
         // scrolls with the messages.
         let key = reader.key;
         let reply = self.render_inline_reply(key, th, cx);
-        let footer = reply.is_none().then(|| self.render_reply_row(th, cx));
+        // Drafts are edited, not answered.
+        let drafts_only = self.mail.as_ref().ok().is_some_and(|mail| {
+            let ids: Vec<MessageId> = reader.parts.iter().map(|p| p.id).collect();
+            mail.drafts(&ids).len() == ids.len()
+        });
+        let footer = (reply.is_none() && !drafts_only).then(|| self.render_reply_row(th, cx));
         // A reply goes next to the message it answers, the newest.
         let (reply_above, reply_below) = if newest_first {
             (reply, None)

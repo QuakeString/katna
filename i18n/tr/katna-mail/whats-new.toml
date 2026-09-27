@@ -454,3 +454,12 @@ Katna işinize yarıyorsa, Katna hakkında penceresinde artık Bana bir
 kahve ısmarla düğmesi ve aynı sayfayı telefonunuzda açan bir QR kodu
 var.
 """
+
+["2026-09-27-1615-from-row"]
+title = "İletinin kimden gideceğini seçin"
+text = """
+Yeni iletilerde artık Kime'nin altında bir Kimden satırı var. Başka bir
+hesabınızdan göndermek için okuna tıklayın. Ayarlar > Oluşturma > Yeni
+iletileri şu hesaptan gönder bölümünde başka bir varsayılan seçmediğiniz
+sürece yeni posta ilk hesabınızdan başlar.
+"""

@@ -19,6 +19,8 @@ compose-show-trimmed = ಟ್ರಿಮ್ ಮಾಡಿದ ವಿಷಯವನ್�
 compose-to = ಇವರಿಗೆ
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = ಇವರಿಂದ
+compose-from-choose = ಇನ್ನೊಂದು ಖಾತೆಯಿಂದ ಕಳುಹಿಸಿ
 compose-recipients = ಸ್ವೀಕರಿಸುವವರು
 compose-subject = ವಿಷಯ
 

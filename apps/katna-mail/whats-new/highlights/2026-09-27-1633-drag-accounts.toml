@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Drag accounts into order"
+text = """
+In Settings > Accounts, dragging an account now lifts its whole row, and
+the other accounts slide aside to make room. Move up and Move down show
+when you point at a row.
+"""

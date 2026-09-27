@@ -19,6 +19,8 @@ compose-show-trimmed = Afficher le contenu masqué
 compose-to = À
 compose-cc = Cc
 compose-bcc = Cci
+compose-from = De
+compose-from-choose = Envoyer depuis un autre compte
 compose-recipients = Destinataires
 compose-subject = Objet
 

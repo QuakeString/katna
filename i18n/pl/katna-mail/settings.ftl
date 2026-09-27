@@ -163,7 +163,7 @@ settings-default-apps-show-folder-detail = Otwiera menedżer plików z zaznaczon
 ## Settings > Compose
 
 settings-compose-send-from = Wysyłaj nowe wiadomości z
-settings-compose-send-from-detail = Odpowiedzi i przekazane wiadomości zawsze wychodzą z konta, w którym jesteś.
+settings-compose-send-from-detail = Nowe wiadomości zaczynają się od tego konta; w wierszu Od można wybrać inne. Odpowiedzi i przekazane wiadomości zawsze wychodzą z konta, na które przyszła oryginalna wiadomość.
 settings-compose-send-from-current = Konto, w którym jesteś
 settings-compose-send-on-replies = Wysyłanie odpowiedzi
 settings-compose-send-on-replies-detail = Co robi przycisk Wyślij przy odpowiedzi lub przekazaniu. Menu obok przycisku Wyślij oferuje drugą opcję.
@@ -239,7 +239,7 @@ settings-default-apps-text-summary = Gdzie otwierają się zwykły tekst, logi i
 settings-default-apps-sheets-summary = Gdzie otwierają się pliki Excel, OpenDocument i CSV
 settings-default-apps-documents-summary = Gdzie otwierają się dokumenty Word, tekst OpenDocument i prezentacje
 settings-default-apps-after-saving-summary = Pokazuj zapisane załączniki w ich folderze
-settings-compose-send-from-summary = Konto, z którego wychodzi nowa poczta: to, w którym jesteś, albo zawsze to samo
+settings-compose-send-from-summary = Konto, z którego wychodzi nowa poczta: pierwsze, inne albo to, w którym jesteś
 settings-compose-send-on-replies-summary = Wyślij albo Wyślij i zarchiwizuj wątek przy odpowiedziach i przekazywaniu
 settings-compose-signatures-summary = Dodawany pod wiadomością, po wierszu „--”
 settings-compose-for-new-mail-summary = Podpis, od którego zaczyna się nowa wiadomość

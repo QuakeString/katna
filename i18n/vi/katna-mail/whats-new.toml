@@ -445,3 +445,12 @@ text = """
 Nếu Katna có ích với bạn, Giới thiệu về Katna giờ có nút Mời tôi một ly
 cà phê và mã QR để mở cùng trang đó trên điện thoại của bạn.
 """
+
+["2026-09-27-1615-from-row"]
+title = "Chọn người gửi thư"
+text = """
+Thư mới giờ có hàng Từ bên dưới Tới. Nhấp vào mũi tên của hàng này để
+gửi từ một tài khoản khác của bạn. Thư mới bắt đầu từ tài khoản đầu tiên
+của bạn, trừ khi bạn chọn mặc định khác trong Cài đặt > Soạn thư > Gửi
+thư mới từ.
+"""

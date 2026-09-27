@@ -1,0 +1,4 @@
+title = "Room for many attachments"
+text = """
+However many files you attach, the list now scrolls above the Send bar instead of running over it, shows the newest file, and says how many files there are and their total size.
+"""

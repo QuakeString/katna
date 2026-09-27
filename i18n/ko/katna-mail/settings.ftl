@@ -153,7 +153,7 @@ settings-default-apps-show-folder-detail = 저장한 첨부파일이 선택된 �
 ## Settings > Compose
 
 settings-compose-send-from = 새 메일 보내는 계정
-settings-compose-send-from-detail = 답장과 전달은 항상 현재 사용 중인 계정에서 보냅니다.
+settings-compose-send-from-detail = 새 메일은 이 계정으로 시작하며, 보낸사람 줄에서 다른 계정을 고를 수 있습니다. 답장과 전달은 항상 원래 메일을 받은 계정에서 보냅니다.
 settings-compose-send-from-current = 현재 사용 중인 계정
 settings-compose-send-on-replies = 답장 시 보내기
 settings-compose-send-on-replies-detail = 답장이나 전달에서 보내기 버튼이 하는 동작입니다. 보내기 옆 메뉴에서 다른 동작을 선택할 수 있습니다.
@@ -229,7 +229,7 @@ settings-default-apps-text-summary = 일반 텍스트, 로그, 코드를 여는 
 settings-default-apps-sheets-summary = Excel, OpenDocument, CSV 파일을 여는 앱
 settings-default-apps-documents-summary = Word, OpenDocument 텍스트, 슬라이드를 여는 앱
 settings-default-apps-after-saving-summary = 저장한 첨부파일을 폴더에서 표시
-settings-compose-send-from-summary = 새 메일을 보내는 계정: 현재 사용 중인 계정 또는 항상 같은 계정
+settings-compose-send-from-summary = 새 메일을 보내는 계정: 첫 번째 계정, 다른 계정 또는 현재 사용 중인 계정
 settings-compose-send-on-replies-summary = 답장과 전달에서 보내기 또는 보내고 대화 보관처리
 settings-compose-signatures-summary = 메일 본문 아래 “--” 줄 다음에 추가
 settings-compose-for-new-mail-summary = 새 메일에 처음부터 들어가는 서명
