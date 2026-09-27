@@ -1515,6 +1515,16 @@ the name, the name goes above them and both span the row, as in Gmail's
 mobile settings. So a narrow tablet stacks them too. Long choices wrap to a
 second line instead of being cut off.
 
+The open conversation reads its own pane's width, not the layout. A pane
+narrower than 420 px (a narrow reading pane, or the reading pane dragged
+small) lays out as on a phone: the text uses the room under the sender's
+picture and Reply, Reply all and Forward share the width, folding to icons
+together. Under 260 px each message's date and star step aside (the date
+stays under "to", starring in ⋮) and the subject takes a smaller size.
+As the pane narrows the toolbar first drops Newer/Older (J and K still
+step), then leaves Mark unread, Report spam and finally Delete to its ⋮
+menu, so nothing is ever cut off at the card's edge.
+
 A layout changes only 12 px past its threshold, so a window resized right
 at a threshold does not flicker between two layouts. The GNOME minimum
 window size (360 px) is the smallest phone layout.

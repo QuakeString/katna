@@ -166,11 +166,6 @@ impl Shape {
     pub(super) fn card_radius(&self) -> f32 {
         super::PANEL_RADIUS * (1.0 - self.phone)
     }
-
-    /// How far a conversation's text is indented from the card's edge.
-    pub(super) fn reader_indent(&self) -> f32 {
-        lerp(72.0, 16.0, self.phone)
-    }
 }
 
 /// The layout and its springs.

@@ -31,6 +31,7 @@ const CHIP_GAP: f32 = 8.0;
 const MORE_SIZE: f32 = 30.0;
 
 use super::attachments::kind_badge;
+use super::reader::Squeeze;
 use super::{Act, LIST_CONTEXT, Listing, MailWindow, Menu, READER_CONTEXT, Reload, STACKED_BELOW};
 use crate::data::{EntryKey, Row, RowFile};
 use crate::format;
@@ -342,7 +343,7 @@ impl MailWindow {
                     )
             };
             bar = bar
-                .child(self.action_buttons("list", th, cx))
+                .child(self.action_buttons("list", Squeeze::NONE, th, cx))
                 .child(separator(th))
                 .child(read_button)
                 .child({
@@ -510,9 +511,12 @@ impl MailWindow {
 
     /// Archive, spam and delete, for the ticked lines or the open
     /// conversation.
+    /// Archive, Report spam and Delete, less those `squeeze` leaves to
+    /// the More menu.
     pub(super) fn action_buttons(
         &self,
         prefix: &'static str,
+        squeeze: Squeeze,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> Div {
@@ -524,16 +528,22 @@ impl MailWindow {
                     .tooltip(tip("Archive", th))
                     .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Archive, cx))),
             )
-            .child(
-                icon_button((prefix, 2_usize), "junk", 20.0, th)
-                    .tooltip(tip("Report spam", th))
-                    .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Spam, cx))),
-            )
-            .child(
-                icon_button((prefix, 3_usize), "trash", 20.0, th)
-                    .tooltip(tip("Delete", th))
-                    .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Delete, cx))),
-            )
+            .when(!squeeze.spam, |d| {
+                d.child(
+                    icon_button((prefix, 2_usize), "junk", 20.0, th)
+                        .tooltip(tip("Report spam", th))
+                        .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Spam, cx))),
+                )
+            })
+            .when(!squeeze.delete, |d| {
+                d.child(
+                    icon_button((prefix, 3_usize), "trash", 20.0, th)
+                        .tooltip(tip("Delete", th))
+                        .on_click(
+                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Delete, cx)),
+                        ),
+                )
+            })
     }
 
     /// Tells the list its lines changed; `keep_scroll` stays at the same
@@ -682,6 +692,27 @@ impl MailWindow {
                         ))
                     }
                     Some(()) => menu(th)
+                        // What a narrow reading pane leaves off its toolbar.
+                        .when(
+                            which == Menu::ReaderMore && self.reader_squeeze().spam,
+                            |d| {
+                                d.child(menu_item("more-spam", "Report spam", th).on_click(
+                                    cx.listener(|this, _, _, cx| {
+                                        this.act_on_targets(Act::Spam, cx)
+                                    }),
+                                ))
+                            },
+                        )
+                        .when(
+                            which == Menu::ReaderMore && self.reader_squeeze().delete,
+                            |d| {
+                                d.child(menu_item("more-delete", "Delete", th).on_click(
+                                    cx.listener(|this, _, _, cx| {
+                                        this.act_on_targets(Act::Delete, cx)
+                                    }),
+                                ))
+                            },
+                        )
                         .child(menu_item("more-read", "Mark as read", th).on_click(
                             cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)),
                         ))

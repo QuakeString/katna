@@ -39,6 +39,10 @@ const PHONE_FRAME: f32 = 2.0 + 8.0 + 20.0 + 8.0 + 8.0;
 /// The row's padding on the right.
 const RIGHT: f32 = 24.0;
 const PHONE_RIGHT: f32 = 16.0;
+/// A conversation pane narrower than this lays out as on a phone: the
+/// text starts at the sender picture's edge and the reply row shares its
+/// width equally.
+const COMPACT_BELOW: f32 = 420.0;
 
 pub(super) struct ReplyRow {
     /// The width of each button's word in the UI font.
@@ -48,6 +52,10 @@ pub(super) struct ReplyRow {
     /// The conversation the row was last laid out for: another one takes
     /// its row without motion.
     key: Option<EntryKey>,
+    /// The conversation pane's width.
+    width: f32,
+    /// 1 when the pane is narrow enough to lay out as on a phone.
+    compact: Spring,
 }
 
 impl ReplyRow {
@@ -56,6 +64,8 @@ impl ReplyRow {
             words: [0.0; 3],
             shown: std::array::from_fn(|_| Spring::new(motion::SMOOTH, 1.0)),
             key: None,
+            width: f32::MAX,
+            compact: Spring::new(motion::SMOOTH, 0.0),
         }
     }
 }
@@ -94,10 +104,18 @@ fn folds(words: [f32; 3], room: f32, phone: bool) -> [bool; 3] {
 impl MailWindow {
     /// Lays out the reply row for a conversation pane `width` wide.
     pub(super) fn update_reply_row(&mut self, width: f32, window: &Window, reduce: bool) {
+        self.reply_row.width = width;
         let Some(key) = self.reader.as_ref().map(|r| r.key) else {
             self.reply_row.key = None;
             return;
         };
+        let fresh = self.reply_row.key != Some(key);
+        let compact = &mut self.reply_row.compact;
+        compact.set(if width < COMPACT_BELOW { 1.0 } else { 0.0 });
+        if fresh {
+            compact.snap(compact.target());
+        }
+        compact.tick(window, reduce);
         let mut font = window.text_style().font();
         if let Some(family) = &self.font {
             font.family = family.clone();
@@ -119,15 +137,14 @@ impl MailWindow {
                     .width,
             );
         }
-        let shape = self.layout.shape;
-        let phone = shape.is_phone();
-        let right = if phone { PHONE_RIGHT } else { RIGHT };
+        let phone = self.layout.shape.is_phone();
+        let shared = self.reply_row_shared();
+        let right = if shared { PHONE_RIGHT } else { RIGHT };
         // A little slack for the card's edge and rounding; a phone's
         // conversation has no card around it.
         let slack = if phone { 0.0 } else { 4.0 };
-        let room = width - shape.reader_indent() - right - slack;
-        let folded = folds(self.reply_row.words, room, phone);
-        let fresh = self.reply_row.key != Some(key);
+        let room = width - self.reader_indent() - right - slack;
+        let folded = folds(self.reply_row.words, room, shared);
         self.reply_row.key = Some(key);
         for (spring, folded) in self.reply_row.shown.iter_mut().zip(folded) {
             let target = if folded { 0.0 } else { 1.0 };
@@ -140,16 +157,40 @@ impl MailWindow {
         }
     }
 
+    /// The conversation pane's width, as last laid out.
+    pub(super) fn reader_width(&self) -> f32 {
+        self.reply_row.width
+    }
+
+    /// How far the conversation lays out as on a phone: on a phone, and
+    /// in a narrow pane. 0 to 1.
+    pub(super) fn reader_compact(&self) -> f32 {
+        self.layout
+            .shape
+            .phone
+            .max(self.reply_row.compact.value())
+            .clamp(0.0, 1.0)
+    }
+
+    /// How far a conversation's text is indented from the card's edge.
+    pub(super) fn reader_indent(&self) -> f32 {
+        lerp(72.0, 16.0, self.reader_compact())
+    }
+
+    /// The reply row's buttons share its width equally, as on a phone.
+    fn reply_row_shared(&self) -> bool {
+        self.layout.shape.is_phone() || self.reply_row.compact.target() > 0.5
+    }
+
     /// The row itself.
     pub(super) fn render_reply_row(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        let shape = self.layout.shape;
-        let phone = shape.is_phone();
+        let shared = self.reply_row_shared();
         div()
             .flex()
             .flex_row()
-            .gap(px(if phone { PHONE_GAP } else { GAP }))
-            .pl(px(shape.reader_indent()))
-            .pr(px(lerp(RIGHT, PHONE_RIGHT, shape.phone)))
+            .gap(px(if shared { PHONE_GAP } else { GAP }))
+            .pl(px(self.reader_indent()))
+            .pr(px(lerp(RIGHT, PHONE_RIGHT, self.reader_compact())))
             .py(px(14.0))
             .children(
                 BUTTONS
@@ -159,12 +200,12 @@ impl MailWindow {
                         let shown = self.reply_row.shown[ix].value();
                         pill_button(id, name, word, self.reply_row.words[ix], shown, th)
                             .flex_none()
-                            .when(phone, |d| {
+                            .when(shared, |d| {
                                 d.flex_1()
                                     .min_w_0()
                                     .justify_center()
-                                    .pl(px(12.0))
-                                    .pr(px(12.0))
+                                    .pl(px(8.0))
+                                    .pr(px(8.0))
                             })
                             .when(shown < 0.5, |d| d.tooltip(tip(word, th)))
                             .on_click(cx.listener(move |this, _, window, cx| {
