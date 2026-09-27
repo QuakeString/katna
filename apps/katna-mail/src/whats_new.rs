@@ -87,8 +87,9 @@ pub const HIGHLIGHTS: &[Highlight] = &[
         id: 6,
         title: "About Katna",
         text: "Help > About Katna, also in Quick settings, shows the version, \
-               the changelog and the free software Katna is built on. The \
-               version in the Settings header opens it too.",
+               the changelog and every library Katna is built on, with its \
+               authors and license. The version in the Settings header opens \
+               it too.",
         animation: None,
     },
 ];

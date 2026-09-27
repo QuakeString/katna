@@ -1372,8 +1372,14 @@ Gemini or confidential mode):
   row, a line of thanks to Rust, KDE and Linux, and the free software
   Katna is built on, each with its license. The coffee link and each
   Follow link are one constant (`SUPPORT_URL`, `FOLLOW`); unset ones show
-  as "Coming soon" or stay hidden. `CREDITS` in the same file is the one
-  list of credits; the README follows it. On a phone it fills the window.
+  as "Coming soon" or stay hidden. `CREDITS` in the same file picks the
+  heart of Katna by hand; "Every library Katna uses" below it lists each
+  direct dependency with its version, authors, license and repository
+  from `docs/credits.json`, which `ci/gen-credits.sh` writes from
+  `cargo metadata` together with CREDITS.md. A short "A personal project"
+  note says where Katna's ideas come from (Gmail, Mailspring,
+  Thunderbird) and that LLMs made it possible. On a phone it fills the
+  window.
 - **After the first real install.** The owner's first run on KDE brought
   these changes. Compose sits in the top bar in place of the app name, so
   it shows whether the folders are open or not; the account picture moved

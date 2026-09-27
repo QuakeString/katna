@@ -3,8 +3,11 @@
 //! About Katna: the suite, the version of Katna Mail with its What's new
 //! and changelog, the source on GitHub, a way to support the work, where
 //! to follow the author, the free software Katna is built on, each with its
-//! license, and some love for Rust, KDE and Linux. Opened from Help in the menu bar, quick
+//! license, every library it uses (`docs/credits.json`), and some love
+//! for Rust, KDE and Linux. Opened from Help in the menu bar, quick
 //! settings and the version in the Settings header.
+
+use std::sync::LazyLock;
 
 use gpui::{
     AnyElement, Context, FocusHandle, FontWeight, KeyDownEvent, MouseButton, SharedString, Window,
@@ -30,12 +33,15 @@ const SOURCE_URL: &str = env!("CARGO_PKG_REPOSITORY");
 /// until there is one (the link is left out).
 const FOLLOW: &[(&str, Option<&str>)] = &[
     ("GitHub", Some("https://github.com/QuakeString")),
-    ("X", None),
-    ("LinkedIn", None),
+    ("X", Some("https://x.com/QuakeString")),
+    (
+        "LinkedIn",
+        Some("https://www.linkedin.com/in/md-mozammel-hossain-97a20446/"),
+    ),
 ];
 
-/// Free software Katna is built on: the name, what it does in Katna, its
-/// license and its home. The README's credits follow this list.
+/// The heart of Katna, picked by hand: the name, what it does in Katna,
+/// its license and its home. Every library is in [`LIBRARIES`].
 const CREDITS: &[(&str, &str, &str, &str)] = &[
     (
         "Pimalaya",
@@ -135,10 +141,48 @@ const CREDITS: &[(&str, &str, &str, &str)] = &[
     ),
 ];
 
+/// A library Katna uses directly, from `docs/credits.json`, which
+/// `ci/gen-credits.sh` writes from `cargo metadata` (CREDITS.md too).
+struct Library {
+    name: String,
+    version: String,
+    authors: String,
+    license: String,
+    repository: String,
+}
+
+static LIBRARIES: LazyLock<Vec<Library>> =
+    LazyLock::new(|| libraries(include_str!("../../../../docs/credits.json")));
+
+fn libraries(json: &str) -> Vec<Library> {
+    let json: serde_json::Value = serde_json::from_str(json).unwrap_or_default();
+    let text = |v: &serde_json::Value, key| v[key].as_str().unwrap_or_default().to_owned();
+    json["crates"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .map(|c| Library {
+            name: text(c, "name"),
+            version: text(c, "version"),
+            authors: c["authors"]
+                .as_array()
+                .into_iter()
+                .flatten()
+                .filter_map(|a| a.as_str())
+                .collect::<Vec<_>>()
+                .join(", "),
+            license: text(c, "license"),
+            repository: text(c, "repository"),
+        })
+        .collect()
+}
+
 pub(super) struct About {
     focus: FocusHandle,
     closing: bool,
     shown: Spring,
+    /// Every library is listed, not only the heart of Katna.
+    all: bool,
 }
 
 impl MailWindow {
@@ -170,6 +214,7 @@ impl MailWindow {
             focus,
             closing: false,
             shown,
+            all: false,
         });
         cx.notify();
     }
@@ -411,6 +456,32 @@ impl MailWindow {
                     ),
             );
 
+        let personal = div()
+            .flex_none()
+            .px(px(24.0))
+            .pt(px(20.0))
+            .flex()
+            .flex_col()
+            .gap(px(4.0))
+            .child(
+                div()
+                    .text_size(px(15.0))
+                    .font_weight(FontWeight::MEDIUM)
+                    .child("A personal project"),
+            )
+            .child(
+                div()
+                    .text_size(px(14.0))
+                    .line_height(px(21.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(
+                        "Katna Mail does not try to be new or revolutionary. It is \
+                         the mail app its author wanted, and its features and look \
+                         are borrowed from Gmail, Mailspring and Thunderbird. It was \
+                         only possible because of how far LLMs have come.",
+                    ),
+            );
+
         let credits = CREDITS
             .iter()
             .enumerate()
@@ -475,6 +546,94 @@ impl MailWindow {
             )
             .children(credits);
 
+        let all = about.all;
+        let libraries = div()
+            .flex_none()
+            .px(px(12.0))
+            .pt(px(8.0))
+            .flex()
+            .flex_col()
+            .child(
+                div()
+                    .id("about-all-libraries")
+                    .px(px(12.0))
+                    .py(px(10.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(12.0))
+                    .rounded(px(8.0))
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        if let Some(about) = &mut this.about {
+                            about.all = !about.all;
+                        }
+                        cx.notify();
+                    }))
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .text_size(px(14.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .text_color(rgba(th.accent))
+                            .child(format!("Every library Katna uses ({})", LIBRARIES.len())),
+                    )
+                    .child(icon(
+                        if all { "chevron-down" } else { "chevron-right" },
+                        th.accent,
+                        20.0,
+                    )),
+            )
+            .when(all, |d| {
+                d.children(LIBRARIES.iter().enumerate().map(|(ix, lib)| {
+                    let url = lib.repository.clone();
+                    div()
+                        .id(("about-library", ix))
+                        .flex_none()
+                        .px(px(12.0))
+                        .py(px(6.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(12.0))
+                        .rounded(px(8.0))
+                        .cursor_pointer()
+                        .hover(|s| s.bg(rgba(th.hover)))
+                        .tooltip(tip(lib.repository.clone(), th))
+                        .on_click(move |_, _, cx| cx.open_url(&url))
+                        .child(
+                            div()
+                                .flex_1()
+                                .min_w_0()
+                                .flex()
+                                .flex_col()
+                                .child(
+                                    div()
+                                        .text_size(px(14.0))
+                                        .line_height(px(20.0))
+                                        .child(format!("{} {}", lib.name, lib.version)),
+                                )
+                                .child(
+                                    div()
+                                        .text_size(px(13.0))
+                                        .line_height(px(18.0))
+                                        .text_color(rgba(th.text_dim))
+                                        .child(format!("by {}", lib.authors)),
+                                ),
+                        )
+                        .child(
+                            div()
+                                .flex_none()
+                                .max_w(px(160.0))
+                                .text_size(px(12.0))
+                                .text_color(rgba(th.text_dim))
+                                .child(lib.license.clone()),
+                        )
+                }))
+            });
+
         let body = div()
             .id("about-body")
             .flex_1()
@@ -488,7 +647,9 @@ impl MailWindow {
             .child(coffee)
             .children(follow)
             .child(love)
-            .child(built_on);
+            .child(personal)
+            .child(built_on)
+            .child(libraries);
 
         let footer = div()
             .flex_none()
@@ -613,5 +774,24 @@ mod tests {
         for (site, url) in FOLLOW {
             assert!(url.is_none_or(|url| url.starts_with("https://")), "{site}");
         }
+    }
+
+    #[test]
+    fn every_library_has_a_home() {
+        assert!(LIBRARIES.len() > 20);
+        for lib in LIBRARIES.iter() {
+            assert!(
+                !lib.name.is_empty() && !lib.version.is_empty(),
+                "{}",
+                lib.name
+            );
+            assert!(
+                !lib.authors.is_empty() && !lib.license.is_empty(),
+                "{}",
+                lib.name
+            );
+            assert!(lib.repository.starts_with("https://"), "{}", lib.name);
+        }
+        assert!(LIBRARIES.iter().any(|lib| lib.name == "gpui-pre"));
     }
 }
