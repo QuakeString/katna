@@ -7,6 +7,7 @@
 settings-tab-general = Общие
 settings-tab-inbox = Входящие
 settings-tab-accounts = Аккаунты
+settings-tab-katna-account = Аккаунт Katna
 settings-tab-subscriptions = Подписки
 settings-tab-appearance = Внешний вид
 settings-tab-shortcuts = Быстрые клавиши

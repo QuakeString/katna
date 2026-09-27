@@ -7,6 +7,7 @@
 settings-tab-general = ទូទៅ
 settings-tab-inbox = ប្រអប់ទទួល
 settings-tab-accounts = គណនី
+settings-tab-katna-account = គណនី Katna
 settings-tab-subscriptions = ការជាវ
 settings-tab-appearance = រូបរាង
 settings-tab-shortcuts = ផ្លូវកាត់

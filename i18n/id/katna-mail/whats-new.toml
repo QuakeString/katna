@@ -609,3 +609,21 @@ Seret chip alamat ke kolom lain untuk memindahkannya; Cc dan Bcc terbuka
 saat Anda menyeret, bahkan saat tersembunyi. Mengarahkan penunjuk ke chip
 menampilkan x untuk menghapusnya.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "Akun Katna"
+text = """
+Setelan > Akun Katna memungkinkan Anda membuat akun di server Katna sendiri,
+dengan sandinya sendiri, tidak pernah sandi email. Fitur online Katna,
+seperti tanda terima baca dan pelacakan tautan, akan memerlukannya. Anda
+bisa melihat komputer yang masuk dan mengeluarkan salah satunya.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Kembali ke tempat semula"
+text = """
+Menutup Katna Mail lalu membukanya lagi akan mengembalikan aplikasi, folder,
+dan tab kotak masuk yang Anda buka, folder yang Anda bentangkan, serta
+apakah panel folder dilipat. Keluar dari Katna lewat baki sistem akan
+memulainya dari awal.
+"""

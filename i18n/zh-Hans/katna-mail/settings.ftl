@@ -7,6 +7,7 @@
 settings-tab-general = 常规
 settings-tab-inbox = 收件箱
 settings-tab-accounts = 账号
+settings-tab-katna-account = Katna 账号
 settings-tab-subscriptions = 订阅
 settings-tab-appearance = 外观
 settings-tab-shortcuts = 快捷键

@@ -7,6 +7,7 @@
 settings-tab-general = 기본설정
 settings-tab-inbox = 받은편지함
 settings-tab-accounts = 계정
+settings-tab-katna-account = Katna 계정
 settings-tab-subscriptions = 구독
 settings-tab-appearance = 모양
 settings-tab-shortcuts = 단축키

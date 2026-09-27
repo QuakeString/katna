@@ -631,3 +631,22 @@ I-drag ang chip ng address sa ibang field para ilipat ito; bumubukas ang
 Cc at Bcc habang nagda-drag ka, kahit nakatago ang mga ito. Kapag itinuro
 mo ang isang chip, may lalabas na x na nag-aalis dito.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "Katna account"
+text = """
+Sa Mga setting > Katna account, makakagawa ka ng account sa sariling
+server ng Katna, na may sariling password, hindi kailanman password ng
+mail. Kakailanganin ito ng mga online na feature ng Katna, gaya ng mga
+read receipt at pag-track ng link. Makikita mo ang mga computer na
+naka-sign in at mai-sign out ang alinman sa mga ito.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Balik kung nasaan ka"
+text = """
+Kapag isinara at binuksan ulit ang Katna Mail, babalik ang app, ang folder
+at ang tab ng inbox na bukas mo, ang mga folder na binuksan mo at kung
+nakatupi ang pane ng folder. Kapag ini-quit ang Katna mula sa system tray,
+magsisimula ito nang bago.
+"""

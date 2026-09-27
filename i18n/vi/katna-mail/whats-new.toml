@@ -595,3 +595,22 @@ text = """
 Kéo thẻ địa chỉ sang trường khác để chuyển nó; Cc và Bcc sẽ mở ra khi
 bạn kéo, kể cả khi đang ẩn. Trỏ vào thẻ sẽ hiện dấu x để xóa nó.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "Tài khoản Katna"
+text = """
+Cài đặt > Tài khoản Katna cho phép bạn tạo tài khoản trên máy chủ riêng
+của Katna, với mật khẩu riêng, không bao giờ là mật khẩu thư. Các tính
+năng trực tuyến của Katna, như xác nhận đã đọc và theo dõi liên kết, sẽ
+cần đến tài khoản này. Bạn có thể xem các máy tính đang đăng nhập và
+đăng xuất bất kỳ máy nào.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Trở lại đúng chỗ cũ"
+text = """
+Đóng Katna Mail rồi mở lại sẽ đưa trở lại ứng dụng, thư mục và tab hộp
+thư đến bạn đang mở, các thư mục bạn đã mở rộng và việc ngăn thư mục có
+đang thu gọn hay không. Thoát Katna từ khay hệ thống sẽ khởi động lại từ
+đầu.
+"""

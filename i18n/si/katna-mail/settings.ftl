@@ -7,6 +7,7 @@
 settings-tab-general = සාමාන්‍ය
 settings-tab-inbox = එන ලිපි
 settings-tab-accounts = ගිණුම්
+settings-tab-katna-account = Katna ගිණුම
 settings-tab-subscriptions = දායකත්ව
 settings-tab-appearance = පෙනුම
 settings-tab-shortcuts = කෙටිමං

@@ -7,6 +7,7 @@
 settings-tab-general = Chung
 settings-tab-inbox = Hộp thư đến
 settings-tab-accounts = Tài khoản
+settings-tab-katna-account = Tài khoản Katna
 settings-tab-subscriptions = Gói đăng ký
 settings-tab-appearance = Giao diện
 settings-tab-shortcuts = Phím tắt

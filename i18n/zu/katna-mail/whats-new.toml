@@ -636,3 +636,22 @@ Hudula i-chip yekheli uyise kwenye inkambu ukuze uyihambise; u-Cc
 no-Bcc bayavuleka ngenkathi uhudula, ngisho noma bafihliwe. Ukukhomba
 i-chip kubonisa u-x oyisusayo.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "I-akhawunti ye-Katna"
+text = """
+Izilungiselelo > I-akhawunti ye-Katna ikuvumela ukuthi udale i-akhawunti
+kuseva ye-Katna uqobo, enephasiwedi yayo, hhayi neze iphasiwedi yemeyili.
+Izici ze-inthanethi ze-Katna, njengezaziso zokufunda nokulandelela
+izixhumanisi, zizoyidinga. Ungabona amakhompyutha angenile futhi ukhiphe
+noma iyiphi yawo.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Ubuyela lapho ubukhona"
+text = """
+Ukuvala i-Katna Mail bese uyivula futhi kubuyisa uhlelo lokusebenza,
+ifolda nethebhu yebhokisi lokungenayo obekuvulile, amafolda obuwavulile
+nokuthi iphaneli yamafolda ibigoqiwe yini. Ukuphuma ku-Katna usuka
+kuthreyi kuyiqala kabusha.
+"""

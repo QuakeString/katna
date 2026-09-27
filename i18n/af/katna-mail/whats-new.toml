@@ -597,3 +597,21 @@ Sleep 'n adresskyfie na 'n ander veld om dit te skuif; Cc en Bcc gaan oop
 terwyl jy sleep, selfs as hulle versteek is. As jy na 'n skyfie wys,
 verskyn 'n x wat dit verwyder.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "Katna-rekening"
+text = """
+Instellings > Katna-rekening laat jou 'n rekening op Katna se eie bediener
+skep, met sy eie wagwoord, nooit 'n e-poswagwoord nie. Katna se aanlyn
+funksies, soos leesbewyse en skakelnasporing, sal dit nodig hê. Jy kan die
+aangemelde rekenaars sien en enigeen van hulle afmeld.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Terug waar jy was"
+text = """
+As jy Katna Mail toemaak en weer oopmaak, kom die toep, die vouer en die
+inkassie-oortjie wat jy oop gehad het terug, asook die vouers wat jy
+oopgemaak het en of die vouerpaneel ingevou was. As jy Katna uit die
+stelselbalk afsluit, begin dit weer van voor af.
+"""

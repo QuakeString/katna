@@ -613,3 +613,22 @@ Seret cip alamat ke medan lain untuk memindahkannya; Sk dan Skt terbuka
 semasa anda menyeret, walaupun tersembunyi. Menuding pada cip
 menunjukkan x yang mengalih keluarnya.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "Akaun Katna"
+text = """
+Tetapan > Akaun Katna membolehkan anda mencipta akaun pada pelayan Katna
+sendiri, dengan kata laluannya sendiri, bukan kata laluan mel. Ciri
+dalam talian Katna, seperti resit baca dan penjejakan pautan, akan
+memerlukannya. Anda boleh melihat komputer yang telah log masuk dan
+melog keluar mana-mana daripadanya.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Kembali di tempat anda tadi"
+text = """
+Menutup Katna Mail dan membukanya semula mengembalikan apl, folder dan
+tab peti masuk yang anda buka, folder yang anda kembangkan dan sama ada
+anak tetingkap folder dilipat. Keluar daripada Katna melalui dulang
+sistem memulakannya semula dari awal.
+"""

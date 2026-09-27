@@ -7,6 +7,7 @@
 settings-tab-general = Algemeen
 settings-tab-inbox = Inbox
 settings-tab-accounts = Accounts
+settings-tab-katna-account = Katna-account
 settings-tab-subscriptions = Abonnementen
 settings-tab-appearance = Weergave
 settings-tab-shortcuts = Sneltoetsen

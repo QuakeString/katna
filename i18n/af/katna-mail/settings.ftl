@@ -7,6 +7,7 @@
 settings-tab-general = Algemeen
 settings-tab-inbox = Inkassie
 settings-tab-accounts = Rekeninge
+settings-tab-katna-account = Katna-rekening
 settings-tab-subscriptions = Intekeninge
 settings-tab-appearance = Voorkoms
 settings-tab-shortcuts = Kortpaaie

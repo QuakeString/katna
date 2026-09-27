@@ -620,3 +620,22 @@ Ziehen Sie einen Adress-Chip in ein anderes Feld, um ihn zu verschieben;
 Cc und Bcc öffnen sich beim Ziehen, auch wenn sie ausgeblendet sind.
 Zeigen Sie auf einen Chip, erscheint ein x, das ihn entfernt.
 """
+
+["2026-09-27-1722-katna-account"]
+title = "Katna-Konto"
+text = """
+Unter Einstellungen > Katna-Konto erstellen Sie ein Konto auf dem eigenen
+Server von Katna, mit eigenem Passwort, nie einem E-Mail-Passwort. Die
+Online-Funktionen von Katna, etwa Lesebestätigungen und Link-Tracking,
+werden es brauchen. Sie sehen die angemeldeten Computer und können jeden
+davon abmelden.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Wieder da, wo Sie waren"
+text = """
+Wenn Sie Katna Mail schließen und wieder öffnen, kommen die App, der
+Ordner und der Posteingangs-Tab zurück, die Sie offen hatten, dazu die
+aufgeklappten Ordner und ob der Ordnerbereich eingeklappt war. Wird Katna
+über das Symbol im Systemabschnitt beendet, startet es frisch.
+"""
