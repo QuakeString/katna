@@ -148,7 +148,12 @@ impl MailWindow {
         cx.notify();
     }
 
-    fn close_whats_new(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+    /// What's new is open and not on its way out.
+    pub(super) fn whats_new_open(&self) -> bool {
+        self.whats_new.as_ref().is_some_and(|d| !d.closing)
+    }
+
+    pub(super) fn close_whats_new(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         if let Some(dialog) = &mut self.whats_new
             && !dialog.closing
         {
@@ -160,6 +165,7 @@ impl MailWindow {
     }
 
     fn whats_new_key(&mut self, event: &KeyDownEvent, window: &mut Window, cx: &mut Context<Self>) {
+        // Escape reaches `popovers` first; this is for Enter.
         if matches!(event.keystroke.key.as_str(), "escape" | "enter") {
             self.close_whats_new(window, cx);
             cx.stop_propagation();
