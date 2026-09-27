@@ -13,7 +13,7 @@ use std::time::Duration;
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, EntityId, Focusable, FontWeight, Hsla,
     MouseButton, MouseDownEvent, SharedString, Subscription, Task, Window, deferred, div,
-    linear_color_stop, linear_gradient, prelude::*, relative, rgba,
+    prelude::*, relative, rgba,
 };
 use katna_dbus::{NewImapAccount, ServerSpec};
 use katna_i18n::tr;
@@ -1303,19 +1303,7 @@ impl MailWindow {
 
 /// The Katna Mail mark, as in the top bar.
 pub(super) fn logo() -> AnyElement {
-    div()
-        .size(px(40.0))
-        .flex()
-        .items_center()
-        .justify_center()
-        .rounded(px(11.0))
-        .bg(linear_gradient(
-            135.0,
-            linear_color_stop(rgba(0x4f8df7ff), 0.0),
-            linear_color_stop(rgba(0x3949c9ff), 1.0),
-        ))
-        .child(icon("mail", 0xffffffff, 26.0))
-        .into_any_element()
+    crate::widgets::katna_mark(40.0)
 }
 
 fn error_line(error: String, th: &Theme) -> AnyElement {

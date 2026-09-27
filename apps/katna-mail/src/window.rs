@@ -158,10 +158,10 @@ const NAV_WIDTH: f32 = 256.0;
 /// How far the folder highlight pill (and the drawer's) stays off the
 /// pane's left edge.
 const NAV_ROW_INSET: f32 = 8.0;
-/// The one gap between the top bar's elements: the menu button and
-/// Compose, Compose and the search box (when the window is too narrow for
-/// the box's usual place), the search box and Settings, Settings and the
-/// account picture. The header bar itself spaces its items 6 px apart.
+/// The one gap between the top bar's elements: the menu button and the
+/// app's name, the name and the search box (when the window is too narrow
+/// for the box's usual place), the search box and Settings, Settings and
+/// the account picture. The header bar itself spaces its items 6 px apart.
 const TOP_BAR_GAP: f32 = 16.0;
 const BAR_ITEM_GAP: f32 = 6.0;
 /// The room the language button, Settings and the account picture take at
@@ -172,30 +172,48 @@ const TOP_END_WIDTH: f32 =
     LANGUAGE_BUTTON_WIDTH + TOP_BAR_GAP + 40.0 + TOP_BAR_GAP + 40.0 + 8.0 + BAR_ITEM_GAP;
 /// The language button: its flag and chevron with 8 px either side.
 const LANGUAGE_BUTTON_WIDTH: f32 = 8.0 + 24.0 + 4.0 + 18.0 + 8.0;
-/// The size of the word on the top bar's Compose button.
+/// The size of the word on the Compose button.
 const COMPOSE_TEXT_SIZE: f32 = 14.0;
-/// Where Compose starts on the top bar: the bar's 6 px padding, the menu
-/// button (48 px with a 6 px margin) and the gap after it.
-const COMPOSE_LEFT: f32 = 6.0 + 6.0 + 48.0 + TOP_BAR_GAP;
+/// Compose is as tall as a phone's: a 56 px square in the rail, a pill in
+/// the folder pane.
+const COMPOSE_HEIGHT: f32 = 56.0;
+const COMPOSE_RADIUS: f32 = 16.0;
+/// Where Compose sits in the rail: centred, 8 px from the top.
+const COMPOSE_RAIL_LEFT: f32 = (apps::APP_RAIL_WIDTH - COMPOSE_HEIGHT) / 2.0;
+const COMPOSE_TOP: f32 = 8.0;
+/// The room Compose takes above the folders, with 16 px under it.
+const COMPOSE_NAV_ROOM: f32 = COMPOSE_TOP + COMPOSE_HEIGHT + 16.0;
+/// Where the app's name starts on the top bar: the bar's 6 px padding,
+/// the menu button (48 px with a 6 px margin) and the gap after it.
+const TITLE_LEFT: f32 = 6.0 + 6.0 + 48.0 + TOP_BAR_GAP;
+/// The Katna mark beside the app's name, the gap after it and the size of
+/// the name.
+const TITLE_MARK: f32 = 32.0;
+const TITLE_MARK_GAP: f32 = 10.0;
+const TITLE_TEXT_SIZE: f32 = 22.0;
 
-/// Width of the top bar's Compose button: a 40 px square when folded to
-/// its pencil (`label` 0), the pencil and the word (`text` px wide) when
-/// `label` is 1.
+/// Width of Compose: a square in the rail (`label` 0), the pencil and the
+/// word (`text` px wide) in the folder pane (`label` 1).
 fn compose_width(label: f32, text: f32) -> f32 {
-    lerp(40.0, 16.0 + 24.0 + 12.0 + text + 24.0, label)
+    lerp(COMPOSE_HEIGHT, 16.0 + 24.0 + 12.0 + text + 24.0, label)
 }
 
-/// How wide the word on Compose is drawn in the window's font, so the
-/// button fits it whatever font and size the desktop uses.
-fn compose_text_width(font: Option<&SharedString>, window: &Window) -> f32 {
+/// How wide `text` is drawn in the window's font, so what holds it fits
+/// whatever font and size the desktop uses.
+fn text_width(
+    text: &str,
+    size: f32,
+    weight: FontWeight,
+    font: Option<&SharedString>,
+    window: &Window,
+) -> f32 {
     let mut style = window.text_style().font();
     if let Some(family) = font {
         style.family = family.clone();
     }
-    style.weight = FontWeight::MEDIUM;
-    let label = katna_i18n::tr!("compose");
+    style.weight = weight;
     let run = TextRun {
-        len: label.len(),
+        len: text.len(),
         font: style,
         color: Hsla::default(),
         background_color: None,
@@ -204,9 +222,40 @@ fn compose_text_width(font: Option<&SharedString>, window: &Window) -> f32 {
     };
     let line = window
         .text_system()
-        .shape_line(label.into(), px(COMPOSE_TEXT_SIZE), &[run], None);
+        .shape_line(text.to_owned().into(), px(size), &[run], None);
     unpx(line.width).ceil() + 1.0
 }
+
+fn compose_text_width(font: Option<&SharedString>, window: &Window) -> f32 {
+    text_width(
+        &katna_i18n::tr!("compose"),
+        COMPOSE_TEXT_SIZE,
+        FontWeight::MEDIUM,
+        font,
+        window,
+    )
+}
+
+/// The widths of "Katna" and of the longest app name after it, so the
+/// search box keeps its place whichever app is on show.
+fn title_widths(font: Option<&SharedString>, window: &Window) -> (f32, f32) {
+    let width = |text: &str| text_width(text, TITLE_TEXT_SIZE, FontWeight::NORMAL, font, window);
+    let brand = width(&katna_i18n::tr!("top-brand"));
+    let name = RailApp::ALL
+        .into_iter()
+        .map(|app| width(&app.label()))
+        .fold(0.0, f32::max);
+    (brand, name)
+}
+
+/// Width of the mark and the name on the top bar; the words fold away
+/// as `label` goes to 0.
+fn title_width(label: f32, (brand, name): (f32, f32)) -> f32 {
+    TITLE_MARK + (TITLE_MARK_GAP + brand + TITLE_WORD_GAP + name) * label
+}
+
+/// The space between "Katna" and the app's name.
+const TITLE_WORD_GAP: f32 = 6.0;
 /// Corners of cards that float: menus aside, dialogs and panels.
 const PANEL_RADIUS: f32 = 15.0;
 const SEARCH_WIDTH: f32 = 720.0;
@@ -284,6 +333,18 @@ enum Hover {
     Panel,
 }
 
+/// One step Ctrl+Z takes back.
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum UndoStep {
+    /// Undone by sending this.
+    Command(Command),
+    /// Deleted forever: Ctrl+Z says it cannot be undone.
+    DeletedForever,
+}
+
+/// How many steps Ctrl+Z remembers.
+const UNDO_STEPS: usize = 50;
+
 /// A short note at the bottom of the window, maybe with an Undo button.
 struct Snackbar {
     text: SharedString,
@@ -306,6 +367,14 @@ pub struct MailWindow {
     chrome: WindowChrome,
     /// The app of the rail on show.
     app: RailApp,
+    /// The app whose name rolls away at the top left, and how far the
+    /// new name has rolled in (0 to 1).
+    title_from: RailApp,
+    title_roll: Spring,
+    /// 0 = hidden, 1 = shown: Compose, in the folder pane or the rail.
+    compose_shown: Spring,
+    /// 0 = Compose is in the rail, 1 = over the folders beside the list.
+    compose_dock: Spring,
     people: Option<People>,
     people_task: Option<Task<()>>,
     /// The desktop's UI font, or `None` to leave GPUI's default.
@@ -406,6 +475,9 @@ pub struct MailWindow {
     /// The tab indicator's position, in tabs.
     tab_spring: Spring,
     snackbar: Option<Snackbar>,
+    /// What Ctrl+Z takes back, newest last: this window's actions since
+    /// it opened.
+    undo_history: Vec<UndoStep>,
     /// After a crash: the report to view or copy.
     crash_notice: Option<crash_notice::CrashNotice>,
     /// Settings > User feedback's list of crash reports, as last read.
@@ -529,6 +601,10 @@ impl MailWindow {
         let mut this = Self {
             chrome: WindowChrome::new(env, "Katna Mail", window, cx),
             app: RailApp::Mail,
+            title_from: RailApp::Mail,
+            title_roll: Spring::new(motion::SLIDE, 1.0),
+            compose_shown: Spring::new(motion::SMOOTH, 1.0),
+            compose_dock: Spring::new(motion::SLIDE, 1.0),
             people: None,
             people_task: None,
             font,
@@ -590,6 +666,7 @@ impl MailWindow {
             settings_spring: Spring::new(motion::SLIDE, 0.0),
             tab_spring: Spring::new(motion::SLIDE, 0.0),
             snackbar: None,
+            undo_history: Vec::new(),
             crash_notice: None,
             saved_reports: None,
             compose: None,
@@ -1249,7 +1326,7 @@ impl MailWindow {
     }
 
     fn undo_action(&mut self, _: &Undo, window: &mut Window, cx: &mut Context<Self>) {
-        self.undo(window, cx);
+        self.undo_last(window, cx);
     }
 
     fn go_to(&mut self, role: Role, window: &mut Window, cx: &mut Context<Self>) {
@@ -1316,6 +1393,9 @@ impl MailWindow {
             })
             .ok();
         });
+        if let Some(undo) = &undo {
+            self.remember(UndoStep::Command(undo.clone()));
+        }
         self.snackbar = Some(Snackbar {
             text: text.into(),
             undo,
@@ -1323,6 +1403,14 @@ impl MailWindow {
             _hide: hide,
         });
         cx.notify();
+    }
+
+    /// Keeps `step` for Ctrl+Z.
+    fn remember(&mut self, step: UndoStep) {
+        self.undo_history.push(step);
+        if self.undo_history.len() > UNDO_STEPS {
+            self.undo_history.remove(0);
+        }
     }
 
     fn hide_snackbar(&mut self, cx: &mut Context<Self>) {
@@ -1698,17 +1786,26 @@ impl MailWindow {
             let ids: Vec<MessageId> = keys.iter().flat_map(|k| mail.entry_messages(*k)).collect();
             mail.with_copies(&ids)
         };
-        let for_good = matches!(act, Act::Delete) && {
-            let trash = self.account().and_then(|a| mail.trash_folder(a));
-            trash.is_none() || (folder.is_some() && folder == trash)
-        };
+        let account = self.account();
+        let trash = account.and_then(|a| mail.trash_folder(a));
+        let for_good = matches!(act, Act::Delete)
+            && match (trash, folder) {
+                (None, _) => true,
+                (Some(trash), Some(folder)) => folder == trash,
+                // Search results: all of them are in Trash already.
+                (Some(trash), None) => keys
+                    .iter()
+                    .flat_map(|k| messages_in(*k))
+                    .all(|id| mail.message_folders(id).contains(&trash)),
+            };
         let (command, undo) = match act {
             Act::Read(read) => {
                 let ids = data::flag_changes(&copies_of(&keys), MessageFlags::SEEN, read);
                 for key in &keys {
                     self.pending.entry(*key).or_default().unread = Some(!read);
                 }
-                (Command::MarkRead(ids, read), None)
+                let undo = Command::MarkRead(ids.clone(), !read);
+                (Command::MarkRead(ids, read), Some(undo))
             }
             Act::Star(on) => {
                 // Starring marks the newest message; unstarring clears all.
@@ -1777,16 +1874,36 @@ impl MailWindow {
                 };
                 // Deleting on an account without a Trash folder, or in
                 // Trash itself, is for good (as the daemon does it), so
-                // there is nothing to undo.
-                let undo = folder
-                    .filter(|_| !for_good)
-                    .map(|folder| Command::Move(ids, folder));
+                // there is nothing to undo. Out of search results or a
+                // conversation window, each message goes back where it was.
+                let undo = match folder {
+                    _ if for_good => None,
+                    Some(folder) => Some(Command::Move(ids, folder)),
+                    None => {
+                        let all_mail = account.and_then(|a| self.tree.role_folder(a, Role::All));
+                        let to = match act {
+                            Act::Archive => account.and_then(|a| {
+                                self.tree
+                                    .role_folder(a, Role::Archive)
+                                    .or_else(|| self.tree.role_folder(a, Role::All))
+                            }),
+                            Act::Delete => trash,
+                            _ => target,
+                        };
+                        move_back(mail, all_mail, &ids, to)
+                    }
+                };
                 self.remove_lines(&keys);
                 (command, undo)
             }
         };
         let done = match act {
             _ if !announce => None,
+            Act::Read(read) => Some(if read {
+                katna_i18n::tr!("toast-marked-read", count = count as u64, kind = kind)
+            } else {
+                katna_i18n::tr!("toast-marked-unread", count = count as u64, kind = kind)
+            }),
             Act::Spam => Some(katna_i18n::tr!(
                 "toast-spam",
                 count = count as u64,
@@ -1799,6 +1916,7 @@ impl MailWindow {
             )),
             _ => command.done_text(count, conversations),
         };
+        let deleted_forever = for_good && announce;
         // Moved out of a conversation window, which now closes: the mail
         // window says so and offers Undo.
         if self.detached
@@ -1806,10 +1924,16 @@ impl MailWindow {
             && let Some(main) = self.main.as_ref().and_then(WeakEntity::upgrade)
         {
             main.update(cx, |main, cx| {
+                if deleted_forever {
+                    main.remember(UndoStep::DeletedForever);
+                }
                 main.send(command, done, undo.clone(), false, cx)
             });
             cx.notify();
             return undo;
+        }
+        if deleted_forever {
+            self.remember(UndoStep::DeletedForever);
         }
         self.send(command, done, undo.clone(), false, cx);
         cx.notify();
@@ -1888,11 +2012,44 @@ impl MailWindow {
         .detach();
     }
 
+    /// Undo on the snackbar: takes back what it tells of.
     fn undo(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let Some(undo) = self.snackbar.as_mut().and_then(|s| s.undo.take()) else {
             return;
         };
+        let step = UndoStep::Command(undo.clone());
+        if let Some(ix) = self.undo_history.iter().rposition(|s| *s == step) {
+            self.undo_history.remove(ix);
+        }
         self.hide_snackbar(cx);
+        self.run_undo(undo, window, cx);
+    }
+
+    /// Ctrl+Z: takes back the newest action not undone yet, whether or not
+    /// its snackbar is still on screen.
+    fn undo_last(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        match self.undo_history.pop() {
+            None => self.show_snackbar(katna_i18n::tr!("toast-nothing-to-undo"), None, cx),
+            Some(UndoStep::DeletedForever) => {
+                self.show_snackbar(
+                    katna_i18n::tr!("toast-cannot-undo-delete-forever"),
+                    None,
+                    cx,
+                );
+            }
+            Some(UndoStep::Command(undo)) => {
+                if let Some(snackbar) = &mut self.snackbar
+                    && snackbar.undo.as_ref() == Some(&undo)
+                {
+                    snackbar.undo = None;
+                    self.hide_snackbar(cx);
+                }
+                self.run_undo(undo, window, cx);
+            }
+        }
+    }
+
+    fn run_undo(&mut self, undo: Command, window: &mut Window, cx: &mut Context<Self>) {
         if let Command::UndoSend(_) = undo {
             // Taken back from the outbox: the message opens again.
             let connection = self.daemon.clone();
@@ -1915,7 +2072,7 @@ impl MailWindow {
                             this.send(command, None, None, false, cx);
                         }
                         this.reopen_unsent(window, cx);
-                        this.show_snackbar("Sending undone.", None, cx);
+                        this.show_snackbar(katna_i18n::tr!("toast-send-undone"), None, cx);
                     }
                     Err(err) => this.show_snackbar(err, None, cx),
                 })
@@ -2293,6 +2450,24 @@ impl Render for MailWindow {
         }
         // The Settings page stays reachable, for example to delete data.
         let onboarding = self.onboarding() && self.settings_page.is_none();
+        self.compose_shown.set(
+            if self.mail.is_ok() && !self.accounts.is_empty() && !onboarding {
+                1.0
+            } else {
+                0.0
+            },
+        );
+        self.compose_shown.tick(window, reduce);
+        // The other apps have no folders: Compose waits in the rail there.
+        self.compose_dock
+            .set(if self.app == RailApp::Mail && self.nav_docked() {
+                1.0
+            } else {
+                0.0
+            });
+        self.compose_dock.tick(window, reduce);
+        self.title_roll.tick(window, reduce);
+        let compose_text = compose_text_width(self.font.as_ref(), window);
         let content = match &self.mail {
             _ if onboarding => self.render_onboarding(&th, window, cx),
             Err(err) => self.render_error(err, &th),
@@ -2325,7 +2500,14 @@ impl Render for MailWindow {
             .size_full()
             .flex()
             .flex_col()
-            .child(div().flex_1().min_h_0().child(content))
+            .child(
+                div()
+                    .relative()
+                    .flex_1()
+                    .min_h_0()
+                    .child(content)
+                    .children(self.render_compose_button(&th, compose_text, cx)),
+            )
             .children(if onboarding {
                 None
             } else {
@@ -2346,22 +2528,20 @@ impl Render for MailWindow {
 
         // On a desktop the search box stays where the list starts with the
         // folders open, whether they are open or folded, and never moves
-        // with them. On a tablet (Compose beside the menu button, the
-        // folders in a drawer) it starts a clear gap after Compose, and it
+        // with them. On a tablet (the folders in a drawer) it starts a
+        // clear gap after the app's name beside the menu button, and it
         // never comes closer than that. It grows into a pill across the top
         // bar of a phone, under its menu button and account picture.
         let (room_start, room_end) = shape.room;
-        let compose_text = compose_text_width(self.font.as_ref(), window);
-        let after_compose = room_start
-            + COMPOSE_LEFT
-            + compose_width(shape.compose_label(), compose_text)
-            + TOP_BAR_GAP;
+        let titles = title_widths(self.font.as_ref(), window);
+        let after_title =
+            room_start + TITLE_LEFT + title_width(shape.title_label(), titles) + TOP_BAR_GAP;
         let list_left = if shape.is_desktop() {
             shape.rail() + NAV_WIDTH
         } else {
             0.0
         };
-        let search_left = list_left.max(after_compose);
+        let search_left = list_left.max(after_title);
         let regular = (width - search_left - room_end - TOP_END_WIDTH - TOP_BAR_GAP)
             .clamp(200.0, SEARCH_WIDTH);
         let pill = (width - 12.0 - room_start - room_end).max(200.0);
@@ -2457,7 +2637,7 @@ impl Render for MailWindow {
             start: if onboarding {
                 Vec::new()
             } else {
-                self.render_top_start(&th, compose_text, cx)
+                self.render_top_start(&th, titles, cx)
             },
             center: (self.mail.is_ok() && !onboarding).then(|| {
                 div()
@@ -2503,6 +2683,42 @@ impl Focusable for MailWindow {
 }
 
 /// The card that fills the page for the welcome and error pages.
+/// What moves `ids` back after a move to `to`: each goes back to the
+/// folder the daemon takes it out of (not `to`, and not All Mail when it
+/// is somewhere else too, as `katna_sync::ops::move_messages` picks it).
+/// `None` when none of them moves.
+fn move_back(
+    mail: &Mail,
+    all_mail: Option<FolderId>,
+    ids: &[MessageId],
+    to: Option<FolderId>,
+) -> Option<Command> {
+    let mut back: Vec<(FolderId, Vec<MessageId>)> = Vec::new();
+    for &id in ids {
+        let Some(from) = mail
+            .message_folders(id)
+            .into_iter()
+            .filter(|f| Some(*f) != to)
+            .min_by_key(|f| Some(*f) == all_mail)
+        else {
+            continue;
+        };
+        match back.iter_mut().find(|(folder, _)| *folder == from) {
+            Some((_, ids)) => ids.push(id),
+            None => back.push((from, vec![id])),
+        }
+    }
+    let mut moves: Vec<Command> = back
+        .into_iter()
+        .map(|(folder, ids)| Command::Move(ids, folder))
+        .collect();
+    match moves.len() {
+        0 => None,
+        1 => moves.pop(),
+        _ => Some(Command::Several(moves)),
+    }
+}
+
 fn page_card(th: &Theme) -> gpui::Div {
     div()
         .flex_1()

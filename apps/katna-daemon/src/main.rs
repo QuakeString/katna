@@ -23,6 +23,9 @@ file for this binary under ~/.config and ~/.local/share. Then:
 
 The log filter comes from KATNA_LOG or [logging] filter in config.toml.";
 
+/// The daemon's translations, embedded by `build.rs`.
+const TRANSLATIONS: katna_i18n::Sources = include!(concat!(env!("OUT_DIR"), "/translations.rs"));
+
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     match args.iter().map(String::as_str).collect::<Vec<_>>()[..] {
@@ -56,6 +59,10 @@ fn run() -> ExitCode {
     if let Err(err) = katna_core::logging::init(&config.logging.filter) {
         return fail(err);
     }
+    // The language of notifications and the tray (§13.10); Katna Mail's
+    // setting, applied again when it changes (`Daemon::reload_config`).
+    katna_i18n::init(TRANSLATIONS, Some(paths.data_dir().join("i18n")));
+    katna_i18n::apply(&config.general.language);
     smol::block_on(async {
         let mut signals = match async_signal::Signals::new([
             async_signal::Signal::Term,
