@@ -114,6 +114,112 @@ list-select-all-in = { $kind ->
        *[other] Select all { $count } messages in { $folder }
     }
 }
+# After choosing Read, Unread, Starred or Unstarred in the select menu,
+# which ticks every such line of the list, loaded or not.
+# $pick: "read", "unread", "starred" or "unstarred".
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } read conversation is selected.
+           *[other] All { $count } read conversations are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } read message is selected.
+           *[other] All { $count } read messages are selected.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } unread conversation is selected.
+           *[other] All { $count } unread conversations are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } unread message is selected.
+           *[other] All { $count } unread messages are selected.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } starred conversation is selected.
+           *[other] All { $count } starred conversations are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } starred message is selected.
+           *[other] All { $count } starred messages are selected.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } unstarred conversation is selected.
+           *[other] All { $count } unstarred conversations are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } unstarred message is selected.
+           *[other] All { $count } unstarred messages are selected.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } read conversation in { $folder } is selected.
+           *[other] All { $count } read conversations in { $folder } are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } read message in { $folder } is selected.
+           *[other] All { $count } read messages in { $folder } are selected.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } unread conversation in { $folder } is selected.
+           *[other] All { $count } unread conversations in { $folder } are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } unread message in { $folder } is selected.
+           *[other] All { $count } unread messages in { $folder } are selected.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } starred conversation in { $folder } is selected.
+           *[other] All { $count } starred conversations in { $folder } are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } starred message in { $folder } is selected.
+           *[other] All { $count } starred messages in { $folder } are selected.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } unstarred conversation in { $folder } is selected.
+           *[other] All { $count } unstarred conversations in { $folder } are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } unstarred message in { $folder } is selected.
+           *[other] All { $count } unstarred messages in { $folder } are selected.
+        }
+    }
+}
+# A notice when the select menu's choice matches no line.
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] No read conversations here.
+       *[message] No read messages here.
+    }
+   *[unread] { $kind ->
+        [conversation] No unread conversations here.
+       *[message] No unread messages here.
+    }
+    [starred] { $kind ->
+        [conversation] No starred conversations here.
+       *[message] No starred messages here.
+    }
+    [unstarred] { $kind ->
+        [conversation] No unstarred conversations here.
+       *[message] No unstarred messages here.
+    }
+}
 list-clear-selection = Clear selection
 
 ## Mail list: empty states

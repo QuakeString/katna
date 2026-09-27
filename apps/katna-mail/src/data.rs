@@ -11,9 +11,10 @@ use std::time::{Duration, Instant};
 
 use katna_core::{Account, AccountId, MailCategory, Paths};
 use katna_search::{Query, SearchIndex, SearchOptions, SearchResults};
+pub use katna_store::Marks;
 use katna_store::{
-    FolderId, FolderSummary, MessageFlags, MessageId, Mode, ParticipantRole, Store, StoredMessage,
-    ThreadId, ThreadSender, ThreadSummary,
+    FolderId, FolderMarks, FolderSummary, MessageFlags, MessageId, Mode, ParticipantRole, Store,
+    StoredMessage, ThreadId, ThreadSender, ThreadSummary,
 };
 
 /// At most this many search results are listed.
@@ -682,6 +683,46 @@ impl Mail {
             };
             self.rows.insert(row.key, Rc::new(row));
         }
+    }
+
+    /// Whether each of `entries` is unread and starred, as its row shows
+    /// it (before changes the daemon has not confirmed). Reads the whole
+    /// folder in two queries, so it stays quick for folders of any size;
+    /// search results, which have no folder, read their rows.
+    pub fn marks(
+        &mut self,
+        entries: &[Entry],
+        folder: Option<FolderId>,
+        show_recipients: bool,
+    ) -> Vec<Marks> {
+        let known = folder.map(|folder| {
+            self.store.folder_marks(folder).unwrap_or_else(|err| {
+                tracing::warn!("reading folder {}: {err}", folder.0);
+                FolderMarks::default()
+            })
+        });
+        let found = |e: &Entry| {
+            let known = known.as_ref()?;
+            match e.key {
+                EntryKey::Thread(thread) => known.threads.get(&thread).copied(),
+                EntryKey::Message(id) => known.messages.get(&id).copied(),
+            }
+        };
+        let mut marks: Vec<Option<Marks>> = entries.iter().map(found).collect();
+        // Lines the folder does not hold (none, or a pinned conversation
+        // from elsewhere): their rows tell, in pages to keep the cache.
+        let missing: Vec<usize> = (0..entries.len()).filter(|&i| marks[i].is_none()).collect();
+        for page in missing.chunks(ROW_CACHE / 2) {
+            let page_entries: Vec<Entry> = page.iter().map(|&i| entries[i]).collect();
+            let rows = self.rows(&page_entries, folder, show_recipients);
+            for (&i, row) in page.iter().zip(rows) {
+                marks[i] = row.map(|r| Marks {
+                    unread: r.unread,
+                    flagged: r.flagged,
+                });
+            }
+        }
+        marks.into_iter().map(Option::unwrap_or_default).collect()
     }
 
     /// Rows of single messages (the parts of a conversation).

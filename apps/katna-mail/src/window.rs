@@ -335,6 +335,10 @@ pub struct MailWindow {
     /// the ticked ones. The banner offering the whole list follows this
     /// rather than the lines on screen, which the banner itself changes.
     page_pick: Option<usize>,
+    /// What the select menu ticked in the whole list ("Unread") and how
+    /// many lines, while those are still the ticked ones: the banner says
+    /// so.
+    picked: Option<(list::Pick, usize)>,
     pending: HashMap<EntryKey, Pending>,
     /// Rows of the list on screen at the last layout.
     visible: Range<usize>,
@@ -548,6 +552,7 @@ impl MailWindow {
             checked: HashSet::new(),
             checked_all: false,
             page_pick: None,
+            picked: None,
             pending: HashMap::new(),
             visible: 0..0,
             hovered: None,
@@ -972,6 +977,7 @@ impl MailWindow {
         self.checked.clear();
         self.checked_all = false;
         self.page_pick = None;
+        self.picked = None;
         self.menu = None;
         self.show_list();
         cx.notify();
@@ -1231,12 +1237,14 @@ impl MailWindow {
     fn select_all(&mut self, _: &SelectAll, _: &mut Window, cx: &mut Context<Self>) {
         self.checked = self.entries.iter().map(|e| e.key).collect();
         self.checked_all = true;
+        self.picked = None;
         cx.notify();
     }
 
     fn select_none(&mut self, _: &SelectNone, _: &mut Window, cx: &mut Context<Self>) {
         self.checked.clear();
         self.checked_all = false;
+        self.picked = None;
         cx.notify();
     }
 
@@ -1591,6 +1599,7 @@ impl MailWindow {
                 self.checked.clear();
                 self.checked_all = false;
                 self.page_pick = None;
+                self.picked = None;
                 self.reset_list(false);
                 if first {
                     self.card_seq += 1;
@@ -1705,10 +1714,11 @@ impl MailWindow {
             Act::Star(on) => {
                 // Starring marks the newest message; unstarring clears all.
                 let copies = if on {
+                    let wanted: HashSet<EntryKey> = keys.iter().copied().collect();
                     let latest: Vec<MessageId> = self
                         .entries
                         .iter()
-                        .filter(|e| keys.contains(&e.key))
+                        .filter(|e| wanted.contains(&e.key))
                         .map(|e| e.latest)
                         .collect();
                     mail.with_copies(&latest)
@@ -1810,6 +1820,8 @@ impl MailWindow {
 
     /// Takes lines out of the list, keeping the cursor on the next one.
     fn remove_lines(&mut self, keys: &[EntryKey]) {
+        // A set: the list and the selection can both be thousands long.
+        let keys: HashSet<EntryKey> = keys.iter().copied().collect();
         let cursor = self.selected.unwrap_or(0);
         let removed_before = self.entries[..cursor.min(self.entries.len())]
             .iter()
@@ -1826,11 +1838,12 @@ impl MailWindow {
         } else {
             Some((cursor - removed_before).min(self.entries.len() - 1))
         };
-        for key in keys {
+        for key in &keys {
             self.checked.remove(key);
         }
         self.checked_all = false;
         self.page_pick = None;
+        self.picked = None;
         if self.reader.as_ref().is_some_and(|r| keys.contains(&r.key)) {
             self.show_list();
             self.reader = None;
@@ -1967,6 +1980,7 @@ impl MailWindow {
             }
             self.checked_all = false;
             self.page_pick = None;
+            self.picked = None;
             cx.notify();
         }
     }
