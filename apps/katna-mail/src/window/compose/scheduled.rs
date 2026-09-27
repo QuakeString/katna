@@ -9,6 +9,7 @@ use std::sync::Arc;
 
 use futures_lite::StreamExt;
 use gpui::{AnyElement, Context, FontWeight, Window, div, prelude::*, rgba};
+use katna_core::AccountId;
 use katna_dbus::OutboxItem;
 use katna_dbus::zbus::Connection;
 use katna_i18n::tr;
@@ -54,9 +55,10 @@ impl MailWindow {
                         let mut scheduled: Vec<OutboxItem> = items
                             .into_iter()
                             .filter(|i| {
-                                i.state == katna_dbus::send_state::QUEUED
+                                (i.state == katna_dbus::send_state::QUEUED
                                     && i.detail.is_empty()
-                                    && i.send_at > later
+                                    && i.send_at > later)
+                                    || i.state == katna_dbus::send_state::HELD
                             })
                             .collect();
                         scheduled.sort_by_key(|i| i.send_at);
@@ -80,6 +82,60 @@ impl MailWindow {
         if let Some(connection) = self.daemon.clone() {
             self.watch_scheduled(connection, cx);
         }
+    }
+
+    /// The account the open message goes from.
+    fn sending_account(&self) -> Option<AccountId> {
+        let compose = self.compose.as_ref()?;
+        compose
+            .from
+            .or_else(|| self.compose_account(compose.kind).map(|a| a.id))
+    }
+
+    /// Whether the mail server of the open message's account holds
+    /// scheduled mail: `None` until the daemon has said.
+    pub(super) fn server_holds_mail(&self) -> Option<bool> {
+        let account = self.sending_account()?;
+        self.writing
+            .hold_limits
+            .get(&account)
+            .map(|&limit| limit > 0)
+    }
+
+    /// Asks the daemon, once per account, whether its mail server holds
+    /// scheduled mail, for the schedule menu to say who sends it.
+    pub(super) fn ask_hold_limit(&mut self, cx: &mut Context<Self>) {
+        let Some(account) = self.sending_account() else {
+            return;
+        };
+        if self.writing.hold_limits.contains_key(&account) {
+            return;
+        }
+        let connection = self.daemon.clone();
+        cx.spawn(async move |this, cx| {
+            let result = cx
+                .background_executor()
+                .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await?,
+                    };
+                    daemon::server_hold_limit(&connection, account.0).await
+                })
+                .await;
+            match result {
+                Ok(limit) => {
+                    this.update(cx, |this, cx| {
+                        this.writing.hold_limits.insert(account, limit);
+                        cx.notify();
+                    })
+                    .ok();
+                }
+                // Offline: ask again next time.
+                Err(err) => tracing::debug!(%err, "asking whether the server holds mail"),
+            }
+        })
+        .detach();
     }
 
     pub(in crate::window) fn open_scheduled(&mut self, cx: &mut Context<Self>) {
@@ -177,6 +233,8 @@ impl MailWindow {
                 jiff::Timestamp::from_second(item.send_at).unwrap_or_default(),
                 &self.tz,
             );
+            // The mail server has it: it can't be taken back.
+            let held = item.state == katna_dbus::send_state::HELD;
             let item = item.clone();
             div()
                 .id(("scheduled", ix))
@@ -205,19 +263,22 @@ impl MailWindow {
                                 .font_weight(FontWeight::MEDIUM)
                                 .child(subject),
                         )
-                        .child(
-                            div()
-                                .text_size(px(13.0))
-                                .text_color(rgba(th.accent))
-                                .child(tr!("schedule-sends-at", when = when)),
-                        ),
+                        .child(div().text_size(px(13.0)).text_color(rgba(th.accent)).child(
+                            if held {
+                                tr!("schedule-server-sends-at", when = when)
+                            } else {
+                                tr!("schedule-sends-at", when = when)
+                            },
+                        )),
                 )
-                .child(
-                    outlined_button(("scheduled-cancel", ix), tr!("schedule-cancel-send"), th)
-                        .on_click(cx.listener(move |this, _, window, cx| {
-                            this.cancel_scheduled(item.clone(), window, cx)
-                        })),
-                )
+                .when(!held, |d| {
+                    d.child(
+                        outlined_button(("scheduled-cancel", ix), tr!("schedule-cancel-send"), th)
+                            .on_click(cx.listener(move |this, _, window, cx| {
+                                this.cancel_scheduled(item.clone(), window, cx)
+                            })),
+                    )
+                })
         });
         let empty = self.writing.scheduled.is_empty().then(|| {
             div()

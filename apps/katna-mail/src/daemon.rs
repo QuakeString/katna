@@ -221,6 +221,34 @@ pub async fn queue_send(
         .map_err(|err| describe(&err))
 }
 
+/// Schedules an RFC 5322 message from `account` to go out at `at` (Unix
+/// seconds); Undo works for `delay` seconds. Returns its outbox ID.
+pub async fn schedule_send(
+    connection: &Connection,
+    account: i64,
+    message: &[u8],
+    delay: u32,
+    at: i64,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.schedule_send(account, message, delay, at)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// How long the SMTP server of `account` holds scheduled mail, in seconds;
+/// 0 when it cannot.
+pub async fn server_hold_limit(connection: &Connection, account: i64) -> Result<u64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.server_hold_limit(account)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Saves an RFC 5322 message as a draft of `account`, in place of the
 /// copies saved before with its `Message-ID`. Returns the saved message.
 pub async fn save_draft(

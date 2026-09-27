@@ -462,6 +462,79 @@ fn stalwart_delivers_submitted_mail_and_idle_sees_it() {
     });
 }
 
+/// RFC 4865: Stalwart holds mail sent with `HOLDUNTIL` until then.
+#[test]
+#[ignore = "needs the dev/compose.yaml servers"]
+fn stalwart_holds_scheduled_mail_until_its_time() {
+    smol::block_on(async {
+        let imap = Endpoint::new(
+            "127.0.0.1",
+            port("KATNA_STALWART_IMAPS_PORT", 10993),
+            Security::Tls,
+        );
+        let smtp = Endpoint::new(
+            "127.0.0.1",
+            port("KATNA_STALWART_SUBMISSIONS_PORT", 10465),
+            Security::Tls,
+        );
+        let mut sender = SmtpSender::connect(&smtp, &creds(), tls()).await.unwrap();
+        let limit = sender.hold_limit().await.unwrap();
+        let limit =
+            limit.unwrap_or_else(|| panic!("no FUTURERELEASE in {:?}", sender.capabilities()));
+        assert!(limit >= 24 * 3600, "{limit}");
+        let subject = unique("smtp-held");
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as i64;
+        let at = now + 20;
+        sender
+            .send_held(USER, &[USER], message(&subject, USER), at)
+            .await
+            .unwrap();
+        sender.quit().await.unwrap();
+
+        let reader = spawn(&imap).await;
+        let arrived = async |reader: &Connection| {
+            reader.select("INBOX").await.unwrap();
+            reader
+                .fetch_envelopes(1, None)
+                .await
+                .unwrap()
+                .iter()
+                .any(|e| e.subject.as_deref() == Some(subject.as_str()))
+        };
+        async_io::Timer::after(Duration::from_secs(8)).await;
+        assert!(!arrived(&reader).await, "delivered before its time");
+        let deadline = Instant::now() + Duration::from_secs(90);
+        loop {
+            if arrived(&reader).await {
+                break;
+            }
+            assert!(Instant::now() < deadline, "held mail never arrived");
+            async_io::Timer::after(Duration::from_secs(2)).await;
+        }
+        let late = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as i64;
+        assert!(late >= at, "arrived at {late}, before {at}");
+        reader.logout().await.unwrap();
+
+        // Dovecot's submission server cannot hold mail.
+        let dovecot = Endpoint::new(
+            "127.0.0.1",
+            port("KATNA_DOVECOT_SUBMISSION_PORT", 20587),
+            Security::StartTls,
+        );
+        let mut sender = SmtpSender::connect(&dovecot, &creds(), tls())
+            .await
+            .unwrap();
+        assert_eq!(sender.hold_limit().await.unwrap(), None);
+        sender.quit().await.unwrap();
+    });
+}
+
 #[test]
 #[ignore = "needs the dev/compose.yaml servers"]
 fn dovecot_submission_relays_to_mailpit() {

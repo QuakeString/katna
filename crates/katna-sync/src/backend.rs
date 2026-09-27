@@ -5,7 +5,7 @@
 
 use std::{collections::HashMap, fmt, future::Future, ops::RangeInclusive, time::Duration};
 
-use crate::Result;
+use crate::{Error, Result};
 
 /// How to reach a server.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -424,6 +424,27 @@ pub trait MailSender: Send + 'static {
         to: &[&str],
         message: Vec<u8>,
     ) -> impl Future<Output = Result<()>> + Send;
+
+    /// The longest time, in seconds, the server holds a message before
+    /// it goes out (SMTP `FUTURERELEASE`, RFC 4865), if it can. May ask
+    /// the server: some list it only after login.
+    fn hold_limit(&mut self) -> impl Future<Output = Result<Option<u64>>> + Send {
+        async { Ok(None) }
+    }
+
+    /// Like [`send`](Self::send), but the server holds the message until
+    /// `until` (Unix seconds). Only when [`hold_limit`](Self::hold_limit)
+    /// allows it; SMTP cannot take the message back afterwards.
+    fn send_held(
+        &mut self,
+        from: &str,
+        to: &[&str],
+        message: Vec<u8>,
+        until: i64,
+    ) -> impl Future<Output = Result<()>> + Send {
+        let _ = (from, to, message, until);
+        async { Err(Error::Rejected("the server cannot hold mail".into())) }
+    }
 
     fn quit(self) -> impl Future<Output = Result<()>> + Send;
 }

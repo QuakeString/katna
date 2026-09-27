@@ -128,6 +128,9 @@ pub mod send_state {
     /// Being handed to the SMTP server; too late to undo.
     pub const SENDING: &str = "sending";
     pub const SENT: &str = "sent";
+    /// Scheduled mail the SMTP server holds until `send_at`; it cannot be
+    /// taken back.
+    pub const HELD: &str = "held";
     /// The server refused it for good.
     pub const FAILED: &str = "failed";
     /// Undone with `UndoSend`.
@@ -285,6 +288,23 @@ macro_rules! pim_proxy {
             /// Adds `Date` and `Message-ID` when missing. Once sent it is
             /// filed in the Sent folder. Returns the outbox ID.
             fn queue_send(&self, account: i64, message: &[u8], delay: u32) -> zbus::Result<i64>;
+
+            /// Like `QueueSend`, for mail scheduled to go out at `at` (Unix
+            /// seconds): after `delay` seconds (undo send) it goes to an
+            /// SMTP server that holds mail until then (`ServerHoldLimit`),
+            /// or else it is sent at `at` while the daemon runs.
+            fn schedule_send(
+                &self,
+                account: i64,
+                message: &[u8],
+                delay: u32,
+                at: i64,
+            ) -> zbus::Result<i64>;
+
+            /// How long, in seconds, the SMTP server of `account` holds
+            /// mail to send later (RFC 4865 `FUTURERELEASE`); 0 when it
+            /// cannot. Logs in to ask the first time.
+            fn server_hold_limit(&self, account: i64) -> zbus::Result<u64>;
 
             /// Takes a queued message back. Returns `false` when it is
             /// already being sent.

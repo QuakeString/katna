@@ -286,6 +286,9 @@ pub(super) struct Writing {
     /// The message just discarded, or closed without being saved, for
     /// Undo to open again.
     closed_draft: Option<Unsent>,
+    /// How long each account's mail server holds scheduled mail, in
+    /// seconds (0: it cannot), once asked.
+    hold_limits: std::collections::HashMap<AccountId, u64>,
 }
 
 impl Writing {
@@ -1385,6 +1388,8 @@ impl MailWindow {
         );
         let connection = self.daemon.clone();
         let when = at.map(|at| schedule::describe(at, &self.tz));
+        let undo = self.config.sending.undo_send_seconds;
+        let at = at.map(|at| at.as_second());
         cx.spawn_in(window, async move |this, cx| {
             let result = cx
                 .background_executor()
@@ -1395,7 +1400,14 @@ impl MailWindow {
                         Some(connection) => connection,
                         None => daemon::connect().await?,
                     };
-                    let id = daemon::queue_send(&connection, account, &raw, delay).await?;
+                    let id = match at {
+                        // Undo works for the undo delay; then it may go
+                        // to the mail server to hold.
+                        Some(at) => {
+                            daemon::schedule_send(&connection, account, &raw, undo, at).await?
+                        }
+                        None => daemon::queue_send(&connection, account, &raw, delay).await?,
+                    };
                     if let Some((account, message_id)) = saved
                         && let Err(err) =
                             daemon::discard_draft(&connection, account, &message_id).await
