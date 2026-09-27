@@ -156,11 +156,15 @@ Rust: the latest stable, installed automatically by rustup from
 
 Katna would not exist without these projects and the people behind them.
 
+- **[GPUI](https://github.com/zed-industries/zed/tree/main/crates/gpui) and
+  the [Zed](https://zed.dev) project:** Katna Mail's whole interface is built
+  on GPUI, the fast, GPU-accelerated UI framework that Zed Industries made
+  for the [Zed editor](https://github.com/zed-industries/zed). Every pixel,
+  animation and window you see is drawn by it. Thank you, Zed team, for
+  building it in the open.
 - **[Pimalaya](https://github.com/pimalaya):** the mail protocols under the
   hood. `io-imap`, `io-smtp` and `io-sasl` speak to your mail servers, on top
   of [`imap-codec`](https://github.com/duesee/imap-codec) for IMAP parsing.
-- **[GPUI](https://github.com/zed-industries/zed)** from Zed: the
-  GPU-accelerated UI framework that draws every pixel of Katna Mail.
 - **Main crates:**
   [Tantivy](https://github.com/quickwit-oss/tantivy) (search),
   [rusqlite](https://github.com/rusqlite/rusqlite) (storage),
