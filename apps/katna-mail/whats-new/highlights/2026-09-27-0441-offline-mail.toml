@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Choose how much mail stays offline"
+text = """
+Settings > General > Offline mail keeps a week, a month, three months, a
+year or all of your mail on this computer. Older mail downloads when you
+open it.
+"""

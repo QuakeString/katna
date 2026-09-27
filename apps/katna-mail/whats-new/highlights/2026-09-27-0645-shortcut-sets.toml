@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Shortcuts from the mail app you know"
+text = """
+Settings > Shortcuts can start from the keys of Gmail, Inbox by Gmail,
+Apple Mail, Outlook or Thunderbird, lists them in two columns, and
+Restore defaults takes back your changes.
+"""
