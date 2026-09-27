@@ -83,7 +83,7 @@ jobs:
         if: env.CODE == 'true'
         with:
           key: ${{ matrix.image }}
-          save-if: ${{ github.ref == 'refs/heads/main' || github.head_ref == 'claude/faster-ci-ftmbqn' }}
+          save-if: ${{ github.ref == 'refs/heads/main' }}
       - run: cargo fmt --all --check
         if: env.CODE == 'true'
       - run: ci/gen-credits.sh --check
@@ -119,7 +119,7 @@ jobs:
       - run: rustup toolchain install
       - uses: Swatinem/rust-cache@v2
         with:
-          save-if: ${{ github.ref == 'refs/heads/main' || github.head_ref == 'claude/faster-ci-ftmbqn' }}
+          save-if: ${{ github.ref == 'refs/heads/main' }}
       - run: cargo test --locked -p katna-server -- --include-ignored
       - name: Tracked sending against a running server
         env:
@@ -172,7 +172,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           key: release-${{ matrix.part }}
-          save-if: ${{ github.ref == 'refs/heads/main' || github.head_ref == 'claude/faster-ci-ftmbqn' }}
+          save-if: ${{ github.ref == 'refs/heads/main' }}
       - run: cargo build --release --locked ${{ matrix.args }}
       - name: Keep the measured binaries
         run: mkdir bins && for bin in ${{ matrix.keep }}; do cp "target/release/$bin" bins/; done
