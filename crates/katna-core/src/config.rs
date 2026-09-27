@@ -100,8 +100,13 @@ pub enum WindowFrame {
 pub struct Onboarding {
     /// The welcome and the offer of a tour of the window have been seen.
     pub done: bool,
-    /// The newest What's new highlight shown, or offered by the first
-    /// start. `None` in files written before What's new existed.
+    /// The What's new highlights shown, or offered by the first start, by
+    /// name (`2026-09-27-0444-about-katna`), so one merged after newer ones
+    /// still shows.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub whats_new_shown: Vec<String>,
+    /// The number of the newest highlight shown, from the versions that
+    /// numbered them. Read once, then replaced by `whats_new_shown`.
     pub whats_new_seen: Option<u32>,
     /// The version of Katna Mail that started last, as its package names
     /// it, for the link to the changes since.
@@ -913,12 +918,14 @@ mod tests {
     fn whats_new_state_round_trips() {
         let mut config = Config::default();
         config.onboarding.whats_new_seen = Some(3);
+        config.onboarding.whats_new_shown = vec!["2026-09-27-0444-about-katna".to_owned()];
         config.onboarding.last_version = Some("0.0.0.r90.gabc1234".to_owned());
         let text = toml::to_string_pretty(&config).unwrap();
         assert_eq!(Config::parse(&text).unwrap(), config);
         // Unset values stay out of the file.
         let text = toml::to_string_pretty(&Config::default()).unwrap();
         assert!(!text.contains("whats_new_seen"));
+        assert!(!text.contains("whats_new_shown"));
     }
 
     #[test]
