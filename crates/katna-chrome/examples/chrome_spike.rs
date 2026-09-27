@@ -13,11 +13,13 @@
 
 use gpui::{
     AnyElement, App, Context, Decorations, IntoElement, ParentElement, Render, SharedString,
-    Styled, Window, WindowAppearance, div, prelude::*, px, rgba, size,
+    Styled, Window, WindowAppearance, div, prelude::*, rgba, size,
 };
 use katna_chrome::tokens::with_alpha;
 use katna_chrome::{Environment, WindowChrome, window_options};
 use katna_core::ids::MAIL_APP_ID;
+use katna_ui::px;
+use katna_ui::unpx;
 
 struct Spike {
     chrome: WindowChrome,
@@ -65,10 +67,10 @@ impl Spike {
                 WindowAppearance::Dark | WindowAppearance::VibrantDark
             ),
             layout,
-            f32::from(window.viewport_size().width),
-            f32::from(window.viewport_size().height),
-            f32::from(bounds.size.width),
-            f32::from(bounds.size.height),
+            unpx(window.viewport_size().width),
+            unpx(window.viewport_size().height),
+            unpx(bounds.size.width),
+            unpx(bounds.size.height),
         )
     }
 }

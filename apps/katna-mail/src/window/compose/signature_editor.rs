@@ -8,8 +8,9 @@
 
 use gpui::{
     AnyElement, Context, Entity, Focusable, MouseButton, Window, anchored, deferred, div, point,
-    prelude::*, px, rgba,
+    prelude::*, rgba,
 };
+use katna_ui::px;
 use katna_ui::rich::{Align, Doc, Font, List, RichEditor, Size, html};
 use katna_ui::{InputEvent, TextInput};
 

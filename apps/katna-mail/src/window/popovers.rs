@@ -6,9 +6,8 @@
 //! whole window; Escape is caught before any shortcut, so it works with
 //! nothing focused and never also goes back to the list.
 
-use gpui::{
-    AnyElement, Context, MouseButton, MouseDownEvent, Window, deferred, div, prelude::*, px,
-};
+use gpui::{AnyElement, Context, MouseButton, MouseDownEvent, Window, deferred, div, prelude::*};
+use katna_ui::px;
 
 use super::MailWindow;
 

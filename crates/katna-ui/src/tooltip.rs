@@ -7,9 +7,9 @@
 //! button.tooltip(Tooltip::text("Archive", bg, fg))
 //! ```
 
+use crate::scale::px;
 use gpui::{
-    AnyView, App, Context, Global, Hsla, IntoElement, Render, SharedString, Window, div,
-    prelude::*, px,
+    AnyView, App, Context, Global, Hsla, IntoElement, Render, SharedString, Window, div, prelude::*,
 };
 
 /// The UI font of the app, for views drawn outside its main view (such as

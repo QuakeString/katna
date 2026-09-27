@@ -11,8 +11,9 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, FontWeight, SharedString, Window, canvas,
-    div, point, prelude::*, px, rgba,
+    div, point, prelude::*, rgba,
 };
+use katna_ui::px;
 use katna_ui::{InputEvent, Ripple};
 
 use super::MailWindow;
@@ -117,6 +118,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Appearance,
+        "Scaling",
+        "Make everything bigger or smaller: text, icons, spacing and dividers",
+        "scale zoom size bigger smaller larger font text dpi magnify",
+    ),
+    entry(
+        Section::Appearance,
         "Theme",
         "Same as the desktop, light or dark",
         "dark mode light mode night",
@@ -174,6 +181,18 @@ const ENTRIES: &[Entry] = &[
         "Documents",
         "Where Word and OpenDocument text open",
         "open attachment viewer app docx odt word",
+    ),
+    entry(
+        Section::Signatures,
+        "Send new messages from",
+        "The account new mail goes out from: the one you are in, or always the same one",
+        "from sender default account address identity",
+    ),
+    entry(
+        Section::Signatures,
+        "Send on replies",
+        "Send, or Send and archive the conversation, on replies and forwards",
+        "send archive default behavior behaviour reply forward",
     ),
     entry(
         Section::Signatures,

@@ -13,11 +13,11 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     AnyElement, Context, Div, FontWeight, Global, HighlightStyle, SharedString, StyledText,
-    anchored, deferred, div, point, prelude::*, px, rgba,
+    anchored, deferred, div, point, prelude::*, rgba,
 };
 use katna_search::contacts::{ContactBook, Suggestion};
-use katna_ui::TextInput;
 use katna_ui::text_input::{Cancel, Down, Submit, Up};
+use katna_ui::{TextInput, px};
 
 use super::super::FocusNext;
 use super::MailWindow;
@@ -146,7 +146,13 @@ impl MailWindow {
         };
         let text = input.read(cx).text().to_owned();
         let (start, typed) = last_entry(&text);
-        let account = self.compose_account().map(|a| a.id.0);
+        // The account the message goes out from.
+        let account = self.compose.as_ref().and_then(|compose| {
+            compose
+                .from
+                .or_else(|| self.compose_account(compose.kind).map(|a| a.id))
+                .map(|id| id.0)
+        });
         let items = match cx.try_global::<Book>().and_then(|b| b.book.as_ref()) {
             Some(book) if !typed.trim().is_empty() => {
                 // Everyone already added to To, Cc or Bcc.

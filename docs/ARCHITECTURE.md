@@ -1283,6 +1283,17 @@ Gemini or confidential mode):
   included), inbox tabs, undo-send delay, signatures and conversation view.
   Changes apply at once and are saved to `config.toml` (`[mail]`,
   `[sending]` and `[shortcuts]`).
+- **Scaling.** Settings > Appearance > Scaling makes the whole interface
+  75% to 200% of its size, on top of the desktop's scale, and applies at
+  once. GPUI takes the display's scale from the desktop and cannot add to
+  it, so Katna scales its own lengths: every length goes through
+  `katna_ui::px`, which multiplies by the scale, and every length read
+  back from GPUI (layout bounds, the window's size, the pointer) through
+  `katna_ui::unpx`, which divides by it (`crates/katna-ui/src/scale.rs`).
+  The layouts follow the scaled width, as a web page's do when zoomed:
+  at 200% a 1400 px window lays out as a 700 px one. The slider previews
+  while dragged and applies when let go, so it doesn't grow under the
+  pointer. Mail you send keeps its own font size.
 - **Settings page.** "See all settings", the rail's gear or `?` open it in
   place of the list (`window/settings_page.rs`). Its tabs, in the owner's
   order: General, Inbox, Accounts, Subscription, Appearance (reading pane,
@@ -1333,6 +1344,14 @@ Gemini or confidential mode):
   user signed their newest message in the conversation with, found by
   comparing the text after its `-- ` line (`signatures.rs`); otherwise the
   reply default. The single signature of older versions becomes the first.
+- **Sending account, Send and archive.** Settings → Compose picks the
+  account new mail goes out from: the one whose mail is open (default) or
+  always the same address (`sending.send_from`). Replies and forwards go
+  out from the account whose mail is open. The account is fixed when the message
+  opens. "Send on replies" makes Send on a reply or forward also archive
+  the conversation (`sending.send_and_archive`); the menu beside Send
+  offers the other way. The archive happens once the message is queued,
+  and Undo on "Sent and archived" brings the conversation back as well.
 - **Keyboard shortcuts.** Every action has one (`window/keymap.rs`), with
   Gmail's keys as defaults: j/k, o, u, c, r, a, f, e, #, !, v, s, x,
   Shift+I/U, `* a`, `* n`, z, `g i`/`g s`/`g t`/`g d`/`g a`, /, ?, and Ctrl

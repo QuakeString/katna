@@ -189,6 +189,21 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 19,
+        title: "Send and archive",
+        text: "The menu beside Send on a reply sends it and archives the \
+               conversation. Settings > Compose can make that what Send does, and \
+               can send new mail from the same account every time.",
+        animation: None,
+    },
+    Highlight {
+        id: 20,
+        title: "Make everything bigger or smaller",
+        text: "Settings > Appearance > Scaling sizes the whole window, text, icons \
+               and spacing alike, from 75% to 200% on top of your desktop's scale.",
+        animation: None,
+    },
+    Highlight {
+        id: 21,
         title: "Addresses suggested as you type",
         text: "To, Cc and Bcc suggest the people you write to most as you type, even \
                with a typo. Pick one with the arrow keys and Enter, Tab or a click.",
