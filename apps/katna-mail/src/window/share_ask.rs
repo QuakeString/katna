@@ -34,15 +34,16 @@ pub(super) fn points(th: &Theme) -> AnyElement {
         .child(feature(
             "document",
             "What is sent",
-            "The crash report: what crashed and where in Katna, the version, and the name \
-             of your Linux system and desktop.",
+            "The crash report as you can view it in Settings: what crashed and where in \
+             Katna, the version, your Linux system and desktop, and Katna's last log lines, \
+             which can name mail folders.",
             th,
         ))
         .child(feature(
             "shield-check",
             "What is never sent",
-            "Your mail, contacts, accounts, passwords, file names, IP address, user name or \
-             computer name.",
+            "Your messages, contacts, passwords, IP address, user name or computer name. \
+             Email addresses are removed from the report.",
             th,
         ))
         .child(feature(

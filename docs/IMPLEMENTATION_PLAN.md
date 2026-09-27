@@ -32,7 +32,7 @@ they become the plan.
 | D4 | Rust toolchain | **Decided: latest stable** — `rust-toolchain.toml` with `channel = "stable"`; `rust-version` in `Cargo.toml` records the minimum and is raised deliberately | CI, contributors |
 | D5 | Supported systems for CI | **Decided: Arch Linux and Ubuntu 26.04 LTS** — Arch = latest Plasma and GNOME; Ubuntu = GNOME, Kubuntu 26.04 = older Plasma | Test matrix, Plasma versions |
 | D6 | App ID / D-Bus prefix | **Decided: `in.invenia.katna`** (domain `katna.invenia.in`): `in.invenia.katna.Mail`, `in.invenia.katna.Calendar`, `in.invenia.katna.Daemon`, interface `in.invenia.katna.Pim1` | Flatpak IDs, D-Bus names, desktop files |
-| D7 | Where crash reports and feedback go | **Decided: a Sentry cloud project now, our own server later** (owner, 27 September 2026): self-hosted GlitchTip or Sentry on `katna.invenia.in` replaces it by changing the DSN. Only after the user opts in; DSN empty until the project exists (`ARCHITECTURE.md` §19.2) | Crash-report track C.5–C.9 |
+| D7 | Where crash reports and feedback go | **Decided: a Sentry cloud project now, our own server later** (owner, 27 September 2026): self-hosted GlitchTip or Sentry on `katna.invenia.in` replaces it by changing the DSN. Only after the user opts in; DSN in `katna_core::ids::SENTRY_DSN` since 27 September 2026 (`ARCHITECTURE.md` §19.2) | Crash-report track C.5–C.9 |
 
 D6 matters for Flathub: its app IDs must match a domain or code-hosting
 account you control.
@@ -242,9 +242,9 @@ notification; promotion to stable ships byte-identical, signed files.
 
 Asked for by the owner on 27 September 2026 (design: `ARCHITECTURE.md`
 §19.2). Crash reports on the machine come first and need no network or
-consent (C.1–C.3, C.2a). Sending, usage statistics and the feedback form (C.4–C.8)
-wait until the onboarding and Settings rewrites of that week have landed.
-Nothing leaves the machine before the user opts in.
+consent (C.1–C.3, C.2a). Asking and sending crash reports (C.4, C.5) came
+next; usage statistics and the feedback form (C.6, C.7) follow. Nothing
+leaves the machine before the user opts in.
 
 | Task | Deliverable |
 |---|---|
@@ -252,11 +252,11 @@ Nothing leaves the machine before the user opts in.
 | C.2 Crash notice ✅ | Next start of Katna Mail after a crash of the app or the daemon: "closed unexpectedly last time" with View report and Copy report; `katnactl crashes` lists, prints and deletes reports |
 | C.2a User feedback tab ✅ | Settings > User feedback (tab before Experimental): "Save crash reports on this computer" (default on) and the saved reports with View, Copy, Delete and Delete all; the tab itself comes from the Settings rewrite |
 | C.3 Readable stacks | Measure `strip = "debuginfo"` against the size budgets; CI keeps each build's debug files (by build ID) and, once the Sentry project exists, uploads them with `sentry-cli` |
-| C.4 Asking | "Help improve Katna" step in onboarding (Share / Don't share, equal weight, no default); asked once after updating for existing installs; Settings > User feedback switches "Send crash reports" and "Send anonymous usage statistics", off until the user opts in, changeable at any time |
-| C.5 Sending crash reports | Daemon uploads envelopes to the DSN over `rustls` only when the switch is on and the network is not metered; Send / Always send in the crash notice; an empty DSN turns sending off |
+| C.4 Asking ✅ | "Help improve Katna" step in onboarding (Don't send / Send crash reports, equal weight, no default); asked once after updating for existing installs; Settings > User feedback switch "Send crash reports", off until the user opts in, changeable at any time ("Send anonymous usage statistics" comes with C.6) |
+| C.5 Sending crash reports ✅ | Daemon sends new reports as hand-written envelopes (no SDK) over `rustls` only when the switch is on and the network is not metered: 20 s after start, every 15 minutes and when settings are saved; reports of the last 7 days, marked "Sent" in the list; an empty DSN turns sending off |
 | C.6 Usage statistics | One enum of features, weekly `info` event with yes/no feature tags and bucketed facts, release-health sessions, random install ID rotated every 90 days and resettable; Settings > User feedback shows what is counted |
 | C.7 Feedback form | Help > Send feedback (global menu, Quick settings > Help, Settings > User feedback): form, optional reply address, preview of exactly what is sent, Sentry User Feedback item |
-| C.8 Sentry project | Project `invenia-systems/4512156171698256` created (owner, 27 September 2026); organization-wide Require Data Scrubber, Require Using Default Scrubbers and Prevent Storing of IP Addresses on (done); GitHub integration; DSN filled in `katna_core::ids`; `SENTRY_AUTH_TOKEN` secret added by the owner for C.3's debug-file upload |
+| C.8 Sentry project | Project `invenia-systems/4512156171698256` created (owner, 27 September 2026); organization-wide Require Data Scrubber, Require Using Default Scrubbers and Prevent Storing of IP Addresses on (done); GitHub integration; DSN filled in `katna_core::ids` (done); `SENTRY_AUTH_TOKEN` secret added by the owner for C.3's debug-file upload |
 | C.9 Own server (later) | GlitchTip or self-hosted Sentry on `katna.invenia.in` with the same settings as C.8; CI uploads debug files there; the DSN constant switches to it; the cloud project is closed once no supported version sends to it |
 
 **Done when:** a panic and a segfault in Katna Mail and in the daemon each
@@ -265,6 +265,36 @@ offers it on the next start; with sharing off nothing is sent (checked with
 a recording proxy); with sharing on, the same report appears in Sentry
 with function names and lines, and the weekly statistics event carries
 only the documented fields.
+
+### Languages track
+
+Asked for by the owner on 27 September 2026 (design: `ARCHITECTURE.md`
+§13.10): 51 picker entries, 49 translations, the whole layout mirrored for
+Arabic, Persian, Hebrew and Urdu. Many threads change the UI at the same
+time, so strings move to Fluent area by area in small pull requests, each
+merging `main` first, rather than in one large one.
+
+| Task | Deliverable |
+|---|---|
+| L.1 Framework and picker | `katna-i18n` crate: language list (`i18n/languages.toml`), system language (`LANGUAGE`, `LC_*`, `plasma-localerc`), `general.language` setting, Fluent bundles with English fallback, `tr!`, override folder, pseudo-locales, id and variable checks; ICU4X dates, numbers and plurals in `format.rs`; top-bar language button and picker popover, Settings > General row, phone drawer row; bundled flags; the top bar and the picker translated into all 48 languages; CLAUDE.md rule that new UI text goes through `tr!` |
+| L.2 GPUI patches | `gpui-pre` vendored with `KATNA.md`: window layout direction with mirrored bounds, start/end text alignment, `.layout_ltr()`, UAX #14 and grapheme-safe line breaking with dictionary breaks for Thai, Lao, Khmer and Burmese, Han forms from Katna's language, bidi-aware carets |
+| L.3 Mirroring | RTL switch in `window/layout.rs` `Shape`; mirrored directional icons; drawer, conversation and menus from the right; arrow keys; checked with `qps-plocm` |
+| L.4 Strings, by area | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
+| L.5 Mail content | Per-message and per-paragraph direction in the reader and list; compose direction buttons and `dir` in sent HTML; quote and forward headers in the UI language; shortcuts by key position on non-Latin layouts; input method check (Fcitx5, IBus) |
+| L.6 Search in unspaced scripts | Thai, Lao, Khmer and Burmese word splitting in `katna-search` with the shared segmenter |
+| L.7 Corrections | Translation guide (`i18n/README.md`), "Translation correction" issue template, coverage report in CI; later hosted Weblate on the same files (owner applies) |
+| L.8 Review | Native speakers review the machine drafts; `languages.toml` marks each reviewed language and the picker drops its "Translated by machine" note |
+
+**Done when:** with the desktop set to Bengali, Katna Mail, its
+notifications, tray and global menu start in Bengali with Bengali dates
+and digits, and picking English (US), English (UK) and English (India) in
+the top-bar picker switches at once to their formats; in Arabic, Hebrew,
+Persian and Urdu the whole window is mirrored with nothing overlapping or
+clipped, while an English mail still reads left to right; screenshots of
+Hindi, Bengali, Tamil, Thai, Khmer, Burmese, Lao, Dzongkha, Amharic,
+Arabic, Japanese and Korean show correctly joined text that wraps only
+between words; `qps-ploc` finds no untranslated text in the converted
+areas; and the app and the daemon stay within their size budgets.
 
 ### Later: promotional website (not scheduled yet)
 
@@ -282,6 +312,32 @@ server); whether the site also serves the update manifests and package
 repositories (release track U.9, U.10); a Katna logo and brand look;
 languages; and no trackers or third-party analytics, to match Katna's
 privacy promise.
+
+### Later: Katna on phones (not scheduled yet)
+
+Asked about by the owner on 27 September 2026; design only, in
+`ARCHITECTURE.md` §26. Nothing starts until the owner asks for it. M.1 and
+M.2 also help the desktop (a daemon-free engine is easier to test), so they
+may start earlier if a desktop task needs them.
+
+| Task | Deliverable |
+|---|---|
+| M.1 Engine split | `katna-engine` library out of `katna-daemon` (no D-Bus, systemd or GPUI); `PimClient` trait with the D-Bus client and an in-process one; `sync_once(deadline)` |
+| M.2 Portability | Sandbox paths in `katna-core`; `SecretStore` trait (Secret Service, Android Keystore, iOS Keychain); network and metered events behind a trait; OpenPGP without `gpg` |
+| M.3 Spike: GPUI on Android | Time-boxed (1–2 weeks). `gpui-mobile` on Katna's GPUI 0.3.6; Katna Mail's phone layout on an emulator and a real phone. Measure start time, scrolling, APK size, idle battery, and typing in English and Bengali. Result in `docs/spikes/` |
+| M.4 Android app | Host activity, lifecycle and state restore, touch gestures, IME, insets, notifications with actions, share sheet, file and photo pickers, OAuth in the browser |
+| M.5 Android new mail | Foreground IDLE service (`specialUse`), WorkManager timer and Manual; Settings → New mail with honest costs |
+| M.6 Push | Web Push (RFC 8030/8291) receiver; UnifiedPush on Android; JMAP push subscriptions; "Wake my phone" in `katna-daemon`; the watcher in Katna Server |
+| M.7 Push gateway and iOS spike | Stateless gateway (sealed APNs tokens, no logs); `gpui_ios` or `gpui-mobile` on iOS; Notification Service Extension |
+| M.8 iOS app | After the licensing decision (§26.6): TestFlight build with push, background refresh and the same features as M.4 |
+| M.9 Distribution | GitHub APKs and F-Droid, then Google Play; App Store |
+
+**Done when:** on an Android phone without Google services, with Katna
+swiped away, new mail in a Stalwart account and a Gmail account raises a
+notification within a minute, and a day of idle costs no more battery than
+FairEmail on the same phone; on an iPhone a JMAP account notifies within a
+minute through server push and a Gmail account through the owner's Katna
+desktop; no Katna-run server ever holds a password, a token or a message.
 
 ### Phase 5 — Gmail-class features (≈ 8 weeks)
 

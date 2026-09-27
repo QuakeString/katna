@@ -29,7 +29,7 @@ pub(super) struct SavedReports {
 
 /// What sending crash reports means, under its switch.
 pub(super) const SEND_DETAIL: &str = "The saved report, exactly as you can view it here, goes \
-     to Katna's crash tracker (Sentry, in the EU). No IP address, account or mail is sent";
+     to Katna's crash tracker (Sentry, in the EU). No IP address, messages or email addresses";
 
 /// "Katna Mail" for `katna-mail`.
 fn app_name(app: &str) -> &str {

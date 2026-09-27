@@ -15,6 +15,7 @@
 //! (a walk through the window), `whats_new` (after an update) and `layout` (phone, tablet and desktop
 //! layouts, by the window's width).
 
+mod about;
 mod account_view;
 mod accounts;
 mod add_account;
@@ -133,6 +134,8 @@ actions!(
         GoToAllMail,
         OpenSettings,
         ShowShortcuts,
+        ShowWhatsNew,
+        ShowAbout,
     ]
 );
 
@@ -403,6 +406,8 @@ pub struct MailWindow {
     share_ask: Option<share_ask::ShareAsk>,
     /// Ask it once What's new is closed.
     share_ask_later: bool,
+    /// The About Katna dialog.
+    about: Option<about::About>,
     tour: Option<tour::Tour>,
     tour_marks: tour::Marks,
     /// Where the parts the tour shows were in the last frame.
@@ -567,6 +572,7 @@ impl MailWindow {
             whats_new: None,
             share_ask: None,
             share_ask_later: false,
+            about: None,
             tour: None,
             tour_marks: Default::default(),
             tour_seen: HashMap::new(),
@@ -2292,6 +2298,7 @@ impl Render for MailWindow {
         } else {
             self.render_share_ask(&th, window, reduce, cx)
         };
+        let about = self.render_about(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let crash_notice = if onboarding {
@@ -2329,6 +2336,8 @@ impl Render for MailWindow {
             .on_action(cx.listener(Self::go_to_all_mail))
             .on_action(cx.listener(Self::open_settings))
             .on_action(cx.listener(Self::show_shortcuts))
+            .on_action(cx.listener(Self::show_whats_new_action))
+            .on_action(cx.listener(Self::show_about))
             .child(content)
             .children(floating_settings)
             .children(fab)
@@ -2344,6 +2353,7 @@ impl Render for MailWindow {
             .children(crash_notice)
             .children(whats_new)
             .children(share_ask)
+            .children(about)
             .children(snackbar)
             .children(tour)
             .into_any_element();

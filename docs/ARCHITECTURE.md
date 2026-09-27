@@ -32,6 +32,7 @@ Merkuro).
 ### Non-goals (for now)
 
 - Windows / macOS builds.
+- Android / iOS builds for now; the design for later is §26.
 - Being a general Akonadi replacement that other apps plug into.
 - Exchange (EWS) support in the first releases.
 
@@ -148,6 +149,7 @@ are testable and benchmarkable without a GUI.
 | D-Bus and desktop | `zbus`, `ashpd` (portals), `oo7` (Secret Service) | Notifications implemented directly on `org.freedesktop.Notifications` via `zbus` (actions, inline reply, activation tokens); the tray (StatusNotifierItem), dbusmenu and the taskbar count too (§15.2). |
 | Icons | `freedesktop-icons` + `resvg` | |
 | Spell check | `spellbook` | Hunspell dictionaries. |
+| Languages | Fluent (`fluent-bundle`) + ICU4X | UI text in `.ftl` files per language, dates, numbers and plurals from CLDR; RTL mirroring in the vendored GPUI (§13.10). |
 | Mail rules on the server | `sieve-rs` (compile) + ManageSieve | |
 | OpenPGP and S/MIME | The user's GnuPG: `gpg` and `gpgsm` (`katna-crypto`) | Like KMail: existing keys, trust, gpg-agent, pinentry and smartcards work unchanged (§19.1). Sequoia/rPGP kept in reserve. |
 | Server | `axum`, PostgreSQL (`sqlx`) | |
@@ -1366,8 +1368,8 @@ Gemini or confidential mode):
   start. After an update the window shows What's new once
   (`window/whats_new.rs`): the version now running (the package version,
   `0.0.0.r90.gabc1234` until there are tagged releases; the PKGBUILD
-  passes it as `KATNA_VERSION`), the highlights not shown before, newest
-  first and at most six, and Full changelog (GitHub's comparison of the
+  passes it as `KATNA_VERSION`), the highlights not shown before (at
+  most six: a major one first even when older, then the newest), and Full changelog (GitHub's comparison of the
   previous build's commit with this one). The highlights are curated in
   `apps/katna-mail/src/whats_new.rs` and built into the app: a change
   people will notice appends one with the next id. A major feature may
@@ -1384,6 +1386,21 @@ Gemini or confidential mode):
   such a user no longer sees the tour again. Updates without new
   highlights show nothing. Quick settings > Help > What's new opens the
   newest highlights at any time. On a phone the dialog fills the window.
+- **About Katna.** Help > About Katna in the global menu, Quick settings >
+  Help > About Katna, and the version pill at the top right of the
+  Settings header open the About dialog (`window/about.rs`): the version,
+  What's new, the changelog and source links, "Buy me a coffee", a Follow
+  row, a line of thanks to Rust, KDE and Linux, and the free software
+  Katna is built on, each with its license. The coffee link and each
+  Follow link are one constant (`SUPPORT_URL`, `FOLLOW`); unset ones show
+  as "Coming soon" or stay hidden. `CREDITS` in the same file picks the
+  heart of Katna by hand; "Every library Katna uses" below it lists each
+  direct dependency with its version, authors, license and repository
+  from `docs/credits.json`, which `ci/gen-credits.sh` writes from
+  `cargo metadata` together with CREDITS.md. A short "A personal project"
+  note says where Katna's ideas come from (Gmail, Mailspring,
+  Thunderbird) and that LLMs made it possible. On a phone it fills the
+  window.
 - **After the first real install.** The owner's first run on KDE brought
   these changes. Compose sits in the top bar in place of the app name, so
   it shows whether the folders are open or not; the account picture moved
@@ -1584,6 +1601,272 @@ At every size, Reply, Reply all and Forward stay on one line at the foot
 of a conversation: as the pane narrows they drop their words one at a
 time (Reply all first, then Reply, then Forward) and keep their icons,
 with the word as a tooltip. The words are measured in the desktop's font.
+
+### 13.10 Languages
+
+Asked for by the owner on 27 September 2026. Until then every label,
+menu, notification and tray item was English typed into the code, dates
+used English month and day names in fixed formats, and numbers always
+grouped by commas. Only the spell-check dictionary followed the desktop's
+language (`spell.rs`).
+
+**Languages.** 51 entries in the picker, 49 translations (the three
+English entries share one text and differ only in formats). Each has a
+BCP 47 tag, its own name, its English name and a flag:
+
+| Group | Entries (tag, flag) |
+|---|---|
+| English | English (India) `en-IN` 🇮🇳, English (UK) `en-GB` 🇬🇧, English (US) `en-US` 🇺🇸 |
+| South Asia | Hindi `hi` 🇮🇳, Bengali `bn` 🇧🇩, Tamil `ta` 🇮🇳, Telugu `te` 🇮🇳, Marathi `mr` 🇮🇳, Gujarati `gu` 🇮🇳, Kannada `kn` 🇮🇳, Malayalam `ml` 🇮🇳, Punjabi `pa` 🇮🇳, Odia `or` 🇮🇳, Assamese `as` 🇮🇳, Urdu `ur` 🇵🇰, Nepali `ne` 🇳🇵 |
+| Himalaya and Sri Lanka | Sinhala `si` 🇱🇰, Dzongkha `dz` 🇧🇹 |
+| East Asia | Chinese (Simplified) `zh-Hans` 🇨🇳, Chinese (Traditional) `zh-Hant` 🇹🇼, Japanese `ja` 🇯🇵, Korean `ko` 🇰🇷 |
+| Southeast Asia | Thai `th` 🇹🇭, Vietnamese `vi` 🇻🇳, Indonesian `id` 🇮🇩, Malay `ms` 🇲🇾, Filipino `fil` 🇵🇭, Khmer `km` 🇰🇭, Burmese `my` 🇲🇲, Lao `lo` 🇱🇦 |
+| Middle East | Arabic `ar` 🇸🇦, Persian `fa` 🇮🇷, Hebrew `he` 🇮🇱, Turkish `tr` 🇹🇷 |
+| Europe | Russian `ru` 🇷🇺, Ukrainian `uk` 🇺🇦, German `de` 🇩🇪, French `fr` 🇫🇷, Spanish `es` 🇪🇸, Portuguese `pt-BR` 🇧🇷, Italian `it` 🇮🇹, Dutch `nl` 🇳🇱, Polish `pl` 🇵🇱, Swedish `sv` 🇸🇪 |
+| Africa | Swahili `sw` 🇰🇪, Amharic `am` 🇪🇹, Hausa `ha` 🇳🇬, Yoruba `yo` 🇳🇬, Igbo `ig` 🇳🇬, Zulu `zu` 🇿🇦, Afrikaans `af` 🇿🇦 |
+
+Portuguese is Brazilian Portuguese (most speakers); European Portuguese
+can be added as its own entry later. Punjabi is Gurmukhi (`pa-Guru`).
+Arabic, Persian, Hebrew and Urdu read right to left and mirror the whole
+layout.
+
+**Tooling: Fluent.** Strings live in Fluent files (`fluent-bundle`,
+Mozilla's Project Fluent), one per binary per language:
+`i18n/<tag>/katna-mail.ftl`, `katna-ui.ftl` (shared widgets),
+`katna-daemon.ftl` (notifications, tray, dock menu). Chosen over gettext
+because:
+
+- It is pure Rust with no `libintl`, and small (about 0.3 MB).
+- Plurals and other variants are chosen inside each message with CLDR's
+  categories, so Arabic's six plural forms, the Slavic few/many forms and
+  languages with no plural all work without code changes. Translators can
+  also vary a message by other values (the kind of folder, say), which
+  gettext cannot.
+- Variables are wrapped in Unicode isolation marks (FSI…PDI) by default,
+  so a Latin name or address inside an Arabic or Hebrew sentence keeps the
+  sentence's direction.
+- Weblate and Pontoon both edit `.ftl` files, and it is the choice of
+  other Rust desktops (COSMIC), so the tooling is proven.
+
+gettext has more translators who know it and is KDE's own format, but in
+Rust it needs a C library or an extractor that does not understand Rust
+macros, and its plural handling is one formula per file. Weblate serves
+either, so contributors lose nothing with Fluent.
+
+All code goes through `katna-i18n` (a new crate without GPUI, used by the
+apps and the daemon): `tr!("message-id")` and `tr!("message-id", count =
+n, name = sender)` return the text in the current language, falling back
+message by message to English, so a partly translated language still
+shows everything. A unit test checks that every id the code uses exists
+in English, and that each translation's variables match English. Log
+messages, `katnactl` and D-Bus error names stay English.
+
+The English files are embedded in every binary; the others are embedded
+compressed with `zstd` (already a dependency) and unpacked on first use.
+A file in `$XDG_DATA_HOME/katna/i18n/<tag>/` is loaded over the built-in
+one message by message, so a reviewer can try a correction without
+building Katna.
+
+**Choosing the language.**
+
+- **System default** (the default) follows the desktop: the first
+  language in `LANGUAGE` (a list, as `bn:en_US`) that Katna has, else
+  `LC_ALL`, `LC_MESSAGES`, `LANG`. On Plasma it also reads
+  `~/.config/plasma-localerc` (`[Translations] LANGUAGE`, `[Formats]`),
+  because the daemon, started by systemd, may not have the session's
+  variables. POSIX names are mapped to the tags above (`bn_IN.UTF-8` →
+  `bn`, `zh_TW` and `zh_HK` → `zh-Hant`, `zh_CN` → `zh-Hans`, `tl_PH` and
+  `fil_PH` → `fil`, `pt_PT` → `pt-BR` until European Portuguese exists,
+  `iw` → `he`). A language Katna does not have falls back to English (US).
+- The user's choice is `general.language` in `config.toml` (empty =
+  System default). The app and the daemon read the same key; the app tells
+  the daemon over D-Bus when it changes, so notifications, the tray and
+  the dock menu switch too. `KATNA_LANGUAGE` overrides everything, for
+  testing.
+- Formats: with System default, dates and numbers follow `LC_TIME` and
+  `LC_NUMERIC` (on Plasma, `[Formats]`), as the desktop does, so a user can
+  read English with Indian formats. A language picked in Katna brings its
+  own formats; this is what makes the three English entries differ.
+- Changing the language applies at once, without a restart: every string
+  is looked up at render, cached measurements (such as the Compose button's
+  width) are measured again, and the layout flips direction if needed.
+
+**Language picker.** Two places change the same setting:
+
+- A **language button** in the top bar, just left of Settings (the gear),
+  with the same size, hover and one shared gap (`TOP_BAR_GAP`) as the
+  other top-bar buttons. It shows the current language's flag and a small
+  chevron; its tooltip names the language ("Language: বাংলা, following
+  the system" with System default).
+- **Settings > General > Language**, a row with the same choices.
+
+The button opens a popover (the popover rules of §13.6: closes on Esc and
+any outside click, stays inside the window, frosted when frosted menus are
+on). At the top a "Search language" box, focused when it opens, matching
+own names, English names and tags, ignoring case and accents. Below it
+the list: "System default" first (with the language it resolves to as its
+second line), then the 51 entries in the order of the table above. Each
+row has the flag, the language's own name, its English name under it
+(each in the other language's script, never transliterated), and a check
+on the current choice. Arrow keys move, Enter picks. Under a
+machine-translated language a line at the foot of the popover says so and
+links to how to help (see below).
+
+On a phone the top bar has no room (the search pill holds the menu and the
+account picture), so Language is a row in the navigation drawer next to
+Settings, and the picker opens as a sheet over the window like Quick
+settings.
+
+Flags are bundled SVGs (from `flag-icons`, MIT, in the app's assets),
+drawn as colour images with rounded corners. Colour emoji are not used:
+they depend on an installed emoji font and GPUI's colour-glyph support.
+Language is not a country, so the flag only helps to find the row; the
+names carry the meaning.
+
+**Dates, numbers and plurals.** `katna-i18n` formats with ICU4X
+(`icu_datetime`, `icu_decimal`, `icu_calendar`; `icu_locale_core` and
+`icu_properties` are already in the tree) using CLDR data for the 51
+locales only, baked with `icu4x-datagen` so the binary does not carry
+every locale. `format.rs` keeps its rules (time today, weekday this week,
+day and month this year, full date otherwise) and asks ICU4X for each
+length, so month and day names, the order (`27/09/2026`, `9/27/2026`,
+`2026/09/27`), 12- or 24-hour time and digits follow the locale:
+
+- English (India) groups numbers in lakhs (`12,34,567`), UK and US by
+  thousands; India and UK write day before month, the US month first.
+- Digits follow CLDR's default for the locale (Bengali digits for Bengali,
+  Arabic-Indic for Arabic, Extended Arabic-Indic for Persian and Urdu,
+  Latin elsewhere).
+- The calendar follows the locale's CLDR default: Buddhist years for Thai,
+  Solar Hijri for Persian, Gregorian elsewhere. A setting to always use
+  Gregorian comes with the date format settings later.
+- The first day of the week (search's date picker) follows the locale.
+- Relative times ("2 hours ago") and sizes ("12 KB") are Fluent messages
+  with plural forms and a formatted number.
+- Folder and label names sort with `icu_collator` in the chosen language.
+
+The daemon does not format dates, so it links only Fluent (its 20 MB
+budget).
+
+**Text shaping and fonts.** The vendored GPUI draws text with
+`cosmic-text`, which shapes every script with `harfrust` (HarfBuzz's
+rules) and reorders mixed-direction lines with `unicode-bidi`, so
+Devanagari, Bengali, Tamil and the other Indic scripts, Thai, Khmer,
+Burmese, Lao, Tibetan (Dzongkha), Ethiopic (Amharic), Arabic and Hebrew
+join and reorder correctly when a font for the script is installed. Katna
+does not bundle fonts: `cosmic-text` falls back per script to the Noto
+family (`Noto Sans Bengali`, `Noto Serif Tibetan`, `Noto Sans Ethiopic`,
+`Noto Sans CJK SC/TC/JP/KR`, …), and packages recommend `noto-fonts` and
+`noto-fonts-cjk` (Arch optdepends; Ubuntu Recommends). Two fixes are
+needed in the vendored GPUI:
+
+- **Line breaking.** GPUI wraps at spaces for a short list of scripts and
+  anywhere at all for the rest, which splits Hindi, Arabic or Tamil words
+  in the middle, even inside a letter cluster. The patch breaks only at
+  Unicode line-break opportunities (UAX #14) and never inside a grapheme
+  cluster; Thai, Lao, Khmer and Burmese, which put no spaces between
+  words, break with `icu_segmenter`'s dictionaries; Chinese and Japanese
+  may break between characters but not before closing punctuation.
+- **Han glyphs.** `cosmic-text` picks Chinese, Japanese or Korean forms of
+  shared characters from the system locale at start; the patch passes
+  Katna's language instead, so Japanese UI text uses Japanese forms.
+
+The picker needs each language's own name to render in any language, so
+it is the first place these are checked. Urdu uses the Naskh style of
+Noto Sans Arabic; Nastaliq (`Noto Nastaliq Urdu`) is used when installed.
+
+**Right to left.** GPUI has no layout direction, and converting every
+`flex_row`, padding and position in the code by hand would touch every
+file. Instead Katna vendors `gpui-pre` (like `gpui-pre-linux` and
+`gpui-pre-wgpu`, with the patch described in its `KATNA.md`) and adds a
+window-wide layout direction:
+
+- In right-to-left windows, every element's horizontal position is
+  mirrored inside its parent when layout bounds are computed
+  (`x' = parent width − x − width`). Rows, paddings, margins, absolute
+  positions and the springs that move them all mirror at once, and hit
+  testing follows because it uses the same bounds.
+- Text alignment reads as start and end: `text_left` means start (right
+  in RTL), `text_right` means end.
+- A subtree can opt out and keep left-to-right (`.layout_ltr()`), for
+  things that are not text: the attachment viewer's pages and pictures,
+  media controls, the colour picker, the mail body (below), phone numbers
+  and code.
+- Icons that point somewhere are drawn mirrored: back, forward, reply,
+  reply all, forward, send, undo, redo, the panel icon, list navigation
+  chevrons, the Compose FAB's position. Icons that do not (search, star,
+  gear, check, clock, logos) are not.
+- Horizontal scrolling starts at the right; the phone's drawer slides in
+  from the right and a conversation from the left; menus open towards the
+  start edge.
+- Left and Right arrow keys follow what is on screen; Newer and Older keep
+  their meaning. J, K and the other letter shortcuts are unchanged.
+- Carets and selection in text boxes follow the visual order of mixed
+  text (GPUI assumes glyphs run left to right in index order; the patch
+  maps positions through the bidi runs).
+
+**Mail content in other scripts.**
+
+- Charsets: `mail-parser` decodes with `encoding_rs`, which covers the
+  legacy charsets these languages used (ISO-2022-JP, Shift_JIS, EUC-KR,
+  GB18030, Big5, windows-874/TIS-620, windows-1256, ISO-8859-6 and -8,
+  KOI8-R/U). Katna always sends UTF-8.
+- Direction is the message's, not the UI's: an HTML body honours `dir`
+  and `dir="auto"`; a plain-text body sets each paragraph's direction from
+  its first strong letter. The subject, sender and snippet in the list do
+  the same per line, aligned to the UI's start edge, so Arabic mail reads
+  right to left in an English UI and English mail left to right in an
+  Arabic one.
+- Compose: each paragraph's direction follows what is typed (first strong
+  letter); the format bar has "Right to left" and "Left to right" buttons
+  when an RTL language is the UI or keyboard layout, and sent HTML carries
+  `dir`. The quote header ("On 27 Sep 2026, Rahim wrote:") and the
+  forwarded-message header are written in the UI language with its date
+  format; `Re:` and `Fwd:` stay as they are (they are protocol, and
+  localized prefixes are already recognised for threading,
+  `katna_core::subject`).
+- Input methods: typing Chinese, Japanese, Korean and Indic scripts goes
+  through the desktop's input method (IBus or Fcitx5) via GPUI's
+  `text-input-v3` (Wayland) and XIM (X11) support; every Katna text box
+  implements GPUI's input handler, so composition works everywhere text
+  is typed.
+- Keyboard shortcuts: on a non-Latin keyboard layout (Russian, Arabic,
+  Hebrew, …) letter shortcuts use the key in the same place on the US
+  layout, as Gmail does, so J and K still step.
+- Search: words in Thai, Lao, Khmer and Burmese are split with the same
+  segmenter as line breaking (§7), and Chinese and Japanese with the
+  optional dictionaries.
+
+**Translations.** English is the source. All 48 other translations are
+first drafted by AI, and are marked as such until a native speaker has
+reviewed them:
+
+- `i18n/languages.toml` lists each entry: tag, own name, English name,
+  flag, direction, formats locale, and `status = "machine"` or
+  `"reviewed"` with the reviewers' names. Each drafted file starts with a
+  comment saying it is machine-drafted and needs review.
+- In the app, a machine-drafted language shows "Translated by machine.
+  Help improve it" at the foot of the picker, linking to the repository's
+  translation guide.
+- Corrections: now, anyone can edit `i18n/<tag>/*.ftl` on GitHub in the
+  browser and open a pull request, or file a "Translation correction"
+  issue (template with language, where, current and better text); the
+  local override folder above lets them check it in the app first. Later,
+  hosted Weblate (free for libre projects; the owner applies) takes over
+  the same files, with English as the source and CI unchanged.
+- New English strings: a pull request that adds UI text adds it to the
+  English file only; a follow-up drafts the other languages, so no
+  feature waits on 48 translations. Missing messages show in English
+  meanwhile, and CI reports each language's coverage.
+- Pseudo-locales for testing: `KATNA_LANGUAGE=qps-ploc` shows every
+  string accented and 40 % longer (finds hard-coded text and clipped
+  labels); `qps-plocm` also mirrors the layout (finds RTL bugs without
+  reading Arabic).
+
+**Size.** Fluent about 0.3 MB; compressed translations about 2 MB; ICU4X
+code and baked data for 51 locales, measured when added (expected a few
+MB). The app is about 56 MB of its 100 MB budget, so this fits; the daemon
+adds only Fluent and its own strings.
 
 ## 14. D-Bus API (`katna-dbus`)
 
@@ -2097,23 +2380,36 @@ consent.
   `feedback.save_crash_reports`, read at the moment of a panic, so it
   takes effect at once; off means the panic hook and the core-dump check
   write nothing), and the list of saved reports with
-  **View**, **Copy** and **Delete** (and Delete all). Later (Part 2): the
-  sending switches and **Send feedback**.
+  **View**, **Copy** and **Delete** (and Delete all), each marked "Sent"
+  once it went to the crash tracker. Part 2 adds "Send crash reports"
+  (built) and later the usage statistics switch and **Send feedback**.
 
-**Part 2: sending, only with consent (later).** Reports go to a Sentry
-cloud project (decided by the owner on 27 September 2026, §25).
+**Part 2: sending, only with consent.** Reports go to a Sentry cloud
+project (decided by the owner on 27 September 2026, §25). Sending crash
+reports is built; usage statistics and the feedback form come later.
 
-- **Asking.** The first-run screen (onboarding) has one step, "Help improve
-  Katna", with **Share** and **Don't share** given equal weight and no
-  default: nothing is sent until the user picks. People who installed
-  before this existed are asked once in the same words after updating.
-  Settings > User feedback has the same two switches afterwards, "Send
-  crash reports" and "Send anonymous usage statistics", each off unless the
-  user turned it on, and changeable at any time. The daemon reads the
-  same config keys and sends nothing on metered connections.
-- **Crash reports.** With consent, a new report is shown to the user and
-  sent when they click **Send** (or automatically, if they chose "Always
-  send" in the notice). The text sent is exactly the file they can read.
+- **Asking.** The first-run screen (onboarding) has a step, "Help improve
+  Katna", between the look and the tour: what is sent, what is never sent
+  and where it goes, with **Don't send** and **Send crash reports** given
+  equal weight (the same outlined buttons) and no default. People who
+  installed before this existed get the same words once in a dialog after
+  updating, after What's new if that shows. Closing the dialog without an
+  answer asks again on the next start; until an answer is given
+  (`feedback.send_crash_reports` unset), nothing is sent. Settings > User
+  feedback has the "Send crash reports" switch afterwards, changeable at
+  any time; "Send anonymous usage statistics" joins it with C.6.
+- **Crash reports.** With consent, new reports are sent without asking
+  again, and the saved-reports list marks each one "Sent". The daemon
+  looks 20 seconds after it starts, every 15 minutes, and at once when
+  Katna Mail saves settings (`ReloadConfig`), never on a metered
+  connection. It first turns new core dumps of Katna Mail and itself
+  into reports (a daemon crash is reported even if Katna Mail is not
+  opened), then sends the reports of the last seven days not sent yet,
+  oldest first, at most five per look. `crashes/sent` lists what went. A
+  2xx answer or a refusal (another 4xx) marks the report done; a 429,
+  a server error or no network leaves it for the next look. The text sent
+  is the saved file, scrubbed once more; "Save crash reports on this
+  computer" off means there is nothing to send.
 - **Usage statistics.** Once a week at most, a small JSON document:
   app version, OS release family (Arch, Ubuntu, …), desktop and session
   type, screen scale bucket, number of accounts in buckets (1, 2–3, 4+),
@@ -2133,32 +2429,40 @@ cloud project (decided by the owner on 27 September 2026, §25).
   reply (clearly optional, never filled in from the account). It shows
   exactly what will be sent before sending. This is independent of the
   switches: sending feedback is itself the consent for that one message.
-- **Protocol and SDK.** Everything uses Sentry's envelope format
-  (`POST /api/<project>/envelope/`). Capture (Part 1) needs no Sentry
-  code: the local report already holds what an event needs (message,
-  location, frames as module + offset, build ID, system). When sending
-  (C.5), the daemon turns a report into a Sentry `Event` (frames with
-  `instruction_addr` relative to the image, `debug_meta` from the build
-  ID), so the upload holds exactly what the user could read. The Sentry
-  crates come in with that step, built without default features, and
-  only if the daemon stays within its budget; the envelope is simple
-  enough to write by hand otherwise. Native crashes become events from
-  the `coredumpctl` stack (module build ID plus offset per frame);
-  Sentry's minidump handler (`sentry-rust-minidump`, an extra process) is
-  not used unless the stacks from core dumps turn out not to be enough.
-  Crash reports are error events; feedback uses Sentry's User Feedback
-  item; usage statistics are one `info` event per week whose tags are the
-  feature flags above, plus release-health sessions for crash-free rates.
-- **Client settings.** `send_default_pii` off; no user object, no IP (the
-  project is set to not store IP addresses and to scrub data server-side
-  as well); `server_name` empty; breadcrumbs only from Katna's own log
-  lines after scrubbing. The DSN is one constant in `katna_core::ids`,
-  empty until the owner creates the Sentry project; an empty DSN disables
-  sending entirely, and config can point it at a self-hosted Sentry or
-  GlitchTip. TLS is `rustls` (the SDK is built without default features,
-  so no OpenSSL). The daemon does the upload (only it talks to the
-  network, §9); the app hands it reports over D-Bus. The daemon's 20 MB
-  budget is checked with the SDK in.
+- **Protocol, no SDK.** Everything uses Sentry's envelope format
+  (`POST /api/<project>/envelope/`), written by hand in
+  `katna_core::sentry` and posted with Katna's own small HTTPS client
+  (`katna_sync::autoconfig::http::post`, `rustls`), so sending adds no
+  dependency and nothing to the daemon's size. An envelope holds an error
+  event read back from the report's text and the report itself as a
+  `text/plain` attachment, so the upload is exactly what the user could
+  read. The event ID is a hash of the report, so a report sent twice is
+  kept once. Frames: a panic in a build with function names (Katna Mail)
+  uses Rust's backtrace (function, file, line), without the frames of the
+  panic machinery; a stripped build (the daemon) sends each frame as an
+  address relative to its module (`addr_mode: "rel:N"`) with the module's
+  ELF image in `debug_meta` (debug ID from the GNU build ID, as
+  `sentry-cli` computes it), for the debug files of C.3; a native crash
+  uses the `coredumpctl` stack of the crashed thread the same way, with
+  the build IDs `coredumpctl` lists. Level `fatal`, release
+  `katna@<version>`, tags `app` and `kind`, the OS line as
+  `contexts.os.raw_description`. Checked on 27 September 2026: Sentry
+  answered 200 to a test envelope. Sentry's minidump handler
+  (`sentry-rust-minidump`, an extra process) is not used unless the stacks
+  from core dumps turn out not to be enough. Later, feedback uses Sentry's
+  User Feedback item; usage statistics are one `info` event per week whose
+  tags are the feature flags above, plus release-health sessions for
+  crash-free rates.
+- **Client settings.** Nothing like the SDK's `send_default_pii`: no user
+  object, no IP (the project is also set to not store IP addresses and to
+  scrub data server-side), no `server_name`, no device ID; the recent log
+  lines go only inside the scrubbed report. The DSN is one constant,
+  `katna_core::ids::SENTRY_DSN` (a DSN is the project's public address,
+  not a secret); an empty DSN turns sending off, and `feedback.dsn` in the
+  settings file can point it at a self-hosted Sentry or GlitchTip. The
+  daemon does the upload (only it talks to the network, §9); Katna Mail
+  only writes the setting, and the daemon reads the reports from the
+  crash folder.
 
 **Server side.** The Sentry cloud project exists (organization
 `invenia-systems`, project ID `4512156171698256`, created by the owner on
@@ -2192,7 +2496,9 @@ target; reports already sent stay in the cloud project until it is closed.
 - **GPUI:** pin exact `gpui-pre` and GPUI Kit versions; GPUI types only in
   `katna-ui`, `katna-chrome` and the GUI apps. `gpui-pre-linux` is a
   vendored copy with the KDE global menu patch (§15.2); upgrading GPUI means
-  re-applying it (`vendor/gpui-pre-linux/KATNA.md`).
+  re-applying it (`vendor/gpui-pre-linux/KATNA.md`). `gpui-pre-wgpu` and,
+  for layout direction and line breaking (§13.10), `gpui-pre` are vendored
+  the same way, each with its own `KATNA.md`.
 - **Pimalaya: light forks.** Fork only crates we change. Fork `master`
   mirrors upstream; our changes live on a `katna` branch. Use
   `[patch.crates-io]` in the workspace; drop the patch when upstream merges
@@ -2476,6 +2782,8 @@ Packaging (Flatpak, deb, rpm, AUR) starts from Phase 3; the
 | Background daemon drains battery or leaks memory | Users disable it | Event-driven design, CI resource budgets, power/metered awareness |
 | GPU/Vulkan missing on old hardware | High CPU from software rendering | Test early on old machines; document requirements |
 | An update corrupts or loses local data, or leaves Katna unable to start | Users lose mail they cannot re-download and stop trusting updates | Channels with a beta soak, upgrade and migration tests, backup before migrating, expand-then-contract schema changes, health check and safe mode (§21.2) |
+| No official GPUI phone backend (§26.2) | A phone port rests on an experimental community backend | Vendor and patch it like `gpui-pre-linux`, contribute upstream, Android first |
+| Phones stop background mail (§26.4) | Late or missing new-mail notifications | Foreground service or push per platform; say the delay plainly in Settings |
 | Scope | Burnout, never shipping | Strict phases with "done when" criteria |
 
 ## 25. Open decisions
@@ -2485,6 +2793,8 @@ Packaging (Flatpak, deb, rpm, AUR) starts from Phase 3; the
 3. Updates (§21.2): where the update manifests and package repositories are
    hosted (`katna.invenia.in` or GitHub releases only), who holds the signing
    keys, and how long the beta soak is.
+4. Phones (§26.7): GPUI phone base, Android first, iOS licensing, the push
+   gateway, and never holding mail logins on a Katna-run server.
 
 Decided:
 
@@ -2500,6 +2810,302 @@ Decided:
   over our own receiver and GitHub issues only), moving later to a
   self-hosted GlitchTip or Sentry on `katna.invenia.in`. The DSN stays
   empty until the cloud project exists.
+- Languages (§13.10): Fluent for UI text over gettext, ICU4X for dates and
+  numbers, system fonts (Noto) rather than bundled ones, and AI-drafted
+  translations marked for native review (owner's request, 27 September
+  2026).
 - Test and support matrix: Arch Linux (latest Plasma and GNOME) and
   Ubuntu 26.04 LTS (GNOME) / Kubuntu 26.04 (Plasma). The Plasma
   integration supports the Plasma versions of these two.
+
+## 26. Katna on phones (planned, not built)
+
+Asked about by the owner on 27 September 2026. This is design only: nothing
+here is built or scheduled, and the Linux desktop apps come first. The work
+is in `IMPLEMENTATION_PLAN.md`, "Later: Katna on phones".
+
+The goal is Katna Mail on Android and iOS with the same look (the phone
+layout of §13.9 already follows Gmail's mobile app), the same local-first
+store and instant search, and the same privacy promise: no trackers, no
+analytics, no Google-only features, and no server that reads the user's
+mail.
+
+Two things stand in the way. GPUI has no official phone backend (§26.2),
+and phones do not let an app keep a background service like `katna-daemon`
+running (§26.3, §26.4).
+
+### 26.1 What carries over
+
+Most of Katna is plain Rust with no desktop ties and builds for Android and
+iOS as it is.
+
+| Part | On a phone |
+|---|---|
+| `katna-store` (SQLite, bundled), `katna-search` (tantivy), `katna-import`, `katna-meta`, `katna-org` | As is |
+| `katna-render` (HTML mail drawn with GPUI elements, §12), `katna-preview` (pure-Rust PDF, sheets, pictures) | As is |
+| `katna-sync` (IMAP, SMTP, POP3, JMAP over rustls; `rustls-platform-verifier` already supports Android and iOS) | As is, plus a "sync once before a deadline" entry point (§26.3) |
+| `katna-core` | Paths come from the app's sandbox instead of XDG directories |
+| Sync workers, op queue, outbox, scheduler, indexer inside `katna-daemon` | Move into a `katna-engine` library (§26.3) |
+| `katna-daemon` shell: systemd unit, D-Bus name, `/proc/self/exe` re-exec, logind and NetworkManager events | Desktop only |
+| `katna-dbus` | Desktop only; the phone app calls the engine in-process |
+| Passwords in the Secret Service (`oo7`) | Android Keystore (a key that encrypts the secrets) and the iOS Keychain, behind a small `SecretStore` trait |
+| `katna-notify` (freedesktop notifications) | Android notification channels and iOS `UserNotifications`, with the same actions (Reply, Mark read, Archive) |
+| `katna-crypto` (runs the user's `gpg` and `gpgsm`) | Phones have no GnuPG. OpenPGP through a Rust library (rPGP or Sequoia) or OpenKeychain on Android; S/MIME later |
+| `katna-platform`, `katna-chrome` (window frames, blur, tray, KDE global menu, portals) | Desktop only |
+| `katna-ui`, `katna-mail` views | Carry over through GPUI; the phone layout exists, touch and text input are new (§26.2, §26.5) |
+
+### 26.2 What GPUI is missing
+
+**State in September 2026.** Zed's GPUI ships backends for macOS, Linux
+(X11 and Wayland) and Windows only. Katna's copy (`vendor/gpui-pre-wgpu`,
+`vendor/gpui-pre-linux`, 0.3.6) draws through wgpu, and wgpu runs on
+Android (Vulkan, GLES) and iOS (Metal), so drawing is not the problem. The
+missing part is everything around it.
+
+- **Upstream iOS:** Zed pull request
+  [#63068](https://github.com/zed-industries/zed/pull/63068) adds a
+  `gpui_ios` crate: UIKit scenes and window lifecycle, CoreText, Metal,
+  safe-area and keyboard insets, native text input, keychain credentials,
+  touch and drag scrolling, and a simulator example. It was opened on
+  22 August 2026, is still open, and its author calls it a side project.
+  It leaves out momentum scrolling, edit menus and keyboard accessories.
+  Nothing for Android upstream.
+- **Community:** [`longbridge/gpui-mobile`](https://github.com/longbridge/gpui-mobile),
+  from the authors of GPUI Kit (which Katna uses), is published as
+  `gpui-pre-mobile` against `gpui-pre` 0.3.4 (Katna uses 0.3.6). It covers
+  iOS (Metal, CoreText) and Android (Vulkan or GLES, cosmic-text), touch with
+  momentum scrolling, safe areas, dark mode, an Android input activity for
+  IME composition, and a file picker. It calls itself experimental;
+  accessibility, full IME composition and lifecycle hooks are not done.
+  Several forks of it exist.
+
+What Katna would need from a phone backend, whichever one it starts from:
+
+1. **Lifecycle.** Android destroys the drawing surface whenever the app
+   leaves the screen and may kill the process at any time; iOS suspends it
+   seconds after it is backgrounded. The backend drops and recreates the
+   wgpu surface; the app saves what is open (conversation, draft, scroll
+   position) and restores it after the process was killed.
+2. **Touch.** GPUI's input model is mouse and keyboard. Phones need tap,
+   long press (selection mode), fling with momentum, pull to refresh, swipe
+   on a row to archive or delete (as in Gmail), the system back gesture
+   (Android predictive back, iOS edge swipe) and pinch zoom in the viewers
+   and HTML mail. Anything only reachable by hover (row hover actions,
+   tooltips) needs a touch path; the phone layout already hides the hover
+   toolbar (§13.9).
+3. **Text input.** The hardest part: the on-screen keyboard, IME composition
+   (Bengali, Hindi, Chinese and others), autocorrect and suggestions,
+   selection handles, the copy and paste menu, and moving the compose field
+   above the keyboard.
+4. **Screen insets.** Status bar, notch or camera cut-out, gesture bar and
+   keyboard.
+5. **Accessibility.** TalkBack and VoiceOver through AccessKit, which GPUI
+   already uses on the desktop.
+6. **Fonts.** System fonts, emoji and complex-script shaping, honouring the
+   system text size.
+7. **Platform services.** Notifications, the share sheet (share a file into
+   Katna as an attachment, share an attachment out), the system file and
+   photo pickers, opening an attachment in another app (instead of
+   "Open with", §13.8), `mailto:` links, network and metered-network state
+   (instead of NetworkManager), OAuth in the system browser, and the unread
+   badge.
+
+**Recommendation.** Do not write a phone backend from scratch. Start from
+`gpui-mobile`, vendored and patched the way `gpui-pre-linux` is, and move to
+upstream `gpui_ios` for iOS if it lands. Send fixes upstream. **Android
+first**: it builds and tests from Linux (cargo-ndk, Gradle and an emulator),
+it allows real background mail on the device (§26.4), and F-Droid users are
+the audience most likely to want a private mail app. iOS needs a Mac with
+Xcode for building and signing, an Apple developer account, and a push
+gateway (§26.4).
+
+### 26.3 The engine without a daemon
+
+On the desktop, `katna-daemon` owns the network and every write, and the
+apps read the store and send commands over D-Bus (§2). On a phone there is
+one app process (plus, on iOS, small extension processes), and the system
+decides when it may run.
+
+The same rules still hold; only the process boundary moves:
+
+- **`katna-engine`.** The sync workers, op queue, outbox, scheduler,
+  indexer and new-mail policy move out of `katna-daemon` into a library
+  with no D-Bus, systemd or GPUI. `katna-daemon` becomes that engine plus
+  its desktop shell (D-Bus, systemd, tray, updates). The phone app runs the
+  engine on its own threads.
+- **One client API, two transports.** The app talks to the engine through
+  a `PimClient` trait: today's commands (`apps/katna-mail/src/daemon.rs`)
+  and change signals. On the desktop it is the D-Bus proxy; on a phone it
+  is an in-process channel. The views do not know which one they have.
+- **One writer.** The engine's thread is still the only writer; the views
+  read the store read-only. All SQL stays in `katna-store`.
+- **Killed at any moment is normal.** The op queue and outbox are already
+  on disk, so a killed process loses nothing. The engine must also start
+  in well under a second, because on a phone it starts every time the app
+  or a background task runs.
+- **Sync once, with a deadline.** Besides "run until stopped" (the app is on
+  screen: IDLE on each account, as on the desktop), the engine gets
+  `sync_once(deadline)`: send what is queued in the outbox, fetch new
+  headers for the Inbox and the folders that notify, raise notifications,
+  then stop. Background runs are short (Android WorkManager work is limited
+  to about 10 minutes; iOS background refresh gives about 30 seconds).
+  Large jobs (indexing a first sync, downloading old bodies) wait for the
+  app to be open or for the phone to be charging (Android WorkManager
+  constraints, iOS `BGProcessingTask`).
+- **iOS notification extension.** The Notification Service Extension that
+  finishes a push (§26.4) is a separate process with a small memory limit
+  (about 24 MB) and a few seconds of time. It reads the store read-only
+  from the shared App Group folder, fetches the new message's headers
+  itself, and never writes `mail.db`; it leaves a small note the engine
+  picks up on its next start. The app must also end every write
+  transaction before it is suspended: iOS terminates a suspended app that
+  holds a file lock in a shared folder.
+- **Send later and snooze with the app closed.** Android can run work at a
+  set time (exact alarms need the user's permission from Android 14 on;
+  WorkManager is late by minutes in Doze). iOS cannot run code at a set
+  time at all. Scheduled sends there go out when the app next runs, or
+  from Katna Server when the user has one (§16 already plans "send later
+  while the machine is off"). Undo send is fine on both: the app is open
+  during the delay, and a send started just before the app is closed
+  finishes in expedited work (Android) or a background task (iOS).
+- **Phone defaults.** Bodies are downloaded for fewer days than on the
+  desktop, nothing big is downloaded on a metered network (the
+  `sync.metered` setting, §6), and the first sync fetches recent mail first.
+
+### 26.4 How new mail reaches a phone
+
+On the desktop, the daemon keeps an IMAP IDLE connection open and the
+server tells it at once about new mail. A phone app cannot count on staying
+alive to hold that connection. iOS suspends it within seconds; Android
+allows it only in a foreground service with a permanent notification, and
+some phone makers kill even that. So something has to wake the app.
+
+#### How other mail apps do it
+
+| App | How new mail arrives | Does a server hold your mail login? |
+|---|---|---|
+| **Gmail** (Android and iOS), Gmail accounts | Google's mail servers see the message arrive and send a push through Firebase Cloud Messaging (Android: one shared connection that Google Play services keeps open for every app) or Apple's push service (iOS); the app then syncs. | No extra one: Google runs the mailbox and the push sender. This is what only a mail provider can do. |
+| **Gmail**, other IMAP accounts | Checked on a timer ("Sync frequency"), or Gmailify, where Google's servers fetch the other account. | With Gmailify, yes: Google's. |
+| **Apple Mail** (iOS) | Push only for providers Apple supports (iCloud, Exchange). Other IMAP accounts, Gmail included, are fetched every 15, 30 or 60 minutes or by hand. | No; it simply is not instant. |
+| **Spark, Outlook and similar** | Their servers hold an OAuth token (or password), watch the mailbox, and push through APNs or FCM. Spark says it copies the subject and part of the message, encrypted, and deletes it 4 hours after notifying. | **Yes.** |
+| **FairEmail, Thunderbird for Android (K-9)** | No server. A foreground service with a permanent "monitoring" notification keeps IMAP IDLE open; periodic sync as a fallback. FairEmail uses the `specialUse` foreground-service type because `dataSync` is limited to 6 hours a day from Android 15. Missed or late mail on aggressive phones is the most common complaint in both projects. | No |
+| **Delta Chat** (chat over email) | The app stores an encrypted device token on its mail server with IMAP METADATA. When mail arrives the server sends that token to Delta Chat's notification proxy, which decrypts it and forwards an empty wake-up to Apple or Google; the app then fetches the mail itself. Only works with servers that cooperate (chatmail). | No. The proxy sees no mail data and forgets the token at once. |
+| **Tuta** (Android) | Its own server-sent-events connection instead of Firebase, with a 15-minute job as backup. | Tuta is the mail provider. |
+
+The lesson: Gmail's instant, battery-free notifications come from being the
+mail provider *and* using the phone maker's push service. A third-party app
+gets instant mail on iOS only if some server sends it an Apple push, and
+that server must know when the mail arrived. Either the mail server says so
+itself, or something has to watch the mailbox, which means holding the
+login.
+
+#### Katna's design: one wake-up format, several sources
+
+Every device gets one **push address**, a standard Web Push URL (RFC 8030,
+payloads encrypted to the device with RFC 8291, so nothing in between can
+read them). Anything that knows about new mail sends a wake-up to that
+address. What sits behind the address differs per platform:
+
+- **Android:** a UnifiedPush distributor the user picks (ntfy, Sunup,
+  NextPush, or a Google-based one on phones with Google services). No Katna
+  server, no Firebase library in the app, fine for F-Droid.
+- **iOS:** only a sender holding Katna's Apple push key can reach the app,
+  so the address points at the **Katna push gateway**, a tiny Rust service
+  (part of Katna Server, run by the project at `katna.invenia.in`). The
+  device token is sealed inside the URL, encrypted to the gateway's key, as
+  in Delta Chat, so the gateway stores nothing. It unwraps the token and
+  forwards the still-encrypted payload as a mutable-content Apple push. The
+  Notification Service Extension decrypts it on the phone and fetches the
+  headers from the mail server directly. The gateway sees an opaque token,
+  the time and the sender's IP address. It never sees credentials,
+  addresses, subjects or content, and it keeps no logs of tokens.
+
+The wake-up sources, from most to least private:
+
+1. **The mail server itself.** JMAP servers with push subscriptions
+   (RFC 8620 §7.2 with RFC 8291 encryption; Stalwart and Fastmail have them)
+   post straight to the push address. Nobody but the provider is involved.
+   Dovecot-based servers with METADATA push, as chatmail uses, can follow
+   later. Gmail offers no push to other apps over IMAP (its API push needs
+   Google Cloud Pub/Sub, a Google-only feature Katna does not use).
+2. **The user's own Katna desktop.** `katna-daemon` already holds an IDLE
+   connection to every account. With "Wake my phone" on, it sends a wake-up
+   (optionally with the sender and subject, encrypted to the phone) when new
+   mail arrives. No new place holds a password, and it works for every
+   provider, Gmail included. It only works while that computer is on and
+   awake.
+3. **A Katna Server the user hosts** (§16): the same IDLE watcher in a
+   container on the user's own server or VPS. The login stays on hardware
+   the user controls. The same server can send later and snooze while the
+   phone is off.
+4. **On the phone alone.** Android: a foreground service holding IDLE
+   ("Instant", with its permanent notification, which the user can hide by
+   turning off that notification channel), or a timer (every 15, 30 or 60
+   minutes via WorkManager), or by hand. iOS: background app refresh, when
+   the system allows it (Apple warns that it may run rarely, or in common
+   cases not at all), plus a full sync whenever the app opens.
+
+**Not offered: a Katna-hosted server that holds logins** (Spark's model).
+It works with every provider without any setup, which is why most
+commercial apps do it. But it makes Katna a store of thousands of mail
+passwords or tokens, costs money to run forever, and breaks "your data stays
+on your machine". If it is ever reconsidered, it must be opt-in per account,
+use app passwords or narrow OAuth scopes, send content-free wake-ups only,
+forget the login on disconnect, and be open source and audited.
+
+#### Recommendation per platform
+
+- **Android:** default to "Instant" through the on-phone foreground service
+  (the FairEmail model), because it needs no server and works with every
+  provider on day one. Settings → New mail offers Instant, every 15 / 30 /
+  60 minutes, or Manual, and "Use push" once a UnifiedPush distributor is
+  installed, which switches JMAP accounts to server push and IMAP accounts
+  to the desktop or self-hosted watcher and lets the permanent notification
+  go away. The Settings page says plainly what each choice costs in battery
+  and delay, and links to the phone's battery-optimization setting.
+- **iOS:** instant mail only through push, so the push gateway ships with
+  the first iOS build. JMAP accounts use server push; IMAP accounts (Gmail
+  included) use the user's Katna desktop or self-hosted Katna Server; any
+  account without either says, in Settings → New mail, "Checked when iOS
+  allows it; may be delayed", and syncs fully whenever the app is opened.
+
+### 26.5 Phone-specific UI work
+
+The phone layout (§13.9) is the starting point. Still to do: 48 dp touch
+targets; swipe actions on list rows (set in Settings, as in Gmail); long
+press to select; pull to refresh; bottom sheets for menus; the system back
+gesture closing the conversation, drawer or sheet in that order; attaching
+from the camera and photo library; the system share sheet; the system font
+size; tablets and foldables switching between the phone and tablet layouts
+as they already do on the desktop. Desktop-only features are hidden: the
+window frame and blur, tray, global menu, KRunner, and opening mail in a
+new window.
+
+### 26.6 Distribution and licensing
+
+- **Android:** APKs on GitHub releases and F-Droid first (no Google
+  libraries, so F-Droid accepts it), Google Play later (Play asks why an app
+  uses a `specialUse` foreground service; FairEmail's reason was accepted).
+  Built on Linux CI with cargo-ndk and Gradle; the Android host code
+  (activity, services, notification actions, `rustls-platform-verifier`'s
+  helper) is a few hundred lines of Kotlin, like the Plasma C++ in §15.6.
+- **iOS:** TestFlight, then the App Store. Needs macOS CI runners, an Apple
+  developer account and a small Swift or `objc2` shim for the notification
+  extension. **Licensing needs a decision first:** the App Store's terms are
+  widely held to conflict with the GPL (VLC was removed in 2011 over this).
+  The owner, as copyright holder, can publish their own GPL code there, but
+  outside contributions and any GPL code taken from Mailspring would need
+  their authors' permission, a contributor agreement, or an App Store
+  exception added to the license. This should be settled before Katna
+  takes outside contributions.
+- Crash reports on phones follow the desktop plan (opt-in, Sentry, no
+  tracking).
+
+### 26.7 Open questions
+
+1. Which GPUI phone base: `gpui-mobile` now, or wait for upstream?
+2. Android first (recommended) or both at once?
+3. The iOS licensing path (§26.6).
+4. Who runs the push gateway and where (`katna.invenia.in` recommended).
+5. Whether a Katna-hosted login-holding watcher is ever offered
+   (recommended: no).

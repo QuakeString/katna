@@ -3734,6 +3734,7 @@ dependencies = [
  "katna-store",
  "katna-ui",
  "mail-parser",
+ "serde_json",
  "spellbook",
  "tempfile",
  "tracing",
