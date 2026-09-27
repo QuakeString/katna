@@ -38,6 +38,7 @@ use katna_sync::{
     pictures::Pictures,
     pop3::{self, Pop3Client},
     smtp::SmtpSender,
+    tracking,
     worker::{self, Connector, Event, ImapConnector, Pop3Connector, WorkerConfig},
 };
 
@@ -87,6 +88,8 @@ pub enum Notice {
     MeteredChanged(bool),
     /// The Katna account this computer is signed in to changed.
     KatnaAccountChanged,
+    /// A tracked message was opened or a link in it followed.
+    TrackingChanged,
 }
 
 /// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
@@ -208,6 +211,9 @@ pub struct Daemon {
     delete_requests: (Sender<DeleteDone>, Receiver<DeleteDone>),
     /// Tells the crash report sender that settings changed.
     crash_uploads: (Sender<()>, Receiver<()>),
+    /// Tells the tracking event stream to look again (a tracked message
+    /// went out, or settings changed).
+    tracking_wake: (Sender<()>, Receiver<()>),
     /// The languages Katna Server translates between, once asked.
     translation_languages: crate::translate::Languages,
     /// Wakes the scheduler of snooze and reminders, once it runs.
@@ -253,6 +259,7 @@ impl Daemon {
             indexer: OnceLock::new(),
             delete_requests: async_channel::bounded(1),
             crash_uploads: async_channel::bounded(1),
+            tracking_wake: async_channel::bounded(1),
             translation_languages: Default::default(),
             scheduler: OnceLock::new(),
         });
@@ -308,7 +315,44 @@ impl Daemon {
             self.crash_uploads.1.clone(),
         ))
         .detach();
+        smol::spawn(crate::tracking::run(
+            Arc::downgrade(self),
+            self.tracking_wake.1.clone(),
+        ))
+        .detach();
         Ok(())
+    }
+
+    /// Has the tracking event stream look again.
+    pub(crate) fn wake_tracking(&self) {
+        let _ = self.tracking_wake.0.try_send(());
+    }
+
+    /// Katna Server, for tracking ([`crate::katna_account::server_url`]).
+    pub(crate) fn tracking_client(&self) -> Option<tracking::Client> {
+        let server = tracking::Server::parse(&crate::katna_account::server_url())?;
+        let tls = Tls::system()
+            .map_err(|err| tracing::warn!(%err, "TLS setup failed; tracking waits"))
+            .ok()?;
+        Some(tracking::Client::new(server, tls))
+    }
+
+    /// This computer's Katna Server token, once it has registered. The
+    /// server only takes it for tracking while signed in to a Katna
+    /// account with a confirmed address (§16.2).
+    pub(crate) async fn tracking_token(&self) -> Option<String> {
+        let session = crate::katna_account::Session::new(&self.secrets).ok()?;
+        match session.token().await {
+            Ok(token) => token,
+            Err(error) => {
+                tracing::warn!(%error, "no Katna Server token");
+                None
+            }
+        }
+    }
+
+    pub(crate) fn notices(&self) -> &Sender<Notice> {
+        &self.notices
     }
 
     pub(crate) fn paths(&self) -> &Paths {
@@ -1130,6 +1174,20 @@ impl Daemon {
         }
     }
 
+    /// Like [`Daemon::queue_send`], as one tracked copy per recipient.
+    pub fn queue_tracked_send(
+        &self,
+        account: AccountId,
+        raw: &[u8],
+        delay: u32,
+    ) -> Result<i64, CommandError> {
+        self.check_smtp(account)?;
+        let id = outbox::queue_with(&mut self.store(), account, raw, delay, unix_now(), true)?;
+        tracing::info!(id, %account, delay, "queued to send, tracked");
+        self.queued(id);
+        Ok(id)
+    }
+
     /// Saves a mail template (a new one for ID 0). Returns its ID.
     pub fn save_template(&self, template: TemplateItem) -> Result<i64, CommandError> {
         let name = template_name(&template.name)?;
@@ -1282,10 +1340,12 @@ impl Daemon {
                     .unwrap()
                     .insert(event.id, event.detail);
             }
-            if event.state == SendState::Sent
-                && let Some(running) = self.workers().get(&event.account)
-            {
-                running.handle.send_changes();
+            if event.state == SendState::Sent {
+                if let Some(running) = self.workers().get(&event.account) {
+                    running.handle.send_changes();
+                }
+                // A tracked message may have gone out: follow its events.
+                self.wake_tracking();
             }
             let _ = self.notices.try_send(Notice::OutboxChanged(event.id));
         }
@@ -1488,7 +1548,7 @@ impl Daemon {
         let _ = self.notices.try_send(Notice::StatusChanged(id));
     }
 
-    fn store(&self) -> MutexGuard<'_, Store> {
+    pub(crate) fn store(&self) -> MutexGuard<'_, Store> {
         self.store.lock().unwrap()
     }
 
@@ -1646,6 +1706,21 @@ impl Outgoing for SmtpAccounts {
                     .any(|domain| host.strip_suffix(domain).is_some_and(|h| h.ends_with('.')))
             })
         })
+    }
+
+    fn tracking(&self) -> Option<tracking::Client> {
+        self.0.upgrade()?.tracking_client()
+    }
+
+    async fn tracking_token(&self) -> katna_sync::Result<String> {
+        let daemon = self
+            .0
+            .upgrade()
+            .ok_or_else(|| katna_sync::Error::Closed("the daemon is stopping".into()))?;
+        daemon
+            .tracking_token()
+            .await
+            .ok_or_else(|| katna_sync::Error::Rejected("not signed in to a Katna account".into()))
     }
 }
 

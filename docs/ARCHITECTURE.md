@@ -710,7 +710,7 @@ from or adds to the sketch above:
   name (so a second instance never writes the index) and wakes it on every
   `MailChanged` notice. If the index cannot be opened, mail still syncs
   and the error is logged. Linking tantivy grows the daemon from 11.6 to
-  15.0 MB (then 14.3 MiB of a 15 MiB budget; it is 20 MiB now, §17.2).
+  15.0 MB (then 14.3 MiB of a 15 MiB budget; it is 50 MB now, §17.2).
   `katna_search::Indexer` runs updates on its own thread
   with its own read-only store connection: once at start, then on
   `Indexer::changed()` (the daemon calls it after each sync) and every 5 s
@@ -2160,8 +2160,8 @@ length, so month and day names, the order (`27/09/2026`, `9/27/2026`,
   with plural forms and a formatted number.
 - Folder and label names sort with `icu_collator` in the chosen language.
 
-The daemon does not format dates, so it links only Fluent (its 20 MB
-budget): the counts in its notifications and tray tooltip are written in
+The daemon does not format dates, so it links only Fluent (it was on a
+tight budget): the counts in its notifications and tray tooltip are written in
 Western digits whatever the language. Its text is in
 `i18n/<tag>/katna-daemon/`, embedded by its own build script; it applies
 `general.language` at start and again when Katna Mail asks it to reload
@@ -2624,6 +2624,25 @@ Everything is deleted after 180 days, and an install can delete its data.
 One server process (events are ordered within it). The API is in
 `server/katna-server/README.md`.
 
+**Implemented (daemon, `katna-sync::tracking`, `apps/katna-daemon/src/tracking.rs`):**
+a message queued with tracking (D-Bus `QueueTrackedSend`) that has an HTML
+part, is not signed or encrypted, and has at most 50 recipients (To, Cc and
+Bcc) goes out as one copy per recipient, each in its own SMTP transaction
+with the headers unchanged. Each copy's HTML gets the pixel before the
+first `<blockquote` and its links outside quotes rewritten; plain-text
+parts are left alone. A refused recipient does not stop the others and the
+send retries only the rest. Sent keeps one clean copy; on Gmail the
+tracked copies Gmail filed are found by `rfc822msgid:` plus a marker in the
+body and moved to Trash and deleted there (op `PurgeTracked`). Anything
+that stops tracking (no server, server error, too many recipients) sends
+the message once, untracked. The recipient mapping and events live in
+`pim.db` (schema v3). Tracking uses the Katna account token
+(`katna_account::Session::token`, §16.2) and server (`server_url`); the
+server takes it only while this computer is signed in to an account with a
+confirmed address, and otherwise the message goes out untracked. The first
+open or click by a person raises a notification whose Open shows the Sent
+copy.
+
 ### 16.2 Katna accounts
 
 Every server feature needs a **Katna account**, like a Mailspring ID
@@ -2720,7 +2739,7 @@ about 2 MB of the first 30 MiB (31.5 MB) budget.
 | Metric | Target |
 |---|---|
 | Katna Mail binary | ≤ 100 MB (100,000,000 bytes) |
-| `katna-daemon` binary | ≤ 20 MiB (21 MB) |
+| `katna-daemon` binary | ≤ 50 MB |
 | Idle CPU (app and daemon) | ≈ 0 %; no periodic wake-ups beyond IDLE renewals |
 | Cold start to usable inbox | < 500 ms |
 | Search latency | p50 < 20 ms, p99 < 50 ms on 1M messages |
@@ -2728,7 +2747,8 @@ about 2 MB of the first 30 MiB (31.5 MB) budget.
 
 With sync, bodies, the op queue, sending and the search indexer,
 `katna-daemon` is 15.6 MB. tantivy is the biggest part. Its budget was
-15 MiB until sending came in; it is 20 MiB (September 2026) so features
+15 MiB until sending came in, then 20 MiB, and 50 MB since Katna
+Server's tracking and translation came in (September 2026), so features
 are not trimmed to fit. Katna Mail's budget was 30 MiB until the fixes
 after the first real install, when the app reached it; then 50 MB, and
 100 MB since the attachment viewers (September 2026), so features are
@@ -2896,7 +2916,7 @@ consent.
   `addr2line -f -C -e <unstripped binary> <offset - 1>` turns them into
   functions and lines, and later Sentry does the same with the debug files
   CI uploads. Keeping symbol names in the daemon costs 3.1 MB and would
-  break its 20 MB budget (§17), so it stays stripped. Katna Mail keeps its
+  cost more than it is worth (§17), so it stays stripped. Katna Mail keeps its
   function names (`strip = "debuginfo"` for that package only: 48 MB to
   56 MB of its 100 MB budget, no change in memory use since the symbol
   table is not loaded), so its panic backtraces and `coredumpctl` stacks

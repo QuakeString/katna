@@ -26,6 +26,7 @@ mod quota;
 pub mod remote;
 pub mod templates;
 mod thread;
+pub mod tracking;
 mod translation;
 
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths};
@@ -56,6 +57,7 @@ pub use pop3::Pop3Uidl;
 pub use quota::StorageQuota;
 pub use remote::{FolderRole, NewAttachment, RemoteMessage, StoredAttachment, StoredFolder};
 pub use templates::{Template, TemplateFile, TemplateSummary};
+pub use tracking::{NewRecipient, TrackedMessage, TrackedRecipient, TrackingEvent, TrackingNews};
 pub use translation::Translation;
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.

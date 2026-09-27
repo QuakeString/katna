@@ -50,7 +50,7 @@ real desktop with real mail.
   mailboxes: across the 517,000 messages of the Enron corpus, a query takes
   2.4 ms at the median and 9.7 ms at p99.
 - **Works when the window is closed.** `katna-daemon` syncs, notifies and
-  sends scheduled mail in the background, from a binary under 20 MB.
+  sends scheduled mail in the background, from a small binary.
 - **Feels native.** System colors and accent, tray icon with unread badge,
   KDE global menu, desktop notifications you can act on, and your KDE user
   picture as your own.

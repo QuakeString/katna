@@ -106,6 +106,35 @@ impl NewMailNotices {
         });
     }
 
+    /// Shows that a tracked message was opened or a link in it followed,
+    /// when notifications are on. Open shows `message` (the copy in Sent),
+    /// when it is known.
+    pub(crate) async fn tracking(
+        &self,
+        summary: &str,
+        body: &str,
+        account: AccountId,
+        message: Option<MessageId>,
+    ) {
+        if !self.enabled.load(Ordering::Relaxed) {
+            return;
+        }
+        match self.notifier.tracking(summary, body).await {
+            Ok(id) => {
+                if let Some(message) = message {
+                    self.shown.lock().unwrap().insert(
+                        id,
+                        Shown {
+                            account,
+                            messages: vec![message],
+                        },
+                    );
+                }
+            }
+            Err(err) => tracing::warn!(%err, "could not show a tracking notification"),
+        }
+    }
+
     pub(crate) fn forget(&self, account: AccountId) {
         self.seen.lock().unwrap().remove(&account);
     }
