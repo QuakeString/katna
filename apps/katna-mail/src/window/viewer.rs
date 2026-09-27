@@ -833,7 +833,6 @@ impl Render for Viewer {
                         rgba(SCRIM_FROSTED).into(),
                         px(0.0),
                         self.th.frost as f32,
-                        Vec::new(),
                     ))
                 }
             })
