@@ -1,6 +1,6 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 27 September 2026, through PR #151). Companion to
+> Status: **v0.2** (updated 27 September 2026, through PR #179). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
@@ -13,20 +13,32 @@ not started. The plan is refreshed after each batch of merges. The
 "Daily use" track in §5 lists work the owner asked for while using Katna
 Mail that the phases did not name.
 
-- **Done:** spikes S1, S2; Phase 0; Phase 1 except `katna-meta` as its own
-  crate; most of Phase 3 (Katna Mail is in daily use on the owner's Plasma
-  6.7 Wayland laptop with a real Gmail account through the `arch-latest`
-  package); notifications, badge, tray and global menu from Phase 4;
+- **Done:** spikes S1, S2; Phase 0; Phase 1; most of Phase 3 (Katna Mail is in daily
+  use on the owner's Plasma 6.7 Wayland laptop with a real Gmail account
+  through the `arch-latest` package); notifications, badge, tray, global
+  menu, KRunner and GNOME search from Phase 4; templates, snooze,
+  follow-up reminders and send later from Phases 5 and 7;
   local crash reports and opt-in sending; the language framework and most
   of the UI translated; reading and sending encrypted mail.
-- **Merged since the last refresh:** Buy me a coffee in the README (#144)
-  and in About (#145), translations (#147), Compose above the account's
-  name (#148), a From row with an account picker (#150) and a unified
-  inbox with folding accounts (#151).
-- **Next, in the owner's order (27 September 2026):** KRunner and GNOME
-  search (4.4, 4.5), then open and click tracking on Katna Server (7.1,
-  7.2), then the other Katna Server features in §5 Phase 7 (7.3–7.12).
-  Organizations (Phase 2) is not needed first and comes later. Alongside:
+- **Merged since the last refresh:** right-click menus per folder
+  (#152), leaving Settings on a folder click (#153), the select menu
+  (#154), drafts kept on close (#155), account rows that drag (#156),
+  storage used at the foot of the folder pane (#158), About over any view
+  (#161), a prompt tray Quit (#162), the contact panel (#164), KRunner and
+  GNOME search (#166), send later handed to the mail server with
+  FUTURERELEASE (#167), templates (#168), a softer hover shadow (#169),
+  chips that drag between To, Cc and Bcc (#171), snooze and follow-up
+  reminders (#172), reopening where the owner left off (#173); Katna
+  Server with open and click tracking (#160) and Katna accounts (#170);
+  translations of all of it (#157, #165, #174, #175, #177, #179).
+- **In review:** tracking in the daemon and app (#178), then automatic
+  translation (#176).
+- **Next, in the owner's order (27 September 2026):** finish tracking
+  (7.1, 7.2) and translation (7.8), then mailbox insights (7.3).
+  Organizations (Phase 2) is not needed first and comes later.
+- **Size:** after #176 and #178 the daemon is about 20.8 MB of its
+  20.97 MB budget (`ci/size-budgets.txt`). The next daemon feature needs
+  the owner's decision: raise the budget or make room first. Alongside:
   usage statistics, feedback form and debug-file upload (C.3, C.6, C.7);
   right-to-left layout (L.2, L.3); the release track before any public
   release.
@@ -167,14 +179,14 @@ query set runs at p50 2.4 ms, p99 9.7 ms, including subjects and snippets.
 | 1.6 Op queue ✅ #20 | Optimistic local flags/move/delete, replay with retries and conflict handling |
 | 1.7 Threading ✅ #25, #34, #72 | JWZ threading + Gmail thread IDs; property tests |
 | 1.8 SMTP + outbox ✅ #22 | Sending, Sent-folder handling, outbox with undo delay |
-| 1.9 `katna-meta` ◐ undo send and scheduled send live in the outbox (#22, #53); the crate is still empty | Metadata table + scheduler (undo send first) |
+| 1.9 `katna-meta` ✅ #172; undo send and scheduled send stay in the outbox (#22, #53) | Metadata table + scheduler (undo send first) |
 | 1.10 POP3 ✅ #27 | Client with UIDL tracking, leave-on-server, `TOP` (header-first partial download of large messages comes later) |
 | 1.11 `katna-daemon` ✅ #15, #17, #19, #65 | Process, `in.invenia.katna.Pim1` D-Bus skeleton (commands + change signals), single instance, systemd user unit, D-Bus activation, graceful shutdown |
 | 1.12 System events ✅ #30, #38 | Network changes, suspend/resume, metered connections |
 | 1.13 `katnactl` ✅ #15, #28, #33 | Small CLI client for the daemon (add account, sync, search, send, list) — the test harness until the GUI exists |
 
-Status (27 September 2026): all tasks merged except `katna-meta` as its
-own crate. Gmail syncs in the background on the owner's laptop; the
+Status (27 September 2026): all tasks merged; `katna-meta` came with
+snooze and reminders (#172). Gmail syncs in the background on the owner's laptop; the
 integration tests run against Stalwart in CI.
 
 **Done when:** two real accounts (Stalwart + Gmail/Fastmail) sync
@@ -243,12 +255,13 @@ run on the CI distro matrix.
 | 4.1 `katna-notify` ✅ #41, #80 | Notifications with click-to-open (activation tokens), inline reply-all on Plasma, archive/mark read, fallback quick-reply window |
 | 4.2 Notification rules | Grouping, Inbox/category filters, per-organization policy, closing on read elsewhere |
 | 4.3 Badge + tray ✅ #48, #65, #70 | Unity LauncherEntry unread count, tray icon with badge and menu, single-instance app actions, KDE global menu (done early, September 2026; §15.2) |
-| 4.4 KRunner | `org.kde.krunner1` in the daemon: contacts, mail, organizations; actions |
-| 4.5 GNOME search | `org.gnome.Shell.SearchProvider2` using the same backend |
+| 4.4 KRunner ✅ #166 | `org.kde.krunner1` in the daemon: contacts, mail, organizations; actions |
+| 4.5 GNOME search ✅ #166 | `org.gnome.Shell.SearchProvider2` using the same backend |
 | 4.6 Small integrations | Global shortcut (portal), Dolphin service menu |
 
 Status (27 September 2026): 4.1 and 4.3 are done and translated (#129);
-4.2 is not planned in detail yet; 4.4–4.6 not started.
+4.4 and 4.5 are done for people and mail (#166; organizations come with
+Phase 2); 4.2 is not planned in detail yet; 4.6 not started.
 
 **Done when:** with no window open, new mail raises a notification;
 clicking it focuses the right message on Wayland; reply-all from the
@@ -284,6 +297,15 @@ belong to Phase 3 tasks above; this track records them so none is lost.
 | D.19 Compose above the account ✅ | Compose sits above the account's name at the top of the folders (#148) |
 | D.20 From row ✅ | Compose has a From row with an account picker; new mail starts from the first account (#150) |
 | D.21 Unified inbox ✅ | One inbox over all accounts, and arrows that fold each account in the folder pane (#151) |
+| D.22 Folder menus and Settings ✅ | Right-click menus fit each folder, Move to moves, Not spam in Spam (#152); picking a folder or app leaves Settings (#153); About opens over any view (#161) |
+| D.23 Select menu ✅ | Choices tick the matching mail on screen, with a link to select the rest, as in Gmail (#154) |
+| D.24 Drafts on close ✅ | Closing compose saves the draft here and on the server; only Discard drops it, with Undo (#155) |
+| D.25 Account drag ✅ | The whole account row drags in Settings > Accounts, the others slide aside; arrows on hover (#156) |
+| D.26 Storage bar ✅ | Storage used at the foot of the folder pane (#158) |
+| D.27 Prompt Quit ✅ | Quit from the tray ends the daemon promptly, even mid-sync (#162) |
+| D.28 Softer hover shadow ✅ | A lighter shadow on the hovered mail line (#169) |
+| D.29 Chip drag ✅ | Address chips drag between To, Cc and Bcc; an x on hover removes one (#171) |
+| D.30 Reopen where left ✅ | The window reopens on the same app, folder, tab and folder pane (#173) |
 
 Not yet checked on a real desktop: Open with (#55), Gmail Important sync
 (#56), scheduled send (#53), the badge count with one account (#61), the
@@ -361,7 +383,7 @@ merging `main` first, rather than in one large one.
 | L.1 Framework and picker ✅ #100 | `katna-i18n` crate: language list (`i18n/languages.toml`), system language (`LANGUAGE`, `LC_*`, `plasma-localerc`), `general.language` setting, Fluent bundles with English fallback, `tr!`, override folder, pseudo-locales, id and variable checks; ICU4X dates, numbers and plurals in `format.rs`; top-bar language button and picker popover, Settings > General row, phone drawer row; bundled flags; the top bar and the picker translated into all 48 languages; CLAUDE.md rule that new UI text goes through `tr!` |
 | L.2 GPUI patches | `gpui-pre` vendored with `KATNA.md`: window layout direction with mirrored bounds, start/end text alignment, `.layout_ltr()`, UAX #14 and grapheme-safe line breaking with dictionary breaks for Thai, Lao, Khmer and Burmese, Han forms from Katna's language, bidi-aware carets |
 | L.3 Mirroring | RTL switch in `window/layout.rs` `Shape`; mirrored directional icons; drawer, conversation and menus from the right; arrow keys; checked with `qps-plocm` |
-| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134; account settings, paste and drop and newer text #141, #142, #147; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
+| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134; account settings, paste and drop and newer text #141, #142, #147, #157, #165, #174, #175, #177, #179; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
 | L.5 Mail content | Per-message and per-paragraph direction in the reader and list; compose direction buttons and `dir` in sent HTML; quote and forward headers in the UI language; shortcuts by key position on non-Latin layouts; input method check (Fcitx5, IBus) |
 | L.6 Search in unspaced scripts | Thai, Lao, Khmer and Burmese word splitting in `katna-search` with the shared segmenter |
 | L.7 Corrections | Translation guide (`i18n/README.md`), "Translation correction" issue template, coverage report in CI; later hosted Weblate on the same files (owner applies) |
@@ -483,9 +505,10 @@ one-click unsubscribe (RFC 8058), templates, mute thread, inbox categories
 
 Status (27 September 2026): done early: labels and folders created on the
 server (#58), Gmail labels stored once (#34), Gmail's inbox tabs (#31),
-send later (#53), pins (#57), Undo on every action (#125). Not started:
-snooze, follow-up reminders, rules and Sieve, vacation responder,
-one-click unsubscribe, templates, mute, a local category classifier,
+send later (#53, handed to the server with FUTURERELEASE in #167), pins
+(#57), Undo on every action (#125), templates (#168), snooze and
+follow-up reminders (#172). Not started: rules and Sieve, vacation
+responder, one-click unsubscribe, mute, a local category classifier,
 phishing warnings and **OAuth2** (Gmail works with an app password today).
 
 **Done when:** the feature checklist in the architecture (§10, §11) works
@@ -537,16 +560,16 @@ says so and the owner has decided it.
 
 | Task | Where it runs | Deliverable | Status |
 |---|---|---|---|
-| 7.0 Katna accounts | Server + app | A Katna account on the server, like Mailspring ID (owner, 27 September 2026): sign-up with an email address and password, address verification, per-device tokens that replace the per-install token, a Katna account page in Settings, and every server feature (7.1–7.3, 7.8) behind sign-in. No payments yet. The account holds no mail logins (7.10) | Building |
-| 7.1 Read receipts | Server + daemon + app | Opens per recipient through a tracking picture; a standard read-receipt request (MDN, RFC 8098) is offered as the no-server choice, which the recipient may decline; per-recipient sending (ARCHITECTURE.md §11); Apple Mail Privacy Protection shown as "maybe", scanners as "scanner"; off by default, per message | Building |
-| 7.2 Link tracking | Server + daemon + app | Clicks through `/l/<id>/<n>` redirects stored on the server (never an open redirect); shown per recipient and link | Building, with 7.1 |
+| 7.0 Katna accounts ✅ #170 | Server + app | A Katna account on the server, like Mailspring ID (owner, 27 September 2026): sign-up with an email address and password, address verification, per-device tokens that replace the per-install token, a Katna account page in Settings, and every server feature (7.1–7.3, 7.8) behind sign-in. No payments yet. The account holds no mail logins (7.10) | Done |
+| 7.1 Read receipts ◐ server #160 | Server + daemon + app | Opens per recipient through a tracking picture; a standard read-receipt request (MDN, RFC 8098) is offered as the no-server choice, which the recipient may decline; per-recipient sending (ARCHITECTURE.md §11); Apple Mail Privacy Protection shown as "maybe", scanners as "scanner"; off by default, per message | Server done (#160); daemon and app in review (#178) |
+| 7.2 Link tracking ◐ server #160 | Server + daemon + app | Clicks through `/l/<id>/<n>` redirects stored on the server (never an open redirect); shown per recipient and link | With 7.1: in review (#178) |
 | 7.3 Mailbox insights | App, with 7.1–7.2 events | An Activity view: open and click rates of tracked mail, reply rates and times, busiest senders and hours, subject lines that got replies; counted from the local store, only tracking events come from the server | After 7.1–7.2 |
-| 7.4 Mail templates | App (local) | Save mail as a template, start new mail or a reply from one, fields such as the first name; Settings > Compose > Templates (the row says "Coming soon" today). Sync between devices later with 7.12 | Ready to build; no server |
-| 7.5 Follow-up reminders | Daemon (local) | "Remind me if nobody replies in N days" in compose; `katna-meta` (task 1.9) with the reply check, a notification and the thread back on top of the Inbox. Works while the computer is on; 7.10 covers a switched-off computer | Ready to build; no server |
-| 7.6 Snooze | Daemon (local; Gmail, Outlook.com and Zoho offer no snooze over IMAP) | Snooze a conversation until a time; it moves to a "Snoozed" label and comes back unread (ARCHITECTURE.md §10, Phase 5). Same `katna-meta` scheduler as 7.5 | Ready to build; no server |
-| 7.7 Send later | Mail server, else daemon ◐ #53 | Scheduled send exists and sends while the computer is on. Where the account's SMTP server offers FUTURERELEASE (RFC 4865; Stalwart does, Gmail does not) or, later, JMAP's `sendAt`, hand the mail to the server so it goes out on time with the computer off | Local done; server hand-off to build |
-| 7.8 Automatic translation | Server + daemon + app | Translate a message into the reading language, with the original one click away. LibreTranslate (AGPL-3.0, its own container) on the owner's server, chosen 27 September 2026; the daemon sends only the text of a message the user asks to translate (or of languages the user chose to always translate), over TLS with the install's token; no logs kept | Decided; ready to build |
-| 7.9 Rich contact profiles | App (local) + decision | A right-hand panel for the sender: picture, all mail exchanged, attachments, first and last contact, signature details (phone, title) read from their mail, and the account's own contacts over CardDAV once Phase 6 syncs them. Outside profiles (LinkedIn, X) need a data source | Local part ready to build; outside data to decide |
+| 7.4 Mail templates ✅ #168 | App (local) | Save mail as a template, start new mail or a reply from one, fields such as the first name; Settings > Compose > Templates; stored in `pim.db`. Sync between devices later with 7.12 | Done |
+| 7.5 Follow-up reminders ✅ #172 | Daemon (local) | "Remind me if nobody replies in N days" in compose; `katna-meta` (task 1.9) with the reply check, a notification and the thread back on top of the Inbox. Works while the computer is on; 7.10 covers a switched-off computer | Done |
+| 7.6 Snooze ✅ #172 | Daemon (local; Gmail, Outlook.com and Zoho offer no snooze over IMAP) | Snooze a conversation until a time; it moves to a "Snoozed" label and comes back unread (ARCHITECTURE.md §10, Phase 5). Same `katna-meta` scheduler as 7.5 | Done |
+| 7.7 Send later ✅ #53, #167 | Mail server, else daemon | Scheduled send exists and sends while the computer is on. Where the account's SMTP server offers FUTURERELEASE (RFC 4865; Stalwart does, Gmail does not) or, later, JMAP's `sendAt`, hand the mail to the server so it goes out on time with the computer off | Done |
+| 7.8 Automatic translation ◐ | Server + daemon + app | Translate a message into the reading language, with the original one click away. LibreTranslate (AGPL-3.0, its own container) on the owner's server, chosen 27 September 2026; the daemon sends only the text of a message the user asks to translate (or of languages the user chose to always translate), over TLS with the install's token; no logs kept | In review (#176) |
+| 7.9 Rich contact profiles ◐ #164 | App (local) + decision | A right-hand panel for the sender: picture, all mail exchanged, attachments, first and last contact, signature details (phone, title) read from their mail, and the account's own contacts over CardDAV once Phase 6 syncs them. Outside profiles (LinkedIn, X) need a data source | Local panel done (#164); CardDAV with Phase 6; outside data to decide |
 | 7.10 While the computer is off | — | Send later, snooze and reminders run only while the computer is on; the server holds no logins or tokens (owner, 27 September 2026). Revisit later if wanted | Decided: computer only |
 | 7.11 Company overviews | App + Phase 2 | A company page: people, mail and files exchanged, and the local time from their mail. It is the organization view of Phase 2 (2.1–2.4, 3.9). Size and funding need a data source | After Phase 2; outside data to decide |
 | 7.12 Metadata sync | Server | Templates, reminders, snoozes and tracking IDs shared between the owner's devices, end-to-end encrypted (ARCHITECTURE.md §16) | Later |
