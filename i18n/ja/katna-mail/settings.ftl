@@ -238,3 +238,11 @@ settings-search-results = 「{ $query }」に一致する設定
 ## Settings: opening at login
 
 settings-open-at-login-failed = ログイン時に開く設定を変更できませんでした: { $error }
+
+## Settings > General > Time
+
+settings-time = 時刻
+settings-clock-language = 言語の表記に従う
+settings-clock-12 = 12時間制（例: 午後2:05）
+settings-clock-24 = 24時間制（例: 14:05）
+settings-time-summary = 12時間制、24時間制、または言語の表記に従う

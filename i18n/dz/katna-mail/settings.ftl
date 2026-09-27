@@ -238,3 +238,11 @@ settings-search-results = “{ $query }” དང་མཐུན་པའི་�
 ## Settings: opening at login
 
 settings-open-at-login-failed = ནང་བསྐྱོད་སྐབས་ཁ་ཕྱེ་ནི་ བསྒྱུར་མ་ཚུགས: { $error }
+
+## Settings > General > Time
+
+settings-time = དུས་ཚོད
+settings-clock-language = སྐད་ཡིག་གིས་འབྲི་སྲོལ་བཞིན
+settings-clock-12 = ཆུ་ཚོད་ 12 དཔེར་ན་ 2:05 PM
+settings-clock-24 = ཆུ་ཚོད་ 24 དཔེར་ན་ 14:05
+settings-time-summary = ཆུ་ཚོད་ 12 ཡང་ན་ 24 གི་ཆུ་ཚོད་ ཡང་ན་ སྐད་ཡིག་གིས་འབྲི་སྲོལ་བཞིན

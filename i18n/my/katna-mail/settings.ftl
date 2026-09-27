@@ -238,3 +238,11 @@ settings-search-results = “{ $query }” နှင့် ကိုက်ညီ
 ## Settings: opening at login
 
 settings-open-at-login-failed = ဝင်ရောက်သည့်အခါ ဖွင့်ခြင်းကို ပြောင်း၍ မရပါ- { $error }
+
+## Settings > General > Time
+
+settings-time = အချိန်
+settings-clock-language = ဘာသာစကားက ရေးသည့်အတိုင်း
+settings-clock-12 = ၁၂ နာရီစနစ်၊ ဥပမာ ညနေ ၂:၀၅
+settings-clock-24 = ၂၄ နာရီစနစ်၊ ဥပမာ ၁၄:၀၅
+settings-time-summary = ၁၂ နာရီ သို့မဟုတ် ၂၄ နာရီစနစ်၊ သို့မဟုတ် ဘာသာစကားက ရေးသည့်အတိုင်း

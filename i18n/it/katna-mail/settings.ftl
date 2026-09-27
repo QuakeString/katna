@@ -246,3 +246,11 @@ settings-search-results = Impostazioni corrispondenti a «{ $query }»
 ## Settings: opening at login
 
 settings-open-at-login-failed = Impossibile modificare l’apertura all’accesso: { $error }
+
+## Settings > General > Time
+
+settings-time = Ora
+settings-clock-language = Come si scrive nella lingua
+settings-clock-12 = 12 ore, ad esempio 02:05 PM
+settings-clock-24 = 24 ore, ad esempio 14:05
+settings-time-summary = Formato 12 o 24 ore, o come si scrive nella lingua

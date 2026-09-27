@@ -248,3 +248,11 @@ settings-search-results = Ustawienia pasujące do „{ $query }”
 ## Settings: opening at login
 
 settings-open-at-login-failed = Nie udało się zmienić otwierania po zalogowaniu: { $error }
+
+## Settings > General > Time
+
+settings-time = Godzina
+settings-clock-language = Tak jak w danym języku
+settings-clock-12 = 12-godzinny, np. 2:05 PM
+settings-clock-24 = 24-godzinny, np. 14:05
+settings-time-summary = Zegar 12- lub 24-godzinny albo tak jak w danym języku

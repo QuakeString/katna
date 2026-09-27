@@ -238,3 +238,11 @@ settings-search-results = 与“{ $query }”匹配的设置
 ## Settings: opening at login
 
 settings-open-at-login-failed = 无法更改登录时打开的设置：{ $error }
+
+## Settings > General > Time
+
+settings-time = 时间
+settings-clock-language = 按语言习惯
+settings-clock-12 = 12 小时制，例如下午2:05
+settings-clock-24 = 24 小时制，例如 14:05
+settings-time-summary = 12 小时制或 24 小时制，或按语言习惯

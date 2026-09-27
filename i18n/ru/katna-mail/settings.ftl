@@ -248,3 +248,11 @@ settings-search-results = Настройки по запросу «{ $query }»
 ## Settings: opening at login
 
 settings-open-at-login-failed = Не удалось изменить запуск при входе в систему: { $error }
+
+## Settings > General > Time
+
+settings-time = Время
+settings-clock-language = Как принято в языке
+settings-clock-12 = 12-часовой, например 2:05 PM
+settings-clock-24 = 24-часовой, например 14:05
+settings-time-summary = 12- или 24-часовой формат или как принято в языке

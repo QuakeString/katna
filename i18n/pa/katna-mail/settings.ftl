@@ -244,3 +244,11 @@ settings-search-results = “{ $query }” ਨਾਲ ਮੇਲ ਖਾਂਦੀ�
 ## Settings: opening at login
 
 settings-open-at-login-failed = ਲੌਗਇਨ ’ਤੇ ਖੋਲ੍ਹਣਾ ਬਦਲਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ: { $error }
+
+## Settings > General > Time
+
+settings-time = ਸਮਾਂ
+settings-clock-language = ਜਿਵੇਂ ਭਾਸ਼ਾ ਲਿਖਦੀ ਹੈ
+settings-clock-12 = 12 ਘੰਟੇ, ਜਿਵੇਂ 2:05 PM
+settings-clock-24 = 24 ਘੰਟੇ, ਜਿਵੇਂ 14:05
+settings-time-summary = 12 ਘੰਟੇ ਜਾਂ 24 ਘੰਟੇ ਦੀ ਘੜੀ, ਜਾਂ ਜਿਵੇਂ ਭਾਸ਼ਾ ਲਿਖਦੀ ਹੈ

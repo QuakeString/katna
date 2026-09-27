@@ -244,3 +244,11 @@ settings-search-results = ከ«{ $query }» ጋር የሚዛመዱ ቅንብሮ�
 ## Settings: opening at login
 
 settings-open-at-login-failed = ሲገቡ መክፈትን መቀየር አልተቻለም፦ { $error }
+
+## Settings > General > Time
+
+settings-time = ሰዓት
+settings-clock-language = ቋንቋው በሚጽፈው መንገድ
+settings-clock-12 = የ12 ሰዓት፣ ለምሳሌ 2:05 ከሰዓት
+settings-clock-24 = የ24 ሰዓት፣ ለምሳሌ 14:05
+settings-time-summary = የ12 ወይም የ24 ሰዓት አቆጣጠር፣ ወይም ቋንቋው በሚጽፈው መንገድ

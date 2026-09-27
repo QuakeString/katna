@@ -238,3 +238,11 @@ settings-search-results = ការកំណត់ដែលត្រូវនឹ
 ## Settings: opening at login
 
 settings-open-at-login-failed = មិនអាចប្ដូរការបើកពេលចូលគណនីបានទេ៖ { $error }
+
+## Settings > General > Time
+
+settings-time = ម៉ោង
+settings-clock-language = តាមរបៀបដែលភាសាសរសេរ
+settings-clock-12 = 12 ម៉ោង ដូចជា 2:05 PM
+settings-clock-24 = 24 ម៉ោង ដូចជា 14:05
+settings-time-summary = នាឡិកា 12 ម៉ោង ឬ 24 ម៉ោង ឬតាមរបៀបដែលភាសាសរសេរ

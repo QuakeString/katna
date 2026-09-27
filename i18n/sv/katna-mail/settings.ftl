@@ -244,3 +244,11 @@ settings-search-results = Inställningar som matchar ”{ $query }”
 ## Settings: opening at login
 
 settings-open-at-login-failed = Det gick inte att ändra öppning vid inloggning: { $error }
+
+## Settings > General > Time
+
+settings-time = Tid
+settings-clock-language = Enligt språket
+settings-clock-12 = 12-timmars, till exempel 2:05 em
+settings-clock-24 = 24-timmars, till exempel 14:05
+settings-time-summary = 12- eller 24-timmarsklocka, eller enligt språket

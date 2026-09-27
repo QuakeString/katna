@@ -244,3 +244,11 @@ settings-search-results = Mga setting na tumutugma sa “{ $query }”
 ## Settings: opening at login
 
 settings-open-at-login-failed = Hindi mabago ang pagbubukas sa pag-log in: { $error }
+
+## Settings > General > Time
+
+settings-time = Oras
+settings-clock-language = Kung paano ito isinusulat ng wika
+settings-clock-12 = 12-oras, gaya ng 2:05 PM
+settings-clock-24 = 24-oras, gaya ng 14:05
+settings-time-summary = 12-oras o 24-oras na orasan, o kung paano ito isinusulat ng wika

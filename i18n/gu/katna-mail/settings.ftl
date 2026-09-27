@@ -244,3 +244,11 @@ settings-search-results = “{ $query }” સાથે મેળ ખાતા�
 ## Settings: opening at login
 
 settings-open-at-login-failed = લૉગિન વખતે ખોલવાનું બદલી શકાયું નથી: { $error }
+
+## Settings > General > Time
+
+settings-time = સમય
+settings-clock-language = ભાષા જે રીતે લખે છે તે રીતે
+settings-clock-12 = 12 કલાક, જેમ કે 02:05 PM
+settings-clock-24 = 24 કલાક, જેમ કે 14:05
+settings-time-summary = 12 કલાક અથવા 24 કલાકની ઘડિયાળ, અથવા ભાષા જે રીતે લખે છે તે રીતે

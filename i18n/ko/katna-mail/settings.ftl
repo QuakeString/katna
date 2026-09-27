@@ -238,3 +238,11 @@ settings-search-results = “{ $query }”에 해당하는 설정
 ## Settings: opening at login
 
 settings-open-at-login-failed = 로그인할 때 열기 설정을 변경할 수 없습니다: { $error }
+
+## Settings > General > Time
+
+settings-time = 시간
+settings-clock-language = 언어의 표기 방식대로
+settings-clock-12 = 12시간제(예: 오후 2:05)
+settings-clock-24 = 24시간제(예: 14:05)
+settings-time-summary = 12시간제 또는 24시간제, 또는 언어의 표기 방식대로

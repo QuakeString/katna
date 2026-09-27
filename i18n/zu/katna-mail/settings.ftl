@@ -244,3 +244,11 @@ settings-search-results = Izilungiselelo ezihambisana nokuthi “{ $query }”
 ## Settings: opening at login
 
 settings-open-at-login-failed = Ayikwazanga ukushintsha ukuvula lapho ungena: { $error }
+
+## Settings > General > Time
+
+settings-time = Isikhathi
+settings-clock-language = Njengoba ulimi lukubhala
+settings-clock-12 = Amahora angu-12, njengokuthi 2:05 PM
+settings-clock-24 = Amahora angu-24, njengokuthi 14:05
+settings-time-summary = Iwashi lamahora angu-12 noma angu-24, noma njengoba ulimi lukubhala

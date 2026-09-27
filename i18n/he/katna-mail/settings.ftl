@@ -246,3 +246,11 @@ settings-search-results = הגדרות שתואמות את „{ $query }”
 ## Settings: opening at login
 
 settings-open-at-login-failed = לא ניתן היה לשנות את הפתיחה בכניסה למערכת: { $error }
+
+## Settings > General > Time
+
+settings-time = שעה
+settings-clock-language = כפי שנהוג בשפה
+settings-clock-12 = 12 שעות, למשל 2:05 PM
+settings-clock-24 = 24 שעות, למשל 14:05
+settings-time-summary = שעון של 12 או 24 שעות, או כפי שנהוג בשפה

@@ -244,3 +244,11 @@ settings-search-results = “{ $query }” உடன் பொருந்து
 ## Settings: opening at login
 
 settings-open-at-login-failed = உள்நுழையும்போது திறப்பதை மாற்ற முடியவில்லை: { $error }
+
+## Settings > General > Time
+
+settings-time = நேரம்
+settings-clock-language = மொழி எழுதுவது போல
+settings-clock-12 = 12 மணிநேரம், எ.கா. 2:05 PM
+settings-clock-24 = 24 மணிநேரம், எ.கா. 14:05
+settings-time-summary = 12 மணிநேர அல்லது 24 மணிநேரக் கடிகாரம், அல்லது மொழி எழுதுவது போல

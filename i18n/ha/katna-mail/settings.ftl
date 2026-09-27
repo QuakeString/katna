@@ -244,3 +244,11 @@ settings-search-results = Saitunan da suka dace da “{ $query }”
 ## Settings: opening at login
 
 settings-open-at-login-failed = Ba a iya canza buɗewa lokacin shiga ba: { $error }
+
+## Settings > General > Time
+
+settings-time = Lokaci
+settings-clock-language = Yadda harshen ke rubuta shi
+settings-clock-12 = Awa 12, kamar 2:05 YM
+settings-clock-24 = Awa 24, kamar 14:05
+settings-time-summary = Agogon awa 12 ko awa 24, ko yadda harshen ke rubuta shi

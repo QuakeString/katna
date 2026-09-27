@@ -244,3 +244,11 @@ settings-search-results = “{ $query }” හා ගැළපෙන සැක�
 ## Settings: opening at login
 
 settings-open-at-login-failed = පිවිසීමේදී විවෘත කිරීම වෙනස් කළ නොහැකි විය: { $error }
+
+## Settings > General > Time
+
+settings-time = වේලාව
+settings-clock-language = භාෂාව ලියන ආකාරයට
+settings-clock-12 = පැය 12, උදා: ප.ව. 2.05
+settings-clock-24 = පැය 24, උදා: 14:05
+settings-time-summary = පැය 12 හෝ පැය 24 ඔරලෝසුව, හෝ භාෂාව ලියන ආකාරයට

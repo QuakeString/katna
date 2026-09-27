@@ -238,3 +238,11 @@ settings-search-results = Setelan yang cocok dengan “{ $query }”
 ## Settings: opening at login
 
 settings-open-at-login-failed = Tidak dapat mengubah pembukaan saat login: { $error }
+
+## Settings > General > Time
+
+settings-time = Waktu
+settings-clock-language = Sesuai cara penulisan bahasa
+settings-clock-12 = 12 jam, misalnya 2.05 PM
+settings-clock-24 = 24 jam, misalnya 14.05
+settings-time-summary = Format 12 jam atau 24 jam, atau sesuai cara penulisan bahasa

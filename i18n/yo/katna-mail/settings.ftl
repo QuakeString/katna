@@ -238,3 +238,11 @@ settings-search-results = Àwọn ètò tó bá “{ $query }” mu
 ## Settings: opening at login
 
 settings-open-at-login-failed = Kò lè yí ṣíṣí nígbà ìwọlé padà: { $error }
+
+## Settings > General > Time
+
+settings-time = Àkókò
+settings-clock-language = Bí èdè ṣe ń kọ ọ́
+settings-clock-12 = Wákàtí 12, bí 2:05 Ọ̀sán
+settings-clock-24 = Wákàtí 24, bí 14:05
+settings-time-summary = Aago wákàtí 12 tàbí wákàtí 24, tàbí bí èdè ṣe ń kọ ọ́

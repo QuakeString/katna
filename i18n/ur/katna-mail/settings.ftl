@@ -244,3 +244,11 @@ settings-search-results = ”{ $query }“ سے مماثل ترتیبات
 ## Settings: opening at login
 
 settings-open-at-login-failed = لاگ ان پر کھولنے کی ترتیب نہیں بدل سکی: { $error }
+
+## Settings > General > Time
+
+settings-time = وقت
+settings-clock-language = زبان کے مطابق
+settings-clock-12 = 12 گھنٹے، جیسے 2:05 PM
+settings-clock-24 = 24 گھنٹے، جیسے 14:05
+settings-time-summary = 12 گھنٹے یا 24 گھنٹے کی گھڑی، یا زبان کے مطابق

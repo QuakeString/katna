@@ -244,3 +244,11 @@ settings-search-results = “{ $query }” शी जुळणाऱ्या �
 ## Settings: opening at login
 
 settings-open-at-login-failed = लॉग इन केल्यावर उघडण्याची सेटिंग बदलता आली नाही: { $error }
+
+## Settings > General > Time
+
+settings-time = वेळ
+settings-clock-language = भाषा जशी लिहिते तशी
+settings-clock-12 = १२ तास, उदा. २:०५ PM
+settings-clock-24 = २४ तास, उदा. १४:०५
+settings-time-summary = १२ तास किंवा २४ तासांचे घड्याळ, किंवा भाषा जशी लिहिते तशी

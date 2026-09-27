@@ -244,3 +244,11 @@ settings-search-results = Instellings wat by “{ $query }” pas
 ## Settings: opening at login
 
 settings-open-at-login-failed = Kon nie oopmaak by aanmelding verander nie: { $error }
+
+## Settings > General > Time
+
+settings-time = Tyd
+settings-clock-language = Soos die taal dit skryf
+settings-clock-12 = 12-uur, soos 02:05 nm.
+settings-clock-24 = 24-uur, soos 14:05
+settings-time-summary = 12-uur- of 24-uurhorlosie, of soos die taal dit skryf

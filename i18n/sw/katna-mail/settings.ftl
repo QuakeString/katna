@@ -244,3 +244,11 @@ settings-search-results = Mipangilio inayolingana na “{ $query }”
 ## Settings: opening at login
 
 settings-open-at-login-failed = Imeshindwa kubadilisha kufungua wakati wa kuingia: { $error }
+
+## Settings > General > Time
+
+settings-time = Saa
+settings-clock-language = Kama lugha inavyoiandika
+settings-clock-12 = Mfumo wa saa 12, kama vile 2:05 PM
+settings-clock-24 = Mfumo wa saa 24, kama vile 14:05
+settings-time-summary = Mfumo wa saa 12 au saa 24, au kama lugha inavyoiandika

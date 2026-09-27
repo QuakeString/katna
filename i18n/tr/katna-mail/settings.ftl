@@ -244,3 +244,11 @@ settings-search-results = “{ $query }” ile eşleşen ayarlar
 ## Settings: opening at login
 
 settings-open-at-login-failed = Oturum açılışında açma ayarı değiştirilemedi: { $error }
+
+## Settings > General > Time
+
+settings-time = Saat
+settings-clock-language = Dilin yazdığı gibi
+settings-clock-12 = 12 saatlik, örneğin 2:05 ÖS
+settings-clock-24 = 24 saatlik, örneğin 14:05
+settings-time-summary = 12 veya 24 saatlik biçim ya da dilin yazdığı gibi

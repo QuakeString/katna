@@ -238,3 +238,11 @@ settings-search-results = Cài đặt khớp với “{ $query }”
 ## Settings: opening at login
 
 settings-open-at-login-failed = Không thể thay đổi việc mở khi đăng nhập: { $error }
+
+## Settings > General > Time
+
+settings-time = Giờ
+settings-clock-language = Theo cách viết của ngôn ngữ
+settings-clock-12 = 12 giờ, chẳng hạn 2:05 CH
+settings-clock-24 = 24 giờ, chẳng hạn 14:05
+settings-time-summary = Đồng hồ 12 giờ hoặc 24 giờ, hoặc theo cách viết của ngôn ngữ

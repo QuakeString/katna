@@ -238,3 +238,11 @@ settings-search-results = ການຕັ້ງຄ່າທີ່ກົງກັ
 ## Settings: opening at login
 
 settings-open-at-login-failed = ບໍ່ສາມາດປ່ຽນການເປີດເມື່ອເຂົ້າສູ່ລະບົບໄດ້: { $error }
+
+## Settings > General > Time
+
+settings-time = ເວລາ
+settings-clock-language = ຕາມທີ່ພາສາຂຽນ
+settings-clock-12 = 12 ຊົ່ວໂມງ, ເຊັ່ນ 2:05 ຫຼັງທ່ຽງ
+settings-clock-24 = 24 ຊົ່ວໂມງ, ເຊັ່ນ 14:05
+settings-time-summary = ໂມງ 12 ຊົ່ວໂມງ ຫຼື 24 ຊົ່ວໂມງ, ຫຼື ຕາມທີ່ພາສາຂຽນ

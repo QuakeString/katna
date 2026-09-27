@@ -238,3 +238,11 @@ settings-search-results = Ntọala dabara na “{ $query }”
 ## Settings: opening at login
 
 settings-open-at-login-failed = Enweghị ike ịgbanwe imepe mgbe ị banyere: { $error }
+
+## Settings > General > Time
+
+settings-time = Oge
+settings-clock-language = Dịka asụsụ si ede ya
+settings-clock-12 = Awa 12, dịka 2:05 N’abalị
+settings-clock-24 = Awa 24, dịka 14:05
+settings-time-summary = Elekere awa 12 ma ọ bụ awa 24, ma ọ bụ dịka asụsụ si ede ya

@@ -252,3 +252,11 @@ settings-search-results = الإعدادات المطابقة لـ«{ $query }»
 ## Settings: opening at login
 
 settings-open-at-login-failed = تعذّر تغيير الفتح عند تسجيل الدخول: { $error }
+
+## Settings > General > Time
+
+settings-time = الوقت
+settings-clock-language = كما تكتبه اللغة
+settings-clock-12 = نظام ١٢ ساعة، مثل ٢:٠٥ م
+settings-clock-24 = نظام ٢٤ ساعة، مثل ١٤:٠٥
+settings-time-summary = نظام ١٢ أو ٢٤ ساعة، أو كما تكتبه اللغة
