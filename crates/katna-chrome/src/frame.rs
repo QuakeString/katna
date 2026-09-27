@@ -49,6 +49,18 @@ impl Look {
     }
 }
 
+/// The margin, in logical pixels, around the visible frame of a window
+/// opened in `env`: its shadow and resize edges under CSD, none under SSD.
+pub(crate) fn surface_margin(env: &Environment) -> f32 {
+    match env.requested_decorations() {
+        DecorationMode::Client if env.full_client_frame() => {
+            ChromeTokens::new(env.preset(), false).shadow_inset
+        }
+        DecorationMode::Client => RESIZE_HANDLE,
+        DecorationMode::Server => 0.0,
+    }
+}
+
 /// Options for opening a Katna window with the right decorations.
 pub fn window_options(
     env: &Environment,
@@ -59,13 +71,7 @@ pub fn window_options(
 ) -> WindowOptions {
     // Under CSD the surface includes the shadow margin; grow it so the
     // visible window has the requested size.
-    let margin = match env.requested_decorations() {
-        DecorationMode::Client if env.full_client_frame() => {
-            ChromeTokens::new(env.preset(), false).shadow_inset
-        }
-        DecorationMode::Client => RESIZE_HANDLE,
-        DecorationMode::Server => 0.0,
-    };
+    let margin = surface_margin(env);
     let surface_size = size(
         initial_size.width + px(2.0 * margin),
         initial_size.height + px(2.0 * margin),

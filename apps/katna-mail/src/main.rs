@@ -13,6 +13,7 @@ mod data;
 mod format;
 mod instance;
 mod outgoing;
+mod placement;
 mod sidebar;
 mod signatures;
 mod spell;
@@ -152,15 +153,23 @@ fn main() -> ExitCode {
             if let Some(font) = &font {
                 cx.set_global(katna_ui::UiFont(font.clone()));
             }
-            let options = window_options(
+            let mut options = window_options(
                 &env,
                 MAIL_APP_ID,
                 "Katna Mail",
                 size(desktop_px(1280.0), desktop_px(800.0)),
                 cx,
             );
+            // As it closed, while the Katna service runs.
+            let placement = placement::MailPlacement::new(
+                paths.mail_window_file(),
+                env.clone(),
+                connection.clone(),
+            );
+            placement.restore(&mut options, cx);
             let opened = cx.open_window(options, |window, cx| {
                 cx.new(|cx| {
+                    placement.follow(window, cx);
                     let mut view = window::MailWindow::new(env, paths, font, window, cx);
                     if let Some(query) = search {
                         view.search_for(query, window, cx);
@@ -178,6 +187,7 @@ fn main() -> ExitCode {
                     return;
                 }
             };
+            placement.save_on_quit(cx);
             // The window has bound the keys; show them in the menu bar.
             window::refresh_menu_bar(cx);
             cx.spawn(async move |cx| {

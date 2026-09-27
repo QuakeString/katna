@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Opens where you left it"
+text = """
+Katna Mail opens at the size and place it had when you closed it,
+maximized if it was. Quitting Katna from the tray starts it afresh. On
+Wayland the place comes back where the desktop supports it (Plasma 6.7 and
+later).
+"""
