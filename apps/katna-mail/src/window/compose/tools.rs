@@ -250,6 +250,16 @@ pub(super) fn separator(th: &Theme) -> gpui::Div {
 
 /// A popup above the element it belongs to (in a `relative` parent),
 /// kept inside the window.
+/// The width of the Send row taken by its padding, Send and the bin.
+const ACTIONS_FIXED: f32 = 200.0;
+/// The width of each of its other buttons.
+const TOOL_WIDTH: f32 = 42.0;
+
+/// Room between the floating formatting bar and the Send row.
+const FORMAT_BAR_GAP: f32 = 4.0;
+/// How much of the text the open formatting bar covers.
+pub(super) const FORMAT_BAR_COVER: f32 = 40.0 + FORMAT_BAR_GAP + 8.0;
+
 pub(super) fn above(popup: impl IntoElement) -> AnyElement {
     // Anchored to the parent's top left corner.
     deferred(
@@ -468,10 +478,12 @@ impl MailWindow {
             .when(open(Popup::More) || open(Popup::Label), |d| {
                 d.child(above(self.render_more_menu(th, cx)))
             });
-        // A phone-sized sheet keeps the tools that fit beside Send; links
-        // still come with Ctrl+K.
-        let narrow = width < 440.0;
-        let tiny = width < 400.0;
+        // A narrow row keeps the tools that fit beside Send and the bin,
+        // dropping the calendar, photo, emoji and link buttons in turn;
+        // links still come with Ctrl+K. Formatting, attaching, the
+        // signature and More always stay.
+        let fit = ((width - ACTIONS_FIXED) / TOOL_WIDTH).floor() as i32 - 4;
+        let (link, emoji_fits, image, event) = (fit >= 1, fit >= 2, fit >= 3, fit >= 4);
         div()
             .flex_none()
             .h(px(60.0))
@@ -487,21 +499,21 @@ impl MailWindow {
                 tool("compose-attach", "attachment", "Attach files")
                     .on_click(cx.listener(|this, _, _, cx| this.pick_files(false, cx))),
             )
-            .when(!narrow, |d| {
+            .when(link, |d| {
                 d.child(
                     tool("compose-link", "link", "Insert link (Ctrl+K)").on_click(
                         cx.listener(|this, _, window, cx| this.open_link_dialog(window, cx)),
                     ),
                 )
             })
-            .when(!tiny, |d| d.child(emoji))
-            .when(!plain && !narrow, |d| {
+            .when(emoji_fits, |d| d.child(emoji))
+            .when(!plain && image, |d| {
                 d.child(
                     tool("compose-image", "image", "Insert photo")
                         .on_click(cx.listener(|this, _, _, cx| this.pick_files(true, cx))),
                 )
             })
-            .when(!narrow, |d| {
+            .when(event, |d| {
                 d.child(
                     tool("compose-event", "event", "Insert calendar event").on_click(cx.listener(
                         |this, _, _, cx| {
@@ -698,21 +710,56 @@ impl MailWindow {
 
     // Formatting.
 
-    pub(super) fn render_format_bar(
+    /// The formatting bar (Aa), if it is open: it floats over the end of
+    /// the text just above the Send row, as wide as its buttons, so opening
+    /// it moves nothing. Put it just before [`Self::render_compose_actions`].
+    pub(super) fn render_floating_format_bar(
         &self,
         th: &Theme,
         width: f32,
         cx: &mut Context<Self>,
-    ) -> AnyElement {
+    ) -> Option<AnyElement> {
+        if !self.compose.as_ref()?.format_bar {
+            return None;
+        }
+        Some(
+            div()
+                .relative()
+                .flex_none()
+                .h_0()
+                .child(
+                    div()
+                        .id("format-bar")
+                        .occlude()
+                        .absolute()
+                        .bottom(px(FORMAT_BAR_GAP))
+                        .left(px(12.0))
+                        .max_w(px(width))
+                        // Tinted apart from the text under it; on a narrow
+                        // window its buttons scroll sideways.
+                        .rounded(px(8.0))
+                        .bg(rgba(th.search))
+                        .shadow(crate::widgets::elevation(th, 1.0))
+                        .overflow_x_scroll()
+                        .child(
+                            div()
+                                .flex_none()
+                                .child(self.render_format_bar(th, width, cx)),
+                        ),
+                )
+                .into_any_element(),
+        )
+    }
+
+    fn render_format_bar(&self, th: &Theme, width: f32, cx: &mut Context<Self>) -> AnyElement {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };
         let editor = compose.body.read(cx);
         if editor.is_plain() {
             return div()
-                .flex_none()
-                .mx(px(16.0))
                 .h(px(40.0))
+                .px(px(12.0))
                 .flex()
                 .items_center()
                 .text_size(px(13.0))
@@ -926,18 +973,12 @@ impl MailWindow {
                 .children(table_popup)
         };
         div()
-            .flex_none()
-            .mx(px(12.0))
-            .mt(px(4.0))
             .h(px(40.0))
             .px(px(4.0))
             .flex()
             .flex_row()
             .items_center()
             .gap(px(1.0))
-            .rounded(px(8.0))
-            .bg(rgba(th.surface))
-            .shadow(crate::widgets::elevation(th, 1.0))
             .child(
                 format_button("format-undo", "undo", false, th)
                     .when(!can_undo, |d| d.opacity(0.4))

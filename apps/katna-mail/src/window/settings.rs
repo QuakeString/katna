@@ -54,16 +54,21 @@ pub(super) enum Change {
 impl MailWindow {
     pub(super) fn render_settings(&self, th: &Theme, t: f32, cx: &mut Context<Self>) -> AnyElement {
         let view = &self.config.mail;
+        // On a phone the panel is a page of its own, over the whole window
+        // below the top bar.
+        let phone = self.layout.shape.is_phone();
         let inner = SETTINGS_WIDTH - 16.0;
         let panel = div()
             .id("settings")
-            .w(px(inner))
+            .map(|d| if phone { d.w_full() } else { d.w(px(inner)) })
             .h_full()
             .flex()
             .flex_col()
-            .rounded(px(super::PANEL_RADIUS))
+            .when(!phone, |d| {
+                d.rounded(px(super::PANEL_RADIUS))
+                    .shadow(elevation(th, 1.0 * t.min(1.0)))
+            })
             .bg(rgba(th.surface))
-            .shadow(elevation(th, 1.0 * t.min(1.0)))
             .child(
                 div()
                     .flex_none()
@@ -263,19 +268,31 @@ impl MailWindow {
                             ),
                     ),
             );
-        // The panel keeps its width and slides out from under the edge.
+        // The panel keeps its width and slides out from under the edge. The
+        // page of a phone fades in as it comes in from the right.
+        let t = t.clamp(0.0, 1.0);
+        if phone {
+            return div()
+                .id("settings-phone")
+                .occlude()
+                .size_full()
+                .ml(px(24.0 * (1.0 - t)))
+                .opacity(t)
+                .child(panel)
+                .into_any_element();
+        }
         div()
             .flex_none()
             .h_full()
-            .w(px(SETTINGS_WIDTH * t.clamp(0.0, 1.0)))
+            .w(px(SETTINGS_WIDTH * t))
             .pb(px(16.0))
             .overflow_hidden()
             .child(
                 div()
                     .h_full()
                     .pr(px(16.0))
-                    .ml(px(24.0 * (1.0 - t.clamp(0.0, 1.0))))
-                    .opacity(t.clamp(0.0, 1.0))
+                    .ml(px(24.0 * (1.0 - t)))
+                    .opacity(t)
                     .child(panel),
             )
             .into_any_element()
@@ -518,7 +535,9 @@ impl MailWindow {
         self.page_control(div().id(id), th, cx)
             .relative()
             .overflow_hidden()
-            .h(px(40.0))
+            // A long label wraps onto a second line in a narrow window.
+            .min_h(px(40.0))
+            .py(px(8.0))
             .px(px(8.0))
             .flex()
             .flex_row()
@@ -531,7 +550,7 @@ impl MailWindow {
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
             .child(Ripple::new((id, 1_usize), rgba(th.ripple)).rounded(8.0))
             .child(animated_radio((id, 2_usize), on, th))
-            .child(label)
+            .child(div().flex_1().min_w_0().child(label))
             .into_any_element()
     }
 
