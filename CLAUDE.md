@@ -19,6 +19,7 @@ cargo deny check                         # licenses, bans, advisories
 cargo build --release --workspace --bins \
   && cargo build --release -p katna-daemon -p katnactl -p katna-search-cli -p katna-bench \
   && ci/check-sizes.sh                   # non-GUI bins rebuilt without GPUI's features
+ci/gen-credits.sh                        # after adding or removing a dependency
 ```
 
 The toolchain is always the latest stable Rust (`rust-toolchain.toml`).

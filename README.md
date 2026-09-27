@@ -24,7 +24,19 @@
 > accounts, but things change fast and there are no versioned releases yet.
 > A prebuilt Arch Linux package follows every change on `main`.
 
-## Why Katna
+## A personal project
+
+Katna Mail is not trying to be unique or revolutionary. It is a very
+personal project: the mail client its author wanted on their own Linux
+desktop. Its features and look are openly borrowed from the mail apps they
+love, mainly Gmail, Mailspring and Thunderbird, and rebuilt in Rust with
+Katna's own name and icons.
+
+It has only been possible because of how far LLMs (large language models)
+have come. Much of Katna was written with AI coding assistants, then tried
+by hand every day on a real desktop with real mail.
+
+## Highlights
 
 - **Instant search.** Typo-tolerant full-text search over very large
   mailboxes: across the 517,000 messages of the Enron corpus, a query takes
@@ -151,8 +163,8 @@ Katna would not exist without these projects and the people behind them.
   GPU-accelerated UI framework that draws every pixel of Katna Mail.
 - **Main crates:**
   [Tantivy](https://github.com/quickwit-oss/tantivy) (search),
-  [SQLite](https://sqlite.org) via [rusqlite](https://github.com/rusqlite/rusqlite) (storage),
-  [rustls](https://github.com/rustls/rustls) (TLS),
+  [rusqlite](https://github.com/rusqlite/rusqlite) (storage),
+  [futures-rustls](https://github.com/quininer/futures-rustls) (TLS),
   [mail-parser](https://github.com/stalwartlabs/mail-parser) (MIME),
   [html5ever](https://github.com/servo/html5ever) (HTML mail),
   [zbus](https://github.com/z-galaxy/zbus) and [ashpd](https://github.com/bilelmoussaoui/ashpd) (D-Bus and portals),
@@ -163,8 +175,13 @@ Katna would not exist without these projects and the people behind them.
   [jiff](https://github.com/BurntSushi/jiff) (dates and time zones),
   [spellbook](https://github.com/helix-editor/spellbook) (spell checking) and
   [smol](https://github.com/smol-rs/smol) (async).
-  Each keeps its own license (MIT, Apache-2.0, MPL-2.0 and others); see
-  `Cargo.lock` for the full list.
+  Under them, [SQLite](https://sqlite.org) stores your mail and
+  [rustls](https://github.com/rustls/rustls) keeps your connections safe.
+
+**[CREDITS.md](CREDITS.md) lists every library Katna uses, with its
+authors, license and link.** It is generated from `Cargo.lock` by
+`ci/gen-credits.sh`, together with [`docs/credits.json`](docs/credits.json)
+for the app's About dialog.
 
 With love for **[Rust](https://www.rust-lang.org)** 🦀, which makes a fast
 and safe mail client a joy to write (Katna has no `unsafe` code), for

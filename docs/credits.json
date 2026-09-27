@@ -1,0 +1,524 @@
+{
+  "generated_by": "ci/gen-credits.sh",
+  "crates": [
+    {
+      "name": "ashpd",
+      "version": "0.13.13",
+      "description": "XDG portals wrapper in Rust using zbus",
+      "license": "MIT",
+      "authors": [
+        "Bilal Elmoussaoui"
+      ],
+      "repository": "https://github.com/bilelmoussaoui/ashpd"
+    },
+    {
+      "name": "async-channel",
+      "version": "2.5.0",
+      "description": "Async multi-producer multi-consumer channel",
+      "license": "Apache-2.0 OR MIT",
+      "authors": [
+        "Stjepan Glavina"
+      ],
+      "repository": "https://github.com/smol-rs/async-channel"
+    },
+    {
+      "name": "async-io",
+      "version": "2.6.0",
+      "description": "Async I/O and timers",
+      "license": "Apache-2.0 OR MIT",
+      "authors": [
+        "Stjepan Glavina"
+      ],
+      "repository": "https://github.com/smol-rs/async-io"
+    },
+    {
+      "name": "async-net",
+      "version": "2.0.0",
+      "description": "Async networking primitives for TCP/UDP/Unix communication",
+      "license": "Apache-2.0 OR MIT",
+      "authors": [
+        "Stjepan Glavina"
+      ],
+      "repository": "https://github.com/smol-rs/async-net"
+    },
+    {
+      "name": "async-signal",
+      "version": "0.2.14",
+      "description": "Async signal handling",
+      "license": "Apache-2.0 OR MIT",
+      "authors": [
+        "John Nunley"
+      ],
+      "repository": "https://github.com/smol-rs/async-signal"
+    },
+    {
+      "name": "blake3",
+      "version": "1.8.7",
+      "description": "the BLAKE3 hash function",
+      "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+      "authors": [
+        "Jack O'Connor",
+        "Samuel Neves"
+      ],
+      "repository": "https://github.com/BLAKE3-team/BLAKE3"
+    },
+    {
+      "name": "calamine",
+      "version": "0.36.1",
+      "description": "An Excel/OpenDocument Spreadsheet reader and deserializer in pure Rust",
+      "license": "MIT",
+      "authors": [
+        "Johann Tuffe"
+      ],
+      "repository": "https://github.com/tafia/calamine"
+    },
+    {
+      "name": "emojis",
+      "version": "0.9.0",
+      "description": "✨ Lookup emoji in *O(1)* time, access metadata and GitHub shortcodes, iterate over all emoji, and more!",
+      "license": "(MIT OR Apache-2.0) AND Unicode-3.0",
+      "authors": [
+        "Ross MacArthur"
+      ],
+      "repository": "https://github.com/rossmacarthur/emojis"
+    },
+    {
+      "name": "fontdb",
+      "version": "0.23.0",
+      "description": "A simple, in-memory font database with CSS-like queries.",
+      "license": "MIT",
+      "authors": [
+        "Yevhenii Reizner"
+      ],
+      "repository": "https://github.com/RazrFalcon/fontdb"
+    },
+    {
+      "name": "futures-lite",
+      "version": "2.6.1",
+      "description": "Futures, streams, and async I/O combinators",
+      "license": "Apache-2.0 OR MIT",
+      "authors": [
+        "Contributors to futures-rs",
+        "Stjepan Glavina"
+      ],
+      "repository": "https://github.com/smol-rs/futures-lite"
+    },
+    {
+      "name": "futures-rustls",
+      "version": "0.26.0",
+      "description": "Asynchronous TLS/SSL streams for futures using Rustls.",
+      "license": "MIT/Apache-2.0",
+      "authors": [
+        "quininer kel"
+      ],
+      "repository": "https://github.com/quininer/futures-rustls"
+    },
+    {
+      "name": "gpui-pre",
+      "version": "0.3.6",
+      "description": "Zed's GPU-accelerated UI framework (gpui-pre snapshot of zed@bcf6582)",
+      "license": "Apache-2.0",
+      "authors": [
+        "Nathan Sobo"
+      ],
+      "repository": "https://github.com/zed-industries/zed"
+    },
+    {
+      "name": "gpui-pre-linux",
+      "version": "0.3.6",
+      "description": "Zed's `gpui_linux` crate (gpui-pre snapshot of zed@bcf6582)",
+      "license": "Apache-2.0",
+      "authors": [
+        "zed-industries"
+      ],
+      "repository": "https://github.com/zed-industries/zed"
+    },
+    {
+      "name": "gpui-pre-platform",
+      "version": "0.3.6",
+      "description": "Zed's `gpui_platform` crate (gpui-pre snapshot of zed@bcf6582)",
+      "license": "Apache-2.0",
+      "authors": [
+        "zed-industries"
+      ],
+      "repository": "https://github.com/zed-industries/zed"
+    },
+    {
+      "name": "gpui-pre-wgpu",
+      "version": "0.3.6",
+      "description": "Zed's `gpui_wgpu` crate (gpui-pre snapshot of zed@bcf6582)",
+      "license": "Apache-2.0",
+      "authors": [
+        "zed-industries"
+      ],
+      "repository": "https://github.com/zed-industries/zed"
+    },
+    {
+      "name": "hayro",
+      "version": "0.7.1",
+      "description": "A rasterizer for PDF files.",
+      "license": "Apache-2.0 OR MIT",
+      "authors": [
+        "Laurenz Stampfl"
+      ],
+      "repository": "https://github.com/LaurenzV/hayro"
+    },
+    {
+      "name": "html5ever",
+      "version": "0.40.1",
+      "description": "High-performance browser-grade HTML5 parser",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "The html5ever Project Developers"
+      ],
+      "repository": "https://github.com/servo/html5ever"
+    },
+    {
+      "name": "image",
+      "version": "0.25.10",
+      "description": "Imaging library. Provides basic image processing and encoders/decoders for common image formats.",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "The image-rs Developers"
+      ],
+      "repository": "https://github.com/image-rs/image"
+    },
+    {
+      "name": "imap-codec",
+      "version": "2.0.0-alpha.9",
+      "description": "Rock-solid and complete codec for IMAP",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Damian Poddebniak"
+      ],
+      "repository": "https://github.com/duesee/imap-codec"
+    },
+    {
+      "name": "imap-types",
+      "version": "2.0.0-alpha.7",
+      "description": "Misuse-resistant data structures for IMAP",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Damian Poddebniak"
+      ],
+      "repository": "https://github.com/duesee/imap-codec"
+    },
+    {
+      "name": "io-imap",
+      "version": "0.6.0",
+      "description": "IMAP client library for Rust",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Clément DOUIN (soywod)"
+      ],
+      "repository": "https://github.com/pimalaya/io-imap"
+    },
+    {
+      "name": "io-sasl",
+      "version": "0.1.0",
+      "description": "Simple Authentication and Security Layer (SASL) client library for Rust",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Clément DOUIN (soywod)"
+      ],
+      "repository": "https://github.com/pimalaya/io-sasl"
+    },
+    {
+      "name": "io-smtp",
+      "version": "0.3.0",
+      "description": "SMTP client library for Rust",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "soywod"
+      ],
+      "repository": "https://github.com/pimalaya/io-smtp"
+    },
+    {
+      "name": "jiff",
+      "version": "0.2.37",
+      "description": "A date-time library that encourages you to jump into the pit of success. This library is heavily inspired by the Temporal project.",
+      "license": "Unlicense OR MIT",
+      "authors": [
+        "Andrew Gallant"
+      ],
+      "repository": "https://github.com/BurntSushi/jiff"
+    },
+    {
+      "name": "krilla",
+      "version": "0.8.2",
+      "description": "A high-level crate for creating PDF files.",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Laurenz Stampfl"
+      ],
+      "repository": "https://github.com/LaurenzV/krilla"
+    },
+    {
+      "name": "levenshtein_automata",
+      "version": "0.2.1",
+      "description": "Creates Levenshtein Automata in an efficient manner.",
+      "license": "MIT",
+      "authors": [
+        "Paul Masurel"
+      ],
+      "repository": "https://github.com/tantivy-search/levenshtein-automata"
+    },
+    {
+      "name": "mail-parser",
+      "version": "0.11.9",
+      "description": "Fast and robust e-mail parsing library for Rust",
+      "license": "Apache-2.0 OR MIT",
+      "authors": [
+        "Stalwart Labs"
+      ],
+      "repository": "https://github.com/stalwartlabs/mail-parser"
+    },
+    {
+      "name": "oo7",
+      "version": "0.6.0",
+      "description": "James Bond went on a new mission and this time as a Secret Service provider",
+      "license": "MIT",
+      "authors": [
+        "Bilal Elmoussaoui",
+        "Maximiliano Sandoval",
+        "Sophie Herold"
+      ],
+      "repository": "https://github.com/linux-credentials/oo7"
+    },
+    {
+      "name": "quick-xml",
+      "version": "0.41.0",
+      "description": "High performance xml reader and writer",
+      "license": "MIT",
+      "authors": [
+        "tafia"
+      ],
+      "repository": "https://github.com/tafia/quick-xml"
+    },
+    {
+      "name": "resvg",
+      "version": "0.46.0",
+      "description": "An SVG rendering library.",
+      "license": "Apache-2.0 OR MIT",
+      "authors": [
+        "linebender"
+      ],
+      "repository": "https://github.com/linebender/resvg"
+    },
+    {
+      "name": "roxmltree",
+      "version": "0.21.1",
+      "description": "Represent an XML as a read-only tree.",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Yevhenii Reizner"
+      ],
+      "repository": "https://github.com/RazrFalcon/roxmltree"
+    },
+    {
+      "name": "rpassword",
+      "version": "7.5.4",
+      "description": "Read passwords in console applications (unix, windows, macos, wasm).",
+      "license": "Apache-2.0",
+      "authors": [
+        "Conrad Kleinespel"
+      ],
+      "repository": "https://github.com/conradkleinespel/rpassword"
+    },
+    {
+      "name": "rusqlite",
+      "version": "0.40.2",
+      "description": "Ergonomic wrapper for SQLite",
+      "license": "MIT",
+      "authors": [
+        "The rusqlite developers"
+      ],
+      "repository": "https://github.com/rusqlite/rusqlite"
+    },
+    {
+      "name": "rustls-platform-verifier",
+      "version": "0.7.1",
+      "description": "rustls-platform-verifier supports verifying TLS certificates in rustls with the operating system verifier",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "rustls"
+      ],
+      "repository": "https://github.com/rustls/rustls-platform-verifier"
+    },
+    {
+      "name": "rustybuzz",
+      "version": "0.20.1",
+      "description": "A complete harfbuzz shaping algorithm port to Rust.",
+      "license": "MIT",
+      "authors": [
+        "Caleb Maclennan",
+        "Laurenz Stampfl",
+        "Yevhenii Reizner",
+        "خالد حسني (Khaled Hosny)"
+      ],
+      "repository": "https://github.com/harfbuzz/rustybuzz"
+    },
+    {
+      "name": "serde",
+      "version": "1.0.229",
+      "description": "A generic serialization/deserialization framework",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "David Tolnay",
+        "Erick Tryzelaar"
+      ],
+      "repository": "https://github.com/serde-rs/serde"
+    },
+    {
+      "name": "serde_json",
+      "version": "1.0.151",
+      "description": "A JSON serialization file format",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "David Tolnay",
+        "Erick Tryzelaar"
+      ],
+      "repository": "https://github.com/serde-rs/json"
+    },
+    {
+      "name": "smol",
+      "version": "2.0.2",
+      "description": "A small and fast async runtime",
+      "license": "Apache-2.0 OR MIT",
+      "authors": [
+        "Stjepan Glavina"
+      ],
+      "repository": "https://github.com/smol-rs/smol"
+    },
+    {
+      "name": "spellbook",
+      "version": "0.4.2",
+      "description": "A spellchecking library compatible with Hunspell dictionaries",
+      "license": "MPL-2.0",
+      "authors": [
+        "Michael Davis"
+      ],
+      "repository": "https://github.com/helix-editor/spellbook"
+    },
+    {
+      "name": "tantivy",
+      "version": "0.26.2",
+      "description": "Search engine library",
+      "license": "MIT",
+      "authors": [
+        "Paul Masurel"
+      ],
+      "repository": "https://github.com/quickwit-oss/tantivy"
+    },
+    {
+      "name": "tantivy-fst",
+      "version": "0.5.0",
+      "description": "This is a tantivy-specific fork from the fst crate from Burntsushi. (Please use the fst crate instead.)",
+      "license": "Unlicense/MIT",
+      "authors": [
+        "Andrew Gallant"
+      ],
+      "repository": "https://github.com/quickwit-inc/fst"
+    },
+    {
+      "name": "tempfile",
+      "version": "3.27.0",
+      "description": "A library for managing temporary files and directories.",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Ashley Mannix",
+        "Jason White",
+        "Steven Allen",
+        "The Rust Project Developers"
+      ],
+      "repository": "https://github.com/Stebalien/tempfile"
+    },
+    {
+      "name": "thiserror",
+      "version": "2.0.21",
+      "description": "derive(Error)",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "David Tolnay"
+      ],
+      "repository": "https://github.com/dtolnay/thiserror"
+    },
+    {
+      "name": "toml",
+      "version": "1.1.6+spec-1.1.0",
+      "description": "A native Rust encoder and decoder of TOML-formatted files and streams. Provides implementations of the standard Serialize/Deserialize traits for TOML data to facilitate deserializing and serializing Rust structures.",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "toml-rs"
+      ],
+      "repository": "https://github.com/toml-rs/toml"
+    },
+    {
+      "name": "tracing",
+      "version": "0.1.44",
+      "description": "Application-level tracing for Rust.",
+      "license": "MIT",
+      "authors": [
+        "Eliza Weisman",
+        "Tokio Contributors"
+      ],
+      "repository": "https://github.com/tokio-rs/tracing"
+    },
+    {
+      "name": "tracing-subscriber",
+      "version": "0.3.23",
+      "description": "Utilities for implementing and composing `tracing` subscribers.",
+      "license": "MIT",
+      "authors": [
+        "David Barsky",
+        "Eliza Weisman",
+        "Tokio Contributors"
+      ],
+      "repository": "https://github.com/tokio-rs/tracing"
+    },
+    {
+      "name": "unicode-segmentation",
+      "version": "1.13.3",
+      "description": "This crate provides Grapheme Cluster, Word and Sentence boundaries according to Unicode Standard Annex #29 rules.",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Manish Goregaokar",
+        "kwantam"
+      ],
+      "repository": "https://github.com/unicode-rs/unicode-segmentation"
+    },
+    {
+      "name": "zbus",
+      "version": "5.19.0",
+      "description": "API for D-Bus communication",
+      "license": "MIT",
+      "authors": [
+        "Zeeshan Ali Khan"
+      ],
+      "repository": "https://github.com/z-galaxy/zbus"
+    },
+    {
+      "name": "zip",
+      "version": "8.6.0",
+      "description": "Library to support the reading and writing of zip files.",
+      "license": "MIT",
+      "authors": [
+        "Chris Hennick",
+        "Marli Frost",
+        "Mathijs van de Nes",
+        "Ryan Levick"
+      ],
+      "repository": "https://github.com/zip-rs/zip2"
+    },
+    {
+      "name": "zstd",
+      "version": "0.14.0",
+      "description": "Binding for the zstd compression library.",
+      "license": "BSD-3-Clause",
+      "authors": [
+        "Alexandre Bury"
+      ],
+      "repository": "https://github.com/gyscos/zstd-rs"
+    }
+  ]
+}
