@@ -12,8 +12,8 @@ use gpui::{
     SpringAnimation, Stateful, div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountsShown, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane, Theme as ThemeChoice,
-    UNDO_SEND_CHOICES, WindowFrame,
+    AccountsShown, AutoAdvance, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane,
+    Theme as ThemeChoice, UNDO_SEND_CHOICES, WindowFrame,
 };
 use katna_i18n::tr;
 use katna_ui::Ripple;
@@ -69,6 +69,8 @@ pub(super) enum Change {
     /// Katna Mail opens at login (an autostart entry).
     OpenAtLogin(bool),
     MarkRead(MarkRead),
+    /// What opens after the open conversation is moved away.
+    AutoAdvance(AutoAdvance),
     RemoteImages(bool),
     ReplyAll(bool),
     ImportantMarkers(bool),
@@ -460,6 +462,7 @@ impl MailWindow {
             }
             Change::SaveCrashReports(on) => self.config.feedback.save_crash_reports = on,
             Change::MarkRead(when) => view.mark_read = when,
+            Change::AutoAdvance(then) => view.auto_advance = then,
             Change::RemoteImages(on) => {
                 view.remote_images = on;
                 self.remote.always = on;

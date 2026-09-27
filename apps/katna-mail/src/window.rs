@@ -367,6 +367,11 @@ pub struct MailWindow {
     chrome: WindowChrome,
     /// The app of the rail on show.
     app: RailApp,
+    /// Undo steps that bring back the conversation that was open, with
+    /// its key, so undoing opens it again.
+    undo_reopens: Vec<(Command, EntryKey)>,
+    /// The conversation to open once an undo brings it back to the list.
+    reopen_after_undo: Option<EntryKey>,
     /// The app whose name rolls away at the top left, and how far the
     /// new name has rolled in (0 to 1).
     title_from: RailApp,
@@ -605,6 +610,8 @@ impl MailWindow {
         let mut this = Self {
             chrome: WindowChrome::new(env, "Katna Mail", window, cx),
             app: RailApp::Mail,
+            undo_reopens: Vec::new(),
+            reopen_after_undo: None,
             title_from: RailApp::Mail,
             title_roll: Spring::new(motion::SLIDE, 1.0),
             compose_shown: Spring::new(motion::SMOOTH, 1.0),
@@ -1545,6 +1552,21 @@ impl MailWindow {
                     selected_key.and_then(|key| self.entries.iter().position(|e| e.key == key));
                 let keys: HashSet<EntryKey> = self.entries.iter().map(|e| e.key).collect();
                 self.checked.retain(|key| keys.contains(key));
+                // An undone delete or move: the conversation is back, and
+                // opens again where it was.
+                if let Some(ix) = self
+                    .reopen_after_undo
+                    .and_then(|key| self.entries.iter().position(|e| e.key == key))
+                {
+                    self.reopen_after_undo = None;
+                    if !self.reading && !self.split() {
+                        self.card_seq += 1;
+                    }
+                    self.selected = Some(ix);
+                    self.reading = true;
+                    self.list_state.scroll_to_reveal_item(ix);
+                    self.load_reader(ix, cx);
+                }
                 if self.selected.is_none() && self.reading {
                     self.show_list();
                     self.reader = None;
@@ -1903,7 +1925,14 @@ impl MailWindow {
                         move_back(mail, all_mail, &ids, to)
                     }
                 };
-                self.remove_lines(&keys);
+                let advanced = self.remove_lines(&keys, cx);
+                // Undo brings the conversation back and opens it again.
+                if let (Some(key), Some(undo)) = (advanced, &undo) {
+                    self.undo_reopens.push((undo.clone(), key));
+                    if self.undo_reopens.len() > UNDO_STEPS {
+                        self.undo_reopens.remove(0);
+                    }
+                }
                 (command, undo)
             }
         };
@@ -1951,14 +1980,30 @@ impl MailWindow {
     }
 
     /// Takes lines out of the list, keeping the cursor on the next one.
-    fn remove_lines(&mut self, keys: &[EntryKey]) {
+    /// When the open conversation goes, the next one opens in its place
+    /// (Settings > General > Auto-advance), with no empty pane between;
+    /// returns the key of the one that went.
+    fn remove_lines(&mut self, keys: &[EntryKey], cx: &mut Context<Self>) -> Option<EntryKey> {
         // A set: the list and the selection can both be thousands long.
         let keys: HashSet<EntryKey> = keys.iter().copied().collect();
         let cursor = self.selected.unwrap_or(0);
-        let removed_before = self.entries[..cursor.min(self.entries.len())]
-            .iter()
-            .filter(|e| keys.contains(&e.key))
-            .count();
+        let removed_before = |at: usize, entries: &[Entry]| {
+            entries[..at.min(entries.len())]
+                .iter()
+                .filter(|e| keys.contains(&e.key))
+                .count()
+        };
+        let before_cursor = removed_before(cursor, &self.entries);
+        // Where the open conversation was, when it goes: the line that
+        // took its place is at this index afterwards.
+        let open_gone = self
+            .reader
+            .as_ref()
+            .filter(|r| keys.contains(&r.key))
+            .map(|r| r.key);
+        let open_at = open_gone
+            .and_then(|key| self.entries.iter().position(|e| e.key == key))
+            .map(|at| at - removed_before(at, &self.entries));
         for ix in (0..self.entries.len()).rev() {
             if keys.contains(&self.entries[ix].key) {
                 self.list_state.splice(ix..ix + 1, 0);
@@ -1968,7 +2013,7 @@ impl MailWindow {
         self.selected = if self.entries.is_empty() {
             None
         } else {
-            Some((cursor - removed_before).min(self.entries.len() - 1))
+            Some((cursor - before_cursor).min(self.entries.len() - 1))
         };
         for key in &keys {
             self.checked.remove(key);
@@ -1976,11 +2021,23 @@ impl MailWindow {
         self.checked_all = false;
         self.page_pick = None;
         self.picked = None;
-        if self.reader.as_ref().is_some_and(|r| keys.contains(&r.key)) {
-            self.show_list();
-            self.reader = None;
-        }
         self.hovered = None;
+        let open_gone = open_gone?;
+        let next = open_at
+            .filter(|_| self.reading && !self.detached)
+            .and_then(|at| self.config.mail.auto_advance.pick(at, self.entries.len()));
+        match next {
+            Some(ix) => {
+                self.selected = Some(ix);
+                self.list_state.scroll_to_reveal_item(ix);
+                self.load_reader(ix, cx);
+            }
+            None => {
+                self.show_list();
+                self.reader = None;
+            }
+        }
+        Some(open_gone)
     }
 
     /// Sends `command` to the daemon. Shows `done` when it is applied, and
@@ -2063,6 +2120,9 @@ impl MailWindow {
     }
 
     fn run_undo(&mut self, undo: Command, window: &mut Window, cx: &mut Context<Self>) {
+        if let Some(ix) = self.undo_reopens.iter().rposition(|(u, _)| *u == undo) {
+            self.reopen_after_undo = Some(self.undo_reopens.remove(ix).1);
+        }
         if let Command::UndoSend(_) = undo {
             // Taken back from the outbox: the message opens again.
             let connection = self.daemon.clone();

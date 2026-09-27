@@ -405,6 +405,9 @@ pub struct MailView {
     pub open: OpenAttachments,
     /// When an opened conversation is marked read.
     pub mark_read: MarkRead,
+    /// What opens after the open conversation is deleted, archived or
+    /// moved away.
+    pub auto_advance: AutoAdvance,
     /// Load the images of every message from the web, not only those of
     /// trusted senders. Loading them tells senders that a message was read.
     pub remote_images: bool,
@@ -450,6 +453,7 @@ impl Default for MailView {
             full_names: false,
             open: OpenAttachments::default(),
             mark_read: MarkRead::Instantly,
+            auto_advance: AutoAdvance::Next,
             remote_images: false,
             reply_all: false,
             important_markers: true,
@@ -470,6 +474,36 @@ impl MailView {
             .get(&address.to_lowercase())
             .cloned()
             .unwrap_or_default()
+    }
+}
+
+/// What opens after the open conversation leaves the list
+/// ([`MailView::auto_advance`]), as Gmail's Auto-advance.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum AutoAdvance {
+    /// The line below it (the one above when it was the last).
+    #[default]
+    Next,
+    /// The line above it (the one below when it was the first).
+    Previous,
+    /// No conversation: back to the list.
+    List,
+}
+
+impl AutoAdvance {
+    pub const ALL: [Self; 3] = [Self::Next, Self::Previous, Self::List];
+
+    /// The line to open in a list of `len` lines, where `at` is the line
+    /// that took the removed one's place (`len` when it was the last).
+    pub fn pick(self, at: usize, len: usize) -> Option<usize> {
+        let below = (at < len).then_some(at);
+        let above = at.min(len).checked_sub(1);
+        match self {
+            Self::Next => below.or(above),
+            Self::Previous => above.or(below),
+            Self::List => None,
+        }
     }
 }
 
@@ -800,6 +834,21 @@ fn tempfile_in(dir: &Path) -> Result<(std::path::PathBuf, fs::File)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn auto_advance_picks_a_neighbor() {
+        // Line 2 of 5 removed: 4 left, and line 2 is the one that was below.
+        assert_eq!(AutoAdvance::Next.pick(2, 4), Some(2));
+        assert_eq!(AutoAdvance::Previous.pick(2, 4), Some(1));
+        assert_eq!(AutoAdvance::List.pick(2, 4), None);
+        // The last line removed: the one above opens either way.
+        assert_eq!(AutoAdvance::Next.pick(4, 4), Some(3));
+        // The first line removed: Previous takes the one below.
+        assert_eq!(AutoAdvance::Previous.pick(0, 4), Some(0));
+        // Nothing left.
+        assert_eq!(AutoAdvance::Next.pick(0, 0), None);
+        assert_eq!(AutoAdvance::Previous.pick(0, 0), None);
+    }
 
     #[test]
     fn missing_file_gives_defaults() {
