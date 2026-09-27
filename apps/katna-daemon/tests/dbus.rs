@@ -364,6 +364,245 @@ fn changes_imported_mail_in_the_store() {
     });
 }
 
+/// Stores a message in `folder`; `reply_to` makes it an answer.
+fn add_mail(
+    batch: &mut katna_store::MailBatch<'_>,
+    account: katna_core::AccountId,
+    folder: katna_store::FolderId,
+    message_id: &str,
+    date: i64,
+    reply_to: Option<&str>,
+    flags: MessageFlags,
+) -> katna_store::MessageId {
+    let raw = format!("Message-ID: {message_id}\r\nSubject: Offer\r\n\r\nHello.\r\n");
+    let added = batch
+        .add_message(
+            account,
+            folder,
+            &NewMessage {
+                raw: raw.as_bytes(),
+                message_id_hdr: Some(message_id),
+                subject: Some("Offer"),
+                date: Some(date),
+                flags,
+                has_attachments: false,
+                list_id: None,
+                snippet: None,
+                participants: &[],
+                in_reply_to: reply_to,
+                references: &[],
+                category: None,
+            },
+        )
+        .unwrap();
+    let Added::Message(id) = added else {
+        unreachable!()
+    };
+    id
+}
+
+#[test]
+fn snoozes_and_reminds_across_restarts() {
+    use katna_store::FolderRole;
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs() as i64;
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    let account = store
+        .add_account(AccountKind::Local, "enron", "enron@local")
+        .unwrap()
+        .id;
+    let mut batch = store.mail_batch().unwrap();
+    let inbox = batch
+        .upsert_folder(account, "INBOX", Some(FolderRole::Inbox))
+        .unwrap();
+    let sent = batch
+        .upsert_folder(account, "Sent", Some(FolderRole::Sent))
+        .unwrap();
+    let seen = MessageFlags::SEEN;
+    let first = add_mail(&mut batch, account, inbox, "<1@x>", now - 900, None, seen);
+    let second = add_mail(&mut batch, account, inbox, "<2@x>", now - 800, None, seen);
+    // Sent with a reminder: one got no answer, one did.
+    let unanswered = add_mail(&mut batch, account, sent, "<3@x>", now - 700, None, seen);
+    let answered = add_mail(&mut batch, account, sent, "<4@x>", now - 600, None, seen);
+    add_mail(
+        &mut batch,
+        account,
+        inbox,
+        "<5@x>",
+        now - 500,
+        Some("<4@x>"),
+        seen,
+    );
+    batch.commit().unwrap();
+    for (outbox, header) in [(900_001, "<3@x>"), (900_002, "<4@x>")] {
+        let follow_up = katna_meta::FollowUp {
+            account: account.0,
+            message_id: header.into(),
+            subject: "Offer".into(),
+            remind_at: now + 3600,
+            after: 3600,
+        };
+        katna_meta::set_follow_up(&mut store, outbox, &follow_up).unwrap();
+    }
+    drop(store);
+
+    let folder_of = |reader: &Store, id| -> Vec<String> {
+        reader.messages_by_id(&[id]).unwrap()[0]
+            .locations
+            .iter()
+            .map(|l| l.path.clone())
+            .collect()
+    };
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let client = bus.connect().await;
+        let pim = PimProxy::new(&client).await.unwrap();
+        let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
+
+        let err = pim.snooze(&[first.0], now).await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+        let err = pim.snooze(&[999_999], now + 3600).await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.UnknownObject");
+
+        // Snoozed: in the Snoozed folder, made on this computer.
+        pim.snooze(&[first.0], now + 3600).await.unwrap();
+        assert_eq!(folder_of(&reader, first), ["Snoozed"]);
+        let snooze = katna_meta::snooze_of(&reader, first).unwrap().unwrap();
+        assert_eq!((snooze.until, snooze.back_to), (now + 3600, inbox.0));
+        // Sent mail is not snoozed.
+        pim.snooze(&[unanswered.0], now + 3600).await.unwrap();
+        assert_eq!(folder_of(&reader, unanswered), ["Sent"]);
+        // Unsnoozed (Undo): back as it was.
+        pim.unsnooze(&[first.0]).await.unwrap();
+        assert_eq!(folder_of(&reader, first), ["INBOX"]);
+        assert!(
+            reader.messages_by_id(&[first]).unwrap()[0]
+                .flags
+                .contains(seen)
+        );
+        assert_eq!(katna_meta::snooze_of(&reader, first).unwrap(), None);
+
+        pim.snooze(&[first.0, second.0], now + 3600).await.unwrap();
+        instance.shutdown().await;
+    });
+
+    // The time passes while the daemon is not running.
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    for id in [first, second] {
+        let mut snooze = katna_meta::snooze_of(&store, id).unwrap().unwrap();
+        snooze.until = now - 10;
+        katna_meta::set_snooze(&mut store, id, &snooze).unwrap();
+    }
+    for outbox in [900_001, 900_002] {
+        let mut follow_up = katna_meta::follow_up_of(&store, outbox).unwrap().unwrap();
+        follow_up.remind_at = now - 10;
+        katna_meta::set_follow_up(&mut store, outbox, &follow_up).unwrap();
+    }
+    drop(store);
+
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
+        within("snoozed mail back", 10, async {
+            while !katna_meta::snoozed(&reader).unwrap().is_empty()
+                || !katna_meta::follow_ups(&reader).unwrap().is_empty()
+            {
+                Timer::after(Duration::from_millis(50)).await;
+            }
+        })
+        .await;
+        for id in [first, second] {
+            assert_eq!(folder_of(&reader, id), ["INBOX"]);
+            let flags = reader.messages_by_id(&[id]).unwrap()[0].flags;
+            assert!(!flags.contains(seen), "back unread");
+        }
+        let mut folders = folder_of(&reader, unanswered);
+        folders.sort();
+        assert_eq!(folders, ["INBOX", "Sent"], "the reminder is in the inbox");
+        assert!(
+            !reader.messages_by_id(&[unanswered]).unwrap()[0]
+                .flags
+                .contains(seen)
+        );
+        assert_eq!(
+            folder_of(&reader, answered),
+            ["Sent"],
+            "answered: no reminder"
+        );
+        let mut surfaced: Vec<_> = katna_meta::surfaced(&reader)
+            .unwrap()
+            .into_iter()
+            .map(|(id, _)| id)
+            .collect();
+        surfaced.sort();
+        assert_eq!(surfaced, [first, second, unanswered]);
+        instance.shutdown().await;
+    });
+}
+
+#[test]
+fn follow_ups_wait_on_outgoing_mail() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    let account = store
+        .add_account(AccountKind::Imap, "Alice", "alice@katna.test")
+        .unwrap()
+        .id;
+    let smtp = Server {
+        host: "127.0.0.1".into(),
+        port: 1,
+        security: katna_core::Security::Tls,
+        username: "alice@katna.test".into(),
+        accept_invalid_certs: true,
+    };
+    let settings = AccountSettings {
+        smtp: Some(smtp),
+        ..AccountSettings::default()
+    };
+    store.set_account_settings(account, &settings).unwrap();
+    drop(store);
+    let message = b"From: alice@katna.test\r\nTo: bob@katna.test\r\n\
+        Subject: Lunch\r\n\r\nNoon?\r\n";
+
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let client = bus.connect().await;
+        let pim = PimProxy::new(&client).await.unwrap();
+        let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
+
+        let err = pim.set_follow_up(424_242, 86_400).await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+
+        let id = pim.queue_send(account.0, message, 3600).await.unwrap();
+        pim.set_follow_up(id, 3 * 86_400).await.unwrap();
+        let send_at = pim.outbox().await.unwrap()[0].send_at;
+        let follow_up = katna_meta::follow_up_of(&reader, id).unwrap().unwrap();
+        assert_eq!(follow_up.remind_at, send_at + 3 * 86_400);
+        assert_eq!(follow_up.subject, "Lunch");
+        assert!(
+            follow_up.message_id.contains('@'),
+            "{}",
+            follow_up.message_id
+        );
+        // 0 takes it back; so does Undo send.
+        pim.set_follow_up(id, 0).await.unwrap();
+        assert_eq!(katna_meta::follow_up_of(&reader, id).unwrap(), None);
+        pim.set_follow_up(id, 86_400).await.unwrap();
+        assert!(pim.undo_send(id).await.unwrap());
+        assert_eq!(katna_meta::follow_up_of(&reader, id).unwrap(), None);
+        let err = pim.set_follow_up(id, 86_400).await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+        instance.shutdown().await;
+    });
+}
+
 #[test]
 fn queues_undoes_and_retries_outgoing_mail() {
     let bus = Bus::start();

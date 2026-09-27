@@ -978,6 +978,7 @@ pub(super) fn role_icon(role: Role) -> &'static str {
     match role {
         Role::Inbox => "inbox",
         Role::Flagged => "star",
+        Role::Snoozed => "schedule",
         Role::Drafts => "drafts",
         Role::Sent => "sent",
         Role::Archive => "archive",

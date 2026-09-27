@@ -74,6 +74,9 @@ pub struct Row {
     pub important: bool,
     /// Pinned to the top of the list.
     pub pinned: bool,
+    /// Snoozed: when it comes back (Unix seconds), shown in place of the
+    /// date.
+    pub snoozed_until: Option<i64>,
     pub attachments: bool,
     /// The named attachments, in conversation order, for the chips under
     /// the line. Empty when only `attachments` is known (mail synced
@@ -193,6 +196,7 @@ impl Row {
             flagged: message.flags.contains(MessageFlags::FLAGGED),
             important: message.flags.contains(MessageFlags::IMPORTANT),
             pinned: false,
+            snoozed_until: None,
             attachments: message.has_attachments,
             files: Vec::new(),
             snippet: message
@@ -287,6 +291,62 @@ pub struct Mail {
     /// The accounts' addresses, for "me".
     me: Vec<String>,
     pins: Pins,
+    reminders: Reminders,
+}
+
+/// Snoozed mail, and mail back from snooze or a follow-up reminder
+/// (`katna-meta`, written by the daemon).
+#[derive(Debug, Default)]
+struct Reminders {
+    /// Snoozed messages: when they come back.
+    snoozed: HashMap<MessageId, i64>,
+    /// Lines that came back to the Inbox, by when: they sort as if they
+    /// arrived then.
+    surfaced_messages: HashMap<MessageId, i64>,
+    surfaced_threads: HashMap<ThreadId, i64>,
+}
+
+impl Reminders {
+    fn read(store: &Store) -> Self {
+        let mut reminders = Self::default();
+        match katna_meta::snoozed(store) {
+            Ok(list) => {
+                reminders.snoozed = list.into_iter().map(|(id, s)| (id, s.until)).collect();
+            }
+            Err(err) => tracing::warn!("reading snoozed mail: {err}"),
+        }
+        let surfaced = katna_meta::surfaced(store).unwrap_or_else(|err| {
+            tracing::warn!("reading mail back from snooze: {err}");
+            Vec::new()
+        });
+        if surfaced.is_empty() {
+            return reminders;
+        }
+        let ids: Vec<MessageId> = surfaced.iter().map(|(id, _)| *id).collect();
+        let threads: HashMap<MessageId, Option<ThreadId>> = store
+            .messages_by_id(&ids)
+            .unwrap_or_default()
+            .into_iter()
+            .map(|m| (m.id, m.thread_id))
+            .collect();
+        for (id, at) in surfaced {
+            reminders.surfaced_messages.insert(id, at);
+            if let Some(Some(thread)) = threads.get(&id) {
+                let newest = reminders.surfaced_threads.entry(*thread).or_insert(at);
+                *newest = (*newest).max(at);
+            }
+        }
+        reminders
+    }
+
+    /// When a line came back to the Inbox, if it did.
+    fn surfaced(&self, entry: &Entry) -> Option<i64> {
+        match entry.key {
+            EntryKey::Thread(thread) => self.surfaced_threads.get(&thread).copied(),
+            EntryKey::Message(id) => self.surfaced_messages.get(&id).copied(),
+        }
+        .or_else(|| self.surfaced_messages.get(&entry.latest).copied())
+    }
 }
 
 /// Pinned mail, by how recently it was pinned (0 is the newest pin).
@@ -323,6 +383,45 @@ impl Pins {
     }
 }
 
+/// Puts lines that came back to the Inbox (from snooze, or as a reminder)
+/// where mail that arrived at that time would be: `entries` are newest
+/// first, and `date` tells a line's date.
+fn surfaced_in_place(
+    entries: Vec<Entry>,
+    reminders: &Reminders,
+    date: impl Fn(&Entry) -> Option<i64>,
+) -> Vec<Entry> {
+    if reminders.surfaced_messages.is_empty() {
+        return entries;
+    }
+    let (mut back, mut rest): (Vec<(Entry, i64)>, Vec<Entry>) = (Vec::new(), Vec::new());
+    for entry in entries {
+        match reminders.surfaced(&entry) {
+            Some(at) => back.push((entry, at)),
+            None => rest.push(entry),
+        }
+    }
+    if back.is_empty() {
+        return rest;
+    }
+    // Latest first, so each goes above those that came back before it.
+    back.sort_by_key(|(_, at)| std::cmp::Reverse(*at));
+    let mut out = Vec::with_capacity(rest.len() + back.len());
+    let mut rest = rest.into_iter().peekable();
+    for (entry, at) in back {
+        while let Some(next) = rest.peek() {
+            if date(next).is_some_and(|d| d > at) {
+                out.push(rest.next().expect("peeked"));
+            } else {
+                break;
+            }
+        }
+        out.push(entry);
+    }
+    out.extend(rest);
+    out
+}
+
 /// Moves pinned lines to the top, newest pin first; the rest keep their
 /// order.
 fn pinned_first(entries: Vec<Entry>, pins: &Pins) -> Vec<Entry> {
@@ -354,6 +453,7 @@ impl Mail {
         Ok(Self {
             me,
             pins: Pins::read(&store),
+            reminders: Reminders::read(&store),
             store,
             index_dir,
             index,
@@ -417,6 +517,7 @@ impl Mail {
             tracing::warn!("reading folder {}: {err}", folder.0);
             Vec::new()
         });
+        let entries = surfaced_in_place(entries, &self.reminders, |e| self.date_of(e.latest));
         pinned_first(entries, &self.pins)
     }
 
@@ -450,6 +551,7 @@ impl Mail {
             tracing::warn!("reading {} folders: {err}", folders.len());
             Vec::new()
         });
+        let entries = surfaced_in_place(entries, &self.reminders, |e| self.date_of(e.latest));
         pinned_first(entries, &self.pins)
     }
 
@@ -602,10 +704,29 @@ impl Mail {
         self.index_error.as_deref()
     }
 
+    /// When `message` was sent, if known.
+    fn date_of(&self, message: MessageId) -> Option<i64> {
+        self.store
+            .messages_by_id(&[message])
+            .ok()?
+            .pop()
+            .and_then(|m| m.date)
+    }
+
+    /// When snoozed `messages` come back: the soonest, if any is snoozed.
+    pub fn snoozed_until(&self, messages: &[MessageId]) -> Option<i64> {
+        messages
+            .iter()
+            .filter_map(|id| self.reminders.snoozed.get(id))
+            .min()
+            .copied()
+    }
+
     /// Picks up what the daemon wrote since the last call.
     pub fn refresh(&mut self) {
         self.rows.clear();
         self.pins = Pins::read(&self.store);
+        self.reminders = Reminders::read(&self.store);
         if let Some(index) = &self.index
             && let Err(err) = index.reload()
         {
@@ -723,6 +844,7 @@ impl Mail {
             };
             let row = Row {
                 pinned: self.pins.rank(row.key).is_some(),
+                snoozed_until: self.reminders.snoozed.get(&row.id).copied(),
                 ..row
             };
             self.rows.insert(row.key, Rc::new(row));
@@ -973,6 +1095,33 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
         );
     }
 
+    #[test]
+    fn mail_back_from_snooze_sorts_by_when_it_came_back() {
+        let line = |n| Entry::message(MessageId(n));
+        // Dates: 5 newest, then 4, 3, 2, 1; 1 and 2 came back at 450 and
+        // 350, 7's conversation at 999.
+        let dates = HashMap::from([(5, 500), (4, 400), (3, 300), (2, 200), (1, 100), (6, 50)]);
+        let thread = Entry {
+            key: EntryKey::Thread(ThreadId(7)),
+            latest: MessageId(6),
+        };
+        let reminders = Reminders {
+            snoozed: HashMap::new(),
+            surfaced_messages: HashMap::from([(MessageId(1), 450), (MessageId(2), 350)]),
+            surfaced_threads: HashMap::from([(ThreadId(7), 999)]),
+        };
+        let entries = vec![line(5), line(4), line(3), line(2), line(1), thread];
+        assert_eq!(
+            surfaced_in_place(entries, &reminders, |e| dates.get(&e.latest.0).copied()),
+            [thread, line(5), line(1), line(4), line(2), line(3)]
+        );
+        let none = Reminders::default();
+        assert_eq!(
+            surfaced_in_place(vec![line(2), line(1)], &none, |_| None),
+            [line(2), line(1)]
+        );
+    }
+
     fn store_with_mail(paths: &Paths) -> (FolderId, MessageId) {
         let mut store = Store::open(paths, Mode::ReadWrite).unwrap();
         let account = store
@@ -1102,6 +1251,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
                 flagged: true,
                 important: false,
                 pinned: false,
+                snoozed_until: None,
                 attachments: false,
                 files: Vec::new(),
                 snippet: "The budget is final.".into(),

@@ -197,6 +197,79 @@ fn moves_without_uidplus_sync_the_target_again() {
 }
 
 #[test]
+fn copies_keep_the_original_and_reach_the_server() {
+    let (_tmp, mut store, account, server) = setup_synced();
+    let (inbox, archive) = (
+        folder(&store, account, "INBOX"),
+        folder(&store, account, "Archive"),
+    );
+    let id = message_at(&store, inbox, 0);
+
+    assert_eq!(
+        ops::copy_messages(&mut store, &[id], archive).unwrap(),
+        [account]
+    );
+    // Copying again queues nothing.
+    assert!(
+        ops::copy_messages(&mut store, &[id], archive)
+            .unwrap()
+            .is_empty()
+    );
+    let mut folders: Vec<FolderId> = store
+        .locations(id)
+        .unwrap()
+        .iter()
+        .map(|l| l.folder)
+        .collect();
+    folders.sort_by_key(|f| f.0);
+    let mut want = [inbox, archive];
+    want.sort_by_key(|f| f.0);
+    assert_eq!(folders, want);
+
+    server.clear_log();
+    let report = replay(&server, &mut store, account, NOW);
+    assert_eq!((report.done, report.resync.len()), (1, 0));
+    assert_eq!(server.log(), ["SELECT INBOX", "COPY [1] Archive"]);
+    assert_eq!(server.uids("INBOX"), [1, 2]);
+    assert_eq!(server.uids("Archive"), [1]);
+    assert_eq!(store.folder_uids(archive).unwrap(), [1]);
+    for report in sync(&server, &mut store, account) {
+        assert_eq!((report.added, report.removed), (0, 0), "{report:?}");
+    }
+}
+
+#[test]
+fn a_move_from_one_folder_leaves_the_others() {
+    let (_tmp, mut store, account, server) = setup_synced();
+    let (inbox, archive, trash) = (
+        folder(&store, account, "INBOX"),
+        folder(&store, account, "Archive"),
+        folder(&store, account, "Trash"),
+    );
+    let id = message_at(&store, inbox, 0);
+    ops::copy_messages(&mut store, &[id], archive).unwrap();
+    replay(&server, &mut store, account, NOW);
+
+    // Not in Trash: nothing moves.
+    assert!(
+        ops::move_messages_from(&mut store, &[id], Some(trash), inbox)
+            .unwrap()
+            .is_empty()
+    );
+    ops::move_messages_from(&mut store, &[id], Some(archive), trash).unwrap();
+    let mut folders: Vec<FolderId> = store
+        .locations(id)
+        .unwrap()
+        .iter()
+        .map(|l| l.folder)
+        .collect();
+    folders.sort_by_key(|f| f.0);
+    let mut want = [inbox, trash];
+    want.sort_by_key(|f| f.0);
+    assert_eq!(folders, want);
+}
+
+#[test]
 fn delete_goes_to_trash_then_away() {
     let (_tmp, mut store, account, server) = setup_synced();
     let (inbox, trash) = (

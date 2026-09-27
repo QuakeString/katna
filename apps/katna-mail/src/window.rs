@@ -52,6 +52,7 @@ mod settings;
 mod settings_page;
 mod settings_search;
 mod share_ask;
+mod snooze;
 mod tab_strip;
 mod tour;
 mod unified;
@@ -329,6 +330,9 @@ enum Act {
     Star(bool),
     Important(bool),
     Pin(bool),
+    /// Until then (Unix seconds).
+    Snooze(i64),
+    Unsnooze,
 }
 
 /// What the pointer rests on that opens the folded navigation.
@@ -467,6 +471,8 @@ pub struct MailWindow {
     menu: Option<Menu>,
     /// The right-click menu of the list.
     context_menu: Option<context_menu::ContextMenu>,
+    /// The snooze menu, or its date and time picker.
+    snooze_menu: Option<snooze::SnoozeMenu>,
     /// The navigation is open (not folded to the rail).
     nav_open: bool,
     /// The folded navigation is opened over the list while the pointer is
@@ -674,6 +680,7 @@ impl MailWindow {
             search_panel_spring: Spring::new(motion::SMOOTH, 0.0),
             menu: None,
             context_menu: None,
+            snooze_menu: None,
             nav_open: true,
             nav_peek: false,
             peek_hover: (false, false),
@@ -1933,6 +1940,29 @@ impl MailWindow {
                 let undo = Command::Pin(ids.clone(), !on);
                 (Command::Pin(ids, on), Some(undo))
             }
+            Act::Snooze(until) => {
+                let ids: Vec<MessageId> = keys.iter().flat_map(|k| messages_in(*k)).collect();
+                let undo = Command::Unsnooze(ids.clone());
+                let advanced = self.remove_lines(&keys, cx);
+                if let Some(key) = advanced {
+                    self.undo_reopens.push((undo.clone(), key));
+                    if self.undo_reopens.len() > UNDO_STEPS {
+                        self.undo_reopens.remove(0);
+                    }
+                }
+                (Command::Snooze(ids, until), Some(undo))
+            }
+            Act::Unsnooze => {
+                let ids: Vec<MessageId> = keys.iter().flat_map(|k| messages_in(*k)).collect();
+                // Undo snoozes again until the same time, if it is still ahead.
+                let now = jiff::Timestamp::now().as_second();
+                let undo = mail
+                    .snoozed_until(&ids)
+                    .filter(|until| *until > now + 60)
+                    .map(|until| Command::Snooze(ids.clone(), until));
+                self.remove_lines(&keys, cx);
+                (Command::Unsnooze(ids), undo)
+            }
             Act::Archive | Act::Delete | Act::Spam | Act::MoveTo(_) => {
                 let ids: Vec<MessageId> = keys.iter().flat_map(|k| messages_in(*k)).collect();
                 let target = match act {
@@ -2004,6 +2034,12 @@ impl MailWindow {
             } else {
                 katna_i18n::tr!("toast-marked-unread", count = count as u64, kind = kind)
             }),
+            Act::Snooze(until) => Some(katna_i18n::tr!(
+                "toast-snoozed",
+                count = count as u64,
+                kind = kind,
+                when = snooze::describe(until, &self.tz)
+            )),
             Act::Spam if in_spam => Some(katna_i18n::tr!(
                 "toast-not-spam",
                 count = count as u64,
@@ -2713,6 +2749,7 @@ impl Render for MailWindow {
         let about = self.render_about(&th, window, reduce, cx);
         let print_preview = self.render_print_preview(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
+        let snooze_menu = self.render_snooze_menu(&th, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let crash_notice = if onboarding {
             None
@@ -2762,6 +2799,7 @@ impl Render for MailWindow {
             .children(language_picker)
             .children(add_account)
             .children(context_menu)
+            .children(snooze_menu)
             .children(danger)
             .children(new_label)
             .children(crash_notice)

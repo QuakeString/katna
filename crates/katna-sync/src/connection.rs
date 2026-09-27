@@ -44,6 +44,7 @@ enum Request {
     FetchBodies(Vec<u32>, Reply<Vec<(u32, Vec<u8>)>>),
     StoreFlags(Vec<u32>, Flags, bool, Reply<()>),
     MoveMessages(Vec<u32>, String, Reply<Vec<(u32, u32)>>),
+    CopyMessages(Vec<u32>, String, Reply<Vec<(u32, u32)>>),
     Expunge(Vec<u32>, Reply<()>),
     FetchFlags(u32, u32, Option<u64>, Reply<FlagChanges>),
     Uids(Reply<Vec<u32>>),
@@ -109,6 +110,12 @@ impl Connection {
     pub async fn move_messages(&self, uids: &[u32], folder: &str) -> Result<Vec<(u32, u32)>> {
         let (uids, folder) = (uids.to_vec(), folder.to_owned());
         self.call(|reply| Request::MoveMessages(uids, folder, reply))
+            .await
+    }
+
+    pub async fn copy_messages(&self, uids: &[u32], folder: &str) -> Result<Vec<(u32, u32)>> {
+        let (uids, folder) = (uids.to_vec(), folder.to_owned());
+        self.call(|reply| Request::CopyMessages(uids, folder, reply))
             .await
     }
 
@@ -244,6 +251,10 @@ impl MailBackend for Connection {
         Connection::move_messages(self, uids, folder).await
     }
 
+    async fn copy_messages(&mut self, uids: &[u32], folder: &str) -> Result<Vec<(u32, u32)>> {
+        Connection::copy_messages(self, uids, folder).await
+    }
+
     async fn expunge(&mut self, uids: &[u32]) -> Result<()> {
         Connection::expunge(self, uids).await
     }
@@ -352,6 +363,9 @@ async fn run<B: MailBackend>(mut backend: B, inbox: Receiver<Request>) {
             }
             Request::MoveMessages(uids, folder, reply) => {
                 answer(&reply, backend.move_messages(&uids, &folder).await)
+            }
+            Request::CopyMessages(uids, folder, reply) => {
+                answer(&reply, backend.copy_messages(&uids, &folder).await)
             }
             Request::Expunge(uids, reply) => answer(&reply, backend.expunge(&uids).await),
             Request::FetchFlags(first, last, changed_since, reply) => answer(

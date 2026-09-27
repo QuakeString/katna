@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Snooze and reply reminders"
+text = """
+Snooze a conversation with the clock on its line or from the right-click
+menu: it waits in the Snoozed folder and comes back to the Inbox, unread,
+at the time you chose. When sending, the arrow beside Send can remind you
+if nobody replies within 1, 3 or 7 days. Both work while your computer is
+on, and catch up after it wakes.
+"""

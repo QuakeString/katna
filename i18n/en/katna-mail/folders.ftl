@@ -32,6 +32,8 @@ nav-tab-new = { $count ->
 folder-inbox = Inbox
 # Starred (flagged) messages.
 folder-starred = Starred
+# Katna's folder of snoozed mail, which comes back to the inbox later.
+folder-snoozed = Snoozed
 # Unread messages of every account (in the unified inbox).
 folder-unread = Unread
 # Messages marked important (in the unified inbox).

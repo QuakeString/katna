@@ -5724,6 +5724,7 @@ dependencies = [
  "katna-crypto",
  "katna-dbus",
  "katna-i18n",
+ "katna-meta",
  "katna-org",
  "katna-platform",
  "katna-preview",
@@ -5744,8 +5745,15 @@ dependencies = [
 name = "katna-meta"
 version = "0.0.0"
 dependencies = [
+ "async-channel",
+ "async-io",
+ "futures-lite",
  "katna-core",
  "katna-store",
+ "serde",
+ "serde_json",
+ "smol",
+ "tempfile",
 ]
 
 [[package]]

@@ -83,6 +83,8 @@ impl MailWindow {
         let closed = if self.context_menu.is_some() {
             self.close_context_menu(cx);
             true
+        } else if self.close_snooze_menu(cx) {
+            true
         } else if self.print_preview_open() {
             self.close_print_preview(window, cx);
             true
