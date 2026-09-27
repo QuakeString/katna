@@ -7,7 +7,7 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 
 use katna_core::{Account, AccountId};
 use katna_i18n::tr;
-use katna_store::{FolderId, FolderRole, FolderSummary};
+use katna_store::{FlagFilter, FolderId, FolderRole, FolderSummary};
 
 /// Folder paths are split at this separator. Stalwart, Gmail and the
 /// importers use `/`; servers with `.` show one level until the store keeps
@@ -85,6 +85,90 @@ impl Role {
     }
 }
 
+/// A list of the unified inbox, over every account: a special folder of
+/// each, or the mail of all their folders with a flag.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Unified {
+    Inbox,
+    Unread,
+    Starred,
+    Important,
+    Sent,
+    AllMail,
+    Junk,
+    Trash,
+    Drafts,
+}
+
+impl Unified {
+    /// In the order the folder pane lists them.
+    pub const ALL: [Self; 9] = [
+        Self::Inbox,
+        Self::Unread,
+        Self::Starred,
+        Self::Important,
+        Self::Sent,
+        Self::AllMail,
+        Self::Junk,
+        Self::Trash,
+        Self::Drafts,
+    ];
+
+    /// The special folder of each account it lists, or `None` for the
+    /// lists by flag, which cover every folder but trash and spam.
+    pub fn role(self) -> Option<Role> {
+        match self {
+            Self::Inbox => Some(Role::Inbox),
+            Self::Sent => Some(Role::Sent),
+            Self::AllMail => Some(Role::All),
+            Self::Junk => Some(Role::Junk),
+            Self::Trash => Some(Role::Trash),
+            Self::Drafts => Some(Role::Drafts),
+            Self::Unread | Self::Starred | Self::Important => None,
+        }
+    }
+
+    /// Which messages of its folders it keeps.
+    pub fn filter(self) -> FlagFilter {
+        match self {
+            Self::Unread => FlagFilter::UNREAD,
+            Self::Starred => FlagFilter::STARRED,
+            Self::Important => FlagFilter::IMPORTANT,
+            _ => FlagFilter::default(),
+        }
+    }
+
+    /// Its name in the current language.
+    pub fn title(self) -> String {
+        match self {
+            Self::Unread => tr!("folder-unread"),
+            Self::Starred => tr!("folder-starred"),
+            Self::Important => tr!("folder-important"),
+            _ => self.role().and_then(Role::title).unwrap_or_default(),
+        }
+    }
+
+    /// Its key among the expanded rows of the folder pane.
+    pub fn key(self) -> &'static str {
+        match self {
+            Self::Inbox => "all:inbox",
+            Self::Unread => "all:unread",
+            Self::Starred => "all:starred",
+            Self::Important => "all:important",
+            Self::Sent => "all:sent",
+            Self::AllMail => "all:all-mail",
+            Self::Junk => "all:junk",
+            Self::Trash => "all:trash",
+            Self::Drafts => "all:drafts",
+        }
+    }
+
+    /// Whether the list shows recipients instead of senders.
+    pub fn shows_recipients(self) -> bool {
+        self.role().is_some_and(Role::shows_recipients)
+    }
+}
+
 impl AccountNode {
     /// Every node of the account, depth first.
     fn folders(&self) -> impl Iterator<Item = &Node> {
@@ -143,10 +227,29 @@ pub struct Tree {
 /// A visible line of the sidebar.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Row {
+    /// The heading of the unified inbox, over the accounts.
+    AllAccounts { expanded: bool },
+    /// A list of the unified inbox; expanded, one row per account follows.
+    Unified {
+        view: Unified,
+        unread: u64,
+        expanded: bool,
+    },
+    /// One account's part of a list of the unified inbox: its special
+    /// folder, or for a list by flag, `folder: None`.
+    UnifiedAccount {
+        view: Unified,
+        account: AccountId,
+        name: String,
+        folder: Option<FolderId>,
+        unread: u64,
+    },
     Account {
         id: AccountId,
         name: String,
         unread: u64,
+        /// Its folders show under it.
+        expanded: bool,
     },
     /// The header over an account's own folders, Gmail's "Labels".
     Labels { account: AccountId },
@@ -325,18 +428,29 @@ impl Tree {
     }
 
     /// The visible rows, given the expanded node keys: of every account,
-    /// or of `only` when given.
-    pub fn rows(&self, expanded: &HashSet<String>, only: Option<AccountId>) -> Vec<Row> {
+    /// or of `only` when given. Only accounts `open` says are open show
+    /// their folders.
+    pub fn rows(
+        &self,
+        expanded: &HashSet<String>,
+        only: Option<AccountId>,
+        open: impl Fn(AccountId) -> bool,
+    ) -> Vec<Row> {
         let mut rows = Vec::new();
         for account in &self.accounts {
             if only.is_some_and(|id| id != account.id) {
                 continue;
             }
+            let is_open = open(account.id);
             rows.push(Row::Account {
                 id: account.id,
                 name: account.name.clone(),
                 unread: account.unread,
+                expanded: is_open,
             });
+            if !is_open {
+                continue;
+            }
             // The user's own folders (labels) come after the special ones,
             // under a header with the button that makes a new one.
             let special = account
@@ -351,6 +465,92 @@ impl Tree {
             push_rows(&account.roots[special..], 0, expanded, &mut rows);
         }
         rows
+    }
+}
+
+impl Tree {
+    /// The rows of the unified inbox: its heading and, when `open`, its
+    /// lists that some account has, each followed by its accounts when
+    /// expanded (by [`Unified::key`]). Empty with fewer than two accounts.
+    pub fn unified_rows(&self, expanded: &HashSet<String>, open: bool) -> Vec<Row> {
+        if self.accounts.len() < 2 {
+            return Vec::new();
+        }
+        let mut rows = vec![Row::AllAccounts { expanded: open }];
+        if !open {
+            return rows;
+        }
+        for view in Unified::ALL {
+            let parts = self.unified_parts(view);
+            if parts.is_empty() {
+                continue;
+            }
+            let is_expanded = expanded.contains(view.key());
+            rows.push(Row::Unified {
+                view,
+                // Only special folders have counts: counting mail by flag
+                // across every folder is too slow to do on each change.
+                unread: parts
+                    .iter()
+                    .map(|p| match p {
+                        Row::UnifiedAccount { unread, .. } => *unread,
+                        _ => 0,
+                    })
+                    .sum(),
+                expanded: is_expanded,
+            });
+            if is_expanded {
+                rows.extend(parts);
+            }
+        }
+        rows
+    }
+
+    /// The rows of each account in `view`: every account for a list by
+    /// flag, those with the folder for a special folder.
+    fn unified_parts(&self, view: Unified) -> Vec<Row> {
+        self.accounts
+            .iter()
+            .filter_map(|account| {
+                let (folder, unread) = match view.role() {
+                    Some(role) => {
+                        let node = account
+                            .folders()
+                            .find(|n| n.role == role && n.folder.is_some())?;
+                        (node.folder, node.unread)
+                    }
+                    None => (None, 0),
+                };
+                Some(Row::UnifiedAccount {
+                    view,
+                    account: account.id,
+                    name: account.name.clone(),
+                    folder,
+                    unread,
+                })
+            })
+            .collect()
+    }
+
+    /// The folders `view` lists mail from, of `account` or of all.
+    pub fn unified_folders(&self, view: Unified, account: Option<AccountId>) -> Vec<FolderId> {
+        self.accounts
+            .iter()
+            .filter(|a| account.is_none_or(|id| id == a.id))
+            .flat_map(|a| match view.role() {
+                Some(role) => a
+                    .folders()
+                    .find(|n| n.role == role && n.folder.is_some())
+                    .and_then(|n| n.folder)
+                    .into_iter()
+                    .collect::<Vec<_>>(),
+                None => a
+                    .folders()
+                    .filter(|n| !matches!(n.role, Role::Trash | Role::Junk))
+                    .filter_map(|n| n.folder)
+                    .collect(),
+            })
+            .collect()
     }
 }
 
@@ -498,7 +698,25 @@ mod tests {
     fn labels(rows: &[Row]) -> Vec<String> {
         rows.iter()
             .map(|row| match row {
-                Row::Account { name, .. } => format!("# {name}"),
+                Row::AllAccounts { expanded } => {
+                    format!("# All{}", if *expanded { " -" } else { " +" })
+                }
+                Row::Unified {
+                    view,
+                    expanded,
+                    unread,
+                } => format!("{:?} {unread}{}", view, if *expanded { " -" } else { " +" }),
+                Row::UnifiedAccount {
+                    name,
+                    folder,
+                    unread,
+                    ..
+                } => {
+                    format!("  {name} {:?} {unread}", folder.map(|f| f.0))
+                }
+                Row::Account { name, expanded, .. } => {
+                    format!("# {name}{}", if *expanded { "" } else { " +" })
+                }
                 Row::Labels { .. } => "## Labels".to_owned(),
                 Row::Folder {
                     depth,
@@ -581,7 +799,7 @@ mod tests {
         assert_eq!(tree.accounts[0].unread, 4);
         assert_eq!(tree.accounts[1].name, "Account 2");
 
-        let rows = tree.rows(&tree.initially_expanded(), None);
+        let rows = tree.rows(&tree.initially_expanded(), None, |_| true);
         assert_eq!(
             labels(&rows),
             [
@@ -599,7 +817,7 @@ mod tests {
                 "## Labels",
             ]
         );
-        let collapsed = tree.rows(&HashSet::new(), None);
+        let collapsed = tree.rows(&HashSet::new(), None, |_| true);
         assert_eq!(
             labels(&collapsed)[..4],
             ["# Work", "Inbox +", "archive", "## Labels"]
@@ -615,7 +833,7 @@ mod tests {
         );
 
         // One account at a time.
-        let only = tree.rows(&HashSet::new(), Some(AccountId(2)));
+        let only = tree.rows(&HashSet::new(), Some(AccountId(2)), |_| true);
         assert_eq!(labels(&only), ["# Account 2", "Inbox", "## Labels"]);
         assert_eq!(
             tree.default_folder_in(Some(AccountId(2))),
@@ -653,7 +871,7 @@ mod tests {
         assert_eq!(id, FolderId(8));
         assert_eq!(ancestors, ["1:user03"]);
         let expanded: HashSet<String> = ancestors.into_iter().collect();
-        let rows = tree.rows(&expanded, None);
+        let rows = tree.rows(&expanded, None, |_| true);
         assert_eq!(rows.len(), 2 + 30 + 2);
         assert_eq!(labels(&rows)[1], "## Labels");
         assert_eq!(labels(&rows)[5..8], ["user03 -", "  Inbox +", "  notes"]);
@@ -662,7 +880,86 @@ mod tests {
     #[test]
     fn empty_store() {
         let tree = Tree::build(&[], &[], &HashMap::new());
-        assert!(tree.rows(&HashSet::new(), None).is_empty());
+        assert!(tree.rows(&HashSet::new(), None, |_| true).is_empty());
         assert_eq!(tree.default_folder_in(None), None);
+    }
+
+    #[test]
+    fn unified_inbox_over_the_accounts() {
+        let accounts = [
+            Account {
+                id: AccountId(1),
+                kind: AccountKind::Imap,
+                display_name: String::new(),
+                address: "ada@example.org".into(),
+            },
+            Account {
+                id: AccountId(2),
+                kind: AccountKind::Imap,
+                display_name: String::new(),
+                address: "kay@example.org".into(),
+            },
+        ];
+        let folders = [
+            folder(1, 1, "INBOX", 3),
+            folder(2, 1, "Sent", 1),
+            folder(3, 1, "Trash", 1),
+            folder(4, 1, "Work", 1),
+            folder(5, 2, "INBOX", 2),
+            folder(6, 2, "Spam", 0),
+        ];
+        let unread = HashMap::from([(FolderId(1), 2), (FolderId(5), 1), (FolderId(4), 7)]);
+        let tree = Tree::build(&accounts, &folders, &unread);
+
+        let folded = tree.unified_rows(&HashSet::new(), false);
+        assert_eq!(labels(&folded), ["# All +"]);
+        let rows = tree.unified_rows(&HashSet::from(["all:inbox".to_owned()]), true);
+        assert_eq!(
+            labels(&rows),
+            [
+                "# All -",
+                "Inbox 3 -",
+                "  ada@example.org Some(1) 2",
+                "  kay@example.org Some(5) 1",
+                "Unread 0 +",
+                "Starred 0 +",
+                "Important 0 +",
+                "Sent 0 +",
+                "Junk 0 +",
+                "Trash 0 +",
+            ]
+        );
+        let unread_parts = tree.unified_rows(&HashSet::from(["all:unread".to_owned()]), true);
+        assert_eq!(
+            labels(&unread_parts)[3..5],
+            ["  ada@example.org None 0", "  kay@example.org None 0"]
+        );
+
+        assert_eq!(
+            tree.unified_folders(Unified::Inbox, None),
+            [FolderId(1), FolderId(5)]
+        );
+        assert_eq!(tree.unified_folders(Unified::Sent, Some(AccountId(2))), []);
+        // Lists by flag cover every folder but trash and spam.
+        assert_eq!(
+            tree.unified_folders(Unified::Unread, None),
+            [FolderId(1), FolderId(2), FolderId(4), FolderId(5)]
+        );
+
+        // Folded accounts show only their name.
+        let rows = tree.rows(&HashSet::new(), None, |id| id == AccountId(2));
+        assert_eq!(
+            labels(&rows),
+            [
+                "# ada@example.org +",
+                "# kay@example.org",
+                "Inbox",
+                "## Labels"
+            ]
+        );
+
+        // One account has no unified inbox.
+        let one = Tree::build(&accounts, &folders[..4], &unread);
+        assert!(one.unified_rows(&HashSet::new(), true).is_empty());
     }
 }

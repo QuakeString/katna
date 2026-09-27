@@ -11,6 +11,11 @@ accounts-folder-pane-detail = Which accounts' folders the pane on the left shows
 # Radio choice under "Folder pane"; the account card is the account's picture and name at the top of the pane.
 accounts-shown-one = One account at a time; switch in the account card
 accounts-shown-all = All accounts, one after another
+# Settings row: the unified inbox, over the accounts in the folder pane.
+accounts-unified = Unified inbox
+# Switch under "Unified inbox".
+accounts-unified-switch = Show the mail of all accounts together
+accounts-unified-switch-detail = "All Accounts" heads the folder pane, with the inboxes of every account in one list, and so their sent mail, drafts and more. The accounts below it start folded; the arrow beside each name opens it.
 # Settings row: the list of accounts.
 accounts-row = Accounts
 accounts-row-detail = The folder pane and the account menu list accounts in this order; the first is the default. Removing an account deletes Katna's copy of its mail on this computer. The mail stays on the server.

@@ -54,6 +54,7 @@ mod settings_search;
 mod share_ask;
 mod tab_strip;
 mod tour;
+mod unified;
 mod viewer;
 mod whats_new;
 
@@ -290,6 +291,11 @@ const FAILURE_TIME: Duration = Duration::from_secs(12);
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Listing {
     Folder(FolderId),
+    /// A list of the unified inbox, of every account or of `account`.
+    Unified {
+        view: sidebar::Unified,
+        account: Option<AccountId>,
+    },
     Search {
         query: String,
         total: Option<usize>,
@@ -394,8 +400,16 @@ pub struct MailWindow {
     unread: HashMap<FolderId, u64>,
     unread_task: Option<Task<()>>,
     expanded: HashSet<String>,
+    /// Accounts folded or opened in the folder pane by their arrow; the
+    /// others are open, or folded under the unified inbox.
+    open_accounts: HashMap<AccountId, bool>,
+    /// Whether the unified inbox's lists show under "All Accounts".
+    all_accounts_open: bool,
     nav_rows: Vec<sidebar::Row>,
     folder: Option<FolderId>,
+    /// The unified inbox's list last opened, as `folder` is the folder:
+    /// what shows again when a search is cleared.
+    unified: Option<(sidebar::Unified, Option<AccountId>)>,
     show_recipients: bool,
     listing: Option<Listing>,
     /// The inbox tabs of the listed folder's account; none outside inboxes.
@@ -570,11 +584,7 @@ impl MailWindow {
         let mut this = Self::build(env, paths, font, window, cx);
         keymap::bind(&this.config.shortcuts, cx);
         this.load_tree();
-        if let Some((folder, ancestors)) = this.default_folder() {
-            this.expanded.extend(ancestors);
-            this.rebuild_nav();
-            this.open_folder(folder, cx);
-        }
+        this.open_default_folder(cx);
         this.count_unread(cx);
         this.listen(cx);
         this.watch_colors(cx);
@@ -630,6 +640,9 @@ impl MailWindow {
             unread: HashMap::new(),
             unread_task: None,
             expanded: HashSet::new(),
+            open_accounts: HashMap::new(),
+            all_accounts_open: true,
+            unified: None,
             nav_rows: Vec::new(),
             folder: None,
             show_recipients: false,
@@ -942,7 +955,12 @@ impl MailWindow {
 
     /// With one account the folders stand alone, without an account heading.
     fn rebuild_nav(&mut self) {
-        let mut rows = self.tree.rows(&self.expanded, self.shown_account());
+        let only = self.shown_account();
+        // With one account on show its folders stand alone, never folded.
+        let single = only.is_some() || self.tree.accounts.len() == 1;
+        let mut rows = self
+            .tree
+            .rows(&self.expanded, only, |id| single || self.account_open(id));
         let accounts = rows
             .iter()
             .filter(|r| matches!(r, sidebar::Row::Account { .. }))
@@ -950,10 +968,24 @@ impl MailWindow {
         if accounts == 1 {
             rows.retain(|r| !matches!(r, sidebar::Row::Account { .. }));
         }
+        if self.config.mail.unified_inbox {
+            let mut all = self
+                .tree
+                .unified_rows(&self.expanded, self.all_accounts_open);
+            all.append(&mut rows);
+            rows = all;
+        }
         // Scheduled mail shows under the first Sent folder while there is
         // some.
         let scheduled = self.writing.scheduled_count();
         if scheduled > 0 {
+            let after_sent = |ix: usize| {
+                ix + 1
+                    + rows[ix + 1..]
+                        .iter()
+                        .take_while(|r| matches!(r, sidebar::Row::UnifiedAccount { .. }))
+                        .count()
+            };
             let at = rows
                 .iter()
                 .position(|r| {
@@ -962,10 +994,13 @@ impl MailWindow {
                         sidebar::Row::Folder {
                             role: Role::Sent,
                             ..
+                        } | sidebar::Row::Unified {
+                            view: sidebar::Unified::Sent,
+                            ..
                         }
                     )
                 })
-                .map_or(rows.len(), |ix| ix + 1);
+                .map_or(rows.len(), after_sent);
             rows.insert(
                 at,
                 sidebar::Row::Folder {
@@ -996,6 +1031,7 @@ impl MailWindow {
             Some(Listing::Folder(folder)) => {
                 self.tree.node(*folder).map_or(Role::Other, |n| n.role)
             }
+            Some(Listing::Unified { view, .. }) => view.role().unwrap_or(Role::Other),
             _ => Role::Other,
         }
     }
@@ -1059,6 +1095,7 @@ impl MailWindow {
         };
         self.tab = self.tab.min(self.tabs.len().saturating_sub(1));
         self.folder = Some(folder);
+        self.unified = None;
         self.listing = Some(Listing::Folder(folder));
         self.entries = self.list_entries(folder);
         self.category_unread = match &self.mail {
@@ -1494,6 +1531,10 @@ impl MailWindow {
         if self.listing.is_some() {
             return;
         }
+        if self.shows_unified() {
+            self.open_unified(sidebar::Unified::Inbox, None, cx);
+            return;
+        }
         if let Some((folder, ancestors)) = self.default_folder() {
             self.expanded.extend(ancestors);
             self.rebuild_nav();
@@ -1541,10 +1582,15 @@ impl MailWindow {
             .and_then(|ix| self.entries.get(ix))
             .map(|e| e.key);
         match self.listing.clone() {
-            Some(Listing::Folder(folder)) => {
-                self.entries = self.list_entries(folder);
+            Some(listing @ (Listing::Folder(_) | Listing::Unified { .. })) => {
+                self.entries = match listing {
+                    Listing::Folder(folder) => self.list_entries(folder),
+                    Listing::Unified { view, account } => self.unified_entries(view, account),
+                    Listing::Search { .. } => Vec::new(),
+                };
                 self.reset_list(true);
                 if let Ok(mail) = &self.mail
+                    && let Listing::Folder(folder) = listing
                     && self.folder_role() == Role::Inbox
                 {
                     self.category_unread = mail.category_unread(folder);
@@ -1634,10 +1680,8 @@ impl MailWindow {
         self.search_error = None;
         if text.is_empty() {
             self.search_task = None;
-            if matches!(self.listing, Some(Listing::Search { .. }))
-                && let Some(folder) = self.folder
-            {
-                self.open_folder(folder, cx);
+            if matches!(self.listing, Some(Listing::Search { .. })) {
+                self.open_listed(cx);
             }
             return;
         }
@@ -1734,6 +1778,7 @@ impl MailWindow {
     fn folder_name(&self) -> Option<String> {
         match &self.listing {
             Some(Listing::Folder(folder)) => self.tree.node(*folder).map(|n| n.label()),
+            Some(Listing::Unified { view, account }) => Some(self.unified_name(*view, *account)),
             _ => None,
         }
     }
