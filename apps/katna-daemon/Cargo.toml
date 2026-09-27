@@ -18,6 +18,9 @@ katna-search.workspace = true
 katna-org.workspace = true
 katna-dav.workspace = true
 katna-dbus.workspace = true
+# Without the "format" feature, whose ICU4X data is large: the few
+# numbers in the daemon's text show as Western digits.
+katna-i18n.workspace = true
 katna-notify.workspace = true
 katna-platform.workspace = true
 async-channel.workspace = true

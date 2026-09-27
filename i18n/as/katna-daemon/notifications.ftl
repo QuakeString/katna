@@ -1,0 +1,18 @@
+# Katna Mail, Assamese (অসমীয়া).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## A new-mail notification
+
+notify-new-emails = { $count }টা নতুন ইমেইল
+notify-and-more = আৰু { $count }টা
+notify-no-subject = (কোনো বিষয় নাই)
+notify-unknown-sender = অজ্ঞাত প্ৰেৰক
+
+## Its buttons
+
+notify-open = খোলক
+notify-reply-all = সকলোকে উত্তৰ দিয়ক
+notify-mark-read = পঢ়া বুলি চিহ্নিত কৰক
+notify-mark-all-read = সকলোবোৰ পঢ়া বুলি চিহ্নিত কৰক
+notify-archive = আৰ্কাইভ কৰক

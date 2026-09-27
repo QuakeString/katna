@@ -165,7 +165,7 @@ pub(super) static SHORTCUTS: &[Shortcut] = &[
     shortcut!("check", Actions, List, ["x"], ToggleCheck),
     shortcut!("select_all", Actions, List, ["* a"], SelectAll),
     shortcut!("select_none", Actions, List, ["* n"], SelectNone),
-    shortcut!("undo", Actions, Anywhere, ["z"], Undo),
+    shortcut!("undo", Actions, Anywhere, ["z", "ctrl-z"], Undo),
     shortcut!("go_inbox", GoTo, Anywhere, ["g i"], GoToInbox),
     shortcut!("go_starred", GoTo, Anywhere, ["g s"], GoToStarred),
     shortcut!("go_sent", GoTo, Anywhere, ["g t"], GoToSent),
@@ -400,6 +400,14 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
         ] {
             bindings.push(KeyBinding::new(keys, gpui::NoAction, Some(context)));
         }
+    }
+    // Ctrl+Z in a field is about its text, never the mail: the rich
+    // editor undoes typing with it, and the plain fields do nothing.
+    for context in [
+        katna_ui::TEXT_AREA_CONTEXT,
+        katna_ui::text_input::KEY_CONTEXT,
+    ] {
+        bindings.push(KeyBinding::new("ctrl-z", gpui::NoAction, Some(context)));
     }
     cx.bind_keys(bindings);
     katna_ui::text_input::bind_keys(cx);

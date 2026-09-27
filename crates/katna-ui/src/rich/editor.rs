@@ -140,6 +140,17 @@ pub enum RichEvent {
     /// A paste option the owner carries out was chosen (see
     /// [`RichEditor::offer_choice`]).
     PasteChoice(PasteOption),
+    /// The pointer rested on, or a left click landed on, a misspelled word
+    /// or a grammar mistake: the owner shows the fixes in a card under
+    /// `word` (window bounds). [`RichEditor::set_cursor`] with `at` makes
+    /// [`RichEditor::replace_word`] and the grammar fixes apply to them.
+    Hint {
+        word: Bounds<Pixels>,
+        at: Pos,
+        misspelled: Option<String>,
+        suggestions: Vec<String>,
+        grammar: Option<GrammarIssue>,
+    },
 }
 
 /// A spelling dictionary the owner provides.
@@ -187,6 +198,8 @@ pub trait Suggest {
 
 /// How long typing pauses before its paragraph's grammar is checked.
 pub(crate) const GRAMMAR_WAIT: Duration = Duration::from_millis(500);
+/// How long the pointer rests on marked words before their fixes show.
+pub(crate) const HINT_WAIT: Duration = Duration::from_millis(600);
 
 /// Colors of what the editor draws beside text.
 #[derive(Debug, Clone, Copy)]
@@ -229,6 +242,16 @@ pub enum TableEdit {
     DeleteRow,
     DeleteColumn,
     DeleteTable,
+}
+
+/// Words marked as misspelled or as a grammar mistake, under a point.
+struct Mark {
+    path: Path,
+    range: Range<usize>,
+    /// In window coordinates.
+    bounds: Bounds<Pixels>,
+    misspelled: bool,
+    grammar: Option<GrammarIssue>,
 }
 
 #[derive(Clone)]
@@ -301,6 +324,13 @@ pub struct RichEditor {
     width: Pixels,
     /// The editor had the focus when last drawn.
     pub(crate) drawn_focused: std::cell::Cell<bool>,
+    /// The marked words under the pointer, and the wait before their fixes
+    /// show.
+    hover: Option<(Path, Range<usize>)>,
+    hover_task: Option<gpui::Task<()>>,
+    /// The marked words a left click went down on, to show their fixes if
+    /// it comes up without dragging.
+    clicked: Option<(Path, Range<usize>)>,
 }
 
 impl EventEmitter<RichEvent> for RichEditor {}
@@ -347,6 +377,9 @@ impl RichEditor {
             drawn_focused: std::cell::Cell::new(false),
             next_image_id: 0,
             width: px(0.0),
+            hover: None,
+            hover_task: None,
+            clicked: None,
         }
     }
 
@@ -668,6 +701,11 @@ impl RichEditor {
             doc.delete(start, Pos::new(path, range.end));
             doc.insert_text(start, replacement, &style)
         });
+    }
+
+    /// Puts the cursor at `at`, such as the words of a [`RichEvent::Hint`].
+    pub fn set_cursor(&mut self, at: Pos, cx: &mut Context<Self>) {
+        self.set_selection(at, at, cx);
     }
 
     // Selection.
@@ -1408,6 +1446,10 @@ impl RichEditor {
             }
             _ => {
                 self.selecting = true;
+                self.clicked = (!event.modifiers.shift)
+                    .then(|| self.mark_at(event.position))
+                    .flatten()
+                    .map(|mark| (mark.path, mark.range));
                 if event.modifiers.shift {
                     self.set_selection(self.anchor, pos, cx);
                 } else {
@@ -1447,6 +1489,115 @@ impl RichEditor {
             misspelled,
             grammar,
         });
+    }
+
+    /// A left click that came up where it went down on marked words shows
+    /// their fixes.
+    fn mouse_up(&mut self, event: &MouseUpEvent, cx: &mut Context<Self>) {
+        self.selecting = false;
+        let Some(clicked) = self.clicked.take() else {
+            return;
+        };
+        if self.has_selection() {
+            return;
+        }
+        if let Some(mark) = self.mark_at(event.position)
+            && (mark.path, mark.range.clone()) == clicked
+        {
+            self.hover = Some(clicked);
+            self.hover_task = None;
+            self.emit_hint(mark, cx);
+        }
+    }
+
+    /// Resting the pointer on marked words shows their fixes after a wait.
+    fn mouse_move(&mut self, event: &MouseMoveEvent, window: &mut Window, cx: &mut Context<Self>) {
+        if event.pressed_button.is_some() {
+            return;
+        }
+        let key = self
+            .mark_at(event.position)
+            .map(|mark| (mark.path, mark.range));
+        if key == self.hover {
+            return;
+        }
+        self.hover = key.clone();
+        self.hover_task = key.map(|key| {
+            cx.spawn_in(window, async move |this, cx| {
+                cx.background_executor().timer(HINT_WAIT).await;
+                this.update_in(cx, |this, window, cx| {
+                    this.hover_task = None;
+                    match this.mark_at(window.mouse_position()) {
+                        Some(mark) if (mark.path, mark.range.clone()) == key => {
+                            this.emit_hint(mark, cx)
+                        }
+                        // The pointer left the editor meanwhile.
+                        _ => this.hover = None,
+                    }
+                })
+                .ok();
+            })
+        });
+    }
+
+    /// Forgets the words the pointer was on, so resting on them again
+    /// shows their fixes again (the owner calls it on closing the card).
+    pub fn end_hint(&mut self) {
+        self.hover = None;
+        self.hover_task = None;
+    }
+
+    fn emit_hint(&self, mark: Mark, cx: &mut Context<Self>) {
+        let text = self.doc.para(mark.path).map_or("", |p| p.text.as_str());
+        let word = text.get(mark.range.clone()).unwrap_or_default().to_owned();
+        let suggestions = match &self.spell {
+            Some(spell) if mark.misspelled => spell.suggest(&word),
+            _ => Vec::new(),
+        };
+        cx.emit(RichEvent::Hint {
+            word: mark.bounds,
+            at: Pos::new(mark.path, mark.range.start),
+            misspelled: mark.misspelled.then_some(word),
+            suggestions,
+            grammar: mark.grammar,
+        });
+    }
+
+    /// The marked words under window point `p`, as drawn last.
+    fn mark_at(&self, p: Point<Pixels>) -> Option<Mark> {
+        let (pos, _) = self.hit(p)?;
+        let para = self.doc.para(pos.path)?;
+        let layout = self.layouts.get(&pos.path)?;
+        let (range, deco) = self
+            .decorations(pos.path, para)
+            .into_iter()
+            .find(|(r, d)| {
+                (d.misspelled || d.grammar) && r.start <= pos.offset && pos.offset <= r.end
+            })?;
+        let rects: Vec<Bounds<Pixels>> = layout
+            .selection_rects(range.clone(), false)
+            .into_iter()
+            .map(|r| Bounds::new(r.origin + layout.bounds.origin, r.size))
+            .collect();
+        if !rects.iter().any(|r| r.contains(&p)) {
+            return None;
+        }
+        let bounds = rects.into_iter().reduce(|a, b| a.union(&b))?;
+        let grammar = if deco.grammar {
+            self.grammar_issues(para)
+                .into_iter()
+                .find(|issue| issue.range == range)
+                .cloned()
+        } else {
+            None
+        };
+        Some(Mark {
+            path: pos.path,
+            range,
+            bounds,
+            misspelled: deco.misspelled,
+            grammar,
+        })
     }
 
     fn drag_to(&mut self, event: &MouseMoveEvent, cx: &mut Context<Self>) {
@@ -2549,7 +2700,7 @@ impl Element for Anchor {
                     && event.button == MouseButton::Left
                     && editor.read(cx).selecting
                 {
-                    editor.update(cx, |editor, _| editor.selecting = false);
+                    editor.update(cx, |editor, cx| editor.mouse_up(event, cx));
                 }
             }
         });
@@ -2670,6 +2821,7 @@ impl Render for RichEditor {
             .on_action(cx.listener(|_, _: &InsertLink, _, cx| cx.emit(RichEvent::EditLink)))
             .on_mouse_down(MouseButton::Left, cx.listener(Self::mouse_down))
             .on_mouse_down(MouseButton::Right, cx.listener(Self::right_mouse_down))
+            .on_mouse_move(cx.listener(Self::mouse_move))
             .child(Anchor {
                 editor: cx.entity(),
             })

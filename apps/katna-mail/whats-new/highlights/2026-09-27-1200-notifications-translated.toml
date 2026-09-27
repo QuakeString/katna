@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Notifications in your language"
+text = """
+New-mail notifications and their buttons, and the tray icon's menu and
+tooltip, now follow the language you pick, and switch as soon as you
+change it.
+"""

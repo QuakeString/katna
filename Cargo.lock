@@ -5640,6 +5640,7 @@ dependencies = [
  "katna-core",
  "katna-dav",
  "katna-dbus",
+ "katna-i18n",
  "katna-import",
  "katna-meta",
  "katna-notify",
@@ -5752,6 +5753,7 @@ name = "katna-notify"
 version = "0.0.0"
 dependencies = [
  "katna-core",
+ "katna-i18n",
  "zbus",
 ]
 

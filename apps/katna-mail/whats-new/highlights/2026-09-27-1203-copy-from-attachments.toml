@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Copy from attachments"
+text = """
+Text in PDFs, documents, slides and text files opened in Katna can now be
+selected and copied like the text of a message. In a spreadsheet, drag
+across cells, or click a column letter or row number, and Ctrl+C copies
+them so they paste as cells.
+"""

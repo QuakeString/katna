@@ -459,6 +459,10 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
     (`Store::trash_folder`, which the app also reads: a delete for good
     says "deleted forever" and offers no Undo). Archive moves to
     `\Archive` (or Gmail's `\All`).
+  - A move out of a folder the message was only just moved into (Undo
+    right after Archive) queues with no UID; when the earlier move runs,
+    its `COPYUID` answer is handed to the waiting one, so the pair
+    replays in order even offline.
   - A refused operation is retried after 60 s. After three refusals it is
     marked failed (kept for inspection) and undone locally: moves at once,
     flags by forgetting the folder's HIGHESTMODSEQ so the next sync reads
@@ -1151,11 +1155,12 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   in Gmail, on a desktop the search box starts where the mail list does
   with the folders open, and stays there when they fold (it does not
   follow the list). It moves left only when the window is too narrow for
-  that place, and then always sits one gap after Compose, whose width is
-  set for this (whole or folded to its pencil; whole, it is measured from
-  its word in the desktop's font, so the word never clips). The top bar uses that one
-  16 px gap between all its items: menu button, Compose, search box,
-  Settings and account picture. `katna_chrome::Bar` gives the bar a center slot,
+  that place, and then always sits one gap after the app's name, whose
+  width is set for this: the Katna mark, "Katna" and the longest app name,
+  measured in the desktop's font (a narrow tablet, under 760 px, folds the
+  words away and keeps the mark). The top bar uses that one
+  16 px gap between all its items: menu button, the app's name, search
+  box, Settings and account picture. `katna_chrome::Bar` gives the bar a center slot,
   height and background for this.
 - **Navigation.** The folders as full pills, rounded at both ends and
   set 8 px in from the pane's edge (the drawers' lines too). The menu
@@ -1199,6 +1204,14 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   `uniform_list`. Hovering a line shows Archive, Delete, Mark as
   read/unread and Pin in place of the date. Star, importance and pin
   changes show a snackbar with Undo.
+- **Undo.** Every change to mail (archive, delete to Trash, move, spam,
+  read/unread, star, importance, pin, send while its undo delay runs)
+  shows a snackbar with Undo, and each window keeps its last 50 as a
+  history that Ctrl+Z (and the set's own key, like Z) walks back through
+  after the snackbar is gone. Moves out of search results or a
+  conversation window go back per message to the folder each left.
+  Deletes for good and mail already sent cannot be undone; Ctrl+Z says so.
+  In text fields Ctrl+Z is about the text.
 - **Pins.** Pin to top (hover button, More and right-click menus) keeps a
   conversation, or a single message in message view, above the rest of
   every folder it is listed in, newest pin first, with a pin next to the
@@ -1224,17 +1237,22 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   `MailChanged` itself. Archiving, deleting or moving the conversation
   closes it, and the main window shows the snackbar with Undo.
 - **Printing.** "Print all" on the open conversation's toolbar (and its
-  More menu) prints every message: the desktop's print dialog (XDG print
-  portal) asks for printer and paper first, then `katna_render::print`
-  lays the conversation out as a PDF on that paper (krilla, text shaped
-  and measured with rustybuzz, in the desktop's UI font found with
-  fontdb) and hands it back to the dialog. The text of each message is
-  printed, with sender, date, recipients and attachment names; pictures
-  and HTML styling are not, and there is no font fallback for scripts the
-  UI font lacks. Without a print portal the PDF opens in the default app.
-  PDFs are written to `$XDG_RUNTIME_DIR/katna/print` and removed after an
-  hour. Print and In new window sit right of the actions and move to the
-  More menu when the reading pane is under 600 px.
+  More menu) prints every message. Katna's own print preview opens first
+  (`window/print_preview.rs`): `katna_render::print` lays the conversation
+  out as a PDF (krilla, text shaped and measured with rustybuzz, in the
+  desktop's UI font found with fontdb) on A4, or Letter where the locale
+  uses it (`LC_PAPER`), and hayro (`katna_preview::pdf`) draws the pages;
+  an A4 or Letter switch lays them out again. Print hands off to the
+  desktop's print dialog (XDG print portal), which starts on the previewed
+  paper; if a different paper is picked there, the pages are laid out
+  again on it. The text of each message is printed, with sender, date,
+  recipients and attachment names; pictures and HTML styling are not, and
+  there is no font fallback for scripts the UI font lacks. Without a print
+  portal the PDF opens in the default app. PDFs are written to
+  `$XDG_RUNTIME_DIR/katna/print` and removed after an hour. Print and In
+  new window sit right of the actions and move to the More menu when the
+  reading pane is under 600 px. The More menus open right under their
+  button, with an icon beside each item.
 - **Reading options.** Settings > General > Reading, taken from
   Mailspring: *Newest message first* shows a conversation's latest reply on
   top, with a reply written above it (`mail.newest_first`); *Show full
@@ -1474,7 +1492,11 @@ Gemini or confidential mode):
   photo, calendar event (says it comes with Katna Calendar), signature,
   More (default to full screen, label (coming soon), plain text mode,
   print, check spelling) and discard. A right-click gives spelling
-  suggestions, clipboard, link and table actions. Mail waiting to be sent
+  suggestions, clipboard, link and table actions. Resting the pointer
+  on an underlined word (600 ms) or a left click on it shows just its
+  fixes in a card under it, in the text and the subject; the card closes
+  when the pointer leaves the word and the card, on a click outside, on
+  Esc or when typing resumes. Mail waiting to be sent
   later gets a *Scheduled* row in the folder list after Sent, which opens
   a list with Cancel send; a cancelled message opens again as written.
   Paste and drop work as in a desktop mail app (`compose/paste.rs`,
@@ -1589,11 +1611,20 @@ Gemini or confidential mode):
   Thunderbird) and that LLMs made it possible. On a phone it fills the
   window.
 - **After the first real install.** The owner's first run on KDE brought
-  these changes. Compose sits in the top bar in place of the app name, so
-  it shows whether the folders are open or not; the account picture moved
+  these changes. The account picture moved
   to the top right, beside the settings gear, with its card below it; the
-  search box is 40 px tall, and Compose beside it is as tall (a 40 px
-  square when a narrow tablet folds it to its pencil). The menu button (a panel icon, not a
+  search box is 40 px tall. Compose first sat in the top bar in place of
+  the app name; the owner later moved it (2026-09-27): it is a 56 px
+  pill at the top of the folders, under the account's name when there is
+  one, and while the folders are folded (and always on a tablet or on
+  another app's page) it is a 56 px square at the top of the app rail.
+  It slides between the two as the folders open or fold, while the
+  rail's apps move down to make room, and resting on it in the rail
+  opens the folders over the list, as resting on Mail does (Escape or
+  leaving closes them). The top bar shows the Katna mark and "Katna
+  Mail" in its place, or Katna Calendar, Contacts, Tasks, Notes or
+  Feeds; switching apps rolls the second word, the old one down and out
+  and the new one down into its place. The menu button (a panel icon, not a
   hamburger: its left part is filled while the folders show and fades to
   an outline as they fold, following the drawer on a tablet or phone;
   "Hide folders" / "Show folders") folds the folders away completely; resting on Mail in the
@@ -1724,6 +1755,21 @@ desktop's own app stays one click away.
     `draw:page`s. Pictures, charts, layout and speaker notes are left out.
     A slide without a title placeholder takes a short first line as its
     title.
+  - **Selecting and copying.** Text files, documents, slides and PDFs
+    select like message text (§ "Message text can be selected" above,
+    `window/select.rs`, shared with the reader): drag, double- and
+    triple-click, Shift+click, Ctrl+A, Ctrl+C and a right-click Copy,
+    also to the primary selection. Copying and Ctrl+A reach text scrolled
+    out of sight. A PDF's text comes from the page itself: hayro reads each
+    page with a device that keeps every glyph with a known character
+    (ToUnicode, glyph names) and where it is drawn, and glyphs on one
+    baseline become a line (`katna_preview::pdf::TextLine`); pages are read
+    in the background, eight at a time, up to 2,000. The selection is drawn
+    over the page's picture. Scanned PDFs have no text to select.
+    Spreadsheets select cells instead: click, drag or Shift+click for a
+    range, a column letter or row number for all of it; Ctrl+C copies
+    them tab-separated (cells with tabs, line breaks or quotes quoted), so
+    they paste as cells into other spreadsheets.
   - Anything else opens straight in the desktop's default app, and so
     does a file of a previewable type that turns out unreadable (damaged,
     encrypted, Word 6/95; the viewer closes and hands it over, or asks
@@ -1778,7 +1824,7 @@ one of three layouts by the width inside the window frame
 | Layout  | Width         | What changes |
 |---------|---------------|--------------|
 | Desktop | 1080 px and up | §13.6 as is. |
-| Tablet  | 600–1080 px   | The folders fold into a drawer the menu button opens over a dimmed list; Compose stays in the top bar beside the menu button (the owner's choice), folding down to its pencil below 760 px; the reading pane (three-pane setting) stays beside the list from 840 px, and narrower the conversation slides in over the list. |
+| Tablet  | 600–1080 px   | The folders fold into a drawer the menu button opens over a dimmed list; Compose is a square at the top of the app rail, and the top bar shows the Katna mark and the app's name beside the menu button, the name folding away below 760 px; the reading pane (three-pane setting) stays beside the list from 840 px, and narrower the conversation slides in over the list. |
 | Phone   | under 600 px  | No app rail: the apps sit in a bar along the bottom. The search box is a pill across the top bar with the menu button and account picture inside it (settings move to the drawer). The list is edge to edge, three lines a message with the sender's picture, which ticks the line when tapped; the inbox tabs move to the drawer. Compose floats at the bottom right; it folds to its pencil as the list scrolls down and grows back after a few steps up (or at the top). The search row and the list toolbar slide up out of sight once the list has scrolled past them, and come back as soon as it turns back up (or at the top); the list keeps still on screen while they move. An open conversation slides in over the list and the bottom bar sinks away; its messages use the room under the sender's picture, from the picture's left edge, and Reply, Reply all and Forward share the width equally. Composing takes a sheet over the whole window. Quick settings and the Settings page each fill the window between the top bar and the bottom bar, with no Compose button over them; the Settings page's section tabs stay on one line that scrolls sideways. |
 
 Settings rows put the name beside the controls and wrap on width alone,
@@ -1958,7 +2004,11 @@ length, so month and day names, the order (`27/09/2026`, `9/27/2026`,
 - Folder and label names sort with `icu_collator` in the chosen language.
 
 The daemon does not format dates, so it links only Fluent (its 20 MB
-budget).
+budget): the counts in its notifications and tray tooltip are written in
+Western digits whatever the language. Its text is in
+`i18n/<tag>/katna-daemon/`, embedded by its own build script; it applies
+`general.language` at start and again when Katna Mail asks it to reload
+the settings, rebuilding the tray menu.
 
 **Text shaping and fonts.** The vendored GPUI draws text with
 `cosmic-text`, which shapes every script with `harfrust` (HarfBuzz's

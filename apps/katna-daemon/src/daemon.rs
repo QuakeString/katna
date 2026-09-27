@@ -19,6 +19,7 @@ use katna_core::{
     config::Metered,
 };
 use katna_dbus::{AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, state};
+use katna_i18n::tr;
 use katna_store::{FolderId, MessageFlags, MessageId, Mode, SendState, Store};
 use katna_sync::{
     Credentials, Endpoint, MailBackend,
@@ -143,6 +144,8 @@ pub struct Daemon {
     metered_setting: Mutex<Metered>,
     /// The user's `sync.offline_days` setting; `None` for all mail.
     offline_days: Mutex<Option<u32>>,
+    /// The user's `general.language` setting, as last applied.
+    language: Mutex<String>,
     status: Mutex<HashMap<AccountId, Status>>,
     outbox: Mutex<Option<Sending>>,
     /// Why each outbox entry's last try failed.
@@ -174,7 +177,8 @@ impl Daemon {
         config: WorkerConfig,
     ) -> katna_store::Result<(Arc<Self>, Receiver<Notice>)> {
         let store = Store::open(&paths, Mode::ReadWrite)?;
-        let sync = settings(&paths).sync;
+        let saved = settings(&paths);
+        let sync = saved.sync;
         let setting = sync.metered;
         let (notices, receiver) = async_channel::unbounded();
         let daemon = Arc::new(Self {
@@ -187,6 +191,7 @@ impl Daemon {
             network_metered: AtomicBool::new(false),
             metered_setting: Mutex::new(setting),
             offline_days: Mutex::new(sync.offline_window()),
+            language: Mutex::new(saved.general.language),
             status: Mutex::default(),
             outbox: Mutex::default(),
             send_errors: Mutex::default(),
@@ -377,9 +382,8 @@ impl Daemon {
         password: String,
     ) -> Result<AccountId, CommandError> {
         if self.closing.load(Ordering::SeqCst) {
-            return Err(CommandError::Failed(
-                "Katna is deleting all its data".into(),
-            ));
+            // Katna Mail shows this in the add-account dialog.
+            return Err(CommandError::Failed(tr!("daemon-deleting-data")));
         }
         let name = match display_name.trim() {
             "" => address.clone(),
@@ -600,8 +604,9 @@ impl Daemon {
 
     /// Reads the settings file again and applies what the daemon uses from
     /// it (`sync.metered`, `sync.offline_days`, `notifications`,
-    /// the `general` tray and badge switches, `feedback.send_crash_reports`).
-    /// Katna Mail calls this after saving settings.
+    /// the `general` language, tray and badge switches,
+    /// `feedback.send_crash_reports`). Katna Mail calls this after saving
+    /// settings.
     pub fn reload_config(&self) -> Result<(), CommandError> {
         let config = Config::load(&self.paths.config_file())
             .map_err(|err| CommandError::InvalidArgs(err.to_string()))?;
@@ -621,6 +626,11 @@ impl Daemon {
         }
         if let Some(notices) = self.new_mail_notices() {
             notices.set(&config.notifications);
+        }
+        // Before the tray hears of it, so it rebuilds in the new language.
+        let language = &config.general.language;
+        if std::mem::replace(&mut *self.language.lock().unwrap(), language.clone()) != *language {
+            katna_i18n::apply(language);
         }
         if let Some(desktop) = self.desktop.get() {
             desktop.settings(config.general.clone());

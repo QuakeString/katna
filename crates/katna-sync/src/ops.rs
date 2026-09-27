@@ -45,12 +45,15 @@ enum Op {
         add: u32,
         remove: u32,
     },
-    /// Move `message` from `from` (where its UID is `uid`) to `to`.
+    /// Move `message` from `from` (where its UID is `uid`) to `to`. `uid`
+    /// is `None` when an earlier move put the message in `from` and the
+    /// server has not confirmed it yet (an undo right after an archive); it
+    /// is looked up at replay time, after that earlier move has run.
     Move {
         message: i64,
         from: i64,
         from_path: String,
-        uid: u32,
+        uid: Option<u32>,
         to: i64,
         to_path: String,
     },
@@ -233,17 +236,9 @@ pub fn move_messages(
         };
         let from = &folders[&source.folder];
         let synced = is_synced(store, account)?;
-        let uid = match source.uid {
-            Some(uid) => uid,
-            // Local folders have no UIDs.
-            None if !synced => 0,
-            None => {
-                return Err(ChangeError::NotPossible(format!(
-                    "message {} is still being moved; try again in a moment",
-                    id.0
-                )));
-            }
-        };
+        // Local folders have no UIDs; a message moved there a moment ago
+        // gets its UID when that move runs on the server.
+        let uid = source.uid;
         plans.push((
             account,
             synced,
@@ -424,7 +419,19 @@ pub async fn replay<B: MailBackend>(
                     continue;
                 }
             };
-            let result = run(backend, store, &op, &mut selected, &mut report).await;
+            // A move that handed its new UID to a later one: read the
+            // queue again so that one runs with it.
+            let mut requeued = false;
+            let result = run(
+                backend,
+                store,
+                account,
+                &op,
+                &mut selected,
+                &mut report,
+                &mut requeued,
+            )
+            .await;
             let mut batch = store.mail_batch()?;
             match result {
                 Ok(()) => {
@@ -446,6 +453,9 @@ pub async fn replay<B: MailBackend>(
                 Err(error) => return Err(error),
             }
             batch.commit()?;
+            if requeued {
+                break;
+            }
         }
     }
     Ok(report)
@@ -455,9 +465,11 @@ pub async fn replay<B: MailBackend>(
 async fn run<B: MailBackend>(
     backend: &mut B,
     store: &mut Store,
+    account: AccountId,
     op: &Op,
     selected: &mut Option<String>,
     report: &mut ReplayReport,
+    requeued: &mut bool,
 ) -> Result<()> {
     match op {
         Op::Flags {
@@ -494,12 +506,24 @@ async fn run<B: MailBackend>(
         }
         Op::Move {
             message,
+            from,
             from_path,
             uid,
             to,
             to_path,
-            ..
         } => {
+            let uid = match uid {
+                Some(uid) => *uid,
+                None => store
+                    .locations(MessageId(*message))?
+                    .into_iter()
+                    .find(|l| l.folder == FolderId(*from))
+                    .and_then(|l| l.uid)
+                    .ok_or_else(|| {
+                        Error::Rejected("the message's earlier move is not confirmed yet".into())
+                    })?,
+            };
+            let uid = &uid;
             select(backend, selected, from_path).await?;
             let moved = backend.move_messages(&[*uid], to_path).await?;
             let mut batch = store.mail_batch()?;
@@ -507,7 +531,11 @@ async fn run<B: MailBackend>(
             match moved.iter().find(|(old, _)| old == uid) {
                 // The local copy now carries its server UID.
                 Some(&(_, new)) => {
-                    batch.move_location(message, to, to, Some(new))?;
+                    if !batch.move_location(message, to, to, Some(new))? {
+                        // Moved on locally meanwhile (Undo): the queued move
+                        // out of `to` takes the UID.
+                        *requeued = hand_uid_on(&mut batch, account, message, to, new)?;
+                    }
                 }
                 // Without UIDPLUS the next sync of `to` adds it again.
                 None => {
@@ -559,6 +587,36 @@ async fn run<B: MailBackend>(
 }
 
 /// Undoes the local side of an operation the server refused for good.
+/// Gives the queued move of `message` out of `folder` that waits for its
+/// UID there the `uid` the server reported. Returns whether there was one.
+fn hand_uid_on(
+    batch: &mut katna_store::MailBatch<'_>,
+    account: AccountId,
+    message: MessageId,
+    folder: FolderId,
+    uid: u32,
+) -> katna_store::Result<bool> {
+    for queued in batch.pending_ops(account)? {
+        let Ok(mut op) = serde_json::from_str::<Op>(&queued.op_json) else {
+            continue;
+        };
+        if let Op::Move {
+            message: m,
+            from,
+            uid: waiting @ None,
+            ..
+        } = &mut op
+            && *m == message.0
+            && *from == folder.0
+        {
+            *waiting = Some(uid);
+            batch.set_op_json(queued.id, &encode(&op))?;
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
 fn undo(batch: &mut katna_store::MailBatch<'_>, op: &Op) -> katna_store::Result<()> {
     match op {
         // The next sync fetches every flag of the folder again.
@@ -570,12 +628,7 @@ fn undo(batch: &mut katna_store::MailBatch<'_>, op: &Op) -> katna_store::Result<
             to,
             ..
         } => {
-            batch.move_location(
-                MessageId(*message),
-                FolderId(*to),
-                FolderId(*from),
-                Some(*uid),
-            )?;
+            batch.move_location(MessageId(*message), FolderId(*to), FolderId(*from), *uid)?;
             Ok(())
         }
         // Gone locally; it stays on the server and in other clients.

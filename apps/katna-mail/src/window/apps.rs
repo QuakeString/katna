@@ -94,6 +94,10 @@ impl MailWindow {
         if self.app == app {
             return;
         }
+        // The name at the top left rolls from the old app's to the new.
+        self.title_from = self.app;
+        self.title_roll.snap(0.0);
+        self.title_roll.set(1.0);
         self.app = app;
         self.menu = None;
         self.search_panel = None;
@@ -124,6 +128,11 @@ impl MailWindow {
 
     pub(super) fn render_app_rail(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let labels = self.config.mail.app_labels;
+        // Room at the top for Compose while it is in the rail: the apps
+        // move down as it slides in from the folders.
+        let compose_room = (super::COMPOSE_TOP + super::COMPOSE_HEIGHT + 12.0 - 4.0)
+            * (1.0 - self.compose_dock.value().clamp(0.0, 1.0))
+            * self.compose_shown.value().clamp(0.0, 1.0);
         let items = App::ALL.into_iter().map(|app| {
             let on = self.app == app;
             div()
@@ -218,8 +227,16 @@ impl MailWindow {
             .flex()
             .flex_col()
             .items_center()
-            .child(self.tour_mark(super::tour::Spot::Apps))
-            .children(items)
+            .child(div().flex_none().h(px(compose_room)))
+            .child(
+                div()
+                    .relative()
+                    .flex()
+                    .flex_col()
+                    .items_center()
+                    .child(self.tour_mark(super::tour::Spot::Apps))
+                    .children(items),
+            )
             .child(div().flex_1())
             .child(
                 icon_button_colored(

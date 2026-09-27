@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Undo anything with Ctrl+Z"
+text = """
+Archived, deleted, moved or starred something by mistake? Press Ctrl+Z, or
+Undo on the note at the bottom, to take it back, including from search
+results and conversations open in their own window. Ctrl+Z keeps going back
+through what you did, marking as read or unread included, and takes back a
+sent message while its undo delay is still running.
+"""

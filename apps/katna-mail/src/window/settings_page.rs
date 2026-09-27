@@ -1153,14 +1153,16 @@ impl MailWindow {
                 d.children(accounts.iter().enumerate().map(|(ix, account)| {
                     let provider = self.provider(account);
                     let setting = self.config.mail.tabs_of(&account.address);
-                    let title = if account.display_name.trim().is_empty() {
-                        account.address.clone()
+                    // The name, with the address on its own line under it.
+                    let name = account.display_name.trim();
+                    let (title, address) = if name.is_empty() || name == account.address {
+                        (account.address.clone(), None)
                     } else {
-                        format!("{} ({})", account.display_name.trim(), account.address)
+                        (name.to_owned(), Some(account.address.as_str()))
                     };
                     self.row(
                         title,
-                        None,
+                        address,
                         self.account_tabs_choice(ix, &account.address, &setting, provider, th, cx),
                         th,
                     )
@@ -1464,8 +1466,11 @@ impl MailWindow {
                     } else {
                         address.eq_ignore_ascii_case(chosen)
                     };
+                    // The whole address on hover, where the chip cuts it short.
+                    let full = (!address.is_empty()).then(|| tip(label.clone(), th));
                     chip(("page-send-from", n), label, on, th)
                         .map(|d| self.page_control(d, th, cx))
+                        .when_some(full, |d, full| d.tooltip(full))
                         .on_click(cx.listener(move |this, _, _, cx| {
                             this.set_send_from(address.clone(), cx)
                         }))
@@ -2246,7 +2251,11 @@ pub(super) fn setting_row(
     flash: Option<AnyElement>,
     th: &Theme,
 ) -> Div {
-    let long = detail.clone().filter(|d| d.chars().count() > ONE_LINE);
+    // One word, such as an address, is shown as it is: it isn't a
+    // sentence to tuck away.
+    let long = detail
+        .clone()
+        .filter(|d| d.chars().count() > ONE_LINE && d.contains(char::is_whitespace));
     let open = long.is_some() && info.borrow().as_ref() == Some(&label);
     let button = long.clone().map(|text| {
         let info = info.clone();
@@ -2306,8 +2315,12 @@ pub(super) fn setting_row(
                         .flex_row()
                         .items_center()
                         .gap(px(4.0))
+                        // A name longer than the column, such as an
+                        // account's, wraps inside it rather than running
+                        // under the controls.
                         .child(
                             div()
+                                .min_w_0()
                                 .text_size(px(14.0))
                                 .font_weight(FontWeight::MEDIUM)
                                 .child(label),
@@ -2375,11 +2388,15 @@ fn chip(id: impl Into<gpui::ElementId>, label: String, on: bool, th: &Theme) -> 
         .text_size(px(13.0))
         .cursor_pointer()
         .hover(|s| s.bg(rgba(th.hover)))
-        .child(if label.trim().is_empty() {
+        // A long address or name is cut short with "…" rather than
+        // running past the row.
+        .max_w_full()
+        .min_w_0()
+        .child(div().truncate().child(if label.trim().is_empty() {
             tr!("settings-compose-untitled")
         } else {
             label
-        })
+        }))
 }
 
 /// A key as a keycap; `off` when single keys are turned off.

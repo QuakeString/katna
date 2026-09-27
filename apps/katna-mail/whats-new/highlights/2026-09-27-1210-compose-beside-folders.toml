@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Compose moves to the folders"
+text = """
+Compose now sits at the top of your folders. Fold them away and it
+slides into the bar on the left, where resting on it shows the folders
+again. The top left shows Katna Mail, and the name rolls to Calendar,
+Contacts and the rest as you switch apps.
+"""
