@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 624 more of their own. Each keeps its own license.
+bring in 830 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -26,6 +26,7 @@ bring in 624 more of their own. Each keeps its own license.
 | [gpui-pre-linux](https://github.com/zed-industries/zed) 0.3.6 | zed-industries | Apache-2.0 | Zed's `gpui_linux` crate (gpui-pre snapshot of zed@bcf6582) |
 | [gpui-pre-platform](https://github.com/zed-industries/zed) 0.3.6 | zed-industries | Apache-2.0 | Zed's `gpui_platform` crate (gpui-pre snapshot of zed@bcf6582) |
 | [gpui-pre-wgpu](https://github.com/zed-industries/zed) 0.3.6 | zed-industries | Apache-2.0 | Zed's `gpui_wgpu` crate (gpui-pre snapshot of zed@bcf6582) |
+| [harper-core](https://github.com/automattic/harper) 2.11.0 | automattic | Apache-2.0 | The language checker for developers. |
 | [hayro](https://github.com/LaurenzV/hayro) 0.7.1 | Laurenz Stampfl | Apache-2.0 OR MIT | A rasterizer for PDF files. |
 | [html5ever](https://github.com/servo/html5ever) 0.40.1 | The html5ever Project Developers | MIT OR Apache-2.0 | High-performance browser-grade HTML5 parser |
 | [icu_calendar](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | Date APIs for Gregorian and non-Gregorian calendars |
