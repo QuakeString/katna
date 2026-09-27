@@ -619,18 +619,20 @@ impl MailWindow {
                     .with_priority(1),
                 )
                 .child(
+                    // Under the button, moved back inside the window when
+                    // it would run past an edge (a phone's narrow window).
                     deferred(
-                        div()
-                            .absolute()
-                            .top(px(40.0))
-                            .left(px(0.0))
-                            .occlude()
+                        anchored()
+                            .offset(point(px(0.0), px(40.0)))
+                            .snap_to_window_with_margin(px(8.0))
                             .child(
-                                items.with_animation(
-                                    ("menu", which as usize),
-                                    Animation::new(Duration::from_millis(160))
-                                        .with_easing(ease_out_quint()),
-                                    |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
+                                div().occlude().child(
+                                    items.with_animation(
+                                        ("menu", which as usize),
+                                        Animation::new(Duration::from_millis(160))
+                                            .with_easing(ease_out_quint()),
+                                        |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
+                                    ),
                                 ),
                             ),
                     )
