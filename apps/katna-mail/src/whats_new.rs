@@ -83,6 +83,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                popovers turn to frosted glass.",
         animation: None,
     },
+    Highlight {
+        id: 6,
+        title: "Search your settings",
+        text: "With Settings open, the search box finds any setting and takes you \
+               to it. Settings has more tabs, in a clearer order, and long \
+               explanations sit behind an (i) button.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.

@@ -1242,8 +1242,26 @@ Gemini or confidential mode):
   Changes apply at once and are saved to `config.toml` (`[mail]`,
   `[sending]` and `[shortcuts]`).
 - **Settings page.** "See all settings", the rail's gear or `?` open it in
-  place of the list (`window/settings_page.rs`), with sections General,
-  Inbox, Accounts, Signatures and Keyboard shortcuts.
+  place of the list (`window/settings_page.rs`). Its tabs, in the owner's
+  order: General, Inbox, Accounts, Subscription, Appearance (reading pane,
+  density, theme, desktop colors, app names, sender pictures), Shortcuts,
+  Default apps, Mail rules, Folders, Signature, Templates, MCP server,
+  User feedback (turning crash reports and feedback off at any time) and
+  Experimental, always last. Subscription, Mail rules, Folders, Templates,
+  MCP server and, until its switches land, User feedback are still to come: their tabs are fainter and each shows a "Coming soon"
+  page saying what it will do. The tabs wrap onto a second line on a
+  desktop, as Gmail's do, and scroll sideways on a phone. A setting's
+  line that would take more than one line under its name (over about 40
+  characters) sits behind an (i) button beside the name: its tooltip on
+  hover, and shown under the name after a click, Enter or a tap.
+- **Searching settings.** While the Settings page is open the top bar's
+  search box searches settings ("Search settings"; `window/settings_search.rs`):
+  matching rows from every tab replace the open tab, each with its tab and
+  a line on it (row names, what they do, other words people use, and every
+  shortcut's name). A result, or Enter for the first, opens its tab,
+  scrolls the row into view and lights it up for a moment. Closing the page
+  puts mail search back, with its words if the list still shows its
+  results.
 - **Tab between controls.** Tab and Shift+Tab move the focus in the order
   things are drawn, as in any desktop form: fields (`TextInput`,
   `RichEditor`) are always Tab stops, and the Settings page's tabs, rows,

@@ -45,6 +45,8 @@ impl Render for Tooltip {
         // Kept below and right of the pointer, clear of the cursor.
         div().pl(px(4.0)).pt(px(14.0)).child(
             div()
+                // Long text wraps rather than running off the window.
+                .max_w(px(320.0))
                 .px(px(8.0))
                 .py(px(4.0))
                 .rounded(px(4.0))

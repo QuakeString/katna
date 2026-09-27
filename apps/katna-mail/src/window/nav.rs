@@ -165,6 +165,8 @@ impl MailWindow {
         let available = self.mail.as_ref().is_ok_and(crate::data::Mail::has_index);
         let has_text = !self.search.read(cx).text().is_empty();
         let panel_open = self.search_panel.is_some();
+        // While the Settings page is open the box searches settings.
+        let settings = self.settings_page.is_some();
         // On a phone the box is a pill across the bar, with the menu button
         // and the account picture over its two ends.
         let phone = self.layout.shape.phone;
@@ -186,7 +188,7 @@ impl MailWindow {
             .text_size(px(16.0))
             .line_height(px(24.0))
             .text_color(rgba(th.text))
-            .when(!available, |d| d.opacity(0.6))
+            .when(!available && !settings, |d| d.opacity(0.6))
             // A drag here selects text rather than moving the window.
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .child(self.tour_mark(Spot::Search))
@@ -202,7 +204,7 @@ impl MailWindow {
                                 .tooltip(tip("Search", th))
                                 .on_click(cx.listener(|this, _, window, cx| {
                                     let text = this.search.read(cx).text().trim().to_owned();
-                                    if text.is_empty() {
+                                    if text.is_empty() || this.settings_page.is_some() {
                                         this.focus_search(&FocusSearch, window, cx);
                                     } else {
                                         this.start_search(text, cx);
@@ -222,19 +224,21 @@ impl MailWindow {
                         })),
                 )
             })
-            .child(
-                icon_button_colored(
-                    "search-options",
-                    "tune",
-                    22.0,
-                    if panel_open { th.accent } else { th.text_dim },
-                    th,
+            .when(!settings, |d| {
+                d.child(
+                    icon_button_colored(
+                        "search-options",
+                        "tune",
+                        22.0,
+                        if panel_open { th.accent } else { th.text_dim },
+                        th,
+                    )
+                    .tooltip(tip("Show search options", th))
+                    .on_click(cx.listener(|this, _, window, cx| {
+                        this.toggle_search_panel(window, cx);
+                    })),
                 )
-                .tooltip(tip("Show search options", th))
-                .on_click(cx.listener(|this, _, window, cx| {
-                    this.toggle_search_panel(window, cx);
-                })),
-            )
+            })
             .into_any_element()
     }
 

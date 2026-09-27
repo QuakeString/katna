@@ -206,13 +206,13 @@ impl MailWindow {
         div()
             .flex()
             .flex_col()
-            .child(super::settings_page::row(
+            .child(self.row(
                 "Folder pane",
                 Some("Which accounts' folders the pane on the left shows."),
                 pane,
                 th,
             ))
-            .child(super::settings_page::row(
+            .child(self.row(
                 "Accounts",
                 Some(
                     "Removing an account deletes Katna's copy of its mail on this computer. \
@@ -221,7 +221,7 @@ impl MailWindow {
                 list,
                 th,
             ))
-            .child(super::settings_page::row(
+            .child(self.row(
                 "Delete all data",
                 Some("Start over, as on a new install."),
                 delete_all,
