@@ -66,6 +66,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
+        "settings-time",
+        "settings-time-summary",
+        "clock 24-hour 12-hour am pm time format hours",
+    ),
+    entry(
+        Section::General,
         "settings-general-reading",
         "settings-general-reading-summary",
         "order oldest descending chronological reverse headers details from to cc names recipients first last",

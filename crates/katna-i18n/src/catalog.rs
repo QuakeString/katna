@@ -65,6 +65,19 @@ pub fn apply(choice: &str) -> Resolved {
     resolved
 }
 
+/// Builds the current language's catalog again, as after a change to the
+/// clock setting.
+#[cfg(feature = "format")]
+pub(crate) fn rebuild() {
+    let Ok(mut current) = CURRENT.write() else {
+        return;
+    };
+    if let Some(catalog) = current.as_ref() {
+        let resolved = catalog.resolved.clone();
+        *current = Some(Arc::new(build(resolved)));
+    }
+}
+
 /// The language in use.
 pub fn current() -> Resolved {
     catalog().resolved.clone()
@@ -178,7 +191,7 @@ fn build(resolved: Resolved) -> Catalog {
     });
     Catalog {
         #[cfg(feature = "format")]
-        formats: crate::format::Formats::new(&resolved.formats),
+        formats: crate::format::Formats::new(&resolved.formats, crate::format::clock()),
         resolved,
         bundle,
         english,

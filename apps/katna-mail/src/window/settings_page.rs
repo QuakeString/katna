@@ -22,7 +22,7 @@ use gpui::{
     ScrollHandle, SharedString, Stateful, Subscription, Task, Window, div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountTabs, Density, FileGroup, MarkRead, OpenIn, ReadingPane, ShortcutSet, TabStyle,
+    AccountTabs, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane, ShortcutSet, TabStyle,
     Theme as ThemeChoice,
 };
 use katna_i18n::tr;
@@ -448,6 +448,7 @@ impl MailWindow {
                 self.language_choice(th, cx),
                 th,
             ))
+            .child(self.row(tr!("settings-time"), None, self.clock_choice(th, cx), th))
             .child(self.row(
                 tr!("settings-general-conversations"),
                 None,
@@ -526,6 +527,41 @@ impl MailWindow {
                 self.desktop_switches(th, cx),
                 th,
             ))
+            .into_any_element()
+    }
+
+    /// 12- or 24-hour times, or as the language writes them
+    /// (`general.clock`).
+    fn clock_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let now = self.config.general.clock;
+        let chips = [
+            (
+                Clock::Language,
+                "clock-language",
+                katna_i18n::tr!("settings-clock-language"),
+            ),
+            (
+                Clock::TwelveHour,
+                "clock-12",
+                katna_i18n::tr!("settings-clock-12"),
+            ),
+            (
+                Clock::TwentyFourHour,
+                "clock-24",
+                katna_i18n::tr!("settings-clock-24"),
+            ),
+        ]
+        .map(|(clock, id, text)| {
+            self.page_control(chip(id, text, clock == now, th), th, cx)
+                .on_click(cx.listener(move |this, _, _, cx| this.apply(Change::Clock(clock), cx)))
+        });
+        div()
+            .px(px(8.0))
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .gap(px(6.0))
+            .children(chips)
             .into_any_element()
     }
 

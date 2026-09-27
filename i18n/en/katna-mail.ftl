@@ -1220,3 +1220,12 @@ accounts-confirm-word = delete
 accounts-confirm-placeholder = Type “{ accounts-confirm-word }”
 accounts-confirm-prompt = To confirm, type “{ accounts-confirm-word }”:
 accounts-cancel = Cancel
+
+## Settings > General > Time
+
+settings-time = Time
+settings-clock-language = As the language writes it
+settings-clock-12 = 12-hour, like 2:05 PM
+settings-clock-24 = 24-hour, like 14:05
+# The line under "Time" in a settings search result.
+settings-time-summary = 12-hour or 24-hour clock, or as the language writes it

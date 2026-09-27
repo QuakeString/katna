@@ -3,6 +3,7 @@ mod dispatcher;
 mod effects;
 mod headless;
 mod keyboard;
+mod placement;
 mod platform;
 mod system_notifications;
 #[cfg(any(feature = "wayland", feature = "x11"))]
@@ -17,6 +18,7 @@ mod xdg_desktop_portal;
 
 pub use appmenu::set_kde_appmenu;
 pub use effects::{compositor_blur, set_client_corner_radius};
+pub use placement::{Placement, placement_session, restore_placement};
 pub(crate) use appmenu::kde_appmenu;
 pub use dispatcher::*;
 pub(crate) use headless::*;
