@@ -11,17 +11,21 @@ use gpui::{
     FontWeight, Global, HitboxBehavior, Hsla, IntoElement, MouseButton, ParentElement, PathBuilder,
     Pixels, ResizeEdge, SharedString, Size, Styled, Tiling, TitlebarOptions, Window,
     WindowAppearance, WindowBackgroundAppearance, WindowBounds, WindowButton, WindowButtonLayout,
-    WindowDecorations, WindowOptions, canvas, div, point, prelude::*, px, rgba, size,
+    WindowDecorations, WindowOptions, canvas, div, point, prelude::*, rgba, size,
 };
+use katna_ui::px;
+use katna_ui::unpx;
 
 use crate::desktop::{DecorationMode, Environment, Preset, Session};
 use crate::geometry::{Edge, FrameGeometry, RESIZE_HANDLE, Rect, Sides};
 use crate::tokens::{ChromeColors, ChromeTokens, Shadow};
 
-/// GNOME HIG minimum window size (360×294 logical pixels).
+/// GNOME HIG minimum window size (360×294 logical pixels), in the
+/// desktop's pixels, whatever Katna's own scale.
+#[allow(clippy::disallowed_methods)]
 pub const MIN_WINDOW_SIZE: Size<Pixels> = Size {
-    width: px(360.0),
-    height: px(294.0),
+    width: gpui::px(360.0),
+    height: gpui::px(294.0),
 };
 
 /// How the app wants its windows to look: a GPUI global that every
@@ -282,7 +286,7 @@ impl WindowChrome {
     /// The width the content gets: the window's surface less the shadow,
     /// resize margins and border that the frame draws around it.
     pub fn inner_width(&self, window: &Window) -> f32 {
-        let width = f32::from(window.viewport_size().width);
+        let width = unpx(window.viewport_size().width);
         let Decorations::Client { tiling } = window.window_decorations() else {
             return width;
         };
@@ -411,8 +415,8 @@ impl WindowChrome {
         };
         let viewport = window.viewport_size();
         let geometry = FrameGeometry {
-            surface_width: f32::from(viewport.width),
-            surface_height: f32::from(viewport.height),
+            surface_width: unpx(viewport.width),
+            surface_height: unpx(viewport.height),
             inset,
             tiled,
         };
@@ -647,18 +651,18 @@ impl WindowChrome {
 }
 
 fn x(p: gpui::Point<Pixels>) -> f32 {
-    f32::from(p.x)
+    unpx(p.x)
 }
 
 fn y(p: gpui::Point<Pixels>) -> f32 {
-    f32::from(p.y)
+    unpx(p.y)
 }
 
 fn geometry_now(window: &Window, inset: f32, tiled: Sides) -> FrameGeometry {
     let viewport = window.viewport_size();
     FrameGeometry {
-        surface_width: f32::from(viewport.width),
-        surface_height: f32::from(viewport.height),
+        surface_width: unpx(viewport.width),
+        surface_height: unpx(viewport.height),
         inset,
         tiled,
     }

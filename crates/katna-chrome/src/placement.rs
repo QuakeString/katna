@@ -5,8 +5,10 @@
 //! through GPUI's window bounds; the place through the compositor's session
 //! on Wayland and an exact position on X11 (`gpui_linux::restore_placement`).
 
-use gpui::{App, Bounds, Pixels, Window, WindowBounds, WindowOptions, point, px, size};
+use gpui::{App, Bounds, Pixels, Window, WindowBounds, WindowOptions, point, size};
 use katna_core::window::WindowState;
+use katna_ui::px;
+use katna_ui::scale::desktop_px;
 
 use crate::desktop::{Environment, Session};
 use crate::frame::{MIN_WINDOW_SIZE, surface_margin};
@@ -40,8 +42,8 @@ pub fn restore_window(
         Session::X11 => 0.0,
     };
     let frame = size(
-        px(state.width).max(MIN_WINDOW_SIZE.width),
-        px(state.height).max(MIN_WINDOW_SIZE.height),
+        desktop_px(state.width).max(MIN_WINDOW_SIZE.width),
+        desktop_px(state.height).max(MIN_WINDOW_SIZE.height),
     );
     let surface = size(
         frame.width + px(2.0 * margin),
@@ -49,9 +51,9 @@ pub fn restore_window(
     );
     let mut bounds = Bounds::centered(None, surface, cx);
     if let Some((x, y)) = state.position
-        && on_a_display(point(px(x), px(y)), cx)
+        && on_a_display(point(desktop_px(x), desktop_px(y)), cx)
     {
-        bounds.origin = point(px(x - margin), px(y - margin));
+        bounds.origin = point(desktop_px(x) - px(margin), desktop_px(y) - px(margin));
     }
     options.window_bounds = Some(if state.maximized {
         WindowBounds::Maximized(bounds)
@@ -63,7 +65,7 @@ pub fn restore_window(
 /// Whether the top of a window whose frame starts at `origin` would be on
 /// one of the displays, so it can be grabbed.
 fn on_a_display(origin: gpui::Point<Pixels>, cx: &App) -> bool {
-    let grip = point(origin.x + px(48.0), origin.y + px(16.0));
+    let grip = point(origin.x + desktop_px(48.0), origin.y + desktop_px(16.0));
     cx.displays()
         .iter()
         .any(|display| display.bounds().contains(&grip))
@@ -96,6 +98,8 @@ impl Placement {
     /// had a size.
     pub fn state(&self, env: &Environment, run: Option<String>) -> Option<WindowState> {
         let windowed = self.windowed?;
+        // Window sizes and places are in the desktop's pixels, whatever
+        // the interface scale, so they are read as they are.
         // Wayland does not tell a window where it is; the compositor's
         // session remembers that.
         let position = (env.session == Session::X11)
