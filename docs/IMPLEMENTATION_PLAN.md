@@ -32,7 +32,7 @@ they become the plan.
 | D4 | Rust toolchain | **Decided: latest stable** — `rust-toolchain.toml` with `channel = "stable"`; `rust-version` in `Cargo.toml` records the minimum and is raised deliberately | CI, contributors |
 | D5 | Supported systems for CI | **Decided: Arch Linux and Ubuntu 26.04 LTS** — Arch = latest Plasma and GNOME; Ubuntu = GNOME, Kubuntu 26.04 = older Plasma | Test matrix, Plasma versions |
 | D6 | App ID / D-Bus prefix | **Decided: `in.invenia.katna`** (domain `katna.invenia.in`): `in.invenia.katna.Mail`, `in.invenia.katna.Calendar`, `in.invenia.katna.Daemon`, interface `in.invenia.katna.Pim1` | Flatpak IDs, D-Bus names, desktop files |
-| D7 | Where crash reports and feedback go | **Decided: a Sentry cloud project now, our own server later** (owner, 27 September 2026): self-hosted GlitchTip or Sentry on `katna.invenia.in` replaces it by changing the DSN. Only after the user opts in; DSN empty until the project exists (`ARCHITECTURE.md` §19.2) | Crash-report track C.5–C.9 |
+| D7 | Where crash reports and feedback go | **Decided: a Sentry cloud project now, our own server later** (owner, 27 September 2026): self-hosted GlitchTip or Sentry on `katna.invenia.in` replaces it by changing the DSN. Only after the user opts in; DSN in `katna_core::ids::SENTRY_DSN` since 27 September 2026 (`ARCHITECTURE.md` §19.2) | Crash-report track C.5–C.9 |
 
 D6 matters for Flathub: its app IDs must match a domain or code-hosting
 account you control.
@@ -242,9 +242,9 @@ notification; promotion to stable ships byte-identical, signed files.
 
 Asked for by the owner on 27 September 2026 (design: `ARCHITECTURE.md`
 §19.2). Crash reports on the machine come first and need no network or
-consent (C.1–C.3, C.2a). Sending, usage statistics and the feedback form (C.4–C.8)
-wait until the onboarding and Settings rewrites of that week have landed.
-Nothing leaves the machine before the user opts in.
+consent (C.1–C.3, C.2a). Asking and sending crash reports (C.4, C.5) came
+next; usage statistics and the feedback form (C.6, C.7) follow. Nothing
+leaves the machine before the user opts in.
 
 | Task | Deliverable |
 |---|---|
@@ -252,11 +252,11 @@ Nothing leaves the machine before the user opts in.
 | C.2 Crash notice ✅ | Next start of Katna Mail after a crash of the app or the daemon: "closed unexpectedly last time" with View report and Copy report; `katnactl crashes` lists, prints and deletes reports |
 | C.2a User feedback tab ✅ | Settings > User feedback (tab before Experimental): "Save crash reports on this computer" (default on) and the saved reports with View, Copy, Delete and Delete all; the tab itself comes from the Settings rewrite |
 | C.3 Readable stacks | Measure `strip = "debuginfo"` against the size budgets; CI keeps each build's debug files (by build ID) and, once the Sentry project exists, uploads them with `sentry-cli` |
-| C.4 Asking | "Help improve Katna" step in onboarding (Share / Don't share, equal weight, no default); asked once after updating for existing installs; Settings > User feedback switches "Send crash reports" and "Send anonymous usage statistics", off until the user opts in, changeable at any time |
-| C.5 Sending crash reports | Daemon uploads envelopes to the DSN over `rustls` only when the switch is on and the network is not metered; Send / Always send in the crash notice; an empty DSN turns sending off |
+| C.4 Asking ✅ | "Help improve Katna" step in onboarding (Don't send / Send crash reports, equal weight, no default); asked once after updating for existing installs; Settings > User feedback switch "Send crash reports", off until the user opts in, changeable at any time ("Send anonymous usage statistics" comes with C.6) |
+| C.5 Sending crash reports ✅ | Daemon sends new reports as hand-written envelopes (no SDK) over `rustls` only when the switch is on and the network is not metered: 20 s after start, every 15 minutes and when settings are saved; reports of the last 7 days, marked "Sent" in the list; an empty DSN turns sending off |
 | C.6 Usage statistics | One enum of features, weekly `info` event with yes/no feature tags and bucketed facts, release-health sessions, random install ID rotated every 90 days and resettable; Settings > User feedback shows what is counted |
 | C.7 Feedback form | Help > Send feedback (global menu, Quick settings > Help, Settings > User feedback): form, optional reply address, preview of exactly what is sent, Sentry User Feedback item |
-| C.8 Sentry project | Project `invenia-systems/4512156171698256` created (owner, 27 September 2026); organization-wide Require Data Scrubber, Require Using Default Scrubbers and Prevent Storing of IP Addresses on (done); GitHub integration; DSN filled in `katna_core::ids`; `SENTRY_AUTH_TOKEN` secret added by the owner for C.3's debug-file upload |
+| C.8 Sentry project | Project `invenia-systems/4512156171698256` created (owner, 27 September 2026); organization-wide Require Data Scrubber, Require Using Default Scrubbers and Prevent Storing of IP Addresses on (done); GitHub integration; DSN filled in `katna_core::ids` (done); `SENTRY_AUTH_TOKEN` secret added by the owner for C.3's debug-file upload |
 | C.9 Own server (later) | GlitchTip or self-hosted Sentry on `katna.invenia.in` with the same settings as C.8; CI uploads debug files there; the DSN constant switches to it; the cloud project is closed once no supported version sends to it |
 
 **Done when:** a panic and a segfault in Katna Mail and in the daemon each

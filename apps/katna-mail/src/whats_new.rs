@@ -95,8 +95,8 @@ pub const HIGHLIGHTS: &[Highlight] = &[
         id: 7,
         title: "Crash reports stay on your computer",
         text: "If Katna Mail or its background service crashes, the next start says so, \
-               with the report to view or copy for a bug report. Nothing is sent. \
-               Settings > User feedback lists them.",
+               with the report to view or copy for a bug report. Settings > User \
+               feedback lists them.",
         animation: None,
     },
     Highlight {
@@ -166,6 +166,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 16,
+        title: "Help improve Katna, if you like",
+        text: "Katna asks once whether to send crash reports to help fix what went \
+               wrong. They go without your IP address, messages or email addresses, \
+               and only if you say yes. Change it any time in Settings > User feedback.",
+        animation: None,
+    },
+    Highlight {
+        id: 17,
         title: "Old Word files and slides",
         text: "Word 97–2003 documents (.doc) now open in the viewer with their \
                headings, lists and tables, and PowerPoint (.pptx, .ppt) and \

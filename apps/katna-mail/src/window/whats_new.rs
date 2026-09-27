@@ -64,8 +64,18 @@ impl MailWindow {
             }
         } else {
             let (highlights, more) = whats_new::unseen(seen);
-            if !highlights.is_empty() {
+            let shown = !highlights.is_empty();
+            if shown {
                 self.open_whats_new(highlights, more, true, from, window, cx);
+            }
+            // Installed before "Help improve Katna" was asked: ask once,
+            // after What's new.
+            if self.share_unanswered() {
+                if shown {
+                    self.share_ask_later = true;
+                } else {
+                    self.open_share_ask(window, cx);
+                }
             }
         }
         // Shown once: a start that ends before the dialog or the tour is
@@ -160,6 +170,9 @@ impl MailWindow {
             dialog.closing = true;
             dialog.shown.set(0.0);
             window.focus(&self.list_focus, cx);
+        }
+        if self.share_ask_later {
+            self.open_share_ask(window, cx);
         }
         cx.notify();
     }
