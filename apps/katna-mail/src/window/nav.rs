@@ -6,8 +6,8 @@
 use std::ops::Range;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, Transformation, div,
-    prelude::*, px, radians, rgba, svg, uniform_list,
+    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, div, prelude::*, px, rgba, svg,
+    uniform_list,
 };
 use katna_ui::Ripple;
 use katna_ui::motion::{self, lerp};
@@ -38,14 +38,13 @@ impl MailWindow {
         // Compose sits beside the menu button on a desktop and a tablet;
         // a phone has it floating over the list.
         let shown = 1.0 - self.layout.shape.phone;
-        // The bars turn upright as the navigation folds away, and lie down
-        // again as a phone's or tablet's drawer opens.
+        // How far the folders show: docked beside the list on a desktop,
+        // or a phone's or tablet's drawer.
         let open = self
             .reserve_spring
             .value()
             .max(self.layout.drawer_t())
             .clamp(0.0, 1.0);
-        let folded = 1.0 - open;
         let menu = div()
             .id("menu-button")
             .relative()
@@ -59,20 +58,40 @@ impl MailWindow {
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
-            .tooltip(tip("Main menu", th))
+            .tooltip(tip(
+                if open > 0.5 {
+                    "Hide folders"
+                } else {
+                    "Show folders"
+                },
+                th,
+            ))
             .on_click(cx.listener(|this, _, window, cx| {
                 this.toggle_navigation(&ToggleNavigation, window, cx)
             }))
             .child(Ripple::new("menu-ripple", rgba(th.ripple)).centered())
             .child(self.tour_mark(Spot::Menu))
+            // A panel whose left part fills while the folders show, fading
+            // with the pane as it opens or folds.
             .child(
-                svg()
-                    .path("icons/menu.svg")
+                div()
+                    .relative()
                     .size(px(24.0))
-                    .text_color(rgba(th.text_dim))
-                    .with_transformation(Transformation::rotate(radians(
-                        folded * std::f32::consts::FRAC_PI_2,
-                    ))),
+                    .child(
+                        svg()
+                            .path("icons/folders-pane.svg")
+                            .size_full()
+                            .text_color(rgba(th.text_dim)),
+                    )
+                    .child(
+                        svg()
+                            .path("icons/folders-pane-fill.svg")
+                            .absolute()
+                            .top_0()
+                            .left_0()
+                            .size_full()
+                            .text_color(rgba(fade(th.text_dim, open))),
+                    ),
             )
             .into_any_element();
         // A narrow tablet folds Compose down to its pencil, so the search
