@@ -26,6 +26,7 @@ pub mod limits;
 pub mod mailer;
 pub mod routes;
 pub mod stream;
+pub mod translate;
 
 pub use config::Config;
 pub use routes::{AppState, router};

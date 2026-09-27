@@ -90,7 +90,6 @@ impl MailWindow {
     /// Whether this computer is signed in to a Katna account with a
     /// confirmed address, as last read. Server features check it and show
     /// [`MailWindow::katna_sign_in_needed`] when not.
-    #[allow(dead_code)]
     pub(super) fn katna_signed_in(&self) -> bool {
         self.katna
             .as_ref()

@@ -220,6 +220,8 @@ outbox           (id, draft_message_id, send_at, state, per_recipient BOOL, atte
 notification     (notif_id, message_ids, account_id, created_at)   -- to close/update later
 pop3_uidl        (account_id, uidl, message_id NULL, first_seen)   -- POP3 downloads (v3)
 pin              (message_id, pinned_at)   -- pinned to the top of the list (v5)
+translation      (message_id, target, source, source_hash, text, created_at)
+                                            -- kept translations (v8, §16.4)
 ```
 
 `participant` is the key table for organizations (§8) and address search.
@@ -2673,6 +2675,42 @@ own on Katna Server; mail logins never go to the server.
 
 `axum` + PostgreSQL; WebSocket/SSE delta stream to `katna-daemon`; a
 scheduler for server-side actions; shared crates with the apps where useful.
+
+### 16.4 Automatic translation
+
+Katna Mail offers to translate a message that is not in the reading
+language (plan 7.8; decided 27 September 2026: LibreTranslate on the
+owner's server, over on-device models or DeepL).
+
+- **Server:** LibreTranslate (AGPL-3.0, upstream image, unmodified) runs as
+  its own container beside `katna-server`, on the compose file's internal
+  network only; which language models load is set there
+  (`LT_LOAD_ONLY`). `katna-server` passes `GET /api/v1/languages` and
+  `POST /api/v1/translate` / `/api/v1/detect` through for computers signed
+  in to a Katna account with a confirmed address (§16.2), with a daily
+  limit per account, and logs and keeps neither the text nor the
+  translation.
+- **Daemon:** `Translate(message, text, source, target)` on D-Bus. Katna
+  Mail finds the message's language on this computer (`katna-translate`,
+  whatlang; in the app, as its models would crowd the daemon's size
+  budget) and sends its plain text (HTML made plain, quotes and signature
+  kept; never attachments, headers or addresses). Mail already in the
+  reading language is never sent, and the daemon refuses it too. It sends
+  the text in
+  pieces of at most 4000 characters (40,000 in all) over rustls to
+  `katna_core::ids::TRACKING_SERVER_URL` (empty turns translation off),
+  with the Katna account's token (`katna_account::Session::token`), and
+  keeps the translation in `mail.db` (`translation`, keyed by message,
+  target and a hash of the text). Reset cache forgets them. Encrypted mail
+  is never offered for translation.
+- **App:** a bar above a message in another language: "Translate to
+  <reading language>", then "Show original"; while signed out it says to
+  sign in to a Katna account, with a button to Settings > Katna account.
+  Settings > General >
+  Translation: offer translations (on), the reading language (the UI
+  language by default), languages always translated (none by default, one
+  click from the bar) and languages never offered. The Settings text says
+  the mail's text goes to Katna's server.
 
 ## 17. Performance budget
 

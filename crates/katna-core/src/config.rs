@@ -454,6 +454,39 @@ pub struct MailView {
     /// first account is the default where there is one.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub account_order: Vec<String>,
+    /// Translating mail into the reading language with Katna Server.
+    pub translation: TranslationSettings,
+}
+
+/// Automatic translation (Settings > General > Translation;
+/// `docs/ARCHITECTURE.md` §16.4). Languages are LibreTranslate codes
+/// (`es`, `zh`, `zt`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TranslationSettings {
+    /// Offer to translate mail in other languages. Nothing is sent until
+    /// the user asks, or chose to always translate a language.
+    pub offer: bool,
+    /// The language mail is translated into; empty for the interface's.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub reading_language: String,
+    /// Languages translated as soon as a message opens.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub always: Vec<String>,
+    /// Languages never offered for translation.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub never: Vec<String>,
+}
+
+impl Default for TranslationSettings {
+    fn default() -> Self {
+        Self {
+            offer: true,
+            reading_language: String::new(),
+            always: Vec::new(),
+            never: Vec::new(),
+        }
+    }
 }
 
 impl Default for MailView {
@@ -488,6 +521,7 @@ impl Default for MailView {
             unified_inbox: false,
             current_account: String::new(),
             account_order: Vec::new(),
+            translation: TranslationSettings::default(),
         }
     }
 }

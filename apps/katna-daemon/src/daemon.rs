@@ -25,6 +25,7 @@ use katna_i18n::tr;
 use katna_search::IndexerWaker;
 use katna_store::{
     FolderId, Forgotten, MessageFlags, MessageId, Mode, SendState, Store, Template, TemplateFile,
+    Translation,
 };
 use katna_sync::{
     Credentials, Endpoint, MailBackend, MailSender,
@@ -41,6 +42,7 @@ use katna_sync::{
     worker::{self, Connector, Event, ImapConnector, Pop3Connector, WorkerConfig},
 };
 
+use crate::translate::{self, KatnaServer, TranslateError};
 use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secrets};
 
 mod reminders;
@@ -212,6 +214,8 @@ pub struct Daemon {
     /// Tells the tracking event stream to look again (a tracked message
     /// went out, or settings changed).
     tracking_wake: (Sender<()>, Receiver<()>),
+    /// The languages Katna Server translates between, once asked.
+    translation_languages: crate::translate::Languages,
     /// Wakes the scheduler of snooze and reminders, once it runs.
     scheduler: OnceLock<katna_meta::Waker>,
 }
@@ -256,6 +260,7 @@ impl Daemon {
             delete_requests: async_channel::bounded(1),
             crash_uploads: async_channel::bounded(1),
             tracking_wake: async_channel::bounded(1),
+            translation_languages: Default::default(),
             scheduler: OnceLock::new(),
         });
         Ok((daemon, receiver))
@@ -567,6 +572,71 @@ impl Daemon {
         let pictures = Pictures::system(self.paths.cache_dir())
             .map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
         Ok(pictures.sender(address).await)
+    }
+
+    /// Translates `text`, the plain text of `message` in language `source`
+    /// (found by the app; `auto` when unclear), into `target` (LibreTranslate
+    /// codes such as `en`): the language it was in and the translation,
+    /// from the store when this text was translated before. Mail already
+    /// in `target` is never sent.
+    pub async fn translate(
+        &self,
+        message: MessageId,
+        text: &str,
+        source: &str,
+        target: &str,
+    ) -> Result<Translation, TranslateError> {
+        let valid = |code: &str| {
+            (2..=8).contains(&code.len())
+                && code.bytes().all(|b| b.is_ascii_lowercase() || b == b'-')
+        };
+        if !valid(source) || !valid(target) {
+            return Err(TranslateError::Server(format!(
+                "bad language {source:?} or {target:?}"
+            )));
+        }
+        // Before anything reaches the network, the store included.
+        if katna_translate::same_language(source, target) {
+            return Err(TranslateError::SameLanguage);
+        }
+        {
+            let store = self.store();
+            let known = store
+                .messages_by_id(&[message])
+                .map_err(|err| TranslateError::Server(err.to_string()))?;
+            if known.is_empty() {
+                return Err(TranslateError::Server(format!("no message {}", message.0)));
+            }
+            let cached = store
+                .translation(message, target, text)
+                .map_err(|err| TranslateError::Server(err.to_string()))?;
+            if let Some(cached) = cached {
+                return Ok(cached);
+            }
+        }
+        let server = KatnaServer::connect(&self.secrets).await?;
+        let done = translate::translate(&server, &self.translation_languages, text, source, target)
+            .await?;
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_or(0, |d| d.as_secs().try_into().unwrap_or(i64::MAX));
+        if let Err(err) = self
+            .store()
+            .save_translation(message, target, text, &done, now)
+        {
+            tracing::warn!(%err, "keeping a translation");
+        }
+        tracing::info!(from = done.source, to = target, "message translated");
+        Ok(done)
+    }
+
+    /// The languages Katna Server can translate into `target`.
+    pub async fn translation_sources(&self, target: &str) -> Result<Vec<String>, TranslateError> {
+        let server = KatnaServer::connect(&self.secrets).await?;
+        self.translation_languages
+            .sources(&server, target)
+            .await
+            .inspect_err(|err| tracing::info!(%err, "asking the server for its languages"))
     }
 
     /// Renames an account. An empty name goes back to the name its own
@@ -1494,8 +1564,8 @@ enum Link {
 }
 
 /// Drops the handle and waits for the worker to log out.
-/// Forgets the downloaded mail of every IMAP account and deletes the
-/// sender pictures, for [`Daemon::reset_cache`]. POP3 servers may no longer
+/// Forgets the downloaded mail of every IMAP account and the translations,
+/// and deletes the sender pictures, for [`Daemon::reset_cache`]. POP3 servers may no longer
 /// have their mail, and imported mail has no server.
 fn forget_downloaded(paths: &Paths) -> Result<Forgotten, CommandError> {
     let mut store = Store::open(paths, Mode::ReadWrite)?;
@@ -1506,6 +1576,7 @@ fn forget_downloaded(paths: &Paths) -> Result<Forgotten, CommandError> {
         .map(|account| account.id)
         .collect();
     let forgotten = store.forget_downloaded_mail(&accounts)?;
+    store.forget_translations()?;
     let pictures = Pictures::cache_dir(paths.cache_dir());
     match std::fs::remove_dir_all(&pictures) {
         Err(err) if err.kind() != std::io::ErrorKind::NotFound => {

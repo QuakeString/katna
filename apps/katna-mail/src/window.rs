@@ -59,6 +59,7 @@ mod snooze;
 mod storage;
 mod tab_strip;
 mod tour;
+mod translate;
 mod unified;
 mod view_state;
 mod viewer;
@@ -460,6 +461,8 @@ pub struct MailWindow {
     main: Option<WeakEntity<Self>>,
     /// Remote images and sender pictures of the open conversation.
     remote: remote::Remote,
+    /// Translations of opened messages (the Translate bar).
+    translations: translate::Translations,
     /// The selected text of the open conversation.
     text: select::TextSelection,
     /// Whether a conversation is open: in place of the list with two
@@ -662,6 +665,7 @@ impl MailWindow {
             font,
             mail: Mail::open(&paths),
             remote: remote::Remote::load(&paths),
+            translations: translate::Translations::default(),
             text: select::TextSelection::new(cx),
             accounts: Vec::new(),
             quotas: HashMap::new(),

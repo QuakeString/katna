@@ -34,6 +34,9 @@ at once. `/` shows recipients a short page saying this.
 An EU legal review (GDPR, ePrivacy) is still open before tracking is sold
 to anyone.
 
+Translation keeps nothing: the text and the translation pass through to
+LibreTranslate and back, and neither is logged (only a failed request's
+status is).
 ## Katna accounts
 
 Every server feature needs a Katna account, much like a Mailspring ID.
@@ -99,10 +102,14 @@ trying it out alone.
 | `POST /api/v1/tracks` `{"count": n, "links": [...]}` | `n` (1–100) new IDs sharing the links; returns `{"ids": [...]}`. 5000 per install per day. |
 | `DELETE /api/v1/tracks/<id>` | Deletes one ID and its events. |
 | `GET /api/v1/events` | Server-sent events (`event: track`) after `Last-Event-ID` or `?after=`: `{"seq", "id", "kind": "open"\|"click", "link", "source", "at"}` (`at` in ms). |
+| `GET /api/v1/languages` | LibreTranslate's languages: `[{"code", "name", "targets"}]`. |
+| `POST /api/v1/translate` `{"q", "source", "target"}` | Plain text translated by LibreTranslate: `{"translatedText"}`. `source` may be `auto`. 2000 requests per account per day. |
+| `POST /api/v1/detect` `{"q"}` | The language of a text, as LibreTranslate answers. |
 | `GET /healthz` | `ok` when the database answers. |
 
 All but the first need `Authorization: Bearer <token>`. The tracking
-routes (`/api/v1/tracks`, `/api/v1/events`) also need the install signed in
+and translation routes (`/api/v1/tracks`, `/api/v1/events`,
+`/api/v1/languages`, `/api/v1/translate`, `/api/v1/detect`) also need the install signed in
 to an account with a confirmed address. Errors are
 `{"error": "…", "code": "…"}`; `code` is `unknown_install` (401, register
 again), `sign_in` or `not_verified` (403), `wrong_password` (401),
@@ -112,8 +119,11 @@ again), `sign_in` or `not_verified` (403), `wrong_password` (401),
 
 ## Running it
 
-It runs as three containers: Katna Server, PostgreSQL and Caddy, which
-gets the TLS certificate.
+It runs as four containers: Katna Server, PostgreSQL, Caddy, which gets
+the TLS certificate, and LibreTranslate for automatic translation (only
+Katna Server can reach it). LibreTranslate needs about 4 GB of memory with
+the default languages; set `KATNA_TRANSLATE_LANGUAGES` in `.env` to load
+fewer.
 
 1. DNS for the tracking domain (a separate domain from the one you send
    mail from, for example `server.katna.invenia.in`):
@@ -140,7 +150,9 @@ from the proxy's `X-Forwarded-For`; only behind a proxy),
 `KATNA_SERVER_RETENTION_DAYS` (180), `KATNA_SERVER_DAILY_LIMIT` (5000),
 `KATNA_SERVER_INSTALLS_PER_HOUR` (10), `KATNA_SERVER_SMTP_HOST`, `_PORT`
 (465), `_USERNAME`, `_PASSWORD` or `KATNA_SERVER_SMTP_URL`,
-`KATNA_SERVER_MAIL_FROM` (the username), `RUST_LOG`.
+`KATNA_SERVER_MAIL_FROM` (the username), `KATNA_SERVER_TRANSLATE_URL`
+(LibreTranslate, `http://` on the internal network; empty turns translation
+off), `KATNA_SERVER_TRANSLATIONS_PER_DAY` (2000), `RUST_LOG`.
 
 Run one server process: events are numbered and streamed in order within
 the process.

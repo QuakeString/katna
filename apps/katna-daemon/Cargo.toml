@@ -23,6 +23,7 @@ katna-dbus.workspace = true
 katna-i18n.workspace = true
 katna-notify.workspace = true
 katna-platform.workspace = true
+katna-translate.workspace = true
 async-channel.workspace = true
 async-io.workspace = true
 async-signal.workspace = true

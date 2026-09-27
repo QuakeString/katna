@@ -257,6 +257,38 @@
       "repository": "https://github.com/servo/html5ever"
     },
     {
+      "name": "http-body-util",
+      "version": "0.1.5",
+      "description": "Combinators and adapters for HTTP request or response bodies.",
+      "license": "MIT",
+      "authors": [
+        "Carl Lerche",
+        "Lucio Franco",
+        "Sean McArthur"
+      ],
+      "repository": "https://github.com/hyperium/http-body"
+    },
+    {
+      "name": "hyper",
+      "version": "1.11.1",
+      "description": "A protective and efficient HTTP library for all.",
+      "license": "MIT",
+      "authors": [
+        "Sean McArthur"
+      ],
+      "repository": "https://github.com/hyperium/hyper"
+    },
+    {
+      "name": "hyper-util",
+      "version": "0.1.21",
+      "description": "hyper utilities",
+      "license": "MIT",
+      "authors": [
+        "Sean McArthur"
+      ],
+      "repository": "https://github.com/hyperium/hyper-util"
+    },
+    {
       "name": "icu_calendar",
       "version": "2.3.0",
       "description": "Date APIs for Gregorian and non-Gregorian calendars",
@@ -680,6 +712,16 @@
         "kwantam"
       ],
       "repository": "https://github.com/unicode-rs/unicode-segmentation"
+    },
+    {
+      "name": "whatlang",
+      "version": "0.18.0",
+      "description": "Fast and lightweight language identification library for Rust.",
+      "license": "MIT",
+      "authors": [
+        "Serhii Potapov"
+      ],
+      "repository": "https://github.com/greyblake/whatlang-rs"
     },
     {
       "name": "writeable",

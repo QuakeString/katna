@@ -234,6 +234,24 @@ pub mod app_action {
     }
 }
 
+/// Why `Translate` gave no translation: the third field of its answer,
+/// empty when it did.
+pub mod translate_problem {
+    /// This build has no translation server.
+    pub const OFF: &str = "off";
+    /// The message is already in the language asked for; nothing was sent.
+    pub const SAME_LANGUAGE: &str = "same-language";
+    /// The server cannot translate from that language into this one.
+    pub const UNSUPPORTED: &str = "unsupported";
+    /// Over the server's limit for now.
+    pub const TOO_MANY: &str = "too-many";
+    /// This computer is not signed in to a Katna account with a confirmed
+    /// address.
+    pub const SIGN_IN: &str = "sign-in";
+    /// The server could not be reached, or failed.
+    pub const FAILED: &str = "failed";
+}
+
 /// Message flag names for `SetFlags`.
 pub mod flag {
     pub const SEEN: &str = "seen";
@@ -290,9 +308,10 @@ macro_rules! pim_proxy {
 
             /// Deletes what was downloaded and can be downloaded again: the
             /// bodies and attachments of mail still on its IMAP server, the
-            /// search index (rebuilt at once) and sender pictures, then
-            /// syncs. Accounts, settings, flags, labels, pins and mail that
-            /// exists only on this computer stay; servers are not touched.
+            /// search index (rebuilt at once), sender pictures and
+            /// translations, then syncs. Accounts, settings, flags, labels,
+            /// pins and mail that exists only on this computer stay;
+            /// servers are not touched.
             /// Returns how many messages lost their body and how many bytes
             /// of mail were deleted.
             fn reset_cache(&self) -> zbus::Result<(u64, u64)>;
@@ -433,6 +452,28 @@ macro_rules! pim_proxy {
             /// Empty when there is none, and always for free-mail
             /// addresses.
             fn sender_picture(&self, address: &str) -> zbus::Result<Vec<u8>>;
+
+            /// Translates `text`, the plain text of `message` (HTML made
+            /// plain, quotes and signature kept, never attachments), from
+            /// `source` into `target`, LibreTranslate codes such as `es`,
+            /// `en` or `zt`, with Katna Server. `source` is the language
+            /// the caller found in it on this computer (`auto` when
+            /// unclear): mail already in `target` is never sent. Returns
+            /// the language it was in, the translation, and a
+            /// [`translate_problem`] when there is none. Translations are
+            /// kept in the store, so asking again needs no server.
+            fn translate(
+                &self,
+                message: i64,
+                text: &str,
+                source: &str,
+                target: &str,
+            ) -> zbus::Result<(String, String, String)>;
+
+            /// The languages Katna Server can translate into `target`, and
+            /// a [`translate_problem`] when it could not be asked (`sign-in`
+            /// while this computer is not signed in to a Katna account).
+            fn translation_sources(&self, target: &str) -> zbus::Result<(Vec<String>, String)>;
 
             /// Reads the settings file again; call after saving settings
             /// the daemon uses (`sync.metered`).
