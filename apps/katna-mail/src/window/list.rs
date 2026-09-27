@@ -130,12 +130,6 @@ impl MailWindow {
             .bg(rgba(th.surface))
             .shadow(card_shadow(th, outline))
             .p(px(outline))
-            .on_mouse_down(
-                gpui::MouseButton::Left,
-                cx.listener(|this, event: &gpui::MouseDownEvent, window, cx| {
-                    this.double_click_reader(event, window, cx)
-                }),
-            )
             .on_action(cx.listener(Self::select_next))
             .on_action(cx.listener(Self::select_previous))
             .on_action(cx.listener(Self::select_first))
@@ -721,7 +715,25 @@ impl MailWindow {
                         ))
                         .child(menu_item("more-unpin", "Unpin", th).on_click(
                             cx.listener(|this, _, _, cx| this.act_on_targets(Act::Pin(false), cx)),
-                        )),
+                        ))
+                        .when(which == Menu::ReaderMore, |d| {
+                            d.child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
+                                .child(menu_item("more-print", "Print all", th).on_click(
+                                    cx.listener(|this, _, _, cx| {
+                                        this.menu = None;
+                                        this.print_conversation(cx);
+                                    }),
+                                ))
+                                .when(!self.detached, |d| {
+                                    d.child(
+                                        menu_item("more-new-window", "Open in new window", th)
+                                            .on_click(cx.listener(|this, _, _, cx| {
+                                                this.menu = None;
+                                                this.open_reader_in_window(cx);
+                                            })),
+                                    )
+                                })
+                        }),
                 }
             }
             Menu::MoveTo => {
@@ -1128,11 +1140,11 @@ impl MailWindow {
             }))
             .on_click(
                 cx.listener(move |this, event: &gpui::ClickEvent, window, cx| {
-                    // A double-click opens the line in a window of its own.
-                    if event.click_count() >= 2 {
+                    // Shift+click opens the line in a window of its own;
+                    // any other click opens it here.
+                    if event.modifiers().shift {
                         this.open_in_window(ix, cx);
                     } else {
-                        this.clicked = Some((std::time::Instant::now(), ix));
                         this.open(ix, window, cx);
                     }
                 }),
