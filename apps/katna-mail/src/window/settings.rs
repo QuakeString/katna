@@ -21,7 +21,9 @@ use katna_ui::motion;
 use super::{MailWindow, SETTINGS_WIDTH};
 use crate::theme::{Theme, mix};
 use crate::widgets::FocusRing;
-use crate::widgets::{elevation, icon, icon_button, radio, switch, tip};
+use crate::widgets::{
+    CARD_SHADOW_ROOM, card_outline, card_shadow, icon, icon_button, radio, switch, tip,
+};
 
 /// One loop of the reading-pane demo.
 const PANE_DEMO: Duration = Duration::from_millis(2600);
@@ -66,9 +68,12 @@ impl MailWindow {
             .h_full()
             .flex()
             .flex_col()
+            .relative()
             .when(!phone, |d| {
-                d.rounded(px(super::PANEL_RADIUS))
-                    .shadow(elevation(th, 1.0 * t.min(1.0)))
+                d.rounded(px(super::PANEL_RADIUS)).shadow(card_shadow(
+                    th,
+                    t.min(1.0) * self.layout.shape.card_outline(),
+                ))
             })
             .bg(rgba(th.surface))
             .child(
@@ -294,7 +299,12 @@ impl MailWindow {
                                     .child("What\u{2019}s new"),
                             ),
                     ),
-            );
+            )
+            .children(card_outline(
+                th,
+                super::PANEL_RADIUS,
+                self.layout.shape.card_outline(),
+            ));
         // The panel keeps its width and slides out from under the edge. The
         // page of a phone fades in as it comes in from the right.
         let t = t.clamp(0.0, 1.0);
@@ -308,11 +318,18 @@ impl MailWindow {
                 .child(panel)
                 .into_any_element();
         }
+        // The clip reaches a little past the panel's left and top edges, so
+        // its shadow is never cut.
+        let room = CARD_SHADOW_ROOM;
         div()
             .flex_none()
             .h_full()
-            .w(px(SETTINGS_WIDTH * t))
-            .pb(px(16.0))
+            .w(px(SETTINGS_WIDTH * t + room))
+            .ml(px(-room))
+            .mt(px(-room))
+            .pl(px(room))
+            .pt(px(room))
+            .pb(px(16.0 - room))
             .overflow_hidden()
             .child(
                 div()

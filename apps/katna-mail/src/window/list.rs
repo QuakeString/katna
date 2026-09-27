@@ -31,12 +31,14 @@ const CHIP_GAP: f32 = 8.0;
 const MORE_SIZE: f32 = 30.0;
 
 use super::attachments::kind_badge;
+use super::reader::Squeeze;
 use super::{Act, LIST_CONTEXT, Listing, MailWindow, Menu, READER_CONTEXT, Reload, STACKED_BELOW};
 use crate::data::{EntryKey, Row, RowFile};
 use crate::format;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
-    icon, icon_button, icon_button_colored, menu, menu_item, placeholder, tip, toolbar,
+    TOOLBAR_HEIGHT, card_outline, card_shadow, icon, icon_button, icon_button_colored, menu,
+    menu_item, placeholder, tip, toolbar,
 };
 
 const TAB_HEIGHT: f32 = 56.0;
@@ -108,6 +110,10 @@ impl MailWindow {
                 .into_any_element()
         };
         let reading_context = self.reading && (two_pane_reading || self.split());
+        let (radius, outline) = (
+            self.layout.shape.card_radius(),
+            self.layout.shape.card_outline(),
+        );
         let card = div()
             .id("card")
             .key_context(if reading_context {
@@ -119,9 +125,12 @@ impl MailWindow {
             .size_full()
             .flex()
             .flex_col()
-            .rounded(px(self.layout.shape.card_radius()))
+            .relative()
+            .rounded(px(radius))
             .overflow_hidden()
             .bg(rgba(th.surface))
+            .shadow(card_shadow(th, outline))
+            .p(px(outline))
             .on_action(cx.listener(Self::select_next))
             .on_action(cx.listener(Self::select_previous))
             .on_action(cx.listener(Self::select_first))
@@ -143,7 +152,8 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_important))
             .on_action(cx.listener(Self::mark_not_important))
             .on_action(cx.listener(Self::toggle_check))
-            .child(inner);
+            .child(inner)
+            .children(card_outline(th, radius, outline));
         card.into_any_element()
     }
 
@@ -158,8 +168,21 @@ impl MailWindow {
             (self.shows_tabs() && !self.layout.shape.is_phone()).then(|| self.render_tabs(th, cx));
         let banner = self.render_select_banner(th, cx);
         let list = self.render_list(th, cx);
+        // A phone's toolbar slides up out of sight as the list moves on.
+        let toolbar = self.render_list_toolbar(th, cx);
+        let rows = self.layout.shape.rows;
+        let toolbar = if self.layout.shape.is_phone() && rows < 0.999 {
+            div()
+                .flex_none()
+                .h(px(TOOLBAR_HEIGHT * rows))
+                .overflow_hidden()
+                .child(div().mt(px(-TOOLBAR_HEIGHT * (1.0 - rows))).child(toolbar))
+                .into_any_element()
+        } else {
+            toolbar
+        };
         (
-            self.render_list_toolbar(th, cx),
+            toolbar,
             div()
                 .size_full()
                 .flex()
@@ -320,7 +343,7 @@ impl MailWindow {
                     )
             };
             bar = bar
-                .child(self.action_buttons("list", th, cx))
+                .child(self.action_buttons("list", Squeeze::NONE, th, cx))
                 .child(separator(th))
                 .child(read_button)
                 .child({
@@ -488,9 +511,12 @@ impl MailWindow {
 
     /// Archive, spam and delete, for the ticked lines or the open
     /// conversation.
+    /// Archive, Report spam and Delete, less those `squeeze` leaves to
+    /// the More menu.
     pub(super) fn action_buttons(
         &self,
         prefix: &'static str,
+        squeeze: Squeeze,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> Div {
@@ -502,16 +528,22 @@ impl MailWindow {
                     .tooltip(tip("Archive", th))
                     .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Archive, cx))),
             )
-            .child(
-                icon_button((prefix, 2_usize), "junk", 20.0, th)
-                    .tooltip(tip("Report spam", th))
-                    .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Spam, cx))),
-            )
-            .child(
-                icon_button((prefix, 3_usize), "trash", 20.0, th)
-                    .tooltip(tip("Delete", th))
-                    .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Delete, cx))),
-            )
+            .when(!squeeze.spam, |d| {
+                d.child(
+                    icon_button((prefix, 2_usize), "junk", 20.0, th)
+                        .tooltip(tip("Report spam", th))
+                        .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Spam, cx))),
+                )
+            })
+            .when(!squeeze.delete, |d| {
+                d.child(
+                    icon_button((prefix, 3_usize), "trash", 20.0, th)
+                        .tooltip(tip("Delete", th))
+                        .on_click(
+                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Delete, cx)),
+                        ),
+                )
+            })
     }
 
     /// Tells the list its lines changed; `keep_scroll` stays at the same
@@ -604,18 +636,20 @@ impl MailWindow {
                     .with_priority(1),
                 )
                 .child(
+                    // Under the button, moved back inside the window when
+                    // it would run past an edge (a phone's narrow window).
                     deferred(
-                        div()
-                            .absolute()
-                            .top(px(40.0))
-                            .left(px(0.0))
-                            .occlude()
+                        anchored()
+                            .offset(point(px(0.0), px(40.0)))
+                            .snap_to_window_with_margin(px(8.0))
                             .child(
-                                items.with_animation(
-                                    ("menu", which as usize),
-                                    Animation::new(Duration::from_millis(160))
-                                        .with_easing(ease_out_quint()),
-                                    |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
+                                div().occlude().child(
+                                    items.with_animation(
+                                        ("menu", which as usize),
+                                        Animation::new(Duration::from_millis(160))
+                                            .with_easing(ease_out_quint()),
+                                        |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
+                                    ),
                                 ),
                             ),
                     )
@@ -658,6 +692,27 @@ impl MailWindow {
                         ))
                     }
                     Some(()) => menu(th)
+                        // What a narrow reading pane leaves off its toolbar.
+                        .when(
+                            which == Menu::ReaderMore && self.reader_squeeze().spam,
+                            |d| {
+                                d.child(menu_item("more-spam", "Report spam", th).on_click(
+                                    cx.listener(|this, _, _, cx| {
+                                        this.act_on_targets(Act::Spam, cx)
+                                    }),
+                                ))
+                            },
+                        )
+                        .when(
+                            which == Menu::ReaderMore && self.reader_squeeze().delete,
+                            |d| {
+                                d.child(menu_item("more-delete", "Delete", th).on_click(
+                                    cx.listener(|this, _, _, cx| {
+                                        this.act_on_targets(Act::Delete, cx)
+                                    }),
+                                ))
+                            },
+                        )
                         .child(menu_item("more-read", "Mark as read", th).on_click(
                             cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)),
                         ))

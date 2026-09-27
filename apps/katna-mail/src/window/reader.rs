@@ -18,6 +18,7 @@ use gpui::{
 use katna_render::MessageView;
 use katna_render::html::Document;
 use katna_store::{MessageFlags, MessageId};
+use katna_ui::motion::lerp;
 
 use super::compose::Kind;
 use super::list::separator;
@@ -27,7 +28,9 @@ use crate::daemon::Command;
 use crate::data::{self, EntryKey, Mail, Row};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button, icon_button_colored, placeholder, tip, toolbar};
+use crate::widgets::{
+    card_outline, card_shadow, icon, icon_button, icon_button_colored, placeholder, tip, toolbar,
+};
 
 mod security;
 use security::Secured;
@@ -42,6 +45,9 @@ const FOLD_AT: usize = 3;
 const PICTURE_COLUMN: f32 = 72.0;
 /// From the picture's left edge to the text's.
 const PICTURE_COLUMN_INSET: f32 = PICTURE_COLUMN - (PICTURE_COLUMN - 40.0) / 2.0;
+/// An open message shows its date and star button, and the subject its
+/// full size, in panes at least this wide.
+const STAR_FROM: f32 = 260.0;
 
 /// An open conversation (or a single message).
 pub(super) struct Conversation {
@@ -354,6 +360,37 @@ pub(super) struct Printable {
 }
 
 /// What the list of messages shows: a message, or a fold of several.
+/// What a narrow reading pane leaves off its toolbar, narrowest last. The
+/// More menu offers the actions instead; Newer and Older stay on the keys
+/// and the list.
+#[derive(Debug, Clone, Copy)]
+pub(super) struct Squeeze {
+    /// Newer, Older and the separators.
+    pub steps: bool,
+    pub unread: bool,
+    pub spam: bool,
+    pub delete: bool,
+}
+
+impl Squeeze {
+    pub const NONE: Self = Self {
+        steps: false,
+        unread: false,
+        spam: false,
+        delete: false,
+    };
+
+    /// For a reading pane `width` wide.
+    fn for_width(width: f32) -> Self {
+        Self {
+            steps: width < 400.0,
+            unread: width < 300.0,
+            spam: width < 300.0,
+            delete: width < 220.0,
+        }
+    }
+}
+
 enum Shown {
     Part(usize),
     Fold(usize),
@@ -362,17 +399,34 @@ enum Shown {
 impl MailWindow {
     /// The reading pane beside the list: its own card.
     pub(super) fn render_reader_card(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let (radius, outline) = (
+            self.layout.shape.card_radius(),
+            self.layout.shape.card_outline(),
+        );
         div()
             .id("reader-card")
             .size_full()
             .flex()
             .flex_col()
-            .rounded(px(self.layout.shape.card_radius()))
+            .relative()
+            .rounded(px(radius))
             .overflow_hidden()
             .bg(rgba(th.surface))
+            .shadow(card_shadow(th, outline))
+            .p(px(outline))
             .child(self.render_reader_toolbar(th, cx))
             .child(div().flex_1().min_h_0().child(self.render_reader(th, cx)))
+            .children(card_outline(th, radius, outline))
             .into_any_element()
+    }
+
+    /// What the reading pane's toolbar leaves to the More menu.
+    pub(super) fn reader_squeeze(&self) -> Squeeze {
+        if self.layout.shape.is_phone() {
+            Squeeze::NONE
+        } else {
+            Squeeze::for_width(self.reader_width())
+        }
     }
 
     pub(super) fn render_reader_toolbar(
@@ -395,6 +449,7 @@ impl MailWindow {
             cx.listener(|this, _, window, cx| this.close_message(&super::CloseMessage, window, cx)),
         );
         let phone = self.layout.shape.is_phone();
+        let squeeze = self.reader_squeeze();
         // A conversation window has no list beside it to share with.
         let pane = (!self.detached && self.split())
             .then_some(self.cards_width * self.config.mail.reading_pane_share);
@@ -404,17 +459,20 @@ impl MailWindow {
         toolbar(th)
             // A conversation window closes from its own frame.
             .when(!self.detached, |d| {
-                d.child(back).when(!phone, |d| d.child(separator(th)))
+                d.child(back)
+                    .when(!phone && !squeeze.steps, |d| d.child(separator(th)))
             })
-            .child(self.action_buttons("reader", th, cx))
-            .when(!phone, |d| d.child(separator(th)))
-            .child(
-                icon_button("reader-unread", "mail", 20.0, th)
-                    .tooltip(tip("Mark as unread", th))
-                    .on_click(cx.listener(|this, _, window, cx| {
-                        this.mark_unread(&super::MarkUnread, window, cx)
-                    })),
-            )
+            .child(self.action_buttons("reader", squeeze, th, cx))
+            .when(!phone && !squeeze.steps, |d| d.child(separator(th)))
+            .when(!squeeze.unread, |d| {
+                d.child(
+                    icon_button("reader-unread", "mail", 20.0, th)
+                        .tooltip(tip("Mark as unread", th))
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            this.mark_unread(&super::MarkUnread, window, cx)
+                        })),
+                )
+            })
             .when(!narrow, |d| {
                 d.child({
                     let move_to = icon_button("reader-move", "move-to", 20.0, th)
@@ -461,7 +519,7 @@ impl MailWindow {
             })
             // A phone moves between conversations from the list; a
             // conversation window shows only its own.
-            .when(!phone && !self.detached, |d| {
+            .when(!phone && !self.detached && !squeeze.steps, |d| {
                 d.child(
                     icon_button("newer", "chevron-left", 20.0, th)
                         .tooltip(tip("Newer", th))
@@ -499,7 +557,7 @@ impl MailWindow {
             .flex_row()
             .items_start()
             .gap(px(12.0))
-            .pl(px(self.layout.shape.reader_indent()))
+            .pl(px(self.reader_indent()))
             .pr(px(16.0))
             .pt(px(20.0))
             .pb(px(12.0))
@@ -514,8 +572,15 @@ impl MailWindow {
                     .child(
                         div()
                             .w_full()
-                            .text_size(px(22.0))
-                            .line_height(px(28.0))
+                            .map(|d| {
+                                // A very narrow pane takes a smaller title so
+                                // its words don't break.
+                                if self.reader_width() < STAR_FROM {
+                                    d.text_size(px(18.0)).line_height(px(24.0))
+                                } else {
+                                    d.text_size(px(22.0)).line_height(px(28.0))
+                                }
+                            })
                             .text_color(rgba(th.text))
                             .child(reader.subject.clone()),
                     )
@@ -753,6 +818,11 @@ impl MailWindow {
             format!("to {}", names(&all))
         });
         let details = part.details;
+        // A very narrow pane leaves starring to the toolbar's More menu and
+        // the date to the details under "to", and lets the name shrink
+        // further.
+        let roomy = self.reader_width() >= STAR_FROM;
+        let name_room = lerp(120.0, 48.0, self.reader_compact());
         let header = div()
             .id(("part-header", ix))
             .flex()
@@ -763,7 +833,7 @@ impl MailWindow {
             .child(
                 div()
                     .flex_1()
-                    .min_w(px(120.0))
+                    .min_w(px(name_room))
                     .flex()
                     .flex_col()
                     .child(
@@ -818,31 +888,35 @@ impl MailWindow {
                         )
                     }),
             )
-            .child(
+            .when(roomy, |d| {
                 // Gives way to the sender's name in a narrow pane.
-                div()
-                    .min_w_0()
-                    .truncate()
-                    .pt(px(2.0))
-                    .text_size(px(12.0))
-                    .text_color(rgba(th.text_faint))
-                    .child(long_date.clone()),
-            )
-            .child(
-                icon_button_colored(
-                    ("part-star", ix),
-                    if flagged { "star-filled" } else { "star" },
-                    20.0,
-                    if flagged { th.star } else { th.text_faint },
-                    th,
+                d.child(
+                    div()
+                        .min_w_0()
+                        .truncate()
+                        .pt(px(2.0))
+                        .text_size(px(12.0))
+                        .text_color(rgba(th.text_faint))
+                        .child(long_date.clone()),
                 )
-                .size(px(32.0))
-                .tooltip(tip(if flagged { "Starred" } else { "Not starred" }, th))
-                .on_click(cx.listener(move |this, _, _, cx| {
-                    cx.stop_propagation();
-                    this.star_message(ix, id, !flagged, cx);
-                })),
-            )
+            })
+            .when(roomy, |d| {
+                d.child(
+                    icon_button_colored(
+                        ("part-star", ix),
+                        if flagged { "star-filled" } else { "star" },
+                        20.0,
+                        if flagged { th.star } else { th.text_faint },
+                        th,
+                    )
+                    .size(px(32.0))
+                    .tooltip(tip(if flagged { "Starred" } else { "Not starred" }, th))
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        cx.stop_propagation();
+                        this.star_message(ix, id, !flagged, cx);
+                    })),
+                )
+            })
             .child(
                 icon_button(("part-reply", ix), "reply", 20.0, th)
                     .tooltip(tip("Reply", th))
@@ -1007,10 +1081,10 @@ impl MailWindow {
                     .max_w(px(960.0))
                     .child(header)
                     .child(
-                        // On a phone the message takes the room under the
-                        // picture too, from the picture's left edge.
+                        // On a phone, and in a narrow pane, the message takes
+                        // the room under the picture too, from its left edge.
                         div()
-                            .ml(px(-PICTURE_COLUMN_INSET * self.layout.shape.phone))
+                            .ml(px(-PICTURE_COLUMN_INSET * self.reader_compact()))
                             .children(details_box)
                             .children(self.security_banner(part, th, cx))
                             .child(body),

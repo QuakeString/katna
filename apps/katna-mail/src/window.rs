@@ -2027,11 +2027,16 @@ impl MailWindow {
                         .bg(rgba(th.divider))
                         .group_hover("split", |s| s.bg(rgba(th.text_faint))),
                 );
+            // Clipped only from the side it slides in from, and a little
+            // wider than the card, so the card's shadow is never cut.
+            let room = crate::widgets::CARD_SHADOW_ROOM;
             let pane = div()
                 .flex_none()
                 .h_full()
-                .w(px(pane_width * pane_t))
-                .overflow_hidden()
+                .w(px(pane_width * pane_t + 2.0 * room))
+                .mx(px(-room))
+                .px(px(room))
+                .overflow_x_hidden()
                 .child(
                     div()
                         .w(px(pane_width))
@@ -2328,6 +2333,18 @@ impl Render for MailWindow {
         // Pictures of people asked for while drawing.
         self.fetch_pictures(cx);
         let frame = self.chrome.render_bar(bar, content, window, cx);
+        // A phone's top bar slides up out of the window as the list moves
+        // on; the content below takes its room.
+        let hidden = shape.top_bar_hidden();
+        let frame = if hidden > 0.01 {
+            div().size_full().overflow_hidden().child(
+                frame
+                    .mt(px(-hidden))
+                    .h(window.viewport_size().height + px(hidden)),
+            )
+        } else {
+            frame
+        };
         match &self.font {
             Some(font) => frame.font_family(font.clone()).into_any_element(),
             None => frame.into_any_element(),
