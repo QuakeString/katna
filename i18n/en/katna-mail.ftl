@@ -17,6 +17,13 @@ language-machine = Translated by machine. Help improve it
 language-setting = Language
 language-setting-detail = The language of menus, buttons and messages, and the format of dates and numbers. System default follows the desktop.
 
+## Settings > General > Default mail app
+
+mail-app-is-default = Katna Mail is your default mail app.
+mail-app-is-other = Email links open in another app.
+mail-app-make-default = Make default
+mail-app-make-default-failed = Couldn't change the default mail app.
+
 ## Dates and sizes
 
 ago-just-now = just now
@@ -611,10 +618,3 @@ settings-time = Time
 settings-clock-language = As the language writes it
 settings-clock-12 = 12-hour, like 2:05 PM
 settings-clock-24 = 24-hour, like 14:05
-
-## Settings > General > Default mail app
-
-mail-app-is-default = Katna Mail is your default mail app.
-mail-app-is-other = Email links open in another app.
-mail-app-make-default = Make default
-mail-app-make-default-failed = Couldn't change the default mail app.
