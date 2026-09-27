@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="packaging/icons/in.invenia.katna.Mail.svg" width="96" height="96" alt="Katna Mail icon">
+  <img src="packaging/icons/src/katna.svg" width="96" height="96" alt="Katna logo">
 </p>
 
 <h1 align="center">Katna</h1>

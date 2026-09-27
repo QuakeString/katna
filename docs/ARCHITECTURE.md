@@ -2228,9 +2228,10 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   (`org.kde.StatusNotifierItem-PID-N`), registered with
   `org.kde.StatusNotifierWatcher` again whenever the watcher restarts.
   Plasma shows it natively; GNOME needs the AppIndicator extension (on by
-  default on Ubuntu). The icon is drawn in code (the app icon's shapes plus
-  a red badge with the count, `99+` above 99), since the protocol takes
-  pixels and an SVG renderer would grow the daemon. Left click raises the
+  default on Ubuntu). The icon is the app icon pre-rendered at each tray
+  size (`crates/katna-platform/icons/`, from `packaging/icons/render.py`)
+  with a red badge drawn in code with the count, `99+` above 99, since the
+  protocol takes pixels and an SVG renderer would grow the daemon. Left click raises the
   app, middle click starts a new message. The right-click menu
   (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
   Quit. Quit closes the app and stops the daemon until the next login or

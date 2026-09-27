@@ -104,6 +104,20 @@ fn desktop_actions_run_katna_mail_with_a_flag() {
 fn icon_is_named_after_app_id() {
     let text = read("icons", &format!("{MAIL_APP_ID}.svg"));
     assert!(text.contains("<svg"), "not an SVG");
+    // Qt SVG, which draws icons on KDE, skips filters.
+    assert!(!text.contains("<filter"), "the installed icon has filters");
+    let hicolor = packaging().join("icons/hicolor");
+    let mut sizes = 0;
+    for dir in fs::read_dir(&hicolor).unwrap() {
+        let size = dir.unwrap().file_name().to_string_lossy().into_owned();
+        let names: Vec<String> = fs::read_dir(hicolor.join(&size).join("apps"))
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+            .collect();
+        assert_eq!(names, [format!("{MAIL_APP_ID}.png")], "{size}");
+        sizes += 1;
+    }
+    assert!(sizes >= 4, "{sizes} PNG sizes");
 }
 
 #[test]

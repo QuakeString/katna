@@ -10,6 +10,7 @@ Files that distribution packages install, and the Arch Linux package.
 | `dbus/<daemon bus name>.service` | `/usr/share/dbus-1/services/` (D-Bus activation, starts the unit) |
 | `desktop/<mail app ID>.desktop` | `/usr/share/applications/` |
 | `icons/<mail app ID>.svg` | `/usr/share/icons/hicolor/scalable/apps/` |
+| `icons/hicolor/<N>x<N>/apps/<mail app ID>.png` | `/usr/share/icons/hicolor/<N>x<N>/apps/` |
 | `arch/PKGBUILD` | Arch Linux package `katna-git` |
 
 The file names are the IDs from `katna_core::ids` (`in.invenia.katna.Mail`,
@@ -19,6 +20,15 @@ lines against them, and a test in `apps/katna-daemon/src/install.rs` checks
 that the unit and activation file match what
 `katna-daemon install-user-service` writes. Other files in these folders
 must not spell out an ID: install them with globs.
+
+The icon is Katna's logo, designed by Mozammel. Its sources are in
+`icons/src/`: `katna.svg`, the full logo, and `katna-small.svg`, a simpler
+form for 16 to 32 px whose card carries only ক, since the word কাটনা can't
+be read that small. The installed SVG is the full logo without its blur
+filters, which Qt (and so KDE) doesn't draw. After changing a source, run
+`python3 packaging/icons/render.py` (needs `rsvg-convert` and Pillow): it
+renders the PNGs, which KDE prefers at their sizes, and the tray's pixels
+in `crates/katna-platform/icons/`. Katna Mail draws the sources itself.
 
 ## Arch Linux
 
