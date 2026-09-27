@@ -2325,6 +2325,18 @@ impl Render for MailWindow {
         // Pictures of people asked for while drawing.
         self.fetch_pictures(cx);
         let frame = self.chrome.render_bar(bar, content, window, cx);
+        // A phone's top bar slides up out of the window as the list moves
+        // on; the content below takes its room.
+        let hidden = shape.top_bar_hidden();
+        let frame = if hidden > 0.01 {
+            div().size_full().overflow_hidden().child(
+                frame
+                    .mt(px(-hidden))
+                    .h(window.viewport_size().height + px(hidden)),
+            )
+        } else {
+            frame
+        };
         match &self.font {
             Some(font) => frame.font_family(font.clone()).into_any_element(),
             None => frame.into_any_element(),

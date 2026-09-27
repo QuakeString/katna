@@ -13,8 +13,8 @@
 //! pill, the cards' margins and corners melt away.
 
 use gpui::{
-    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, Window, div, prelude::*, px,
-    rgba,
+    AnimationExt, AnyElement, Context, Decorations, FontWeight, SpringAnimation, Window, div,
+    prelude::*, px, rgba,
 };
 use katna_ui::Ripple;
 use katna_ui::motion::{self, Spring, lerp};
@@ -23,7 +23,7 @@ use super::apps::{APP_RAIL_WIDTH, App as RailApp};
 use super::{Compose, MailWindow, NAV_ROW_INSET, NAV_WIDTH, ToggleSettings};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, tip};
+use crate::widgets::{TOOLBAR_HEIGHT, elevation, icon, tip};
 
 /// Narrower windows use the phone layout.
 pub(super) const PHONE_BELOW: f32 = 600.0;
@@ -44,6 +44,9 @@ const COMPOSE_FOLD_BELOW: f32 = 760.0;
 /// down this far in one go, and grows back after this far up.
 const FAB_FOLD_AFTER: f32 = 24.0;
 const FAB_UNFOLD_AFTER: f32 = 120.0;
+/// A phone's search row and list toolbar come back once the list has
+/// turned back up this far.
+const ROWS_RETURN_AFTER: f32 = 24.0;
 /// Room for the word "Compose" on a phone's Compose button.
 const FAB_LABEL_WIDTH: f32 = 80.0;
 const FAB_SIZE: f32 = 56.0;
@@ -106,9 +109,24 @@ pub(super) struct Shape {
     pub page: f32,
     /// The room the window buttons take at the two ends of the top bar.
     pub room: (f32, f32),
+    /// How much of a phone's search row and list toolbar shows: they slide
+    /// away as the list moves on. 1 = all of them.
+    pub rows: f32,
+    /// The top bar slides away with the rows. Not when it holds the
+    /// window's own buttons (Katna's window frame).
+    pub top_bar_slides: bool,
 }
 
 impl Shape {
+    /// How far a phone's top bar has slid up out of the window.
+    pub(super) fn top_bar_hidden(&self) -> f32 {
+        if self.top_bar_slides {
+            super::TOP_BAR_HEIGHT * (1.0 - self.rows)
+        } else {
+            0.0
+        }
+    }
+
     pub(super) fn is_phone(&self) -> bool {
         self.size == Size::Phone
     }
@@ -168,6 +186,8 @@ pub(super) struct Layout {
     pub drawer: bool,
     /// How much of the word "Compose" a phone's Compose button shows.
     fab_label: Spring,
+    /// How much of a phone's search row and list toolbar shows.
+    rows: Spring,
     /// How far the list was scrolled last frame, and how far it has moved
     /// since it last turned (down positive, up negative).
     list_top: f32,
@@ -185,6 +205,7 @@ impl Layout {
             scrim: Spring::new(motion::SMOOTH, 0.0),
             drawer: false,
             fab_label: Spring::new(motion::SMOOTH, 1.0),
+            rows: Spring::new(motion::SMOOTH, 1.0),
             list_top: 0.0,
             list_run: 0.0,
             shape: Shape {
@@ -194,6 +215,8 @@ impl Layout {
                 label: 1.0,
                 page: 0.0,
                 room: (0.0, 0.0),
+                rows: 1.0,
+                top_bar_slides: false,
             },
         }
     }
@@ -275,6 +298,8 @@ impl MailWindow {
             label,
             page: layout.shape.page,
             room,
+            rows: layout.shape.rows,
+            top_bar_slides: layout.shape.top_bar_slides,
         };
         let open = self.slides() && self.reading && self.reader.is_some();
         let layout = &mut self.layout;
@@ -292,6 +317,7 @@ impl MailWindow {
             layout.fab_label.snap(layout.fab_label.target());
         }
         layout.fab_label.tick(window, reduce);
+        self.slide_rows(top, open, first, window, reduce);
         if !self.slides() {
             // The next conversation opened slides in from the edge again.
             self.layout.page.snap(0.0);
@@ -300,6 +326,38 @@ impl MailWindow {
 
     /// Whether an opened conversation slides in over the list: a phone, or
     /// a tablet too narrow for the reading pane.
+    /// Slides a phone's search row and list toolbar away once the list has
+    /// moved on past them, and back as soon as it turns back up or reaches
+    /// the top. The list keeps still on screen while they move: it takes
+    /// up the room they leave, or give back.
+    fn slide_rows(&mut self, top: f32, open: bool, first: bool, window: &Window, reduce: bool) {
+        let slides = matches!(window.window_decorations(), Decorations::Server);
+        let layout = &mut self.layout;
+        let phone = layout.size == Some(Size::Phone);
+        let rows_height = TOOLBAR_HEIGHT + if slides { super::TOP_BAR_HEIGHT } else { 0.0 };
+        let at_top = top <= 1.0;
+        let listing = phone && !open && !layout.drawer;
+        if !listing || at_top || -layout.list_run >= ROWS_RETURN_AFTER {
+            layout.rows.set(1.0);
+        } else if layout.list_run >= FAB_FOLD_AFTER && top > rows_height {
+            layout.rows.set(0.0);
+        }
+        if first || !phone {
+            layout.rows.snap(layout.rows.target());
+        }
+        let before = layout.rows.value().clamp(0.0, 1.0);
+        let rows = layout.rows.tick(window, reduce).clamp(0.0, 1.0);
+        layout.shape.rows = rows;
+        layout.shape.top_bar_slides = slides;
+        // Hiding by `moved` would lift the list by as much: scroll it back.
+        // At the top the list comes down with the rows instead.
+        let moved = rows_height * (before - rows);
+        if phone && moved.abs() > 0.01 && !(moved < 0.0 && at_top) {
+            self.list_state.scroll_by(px(-moved));
+            self.layout.list_top -= moved;
+        }
+    }
+
     pub(super) fn slides(&self) -> bool {
         !self.layout.shape.is_desktop() && !self.split()
     }

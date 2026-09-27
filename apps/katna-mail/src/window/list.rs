@@ -36,8 +36,8 @@ use crate::data::{EntryKey, Row, RowFile};
 use crate::format;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
-    card_outline, card_shadow, icon, icon_button, icon_button_colored, menu, menu_item,
-    placeholder, tip, toolbar,
+    TOOLBAR_HEIGHT, card_outline, card_shadow, icon, icon_button, icon_button_colored, menu,
+    menu_item, placeholder, tip, toolbar,
 };
 
 const TAB_HEIGHT: f32 = 56.0;
@@ -173,8 +173,21 @@ impl MailWindow {
             (self.shows_tabs() && !self.layout.shape.is_phone()).then(|| self.render_tabs(th, cx));
         let banner = self.render_select_banner(th, cx);
         let list = self.render_list(th, cx);
+        // A phone's toolbar slides up out of sight as the list moves on.
+        let toolbar = self.render_list_toolbar(th, cx);
+        let rows = self.layout.shape.rows;
+        let toolbar = if self.layout.shape.is_phone() && rows < 0.999 {
+            div()
+                .flex_none()
+                .h(px(TOOLBAR_HEIGHT * rows))
+                .overflow_hidden()
+                .child(div().mt(px(-TOOLBAR_HEIGHT * (1.0 - rows))).child(toolbar))
+                .into_any_element()
+        } else {
+            toolbar
+        };
         (
-            self.render_list_toolbar(th, cx),
+            toolbar,
             div()
                 .size_full()
                 .flex()
