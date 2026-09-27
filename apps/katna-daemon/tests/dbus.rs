@@ -1238,6 +1238,8 @@ fn notifies_about_new_mail_on_dev_servers() {
                 actions: [
                     "default",
                     "Open",
+                    "reply-all",
+                    "Reply all",
                     "mark-read",
                     "Mark as read",
                     "archive",

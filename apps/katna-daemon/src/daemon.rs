@@ -141,6 +141,8 @@ pub struct Daemon {
     network_metered: AtomicBool,
     /// The user's `sync.metered` setting.
     metered_setting: Mutex<Metered>,
+    /// The user's `sync.offline_days` setting; `None` for all mail.
+    offline_days: Mutex<Option<u32>>,
     status: Mutex<HashMap<AccountId, Status>>,
     outbox: Mutex<Option<Sending>>,
     /// Why each outbox entry's last try failed.
@@ -170,7 +172,8 @@ impl Daemon {
         config: WorkerConfig,
     ) -> katna_store::Result<(Arc<Self>, Receiver<Notice>)> {
         let store = Store::open(&paths, Mode::ReadWrite)?;
-        let setting = settings(&paths).sync.metered;
+        let sync = settings(&paths).sync;
+        let setting = sync.metered;
         let (notices, receiver) = async_channel::unbounded();
         let daemon = Arc::new(Self {
             paths,
@@ -181,6 +184,7 @@ impl Daemon {
             metered: AtomicBool::new(setting.decide(false)),
             network_metered: AtomicBool::new(false),
             metered_setting: Mutex::new(setting),
+            offline_days: Mutex::new(sync.offline_window()),
             status: Mutex::default(),
             outbox: Mutex::default(),
             send_errors: Mutex::default(),
@@ -578,17 +582,25 @@ impl Daemon {
     }
 
     /// Reads the settings file again and applies what the daemon uses from
-    /// it (`sync.metered`, `notifications.new_mail`, the `general` tray and
-    /// badge switches). Katna Mail calls this after saving settings.
+    /// it (`sync.metered`, `sync.offline_days`, `notifications.new_mail`,
+    /// the `general` tray and badge switches). Katna Mail calls this after
+    /// saving settings.
     pub fn reload_config(&self) -> Result<(), CommandError> {
         let config = Config::load(&self.paths.config_file())
             .map_err(|err| CommandError::InvalidArgs(err.to_string()))?;
         tracing::info!(
             metered = ?config.sync.metered,
+            offline_days = config.sync.offline_days,
             new_mail = config.notifications.new_mail,
             "settings reloaded"
         );
         *self.metered_setting.lock().unwrap() = config.sync.metered;
+        let days = config.sync.offline_window();
+        if std::mem::replace(&mut *self.offline_days.lock().unwrap(), days) != days {
+            for running in self.workers().values() {
+                running.handle.set_offline_days(days);
+            }
+        }
         if let Some(notices) = self.new_mail_notices() {
             notices.set_enabled(config.notifications.new_mail);
         }
@@ -994,7 +1006,8 @@ impl Daemon {
         let (handle, control) = worker::control();
         handle.set_metered(self.metered.load(Ordering::Relaxed));
         let (events, received) = async_channel::unbounded();
-        let config = self.config.clone();
+        let mut config = self.config.clone();
+        config.offline.days = *self.offline_days.lock().unwrap();
         let task = match link {
             Link::Imap(connector) => {
                 smol::spawn(worker::run(connector, store, id, config, events, control))

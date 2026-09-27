@@ -49,6 +49,8 @@ pub(super) enum Change {
     WindowFrame(WindowFrame),
     /// The blurred, translucent window background.
     Blur(bool),
+    /// Days of mail the daemon downloads ahead of time; 0 for all mail.
+    OfflineDays(u32),
 }
 
 impl MailWindow {
@@ -399,6 +401,16 @@ impl MailWindow {
             Change::SingleKeys(on) => {
                 self.config.shortcuts.single_keys = on;
                 self.shortcuts_changed(cx);
+                return;
+            }
+            Change::OfflineDays(days) => {
+                if self.config.sync.offline_days == days {
+                    return;
+                }
+                self.config.sync.offline_days = days;
+                self.save_config();
+                self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
                 return;
             }
             Change::Tray(on) | Change::UnreadBadge(on) => {
