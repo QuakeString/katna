@@ -788,12 +788,19 @@ impl MailWindow {
         let Some(compose) = &self.compose else {
             return;
         };
-        // An inline reply has no scroll of its own: the conversation scrolls.
-        let scroll = if compose.mode == Mode::Inline {
-            self.reader_scroll.clone()
+        // An inline reply has no scroll of its own: the conversation scrolls,
+        // under its Send row.
+        let (scroll, mut covered) = if compose.mode == Mode::Inline {
+            (
+                self.reader_scroll.clone(),
+                compose.stick.get().footer_height,
+            )
         } else {
-            compose.body_scroll.clone()
+            (compose.body_scroll.clone(), 0.0)
         };
+        if compose.format_bar {
+            covered += tools::FORMAT_BAR_COVER;
+        }
         let body = compose.body.clone();
         cx.spawn(async move |_, cx| {
             cx.background_executor().timer(CURSOR_SETTLE).await;
@@ -801,7 +808,8 @@ impl MailWindow {
                 let Some(cursor) = body.read(cx).cursor_bounds() else {
                     return;
                 };
-                let view = scroll.bounds();
+                let mut view = scroll.bounds();
+                view.size.height -= px(covered);
                 let pad = px(12.0);
                 let mut offset = scroll.offset();
                 if cursor.bottom() + pad > view.bottom() {
@@ -1194,10 +1202,11 @@ impl MailWindow {
                     })),
             );
 
-        // On a phone the message is written on a sheet over the whole
-        // window, as mobile mail does; minimized, it is a strip at the foot.
+        // On a phone, and a tablet too narrow for the reading pane, the
+        // message is written on a sheet over the whole window, top bar and
+        // all, as mobile mail does; minimized, it is a strip at the foot.
         let shape = self.layout.shape;
-        let sheet = shape.is_phone() && mode != Mode::Minimized;
+        let sheet = !shape.size.splits(shape.width) && mode != Mode::Minimized;
         let (width, height) = match mode {
             _ if sheet => (shape.width, vh),
             Mode::Minimized if shape.is_phone() => (shape.width - 16.0, TITLE_HEIGHT),
@@ -1233,9 +1242,7 @@ impl MailWindow {
                 d.child(self.render_compose_fields(th, cx))
                     .child(self.render_compose_body(th, width, cx))
                     .child(self.render_attachments(th, cx))
-                    .when(compose.format_bar, |d| {
-                        d.child(self.render_format_bar(th, width - 32.0, cx))
-                    })
+                    .children(self.render_floating_format_bar(th, width - 24.0, cx))
                     .child(self.render_compose_actions(th, width, cx))
                     .child(self.render_drop_target(th))
                     .children(self.render_compose_dialog(th, cx))
@@ -1244,9 +1251,10 @@ impl MailWindow {
         Some(match mode {
             _ if sheet => div()
                 .absolute()
-                .top(px(lerp(48.0, 0.0, t)))
+                .top(px(lerp(48.0, 0.0, t) - super::TOP_BAR_HEIGHT))
+                .bottom(px(-lerp(48.0, 0.0, t)))
                 .left_0()
-                .size_full()
+                .right_0()
                 .opacity(t)
                 .child(panel)
                 .into_any_element(),
@@ -1406,6 +1414,7 @@ impl MailWindow {
             .child(measure(
                 &self.reader_scroll,
                 &compose.stick,
+                cx,
                 |stick, top, _| {
                     stick.card_top = top;
                 },
@@ -1421,6 +1430,7 @@ impl MailWindow {
                     .child(measure(
                         &self.reader_scroll,
                         &compose.stick,
+                        cx,
                         |stick, top, height| {
                             stick.footer_top = top;
                             stick.footer_height = height;
@@ -1438,13 +1448,11 @@ impl MailWindow {
                             } else {
                                 rgba(0)
                             })
-                            .when(compose.format_bar, |d| {
-                                d.child(self.render_format_bar(
-                                    th,
-                                    card_width.max(320.0) - 24.0,
-                                    cx,
-                                ))
-                            })
+                            .children(self.render_floating_format_bar(
+                                th,
+                                card_width.max(320.0) - 24.0,
+                                cx,
+                            ))
                             .child(self.render_compose_actions(th, card_width.max(320.0), cx)),
                     ),
             )
@@ -1597,6 +1605,11 @@ impl MailWindow {
             .track_scroll(&compose.body_scroll)
             .px(px(16.0))
             .py(px(12.0))
+            // The end of the text can scroll up from under the floating
+            // formatting bar.
+            .when(compose.format_bar, |d| {
+                d.pb(px(12.0 + tools::FORMAT_BAR_COVER))
+            })
             .text_size(px(14.0))
             .line_height(px(20.0))
             .text_color(rgba(th.text))
@@ -1624,17 +1637,22 @@ const STICK_BELOW: f32 = 96.0;
 fn measure(
     scroll: &ScrollHandle,
     stick: &Rc<Cell<Stick>>,
+    cx: &Context<MailWindow>,
     set: impl Fn(&mut Stick, f32, f32) + 'static,
 ) -> impl IntoElement {
-    let (scroll, stick) = (scroll.clone(), stick.clone());
+    let (scroll, stick, this) = (scroll.clone(), stick.clone(), cx.entity().downgrade());
     canvas(
-        move |bounds, window, _| {
+        move |bounds, _, cx| {
             let top = f32::from(bounds.top() - scroll.bounds().top() - scroll.offset().y);
             let mut at = stick.get();
             set(&mut at, top, f32::from(bounds.size.height));
             if at != stick.get() {
                 stick.set(at);
-                window.refresh();
+                // After this frame: a change asked for while drawing is lost.
+                let this = this.clone();
+                cx.defer(move |cx| {
+                    this.update(cx, |_, cx| cx.notify()).ok();
+                });
             }
         },
         |_, _, _, _| {},
@@ -1706,6 +1724,25 @@ mod tests {
 
     fn text(d: &Draft) -> String {
         html::to_plain(&d.body)
+    }
+
+    #[test]
+    fn a_reply_keeps_its_quote_behind_the_dots() {
+        let original = Original {
+            view: &view(),
+            date: "Tue, 25 Jun 2002, 22:23".to_owned(),
+        };
+        let signature = Some(html::from_plain("Kay\n"));
+        let mut body = draft(Kind::Reply, Some(&original), me, signature).body;
+        let full = body.clone();
+        let quote = trim_quote(&mut body).expect("the quote");
+        assert_eq!(html::to_plain(&body), "\n\n-- \nKay\n");
+        let mut back = body.clone();
+        back.blocks.extend(quote);
+        assert_eq!(back, full);
+        // Nothing to fold without a quote.
+        let mut new = draft(Kind::New, None, me, None).body;
+        assert!(trim_quote(&mut new).is_none());
     }
 
     #[test]

@@ -169,9 +169,7 @@ impl MailWindow {
             .child(self.render_compose_fields(th, cx))
             .child(self.render_compose_body(th, width, cx))
             .child(self.render_attachments(th, cx))
-            .when(compose.format_bar, |d| {
-                d.child(self.render_format_bar(th, width - 32.0, cx))
-            })
+            .children(self.render_floating_format_bar(th, width - 24.0, cx))
             .child(self.render_compose_actions(th, width, cx))
             .child(self.render_drop_target(th))
             .children(self.render_compose_dialog(th, cx));
