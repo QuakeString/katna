@@ -212,8 +212,12 @@ const PANEL_RADIUS: f32 = 15.0;
 const SEARCH_WIDTH: f32 = 720.0;
 /// Quick settings panel, with its right margin.
 const SETTINGS_WIDTH: f32 = 336.0;
+/// The space between cards side by side (the list, the reading pane,
+/// Quick settings) and between the cards and the window's edges: one
+/// value, so every gap is the same.
+const CARD_GAP: f32 = 16.0;
 /// Space between the list and the reading pane; also the handle to drag.
-const SPLIT_GAP: f32 = 12.0;
+const SPLIT_GAP: f32 = CARD_GAP;
 /// Narrower lists show each line as three (sender, subject, snippet).
 const STACKED_BELOW: f32 = 680.0;
 const PAGE: usize = 10;
@@ -279,6 +283,18 @@ enum Hover {
     Rail,
     Panel,
 }
+
+/// One step Ctrl+Z takes back.
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum UndoStep {
+    /// Undone by sending this.
+    Command(Command),
+    /// Deleted forever: Ctrl+Z says it cannot be undone.
+    DeletedForever,
+}
+
+/// How many steps Ctrl+Z remembers.
+const UNDO_STEPS: usize = 50;
 
 /// A short note at the bottom of the window, maybe with an Undo button.
 struct Snackbar {
@@ -402,6 +418,9 @@ pub struct MailWindow {
     /// The tab indicator's position, in tabs.
     tab_spring: Spring,
     snackbar: Option<Snackbar>,
+    /// What Ctrl+Z takes back, newest last: this window's actions since
+    /// it opened.
+    undo_history: Vec<UndoStep>,
     /// After a crash: the report to view or copy.
     crash_notice: Option<crash_notice::CrashNotice>,
     /// Settings > User feedback's list of crash reports, as last read.
@@ -586,6 +605,7 @@ impl MailWindow {
             settings_spring: Spring::new(motion::SLIDE, 0.0),
             tab_spring: Spring::new(motion::SLIDE, 0.0),
             snackbar: None,
+            undo_history: Vec::new(),
             crash_notice: None,
             saved_reports: None,
             compose: None,
@@ -1245,7 +1265,7 @@ impl MailWindow {
     }
 
     fn undo_action(&mut self, _: &Undo, window: &mut Window, cx: &mut Context<Self>) {
-        self.undo(window, cx);
+        self.undo_last(window, cx);
     }
 
     fn go_to(&mut self, role: Role, window: &mut Window, cx: &mut Context<Self>) {
@@ -1312,6 +1332,9 @@ impl MailWindow {
             })
             .ok();
         });
+        if let Some(undo) = &undo {
+            self.remember(UndoStep::Command(undo.clone()));
+        }
         self.snackbar = Some(Snackbar {
             text: text.into(),
             undo,
@@ -1319,6 +1342,14 @@ impl MailWindow {
             _hide: hide,
         });
         cx.notify();
+    }
+
+    /// Keeps `step` for Ctrl+Z.
+    fn remember(&mut self, step: UndoStep) {
+        self.undo_history.push(step);
+        if self.undo_history.len() > UNDO_STEPS {
+            self.undo_history.remove(0);
+        }
     }
 
     fn hide_snackbar(&mut self, cx: &mut Context<Self>) {
@@ -1694,17 +1725,26 @@ impl MailWindow {
             let ids: Vec<MessageId> = keys.iter().flat_map(|k| mail.entry_messages(*k)).collect();
             mail.with_copies(&ids)
         };
-        let for_good = matches!(act, Act::Delete) && {
-            let trash = self.account().and_then(|a| mail.trash_folder(a));
-            trash.is_none() || (folder.is_some() && folder == trash)
-        };
+        let account = self.account();
+        let trash = account.and_then(|a| mail.trash_folder(a));
+        let for_good = matches!(act, Act::Delete)
+            && match (trash, folder) {
+                (None, _) => true,
+                (Some(trash), Some(folder)) => folder == trash,
+                // Search results: all of them are in Trash already.
+                (Some(trash), None) => keys
+                    .iter()
+                    .flat_map(|k| messages_in(*k))
+                    .all(|id| mail.message_folders(id).contains(&trash)),
+            };
         let (command, undo) = match act {
             Act::Read(read) => {
                 let ids = data::flag_changes(&copies_of(&keys), MessageFlags::SEEN, read);
                 for key in &keys {
                     self.pending.entry(*key).or_default().unread = Some(!read);
                 }
-                (Command::MarkRead(ids, read), None)
+                let undo = Command::MarkRead(ids.clone(), !read);
+                (Command::MarkRead(ids, read), Some(undo))
             }
             Act::Star(on) => {
                 // Starring marks the newest message; unstarring clears all.
@@ -1773,16 +1813,36 @@ impl MailWindow {
                 };
                 // Deleting on an account without a Trash folder, or in
                 // Trash itself, is for good (as the daemon does it), so
-                // there is nothing to undo.
-                let undo = folder
-                    .filter(|_| !for_good)
-                    .map(|folder| Command::Move(ids, folder));
+                // there is nothing to undo. Out of search results or a
+                // conversation window, each message goes back where it was.
+                let undo = match folder {
+                    _ if for_good => None,
+                    Some(folder) => Some(Command::Move(ids, folder)),
+                    None => {
+                        let all_mail = account.and_then(|a| self.tree.role_folder(a, Role::All));
+                        let to = match act {
+                            Act::Archive => account.and_then(|a| {
+                                self.tree
+                                    .role_folder(a, Role::Archive)
+                                    .or_else(|| self.tree.role_folder(a, Role::All))
+                            }),
+                            Act::Delete => trash,
+                            _ => target,
+                        };
+                        move_back(mail, all_mail, &ids, to)
+                    }
+                };
                 self.remove_lines(&keys);
                 (command, undo)
             }
         };
         let done = match act {
             _ if !announce => None,
+            Act::Read(read) => Some(if read {
+                katna_i18n::tr!("toast-marked-read", count = count as u64, kind = kind)
+            } else {
+                katna_i18n::tr!("toast-marked-unread", count = count as u64, kind = kind)
+            }),
             Act::Spam => Some(katna_i18n::tr!(
                 "toast-spam",
                 count = count as u64,
@@ -1795,6 +1855,7 @@ impl MailWindow {
             )),
             _ => command.done_text(count, conversations),
         };
+        let deleted_forever = for_good && announce;
         // Moved out of a conversation window, which now closes: the mail
         // window says so and offers Undo.
         if self.detached
@@ -1802,10 +1863,16 @@ impl MailWindow {
             && let Some(main) = self.main.as_ref().and_then(WeakEntity::upgrade)
         {
             main.update(cx, |main, cx| {
+                if deleted_forever {
+                    main.remember(UndoStep::DeletedForever);
+                }
                 main.send(command, done, undo.clone(), false, cx)
             });
             cx.notify();
             return undo;
+        }
+        if deleted_forever {
+            self.remember(UndoStep::DeletedForever);
         }
         self.send(command, done, undo.clone(), false, cx);
         cx.notify();
@@ -1884,11 +1951,44 @@ impl MailWindow {
         .detach();
     }
 
+    /// Undo on the snackbar: takes back what it tells of.
     fn undo(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let Some(undo) = self.snackbar.as_mut().and_then(|s| s.undo.take()) else {
             return;
         };
+        let step = UndoStep::Command(undo.clone());
+        if let Some(ix) = self.undo_history.iter().rposition(|s| *s == step) {
+            self.undo_history.remove(ix);
+        }
         self.hide_snackbar(cx);
+        self.run_undo(undo, window, cx);
+    }
+
+    /// Ctrl+Z: takes back the newest action not undone yet, whether or not
+    /// its snackbar is still on screen.
+    fn undo_last(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        match self.undo_history.pop() {
+            None => self.show_snackbar(katna_i18n::tr!("toast-nothing-to-undo"), None, cx),
+            Some(UndoStep::DeletedForever) => {
+                self.show_snackbar(
+                    katna_i18n::tr!("toast-cannot-undo-delete-forever"),
+                    None,
+                    cx,
+                );
+            }
+            Some(UndoStep::Command(undo)) => {
+                if let Some(snackbar) = &mut self.snackbar
+                    && snackbar.undo.as_ref() == Some(&undo)
+                {
+                    snackbar.undo = None;
+                    self.hide_snackbar(cx);
+                }
+                self.run_undo(undo, window, cx);
+            }
+        }
+    }
+
+    fn run_undo(&mut self, undo: Command, window: &mut Window, cx: &mut Context<Self>) {
         if let Command::UndoSend(_) = undo {
             // Taken back from the outbox: the message opens again.
             let connection = self.daemon.clone();
@@ -1911,7 +2011,7 @@ impl MailWindow {
                             this.send(command, None, None, false, cx);
                         }
                         this.reopen_unsent(window, cx);
-                        this.show_snackbar("Sending undone.", None, cx);
+                        this.show_snackbar(katna_i18n::tr!("toast-send-undone"), None, cx);
                     }
                     Err(err) => this.show_snackbar(err, None, cx),
                 })
@@ -2144,16 +2244,16 @@ impl MailWindow {
                         .bg(rgba(th.divider))
                         .group_hover("split", |s| s.bg(rgba(th.text_faint))),
                 );
-            // Clipped only from the side it slides in from, and a little
-            // wider than the card, so the card's shadow is never cut.
+            // Clipped a little outside the card on every side, so the
+            // card's shadow is never cut; the row stretches it to its height
+            // plus that room.
             let room = crate::widgets::CARD_SHADOW_ROOM;
             let pane = div()
                 .flex_none()
-                .h_full()
                 .w(px(pane_width * pane_t + 2.0 * room))
-                .mx(px(-room))
-                .px(px(room))
-                .overflow_x_hidden()
+                .m(px(-room))
+                .p(px(room))
+                .overflow_hidden()
                 .child(
                     div()
                         .w(px(pane_width))
@@ -2268,7 +2368,7 @@ impl Render for MailWindow {
         let (rail, margin) = if shape.is_phone() {
             (0.0, 0.0)
         } else {
-            (apps::APP_RAIL_WIDTH, 16.0)
+            (apps::APP_RAIL_WIDTH, CARD_GAP)
         };
         let nav = if self.nav_docked() { NAV_WIDTH } else { 0.0 };
         let settings = if self.settings_open && !settings_floats {
@@ -2499,6 +2599,42 @@ impl Focusable for MailWindow {
 }
 
 /// The card that fills the page for the welcome and error pages.
+/// What moves `ids` back after a move to `to`: each goes back to the
+/// folder the daemon takes it out of (not `to`, and not All Mail when it
+/// is somewhere else too, as `katna_sync::ops::move_messages` picks it).
+/// `None` when none of them moves.
+fn move_back(
+    mail: &Mail,
+    all_mail: Option<FolderId>,
+    ids: &[MessageId],
+    to: Option<FolderId>,
+) -> Option<Command> {
+    let mut back: Vec<(FolderId, Vec<MessageId>)> = Vec::new();
+    for &id in ids {
+        let Some(from) = mail
+            .message_folders(id)
+            .into_iter()
+            .filter(|f| Some(*f) != to)
+            .min_by_key(|f| Some(*f) == all_mail)
+        else {
+            continue;
+        };
+        match back.iter_mut().find(|(folder, _)| *folder == from) {
+            Some((_, ids)) => ids.push(id),
+            None => back.push((from, vec![id])),
+        }
+    }
+    let mut moves: Vec<Command> = back
+        .into_iter()
+        .map(|(folder, ids)| Command::Move(ids, folder))
+        .collect();
+    match moves.len() {
+        0 => None,
+        1 => moves.pop(),
+        _ => Some(Command::Several(moves)),
+    }
+}
+
 fn page_card(th: &Theme) -> gpui::Div {
     div()
         .flex_1()

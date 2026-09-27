@@ -459,6 +459,10 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
     (`Store::trash_folder`, which the app also reads: a delete for good
     says "deleted forever" and offers no Undo). Archive moves to
     `\Archive` (or Gmail's `\All`).
+  - A move out of a folder the message was only just moved into (Undo
+    right after Archive) queues with no UID; when the earlier move runs,
+    its `COPYUID` answer is handed to the waiting one, so the pair
+    replays in order even offline.
   - A refused operation is retried after 60 s. After three refusals it is
     marked failed (kept for inspection) and undone locally: moves at once,
     flags by forgetting the folder's HIGHESTMODSEQ so the next sync reads
@@ -1199,6 +1203,14 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   `uniform_list`. Hovering a line shows Archive, Delete, Mark as
   read/unread and Pin in place of the date. Star, importance and pin
   changes show a snackbar with Undo.
+- **Undo.** Every change to mail (archive, delete to Trash, move, spam,
+  read/unread, star, importance, pin, send while its undo delay runs)
+  shows a snackbar with Undo, and each window keeps its last 50 as a
+  history that Ctrl+Z (and the set's own key, like Z) walks back through
+  after the snackbar is gone. Moves out of search results or a
+  conversation window go back per message to the folder each left.
+  Deletes for good and mail already sent cannot be undone; Ctrl+Z says so.
+  In text fields Ctrl+Z is about the text.
 - **Pins.** Pin to top (hover button, More and right-click menus) keeps a
   conversation, or a single message in message view, above the rest of
   every folder it is listed in, newest pin first, with a pin next to the
@@ -1714,6 +1726,21 @@ desktop's own app stays one click away.
     `draw:page`s. Pictures, charts, layout and speaker notes are left out.
     A slide without a title placeholder takes a short first line as its
     title.
+  - **Selecting and copying.** Text files, documents, slides and PDFs
+    select like message text (§ "Message text can be selected" above,
+    `window/select.rs`, shared with the reader): drag, double- and
+    triple-click, Shift+click, Ctrl+A, Ctrl+C and a right-click Copy,
+    also to the primary selection. Copying and Ctrl+A reach text scrolled
+    out of sight. A PDF's text comes from the page itself: hayro reads each
+    page with a device that keeps every glyph with a known character
+    (ToUnicode, glyph names) and where it is drawn, and glyphs on one
+    baseline become a line (`katna_preview::pdf::TextLine`); pages are read
+    in the background, eight at a time, up to 2,000. The selection is drawn
+    over the page's picture. Scanned PDFs have no text to select.
+    Spreadsheets select cells instead: click, drag or Shift+click for a
+    range, a column letter or row number for all of it; Ctrl+C copies
+    them tab-separated (cells with tabs, line breaks or quotes quoted), so
+    they paste as cells into other spreadsheets.
   - Anything else opens straight in the desktop's default app, and so
     does a file of a previewable type that turns out unreadable (damaged,
     encrypted, Word 6/95; the viewer closes and hands it over, or asks
@@ -1948,7 +1975,11 @@ length, so month and day names, the order (`27/09/2026`, `9/27/2026`,
 - Folder and label names sort with `icu_collator` in the chosen language.
 
 The daemon does not format dates, so it links only Fluent (its 20 MB
-budget).
+budget): the counts in its notifications and tray tooltip are written in
+Western digits whatever the language. Its text is in
+`i18n/<tag>/katna-daemon/`, embedded by its own build script; it applies
+`general.language` at start and again when Katna Mail asks it to reload
+the settings, rebuilding the tray menu.
 
 **Text shaping and fonts.** The vendored GPUI draws text with
 `cosmic-text`, which shapes every script with `harfrust` (HarfBuzz's

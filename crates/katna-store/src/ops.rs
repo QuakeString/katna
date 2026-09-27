@@ -127,6 +127,32 @@ impl MailBatch<'_> {
             .execute([account.0])?)
     }
 
+    /// Pending operations of `account`, due or not, oldest first.
+    pub fn pending_ops(&mut self, account: AccountId) -> Result<Vec<QueuedOp>> {
+        let mut stmt = self.tx().prepare_cached(
+            "SELECT id, account_id, op_json, attempts FROM op_queue
+             WHERE account_id = ?1 AND state = 'pending' ORDER BY id",
+        )?;
+        let rows = stmt.query_map([account.0], |row| {
+            Ok(QueuedOp {
+                id: row.get(0)?,
+                account: AccountId(row.get(1)?),
+                op_json: row.get(2)?,
+                attempts: row.get(3)?,
+            })
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// Replaces a queued operation, for example once a UID it waited for
+    /// is known.
+    pub fn set_op_json(&mut self, id: i64, op_json: &str) -> Result<()> {
+        self.tx()
+            .prepare_cached("UPDATE op_queue SET op_json = ?2 WHERE id = ?1")?
+            .execute(params![id, op_json])?;
+        Ok(())
+    }
+
     /// The operation is done: forget it.
     pub fn finish_op(&mut self, id: i64) -> Result<()> {
         self.tx()
