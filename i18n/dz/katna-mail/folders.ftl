@@ -30,6 +30,7 @@ folder-spam = སྤེམ
 folder-trash = གད་སྙིགས
 folder-all-mail = གློག་འཕྲིན་ཆ་མཉམ
 folder-scheduled = དུས་ཚོད་བཀོད་ཡོདཔ
+folder-activity = ལཱ་གི་རྣམ་པ
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

@@ -30,6 +30,7 @@ folder-spam = 스팸함
 folder-trash = 휴지통
 folder-all-mail = 전체보관함
 folder-scheduled = 예약됨
+folder-activity = 활동
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

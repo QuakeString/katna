@@ -77,6 +77,19 @@ security-missing-key = Nilagdaan gamit ang key na wala sa iyo, kaya hindi ito ma
 security-missing-key-id = Nilagdaan gamit ang key na wala sa iyo ({ $key }), kaya hindi ito masuri
 security-signature-unavailable = May lagda; i-install ang { $tool } para masuri ang lagda
 security-signature-error = Hindi masuri ang lagda.
+tracking-opened = Binuksan ito ni { $who } nang { $count ->
+    [one] isang beses
+   *[other] { $count } beses
+}, huli noong { $when }
+tracking-opened-clicked = Binuksan ito ni { $who } at sinundan ang isang link nang { $count ->
+    [one] isang beses
+   *[other] { $count } beses
+}, huli noong { $when }
+tracking-maybe-opened = Maaaring binuksan ito ni { $who } (naglo-load ng mga larawan ang Apple Mail para sa privacy)
+tracking-not-opened = Hindi pa ito binubuksan ni { $who }
+tracking-receipt = Nagpadala si { $who } ng read receipt
+tracking-receipt-displayed = Read receipt: binuksan ni { $who } ang mensahe mo
+tracking-receipt-other = Read receipt: dinelete o inasikaso ni { $who } ang mensahe mo nang hindi ito binubuksan
 
 ## Remote images and pictures
 

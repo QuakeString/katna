@@ -36,6 +36,14 @@ settings-general-full-headers = បង្ហាញក្បាលសារពេ
 settings-general-full-headers-detail = ពី ទៅ ចម្លងជូន កាលបរិច្ឆេទ និងប្រធានបទ បើកនៅលើគ្រប់សារ
 settings-general-full-names = ឈ្មោះពេញរបស់អ្នកទទួល
 settings-general-full-names-detail = “ទៅ ខ្ញុំ, Ada Lovelace” ជំនួសឱ្យ “ទៅ ខ្ញុំ, Ada”
+settings-translation = ការបកប្រែ
+settings-translation-detail = សំបុត្រជាភាសាផ្សេង អាចអានជាភាសារបស់អ្នកបាន។
+settings-translation-offer = ផ្ដល់ការបកប្រែ
+settings-translation-offer-detail = អត្ថបទរបស់សារ ត្រូវបានផ្ញើទៅម៉ាស៊ីនមេរបស់ Katna ដើម្បីបកប្រែ តែពេលអ្នកស្នើ ឬបកប្រែភាសារបស់វាជានិច្ចប៉ុណ្ណោះ។ ឯកសារភ្ជាប់មិនដែលត្រូវបានផ្ញើទេ។
+settings-translation-reading = បកប្រែទៅជា
+settings-translation-always = បកប្រែជានិច្ច
+settings-translation-never = កុំផ្ដល់សម្រាប់
+settings-translation-none = មិនទាន់មាននៅឡើយ។ ជ្រើសរើសពីរបារបកប្រែរបស់សារ។
 settings-general-mark-read = សម្គាល់ថាបានអាន
 settings-general-mark-read-now = ភ្លាមៗពេលបើក
 settings-general-mark-read-1s = បន្ទាប់ពីបើក 1 វិនាទី
@@ -78,6 +86,9 @@ settings-general-tray = បង្ហាញ Katna ក្នុងថាសប្�
 settings-general-tray-detail = ជាមួយចំនួនមិនទាន់អាន និងម៉ឺនុយ
 settings-general-unread-badge = ចំនួនមិនទាន់អាននៅលើរូបតំណាងរបារភារកិច្ច
 settings-general-unread-badge-detail = ចំនួនសារក្នុងប្រអប់ទទួលដែលមិនទាន់អាន
+settings-general-search-triggers = ស្វែងរកពីផ្ទៃតុ
+settings-general-search-triggers-detail = វាយពាក្យមួយក្នុងចំណោមពាក្យទាំងនេះ និងដកឃ្លាមួយក្នុង KRunner ឬការស្វែងរករបស់ GNOME រួចវាយអ្វីដែលត្រូវរក ដើម្បីស្វែងរកសំបុត្ររបស់អ្នកដូចប្រអប់ស្វែងរកនៅទីនេះ។ បំបែកពាក្យដោយសញ្ញាក្បៀស។
+settings-general-search-triggers-none = គ្មានពាក្យ; មានតែ “mail:” ប៉ុណ្ណោះដែលដំណើរការ
 
 ## Settings > Inbox
 
@@ -218,6 +229,7 @@ settings-shortcuts-restored = ផ្លូវកាត់ទាំងអស់�
 
 settings-general-language-summary = ភាសារបស់កម្មវិធី កាលបរិច្ឆេទ និងលេខ
 settings-general-reading-summary = សារថ្មីបំផុតមុនគេ ក្បាលសារពេញលេញ ឈ្មោះពេញរបស់អ្នកទទួល
+settings-translation-summary = បកប្រែសំបុត្រជាភាសាផ្សេងៗ ជាមួយម៉ាស៊ីនមេរបស់ Katna ទៅជាភាសាដែលអ្នកជ្រើសរើស
 settings-general-mark-read-summary = ពេលដែលការសន្ទនាដែលបានបើកត្រូវបានសម្គាល់ថាបានអាន៖ ភ្លាមៗ បន្ទាប់ពី 1 ឬ 3 វិនាទី ឬដោយដៃ
 settings-general-auto-advance-summary = អ្វីដែលបើកបន្ទាប់ពីអ្នកលុប ទុកក្នុងបណ្ណសារ ឬផ្លាស់ទីការសន្ទនាដែលកំពុងបើក៖ ការសន្ទនាបន្ទាប់ ការសន្ទនាមុន ឬបញ្ជី
 settings-general-reply-button-summary = ប៊ូតុងឆ្លើយតបនៅក្បែរសារនីមួយៗ ឆ្លើយតបទៅគ្រប់គ្នា
@@ -250,6 +262,7 @@ settings-compose-for-new-mail-summary = ហត្ថលេខាដែលសំ�
 settings-compose-for-replies-summary = ហត្ថលេខាដែលការឆ្លើយតប និងការបញ្ជូនបន្តចាប់ផ្ដើមជាមួយ
 settings-compose-format-summary = សរសេរសំបុត្រថ្មីជាអត្ថបទធម្មតា
 settings-compose-spelling-summary = ពិនិត្យអក្ខរាវិរុទ្ធពេលសរសេរ និងភាសារបស់វចនានុក្រម
+settings-general-search-triggers-summary = ពាក្យដែលស្វែងរកសំបុត្ររបស់អ្នកពី KRunner ឬការស្វែងរករបស់ GNOME
 settings-compose-templates-summary = រក្សាទុកសំបុត្រដែលអ្នកសរសេរញឹកញាប់ ហើយចាប់ផ្ដើមសំបុត្រថ្មី ឬការឆ្លើយតបពីវា
 settings-feedback-crash-reports-summary = រក្សាទុករបាយការណ៍គាំងនៅលើកុំព្យូទ័រនេះ ពេល Katna Mail ឬសេវាផ្ទៃខាងក្រោយរបស់វាគាំង
 settings-feedback-saved-summary = មើល ចម្លង ឬលុបរបាយការណ៍គាំងដែលបានរក្សាទុកនៅលើកុំព្យូទ័រនេះ

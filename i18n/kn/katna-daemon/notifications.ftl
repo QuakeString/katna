@@ -14,6 +14,8 @@ notify-unknown-sender = ಅಜ್ಞಾತ ಕಳುಹಿಸುವವರು
 notify-snooze-back = ಸ್ನೂಜ್‌ನಿಂದ ಮರಳಿದೆ
 notify-no-reply = ಇನ್ನೂ ಉತ್ತರವಿಲ್ಲ
 notify-no-reply-to = “{ $subject }” ಗೆ ಯಾರೂ ಉತ್ತರಿಸಿಲ್ಲ.
+notify-tracking-opened = { $who } ಅವರು { $subject } ತೆರೆದಿದ್ದಾರೆ
+notify-tracking-clicked = { $who } ಅವರು { $subject } ನಲ್ಲಿನ ಲಿಂಕ್ ಕ್ಲಿಕ್ ಮಾಡಿದ್ದಾರೆ
 
 ## Its buttons
 

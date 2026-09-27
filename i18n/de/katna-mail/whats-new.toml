@@ -650,3 +650,42 @@ der Pfeil neben Senden erinnern, wenn innerhalb von 1, 3 oder 7 Tagen
 niemand antwortet. Beides funktioniert, solange Ihr Computer an ist, und
 holt Verpasstes nach, wenn er aufwacht.
 """
+
+["2026-09-27-1717-translate-mail"]
+title = "E-Mails in Ihrer Sprache lesen"
+text = """
+Über einer Nachricht in einer anderen Sprache steht jetzt ein Knopf zum
+Übersetzen, und Original anzeigen holt sie zurück. Katna erkennt die
+Sprache auf Ihrem Computer; nur wenn Sie darum bitten, geht der Text der
+Nachricht zur Übersetzung an Katnas eigenen Server. Unter Einstellungen >
+Allgemein > Übersetzung wählen Sie Ihre Sprache und die Sprachen, die
+immer übersetzt werden.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Sehen, wann E-Mails geöffnet werden"
+text = """
+Schalten Sie das Auge neben den Empfängern ein, um zu sehen, wann jeder
+Ihre Nachricht öffnet oder einem Link darin folgt, oder fordern Sie
+stattdessen eine Lesebestätigung an. Gesendete E-Mails zeigen, wer sie
+geöffnet hat, und beim ersten Mal meldet es eine Benachrichtigung. Beides
+ist bei jeder neuen Nachricht aus, und die Verfolgung braucht ein
+Katna-Konto (Einstellungen > Katna-Konto).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Aktivität für verfolgte E-Mails"
+text = """
+Aktivität unter Gesendet zeigt, wie viele Ihrer verfolgten Nachrichten
+geöffnet wurden und wie oft ihre Links aufgerufen wurden, mit Ihren
+Betreffzeilen danach sortiert, wie oft sie geöffnet werden.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "E-Mails aus KRunner mit k durchsuchen"
+text = """
+Geben Sie in KRunner oder der GNOME-Suche k oder m, ein Leerzeichen und
+dann das Gesuchte ein, etwa „k budget“, um dieselben Ergebnisse wie im
+Suchfeld von Katna Mail zu erhalten. Eigene Wörter wählen Sie in den
+Einstellungen unter Allgemein.
+"""

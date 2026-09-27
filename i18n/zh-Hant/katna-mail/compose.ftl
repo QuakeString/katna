@@ -65,6 +65,12 @@ compose-encrypt = 加密
 compose-encrypted = 已加密：只有收件者能閱讀
 compose-sign = 簽署
 compose-signed = 已簽署：收件者可以驗證郵件確實來自你
+compose-track = 追蹤開信和點閱
+compose-tracked = 已追蹤：每位收件者開啟郵件或點開連結時，你都能看到
+compose-track-unavailable = 已簽署、已加密和純文字郵件無法追蹤
+compose-track-sign-in = 登入 Katna 帳戶即可追蹤開信和點閱
+compose-receipt = 要求已讀回條
+compose-receipt-on = 已要求已讀回條：收件者的應用程式可能會詢問對方是否傳送回條
 
 ## Spelling
 

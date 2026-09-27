@@ -36,6 +36,14 @@ settings-general-full-headers = పూర్తి హెడర్‌లను �
 settings-general-full-headers-detail = ప్రతి మెసేజ్‌లో పంపినవారు, స్వీకర్త, cc, తేదీ, సబ్జెక్ట్ తెరిచే ఉంటాయి
 settings-general-full-names = స్వీకర్తల పూర్తి పేర్లు
 settings-general-full-names-detail = “నాకు, Ada” బదులుగా “నాకు, Ada Lovelace”
+settings-translation = అనువాదం
+settings-translation-detail = వేరే భాషలోని మెయిల్‌ను మీ భాషలో చదవవచ్చు.
+settings-translation-offer = అనువదించమని సూచించండి
+settings-translation-offer-detail = మీరు అడిగినప్పుడు లేదా దాని భాషను ఎల్లప్పుడూ అనువదించేలా ఎంచుకున్నప్పుడు మాత్రమే, మెసేజ్ టెక్స్ట్ అనువాదం కోసం Katna సర్వర్‌కు వెళ్తుంది. అటాచ్‌మెంట్‌లు ఎప్పటికీ వెళ్లవు.
+settings-translation-reading = ఈ భాషలోకి అనువదించండి
+settings-translation-always = ఎల్లప్పుడూ అనువదించండి
+settings-translation-never = ఎప్పుడూ సూచించవద్దు
+settings-translation-none = ఇంకా ఏదీ లేదు. మెసేజ్ పైన ఉన్న అనువాద బార్ నుండి ఎంచుకోండి.
 settings-general-mark-read = చదివినట్లు గుర్తు పెట్టడం
 settings-general-mark-read-now = తెరిచిన వెంటనే
 settings-general-mark-read-1s = 1 సెకను తెరిచి ఉన్న తర్వాత
@@ -84,6 +92,9 @@ settings-general-tray = సిస్టమ్ ట్రేలో Katnaను చ
 settings-general-tray-detail = చదవని వాటి సంఖ్య, ఒక మెనూతో
 settings-general-unread-badge = టాస్క్‌బార్ ఐకాన్‌పై చదవని వాటి సంఖ్య
 settings-general-unread-badge-detail = ఇన్‌బాక్స్‌లో ఎన్ని మెసేజ్‌లు చదవలేదు
+settings-general-search-triggers = డెస్క్‌టాప్ నుండి వెతకండి
+settings-general-search-triggers-detail = KRunner లేదా GNOME సెర్చ్‌లో ఈ పదాలలో ఒకదాన్ని, ఒక ఖాళీని టైప్ చేసి, ఆపై వెతకాల్సింది టైప్ చేయండి; ఇక్కడి సెర్చ్ బాక్స్ లాగానే మీ మెయిల్‌లో వెతుకుతుంది. పదాలను కామాలతో వేరు చేయండి.
+settings-general-search-triggers-none = పదాలు లేవు; “mail:” మాత్రమే పనిచేస్తుంది
 
 ## Settings > Inbox
 
@@ -224,6 +235,7 @@ settings-shortcuts-restored = ప్రతి షార్ట్‌కట్‌�
 
 settings-general-language-summary = యాప్, తేదీలు, సంఖ్యల భాష
 settings-general-reading-summary = కొత్త మెసేజ్ ముందు, పూర్తి హెడర్‌లు, స్వీకర్తల పూర్తి పేర్లు
+settings-translation-summary = ఇతర భాషలలోని మెయిల్‌ను Katna సర్వర్‌తో మీరు ఎంచుకున్న భాషలోకి అనువదించండి
 settings-general-mark-read-summary = తెరిచిన సంభాషణ ఎప్పుడు చదివినట్లు గుర్తు పెట్టబడుతుంది: వెంటనే, 1 లేదా 3 సెకన్ల తర్వాత, లేదా మాన్యువల్‌గా
 settings-general-auto-advance-summary = తెరిచిన సంభాషణను మీరు తొలగించిన, ఆర్కైవ్ చేసిన లేదా తరలించిన తర్వాత ఏది తెరుచుకుంటుంది: తర్వాతిది, మునుపటిది, లేదా లిస్ట్
 settings-general-reply-button-summary = ప్రతి మెసేజ్ పక్కన ఉన్న రిప్లయి బటన్ అందరికీ రిప్లయి ఇస్తుంది
@@ -256,6 +268,7 @@ settings-compose-for-new-mail-summary = కొత్త మెయిల్ మ�
 settings-compose-for-replies-summary = రిప్లయిలు, ఫార్వర్డ్‌లు మొదలయ్యే సంతకం
 settings-compose-format-summary = కొత్త మెయిల్‌ను సాధారణ టెక్స్ట్‌లో రాయండి
 settings-compose-spelling-summary = రాస్తున్నప్పుడు స్పెల్లింగ్ చెక్, డిక్షనరీ భాష
+settings-general-search-triggers-summary = KRunner లేదా GNOME సెర్చ్ నుండి మీ మెయిల్‌లో వెతికే పదాలు
 settings-compose-templates-summary = మీరు తరచుగా రాసే మెయిల్‌ను సేవ్ చేసి, దాని నుండి కొత్త మెయిల్ లేదా రిప్లయిని మొదలుపెట్టండి
 settings-feedback-crash-reports-summary = Katna Mail లేదా దాని బ్యాక్‌గ్రౌండ్ సర్వీస్ క్రాష్ అయినప్పుడు క్రాష్ రిపోర్ట్‌లను ఈ కంప్యూటర్‌లో సేవ్ చేయండి
 settings-feedback-saved-summary = ఈ కంప్యూటర్‌లో సేవ్ చేసిన క్రాష్ రిపోర్ట్‌లను చూడండి, కాపీ చేయండి లేదా తొలగించండి

@@ -77,6 +77,19 @@ security-missing-key = ଆପଣଙ୍କ ପାଖରେ ନଥିବା ଏକ
 security-missing-key-id = ଆପଣଙ୍କ ପାଖରେ ନଥିବା ଏକ କି' ({ $key }) ସହ ଦସ୍ତଖତ, ତେଣୁ ଯାଞ୍ଚ କରିହେବ ନାହିଁ
 security-signature-unavailable = ଦସ୍ତଖତ ଅଛି; ଦସ୍ତଖତ ଯାଞ୍ଚ କରିବା ପାଇଁ { $tool } ଇନଷ୍ଟଲ କରନ୍ତୁ
 security-signature-error = ଦସ୍ତଖତ ଯାଞ୍ଚ କରିହେଲା ନାହିଁ।
+tracking-opened = { $who } ଏହାକୁ { $count ->
+    [one] ଥରେ
+   *[other] { $count } ଥର
+} ଖୋଲିଛନ୍ତି, ଶେଷ ଥର { $when }
+tracking-opened-clicked = { $who } ଏହାକୁ ଖୋଲି ଲିଙ୍କ { $count ->
+    [one] ଥରେ
+   *[other] { $count } ଥର
+} ଖୋଲିଛନ୍ତି, ଶେଷ ଥର { $when }
+tracking-maybe-opened = { $who } ହୁଏତ ଏହାକୁ ଖୋଲିଥିବେ (Apple Mail ଗୋପନୀୟତା ପାଇଁ ଛବି ଲୋଡ କରେ)
+tracking-not-opened = { $who } ଏପର୍ଯ୍ୟନ୍ତ ଏହାକୁ ଖୋଲିନାହାନ୍ତି
+tracking-receipt = { $who } ଏକ ପଢ଼ିବା ରସିଦ ପଠାଇଛନ୍ତି
+tracking-receipt-displayed = ପଢ଼ିବା ରସିଦ: { $who } ଆପଣଙ୍କ ମେସେଜ ଖୋଲିଛନ୍ତି
+tracking-receipt-other = ପଢ଼ିବା ରସିଦ: { $who } ଆପଣଙ୍କ ମେସେଜ ନ ଖୋଲି ଡିଲିଟ କରିଛନ୍ତି ବା ପରିଚାଳନା କରିଛନ୍ତି
 
 ## Remote images and pictures
 

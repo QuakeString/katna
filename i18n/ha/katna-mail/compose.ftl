@@ -68,6 +68,12 @@ compose-encrypt = Ɓoye
 compose-encrypted = An ɓoye: masu karɓa kaɗai ne za su iya karanta shi
 compose-sign = Sa hannu
 compose-signed = An sa hannu: masu karɓa za su iya tabbatar da cewa daga gare ku ne
+compose-track = Bibiyi buɗewa da dannawa
+compose-tracked = Ana bibiya: za ku ga lokacin da kowane mai karɓa ya buɗe shi ko ya bi mahaɗi
+compose-track-unavailable = Ba za a iya bibiyar wasiƙar da aka sa wa hannu, aka ɓoye ko ta rubutu mara ado ba
+compose-track-sign-in = Ku shiga asusun Katna don bibiyar buɗewa da dannawa
+compose-receipt = Nemi rasidin karantawa
+compose-receipt-on = An nemi rasidin karantawa: manhajar mai karɓa na iya tambayarsa ya aiko da shi
 
 ## Spelling
 

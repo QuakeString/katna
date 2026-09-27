@@ -37,6 +37,7 @@ folder-spam = الرسائل غير المرغوب فيها
 folder-trash = المهملات
 folder-all-mail = كل البريد
 folder-scheduled = المُجدوَلة
+folder-activity = النشاط
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

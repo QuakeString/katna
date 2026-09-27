@@ -69,6 +69,12 @@ compose-encrypt = Cifrar
 compose-encrypted = Cifrado: solo los destinatarios pueden leerlo
 compose-sign = Firmar
 compose-signed = Firmado: los destinatarios pueden comprobar que es tuyo
+compose-track = Seguir aperturas y clics
+compose-tracked = Con seguimiento: verás cuándo lo abre cada destinatario o sigue un enlace
+compose-track-unavailable = No se puede hacer seguimiento del correo firmado, cifrado o de texto sin formato
+compose-track-sign-in = Inicia sesión en una cuenta de Katna para seguir aperturas y clics
+compose-receipt = Pedir confirmación de lectura
+compose-receipt-on = Confirmación de lectura pedida: la aplicación del destinatario puede pedirle que la envíe
 
 ## Spelling
 

@@ -65,6 +65,12 @@ compose-encrypt = Mã hóa
 compose-encrypted = Đã mã hóa: chỉ người nhận đọc được
 compose-sign = Ký
 compose-signed = Đã ký: người nhận có thể kiểm tra thư là của bạn
+compose-track = Theo dõi lượt mở và lượt nhấp
+compose-tracked = Đang theo dõi: bạn thấy khi mỗi người nhận mở thư hoặc mở một liên kết
+compose-track-unavailable = Không thể theo dõi thư đã ký, đã mã hóa hoặc văn bản thuần
+compose-track-sign-in = Đăng nhập tài khoản Katna để theo dõi lượt mở và lượt nhấp
+compose-receipt = Yêu cầu xác nhận đã đọc
+compose-receipt-on = Đã yêu cầu xác nhận đã đọc: ứng dụng của người nhận có thể hỏi họ có gửi xác nhận không
 
 ## Spelling
 

@@ -68,6 +68,12 @@ compose-encrypt = Verschlüsseln
 compose-encrypted = Verschlüsselt: Nur die Empfänger können sie lesen
 compose-sign = Signieren
 compose-signed = Signiert: Empfänger können prüfen, dass sie von Ihnen stammt
+compose-track = Öffnungen und Klicks verfolgen
+compose-tracked = Verfolgt: Sie sehen, wann jeder Empfänger sie öffnet oder einem Link folgt
+compose-track-unavailable = Signierte, verschlüsselte und Nur-Text-E-Mails können nicht verfolgt werden
+compose-track-sign-in = Melden Sie sich bei einem Katna-Konto an, um Öffnungen und Klicks zu verfolgen
+compose-receipt = Lesebestätigung anfordern
+compose-receipt-on = Lesebestätigung angefordert: Die App des Empfängers fragt ihn möglicherweise, ob er eine sendet
 
 ## Spelling
 

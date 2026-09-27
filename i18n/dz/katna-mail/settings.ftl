@@ -36,6 +36,14 @@ settings-general-full-headers = མགོ་ཡིག་ཆ་ཚང་སྟོ
 settings-general-full-headers-detail = འཕྲིན་དོན་རེ་རེ་གུ་ ལས་ ལུ་ cc ཚེས་གྲངས་དང་དོན་ཚན་ཚུ་ཁ་ཕྱེཝ་ཨིན
 settings-general-full-names = ལེན་མི་ཚུ་གི་མིང་ཆ་ཚང
 settings-general-full-names-detail = “ང་ལུ་ Ada” གི་ཚབ་ལུ་ “ང་ལུ་ Ada Lovelace”
+settings-translation = སྐད་བསྒྱུར
+settings-translation-detail = སྐད་ཡིག་གཞན་ནང་གི་གློག་འཕྲིན་ཚུ་ ཁྱོད་རའི་སྐད་ཡིག་ནང་ ལྷག་ཚུགས།
+settings-translation-offer = སྐད་བསྒྱུར་འབད་ནི་ གྲོས་འཆར་བཀོད།
+settings-translation-offer-detail = འཕྲིན་དོན་གྱི་ཚིག་ཡིག་འདི་ ཁྱོད་ཀྱིས་ཞུ་བའི་སྐབས་ ཡང་ན་ དེའི་སྐད་ཡིག་ཨ་རྟག་ར་སྐད་བསྒྱུར་འབད་བའི་སྐབས་རྐྱངམ་ཅིག་ སྐད་བསྒྱུར་གྱི་དོན་ལུ་ Katna གི་སར་བར་ལུ་འགྱོཝ་ཨིན། མཉམ་སྦྲགས་ཚུ་ ནམ་ཡང་མི་འགྱོ།
+settings-translation-reading = སྐད་བསྒྱུར་འབད་སའི་སྐད་ཡིག
+settings-translation-always = ཨ་རྟག་ར་སྐད་བསྒྱུར་འབད།
+settings-translation-never = ནམ་ཡང་གྲོས་འཆར་མ་བཀོད།
+settings-translation-none = ད་ཚུན་ག་ནི་ཡང་མེད། འཕྲིན་དོན་གྱི་ སྐད་བསྒྱུར་ཕྲ་རིང་ལས་ གདམ།
 settings-general-mark-read = ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ།
 settings-general-mark-read-now = ཁ་ཕྱེཝ་ཅིག་ལས་ལམ་སེང་
 settings-general-mark-read-1s = སྐར་ཆ་ ༡ ཁ་ཕྱེ་བཞག་ཞིནམ་ལས
@@ -78,6 +86,9 @@ settings-general-tray = Katna རིམ་ལུགས་སྡེར་མ་�
 settings-general-tray-detail = མ་ལྷག་པའི་གྱངས་ཁ་དང་ དཀར་ཆག་དང་བཅས
 settings-general-unread-badge = ལཱ་གི་ཕྲ་རིང་ངོས་དཔར་གུ་ མ་ལྷག་པའི་གྱངས་ཁ
 settings-general-unread-badge-detail = ནང་འབྱོར་སྒྲོམ་གྱི་འཕྲིན་དོན་ག་དེམ་ཅིག་མ་ལྷག་པས
+settings-general-search-triggers = ཌེཀསི་ཊོཔ་ལས་འཚོལ།
+settings-general-search-triggers-detail = ནཱ་གི་འཚོལ་ཞིབ་སྒྲོམ་བཟུམ་སྦེ་ ཁྱོད་ཀྱི་གློག་འཕྲིན་འཚོལ་ནིའི་དོན་ལུ་ KRunner ཡང་ན་ GNOME འཚོལ་ཞིབ་ནང་ ཚིག་འདི་ཚུ་ལས་ གཅིག་དང་ བར་སྟོང་ཅིག་ ཡིག་དཔར་རྐྱབ་ཞིནམ་ལས་ འཚོལ་དགོ་མི་འདི་ ཡིག་དཔར་རྐྱབ། ཚིག་ཚུ་གི་བར་ན་ ཚེག་ཤད་ (,) བཙུགས།
+settings-general-search-triggers-none = ཚིག་མེད། “mail:” རྐྱངམ་ཅིག་ ལཱ་འབདཝ་ཨིན།
 
 ## Settings > Inbox
 
@@ -218,6 +229,7 @@ settings-shortcuts-restored = མགྱོགས་ཐབས་རེ་རེ�
 
 settings-general-language-summary = གློག་རིམ་དང་ ཚེས་གྲངས་ ཨང་གྲངས་ཚུ་གི་སྐད་ཡིག
 settings-general-reading-summary = འཕྲིན་དོན་གསར་ཤོས་ཧེ་མ་ མགོ་ཡིག་ཆ་ཚང་ ལེན་མི་ཚུ་གི་མིང་ཆ་ཚང
+settings-translation-summary = སྐད་ཡིག་གཞན་ནང་གི་གློག་འཕྲིན་ཚུ་ Katna གི་སར་བར་གྱིས་ ཁྱོད་ཀྱིས་གདམ་མི་སྐད་ཡིག་ནང་ སྐད་བསྒྱུར་འབད།
 settings-general-mark-read-summary = ཁ་ཕྱེ་ཡོད་པའི་གླེང་མོལ་ ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ་ནིའི་དུས་: ལམ་སེང་ སྐར་ཆ་ ༡ ཡང་ན་ ༣ གི་ཤུལ་ལས་ ཡང་ན་ ལག་ཐོག་ལས
 settings-general-auto-advance-summary = ཁ་ཕྱེ་ཡོད་པའི་གླེང་མོལ་ བཏོན་གཏང་ ཡིག་མཛོད་ནང་བཙུགས་ ཡང་ན་ སྤོ་བཤུད་འབད་བའི་ཤུལ་ལས་ ག་ཅི་ཁ་ཕྱེཝ་ཨིན་ན: ཤུལ་མམ་ ཧེ་མམ་ ཡང་ན་ ཐོ་ཡིག
 settings-general-reply-button-summary = འཕྲིན་དོན་རེ་རེའི་སྦོ་ལོགས་ཁ་ཡོད་པའི་ལན་སློག་ཨེབ་རྟ་གིས་ མི་ག་ར་ལུ་ལན་སློགཔ་ཨིན
@@ -250,6 +262,7 @@ settings-compose-for-new-mail-summary = གློག་འཕྲིན་གས�
 settings-compose-for-replies-summary = ལན་དང་མདུན་སྐྱེལ་ཚུ་འགོ་བཙུགས་མི་མིང་རྟགས
 settings-compose-format-summary = གློག་འཕྲིན་གསརཔ་ ཚིག་ཡིག་རྐྱང་པ་ནང་བྲིས།
 settings-compose-spelling-summary = བྲི་བའི་སྐབས་ ཡིག་སྦྱོར་ཞིབ་དཔྱད་དང་ ཚིག་མཛོད་ཀྱི་སྐད་ཡིག
+settings-general-search-triggers-summary = KRunner ཡང་ན་ GNOME འཚོལ་ཞིབ་ལས་ ཁྱོད་ཀྱི་གློག་འཕྲིན་འཚོལ་མི་ཚིག
 settings-compose-templates-summary = ཁྱོད་ཀྱིས་ཡང་ཡང་བྲི་མི་གློག་འཕྲིན་ཚུ་སྲུང་སྟེ་ དེ་ལས་གློག་འཕྲིན་གསརཔ་ ཡང་ན་ལན་ཅིག་འགོ་བཙུགས།
 settings-feedback-crash-reports-summary = Katna Mail ཡང་ན་ དེ་གི་རྒྱབ་ཐག་ཞབས་ཏོག་ཆག་པའི་སྐབས་ ཆག་སྐྱོན་སྙན་ཞུ་ཚུ་ གློག་རིག་འདི་གུ་སྲུང་།
 settings-feedback-saved-summary = གློག་རིག་འདི་གུ་སྲུང་ཡོད་པའི་ ཆག་སྐྱོན་སྙན་ཞུ་ཚུ་ བལྟ་ འདྲ་བཤུས་རྐྱབ་ ཡང་ན་བཏོན་གཏང་།

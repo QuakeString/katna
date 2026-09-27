@@ -36,6 +36,14 @@ settings-general-full-headers = Bonisa amakhanda aphelele
 settings-general-full-headers-detail = Kusuka ku, ku, cc, usuku nesihloko kuvuleka kuwo wonke umlayezo
 settings-general-full-names = Amagama aphelele abamukeli
 settings-general-full-names-detail = “ku-mina, Ada Lovelace” esikhundleni sokuthi “ku-mina, Ada”
+settings-translation = Ukuhumusha
+settings-translation-detail = Imeyili ngolunye ulimi ingafundwa ngolwakho.
+settings-translation-offer = Nikela ngokuhumusha
+settings-translation-offer-detail = Umbhalo womlayezo uya kuseva ye-Katna ukuze uhunyushwe, kuphela uma ucela noma uhlale uhumusha ulimi lwawo. Okunamathiselwe akuyi neze.
+settings-translation-reading = Humushela olimini
+settings-translation-always = Humusha njalo
+settings-translation-never = Ungalokothi unikele ngalezi zilimi
+settings-translation-none = Akukabi khona. Khetha kubha yokuHumusha yomlayezo.
 settings-general-mark-read = Maka njengokufundiwe
 settings-general-mark-read-now = Ngokushesha nje uma uvuleka
 settings-general-mark-read-1s = Ngemva kokuvuleka isekhondi elingu-1
@@ -84,6 +92,9 @@ settings-general-tray = Bonisa i-Katna kuthileyi yesistimu
 settings-general-tray-detail = Nesibalo sokungafundiwe nemenyu
 settings-general-unread-badge = Isibalo sokungafundiwe esithonjaneni sebha yemisebenzi
 settings-general-unread-badge-detail = Ingakanani imilayezo yebhokisi lokungenayo engafundiwe
+settings-general-search-triggers = Sesha kusuka kudeskithophu
+settings-general-search-triggers-detail = Thayipha elinye lala magama nesikhala ku-KRunner noma ekusesheni kwe-GNOME, bese uthayipha okufunayo, ukuze useshe imeyili yakho njengoba ibhokisi lokusesha lapha lenza. Hlukanisa amagama ngokhefana.
+settings-general-search-triggers-none = Awekho amagama; kusebenza “mail:” kuphela
 
 ## Settings > Inbox
 
@@ -224,6 +235,7 @@ settings-shortcuts-restored = Isinqamuleli ngasinye sesinokhiye besethi yaso fut
 
 settings-general-language-summary = Ulimi lwe-app, izinsuku nezinombolo
 settings-general-reading-summary = Umlayezo omusha kakhulu kuqala, amakhanda aphelele, amagama aphelele abamukeli
+settings-translation-summary = Humusha imeyili ngezinye izilimi ngeseva ye-Katna, ulimi olukhethayo
 settings-general-mark-read-summary = Lapho ingxoxo evuliwe imakwa njengefundiwe: ngokushesha, ngemva kwemizuzwana engu-1 noma engu-3, noma ngesandla
 settings-general-auto-advance-summary = Okuvulekayo ngemva kokususa, ukufaka kungobo yomlando noma ukuhambisa ingxoxo evuliwe: elandelayo, edlule, noma uhlu
 settings-general-reply-button-summary = Inkinobho yokuphendula eduze komlayezo ngamunye iphendula wonke umuntu
@@ -256,6 +268,7 @@ settings-compose-for-new-mail-summary = Isiginesha imeyili entsha eqala ngayo
 settings-compose-for-replies-summary = Isiginesha izimpendulo nokudluliselwayo okuqala ngayo
 settings-compose-format-summary = Bhala imeyili entsha ngombhalo osobala
 settings-compose-spelling-summary = Hlola ukupela ngenkathi ubhala, nolimi lwesichazamazwi
+settings-general-search-triggers-summary = Amagama asesha imeyili yakho kusuka ku-KRunner noma ekusesheni kwe-GNOME
 settings-compose-templates-summary = Londoloza imeyili oyibhala kaningi, bese uqala imeyili entsha noma impendulo ngayo
 settings-feedback-crash-reports-summary = Londoloza imibiko yokuphahlazeka kule khompyutha uma i-Katna Mail noma isevisi yayo yangemuva iphahlazeka
 settings-feedback-saved-summary = Buka, kopisha noma susa imibiko yokuphahlazeka elondolozwe kule khompyutha

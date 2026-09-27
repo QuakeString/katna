@@ -36,6 +36,14 @@ settings-general-full-headers = ခေါင်းစီး အပြည့်�
 settings-general-full-headers-detail = မက်ဆေ့ဂျ်တိုင်းတွင် မှ၊ သို့၊ မိတ္တူ၊ ရက်စွဲနှင့် ခေါင်းစဉ်ကို ဖွင့်ပြသည်
 settings-general-full-names = လက်ခံသူများ၏ အမည်အပြည့်အစုံ
 settings-general-full-names-detail = “ကျွန်ုပ်၊ Ada ထံသို့” အစား “ကျွန်ုပ်၊ Ada Lovelace ထံသို့”
+settings-translation = ဘာသာပြန်ခြင်း
+settings-translation-detail = အခြားဘာသာစကားဖြင့် ရေးထားသော မေးလ်ကို သင့်ဘာသာစကားဖြင့် ဖတ်နိုင်သည်။
+settings-translation-offer = ဘာသာပြန်ရန် အကြံပြုရန်
+settings-translation-offer-detail = မက်ဆေ့ဂျ်၏ စာသားကို ဘာသာပြန်ရန် Katna ၏ ဆာဗာသို့ ပို့သည်မှာ သင် တောင်းဆိုသည့်အခါ သို့မဟုတ် ၎င်း၏ ဘာသာစကားကို အမြဲ ဘာသာပြန်သည့်အခါ၌သာ ဖြစ်သည်။ ပူးတွဲဖိုင်များကို ဘယ်တော့မှ မပို့ပါ။
+settings-translation-reading = ဘာသာပြန်မည့် ဘာသာစကား
+settings-translation-always = အမြဲ ဘာသာပြန်ရန်
+settings-translation-never = ဤဘာသာစကားများအတွက် ဘယ်တော့မှ အကြံမပြုရန်
+settings-translation-none = မရှိသေးပါ။ မက်ဆေ့ဂျ်တစ်ခု၏ ဘာသာပြန် ဘားမှ ရွေးပါ။
 settings-general-mark-read = ဖတ်ပြီးအဖြစ် မှတ်ရန်
 settings-general-mark-read-now = ဖွင့်သည်နှင့် ချက်ချင်း
 settings-general-mark-read-1s = ၁ စက္ကန့် ဖွင့်ထားပြီးနောက်
@@ -78,6 +86,9 @@ settings-general-tray = Katna ကို စနစ်ဗန်းတွင် ပ
 settings-general-tray-detail = မဖတ်ရသေး အရေအတွက်နှင့် မီနူးဖြင့်
 settings-general-unread-badge = တာစ်ဘား အိုင်ကွန်ပေါ်တွင် မဖတ်ရသေး အရေအတွက်
 settings-general-unread-badge-detail = ဝင်စာ မက်ဆေ့ဂျ် မည်မျှ မဖတ်ရသေးကြောင်း
+settings-general-search-triggers = ဒက်စ်တော့မှ ရှာရန်
+settings-general-search-triggers-detail = KRunner သို့မဟုတ် GNOME ရှာဖွေမှုတွင် ဤစကားလုံးများထဲမှ တစ်ခုနှင့် space တစ်ခုကို ရိုက်ပြီး ရှာလိုသည့်အရာကို ရိုက်ပါ၊ ဤနေရာရှိ ရှာဖွေရေးအကွက်ကဲ့သို့ သင့်မေးလ်ကို ရှာပေးပါမည်။ စကားလုံးများကို ကော်မာဖြင့် ခွဲပါ။
+settings-general-search-triggers-none = စကားလုံး မရှိပါ၊ “mail:” သာ အလုပ်လုပ်သည်
 
 ## Settings > Inbox
 
@@ -218,6 +229,7 @@ settings-shortcuts-restored = ဖြတ်လမ်းတိုင်းသည�
 
 settings-general-language-summary = အက်ပ်၊ ရက်စွဲများနှင့် နံပါတ်များ၏ ဘာသာစကား
 settings-general-reading-summary = နောက်ဆုံး မက်ဆေ့ဂျ်ကို ရှေ့ဆုံးတွင်၊ ခေါင်းစီး အပြည့်အစုံ၊ လက်ခံသူများ၏ အမည်အပြည့်အစုံ
+settings-translation-summary = အခြားဘာသာစကားများဖြင့် ရေးထားသော မေးလ်ကို Katna ၏ ဆာဗာဖြင့် သင်ရွေးသော ဘာသာစကားသို့ ဘာသာပြန်ရန်
 settings-general-mark-read-summary = ဖွင့်ထားသော စကားဝိုင်းကို ဖတ်ပြီးအဖြစ် မှတ်မည့်အချိန်- ချက်ချင်း၊ ၁ သို့မဟုတ် ၃ စက္ကန့်အကြာ သို့မဟုတ် ကိုယ်တိုင်
 settings-general-auto-advance-summary = ဖွင့်ထားသော စကားဝိုင်းကို ဖျက်၊ မှတ်တမ်းသိမ်း သို့မဟုတ် ရွှေ့ပြီးနောက် ဖွင့်မည့်အရာ- နောက်တစ်ခု၊ ယခင်တစ်ခု သို့မဟုတ် စာရင်း
 settings-general-reply-button-summary = မက်ဆေ့ဂျ်တစ်ခုစီဘေးရှိ ပြန်စာခလုတ်က လူတိုင်းကို ပြန်စာရေးသည်
@@ -250,6 +262,7 @@ settings-compose-for-new-mail-summary = မေးလ်အသစ် စတင်
 settings-compose-for-replies-summary = ပြန်စာနှင့် ထပ်ဆင့်ပို့ချက်များ စတင်မည့် လက်မှတ်
 settings-compose-format-summary = မေးလ်အသစ်ကို စာသားသက်သက်ဖြင့် ရေးရန်
 settings-compose-spelling-summary = ရေးနေစဉ် စာလုံးပေါင်း စစ်ဆေးခြင်းနှင့် အဘိဓာန်၏ ဘာသာစကား
+settings-general-search-triggers-summary = KRunner သို့မဟုတ် GNOME ရှာဖွေမှုမှ သင့်မေးလ်ကို ရှာပေးသော စကားလုံးများ
 settings-compose-templates-summary = မကြာခဏရေးသော မေးလ်ကို သိမ်းပြီး ၎င်းမှ မေးလ်အသစ် သို့မဟုတ် ပြန်စာကို စတင်ပါ
 settings-feedback-crash-reports-summary = Katna Mail သို့မဟုတ် ၎င်း၏ နောက်ခံဝန်ဆောင်မှု ပျက်ကျသည့်အခါ ပျက်ကျမှု အစီရင်ခံစာများကို ဤကွန်ပျူတာတွင် သိမ်းရန်
 settings-feedback-saved-summary = ဤကွန်ပျူတာတွင် သိမ်းထားသော ပျက်ကျမှု အစီရင်ခံစာများကို ကြည့်ရန်၊ မိတ္တူကူးရန် သို့မဟုတ် ဖျက်ရန်

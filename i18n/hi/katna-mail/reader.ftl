@@ -77,6 +77,19 @@ security-missing-key = ऐसी कुंजी से हस्ताक्ष
 security-missing-key-id = ऐसी कुंजी ({ $key }) से हस्ताक्षर किया गया जो आपके पास नहीं है, इसलिए इसकी जांच नहीं हो सकती
 security-signature-unavailable = हस्ताक्षरित; हस्ताक्षर की जांच के लिए { $tool } इंस्टॉल करें
 security-signature-error = हस्ताक्षर की जांच नहीं हो सकी।
+tracking-opened = { $who } ने इसे { $count ->
+    [one] एक बार
+   *[other] { $count } बार
+} खोला, आखिरी बार { $when }
+tracking-opened-clicked = { $who } ने इसे खोला और { $count ->
+    [one] एक बार
+   *[other] { $count } बार
+} लिंक खोला, आखिरी बार { $when }
+tracking-maybe-opened = { $who } ने शायद इसे खोला है (Apple Mail निजता के लिए इमेज लोड करता है)
+tracking-not-opened = { $who } ने अभी तक इसे नहीं खोला है
+tracking-receipt = { $who } ने पढ़ने की रसीद भेजी
+tracking-receipt-displayed = पढ़ने की रसीद: { $who } ने आपका मैसेज खोला
+tracking-receipt-other = पढ़ने की रसीद: { $who } ने आपका मैसेज खोले बिना मिटा दिया या निपटा दिया
 
 ## Remote images and pictures
 

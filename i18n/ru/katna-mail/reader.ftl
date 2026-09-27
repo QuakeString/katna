@@ -77,6 +77,23 @@ security-missing-key = Подписано ключом, которого у ва
 security-missing-key-id = Подписано ключом, которого у вас нет ({ $key }), поэтому подпись нельзя проверить
 security-signature-unavailable = Подписано; установите { $tool }, чтобы проверить подпись
 security-signature-error = Не удалось проверить подпись.
+tracking-opened = { $who }: открыто { $count ->
+    [one] { $count } раз
+    [few] { $count } раза
+    [many] { $count } раз
+   *[other] { $count } раза
+}, последний раз { $when }
+tracking-opened-clicked = { $who }: открыто, переход по ссылке { $count ->
+    [one] { $count } раз
+    [few] { $count } раза
+    [many] { $count } раз
+   *[other] { $count } раза
+}, последний раз { $when }
+tracking-maybe-opened = { $who }: возможно, открыто (Apple Mail загружает изображения ради конфиденциальности)
+tracking-not-opened = { $who }: ещё не открыто
+tracking-receipt = Уведомление о прочтении от { $who }
+tracking-receipt-displayed = Уведомление о прочтении: ваше письмо открыто получателем { $who }
+tracking-receipt-other = Уведомление о прочтении: ваше письмо удалено или обработано получателем { $who } без открытия
 
 ## Remote images and pictures
 

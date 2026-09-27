@@ -36,6 +36,14 @@ settings-general-full-headers = ສະແດງສ່ວນຫົວແບບເ
 settings-general-full-headers-detail = ຈາກ, ເຖິງ, ສຳເນົາ, ວັນທີ ແລະ ຫົວຂໍ້ ເປີດຢູ່ໃນທຸກຂໍ້ຄວາມ
 settings-general-full-names = ຊື່ເຕັມຂອງຜູ້ຮັບ
 settings-general-full-names-detail = “ເຖິງ ຂ້ອຍ, Ada Lovelace” ແທນ “ເຖິງ ຂ້ອຍ, Ada”
+settings-translation = ການແປພາສາ
+settings-translation-detail = ອີເມວໃນພາສາອື່ນ ສາມາດອ່ານເປັນພາສາຂອງທ່ານໄດ້.
+settings-translation-offer = ສະເໜີການແປ
+settings-translation-offer-detail = ເນື້ອຫາຂອງຂໍ້ຄວາມຈະຖືກສົ່ງໄປຫາເຊີບເວີຂອງ Katna ເພື່ອແປ ສະເພາະເມື່ອທ່ານຂໍ ຫຼື ແປພາສານັ້ນສະເໝີ. ໄຟລ໌ແນບບໍ່ເຄີຍຖືກສົ່ງ.
+settings-translation-reading = ແປເປັນ
+settings-translation-always = ແປສະເໝີ
+settings-translation-never = ບໍ່ສະເໜີສຳລັບ
+settings-translation-none = ຍັງບໍ່ມີ. ເລືອກຈາກແຖບແປຂອງຂໍ້ຄວາມ.
 settings-general-mark-read = ໝາຍວ່າອ່ານແລ້ວ
 settings-general-mark-read-now = ທັນທີທີ່ເປີດ
 settings-general-mark-read-1s = ຫຼັງຈາກເປີດໄວ້ 1 ວິນາທີ
@@ -78,6 +86,9 @@ settings-general-tray = ສະແດງ Katna ໃນຖາດລະບົບ
 settings-general-tray-detail = ພ້ອມຈຳນວນທີ່ຍັງບໍ່ໄດ້ອ່ານ ແລະ ເມນູ
 settings-general-unread-badge = ຈຳນວນທີ່ຍັງບໍ່ໄດ້ອ່ານເທິງໄອຄອນແຖບໜ້າວຽກ
 settings-general-unread-badge-detail = ມີຂໍ້ຄວາມໃນກ່ອງຈົດໝາຍເຂົ້າທີ່ຍັງບໍ່ໄດ້ອ່ານຈັກຂໍ້ຄວາມ
+settings-general-search-triggers = ຊອກຫາຈາກເດັສທັອບ
+settings-general-search-triggers-detail = ພິມຄຳໃດໜຶ່ງໃນຄຳເຫຼົ່ານີ້ ແລະ ຍະຫວ່າງໃນ KRunner ຫຼື ການຊອກຫາຂອງ GNOME ແລ້ວພິມສິ່ງທີ່ຕ້ອງການຊອກຫາ ເພື່ອຊອກຫາອີເມວຂອງທ່ານຄືກັບຊ່ອງຊອກຫາຢູ່ບ່ອນນີ້. ແຍກແຕ່ລະຄຳດ້ວຍເຄື່ອງໝາຍຈຸດ (,).
+settings-general-search-triggers-none = ບໍ່ມີຄຳ; ມີແຕ່ “mail:” ທີ່ໃຊ້ໄດ້
 
 ## Settings > Inbox
 
@@ -218,6 +229,7 @@ settings-shortcuts-restored = ປຸ່ມລັດທັງໝົດກັບ�
 
 settings-general-language-summary = ພາສາຂອງແອັບ, ວັນທີ ແລະ ຕົວເລກ
 settings-general-reading-summary = ຂໍ້ຄວາມໃໝ່ສຸດກ່ອນ, ສ່ວນຫົວແບບເຕັມ, ຊື່ເຕັມຂອງຜູ້ຮັບ
+settings-translation-summary = ແປອີເມວໃນພາສາອື່ນດ້ວຍເຊີບເວີຂອງ Katna ເປັນພາສາທີ່ທ່ານເລືອກ
 settings-general-mark-read-summary = ເມື່ອໃດການສົນທະນາທີ່ເປີດຈະຖືກໝາຍວ່າອ່ານແລ້ວ: ທັນທີ, ຫຼັງ 1 ຫຼື 3 ວິນາທີ, ຫຼື ໝາຍເອງ
 settings-general-auto-advance-summary = ສິ່ງທີ່ເປີດຫຼັງຈາກທ່ານລຶບ, ຈັດເກັບ ຫຼື ຍ້າຍການສົນທະນາທີ່ເປີດຢູ່: ອັນຖັດໄປ, ອັນກ່ອນໜ້າ ຫຼື ລາຍການ
 settings-general-reply-button-summary = ປຸ່ມຕອບກັບຂ້າງແຕ່ລະຂໍ້ຄວາມຈະຕອບກັບທຸກຄົນ
@@ -250,6 +262,7 @@ settings-compose-for-new-mail-summary = ລາຍເຊັນທີ່ອີເ�
 settings-compose-for-replies-summary = ລາຍເຊັນທີ່ການຕອບກັບ ແລະ ການສົ່ງຕໍ່ເລີ່ມຕົ້ນດ້ວຍ
 settings-compose-format-summary = ຂຽນອີເມວໃໝ່ເປັນຂໍ້ຄວາມທຳມະດາ
 settings-compose-spelling-summary = ກວດການສະກົດຄຳຂະນະຂຽນ, ແລະ ພາສາຂອງວັດຈະນານຸກົມ
+settings-general-search-triggers-summary = ຄຳທີ່ຊອກຫາອີເມວຂອງທ່ານຈາກ KRunner ຫຼື ການຊອກຫາຂອງ GNOME
 settings-compose-templates-summary = ບັນທຶກອີເມວທີ່ທ່ານຂຽນເລື້ອຍໆ, ແລະ ໃຊ້ມັນເລີ່ມອີເມວໃໝ່ ຫຼື ການຕອບກັບ
 settings-feedback-crash-reports-summary = ບັນທຶກລາຍງານການຂັດຂ້ອງໄວ້ໃນຄອມພິວເຕີນີ້ເມື່ອ Katna Mail ຫຼື ບໍລິການເບື້ອງຫຼັງຂອງມັນຂັດຂ້ອງ
 settings-feedback-saved-summary = ເບິ່ງ, ສຳເນົາ ຫຼື ລຶບລາຍງານການຂັດຂ້ອງທີ່ບັນທຶກໄວ້ໃນຄອມພິວເຕີນີ້

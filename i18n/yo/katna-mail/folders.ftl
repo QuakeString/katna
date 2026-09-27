@@ -30,6 +30,7 @@ folder-spam = Àwúrúju
 folder-trash = Ìdọ̀tí
 folder-all-mail = Gbogbo lẹ́tà
 folder-scheduled = Tí a ṣètò
+folder-activity = Ìgbòkègbodò
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

@@ -33,6 +33,7 @@ folder-spam = Skräppost
 folder-trash = Papperskorgen
 folder-all-mail = Alla mail
 folder-scheduled = Schemalagt
+folder-activity = Aktivitet
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

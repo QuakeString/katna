@@ -36,6 +36,14 @@ settings-general-full-headers = Показывать заголовки полн
 settings-general-full-headers-detail = От кого, кому, копия, дата и тема открыты в каждом письме
 settings-general-full-names = Полные имена получателей
 settings-general-full-names-detail = «мне, Ada Lovelace», а не «мне, Ada»
+settings-translation = Перевод
+settings-translation-detail = Письма на другом языке можно читать на вашем.
+settings-translation-offer = Предлагать перевод
+settings-translation-offer-detail = Текст письма отправляется на сервер Katna для перевода, только когда вы об этом просите или всегда переводите его язык. Вложения не отправляются никогда.
+settings-translation-reading = Переводить на
+settings-translation-always = Всегда переводить
+settings-translation-never = Никогда не предлагать для
+settings-translation-none = Пока нет. Выберите на панели перевода над письмом.
 settings-general-mark-read = Отмечать как прочитанное
 settings-general-mark-read-now = Сразу при открытии
 settings-general-mark-read-1s = Через 1 секунду после открытия
@@ -88,6 +96,9 @@ settings-general-tray = Показывать Katna в системном лот�
 settings-general-tray-detail = Со счётчиком непрочитанных и меню
 settings-general-unread-badge = Счётчик непрочитанных на значке в панели задач
 settings-general-unread-badge-detail = Сколько писем во «Входящих» не прочитано
+settings-general-search-triggers = Поиск с рабочего стола
+settings-general-search-triggers-detail = Введите в KRunner или в поиске GNOME одно из этих слов и пробел, а затем то, что нужно найти, чтобы искать в почте так же, как в здешней строке поиска. Разделяйте слова запятыми.
+settings-general-search-triggers-none = Слов нет; работает только «mail:»
 
 ## Settings > Inbox
 
@@ -228,6 +239,7 @@ settings-shortcuts-restored = Всем сочетаниям снова назн�
 
 settings-general-language-summary = Язык приложения, дат и чисел
 settings-general-reading-summary = Сначала новые письма, полные заголовки, полные имена получателей
+settings-translation-summary = Перевод писем на других языках через сервер Katna на выбранный вами язык
 settings-general-mark-read-summary = Когда открытая цепочка отмечается как прочитанная: сразу, через 1 или 3 секунды или вручную
 settings-general-auto-advance-summary = Что открывается после удаления, архивирования или перемещения открытой цепочки: следующая, предыдущая или список
 settings-general-reply-button-summary = Кнопка ответа рядом с каждым письмом отвечает всем
@@ -260,6 +272,7 @@ settings-compose-for-new-mail-summary = Подпись, с которой нач
 settings-compose-for-replies-summary = Подпись, с которой начинаются ответы и пересылки
 settings-compose-format-summary = Писать новые письма обычным текстом
 settings-compose-spelling-summary = Проверка орфографии при вводе и язык словаря
+settings-general-search-triggers-summary = Слова для поиска в почте из KRunner или поиска GNOME
 settings-compose-templates-summary = Сохраняйте письма, которые часто пишете, и начинайте с них новое письмо или ответ
 settings-feedback-crash-reports-summary = Сохранять отчёты о сбоях на этом компьютере, когда Katna Mail или её фоновая служба аварийно завершается
 settings-feedback-saved-summary = Просмотр, копирование и удаление отчётов о сбоях, сохранённых на этом компьютере

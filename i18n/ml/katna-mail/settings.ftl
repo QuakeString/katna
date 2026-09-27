@@ -36,6 +36,14 @@ settings-general-full-headers = പൂർണ്ണ ഹെഡറുകൾ കാ�
 settings-general-full-headers-detail = എല്ലാ സന്ദേശത്തിലും അയച്ചയാൾ, സ്വീകർത്താവ്, cc, തീയതി, വിഷയം എന്നിവ തുറന്നിരിക്കും
 settings-general-full-names = സ്വീകർത്താക്കളുടെ മുഴുവൻ പേരുകൾ
 settings-general-full-names-detail = “ഞാൻ, Ada” എന്നതിന് പകരം “ഞാൻ, Ada Lovelace”
+settings-translation = വിവർത്തനം
+settings-translation-detail = മറ്റൊരു ഭാഷയിലുള്ള മെയിൽ നിങ്ങളുടെ ഭാഷയിൽ വായിക്കാം.
+settings-translation-offer = വിവർത്തനം ചെയ്യാൻ നിർദ്ദേശിക്കുക
+settings-translation-offer-detail = നിങ്ങൾ ആവശ്യപ്പെടുമ്പോഴോ അതിന്റെ ഭാഷ എപ്പോഴും വിവർത്തനം ചെയ്യുമ്പോഴോ മാത്രമേ ഒരു സന്ദേശത്തിന്റെ ടെക്സ്റ്റ് വിവർത്തനത്തിനായി Katna-യുടെ സെർവറിലേക്ക് പോകൂ. അറ്റാച്ച്‌മെന്റുകൾ ഒരിക്കലും പോകില്ല.
+settings-translation-reading = ഇതിലേക്ക് വിവർത്തനം ചെയ്യുക
+settings-translation-always = എപ്പോഴും വിവർത്തനം ചെയ്യുക
+settings-translation-never = ഇവയ്ക്ക് ഒരിക്കലും നിർദ്ദേശിക്കരുത്
+settings-translation-none = ഇതുവരെ ഒന്നുമില്ല. ഒരു സന്ദേശത്തിന്റെ വിവർത്തന ബാറിൽ നിന്ന് തിരഞ്ഞെടുക്കുക.
 settings-general-mark-read = വായിച്ചതായി അടയാളപ്പെടുത്തൽ
 settings-general-mark-read-now = തുറന്നയുടൻ
 settings-general-mark-read-1s = 1 സെക്കൻഡ് തുറന്നിരുന്ന ശേഷം
@@ -84,6 +92,9 @@ settings-general-tray = സിസ്റ്റം ട്രേയിൽ Katna ക
 settings-general-tray-detail = വായിക്കാത്തവയുടെ എണ്ണവും ഒരു മെനുവും സഹിതം
 settings-general-unread-badge = ടാസ്‌ക്‌ബാർ ഐക്കണിൽ വായിക്കാത്തവയുടെ എണ്ണം
 settings-general-unread-badge-detail = ഇൻബോക്‌സിലെ എത്ര സന്ദേശങ്ങൾ വായിച്ചിട്ടില്ല
+settings-general-search-triggers = ഡെസ്‌ക്‌ടോപ്പിൽ നിന്ന് തിരയുക
+settings-general-search-triggers-detail = ഇവിടത്തെ തിരയൽ ബോക്സ് ചെയ്യുന്നതുപോലെ നിങ്ങളുടെ മെയിൽ തിരയാൻ, KRunner-ലോ GNOME തിരയലിലോ ഈ വാക്കുകളിലൊന്നും ഒരു സ്‌പേസും ടൈപ്പ് ചെയ്യുക, തുടർന്ന് കണ്ടെത്തേണ്ടത് ടൈപ്പ് ചെയ്യുക. വാക്കുകൾ കോമ കൊണ്ട് വേർതിരിക്കുക.
+settings-general-search-triggers-none = വാക്കുകളില്ല; “mail:” മാത്രമേ പ്രവർത്തിക്കൂ
 
 ## Settings > Inbox
 
@@ -224,6 +235,7 @@ settings-shortcuts-restored = ഓരോ കുറുക്കുവഴിക്�
 
 settings-general-language-summary = ആപ്പിന്റെയും തീയതികളുടെയും നമ്പറുകളുടെയും ഭാഷ
 settings-general-reading-summary = ഏറ്റവും പുതിയ സന്ദേശം ആദ്യം, പൂർണ്ണ ഹെഡറുകൾ, സ്വീകർത്താക്കളുടെ മുഴുവൻ പേരുകൾ
+settings-translation-summary = മറ്റ് ഭാഷകളിലെ മെയിൽ Katna-യുടെ സെർവർ ഉപയോഗിച്ച് നിങ്ങൾ തിരഞ്ഞെടുക്കുന്ന ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യുക
 settings-general-mark-read-summary = തുറന്ന സംഭാഷണം എപ്പോൾ വായിച്ചതായി അടയാളപ്പെടുത്തുന്നു: ഉടൻ, 1 അല്ലെങ്കിൽ 3 സെക്കൻഡിന് ശേഷം, അല്ലെങ്കിൽ സ്വമേധയാ
 settings-general-auto-advance-summary = തുറന്നിരിക്കുന്ന സംഭാഷണം ഇല്ലാതാക്കുകയോ ആർക്കൈവ് ചെയ്യുകയോ നീക്കുകയോ ചെയ്‌ത ശേഷം എന്ത് തുറക്കണം: അടുത്തത്, മുമ്പത്തേത്, അല്ലെങ്കിൽ ലിസ്റ്റ്
 settings-general-reply-button-summary = ഓരോ സന്ദേശത്തിനും അടുത്തുള്ള മറുപടി ബട്ടൺ എല്ലാവർക്കും മറുപടി നൽകുന്നു
@@ -256,6 +268,7 @@ settings-compose-for-new-mail-summary = പുതിയ മെയിൽ തു�
 settings-compose-for-replies-summary = മറുപടികളും ഫോർവേഡുകളും തുടങ്ങുന്ന ഒപ്പ്
 settings-compose-format-summary = പുതിയ മെയിൽ പ്ലെയിൻ ടെക്സ്റ്റിൽ എഴുതുക
 settings-compose-spelling-summary = എഴുതുമ്പോൾ അക്ഷരത്തെറ്റ് പരിശോധന, നിഘണ്ടുവിന്റെ ഭാഷ
+settings-general-search-triggers-summary = KRunner-ൽ നിന്നോ GNOME തിരയലിൽ നിന്നോ നിങ്ങളുടെ മെയിൽ തിരയുന്ന വാക്കുകൾ
 settings-compose-templates-summary = നിങ്ങൾ പതിവായി എഴുതുന്ന മെയിൽ സംരക്ഷിച്ച്, അതിൽ നിന്ന് പുതിയ മെയിലോ മറുപടിയോ തുടങ്ങുക
 settings-feedback-crash-reports-summary = Katna Mail അല്ലെങ്കിൽ അതിന്റെ പശ്ചാത്തല സേവനം ക്രാഷ് ആകുമ്പോൾ ക്രാഷ് റിപ്പോർട്ടുകൾ ഈ കമ്പ്യൂട്ടറിൽ സംരക്ഷിക്കുക
 settings-feedback-saved-summary = ഈ കമ്പ്യൂട്ടറിൽ സംരക്ഷിച്ച ക്രാഷ് റിപ്പോർട്ടുകൾ കാണുക, പകർത്തുക അല്ലെങ്കിൽ ഇല്ലാതാക്കുക

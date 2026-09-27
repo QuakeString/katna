@@ -68,6 +68,12 @@ compose-encrypt = Kryptera
 compose-encrypted = Krypterat: bara mottagarna kan läsa det
 compose-sign = Signera
 compose-signed = Signerat: mottagarna kan kontrollera att det kommer från dig
+compose-track = Spåra öppningar och klick
+compose-tracked = Spårat: du ser när varje mottagare öppnar det eller följer en länk
+compose-track-unavailable = E-post som är signerad, krypterad eller i ren text kan inte spåras
+compose-track-sign-in = Logga in på ett Katna-konto för att spåra öppningar och klick
+compose-receipt = Begär läskvitto
+compose-receipt-on = Läskvitto begärt: mottagarens app kan be hen att skicka ett
 
 ## Spelling
 

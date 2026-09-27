@@ -36,6 +36,14 @@ settings-general-full-headers = 詳細なヘッダーを表示
 settings-general-full-headers-detail = すべてのメールで From、To、Cc、日付、件名を開いて表示します
 settings-general-full-names = 宛先をフルネームで表示
 settings-general-full-names-detail = 「To: 自分、Ada」ではなく「To: 自分、Ada Lovelace」
+settings-translation = 翻訳
+settings-translation-detail = 他の言語のメールを自分の言語で読めます。
+settings-translation-offer = 翻訳を提案
+settings-translation-offer-detail = メッセージの本文が翻訳のために Katna のサーバーに送られるのは、翻訳を求めたときか、その言語を常に翻訳する設定にしているときだけです。添付ファイルが送られることはありません。
+settings-translation-reading = 翻訳先
+settings-translation-always = 常に翻訳
+settings-translation-never = 提案しない言語
+settings-translation-none = まだありません。メッセージの翻訳バーから選べます。
 settings-general-mark-read = 既読にするタイミング
 settings-general-mark-read-now = 開いたらすぐ
 settings-general-mark-read-1s = 開いてから 1 秒後
@@ -78,6 +86,9 @@ settings-general-tray = システムトレイに Katna を表示
 settings-general-tray-detail = 未読数とメニュー付き
 settings-general-unread-badge = タスクバーのアイコンに未読数を表示
 settings-general-unread-badge-detail = 受信トレイの未読メールの数
+settings-general-search-triggers = デスクトップから検索
+settings-general-search-triggers-detail = KRunner または GNOME の検索で、これらの語のいずれかとスペースを入力してから探したいものを入力すると、ここの検索ボックスと同じようにメールを検索できます。語はカンマで区切ります。
+settings-general-search-triggers-none = 語なし。「mail:」のみ使えます
 
 ## Settings > Inbox
 
@@ -218,6 +229,7 @@ settings-shortcuts-restored = すべてのショートカットをセットの�
 
 settings-general-language-summary = アプリ、日付、数値の言語
 settings-general-reading-summary = 新しいメールを先頭に表示、詳細なヘッダー、宛先のフルネーム
+settings-translation-summary = 他の言語のメールを Katna のサーバーで、選んだ言語に翻訳します
 settings-general-mark-read-summary = 開いたスレッドを既読にするタイミング: すぐ、1 秒後または 3 秒後、手動
 settings-general-auto-advance-summary = 開いているスレッドを削除、アーカイブ、移動した後に開くもの: 次のスレッド、前のスレッド、またはリスト
 settings-general-reply-button-summary = 各メールの横にある返信ボタンで全員に返信
@@ -250,6 +262,7 @@ settings-compose-for-new-mail-summary = 新規メールに最初から入れる�
 settings-compose-for-replies-summary = 返信や転送に最初から入れる署名
 settings-compose-format-summary = 新規メールをプレーンテキストで作成
 settings-compose-spelling-summary = 入力中のスペルチェックと辞書の言語
+settings-general-search-triggers-summary = KRunner や GNOME の検索からメールを検索する語
 settings-compose-templates-summary = よく書くメールを保存し、新規メールや返信に使えます
 settings-feedback-crash-reports-summary = Katna Mail またはバックグラウンド サービスがクラッシュしたときに、クラッシュレポートをこのパソコンに保存
 settings-feedback-saved-summary = このパソコンに保存したクラッシュレポートの表示、コピー、削除

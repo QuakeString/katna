@@ -641,3 +641,41 @@ wybranej porze. Przy wysyłaniu strzałka obok Wyślij może przypomnieć, jeśl
 nikt nie odpowie w ciągu 1, 3 lub 7 dni. Oba działają, gdy komputer jest
 włączony, i nadrabiają zaległości po jego wybudzeniu.
 """
+
+["2026-09-27-1717-translate-mail"]
+title = "Czytaj pocztę w swoim języku"
+text = """
+Nad wiadomością w innym języku pojawia się teraz przycisk Przetłumacz, a
+Pokaż oryginał przywraca ją. Katna rozpoznaje język na twoim komputerze;
+tekst wiadomości trafia na własny serwer Katna do przetłumaczenia tylko
+wtedy, gdy o to poprosisz. Ustawienia > Ogólne > Tłumaczenie pozwalają
+wybrać twój język i języki, które mają być zawsze tłumaczone.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Zobacz, kiedy poczta zostaje otwarta"
+text = """
+Włącz oko obok odbiorców, aby widzieć, kiedy każdy z nich otwiera twoją
+wiadomość lub klika zawarty w niej link, albo poproś zamiast tego o
+potwierdzenie przeczytania. Wysłana poczta pokazuje, kto ją otworzył, a
+powiadomienie informuje o tym za pierwszym razem. Obie funkcje są
+wyłączone dla każdej nowej wiadomości, a śledzenie wymaga konta Katna
+(Ustawienia > Konto Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Aktywność śledzonej poczty"
+text = """
+Aktywność pod Wysłanymi pokazuje, ile twoich śledzonych wiadomości
+otwarto i jak często klikano ich linki, a tematy są uszeregowane według
+tego, jak często są otwierane.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Przeszukuj pocztę z KRunnera za pomocą k"
+text = """
+Wpisz k lub m, spację, a potem to, czego szukasz, w KRunnerze lub
+wyszukiwarce GNOME, aby dostać te same wyniki co w polu wyszukiwania
+Katna Mail, na przykład „k budget”. Własne słowa wybierzesz w
+Ustawienia > Ogólne.
+"""

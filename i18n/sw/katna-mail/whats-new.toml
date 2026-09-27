@@ -643,3 +643,41 @@ uliouchagua. Unapotuma, mshale ulio kando ya Tuma unaweza kukukumbusha
 ikiwa hakuna atakayejibu ndani ya siku 1, 3 au 7. Vyote hufanya kazi
 kompyuta yako ikiwa imewashwa, na hufidia vilivyokosa baada ya kuamka.
 """
+
+["2026-09-27-1717-translate-mail"]
+title = "Soma barua katika lugha yako"
+text = """
+Ujumbe ulio katika lugha nyingine sasa unaonyesha kitufe cha Tafsiri juu
+yake, na Onyesha asili huurudisha kama ulivyokuwa. Katna hutambua lugha
+kwenye kompyuta yako; maandishi ya ujumbe huenda kwenye seva ya Katna
+yenyewe ili yatafsiriwe pale tu unapoomba. Mipangilio > Jumla > Tafsiri
+huchagua lugha yako na zile za kutafsiri kila wakati.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Ona barua inapofunguliwa"
+text = """
+Washa jicho karibu na wapokeaji ili uone kila mmoja anapofungua ujumbe
+wako au kufuata kiungo ndani yake, au omba stakabadhi ya kusoma badala
+yake. Barua zilizotumwa zinaonyesha nani amezifungua, na arifa
+inakujulisha mara ya kwanza. Vyote viwili vimezimwa kwa kila ujumbe
+mpya, na ufuatiliaji unahitaji akaunti ya Katna (Mipangilio > Akaunti ya
+Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Shughuli ya barua zinazofuatiliwa"
+text = """
+Shughuli chini ya Zilizotumwa inaonyesha ni ujumbe wako mingapi
+unaofuatiliwa imefunguliwa na mara ngapi viungo vyake vimefuatwa, pamoja
+na mada zako zikiwa zimepangwa kwa jinsi zinavyofunguliwa mara nyingi.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Tafuta barua zako kutoka KRunner kwa k"
+text = """
+Andika k au m, nafasi, kisha unachotafuta katika KRunner au utafutaji wa
+GNOME ili upate matokeo yale yale ya kisanduku cha utafutaji cha
+Katna Mail, kama “k budget”. Chagua maneno yako mwenyewe katika
+Mipangilio > Jumla.
+"""

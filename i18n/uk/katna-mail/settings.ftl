@@ -36,6 +36,14 @@ settings-general-full-headers = Показувати повні заголовк
 settings-general-full-headers-detail = Від, кому, копія, дата й тема відкриті в кожному листі
 settings-general-full-names = Повні імена одержувачів
 settings-general-full-names-detail = «мені, Ada Lovelace», а не «мені, Ada»
+settings-translation = Переклад
+settings-translation-detail = Листи іншою мовою можна читати вашою.
+settings-translation-offer = Пропонувати переклад
+settings-translation-offer-detail = Текст листа надсилається на сервер Katna для перекладу, лише коли ви просите або завжди перекладаєте його мову. Вкладення не надсилаються ніколи.
+settings-translation-reading = Перекладати на
+settings-translation-always = Завжди перекладати
+settings-translation-never = Ніколи не пропонувати для
+settings-translation-none = Поки нічого. Виберіть на панелі перекладу над листом.
 settings-general-mark-read = Позначати як прочитане
 settings-general-mark-read-now = Одразу після відкриття
 settings-general-mark-read-1s = Через 1 секунду після відкриття
@@ -88,6 +96,9 @@ settings-general-tray = Показувати Katna в системному ло�
 settings-general-tray-detail = Із лічильником непрочитаних і меню
 settings-general-unread-badge = Лічильник непрочитаних на значку панелі завдань
 settings-general-unread-badge-detail = Скільки листів у «Вхідних» не прочитано
+settings-general-search-triggers = Пошук зі стільниці
+settings-general-search-triggers-detail = Введіть у KRunner або в пошуку GNOME одне з цих слів і пробіл, а потім те, що треба знайти, щоб шукати в пошті так само, як у тутешньому полі пошуку. Розділяйте слова комами.
+settings-general-search-triggers-none = Слів немає; працює лише «mail:»
 
 ## Settings > Inbox
 
@@ -228,6 +239,7 @@ settings-shortcuts-restored = Усім комбінаціям знову при�
 
 settings-general-language-summary = Мова програми, дат і чисел
 settings-general-reading-summary = Спочатку найновіший лист, повні заголовки, повні імена одержувачів
+settings-translation-summary = Переклад листів іншими мовами на вибрану вами мову через сервер Katna
 settings-general-mark-read-summary = Коли відкритий ланцюжок позначається як прочитаний: одразу, через 1 чи 3 секунди або вручну
 settings-general-auto-advance-summary = Що відкривається після того, як ви видалите, заархівуєте чи перемістите відкритий ланцюжок: наступний, попередній або список
 settings-general-reply-button-summary = Кнопка відповіді біля кожного листа відповідає всім
@@ -260,6 +272,7 @@ settings-compose-for-new-mail-summary = Підпис, з якого почина
 settings-compose-for-replies-summary = Підпис, з якого починаються відповіді й пересилання
 settings-compose-format-summary = Писати нові листи звичайним текстом
 settings-compose-spelling-summary = Перевірка правопису під час введення та мова словника
+settings-general-search-triggers-summary = Слова для пошуку в пошті з KRunner або пошуку GNOME
 settings-compose-templates-summary = Зберігайте листи, які часто пишете, і починайте з них новий лист або відповідь
 settings-feedback-crash-reports-summary = Зберігати звіти про збої на цьому комп’ютері, коли Katna Mail або її фонова служба аварійно завершується
 settings-feedback-saved-summary = Переглянути, скопіювати або видалити звіти про збої, збережені на цьому комп’ютері

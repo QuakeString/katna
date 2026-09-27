@@ -70,6 +70,12 @@ compose-encrypt = Zaszyfruj
 compose-encrypted = Zaszyfrowane: tylko odbiorcy mogą to przeczytać
 compose-sign = Podpisz
 compose-signed = Podpisane: odbiorcy mogą sprawdzić, że pochodzi od Ciebie
+compose-track = Śledź otwarcia i kliknięcia
+compose-tracked = Śledzone: zobaczysz, kiedy każdy odbiorca ją otworzy lub kliknie link
+compose-track-unavailable = Nie można śledzić wiadomości podpisanych, zaszyfrowanych ani w zwykłym tekście
+compose-track-sign-in = Zaloguj się na konto Katna, aby śledzić otwarcia i kliknięcia
+compose-receipt = Poproś o potwierdzenie przeczytania
+compose-receipt-on = Poproszono o potwierdzenie przeczytania: aplikacja odbiorcy może zapytać go o jego wysłanie
 
 ## Spelling
 

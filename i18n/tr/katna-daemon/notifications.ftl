@@ -11,6 +11,8 @@ notify-unknown-sender = Bilinmeyen gönderen
 notify-snooze-back = Ertelemeden dönenler
 notify-no-reply = Henüz yanıt yok
 notify-no-reply-to = “{ $subject }” iletisine kimse yanıt vermedi.
+notify-tracking-opened = { $who }, { $subject } iletisini açtı
+notify-tracking-clicked = { $who }, { $subject } iletisindeki bir bağlantıya tıkladı
 
 ## Its buttons
 

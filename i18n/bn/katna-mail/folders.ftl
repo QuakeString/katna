@@ -33,6 +33,7 @@ folder-spam = স্প্যাম
 folder-trash = ট্র্যাশ
 folder-all-mail = সব মেল
 folder-scheduled = শিডিউল করা
+folder-activity = কার্যকলাপ
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

@@ -36,6 +36,14 @@ settings-general-full-headers = Wys volledige opskrifte
 settings-general-full-headers-detail = Van, aan, afskrif, datum en onderwerp is oop op elke boodskap
 settings-general-full-names = Volle name van ontvangers
 settings-general-full-names-detail = “aan my, Ada Lovelace” eerder as “aan my, Ada”
+settings-translation = Vertaling
+settings-translation-detail = E-pos in 'n ander taal kan in joune gelees word.
+settings-translation-offer = Bied aan om te vertaal
+settings-translation-offer-detail = 'n Boodskap se teks gaan na Katna se bediener om vertaal te word, net wanneer jy vra of sy taal altyd laat vertaal. Aanhegsels gaan nooit.
+settings-translation-reading = Vertaal na
+settings-translation-always = Vertaal altyd
+settings-translation-never = Moet nooit aanbied vir
+settings-translation-none = Nog geen. Kies uit 'n boodskap se Vertaal-balk.
 settings-general-mark-read = Merk as gelees
 settings-general-mark-read-now = Sodra dit oopmaak
 settings-general-mark-read-1s = Nadat dit 1 sekonde oop is
@@ -84,6 +92,9 @@ settings-general-tray = Wys Katna in die stelselbalk
 settings-general-tray-detail = Met die ongeleesde telling en 'n kieslys
 settings-general-unread-badge = Ongeleesde telling op die taakbalkikoon
 settings-general-unread-badge-detail = Hoeveel inkassieboodskappe ongelees is
+settings-general-search-triggers = Soek vanaf die werkskerm
+settings-general-search-triggers-detail = Tik een van hierdie woorde en 'n spasie in KRunner of die GNOME-soektog, dan wat jy wil vind, om jou e-pos te deursoek soos die soekkassie hier doen. Skei woorde met kommas.
+settings-general-search-triggers-none = Geen woorde nie; net “mail:” werk
 
 ## Settings > Inbox
 
@@ -224,6 +235,7 @@ settings-shortcuts-restored = Elke kortpad het weer sy stel se sleutels.
 
 settings-general-language-summary = Taal van die program, datums en getalle
 settings-general-reading-summary = Nuutste boodskap eerste, volledige opskrifte, volle name van ontvangers
+settings-translation-summary = Vertaal e-pos in ander tale met Katna se bediener, na die taal wat jy kies
 settings-general-mark-read-summary = Wanneer 'n oop gesprek as gelees gemerk word: dadelik, ná 1 of 3 sekondes, of met die hand
 settings-general-auto-advance-summary = Wat oopmaak nadat jy die oop gesprek uitvee, argiveer of skuif: die volgende een, die vorige een, of die lys
 settings-general-reply-button-summary = Die antwoordknoppie langs elke boodskap antwoord almal
@@ -256,6 +268,7 @@ settings-compose-for-new-mail-summary = Die handtekening waarmee nuwe e-pos begi
 settings-compose-for-replies-summary = Die handtekening waarmee antwoorde en aangestuurde boodskappe begin
 settings-compose-format-summary = Skryf nuwe e-pos in gewone teks
 settings-compose-spelling-summary = Kontroleer spelling tydens skryf, en die woordeboek se taal
+settings-general-search-triggers-summary = Woorde wat jou e-pos vanaf KRunner of die GNOME-soektog deursoek
 settings-compose-templates-summary = Stoor e-pos wat jy gereeld skryf, en begin nuwe e-pos of 'n antwoord daarmee
 settings-feedback-crash-reports-summary = Stoor omvalverslae op hierdie rekenaar wanneer Katna Mail of sy agtergronddiens omval
 settings-feedback-saved-summary = Bekyk, kopieer of vee die omvalverslae uit wat op hierdie rekenaar gestoor is

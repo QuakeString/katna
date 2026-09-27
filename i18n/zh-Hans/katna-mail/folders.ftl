@@ -30,6 +30,7 @@ folder-spam = 垃圾邮件
 folder-trash = 已删除邮件
 folder-all-mail = 所有邮件
 folder-scheduled = 已安排
+folder-activity = 动态
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

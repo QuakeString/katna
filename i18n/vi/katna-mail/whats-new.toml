@@ -625,3 +625,39 @@ mũi tên bên cạnh nút Gửi có thể nhắc bạn nếu không ai trả l�
 1, 3 hoặc 7 ngày. Cả hai hoạt động khi máy tính đang bật, và làm bù phần
 còn lại sau khi máy thức dậy.
 """
+
+["2026-09-27-1717-translate-mail"]
+title = "Đọc thư bằng ngôn ngữ của bạn"
+text = """
+Thư bằng ngôn ngữ khác giờ có nút Dịch ở phía trên, và Hiện bản gốc đưa
+thư trở lại như cũ. Katna nhận biết ngôn ngữ ngay trên máy tính của bạn;
+chỉ khi bạn yêu cầu, nội dung thư mới được gửi đến máy chủ riêng của Katna
+để dịch. Cài đặt > Chung > Dịch cho bạn chọn ngôn ngữ của mình và những
+ngôn ngữ luôn được dịch.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Biết khi nào thư được mở"
+text = """
+Bật biểu tượng con mắt cạnh người nhận để thấy khi mỗi người mở thư của
+bạn hoặc mở một liên kết trong thư, hoặc yêu cầu xác nhận đã đọc thay vào
+đó. Thư đã gửi cho thấy ai đã mở, và một thông báo cho bạn biết ở lần đầu
+tiên. Cả hai đều tắt với mọi thư mới, và việc theo dõi cần tài khoản Katna
+(Cài đặt > Tài khoản Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Hoạt động của thư được theo dõi"
+text = """
+Hoạt động bên dưới Đã gửi cho thấy bao nhiêu thư được theo dõi của bạn đã
+được mở và các liên kết trong đó được mở thường xuyên đến đâu, kèm các
+tiêu đề của bạn xếp theo mức độ thường được mở.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Tìm trong thư từ KRunner bằng k"
+text = """
+Gõ k hoặc m, một dấu cách, rồi điều cần tìm trong KRunner hoặc ô tìm
+kiếm của GNOME để có cùng kết quả như ô tìm kiếm của Katna Mail, ví dụ
+“k budget”. Chọn từ của riêng bạn trong Cài đặt > Chung.
+"""

@@ -11,6 +11,8 @@ notify-unknown-sender = གཏང་མི་མ་ཤེསཔ
 notify-snooze-back = ཤུལ་མར་བཞག་མི་ལས་ ལོག་འོང་ཡི།
 notify-no-reply = ད་ཚུན་ ལན་མ་འོང་།
 notify-no-reply-to = “{ $subject }” ལུ་ མི་སུ་གིས་ཡང་ ལན་མ་སློག།
+notify-tracking-opened = { $who } གིས་ { $subject } ཁ་ཕྱེ་ཡི
+notify-tracking-clicked = { $who } གིས་ { $subject } ནང་གི་འབྲེལ་མཐུད་གཅིག་ཨེབ་གཏང་འབད་ཡི
 
 ## Its buttons
 

@@ -68,6 +68,12 @@ compose-encrypt = Bethela
 compose-encrypted = Kubethelwe: abamukeli kuphela abangakufunda
 compose-sign = Sayina
 compose-signed = Kusayiniwe: abamukeli bangahlola ukuthi kuvela kuwe
+compose-track = Landelela ukuvulwa nokuchofozwa
+compose-tracked = Kuyalandelelwa: uzobona lapho umamukeli ngamunye ewuvula noma elandela isixhumanisi
+compose-track-unavailable = Imeyili esayiniwe, ebethelwe noma yombhalo osobala ayikwazi ukulandelelwa
+compose-track-sign-in = Ngena ku-akhawunti ye-Katna ukuze ulandelele ukuvulwa nokuchofozwa
+compose-receipt = Cela isaziso sokufunda
+compose-receipt-on = Isaziso sokufunda siceliwe: uhlelo lokusebenza lomamukeli lungamcela ukuthi asithumele
 
 ## Spelling
 

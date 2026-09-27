@@ -36,6 +36,14 @@ settings-general-full-headers = הצגת כותרות מלאות
 settings-general-full-headers-detail = מאת, אל, עותק, תאריך ונושא פתוחים בכל הודעה
 settings-general-full-names = שמות מלאים של הנמענים
 settings-general-full-names-detail = „אליי, Ada Lovelace” במקום „אליי, Ada”
+settings-translation = תרגום
+settings-translation-detail = אפשר לקרוא בשפה שלך דואר שנכתב בשפה אחרת.
+settings-translation-offer = הצעה לתרגם
+settings-translation-offer-detail = הטקסט של הודעה נשלח לשרת של Katna לתרגום רק כשמבקשים, או כשהשפה שלה מתורגמת תמיד. קבצים מצורפים אף פעם לא נשלחים.
+settings-translation-reading = תרגום אל
+settings-translation-always = תמיד לתרגם
+settings-translation-never = אף פעם לא להציע עבור
+settings-translation-none = עדיין אין. אפשר לבחור מסרגל התרגום של הודעה.
 settings-general-mark-read = סימון כנקראה
 settings-general-mark-read-now = מיד כשהיא נפתחת
 settings-general-mark-read-1s = אחרי שהיא פתוחה שנייה אחת
@@ -86,6 +94,9 @@ settings-general-tray = הצגת Katna במגש המערכת
 settings-general-tray-detail = עם מספר ההודעות שלא נקראו ותפריט
 settings-general-unread-badge = מספר ההודעות שלא נקראו על סמל שורת המשימות
 settings-general-unread-badge-detail = כמה הודעות בדואר הנכנס לא נקראו
+settings-general-search-triggers = חיפוש משולחן העבודה
+settings-general-search-triggers-detail = יש להקליד אחת מהמילים האלה ורווח ב־KRunner או בחיפוש של GNOME, ואחר כך את מה שמחפשים, כדי לחפש בדואר כמו בתיבת החיפוש כאן. יש להפריד בין המילים בפסיקים.
+settings-general-search-triggers-none = אין מילים; רק „mail:” עובד
 
 ## Settings > Inbox
 
@@ -226,6 +237,7 @@ settings-shortcuts-restored = כל הקיצורים חזרו למקשים של �
 
 settings-general-language-summary = שפת האפליקציה, התאריכים והמספרים
 settings-general-reading-summary = ההודעה החדשה ביותר ראשונה, כותרות מלאות, שמות מלאים של הנמענים
+settings-translation-summary = תרגום דואר בשפות אחרות בעזרת השרת של Katna, לשפה שבוחרים
 settings-general-mark-read-summary = מתי שיחה פתוחה מסומנת כנקראה: מיד, אחרי 1 או 3 שניות, או ידנית
 settings-general-auto-advance-summary = מה נפתח אחרי מחיקה, העברה לארכיון או העברה של השיחה הפתוחה: השיחה הבאה, הקודמת או הרשימה
 settings-general-reply-button-summary = כפתור התשובה שליד כל הודעה עונה לכולם
@@ -258,6 +270,7 @@ settings-compose-for-new-mail-summary = החתימה שבה מתחיל דואר 
 settings-compose-for-replies-summary = החתימה שבה מתחילות תשובות והעברות
 settings-compose-format-summary = כתיבת דואר חדש בטקסט פשוט
 settings-compose-spelling-summary = בדיקת איות בזמן הכתיבה, ושפת המילון
+settings-general-search-triggers-summary = מילים שמחפשות בדואר מ־KRunner או מהחיפוש של GNOME
 settings-compose-templates-summary = שמירת הודעות שכותבים לעיתים קרובות, והתחלת הודעה חדשה או תשובה מהן
 settings-feedback-crash-reports-summary = שמירת דוחות קריסה במחשב הזה כש־Katna Mail או שירות הרקע שלה קורסים
 settings-feedback-saved-summary = הצגה, העתקה או מחיקה של דוחות הקריסה שנשמרו במחשב הזה

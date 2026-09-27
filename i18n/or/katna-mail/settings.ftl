@@ -36,6 +36,14 @@ settings-general-full-headers = ସମ୍ପୂର୍ଣ୍ଣ ହେଡର ଦ�
 settings-general-full-headers-detail = ପ୍ରତ୍ୟେକ ମେସେଜରେ ପ୍ରେରକ, ପ୍ରାପକ, cc, ତାରିଖ ଓ ବିଷୟ ଖୋଲା ରହେ
 settings-general-full-names = ପ୍ରାପକଙ୍କ ପୂରା ନାମ
 settings-general-full-names-detail = “ମୋତେ, Ada” ବଦଳରେ “ମୋତେ, Ada Lovelace”
+settings-translation = ଅନୁବାଦ
+settings-translation-detail = ଅନ୍ୟ ଭାଷାର ମେଲ ଆପଣଙ୍କ ଭାଷାରେ ପଢ଼ିହେବ।
+settings-translation-offer = ଅନୁବାଦ କରିବାକୁ ପ୍ରସ୍ତାବ ଦିଅନ୍ତୁ
+settings-translation-offer-detail = ମେସେଜର ଟେକ୍ସଟ ଅନୁବାଦ ପାଇଁ Katnaର ସର୍ଭରକୁ ଯାଏ, କେବଳ ଆପଣ କହିଲେ କିମ୍ବା ଏହାର ଭାଷା ସବୁବେଳେ ଅନୁବାଦ କରୁଥିଲେ। ଆଟାଚମେଣ୍ଟ କେବେ ବି ଯାଏ ନାହିଁ।
+settings-translation-reading = ଏହି ଭାଷାକୁ ଅନୁବାଦ କରନ୍ତୁ
+settings-translation-always = ସବୁବେଳେ ଅନୁବାଦ କରନ୍ତୁ
+settings-translation-never = ଏଥିପାଇଁ କେବେ ପ୍ରସ୍ତାବ ଦିଅନ୍ତୁ ନାହିଁ
+settings-translation-none = ଏପର୍ଯ୍ୟନ୍ତ କିଛି ନାହିଁ। ମେସେଜର ଅନୁବାଦ ବାରରୁ ବାଛନ୍ତୁ।
 settings-general-mark-read = ପଢ଼ାଯାଇଛି ଭାବେ ଚିହ୍ନିତ କରନ୍ତୁ
 settings-general-mark-read-now = ଖୋଲିବା ମାତ୍ରେ
 settings-general-mark-read-1s = 1 ସେକେଣ୍ଡ ଖୋଲା ରହିବା ପରେ
@@ -84,6 +92,9 @@ settings-general-tray = ସିଷ୍ଟମ ଟ୍ରେରେ Katna ଦେଖା
 settings-general-tray-detail = ଅପଠିତ ସଂଖ୍ୟା ଓ ଏକ ମେନୁ ସହ
 settings-general-unread-badge = ଟାସ୍କବାର ଆଇକନରେ ଅପଠିତ ସଂଖ୍ୟା
 settings-general-unread-badge-detail = ଇନବକ୍ସର କେତେ ମେସେଜ ପଢ଼ାଯାଇନାହିଁ
+settings-general-search-triggers = ଡେସ୍କଟପରୁ ସନ୍ଧାନ କରନ୍ତୁ
+settings-general-search-triggers-detail = KRunner କିମ୍ବା GNOME ସନ୍ଧାନରେ ଏହି ଶବ୍ଦଗୁଡ଼ିକ ମଧ୍ୟରୁ ଗୋଟିଏ ଓ ଏକ ସ୍ପେସ ଟାଇପ କରନ୍ତୁ, ତାପରେ କ’ଣ ଖୋଜିବେ, ଏଠାର ସନ୍ଧାନ ବକ୍ସ ପରି ଆପଣଙ୍କ ମେଲ ସନ୍ଧାନ କରିବାକୁ। ଶବ୍ଦଗୁଡ଼ିକୁ କମା ଦ୍ୱାରା ଅଲଗା କରନ୍ତୁ।
+settings-general-search-triggers-none = କୌଣସି ଶବ୍ଦ ନାହିଁ; କେବଳ “mail:” କାମ କରେ
 
 ## Settings > Inbox
 
@@ -224,6 +235,7 @@ settings-shortcuts-restored = ପ୍ରତ୍ୟେକ ସର୍ଟକଟ ପୁ
 
 settings-general-language-summary = ଆପ, ତାରିଖ ଓ ସଂଖ୍ୟାର ଭାଷା
 settings-general-reading-summary = ସବୁଠୁ ନୂଆ ମେସେଜ ପ୍ରଥମେ, ସମ୍ପୂର୍ଣ୍ଣ ହେଡର, ପ୍ରାପକଙ୍କ ପୂରା ନାମ
+settings-translation-summary = ଅନ୍ୟ ଭାଷାର ମେଲକୁ Katnaର ସର୍ଭର ମାଧ୍ୟମରେ ଆପଣ ବାଛିଥିବା ଭାଷାକୁ ଅନୁବାଦ କରନ୍ତୁ
 settings-general-mark-read-summary = ଖୋଲାଯାଇଥିବା ବାର୍ତ୍ତାଳାପ କେବେ ପଢ଼ାଯାଇଛି ଭାବେ ଚିହ୍ନିତ ହେବ: ତୁରନ୍ତ, 1 କିମ୍ବା 3 ସେକେଣ୍ଡ ପରେ, କିମ୍ବା ହାତରେ
 settings-general-auto-advance-summary = ଖୋଲା ବାର୍ତ୍ତାଳାପ ଡିଲିଟ, ଆର୍କାଇଭ କିମ୍ବା ଘୁଞ୍ଚାଇବା ପରେ କ'ଣ ଖୋଲିବ: ପରବର୍ତ୍ତୀଟି, ପୂର୍ବବର୍ତ୍ତୀଟି, କିମ୍ବା ତାଲିକା
 settings-general-reply-button-summary = ପ୍ରତ୍ୟେକ ମେସେଜ ପାଖରେ ଥିବା ଉତ୍ତର ବଟନ ସମସ୍ତଙ୍କୁ ଉତ୍ତର ଦିଏ
@@ -256,6 +268,7 @@ settings-compose-for-new-mail-summary = ନୂଆ ମେଲ ଯେଉଁ ଦସ�
 settings-compose-for-replies-summary = ଉତ୍ତର ଓ ଫରୱାର୍ଡ ଯେଉଁ ଦସ୍ତଖତରୁ ଆରମ୍ଭ ହୁଏ
 settings-compose-format-summary = ନୂଆ ମେଲ ସାଧା ଟେକ୍ସଟରେ ଲେଖନ୍ତୁ
 settings-compose-spelling-summary = ଲେଖିବା ବେଳେ ବନାନ ଯାଞ୍ଚ କରନ୍ତୁ, ଏବଂ ଅଭିଧାନର ଭାଷା
+settings-general-search-triggers-summary = KRunner କିମ୍ବା GNOME ସନ୍ଧାନରୁ ଆପଣଙ୍କ ମେଲ ସନ୍ଧାନ କରୁଥିବା ଶବ୍ଦ
 settings-compose-templates-summary = ଆପଣ ବାରମ୍ବାର ଲେଖୁଥିବା ମେଲ ସେଭ କରନ୍ତୁ, ଏବଂ ସେଥିରୁ ନୂଆ ମେଲ କିମ୍ବା ଉତ୍ତର ଆରମ୍ଭ କରନ୍ତୁ
 settings-feedback-crash-reports-summary = Katna Mail କିମ୍ବା ଏହାର ବ୍ୟାକଗ୍ରାଉଣ୍ଡ ସେବା କ୍ରାସ ହେଲେ ଏହି କମ୍ପ୍ୟୁଟରରେ କ୍ରାସ ରିପୋର୍ଟ ସେଭ କରନ୍ତୁ
 settings-feedback-saved-summary = ଏହି କମ୍ପ୍ୟୁଟରରେ ସେଭ ହୋଇଥିବା କ୍ରାସ ରିପୋର୍ଟ ଦେଖନ୍ତୁ, କପି କରନ୍ତୁ କିମ୍ବା ଡିଲିଟ କରନ୍ତୁ

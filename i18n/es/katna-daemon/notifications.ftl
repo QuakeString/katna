@@ -15,6 +15,8 @@ notify-unknown-sender = Remitente desconocido
 notify-snooze-back = Vuelve el correo pospuesto
 notify-no-reply = Aún sin respuesta
 notify-no-reply-to = Nadie ha respondido a «{ $subject }».
+notify-tracking-opened = { $who } abrió { $subject }
+notify-tracking-clicked = { $who } hizo clic en un enlace de { $subject }
 
 ## Its buttons
 

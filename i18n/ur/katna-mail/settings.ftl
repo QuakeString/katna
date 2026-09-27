@@ -36,6 +36,14 @@ settings-general-full-headers = مکمل ہیڈرز دکھائیں
 settings-general-full-headers-detail = ہر پیغام پر منجانب، بنام، cc، تاریخ اور موضوع کھلے رہتے ہیں
 settings-general-full-names = وصول کنندگان کے پورے نام
 settings-general-full-names-detail = ”بنام میں، Ada Lovelace“، نہ کہ ”بنام میں، Ada“
+settings-translation = ترجمہ
+settings-translation-detail = دوسری زبان کی میل آپ کی زبان میں پڑھی جا سکتی ہے۔
+settings-translation-offer = ترجمے کی پیشکش کریں
+settings-translation-offer-detail = پیغام کا متن ترجمے کے لیے Katna کے سرور پر صرف تب جاتا ہے جب آپ کہیں یا اس کی زبان کا ہمیشہ ترجمہ کریں۔ اٹیچمنٹس کبھی نہیں جاتیں۔
+settings-translation-reading = اس زبان میں ترجمہ کریں
+settings-translation-always = ہمیشہ ترجمہ کریں
+settings-translation-never = کبھی پیشکش نہ کریں
+settings-translation-none = ابھی کوئی نہیں۔ پیغام کی ترجمہ بار سے منتخب کریں۔
 settings-general-mark-read = بطور پڑھا ہوا نشان زد کریں
 settings-general-mark-read-now = کھلتے ہی
 settings-general-mark-read-1s = 1 سیکنڈ کھلا رہنے کے بعد
@@ -84,6 +92,9 @@ settings-general-tray = Katna کو سسٹم ٹرے میں دکھائیں
 settings-general-tray-detail = ناخواندہ تعداد اور ایک مینیو کے ساتھ
 settings-general-unread-badge = ٹاسک بار آئیکن پر ناخواندہ تعداد
 settings-general-unread-badge-detail = ان باکس کے کتنے پیغامات ناخواندہ ہیں
+settings-general-search-triggers = ڈیسک ٹاپ سے تلاش کریں
+settings-general-search-triggers-detail = KRunner یا GNOME کی تلاش میں ان میں سے کوئی ایک لفظ اور ایک خالی جگہ ٹائپ کریں، پھر جو ڈھونڈنا ہے، تاکہ یہاں کے سرچ باکس کی طرح آپ کی میل تلاش ہو۔ الفاظ کو کوما سے الگ کریں۔
+settings-general-search-triggers-none = کوئی لفظ نہیں؛ صرف ”mail:“ چلتا ہے
 
 ## Settings > Inbox
 
@@ -224,6 +235,7 @@ settings-shortcuts-restored = ہر شارٹ کٹ کی کلیدیں دوبارہ 
 
 settings-general-language-summary = ایپ، تاریخوں اور نمبروں کی زبان
 settings-general-reading-summary = سب سے نیا پیغام پہلے، مکمل ہیڈرز، وصول کنندگان کے پورے نام
+settings-translation-summary = دوسری زبانوں کی میل کا Katna کے سرور سے اپنی چنی ہوئی زبان میں ترجمہ کریں
 settings-general-mark-read-summary = کھلی گفتگو کب پڑھی ہوئی نشان زد ہو: فوراً، 1 یا 3 سیکنڈ بعد، یا دستی طور پر
 settings-general-auto-advance-summary = کھلی گفتگو کو حذف، آرکائیو یا منتقل کرنے کے بعد کیا کھلے: اگلی، پچھلی، یا فہرست
 settings-general-reply-button-summary = ہر پیغام کے ساتھ موجود جواب کا بٹن سب کو جواب دیتا ہے
@@ -256,6 +268,7 @@ settings-compose-for-new-mail-summary = وہ دستخط جس سے نئی میل 
 settings-compose-for-replies-summary = وہ دستخط جس سے جوابات اور فارورڈز شروع ہوتے ہیں
 settings-compose-format-summary = نئی میل سادہ متن میں لکھیں
 settings-compose-spelling-summary = لکھتے وقت املا کی جانچ، اور لغت کی زبان
+settings-general-search-triggers-summary = وہ الفاظ جو KRunner یا GNOME کی تلاش سے آپ کی میل تلاش کرتے ہیں
 settings-compose-templates-summary = اکثر لکھی جانے والی میل محفوظ کریں، اور اس سے نئی میل یا جواب شروع کریں
 settings-feedback-crash-reports-summary = جب Katna Mail یا اس کی بیک گراؤنڈ سروس کریش ہو تو اس کمپیوٹر پر کریش رپورٹس محفوظ کریں
 settings-feedback-saved-summary = اس کمپیوٹر پر محفوظ کریش رپورٹس دیکھیں، کاپی کریں یا حذف کریں

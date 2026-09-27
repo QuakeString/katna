@@ -15,6 +15,8 @@ notify-unknown-sender = שולח לא ידוע
 notify-snooze-back = חזרו מהשהיה
 notify-no-reply = עדיין אין תשובה
 notify-no-reply-to = אף אחד לא ענה על „{ $subject }”.
+notify-tracking-opened = ההודעה { $subject } נפתחה אצל { $who }
+notify-tracking-clicked = קישור בהודעה { $subject } נפתח אצל { $who }
 
 ## Its buttons
 

@@ -11,6 +11,8 @@ notify-unknown-sender = 不明寄件者
 notify-snooze-back = 延後的郵件已返回
 notify-no-reply = 尚無回覆
 notify-no-reply-to = 沒有人回覆「{ $subject }」。
+notify-tracking-opened = { $who } 開啟了「{ $subject }」
+notify-tracking-clicked = { $who } 點了「{ $subject }」中的連結
 
 ## Its buttons
 

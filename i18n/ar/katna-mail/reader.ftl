@@ -77,6 +77,27 @@ security-missing-key = موقَّعة بمفتاح ليس لديك، لذا يت
 security-missing-key-id = موقَّعة بمفتاح ليس لديك ({ $key })، لذا يتعذّر التحقق منها
 security-signature-unavailable = موقَّعة؛ ثبّت { $tool } للتحقق من التوقيع
 security-signature-error = تعذّر التحقق من التوقيع.
+tracking-opened = فتحها { $who } { $count ->
+    [zero] { $count } مرة
+    [one] مرة واحدة
+    [two] مرتين
+    [few] { $count } مرات
+    [many] { $count } مرة
+   *[other] { $count } مرة
+}، آخرها { $when }
+tracking-opened-clicked = فتحها { $who } وتابع رابطًا { $count ->
+    [zero] { $count } مرة
+    [one] مرة واحدة
+    [two] مرتين
+    [few] { $count } مرات
+    [many] { $count } مرة
+   *[other] { $count } مرة
+}، آخرها { $when }
+tracking-maybe-opened = ربما فتحها { $who } (يحمّل Apple Mail الصور حفاظًا على الخصوصية)
+tracking-not-opened = لم يفتحها { $who } بعد
+tracking-receipt = أرسل { $who } إشعارًا بالقراءة
+tracking-receipt-displayed = إشعار بالقراءة: فتح { $who } رسالتك
+tracking-receipt-other = إشعار بالقراءة: حذف { $who } رسالتك أو تعامل معها دون فتحها
 
 ## Remote images and pictures
 

@@ -36,6 +36,14 @@ settings-general-full-headers = Tampilkan header lengkap
 settings-general-full-headers-detail = Dari, kepada, cc, tanggal, dan subjek terbuka di setiap pesan
 settings-general-full-names = Nama lengkap penerima
 settings-general-full-names-detail = “kepada saya, Ada Lovelace”, bukan “kepada saya, Ada”
+settings-translation = Terjemahan
+settings-translation-detail = Email dalam bahasa lain bisa dibaca dalam bahasa Anda.
+settings-translation-offer = Tawarkan terjemahan
+settings-translation-offer-detail = Teks pesan dikirim ke server Katna untuk diterjemahkan hanya saat Anda memintanya atau selalu menerjemahkan bahasanya. Lampiran tidak pernah dikirim.
+settings-translation-reading = Terjemahkan ke
+settings-translation-always = Selalu terjemahkan
+settings-translation-never = Jangan pernah tawarkan untuk
+settings-translation-none = Belum ada. Pilih dari bilah Terjemahkan di sebuah pesan.
 settings-general-mark-read = Tandai sudah dibaca
 settings-general-mark-read-now = Segera setelah dibuka
 settings-general-mark-read-1s = Setelah terbuka selama 1 detik
@@ -78,6 +86,9 @@ settings-general-tray = Tampilkan Katna di baki sistem
 settings-general-tray-detail = Dengan jumlah belum dibaca dan menu
 settings-general-unread-badge = Jumlah belum dibaca di ikon taskbar
 settings-general-unread-badge-detail = Berapa banyak pesan Kotak Masuk yang belum dibaca
+settings-general-search-triggers = Telusuri dari desktop
+settings-general-search-triggers-detail = Ketik salah satu kata ini dan spasi di KRunner atau penelusuran GNOME, lalu yang ingin dicari, untuk menelusuri email Anda seperti kotak penelusuran di sini. Pisahkan kata dengan koma.
+settings-general-search-triggers-none = Tidak ada kata; hanya “mail:” yang berfungsi
 
 ## Settings > Inbox
 
@@ -218,6 +229,7 @@ settings-shortcuts-restored = Semua pintasan kembali memakai tombol setnya.
 
 settings-general-language-summary = Bahasa aplikasi, tanggal, dan angka
 settings-general-reading-summary = Pesan terbaru di atas, header lengkap, nama lengkap penerima
+settings-translation-summary = Terjemahkan email dalam bahasa lain dengan server Katna, ke bahasa yang Anda pilih
 settings-general-mark-read-summary = Kapan percakapan yang dibuka ditandai sudah dibaca: langsung, setelah 1 atau 3 detik, atau secara manual
 settings-general-auto-advance-summary = Apa yang terbuka setelah Anda menghapus, mengarsipkan, atau memindahkan percakapan yang terbuka: yang berikutnya, yang sebelumnya, atau daftar
 settings-general-reply-button-summary = Tombol balas di samping setiap pesan membalas ke semua orang
@@ -250,6 +262,7 @@ settings-compose-for-new-mail-summary = Tanda tangan untuk email baru
 settings-compose-for-replies-summary = Tanda tangan untuk balasan dan penerusan
 settings-compose-format-summary = Tulis email baru dalam teks biasa
 settings-compose-spelling-summary = Periksa ejaan saat menulis, dan bahasa kamus
+settings-general-search-triggers-summary = Kata yang menelusuri email Anda dari KRunner atau penelusuran GNOME
 settings-compose-templates-summary = Simpan email yang sering Anda tulis, lalu mulai email baru atau balasan darinya
 settings-feedback-crash-reports-summary = Simpan laporan error di komputer ini saat Katna Mail atau layanan latar belakangnya error
 settings-feedback-saved-summary = Lihat, salin, atau hapus laporan error yang disimpan di komputer ini

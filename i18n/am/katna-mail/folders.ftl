@@ -33,6 +33,7 @@ folder-spam = አይፈለጌ መልዕክት
 folder-trash = መጣያ
 folder-all-mail = ሁሉም ደብዳቤ
 folder-scheduled = መርሐግብር የተያዘላቸው
+folder-activity = እንቅስቃሴ
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

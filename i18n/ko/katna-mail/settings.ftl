@@ -36,6 +36,14 @@ settings-general-full-headers = 전체 헤더 표시
 settings-general-full-headers-detail = 모든 메일에서 보낸사람, 받는사람, 참조, 날짜, 제목을 펼쳐서 표시
 settings-general-full-names = 받는사람 전체 이름
 settings-general-full-names-detail = “받는사람: 나, Ada” 대신 “받는사람: 나, Ada Lovelace”
+settings-translation = 번역
+settings-translation-detail = 다른 언어로 된 메일을 내 언어로 읽을 수 있습니다.
+settings-translation-offer = 번역 제안
+settings-translation-offer-detail = 메일 본문은 번역을 요청하거나 해당 언어를 항상 번역하도록 설정한 경우에만 번역을 위해 Katna 서버로 전송됩니다. 첨부파일은 전송되지 않습니다.
+settings-translation-reading = 번역할 언어
+settings-translation-always = 항상 번역
+settings-translation-never = 번역 제안 안 함
+settings-translation-none = 아직 없습니다. 메일의 번역 표시줄에서 선택하세요.
 settings-general-mark-read = 읽음으로 표시
 settings-general-mark-read-now = 열자마자
 settings-general-mark-read-1s = 1초 동안 열어 둔 후
@@ -78,6 +86,9 @@ settings-general-tray = 시스템 트레이에 Katna 표시
 settings-general-tray-detail = 읽지 않은 메일 수와 메뉴 포함
 settings-general-unread-badge = 작업 표시줄 아이콘에 읽지 않은 메일 수 표시
 settings-general-unread-badge-detail = 받은편지함에서 읽지 않은 메일의 수
+settings-general-search-triggers = 데스크톱에서 검색
+settings-general-search-triggers-detail = KRunner나 GNOME 검색에 이 단어 중 하나와 공백을 입력한 다음 찾을 내용을 입력하면 여기 검색창처럼 메일을 검색합니다. 단어는 쉼표로 구분하세요.
+settings-general-search-triggers-none = 단어 없음, “mail:”만 사용 가능
 
 ## Settings > Inbox
 
@@ -218,6 +229,7 @@ settings-shortcuts-restored = 모든 단축키를 세트의 키로 되돌렸습�
 
 settings-general-language-summary = 앱, 날짜, 숫자의 언어
 settings-general-reading-summary = 최신 메일 먼저 표시, 전체 헤더, 받는사람 전체 이름
+settings-translation-summary = 다른 언어로 된 메일을 Katna 서버로 원하는 언어로 번역
 settings-general-mark-read-summary = 연 대화를 읽음으로 표시하는 시점: 즉시, 1초 또는 3초 후, 직접
 settings-general-auto-advance-summary = 열린 대화를 삭제, 보관처리 또는 이동한 후에 열 항목: 다음 대화, 이전 대화 또는 목록
 settings-general-reply-button-summary = 각 메일 옆의 답장 버튼이 모두에게 답장
@@ -250,6 +262,7 @@ settings-compose-for-new-mail-summary = 새 메일에 처음부터 들어가는 
 settings-compose-for-replies-summary = 답장과 전달에 처음부터 들어가는 서명
 settings-compose-format-summary = 새 메일을 일반 텍스트로 작성
 settings-compose-spelling-summary = 작성하는 동안 맞춤법 검사, 사전 언어
+settings-general-search-triggers-summary = KRunner나 GNOME 검색에서 메일을 검색하는 단어
 settings-compose-templates-summary = 자주 쓰는 메일을 저장하고, 새 메일이나 답장을 템플릿으로 시작
 settings-feedback-crash-reports-summary = Katna Mail이나 백그라운드 서비스가 비정상 종료되면 이 컴퓨터에 오류 보고서 저장
 settings-feedback-saved-summary = 이 컴퓨터에 저장된 오류 보고서 보기, 복사, 삭제

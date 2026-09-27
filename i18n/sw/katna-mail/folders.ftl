@@ -33,6 +33,7 @@ folder-spam = Taka
 folder-trash = Tupio
 folder-all-mail = Barua zote
 folder-scheduled = Zilizoratibiwa
+folder-activity = Shughuli
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

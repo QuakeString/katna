@@ -36,6 +36,14 @@ settings-general-full-headers = Pokazuj pełne nagłówki
 settings-general-full-headers-detail = Od, do, DW, data i temat rozwinięte w każdej wiadomości
 settings-general-full-names = Pełne nazwy odbiorców
 settings-general-full-names-detail = „do mnie, Ada Lovelace” zamiast „do mnie, Ada”
+settings-translation = Tłumaczenie
+settings-translation-detail = Pocztę w innym języku można czytać w Twoim.
+settings-translation-offer = Proponuj tłumaczenie
+settings-translation-offer-detail = Tekst wiadomości trafia na serwer Katna do przetłumaczenia tylko wtedy, gdy o to poprosisz lub gdy zawsze tłumaczysz jej język. Załączniki nigdy nie są wysyłane.
+settings-translation-reading = Tłumacz na
+settings-translation-always = Zawsze tłumacz
+settings-translation-never = Nigdy nie proponuj dla
+settings-translation-none = Jeszcze brak. Wybierz je na pasku tłumaczenia nad wiadomością.
 settings-general-mark-read = Oznaczanie jako przeczytane
 settings-general-mark-read-now = Od razu po otwarciu
 settings-general-mark-read-1s = Po 1 sekundzie od otwarcia
@@ -88,6 +96,9 @@ settings-general-tray = Pokazuj Katna w zasobniku systemowym
 settings-general-tray-detail = Z liczbą nieprzeczytanych i menu
 settings-general-unread-badge = Liczba nieprzeczytanych na ikonie w pasku zadań
 settings-general-unread-badge-detail = Ile wiadomości w Odebranych jest nieprzeczytanych
+settings-general-search-triggers = Wyszukiwanie z pulpitu
+settings-general-search-triggers-detail = Wpisz jedno z tych słów i spację w KRunnerze lub wyszukiwarce GNOME, a potem to, czego szukasz, aby przeszukać pocztę tak jak pole wyszukiwania tutaj. Oddzielaj słowa przecinkami.
+settings-general-search-triggers-none = Brak słów; działa tylko „mail:”
 
 ## Settings > Inbox
 
@@ -228,6 +239,7 @@ settings-shortcuts-restored = Wszystkie skróty mają znów klawisze swojego zes
 
 settings-general-language-summary = Język aplikacji, dat i liczb
 settings-general-reading-summary = Najnowsza wiadomość na początku, pełne nagłówki, pełne nazwy odbiorców
+settings-translation-summary = Tłumaczenie poczty w innych językach przez serwer Katna na wybrany przez Ciebie język
 settings-general-mark-read-summary = Kiedy otwarty wątek jest oznaczany jako przeczytany: od razu, po 1 lub 3 sekundach albo ręcznie
 settings-general-auto-advance-summary = Co się otwiera po usunięciu, zarchiwizowaniu lub przeniesieniu otwartego wątku: następny, poprzedni albo lista
 settings-general-reply-button-summary = Przycisk odpowiedzi obok każdej wiadomości odpowiada wszystkim
@@ -260,6 +272,7 @@ settings-compose-for-new-mail-summary = Podpis, od którego zaczyna się nowa wi
 settings-compose-for-replies-summary = Podpis, od którego zaczynają się odpowiedzi i przekazywane wiadomości
 settings-compose-format-summary = Pisz nowe wiadomości zwykłym tekstem
 settings-compose-spelling-summary = Sprawdzanie pisowni podczas pisania i język słownika
+settings-general-search-triggers-summary = Słowa, które przeszukują pocztę z KRunnera lub wyszukiwarki GNOME
 settings-compose-templates-summary = Zapisuj często pisane wiadomości i zaczynaj od nich nową wiadomość lub odpowiedź
 settings-feedback-crash-reports-summary = Zapisuj raporty o awariach na tym komputerze, gdy Katna Mail lub jej usługa w tle ulegnie awarii
 settings-feedback-saved-summary = Wyświetl, skopiuj lub usuń raporty o awariach zapisane na tym komputerze

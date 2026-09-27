@@ -11,6 +11,8 @@ notify-unknown-sender = មិនស្គាល់អ្នកផ្ញើ
 notify-snooze-back = ត្រឡប់មកពីការពន្យារពេល
 notify-no-reply = មិនទាន់មានការឆ្លើយតប
 notify-no-reply-to = គ្មាននរណាបានឆ្លើយតប “{ $subject }” ទេ។
+notify-tracking-opened = { $who } បានបើក { $subject }
+notify-tracking-clicked = { $who } បានចុចតំណក្នុង { $subject }
 
 ## Its buttons
 

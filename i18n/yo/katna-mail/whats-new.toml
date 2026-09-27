@@ -629,3 +629,39 @@ tó wà lẹ́gbẹ̀ẹ́ Fi ránṣẹ́ lè rán ọ létí tí kò bá sí �
 ọjọ́ 1, 3 tàbí 7. Méjèèjì ń ṣiṣẹ́ nígbà tí kọ̀ǹpútà rẹ bá wà ní títàn,
 wọ́n sì máa ń ṣe ohun tí wọ́n pàdánù lẹ́yìn tí ó bá jí.
 """
+
+["2026-09-27-1717-translate-mail"]
+title = "Ka lẹ́tà ní èdè rẹ"
+text = """
+Ìfiránṣẹ́ ní èdè mìíràn ti ń fi bọ́tìnnì Túmọ̀ hàn lókè rẹ̀ báyìí, Fi ti
+àtilẹ̀wá hàn sì máa ń dá a padà. Katna máa ń dá èdè mọ̀ lórí kọ̀ǹpútà rẹ;
+kìkì nígbà tí o bá béèrè ni ọ̀rọ̀ ìfiránṣẹ́ náà máa ń lọ sí sáfà Katna
+fúnra rẹ̀ fún ìtúmọ̀. Ètò > Gbogbogbò > Ìtúmọ̀ ni o ti lè yan èdè rẹ àti
+àwọn tí a ó máa túmọ̀ nígbà gbogbo.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Wo ìgbà tí a ṣí lẹ́tà"
+text = """
+Tan ojú tó wà lẹ́gbẹ̀ẹ́ àwọn olùgbà láti rí ìgbà tí ẹnìkọ̀ọ̀kan bá ṣí
+ìfiránṣẹ́ rẹ tàbí tẹ̀lé ìjápọ̀ kan nínú rẹ̀, tàbí béèrè ìwé-ẹ̀rí kíkà dípò
+bẹ́ẹ̀. Lẹ́tà tí a fi ránṣẹ́ máa ń fi ẹni tó ṣí i hàn, ìfitónilétí kan sì
+máa sọ fún ọ ní ìgbà àkọ́kọ́. Méjèèjì wà ní pípa fún gbogbo ìfiránṣẹ́
+tuntun, títọpa sì nílò àkáǹtì Katna (Ètò > Àkáǹtì Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Ìgbòkègbodò fún lẹ́tà tí a ń tọpa"
+text = """
+Ìgbòkègbodò lábẹ́ Tí a fi ránṣẹ́ máa ń fi iye ìfiránṣẹ́ rẹ tí a ń tọpa tí
+a ti ṣí hàn, àti bí a ṣe ń tẹ̀lé àwọn ìjápọ̀ wọn tó, pẹ̀lú àwọn àkọlé rẹ
+tí a tò lẹ́sẹẹsẹ gẹ́gẹ́ bí a ṣe ń ṣí wọn tó.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Ṣàwárí lẹ́tà rẹ láti inú KRunner pẹ̀lú k"
+text = """
+Tẹ k tàbí m, àlàfo kan, lẹ́yìn náà ohun tí o fẹ́ wá nínú KRunner tàbí
+àwárí GNOME láti rí àbájáde kan náà bí ti àpótí àwárí Katna Mail, bí
+àpẹẹrẹ “k budget”. Yan àwọn ọ̀rọ̀ tìrẹ nínú Ètò > Gbogbogbò.
+"""

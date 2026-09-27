@@ -77,6 +77,19 @@ security-missing-key = तपाईंसँग नभएको कुञ्ज�
 security-missing-key-id = तपाईंसँग नभएको कुञ्जी ({ $key }) द्वारा हस्ताक्षर गरिएकाले जाँच गर्न सकिँदैन
 security-signature-unavailable = हस्ताक्षरित; हस्ताक्षर जाँच गर्न { $tool } स्थापना गर्नुहोस्
 security-signature-error = हस्ताक्षर जाँच गर्न सकिएन।
+tracking-opened = { $who } ले यो { $count ->
+    [one] एक पटक
+   *[other] { $count } पटक
+} खोल्नुभयो, पछिल्लो पटक { $when }
+tracking-opened-clicked = { $who } ले यो खोलेर लिङ्क { $count ->
+    [one] एक पटक
+   *[other] { $count } पटक
+} खोल्नुभयो, पछिल्लो पटक { $when }
+tracking-maybe-opened = { $who } ले यो खोल्नुभएको हुन सक्छ (Apple Mail ले गोपनीयताका लागि तस्बिरहरू लोड गर्छ)
+tracking-not-opened = { $who } ले यो अझै खोल्नुभएको छैन
+tracking-receipt = { $who } ले पढेको रसिद पठाउनुभयो
+tracking-receipt-displayed = पढेको रसिद: { $who } ले तपाईंको सन्देश खोल्नुभयो
+tracking-receipt-other = पढेको रसिद: { $who } ले तपाईंको सन्देश नखोली मेटाउनुभयो वा व्यवस्थापन गर्नुभयो
 
 ## Remote images and pictures
 

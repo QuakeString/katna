@@ -36,6 +36,14 @@ settings-general-full-headers = Fi àwọn àkọlé kíkún hàn
 settings-general-full-headers-detail = Láti, sí, ẹ̀dà, ọjọ́ àti àkọlé máa ń ṣí lórí gbogbo ìfiránṣẹ́
 settings-general-full-names = Orúkọ kíkún àwọn olùgbà
 settings-general-full-names-detail = “sí èmi, Ada Lovelace” dípò “sí èmi, Ada”
+settings-translation = Ìtúmọ̀
+settings-translation-detail = O lè ka lẹ́tà ní èdè mìíràn ní èdè tìrẹ.
+settings-translation-offer = Dábàá láti túmọ̀
+settings-translation-offer-detail = Ọ̀rọ̀ ìfiránṣẹ́ kan máa ń lọ sí sáfà Katna fún ìtúmọ̀, kìkì nígbà tí o bá béèrè tàbí tí o máa ń túmọ̀ èdè rẹ̀ nígbà gbogbo. Àwọn àfikún kì í lọ rárá.
+settings-translation-reading = Túmọ̀ sí
+settings-translation-always = Máa túmọ̀ nígbà gbogbo
+settings-translation-never = Má ṣe dábàá rárá fún
+settings-translation-none = Kò tíì sí. Yàn án láti inú ọ̀pá Ìtúmọ̀ ìfiránṣẹ́ kan.
 settings-general-mark-read = Sàmì sí bí kíkà
 settings-general-mark-read-now = Ní kété tí ó bá ṣí
 settings-general-mark-read-1s = Lẹ́yìn tí ó bá ṣí fún ìṣẹ́jú-àáyá 1
@@ -78,6 +86,9 @@ settings-general-tray = Fi Katna hàn nínú àtẹ ètò
 settings-general-tray-detail = Pẹ̀lú iye àìkà àti mẹ́nù kan
 settings-general-unread-badge = Iye àìkà lórí àmì-àwòrán ọ̀pá iṣẹ́
 settings-general-unread-badge-detail = Iye ìfiránṣẹ́ inú Àpótí-ìwọlé tí a kò tíì kà
+settings-general-search-triggers = Ṣàwárí láti orí déskítọ́ọ̀pù
+settings-general-search-triggers-detail = Tẹ ọ̀kan nínú àwọn ọ̀rọ̀ wọ̀nyí àti àlàfo kan nínú KRunner tàbí àwárí GNOME, lẹ́yìn náà ohun tí o fẹ́ wá, láti ṣàwárí lẹ́tà rẹ bí àpótí àwárí ibí ṣe ń ṣe. Fi kọ́mà ya àwọn ọ̀rọ̀ sọ́tọ̀.
+settings-general-search-triggers-none = Kò sí ọ̀rọ̀; “mail:” nìkan ló ń ṣiṣẹ́
 
 ## Settings > Inbox
 
@@ -218,6 +229,7 @@ settings-shortcuts-restored = Gbogbo ọ̀nà àbùjá ti ní àwọn kọ́kọ
 
 settings-general-language-summary = Èdè áàpù, ọjọ́ àti nọ́ńbà
 settings-general-reading-summary = Ìfiránṣẹ́ tuntun jù lọ ní àkọ́kọ́, àkọlé kíkún, orúkọ kíkún àwọn olùgbà
+settings-translation-summary = Túmọ̀ lẹ́tà ní àwọn èdè mìíràn pẹ̀lú sáfà Katna, sí èdè tí o yàn
 settings-general-mark-read-summary = Ìgbà tí a ń sàmì sí ìjíròrò tí a ṣí bí kíkà: lẹ́sẹ̀kẹsẹ̀, lẹ́yìn ìṣẹ́jú-àáyá 1 tàbí 3, tàbí fúnra rẹ
 settings-general-auto-advance-summary = Ohun tí yóò ṣí lẹ́yìn tí o bá pa ìjíròrò tí ó ṣí rẹ́, fi í pamọ́ tàbí gbé e lọ: èyí tó kàn, èyí tó ṣáájú, tàbí àkójọ
 settings-general-reply-button-summary = Bọ́tìnnì èsì lẹ́gbẹ̀ẹ́ ìfiránṣẹ́ kọ̀ọ̀kan ń fèsì sí gbogbo ènìyàn
@@ -250,6 +262,7 @@ settings-compose-for-new-mail-summary = Ìbuwọ́lù tí lẹ́tà tuntun fi ń
 settings-compose-for-replies-summary = Ìbuwọ́lù tí èsì àti ìfiránṣẹ́-síwájú fi ń bẹ̀rẹ̀
 settings-compose-format-summary = Kọ lẹ́tà tuntun ní ọ̀rọ̀ lásán
 settings-compose-spelling-summary = Ṣàyẹ̀wò ìsípẹ́lì nígbà kíkọ̀wé, àti èdè ìwé-atúmọ̀
+settings-general-search-triggers-summary = Àwọn ọ̀rọ̀ tí ń ṣàwárí lẹ́tà rẹ láti inú KRunner tàbí àwárí GNOME
 settings-compose-templates-summary = Fi lẹ́tà tí o máa ń kọ lọ́pọ̀ ìgbà pamọ́, kí o sì bẹ̀rẹ̀ lẹ́tà tuntun tàbí èsì láti inú rẹ̀
 settings-feedback-crash-reports-summary = Fi ìjábọ̀ ìjákulẹ̀ pamọ́ sórí kọ̀ǹpútà yìí nígbà tí Katna Mail tàbí iṣẹ́ ẹ̀yìn rẹ̀ bá jákulẹ̀
 settings-feedback-saved-summary = Wo, ṣẹ̀dà tàbí pa ìjábọ̀ ìjákulẹ̀ tí a fi pamọ́ sórí kọ̀ǹpútà yìí rẹ́

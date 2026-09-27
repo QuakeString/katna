@@ -36,6 +36,14 @@ settings-general-full-headers = Hiện đầy đủ phần đầu thư
 settings-general-full-headers-detail = Từ, tới, cc, ngày và tiêu đề hiện trên mọi thư
 settings-general-full-names = Tên đầy đủ của người nhận
 settings-general-full-names-detail = “tới tôi, Ada Lovelace” thay vì “tới tôi, Ada”
+settings-translation = Dịch
+settings-translation-detail = Thư bằng ngôn ngữ khác có thể đọc bằng ngôn ngữ của bạn.
+settings-translation-offer = Đề nghị dịch
+settings-translation-offer-detail = Nội dung thư chỉ được gửi đến máy chủ của Katna để dịch khi bạn yêu cầu hoặc khi bạn luôn dịch ngôn ngữ đó. Tệp đính kèm không bao giờ được gửi đi.
+settings-translation-reading = Dịch sang
+settings-translation-always = Luôn dịch
+settings-translation-never = Không bao giờ đề nghị cho
+settings-translation-none = Chưa có. Hãy chọn từ thanh Dịch của một thư.
 settings-general-mark-read = Đánh dấu là đã đọc
 settings-general-mark-read-now = Ngay khi mở
 settings-general-mark-read-1s = Sau khi mở 1 giây
@@ -78,6 +86,9 @@ settings-general-tray = Hiện Katna trong khay hệ thống
 settings-general-tray-detail = Kèm số thư chưa đọc và một menu
 settings-general-unread-badge = Số thư chưa đọc trên biểu tượng ở thanh tác vụ
 settings-general-unread-badge-detail = Số thư chưa đọc trong Hộp thư đến
+settings-general-search-triggers = Tìm từ màn hình nền
+settings-general-search-triggers-detail = Gõ một trong các từ này và một dấu cách trong KRunner hoặc ô tìm kiếm của GNOME, rồi gõ điều cần tìm, để tìm trong thư như ô tìm kiếm ở đây. Phân tách các từ bằng dấu phẩy.
+settings-general-search-triggers-none = Không có từ nào; chỉ “mail:” hoạt động
 
 ## Settings > Inbox
 
@@ -218,6 +229,7 @@ settings-shortcuts-restored = Mọi phím tắt đã trở về phím của bộ
 
 settings-general-language-summary = Ngôn ngữ của ứng dụng, ngày và số
 settings-general-reading-summary = Thư mới nhất trước, đầy đủ phần đầu thư, tên đầy đủ của người nhận
+settings-translation-summary = Dịch thư bằng ngôn ngữ khác qua máy chủ của Katna, sang ngôn ngữ bạn chọn
 settings-general-mark-read-summary = Khi nào cuộc hội thoại đã mở được đánh dấu là đã đọc: ngay lập tức, sau 1 hoặc 3 giây, hoặc thủ công
 settings-general-auto-advance-summary = Mục nào sẽ mở sau khi bạn xóa, lưu trữ hoặc di chuyển cuộc hội thoại đang mở: cuộc tiếp theo, cuộc trước đó hoặc danh sách
 settings-general-reply-button-summary = Nút trả lời bên cạnh mỗi thư sẽ trả lời tất cả mọi người
@@ -250,6 +262,7 @@ settings-compose-for-new-mail-summary = Chữ ký mở đầu cho thư mới
 settings-compose-for-replies-summary = Chữ ký mở đầu cho thư trả lời và chuyển tiếp
 settings-compose-format-summary = Viết thư mới bằng văn bản thuần
 settings-compose-spelling-summary = Kiểm tra chính tả khi viết, và ngôn ngữ của từ điển
+settings-general-search-triggers-summary = Các từ để tìm trong thư từ KRunner hoặc ô tìm kiếm của GNOME
 settings-compose-templates-summary = Lưu những thư bạn hay viết, rồi bắt đầu thư mới hoặc thư trả lời từ đó
 settings-feedback-crash-reports-summary = Lưu báo cáo sự cố trên máy tính này khi Katna Mail hoặc dịch vụ nền của nó gặp sự cố
 settings-feedback-saved-summary = Xem, sao chép hoặc xóa báo cáo sự cố đã lưu trên máy tính này
