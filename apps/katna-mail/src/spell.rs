@@ -72,14 +72,43 @@ pub fn language(setting: &str) -> String {
     env.split(['.', '@']).next().unwrap_or("en_US").to_owned()
 }
 
+/// The folders dictionaries are looked for in, the user's first.
+fn dirs() -> Vec<PathBuf> {
+    let mut dirs: Vec<PathBuf> = DIRS.iter().map(PathBuf::from).collect();
+    if let Some(home) = std::env::var_os("HOME") {
+        dirs.insert(0, PathBuf::from(home).join(".local/share/hunspell"));
+    }
+    dirs
+}
+
+/// The languages with a dictionary installed, as `en_US`, sorted.
+pub fn installed() -> Vec<String> {
+    let mut names: Vec<String> = dirs()
+        .iter()
+        .filter_map(|dir| std::fs::read_dir(dir).ok().map(|e| (dir.clone(), e)))
+        .flat_map(|(dir, entries)| {
+            entries.filter_map(move |e| {
+                let name = e
+                    .ok()?
+                    .file_name()
+                    .to_str()?
+                    .strip_suffix(".dic")?
+                    .to_owned();
+                dir.join(format!("{name}.aff")).is_file().then_some(name)
+            })
+        })
+        // Hyphenation and thesaurus files share the folders.
+        .filter(|n| !n.starts_with("hyph_") && !n.starts_with("th_"))
+        .collect();
+    names.sort();
+    names.dedup();
+    names
+}
+
 /// The `.aff` and `.dic` files for `language`, or for the same language in
 /// another country (`en_GB` for `en_IN`), or English.
 pub fn find(language: &str) -> Option<(PathBuf, PathBuf)> {
-    let home = std::env::var_os("HOME").map(PathBuf::from);
-    let mut dirs: Vec<PathBuf> = DIRS.iter().map(PathBuf::from).collect();
-    if let Some(home) = home {
-        dirs.insert(0, home.join(".local/share/hunspell"));
-    }
+    let dirs = dirs();
     let base = language.split('_').next().unwrap_or(language);
     let exact = |dir: &Path, name: &str| {
         let aff = dir.join(format!("{name}.aff"));
