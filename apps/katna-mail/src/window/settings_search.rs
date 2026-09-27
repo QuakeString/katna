@@ -69,6 +69,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
+        "Reset cache",
+        "Delete downloaded mail, sender pictures and the search index, and download them again",
+        "cache clear local data storage disk space rebuild index redownload fix",
+    ),
+    entry(
+        Section::General,
         "Desktop",
         "The system tray icon and the unread count on the taskbar icon",
         "tray badge unread count taskbar dock panel",

@@ -172,6 +172,15 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                and only if you say yes. Change it any time in Settings > User feedback.",
         animation: None,
     },
+    Highlight {
+        id: 17,
+        title: "Reset cache",
+        text: "Settings > General > Reset cache deletes the mail Katna downloaded, \
+               sender pictures and the search index, then downloads recent mail \
+               again. Handy when something looks out of date or to free disk space; \
+               accounts, settings, drafts and your mail on the server stay.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.

@@ -570,9 +570,7 @@ impl Daemon {
     /// Nothing changes on the servers. Returns what was deleted.
     pub async fn reset_cache(self: &Arc<Self>) -> Result<Forgotten, CommandError> {
         if self.closing() {
-            return Err(CommandError::Failed(
-                "all data is being deleted".into(),
-            ));
+            return Err(CommandError::Failed("all data is being deleted".into()));
         }
         if self.resetting.swap(true, Ordering::SeqCst) {
             return Err(CommandError::Failed(
@@ -604,7 +602,7 @@ impl Daemon {
             self.start_account(account).await;
             let _ = self.notices.try_send(Notice::MailChanged(account.id));
         }
-        Ok(forgotten?)
+        forgotten
     }
 
     /// Requests from [`Daemon::delete_all_data`].

@@ -6,9 +6,9 @@
 use katna_core::AccountId;
 use rusqlite::params;
 
+use crate::Store;
 use crate::blob::BlobHash;
 use crate::error::Result;
-use crate::Store;
 
 /// What [`Store::forget_downloaded_mail`] deleted.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
@@ -153,7 +153,10 @@ mod tests {
         let popped = remote(&mut store, pop, pop_inbox, 3);
         let mut batch = store.mail_batch().unwrap();
         batch
-            .enqueue_op(imap, &format!(r#"{{"kind":"move","message":{}}}"#, queued.0))
+            .enqueue_op(
+                imap,
+                &format!(r#"{{"kind":"move","message":{}}}"#, queued.0),
+            )
             .unwrap();
         let draft = batch
             .add_outgoing(
@@ -179,7 +182,10 @@ mod tests {
 
         let forgotten = store.forget_downloaded_mail(&[imap]).unwrap();
         assert_eq!(forgotten.messages, 1);
-        assert_eq!(forgotten.bytes, b"Subject: Hello\r\n\r\nBody 1".len() as u64);
+        assert_eq!(
+            forgotten.bytes,
+            b"Subject: Hello\r\n\r\nBody 1".len() as u64
+        );
 
         let message = stored(&store, plain);
         assert_eq!(message.blob_hash, None);
@@ -203,6 +209,9 @@ mod tests {
             .unwrap();
         batch.commit().unwrap();
         assert!(body(&store, plain).is_some());
-        assert_eq!(store.forget_downloaded_mail(&[]).unwrap(), Forgotten::default());
+        assert_eq!(
+            store.forget_downloaded_mail(&[]).unwrap(),
+            Forgotten::default()
+        );
     }
 }

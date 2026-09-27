@@ -453,6 +453,12 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
+                "Reset cache",
+                Some("When mail looks wrong or out of date, or to free disk space. Nothing changes on your mail servers."),
+                self.reset_cache_control(th, cx),
+                th,
+            ))
+            .child(self.row(
                 "Desktop",
                 Some("Shown even while Katna Mail is closed."),
                 self.desktop_switches(th, cx),
