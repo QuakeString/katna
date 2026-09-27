@@ -510,3 +510,514 @@ print-not-downloaded = (ابھی تک ڈاؤن لوڈ نہیں ہوا۔)
 print-encrypted = (مرموز۔ اس کا متن پرنٹ کرنے کے لیے اسے Katna Mail میں کھولیں۔)
 print-to = بنام: { $addresses }
 print-cc = Cc: { $addresses }
+
+## Leftovers from earlier areas (reading pane and its right-click menu)
+
+attachment-open-message = اس کی اٹیچمنٹس پڑھنے کے لیے یہ پیغام کھولیں۔
+text-copy = کاپی کریں
+text-select-all = سب منتخب کریں
+
+## Settings page: its tabs
+
+settings-tab-general = عمومی
+settings-tab-inbox = ان باکس
+settings-tab-accounts = اکاؤنٹس
+settings-tab-subscriptions = سبسکرپشنز
+settings-tab-appearance = ظاہری شکل
+settings-tab-shortcuts = شارٹ کٹس
+settings-tab-default-apps = ڈیفالٹ ایپس
+settings-tab-folders-rules = فولڈرز اور اصول
+settings-tab-compose = تحریر
+settings-tab-mcp-server = MCP سرور
+settings-tab-feedback = صارف کی رائے
+settings-tab-experimental = تجرباتی
+
+## Settings page: tabs still to come
+
+settings-tab-subscriptions-coming = آپ کو ملنے والے نیوز لیٹرز اور میلنگ لسٹس دیکھیں، اور ایک کلک میں ان کی سبسکرپشن ختم کریں۔
+settings-tab-folders-rules-coming = فولڈرز اور لیبلز بنائیں، ان کا نام بدلیں، انہیں منتقل کریں اور چھپائیں، اور منتخب کریں کہ کون سے ہم آہنگ ہوں۔ اصول نئی میل کو مرسل، موضوع یا الفاظ کی بنیاد پر خود بخود ترتیب دیتے ہیں، لیبل لگاتے ہیں، آگے بھیجتے ہیں یا حذف کرتے ہیں۔
+settings-tab-mcp-server-coming = اس کمپیوٹر پر موجود AI اسسٹنٹس کو آپ کی اجازت سے آپ کی میل تلاش کرنے، پڑھنے اور اس کے ڈرافٹ لکھنے دیں۔
+
+## Settings > General
+
+settings-general-conversations = گفتگو کا منظر
+settings-general-conversations-group = ایک ہی میل کے جوابات کو گروپ کریں
+settings-general-conversations-group-detail = فہرست میں ہر گفتگو کے لیے ایک لائن
+settings-general-reading = پڑھنا
+settings-general-newest-first = سب سے نیا پیغام پہلے
+settings-general-newest-first-detail = گفتگو اپنے تازہ ترین جواب سے شروع ہوتی ہے
+settings-general-full-headers = مکمل ہیڈرز دکھائیں
+settings-general-full-headers-detail = ہر پیغام پر منجانب، بنام، cc، تاریخ اور موضوع کھلے رہتے ہیں
+settings-general-full-names = وصول کنندگان کے پورے نام
+settings-general-full-names-detail = ”بنام میں، Ada Lovelace“، نہ کہ ”بنام میں، Ada“
+settings-general-mark-read = بطور پڑھا ہوا نشان زد کریں
+settings-general-mark-read-now = کھلتے ہی
+settings-general-mark-read-1s = 1 سیکنڈ کھلا رہنے کے بعد
+settings-general-mark-read-3s = 3 سیکنڈ کھلا رہنے کے بعد
+settings-general-mark-read-never = صرف جب میں اسے بطور پڑھا ہوا نشان زد کروں
+settings-general-reply-button = جواب کا بٹن
+settings-general-reply-all = سب کو جواب دیں
+settings-general-reply-all-detail = ہر پیغام کے ساتھ موجود جواب کا بٹن سب کو جواب دیتا ہے، صرف مرسل کو نہیں
+settings-general-remote-images = ویب سے تصاویر
+settings-general-remote-images-detail = کسی پیغام کی تصاویر لوڈ کرنے سے اس کے مرسل کو پتا چل جاتا ہے کہ آپ نے اسے کھولا، کب، اور تقریباً کہاں سے۔ بند ہونے پر، ہر پیغام پہلے پوچھتا ہے، اور آپ کسی مرسل کی تصاویر ہمیشہ دکھا سکتے ہیں۔
+settings-general-remote-images-always = ہمیشہ تصاویر دکھائیں
+settings-general-remote-images-always-detail = ہر پیغام میں، صرف ان مرسلین سے نہیں جن پر آپ کو بھروسا ہے
+settings-general-sending = بھیجنا
+settings-general-sending-detail = بھیجا گیا پیغام کتنی دیر انتظار کرے، تاکہ اسے واپس لیا جا سکے۔
+settings-general-offline = آف لائن میل
+settings-general-offline-detail = حالیہ میل پوری ڈاؤن لوڈ کی جاتی ہے، تاکہ کنکشن کے بغیر پڑھی جا سکے۔ پرانی میل کھولنے پر ڈاؤن لوڈ ہوتی ہے۔
+settings-general-offline-days = { $count ->
+    [one] { $count } دن
+   *[other] { $count } دن
+}
+settings-general-offline-years = { $count ->
+    [one] { $count } سال
+   *[other] { $count } سال
+}
+settings-general-offline-all = تمام میل
+settings-general-offline-note = کم دن منتخب کرنے سے پہلے سے ڈاؤن لوڈ شدہ میل برقرار رہتی ہے۔ سرور پر کچھ نہیں بدلتا۔
+settings-general-notifications = اطلاعات
+settings-general-notifications-detail = ان باکس میں نئی میل کے لیے، اس وقت بھی جب Katna Mail بند ہو۔
+settings-general-new-mail = نئی میل کی اطلاع دیں
+settings-general-new-mail-detail = ”سب کو جواب دیں“، ”بطور پڑھا ہوا نشان زد کریں“ اور ”آرکائیو کریں“ کے ساتھ
+settings-general-new-mail-sound = آواز چلائیں
+settings-general-new-mail-sound-detail = ڈیسک ٹاپ کی نئی میل کی آواز
+settings-general-desktop = ڈیسک ٹاپ
+settings-general-open-at-login = لاگ ان پر Katna Mail کھولیں
+settings-general-open-at-login-detail = دونوں صورتوں میں لاگ ان پر میل ہم آہنگ ہوتی ہے، جب تک سروس چل رہی ہو
+settings-general-tray = Katna کو سسٹم ٹرے میں دکھائیں
+settings-general-tray-detail = ناخواندہ تعداد اور ایک مینیو کے ساتھ
+settings-general-unread-badge = ٹاسک بار آئیکن پر ناخواندہ تعداد
+settings-general-unread-badge-detail = ان باکس کے کتنے پیغامات ناخواندہ ہیں
+
+## Settings > Inbox
+
+settings-inbox-tabs = ان باکس ٹیبز
+settings-inbox-tabs-detail = ان باکس کو ٹیبز میں ترتیب دیں، جیسے آپ کے میل فراہم کنندہ کی ویب سائٹ کرتی ہے۔
+settings-inbox-tabs-show = ان باکس ٹیبز دکھائیں
+settings-inbox-tabs-show-detail = بند ہونے پر ہر اکاؤنٹ کے لیے ایک فہرست دکھائی دیتی ہے
+settings-inbox-no-accounts = ٹیبز منتخب کرنے کے لیے ایک اکاؤنٹ شامل کریں۔
+settings-inbox-tabs-automatic = خودکار: { $tabs } ({ $provider })
+settings-inbox-tabs-off = کوئی ٹیب نہیں
+settings-inbox-tabs-gmail = بنیادی، پروموشنز، سوشل، اپ ڈیٹس، فورمز
+settings-inbox-tabs-focused = مرکوز اور دیگر
+settings-inbox-tabs-zoho = ان باکس، نیوز لیٹرز اور اطلاعات
+settings-inbox-tabs-shown = دکھائے گئے ٹیبز۔ جس ٹیب کو آپ بند کریں اس کی میل { $tab } میں رہتی ہے۔
+
+## Settings > Appearance
+
+settings-appearance-reading-pane = پڑھنے کا پین
+settings-appearance-reading-pane-detail = کھلی گفتگو کہاں دکھائی دیتی ہے۔
+settings-appearance-pane-right = فہرست کے ساتھ
+settings-appearance-pane-none = کوئی تقسیم نہیں
+settings-appearance-density = کثافت
+settings-appearance-density-default = ڈیفالٹ
+settings-appearance-density-compact = کمپیکٹ
+settings-appearance-scaling = اسکیلنگ
+settings-appearance-scaling-detail = Katna Mail میں ہر چیز کو ڈیسک ٹاپ کے اپنے اسکیل کے علاوہ بڑا یا چھوٹا کرتا ہے: متن، آئیکنز، فاصلہ اور تقسیم کار لائنیں۔ آپ کی بھیجی گئی میل اپنا فونٹ سائز برقرار رکھتی ہے۔ بہت چھوٹے سائز آئیکنز پر کلک کرنا مشکل بنا سکتے ہیں۔
+settings-appearance-theme = تھیم
+settings-appearance-theme-system = ڈیسک ٹاپ جیسی
+settings-appearance-theme-light = ہلکی
+settings-appearance-theme-dark = گہری
+settings-appearance-desktop-colors = ڈیسک ٹاپ کے رنگ
+settings-appearance-desktop-colors-use = ڈیسک ٹاپ کے رنگ استعمال کریں
+settings-appearance-desktop-colors-use-detail = ڈیسک ٹاپ کی رنگ سکیم اور ایکسنٹ رنگ
+settings-appearance-app-names = ایپس کے نام
+settings-appearance-app-names-show = ایپس کے نام دکھائیں
+settings-appearance-app-names-show-detail = بالکل دائیں جانب ایپ آئیکنز کے نیچے نام
+settings-appearance-sender-pictures = مرسلین کی تصاویر
+settings-appearance-sender-pictures-show = کمپنی کے لوگو دکھائیں
+settings-appearance-sender-pictures-show-detail = مرسل کے ڈومین سے تلاش کیے جاتے ہیں، کبھی پیغام سے نہیں، اور ایک ہفتے تک رکھے جاتے ہیں
+settings-appearance-important = اہم کے نشانات
+settings-appearance-important-show = اہم کے نشانات دکھائیں
+settings-appearance-important-show-detail = فہرست میں ہر پیغام کے ساتھ
+settings-appearance-message-width = پیغام کی چوڑائی
+settings-appearance-message-width-limit = پیغامات کی چوڑائی محدود کریں
+settings-appearance-message-width-limit-detail = چوڑی ونڈو میں لمبی لائنیں پڑھنا آسان ہوتا ہے
+settings-appearance-mail-colors = میل کے رنگ
+settings-appearance-mail-colors-detail = زیادہ تر میل سفید صفحے کے لیے ڈیزائن کی جاتی ہے۔ گہری تھیم میں اس کے رنگ ایسے گہرے رنگوں میں بدل دیے جاتے ہیں جو اچھی طرح پڑھے جا سکیں؛ بند ہونے پر، یہ ہلکے صفحے پر اپنے مرسل کے رنگ برقرار رکھتی ہے۔
+settings-appearance-dark-mail = میل کے لیے بھی گہرے رنگ
+settings-appearance-dark-mail-detail = صرف جب تھیم گہری ہو
+settings-appearance-attachment-previews = اٹیچمنٹ کے پیش منظر
+settings-appearance-attachment-previews-show = اٹیچمنٹس کے پیش منظر دکھائیں
+settings-appearance-attachment-previews-show-detail = ہر فائل کے کارڈ پر اس کے مواد کی ایک چھوٹی تصویر
+
+## Settings > Default apps
+
+settings-default-apps-intro = کلک کرنے پر اٹیچمنٹس کہاں کھلتی ہیں۔ ویوئر ہمیشہ کسی فائل کو کسی اور ایپ میں بھی کھول سکتا ہے۔ ڈیسک ٹاپ کی ڈیفالٹ ایپس اس کی اپنی ترتیبات میں سیٹ ہوتی ہیں۔
+settings-default-apps-pdf = PDF فائلیں
+settings-default-apps-pdf-detail = صفحات، زوم کے ساتھ۔
+settings-default-apps-pictures = تصاویر
+settings-default-apps-pictures-detail = فوٹوز (سیدھی کی گئی)، PNG، GIF، WebP، BMP، TIFF اور SVG۔
+settings-default-apps-text = ٹیکسٹ فائلیں
+settings-default-apps-text-detail = سادہ متن، لاگز، کوڈ اور دیگر متن۔
+settings-default-apps-sheets = اسپریڈشیٹس
+settings-default-apps-sheets-detail = Excel (xlsx، xls)، OpenDocument (ods) اور CSV۔
+settings-default-apps-documents = دستاویزات
+settings-default-apps-documents-detail = Word (docx) اور OpenDocument متن (odt)۔
+settings-default-apps-katna = Katna Mail کا ویوئر
+settings-default-apps-system = ڈیسک ٹاپ کی ڈیفالٹ ایپ
+settings-default-apps-ask = ہر بار پوچھیں کہ کون سی ایپ
+settings-default-apps-after-saving = محفوظ کرنے کے بعد
+settings-default-apps-show-folder = محفوظ کردہ فائلیں ان کے فولڈر میں دکھائیں
+settings-default-apps-show-folder-detail = محفوظ کردہ اٹیچمنٹس کو منتخب کر کے فائل مینیجر کھولتا ہے
+
+## Settings > Compose
+
+settings-compose-send-from = نئے پیغامات اس سے بھیجیں
+settings-compose-send-from-detail = جوابات اور فارورڈز ہمیشہ اسی اکاؤنٹ سے جاتے ہیں جس میں آپ ہیں۔
+settings-compose-send-from-current = وہ اکاؤنٹ جس میں آپ ہیں
+settings-compose-send-on-replies = جوابات پر بھیجیں
+settings-compose-send-on-replies-detail = جواب یا فارورڈ پر ”بھیجیں“ کیا کرتا ہے۔ ”بھیجیں“ کے ساتھ والا مینیو دوسرا اختیار دیتا ہے۔
+settings-compose-send-plain = بھیجیں
+settings-compose-send-archive = بھیجیں اور آرکائیو کریں
+settings-compose-signatures = دستخط
+settings-compose-signatures-detail = آپ کے پیغام کے نیچے، ”--“ لائن کے بعد شامل کیا جاتا ہے۔ تحریر کی ونڈو میں کوئی اور منتخب کریں۔
+settings-compose-untitled = بلا عنوان
+settings-compose-signature-name = نام، جیسے کام
+settings-compose-signature-first = میرا دستخط
+settings-compose-signature-numbered = دستخط { $number }
+settings-compose-signature-delete = حذف کریں
+settings-compose-signature-deleted = دستخط حذف کر دیا گیا
+settings-compose-signature-new = نیا بنائیں
+settings-compose-no-signatures = ابھی کوئی دستخط نہیں۔
+settings-compose-no-signature = کوئی دستخط نہیں
+settings-compose-for-new-mail = نئی میل کے لیے
+settings-compose-for-replies = جوابات اور فارورڈز کے لیے
+settings-compose-for-replies-detail = جس گفتگو میں آپ نے کسی پیغام پر دستخط کیا ہو، اس میں جواب اسی دستخط سے شروع ہوتا ہے۔
+settings-compose-format = فارمیٹ
+settings-compose-plain-text = سادہ متن میں لکھیں
+settings-compose-plain-text-detail = نئی میل فارمیٹنگ کے بغیر شروع ہوتی ہے؛ تحریر کی ونڈو میں بدلا جا سکتا ہے
+settings-compose-spelling = املا
+settings-compose-spell-check = لکھتے وقت املا کی جانچ کریں
+settings-compose-spell-check-detail = غلط املا والے الفاظ کے نیچے لکیر لگتی ہے، رائٹ کلک پر تجاویز کے ساتھ
+settings-compose-spell-desktop = ڈیسک ٹاپ کی زبان ({ $language })
+settings-compose-templates = ٹیمپلیٹس
+settings-compose-templates-detail = اکثر لکھی جانے والی میل محفوظ کریں، اور اس سے نئی میل یا جواب شروع کریں۔
+
+## Settings > Shortcuts
+
+settings-shortcuts-set = شارٹ کٹ سیٹ
+settings-shortcuts-set-detail = کسی ایسی میل ایپ کی کلیدوں سے شروع کریں جسے آپ جانتے ہیں۔ یہاں Cmd سے مراد Ctrl ہے۔ آپ کی اپنی تبدیلیاں سیٹ کے اوپر برقرار رہتی ہیں، اور ”ڈیفالٹس بحال کریں“ سیٹ کی کلیدوں پر واپس لے جاتا ہے۔
+settings-shortcuts-single = ایک کلید والے شارٹ کٹس
+settings-shortcuts-single-detail = Ctrl یا Alt کے بغیر کلیدیں، جیسے ویب میل میں: e آرکائیو کرتی ہے، j اور k حرکت دیتی ہیں، / تلاش کرتی ہے۔ یہ فہرست اور کھلی گفتگو میں کام کرتی ہیں، ٹائپ کرتے وقت کبھی نہیں۔
+settings-shortcuts-single-use = ایک کلید والے شارٹ کٹس استعمال کریں
+settings-shortcuts-single-use-detail = Ctrl شارٹ کٹس ہمیشہ کام کرتے ہیں
+settings-shortcuts-how = کسی کلید کو بدلنے کے لیے اس پر کلک کریں، یا شامل کرنے کے لیے + پر، پھر نئی کلیدیں دبائیں۔ Esc منسوخ کرتا ہے۔
+settings-shortcuts-restore = ڈیفالٹس بحال کریں
+settings-shortcuts-no-key = کوئی کلید نہیں
+settings-shortcuts-press = کلیدیں دبائیں…
+settings-shortcuts-then = { $keys } پھر…
+settings-shortcuts-moved = { $keys } اب ”{ $previous }“ کے بجائے ”{ $action }“ کرتی ہے۔
+settings-shortcuts-single-off = ایک کلید والے شارٹ کٹس بند ہیں، اس لیے یہ کلید ان کے آن ہونے پر کام کرے گی۔
+settings-shortcuts-restored = ہر شارٹ کٹ کی کلیدیں دوبارہ اس کے سیٹ والی ہیں۔
+
+## Settings search: the line under a result
+
+settings-general-language-summary = ایپ، تاریخوں اور نمبروں کی زبان
+settings-general-reading-summary = سب سے نیا پیغام پہلے، مکمل ہیڈرز، وصول کنندگان کے پورے نام
+settings-general-mark-read-summary = کھلی گفتگو کب پڑھی ہوئی نشان زد ہو: فوراً، 1 یا 3 سیکنڈ بعد، یا دستی طور پر
+settings-general-reply-button-summary = ہر پیغام کے ساتھ موجود جواب کا بٹن سب کو جواب دیتا ہے
+settings-general-remote-images-summary = ہر پیغام کی تصاویر ہمیشہ دکھائیں
+settings-general-sending-summary = بھیجنا کالعدم کریں: بھیجا گیا پیغام کتنی دیر انتظار کرے، تاکہ اسے واپس لیا جا سکے
+settings-general-offline-summary = حالیہ میل کے کتنے دن پورے ڈاؤن لوڈ کیے جائیں، تاکہ کنکشن کے بغیر پڑھے جا سکیں
+settings-general-notifications-summary = نئی میل کی اطلاعات اور ان کی آواز
+settings-general-desktop-summary = لاگ ان پر Katna Mail کھولیں، سسٹم ٹرے آئیکن اور ٹاسک بار آئیکن پر ناخواندہ تعداد
+settings-accounts-accounts-summary = اکاؤنٹ شامل کریں یا ہٹائیں، یا اس کی تصویر بدلیں
+settings-appearance-density-summary = فہرست میں ڈیفالٹ یا کمپیکٹ لائنیں
+settings-appearance-scaling-summary = ہر چیز بڑی یا چھوٹی کریں: متن، آئیکنز، فاصلہ اور تقسیم کار لائنیں
+settings-appearance-theme-summary = ڈیسک ٹاپ جیسی، ہلکی یا گہری
+settings-appearance-sender-pictures-summary = کمپنی کے لوگو، مرسل کے ڈومین سے تلاش کیے گئے
+settings-appearance-important-summary = فہرست میں ہر پیغام کے ساتھ اہم کا نشان
+settings-appearance-mail-colors-summary = گہری تھیم میں HTML میل کے لیے گہرے رنگ، یا اس کے مرسل کے رنگ
+settings-appearance-attachment-previews-summary = ہر اٹیچمنٹ کے مواد کی ایک چھوٹی تصویر
+settings-shortcuts-set-summary = Gmail، Inbox by Gmail، Apple Mail، Outlook یا Thunderbird کی کلیدوں سے شروع کریں
+settings-shortcuts-single-summary = Ctrl یا Alt کے بغیر کلیدیں، جیسے ویب میل میں
+settings-default-apps-pdf-summary = PDF اٹیچمنٹس کہاں کھلتی ہیں
+settings-default-apps-pictures-summary = فوٹوز اور تصاویر کہاں کھلتی ہیں
+settings-default-apps-text-summary = سادہ متن، لاگز اور کوڈ کہاں کھلتے ہیں
+settings-default-apps-sheets-summary = Excel، OpenDocument اور CSV فائلیں کہاں کھلتی ہیں
+settings-default-apps-documents-summary = Word اور OpenDocument متن کہاں کھلتے ہیں
+settings-default-apps-after-saving-summary = محفوظ کردہ اٹیچمنٹس ان کے فولڈر میں دکھائیں
+settings-compose-send-from-summary = وہ اکاؤنٹ جس سے نئی میل جاتی ہے: جس میں آپ ہیں، یا ہمیشہ ایک ہی
+settings-compose-send-on-replies-summary = جوابات اور فارورڈز پر ”بھیجیں“، یا ”بھیجیں اور آرکائیو کریں“
+settings-compose-signatures-summary = آپ کے پیغام کے نیچے، ”--“ لائن کے بعد شامل کیا جاتا ہے
+settings-compose-for-new-mail-summary = وہ دستخط جس سے نئی میل شروع ہوتی ہے
+settings-compose-for-replies-summary = وہ دستخط جس سے جوابات اور فارورڈز شروع ہوتے ہیں
+settings-compose-format-summary = نئی میل سادہ متن میں لکھیں
+settings-compose-spelling-summary = لکھتے وقت املا کی جانچ، اور لغت کی زبان
+settings-compose-templates-summary = جلد آ رہا ہے: اکثر لکھی جانے والی میل محفوظ کریں، اور اس سے نئی میل یا جواب شروع کریں
+settings-feedback-crash-reports-summary = جب Katna Mail یا اس کی بیک گراؤنڈ سروس کریش ہو تو اس کمپیوٹر پر کریش رپورٹس محفوظ کریں
+settings-feedback-saved-summary = اس کمپیوٹر پر محفوظ کریش رپورٹس دیکھیں، کاپی کریں یا حذف کریں
+settings-feedback-help-improve-summary = خرابی ٹھیک کرنے میں مدد کے لیے کریش رپورٹس بھیجیں؛ جب تک آپ آن نہ کریں بند رہتا ہے
+settings-experimental-blur-summary = ڈیسک ٹاپ اوپری بار کے پیچھے سے دھندلا نظر آتا ہے، اور مینیو دھندلے شیشے جیسے ہوتے ہیں
+settings-search-shortcut = کی بورڈ شارٹ کٹ
+settings-search-tab = ترتیبات کا ٹیب
+settings-search-none = کوئی ترتیب ”{ $query }“ سے مماثل نہیں۔
+settings-search-results = ”{ $query }“ سے مماثل ترتیبات
+
+## Quick settings (the panel that slides in from the right)
+
+quick-title = فوری ترتیبات
+quick-see-all = تمام ترتیبات دیکھیں
+quick-reading-pane = پڑھنے کا پین
+quick-pane-right = فہرست کے ساتھ
+quick-pane-none = کوئی تقسیم نہیں
+quick-density = کثافت
+quick-density-default = ڈیفالٹ
+quick-density-compact = کمپیکٹ
+quick-theme = تھیم
+quick-theme-system = ڈیسک ٹاپ جیسی
+quick-theme-light = ہلکی
+quick-theme-dark = گہری
+quick-desktop-colors = ڈیسک ٹاپ کے رنگ
+quick-desktop-colors-detail = ڈیسک ٹاپ کی رنگ سکیم اور ایکسنٹ رنگ
+quick-app-names = ایپس کے نام
+quick-app-names-detail = بالکل دائیں جانب ایپ آئیکنز کے نیچے نام
+quick-inbox-tabs = ان باکس ٹیبز
+quick-inbox-tabs-detail = ہر اکاؤنٹ کے میل فراہم کنندہ کے ٹیبز
+quick-choose-tabs = ٹیبز منتخب کریں
+quick-choose-tabs-detail = ہر اکاؤنٹ کے لیے، ترتیبات میں
+quick-sending = بھیجنا
+quick-undo-send = بھیجنا کالعدم کریں
+quick-undo-send-off = بند
+quick-undo-send-seconds = { $seconds } سیکنڈ
+quick-signatures = دستخط
+quick-signatures-none = ابھی کوئی نہیں
+quick-signatures-one = { $name }، بطور ڈیفالٹ استعمال
+quick-signatures-many = { $count ->
+    [one] { $count } دستخط؛ { $name } بطور ڈیفالٹ
+   *[other] { $count } دستخط؛ { $name } بطور ڈیفالٹ
+}
+quick-signatures-no-default = { $count ->
+    [one] { $count }، کوئی ڈیفالٹ نہیں
+   *[other] { $count }، کوئی ڈیفالٹ نہیں
+}
+quick-signature-untitled = بلا عنوان
+quick-threading = ای میل تھریڈنگ
+quick-conversation-view = گفتگو کا منظر
+quick-conversation-view-detail = ایک ہی میل کے جوابات کو گروپ کریں
+quick-help = مدد
+quick-tour = ٹور کریں
+quick-whats-new = نیا کیا ہے
+quick-about = Katna کے بارے میں
+
+## Settings: opening at login
+
+settings-open-at-login-failed = لاگ ان پر کھولنے کی ترتیب نہیں بدل سکی: { $error }
+
+## Settings > Appearance > Scaling
+
+scale-letter = ع
+scale-percent = { $percent }%
+scale-reset = { $percent }% پر واپس جائیں
+
+## Settings > Experimental > Look & Feel
+
+look-intro = ایسی خصوصیات جنہیں ابھی آزمایا جا رہا ہے۔ یہ بدل سکتی ہیں یا ختم ہو سکتی ہیں۔
+look-heading = شکل و صورت
+look-window-frame = ونڈو فریم
+look-window-frame-detail = ٹائٹل بار، ونڈو بٹن، کونے اور سایہ کون بناتا ہے۔
+look-frame-native-kde = مقامی: KDE کا فریم، آپ کی Plasma تھیم میں
+look-frame-native = مقامی: ڈیسک ٹاپ کا فریم
+look-frame-katna = Katna: اوپری بار ٹائٹل بار بن جاتا ہے
+look-frame-katna-note-named = Katna گول کونے اور اپنا سایہ خود بناتا ہے۔ فریم اب { $desktop } تھیم کی پیروی نہیں کرتا؛ ونڈو کے اصول اب بھی لاگو ہوتے ہیں۔
+look-frame-katna-note = Katna گول کونے اور اپنا سایہ خود بناتا ہے۔ فریم اب ڈیسک ٹاپ تھیم کی پیروی نہیں کرتا؛ ونڈو کے اصول اب بھی لاگو ہوتے ہیں۔
+look-frame-client-side = آپ کا ڈیسک ٹاپ فریم ہر ایپ پر چھوڑتا ہے، اس لیے Katna پہلے ہی اپنا فریم خود بناتا ہے۔
+look-blurred-background = دھندلا پس منظر
+look-blurred-background-detail = ڈیسک ٹاپ اوپری بار اور فولڈرز کے پیچھے سے دھندلا نظر آتا ہے، اور مینیو اور پاپ اوورز دھندلے شیشے جیسے ہوتے ہیں۔
+look-blur = ونڈو کے پیچھے کا منظر دھندلا کریں
+look-blur-detail = میل ٹھوس کارڈز پر رہتی ہے، اس لیے متن کا کنٹراسٹ برقرار رہتا ہے
+look-blur-off-kde = KDE کا دھندلاہٹ کا اثر بند ہے۔ ”سسٹم کی ترتیبات“، ”ونڈو مینجمنٹ“، ”ڈیسک ٹاپ اثرات“ میں ”دھندلاہٹ“ آن کریں، پھر Katna Mail دوبارہ کھولیں۔
+look-blur-none-gnome = GNOME ونڈوز کے پیچھے کا منظر دھندلا نہیں کرتا۔
+look-blur-none-x11 = آپ کا ونڈو مینیجر ونڈوز کے پیچھے کا منظر دھندلا نہیں کرتا۔
+look-blur-none-wayland = آپ کا کمپوزیٹر ونڈوز کے پیچھے کا منظر دھندلا نہیں کرتا۔
+
+## Settings > User feedback (crash reports)
+
+feedback-intro-sending = نئی کریش رپورٹس خرابی ٹھیک کرنے میں مدد کے لیے بھیجی جاتی ہیں۔ اس کمپیوٹر سے اور کچھ نہیں جاتا۔
+feedback-intro-local = Katna کہیں کچھ نہیں بھیجتا۔ کریش رپورٹس اس کمپیوٹر پر رہتی ہیں، تاکہ آپ انہیں دیکھ سکیں یا کسی بگ رپورٹ کے ساتھ منسلک کر سکیں۔
+feedback-crash-reports = کریش رپورٹس
+feedback-crash-reports-detail = جب Katna Mail یا اس کی بیک گراؤنڈ سروس کریش ہو تو لکھی جاتی ہیں۔
+feedback-save = اس کمپیوٹر پر کریش رپورٹس محفوظ کریں
+feedback-save-detail = آپ کا ہوم فولڈر، صارف اور کمپیوٹر کے نام اور ای میل پتے شامل نہیں کیے جاتے
+feedback-saved = محفوظ کردہ کریش رپورٹس
+feedback-saved-detail = { $count ->
+    [one] تازہ ترین { $count } رپورٹ رکھی جاتی ہے۔
+   *[other] تازہ ترین { $count } رپورٹس رکھی جاتی ہیں۔
+}
+feedback-help-improve = Katna کو بہتر بنانے میں مدد کریں
+feedback-help-improve-detail = جب تک آپ آن نہ کریں بند رہتا ہے، اور آپ اسے یہاں کسی بھی وقت بند کر سکتے ہیں۔
+feedback-send = کریش رپورٹس بھیجیں
+feedback-send-detail = محفوظ کردہ رپورٹ، بالکل ویسی ہی جیسی آپ اسے یہاں دیکھ سکتے ہیں، Katna کے کریش ٹریکر (Sentry، یورپی یونین میں) کو جاتی ہے۔ کوئی IP پتہ، پیغامات یا ای میل پتے نہیں
+feedback-none-saved = کوئی کریش رپورٹ محفوظ نہیں۔
+feedback-delete-all = سب حذف کریں
+feedback-app-daemon = بیک گراؤنڈ سروس
+feedback-report-sent = { $date } · بھیجی گئی
+feedback-view = دیکھیں
+feedback-view-tooltip = رپورٹ کھولیں
+feedback-copy-tooltip = بگ رپورٹ میں چسپاں کرنے کے لیے کاپی کریں
+feedback-copied = کریش رپورٹ کاپی ہو گئی۔
+feedback-deleted-all = کریش رپورٹس حذف کر دی گئیں۔
+feedback-read-failed = کریش رپورٹ پڑھی نہیں جا سکی: { $error }
+feedback-delete-failed = کریش رپورٹ حذف نہیں ہو سکی: { $error }
+feedback-delete-all-failed = کریش رپورٹس حذف نہیں ہو سکیں: { $error }
+
+## Menu bar (the KDE global menu)
+
+desktop-menu-file = _فائل
+desktop-menu-new-message = _نیا پیغام
+desktop-menu-quit = _باہر نکلیں
+desktop-menu-edit = _ترمیم
+desktop-menu-undo = _کالعدم کریں
+desktop-menu-select-all = _سب منتخب کریں
+desktop-menu-select-none = _انتخاب ختم کریں
+desktop-menu-find = _تلاش کریں…
+desktop-menu-view = _منظر
+desktop-menu-folder-list = _فولڈر فہرست دکھائیں
+desktop-menu-refresh = _ریفریش کریں
+desktop-menu-go = _جائیں
+desktop-menu-inbox = _ان باکس
+desktop-menu-starred = _ستارے والی
+desktop-menu-sent = _ارسال کردہ
+desktop-menu-drafts = _ڈرافٹس
+desktop-menu-all-mail = _تمام میل
+desktop-menu-next = _اگلی گفتگو
+desktop-menu-previous = _پچھلی گفتگو
+desktop-menu-message = _پیغام
+desktop-menu-open = _کھولیں
+desktop-menu-reply = _جواب دیں
+desktop-menu-reply-all = _سب کو جواب دیں
+desktop-menu-forward = _آگے بھیجیں
+desktop-menu-archive = _آرکائیو کریں
+desktop-menu-delete = _حذف کریں
+desktop-menu-spam = _سپام کی اطلاع دیں
+desktop-menu-move-to = _یہاں منتقل کریں…
+desktop-menu-mark-read = _بطور پڑھا ہوا نشان زد کریں
+desktop-menu-mark-unread = _بطور ناخواندہ نشان زد کریں
+desktop-menu-star = _ستارہ لگائیں
+desktop-menu-important = _بطور اہم نشان زد کریں
+desktop-menu-not-important = _بطور غیر اہم نشان زد کریں
+desktop-menu-settings = _ترتیبات
+desktop-menu-quick-settings = _فوری ترتیبات
+desktop-menu-configure = _Katna Mail کو کنفیگر کریں…
+desktop-menu-help = _مدد
+desktop-menu-shortcuts = _کی بورڈ شارٹ کٹس
+desktop-menu-whats-new = _نیا کیا ہے
+desktop-menu-about = _Katna کے بارے میں
+
+## Settings > Keyboard shortcuts: the groups of the list
+
+shortcut-group-moving = نیویگیشن
+shortcut-group-actions = کارروائیاں
+shortcut-group-go-to = یہاں جائیں
+shortcut-group-app = ایپلیکیشن
+
+## Settings > Keyboard shortcuts: what each shortcut does
+
+shortcut-next = اگلی گفتگو
+shortcut-previous = پچھلی گفتگو
+shortcut-down = فہرست میں نیچے جائیں
+shortcut-up = فہرست میں اوپر جائیں
+shortcut-first = فہرست میں پہلی
+shortcut-last = فہرست میں آخری
+shortcut-page-down = فہرست میں ایک صفحہ نیچے
+shortcut-page-up = فہرست میں ایک صفحہ اوپر
+shortcut-open = گفتگو کھولیں
+shortcut-back = فہرست پر واپس
+shortcut-scroll-down = نیچے اسکرول کریں
+shortcut-scroll-up = اوپر اسکرول کریں
+shortcut-scroll-page-down = ایک صفحہ نیچے اسکرول کریں
+shortcut-scroll-page-up = ایک صفحہ اوپر اسکرول کریں
+shortcut-compose = تحریر کریں
+shortcut-reply = جواب دیں
+shortcut-reply-all = سب کو جواب دیں
+shortcut-forward = آگے بھیجیں
+shortcut-archive = آرکائیو کریں
+shortcut-delete = حذف کریں
+shortcut-spam = سپام کی اطلاع دیں
+shortcut-move-to = یہاں منتقل کریں
+shortcut-mark-read = بطور پڑھا ہوا نشان زد کریں
+shortcut-mark-unread = بطور ناخواندہ نشان زد کریں
+shortcut-star = ستارہ لگائیں یا ہٹائیں
+shortcut-important = بطور اہم نشان زد کریں
+shortcut-not-important = بطور غیر اہم نشان زد کریں
+shortcut-check = گفتگو پر نشان لگائیں
+shortcut-select-all = تمام گفتگوؤں پر نشان لگائیں
+shortcut-select-none = تمام گفتگوؤں سے نشان ہٹائیں
+shortcut-undo = آخری کارروائی کالعدم کریں
+shortcut-go-inbox = ان باکس
+shortcut-go-starred = ستارے والی
+shortcut-go-sent = ارسال کردہ
+shortcut-go-drafts = ڈرافٹس
+shortcut-go-all = تمام میل
+shortcut-search = میل تلاش کریں
+shortcut-navigation = مینیو دکھائیں یا سمیٹیں
+shortcut-quick-settings = فوری ترتیبات
+shortcut-settings = تمام ترتیبات
+shortcut-shortcuts = کی بورڈ شارٹ کٹس
+shortcut-reload = نئی میل چیک کریں
+shortcut-quit = باہر نکلیں
+
+## Keys pressed one after another, as a shortcut shows them ("G then I")
+
+shortcut-sequence = { $first } پھر { $second }
+
+## Settings > Accounts
+
+accounts-folder-pane = فولڈر پین
+accounts-folder-pane-detail = دائیں جانب والا پین کن اکاؤنٹس کے فولڈرز دکھائے۔
+accounts-shown-one = ایک وقت میں ایک اکاؤنٹ؛ اکاؤنٹ کارڈ میں تبدیل کریں
+accounts-shown-all = تمام اکاؤنٹس، ایک کے بعد ایک
+accounts-row = اکاؤنٹس
+accounts-row-detail = اکاؤنٹ ہٹانے سے اس کمپیوٹر پر اس کی میل کی Katna والی کاپی حذف ہو جاتی ہے۔ میل سرور پر رہتی ہے۔
+accounts-none = ابھی کوئی اکاؤنٹ نہیں۔
+accounts-kind-imported = درآمد شدہ
+accounts-picture-reset = ڈیسک ٹاپ کی تصویر استعمال کریں
+accounts-picture-change = تصویر بدلیں
+accounts-remove = ہٹائیں
+accounts-delete-all-row = تمام ڈیٹا حذف کریں
+accounts-delete-all-row-detail = نئے انسٹال کی طرح، دوبارہ شروع کریں۔
+accounts-delete-all-about = اس کمپیوٹر سے ہر اکاؤنٹ، تمام محفوظ میل، رابطے اور کیلنڈر، تلاش کا انڈیکس، آپ کی ترتیبات اور محفوظ پاس ورڈز حذف کر دیتا ہے۔ آپ کے میل سرورز پر کچھ نہیں بدلتا۔
+accounts-delete-all-open = Katna کا تمام ڈیٹا حذف کریں
+
+## Settings > Accounts: snackbars after deleting
+
+accounts-removed-local = { $address } کو Katna سے ہٹا دیا گیا۔
+accounts-removed = { $address } کو Katna سے ہٹا دیا گیا۔ اس کی میل ابھی بھی سرور پر ہے۔
+accounts-all-deleted = Katna کا تمام ڈیٹا اس کمپیوٹر سے حذف کر دیا گیا۔
+
+## Settings > Accounts: the dialog that asks before deleting
+
+accounts-remove-title = { $address } کو ہٹائیں؟
+accounts-remove-confirm = اکاؤنٹ ہٹائیں
+accounts-removing = ہٹایا جا رہا ہے…
+accounts-remove-local-mail = { $folders ->
+    [0] اس اکاؤنٹ میں درآمد کی گئی تمام میل
+    [one] اس اکاؤنٹ میں درآمد کی گئی تمام میل، اس کے فولڈر میں
+   *[other] اس اکاؤنٹ میں درآمد کی گئی تمام میل، اس کے { $folders } فولڈرز میں
+}
+accounts-remove-local-settings = اس کی Katna ترتیبات
+accounts-remove-mail = { $folders ->
+    [0] Katna میں محفوظ اس اکاؤنٹ کی تمام میل
+    [one] Katna میں محفوظ اس اکاؤنٹ کی تمام میل، اس کے فولڈر میں
+   *[other] Katna میں محفوظ اس اکاؤنٹ کی تمام میل، اس کے { $folders } فولڈرز میں
+}
+accounts-remove-outbox = آؤٹ باکس میں منتظر اس کے پیغامات
+accounts-remove-settings = اس کا محفوظ پاس ورڈ اور اس کی Katna ترتیبات
+accounts-delete-all-title = Katna کا تمام ڈیٹا حذف کریں؟
+accounts-delete-all-confirm = سب کچھ حذف کریں
+accounts-deleting = حذف کیا جا رہا ہے…
+accounts-delete-all-accounts = ہر اکاؤنٹ، اور Katna میں محفوظ تمام میل اور اٹیچمنٹس
+accounts-delete-all-contacts = رابطے، کیلنڈر اور تلاش کا انڈیکس
+accounts-delete-all-settings = تمام ترتیبات، دستخط اور کی بورڈ شارٹ کٹس
+accounts-delete-all-passwords = ہر محفوظ پاس ورڈ
+accounts-deleted-heading = اس کمپیوٹر سے حذف ہو گا:
+accounts-cannot-undo = اسے کالعدم نہیں کیا جا سکتا۔
+accounts-server-delete-all = آپ کے میل سرورز پر کچھ نہیں بدلتا: آپ کی میل وہیں رہتی ہے، اور اکاؤنٹ دوبارہ شامل کرنے سے یہ دوبارہ ڈاؤن لوڈ ہو جاتی ہے۔ فائلوں سے درآمد کی گئی میل صرف Katna میں ہے؛ فائلوں کو نہیں چھیڑا جاتا۔
+accounts-server-local = یہ میل فائلوں سے درآمد کی گئی تھی، اس لیے واحد کاپی Katna کے پاس ہے۔ جن فائلوں سے یہ آئی انہیں نہیں چھیڑا جاتا؛ اسے واپس حاصل کرنے کے لیے انہیں دوبارہ درآمد کریں۔
+accounts-server-remove = میل سرور پر کچھ نہیں بدلتا: آپ کی میل وہیں رہتی ہے، اور اکاؤنٹ دوبارہ شامل کرنے سے یہ دوبارہ ڈاؤن لوڈ ہو جاتی ہے۔
+accounts-confirm-word = حذف
+accounts-confirm-placeholder = ”{ accounts-confirm-word }“ ٹائپ کریں
+accounts-confirm-prompt = تصدیق کے لیے، ”{ accounts-confirm-word }“ ٹائپ کریں:
+accounts-cancel = منسوخ کریں

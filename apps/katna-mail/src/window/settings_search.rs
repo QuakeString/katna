@@ -379,7 +379,14 @@ fn search(query: &str) -> Vec<Found> {
                 detail: tr!(e.detail).into(),
                 row: Some(title),
             },
-            e.words,
+            // The English name and line too, so English words find a row
+            // in any language.
+            format!(
+                "{} {} {}",
+                katna_i18n::english(e.title),
+                katna_i18n::english(e.detail),
+                e.words
+            ),
         )
     });
     let shortcuts = SHORTCUTS.iter().map(|s| {
@@ -390,7 +397,7 @@ fn search(query: &str) -> Vec<Found> {
                 detail: tr!("settings-search-shortcut").into(),
                 row: Some(s.title().into()),
             },
-            "keyboard key shortcut",
+            format!("{} keyboard key shortcut", s.english_title()),
         )
     });
     let tabs = Section::ALL.into_iter().map(|section| {
@@ -406,7 +413,7 @@ fn search(query: &str) -> Vec<Found> {
                 .into(),
                 row: None,
             },
-            tab_words(section),
+            tab_words(section).to_owned(),
         )
     });
     let query = words.join(" ");
@@ -415,6 +422,7 @@ fn search(query: &str) -> Vec<Found> {
         .chain(tabs)
         .filter_map(|(found, extra)| {
             let title = found.title.to_lowercase();
+            let extra = extra.to_lowercase();
             let text = format!(
                 "{title} {} {extra} {}",
                 found.detail.to_lowercase(),

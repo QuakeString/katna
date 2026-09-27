@@ -293,8 +293,10 @@ impl MailWindow {
                 what: What::DeleteAll { typed, .. },
                 ..
             }) => {
-                typed.read(cx).text().trim().to_lowercase()
-                    == tr!("accounts-confirm-word").to_lowercase()
+                // The English word also works, for a keyboard without the
+                // language's letters or accents.
+                let typed = typed.read(cx).text().trim().to_lowercase();
+                typed == tr!("accounts-confirm-word").to_lowercase() || typed == "delete"
             }
             Some(_) => true,
         }

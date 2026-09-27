@@ -557,3 +557,521 @@ print-not-downloaded = (Non ancora scaricato.)
 print-encrypted = (Crittografato. Aprilo in Katna Mail per stamparne il testo.)
 print-to = A: { $addresses }
 print-cc = Cc: { $addresses }
+
+## Leftovers from earlier areas (reading pane and its right-click menu)
+
+attachment-open-message = Apri questo messaggio per leggerne gli allegati.
+text-copy = Copia
+text-select-all = Seleziona tutto
+
+## Settings page: its tabs
+
+settings-tab-general = Generali
+settings-tab-inbox = Posta in arrivo
+settings-tab-accounts = Account
+settings-tab-subscriptions = Iscrizioni
+settings-tab-appearance = Aspetto
+settings-tab-shortcuts = Scorciatoie
+settings-tab-default-apps = App predefinite
+settings-tab-folders-rules = Cartelle e regole
+settings-tab-compose = Scrittura
+settings-tab-mcp-server = Server MCP
+settings-tab-feedback = Feedback degli utenti
+settings-tab-experimental = Sperimentali
+
+## Settings page: tabs still to come
+
+settings-tab-subscriptions-coming = Visualizza le newsletter e le mailing list che ricevi e annulla l’iscrizione con un clic.
+settings-tab-folders-rules-coming = Crea, rinomina, sposta e nascondi cartelle ed etichette e scegli quali sincronizzare. Le regole ordinano, etichettano, inoltrano o eliminano automaticamente la nuova posta, in base a mittente, oggetto o parole.
+settings-tab-mcp-server-coming = Consenti agli assistenti IA su questo computer di cercare, leggere e scrivere bozze della tua posta, con il tuo consenso.
+
+## Settings > General
+
+settings-general-conversations = Visualizzazione per conversazione
+settings-general-conversations-group = Raggruppa le risposte alla stessa email
+settings-general-conversations-group-detail = Una riga per conversazione nell’elenco
+settings-general-reading = Lettura
+settings-general-newest-first = Prima il messaggio più recente
+settings-general-newest-first-detail = Una conversazione inizia con l’ultima risposta
+settings-general-full-headers = Mostra intestazioni complete
+settings-general-full-headers-detail = Da, a, cc, data e oggetto visibili in ogni messaggio
+settings-general-full-names = Nomi completi dei destinatari
+settings-general-full-names-detail = «a me, Ada Lovelace» anziché «a me, Ada»
+settings-general-mark-read = Segna come già letto
+settings-general-mark-read-now = Appena si apre
+settings-general-mark-read-1s = Dopo 1 secondo di apertura
+settings-general-mark-read-3s = Dopo 3 secondi di apertura
+settings-general-mark-read-never = Solo quando la segno come già letta
+settings-general-reply-button = Pulsante Rispondi
+settings-general-reply-all = Rispondi a tutti
+settings-general-reply-all-detail = Il pulsante di risposta accanto a ogni messaggio risponde a tutti, non solo al mittente
+settings-general-remote-images = Immagini dal web
+settings-general-remote-images-detail = Caricare le immagini di un messaggio fa sapere al mittente che l’hai aperto, quando e più o meno dove. Se disattivato, ogni messaggio chiede prima, e puoi sempre mostrare le immagini di un mittente.
+settings-general-remote-images-always = Mostra sempre le immagini
+settings-general-remote-images-always-detail = In ogni messaggio, non solo da mittenti attendibili
+settings-general-sending = Invio
+settings-general-sending-detail = Quanto attende un messaggio inviato, per poterlo annullare.
+settings-general-offline = Posta offline
+settings-general-offline-detail = La posta recente viene scaricata per intero, per leggerla senza connessione. La posta meno recente viene scaricata quando la apri.
+settings-general-offline-days = { $count ->
+    [one] { $count } giorno
+    [many] { $count } di giorni
+   *[other] { $count } giorni
+}
+settings-general-offline-years = { $count ->
+    [one] { $count } anno
+    [many] { $count } di anni
+   *[other] { $count } anni
+}
+settings-general-offline-all = Tutta la posta
+settings-general-offline-note = Scegliendo meno giorni, la posta già scaricata viene mantenuta. Sul server non cambia nulla.
+settings-general-notifications = Notifiche
+settings-general-notifications-detail = Per la nuova posta in Posta in arrivo, anche quando Katna Mail è chiuso.
+settings-general-new-mail = Avvisami quando arriva nuova posta
+settings-general-new-mail-detail = Con Rispondi a tutti, Segna come già letto e Archivia
+settings-general-new-mail-sound = Riproduci un suono
+settings-general-new-mail-sound-detail = Il suono di nuova posta del desktop
+settings-general-desktop = Desktop
+settings-general-open-at-login = Apri Katna Mail all’accesso
+settings-general-open-at-login-detail = La posta si sincronizza comunque all’accesso, finché il servizio è in esecuzione
+settings-general-tray = Mostra Katna nell’area di notifica
+settings-general-tray-detail = Con il numero di messaggi da leggere e un menu
+settings-general-unread-badge = Numero di messaggi da leggere sull’icona nella barra delle applicazioni
+settings-general-unread-badge-detail = Quanti messaggi in Posta in arrivo sono da leggere
+
+## Settings > Inbox
+
+settings-inbox-tabs = Schede della posta in arrivo
+settings-inbox-tabs-detail = Suddividi la posta in arrivo in schede, come fa il sito web del tuo provider di posta.
+settings-inbox-tabs-show = Mostra le schede della posta in arrivo
+settings-inbox-tabs-show-detail = Se disattivato, un unico elenco per tutti gli account
+settings-inbox-no-accounts = Aggiungi un account per sceglierne le schede.
+settings-inbox-tabs-automatic = Automatico: { $tabs } ({ $provider })
+settings-inbox-tabs-off = Nessuna scheda
+settings-inbox-tabs-gmail = Principale, Promozioni, Social, Aggiornamenti, Forum
+settings-inbox-tabs-focused = Evidenziata e Altra
+settings-inbox-tabs-zoho = Posta in arrivo, Newsletter e Notifiche
+settings-inbox-tabs-shown = Schede mostrate. La posta di una scheda disattivata resta in { $tab }.
+
+## Settings > Appearance
+
+settings-appearance-reading-pane = Riquadro di lettura
+settings-appearance-reading-pane-detail = Dove viene mostrata una conversazione aperta.
+settings-appearance-pane-right = A destra dell’elenco
+settings-appearance-pane-none = Nessuna suddivisione
+settings-appearance-density = Densità
+settings-appearance-density-default = Predefinita
+settings-appearance-density-compact = Compatta
+settings-appearance-scaling = Scala
+settings-appearance-scaling-detail = Ingrandisce o rimpicciolisce tutto in Katna Mail, oltre alla scala del desktop: testo, icone, spaziatura e divisori. La posta che invii mantiene la propria dimensione del carattere. Con dimensioni molto piccole può essere difficile fare clic sulle icone.
+settings-appearance-theme = Tema
+settings-appearance-theme-system = Come il desktop
+settings-appearance-theme-light = Chiaro
+settings-appearance-theme-dark = Scuro
+settings-appearance-desktop-colors = Colori del desktop
+settings-appearance-desktop-colors-use = Usa i colori del desktop
+settings-appearance-desktop-colors-use-detail = Lo schema di colori e il colore di risalto del desktop
+settings-appearance-app-names = Nomi delle app
+settings-appearance-app-names-show = Mostra i nomi delle app
+settings-appearance-app-names-show-detail = Nomi sotto le icone delle app all’estrema sinistra
+settings-appearance-sender-pictures = Immagini dei mittenti
+settings-appearance-sender-pictures-show = Mostra i loghi aziendali
+settings-appearance-sender-pictures-show-detail = Cercati in base al dominio del mittente, mai in base al messaggio, e conservati per una settimana
+settings-appearance-important = Indicatori di importanza
+settings-appearance-important-show = Mostra gli indicatori di importanza
+settings-appearance-important-show-detail = Accanto a ogni messaggio nell’elenco
+settings-appearance-message-width = Larghezza dei messaggi
+settings-appearance-message-width-limit = Limita la larghezza dei messaggi
+settings-appearance-message-width-limit-detail = Le righe lunghe sono più facili da leggere in una finestra larga
+settings-appearance-mail-colors = Colori della posta
+settings-appearance-mail-colors-detail = La maggior parte della posta è pensata per una pagina bianca. Con un tema scuro i suoi colori vengono sostituiti da colori scuri ben leggibili; se disattivato, mantiene i colori del mittente su una pagina chiara.
+settings-appearance-dark-mail = Colori scuri anche per la posta
+settings-appearance-dark-mail-detail = Solo con il tema scuro
+settings-appearance-attachment-previews = Anteprime degli allegati
+settings-appearance-attachment-previews-show = Mostra le anteprime degli allegati
+settings-appearance-attachment-previews-show-detail = Una piccola immagine del contenuto di ogni file nel suo riquadro
+
+## Settings > Default apps
+
+settings-default-apps-intro = Dove si aprono gli allegati quando fai clic su di essi. Il visualizzatore può sempre aprire un file anche in un’altra app. Le app predefinite del desktop si impostano nelle sue impostazioni.
+settings-default-apps-pdf = File PDF
+settings-default-apps-pdf-detail = Pagine, con zoom.
+settings-default-apps-pictures = Immagini
+settings-default-apps-pictures-detail = Foto (raddrizzate), PNG, GIF, WebP, BMP, TIFF e SVG.
+settings-default-apps-text = File di testo
+settings-default-apps-text-detail = Testo semplice, log, codice e altro testo.
+settings-default-apps-sheets = Fogli di calcolo
+settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) e CSV.
+settings-default-apps-documents = Documenti
+settings-default-apps-documents-detail = Word (docx) e testo OpenDocument (odt).
+settings-default-apps-katna = Visualizzatore di Katna Mail
+settings-default-apps-system = App predefinita del desktop
+settings-default-apps-ask = Chiedi ogni volta quale app usare
+settings-default-apps-after-saving = Dopo il salvataggio
+settings-default-apps-show-folder = Mostra i file salvati nella loro cartella
+settings-default-apps-show-folder-detail = Apre il gestore di file con gli allegati salvati selezionati
+
+## Settings > Compose
+
+settings-compose-send-from = Invia nuovi messaggi da
+settings-compose-send-from-detail = Le risposte e gli inoltri partono sempre dall’account in cui ti trovi.
+settings-compose-send-from-current = L’account in cui ti trovi
+settings-compose-send-on-replies = Invio nelle risposte
+settings-compose-send-on-replies-detail = Cosa fa Invia in una risposta o un inoltro. Il menu accanto a Invia offre l’altra opzione.
+settings-compose-send-plain = Invia
+settings-compose-send-archive = Invia e archivia
+settings-compose-signatures = Firme
+settings-compose-signatures-detail = Aggiunta sotto il tuo messaggio, dopo una riga «--». Scegline un’altra nella finestra di scrittura.
+settings-compose-untitled = Senza titolo
+settings-compose-signature-name = Nome, ad esempio Lavoro
+settings-compose-signature-first = La mia firma
+settings-compose-signature-numbered = Firma { $number }
+settings-compose-signature-delete = Elimina
+settings-compose-signature-deleted = Firma eliminata
+settings-compose-signature-new = Crea nuova
+settings-compose-no-signatures = Ancora nessuna firma.
+settings-compose-no-signature = Nessuna firma
+settings-compose-for-new-mail = Per i nuovi messaggi
+settings-compose-for-replies = Per risposte e inoltri
+settings-compose-for-replies-detail = In una conversazione in cui hai firmato un messaggio, una risposta inizia invece con quella firma.
+settings-compose-format = Formato
+settings-compose-plain-text = Scrivi in testo semplice
+settings-compose-plain-text-detail = La nuova posta inizia senza formattazione; la finestra di scrittura può cambiarlo
+settings-compose-spelling = Ortografia
+settings-compose-spell-check = Controlla l’ortografia durante la scrittura
+settings-compose-spell-check-detail = Le parole errate vengono sottolineate, con suggerimenti facendo clic con il tasto destro
+settings-compose-spell-desktop = Lingua del desktop ({ $language })
+settings-compose-templates = Modelli
+settings-compose-templates-detail = Salva i messaggi che scrivi spesso e usali per iniziare un nuovo messaggio o una risposta.
+
+## Settings > Shortcuts
+
+settings-shortcuts-set = Set di scorciatoie
+settings-shortcuts-set-detail = Parti dai tasti di un’app di posta che conosci. Qui Cmd corrisponde a Ctrl. Le tue modifiche restano applicate sopra il set, e Ripristina predefinite torna ai tasti del set.
+settings-shortcuts-single = Scorciatoie a tasto singolo
+settings-shortcuts-single-detail = Tasti senza Ctrl o Alt, come nella webmail: e archivia, j e k spostano, / cerca. Funzionano nell’elenco e nella conversazione aperta, mai mentre scrivi.
+settings-shortcuts-single-use = Usa le scorciatoie a tasto singolo
+settings-shortcuts-single-use-detail = Le scorciatoie con Ctrl funzionano sempre
+settings-shortcuts-how = Fai clic su un tasto per cambiarlo, o su + per aggiungerne uno, quindi premi i nuovi tasti. Esc annulla.
+settings-shortcuts-restore = Ripristina predefinite
+settings-shortcuts-no-key = Nessun tasto
+settings-shortcuts-press = Premi i tasti…
+settings-shortcuts-then = { $keys } poi…
+settings-shortcuts-moved = { $keys } ora esegue «{ $action }» invece di «{ $previous }».
+settings-shortcuts-single-off = Le scorciatoie a tasto singolo sono disattivate, quindi questo tasto funzionerà quando saranno attive.
+settings-shortcuts-restored = Tutte le scorciatoie hanno di nuovo i tasti del loro set.
+
+## Settings search: the line under a result
+
+settings-general-language-summary = Lingua dell’app, delle date e dei numeri
+settings-general-reading-summary = Prima il messaggio più recente, intestazioni complete, nomi completi dei destinatari
+settings-general-mark-read-summary = Quando una conversazione aperta viene segnata come già letta: subito, dopo 1 o 3 secondi, o a mano
+settings-general-reply-button-summary = Il pulsante di risposta accanto a ogni messaggio risponde a tutti
+settings-general-remote-images-summary = Mostra sempre le immagini di ogni messaggio
+settings-general-sending-summary = Annulla invio: quanto attende un messaggio inviato, per poterlo annullare
+settings-general-offline-summary = Quanti giorni di posta recente vengono scaricati per intero, per leggerla senza connessione
+settings-general-notifications-summary = Notifiche di nuova posta e il loro suono
+settings-general-desktop-summary = Apri Katna Mail all’accesso, l’icona nell’area di notifica e il numero di messaggi da leggere sull’icona nella barra delle applicazioni
+settings-accounts-accounts-summary = Aggiungi o rimuovi un account, o cambiane l’immagine
+settings-appearance-density-summary = Righe predefinite o compatte nell’elenco
+settings-appearance-scaling-summary = Ingrandisci o rimpicciolisci tutto: testo, icone, spaziatura e divisori
+settings-appearance-theme-summary = Come il desktop, chiaro o scuro
+settings-appearance-sender-pictures-summary = Loghi aziendali, cercati in base al dominio del mittente
+settings-appearance-important-summary = L’indicatore di importanza accanto a ogni messaggio nell’elenco
+settings-appearance-mail-colors-summary = Colori scuri per la posta HTML con un tema scuro, o i colori del mittente
+settings-appearance-attachment-previews-summary = Una piccola immagine del contenuto di ogni allegato
+settings-shortcuts-set-summary = Parti dai tasti di Gmail, Inbox by Gmail, Apple Mail, Outlook o Thunderbird
+settings-shortcuts-single-summary = Tasti senza Ctrl o Alt, come nella webmail
+settings-default-apps-pdf-summary = Dove si aprono gli allegati PDF
+settings-default-apps-pictures-summary = Dove si aprono foto e immagini
+settings-default-apps-text-summary = Dove si aprono testo semplice, log e codice
+settings-default-apps-sheets-summary = Dove si aprono i file Excel, OpenDocument e CSV
+settings-default-apps-documents-summary = Dove si aprono i testi Word e OpenDocument
+settings-default-apps-after-saving-summary = Mostra gli allegati salvati nella loro cartella
+settings-compose-send-from-summary = L’account da cui parte la nuova posta: quello in cui ti trovi o sempre lo stesso
+settings-compose-send-on-replies-summary = Invia, o Invia e archivia la conversazione, nelle risposte e negli inoltri
+settings-compose-signatures-summary = Aggiunta sotto il tuo messaggio, dopo una riga «--»
+settings-compose-for-new-mail-summary = La firma con cui inizia la nuova posta
+settings-compose-for-replies-summary = La firma con cui iniziano risposte e inoltri
+settings-compose-format-summary = Scrivi la nuova posta in testo semplice
+settings-compose-spelling-summary = Controlla l’ortografia durante la scrittura, e la lingua del dizionario
+settings-compose-templates-summary = Prossimamente: salva i messaggi che scrivi spesso e usali per iniziare un nuovo messaggio o una risposta
+settings-feedback-crash-reports-summary = Salva i rapporti sugli arresti anomali su questo computer quando Katna Mail o il suo servizio in background si arresta in modo anomalo
+settings-feedback-saved-summary = Visualizza, copia o elimina i rapporti sugli arresti anomali salvati su questo computer
+settings-feedback-help-improve-summary = Invia i rapporti sugli arresti anomali per aiutare a risolvere il problema; disattivato finché non lo attivi
+settings-experimental-blur-summary = Il desktop traspare sfocato attraverso la barra superiore, e i menu sono in vetro smerigliato
+settings-search-shortcut = Scorciatoia da tastiera
+settings-search-tab = Scheda delle impostazioni
+settings-search-none = Nessuna impostazione corrisponde a «{ $query }».
+settings-search-results = Impostazioni corrispondenti a «{ $query }»
+
+## Quick settings (the panel that slides in from the right)
+
+quick-title = Impostazioni rapide
+quick-see-all = Visualizza tutte le impostazioni
+quick-reading-pane = Riquadro di lettura
+quick-pane-right = A destra dell’elenco
+quick-pane-none = Nessuna suddivisione
+quick-density = Densità
+quick-density-default = Predefinita
+quick-density-compact = Compatta
+quick-theme = Tema
+quick-theme-system = Come il desktop
+quick-theme-light = Chiaro
+quick-theme-dark = Scuro
+quick-desktop-colors = Colori del desktop
+quick-desktop-colors-detail = Lo schema di colori e il colore di risalto del desktop
+quick-app-names = Nomi delle app
+quick-app-names-detail = Nomi sotto le icone delle app all’estrema sinistra
+quick-inbox-tabs = Schede della posta in arrivo
+quick-inbox-tabs-detail = Le schede del provider di posta di ogni account
+quick-choose-tabs = Scegli le schede
+quick-choose-tabs-detail = Per account, nelle Impostazioni
+quick-sending = Invio
+quick-undo-send = Annulla invio
+quick-undo-send-off = Disattivato
+quick-undo-send-seconds = { $seconds } s
+quick-signatures = Firme
+quick-signatures-none = Ancora nessuna
+quick-signatures-one = { $name }, usata come predefinita
+quick-signatures-many = { $count ->
+    [one] { $count } firma; { $name } predefinita
+    [many] { $count } di firme; { $name } predefinita
+   *[other] { $count } firme; { $name } predefinita
+}
+quick-signatures-no-default = { $count ->
+    [one] { $count }, nessuna predefinita
+    [many] { $count }, nessuna predefinita
+   *[other] { $count }, nessuna predefinita
+}
+quick-signature-untitled = Senza titolo
+quick-threading = Organizzazione in thread delle email
+quick-conversation-view = Visualizzazione per conversazione
+quick-conversation-view-detail = Raggruppa le risposte alla stessa email
+quick-help = Guida
+quick-tour = Fai il tour
+quick-whats-new = Novità
+quick-about = Informazioni su Katna
+
+## Settings: opening at login
+
+settings-open-at-login-failed = Impossibile modificare l’apertura all’accesso: { $error }
+
+## Settings > Appearance > Scaling
+
+scale-letter = A
+scale-percent = { $percent }%
+scale-reset = Torna al { $percent }%
+
+## Settings > Experimental > Look & Feel
+
+look-intro = Funzionalità ancora in prova. Potrebbero cambiare o essere rimosse.
+look-heading = Aspetto e stile
+look-window-frame = Cornice della finestra
+look-window-frame-detail = Chi disegna la barra del titolo, i pulsanti della finestra, gli angoli e l’ombra.
+look-frame-native-kde = Nativa: la cornice di KDE, nel tuo tema di Plasma
+look-frame-native = Nativa: la cornice del desktop
+look-frame-katna = Katna: la barra superiore diventa la barra del titolo
+look-frame-katna-note-named = Katna disegna angoli arrotondati e la propria ombra. La cornice non segue più il tema di { $desktop }; le regole delle finestre restano valide.
+look-frame-katna-note = Katna disegna angoli arrotondati e la propria ombra. La cornice non segue più il tema del desktop; le regole delle finestre restano valide.
+look-frame-client-side = Il tuo desktop lascia la cornice a ogni app, quindi Katna disegna già la propria.
+look-blurred-background = Sfondo sfocato
+look-blurred-background-detail = Il desktop traspare sfocato attraverso la barra superiore e le cartelle, e menu e popup sono in vetro smerigliato.
+look-blur = Sfoca ciò che sta dietro la finestra
+look-blur-detail = La posta resta su riquadri opachi, così il testo mantiene il contrasto
+look-blur-off-kde = L’effetto sfocatura di KDE è disattivato. Attiva Sfocatura in Impostazioni di sistema, Gestione delle finestre, Effetti del desktop, quindi riapri Katna Mail.
+look-blur-none-gnome = GNOME non sfoca ciò che sta dietro le finestre.
+look-blur-none-x11 = Il tuo gestore di finestre non sfoca ciò che sta dietro le finestre.
+look-blur-none-wayland = Il tuo compositore non sfoca ciò che sta dietro le finestre.
+
+## Settings > User feedback (crash reports)
+
+feedback-intro-sending = I nuovi rapporti sugli arresti anomali vengono inviati per aiutare a risolvere il problema. Nient’altro lascia questo computer.
+feedback-intro-local = Katna non invia nulla a nessuno. I rapporti sugli arresti anomali restano su questo computer, perché tu possa consultarli o allegarli a una segnalazione di bug.
+feedback-crash-reports = Rapporti sugli arresti anomali
+feedback-crash-reports-detail = Creati quando Katna Mail o il suo servizio in background si arresta in modo anomalo.
+feedback-save = Salva i rapporti sugli arresti anomali su questo computer
+feedback-save-detail = La tua cartella home, i nomi utente e del computer e gli indirizzi email vengono omessi
+feedback-saved = Rapporti sugli arresti anomali salvati
+feedback-saved-detail = { $count ->
+    [one] Viene conservato solo il più recente.
+    [many] Vengono conservati i { $count } di più recenti.
+   *[other] Vengono conservati i { $count } più recenti.
+}
+feedback-help-improve = Aiuta a migliorare Katna
+feedback-help-improve-detail = Disattivato finché non lo attivi, e puoi disattivarlo qui in qualsiasi momento.
+feedback-send = Invia i rapporti sugli arresti anomali
+feedback-send-detail = Il rapporto salvato, esattamente come puoi vederlo qui, viene inviato al sistema di tracciamento degli arresti anomali di Katna (Sentry, nell’UE). Nessun indirizzo IP, messaggio o indirizzo email
+feedback-none-saved = Nessun rapporto sugli arresti anomali salvato.
+feedback-delete-all = Elimina tutto
+feedback-app-daemon = Servizio in background
+feedback-report-sent = { $date } · Inviato
+feedback-view = Visualizza
+feedback-view-tooltip = Apri il rapporto
+feedback-copy-tooltip = Copialo per incollarlo in una segnalazione di bug
+feedback-copied = Rapporto sull’arresto anomalo copiato.
+feedback-deleted-all = Rapporti sugli arresti anomali eliminati.
+feedback-read-failed = Impossibile leggere il rapporto sull’arresto anomalo: { $error }
+feedback-delete-failed = Impossibile eliminare il rapporto sull’arresto anomalo: { $error }
+feedback-delete-all-failed = Impossibile eliminare i rapporti sugli arresti anomali: { $error }
+
+## Menu bar (the KDE global menu)
+
+desktop-menu-file = _File
+desktop-menu-new-message = _Nuovo messaggio
+desktop-menu-quit = _Esci
+desktop-menu-edit = _Modifica
+desktop-menu-undo = _Annulla
+desktop-menu-select-all = Seleziona t_utto
+desktop-menu-select-none = _Deseleziona
+desktop-menu-find = _Trova…
+desktop-menu-view = _Visualizza
+desktop-menu-folder-list = Mostra l’elenco delle _cartelle
+desktop-menu-refresh = A_ggiorna
+desktop-menu-go = Va_i
+desktop-menu-inbox = Posta in _arrivo
+desktop-menu-starred = _Speciali
+desktop-menu-sent = _Inviati
+desktop-menu-drafts = _Bozze
+desktop-menu-all-mail = _Tutti i messaggi
+desktop-menu-next = Conversazione s_uccessiva
+desktop-menu-previous = Conversazione _precedente
+desktop-menu-message = M_essaggio
+desktop-menu-open = _Apri
+desktop-menu-reply = _Rispondi
+desktop-menu-reply-all = Rispondi a _tutti
+desktop-menu-forward = _Inoltra
+desktop-menu-archive = Arc_hivia
+desktop-menu-delete = _Elimina
+desktop-menu-spam = Segnala come s_pam
+desktop-menu-move-to = _Sposta in…
+desktop-menu-mark-read = Segna come già _letto
+desktop-menu-mark-unread = Segna come da le_ggere
+desktop-menu-star = Aggiungi a Spe_ciali
+desktop-menu-important = Contrassegna come i_mportante
+desktop-menu-not-important = Contrassegna come _non importante
+desktop-menu-settings = Imp_ostazioni
+desktop-menu-quick-settings = Impostazioni _rapide
+desktop-menu-configure = _Configura Katna Mail…
+desktop-menu-help = _Aiuto
+desktop-menu-shortcuts = _Scorciatoie da tastiera
+desktop-menu-whats-new = _Novità
+desktop-menu-about = _Informazioni su Katna
+
+## Settings > Keyboard shortcuts: the groups of the list
+
+shortcut-group-moving = Navigazione
+shortcut-group-actions = Azioni
+shortcut-group-go-to = Vai a
+shortcut-group-app = Applicazione
+
+## Settings > Keyboard shortcuts: what each shortcut does
+
+shortcut-next = Conversazione successiva
+shortcut-previous = Conversazione precedente
+shortcut-down = Scendi nell’elenco
+shortcut-up = Sali nell’elenco
+shortcut-first = Primo dell’elenco
+shortcut-last = Ultimo dell’elenco
+shortcut-page-down = Pagina giù nell’elenco
+shortcut-page-up = Pagina su nell’elenco
+shortcut-open = Apri conversazione
+shortcut-back = Torna all’elenco
+shortcut-scroll-down = Scorri verso il basso
+shortcut-scroll-up = Scorri verso l’alto
+shortcut-scroll-page-down = Scorri di una pagina in basso
+shortcut-scroll-page-up = Scorri di una pagina in alto
+shortcut-compose = Scrivi
+shortcut-reply = Rispondi
+shortcut-reply-all = Rispondi a tutti
+shortcut-forward = Inoltra
+shortcut-archive = Archivia
+shortcut-delete = Elimina
+shortcut-spam = Segnala come spam
+shortcut-move-to = Sposta in
+shortcut-mark-read = Segna come già letto
+shortcut-mark-unread = Segna come da leggere
+shortcut-star = Aggiungi a o rimuovi da Speciali
+shortcut-important = Contrassegna come importante
+shortcut-not-important = Contrassegna come non importante
+shortcut-check = Seleziona la conversazione
+shortcut-select-all = Seleziona tutte le conversazioni
+shortcut-select-none = Deseleziona tutte le conversazioni
+shortcut-undo = Annulla l’ultima azione
+shortcut-go-inbox = Posta in arrivo
+shortcut-go-starred = Speciali
+shortcut-go-sent = Inviati
+shortcut-go-drafts = Bozze
+shortcut-go-all = Tutti i messaggi
+shortcut-search = Cerca nella posta
+shortcut-navigation = Mostra o comprimi il menu
+shortcut-quick-settings = Impostazioni rapide
+shortcut-settings = Tutte le impostazioni
+shortcut-shortcuts = Scorciatoie da tastiera
+shortcut-reload = Controlla se c’è nuova posta
+shortcut-quit = Esci
+
+## Keys pressed one after another, as a shortcut shows them ("G then I")
+
+shortcut-sequence = { $first } poi { $second }
+
+## Settings > Accounts
+
+accounts-folder-pane = Riquadro delle cartelle
+accounts-folder-pane-detail = Di quali account il riquadro a sinistra mostra le cartelle.
+accounts-shown-one = Un account alla volta; cambialo dal riquadro dell’account
+accounts-shown-all = Tutti gli account, uno dopo l’altro
+accounts-row = Account
+accounts-row-detail = Rimuovere un account elimina la copia della sua posta che Katna conserva su questo computer. La posta resta sul server.
+accounts-none = Ancora nessun account.
+accounts-kind-imported = Importato
+accounts-picture-reset = Usa l’immagine del desktop
+accounts-picture-change = Cambia immagine
+accounts-remove = Rimuovi
+accounts-delete-all-row = Elimina tutti i dati
+accounts-delete-all-row-detail = Ricomincia da capo, come dopo una nuova installazione.
+accounts-delete-all-about = Elimina da questo computer tutti gli account, tutta la posta salvata, i contatti e i calendari, l’indice di ricerca, le tue impostazioni e le password salvate. Sui tuoi server di posta non cambia nulla.
+accounts-delete-all-open = Elimina tutti i dati di Katna
+
+## Settings > Accounts: snackbars after deleting
+
+accounts-removed-local = { $address } è stato rimosso da Katna.
+accounts-removed = { $address } è stato rimosso da Katna. La sua posta è ancora sul server.
+accounts-all-deleted = Tutti i dati di Katna sono stati eliminati da questo computer.
+
+## Settings > Accounts: the dialog that asks before deleting
+
+accounts-remove-title = Rimuovere { $address }?
+accounts-remove-confirm = Rimuovi account
+accounts-removing = Rimozione…
+accounts-remove-local-mail = { $folders ->
+    [0] Tutta la posta importata in questo account
+    [one] Tutta la posta importata in questo account, nella sua cartella
+    [many] Tutta la posta importata in questo account, nelle sue { $folders } di cartelle
+   *[other] Tutta la posta importata in questo account, nelle sue { $folders } cartelle
+}
+accounts-remove-local-settings = Le sue impostazioni di Katna
+accounts-remove-mail = { $folders ->
+    [0] Tutta la posta di questo account salvata da Katna
+    [one] Tutta la posta di questo account salvata da Katna nella sua cartella
+    [many] Tutta la posta di questo account salvata da Katna nelle sue { $folders } di cartelle
+   *[other] Tutta la posta di questo account salvata da Katna nelle sue { $folders } cartelle
+}
+accounts-remove-outbox = I suoi messaggi in attesa in Posta in uscita
+accounts-remove-settings = La sua password salvata e le sue impostazioni di Katna
+accounts-delete-all-title = Eliminare tutti i dati di Katna?
+accounts-delete-all-confirm = Elimina tutto
+accounts-deleting = Eliminazione…
+accounts-delete-all-accounts = Tutti gli account, e tutta la posta e gli allegati salvati da Katna
+accounts-delete-all-contacts = I contatti, i calendari e l’indice di ricerca
+accounts-delete-all-settings = Tutte le impostazioni, le firme e le scorciatoie da tastiera
+accounts-delete-all-passwords = Tutte le password salvate
+accounts-deleted-heading = Eliminato da questo computer:
+accounts-cannot-undo = Questa operazione non può essere annullata.
+accounts-server-delete-all = Sui tuoi server di posta non cambia nulla: la tua posta resta lì, e se aggiungi di nuovo un account viene scaricata di nuovo. La posta importata da file è solo in Katna; i file non vengono toccati.
+accounts-server-local = Questa posta è stata importata da file, quindi Katna ne ha l’unica copia. I file di origine non vengono toccati; importali di nuovo per recuperarla.
+accounts-server-remove = Sul server di posta non cambia nulla: la tua posta resta lì, e se aggiungi di nuovo l’account viene scaricata di nuovo.
+accounts-confirm-word = elimina
+accounts-confirm-placeholder = Digita «{ accounts-confirm-word }»
+accounts-confirm-prompt = Per confermare, digita «{ accounts-confirm-word }»:
+accounts-cancel = Annulla

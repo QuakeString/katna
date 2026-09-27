@@ -90,7 +90,16 @@ impl Shortcut {
     /// What the shortcut does, in the current language: message
     /// `shortcut-<name>`, with `-` for `_`.
     pub(super) fn title(&self) -> String {
-        tr!(&format!("shortcut-{}", self.name.replace('_', "-")))
+        tr!(&self.message())
+    }
+
+    /// What the shortcut does, in English.
+    pub(super) fn english_title(&self) -> String {
+        katna_i18n::english(&self.message())
+    }
+
+    fn message(&self) -> String {
+        format!("shortcut-{}", self.name.replace('_', "-"))
     }
 }
 

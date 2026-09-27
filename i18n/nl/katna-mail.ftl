@@ -510,3 +510,512 @@ print-not-downloaded = (Nog niet gedownload.)
 print-encrypted = (Versleuteld. Open het in Katna Mail om de tekst af te drukken.)
 print-to = Aan: { $addresses }
 print-cc = Cc: { $addresses }
+
+## Leftovers from earlier areas (reading pane and its right-click menu)
+
+attachment-open-message = Open dit bericht om de bijlagen te lezen.
+text-copy = Kopiëren
+text-select-all = Alles selecteren
+
+## Settings page: its tabs
+
+settings-tab-general = Algemeen
+settings-tab-inbox = Inbox
+settings-tab-accounts = Accounts
+settings-tab-subscriptions = Abonnementen
+settings-tab-appearance = Weergave
+settings-tab-shortcuts = Sneltoetsen
+settings-tab-default-apps = Standaardapps
+settings-tab-folders-rules = Mappen en regels
+settings-tab-compose = Opstellen
+settings-tab-mcp-server = MCP-server
+settings-tab-feedback = Feedback
+settings-tab-experimental = Experimenteel
+
+## Settings page: tabs still to come
+
+settings-tab-subscriptions-coming = Bekijk de nieuwsbrieven en mailinglijsten die je ontvangt, en meld je met één klik af.
+settings-tab-folders-rules-coming = Maak, hernoem, verplaats en verberg mappen en labels, en kies welke worden gesynchroniseerd. Met regels wordt nieuwe e-mail vanzelf gesorteerd, gelabeld, doorgestuurd of verwijderd, op afzender, onderwerp of woorden.
+settings-tab-mcp-server-coming = Laat AI-assistenten op deze computer je e-mail doorzoeken, lezen en concepten opstellen, met jouw toestemming.
+
+## Settings > General
+
+settings-general-conversations = Gespreksweergave
+settings-general-conversations-group = Antwoorden op dezelfde e-mail groeperen
+settings-general-conversations-group-detail = Eén regel per gesprek in de lijst
+settings-general-reading = Lezen
+settings-general-newest-first = Nieuwste bericht eerst
+settings-general-newest-first-detail = Een gesprek begint met het laatste antwoord
+settings-general-full-headers = Volledige headers tonen
+settings-general-full-headers-detail = Van, aan, cc, datum en onderwerp open bij elk bericht
+settings-general-full-names = Volledige namen van ontvangers
+settings-general-full-names-detail = ‘aan mij, Ada Lovelace’ in plaats van ‘aan mij, Ada’
+settings-general-mark-read = Markeren als gelezen
+settings-general-mark-read-now = Zodra het wordt geopend
+settings-general-mark-read-1s = Nadat het 1 seconde open is
+settings-general-mark-read-3s = Nadat het 3 seconden open is
+settings-general-mark-read-never = Alleen als ik het als gelezen markeer
+settings-general-reply-button = Antwoordknop
+settings-general-reply-all = Iedereen beantwoorden
+settings-general-reply-all-detail = De antwoordknop naast elk bericht beantwoordt iedereen, niet alleen de afzender
+settings-general-remote-images = Afbeeldingen van internet
+settings-general-remote-images-detail = Als de afbeeldingen van een bericht worden geladen, weet de afzender dat je het hebt geopend, wanneer en ongeveer waar. Staat dit uit, dan vraagt elk bericht het eerst, en je kunt de afbeeldingen van een afzender altijd tonen.
+settings-general-remote-images-always = Afbeeldingen altijd tonen
+settings-general-remote-images-always-detail = In elk bericht, niet alleen van afzenders die je vertrouwt
+settings-general-sending = Verzenden
+settings-general-sending-detail = Hoelang een verzonden bericht wacht, zodat je het nog kunt terughalen.
+settings-general-offline = Offline e-mail
+settings-general-offline-detail = Recente e-mail wordt volledig gedownload, om zonder verbinding te lezen. Oudere e-mail wordt gedownload als je die opent.
+settings-general-offline-days = { $count ->
+    [one] { $count } dag
+   *[other] { $count } dagen
+}
+settings-general-offline-years = { $count ->
+    [one] { $count } jaar
+   *[other] { $count } jaar
+}
+settings-general-offline-all = Alle e-mail
+settings-general-offline-note = Als je minder dagen kiest, blijft e-mail die al is gedownload bewaard. Er verandert niets op de server.
+settings-general-notifications = Meldingen
+settings-general-notifications-detail = Voor nieuwe e-mail in de inbox, ook als Katna Mail gesloten is.
+settings-general-new-mail = Meldingen voor nieuwe e-mail
+settings-general-new-mail-detail = Met Allen beantwoorden, Markeren als gelezen en Archiveren
+settings-general-new-mail-sound = Geluid afspelen
+settings-general-new-mail-sound-detail = Het geluid van de desktop voor nieuwe e-mail
+settings-general-desktop = Desktop
+settings-general-open-at-login = Katna Mail openen bij inloggen
+settings-general-open-at-login-detail = E-mail wordt hoe dan ook gesynchroniseerd bij inloggen, zolang de service draait
+settings-general-tray = Katna tonen in het systeemvak
+settings-general-tray-detail = Met het aantal ongelezen berichten en een menu
+settings-general-unread-badge = Aantal ongelezen op het taakbalkpictogram
+settings-general-unread-badge-detail = Hoeveel berichten in de inbox ongelezen zijn
+
+## Settings > Inbox
+
+settings-inbox-tabs = Inbox-tabbladen
+settings-inbox-tabs-detail = Sorteer de inbox in tabbladen, zoals de website van je e-mailprovider dat doet.
+settings-inbox-tabs-show = Inbox-tabbladen tonen
+settings-inbox-tabs-show-detail = Uit toont één lijst voor elk account
+settings-inbox-no-accounts = Voeg een account toe om de tabbladen ervan te kiezen.
+settings-inbox-tabs-automatic = Automatisch: { $tabs } ({ $provider })
+settings-inbox-tabs-off = Geen tabbladen
+settings-inbox-tabs-gmail = Primair, Reclame, Sociaal, Updates, Forums
+settings-inbox-tabs-focused = Prioriteit en Overige
+settings-inbox-tabs-zoho = Inbox, Nieuwsbrieven en Meldingen
+settings-inbox-tabs-shown = Getoonde tabbladen. E-mail van een tabblad dat je uitzet, blijft in { $tab }.
+
+## Settings > Appearance
+
+settings-appearance-reading-pane = Leesvenster
+settings-appearance-reading-pane-detail = Waar een geopend gesprek wordt getoond.
+settings-appearance-pane-right = Rechts van de lijst
+settings-appearance-pane-none = Geen splitsing
+settings-appearance-density = Dichtheid
+settings-appearance-density-default = Standaard
+settings-appearance-density-compact = Compact
+settings-appearance-scaling = Schaal
+settings-appearance-scaling-detail = Maakt alles in Katna Mail groter of kleiner, bovenop de schaal van de desktop zelf: tekst, pictogrammen, witruimte en scheidingslijnen. E-mail die je verstuurt, houdt zijn eigen lettergrootte. Bij erg kleine formaten zijn pictogrammen lastig aan te klikken.
+settings-appearance-theme = Thema
+settings-appearance-theme-system = Zelfde als de desktop
+settings-appearance-theme-light = Licht
+settings-appearance-theme-dark = Donker
+settings-appearance-desktop-colors = Desktopkleuren
+settings-appearance-desktop-colors-use = Kleuren van de desktop gebruiken
+settings-appearance-desktop-colors-use-detail = Het kleurenschema en de accentkleur van de desktop
+settings-appearance-app-names = Appnamen
+settings-appearance-app-names-show = Appnamen tonen
+settings-appearance-app-names-show-detail = Namen onder de app-pictogrammen helemaal links
+settings-appearance-sender-pictures = Afzenderafbeeldingen
+settings-appearance-sender-pictures-show = Bedrijfslogo’s tonen
+settings-appearance-sender-pictures-show-detail = Opgezocht op het domein van de afzender, nooit per bericht, en een week bewaard
+settings-appearance-important = Belangrijk-markeringen
+settings-appearance-important-show = Belangrijk-markeringen tonen
+settings-appearance-important-show-detail = Naast elk bericht in de lijst
+settings-appearance-message-width = Berichtbreedte
+settings-appearance-message-width-limit = Breedte van berichten beperken
+settings-appearance-message-width-limit-detail = Lange regels lezen makkelijker in een breed venster
+settings-appearance-mail-colors = E-mailkleuren
+settings-appearance-mail-colors-detail = De meeste e-mail is ontworpen voor een witte pagina. Met een donker thema worden de kleuren vervangen door donkere die goed leesbaar zijn; staat dit uit, dan houdt de e-mail de kleuren van de afzender op een lichte pagina.
+settings-appearance-dark-mail = Ook donkere kleuren voor e-mail
+settings-appearance-dark-mail-detail = Alleen als het thema donker is
+settings-appearance-attachment-previews = Voorbeelden van bijlagen
+settings-appearance-attachment-previews-show = Voorbeelden van bijlagen tonen
+settings-appearance-attachment-previews-show-detail = Een kleine afbeelding van de inhoud van elk bestand op de kaart ervan
+
+## Settings > Default apps
+
+settings-default-apps-intro = Waar bijlagen worden geopend als je erop klikt. De viewer kan een bestand ook altijd in een andere app openen. De standaardapps van de desktop stel je in bij de eigen instellingen van de desktop.
+settings-default-apps-pdf = Pdf-bestanden
+settings-default-apps-pdf-detail = Pagina’s, met zoomen.
+settings-default-apps-pictures = Afbeeldingen
+settings-default-apps-pictures-detail = Foto’s (rechtop gedraaid), PNG, GIF, WebP, BMP, TIFF en SVG.
+settings-default-apps-text = Tekstbestanden
+settings-default-apps-text-detail = Platte tekst, logboeken, code en andere tekst.
+settings-default-apps-sheets = Spreadsheets
+settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) en CSV.
+settings-default-apps-documents = Documenten
+settings-default-apps-documents-detail = Word (docx) en OpenDocument-tekst (odt).
+settings-default-apps-katna = Viewer van Katna Mail
+settings-default-apps-system = De standaardapp van de desktop
+settings-default-apps-ask = Elke keer vragen welke app
+settings-default-apps-after-saving = Na opslaan
+settings-default-apps-show-folder = Opgeslagen bestanden tonen in hun map
+settings-default-apps-show-folder-detail = Opent de bestandsbeheerder met de opgeslagen bijlagen geselecteerd
+
+## Settings > Compose
+
+settings-compose-send-from = Nieuwe berichten verzenden vanaf
+settings-compose-send-from-detail = Antwoorden en doorgestuurde berichten gaan altijd uit vanaf het account waarin je bent.
+settings-compose-send-from-current = Het account waarin je bent
+settings-compose-send-on-replies = Verzenden bij antwoorden
+settings-compose-send-on-replies-detail = Wat Verzenden doet bij een antwoord of doorgestuurd bericht. Het menu naast Verzenden biedt de andere keuze.
+settings-compose-send-plain = Verzenden
+settings-compose-send-archive = Verzenden en archiveren
+settings-compose-signatures = Handtekeningen
+settings-compose-signatures-detail = Toegevoegd onder je bericht, na een regel ‘--’. Kies een andere in het opstelvenster.
+settings-compose-untitled = Naamloos
+settings-compose-signature-name = Naam, zoals Werk
+settings-compose-signature-first = Mijn handtekening
+settings-compose-signature-numbered = Handtekening { $number }
+settings-compose-signature-delete = Verwijderen
+settings-compose-signature-deleted = Handtekening verwijderd
+settings-compose-signature-new = Nieuwe maken
+settings-compose-no-signatures = Nog geen handtekeningen.
+settings-compose-no-signature = Geen handtekening
+settings-compose-for-new-mail = Voor nieuwe e-mail
+settings-compose-for-replies = Voor antwoorden en doorsturen
+settings-compose-for-replies-detail = In een gesprek waarin je een bericht hebt ondertekend, begint een antwoord in plaats daarvan met die handtekening.
+settings-compose-format = Opmaak
+settings-compose-plain-text = Schrijven in platte tekst
+settings-compose-plain-text-detail = Nieuwe e-mail begint zonder opmaak; het opstelvenster kan overschakelen
+settings-compose-spelling = Spelling
+settings-compose-spell-check = Spelling controleren tijdens het schrijven
+settings-compose-spell-check-detail = Verkeerd gespelde woorden worden onderstreept, met suggesties via rechtsklikken
+settings-compose-spell-desktop = Taal van de desktop ({ $language })
+settings-compose-templates = Sjablonen
+settings-compose-templates-detail = Sla e-mail op die je vaak schrijft, en begin daarmee een nieuwe e-mail of een antwoord.
+
+## Settings > Shortcuts
+
+settings-shortcuts-set = Sneltoetsenset
+settings-shortcuts-set-detail = Begin met de toetsen van een e-mailapp die je kent. Cmd is hier Ctrl. Je eigen wijzigingen blijven boven op de set, en Standaardwaarden herstellen gaat terug naar de toetsen van de set.
+settings-shortcuts-single = Sneltoetsen met één toets
+settings-shortcuts-single-detail = Toetsen zonder Ctrl of Alt, zoals in webmail: e archiveert, j en k gaan verder en terug, / zoekt. Ze werken in de lijst en in het geopende gesprek, nooit tijdens het typen.
+settings-shortcuts-single-use = Sneltoetsen met één toets gebruiken
+settings-shortcuts-single-use-detail = Sneltoetsen met Ctrl werken altijd
+settings-shortcuts-how = Klik op een toets om die te wijzigen, of op + om er een toe te voegen, en druk dan de nieuwe toetsen in. Esc annuleert.
+settings-shortcuts-restore = Standaardwaarden herstellen
+settings-shortcuts-no-key = Geen toets
+settings-shortcuts-press = Druk op toetsen…
+settings-shortcuts-then = { $keys } en dan…
+settings-shortcuts-moved = { $keys } doet nu ‘{ $action }’ in plaats van ‘{ $previous }’.
+settings-shortcuts-single-off = Sneltoetsen met één toets staan uit, dus deze toets werkt zodra ze aanstaan.
+settings-shortcuts-restored = Elke sneltoets heeft weer de toetsen van de set.
+
+## Settings search: the line under a result
+
+settings-general-language-summary = Taal van de app, datums en getallen
+settings-general-reading-summary = Nieuwste bericht eerst, volledige headers, volledige namen van ontvangers
+settings-general-mark-read-summary = Wanneer een geopend gesprek als gelezen wordt gemarkeerd: meteen, na 1 of 3 seconden, of met de hand
+settings-general-reply-button-summary = De antwoordknop naast elk bericht beantwoordt iedereen
+settings-general-remote-images-summary = De afbeeldingen van elk bericht altijd tonen
+settings-general-sending-summary = Verzenden ongedaan maken: hoelang een verzonden bericht wacht, zodat je het nog kunt terughalen
+settings-general-offline-summary = Hoeveel dagen recente e-mail volledig worden gedownload, om zonder verbinding te lezen
+settings-general-notifications-summary = Meldingen voor nieuwe e-mail en het geluid ervan
+settings-general-desktop-summary = Katna Mail openen bij inloggen, het pictogram in het systeemvak en het aantal ongelezen op het taakbalkpictogram
+settings-accounts-accounts-summary = Een account toevoegen of verwijderen, of de afbeelding ervan wijzigen
+settings-appearance-density-summary = Standaard of compacte regels in de lijst
+settings-appearance-scaling-summary = Alles groter of kleiner maken: tekst, pictogrammen, witruimte en scheidingslijnen
+settings-appearance-theme-summary = Zelfde als de desktop, licht of donker
+settings-appearance-sender-pictures-summary = Bedrijfslogo’s, opgezocht op het domein van de afzender
+settings-appearance-important-summary = De Belangrijk-markering naast elk bericht in de lijst
+settings-appearance-mail-colors-summary = Donkere kleuren voor HTML-e-mail in een donker thema, of de kleuren van de afzender
+settings-appearance-attachment-previews-summary = Een kleine afbeelding van de inhoud van elke bijlage
+settings-shortcuts-set-summary = Begin met de toetsen van Gmail, Inbox by Gmail, Apple Mail, Outlook of Thunderbird
+settings-shortcuts-single-summary = Toetsen zonder Ctrl of Alt, zoals in webmail
+settings-default-apps-pdf-summary = Waar pdf-bijlagen worden geopend
+settings-default-apps-pictures-summary = Waar foto’s en afbeeldingen worden geopend
+settings-default-apps-text-summary = Waar platte tekst, logboeken en code worden geopend
+settings-default-apps-sheets-summary = Waar Excel-, OpenDocument- en CSV-bestanden worden geopend
+settings-default-apps-documents-summary = Waar Word- en OpenDocument-tekst worden geopend
+settings-default-apps-after-saving-summary = Opgeslagen bijlagen tonen in hun map
+settings-compose-send-from-summary = Het account waarvandaan nieuwe e-mail uitgaat: het account waarin je bent, of altijd hetzelfde
+settings-compose-send-on-replies-summary = Verzenden, of Verzenden en het gesprek archiveren, bij antwoorden en doorsturen
+settings-compose-signatures-summary = Toegevoegd onder je bericht, na een regel ‘--’
+settings-compose-for-new-mail-summary = De handtekening waarmee nieuwe e-mail begint
+settings-compose-for-replies-summary = De handtekening waarmee antwoorden en doorgestuurde berichten beginnen
+settings-compose-format-summary = Nieuwe e-mail schrijven in platte tekst
+settings-compose-spelling-summary = Spelling controleren tijdens het schrijven, en de taal van het woordenboek
+settings-compose-templates-summary = Binnenkort: sla e-mail op die je vaak schrijft, en begin daarmee een nieuwe e-mail of een antwoord
+settings-feedback-crash-reports-summary = Crashrapporten op deze computer bewaren als Katna Mail of de achtergrondservice crasht
+settings-feedback-saved-summary = De crashrapporten die op deze computer zijn bewaard bekijken, kopiëren of verwijderen
+settings-feedback-help-improve-summary = Crashrapporten versturen om te helpen oplossen wat er misging; uit tenzij je het aanzet
+settings-experimental-blur-summary = De desktop schijnt wazig door de bovenbalk heen, en menu’s zijn van matglas
+settings-search-shortcut = Sneltoets
+settings-search-tab = Tabblad van Instellingen
+settings-search-none = Geen instellingen gevonden voor ‘{ $query }’.
+settings-search-results = Instellingen die overeenkomen met ‘{ $query }’
+## Quick settings (the panel that slides in from the right)
+
+quick-title = Snelle instellingen
+quick-see-all = Alle instellingen bekijken
+quick-reading-pane = Leesvenster
+quick-pane-right = Rechts van de lijst
+quick-pane-none = Geen splitsing
+quick-density = Dichtheid
+quick-density-default = Standaard
+quick-density-compact = Compact
+quick-theme = Thema
+quick-theme-system = Zelfde als de desktop
+quick-theme-light = Licht
+quick-theme-dark = Donker
+quick-desktop-colors = Desktopkleuren
+quick-desktop-colors-detail = Het kleurenschema en de accentkleur van de desktop
+quick-app-names = Appnamen
+quick-app-names-detail = Namen onder de app-pictogrammen helemaal links
+quick-inbox-tabs = Inbox-tabbladen
+quick-inbox-tabs-detail = De tabbladen van de e-mailprovider van elk account
+quick-choose-tabs = Tabbladen kiezen
+quick-choose-tabs-detail = Per account, in Instellingen
+quick-sending = Verzenden
+quick-undo-send = Verzenden ongedaan maken
+quick-undo-send-off = Uit
+quick-undo-send-seconds = { $seconds } s
+quick-signatures = Handtekeningen
+quick-signatures-none = Nog geen
+quick-signatures-one = { $name }, standaard gebruikt
+quick-signatures-many = { $count ->
+    [one] { $count } handtekening; { $name } standaard
+   *[other] { $count } handtekeningen; { $name } standaard
+}
+quick-signatures-no-default = { $count ->
+    [one] { $count }, geen standaard
+   *[other] { $count }, geen standaard
+}
+quick-signature-untitled = Naamloos
+quick-threading = E-mailgesprekken
+quick-conversation-view = Gespreksweergave
+quick-conversation-view-detail = Antwoorden op dezelfde e-mail groeperen
+quick-help = Help
+quick-tour = Rondleiding volgen
+quick-whats-new = Wat is er nieuw
+quick-about = Over Katna
+
+## Settings: opening at login
+
+settings-open-at-login-failed = Kan openen bij inloggen niet wijzigen: { $error }
+
+## Settings > Appearance > Scaling
+
+scale-letter = A
+scale-percent = { $percent }%
+scale-reset = Terug naar { $percent }%
+
+## Settings > Experimental > Look & Feel
+
+look-intro = Functies die nog worden uitgeprobeerd. Ze kunnen veranderen of verdwijnen.
+look-heading = Uiterlijk
+look-window-frame = Vensterrand
+look-window-frame-detail = Wie de titelbalk, de vensterknoppen, de hoeken en de schaduw tekent.
+look-frame-native-kde = Systeemeigen: de rand van KDE, in je Plasma-thema
+look-frame-native = Systeemeigen: de rand van de desktop
+look-frame-katna = Katna: de bovenbalk wordt de titelbalk
+look-frame-katna-note-named = Katna tekent afgeronde hoeken en een eigen schaduw. De rand volgt het { $desktop }-thema niet meer; vensterregels blijven gelden.
+look-frame-katna-note = Katna tekent afgeronde hoeken en een eigen schaduw. De rand volgt het desktopthema niet meer; vensterregels blijven gelden.
+look-frame-client-side = Je desktop laat de rand over aan elke app, dus Katna tekent al een eigen rand.
+look-blurred-background = Wazige achtergrond
+look-blurred-background-detail = De desktop schijnt wazig door de bovenbalk en de mappen heen, en menu’s en pop-ups zijn van matglas.
+look-blur = Wat achter het venster zit vervagen
+look-blur-detail = E-mail blijft op ondoorzichtige kaarten, zodat tekst goed leesbaar blijft
+look-blur-off-kde = Het vervagingseffect van KDE staat uit. Zet Vervagen aan in Systeeminstellingen, Vensterbeheer, Bureaubladeffecten en open Katna Mail daarna opnieuw.
+look-blur-none-gnome = GNOME vervaagt niet wat achter vensters zit.
+look-blur-none-x11 = Je vensterbeheerder vervaagt niet wat achter vensters zit.
+look-blur-none-wayland = Je compositor vervaagt niet wat achter vensters zit.
+
+## Settings > User feedback (crash reports)
+
+feedback-intro-sending = Nieuwe crashrapporten worden verstuurd om te helpen oplossen wat er misging. Verder verlaat niets deze computer.
+feedback-intro-local = Katna verstuurt nergens iets naartoe. Crashrapporten blijven op deze computer, zodat je ze kunt bekijken of bij een bugmelding kunt voegen.
+feedback-crash-reports = Crashrapporten
+feedback-crash-reports-detail = Aangemaakt als Katna Mail of de achtergrondservice crasht.
+feedback-save = Crashrapporten op deze computer bewaren
+feedback-save-detail = Je persoonlijke map, gebruikers- en computernamen en e-mailadressen worden weggelaten
+feedback-saved = Bewaarde crashrapporten
+feedback-saved-detail = { $count ->
+    [one] Het nieuwste rapport wordt bewaard.
+   *[other] De nieuwste { $count } worden bewaard.
+}
+feedback-help-improve = Help Katna te verbeteren
+feedback-help-improve-detail = Uit tenzij je het aanzet, en je kunt het hier altijd weer uitzetten.
+feedback-send = Crashrapporten versturen
+feedback-send-detail = Het bewaarde rapport, precies zoals je het hier kunt bekijken, gaat naar de crashtracker van Katna (Sentry, in de EU). Geen IP-adres, berichten of e-mailadressen
+feedback-none-saved = Er zijn geen crashrapporten bewaard.
+feedback-delete-all = Alles verwijderen
+feedback-app-daemon = Achtergrondservice
+feedback-report-sent = { $date } · Verstuurd
+feedback-view = Bekijken
+feedback-view-tooltip = Het rapport openen
+feedback-copy-tooltip = Kopiëren om in een bugmelding te plakken
+feedback-copied = Crashrapport gekopieerd.
+feedback-deleted-all = Crashrapporten verwijderd.
+feedback-read-failed = Kan het crashrapport niet lezen: { $error }
+feedback-delete-failed = Kan het crashrapport niet verwijderen: { $error }
+feedback-delete-all-failed = Kan de crashrapporten niet verwijderen: { $error }
+
+## Menu bar (the KDE global menu)
+
+desktop-menu-file = _Bestand
+desktop-menu-new-message = _Nieuw bericht
+desktop-menu-quit = A_fsluiten
+desktop-menu-edit = Be_werken
+desktop-menu-undo = _Ongedaan maken
+desktop-menu-select-all = _Alles selecteren
+desktop-menu-select-none = _Niets selecteren
+desktop-menu-find = _Zoeken…
+desktop-menu-view = Beel_d
+desktop-menu-folder-list = _Mappenlijst tonen
+desktop-menu-refresh = _Vernieuwen
+desktop-menu-go = _Ga
+desktop-menu-inbox = _Inbox
+desktop-menu-starred = _Met ster
+desktop-menu-sent = _Verzonden
+desktop-menu-drafts = _Concepten
+desktop-menu-all-mail = _Alle berichten
+desktop-menu-next = V_olgend gesprek
+desktop-menu-previous = Vo_rig gesprek
+desktop-menu-message = _Bericht
+desktop-menu-open = _Openen
+desktop-menu-reply = _Beantwoorden
+desktop-menu-reply-all = _Allen beantwoorden
+desktop-menu-forward = _Doorsturen
+desktop-menu-archive = A_rchiveren
+desktop-menu-delete = _Verwijderen
+desktop-menu-spam = _Spam melden
+desktop-menu-move-to = Ver_plaatsen naar…
+desktop-menu-mark-read = Markeren als _gelezen
+desktop-menu-mark-unread = Markeren als _ongelezen
+desktop-menu-star = S_ter
+desktop-menu-important = Markeren als bel_angrijk
+desktop-menu-not-important = Markeren als _niet belangrijk
+desktop-menu-settings = _Instellingen
+desktop-menu-quick-settings = _Snelle instellingen
+desktop-menu-configure = Katna Mail _instellen…
+desktop-menu-help = _Help
+desktop-menu-shortcuts = _Sneltoetsen
+desktop-menu-whats-new = _Wat is er nieuw
+desktop-menu-about = _Over Katna
+## Settings > Keyboard shortcuts: the groups of the list
+
+shortcut-group-moving = Navigeren
+shortcut-group-actions = Acties
+shortcut-group-go-to = Ga naar
+shortcut-group-app = Applicatie
+
+## Settings > Keyboard shortcuts: what each shortcut does
+
+shortcut-next = Volgend gesprek
+shortcut-previous = Vorig gesprek
+shortcut-down = Omlaag in de lijst
+shortcut-up = Omhoog in de lijst
+shortcut-first = Eerste in de lijst
+shortcut-last = Laatste in de lijst
+shortcut-page-down = Pagina omlaag in de lijst
+shortcut-page-up = Pagina omhoog in de lijst
+shortcut-open = Gesprek openen
+shortcut-back = Terug naar de lijst
+shortcut-scroll-down = Omlaag scrollen
+shortcut-scroll-up = Omhoog scrollen
+shortcut-scroll-page-down = Een pagina omlaag scrollen
+shortcut-scroll-page-up = Een pagina omhoog scrollen
+shortcut-compose = Opstellen
+shortcut-reply = Beantwoorden
+shortcut-reply-all = Allen beantwoorden
+shortcut-forward = Doorsturen
+shortcut-archive = Archiveren
+shortcut-delete = Verwijderen
+shortcut-spam = Spam melden
+shortcut-move-to = Verplaatsen naar
+shortcut-mark-read = Markeren als gelezen
+shortcut-mark-unread = Markeren als ongelezen
+shortcut-star = Ster toevoegen of verwijderen
+shortcut-important = Markeren als belangrijk
+shortcut-not-important = Markeren als niet belangrijk
+shortcut-check = Gesprek aanvinken
+shortcut-select-all = Alle gesprekken aanvinken
+shortcut-select-none = Alle gesprekken uitvinken
+shortcut-undo = Laatste actie ongedaan maken
+shortcut-go-inbox = Inbox
+shortcut-go-starred = Met ster
+shortcut-go-sent = Verzonden
+shortcut-go-drafts = Concepten
+shortcut-go-all = Alle berichten
+shortcut-search = Zoeken in e-mail
+shortcut-navigation = Menu tonen of inklappen
+shortcut-quick-settings = Snelle instellingen
+shortcut-settings = Alle instellingen
+shortcut-shortcuts = Sneltoetsen
+shortcut-reload = Nieuwe e-mail ophalen
+shortcut-quit = Afsluiten
+
+## Keys pressed one after another, as a shortcut shows them ("G then I")
+
+shortcut-sequence = { $first } en dan { $second }
+
+## Settings > Accounts
+
+accounts-folder-pane = Mappenvenster
+accounts-folder-pane-detail = Van welke accounts het venster links de mappen toont.
+accounts-shown-one = Eén account tegelijk; wissel via de accountkaart
+accounts-shown-all = Alle accounts, na elkaar
+accounts-row = Accounts
+accounts-row-detail = Als je een account verwijdert, wordt de kopie van de e-mail die Katna op deze computer heeft verwijderd. De e-mail blijft op de server.
+accounts-none = Nog geen accounts.
+accounts-kind-imported = Geïmporteerd
+accounts-picture-reset = Desktopafbeelding gebruiken
+accounts-picture-change = Afbeelding wijzigen
+accounts-remove = Verwijderen
+accounts-delete-all-row = Alle gegevens verwijderen
+accounts-delete-all-row-detail = Opnieuw beginnen, zoals bij een nieuwe installatie.
+accounts-delete-all-about = Verwijdert van deze computer elk account, alle opgeslagen e-mail, contacten en agenda’s, de zoekindex, je instellingen en opgeslagen wachtwoorden. Er verandert niets op je mailservers.
+accounts-delete-all-open = Alle Katna-gegevens verwijderen
+
+## Settings > Accounts: snackbars after deleting
+
+accounts-removed-local = { $address } is verwijderd uit Katna.
+accounts-removed = { $address } is verwijderd uit Katna. De e-mail staat nog op de server.
+accounts-all-deleted = Alle Katna-gegevens zijn van deze computer verwijderd.
+
+## Settings > Accounts: the dialog that asks before deleting
+
+accounts-remove-title = { $address } verwijderen?
+accounts-remove-confirm = Account verwijderen
+accounts-removing = Verwijderen…
+accounts-remove-local-mail = { $folders ->
+    [0] Alle e-mail die in dit account is geïmporteerd
+    [one] Alle e-mail die in dit account is geïmporteerd, in de map ervan
+   *[other] Alle e-mail die in dit account is geïmporteerd, in de { $folders } mappen ervan
+}
+accounts-remove-local-settings = De Katna-instellingen ervan
+accounts-remove-mail = { $folders ->
+    [0] Alle e-mail van dit account die Katna heeft opgeslagen
+    [one] Alle e-mail van dit account die Katna heeft opgeslagen, in de map ervan
+   *[other] Alle e-mail van dit account die Katna heeft opgeslagen, in de { $folders } mappen ervan
+}
+accounts-remove-outbox = De berichten ervan die in het postvak UIT wachten
+accounts-remove-settings = Het opgeslagen wachtwoord en de Katna-instellingen ervan
+accounts-delete-all-title = Alle Katna-gegevens verwijderen?
+accounts-delete-all-confirm = Alles verwijderen
+accounts-deleting = Verwijderen…
+accounts-delete-all-accounts = Elk account, en alle e-mail en bijlagen die Katna heeft opgeslagen
+accounts-delete-all-contacts = Contacten, agenda’s en de zoekindex
+accounts-delete-all-settings = Alle instellingen, handtekeningen en sneltoetsen
+accounts-delete-all-passwords = Elk opgeslagen wachtwoord
+accounts-deleted-heading = Verwijderd van deze computer:
+accounts-cannot-undo = Dit kan niet ongedaan worden gemaakt.
+accounts-server-delete-all = Er verandert niets op je mailservers: je e-mail blijft daar, en als je een account opnieuw toevoegt, wordt die opnieuw gedownload. E-mail die uit bestanden is geïmporteerd, staat alleen in Katna; de bestanden blijven onaangeroerd.
+accounts-server-local = Deze e-mail is uit bestanden geïmporteerd, dus Katna heeft de enige kopie. De bestanden waar die vandaan komt, blijven onaangeroerd; importeer ze opnieuw om de e-mail terug te krijgen.
+accounts-server-remove = Er verandert niets op de mailserver: je e-mail blijft daar, en als je het account opnieuw toevoegt, wordt die opnieuw gedownload.
+accounts-confirm-word = verwijderen
+accounts-confirm-placeholder = Typ ‘{ accounts-confirm-word }’
+accounts-confirm-prompt = Typ ‘{ accounts-confirm-word }’ om te bevestigen:
+accounts-cancel = Annuleren

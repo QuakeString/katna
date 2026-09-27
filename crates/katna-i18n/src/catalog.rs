@@ -114,7 +114,20 @@ pub fn lookup(id: &str, args: Option<&FluentArgs<'_>>) -> String {
     id.to_owned()
 }
 
-fn english() -> Arc<Bundle> {
+/// The English text of message `id` without arguments, whatever the
+/// current language: for searches that should also find English words.
+pub fn english(id: &str) -> String {
+    let catalog = catalog();
+    match catalog.english.get_message(id).and_then(|m| m.value()) {
+        Some(pattern) => catalog
+            .english
+            .format_pattern(pattern, None, &mut Vec::new())
+            .into_owned(),
+        None => id.to_owned(),
+    }
+}
+
+fn english_bundle() -> Arc<Bundle> {
     static ENGLISH_BUNDLE: OnceLock<Arc<Bundle>> = OnceLock::new();
     Arc::clone(ENGLISH_BUNDLE.get_or_init(|| {
         let mut bundle = new_bundle("en-US", false);
@@ -154,7 +167,7 @@ fn build(resolved: Resolved) -> Catalog {
             add_owned(&mut bundle, files);
             Arc::new(bundle)
         }
-        _ => english(),
+        _ => english_bundle(),
     };
     let bundle = bundle.map(|mut bundle| {
         add_owned(
@@ -287,7 +300,7 @@ mod tests {
                             continue;
                         };
                         let id = rest.split('"').next().unwrap_or_default();
-                        if english().get_message(id).is_none() {
+                        if english_bundle().get_message(id).is_none() {
                             missing.push(format!("{}: {id}", path.display()));
                         }
                     }
@@ -299,6 +312,12 @@ mod tests {
 
     /// Each translation parses, has only messages English has, and uses
     /// the same variables.
+    #[test]
+    fn english_text_whatever_the_language() {
+        assert_eq!(english("settings"), "Settings");
+        assert_eq!(english("no-such-message"), "no-such-message");
+    }
+
     #[test]
     fn translations_match_english() {
         use fluent_syntax::ast;

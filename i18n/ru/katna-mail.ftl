@@ -601,3 +601,530 @@ print-not-downloaded = (Ещё не загружено.)
 print-encrypted = (Зашифровано. Откройте письмо в Katna Mail, чтобы распечатать его текст.)
 print-to = Кому: { $addresses }
 print-cc = Копия: { $addresses }
+
+## Leftovers from earlier areas (reading pane and its right-click menu)
+
+attachment-open-message = Откройте это письмо, чтобы прочитать вложения.
+text-copy = Копировать
+text-select-all = Выделить всё
+
+## Settings page: its tabs
+
+settings-tab-general = Общие
+settings-tab-inbox = Входящие
+settings-tab-accounts = Аккаунты
+settings-tab-subscriptions = Подписки
+settings-tab-appearance = Внешний вид
+settings-tab-shortcuts = Быстрые клавиши
+settings-tab-default-apps = Приложения по умолчанию
+settings-tab-folders-rules = Папки и правила
+settings-tab-compose = Написание писем
+settings-tab-mcp-server = Сервер MCP
+settings-tab-feedback = Отзывы пользователей
+settings-tab-experimental = Экспериментальные
+
+## Settings page: tabs still to come
+
+settings-tab-subscriptions-coming = Смотрите, какие рассылки и списки рассылки вы получаете, и отписывайтесь в один клик.
+settings-tab-folders-rules-coming = Создавайте, переименовывайте, перемещайте и скрывайте папки и ярлыки, выбирайте, какие из них синхронизировать. Правила сами сортируют, помечают ярлыками, пересылают или удаляют новые письма — по отправителю, теме или словам.
+settings-tab-mcp-server-coming = Разрешите ИИ-помощникам на этом компьютере искать, читать и составлять черновики ваших писем — с вашего согласия.
+
+## Settings > General
+
+settings-general-conversations = Цепочки писем
+settings-general-conversations-group = Группировать ответы на одно письмо
+settings-general-conversations-group-detail = Одна строка на цепочку в списке
+settings-general-reading = Чтение
+settings-general-newest-first = Сначала новые письма
+settings-general-newest-first-detail = Цепочка начинается с последнего ответа
+settings-general-full-headers = Показывать заголовки полностью
+settings-general-full-headers-detail = От кого, кому, копия, дата и тема открыты в каждом письме
+settings-general-full-names = Полные имена получателей
+settings-general-full-names-detail = «мне, Ada Lovelace», а не «мне, Ada»
+settings-general-mark-read = Отмечать как прочитанное
+settings-general-mark-read-now = Сразу при открытии
+settings-general-mark-read-1s = Через 1 секунду после открытия
+settings-general-mark-read-3s = Через 3 секунды после открытия
+settings-general-mark-read-never = Только когда я отмечу сам
+settings-general-reply-button = Кнопка «Ответить»
+settings-general-reply-all = Отвечать всем
+settings-general-reply-all-detail = Кнопка ответа рядом с каждым письмом отвечает всем, а не только отправителю
+settings-general-remote-images = Изображения из интернета
+settings-general-remote-images-detail = Загрузка изображений письма сообщает отправителю, что вы его открыли, когда и примерно где. Если выключено, каждое письмо сначала спрашивает, и вы всегда можете показать изображения отправителя.
+settings-general-remote-images-always = Всегда показывать изображения
+settings-general-remote-images-always-detail = В каждом письме, а не только от надёжных отправителей
+settings-general-sending = Отправка
+settings-general-sending-detail = Сколько отправленное письмо ждёт, чтобы его можно было отменить.
+settings-general-offline = Почта офлайн
+settings-general-offline-detail = Недавние письма загружаются целиком, чтобы читать их без подключения. Более старые загружаются, когда вы их открываете.
+settings-general-offline-days = { $count ->
+    [one] { $count } день
+    [few] { $count } дня
+    [many] { $count } дней
+   *[other] { $count } дня
+}
+settings-general-offline-years = { $count ->
+    [one] { $count } год
+    [few] { $count } года
+    [many] { $count } лет
+   *[other] { $count } года
+}
+settings-general-offline-all = Вся почта
+settings-general-offline-note = Если выбрать меньше дней, уже загруженные письма останутся. На сервере ничего не меняется.
+settings-general-notifications = Уведомления
+settings-general-notifications-detail = О новых письмах во «Входящих», даже когда Katna Mail закрыта.
+settings-general-new-mail = Уведомлять о новых письмах
+settings-general-new-mail-detail = С кнопками «Ответить всем», «Отметить как прочитанное» и «Архивировать»
+settings-general-new-mail-sound = Воспроизводить звук
+settings-general-new-mail-sound-detail = Звук новой почты рабочего стола
+settings-general-desktop = Рабочий стол
+settings-general-open-at-login = Открывать Katna Mail при входе в систему
+settings-general-open-at-login-detail = Почта синхронизируется при входе в любом случае, пока работает служба
+settings-general-tray = Показывать Katna в системном лотке
+settings-general-tray-detail = Со счётчиком непрочитанных и меню
+settings-general-unread-badge = Счётчик непрочитанных на значке в панели задач
+settings-general-unread-badge-detail = Сколько писем во «Входящих» не прочитано
+
+## Settings > Inbox
+
+settings-inbox-tabs = Вкладки «Входящих»
+settings-inbox-tabs-detail = Сортировать входящие по вкладкам, как это делает сайт вашего почтового сервиса.
+settings-inbox-tabs-show = Показывать вкладки «Входящих»
+settings-inbox-tabs-show-detail = Если выключено, для каждого аккаунта один список
+settings-inbox-no-accounts = Добавьте аккаунт, чтобы выбрать его вкладки.
+settings-inbox-tabs-automatic = Автоматически: { $tabs } ({ $provider })
+settings-inbox-tabs-off = Без вкладок
+settings-inbox-tabs-gmail = Несортированные, Промоакции, Соцсети, Оповещения, Форумы
+settings-inbox-tabs-focused = Отсортированные и Другие
+settings-inbox-tabs-zoho = Входящие, Рассылки и Уведомления
+settings-inbox-tabs-shown = Показанные вкладки. Письма с выключенной вкладки остаются во вкладке «{ $tab }».
+
+## Settings > Appearance
+
+settings-appearance-reading-pane = Область просмотра
+settings-appearance-reading-pane-detail = Где показывается открытая цепочка.
+settings-appearance-pane-right = Справа от списка
+settings-appearance-pane-none = Без разделения
+settings-appearance-density = Плотность
+settings-appearance-density-default = Обычная
+settings-appearance-density-compact = Компактная
+settings-appearance-scaling = Масштаб
+settings-appearance-scaling-detail = Делает всё в Katna Mail крупнее или мельче поверх масштаба рабочего стола: текст, значки, отступы и разделители. Отправляемые письма сохраняют свой размер шрифта. При очень малом масштабе по значкам трудно попасть.
+settings-appearance-theme = Тема
+settings-appearance-theme-system = Как на рабочем столе
+settings-appearance-theme-light = Светлая
+settings-appearance-theme-dark = Тёмная
+settings-appearance-desktop-colors = Цвета рабочего стола
+settings-appearance-desktop-colors-use = Использовать цвета рабочего стола
+settings-appearance-desktop-colors-use-detail = Цветовая схема и акцентный цвет рабочего стола
+settings-appearance-app-names = Названия приложений
+settings-appearance-app-names-show = Показывать названия приложений
+settings-appearance-app-names-show-detail = Подписи под значками приложений слева
+settings-appearance-sender-pictures = Изображения отправителей
+settings-appearance-sender-pictures-show = Показывать логотипы компаний
+settings-appearance-sender-pictures-show-detail = Ищутся по домену отправителя, никогда по письму, и хранятся неделю
+settings-appearance-important = Маркеры важности
+settings-appearance-important-show = Показывать маркеры важности
+settings-appearance-important-show-detail = Рядом с каждым письмом в списке
+settings-appearance-message-width = Ширина письма
+settings-appearance-message-width-limit = Ограничить ширину писем
+settings-appearance-message-width-limit-detail = Так в широком окне легче читать длинные строки
+settings-appearance-mail-colors = Цвета писем
+settings-appearance-mail-colors-detail = Большинство писем рассчитаны на белый фон. В тёмной теме их цвета заменяются тёмными, удобными для чтения; если выключено, письмо сохраняет цвета отправителя на светлом фоне.
+settings-appearance-dark-mail = Тёмные цвета и для писем
+settings-appearance-dark-mail-detail = Только когда тема тёмная
+settings-appearance-attachment-previews = Предпросмотр вложений
+settings-appearance-attachment-previews-show = Показывать предпросмотр вложений
+settings-appearance-attachment-previews-show-detail = Миниатюра содержимого каждого файла на его карточке
+
+## Settings > Default apps
+
+settings-default-apps-intro = Где открываются вложения, когда вы на них нажимаете. Из окна просмотра файл всегда можно открыть и в другом приложении. Приложения по умолчанию для рабочего стола задаются в его собственных настройках.
+settings-default-apps-pdf = Файлы PDF
+settings-default-apps-pdf-detail = Страницы с масштабированием.
+settings-default-apps-pictures = Изображения
+settings-default-apps-pictures-detail = Фотографии (с правильной ориентацией), PNG, GIF, WebP, BMP, TIFF и SVG.
+settings-default-apps-text = Текстовые файлы
+settings-default-apps-text-detail = Обычный текст, журналы, код и другой текст.
+settings-default-apps-sheets = Таблицы
+settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) и CSV.
+settings-default-apps-documents = Документы
+settings-default-apps-documents-detail = Word (docx) и текст OpenDocument (odt).
+settings-default-apps-katna = Просмотрщик Katna Mail
+settings-default-apps-system = Приложение по умолчанию на рабочем столе
+settings-default-apps-ask = Каждый раз спрашивать, каким приложением
+settings-default-apps-after-saving = После сохранения
+settings-default-apps-show-folder = Показывать сохранённые файлы в их папке
+settings-default-apps-show-folder-detail = Открывает файловый менеджер с выделенными сохранёнными вложениями
+
+## Settings > Compose
+
+settings-compose-send-from = Отправлять новые письма с
+settings-compose-send-from-detail = Ответы и пересылки всегда уходят с аккаунта, в котором вы находитесь.
+settings-compose-send-from-current = Текущего аккаунта
+settings-compose-send-on-replies = Отправка ответов
+settings-compose-send-on-replies-detail = Что делает кнопка «Отправить» при ответе или пересылке. Другой вариант — в меню рядом с ней.
+settings-compose-send-plain = Отправить
+settings-compose-send-archive = Отправить и архивировать
+settings-compose-signatures = Подписи
+settings-compose-signatures-detail = Добавляется под вашим письмом после строки «--». Другую подпись можно выбрать в окне нового письма.
+settings-compose-untitled = Без названия
+settings-compose-signature-name = Название, например «Работа»
+settings-compose-signature-first = Моя подпись
+settings-compose-signature-numbered = Подпись { $number }
+settings-compose-signature-delete = Удалить
+settings-compose-signature-deleted = Подпись удалена
+settings-compose-signature-new = Создать
+settings-compose-no-signatures = Подписей пока нет.
+settings-compose-no-signature = Без подписи
+settings-compose-for-new-mail = Для новых писем
+settings-compose-for-replies = Для ответов и пересылок
+settings-compose-for-replies-detail = В цепочке, где вы уже подписали письмо, ответ начинается с той же подписи.
+settings-compose-format = Формат
+settings-compose-plain-text = Писать обычным текстом
+settings-compose-plain-text-detail = Новые письма начинаются без форматирования; в окне письма это можно переключить
+settings-compose-spelling = Орфография
+settings-compose-spell-check = Проверять орфографию при вводе
+settings-compose-spell-check-detail = Слова с ошибками подчёркиваются, варианты — по правому щелчку
+settings-compose-spell-desktop = Язык рабочего стола ({ $language })
+settings-compose-templates = Шаблоны
+settings-compose-templates-detail = Сохраняйте письма, которые часто пишете, и начинайте с них новое письмо или ответ.
+
+## Settings > Shortcuts
+
+settings-shortcuts-set = Набор сочетаний
+settings-shortcuts-set-detail = Начните с клавиш знакомого почтового приложения. Cmd здесь — это Ctrl. Ваши изменения сохраняются поверх набора, а «Восстановить по умолчанию» возвращает клавиши набора.
+settings-shortcuts-single = Сочетания из одной клавиши
+settings-shortcuts-single-detail = Клавиши без Ctrl и Alt, как в веб-почте: e архивирует, j и k перемещают, / ищет. Работают в списке и в открытой цепочке, но не во время ввода текста.
+settings-shortcuts-single-use = Использовать сочетания из одной клавиши
+settings-shortcuts-single-use-detail = Сочетания с Ctrl работают всегда
+settings-shortcuts-how = Нажмите на клавишу, чтобы изменить её, или на +, чтобы добавить, затем нажмите новые клавиши. Esc — отмена.
+settings-shortcuts-restore = Восстановить по умолчанию
+settings-shortcuts-no-key = Нет клавиши
+settings-shortcuts-press = Нажмите клавиши…
+settings-shortcuts-then = { $keys }, затем…
+settings-shortcuts-moved = { $keys } теперь выполняет «{ $action }» вместо «{ $previous }».
+settings-shortcuts-single-off = Сочетания из одной клавиши выключены, поэтому эта клавиша заработает, когда вы их включите.
+settings-shortcuts-restored = Всем сочетаниям снова назначены клавиши набора.
+
+## Settings search: the line under a result
+
+settings-general-language-summary = Язык приложения, дат и чисел
+settings-general-reading-summary = Сначала новые письма, полные заголовки, полные имена получателей
+settings-general-mark-read-summary = Когда открытая цепочка отмечается как прочитанная: сразу, через 1 или 3 секунды или вручную
+settings-general-reply-button-summary = Кнопка ответа рядом с каждым письмом отвечает всем
+settings-general-remote-images-summary = Всегда показывать изображения в каждом письме
+settings-general-sending-summary = Отмена отправки: сколько отправленное письмо ждёт, чтобы его можно было отменить
+settings-general-offline-summary = За сколько дней недавние письма загружаются целиком, чтобы читать их без подключения
+settings-general-notifications-summary = Уведомления о новых письмах и их звук
+settings-general-desktop-summary = Открытие Katna Mail при входе в систему, значок в системном лотке и счётчик непрочитанных на значке в панели задач
+settings-accounts-accounts-summary = Добавить или удалить аккаунт либо сменить его изображение
+settings-appearance-density-summary = Обычные или компактные строки в списке
+settings-appearance-scaling-summary = Сделать всё крупнее или мельче: текст, значки, отступы и разделители
+settings-appearance-theme-summary = Как на рабочем столе, светлая или тёмная
+settings-appearance-sender-pictures-summary = Логотипы компаний, найденные по домену отправителя
+settings-appearance-important-summary = Маркер важности рядом с каждым письмом в списке
+settings-appearance-mail-colors-summary = Тёмные цвета для HTML-писем в тёмной теме или цвета отправителя
+settings-appearance-attachment-previews-summary = Миниатюра содержимого каждого вложения
+settings-shortcuts-set-summary = Начать с клавиш Gmail, Inbox by Gmail, Apple Mail, Outlook или Thunderbird
+settings-shortcuts-single-summary = Клавиши без Ctrl и Alt, как в веб-почте
+settings-default-apps-pdf-summary = Где открываются вложения PDF
+settings-default-apps-pictures-summary = Где открываются фотографии и изображения
+settings-default-apps-text-summary = Где открываются обычный текст, журналы и код
+settings-default-apps-sheets-summary = Где открываются файлы Excel, OpenDocument и CSV
+settings-default-apps-documents-summary = Где открываются документы Word и OpenDocument
+settings-default-apps-after-saving-summary = Показывать сохранённые вложения в их папке
+settings-compose-send-from-summary = Аккаунт, с которого уходят новые письма: текущий или всегда один и тот же
+settings-compose-send-on-replies-summary = «Отправить» или «Отправить и архивировать» цепочку при ответах и пересылках
+settings-compose-signatures-summary = Добавляется под вашим письмом после строки «--»
+settings-compose-for-new-mail-summary = Подпись, с которой начинаются новые письма
+settings-compose-for-replies-summary = Подпись, с которой начинаются ответы и пересылки
+settings-compose-format-summary = Писать новые письма обычным текстом
+settings-compose-spelling-summary = Проверка орфографии при вводе и язык словаря
+settings-compose-templates-summary = Скоро: сохраняйте письма, которые часто пишете, и начинайте с них новое письмо или ответ
+settings-feedback-crash-reports-summary = Сохранять отчёты о сбоях на этом компьютере, когда Katna Mail или её фоновая служба аварийно завершается
+settings-feedback-saved-summary = Просмотр, копирование и удаление отчётов о сбоях, сохранённых на этом компьютере
+settings-feedback-help-improve-summary = Отправлять отчёты о сбоях, чтобы помочь исправить ошибки; выключено, пока вы не включите
+settings-experimental-blur-summary = Рабочий стол размыто просвечивает сквозь верхнюю панель, а меню — из матового стекла
+settings-search-shortcut = Сочетание клавиш
+settings-search-tab = Вкладка настроек
+settings-search-none = Нет настроек по запросу «{ $query }».
+settings-search-results = Настройки по запросу «{ $query }»
+
+## Quick settings (the panel that slides in from the right)
+
+quick-title = Быстрые настройки
+quick-see-all = Все настройки
+quick-reading-pane = Область просмотра
+quick-pane-right = Справа от списка
+quick-pane-none = Без разделения
+quick-density = Плотность
+quick-density-default = Обычная
+quick-density-compact = Компактная
+quick-theme = Тема
+quick-theme-system = Как на рабочем столе
+quick-theme-light = Светлая
+quick-theme-dark = Тёмная
+quick-desktop-colors = Цвета рабочего стола
+quick-desktop-colors-detail = Цветовая схема и акцентный цвет рабочего стола
+quick-app-names = Названия приложений
+quick-app-names-detail = Подписи под значками приложений слева
+quick-inbox-tabs = Вкладки «Входящих»
+quick-inbox-tabs-detail = Вкладки почтового сервиса каждого аккаунта
+quick-choose-tabs = Выбрать вкладки
+quick-choose-tabs-detail = Для каждого аккаунта, в настройках
+quick-sending = Отправка
+quick-undo-send = Отмена отправки
+quick-undo-send-off = Выкл.
+quick-undo-send-seconds = { $seconds } с
+quick-signatures = Подписи
+quick-signatures-none = Пока нет
+quick-signatures-one = { $name }, по умолчанию
+quick-signatures-many = { $count ->
+    [one] { $count } подпись; по умолчанию — { $name }
+    [few] { $count } подписи; по умолчанию — { $name }
+    [many] { $count } подписей; по умолчанию — { $name }
+   *[other] { $count } подписи; по умолчанию — { $name }
+}
+quick-signatures-no-default = { $count ->
+    [one] { $count }, без подписи по умолчанию
+    [few] { $count }, без подписи по умолчанию
+    [many] { $count }, без подписи по умолчанию
+   *[other] { $count }, без подписи по умолчанию
+}
+quick-signature-untitled = Без названия
+quick-threading = Цепочки писем
+quick-conversation-view = Группировка в цепочки
+quick-conversation-view-detail = Группировать ответы на одно письмо
+quick-help = Справка
+quick-tour = Пройти обзор
+quick-whats-new = Что нового
+quick-about = О Katna
+
+## Settings: opening at login
+
+settings-open-at-login-failed = Не удалось изменить запуск при входе в систему: { $error }
+
+## Settings > Appearance > Scaling
+
+scale-letter = А
+scale-percent = { $percent } %
+scale-reset = Вернуть { $percent } %
+
+## Settings > Experimental > Look & Feel
+
+look-intro = Функции, которые ещё проходят испытания. Они могут измениться или исчезнуть.
+look-heading = Внешний вид и поведение
+look-window-frame = Рамка окна
+look-window-frame-detail = Кто рисует заголовок, кнопки окна, углы и тень.
+look-frame-native-kde = Системная: рамка KDE в вашей теме Plasma
+look-frame-native = Системная: рамка рабочего стола
+look-frame-katna = Katna: верхняя панель становится заголовком окна
+look-frame-katna-note-named = Katna рисует скруглённые углы и собственную тень. Рамка больше не следует теме { $desktop }; правила окон по-прежнему действуют.
+look-frame-katna-note = Katna рисует скруглённые углы и собственную тень. Рамка больше не следует теме рабочего стола; правила окон по-прежнему действуют.
+look-frame-client-side = Ваш рабочий стол оставляет рамку каждому приложению, поэтому Katna уже рисует свою.
+look-blurred-background = Размытый фон
+look-blurred-background-detail = Рабочий стол размыто просвечивает сквозь верхнюю панель и папки, а меню и всплывающие окна — из матового стекла.
+look-blur = Размывать то, что за окном
+look-blur-detail = Письма остаются на непрозрачных карточках, поэтому текст сохраняет контраст
+look-blur-off-kde = Эффект размытия KDE выключен. Включите «Размытие» в «Параметрах системы» → «Управление окнами» → «Эффекты рабочего стола», затем снова откройте Katna Mail.
+look-blur-none-gnome = GNOME не размывает то, что за окнами.
+look-blur-none-x11 = Ваш оконный менеджер не размывает то, что за окнами.
+look-blur-none-wayland = Ваш композитор не размывает то, что за окнами.
+
+## Settings > User feedback (crash reports)
+
+feedback-intro-sending = Новые отчёты о сбоях отправляются, чтобы помочь исправить ошибки. Больше ничего не покидает этот компьютер.
+feedback-intro-local = Katna ничего никуда не отправляет. Отчёты о сбоях остаются на этом компьютере — их можно посмотреть или приложить к сообщению об ошибке.
+feedback-crash-reports = Отчёты о сбоях
+feedback-crash-reports-detail = Создаются, когда Katna Mail или её фоновая служба аварийно завершается.
+feedback-save = Сохранять отчёты о сбоях на этом компьютере
+feedback-save-detail = Домашняя папка, имена пользователя и компьютера и адреса электронной почты не включаются
+feedback-saved = Сохранённые отчёты о сбоях
+feedback-saved-detail = { $count ->
+    [one] Хранится { $count } последний отчёт.
+    [few] Хранятся { $count } последних отчёта.
+    [many] Хранятся { $count } последних отчётов.
+   *[other] Хранятся { $count } последнего отчёта.
+}
+feedback-help-improve = Помочь улучшить Katna
+feedback-help-improve-detail = Выключено, пока вы не включите, и здесь это можно выключить в любой момент.
+feedback-send = Отправлять отчёты о сбоях
+feedback-send-detail = Сохранённый отчёт — ровно такой, каким вы видите его здесь, — отправляется в систему отслеживания сбоев Katna (Sentry, в ЕС). Без IP-адреса, писем и адресов электронной почты
+feedback-none-saved = Сохранённых отчётов о сбоях нет.
+feedback-delete-all = Удалить все
+feedback-app-daemon = Фоновая служба
+feedback-report-sent = { $date } · Отправлен
+feedback-view = Открыть
+feedback-view-tooltip = Открыть отчёт
+feedback-copy-tooltip = Скопировать, чтобы вставить в сообщение об ошибке
+feedback-copied = Отчёт о сбое скопирован.
+feedback-deleted-all = Отчёты о сбоях удалены.
+feedback-read-failed = Не удалось прочитать отчёт о сбое: { $error }
+feedback-delete-failed = Не удалось удалить отчёт о сбое: { $error }
+feedback-delete-all-failed = Не удалось удалить отчёты о сбоях: { $error }
+
+## Menu bar (the KDE global menu)
+
+desktop-menu-file = _Файл
+desktop-menu-new-message = _Новое письмо
+desktop-menu-quit = _Выход
+desktop-menu-edit = _Правка
+desktop-menu-undo = _Отменить
+desktop-menu-select-all = Выделить _всё
+desktop-menu-select-none = _Снять выделение
+desktop-menu-find = _Найти…
+desktop-menu-view = _Вид
+desktop-menu-folder-list = Показывать _список папок
+desktop-menu-refresh = _Обновить
+desktop-menu-go = Пере_ход
+desktop-menu-inbox = _Входящие
+desktop-menu-starred = _Помеченные
+desktop-menu-sent = _Отправленные
+desktop-menu-drafts = _Черновики
+desktop-menu-all-mail = Вс_я почта
+desktop-menu-next = _Следующая цепочка
+desktop-menu-previous = П_редыдущая цепочка
+desktop-menu-message = П_исьмо
+desktop-menu-open = О_ткрыть
+desktop-menu-reply = _Ответить
+desktop-menu-reply-all = Ответить _всем
+desktop-menu-forward = _Переслать
+desktop-menu-archive = _Архивировать
+desktop-menu-delete = _Удалить
+desktop-menu-spam = В _спам
+desktop-menu-move-to = Перемест_ить в…
+desktop-menu-mark-read = Отметить как п_рочитанное
+desktop-menu-mark-unread = Отметить как _непрочитанное
+desktop-menu-star = Пом_етить
+desktop-menu-important = Отметить как ва_жное
+desktop-menu-not-important = Отметить как не_важное
+desktop-menu-settings = _Настройка
+desktop-menu-quick-settings = _Быстрые настройки
+desktop-menu-configure = _Настроить Katna Mail…
+desktop-menu-help = _Справка
+desktop-menu-shortcuts = Быстрые _клавиши
+desktop-menu-whats-new = _Что нового
+desktop-menu-about = _О Katna
+
+## Settings > Keyboard shortcuts: the groups of the list
+
+shortcut-group-moving = Перемещение
+shortcut-group-actions = Действия
+shortcut-group-go-to = Переход
+shortcut-group-app = Приложение
+
+## Settings > Keyboard shortcuts: what each shortcut does
+
+shortcut-next = Следующая цепочка
+shortcut-previous = Предыдущая цепочка
+shortcut-down = Вниз по списку
+shortcut-up = Вверх по списку
+shortcut-first = В начало списка
+shortcut-last = В конец списка
+shortcut-page-down = На страницу вниз по списку
+shortcut-page-up = На страницу вверх по списку
+shortcut-open = Открыть цепочку
+shortcut-back = Вернуться к списку
+shortcut-scroll-down = Прокрутить вниз
+shortcut-scroll-up = Прокрутить вверх
+shortcut-scroll-page-down = Прокрутить на страницу вниз
+shortcut-scroll-page-up = Прокрутить на страницу вверх
+shortcut-compose = Написать
+shortcut-reply = Ответить
+shortcut-reply-all = Ответить всем
+shortcut-forward = Переслать
+shortcut-archive = Архивировать
+shortcut-delete = Удалить
+shortcut-spam = В спам
+shortcut-move-to = Переместить в
+shortcut-mark-read = Отметить как прочитанное
+shortcut-mark-unread = Отметить как непрочитанное
+shortcut-star = Пометить или снять пометку
+shortcut-important = Отметить как важное
+shortcut-not-important = Отметить как неважное
+shortcut-check = Выбрать цепочку
+shortcut-select-all = Выбрать все цепочки
+shortcut-select-none = Отменить выбор всех цепочек
+shortcut-undo = Отменить последнее действие
+shortcut-go-inbox = Входящие
+shortcut-go-starred = Помеченные
+shortcut-go-sent = Отправленные
+shortcut-go-drafts = Черновики
+shortcut-go-all = Вся почта
+shortcut-search = Поиск в почте
+shortcut-navigation = Показать или свернуть меню
+shortcut-quick-settings = Быстрые настройки
+shortcut-settings = Все настройки
+shortcut-shortcuts = Быстрые клавиши
+shortcut-reload = Проверить почту
+shortcut-quit = Выйти
+
+## Keys pressed one after another, as a shortcut shows them ("G then I")
+
+shortcut-sequence = { $first }, затем { $second }
+
+## Settings > Accounts
+
+accounts-folder-pane = Панель папок
+accounts-folder-pane-detail = Папки каких аккаунтов показывает панель слева.
+accounts-shown-one = Один аккаунт за раз; переключение в карточке аккаунта
+accounts-shown-all = Все аккаунты, один за другим
+accounts-row = Аккаунты
+accounts-row-detail = При удалении аккаунта удаляется копия его почты, которую Katna хранит на этом компьютере. На сервере почта остаётся.
+accounts-none = Аккаунтов пока нет.
+accounts-kind-imported = Импортирован
+accounts-picture-reset = Взять изображение из системы
+accounts-picture-change = Сменить изображение
+accounts-remove = Удалить
+accounts-delete-all-row = Удалить все данные
+accounts-delete-all-row-detail = Начать заново, как после новой установки.
+accounts-delete-all-about = Удаляет с этого компьютера все аккаунты, всю сохранённую почту, контакты и календари, поисковый индекс, ваши настройки и сохранённые пароли. На почтовых серверах ничего не меняется.
+accounts-delete-all-open = Удалить все данные Katna
+
+## Settings > Accounts: snackbars after deleting
+
+accounts-removed-local = { $address } удалён из Katna.
+accounts-removed = { $address } удалён из Katna. Его почта по-прежнему на сервере.
+accounts-all-deleted = Все данные Katna удалены с этого компьютера.
+
+## Settings > Accounts: the dialog that asks before deleting
+
+accounts-remove-title = Удалить { $address }?
+accounts-remove-confirm = Удалить аккаунт
+accounts-removing = Удаление…
+accounts-remove-local-mail = { $folders ->
+    [0] Вся почта, импортированная в этот аккаунт
+    [1] Вся почта, импортированная в этот аккаунт, в его папке
+    [one] Вся почта, импортированная в этот аккаунт, в его { $folders } папке
+    [few] Вся почта, импортированная в этот аккаунт, в его { $folders } папках
+    [many] Вся почта, импортированная в этот аккаунт, в его { $folders } папках
+   *[other] Вся почта, импортированная в этот аккаунт, в его { $folders } папках
+}
+accounts-remove-local-settings = Его настройки в Katna
+accounts-remove-mail = { $folders ->
+    [0] Вся почта этого аккаунта, сохранённая Katna
+    [1] Вся почта этого аккаунта, сохранённая Katna в его папке
+    [one] Вся почта этого аккаунта, сохранённая Katna в его { $folders } папке
+    [few] Вся почта этого аккаунта, сохранённая Katna в его { $folders } папках
+    [many] Вся почта этого аккаунта, сохранённая Katna в его { $folders } папках
+   *[other] Вся почта этого аккаунта, сохранённая Katna в его { $folders } папках
+}
+accounts-remove-outbox = Его письма, ожидающие в исходящих
+accounts-remove-settings = Его сохранённый пароль и настройки в Katna
+accounts-delete-all-title = Удалить все данные Katna?
+accounts-delete-all-confirm = Удалить всё
+accounts-deleting = Удаление…
+accounts-delete-all-accounts = Все аккаунты, а также вся почта и вложения, сохранённые Katna
+accounts-delete-all-contacts = Контакты, календари и поисковый индекс
+accounts-delete-all-settings = Все настройки, подписи и быстрые клавиши
+accounts-delete-all-passwords = Все сохранённые пароли
+accounts-deleted-heading = Удаляется с этого компьютера:
+accounts-cannot-undo = Это действие нельзя отменить.
+accounts-server-delete-all = На ваших почтовых серверах ничего не меняется: почта остаётся там, и если снова добавить аккаунт, она загрузится заново. Почта, импортированная из файлов, есть только в Katna; сами файлы не затрагиваются.
+accounts-server-local = Эта почта импортирована из файлов, поэтому единственная её копия — в Katna. Исходные файлы не затрагиваются; импортируйте их снова, чтобы вернуть почту.
+accounts-server-remove = На почтовом сервере ничего не меняется: почта остаётся там, и если снова добавить аккаунт, она загрузится заново.
+accounts-confirm-word = удалить
+accounts-confirm-placeholder = Введите «{ accounts-confirm-word }»
+accounts-confirm-prompt = Для подтверждения введите «{ accounts-confirm-word }»:
+accounts-cancel = Отмена

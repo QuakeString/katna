@@ -510,3 +510,514 @@ print-not-downloaded = (තවම බාගත කර නැත.)
 print-encrypted = (සංකේතනය කර ඇත. එහි පෙළ මුද්‍රණය කිරීමට එය Katna Mail හි විවෘත කරන්න.)
 print-to = ලබන්නා: { $addresses }
 print-cc = Cc: { $addresses }
+
+## Leftovers from earlier areas (reading pane and its right-click menu)
+
+attachment-open-message = මෙම පණිවිඩයේ ඇමුණුම් කියවීමට එය විවෘත කරන්න.
+text-copy = පිටපත් කරන්න
+text-select-all = සියල්ල තෝරන්න
+
+## Settings page: its tabs
+
+settings-tab-general = සාමාන්‍ය
+settings-tab-inbox = එන ලිපි
+settings-tab-accounts = ගිණුම්
+settings-tab-subscriptions = දායකත්ව
+settings-tab-appearance = පෙනුම
+settings-tab-shortcuts = කෙටිමං
+settings-tab-default-apps = පෙරනිමි යෙදුම්
+settings-tab-folders-rules = ෆෝල්ඩර සහ නීති
+settings-tab-compose = රචනා කිරීම
+settings-tab-mcp-server = MCP සේවාදායකය
+settings-tab-feedback = පරිශීලක ප්‍රතිපෝෂණ
+settings-tab-experimental = පර්යේෂණාත්මක
+
+## Settings page: tabs still to come
+
+settings-tab-subscriptions-coming = ඔබට ලැබෙන පුවත් හසුන් සහ තැපැල් ලැයිස්තු බලා, එක් ක්ලික් කිරීමකින් දායකත්වයෙන් ඉවත් වන්න.
+settings-tab-folders-rules-coming = ෆෝල්ඩර සහ ලේබල සාදන්න, නැවත නම් කරන්න, ගෙන යන්න සහ සඟවන්න, සහ සමමුහුර්ත කළ යුතු ඒවා තෝරන්න. නීති මඟින් නව තැපැල් යවන්නා, විෂය හෝ වචන අනුව ස්වයංක්‍රීයව වර්ග කිරීම, ලේබල් කිරීම, ඉදිරියට යැවීම හෝ මැකීම කරයි.
+settings-tab-mcp-server-coming = මෙම පරිගණකයේ AI සහායකයන්ට ඔබේ අවසරය ඇතිව ඔබේ තැපැල් සෙවීමට, කියවීමට සහ කෙටුම්පත් කිරීමට ඉඩ දෙන්න.
+
+## Settings > General
+
+settings-general-conversations = සංවාද දසුන
+settings-general-conversations-group = එකම තැපැල් වෙත ලැබුණු පිළිතුරු එකට කාණ්ඩ කරන්න
+settings-general-conversations-group-detail = ලැයිස්තුවේ එක් සංවාදයකට එක් පේළියක්
+settings-general-reading = කියවීම
+settings-general-newest-first = නවතම පණිවිඩය මුලින්
+settings-general-newest-first-detail = සංවාදයක් එහි නවතම පිළිතුරෙන් ආරම්භ වේ
+settings-general-full-headers = සම්පූර්ණ ශීර්ෂ පෙන්වන්න
+settings-general-full-headers-detail = සෑම පණිවිඩයකම යවන්නා, ලබන්නා, cc, දිනය සහ විෂය විවෘතව පෙන්වයි
+settings-general-full-names = ලබන්නන්ගේ සම්පූර්ණ නම්
+settings-general-full-names-detail = “මා, Ada වෙත” වෙනුවට “මා, Ada Lovelace වෙත”
+settings-general-mark-read = කියවූ ලෙස සලකුණු කරන්න
+settings-general-mark-read-now = විවෘත වූ වහාම
+settings-general-mark-read-1s = තත්පර 1ක් විවෘතව තිබූ පසු
+settings-general-mark-read-3s = තත්පර 3ක් විවෘතව තිබූ පසු
+settings-general-mark-read-never = මා කියවූ ලෙස සලකුණු කළ විට පමණි
+settings-general-reply-button = පිළිතුරු බොත්තම
+settings-general-reply-all = සියල්ලන්ට පිළිතුරු දෙන්න
+settings-general-reply-all-detail = එක් එක් පණිවිඩය අසල ඇති පිළිතුරු බොත්තම යවන්නාට පමණක් නොව සියල්ලන්ටම පිළිතුරු දෙයි
+settings-general-remote-images = වෙබයේ රූප
+settings-general-remote-images-detail = පණිවිඩයක රූප පූරණය කිරීමෙන් ඔබ එය විවෘත කළ බව, කවදාද සහ ආසන්න වශයෙන් කොහේද යන්න එහි යවන්නාට දැනගත හැක. අක්‍රිය නම්, සෑම පණිවිඩයක්ම පළමුව විමසයි, සහ ඔබට ඕනෑම විටෙක යවන්නෙකුගේ රූප පෙන්විය හැක.
+settings-general-remote-images-always = සැමවිටම රූප පෙන්වන්න
+settings-general-remote-images-always-detail = ඔබ විශ්වාස කරන යවන්නන්ගෙන් පමණක් නොව, සෑම පණිවිඩයකම
+settings-general-sending = යැවීම
+settings-general-sending-detail = යැවූ පණිවිඩයක් ආපසු ගැනීමට හැකි වන පරිදි එය රැඳී සිටින කාලය.
+settings-general-offline = නොබැඳි තැපැල්
+settings-general-offline-detail = මෑත තැපැල් සම්බන්ධතාවක් නොමැතිව කියවීමට සම්පූර්ණයෙන් බාගත කෙරේ. පැරණි තැපැල් ඔබ විවෘත කරන විට බාගත වේ.
+settings-general-offline-days = { $count ->
+    [one] දින { $count }
+   *[other] දින { $count }
+}
+settings-general-offline-years = { $count ->
+    [one] වසර { $count }
+   *[other] වසර { $count }
+}
+settings-general-offline-all = සියලු තැපැල්
+settings-general-offline-note = දින ගණන අඩු කිරීමෙන් දැනටමත් බාගත කළ තැපැල් ඉවත් නොවේ. සේවාදායකයේ කිසිවක් වෙනස් නොවේ.
+settings-general-notifications = දැනුම්දීම්
+settings-general-notifications-detail = එන ලිපි වෙත ලැබෙන නව තැපැල් සඳහා, Katna Mail වසා ඇති විටත්.
+settings-general-new-mail = නව තැපැල් ගැන මට දැනුම් දෙන්න
+settings-general-new-mail-detail = සියල්ලන්ට පිළිතුරු දෙන්න, කියවූ ලෙස සලකුණු කරන්න සහ සංරක්ෂණය කරන්න යන බොත්තම් සමඟ
+settings-general-new-mail-sound = ශබ්දයක් වාදනය කරන්න
+settings-general-new-mail-sound-detail = ඩෙස්ක්ටොප් එකේ නව තැපැල් ශබ්දය
+settings-general-desktop = ඩෙස්ක්ටොප්
+settings-general-open-at-login = පිවිසීමේදී Katna Mail විවෘත කරන්න
+settings-general-open-at-login-detail = සේවාව ධාවනය වන තාක් කෙසේ වෙතත් පිවිසීමේදී තැපැල් සමමුහුර්ත වේ
+settings-general-tray = පද්ධති තැටියේ Katna පෙන්වන්න
+settings-general-tray-detail = නොකියවූ ගණන සහ මෙනුවක් සමඟ
+settings-general-unread-badge = කාර්ය තීරු අයිකනයේ නොකියවූ ගණන
+settings-general-unread-badge-detail = එන ලිපි වල නොකියවූ පණිවිඩ කීයද යන්න
+
+## Settings > Inbox
+
+settings-inbox-tabs = එන ලිපි ටැබ
+settings-inbox-tabs-detail = ඔබේ තැපැල් සපයන්නාගේ වෙබ් අඩවිය මෙන්, එන ලිපි ටැබවලට වර්ග කරන්න.
+settings-inbox-tabs-show = එන ලිපි ටැබ පෙන්වන්න
+settings-inbox-tabs-show-detail = අක්‍රිය නම් සෑම ගිණුමකටම එක් ලැයිස්තුවක් පෙන්වයි
+settings-inbox-no-accounts = එහි ටැබ තේරීමට ගිණුමක් එක් කරන්න.
+settings-inbox-tabs-automatic = ස්වයංක්‍රීය: { $tabs } ({ $provider })
+settings-inbox-tabs-off = ටැබ නැත
+settings-inbox-tabs-gmail = ප්‍රාථමික, ප්‍රවර්ධන, සමාජ, යාවත්කාලීන, සංසද
+settings-inbox-tabs-focused = අවධානය යොමු කළ සහ වෙනත්
+settings-inbox-tabs-zoho = එන ලිපි, පුවත් හසුන් සහ දැනුම්දීම්
+settings-inbox-tabs-shown = පෙන්වන ටැබ. ඔබ අක්‍රිය කරන ටැබයක තැපැල් { $tab } හි රැඳේ.
+
+## Settings > Appearance
+
+settings-appearance-reading-pane = කියවීමේ පැනලය
+settings-appearance-reading-pane-detail = විවෘත කළ සංවාදයක් පෙන්වන ස්ථානය.
+settings-appearance-pane-right = ලැයිස්තුවේ දකුණට
+settings-appearance-pane-none = බෙදීමක් නැත
+settings-appearance-density = ඝනත්වය
+settings-appearance-density-default = පෙරනිමි
+settings-appearance-density-compact = සංයුක්ත
+settings-appearance-scaling = පරිමාණනය
+settings-appearance-scaling-detail = ඩෙස්ක්ටොප් එකේම පරිමාණයට අමතරව, Katna Mail හි සියල්ල විශාල හෝ කුඩා කරයි: පෙළ, අයිකන, පරතරය සහ බෙදුම් රේඛා. ඔබ යවන තැපැල් එහිම අකුරු ප්‍රමාණය තබා ගනී. ඉතා කුඩා ප්‍රමාණ නිසා අයිකන ක්ලික් කිරීම අපහසු විය හැක.
+settings-appearance-theme = තේමාව
+settings-appearance-theme-system = ඩෙස්ක්ටොප් එකට සමාන
+settings-appearance-theme-light = ලා
+settings-appearance-theme-dark = අඳුරු
+settings-appearance-desktop-colors = ඩෙස්ක්ටොප් වර්ණ
+settings-appearance-desktop-colors-use = ඩෙස්ක්ටොප් එකේ වර්ණ භාවිත කරන්න
+settings-appearance-desktop-colors-use-detail = ඩෙස්ක්ටොප් එකේ වර්ණ රටාව සහ උච්චාරණ වර්ණය
+settings-appearance-app-names = යෙදුම් නම්
+settings-appearance-app-names-show = යෙදුම් නම් පෙන්වන්න
+settings-appearance-app-names-show-detail = වම් කෙළවරේ යෙදුම් අයිකන යට නම්
+settings-appearance-sender-pictures = යවන්නාගේ පින්තූර
+settings-appearance-sender-pictures-show = සමාගම් ලාංඡන පෙන්වන්න
+settings-appearance-sender-pictures-show-detail = පණිවිඩය අනුව නොව යවන්නාගේ වසම අනුව සොයා, සතියක් තබා ගනී
+settings-appearance-important = වැදගත් සලකුණු
+settings-appearance-important-show = වැදගත් සලකුණු පෙන්වන්න
+settings-appearance-important-show-detail = ලැයිස්තුවේ එක් එක් පණිවිඩය අසල
+settings-appearance-message-width = පණිවිඩ පළල
+settings-appearance-message-width-limit = පණිවිඩවල පළල සීමා කරන්න
+settings-appearance-message-width-limit-detail = පුළුල් කවුළුවක දිගු පේළි කියවීම පහසු වේ
+settings-appearance-mail-colors = තැපැල් වර්ණ
+settings-appearance-mail-colors-detail = බොහෝ තැපැල් සුදු පිටුවක් සඳහා නිර්මාණය කර ඇත. අඳුරු තේමාවක් සමඟ එහි වර්ණ හොඳින් කියවිය හැකි අඳුරු වර්ණවලට වෙනස් කෙරේ; අක්‍රිය නම්, එය ලා පිටුවක යවන්නාගේ වර්ණ තබා ගනී.
+settings-appearance-dark-mail = තැපැල් සඳහාත් අඳුරු වර්ණ
+settings-appearance-dark-mail-detail = තේමාව අඳුරු විට පමණි
+settings-appearance-attachment-previews = ඇමුණුම් පෙරදසුන්
+settings-appearance-attachment-previews-show = ඇමුණුම්වල පෙරදසුන් පෙන්වන්න
+settings-appearance-attachment-previews-show-detail = එක් එක් ගොනුවේ කාඩ්පතේ එහි අන්තර්ගතයේ කුඩා රූපයක්
+
+## Settings > Default apps
+
+settings-default-apps-intro = ඇමුණුම් ක්ලික් කළ විට ඒවා විවෘත වන තැන. දර්ශකයට ඕනෑම විටෙක ගොනුවක් වෙනත් යෙදුමක ද විවෘත කළ හැක. ඩෙස්ක්ටොප් එකේ පෙරනිමි යෙදුම් එහිම සැකසීම් තුළ සකසා ඇත.
+settings-default-apps-pdf = PDF ගොනු
+settings-default-apps-pdf-detail = පිටු, විශාලනය සමඟ.
+settings-default-apps-pictures = පින්තූර
+settings-default-apps-pictures-detail = ඡායාරූප (කෙළින් හරවා), PNG, GIF, WebP, BMP, TIFF සහ SVG.
+settings-default-apps-text = පෙළ ගොනු
+settings-default-apps-text-detail = සරල පෙළ, ලොග, කේතය සහ වෙනත් පෙළ.
+settings-default-apps-sheets = පැතුරුම්පත්
+settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) සහ CSV.
+settings-default-apps-documents = ලේඛන
+settings-default-apps-documents-detail = Word (docx) සහ OpenDocument පෙළ (odt).
+settings-default-apps-katna = Katna Mail හි දර්ශකය
+settings-default-apps-system = ඩෙස්ක්ටොප් එකේ පෙරනිමි යෙදුම
+settings-default-apps-ask = සෑම විටම කුමන යෙදුමදැයි අසන්න
+settings-default-apps-after-saving = සුරැකීමෙන් පසු
+settings-default-apps-show-folder = සුරැකි ගොනු ඒවායේ ෆෝල්ඩරයේ පෙන්වන්න
+settings-default-apps-show-folder-detail = සුරැකි ඇමුණුම් තෝරා ඇති ලෙස ගොනු කළමනාකරු විවෘත කරයි
+
+## Settings > Compose
+
+settings-compose-send-from = නව පණිවිඩ යැවිය යුත්තේ
+settings-compose-send-from-detail = පිළිතුරු සහ ඉදිරියට යැවීම් සැමවිටම ඔබ සිටින ගිණුමෙන් යවයි.
+settings-compose-send-from-current = ඔබ සිටින ගිණුම
+settings-compose-send-on-replies = පිළිතුරුවලදී යවන්න
+settings-compose-send-on-replies-detail = පිළිතුරක හෝ ඉදිරියට යැවීමක යවන්න බොත්තම කරන දේ. යවන්න අසල ඇති මෙනුව අනෙක ලබා දෙයි.
+settings-compose-send-plain = යවන්න
+settings-compose-send-archive = යවා සංරක්ෂණය කරන්න
+settings-compose-signatures = අත්සන්
+settings-compose-signatures-detail = ඔබේ පණිවිඩයට පහළින්, “--” පේළියකට පසුව එක් කෙරේ. රචනා කවුළුවේ වෙනත් එකක් තෝරන්න.
+settings-compose-untitled = මාතෘකා රහිත
+settings-compose-signature-name = නම, උදා: රැකියාව
+settings-compose-signature-first = මගේ අත්සන
+settings-compose-signature-numbered = අත්සන { $number }
+settings-compose-signature-delete = මකන්න
+settings-compose-signature-deleted = අත්සන මකන ලදී
+settings-compose-signature-new = නව එකක් සාදන්න
+settings-compose-no-signatures = තවම අත්සන් නැත.
+settings-compose-no-signature = අත්සනක් නැත
+settings-compose-for-new-mail = නව තැපැල් සඳහා
+settings-compose-for-replies = පිළිතුරු සහ ඉදිරියට යැවීම් සඳහා
+settings-compose-for-replies-detail = ඔබ පණිවිඩයක් අත්සන් කළ සංවාදයක, පිළිතුරක් ඒ වෙනුවට එම අත්සනින් ආරම්භ වේ.
+settings-compose-format = ආකෘතිය
+settings-compose-plain-text = සරල පෙළින් ලියන්න
+settings-compose-plain-text-detail = නව තැපැල් හැඩතල ගැන්වීමකින් තොරව ආරම්භ වේ; රචනා කවුළුවට මාරු කළ හැක
+settings-compose-spelling = අක්ෂර වින්‍යාසය
+settings-compose-spell-check = මා ලියන අතරතුර අක්ෂර වින්‍යාසය පරීක්ෂා කරන්න
+settings-compose-spell-check-detail = වැරදි අක්ෂර වින්‍යාසය ඇති වචන යටින් ඉරි ඇඳේ, දකුණු-ක්ලික් කිරීමෙන් යෝජනා සමඟ
+settings-compose-spell-desktop = ඩෙස්ක්ටොප් එකේ භාෂාව ({ $language })
+settings-compose-templates = අච්චු
+settings-compose-templates-detail = ඔබ නිතර ලියන තැපැල් සුරකින්න, සහ එයින් නව තැපැලක් හෝ පිළිතුරක් ආරම්භ කරන්න.
+
+## Settings > Shortcuts
+
+settings-shortcuts-set = කෙටිමං කට්ටලය
+settings-shortcuts-set-detail = ඔබ දන්නා තැපැල් යෙදුමක යතුරුවලින් ආරම්භ කරන්න. මෙහි Cmd යනු Ctrl ය. ඔබේම වෙනස්කම් කට්ටලයට ඉහළින් පවතින අතර, පෙරනිමි ප්‍රතිසාධනය කරන්න කට්ටලයේ යතුරු වෙත ආපසු යයි.
+settings-shortcuts-single = තනි-යතුරු කෙටිමං
+settings-shortcuts-single-detail = වෙබ් තැපැල් මෙන් Ctrl හෝ Alt නොමැති යතුරු: e සංරක්ෂණය කරයි, j සහ k ගෙන යයි, / සොයයි. ඒවා ලැයිස්තුවේ සහ විවෘත සංවාදයේ ක්‍රියා කරයි, ටයිප් කරන අතරතුර කිසි විටෙකත් නොවේ.
+settings-shortcuts-single-use = තනි-යතුරු කෙටිමං භාවිත කරන්න
+settings-shortcuts-single-use-detail = Ctrl කෙටිමං සැමවිටම ක්‍රියා කරයි
+settings-shortcuts-how = යතුරක් වෙනස් කිරීමට එය ක්ලික් කරන්න, නැතහොත් එකක් එක් කිරීමට + ක්ලික් කරන්න, ඉන්පසු නව යතුරු ඔබන්න. Esc අවලංගු කරයි.
+settings-shortcuts-restore = පෙරනිමි ප්‍රතිසාධනය කරන්න
+settings-shortcuts-no-key = යතුරක් නැත
+settings-shortcuts-press = යතුරු ඔබන්න…
+settings-shortcuts-then = { $keys } ඉන්පසු…
+settings-shortcuts-moved = { $keys } දැන් “{ $previous }” වෙනුවට “{ $action }” කරයි.
+settings-shortcuts-single-off = තනි-යතුරු කෙටිමං අක්‍රියයි, එබැවින් මෙම යතුර ඒවා සක්‍රිය කළ පසු ක්‍රියා කරයි.
+settings-shortcuts-restored = සෑම කෙටිමඟකටම නැවතත් එහි කට්ටලයේ යතුරු ඇත.
+
+## Settings search: the line under a result
+
+settings-general-language-summary = යෙදුමේ, දිනවල සහ අංකවල භාෂාව
+settings-general-reading-summary = නවතම පණිවිඩය මුලින්, සම්පූර්ණ ශීර්ෂ, ලබන්නන්ගේ සම්පූර්ණ නම්
+settings-general-mark-read-summary = විවෘත කළ සංවාදයක් කියවූ ලෙස සලකුණු වන්නේ කවදාද: වහාම, තත්පර 1කට හෝ 3කට පසු, නැතහොත් අතින්
+settings-general-reply-button-summary = එක් එක් පණිවිඩය අසල ඇති පිළිතුරු බොත්තම සියල්ලන්ට පිළිතුරු දෙයි
+settings-general-remote-images-summary = සෑම පණිවිඩයකම රූප සැමවිටම පෙන්වන්න
+settings-general-sending-summary = යැවීම අහෝසි කිරීම: යැවූ පණිවිඩයක් ආපසු ගැනීමට හැකි වන පරිදි එය රැඳී සිටින කාලය
+settings-general-offline-summary = සම්බන්ධතාවක් නොමැතිව කියවීමට මෑත තැපැල් දින කීයක් සම්පූර්ණයෙන් බාගත කෙරේද
+settings-general-notifications-summary = නව තැපැල් දැනුම්දීම් සහ ඒවායේ ශබ්දය
+settings-general-desktop-summary = පිවිසීමේදී Katna Mail විවෘත කිරීම, පද්ධති තැටි අයිකනය සහ කාර්ය තීරු අයිකනයේ නොකියවූ ගණන
+settings-accounts-accounts-summary = ගිණුමක් එක් කරන්න හෝ ඉවත් කරන්න, නැතහොත් එහි පින්තූරය වෙනස් කරන්න
+settings-appearance-density-summary = ලැයිස්තුවේ පෙරනිමි හෝ සංයුක්ත පේළි
+settings-appearance-scaling-summary = සියල්ල විශාල හෝ කුඩා කරන්න: පෙළ, අයිකන, පරතරය සහ බෙදුම් රේඛා
+settings-appearance-theme-summary = ඩෙස්ක්ටොප් එකට සමාන, ලා හෝ අඳුරු
+settings-appearance-sender-pictures-summary = යවන්නාගේ වසම අනුව සොයන සමාගම් ලාංඡන
+settings-appearance-important-summary = ලැයිස්තුවේ එක් එක් පණිවිඩය අසල ඇති වැදගත් සලකුණ
+settings-appearance-mail-colors-summary = අඳුරු තේමාවක HTML තැපැල් සඳහා අඳුරු වර්ණ, නැතහොත් එහි යවන්නාගේ වර්ණ
+settings-appearance-attachment-previews-summary = එක් එක් ඇමුණුමේ අන්තර්ගතයේ කුඩා රූපයක්
+settings-shortcuts-set-summary = Gmail, Inbox by Gmail, Apple Mail, Outlook හෝ Thunderbird හි යතුරුවලින් ආරම්භ කරන්න
+settings-shortcuts-single-summary = වෙබ් තැපැල් මෙන් Ctrl හෝ Alt නොමැති යතුරු
+settings-default-apps-pdf-summary = PDF ඇමුණුම් විවෘත වන තැන
+settings-default-apps-pictures-summary = ඡායාරූප සහ පින්තූර විවෘත වන තැන
+settings-default-apps-text-summary = සරල පෙළ, ලොග සහ කේතය විවෘත වන තැන
+settings-default-apps-sheets-summary = Excel, OpenDocument සහ CSV ගොනු විවෘත වන තැන
+settings-default-apps-documents-summary = Word සහ OpenDocument පෙළ විවෘත වන තැන
+settings-default-apps-after-saving-summary = සුරැකි ඇමුණුම් ඒවායේ ෆෝල්ඩරයේ පෙන්වන්න
+settings-compose-send-from-summary = නව තැපැල් යවන ගිණුම: ඔබ සිටින එක, නැතහොත් සැමවිටම එකම එක
+settings-compose-send-on-replies-summary = පිළිතුරු සහ ඉදිරියට යැවීම්වලදී යවන්න, නැතහොත් යවා සංවාදය සංරක්ෂණය කරන්න
+settings-compose-signatures-summary = ඔබේ පණිවිඩයට පහළින්, “--” පේළියකට පසුව එක් කෙරේ
+settings-compose-for-new-mail-summary = නව තැපැල් ආරම්භ වන අත්සන
+settings-compose-for-replies-summary = පිළිතුරු සහ ඉදිරියට යැවීම් ආරම්භ වන අත්සන
+settings-compose-format-summary = නව තැපැල් සරල පෙළින් ලියන්න
+settings-compose-spelling-summary = ලියන අතරතුර අක්ෂර වින්‍යාසය පරීක්ෂා කිරීම, සහ ශබ්දකෝෂයේ භාෂාව
+settings-compose-templates-summary = ළඟදීම: ඔබ නිතර ලියන තැපැල් සුරකින්න, සහ එයින් නව තැපැලක් හෝ පිළිතුරක් ආරම්භ කරන්න
+settings-feedback-crash-reports-summary = Katna Mail හෝ එහි පසුබිම් සේවාව බිඳ වැටුණු විට බිඳවැටීම් වාර්තා මෙම පරිගණකයේ සුරකින්න
+settings-feedback-saved-summary = මෙම පරිගණකයේ සුරැකි බිඳවැටීම් වාර්තා බලන්න, පිටපත් කරන්න හෝ මකන්න
+settings-feedback-help-improve-summary = වැරදුණු දේ නිවැරදි කිරීමට උදවු වීමට බිඳවැටීම් වාර්තා යවන්න; ඔබ සක්‍රිය කරන තුරු අක්‍රියයි
+settings-experimental-blur-summary = ඩෙස්ක්ටොප් එක ඉහළ තීරුව හරහා බොඳව පෙනෙන අතර, මෙනු මීදුම් වීදුරු ලෙස පෙනේ
+settings-search-shortcut = යතුරුපුවරු කෙටිමඟ
+settings-search-tab = සැකසීම් ටැබය
+settings-search-none = “{ $query }” හා ගැළපෙන සැකසීම් නැත.
+settings-search-results = “{ $query }” හා ගැළපෙන සැකසීම්
+
+## Quick settings (the panel that slides in from the right)
+
+quick-title = ඉක්මන් සැකසීම්
+quick-see-all = සියලු සැකසීම් බලන්න
+quick-reading-pane = කියවීමේ පැනලය
+quick-pane-right = ලැයිස්තුවේ දකුණට
+quick-pane-none = බෙදීමක් නැත
+quick-density = ඝනත්වය
+quick-density-default = පෙරනිමි
+quick-density-compact = සංයුක්ත
+quick-theme = තේමාව
+quick-theme-system = ඩෙස්ක්ටොප් එකට සමාන
+quick-theme-light = ලා
+quick-theme-dark = අඳුරු
+quick-desktop-colors = ඩෙස්ක්ටොප් වර්ණ
+quick-desktop-colors-detail = ඩෙස්ක්ටොප් එකේ වර්ණ රටාව සහ උච්චාරණ වර්ණය
+quick-app-names = යෙදුම් නම්
+quick-app-names-detail = වම් කෙළවරේ යෙදුම් අයිකන යට නම්
+quick-inbox-tabs = එන ලිපි ටැබ
+quick-inbox-tabs-detail = එක් එක් ගිණුමේ තැපැල් සපයන්නාගේ ටැබ
+quick-choose-tabs = ටැබ තෝරන්න
+quick-choose-tabs-detail = සැකසීම් තුළ, ගිණුමකට අනුව
+quick-sending = යැවීම
+quick-undo-send = යැවීම අහෝසි කරන්න
+quick-undo-send-off = අක්‍රියයි
+quick-undo-send-seconds = තත්පර { $seconds }
+quick-signatures = අත්සන්
+quick-signatures-none = තවම නැත
+quick-signatures-one = { $name }, පෙරනිමියෙන් භාවිත වේ
+quick-signatures-many = { $count ->
+    [one] අත්සන් { $count }; පෙරනිමියෙන් { $name }
+   *[other] අත්සන් { $count }; පෙරනිමියෙන් { $name }
+}
+quick-signatures-no-default = { $count ->
+    [one] { $count }, පෙරනිමියක් නැත
+   *[other] { $count }, පෙරනිමියක් නැත
+}
+quick-signature-untitled = මාතෘකා රහිත
+quick-threading = ඊමේල් සංවාද
+quick-conversation-view = සංවාද දසුන
+quick-conversation-view-detail = එකම තැපැල් වෙත ලැබුණු පිළිතුරු එකට කාණ්ඩ කරන්න
+quick-help = උදවු
+quick-tour = චාරිකාව ගන්න
+quick-whats-new = අලුත් මොනවාද
+quick-about = Katna ගැන
+
+## Settings: opening at login
+
+settings-open-at-login-failed = පිවිසීමේදී විවෘත කිරීම වෙනස් කළ නොහැකි විය: { $error }
+
+## Settings > Appearance > Scaling
+
+scale-letter = අ
+scale-percent = { $percent }%
+scale-reset = { $percent }% වෙත ආපසු
+
+## Settings > Experimental > Look & Feel
+
+look-intro = තවමත් අත්හදා බලමින් පවතින විශේෂාංග. ඒවා වෙනස් විය හැක හෝ ඉවත් විය හැක.
+look-heading = පෙනුම සහ හැඟීම
+look-window-frame = කවුළු රාමුව
+look-window-frame-detail = මාතෘකා තීරුව, කවුළු බොත්තම්, කොන් සහ සෙවනැල්ල අඳින්නේ කවුද.
+look-frame-native-kde = ස්වදේශීය: ඔබේ Plasma තේමාවේ KDE රාමුව
+look-frame-native = ස්වදේශීය: ඩෙස්ක්ටොප් එකේ රාමුව
+look-frame-katna = Katna: ඉහළ තීරුව මාතෘකා තීරුව බවට පත් වේ
+look-frame-katna-note-named = Katna වටකුරු කොන් සහ එහිම සෙවනැල්ල අඳියි. රාමුව තවදුරටත් { $desktop } තේමාව අනුගමනය නොකරයි; කවුළු නීති තවමත් අදාළ වේ.
+look-frame-katna-note = Katna වටකුරු කොන් සහ එහිම සෙවනැල්ල අඳියි. රාමුව තවදුරටත් ඩෙස්ක්ටොප් තේමාව අනුගමනය නොකරයි; කවුළු නීති තවමත් අදාළ වේ.
+look-frame-client-side = ඔබේ ඩෙස්ක්ටොප් එක රාමුව එක් එක් යෙදුමට භාර දෙයි, එබැවින් Katna දැනටමත් එහිම රාමුව අඳියි.
+look-blurred-background = බොඳ කළ පසුබිම
+look-blurred-background-detail = ඩෙස්ක්ටොප් එක ඉහළ තීරුව සහ ෆෝල්ඩර හරහා බොඳව පෙනෙන අතර, මෙනු සහ උත්පතන මීදුම් වීදුරු ලෙස පෙනේ.
+look-blur = කවුළුව පිටුපස ඇති දේ බොඳ කරන්න
+look-blur-detail = තැපැල් ඝන කාඩ්පත් මත රැඳේ, එබැවින් පෙළ එහි වෙනස්කම තබා ගනී
+look-blur-off-kde = KDE හි බොඳ කිරීමේ ප්‍රයෝගය අක්‍රියයි. පද්ධති සැකසීම්, කවුළු කළමනාකරණය, ඩෙස්ක්ටොප් ප්‍රයෝග තුළ බොඳ කිරීම සක්‍රිය කර, ඉන්පසු Katna Mail නැවත විවෘත කරන්න.
+look-blur-none-gnome = GNOME කවුළු පිටුපස ඇති දේ බොඳ නොකරයි.
+look-blur-none-x11 = ඔබේ කවුළු කළමනාකරු කවුළු පිටුපස ඇති දේ බොඳ නොකරයි.
+look-blur-none-wayland = ඔබේ සංයුක්තකාරකය කවුළු පිටුපස ඇති දේ බොඳ නොකරයි.
+
+## Settings > User feedback (crash reports)
+
+feedback-intro-sending = වැරදුණු දේ නිවැරදි කිරීමට උදවු වීමට නව බිඳවැටීම් වාර්තා යවනු ලැබේ. වෙන කිසිවක් මෙම පරිගණකයෙන් පිටව නොයයි.
+feedback-intro-local = Katna කිසිවක් කොහේවත් නොයවයි. බිඳවැටීම් වාර්තා මෙම පරිගණකයේ රැඳේ, ඔබට බැලීමට හෝ දෝෂ වාර්තාවකට ඇමිණීමට.
+feedback-crash-reports = බිඳවැටීම් වාර්තා
+feedback-crash-reports-detail = Katna Mail හෝ එහි පසුබිම් සේවාව බිඳ වැටුණු විට ලියනු ලැබේ.
+feedback-save = බිඳවැටීම් වාර්තා මෙම පරිගණකයේ සුරකින්න
+feedback-save-detail = ඔබේ නිවාස ෆෝල්ඩරය, පරිශීලක සහ පරිගණක නම් සහ ඊමේල් ලිපින ඉවත් කෙරේ
+feedback-saved = සුරැකි බිඳවැටීම් වාර්තා
+feedback-saved-detail = { $count ->
+    [one] නවතම { $count } තබා ගනී.
+   *[other] නවතම { $count } තබා ගනී.
+}
+feedback-help-improve = Katna වැඩිදියුණු කිරීමට උදවු කරන්න
+feedback-help-improve-detail = ඔබ සක්‍රිය කරන තුරු අක්‍රියයි, සහ ඔබට ඕනෑම විටෙක මෙහි එය අක්‍රිය කළ හැක.
+feedback-send = බිඳවැටීම් වාර්තා යවන්න
+feedback-send-detail = සුරැකි වාර්තාව, ඔබට මෙහි බැලිය හැකි ආකාරයටම, Katna හි බිඳවැටීම් ලුහුබැඳීමට (Sentry, EU හි) යයි. IP ලිපිනයක්, පණිවිඩ හෝ ඊමේල් ලිපින නැත
+feedback-none-saved = සුරැකි බිඳවැටීම් වාර්තා නැත.
+feedback-delete-all = සියල්ල මකන්න
+feedback-app-daemon = පසුබිම් සේවාව
+feedback-report-sent = { $date } · යවන ලදී
+feedback-view = බලන්න
+feedback-view-tooltip = වාර්තාව විවෘත කරන්න
+feedback-copy-tooltip = දෝෂ වාර්තාවකට ඇලවීමට එය පිටපත් කරන්න
+feedback-copied = බිඳවැටීම් වාර්තාව පිටපත් කරන ලදී.
+feedback-deleted-all = බිඳවැටීම් වාර්තා මකන ලදී.
+feedback-read-failed = බිඳවැටීම් වාර්තාව කියවිය නොහැකි විය: { $error }
+feedback-delete-failed = බිඳවැටීම් වාර්තාව මැකිය නොහැකි විය: { $error }
+feedback-delete-all-failed = බිඳවැටීම් වාර්තා මැකිය නොහැකි විය: { $error }
+
+## Menu bar (the KDE global menu)
+
+desktop-menu-file = _ගොනුව
+desktop-menu-new-message = _නව පණිවිඩය
+desktop-menu-quit = _ඉවත් වන්න
+desktop-menu-edit = _සංස්කරණය
+desktop-menu-undo = _අහෝසි කරන්න
+desktop-menu-select-all = _සියල්ල තෝරන්න
+desktop-menu-select-none = _කිසිවක් නොතෝරන්න
+desktop-menu-find = _සොයන්න…
+desktop-menu-view = _දසුන
+desktop-menu-folder-list = _ෆෝල්ඩර ලැයිස්තුව පෙන්වන්න
+desktop-menu-refresh = _නැවුම් කරන්න
+desktop-menu-go = _යන්න
+desktop-menu-inbox = _එන ලිපි
+desktop-menu-starred = _තරු යෙදූ
+desktop-menu-sent = _යැවූ
+desktop-menu-drafts = _කෙටුම්පත්
+desktop-menu-all-mail = _සියලු තැපැල්
+desktop-menu-next = _ඊළඟ සංවාදය
+desktop-menu-previous = _පෙර සංවාදය
+desktop-menu-message = _පණිවිඩය
+desktop-menu-open = _විවෘත කරන්න
+desktop-menu-reply = _පිළිතුරු දෙන්න
+desktop-menu-reply-all = _සියල්ලන්ට පිළිතුරු දෙන්න
+desktop-menu-forward = _ඉදිරියට යවන්න
+desktop-menu-archive = _සංරක්ෂණය කරන්න
+desktop-menu-delete = _මකන්න
+desktop-menu-spam = _අයාචිත තැපැල් ලෙස වාර්තා කරන්න
+desktop-menu-move-to = _වෙත ගෙන යන්න…
+desktop-menu-mark-read = _කියවූ ලෙස සලකුණු කරන්න
+desktop-menu-mark-unread = _නොකියවූ ලෙස සලකුණු කරන්න
+desktop-menu-star = _තරුවක් එක් කරන්න
+desktop-menu-important = _වැදගත් ලෙස සලකුණු කරන්න
+desktop-menu-not-important = _වැදගත් නොවන ලෙස සලකුණු කරන්න
+desktop-menu-settings = _සැකසීම්
+desktop-menu-quick-settings = _ඉක්මන් සැකසීම්
+desktop-menu-configure = _Katna Mail වින්‍යාස කරන්න…
+desktop-menu-help = _උදවු
+desktop-menu-shortcuts = _යතුරුපුවරු කෙටිමං
+desktop-menu-whats-new = _අලුත් මොනවාද
+desktop-menu-about = _Katna ගැන
+
+## Settings > Keyboard shortcuts: the groups of the list
+
+shortcut-group-moving = සැරිසැරීම
+shortcut-group-actions = ක්‍රියා
+shortcut-group-go-to = යන්න
+shortcut-group-app = යෙදුම
+
+## Settings > Keyboard shortcuts: what each shortcut does
+
+shortcut-next = ඊළඟ සංවාදය
+shortcut-previous = පෙර සංවාදය
+shortcut-down = ලැයිස්තුවේ පහළට යන්න
+shortcut-up = ලැයිස්තුවේ ඉහළට යන්න
+shortcut-first = ලැයිස්තුවේ පළමුවැන්න
+shortcut-last = ලැයිස්තුවේ අවසානය
+shortcut-page-down = ලැයිස්තුවේ පිටුවක් පහළට
+shortcut-page-up = ලැයිස්තුවේ පිටුවක් ඉහළට
+shortcut-open = සංවාදය විවෘත කරන්න
+shortcut-back = ලැයිස්තුවට ආපසු
+shortcut-scroll-down = පහළට අනුචලනය කරන්න
+shortcut-scroll-up = ඉහළට අනුචලනය කරන්න
+shortcut-scroll-page-down = පිටුවක් පහළට අනුචලනය කරන්න
+shortcut-scroll-page-up = පිටුවක් ඉහළට අනුචලනය කරන්න
+shortcut-compose = රචනා කරන්න
+shortcut-reply = පිළිතුරු දෙන්න
+shortcut-reply-all = සියල්ලන්ට පිළිතුරු දෙන්න
+shortcut-forward = ඉදිරියට යවන්න
+shortcut-archive = සංරක්ෂණය කරන්න
+shortcut-delete = මකන්න
+shortcut-spam = අයාචිත තැපැල් ලෙස වාර්තා කරන්න
+shortcut-move-to = වෙත ගෙන යන්න
+shortcut-mark-read = කියවූ ලෙස සලකුණු කරන්න
+shortcut-mark-unread = නොකියවූ ලෙස සලකුණු කරන්න
+shortcut-star = තරුව එක් කරන්න හෝ ඉවත් කරන්න
+shortcut-important = වැදගත් ලෙස සලකුණු කරන්න
+shortcut-not-important = වැදගත් නොවන ලෙස සලකුණු කරන්න
+shortcut-check = සංවාදය සලකුණු කරන්න
+shortcut-select-all = සියලු සංවාද සලකුණු කරන්න
+shortcut-select-none = සියලු සංවාදවල සලකුණු ඉවත් කරන්න
+shortcut-undo = අවසන් ක්‍රියාව අහෝසි කරන්න
+shortcut-go-inbox = එන ලිපි
+shortcut-go-starred = තරු යෙදූ
+shortcut-go-sent = යැවූ
+shortcut-go-drafts = කෙටුම්පත්
+shortcut-go-all = සියලු තැපැල්
+shortcut-search = තැපැල් සොයන්න
+shortcut-navigation = මෙනුව පෙන්වන්න හෝ හකුළන්න
+shortcut-quick-settings = ඉක්මන් සැකසීම්
+shortcut-settings = සියලු සැකසීම්
+shortcut-shortcuts = යතුරුපුවරු කෙටිමං
+shortcut-reload = නව තැපැල් සඳහා පරීක්ෂා කරන්න
+shortcut-quit = ඉවත් වන්න
+
+## Keys pressed one after another, as a shortcut shows them ("G then I")
+
+shortcut-sequence = { $first } ඉන්පසු { $second }
+
+## Settings > Accounts
+
+accounts-folder-pane = ෆෝල්ඩර පැනලය
+accounts-folder-pane-detail = වම් පස පැනලය පෙන්වන්නේ කුමන ගිණුම්වල ෆෝල්ඩරද යන්න.
+accounts-shown-one = වරකට එක් ගිණුමක්; ගිණුම් කාඩ්පතෙන් මාරු වන්න
+accounts-shown-all = සියලු ගිණුම්, එකකට පසු එකක්
+accounts-row = ගිණුම්
+accounts-row-detail = ගිණුමක් ඉවත් කිරීමෙන් මෙම පරිගණකයේ ඇති Katna සතු එහි තැපැල් පිටපත මැකේ. තැපැල් සේවාදායකයේ රැඳේ.
+accounts-none = තවම ගිණුම් නැත.
+accounts-kind-imported = ආයාත කළ
+accounts-picture-reset = ඩෙස්ක්ටොප් පින්තූරය භාවිත කරන්න
+accounts-picture-change = පින්තූරය වෙනස් කරන්න
+accounts-remove = ඉවත් කරන්න
+accounts-delete-all-row = සියලු දත්ත මකන්න
+accounts-delete-all-row-detail = නව ස්ථාපනයක මෙන් මුල සිට අරඹන්න.
+accounts-delete-all-about = සෑම ගිණුමක්ම, සියලු ගබඩා කළ තැපැල්, සම්බන්ධතා සහ දින දර්ශන, සෙවුම් සුචිය, ඔබේ සැකසීම් සහ සුරැකි මුරපද මෙම පරිගණකයෙන් මකයි. ඔබේ තැපැල් සේවාදායකවල කිසිවක් වෙනස් නොවේ.
+accounts-delete-all-open = සියලු Katna දත්ත මකන්න
+
+## Settings > Accounts: snackbars after deleting
+
+accounts-removed-local = { $address } Katna වෙතින් ඉවත් කරන ලදී.
+accounts-removed = { $address } Katna වෙතින් ඉවත් කරන ලදී. එහි තැපැල් තවමත් සේවාදායකයේ ඇත.
+accounts-all-deleted = සියලු Katna දත්ත මෙම පරිගණකයෙන් මකන ලදී.
+
+## Settings > Accounts: the dialog that asks before deleting
+
+accounts-remove-title = { $address } ඉවත් කරන්නද?
+accounts-remove-confirm = ගිණුම ඉවත් කරන්න
+accounts-removing = ඉවත් කරමින්…
+accounts-remove-local-mail = { $folders ->
+    [0] මෙම ගිණුමට ආයාත කළ සියලු තැපැල්
+    [one] මෙම ගිණුමට එහි ෆෝල්ඩරයට ආයාත කළ සියලු තැපැල්
+   *[other] මෙම ගිණුමට එහි ෆෝල්ඩර { $folders } තුළට ආයාත කළ සියලු තැපැල්
+}
+accounts-remove-local-settings = එහි Katna සැකසීම්
+accounts-remove-mail = { $folders ->
+    [0] Katna ගබඩා කළ මෙම ගිණුමේ සියලු තැපැල්
+    [one] Katna විසින් එහි ෆෝල්ඩරයේ ගබඩා කළ මෙම ගිණුමේ සියලු තැපැල්
+   *[other] Katna විසින් එහි ෆෝල්ඩර { $folders } තුළ ගබඩා කළ මෙම ගිණුමේ සියලු තැපැල්
+}
+accounts-remove-outbox = පිටතට යන ලිපි තුළ යැවීමට බලා සිටින එහි පණිවිඩ
+accounts-remove-settings = එහි සුරැකි මුරපදය සහ එහි Katna සැකසීම්
+accounts-delete-all-title = සියලු Katna දත්ත මකන්නද?
+accounts-delete-all-confirm = සියල්ල මකන්න
+accounts-deleting = මකමින්…
+accounts-delete-all-accounts = සෑම ගිණුමක්ම, සහ Katna ගබඩා කළ සියලු තැපැල් සහ ඇමුණුම්
+accounts-delete-all-contacts = සම්බන්ධතා, දින දර්ශන සහ සෙවුම් සුචිය
+accounts-delete-all-settings = සියලු සැකසීම්, අත්සන් සහ යතුරුපුවරු කෙටිමං
+accounts-delete-all-passwords = සෑම සුරැකි මුරපදයක්ම
+accounts-deleted-heading = මෙම පරිගණකයෙන් මැකෙන දේ:
+accounts-cannot-undo = මෙය අහෝසි කළ නොහැක.
+accounts-server-delete-all = ඔබේ තැපැල් සේවාදායකවල කිසිවක් වෙනස් නොවේ: ඔබේ තැපැල් එහි රැඳේ, සහ ගිණුමක් නැවත එක් කිරීමෙන් එය නැවත බාගත වේ. ගොනුවලින් ආයාත කළ තැපැල් ඇත්තේ Katna හි පමණි; ගොනු ස්පර්ශ නොකෙරේ.
+accounts-server-local = මෙම තැපැල් ගොනුවලින් ආයාත කළ නිසා, එකම පිටපත ඇත්තේ Katna සතුවය. එය පැමිණි ගොනු ස්පර්ශ නොකෙරේ; එය ආපසු ලබා ගැනීමට ඒවා නැවත ආයාත කරන්න.
+accounts-server-remove = තැපැල් සේවාදායකයේ කිසිවක් වෙනස් නොවේ: ඔබේ තැපැල් එහි රැඳේ, සහ ගිණුම නැවත එක් කිරීමෙන් එය නැවත බාගත වේ.
+accounts-confirm-word = මකන්න
+accounts-confirm-placeholder = “{ accounts-confirm-word }” ටයිප් කරන්න
+accounts-confirm-prompt = තහවුරු කිරීමට, “{ accounts-confirm-word }” ටයිප් කරන්න:
+accounts-cancel = අවලංගු කරන්න

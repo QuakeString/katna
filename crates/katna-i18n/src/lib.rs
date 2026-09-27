@@ -22,7 +22,7 @@ mod languages;
 mod pseudo;
 mod system;
 
-pub use catalog::{Args, Sources, apply, current, init, lookup, rtl};
+pub use catalog::{Args, Sources, apply, current, english, init, lookup, rtl};
 pub use fluent_bundle::FluentValue;
 pub use languages::{Language, Status, all, find, fold, picker};
 pub use system::{Resolved, resolve, system_formats, system_language};

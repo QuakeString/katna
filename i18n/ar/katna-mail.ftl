@@ -682,3 +682,540 @@ print-not-downloaded = (لم يتم التنزيل بعد.)
 print-encrypted = (مشفّرة. افتحها في Katna Mail لطباعة نصها.)
 print-to = إلى: { $addresses }
 print-cc = نسخة إلى: { $addresses }
+
+## Leftovers from earlier areas (reading pane and its right-click menu)
+
+attachment-open-message = افتح هذه الرسالة لقراءة مرفقاتها.
+text-copy = نسخ
+text-select-all = تحديد الكل
+
+## Settings page: its tabs
+
+settings-tab-general = عام
+settings-tab-inbox = البريد الوارد
+settings-tab-accounts = الحسابات
+settings-tab-subscriptions = الاشتراكات
+settings-tab-appearance = المظهر
+settings-tab-shortcuts = الاختصارات
+settings-tab-default-apps = التطبيقات التلقائية
+settings-tab-folders-rules = المجلدات والقواعد
+settings-tab-compose = الكتابة
+settings-tab-mcp-server = خادم MCP
+settings-tab-feedback = ملاحظات المستخدمين
+settings-tab-experimental = تجريبي
+
+## Settings page: tabs still to come
+
+settings-tab-subscriptions-coming = اطّلع على النشرات الإخبارية والقوائم البريدية التي تصلك، وألغِ الاشتراك بنقرة واحدة.
+settings-tab-folders-rules-coming = أنشئ المجلدات والتصنيفات وأعِد تسميتها وانقلها وأخفِها، واختر ما تتم مزامنته منها. تفرز القواعد البريد الجديد وتصنّفه وتعيد توجيهه أو تحذفه تلقائيًا، حسب المُرسِل أو الموضوع أو الكلمات.
+settings-tab-mcp-server-coming = اسمح لمساعدي الذكاء الاصطناعي على هذا الكمبيوتر بالبحث في بريدك وقراءته وكتابة مسودات الرسائل، بموافقتك.
+
+## Settings > General
+
+settings-general-conversations = عرض المحادثات
+settings-general-conversations-group = تجميع الردود على الرسالة نفسها
+settings-general-conversations-group-detail = سطر واحد لكل محادثة في القائمة
+settings-general-reading = القراءة
+settings-general-newest-first = الرسالة الأحدث أولًا
+settings-general-newest-first-detail = تبدأ المحادثة بآخر رد فيها
+settings-general-full-headers = عرض الرؤوس الكاملة
+settings-general-full-headers-detail = تظهر حقول «من» و«إلى» و«نسخة إلى» والتاريخ والموضوع في كل رسالة
+settings-general-full-names = الأسماء الكاملة للمستلمين
+settings-general-full-names-detail = «إليّ، Ada Lovelace» بدلًا من «إليّ، Ada»
+settings-general-mark-read = وضع علامة «مقروءة»
+settings-general-mark-read-now = فور فتحها
+settings-general-mark-read-1s = بعد فتحها لمدة ثانية واحدة
+settings-general-mark-read-3s = بعد فتحها لمدة 3 ثوانٍ
+settings-general-mark-read-never = فقط عندما أضع عليها علامة «مقروءة»
+settings-general-reply-button = زر الرد
+settings-general-reply-all = الرد على الكل
+settings-general-reply-all-detail = يرد زر الرد بجانب كل رسالة على الجميع، وليس على المُرسِل فقط
+settings-general-remote-images = الصور من الويب
+settings-general-remote-images-detail = يُخبر تحميلُ صور الرسالة مُرسِلَها بأنك فتحتها، ومتى، ومن أين تقريبًا. عند إيقاف هذا الخيار، تسأل كل رسالة أولًا، ويمكنك دائمًا عرض صور أي مُرسِل.
+settings-general-remote-images-always = عرض الصور دائمًا
+settings-general-remote-images-always-detail = في كل رسالة، وليس فقط من المُرسِلين الذين تثق بهم
+settings-general-sending = الإرسال
+settings-general-sending-detail = المدة التي تنتظرها الرسالة المُرسَلة، حتى يمكن التراجع عن إرسالها.
+settings-general-offline = البريد بلا اتصال
+settings-general-offline-detail = يتم تنزيل البريد الحديث كاملًا لقراءته بلا اتصال. ويتم تنزيل البريد الأقدم عند فتحه.
+settings-general-offline-days = { $count ->
+    [zero] { $count } يوم
+    [one] يوم واحد
+    [two] يومان
+    [few] { $count } أيام
+    [many] { $count } يومًا
+   *[other] { $count } يوم
+}
+settings-general-offline-years = { $count ->
+    [zero] { $count } سنة
+    [one] سنة واحدة
+    [two] سنتان
+    [few] { $count } سنوات
+    [many] { $count } سنة
+   *[other] { $count } سنة
+}
+settings-general-offline-all = كل البريد
+settings-general-offline-note = اختيار عدد أيام أقل يُبقي على البريد الذي تم تنزيله. لا يتغير أي شيء على الخادم.
+settings-general-notifications = الإشعارات
+settings-general-notifications-detail = للبريد الجديد في البريد الوارد، حتى عندما يكون Katna Mail مغلقًا.
+settings-general-new-mail = إشعاري بالبريد الجديد
+settings-general-new-mail-detail = مع أزرار الرد على الكل ووضع علامة «مقروءة» والأرشفة
+settings-general-new-mail-sound = تشغيل صوت
+settings-general-new-mail-sound-detail = صوت البريد الجديد في سطح المكتب
+settings-general-desktop = سطح المكتب
+settings-general-open-at-login = فتح Katna Mail عند تسجيل الدخول
+settings-general-open-at-login-detail = تتم مزامنة البريد عند تسجيل الدخول في الحالتين، ما دامت الخدمة تعمل
+settings-general-tray = عرض Katna في علبة النظام
+settings-general-tray-detail = مع عدد الرسائل غير المقروءة وقائمة
+settings-general-unread-badge = عدد غير المقروءة على أيقونة شريط المهام
+settings-general-unread-badge-detail = عدد رسائل البريد الوارد غير المقروءة
+
+## Settings > Inbox
+
+settings-inbox-tabs = علامات تبويب البريد الوارد
+settings-inbox-tabs-detail = فرز البريد الوارد في علامات تبويب، كما يفعل موقع مزوّد بريدك.
+settings-inbox-tabs-show = عرض علامات تبويب البريد الوارد
+settings-inbox-tabs-show-detail = عند الإيقاف تظهر قائمة واحدة لكل حساب
+settings-inbox-no-accounts = أضف حسابًا لاختيار علامات التبويب الخاصة به.
+settings-inbox-tabs-automatic = تلقائي: { $tabs } ({ $provider })
+settings-inbox-tabs-off = بلا علامات تبويب
+settings-inbox-tabs-gmail = الأساسية، العروض الترويجية، الشبكات الاجتماعية، التحديثات، المنتديات
+settings-inbox-tabs-focused = المُركَّز وأخرى
+settings-inbox-tabs-zoho = البريد الوارد والنشرات الإخبارية والإشعارات
+settings-inbox-tabs-shown = علامات التبويب المعروضة. يبقى بريد علامة التبويب التي توقفها في { $tab }.
+
+## Settings > Appearance
+
+settings-appearance-reading-pane = جزء القراءة
+settings-appearance-reading-pane-detail = مكان ظهور المحادثة المفتوحة.
+settings-appearance-pane-right = بجانب القائمة
+settings-appearance-pane-none = بلا تقسيم
+settings-appearance-density = الكثافة
+settings-appearance-density-default = تلقائية
+settings-appearance-density-compact = مضغوطة
+settings-appearance-scaling = التحجيم
+settings-appearance-scaling-detail = يكبّر كل شيء في Katna Mail أو يصغّره، فوق تحجيم سطح المكتب نفسه: النصوص والأيقونات والمسافات والفواصل. يحتفظ البريد الذي ترسله بحجم خطه. قد تجعل الأحجام الصغيرة جدًا النقر على الأيقونات صعبًا.
+settings-appearance-theme = السمة
+settings-appearance-theme-system = مثل سطح المكتب
+settings-appearance-theme-light = فاتحة
+settings-appearance-theme-dark = داكنة
+settings-appearance-desktop-colors = ألوان سطح المكتب
+settings-appearance-desktop-colors-use = استخدام ألوان سطح المكتب
+settings-appearance-desktop-colors-use-detail = نظام الألوان ولون التمييز في سطح المكتب
+settings-appearance-app-names = أسماء التطبيقات
+settings-appearance-app-names-show = عرض أسماء التطبيقات
+settings-appearance-app-names-show-detail = الأسماء أسفل أيقونات التطبيقات في أقصى اليمين
+settings-appearance-sender-pictures = صور المُرسِلين
+settings-appearance-sender-pictures-show = عرض شعارات الشركات
+settings-appearance-sender-pictures-show-detail = يتم البحث عنها حسب نطاق المُرسِل، وليس حسب الرسالة أبدًا، ويُحتفظ بها لمدة أسبوع
+settings-appearance-important = علامات «مهمة»
+settings-appearance-important-show = عرض علامات «مهمة»
+settings-appearance-important-show-detail = بجانب كل رسالة في القائمة
+settings-appearance-message-width = اتساع الرسائل
+settings-appearance-message-width-limit = تحديد اتساع الرسائل
+settings-appearance-message-width-limit-detail = قراءة الأسطر الطويلة أسهل في نافذة عريضة
+settings-appearance-mail-colors = ألوان البريد
+settings-appearance-mail-colors-detail = صُمّم معظم البريد لصفحة بيضاء. مع السمة الداكنة، تتغير ألوانه إلى ألوان داكنة سهلة القراءة؛ وعند الإيقاف، يحتفظ بألوان مُرسِله على صفحة فاتحة.
+settings-appearance-dark-mail = ألوان داكنة للبريد أيضًا
+settings-appearance-dark-mail-detail = فقط عندما تكون السمة داكنة
+settings-appearance-attachment-previews = معاينات المرفقات
+settings-appearance-attachment-previews-show = عرض معاينات المرفقات
+settings-appearance-attachment-previews-show-detail = صورة صغيرة لمحتوى كل ملف على بطاقته
+
+## Settings > Default apps
+
+settings-default-apps-intro = مكان فتح المرفقات عند النقر عليها. ويمكن للعارض دائمًا فتح الملف في تطبيق آخر أيضًا. يتم ضبط التطبيقات التلقائية لسطح المكتب في إعداداته الخاصة.
+settings-default-apps-pdf = ملفات PDF
+settings-default-apps-pdf-detail = الصفحات، مع التكبير والتصغير.
+settings-default-apps-pictures = الصور
+settings-default-apps-pictures-detail = الصور الفوتوغرافية (بالاتجاه الصحيح) وPNG وGIF وWebP وBMP وTIFF وSVG.
+settings-default-apps-text = الملفات النصية
+settings-default-apps-text-detail = النص العادي والسجلات والتعليمات البرمجية والنصوص الأخرى.
+settings-default-apps-sheets = جداول البيانات
+settings-default-apps-sheets-detail = Excel (xlsx وxls) وOpenDocument (ods) وCSV.
+settings-default-apps-documents = المستندات
+settings-default-apps-documents-detail = Word (docx) ونصوص OpenDocument (odt).
+settings-default-apps-katna = عارض Katna Mail
+settings-default-apps-system = التطبيق التلقائي لسطح المكتب
+settings-default-apps-ask = السؤال عن التطبيق في كل مرة
+settings-default-apps-after-saving = بعد الحفظ
+settings-default-apps-show-folder = عرض الملفات المحفوظة في مجلدها
+settings-default-apps-show-folder-detail = يفتح مدير الملفات مع تحديد المرفقات المحفوظة
+
+## Settings > Compose
+
+settings-compose-send-from = إرسال الرسائل الجديدة من
+settings-compose-send-from-detail = يتم دائمًا إرسال الردود وإعادات التوجيه من الحساب الذي تستخدمه.
+settings-compose-send-from-current = الحساب الذي تستخدمه
+settings-compose-send-on-replies = الإرسال في الردود
+settings-compose-send-on-replies-detail = ما يفعله زر «إرسال» في الرد أو إعادة التوجيه. وتوفّر القائمة بجانب «إرسال» الخيار الآخر.
+settings-compose-send-plain = إرسال
+settings-compose-send-archive = إرسال وأرشفة
+settings-compose-signatures = التوقيعات
+settings-compose-signatures-detail = يُضاف أسفل رسالتك، بعد سطر «--». اختر توقيعًا آخر في نافذة الإنشاء.
+settings-compose-untitled = بلا عنوان
+settings-compose-signature-name = الاسم، مثل: العمل
+settings-compose-signature-first = توقيعي
+settings-compose-signature-numbered = التوقيع { $number }
+settings-compose-signature-delete = حذف
+settings-compose-signature-deleted = تم حذف التوقيع
+settings-compose-signature-new = إنشاء جديد
+settings-compose-no-signatures = لا توجد توقيعات بعد.
+settings-compose-no-signature = بلا توقيع
+settings-compose-for-new-mail = للرسائل الجديدة
+settings-compose-for-replies = للردود وإعادة التوجيه
+settings-compose-for-replies-detail = في محادثة وقّعت فيها رسالة، يبدأ الرد بذلك التوقيع بدلًا من ذلك.
+settings-compose-format = التنسيق
+settings-compose-plain-text = الكتابة بنص عادي
+settings-compose-plain-text-detail = يبدأ البريد الجديد بلا تنسيق؛ ويمكن التبديل في نافذة الإنشاء
+settings-compose-spelling = الإملاء
+settings-compose-spell-check = التدقيق الإملائي أثناء الكتابة
+settings-compose-spell-check-detail = يوضع خط تحت الكلمات التي بها أخطاء إملائية، مع اقتراحات عند النقر بزر الماوس الأيمن
+settings-compose-spell-desktop = لغة سطح المكتب ({ $language })
+settings-compose-templates = النماذج
+settings-compose-templates-detail = احفظ الرسائل التي تكتبها كثيرًا، وابدأ منها رسالة جديدة أو ردًا.
+
+## Settings > Shortcuts
+
+settings-shortcuts-set = مجموعة الاختصارات
+settings-shortcuts-set-detail = ابدأ من مفاتيح تطبيق بريد تعرفه. مفتاح Cmd هو Ctrl هنا. تبقى تغييراتك فوق المجموعة، ويعيد «استعادة الإعدادات التلقائية» مفاتيح المجموعة.
+settings-shortcuts-single = اختصارات المفتاح الواحد
+settings-shortcuts-single-detail = مفاتيح بلا Ctrl أو Alt، كما في بريد الويب: e للأرشفة، وj وk للتنقل، و/ للبحث. تعمل في القائمة وفي المحادثة المفتوحة، ولا تعمل أبدًا أثناء الكتابة.
+settings-shortcuts-single-use = استخدام اختصارات المفتاح الواحد
+settings-shortcuts-single-use-detail = تعمل اختصارات Ctrl دائمًا
+settings-shortcuts-how = انقر على مفتاح لتغييره، أو على + لإضافة مفتاح، ثم اضغط المفاتيح الجديدة. يلغي Esc العملية.
+settings-shortcuts-restore = استعادة الإعدادات التلقائية
+settings-shortcuts-no-key = بلا مفتاح
+settings-shortcuts-press = اضغط المفاتيح…
+settings-shortcuts-then = { $keys } ثم…
+settings-shortcuts-moved = أصبح { $keys } ينفّذ «{ $action }» بدلًا من «{ $previous }».
+settings-shortcuts-single-off = اختصارات المفتاح الواحد متوقفة، لذا سيعمل هذا المفتاح بعد تفعيلها.
+settings-shortcuts-restored = عادت كل الاختصارات إلى مفاتيح مجموعتها.
+
+## Settings search: the line under a result
+
+settings-general-language-summary = لغة التطبيق والتواريخ والأرقام
+settings-general-reading-summary = الرسالة الأحدث أولًا، والرؤوس الكاملة، والأسماء الكاملة للمستلمين
+settings-general-mark-read-summary = متى توضع علامة «مقروءة» على المحادثة المفتوحة: فورًا، أو بعد ثانية أو 3 ثوانٍ، أو يدويًا
+settings-general-reply-button-summary = يرد زر الرد بجانب كل رسالة على الجميع
+settings-general-remote-images-summary = عرض الصور في كل رسالة دائمًا
+settings-general-sending-summary = التراجع عن الإرسال: المدة التي تنتظرها الرسالة المُرسَلة، حتى يمكن التراجع عن إرسالها
+settings-general-offline-summary = عدد أيام البريد الحديث التي يتم تنزيلها كاملة لقراءتها بلا اتصال
+settings-general-notifications-summary = إشعارات البريد الجديد وصوتها
+settings-general-desktop-summary = فتح Katna Mail عند تسجيل الدخول، وأيقونة علبة النظام، وعدد غير المقروءة على أيقونة شريط المهام
+settings-accounts-accounts-summary = إضافة حساب أو إزالته، أو تغيير صورته
+settings-appearance-density-summary = أسطر تلقائية أو مضغوطة في القائمة
+settings-appearance-scaling-summary = تكبير كل شيء أو تصغيره: النصوص والأيقونات والمسافات والفواصل
+settings-appearance-theme-summary = مثل سطح المكتب، أو فاتحة، أو داكنة
+settings-appearance-sender-pictures-summary = شعارات الشركات، يتم البحث عنها حسب نطاق المُرسِل
+settings-appearance-important-summary = علامة «مهمة» بجانب كل رسالة في القائمة
+settings-appearance-mail-colors-summary = ألوان داكنة لبريد HTML في السمة الداكنة، أو ألوان مُرسِله
+settings-appearance-attachment-previews-summary = صورة صغيرة لمحتوى كل مرفق
+settings-shortcuts-set-summary = البدء من مفاتيح Gmail أو Inbox by Gmail أو Apple Mail أو Outlook أو Thunderbird
+settings-shortcuts-single-summary = مفاتيح بلا Ctrl أو Alt، كما في بريد الويب
+settings-default-apps-pdf-summary = مكان فتح مرفقات PDF
+settings-default-apps-pictures-summary = مكان فتح الصور الفوتوغرافية والصور
+settings-default-apps-text-summary = مكان فتح النص العادي والسجلات والتعليمات البرمجية
+settings-default-apps-sheets-summary = مكان فتح ملفات Excel وOpenDocument وCSV
+settings-default-apps-documents-summary = مكان فتح مستندات Word ونصوص OpenDocument
+settings-default-apps-after-saving-summary = عرض المرفقات المحفوظة في مجلدها
+settings-compose-send-from-summary = الحساب الذي يُرسَل منه البريد الجديد: الحساب الذي تستخدمه، أو الحساب نفسه دائمًا
+settings-compose-send-on-replies-summary = «إرسال» أو «إرسال وأرشفة» المحادثة، في الردود وإعادة التوجيه
+settings-compose-signatures-summary = يُضاف أسفل رسالتك، بعد سطر «--»
+settings-compose-for-new-mail-summary = التوقيع الذي يبدأ به البريد الجديد
+settings-compose-for-replies-summary = التوقيع الذي تبدأ به الردود وإعادات التوجيه
+settings-compose-format-summary = كتابة البريد الجديد بنص عادي
+settings-compose-spelling-summary = التدقيق الإملائي أثناء الكتابة، ولغة القاموس
+settings-compose-templates-summary = قريبًا: احفظ الرسائل التي تكتبها كثيرًا، وابدأ منها رسالة جديدة أو ردًا
+settings-feedback-crash-reports-summary = حفظ تقارير الأعطال على هذا الكمبيوتر عند تعطّل Katna Mail أو خدمته في الخلفية
+settings-feedback-saved-summary = عرض تقارير الأعطال المحفوظة على هذا الكمبيوتر أو نسخها أو حذفها
+settings-feedback-help-improve-summary = إرسال تقارير الأعطال للمساعدة في إصلاح الخلل؛ متوقف ما لم تفعّله
+settings-experimental-blur-summary = يظهر سطح المكتب عبر الشريط العلوي بشكل ضبابي، وتبدو القوائم كزجاج مصنفر
+settings-search-shortcut = اختصار لوحة المفاتيح
+settings-search-tab = علامة تبويب في الإعدادات
+settings-search-none = لا توجد إعدادات مطابقة لـ«{ $query }».
+settings-search-results = الإعدادات المطابقة لـ«{ $query }»
+
+## Quick settings (the panel that slides in from the right)
+
+quick-title = الإعدادات السريعة
+quick-see-all = عرض كل الإعدادات
+quick-reading-pane = جزء القراءة
+quick-pane-right = بجانب القائمة
+quick-pane-none = بلا تقسيم
+quick-density = الكثافة
+quick-density-default = تلقائية
+quick-density-compact = مضغوطة
+quick-theme = السمة
+quick-theme-system = مثل سطح المكتب
+quick-theme-light = فاتحة
+quick-theme-dark = داكنة
+quick-desktop-colors = ألوان سطح المكتب
+quick-desktop-colors-detail = نظام الألوان ولون التمييز في سطح المكتب
+quick-app-names = أسماء التطبيقات
+quick-app-names-detail = الأسماء أسفل أيقونات التطبيقات في أقصى اليمين
+quick-inbox-tabs = علامات تبويب البريد الوارد
+quick-inbox-tabs-detail = علامات التبويب لدى مزوّد بريد كل حساب
+quick-choose-tabs = اختيار علامات التبويب
+quick-choose-tabs-detail = لكل حساب، في الإعدادات
+quick-sending = الإرسال
+quick-undo-send = التراجع عن الإرسال
+quick-undo-send-off = متوقف
+quick-undo-send-seconds = { $seconds } ث
+quick-signatures = التوقيعات
+quick-signatures-none = لا توجد بعد
+quick-signatures-one = { $name }، يُستخدم تلقائيًا
+quick-signatures-many = { $count ->
+    [zero] { $count } توقيع؛ { $name } تلقائيًا
+    [one] توقيع واحد؛ { $name } تلقائيًا
+    [two] توقيعان؛ { $name } تلقائيًا
+    [few] { $count } توقيعات؛ { $name } تلقائيًا
+    [many] { $count } توقيعًا؛ { $name } تلقائيًا
+   *[other] { $count } توقيع؛ { $name } تلقائيًا
+}
+quick-signatures-no-default = { $count ->
+    [zero] { $count }، بلا توقيع تلقائي
+    [one] { $count }، بلا توقيع تلقائي
+    [two] { $count }، بلا توقيع تلقائي
+    [few] { $count }، بلا توقيع تلقائي
+    [many] { $count }، بلا توقيع تلقائي
+   *[other] { $count }، بلا توقيع تلقائي
+}
+quick-signature-untitled = بلا عنوان
+quick-threading = سلاسل الرسائل
+quick-conversation-view = عرض المحادثات
+quick-conversation-view-detail = تجميع الردود على الرسالة نفسها
+quick-help = المساعدة
+quick-tour = بدء الجولة التعريفية
+quick-whats-new = ما الجديد
+quick-about = حول Katna
+
+## Settings: opening at login
+
+settings-open-at-login-failed = تعذّر تغيير الفتح عند تسجيل الدخول: { $error }
+
+## Settings > Appearance > Scaling
+
+scale-letter = ع
+scale-percent = { $percent }٪
+scale-reset = العودة إلى { $percent }٪
+
+## Settings > Experimental > Look & Feel
+
+look-intro = ميزات لا تزال قيد التجربة. قد تتغير أو تختفي.
+look-heading = الشكل والمظهر
+look-window-frame = إطار النافذة
+look-window-frame-detail = مَن يرسم شريط العنوان وأزرار النافذة والزوايا والظل.
+look-frame-native-kde = أصلي: إطار KDE، بسمة Plasma الخاصة بك
+look-frame-native = أصلي: إطار سطح المكتب
+look-frame-katna = Katna: يصبح الشريط العلوي شريط العنوان
+look-frame-katna-note-named = يرسم Katna زوايا مستديرة وظلًا خاصًا به. لم يعد الإطار يتبع سمة { $desktop }؛ لكن قواعد النوافذ لا تزال سارية.
+look-frame-katna-note = يرسم Katna زوايا مستديرة وظلًا خاصًا به. لم يعد الإطار يتبع سمة سطح المكتب؛ لكن قواعد النوافذ لا تزال سارية.
+look-frame-client-side = يترك سطح المكتب لديك الإطار لكل تطبيق، لذا يرسم Katna إطاره الخاص بالفعل.
+look-blurred-background = خلفية ضبابية
+look-blurred-background-detail = يظهر سطح المكتب عبر الشريط العلوي والمجلدات بشكل ضبابي، وتبدو القوائم والنوافذ المنبثقة كزجاج مصنفر.
+look-blur = إضفاء ضبابية على ما خلف النافذة
+look-blur-detail = يبقى البريد على بطاقات مُصمتة، ليحتفظ النص بتباينه
+look-blur-off-kde = تأثير الضبابية في KDE متوقف. فعّل «الضبابية» في «إعدادات النظام»، «إدارة النوافذ»، «تأثيرات سطح المكتب»، ثم افتح Katna Mail مجددًا.
+look-blur-none-gnome = لا يضفي GNOME ضبابية على ما خلف النوافذ.
+look-blur-none-x11 = لا يضفي مدير النوافذ لديك ضبابية على ما خلف النوافذ.
+look-blur-none-wayland = لا يضفي المُركِّب لديك ضبابية على ما خلف النوافذ.
+
+## Settings > User feedback (crash reports)
+
+feedback-intro-sending = يتم إرسال تقارير الأعطال الجديدة للمساعدة في إصلاح الخلل. لا يغادر أي شيء آخر هذا الكمبيوتر.
+feedback-intro-local = لا يرسل Katna أي شيء إلى أي مكان. تبقى تقارير الأعطال على هذا الكمبيوتر، لتطّلع عليها أو ترفقها ببلاغ عن خطأ.
+feedback-crash-reports = تقارير الأعطال
+feedback-crash-reports-detail = تُكتب عند تعطّل Katna Mail أو خدمته في الخلفية.
+feedback-save = حفظ تقارير الأعطال على هذا الكمبيوتر
+feedback-save-detail = يُستبعد منها مجلد المنزل واسم المستخدم واسم الكمبيوتر وعناوين البريد الإلكتروني
+feedback-saved = تقارير الأعطال المحفوظة
+feedback-saved-detail = { $count ->
+    [zero] يُحتفظ بأحدث { $count } تقرير.
+    [one] يُحتفظ بأحدث تقرير فقط.
+    [two] يُحتفظ بأحدث تقريرين.
+    [few] يُحتفظ بأحدث { $count } تقارير.
+    [many] يُحتفظ بأحدث { $count } تقريرًا.
+   *[other] يُحتفظ بأحدث { $count } تقرير.
+}
+feedback-help-improve = المساعدة في تحسين Katna
+feedback-help-improve-detail = متوقف ما لم تفعّله، ويمكنك إيقافه هنا في أي وقت.
+feedback-send = إرسال تقارير الأعطال
+feedback-send-detail = يُرسَل التقرير المحفوظ، تمامًا كما يمكنك عرضه هنا، إلى متتبّع الأعطال لدى Katna (Sentry، في الاتحاد الأوروبي). بلا عنوان IP أو رسائل أو عناوين بريد إلكتروني
+feedback-none-saved = لا توجد تقارير أعطال محفوظة.
+feedback-delete-all = حذف الكل
+feedback-app-daemon = الخدمة في الخلفية
+feedback-report-sent = { $date } · تم الإرسال
+feedback-view = عرض
+feedback-view-tooltip = فتح التقرير
+feedback-copy-tooltip = نسخه للصقه في بلاغ عن خطأ
+feedback-copied = تم نسخ تقرير العطل.
+feedback-deleted-all = تم حذف تقارير الأعطال.
+feedback-read-failed = تعذّرت قراءة تقرير العطل: { $error }
+feedback-delete-failed = تعذّر حذف تقرير العطل: { $error }
+feedback-delete-all-failed = تعذّر حذف تقارير الأعطال: { $error }
+
+## Menu bar (the KDE global menu)
+
+desktop-menu-file = _ملف
+desktop-menu-new-message = _رسالة جديدة
+desktop-menu-quit = _إنهاء
+desktop-menu-edit = _تحرير
+desktop-menu-undo = _تراجع
+desktop-menu-select-all = _تحديد الكل
+desktop-menu-select-none = _إلغاء التحديد
+desktop-menu-find = _بحث…
+desktop-menu-view = _عرض
+desktop-menu-folder-list = _إظهار قائمة المجلدات
+desktop-menu-refresh = _إعادة التحميل
+desktop-menu-go = _انتقال
+desktop-menu-inbox = _البريد الوارد
+desktop-menu-starred = _المميّزة بنجمة
+desktop-menu-sent = _المُرسَلة
+desktop-menu-drafts = _المسودات
+desktop-menu-all-mail = _كل البريد
+desktop-menu-next = _المحادثة التالية
+desktop-menu-previous = _المحادثة السابقة
+desktop-menu-message = _رسالة
+desktop-menu-open = _فتح
+desktop-menu-reply = _رد
+desktop-menu-reply-all = _الرد على الكل
+desktop-menu-forward = _إعادة توجيه
+desktop-menu-archive = _أرشفة
+desktop-menu-delete = _حذف
+desktop-menu-spam = _الإبلاغ عن محتوى غير مرغوب فيه
+desktop-menu-move-to = _نقل إلى…
+desktop-menu-mark-read = _وضع علامة «مقروءة»
+desktop-menu-mark-unread = _وضع علامة «غير مقروءة»
+desktop-menu-star = _إضافة نجمة
+desktop-menu-important = _وضع علامة «مهمة»
+desktop-menu-not-important = _وضع علامة «غير مهمة»
+desktop-menu-settings = _الإعدادات
+desktop-menu-quick-settings = _الإعدادات السريعة
+desktop-menu-configure = _ضبط Katna Mail…
+desktop-menu-help = _مساعدة
+desktop-menu-shortcuts = _اختصارات لوحة المفاتيح
+desktop-menu-whats-new = _ما الجديد
+desktop-menu-about = _حول Katna
+
+## Settings > Keyboard shortcuts: the groups of the list
+
+shortcut-group-moving = التنقل
+shortcut-group-actions = الإجراءات
+shortcut-group-go-to = الانتقال إلى
+shortcut-group-app = التطبيق
+
+## Settings > Keyboard shortcuts: what each shortcut does
+
+shortcut-next = المحادثة التالية
+shortcut-previous = المحادثة السابقة
+shortcut-down = النزول في القائمة
+shortcut-up = الصعود في القائمة
+shortcut-first = الأولى في القائمة
+shortcut-last = الأخيرة في القائمة
+shortcut-page-down = صفحة لأسفل في القائمة
+shortcut-page-up = صفحة لأعلى في القائمة
+shortcut-open = فتح المحادثة
+shortcut-back = العودة إلى القائمة
+shortcut-scroll-down = التمرير لأسفل
+shortcut-scroll-up = التمرير لأعلى
+shortcut-scroll-page-down = التمرير صفحة لأسفل
+shortcut-scroll-page-up = التمرير صفحة لأعلى
+shortcut-compose = إنشاء
+shortcut-reply = رد
+shortcut-reply-all = الرد على الكل
+shortcut-forward = إعادة توجيه
+shortcut-archive = أرشفة
+shortcut-delete = حذف
+shortcut-spam = الإبلاغ عن محتوى غير مرغوب فيه
+shortcut-move-to = نقل إلى
+shortcut-mark-read = وضع علامة «مقروءة»
+shortcut-mark-unread = وضع علامة «غير مقروءة»
+shortcut-star = إضافة نجمة أو إزالتها
+shortcut-important = وضع علامة «مهمة»
+shortcut-not-important = وضع علامة «غير مهمة»
+shortcut-check = تحديد المحادثة
+shortcut-select-all = تحديد كل المحادثات
+shortcut-select-none = إلغاء تحديد كل المحادثات
+shortcut-undo = التراجع عن آخر إجراء
+shortcut-go-inbox = البريد الوارد
+shortcut-go-starred = المميّزة بنجمة
+shortcut-go-sent = المُرسَلة
+shortcut-go-drafts = المسودات
+shortcut-go-all = كل البريد
+shortcut-search = البحث في البريد
+shortcut-navigation = إظهار القائمة أو طيّها
+shortcut-quick-settings = الإعدادات السريعة
+shortcut-settings = كل الإعدادات
+shortcut-shortcuts = اختصارات لوحة المفاتيح
+shortcut-reload = التحقق من وجود بريد جديد
+shortcut-quit = إنهاء
+
+## Keys pressed one after another, as a shortcut shows them ("G then I")
+
+shortcut-sequence = { $first } ثم { $second }
+
+## Settings > Accounts
+
+accounts-folder-pane = جزء المجلدات
+accounts-folder-pane-detail = الحسابات التي يعرض الجزء الأيمن مجلداتها.
+accounts-shown-one = حساب واحد في كل مرة؛ يمكنك التبديل من بطاقة الحساب
+accounts-shown-all = كل الحسابات، الواحد تلو الآخر
+accounts-row = الحسابات
+accounts-row-detail = تؤدي إزالة حساب إلى حذف نسخة Katna من بريده على هذا الكمبيوتر. يبقى البريد على الخادم.
+accounts-none = لا توجد حسابات بعد.
+accounts-kind-imported = مستورَد
+accounts-picture-reset = استخدام صورة سطح المكتب
+accounts-picture-change = تغيير الصورة
+accounts-remove = إزالة
+accounts-delete-all-row = حذف كل البيانات
+accounts-delete-all-row-detail = البدء من جديد، كما في تثبيت جديد.
+accounts-delete-all-about = يحذف من هذا الكمبيوتر كل الحسابات، وكل البريد المخزَّن، وجهات الاتصال والتقاويم، وفهرس البحث، وإعداداتك وكلمات المرور المحفوظة. لا يتغير أي شيء على خوادم بريدك.
+accounts-delete-all-open = حذف كل بيانات Katna
+
+## Settings > Accounts: snackbars after deleting
+
+accounts-removed-local = تمت إزالة { $address } من Katna.
+accounts-removed = تمت إزالة { $address } من Katna. لا يزال بريده على الخادم.
+accounts-all-deleted = تم حذف كل بيانات Katna من هذا الكمبيوتر.
+
+## Settings > Accounts: the dialog that asks before deleting
+
+accounts-remove-title = هل تريد إزالة { $address }؟
+accounts-remove-confirm = إزالة الحساب
+accounts-removing = جارٍ الإزالة…
+accounts-remove-local-mail = { $folders ->
+    [0] كل البريد المستورد إلى هذا الحساب
+    [one] كل البريد المستورد إلى هذا الحساب في مجلده
+    [two] كل البريد المستورد إلى هذا الحساب في مجلديه
+    [few] كل البريد المستورد إلى هذا الحساب في مجلداته البالغ عددها { $folders }
+    [many] كل البريد المستورد إلى هذا الحساب في مجلداته البالغ عددها { $folders }
+   *[other] كل البريد المستورد إلى هذا الحساب في مجلداته البالغ عددها { $folders }
+}
+accounts-remove-local-settings = إعداداته في Katna
+accounts-remove-mail = { $folders ->
+    [0] كل بريد هذا الحساب الذي خزّنه Katna
+    [one] كل بريد هذا الحساب الذي خزّنه Katna في مجلده
+    [two] كل بريد هذا الحساب الذي خزّنه Katna في مجلديه
+    [few] كل بريد هذا الحساب الذي خزّنه Katna في مجلداته البالغ عددها { $folders }
+    [many] كل بريد هذا الحساب الذي خزّنه Katna في مجلداته البالغ عددها { $folders }
+   *[other] كل بريد هذا الحساب الذي خزّنه Katna في مجلداته البالغ عددها { $folders }
+}
+accounts-remove-outbox = رسائله المنتظرة في صندوق الصادر
+accounts-remove-settings = كلمة المرور المحفوظة له وإعداداته في Katna
+accounts-delete-all-title = هل تريد حذف كل بيانات Katna؟
+accounts-delete-all-confirm = حذف كل شيء
+accounts-deleting = جارٍ الحذف…
+accounts-delete-all-accounts = كل الحسابات، وكل البريد والمرفقات التي خزّنها Katna
+accounts-delete-all-contacts = جهات الاتصال والتقاويم وفهرس البحث
+accounts-delete-all-settings = كل الإعدادات والتوقيعات واختصارات لوحة المفاتيح
+accounts-delete-all-passwords = كل كلمات المرور المحفوظة
+accounts-deleted-heading = سيُحذف من هذا الكمبيوتر:
+accounts-cannot-undo = لا يمكن التراجع عن هذا الإجراء.
+accounts-server-delete-all = لا يتغير أي شيء على خوادم بريدك: يبقى بريدك هناك، وإضافة حساب مجددًا تنزّله مرة أخرى. البريد المستورد من ملفات موجود في Katna فقط؛ ولا يتم المساس بالملفات.
+accounts-server-local = تم استيراد هذا البريد من ملفات، لذا يملك Katna النسخة الوحيدة منه. لا يتم المساس بالملفات التي جاء منها؛ استوردها مجددًا لاستعادته.
+accounts-server-remove = لا يتغير أي شيء على خادم البريد: يبقى بريدك هناك، وإضافة الحساب مجددًا تنزّله مرة أخرى.
+accounts-confirm-word = حذف
+accounts-confirm-placeholder = اكتب «{ accounts-confirm-word }»
+accounts-confirm-prompt = للتأكيد، اكتب «{ accounts-confirm-word }»:
+accounts-cancel = إلغاء
