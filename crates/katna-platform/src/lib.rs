@@ -8,4 +8,5 @@ pub mod dbusmenu;
 pub mod font;
 pub mod icon;
 pub mod launcher;
+pub mod mimeapps;
 pub mod tray;

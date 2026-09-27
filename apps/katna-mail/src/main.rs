@@ -12,6 +12,7 @@ mod daemon;
 mod data;
 mod format;
 mod instance;
+mod mailto;
 mod outgoing;
 mod placement;
 mod sidebar;
@@ -52,6 +53,8 @@ Options:
   --settings       Open the settings
   --message ID     Open the message with this ID (as notifications do)
   --reply-all ID   Open the message with this ID and reply to all
+  mailto:...       Write a new message as the link asks (Katna Mail is
+                   the desktop's mail app when Settings > General says so)
   -h, --help       Show this help
   -V, --version    Show the version
 
@@ -89,6 +92,10 @@ fn main() -> ExitCode {
                     Some(id) => request = instance::Request::for_message(flag, id),
                     None => return usage_error(),
                 }
+            }
+            // The desktop file's `%u`: a link to write to.
+            Some(uri) if mailto::Mailto::parse(uri).is_some() => {
+                request = Some(instance::Request::Mailto(uri.to_owned()));
             }
             Some("-h" | "--help") => {
                 print!("{USAGE}");

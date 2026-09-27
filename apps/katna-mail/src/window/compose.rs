@@ -545,6 +545,50 @@ impl MailWindow {
         }
     }
 
+    /// Starts a new message filled in from a `mailto:` link. An unsent
+    /// message already open stays, as it does for Compose.
+    pub(super) fn open_mailto(
+        &mut self,
+        mail: crate::mailto::Mailto,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.open_compose(Kind::New, None, window, cx);
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        if compose.kind != Kind::New || compose.touched(cx) {
+            return;
+        }
+        let set = |field: &Entity<TextInput>, text: String, cx: &mut Context<Self>| {
+            field.update(cx, |input, cx| input.set_text(text, cx));
+        };
+        set(&compose.to, mail.to.join(", "), cx);
+        set(&compose.cc, mail.cc.join(", "), cx);
+        set(&compose.bcc, mail.bcc.join(", "), cx);
+        set(&compose.subject, mail.subject.clone(), cx);
+        compose.show_cc |= !mail.cc.is_empty();
+        compose.show_bcc |= !mail.bcc.is_empty();
+        if !mail.body.is_empty() {
+            // The text goes where the cursor waits, above the signature.
+            let mut doc = compose.body.read(cx).doc().clone();
+            let text = html::from_plain(mail.body.trim_end()).blocks;
+            doc.blocks.splice(0..1.min(doc.blocks.len()), text);
+            compose.body.update(cx, |editor, cx| {
+                editor.set_doc(doc.clone(), doc.start(), cx)
+            });
+        }
+        let focus = if mail.to.is_empty() {
+            compose.to.focus_handle(cx)
+        } else if mail.subject.is_empty() {
+            compose.subject.focus_handle(cx)
+        } else {
+            compose.body.focus_handle(cx)
+        };
+        window.focus(&focus, cx);
+        cx.notify();
+    }
+
     /// Scrolls the conversation smoothly to the reply that just opened at
     /// its end, as Gmail does: to the end when the whole card fits, else
     /// just far enough that its first line, with the cursor, sits near the
