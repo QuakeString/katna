@@ -152,7 +152,10 @@ menu-reply-all = Fèsì sí gbogbo
 menu-forward = Fi ránṣẹ́ síwájú
 menu-archive = Fi pamọ́
 menu-delete = Pa rẹ́
+menu-delete-forever = Pa rẹ́ títí láé
+menu-move-to-inbox = Gbé lọ sí Àpótí-ìwọlé
 menu-spam = Jábọ̀ àwúrúju
+menu-not-spam = Kì í ṣe àwúrúju
 menu-mark-read = Sàmì sí bí kíkà
 menu-mark-unread = Sàmì sí bí àìkà
 menu-mark-all-read = Sàmì sí gbogbo rẹ̀ bí kíkà
@@ -209,6 +212,10 @@ toast-unpinned = { $kind ->
 toast-spam = { $kind ->
     [conversation] A ti jábọ̀ ìjíròrò { $count } bí àwúrúju.
    *[message] A ti jábọ̀ ìfiránṣẹ́ { $count } bí àwúrúju.
+}
+toast-not-spam = { $kind ->
+    [conversation] A ti sàmì sí ìjíròrò { $count } pé kì í ṣe àwúrúju, a sì ti gbé wọn lọ sí àpótí-ìwọlé.
+   *[message] A ti sàmì sí ìfiránṣẹ́ { $count } pé kì í ṣe àwúrúju, a sì ti gbé wọn lọ sí àpótí-ìwọlé.
 }
 toast-deleted-forever = { $kind ->
     [conversation] A ti pa ìjíròrò { $count } rẹ́ títí láé.

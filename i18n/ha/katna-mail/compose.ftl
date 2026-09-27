@@ -38,6 +38,9 @@ compose-scheduled = An tsara aikawa a { $when }
 compose-sent-archived = An aika kuma an adana a ma'ajiya
 compose-sent = An aika saƙo
 compose-discarded = An yi watsi da zayyana
+compose-draft-saved = An adana zayyana
+compose-draft-failed = Ba a iya adana zayyanar ba: { $error }
+compose-draft-not-opened = Ba a iya buɗe zayyanar ba.
 
 ## Attachments
 

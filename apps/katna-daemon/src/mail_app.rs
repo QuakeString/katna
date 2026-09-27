@@ -21,8 +21,9 @@ pub(crate) async fn run(
     token: Option<String>,
 ) -> bool {
     // Kept for starting the app, as the call takes `params`.
-    let message = match params.first() {
-        Some(Value::I64(id)) => Some(*id),
+    let argument = match params.first() {
+        Some(Value::I64(id)) => Some(id.to_string()),
+        Some(Value::Str(text)) => Some(text.to_string()),
         _ => None,
     };
     let mut platform: HashMap<&str, Value<'_>> = HashMap::new();
@@ -66,10 +67,10 @@ pub(crate) async fn run(
     if let Some(action) = action
         && let Some(flag) = app_action::flag(action)
     {
-        if app_action::takes_message(action) {
+        if app_action::takes_message(action) || app_action::takes_text(action) {
             // Without the message there is nothing to open: just start.
-            if let Some(id) = message {
-                command.arg(flag).arg(id.to_string());
+            if let Some(argument) = argument {
+                command.arg(flag).arg(argument);
             }
         } else {
             command.arg(flag);
@@ -80,6 +81,46 @@ pub(crate) async fn run(
             .env("XDG_ACTIVATION_TOKEN", token)
             .env("DESKTOP_STARTUP_ID", token);
     }
+    spawn(command);
+    false
+}
+
+/// Has Katna Mail write a new message as the `mailto:` link `uri` asks.
+/// Returns whether a running app took it.
+pub(crate) async fn open_mailto(
+    connection: &zbus::Connection,
+    uri: &str,
+    token: Option<String>,
+) -> bool {
+    let mut platform: HashMap<&str, Value<'_>> = HashMap::new();
+    if let Some(token) = &token {
+        platform.insert("activation-token", Value::from(token.as_str()));
+    }
+    let called = connection
+        .call_method(
+            Some(ids::MAIL_APP_ID),
+            ids::MAIL_OBJECT_PATH,
+            Some("org.freedesktop.Application"),
+            "Open",
+            &(vec![uri], platform),
+        )
+        .await;
+    match called {
+        Ok(_) => return true,
+        Err(err) => tracing::debug!(%err, "Katna Mail is not running"),
+    }
+    let mut command = Command::new("katna-mail");
+    command.arg(uri);
+    if let Some(token) = &token {
+        command
+            .env("XDG_ACTIVATION_TOKEN", token)
+            .env("DESKTOP_STARTUP_ID", token);
+    }
+    spawn(command);
+    false
+}
+
+fn spawn(mut command: Command) {
     match command.spawn() {
         // Reaped on its own thread, so it leaves no zombie behind.
         Ok(mut child) => {
@@ -87,5 +128,4 @@ pub(crate) async fn run(
         }
         Err(err) => tracing::warn!(%err, "could not start katna-mail"),
     }
-    false
 }

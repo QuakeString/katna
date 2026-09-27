@@ -475,3 +475,43 @@ ihren Pfeil, um von einem anderen Ihrer Konten zu senden. Neue E-Mails
 beginnen mit Ihrem ersten Konto, außer Sie wählen unter Einstellungen >
 Verfassen > Neue Nachrichten senden von ein anderes Standardkonto.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Gemeinsamer Posteingang"
+text = """
+Schalten Sie Einstellungen > Konten > Gemeinsamer Posteingang ein, um
+die E-Mails all Ihrer Konten zusammen zu sehen. „Alle Konten“ steht oben
+im Ordnerbereich, mit je einem Posteingang, Ungelesen, Markiert,
+Wichtig, Gesendet, Entwürfe und mehr für alle Konten; der Pfeil daneben
+öffnet eine Zeile pro Konto. Der Name jedes Kontos hat jetzt einen
+Pfeil, der seine Ordner einklappt.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Kontextmenüs passen zu jedem Ordner"
+text = """
+Wählen Sie im Kontextmenü unter Verschieben nach einen Ordner oder ein
+Label, wird die E-Mail jetzt verschoben, mit Rückgängig, auch aus
+Suchergebnissen. In Spam wird aus Spam melden Kein Spam. Papierkorb
+bietet In den Posteingang verschieben und Endgültig löschen, Archiv
+bietet In den Posteingang verschieben, und Entwürfe und Gesendet lassen
+Einträge weg, die dort nicht passen.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Konten per Ziehen ordnen"
+text = """
+Wenn Sie in Einstellungen > Konten ein Konto ziehen, hebt sich jetzt
+seine ganze Zeile, und die anderen Konten rücken beiseite, um Platz zu
+machen. Nach oben und Nach unten erscheinen, wenn Sie auf eine Zeile
+zeigen.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Entwürfe bleiben erhalten"
+text = """
+Schließen Sie eine Nachricht, die Sie gerade schreiben, wird sie jetzt
+in Entwürfe gespeichert, auch auf Ihrem Mailserver, wie in Gmail. Öffnen
+Sie sie aus Entwürfe, um weiterzuschreiben. Nur der Papierkorb-Knopf
+verwirft sie, und Rückgängig holt sie zurück.
+"""

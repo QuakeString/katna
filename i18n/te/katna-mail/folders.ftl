@@ -9,6 +9,9 @@ nav-folders = ఫోల్డర్‌లు
 nav-label-new = కొత్త లేబుల్‌ను క్రియేట్ చేయండి
 nav-folder-new = కొత్త ఫోల్డర్‌ను క్రియేట్ చేయండి
 nav-account-unnamed = ఖాతా { $number }
+nav-all-accounts = అన్ని ఖాతాలు
+nav-expand = ఫోల్డర్‌లను చూపండి
+nav-collapse = ఫోల్డర్‌లను దాచండి
 nav-tab-new = { $count ->
     [one] { $count } కొత్తది
    *[other] { $count } కొత్తవి
@@ -18,6 +21,8 @@ nav-tab-new = { $count ->
 
 folder-inbox = ఇన్‌బాక్స్
 folder-starred = నక్షత్రం ఉంచినవి
+folder-unread = చదవనివి
+folder-important = ముఖ్యమైనవి
 folder-drafts = డ్రాఫ్ట్‌లు
 folder-sent = పంపినవి
 folder-archive = ఆర్కైవ్

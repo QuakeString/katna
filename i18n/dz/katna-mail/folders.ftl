@@ -9,12 +9,17 @@ nav-folders = སྣོད་འཛིན་ཚུ
 nav-label-new = ཁ་ཡིག་གསརཔ་གསར་བསྐྲུན་འབད།
 nav-folder-new = སྣོད་འཛིན་གསརཔ་གསར་བསྐྲུན་འབད།
 nav-account-unnamed = རྩིས་ཐོ་ { $number }
+nav-all-accounts = རྩིས་ཐོ་ཆ་མཉམ
+nav-expand = སྣོད་འཛིན་ཚུ་སྟོན།
+nav-collapse = སྣོད་འཛིན་ཚུ་སྦ།
 nav-tab-new = གསརཔ་ { $count }
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = ནང་འབྱོར་སྒྲོམ
 folder-starred = སྐར་མ་བཀལ་ཡོདཔ
+folder-unread = མ་ལྷག་པ
+folder-important = གལ་ཅན
 folder-drafts = ཟིན་བྲིས
 folder-sent = བཏང་ཡོདཔ
 folder-archive = ཡིག་མཛོད

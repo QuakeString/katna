@@ -485,3 +485,44 @@ messages partent de votre premier compte, sauf si vous choisissez un
 autre compte par défaut dans Paramètres > Rédaction > Envoyer les
 nouveaux messages depuis.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Boîte de réception unifiée"
+text = """
+Activez Paramètres > Comptes > Boîte de réception unifiée pour voir
+ensemble les messages de tous vos comptes. « Tous les comptes » est en
+tête du volet des dossiers, avec une seule Boîte de réception, Non lus,
+Messages suivis, Importants, Messages envoyés, Brouillons et plus encore
+pour tous les comptes ; la flèche à côté de chacun ouvre une ligne par
+compte. Le nom de chaque compte a maintenant une flèche qui replie ses
+dossiers.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Des menus contextuels adaptés à chaque dossier"
+text = """
+Choisir un dossier ou un libellé sous Déplacer vers dans le menu du clic
+droit déplace maintenant le message, avec Annuler, y compris depuis les
+résultats de recherche. Dans Spam, Signaler comme spam devient Pas un
+spam. Corbeille propose Déplacer vers la boîte de réception et Supprimer
+définitivement, Archives propose Déplacer vers la boîte de réception, et
+Brouillons et Messages envoyés omettent les actions qui n’y ont pas de
+sens.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Réorganisez les comptes par glisser-déposer"
+text = """
+Dans Paramètres > Comptes, faire glisser un compte soulève désormais
+toute sa ligne, et les autres comptes s’écartent pour lui faire de la
+place. Monter et Descendre apparaissent quand vous pointez une ligne.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Les brouillons sont conservés"
+text = """
+Fermer un message en cours de rédaction l’enregistre désormais dans
+Brouillons, y compris sur votre serveur de messagerie, comme dans Gmail.
+Ouvrez-le depuis Brouillons pour continuer à écrire. Seul le bouton
+Corbeille le supprime, et Annuler le récupère.
+"""

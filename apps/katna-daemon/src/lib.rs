@@ -4,12 +4,14 @@
 //!
 //! The daemon is the only process that writes the store and talks to mail
 //! servers. It runs one sync worker per account, keeps the search index up
-//! to date and serves `in.invenia.katna.Pim1` on the session bus; owning
-//! the bus name keeps it to a single instance.
+//! to date and serves `in.invenia.katna.Pim1` on the session bus, with
+//! KRunner's and GNOME Shell's search; owning the bus name keeps it to a
+//! single instance.
 
 mod crash_upload;
 pub mod daemon;
 mod desktop;
+mod desktop_search;
 pub mod install;
 pub mod katna_account;
 mod mail_app;
@@ -78,6 +80,9 @@ struct Backfill {
     stop: Arc<AtomicBool>,
     thread: Option<std::thread::JoinHandle<()>>,
 }
+
+/// How long after starting the desktop search reads the addresses.
+const DESKTOP_SEARCH_WARM_UP: Duration = Duration::from_secs(20);
 
 /// Pause between backfill batches, so sync gets the write lock often.
 const BACKFILL_PAUSE: Duration = Duration::from_millis(20);
@@ -194,6 +199,15 @@ impl Instance {
             .object_server()
             .at(ids::PIM_OBJECT_PATH, PimService::new(daemon.clone()))
             .await?;
+        let finder = desktop_search::Finder::new(index_paths.clone());
+        desktop_search::serve(&connection, finder.clone()).await?;
+        let warm = finder.clone();
+        smol::spawn(async move {
+            // Out of the way of the first sync after login.
+            smol::Timer::after(DESKTOP_SEARCH_WARM_UP).await;
+            warm.warm_up();
+        })
+        .detach();
         // Taken after the object is there, so activated calls find it.
         let reply = connection
             .request_name_with_flags(ids::DAEMON_BUS_NAME, RequestNameFlags::DoNotQueue.into())
@@ -227,6 +241,7 @@ impl Instance {
             forward,
             indexer.as_ref().map(Indexer::waker),
             desktop,
+            finder,
         ))
         .detach();
         smol::spawn(service::emit_signals(connection.clone(), forwarded)).detach();
@@ -334,12 +349,16 @@ impl Instance {
         if let Err(err) = self.connection.release_name(ids::DAEMON_BUS_NAME).await {
             tracing::debug!(%err, "releasing the bus name");
         }
+        let started = Instant::now();
         self.backfill.stop().await;
+        tracing::debug!(ms = started.elapsed().as_millis(), "backfill stopped");
         self.daemon.shutdown().await;
+        tracing::debug!(ms = started.elapsed().as_millis(), "accounts stopped");
         if let Some(indexer) = self.indexer {
             // Commits what it has indexed; at most one batch more.
             smol::unblock(move || indexer.stop()).await;
         }
+        tracing::debug!(ms = started.elapsed().as_millis(), "indexer stopped");
     }
 }
 
@@ -360,13 +379,15 @@ fn start_indexer(paths: &Paths) -> Option<Indexer> {
     }
 }
 
-/// Passes `notices` on to `forward`, and wakes the indexer and updates the
-/// unread counts when mail changed.
+/// Passes `notices` on to `forward`, and wakes the indexer, updates the
+/// unread counts and has the desktop search read the addresses again when
+/// mail changed.
 async fn watch_mail(
     notices: Receiver<Notice>,
     forward: Sender<Notice>,
     indexer: Option<IndexerWaker>,
     desktop: desktop::Handle,
+    finder: Arc<desktop_search::Finder>,
 ) {
     while let Ok(notice) = notices.recv().await {
         if let Notice::MailChanged(_) = notice {
@@ -374,6 +395,7 @@ async fn watch_mail(
                 indexer.changed();
             }
             desktop.mail_changed();
+            finder.mail_changed();
         }
         if forward.send(notice).await.is_err() {
             break;

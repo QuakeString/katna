@@ -38,6 +38,9 @@ compose-scheduled = Stuur geskeduleer vir { $when }
 compose-sent-archived = Gestuur en geargiveer
 compose-sent = Boodskap gestuur
 compose-discarded = Konsep weggegooi
+compose-draft-saved = Konsep gestoor
+compose-draft-failed = Die konsep kon nie gestoor word nie: { $error }
+compose-draft-not-opened = Die konsep kon nie oopgemaak word nie.
 
 ## Attachments
 

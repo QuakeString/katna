@@ -230,7 +230,10 @@ menu-reply-all = پاسخ به همه
 menu-forward = بازارسال
 menu-archive = بایگانی
 menu-delete = حذف
+menu-delete-forever = حذف برای همیشه
+menu-move-to-inbox = انتقال به صندوق ورودی
 menu-spam = گزارش هرزنامه
+menu-not-spam = هرزنامه نیست
 menu-mark-read = علامت‌گذاری به‌عنوان خوانده‌شده
 menu-mark-unread = علامت‌گذاری به‌عنوان خوانده‌نشده
 menu-mark-all-read = علامت‌گذاری همه به‌عنوان خوانده‌شده
@@ -346,6 +349,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] پیام به‌عنوان هرزنامه گزارش شد.
        *[other] { $count } پیام به‌عنوان هرزنامه گزارش شد.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] مکالمه به‌عنوان غیرهرزنامه علامت خورد و به صندوق ورودی منتقل شد.
+       *[other] { $count } مکالمه به‌عنوان غیرهرزنامه علامت خورد و به صندوق ورودی منتقل شد.
+    }
+   *[message] { $count ->
+        [one] پیام به‌عنوان غیرهرزنامه علامت خورد و به صندوق ورودی منتقل شد.
+       *[other] { $count } پیام به‌عنوان غیرهرزنامه علامت خورد و به صندوق ورودی منتقل شد.
     }
 }
 toast-deleted-forever = { $kind ->

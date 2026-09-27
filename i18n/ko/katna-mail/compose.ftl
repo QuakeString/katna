@@ -38,6 +38,9 @@ compose-scheduled = { $when }에 전송 예약됨
 compose-sent-archived = 보내고 보관처리함
 compose-sent = 메일을 보냈습니다
 compose-discarded = 임시보관 메일을 삭제했습니다
+compose-draft-saved = 임시보관함에 저장했습니다
+compose-draft-failed = 임시보관 메일을 저장하지 못했습니다: { $error }
+compose-draft-not-opened = 임시보관 메일을 열지 못했습니다.
 
 ## Attachments
 

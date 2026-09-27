@@ -44,6 +44,15 @@ pub const MAIL_MENU_BAR_PATH: &str = "/in/invenia/katna/Mail/MenuBar";
 /// unread count on Katna Mail's taskbar icon.
 pub const LAUNCHER_ENTRY_PATH: &str = "/in/invenia/katna/Daemon/LauncherEntry";
 
+/// Object path of the daemon's KRunner runner (`org.kde.krunner1`), named
+/// in its `krunner/dbusplugins` file.
+pub const RUNNER_OBJECT_PATH: &str = "/in/invenia/katna/Daemon/Runner";
+
+/// Object path of the daemon's GNOME Shell search provider
+/// (`org.gnome.Shell.SearchProvider2`), named in its
+/// `gnome-shell/search-providers` file.
+pub const SEARCH_PROVIDER_OBJECT_PATH: &str = "/in/invenia/katna/Daemon/SearchProvider";
+
 /// Katna's crash tracker: the Sentry project crash reports are sent to,
 /// only after the user agrees (`docs/ARCHITECTURE.md` §19.2). A DSN is
 /// the project's public address, not a secret. Empty turns sending off;
@@ -122,7 +131,13 @@ mod tests {
         let path = |name: &str| format!("/{}", name.replace('.', "/"));
         assert_eq!(MAIL_OBJECT_PATH, path(MAIL_APP_ID));
         assert!(MAIL_MENU_BAR_PATH.starts_with(MAIL_OBJECT_PATH));
-        assert!(LAUNCHER_ENTRY_PATH.starts_with(&path(DAEMON_BUS_NAME)));
+        for daemon_path in [
+            LAUNCHER_ENTRY_PATH,
+            RUNNER_OBJECT_PATH,
+            SEARCH_PROVIDER_OBJECT_PATH,
+        ] {
+            assert!(daemon_path.starts_with(&path(DAEMON_BUS_NAME)));
+        }
     }
 
     #[test]

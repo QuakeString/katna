@@ -31,7 +31,7 @@ use futures_lite::FutureExt;
 
 use crate::{
     Envelope, Error, FlagChanges, Flags, Folder, FolderChange, FolderStatus, MailBackend,
-    MessageHeaders, Result, Wait,
+    MessageHeaders, Quota, Result, Wait,
 };
 
 type Reply<T> = Sender<Result<T>>;
@@ -53,6 +53,7 @@ enum Request {
     PollChanges(Reply<Vec<FolderChange>>),
     GmailSearch(u32, String, Reply<Option<Vec<u32>>>),
     GmailMessageIds(Vec<u32>, Reply<Option<HashMap<u32, u64>>>),
+    Quota(Reply<Option<Quota>>),
     WaitForChanges(Duration, Reply<Vec<FolderChange>>),
     Logout(Reply<()>),
 }
@@ -179,6 +180,10 @@ impl Connection {
             .await
     }
 
+    pub async fn quota(&self) -> Result<Option<Quota>> {
+        self.call(Request::Quota).await
+    }
+
     /// Waits for changes to the selected folder, for at most `max_wait`.
     ///
     /// Returns early, possibly with no changes, when another request needs
@@ -290,6 +295,10 @@ impl MailBackend for Connection {
         Connection::gmail_message_ids(self, uids).await
     }
 
+    async fn quota(&mut self) -> Result<Option<Quota>> {
+        Connection::quota(self).await
+    }
+
     /// If `interrupt` wins, the task still finishes its wait, and changes
     /// it reports after that are not delivered; the next sync finds them.
     async fn wait_for_changes<I>(
@@ -374,6 +383,7 @@ async fn run<B: MailBackend>(mut backend: B, inbox: Receiver<Request>) {
             Request::GmailMessageIds(uids, reply) => {
                 answer(&reply, backend.gmail_message_ids(&uids).await)
             }
+            Request::Quota(reply) => answer(&reply, backend.quota().await),
             Request::WaitForChanges(max_wait, reply) => {
                 // The next request, or the last handle going away, ends the
                 // wait. `recv` is cancel-safe: nothing is lost if the server

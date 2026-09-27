@@ -95,6 +95,8 @@ package() {
   install -Dm644 -t "$pkgdir/usr/lib/systemd/user" packaging/systemd/*.service
   install -Dm644 -t "$pkgdir/usr/share/dbus-1/services" packaging/dbus/*.service
   install -Dm644 -t "$pkgdir/usr/share/applications" packaging/desktop/*.desktop
+  install -Dm644 -t "$pkgdir/usr/share/krunner/dbusplugins" packaging/krunner/*.desktop
+  install -Dm644 -t "$pkgdir/usr/share/gnome-shell/search-providers" packaging/gnome-shell/*.ini
   install -Dm644 -t "$pkgdir/usr/share/icons/hicolor/scalable/apps" packaging/icons/*.svg
   for dir in packaging/icons/hicolor/*/apps; do
     install -Dm644 -t "$pkgdir/usr/share/icons/${dir#packaging/icons/}" "$dir"/*.png

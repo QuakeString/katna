@@ -38,6 +38,9 @@ compose-scheduled = Gönderim { $when } için planlandı
 compose-sent-archived = Gönderildi ve arşivlendi
 compose-sent = İleti gönderildi
 compose-discarded = Taslak silindi
+compose-draft-saved = Taslak kaydedildi
+compose-draft-failed = Taslak kaydedilemedi: { $error }
+compose-draft-not-opened = Taslak açılamadı.
 
 ## Attachments
 

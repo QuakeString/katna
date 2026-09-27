@@ -152,7 +152,10 @@ menu-reply-all = အားလုံးကို ပြန်စာရေးရ�
 menu-forward = ထပ်ဆင့်ပို့ရန်
 menu-archive = မှတ်တမ်းသိမ်းရန်
 menu-delete = ဖျက်ရန်
+menu-delete-forever = အပြီးဖျက်ရန်
+menu-move-to-inbox = ဝင်စာသို့ ရွှေ့ရန်
 menu-spam = စပမ်းအဖြစ် တိုင်ကြားရန်
+menu-not-spam = စပမ်း မဟုတ်ပါ
 menu-mark-read = ဖတ်ပြီးအဖြစ် မှတ်ရန်
 menu-mark-unread = မဖတ်ရသေးအဖြစ် မှတ်ရန်
 menu-mark-all-read = အားလုံးကို ဖတ်ပြီးအဖြစ် မှတ်ရန်
@@ -209,6 +212,10 @@ toast-unpinned = { $kind ->
 toast-spam = { $kind ->
     [conversation] စကားဝိုင်း { $count } ခုကို စပမ်းအဖြစ် တိုင်ကြားလိုက်ပြီ။
    *[message] မက်ဆေ့ဂျ် { $count } စောင်ကို စပမ်းအဖြစ် တိုင်ကြားလိုက်ပြီ။
+}
+toast-not-spam = { $kind ->
+    [conversation] စကားဝိုင်း { $count } ခုကို စပမ်း မဟုတ်ဟု မှတ်ပြီး ဝင်စာသို့ ရွှေ့လိုက်ပြီ။
+   *[message] မက်ဆေ့ဂျ် { $count } စောင်ကို စပမ်း မဟုတ်ဟု မှတ်ပြီး ဝင်စာသို့ ရွှေ့လိုက်ပြီ။
 }
 toast-deleted-forever = { $kind ->
     [conversation] စကားဝိုင်း { $count } ခုကို အပြီးဖျက်လိုက်ပြီ။

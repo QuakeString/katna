@@ -148,3 +148,20 @@ compose-tool-signature-none = No signature
 compose-tool-signature-untitled = Untitled
 # Opens Settings at the signatures.
 compose-tool-signature-manage = Manage signatures
+
+## The templates menu, and saving a message as a template
+
+compose-tool-templates = Templates
+compose-tool-templates-none = No templates yet
+compose-tool-template-save = Save as template…
+# Opens Settings at the templates.
+compose-tool-templates-manage = Manage templates
+compose-tool-template-save-title = Save as template
+compose-tool-template-save-text = The subject, text and attachments are saved. In the text, {"{"}first name{"}"}, {"{"}name{"}"} and {"{"}my name{"}"} are filled in when you use it. A template with the same name is replaced.
+compose-tool-template-name = Template name
+compose-tool-template-save-ok = Save
+# $name: the template's name.
+compose-template-saved = Saved as template “{ $name }”
+# $error: why it failed.
+compose-template-save-failed = Could not save the template: { $error }
+compose-template-open-failed = Could not open the template

@@ -9,6 +9,9 @@ nav-folders = Folda
 nav-label-new = Ƙirƙiri sabon lakabi
 nav-folder-new = Ƙirƙiri sabuwar folda
 nav-account-unnamed = Asusu { $number }
+nav-all-accounts = Dukkan asusu
+nav-expand = Nuna folda
+nav-collapse = Ɓoye folda
 nav-tab-new = { $count ->
     [one] { $count } sabo
    *[other] { $count } sababbi
@@ -18,6 +21,8 @@ nav-tab-new = { $count ->
 
 folder-inbox = Akwatin saƙo
 folder-starred = Masu tauraro
+folder-unread = Ba a karanta ba
+folder-important = Muhimmi
 folder-drafts = Zayyanai
 folder-sent = Waɗanda aka aika
 folder-archive = Ma'ajiya

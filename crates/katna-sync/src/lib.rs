@@ -50,6 +50,6 @@ pub mod worker;
 pub use backend::{
     Address, AttachmentPart, Credentials, Endpoint, Envelope, FlagChanges, FlagState, Flags,
     Folder, FolderChange, FolderRole, FolderStatus, IMPORTANT, MailBackend, MailSender,
-    MessageHeaders, Security, Wait,
+    MessageHeaders, Quota, Security, Wait,
 };
 pub use error::{Error, Result};

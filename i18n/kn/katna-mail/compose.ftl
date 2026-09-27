@@ -38,6 +38,9 @@ compose-scheduled = { $when } ಕ್ಕೆ ಕಳುಹಿಸಲು ನಿಗದ
 compose-sent-archived = ಕಳುಹಿಸಲಾಗಿದೆ ಮತ್ತು ಆರ್ಕೈವ್ ಮಾಡಲಾಗಿದೆ
 compose-sent = ಸಂದೇಶವನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ
 compose-discarded = ಡ್ರಾಫ್ಟ್ ಅನ್ನು ತ್ಯಜಿಸಲಾಗಿದೆ
+compose-draft-saved = ಡ್ರಾಫ್ಟ್ ಉಳಿಸಲಾಗಿದೆ
+compose-draft-failed = ಡ್ರಾಫ್ಟ್ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: { $error }
+compose-draft-not-opened = ಡ್ರಾಫ್ಟ್ ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
 
 ## Attachments
 

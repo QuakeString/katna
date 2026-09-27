@@ -38,6 +38,9 @@ compose-scheduled = Отправка запланирована на { $when }
 compose-sent-archived = Отправлено и перемещено в архив
 compose-sent = Письмо отправлено
 compose-discarded = Черновик удалён
+compose-draft-saved = Черновик сохранён
+compose-draft-failed = Не удалось сохранить черновик: { $error }
+compose-draft-not-opened = Не удалось открыть черновик.
 
 ## Attachments
 

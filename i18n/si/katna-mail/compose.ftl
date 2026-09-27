@@ -38,6 +38,9 @@ compose-scheduled = { $when } ට යැවීමට කාලසටහන් �
 compose-sent-archived = යවා සංරක්ෂණය කළා
 compose-sent = පණිවිඩය යැව්වා
 compose-discarded = කෙටුම්පත ඉවත දැමුවා
+compose-draft-saved = කෙටුම්පත සුරැකිණි
+compose-draft-failed = කෙටුම්පත සුරැකිය නොහැකි විය: { $error }
+compose-draft-not-opened = කෙටුම්පත විවෘත කළ නොහැකි විය.
 
 ## Attachments
 

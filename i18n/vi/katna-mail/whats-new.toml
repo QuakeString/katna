@@ -454,3 +454,40 @@ gửi từ một tài khoản khác của bạn. Thư mới bắt đầu từ t�
 của bạn, trừ khi bạn chọn mặc định khác trong Cài đặt > Soạn thư > Gửi
 thư mới từ.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Hộp thư đến hợp nhất"
+text = """
+Bật Cài đặt > Tài khoản > Hộp thư đến hợp nhất để xem thư của tất cả tài
+khoản cùng lúc. “Tất cả tài khoản” nằm ở đầu ngăn thư mục với một Hộp
+thư đến, Chưa đọc, Có gắn dấu sao, Quan trọng, Đã gửi, Thư nháp và nhiều
+mục khác chung cho mọi tài khoản; mũi tên bên cạnh mỗi mục mở ra một
+dòng cho từng tài khoản. Giờ đây tên của mỗi tài khoản có một mũi tên để
+thu gọn các thư mục của nó.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menu chuột phải phù hợp với từng thư mục"
+text = """
+Chọn một thư mục hoặc nhãn trong Di chuyển tới ở menu chuột phải giờ sẽ
+chuyển thư, có Hoàn tác, kể cả từ kết quả tìm kiếm. Trong Thư rác, Báo
+cáo thư rác đổi thành Không phải thư rác. Thùng rác có Chuyển vào Hộp
+thư đến và Xóa vĩnh viễn, Lưu trữ có Chuyển vào Hộp thư đến, còn Thư
+nháp và Đã gửi bỏ đi các mục không áp dụng ở đó.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Kéo tài khoản để sắp xếp"
+text = """
+Trong Cài đặt > Tài khoản, khi kéo một tài khoản, giờ cả hàng của nó
+được nhấc lên và các tài khoản khác dạt sang bên để nhường chỗ. Chuyển
+lên và Chuyển xuống hiện ra khi bạn trỏ vào một hàng.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Thư nháp được giữ lại"
+text = """
+Đóng thư đang soạn giờ sẽ lưu nó vào Thư nháp, cả trên máy chủ thư của
+bạn, như trong Gmail. Mở nó từ Thư nháp để viết tiếp. Chỉ nút thùng rác
+mới bỏ nó đi, và Hoàn tác sẽ lấy lại.
+"""

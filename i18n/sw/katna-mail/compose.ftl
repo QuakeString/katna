@@ -38,6 +38,9 @@ compose-scheduled = Kutuma kumeratibiwa { $when }
 compose-sent-archived = Umetumwa na kuwekwa kwenye kumbukumbu
 compose-sent = Ujumbe umetumwa
 compose-discarded = Rasimu imetupwa
+compose-draft-saved = Rasimu imehifadhiwa
+compose-draft-failed = Imeshindwa kuhifadhi rasimu: { $error }
+compose-draft-not-opened = Imeshindwa kufungua rasimu.
 
 ## Attachments
 

@@ -8,7 +8,9 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use katna_core::ids::{DAEMON_BUS_NAME, MAIL_APP_ID, PREFIX};
+use katna_core::ids::{
+    DAEMON_BUS_NAME, MAIL_APP_ID, PREFIX, RUNNER_OBJECT_PATH, SEARCH_PROVIDER_OBJECT_PATH,
+};
 
 /// Name of the systemd user unit (also `katna_daemon::install::UNIT`).
 const UNIT: &str = "katna-daemon.service";
@@ -137,6 +139,40 @@ fn systemd_unit_matches_bus_name() {
     assert_eq!(value(&text, "ExecStart"), Some("/usr/bin/katna-daemon"));
 }
 
+/// KRunner asks the daemon's runner for results (`krunner/dbusplugins`).
+#[test]
+fn krunner_plugin_names_the_runner() {
+    let text = read("krunner", &format!("{MAIL_APP_ID}.desktop"));
+    assert!(text.contains("\n[Desktop Entry]\n"), "{text}");
+    assert_eq!(value(&text, "X-Plasma-API"), Some("DBus"));
+    assert_eq!(
+        value(&text, "X-Plasma-DBusRunner-Service"),
+        Some(DAEMON_BUS_NAME)
+    );
+    assert_eq!(
+        value(&text, "X-Plasma-DBusRunner-Path"),
+        Some(RUNNER_OBJECT_PATH)
+    );
+}
+
+/// GNOME Shell asks the daemon's search provider for results, under Katna
+/// Mail's name and icon.
+#[test]
+fn search_provider_names_the_provider() {
+    let text = read("gnome-shell", &format!("{MAIL_APP_ID}.search-provider.ini"));
+    assert!(text.contains("\n[Shell Search Provider]\n"), "{text}");
+    assert_eq!(
+        value(&text, "DesktopId"),
+        Some(format!("{MAIL_APP_ID}.desktop").as_str())
+    );
+    assert_eq!(value(&text, "BusName"), Some(DAEMON_BUS_NAME));
+    assert_eq!(
+        value(&text, "ObjectPath"),
+        Some(SEARCH_PROVIDER_OBJECT_PATH)
+    );
+    assert_eq!(value(&text, "Version"), Some("2"));
+}
+
 /// Other packaging files (`packaging/*/*`) use the IDs only through file
 /// names (the PKGBUILD installs with globs), so they never need changing.
 /// Subdirectories are makepkg output and are not checked.
@@ -146,6 +182,8 @@ fn prefix_only_in_checked_files() {
         format!("desktop/{MAIL_APP_ID}.desktop"),
         format!("dbus/{DAEMON_BUS_NAME}.service"),
         format!("systemd/{UNIT}"),
+        format!("krunner/{MAIL_APP_ID}.desktop"),
+        format!("gnome-shell/{MAIL_APP_ID}.search-provider.ini"),
     ];
     for dir in fs::read_dir(packaging()).unwrap() {
         let dir = dir.unwrap().path();
