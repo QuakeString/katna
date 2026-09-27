@@ -604,3 +604,10 @@ print-cc = Cc: { $addresses }
 
 text-copy = Copy
 text-select-all = Select all
+
+## Settings > General > Time
+
+settings-time = Time
+settings-clock-language = As the language writes it
+settings-clock-12 = 12-hour, like 2:05 PM
+settings-clock-24 = 24-hour, like 14:05

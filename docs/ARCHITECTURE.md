@@ -1303,7 +1303,8 @@ Gemini or confidential mode):
   pointer. Mail you send keeps its own font size.
 - **Settings page.** "See all settings", the rail's gear or `?` open it in
   place of the list (`window/settings_page.rs`). Its tabs, in the owner's
-  order: General (conversation view, reading order and headers, when mail
+  order: General (language, 12- or 24-hour time, conversation view,
+  reading order and headers, when mail
   is marked read, what the reply button does, images from the web, undo
   send, offline mail,
   new-mail notifications and their sound, opening at login, tray and
