@@ -11,6 +11,7 @@ use futures_lite::StreamExt;
 use gpui::{AnyElement, Context, FontWeight, Window, div, prelude::*, rgba};
 use katna_dbus::OutboxItem;
 use katna_dbus::zbus::Connection;
+use katna_i18n::tr;
 use katna_store::MessageId;
 use katna_ui::px;
 use katna_ui::rich::html;
@@ -93,7 +94,7 @@ impl MailWindow {
             .as_ref()
             .is_some_and(|c| !c.closing && c.touched(cx))
         {
-            self.show_snackbar("Send or discard the open message first.", None, cx);
+            self.show_snackbar(tr!("schedule-open-first"), None, cx);
             return;
         }
         // Read it before the outbox forgets it.
@@ -130,11 +131,7 @@ impl MailWindow {
                 match result {
                     Ok(()) => {
                         this.writing.scheduled_open = false;
-                        this.show_snackbar(
-                            "Send cancelled. The message is open to edit.",
-                            None,
-                            cx,
-                        );
+                        this.show_snackbar(tr!("schedule-cancelled"), None, cx);
                         match opened.and_then(|(raw, sealing)| {
                             let mut unsent = unsent_from_raw(&raw)?;
                             unsent.sealing = sealing;
@@ -144,11 +141,9 @@ impl MailWindow {
                                 this.unsent = Some(unsent);
                                 this.reopen_unsent(window, cx);
                             }
-                            None => this.show_snackbar(
-                                "Send cancelled. The message could not be opened again.",
-                                None,
-                                cx,
-                            ),
+                            None => {
+                                this.show_snackbar(tr!("schedule-cancelled-not-opened"), None, cx)
+                            }
                         }
                     }
                     Err(err) => this.show_snackbar(err, None, cx),
@@ -174,7 +169,7 @@ impl MailWindow {
         let height = (unpx(viewport.height) - 160.0).clamp(200.0, 560.0);
         let rows = self.writing.scheduled.iter().enumerate().map(|(ix, item)| {
             let subject = if item.subject.trim().is_empty() {
-                "(no subject)".to_owned()
+                tr!("schedule-no-subject")
             } else {
                 item.subject.clone()
             };
@@ -214,15 +209,14 @@ impl MailWindow {
                             div()
                                 .text_size(px(13.0))
                                 .text_color(rgba(th.accent))
-                                .child(format!("Sends {when}")),
+                                .child(tr!("schedule-sends-at", when = when)),
                         ),
                 )
                 .child(
-                    outlined_button(("scheduled-cancel", ix), "Cancel send", th).on_click(
-                        cx.listener(move |this, _, window, cx| {
+                    outlined_button(("scheduled-cancel", ix), tr!("schedule-cancel-send"), th)
+                        .on_click(cx.listener(move |this, _, window, cx| {
                             this.cancel_scheduled(item.clone(), window, cx)
-                        }),
-                    ),
+                        })),
                 )
         });
         let empty = self.writing.scheduled.is_empty().then(|| {
@@ -236,7 +230,7 @@ impl MailWindow {
                 .text_color(rgba(th.text_dim))
                 .text_size(px(14.0))
                 .child(icon("schedule", th.text_faint, 48.0))
-                .child("Nothing is scheduled.")
+                .child(tr!("schedule-nothing"))
         });
         let close = cx.listener(|this, _, _, cx| {
             this.writing.scheduled_open = false;
@@ -284,10 +278,15 @@ impl MailWindow {
                                 .items_center()
                                 .border_b_1()
                                 .border_color(rgba(th.divider))
-                                .child(div().flex_1().text_size(px(20.0)).child("Scheduled"))
+                                .child(
+                                    div()
+                                        .flex_1()
+                                        .text_size(px(20.0))
+                                        .child(tr!("folder-scheduled")),
+                                )
                                 .child(
                                     icon_button("scheduled-close", "close", 20.0, th)
-                                        .tooltip(tip("Close", th))
+                                        .tooltip(tip(tr!("schedule-close"), th))
                                         .on_click(cx.listener(|this, _, _, cx| {
                                             this.writing.scheduled_open = false;
                                             cx.notify();
