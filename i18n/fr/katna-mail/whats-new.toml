@@ -605,3 +605,29 @@ n’importe quel nouveau message ou réponse. Écrivez {first name}, {name} ou
 {my name} et Katna les remplit pour chaque destinataire. Modifiez,
 renommez ou supprimez les modèles dans Paramètres > Rédaction.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Les messages programmés partent même ordinateur éteint"
+text = """
+Quand votre serveur de messagerie peut retenir un message jusqu’à une
+heure donnée, comme le fait Stalwart, Programmer l’envoi lui confie
+désormais le message une fois Annuler disparu, pour qu’il parte à l’heure
+même si cet ordinateur est éteint. Le menu de programmation indique si
+c’est votre serveur de messagerie ou Katna qui l’enverra.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Un survol plus léger"
+text = """
+La ligne sous le pointeur dans la liste de messages se soulève désormais
+avec une ombre légère, comme dans Gmail, au lieu d’une bande sombre en
+dessous.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Glissez les adresses entre À, Cc et Cci"
+text = """
+Faites glisser la pastille d’une adresse vers un autre champ pour la
+déplacer ; Cc et Cci s’ouvrent pendant le glissement, même masqués.
+Pointer une pastille affiche un x qui la retire.
+"""

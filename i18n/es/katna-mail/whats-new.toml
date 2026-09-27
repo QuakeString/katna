@@ -590,3 +590,28 @@ con un clic. Escribe {first name}, {name} o {my name} y Katna los rellena
 para cada destinatario. Edita, cambia de nombre o elimina plantillas en
 Ajustes > Redacción.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "El correo programado sale con el ordenador apagado"
+text = """
+Cuando tu servidor de correo puede retener el correo hasta una hora
+fijada, como hace Stalwart, Programar envío ahora le entrega el mensaje en
+cuanto desaparece Deshacer, así que sale a su hora aunque este ordenador
+esté apagado. El menú de programación indica si lo enviará tu servidor de
+correo o Katna.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Un resaltado más ligero"
+text = """
+La línea bajo el puntero en la lista de correos ahora se eleva con una
+sombra tenue, como en Gmail, en lugar de una franja oscura debajo.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Arrastra direcciones entre Para, Cc y Cco"
+text = """
+Arrastra la ficha de una dirección a otro campo para moverla; Cc y Cco se
+abren mientras arrastras, aunque estén ocultos. Al señalar una ficha
+aparece una x que la quita.
+"""

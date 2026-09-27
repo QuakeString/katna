@@ -89,6 +89,7 @@ send-check-add-subject = ເພີ່ມຫົວເລື່ອງ
 send-check-send-anyway = ສົ່ງຢູ່ດີ
 recipient-not-valid = ບໍ່ແມ່ນທີ່ຢູ່ອີເມວທີ່ຖືກຕ້ອງ
 recipient-show-address = ສະແດງທີ່ຢູ່
+recipient-remove = ລຶບອອກ
 recipient-bad-title = ກວດເບິ່ງທີ່ຢູ່
 recipient-bad-text = “{ $address }” ບໍ່ແມ່ນທີ່ຢູ່ອີເມວທີ່ຖືກຕ້ອງ. ແກ້ໄຂ ຫຼື ລຶບມັນອອກກ່ອນສົ່ງ.
 recipient-bad-fix = ແກ້ໄຂ

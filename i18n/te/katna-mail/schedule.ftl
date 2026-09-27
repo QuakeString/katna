@@ -11,6 +11,8 @@ schedule-scheduled-messages = షెడ్యూల్ చేసిన మెస
 
 schedule-title = పంపడాన్ని షెడ్యూల్ చేయండి
 schedule-zone-note = { $zone }. యాప్ మూసివేసి ఉన్నా Katna ఆ సమయానికి పంపుతుంది.
+schedule-zone-note-server = { $zone }. ఈ కంప్యూటర్ ఆఫ్‌లో ఉన్నా మీ మెయిల్ సర్వర్ ఆ సమయానికి పంపుతుంది. చర్య రద్దు చేయండి కనిపించకుండా పోయిన తర్వాత దీన్ని రద్దు చేయలేరు.
+schedule-zone-note-local = { $zone }. ఈ కంప్యూటర్ ఆన్‌లో ఉన్నప్పుడు Katna ఆ సమయానికి పంపుతుంది.
 schedule-local-time = స్థానిక సమయం
 schedule-this-morning = ఈ రోజు ఉదయం
 schedule-this-afternoon = ఈ రోజు మధ్యాహ్నం
@@ -28,6 +30,7 @@ schedule-no-such-time = ఆ సమయం ఇక్కడ ఉండదు.
 
 schedule-no-subject = (సబ్జెక్ట్ లేదు)
 schedule-sends-at = { $when }కి పంపబడుతుంది
+schedule-server-sends-at = మీ మెయిల్ సర్వర్ { $when }కి పంపుతుంది
 schedule-cancel-send = పంపడాన్ని రద్దు చేయండి
 schedule-nothing = ఏదీ షెడ్యూల్ చేయబడలేదు.
 schedule-close = మూసివేయండి

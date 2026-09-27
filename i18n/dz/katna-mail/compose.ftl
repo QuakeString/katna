@@ -91,6 +91,7 @@ send-check-add-subject = དོན་ཚན་ཁ་སྐོང་རྐྱབ�
 send-check-send-anyway = ག་དེ་འབད་རུང་གཏང་།
 recipient-not-valid = ནུས་ཅན་གྱི་གློག་འཕྲིན་ཁ་བྱང་མེན།
 recipient-show-address = ཁ་བྱང་སྟོན།
+recipient-remove = བཏོན།
 recipient-bad-title = ཁ་བྱང་ཞིབ་དཔྱད་འབད།
 recipient-bad-text = “{ $address }” འདི་ ནུས་ཅན་གྱི་གློག་འཕྲིན་ཁ་བྱང་མེན། མ་གཏང་བའི་ཧེ་མ་ ནོར་བཅོས་འབད་ ཡང་ན་ བཏོན་གཏང་།
 recipient-bad-fix = ནོར་བཅོས་འབད།

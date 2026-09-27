@@ -584,3 +584,28 @@ sekali klik. Tulis {first name}, {name}, atau {my name} dan Katna
 mengisinya untuk setiap penerima. Edit, ganti nama, atau hapus template
 di Setelan > Tulis.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Email terjadwal terkirim meski komputer mati"
+text = """
+Jika server email Anda bisa menahan email hingga waktu yang ditentukan,
+seperti Stalwart, Jadwalkan pengiriman kini menyerahkan pesan ke server
+setelah Urungkan hilang, sehingga pesan terkirim tepat waktu meski
+komputer ini mati. Menu jadwal menyebutkan apakah server email Anda atau
+Katna yang akan mengirimnya.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Sorotan yang lebih ringan"
+text = """
+Baris di bawah penunjuk di daftar email kini terangkat dengan bayangan
+tipis, seperti di Gmail, sebagai ganti pita gelap di bawahnya.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Seret alamat antara Kepada, Cc, dan Bcc"
+text = """
+Seret chip alamat ke kolom lain untuk memindahkannya; Cc dan Bcc terbuka
+saat Anda menyeret, bahkan saat tersembunyi. Mengarahkan penunjuk ke chip
+menampilkan x untuk menghapusnya.
+"""

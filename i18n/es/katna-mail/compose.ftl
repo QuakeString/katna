@@ -93,6 +93,7 @@ send-check-add-subject = Añadir asunto
 send-check-send-anyway = Enviar de todos modos
 recipient-not-valid = No es una dirección de correo válida
 recipient-show-address = Mostrar dirección
+recipient-remove = Quitar
 recipient-bad-title = Revisa la dirección
 recipient-bad-text = «{ $address }» no es una dirección de correo válida. Corrígela o quítala antes de enviar.
 recipient-bad-fix = Corregir

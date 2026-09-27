@@ -92,6 +92,7 @@ send-check-add-subject = Konu ekle
 send-check-send-anyway = Yine de gönder
 recipient-not-valid = Geçerli bir e-posta adresi değil
 recipient-show-address = Adresi göster
+recipient-remove = Kaldır
 recipient-bad-title = Adresi kontrol edin
 recipient-bad-text = “{ $address }” geçerli bir e-posta adresi değil. Göndermeden önce düzeltin veya kaldırın.
 recipient-bad-fix = Düzelt

@@ -585,3 +585,28 @@ yanıta ekleyin. {first name}, {name} veya {my name} yazın, Katna bunları
 her alıcı için doldursun. Şablonları Ayarlar > Oluşturma bölümünde
 düzenleyin, yeniden adlandırın ya da silin.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Planlanan postalar bilgisayarınız kapalıyken de gider"
+text = """
+Posta sunucunuz, Stalwart'ın yapabildiği gibi postayı belirli bir saate
+kadar bekletebiliyorsa, Gönderimi planla artık Geri al kaybolunca iletiyi
+ona teslim eder; böylece ileti, bu bilgisayar kapalı olsa bile zamanında
+gider. Planlama menüsü, iletiyi posta sunucunuzun mu yoksa Katna'nın mı
+göndereceğini söyler.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Daha hafif bir vurgulama"
+text = """
+Posta listesinde işaretçinin altındaki satır artık altında koyu bir
+şerit yerine, Gmail'deki gibi hafif bir gölgeyle yükselir.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Adresleri Kime, Bilgi ve Gizli arasında sürükleyin"
+text = """
+Bir adres çipini taşımak için başka bir alana sürükleyin; siz
+sürüklerken Bilgi ve Gizli, gizli olsalar bile açılır. Bir çipin üzerine
+gelince onu kaldıran bir x görünür.
+"""

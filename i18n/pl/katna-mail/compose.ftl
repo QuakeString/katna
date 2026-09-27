@@ -94,6 +94,7 @@ send-check-add-subject = Dodaj temat
 send-check-send-anyway = Wyślij mimo to
 recipient-not-valid = Nieprawidłowy adres e-mail
 recipient-show-address = Pokaż adres
+recipient-remove = Usuń
 recipient-bad-title = Sprawdź adres
 recipient-bad-text = „{ $address }” nie jest prawidłowym adresem e-mail. Popraw go lub usuń przed wysłaniem.
 recipient-bad-fix = Popraw

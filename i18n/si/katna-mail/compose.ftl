@@ -92,6 +92,7 @@ send-check-add-subject = විෂයක් එක් කරන්න
 send-check-send-anyway = කෙසේ වෙතත් යවන්න
 recipient-not-valid = වලංගු ඊමේල් ලිපිනයක් නොවේ
 recipient-show-address = ලිපිනය පෙන්වන්න
+recipient-remove = ඉවත් කරන්න
 recipient-bad-title = ලිපිනය පරීක්ෂා කරන්න
 recipient-bad-text = “{ $address }” වලංගු ඊමේල් ලිපිනයක් නොවේ. යැවීමට පෙර එය නිවැරදි කරන්න හෝ ඉවත් කරන්න.
 recipient-bad-fix = නිවැරදි කරන්න

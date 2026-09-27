@@ -11,6 +11,8 @@ schedule-scheduled-messages = নিৰ্ধাৰিত বাৰ্তা ({ 
 
 schedule-title = পঠিওৱাৰ সময় নিৰ্ধাৰণ কৰক
 schedule-zone-note = { $zone }। এপ বন্ধ থাকিলেও Katnaই সেই সময়ত ইয়াক পঠিয়ায়।
+schedule-zone-note-server = { $zone }। এই কম্পিউটাৰ বন্ধ থাকিলেও আপোনাৰ মেইল ছাৰ্ভাৰে সেই সময়ত ইয়াক পঠিয়াব। আনডু কৰক নোহোৱা হোৱাৰ পিছত ইয়াক বাতিল কৰিব নোৱাৰি।
+schedule-zone-note-local = { $zone }। এই কম্পিউটাৰ অন থাকিলে Katnaই সেই সময়ত ইয়াক পঠিয়াব।
 schedule-local-time = স্থানীয় সময়
 schedule-this-morning = আজি ৰাতিপুৱা
 schedule-this-afternoon = আজি আবেলি
@@ -28,6 +30,7 @@ schedule-no-such-time = এই সময়টো ইয়াত নাই।
 
 schedule-no-subject = (বিষয় নাই)
 schedule-sends-at = পঠিয়াব { $when }
+schedule-server-sends-at = আপোনাৰ মেইল ছাৰ্ভাৰে পঠিয়াব { $when }
 schedule-cancel-send = পঠিওৱা বাতিল কৰক
 schedule-nothing = একো নিৰ্ধাৰিত কৰা নাই।
 schedule-close = বন্ধ কৰক

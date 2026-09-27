@@ -89,6 +89,7 @@ send-check-add-subject = Tambah subjek
 send-check-send-anyway = Hantar juga
 recipient-not-valid = Bukan alamat e-mel yang sah
 recipient-show-address = Tunjukkan alamat
+recipient-remove = Alih keluar
 recipient-bad-title = Semak alamat
 recipient-bad-text = “{ $address }” bukan alamat e-mel yang sah. Betulkan atau alih keluarnya sebelum menghantar.
 recipient-bad-fix = Betulkan

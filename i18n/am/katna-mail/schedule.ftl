@@ -11,6 +11,8 @@ schedule-scheduled-messages = መርሐግብር የተያዘላቸው መልዕ
 
 schedule-title = መላክን መርሐግብር አስይዝ
 schedule-zone-note = { $zone }። መተግበሪያው ቢዘጋም Katna በዚያ ሰዓት ይልከዋል።
+schedule-zone-note-server = { $zone }። ይህ ኮምፒውተር ቢጠፋም የደብዳቤ አገልጋይዎ በዚያ ሰዓት ይልከዋል። ቀልብስ ከጠፋ በኋላ ሊሰረዝ አይችልም።
+schedule-zone-note-local = { $zone }። ይህ ኮምፒውተር በርቶ እያለ Katna በዚያ ሰዓት ይልከዋል።
 schedule-local-time = የአካባቢ ሰዓት
 schedule-this-morning = ዛሬ ጠዋት
 schedule-this-afternoon = ዛሬ ከሰዓት
@@ -28,6 +30,7 @@ schedule-no-such-time = ያ ሰዓት እዚህ የለም።
 
 schedule-no-subject = (ርዕሰ ጉዳይ የለም)
 schedule-sends-at = የሚላከው፦ { $when }
+schedule-server-sends-at = የደብዳቤ አገልጋይዎ የሚልከው፦ { $when }
 schedule-cancel-send = መላክን ሰርዝ
 schedule-nothing = መርሐግብር የተያዘለት ምንም የለም።
 schedule-close = ዝጋ

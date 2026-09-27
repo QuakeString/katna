@@ -568,3 +568,27 @@ otu pịa. Dee {first name}, {name} ma ọ bụ {my name} ma Katna ga-edejupụt
 ha maka onye nnata ọ bụla. Dezie, gbanwee aha ma ọ bụ hichapụ ndebiri
 ụkpụrụ na Ntọala > Ide ozi.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Ozi a haziri oge ya na-apụ ọbụlagodi na kọmputa gị gbanyụrụ"
+text = """
+Mgbe sava ozi gị nwere ike ijide ozi ruo oge a kara aka, dị ka Stalwart
+na-eme, Hazie oge izipu na-enyefe ya ozi ahụ ugbu a ozugbo Megharịa pụrụ,
+ka o wee pụọ n'oge ọbụlagodi mgbe kọmputa a gbanyụrụ. Menu nhazi oge
+na-ekwu ma ọ bụ sava ozi gị ka ọ bụ Katna ga-ezipu ya.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Ntụ aka dị nro karị"
+text = """
+Ahịrị dị n'okpuru ihe ntụ aka na ndepụta ozi na-ebuli ugbu a na obere
+onyinyo, dị ka na Gmail, kama eriri gbara ọchịchịrị n'okpuru ya.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Dọrọ adreesị n'etiti Gaa, Cc na Bcc"
+text = """
+Dọrọ mpekere adreesị gaa n'ogige ọzọ iji bugharịa ya; Cc na Bcc na-emepe
+ka ị na-adọrọ, ọbụlagodi mgbe ha zoro ezo. Ịtụ aka na mpekere na-egosi x
+na-ewepụ ya.
+"""

@@ -11,6 +11,8 @@ schedule-scheduled-messages = ຂໍ້ຄວາມທີ່ຕັ້ງເວ�
 
 schedule-title = ຕັ້ງເວລາສົ່ງ
 schedule-zone-note = { $zone }. Katna ຈະສົ່ງມັນໃນເວລານັ້ນ, ເຖິງແມ່ນວ່າແອັບຈະປິດຢູ່.
+schedule-zone-note-server = { $zone }. ເຊີບເວີອີເມວຂອງທ່ານຈະສົ່ງມັນໃນເວລານັ້ນ, ເຖິງແມ່ນວ່າຄອມພິວເຕີນີ້ຈະປິດຢູ່. ເມື່ອ ຍ້ອນກັບ ຫາຍໄປແລ້ວ ຈະຍົກເລີກບໍ່ໄດ້.
+schedule-zone-note-local = { $zone }. Katna ຈະສົ່ງມັນໃນເວລານັ້ນ ໃນຂະນະທີ່ຄອມພິວເຕີນີ້ເປີດຢູ່.
 schedule-local-time = ເວລາທ້ອງຖິ່ນ
 schedule-this-morning = ເຊົ້ານີ້
 schedule-this-afternoon = ບ່າຍນີ້
@@ -28,6 +30,7 @@ schedule-no-such-time = ເວລານັ້ນບໍ່ມີຢູ່ບ່�
 
 schedule-no-subject = (ບໍ່ມີຫົວຂໍ້)
 schedule-sends-at = ສົ່ງ { $when }
+schedule-server-sends-at = ເຊີບເວີອີເມວຂອງທ່ານຈະສົ່ງມັນ { $when }
 schedule-cancel-send = ຍົກເລີກການສົ່ງ
 schedule-nothing = ບໍ່ມີຫຍັງຕັ້ງເວລາໄວ້.
 schedule-close = ປິດ

@@ -588,3 +588,28 @@ kemudian masukkan ke dalam mana-mana mel baharu atau balasan dengan satu klik.
 Tulis {first name}, {name} atau {my name} dan Katna mengisinya untuk setiap
 penerima. Sunting, namakan semula atau padam templat dalam Tetapan > Karang.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Mel berjadual dihantar walaupun komputer anda dimatikan"
+text = """
+Apabila pelayan mel anda boleh menahan mel hingga masa yang ditetapkan,
+seperti Stalwart, Jadualkan penghantaran kini menyerahkan mesej kepadanya
+sebaik sahaja Buat asal hilang, jadi ia dihantar tepat pada masanya
+walaupun komputer ini dimatikan. Menu jadual memberitahu sama ada pelayan
+mel anda atau Katna yang akan menghantarnya.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Tudingan yang lebih ringan"
+text = """
+Baris di bawah penuding dalam senarai mel kini terangkat dengan bayang
+samar, seperti dalam Gmail, dan bukan jalur gelap di bawahnya.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Seret alamat antara Kepada, Sk dan Skt"
+text = """
+Seret cip alamat ke medan lain untuk memindahkannya; Sk dan Skt terbuka
+semasa anda menyeret, walaupun tersembunyi. Menuding pada cip
+menunjukkan x yang mengalih keluarnya.
+"""

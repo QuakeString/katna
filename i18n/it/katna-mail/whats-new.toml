@@ -592,3 +592,28 @@ una risposta con un clic. Scrivi {first name}, {name} o {my name} e
 Katna li compila per ogni destinatario. Modifica, rinomina o elimina i
 modelli in Impostazioni > Scrittura.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "La posta programmata parte anche a computer spento"
+text = """
+Quando il tuo server di posta può trattenere la posta fino a un'ora
+stabilita, come fa Stalwart, Programma invio ora gli consegna il messaggio
+appena sparisce Annulla, così parte in orario anche con questo computer
+spento. Il menu di programmazione dice se lo invierà il tuo server di
+posta o Katna.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Un passaggio del puntatore più leggero"
+text = """
+La riga sotto il puntatore nell'elenco della posta ora si solleva con
+un'ombra leggera, come in Gmail, invece di una fascia scura sotto.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Trascina gli indirizzi tra A, Cc e Ccn"
+text = """
+Trascina il chip di un indirizzo in un altro campo per spostarlo; Cc e
+Ccn si aprono mentre trascini, anche se nascosti. Puntando un chip compare
+una x che lo rimuove.
+"""

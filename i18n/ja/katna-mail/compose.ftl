@@ -89,6 +89,7 @@ send-check-add-subject = 件名を追加
 send-check-send-anyway = このまま送信
 recipient-not-valid = 有効なメールアドレスではありません
 recipient-show-address = アドレスを表示
+recipient-remove = 削除
 recipient-bad-title = アドレスを確認してください
 recipient-bad-text = 「{ $address }」は有効なメールアドレスではありません。送信する前に修正するか削除してください。
 recipient-bad-fix = 修正

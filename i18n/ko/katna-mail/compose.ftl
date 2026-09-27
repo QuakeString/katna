@@ -89,6 +89,7 @@ send-check-add-subject = 제목 추가
 send-check-send-anyway = 그래도 보내기
 recipient-not-valid = 올바른 이메일 주소가 아닙니다
 recipient-show-address = 주소 보기
+recipient-remove = 삭제
 recipient-bad-title = 주소를 확인하세요
 recipient-bad-text = “{ $address }”은(는) 올바른 이메일 주소가 아닙니다. 보내기 전에 수정하거나 삭제하세요.
 recipient-bad-fix = 수정
