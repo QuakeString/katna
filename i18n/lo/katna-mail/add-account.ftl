@@ -1,0 +1,72 @@
+# Katna Mail, Lao (ລາວ).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Add a mail account: titles and steps
+
+add-account-title = ເພີ່ມບັນຊີອີເມວ
+add-account-looking = ກຳລັງຊອກຫາເຊີບເວີອີເມວຂອງ { $address }…
+add-account-address-intro = ປ້ອນທີ່ຢູ່ອີເມວຂອງທ່ານ. Katna ຈະຊອກຫາເຊີບເວີໃຫ້ທ່ານ.
+add-account-servers-title = ການຕັ້ງຄ່າເຊີບເວີ
+add-account-servers-intro = ບ່ອນທີ່ Katna ອ່ານ ແລະ ສົ່ງອີເມວສຳລັບ { $address }.
+add-account-password-title = ປ້ອນລະຫັດຜ່ານຂອງທ່ານ
+add-account-signing-in = ກຳລັງເຂົ້າສູ່ລະບົບ…
+
+## Add a mail account: fields
+
+add-account-field-address = ທີ່ຢູ່ອີເມວ
+add-account-incoming = ອີເມວຂາເຂົ້າ ({ $protocol })
+add-account-outgoing = ອີເມວຂາອອກ ({ $protocol })
+add-account-field-server = ເຊີບເວີ
+add-account-field-port = ພອດ
+add-account-security-none = ບໍ່ມີ
+add-account-field-username = ຊື່ຜູ້ໃຊ້
+add-account-field-password = ລະຫັດຜ່ານ
+add-account-show-password = ສະແດງລະຫັດຜ່ານ
+add-account-app-password-hint = { $provider } ຕ້ອງການລະຫັດຜ່ານແອັບຢູ່ທີ່ນີ້, ບໍ່ແມ່ນລະຫັດທີ່ທ່ານໃຊ້ໃນເວັບ. ສ້າງລະຫັດໜຶ່ງໃນການຕັ້ງຄ່າຄວາມປອດໄພຂອງບັນຊີ { $provider } ຂອງທ່ານ.
+add-account-field-name = ຊື່ຂອງທ່ານ (ບໍ່ບັງຄັບ)
+add-account-name-hint = ສະແດງໃຫ້ຄົນທີ່ທ່ານຂຽນຫາເຫັນ.
+add-account-servers-pair = { $imap } ແລະ { $smtp }
+add-account-servers-found = { $source ->
+    [built-in] ເຊີບເວີ: { $servers }, ພົບໃນລາຍຊື່ຜູ້ໃຫ້ບໍລິການຂອງ Katna.
+    [provider] ເຊີບເວີ: { $servers }, ພົບໃນການຕັ້ງຄ່າຂອງຜູ້ໃຫ້ບໍລິການຂອງທ່ານ.
+    [ispdb] ເຊີບເວີ: { $servers }, ພົບໃນລາຍຊື່ຜູ້ໃຫ້ບໍລິການຂອງ Thunderbird.
+    [dns] ເຊີບເວີ: { $servers }, ພົບໃນບັນທຶກ DNS ຂອງໂດເມນທ່ານ.
+   *[other] ເຊີບເວີ: { $servers }, ຈາກການຄາດເດົາ; ກວດສອບຖ້າເຂົ້າສູ່ລະບົບບໍ່ສຳເລັດ.
+}
+add-account-servers-entered = ເຊີບເວີ: { $servers }, ຕາມທີ່ປ້ອນ.
+
+## Add a mail account: buttons
+
+add-account-servers-button = ການຕັ້ງຄ່າເຊີບເວີ
+add-account-back = ກັບຄືນ
+add-account-add = ເພີ່ມບັນຊີ
+add-account-next = ຕໍ່ໄປ
+add-account-cancel = ຍົກເລີກ
+
+## Add a mail account: problems
+
+add-account-server-missing = { $kind ->
+    [incoming] ປ້ອນເຊີບເວີຂາເຂົ້າ.
+   *[outgoing] ປ້ອນເຊີບເວີຂາອອກ.
+}
+add-account-server-space = { $kind ->
+    [incoming] ຊື່ເຊີບເວີຂາເຂົ້າມີຍະຫວ່າງ.
+   *[outgoing] ຊື່ເຊີບເວີຂາອອກມີຍະຫວ່າງ.
+}
+add-account-port-invalid = { $kind ->
+    [incoming] ພອດຂາເຂົ້າຕ້ອງເປັນຕົວເລກຈາກ { $min } ຫາ { $max }.
+   *[outgoing] ພອດຂາອອກຕ້ອງເປັນຕົວເລກຈາກ { $min } ຫາ { $max }.
+}
+add-account-address-empty = ປ້ອນທີ່ຢູ່ອີເມວ.
+add-account-address-invalid = ປ້ອນທີ່ຢູ່ອີເມວເຊັ່ນ { $example }.
+add-account-not-found = Katna ຊອກບໍ່ພົບເຊີບເວີຂອງ { $address }, ສະນັ້ນຈຶ່ງໃສ່ຊື່ທີ່ໃຊ້ທົ່ວໄປໄວ້. ກວດສອບກັບຜູ້ໃຫ້ບໍລິການຂອງທ່ານ.
+add-account-password-empty = ປ້ອນລະຫັດຜ່ານ.
+add-account-added = ເພີ່ມ { $address } ແລ້ວ. ກຳລັງດຶງອີເມວຂອງທ່ານ…
+add-account-app-password-refused = { $provider } ປະຕິເສດລະຫັດຜ່ານ. ມັນຕ້ອງການລະຫັດຜ່ານແອັບ, ບໍ່ແມ່ນລະຫັດທີ່ທ່ານໃຊ້ໃນເວັບ.
+add-account-password-refused = ເຊີບເວີປະຕິເສດລະຫັດຜ່ານ. ກວດສອບແລ້ວລອງອີກຄັ້ງ.
+
+## The account menu (from the account button on the top bar)
+
+add-account-menu-another = ເພີ່ມບັນຊີອື່ນ
+add-account-menu-manage = ຈັດການບັນຊີ

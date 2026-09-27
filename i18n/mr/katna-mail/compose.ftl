@@ -1,0 +1,76 @@
+# Katna Mail, Marathi (मराठी).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Compose window: title bar
+
+compose-new-message = नवीन मेसेज
+compose-restore = पूर्वस्थितीत आणा
+compose-minimize = लहान करा
+compose-exit-full-screen = पूर्ण स्क्रीनमधून बाहेर पडा
+compose-open-window = नवीन विंडोमध्ये उघडा
+compose-save-close = सेव्ह करा आणि बंद करा
+compose-back-to-mail = मेल विंडोवर परत जा
+compose-pop-out-reply = उत्तर वेगळ्या विंडोमध्ये उघडा
+compose-show-trimmed = कापलेला मजकूर दाखवा
+
+## Recipients and subject
+
+compose-to = प्रति
+compose-cc = Cc
+compose-bcc = Bcc
+compose-recipients = प्राप्तकर्ते
+compose-subject = विषय
+
+## Sending (the notes at the bottom of the window)
+
+compose-open-elsewhere = आधी उघडा असलेला मेसेज पाठवा किंवा टाकून द्या.
+compose-bad-address = “{ $address }” हा ईमेल पत्ता नाही.
+compose-no-recipients = किमान एक प्राप्तकर्ता जोडा.
+compose-attachments-too-large = अटॅचमेंट { $size } आहेत; मेल सर्व्हर जास्तीत जास्त { $limit } स्वीकारतात.
+compose-no-account = मेल पाठवण्यासाठी एखादे खाते जोडा.
+compose-past-time = भविष्यातील वेळ निवडा.
+compose-scheduling = शेड्यूल करत आहे…
+compose-sending = पाठवत आहे…
+compose-scheduled = { $when } ला पाठवणे शेड्यूल केले
+compose-sent-archived = पाठवले आणि संग्रहित केले
+compose-sent = मेसेज पाठवला
+compose-discarded = मसुदा टाकून दिला
+
+## Attachments
+
+compose-picker-insert = घाला
+compose-picker-attach = अटॅच करा
+compose-file-too-large = { $name } खूप मोठी आहे: एका मेसेजमध्ये जास्तीत जास्त { $limit } पाठवता येते.
+compose-attachment-size = ({ $size })
+compose-remove-attachment = अटॅचमेंट काढा
+compose-drop-files = फाइल्स येथे सोडा
+
+## Encryption and signing (the toggles by the recipients)
+
+compose-encrypt = एन्क्रिप्ट करा
+compose-encrypted = एन्क्रिप्ट केलेले: फक्त प्राप्तकर्तेच वाचू शकतात
+compose-sign = स्वाक्षरी करा
+compose-signed = स्वाक्षरी केलेले: हा मेसेज तुमच्याकडूनच आहे हे प्राप्तकर्ते तपासू शकतात
+
+## Spelling
+
+spell-no-dictionary = { $language } साठी शुद्धलेखन शब्दकोश इंस्टॉल केलेला नाही (उदाहरणार्थ hunspell-en_us).
+spell-dictionary-error = शुद्धलेखन शब्दकोश: { $error }
+
+## Grammar checking (the right-click menu on a grammar mistake)
+
+grammar-replace = “{ $words }”
+grammar-add = “{ $words }” जोडा
+grammar-remove = “{ $words }” काढा
+grammar-ignore = दुर्लक्ष करा
+
+## Send checks (asked before a message goes out)
+
+send-check-attachment-title = तुम्हाला फाइल्स अटॅच करायच्या होत्या का?
+send-check-attachment-text = तुम्ही अटॅचमेंटचा उल्लेख केला, पण काहीही अटॅच केलेले नाही.
+send-check-attach = फाइल अटॅच करा
+send-check-subject-title = विषयाशिवाय पाठवायचा?
+send-check-subject-text = या मेसेजला विषय नाही.
+send-check-add-subject = विषय जोडा
+send-check-send-anyway = तरीही पाठवा

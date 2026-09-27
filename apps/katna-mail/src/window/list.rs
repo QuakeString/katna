@@ -40,7 +40,7 @@ use crate::format;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     TOOLBAR_HEIGHT, card_outline, card_shadow, icon, icon_button, icon_button_colored, menu,
-    menu_item, placeholder, tip, toolbar,
+    menu_item, menu_item_icon, placeholder, tip, toolbar,
 };
 
 const TAB_HEIGHT: f32 = 56.0;
@@ -48,7 +48,7 @@ const TAB_MAX_WIDTH: f32 = 240.0;
 
 /// What the select menu ticks.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Pick {
+pub(super) enum Pick {
     All,
     None,
     Read,
@@ -133,6 +133,9 @@ impl MailWindow {
             .bg(rgba(th.surface))
             .shadow(card_shadow(th, outline))
             .p(px(outline))
+            // GPUI clips to rectangles, so the lines stop short of the
+            // rounded bottom corners rather than showing square ones.
+            .pb(px(radius.max(outline)))
             .on_action(cx.listener(Self::select_next))
             .on_action(cx.listener(Self::select_previous))
             .on_action(cx.listener(Self::select_first))
@@ -323,7 +326,9 @@ impl MailWindow {
                 )
                 .child({
                     let more = icon_button("list-more", "more", 20.0, th)
-                        .tooltip(tip(tr!("list-more"), th))
+                        .when(self.menu != Some(Menu::ListMore), |d| {
+                            d.tooltip(tip(tr!("list-more"), th))
+                        })
                         .on_click(
                             cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)),
                         );
@@ -350,13 +355,17 @@ impl MailWindow {
                 .child(read_button)
                 .child({
                     let move_to = icon_button("list-move", "move-to", 20.0, th)
-                        .tooltip(tip(tr!("list-move-to"), th))
+                        .when(self.menu != Some(Menu::MoveTo), |d| {
+                            d.tooltip(tip(tr!("list-move-to"), th))
+                        })
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)));
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
                 })
                 .child({
                     let more = icon_button("list-more", "more", 20.0, th)
-                        .tooltip(tip(tr!("list-more"), th))
+                        .when(self.menu != Some(Menu::ListMore), |d| {
+                            d.tooltip(tip(tr!("list-more"), th))
+                        })
                         .on_click(
                             cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)),
                         );
@@ -493,7 +502,9 @@ impl MailWindow {
             _ => self.folder_name().unwrap_or_default().into(),
         };
         let more = icon_button("list-more", "more", 20.0, th)
-            .tooltip(tip(tr!("list-more"), th))
+            .when(self.menu != Some(Menu::ListMore), |d| {
+                d.tooltip(tip(tr!("list-more"), th))
+            })
             .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)));
         toolbar(th)
             .pl(px(16.0))
@@ -643,11 +654,12 @@ impl MailWindow {
                     .with_priority(1),
                 )
                 .child(
-                    // Under the button, moved back inside the window when
-                    // it would run past an edge (a phone's narrow window).
+                    // Just under the button (where the button's row puts
+                    // it), moved back inside the window when it would run
+                    // past an edge (a phone's narrow window).
                     deferred(
                         anchored()
-                            .offset(point(px(0.0), px(40.0)))
+                            .offset(point(px(0.0), px(4.0)))
                             .snap_to_window_with_margin(px(8.0))
                             .child(
                                 div().occlude().child(
@@ -691,87 +703,131 @@ impl MailWindow {
                 };
                 match targets {
                     None => menu(th).child(
-                        menu_item("mark-all-read", &tr!("menu-mark-all-read"), th).on_click(
-                            cx.listener(|this, _, _, cx| {
-                                let keys = this.entries.iter().map(|e| e.key).collect();
-                                this.act(Act::Read(true), keys, cx);
-                            }),
-                        ),
+                        menu_item_icon(
+                            "mark-all-read",
+                            "mark-read",
+                            &tr!("menu-mark-all-read"),
+                            th,
+                        )
+                        .on_click(cx.listener(|this, _, _, cx| {
+                            let keys = this.entries.iter().map(|e| e.key).collect();
+                            this.act(Act::Read(true), keys, cx);
+                        })),
                     ),
                     Some(()) => menu(th)
                         // What a narrow reading pane leaves off its toolbar.
                         .when(
                             which == Menu::ReaderMore && self.reader_squeeze().spam,
                             |d| {
-                                d.child(menu_item("more-spam", &tr!("menu-spam"), th).on_click(
-                                    cx.listener(|this, _, _, cx| {
-                                        this.act_on_targets(Act::Spam, cx)
-                                    }),
-                                ))
+                                d.child(
+                                    menu_item_icon("more-spam", "junk", &tr!("menu-spam"), th)
+                                        .on_click(cx.listener(|this, _, _, cx| {
+                                            this.act_on_targets(Act::Spam, cx)
+                                        })),
+                                )
                             },
                         )
                         .when(
                             which == Menu::ReaderMore && self.reader_squeeze().delete,
                             |d| {
-                                d.child(menu_item("more-delete", &tr!("menu-delete"), th).on_click(
-                                    cx.listener(|this, _, _, cx| {
-                                        this.act_on_targets(Act::Delete, cx)
-                                    }),
-                                ))
+                                d.child(
+                                    menu_item_icon("more-delete", "trash", &tr!("menu-delete"), th)
+                                        .on_click(cx.listener(|this, _, _, cx| {
+                                            this.act_on_targets(Act::Delete, cx)
+                                        })),
+                                )
                             },
                         )
-                        .child(menu_item("more-read", &tr!("menu-mark-read"), th).on_click(
-                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)),
-                        ))
                         .child(
-                            menu_item("more-unread", &tr!("menu-mark-unread"), th).on_click(
-                                cx.listener(|this, _, window, cx| {
-                                    this.mark_unread(&super::MarkUnread, window, cx)
-                                }),
-                            ),
-                        )
-                        .child(menu_item("more-star", &tr!("menu-star"), th).on_click(
-                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Star(true), cx)),
-                        ))
-                        .child(menu_item("more-unstar", &tr!("menu-unstar"), th).on_click(
-                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Star(false), cx)),
-                        ))
-                        .child(
-                            menu_item("more-important", &tr!("menu-important"), th).on_click(
-                                cx.listener(|this, _, _, cx| {
-                                    this.act_on_targets(Act::Important(true), cx)
-                                }),
-                            ),
-                        )
-                        .child(
-                            menu_item("more-not-important", &tr!("menu-not-important"), th)
+                            menu_item_icon("more-read", "mark-read", &tr!("menu-mark-read"), th)
                                 .on_click(cx.listener(|this, _, _, cx| {
-                                    this.act_on_targets(Act::Important(false), cx)
+                                    this.act_on_targets(Act::Read(true), cx)
                                 })),
                         )
-                        .child(menu_item("more-pin", &tr!("menu-pin"), th).on_click(
-                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Pin(true), cx)),
-                        ))
-                        .child(menu_item("more-unpin", &tr!("menu-unpin"), th).on_click(
-                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Pin(false), cx)),
-                        ))
+                        .child(
+                            menu_item_icon("more-unread", "mail", &tr!("menu-mark-unread"), th)
+                                .on_click(cx.listener(|this, _, window, cx| {
+                                    this.mark_unread(&super::MarkUnread, window, cx)
+                                })),
+                        )
+                        .child(
+                            menu_item_icon("more-star", "star", &tr!("menu-star"), th).on_click(
+                                cx.listener(|this, _, _, cx| {
+                                    this.act_on_targets(Act::Star(true), cx)
+                                }),
+                            ),
+                        )
+                        .child(
+                            menu_item_icon("more-unstar", "star-filled", &tr!("menu-unstar"), th)
+                                .on_click(cx.listener(|this, _, _, cx| {
+                                    this.act_on_targets(Act::Star(false), cx)
+                                })),
+                        )
+                        .child(
+                            menu_item_icon(
+                                "more-important",
+                                "important",
+                                &tr!("menu-important"),
+                                th,
+                            )
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                this.act_on_targets(Act::Important(true), cx)
+                            })),
+                        )
+                        .child(
+                            menu_item_icon(
+                                "more-not-important",
+                                "important-filled",
+                                &tr!("menu-not-important"),
+                                th,
+                            )
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                this.act_on_targets(Act::Important(false), cx)
+                            })),
+                        )
+                        .child(
+                            menu_item_icon("more-pin", "pin", &tr!("menu-pin"), th).on_click(
+                                cx.listener(|this, _, _, cx| {
+                                    this.act_on_targets(Act::Pin(true), cx)
+                                }),
+                            ),
+                        )
+                        .child(
+                            menu_item_icon("more-unpin", "pin-filled", &tr!("menu-unpin"), th)
+                                .on_click(cx.listener(|this, _, _, cx| {
+                                    this.act_on_targets(Act::Pin(false), cx)
+                                })),
+                        )
                         .when(which == Menu::ReaderMore, |d| {
                             d.child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
                                 .child(
-                                    menu_item("more-print", &tr!("menu-print-all"), th).on_click(
-                                        cx.listener(|this, _, _, cx| {
+                                    menu_item_icon(
+                                        "more-print",
+                                        "print",
+                                        &tr!("menu-print-all"),
+                                        th,
+                                    )
+                                    .on_click(cx.listener(
+                                        |this, _, window, cx| {
                                             this.menu = None;
-                                            this.print_conversation(cx);
-                                        }),
-                                    ),
+                                            this.print_conversation(window, cx);
+                                        },
+                                    )),
                                 )
                                 .when(!self.detached, |d| {
                                     d.child(
-                                        menu_item("more-new-window", &tr!("menu-new-window"), th)
-                                            .on_click(cx.listener(|this, _, _, cx| {
+                                        menu_item_icon(
+                                            "more-new-window",
+                                            "open-external",
+                                            &tr!("menu-new-window"),
+                                            th,
+                                        )
+                                        .on_click(
+                                            cx.listener(|this, _, _, cx| {
                                                 this.menu = None;
                                                 this.open_reader_in_window(cx);
-                                            })),
+                                            }),
+                                        ),
                                     )
                                 })
                         }),
@@ -880,33 +936,54 @@ impl MailWindow {
         self.menu = None;
         self.checked_all = false;
         self.page_pick = None;
+        self.picked = None;
         self.checked.clear();
-        let range =
-            self.visible.start.min(self.entries.len())..self.visible.end.min(self.entries.len());
-        let entries = self.entries[range].to_vec();
-        let folder = self.listed_folder();
-        let rows: Vec<Option<Rc<Row>>> = match &mut self.mail {
-            Ok(mail) => mail.rows(&entries, folder, self.show_recipients),
-            Err(_) => Vec::new(),
-        };
-        for (entry, row) in entries.iter().zip(rows) {
-            let Some(row) = row.map(|r| self.with_pending(r)) else {
-                continue;
-            };
-            let take = match pick {
-                Pick::All => true,
-                Pick::None => false,
-                Pick::Read => !row.unread,
-                Pick::Unread => row.unread,
-                Pick::Starred => row.flagged,
-                Pick::Unstarred => !row.flagged,
-            };
-            if take {
-                self.checked.insert(entry.key);
+        match pick {
+            Pick::None => {}
+            // The lines on screen; the banner offers the whole list.
+            Pick::All => {
+                let range = self.visible.start.min(self.entries.len())
+                    ..self.visible.end.min(self.entries.len());
+                self.checked
+                    .extend(self.entries[range].iter().map(|e| e.key));
+                if self.checked.len() < self.entries.len() {
+                    self.page_pick = Some(self.checked.len());
+                } else if !self.checked.is_empty() {
+                    self.checked_all = true;
+                }
             }
-        }
-        if pick == Pick::All && self.checked.len() < self.entries.len() {
-            self.page_pick = Some(self.checked.len());
+            // Every matching line of the list, loaded on screen or not.
+            Pick::Read | Pick::Unread | Pick::Starred | Pick::Unstarred => {
+                let folder = self.listed_folder();
+                let show_recipients = self.show_recipients;
+                let marks = match &mut self.mail {
+                    Ok(mail) => mail.marks(&self.entries, folder, show_recipients),
+                    Err(_) => Vec::new(),
+                };
+                for (entry, marks) in self.entries.iter().zip(marks) {
+                    let pending = self.pending.get(&entry.key);
+                    let unread = pending.and_then(|p| p.unread).unwrap_or(marks.unread);
+                    let flagged = pending.and_then(|p| p.flagged).unwrap_or(marks.flagged);
+                    let take = match pick {
+                        Pick::Read => !unread,
+                        Pick::Unread => unread,
+                        Pick::Starred => flagged,
+                        _ => !flagged,
+                    };
+                    if take {
+                        self.checked.insert(entry.key);
+                    }
+                }
+                if self.checked.is_empty() {
+                    self.show_snackbar(
+                        pick_none_text(pick, self.config.mail.conversations),
+                        None,
+                        cx,
+                    );
+                } else {
+                    self.picked = Some((pick, self.checked.len()));
+                }
+            }
         }
         cx.notify();
     }
@@ -916,7 +993,11 @@ impl MailWindow {
     fn render_select_banner(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
         let on_screen = self.checked.len();
         let page_checked = on_screen > 0 && self.page_pick == Some(on_screen);
-        if !(self.checked_all || page_checked) {
+        let picked = self
+            .picked
+            .filter(|&(_, count)| count > 0 && count == on_screen)
+            .map(|(pick, _)| pick);
+        if !(self.checked_all || page_checked || picked.is_some()) {
             return None;
         }
         let kind = if self.config.mail.conversations {
@@ -927,6 +1008,24 @@ impl MailWindow {
         let folder = self.folder_name();
         let total = self.entries.len() as u64;
         let (text, link) = match (self.checked_all, folder) {
+            (false, folder) if let Some(pick) = picked => (
+                match folder {
+                    Some(folder) => tr!(
+                        "list-selected-picked-in",
+                        pick = pick_name(pick),
+                        count = on_screen as u64,
+                        kind = kind,
+                        folder = folder
+                    ),
+                    None => tr!(
+                        "list-selected-picked",
+                        pick = pick_name(pick),
+                        count = on_screen as u64,
+                        kind = kind
+                    ),
+                },
+                tr!("list-clear-selection"),
+            ),
             (true, Some(folder)) => (
                 tr!(
                     "list-selected-all-in",
@@ -978,10 +1077,14 @@ impl MailWindow {
                         .text_color(rgba(th.accent))
                         .cursor_pointer()
                         .on_click(cx.listener(|this, _, _, cx| {
-                            if this.checked_all {
+                            let picked = this
+                                .picked
+                                .is_some_and(|(_, count)| count == this.checked.len());
+                            if this.checked_all || picked {
                                 this.checked.clear();
                                 this.checked_all = false;
                                 this.page_pick = None;
+                                this.picked = None;
                             } else {
                                 this.checked = this.entries.iter().map(|e| e.key).collect();
                                 this.checked_all = true;
@@ -1332,6 +1435,7 @@ impl MailWindow {
                 }
                 this.checked_all = false;
                 this.page_pick = None;
+                this.picked = None;
                 cx.notify();
             }))
             .child(if checked {
@@ -1973,4 +2077,25 @@ fn first_sync_placeholder(th: &Theme) -> AnyElement {
                 .child(tr!("list-first-sync-detail")),
         )
         .into_any_element()
+}
+
+/// The select menu's choice as the messages about it name it.
+fn pick_name(pick: Pick) -> &'static str {
+    match pick {
+        Pick::Read => "read",
+        Pick::Unread => "unread",
+        Pick::Starred => "starred",
+        Pick::Unstarred => "unstarred",
+        Pick::All | Pick::None => "other",
+    }
+}
+
+/// "No unread conversations here", when a pick matches nothing.
+fn pick_none_text(pick: Pick, conversations: bool) -> String {
+    let kind = if conversations {
+        "conversation"
+    } else {
+        "message"
+    };
+    tr!("list-picked-none", pick = pick_name(pick), kind = kind)
 }

@@ -1,0 +1,428 @@
+# Katna Mail, English: mail list.
+# Guide: i18n/README.md. Keep ids stable; change the text freely.
+# In plural forms, write { $count } rather than the digit, so languages
+# with their own digits show them.
+
+## Mail list: inbox tabs (Gmail's categories, Outlook's and Zoho's)
+
+tab-primary = Primary
+tab-promotions = Promotions
+tab-social = Social
+tab-updates = Updates
+tab-forums = Forums
+tab-focused = Focused
+tab-other = Other
+tab-inbox = Inbox
+tab-newsletters = Newsletters
+tab-notifications = Notifications
+# Badge under a tab's name: how many unread messages it has.
+tab-new = { $count } new
+# Settings > Inbox tabs, "Automatic: Gmail (sorted by Katna)": for accounts
+# that are not Gmail, Outlook or Zoho, Katna sorts mail into tabs itself.
+tab-provider-other = sorted by Katna
+
+## Mail list: toolbar
+
+# Tooltip of the checkbox that ticks every line.
+list-select = Select
+list-refresh = Refresh
+# Tooltip of the "more actions" button (three dots).
+list-more = More
+list-mark-read = Mark as read
+list-mark-unread = Mark as unread
+list-move-to = Move to
+list-archive = Archive
+list-spam = Report spam
+list-delete = Delete
+# Tooltips of the page arrows: newer mail is on the previous page.
+list-newer = Newer
+list-older = Older
+# Which lines show: $first and $last are line numbers, $total all lines.
+list-range = { $first }–{ $last } of { $total }
+# As list-range, when the total is an estimate from the search engine.
+list-range-about = { $first }–{ $last } of about { $total }
+# $query: what the user typed in the search box.
+list-results = Results for “{ $query }”
+# $query: the spelling-corrected search that ran instead.
+list-results-corrected = Showing results for “{ $query }”
+# A link that runs the search as typed. $query: what the user typed.
+list-search-instead = Search instead for “{ $query }”
+# The "+3" button after a line's attachment chips: $count more files.
+list-files-more = +{ $count }
+
+## Mail list: Select menu (which lines to tick)
+
+list-pick-all = All
+list-pick-none = None
+list-pick-read = Read
+list-pick-unread = Unread
+list-pick-starred = Starred
+list-pick-unstarred = Unstarred
+
+## Mail list: banner when every line is ticked
+# $kind: "conversation" or "message", as the list groups mail.
+# $count: how many; $folder: the folder's name.
+
+list-selected-all = { $kind ->
+    [conversation] { $count ->
+        [one] All { $count } conversations are selected.
+       *[other] All { $count } conversations are selected.
+    }
+   *[message] { $count ->
+        [one] All { $count } messages are selected.
+       *[other] All { $count } messages are selected.
+    }
+}
+list-selected-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] All { $count } conversations in { $folder } are selected.
+       *[other] All { $count } conversations in { $folder } are selected.
+    }
+   *[message] { $count ->
+        [one] All { $count } messages in { $folder } are selected.
+       *[other] All { $count } messages in { $folder } are selected.
+    }
+}
+list-selected-screen = { $kind ->
+    [conversation] { $count ->
+        [one] All { $count } conversations on screen are selected.
+       *[other] All { $count } conversations on screen are selected.
+    }
+   *[message] { $count ->
+        [one] All { $count } messages on screen are selected.
+       *[other] All { $count } messages on screen are selected.
+    }
+}
+# A link that ticks every line, not only those on screen.
+list-select-all = { $kind ->
+    [conversation] { $count ->
+        [one] Select all { $count } conversations
+       *[other] Select all { $count } conversations
+    }
+   *[message] { $count ->
+        [one] Select all { $count } messages
+       *[other] Select all { $count } messages
+    }
+}
+list-select-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] Select all { $count } conversations in { $folder }
+       *[other] Select all { $count } conversations in { $folder }
+    }
+   *[message] { $count ->
+        [one] Select all { $count } messages in { $folder }
+       *[other] Select all { $count } messages in { $folder }
+    }
+}
+# After choosing Read, Unread, Starred or Unstarred in the select menu,
+# which ticks every such line of the list, loaded or not.
+# $pick: "read", "unread", "starred" or "unstarred".
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } read conversation is selected.
+           *[other] All { $count } read conversations are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } read message is selected.
+           *[other] All { $count } read messages are selected.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } unread conversation is selected.
+           *[other] All { $count } unread conversations are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } unread message is selected.
+           *[other] All { $count } unread messages are selected.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } starred conversation is selected.
+           *[other] All { $count } starred conversations are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } starred message is selected.
+           *[other] All { $count } starred messages are selected.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } unstarred conversation is selected.
+           *[other] All { $count } unstarred conversations are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } unstarred message is selected.
+           *[other] All { $count } unstarred messages are selected.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } read conversation in { $folder } is selected.
+           *[other] All { $count } read conversations in { $folder } are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } read message in { $folder } is selected.
+           *[other] All { $count } read messages in { $folder } are selected.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } unread conversation in { $folder } is selected.
+           *[other] All { $count } unread conversations in { $folder } are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } unread message in { $folder } is selected.
+           *[other] All { $count } unread messages in { $folder } are selected.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } starred conversation in { $folder } is selected.
+           *[other] All { $count } starred conversations in { $folder } are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } starred message in { $folder } is selected.
+           *[other] All { $count } starred messages in { $folder } are selected.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } unstarred conversation in { $folder } is selected.
+           *[other] All { $count } unstarred conversations in { $folder } are selected.
+        }
+       *[message] { $count ->
+            [one] { $count } unstarred message in { $folder } is selected.
+           *[other] All { $count } unstarred messages in { $folder } are selected.
+        }
+    }
+}
+# A notice when the select menu's choice matches no line.
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] No read conversations here.
+       *[message] No read messages here.
+    }
+   *[unread] { $kind ->
+        [conversation] No unread conversations here.
+       *[message] No unread messages here.
+    }
+    [starred] { $kind ->
+        [conversation] No starred conversations here.
+       *[message] No starred messages here.
+    }
+    [unstarred] { $kind ->
+        [conversation] No unstarred conversations here.
+       *[message] No unstarred messages here.
+    }
+}
+list-clear-selection = Clear selection
+
+## Mail list: empty states
+
+list-empty-search = No messages matched your search.
+# $tab: the inbox tab's name, such as Promotions.
+list-empty-tab = No mail in { $tab }.
+list-empty-tab-unknown = No mail in this tab.
+# $folder: the folder's name.
+list-empty-folder = No messages in { $folder }.
+list-empty-folder-unknown = No messages in this folder.
+# While the first sync of a new account downloads its mail.
+list-first-sync = Getting your mail…
+list-first-sync-detail = It shows up here as it arrives.
+
+## Mail list: lines
+
+# A line whose message was deleted elsewhere while the list showed it.
+row-removed = This message was removed.
+# Tooltips of a line's star.
+row-starred = Starred
+row-not-starred = Not starred
+# Tooltips of a line's importance marker.
+row-important = Important. Click to mark as not important.
+row-mark-important = Mark as important
+# Tooltip of the pin icon on a pinned line.
+row-pinned = Pinned to the top
+# Tooltips of the pin button shown on a line under the pointer.
+row-pin = Pin to top
+row-unpin = Unpin
+
+## Mail list: More menu and right-click menu
+
+menu-reply = Reply
+menu-reply-all = Reply all
+menu-forward = Forward
+menu-archive = Archive
+menu-delete = Delete
+menu-spam = Report spam
+menu-mark-read = Mark as read
+menu-mark-unread = Mark as unread
+# Marks every line in the list as read.
+menu-mark-all-read = Mark all as read
+menu-star = Add star
+menu-unstar = Remove star
+menu-important = Mark as important
+menu-not-important = Mark as not important
+menu-pin = Pin to top
+menu-unpin = Unpin
+# Prints every message of the open conversation.
+menu-print-all = Print all
+menu-new-window = Open in new window
+# Opens a submenu of folders.
+menu-move-to = Move to
+# Heading over the list of folders to move the ticked mail to.
+menu-move-to-heading = Move to:
+# Searches for mail from the sender. $name: the sender's name or address.
+menu-find-from = Find emails from { $name }
+
+## Snackbar after an action on mail in the list
+# $kind: "conversation" or "message", as the list groups mail.
+# $count: how many were acted on.
+
+toast-archived = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation archived.
+       *[other] { $count } conversations archived.
+    }
+   *[message] { $count ->
+        [one] Message archived.
+       *[other] { $count } messages archived.
+    }
+}
+toast-trashed = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation moved to Trash.
+       *[other] { $count } conversations moved to Trash.
+    }
+   *[message] { $count ->
+        [one] Message moved to Trash.
+       *[other] { $count } messages moved to Trash.
+    }
+}
+toast-moved = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation moved.
+       *[other] { $count } conversations moved.
+    }
+   *[message] { $count ->
+        [one] Message moved.
+       *[other] { $count } messages moved.
+    }
+}
+toast-starred = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation starred.
+       *[other] { $count } conversations starred.
+    }
+   *[message] { $count ->
+        [one] Message starred.
+       *[other] { $count } messages starred.
+    }
+}
+toast-unstarred = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation unstarred.
+       *[other] { $count } conversations unstarred.
+    }
+   *[message] { $count ->
+        [one] Message unstarred.
+       *[other] { $count } messages unstarred.
+    }
+}
+toast-important = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation marked as important.
+       *[other] { $count } conversations marked as important.
+    }
+   *[message] { $count ->
+        [one] Message marked as important.
+       *[other] { $count } messages marked as important.
+    }
+}
+toast-not-important = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation marked as not important.
+       *[other] { $count } conversations marked as not important.
+    }
+   *[message] { $count ->
+        [one] Message marked as not important.
+       *[other] { $count } messages marked as not important.
+    }
+}
+toast-pinned = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation pinned to the top.
+       *[other] { $count } conversations pinned to the top.
+    }
+   *[message] { $count ->
+        [one] Message pinned to the top.
+       *[other] { $count } messages pinned to the top.
+    }
+}
+toast-unpinned = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation unpinned.
+       *[other] { $count } conversations unpinned.
+    }
+   *[message] { $count ->
+        [one] Message unpinned.
+       *[other] { $count } messages unpinned.
+    }
+}
+toast-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation reported as spam.
+       *[other] { $count } conversations reported as spam.
+    }
+   *[message] { $count ->
+        [one] Message reported as spam.
+       *[other] { $count } messages reported as spam.
+    }
+}
+toast-deleted-forever = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation deleted forever.
+       *[other] { $count } conversations deleted forever.
+    }
+   *[message] { $count ->
+        [one] Message deleted forever.
+       *[other] { $count } messages deleted forever.
+    }
+}
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation marked as read.
+       *[other] { $count } conversations marked as read.
+    }
+   *[message] { $count ->
+        [one] Message marked as read.
+       *[other] { $count } messages marked as read.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation marked as unread.
+       *[other] { $count } conversations marked as unread.
+    }
+   *[message] { $count ->
+        [one] Message marked as unread.
+       *[other] { $count } messages marked as unread.
+    }
+}
+# After Undo on the snackbar took an action back.
+toast-undone = Action undone.
+# Ctrl+Z when nothing done in this window is left to take back.
+toast-nothing-to-undo = Nothing to undo.
+# Ctrl+Z right after mail was deleted forever (from Trash).
+toast-cannot-undo-delete-forever = Mail deleted forever can't be brought back.
+# After Undo on "Message sent": the message opens again, not sent.
+toast-send-undone = Sending undone.
+# Undo on a sent message once it has already gone to the mail server.
+toast-too-late-to-undo-send = Too late to undo: the message has already been sent.
+# The snackbar's button that takes the action back.
+toast-undo = Undo
+toast-no-spam-folder = This account has no spam folder.

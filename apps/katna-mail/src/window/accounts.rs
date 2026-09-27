@@ -27,8 +27,6 @@ use crate::theme::{Theme, fade};
 use crate::widgets::{FocusRing, elevation, icon};
 
 const WIDTH: f32 = 500.0;
-/// What to type before everything is deleted.
-const CONFIRM_WORD: &str = "delete";
 
 /// A question before deleting.
 pub(super) struct Danger {
@@ -108,15 +106,21 @@ impl MailWindow {
                     .gap(px(8.0))
                     .when(self.remote.has_own_picture(id), |d| {
                         d.child(
-                            text_button(("account-picture-reset", ix), "Use desktop picture", th)
-                                .map(|d| self.page_control(d, th, cx))
-                                .on_click(cx.listener(move |this, _, _, cx| {
+                            text_button(
+                                ("account-picture-reset", ix),
+                                tr!("accounts-picture-reset"),
+                                th,
+                            )
+                            .map(|d| self.page_control(d, th, cx))
+                            .on_click(
+                                cx.listener(move |this, _, _, cx| {
                                     this.reset_account_picture(id, cx)
-                                })),
+                                }),
+                            ),
                         )
                     })
                     .child(
-                        text_button(("account-picture", ix), "Change picture", th)
+                        text_button(("account-picture", ix), tr!("accounts-picture-change"), th)
                             .map(|d| self.page_control(d, th, cx))
                             .on_click(
                                 cx.listener(move |this, _, _, cx| {
@@ -125,7 +129,7 @@ impl MailWindow {
                             ),
                     )
                     .child(
-                        danger_button(("account-remove", ix), "Remove", false, th)
+                        danger_button(("account-remove", ix), tr!("accounts-remove"), false, th)
                             .map(|d| self.page_control(d, th, cx))
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 this.ask(What::RemoveAccount(account.clone()), cx)
@@ -161,12 +165,12 @@ impl MailWindow {
                         .py(px(8.0))
                         .text_size(px(14.0))
                         .text_color(rgba(th.text_faint))
-                        .child("No accounts yet."),
+                        .child(tr!("accounts-none")),
                 )
             })
             .child(
                 div().pt(px(8.0)).flex().child(
-                    crate::widgets::outlined_button("account-add-page", "Add an account", th)
+                    crate::widgets::outlined_button("account-add-page", tr!("account-add"), th)
                         .map(|d| self.page_control(d, th, cx))
                         .on_click(
                             cx.listener(|this, _, window, cx| this.open_add_account(window, cx)),
@@ -183,16 +187,17 @@ impl MailWindow {
                     .text_size(px(14.0))
                     .line_height(px(20.0))
                     .text_color(rgba(th.text_dim))
-                    .child(
-                        "Deletes every account, all stored mail, contacts and calendars, the \
-                         search index, your settings and saved passwords from this computer. \
-                         Nothing changes on your mail servers.",
-                    ),
+                    .child(tr!("accounts-delete-all-about")),
             )
             .child(
-                danger_button("delete-all-open", "Delete all Katna data", false, th)
-                    .map(|d| self.page_control(d, th, cx))
-                    .on_click(cx.listener(|this, _, window, cx| this.ask_delete_all(window, cx))),
+                danger_button(
+                    "delete-all-open",
+                    tr!("accounts-delete-all-open"),
+                    false,
+                    th,
+                )
+                .map(|d| self.page_control(d, th, cx))
+                .on_click(cx.listener(|this, _, window, cx| this.ask_delete_all(window, cx))),
             );
         let shown = self.config.mail.accounts_shown;
         let mut pane = div().flex().flex_col().gap(px(2.0));
@@ -200,12 +205,12 @@ impl MailWindow {
             (
                 AccountsShown::One,
                 "page-accounts-one",
-                "One account at a time; switch in the account card",
+                tr!("accounts-shown-one"),
             ),
             (
                 AccountsShown::All,
                 "page-accounts-all",
-                "All accounts, one after another",
+                tr!("accounts-shown-all"),
             ),
         ] {
             pane = pane.child(self.radio_row(
@@ -221,23 +226,20 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(self.row(
-                "Folder pane",
-                Some("Which accounts' folders the pane on the left shows."),
+                tr!("accounts-folder-pane"),
+                Some(tr!("accounts-folder-pane-detail").as_str()),
                 pane,
                 th,
             ))
             .child(self.row(
-                "Accounts",
-                Some(
-                    "Removing an account deletes Katna's copy of its mail on this computer. \
-                     The mail stays on the server.",
-                ),
+                tr!("accounts-row"),
+                Some(tr!("accounts-row-detail").as_str()),
                 list,
                 th,
             ))
             .child(self.row(
-                "Delete all data",
-                Some("Start over, as on a new install."),
+                tr!("accounts-delete-all-row"),
+                Some(tr!("accounts-delete-all-row-detail").as_str()),
                 delete_all,
                 th,
             ))
@@ -283,7 +285,7 @@ impl MailWindow {
     fn ask_delete_all(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let accent = rgba(self.theme(window).error).into();
         let typed = cx.new(|cx| {
-            let mut input = TextInput::new(format!("Type \u{201c}{CONFIRM_WORD}\u{201d}"), cx);
+            let mut input = TextInput::new(tr!("accounts-confirm-placeholder"), cx);
             input.set_accent(accent);
             input
         });
@@ -324,11 +326,12 @@ impl MailWindow {
             Some(Danger {
                 what: What::DeleteAll { typed, .. },
                 ..
-            }) => typed
-                .read(cx)
-                .text()
-                .trim()
-                .eq_ignore_ascii_case(CONFIRM_WORD),
+            }) => {
+                // The English word also works, for a keyboard without the
+                // language's letters or accents.
+                let typed = typed.read(cx).text().trim().to_lowercase();
+                typed == tr!("accounts-confirm-word").to_lowercase() || typed == "delete"
+            }
             Some(_) => true,
         }
     }
@@ -412,13 +415,11 @@ impl MailWindow {
             self.close_listing(cx);
         }
         self.refresh(true, cx);
+        let address = account.address.as_str();
         let text = if account.kind == AccountKind::Local {
-            format!("{} was removed from Katna.", account.address)
+            tr!("accounts-removed-local", address = address)
         } else {
-            format!(
-                "{} was removed from Katna. Its mail is still on the server.",
-                account.address
-            )
+            tr!("accounts-removed", address = address)
         };
         self.show_snackbar(text, None, cx);
     }
@@ -435,7 +436,7 @@ impl MailWindow {
         self.unread.clear();
         self.mail = Mail::open(&self.paths);
         self.load_tree();
-        self.show_snackbar("All Katna data was deleted from this computer.", None, cx);
+        self.show_snackbar(tr!("accounts-all-deleted"), None, cx);
     }
 
     /// The daemon deleted what it downloaded and is downloading it again.
@@ -479,13 +480,12 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let ready = self.danger_ready(cx);
         let danger = self.danger.as_ref()?;
-        let (title, action, busy_text, items): (String, &str, &str, Vec<String>) =
+        let (title, action, busy_text, items): (String, String, String, Vec<String>) =
             match &danger.what {
-                // Its button's labels are translated below.
                 What::ResetCache => (
                     tr!("reset-cache-title"),
-                    "",
-                    "",
+                    tr!("reset-cache-confirm"),
+                    tr!("reset-cache-busy"),
                     vec![
                         tr!("reset-cache-mail"),
                         tr!("reset-cache-index"),
@@ -493,38 +493,34 @@ impl MailWindow {
                     ],
                 ),
                 What::RemoveAccount(account) => {
-                    let folders = match self.tree.folders_of(account.id).len() {
-                        0 => String::new(),
-                        1 => " in its folder".to_owned(),
-                        n => format!(" in its {n} folders"),
-                    };
+                    let folders = self.tree.folders_of(account.id).len();
                     (
-                        format!("Remove {}?", account.address),
-                        "Remove account",
-                        "Removing\u{2026}",
+                        tr!("accounts-remove-title", address = account.address.as_str()),
+                        tr!("accounts-remove-confirm"),
+                        tr!("accounts-removing"),
                         if account.kind == AccountKind::Local {
                             vec![
-                                format!("All mail imported into this account{folders}"),
-                                "Its Katna settings".into(),
+                                tr!("accounts-remove-local-mail", folders = folders),
+                                tr!("accounts-remove-local-settings"),
                             ]
                         } else {
                             vec![
-                                format!("All of this account's mail stored by Katna{folders}"),
-                                "Its messages waiting in the outbox".into(),
-                                "Its saved password and its Katna settings".into(),
+                                tr!("accounts-remove-mail", folders = folders),
+                                tr!("accounts-remove-outbox"),
+                                tr!("accounts-remove-settings"),
                             ]
                         },
                     )
                 }
                 What::DeleteAll { .. } => (
-                    "Delete all Katna data?".into(),
-                    "Delete everything",
-                    "Deleting\u{2026}",
+                    tr!("accounts-delete-all-title"),
+                    tr!("accounts-delete-all-confirm"),
+                    tr!("accounts-deleting"),
                     vec![
-                        "Every account, and all mail and attachments stored by Katna".into(),
-                        "Contacts, calendars and the search index".into(),
-                        "All settings, signatures and keyboard shortcuts".into(),
-                        "Every saved password".into(),
+                        tr!("accounts-delete-all-accounts"),
+                        tr!("accounts-delete-all-contacts"),
+                        tr!("accounts-delete-all-settings"),
+                        tr!("accounts-delete-all-passwords"),
                     ],
                 ),
             };
@@ -548,9 +544,9 @@ impl MailWindow {
                     .font_weight(FontWeight::SEMIBOLD)
                     .text_color(rgba(tone))
                     .child(if reset {
-                        SharedString::from(tr!("reset-cache-deleted"))
+                        tr!("reset-cache-deleted")
                     } else {
-                        "Deleted from this computer:".into()
+                        tr!("accounts-deleted-heading")
                     }),
             )
             .children(items.into_iter().map(|item| {
@@ -570,10 +566,9 @@ impl MailWindow {
                         .text_size(px(14.0))
                         .font_weight(FontWeight::SEMIBOLD)
                         .text_color(rgba(tone))
-                        .child("This cannot be undone."),
+                        .child(tr!("accounts-cannot-undo")),
                 )
             });
-        let kept = tr!("reset-cache-kept");
         let server = div()
             .mt(px(12.0))
             .p(px(12.0))
@@ -590,26 +585,14 @@ impl MailWindow {
                     .text_size(px(13.0))
                     .line_height(px(19.0))
                     .text_color(rgba(th.text_dim))
-                    .child(SharedString::from(
-                        match &danger.what {
-                            What::ResetCache => kept.as_str(),
-                            What::DeleteAll { .. } => {
-                                "Nothing changes on your mail servers: your mail stays there, \
-                             and adding an account again downloads it again. Mail imported \
-                             from files is only in Katna; the files are not touched."
-                            }
-                            What::RemoveAccount(account) if account.kind == AccountKind::Local => {
-                                "This mail was imported from files, so Katna has the only copy. \
-                             The files it came from are not touched; import them again to \
-                             get it back."
-                            }
-                            What::RemoveAccount(_) => {
-                                "Nothing changes on the mail server: your mail stays there, and \
-                             adding the account again downloads it again."
-                            }
+                    .child(match &danger.what {
+                        What::ResetCache => tr!("reset-cache-kept"),
+                        What::DeleteAll { .. } => tr!("accounts-server-delete-all"),
+                        What::RemoveAccount(account) if account.kind == AccountKind::Local => {
+                            tr!("accounts-server-local")
                         }
-                        .to_owned(),
-                    )),
+                        What::RemoveAccount(_) => tr!("accounts-server-remove"),
+                    }),
             );
         let confirm = match &danger.what {
             What::DeleteAll { typed, .. } => {
@@ -623,7 +606,7 @@ impl MailWindow {
                         .child(
                             div()
                                 .text_size(px(14.0))
-                                .child(format!("To confirm, type \u{201c}{CONFIRM_WORD}\u{201d}:")),
+                                .child(tr!("accounts-confirm-prompt")),
                         )
                         .child(
                             div()
@@ -712,26 +695,16 @@ impl MailWindow {
                             .cursor_pointer()
                             .hover(|s| s.bg(rgba(fade(th.accent, 0.08))))
                             .on_click(cx.listener(|this, _, _, cx| this.close_danger(cx)))
-                            .child("Cancel"),
+                            .child(tr!("accounts-cancel")),
                     )
                     .child(
-                        if reset {
-                            crate::widgets::filled_button(
-                                "danger-confirm",
-                                if busy {
-                                    tr!("reset-cache-busy")
-                                } else {
-                                    tr!("reset-cache-confirm")
-                                },
-                                th,
-                            )
-                        } else {
-                            danger_button(
-                                "danger-confirm",
-                                if busy { busy_text } else { action },
-                                true,
-                                th,
-                            )
+                        {
+                            let label = if busy { busy_text } else { action };
+                            if reset {
+                                crate::widgets::filled_button("danger-confirm", label, th)
+                            } else {
+                                danger_button("danger-confirm", label, true, th)
+                            }
                         }
                         .focus_ring(th)
                         .when(!ready, |d| d.opacity(0.45).cursor_default())
@@ -780,7 +753,11 @@ impl MailWindow {
 
 /// A red button: outlined in the page, filled in the dialog.
 /// A quiet button: accent text, a background under the pointer.
-fn text_button(id: impl Into<gpui::ElementId>, label: &'static str, th: &Theme) -> Stateful<Div> {
+fn text_button(
+    id: impl Into<gpui::ElementId>,
+    label: impl Into<SharedString>,
+    th: &Theme,
+) -> Stateful<Div> {
     div()
         .id(id)
         .flex_none()
@@ -794,15 +771,16 @@ fn text_button(id: impl Into<gpui::ElementId>, label: &'static str, th: &Theme) 
         .text_color(rgba(th.accent))
         .cursor_pointer()
         .hover(|s| s.bg(rgba(th.hover)))
-        .child(label)
+        .child(label.into())
 }
 
 fn danger_button(
     id: impl Into<gpui::ElementId>,
-    label: &'static str,
+    label: impl Into<SharedString>,
     filled: bool,
     th: &Theme,
 ) -> Stateful<Div> {
+    let label = label.into();
     let button = div()
         .id(id)
         .flex_none()
@@ -830,13 +808,14 @@ fn danger_button(
     }
 }
 
-fn kind_name(kind: AccountKind) -> &'static str {
+/// The account's type; protocol names stay as they are.
+fn kind_name(kind: AccountKind) -> String {
     match kind {
-        AccountKind::Imap => "IMAP",
-        AccountKind::Jmap => "JMAP",
-        AccountKind::Pop3 => "POP3",
-        AccountKind::Local => "Imported",
-        AccountKind::CalDav => "CalDAV",
-        AccountKind::CardDav => "CardDAV",
+        AccountKind::Imap => "IMAP".into(),
+        AccountKind::Jmap => "JMAP".into(),
+        AccountKind::Pop3 => "POP3".into(),
+        AccountKind::Local => tr!("accounts-kind-imported"),
+        AccountKind::CalDav => "CalDAV".into(),
+        AccountKind::CardDav => "CardDAV".into(),
     }
 }

@@ -11,11 +11,15 @@ mod autostart;
 mod daemon;
 mod data;
 mod format;
+mod grammar;
 mod instance;
+mod mailto;
 mod outgoing;
+mod placement;
 mod sidebar;
 mod signatures;
 mod spell;
+mod suggest;
 mod tabs;
 mod theme;
 mod whats_new;
@@ -37,6 +41,7 @@ use katna_ui::scale::desktop_px;
 const USAGE: &str = "\
 Usage: katna-mail [--data-dir DIR] [--search QUERY] [--compose | --inbox | --settings |
                   --message ID | --reply-all ID]
+       katna-mail --background
 
 When Katna Mail is already running, it comes to the front and does what
 the options ask; a second window does not open.
@@ -51,6 +56,10 @@ Options:
   --settings       Open the settings
   --message ID     Open the message with this ID (as notifications do)
   --reply-all ID   Open the message with this ID and reply to all
+  mailto:...       Write a new message as the link asks (Katna Mail is
+                   the desktop's mail app when Settings > General says so)
+  --background     Start the Katna service (sync, notifications, the tray
+                   icon) without a window, as at login
   -h, --help       Show this help
   -V, --version    Show the version
 
@@ -64,6 +73,12 @@ shortcuts changes them.
 const TRANSLATIONS: katna_i18n::Sources = include!(concat!(env!("OUT_DIR"), "/translations.rs"));
 
 fn main() -> ExitCode {
+    // Grammar checking runs in a copy of the app, started by the app.
+    let mut given = std::env::args().skip(1);
+    if given.next().as_deref() == Some(grammar::HELPER_FLAG) {
+        let language = given.next().unwrap_or_default();
+        return grammar::run_helper(&language, &given.next().unwrap_or_default());
+    }
     let mut data_dir: Option<PathBuf> = None;
     let mut search: Option<String> = None;
     let mut open_first = false;
@@ -80,6 +95,8 @@ fn main() -> ExitCode {
                 None => return usage_error(),
             },
             Some("--open") => open_first = true,
+            // At login: the Katna service only, without a window.
+            Some(autostart::BACKGROUND_FLAG) => return autostart::start_service(),
             Some(flag @ ("--compose" | "--inbox" | "--settings")) => {
                 request = instance::Request::from_flag(flag);
             }
@@ -88,6 +105,10 @@ fn main() -> ExitCode {
                     Some(id) => request = instance::Request::for_message(flag, id),
                     None => return usage_error(),
                 }
+            }
+            // The desktop file's `%u`: a link to write to.
+            Some(uri) if mailto::Mailto::parse(uri).is_some() => {
+                request = Some(instance::Request::Mailto(uri.to_owned()));
             }
             Some("-h" | "--help") => {
                 print!("{USAGE}");
@@ -118,12 +139,14 @@ fn main() -> ExitCode {
     }
     // The language, before any text is drawn (§13.10).
     katna_i18n::init(TRANSLATIONS, Some(paths.data_dir().join("i18n")));
-    katna_i18n::apply(
-        &Config::load(&paths.config_file())
-            .unwrap_or_default()
-            .general
-            .language,
-    );
+    let general = Config::load(&paths.config_file())
+        .unwrap_or_default()
+        .general;
+    if single && !general.start_at_login_set {
+        start_at_login_by_default(&paths);
+    }
+    format::set_clock(general.clock);
+    katna_i18n::apply(&general.language);
     let (connection, sender, requests) = match instance::start(request, single) {
         instance::Started::HandedOff => return ExitCode::SUCCESS,
         instance::Started::First {
@@ -152,15 +175,23 @@ fn main() -> ExitCode {
             if let Some(font) = &font {
                 cx.set_global(katna_ui::UiFont(font.clone()));
             }
-            let options = window_options(
+            let mut options = window_options(
                 &env,
                 MAIL_APP_ID,
                 "Katna Mail",
                 size(desktop_px(1280.0), desktop_px(800.0)),
                 cx,
             );
+            // As it closed, while the Katna service runs.
+            let placement = placement::MailPlacement::new(
+                paths.mail_window_file(),
+                env.clone(),
+                connection.clone(),
+            );
+            placement.restore(&mut options, cx);
             let opened = cx.open_window(options, |window, cx| {
                 cx.new(|cx| {
+                    placement.follow(window, cx);
                     let mut view = window::MailWindow::new(env, paths, font, window, cx);
                     if let Some(query) = search {
                         view.search_for(query, window, cx);
@@ -178,6 +209,7 @@ fn main() -> ExitCode {
                     return;
                 }
             };
+            placement.save_on_quit(cx);
             // The window has bound the keys; show them in the menu bar.
             window::refresh_menu_bar(cx);
             cx.spawn(async move |cx| {
@@ -248,6 +280,23 @@ fn ui_font(env: &Environment, cx: &App) -> Option<SharedString> {
     let family = font::pick_family(wanted.as_ref().map(|f| f.family.as_str()), &installed, kde);
     tracing::info!(?wanted, ?family, "UI font");
     family.map(SharedString::from)
+}
+
+/// Katna starts quietly at login unless someone turned that off: done
+/// once, on the first run that has the setting, and remembered in the
+/// config file so turning it off stays off. A config file that can't be
+/// read is left alone.
+fn start_at_login_by_default(paths: &Paths) {
+    let file = paths.config_file();
+    let Ok(mut config) = Config::load(&file) else {
+        return;
+    };
+    if autostart::set_default() {
+        config.general.start_at_login_set = true;
+        if let Err(err) = config.save(&file) {
+            tracing::warn!(%err, "cannot save the config");
+        }
+    }
 }
 
 fn usage_error() -> ExitCode {

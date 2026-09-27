@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Select every unread or starred mail"
+text = """
+Read, Unread, Starred and Unstarred in the select menu now tick every
+matching conversation in the folder, not only the ones on screen. A line
+above the list says how many are selected, and archiving, deleting,
+moving or marking them works on all of them.
+"""

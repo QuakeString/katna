@@ -51,7 +51,7 @@ pub(super) struct Painter<'a> {
     /// The background under what is being drawn, as drawn.
     bg: u32,
     /// Its text, selectable.
-    pieces: Pieces<'a>,
+    pieces: Pieces,
 }
 
 impl<'a> Painter<'a> {
@@ -61,7 +61,7 @@ impl<'a> Painter<'a> {
         remote: bool,
         mono: Option<SharedString>,
         dark_mail: bool,
-        pieces: Pieces<'a>,
+        pieces: Pieces,
     ) -> Self {
         Self {
             ink: Ink {

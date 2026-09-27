@@ -1,0 +1,76 @@
+# Katna Mail, Assamese (অসমীয়া).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Compose window: title bar
+
+compose-new-message = নতুন বাৰ্তা
+compose-restore = আগৰ আকাৰলৈ আনক
+compose-minimize = সৰু কৰক
+compose-exit-full-screen = সম্পূৰ্ণ স্ক্ৰীনৰ পৰা ওলাওক
+compose-open-window = নতুন উইণ্ড'ত খোলক
+compose-save-close = ছেভ কৰি বন্ধ কৰক
+compose-back-to-mail = মেইল উইণ্ড'লৈ উভতি যাওক
+compose-pop-out-reply = উত্তৰ পৃথক উইণ্ড'ত খোলক
+compose-show-trimmed = চুটি কৰা অংশ দেখুৱাওক
+
+## Recipients and subject
+
+compose-to = প্ৰাপক
+compose-cc = Cc
+compose-bcc = Bcc
+compose-recipients = প্ৰাপকসকল
+compose-subject = বিষয়
+
+## Sending (the notes at the bottom of the window)
+
+compose-open-elsewhere = প্ৰথমে খোলা বাৰ্তাটো পঠিয়াওক বা বাতিল কৰক।
+compose-bad-address = “{ $address }” কোনো ইমেইল ঠিকনা নহয়।
+compose-no-recipients = অন্ততঃ এজন প্ৰাপক যোগ কৰক।
+compose-attachments-too-large = সংলগ্নকসমূহৰ আকাৰ { $size }; মেইল ছাৰ্ভাৰে সৰ্বাধিক { $limit } লয়।
+compose-no-account = মেইল পঠিয়াবলৈ এটা একাউণ্ট যোগ কৰক।
+compose-past-time = ভৱিষ্যতৰ এটা সময় বাছক।
+compose-scheduling = সময় নিৰ্ধাৰণ কৰি থকা হৈছে…
+compose-sending = পঠিয়াই থকা হৈছে…
+compose-scheduled = { $when }ত পঠিয়াবলৈ নিৰ্ধাৰণ কৰা হ'ল
+compose-sent-archived = পঠিওৱা আৰু আৰ্কাইভ কৰা হ'ল
+compose-sent = বাৰ্তা পঠিওৱা হ'ল
+compose-discarded = ড্ৰাফ্ট বাতিল কৰা হ'ল
+
+## Attachments
+
+compose-picker-insert = সুমুৱাওক
+compose-picker-attach = সংলগ্ন কৰক
+compose-file-too-large = { $name } বহুত ডাঙৰ: এটা বাৰ্তাত সৰ্বাধিক { $limit } ৰাখিব পাৰি।
+compose-attachment-size = ({ $size })
+compose-remove-attachment = সংলগ্নক আঁতৰাওক
+compose-drop-files = ফাইলসমূহ ইয়াত এৰক
+
+## Encryption and signing (the toggles by the recipients)
+
+compose-encrypt = এনক্ৰিপ্ট কৰক
+compose-encrypted = এনক্ৰিপ্ট কৰা: কেৱল প্ৰাপকসকলেহে পঢ়িব পাৰে
+compose-sign = স্বাক্ষৰ কৰক
+compose-signed = স্বাক্ষৰিত: প্ৰাপকসকলে পৰীক্ষা কৰিব পাৰে যে এইটো আপোনাৰ পৰা আহিছে
+
+## Spelling
+
+spell-no-dictionary = { $language }ৰ বাবে কোনো বানান অভিধান ইনষ্টল কৰা নাই (উদাহৰণস্বৰূপে hunspell-en_us)।
+spell-dictionary-error = বানান অভিধান: { $error }
+
+## Grammar checking (the right-click menu on a grammar mistake)
+
+grammar-replace = “{ $words }”
+grammar-add = “{ $words }” যোগ কৰক
+grammar-remove = “{ $words }” আঁতৰাওক
+grammar-ignore = আওকাণ কৰক
+
+## Send checks (asked before a message goes out)
+
+send-check-attachment-title = আপুনি ফাইল সংলগ্ন কৰিব বিচাৰিছিল নেকি?
+send-check-attachment-text = আপুনি এটা সংলগ্নকৰ কথা লিখিছে, কিন্তু একো সংলগ্ন কৰা নাই।
+send-check-attach = এটা ফাইল সংলগ্ন কৰক
+send-check-subject-title = বিষয় নোহোৱাকৈ পঠিয়াব নেকি?
+send-check-subject-text = এই বাৰ্তাটোৰ কোনো বিষয় নাই।
+send-check-add-subject = বিষয় যোগ কৰক
+send-check-send-anyway = তথাপি পঠিয়াওক

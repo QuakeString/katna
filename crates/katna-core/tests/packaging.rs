@@ -59,7 +59,9 @@ fn desktop_entry_matches_app_id() {
     let text = read("desktop", &format!("{MAIL_APP_ID}.desktop"));
     assert!(text.contains("\n[Desktop Entry]\n"), "{text}");
     assert_eq!(value(&text, "Name"), Some("Katna Mail"));
-    assert_eq!(value(&text, "Exec"), Some("katna-mail"));
+    // `%u`: a `mailto:` link when Katna Mail is the default mail app.
+    assert_eq!(value(&text, "Exec"), Some("katna-mail %u"));
+    assert_eq!(value(&text, "MimeType"), Some("x-scheme-handler/mailto;"));
     assert_eq!(value(&text, "Icon"), Some(MAIL_APP_ID));
     assert_eq!(value(&text, "StartupWMClass"), Some(MAIL_APP_ID));
 }
@@ -102,6 +104,20 @@ fn desktop_actions_run_katna_mail_with_a_flag() {
 fn icon_is_named_after_app_id() {
     let text = read("icons", &format!("{MAIL_APP_ID}.svg"));
     assert!(text.contains("<svg"), "not an SVG");
+    // Qt SVG, which draws icons on KDE, skips filters.
+    assert!(!text.contains("<filter"), "the installed icon has filters");
+    let hicolor = packaging().join("icons/hicolor");
+    let mut sizes = 0;
+    for dir in fs::read_dir(&hicolor).unwrap() {
+        let size = dir.unwrap().file_name().to_string_lossy().into_owned();
+        let names: Vec<String> = fs::read_dir(hicolor.join(&size).join("apps"))
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+            .collect();
+        assert_eq!(names, [format!("{MAIL_APP_ID}.png")], "{size}");
+        sizes += 1;
+    }
+    assert!(sizes >= 4, "{sizes} PNG sizes");
 }
 
 #[test]

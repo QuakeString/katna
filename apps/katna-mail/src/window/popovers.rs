@@ -83,6 +83,9 @@ impl MailWindow {
         let closed = if self.context_menu.is_some() {
             self.close_context_menu(cx);
             true
+        } else if self.print_preview_open() {
+            self.close_print_preview(window, cx);
+            true
         } else if self.share_ask_open() {
             self.close_share_ask(window, cx);
             true
@@ -98,6 +101,11 @@ impl MailWindow {
             || self.language_picker.take().is_some()
             || self.dismiss_search_panel(window, cx)
         {
+            true
+        } else if self.nav_peek {
+            // The folders opened over the list from the rail.
+            self.nav_peek = false;
+            self.peek_task = None;
             true
         } else if self.settings_open && !self.covered() {
             self.settings_open = false;
@@ -120,6 +128,7 @@ impl MailWindow {
             || self.new_label.is_some()
             || self.whats_new.is_some()
             || self.share_ask.is_some()
+            || self.print_preview.is_some()
             || self.about.is_some()
             || self.tour.is_some()
             || self.files.viewer.is_some()

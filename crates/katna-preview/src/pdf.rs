@@ -10,6 +10,8 @@ use hayro::vello_cpu::color::palette::css::WHITE;
 use hayro::{RenderCache, RenderSettings};
 use image::RgbaImage;
 
+pub use crate::pdf_text::TextLine;
+
 /// A page is never drawn larger than this many pixels on a side...
 pub const MAX_SIDE: f32 = 8192.0;
 /// ...or than this many pixels in all (about 128 MB of RGBA).
@@ -83,6 +85,18 @@ impl Document {
         }
         // On an opaque white page premultiplied and straight alpha agree.
         RgbaImage::from_raw(width, height, pixmap.data_as_u8_slice().to_vec())
+    }
+}
+
+impl Document {
+    /// The text of page `page`, line by line, with where each character
+    /// is drawn, in points from the page's top left.
+    pub fn text(&self, page: usize) -> Vec<TextLine> {
+        self.pdf
+            .pages()
+            .get(page)
+            .map(crate::pdf_text::lines)
+            .unwrap_or_default()
     }
 }
 
@@ -169,6 +183,63 @@ mod tests {
         assert!(14_400.0 * s <= MAX_SIDE);
         let s = fit_scale(5000.0, 5000.0, 2.0);
         assert!(5000.0 * s * 5000.0 * s <= MAX_PIXELS * 1.001);
+    }
+
+    /// A one-page PDF with two lines of Helvetica text.
+    fn text_pdf() -> Vec<u8> {
+        let content = b"BT /F1 12 Tf 72 700 Td (Hello world) Tj 0 -20 Td (Second line) Tj ET";
+        let objects = [
+            "<< /Type /Catalog /Pages 2 0 R >>".to_owned(),
+            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>".to_owned(),
+            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R \
+             /Resources << /Font << /F1 5 0 R >> >> >>"
+                .to_owned(),
+            format!(
+                "<< /Length {} >>\nstream\n{}\nendstream",
+                content.len(),
+                std::str::from_utf8(content).unwrap()
+            ),
+            "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>".to_owned(),
+        ];
+        let mut out = b"%PDF-1.4\n".to_vec();
+        let mut offsets = Vec::new();
+        for (i, body) in objects.iter().enumerate() {
+            offsets.push(out.len());
+            out.extend(format!("{} 0 obj\n{body}\nendobj\n", i + 1).as_bytes());
+        }
+        let xref = out.len();
+        out.extend(format!("xref\n0 {}\n0000000000 65535 f \n", objects.len() + 1).as_bytes());
+        for offset in offsets {
+            out.extend(format!("{offset:010} 00000 n \n").as_bytes());
+        }
+        out.extend(
+            format!(
+                "trailer\n<< /Size {} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n",
+                objects.len() + 1
+            )
+            .as_bytes(),
+        );
+        out
+    }
+
+    #[test]
+    fn reads_the_text_of_a_page() {
+        let doc = Document::open(text_pdf()).unwrap();
+        let lines = doc.text(0);
+        let texts: Vec<&str> = lines.iter().map(|l| l.text.as_str()).collect();
+        assert_eq!(texts, ["Hello world", "Second line"]);
+        let first = &lines[0];
+        // 72 pt from the left, the baseline 92 pt from the top.
+        assert!((first.left() - 72.0).abs() < 0.5, "{}", first.left());
+        assert!(first.top < 92.0 && first.bottom > 92.0);
+        assert!(first.right() > 120.0 && first.right() < 160.0);
+        assert!(lines[1].top > first.top);
+        // Every character has a place, left to right.
+        assert_eq!(first.chars.len(), first.text.chars().count());
+        assert!(first.chars.windows(2).all(|w| w[0].1 <= w[1].1));
+        assert!(doc.text(5).is_empty());
+        // No text at all.
+        assert!(Document::open(square_pdf()).unwrap().text(0).is_empty());
     }
 
     #[test]

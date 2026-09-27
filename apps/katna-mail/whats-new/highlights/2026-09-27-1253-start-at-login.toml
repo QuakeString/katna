@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Katna starts at login"
+text = """
+Katna now starts quietly when you log in: mail syncs, and new-mail
+notifications and the tray icon come up without opening the window. Turn
+it off, or have the window open too, in Settings > General > Desktop.
+"""

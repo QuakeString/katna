@@ -5,7 +5,8 @@
 //! each in `apps/katna-mail/whats-new/highlights/`, which `build.rs` builds
 //! into [`HIGHLIGHTS`]; a change people will notice adds a file. A major
 //! feature may bring a short animation (animated WebPs in
-//! `apps/katna-mail/whats-new/`, one per theme).
+//! `apps/katna-mail/whats-new/`, one per theme). They are written in
+//! English; `i18n/<language>/katna-mail/whats-new.toml` translates them.
 
 use std::collections::HashSet;
 
@@ -27,10 +28,47 @@ pub struct Highlight {
     /// Highlights are in this order, and the config remembers the names
     /// shown.
     pub name: &'static str,
-    pub title: &'static str,
-    pub text: &'static str,
+    /// In English, as the file has them; [`Highlight::title`] and
+    /// [`Highlight::text`] give the current language's.
+    title: &'static str,
+    text: &'static str,
+    /// Its translations, in folder order.
+    translations: &'static [Translation],
     /// A short animation of the feature, for major ones only.
     pub animation: Option<Animation>,
+}
+
+/// A highlight in another language, from
+/// `i18n/<folder>/katna-mail/whats-new.toml`.
+#[derive(Debug)]
+pub struct Translation {
+    /// The language's folder under `i18n/` (`ja`, `pt-BR`).
+    folder: &'static str,
+    title: &'static str,
+    text: &'static str,
+}
+
+impl Highlight {
+    /// The title in the current language, else English.
+    pub fn title(&self) -> &'static str {
+        self.in_language(&katna_i18n::current().language.translation)
+            .0
+    }
+
+    /// The text in the current language, else English.
+    pub fn text(&self) -> &'static str {
+        self.in_language(&katna_i18n::current().language.translation)
+            .1
+    }
+
+    /// The title and text in the language whose translation is in
+    /// `i18n/<folder>/`, else English.
+    fn in_language(&self, folder: &str) -> (&'static str, &'static str) {
+        self.translations
+            .iter()
+            .find(|t| t.folder == folder)
+            .map_or((self.title, self.text), |t| (t.title, t.text))
+    }
 }
 
 /// Animated WebPs of a feature in the light and the dark theme, recorded
@@ -206,6 +244,42 @@ mod tests {
     }
 
     #[test]
+    fn translated_or_english() {
+        const JA: &[Translation] = &[Translation {
+            folder: "ja",
+            title: "新着",
+            text: "本文",
+        }];
+        let highlight = Highlight {
+            name: "2026-09-27-0444-about-katna",
+            title: "About Katna",
+            text: "Help > About Katna",
+            translations: JA,
+            animation: None,
+        };
+        assert_eq!(highlight.in_language("ja"), ("新着", "本文"));
+        assert_eq!(
+            highlight.in_language("de"),
+            ("About Katna", "Help > About Katna")
+        );
+        assert_eq!(
+            highlight.in_language("en"),
+            ("About Katna", "Help > About Katna")
+        );
+        // Nothing applied in tests: English.
+        assert_eq!(highlight.title(), "About Katna");
+        assert_eq!(highlight.text(), "Help > About Katna");
+        // Every built-in translation is whole and one paragraph.
+        for highlight in HIGHLIGHTS {
+            for t in highlight.translations {
+                assert!(!t.title.is_empty() && !t.text.is_empty());
+                assert!(!t.text.contains("  "), "{} {}", t.folder, highlight.name);
+                assert_eq!(highlight.in_language(t.folder), (t.title, t.text));
+            }
+        }
+    }
+
+    #[test]
     fn animations_are_small_animated_webp() {
         for highlight in HIGHLIGHTS {
             let Some(animation) = &highlight.animation else {
@@ -215,7 +289,7 @@ mod tests {
                 assert!(
                     bytes.len() <= MAX_ANIMATION_BYTES,
                     "{}: {} bytes",
-                    highlight.title,
+                    highlight.name,
                     bytes.len()
                 );
                 assert_eq!(&bytes[..4], b"RIFF");

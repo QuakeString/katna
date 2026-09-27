@@ -10,17 +10,21 @@
 use std::rc::Rc;
 
 use gpui::{
-    Anchor, AnyElement, Context, Entity, Focusable, FontWeight, Hsla, MouseButton, Pixels, Point,
-    Stateful, Subscription, Window, anchored, deferred, div, point, prelude::*, rgba,
+    Anchor, AnyElement, Bounds, Context, DispatchPhase, Div, Entity, Focusable, FontWeight, Hsla,
+    MouseButton, MouseMoveEvent, Pixels, Point, SharedString, Stateful, Subscription, Window,
+    anchored, canvas, deferred, div, point, prelude::*, rgba,
 };
 use jiff::civil::Date;
+use katna_i18n::{format, tr};
 use katna_ui::px;
-use katna_ui::rich::{Align, Font, List, RichEditor, Size, TableEdit, html};
+use katna_ui::rich::{Align, Font, GrammarIssue, List, Pos, RichEditor, Size, TableEdit, html};
 use katna_ui::{InputEvent, TextInput};
 
 use super::super::MailWindow;
+use super::checks::{Passed, SendCheck};
+use super::recipients::Field;
 use super::{Mode, schedule};
-use crate::theme::{Theme, fade};
+use crate::theme::{Theme, fade, mix};
 use crate::widgets::{filled_button, icon, icon_button, icon_button_colored, menu, menu_item, tip};
 
 /// The open menu or dialog of the compose window.
@@ -49,12 +53,55 @@ pub(in crate::window) enum Popup {
     Label,
     /// Asks before plain text mode drops the formatting.
     PlainText,
+    /// Send asks before a message goes out; the answers so far and how
+    /// it was sending.
+    SendCheck {
+        check: SendCheck,
+        at: Option<jiff::Timestamp>,
+        archive: bool,
+        passed: Passed,
+    },
+    /// Send found a recipient that is not an address.
+    BadAddress {
+        field: Field,
+        address: String,
+    },
     /// The right-click menu.
     Context {
         position: Point<Pixels>,
         misspelled: Option<String>,
+        grammar: Option<GrammarIssue>,
+    },
+    /// The fixes of marked words in the text, on a rest or a left click;
+    /// it closes when the pointer leaves the words and the card.
+    Hint {
+        word: Bounds<Pixels>,
+        at: Pos,
+        misspelled: Option<String>,
+        suggestions: Vec<String>,
+        grammar: Option<GrammarIssue>,
+    },
+    /// A right click on a grammar mistake in the subject, or with `word`, a
+    /// rest or a left click on it (closing like [`Popup::Hint`]).
+    SubjectGrammar {
+        position: Point<Pixels>,
+        issue: GrammarIssue,
+        word: Option<Bounds<Pixels>>,
     },
 }
+
+impl Popup {
+    /// A card of fixes that opened without a right click.
+    pub(in crate::window) fn is_hint(&self) -> bool {
+        matches!(
+            self,
+            Popup::Hint { .. } | Popup::SubjectGrammar { word: Some(_), .. }
+        )
+    }
+}
+
+/// A change to the subject field, from its grammar menu.
+type SubjectEdit = dyn Fn(&mut TextInput, &mut Context<TextInput>);
 
 /// Fields of the compose window's dialogs.
 pub(in crate::window) struct Dialog {
@@ -74,8 +121,7 @@ pub(in crate::window) struct Dialog {
 
 impl Dialog {
     pub fn new(accent: Hsla, cx: &mut Context<MailWindow>) -> Self {
-        let input = |placeholder: &str, cx: &mut Context<MailWindow>| {
-            let placeholder = placeholder.to_owned();
+        let input = |placeholder: String, cx: &mut Context<MailWindow>| {
             cx.new(|cx| {
                 let mut input = TextInput::new(placeholder, cx);
                 input.set_accent(accent);
@@ -84,12 +130,12 @@ impl Dialog {
         };
         let today = jiff::Zoned::now().date();
         Dialog {
-            link_text: input("", cx),
-            link_url: input("https://", cx),
+            link_text: input(String::new(), cx),
+            link_url: input("https://".to_owned(), cx),
             editing_link: false,
-            emoji_search: input("Search emoji", cx),
+            emoji_search: input(tr!("compose-tool-emoji-search"), cx),
             emoji_group: 0,
-            time: input("8:00 AM", cx),
+            time: input(schedule::clock(jiff::civil::Time::constant(8, 0, 0, 0)), cx),
             month: today,
             day: today,
             grid: (0, 0),
@@ -147,17 +193,33 @@ pub(super) const COLORS: [u32; 64] = [
 ];
 
 /// The emoji groups of the picker, with the emoji on their tab.
-const EMOJI_GROUPS: [(emojis::Group, &str, &str); 9] = [
-    (emojis::Group::SmileysAndEmotion, "😀", "Smileys & emotion"),
-    (emojis::Group::PeopleAndBody, "👋", "People"),
-    (emojis::Group::AnimalsAndNature, "🐻", "Animals & nature"),
-    (emojis::Group::FoodAndDrink, "🍔", "Food & drink"),
-    (emojis::Group::TravelAndPlaces, "✈️", "Travel & places"),
-    (emojis::Group::Activities, "⚽", "Activities"),
-    (emojis::Group::Objects, "💡", "Objects"),
-    (emojis::Group::Symbols, "❤️", "Symbols"),
-    (emojis::Group::Flags, "🏁", "Flags"),
+const EMOJI_GROUPS: [(emojis::Group, &str); 9] = [
+    (emojis::Group::SmileysAndEmotion, "😀"),
+    (emojis::Group::PeopleAndBody, "👋"),
+    (emojis::Group::AnimalsAndNature, "🐻"),
+    (emojis::Group::FoodAndDrink, "🍔"),
+    (emojis::Group::TravelAndPlaces, "✈️"),
+    (emojis::Group::Activities, "⚽"),
+    (emojis::Group::Objects, "💡"),
+    (emojis::Group::Symbols, "❤️"),
+    (emojis::Group::Flags, "🏁"),
 ];
+
+/// The name of an emoji group, on its tab.
+fn emoji_group_name(group: emojis::Group) -> String {
+    use emojis::Group;
+    match group {
+        Group::SmileysAndEmotion => tr!("compose-tool-emoji-smileys"),
+        Group::PeopleAndBody => tr!("compose-tool-emoji-people"),
+        Group::AnimalsAndNature => tr!("compose-tool-emoji-animals"),
+        Group::FoodAndDrink => tr!("compose-tool-emoji-food"),
+        Group::TravelAndPlaces => tr!("compose-tool-emoji-travel"),
+        Group::Activities => tr!("compose-tool-emoji-activities"),
+        Group::Objects => tr!("compose-tool-emoji-objects"),
+        Group::Symbols => tr!("compose-tool-emoji-symbols"),
+        Group::Flags => tr!("compose-tool-emoji-flags"),
+    }
+}
 
 /// Most emoji a search shows.
 const EMOJI_RESULTS: usize = 160;
@@ -216,9 +278,29 @@ pub(super) fn format_button(
         .justify_center()
         .rounded(px(4.0))
         .cursor_pointer()
-        .when(active, |d| d.bg(rgba(th.chip)))
+        .when(active, |d| d.bg(rgba(format_active(th))))
         .hover(|s| s.bg(rgba(th.hover)))
-        .child(icon(name, if active { th.text } else { th.text_dim }, 18.0))
+        .child(icon(
+            name,
+            if active {
+                th.nav_selected_text
+            } else {
+                th.text_dim
+            },
+            18.0,
+        ))
+}
+
+/// The formatting bar's background: the card's color tinted with the
+/// accent, so it stands apart from the text under it.
+pub(super) fn format_bar_bg(th: &Theme) -> u32 {
+    mix(th.surface, th.accent, if th.dark { 0.16 } else { 0.10 })
+}
+
+/// A format that is on (Bold, a list, the alignment): the selection color,
+/// stronger than the bar's tint.
+fn format_active(th: &Theme) -> u32 {
+    mix(th.surface, th.accent, if th.dark { 0.42 } else { 0.30 })
 }
 
 /// A dropdown of the formatting bar: its content and a small arrow.
@@ -405,9 +487,9 @@ impl MailWindow {
                     .hover(|s| s.bg(rgba(0xffffff1f)))
                     .tooltip(tip(
                         if archives {
-                            "Send and archive (Ctrl+Enter)"
+                            tr!("compose-tool-send-archive-tip")
                         } else {
-                            "Send (Ctrl+Enter)"
+                            tr!("compose-tool-send-tip")
                         },
                         th,
                     ))
@@ -415,7 +497,7 @@ impl MailWindow {
                         cx.listener(|this, _, window, cx| this.send_compose_default(window, cx)),
                     )
                     .when(archives, |d| d.child(icon("archive", th.on_accent, 18.0)))
-                    .child("Send"),
+                    .child(tr!("compose-tool-send")),
             )
             .child(div().w(px(1.0)).h(px(20.0)).bg(rgba(0xffffff66)))
             .child(
@@ -429,7 +511,7 @@ impl MailWindow {
                     .rounded_r_full()
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(0xffffff1f)))
-                    .tooltip(tip("More send options", th))
+                    .tooltip(tip(tr!("compose-tool-send-more"), th))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Send, cx)))
                     .child(icon("drop-down", th.on_accent, 20.0)),
             )
@@ -439,7 +521,7 @@ impl MailWindow {
             .when(open(Popup::Schedule), |d| {
                 d.child(above(self.render_schedule_menu(th, cx)))
             });
-        let tool = |id: &'static str, name: &'static str, label: &'static str| {
+        let tool = |id: &'static str, name: &'static str, label: String| {
             icon_button(id, name, 20.0, th).tooltip(tip(label, th))
         };
         let format = icon_button_colored(
@@ -447,14 +529,14 @@ impl MailWindow {
             "format-text",
             20.0,
             if compose.format_bar {
-                th.text
+                th.nav_selected_text
             } else {
                 th.text_dim
             },
             th,
         )
-        .when(compose.format_bar, |d| d.bg(rgba(th.chip)))
-        .tooltip(tip("Formatting options", th))
+        .when(compose.format_bar, |d| d.bg(rgba(format_active(th))))
+        .tooltip(tip(tr!("compose-tool-formatting"), th))
         .on_click(cx.listener(|this, _, window, cx| {
             if let Some(c) = &mut this.compose {
                 c.format_bar = !c.format_bar;
@@ -466,7 +548,7 @@ impl MailWindow {
         let emoji = div()
             .relative()
             .child(
-                tool("compose-emoji", "emoji", "Insert emoji").on_click(cx.listener(
+                tool("compose-emoji", "emoji", tr!("compose-tool-emoji")).on_click(cx.listener(
                     |this, _, window, cx| {
                         this.toggle_popup(Popup::Emoji, cx);
                         if let Some(c) = &this.compose
@@ -485,7 +567,7 @@ impl MailWindow {
         let more = div()
             .relative()
             .child(
-                tool("compose-more", "more", "More options")
+                tool("compose-more", "more", tr!("compose-tool-more"))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::More, cx))),
             )
             .when(open(Popup::More) || open(Popup::Label), |d| {
@@ -510,12 +592,12 @@ impl MailWindow {
             .child(div().w(px(8.0)))
             .child(format)
             .child(
-                tool("compose-attach", "attachment", "Attach files")
+                tool("compose-attach", "attachment", tr!("compose-tool-attach"))
                     .on_click(cx.listener(|this, _, _, cx| this.pick_files(false, cx))),
             )
             .when(link, |d| {
                 d.child(
-                    tool("compose-link", "link", "Insert link (Ctrl+K)").on_click(
+                    tool("compose-link", "link", tr!("compose-tool-link")).on_click(
                         cx.listener(|this, _, window, cx| this.open_link_dialog(window, cx)),
                     ),
                 )
@@ -523,21 +605,17 @@ impl MailWindow {
             .when(emoji_fits, |d| d.child(emoji))
             .when(!plain && image, |d| {
                 d.child(
-                    tool("compose-image", "image", "Insert photo")
+                    tool("compose-image", "image", tr!("compose-tool-photo"))
                         .on_click(cx.listener(|this, _, _, cx| this.pick_files(true, cx))),
                 )
             })
             .when(event, |d| {
                 d.child(
-                    tool("compose-event", "event", "Insert calendar event").on_click(cx.listener(
-                        |this, _, _, cx| {
-                            this.show_snackbar(
-                                "Calendar events come with Katna Calendar.",
-                                None,
-                                cx,
-                            )
-                        },
-                    )),
+                    tool("compose-event", "event", tr!("compose-tool-event")).on_click(
+                        cx.listener(|this, _, _, cx| {
+                            this.show_snackbar(tr!("compose-tool-event-coming"), None, cx)
+                        }),
+                    ),
                 )
             })
             .child(self.render_signature_button(th, cx))
@@ -548,18 +626,20 @@ impl MailWindow {
                 |d| {
                     d.child(
                         icon_button_colored("compose-dock", "close-full", 20.0, th.text_dim, th)
-                            .tooltip(tip("Back to the mail window", th))
+                            .tooltip(tip(tr!("compose-tool-dock"), th))
                             .on_click(cx.listener(|this, _, _, cx| this.dock_compose(cx))),
                     )
                 },
             )
             .child(
                 icon_button_colored("compose-discard", "trash", 20.0, th.text_dim, th)
-                    .tooltip(tip("Discard draft", th))
+                    .tooltip(tip(tr!("compose-tool-discard"), th))
                     .on_click(cx.listener(|this, _, _, cx| this.close_compose(true, cx))),
             )
             .children(self.render_popup_scrim(cx))
             .children(self.render_context_popup(th, cx))
+            .children(self.render_hint(th, cx))
+            .children(self.render_subject_grammar(th, cx))
             .children(self.render_link_bubble(th, cx))
             .into_any_element()
     }
@@ -567,8 +647,18 @@ impl MailWindow {
     /// Catches a click anywhere outside the open menu, closing it.
     fn render_popup_scrim(&self, cx: &mut Context<Self>) -> Option<AnyElement> {
         let popup = self.compose.as_ref()?.popup.as_ref()?;
-        // The dialogs close with their own buttons.
-        if matches!(popup, Popup::Link | Popup::PickTime | Popup::PlainText) {
+        // The dialogs close with their own buttons; the cards of fixes when
+        // the pointer leaves them, so the text under them still takes it.
+        if popup.is_hint()
+            || matches!(
+                popup,
+                Popup::Link
+                    | Popup::PickTime
+                    | Popup::PlainText
+                    | Popup::SendCheck { .. }
+                    | Popup::BadAddress { .. }
+            )
+        {
             return None;
         }
         Some(
@@ -603,18 +693,20 @@ impl MailWindow {
             .w(px(240.0))
             .when(answering, |d| {
                 let (name, label) = if archives {
-                    ("send", "Send without archiving")
+                    ("send", tr!("compose-tool-send-without-archiving"))
                 } else {
-                    ("archive", "Send and archive")
+                    ("archive", tr!("compose-tool-send-and-archive"))
                 };
                 d.child(
-                    tool_item("compose-send-other", name, label, th).on_click(cx.listener(
-                        move |this, _, window, cx| this.send_compose(None, !archives, window, cx),
+                    tool_item("compose-send-other", name, &label, th).on_click(cx.listener(
+                        move |this, _, window, cx| {
+                            this.send_compose(None, !archives, Passed::default(), window, cx)
+                        },
                     )),
                 )
             })
             .child(
-                tool_item("compose-schedule", "schedule", "Schedule send", th).on_click(
+                tool_item("compose-schedule", "schedule", &tr!("schedule-send"), th).on_click(
                     cx.listener(|this, _, _, cx| {
                         if let Some(c) = &mut this.compose {
                             c.popup = Some(Popup::Schedule);
@@ -628,7 +720,7 @@ impl MailWindow {
                     tool_item(
                         "compose-scheduled",
                         "send",
-                        &format!("Scheduled messages ({count})"),
+                        &tr!("schedule-scheduled-messages", count = count),
                         th,
                     )
                     .on_click(cx.listener(|this, _, _, cx| {
@@ -664,7 +756,7 @@ impl MailWindow {
                         .child(schedule::short(&preset.at)),
                 )
                 .on_click(cx.listener(move |this, _, window, cx| {
-                    this.send_compose(Some(at), false, window, cx)
+                    this.send_compose(Some(at), false, Passed::default(), window, cx)
                 }))
         });
         menu(th)
@@ -675,7 +767,7 @@ impl MailWindow {
                     .pt(px(8.0))
                     .pb(px(8.0))
                     .text_size(px(16.0))
-                    .child("Schedule send"),
+                    .child(tr!("schedule-title")),
             )
             .child(
                 div()
@@ -683,15 +775,19 @@ impl MailWindow {
                     .pb(px(8.0))
                     .text_size(px(12.0))
                     .text_color(rgba(th.text_dim))
-                    .child(format!(
-                        "{}. Katna sends it at that time, even with the app closed.",
-                        self.tz.iana_name().unwrap_or("Local time")
+                    .child(tr!(
+                        "schedule-zone-note",
+                        zone = self
+                            .tz
+                            .iana_name()
+                            .map(str::to_owned)
+                            .unwrap_or_else(|| tr!("schedule-local-time"))
                     )),
             )
             .children(items)
             .child(menu_divider(th))
             .child(
-                tool_item("schedule-pick", "calendar", "Pick date & time", th)
+                tool_item("schedule-pick", "calendar", &tr!("schedule-pick"), th)
                     .on_click(cx.listener(|this, _, window, cx| this.open_time_picker(window, cx))),
             )
             .into_any_element()
@@ -708,7 +804,7 @@ impl MailWindow {
         c.popup = Some(Popup::PickTime);
         let time = c.dialog.time.clone();
         time.update(cx, |t, cx| {
-            t.set_text("8:00 AM", cx);
+            t.set_text(schedule::clock(jiff::civil::Time::constant(8, 0, 0, 0)), cx);
             t.select_all_text(cx);
         });
         window.focus(&time.focus_handle(cx), cx);
@@ -722,18 +818,19 @@ impl MailWindow {
         };
         let text = c.dialog.time.read(cx).text().to_owned();
         let Some(time) = schedule::parse_time(&text) else {
+            let example = schedule::clock(jiff::civil::Time::constant(8, 0, 0, 0));
             self.show_snackbar(
-                format!("\u{201c}{text}\u{201d} is not a time, for example 8:00 AM."),
+                tr!("schedule-not-a-time", text = text, example = example),
                 None,
                 cx,
             );
             return;
         };
         let Some(at) = schedule::moment(c.dialog.day, time, &self.tz) else {
-            self.show_snackbar("That time does not exist here.", None, cx);
+            self.show_snackbar(tr!("schedule-no-such-time"), None, cx);
             return;
         };
-        self.send_compose(Some(at), false, window, cx);
+        self.send_compose(Some(at), false, Passed::default(), window, cx);
     }
 
     // Formatting.
@@ -766,7 +863,7 @@ impl MailWindow {
                         // Tinted apart from the text under it; on a narrow
                         // window its buttons scroll sideways.
                         .rounded(px(8.0))
-                        .bg(rgba(th.search))
+                        .bg(rgba(format_bar_bg(th)))
                         .shadow(crate::widgets::elevation(th, 1.0))
                         .overflow_x_scroll()
                         .child(
@@ -792,7 +889,7 @@ impl MailWindow {
                 .items_center()
                 .text_size(px(13.0))
                 .text_color(rgba(th.text_dim))
-                .child("Plain text mode: formatting is off. Turn it on in More options.")
+                .child(tr!("compose-tool-plain-note"))
                 .into_any_element();
         }
         let style = editor.current_style();
@@ -808,7 +905,7 @@ impl MailWindow {
             .child(
                 format_dropdown("format-font", th)
                     .w(px(100.0))
-                    .tooltip(tip("Font", th))
+                    .tooltip(tip(tr!("compose-tool-font"), th))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Font, cx)))
                     .child(
                         div()
@@ -834,7 +931,7 @@ impl MailWindow {
             .relative()
             .child(
                 format_dropdown("format-size", th)
-                    .tooltip(tip("Size", th))
+                    .tooltip(tip(tr!("compose-tool-size"), th))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Size, cx)))
                     .child(icon("text-size", th.text_dim, 18.0))
                     .child(icon("drop-down", th.text_dim, 18.0)),
@@ -863,7 +960,7 @@ impl MailWindow {
             .relative()
             .child(
                 format_dropdown("format-color", th)
-                    .tooltip(tip("Text color", th))
+                    .tooltip(tip(tr!("compose-tool-text-color"), th))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Colors, cx)))
                     .child(icon("text-color", th.text_dim, 18.0))
                     .child(icon("drop-down", th.text_dim, 18.0)),
@@ -885,13 +982,23 @@ impl MailWindow {
             .relative()
             .child(
                 format_dropdown("format-align", th)
-                    .tooltip(tip("Align", th))
+                    // Centred or right-aligned text shows as on, like Bold.
+                    .when(para.align != Align::Left, |d| d.bg(rgba(format_active(th))))
+                    .tooltip(tip(tr!("compose-tool-align"), th))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Align, cx)))
-                    .child(icon(align_icon, th.text_dim, 18.0))
+                    .child(icon(
+                        align_icon,
+                        if para.align == Align::Left {
+                            th.text_dim
+                        } else {
+                            th.nav_selected_text
+                        },
+                        18.0,
+                    ))
                     .child(icon("drop-down", th.text_dim, 18.0)),
             )
             .when(open(Popup::Align), |d| {
-                let mut button = |id, name, value: Align, label: &'static str| {
+                let mut button = |id, name, value: Align, label: String| {
                     format_button(id, name, para.align == value, th)
                         .tooltip(tip(label, th))
                         .on_click(self.on_body(cx, move |e, cx| e.set_align(value, cx)))
@@ -907,19 +1014,19 @@ impl MailWindow {
                             "align-left",
                             "align-left",
                             Align::Left,
-                            "Align left (Ctrl+Shift+L)",
+                            tr!("compose-tool-align-left"),
                         ))
                         .child(button(
                             "align-center",
                             "align-center",
                             Align::Center,
-                            "Align center (Ctrl+Shift+E)",
+                            tr!("compose-tool-align-center"),
                         ))
                         .child(button(
                             "align-right",
                             "align-right",
                             Align::Right,
-                            "Align right (Ctrl+Shift+R)",
+                            tr!("compose-tool-align-right"),
                         )),
                 ))
             });
@@ -937,27 +1044,34 @@ impl MailWindow {
         });
         let rest: Vec<AnyElement> = vec![
             format_button("format-indent-less", "indent-less", false, th)
-                .tooltip(tip("Indent less (Ctrl+[)", th))
+                .tooltip(tip(tr!("compose-tool-indent-less"), th))
                 .on_click(self.on_body(cx, |e, cx| e.indent(false, cx)))
                 .into_any_element(),
             format_button("format-indent-more", "indent-more", false, th)
-                .tooltip(tip("Indent more (Ctrl+])", th))
+                .tooltip(tip(tr!("compose-tool-indent-more"), th))
                 .on_click(self.on_body(cx, |e, cx| e.indent(true, cx)))
                 .into_any_element(),
             format_button("format-quote", "quote", para.quote > 0, th)
-                .tooltip(tip("Quote (Ctrl+Shift+9)", th))
+                .tooltip(tip(tr!("compose-tool-quote"), th))
                 .on_click(self.on_body(cx, |e, cx| e.toggle_quote(cx)))
                 .into_any_element(),
             format_button("format-strike", "format-strike", style.strike, th)
-                .tooltip(tip("Strikethrough (Alt+Shift+5)", th))
+                .tooltip(tip(tr!("compose-tool-strikethrough"), th))
                 .on_click(self.on_body(cx, |e, cx| e.toggle_strike(cx)))
                 .into_any_element(),
             format_button("format-clear", "clear-format", false, th)
-                .tooltip(tip("Remove formatting (Ctrl+\\)", th))
+                .tooltip(tip(tr!("compose-tool-remove-formatting"), th))
                 .on_click(self.on_body(cx, |e, cx| e.clear_formatting(cx)))
                 .into_any_element(),
             format_button("format-table", "table", in_table, th)
-                .tooltip(tip(if in_table { "Table" } else { "Insert table" }, th))
+                .tooltip(tip(
+                    if in_table {
+                        tr!("compose-tool-table")
+                    } else {
+                        tr!("compose-tool-insert-table")
+                    },
+                    th,
+                ))
                 .on_click(table_click)
                 .into_any_element(),
         ];
@@ -982,7 +1096,7 @@ impl MailWindow {
                 .relative()
                 .child(
                     format_button("format-more", "drop-down", open(Popup::MoreFormat), th)
-                        .tooltip(tip("More formatting options", th))
+                        .tooltip(tip(tr!("compose-tool-more-formatting"), th))
                         .on_click(
                             cx.listener(|this, _, _, cx| this.toggle_popup(Popup::MoreFormat, cx)),
                         ),
@@ -1010,13 +1124,13 @@ impl MailWindow {
             .child(
                 format_button("format-undo", "undo", false, th)
                     .when(!can_undo, |d| d.opacity(0.4))
-                    .tooltip(tip("Undo (Ctrl+Z)", th))
+                    .tooltip(tip(tr!("compose-tool-undo"), th))
                     .on_click(self.on_body(cx, |e, cx| e.undo(cx))),
             )
             .child(
                 format_button("format-redo", "redo", false, th)
                     .when(!can_redo, |d| d.opacity(0.4))
-                    .tooltip(tip("Redo (Ctrl+Y)", th))
+                    .tooltip(tip(tr!("compose-tool-redo"), th))
                     .on_click(self.on_body(cx, |e, cx| e.redo(cx))),
             )
             .child(separator(th))
@@ -1026,17 +1140,17 @@ impl MailWindow {
             .child(separator(th))
             .child(
                 format_button("format-bold", "format-bold", style.bold, th)
-                    .tooltip(tip("Bold (Ctrl+B)", th))
+                    .tooltip(tip(tr!("compose-tool-bold"), th))
                     .on_click(self.on_body(cx, |e, cx| e.toggle_bold(cx))),
             )
             .child(
                 format_button("format-italic", "format-italic", style.italic, th)
-                    .tooltip(tip("Italic (Ctrl+I)", th))
+                    .tooltip(tip(tr!("compose-tool-italic"), th))
                     .on_click(self.on_body(cx, |e, cx| e.toggle_italic(cx))),
             )
             .child(
                 format_button("format-underline", "format-underline", style.underline, th)
-                    .tooltip(tip("Underline (Ctrl+U)", th))
+                    .tooltip(tip(tr!("compose-tool-underline"), th))
                     .on_click(self.on_body(cx, |e, cx| e.toggle_underline(cx))),
             )
             .child(colors)
@@ -1049,7 +1163,7 @@ impl MailWindow {
                     para.list == List::Numbered,
                     th,
                 )
-                .tooltip(tip("Numbered list (Ctrl+Shift+7)", th))
+                .tooltip(tip(tr!("compose-tool-numbered-list"), th))
                 .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Numbered, cx))),
             )
             .child(
@@ -1059,7 +1173,7 @@ impl MailWindow {
                     para.list == List::Bullet,
                     th,
                 )
-                .tooltip(tip("Bulleted list (Ctrl+Shift+8)", th))
+                .tooltip(tip(tr!("compose-tool-bulleted-list"), th))
                 .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Bullet, cx))),
             )
             .child(tail)
@@ -1134,9 +1248,9 @@ impl MailWindow {
                     .text_size(px(13.0))
                     .text_color(rgba(th.text_dim))
                     .child(if background {
-                        "Background color"
+                        tr!("compose-tool-background-color")
                     } else {
-                        "Text color"
+                        tr!("compose-tool-text-color")
                     }),
             )
             .child(
@@ -1166,9 +1280,9 @@ impl MailWindow {
                     .hover(|s| s.bg(rgba(th.hover)))
                     .when(current.is_none(), |d| d.font_weight(FontWeight::MEDIUM))
                     .child(if background {
-                        "No background"
+                        tr!("compose-tool-no-background")
                     } else {
-                        "Default color"
+                        tr!("compose-tool-default-color")
                     })
                     .on_click(self.on_body(cx, move |e, cx| set(e, None, cx))),
             )
@@ -1210,9 +1324,9 @@ impl MailWindow {
                     .text_size(px(13.0))
                     .text_color(rgba(th.text_dim))
                     .child(if rows == 0 {
-                        "Insert table".to_owned()
+                        tr!("compose-tool-insert-table")
                     } else {
-                        format!("{cols} \u{d7} {rows} table")
+                        tr!("compose-tool-table-size", columns = cols, rows = rows)
                     }),
             )
             .child(
@@ -1237,14 +1351,34 @@ impl MailWindow {
         };
         menu(th)
             .w(px(220.0))
-            .child(item(0, "Insert row above", TableEdit::RowAbove))
-            .child(item(1, "Insert row below", TableEdit::RowBelow))
-            .child(item(2, "Insert column left", TableEdit::ColumnLeft))
-            .child(item(3, "Insert column right", TableEdit::ColumnRight))
+            .child(item(0, &tr!("compose-tool-row-above"), TableEdit::RowAbove))
+            .child(item(1, &tr!("compose-tool-row-below"), TableEdit::RowBelow))
+            .child(item(
+                2,
+                &tr!("compose-tool-column-left"),
+                TableEdit::ColumnLeft,
+            ))
+            .child(item(
+                3,
+                &tr!("compose-tool-column-right"),
+                TableEdit::ColumnRight,
+            ))
             .child(menu_divider(th))
-            .child(item(4, "Delete row", TableEdit::DeleteRow))
-            .child(item(5, "Delete column", TableEdit::DeleteColumn))
-            .child(item(6, "Delete table", TableEdit::DeleteTable))
+            .child(item(
+                4,
+                &tr!("compose-tool-delete-row"),
+                TableEdit::DeleteRow,
+            ))
+            .child(item(
+                5,
+                &tr!("compose-tool-delete-column"),
+                TableEdit::DeleteColumn,
+            ))
+            .child(item(
+                6,
+                &tr!("compose-tool-delete-table"),
+                TableEdit::DeleteTable,
+            ))
             .into_any_element()
     }
 
@@ -1260,7 +1394,7 @@ impl MailWindow {
         let tabs = EMOJI_GROUPS
             .iter()
             .enumerate()
-            .map(|(ix, (_, face, label))| {
+            .map(|(ix, &(kind, face))| {
                 let selected = query.trim().is_empty() && ix == group;
                 div()
                     .id(("emoji-group", ix))
@@ -1273,7 +1407,7 @@ impl MailWindow {
                     .cursor_pointer()
                     .when(selected, |d| d.bg(rgba(th.chip)))
                     .hover(|s| s.bg(rgba(th.hover)))
-                    .tooltip(tip(*label, th))
+                    .tooltip(tip(emoji_group_name(kind), th))
                     .on_click(cx.listener(move |this, _, _, cx| {
                         if let Some(c) = &mut this.compose {
                             c.dialog.emoji_group = ix;
@@ -1281,7 +1415,7 @@ impl MailWindow {
                         }
                         cx.notify();
                     }))
-                    .child(*face)
+                    .child(face)
             })
             .collect::<Vec<_>>();
         let cells = list.iter().enumerate().map(|(ix, emoji)| {
@@ -1301,11 +1435,11 @@ impl MailWindow {
                 .child(text)
         });
         let title = if query.trim().is_empty() {
-            EMOJI_GROUPS[group].2.to_owned()
+            emoji_group_name(EMOJI_GROUPS[group.min(EMOJI_GROUPS.len() - 1)].0)
         } else if list.is_empty() {
-            "No emoji found".to_owned()
+            tr!("compose-tool-emoji-none")
         } else {
-            "Search results".to_owned()
+            tr!("compose-tool-emoji-results")
         };
         div()
             .w(px(360.0))
@@ -1458,7 +1592,7 @@ impl MailWindow {
                             .map(|d| crate::widgets::raised(d, th, 8.0, 2.0))
                             .text_size(px(13.0))
                             .text_color(rgba(th.text_dim))
-                            .child("Go to link:")
+                            .child(tr!("compose-tool-link-go"))
                             .child(
                                 div()
                                     .id("link-bubble-open")
@@ -1480,7 +1614,7 @@ impl MailWindow {
                                     .on_click(cx.listener(|this, _, window, cx| {
                                         this.open_link_dialog(window, cx)
                                     }))
-                                    .child("Change"),
+                                    .child(tr!("compose-tool-link-change")),
                             )
                             .child(
                                 div()
@@ -1489,7 +1623,7 @@ impl MailWindow {
                                     .cursor_pointer()
                                     .hover(|s| s.underline())
                                     .on_click(self.on_body(cx, |e, cx| e.remove_link(cx)))
-                                    .child("Remove"),
+                                    .child(tr!("compose-tool-link-remove")),
                             ),
                     ),
             )
@@ -1504,12 +1638,14 @@ impl MailWindow {
         &mut self,
         position: Point<Pixels>,
         misspelled: Option<String>,
+        grammar: Option<GrammarIssue>,
         cx: &mut Context<Self>,
     ) {
         if let Some(c) = &mut self.compose {
             c.popup = Some(Popup::Context {
                 position,
                 misspelled,
+                grammar,
             });
         }
         cx.notify();
@@ -1520,6 +1656,7 @@ impl MailWindow {
         let Some(Popup::Context {
             position,
             misspelled,
+            grammar,
         }) = &compose.popup
         else {
             return None;
@@ -1533,30 +1670,16 @@ impl MailWindow {
         let in_table = editor.in_table();
         let in_link = editor.link_at_cursor().is_some();
         let selection = editor.has_selection();
-        let mut items = menu(th).w(px(240.0));
-        if let Some(word) = misspelled.clone() {
-            if suggestions.is_empty() {
-                items = items.child(
-                    div()
-                        .h(px(32.0))
-                        .px(px(16.0))
-                        .flex()
-                        .items_center()
-                        .text_color(rgba(th.text_faint))
-                        .child("No suggestions"),
-                );
-            }
-            for (ix, s) in suggestions.into_iter().enumerate() {
-                let word = s.clone();
-                items = items.child(
-                    menu_item(("spell-suggestion", ix), &s, th)
-                        .font_weight(FontWeight::BOLD)
-                        .on_click(self.on_body(cx, move |e, cx| e.replace_word(&word, cx))),
-                );
-            }
-            items = items.child(menu_item("spell-add", "Add to dictionary", th).on_click(
-                cx.listener(move |this, _, window, cx| this.add_to_dictionary(&word, window, cx)),
-            ));
+        let mut items = self.fix_items(
+            menu(th).w(px(240.0)),
+            misspelled.clone(),
+            suggestions,
+            grammar.clone(),
+            None,
+            th,
+            cx,
+        );
+        if misspelled.is_some() || grammar.is_some() {
             items = items.child(menu_divider(th));
         }
         let action = |ix: usize, label: &str, keys: &'static str, what: Clip| {
@@ -1567,26 +1690,28 @@ impl MailWindow {
         };
         items = items
             .when(selection, |d| {
-                d.child(action(0, "Cut", "Ctrl+X", Clip::Cut)).child(action(
-                    1,
-                    "Copy",
-                    "Ctrl+C",
-                    Clip::Copy,
-                ))
+                d.child(action(0, &tr!("compose-tool-cut"), "Ctrl+X", Clip::Cut))
+                    .child(action(1, &tr!("compose-tool-copy"), "Ctrl+C", Clip::Copy))
             })
-            .child(action(2, "Paste", "Ctrl+V", Clip::Paste))
-            .child(action(3, "Select all", "Ctrl+A", Clip::SelectAll));
+            .child(action(2, &tr!("compose-tool-paste"), "Ctrl+V", Clip::Paste))
+            .child(action(
+                3,
+                &tr!("compose-tool-select-all"),
+                "Ctrl+A",
+                Clip::SelectAll,
+            ));
         if in_link {
-            items =
-                items
-                    .child(menu_divider(th))
-                    .child(menu_item("context-link-edit", "Edit link", th).on_click(
+            items = items
+                .child(menu_divider(th))
+                .child(
+                    menu_item("context-link-edit", &tr!("compose-tool-edit-link"), th).on_click(
                         cx.listener(|this, _, window, cx| this.open_link_dialog(window, cx)),
-                    ))
-                    .child(
-                        menu_item("context-link-remove", "Remove link", th)
-                            .on_click(self.on_body(cx, |e, cx| e.remove_link(cx))),
-                    );
+                    ),
+                )
+                .child(
+                    menu_item("context-link-remove", &tr!("compose-tool-remove-link"), th)
+                        .on_click(self.on_body(cx, |e, cx| e.remove_link(cx))),
+                );
         }
         if in_table {
             let mut edit = |ix: usize, label: &str, edit: TableEdit| {
@@ -1595,13 +1720,272 @@ impl MailWindow {
             };
             items = items
                 .child(menu_divider(th))
-                .child(edit(0, "Insert row above", TableEdit::RowAbove))
-                .child(edit(1, "Insert row below", TableEdit::RowBelow))
-                .child(edit(2, "Insert column left", TableEdit::ColumnLeft))
-                .child(edit(3, "Insert column right", TableEdit::ColumnRight))
-                .child(edit(4, "Delete row", TableEdit::DeleteRow))
-                .child(edit(5, "Delete column", TableEdit::DeleteColumn))
-                .child(edit(6, "Delete table", TableEdit::DeleteTable));
+                .child(edit(0, &tr!("compose-tool-row-above"), TableEdit::RowAbove))
+                .child(edit(1, &tr!("compose-tool-row-below"), TableEdit::RowBelow))
+                .child(edit(
+                    2,
+                    &tr!("compose-tool-column-left"),
+                    TableEdit::ColumnLeft,
+                ))
+                .child(edit(
+                    3,
+                    &tr!("compose-tool-column-right"),
+                    TableEdit::ColumnRight,
+                ))
+                .child(edit(
+                    4,
+                    &tr!("compose-tool-delete-row"),
+                    TableEdit::DeleteRow,
+                ))
+                .child(edit(
+                    5,
+                    &tr!("compose-tool-delete-column"),
+                    TableEdit::DeleteColumn,
+                ))
+                .child(edit(
+                    6,
+                    &tr!("compose-tool-delete-table"),
+                    TableEdit::DeleteTable,
+                ));
+        }
+        Some(
+            deferred(
+                anchored()
+                    .position(*position)
+                    .snap_to_window_with_margin(px(8.0))
+                    .child(div().occlude().child(items)),
+            )
+            .with_priority(2)
+            .into_any_element(),
+        )
+    }
+
+    /// The fixes of a misspelled word (`suggestions` for `misspelled`) or a
+    /// grammar mistake, added to `items`. With `at`, the cursor moves to
+    /// the words first.
+    #[allow(clippy::too_many_arguments)]
+    fn fix_items(
+        &self,
+        mut items: Div,
+        misspelled: Option<String>,
+        suggestions: Vec<String>,
+        grammar: Option<GrammarIssue>,
+        at: Option<Pos>,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Div {
+        if let Some(word) = misspelled {
+            if suggestions.is_empty() {
+                items = items.child(
+                    div()
+                        .h(px(32.0))
+                        .px(px(16.0))
+                        .flex()
+                        .items_center()
+                        .text_color(rgba(th.text_faint))
+                        .child(tr!("compose-tool-no-suggestions")),
+                );
+            }
+            for (ix, s) in suggestions.into_iter().enumerate() {
+                let word = s.clone();
+                items = items.child(
+                    menu_item(("spell-suggestion", ix), &s, th)
+                        .font_weight(FontWeight::BOLD)
+                        .on_click(self.on_words(at, cx, move |e, cx| e.replace_word(&word, cx))),
+                );
+            }
+            items = items.child(
+                menu_item("spell-add", &tr!("compose-tool-add-to-dictionary"), th).on_click(
+                    cx.listener(move |this, _, window, cx| {
+                        this.add_to_dictionary(&word, window, cx)
+                    }),
+                ),
+            );
+        }
+        if let Some(issue) = grammar {
+            items = items.child(
+                div()
+                    .px(px(16.0))
+                    .py(px(8.0))
+                    .text_size(px(13.0))
+                    .line_height(px(18.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(issue.message.clone()),
+            );
+            for (ix, fix) in issue.fixes.iter().enumerate() {
+                let (issue, fix) = (issue.clone(), fix.clone());
+                items = items.child(
+                    menu_item(("grammar-fix", ix), &fix.label, th)
+                        .font_weight(FontWeight::BOLD)
+                        .on_click(
+                            self.on_words(at, cx, move |e, cx| e.fix_grammar(&issue, &fix, cx)),
+                        ),
+                );
+            }
+            items =
+                items.child(
+                    menu_item("grammar-ignore", &tr!("grammar-ignore"), th)
+                        .on_click(self.on_words(at, cx, move |e, cx| e.ignore_grammar(&issue, cx))),
+                );
+        }
+        items
+    }
+
+    /// A listener that runs `f` on the editor, with the cursor moved to `at`
+    /// first if given.
+    fn on_words<E>(
+        &self,
+        at: Option<Pos>,
+        cx: &mut Context<Self>,
+        f: impl Fn(&mut RichEditor, &mut Context<RichEditor>) + 'static,
+    ) -> impl Fn(&E, &mut Window, &mut gpui::App) + 'static {
+        self.on_body(cx, move |e, cx| {
+            if let Some(at) = at {
+                e.set_cursor(at, cx);
+            }
+            f(e, cx)
+        })
+    }
+
+    /// Shows a card of fixes unless another menu or dialog is open.
+    pub(super) fn show_hint(&mut self, hint: Popup, cx: &mut Context<Self>) {
+        if let Some(c) = &mut self.compose
+            && c.popup.as_ref().is_none_or(Popup::is_hint)
+        {
+            c.popup = Some(hint);
+            cx.notify();
+        }
+    }
+
+    /// Closes the card of fixes, if one is open.
+    pub(super) fn close_hint(&mut self, cx: &mut Context<Self>) {
+        let Some(c) = &mut self.compose else {
+            return;
+        };
+        if c.popup.as_ref().is_some_and(Popup::is_hint) {
+            c.popup = None;
+            c.body.update(cx, |editor, _| editor.end_hint());
+            c.subject.update(cx, |input, _| input.end_hint());
+            cx.notify();
+        }
+    }
+
+    /// The fixes of the marked words under the pointer or a left click.
+    fn render_hint(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let compose = self.compose.as_ref()?;
+        let Some(Popup::Hint {
+            word,
+            at,
+            misspelled,
+            suggestions,
+            grammar,
+        }) = &compose.popup
+        else {
+            return None;
+        };
+        let items = self.fix_items(
+            menu(th).w(px(240.0)),
+            misspelled.clone(),
+            suggestions.clone(),
+            grammar.clone(),
+            Some(*at),
+            th,
+            cx,
+        );
+        Some(self.hint_card(*word, items, cx))
+    }
+
+    /// A card of fixes under `word`, closing when the pointer leaves both or
+    /// on a click outside.
+    fn hint_card(&self, word: Bounds<Pixels>, items: Div, cx: &mut Context<Self>) -> AnyElement {
+        let this = cx.entity().downgrade();
+        let watch = canvas(
+            |_, _, _| {},
+            move |card, _, window, _| {
+                let this = this.clone();
+                window.on_mouse_event(move |event: &MouseMoveEvent, phase, _, cx| {
+                    let on_words = word.dilate(px(2.0)).contains(&event.position);
+                    if phase == DispatchPhase::Bubble
+                        && !on_words
+                        && !card.contains(&event.position)
+                    {
+                        this.update(cx, |this, cx| this.close_hint(cx)).ok();
+                    }
+                });
+            },
+        )
+        .absolute()
+        .top_0()
+        .left_0()
+        .size_full();
+        deferred(
+            anchored()
+                .position(word.bottom_left())
+                .snap_to_window_with_margin(px(8.0))
+                .child(
+                    div()
+                        .id("compose-hint")
+                        .relative()
+                        .occlude()
+                        .on_mouse_down_out(cx.listener(|this, _, _, cx| this.close_hint(cx)))
+                        .child(items)
+                        .child(watch),
+                ),
+        )
+        .with_priority(2)
+        .into_any_element()
+    }
+
+    /// The fixes of a grammar mistake in the subject.
+    fn render_subject_grammar(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let compose = self.compose.as_ref()?;
+        let Some(Popup::SubjectGrammar {
+            position,
+            issue,
+            word,
+        }) = &compose.popup
+        else {
+            return None;
+        };
+        let on_subject = |f: Box<SubjectEdit>| {
+            cx.listener(move |this: &mut Self, _, window, cx| {
+                let Some(c) = &mut this.compose else {
+                    return;
+                };
+                c.popup = None;
+                let subject = c.subject.clone();
+                window.focus(&subject.focus_handle(cx), cx);
+                subject.update(cx, |input, cx| f(input, cx));
+                cx.notify();
+            })
+        };
+        let mut items = menu(th).w(px(240.0)).child(
+            div()
+                .px(px(16.0))
+                .py(px(8.0))
+                .text_size(px(13.0))
+                .line_height(px(18.0))
+                .text_color(rgba(th.text_dim))
+                .child(issue.message.clone()),
+        );
+        for (ix, fix) in issue.fixes.iter().enumerate() {
+            let (issue, fix) = (issue.clone(), fix.clone());
+            items = items.child(
+                menu_item(("subject-grammar-fix", ix), &fix.label, th)
+                    .font_weight(FontWeight::BOLD)
+                    .on_click(on_subject(Box::new(move |input, cx| {
+                        input.fix_grammar(&issue, &fix, cx)
+                    }))),
+            );
+        }
+        let ignored = issue.clone();
+        items = items.child(
+            menu_item("subject-grammar-ignore", &tr!("grammar-ignore"), th).on_click(on_subject(
+                Box::new(move |input, cx| input.ignore_grammar(&ignored, cx)),
+            )),
+        );
+        if let Some(word) = word {
+            return Some(self.hint_card(*word, items, cx));
         }
         Some(
             deferred(
@@ -1635,7 +2019,11 @@ impl MailWindow {
         if let Some(speller) = &self.writing.speller
             && let Err(err) = speller.add_word(word)
         {
-            self.show_snackbar(format!("Could not save the word: {err}"), None, cx);
+            self.show_snackbar(
+                tr!("compose-tool-dictionary-failed", error = err.to_string()),
+                None,
+                cx,
+            );
         }
         // Drawn again, the word is no longer marked.
         self.edit_body(window, cx, |_, cx| cx.notify());
@@ -1660,7 +2048,7 @@ impl MailWindow {
         let label_item = div()
             .relative()
             .child(
-                tool_item("more-label", "label", "Label", th)
+                tool_item("more-label", "label", &tr!("compose-tool-label"), th)
                     .child(icon(
                         if label_open {
                             "chevron-down"
@@ -1689,10 +2077,7 @@ impl MailWindow {
                         .pb(px(8.0))
                         .text_size(px(13.0))
                         .text_color(rgba(th.text_dim))
-                        .child(
-                            "Labels on sent mail are coming soon. \
-                             Label the message in Sent once it is out.",
-                        ),
+                        .child(tr!("compose-tool-label-coming")),
                 )
             });
         menu(th)
@@ -1701,7 +2086,7 @@ impl MailWindow {
                 tool_item(
                     "more-full-screen",
                     "open-full",
-                    "Default to full screen",
+                    &tr!("compose-tool-full-screen"),
                     th,
                 )
                 .child(check(sending.compose_full_screen))
@@ -1723,21 +2108,29 @@ impl MailWindow {
             .child(label_item)
             .child(menu_divider(th))
             .child(
-                tool_item("more-plain", "plain-text", "Plain text mode", th)
-                    .child(check(plain))
-                    .on_click(cx.listener(|this, _, window, cx| this.toggle_plain(window, cx))),
+                tool_item(
+                    "more-plain",
+                    "plain-text",
+                    &tr!("compose-tool-plain-mode"),
+                    th,
+                )
+                .child(check(plain))
+                .on_click(cx.listener(|this, _, window, cx| this.toggle_plain(window, cx))),
             )
             .child(menu_divider(th))
             .child(
-                tool_item("more-print", "print", "Print", th)
+                tool_item("more-print", "print", &tr!("compose-tool-print"), th)
                     .on_click(cx.listener(|this, _, _, cx| this.print_compose(cx))),
             )
             .child(
-                tool_item("more-spell", "spell-check", "Check spelling", th)
-                    .child(check(spell))
-                    .on_click(
-                        cx.listener(|this, _, window, cx| this.toggle_spell_check(window, cx)),
-                    ),
+                tool_item(
+                    "more-spell",
+                    "spell-check",
+                    &tr!("compose-tool-check-spelling"),
+                    th,
+                )
+                .child(check(spell))
+                .on_click(cx.listener(|this, _, window, cx| this.toggle_spell_check(window, cx))),
             )
             .into_any_element()
     }
@@ -1807,13 +2200,18 @@ impl MailWindow {
         c.popup = None;
         let draft = c.fields(cx);
         let body = html::to_html(&draft.body, &|image| html::data_uri(image));
-        let field = |label: &str, value: &str| {
+        let field = |label: String, value: &str| {
             if value.trim().is_empty() {
                 String::new()
             } else {
-                format!("<div><b>{label}:</b> {}</div>", html::escape(value.trim()))
+                format!(
+                    "<div><b>{}</b> {}</div>",
+                    html::escape(&label),
+                    html::escape(value.trim())
+                )
             }
         };
+        let no_subject = tr!("compose-tool-print-no-subject");
         let page = format!(
             "<!doctype html><html><head><meta charset=\"utf-8\"><title>{title}</title>\
              <style>body{{font-family:arial,sans-serif;font-size:14px;margin:32px}}\
@@ -1822,13 +2220,13 @@ impl MailWindow {
              <body onload=\"window.print()\"><h1>{title}</h1><div class=\"h\">{to}{cc}{bcc}</div>\
              {body}</body></html>",
             title = html::escape(if draft.subject.trim().is_empty() {
-                "(no subject)"
+                &no_subject
             } else {
                 draft.subject.trim()
             }),
-            to = field("To", &draft.to),
-            cc = field("Cc", &draft.cc),
-            bcc = field("Bcc", &draft.bcc),
+            to = field(tr!("compose-tool-print-to"), &draft.to),
+            cc = field(tr!("compose-tool-print-cc"), &draft.cc),
+            bcc = field(tr!("compose-tool-print-bcc"), &draft.bcc),
         );
         let dir = std::env::var_os("XDG_RUNTIME_DIR")
             .map(std::path::PathBuf::from)
@@ -1838,7 +2236,7 @@ impl MailWindow {
         let written = std::fs::create_dir_all(&dir).and_then(|_| std::fs::write(&path, page));
         match written {
             Ok(()) => cx.open_url(&format!("file://{}", path.display())),
-            Err(err) => self.show_snackbar(format!("Could not print: {err}"), None, cx),
+            Err(err) => self.show_snackbar(tr!("print-failed", error = err.to_string()), None, cx),
         }
         cx.notify();
     }
@@ -1856,6 +2254,15 @@ impl MailWindow {
             Popup::Link => self.render_link_dialog(th, cx),
             Popup::PickTime => self.render_time_picker(th, cx),
             Popup::PlainText => self.render_plain_dialog(th, cx),
+            Popup::SendCheck {
+                check,
+                at,
+                archive,
+                passed,
+            } => self.render_send_check(*check, *at, *archive, *passed, th, cx),
+            Popup::BadAddress { field, address } => {
+                self.render_bad_address(*field, address, th, cx)
+            }
             _ => return None,
         };
         Some(
@@ -1876,7 +2283,7 @@ impl MailWindow {
     fn dialog_buttons(
         &self,
         th: &Theme,
-        ok: &'static str,
+        ok: String,
         cx: &mut Context<Self>,
         on_ok: impl Fn(&mut Self, &mut Window, &mut Context<Self>) + 'static,
     ) -> gpui::Div {
@@ -1900,7 +2307,7 @@ impl MailWindow {
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
                     .on_click(cx.listener(|this, _, window, cx| this.close_popup(window, cx)))
-                    .child("Cancel"),
+                    .child(tr!("compose-tool-cancel")),
             )
             .child(
                 filled_button("dialog-ok", ok, th)
@@ -1908,7 +2315,7 @@ impl MailWindow {
             )
     }
 
-    fn dialog_card(th: &Theme, width: f32, title: &'static str) -> gpui::Div {
+    pub(super) fn dialog_card(th: &Theme, width: f32, title: impl Into<SharedString>) -> gpui::Div {
         div()
             .w(px(width))
             .p(px(24.0))
@@ -1918,14 +2325,14 @@ impl MailWindow {
             .bg(rgba(th.menu))
             .shadow(crate::widgets::elevation(th, 3.0))
             .text_color(rgba(th.text))
-            .child(div().mb(px(16.0)).text_size(px(20.0)).child(title))
+            .child(div().mb(px(16.0)).text_size(px(20.0)).child(title.into()))
     }
 
     fn render_link_dialog(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };
-        let field = |label: &'static str, input: &Entity<TextInput>| {
+        let field = |label: String, input: &Entity<TextInput>| {
             div()
                 .flex()
                 .flex_col()
@@ -1954,41 +2361,121 @@ impl MailWindow {
             th,
             400.0,
             if compose.dialog.editing_link {
-                "Edit link"
+                tr!("compose-tool-edit-link")
             } else {
-                "Insert link"
+                tr!("compose-tool-insert-link")
             },
         )
-        .child(field("Text to display", &compose.dialog.link_text))
         .child(field(
-            "Web address or email address",
+            tr!("compose-tool-link-text"),
+            &compose.dialog.link_text,
+        ))
+        .child(field(
+            tr!("compose-tool-link-address"),
             &compose.dialog.link_url,
         ))
         .child(
             div()
                 .text_size(px(12.0))
                 .text_color(rgba(th.text_faint))
-                .child("Not sure where to link? Search for the page, then copy its address."),
+                .child(tr!("compose-tool-link-hint")),
         )
-        .child(self.dialog_buttons(th, "OK", cx, |this, window, cx| this.apply_link(window, cx)))
+        .child(
+            self.dialog_buttons(th, tr!("compose-tool-ok"), cx, |this, window, cx| {
+                this.apply_link(window, cx)
+            }),
+        )
         .into_any_element()
     }
 
     fn render_plain_dialog(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        Self::dialog_card(th, 380.0, "Switch to plain text?")
+        Self::dialog_card(th, 380.0, tr!("compose-tool-plain-title"))
             .child(
                 div()
                     .text_size(px(14.0))
                     .line_height(px(20.0))
                     .text_color(rgba(th.text_dim))
+                    .child(tr!("compose-tool-plain-text")),
+            )
+            .child(self.dialog_buttons(
+                th,
+                tr!("compose-tool-plain-switch"),
+                cx,
+                |this, window, cx| this.make_plain(window, cx),
+            ))
+            .into_any_element()
+    }
+
+    /// Asks before sending a message that speaks of an attachment without
+    /// one, or has no subject.
+    fn render_send_check(
+        &self,
+        check: SendCheck,
+        at: Option<jiff::Timestamp>,
+        archive: bool,
+        passed: Passed,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let (title, text, fix) = match check {
+            SendCheck::Attachment => (
+                tr!("send-check-attachment-title"),
+                tr!("send-check-attachment-text"),
+                tr!("send-check-attach"),
+            ),
+            SendCheck::Subject => (
+                tr!("send-check-subject-title"),
+                tr!("send-check-subject-text"),
+                tr!("send-check-add-subject"),
+            ),
+        };
+        Self::dialog_card(th, 380.0, title)
+            .child(
+                div()
+                    .text_size(px(14.0))
+                    .line_height(px(20.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(text),
+            )
+            .child(
+                div()
+                    .mt(px(20.0))
+                    .flex()
+                    .flex_row()
+                    .justify_end()
+                    .gap(px(8.0))
                     .child(
-                        "Plain text mode removes the formatting, pictures and tables \
-                         of this message. Its text stays.",
+                        div()
+                            .id("send-check-fix")
+                            .h(px(36.0))
+                            .px(px(16.0))
+                            .flex()
+                            .items_center()
+                            .rounded_full()
+                            .text_size(px(14.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .text_color(rgba(th.accent))
+                            .cursor_pointer()
+                            .hover(|s| s.bg(rgba(th.hover)))
+                            .on_click(cx.listener(move |this, _, window, cx| match check {
+                                SendCheck::Attachment => this.pick_files(false, cx),
+                                SendCheck::Subject => {
+                                    if let Some(c) = &mut this.compose {
+                                        c.popup = None;
+                                        window.focus(&c.subject.focus_handle(cx), cx);
+                                    }
+                                    cx.notify();
+                                }
+                            }))
+                            .child(fix),
+                    )
+                    .child(
+                        filled_button("send-check-send", tr!("send-check-send-anyway"), th)
+                            .on_click(cx.listener(move |this, _, window, cx| {
+                                this.send_compose(at, archive, passed.with(check), window, cx)
+                            })),
                     ),
             )
-            .child(self.dialog_buttons(th, "Switch", cx, |this, window, cx| {
-                this.make_plain(window, cx)
-            }))
             .into_any_element()
     }
 
@@ -1998,7 +2485,7 @@ impl MailWindow {
         };
         let today = jiff::Timestamp::now().to_zoned(self.tz.clone()).date();
         let (month, day) = (compose.dialog.month, compose.dialog.day);
-        let days = schedule::month_grid(month)
+        let days = schedule::month_grid(month, format::first_weekday())
             .into_iter()
             .enumerate()
             .map(|(ix, date)| {
@@ -2032,7 +2519,7 @@ impl MailWindow {
                                 cx.notify();
                             }))
                     })
-                    .child(date.day().to_string())
+                    .child(format::number(date.day() as u64))
             })
             .collect::<Vec<_>>();
         let step = |months: i32| {
@@ -2049,7 +2536,7 @@ impl MailWindow {
                 cx.notify();
             }
         };
-        let weekdays = ["S", "M", "T", "W", "T", "F", "S"].into_iter().map(|d| {
+        let weekdays = format::weekdays_short().into_iter().map(|(_, d)| {
             div()
                 .size(px(36.0))
                 .flex()
@@ -2060,7 +2547,7 @@ impl MailWindow {
                 .child(d)
         });
         let (prev, next) = (cx.listener(step(-1)), cx.listener(step(1)));
-        Self::dialog_card(th, 330.0, "Pick date & time")
+        Self::dialog_card(th, 330.0, tr!("schedule-pick"))
             .child(
                 div()
                     .flex()
@@ -2071,7 +2558,7 @@ impl MailWindow {
                             .flex_1()
                             .text_size(px(14.0))
                             .font_weight(FontWeight::MEDIUM)
-                            .child(month.strftime("%B %Y").to_string()),
+                            .child(format::month_year(month)),
                     )
                     .child(
                         icon_button("pick-prev", "chevron-left", 20.0, th)
@@ -2112,7 +2599,9 @@ impl MailWindow {
                             .border_1()
                             .border_color(rgba(th.divider))
                             .text_size(px(14.0))
-                            .child(day.strftime("%b %-d, %Y").to_string()),
+                            .child(format::day_month_year(
+                                day.to_datetime(jiff::civil::Time::midnight()),
+                            )),
                     )
                     .child(
                         div()
@@ -2129,7 +2618,7 @@ impl MailWindow {
                     ),
             )
             .child(
-                self.dialog_buttons(th, "Schedule send", cx, |this, window, cx| {
+                self.dialog_buttons(th, tr!("schedule-send"), cx, |this, window, cx| {
                     this.schedule_picked(window, cx)
                 }),
             )
@@ -2158,18 +2647,18 @@ impl MailWindow {
             .enumerate()
             .map(|(ix, s)| {
                 let name = if s.name.trim().is_empty() {
-                    "Untitled"
+                    tr!("compose-tool-signature-untitled")
                 } else {
-                    s.name.as_str()
+                    s.name.clone()
                 };
-                item(ix + 1, Some(s.id), name)
+                item(ix + 1, Some(s.id), &name)
             })
             .collect::<Vec<_>>();
         div()
             .relative()
             .child(
                 icon_button("compose-signature", "signature", 20.0, th)
-                    .tooltip(tip("Insert signature", th))
+                    .tooltip(tip(tr!("compose-tool-signature"), th))
                     .on_click(
                         cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Signature, cx)),
                     ),
@@ -2178,12 +2667,17 @@ impl MailWindow {
                 d.child(above(
                     menu(th)
                         .w(px(240.0))
-                        .child(item(0, None, "No signature"))
+                        .child(item(0, None, &tr!("compose-tool-signature-none")))
                         .children(items)
                         .child(menu_divider(th))
                         .child(
-                            menu_item("compose-signatures-manage", "Manage signatures", th)
-                                .on_click(cx.listener(|this, _, window, cx| {
+                            menu_item(
+                                "compose-signatures-manage",
+                                &tr!("compose-tool-signature-manage"),
+                                th,
+                            )
+                            .on_click(cx.listener(
+                                |this, _, window, cx| {
                                     if let Some(c) = &mut this.compose {
                                         c.popup = None;
                                     }
@@ -2192,7 +2686,8 @@ impl MailWindow {
                                         window,
                                         cx,
                                     );
-                                })),
+                                },
+                            )),
                         ),
                 ))
             })

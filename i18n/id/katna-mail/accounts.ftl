@@ -1,0 +1,60 @@
+# Katna Mail, Indonesian (Bahasa Indonesia).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Settings > Accounts
+
+accounts-folder-pane = Panel folder
+accounts-folder-pane-detail = Folder akun mana yang ditampilkan di panel kiri.
+accounts-shown-one = Satu akun dalam satu waktu; beralih di kartu akun
+accounts-shown-all = Semua akun, satu per satu berurutan
+accounts-row = Akun
+accounts-row-detail = Menghapus akun akan menghapus salinan email akun tersebut milik Katna di komputer ini. Email tetap ada di server.
+accounts-none = Belum ada akun.
+accounts-kind-imported = Diimpor
+accounts-picture-reset = Gunakan gambar desktop
+accounts-picture-change = Ubah gambar
+accounts-remove = Hapus
+accounts-delete-all-row = Hapus semua data
+accounts-delete-all-row-detail = Mulai dari awal, seperti pada instalasi baru.
+accounts-delete-all-about = Menghapus setiap akun, semua email, kontak, dan kalender yang tersimpan, indeks penelusuran, setelan Anda, dan sandi yang tersimpan dari komputer ini. Tidak ada yang berubah di server email Anda.
+accounts-delete-all-open = Hapus semua data Katna
+
+## Settings > Accounts: snackbars after deleting
+
+accounts-removed-local = { $address } telah dihapus dari Katna.
+accounts-removed = { $address } telah dihapus dari Katna. Emailnya masih ada di server.
+accounts-all-deleted = Semua data Katna telah dihapus dari komputer ini.
+
+## Settings > Accounts: the dialog that asks before deleting
+
+accounts-remove-title = Hapus { $address }?
+accounts-remove-confirm = Hapus akun
+accounts-removing = Menghapus…
+accounts-remove-local-mail = { $folders ->
+    [0] Semua email yang diimpor ke akun ini
+   *[other] Semua email yang diimpor ke akun ini, di { $folders } foldernya
+}
+accounts-remove-local-settings = Setelan Katna akun ini
+accounts-remove-mail = { $folders ->
+    [0] Semua email akun ini yang disimpan oleh Katna
+   *[other] Semua email akun ini yang disimpan oleh Katna, di { $folders } foldernya
+}
+accounts-remove-outbox = Pesan akun ini yang menunggu di kotak keluar
+accounts-remove-settings = Sandi tersimpan dan setelan Katna akun ini
+accounts-delete-all-title = Hapus semua data Katna?
+accounts-delete-all-confirm = Hapus semuanya
+accounts-deleting = Menghapus…
+accounts-delete-all-accounts = Setiap akun, serta semua email dan lampiran yang disimpan oleh Katna
+accounts-delete-all-contacts = Kontak, kalender, dan indeks penelusuran
+accounts-delete-all-settings = Semua setelan, tanda tangan, dan pintasan keyboard
+accounts-delete-all-passwords = Setiap sandi yang tersimpan
+accounts-deleted-heading = Dihapus dari komputer ini:
+accounts-cannot-undo = Tindakan ini tidak dapat diurungkan.
+accounts-server-delete-all = Tidak ada yang berubah di server email Anda: email Anda tetap di sana, dan menambahkan akun lagi akan mendownloadnya kembali. Email yang diimpor dari file hanya ada di Katna; file-filenya tidak diubah.
+accounts-server-local = Email ini diimpor dari file, jadi Katna memiliki satu-satunya salinan. File asalnya tidak diubah; impor lagi untuk mendapatkannya kembali.
+accounts-server-remove = Tidak ada yang berubah di server email: email Anda tetap di sana, dan menambahkan akun lagi akan mendownloadnya kembali.
+accounts-confirm-word = hapus
+accounts-confirm-placeholder = Ketik “{ accounts-confirm-word }”
+accounts-confirm-prompt = Untuk mengonfirmasi, ketik “{ accounts-confirm-word }”:
+accounts-cancel = Batal

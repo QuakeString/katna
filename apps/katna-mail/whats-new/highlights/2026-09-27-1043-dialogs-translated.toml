@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Dialogs in your language"
+text = """
+About, What's new, the welcome pages and the tour, adding an account,
+search options and the crash notice now follow the language you pick.
+"""

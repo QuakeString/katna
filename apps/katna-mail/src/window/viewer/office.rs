@@ -7,14 +7,20 @@
 //! a tab per sheet at the foot. A document is laid out as one long white
 //! page: headings, lists, tables and bold/italic/underline/strike-through
 //! runs, only the paragraphs on screen laid out.
+//!
+//! A document's text selects like a message's. A spreadsheet selects
+//! cells: click one, drag or Shift+click for a range, click a column
+//! letter or row number for all of it; Ctrl+C copies them tab-separated,
+//! which pastes as cells into other spreadsheets.
 
 use std::ops::Range;
 use std::rc::Rc;
 
 use gpui::ListHorizontalSizingBehavior;
 use gpui::{
-    AnyElement, Context, FontStyle, FontWeight, HighlightStyle, ListAlignment, ListState,
-    SharedString, StrikethroughStyle, StyledText, UnderlineStyle, UniformListScrollHandle, div,
+    AnyElement, ClipboardItem, Context, DispatchPhase, FontStyle, FontWeight, HighlightStyle,
+    ListAlignment, ListState, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent, Pixels,
+    Point, SharedString, StrikethroughStyle, UnderlineStyle, UniformListScrollHandle, canvas, div,
     list, prelude::*, rgba, uniform_list,
 };
 use katna_preview::document::{Align, Block, Document, Paragraph, Style};
@@ -22,7 +28,9 @@ use katna_preview::sheet::{self, MAX_ROWS, Sheet, Workbook};
 use katna_ui::px;
 use katna_ui::unpx;
 
-use super::{BAR_HEIGHT, Viewer};
+use super::super::select::{self, Key, Marker, MenuAct};
+use super::{BAR_HEIGHT, Content, Viewer, ZOOMS};
+use crate::theme::Theme;
 
 // Paper colors, the same in light and dark themes, like a printed page.
 const PAPER: u32 = 0xffffffff;
@@ -30,7 +38,11 @@ const INK: u32 = 0x202124ff;
 const INK_DIM: u32 = 0x5f6368ff;
 const GRID: u32 = 0xe0e3e7ff;
 const HEADER: u32 = 0xf1f3f4ff;
+/// "Slide 3" above each slide's page, on the dark backdrop.
+const SLIDE_LABEL: u32 = 0xffffffb3;
 const SHEET_GREEN: u32 = 0x188038ff;
+/// Column letters and row numbers of selected cells.
+const PICKED: u32 = 0xd3e3fdff;
 
 /// A column is at least this wide at zoom 1, and at most...
 const MIN_COLUMN: f32 = 64.0;
@@ -48,6 +60,33 @@ pub(super) struct SheetView {
     /// Each sheet's column widths at zoom 1, in logical pixels.
     widths: Vec<Rc<Vec<f32>>>,
     pub scroll: UniformListScrollHandle,
+    /// The selected cells: where the selection started and where it ends
+    /// now, as (row, column) in the sheet's rows.
+    cells: Option<(Cell, Cell)>,
+    /// A drag is extending the selection, by `Drag`.
+    dragging: Option<Drag>,
+    /// The right-click menu, where the pointer was.
+    menu: Option<Point<Pixels>>,
+}
+
+type Cell = (usize, usize);
+
+/// What a drag over the sheet selects.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Drag {
+    Cells,
+    Rows,
+    Columns,
+}
+
+/// Where the pointer is on the grid.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Spot {
+    Cell(Cell),
+    /// A row's number.
+    Row(usize),
+    /// A column's letter.
+    Column(usize),
 }
 
 impl SheetView {
@@ -62,8 +101,104 @@ impl SheetView {
             current: 0,
             widths,
             scroll: UniformListScrollHandle::new(),
+            cells: None,
+            dragging: None,
+            menu: None,
         }
     }
+
+    /// The sheet on show.
+    fn sheet(&self) -> &Sheet {
+        &self.book.sheets[self.current.min(self.book.sheets.len() - 1)]
+    }
+
+    /// The selection as top-left and bottom-right cells.
+    fn range(&self) -> Option<(Cell, Cell)> {
+        let ((r0, c0), (r1, c1)) = self.cells?;
+        Some(((r0.min(r1), c0.min(c1)), (r0.max(r1), c0.max(c1))))
+    }
+
+    /// The grid at `zoom`: row height, row number width and column widths.
+    fn grid(&self, zoom: f32) -> Grid {
+        let sheet = self.sheet();
+        let last_row = sheet.origin.0 as usize + sheet.rows.len();
+        Grid {
+            row_height: (24.0 * zoom).round(),
+            number_width: ((last_row.to_string().len() as f32) * 8.0 + 20.0) * zoom,
+            widths: self.widths[self.current.min(self.widths.len() - 1)]
+                .iter()
+                .map(|w| w * zoom)
+                .collect(),
+        }
+    }
+
+    /// What is under `at` (in window coordinates) on the grid at `zoom`;
+    /// the header row when `header`.
+    fn spot(&self, at: Point<Pixels>, zoom: f32, header: bool) -> Option<Spot> {
+        let grid = self.grid(zoom);
+        let handle = self.scroll.0.borrow().base_handle.clone();
+        let view = handle.bounds();
+        let offset = handle.offset();
+        let sheet = self.sheet();
+        let x = unpx(at.x - view.left() - offset.x) - grid.number_width;
+        let column = (x >= 0.0).then(|| {
+            let mut edge = 0.0;
+            grid.widths
+                .iter()
+                .position(|w| {
+                    edge += w;
+                    x < edge
+                })
+                .unwrap_or(grid.widths.len().saturating_sub(1))
+        });
+        if header {
+            return column.map(Spot::Column);
+        }
+        let y = unpx(at.y - view.top() - offset.y);
+        let row = ((y / grid.row_height).floor().max(0.0) as usize)
+            .min(sheet.rows.len().saturating_sub(1));
+        Some(match column {
+            Some(column) => Spot::Cell((row, column)),
+            None => Spot::Row(row),
+        })
+    }
+
+    /// The selected cells as text: columns apart by tabs, rows by line
+    /// breaks, and cells with either (or quotes) quoted, as spreadsheets
+    /// copy them.
+    fn copied(&self) -> String {
+        let Some(((r0, c0), (r1, c1))) = self.range() else {
+            return String::new();
+        };
+        let sheet = self.sheet();
+        let mut out = String::new();
+        for row in r0..=r1.min(sheet.rows.len().saturating_sub(1)) {
+            if row > r0 {
+                out.push('\n');
+            }
+            for column in c0..=c1 {
+                if column > c0 {
+                    out.push('\t');
+                }
+                let cell = sheet.rows[row].get(column).map_or("", String::as_str);
+                if cell.contains(['\t', '\n', '"']) {
+                    out.push('"');
+                    out.push_str(&cell.replace('"', "\"\""));
+                    out.push('"');
+                } else {
+                    out.push_str(cell);
+                }
+            }
+        }
+        out
+    }
+}
+
+/// A sheet's grid at the zoom on show, in logical pixels.
+struct Grid {
+    row_height: f32,
+    number_width: f32,
+    widths: Vec<f32>,
 }
 
 pub(super) struct DocumentView {
@@ -83,6 +218,34 @@ impl DocumentView {
             measured: 1.0,
         }
     }
+
+    /// All of the document's text, keyed as it is drawn: a block is a
+    /// part, and a table's paragraphs its pieces, cell by cell.
+    pub fn all_text(&self) -> Rc<Vec<(Key, SharedString)>> {
+        let mut all = Vec::new();
+        for (ix, block) in self.doc.blocks.iter().enumerate() {
+            match block {
+                Block::Paragraph(p) => all.push((Key::new(ix, 0), text_of(p))),
+                Block::Table(rows) => {
+                    let cells = rows.iter().flatten().flatten();
+                    for (piece, p) in cells.enumerate() {
+                        all.push((Key::new(ix, piece), text_of(p)));
+                    }
+                }
+                Block::Slide(_) => {}
+            }
+        }
+        Rc::new(all)
+    }
+}
+
+/// A paragraph's text.
+fn text_of(p: &Paragraph) -> SharedString {
+    p.runs
+        .iter()
+        .map(|run| run.text.as_str())
+        .collect::<String>()
+        .into()
 }
 
 /// Column widths that fit most of each column's text.
@@ -122,6 +285,8 @@ impl Viewer {
         {
             view.current = ix;
             view.scroll = UniformListScrollHandle::new();
+            view.cells = None;
+            view.menu = None;
             cx.notify();
         }
     }
@@ -136,12 +301,22 @@ impl Viewer {
         let book = view.book.clone();
         let current = view.current.min(book.sheets.len() - 1);
         let sheet = &book.sheets[current];
-        let widths: Rc<Vec<f32>> = Rc::new(view.widths[current].iter().map(|w| w * zoom).collect());
-        let row_height = (24.0 * zoom).round();
+        let grid = view.grid(zoom);
+        let widths: Rc<Vec<f32>> = Rc::new(grid.widths);
+        let row_height = grid.row_height;
         let text_size = 13.0 * zoom;
-        let last_row = sheet.origin.0 as usize + sheet.rows.len();
-        let number_width = ((last_row.to_string().len() as f32) * 8.0 + 20.0) * zoom;
+        let number_width = grid.number_width;
         let total_width = number_width + widths.iter().sum::<f32>();
+        let selected = view.range();
+        let anchor = view.cells.map(|(anchor, _)| anchor);
+        let accent = self.th.accent;
+        let tint = rgba((accent & 0xffff_ff00) | 0x26);
+        let picked = rgba(PICKED);
+        let in_rows =
+            move |row: usize| selected.is_some_and(|((r0, _), (r1, _))| (r0..=r1).contains(&row));
+        let in_columns = move |column: usize| {
+            selected.is_some_and(|((_, c0), (_, c1))| (c0..=c1).contains(&column))
+        };
         let margin = side_margin(vw);
         let scroll_x = unpx(view.scroll.0.borrow().base_handle.offset().x);
 
@@ -181,8 +356,19 @@ impl Viewer {
                             .border_r_1()
                             .border_color(rgba(GRID))
                             .text_color(rgba(INK_DIM))
+                            .when(in_columns(ix), |d| d.bg(picked))
                             .child(sheet::column_name(first_col + ix as u32))
                     })),
+            )
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(move |this, event: &MouseDownEvent, window, cx| {
+                    this.press_cells(event, true, window, cx);
+                }),
+            )
+            .on_mouse_down(
+                MouseButton::Right,
+                cx.listener(|this, event: &MouseDownEvent, _, cx| this.cell_menu_at(event, cx)),
             );
 
         let rows = {
@@ -211,14 +397,16 @@ impl Viewer {
                                         .flex()
                                         .items_center()
                                         .justify_center()
-                                        .bg(rgba(HEADER))
+                                        .bg(rgba(if in_rows(ix) { PICKED } else { HEADER }))
                                         .border_r_1()
                                         .border_color(rgba(GRID))
                                         .text_color(rgba(INK_DIM))
                                         .child((sheet.origin.0 as usize + ix + 1).to_string()),
                                 )
-                                .children(cells.iter().zip(widths.iter()).map(|(cell, w)| {
+                                .children(widths.iter().enumerate().map(|(column, w)| {
+                                    let cell = cells.get(column).map_or("", String::as_str);
                                     let line = cell.lines().next().unwrap_or("").to_owned();
+                                    let on = in_rows(ix) && in_columns(column);
                                     div()
                                         .flex_none()
                                         .w(px(*w))
@@ -230,6 +418,15 @@ impl Viewer {
                                         .overflow_hidden()
                                         .border_r_1()
                                         .border_color(rgba(GRID))
+                                        .when(on, |d| d.bg(tint))
+                                        // The cell the selection started in, as
+                                        // spreadsheets show the active cell.
+                                        .when(anchor == Some((ix, column)), |d| {
+                                            d.bg(rgba(PAPER))
+                                                .border_2()
+                                                .border_color(rgba(accent))
+                                                .px(px(5.0))
+                                        })
                                         .child(div().truncate().child(line))
                                 }))
                         })
@@ -240,6 +437,17 @@ impl Viewer {
             .track_scroll(&view.scroll)
             .flex_1()
             .min_h_0()
+            .cursor(gpui::CursorStyle::Arrow)
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(move |this, event: &MouseDownEvent, window, cx| {
+                    this.press_cells(event, false, window, cx);
+                }),
+            )
+            .on_mouse_down(
+                MouseButton::Right,
+                cx.listener(|this, event: &MouseDownEvent, _, cx| this.cell_menu_at(event, cx)),
+            )
         };
 
         let tabs = (book.sheets.len() > 1 || sheet.cut).then(|| {
@@ -319,7 +527,12 @@ impl Viewer {
             .into_any_element()
     }
 
-    pub(super) fn document_body(&mut self, zoom: f32, vw: f32) -> AnyElement {
+    pub(super) fn document_body(
+        &mut self,
+        zoom: f32,
+        vw: f32,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let super::Content::Document(view) = &mut self.content else {
             return div().into_any_element();
         };
@@ -328,19 +541,42 @@ impl Viewer {
             view.state.remeasure();
         }
         let doc = view.doc.clone();
+        let marker = self.text.marker(&self.th);
         let page = (vw - 2.0 * side_margin(vw)).clamp(280.0, PAGE_WIDTH) * zoom;
         let pad = if vw < 700.0 { 20.0 } else { 72.0 } * zoom;
         let count = doc.blocks.len();
-        div()
+        select::selectable(div(), None, cx)
             .size_full()
             .pt(px(BAR_HEIGHT + 8.0))
             .child(
                 list(view.state.clone(), move |ix, _, _| {
-                    let top = ix == 0;
-                    let end = ix == count;
+                    // Slides are pages of their own, each under its label.
+                    if let Some(Block::Slide(n)) = doc.blocks.get(ix) {
+                        return div()
+                            .w_full()
+                            .flex()
+                            .justify_center()
+                            .child(
+                                div()
+                                    .w(px(page))
+                                    .pt(px(if ix == 0 { 8.0 } else { 28.0 } * zoom))
+                                    .pb(px(8.0 * zoom))
+                                    .text_size(px(13.0 * zoom))
+                                    .text_color(rgba(SLIDE_LABEL))
+                                    .child(SharedString::from(katna_i18n::tr!("viewer-slide", number = n))),
+                            )
+                            .into_any_element();
+                    }
+                    let slide_edge = |ix: Option<usize>| {
+                        ix.and_then(|ix| doc.blocks.get(ix))
+                            .is_some_and(|b| matches!(b, Block::Slide(_)))
+                    };
+                    let top = ix == 0 || slide_edge(ix.checked_sub(1));
+                    let end = ix == count || slide_edge(Some(ix + 1));
                     let content: AnyElement = match doc.blocks.get(ix) {
-                        Some(Block::Paragraph(p)) => paragraph(p, zoom, false),
-                        Some(Block::Table(rows)) => table(rows, zoom),
+                        Some(Block::Paragraph(p)) => paragraph(p, zoom, false, &marker, Key::new(ix, 0)),
+                        Some(Block::Table(rows)) => table(rows, zoom, &marker, ix),
+                        Some(Block::Slide(_)) => div().into_any_element(),
                         None if doc.cut => div()
                             .pt(px(16.0 * zoom))
                             .text_size(px(13.0 * zoom))
@@ -353,7 +589,7 @@ impl Viewer {
                         .w_full()
                         .flex()
                         .justify_center()
-                        .when(end, |d| d.pb(px(96.0)))
+                        .when(ix == count, |d| d.pb(px(96.0)))
                         .child(
                             div()
                                 .w(px(page))
@@ -372,8 +608,186 @@ impl Viewer {
     }
 }
 
-/// A paragraph: its text in its runs' looks, sized by its style.
-fn paragraph(p: &Paragraph, zoom: f32, in_cell: bool) -> AnyElement {
+impl Viewer {
+    fn sheet_view(&self) -> Option<&SheetView> {
+        match &self.content {
+            Content::Sheet(view) => Some(view),
+            _ => None,
+        }
+    }
+
+    fn sheet_view_mut(&mut self) -> Option<&mut SheetView> {
+        match &mut self.content {
+            Content::Sheet(view) => Some(view),
+            _ => None,
+        }
+    }
+
+    /// A press on the grid (or its column letters, when `header`):
+    /// selects a cell, row or column, or extends the selection with Shift.
+    fn press_cells(
+        &mut self,
+        event: &MouseDownEvent,
+        header: bool,
+        window: &mut gpui::Window,
+        cx: &mut Context<Self>,
+    ) {
+        cx.stop_propagation();
+        window.focus(&self.focus, cx);
+        let zoom = ZOOMS[self.zoom];
+        let Some(view) = self.sheet_view_mut() else {
+            return;
+        };
+        view.menu = None;
+        let Some(spot) = view.spot(event.position, zoom, header) else {
+            return;
+        };
+        let last_row = view.sheet().rows.len().saturating_sub(1);
+        let last_column = view.sheet().columns.saturating_sub(1);
+        let (from, to, drag) = match spot {
+            Spot::Cell(cell) => (cell, cell, Drag::Cells),
+            Spot::Row(row) => ((row, 0), (row, last_column), Drag::Rows),
+            Spot::Column(column) => ((0, column), (last_row, column), Drag::Columns),
+        };
+        view.cells = match view.cells {
+            Some((anchor, _)) if event.modifiers.shift => Some((anchor, to)),
+            _ => Some((from, to)),
+        };
+        view.dragging = Some(drag);
+        cx.notify();
+    }
+
+    fn drag_cells(&mut self, event: &MouseMoveEvent, cx: &mut Context<Self>) {
+        if event.pressed_button != Some(MouseButton::Left) {
+            self.release_cells(cx);
+            return;
+        }
+        let zoom = ZOOMS[self.zoom];
+        let Some(view) = self.sheet_view_mut() else {
+            return;
+        };
+        let (Some(drag), Some((anchor, head))) = (view.dragging, view.cells) else {
+            return;
+        };
+        let Some(spot) = view.spot(event.position, zoom, false) else {
+            return;
+        };
+        let (row, column) = match spot {
+            Spot::Cell(cell) => cell,
+            Spot::Row(row) => (row, 0),
+            Spot::Column(column) => (head.0, column),
+        };
+        let head = match drag {
+            Drag::Cells => (row, column),
+            Drag::Rows => (row, head.1),
+            Drag::Columns => (head.0, column),
+        };
+        if view.cells != Some((anchor, head)) {
+            view.cells = Some((anchor, head));
+            cx.notify();
+        }
+    }
+
+    fn release_cells(&mut self, cx: &mut Context<Self>) {
+        let Some(view) = self.sheet_view_mut() else {
+            return;
+        };
+        view.dragging = None;
+        // Pasted with the middle button, as on any Linux desktop.
+        let copied = view.copied();
+        if !copied.is_empty() {
+            cx.write_to_primary(ClipboardItem::new_string(copied));
+        }
+    }
+
+    pub(super) fn copy_cells(&mut self, cx: &mut Context<Self>) {
+        let copied = self.sheet_view().map(SheetView::copied).unwrap_or_default();
+        if !copied.is_empty() {
+            cx.write_to_clipboard(ClipboardItem::new_string(copied));
+        }
+    }
+
+    pub(super) fn select_all_cells(&mut self, cx: &mut Context<Self>) {
+        if let Some(view) = self.sheet_view_mut() {
+            let sheet = view.sheet();
+            if !sheet.rows.is_empty() && sheet.columns > 0 {
+                let end = (sheet.rows.len() - 1, sheet.columns - 1);
+                view.cells = Some(((0, 0), end));
+                cx.notify();
+            }
+        }
+    }
+
+    fn cell_menu_at(&mut self, event: &MouseDownEvent, cx: &mut Context<Self>) {
+        cx.stop_propagation();
+        if let Some(view) = self.sheet_view_mut() {
+            view.menu = Some(event.position);
+            cx.notify();
+        }
+    }
+
+    /// Follows the pointer while a drag selects cells, wherever it goes.
+    pub(super) fn follow_cell_drags(&self, cx: &mut Context<Self>) -> impl IntoElement {
+        let this = cx.entity().downgrade();
+        let dragging = |viewer: &Viewer| viewer.sheet_view().is_some_and(|v| v.dragging.is_some());
+        canvas(
+            |_, _, _| {},
+            move |_, _, window, _| {
+                window.on_mouse_event({
+                    let this = this.clone();
+                    move |event: &MouseMoveEvent, phase, _, cx| {
+                        let Some(this) = this.upgrade() else {
+                            return;
+                        };
+                        if phase == DispatchPhase::Bubble && dragging(this.read(cx)) {
+                            this.update(cx, |this, cx| this.drag_cells(event, cx));
+                        }
+                    }
+                });
+                window.on_mouse_event(move |event: &MouseUpEvent, phase, _, cx| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    if phase == DispatchPhase::Bubble
+                        && event.button == MouseButton::Left
+                        && dragging(this.read(cx))
+                    {
+                        this.update(cx, |this, cx| this.release_cells(cx));
+                    }
+                });
+            },
+        )
+        .absolute()
+        .size_0()
+    }
+
+    /// The right-click menu of the selected cells, when open.
+    pub(super) fn cell_menu(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let view = self.sheet_view()?;
+        let at = view.menu?;
+        Some(select::copy_menu(
+            at,
+            view.cells.is_some(),
+            th,
+            cx,
+            |this: &mut Viewer, act, cx| {
+                if let Some(view) = this.sheet_view_mut() {
+                    view.menu = None;
+                }
+                match act {
+                    MenuAct::Close => {}
+                    MenuAct::Copy => this.copy_cells(cx),
+                    MenuAct::SelectAll => this.select_all_cells(cx),
+                }
+                cx.notify();
+            },
+        ))
+    }
+}
+
+/// A paragraph: its text in its runs' looks, sized by its style,
+/// selectable as the piece `key`.
+fn paragraph(p: &Paragraph, zoom: f32, in_cell: bool, marker: &Marker, key: Key) -> AnyElement {
     let (size, weight, color, before, after) = match p.style {
         Style::Title => (26.0, FontWeight::NORMAL, INK, 0.0, 12.0),
         Style::Subtitle => (17.0, FontWeight::NORMAL, INK_DIM, 0.0, 12.0),
@@ -386,12 +800,20 @@ fn paragraph(p: &Paragraph, zoom: f32, in_cell: bool) -> AnyElement {
     let size = size * zoom;
     // Table cells are tight: no space above or below their paragraphs.
     let (before, after) = if in_cell { (0.0, 0.0) } else { (before, after) };
-    let text = styled(p);
-    let body = div()
+    let (text, highlights) = styled(p);
+    let (text, holder) = marker.piece(key, text, highlights);
+    let body = holder
         .flex_1()
         .min_w_0()
-        .when(p.align == Align::Center, |d| d.text_center())
-        .when(p.align == Align::End, |d| d.text_right())
+        // A short line is centered (or put right) as a whole, not only
+        // its letters: GPUI draws a selection only across the line's own
+        // width from the left.
+        .when(p.align == Align::Center, |d| {
+            d.flex().justify_center().text_center()
+        })
+        .when(p.align == Align::End, |d| {
+            d.flex().justify_end().text_right()
+        })
         .child(text);
     div()
         .w_full()
@@ -417,9 +839,9 @@ fn paragraph(p: &Paragraph, zoom: f32, in_cell: bool) -> AnyElement {
         .into_any_element()
 }
 
-/// A paragraph's text with its bold, italic, underlined and struck-through
+/// A paragraph's text and its bold, italic, underlined and struck-through
 /// runs.
-fn styled(p: &Paragraph) -> StyledText {
+fn styled(p: &Paragraph) -> (SharedString, Vec<(Range<usize>, HighlightStyle)>) {
     let mut text = String::new();
     let mut highlights = Vec::new();
     for run in &p.runs {
@@ -443,12 +865,13 @@ fn styled(p: &Paragraph) -> StyledText {
             highlights.push((start..text.len(), style));
         }
     }
-    StyledText::new(SharedString::from(text)).with_highlights(highlights)
+    (SharedString::from(text), highlights)
 }
 
 /// A table: its cells side by side with thin rules, each cell its
-/// paragraphs.
-fn table(rows: &[Vec<Vec<Paragraph>>], zoom: f32) -> AnyElement {
+/// paragraphs, the pieces of `part` in order.
+fn table(rows: &[Vec<Vec<Paragraph>>], zoom: f32, marker: &Marker, part: usize) -> AnyElement {
+    let mut piece = 0;
     div()
         .w_full()
         .my(px(8.0 * zoom))
@@ -474,7 +897,9 @@ fn table(rows: &[Vec<Vec<Paragraph>>], zoom: f32) -> AnyElement {
                             if matches!(p.style, Style::Title | Style::Subtitle) {
                                 p.style = Style::Heading(3);
                             }
-                            paragraph(&p, zoom * 0.95, true)
+                            let key = Key::new(part, piece);
+                            piece += 1;
+                            paragraph(&p, zoom * 0.95, true, marker, key)
                         }))
                 }))
         }))
@@ -494,6 +919,33 @@ mod tests {
         assert!(!numeric("Total"));
         assert!(!numeric(""));
         assert!(!numeric("2024-01-05"));
+    }
+
+    #[test]
+    fn cells_copy_tab_separated() {
+        let book = Workbook {
+            sheets: vec![Sheet {
+                name: "S".into(),
+                origin: (0, 0),
+                rows: vec![
+                    vec!["Name".into(), "Note".into(), "Sum".into()],
+                    vec!["Ann".into(), "two\nlines".into(), "3".into()],
+                    vec!["Bo \"B\"".into()],
+                ],
+                columns: 3,
+                cut: false,
+            }],
+        };
+        let mut view = SheetView::new(book);
+        assert_eq!(view.copied(), "");
+        // Selected upward and leftward from the bottom right.
+        view.cells = Some(((2, 2), (0, 0)));
+        assert_eq!(
+            view.copied(),
+            "Name\tNote\tSum\nAnn\t\"two\nlines\"\t3\n\"Bo \"\"B\"\"\"\t\t"
+        );
+        view.cells = Some(((1, 2), (1, 2)));
+        assert_eq!(view.copied(), "3");
     }
 
     #[test]

@@ -14,6 +14,7 @@ use gpui::{
     AnyElement, Context, FocusHandle, FontWeight, ImageSource, KeyDownEvent, MouseButton,
     ObjectFit, RenderImage, Task, Window, div, img, prelude::*, rgba,
 };
+use katna_i18n::tr;
 use katna_preview::image::codecs::webp::WebPDecoder;
 use katna_preview::image::{AnimationDecoder, Frame};
 use katna_ui::motion::{self, Spring, lerp};
@@ -211,23 +212,29 @@ impl MailWindow {
         let width = if phone { vw } else { WIDTH.min(vw - 48.0) };
         // Room for the animations: the card less its padding.
         let inner = width - 48.0;
-        // The first highlight's animation spans the top of the card.
+        // The first highlight's animation spans the top of the card, with
+        // the card's top corners, and stays put while the highlights scroll
+        // (scrolled under the card's corners, it would show square ones).
+        let corner = if phone { 0.0 } else { PANEL_RADIUS };
         let hero = dialog
             .highlights
             .first()
             .and_then(|h| Some((h.name, h.animation.as_ref()?.for_theme(dialog.dark))))
             .map(|(id, bytes)| {
                 let (w, h) = size(bytes, width);
+                // A narrower animation sits clear of the corners.
+                let r = if w + 0.5 >= width { corner } else { 0.0 };
                 div()
                     .flex_none()
                     .w_full()
                     .h(px(h))
                     .flex()
                     .justify_center()
+                    .rounded_t(px(corner))
                     .bg(rgba(th.backdrop))
                     .border_b_1()
                     .border_color(rgba(th.divider))
-                    .child(animation(id, dialog.animations.get(id), w, h))
+                    .child(animation(id, dialog.animations.get(id), (w, h), (r, 0.0)))
             });
 
         let has_hero = hero.is_some();
@@ -262,7 +269,7 @@ impl MailWindow {
                         div()
                             .text_size(px(22.0))
                             .line_height(px(30.0))
-                            .child("What\u{2019}s new in Katna Mail"),
+                            .child(tr!("whats-new-title")),
                     )
                     .child(
                         div()
@@ -270,9 +277,9 @@ impl MailWindow {
                             .line_height(px(18.0))
                             .text_color(rgba(th.text_dim))
                             .child(if dialog.updated {
-                                format!("Updated to version {}", whats_new::VERSION)
+                                tr!("whats-new-updated", version = whats_new::VERSION)
                             } else {
-                                format!("Version {}", whats_new::VERSION)
+                                tr!("whats-new-version", version = whats_new::VERSION)
                             }),
                     ),
             );
@@ -294,8 +301,9 @@ impl MailWindow {
                     .child(animation(
                         highlight.name,
                         dialog.animations.get(highlight.name),
-                        w,
-                        h,
+                        (w, h),
+                        // Inside the 12 px frame and its 1 px border.
+                        (11.0, 11.0),
                     ))
             });
             div()
@@ -328,14 +336,14 @@ impl MailWindow {
                                         .text_size(px(15.0))
                                         .line_height(px(22.0))
                                         .font_weight(FontWeight::MEDIUM)
-                                        .child(highlight.title),
+                                        .child(highlight.title()),
                                 )
                                 .child(
                                     div()
                                         .text_size(px(14.0))
                                         .line_height(px(21.0))
                                         .text_color(rgba(th.text_dim))
-                                        .child(highlight.text),
+                                        .child(highlight.text()),
                                 ),
                         ),
                 )
@@ -346,10 +354,7 @@ impl MailWindow {
                 .px(px(24.0))
                 .text_size(px(14.0))
                 .text_color(rgba(th.text_dim))
-                .child(match dialog.more {
-                    1 => "And one more in the full changelog.".to_owned(),
-                    n => format!("And {n} more in the full changelog."),
-                })
+                .child(tr!("whats-new-more", count = dialog.more))
         });
         let body = div()
             .id("whats-new-body")
@@ -359,7 +364,6 @@ impl MailWindow {
             .pb(px(8.0))
             .flex()
             .flex_col()
-            .children(hero)
             .child(header)
             .children(items)
             .children(more);
@@ -375,14 +379,14 @@ impl MailWindow {
             .items_center()
             .gap(px(8.0))
             .child(
-                text_button("whats-new-changelog", "Full changelog", th)
+                text_button("whats-new-changelog", tr!("whats-new-changelog"), th)
                     .gap(px(8.0))
                     .child(icon("open-external", th.accent, 18.0))
                     .on_click(move |_, _, cx| cx.open_url(&url)),
             )
             .child(div().flex_1())
             .child(
-                filled_button("whats-new-close", "Got it", th)
+                filled_button("whats-new-close", tr!("whats-new-got-it"), th)
                     .on_click(cx.listener(|this, _, window, cx| this.close_whats_new(window, cx))),
             );
 
@@ -403,6 +407,7 @@ impl MailWindow {
             .bg(rgba(th.surface))
             .text_color(rgba(th.text))
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .children(hero)
             .child(body)
             .child(footer);
         Some(
@@ -444,8 +449,15 @@ impl MailWindow {
     }
 }
 
-/// An animation at `w` by `h`, or its room while it is decoded.
-fn animation(name: &'static str, image: Option<&Arc<RenderImage>>, w: f32, h: f32) -> gpui::Div {
+/// An animation at `w` by `h`, or its room while it is decoded, with its
+/// top and bottom corners rounded by `top` and `bottom`: GPUI clips a child
+/// to a square, so the image rounds itself to fit a rounded frame.
+fn animation(
+    name: &'static str,
+    image: Option<&Arc<RenderImage>>,
+    (w, h): (f32, f32),
+    (top, bottom): (f32, f32),
+) -> gpui::Div {
     div()
         .flex_none()
         .w(px(w))
@@ -457,6 +469,8 @@ fn animation(name: &'static str, image: Option<&Arc<RenderImage>>, w: f32, h: f3
                 .id(name)
                 .size_full()
                 .object_fit(ObjectFit::Contain)
+                .rounded_t(px(top))
+                .rounded_b(px(bottom))
         }))
 }
 
@@ -507,11 +521,11 @@ mod tests {
                 continue;
             };
             for bytes in [animation.light, animation.dark] {
-                let image = decode(bytes).expect(highlight.title);
+                let image = decode(bytes).expect(highlight.name);
                 assert!(
                     image.frame_count() > 1,
                     "{} is not animated",
-                    highlight.title
+                    highlight.name
                 );
                 assert_eq!(webp_size(bytes), webp_size(animation.light));
             }

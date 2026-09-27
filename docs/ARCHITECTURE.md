@@ -459,6 +459,10 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
     (`Store::trash_folder`, which the app also reads: a delete for good
     says "deleted forever" and offers no Undo). Archive moves to
     `\Archive` (or Gmail's `\All`).
+  - A move out of a folder the message was only just moved into (Undo
+    right after Archive) queues with no UID; when the earlier move runs,
+    its `COPYUID` answer is handed to the waiting one, so the pair
+    replays in order even offline.
   - A refused operation is retried after 60 s. After three refusals it is
     marked failed (kept for inspection) and undone locally: moves at once,
     flags by forgetting the folder's HIGHESTMODSEQ so the next sync reads
@@ -733,6 +737,15 @@ To, Cc and Bcc suggest addresses as the user types, like Gmail.
 - **Speed.** Candidates come from an index by first letter, and the marks
   that bold the matched text are worked out for the shown rows only: under
   6 ms a key on 100,000 contacts in a release build.
+- **Chips.** A finished recipient becomes a chip (comma, semicolon, Enter,
+  Tab, leaving the field, picking a suggestion, or pasting several). A chip
+  shows the name, or the address when there is none; a named chip has an
+  arrow that opens a card with the address, and a double-click puts it back
+  into the field for editing, in place. Anything `outgoing::valid_email`
+  rejects stays as a red chip, and Send, Send and archive and scheduled send
+  stop with a "Check the address" dialog until it is fixed or removed. The
+  chips live in `Compose.chips` (`compose/chips.rs`); drafts and sending
+  still read the fields as one "a, b, c" text.
 
 ## 8. Organizations (`katna-org`)
 
@@ -798,7 +811,8 @@ the same matching on event attendees ("Meeting with Acme").
 
 | Environment | How it starts |
 |---|---|
-| systemd | `katna-daemon.service` (systemd user unit), started at login when "run in background" is on. |
+| Any desktop | "Start Katna at login" (Settings > General > Desktop, on by default): an XDG autostart entry running `katna-mail --background`, which starts the daemon by D-Bus activation and exits without a window; "Open the window too" drops the flag. Turning it off also disables the systemd unit. |
+| systemd | `katna-daemon.service` (systemd user unit); D-Bus activation goes through it. Enabling it by hand starts the daemon at login without Katna Mail. |
 | Any session | **D-Bus activation** (`in.invenia.katna.Daemon.service`): starts on demand when an app, KRunner, the clock plugin or a notification action calls it. |
 | No systemd | XDG autostart `.desktop` file. |
 | Flatpak | **Background portal** (`RequestBackground` with autostart). KDE and GNOME both implement it; GNOME lists it under "Background Apps". |
@@ -1057,6 +1071,24 @@ GPUI global):
   one plain box shadow that follows its rounded corners. Where the
   window's surface cannot be copied from, panels stay opaque.
 
+**Window state.** The mail window opens as it closed: its size, maximized
+state and place (`katna_chrome::placement`, saved in
+`$XDG_STATE_HOME/katna/mail-window.toml` when the app quits). The state
+belongs to one run of the Katna service, named by the daemon's process id
+and start time (which survive its re-exec after an update); once the
+service quits (the tray's Quit, logging out), the next start opens the
+window at its default size and place.
+
+- Wayland does not let a window place itself. Katna's copy of GPUI
+  (`vendor/gpui-pre-linux`) joins the window to an
+  `xdg-session-management-v1` session (KWin from Plasma 6.7), and the
+  compositor puts it back where it was; a fresh start removes the old
+  session and begins a new one. Without the protocol only the size and
+  maximized state come back.
+- X11: the window opens exactly at its old position (user-specified
+  position, static gravity). KWin adds the CSD shadow margin itself on X11,
+  so the saved frame is asked for as is.
+
 ### 13.2 Look and feel
 
 - One Katna design language on a **token layer** (radius, spacing, button
@@ -1133,11 +1165,12 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   in Gmail, on a desktop the search box starts where the mail list does
   with the folders open, and stays there when they fold (it does not
   follow the list). It moves left only when the window is too narrow for
-  that place, and then always sits one gap after Compose, whose width is
-  set for this (whole or folded to its pencil; whole, it is measured from
-  its word in the desktop's font, so the word never clips). The top bar uses that one
-  16 px gap between all its items: menu button, Compose, search box,
-  Settings and account picture. `katna_chrome::Bar` gives the bar a center slot,
+  that place, and then always sits one gap after the app's name, whose
+  width is set for this: the Katna mark, "Katna" and the longest app name,
+  measured in the desktop's font (a narrow tablet, under 760 px, folds the
+  words away and keeps the mark). The top bar uses that one
+  16 px gap between all its items: menu button, the app's name, search
+  box, Settings and account picture. `katna_chrome::Bar` gives the bar a center slot,
   height and background for this.
 - **Navigation.** The folders as full pills, rounded at both ends and
   set 8 px in from the pane's edge (the drawers' lines too). The menu
@@ -1181,6 +1214,14 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   `uniform_list`. Hovering a line shows Archive, Delete, Mark as
   read/unread and Pin in place of the date. Star, importance and pin
   changes show a snackbar with Undo.
+- **Undo.** Every change to mail (archive, delete to Trash, move, spam,
+  read/unread, star, importance, pin, send while its undo delay runs)
+  shows a snackbar with Undo, and each window keeps its last 50 as a
+  history that Ctrl+Z (and the set's own key, like Z) walks back through
+  after the snackbar is gone. Moves out of search results or a
+  conversation window go back per message to the folder each left.
+  Deletes for good and mail already sent cannot be undone; Ctrl+Z says so.
+  In text fields Ctrl+Z is about the text.
 - **Pins.** Pin to top (hover button, More and right-click menus) keeps a
   conversation, or a single message in message view, above the rest of
   every folder it is listed in, newest pin first, with a pin next to the
@@ -1206,17 +1247,22 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   `MailChanged` itself. Archiving, deleting or moving the conversation
   closes it, and the main window shows the snackbar with Undo.
 - **Printing.** "Print all" on the open conversation's toolbar (and its
-  More menu) prints every message: the desktop's print dialog (XDG print
-  portal) asks for printer and paper first, then `katna_render::print`
-  lays the conversation out as a PDF on that paper (krilla, text shaped
-  and measured with rustybuzz, in the desktop's UI font found with
-  fontdb) and hands it back to the dialog. The text of each message is
-  printed, with sender, date, recipients and attachment names; pictures
-  and HTML styling are not, and there is no font fallback for scripts the
-  UI font lacks. Without a print portal the PDF opens in the default app.
-  PDFs are written to `$XDG_RUNTIME_DIR/katna/print` and removed after an
-  hour. Print and In new window sit right of the actions and move to the
-  More menu when the reading pane is under 600 px.
+  More menu) prints every message. Katna's own print preview opens first
+  (`window/print_preview.rs`): `katna_render::print` lays the conversation
+  out as a PDF (krilla, text shaped and measured with rustybuzz, in the
+  desktop's UI font found with fontdb) on A4, or Letter where the locale
+  uses it (`LC_PAPER`), and hayro (`katna_preview::pdf`) draws the pages;
+  an A4 or Letter switch lays them out again. Print hands off to the
+  desktop's print dialog (XDG print portal), which starts on the previewed
+  paper; if a different paper is picked there, the pages are laid out
+  again on it. The text of each message is printed, with sender, date,
+  recipients and attachment names; pictures and HTML styling are not, and
+  there is no font fallback for scripts the UI font lacks. Without a print
+  portal the PDF opens in the default app. PDFs are written to
+  `$XDG_RUNTIME_DIR/katna/print` and removed after an hour. Print and In
+  new window sit right of the actions and move to the More menu when the
+  reading pane is under 600 px. The More menus open right under their
+  button, with an icon beside each item.
 - **Reading options.** Settings > General > Reading, taken from
   Mailspring: *Newest message first* shows a conversation's latest reply on
   top, with a reply written above it (`mail.newest_first`); *Show full
@@ -1303,10 +1349,11 @@ Gemini or confidential mode):
   pointer. Mail you send keeps its own font size.
 - **Settings page.** "See all settings", the rail's gear or `?` open it in
   place of the list (`window/settings_page.rs`). Its tabs, in the owner's
-  order: General (conversation view, reading order and headers, when mail
+  order: General (language, 12- or 24-hour time, conversation view,
+  reading order and headers, when mail
   is marked read, what the reply button does, images from the web, undo
   send, offline mail,
-  new-mail notifications and their sound, opening at login, tray and
+  new-mail notifications and their sound, starting at login, tray and
   badge), Inbox, Accounts, Subscription, Appearance (reading pane,
   density, scaling, theme, desktop colors, app names, sender pictures,
   Important markers, message width, dark colors for HTML mail, attachment
@@ -1324,9 +1371,12 @@ Gemini or confidential mode):
   about 40 characters) sits behind an (i) button beside the name: its
   tooltip on hover, and shown under the name after a click, Enter or a tap.
   The General, Appearance and Compose rows added after comparing with
-  Mailspring's settings each change real behaviour: "Open Katna Mail at
+  Mailspring's settings each change real behaviour: "Start Katna at
   login" is a desktop entry in `$XDG_CONFIG_HOME/autostart` (the file is
-  the setting, so the desktop's own autostart settings agree with it);
+  the setting, so the desktop's own autostart settings agree with it),
+  written once by default on the first run (`general.start_at_login_set`
+  keeps an explicit off off) and starting only the service unless "Open
+  the Katna Mail window too" is on;
   marking read after 1 or 3 seconds only happens if the conversation is
   still open then; with "Always show images" off, each message's images
   still wait to be asked for; and the new-mail sound is the notification's
@@ -1378,6 +1428,50 @@ Gemini or confidential mode):
   user signed their newest message in the conversation with, found by
   comparing the text after its `-- ` line (`signatures.rs`); otherwise the
   reply default. The single signature of older versions becomes the first.
+- **Grammar.** Harper (`harper-core`, Apache-2.0) checks English drafts,
+  text and subject, on this computer as you write (`grammar.rs`), on by default, under
+  Settings → Compose → Grammar. Paragraphs are checked off the UI thread
+  half a second after typing pauses, cached by their text; paragraphs
+  that do not look English, quotes and the signature are skipped, and
+  Harper's own spelling rule is off (spelling is Hunspell's). Mistakes
+  get a straight amber underline, apart from spelling's red wave; a right
+  click shows the message, up to four fixes and Ignore (for that draft).
+  The dialect follows the spelling language (British, Canadian,
+  Australian, Indian, else American). Harper's dictionary takes about
+  135 MB and stays loaded for the life of a process once any rule touches
+  it, so Harper runs in a helper process: the app binary started with
+  `--grammar-helper <language>`, one paragraph in and its mistakes out
+  as a JSON line each way over its pipes. It starts when a message opens
+  and is stopped when the last one closes (or grammar checking is turned
+  off), so the app itself stays small. The app binary grows about 10 MB.
+  Other languages are for Harper upstream.
+- **Writing suggestions.** While the cursor is at the end of a paragraph
+  the user writes (not a quote or the signature), the likely rest of the
+  phrase shows in grey after it, laid out and wrapped like text but not
+  in the document; Tab (or Right) takes it, Escape or typing on drops it
+  (`suggest.rs`, `RichEditor::set_suggest`). It is a table of which word
+  followed which one or two words, learned in the background on the
+  first message written from the newest 3,000 sent messages (the user's
+  own text only: quotes, "On … wrote:" and the signature are cut) plus
+  about forty phrases common in mail. A reply adds a second table from
+  the conversation it answers, where a phrase seen once counts, and that
+  conversation's names and longer words complete as they are typed
+  ("Thursday at" → "3pm" when the mail asked for Thursday at 3pm). A
+  word is offered only when it followed its context at least twice
+  (counting both tables) and at least 60% of the time, up to five words,
+  so it stays quiet when unsure and in languages it has not seen.
+  Looking up is a few hash lookups per keystroke on the UI thread;
+  nothing leaves the computer. On by default, Settings → Compose →
+  Writing suggestions.
+  - *Planned, second layer:* whole sentences that answer the mail
+    ("Thursday works for me, see you then") need a language model. It
+    would be an optional small on-device model, downloaded only when the
+    user turns it on, run by a helper process (`katna-suggest`) that
+    starts while a message is being written and exits after, fed the
+    conversation and the text so far, and answering after a pause in
+    typing; the phrase tables stay the instant answer. The app and the
+    daemon never load the model, so their size and memory budgets hold.
+    No cloud service.
 - **Sending account, Send and archive.** Settings → Compose picks the
   account new mail goes out from: the one whose mail is open (default) or
   always the same address (`sending.send_from`). Replies and forwards go
@@ -1386,6 +1480,15 @@ Gemini or confidential mode):
   the conversation (`sending.send_and_archive`); the menu beside Send
   offers the other way. The archive happens once the message is queued,
   and Undo on "Sent and archived" brings the conversation back as well.
+- **Send checks.** Before any send (Send, Send and archive, schedule
+  send) the compose window asks, as webmail does
+  (`window/compose/checks.rs`): when the subject or the user's own words
+  (not the quoted or forwarded message, not the signature) speak of an
+  attachment ("attached", "attachment", "enclosed", "PFA") and no file or
+  picture is attached, "Did you mean to attach files?" with Attach a
+  file or Send anyway; then, for an empty subject, "Send without a
+  subject?" with Add subject (the cursor goes to Subject) or Send
+  anyway. English words only for now.
 - **Keyboard shortcuts.** Every action has one (`window/keymap.rs`), with
   Gmail's keys as defaults: j/k, o, u, c, r, a, f, e, #, !, v, s, x,
   Shift+I/U, `* a`, `* n`, z, `g i`/`g s`/`g t`/`g d`/`g a`, /, ?, and Ctrl
@@ -1412,7 +1515,11 @@ Gemini or confidential mode):
   photo, calendar event (says it comes with Katna Calendar), signature,
   More (default to full screen, label (coming soon), plain text mode,
   print, check spelling) and discard. A right-click gives spelling
-  suggestions, clipboard, link and table actions. Mail waiting to be sent
+  suggestions, clipboard, link and table actions. Resting the pointer
+  on an underlined word (600 ms) or a left click on it shows just its
+  fixes in a card under it, in the text and the subject; the card closes
+  when the pointer leaves the word and the card, on a click outside, on
+  Esc or when typing resumes. Mail waiting to be sent
   later gets a *Scheduled* row in the folder list after Sent, which opens
   a list with Cancel send; a cancelled message opens again as written.
   The expand button in the compose title bar moves the message into a
@@ -1508,11 +1615,20 @@ Gemini or confidential mode):
   Thunderbird) and that LLMs made it possible. On a phone it fills the
   window.
 - **After the first real install.** The owner's first run on KDE brought
-  these changes. Compose sits in the top bar in place of the app name, so
-  it shows whether the folders are open or not; the account picture moved
+  these changes. The account picture moved
   to the top right, beside the settings gear, with its card below it; the
-  search box is 40 px tall, and Compose beside it is as tall (a 40 px
-  square when a narrow tablet folds it to its pencil). The menu button (a panel icon, not a
+  search box is 40 px tall. Compose first sat in the top bar in place of
+  the app name; the owner later moved it (2026-09-27): it is a 56 px
+  pill at the top of the folders, under the account's name when there is
+  one, and while the folders are folded (and always on a tablet or on
+  another app's page) it is a 56 px square at the top of the app rail.
+  It slides between the two as the folders open or fold, while the
+  rail's apps move down to make room, and resting on it in the rail
+  opens the folders over the list, as resting on Mail does (Escape or
+  leaving closes them). The top bar shows the Katna mark and "Katna
+  Mail" in its place, or Katna Calendar, Contacts, Tasks, Notes or
+  Feeds; switching apps rolls the second word, the old one down and out
+  and the new one down into its place. The menu button (a panel icon, not a
   hamburger: its left part is filled while the folders show and fades to
   an outline as they fold, following the drawer on a tablet or phone;
   "Hide folders" / "Show folders") folds the folders away completely; resting on Mail in the
@@ -1589,8 +1705,9 @@ desktop's own app stays one click away.
 - **Cards.** Under each open message, one card per attachment (the
   webmail layout): a thumbnail (pictures, and the top of a PDF's first
   page), a glance drawn small on a white page (the top-left cells of a
-  spreadsheet or CSV, the first lines of a text file or document;
-  `katna_preview::glance`, skipped above 20 MB), or a colored type badge,
+  spreadsheet or CSV, the first lines of a text file or document, the
+  first slide's text centered; `katna_preview::glance`, skipped above
+  20 MB), or a colored type badge,
   and the file name. Hovering shows the name, the size and a Save button
   on frosted glass; "Save all" saves every attachment to a folder.
   Thumbnails are made in the background from the stored raw message and
@@ -1624,15 +1741,52 @@ desktop's own app stays one click away.
     numbered and bulleted lists (Word numbering and list styles, ODF list
     styles), tables, alignment and bold/italic/underline/strike-through.
     Pictures, headers, footers, notes, comments and text boxes are left
-    out. Only paragraphs on screen are laid out. Old Word (.doc), RTF and
-    slides have no preview.
-  - Anything else shows "No preview available" with Save and "Open
-    with…".
+    out. Only paragraphs on screen are laid out. Word 97–2003 (.doc) is
+    read into the same model (`katna_preview::word`): the OLE compound file
+    through `cfb` (MIT), then the FIB, the piece table (UTF-16 or
+    Windows-1252 text), the character and paragraph property pages, the
+    style sheet (built-in heading, title and subtitle styles) and the list
+    tables, giving the same headings, lists, tables, alignment and looks;
+    fields show their result, hidden text is dropped, and encrypted or
+    Word 6/95 files are not read. RTF has no preview.
+  - **Slides:** PowerPoint (pptx, ppt) and OpenDocument (odp),
+    `katna_preview::slides`, shown as text: each slide is its own white
+    page under a "Slide N" label, title first, then its text (bulleted
+    body placeholders, numbered lists), and its tables. pptx follows the
+    presentation's slide list; ppt follows the persist directory from the
+    last edit to the document's slide list and reads each slide's text
+    atoms, falling back to the texts kept in the slide list; odp reads
+    `draw:page`s. Pictures, charts, layout and speaker notes are left out.
+    A slide without a title placeholder takes a short first line as its
+    title.
+  - **Selecting and copying.** Text files, documents, slides and PDFs
+    select like message text (§ "Message text can be selected" above,
+    `window/select.rs`, shared with the reader): drag, double- and
+    triple-click, Shift+click, Ctrl+A, Ctrl+C and a right-click Copy,
+    also to the primary selection. Copying and Ctrl+A reach text scrolled
+    out of sight. A PDF's text comes from the page itself: hayro reads each
+    page with a device that keeps every glyph with a known character
+    (ToUnicode, glyph names) and where it is drawn, and glyphs on one
+    baseline become a line (`katna_preview::pdf::TextLine`); pages are read
+    in the background, eight at a time, up to 2,000. The selection is drawn
+    over the page's picture. Scanned PDFs have no text to select.
+    Spreadsheets select cells instead: click, drag or Shift+click for a
+    range, a column letter or row number for all of it; Ctrl+C copies
+    them tab-separated (cells with tabs, line breaks or quotes quoted), so
+    they paste as cells into other spreadsheets.
+  - Anything else opens straight in the desktop's default app, and so
+    does a file of a previewable type that turns out unreadable (damaged,
+    encrypted, Word 6/95; the viewer closes and hands it over, or asks
+    which app when Default apps says Ask). Files that could run a program
+    never do: they show "No preview available" with Save only. Paging to
+    such a file with the viewer's arrows shows that page with "Open with…"
+    rather than launching an app.
 - **Default apps** (Settings → Default apps, `[mail.open]` in
-  `config.toml`): for PDFs, pictures, text, spreadsheets and documents,
+  `config.toml`): for PDFs, pictures, text, spreadsheets and documents
+  (slides included),
   clicking a card opens Katna Mail's viewer (the default), the desktop's
   default app for the type, or asks which app each time. Files without a
-  preview always open in the viewer. Which app is the desktop's default
+  preview always open in the desktop's default app (see above). Which app is the desktop's default
   is set in the desktop's own settings.
 - **Save** asks where through the desktop's file chooser (portal),
   starting in the download folder (`XDG_DOWNLOAD_DIR`); without a portal
@@ -1674,7 +1828,7 @@ one of three layouts by the width inside the window frame
 | Layout  | Width         | What changes |
 |---------|---------------|--------------|
 | Desktop | 1080 px and up | §13.6 as is. |
-| Tablet  | 600–1080 px   | The folders fold into a drawer the menu button opens over a dimmed list; Compose stays in the top bar beside the menu button (the owner's choice), folding down to its pencil below 760 px; the reading pane (three-pane setting) stays beside the list from 840 px, and narrower the conversation slides in over the list. |
+| Tablet  | 600–1080 px   | The folders fold into a drawer the menu button opens over a dimmed list; Compose is a square at the top of the app rail, and the top bar shows the Katna mark and the app's name beside the menu button, the name folding away below 760 px; the reading pane (three-pane setting) stays beside the list from 840 px, and narrower the conversation slides in over the list. |
 | Phone   | under 600 px  | No app rail: the apps sit in a bar along the bottom. The search box is a pill across the top bar with the menu button and account picture inside it (settings move to the drawer). The list is edge to edge, three lines a message with the sender's picture, which ticks the line when tapped; the inbox tabs move to the drawer. Compose floats at the bottom right; it folds to its pencil as the list scrolls down and grows back after a few steps up (or at the top). The search row and the list toolbar slide up out of sight once the list has scrolled past them, and come back as soon as it turns back up (or at the top); the list keeps still on screen while they move. An open conversation slides in over the list and the bottom bar sinks away; its messages use the room under the sender's picture, from the picture's left edge, and Reply, Reply all and Forward share the width equally. Composing takes a sheet over the whole window. Quick settings and the Settings page each fill the window between the top bar and the bottom bar, with no Compose button over them; the Settings page's section tabs stay on one line that scrolls sideways. |
 
 Settings rows put the name beside the controls and wrap on width alone,
@@ -1737,9 +1891,11 @@ Arabic, Persian, Hebrew and Urdu read right to left and mirror the whole
 layout.
 
 **Tooling: Fluent.** Strings live in Fluent files (`fluent-bundle`,
-Mozilla's Project Fluent), one per binary per language:
-`i18n/<tag>/katna-mail.ftl`, `katna-ui.ftl` (shared widgets),
-`katna-daemon.ftl` (notifications, tray, dock menu). Chosen over gettext
+Mozilla's Project Fluent), one folder per binary per language with one
+file per area, so changes made side by side add lines to different files:
+`i18n/<tag>/katna-mail/<area>.ftl` (`list.ftl`, `reader.ftl`,
+`settings.ftl`, …), `katna-ui.ftl` (shared widgets, one file),
+`katna-daemon/` (notifications, tray, dock menu). Chosen over gettext
 because:
 
 - It is pure Rust with no `libintl`, and small (about 0.3 MB).
@@ -1852,7 +2008,11 @@ length, so month and day names, the order (`27/09/2026`, `9/27/2026`,
 - Folder and label names sort with `icu_collator` in the chosen language.
 
 The daemon does not format dates, so it links only Fluent (its 20 MB
-budget).
+budget): the counts in its notifications and tray tooltip are written in
+Western digits whatever the language. Its text is in
+`i18n/<tag>/katna-daemon/`, embedded by its own build script; it applies
+`general.language` at start and again when Katna Mail asks it to reload
+the settings, rebuilding the tray menu.
 
 **Text shaping and fonts.** The vendored GPUI draws text with
 `cosmic-text`, which shapes every script with `harfrust` (HarfBuzz's
@@ -2096,9 +2256,10 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   (`org.kde.StatusNotifierItem-PID-N`), registered with
   `org.kde.StatusNotifierWatcher` again whenever the watcher restarts.
   Plasma shows it natively; GNOME needs the AppIndicator extension (on by
-  default on Ubuntu). The icon is drawn in code (the app icon's shapes plus
-  a red badge with the count, `99+` above 99), since the protocol takes
-  pixels and an SVG renderer would grow the daemon. Left click raises the
+  default on Ubuntu). The icon is the app icon pre-rendered at each tray
+  size (`crates/katna-platform/icons/`, from `packaging/icons/render.py`)
+  with a red badge drawn in code with the count, `99+` above 99, since the
+  protocol takes pixels and an SVG renderer would grow the daemon. Left click raises the
   app, middle click starts a new message. The right-click menu
   (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
   Quit. Quit closes the app and stops the daemon until the next login or
@@ -2116,6 +2277,15 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   Preferences (right-click on the taskbar icon in Plasma and GNOME) run
   `katna-mail --compose`, `--inbox` and `--settings`. With `--data-dir` the
   app stands alone.
+- **Default mail app**: the desktop file declares
+  `MimeType=x-scheme-handler/mailto;` and `Exec=katna-mail %u`. A `mailto:`
+  link (RFC 6068: to, cc, bcc, subject, body) opens a new message filled
+  in; a running app gets it through `org.freedesktop.Application.Open`.
+  Settings > General > Default mail app shows whether the desktop's
+  `mimeapps.list` names Katna Mail for `x-scheme-handler/mailto` and can
+  set it (`katna_platform::mimeapps`, in the user's `mimeapps.list` and any
+  desktop-specific list that names another app). Plasma and GNOME read
+  these files. Under Flatpak this needs the OpenURI portal instead (later).
 - **KDE global menu**: the app serves its menu bar (File, Edit, View, Go,
   Message, Settings, Help) with `com.canonical.dbusmenu` at
   `/in/invenia/katna/Mail/MenuBar`, built from its GPUI actions and their

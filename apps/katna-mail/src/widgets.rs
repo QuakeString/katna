@@ -9,8 +9,8 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, AnyView, App, Bounds, BoxShadow, Div, ElementId, FocusHandle, FontWeight, Pixels,
-    ScrollHandle, SharedString, Stateful, StyleRefinement, Window, canvas, div, point, prelude::*,
-    rgba, svg,
+    ScrollHandle, SharedString, Stateful, StyleRefinement, Window, canvas, div, img, point,
+    prelude::*, rgba, svg,
 };
 use katna_ui::motion::lerp;
 use katna_ui::px;
@@ -27,6 +27,18 @@ pub fn icon(name: &str, color: u32, size: f32) -> AnyElement {
         .flex_none()
         .text_color(rgba(color))
         .into_any_element()
+}
+
+/// Katna's logo, `size` px square. Below 48 px it takes the logo's small
+/// form, whose card carries only ক, since the whole word can't be read
+/// there (`packaging/icons/src/`).
+pub fn katna_mark(size: f32) -> AnyElement {
+    img(SharedString::from(crate::assets::logo_path(
+        size * katna_ui::scale::scale(),
+    )))
+    .size(px(size))
+    .flex_none()
+    .into_any_element()
 }
 
 /// A tooltip saying `text`, for `.tooltip()`: it shows once the pointer
@@ -437,6 +449,27 @@ pub fn menu_item(id: impl Into<gpui::ElementId>, label: &str, th: &Theme) -> Sta
         .items_center()
         .cursor_pointer()
         .hover(|s| s.bg(rgba(th.hover)))
+        .child(label.to_owned())
+}
+
+/// A [`menu_item`] with an icon before its label.
+pub fn menu_item_icon(
+    id: impl Into<gpui::ElementId>,
+    name: &str,
+    label: &str,
+    th: &Theme,
+) -> Stateful<Div> {
+    div()
+        .id(id)
+        .h(px(36.0))
+        .pl(px(16.0))
+        .pr(px(24.0))
+        .flex()
+        .items_center()
+        .gap(px(16.0))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .child(icon(name, th.text_dim, 20.0))
         .child(label.to_owned())
 }
 

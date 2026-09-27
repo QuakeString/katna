@@ -202,6 +202,27 @@ pub struct General {
     /// The language of the interface, a tag from `i18n/languages.toml`
     /// (`bn`, `en-IN`); empty follows the desktop (§13.10).
     pub language: String,
+    /// 12- or 24-hour times, or as the language writes them.
+    pub clock: Clock,
+    /// Katna Mail has set up starting at login once (on by default). The
+    /// autostart entry is the setting itself; this only stops the default
+    /// from coming back after it was turned off.
+    pub start_at_login_set: bool,
+}
+
+/// How times show ([`General::clock`]).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub enum Clock {
+    /// As the language (its formats) writes them.
+    #[default]
+    #[serde(rename = "language")]
+    Language,
+    /// `2:05 PM`.
+    #[serde(rename = "12-hour")]
+    TwelveHour,
+    /// `14:05`.
+    #[serde(rename = "24-hour")]
+    TwentyFourHour,
 }
 
 impl Default for General {
@@ -211,6 +232,8 @@ impl Default for General {
             show_in_tray: true,
             unread_badge: true,
             language: String::new(),
+            clock: Clock::Language,
+            start_at_login_set: false,
         }
     }
 }
@@ -256,6 +279,11 @@ pub struct Sending {
     pub spell_check: bool,
     /// The dictionary, as `en_US`; empty for the desktop's language.
     pub spell_language: String,
+    /// Grammar mistakes are underlined while writing, in English.
+    pub grammar_check: bool,
+    /// The likely rest of a phrase shows grey ahead of the cursor while
+    /// writing, learned on this computer from the user's sent mail.
+    pub writing_suggestions: bool,
     /// The address new mail is sent from; empty for the account whose
     /// mail is open. Replies go out from the account they answer.
     pub send_from: String,
@@ -276,6 +304,8 @@ impl Default for Sending {
             plain_text: false,
             spell_check: true,
             spell_language: String::new(),
+            grammar_check: true,
+            writing_suggestions: true,
             send_from: String::new(),
             send_and_archive: false,
         }

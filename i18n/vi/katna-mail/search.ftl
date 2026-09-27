@@ -1,0 +1,55 @@
+# Katna Mail, Vietnamese (Tiếng Việt).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Search options (the panel from the button at the right of the search box)
+
+search-options = Tùy chọn tìm kiếm
+search-options-close = Đóng
+search-from = Từ
+search-to = Đến
+search-subject = Tiêu đề
+search-has-words = Có các từ
+search-without = Không có
+search-date-within = Ngày trong vòng
+search-has-attachment = Có tệp đính kèm
+search-clear-filter = Xóa bộ lọc
+
+## Search options: "Date within" choices
+
+search-within-any = Bất kỳ lúc nào
+search-within-days = { $count ->
+   *[other] { $count } ngày
+}
+search-within-weeks = { $count ->
+   *[other] { $count } tuần
+}
+search-within-months = { $count ->
+   *[other] { $count } tháng
+}
+search-within-years = { $count ->
+   *[other] { $count } năm
+}
+search-within-custom = Tùy chỉnh
+
+## Search options: custom dates (the calendar popover)
+
+search-dates-on = Vào ngày
+search-dates-before = Trước
+search-dates-since = Từ ngày
+search-dates-between = Trong khoảng
+search-dates-from = Từ
+search-dates-to = Đến
+search-dates-placeholder = YYYY-MM-DD
+search-dates-missing = Chọn một ngày
+search-dates-unreadable = Hãy dùng ngày như 2026-09-01
+search-dates-out-of-range = Ngày đó nằm ngoài phạm vi
+search-dates-chip-before = Trước { $date }
+search-dates-chip-since = Từ { $date }
+search-dates-chip-between = { $first } – { $last }
+search-dates-cancel = Hủy
+search-dates-done = Xong
+search-dates-month-back = Tháng trước
+search-dates-month-on = Tháng sau
+search-dates-year-back = Năm trước
+search-dates-year-on = Năm sau

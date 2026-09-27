@@ -1,0 +1,76 @@
+# Katna Mail, Tamil (தமிழ்).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Compose window: title bar
+
+compose-new-message = புதிய மெசேஜ்
+compose-restore = மீட்டமை
+compose-minimize = சிறிதாக்கு
+compose-exit-full-screen = முழுத்திரையிலிருந்து வெளியேறு
+compose-open-window = புதிய சாளரத்தில் திற
+compose-save-close = சேமித்து மூடு
+compose-back-to-mail = அஞ்சல் சாளரத்துக்குத் திரும்பு
+compose-pop-out-reply = பதிலைத் தனியாகத் திற
+compose-show-trimmed = சுருக்கிய உள்ளடக்கத்தைக் காட்டு
+
+## Recipients and subject
+
+compose-to = பெறுநர்
+compose-cc = Cc
+compose-bcc = Bcc
+compose-recipients = பெறுநர்கள்
+compose-subject = பொருள்
+
+## Sending (the notes at the bottom of the window)
+
+compose-open-elsewhere = திறந்திருக்கும் மெசேஜை முதலில் அனுப்பவும் அல்லது நிராகரிக்கவும்.
+compose-bad-address = “{ $address }” மின்னஞ்சல் முகவரி அல்ல.
+compose-no-recipients = குறைந்தது ஒரு பெறுநரைச் சேர்க்கவும்.
+compose-attachments-too-large = இணைப்புகள் { $size }; அஞ்சல் சர்வர்கள் { $limit } வரை மட்டுமே ஏற்கும்.
+compose-no-account = அஞ்சல் அனுப்ப ஒரு கணக்கைச் சேர்க்கவும்.
+compose-past-time = எதிர்கால நேரத்தைத் தேர்ந்தெடுக்கவும்.
+compose-scheduling = திட்டமிடுகிறது…
+compose-sending = அனுப்புகிறது…
+compose-scheduled = { $when } அன்று அனுப்பத் திட்டமிடப்பட்டது
+compose-sent-archived = அனுப்பிக் காப்பகப்படுத்தப்பட்டது
+compose-sent = மெசேஜ் அனுப்பப்பட்டது
+compose-discarded = வரைவு நிராகரிக்கப்பட்டது
+
+## Attachments
+
+compose-picker-insert = செருகு
+compose-picker-attach = இணை
+compose-file-too-large = { $name } மிகப் பெரியது: ஒரு மெசேஜ் { $limit } வரை மட்டுமே கொண்டு செல்லும்.
+compose-attachment-size = ({ $size })
+compose-remove-attachment = இணைப்பை அகற்று
+compose-drop-files = கோப்புகளை இங்கே விடவும்
+
+## Encryption and signing (the toggles by the recipients)
+
+compose-encrypt = என்க்ரிப்ட் செய்
+compose-encrypted = என்க்ரிப்ட் செய்யப்பட்டது: பெறுநர்கள் மட்டுமே படிக்க முடியும்
+compose-sign = கையொப்பமிடு
+compose-signed = கையொப்பமிடப்பட்டது: இது உங்களிடமிருந்து வந்தது என்று பெறுநர்கள் சரிபார்க்கலாம்
+
+## Spelling
+
+spell-no-dictionary = { $language } க்கான எழுத்துப்பிழை அகராதி நிறுவப்படவில்லை (எ.கா. hunspell-en_us).
+spell-dictionary-error = எழுத்துப்பிழை அகராதி: { $error }
+
+## Grammar checking (the right-click menu on a grammar mistake)
+
+grammar-replace = “{ $words }”
+grammar-add = “{ $words }” ஐச் சேர்
+grammar-remove = “{ $words }” ஐ அகற்று
+grammar-ignore = புறக்கணி
+
+## Send checks (asked before a message goes out)
+
+send-check-attachment-title = கோப்புகளை இணைக்க நினைத்தீர்களா?
+send-check-attachment-text = நீங்கள் ஒரு இணைப்பைப் பற்றி எழுதினீர்கள், ஆனால் எதுவும் இணைக்கப்படவில்லை.
+send-check-attach = கோப்பை இணை
+send-check-subject-title = பொருள் இல்லாமல் அனுப்பவா?
+send-check-subject-text = இந்த மெசேஜுக்குப் பொருள் இல்லை.
+send-check-add-subject = பொருளைச் சேர்
+send-check-send-anyway = பரவாயில்லை, அனுப்பு

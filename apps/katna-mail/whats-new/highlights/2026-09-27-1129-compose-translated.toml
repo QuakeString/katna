@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Writing mail in your language"
+text = """
+The compose window, its formatting bar, schedule send and the signature
+editor now follow the language you pick, and suggested send times use
+its way of writing dates and the 12- or 24-hour clock you chose. The
+theme choice that follows the desktop is now simply called System.
+"""

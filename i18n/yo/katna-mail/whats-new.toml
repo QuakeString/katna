@@ -1,0 +1,352 @@
+# Katna Mail, Yoruba (Yorùbá).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-27-0319-whats-new"]
+title = "Kí ló jẹ́ tuntun, lẹ́yìn gbogbo ìmúdójúìwọ̀n"
+text = """
+Lẹ́yìn ìmúdójúìwọ̀n, Katna Mail máa ń fi ohun tó yí padà hàn lẹ́ẹ̀kan,
+dípò ìrìn-àjò ìkíni káàbọ̀. Ètò kíákíá tún lè ṣí i.
+"""
+
+["2026-09-27-0320-reply-buttons-fit"]
+title = "Àwọn bọ́tìnnì èsì tó máa ń bá àyè mu"
+text = """
+Fèsì, Fèsì sí gbogbo àti Fi ránṣẹ́ síwájú máa ń wà ní ìlà kan: bí
+fèrèsé ṣe ń dín kù, wọ́n máa ń di àmì ní ọ̀kọ̀ọ̀kan. Lórí fóònù, wọ́n
+máa ń pín ìbú náà.
+"""
+
+["2026-09-27-0321-notifications-open-mail"]
+title = "Ìfitónilétí ń ṣí lẹ́tà tirẹ̀"
+text = """
+Tẹ ìfitónilétí lẹ́tà tuntun láti ṣí ìfiránṣẹ́ náà, kódà bí Katna Mail
+bá ti pa. Ìfitónilétí náà tún ní Fèsì sí gbogbo báyìí.
+"""
+
+["2026-09-27-0322-attachment-previews"]
+title = "Àyẹ̀wò ṣáájú fún àfikún púpọ̀ sí i"
+text = """
+Àwọn spreadsheet, CSV, fáìlì ọ̀rọ̀ àti ìwé máa ń fi àyẹ̀wò ṣáájú hàn
+lórí káàdì wọn, ẹ̀yìn olùwò náà sì ti mọ́lẹ̀ sí i.
+"""
+
+["2026-09-27-0323-frosted-menus"]
+title = "Àwọn mẹ́nù dígí tí ó ṣú"
+text = """
+Nígbà tí Ètò > Àdánwò > Ẹ̀yìn tí ó ṣú bá wà ní títàn, àwọn mẹ́nù àti
+àwọn fèrèsé tó ń yọ jáde máa ń dà bí dígí tí ó ṣú.
+"""
+
+["2026-09-27-0346-settings-search"]
+title = "Wá nínú ètò rẹ"
+text = """
+Nígbà tí Ètò bá ṣí, àpótí ìwádìí máa ń rí ètò èyíkéyìí, á sì mú ọ lọ
+síbẹ̀. Ètò ní ààyò púpọ̀ sí i, ní ètò tó ṣe kedere jù, àlàyé gígùn sì
+wà lẹ́yìn bọ́tìnnì (i).
+"""
+
+["2026-09-27-0410-crash-reports-kept"]
+title = "Ìròyìn ìjàlù ń dúró sórí kọ̀ǹpútà rẹ"
+text = """
+Bí Katna Mail tàbí iṣẹ́ ẹ̀yìn rẹ̀ bá jálù, ìbẹ̀rẹ̀ tó kàn á sọ fún ọ,
+pẹ̀lú ìròyìn tí o lè wò tàbí dà kọ fún ìròyìn àṣìṣe. Ètò > Èsì oníṣe
+ń ṣe àkójọ wọn.
+"""
+
+["2026-09-27-0438-calmer-reply"]
+title = "Èsì tó farabalẹ̀ jù"
+text = """
+Fífèsì nínú Pánẹ́ẹ̀lì kíkà máa ń fi Fi ránṣẹ́ àti ìgúnrege sí ìsàlẹ̀,
+á ká lẹ́tà tí a fà yọ sẹ́yìn "...", Ṣí èsì sí ọ̀tọ̀ sì máa ń ṣí èsì
+náà ní fèrèsé tirẹ̀. Lórí fóònù, kíkọ̀wé máa ń gba gbogbo fèrèsé.
+"""
+
+["2026-09-27-0439-mail-in-own-window"]
+title = "Lẹ́tà ní fèrèsé tirẹ̀"
+text = """
+Tẹ Shift+tẹ ìfiránṣẹ́ kan, tẹ ẹ́ ní apá ọ̀tún tàbí lo Ní fèrèsé tuntun
+lórí ọ̀pá irinṣẹ́ kíkà láti ṣí i ní fèrèsé tirẹ̀. Tẹ gbogbo rẹ̀ jáde
+máa ń tẹ gbogbo ìjíròrò náà jáde.
+"""
+
+["2026-09-27-0440-settings-on-phone"]
+title = "Ètò lórí fóònù"
+text = """
+Lórí ojú-ìbojú tóóró, Ètò àti Ètò kíákíá máa ń kún fèrèsé, gbogbo
+mẹ́nù àti fèrèsé tó ń yọ jáde sì máa ń pa dé pẹ̀lú Escape tàbí títẹ
+ìta rẹ̀.
+"""
+
+["2026-09-27-0441-offline-mail"]
+title = "Yan iye lẹ́tà tí yóò wà láìsí ìntánẹ́ẹ̀tì"
+text = """
+Ètò > Gbogbogbò > Lẹ́tà láìsí ìntánẹ́ẹ̀tì máa ń tọ́jú ọ̀sẹ̀ kan, oṣù
+kan, oṣù mẹ́ta, ọdún kan tàbí gbogbo lẹ́tà rẹ sórí kọ̀ǹpútà yìí. Lẹ́tà
+àtijọ́ máa ń gbà sílẹ̀ nígbà tí o bá ṣí i.
+"""
+
+["2026-09-27-0442-folder-pane-button"]
+title = "Bọ́tìnnì pánẹ́ẹ̀lì fódà tuntun"
+text = """
+Bọ́tìnnì tó wà lókè lápá òsì máa ń fi pánẹ́ẹ̀lì fódà hàn tàbí pa á mọ́,
+apá òsì rẹ̀ sì máa ń kún nígbà tí àwọn fódà bá ń hàn.
+"""
+
+["2026-09-27-0443-cards-and-phone-rows"]
+title = "Káàdì tó mọ́ jù, fóònù tó farabalẹ̀ jù"
+text = """
+Àkójọ àti olùkà wà lórí káàdì tí ó ní ìlà tín-ínrín àti òjìji kúkúrú,
+àwọn mẹ́nù máa ń wà nínú fèrèsé nígbà gbogbo, lórí fóònù sì, ìlà
+ìwádìí àti ọ̀pá irinṣẹ́ máa ń yọ̀ kúrò bí o ṣe ń yí lọ.
+"""
+
+["2026-09-27-0444-about-katna"]
+title = "Nípa Katna"
+text = """
+Ìrànlọ́wọ́ > Nípa Katna, tó tún wà nínú Ètò kíákíá, máa ń fi ẹ̀yà hàn,
+àkọsílẹ̀ àyípadà àti gbogbo ibi-ìkówèésí tí a fi kọ́ Katna, pẹ̀lú àwọn
+òǹkọ̀wé àti ìwé-àṣẹ wọn. Ẹ̀yà tó wà ní orí Ètò náà máa ń ṣí i.
+"""
+
+["2026-09-27-0457-settings-tabs-one-line"]
+title = "Àwọn táàbù Ètò ní ìlà kan"
+text = """
+Àwọn táàbù Ètò máa ń wà ní ìlà kan: bí wọn kò bá gba àyè, àwọn ọfà ní
+ẹ̀gbẹ́ àti kẹ̀kẹ́ màúsì máa ń gbé àwọn tó kù wá sójú. Àwọn ìbuwọ́lù àti
+àwọn àwòṣe ń pín táàbù Kíkọ̀wé, àwọn fódà àti òfin lẹ́tà náà sì ń pín
+ọ̀kan.
+"""
+
+["2026-09-27-0515-send-crash-reports"]
+title = "Ràn wá lọ́wọ́ láti mú Katna dára sí i, bí o bá fẹ́"
+text = """
+Katna máa ń béèrè lẹ́ẹ̀kan bóyá kí ó fi ìròyìn ìjàlù ránṣẹ́ láti ṣe
+àtúnṣe ohun tí kò lọ dáadáa. Wọn kì í lọ pẹ̀lú àdírẹ́sì IP rẹ, àwọn
+ìfiránṣẹ́ tàbí àdírẹ́sì ímeèlì rẹ, àti pé tí o bá gbà nìkan ni. Yí i
+padà nígbàkúùgbà nínú Ètò > Èsì oníṣe.
+"""
+
+["2026-09-27-0536-older-attachments-open"]
+title = "Àfikún lẹ́tà àtijọ́ ń ṣí lẹ́sẹ̀kẹsẹ̀"
+text = """
+Títẹ àfikún lẹ́tà àtijọ́ tí kò tíì sí lórí kọ̀ǹpútà yìí máa ń gbà á
+sílẹ̀: àfikún náà máa ń kún bí ó ṣe ń gbà sílẹ̀, lẹ́yìn náà á ṣí.
+"""
+
+["2026-09-27-0556-reading-options"]
+title = "Ka àwọn ìjíròrò lọ́nà tìrẹ"
+text = """
+Ètò > Gbogbogbò > Kíkà lè fi ìfiránṣẹ́ tuntun jùlọ hàn ní àkọ́kọ́, ṣí
+gbogbo àkọlé kíkún ti ìfiránṣẹ́ kọ̀ọ̀kan, kí ó sì pe àwọn olùgbà ní
+orúkọ wọn lódindi dípò orúkọ àkọ́kọ́.
+"""
+
+["2026-09-27-0609-send-and-archive"]
+title = "Fi ránṣẹ́ kí o sì fi pamọ́"
+text = """
+Mẹ́nù tó wà lẹ́gbẹ̀ẹ́ Fi ránṣẹ́ lórí èsì máa ń fi í ránṣẹ́, á sì fi
+ìjíròrò náà pamọ́. Ètò > Kíkọ̀wé lè sọ ìyẹn di ohun tí Fi ránṣẹ́ ń ṣe,
+ó sì lè fi lẹ́tà tuntun ránṣẹ́ láti àkáǹtì kan náà ní gbogbo ìgbà.
+"""
+
+["2026-09-27-0627-scaling"]
+title = "Mú ohun gbogbo tóbi tàbí kéré sí i"
+text = """
+Ètò > Ìrísí > Ìwọ̀n máa ń yí ìwọ̀n gbogbo fèrèsé padà, ọ̀rọ̀, àmì àti
+àyè papọ̀, láti 75% sí 200% lórí ìwọ̀n tábìlì rẹ.
+"""
+
+["2026-09-27-0645-shortcut-sets"]
+title = "Ọ̀nà àbùjá láti áàpù ímeèlì tí o mọ̀"
+text = """
+Ètò > Ọ̀nà àbùjá lè bẹ̀rẹ̀ láti àwọn bọ́tìnnì Gmail, Inbox by Gmail,
+Apple Mail, Outlook tàbí Thunderbird, ó máa ń ṣe àkójọ wọn ní ọ̀wọ̀n
+méjì, Mú àtilẹ̀wá padà sì máa ń dá àwọn àyípadà rẹ padà.
+"""
+
+["2026-09-27-0646-more-settings"]
+title = "Ètò púpọ̀ sí i"
+text = """
+Ṣí Katna Mail nígbà tí o bá wọlé, yan ìgbà tí a máa sàmì sí lẹ́tà bí
+èyí tí a ti kà, jẹ́ kí bọ́tìnnì èsì fèsì sí gbogbo ènìyàn, máa fi àwòrán
+hàn nígbà gbogbo, pa ohùn lẹ́tà tuntun, fi àmì Pàtàkì pamọ́, dín ìlà
+gígùn kù, pa àwọ̀ lẹ́tà mọ́ ní ipò òkùnkùn, pa àyẹ̀wò ṣáájú àfikún,
+kọ̀wé ní ọ̀rọ̀ lásán, yan èdè àkọtọ́ kí o sì rí fáìlì tí o fi pamọ́ nínú
+fódà wọn.
+"""
+
+["2026-09-27-0706-your-language"]
+title = "Èdè rẹ"
+text = """
+Yan ọ̀kan nínú èdè 51 láti bọ́tìnnì àsíá lórí ọ̀pá òkè, tàbí tẹ̀lé ti
+tábìlì rẹ. Ọjọ́ àti nọ́mbà ń tẹ̀lé e báyìí; a óò túmọ̀ ìyókù áàpù náà
+nínú àwọn ìmúdójúìwọ̀n tó ń bọ̀. AI ló kọ àkọ́pọ̀ ìtumọ̀ náà, a sì
+kí àtúnṣe káàbọ̀.
+"""
+
+["2026-09-27-0723-select-and-copy-text"]
+title = "Yan kí o sì dà ọ̀rọ̀ kọ nínú lẹ́tà"
+text = """
+Fà kọjá ìfiránṣẹ́ kan láti yan ọ̀rọ̀ rẹ̀, tẹ lẹ́ẹ̀mejì fún ọ̀rọ̀ kan tàbí
+lẹ́ẹ̀mẹ́ta fún ìpínrọ̀ kan. Ctrl+C tàbí títẹ apá ọ̀tún máa ń dà á kọ,
+Ctrl+A sì máa ń yan gbogbo ìjíròrò náà.
+"""
+
+["2026-09-27-0743-address-suggestions"]
+title = "Àbá àdírẹ́sì bí o ṣe ń tẹ̀"
+text = """
+Sí, Ẹ̀dà àti Ẹ̀dà àṣírí máa ń dábàá àwọn ènìyàn tí o máa ń kọ̀wé sí
+jùlọ bí o ṣe ń tẹ̀, kódà pẹ̀lú àṣìṣe. Yan ọ̀kan pẹ̀lú àwọn bọ́tìnnì ọfà
+àti Enter, Tab tàbí títẹ.
+"""
+
+["2026-09-27-0804-main-window-translated"]
+title = "Fèrèsé àkọ́kọ́ ní èdè rẹ"
+text = """
+Ọ̀pá áàpù, àwọn fódà, àwọn táàbù, àkójọ, àwọn mẹ́nù àti Pánẹ́ẹ̀lì kíkà
+ń tẹ̀lé èdè tí o yàn báyìí. Àwọn fódà tí o ṣe máa ń pa orúkọ wọn mọ́.
+"""
+
+["2026-09-27-0824-24-hour-clock"]
+title = "Aago wákàtí 12 tàbí wákàtí 24"
+text = """
+Ètò > Gbogbogbò > Àkókò máa ń fi àkókò hàn pẹ̀lú aago wákàtí 12 tàbí
+wákàtí 24, bí ó ti wù kí èdè náà kọ ọ́.
+"""
+
+["2026-09-27-0824-settings-translated"]
+title = "Ètò ní èdè rẹ"
+text = """
+Ètò, Ètò kíákíá, àwọn àkáǹtì rẹ àti orúkọ àwọn ọ̀nà àbùjá kíbọ́ọ̀dù ń
+tẹ̀lé èdè tí o yàn báyìí, wíwá nínú Ètò sì máa ń rí àwọn ìlà nípa orúkọ
+wọn tí a túmọ̀.
+"""
+
+["2026-09-27-0825-default-mail-app"]
+title = "Katna gẹ́gẹ́ bí áàpù ímeèlì rẹ"
+text = """
+Ìjápọ̀ ímeèlì nínú àwọn áàpù mìíràn àti lórí ojúlé wẹ́ẹ̀bù lè ṣí
+ìfiránṣẹ́ tuntun nínú Katna Mail, pẹ̀lú àdírẹ́sì, àkọlé àti ọ̀rọ̀ tí a
+ti kọ sínú rẹ̀. Tàn án nínú Ètò > Gbogbogbò > Áàpù ímeèlì àtilẹ̀wá.
+"""
+
+["2026-09-27-0825-old-word-files-and-slides"]
+title = "Fáìlì Word àtijọ́ àti àwọn sílááìdì"
+text = """
+Ìwé Word 97–2003 (.doc) ń ṣí nínú olùwò báyìí pẹ̀lú àwọn àkọlé, àkójọ
+àti tábìlì wọn, àwọn sílááìdì PowerPoint (.pptx, .ppt) àti OpenDocument
+(.odp) sì ń fi ọ̀rọ̀ sílááìdì kọ̀ọ̀kan hàn. Káàdì wọn náà ń fi àwọn ìlà
+àkọ́kọ́ hàn. Àwọn fáìlì tí Katna kò lè fi hàn máa ń ṣí tààrà nínú áàpù
+àtilẹ̀wá rẹ.
+"""
+
+["2026-09-27-0825-opens-where-you-left-it"]
+title = "Ó ń ṣí níbi tí o fi í sí"
+text = """
+Katna Mail máa ń ṣí pẹ̀lú ìwọ̀n àti ibi tó wà nígbà tí o pa á dé, ní
+títóbi jùlọ bí ó bá rí bẹ́ẹ̀. Jíjáde kúrò nínú Katna láti inú tìréè
+máa ń bẹ̀rẹ̀ rẹ̀ lọ́tun. Lórí Wayland, ibi náà máa ń padà níbi tí tábìlì
+bá ṣe àtìlẹ́yìn fún un (Plasma 6.7 àti lẹ́yìn rẹ̀).
+"""
+
+["2026-09-27-0826-grammar-checking"]
+title = "Àyẹ̀wò gírámà"
+text = """
+Nígbà tí o bá ń kọ̀wé ní èdè Gẹ̀ẹ́sì, nínú ọ̀rọ̀ àti àkọlé, àṣìṣe
+gírámà máa ń ní ìlà ìsàlẹ̀ aláwọ̀ amber. Tẹ ọ̀kan ní apá ọ̀tún fún
+àtúnṣe tàbí láti fojú fò ó. Ó ń ṣiṣẹ́ lórí kọ̀ǹpútà rẹ, pẹ̀lú Harper;
+pa á nínú Ètò > Kíkọ̀wé.
+"""
+
+["2026-09-27-0828-check-before-sending"]
+title = "Àyẹ̀wò kí o tó fi ránṣẹ́"
+text = """
+Bí ìfiránṣẹ́ rẹ bá sọ̀rọ̀ nípa àfikún ṣùgbọ́n kò ní ọ̀kankan, tàbí kò ní
+àkọlé, Katna máa ń béèrè kí ó tó fi í ránṣẹ́, fún lẹ́tà tí a ṣètò náà.
+"""
+
+["2026-09-27-0831-writing-suggestions"]
+title = "Àbá kíkọ̀wé"
+text = """
+Bí o ṣe ń kọ̀wé, ìyókù gbólóhùn tó ṣeé ṣe máa ń hàn ní àwọ̀ eérú. Tẹ
+Tab láti gbà á, tàbí máa tẹ̀ síwájú. Katna ń kọ́ àwọn gbólóhùn láti
+inú lẹ́tà tí o ti fi ránṣẹ́ àti ìjíròrò tí o ń fèsì sí, lórí kọ̀ǹpútà
+rẹ; pa á nínú Ètò > Kíkọ̀wé.
+"""
+
+["2026-09-27-1043-dialogs-translated"]
+title = "Àwọn àpótí ìbánisọ̀rọ̀ ní èdè rẹ"
+text = """
+Nípa, Kí ló jẹ́ tuntun, àwọn ojú-ìwé ìkíni káàbọ̀ àti ìrìn-àjò,
+fífi àkáǹtì kún un, àṣàyàn ìwádìí àti ìkìlọ̀ ìjàlù ń tẹ̀lé èdè tí o
+yàn báyìí.
+"""
+
+["2026-09-27-1129-compose-translated"]
+title = "Kíkọ lẹ́tà ní èdè rẹ"
+text = """
+Fèrèsé kíkọ̀wé, ọ̀pá ìgúnrege rẹ̀, ṣíṣètò fífiránṣẹ́ àti olóòtú
+ìbuwọ́lù ń tẹ̀lé èdè tí o yàn báyìí, àwọn àkókò fífiránṣẹ́ tí a dábàá
+sì ń lo ọ̀nà tí èdè náà ń gbà kọ ọjọ́ àti aago wákàtí 12 tàbí 24 tí o
+yàn. Àṣàyàn àkòrí tó ń tẹ̀lé tábìlì ni a ń pè ní Ètò lásán báyìí.
+"""
+
+["2026-09-27-1132-print-preview"]
+title = "Wò ó kí o tó tẹ̀ ẹ́ jáde"
+text = """
+Tẹ̀ ẹ́ jáde ń ṣí àyẹ̀wò ṣáájú àwọn ojú-ìwé ní àkọ́kọ́ báyìí, lórí A4
+tàbí Letter, kí fèrèsé ìtẹ̀wé rẹ tó ṣí. Àwọn mẹ́nù Síi ń ṣí ní ìsàlẹ̀
+bọ́tìnnì wọn gan-an, pẹ̀lú àmì lẹ́gbẹ̀ẹ́ ohun kọ̀ọ̀kan.
+"""
+
+["2026-09-27-1137-formatting-bar-colors"]
+title = "Ọ̀pá ìgúnrege tó ṣe kedere jù"
+text = """
+Ọ̀pá ìgúnrege ní àwọ̀ àfihàn rẹ, àwọn ìgúnrege tó wà ní títàn, bí Nípọn
+tàbí àkójọ, sì ń hàn ní àwọ̀ ìyàn. Nínú èsì, Fi ránṣẹ́ àti àwọn
+irinṣẹ́ rẹ̀ máa ń wà ní ìsàlẹ̀ bí o ṣe ń yí lọ.
+"""
+
+["2026-09-27-1200-notifications-translated"]
+title = "Ìfitónilétí ní èdè rẹ"
+text = """
+Ìfitónilétí lẹ́tà tuntun àti àwọn bọ́tìnnì wọn, pẹ̀lú mẹ́nù àti àlàyé
+kékeré àmì tìréè, ń tẹ̀lé èdè tí o yàn báyìí, wọ́n sì máa ń yí padà ní
+kété tí o bá yí i padà.
+"""
+
+["2026-09-27-1242-whats-new-translated"]
+title = "Ohun tuntun ní èdè rẹ"
+text = """
+Àwọn àkọsílẹ̀ yìí ń hàn báyìí ní èdè tí a ṣètò Katna Mail sí. Àwọn ìtúmọ̀ jẹ́ àkọ́kọ, nítorí náà sọ fún wa ibi tí ọ̀rọ̀ lè dára sí i.
+"""
+
+["2026-09-27-1126-undo-anything"]
+title = "Dá ohunkóhun padà pẹ̀lú Ctrl+Z"
+text = """
+Ṣé o fi nǹkan pamọ́, pa á rẹ́, gbé e lọ sí ibòmíràn tàbí fi ìràwọ̀ sí i
+láìmọ̀? Tẹ Ctrl+Z, tàbí Dá padà lórí àkíyèsí tó wà nísàlẹ̀, láti gbà á
+padà, títí kan láti inú àbájáde ìwádìí àti ìjíròrò tó ṣí sílẹ̀ nínú
+fèrèsé tirẹ̀. Ctrl+Z máa ń bá a lọ láti padà sẹ́yìn nínú ohun tí o ṣe,
+títí kan sísàmì sí bí kíkà tàbí àìkà, ó sì máa ń gba lẹ́tà tí o fi
+ránṣẹ́ padà nígbà tí àkókò fún Dá fífiránṣẹ́ padà ṣì ń lọ.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Ṣẹ̀dà láti inú àfikún"
+text = """
+Báyìí o lè yan ọ̀rọ̀ inú PDF, ìwé, sílááìdì àti fáìlì ọ̀rọ̀ tí o ṣí nínú
+Katna kí o sì ṣẹ̀dà rẹ̀ bí ọ̀rọ̀ inú lẹ́tà. Nínú spreadsheet, fà kọjá
+àwọn sẹ́ẹ̀lì, tàbí tẹ lẹ́tà ọwọ̀n kan tàbí nọ́ńbà ìlà kan, Ctrl+C yóò sì
+ṣẹ̀dà wọn kí wọ́n lè lẹ̀ mọ́ bí sẹ́ẹ̀lì.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Kọ̀wé ti lọ sọ́dọ̀ àwọn fódà"
+text = """
+Kọ̀wé wà lókè àwọn fódà rẹ báyìí. Ká wọn kúrò, yóò sì yọ́ wọ inú ọ̀pá tó
+wà lápá òsì, níbi tí fífi atọ́ka dúró lórí rẹ̀ yóò tún fi àwọn fódà hàn.
+Lókè lápá òsì ń fi Katna Mail hàn, orúkọ náà sì ń yí padà sí Kàlẹ́ńdà,
+Olùbásọ̀rọ̀ àti àwọn yòókù bí o ṣe ń yí áàpù padà.
+"""

@@ -32,6 +32,7 @@ futures-lite.workspace = true
 tracing.workspace = true
 emojis.workspace = true
 spellbook.workspace = true
+harper-core.workspace = true
 mail-parser.workspace = true
 fontdb.workspace = true
 serde_json.workspace = true

@@ -1,0 +1,297 @@
+# Katna Mail, Italian (Italiano).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Mail list: inbox tabs (Gmail's categories, Outlook's and Zoho's)
+
+tab-primary = Principale
+tab-promotions = Promozioni
+tab-social = Social
+tab-updates = Aggiornamenti
+tab-forums = Forum
+tab-focused = Evidenziata
+tab-other = Altra
+tab-inbox = Posta in arrivo
+tab-newsletters = Newsletter
+tab-notifications = Notifiche
+tab-new = { $count ->
+    [one] { $count } nuovo
+    [many] { $count } nuovi
+   *[other] { $count } nuovi
+}
+tab-provider-other = ordinata da Katna
+
+## Mail list: toolbar
+
+list-select = Seleziona
+list-refresh = Aggiorna
+list-more = Altro
+list-mark-read = Segna come già letto
+list-mark-unread = Segna come da leggere
+list-move-to = Sposta in
+list-archive = Archivia
+list-spam = Segnala come spam
+list-delete = Elimina
+list-newer = Più recenti
+list-older = Meno recenti
+list-range = { $first }–{ $last } di { $total }
+list-range-about = { $first }–{ $last } di circa { $total }
+list-results = Risultati per «{ $query }»
+list-results-corrected = Sono mostrati i risultati per «{ $query }»
+list-search-instead = Cerca invece «{ $query }»
+list-files-more = +{ $count }
+
+## Mail list: Select menu (which lines to tick)
+
+list-pick-all = Tutti
+list-pick-none = Nessuno
+list-pick-read = Già letti
+list-pick-unread = Da leggere
+list-pick-starred = Speciali
+list-pick-unstarred = Non speciali
+
+## Mail list: banner when every line is ticked
+
+list-selected-all = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } conversazione selezionata.
+        [many] Tutte le { $count } di conversazioni sono selezionate.
+       *[other] Tutte le { $count } conversazioni sono selezionate.
+    }
+   *[message] { $count ->
+        [one] { $count } messaggio selezionato.
+        [many] Tutti i { $count } di messaggi sono selezionati.
+       *[other] Tutti i { $count } messaggi sono selezionati.
+    }
+}
+list-selected-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } conversazione in { $folder } selezionata.
+        [many] Tutte le { $count } di conversazioni in { $folder } sono selezionate.
+       *[other] Tutte le { $count } conversazioni in { $folder } sono selezionate.
+    }
+   *[message] { $count ->
+        [one] { $count } messaggio in { $folder } selezionato.
+        [many] Tutti i { $count } di messaggi in { $folder } sono selezionati.
+       *[other] Tutti i { $count } messaggi in { $folder } sono selezionati.
+    }
+}
+list-selected-screen = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } conversazione in questa pagina selezionata.
+        [many] Tutte le { $count } di conversazioni in questa pagina sono selezionate.
+       *[other] Tutte le { $count } conversazioni in questa pagina sono selezionate.
+    }
+   *[message] { $count ->
+        [one] { $count } messaggio in questa pagina selezionato.
+        [many] Tutti i { $count } di messaggi in questa pagina sono selezionati.
+       *[other] Tutti i { $count } messaggi in questa pagina sono selezionati.
+    }
+}
+list-select-all = { $kind ->
+    [conversation] { $count ->
+        [one] Seleziona { $count } conversazione
+        [many] Seleziona tutte le { $count } di conversazioni
+       *[other] Seleziona tutte le { $count } conversazioni
+    }
+   *[message] { $count ->
+        [one] Seleziona { $count } messaggio
+        [many] Seleziona tutti i { $count } di messaggi
+       *[other] Seleziona tutti i { $count } messaggi
+    }
+}
+list-select-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] Seleziona { $count } conversazione in { $folder }
+        [many] Seleziona tutte le { $count } di conversazioni in { $folder }
+       *[other] Seleziona tutte le { $count } conversazioni in { $folder }
+    }
+   *[message] { $count ->
+        [one] Seleziona { $count } messaggio in { $folder }
+        [many] Seleziona tutti i { $count } di messaggi in { $folder }
+       *[other] Seleziona tutti i { $count } messaggi in { $folder }
+    }
+}
+list-clear-selection = Annulla selezione
+
+## Mail list: empty states
+
+list-empty-search = Nessun messaggio corrisponde alla ricerca.
+list-empty-tab = Nessun messaggio in { $tab }.
+list-empty-tab-unknown = Nessun messaggio in questa scheda.
+list-empty-folder = Nessun messaggio in { $folder }.
+list-empty-folder-unknown = Nessun messaggio in questa cartella.
+list-first-sync = Recupero della posta…
+list-first-sync-detail = I messaggi compaiono qui man mano che arrivano.
+
+## Mail list: lines
+
+row-removed = Questo messaggio è stato rimosso.
+row-starred = Speciale
+row-not-starred = Non speciale
+row-important = Importante. Fai clic per contrassegnare come non importante.
+row-mark-important = Contrassegna come importante
+row-pinned = Fissato in alto
+row-pin = Fissa in alto
+row-unpin = Sblocca
+
+## Mail list: More menu and right-click menu
+
+menu-reply = Rispondi
+menu-reply-all = Rispondi a tutti
+menu-forward = Inoltra
+menu-archive = Archivia
+menu-delete = Elimina
+menu-spam = Segnala come spam
+menu-mark-read = Segna come già letto
+menu-mark-unread = Segna come da leggere
+menu-mark-all-read = Segna tutti come già letti
+menu-star = Aggiungi a Speciali
+menu-unstar = Rimuovi da Speciali
+menu-important = Contrassegna come importante
+menu-not-important = Contrassegna come non importante
+menu-pin = Fissa in alto
+menu-unpin = Sblocca
+menu-print-all = Stampa tutto
+menu-new-window = Apri in una nuova finestra
+menu-move-to = Sposta in
+menu-move-to-heading = Sposta in:
+menu-find-from = Trova email da { $name }
+
+## Snackbar after an action on mail in the list
+
+toast-archived = { $kind ->
+    [conversation] { $count ->
+        [one] Conversazione archiviata.
+        [many] { $count } di conversazioni archiviate.
+       *[other] { $count } conversazioni archiviate.
+    }
+   *[message] { $count ->
+        [one] Messaggio archiviato.
+        [many] { $count } di messaggi archiviati.
+       *[other] { $count } messaggi archiviati.
+    }
+}
+toast-trashed = { $kind ->
+    [conversation] { $count ->
+        [one] Conversazione spostata nel Cestino.
+        [many] { $count } di conversazioni spostate nel Cestino.
+       *[other] { $count } conversazioni spostate nel Cestino.
+    }
+   *[message] { $count ->
+        [one] Messaggio spostato nel Cestino.
+        [many] { $count } di messaggi spostati nel Cestino.
+       *[other] { $count } messaggi spostati nel Cestino.
+    }
+}
+toast-moved = { $kind ->
+    [conversation] { $count ->
+        [one] Conversazione spostata.
+        [many] { $count } di conversazioni spostate.
+       *[other] { $count } conversazioni spostate.
+    }
+   *[message] { $count ->
+        [one] Messaggio spostato.
+        [many] { $count } di messaggi spostati.
+       *[other] { $count } messaggi spostati.
+    }
+}
+toast-starred = { $kind ->
+    [conversation] { $count ->
+        [one] Conversazione aggiunta a Speciali.
+        [many] { $count } di conversazioni aggiunte a Speciali.
+       *[other] { $count } conversazioni aggiunte a Speciali.
+    }
+   *[message] { $count ->
+        [one] Messaggio aggiunto a Speciali.
+        [many] { $count } di messaggi aggiunti a Speciali.
+       *[other] { $count } messaggi aggiunti a Speciali.
+    }
+}
+toast-unstarred = { $kind ->
+    [conversation] { $count ->
+        [one] Conversazione rimossa da Speciali.
+        [many] { $count } di conversazioni rimosse da Speciali.
+       *[other] { $count } conversazioni rimosse da Speciali.
+    }
+   *[message] { $count ->
+        [one] Messaggio rimosso da Speciali.
+        [many] { $count } di messaggi rimossi da Speciali.
+       *[other] { $count } messaggi rimossi da Speciali.
+    }
+}
+toast-important = { $kind ->
+    [conversation] { $count ->
+        [one] Conversazione contrassegnata come importante.
+        [many] { $count } di conversazioni contrassegnate come importanti.
+       *[other] { $count } conversazioni contrassegnate come importanti.
+    }
+   *[message] { $count ->
+        [one] Messaggio contrassegnato come importante.
+        [many] { $count } di messaggi contrassegnati come importanti.
+       *[other] { $count } messaggi contrassegnati come importanti.
+    }
+}
+toast-not-important = { $kind ->
+    [conversation] { $count ->
+        [one] Conversazione contrassegnata come non importante.
+        [many] { $count } di conversazioni contrassegnate come non importanti.
+       *[other] { $count } conversazioni contrassegnate come non importanti.
+    }
+   *[message] { $count ->
+        [one] Messaggio contrassegnato come non importante.
+        [many] { $count } di messaggi contrassegnati come non importanti.
+       *[other] { $count } messaggi contrassegnati come non importanti.
+    }
+}
+toast-pinned = { $kind ->
+    [conversation] { $count ->
+        [one] Conversazione fissata in alto.
+        [many] { $count } di conversazioni fissate in alto.
+       *[other] { $count } conversazioni fissate in alto.
+    }
+   *[message] { $count ->
+        [one] Messaggio fissato in alto.
+        [many] { $count } di messaggi fissati in alto.
+       *[other] { $count } messaggi fissati in alto.
+    }
+}
+toast-unpinned = { $kind ->
+    [conversation] { $count ->
+        [one] Conversazione sbloccata.
+        [many] { $count } di conversazioni sbloccate.
+       *[other] { $count } conversazioni sbloccate.
+    }
+   *[message] { $count ->
+        [one] Messaggio sbloccato.
+        [many] { $count } di messaggi sbloccati.
+       *[other] { $count } messaggi sbloccati.
+    }
+}
+toast-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Conversazione segnalata come spam.
+        [many] { $count } di conversazioni segnalate come spam.
+       *[other] { $count } conversazioni segnalate come spam.
+    }
+   *[message] { $count ->
+        [one] Messaggio segnalato come spam.
+        [many] { $count } di messaggi segnalati come spam.
+       *[other] { $count } messaggi segnalati come spam.
+    }
+}
+toast-deleted-forever = { $kind ->
+    [conversation] { $count ->
+        [one] Conversazione eliminata definitivamente.
+        [many] { $count } di conversazioni eliminate definitivamente.
+       *[other] { $count } conversazioni eliminate definitivamente.
+    }
+   *[message] { $count ->
+        [one] Messaggio eliminato definitivamente.
+        [many] { $count } di messaggi eliminati definitivamente.
+       *[other] { $count } messaggi eliminati definitivamente.
+    }
+}
+toast-undone = Azione annullata.
+toast-undo = Annulla
+toast-no-spam-folder = Questo account non ha una cartella Spam.

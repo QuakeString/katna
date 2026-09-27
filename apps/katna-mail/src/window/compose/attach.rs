@@ -7,6 +7,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use gpui::{AnyElement, Context, ExternalPaths, PathPromptOptions, div, prelude::*, rgba};
+use katna_i18n::tr;
 use katna_ui::px;
 
 use super::super::MailWindow;
@@ -102,7 +103,14 @@ impl MailWindow {
             files: true,
             directories: false,
             multiple: true,
-            prompt: Some(if pictures { "Insert" } else { "Attach" }.into()),
+            prompt: Some(
+                if pictures {
+                    tr!("compose-picker-insert")
+                } else {
+                    tr!("compose-picker-attach")
+                }
+                .into(),
+            ),
         });
         cx.spawn(async move |this, cx| {
             let Ok(Ok(Some(paths))) = chosen.await else {
@@ -156,9 +164,10 @@ impl MailWindow {
                         }
                     };
                     if total + data.len() > MAX_TOTAL {
-                        problem = Some(format!(
-                            "{name} is too large: a message can carry up to {}.",
-                            format::size(MAX_TOTAL as u64)
+                        problem = Some(tr!(
+                            "compose-file-too-large",
+                            name = name,
+                            limit = format::size(MAX_TOTAL as u64)
                         ));
                         continue;
                     }
@@ -233,12 +242,10 @@ impl MailWindow {
                         .text_color(rgba(th.accent))
                         .child(a.name.clone()),
                 )
-                .child(
-                    div()
-                        .flex_none()
-                        .text_color(rgba(th.text_dim))
-                        .child(format!("({})", format::size(a.data.len() as u64))),
-                )
+                .child(div().flex_none().text_color(rgba(th.text_dim)).child(tr!(
+                    "compose-attachment-size",
+                    size = format::size(a.data.len() as u64)
+                )))
                 .child(
                     div()
                         .id(("attachment-remove", ix))
@@ -250,7 +257,7 @@ impl MailWindow {
                         .rounded_full()
                         .cursor_pointer()
                         .hover(|s| s.bg(rgba(th.hover)))
-                        .tooltip(tip("Remove attachment", th))
+                        .tooltip(tip(tr!("compose-remove-attachment"), th))
                         .on_click(cx.listener(move |this, _, _, cx| this.remove_attachment(ix, cx)))
                         .child(icon("close", th.text_dim, 16.0)),
                 )
@@ -296,7 +303,7 @@ impl MailWindow {
                     .text_color(rgba(accent))
                     .text_size(px(16.0))
                     .child(icon("attachment", accent, 32.0))
-                    .child("Drop files here"),
+                    .child(tr!("compose-drop-files")),
             )
             .into_any_element()
     }

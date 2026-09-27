@@ -60,11 +60,15 @@ actions!(
         InsertLink,
         NextCell,
         PrevCell,
+        AcceptSuggestion,
+        DismissSuggestion,
     ]
 );
 
 /// Key context of a focused [`RichEditor`], besides [`TEXT_AREA_CONTEXT`].
 pub const RICH_TEXT_CONTEXT: &str = "RichText";
+/// Added to [`RICH_TEXT_CONTEXT`] while a writing suggestion shows.
+const SUGGESTING_CONTEXT: &str = "Suggesting";
 
 /// Binds the formatting keys (webmail's). Call after the text area's.
 pub fn bind_keys(cx: &mut App) {
@@ -95,6 +99,10 @@ pub fn bind_keys(cx: &mut App) {
         KeyBinding::new("ctrl-k", InsertLink, context),
         KeyBinding::new("tab", NextCell, context),
         KeyBinding::new("shift-tab", PrevCell, context),
+        // Last, so they win over Tab and Right while a suggestion shows.
+        KeyBinding::new("tab", AcceptSuggestion, Some("RichText && Suggesting")),
+        KeyBinding::new("right", AcceptSuggestion, Some("RichText && Suggesting")),
+        KeyBinding::new("escape", DismissSuggestion, Some("RichText && Suggesting")),
     ]);
 }
 
@@ -110,10 +118,23 @@ pub enum RichEvent {
     Cancel,
     /// Ctrl+K: the owner opens its link dialog.
     EditLink,
-    /// A right click at a window position, on a misspelled word if any.
+    /// A right click at a window position, on a misspelled word or a
+    /// grammar mistake if any.
     ContextMenu {
         position: Point<Pixels>,
         misspelled: Option<String>,
+        grammar: Option<GrammarIssue>,
+    },
+    /// The pointer rested on, or a left click landed on, a misspelled word
+    /// or a grammar mistake: the owner shows the fixes in a card under
+    /// `word` (window bounds). [`RichEditor::set_cursor`] with `at` makes
+    /// [`RichEditor::replace_word`] and the grammar fixes apply to them.
+    Hint {
+        word: Bounds<Pixels>,
+        at: Pos,
+        misspelled: Option<String>,
+        suggestions: Vec<String>,
+        grammar: Option<GrammarIssue>,
     },
 }
 
@@ -125,12 +146,54 @@ pub trait SpellCheck {
     fn suggest(&self, word: &str) -> Vec<String>;
 }
 
+/// A grammar checker the owner provides. It runs off the UI thread, one
+/// paragraph at a time.
+pub trait GrammarCheck: Send + Sync {
+    /// The mistakes in a paragraph's text.
+    fn check(&self, text: &str) -> Vec<GrammarIssue>;
+}
+
+/// A grammar mistake in a paragraph.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GrammarIssue {
+    /// Where, in bytes of the paragraph's text.
+    pub range: Range<usize>,
+    /// What is wrong, in a sentence.
+    pub message: String,
+    /// Ways to fix it, best first.
+    pub fixes: Vec<GrammarFix>,
+}
+
+/// One way to fix a [`GrammarIssue`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GrammarFix {
+    /// What the menu says, as "Replace with \u{201c}an\u{201d}".
+    pub label: String,
+    /// The text that takes the place of the mistake.
+    pub replacement: String,
+}
+
+/// Writing suggestions the owner provides: the likely rest of a phrase.
+/// Asked on every keystroke, so it must answer at once.
+pub trait Suggest {
+    /// What likely follows `before`, the paragraph's text up to the
+    /// cursor, with the space it needs first; `None` when unsure.
+    fn suggest(&self, before: &str) -> Option<String>;
+}
+
+/// How long typing pauses before its paragraph's grammar is checked.
+pub(crate) const GRAMMAR_WAIT: Duration = Duration::from_millis(500);
+/// How long the pointer rests on marked words before their fixes show.
+pub(crate) const HINT_WAIT: Duration = Duration::from_millis(600);
+
 /// Colors of what the editor draws beside text.
 #[derive(Debug, Clone, Copy)]
 pub struct Palette {
     pub accent: Hsla,
     pub link: Hsla,
     pub misspelled: Hsla,
+    /// The underline of grammar mistakes.
+    pub grammar: Hsla,
     /// Table borders and quote bars.
     pub rule: Hsla,
     /// The image size bar.
@@ -145,6 +208,7 @@ impl Default for Palette {
             accent: gpui::blue(),
             link: gpui::blue(),
             misspelled: gpui::red(),
+            grammar: gpui::blue(),
             rule: gpui::rgb(0xcccccc).into(),
             surface: gpui::white(),
             text: gpui::black(),
@@ -163,6 +227,16 @@ pub enum TableEdit {
     DeleteRow,
     DeleteColumn,
     DeleteTable,
+}
+
+/// Words marked as misspelled or as a grammar mistake, under a point.
+struct Mark {
+    path: Path,
+    range: Range<usize>,
+    /// In window coordinates.
+    bounds: Bounds<Pixels>,
+    misspelled: bool,
+    grammar: Option<GrammarIssue>,
 }
 
 #[derive(Clone)]
@@ -210,6 +284,19 @@ pub struct RichEditor {
     plain: bool,
     spell: Option<Rc<dyn SpellCheck>>,
     misspellings: RefCell<HashMap<String, Vec<Range<usize>>>>,
+    grammar: Option<Arc<dyn GrammarCheck>>,
+    /// Grammar mistakes by paragraph text, as far as checked.
+    grammar_found: HashMap<String, Vec<GrammarIssue>>,
+    /// The paragraphs being checked.
+    grammar_asked: Vec<String>,
+    grammar_task: Option<gpui::Task<()>>,
+    /// Mistakes the user chose to ignore in this text: the words and the
+    /// message.
+    grammar_ignored: std::collections::HashSet<(String, String)>,
+    suggest: Option<Rc<dyn Suggest>>,
+    /// The writing suggestion shown after the cursor, while the cursor
+    /// stays where it was made.
+    ghost: Option<(Pos, String)>,
     families: RefCell<Option<Rc<HashMap<Font, SharedString>>>>,
     /// What was copied, to paste it back with its formatting.
     copied: Option<(String, Vec<Block>)>,
@@ -219,6 +306,13 @@ pub struct RichEditor {
     width: Pixels,
     /// The editor had the focus when last drawn.
     pub(crate) drawn_focused: std::cell::Cell<bool>,
+    /// The marked words under the pointer, and the wait before their fixes
+    /// show.
+    hover: Option<(Path, Range<usize>)>,
+    hover_task: Option<gpui::Task<()>>,
+    /// The marked words a left click went down on, to show their fixes if
+    /// it comes up without dragging.
+    clicked: Option<(Path, Range<usize>)>,
 }
 
 impl EventEmitter<RichEvent> for RichEditor {}
@@ -249,12 +343,22 @@ impl RichEditor {
             plain: false,
             spell: None,
             misspellings: RefCell::new(HashMap::new()),
+            grammar: None,
+            grammar_found: HashMap::new(),
+            grammar_asked: Vec::new(),
+            grammar_task: None,
+            grammar_ignored: Default::default(),
+            suggest: None,
+            ghost: None,
             families: RefCell::new(None),
             copied: None,
             images: HashMap::new(),
             drawn_focused: std::cell::Cell::new(false),
             next_image_id: 0,
             width: px(0.0),
+            hover: None,
+            hover_task: None,
+            clicked: None,
         }
     }
 
@@ -350,6 +454,200 @@ impl RichEditor {
         self.spell.is_some()
     }
 
+    /// Turns grammar checking on with `checker`, or off.
+    pub fn set_grammar_check(
+        &mut self,
+        checker: Option<Arc<dyn GrammarCheck>>,
+        cx: &mut Context<Self>,
+    ) {
+        self.grammar = checker;
+        self.grammar_found.clear();
+        self.grammar_asked.clear();
+        self.grammar_task = None;
+        cx.notify();
+    }
+
+    /// Turns writing suggestions on with `suggest`, or off.
+    pub fn set_suggest(&mut self, suggest: Option<Rc<dyn Suggest>>, cx: &mut Context<Self>) {
+        self.suggest = suggest;
+        self.ghost = None;
+        cx.notify();
+    }
+
+    /// Asks for a writing suggestion after what was just typed: only at
+    /// the end of a paragraph the user writes (not a quote or the
+    /// signature), with nothing selected or being composed.
+    fn request_suggestion(&mut self) {
+        self.ghost = None;
+        let Some(suggest) = &self.suggest else {
+            return;
+        };
+        if self.has_selection() || self.marked.is_some() || self.selected_image.is_some() {
+            return;
+        }
+        let Some(para) = self.doc.para(self.head.path) else {
+            return;
+        };
+        if self.plain_blocked(para) || self.head.offset != para.len() {
+            return;
+        }
+        if let Some(text) = suggest.suggest(&para.text).filter(|t| !t.trim().is_empty()) {
+            self.ghost = Some((self.head, text));
+        }
+    }
+
+    /// The writing suggestion shown in paragraph `path`, and its style.
+    pub(crate) fn ghost_in(&self, path: Path) -> Option<(usize, &str, CharStyle)> {
+        let (pos, text) = self.ghost.as_ref()?;
+        (pos.path == path && *pos == self.head && !self.has_selection())
+            .then(|| (pos.offset, text.as_str(), self.style_for_typing()))
+    }
+
+    fn showing_suggestion(&self) -> bool {
+        self.ghost
+            .as_ref()
+            .is_some_and(|(pos, _)| *pos == self.head && !self.has_selection())
+    }
+
+    fn accept_suggestion(&mut self, _: &AcceptSuggestion, _: &mut Window, cx: &mut Context<Self>) {
+        match self.ghost.take() {
+            Some((pos, text)) if pos == self.head && !self.has_selection() => {
+                self.insert(&text, cx);
+            }
+            _ => cx.propagate(),
+        }
+    }
+
+    fn dismiss_suggestion(
+        &mut self,
+        _: &DismissSuggestion,
+        _: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if self.ghost.take().is_none() {
+            cx.propagate();
+        }
+        cx.notify();
+    }
+
+    /// Checks the grammar of paragraphs not checked yet, once typing
+    /// pauses. Called on every render; a change starts the wait again.
+    fn request_grammar(&mut self, cx: &mut Context<Self>) {
+        let Some(checker) = self.grammar.clone() else {
+            return;
+        };
+        let mut wanted: Vec<String> = Vec::new();
+        for path in self.doc.paths() {
+            let Some(para) = self.doc.para(path) else {
+                continue;
+            };
+            if !self.plain_blocked(para)
+                && para.text.chars().any(char::is_alphabetic)
+                && !self.grammar_found.contains_key(&para.text)
+                && !wanted.contains(&para.text)
+            {
+                wanted.push(para.text.clone());
+            }
+        }
+        if wanted.is_empty() || wanted == self.grammar_asked {
+            return;
+        }
+        self.grammar_asked = wanted.clone();
+        self.grammar_task = Some(cx.spawn(async move |this, cx| {
+            cx.background_executor().timer(GRAMMAR_WAIT).await;
+            let found = cx
+                .background_executor()
+                .spawn(async move {
+                    wanted
+                        .into_iter()
+                        .map(|text| {
+                            let issues = checker.check(&text);
+                            (text, issues)
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .await;
+            this.update(cx, |this, cx| {
+                this.grammar_found.extend(found);
+                // Forget paragraphs that are gone, as typed on the way.
+                let texts: std::collections::HashSet<&str> = this
+                    .doc
+                    .paths()
+                    .into_iter()
+                    .filter_map(|p| this.doc.para(p))
+                    .map(|p| p.text.as_str())
+                    .collect();
+                this.grammar_found.retain(|t, _| texts.contains(t.as_str()));
+                this.grammar_asked.clear();
+                this.grammar_task = None;
+                cx.notify();
+            })
+            .ok();
+        }));
+    }
+
+    /// Mistakes found in `para`'s text, without the ignored ones.
+    fn grammar_issues(&self, para: &Para) -> Vec<&GrammarIssue> {
+        if self.grammar.is_none() || self.plain_blocked(para) {
+            return Vec::new();
+        }
+        self.grammar_found
+            .get(&para.text)
+            .into_iter()
+            .flatten()
+            .filter(|issue| {
+                para.text.get(issue.range.clone()).is_some_and(|words| {
+                    !self
+                        .grammar_ignored
+                        .contains(&(words.to_owned(), issue.message.clone()))
+                })
+            })
+            .collect()
+    }
+
+    /// The grammar mistake at the cursor, if any.
+    fn grammar_at_cursor(&self) -> Option<GrammarIssue> {
+        let para = self.doc.para(self.head.path)?;
+        let at = self.head.offset;
+        self.grammar_issues(para)
+            .into_iter()
+            .find(|issue| issue.range.start <= at && at <= issue.range.end)
+            .cloned()
+    }
+
+    /// Fixes grammar mistake `issue` in the cursor's paragraph with `fix`.
+    pub fn fix_grammar(&mut self, issue: &GrammarIssue, fix: &GrammarFix, cx: &mut Context<Self>) {
+        let path = self.head.path;
+        let range = issue.range.clone();
+        let current = self.doc.para(path).and_then(|p| p.text.get(range.clone()));
+        if current.is_none() {
+            return;
+        }
+        let replacement = fix.replacement.clone();
+        self.edit(EditKind::Other, cx, |doc, _| {
+            let style = doc
+                .para(path)
+                .map(|p| p.style_at(range.start))
+                .unwrap_or_default();
+            let start = Pos::new(path, range.start);
+            doc.delete(start, Pos::new(path, range.end));
+            doc.insert_text(start, &replacement, &style)
+        });
+    }
+
+    /// Stops marking `issue`'s words with its message in this text.
+    pub fn ignore_grammar(&mut self, issue: &GrammarIssue, cx: &mut Context<Self>) {
+        let words = self
+            .doc
+            .para(self.head.path)
+            .and_then(|p| p.text.get(issue.range.clone()))
+            .map(str::to_owned);
+        if let Some(words) = words {
+            self.grammar_ignored.insert((words, issue.message.clone()));
+            cx.notify();
+        }
+    }
+
     /// Suggestions for the misspelled word at the cursor.
     pub fn suggestions(&self) -> Vec<String> {
         let (Some(spell), Some(word)) = (&self.spell, self.word_at_cursor()) else {
@@ -382,6 +680,11 @@ impl RichEditor {
             doc.delete(start, Pos::new(path, range.end));
             doc.insert_text(start, replacement, &style)
         });
+    }
+
+    /// Puts the cursor at `at`, such as the words of a [`RichEvent::Hint`].
+    pub fn set_cursor(&mut self, at: Pos, cx: &mut Context<Self>) {
+        self.set_selection(at, at, cx);
     }
 
     // Selection.
@@ -445,7 +748,7 @@ impl RichEditor {
                 marked.clone(),
                 Deco {
                     marked: true,
-                    misspelled: false,
+                    ..Deco::default()
                 },
             ));
         }
@@ -470,11 +773,26 @@ impl RichEditor {
                     decos.push((
                         range,
                         Deco {
-                            marked: false,
                             misspelled: true,
+                            ..Deco::default()
                         },
                     ));
                 }
+            }
+        }
+        for issue in self.grammar_issues(para) {
+            let range = issue.range.clone();
+            let overlaps = decos
+                .iter()
+                .any(|(r, _): &(Range<usize>, Deco)| r.start < range.end && range.start < r.end);
+            if !overlaps && range.start < range.end {
+                decos.push((
+                    range,
+                    Deco {
+                        grammar: true,
+                        ..Deco::default()
+                    },
+                ));
             }
         }
         decos.sort_by_key(|(r, _)| r.start);
@@ -501,6 +819,7 @@ impl RichEditor {
             link: self.palette.link,
             accent: self.palette.accent,
             misspelled: self.palette.misspelled,
+            grammar: self.palette.grammar,
             families,
             plain: self.plain,
         }
@@ -532,6 +851,7 @@ impl RichEditor {
         self.marked = None;
         if changed {
             self.typing = None;
+            self.ghost = None;
             cx.emit(RichEvent::Selection);
         }
         cx.notify();
@@ -579,6 +899,7 @@ impl RichEditor {
             }
         }
         self.redo.clear();
+        self.ghost = None;
         self.last_edit = Some((kind, now));
         let selection = self.ordered();
         let cursor = f(&mut self.doc, selection);
@@ -1130,6 +1451,10 @@ impl RichEditor {
             }
             _ => {
                 self.selecting = true;
+                self.clicked = (!event.modifiers.shift)
+                    .then(|| self.mark_at(event.position))
+                    .flatten()
+                    .map(|mark| (mark.path, mark.range));
                 if event.modifiers.shift {
                     self.set_selection(self.anchor, pos, cx);
                 } else {
@@ -1159,10 +1484,125 @@ impl RichEditor {
             let (_, word) = self.word_at_cursor()?;
             (!spell.check(&word)).then_some(word)
         });
+        let grammar = if misspelled.is_none() {
+            self.grammar_at_cursor()
+        } else {
+            None
+        };
         cx.emit(RichEvent::ContextMenu {
             position: event.position,
             misspelled,
+            grammar,
         });
+    }
+
+    /// A left click that came up where it went down on marked words shows
+    /// their fixes.
+    fn mouse_up(&mut self, event: &MouseUpEvent, cx: &mut Context<Self>) {
+        self.selecting = false;
+        let Some(clicked) = self.clicked.take() else {
+            return;
+        };
+        if self.has_selection() {
+            return;
+        }
+        if let Some(mark) = self.mark_at(event.position)
+            && (mark.path, mark.range.clone()) == clicked
+        {
+            self.hover = Some(clicked);
+            self.hover_task = None;
+            self.emit_hint(mark, cx);
+        }
+    }
+
+    /// Resting the pointer on marked words shows their fixes after a wait.
+    fn mouse_move(&mut self, event: &MouseMoveEvent, window: &mut Window, cx: &mut Context<Self>) {
+        if event.pressed_button.is_some() {
+            return;
+        }
+        let key = self
+            .mark_at(event.position)
+            .map(|mark| (mark.path, mark.range));
+        if key == self.hover {
+            return;
+        }
+        self.hover = key.clone();
+        self.hover_task = key.map(|key| {
+            cx.spawn_in(window, async move |this, cx| {
+                cx.background_executor().timer(HINT_WAIT).await;
+                this.update_in(cx, |this, window, cx| {
+                    this.hover_task = None;
+                    match this.mark_at(window.mouse_position()) {
+                        Some(mark) if (mark.path, mark.range.clone()) == key => {
+                            this.emit_hint(mark, cx)
+                        }
+                        // The pointer left the editor meanwhile.
+                        _ => this.hover = None,
+                    }
+                })
+                .ok();
+            })
+        });
+    }
+
+    /// Forgets the words the pointer was on, so resting on them again
+    /// shows their fixes again (the owner calls it on closing the card).
+    pub fn end_hint(&mut self) {
+        self.hover = None;
+        self.hover_task = None;
+    }
+
+    fn emit_hint(&self, mark: Mark, cx: &mut Context<Self>) {
+        let text = self.doc.para(mark.path).map_or("", |p| p.text.as_str());
+        let word = text.get(mark.range.clone()).unwrap_or_default().to_owned();
+        let suggestions = match &self.spell {
+            Some(spell) if mark.misspelled => spell.suggest(&word),
+            _ => Vec::new(),
+        };
+        cx.emit(RichEvent::Hint {
+            word: mark.bounds,
+            at: Pos::new(mark.path, mark.range.start),
+            misspelled: mark.misspelled.then_some(word),
+            suggestions,
+            grammar: mark.grammar,
+        });
+    }
+
+    /// The marked words under window point `p`, as drawn last.
+    fn mark_at(&self, p: Point<Pixels>) -> Option<Mark> {
+        let (pos, _) = self.hit(p)?;
+        let para = self.doc.para(pos.path)?;
+        let layout = self.layouts.get(&pos.path)?;
+        let (range, deco) = self
+            .decorations(pos.path, para)
+            .into_iter()
+            .find(|(r, d)| {
+                (d.misspelled || d.grammar) && r.start <= pos.offset && pos.offset <= r.end
+            })?;
+        let rects: Vec<Bounds<Pixels>> = layout
+            .selection_rects(range.clone(), false)
+            .into_iter()
+            .map(|r| Bounds::new(r.origin + layout.bounds.origin, r.size))
+            .collect();
+        if !rects.iter().any(|r| r.contains(&p)) {
+            return None;
+        }
+        let bounds = rects.into_iter().reduce(|a, b| a.union(&b))?;
+        let grammar = if deco.grammar {
+            self.grammar_issues(para)
+                .into_iter()
+                .find(|issue| issue.range == range)
+                .cloned()
+        } else {
+            None
+        };
+        Some(Mark {
+            path: pos.path,
+            range,
+            bounds,
+            misspelled: deco.misspelled,
+            grammar,
+        })
     }
 
     fn drag_to(&mut self, event: &MouseMoveEvent, cx: &mut Context<Self>) {
@@ -2056,6 +2496,9 @@ impl EntityInputHandler for RichEditor {
         let typing = self.typing.take();
         self.typing = typing;
         self.insert(new_text, cx);
+        if !new_text.contains('\n') {
+            self.request_suggestion();
+        }
     }
 
     fn replace_and_mark_text_in_range(
@@ -2084,6 +2527,8 @@ impl EntityInputHandler for RichEditor {
         self.head = Pos::new(path, range.end);
         self.marked = None;
         self.replace_text_in_range(None, new_text, window, cx);
+        // No suggestion while a character is being composed.
+        self.ghost = None;
         self.marked = (!new_text.is_empty()).then(|| start..start + new_text.len());
         if let Some(sel) = new_selected_range_utf16 {
             let sel = range_from_utf16(new_text, &sel);
@@ -2253,7 +2698,7 @@ impl Element for Anchor {
                     && event.button == MouseButton::Left
                     && editor.read(cx).selecting
                 {
-                    editor.update(cx, |editor, _| editor.selecting = false);
+                    editor.update(cx, |editor, cx| editor.mouse_up(event, cx));
                 }
             }
         });
@@ -2275,6 +2720,7 @@ impl Render for RichEditor {
         self.numbers = list_numbers(&self.doc);
         self.layouts.clear();
         self.sync_images();
+        self.request_grammar(cx);
         let blocks: Vec<AnyElement> = self
             .doc
             .blocks
@@ -2283,13 +2729,18 @@ impl Render for RichEditor {
             .enumerate()
             .map(|(ix, block)| self.render_block(ix, block, cx))
             .collect();
+        let suggesting = if self.showing_suggestion() {
+            format!(" {SUGGESTING_CONTEXT}")
+        } else {
+            String::new()
+        };
         div()
             .relative()
             .w_full()
             .min_w_0()
             .flex()
             .flex_col()
-            .key_context(format!("{TEXT_AREA_CONTEXT} {RICH_TEXT_CONTEXT}").as_str())
+            .key_context(format!("{TEXT_AREA_CONTEXT} {RICH_TEXT_CONTEXT}{suggesting}").as_str())
             .track_focus(&self.focus_handle(cx))
             .cursor(CursorStyle::IBeam)
             .on_action(cx.listener(Self::backspace))
@@ -2329,6 +2780,8 @@ impl Render for RichEditor {
             .on_action(cx.listener(Self::cancel))
             .on_action(cx.listener(Self::next_cell))
             .on_action(cx.listener(Self::prev_cell))
+            .on_action(cx.listener(Self::accept_suggestion))
+            .on_action(cx.listener(Self::dismiss_suggestion))
             .on_action(cx.listener(|this, _: &Bold, _, cx| this.toggle_bold(cx)))
             .on_action(cx.listener(|this, _: &Italic, _, cx| this.toggle_italic(cx)))
             .on_action(cx.listener(|this, _: &Underline, _, cx| this.toggle_underline(cx)))
@@ -2353,6 +2806,7 @@ impl Render for RichEditor {
             .on_action(cx.listener(|_, _: &InsertLink, _, cx| cx.emit(RichEvent::EditLink)))
             .on_mouse_down(MouseButton::Left, cx.listener(Self::mouse_down))
             .on_mouse_down(MouseButton::Right, cx.listener(Self::right_mouse_down))
+            .on_mouse_move(cx.listener(Self::mouse_move))
             .child(Anchor {
                 editor: cx.entity(),
             })

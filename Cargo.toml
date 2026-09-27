@@ -47,6 +47,8 @@ futures-rustls = { version = "0.26", default-features = false, features = ["ring
 # Pure-Rust PDF rasterizer for the attachment viewer (katna-preview).
 hayro = "0.7.1"
 calamine = "0.36.1"
+# Office 97–2003 compound files: Word (.doc) and PowerPoint (.ppt) previews.
+cfb = "0.15"
 quick-xml = "0.41"
 zip = { version = "8.6", default-features = false, features = ["deflate-flate2"] }
 # The version GPUI decodes pictures with; no extra formats of our own.
@@ -72,6 +74,8 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 smol = "2.0"
 spellbook = "0.4"
+# Grammar checking. Without the thesaurus, which Katna does not use.
+harper-core = { version = "2.11", default-features = false, features = ["concurrent"] }
 tantivy-fst = "0.5.0"
 tantivy = { version = "0.26.2", default-features = false, features = ["mmap", "lz4-compression", "stemmer"] }
 tempfile = "3.27"
@@ -94,6 +98,8 @@ icu_datetime = "2.3"
 icu_decimal = "2.3"
 icu_calendar = "2.3"
 icu_time = "2.3"
+# ICU4X's text output, for patterns ICU4X's formatters don't offer.
+writeable = "0.6"
 # Formatters shared between threads (the daemon and GPUI both use them).
 icu_provider = { version = "2.3", features = ["sync"] }
 

@@ -11,7 +11,7 @@ publish.workspace = true
 [features]
 # Dates and numbers with ICU4X. The daemon formats neither, so it leaves
 # this out and stays small.
-format = ["dep:icu_datetime", "dep:icu_decimal", "dep:icu_calendar", "dep:icu_time", "dep:icu_provider", "dep:jiff"]
+format = ["dep:icu_datetime", "dep:icu_decimal", "dep:icu_calendar", "dep:icu_time", "dep:icu_provider", "dep:jiff", "dep:writeable"]
 
 [dependencies]
 fluent-bundle.workspace = true
@@ -26,6 +26,7 @@ icu_calendar = { workspace = true, optional = true }
 icu_time = { workspace = true, optional = true }
 icu_provider = { workspace = true, optional = true }
 jiff = { workspace = true, optional = true }
+writeable = { workspace = true, optional = true }
 
 [dev-dependencies]
 fluent-syntax.workspace = true

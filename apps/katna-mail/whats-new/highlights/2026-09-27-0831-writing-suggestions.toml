@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Writing suggestions"
+text = """
+As you write, the likely rest of a phrase shows in grey. Press Tab to take
+it, or keep typing. Katna learns the phrases from mail you sent and from
+the conversation you are answering, on your computer; turn it off in
+Settings > Compose.
+"""

@@ -1,0 +1,72 @@
+# Katna Mail, Igbo (Igbo).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Add a mail account: titles and steps
+
+add-account-title = Tinye akaụntụ ozi
+add-account-looking = Na-achọ sava ozi nke { $address }…
+add-account-address-intro = Tinye adreesị ozi-e gị. Katna ga-achọtara gị sava ndị ahụ.
+add-account-servers-title = Ntọala sava
+add-account-servers-intro = Ebe Katna na-agụ ma na-ezipụ ozi maka { $address }.
+add-account-password-title = Tinye okwuntughe gị
+add-account-signing-in = Na-abanye…
+
+## Add a mail account: fields
+
+add-account-field-address = Adreesị ozi-e
+add-account-incoming = Ozi mbata ({ $protocol })
+add-account-outgoing = Ozi mpụta ({ $protocol })
+add-account-field-server = Sava
+add-account-field-port = Ọdụ
+add-account-security-none = Ọ dịghị
+add-account-field-username = Aha onye ọrụ
+add-account-field-password = Okwuntughe
+add-account-show-password = Gosi okwuntughe
+add-account-app-password-hint = { $provider } chọrọ okwuntughe ngwa ebe a, ọ bụghị nke ị na-eji na weebụ. Mee otu na ntọala nchekwa nke akaụntụ { $provider } gị.
+add-account-field-name = Aha gị (nhọrọ)
+add-account-name-hint = A na-egosi ya ndị ị na-edegara ozi.
+add-account-servers-pair = { $imap } na { $smtp }
+add-account-servers-found = { $source ->
+    [built-in] Sava: { $servers }, a chọtara ha na ndepụta ndị na-enye ọrụ nke Katna.
+    [provider] Sava: { $servers }, a chọtara ha na ntọala nke onye na-enye gị ọrụ.
+    [ispdb] Sava: { $servers }, a chọtara ha na ndepụta ndị na-enye ọrụ nke Thunderbird.
+    [dns] Sava: { $servers }, a chọtara ha na ndekọ DNS nke ngalaba gị.
+   *[other] Sava: { $servers }, site n'ịkọ nkọ; nyochaa ha ma ọ bụrụ na ịbanye dara.
+}
+add-account-servers-entered = Sava: { $servers }, dịka e tinyere ha.
+
+## Add a mail account: buttons
+
+add-account-servers-button = Ntọala sava
+add-account-back = Laghachi
+add-account-add = Tinye akaụntụ
+add-account-next = Nke ọzọ
+add-account-cancel = Kagbuo
+
+## Add a mail account: problems
+
+add-account-server-missing = { $kind ->
+    [incoming] Tinye sava ozi mbata.
+   *[outgoing] Tinye sava ozi mpụta.
+}
+add-account-server-space = { $kind ->
+    [incoming] Aha sava ozi mbata nwere oghere n'ime ya.
+   *[outgoing] Aha sava ozi mpụta nwere oghere n'ime ya.
+}
+add-account-port-invalid = { $kind ->
+    [incoming] Ọdụ ozi mbata ga-abụrịrị nọmba site na { $min } ruo { $max }.
+   *[outgoing] Ọdụ ozi mpụta ga-abụrịrị nọmba site na { $min } ruo { $max }.
+}
+add-account-address-empty = Tinye adreesị ozi-e.
+add-account-address-invalid = Tinye adreesị ozi-e dị ka { $example }.
+add-account-not-found = Katna enweghị ike ịchọta sava nke { $address }, ya mere o tinyere aha a na-ejikarị. Nyochaa ha n'aka onye na-enye gị ọrụ.
+add-account-password-empty = Tinye okwuntughe.
+add-account-added = Etinyela { $address }. Na-ebute ozi gị…
+add-account-app-password-refused = { $provider } jụrụ okwuntughe ahụ. Ọ chọrọ okwuntughe ngwa, ọ bụghị nke ị na-eji na weebụ.
+add-account-password-refused = Sava jụrụ okwuntughe ahụ. Nyochaa ya ma nwaa ọzọ.
+
+## The account menu (from the account button on the top bar)
+
+add-account-menu-another = Tinye akaụntụ ọzọ
+add-account-menu-manage = Jikwaa akaụntụ

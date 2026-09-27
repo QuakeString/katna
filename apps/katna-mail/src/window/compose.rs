@@ -19,6 +19,8 @@
 //! in a window of its own.
 
 mod attach;
+mod checks;
+mod chips;
 mod popout;
 mod recipients;
 mod schedule;
@@ -29,6 +31,7 @@ mod tools;
 
 use std::cell::Cell;
 use std::rc::Rc;
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use gpui::{
@@ -37,25 +40,32 @@ use gpui::{
 };
 use katna_core::AccountId;
 use katna_dbus::OutboxItem;
+use katna_i18n::tr;
 use katna_render::{Address, MessageView};
 use katna_store::MessageId;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
-use katna_ui::rich::{Block, Doc, Palette, Para, RichEditor, RichEvent, SpellCheck, html};
+use katna_ui::rich::{
+    Block, Doc, GrammarCheck, Palette, Para, RichEditor, RichEvent, SpellCheck, Suggest, html,
+};
 use katna_ui::unpx;
-use katna_ui::{InputEvent, TextInput};
+use katna_ui::{InputEvent, InputGrammarMenu, TextInput};
 
 use super::{MailWindow, SNACKBAR_TIME};
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::format;
+use crate::grammar;
 use crate::outgoing::{self, Mailbox, Outgoing, Part};
 use crate::signatures;
 use crate::spell::{self, Speller};
+use crate::suggest::{Phrases, Suggester};
 use crate::theme::{Theme, fade};
 use crate::widgets::{elevation, icon, tip};
 
 pub(super) use attach::Attachment;
+use checks::Passed;
+use chips::Chips;
 use recipients::{Field, Suggestions};
 pub(super) use scheduled::NAV_KEY as SCHEDULED_NAV_KEY;
 use security::Sealing;
@@ -116,6 +126,9 @@ pub(super) struct Compose {
     from: Option<AccountId>,
     show_cc: bool,
     show_bcc: bool,
+    /// The recipients of To, Cc and Bcc; their fields hold only what is
+    /// being typed after them.
+    chips: Chips,
     /// Addresses suggested for the recipient being typed.
     suggest: Option<Suggestions>,
     mode: Mode,
@@ -135,9 +148,14 @@ pub(super) struct Compose {
     /// The quoted message a reply answers, kept out of the text behind a
     /// "..." button until it is opened, as in Gmail. It is still sent.
     trimmed: Option<Vec<Block>>,
+    /// The text of the conversation a reply answers, for writing
+    /// suggestions.
+    answered: String,
     /// Where an inline reply was last drawn, to keep its Send row at the
     /// bottom of the conversation while the rest scrolls under it.
     stick: Rc<Cell<Stick>>,
+    /// The underline of grammar mistakes in the subject.
+    grammar_color: Hsla,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -145,10 +163,11 @@ impl Compose {
     /// What the fields hold now.
     fn fields(&self, cx: &gpui::App) -> Draft {
         let text = |input: &Entity<TextInput>| input.read(cx).text().to_owned();
+        let recipients = |field, input| self.chips.text(field, &text(input));
         Draft {
-            to: text(&self.to),
-            cc: text(&self.cc),
-            bcc: text(&self.bcc),
+            to: recipients(Field::To, &self.to),
+            cc: recipients(Field::Cc, &self.cc),
+            bcc: recipients(Field::Bcc, &self.bcc),
             subject: text(&self.subject),
             body: {
                 let mut body = self.body.read(cx).doc().clone();
@@ -166,7 +185,7 @@ impl Compose {
     fn title(&self, cx: &gpui::App) -> SharedString {
         let subject = self.subject.read(cx).text().trim();
         if subject.is_empty() {
-            "New Message".into()
+            tr!("compose-new-message").into()
         } else {
             subject.to_owned().into()
         }
@@ -195,6 +214,26 @@ struct Stick {
     card_top: f32,
     footer_top: f32,
     footer_height: f32,
+    /// How far the Send row was drawn above its place, to see after
+    /// layout whether that is still right.
+    stuck: f32,
+}
+
+impl Stick {
+    /// How far the Send row goes up from its place so it stays at the
+    /// bottom of the conversation `scroll`, but no higher than a little
+    /// below the top of the card.
+    fn stuck(&self, scroll: &ScrollHandle) -> f32 {
+        // A scroll past either end is only put back when the conversation
+        // is laid out, after the window drew; the offset it ends up with
+        // is what counts.
+        let max = unpx(scroll.max_offset().y).max(0.0);
+        let offset = unpx(scroll.offset().y).clamp(-max, 0.0);
+        let bottom = unpx(scroll.bounds().size.height) - offset;
+        let highest = self.card_top + STICK_BELOW;
+        (self.footer_top + self.footer_height - bottom)
+            .clamp(0.0, (self.footer_top - highest).max(0.0))
+    }
 }
 
 /// What the compose windows share: the spelling dictionary, loaded once,
@@ -204,6 +243,13 @@ pub(super) struct Writing {
     speller: Option<Rc<Speller>>,
     /// Loading, or why it could not be loaded.
     speller_state: SpellerState,
+    /// Harper's grammar rules, in their helper process while a message is
+    /// open.
+    grammar: Option<Arc<dyn GrammarCheck>>,
+    /// Phrases learned from the sent mail, loaded on the first message
+    /// written.
+    phrases: Option<Rc<Phrases>>,
+    phrases_loading: bool,
     /// Messages waiting for their scheduled time, soonest first.
     scheduled: Vec<OutboxItem>,
     /// The list of scheduled mail shows.
@@ -332,6 +378,23 @@ fn quoted(body: &str) -> Vec<Block> {
     doc.blocks
 }
 
+/// The quoted conversation in a reply's `doc`, with its "On ... wrote:"
+/// line.
+fn thread_text(doc: &Doc) -> String {
+    let paras: Vec<&str> = doc
+        .blocks
+        .iter()
+        .filter_map(|b| match b {
+            Block::Para(p) => Some(p),
+            _ => None,
+        })
+        .skip_while(|p| p.style.quote == 0 && !p.text.trim_end().ends_with("wrote:"))
+        .filter(|p| !p.style.signature)
+        .map(|p| p.text.as_str())
+        .collect();
+    paras.join("\n")
+}
+
 /// Takes the quoted message off the end of a reply's `doc`: the "On ...
 /// wrote:" line, the blank line before it and the quote after it.
 fn trim_quote(doc: &mut Doc) -> Option<Vec<Block>> {
@@ -458,7 +521,7 @@ impl MailWindow {
                 if compose.mode == Mode::Minimized {
                     compose.mode = Mode::Open;
                 }
-                self.show_snackbar("Send or discard the open message first.", None, cx);
+                self.show_snackbar(tr!("compose-open-elsewhere"), None, cx);
             }
             cx.notify();
             return;
@@ -543,6 +606,50 @@ impl MailWindow {
         if mode == Mode::Inline {
             self.reveal_inline_reply(cx);
         }
+    }
+
+    /// Starts a new message filled in from a `mailto:` link. An unsent
+    /// message already open stays, as it does for Compose.
+    pub(super) fn open_mailto(
+        &mut self,
+        mail: crate::mailto::Mailto,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.open_compose(Kind::New, None, window, cx);
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        if compose.kind != Kind::New || compose.touched(cx) {
+            return;
+        }
+        let set = |field: &Entity<TextInput>, text: String, cx: &mut Context<Self>| {
+            field.update(cx, |input, cx| input.set_text(text, cx));
+        };
+        compose.chips.set(Field::To, &mail.to.join(", "));
+        compose.chips.set(Field::Cc, &mail.cc.join(", "));
+        compose.chips.set(Field::Bcc, &mail.bcc.join(", "));
+        set(&compose.subject, mail.subject.clone(), cx);
+        compose.show_cc |= !mail.cc.is_empty();
+        compose.show_bcc |= !mail.bcc.is_empty();
+        if !mail.body.is_empty() {
+            // The text goes where the cursor waits, above the signature.
+            let mut doc = compose.body.read(cx).doc().clone();
+            let text = html::from_plain(mail.body.trim_end()).blocks;
+            doc.blocks.splice(0..1.min(doc.blocks.len()), text);
+            compose.body.update(cx, |editor, cx| {
+                editor.set_doc(doc.clone(), doc.start(), cx)
+            });
+        }
+        let focus = if mail.to.is_empty() {
+            compose.to.focus_handle(cx)
+        } else if mail.subject.is_empty() {
+            compose.subject.focus_handle(cx)
+        } else {
+            compose.body.focus_handle(cx)
+        };
+        window.focus(&focus, cx);
+        self.chips_changed(Field::To, cx);
     }
 
     /// Scrolls the conversation smoothly to the reply that just opened at
@@ -677,21 +784,41 @@ impl MailWindow {
                 input
             })
         };
-        let to = input("Recipients", &draft.to, cx);
-        let cc = input("", &draft.cc, cx);
-        let bcc = input("", &draft.bcc, cx);
-        let subject = input("Subject", &draft.subject, cx);
+        // The recipients open as chips, and the fields empty.
+        let chips = Chips::new(&draft.to, &draft.cc, &draft.bcc);
+        let mut start = start;
+        for text in [&mut start.to, &mut start.cc, &mut start.bcc] {
+            *text = chips::normalized(text);
+        }
+        let placeholder = if chips.get(Field::To).is_empty() {
+            tr!("compose-recipients")
+        } else {
+            String::new()
+        };
+        let to = input(&placeholder, "", cx);
+        let cc = input("", "", cx);
+        let bcc = input("", "", cx);
+        let subject = input(&tr!("compose-subject"), &draft.subject, cx);
         let speller = self.speller(cx);
+        let grammar = self.grammar();
+        let answered = thread_text(&draft.body);
+        let suggest = self.suggestions(&answered, cx);
+        subject.update(cx, |input, cx| {
+            input.set_grammar_check(grammar.clone(), grammar_color(&th), cx)
+        });
         let body = cx.new(|cx| {
             let mut editor = RichEditor::new("", cx);
             editor.set_palette(palette(&th));
             editor.set_doc(draft.body.clone(), draft.body.start(), cx);
             editor.set_spell_check(speller, cx);
+            editor.set_grammar_check(grammar, cx);
+            editor.set_suggest(suggest, cx);
             editor
         });
         let mut subscriptions = Vec::new();
-        // Enter in a field moves on to the next one; typing a recipient
-        // suggests addresses.
+        // Enter in a field moves on to the next one, once the recipient
+        // typed there is a chip; typing a recipient suggests addresses, and
+        // leaving the field makes a chip of it.
         let fields: [(&Entity<TextInput>, FocusHandle, Option<Field>); 4] = [
             (&to, subject.focus_handle(cx), Some(Field::To)),
             (&cc, subject.focus_handle(cx), Some(Field::Cc)),
@@ -703,12 +830,45 @@ impl MailWindow {
                 input,
                 window,
                 move |this, _, event: &InputEvent, window, cx| match (event, field) {
-                    (InputEvent::Submit, _) => window.focus(&next, cx),
+                    (InputEvent::Submit, Some(field)) => {
+                        if !this.commit_recipients(field, true, cx) {
+                            window.focus(&next, cx);
+                        }
+                    }
+                    (InputEvent::Submit, None) => window.focus(&next, cx),
                     (InputEvent::Changed, Some(field)) => this.recipient_changed(field, cx),
-                    (InputEvent::Changed | InputEvent::Cancel, _) => cx.notify(),
+                    (InputEvent::Changed | InputEvent::Cancel, _) => {
+                        // Typing or Esc closes a card of fixes.
+                        this.close_hint(cx);
+                        cx.notify()
+                    }
                 },
             ));
+            if let Some(field) = field {
+                let focus = input.focus_handle(cx);
+                subscriptions.push(cx.on_blur(&focus, window, move |this, _, cx| {
+                    // A click on a suggestion picks it instead.
+                    if !this.suggesting(field) {
+                        this.commit_recipients(field, true, cx);
+                    }
+                }));
+            }
         }
+        subscriptions.push(
+            cx.subscribe(&subject, |this, _, event: &InputGrammarMenu, cx| {
+                let popup = Popup::SubjectGrammar {
+                    position: event.position,
+                    issue: event.issue.clone(),
+                    word: event.word,
+                };
+                if event.word.is_some() {
+                    this.show_hint(popup, cx);
+                } else if let Some(c) = &mut this.compose {
+                    c.popup = Some(popup);
+                    cx.notify();
+                }
+            }),
+        );
         self.load_address_book(cx);
         subscriptions.push(cx.subscribe_in(
             &body,
@@ -716,6 +876,7 @@ impl MailWindow {
             |this, _, event: &RichEvent, window, cx| match event {
                 RichEvent::Submit => this.send_compose_default(window, cx),
                 RichEvent::Changed => {
+                    this.close_hint(cx);
                     this.keep_cursor_in_view(cx);
                     cx.notify();
                 }
@@ -731,7 +892,24 @@ impl MailWindow {
                 RichEvent::ContextMenu {
                     position,
                     misspelled,
-                } => this.open_compose_menu(*position, misspelled.clone(), cx),
+                    grammar,
+                } => this.open_compose_menu(*position, misspelled.clone(), grammar.clone(), cx),
+                RichEvent::Hint {
+                    word,
+                    at,
+                    misspelled,
+                    suggestions,
+                    grammar,
+                } => this.show_hint(
+                    Popup::Hint {
+                        word: *word,
+                        at: *at,
+                        misspelled: misspelled.clone(),
+                        suggestions: suggestions.clone(),
+                        grammar: grammar.clone(),
+                    },
+                    cx,
+                ),
             },
         ));
         let focus = if focus_body {
@@ -748,6 +926,7 @@ impl MailWindow {
             cc,
             show_bcc: !draft.bcc.is_empty(),
             bcc,
+            chips,
             suggest: None,
             subject,
             body,
@@ -768,7 +947,9 @@ impl MailWindow {
             closing: false,
             body_scroll: ScrollHandle::new(),
             trimmed: None,
+            answered,
             stick: Rc::default(),
+            grammar_color: grammar_color(&th),
             _subscriptions: subscriptions,
         });
         cx.notify();
@@ -820,6 +1001,88 @@ impl MailWindow {
             .speller
             .clone()
             .map(|s| s as Rc<dyn SpellCheck>)
+    }
+
+    /// Harper's grammar rules if grammar checking is on; starts their
+    /// helper process for the first message open.
+    pub(super) fn grammar(&mut self) -> Option<Arc<dyn GrammarCheck>> {
+        if !self.config.sending.grammar_check {
+            self.writing.grammar = None;
+            return None;
+        }
+        if self.writing.grammar.is_none() {
+            let language = spell::language(&self.config.sending.spell_language);
+            match grammar::Helper::start(&language, &self.config.general.language) {
+                Ok(helper) => self.writing.grammar = Some(Arc::new(helper)),
+                Err(err) => tracing::warn!("grammar checking: {err}"),
+            }
+        }
+        self.writing.grammar.clone()
+    }
+
+    /// The open message checks grammar, or stops, as Settings says.
+    pub(super) fn grammar_changed(&mut self, cx: &mut Context<Self>) {
+        if self.compose.is_none() {
+            self.writing.grammar = None;
+            return;
+        }
+        let grammar = self.grammar();
+        if let Some(compose) = &self.compose {
+            let color = compose.grammar_color;
+            compose.body.update(cx, |editor, cx| {
+                editor.set_grammar_check(grammar.clone(), cx)
+            });
+            compose
+                .subject
+                .update(cx, |input, cx| input.set_grammar_check(grammar, color, cx));
+        }
+    }
+
+    /// Writing suggestions if they are on; starts learning the phrases the
+    /// first time.
+    fn suggestions(&mut self, thread: &str, cx: &mut Context<Self>) -> Option<Rc<dyn Suggest>> {
+        if !self.config.sending.writing_suggestions {
+            return None;
+        }
+        if self.writing.phrases.is_none() && !self.writing.phrases_loading {
+            self.writing.phrases_loading = true;
+            let paths = self.paths.clone();
+            cx.spawn(async move |this, cx| {
+                let phrases = cx
+                    .background_executor()
+                    .spawn(async move { Phrases::learn(&paths) })
+                    .await;
+                this.update(cx, |this, cx| {
+                    this.writing.phrases = Some(Rc::new(phrases));
+                    this.writing.phrases_loading = false;
+                    this.suggestions_changed(cx);
+                })
+                .ok();
+            })
+            .detach();
+        }
+        // Common phrases and the conversation until the sent mail is read.
+        let sent = self
+            .writing
+            .phrases
+            .clone()
+            .unwrap_or_else(|| Rc::new(Phrases::built_in()));
+        Some(Rc::new(Suggester::new(sent, thread)))
+    }
+
+    /// The open message suggests, or stops, as Settings says.
+    pub(super) fn suggestions_changed(&mut self, cx: &mut Context<Self>) {
+        let thread = self
+            .compose
+            .as_ref()
+            .map(|c| c.answered.clone())
+            .unwrap_or_default();
+        let suggest = self.suggestions(&thread, cx);
+        if let Some(compose) = &self.compose {
+            compose
+                .body
+                .update(cx, |editor, cx| editor.set_suggest(suggest, cx));
+        }
     }
 
     /// Scrolls the body so the cursor stays in view while typing. The
@@ -892,16 +1155,18 @@ impl MailWindow {
     /// also archives its conversation when Send and archive is the default.
     pub(super) fn send_compose_default(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let archive = self.config.sending.send_and_archive;
-        self.send_compose(None, archive, window, cx);
+        self.send_compose(None, archive, Passed::default(), window, cx);
     }
 
     /// Sends the open message, now (after the undo delay) or at `at`. With
     /// `archive`, a reply or forward also archives the conversation it
-    /// answers once the message is on its way.
+    /// answers once the message is on its way. First it asks about a
+    /// missing attachment or subject, unless `passed`.
     fn send_compose(
         &mut self,
         at: Option<jiff::Timestamp>,
         archive: bool,
+        passed: Passed,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
@@ -919,41 +1184,57 @@ impl MailWindow {
         let signature = compose.signature;
         let attachments = compose.attachments.clone();
         let plain = compose.plain(cx);
+        if let Some((field, address)) = self.bad_recipient(cx) {
+            if let Some(c) = &mut self.compose {
+                c.popup = Some(Popup::BadAddress { field, address });
+            }
+            cx.notify();
+            return;
+        }
         let parse = |text: &str| outgoing::parse_addresses(text);
         let (to, cc, bcc) = match (parse(&draft.to), parse(&draft.cc), parse(&draft.bcc)) {
             (Ok(to), Ok(cc), Ok(bcc)) => (to, cc, bcc),
             (Err(bad), ..) | (_, Err(bad), _) | (.., Err(bad)) => {
-                self.show_snackbar(
-                    format!("\u{201c}{bad}\u{201d} is not an email address."),
-                    None,
-                    cx,
-                );
+                self.show_snackbar(tr!("compose-bad-address", address = bad), None, cx);
                 return;
             }
         };
         if to.is_empty() && cc.is_empty() && bcc.is_empty() {
-            self.show_snackbar("Add at least one recipient.", None, cx);
+            self.show_snackbar(tr!("compose-no-recipients"), None, cx);
             return;
         }
         let total: usize = attachments.iter().map(|a| a.data.len()).sum::<usize>()
             + draft.body.images().map(|i| i.data.len()).sum::<usize>();
         if total > attach::MAX_TOTAL {
             self.show_snackbar(
-                format!(
-                    "The attachments are {}; mail servers take up to {}.",
-                    format::size(total as u64),
-                    format::size(attach::MAX_TOTAL as u64)
+                tr!(
+                    "compose-attachments-too-large",
+                    size = format::size(total as u64),
+                    limit = format::size(attach::MAX_TOTAL as u64)
                 ),
                 None,
                 cx,
             );
             return;
         }
+        let attached = attachments.len() + draft.body.images().count();
+        if let Some(check) = checks::check(&draft.subject, &draft.body, attached, passed) {
+            if let Some(c) = &mut self.compose {
+                c.popup = Some(Popup::SendCheck {
+                    check,
+                    at,
+                    archive,
+                    passed,
+                });
+            }
+            cx.notify();
+            return;
+        }
         let account = chosen
             .and_then(|id| self.accounts.iter().find(|a| a.id == id))
             .or_else(|| self.compose_account(kind));
         let Some(account) = account else {
-            self.show_snackbar("Add an account to send mail from.", None, cx);
+            self.show_snackbar(tr!("compose-no-account"), None, cx);
             self.open_add_account(window, cx);
             return;
         };
@@ -996,7 +1277,7 @@ impl MailWindow {
             Some(at) => {
                 let seconds = at.as_second() - jiff::Timestamp::now().as_second();
                 if seconds < 60 {
-                    self.show_snackbar("Pick a time in the future.", None, cx);
+                    self.show_snackbar(tr!("compose-past-time"), None, cx);
                     return;
                 }
                 u32::try_from(seconds).unwrap_or(u32::MAX)
@@ -1039,9 +1320,9 @@ impl MailWindow {
         self.close_compose(false, cx);
         self.show_snackbar(
             if at.is_some() {
-                "Scheduling\u{2026}"
+                tr!("compose-scheduling")
             } else {
-                "Sending\u{2026}"
+                tr!("compose-sending")
             },
             None,
             cx,
@@ -1064,9 +1345,9 @@ impl MailWindow {
             this.update_in(cx, |this, window, cx| match result {
                 Ok(id) => {
                     let text = match &when {
-                        Some(when) => format!("Send scheduled for {when}"),
-                        None if answering.is_some() => "Sent and archived".to_owned(),
-                        None => "Message sent".to_owned(),
+                        Some(when) => tr!("compose-scheduled", when = when.clone()),
+                        None if answering.is_some() => tr!("compose-sent-archived"),
+                        None => tr!("compose-sent"),
                     };
                     if let Some(key) = answering {
                         let unarchive = this.act_with(super::Act::Archive, vec![key], false, cx);
@@ -1142,7 +1423,7 @@ impl MailWindow {
         }
         self.close_compose_window(cx);
         if discarded {
-            self.show_snackbar("Draft discarded", None, cx);
+            self.show_snackbar(tr!("compose-discarded"), None, cx);
         }
         cx.notify();
     }
@@ -1166,6 +1447,10 @@ impl MailWindow {
         reduce: bool,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // Harper's helper is large: it runs only while a message is open.
+        if self.compose.is_none() && self.writing.grammar.is_some() {
+            self.writing.grammar = None;
+        }
         let (mode, conversation, closing) = self
             .compose
             .as_ref()
@@ -1248,9 +1533,9 @@ impl MailWindow {
                 )
                 .tooltip(tip(
                     if mode == Mode::Minimized {
-                        "Restore"
+                        tr!("compose-restore")
                     } else {
-                        "Minimize"
+                        tr!("compose-minimize")
                     },
                     th,
                 ))
@@ -1262,7 +1547,7 @@ impl MailWindow {
             .when(mode == Mode::Full, |d| {
                 d.child(
                     small_button("compose-full", "close-full", th)
-                        .tooltip(tip("Exit full screen", th))
+                        .tooltip(tip(tr!("compose-exit-full-screen"), th))
                         .on_click(cx.listener(|this, _, _, cx| {
                             cx.stop_propagation();
                             this.compose_mode(Mode::Full, cx)
@@ -1272,7 +1557,7 @@ impl MailWindow {
             .child(
                 // Gmail's expand button, in a window of its own here.
                 small_button("compose-pop-out", "open-full", th)
-                    .tooltip(tip("Open in a new window", th))
+                    .tooltip(tip(tr!("compose-open-window"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
                         cx.stop_propagation();
                         this.pop_out_compose(window, cx)
@@ -1280,7 +1565,7 @@ impl MailWindow {
             )
             .child(
                 small_button("compose-close", "close", th)
-                    .tooltip(tip("Save and close", th))
+                    .tooltip(tip(tr!("compose-save-close"), th))
                     .on_click(cx.listener(|this, _, _, cx| {
                         cx.stop_propagation();
                         // Drafts are not saved yet, so closing loses the text.
@@ -1389,9 +1674,9 @@ impl MailWindow {
             .as_ref()
             .filter(|c| c.mode == Mode::Inline && !c.closing && c.conversation == Some(key))?;
         let (kind_icon, kind_label) = match compose.kind {
-            Kind::ReplyAll => ("reply-all", "Reply all"),
-            Kind::Forward => ("forward", "Forward"),
-            Kind::Reply | Kind::New => ("reply", "Reply"),
+            Kind::ReplyAll => ("reply-all", tr!("reply-reply-all")),
+            Kind::Forward => ("forward", tr!("reply-forward")),
+            Kind::Reply | Kind::New => ("reply", tr!("reply-reply")),
         };
         let me = compose
             .from
@@ -1405,9 +1690,10 @@ impl MailWindow {
                 };
                 self.person_avatar(&name, &a.address, 40.0)
             });
+        let to_field = self.render_recipient_field(Field::To, th, cx);
         let header = div()
             .flex_none()
-            .h(px(44.0))
+            .min_h(px(44.0))
             .pl(px(12.0))
             .pr(px(6.0))
             .flex()
@@ -1422,7 +1708,7 @@ impl MailWindow {
                     .tooltip(tip(kind_label, th))
                     .child(icon(kind_icon, th.text_dim, 20.0)),
             )
-            .child(div().flex_1().min_w_0().child(compose.to.clone()))
+            .child(to_field)
             .when(!compose.show_cc, |d| {
                 d.child(
                     div()
@@ -1439,22 +1725,24 @@ impl MailWindow {
                             }
                             cx.notify();
                         }))
-                        .child("Cc"),
+                        .child(tr!("compose-cc")),
                 )
             })
             .children(self.render_sealing(th, cx))
             .child(
                 small_button("inline-pop-out", "open-full", th)
-                    .tooltip(tip("Pop out reply", th))
+                    .tooltip(tip(tr!("compose-pop-out-reply"), th))
                     // Straight into a window of its own; docking it brings
                     // it back here.
                     .on_click(cx.listener(|this, _, window, cx| this.pop_out_compose(window, cx))),
             );
+        let header = self.recipient_row(header, Field::To, th, cx);
+        let cc_field = self.render_recipient_field(Field::Cc, th, cx);
         let cc = compose.show_cc.then(|| {
             div()
                 .flex_none()
                 .mx(px(12.0))
-                .h(px(36.0))
+                .min_h(px(36.0))
                 .flex()
                 .flex_row()
                 .items_center()
@@ -1462,9 +1750,15 @@ impl MailWindow {
                 .border_t_1()
                 .border_color(rgba(th.divider))
                 .text_size(px(14.0))
-                .child(div().flex_none().text_color(rgba(th.text_dim)).child("Cc"))
-                .child(div().flex_1().min_w_0().child(compose.cc.clone()))
+                .child(
+                    div()
+                        .flex_none()
+                        .text_color(rgba(th.text_dim))
+                        .child(tr!("compose-cc")),
+                )
+                .child(cc_field)
         });
+        let cc = cc.map(|cc| self.recipient_row(cc, Field::Cc, th, cx));
         let focus = compose.body.focus_handle(cx);
         let body = div()
             .id("inline-body")
@@ -1482,11 +1776,9 @@ impl MailWindow {
         // while the text runs on below it, and moves up with the card.
         let stuck = {
             let at = compose.stick.get();
-            let view = self.reader_scroll.bounds().size.height;
-            let bottom = unpx(view - self.reader_scroll.offset().y);
-            let highest = at.card_top + STICK_BELOW;
-            (at.footer_top + at.footer_height - bottom)
-                .clamp(0.0, (at.footer_top - highest).max(0.0))
+            let stuck = at.stuck(&self.reader_scroll);
+            compose.stick.set(Stick { stuck, ..at });
+            stuck
         };
         let card = div()
             .id("inline-reply")
@@ -1586,7 +1878,7 @@ impl MailWindow {
                 .bg(rgba(th.chip))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
-                .tooltip(tip("Show trimmed content", th))
+                .tooltip(tip(tr!("compose-show-trimmed"), th))
                 .on_click(cx.listener(|this, _, _, cx| {
                     cx.stop_propagation();
                     this.show_trimmed(cx);
@@ -1615,24 +1907,43 @@ impl MailWindow {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };
-        let row = |label: &'static str, input: &Entity<TextInput>| {
+        let row = |label: String, field: AnyElement| {
             div()
                 .flex_none()
                 .mx(px(16.0))
-                .h(px(40.0))
+                .min_h(px(40.0))
                 .flex()
                 .flex_row()
-                .items_center()
+                // With chips on several lines, the label stays by the first.
+                .items_start()
                 .gap(px(8.0))
                 .border_b_1()
                 .border_color(rgba(th.divider))
                 .text_size(px(14.0))
                 .when(!label.is_empty(), |d| {
-                    d.child(div().flex_none().text_color(rgba(th.text_dim)).child(label))
+                    d.child(
+                        div()
+                            .flex_none()
+                            .h(px(40.0))
+                            .flex()
+                            .items_center()
+                            .text_color(rgba(th.text_dim))
+                            .child(label),
+                    )
                 })
-                .child(div().flex_1().min_w_0().child(input.clone()))
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .min_h(px(40.0))
+                        .flex()
+                        .items_center()
+                        .child(field),
+                )
         };
-        let link = |id: &'static str, label: &'static str| {
+        let [to_field, cc_field, bcc_field] = [Field::To, Field::Cc, Field::Bcc]
+            .map(|field| self.render_recipient_field(field, th, cx));
+        let link = |id: &'static str, label: String| {
             div()
                 .id(id)
                 .px(px(4.0))
@@ -1644,15 +1955,17 @@ impl MailWindow {
                 .child(label)
         };
         let to = self
-            .recipient_row(row("To", &compose.to), Field::To, th, cx)
+            .recipient_row(row(tr!("compose-to"), to_field), Field::To, th, cx)
             .child(
                 div()
                     .flex_none()
+                    .h(px(40.0))
                     .flex()
                     .flex_row()
+                    .items_center()
                     .gap(px(4.0))
                     .when(!compose.show_cc, |d| {
-                        d.child(link("compose-cc", "Cc").on_click(cx.listener(
+                        d.child(link("compose-cc", tr!("compose-cc")).on_click(cx.listener(
                             |this, _, window, cx| {
                                 if let Some(c) = &mut this.compose {
                                     c.show_cc = true;
@@ -1663,15 +1976,17 @@ impl MailWindow {
                         )))
                     })
                     .when(!compose.show_bcc, |d| {
-                        d.child(link("compose-bcc", "Bcc").on_click(cx.listener(
-                            |this, _, window, cx| {
-                                if let Some(c) = &mut this.compose {
-                                    c.show_bcc = true;
-                                    window.focus(&c.bcc.focus_handle(cx), cx);
-                                }
-                                cx.notify();
-                            },
-                        )))
+                        d.child(
+                            link("compose-bcc", tr!("compose-bcc")).on_click(cx.listener(
+                                |this, _, window, cx| {
+                                    if let Some(c) = &mut this.compose {
+                                        c.show_bcc = true;
+                                        window.focus(&c.bcc.focus_handle(cx), cx);
+                                    }
+                                    cx.notify();
+                                },
+                            )),
+                        )
                     })
                     .children(self.render_sealing(th, cx)),
             );
@@ -1681,12 +1996,15 @@ impl MailWindow {
             .flex_col()
             .child(to)
             .when(compose.show_cc, |d| {
-                d.child(self.recipient_row(row("Cc", &compose.cc), Field::Cc, th, cx))
+                d.child(self.recipient_row(row(tr!("compose-cc"), cc_field), Field::Cc, th, cx))
             })
             .when(compose.show_bcc, |d| {
-                d.child(self.recipient_row(row("Bcc", &compose.bcc), Field::Bcc, th, cx))
+                d.child(self.recipient_row(row(tr!("compose-bcc"), bcc_field), Field::Bcc, th, cx))
             })
-            .child(row("", &compose.subject))
+            .child(row(
+                String::new(),
+                compose.subject.clone().into_any_element(),
+            ))
             .into_any_element()
     }
 
@@ -1732,7 +2050,8 @@ impl MailWindow {
 const STICK_BELOW: f32 = 96.0;
 
 /// Records where its parent is drawn in the conversation `scroll`, in
-/// pixels from the top of the content, and draws again when that moved.
+/// pixels from the top of the content, and draws again when that moved or
+/// the Send row is no longer at the bottom of the pane.
 fn measure(
     scroll: &ScrollHandle,
     stick: &Rc<Cell<Stick>>,
@@ -1745,7 +2064,10 @@ fn measure(
             let top = unpx(bounds.top() - scroll.bounds().top() - scroll.offset().y);
             let mut at = stick.get();
             set(&mut at, top, unpx(bounds.size.height));
-            if at != stick.get() {
+            // Also when the pane changed size or a scroll went past its
+            // end since the Send row was placed.
+            let placed = (at.stuck(&scroll) - at.stuck).abs() < 0.5;
+            if at != stick.get() || !placed {
                 stick.set(at);
                 // After this frame: a change asked for while drawing is lost.
                 let this = this.clone();
@@ -1762,6 +2084,12 @@ fn measure(
     .size_full()
 }
 
+/// The underline of grammar mistakes: amber, apart from spelling's red
+/// and the blue of links.
+fn grammar_color(th: &Theme) -> Hsla {
+    rgba(if th.dark { 0xfdd663ff } else { 0xf9ab00ff }).into()
+}
+
 /// The editor's colors from the window's theme.
 fn palette(th: &Theme) -> Palette {
     let color = |c: u32| -> Hsla { rgba(c).into() };
@@ -1769,6 +2097,7 @@ fn palette(th: &Theme) -> Palette {
         accent: color(th.accent),
         link: color(if th.dark { 0x8ab4f8ff } else { 0x1a0dabff }),
         misspelled: color(th.error),
+        grammar: grammar_color(th),
         rule: color(if th.dark { 0x5f6368ff } else { 0xccccccff }),
         surface: color(th.menu),
         text: color(th.text),

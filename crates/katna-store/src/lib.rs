@@ -39,7 +39,7 @@ pub use mail::{
     ParticipantRole, ThreadId,
 };
 pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
-pub use mail_view::{FolderSummary, ThreadEntry, ThreadSender, ThreadSummary};
+pub use mail_view::{FolderMarks, FolderSummary, Marks, ThreadEntry, ThreadSender, ThreadSummary};
 pub use ops::{Location, PinnedMessage, QueuedOp};
 pub use outbox::{OutboxEntry, SendState};
 pub use people::{Correspondent, Person};
@@ -309,6 +309,12 @@ impl Store {
         folder: FolderId,
     ) -> Result<Vec<ThreadSummary>> {
         mail_view::thread_summaries(&self.mail, threads, folder)
+    }
+
+    /// Whether each message of `folder`, and each conversation with a
+    /// message there, is unread and starred; see [`FolderMarks`].
+    pub fn folder_marks(&self, folder: FolderId) -> Result<FolderMarks> {
+        mail_view::folder_marks(&self.mail, folder)
     }
 
     /// Unread **conversations** (not messages) in `folder` per tab, for tab

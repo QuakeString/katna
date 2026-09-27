@@ -29,6 +29,27 @@ The text is one paragraph; line breaks in the file become spaces. The
 build stops on a bad name, an unknown key, a missing title or text, or a
 missing animation file.
 
+## Translations
+
+Write highlights in English only. Their translations are added later, with
+the rest of the languages work, one file per language beside its `.ftl`
+files: `i18n/<language>/katna-mail/whats-new.toml`, with a table per
+highlight named by its file name without `.toml`:
+
+```toml
+["2026-09-27-0444-about-katna"]
+title = "Katna について"
+text = """
+ヘルプ > Katna について（クイック設定にもあります）には、バージョン、
+変更履歴、Katna が使っているすべてのライブラリが表示されます。
+"""
+```
+
+What's new shows a highlight in the chosen language when that file has
+its table, else in English. The text is one paragraph here too. The build
+stops on a table for a highlight that does not exist, a key other than
+`title` and `text`, or an empty one.
+
 # What's new animations
 
 Short looping clips of major features, built into Katna Mail and shown in

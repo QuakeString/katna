@@ -11,8 +11,9 @@ use std::sync::LazyLock;
 
 use gpui::{
     AnyElement, Context, FocusHandle, FontWeight, KeyDownEvent, MouseButton, SharedString, Window,
-    div, linear_color_stop, linear_gradient, prelude::*, rgba,
+    div, prelude::*, rgba,
 };
+use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 use katna_ui::unpx;
@@ -49,97 +50,97 @@ const FOLLOW: &[(&str, Option<&str>)] = &[
     ),
 ];
 
-/// The heart of Katna, picked by hand: the name, what it does in Katna,
-/// its license and its home. It matches the credits in README.md; every
+/// The heart of Katna, picked by hand: the name, the message id of what
+/// it does in Katna, its license and its home. It matches the credits in README.md; every
 /// library is in [`LIBRARIES`].
 const CREDITS: &[(&str, &str, &str, &str)] = &[
     (
         "Pimalaya",
-        "IMAP, SMTP and sign-in (io-imap, io-smtp, io-sasl)",
+        "about-credit-pimalaya",
         "MIT or Apache-2.0",
         "https://github.com/pimalaya",
     ),
     (
         "imap-codec",
-        "Reading and writing IMAP",
+        "about-credit-imap-codec",
         "MIT or Apache-2.0",
         "https://github.com/duesee/imap-codec",
     ),
     (
         "Tantivy",
-        "Search",
+        "about-credit-tantivy",
         "MIT",
         "https://github.com/quickwit-oss/tantivy",
     ),
     (
         "SQLite and rusqlite",
-        "The mail store",
+        "about-credit-sqlite",
         "Public domain and MIT",
         "https://github.com/rusqlite/rusqlite",
     ),
     (
         "rustls",
-        "Secure connections",
+        "about-credit-rustls",
         "Apache-2.0, ISC or MIT",
         "https://github.com/rustls/rustls",
     ),
     (
         "mail-parser",
-        "Reading mail, from Stalwart Labs",
+        "about-credit-mail-parser",
         "Apache-2.0 or MIT",
         "https://github.com/stalwartlabs/mail-parser",
     ),
     (
         "html5ever",
-        "HTML mail, from the Servo project",
+        "about-credit-html5ever",
         "MIT or Apache-2.0",
         "https://github.com/servo/html5ever",
     ),
     (
         "zbus and ashpd",
-        "Talking to the desktop over D-Bus and portals",
+        "about-credit-zbus",
         "MIT",
         "https://github.com/z-galaxy/zbus",
     ),
     (
         "oo7",
-        "Passwords in the desktop's keyring",
+        "about-credit-oo7",
         "MIT",
         "https://github.com/linux-credentials/oo7",
     ),
     (
         "hayro and krilla",
-        "Viewing and printing PDFs",
+        "about-credit-hayro",
         "Apache-2.0 or MIT",
         "https://github.com/LaurenzV/hayro",
     ),
     (
         "calamine",
-        "Spreadsheet previews",
+        "about-credit-calamine",
         "MIT",
         "https://github.com/tafia/calamine",
     ),
     (
         "resvg",
-        "SVG pictures",
+        "about-credit-resvg",
         "Apache-2.0 or MIT",
         "https://github.com/linebender/resvg",
     ),
     (
         "Jiff",
-        "Dates and time zones",
+        "about-credit-jiff",
         "Unlicense or MIT",
         "https://github.com/BurntSushi/jiff",
     ),
     (
         "Spellbook",
-        "Spell check, from the Helix editor",
+        "about-credit-spellbook",
         "MPL-2.0",
         "https://github.com/helix-editor/spellbook",
     ),
     (
         "smol",
-        "Doing many things at once",
+        "about-credit-smol",
         "Apache-2.0 or MIT",
         "https://github.com/smol-rs/smol",
     ),
@@ -263,7 +264,7 @@ impl MailWindow {
             .text_color(rgba(th.text_dim))
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
-            .tooltip(tip("About Katna", th))
+            .tooltip(tip(tr!("about-tooltip"), th))
             .on_click(cx.listener(|this, _, window, cx| this.open_about(window, cx)))
             .child(icon("info", th.text_dim, 18.0))
             .child(
@@ -313,7 +314,7 @@ impl MailWindow {
                 div()
                     .text_size(px(14.0))
                     .text_color(rgba(th.text_dim))
-                    .child("Mail and calendar for the Linux desktop"),
+                    .child(tr!("about-tagline")),
             )
             .child(
                 div()
@@ -337,17 +338,22 @@ impl MailWindow {
             .justify_center()
             .gap(px(8.0))
             .child(
-                outlined_button("about-whats-new", "What\u{2019}s new", th).on_click(cx.listener(
-                    |this, _, window, cx| {
+                outlined_button("about-whats-new", tr!("about-whats-new"), th).on_click(
+                    cx.listener(|this, _, window, cx| {
                         this.close_about(window, cx);
                         this.show_whats_new(window, cx);
-                    },
-                )),
+                    }),
+                ),
             )
-            .child(link_button("about-changelog", "Changelog", changelog, th))
+            .child(link_button(
+                "about-changelog",
+                tr!("about-changelog"),
+                changelog,
+                th,
+            ))
             .child(link_button(
                 "about-source",
-                "Source code",
+                tr!("about-source"),
                 SOURCE_URL.to_owned(),
                 th,
             ));
@@ -368,13 +374,15 @@ impl MailWindow {
             .text_size(px(14.0))
             .font_weight(FontWeight::MEDIUM)
             .child(icon("coffee", th.text, 20.0))
-            .child("Buy me a coffee");
+            .child(tr!("about-coffee"));
         let coffee = match SUPPORT_URL {
             Some(url) => coffee
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(fade(th.star, 0.34))))
                 .on_click(move |_, _, cx| cx.open_url(url)),
-            None => coffee.opacity(0.55).tooltip(tip("Coming soon", th)),
+            None => coffee
+                .opacity(0.55)
+                .tooltip(tip(tr!("about-coming-soon"), th)),
         };
 
         let follow = FOLLOW
@@ -416,7 +424,7 @@ impl MailWindow {
                     div()
                         .text_size(px(13.0))
                         .text_color(rgba(th.text_dim))
-                        .child("Follow the author"),
+                        .child(tr!("about-follow")),
                 )
                 .children(follow)
         });
@@ -444,20 +452,14 @@ impl MailWindow {
                         div()
                             .text_size(px(15.0))
                             .font_weight(FontWeight::MEDIUM)
-                            .child("Made with love for Rust, KDE and Linux"),
+                            .child(tr!("about-love-title")),
                     )
                     .child(
                         div()
                             .text_size(px(14.0))
                             .line_height(px(21.0))
                             .text_color(rgba(th.text_dim))
-                            .child(
-                                "Rust makes a fast and safe mail app a joy to write: \
-                                 Katna has no unsafe code. KDE's Plasma desktop and \
-                                 its PIM suite inspired Katna, and Linux and the free \
-                                 software community build the ground it stands on. \
-                                 Thank you, and thank you to the libraries below.",
-                            ),
+                            .child(tr!("about-love-text")),
                     )
                     .child(
                         div()
@@ -465,16 +467,11 @@ impl MailWindow {
                             .text_size(px(14.0))
                             .line_height(px(21.0))
                             .text_color(rgba(th.text_dim))
-                            .child(
-                                "KDE builds the desktop Katna feels most at home on, \
-                                 and it is made by volunteers and funded by people \
-                                 like you. If you enjoy Plasma or KDE's apps, please \
-                                 consider donating to KDE.",
-                            ),
+                            .child(tr!("about-kde-text")),
                     )
                     .child(div().mt(px(8.0)).flex().flex_row().child(link_button(
                         "about-donate-kde",
-                        "Donate to KDE",
+                        tr!("about-donate-kde"),
                         KDE_DONATE_URL.to_owned(),
                         th,
                     ))),
@@ -494,20 +491,14 @@ impl MailWindow {
                 div()
                     .text_size(px(15.0))
                     .font_weight(FontWeight::MEDIUM)
-                    .child("Built on GPUI, from the Zed project"),
+                    .child(tr!("about-gpui-title")),
             )
             .child(
                 div()
                     .text_size(px(14.0))
                     .line_height(px(21.0))
                     .text_color(rgba(th.text_dim))
-                    .child(
-                        "Katna Mail's whole interface is built on GPUI, the fast, \
-                         GPU-accelerated UI framework that Zed Industries made for \
-                         the Zed editor. Every pixel, animation and window you see \
-                         is drawn by it. Thank you, Zed team, for building it in \
-                         the open. Apache-2.0.",
-                    ),
+                    .child(tr!("about-gpui-text")),
             )
             .child(
                 div()
@@ -519,7 +510,7 @@ impl MailWindow {
                     .child(link_button("about-zed", "zed.dev", ZED_URL.to_owned(), th))
                     .child(link_button(
                         "about-gpui",
-                        "GPUI on GitHub",
+                        tr!("about-gpui-github"),
                         GPUI_URL.to_owned(),
                         th,
                     )),
@@ -536,19 +527,14 @@ impl MailWindow {
                 div()
                     .text_size(px(15.0))
                     .font_weight(FontWeight::MEDIUM)
-                    .child("A personal project"),
+                    .child(tr!("about-personal-title")),
             )
             .child(
                 div()
                     .text_size(px(14.0))
                     .line_height(px(21.0))
                     .text_color(rgba(th.text_dim))
-                    .child(
-                        "Katna Mail does not try to be new or revolutionary. It is \
-                         the mail app its author wanted, and its features and look \
-                         are borrowed from Gmail, Mailspring and Thunderbird. It was \
-                         only possible because of how far LLMs have come.",
-                    ),
+                    .child(tr!("about-personal-text")),
             );
 
         let credits = CREDITS
@@ -587,7 +573,7 @@ impl MailWindow {
                                     .text_size(px(13.0))
                                     .line_height(px(18.0))
                                     .text_color(rgba(th.text_dim))
-                                    .child(*what),
+                                    .child(tr!(what)),
                             ),
                     )
                     .child(
@@ -611,7 +597,7 @@ impl MailWindow {
                     .text_size(px(12.0))
                     .font_weight(FontWeight::MEDIUM)
                     .text_color(rgba(th.text_dim))
-                    .child("BUILT ON FREE SOFTWARE"),
+                    .child(tr!("about-built-on")),
             )
             .children(credits);
 
@@ -647,7 +633,7 @@ impl MailWindow {
                             .text_size(px(14.0))
                             .font_weight(FontWeight::MEDIUM)
                             .text_color(rgba(th.accent))
-                            .child(format!("Every library Katna uses ({})", LIBRARIES.len())),
+                            .child(tr!("about-all-libraries", count = LIBRARIES.len())),
                     )
                     .child(icon(
                         if all { "chevron-down" } else { "chevron-right" },
@@ -689,7 +675,10 @@ impl MailWindow {
                                         .text_size(px(13.0))
                                         .line_height(px(18.0))
                                         .text_color(rgba(th.text_dim))
-                                        .child(format!("by {}", lib.authors)),
+                                        .child(tr!(
+                                            "about-library-authors",
+                                            authors = lib.authors.as_str()
+                                        )),
                                 ),
                         )
                         .child(
@@ -739,10 +728,10 @@ impl MailWindow {
                     .text_size(px(12.0))
                     .line_height(px(17.0))
                     .text_color(rgba(th.text_dim))
-                    .child("Katna is free software under the GNU GPL, version 3 or later."),
+                    .child(tr!("about-license")),
             )
             .child(
-                filled_button("about-close", "Close", th)
+                filled_button("about-close", tr!("about-close"), th)
                     .on_click(cx.listener(|this, _, window, cx| this.close_about(window, cx))),
             );
 
@@ -803,31 +792,19 @@ impl MailWindow {
 /// An outlined button that opens `url` in the browser.
 fn link_button(
     id: &'static str,
-    label: &'static str,
+    label: impl Into<SharedString>,
     url: String,
     th: &Theme,
 ) -> gpui::Stateful<gpui::Div> {
-    outlined_button(id, SharedString::from(label), th)
+    outlined_button(id, label, th)
         .gap(px(8.0))
         .child(icon("open-external", th.accent, 16.0))
         .on_click(move |_, _, cx| cx.open_url(&url))
 }
 
-/// The Katna mark, larger than the one on the account pages.
+/// Katna's logo, larger than the one on the account pages.
 fn logo() -> AnyElement {
-    div()
-        .size(px(64.0))
-        .flex()
-        .items_center()
-        .justify_center()
-        .rounded(px(18.0))
-        .bg(linear_gradient(
-            135.0,
-            linear_color_stop(rgba(0x4f8df7ff), 0.0),
-            linear_color_stop(rgba(0x3949c9ff), 1.0),
-        ))
-        .child(icon("mail", 0xffffffff, 40.0))
-        .into_any_element()
+    crate::widgets::katna_mark(64.0)
 }
 
 #[cfg(test)]

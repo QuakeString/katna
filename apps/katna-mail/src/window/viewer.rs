@@ -11,6 +11,11 @@
 //! drawn only while on screen (and one either side), at the zoom and the
 //! screen's scale, and freed when scrolled far away. Spreadsheets and
 //! documents are drawn by `office.rs`.
+//!
+//! Text can be selected and copied as in a message (`select.rs`): the
+//! lines of a text file, the paragraphs of a document or slides, and the
+//! text a PDF draws (read in the background, page by page). A
+//! spreadsheet selects cells instead, and copies them tab-separated.
 
 mod office;
 
@@ -24,8 +29,8 @@ use gpui::{
     ImageSource, KeyDownEvent, ObjectFit, RenderImage, ScrollHandle, SharedString, Task, Window,
     div, ease_out_quint, img, prelude::*, rgba, uniform_list,
 };
-use katna_preview::pdf::{self, Document};
-use katna_preview::{Kind, Picture, document, picture, sheet, text};
+use katna_preview::pdf::{self, Document, TextLine};
+use katna_preview::{Kind, Picture, document, picture, sheet, slides, text};
 use katna_render::AttachmentFile;
 use katna_ui::Ripple;
 use katna_ui::px;
@@ -33,6 +38,7 @@ use katna_ui::unpx;
 
 use self::office::{DocumentView, SheetView};
 use super::attachments::{Item, bitmap, kind_badge};
+use super::select::{self, Key, Marker, SelectHost, TextSelection};
 use crate::format;
 use crate::theme::Theme;
 use crate::widgets::{icon, tip};
@@ -65,6 +71,9 @@ pub(super) enum ViewerEvent {
     Close,
     Save(Arc<AttachmentFile>),
     OpenWith(Arc<AttachmentFile>),
+    /// The file the viewer was opened on has no preview after all (a
+    /// damaged, protected or unsupported file): open it elsewhere.
+    Unreadable(Arc<AttachmentFile>),
 }
 
 pub(super) struct Viewer {
@@ -86,7 +95,24 @@ pub(super) struct Viewer {
     drawing: Option<(usize, Task<()>)>,
     /// Counts openings, to replay the fade-in.
     seq: usize,
+    /// Selected text of a text file, document or PDF.
+    text: TextSelection,
     pub(super) th: Theme,
+}
+
+impl SelectHost for Viewer {
+    fn selection(&self) -> &TextSelection {
+        &self.text
+    }
+
+    fn selection_mut(&mut self) -> &mut TextSelection {
+        &mut self.text
+    }
+
+    /// The viewer keeps the focus, so its keys still work.
+    fn text_focus(&self) -> FocusHandle {
+        self.focus.clone()
+    }
 }
 
 enum Content {
@@ -107,7 +133,13 @@ struct PdfView {
     doc: Arc<Document>,
     /// Drawn pages: the scale they were drawn at, in pixels per point.
     pages: HashMap<usize, (f32, Arc<RenderImage>)>,
+    /// Each page's text, as far as it has been read.
+    text: Vec<Rc<Vec<TextLine>>>,
+    _reading: Option<Task<()>>,
 }
+
+/// Pages whose text is read, for selecting; enough for any mail.
+const TEXT_PAGES: usize = 2000;
 
 /// What loading found, made on a background thread.
 enum Loaded {
@@ -117,6 +149,8 @@ enum Loaded {
     Text(Vec<SharedString>, bool),
     Sheet(sheet::Workbook),
     Document(document::Document),
+    /// Why there is nothing to show: a message id, translated on the
+    /// main thread.
     Nothing(&'static str),
 }
 
@@ -146,6 +180,7 @@ impl Viewer {
             _load: None,
             drawing: None,
             seq: 0,
+            text: TextSelection::new(cx),
             th,
         };
         this.show(current, cx);
@@ -179,6 +214,7 @@ impl Viewer {
         let ix = ix % self.items.len();
         self.current = ix;
         self.seq += 1;
+        self.text.begin(self.seq);
         self.zoom = fit_step();
         self.scroll.set_offset(gpui::point(px(0.0), px(0.0)));
         self.file = None;
@@ -187,6 +223,10 @@ impl Viewer {
         self.release(old);
         let item = self.items[ix].clone();
         let raw = self.raw.clone();
+        // Only the file the viewer was opened on is handed to another app
+        // when it cannot be shown; paging through never launches one.
+        let first = self.seq == 1;
+        let risky = item.risky;
         self._load = Some(cx.spawn(async move |this, cx| {
             let (file, loaded) = cx
                 .background_executor()
@@ -194,17 +234,42 @@ impl Viewer {
                 .await;
             this.update(cx, |this, cx| {
                 this.file = file.map(Arc::new);
+                if first
+                    && matches!(loaded, Loaded::Nothing(_))
+                    && !risky
+                    && let Some(file) = &this.file
+                {
+                    cx.emit(ViewerEvent::Unreadable(file.clone()));
+                }
                 this.content = match loaded {
-                    Loaded::Pdf(doc) => Content::Pdf(PdfView {
-                        doc: Arc::new(doc),
-                        pages: HashMap::new(),
-                    }),
+                    Loaded::Pdf(doc) => {
+                        let doc = Arc::new(doc);
+                        Content::Pdf(PdfView {
+                            _reading: Some(this.read_pdf_text(doc.clone(), cx)),
+                            doc,
+                            pages: HashMap::new(),
+                            text: Vec::new(),
+                        })
+                    }
                     Loaded::Bitmap(image, size) => Content::Bitmap(image, size),
                     Loaded::Drawn(image, size) => Content::Drawn(image, size),
-                    Loaded::Text(lines, cut) => Content::Text(Rc::new(lines), cut),
+                    Loaded::Text(lines, cut) => {
+                        let all = lines
+                            .iter()
+                            .enumerate()
+                            .map(|(ix, line)| (Key::new(0, ix), line.clone()))
+                            .collect();
+                        this.text.set_all(Some(Rc::new(all)));
+                        Content::Text(Rc::new(lines), cut)
+                    }
                     Loaded::Sheet(book) => Content::Sheet(SheetView::new(book)),
-                    Loaded::Document(doc) => Content::Document(DocumentView::new(doc)),
-                    Loaded::Nothing(why) => Content::Nothing(why.into()),
+                    Loaded::Document(doc) => {
+                        let view = DocumentView::new(doc);
+                        this.text.set_all(Some(view.all_text()));
+                        this.text.set_part_gap("\n");
+                        Content::Document(view)
+                    }
+                    Loaded::Nothing(why) => Content::Nothing(katna_i18n::tr!(why).into()),
                 };
                 cx.notify();
             })
@@ -215,6 +280,70 @@ impl Viewer {
 
     fn close(&mut self, cx: &mut Context<Self>) {
         cx.emit(ViewerEvent::Close);
+    }
+
+    /// Reads the text of `doc`'s pages in the background, a few pages at
+    /// a time, so it can be selected.
+    fn read_pdf_text(&mut self, doc: Arc<Document>, cx: &mut Context<Self>) -> Task<()> {
+        self.text.set_part_gap("\n\n");
+        cx.spawn(async move |this, cx| {
+            let count = doc.pages().min(TEXT_PAGES);
+            let mut next = 0;
+            while next < count {
+                let (from, to) = (next, (next + 8).min(count));
+                let doc = doc.clone();
+                let pages: Vec<Vec<TextLine>> = cx
+                    .background_executor()
+                    .spawn(async move { (from..to).map(|p| doc.text(p)).collect() })
+                    .await;
+                let done = to == count;
+                let more = this.update(cx, |this, cx| {
+                    let Content::Pdf(pdf) = &mut this.content else {
+                        return false;
+                    };
+                    pdf.text.extend(pages.into_iter().map(Rc::new));
+                    // Until every page is read, copying takes what is on
+                    // screen.
+                    if done {
+                        let all = pdf
+                            .text
+                            .iter()
+                            .enumerate()
+                            .flat_map(|(page, lines)| {
+                                lines.iter().enumerate().map(move |(ix, line)| {
+                                    (Key::new(page, ix), SharedString::from(line.text.clone()))
+                                })
+                            })
+                            .collect();
+                        this.text.set_all(Some(Rc::new(all)));
+                    }
+                    cx.notify();
+                    true
+                });
+                if !matches!(more, Ok(true)) {
+                    return;
+                }
+                next = to;
+            }
+        })
+    }
+
+    /// Copies the selected text, or the selected cells of a spreadsheet.
+    fn copy(&mut self, cx: &mut Context<Self>) {
+        if matches!(self.content, Content::Sheet(_)) {
+            self.copy_cells(cx);
+        } else {
+            select::copy(self, cx);
+        }
+    }
+
+    /// Selects all of the text, or every cell of the sheet on show.
+    fn select_all(&mut self, cx: &mut Context<Self>) {
+        if matches!(self.content, Content::Sheet(_)) {
+            self.select_all_cells(cx);
+        } else {
+            select::select_all(self, cx);
+        }
     }
 
     fn save(&mut self, cx: &mut Context<Self>) {
@@ -284,6 +413,8 @@ impl Viewer {
             "-" => self.set_zoom(self.zoom.saturating_sub(1), cx),
             "0" => self.set_zoom(fit_step(), cx),
             "s" if ctrl => self.save(cx),
+            "c" if ctrl => self.copy(cx),
+            "a" if ctrl => self.select_all(cx),
             "up" => self.scroll_by(-LINE_SCROLL, cx),
             "down" => self.scroll_by(LINE_SCROLL, cx),
             "pageup" => self.scroll_by(-page, cx),
@@ -369,13 +500,13 @@ impl Viewer {
 /// Extracts `item` from the raw message and decodes it for showing.
 fn load(raw: &[u8], item: &Item) -> (Option<AttachmentFile>, Loaded) {
     let Some(file) = katna_render::attachment_file(raw, item.index) else {
-        return (None, Loaded::Nothing("This attachment could not be read."));
+        return (None, Loaded::Nothing("viewer-unreadable"));
     };
     let loaded = match katna_preview::kind(&file.mime, &file.name) {
         Kind::Pdf => match Document::open(file.bytes.clone()) {
             Ok(doc) => Loaded::Pdf(doc),
-            Err(pdf::Error::Locked) => Loaded::Nothing("This PDF is protected with a password."),
-            Err(pdf::Error::Invalid) => Loaded::Nothing("This PDF could not be read."),
+            Err(pdf::Error::Locked) => Loaded::Nothing("viewer-pdf-locked"),
+            Err(pdf::Error::Invalid) => Loaded::Nothing("viewer-pdf-unreadable"),
         },
         Kind::Picture(Picture::Svg) => Loaded::Drawn(
             Arc::new(gpui::Image::from_bytes(
@@ -398,7 +529,7 @@ fn load(raw: &[u8], item: &Item) -> (Option<AttachmentFile>, Loaded) {
                     let size = image.dimensions();
                     Loaded::Bitmap(bitmap(image), size)
                 }
-                Err(_) => Loaded::Nothing("This picture could not be read."),
+                Err(_) => Loaded::Nothing("viewer-picture-unreadable"),
             }
         }
         Kind::Text => {
@@ -412,27 +543,19 @@ fn load(raw: &[u8], item: &Item) -> (Option<AttachmentFile>, Loaded) {
         }
         Kind::Sheet { csv: false } => match sheet::open(file.bytes.clone()) {
             Ok(book) => Loaded::Sheet(book),
-            Err(_) => Loaded::Nothing("This spreadsheet could not be read."),
+            Err(_) => Loaded::Nothing("viewer-sheet-unreadable"),
         },
         Kind::Document => match document::open(file.bytes.clone()) {
             Ok(doc) => Loaded::Document(doc),
-            Err(_) => Loaded::Nothing("This document could not be read."),
+            Err(_) => Loaded::Nothing("viewer-document-unreadable"),
         },
-        Kind::Other if is_old_office(&file.name) => {
-            Loaded::Nothing("Old Word files (.doc) and slides have no preview yet.")
-        }
-        Kind::Other => Loaded::Nothing("No preview available"),
+        Kind::Slides => match slides::open(file.bytes.clone()) {
+            Ok(doc) => Loaded::Document(doc),
+            Err(_) => Loaded::Nothing("viewer-slides-unreadable"),
+        },
+        Kind::Other => Loaded::Nothing("viewer-no-preview"),
     };
     (Some(file), loaded)
-}
-
-/// Word 97–2003 and RTF documents and slides, which have no preview.
-fn is_old_office(name: &str) -> bool {
-    name.rsplit_once('.').is_some_and(|(_, ext)| {
-        ["doc", "dot", "ppt", "pps", "pptx", "rtf"]
-            .iter()
-            .any(|e| ext.eq_ignore_ascii_case(e))
-    })
 }
 
 fn fit_step() -> usize {
@@ -475,6 +598,9 @@ impl Render for Viewer {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         // Text without a size of its own follows Settings > Appearance > Scaling.
         window.set_rem_size(px(16.0));
+        // A new frame: text scrolled out of sight is no longer selectable
+        // where it was.
+        self.text.begin(self.seq);
         let th = self.th;
         let viewport = window.viewport_size();
         // The room the viewer had at the last frame: the window below the
@@ -492,7 +618,7 @@ impl Render for Viewer {
 
         let mut pages_label = None;
         let body: AnyElement = if matches!(self.content, Content::Document(_)) {
-            self.document_body(zoom, vw)
+            self.document_body(zoom, vw, cx)
         } else {
             match &self.content {
                 Content::Document(_) => div().into_any_element(),
@@ -564,6 +690,19 @@ impl Render for Viewer {
                     let count = lines.len() + usize::from(cut);
                     let size = 13.0 * zoom;
                     let width = (vw - 160.0).clamp(300.0, 960.0);
+                    let marker = self.text.marker(&th);
+                    let page = select::selectable(
+                        div()
+                            .w(px(width))
+                            .h_full()
+                            .rounded(px(8.0))
+                            .bg(rgba(0xffffffff))
+                            .text_color(rgba(0x202124ff))
+                            .font_family("monospace")
+                            .text_size(px(size)),
+                        None,
+                        cx,
+                    );
                     div()
                         .size_full()
                         .flex()
@@ -571,34 +710,32 @@ impl Render for Viewer {
                         .pt(px(BAR_HEIGHT + 8.0))
                         .pb(px(80.0))
                         .child(
-                            div()
-                                .w(px(width))
-                                .h_full()
-                                .rounded(px(8.0))
-                                .bg(rgba(0xffffffff))
-                                .text_color(rgba(0x202124ff))
-                                .font_family("monospace")
-                                .text_size(px(size))
-                                .child(
-                                    uniform_list("viewer-text", count, move |range, _, _| {
-                                        range
-                                            .map(|ix| {
-                                                let line = match lines.get(ix) {
-                                                    Some(line) => line.clone(),
-                                                    None => "… (the rest of the file is not shown)"
-                                                        .into(),
-                                                };
-                                                div()
-                                                    .px(px(20.0))
-                                                    .h(px(size * 1.5))
-                                                    .whitespace_nowrap()
-                                                    .child(line)
-                                            })
-                                            .collect()
-                                    })
-                                    .py(px(12.0))
-                                    .size_full(),
-                                ),
+                            page.child(
+                                uniform_list("viewer-text", count, move |range, _, _| {
+                                    range
+                                        .map(|ix| {
+                                            let row = div()
+                                                .px(px(20.0))
+                                                .h(px(size * 1.5))
+                                                .whitespace_nowrap();
+                                            match lines.get(ix) {
+                                                Some(line) => {
+                                                    let (styled, holder) = marker.piece(
+                                                        Key::new(0, ix),
+                                                        line.clone(),
+                                                        Vec::new(),
+                                                    );
+                                                    row.child(holder.child(styled))
+                                                }
+                                                None => row
+                                                    .child("… (the rest of the file is not shown)"),
+                                            }
+                                        })
+                                        .collect()
+                                })
+                                .py(px(12.0))
+                                .size_full(),
+                            ),
                         )
                         .into_any_element()
                 }
@@ -613,11 +750,14 @@ impl Render for Viewer {
                     let current = self.current_page(count);
                     pages_label = Some(format!("Page {} of {}", current + 1, count));
                     let wide = widest * z > vw - 32.0;
+                    let marker = self.text.marker(&th);
                     let pages: Vec<AnyElement> = (0..count)
                         .map(|p| {
                             let (w, h) = pdf.doc.page_size(p);
                             let (w, h) = (w * z, h * z);
+                            let text = pdf.text.get(p).filter(|lines| !lines.is_empty());
                             div()
+                                .relative()
                                 .flex_none()
                                 .w(px(w))
                                 .h(px(h))
@@ -637,6 +777,14 @@ impl Render for Viewer {
                                             .object_fit(ObjectFit::Fill),
                                     )
                                 })
+                                .when_some(text, |d, lines| {
+                                    d.cursor_text().child(page_text(
+                                        p,
+                                        lines.clone(),
+                                        z,
+                                        marker.clone(),
+                                    ))
+                                })
                                 .into_any_element()
                         })
                         .collect();
@@ -646,7 +794,7 @@ impl Render for Viewer {
                     window.on_next_frame(move |_, cx| {
                         this.update(cx, |this, cx| this.draw_pages(scale, cx)).ok();
                     });
-                    div()
+                    select::selectable(div(), None, cx)
                         .id("viewer-pages")
                         .size_full()
                         .overflow_scroll()
@@ -675,6 +823,7 @@ impl Render for Viewer {
             .flex_row()
             .items_center()
             .gap(px(12.0))
+            .occlude()
             .bg(rgba(BAR))
             .child(
                 bar_button("viewer-close", "back", &th)
@@ -838,9 +987,13 @@ impl Render for Viewer {
                 }
             })
             .child(body)
+            .child(select::follow_drags(cx))
+            .child(self.follow_cell_drags(cx))
             .child(top_bar)
             .children(arrows.into_iter().flatten())
             .children(foot)
+            .children(select::text_menu(self, &th, cx))
+            .children(self.cell_menu(&th, cx))
             .with_animation(
                 ("viewer-in", self.seq),
                 Animation::new(Duration::from_millis(160)).with_easing(ease_out_quint()),
@@ -878,6 +1031,56 @@ impl Viewer {
             )
             .into_any_element()
     }
+}
+
+/// A PDF page's text over its picture: invisible, but recorded where each
+/// character is so it can be selected, with the selection drawn over the
+/// page. `z` is logical pixels per point.
+fn page_text(page: usize, lines: Rc<Vec<TextLine>>, z: f32, marker: Marker) -> AnyElement {
+    let color = marker.color();
+    gpui::canvas(
+        move |bounds, _, _| {
+            let origin = bounds.origin;
+            let mut shade = Vec::new();
+            for (ix, line) in lines.iter().enumerate() {
+                let key = Key::new(page, ix);
+                let top = origin.y + px(line.top * z);
+                let height = px((line.bottom - line.top) * z);
+                let left = origin.x + px(line.left() * z);
+                let area = gpui::Bounds::new(
+                    gpui::point(left, top),
+                    gpui::size(px((line.right() - line.left()) * z), height),
+                );
+                let chars = line
+                    .chars
+                    .iter()
+                    .map(|(offset, x, _)| (*offset, origin.x + px(x * z)))
+                    .collect();
+                marker.place(key, SharedString::from(line.text.clone()), area, chars);
+                if let Some(range) = marker.range(key, line.text.len()) {
+                    let from = line.chars.iter().find(|c| c.0 >= range.start);
+                    let to = line.chars.iter().rev().find(|c| c.0 < range.end);
+                    if let (Some(from), Some(to)) = (from, to) {
+                        shade.push(gpui::Bounds::new(
+                            gpui::point(origin.x + px(from.1 * z), top),
+                            gpui::size(px((to.2 - from.1).max(0.0) * z), height),
+                        ));
+                    }
+                }
+            }
+            shade
+        },
+        move |_, shade, window, _| {
+            for area in shade {
+                window.paint_quad(gpui::fill(area, color));
+            }
+        },
+    )
+    .absolute()
+    .top_0()
+    .left_0()
+    .size_full()
+    .into_any_element()
 }
 
 /// The logical size of a `w` × `h` pixel picture: at most its own size (at

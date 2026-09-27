@@ -18,6 +18,7 @@ use std::{
 use futures_lite::{FutureExt, StreamExt};
 use katna_core::AccountId;
 use katna_core::config::Notifications;
+use katna_i18n::tr;
 use katna_notify::{NewMail, Notifier, action};
 use katna_store::{FolderRole, MessageFlags, MessageId, ParticipantRole, Store};
 use zbus::zvariant::Value;
@@ -179,7 +180,7 @@ impl NewMailNotices {
                     .and_then(|p| p.display_name.clone())
                     .filter(|name| !name.trim().is_empty())
                     .or_else(|| from.map(|p| p.email_norm.clone()))
-                    .unwrap_or_else(|| "Unknown sender".to_owned());
+                    .unwrap_or_else(|| tr!("notify-unknown-sender"));
                 NewMail {
                     sender,
                     subject: message.subject,

@@ -10,6 +10,7 @@
 use std::collections::HashMap;
 
 use katna_core::ids;
+use katna_i18n::tr;
 use zbus::zvariant::Value;
 
 /// Actions on a new-mail notification, as `ActionInvoked` names them.
@@ -72,11 +73,12 @@ pub struct NewMail {
     pub preview: Option<String>,
 }
 
-/// Summary and body of a notification for `mails` (not empty).
+/// Summary and body of a notification for `mails` (not empty), in the
+/// current language (`i18n/<language>/katna-daemon/notifications.ftl`).
 pub fn new_mail_text(mails: &[NewMail]) -> (String, String) {
     let subject = |mail: &NewMail| {
         if mail.subject.trim().is_empty() {
-            "(no subject)".to_owned()
+            tr!("notify-no-subject")
         } else {
             mail.subject.clone()
         }
@@ -89,14 +91,17 @@ pub fn new_mail_text(mails: &[NewMail]) -> (String, String) {
         }
         return (mail.sender.clone(), body);
     }
-    let summary = format!("{} new emails", mails.len());
+    let summary = tr!("notify-new-emails", count = mails.len());
     let mut lines: Vec<String> = mails
         .iter()
         .take(LISTED)
         .map(|mail| escape(&format!("{}: {}", mail.sender, subject(mail))))
         .collect();
     if mails.len() > LISTED {
-        lines.push(format!("and {} more", mails.len() - LISTED));
+        lines.push(escape(&tr!(
+            "notify-and-more",
+            count = mails.len() - LISTED
+        )));
     }
     (summary, lines.join("\n"))
 }
@@ -146,16 +151,25 @@ impl Notifier {
         sound: bool,
     ) -> zbus::Result<u32> {
         let (summary, body) = new_mail_text(mails);
-        let mark_read = if mails.len() == 1 {
-            "Mark as read"
-        } else {
-            "Mark all as read"
-        };
-        let mut actions = vec![action::OPEN, "Open"];
-        if mails.len() == 1 {
-            actions.extend([action::REPLY_ALL, "Reply all"]);
+        let one = mails.len() == 1;
+        let mut actions = vec![(action::OPEN, tr!("notify-open"))];
+        if one {
+            actions.push((action::REPLY_ALL, tr!("notify-reply-all")));
         }
-        actions.extend([action::MARK_READ, mark_read, action::ARCHIVE, "Archive"]);
+        let mark_read = if one {
+            tr!("notify-mark-read")
+        } else {
+            tr!("notify-mark-all-read")
+        };
+        actions.extend([
+            (action::MARK_READ, mark_read),
+            (action::ARCHIVE, tr!("notify-archive")),
+        ]);
+        // Key, label, key, label, … as the specification has them.
+        let actions: Vec<&str> = actions
+            .iter()
+            .flat_map(|(key, label)| [*key, label.as_str()])
+            .collect();
         let mut hints = HashMap::from([
             ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
             ("category", Value::from("email.arrived")),

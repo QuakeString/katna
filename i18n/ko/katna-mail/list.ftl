@@ -1,0 +1,165 @@
+# Katna Mail, Korean (한국어).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Mail list: inbox tabs (Gmail's categories, Outlook's and Zoho's)
+
+tab-primary = 기본
+tab-promotions = 프로모션
+tab-social = 소셜
+tab-updates = 업데이트
+tab-forums = 포럼
+tab-focused = 중요
+tab-other = 기타
+tab-inbox = 받은편지함
+tab-newsletters = 뉴스레터
+tab-notifications = 알림
+tab-new = 새 메일 { $count }개
+tab-provider-other = Katna에서 분류
+
+## Mail list: toolbar
+
+list-select = 선택
+list-refresh = 새로고침
+list-more = 더보기
+list-mark-read = 읽음으로 표시
+list-mark-unread = 읽지 않음으로 표시
+list-move-to = 이동
+list-archive = 보관처리
+list-spam = 스팸신고
+list-delete = 삭제
+list-newer = 최신
+list-older = 이전
+list-range = { $first }–{ $last } / { $total }
+list-range-about = { $first }–{ $last } / 약 { $total }
+list-results = “{ $query }” 검색결과
+list-results-corrected = “{ $query }” 검색결과를 표시합니다
+list-search-instead = 대신 “{ $query }”(으)로 검색
+list-files-more = +{ $count }
+
+## Mail list: Select menu (which lines to tick)
+
+list-pick-all = 전체
+list-pick-none = 선택 안함
+list-pick-read = 읽음
+list-pick-unread = 읽지 않음
+list-pick-starred = 별표 있음
+list-pick-unstarred = 별표 없음
+
+## Mail list: banner when every line is ticked
+
+list-selected-all = { $kind ->
+    [conversation] 대화 { $count }개가 모두 선택되었습니다.
+   *[message] 메일 { $count }개가 모두 선택되었습니다.
+}
+list-selected-all-in = { $kind ->
+    [conversation] { $folder }의 대화 { $count }개가 모두 선택되었습니다.
+   *[message] { $folder }의 메일 { $count }개가 모두 선택되었습니다.
+}
+list-selected-screen = { $kind ->
+    [conversation] 이 페이지의 대화 { $count }개가 모두 선택되었습니다.
+   *[message] 이 페이지의 메일 { $count }개가 모두 선택되었습니다.
+}
+list-select-all = { $kind ->
+    [conversation] 대화 { $count }개 모두 선택
+   *[message] 메일 { $count }개 모두 선택
+}
+list-select-all-in = { $kind ->
+    [conversation] { $folder }의 대화 { $count }개 모두 선택
+   *[message] { $folder }의 메일 { $count }개 모두 선택
+}
+list-clear-selection = 선택 해제
+
+## Mail list: empty states
+
+list-empty-search = 검색과 일치하는 메일이 없습니다.
+list-empty-tab = { $tab }에 메일이 없습니다.
+list-empty-tab-unknown = 이 탭에 메일이 없습니다.
+list-empty-folder = { $folder }에 메일이 없습니다.
+list-empty-folder-unknown = 이 폴더에 메일이 없습니다.
+list-first-sync = 메일을 가져오는 중…
+list-first-sync-detail = 메일이 도착하는 대로 여기에 표시됩니다.
+
+## Mail list: lines
+
+row-removed = 이 메일은 삭제되었습니다.
+row-starred = 별표 있음
+row-not-starred = 별표 없음
+row-important = 중요. 클릭하면 중요하지 않음으로 표시합니다.
+row-mark-important = 중요 표시
+row-pinned = 상단에 고정됨
+row-pin = 상단에 고정
+row-unpin = 고정 해제
+
+## Mail list: More menu and right-click menu
+
+menu-reply = 답장
+menu-reply-all = 전체답장
+menu-forward = 전달
+menu-archive = 보관처리
+menu-delete = 삭제
+menu-spam = 스팸신고
+menu-mark-read = 읽음으로 표시
+menu-mark-unread = 읽지 않음으로 표시
+menu-mark-all-read = 모두 읽음으로 표시
+menu-star = 별표 추가
+menu-unstar = 별표 삭제
+menu-important = 중요 표시
+menu-not-important = 중요하지 않음으로 표시
+menu-pin = 상단에 고정
+menu-unpin = 고정 해제
+menu-print-all = 모두 인쇄
+menu-new-window = 새 창에서 열기
+menu-move-to = 이동
+menu-move-to-heading = 이동할 위치:
+menu-find-from = { $name }님이 보낸 메일 찾기
+
+## Snackbar after an action on mail in the list
+
+toast-archived = { $kind ->
+    [conversation] 대화 { $count }개가 보관처리되었습니다.
+   *[message] 메일 { $count }개가 보관처리되었습니다.
+}
+toast-trashed = { $kind ->
+    [conversation] 대화 { $count }개가 휴지통으로 이동되었습니다.
+   *[message] 메일 { $count }개가 휴지통으로 이동되었습니다.
+}
+toast-moved = { $kind ->
+    [conversation] 대화 { $count }개가 이동되었습니다.
+   *[message] 메일 { $count }개가 이동되었습니다.
+}
+toast-starred = { $kind ->
+    [conversation] 대화 { $count }개에 별표를 추가했습니다.
+   *[message] 메일 { $count }개에 별표를 추가했습니다.
+}
+toast-unstarred = { $kind ->
+    [conversation] 대화 { $count }개의 별표를 삭제했습니다.
+   *[message] 메일 { $count }개의 별표를 삭제했습니다.
+}
+toast-important = { $kind ->
+    [conversation] 대화 { $count }개를 중요로 표시했습니다.
+   *[message] 메일 { $count }개를 중요로 표시했습니다.
+}
+toast-not-important = { $kind ->
+    [conversation] 대화 { $count }개를 중요하지 않음으로 표시했습니다.
+   *[message] 메일 { $count }개를 중요하지 않음으로 표시했습니다.
+}
+toast-pinned = { $kind ->
+    [conversation] 대화 { $count }개를 상단에 고정했습니다.
+   *[message] 메일 { $count }개를 상단에 고정했습니다.
+}
+toast-unpinned = { $kind ->
+    [conversation] 대화 { $count }개의 고정을 해제했습니다.
+   *[message] 메일 { $count }개의 고정을 해제했습니다.
+}
+toast-spam = { $kind ->
+    [conversation] 대화 { $count }개를 스팸으로 신고했습니다.
+   *[message] 메일 { $count }개를 스팸으로 신고했습니다.
+}
+toast-deleted-forever = { $kind ->
+    [conversation] 대화 { $count }개를 영구삭제했습니다.
+   *[message] 메일 { $count }개를 영구삭제했습니다.
+}
+toast-undone = 작업을 실행취소했습니다.
+toast-undo = 실행취소
+toast-no-spam-folder = 이 계정에는 스팸함이 없습니다.

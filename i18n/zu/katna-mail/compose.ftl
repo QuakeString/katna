@@ -1,0 +1,76 @@
+# Katna Mail, Zulu (isiZulu).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Compose window: title bar
+
+compose-new-message = Umlayezo Omusha
+compose-restore = Buyisela
+compose-minimize = Nciphisa
+compose-exit-full-screen = Phuma kusikrini esigcwele
+compose-open-window = Vula ewindini elisha
+compose-save-close = Londoloza bese uvala
+compose-back-to-mail = Buyela ewindini le-imeyili
+compose-pop-out-reply = Vula impendulo ngokwehlukile
+compose-show-trimmed = Bonisa okuqukethwe okufinyeziwe
+
+## Recipients and subject
+
+compose-to = Ku
+compose-cc = Cc
+compose-bcc = Bcc
+compose-recipients = Abamukeli
+compose-subject = Isihloko
+
+## Sending (the notes at the bottom of the window)
+
+compose-open-elsewhere = Thumela noma ulahle umlayezo ovuliwe kuqala.
+compose-bad-address = “{ $address }” akulona ikheli le-imeyili.
+compose-no-recipients = Engeza okungenani umamukeli oyedwa.
+compose-attachments-too-large = Okunamathiselwe kungu-{ $size }; amaseva e-imeyili amukela kufika ku-{ $limit }.
+compose-no-account = Engeza i-akhawunti ozothumela ngayo imeyili.
+compose-past-time = Khetha isikhathi esizayo.
+compose-scheduling = Iyahlela…
+compose-sending = Iyathumela…
+compose-scheduled = Ukuthumela kuhlelelwe { $when }
+compose-sent-archived = Kuthunyelwe futhi kwafakwa kungobo yomlando
+compose-sent = Umlayezo uthunyelwe
+compose-discarded = Okusalungiswa kulahliwe
+
+## Attachments
+
+compose-picker-insert = Faka
+compose-picker-attach = Namathisela
+compose-file-too-large = { $name } likhulu kakhulu: umlayezo ungathwala kufika ku-{ $limit }.
+compose-attachment-size = ({ $size })
+compose-remove-attachment = Susa okunamathiselwe
+compose-drop-files = Yehlisela amafayela lapha
+
+## Encryption and signing (the toggles by the recipients)
+
+compose-encrypt = Bethela
+compose-encrypted = Kubethelwe: abamukeli kuphela abangakufunda
+compose-sign = Sayina
+compose-signed = Kusayiniwe: abamukeli bangahlola ukuthi kuvela kuwe
+
+## Spelling
+
+spell-no-dictionary = Asikho isichazamazwi sokupela se-{ $language } esifakiwe (isibonelo hunspell-en_us).
+spell-dictionary-error = Isichazamazwi sokupela: { $error }
+
+## Grammar checking (the right-click menu on a grammar mistake)
+
+grammar-replace = “{ $words }”
+grammar-add = Engeza “{ $words }”
+grammar-remove = Susa “{ $words }”
+grammar-ignore = Ziba
+
+## Send checks (asked before a message goes out)
+
+send-check-attachment-title = Ingabe ubuhlose ukunamathisela amafayela?
+send-check-attachment-text = Ubhale ngokunamathiselwe, kodwa akukho okunamathiselwe.
+send-check-attach = Namathisela ifayela
+send-check-subject-title = Thumela ngaphandle kwesihloko?
+send-check-subject-text = Lo mlayezo awunaso isihloko.
+send-check-add-subject = Engeza isihloko
+send-check-send-anyway = Thumela noma kunjalo
