@@ -157,6 +157,15 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 15,
+        title: "Settings tabs on one line",
+        text: "The Settings tabs stay on one line: when they don't fit, arrows at \
+               the edges and the scroll wheel glide the rest into view. Signatures \
+               and templates share a Compose tab, and folders and mail rules \
+               share one too.",
+        animation: None,
+    },
+    Highlight {
+        id: 16,
         title: "Help improve Katna, if you like",
         text: "Katna asks once whether to send crash reports to help fix what went \
                wrong. They go without your IP address, messages or email addresses, \

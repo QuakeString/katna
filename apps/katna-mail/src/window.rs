@@ -48,6 +48,7 @@ mod settings;
 mod settings_page;
 mod settings_search;
 mod share_ask;
+mod tab_strip;
 mod tour;
 mod viewer;
 mod whats_new;

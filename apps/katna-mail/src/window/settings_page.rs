@@ -6,7 +6,7 @@
 //! Inbox (tabs per account), Accounts (the folder pane, remove one, or
 //! delete all data), Appearance (reading pane, density, theme, pictures),
 //! Shortcuts (every one, each can be changed by pressing the new keys),
-//! Default apps (where each kind of attachment opens), Signature (several,
+//! Default apps (where each kind of attachment opens), Compose (signatures,
 //! with defaults for new mail and replies), User feedback (crash reports
 //! and feedback) and Experimental, with pages for
 //! the tabs still to come. The top bar's search box finds settings while
@@ -30,6 +30,7 @@ use katna_ui::{InputEvent, RichEditor, Ripple, TextInput};
 
 use super::keymap::{self, Group, SHORTCUTS};
 use super::settings::{Change, heading};
+use super::tab_strip::TabStrip;
 use super::{
     FocusNext, FocusPrevious, MailWindow, OpenSettings, ShowShortcuts, apps::App as RailApp,
 };
@@ -62,17 +63,17 @@ pub(super) enum Section {
     Appearance,
     Shortcuts,
     DefaultApps,
+    /// Folders & rules: folders and labels, and mail rules.
     MailRules,
-    Folders,
+    /// Compose: signatures, and templates to come.
     Signatures,
-    Templates,
     McpServer,
     Feedback,
     Experimental,
 }
 
 impl Section {
-    pub(super) const ALL: [Self; 14] = [
+    pub(super) const ALL: [Self; 12] = [
         Self::General,
         Self::Inbox,
         Self::Accounts,
@@ -81,9 +82,7 @@ impl Section {
         Self::Shortcuts,
         Self::DefaultApps,
         Self::MailRules,
-        Self::Folders,
         Self::Signatures,
-        Self::Templates,
         Self::McpServer,
         Self::Feedback,
         Self::Experimental,
@@ -98,10 +97,8 @@ impl Section {
             Self::Appearance => "Appearance",
             Self::Shortcuts => "Shortcuts",
             Self::DefaultApps => "Default apps",
-            Self::MailRules => "Mail rules",
-            Self::Folders => "Folders",
-            Self::Signatures => "Signature",
-            Self::Templates => "Templates",
+            Self::MailRules => "Folders & rules",
+            Self::Signatures => "Compose",
             Self::McpServer => "MCP server",
             Self::Feedback => "User feedback",
             Self::Experimental => "Experimental",
@@ -121,8 +118,8 @@ pub(super) struct SettingsPage {
     pub(super) focus: FocusHandle,
     /// The controls Tab stops at, which the page scrolls to.
     stops: TabStops,
-    /// The row of section tabs, which scrolls sideways on a phone.
-    tabs: ScrollHandle,
+    /// The row of section tabs, on one line that scrolls sideways.
+    tabs: TabStrip,
     /// What the top bar's search box has, which shows matching settings
     /// in place of the open tab.
     pub(super) query: SharedString,
@@ -180,7 +177,7 @@ impl MailWindow {
             scroll: scroll.clone(),
             focus: cx.focus_handle().tab_stop(true),
             stops: TabStops::new(scroll),
-            tabs: ScrollHandle::new(),
+            tabs: TabStrip::default(),
             query: SharedString::default(),
             flash: None,
             info: Rc::default(),
@@ -190,7 +187,7 @@ impl MailWindow {
         }
         page.section = section;
         if let Some(ix) = Section::ALL.iter().position(|s| *s == section) {
-            page.tabs.scroll_to_item(ix);
+            page.tabs.reveal(ix, fresh);
         }
         page.recording = None;
         page.flash = None;
@@ -294,7 +291,7 @@ impl MailWindow {
         let section = page.section;
         let scroll = page.scroll.clone();
         let focus = page.focus.clone();
-        let tabs_scroll = page.tabs.clone();
+        let strip = page.tabs.clone();
         let tabs = Section::ALL.map(|s| {
             let on = s == section;
             div()
@@ -346,11 +343,9 @@ impl MailWindow {
             Section::Shortcuts => self.shortcuts_section(th, cx),
             Section::Experimental => self.experimental_section(th, cx),
             Section::Feedback => self.feedback_section(th, cx),
-            Section::Subscriptions
-            | Section::MailRules
-            | Section::Folders
-            | Section::Templates
-            | Section::McpServer => self.coming_soon_section(section, th),
+            Section::Subscriptions | Section::MailRules | Section::McpServer => {
+                self.coming_soon_section(section, th)
+            }
         };
         // On a phone the page fills the window below the top bar, like the
         // list, and its sides come in closer.
@@ -386,26 +381,15 @@ impl MailWindow {
                     .child(div().flex_1())
                     .child(self.version_button(th, cx)),
             )
-            // The tabs wrap onto more lines on a wide page; on a phone they
-            // stay on one line that scrolls sideways, as a phone's tabs do.
-            .child(
-                div()
-                    .id("settings-page-tabs")
-                    .flex_none()
-                    .px(px(lerp(16.0, 4.0, shape.phone)))
-                    .flex()
-                    .flex_row()
-                    .border_b_1()
-                    .border_color(rgba(th.divider))
-                    .map(|d| {
-                        if shape.is_phone() {
-                            d.overflow_x_scroll().track_scroll(&tabs_scroll)
-                        } else {
-                            d.flex_wrap()
-                        }
-                    })
-                    .children(tabs),
-            )
+            // One line of tabs that scrolls sideways when they don't fit,
+            // with arrows at the edges except on a phone, where it's swiped.
+            .child(strip.render(
+                "settings-page-tabs",
+                tabs,
+                !shape.is_phone(),
+                lerp(16.0, 4.0, shape.phone),
+                th,
+            ))
             .child(
                 div()
                     .id("settings-page-body")
@@ -1176,6 +1160,14 @@ impl MailWindow {
                     th,
                 ))
             })
+            .child(self.row(
+                "Templates",
+                Some("Save mail you write often, and start new mail or a reply from it."),
+                div()
+                    .flex()
+                    .child(super::settings_search::coming_pill(th)),
+                th,
+            ))
             .into_any_element()
     }
 
