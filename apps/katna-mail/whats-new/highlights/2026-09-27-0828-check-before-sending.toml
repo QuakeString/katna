@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A check before sending"
+text = """
+If your message speaks of an attachment but has none, or has no subject,
+Katna asks before sending it, for scheduled mail too.
+"""

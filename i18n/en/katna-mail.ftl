@@ -642,3 +642,13 @@ viewer-slides-unreadable = These slides could not be read.
 viewer-no-preview = No preview available
 # Above each slide of a presentation. $number: the slide's number.
 viewer-slide = Slide { $number }
+
+## Send checks (asked before a message goes out)
+
+send-check-attachment-title = Did you mean to attach files?
+send-check-attachment-text = You wrote about an attachment, but nothing is attached.
+send-check-attach = Attach a file
+send-check-subject-title = Send without a subject?
+send-check-subject-text = This message has no subject.
+send-check-add-subject = Add subject
+send-check-send-anyway = Send anyway
