@@ -20,6 +20,7 @@ storage-used-detail = { $address }: { $used } dari { $total } terpakai
 
 folder-inbox = Kotak Masuk
 folder-starred = Berbintang
+folder-snoozed = Ditunda
 folder-unread = Belum dibaca
 folder-important = Penting
 folder-drafts = Draf

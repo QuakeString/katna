@@ -634,3 +634,13 @@ carpeta y la pestaña de Recibidos que tenías abiertas, las carpetas que
 habías desplegado y si el panel de carpetas estaba plegado. Salir de Katna
 desde la bandeja del sistema lo hace empezar de cero.
 """
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Posponer y recordatorios de respuesta"
+text = """
+Pospón una conversación con el reloj de su línea o desde el menú del clic
+derecho: espera en la carpeta Pospuestos y vuelve a Recibidos, sin leer,
+a la hora que elegiste. Al enviar, la flecha junto a Enviar puede
+recordártelo si nadie responde en 1, 3 o 7 días. Ambas funciones van
+mientras el ordenador está encendido y se ponen al día cuando se reactiva.
+"""

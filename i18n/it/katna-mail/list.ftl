@@ -32,6 +32,8 @@ list-move-to = Sposta in
 list-archive = Archivia
 list-spam = Segnala come spam
 list-delete = Elimina
+list-snooze = Posticipa
+list-unsnooze = Annulla posticipo
 list-newer = Più recenti
 list-older = Meno recenti
 list-range = { $first }–{ $last } di { $total }
@@ -402,6 +404,7 @@ row-mark-important = Contrassegna come importante
 row-pinned = Fissato in alto
 row-pin = Fissa in alto
 row-unpin = Sblocca
+row-snoozed-until = Posticipato a { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -423,6 +426,8 @@ menu-important = Contrassegna come importante
 menu-not-important = Contrassegna come non importante
 menu-pin = Fissa in alto
 menu-unpin = Sblocca
+menu-snooze = Posticipa
+menu-unsnooze = Annulla posticipo
 menu-print-all = Stampa tutto
 menu-new-window = Apri in una nuova finestra
 menu-move-to = Sposta in
@@ -537,6 +542,30 @@ toast-unpinned = { $kind ->
         [one] Messaggio sbloccato.
         [many] { $count } di messaggi sbloccati.
        *[other] { $count } messaggi sbloccati.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Conversazione posticipata a { $when }.
+        [many] { $count } di conversazioni posticipate a { $when }.
+       *[other] { $count } conversazioni posticipate a { $when }.
+    }
+   *[message] { $count ->
+        [one] Messaggio posticipato a { $when }.
+        [many] { $count } di messaggi posticipati a { $when }.
+       *[other] { $count } messaggi posticipati a { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Conversazione tornata in Posta in arrivo.
+        [many] { $count } di conversazioni tornate in Posta in arrivo.
+       *[other] { $count } conversazioni tornate in Posta in arrivo.
+    }
+   *[message] { $count ->
+        [one] Messaggio tornato in Posta in arrivo.
+        [many] { $count } di messaggi tornati in Posta in arrivo.
+       *[other] { $count } messaggi tornati in Posta in arrivo.
     }
 }
 toast-spam = { $kind ->

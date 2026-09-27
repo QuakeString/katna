@@ -28,6 +28,8 @@ list-move-to = Verplaatsen naar
 list-archive = Archiveren
 list-spam = Spam melden
 list-delete = Verwijderen
+list-snooze = Snoozen
+list-unsnooze = Snooze opheffen
 list-newer = Nieuwer
 list-older = Ouder
 list-range = { $first }–{ $last } van { $total }
@@ -348,6 +350,7 @@ row-mark-important = Markeren als belangrijk
 row-pinned = Bovenaan vastgezet
 row-pin = Bovenaan vastzetten
 row-unpin = Losmaken
+row-snoozed-until = Gesnoozed tot { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = Markeren als belangrijk
 menu-not-important = Markeren als niet belangrijk
 menu-pin = Bovenaan vastzetten
 menu-unpin = Losmaken
+menu-snooze = Snoozen
+menu-unsnooze = Snooze opheffen
 menu-print-all = Alles afdrukken
 menu-new-window = Openen in nieuw venster
 menu-move-to = Verplaatsen naar
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] Bericht losgemaakt.
        *[other] { $count } berichten losgemaakt.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek gesnoozed tot { $when }.
+       *[other] { $count } gesprekken gesnoozed tot { $when }.
+    }
+   *[message] { $count ->
+        [one] Bericht gesnoozed tot { $when }.
+       *[other] { $count } berichten gesnoozed tot { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek terug in de Inbox.
+       *[other] { $count } gesprekken terug in de Inbox.
+    }
+   *[message] { $count ->
+        [one] Bericht terug in de Inbox.
+       *[other] { $count } berichten terug in de Inbox.
     }
 }
 toast-spam = { $kind ->

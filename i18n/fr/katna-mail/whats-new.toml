@@ -650,3 +650,14 @@ l’onglet de la boîte de réception que vous aviez ouverts, les dossiers que
 vous aviez dépliés et l’état replié ou non du volet des dossiers. Quitter
 Katna depuis la zone de notification le fait repartir de zéro.
 """
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Mise en attente et rappels de réponse"
+text = """
+Mettez une conversation en attente avec l’horloge de sa ligne ou depuis le
+menu du clic droit : elle patiente dans le dossier En attente et revient
+dans la boîte de réception, non lue, à l’heure choisie. À l’envoi, la
+flèche à côté d’Envoyer peut vous le rappeler si personne ne répond sous
+1, 3 ou 7 jours. Les deux fonctionnent tant que votre ordinateur est
+allumé, et rattrapent leur retard à son réveil.
+"""

@@ -616,3 +616,13 @@ inkorgsfliken du hade öppna tillbaka, liksom mapparna du hade fällt ut
 och om mappfönstret var hopfällt. Avslutar du Katna från systemfältet
 startar det från början.
 """
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Snooza och påminnelser om svar"
+text = """
+Snooza en konversation med klockan på dess rad eller från
+högerklicksmenyn: den väntar i mappen Snoozade och kommer tillbaka till
+Inkorgen, oläst, vid den tid du valde. När du skickar kan pilen bredvid
+Skicka påminna dig om ingen svarar inom 1, 3 eller 7 dagar. Båda fungerar
+medan datorn är på och tar igen det som missats när den vaknar.
+"""

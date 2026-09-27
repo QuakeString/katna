@@ -33,6 +33,8 @@ list-move-to = Перемістити в
 list-archive = Архівувати
 list-spam = Повідомити про спам
 list-delete = Видалити
+list-snooze = Відкласти
+list-unsnooze = Скасувати відкладення
 list-newer = Новіші
 list-older = Старіші
 list-range = { $first }–{ $last } з { $total }
@@ -453,6 +455,7 @@ row-mark-important = Позначити як важливе
 row-pinned = Закріплено вгорі
 row-pin = Закріпити вгорі
 row-unpin = Відкріпити
+row-snoozed-until = Відкладено до { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -474,6 +477,8 @@ menu-important = Позначити як важливе
 menu-not-important = Позначити як неважливе
 menu-pin = Закріпити вгорі
 menu-unpin = Відкріпити
+menu-snooze = Відкласти
+menu-unsnooze = Скасувати відкладення
 menu-print-all = Надрукувати все
 menu-new-window = Відкрити в новому вікні
 menu-move-to = Перемістити в
@@ -606,6 +611,34 @@ toast-unpinned = { $kind ->
         [few] { $count } листи відкріплено.
         [many] { $count } листів відкріплено.
        *[other] { $count } листа відкріплено.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } ланцюжок відкладено до { $when }.
+        [few] { $count } ланцюжки відкладено до { $when }.
+        [many] { $count } ланцюжків відкладено до { $when }.
+       *[other] { $count } ланцюжка відкладено до { $when }.
+    }
+   *[message] { $count ->
+        [one] { $count } лист відкладено до { $when }.
+        [few] { $count } листи відкладено до { $when }.
+        [many] { $count } листів відкладено до { $when }.
+       *[other] { $count } листа відкладено до { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } ланцюжок повернуто у Вхідні.
+        [few] { $count } ланцюжки повернуто у Вхідні.
+        [many] { $count } ланцюжків повернуто у Вхідні.
+       *[other] { $count } ланцюжка повернуто у Вхідні.
+    }
+   *[message] { $count ->
+        [one] { $count } лист повернуто у Вхідні.
+        [few] { $count } листи повернуто у Вхідні.
+        [many] { $count } листів повернуто у Вхідні.
+       *[other] { $count } листа повернуто у Вхідні.
     }
 }
 toast-spam = { $kind ->

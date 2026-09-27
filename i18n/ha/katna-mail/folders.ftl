@@ -23,6 +23,7 @@ storage-used-detail = { $address }: an yi amfani da { $used } na { $total }
 
 folder-inbox = Akwatin saƙo
 folder-starred = Masu tauraro
+folder-snoozed = Waɗanda aka jinkirta
 folder-unread = Ba a karanta ba
 folder-important = Muhimmi
 folder-drafts = Zayyanai

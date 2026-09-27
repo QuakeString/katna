@@ -23,6 +23,7 @@ storage-used-detail = { $address }: { $used } از { $total } استفاده ش�
 
 folder-inbox = صندوق ورودی
 folder-starred = ستاره‌دار
+folder-snoozed = به تعویق افتاده
 folder-unread = خوانده‌نشده
 folder-important = مهم
 folder-drafts = پیش‌نویس‌ها

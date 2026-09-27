@@ -28,6 +28,8 @@ list-move-to = ਇੱਥੇ ਭੇਜੋ
 list-archive = ਪੁਰਾਲੇਖਬੱਧ ਕਰੋ
 list-spam = ਸਪੈਮ ਦੀ ਰਿਪੋਰਟ ਕਰੋ
 list-delete = ਮਿਟਾਓ
+list-snooze = ਸਨੂਜ਼ ਕਰੋ
+list-unsnooze = ਸਨੂਜ਼ ਹਟਾਓ
 list-newer = ਨਵੀਆਂ
 list-older = ਪੁਰਾਣੀਆਂ
 list-range = { $total } ਵਿੱਚੋਂ { $first }–{ $last }
@@ -348,6 +350,7 @@ row-mark-important = ਮਹੱਤਵਪੂਰਨ ਵਜੋਂ ਨਿਸ਼ਾਨ
 row-pinned = ਸਿਖਰ ’ਤੇ ਪਿੰਨ ਕੀਤਾ ਗਿਆ
 row-pin = ਸਿਖਰ ’ਤੇ ਪਿੰਨ ਕਰੋ
 row-unpin = ਅਣਪਿੰਨ ਕਰੋ
+row-snoozed-until = { $when } ਤੱਕ ਸਨੂਜ਼ ਕੀਤੀ ਗਈ
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = ਮਹੱਤਵਪੂਰਨ ਵਜੋਂ ਨਿਸ਼ਾਨਦ�
 menu-not-important = ਗੈਰ-ਮਹੱਤਵਪੂਰਨ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
 menu-pin = ਸਿਖਰ ’ਤੇ ਪਿੰਨ ਕਰੋ
 menu-unpin = ਅਣਪਿੰਨ ਕਰੋ
+menu-snooze = ਸਨੂਜ਼ ਕਰੋ
+menu-unsnooze = ਸਨੂਜ਼ ਹਟਾਓ
 menu-print-all = ਸਭ ਪ੍ਰਿੰਟ ਕਰੋ
 menu-new-window = ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ
 menu-move-to = ਇੱਥੇ ਭੇਜੋ
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] ਸੁਨੇਹਾ ਅਣਪਿੰਨ ਕੀਤਾ ਗਿਆ।
        *[other] { $count } ਸੁਨੇਹੇ ਅਣਪਿੰਨ ਕੀਤੇ ਗਏ।
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] ਗੱਲਬਾਤ { $when } ਤੱਕ ਸਨੂਜ਼ ਕੀਤੀ ਗਈ।
+       *[other] { $count } ਗੱਲਬਾਤਾਂ { $when } ਤੱਕ ਸਨੂਜ਼ ਕੀਤੀਆਂ ਗਈਆਂ।
+    }
+   *[message] { $count ->
+        [one] ਸੁਨੇਹਾ { $when } ਤੱਕ ਸਨੂਜ਼ ਕੀਤਾ ਗਿਆ।
+       *[other] { $count } ਸੁਨੇਹੇ { $when } ਤੱਕ ਸਨੂਜ਼ ਕੀਤੇ ਗਏ।
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] ਗੱਲਬਾਤ ਇਨਬਾਕਸ ਵਿੱਚ ਵਾਪਸ ਆ ਗਈ।
+       *[other] { $count } ਗੱਲਬਾਤਾਂ ਇਨਬਾਕਸ ਵਿੱਚ ਵਾਪਸ ਆ ਗਈਆਂ।
+    }
+   *[message] { $count ->
+        [one] ਸੁਨੇਹਾ ਇਨਬਾਕਸ ਵਿੱਚ ਵਾਪਸ ਆ ਗਿਆ।
+       *[other] { $count } ਸੁਨੇਹੇ ਇਨਬਾਕਸ ਵਿੱਚ ਵਾਪਸ ਆ ਗਏ।
     }
 }
 toast-spam = { $kind ->

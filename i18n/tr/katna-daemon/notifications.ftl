@@ -8,6 +8,9 @@ notify-new-emails = { $count } yeni e-posta
 notify-and-more = ve { $count } tane daha
 notify-no-subject = (konu yok)
 notify-unknown-sender = Bilinmeyen gönderen
+notify-snooze-back = Ertelemeden dönenler
+notify-no-reply = Henüz yanıt yok
+notify-no-reply-to = “{ $subject }” iletisine kimse yanıt vermedi.
 
 ## Its buttons
 

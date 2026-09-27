@@ -8,6 +8,9 @@ notify-new-emails = Email ọhụrụ { $count }
 notify-and-more = na { $count } ọzọ
 notify-no-subject = (enweghị isiokwu)
 notify-unknown-sender = Onye zitere amaghị
+notify-snooze-back = Alọghachila site na iyigharị
+notify-no-reply = Azịza apụtabeghị
+notify-no-reply-to = Ọ dịghị onye zaghachiri “{ $subject }”.
 
 ## Its buttons
 

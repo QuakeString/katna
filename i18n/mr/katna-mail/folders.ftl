@@ -23,6 +23,7 @@ storage-used-detail = { $address }: { $total } पैकी { $used } वाप�
 
 folder-inbox = इनबॉक्स
 folder-starred = तारांकित
+folder-snoozed = स्नूझ केलेले
 folder-unread = न वाचलेले
 folder-important = महत्त्वाचे
 folder-drafts = मसुदे

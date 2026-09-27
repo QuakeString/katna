@@ -8,6 +8,9 @@ notify-new-emails = { $count }টা নতুন ইমেইল
 notify-and-more = আৰু { $count }টা
 notify-no-subject = (কোনো বিষয় নাই)
 notify-unknown-sender = অজ্ঞাত প্ৰেৰক
+notify-snooze-back = স্নুজৰ পৰা উভতি আহিল
+notify-no-reply = এতিয়াও কোনো উত্তৰ নাই
+notify-no-reply-to = “{ $subject }”ৰ উত্তৰ কোনেও দিয়া নাই।
 
 ## Its buttons
 

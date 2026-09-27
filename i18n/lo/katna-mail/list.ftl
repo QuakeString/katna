@@ -28,6 +28,8 @@ list-move-to = ຍ້າຍໄປທີ່
 list-archive = ຈັດເກັບ
 list-spam = ລາຍງານສະແປມ
 list-delete = ລຶບ
+list-snooze = ເລື່ອນເວລາ
+list-unsnooze = ຍົກເລີກການເລື່ອນເວລາ
 list-newer = ໃໝ່ກວ່າ
 list-older = ເກົ່າກວ່າ
 list-range = { $first }–{ $last } ຈາກ { $total }
@@ -198,6 +200,7 @@ row-mark-important = ໝາຍວ່າສຳຄັນ
 row-pinned = ປັກໝຸດໄວ້ເທິງສຸດແລ້ວ
 row-pin = ປັກໝຸດໄວ້ເທິງສຸດ
 row-unpin = ຖອນປັກໝຸດ
+row-snoozed-until = ເລື່ອນເວລາຈົນຮອດ { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -219,6 +222,8 @@ menu-important = ໝາຍວ່າສຳຄັນ
 menu-not-important = ໝາຍວ່າບໍ່ສຳຄັນ
 menu-pin = ປັກໝຸດໄວ້ເທິງສຸດ
 menu-unpin = ຖອນປັກໝຸດ
+menu-snooze = ເລື່ອນເວລາ
+menu-unsnooze = ຍົກເລີກການເລື່ອນເວລາ
 menu-print-all = ພິມທັງໝົດ
 menu-new-window = ເປີດໃນໜ້າຕ່າງໃໝ່
 menu-move-to = ຍ້າຍໄປທີ່
@@ -262,6 +267,14 @@ toast-pinned = { $kind ->
 toast-unpinned = { $kind ->
     [conversation] ຖອນປັກໝຸດການສົນທະນາ { $count } ລາຍການແລ້ວ.
    *[message] ຖອນປັກໝຸດຂໍ້ຄວາມ { $count } ລາຍການແລ້ວ.
+}
+toast-snoozed = { $kind ->
+    [conversation] ເລື່ອນເວລາການສົນທະນາ { $count } ລາຍການຈົນຮອດ { $when } ແລ້ວ.
+   *[message] ເລື່ອນເວລາຂໍ້ຄວາມ { $count } ລາຍການຈົນຮອດ { $when } ແລ້ວ.
+}
+toast-unsnoozed = { $kind ->
+    [conversation] ການສົນທະນາ { $count } ລາຍການກັບມາຢູ່ກ່ອງຈົດໝາຍເຂົ້າແລ້ວ.
+   *[message] ຂໍ້ຄວາມ { $count } ລາຍການກັບມາຢູ່ກ່ອງຈົດໝາຍເຂົ້າແລ້ວ.
 }
 toast-spam = { $kind ->
     [conversation] ລາຍງານການສົນທະນາ { $count } ລາຍການວ່າເປັນສະແປມແລ້ວ.

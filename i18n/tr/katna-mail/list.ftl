@@ -28,6 +28,8 @@ list-move-to = Taşı
 list-archive = Arşivle
 list-spam = Spam bildir
 list-delete = Sil
+list-snooze = Ertele
+list-unsnooze = Ertelemeyi kaldır
 list-newer = Daha yeni
 list-older = Daha eski
 list-range = { $first }–{ $last } / { $total }
@@ -348,6 +350,7 @@ row-mark-important = Önemli olarak işaretle
 row-pinned = En üste sabitlendi
 row-pin = En üste sabitle
 row-unpin = Sabitlemeyi kaldır
+row-snoozed-until = Ertelendi, geri dönüş: { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = Önemli olarak işaretle
 menu-not-important = Önemli değil olarak işaretle
 menu-pin = En üste sabitle
 menu-unpin = Sabitlemeyi kaldır
+menu-snooze = Ertele
+menu-unsnooze = Ertelemeyi kaldır
 menu-print-all = Tümünü yazdır
 menu-new-window = Yeni pencerede aç
 menu-move-to = Taşı
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] İletinin sabitlemesi kaldırıldı.
        *[other] { $count } iletinin sabitlemesi kaldırıldı.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] İleti dizisi ertelendi, geri dönüş: { $when }.
+       *[other] { $count } ileti dizisi ertelendi, geri dönüş: { $when }.
+    }
+   *[message] { $count ->
+        [one] İleti ertelendi, geri dönüş: { $when }.
+       *[other] { $count } ileti ertelendi, geri dönüş: { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] İleti dizisi Gelen Kutusu'na döndü.
+       *[other] { $count } ileti dizisi Gelen Kutusu'na döndü.
+    }
+   *[message] { $count ->
+        [one] İleti Gelen Kutusu'na döndü.
+       *[other] { $count } ileti Gelen Kutusu'na döndü.
     }
 }
 toast-spam = { $kind ->

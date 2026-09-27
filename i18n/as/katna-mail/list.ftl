@@ -28,6 +28,8 @@ list-move-to = ইয়ালৈ স্থানান্তৰ কৰক
 list-archive = আৰ্কাইভ কৰক
 list-spam = স্পাম বুলি ৰিপৰ্ট কৰক
 list-delete = মচক
+list-snooze = স্নুজ কৰক
+list-unsnooze = স্নুজ বাতিল কৰক
 list-newer = নতুন
 list-older = পুৰণি
 list-range = { $total }ৰ { $first }–{ $last }
@@ -348,6 +350,7 @@ row-mark-important = গুৰুত্বপূৰ্ণ বুলি চিহ
 row-pinned = ওপৰত পিন কৰা হৈছে
 row-pin = ওপৰত পিন কৰক
 row-unpin = আনপিন কৰক
+row-snoozed-until = { $when }লৈ স্নুজ কৰা হৈছে
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = গুৰুত্বপূৰ্ণ বুলি চিহ্�
 menu-not-important = গুৰুত্বপূৰ্ণ নহয় বুলি চিহ্নিত কৰক
 menu-pin = ওপৰত পিন কৰক
 menu-unpin = আনপিন কৰক
+menu-snooze = স্নুজ কৰক
+menu-unsnooze = স্নুজ বাতিল কৰক
 menu-print-all = সকলো প্ৰিণ্ট কৰক
 menu-new-window = নতুন ৱিণ্ড'ত খোলক
 menu-move-to = ইয়ালৈ স্থানান্তৰ কৰক
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] বাৰ্তাটো আনপিন কৰা হ'ল।
        *[other] { $count }টা বাৰ্তা আনপিন কৰা হ'ল।
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো { $when }লৈ স্নুজ কৰা হ'ল।
+       *[other] { $count }টা কথোপকথন { $when }লৈ স্নুজ কৰা হ'ল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো { $when }লৈ স্নুজ কৰা হ'ল।
+       *[other] { $count }টা বাৰ্তা { $when }লৈ স্নুজ কৰা হ'ল।
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথনটো ইনবক্সলৈ উভতি আহিল।
+       *[other] { $count }টা কথোপকথন ইনবক্সলৈ উভতি আহিল।
+    }
+   *[message] { $count ->
+        [one] বাৰ্তাটো ইনবক্সলৈ উভতি আহিল।
+       *[other] { $count }টা বাৰ্তা ইনবক্সলৈ উভতি আহিল।
     }
 }
 toast-spam = { $kind ->

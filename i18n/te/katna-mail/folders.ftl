@@ -23,6 +23,7 @@ storage-used-detail = { $address }: { $total }లో { $used } ఉపయోగ�
 
 folder-inbox = ఇన్‌బాక్స్
 folder-starred = నక్షత్రం ఉంచినవి
+folder-snoozed = స్నూజ్ చేసినవి
 folder-unread = చదవనివి
 folder-important = ముఖ్యమైనవి
 folder-drafts = డ్రాఫ్ట్‌లు

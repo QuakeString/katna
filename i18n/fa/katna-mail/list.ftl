@@ -28,6 +28,8 @@ list-move-to = انتقال به
 list-archive = بایگانی
 list-spam = گزارش هرزنامه
 list-delete = حذف
+list-snooze = به تعویق انداختن
+list-unsnooze = لغو تعویق
 list-newer = جدیدتر
 list-older = قدیمی‌تر
 list-range = { $first }–{ $last } از { $total }
@@ -348,6 +350,7 @@ row-mark-important = علامت‌گذاری به‌عنوان مهم
 row-pinned = سنجاق‌شده در بالا
 row-pin = سنجاق کردن به بالا
 row-unpin = برداشتن سنجاق
+row-snoozed-until = به تعویق افتاده تا { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -369,6 +372,8 @@ menu-important = علامت‌گذاری به‌عنوان مهم
 menu-not-important = علامت‌گذاری به‌عنوان غیرمهم
 menu-pin = سنجاق کردن به بالا
 menu-unpin = برداشتن سنجاق
+menu-snooze = به تعویق انداختن
+menu-unsnooze = لغو تعویق
 menu-print-all = چاپ همه
 menu-new-window = باز کردن در پنجرهٔ جدید
 menu-move-to = انتقال به
@@ -465,6 +470,26 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] سنجاق پیام برداشته شد.
        *[other] سنجاق { $count } پیام برداشته شد.
+    }
+}
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] مکالمه تا { $when } به تعویق افتاد.
+       *[other] { $count } مکالمه تا { $when } به تعویق افتاد.
+    }
+   *[message] { $count ->
+        [one] پیام تا { $when } به تعویق افتاد.
+       *[other] { $count } پیام تا { $when } به تعویق افتاد.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] مکالمه به صندوق ورودی برگشت.
+       *[other] { $count } مکالمه به صندوق ورودی برگشت.
+    }
+   *[message] { $count ->
+        [one] پیام به صندوق ورودی برگشت.
+       *[other] { $count } پیام به صندوق ورودی برگشت.
     }
 }
 toast-spam = { $kind ->

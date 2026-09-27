@@ -635,3 +635,14 @@ della posta in arrivo che avevi aperto, le cartelle espanse e il riquadro
 delle cartelle compresso o no. Se esci da Katna dall’area di notifica,
 riparte da zero.
 """
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Posticipa e promemoria di risposta"
+text = """
+Posticipa una conversazione con l'orologio sulla sua riga o dal menu del
+clic destro: resta nella cartella Posticipati e torna in Posta in arrivo,
+da leggere, all'ora che hai scelto. Quando invii, la freccia accanto a
+Invia può ricordartelo se nessuno risponde entro 1, 3 o 7 giorni.
+Entrambi funzionano mentre il computer è acceso e recuperano quando si
+riattiva.
+"""

@@ -15,6 +15,9 @@ notify-and-more = { $count ->
 }
 notify-no-subject = (nessun oggetto)
 notify-unknown-sender = Mittente sconosciuto
+notify-snooze-back = Di nuovo in Posta in arrivo
+notify-no-reply = Ancora nessuna risposta
+notify-no-reply-to = Nessuno ha risposto a «{ $subject }».
 
 ## Its buttons
 

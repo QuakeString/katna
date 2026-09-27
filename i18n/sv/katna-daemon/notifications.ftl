@@ -11,6 +11,9 @@ notify-new-emails = { $count ->
 notify-and-more = och { $count } till
 notify-no-subject = (inget ämne)
 notify-unknown-sender = Okänd avsändare
+notify-snooze-back = Tillbaka från snooze
+notify-no-reply = Inget svar än
+notify-no-reply-to = Ingen har svarat på ”{ $subject }”.
 
 ## Its buttons
 

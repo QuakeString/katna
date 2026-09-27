@@ -632,3 +632,14 @@ da Caixa de entrada que estavam abertos, as pastas que você tinha
 expandido e se o painel de pastas estava recolhido. Sair do Katna pela
 bandeja do sistema o reinicia do zero.
 """
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Adiar e lembretes de resposta"
+text = """
+Adie uma conversa com o relógio na linha dela ou pelo menu do botão
+direito: ela espera na pasta Adiados e volta para a Caixa de entrada, não
+lida, no horário que você escolheu. Ao enviar, a seta ao lado de Enviar
+pode lembrar você se ninguém responder em 1, 3 ou 7 dias. Os dois
+funcionam enquanto o computador está ligado e põem tudo em dia quando ele
+volta do modo de suspensão.
+"""

@@ -8,6 +8,9 @@ notify-new-emails = อีเมลใหม่ { $count } ฉบับ
 notify-and-more = และอีก { $count } ฉบับ
 notify-no-subject = (ไม่มีหัวเรื่อง)
 notify-unknown-sender = ไม่ทราบผู้ส่ง
+notify-snooze-back = กลับมาจากการเลื่อนเวลา
+notify-no-reply = ยังไม่มีการตอบกลับ
+notify-no-reply-to = ยังไม่มีใครตอบกลับ “{ $subject }”
 
 ## Its buttons
 

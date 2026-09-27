@@ -23,6 +23,7 @@ storage-used-detail = { $address }፦ ከ{ $total } ውስጥ { $used } ጥቅ�
 
 folder-inbox = ገቢ መልዕክት ሳጥን
 folder-starred = ኮከብ የተደረገባቸው
+folder-snoozed = ያሸለቡ
 folder-unread = ያልተነበቡ
 folder-important = አስፈላጊ
 folder-drafts = ረቂቆች
