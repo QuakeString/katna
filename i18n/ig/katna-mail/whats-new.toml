@@ -345,3 +345,37 @@ ekpe, ebe idowe ntụnye n'elu ya na-egosi folda ọzọ. N'elu aka ekpe
 na-egosi Katna Mail, aha ahụ na-agbanwekwa gaa Kalịnda, Kọntaktị na ndị
 ọzọ ka ị na-agbanwe ngwa.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Họrọ ozi niile a gụghị ma ọ bụ nwere kpakpando"
+text = """
+Agụrụ, A gụghị, Nwere kpakpando na Enweghị kpakpando na menu Họrọ na-aka
+akara ugbu a na mkparịta ụka ọ bụla dabara na folda, ọ bụghị naanị ndị
+nọ na ihuenyo. Otu ahịrị dị n'elu ndepụta na-ekwu ole a họọrọ, na
+ichekwa, ihichapụ, ibugharịa ma ọ bụ ịka akara na-arụ ọrụ na ha niile.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Mmezi na-enweghị ịpị aka nri"
+text = """
+Dowe ntụnye n'elu okwu nwere ahịrị n'okpuru, ma ọ bụ pịa ya, mmezi ya
+ga-apụta n'okpuru ya ozugbo: aro nsụpe, mmezi ụtọasụsụ na Leghara ya
+anya, n'ederede na n'isiokwu. Ịpị aka nri ka na-emepe menu zuru ezu.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "Ndị nnata dị ka mpekere"
+text = """
+Adreesị dị na Gaa, Cc na Bcc na-aghọ mpekere na-egosi naanị aha. Akụ dị
+na mpekere na-egosi adreesị ya, ịpị ya ugboro abụọ na-ekwekwa ka i dezie
+ya. Ihe ọ bụla na-abụghị adreesị ziri ezi ka a na-aka akara na-acha uhie
+uhie, Zipu na-arịọkwa gị ka i dozie ya na mbụ.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna na-amalite mgbe ị banyere"
+text = """
+Katna na-amalite ugbu a n'ụzọ dị jụụ mgbe ị banyere: ozi na-emekọrịta,
+ọkwa ozi ọhụrụ na akara ngosi tree na-apụtakwa na-emepeghị windo.
+Gbanyụọ ya, ma ọ bụ mee ka windo mepekwa, na Ntọala > Izugbe > Desktọpụ.
+"""

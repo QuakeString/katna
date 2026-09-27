@@ -359,3 +359,39 @@ a sinistra, dove basta fermarci sopra con il puntatore per rivedere le
 cartelle. In alto a sinistra c'è Katna Mail, e il nome scorre su
 Calendario, Contatti e gli altri quando cambi app.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Seleziona tutta la posta da leggere o speciale"
+text = """
+Già letti, Da leggere, Speciali e Non speciali nel menu Seleziona ora
+spuntano ogni conversazione corrispondente nella cartella, non solo
+quelle sullo schermo. Una riga sopra l'elenco dice quante sono
+selezionate, e archiviare, eliminare, spostare o segnare vale per tutte.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Correzioni senza clic destro"
+text = """
+Fermati con il puntatore su una parola sottolineata, o fai clic su di
+essa, e le sue correzioni compaiono proprio sotto: suggerimenti
+ortografici, correzioni grammaticali e Ignora, nel testo e nell'oggetto.
+Il clic destro apre ancora il menu completo.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "I destinatari diventano chip"
+text = """
+Gli indirizzi in A, Cc e Ccn diventano chip che mostrano solo il nome. La
+freccia su un chip mostra il suo indirizzo, e con un doppio clic puoi
+modificarlo. Tutto ciò che non è un indirizzo valido è segnato in rosso, e
+Invia ti chiede di correggerlo prima.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna si avvia all'accesso"
+text = """
+Ora Katna si avvia in silenzio quando accedi: la posta si sincronizza, e
+le notifiche di nuova posta e l'icona nell'area di notifica compaiono
+senza aprire la finestra. Puoi disattivarlo, o far aprire anche la
+finestra, in Impostazioni > Generali > Desktop.
+"""

@@ -840,6 +840,7 @@ impl MailWindow {
             return;
         };
         self.accounts = mail.accounts();
+        self.config.mail.order_accounts(&mut self.accounts);
         self.tree = Tree::build(&self.accounts, &mail.folders(), &self.unread);
         self.expanded = self.tree.initially_expanded();
         self.rebuild_nav();

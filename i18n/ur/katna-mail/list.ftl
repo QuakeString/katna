@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] { $folder } میں تمام { $count } پیغامات منتخب کریں
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } پڑھی ہوئی گفتگو منتخب ہے۔
+           *[other] تمام { $count } پڑھی ہوئی گفتگوئیں منتخب ہیں۔
+        }
+       *[message] { $count ->
+            [one] { $count } پڑھا ہوا پیغام منتخب ہے۔
+           *[other] تمام { $count } پڑھے ہوئے پیغامات منتخب ہیں۔
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ناخواندہ گفتگو منتخب ہے۔
+           *[other] تمام { $count } ناخواندہ گفتگوئیں منتخب ہیں۔
+        }
+       *[message] { $count ->
+            [one] { $count } ناخواندہ پیغام منتخب ہے۔
+           *[other] تمام { $count } ناخواندہ پیغامات منتخب ہیں۔
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ستارے والی گفتگو منتخب ہے۔
+           *[other] تمام { $count } ستارے والی گفتگوئیں منتخب ہیں۔
+        }
+       *[message] { $count ->
+            [one] { $count } ستارے والا پیغام منتخب ہے۔
+           *[other] تمام { $count } ستارے والے پیغامات منتخب ہیں۔
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } بغیر ستارے والی گفتگو منتخب ہے۔
+           *[other] تمام { $count } بغیر ستارے والی گفتگوئیں منتخب ہیں۔
+        }
+       *[message] { $count ->
+            [one] { $count } بغیر ستارے والا پیغام منتخب ہے۔
+           *[other] تمام { $count } بغیر ستارے والے پیغامات منتخب ہیں۔
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } میں { $count } پڑھی ہوئی گفتگو منتخب ہے۔
+           *[other] { $folder } میں تمام { $count } پڑھی ہوئی گفتگوئیں منتخب ہیں۔
+        }
+       *[message] { $count ->
+            [one] { $folder } میں { $count } پڑھا ہوا پیغام منتخب ہے۔
+           *[other] { $folder } میں تمام { $count } پڑھے ہوئے پیغامات منتخب ہیں۔
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } میں { $count } ناخواندہ گفتگو منتخب ہے۔
+           *[other] { $folder } میں تمام { $count } ناخواندہ گفتگوئیں منتخب ہیں۔
+        }
+       *[message] { $count ->
+            [one] { $folder } میں { $count } ناخواندہ پیغام منتخب ہے۔
+           *[other] { $folder } میں تمام { $count } ناخواندہ پیغامات منتخب ہیں۔
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } میں { $count } ستارے والی گفتگو منتخب ہے۔
+           *[other] { $folder } میں تمام { $count } ستارے والی گفتگوئیں منتخب ہیں۔
+        }
+       *[message] { $count ->
+            [one] { $folder } میں { $count } ستارے والا پیغام منتخب ہے۔
+           *[other] { $folder } میں تمام { $count } ستارے والے پیغامات منتخب ہیں۔
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } میں { $count } بغیر ستارے والی گفتگو منتخب ہے۔
+           *[other] { $folder } میں تمام { $count } بغیر ستارے والی گفتگوئیں منتخب ہیں۔
+        }
+       *[message] { $count ->
+            [one] { $folder } میں { $count } بغیر ستارے والا پیغام منتخب ہے۔
+           *[other] { $folder } میں تمام { $count } بغیر ستارے والے پیغامات منتخب ہیں۔
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] یہاں کوئی پڑھی ہوئی گفتگو نہیں۔
+       *[message] یہاں کوئی پڑھا ہوا پیغام نہیں۔
+    }
+   *[unread] { $kind ->
+        [conversation] یہاں کوئی ناخواندہ گفتگو نہیں۔
+       *[message] یہاں کوئی ناخواندہ پیغام نہیں۔
+    }
+    [starred] { $kind ->
+        [conversation] یہاں کوئی ستارے والی گفتگو نہیں۔
+       *[message] یہاں کوئی ستارے والا پیغام نہیں۔
+    }
+    [unstarred] { $kind ->
+        [conversation] یہاں کوئی بغیر ستارے والی گفتگو نہیں۔
+       *[message] یہاں کوئی بغیر ستارے والا پیغام نہیں۔
+    }
+}
 list-clear-selection = انتخاب صاف کریں
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count } پیغامات ہمیشہ کے لیے حذف کر دیے گئے۔
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] گفتگو بطور پڑھی ہوئی نشان زد کر دی گئی۔
+       *[other] { $count } گفتگوئیں بطور پڑھی ہوئی نشان زد کر دی گئیں۔
+    }
+   *[message] { $count ->
+        [one] پیغام بطور پڑھا ہوا نشان زد کر دیا گیا۔
+       *[other] { $count } پیغامات بطور پڑھے ہوئے نشان زد کر دیے گئے۔
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] گفتگو بطور ناخواندہ نشان زد کر دی گئی۔
+       *[other] { $count } گفتگوئیں بطور ناخواندہ نشان زد کر دی گئیں۔
+    }
+   *[message] { $count ->
+        [one] پیغام بطور ناخواندہ نشان زد کر دیا گیا۔
+       *[other] { $count } پیغامات بطور ناخواندہ نشان زد کر دیے گئے۔
+    }
+}
 toast-undone = کارروائی کالعدم کر دی گئی۔
+toast-nothing-to-undo = کالعدم کرنے کو کچھ نہیں۔
+toast-cannot-undo-delete-forever = ہمیشہ کے لیے حذف کی گئی میل واپس نہیں لائی جا سکتی۔
+toast-send-undone = بھیجنا کالعدم کر دیا گیا۔
+toast-too-late-to-undo-send = کالعدم کرنے میں بہت دیر ہو گئی: پیغام پہلے ہی بھیجا جا چکا ہے۔
 toast-undo = کالعدم کریں
 toast-no-spam-folder = اس اکاؤنٹ میں کوئی سپام فولڈر نہیں ہے۔

@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] เลือกการสนทนาทั้ง { $count } รายการใน { $folder }
    *[message] เลือกข้อความทั้ง { $count } รายการใน { $folder }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] เลือกการสนทนาที่อ่านแล้วทั้ง { $count } รายการแล้ว
+       *[message] เลือกข้อความที่อ่านแล้วทั้ง { $count } รายการแล้ว
+    }
+   *[unread] { $kind ->
+        [conversation] เลือกการสนทนาที่ยังไม่อ่านทั้ง { $count } รายการแล้ว
+       *[message] เลือกข้อความที่ยังไม่อ่านทั้ง { $count } รายการแล้ว
+    }
+    [starred] { $kind ->
+        [conversation] เลือกการสนทนาที่ติดดาวทั้ง { $count } รายการแล้ว
+       *[message] เลือกข้อความที่ติดดาวทั้ง { $count } รายการแล้ว
+    }
+    [unstarred] { $kind ->
+        [conversation] เลือกการสนทนาที่ไม่ติดดาวทั้ง { $count } รายการแล้ว
+       *[message] เลือกข้อความที่ไม่ติดดาวทั้ง { $count } รายการแล้ว
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] เลือกการสนทนาที่อ่านแล้วทั้ง { $count } รายการใน { $folder } แล้ว
+       *[message] เลือกข้อความที่อ่านแล้วทั้ง { $count } รายการใน { $folder } แล้ว
+    }
+   *[unread] { $kind ->
+        [conversation] เลือกการสนทนาที่ยังไม่อ่านทั้ง { $count } รายการใน { $folder } แล้ว
+       *[message] เลือกข้อความที่ยังไม่อ่านทั้ง { $count } รายการใน { $folder } แล้ว
+    }
+    [starred] { $kind ->
+        [conversation] เลือกการสนทนาที่ติดดาวทั้ง { $count } รายการใน { $folder } แล้ว
+       *[message] เลือกข้อความที่ติดดาวทั้ง { $count } รายการใน { $folder } แล้ว
+    }
+    [unstarred] { $kind ->
+        [conversation] เลือกการสนทนาที่ไม่ติดดาวทั้ง { $count } รายการใน { $folder } แล้ว
+       *[message] เลือกข้อความที่ไม่ติดดาวทั้ง { $count } รายการใน { $folder } แล้ว
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] ไม่มีการสนทนาที่อ่านแล้วที่นี่
+       *[message] ไม่มีข้อความที่อ่านแล้วที่นี่
+    }
+   *[unread] { $kind ->
+        [conversation] ไม่มีการสนทนาที่ยังไม่อ่านที่นี่
+       *[message] ไม่มีข้อความที่ยังไม่อ่านที่นี่
+    }
+    [starred] { $kind ->
+        [conversation] ไม่มีการสนทนาที่ติดดาวที่นี่
+       *[message] ไม่มีข้อความที่ติดดาวที่นี่
+    }
+    [unstarred] { $kind ->
+        [conversation] ไม่มีการสนทนาที่ไม่ติดดาวที่นี่
+       *[message] ไม่มีข้อความที่ไม่ติดดาวที่นี่
+    }
+}
 list-clear-selection = ล้างการเลือก
 
 ## Mail list: empty states
@@ -160,6 +214,18 @@ toast-deleted-forever = { $kind ->
     [conversation] ลบการสนทนา { $count } รายการอย่างถาวรแล้ว
    *[message] ลบข้อความ { $count } รายการอย่างถาวรแล้ว
 }
+toast-marked-read = { $kind ->
+    [conversation] ทำเครื่องหมายการสนทนา { $count } รายการว่าอ่านแล้ว
+   *[message] ทำเครื่องหมายข้อความ { $count } รายการว่าอ่านแล้ว
+}
+toast-marked-unread = { $kind ->
+    [conversation] ทำเครื่องหมายการสนทนา { $count } รายการว่ายังไม่อ่านแล้ว
+   *[message] ทำเครื่องหมายข้อความ { $count } รายการว่ายังไม่อ่านแล้ว
+}
 toast-undone = เลิกทำการดำเนินการแล้ว
+toast-nothing-to-undo = ไม่มีอะไรให้เลิกทำ
+toast-cannot-undo-delete-forever = อีเมลที่ลบอย่างถาวรแล้วจะนำกลับมาไม่ได้
+toast-send-undone = เลิกทำการส่งแล้ว
+toast-too-late-to-undo-send = สายเกินไปที่จะเลิกทำ: ข้อความถูกส่งไปแล้ว
 toast-undo = เลิกทำ
 toast-no-spam-folder = บัญชีนี้ไม่มีโฟลเดอร์สแปม

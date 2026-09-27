@@ -123,6 +123,22 @@ attachment-encrypted-open = Hierdie lêer het geënkripteer aangekom. Stoor dit 
 print-failed = Kon nie druk nie: { $error }
 print-no-font = geen lettertipe is gevind nie
 print-opened-as-pdf = As 'n PDF oopgemaak om van daar af te druk.
+print-preview-title = Drukvoorskou
+print-preview-laying-out = Bladsye word uitgelê…
+print-preview-pages = { $count ->
+    [one] { $count } bladsy
+   *[other] { $count } bladsye
+}
+print-preview-more = { $count ->
+    [one] en nog { $count } bladsy
+   *[other] en nog { $count } bladsye
+}
+print-preview-failed = die bladsye kon nie gewys word nie
+print-preview-paper = Papier
+print-preview-a4 = A4
+print-preview-letter = US Letter
+print-preview-cancel = Kanselleer
+print-preview-print = Druk
 print-not-downloaded = (Nog nie afgelaai nie.)
 print-encrypted = (Geënkripteer. Maak dit in Katna Mail oop om die teks te druk.)
 print-to = Aan: { $addresses }

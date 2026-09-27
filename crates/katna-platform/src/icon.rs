@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Katna Mail's icon drawn in code, with an optional unread-count badge, for
-//! the tray (`docs/ARCHITECTURE.md` §15.2). Tray protocols take raw pixels,
-//! and drawing the few shapes of `packaging/icons/in.invenia.katna.Mail.svg`
-//! here keeps an SVG renderer out of the daemon.
+//! Katna Mail's icon with an optional unread-count badge, for the tray
+//! (`docs/ARCHITECTURE.md` §15.2). Tray protocols take raw pixels. The icon
+//! comes pre-rendered at each tray size (`icons/*.rgba`, made from the logo
+//! by `packaging/icons/render.py`), which keeps an SVG renderer out of the
+//! daemon; the badge is drawn in code.
 //!
-//! Shapes are drawn from their distance to each pixel, which antialiases
-//! edges at any size. Coordinates are those of the 128×128 SVG.
+//! The badge's shapes are drawn from their distance to each pixel, which
+//! antialiases edges at any size.
 
 /// An RGBA color with straight (not premultiplied) alpha, 0.0–1.0.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -16,15 +17,6 @@ impl Rgba {
     fn hex(rgb: u32, alpha: f32) -> Self {
         let channel = |shift: u32| ((rgb >> shift) & 0xff) as f32 / 255.0;
         Self([channel(16), channel(8), channel(0), alpha])
-    }
-
-    fn mix(self, other: Self, t: f32) -> Self {
-        let t = t.clamp(0.0, 1.0);
-        let mut out = [0.0; 4];
-        for (i, v) in out.iter_mut().enumerate() {
-            *v = self.0[i] + (other.0[i] - self.0[i]) * t;
-        }
-        Self(out)
     }
 }
 
@@ -113,64 +105,55 @@ fn polyline(x: f32, y: f32, points: &[(f32, f32)]) -> f32 {
         .fold(f32::INFINITY, f32::min)
 }
 
-const TILE_TOP: u32 = 0x4f9cf9;
-const TILE_BOTTOM: u32 = 0x1c5fd4;
-const SHADOW: u32 = 0x0b2f6e;
-const PAPER_TOP: u32 = 0xffffff;
-const PAPER_BOTTOM: u32 = 0xe6eefb;
-const FOLD: u32 = 0xc3d4f2;
 const BADGE: u32 = 0xe5372d;
 
-/// Draws the app icon: an envelope on a rounded blue square.
+/// The icon at the tray's sizes: straight-alpha RGBA, row by row.
+const PIXELS: &[(u32, &[u8])] = &[
+    (16, include_bytes!("../icons/16.rgba")),
+    (22, include_bytes!("../icons/22.rgba")),
+    (24, include_bytes!("../icons/24.rgba")),
+    (32, include_bytes!("../icons/32.rgba")),
+    (48, include_bytes!("../icons/48.rgba")),
+    (64, include_bytes!("../icons/64.rgba")),
+];
+
+/// Paints the icon, scaled from the nearest rendered size at or above `size`
+/// (or the largest) when `size` isn't one of them.
 fn draw_icon(canvas: &mut Canvas) {
-    let unit = canvas.size as f32 / 128.0;
-    let solid = |rgb, alpha| Rgba::hex(rgb, alpha);
-    canvas.paint(unit, |x, y, px| {
-        let d = rounded_rect(x, y, [8.0, 10.0, 112.0, 112.0], 26.0);
-        (coverage(d, px), solid(SHADOW, 0.25))
-    });
-    canvas.paint(unit, |x, y, px| {
-        let d = rounded_rect(x, y, [8.0, 6.0, 112.0, 112.0], 26.0);
-        let t = (y - 6.0) / 112.0;
-        (
-            coverage(d, px),
-            solid(TILE_TOP, 1.0).mix(solid(TILE_BOTTOM, 1.0), t),
-        )
-    });
-    canvas.paint(unit, |x, y, px| {
-        let d = rounded_rect(x, y, [26.0, 39.0, 76.0, 54.0], 8.0);
-        (coverage(d, px), solid(SHADOW, 0.2))
-    });
-    canvas.paint(unit, |x, y, px| {
-        let d = rounded_rect(x, y, [26.0, 36.0, 76.0, 54.0], 8.0);
-        let t = (y - 36.0) / 54.0;
-        (
-            coverage(d, px),
-            solid(PAPER_TOP, 1.0).mix(solid(PAPER_BOTTOM, 1.0), t),
-        )
-    });
-    canvas.paint(unit, |x, y, px| {
-        let fold = [
-            (28.0, 88.0),
-            (57.0, 63.0),
-            (64.0, 59.0),
-            (71.0, 63.0),
-            (100.0, 88.0),
-        ];
-        let d = polyline(x, y, &fold) - 1.5;
-        (coverage(d, px), solid(FOLD, 1.0))
-    });
-    canvas.paint(unit, |x, y, px| {
-        let flap = [
-            (29.0, 40.0),
-            (58.0, 64.0),
-            (64.0, 67.0),
-            (70.0, 64.0),
-            (99.0, 40.0),
-        ];
-        let d = polyline(x, y, &flap) - 2.5;
-        (coverage(d, px), solid(TILE_BOTTOM, 1.0))
-    });
+    let size = canvas.size;
+    let &(from, rgba) = PIXELS
+        .iter()
+        .find(|(s, _)| *s >= size)
+        .unwrap_or(&PIXELS[PIXELS.len() - 1]);
+    let step = from as f32 / size as f32;
+    for y in 0..size {
+        for x in 0..size {
+            // Average the source pixels this pixel covers (box filter).
+            let (x0, x1) = (x as f32 * step, (x + 1) as f32 * step);
+            let (y0, y1) = (y as f32 * step, (y + 1) as f32 * step);
+            let mut sum = [0.0f32; 4];
+            let mut weight = 0.0;
+            let (sx0, sy0) = (x0.floor() as u32, y0.floor() as u32);
+            let (sx1, sy1) = ((x1.ceil() as u32).min(from), (y1.ceil() as u32).min(from));
+            for sy in sy0..sy1 {
+                let wy = (y1.min((sy + 1) as f32) - y0.max(sy as f32)).max(0.0);
+                for sx in sx0..sx1 {
+                    let wx = (x1.min((sx + 1) as f32) - x0.max(sx as f32)).max(0.0);
+                    let i = ((sy * from + sx) * 4) as usize;
+                    let a = rgba[i + 3] as f32 / 255.0;
+                    let w = wx * wy;
+                    for c in 0..3 {
+                        sum[c] += rgba[i + c] as f32 / 255.0 * a * w;
+                    }
+                    sum[3] += a * w;
+                    weight += w;
+                }
+            }
+            if weight > 0.0 {
+                canvas.pixels[(y * size + x) as usize] = sum.map(|v| v / weight);
+            }
+        }
+    }
 }
 
 /// Strokes of each badge character in a box 0.6 wide and 1.0 tall, y down.
@@ -352,17 +335,30 @@ mod tests {
     }
 
     #[test]
-    fn icon_has_a_transparent_corner_a_blue_tile_and_white_paper() {
-        let size = 64;
-        let icon = app_icon_argb(size, None);
-        assert_eq!(icon.len(), (size * size * 4) as usize);
-        assert_eq!(pixel(&icon, size, 0, 0)[0], 0, "corner is transparent");
-        let [a, r, g, b] = pixel(&icon, size, 8, 32);
-        assert_eq!(a, 255);
-        assert!(b > 200 && r < 100, "tile is blue: {r} {g} {b}");
-        let [a, r, g, b] = pixel(&icon, size, 32, 25);
-        assert_eq!(a, 255);
-        assert!(r > 220 && g > 220 && b > 220, "paper is white: {r} {g} {b}");
+    fn icon_has_a_transparent_corner_a_teal_envelope_and_a_light_card() {
+        for size in [16, 22, 24, 32, 48, 64] {
+            let icon = app_icon_argb(size, None);
+            assert_eq!(icon.len(), (size * size * 4) as usize);
+            assert_eq!(pixel(&icon, size, 0, 0)[0], 0, "corner is transparent");
+            // The envelope's lower left, inside its outline.
+            let [a, r, g, b] = pixel(&icon, size, size / 5, size * 3 / 4);
+            assert_eq!(a, 255, "{size}");
+            assert!(
+                g > 180 && b > 180 && r < 200,
+                "envelope is teal: {r} {g} {b}"
+            );
+            // The card, left of the lettering.
+            let [a, r, g, b] = pixel(&icon, size, size * 3 / 10, size * 2 / 5);
+            assert_eq!(a, 255, "{size}");
+            assert!(r > 200 && g > 200 && b > 200, "card is light: {r} {g} {b}");
+        }
+    }
+
+    #[test]
+    fn every_rendered_size_is_whole() {
+        for (size, rgba) in PIXELS {
+            assert_eq!(rgba.len(), (size * size * 4) as usize, "{size}");
+        }
     }
 
     #[test]

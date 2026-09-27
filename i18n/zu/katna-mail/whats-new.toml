@@ -369,3 +369,40 @@ amafolda futhi. Phezulu ngakwesokunxele kubonisa i-Katna Mail, futhi
 igama lishintshela ku-Ikhalenda, ku-Oxhumana nabo nakwezinye njengoba
 ushintsha ama-app.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Khetha yonke imeyili engafundiwe noma enenkanyezi"
+text = """
+Okufundiwe, Okungafundiwe, Okunenkanyezi kanye no-Okungenankanyezi
+kumenyu ethi Khetha manje kumaka yonke ingxoxo efanayo kufolda, hhayi
+nje lezo ezisesikrinini. Umugqa ongaphezu kohlu usho ukuthi zingaki
+ezikhethiwe, futhi ukufaka kungobo yomlando, ukususa, ukuhambisa noma
+ukumaka kusebenza kuzo zonke.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Ukulungiswa ngaphandle kokuchofoza ngakwesokudla"
+text = """
+Beka isikhombi egameni elinomugqa ongezansi, noma ulichofoze, futhi
+ukulungiswa kwalo kuvela ngaphansi kwalo khona lapho: iziphakamiso
+zokupela, ukulungiswa kohlelo lolimi kanye no-Ziba, embhalweni
+nasesihlokweni. Ukuchofoza ngakwesokudla kusavula imenyu egcwele.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "Abamukeli njengama-chip"
+text = """
+Amakheli aku-Ku, Cc naku-Bcc aba ama-chip abonisa igama kuphela.
+Umcibisholo oku-chip ubonisa ikheli layo, futhi ukuchofoza kabili
+kukuvumela ukulihlela. Noma yini engelona ikheli elivumelekile imakwa
+ngokubomvu, futhi u-Thumela ukucela ukuthi ukulungise kuqala.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "I-Katna iqala lapho ungena"
+text = """
+Manje i-Katna iqala buthule lapho ungena: imeyili iyavumelaniswa, futhi
+izaziso zemeyili entsha nesithonjana sethileyi kuyavela ngaphandle
+kokuvula iwindi. Kuvale, noma wenze iwindi livuleke nalo,
+ku-Izilungiselelo > Okuvamile > Ideskithophu.
+"""

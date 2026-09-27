@@ -995,10 +995,18 @@ a tile of one color sits on a disc of that color, and a see-through glyph
 sits on a white disc, or a dark one when the glyph is light.
 
 The user's own accounts show the picture picked in Settings → Accounts
-(kept in `$XDG_DATA_HOME/katna/account-pictures/<account id>`), else the
-desktop user's picture (`~/.face.icon`, the AccountsService icon, or
-`~/.face`). There is no OAuth, so a provider's profile photo is out of
-reach; Libravatar or Gravatar could come later as an opt-in.
+(kept in `$XDG_DATA_HOME/katna/account-pictures/<account id>`), else each
+its own coloured letter, so accounts tell apart. "Use desktop picture"
+copies the desktop user's picture (`~/.face.icon`, the AccountsService
+icon, or `~/.face`) in as the account's picture; it is not the default,
+because it made every account look the same. There is no OAuth, so a
+provider's profile photo (Google's needs a Google sign-in) is out of
+reach; when OAuth2 comes, it goes after the picked picture in
+`own_picture` (`window/remote.rs`). Libravatar or Gravatar could come
+later as an opt-in. Settings → Accounts also renames an account and sets
+the order accounts are listed in everywhere (Move up, Move down, or a
+drag by the handle; `mail.account_order` in `config.toml`), the first
+being the default.
 
 Size: this renderer added 2.7 MB to the release app (31.3 → 34.0 MB). For
 comparison, a minimal program with Blitz (`blitz-html` + `blitz-paint` +
@@ -1520,6 +1528,25 @@ Gemini or confidential mode):
   Esc or when typing resumes. Mail waiting to be sent
   later gets a *Scheduled* row in the folder list after Sent, which opens
   a list with Cancel send; a cancelled message opens again as written.
+  Paste and drop work as in a desktop mail app (`compose/paste.rs`,
+  `katna-ui` `rich/editor/paste.rs`): the clipboard is read with its HTML,
+  copied files and pictures (`gpui_linux::read_rich`, a Katna patch to
+  GPUI's Linux clipboard, vendor/gpui-pre-linux/KATNA.md), so text from
+  Word, LibreOffice or a browser keeps its formatting (`html::from_pasted_html`:
+  style sheet classes, Word's lists, merged cells, cell colors; the page's
+  own near-black text and white background are dropped so the text follows
+  the theme), and spreadsheet cells (or tab-separated rows) become a
+  table. A bar under the paste offers Keep formatting or Plain text, or for
+  cells Table, Picture (the source app's picture, else one drawn with
+  `katna_preview::table`) or Plain text, until the next edit; Ctrl+Shift+V
+  pastes plain text. Copying offers HTML too. Files copied in a file
+  manager or dropped are attached; pictures pasted or dropped go in the
+  text (attached when dropped outside the text or in plain text mode) with
+  an Inline / Attachment choice under them. Text, cells or a picture
+  dragged from another app arrive as a content drop
+  (`gpui_linux::dropped_content`) and go in where they are dropped; the
+  dashed drop cover says "Drop here" for those and "Drop files here" for
+  files. The 25 MB total counts pasted and dropped pictures.
   The expand button in the compose title bar moves the message into a
   normal window of its own (`compose/popout.rs`), framed like the mail
   window: Katna's header bar with the window buttons, rounded corners and
@@ -2152,7 +2179,9 @@ Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssx)`
 `DiscoverAccount(address) → (account, source)`, `AddImapAccount(account,
 password) → id`, `AddPop3Account(account, password) → id` (with
 leave-on-server, days to keep, and delete-with-local),
-`SetPassword(id, password)`, `RemoveAccount(id) → b`,
+`SetPassword(id, password)`, `RenameAccount(id, name)` (an empty name
+goes back to the name the account's own sent mail uses, which a name-less
+account also takes after its first sync), `RemoveAccount(id) → b`,
 `DeleteAllData()` (stops every account, deletes every saved password,
 the data directory, the cache and `config.toml`, then the daemon exits;
 the next call starts a new one), `SyncNow(id)` (0 for every account), `FetchBody(message)`,
@@ -2253,9 +2282,10 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   (`org.kde.StatusNotifierItem-PID-N`), registered with
   `org.kde.StatusNotifierWatcher` again whenever the watcher restarts.
   Plasma shows it natively; GNOME needs the AppIndicator extension (on by
-  default on Ubuntu). The icon is drawn in code (the app icon's shapes plus
-  a red badge with the count, `99+` above 99), since the protocol takes
-  pixels and an SVG renderer would grow the daemon. Left click raises the
+  default on Ubuntu). The icon is the app icon pre-rendered at each tray
+  size (`crates/katna-platform/icons/`, from `packaging/icons/render.py`)
+  with a red badge drawn in code with the count, `99+` above 99, since the
+  protocol takes pixels and an SVG renderer would grow the daemon. Left click raises the
   app, middle click starts a new message. The right-click menu
   (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
   Quit. Quit closes the app and stops the daemon until the next login or

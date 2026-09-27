@@ -135,6 +135,30 @@ attachment-encrypted-open = وصل هذا الملف مشفّرًا. احفظه 
 print-failed = تعذّرت الطباعة: { $error }
 print-no-font = لم يتم العثور على أي خط
 print-opened-as-pdf = تم الفتح كملف PDF للطباعة منه.
+print-preview-title = معاينة الطباعة
+print-preview-laying-out = جارٍ تنسيق الصفحات…
+print-preview-pages = { $count ->
+    [zero] { $count } صفحة
+    [one] صفحة واحدة
+    [two] صفحتان
+    [few] { $count } صفحات
+    [many] { $count } صفحة
+   *[other] { $count } صفحة
+}
+print-preview-more = { $count ->
+    [zero] و{ $count } صفحة أخرى
+    [one] وصفحة أخرى
+    [two] وصفحتان أخريان
+    [few] و{ $count } صفحات أخرى
+    [many] و{ $count } صفحة أخرى
+   *[other] و{ $count } صفحة أخرى
+}
+print-preview-failed = تعذّر عرض الصفحات
+print-preview-paper = الورق
+print-preview-a4 = A4
+print-preview-letter = Letter
+print-preview-cancel = إلغاء
+print-preview-print = طباعة
 print-not-downloaded = (لم يتم التنزيل بعد.)
 print-encrypted = (مشفّرة. افتحها في Katna Mail لطباعة نصها.)
 print-to = إلى: { $addresses }

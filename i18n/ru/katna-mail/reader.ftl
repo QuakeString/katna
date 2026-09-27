@@ -129,6 +129,26 @@ attachment-encrypted-open = Этот файл пришёл зашифрован�
 print-failed = Не удалось распечатать: { $error }
 print-no-font = шрифт не найден
 print-opened-as-pdf = Открыто как PDF, чтобы распечатать оттуда.
+print-preview-title = Предварительный просмотр печати
+print-preview-laying-out = Размещение страниц…
+print-preview-pages = { $count ->
+    [one] { $count } страница
+    [few] { $count } страницы
+    [many] { $count } страниц
+   *[other] { $count } страницы
+}
+print-preview-more = { $count ->
+    [one] и ещё { $count } страница
+    [few] и ещё { $count } страницы
+    [many] и ещё { $count } страниц
+   *[other] и ещё { $count } страницы
+}
+print-preview-failed = не удалось показать страницы
+print-preview-paper = Бумага
+print-preview-a4 = A4
+print-preview-letter = Letter
+print-preview-cancel = Отмена
+print-preview-print = Печать
 print-not-downloaded = (Ещё не загружено.)
 print-encrypted = (Зашифровано. Откройте письмо в Katna Mail, чтобы распечатать его текст.)
 print-to = Кому: { $addresses }

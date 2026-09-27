@@ -49,3 +49,4 @@ app-contacts-messages = { $count ->
    *[other] { $count } رسالة
 }
 app-contacts-last = آخر مراسلة { $date }
+top-brand = Katna

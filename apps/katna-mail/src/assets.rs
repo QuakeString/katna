@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Icons built into the binary, served to GPUI's `svg()` element, and the
-//! language picker's flags (`flags/`, from `flag-icons`, MIT), served to
-//! `img()`.
+//! language picker's flags (`flags/`, from `flag-icons`, MIT) and Katna's
+//! logo (`logo/`), served to `img()`.
 
 use std::borrow::Cow;
 
@@ -35,6 +35,7 @@ icons!(
     "chevron-down",
     "chevron-left",
     "chevron-right",
+    "chevron-up",
     "clear-format",
     "close-full",
     "close",
@@ -44,6 +45,7 @@ icons!(
     "document",
     "download",
     "drafts",
+    "drag-handle",
     "drop-down",
     "emoji",
     "event",
@@ -151,6 +153,40 @@ fn flag(data: &[u8]) -> Vec<u8> {
         .into_bytes()
 }
 
+/// Katna's logo in full, and its small form for under 48 px.
+const LOGO: &[u8] = include_bytes!("../../../packaging/icons/src/katna.svg");
+const LOGO_SMALL: &[u8] = include_bytes!("../../../packaging/icons/src/katna-small.svg");
+
+/// Where [`Assets`] serves the logo for a `size` px square (GPUI pixels).
+pub fn logo_path(size: f32) -> String {
+    let size = size.round().clamp(1.0, 1024.0) as u32;
+    let form = if size < 48 { "small" } else { "full" };
+    format!("logo/{form}-{size}.svg")
+}
+
+/// The logo for `logo/{full,small}-<size>.svg`. GPUI draws an SVG picture
+/// at twice its own size, so giving it the size it is shown at renders it
+/// sharp on double-density screens without sampling it down much.
+fn logo(path: &str) -> Option<Vec<u8>> {
+    let rest = path.strip_prefix("logo/")?.strip_suffix(".svg")?;
+    let (form, size) = rest.split_once('-')?;
+    let size: u32 = size.parse().ok().filter(|s| (1..=1024).contains(s))?;
+    let data = match form {
+        "full" => LOGO,
+        "small" => LOGO_SMALL,
+        _ => return None,
+    };
+    let text = String::from_utf8_lossy(data);
+    Some(
+        text.replacen(
+            r#"width="128" height="128""#,
+            &format!(r#"width="{size}" height="{size}""#),
+            1,
+        )
+        .into_bytes(),
+    )
+}
+
 pub struct Assets;
 
 impl AssetSource for Assets {
@@ -160,6 +196,9 @@ impl AssetSource for Assets {
                 .iter()
                 .find(|(name, _)| *name == path)
                 .map(|(_, data)| Cow::Owned(flag(data))));
+        }
+        if path.starts_with("logo/") {
+            return Ok(logo(path).map(Cow::Owned));
         }
         Ok(ICONS
             .iter()
@@ -205,5 +244,28 @@ mod tests {
             assert!(data.is_some(), "{path}");
             assert!(String::from_utf8_lossy(&data.unwrap()).contains(r#"width="48""#));
         }
+    }
+
+    #[test]
+    fn logo_is_served_at_its_size_in_the_form_for_it() {
+        assert_eq!(logo_path(32.0), "logo/small-32.svg");
+        assert_eq!(logo_path(64.0), "logo/full-64.svg");
+        let small = Assets.load(&logo_path(40.0)).unwrap().unwrap();
+        let small = String::from_utf8_lossy(&small);
+        assert!(small.contains(r#"width="40" height="40""#));
+        assert!(small.contains("small form"));
+        let full = Assets.load("logo/full-96.svg").unwrap().unwrap();
+        assert!(String::from_utf8_lossy(&full).contains(r#"width="96" height="96""#));
+        for bad in ["logo/full-0.svg", "logo/big-64.svg", "logo/full.svg"] {
+            assert!(Assets.load(bad).unwrap().is_none(), "{bad}");
+        }
+    }
+
+    #[test]
+    fn installed_icon_has_no_filters_for_qt() {
+        // KDE draws the scalable icon with Qt SVG, which skips blur filters.
+        let icon = include_str!("../../../packaging/icons/in.invenia.katna.Mail.svg");
+        assert!(!icon.contains("filter"));
+        assert!(!include_str!("../../../packaging/icons/src/katna-small.svg").contains("filter"));
     }
 }

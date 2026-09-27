@@ -437,6 +437,11 @@ pub struct MailView {
     /// address; empty for the first.
     #[serde(skip_serializing_if = "String::is_empty")]
     pub current_account: String,
+    /// The order accounts are listed in (Settings > Accounts), by
+    /// lower-case address; accounts not in it follow, oldest first. The
+    /// first account is the default where there is one.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub account_order: Vec<String>,
 }
 
 impl Default for MailView {
@@ -468,6 +473,7 @@ impl Default for MailView {
             open_saved_folder: false,
             accounts_shown: AccountsShown::One,
             current_account: String::new(),
+            account_order: Vec::new(),
         }
     }
 }
@@ -479,6 +485,34 @@ impl MailView {
             .get(&address.to_lowercase())
             .cloned()
             .unwrap_or_default()
+    }
+
+    /// Sorts `accounts` into [`Self::account_order`]; the rest keep their
+    /// order after them.
+    pub fn order_accounts(&self, accounts: &mut [crate::Account]) {
+        let place = |account: &crate::Account| {
+            let address = account.address.trim().to_lowercase();
+            self.account_order
+                .iter()
+                .position(|a| *a == address)
+                .unwrap_or(usize::MAX)
+        };
+        accounts.sort_by_key(place);
+    }
+
+    /// Moves the account at `from` in `accounts` (as ordered by
+    /// [`Self::order_accounts`]) to `to`, and keeps the whole order.
+    pub fn move_account(&mut self, accounts: &[crate::Account], from: usize, to: usize) {
+        let mut order: Vec<String> = accounts
+            .iter()
+            .map(|a| a.address.trim().to_lowercase())
+            .collect();
+        if from >= order.len() {
+            return;
+        }
+        let moved = order.remove(from);
+        order.insert(to.min(order.len()), moved);
+        self.account_order = order;
     }
 }
 
@@ -838,6 +872,36 @@ fn tempfile_in(dir: &Path) -> Result<(std::path::PathBuf, fs::File)> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn accounts_follow_the_chosen_order() {
+        use crate::{Account, AccountId, AccountKind};
+        let account = |id, address: &str| Account {
+            id: AccountId(id),
+            kind: AccountKind::Imap,
+            display_name: String::new(),
+            address: address.to_owned(),
+        };
+        let mut accounts = vec![
+            account(1, "a@x.org"),
+            account(2, "B@x.org"),
+            account(3, "c@x.org"),
+        ];
+        let mut view = MailView::default();
+        view.order_accounts(&mut accounts);
+        assert_eq!(accounts[0].id, AccountId(1), "no order keeps the store's");
+        view.move_account(&accounts, 2, 0);
+        assert_eq!(view.account_order, ["c@x.org", "a@x.org", "b@x.org"]);
+        view.order_accounts(&mut accounts);
+        let ids: Vec<i64> = accounts.iter().map(|a| a.id.0).collect();
+        assert_eq!(ids, [3, 1, 2]);
+        // A new account goes last.
+        accounts.push(account(4, "d@x.org"));
+        accounts.swap(0, 3);
+        view.order_accounts(&mut accounts);
+        let ids: Vec<i64> = accounts.iter().map(|a| a.id.0).collect();
+        assert_eq!(ids, [3, 1, 2, 4]);
+    }
+
     use super::*;
 
     #[test]

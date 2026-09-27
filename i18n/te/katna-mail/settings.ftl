@@ -68,6 +68,10 @@ settings-general-new-mail-detail = అందరికీ రిప్లయి, 
 settings-general-new-mail-sound = సౌండ్ ప్లే చేయండి
 settings-general-new-mail-sound-detail = డెస్క్‌టాప్ కొత్త మెయిల్ సౌండ్
 settings-general-desktop = డెస్క్‌టాప్
+settings-general-start-at-login = లాగిన్ అయినప్పుడు Katnaను ప్రారంభించండి
+settings-general-start-at-login-detail = విండోను తెరవకుండానే మెయిల్‌ను సింక్ చేసి, కొత్త మెయిల్ నోటిఫికేషన్‌లను, ట్రే ఐకాన్‌ను చూపిస్తుంది
+settings-general-login-window = Katna Mail విండోను కూడా తెరవండి
+settings-general-login-window-detail = లాగిన్ అయినప్పుడు విండో కూడా తెరుచుకుంటుంది
 settings-general-tray = సిస్టమ్ ట్రేలో Katnaను చూపండి
 settings-general-tray-detail = చదవని వాటి సంఖ్య, ఒక మెనూతో
 settings-general-unread-badge = టాస్క్‌బార్ ఐకాన్‌పై చదవని వాటి సంఖ్య
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = ప్రతి మెసేజ్‌�
 settings-general-sending-summary = పంపడాన్ని రద్దు చేయండి: పంపిన మెసేజ్‌ను వెనక్కి తీసుకోగలిగేలా అది ఎంతసేపు వేచి ఉండాలి
 settings-general-offline-summary = కనెక్షన్ లేకుండా చదవడానికి, ఎన్ని రోజుల ఇటీవలి మెయిల్ పూర్తిగా డౌన్‌లోడ్ చేయబడుతుంది
 settings-general-notifications-summary = కొత్త మెయిల్ నోటిఫికేషన్‌లు, వాటి సౌండ్
-settings-general-desktop-summary = లాగిన్ అయినప్పుడు Katna Mailను తెరవడం, సిస్టమ్ ట్రే ఐకాన్, టాస్క్‌బార్ ఐకాన్‌పై చదవని వాటి సంఖ్య
+settings-general-desktop-summary = లాగిన్ అయినప్పుడు Katnaను ప్రారంభించడం, సిస్టమ్ ట్రే ఐకాన్, టాస్క్‌బార్ ఐకాన్‌పై చదవని వాటి సంఖ్య
 settings-accounts-accounts-summary = ఖాతాను జోడించండి లేదా తీసివేయండి, లేదా దాని చిత్రాన్ని మార్చండి
 settings-appearance-density-summary = లిస్ట్‌లో డిఫాల్ట్ లేదా కాంపాక్ట్ లైన్‌లు
 settings-appearance-scaling-summary = ప్రతిదాన్నీ పెద్దదిగా లేదా చిన్నదిగా చేయండి: టెక్స్ట్, ఐకాన్‌లు, స్పేసింగ్, డివైడర్‌లు
@@ -241,7 +245,7 @@ settings-search-results = “{ $query }”కు సరిపోలే సెట
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = లాగిన్ అయినప్పుడు తెరవడాన్ని మార్చడం సాధ్యం కాలేదు: { $error }
+settings-open-at-login-failed = లాగిన్ అయినప్పుడు ప్రారంభించడాన్ని మార్చడం సాధ్యం కాలేదు: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = వ్యాకరణం
 settings-compose-grammar-detail = ఈ కంప్యూటర్‌లోనే Harperతో చెక్ చేయబడుతుంది. ప్రస్తుతానికి ఇంగ్లీష్ మాత్రమే: ఇతర భాషల్లోని టెక్స్ట్‌ను మార్చదు.
 settings-compose-grammar-check = వ్యాకరణం చెక్ చేయండి
 settings-compose-grammar-check-detail = రాస్తున్నప్పుడు వ్యాకరణ తప్పుల కింద గీత గీయండి, ఇంగ్లీష్‌లో
+settings-compose-suggestions = రాసేటప్పుడు సూచనలు
+settings-compose-suggestions-detail = మీరు పంపిన మెయిల్ నుండి, మీరు జవాబిస్తున్న మెయిల్ నుండి ఈ కంప్యూటర్‌లోనే నేర్చుకుంటుంది; ఏదీ దీని నుండి బయటకు వెళ్లదు. సూచనను తీసుకోవడానికి Tab నొక్కండి, లేదా టైప్ చేస్తూనే ఉండండి.
+settings-compose-suggestions-on = రాస్తున్నప్పుడు సూచించండి
+settings-compose-suggestions-on-detail = మీరు టైప్ చేస్తున్నప్పుడు ఒక పదబంధంలో మిగిలిన భాగం ఏమై ఉండవచ్చో బూడిద రంగులో చూపండి
 settings-compose-grammar-summary = రాస్తున్నప్పుడు వ్యాకరణ తప్పుల కింద గీత గీయండి, ఇంగ్లీష్‌లో
+settings-compose-suggestions-summary = మీరు టైప్ చేస్తున్నప్పుడు ఒక పదబంధంలో మిగిలిన భాగం ఏమై ఉండవచ్చో బూడిద రంగులో చూపండి

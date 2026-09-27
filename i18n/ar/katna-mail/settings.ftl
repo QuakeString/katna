@@ -76,6 +76,10 @@ settings-general-new-mail-detail = مع أزرار الرد على الكل وو
 settings-general-new-mail-sound = تشغيل صوت
 settings-general-new-mail-sound-detail = صوت البريد الجديد في سطح المكتب
 settings-general-desktop = سطح المكتب
+settings-general-start-at-login = تشغيل Katna عند تسجيل الدخول
+settings-general-start-at-login-detail = يزامن البريد ويعرض إشعارات البريد الجديد وأيقونة علبة النظام، دون فتح النافذة
+settings-general-login-window = فتح نافذة Katna Mail أيضًا
+settings-general-login-window-detail = تُفتح النافذة أيضًا عند تسجيل الدخول
 settings-general-tray = عرض Katna في علبة النظام
 settings-general-tray-detail = مع عدد الرسائل غير المقروءة وقائمة
 settings-general-unread-badge = عدد غير المقروءة على أيقونة شريط المهام
@@ -213,7 +217,7 @@ settings-general-remote-images-summary = عرض الصور في كل رسالة 
 settings-general-sending-summary = التراجع عن الإرسال: المدة التي تنتظرها الرسالة المُرسَلة، حتى يمكن التراجع عن إرسالها
 settings-general-offline-summary = عدد أيام البريد الحديث التي يتم تنزيلها كاملة لقراءتها بلا اتصال
 settings-general-notifications-summary = إشعارات البريد الجديد وصوتها
-settings-general-desktop-summary = فتح Katna Mail عند تسجيل الدخول، وأيقونة علبة النظام، وعدد غير المقروءة على أيقونة شريط المهام
+settings-general-desktop-summary = تشغيل Katna عند تسجيل الدخول، وأيقونة علبة النظام، وعدد غير المقروءة على أيقونة شريط المهام
 settings-accounts-accounts-summary = إضافة حساب أو إزالته، أو تغيير صورته
 settings-appearance-density-summary = أسطر تلقائية أو مضغوطة في القائمة
 settings-appearance-scaling-summary = تكبير كل شيء أو تصغيره: النصوص والأيقونات والمسافات والفواصل
@@ -249,7 +253,7 @@ settings-search-results = الإعدادات المطابقة لـ«{ $query }»
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = تعذّر تغيير الفتح عند تسجيل الدخول: { $error }
+settings-open-at-login-failed = تعذّر تغيير التشغيل عند تسجيل الدخول: { $error }
 
 ## Settings > General > Time
 
@@ -272,4 +276,9 @@ settings-compose-grammar = القواعد النحوية
 settings-compose-grammar-detail = يجري التدقيق على هذا الكمبيوتر باستخدام Harper. الإنجليزية فقط حاليًا: لا يُمَسّ النص المكتوب بلغات أخرى.
 settings-compose-grammar-check = تدقيق القواعد النحوية
 settings-compose-grammar-check-detail = وضع خط تحت الأخطاء النحوية أثناء الكتابة، بالإنجليزية
+settings-compose-suggestions = اقتراحات الكتابة
+settings-compose-suggestions-detail = تُتعلَّم على هذا الحاسوب من البريد الذي أرسلته والبريد الذي تردّ عليه؛ ولا يغادره شيء. اضغط Tab لقبول اقتراح، أو واصل الكتابة.
+settings-compose-suggestions-on = الاقتراح أثناء الكتابة
+settings-compose-suggestions-on-detail = عرض التتمة المحتملة للعبارة باللون الرمادي أثناء الكتابة
 settings-compose-grammar-summary = وضع خط تحت الأخطاء النحوية أثناء الكتابة، بالإنجليزية
+settings-compose-suggestions-summary = عرض التتمة المحتملة للعبارة باللون الرمادي أثناء الكتابة

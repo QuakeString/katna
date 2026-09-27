@@ -68,6 +68,10 @@ settings-general-new-mail-detail = Med Svara alla, Markera som läst och Arkiver
 settings-general-new-mail-sound = Spela upp ett ljud
 settings-general-new-mail-sound-detail = Skrivbordets ljud för ny e-post
 settings-general-desktop = Skrivbord
+settings-general-start-at-login = Starta Katna vid inloggning
+settings-general-start-at-login-detail = Synkroniserar e-post och visar aviseringar om ny e-post och ikonen i systemfältet, utan att öppna fönstret
+settings-general-login-window = Öppna även fönstret för Katna Mail
+settings-general-login-window-detail = Fönstret öppnas också vid inloggning
 settings-general-tray = Visa Katna i systemfältet
 settings-general-tray-detail = Med antalet olästa och en meny
 settings-general-unread-badge = Antal olästa på aktivitetsfältets ikon
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = Visa alltid bilderna i alla meddelanden
 settings-general-sending-summary = Ångra skicka: hur länge ett skickat meddelande väntar, så att det går att ångra
 settings-general-offline-summary = Hur många dagars ny e-post som hämtas i sin helhet, för att läsas utan anslutning
 settings-general-notifications-summary = Aviseringar om ny e-post och deras ljud
-settings-general-desktop-summary = Öppna Katna Mail vid inloggning, ikonen i systemfältet och antalet olästa på aktivitetsfältets ikon
+settings-general-desktop-summary = Starta Katna vid inloggning, ikonen i systemfältet och antalet olästa på aktivitetsfältets ikon
 settings-accounts-accounts-summary = Lägg till eller ta bort ett konto, eller byt dess bild
 settings-appearance-density-summary = Standardrader eller kompakta rader i listan
 settings-appearance-scaling-summary = Gör allt större eller mindre: text, ikoner, avstånd och avdelare
@@ -241,7 +245,7 @@ settings-search-results = Inställningar som matchar ”{ $query }”
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Det gick inte att ändra öppning vid inloggning: { $error }
+settings-open-at-login-failed = Det gick inte att ändra start vid inloggning: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = Grammatik
 settings-compose-grammar-detail = Kontrolleras på den här datorn med Harper. Bara engelska än så länge: text på andra språk lämnas orörd.
 settings-compose-grammar-check = Kontrollera grammatiken
 settings-compose-grammar-check-detail = Stryk under grammatikfel medan du skriver, på engelska
+settings-compose-suggestions = Skrivförslag
+settings-compose-suggestions-detail = Inlärda på den här datorn från e-post du har skickat och e-posten du svarar på; inget lämnar datorn. Tryck på Tab för att ta ett förslag, eller fortsätt skriva.
+settings-compose-suggestions-on = Föreslå medan du skriver
+settings-compose-suggestions-on-detail = Visa den troliga fortsättningen på en fras i grått medan du skriver
 settings-compose-grammar-summary = Stryk under grammatikfel medan du skriver, på engelska
+settings-compose-suggestions-summary = Visa den troliga fortsättningen på en fras i grått medan du skriver

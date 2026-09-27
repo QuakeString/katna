@@ -68,6 +68,10 @@ settings-general-new-mail-detail = ସମସ୍ତଙ୍କୁ ଉତ୍ତର �
 settings-general-new-mail-sound = ଧ୍ୱନି ବଜାନ୍ତୁ
 settings-general-new-mail-sound-detail = ଡେସ୍କଟପର ନୂଆ ମେଲ ଧ୍ୱନି
 settings-general-desktop = ଡେସ୍କଟପ
+settings-general-start-at-login = ଲଗଇନ ସମୟରେ Katna ଆରମ୍ଭ କରନ୍ତୁ
+settings-general-start-at-login-detail = ୱିଣ୍ଡୋ ନ ଖୋଲି ମେଲ ସିଙ୍କ କରେ ଏବଂ ନୂଆ ମେଲ ବିଜ୍ଞପ୍ତି ଓ ଟ୍ରେ ଆଇକନ ଦେଖାଏ
+settings-general-login-window = Katna Mail ୱିଣ୍ଡୋ ମଧ୍ୟ ଖୋଲନ୍ତୁ
+settings-general-login-window-detail = ଲଗଇନ ସମୟରେ ୱିଣ୍ଡୋ ମଧ୍ୟ ଖୋଲେ
 settings-general-tray = ସିଷ୍ଟମ ଟ୍ରେରେ Katna ଦେଖାନ୍ତୁ
 settings-general-tray-detail = ଅପଠିତ ସଂଖ୍ୟା ଓ ଏକ ମେନୁ ସହ
 settings-general-unread-badge = ଟାସ୍କବାର ଆଇକନରେ ଅପଠିତ ସଂଖ୍ୟା
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = ପ୍ରତ୍ୟେକ ମେସେ�
 settings-general-sending-summary = ପଠାଇବା ପୂର୍ବବତ୍ କରନ୍ତୁ: ପଠାଯାଇଥିବା ମେସେଜ କେତେ ସମୟ ଅପେକ୍ଷା କରିବ, ଯାହାଦ୍ୱାରା ଏହାକୁ ଫେରାଇ ନିଆଯାଇପାରିବ
 settings-general-offline-summary = ସଂଯୋଗ ବିନା ପଢ଼ିବା ପାଇଁ କେତେ ଦିନର ସାମ୍ପ୍ରତିକ ମେଲ ସମ୍ପୂର୍ଣ୍ଣ ଡାଉନଲୋଡ ହେବ
 settings-general-notifications-summary = ନୂଆ ମେଲ ବିଜ୍ଞପ୍ତି ଓ ସେଗୁଡ଼ିକର ଧ୍ୱନି
-settings-general-desktop-summary = ଲଗଇନ ସମୟରେ Katna Mail ଖୋଲନ୍ତୁ, ସିଷ୍ଟମ ଟ୍ରେ ଆଇକନ ଓ ଟାସ୍କବାର ଆଇକନରେ ଅପଠିତ ସଂଖ୍ୟା
+settings-general-desktop-summary = ଲଗଇନ ସମୟରେ Katna ଆରମ୍ଭ କରନ୍ତୁ, ସିଷ୍ଟମ ଟ୍ରେ ଆଇକନ ଓ ଟାସ୍କବାର ଆଇକନରେ ଅପଠିତ ସଂଖ୍ୟା
 settings-accounts-accounts-summary = ଏକ ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ କିମ୍ବା କାଢ଼ନ୍ତୁ, କିମ୍ବା ଏହାର ଛବି ବଦଳାନ୍ତୁ
 settings-appearance-density-summary = ତାଲିକାରେ ଡିଫଲ୍ଟ କିମ୍ବା କମ୍ପାକ୍ଟ ଧାଡ଼ି
 settings-appearance-scaling-summary = ସବୁକିଛି ବଡ଼ କିମ୍ବା ଛୋଟ କରନ୍ତୁ: ଟେକ୍ସଟ, ଆଇକନ, ବ୍ୟବଧାନ ଓ ବିଭାଜକ
@@ -241,7 +245,7 @@ settings-search-results = “{ $query }” ସହ ମେଳ ଖାଉଥିବ�
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = ଲଗଇନ ସମୟରେ ଖୋଲିବା ବଦଳାଇହେଲା ନାହିଁ: { $error }
+settings-open-at-login-failed = ଲଗଇନ ସମୟରେ ଆରମ୍ଭ ହେବା ବଦଳାଇହେଲା ନାହିଁ: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = ବ୍ୟାକରଣ
 settings-compose-grammar-detail = ଏହି କମ୍ପ୍ୟୁଟରରେ Harper ଦ୍ୱାରା ଯାଞ୍ଚ କରାଯାଏ। ଏବେ କେବଳ ଇଂରାଜୀ: ଅନ୍ୟ ଭାଷାର ଟେକ୍ସଟକୁ ଛୁଆଯାଏ ନାହିଁ।
 settings-compose-grammar-check = ବ୍ୟାକରଣ ଯାଞ୍ଚ କରନ୍ତୁ
 settings-compose-grammar-check-detail = ଲେଖିବା ବେଳେ ବ୍ୟାକରଣ ଭୁଲ ତଳେ ରେଖା ଟାଣନ୍ତୁ, ଇଂରାଜୀରେ
+settings-compose-suggestions = ଲେଖା ପରାମର୍ଶ
+settings-compose-suggestions-detail = ଆପଣ ପଠାଇଥିବା ମେଲ ଓ ଆପଣ ଉତ୍ତର ଦେଉଥିବା ମେଲରୁ ଏହି କମ୍ପ୍ୟୁଟରରେ ଶିଖାଯାଇଛି; କିଛି ବି ବାହାରକୁ ଯାଏ ନାହିଁ। ପରାମର୍ଶ ନେବା ପାଇଁ Tab ଦବାନ୍ତୁ, କିମ୍ବା ଟାଇପ କରିଚାଲନ୍ତୁ।
+settings-compose-suggestions-on = ଲେଖିବା ବେଳେ ପରାମର୍ଶ ଦିଅନ୍ତୁ
+settings-compose-suggestions-on-detail = ଟାଇପ କରିବା ବେଳେ ବାକ୍ୟାଂଶର ସମ୍ଭାବ୍ୟ ବାକି ଅଂଶ ଧୂସର ରଙ୍ଗରେ ଦେଖାନ୍ତୁ
 settings-compose-grammar-summary = ଲେଖିବା ବେଳେ ବ୍ୟାକରଣ ଭୁଲ ତଳେ ରେଖା ଟାଣନ୍ତୁ, ଇଂରାଜୀରେ
+settings-compose-suggestions-summary = ଟାଇପ କରିବା ବେଳେ ବାକ୍ୟାଂଶର ସମ୍ଭାବ୍ୟ ବାକି ଅଂଶ ଧୂସର ରଙ୍ଗରେ ଦେଖାନ୍ତୁ

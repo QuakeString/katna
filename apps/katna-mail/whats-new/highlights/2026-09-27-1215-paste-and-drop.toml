@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Paste and drop anything into a message"
+text = """
+Text copied from Word, LibreOffice or a web page keeps its fonts, colors
+and lists, and cells from Excel, LibreOffice Calc or Google Sheets come
+in as a table. A small bar under what you pasted lets you have it as a
+table, a picture or plain text instead; Ctrl+Shift+V pastes plain text.
+Files copied in Dolphin or dragged onto the message are attached, and
+pictures ask whether they go in the text or as an attachment.
+"""

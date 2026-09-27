@@ -123,6 +123,22 @@ attachment-encrypted-open = این فایل رمزگذاری‌شده رسیده
 print-failed = چاپ ممکن نشد: { $error }
 print-no-font = هیچ قلمی پیدا نشد
 print-opened-as-pdf = به‌صورت PDF باز شد تا از آنجا چاپ شود.
+print-preview-title = پیش‌نمایش چاپ
+print-preview-laying-out = در حال صفحه‌آرایی…
+print-preview-pages = { $count ->
+    [one] { $count } صفحه
+   *[other] { $count } صفحه
+}
+print-preview-more = { $count ->
+    [one] و { $count } صفحهٔ دیگر
+   *[other] و { $count } صفحهٔ دیگر
+}
+print-preview-failed = صفحه‌ها نمایش داده نشدند
+print-preview-paper = کاغذ
+print-preview-a4 = A4
+print-preview-letter = Letter
+print-preview-cancel = لغو
+print-preview-print = چاپ
 print-not-downloaded = (هنوز بارگیری نشده است.)
 print-encrypted = (رمزگذاری‌شده. برای چاپ متن آن، آن را در Katna Mail باز کنید.)
 print-to = به: { $addresses }

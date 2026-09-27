@@ -357,3 +357,40 @@ akan menunjukkan folder semula. Bahagian atas kiri menunjukkan
 Katna Mail, dan nama itu bertukar kepada Kalendar, Kenalan dan yang lain
 apabila anda bertukar apl.
 """
+
+["2026-09-27-1143-select-all-unread"]
+title = "Pilih semua mel yang belum dibaca atau dibintangi"
+text = """
+Dibaca, Belum dibaca, Dibintangi dan Tidak dibintangi dalam menu Pilih
+kini menanda setiap perbualan yang sepadan dalam folder, bukan hanya
+yang ada di skrin. Satu baris di atas senarai menyatakan berapa yang
+dipilih, dan mengarkibkan, memadam, mengalih atau menandai berlaku pada
+kesemuanya.
+"""
+
+["2026-09-27-1228-fixes-on-hover"]
+title = "Pembetulan tanpa klik kanan"
+text = """
+Letakkan penuding pada perkataan bergaris bawah, atau kliknya, dan
+pembetulannya muncul betul-betul di bawahnya: cadangan ejaan, pembetulan
+tatabahasa dan Abaikan, dalam teks dan subjek. Klik kanan masih membuka
+menu penuh.
+"""
+
+["2026-09-27-1201-recipient-chips"]
+title = "Penerima sebagai cip"
+text = """
+Alamat dalam Kepada, Sk dan Skt menjadi cip yang hanya menunjukkan nama.
+Anak panah pada cip menunjukkan alamatnya, dan klik dua kali membolehkan
+anda menyuntingnya. Apa-apa yang bukan alamat yang sah ditanda dengan
+warna merah, dan Hantar meminta anda membetulkannya dahulu.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna bermula semasa log masuk"
+text = """
+Katna kini bermula secara senyap apabila anda log masuk: mel
+disegerakkan, dan pemberitahuan mel baharu serta ikon dulang muncul
+tanpa membuka tetingkap. Matikannya, atau biarkan tetingkap turut
+dibuka, dalam Tetapan > Umum > Desktop.
+"""

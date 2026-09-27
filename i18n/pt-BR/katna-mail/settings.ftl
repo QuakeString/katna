@@ -70,6 +70,10 @@ settings-general-new-mail-detail = Com Responder a todos, Marcar como lida e Arq
 settings-general-new-mail-sound = Tocar um som
 settings-general-new-mail-sound-detail = O som de novo e-mail da área de trabalho
 settings-general-desktop = Área de trabalho
+settings-general-start-at-login = Iniciar o Katna ao fazer login
+settings-general-start-at-login-detail = Sincroniza os e-mails e mostra as notificações de novos e-mails e o ícone da bandeja, sem abrir a janela
+settings-general-login-window = Abrir também a janela do Katna Mail
+settings-general-login-window-detail = A janela também abre ao fazer login
 settings-general-tray = Mostrar o Katna na bandeja do sistema
 settings-general-tray-detail = Com a contagem de não lidas e um menu
 settings-general-unread-badge = Contagem de não lidas no ícone da barra de tarefas
@@ -207,7 +211,7 @@ settings-general-remote-images-summary = Sempre exibir as imagens de todas as me
 settings-general-sending-summary = Cancelar envio: quanto tempo uma mensagem enviada espera, para que o envio possa ser cancelado
 settings-general-offline-summary = Quantos dias de e-mails recentes são baixados por completo, para ler sem conexão
 settings-general-notifications-summary = Notificações de novos e-mails e o som delas
-settings-general-desktop-summary = Abrir o Katna Mail ao fazer login, o ícone da bandeja do sistema e a contagem de não lidas no ícone da barra de tarefas
+settings-general-desktop-summary = Iniciar o Katna ao fazer login, o ícone da bandeja do sistema e a contagem de não lidas no ícone da barra de tarefas
 settings-accounts-accounts-summary = Adicionar ou remover uma conta, ou alterar a imagem dela
 settings-appearance-density-summary = Linhas padrão ou compactas na lista
 settings-appearance-scaling-summary = Deixar tudo maior ou menor: texto, ícones, espaçamento e divisórias
@@ -243,7 +247,7 @@ settings-search-results = Configurações que correspondem a “{ $query }”
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Não foi possível alterar a abertura ao fazer login: { $error }
+settings-open-at-login-failed = Não foi possível alterar a inicialização ao fazer login: { $error }
 
 ## Settings > General > Time
 
@@ -266,4 +270,9 @@ settings-compose-grammar = Gramática
 settings-compose-grammar-detail = Verificada neste computador com o Harper. Por enquanto só em inglês: textos em outros idiomas não são alterados.
 settings-compose-grammar-check = Verificar a gramática
 settings-compose-grammar-check-detail = Sublinhar erros de gramática enquanto você escreve, em inglês
+settings-compose-suggestions = Sugestões de escrita
+settings-compose-suggestions-detail = Aprendidas neste computador a partir dos e-mails que você enviou e do e-mail que você está respondendo; nada sai dele. Pressione Tab para aceitar uma sugestão ou continue digitando.
+settings-compose-suggestions-on = Sugerir enquanto você escreve
+settings-compose-suggestions-on-detail = Mostrar em cinza o provável restante de uma frase enquanto você digita
 settings-compose-grammar-summary = Sublinhar erros de gramática enquanto você escreve, em inglês
+settings-compose-suggestions-summary = Mostrar em cinza o provável restante de uma frase enquanto você digita

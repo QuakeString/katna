@@ -21,6 +21,7 @@
 mod attach;
 mod checks;
 mod chips;
+mod paste;
 mod popout;
 mod recipients;
 mod schedule;
@@ -156,6 +157,9 @@ pub(super) struct Compose {
     stick: Rc<Cell<Stick>>,
     /// The underline of grammar mistakes in the subject.
     grammar_color: Hsla,
+    /// Pictures just pasted or dropped, while the choice between the text
+    /// and the attachments shows.
+    picture_choice: Option<paste::PictureChoice>,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -813,6 +817,7 @@ impl MailWindow {
             editor.set_spell_check(speller, cx);
             editor.set_grammar_check(grammar, cx);
             editor.set_suggest(suggest, cx);
+            paste::setup(&mut editor);
             editor
         });
         let mut subscriptions = Vec::new();
@@ -894,6 +899,11 @@ impl MailWindow {
                     misspelled,
                     grammar,
                 } => this.open_compose_menu(*position, misspelled.clone(), grammar.clone(), cx),
+                RichEvent::PasteFiles(paths) => this.paste_files(paths.clone(), cx),
+                RichEvent::PastePictures(pictures) => {
+                    this.place_pictures(pictures.clone(), true, cx)
+                }
+                RichEvent::PasteChoice(option) => this.choose_picture_place(*option, cx),
                 RichEvent::Hint {
                     word,
                     at,
@@ -950,6 +960,7 @@ impl MailWindow {
             answered,
             stick: Rc::default(),
             grammar_color: grammar_color(&th),
+            picture_choice: None,
             _subscriptions: subscriptions,
         });
         cx.notify();
@@ -1607,7 +1618,7 @@ impl MailWindow {
                 _ => d.rounded_t(px(12.0)),
             })
             .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| {
-                this.drop_files(paths.paths().to_vec(), cx);
+                this.drop_on_compose(paths, cx);
             }))
             .child(title_bar)
             .when(mode != Mode::Minimized, |d| {
@@ -1769,6 +1780,9 @@ impl MailWindow {
             .line_height(px(20.0))
             .cursor_text()
             .on_click(move |_, window, cx| window.focus(&focus, cx))
+            .on_drop(cx.listener(|this, paths: &ExternalPaths, window, cx| {
+                this.drop_on_body(paths, window, cx);
+            }))
             .child(div().flex_none().child(compose.body.clone()))
             .children(self.render_trimmed(th, cx));
         let card_width = unpx(self.reader_scroll.bounds().size.width) - 100.0;
@@ -1794,7 +1808,7 @@ impl MailWindow {
             .border_color(rgba(th.divider))
             .shadow(elevation(th, 1.5))
             .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| {
-                this.drop_files(paths.paths().to_vec(), cx);
+                this.drop_on_compose(paths, cx);
             }))
             .child(measure(
                 &self.reader_scroll,
@@ -2034,6 +2048,9 @@ impl MailWindow {
             // A click below the text still puts the cursor in the body, at
             // its end.
             .on_click(move |_, window, cx| window.focus(&focus, cx))
+            .on_drop(cx.listener(|this, paths: &ExternalPaths, window, cx| {
+                this.drop_on_body(paths, window, cx);
+            }))
             .child(
                 div()
                     .flex_none()

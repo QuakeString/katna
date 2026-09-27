@@ -28,3 +28,4 @@ app-contacts-count = { $count } orang daripada mel anda, yang paling kerap berut
 app-contacts-top = { $count } orang teratas daripada mel anda, yang paling kerap berutus mel dahulu
 app-contacts-messages = { $count } mesej
 app-contacts-last = terakhir { $date }
+top-brand = Katna

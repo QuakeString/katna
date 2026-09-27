@@ -123,6 +123,22 @@ attachment-encrypted-open = Filen kom krypterad. Spara den för att öppna den n
 print-failed = Det gick inte att skriva ut: { $error }
 print-no-font = inget typsnitt hittades
 print-opened-as-pdf = Öppnades som PDF för utskrift därifrån.
+print-preview-title = Förhandsgranskning
+print-preview-laying-out = Ordnar sidorna…
+print-preview-pages = { $count ->
+    [one] { $count } sida
+   *[other] { $count } sidor
+}
+print-preview-more = { $count ->
+    [one] och { $count } sida till
+   *[other] och { $count } sidor till
+}
+print-preview-failed = sidorna kunde inte visas
+print-preview-paper = Papper
+print-preview-a4 = A4
+print-preview-letter = Letter
+print-preview-cancel = Avbryt
+print-preview-print = Skriv ut
 print-not-downloaded = (Inte hämtat än.)
 print-encrypted = (Krypterat. Öppna det i Katna Mail för att skriva ut texten.)
 print-to = Till: { $addresses }

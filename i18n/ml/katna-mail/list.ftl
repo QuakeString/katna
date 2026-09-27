@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] { $folder }-ലെ എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുക്കുക
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] വായിച്ച { $count } സംഭാഷണം തിരഞ്ഞെടുത്തു.
+           *[other] വായിച്ച എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+       *[message] { $count ->
+            [one] വായിച്ച { $count } സന്ദേശം തിരഞ്ഞെടുത്തു.
+           *[other] വായിച്ച എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] വായിക്കാത്ത { $count } സംഭാഷണം തിരഞ്ഞെടുത്തു.
+           *[other] വായിക്കാത്ത എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+       *[message] { $count ->
+            [one] വായിക്കാത്ത { $count } സന്ദേശം തിരഞ്ഞെടുത്തു.
+           *[other] വായിക്കാത്ത എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] നക്ഷത്രമിട്ട { $count } സംഭാഷണം തിരഞ്ഞെടുത്തു.
+           *[other] നക്ഷത്രമിട്ട എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+       *[message] { $count ->
+            [one] നക്ഷത്രമിട്ട { $count } സന്ദേശം തിരഞ്ഞെടുത്തു.
+           *[other] നക്ഷത്രമിട്ട എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] നക്ഷത്രമിടാത്ത { $count } സംഭാഷണം തിരഞ്ഞെടുത്തു.
+           *[other] നക്ഷത്രമിടാത്ത എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+       *[message] { $count ->
+            [one] നക്ഷത്രമിടാത്ത { $count } സന്ദേശം തിരഞ്ഞെടുത്തു.
+           *[other] നക്ഷത്രമിടാത്ത എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-ലെ വായിച്ച { $count } സംഭാഷണം തിരഞ്ഞെടുത്തു.
+           *[other] { $folder }-ലെ വായിച്ച എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+       *[message] { $count ->
+            [one] { $folder }-ലെ വായിച്ച { $count } സന്ദേശം തിരഞ്ഞെടുത്തു.
+           *[other] { $folder }-ലെ വായിച്ച എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-ലെ വായിക്കാത്ത { $count } സംഭാഷണം തിരഞ്ഞെടുത്തു.
+           *[other] { $folder }-ലെ വായിക്കാത്ത എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+       *[message] { $count ->
+            [one] { $folder }-ലെ വായിക്കാത്ത { $count } സന്ദേശം തിരഞ്ഞെടുത്തു.
+           *[other] { $folder }-ലെ വായിക്കാത്ത എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-ലെ നക്ഷത്രമിട്ട { $count } സംഭാഷണം തിരഞ്ഞെടുത്തു.
+           *[other] { $folder }-ലെ നക്ഷത്രമിട്ട എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+       *[message] { $count ->
+            [one] { $folder }-ലെ നക്ഷത്രമിട്ട { $count } സന്ദേശം തിരഞ്ഞെടുത്തു.
+           *[other] { $folder }-ലെ നക്ഷത്രമിട്ട എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-ലെ നക്ഷത്രമിടാത്ത { $count } സംഭാഷണം തിരഞ്ഞെടുത്തു.
+           *[other] { $folder }-ലെ നക്ഷത്രമിടാത്ത എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+       *[message] { $count ->
+            [one] { $folder }-ലെ നക്ഷത്രമിടാത്ത { $count } സന്ദേശം തിരഞ്ഞെടുത്തു.
+           *[other] { $folder }-ലെ നക്ഷത്രമിടാത്ത എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] വായിച്ച സംഭാഷണങ്ങളൊന്നും ഇവിടെയില്ല.
+       *[message] വായിച്ച സന്ദേശങ്ങളൊന്നും ഇവിടെയില്ല.
+    }
+   *[unread] { $kind ->
+        [conversation] വായിക്കാത്ത സംഭാഷണങ്ങളൊന്നും ഇവിടെയില്ല.
+       *[message] വായിക്കാത്ത സന്ദേശങ്ങളൊന്നും ഇവിടെയില്ല.
+    }
+    [starred] { $kind ->
+        [conversation] നക്ഷത്രമിട്ട സംഭാഷണങ്ങളൊന്നും ഇവിടെയില്ല.
+       *[message] നക്ഷത്രമിട്ട സന്ദേശങ്ങളൊന്നും ഇവിടെയില്ല.
+    }
+    [unstarred] { $kind ->
+        [conversation] നക്ഷത്രമിടാത്ത സംഭാഷണങ്ങളൊന്നും ഇവിടെയില്ല.
+       *[message] നക്ഷത്രമിടാത്ത സന്ദേശങ്ങളൊന്നും ഇവിടെയില്ല.
+    }
+}
 list-clear-selection = തിരഞ്ഞെടുക്കൽ മായ്‌ക്കുക
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count } സന്ദേശങ്ങൾ ശാശ്വതമായി ഇല്ലാതാക്കി.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] സംഭാഷണം വായിച്ചതായി അടയാളപ്പെടുത്തി.
+       *[other] { $count } സംഭാഷണങ്ങൾ വായിച്ചതായി അടയാളപ്പെടുത്തി.
+    }
+   *[message] { $count ->
+        [one] സന്ദേശം വായിച്ചതായി അടയാളപ്പെടുത്തി.
+       *[other] { $count } സന്ദേശങ്ങൾ വായിച്ചതായി അടയാളപ്പെടുത്തി.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] സംഭാഷണം വായിക്കാത്തതായി അടയാളപ്പെടുത്തി.
+       *[other] { $count } സംഭാഷണങ്ങൾ വായിക്കാത്തതായി അടയാളപ്പെടുത്തി.
+    }
+   *[message] { $count ->
+        [one] സന്ദേശം വായിക്കാത്തതായി അടയാളപ്പെടുത്തി.
+       *[other] { $count } സന്ദേശങ്ങൾ വായിക്കാത്തതായി അടയാളപ്പെടുത്തി.
+    }
+}
 toast-undone = പ്രവർത്തനം പഴയപടിയാക്കി.
+toast-nothing-to-undo = പഴയപടിയാക്കാൻ ഒന്നുമില്ല.
+toast-cannot-undo-delete-forever = ശാശ്വതമായി ഇല്ലാതാക്കിയ മെയിൽ തിരികെ കൊണ്ടുവരാനാകില്ല.
+toast-send-undone = അയയ്ക്കൽ പഴയപടിയാക്കി.
+toast-too-late-to-undo-send = പഴയപടിയാക്കാൻ വൈകിപ്പോയി: സന്ദേശം ഇതിനകം അയച്ചുകഴിഞ്ഞു.
 toast-undo = പഴയപടിയാക്കുക
 toast-no-spam-folder = ഈ അക്കൗണ്ടിന് സ്‌പാം ഫോൾഡർ ഇല്ല.

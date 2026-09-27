@@ -224,6 +224,21 @@ pub async fn sender_picture(connection: &Connection, address: &str) -> Result<Ve
         .map_err(|err| describe(&err))
 }
 
+/// Renames `account`; an empty name goes back to the name its own mail
+/// is sent under.
+pub async fn rename_account(
+    connection: &Connection,
+    account: i64,
+    name: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.rename_account(account, name)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Stops syncing `account` and deletes its mail and password from this
 /// computer. Nothing changes on the server.
 pub async fn remove_account(connection: &Connection, account: i64) -> Result<(), String> {

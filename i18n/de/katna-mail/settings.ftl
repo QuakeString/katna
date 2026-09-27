@@ -68,6 +68,10 @@ settings-general-new-mail-detail = Mit „Allen antworten“, „Als gelesen mar
 settings-general-new-mail-sound = Ton abspielen
 settings-general-new-mail-sound-detail = Der Ton der Arbeitsumgebung für neue E-Mails
 settings-general-desktop = Arbeitsumgebung
+settings-general-start-at-login = Katna bei der Anmeldung starten
+settings-general-start-at-login-detail = Synchronisiert E-Mails und zeigt Benachrichtigungen über neue E-Mails und das Symbol im Systemabschnitt, ohne das Fenster zu öffnen
+settings-general-login-window = Auch das Fenster von Katna Mail öffnen
+settings-general-login-window-detail = Das Fenster öffnet sich ebenfalls bei der Anmeldung
 settings-general-tray = Katna im Systemabschnitt anzeigen
 settings-general-tray-detail = Mit der Anzahl ungelesener Nachrichten und einem Menü
 settings-general-unread-badge = Anzahl ungelesener Nachrichten am Symbol in der Kontrollleiste
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = Die Bilder jeder Nachricht immer anzeig
 settings-general-sending-summary = Senden rückgängig machen: wie lange eine gesendete Nachricht wartet, damit sie zurückgenommen werden kann
 settings-general-offline-summary = Wie viele Tage aktueller E-Mails vollständig heruntergeladen werden, um sie ohne Verbindung zu lesen
 settings-general-notifications-summary = Benachrichtigungen bei neuen E-Mails und ihr Ton
-settings-general-desktop-summary = Katna Mail bei der Anmeldung öffnen, das Symbol im Systemabschnitt und die Anzahl ungelesener Nachrichten am Symbol in der Kontrollleiste
+settings-general-desktop-summary = Katna bei der Anmeldung starten, das Symbol im Systemabschnitt und die Anzahl ungelesener Nachrichten am Symbol in der Kontrollleiste
 settings-accounts-accounts-summary = Ein Konto hinzufügen oder entfernen oder sein Bild ändern
 settings-appearance-density-summary = Standard- oder kompakte Zeilen in der Liste
 settings-appearance-scaling-summary = Alles größer oder kleiner machen: Text, Symbole, Abstände und Trennlinien
@@ -241,7 +245,7 @@ settings-search-results = Einstellungen, die „{ $query }“ entsprechen
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Öffnen bei der Anmeldung konnte nicht geändert werden: { $error }
+settings-open-at-login-failed = Starten bei der Anmeldung konnte nicht geändert werden: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = Grammatik
 settings-compose-grammar-detail = Wird auf diesem Computer mit Harper geprüft. Vorerst nur Englisch: Text in anderen Sprachen bleibt unberührt.
 settings-compose-grammar-check = Grammatik prüfen
 settings-compose-grammar-check-detail = Grammatikfehler beim Schreiben unterstreichen, auf Englisch
+settings-compose-suggestions = Schreibvorschläge
+settings-compose-suggestions-detail = Auf diesem Computer aus den E-Mails gelernt, die Sie gesendet haben und auf die Sie antworten; nichts verlässt ihn. Drücken Sie Tab, um einen Vorschlag zu übernehmen, oder schreiben Sie einfach weiter.
+settings-compose-suggestions-on = Beim Schreiben Vorschläge machen
+settings-compose-suggestions-on-detail = Den wahrscheinlichen Rest einer Wendung beim Tippen grau anzeigen
 settings-compose-grammar-summary = Grammatikfehler beim Schreiben unterstreichen, auf Englisch
+settings-compose-suggestions-summary = Den wahrscheinlichen Rest einer Wendung beim Tippen grau anzeigen

@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] Kies al { $count } boodskappe in { $folder }
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gelese gesprek is gekies.
+           *[other] Al { $count } gelese gesprekke is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } gelese boodskap is gekies.
+           *[other] Al { $count } gelese boodskappe is gekies.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ongelese gesprek is gekies.
+           *[other] Al { $count } ongelese gesprekke is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } ongelese boodskap is gekies.
+           *[other] Al { $count } ongelese boodskappe is gekies.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gesterde gesprek is gekies.
+           *[other] Al { $count } gesterde gesprekke is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } gesterde boodskap is gekies.
+           *[other] Al { $count } gesterde boodskappe is gekies.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ongesterde gesprek is gekies.
+           *[other] Al { $count } ongesterde gesprekke is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } ongesterde boodskap is gekies.
+           *[other] Al { $count } ongesterde boodskappe is gekies.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gelese gesprek in { $folder } is gekies.
+           *[other] Al { $count } gelese gesprekke in { $folder } is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } gelese boodskap in { $folder } is gekies.
+           *[other] Al { $count } gelese boodskappe in { $folder } is gekies.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ongelese gesprek in { $folder } is gekies.
+           *[other] Al { $count } ongelese gesprekke in { $folder } is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } ongelese boodskap in { $folder } is gekies.
+           *[other] Al { $count } ongelese boodskappe in { $folder } is gekies.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gesterde gesprek in { $folder } is gekies.
+           *[other] Al { $count } gesterde gesprekke in { $folder } is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } gesterde boodskap in { $folder } is gekies.
+           *[other] Al { $count } gesterde boodskappe in { $folder } is gekies.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ongesterde gesprek in { $folder } is gekies.
+           *[other] Al { $count } ongesterde gesprekke in { $folder } is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } ongesterde boodskap in { $folder } is gekies.
+           *[other] Al { $count } ongesterde boodskappe in { $folder } is gekies.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] Geen gelese gesprekke hier nie.
+       *[message] Geen gelese boodskappe hier nie.
+    }
+   *[unread] { $kind ->
+        [conversation] Geen ongelese gesprekke hier nie.
+       *[message] Geen ongelese boodskappe hier nie.
+    }
+    [starred] { $kind ->
+        [conversation] Geen gesterde gesprekke hier nie.
+       *[message] Geen gesterde boodskappe hier nie.
+    }
+    [unstarred] { $kind ->
+        [conversation] Geen ongesterde gesprekke hier nie.
+       *[message] Geen ongesterde boodskappe hier nie.
+    }
+}
 list-clear-selection = Vee keuse uit
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count } boodskappe permanent uitgevee.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek as gelees gemerk.
+       *[other] { $count } gesprekke as gelees gemerk.
+    }
+   *[message] { $count ->
+        [one] Boodskap as gelees gemerk.
+       *[other] { $count } boodskappe as gelees gemerk.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek as ongelees gemerk.
+       *[other] { $count } gesprekke as ongelees gemerk.
+    }
+   *[message] { $count ->
+        [one] Boodskap as ongelees gemerk.
+       *[other] { $count } boodskappe as ongelees gemerk.
+    }
+}
 toast-undone = Aksie ontdoen.
+toast-nothing-to-undo = Niks om te ontdoen nie.
+toast-cannot-undo-delete-forever = E-pos wat permanent uitgevee is, kan nie teruggebring word nie.
+toast-send-undone = Stuur ontdoen.
+toast-too-late-to-undo-send = Te laat om te ontdoen: die boodskap is reeds gestuur.
 toast-undo = Ontdoen
 toast-no-spam-folder = Hierdie rekening het geen strooiposvouer nie.

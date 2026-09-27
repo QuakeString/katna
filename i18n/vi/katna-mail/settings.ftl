@@ -62,6 +62,10 @@ settings-general-new-mail-detail = Có Trả lời tất cả, Đánh dấu là 
 settings-general-new-mail-sound = Phát âm thanh
 settings-general-new-mail-sound-detail = Âm thanh thư mới của môi trường máy tính
 settings-general-desktop = Môi trường máy tính
+settings-general-start-at-login = Khởi động Katna khi đăng nhập
+settings-general-start-at-login-detail = Đồng bộ thư, hiện thông báo thư mới và biểu tượng ở khay mà không mở cửa sổ
+settings-general-login-window = Mở cả cửa sổ Katna Mail
+settings-general-login-window-detail = Cửa sổ cũng mở khi đăng nhập
 settings-general-tray = Hiện Katna trong khay hệ thống
 settings-general-tray-detail = Kèm số thư chưa đọc và một menu
 settings-general-unread-badge = Số thư chưa đọc trên biểu tượng ở thanh tác vụ
@@ -199,7 +203,7 @@ settings-general-remote-images-summary = Luôn hiển thị hình ảnh của m�
 settings-general-sending-summary = Hủy gửi: thời gian thư đã gửi chờ trước khi đi, để có thể thu hồi
 settings-general-offline-summary = Bao nhiêu ngày thư gần đây được tải xuống đầy đủ, để đọc khi không có kết nối
 settings-general-notifications-summary = Thông báo thư mới và âm thanh của thông báo
-settings-general-desktop-summary = Mở Katna Mail khi đăng nhập, biểu tượng ở khay hệ thống và số thư chưa đọc trên biểu tượng ở thanh tác vụ
+settings-general-desktop-summary = Khởi động Katna khi đăng nhập, biểu tượng ở khay hệ thống và số thư chưa đọc trên biểu tượng ở thanh tác vụ
 settings-accounts-accounts-summary = Thêm hoặc xóa tài khoản, hoặc đổi ảnh của tài khoản
 settings-appearance-density-summary = Dòng mặc định hoặc thu gọn trong danh sách
 settings-appearance-scaling-summary = Làm mọi thứ to hơn hoặc nhỏ hơn: chữ, biểu tượng, khoảng cách và đường phân cách
@@ -235,7 +239,7 @@ settings-search-results = Cài đặt khớp với “{ $query }”
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Không thể thay đổi việc mở khi đăng nhập: { $error }
+settings-open-at-login-failed = Không thể thay đổi việc khởi động khi đăng nhập: { $error }
 
 ## Settings > General > Time
 
@@ -258,4 +262,9 @@ settings-compose-grammar = Ngữ pháp
 settings-compose-grammar-detail = Được kiểm tra trên máy tính này bằng Harper. Hiện chỉ hỗ trợ tiếng Anh: văn bản bằng ngôn ngữ khác được giữ nguyên.
 settings-compose-grammar-check = Kiểm tra ngữ pháp
 settings-compose-grammar-check-detail = Gạch chân lỗi ngữ pháp khi viết, bằng tiếng Anh
+settings-compose-suggestions = Gợi ý khi viết
+settings-compose-suggestions-detail = Được học trên máy tính này từ thư bạn đã gửi và thư bạn đang trả lời; không có gì rời khỏi máy. Nhấn Tab để nhận gợi ý, hoặc cứ gõ tiếp.
+settings-compose-suggestions-on = Gợi ý trong khi viết
+settings-compose-suggestions-on-detail = Hiện phần còn lại có thể có của cụm từ bằng màu xám khi bạn gõ
 settings-compose-grammar-summary = Gạch chân lỗi ngữ pháp khi viết, bằng tiếng Anh
+settings-compose-suggestions-summary = Hiện phần còn lại có thể có của cụm từ bằng màu xám khi bạn gõ

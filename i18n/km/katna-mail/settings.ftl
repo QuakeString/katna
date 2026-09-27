@@ -62,6 +62,10 @@ settings-general-new-mail-detail = ជាមួយ ឆ្លើយតបទា�
 settings-general-new-mail-sound = ចាក់សំឡេង
 settings-general-new-mail-sound-detail = សំឡេងសំបុត្រថ្មីរបស់ផ្ទៃតុ
 settings-general-desktop = ផ្ទៃតុ
+settings-general-start-at-login = ចាប់ផ្ដើម Katna ពេលចូលគណនី
+settings-general-start-at-login-detail = ធ្វើសមកាលកម្មសំបុត្រ ហើយបង្ហាញការជូនដំណឹងសំបុត្រថ្មី និងរូបតំណាងថាស ដោយមិនបើកបង្អួច
+settings-general-login-window = បើកបង្អួច Katna Mail ផងដែរ
+settings-general-login-window-detail = បង្អួចក៏បើកពេលចូលគណនីដែរ
 settings-general-tray = បង្ហាញ Katna ក្នុងថាសប្រព័ន្ធ
 settings-general-tray-detail = ជាមួយចំនួនមិនទាន់អាន និងម៉ឺនុយ
 settings-general-unread-badge = ចំនួនមិនទាន់អាននៅលើរូបតំណាងរបារភារកិច្ច
@@ -199,7 +203,7 @@ settings-general-remote-images-summary = បង្ហាញរូបភាពរ
 settings-general-sending-summary = មិនធ្វើការផ្ញើវិញ៖ រយៈពេលដែលសារបានផ្ញើរង់ចាំ ដើម្បីអាចដកវាមកវិញបាន
 settings-general-offline-summary = ចំនួនថ្ងៃនៃសំបុត្រថ្មីៗដែលត្រូវបានទាញយកទាំងស្រុង ដើម្បីអានដោយគ្មានការតភ្ជាប់
 settings-general-notifications-summary = ការជូនដំណឹងសំបុត្រថ្មី និងសំឡេងរបស់វា
-settings-general-desktop-summary = បើក Katna Mail ពេលចូលគណនី រូបតំណាងថាសប្រព័ន្ធ និងចំនួនមិនទាន់អាននៅលើរូបតំណាងរបារភារកិច្ច
+settings-general-desktop-summary = ចាប់ផ្ដើម Katna ពេលចូលគណនី រូបតំណាងថាសប្រព័ន្ធ និងចំនួនមិនទាន់អាននៅលើរូបតំណាងរបារភារកិច្ច
 settings-accounts-accounts-summary = បញ្ចូល ឬដកគណនីចេញ ឬប្ដូររូបភាពរបស់វា
 settings-appearance-density-summary = ជួរលំនាំដើម ឬបង្រួមនៅក្នុងបញ្ជី
 settings-appearance-scaling-summary = ធ្វើឱ្យអ្វីៗទាំងអស់ធំជាង ឬតូចជាង៖ អត្ថបទ រូបតំណាង គម្លាត និងបន្ទាត់ខណ្ឌ
@@ -235,7 +239,7 @@ settings-search-results = ការកំណត់ដែលត្រូវនឹ
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = មិនអាចប្ដូរការបើកពេលចូលគណនីបានទេ៖ { $error }
+settings-open-at-login-failed = មិនអាចប្ដូរការចាប់ផ្ដើមពេលចូលគណនីបានទេ៖ { $error }
 
 ## Settings > General > Time
 
@@ -258,4 +262,9 @@ settings-compose-grammar = វេយ្យាករណ៍
 settings-compose-grammar-detail = ពិនិត្យនៅលើកុំព្យូទ័រនេះដោយ Harper។ សម្រាប់ពេលនេះ មានតែភាសាអង់គ្លេសប៉ុណ្ណោះ៖ អត្ថបទជាភាសាផ្សេងទៀតមិនត្រូវបានប៉ះពាល់ទេ។
 settings-compose-grammar-check = ពិនិត្យវេយ្យាករណ៍
 settings-compose-grammar-check-detail = គូសបន្ទាត់ពីក្រោមកំហុសវេយ្យាករណ៍ពេលសរសេរ ជាភាសាអង់គ្លេស
+settings-compose-suggestions = ការណែនាំពេលសរសេរ
+settings-compose-suggestions-detail = រៀននៅលើកុំព្យូទ័រនេះ ពីសំបុត្រដែលអ្នកបានផ្ញើ និងសំបុត្រដែលអ្នកកំពុងឆ្លើយតប គ្មានអ្វីចាកចេញពីវាទេ។ ចុច Tab ដើម្បីយកការណែនាំ ឬបន្តវាយទៀត។
+settings-compose-suggestions-on = ណែនាំពេលសរសេរ
+settings-compose-suggestions-on-detail = បង្ហាញផ្នែកដែលនៅសល់ទំនងជាមាននៃឃ្លា ជាពណ៌ប្រផេះ ពេលអ្នកវាយ
 settings-compose-grammar-summary = គូសបន្ទាត់ពីក្រោមកំហុសវេយ្យាករណ៍ពេលសរសេរ ជាភាសាអង់គ្លេស
+settings-compose-suggestions-summary = បង្ហាញផ្នែកដែលនៅសល់ទំនងជាមាននៃឃ្លា ជាពណ៌ប្រផេះ ពេលអ្នកវាយ

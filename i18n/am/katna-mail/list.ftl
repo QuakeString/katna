@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] በ{ $folder } ውስጥ ያሉትን ሁሉንም { $count } መልዕክቶች ምረጥ
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } የተነበበ ውይይት ተመርጧል።
+           *[other] ሁሉም { $count } የተነበቡ ውይይቶች ተመርጠዋል።
+        }
+       *[message] { $count ->
+            [one] { $count } የተነበበ መልዕክት ተመርጧል።
+           *[other] ሁሉም { $count } የተነበቡ መልዕክቶች ተመርጠዋል።
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ያልተነበበ ውይይት ተመርጧል።
+           *[other] ሁሉም { $count } ያልተነበቡ ውይይቶች ተመርጠዋል።
+        }
+       *[message] { $count ->
+            [one] { $count } ያልተነበበ መልዕክት ተመርጧል።
+           *[other] ሁሉም { $count } ያልተነበቡ መልዕክቶች ተመርጠዋል።
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ኮከብ የተደረገበት ውይይት ተመርጧል።
+           *[other] ሁሉም { $count } ኮከብ የተደረገባቸው ውይይቶች ተመርጠዋል።
+        }
+       *[message] { $count ->
+            [one] { $count } ኮከብ የተደረገበት መልዕክት ተመርጧል።
+           *[other] ሁሉም { $count } ኮከብ የተደረገባቸው መልዕክቶች ተመርጠዋል።
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ኮከብ ያልተደረገበት ውይይት ተመርጧል።
+           *[other] ሁሉም { $count } ኮከብ ያልተደረገባቸው ውይይቶች ተመርጠዋል።
+        }
+       *[message] { $count ->
+            [one] { $count } ኮከብ ያልተደረገበት መልዕክት ተመርጧል።
+           *[other] ሁሉም { $count } ኮከብ ያልተደረገባቸው መልዕክቶች ተመርጠዋል።
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] በአቃፊ { $folder } ውስጥ { $count } የተነበበ ውይይት ተመርጧል።
+           *[other] በአቃፊ { $folder } ውስጥ ሁሉም { $count } የተነበቡ ውይይቶች ተመርጠዋል።
+        }
+       *[message] { $count ->
+            [one] በአቃፊ { $folder } ውስጥ { $count } የተነበበ መልዕክት ተመርጧል።
+           *[other] በአቃፊ { $folder } ውስጥ ሁሉም { $count } የተነበቡ መልዕክቶች ተመርጠዋል።
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] በአቃፊ { $folder } ውስጥ { $count } ያልተነበበ ውይይት ተመርጧል።
+           *[other] በአቃፊ { $folder } ውስጥ ሁሉም { $count } ያልተነበቡ ውይይቶች ተመርጠዋል።
+        }
+       *[message] { $count ->
+            [one] በአቃፊ { $folder } ውስጥ { $count } ያልተነበበ መልዕክት ተመርጧል።
+           *[other] በአቃፊ { $folder } ውስጥ ሁሉም { $count } ያልተነበቡ መልዕክቶች ተመርጠዋል።
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] በአቃፊ { $folder } ውስጥ { $count } ኮከብ የተደረገበት ውይይት ተመርጧል።
+           *[other] በአቃፊ { $folder } ውስጥ ሁሉም { $count } ኮከብ የተደረገባቸው ውይይቶች ተመርጠዋል።
+        }
+       *[message] { $count ->
+            [one] በአቃፊ { $folder } ውስጥ { $count } ኮከብ የተደረገበት መልዕክት ተመርጧል።
+           *[other] በአቃፊ { $folder } ውስጥ ሁሉም { $count } ኮከብ የተደረገባቸው መልዕክቶች ተመርጠዋል።
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] በአቃፊ { $folder } ውስጥ { $count } ኮከብ ያልተደረገበት ውይይት ተመርጧል።
+           *[other] በአቃፊ { $folder } ውስጥ ሁሉም { $count } ኮከብ ያልተደረገባቸው ውይይቶች ተመርጠዋል።
+        }
+       *[message] { $count ->
+            [one] በአቃፊ { $folder } ውስጥ { $count } ኮከብ ያልተደረገበት መልዕክት ተመርጧል።
+           *[other] በአቃፊ { $folder } ውስጥ ሁሉም { $count } ኮከብ ያልተደረገባቸው መልዕክቶች ተመርጠዋል።
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] እዚህ ምንም የተነበቡ ውይይቶች የሉም።
+       *[message] እዚህ ምንም የተነበቡ መልዕክቶች የሉም።
+    }
+   *[unread] { $kind ->
+        [conversation] እዚህ ምንም ያልተነበቡ ውይይቶች የሉም።
+       *[message] እዚህ ምንም ያልተነበቡ መልዕክቶች የሉም።
+    }
+    [starred] { $kind ->
+        [conversation] እዚህ ምንም ኮከብ የተደረገባቸው ውይይቶች የሉም።
+       *[message] እዚህ ምንም ኮከብ የተደረገባቸው መልዕክቶች የሉም።
+    }
+    [unstarred] { $kind ->
+        [conversation] እዚህ ምንም ኮከብ ያልተደረገባቸው ውይይቶች የሉም።
+       *[message] እዚህ ምንም ኮከብ ያልተደረገባቸው መልዕክቶች የሉም።
+    }
+}
 list-clear-selection = ምርጫን አጽዳ
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count } መልዕክቶች እስከመጨረሻው ተሰርዘዋል።
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] ውይይቱ እንደተነበበ ምልክት ተደርጓል።
+       *[other] { $count } ውይይቶች እንደተነበቡ ምልክት ተደርጎባቸዋል።
+    }
+   *[message] { $count ->
+        [one] መልዕክቱ እንደተነበበ ምልክት ተደርጓል።
+       *[other] { $count } መልዕክቶች እንደተነበቡ ምልክት ተደርጎባቸዋል።
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] ውይይቱ እንዳልተነበበ ምልክት ተደርጓል።
+       *[other] { $count } ውይይቶች እንዳልተነበቡ ምልክት ተደርጎባቸዋል።
+    }
+   *[message] { $count ->
+        [one] መልዕክቱ እንዳልተነበበ ምልክት ተደርጓል።
+       *[other] { $count } መልዕክቶች እንዳልተነበቡ ምልክት ተደርጎባቸዋል።
+    }
+}
 toast-undone = እርምጃው ተቀልብሷል።
+toast-nothing-to-undo = የሚቀለበስ ምንም ነገር የለም።
+toast-cannot-undo-delete-forever = እስከመጨረሻው የተሰረዘ ደብዳቤ ሊመለስ አይችልም።
+toast-send-undone = መላኩ ተቀልብሷል።
+toast-too-late-to-undo-send = ለመቀልበስ ዘግይቷል፦ መልዕክቱ አስቀድሞ ተልኳል።
 toast-undo = ቀልብስ
 toast-no-spam-folder = ይህ መለያ የአይፈለጌ መልዕክት አቃፊ የለውም።

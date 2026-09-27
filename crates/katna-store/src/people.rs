@@ -46,6 +46,29 @@ pub(crate) fn people(conn: &Connection, limit: u32) -> Result<Vec<Person>> {
     Ok(rows.collect::<rusqlite::Result<_>>()?)
 }
 
+/// The display name `account`'s own messages from `address` most often
+/// carry; see [`crate::Store::name_in_own_mail`].
+pub(crate) fn name_in_own_mail(
+    conn: &Connection,
+    account: AccountId,
+    address: &str,
+) -> Result<Option<String>> {
+    let mut stmt = conn.prepare_cached(
+        "SELECT trim(p.display_name) AS name
+         FROM participant p JOIN message m ON m.id = p.message_id
+         WHERE p.email_norm = lower(trim(?2)) AND p.role = 'from' AND m.account_id = ?1
+           AND nullif(trim(p.display_name), '') IS NOT NULL
+         GROUP BY name
+         ORDER BY count(*) DESC, name
+         LIMIT 1",
+    )?;
+    let mut rows = stmt.query(rusqlite::params![account.0, address])?;
+    Ok(match rows.next()? {
+        Some(row) => Some(row.get(0)?),
+        None => None,
+    })
+}
+
 /// How one account has written with one address, for suggesting
 /// recipients.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -190,6 +213,58 @@ mod tests {
                 ("bob@example.net", None, 1, Some(100)),
             ]
         );
+    }
+
+    #[test]
+    fn own_name_and_rename() {
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+        let me = store
+            .add_account(AccountKind::Local, "me@example.org", "Me@Example.org")
+            .unwrap()
+            .id;
+        let mut batch = store.mail_batch().unwrap();
+        let sent = batch.ensure_folder(me, "Sent").unwrap();
+        let from = |name: Option<&'static str>| NewParticipant {
+            role: ParticipantRole::From,
+            email_norm: "me@example.org",
+            domain: "example.org",
+            display_name: name,
+        };
+        for (raw, name) in [
+            (&b"1"[..], Some("Ada Lovelace")),
+            (&b"2"[..], Some(" Ada Lovelace ")),
+            (&b"3"[..], Some("ada")),
+            (&b"4"[..], None),
+        ] {
+            let participants = [from(name)];
+            let message = NewMessage {
+                raw,
+                message_id_hdr: None,
+                subject: Some("s"),
+                date: Some(1),
+                flags: crate::MessageFlags::empty(),
+                has_attachments: false,
+                list_id: None,
+                snippet: None,
+                participants: &participants,
+                in_reply_to: None,
+                references: &[],
+                category: None,
+            };
+            batch.add_message(me, sent, &message).unwrap();
+        }
+        batch.commit().unwrap();
+        let name = store.name_in_own_mail(me, "Me@Example.org").unwrap();
+        assert_eq!(name.as_deref(), Some("Ada Lovelace"));
+        assert_eq!(
+            store.name_in_own_mail(me, "other@example.org").unwrap(),
+            None
+        );
+
+        assert!(store.rename_account(me, "Ada").unwrap());
+        assert_eq!(store.accounts().unwrap()[0].display_name, "Ada");
     }
 
     #[test]

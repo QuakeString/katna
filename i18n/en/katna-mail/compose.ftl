@@ -70,6 +70,23 @@ compose-attachment-size = ({ $size })
 compose-remove-attachment = Remove attachment
 # Shown over the message while files are dragged over it.
 compose-drop-files = Drop files here
+# Shown over the message while text, cells or a picture from another app
+# are dragged over it.
+compose-drop-here = Drop here
+
+## Paste options (a small bar under what was just pasted or dropped)
+
+# Pasted text keeps the fonts, colors and lists it was copied with.
+compose-paste-keep-formatting = Keep formatting
+# Cells copied from a spreadsheet go in as a table.
+compose-paste-table = Table
+# Cells go in as a picture of them.
+compose-paste-picture = Picture
+compose-paste-plain-text = Plain text
+# A picture shows in the text of the message.
+compose-paste-inline = Inline
+# A picture goes as an attached file.
+compose-paste-attachment = Attachment
 
 ## Encryption and signing (the toggles by the recipients)
 

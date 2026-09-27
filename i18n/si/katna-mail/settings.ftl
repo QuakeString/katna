@@ -68,6 +68,10 @@ settings-general-new-mail-detail = සියල්ලන්ට පිළිත�
 settings-general-new-mail-sound = ශබ්දයක් වාදනය කරන්න
 settings-general-new-mail-sound-detail = ඩෙස්ක්ටොප් එකේ නව තැපැල් ශබ්දය
 settings-general-desktop = ඩෙස්ක්ටොප්
+settings-general-start-at-login = පිවිසීමේදී Katna ආරම්භ කරන්න
+settings-general-start-at-login-detail = කවුළුව විවෘත නොකර තැපැල් සමමුහුර්ත කර නව තැපැල් දැනුම්දීම් සහ තැටි අයිකනය පෙන්වයි
+settings-general-login-window = Katna Mail කවුළුවද විවෘත කරන්න
+settings-general-login-window-detail = පිවිසීමේදී කවුළුවද විවෘත වේ
 settings-general-tray = පද්ධති තැටියේ Katna පෙන්වන්න
 settings-general-tray-detail = නොකියවූ ගණන සහ මෙනුවක් සමඟ
 settings-general-unread-badge = කාර්ය තීරු අයිකනයේ නොකියවූ ගණන
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = සෑම පණිවිඩයකම �
 settings-general-sending-summary = යැවීම අහෝසි කිරීම: යැවූ පණිවිඩයක් ආපසු ගැනීමට හැකි වන පරිදි එය රැඳී සිටින කාලය
 settings-general-offline-summary = සම්බන්ධතාවක් නොමැතිව කියවීමට මෑත තැපැල් දින කීයක් සම්පූර්ණයෙන් බාගත කෙරේද
 settings-general-notifications-summary = නව තැපැල් දැනුම්දීම් සහ ඒවායේ ශබ්දය
-settings-general-desktop-summary = පිවිසීමේදී Katna Mail විවෘත කිරීම, පද්ධති තැටි අයිකනය සහ කාර්ය තීරු අයිකනයේ නොකියවූ ගණන
+settings-general-desktop-summary = පිවිසීමේදී Katna ආරම්භ කිරීම, පද්ධති තැටි අයිකනය සහ කාර්ය තීරු අයිකනයේ නොකියවූ ගණන
 settings-accounts-accounts-summary = ගිණුමක් එක් කරන්න හෝ ඉවත් කරන්න, නැතහොත් එහි පින්තූරය වෙනස් කරන්න
 settings-appearance-density-summary = ලැයිස්තුවේ පෙරනිමි හෝ සංයුක්ත පේළි
 settings-appearance-scaling-summary = සියල්ල විශාල හෝ කුඩා කරන්න: පෙළ, අයිකන, පරතරය සහ බෙදුම් රේඛා
@@ -241,7 +245,7 @@ settings-search-results = “{ $query }” හා ගැළපෙන සැක�
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = පිවිසීමේදී විවෘත කිරීම වෙනස් කළ නොහැකි විය: { $error }
+settings-open-at-login-failed = පිවිසීමේදී ආරම්භ වීම වෙනස් කළ නොහැකි විය: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = ව්‍යාකරණ
 settings-compose-grammar-detail = මෙම පරිගණකයේම Harper මඟින් පරීක්ෂා කෙරේ. දැනට ඉංග්‍රීසි පමණි: වෙනත් භාෂාවල පෙළ වෙනස් නොකෙරේ.
 settings-compose-grammar-check = ව්‍යාකරණ පරීක්ෂා කරන්න
 settings-compose-grammar-check-detail = ලියන අතරතුර ව්‍යාකරණ දෝෂ යටින් ඉරි අඳින්න, ඉංග්‍රීසියෙන්
+settings-compose-suggestions = ලිවීමේ යෝජනා
+settings-compose-suggestions-detail = ඔබ යැවූ තැපැල් සහ ඔබ පිළිතුරු දෙන තැපැල් වලින් මෙම පරිගණකයේම ඉගෙන ගත් ඒවා; කිසිවක් පිටතට නොයයි. යෝජනාවක් ගැනීමට Tab ඔබන්න, නැතහොත් දිගටම ටයිප් කරන්න.
+settings-compose-suggestions-on = ලියන අතරතුර යෝජනා කරන්න
+settings-compose-suggestions-on-detail = ඔබ ටයිප් කරන අතරතුර වාක්‍ය ඛණ්ඩයක ඉතිරි කොටස විය හැකි දේ අළු පැහැයෙන් පෙන්වන්න
 settings-compose-grammar-summary = ලියන අතරතුර ව්‍යාකරණ දෝෂ යටින් ඉරි අඳින්න, ඉංග්‍රීසියෙන්
+settings-compose-suggestions-summary = ඔබ ටයිප් කරන අතරතුර වාක්‍ය ඛණ්ඩයක ඉතිරි කොටස විය හැකි දේ අළු පැහැයෙන් පෙන්වන්න
