@@ -28,7 +28,7 @@ mod drafts;
 mod paste;
 mod popout;
 mod recipients;
-mod schedule;
+pub(super) mod schedule;
 mod scheduled;
 mod security;
 mod signature_editor;
@@ -152,6 +152,8 @@ pub(super) struct Compose {
     format_bar: bool,
     /// The open menu or dialog, if any.
     popup: Option<Popup>,
+    /// Seconds after sending to remind if nobody replies; 0 for never.
+    follow_up: u32,
     /// Fields of the link and schedule dialogs and the emoji search.
     dialog: tools::Dialog,
     shown: Spring,
@@ -1010,6 +1012,7 @@ impl MailWindow {
             signature,
             format_bar: false,
             popup: None,
+            follow_up: 0,
             dialog,
             shown: Spring::new(motion::SLIDE, 0.0),
             closing: false,
@@ -1259,6 +1262,7 @@ impl MailWindow {
         let signature = compose.signature;
         let attachments = compose.attachments.clone();
         let plain = compose.plain(cx);
+        let follow_up = i64::from(compose.follow_up);
         if let Some((field, address)) = self.bad_recipient(cx) {
             if let Some(c) = &mut self.compose {
                 c.popup = Some(Popup::BadAddress { field, address });
@@ -1408,6 +1412,11 @@ impl MailWindow {
                         }
                         None => daemon::queue_send(&connection, account, &raw, delay).await?,
                     };
+                    if follow_up > 0
+                        && let Err(err) = daemon::set_follow_up(&connection, id, follow_up).await
+                    {
+                        tracing::warn!(%err, "the reply reminder was not set");
+                    }
                     if let Some((account, message_id)) = saved
                         && let Err(err) =
                             daemon::discard_draft(&connection, account, &message_id).await

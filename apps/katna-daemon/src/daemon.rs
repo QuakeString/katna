@@ -42,6 +42,10 @@ use katna_sync::{
 
 use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secrets};
 
+mod reminders;
+
+pub use reminders::{SNOOZED, is_snoozed_path};
+
 /// The longest account name taken.
 const MAX_ACCOUNT_NAME: usize = 200;
 /// The longest template name, in characters.
@@ -202,6 +206,8 @@ pub struct Daemon {
     delete_requests: (Sender<DeleteDone>, Receiver<DeleteDone>),
     /// Tells the crash report sender that settings changed.
     crash_uploads: (Sender<()>, Receiver<()>),
+    /// Wakes the scheduler of snooze and reminders, once it runs.
+    scheduler: OnceLock<katna_meta::Waker>,
 }
 
 /// Where the [`crate::Instance`] reports whether it deleted every file.
@@ -243,6 +249,7 @@ impl Daemon {
             indexer: OnceLock::new(),
             delete_requests: async_channel::bounded(1),
             crash_uploads: async_channel::bounded(1),
+            scheduler: OnceLock::new(),
         });
         Ok((daemon, receiver))
     }
@@ -281,7 +288,8 @@ impl Daemon {
         self.new_mail.get().cloned()
     }
 
-    /// Starts a worker for every account, and the outbox.
+    /// Starts a worker for every account, the outbox and the scheduler of
+    /// snooze and reminders.
     pub async fn start(self: &Arc<Self>) -> Result<(), CommandError> {
         let accounts = self.store().accounts()?;
         tracing::info!(accounts = accounts.len(), "starting");
@@ -289,6 +297,7 @@ impl Daemon {
             self.start_account(&account).await;
         }
         self.start_outbox()?;
+        self.start_scheduler();
         smol::spawn(crate::crash_upload::run(
             Arc::downgrade(self),
             self.crash_uploads.1.clone(),
@@ -728,6 +737,8 @@ impl Daemon {
         for running in self.workers().values() {
             running.handle.reconnect();
         }
+        // After a resume, snoozes may have ended while the timers slept.
+        self.wake_scheduler();
     }
 
     /// NetworkManager says the network became metered or stopped being so.
@@ -1039,6 +1050,10 @@ impl Daemon {
 
     /// Tells clients about queued mail and wakes the outbox.
     fn queued(&self, id: i64) {
+        // A reminder left by an earlier entry with this ID is not this one's.
+        if let Err(error) = katna_meta::clear_follow_up(&mut self.store(), id) {
+            tracing::warn!(%error, id, "clearing an old reply reminder");
+        }
         let _ = self.notices.try_send(Notice::OutboxChanged(id));
         if let Some(sending) = self.outbox.lock().unwrap().as_ref() {
             sending.handle.wake();
@@ -1095,6 +1110,7 @@ impl Daemon {
     pub fn undo_send(&self, id: i64) -> Result<bool, CommandError> {
         let undone = outbox::cancel(&mut self.store(), id)?;
         if undone {
+            katna_meta::clear_follow_up(&mut self.store(), id)?;
             tracing::info!(id, "send undone");
             let _ = self.notices.try_send(Notice::OutboxChanged(id));
         }

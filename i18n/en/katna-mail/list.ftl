@@ -34,6 +34,11 @@ list-move-to = Move to
 list-archive = Archive
 list-spam = Report spam
 list-delete = Delete
+# Tooltip of the clock button on a line under the pointer: opens the
+# snooze times.
+list-snooze = Snooze
+# The same button in the Snoozed folder: brings the mail back now.
+list-unsnooze = Unsnooze
 # Tooltips of the page arrows: newer mail is on the previous page.
 list-newer = Newer
 list-older = Older
@@ -378,6 +383,8 @@ row-pinned = Pinned to the top
 # Tooltips of the pin button shown on a line under the pointer.
 row-pin = Pin to top
 row-unpin = Unpin
+# Tooltip of the time on a snoozed line. $when: date and time it comes back.
+row-snoozed-until = Snoozed until { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -403,6 +410,10 @@ menu-important = Mark as important
 menu-not-important = Mark as not important
 menu-pin = Pin to top
 menu-unpin = Unpin
+# Opens the snooze times.
+menu-snooze = Snooze
+# In the Snoozed folder: brings the mail back to the inbox now.
+menu-unsnooze = Unsnooze
 # Prints every message of the open conversation.
 menu-print-all = Print all
 menu-new-window = Open in new window
@@ -505,6 +516,27 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] Message unpinned.
        *[other] { $count } messages unpinned.
+    }
+}
+# $when: the date and time the mail comes back.
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation snoozed until { $when }.
+       *[other] { $count } conversations snoozed until { $when }.
+    }
+   *[message] { $count ->
+        [one] Message snoozed until { $when }.
+       *[other] { $count } messages snoozed until { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation back in the inbox.
+       *[other] { $count } conversations back in the inbox.
+    }
+   *[message] { $count ->
+        [one] Message back in the inbox.
+       *[other] { $count } messages back in the inbox.
     }
 }
 toast-spam = { $kind ->
