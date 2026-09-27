@@ -109,6 +109,21 @@ fn build_query(
 }
 
 impl MailWindow {
+    /// Escape: closes the custom dates' popover if it is open, else the
+    /// panel.
+    pub(super) fn dismiss_search_panel(
+        &mut self,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> bool {
+        match &self.search_panel {
+            Some(panel) if panel.custom.open => self.custom_cancel(window, cx),
+            Some(_) => self.search_panel = None,
+            None => return false,
+        }
+        true
+    }
+
     pub(super) fn toggle_search_panel(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         if self.search_panel.take().is_some() {
             cx.notify();

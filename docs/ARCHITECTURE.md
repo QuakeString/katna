@@ -1117,6 +1117,13 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   message in the card; `u`/Escape goes back, `j`/`k` move to the next or
   previous message in both views, as in Gmail. The toolbar shows the
   visible range ("1–19 of 72") and paging arrows.
+- **Menus and popovers close alike.** The account menu, the toolbar and
+  right-click menus, the "+N" attachments list, Search options and its date
+  picker all close on Escape (the top one first, before any shortcut, so
+  Escape never also goes back to the list) and on a press anywhere outside
+  them, the top bar included: each sits over a scrim that covers the whole
+  window (`window/popovers.rs`). Escape also closes quick settings; a click
+  beside them does not, since they sit beside the list rather than over it.
 - **Line extras (Gmail's).** Next to the star, an importance marker
   (`+`/`=` mark important, `-` not important; also in the More and
   right-click menus). Importance is the `$Important` keyword (RFC 8457,

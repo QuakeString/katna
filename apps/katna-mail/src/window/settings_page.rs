@@ -98,6 +98,11 @@ impl SettingsPage {
     pub(super) fn tab_stops(&self) -> &TabStops {
         &self.stops
     }
+
+    /// A shortcut's new keys are being recorded.
+    pub(super) fn recording(&self) -> bool {
+        self.recording.is_some()
+    }
 }
 
 struct SignatureEditor {

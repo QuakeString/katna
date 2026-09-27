@@ -12,8 +12,8 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, EntityId, Focusable, FontWeight, Hsla,
-    Subscription, Task, Window, div, linear_color_stop, linear_gradient, prelude::*, px, relative,
-    rgba,
+    MouseButton, MouseDownEvent, Subscription, Task, Window, deferred, div, linear_color_stop,
+    linear_gradient, prelude::*, px, relative, rgba,
 };
 use katna_dbus::{NewImapAccount, ServerSpec};
 use katna_ui::motion::{self, Spring, lerp};
@@ -1249,25 +1249,36 @@ impl MailWindow {
                 Animation::new(Duration::from_millis(180)).with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
             );
+        let close = || {
+            cx.listener(|this: &mut Self, _: &MouseDownEvent, _, cx| {
+                this.account_menu = false;
+                cx.notify();
+            })
+        };
         Some(
             div()
                 .absolute()
                 .top_0()
                 .left_0()
                 .size_full()
+                // Like the other menus: a press anywhere else closes it,
+                // the top bar included.
                 .child(
-                    div()
-                        .id("account-menu-scrim")
-                        .absolute()
-                        .top_0()
-                        .left_0()
-                        .size_full()
-                        .on_click(cx.listener(|this, _, _, cx| {
-                            this.account_menu = false;
-                            cx.notify();
-                        })),
+                    deferred(
+                        div()
+                            .id("account-menu-scrim")
+                            .absolute()
+                            .top(px(-2000.0))
+                            .left(px(-4000.0))
+                            .w(px(8000.0))
+                            .h(px(6000.0))
+                            .occlude()
+                            .on_mouse_down(MouseButton::Left, close())
+                            .on_mouse_down(MouseButton::Right, close()),
+                    )
+                    .with_priority(1),
                 )
-                .child(card)
+                .child(deferred(card).with_priority(2))
                 .into_any_element(),
         )
     }
