@@ -156,6 +156,24 @@ attachment-encrypted-open = This file came encrypted. Save it to open it elsewhe
 print-failed = Could not print: { $error }
 print-no-font = no font was found
 print-opened-as-pdf = Opened as a PDF to print from there.
+
+# The print preview, before the desktop's print dialog.
+print-preview-title = Print preview
+print-preview-laying-out = Laying out the pages…
+print-preview-pages = { $count ->
+    [one] { $count } page
+   *[other] { $count } pages
+}
+print-preview-more = { $count ->
+    [one] and { $count } more page
+   *[other] and { $count } more pages
+}
+print-preview-failed = the pages could not be shown
+print-preview-paper = Paper
+print-preview-a4 = A4
+print-preview-letter = Letter
+print-preview-cancel = Cancel
+print-preview-print = Print
 # In the printed page, in place of a message's text.
 print-not-downloaded = (Not downloaded yet.)
 print-encrypted = (Encrypted. Open it in Katna Mail to print its text.)

@@ -483,14 +483,18 @@ impl MailWindow {
             .when(!narrow, |d| {
                 d.child({
                     let move_to = icon_button("reader-move", "move-to", 20.0, th)
-                        .tooltip(tip(tr!("reader-move-to"), th))
+                        .when(self.menu != Some(Menu::MoveTo), |d| {
+                            d.tooltip(tip(tr!("reader-move-to"), th))
+                        })
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)));
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
                 })
             })
             .child({
                 let more = icon_button("reader-more", "more", 20.0, th)
-                    .tooltip(tip(tr!("reader-more"), th))
+                    .when(self.menu != Some(Menu::ReaderMore), |d| {
+                        d.tooltip(tip(tr!("reader-more"), th))
+                    })
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ReaderMore, cx)));
                 self.with_menu(more, Menu::ReaderMore, th, cx)
             })
@@ -500,7 +504,9 @@ impl MailWindow {
                 d.child(
                     icon_button("reader-print", "print", 20.0, th)
                         .tooltip(tip(tr!("reader-print-all"), th))
-                        .on_click(cx.listener(|this, _, _, cx| this.print_conversation(cx))),
+                        .on_click(
+                            cx.listener(|this, _, window, cx| this.print_conversation(window, cx)),
+                        ),
                 )
                 .when(!self.detached, |d| {
                     d.child(
