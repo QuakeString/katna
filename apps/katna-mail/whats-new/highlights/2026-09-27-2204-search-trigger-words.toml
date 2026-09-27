@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Search your mail from KRunner with k"
+text = """
+Type k or m, a space, then what to find in KRunner or the GNOME search to get
+the same results as Katna Mail's search box, like "k budget". Choose your own
+words in Settings under General.
+"""

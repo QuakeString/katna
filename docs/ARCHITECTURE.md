@@ -2482,7 +2482,10 @@ addresses in the mail (the recipient-suggestion `ContactBook`, read in the
 background 20 s after start and again when mail changed, at most every 10
 minutes). Mail shows only when every word (three letters or more) starts a
 word of its subject or sender, outside Trash and Spam, one message per
-conversation; `mail:` runs the search box's query instead. Enter on a
+conversation; `mail:`, or a trigger word and a space (`k budget`;
+`general.search_triggers`, "k" and "m" by default, set in Settings >
+General and applied at `ReloadConfig`), runs the search box's query
+instead. Enter on a
 person writes to them (a `mailto:` link to Katna Mail); KRunner's buttons
 are Reply all on mail, Copy address (through Klipper) and Find mail on
 people. GNOME's "search in app" opens Katna Mail with the words in its

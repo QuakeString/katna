@@ -201,7 +201,11 @@ impl Instance {
             .object_server()
             .at(ids::PIM_OBJECT_PATH, PimService::new(daemon.clone()))
             .await?;
-        let finder = desktop_search::Finder::new(index_paths.clone());
+        let finder = desktop_search::Finder::new(
+            index_paths.clone(),
+            daemon::settings(&index_paths).general.search_triggers,
+        );
+        daemon.set_finder(finder.clone());
         desktop_search::serve(&connection, finder.clone()).await?;
         let warm = finder.clone();
         smol::spawn(async move {

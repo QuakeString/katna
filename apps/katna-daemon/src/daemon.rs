@@ -200,6 +200,8 @@ pub struct Daemon {
     new_mail: OnceLock<Arc<NewMailNotices>>,
     /// The taskbar count and the tray, once they run.
     desktop: OnceLock<desktop::Handle>,
+    /// KRunner's and GNOME's search, for its trigger words.
+    finder: OnceLock<Arc<crate::desktop_search::Finder>>,
     /// Set once all data is being deleted: nothing starts any more.
     closing: AtomicBool,
     /// Set while the cache is being reset: workers start once it is done.
@@ -254,6 +256,7 @@ impl Daemon {
             on_demand: OnDemand::default(),
             new_mail: OnceLock::new(),
             desktop: OnceLock::new(),
+            finder: OnceLock::new(),
             closing: AtomicBool::new(false),
             resetting: AtomicBool::new(false),
             indexer: OnceLock::new(),
@@ -289,6 +292,11 @@ impl Daemon {
     /// Where settings changes for the taskbar count and the tray go.
     pub(crate) fn set_desktop(&self, handle: desktop::Handle) {
         let _ = self.desktop.set(handle);
+    }
+
+    /// Where the desktop search's trigger words go when settings change.
+    pub(crate) fn set_finder(&self, finder: Arc<crate::desktop_search::Finder>) {
+        let _ = self.finder.set(finder);
     }
 
     /// The search indexer, for [`Daemon::reset_cache`].
@@ -871,7 +879,7 @@ impl Daemon {
 
     /// Reads the settings file again and applies what the daemon uses from
     /// it (`sync.metered`, `sync.offline_days`, `notifications`,
-    /// the `general` language, tray and badge switches,
+    /// the `general` language, tray and badge switches, search trigger words,
     /// `feedback.send_crash_reports`). Katna Mail calls this after saving
     /// settings.
     pub fn reload_config(&self) -> Result<(), CommandError> {
@@ -898,6 +906,9 @@ impl Daemon {
         let language = &config.general.language;
         if std::mem::replace(&mut *self.language.lock().unwrap(), language.clone()) != *language {
             katna_i18n::apply(language);
+        }
+        if let Some(finder) = self.finder.get() {
+            finder.set_triggers(config.general.search_triggers.clone());
         }
         if let Some(desktop) = self.desktop.get() {
             desktop.settings(config.general.clone());
