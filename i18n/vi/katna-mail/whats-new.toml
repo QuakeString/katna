@@ -572,3 +572,26 @@ nhấp. Viết {first name}, {name} hoặc {my name} và Katna sẽ điền chú
 cho từng người nhận. Sửa, đổi tên hoặc xóa mẫu thư trong Cài đặt > Soạn
 thư.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Thư hẹn giờ vẫn được gửi khi máy tính đã tắt"
+text = """
+Khi máy chủ thư của bạn có thể giữ thư đến một thời điểm định sẵn, như
+Stalwart, Lên lịch gửi giờ sẽ giao thư cho máy chủ ngay khi Hoàn tác biến
+mất, để thư đi đúng giờ kể cả khi máy tính này đã tắt. Menu lên lịch cho
+biết máy chủ thư của bạn hay Katna sẽ gửi thư.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Hiệu ứng trỏ chuột nhẹ nhàng hơn"
+text = """
+Dòng dưới con trỏ trong danh sách thư giờ nổi lên với một bóng mờ nhạt,
+giống như trong Gmail, thay cho một dải tối bên dưới.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Kéo địa chỉ giữa Tới, Cc và Bcc"
+text = """
+Kéo thẻ địa chỉ sang trường khác để chuyển nó; Cc và Bcc sẽ mở ra khi
+bạn kéo, kể cả khi đang ẩn. Trỏ vào thẻ sẽ hiện dấu x để xóa nó.
+"""

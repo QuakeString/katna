@@ -576,3 +576,27 @@ pẹ̀lú títẹ̀ kan. Kọ {first name}, {name} tàbí {my name}, Katna yóò
 kún wọn fún olùgbà kọ̀ọ̀kan. Ṣàtúnṣe, tún orúkọ sọ tàbí pa àwọn àwòṣe
 rẹ́ nínú Ètò > Kíkọ̀wé.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Lẹ́tà tí a ṣètò ń lọ bí kọ̀ǹpútà rẹ tilẹ̀ wà ní pípa"
+text = """
+Nígbà tí sáfà lẹ́tà rẹ bá lè di lẹ́tà mú títí di àkókò kan, bí Stalwart
+ṣe lè ṣe, Ṣètò fífiránṣẹ́ yóò fi ìfiránṣẹ́ náà lé e lọ́wọ́ báyìí lẹ́yìn tí
+Dá padà bá ti lọ, kí ó lè lọ lásìkò bí kọ̀ǹpútà yìí bá tilẹ̀ wà ní pípa.
+Mẹ́nù ìṣètò máa ń sọ bóyá sáfà lẹ́tà rẹ ni tàbí Katna ni yóò fi ránṣẹ́.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Ìtọ́ka tó fúyẹ́ jù"
+text = """
+Ìlà tó wà lábẹ́ atọ́ka nínú àkójọ lẹ́tà ti ń gbéra sókè báyìí pẹ̀lú
+òjìji bàìbàì, bí ó ṣe rí nínú Gmail, dípò ẹ̀gbẹ́ dúdú kan nísàlẹ̀ rẹ̀.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Fa àwọn àdírẹ́sì láàrin Sí, Ẹ̀dà àti Ẹ̀dà àṣírí"
+text = """
+Fa ṣíìpù àdírẹ́sì kan lọ sí pápá mìíràn láti gbé e lọ; Ẹ̀dà àti Ẹ̀dà
+àṣírí máa ń ṣí nígbà tí o bá ń fà á, kódà bí wọ́n bá farapamọ́. Títọ́ka
+sí ṣíìpù kan máa ń fi x kan hàn tí ó ń yọ ọ́ kúrò.
+"""

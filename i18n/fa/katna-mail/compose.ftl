@@ -92,6 +92,7 @@ send-check-add-subject = افزودن موضوع
 send-check-send-anyway = در هر صورت ارسال شود
 recipient-not-valid = نشانی ایمیل معتبری نیست
 recipient-show-address = نمایش نشانی
+recipient-remove = حذف
 recipient-bad-title = نشانی را بررسی کنید
 recipient-bad-text = «{ $address }» نشانی ایمیل معتبری نیست. پیش از ارسال آن را درست یا حذف کنید.
 recipient-bad-fix = درست کردن

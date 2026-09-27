@@ -92,6 +92,7 @@ send-check-add-subject = Lägg till ämne
 send-check-send-anyway = Skicka ändå
 recipient-not-valid = Ingen giltig e-postadress
 recipient-show-address = Visa adress
+recipient-remove = Ta bort
 recipient-bad-title = Kontrollera adressen
 recipient-bad-text = ”{ $address }” är ingen giltig e-postadress. Rätta eller ta bort den innan du skickar.
 recipient-bad-fix = Rätta

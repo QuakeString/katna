@@ -11,6 +11,8 @@ schedule-scheduled-messages = 予約済みのメッセージ（{ $count }）
 
 schedule-title = 送信日時を設定
 schedule-zone-note = { $zone }。アプリを閉じていても、Katna がその日時に送信します。
+schedule-zone-note-server = { $zone }。このコンピューターの電源が切れていても、メールサーバーがその日時に送信します。「元に戻す」が消えた後は取り消せません。
+schedule-zone-note-local = { $zone }。このコンピューターの電源が入っていれば、Katna がその日時に送信します。
 schedule-local-time = 現地時間
 schedule-this-morning = 今日の午前
 schedule-this-afternoon = 今日の午後
@@ -28,6 +30,7 @@ schedule-no-such-time = この地域ではその時刻は存在しません。
 
 schedule-no-subject = （件名なし）
 schedule-sends-at = 送信日時: { $when }
+schedule-server-sends-at = メールサーバーが送信: { $when }
 schedule-cancel-send = 送信をキャンセル
 schedule-nothing = 予約済みのメッセージはありません。
 schedule-close = 閉じる

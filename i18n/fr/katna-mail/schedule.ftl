@@ -11,6 +11,8 @@ schedule-scheduled-messages = Messages programmés ({ $count })
 
 schedule-title = Programmer l’envoi
 schedule-zone-note = { $zone }. Katna l’envoie à cette heure-là, même si l’application est fermée.
+schedule-zone-note-server = { $zone }. Votre serveur de messagerie l’enverra à cette heure-là, même si cet ordinateur est éteint. Une fois Annuler disparu, l’envoi ne peut plus être annulé.
+schedule-zone-note-local = { $zone }. Katna l’enverra à cette heure-là tant que cet ordinateur est allumé.
 schedule-local-time = Heure locale
 schedule-this-morning = Ce matin
 schedule-this-afternoon = Cet après-midi
@@ -28,6 +30,7 @@ schedule-no-such-time = Cette heure n’existe pas ici.
 
 schedule-no-subject = (aucun objet)
 schedule-sends-at = Envoi { $when }
+schedule-server-sends-at = Envoi par votre serveur de messagerie { $when }
 schedule-cancel-send = Annuler l’envoi
 schedule-nothing = Aucun envoi programmé.
 schedule-close = Fermer

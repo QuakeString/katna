@@ -11,6 +11,8 @@ schedule-scheduled-messages = အချိန်သတ်မှတ်ထား�
 
 schedule-title = ပို့ချိန် သတ်မှတ်ရန်
 schedule-zone-note = { $zone }။ အက်ပ်ပိတ်ထားလျှင်ပင် Katna က ထိုအချိန်တွင် ပို့ပေးသည်။
+schedule-zone-note-server = { $zone }။ ဤကွန်ပျူတာ ပိတ်ထားလျှင်ပင် သင့်မေးလ်ဆာဗာက ထိုအချိန်တွင် ပို့ပေးမည်။ နောက်ပြန်ရန် ပျောက်သွားပြီးနောက် ပယ်ဖျက်၍ မရတော့ပါ။
+schedule-zone-note-local = { $zone }။ ဤကွန်ပျူတာ ဖွင့်ထားစဉ် Katna က ထိုအချိန်တွင် ပို့ပေးမည်။
 schedule-local-time = ဒေသစံတော်ချိန်
 schedule-this-morning = ဒီနေ့ နံနက်
 schedule-this-afternoon = ဒီနေ့ နေ့လယ်
@@ -28,6 +30,7 @@ schedule-no-such-time = ထိုအချိန်သည် ဤနေရာတ�
 
 schedule-no-subject = (ခေါင်းစဉ်မရှိ)
 schedule-sends-at = { $when } တွင် ပို့မည်
+schedule-server-sends-at = သင့်မေးလ်ဆာဗာက { $when } တွင် ပို့မည်
 schedule-cancel-send = ပို့ခြင်းကို ပယ်ဖျက်ရန်
 schedule-nothing = ဘာမျှ အချိန်သတ်မှတ်မထားပါ။
 schedule-close = ပိတ်ရန်

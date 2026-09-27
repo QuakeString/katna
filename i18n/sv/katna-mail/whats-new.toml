@@ -572,3 +572,28 @@ klick. Skriv {first name}, {name} eller {my name} så fyller Katna i dem för
 varje mottagare. Redigera, byt namn på eller radera mallar i
 Inställningar > Skriva.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Schemalagda mejl går iväg även när datorn är avstängd"
+text = """
+När din e-postserver kan hålla kvar mejl till en bestämd tid, som
+Stalwart kan, lämnar Schemalägg nu över meddelandet till den så snart
+Ångra har försvunnit, så att det går iväg i tid även när den här datorn
+är avstängd. Schemaläggningsmenyn visar om din e-postserver eller Katna
+skickar det.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "En lättare hovring"
+text = """
+Raden under pekaren i mejllistan lyfts nu med en svag skugga, som i
+Gmail, i stället för ett mörkt band under den.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Dra adresser mellan Till, Kopia och Dold kopia"
+text = """
+Dra en adressbricka till ett annat fält för att flytta den; Kopia och Dold
+kopia öppnas medan du drar, även när de är dolda. När du pekar på en
+bricka visas ett x som tar bort den.
+"""

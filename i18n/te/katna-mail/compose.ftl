@@ -92,6 +92,7 @@ send-check-add-subject = సబ్జెక్ట్ జోడించండి
 send-check-send-anyway = అయినా పంపండి
 recipient-not-valid = చెల్లుబాటు అయ్యే ఈమెయిల్ అడ్రస్ కాదు
 recipient-show-address = అడ్రస్ చూపండి
+recipient-remove = తీసివేయండి
 recipient-bad-title = అడ్రస్‌ను తనిఖీ చేయండి
 recipient-bad-text = “{ $address }” చెల్లుబాటు అయ్యే ఈమెయిల్ అడ్రస్ కాదు. పంపే ముందు దాన్ని సరిచేయండి లేదా తీసివేయండి.
 recipient-bad-fix = సరిచేయండి

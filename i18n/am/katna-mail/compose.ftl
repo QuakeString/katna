@@ -92,6 +92,7 @@ send-check-add-subject = ርዕሰ ጉዳይ አክል
 send-check-send-anyway = ቢሆንም ላክ
 recipient-not-valid = ትክክለኛ የኢሜይል አድራሻ አይደለም
 recipient-show-address = አድራሻ አሳይ
+recipient-remove = አስወግድ
 recipient-bad-title = አድራሻውን ያረጋግጡ
 recipient-bad-text = «{ $address }» ትክክለኛ የኢሜይል አድራሻ አይደለም። ከመላክዎ በፊት ያስተካክሉት ወይም ያስወግዱት።
 recipient-bad-fix = አስተካክል

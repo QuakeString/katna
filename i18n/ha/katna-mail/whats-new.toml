@@ -578,3 +578,28 @@ rubutu, sannan ku saka shi a kowace sabuwar wasiƙa ko amsa da danna
 ga kowane mai karɓa. Gyara, sake suna ko share samfura a Saituna >
 Rubutu.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Wasiƙar da aka tsara tana tafiya ko da kwamfutarka a kashe"
+text = """
+Idan sabar wasiƙunka za ta iya riƙe wasiƙa har zuwa lokacin da aka saita,
+kamar yadda Stalwart ke yi, Tsara lokacin aikawa yanzu yana ba ta saƙon da
+zarar Janye ya tafi, don haka yana tafiya a kan lokaci ko da wannan kwamfuta
+a kashe take. Menu na tsara lokaci yana faɗin ko sabar wasiƙunka ce ko
+Katna za ta aika shi.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Nuni mai sauƙi"
+text = """
+Layin da ke ƙarƙashin mai nuni a jerin wasiƙu yanzu yana ɗagawa da ɗan
+inuwa, kamar a Gmail, maimakon wani duhun ɗamara a ƙarƙashinsa.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Ja adireshi tsakanin Zuwa, Kwafi da Kwafi a ɓoye"
+text = """
+Ja ƙaramin katin adireshi zuwa wani fili don matsar da shi; Kwafi da Kwafi
+a ɓoye suna buɗewa yayin da kake ja, ko da a ɓoye suke. Nuna kati yana
+bayyana x da ke cire shi.
+"""

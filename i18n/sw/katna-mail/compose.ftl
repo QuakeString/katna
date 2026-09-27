@@ -92,6 +92,7 @@ send-check-add-subject = Ongeza mada
 send-check-send-anyway = Tuma hata hivyo
 recipient-not-valid = Si anwani sahihi ya barua pepe
 recipient-show-address = Onyesha anwani
+recipient-remove = Ondoa
 recipient-bad-title = Kagua anwani
 recipient-bad-text = “{ $address }” si anwani sahihi ya barua pepe. Irekebishe au uiondoe kabla ya kutuma.
 recipient-bad-fix = Irekebishe

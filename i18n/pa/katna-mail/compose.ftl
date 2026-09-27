@@ -92,6 +92,7 @@ send-check-add-subject = ਵਿਸ਼ਾ ਸ਼ਾਮਲ ਕਰੋ
 send-check-send-anyway = ਫਿਰ ਵੀ ਭੇਜੋ
 recipient-not-valid = ਵੈਧ ਈਮੇਲ ਪਤਾ ਨਹੀਂ ਹੈ
 recipient-show-address = ਪਤਾ ਦਿਖਾਓ
+recipient-remove = ਹਟਾਓ
 recipient-bad-title = ਪਤਾ ਜਾਂਚੋ
 recipient-bad-text = “{ $address }” ਵੈਧ ਈਮੇਲ ਪਤਾ ਨਹੀਂ ਹੈ। ਭੇਜਣ ਤੋਂ ਪਹਿਲਾਂ ਇਸਨੂੰ ਠੀਕ ਕਰੋ ਜਾਂ ਹਟਾਓ।
 recipient-bad-fix = ਠੀਕ ਕਰੋ

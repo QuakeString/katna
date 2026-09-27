@@ -92,6 +92,7 @@ send-check-add-subject = Ƙara jigo
 send-check-send-anyway = Aika duk da haka
 recipient-not-valid = Ba adireshin imel mai inganci ba ne
 recipient-show-address = Nuna adireshi
+recipient-remove = Cire
 recipient-bad-title = Duba adireshin
 recipient-bad-text = “{ $address }” ba adireshin imel mai inganci ba ne. Gyara shi ko cire shi kafin aikawa.
 recipient-bad-fix = Gyara shi

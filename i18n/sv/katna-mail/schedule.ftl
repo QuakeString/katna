@@ -11,6 +11,8 @@ schedule-scheduled-messages = Schemalagda meddelanden ({ $count })
 
 schedule-title = Schemalägg
 schedule-zone-note = { $zone }. Katna skickar det vid den tiden, även när appen är stängd.
+schedule-zone-note-server = { $zone }. Din e-postserver skickar det vid den tiden, även när den här datorn är avstängd. När Ångra har försvunnit går det inte att avbryta.
+schedule-zone-note-local = { $zone }. Katna skickar det vid den tiden medan den här datorn är på.
 schedule-local-time = Lokal tid
 schedule-this-morning = I morse
 schedule-this-afternoon = I eftermiddag
@@ -28,6 +30,7 @@ schedule-no-such-time = Den tiden finns inte här.
 
 schedule-no-subject = (inget ämne)
 schedule-sends-at = Skickas { $when }
+schedule-server-sends-at = Din e-postserver skickar det { $when }
 schedule-cancel-send = Avbryt sändning
 schedule-nothing = Inget är schemalagt.
 schedule-close = Stäng

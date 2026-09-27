@@ -11,6 +11,8 @@ schedule-scheduled-messages = དུས་ཚོད་བཀོད་ཡོད�
 
 schedule-title = གཏང་ནིའི་དུས་ཚོད་བཀོད།
 schedule-zone-note = { $zone }། གློག་རིམ་ཁ་བསྡམས་ཡོད་རུང་ Katna གིས་ དུས་ཚོད་དེ་ལུ་གཏངམ་ཨིན།
+schedule-zone-note-server = { $zone }། གློག་རིག་འདི་ བཀག་སྟེ་ཡོད་རུང་ ཁྱོད་ཀྱི་གློག་འཕྲིན་སར་བར་གྱིས་ དུས་ཚོད་དེ་ལུ་གཏང་འོང་། འབད་བཤོལ། མེདཔ་ཐལ་ཞིནམ་ལས་ ཆ་མེད་གཏང་མི་ཚུགས།
+schedule-zone-note-local = { $zone }། གློག་རིག་འདི་ ཁ་ཕྱེ་སྟེ་ཡོད་པའི་བར་ན་ Katna གིས་ དུས་ཚོད་དེ་ལུ་གཏང་འོང་།
 schedule-local-time = ས་གནས་ཀྱི་ཆུ་ཚོད
 schedule-this-morning = ད་རིས་ཀྱི་ཞོགས་པ
 schedule-this-afternoon = ད་རིས་ཀྱི་ཕྱི་ཆ
@@ -28,6 +30,7 @@ schedule-no-such-time = ཆུ་ཚོད་དེ་ ནཱ་ལུ་མེ�
 
 schedule-no-subject = (དོན་ཚན་མེད)
 schedule-sends-at = { $when } ལུ་གཏང་འོང་།
+schedule-server-sends-at = ཁྱོད་ཀྱི་གློག་འཕྲིན་སར་བར་གྱིས་ { $when } ལུ་གཏང་འོང་།
 schedule-cancel-send = གཏང་ནི་ཆ་མེད་གཏང་།
 schedule-nothing = དུས་ཚོད་བཀོད་ཡོདཔ་ག་ནི་ཡང་མེད།
 schedule-close = ཁ་བསྡམས།

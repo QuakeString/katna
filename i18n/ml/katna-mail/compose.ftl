@@ -92,6 +92,7 @@ send-check-add-subject = വിഷയം ചേർക്കുക
 send-check-send-anyway = എന്തായാലും അയയ്ക്കുക
 recipient-not-valid = സാധുവായ ഇമെയിൽ വിലാസമല്ല
 recipient-show-address = വിലാസം കാണിക്കുക
+recipient-remove = നീക്കം ചെയ്യുക
 recipient-bad-title = വിലാസം പരിശോധിക്കുക
 recipient-bad-text = “{ $address }” സാധുവായ ഇമെയിൽ വിലാസമല്ല. അയയ്ക്കുന്നതിന് മുമ്പ് അത് ശരിയാക്കുകയോ നീക്കം ചെയ്യുകയോ ചെയ്യുക.
 recipient-bad-fix = ശരിയാക്കുക

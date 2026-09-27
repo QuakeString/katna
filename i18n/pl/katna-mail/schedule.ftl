@@ -11,6 +11,8 @@ schedule-scheduled-messages = Zaplanowane wiadomości ({ $count })
 
 schedule-title = Zaplanuj wysłanie
 schedule-zone-note = { $zone }. Katna wyśle ją o tej porze, nawet gdy aplikacja jest zamknięta.
+schedule-zone-note-server = { $zone }. Twój serwer poczty wyśle ją o tej porze, nawet gdy ten komputer jest wyłączony. Gdy zniknie Cofnij, nie da się już tego anulować.
+schedule-zone-note-local = { $zone }. Katna wyśle ją o tej porze, jeśli ten komputer będzie włączony.
 schedule-local-time = Czas lokalny
 schedule-this-morning = Dziś rano
 schedule-this-afternoon = Dziś po południu
@@ -28,6 +30,7 @@ schedule-no-such-time = Ta godzina tutaj nie istnieje.
 
 schedule-no-subject = (bez tematu)
 schedule-sends-at = Wysyłka: { $when }
+schedule-server-sends-at = Wysyłka przez serwer poczty: { $when }
 schedule-cancel-send = Anuluj wysłanie
 schedule-nothing = Nic nie jest zaplanowane.
 schedule-close = Zamknij

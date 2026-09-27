@@ -594,3 +594,29 @@ Klick in jede neue E-Mail oder Antwort ein. Schreiben Sie {first name},
 Vorlagen bearbeiten, umbenennen oder löschen Sie unter Einstellungen >
 Verfassen.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Geplante E-Mails gehen auch bei ausgeschaltetem Computer raus"
+text = """
+Wenn Ihr Mailserver E-Mails bis zu einem festgelegten Zeitpunkt
+zurückhalten kann, wie Stalwart, übergibt Senden planen die Nachricht
+jetzt an ihn, sobald Rückgängig verschwunden ist. So geht sie pünktlich
+hinaus, auch wenn dieser Computer aus ist. Das Menü zum Planen zeigt, ob
+Ihr Mailserver oder Katna sie sendet.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Eine leichtere Hervorhebung"
+text = """
+Die Zeile unter dem Mauszeiger in der E-Mail-Liste hebt sich jetzt mit
+einem zarten Schatten ab, wie in Gmail, statt mit einem dunklen Band
+darunter.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Adressen zwischen An, Cc und Bcc ziehen"
+text = """
+Ziehen Sie einen Adress-Chip in ein anderes Feld, um ihn zu verschieben;
+Cc und Bcc öffnen sich beim Ziehen, auch wenn sie ausgeblendet sind.
+Zeigen Sie auf einen Chip, erscheint ein x, das ihn entfernt.
+"""

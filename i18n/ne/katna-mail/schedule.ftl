@@ -11,6 +11,8 @@ schedule-scheduled-messages = तालिकाबद्ध सन्देश�
 
 schedule-title = पठाउने तालिका बनाउनुहोस्
 schedule-zone-note = { $zone }। एप बन्द भए पनि Katna ले त्यही समयमा पठाउँछ।
+schedule-zone-note-server = { $zone }। यो कम्प्युटर बन्द भए पनि तपाईंको मेल सर्भरले त्यही समयमा पठाउनेछ। पूर्ववत गर्नुहोस् हटेपछि यसलाई रद्द गर्न सकिँदैन।
+schedule-zone-note-local = { $zone }। यो कम्प्युटर चालु हुँदा Katna ले त्यही समयमा पठाउनेछ।
 schedule-local-time = स्थानीय समय
 schedule-this-morning = आज बिहान
 schedule-this-afternoon = आज दिउँसो
@@ -28,6 +30,7 @@ schedule-no-such-time = त्यो समय यहाँ अस्तित�
 
 schedule-no-subject = (विषय छैन)
 schedule-sends-at = { $when } मा पठाइनेछ
+schedule-server-sends-at = तपाईंको मेल सर्भरले { $when } मा पठाउनेछ
 schedule-cancel-send = पठाउन रद्द गर्नुहोस्
 schedule-nothing = केही पनि तालिकामा छैन।
 schedule-close = बन्द गर्नुहोस्

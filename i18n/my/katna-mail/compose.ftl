@@ -89,6 +89,7 @@ send-check-add-subject = ခေါင်းစဉ်ထည့်ရန်
 send-check-send-anyway = မည်သို့ပင်ဖြစ်စေ ပို့ရန်
 recipient-not-valid = မှန်ကန်သော အီးမေးလ်လိပ်စာ မဟုတ်ပါ
 recipient-show-address = လိပ်စာ ပြရန်
+recipient-remove = ဖယ်ရှားရန်
 recipient-bad-title = လိပ်စာကို စစ်ဆေးပါ
 recipient-bad-text = “{ $address }” သည် မှန်ကန်သော အီးမေးလ်လိပ်စာ မဟုတ်ပါ။ မပို့မီ ၎င်းကို ပြင်ပါ သို့မဟုတ် ဖယ်ရှားပါ။
 recipient-bad-fix = ပြင်ရန်

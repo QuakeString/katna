@@ -89,6 +89,7 @@ send-check-add-subject = Fi àkọlé kún un
 send-check-send-anyway = Fi ránṣẹ́ bẹ́ẹ̀
 recipient-not-valid = Kì í ṣe àdírẹ́sì ímeèlì tó tọ́
 recipient-show-address = Fi àdírẹ́sì hàn
+recipient-remove = Yọ ọ́ kúrò
 recipient-bad-title = Ṣàyẹ̀wò àdírẹ́sì náà
 recipient-bad-text = “{ $address }” kì í ṣe àdírẹ́sì ímeèlì tó tọ́. Ṣàtúnṣe rẹ̀ tàbí yọ ọ́ kúrò kí o tó fi ránṣẹ́.
 recipient-bad-fix = Ṣàtúnṣe rẹ̀

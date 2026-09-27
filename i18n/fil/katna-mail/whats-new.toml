@@ -605,3 +605,29 @@ anumang bagong mail o sagot sa isang click. Isulat ang {first name},
 I-edit, palitan ang pangalan o i-delete ang mga template sa Mga setting >
 Mag-compose.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Naipapadala ang naka-iskedyul na mail kahit naka-off ang computer mo"
+text = """
+Kapag kayang hawakan ng iyong mail server ang mail hanggang sa itinakdang
+oras, gaya ng Stalwart, ipinapasa na ngayon ng I-iskedyul ang pagpapadala
+ang mensahe rito kapag nawala na ang I-undo, kaya naipapadala ito sa oras
+kahit naka-off ang computer na ito. Sinasabi ng menu ng iskedyul kung ang
+iyong mail server o ang Katna ang magpapadala nito.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Mas magaan na hover"
+text = """
+Umaangat na ngayon nang may malabong anino ang linyang nasa ilalim ng
+pointer sa listahan ng mail, gaya sa Gmail, sa halip na madilim na guhit
+sa ilalim nito.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "I-drag ang mga address sa pagitan ng Para kay, Cc at Bcc"
+text = """
+I-drag ang chip ng address sa ibang field para ilipat ito; bumubukas ang
+Cc at Bcc habang nagda-drag ka, kahit nakatago ang mga ito. Kapag itinuro
+mo ang isang chip, may lalabas na x na nag-aalis dito.
+"""

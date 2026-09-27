@@ -11,6 +11,8 @@ schedule-scheduled-messages = Mesej berjadual ({ $count })
 
 schedule-title = Jadualkan penghantaran
 schedule-zone-note = { $zone }. Katna menghantarnya pada masa itu, walaupun apl ditutup.
+schedule-zone-note-server = { $zone }. Pelayan mel anda akan menghantarnya pada masa itu, walaupun komputer ini dimatikan. Setelah Buat asal hilang, ia tidak boleh dibatalkan.
+schedule-zone-note-local = { $zone }. Katna akan menghantarnya pada masa itu selagi komputer ini hidup.
 schedule-local-time = Waktu tempatan
 schedule-this-morning = Pagi ini
 schedule-this-afternoon = Petang ini
@@ -28,6 +30,7 @@ schedule-no-such-time = Masa itu tidak wujud di sini.
 
 schedule-no-subject = (tiada subjek)
 schedule-sends-at = Dihantar { $when }
+schedule-server-sends-at = Pelayan mel anda menghantarnya { $when }
 schedule-cancel-send = Batalkan penghantaran
 schedule-nothing = Tiada apa-apa yang dijadualkan.
 schedule-close = Tutup

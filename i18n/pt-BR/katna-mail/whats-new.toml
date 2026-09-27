@@ -588,3 +588,28 @@ depois coloque-a em qualquer e-mail novo ou resposta com um clique. Escreva
 {first name}, {name} ou {my name} e o Katna preenche para cada destinatário.
 Edite, renomeie ou exclua modelos em Configurações > Escrever.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "E-mail programado sai com o computador desligado"
+text = """
+Quando o seu servidor de e-mail consegue segurar mensagens até um horário
+definido, como o Stalwart, Programar envio agora entrega a mensagem a
+ele assim que o Desfazer some, então ela sai na hora certa mesmo com
+este computador desligado. O menu de programação diz se quem vai enviar
+é o seu servidor de e-mail ou o Katna.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Um destaque mais leve"
+text = """
+A linha sob o ponteiro na lista de e-mails agora se ergue com uma sombra
+suave, como no Gmail, em vez de uma faixa escura embaixo dela.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Arraste endereços entre Para, Cc e Cco"
+text = """
+Arraste um chip de endereço para outro campo para movê-lo; Cc e Cco abrem
+enquanto você arrasta, mesmo quando ocultos. Apontar para um chip mostra
+um x que o remove.
+"""

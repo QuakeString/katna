@@ -11,6 +11,8 @@ schedule-scheduled-messages = សារដែលបានកំណត់ពេ�
 
 schedule-title = កំណត់ពេលផ្ញើ
 schedule-zone-note = { $zone }។ Katna ផ្ញើវានៅពេលនោះ ទោះបីកម្មវិធីត្រូវបានបិទក៏ដោយ។
+schedule-zone-note-server = { $zone }។ ម៉ាស៊ីនមេសំបុត្ររបស់អ្នកនឹងផ្ញើវានៅពេលនោះ ទោះបីកុំព្យូទ័រនេះបិទក៏ដោយ។ នៅពេល មិនធ្វើវិញ បាត់ទៅ វាមិនអាចបោះបង់បានទៀតទេ។
+schedule-zone-note-local = { $zone }។ Katna នឹងផ្ញើវានៅពេលនោះ ខណៈកុំព្យូទ័រនេះបើក។
 schedule-local-time = ម៉ោងក្នុងស្រុក
 schedule-this-morning = ព្រឹកនេះ
 schedule-this-afternoon = រសៀលនេះ
@@ -28,6 +30,7 @@ schedule-no-such-time = ម៉ោងនោះមិនមាននៅទីន�
 
 schedule-no-subject = (គ្មានប្រធានបទ)
 schedule-sends-at = ផ្ញើនៅ { $when }
+schedule-server-sends-at = ម៉ាស៊ីនមេសំបុត្ររបស់អ្នកផ្ញើវានៅ { $when }
 schedule-cancel-send = បោះបង់ការផ្ញើ
 schedule-nothing = គ្មានអ្វីត្រូវបានកំណត់ពេលទេ។
 schedule-close = បិទ

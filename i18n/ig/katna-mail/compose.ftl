@@ -89,6 +89,7 @@ send-check-add-subject = Tinye isiokwu
 send-check-send-anyway = Zipu agbanyeghị
 recipient-not-valid = Ọ bụghị adreesị ozi-e ziri ezi
 recipient-show-address = Gosi adreesị
+recipient-remove = Wepụ
 recipient-bad-title = Lelee adreesị ahụ
 recipient-bad-text = “{ $address }” abụghị adreesị ozi-e ziri ezi. Dozie ya ma ọ bụ wepụ ya tupu i zipu.
 recipient-bad-fix = Dozie ya

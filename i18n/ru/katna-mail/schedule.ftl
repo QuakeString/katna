@@ -11,6 +11,8 @@ schedule-scheduled-messages = Запланированные письма ({ $co
 
 schedule-title = Запланировать отправку
 schedule-zone-note = { $zone }. Katna отправит письмо в это время, даже если приложение закрыто.
+schedule-zone-note-server = { $zone }. Ваш почтовый сервер отправит письмо в это время, даже если компьютер выключен. Когда кнопка «Отменить» исчезнет, отправку уже не отменить.
+schedule-zone-note-local = { $zone }. Katna отправит письмо в это время, если компьютер будет включён.
 schedule-local-time = Местное время
 schedule-this-morning = Сегодня утром
 schedule-this-afternoon = Сегодня днём
@@ -28,6 +30,7 @@ schedule-no-such-time = Такого времени здесь не сущест
 
 schedule-no-subject = (без темы)
 schedule-sends-at = Отправка: { $when }
+schedule-server-sends-at = Отправит почтовый сервер: { $when }
 schedule-cancel-send = Отменить отправку
 schedule-nothing = Ничего не запланировано.
 schedule-close = Закрыть

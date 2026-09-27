@@ -92,6 +92,7 @@ send-check-add-subject = ବିଷୟ ଯୋଗ କରନ୍ତୁ
 send-check-send-anyway = ତଥାପି ପଠାନ୍ତୁ
 recipient-not-valid = ବୈଧ ଇମେଲ ଠିକଣା ନୁହେଁ
 recipient-show-address = ଠିକଣା ଦେଖାନ୍ତୁ
+recipient-remove = ହଟାନ୍ତୁ
 recipient-bad-title = ଠିକଣା ଯାଞ୍ଚ କରନ୍ତୁ
 recipient-bad-text = “{ $address }” ଏକ ବୈଧ ଇମେଲ ଠିକଣା ନୁହେଁ। ପଠାଇବା ପୂର୍ବରୁ ଏହାକୁ ଠିକ କରନ୍ତୁ କିମ୍ବା କାଢ଼ି ଦିଅନ୍ତୁ।
 recipient-bad-fix = ଠିକ କରନ୍ତୁ

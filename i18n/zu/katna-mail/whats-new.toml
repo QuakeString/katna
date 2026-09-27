@@ -610,3 +610,29 @@ entsha noma impendulo ngokuchofoza kanye. Bhala {first name}, {name}
 noma {my name} bese i-Katna ikugcwalisela umamukeli ngamunye. Hlela,
 qamba kabusha noma susa izifanekiso ku-Izilungiselelo > Bhala.
 """
+
+["2026-09-27-1724-server-send-later"]
+title = "Imeyili ehleliwe iyahamba ngisho noma ikhompyutha yakho icishiwe"
+text = """
+Uma iseva yakho yemeyili ingayibamba imeyili kuze kube yisikhathi
+esibekiwe, njengoba i-Stalwart ikwazi, u-Hlela ukuthumela manje unikeza
+iseva umlayezo uma u-Hlehlisa esenyamalele, ukuze uhambe ngesikhathi
+ngisho noma le khompyutha icishiwe. Imenyu yokuhlela ikutshela ukuthi
+uzothunyelwa iseva yakho yemeyili noma i-Katna.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Ukukhomba okulula kakhulu"
+text = """
+Umugqa ongaphansi kwesikhombi ohlwini lwemeyili manje uyaphakama
+nesithunzi esifiphele, njengaku-Gmail, esikhundleni somugqa omnyama
+ngaphansi kwawo.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Hudula amakheli phakathi kuka-Ku, Cc no-Bcc"
+text = """
+Hudula i-chip yekheli uyise kwenye inkambu ukuze uyihambise; u-Cc
+no-Bcc bayavuleka ngenkathi uhudula, ngisho noma bafihliwe. Ukukhomba
+i-chip kubonisa u-x oyisusayo.
+"""

@@ -92,6 +92,7 @@ send-check-add-subject = Magdagdag ng paksa
 send-check-send-anyway = Ipadala pa rin
 recipient-not-valid = Hindi valid na email address
 recipient-show-address = Ipakita ang address
+recipient-remove = Alisin
 recipient-bad-title = Suriin ang address
 recipient-bad-text = Hindi valid na email address ang “{ $address }”. Ayusin o alisin ito bago ipadala.
 recipient-bad-fix = Ayusin
