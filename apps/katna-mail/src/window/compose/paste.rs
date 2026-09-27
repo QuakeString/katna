@@ -10,7 +10,7 @@ use std::path::PathBuf;
 use std::rc::Rc;
 use std::sync::Arc;
 
-use gpui::{Context, ExternalPaths, Focusable, SharedString, Window};
+use gpui::{Context, DragMoveEvent, ExternalPaths, Focusable, SharedString, Window};
 use katna_i18n::tr;
 use katna_preview::table;
 use katna_ui::rich::{Align, Block, PasteOption, Picture, RichEditor, Transfer};
@@ -80,6 +80,25 @@ fn table_picture(blocks: &[Block]) -> Option<Picture> {
     })
 }
 
+/// Whether a drag holds only pictures (files, or a picture from another
+/// app), which go where they are dropped in the text.
+pub(super) fn pictures_only(paths: &ExternalPaths) -> bool {
+    match gpui_linux::dropped_content(paths) {
+        Some(content) => {
+            content.image.is_some() && content.text.is_none() && content.html.is_none()
+        }
+        None => {
+            !paths.paths().is_empty()
+                && paths.paths().iter().all(|p| {
+                    p.file_name()
+                        .and_then(|n| n.to_str())
+                        .and_then(katna_ui::rich::image_mime)
+                        .is_some_and(shows_inline)
+                })
+        }
+    }
+}
+
 /// Whether the editor can show a picture of this type in the text.
 fn shows_inline(mime: &str) -> bool {
     matches!(
@@ -110,6 +129,23 @@ impl MailWindow {
         body.update(cx, |editor, cx| editor.place_cursor_at(at, cx));
         window.focus(&body.focus_handle(cx), cx);
         self.take_drop(paths, true, cx);
+    }
+
+    /// A drag moving over the message text: pictures show a caret where
+    /// they would land.
+    pub(in crate::window) fn drag_over_body(
+        &mut self,
+        event: &DragMoveEvent<ExternalPaths>,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(compose) = &self.compose else {
+            return;
+        };
+        let at = event.event.position;
+        let over = event.bounds.contains(&at) && pictures_only(event.drag(cx));
+        compose.body.clone().update(cx, |editor, cx| {
+            editor.show_drop_caret(over.then_some(at), cx)
+        });
     }
 
     /// Something dropped elsewhere on the message: files and pictures are
@@ -277,5 +313,14 @@ mod tests {
         assert_eq!(picture.mime, "image/png");
         assert!(picture.data.starts_with(b"\x89PNG"));
         assert!(table_picture(&blocks[..1]).is_none());
+    }
+
+    #[test]
+    fn only_pictures_skip_the_drop_cover() {
+        let paths = |names: &[&str]| ExternalPaths(names.iter().map(|n| n.into()).collect());
+        assert!(pictures_only(&paths(&["/a/photo.PNG", "/a/b.jpg"])));
+        assert!(!pictures_only(&paths(&["/a/photo.png", "/a/notes.zip"])));
+        assert!(!pictures_only(&paths(&["/a/scan.tiff"])));
+        assert!(!pictures_only(&paths(&[])));
     }
 }

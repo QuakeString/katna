@@ -374,7 +374,15 @@ impl MailWindow {
             .size_full()
             .p(px(8.0))
             .opacity(0.0)
-            .drag_over::<ExternalPaths>(|s, _, _, _| s.opacity(1.0))
+            // Pictures go where they are dropped in the text, shown by a
+            // caret there (`drag_over_body`), so they get no cover.
+            .drag_over::<ExternalPaths>(|s, paths, _, _| {
+                if super::paste::pictures_only(paths) {
+                    s
+                } else {
+                    s.opacity(1.0)
+                }
+            })
             .child(
                 div()
                     .relative()

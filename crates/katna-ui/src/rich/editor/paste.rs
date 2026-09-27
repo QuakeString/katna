@@ -474,6 +474,16 @@ impl RichEditor {
         }
     }
 
+    /// Shows where something dragged over the text would land: a caret at
+    /// window point `p`, or none when `p` is `None` or off the text.
+    pub fn show_drop_caret(&mut self, p: Option<Point<Pixels>>, cx: &mut Context<Self>) {
+        let caret = p.and_then(|p| self.hit(p));
+        if caret != self.drop_caret {
+            self.drop_caret = caret;
+            cx.notify();
+        }
+    }
+
     /// The paste options under block `ix`, if they show there.
     pub(super) fn render_paste_options(
         &self,

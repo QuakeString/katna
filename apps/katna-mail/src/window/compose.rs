@@ -36,8 +36,8 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    AnyElement, Context, Entity, ExternalPaths, FocusHandle, Focusable, FontWeight, Hsla,
-    ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, rgba,
+    AnyElement, Context, DragMoveEvent, Entity, ExternalPaths, FocusHandle, Focusable, FontWeight,
+    Hsla, ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, rgba,
 };
 use katna_core::AccountId;
 use katna_dbus::OutboxItem;
@@ -1783,6 +1783,11 @@ impl MailWindow {
             .line_height(px(20.0))
             .cursor_text()
             .on_click(move |_, window, cx| window.focus(&focus, cx))
+            .on_drag_move(
+                cx.listener(|this, event: &DragMoveEvent<ExternalPaths>, _, cx| {
+                    this.drag_over_body(event, cx);
+                }),
+            )
             .on_drop(cx.listener(|this, paths: &ExternalPaths, window, cx| {
                 this.drop_on_body(paths, window, cx);
             }))
@@ -2051,6 +2056,11 @@ impl MailWindow {
             // A click below the text still puts the cursor in the body, at
             // its end.
             .on_click(move |_, window, cx| window.focus(&focus, cx))
+            .on_drag_move(
+                cx.listener(|this, event: &DragMoveEvent<ExternalPaths>, _, cx| {
+                    this.drag_over_body(event, cx);
+                }),
+            )
             .on_drop(cx.listener(|this, paths: &ExternalPaths, window, cx| {
                 this.drop_on_body(paths, window, cx);
             }))
