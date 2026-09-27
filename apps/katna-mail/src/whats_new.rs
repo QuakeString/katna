@@ -204,6 +204,24 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 21,
+        title: "Shortcuts from the mail app you know",
+        text: "Settings > Shortcuts can start from the keys of Gmail, Inbox by Gmail, \
+               Apple Mail, Outlook or Thunderbird, lists them in two columns, and \
+               Restore defaults takes back your changes.",
+        animation: None,
+    },
+    Highlight {
+        id: 22,
+        title: "More settings",
+        text: "Open Katna Mail at login, choose when mail is marked read, make the \
+               reply button reply to everyone, always show images, mute the new-mail \
+               sound, hide Important markers, narrow long lines, keep mail's own \
+               colors in dark mode, turn off attachment previews, write in plain \
+               text, pick the spelling language and see saved files in their folder.",
+        animation: None,
+    },
+    Highlight {
+        id: 23,
         title: "Select and copy text in mail",
         text: "Drag across a message to select its text, double-click for a word \
                or triple-click for a paragraph. Ctrl+C or a right-click copies it, \

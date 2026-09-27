@@ -50,6 +50,9 @@ const PICTURE_COLUMN_INSET: f32 = PICTURE_COLUMN - (PICTURE_COLUMN - 40.0) / 2.0
 /// An open message shows its date and star button, and the subject its
 /// full size, in panes at least this wide.
 const STAR_FROM: f32 = 260.0;
+/// How wide a message's text gets with "Limit the width of messages":
+/// about 90 characters a line.
+const MESSAGE_WIDTH: f32 = 760.0;
 
 /// An open conversation (or a single message).
 pub(super) struct Conversation {
@@ -938,15 +941,21 @@ impl MailWindow {
                     })),
                 )
             })
-            .child(
-                icon_button(("part-reply", ix), "reply", 20.0, th)
-                    .tooltip(tip("Reply", th))
+            .child({
+                // Settings > General > Reply button.
+                let (kind, name, label) = if self.config.mail.reply_all {
+                    (Kind::ReplyAll, "reply-all", "Reply all")
+                } else {
+                    (Kind::Reply, "reply", "Reply")
+                };
+                icon_button(("part-reply", ix), name, 20.0, th)
+                    .tooltip(tip(label, th))
                     .size(px(32.0))
                     .on_click(cx.listener(move |this, _, window, cx| {
                         cx.stop_propagation();
-                        this.open_compose(Kind::Reply, Some(id), window, cx);
-                    })),
-            );
+                        this.open_compose(kind, Some(id), window, cx);
+                    }))
+            });
 
         let details_box = (details && view.is_some()).then(|| {
             let view = view.expect("checked");
@@ -1038,6 +1047,7 @@ impl MailWindow {
                 div()
                     .flex()
                     .flex_col()
+                    .when(self.config.mail.limit_width, |d| d.max_w(px(MESSAGE_WIDTH)))
                     .pt(px(16.0))
                     .text_size(px(14.0))
                     .line_height(px(21.0))
@@ -1068,6 +1078,7 @@ impl MailWindow {
                                     &self.remote.images,
                                     allowed,
                                     self.remote.mono(),
+                                    self.config.mail.dark_mail,
                                     pieces,
                                 )
                                 .document(doc),
