@@ -726,6 +726,12 @@ impl MailWindow {
         let Some(sidebar::Row::Folder { key, folder, .. }) = self.nav_rows.get(ix).cloned() else {
             return;
         };
+        // A folder picked while Settings is open leaves Settings for it, as
+        // in Gmail; opening or folding a parent folder does not.
+        let opens = folder.is_some() || key == compose::SCHEDULED_NAV_KEY;
+        if opens && self.settings_page.is_some() {
+            self.close_settings_page(window, cx);
+        }
         match folder {
             Some(folder) => {
                 self.clear_search(cx);
