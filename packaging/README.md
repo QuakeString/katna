@@ -66,13 +66,16 @@ plus the files above. Katna Calendar is not packaged yet.
 - Account passwords live in the Secret Service, so a provider must be
   running: GNOME Keyring, KWallet or KeePassXC.
 
-Start the daemon now and at every login:
+Katna Mail starts the daemon at every login once it has been opened
+(Settings > General > Desktop > Start Katna at login, on by default). D-Bus
+also starts it whenever `katnactl` or Katna Mail calls it. To have it start
+at login without ever opening Katna Mail, as with only `katnactl`:
 
 ```sh
 systemctl --user enable --now katna-daemon
 ```
 
-Without that, D-Bus starts it when `katnactl` or Katna Mail first calls it.
+Turning "Start Katna at login" off disables that unit too.
 
 Add an account and watch it sync:
 

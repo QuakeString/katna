@@ -811,7 +811,8 @@ the same matching on event attendees ("Meeting with Acme").
 
 | Environment | How it starts |
 |---|---|
-| systemd | `katna-daemon.service` (systemd user unit), started at login when "run in background" is on. |
+| Any desktop | "Start Katna at login" (Settings > General > Desktop, on by default): an XDG autostart entry running `katna-mail --background`, which starts the daemon by D-Bus activation and exits without a window; "Open the window too" drops the flag. Turning it off also disables the systemd unit. |
+| systemd | `katna-daemon.service` (systemd user unit); D-Bus activation goes through it. Enabling it by hand starts the daemon at login without Katna Mail. |
 | Any session | **D-Bus activation** (`in.invenia.katna.Daemon.service`): starts on demand when an app, KRunner, the clock plugin or a notification action calls it. |
 | No systemd | XDG autostart `.desktop` file. |
 | Flatpak | **Background portal** (`RequestBackground` with autostart). KDE and GNOME both implement it; GNOME lists it under "Background Apps". |
@@ -1352,7 +1353,7 @@ Gemini or confidential mode):
   reading order and headers, when mail
   is marked read, what the reply button does, images from the web, undo
   send, offline mail,
-  new-mail notifications and their sound, opening at login, tray and
+  new-mail notifications and their sound, starting at login, tray and
   badge), Inbox, Accounts, Subscription, Appearance (reading pane,
   density, scaling, theme, desktop colors, app names, sender pictures,
   Important markers, message width, dark colors for HTML mail, attachment
@@ -1370,9 +1371,12 @@ Gemini or confidential mode):
   about 40 characters) sits behind an (i) button beside the name: its
   tooltip on hover, and shown under the name after a click, Enter or a tap.
   The General, Appearance and Compose rows added after comparing with
-  Mailspring's settings each change real behaviour: "Open Katna Mail at
+  Mailspring's settings each change real behaviour: "Start Katna at
   login" is a desktop entry in `$XDG_CONFIG_HOME/autostart` (the file is
-  the setting, so the desktop's own autostart settings agree with it);
+  the setting, so the desktop's own autostart settings agree with it),
+  written once by default on the first run (`general.start_at_login_set`
+  keeps an explicit off off) and starting only the service unless "Open
+  the Katna Mail window too" is on;
   marking read after 1 or 3 seconds only happens if the conversation is
   still open then; with "Always show images" off, each message's images
   still wait to be asked for; and the new-mail sound is the notification's
