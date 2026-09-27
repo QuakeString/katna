@@ -174,6 +174,13 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 17,
+        title: "Attachments of older mail open at once",
+        text: "Clicking an attachment of older mail that is not on this computer yet \
+               downloads it: the attachment fills up while it does, then opens.",
+        animation: None,
+    },
+    Highlight {
+        id: 18,
         title: "Katna as your mail app",
         text: "Email links in other apps and on websites can open a new message in \
                Katna Mail, with the address, subject and text filled in. Turn it on \
