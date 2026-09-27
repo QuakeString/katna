@@ -1,0 +1,18 @@
+# Katna Mail, Bengali (বাংলা).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## A new-mail notification
+
+notify-new-emails = { $count }টি নতুন ইমেল
+notify-and-more = আরও { $count }টি
+notify-no-subject = (কোনো বিষয় নেই)
+notify-unknown-sender = অজানা প্রেরক
+
+## Its buttons
+
+notify-open = খুলুন
+notify-reply-all = সবাইকে উত্তর দিন
+notify-mark-read = পঠিত হিসেবে চিহ্নিত করুন
+notify-mark-all-read = সবগুলি পঠিত হিসেবে চিহ্নিত করুন
+notify-archive = আর্কাইভ করুন

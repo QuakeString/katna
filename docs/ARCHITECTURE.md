@@ -1939,7 +1939,11 @@ length, so month and day names, the order (`27/09/2026`, `9/27/2026`,
 - Folder and label names sort with `icu_collator` in the chosen language.
 
 The daemon does not format dates, so it links only Fluent (its 20 MB
-budget).
+budget): the counts in its notifications and tray tooltip are written in
+Western digits whatever the language. Its text is in
+`i18n/<tag>/katna-daemon/`, embedded by its own build script; it applies
+`general.language` at start and again when Katna Mail asks it to reload
+the settings, rebuilding the tray menu.
 
 **Text shaping and fonts.** The vendored GPUI draws text with
 `cosmic-text`, which shapes every script with `harfrust` (HarfBuzz's
