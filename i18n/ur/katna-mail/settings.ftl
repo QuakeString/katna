@@ -92,6 +92,9 @@ settings-general-tray = Katna کو سسٹم ٹرے میں دکھائیں
 settings-general-tray-detail = ناخواندہ تعداد اور ایک مینیو کے ساتھ
 settings-general-unread-badge = ٹاسک بار آئیکن پر ناخواندہ تعداد
 settings-general-unread-badge-detail = ان باکس کے کتنے پیغامات ناخواندہ ہیں
+settings-general-search-triggers = ڈیسک ٹاپ سے تلاش کریں
+settings-general-search-triggers-detail = KRunner یا GNOME کی تلاش میں ان میں سے کوئی ایک لفظ اور ایک خالی جگہ ٹائپ کریں، پھر جو ڈھونڈنا ہے، تاکہ یہاں کے سرچ باکس کی طرح آپ کی میل تلاش ہو۔ الفاظ کو کوما سے الگ کریں۔
+settings-general-search-triggers-none = کوئی لفظ نہیں؛ صرف ”mail:“ چلتا ہے
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = وہ دستخط جس سے نئی میل 
 settings-compose-for-replies-summary = وہ دستخط جس سے جوابات اور فارورڈز شروع ہوتے ہیں
 settings-compose-format-summary = نئی میل سادہ متن میں لکھیں
 settings-compose-spelling-summary = لکھتے وقت املا کی جانچ، اور لغت کی زبان
+settings-general-search-triggers-summary = وہ الفاظ جو KRunner یا GNOME کی تلاش سے آپ کی میل تلاش کرتے ہیں
 settings-compose-templates-summary = اکثر لکھی جانے والی میل محفوظ کریں، اور اس سے نئی میل یا جواب شروع کریں
 settings-feedback-crash-reports-summary = جب Katna Mail یا اس کی بیک گراؤنڈ سروس کریش ہو تو اس کمپیوٹر پر کریش رپورٹس محفوظ کریں
 settings-feedback-saved-summary = اس کمپیوٹر پر محفوظ کریش رپورٹس دیکھیں، کاپی کریں یا حذف کریں

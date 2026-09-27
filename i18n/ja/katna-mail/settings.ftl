@@ -86,6 +86,9 @@ settings-general-tray = システムトレイに Katna を表示
 settings-general-tray-detail = 未読数とメニュー付き
 settings-general-unread-badge = タスクバーのアイコンに未読数を表示
 settings-general-unread-badge-detail = 受信トレイの未読メールの数
+settings-general-search-triggers = デスクトップから検索
+settings-general-search-triggers-detail = KRunner または GNOME の検索で、これらの語のいずれかとスペースを入力してから探したいものを入力すると、ここの検索ボックスと同じようにメールを検索できます。語はカンマで区切ります。
+settings-general-search-triggers-none = 語なし。「mail:」のみ使えます
 
 ## Settings > Inbox
 
@@ -259,6 +262,7 @@ settings-compose-for-new-mail-summary = 新規メールに最初から入れる�
 settings-compose-for-replies-summary = 返信や転送に最初から入れる署名
 settings-compose-format-summary = 新規メールをプレーンテキストで作成
 settings-compose-spelling-summary = 入力中のスペルチェックと辞書の言語
+settings-general-search-triggers-summary = KRunner や GNOME の検索からメールを検索する語
 settings-compose-templates-summary = よく書くメールを保存し、新規メールや返信に使えます
 settings-feedback-crash-reports-summary = Katna Mail またはバックグラウンド サービスがクラッシュしたときに、クラッシュレポートをこのパソコンに保存
 settings-feedback-saved-summary = このパソコンに保存したクラッシュレポートの表示、コピー、削除

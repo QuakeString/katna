@@ -92,6 +92,9 @@ settings-general-tray = സിസ്റ്റം ട്രേയിൽ Katna ക
 settings-general-tray-detail = വായിക്കാത്തവയുടെ എണ്ണവും ഒരു മെനുവും സഹിതം
 settings-general-unread-badge = ടാസ്‌ക്‌ബാർ ഐക്കണിൽ വായിക്കാത്തവയുടെ എണ്ണം
 settings-general-unread-badge-detail = ഇൻബോക്‌സിലെ എത്ര സന്ദേശങ്ങൾ വായിച്ചിട്ടില്ല
+settings-general-search-triggers = ഡെസ്‌ക്‌ടോപ്പിൽ നിന്ന് തിരയുക
+settings-general-search-triggers-detail = ഇവിടത്തെ തിരയൽ ബോക്സ് ചെയ്യുന്നതുപോലെ നിങ്ങളുടെ മെയിൽ തിരയാൻ, KRunner-ലോ GNOME തിരയലിലോ ഈ വാക്കുകളിലൊന്നും ഒരു സ്‌പേസും ടൈപ്പ് ചെയ്യുക, തുടർന്ന് കണ്ടെത്തേണ്ടത് ടൈപ്പ് ചെയ്യുക. വാക്കുകൾ കോമ കൊണ്ട് വേർതിരിക്കുക.
+settings-general-search-triggers-none = വാക്കുകളില്ല; “mail:” മാത്രമേ പ്രവർത്തിക്കൂ
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = പുതിയ മെയിൽ തു�
 settings-compose-for-replies-summary = മറുപടികളും ഫോർവേഡുകളും തുടങ്ങുന്ന ഒപ്പ്
 settings-compose-format-summary = പുതിയ മെയിൽ പ്ലെയിൻ ടെക്സ്റ്റിൽ എഴുതുക
 settings-compose-spelling-summary = എഴുതുമ്പോൾ അക്ഷരത്തെറ്റ് പരിശോധന, നിഘണ്ടുവിന്റെ ഭാഷ
+settings-general-search-triggers-summary = KRunner-ൽ നിന്നോ GNOME തിരയലിൽ നിന്നോ നിങ്ങളുടെ മെയിൽ തിരയുന്ന വാക്കുകൾ
 settings-compose-templates-summary = നിങ്ങൾ പതിവായി എഴുതുന്ന മെയിൽ സംരക്ഷിച്ച്, അതിൽ നിന്ന് പുതിയ മെയിലോ മറുപടിയോ തുടങ്ങുക
 settings-feedback-crash-reports-summary = Katna Mail അല്ലെങ്കിൽ അതിന്റെ പശ്ചാത്തല സേവനം ക്രാഷ് ആകുമ്പോൾ ക്രാഷ് റിപ്പോർട്ടുകൾ ഈ കമ്പ്യൂട്ടറിൽ സംരക്ഷിക്കുക
 settings-feedback-saved-summary = ഈ കമ്പ്യൂട്ടറിൽ സംരക്ഷിച്ച ക്രാഷ് റിപ്പോർട്ടുകൾ കാണുക, പകർത്തുക അല്ലെങ്കിൽ ഇല്ലാതാക്കുക

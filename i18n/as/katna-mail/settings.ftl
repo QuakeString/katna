@@ -92,6 +92,9 @@ settings-general-tray = ছিষ্টেম ট্ৰেত Katna দেখু
 settings-general-tray-detail = নপঢ়াৰ সংখ্যা আৰু এটা মেনুৰ সৈতে
 settings-general-unread-badge = টাস্কবাৰ আইকনত নপঢ়াৰ সংখ্যা
 settings-general-unread-badge-detail = ইনবক্সৰ কিমান বাৰ্তা পঢ়া হোৱা নাই
+settings-general-search-triggers = ডেস্কটপৰ পৰা সন্ধান কৰক
+settings-general-search-triggers-detail = ইয়াৰ সন্ধান বাকচৰ দৰে আপোনাৰ মেইল সন্ধান কৰিবলৈ KRunner বা GNOME সন্ধানত এই শব্দবোৰৰ এটা আৰু এটা স্পেচ টাইপ কৰক, তাৰ পিছত কি বিচাৰিব লাগে টাইপ কৰক। শব্দবোৰ কমাৰে পৃথক কৰক।
+settings-general-search-triggers-none = কোনো শব্দ নাই; কেৱল “mail:”-হে কাম কৰে
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = নতুন মেইল যি স্�
 settings-compose-for-replies-summary = উত্তৰ আৰু ফৰৱাৰ্ড যি স্বাক্ষৰেৰে আৰম্ভ হয়
 settings-compose-format-summary = নতুন মেইল সাধাৰণ পাঠত লিখক
 settings-compose-spelling-summary = লিখি থাকোঁতে বানান পৰীক্ষা কৰক, আৰু অভিধানৰ ভাষা
+settings-general-search-triggers-summary = KRunner বা GNOME সন্ধানৰ পৰা আপোনাৰ মেইল সন্ধান কৰা শব্দবোৰ
 settings-compose-templates-summary = আপুনি সঘনাই লিখা মেইল ছেভ কৰক, আৰু তাৰ পৰা নতুন মেইল বা উত্তৰ আৰম্ভ কৰক
 settings-feedback-crash-reports-summary = Katna Mail বা ইয়াৰ নেপথ্য সেৱা ক্ৰেশ্ব হ'লে এই কম্পিউটাৰত ক্ৰেশ্ব ৰিপৰ্ট ছেভ কৰক
 settings-feedback-saved-summary = এই কম্পিউটাৰত ছেভ কৰা ক্ৰেশ্ব ৰিপৰ্ট চাওক, কপি কৰক বা মচক

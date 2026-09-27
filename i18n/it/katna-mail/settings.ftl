@@ -94,6 +94,9 @@ settings-general-tray = Mostra Katna nell’area di notifica
 settings-general-tray-detail = Con il numero di messaggi da leggere e un menu
 settings-general-unread-badge = Numero di messaggi da leggere sull’icona nella barra delle applicazioni
 settings-general-unread-badge-detail = Quanti messaggi in Posta in arrivo sono da leggere
+settings-general-search-triggers = Cerca dal desktop
+settings-general-search-triggers-detail = Digita una di queste parole e uno spazio in KRunner o nella ricerca di GNOME, poi ciò che vuoi trovare, per cercare nella tua posta come fa qui la casella di ricerca. Separa le parole con virgole.
+settings-general-search-triggers-none = Nessuna parola; funziona solo «mail:»
 
 ## Settings > Inbox
 
@@ -267,6 +270,7 @@ settings-compose-for-new-mail-summary = La firma con cui inizia la nuova posta
 settings-compose-for-replies-summary = La firma con cui iniziano risposte e inoltri
 settings-compose-format-summary = Scrivi la nuova posta in testo semplice
 settings-compose-spelling-summary = Controlla l’ortografia durante la scrittura, e la lingua del dizionario
+settings-general-search-triggers-summary = Parole che cercano nella tua posta da KRunner o dalla ricerca di GNOME
 settings-compose-templates-summary = Salva i messaggi che scrivi spesso e usali per iniziare un nuovo messaggio o una risposta
 settings-feedback-crash-reports-summary = Salva i rapporti sugli arresti anomali su questo computer quando Katna Mail o il suo servizio in background si arresta in modo anomalo
 settings-feedback-saved-summary = Visualizza, copia o elimina i rapporti sugli arresti anomali salvati su questo computer

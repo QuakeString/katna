@@ -86,6 +86,9 @@ settings-general-tray = Gosi Katna na tree sistemụ
 settings-general-tray-detail = Ya na ọnụọgụ ndị a gụghị na menu
 settings-general-unread-badge = Ọnụọgụ ndị a gụghị na akara ngosi ogwe ọrụ
 settings-general-unread-badge-detail = Ole ozi dị na Igbe ozi mbata a gụghị
+settings-general-search-triggers = Chọọ site na desktọpụ
+settings-general-search-triggers-detail = Pịnye otu n'ime okwu ndị a na oghere na KRunner ma ọ bụ ọchụchọ GNOME, wee pịnye ihe ị na-achọ, iji chọọ ozi gị dịka igbe ọchụchọ dị ebe a si eme. Jiri rịkọm kewaa okwu.
+settings-general-search-triggers-none = Enweghị okwu; ọ bụ naanị “mail:” na-arụ ọrụ
 
 ## Settings > Inbox
 
@@ -259,6 +262,7 @@ settings-compose-for-new-mail-summary = Mbinye aka ozi ọhụrụ ji amalite
 settings-compose-for-replies-summary = Mbinye aka nzaghachi na nzigaa ji amalite
 settings-compose-format-summary = Dee ozi ọhụrụ na ederede nkịtị
 settings-compose-spelling-summary = Nyochaa nsụpe mgbe ị na-ede, na asụsụ ọkọwa okwu
+settings-general-search-triggers-summary = Okwu ndị na-achọ ozi gị site na KRunner ma ọ bụ ọchụchọ GNOME
 settings-compose-templates-summary = Chekwaa ozi ị na-edekarị, ma malite ozi ọhụrụ ma ọ bụ nzaghachi site na ya
 settings-feedback-crash-reports-summary = Chekwaa akụkọ nkwụsị na kọmputa a mgbe Katna Mail ma ọ bụ ọrụ azụ ya kwụsịrị na mberede
 settings-feedback-saved-summary = Lelee, detuo ma ọ bụ hichapụ akụkọ nkwụsị echekwara na kọmputa a

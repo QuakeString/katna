@@ -92,6 +92,9 @@ settings-general-tray = சிஸ்டம் ட்ரேயில் Katna ஐ
 settings-general-tray-detail = படிக்காதவற்றின் எண்ணிக்கையுடனும் ஒரு மெனுவுடனும்
 settings-general-unread-badge = டாஸ்க்பார் ஐகானில் படிக்காதவற்றின் எண்ணிக்கை
 settings-general-unread-badge-detail = இன்பாக்ஸில் எத்தனை மெசேஜ்கள் படிக்கப்படவில்லை
+settings-general-search-triggers = டெஸ்க்டாப்பிலிருந்து தேடு
+settings-general-search-triggers-detail = KRunner அல்லது GNOME தேடலில் இந்தச் சொற்களில் ஒன்றையும் ஓர் இடைவெளியையும் டைப் செய்து, பிறகு தேட வேண்டியதை டைப் செய்யுங்கள்; இங்குள்ள தேடல் பெட்டியைப் போலவே உங்கள் மெயிலில் தேடும். சொற்களைக் காற்புள்ளிகளால் பிரிக்கவும்.
+settings-general-search-triggers-none = சொற்கள் இல்லை; “mail:” மட்டுமே வேலை செய்யும்
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = புதிய அஞ்சல் த�
 settings-compose-for-replies-summary = பதில்களும் முன்னனுப்பல்களும் தொடங்கும் கையொப்பம்
 settings-compose-format-summary = புதிய அஞ்சலை வெற்று உரையில் எழுது
 settings-compose-spelling-summary = எழுதும்போது எழுத்துப்பிழை சரிபார்ப்பு, அகராதியின் மொழி
+settings-general-search-triggers-summary = KRunner அல்லது GNOME தேடலிலிருந்து உங்கள் மெயிலில் தேடும் சொற்கள்
 settings-compose-templates-summary = அடிக்கடி எழுதும் அஞ்சலைச் சேமித்து, அதிலிருந்து புதிய அஞ்சலையோ பதிலையோ தொடங்குங்கள்
 settings-feedback-crash-reports-summary = Katna Mail அல்லது அதன் பின்னணிச் சேவை செயலிழக்கும்போது செயலிழப்பு அறிக்கைகளை இந்தக் கணினியில் சேமி
 settings-feedback-saved-summary = இந்தக் கணினியில் சேமித்த செயலிழப்பு அறிக்கைகளைப் பார், நகலெடு அல்லது நீக்கு

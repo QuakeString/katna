@@ -92,6 +92,9 @@ settings-general-tray = Bonisa i-Katna kuthileyi yesistimu
 settings-general-tray-detail = Nesibalo sokungafundiwe nemenyu
 settings-general-unread-badge = Isibalo sokungafundiwe esithonjaneni sebha yemisebenzi
 settings-general-unread-badge-detail = Ingakanani imilayezo yebhokisi lokungenayo engafundiwe
+settings-general-search-triggers = Sesha kusuka kudeskithophu
+settings-general-search-triggers-detail = Thayipha elinye lala magama nesikhala ku-KRunner noma ekusesheni kwe-GNOME, bese uthayipha okufunayo, ukuze useshe imeyili yakho njengoba ibhokisi lokusesha lapha lenza. Hlukanisa amagama ngokhefana.
+settings-general-search-triggers-none = Awekho amagama; kusebenza “mail:” kuphela
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = Isiginesha imeyili entsha eqala ngayo
 settings-compose-for-replies-summary = Isiginesha izimpendulo nokudluliselwayo okuqala ngayo
 settings-compose-format-summary = Bhala imeyili entsha ngombhalo osobala
 settings-compose-spelling-summary = Hlola ukupela ngenkathi ubhala, nolimi lwesichazamazwi
+settings-general-search-triggers-summary = Amagama asesha imeyili yakho kusuka ku-KRunner noma ekusesheni kwe-GNOME
 settings-compose-templates-summary = Londoloza imeyili oyibhala kaningi, bese uqala imeyili entsha noma impendulo ngayo
 settings-feedback-crash-reports-summary = Londoloza imibiko yokuphahlazeka kule khompyutha uma i-Katna Mail noma isevisi yayo yangemuva iphahlazeka
 settings-feedback-saved-summary = Buka, kopisha noma susa imibiko yokuphahlazeka elondolozwe kule khompyutha

@@ -673,3 +673,12 @@ Activiteit onder Verzonden toont hoeveel van je gevolgde berichten zijn
 geopend en hoe vaak hun links zijn gevolgd, met je onderwerpregels
 gerangschikt op hoe vaak ze worden geopend.
 """
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Zoek in je e-mail vanuit KRunner met k"
+text = """
+Typ k of m, een spatie en dan wat je zoekt in KRunner of de
+GNOME-zoekfunctie, en je krijgt dezelfde resultaten als in het zoekvak
+van Katna Mail, zoals ‘k budget’. Kies je eigen woorden in
+Instellingen > Algemeen.
+"""

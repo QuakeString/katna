@@ -92,6 +92,9 @@ settings-general-tray = Wys Katna in die stelselbalk
 settings-general-tray-detail = Met die ongeleesde telling en 'n kieslys
 settings-general-unread-badge = Ongeleesde telling op die taakbalkikoon
 settings-general-unread-badge-detail = Hoeveel inkassieboodskappe ongelees is
+settings-general-search-triggers = Soek vanaf die werkskerm
+settings-general-search-triggers-detail = Tik een van hierdie woorde en 'n spasie in KRunner of die GNOME-soektog, dan wat jy wil vind, om jou e-pos te deursoek soos die soekkassie hier doen. Skei woorde met kommas.
+settings-general-search-triggers-none = Geen woorde nie; net “mail:” werk
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = Die handtekening waarmee nuwe e-pos begi
 settings-compose-for-replies-summary = Die handtekening waarmee antwoorde en aangestuurde boodskappe begin
 settings-compose-format-summary = Skryf nuwe e-pos in gewone teks
 settings-compose-spelling-summary = Kontroleer spelling tydens skryf, en die woordeboek se taal
+settings-general-search-triggers-summary = Woorde wat jou e-pos vanaf KRunner of die GNOME-soektog deursoek
 settings-compose-templates-summary = Stoor e-pos wat jy gereeld skryf, en begin nuwe e-pos of 'n antwoord daarmee
 settings-feedback-crash-reports-summary = Stoor omvalverslae op hierdie rekenaar wanneer Katna Mail of sy agtergronddiens omval
 settings-feedback-saved-summary = Bekyk, kopieer of vee die omvalverslae uit wat op hierdie rekenaar gestoor is

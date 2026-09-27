@@ -657,3 +657,11 @@ text = """
 a ti ṣí hàn, àti bí a ṣe ń tẹ̀lé àwọn ìjápọ̀ wọn tó, pẹ̀lú àwọn àkọlé rẹ
 tí a tò lẹ́sẹẹsẹ gẹ́gẹ́ bí a ṣe ń ṣí wọn tó.
 """
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Ṣàwárí lẹ́tà rẹ láti inú KRunner pẹ̀lú k"
+text = """
+Tẹ k tàbí m, àlàfo kan, lẹ́yìn náà ohun tí o fẹ́ wá nínú KRunner tàbí
+àwárí GNOME láti rí àbájáde kan náà bí ti àpótí àwárí Katna Mail, bí
+àpẹẹrẹ “k budget”. Yan àwọn ọ̀rọ̀ tìrẹ nínú Ètò > Gbogbogbò.
+"""

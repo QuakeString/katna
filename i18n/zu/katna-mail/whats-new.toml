@@ -696,3 +696,12 @@ Umsebenzi ngaphansi kokuthi Okuthunyelwe ubonisa ukuthi mingaki
 imilayezo yakho elandelelwayo evuliwe nokuthi izixhumanisi zayo
 zilandelwe kangaki, izihloko zakho zihlelwe ngokuthi zivulwa kangaki.
 """
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Sesha imeyili yakho ku-KRunner ngokuthayipha k"
+text = """
+Thayipha k noma m, isikhala, bese uthayipha okufunayo ku-KRunner noma
+ekusesheni kwe-GNOME ukuze uthole imiphumela efanayo nebhokisi lokusesha
+le-Katna Mail, njengokuthi “k budget”. Khetha awakho amagama
+ku-Izilungiselelo > Okuvamile.
+"""

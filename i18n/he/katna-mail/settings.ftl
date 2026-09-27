@@ -94,6 +94,9 @@ settings-general-tray = הצגת Katna במגש המערכת
 settings-general-tray-detail = עם מספר ההודעות שלא נקראו ותפריט
 settings-general-unread-badge = מספר ההודעות שלא נקראו על סמל שורת המשימות
 settings-general-unread-badge-detail = כמה הודעות בדואר הנכנס לא נקראו
+settings-general-search-triggers = חיפוש משולחן העבודה
+settings-general-search-triggers-detail = יש להקליד אחת מהמילים האלה ורווח ב־KRunner או בחיפוש של GNOME, ואחר כך את מה שמחפשים, כדי לחפש בדואר כמו בתיבת החיפוש כאן. יש להפריד בין המילים בפסיקים.
+settings-general-search-triggers-none = אין מילים; רק „mail:” עובד
 
 ## Settings > Inbox
 
@@ -267,6 +270,7 @@ settings-compose-for-new-mail-summary = החתימה שבה מתחיל דואר 
 settings-compose-for-replies-summary = החתימה שבה מתחילות תשובות והעברות
 settings-compose-format-summary = כתיבת דואר חדש בטקסט פשוט
 settings-compose-spelling-summary = בדיקת איות בזמן הכתיבה, ושפת המילון
+settings-general-search-triggers-summary = מילים שמחפשות בדואר מ־KRunner או מהחיפוש של GNOME
 settings-compose-templates-summary = שמירת הודעות שכותבים לעיתים קרובות, והתחלת הודעה חדשה או תשובה מהן
 settings-feedback-crash-reports-summary = שמירת דוחות קריסה במחשב הזה כש־Katna Mail או שירות הרקע שלה קורסים
 settings-feedback-saved-summary = הצגה, העתקה או מחיקה של דוחות הקריסה שנשמרו במחשב הזה

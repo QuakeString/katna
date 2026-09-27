@@ -670,3 +670,12 @@ Aktywność pod Wysłanymi pokazuje, ile twoich śledzonych wiadomości
 otwarto i jak często klikano ich linki, a tematy są uszeregowane według
 tego, jak często są otwierane.
 """
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Przeszukuj pocztę z KRunnera za pomocą k"
+text = """
+Wpisz k lub m, spację, a potem to, czego szukasz, w KRunnerze lub
+wyszukiwarce GNOME, aby dostać te same wyniki co w polu wyszukiwania
+Katna Mail, na przykład „k budget”. Własne słowa wybierzesz w
+Ustawienia > Ogólne.
+"""

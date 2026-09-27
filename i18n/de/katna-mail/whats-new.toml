@@ -680,3 +680,12 @@ Aktivität unter Gesendet zeigt, wie viele Ihrer verfolgten Nachrichten
 geöffnet wurden und wie oft ihre Links aufgerufen wurden, mit Ihren
 Betreffzeilen danach sortiert, wie oft sie geöffnet werden.
 """
+
+["2026-09-27-2204-search-trigger-words"]
+title = "E-Mails aus KRunner mit k durchsuchen"
+text = """
+Geben Sie in KRunner oder der GNOME-Suche k oder m, ein Leerzeichen und
+dann das Gesuchte ein, etwa „k budget“, um dieselben Ergebnisse wie im
+Suchfeld von Katna Mail zu erhalten. Eigene Wörter wählen Sie in den
+Einstellungen unter Allgemein.
+"""

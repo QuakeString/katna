@@ -654,3 +654,12 @@ Aktivitet under Skickat visar hur många av dina spårade meddelanden som
 har öppnats och hur ofta deras länkar har följts, med dina ämnesrader
 rangordnade efter hur ofta de öppnas.
 """
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Sök i din e-post från KRunner med k"
+text = """
+Skriv k eller m, ett mellanslag och sedan det du letar efter i KRunner
+eller GNOME-sökningen för att få samma resultat som i sökrutan i
+Katna Mail, till exempel ”k budget”. Välj dina egna ord under
+Inställningar > Allmänt.
+"""

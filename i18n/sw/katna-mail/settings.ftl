@@ -92,6 +92,9 @@ settings-general-tray = Onyesha Katna kwenye trei ya mfumo
 settings-general-tray-detail = Pamoja na idadi ya ambazo hazijasomwa na menyu
 settings-general-unread-badge = Idadi ya ambazo hazijasomwa kwenye aikoni ya upau wa kazi
 settings-general-unread-badge-detail = Idadi ya jumbe za Kikasha ambazo hazijasomwa
+settings-general-search-triggers = Tafuta kutoka kwenye kompyuta ya mezani
+settings-general-search-triggers-detail = Andika mojawapo ya maneno haya na nafasi katika KRunner au utafutaji wa GNOME, kisha unachotafuta, ili kutafuta barua zako kama kisanduku cha utafutaji hapa kinavyofanya. Tenganisha maneno kwa koma.
+settings-general-search-triggers-none = Hakuna maneno; “mail:” pekee ndiyo hufanya kazi
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = Sahihi ambayo barua mpya huanza nayo
 settings-compose-for-replies-summary = Sahihi ambayo majibu na barua zinazosambazwa huanza nayo
 settings-compose-format-summary = Andika barua mpya kwa maandishi matupu
 settings-compose-spelling-summary = Kagua tahajia wakati wa kuandika, na lugha ya kamusi
+settings-general-search-triggers-summary = Maneno yanayotafuta barua zako kutoka KRunner au utafutaji wa GNOME
 settings-compose-templates-summary = Hifadhi barua unazoandika mara kwa mara, na uanze barua mpya au jibu kutoka kwayo
 settings-feedback-crash-reports-summary = Hifadhi ripoti za kuacha kufanya kazi kwenye kompyuta hii Katna Mail au huduma yake ya chinichini inapoacha kufanya kazi
 settings-feedback-saved-summary = Tazama, nakili au futa ripoti za kuacha kufanya kazi zilizohifadhiwa kwenye kompyuta hii

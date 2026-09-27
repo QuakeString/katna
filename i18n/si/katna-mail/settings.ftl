@@ -92,6 +92,9 @@ settings-general-tray = පද්ධති තැටියේ Katna පෙන්
 settings-general-tray-detail = නොකියවූ ගණන සහ මෙනුවක් සමඟ
 settings-general-unread-badge = කාර්ය තීරු අයිකනයේ නොකියවූ ගණන
 settings-general-unread-badge-detail = එන ලිපි වල නොකියවූ පණිවිඩ කීයද යන්න
+settings-general-search-triggers = ඩෙස්ක්ටොප් එකෙන් සොයන්න
+settings-general-search-triggers-detail = KRunner හෝ GNOME සෙවීමේ මෙම වචනවලින් එකක් සහ හිස්තැනක් ටයිප් කර, පසුව සොයන දේ ටයිප් කරන්න, මෙහි සෙවීම් කොටුව මෙන් ඔබේ තැපැල් සෙවීමට. වචන කොමා මගින් වෙන් කරන්න.
+settings-general-search-triggers-none = වචන නැත; “mail:” පමණක් ක්‍රියා කරයි
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = නව තැපැල් ආරම්�
 settings-compose-for-replies-summary = පිළිතුරු සහ ඉදිරියට යැවීම් ආරම්භ වන අත්සන
 settings-compose-format-summary = නව තැපැල් සරල පෙළින් ලියන්න
 settings-compose-spelling-summary = ලියන අතරතුර අක්ෂර වින්‍යාසය පරීක්ෂා කිරීම, සහ ශබ්දකෝෂයේ භාෂාව
+settings-general-search-triggers-summary = KRunner හෝ GNOME සෙවීමෙන් ඔබේ තැපැල් සොයන වචන
 settings-compose-templates-summary = ඔබ නිතර ලියන තැපැල් සුරකින්න, සහ එයින් නව තැපැලක් හෝ පිළිතුරක් ආරම්භ කරන්න
 settings-feedback-crash-reports-summary = Katna Mail හෝ එහි පසුබිම් සේවාව බිඳ වැටුණු විට බිඳවැටීම් වාර්තා මෙම පරිගණකයේ සුරකින්න
 settings-feedback-saved-summary = මෙම පරිගණකයේ සුරැකි බිඳවැටීම් වාර්තා බලන්න, පිටපත් කරන්න හෝ මකන්න

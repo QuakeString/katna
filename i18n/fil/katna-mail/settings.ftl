@@ -92,6 +92,9 @@ settings-general-tray = Ipakita ang Katna sa system tray
 settings-general-tray-detail = May bilang ng hindi pa nabasa at isang menu
 settings-general-unread-badge = Bilang ng hindi pa nabasa sa icon sa taskbar
 settings-general-unread-badge-detail = Ilang mensahe sa Inbox ang hindi pa nabasa
+settings-general-search-triggers = Maghanap mula sa desktop
+settings-general-search-triggers-detail = I-type ang isa sa mga salitang ito at isang space sa KRunner o sa GNOME search, pagkatapos ang hahanapin, para hanapin ang mail mo gaya ng ginagawa ng search box dito. Paghiwalayin ang mga salita gamit ang kuwit.
+settings-general-search-triggers-none = Walang salita; “mail:” lang ang gumagana
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = Ang lagdang pinagsisimulan ng bagong mai
 settings-compose-for-replies-summary = Ang lagdang pinagsisimulan ng mga sagot at pagpapasa
 settings-compose-format-summary = Sumulat ng bagong mail sa plain text
 settings-compose-spelling-summary = Suriin ang pagbaybay habang sumusulat, at ang wika ng diksyunaryo
+settings-general-search-triggers-summary = Mga salitang naghahanap sa mail mo mula sa KRunner o sa GNOME search
 settings-compose-templates-summary = I-save ang mail na madalas mong isinusulat, at magsimula ng bagong mail o sagot mula rito
 settings-feedback-crash-reports-summary = Mag-save ng mga ulat ng pag-crash sa computer na ito kapag nag-crash ang Katna Mail o ang serbisyo nito sa background
 settings-feedback-saved-summary = Tingnan, kopyahin o i-delete ang mga ulat ng pag-crash na naka-save sa computer na ito

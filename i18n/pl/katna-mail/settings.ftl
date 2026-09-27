@@ -96,6 +96,9 @@ settings-general-tray = Pokazuj Katna w zasobniku systemowym
 settings-general-tray-detail = Z liczbą nieprzeczytanych i menu
 settings-general-unread-badge = Liczba nieprzeczytanych na ikonie w pasku zadań
 settings-general-unread-badge-detail = Ile wiadomości w Odebranych jest nieprzeczytanych
+settings-general-search-triggers = Wyszukiwanie z pulpitu
+settings-general-search-triggers-detail = Wpisz jedno z tych słów i spację w KRunnerze lub wyszukiwarce GNOME, a potem to, czego szukasz, aby przeszukać pocztę tak jak pole wyszukiwania tutaj. Oddzielaj słowa przecinkami.
+settings-general-search-triggers-none = Brak słów; działa tylko „mail:”
 
 ## Settings > Inbox
 
@@ -269,6 +272,7 @@ settings-compose-for-new-mail-summary = Podpis, od którego zaczyna się nowa wi
 settings-compose-for-replies-summary = Podpis, od którego zaczynają się odpowiedzi i przekazywane wiadomości
 settings-compose-format-summary = Pisz nowe wiadomości zwykłym tekstem
 settings-compose-spelling-summary = Sprawdzanie pisowni podczas pisania i język słownika
+settings-general-search-triggers-summary = Słowa, które przeszukują pocztę z KRunnera lub wyszukiwarki GNOME
 settings-compose-templates-summary = Zapisuj często pisane wiadomości i zaczynaj od nich nową wiadomość lub odpowiedź
 settings-feedback-crash-reports-summary = Zapisuj raporty o awariach na tym komputerze, gdy Katna Mail lub jej usługa w tle ulegnie awarii
 settings-feedback-saved-summary = Wyświetl, skopiuj lub usuń raporty o awariach zapisane na tym komputerze

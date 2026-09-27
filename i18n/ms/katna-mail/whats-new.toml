@@ -672,3 +672,12 @@ Aktiviti di bawah Dihantar menunjukkan berapa banyak mesej anda yang
 dijejaki telah dibuka dan berapa kerap pautannya diikuti, dengan baris
 subjek anda disusun mengikut kekerapan ia dibuka.
 """
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Cari mel anda dari KRunner dengan k"
+text = """
+Taip k atau m, satu ruang, kemudian apa yang hendak dicari dalam KRunner
+atau carian GNOME untuk mendapat hasil yang sama seperti kotak carian
+Katna Mail, contohnya “k budget”. Pilih perkataan anda sendiri dalam
+Tetapan > Umum.
+"""

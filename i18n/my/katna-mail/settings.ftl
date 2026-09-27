@@ -86,6 +86,9 @@ settings-general-tray = Katna ကို စနစ်ဗန်းတွင် ပ
 settings-general-tray-detail = မဖတ်ရသေး အရေအတွက်နှင့် မီနူးဖြင့်
 settings-general-unread-badge = တာစ်ဘား အိုင်ကွန်ပေါ်တွင် မဖတ်ရသေး အရေအတွက်
 settings-general-unread-badge-detail = ဝင်စာ မက်ဆေ့ဂျ် မည်မျှ မဖတ်ရသေးကြောင်း
+settings-general-search-triggers = ဒက်စ်တော့မှ ရှာရန်
+settings-general-search-triggers-detail = KRunner သို့မဟုတ် GNOME ရှာဖွေမှုတွင် ဤစကားလုံးများထဲမှ တစ်ခုနှင့် space တစ်ခုကို ရိုက်ပြီး ရှာလိုသည့်အရာကို ရိုက်ပါ၊ ဤနေရာရှိ ရှာဖွေရေးအကွက်ကဲ့သို့ သင့်မေးလ်ကို ရှာပေးပါမည်။ စကားလုံးများကို ကော်မာဖြင့် ခွဲပါ။
+settings-general-search-triggers-none = စကားလုံး မရှိပါ၊ “mail:” သာ အလုပ်လုပ်သည်
 
 ## Settings > Inbox
 
@@ -259,6 +262,7 @@ settings-compose-for-new-mail-summary = မေးလ်အသစ် စတင်
 settings-compose-for-replies-summary = ပြန်စာနှင့် ထပ်ဆင့်ပို့ချက်များ စတင်မည့် လက်မှတ်
 settings-compose-format-summary = မေးလ်အသစ်ကို စာသားသက်သက်ဖြင့် ရေးရန်
 settings-compose-spelling-summary = ရေးနေစဉ် စာလုံးပေါင်း စစ်ဆေးခြင်းနှင့် အဘိဓာန်၏ ဘာသာစကား
+settings-general-search-triggers-summary = KRunner သို့မဟုတ် GNOME ရှာဖွေမှုမှ သင့်မေးလ်ကို ရှာပေးသော စကားလုံးများ
 settings-compose-templates-summary = မကြာခဏရေးသော မေးလ်ကို သိမ်းပြီး ၎င်းမှ မေးလ်အသစ် သို့မဟုတ် ပြန်စာကို စတင်ပါ
 settings-feedback-crash-reports-summary = Katna Mail သို့မဟုတ် ၎င်း၏ နောက်ခံဝန်ဆောင်မှု ပျက်ကျသည့်အခါ ပျက်ကျမှု အစီရင်ခံစာများကို ဤကွန်ပျူတာတွင် သိမ်းရန်
 settings-feedback-saved-summary = ဤကွန်ပျူတာတွင် သိမ်းထားသော ပျက်ကျမှု အစီရင်ခံစာများကို ကြည့်ရန်၊ မိတ္တူကူးရန် သို့မဟုတ် ဖျက်ရန်

@@ -92,6 +92,9 @@ settings-general-tray = Katnaን በሥርዓት ትሪ ውስጥ አሳይ
 settings-general-tray-detail = ካልተነበቡ መልዕክቶች ብዛት እና ከምናሌ ጋር
 settings-general-unread-badge = በተግባር አሞሌ አዶ ላይ ያልተነበቡ መልዕክቶች ብዛት
 settings-general-unread-badge-detail = በገቢ መልዕክት ሳጥን ውስጥ ስንት መልዕክቶች እንዳልተነበቡ
+settings-general-search-triggers = ከዴስክቶፕ ፈልግ
+settings-general-search-triggers-detail = እዚህ ያለው የፍለጋ ሳጥን እንደሚያደርገው ደብዳቤዎን ለመፈለግ፣ በKRunner ወይም በGNOME ፍለጋ ውስጥ ከእነዚህ ቃላት አንዱን እና ክፍተት ይተይቡ፣ ከዚያም ሊያገኙት የሚፈልጉትን ይተይቡ። ቃላትን በኮማ ይለዩ።
+settings-general-search-triggers-none = ምንም ቃላት የሉም፤ «mail:» ብቻ ይሠራል
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = አዲስ ደብዳቤ የሚጀምር�
 settings-compose-for-replies-summary = ምላሾች እና ማስተላለፎች የሚጀምሩበት ፊርማ
 settings-compose-format-summary = አዲስ ደብዳቤን በግልጽ ጽሑፍ ጻፍ
 settings-compose-spelling-summary = በሚጽፉበት ጊዜ ፊደል አጻጻፍን ማረጋገጥ፣ እና የመዝገበ ቃላቱ ቋንቋ
+settings-general-search-triggers-summary = ደብዳቤዎን ከKRunner ወይም ከGNOME ፍለጋ የሚፈልጉ ቃላት
 settings-compose-templates-summary = ብዙ ጊዜ የሚጽፉትን ደብዳቤ ያስቀምጡ፣ እና አዲስ ደብዳቤ ወይም ምላሽ ከእሱ ይጀምሩ
 settings-feedback-crash-reports-summary = Katna Mail ወይም የጀርባ አገልግሎቱ ሲበላሽ የብልሽት ሪፖርቶችን በዚህ ኮምፒውተር ላይ አስቀምጥ
 settings-feedback-saved-summary = በዚህ ኮምፒውተር ላይ የተቀመጡ የብልሽት ሪፖርቶችን ይመልከቱ፣ ይቅዱ ወይም ይሰርዙ

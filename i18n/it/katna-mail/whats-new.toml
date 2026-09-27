@@ -674,3 +674,12 @@ Attività, sotto Inviati, mostra quanti dei tuoi messaggi tracciati sono
 stati aperti e quanto spesso sono stati seguiti i loro link, con gli
 oggetti ordinati in base a quanto spesso vengono aperti.
 """
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Cerca nella posta da KRunner con k"
+text = """
+Digita k o m, uno spazio, poi ciò che vuoi trovare in KRunner o nella
+ricerca di GNOME per ottenere gli stessi risultati della casella di
+ricerca di Katna Mail, come «k budget». Scegli le tue parole in
+Impostazioni, sotto Generali.
+"""

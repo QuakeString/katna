@@ -92,6 +92,9 @@ settings-general-tray = Katna'yı sistem tepsisinde göster
 settings-general-tray-detail = Okunmamış sayısı ve bir menüyle
 settings-general-unread-badge = Görev çubuğu simgesinde okunmamış sayısı
 settings-general-unread-badge-detail = Gelen Kutusu'nda kaç iletinin okunmadığı
+settings-general-search-triggers = Masaüstünden ara
+settings-general-search-triggers-detail = Postalarınızda buradaki arama kutusu gibi aramak için KRunner'a veya GNOME aramasına bu sözcüklerden birini ve bir boşluk, ardından aradığınız şeyi yazın. Sözcükleri virgülle ayırın.
+settings-general-search-triggers-none = Sözcük yok; yalnızca “mail:” çalışır
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = Yeni postaların başladığı imza
 settings-compose-for-replies-summary = Yanıtların ve yönlendirmelerin başladığı imza
 settings-compose-format-summary = Yeni postaları düz metin olarak yaz
 settings-compose-spelling-summary = Yazarken yazım denetimi ve sözlüğün dili
+settings-general-search-triggers-summary = KRunner'dan veya GNOME aramasından postalarınızda arayan sözcükler
 settings-compose-templates-summary = Sık yazdığınız postaları kaydedin ve yeni bir postaya veya yanıta onunla başlayın
 settings-feedback-crash-reports-summary = Katna Mail veya arka plan hizmeti çöktüğünde çökme raporlarını bu bilgisayara kaydet
 settings-feedback-saved-summary = Bu bilgisayara kaydedilen çökme raporlarını görüntüleyin, kopyalayın veya silin

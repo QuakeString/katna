@@ -671,3 +671,12 @@ Atividade, abaixo de Enviados, mostra quantas das suas mensagens
 rastreadas foram abertas e com que frequência os links delas foram
 acessados, com seus assuntos em ordem de quantas vezes são abertos.
 """
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Pesquise seus e-mails pelo KRunner com k"
+text = """
+Digite k ou m, um espaço e depois o que procura no KRunner ou na
+pesquisa do GNOME para ter os mesmos resultados da caixa de pesquisa do
+Katna Mail, como “k budget”. Escolha suas próprias palavras em
+Configurações > Geral.
+"""

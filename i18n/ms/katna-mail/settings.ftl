@@ -86,6 +86,9 @@ settings-general-tray = Tunjukkan Katna dalam dulang sistem
 settings-general-tray-detail = Dengan kiraan belum dibaca dan menu
 settings-general-unread-badge = Kiraan belum dibaca pada ikon bar tugas
 settings-general-unread-badge-detail = Berapa banyak mesej Peti Masuk yang belum dibaca
+settings-general-search-triggers = Cari dari desktop
+settings-general-search-triggers-detail = Taip salah satu perkataan ini dan satu ruang dalam KRunner atau carian GNOME, kemudian apa yang hendak dicari, untuk mencari mel anda seperti kotak carian di sini. Pisahkan perkataan dengan koma.
+settings-general-search-triggers-none = Tiada perkataan; hanya “mail:” berfungsi
 
 ## Settings > Inbox
 
@@ -259,6 +262,7 @@ settings-compose-for-new-mail-summary = Tandatangan yang memulakan mel baharu
 settings-compose-for-replies-summary = Tandatangan yang memulakan balasan dan majuan
 settings-compose-format-summary = Tulis mel baharu dalam teks biasa
 settings-compose-spelling-summary = Semak ejaan semasa menulis, dan bahasa kamus
+settings-general-search-triggers-summary = Perkataan yang mencari mel anda dari KRunner atau carian GNOME
 settings-compose-templates-summary = Simpan mel yang kerap anda tulis, dan mulakan mel baharu atau balasan daripadanya
 settings-feedback-crash-reports-summary = Simpan laporan ranap pada komputer ini apabila Katna Mail atau perkhidmatan latar belakangnya ranap
 settings-feedback-saved-summary = Lihat, salin atau padam laporan ranap yang disimpan pada komputer ini

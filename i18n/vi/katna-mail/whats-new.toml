@@ -653,3 +653,11 @@ Hoạt động bên dưới Đã gửi cho thấy bao nhiêu thư được theo 
 được mở và các liên kết trong đó được mở thường xuyên đến đâu, kèm các
 tiêu đề của bạn xếp theo mức độ thường được mở.
 """
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Tìm trong thư từ KRunner bằng k"
+text = """
+Gõ k hoặc m, một dấu cách, rồi điều cần tìm trong KRunner hoặc ô tìm
+kiếm của GNOME để có cùng kết quả như ô tìm kiếm của Katna Mail, ví dụ
+“k budget”. Chọn từ của riêng bạn trong Cài đặt > Chung.
+"""

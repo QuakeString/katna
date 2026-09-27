@@ -92,6 +92,9 @@ settings-general-tray = Visa Katna i systemfältet
 settings-general-tray-detail = Med antalet olästa och en meny
 settings-general-unread-badge = Antal olästa på aktivitetsfältets ikon
 settings-general-unread-badge-detail = Hur många meddelanden i inkorgen som är olästa
+settings-general-search-triggers = Sök från skrivbordet
+settings-general-search-triggers-detail = Skriv ett av de här orden och ett mellanslag i KRunner eller GNOME-sökningen, sedan det du letar efter, för att söka i din e-post som sökrutan här gör. Skilj orden åt med kommatecken.
+settings-general-search-triggers-none = Inga ord; bara ”mail:” fungerar
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = Signaturen som ny e-post börjar med
 settings-compose-for-replies-summary = Signaturen som svar och vidarebefordringar börjar med
 settings-compose-format-summary = Skriv ny e-post med oformaterad text
 settings-compose-spelling-summary = Kontrollera stavningen medan du skriver, och ordlistans språk
+settings-general-search-triggers-summary = Ord som söker i din e-post från KRunner eller GNOME-sökningen
 settings-compose-templates-summary = Spara e-post du ofta skriver, och börja nya meddelanden eller svar utifrån den
 settings-feedback-crash-reports-summary = Spara kraschrapporter på den här datorn när Katna Mail eller dess bakgrundstjänst kraschar
 settings-feedback-saved-summary = Visa, kopiera eller radera kraschrapporterna som har sparats på den här datorn

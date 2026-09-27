@@ -690,3 +690,12 @@ Activité, sous Messages envoyés, montre combien de vos messages suivis
 ont été ouverts et combien de fois leurs liens ont été suivis, avec vos
 objets classés selon leur taux d’ouverture.
 """
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Cherchez dans vos messages depuis KRunner avec k"
+text = """
+Tapez k ou m, une espace, puis ce que vous cherchez dans KRunner ou la
+recherche de GNOME pour obtenir les mêmes résultats que dans le champ de
+recherche de Katna Mail, par exemple « k budget ». Choisissez vos propres
+mots dans Paramètres, sous Général.
+"""

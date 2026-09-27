@@ -667,3 +667,12 @@ Aktivitas di bawah Terkirim menunjukkan berapa banyak pesan terlacak Anda
 yang dibuka dan seberapa sering link-nya diikuti, dengan subjek diurutkan
 menurut seberapa sering dibuka.
 """
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Telusuri email Anda dari KRunner dengan k"
+text = """
+Ketik k atau m, spasi, lalu yang ingin dicari di KRunner atau penelusuran
+GNOME untuk mendapatkan hasil yang sama dengan kotak penelusuran
+Katna Mail, seperti “k budget”. Pilih kata Anda sendiri di Setelan, di
+bawah Umum.
+"""

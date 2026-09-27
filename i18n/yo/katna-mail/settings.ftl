@@ -86,6 +86,9 @@ settings-general-tray = Fi Katna hàn nínú àtẹ ètò
 settings-general-tray-detail = Pẹ̀lú iye àìkà àti mẹ́nù kan
 settings-general-unread-badge = Iye àìkà lórí àmì-àwòrán ọ̀pá iṣẹ́
 settings-general-unread-badge-detail = Iye ìfiránṣẹ́ inú Àpótí-ìwọlé tí a kò tíì kà
+settings-general-search-triggers = Ṣàwárí láti orí déskítọ́ọ̀pù
+settings-general-search-triggers-detail = Tẹ ọ̀kan nínú àwọn ọ̀rọ̀ wọ̀nyí àti àlàfo kan nínú KRunner tàbí àwárí GNOME, lẹ́yìn náà ohun tí o fẹ́ wá, láti ṣàwárí lẹ́tà rẹ bí àpótí àwárí ibí ṣe ń ṣe. Fi kọ́mà ya àwọn ọ̀rọ̀ sọ́tọ̀.
+settings-general-search-triggers-none = Kò sí ọ̀rọ̀; “mail:” nìkan ló ń ṣiṣẹ́
 
 ## Settings > Inbox
 
@@ -259,6 +262,7 @@ settings-compose-for-new-mail-summary = Ìbuwọ́lù tí lẹ́tà tuntun fi ń
 settings-compose-for-replies-summary = Ìbuwọ́lù tí èsì àti ìfiránṣẹ́-síwájú fi ń bẹ̀rẹ̀
 settings-compose-format-summary = Kọ lẹ́tà tuntun ní ọ̀rọ̀ lásán
 settings-compose-spelling-summary = Ṣàyẹ̀wò ìsípẹ́lì nígbà kíkọ̀wé, àti èdè ìwé-atúmọ̀
+settings-general-search-triggers-summary = Àwọn ọ̀rọ̀ tí ń ṣàwárí lẹ́tà rẹ láti inú KRunner tàbí àwárí GNOME
 settings-compose-templates-summary = Fi lẹ́tà tí o máa ń kọ lọ́pọ̀ ìgbà pamọ́, kí o sì bẹ̀rẹ̀ lẹ́tà tuntun tàbí èsì láti inú rẹ̀
 settings-feedback-crash-reports-summary = Fi ìjábọ̀ ìjákulẹ̀ pamọ́ sórí kọ̀ǹpútà yìí nígbà tí Katna Mail tàbí iṣẹ́ ẹ̀yìn rẹ̀ bá jákulẹ̀
 settings-feedback-saved-summary = Wo, ṣẹ̀dà tàbí pa ìjábọ̀ ìjákulẹ̀ tí a fi pamọ́ sórí kọ̀ǹpútà yìí rẹ́

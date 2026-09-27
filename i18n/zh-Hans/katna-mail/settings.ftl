@@ -86,6 +86,9 @@ settings-general-tray = 在系统托盘中显示 Katna
 settings-general-tray-detail = 显示未读数并提供菜单
 settings-general-unread-badge = 在任务栏图标上显示未读数
 settings-general-unread-badge-detail = 收件箱中未读邮件的数量
+settings-general-search-triggers = 从桌面搜索
+settings-general-search-triggers-detail = 在 KRunner 或 GNOME 搜索中输入其中一个词和一个空格，再输入要找的内容，即可像这里的搜索框一样搜索邮件。多个词之间用逗号分隔。
+settings-general-search-triggers-none = 没有设置词；只有“mail:”可用
 
 ## Settings > Inbox
 
@@ -259,6 +262,7 @@ settings-compose-for-new-mail-summary = 新邮件默认使用的签名
 settings-compose-for-replies-summary = 回复和转发默认使用的签名
 settings-compose-format-summary = 以纯文本撰写新邮件
 settings-compose-spelling-summary = 撰写时检查拼写，以及词典的语言
+settings-general-search-triggers-summary = 可在 KRunner 或 GNOME 搜索中搜索邮件的词
 settings-compose-templates-summary = 保存你经常写的邮件，并以它开始新邮件或回复
 settings-feedback-crash-reports-summary = Katna Mail 或其后台服务崩溃时，将崩溃报告保存在此电脑上
 settings-feedback-saved-summary = 查看、复制或删除保存在此电脑上的崩溃报告

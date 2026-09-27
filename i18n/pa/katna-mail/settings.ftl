@@ -92,6 +92,9 @@ settings-general-tray = ਸਿਸਟਮ ਟ੍ਰੇ ਵਿੱਚ Katna ਦਿ�
 settings-general-tray-detail = ਅਣਪੜ੍ਹੀਆਂ ਦੀ ਗਿਣਤੀ ਅਤੇ ਇੱਕ ਮੀਨੂ ਨਾਲ
 settings-general-unread-badge = ਟਾਸਕਬਾਰ ਆਈਕਨ ’ਤੇ ਅਣਪੜ੍ਹੀਆਂ ਦੀ ਗਿਣਤੀ
 settings-general-unread-badge-detail = ਇਨਬਾਕਸ ਦੇ ਕਿੰਨੇ ਸੁਨੇਹੇ ਅਣਪੜ੍ਹੇ ਹਨ
+settings-general-search-triggers = ਡੈਸਕਟਾਪ ਤੋਂ ਖੋਜੋ
+settings-general-search-triggers-detail = KRunner ਜਾਂ GNOME ਖੋਜ ਵਿੱਚ ਇਹਨਾਂ ਵਿੱਚੋਂ ਇੱਕ ਸ਼ਬਦ ਅਤੇ ਇੱਕ ਖਾਲੀ ਥਾਂ ਟਾਈਪ ਕਰੋ, ਫਿਰ ਜੋ ਲੱਭਣਾ ਹੈ, ਤਾਂ ਜੋ ਇੱਥੇ ਦੇ ਖੋਜ ਬਾਕਸ ਵਾਂਗ ਤੁਹਾਡੀ ਮੇਲ ਖੋਜੀ ਜਾਵੇ। ਸ਼ਬਦਾਂ ਨੂੰ ਕਾਮਿਆਂ ਨਾਲ ਵੱਖ ਕਰੋ।
+settings-general-search-triggers-none = ਕੋਈ ਸ਼ਬਦ ਨਹੀਂ; ਸਿਰਫ਼ “mail:” ਕੰਮ ਕਰਦਾ ਹੈ
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = ਉਹ ਦਸਤਖ਼ਤ ਜਿਨ੍�
 settings-compose-for-replies-summary = ਉਹ ਦਸਤਖ਼ਤ ਜਿਨ੍ਹਾਂ ਨਾਲ ਜਵਾਬ ਅਤੇ ਅੱਗੇ ਭੇਜੇ ਸੁਨੇਹੇ ਸ਼ੁਰੂ ਹੁੰਦੇ ਹਨ
 settings-compose-format-summary = ਨਵੀਂ ਮੇਲ ਸਾਦੀ ਲਿਖਤ ਵਿੱਚ ਲਿਖੋ
 settings-compose-spelling-summary = ਲਿਖਦੇ ਸਮੇਂ ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚੋ, ਅਤੇ ਸ਼ਬਦਕੋਸ਼ ਦੀ ਭਾਸ਼ਾ
+settings-general-search-triggers-summary = ਸ਼ਬਦ ਜੋ KRunner ਜਾਂ GNOME ਖੋਜ ਤੋਂ ਤੁਹਾਡੀ ਮੇਲ ਖੋਜਦੇ ਹਨ
 settings-compose-templates-summary = ਜੋ ਮੇਲ ਤੁਸੀਂ ਅਕਸਰ ਲਿਖਦੇ ਹੋ ਉਸਨੂੰ ਰੱਖਿਅਤ ਕਰੋ, ਅਤੇ ਉਸ ਤੋਂ ਨਵੀਂ ਮੇਲ ਜਾਂ ਜਵਾਬ ਸ਼ੁਰੂ ਕਰੋ
 settings-feedback-crash-reports-summary = ਜਦੋਂ Katna Mail ਜਾਂ ਇਸਦੀ ਬੈਕਗ੍ਰਾਊਂਡ ਸੇਵਾ ਕ੍ਰੈਸ਼ ਹੋਵੇ ਤਾਂ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਇਸ ਕੰਪਿਊਟਰ ’ਤੇ ਰੱਖਿਅਤ ਕਰੋ
 settings-feedback-saved-summary = ਇਸ ਕੰਪਿਊਟਰ ’ਤੇ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਦੇਖੋ, ਕਾਪੀ ਕਰੋ ਜਾਂ ਮਿਟਾਓ

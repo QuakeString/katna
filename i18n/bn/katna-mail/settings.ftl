@@ -92,6 +92,9 @@ settings-general-tray = সিস্টেম ট্রে-তে Katna দে�
 settings-general-tray-detail = অপঠিত সংখ্যা ও একটি মেনু সহ
 settings-general-unread-badge = টাস্কবারের আইকনে অপঠিত সংখ্যা
 settings-general-unread-badge-detail = ইনবক্সের কতগুলি মেসেজ অপঠিত
+settings-general-search-triggers = ডেস্কটপ থেকে খুঁজুন
+settings-general-search-triggers-detail = এখানকার অনুসন্ধান বক্সের মতো আপনার মেল খুঁজতে KRunner বা GNOME অনুসন্ধানে এই শব্দগুলির একটি আর একটি স্পেস টাইপ করুন, তারপর যা খুঁজতে চান। শব্দগুলি কমা দিয়ে আলাদা করুন।
+settings-general-search-triggers-none = কোনো শব্দ নেই; শুধু “mail:” কাজ করে
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = নতুন মেল যে স্ব�
 settings-compose-for-replies-summary = উত্তর ও ফরোয়ার্ড যে স্বাক্ষর দিয়ে শুরু হয়
 settings-compose-format-summary = নতুন মেল সাধারণ টেক্সটে লিখুন
 settings-compose-spelling-summary = লেখার সময় বানান যাচাই, এবং অভিধানের ভাষা
+settings-general-search-triggers-summary = যে শব্দগুলি KRunner বা GNOME অনুসন্ধান থেকে আপনার মেল খোঁজে
 settings-compose-templates-summary = যে মেল আপনি প্রায়ই লেখেন তা সেভ করুন, আর সেখান থেকে নতুন মেল বা উত্তর শুরু করুন
 settings-feedback-crash-reports-summary = Katna Mail বা তার ব্যাকগ্রাউন্ড পরিষেবা ক্র্যাশ করলে এই কম্পিউটারে ক্র্যাশ রিপোর্ট সেভ করুন
 settings-feedback-saved-summary = এই কম্পিউটারে সেভ করা ক্র্যাশ রিপোর্ট দেখুন, কপি করুন বা মুছুন

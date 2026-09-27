@@ -92,6 +92,9 @@ settings-general-tray = Nuna Katna a cikin tiren tsarin
 settings-general-tray-detail = Tare da adadin waɗanda ba a karanta ba da menu
 settings-general-unread-badge = Adadin waɗanda ba a karanta ba a gunkin ma'ajin ayyuka
 settings-general-unread-badge-detail = Yawan saƙonnin Akwatin saƙo da ba a karanta ba
+settings-general-search-triggers = Bincika daga tebur
+settings-general-search-triggers-detail = Rubuta ɗaya daga cikin waɗannan kalmomin da sarari a KRunner ko binciken GNOME, sannan abin da kake nema, don bincika wasiƙunka kamar yadda akwatin bincike na nan ke yi. Raba kalmomi da waƙafi.
+settings-general-search-triggers-none = Babu kalmomi; “mail:” kaɗai ke aiki
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = Sa hannun da sababbin wasiƙu suke faraw
 settings-compose-for-replies-summary = Sa hannun da amsoshi da turawa suke farawa da shi
 settings-compose-format-summary = Rubuta sababbin wasiƙu da rubutu mara ado
 settings-compose-spelling-summary = Duba rubutun kalmomi yayin rubutu, da harshen ƙamus
+settings-general-search-triggers-summary = Kalmomin da ke bincika wasiƙunka daga KRunner ko binciken GNOME
 settings-compose-templates-summary = Ajiye wasiƙun da kuke yawan rubutawa, kuma fara sabuwar wasiƙa ko amsa daga gare su
 settings-feedback-crash-reports-summary = Ajiye rahotannin faɗuwa a wannan kwamfuta lokacin da Katna Mail ko sabis ɗinta na bango ya faɗi
 settings-feedback-saved-summary = Duba, kwafa ko share rahotannin faɗuwa da aka ajiye a wannan kwamfuta

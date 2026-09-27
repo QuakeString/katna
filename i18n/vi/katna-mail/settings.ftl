@@ -86,6 +86,9 @@ settings-general-tray = Hiện Katna trong khay hệ thống
 settings-general-tray-detail = Kèm số thư chưa đọc và một menu
 settings-general-unread-badge = Số thư chưa đọc trên biểu tượng ở thanh tác vụ
 settings-general-unread-badge-detail = Số thư chưa đọc trong Hộp thư đến
+settings-general-search-triggers = Tìm từ màn hình nền
+settings-general-search-triggers-detail = Gõ một trong các từ này và một dấu cách trong KRunner hoặc ô tìm kiếm của GNOME, rồi gõ điều cần tìm, để tìm trong thư như ô tìm kiếm ở đây. Phân tách các từ bằng dấu phẩy.
+settings-general-search-triggers-none = Không có từ nào; chỉ “mail:” hoạt động
 
 ## Settings > Inbox
 
@@ -259,6 +262,7 @@ settings-compose-for-new-mail-summary = Chữ ký mở đầu cho thư mới
 settings-compose-for-replies-summary = Chữ ký mở đầu cho thư trả lời và chuyển tiếp
 settings-compose-format-summary = Viết thư mới bằng văn bản thuần
 settings-compose-spelling-summary = Kiểm tra chính tả khi viết, và ngôn ngữ của từ điển
+settings-general-search-triggers-summary = Các từ để tìm trong thư từ KRunner hoặc ô tìm kiếm của GNOME
 settings-compose-templates-summary = Lưu những thư bạn hay viết, rồi bắt đầu thư mới hoặc thư trả lời từ đó
 settings-feedback-crash-reports-summary = Lưu báo cáo sự cố trên máy tính này khi Katna Mail hoặc dịch vụ nền của nó gặp sự cố
 settings-feedback-saved-summary = Xem, sao chép hoặc xóa báo cáo sự cố đã lưu trên máy tính này

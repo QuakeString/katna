@@ -653,3 +653,11 @@ Aktiwiteit onder Gestuur wys hoeveel van jou nagespoorde boodskappe
 oopgemaak is en hoe dikwels hul skakels gevolg is, met jou onderwerpreëls
 gerangskik volgens hoe dikwels hulle oopgemaak word.
 """
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Deursoek jou e-pos vanuit KRunner met k"
+text = """
+Tik k of m, 'n spasie en dan wat jy wil vind in KRunner of die
+GNOME-soektog om dieselfde resultate as Katna Mail se soekkassie te kry,
+soos “k budget”. Kies jou eie woorde in Instellings onder Algemeen.
+"""

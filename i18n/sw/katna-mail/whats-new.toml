@@ -672,3 +672,12 @@ Shughuli chini ya Zilizotumwa inaonyesha ni ujumbe wako mingapi
 unaofuatiliwa imefunguliwa na mara ngapi viungo vyake vimefuatwa, pamoja
 na mada zako zikiwa zimepangwa kwa jinsi zinavyofunguliwa mara nyingi.
 """
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Tafuta barua zako kutoka KRunner kwa k"
+text = """
+Andika k au m, nafasi, kisha unachotafuta katika KRunner au utafutaji wa
+GNOME ili upate matokeo yale yale ya kisanduku cha utafutaji cha
+Katna Mail, kama “k budget”. Chagua maneno yako mwenyewe katika
+Mipangilio > Jumla.
+"""

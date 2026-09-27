@@ -92,6 +92,9 @@ settings-general-tray = Katna im Systemabschnitt anzeigen
 settings-general-tray-detail = Mit der Anzahl ungelesener Nachrichten und einem Menü
 settings-general-unread-badge = Anzahl ungelesener Nachrichten am Symbol in der Kontrollleiste
 settings-general-unread-badge-detail = Wie viele Nachrichten im Posteingang ungelesen sind
+settings-general-search-triggers = Vom Desktop aus suchen
+settings-general-search-triggers-detail = Geben Sie in KRunner oder der GNOME-Suche eines dieser Wörter und ein Leerzeichen ein, dann das Gesuchte, um Ihre E-Mails so zu durchsuchen wie mit dem Suchfeld hier. Trennen Sie Wörter mit Kommas.
+settings-general-search-triggers-none = Keine Wörter; nur „mail:“ funktioniert
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = Die Signatur, mit der neue E-Mails begin
 settings-compose-for-replies-summary = Die Signatur, mit der Antworten und Weiterleitungen beginnen
 settings-compose-format-summary = Neue E-Mails in reinem Text schreiben
 settings-compose-spelling-summary = Rechtschreibung beim Schreiben prüfen und die Sprache des Wörterbuchs
+settings-general-search-triggers-summary = Wörter, mit denen KRunner oder die GNOME-Suche Ihre E-Mails durchsucht
 settings-compose-templates-summary = E-Mails speichern, die Sie oft schreiben, und damit eine neue E-Mail oder eine Antwort beginnen
 settings-feedback-crash-reports-summary = Absturzberichte auf diesem Computer speichern, wenn Katna Mail oder sein Hintergrunddienst abstürzt
 settings-feedback-saved-summary = Die auf diesem Computer gespeicherten Absturzberichte ansehen, kopieren oder löschen

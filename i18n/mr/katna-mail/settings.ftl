@@ -92,6 +92,9 @@ settings-general-tray = सिस्टम ट्रेमध्ये Katna द
 settings-general-tray-detail = न वाचलेल्यांची संख्या आणि एका मेनूसह
 settings-general-unread-badge = टास्कबार आयकनवर न वाचलेल्यांची संख्या
 settings-general-unread-badge-detail = इनबॉक्समधील किती मेसेज न वाचलेले आहेत
+settings-general-search-triggers = डेस्कटॉपवरून शोधा
+settings-general-search-triggers-detail = KRunner किंवा GNOME शोधामध्ये यापैकी एक शब्द आणि एक स्पेस टाइप करा, मग काय शोधायचे ते, म्हणजे येथील शोध बॉक्सप्रमाणे तुमचा मेल शोधला जाईल. शब्द स्वल्पविरामांनी वेगळे करा.
+settings-general-search-triggers-none = कोणतेही शब्द नाहीत; फक्त “mail:” चालते
 
 ## Settings > Inbox
 
@@ -265,6 +268,7 @@ settings-compose-for-new-mail-summary = नवीन मेल ज्या स�
 settings-compose-for-replies-summary = उत्तरे आणि फॉरवर्ड ज्या स्वाक्षरीने सुरू होतात
 settings-compose-format-summary = नवीन मेल साध्या मजकुरात लिहा
 settings-compose-spelling-summary = लिहिताना शुद्धलेखन तपासा, आणि शब्दकोशाची भाषा
+settings-general-search-triggers-summary = KRunner किंवा GNOME शोधामधून तुमचा मेल शोधणारे शब्द
 settings-compose-templates-summary = तुम्ही वारंवार लिहिता तो मेल सेव्ह करा, आणि त्यावरून नवीन मेल किंवा उत्तर सुरू करा
 settings-feedback-crash-reports-summary = Katna Mail किंवा त्याची बॅकग्राउंड सेवा क्रॅश झाल्यावर क्रॅश अहवाल या कॉम्प्युटरवर सेव्ह करा
 settings-feedback-saved-summary = या कॉम्प्युटरवर सेव्ह केलेले क्रॅश अहवाल पाहा, कॉपी करा किंवा हटवा

@@ -693,3 +693,12 @@ naka-track mong mensahe ang nabuksan at kung gaano kadalas sinundan ang
 mga link nila, kasama ang mga subject line mo na nakaayos ayon sa kung
 gaano kadalas binubuksan ang mga ito.
 """
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Hanapin ang mail mo mula sa KRunner gamit ang k"
+text = """
+I-type ang k o m, isang space, at pagkatapos ang hahanapin sa KRunner o sa
+GNOME search para makuha ang parehong resulta ng search box ng Katna Mail,
+gaya ng “k budget”. Pumili ng sarili mong mga salita sa Mga setting sa
+ilalim ng Pangkalahatan.
+"""

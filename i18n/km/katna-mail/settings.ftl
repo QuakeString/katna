@@ -86,6 +86,9 @@ settings-general-tray = បង្ហាញ Katna ក្នុងថាសប្�
 settings-general-tray-detail = ជាមួយចំនួនមិនទាន់អាន និងម៉ឺនុយ
 settings-general-unread-badge = ចំនួនមិនទាន់អាននៅលើរូបតំណាងរបារភារកិច្ច
 settings-general-unread-badge-detail = ចំនួនសារក្នុងប្រអប់ទទួលដែលមិនទាន់អាន
+settings-general-search-triggers = ស្វែងរកពីផ្ទៃតុ
+settings-general-search-triggers-detail = វាយពាក្យមួយក្នុងចំណោមពាក្យទាំងនេះ និងដកឃ្លាមួយក្នុង KRunner ឬការស្វែងរករបស់ GNOME រួចវាយអ្វីដែលត្រូវរក ដើម្បីស្វែងរកសំបុត្ររបស់អ្នកដូចប្រអប់ស្វែងរកនៅទីនេះ។ បំបែកពាក្យដោយសញ្ញាក្បៀស។
+settings-general-search-triggers-none = គ្មានពាក្យ; មានតែ “mail:” ប៉ុណ្ណោះដែលដំណើរការ
 
 ## Settings > Inbox
 
@@ -259,6 +262,7 @@ settings-compose-for-new-mail-summary = ហត្ថលេខាដែលសំ�
 settings-compose-for-replies-summary = ហត្ថលេខាដែលការឆ្លើយតប និងការបញ្ជូនបន្តចាប់ផ្ដើមជាមួយ
 settings-compose-format-summary = សរសេរសំបុត្រថ្មីជាអត្ថបទធម្មតា
 settings-compose-spelling-summary = ពិនិត្យអក្ខរាវិរុទ្ធពេលសរសេរ និងភាសារបស់វចនានុក្រម
+settings-general-search-triggers-summary = ពាក្យដែលស្វែងរកសំបុត្ររបស់អ្នកពី KRunner ឬការស្វែងរករបស់ GNOME
 settings-compose-templates-summary = រក្សាទុកសំបុត្រដែលអ្នកសរសេរញឹកញាប់ ហើយចាប់ផ្ដើមសំបុត្រថ្មី ឬការឆ្លើយតបពីវា
 settings-feedback-crash-reports-summary = រក្សាទុករបាយការណ៍គាំងនៅលើកុំព្យូទ័រនេះ ពេល Katna Mail ឬសេវាផ្ទៃខាងក្រោយរបស់វាគាំង
 settings-feedback-saved-summary = មើល ចម្លង ឬលុបរបាយការណ៍គាំងដែលបានរក្សាទុកនៅលើកុំព្យូទ័រនេះ

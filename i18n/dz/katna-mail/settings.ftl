@@ -86,6 +86,9 @@ settings-general-tray = Katna རིམ་ལུགས་སྡེར་མ་�
 settings-general-tray-detail = མ་ལྷག་པའི་གྱངས་ཁ་དང་ དཀར་ཆག་དང་བཅས
 settings-general-unread-badge = ལཱ་གི་ཕྲ་རིང་ངོས་དཔར་གུ་ མ་ལྷག་པའི་གྱངས་ཁ
 settings-general-unread-badge-detail = ནང་འབྱོར་སྒྲོམ་གྱི་འཕྲིན་དོན་ག་དེམ་ཅིག་མ་ལྷག་པས
+settings-general-search-triggers = ཌེཀསི་ཊོཔ་ལས་འཚོལ།
+settings-general-search-triggers-detail = ནཱ་གི་འཚོལ་ཞིབ་སྒྲོམ་བཟུམ་སྦེ་ ཁྱོད་ཀྱི་གློག་འཕྲིན་འཚོལ་ནིའི་དོན་ལུ་ KRunner ཡང་ན་ GNOME འཚོལ་ཞིབ་ནང་ ཚིག་འདི་ཚུ་ལས་ གཅིག་དང་ བར་སྟོང་ཅིག་ ཡིག་དཔར་རྐྱབ་ཞིནམ་ལས་ འཚོལ་དགོ་མི་འདི་ ཡིག་དཔར་རྐྱབ། ཚིག་ཚུ་གི་བར་ན་ ཚེག་ཤད་ (,) བཙུགས།
+settings-general-search-triggers-none = ཚིག་མེད། “mail:” རྐྱངམ་ཅིག་ ལཱ་འབདཝ་ཨིན།
 
 ## Settings > Inbox
 
@@ -259,6 +262,7 @@ settings-compose-for-new-mail-summary = གློག་འཕྲིན་གས�
 settings-compose-for-replies-summary = ལན་དང་མདུན་སྐྱེལ་ཚུ་འགོ་བཙུགས་མི་མིང་རྟགས
 settings-compose-format-summary = གློག་འཕྲིན་གསརཔ་ ཚིག་ཡིག་རྐྱང་པ་ནང་བྲིས།
 settings-compose-spelling-summary = བྲི་བའི་སྐབས་ ཡིག་སྦྱོར་ཞིབ་དཔྱད་དང་ ཚིག་མཛོད་ཀྱི་སྐད་ཡིག
+settings-general-search-triggers-summary = KRunner ཡང་ན་ GNOME འཚོལ་ཞིབ་ལས་ ཁྱོད་ཀྱི་གློག་འཕྲིན་འཚོལ་མི་ཚིག
 settings-compose-templates-summary = ཁྱོད་ཀྱིས་ཡང་ཡང་བྲི་མི་གློག་འཕྲིན་ཚུ་སྲུང་སྟེ་ དེ་ལས་གློག་འཕྲིན་གསརཔ་ ཡང་ན་ལན་ཅིག་འགོ་བཙུགས།
 settings-feedback-crash-reports-summary = Katna Mail ཡང་ན་ དེ་གི་རྒྱབ་ཐག་ཞབས་ཏོག་ཆག་པའི་སྐབས་ ཆག་སྐྱོན་སྙན་ཞུ་ཚུ་ གློག་རིག་འདི་གུ་སྲུང་།
 settings-feedback-saved-summary = གློག་རིག་འདི་གུ་སྲུང་ཡོད་པའི་ ཆག་སྐྱོན་སྙན་ཞུ་ཚུ་ བལྟ་ འདྲ་བཤུས་རྐྱབ་ ཡང་ན་བཏོན་གཏང་།
