@@ -189,6 +189,11 @@ and safe mail client a joy to write (Katna has no `unsafe` code), for
 Katna, and for **[Linux](https://kernel.org)** and the free software
 community that builds it. 🐧
 
+💙 **Support KDE.** KDE builds the desktop Katna feels most at home on, and
+it is made by volunteers and funded by people like you. If you enjoy Plasma
+or KDE's apps, please consider
+[donating to KDE](https://kde.org/donate/).
+
 ## Support and follow
 
 Katna is free software, built in the open.
