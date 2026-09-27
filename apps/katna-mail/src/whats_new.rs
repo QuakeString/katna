@@ -179,6 +179,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                downloads it: the attachment fills up while it does, then opens.",
         animation: None,
     },
+    Highlight {
+        id: 18,
+        title: "Read conversations your way",
+        text: "Settings > General > Reading can show the newest message first, open \
+               the full headers of every message, and name recipients in full \
+               instead of by first name.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.

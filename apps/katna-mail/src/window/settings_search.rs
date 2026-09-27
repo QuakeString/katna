@@ -57,6 +57,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
+        "Reading",
+        "Newest message first, full headers, full names of recipients",
+        "order oldest descending chronological reverse headers details from to cc names recipients first last",
+    ),
+    entry(
+        Section::General,
         "Sending",
         "Undo send: how long a sent message waits, so it can be taken back",
         "undo send delay cancel",
