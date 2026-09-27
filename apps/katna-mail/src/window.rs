@@ -57,6 +57,7 @@ mod storage;
 mod tab_strip;
 mod tour;
 mod unified;
+mod view_state;
 mod viewer;
 mod whats_new;
 
@@ -584,10 +585,13 @@ pub struct MailWindow {
 }
 
 impl MailWindow {
+    /// The main window, showing what `shown` showed when the window last
+    /// closed, if anything.
     pub fn new(
         env: Environment,
         paths: Paths,
         font: Option<SharedString>,
+        shown: Option<katna_core::window::ViewState>,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Self {
@@ -596,6 +600,9 @@ impl MailWindow {
         let mut this = Self::build(env, paths, font, window, cx);
         keymap::bind(&this.config.shortcuts, cx);
         this.load_tree();
+        if let Some(shown) = &shown {
+            this.restore_view(shown, cx);
+        }
         this.open_default_folder(cx);
         this.count_unread(cx);
         this.listen(cx);

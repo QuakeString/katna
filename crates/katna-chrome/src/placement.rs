@@ -111,6 +111,7 @@ impl Placement {
             maximized: self.maximized,
             session: gpui_linux::placement_session(),
             service: run,
+            view: Default::default(),
         })
     }
 }

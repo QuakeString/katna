@@ -191,11 +191,11 @@ fn main() -> ExitCode {
                 env.clone(),
                 connection.clone(),
             );
-            placement.restore(&mut options, cx);
+            let shown = placement.restore(&mut options, cx);
             let opened = cx.open_window(options, |window, cx| {
                 cx.new(|cx| {
                     placement.follow(window, cx);
-                    let mut view = window::MailWindow::new(env, paths, font, window, cx);
+                    let mut view = window::MailWindow::new(env, paths, font, shown, window, cx);
                     if open_first {
                         view.open_first(window, cx);
                     }
