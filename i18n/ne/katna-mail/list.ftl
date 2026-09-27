@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] { $folder } का सबै { $count } सन्देशहरू चयन गर्नुहोस्
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रिनमा भएको { $count } पढिएको वार्तालाप चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } पढिएका वार्तालापहरू चयन गरिएका छन्।
+        }
+       *[message] { $count ->
+            [one] स्क्रिनमा भएको { $count } पढिएको सन्देश चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } पढिएका सन्देशहरू चयन गरिएका छन्।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रिनमा भएको { $count } नपढिएको वार्तालाप चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } नपढिएका वार्तालापहरू चयन गरिएका छन्।
+        }
+       *[message] { $count ->
+            [one] स्क्रिनमा भएको { $count } नपढिएको सन्देश चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } नपढिएका सन्देशहरू चयन गरिएका छन्।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रिनमा भएको { $count } तारा लगाइएको वार्तालाप चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } तारा लगाइएका वार्तालापहरू चयन गरिएका छन्।
+        }
+       *[message] { $count ->
+            [one] स्क्रिनमा भएको { $count } तारा लगाइएको सन्देश चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } तारा लगाइएका सन्देशहरू चयन गरिएका छन्।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रिनमा भएको { $count } तारा नलगाइएको वार्तालाप चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } तारा नलगाइएका वार्तालापहरू चयन गरिएका छन्।
+        }
+       *[message] { $count ->
+            [one] स्क्रिनमा भएको { $count } तारा नलगाइएको सन्देश चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } तारा नलगाइएका सन्देशहरू चयन गरिएका छन्।
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } पढिएको वार्तालाप चयन गर्नुहोस्
+           *[other] सबै { $count } पढिएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $count } पढिएको सन्देश चयन गर्नुहोस्
+           *[other] सबै { $count } पढिएका सन्देशहरू चयन गर्नुहोस्
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } नपढिएको वार्तालाप चयन गर्नुहोस्
+           *[other] सबै { $count } नपढिएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $count } नपढिएको सन्देश चयन गर्नुहोस्
+           *[other] सबै { $count } नपढिएका सन्देशहरू चयन गर्नुहोस्
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } तारा लगाइएको वार्तालाप चयन गर्नुहोस्
+           *[other] सबै { $count } तारा लगाइएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $count } तारा लगाइएको सन्देश चयन गर्नुहोस्
+           *[other] सबै { $count } तारा लगाइएका सन्देशहरू चयन गर्नुहोस्
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } तारा नलगाइएको वार्तालाप चयन गर्नुहोस्
+           *[other] सबै { $count } तारा नलगाइएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $count } तारा नलगाइएको सन्देश चयन गर्नुहोस्
+           *[other] सबै { $count } तारा नलगाइएका सन्देशहरू चयन गर्नुहोस्
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } का { $count } पढिएको वार्तालाप चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } पढिएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $folder } का { $count } पढिएको सन्देश चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } पढिएका सन्देशहरू चयन गर्नुहोस्
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } का { $count } नपढिएको वार्तालाप चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } नपढिएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $folder } का { $count } नपढिएको सन्देश चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } नपढिएका सन्देशहरू चयन गर्नुहोस्
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } का { $count } तारा लगाइएको वार्तालाप चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } तारा लगाइएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $folder } का { $count } तारा लगाइएको सन्देश चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } तारा लगाइएका सन्देशहरू चयन गर्नुहोस्
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } का { $count } तारा नलगाइएको वार्तालाप चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } तारा नलगाइएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $folder } का { $count } तारा नलगाइएको सन्देश चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } तारा नलगाइएका सन्देशहरू चयन गर्नुहोस्
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->

@@ -49,6 +49,7 @@ compose-picker-attach = So mọ́ ọn
 compose-file-too-large = { $name } ti tóbi jù: ìfiránṣẹ́ kan lè gbé tó { $limit } nìkan.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Yọ àfikún kúrò
+compose-attachments-total = Fáìlì { $count }, { $size }
 compose-drop-files = Ju àwọn fáìlì sí ibí
 compose-drop-here = Ju sí ibí
 compose-paste-keep-formatting = Pa ìgúnrege mọ́

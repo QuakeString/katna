@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = തെറ്റായ വാക്കു�
 settings-compose-spell-desktop = ഡെസ്‌ക്‌ടോപ്പിന്റെ ഭാഷ ({ $language })
 settings-compose-templates = ടെംപ്ലേറ്റുകൾ
 settings-compose-templates-detail = നിങ്ങൾ പതിവായി എഴുതുന്ന മെയിൽ സംരക്ഷിച്ച്, അതിൽ നിന്ന് പുതിയ മെയിലോ മറുപടിയോ തുടങ്ങുക.
+settings-compose-no-templates = ഇതുവരെ ടെംപ്ലേറ്റുകളൊന്നുമില്ല. ഒരു സന്ദേശത്തിൽ “ടെംപ്ലേറ്റുകൾ” തിരഞ്ഞെടുത്ത്, തുടർന്ന് “ടെംപ്ലേറ്റായി സംരക്ഷിക്കുക” തിരഞ്ഞെടുക്കുക.
+settings-compose-template-new = പുതിയത് സൃഷ്‌ടിക്കുക
+settings-compose-template-new-name = പുതിയ ടെംപ്ലേറ്റ്
+settings-compose-template-subject = വിഷയം
+settings-compose-template-text = ടെംപ്ലേറ്റ് ടെക്സ്റ്റ്
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"}, {"{"}my name{"}"} എന്നിവ സ്വീകർത്താവിന്റെയും നിങ്ങളുടെയും പേരുകൾ കൊണ്ട് പൂരിപ്പിക്കപ്പെടും.
+settings-compose-template-remove-file = അറ്റാച്ച്‌മെന്റ് നീക്കം ചെയ്യുക
+settings-compose-template-save = സംരക്ഷിക്കുക
+settings-compose-template-saved = ടെംപ്ലേറ്റ് സംരക്ഷിച്ചു
+settings-compose-template-needs-name = ടെംപ്ലേറ്റിന് ഒരു പേര് നൽകുക
+settings-compose-template-delete = ടെംപ്ലേറ്റ് ഇല്ലാതാക്കുക
+settings-compose-template-deleted = ടെംപ്ലേറ്റ് ഇല്ലാതാക്കി
+settings-compose-template-delete-failed = ടെംപ്ലേറ്റ് ഇല്ലാതാക്കാനായില്ല: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = പുതിയ മെയിൽ തു�
 settings-compose-for-replies-summary = മറുപടികളും ഫോർവേഡുകളും തുടങ്ങുന്ന ഒപ്പ്
 settings-compose-format-summary = പുതിയ മെയിൽ പ്ലെയിൻ ടെക്സ്റ്റിൽ എഴുതുക
 settings-compose-spelling-summary = എഴുതുമ്പോൾ അക്ഷരത്തെറ്റ് പരിശോധന, നിഘണ്ടുവിന്റെ ഭാഷ
-settings-compose-templates-summary = ഉടൻ വരുന്നു: പതിവായി എഴുതുന്ന മെയിൽ സംരക്ഷിച്ച്, അതിൽ നിന്ന് പുതിയ മെയിലോ മറുപടിയോ തുടങ്ങുക
+settings-compose-templates-summary = നിങ്ങൾ പതിവായി എഴുതുന്ന മെയിൽ സംരക്ഷിച്ച്, അതിൽ നിന്ന് പുതിയ മെയിലോ മറുപടിയോ തുടങ്ങുക
 settings-feedback-crash-reports-summary = Katna Mail അല്ലെങ്കിൽ അതിന്റെ പശ്ചാത്തല സേവനം ക്രാഷ് ആകുമ്പോൾ ക്രാഷ് റിപ്പോർട്ടുകൾ ഈ കമ്പ്യൂട്ടറിൽ സംരക്ഷിക്കുക
 settings-feedback-saved-summary = ഈ കമ്പ്യൂട്ടറിൽ സംരക്ഷിച്ച ക്രാഷ് റിപ്പോർട്ടുകൾ കാണുക, പകർത്തുക അല്ലെങ്കിൽ ഇല്ലാതാക്കുക
 settings-feedback-help-improve-summary = എന്താണ് തെറ്റിയതെന്ന് പരിഹരിക്കാൻ സഹായിക്കാൻ ക്രാഷ് റിപ്പോർട്ടുകൾ അയയ്ക്കുക; നിങ്ങൾ ഓണാക്കിയില്ലെങ്കിൽ ഓഫായിരിക്കും

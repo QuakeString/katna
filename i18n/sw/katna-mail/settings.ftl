@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = Maneno yenye makosa ya tahajia hupigiwa ms
 settings-compose-spell-desktop = Lugha ya kompyuta ya mezani ({ $language })
 settings-compose-templates = Violezo
 settings-compose-templates-detail = Hifadhi barua unazoandika mara kwa mara, na uanze barua mpya au jibu kutoka kwayo.
+settings-compose-no-templates = Bado hakuna violezo. Katika ujumbe, chagua Violezo, kisha Hifadhi kama kiolezo.
+settings-compose-template-new = Unda mpya
+settings-compose-template-new-name = Kiolezo kipya
+settings-compose-template-subject = Mada
+settings-compose-template-text = Maandishi ya kiolezo
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} na {"{"}my name{"}"} hujazwa kwa jina la mpokeaji na jina lako.
+settings-compose-template-remove-file = Ondoa kiambatisho
+settings-compose-template-save = Hifadhi
+settings-compose-template-saved = Kiolezo kimehifadhiwa
+settings-compose-template-needs-name = Kipe kiolezo jina
+settings-compose-template-delete = Futa kiolezo
+settings-compose-template-deleted = Kiolezo kimefutwa
+settings-compose-template-delete-failed = Imeshindwa kufuta kiolezo: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = Sahihi ambayo barua mpya huanza nayo
 settings-compose-for-replies-summary = Sahihi ambayo majibu na barua zinazosambazwa huanza nayo
 settings-compose-format-summary = Andika barua mpya kwa maandishi matupu
 settings-compose-spelling-summary = Kagua tahajia wakati wa kuandika, na lugha ya kamusi
-settings-compose-templates-summary = Inakuja hivi karibuni: hifadhi barua unazoandika mara kwa mara, na uanze barua mpya au jibu kutoka kwayo
+settings-compose-templates-summary = Hifadhi barua unazoandika mara kwa mara, na uanze barua mpya au jibu kutoka kwayo
 settings-feedback-crash-reports-summary = Hifadhi ripoti za kuacha kufanya kazi kwenye kompyuta hii Katna Mail au huduma yake ya chinichini inapoacha kufanya kazi
 settings-feedback-saved-summary = Tazama, nakili au futa ripoti za kuacha kufanya kazi zilizohifadhiwa kwenye kompyuta hii
 settings-feedback-help-improve-summary = Tuma ripoti za kuacha kufanya kazi ili kusaidia kurekebisha tatizo; imezimwa isipokuwa ukiiwasha

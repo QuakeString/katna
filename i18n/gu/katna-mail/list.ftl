@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] { $folder } માંના બધા { $count } મેસેજ પસંદ કરો
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] સ્ક્રીન પરનો { $count } વાંચેલો વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } વાંચેલા વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] સ્ક્રીન પરનો { $count } વાંચેલો મેસેજ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } વાંચેલા મેસેજ પસંદ કરેલા છે.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] સ્ક્રીન પરનો { $count } નહીં વાંચેલો વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } નહીં વાંચેલા વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] સ્ક્રીન પરનો { $count } નહીં વાંચેલો મેસેજ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } નહીં વાંચેલા મેસેજ પસંદ કરેલા છે.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] સ્ક્રીન પરનો { $count } તારાંકિત વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } તારાંકિત વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] સ્ક્રીન પરનો { $count } તારાંકિત મેસેજ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } તારાંકિત મેસેજ પસંદ કરેલા છે.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] સ્ક્રીન પરનો { $count } તારાંકન વિનાનો વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } તારાંકન વિનાના વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] સ્ક્રીન પરનો { $count } તારાંકન વિનાનો મેસેજ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } તારાંકન વિનાના મેસેજ પસંદ કરેલા છે.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } વાંચેલો વાર્તાલાપ પસંદ કરો
+           *[other] બધા { $count } વાંચેલા વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $count } વાંચેલો મેસેજ પસંદ કરો
+           *[other] બધા { $count } વાંચેલા મેસેજ પસંદ કરો
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } નહીં વાંચેલો વાર્તાલાપ પસંદ કરો
+           *[other] બધા { $count } નહીં વાંચેલા વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $count } નહીં વાંચેલો મેસેજ પસંદ કરો
+           *[other] બધા { $count } નહીં વાંચેલા મેસેજ પસંદ કરો
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } તારાંકિત વાર્તાલાપ પસંદ કરો
+           *[other] બધા { $count } તારાંકિત વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $count } તારાંકિત મેસેજ પસંદ કરો
+           *[other] બધા { $count } તારાંકિત મેસેજ પસંદ કરો
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } તારાંકન વિનાનો વાર્તાલાપ પસંદ કરો
+           *[other] બધા { $count } તારાંકન વિનાના વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $count } તારાંકન વિનાનો મેસેજ પસંદ કરો
+           *[other] બધા { $count } તારાંકન વિનાના મેસેજ પસંદ કરો
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } માંનો { $count } વાંચેલો વાર્તાલાપ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } વાંચેલા વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $folder } માંનો { $count } વાંચેલો મેસેજ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } વાંચેલા મેસેજ પસંદ કરો
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } માંનો { $count } નહીં વાંચેલો વાર્તાલાપ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } નહીં વાંચેલા વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $folder } માંનો { $count } નહીં વાંચેલો મેસેજ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } નહીં વાંચેલા મેસેજ પસંદ કરો
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } માંનો { $count } તારાંકિત વાર્તાલાપ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } તારાંકિત વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $folder } માંનો { $count } તારાંકિત મેસેજ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } તારાંકિત મેસેજ પસંદ કરો
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } માંનો { $count } તારાંકન વિનાનો વાર્તાલાપ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } તારાંકન વિનાના વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $folder } માંનો { $count } તારાંકન વિનાનો મેસેજ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } તારાંકન વિનાના મેસેજ પસંદ કરો
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->

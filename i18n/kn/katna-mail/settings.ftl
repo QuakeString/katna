@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = ತಪ್ಪು ಪದಗಳಿಗೆ ಅ�
 settings-compose-spell-desktop = ಡೆಸ್ಕ್‌ಟಾಪ್‌ನ ಭಾಷೆ ({ $language })
 settings-compose-templates = ಟೆಂಪ್ಲೇಟ್‌ಗಳು
 settings-compose-templates-detail = ನೀವು ಆಗಾಗ ಬರೆಯುವ ಮೇಲ್ ಅನ್ನು ಉಳಿಸಿ, ಅದರಿಂದ ಹೊಸ ಮೇಲ್ ಅಥವಾ ಪ್ರತ್ಯುತ್ತರವನ್ನು ಆರಂಭಿಸಿ.
+settings-compose-no-templates = ಇನ್ನೂ ಯಾವುದೇ ಟೆಂಪ್ಲೇಟ್‌ಗಳಿಲ್ಲ. ಸಂದೇಶದಲ್ಲಿ “ಟೆಂಪ್ಲೇಟ್‌ಗಳು” ಆಯ್ಕೆಮಾಡಿ, ನಂತರ “ಟೆಂಪ್ಲೇಟ್ ಆಗಿ ಉಳಿಸಿ” ಆಯ್ಕೆಮಾಡಿ.
+settings-compose-template-new = ಹೊಸದನ್ನು ರಚಿಸಿ
+settings-compose-template-new-name = ಹೊಸ ಟೆಂಪ್ಲೇಟ್
+settings-compose-template-subject = ವಿಷಯ
+settings-compose-template-text = ಟೆಂಪ್ಲೇಟ್ ಪಠ್ಯ
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} ಮತ್ತು {"{"}my name{"}"} ಅನ್ನು ಸ್ವೀಕರಿಸುವವರ ಹೆಸರು ಮತ್ತು ನಿಮ್ಮ ಹೆಸರಿನಿಂದ ಭರ್ತಿ ಮಾಡಲಾಗುತ್ತದೆ.
+settings-compose-template-remove-file = ಲಗತ್ತನ್ನು ತೆಗೆದುಹಾಕಿ
+settings-compose-template-save = ಉಳಿಸಿ
+settings-compose-template-saved = ಟೆಂಪ್ಲೇಟ್ ಉಳಿಸಲಾಗಿದೆ
+settings-compose-template-needs-name = ಟೆಂಪ್ಲೇಟ್‌ಗೆ ಹೆಸರು ನೀಡಿ
+settings-compose-template-delete = ಟೆಂಪ್ಲೇಟ್ ಅಳಿಸಿ
+settings-compose-template-deleted = ಟೆಂಪ್ಲೇಟ್ ಅಳಿಸಲಾಗಿದೆ
+settings-compose-template-delete-failed = ಟೆಂಪ್ಲೇಟ್ ಅನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = ಹೊಸ ಮೇಲ್ ಆರಂಭವ�
 settings-compose-for-replies-summary = ಪ್ರತ್ಯುತ್ತರಗಳು ಮತ್ತು ಫಾರ್ವರ್ಡ್‌ಗಳು ಆರಂಭವಾಗುವ ಸಹಿ
 settings-compose-format-summary = ಹೊಸ ಮೇಲ್ ಅನ್ನು ಸಾದಾ ಪಠ್ಯದಲ್ಲಿ ಬರೆಯಿರಿ
 settings-compose-spelling-summary = ಬರೆಯುವಾಗ ಕಾಗುಣಿತ ಪರಿಶೀಲನೆ ಮತ್ತು ನಿಘಂಟಿನ ಭಾಷೆ
-settings-compose-templates-summary = ಶೀಘ್ರದಲ್ಲೇ: ನೀವು ಆಗಾಗ ಬರೆಯುವ ಮೇಲ್ ಅನ್ನು ಉಳಿಸಿ, ಅದರಿಂದ ಹೊಸ ಮೇಲ್ ಅಥವಾ ಪ್ರತ್ಯುತ್ತರವನ್ನು ಆರಂಭಿಸಿ
+settings-compose-templates-summary = ನೀವು ಆಗಾಗ ಬರೆಯುವ ಮೇಲ್ ಅನ್ನು ಉಳಿಸಿ, ಅದರಿಂದ ಹೊಸ ಮೇಲ್ ಅಥವಾ ಪ್ರತ್ಯುತ್ತರವನ್ನು ಆರಂಭಿಸಿ
 settings-feedback-crash-reports-summary = Katna Mail ಅಥವಾ ಅದರ ಹಿನ್ನೆಲೆ ಸೇವೆ ಕ್ರ್ಯಾಶ್ ಆದಾಗ ಕ್ರ್ಯಾಶ್ ವರದಿಗಳನ್ನು ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ ಉಳಿಸಿ
 settings-feedback-saved-summary = ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ ಉಳಿಸಿದ ಕ್ರ್ಯಾಶ್ ವರದಿಗಳನ್ನು ವೀಕ್ಷಿಸಿ, ನಕಲಿಸಿ ಅಥವಾ ಅಳಿಸಿ
 settings-feedback-help-improve-summary = ಏನು ತಪ್ಪಾಯಿತು ಎಂಬುದನ್ನು ಸರಿಪಡಿಸಲು ಸಹಾಯ ಮಾಡಲು ಕ್ರ್ಯಾಶ್ ವರದಿಗಳನ್ನು ಕಳುಹಿಸಿ; ನೀವು ಆನ್ ಮಾಡದ ಹೊರತು ಆಫ್ ಆಗಿರುತ್ತದೆ

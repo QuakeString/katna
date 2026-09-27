@@ -190,6 +190,19 @@ settings-compose-spell-check-detail = Las palabras mal escritas se subrayan, con
 settings-compose-spell-desktop = Idioma del escritorio ({ $language })
 settings-compose-templates = Plantillas
 settings-compose-templates-detail = Guarda los correos que escribes a menudo y úsalos para empezar un correo nuevo o una respuesta.
+settings-compose-no-templates = Aún no hay plantillas. En un mensaje, elige Plantillas y luego Guardar como plantilla.
+settings-compose-template-new = Crear nueva
+settings-compose-template-new-name = Nueva plantilla
+settings-compose-template-subject = Asunto
+settings-compose-template-text = Texto de la plantilla
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} y {"{"}my name{"}"} se rellenan con el nombre del destinatario y el tuyo.
+settings-compose-template-remove-file = Quitar archivo adjunto
+settings-compose-template-save = Guardar
+settings-compose-template-saved = Plantilla guardada
+settings-compose-template-needs-name = Pon un nombre a la plantilla
+settings-compose-template-delete = Eliminar plantilla
+settings-compose-template-deleted = Plantilla eliminada
+settings-compose-template-delete-failed = No se ha podido eliminar la plantilla: { $error }
 
 ## Settings > Shortcuts
 
@@ -244,7 +257,7 @@ settings-compose-for-new-mail-summary = La firma con la que empieza el correo nu
 settings-compose-for-replies-summary = La firma con la que empiezan las respuestas y los reenvíos
 settings-compose-format-summary = Escribir el correo nuevo en texto sin formato
 settings-compose-spelling-summary = Revisar la ortografía al escribir, y el idioma del diccionario
-settings-compose-templates-summary = Próximamente: guarda los correos que escribes a menudo y úsalos para empezar un correo nuevo o una respuesta
+settings-compose-templates-summary = Guarda los correos que escribes a menudo y úsalos para empezar un correo nuevo o una respuesta
 settings-feedback-crash-reports-summary = Guardar informes de fallos en este ordenador cuando Katna Mail o su servicio en segundo plano fallan
 settings-feedback-saved-summary = Ver, copiar o eliminar los informes de fallos guardados en este ordenador
 settings-feedback-help-improve-summary = Enviar informes de fallos para ayudar a corregir el problema; desactivado salvo que lo actives

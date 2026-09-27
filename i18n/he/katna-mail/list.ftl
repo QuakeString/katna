@@ -108,6 +108,156 @@ list-select-all-in = { $kind ->
        *[other] בחירת כל { $count } ההודעות ב־{ $folder }
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] במסך נבחרה שיחה אחת שנקראה.
+            [two] במסך נבחרו כל { $count } השיחות שנקראו.
+           *[other] במסך נבחרו כל { $count } השיחות שנקראו.
+        }
+       *[message] { $count ->
+            [one] במסך נבחרה הודעה אחת שנקראה.
+            [two] במסך נבחרו כל { $count } ההודעות שנקראו.
+           *[other] במסך נבחרו כל { $count } ההודעות שנקראו.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] במסך נבחרה שיחה אחת שלא נקראה.
+            [two] במסך נבחרו כל { $count } השיחות שלא נקראו.
+           *[other] במסך נבחרו כל { $count } השיחות שלא נקראו.
+        }
+       *[message] { $count ->
+            [one] במסך נבחרה הודעה אחת שלא נקראה.
+            [two] במסך נבחרו כל { $count } ההודעות שלא נקראו.
+           *[other] במסך נבחרו כל { $count } ההודעות שלא נקראו.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] במסך נבחרה שיחה אחת המסומנת בכוכב.
+            [two] במסך נבחרו כל { $count } השיחות המסומנות בכוכב.
+           *[other] במסך נבחרו כל { $count } השיחות המסומנות בכוכב.
+        }
+       *[message] { $count ->
+            [one] במסך נבחרה הודעה אחת המסומנת בכוכב.
+            [two] במסך נבחרו כל { $count } ההודעות המסומנות בכוכב.
+           *[other] במסך נבחרו כל { $count } ההודעות המסומנות בכוכב.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] במסך נבחרה שיחה אחת שאינה מסומנת בכוכב.
+            [two] במסך נבחרו כל { $count } השיחות שאינן מסומנות בכוכב.
+           *[other] במסך נבחרו כל { $count } השיחות שאינן מסומנות בכוכב.
+        }
+       *[message] { $count ->
+            [one] במסך נבחרה הודעה אחת שאינה מסומנת בכוכב.
+            [two] במסך נבחרו כל { $count } ההודעות שאינן מסומנות בכוכב.
+           *[other] במסך נבחרו כל { $count } ההודעות שאינן מסומנות בכוכב.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] בחירת שיחה אחת שנקראה
+            [two] בחירת כל { $count } השיחות שנקראו
+           *[other] בחירת כל { $count } השיחות שנקראו
+        }
+       *[message] { $count ->
+            [one] בחירת הודעה אחת שנקראה
+            [two] בחירת כל { $count } ההודעות שנקראו
+           *[other] בחירת כל { $count } ההודעות שנקראו
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] בחירת שיחה אחת שלא נקראה
+            [two] בחירת כל { $count } השיחות שלא נקראו
+           *[other] בחירת כל { $count } השיחות שלא נקראו
+        }
+       *[message] { $count ->
+            [one] בחירת הודעה אחת שלא נקראה
+            [two] בחירת כל { $count } ההודעות שלא נקראו
+           *[other] בחירת כל { $count } ההודעות שלא נקראו
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] בחירת שיחה אחת המסומנת בכוכב
+            [two] בחירת כל { $count } השיחות המסומנות בכוכב
+           *[other] בחירת כל { $count } השיחות המסומנות בכוכב
+        }
+       *[message] { $count ->
+            [one] בחירת הודעה אחת המסומנת בכוכב
+            [two] בחירת כל { $count } ההודעות המסומנות בכוכב
+           *[other] בחירת כל { $count } ההודעות המסומנות בכוכב
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] בחירת שיחה אחת שאינה מסומנת בכוכב
+            [two] בחירת כל { $count } השיחות שאינן מסומנות בכוכב
+           *[other] בחירת כל { $count } השיחות שאינן מסומנות בכוכב
+        }
+       *[message] { $count ->
+            [one] בחירת הודעה אחת שאינה מסומנת בכוכב
+            [two] בחירת כל { $count } ההודעות שאינן מסומנות בכוכב
+           *[other] בחירת כל { $count } ההודעות שאינן מסומנות בכוכב
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] בחירת שיחה אחת שנקראה ב־{ $folder }
+            [two] בחירת כל { $count } השיחות שנקראו ב־{ $folder }
+           *[other] בחירת כל { $count } השיחות שנקראו ב־{ $folder }
+        }
+       *[message] { $count ->
+            [one] בחירת הודעה אחת שנקראה ב־{ $folder }
+            [two] בחירת כל { $count } ההודעות שנקראו ב־{ $folder }
+           *[other] בחירת כל { $count } ההודעות שנקראו ב־{ $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] בחירת שיחה אחת שלא נקראה ב־{ $folder }
+            [two] בחירת כל { $count } השיחות שלא נקראו ב־{ $folder }
+           *[other] בחירת כל { $count } השיחות שלא נקראו ב־{ $folder }
+        }
+       *[message] { $count ->
+            [one] בחירת הודעה אחת שלא נקראה ב־{ $folder }
+            [two] בחירת כל { $count } ההודעות שלא נקראו ב־{ $folder }
+           *[other] בחירת כל { $count } ההודעות שלא נקראו ב־{ $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] בחירת שיחה אחת המסומנת בכוכב ב־{ $folder }
+            [two] בחירת כל { $count } השיחות המסומנות בכוכב ב־{ $folder }
+           *[other] בחירת כל { $count } השיחות המסומנות בכוכב ב־{ $folder }
+        }
+       *[message] { $count ->
+            [one] בחירת הודעה אחת המסומנת בכוכב ב־{ $folder }
+            [two] בחירת כל { $count } ההודעות המסומנות בכוכב ב־{ $folder }
+           *[other] בחירת כל { $count } ההודעות המסומנות בכוכב ב־{ $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] בחירת שיחה אחת שאינה מסומנת בכוכב ב־{ $folder }
+            [two] בחירת כל { $count } השיחות שאינן מסומנות בכוכב ב־{ $folder }
+           *[other] בחירת כל { $count } השיחות שאינן מסומנות בכוכב ב־{ $folder }
+        }
+       *[message] { $count ->
+            [one] בחירת הודעה אחת שאינה מסומנת בכוכב ב־{ $folder }
+            [two] בחירת כל { $count } ההודעות שאינן מסומנות בכוכב ב־{ $folder }
+           *[other] בחירת כל { $count } ההודעות שאינן מסומנות בכוכב ב־{ $folder }
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->

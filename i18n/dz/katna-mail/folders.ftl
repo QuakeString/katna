@@ -13,6 +13,8 @@ nav-all-accounts = རྩིས་ཐོ་ཆ་མཉམ
 nav-expand = སྣོད་འཛིན་ཚུ་སྟོན།
 nav-collapse = སྣོད་འཛིན་ཚུ་སྦ།
 nav-tab-new = གསརཔ་ { $count }
+storage-used = { $total } ལས་ { $percent }% ལག་ལེན་འཐབ་ཡོདཔ
+storage-used-detail = { $address }: { $total } ལས་ { $used } ལག་ལེན་འཐབ་ཡོདཔ
 
 ## Special folders (the user's own folders keep their names)
 

@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] { $folder }లోని మొత్తం { $count } మెసేజ్‌లను ఎంచుకోండి
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } చదివిన సంభాషణ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } చదివిన సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } చదివిన మెసేజ్ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } చదివిన మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } చదవని సంభాషణ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } చదవని సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } చదవని మెసేజ్ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } చదవని మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } నక్షత్రం ఉంచిన సంభాషణ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } నక్షత్రం ఉంచిన సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } నక్షత్రం ఉంచిన మెసేజ్ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } నక్షత్రం ఉంచిన మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } నక్షత్రం ఉంచని సంభాషణ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } నక్షత్రం ఉంచని సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } నక్షత్రం ఉంచని మెసేజ్ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } నక్షత్రం ఉంచని మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } చదివిన సంభాషణను ఎంచుకోండి
+           *[other] మొత్తం { $count } చదివిన సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $count } చదివిన మెసేజ్‌ను ఎంచుకోండి
+           *[other] మొత్తం { $count } చదివిన మెసేజ్‌లను ఎంచుకోండి
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } చదవని సంభాషణను ఎంచుకోండి
+           *[other] మొత్తం { $count } చదవని సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $count } చదవని మెసేజ్‌ను ఎంచుకోండి
+           *[other] మొత్తం { $count } చదవని మెసేజ్‌లను ఎంచుకోండి
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } నక్షత్రం ఉంచిన సంభాషణను ఎంచుకోండి
+           *[other] మొత్తం { $count } నక్షత్రం ఉంచిన సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $count } నక్షత్రం ఉంచిన మెసేజ్‌ను ఎంచుకోండి
+           *[other] మొత్తం { $count } నక్షత్రం ఉంచిన మెసేజ్‌లను ఎంచుకోండి
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } నక్షత్రం ఉంచని సంభాషణను ఎంచుకోండి
+           *[other] మొత్తం { $count } నక్షత్రం ఉంచని సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $count } నక్షత్రం ఉంచని మెసేజ్‌ను ఎంచుకోండి
+           *[other] మొత్తం { $count } నక్షత్రం ఉంచని మెసేజ్‌లను ఎంచుకోండి
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }లోని { $count } చదివిన సంభాషణను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } చదివిన సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $folder }లోని { $count } చదివిన మెసేజ్‌ను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } చదివిన మెసేజ్‌లను ఎంచుకోండి
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }లోని { $count } చదవని సంభాషణను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } చదవని సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $folder }లోని { $count } చదవని మెసేజ్‌ను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } చదవని మెసేజ్‌లను ఎంచుకోండి
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }లోని { $count } నక్షత్రం ఉంచిన సంభాషణను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } నక్షత్రం ఉంచిన సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $folder }లోని { $count } నక్షత్రం ఉంచిన మెసేజ్‌ను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } నక్షత్రం ఉంచిన మెసేజ్‌లను ఎంచుకోండి
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }లోని { $count } నక్షత్రం ఉంచని సంభాషణను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } నక్షత్రం ఉంచని సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $folder }లోని { $count } నక్షత్రం ఉంచని మెసేజ్‌ను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } నక్షత్రం ఉంచని మెసేజ్‌లను ఎంచుకోండి
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->

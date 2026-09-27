@@ -497,3 +497,82 @@ Pípa ìfiránṣẹ́ tí ò ń kọ dé ń fi í pamọ́ sínú Àwọn àk�
 sáfà lẹ́tà rẹ náà, bí i ti Gmail. Ṣí i láti Àwọn àkọ̀pamọ́ láti máa kọ
 ọ́ lọ. Bọ́tìnnì ìdọ̀tí nìkan ló ń jù ú nù, Dá padà sì ń mú un padà.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Àyè fún ọ̀pọ̀ àfikún"
+text = """
+Iye fáìlì yòówù tí o bá fi kún un, àkójọ náà ń yí lókè ọ̀pá Fi ránṣẹ́
+báyìí dípò kí ó bò ó mọ́lẹ̀, ó ń fi fáìlì tuntun jù hàn, ó sì ń sọ iye
+fáìlì tó wà àti àròpọ̀ ìwọ̀n wọn.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Yan lẹ́tà àìkà tàbí oní ìràwọ̀, bí i ti Gmail"
+text = """
+Kíkà, Àìkà, Oní ìràwọ̀ àti Aláìní ìràwọ̀ nínú mẹ́nù Yàn tún ń sàmì sí
+lẹ́tà tó bá a mu lójú ìbòjú. Ìlà kan lókè àkójọ náà ń fúnni láti yan
+gbogbo ìjíròrò tó bá a mu nínú fódà, Pa àṣàyàn rẹ́ sì ń dá a padà.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Àwọn fódà ń mú ọ jáde kúrò nínú Ètò"
+text = """
+Nígbà tí Ètò bá ṣí sílẹ̀, títẹ fódà kan tàbí àmì-àwòrán Lẹ́tà ń ti Ètò
+báyìí, ó sì ń ṣí fódà náà, bí i ti Gmail. Ọfà Padà ṣì ń ṣiṣẹ́ pẹ̀lú.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Ju àwọn àwòrán sínú ọ̀rọ̀"
+text = """
+Fífa àwòrán kan kọjá lórí ìfiránṣẹ́ ń fi àmì ìkọ̀wé hàn níbi tí yóò bọ́
+sí, kí o lè jù ú sí àárín gbólóhùn. Àwọn fáìlì mìíràn ṣì ń fi agbègbè
+ìjusí fún àwọn àfikún hàn, ìjusí sì ń ṣiṣẹ́ báyìí lẹ́yìn tí o bá ti tẹ
+ọ̀rọ̀.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Jáde ń tì í lẹ́sẹ̀kẹsẹ̀"
+text = """
+Jáde nínú mẹ́nù àmì-àwòrán àtẹ kò dúró de lẹ́tà tí ó ṣì ń dọ́gba tàbí tí
+a ṣì ń ṣe atọ́ka rẹ̀ mọ́: Katna àti àmì-àwòrán àtẹ rẹ̀ ń tì lẹ́sẹ̀kẹsẹ̀,
+ìyókù yóò sì tẹ̀síwájú nígbà tí Katna bá bẹ̀rẹ̀ nígbà míì.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Àlàyé olùbásọ̀rọ̀ lẹ́gbẹ̀ẹ́ lẹ́tà rẹ"
+text = """
+Nínú fèrèsé tó fẹ̀, káàdì kan lẹ́gbẹ̀ẹ́ ìjíròrò tó ṣí sílẹ̀ ń fi
+olùfiránṣẹ́ hàn báyìí: fóònù rẹ̀, ipò àti ilé-iṣẹ́ rẹ̀ láti inú àwọn
+ìbuwọ́lù rẹ̀, àkókò rẹ̀ lọ́wọ́lọ́wọ́, iye lẹ́tà tí ẹ ti fi ránṣẹ́ sí ara
+yín, àwọn ìjíròrò àìpẹ́ yín àti àwọn fáìlì láàrin yín. Tẹ ìjíròrò tàbí
+fáìlì kan láti ṣí i, tàbí ẹlòmíì nínú ìjíròrò náà láti rí i. A ń kà á
+láti inú lẹ́tà rẹ lórí kọ̀ǹpútà yìí nìkan. Bọ́tìnnì olùbásọ̀rọ̀ lórí
+ọ̀pá irinṣẹ́ pánẹ́ẹ̀lì kíkà ń fi í pamọ́.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Àyè ìpamọ́ tí a ti lò"
+text = """
+Nígbà tí sáfà lẹ́tà bá sọ ọ́, ìsàlẹ̀ pánẹ́ẹ̀lì fódà máa ń fi bí àyè
+ìpamọ́ lẹ́tà àkáǹtì náà ṣe kún tó hàn, bíi “A ti lo 34% nínú 15 GB”.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Wá lẹ́tà láti KRunner àti ìṣàwárí GNOME"
+text = """
+Tẹ orúkọ kan sínú KRunner (Alt+Space) tàbí ìṣàwárí Activities láti kọ̀wé
+sí ẹni náà, ṣe ẹ̀dà àdírẹ́sì rẹ̀ tàbí wá lẹ́tà rẹ̀. Àwọn lẹ́tà máa ń hàn
+nígbà tí àkọlé tàbí olùfiránṣẹ́ wọn bá ní gbogbo ọ̀rọ̀ tí o tẹ̀; bẹ̀rẹ̀
+pẹ̀lú mail: láti ṣàwárí gbogbo lẹ́tà rẹ, bí nínú àpótí ìṣàwárí Katna
+Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Àwọn àwòṣe fún lẹ́tà tí o máa ń kọ lọ́pọ̀ ìgbà"
+text = """
+Kọ lẹ́tà kan lẹ́ẹ̀kan kí o sì fi pamọ́ pẹ̀lú bọ́tìnnì tuntun Àwọn àwòṣe
+nínú fèrèsé kíkọ̀wé, lẹ́yìn náà fi sínú lẹ́tà tuntun tàbí èsì èyíkéyìí
+pẹ̀lú títẹ̀ kan. Kọ {first name}, {name} tàbí {my name}, Katna yóò sì
+kún wọn fún olùgbà kọ̀ọ̀kan. Ṣàtúnṣe, tún orúkọ sọ tàbí pa àwọn àwòṣe
+rẹ́ nínú Ètò > Kíkọ̀wé.
+"""

@@ -49,6 +49,7 @@ compose-picker-attach = 添加
 compose-file-too-large = { $name } 太大：一封邮件最多可携带 { $limit }。
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 移除附件
+compose-attachments-total = { $count } 个文件，共 { $size }
 compose-drop-files = 将文件拖放到此处
 compose-drop-here = 拖放到此处
 compose-paste-keep-formatting = 保留格式

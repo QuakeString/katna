@@ -49,6 +49,10 @@ compose-picker-attach = I-attach
 compose-file-too-large = Masyadong malaki ang { $name }: hanggang { $limit } lang ang kaya ng isang mensahe.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Alisin ang attachment
+compose-attachments-total = { $count ->
+    [one] { $count } file, { $size }
+   *[other] { $count } file, { $size }
+}
 compose-drop-files = I-drop dito ang mga file
 compose-drop-here = I-drop dito
 compose-paste-keep-formatting = Panatilihin ang format

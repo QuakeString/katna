@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = ଭୁଲ ବନାନ ଥିବା ଶବ
 settings-compose-spell-desktop = ଡେସ୍କଟପର ଭାଷା ({ $language })
 settings-compose-templates = ଟେମ୍ପଲେଟ
 settings-compose-templates-detail = ଆପଣ ବାରମ୍ବାର ଲେଖୁଥିବା ମେଲ ସେଭ କରନ୍ତୁ, ଏବଂ ସେଥିରୁ ନୂଆ ମେଲ କିମ୍ବା ଉତ୍ତର ଆରମ୍ଭ କରନ୍ତୁ।
+settings-compose-no-templates = ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ଟେମ୍ପଲେଟ ନାହିଁ। ଏକ ବାର୍ତ୍ତାରେ ଟେମ୍ପଲେଟ ବାଛନ୍ତୁ, ତା'ପରେ ଟେମ୍ପଲେଟ ଭାବେ ସେଭ କରନ୍ତୁ।
+settings-compose-template-new = ନୂଆ ତିଆରି କରନ୍ତୁ
+settings-compose-template-new-name = ନୂଆ ଟେମ୍ପଲେଟ
+settings-compose-template-subject = ବିଷୟ
+settings-compose-template-text = ଟେମ୍ପଲେଟ ଟେକ୍ସଟ
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} ଓ {"{"}my name{"}"} ପ୍ରାପକଙ୍କ ଓ ଆପଣଙ୍କ ନାମରେ ଭରାଯାଏ।
+settings-compose-template-remove-file = ଆଟାଚମେଣ୍ଟ ହଟାନ୍ତୁ
+settings-compose-template-save = ସେଭ କରନ୍ତୁ
+settings-compose-template-saved = ଟେମ୍ପଲେଟ ସେଭ ହେଲା
+settings-compose-template-needs-name = ଟେମ୍ପଲେଟକୁ ଏକ ନାମ ଦିଅନ୍ତୁ
+settings-compose-template-delete = ଟେମ୍ପଲେଟ ଡିଲିଟ କରନ୍ତୁ
+settings-compose-template-deleted = ଟେମ୍ପଲେଟ ଡିଲିଟ ହେଲା
+settings-compose-template-delete-failed = ଟେମ୍ପଲେଟ ଡିଲିଟ କରିହେଲା ନାହିଁ: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = ନୂଆ ମେଲ ଯେଉଁ ଦସ�
 settings-compose-for-replies-summary = ଉତ୍ତର ଓ ଫରୱାର୍ଡ ଯେଉଁ ଦସ୍ତଖତରୁ ଆରମ୍ଭ ହୁଏ
 settings-compose-format-summary = ନୂଆ ମେଲ ସାଧା ଟେକ୍ସଟରେ ଲେଖନ୍ତୁ
 settings-compose-spelling-summary = ଲେଖିବା ବେଳେ ବନାନ ଯାଞ୍ଚ କରନ୍ତୁ, ଏବଂ ଅଭିଧାନର ଭାଷା
-settings-compose-templates-summary = ଶୀଘ୍ର ଆସୁଛି: ଆପଣ ବାରମ୍ବାର ଲେଖୁଥିବା ମେଲ ସେଭ କରନ୍ତୁ, ଏବଂ ସେଥିରୁ ନୂଆ ମେଲ କିମ୍ବା ଉତ୍ତର ଆରମ୍ଭ କରନ୍ତୁ
+settings-compose-templates-summary = ଆପଣ ବାରମ୍ବାର ଲେଖୁଥିବା ମେଲ ସେଭ କରନ୍ତୁ, ଏବଂ ସେଥିରୁ ନୂଆ ମେଲ କିମ୍ବା ଉତ୍ତର ଆରମ୍ଭ କରନ୍ତୁ
 settings-feedback-crash-reports-summary = Katna Mail କିମ୍ବା ଏହାର ବ୍ୟାକଗ୍ରାଉଣ୍ଡ ସେବା କ୍ରାସ ହେଲେ ଏହି କମ୍ପ୍ୟୁଟରରେ କ୍ରାସ ରିପୋର୍ଟ ସେଭ କରନ୍ତୁ
 settings-feedback-saved-summary = ଏହି କମ୍ପ୍ୟୁଟରରେ ସେଭ ହୋଇଥିବା କ୍ରାସ ରିପୋର୍ଟ ଦେଖନ୍ତୁ, କପି କରନ୍ତୁ କିମ୍ବା ଡିଲିଟ କରନ୍ତୁ
 settings-feedback-help-improve-summary = ଯାହା ଭୁଲ ହେଲା ତାହା ଠିକ କରିବାରେ ସାହାଯ୍ୟ ପାଇଁ କ୍ରାସ ରିପୋର୍ଟ ପଠାନ୍ତୁ; ଆପଣ ଚାଲୁ ନକଲେ ବନ୍ଦ

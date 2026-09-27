@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] Chagua jumbe zote { $count } katika { $folder }
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Mazungumzo { $count } yaliyosomwa kwenye skrini yamechaguliwa.
+           *[other] Mazungumzo yote { $count } yaliyosomwa kwenye skrini yamechaguliwa.
+        }
+       *[message] { $count ->
+            [one] Ujumbe { $count } uliosomwa kwenye skrini umechaguliwa.
+           *[other] Jumbe zote { $count } zilizosomwa kwenye skrini zimechaguliwa.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Mazungumzo { $count } ambayo hayajasomwa kwenye skrini yamechaguliwa.
+           *[other] Mazungumzo yote { $count } ambayo hayajasomwa kwenye skrini yamechaguliwa.
+        }
+       *[message] { $count ->
+            [one] Ujumbe { $count } ambao haujasomwa kwenye skrini umechaguliwa.
+           *[other] Jumbe zote { $count } ambazo hazijasomwa kwenye skrini zimechaguliwa.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Mazungumzo { $count } yenye nyota kwenye skrini yamechaguliwa.
+           *[other] Mazungumzo yote { $count } yenye nyota kwenye skrini yamechaguliwa.
+        }
+       *[message] { $count ->
+            [one] Ujumbe { $count } wenye nyota kwenye skrini umechaguliwa.
+           *[other] Jumbe zote { $count } zenye nyota kwenye skrini zimechaguliwa.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Mazungumzo { $count } yasiyo na nyota kwenye skrini yamechaguliwa.
+           *[other] Mazungumzo yote { $count } yasiyo na nyota kwenye skrini yamechaguliwa.
+        }
+       *[message] { $count ->
+            [one] Ujumbe { $count } usio na nyota kwenye skrini umechaguliwa.
+           *[other] Jumbe zote { $count } zisizo na nyota kwenye skrini zimechaguliwa.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Chagua mazungumzo { $count } yaliyosomwa
+           *[other] Chagua mazungumzo yote { $count } yaliyosomwa
+        }
+       *[message] { $count ->
+            [one] Chagua ujumbe { $count } uliosomwa
+           *[other] Chagua jumbe zote { $count } zilizosomwa
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Chagua mazungumzo { $count } ambayo hayajasomwa
+           *[other] Chagua mazungumzo yote { $count } ambayo hayajasomwa
+        }
+       *[message] { $count ->
+            [one] Chagua ujumbe { $count } ambao haujasomwa
+           *[other] Chagua jumbe zote { $count } ambazo hazijasomwa
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Chagua mazungumzo { $count } yenye nyota
+           *[other] Chagua mazungumzo yote { $count } yenye nyota
+        }
+       *[message] { $count ->
+            [one] Chagua ujumbe { $count } wenye nyota
+           *[other] Chagua jumbe zote { $count } zenye nyota
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Chagua mazungumzo { $count } yasiyo na nyota
+           *[other] Chagua mazungumzo yote { $count } yasiyo na nyota
+        }
+       *[message] { $count ->
+            [one] Chagua ujumbe { $count } usio na nyota
+           *[other] Chagua jumbe zote { $count } zisizo na nyota
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Chagua mazungumzo { $count } yaliyosomwa katika { $folder }
+           *[other] Chagua mazungumzo yote { $count } yaliyosomwa katika { $folder }
+        }
+       *[message] { $count ->
+            [one] Chagua ujumbe { $count } uliosomwa katika { $folder }
+           *[other] Chagua jumbe zote { $count } zilizosomwa katika { $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Chagua mazungumzo { $count } ambayo hayajasomwa katika { $folder }
+           *[other] Chagua mazungumzo yote { $count } ambayo hayajasomwa katika { $folder }
+        }
+       *[message] { $count ->
+            [one] Chagua ujumbe { $count } ambao haujasomwa katika { $folder }
+           *[other] Chagua jumbe zote { $count } ambazo hazijasomwa katika { $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Chagua mazungumzo { $count } yenye nyota katika { $folder }
+           *[other] Chagua mazungumzo yote { $count } yenye nyota katika { $folder }
+        }
+       *[message] { $count ->
+            [one] Chagua ujumbe { $count } wenye nyota katika { $folder }
+           *[other] Chagua jumbe zote { $count } zenye nyota katika { $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Chagua mazungumzo { $count } yasiyo na nyota katika { $folder }
+           *[other] Chagua mazungumzo yote { $count } yasiyo na nyota katika { $folder }
+        }
+       *[message] { $count ->
+            [one] Chagua ujumbe { $count } usio na nyota katika { $folder }
+           *[other] Chagua jumbe zote { $count } zisizo na nyota katika { $folder }
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->

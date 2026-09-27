@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] Zaɓi dukkan saƙonni { $count } da ke cikin { $folder }
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } da aka karanta da ke kan allo.
+           *[other] An zaɓi dukkan tattaunawa { $count } da aka karanta da ke kan allo.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } da aka karanta da ke kan allo.
+           *[other] An zaɓi dukkan saƙonni { $count } da aka karanta da ke kan allo.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } da ba a karanta ba da ke kan allo.
+           *[other] An zaɓi dukkan tattaunawa { $count } da ba a karanta ba da ke kan allo.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } da ba a karanta ba da ke kan allo.
+           *[other] An zaɓi dukkan saƙonni { $count } da ba a karanta ba da ke kan allo.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } mai tauraro da ke kan allo.
+           *[other] An zaɓi dukkan tattaunawa { $count } masu tauraro da ke kan allo.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } mai tauraro da ke kan allo.
+           *[other] An zaɓi dukkan saƙonni { $count } masu tauraro da ke kan allo.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } mara tauraro da ke kan allo.
+           *[other] An zaɓi dukkan tattaunawa { $count } marasa tauraro da ke kan allo.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } mara tauraro da ke kan allo.
+           *[other] An zaɓi dukkan saƙonni { $count } marasa tauraro da ke kan allo.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } da aka karanta
+           *[other] Zaɓi dukkan tattaunawa { $count } da aka karanta
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } da aka karanta
+           *[other] Zaɓi dukkan saƙonni { $count } da aka karanta
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } da ba a karanta ba
+           *[other] Zaɓi dukkan tattaunawa { $count } da ba a karanta ba
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } da ba a karanta ba
+           *[other] Zaɓi dukkan saƙonni { $count } da ba a karanta ba
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } mai tauraro
+           *[other] Zaɓi dukkan tattaunawa { $count } masu tauraro
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } mai tauraro
+           *[other] Zaɓi dukkan saƙonni { $count } masu tauraro
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } mara tauraro
+           *[other] Zaɓi dukkan tattaunawa { $count } marasa tauraro
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } mara tauraro
+           *[other] Zaɓi dukkan saƙonni { $count } marasa tauraro
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } da aka karanta da ke cikin { $folder }
+           *[other] Zaɓi dukkan tattaunawa { $count } da aka karanta da ke cikin { $folder }
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } da aka karanta da ke cikin { $folder }
+           *[other] Zaɓi dukkan saƙonni { $count } da aka karanta da ke cikin { $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } da ba a karanta ba da ke cikin { $folder }
+           *[other] Zaɓi dukkan tattaunawa { $count } da ba a karanta ba da ke cikin { $folder }
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } da ba a karanta ba da ke cikin { $folder }
+           *[other] Zaɓi dukkan saƙonni { $count } da ba a karanta ba da ke cikin { $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } mai tauraro da ke cikin { $folder }
+           *[other] Zaɓi dukkan tattaunawa { $count } masu tauraro da ke cikin { $folder }
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } mai tauraro da ke cikin { $folder }
+           *[other] Zaɓi dukkan saƙonni { $count } masu tauraro da ke cikin { $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } mara tauraro da ke cikin { $folder }
+           *[other] Zaɓi dukkan tattaunawa { $count } marasa tauraro da ke cikin { $folder }
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } mara tauraro da ke cikin { $folder }
+           *[other] Zaɓi dukkan saƙonni { $count } marasa tauraro da ke cikin { $folder }
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->

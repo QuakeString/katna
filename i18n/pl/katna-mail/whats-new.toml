@@ -508,3 +508,83 @@ także na twoim serwerze poczty, jak w Gmailu. Otwórz ją z Wersji
 roboczych, by pisać dalej. Tylko przycisk kosza ją odrzuca, a Cofnij ją
 przywraca.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Miejsce na wiele załączników"
+text = """
+Niezależnie od liczby załączonych plików lista przewija się teraz nad
+paskiem z przyciskiem Wyślij, zamiast na niego nachodzić, pokazuje
+najnowszy plik i podaje liczbę plików oraz ich łączny rozmiar.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Zaznaczanie nieprzeczytanej lub oznaczonej gwiazdką poczty jak w Gmailu"
+text = """
+Przeczytane, Nieprzeczytane, Oznaczone gwiazdką i Bez gwiazdki w menu
+zaznaczania znów zaznaczają pasującą pocztę na ekranie. Wiersz nad listą
+proponuje zaznaczenie wszystkich pasujących wątków w folderze, a Wyczyść
+zaznaczenie to cofa.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Foldery wyprowadzają z Ustawień"
+text = """
+Gdy Ustawienia są otwarte, kliknięcie folderu lub ikony Poczta zamyka
+teraz Ustawienia i otwiera ten folder, jak w Gmailu. Strzałka wstecz
+nadal też działa.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Upuszczanie obrazów w tekście"
+text = """
+Gdy przeciągasz obraz nad wiadomość, kursor pokazuje, gdzie trafi, więc
+możesz go upuścić w środku zdania. Inne pliki nadal pokazują obszar
+upuszczania załączników, a upuszczanie działa teraz także po tym, jak
+coś wpiszesz.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Zakończ zamyka od razu"
+text = """
+Zakończ w menu ikony w zasobniku nie czeka już na pocztę, która wciąż
+się synchronizuje lub indeksuje: Katna i jej ikona w zasobniku zamykają
+się od razu, a reszta będzie kontynuowana przy następnym uruchomieniu
+programu Katna.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Dane kontaktu obok poczty"
+text = """
+W szerokim oknie karta obok otwartego wątku pokazuje teraz nadawcę:
+telefon, stanowisko i firmę z podpisów, godzinę u tej osoby, ile poczty
+wymieniliście, wasze ostatnie wątki i pliki między wami. Kliknij wątek
+lub plik, aby go otworzyć, albo inną osobę z wątku, aby ją zobaczyć.
+Dane pochodzą wyłącznie z poczty na tym komputerze. Przycisk kontaktu na
+pasku narzędzi okienka odczytu ukrywa kartę.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Wykorzystane miejsce"
+text = """
+Na dole panelu folderów widać, jak bardzo zapełnione jest miejsce na pocztę
+konta, np. „Wykorzystano 34% z 15 GB”, jeśli serwer poczty to podaje.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Szukaj poczty w KRunnerze i wyszukiwaniu GNOME"
+text = """
+Wpisz imię w KRunnerze (Alt+Space) lub w wyszukiwaniu Podglądu GNOME, aby
+napisać do tej osoby, skopiować jej adres lub znaleźć jej pocztę. Wiadomości
+pojawiają się, gdy temat lub nadawca zawiera każde wpisane słowo; zacznij od
+mail:, aby przeszukać całą pocztę, tak jak w polu wyszukiwania Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Szablony często pisanych wiadomości"
+text = """
+Napisz wiadomość raz i zapisz ją nowym przyciskiem Szablony podczas pisania,
+a potem jednym kliknięciem wstaw ją do dowolnej nowej wiadomości lub
+odpowiedzi. Wpisz {first name}, {name} lub {my name}, a Katna uzupełni je dla
+każdego odbiorcy. Szablony edytujesz, zmieniasz ich nazwy i usuwasz w sekcji
+Ustawienia > Tworzenie.
+"""

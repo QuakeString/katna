@@ -16,6 +16,8 @@ nav-tab-new = { $count ->
     [one] { $count } નવો
    *[other] { $count } નવા
 }
+storage-used = { $total }માંથી { $percent }% વપરાયું
+storage-used-detail = { $address }: { $total }માંથી { $used } વપરાયું
 
 ## Special folders (the user's own folders keep their names)
 

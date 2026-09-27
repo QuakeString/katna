@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] Alle { $count } Nachrichten in { $folder } auswählen
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } gelesene Konversation auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } gelesenen Konversationen auf dieser Seite sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] Die { $count } gelesene Nachricht auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } gelesenen Nachrichten auf dieser Seite sind ausgewählt.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } ungelesene Konversation auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } ungelesenen Konversationen auf dieser Seite sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] Die { $count } ungelesene Nachricht auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } ungelesenen Nachrichten auf dieser Seite sind ausgewählt.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } markierte Konversation auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } markierten Konversationen auf dieser Seite sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] Die { $count } markierte Nachricht auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } markierten Nachrichten auf dieser Seite sind ausgewählt.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } nicht markierte Konversation auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } nicht markierten Konversationen auf dieser Seite sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] Die { $count } nicht markierte Nachricht auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } nicht markierten Nachrichten auf dieser Seite sind ausgewählt.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } gelesene Konversation auswählen
+           *[other] Alle { $count } gelesenen Konversationen auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } gelesene Nachricht auswählen
+           *[other] Alle { $count } gelesenen Nachrichten auswählen
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } ungelesene Konversation auswählen
+           *[other] Alle { $count } ungelesenen Konversationen auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } ungelesene Nachricht auswählen
+           *[other] Alle { $count } ungelesenen Nachrichten auswählen
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } markierte Konversation auswählen
+           *[other] Alle { $count } markierten Konversationen auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } markierte Nachricht auswählen
+           *[other] Alle { $count } markierten Nachrichten auswählen
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } nicht markierte Konversation auswählen
+           *[other] Alle { $count } nicht markierten Konversationen auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } nicht markierte Nachricht auswählen
+           *[other] Alle { $count } nicht markierten Nachrichten auswählen
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } gelesene Konversation in { $folder } auswählen
+           *[other] Alle { $count } gelesenen Konversationen in { $folder } auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } gelesene Nachricht in { $folder } auswählen
+           *[other] Alle { $count } gelesenen Nachrichten in { $folder } auswählen
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } ungelesene Konversation in { $folder } auswählen
+           *[other] Alle { $count } ungelesenen Konversationen in { $folder } auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } ungelesene Nachricht in { $folder } auswählen
+           *[other] Alle { $count } ungelesenen Nachrichten in { $folder } auswählen
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } markierte Konversation in { $folder } auswählen
+           *[other] Alle { $count } markierten Konversationen in { $folder } auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } markierte Nachricht in { $folder } auswählen
+           *[other] Alle { $count } markierten Nachrichten in { $folder } auswählen
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } nicht markierte Konversation in { $folder } auswählen
+           *[other] Alle { $count } nicht markierten Konversationen in { $folder } auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } nicht markierte Nachricht in { $folder } auswählen
+           *[other] Alle { $count } nicht markierten Nachrichten in { $folder } auswählen
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->

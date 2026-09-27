@@ -49,6 +49,10 @@ compose-picker-attach = अटैच करें
 compose-file-too-large = { $name } बहुत बड़ी है: एक मैसेज में ज़्यादा से ज़्यादा { $limit } भेजे जा सकते हैं।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = अटैचमेंट हटाएं
+compose-attachments-total = { $count ->
+    [one] { $count } फ़ाइल, { $size }
+   *[other] { $count } फ़ाइलें, { $size }
+}
 compose-drop-files = फ़ाइलें यहां छोड़ें
 compose-drop-here = यहां छोड़ें
 compose-paste-keep-formatting = फ़ॉर्मैटिंग रखें

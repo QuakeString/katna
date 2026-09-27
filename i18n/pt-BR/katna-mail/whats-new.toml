@@ -507,3 +507,84 @@ também no seu servidor de e-mail, como no Gmail. Abra-a em Rascunhos
 para continuar escrevendo. Só o botão de lixeira a descarta, e Desfazer
 a traz de volta.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Espaço para muitos anexos"
+text = """
+Não importa quantos arquivos você anexe, a lista agora rola acima da
+barra de Enviar em vez de passar por cima dela, mostra o arquivo mais
+recente e informa quantos arquivos são e o tamanho total.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Selecione e-mails não lidos ou com estrela, como no Gmail"
+text = """
+Lidas, Não lidas, Com estrela e Sem estrela no menu de seleção voltam a
+marcar os e-mails correspondentes na tela. Uma linha acima da lista
+oferece selecionar todas as conversas correspondentes da pasta, e Limpar
+seleção desfaz isso.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Pastas tiram você das Configurações"
+text = """
+Com as Configurações abertas, clicar em uma pasta ou no ícone E-mail
+agora fecha as Configurações e abre essa pasta, como no Gmail. A seta de
+voltar também continua funcionando.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Solte imagens no texto"
+text = """
+Ao arrastar uma imagem sobre uma mensagem, um cursor mostra onde ela vai
+cair, para você soltá-la no meio de uma frase. Outros arquivos continuam
+mostrando a área para anexos, e soltar agora funciona depois que você
+digitou.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Sair fecha na hora"
+text = """
+Sair, no menu do ícone da bandeja, não espera mais os e-mails que ainda
+estão sincronizando ou sendo indexados: o Katna e o ícone da bandeja
+fecham na hora, e o resto continua na próxima vez que o Katna abrir.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Detalhes do contato ao lado do e-mail"
+text = """
+Em uma janela larga, um cartão ao lado da conversa aberta agora mostra o
+remetente: telefone, cargo e empresa tirados das assinaturas, que horas
+são para a pessoa, quantos e-mails vocês trocaram, suas conversas
+recentes e os arquivos entre vocês. Clique em uma conversa ou arquivo
+para abri-lo, ou em outra pessoa da conversa para vê-la. Tudo vem só do
+seu e-mail neste computador. O botão de contato na barra de ferramentas
+do painel de leitura oculta o cartão.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Armazenamento usado"
+text = """
+O rodapé do painel de pastas mostra quanto do armazenamento de e-mail da
+conta está ocupado, como “34% de 15 GB usados”, quando o servidor de e-mail
+informa.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Encontre e-mails pelo KRunner e pela pesquisa do GNOME"
+text = """
+Digite um nome no KRunner (Alt+Space) ou na pesquisa de Atividades para
+escrever para essa pessoa, copiar o endereço dela ou encontrar os e-mails
+dela. As mensagens aparecem quando o assunto ou o remetente tem todas as
+palavras digitadas; comece com mail: para pesquisar todos os seus e-mails,
+como na caixa de pesquisa do Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Modelos para os e-mails que você escreve sempre"
+text = """
+Escreva uma mensagem uma vez e salve-a com o novo botão Modelos ao escrever,
+depois coloque-a em qualquer e-mail novo ou resposta com um clique. Escreva
+{first name}, {name} ou {my name} e o Katna preenche para cada destinatário.
+Edite, renomeie ou exclua modelos em Configurações > Escrever.
+"""

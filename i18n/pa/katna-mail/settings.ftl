@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = ਗਲਤ ਸ਼ਬਦ-ਜੋੜ ਵਾਲ
 settings-compose-spell-desktop = ਡੈਸਕਟਾਪ ਦੀ ਭਾਸ਼ਾ ({ $language })
 settings-compose-templates = ਟੈਂਪਲੇਟ
 settings-compose-templates-detail = ਜੋ ਮੇਲ ਤੁਸੀਂ ਅਕਸਰ ਲਿਖਦੇ ਹੋ ਉਸਨੂੰ ਰੱਖਿਅਤ ਕਰੋ, ਅਤੇ ਉਸ ਤੋਂ ਨਵੀਂ ਮੇਲ ਜਾਂ ਜਵਾਬ ਸ਼ੁਰੂ ਕਰੋ।
+settings-compose-no-templates = ਅਜੇ ਕੋਈ ਟੈਂਪਲੇਟ ਨਹੀਂ। ਕਿਸੇ ਸੁਨੇਹੇ ਵਿੱਚ ਟੈਂਪਲੇਟ ਚੁਣੋ, ਫਿਰ ਟੈਂਪਲੇਟ ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ।
+settings-compose-template-new = ਨਵਾਂ ਬਣਾਓ
+settings-compose-template-new-name = ਨਵਾਂ ਟੈਂਪਲੇਟ
+settings-compose-template-subject = ਵਿਸ਼ਾ
+settings-compose-template-text = ਟੈਂਪਲੇਟ ਦੀ ਲਿਖਤ
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} ਅਤੇ {"{"}my name{"}"} ਵਿੱਚ ਪ੍ਰਾਪਤਕਰਤਾ ਦਾ ਅਤੇ ਤੁਹਾਡਾ ਨਾਮ ਭਰਿਆ ਜਾਂਦਾ ਹੈ।
+settings-compose-template-remove-file = ਅਟੈਚਮੈਂਟ ਹਟਾਓ
+settings-compose-template-save = ਰੱਖਿਅਤ ਕਰੋ
+settings-compose-template-saved = ਟੈਂਪਲੇਟ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ
+settings-compose-template-needs-name = ਟੈਂਪਲੇਟ ਨੂੰ ਨਾਮ ਦਿਓ
+settings-compose-template-delete = ਟੈਂਪਲੇਟ ਮਿਟਾਓ
+settings-compose-template-deleted = ਟੈਂਪਲੇਟ ਮਿਟਾਇਆ ਗਿਆ
+settings-compose-template-delete-failed = ਟੈਂਪਲੇਟ ਮਿਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = ਉਹ ਦਸਤਖ਼ਤ ਜਿਨ੍�
 settings-compose-for-replies-summary = ਉਹ ਦਸਤਖ਼ਤ ਜਿਨ੍ਹਾਂ ਨਾਲ ਜਵਾਬ ਅਤੇ ਅੱਗੇ ਭੇਜੇ ਸੁਨੇਹੇ ਸ਼ੁਰੂ ਹੁੰਦੇ ਹਨ
 settings-compose-format-summary = ਨਵੀਂ ਮੇਲ ਸਾਦੀ ਲਿਖਤ ਵਿੱਚ ਲਿਖੋ
 settings-compose-spelling-summary = ਲਿਖਦੇ ਸਮੇਂ ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚੋ, ਅਤੇ ਸ਼ਬਦਕੋਸ਼ ਦੀ ਭਾਸ਼ਾ
-settings-compose-templates-summary = ਜਲਦੀ ਆ ਰਿਹਾ ਹੈ: ਜੋ ਮੇਲ ਤੁਸੀਂ ਅਕਸਰ ਲਿਖਦੇ ਹੋ ਉਸਨੂੰ ਰੱਖਿਅਤ ਕਰੋ, ਅਤੇ ਉਸ ਤੋਂ ਨਵੀਂ ਮੇਲ ਜਾਂ ਜਵਾਬ ਸ਼ੁਰੂ ਕਰੋ
+settings-compose-templates-summary = ਜੋ ਮੇਲ ਤੁਸੀਂ ਅਕਸਰ ਲਿਖਦੇ ਹੋ ਉਸਨੂੰ ਰੱਖਿਅਤ ਕਰੋ, ਅਤੇ ਉਸ ਤੋਂ ਨਵੀਂ ਮੇਲ ਜਾਂ ਜਵਾਬ ਸ਼ੁਰੂ ਕਰੋ
 settings-feedback-crash-reports-summary = ਜਦੋਂ Katna Mail ਜਾਂ ਇਸਦੀ ਬੈਕਗ੍ਰਾਊਂਡ ਸੇਵਾ ਕ੍ਰੈਸ਼ ਹੋਵੇ ਤਾਂ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਇਸ ਕੰਪਿਊਟਰ ’ਤੇ ਰੱਖਿਅਤ ਕਰੋ
 settings-feedback-saved-summary = ਇਸ ਕੰਪਿਊਟਰ ’ਤੇ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਦੇਖੋ, ਕਾਪੀ ਕਰੋ ਜਾਂ ਮਿਟਾਓ
 settings-feedback-help-improve-summary = ਜੋ ਗਲਤ ਹੋਇਆ ਉਸਨੂੰ ਠੀਕ ਕਰਨ ਵਿੱਚ ਮਦਦ ਲਈ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਭੇਜੋ; ਜਦ ਤੱਕ ਤੁਸੀਂ ਚਾਲੂ ਨਾ ਕਰੋ, ਬੰਦ

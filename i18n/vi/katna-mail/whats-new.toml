@@ -491,3 +491,84 @@ text = """
 bạn, như trong Gmail. Mở nó từ Thư nháp để viết tiếp. Chỉ nút thùng rác
 mới bỏ nó đi, và Hoàn tác sẽ lấy lại.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Chỗ cho nhiều tệp đính kèm"
+text = """
+Dù bạn đính kèm bao nhiêu tệp, danh sách giờ cuộn phía trên thanh Gửi
+thay vì tràn đè lên nó, hiện tệp mới nhất, và cho biết có bao nhiêu tệp
+cùng tổng dung lượng của chúng.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Chọn thư chưa đọc hoặc có gắn dấu sao, kiểu Gmail"
+text = """
+Đã đọc, Chưa đọc, Có gắn dấu sao và Không có dấu sao trong menu Chọn lại
+đánh dấu chọn các thư khớp trên màn hình. Một dòng phía trên danh sách
+đề nghị chọn mọi cuộc hội thoại khớp trong thư mục, và Bỏ chọn sẽ hoàn
+tác việc đó.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Thư mục đưa bạn ra khỏi Cài đặt"
+text = """
+Khi Cài đặt đang mở, nhấp vào một thư mục hoặc biểu tượng Thư giờ sẽ
+đóng Cài đặt và mở thư mục đó, như trong Gmail. Mũi tên Quay lại vẫn
+hoạt động như trước.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Thả ảnh vào giữa văn bản"
+text = """
+Khi kéo một ảnh lên thư, một dấu nháy hiện ra ở chỗ ảnh sẽ được đặt, để
+bạn có thể thả nó vào giữa câu. Các tệp khác vẫn hiện vùng thả dành cho
+tệp đính kèm, và giờ việc thả vẫn hoạt động sau khi bạn đã gõ.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Thoát là đóng ngay"
+text = """
+Thoát trong menu của biểu tượng ở khay không còn chờ những thư đang đồng
+bộ hoặc đang được lập chỉ mục: Katna và biểu tượng ở khay đóng ngay lập
+tức, phần còn lại sẽ tiếp tục vào lần tới Katna khởi động.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Thông tin liên hệ bên cạnh thư"
+text = """
+Trong cửa sổ rộng, một thẻ bên cạnh cuộc hội thoại đang mở giờ hiện
+thông tin người gửi: số điện thoại, chức danh và công ty lấy từ chữ ký
+của họ, giờ hiện tại chỗ họ, lượng thư hai bên đã trao đổi, các cuộc hội
+thoại gần đây và các tệp giữa bạn với họ. Nhấp vào một cuộc hội thoại
+hoặc tệp để mở, hoặc vào một người khác trong cuộc hội thoại để xem
+người đó. Thông tin chỉ được đọc từ thư của bạn trên máy tính này. Nút
+liên hệ trên thanh công cụ của Ngăn đọc sẽ ẩn thẻ này.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Dung lượng đã dùng"
+text = """
+Khi máy chủ thư cho biết, phần dưới cùng của Ngăn thư mục sẽ hiện dung
+lượng lưu trữ thư của tài khoản đã đầy đến đâu, chẳng hạn “Đã dùng 34%
+trong 15 GB”.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Tìm thư từ KRunner và tìm kiếm của GNOME"
+text = """
+Gõ một tên vào KRunner (Alt+Space) hoặc ô tìm kiếm Activities để viết
+thư cho người đó, sao chép địa chỉ hoặc tìm thư của họ. Những thư có
+tiêu đề hoặc người gửi chứa mọi từ bạn gõ sẽ hiện ra; hãy bắt đầu bằng
+mail: để tìm trong toàn bộ thư, giống như trong ô tìm kiếm của Katna
+Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Mẫu cho những thư bạn hay viết"
+text = """
+Viết thư một lần rồi lưu lại bằng nút Mẫu thư mới trong cửa sổ soạn thư,
+sau đó chèn nó vào bất kỳ thư mới hay thư trả lời nào chỉ với một cú
+nhấp. Viết {first name}, {name} hoặc {my name} và Katna sẽ điền chúng
+cho từng người nhận. Sửa, đổi tên hoặc xóa mẫu thư trong Cài đặt > Soạn
+thư.
+"""

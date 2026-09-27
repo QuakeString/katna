@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] ເລືອກການສົນທະນາທັງໝົດ { $count } ລາຍການໃນ { $folder }
    *[message] ເລືອກຂໍ້ຄວາມທັງໝົດ { $count } ລາຍການໃນ { $folder }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+    }
+   *[unread] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+    }
+    [starred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+    }
+    [unstarred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການ
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການ
+    }
+   *[unread] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການ
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການ
+    }
+    [starred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການ
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການ
+    }
+    [unstarred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການ
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການ
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການໃນ { $folder }
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການໃນ { $folder }
+    }
+   *[unread] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການໃນ { $folder }
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການໃນ { $folder }
+    }
+    [starred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການໃນ { $folder }
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການໃນ { $folder }
+    }
+    [unstarred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການໃນ { $folder }
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການໃນ { $folder }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] ເລືອກການສົນທະນາທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການແລ້ວ.

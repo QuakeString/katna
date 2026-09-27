@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = Sinasalungguhitan ang mga maling baybay na
 settings-compose-spell-desktop = Wika ng desktop ({ $language })
 settings-compose-templates = Mga template
 settings-compose-templates-detail = I-save ang mail na madalas mong isinusulat, at magsimula ng bagong mail o sagot mula rito.
+settings-compose-no-templates = Wala pang template. Sa isang mensahe, piliin ang Mga template, pagkatapos ay I-save bilang template.
+settings-compose-template-new = Gumawa ng bago
+settings-compose-template-new-name = Bagong template
+settings-compose-template-subject = Paksa
+settings-compose-template-text = Teksto ng template
+settings-compose-template-fields = Pinupunan ang {"{"}first name{"}"}, {"{"}name{"}"} at {"{"}my name{"}"} ng pangalan ng tatanggap at ng pangalan mo.
+settings-compose-template-remove-file = Alisin ang attachment
+settings-compose-template-save = I-save
+settings-compose-template-saved = Na-save ang template
+settings-compose-template-needs-name = Bigyan ng pangalan ang template
+settings-compose-template-delete = I-delete ang template
+settings-compose-template-deleted = Na-delete ang template
+settings-compose-template-delete-failed = Hindi ma-delete ang template: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = Ang lagdang pinagsisimulan ng bagong mai
 settings-compose-for-replies-summary = Ang lagdang pinagsisimulan ng mga sagot at pagpapasa
 settings-compose-format-summary = Sumulat ng bagong mail sa plain text
 settings-compose-spelling-summary = Suriin ang pagbaybay habang sumusulat, at ang wika ng diksyunaryo
-settings-compose-templates-summary = Malapit na: i-save ang mail na madalas mong isinusulat, at magsimula ng bagong mail o sagot mula rito
+settings-compose-templates-summary = I-save ang mail na madalas mong isinusulat, at magsimula ng bagong mail o sagot mula rito
 settings-feedback-crash-reports-summary = Mag-save ng mga ulat ng pag-crash sa computer na ito kapag nag-crash ang Katna Mail o ang serbisyo nito sa background
 settings-feedback-saved-summary = Tingnan, kopyahin o i-delete ang mga ulat ng pag-crash na naka-save sa computer na ito
 settings-feedback-help-improve-summary = Magpadala ng mga ulat ng pag-crash para makatulong ayusin ang nagkaproblema; naka-off maliban kung i-on mo

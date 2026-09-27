@@ -13,6 +13,8 @@ nav-all-accounts = 모든 계정
 nav-expand = 폴더 보기
 nav-collapse = 폴더 숨기기
 nav-tab-new = 새 메일 { $count }개
+storage-used = { $total } 중 { $percent }% 사용
+storage-used-detail = { $address }: { $total } 중 { $used } 사용
 
 ## Special folders (the user's own folders keep their names)
 

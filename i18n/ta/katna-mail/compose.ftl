@@ -49,6 +49,10 @@ compose-picker-attach = இணை
 compose-file-too-large = { $name } மிகப் பெரியது: ஒரு மெசேஜ் { $limit } வரை மட்டுமே கொண்டு செல்லும்.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = இணைப்பை அகற்று
+compose-attachments-total = { $count ->
+    [one] { $count } கோப்பு, { $size }
+   *[other] { $count } கோப்புகள், { $size }
+}
 compose-drop-files = கோப்புகளை இங்கே விடவும்
 compose-drop-here = இங்கே விடவும்
 compose-paste-keep-formatting = வடிவமைப்பை வைத்திரு

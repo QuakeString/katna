@@ -497,3 +497,84 @@ wasiƙarka, kamar a Gmail. Buɗe shi daga Zayyanai don ci gaba da rubutu.
 Maɓallin kwandon shara ne kaɗai ke zubar da shi, kuma Janye yana dawo da
 shi.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Wuri don abubuwan haɗawa da yawa"
+text = """
+Ko fayiloli nawa aka haɗa, yanzu jerin yana gungurawa sama da sandar
+Aika maimakon ya rufe ta, yana nuna sabon fayil, kuma yana faɗin yawan
+fayiloli da jimillar girmansu.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Zaɓi wasiƙun da ba a karanta ba ko masu tauraro, kamar Gmail"
+text = """
+An karanta, Ba a karanta ba, Masu tauraro da Marasa tauraro a menu na
+Zaɓi suna sake yiwa wasiƙun da suka dace da ke kan allo alama. Layi sama
+da jerin yana ba da damar zaɓar dukkan tattaunawar da ta dace a cikin
+folda, kuma Share zaɓi yana soke hakan.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Foldoji suna fitar da kai daga Saituna"
+text = """
+Idan Saituna a buɗe suke, danna folda ko gunkin Wasiƙu yanzu yana rufe
+Saituna ya buɗe wannan folda, kamar a Gmail. Kibiyar komawa baya ma tana
+aiki har yanzu.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Saki hotuna cikin rubutu"
+text = """
+Jan hoto a kan saƙo yana nuna alamar rubutu a inda zai sauka, don a iya
+sakin sa a tsakiyar jimla. Sauran fayiloli har yanzu suna nuna wurin
+saki na abubuwan haɗawa, kuma yanzu saki yana aiki bayan an yi rubutu.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Fita yana rufewa nan take"
+text = """
+Fita a menu na gunkin tire ba ya sake jiran wasiƙun da ake daidaitawa ko
+ake sanyawa a fihirisa: Katna da gunkin tirensa suna rufewa nan take,
+sauran aikin kuma yana ci gaba idan Katna ya sake farawa.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Bayanan lambar sadarwa kusa da wasiƙunku"
+text = """
+A cikin babbar taga, wani kati kusa da tattaunawar da ke buɗe yanzu yana
+nuna mai aikawa: wayarsa, muƙaminsa da kamfaninsa daga sa hannunsa,
+lokacin da ake a wurinsa, yawan wasiƙun da kuka yi musaya, tattaunawarku
+ta kwanan nan da fayilolin da ke tsakaninku. Danna tattaunawa ko fayil
+don buɗe shi, ko wani mutum a cikin tattaunawar don ganin sa. Ana
+karanta wannan daga wasiƙun da ke wannan kwamfuta kawai. Maɓallin lambar
+sadarwa a sandar kayan aiki ta Wurin karatu yana ɓoye shi.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Ma'ajiyar da aka yi amfani da ita"
+text = """
+Ƙasan Wurin folda yanzu yana nuna yadda ma'ajiyar wasiƙun asusun ta
+cika, kamar “An yi amfani da 34% na 15 GB”, idan sabar wasiƙunsa ta
+faɗa.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Nemo wasiƙu daga KRunner da binciken GNOME"
+text = """
+Rubuta suna a KRunner (Alt+Space) ko binciken Activities don rubuta wa
+wannan mutumin, kwafi adireshinsa ko nemo wasiƙunsa. Saƙonni suna
+bayyana idan jigonsu ko mai aikawa yana da kowace kalma da kuka rubuta;
+fara da mail: don bincika dukan wasiƙunku, kamar a akwatin bincike na
+Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Samfura don wasiƙun da kuke yawan rubutawa"
+text = """
+Rubuta saƙo sau ɗaya ku ajiye shi da sabon maɓallin Samfura a wurin
+rubutu, sannan ku saka shi a kowace sabuwar wasiƙa ko amsa da danna
+ɗaya. Rubuta {first name}, {name} ko {my name} kuma Katna zai cike su
+ga kowane mai karɓa. Gyara, sake suna ko share samfura a Saituna >
+Rubutu.
+"""

@@ -49,6 +49,7 @@ compose-picker-attach = Đính kèm
 compose-file-too-large = { $name } quá lớn: một thư chỉ mang được tối đa { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Xóa tệp đính kèm
+compose-attachments-total = { $count } tệp, { $size }
 compose-drop-files = Thả tệp vào đây
 compose-drop-here = Thả vào đây
 compose-paste-keep-formatting = Giữ định dạng

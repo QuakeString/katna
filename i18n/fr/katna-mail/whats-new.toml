@@ -526,3 +526,82 @@ Brouillons, y compris sur votre serveur de messagerie, comme dans Gmail.
 Ouvrez-le depuis Brouillons pour continuer à écrire. Seul le bouton
 Corbeille le supprime, et Annuler le récupère.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "De la place pour de nombreuses pièces jointes"
+text = """
+Quel que soit le nombre de fichiers joints, la liste défile désormais au-dessus de la barre Envoyer au lieu de la recouvrir, montre le fichier le plus récent et indique le nombre de fichiers et leur taille totale.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Sélectionner les non lus ou suivis, comme dans Gmail"
+text = """
+Lus, Non lus, Suivis et Non suivis dans le menu Sélectionner cochent de
+nouveau les messages correspondants à l’écran. Une ligne au-dessus de la
+liste propose de sélectionner toutes les conversations correspondantes du
+dossier, et Effacer la sélection l’annule.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Les dossiers vous font quitter les Paramètres"
+text = """
+Quand les Paramètres sont ouverts, un clic sur un dossier ou sur l’icône
+Courrier ferme désormais les Paramètres et ouvre ce dossier, comme dans
+Gmail. La flèche de retour fonctionne toujours.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Déposez des images dans le texte"
+text = """
+Quand vous faites glisser une image sur un message, un curseur montre où elle arrivera, pour la déposer au milieu d’une phrase. Les autres fichiers affichent toujours la zone de dépôt des pièces jointes, et le dépôt fonctionne désormais après avoir tapé du texte.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Quitter ferme tout de suite"
+text = """
+Quitter dans le menu de l’icône de la zone de notification n’attend plus
+les messages encore en cours de synchronisation ou d’indexation : Katna et
+son icône se ferment aussitôt, et le reste se poursuit au prochain
+démarrage de Katna.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Les détails du contact à côté de vos messages"
+text = """
+Dans une fenêtre large, une carte à côté de la conversation ouverte
+présente désormais l’expéditeur : son téléphone, son titre et son
+entreprise tirés de ses signatures, son heure locale, le volume de
+messages échangés, vos conversations récentes et les fichiers échangés.
+Cliquez sur une conversation ou un fichier pour l’ouvrir, ou sur une autre
+personne de la conversation pour l’afficher. Tout provient uniquement de
+vos messages sur cet ordinateur. Le bouton de contact dans la barre
+d’outils du volet de lecture masque la carte.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Espace utilisé"
+text = """
+Le bas du volet des dossiers indique à quel point l’espace de messagerie
+du compte est rempli, par exemple « 34 % utilisés sur 15 Go », quand son
+serveur de messagerie le communique.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Trouver des messages depuis KRunner et la recherche GNOME"
+text = """
+Tapez un nom dans KRunner (Alt+Space) ou dans la recherche des Activités
+pour écrire à cette personne, copier son adresse ou trouver ses messages.
+Les messages apparaissent quand leur objet ou leur expéditeur contient
+chaque mot tapé ; commencez par mail: pour chercher dans tous vos
+messages, comme dans le champ de recherche de Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Des modèles pour les messages que vous écrivez souvent"
+text = """
+Écrivez un message une fois et enregistrez-le avec le nouveau bouton
+Modèles de la fenêtre de rédaction, puis insérez-le en un clic dans
+n’importe quel nouveau message ou réponse. Écrivez {first name}, {name} ou
+{my name} et Katna les remplit pour chaque destinataire. Modifiez,
+renommez ou supprimez les modèles dans Paramètres > Rédaction.
+"""

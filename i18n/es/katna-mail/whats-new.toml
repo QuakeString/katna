@@ -513,3 +513,80 @@ Borradores, también en tu servidor de correo, como en Gmail. Ábrelo
 desde Borradores para seguir escribiendo. Solo el botón de la papelera
 lo descarta, y Deshacer lo recupera.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Sitio para muchos adjuntos"
+text = """
+Da igual cuántos archivos adjuntes: la lista ahora se desplaza por encima de la barra de Enviar en lugar de taparla, muestra el archivo más reciente e indica cuántos archivos hay y cuánto ocupan en total.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Selecciona lo no leído o destacado, como en Gmail"
+text = """
+Leídos, No leídos, Destacados y No destacados en el menú Seleccionar
+vuelven a marcar el correo que coincide en pantalla. Una línea encima de
+la lista ofrece seleccionar todas las conversaciones de la carpeta que
+coinciden, y Borrar selección lo deshace.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Las carpetas te sacan de Ajustes"
+text = """
+Con Ajustes abierto, hacer clic en una carpeta o en el icono de Correo
+ahora cierra Ajustes y abre esa carpeta, como en Gmail. La flecha atrás
+también sigue funcionando.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Suelta imágenes dentro del texto"
+text = """
+Al arrastrar una imagen sobre un mensaje aparece un cursor donde caerá, para que puedas soltarla en mitad de una frase. Los demás archivos siguen mostrando la zona para adjuntar, y ahora también se puede soltar después de haber escrito.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Salir cierra al instante"
+text = """
+Salir en el menú del icono de la bandeja ya no espera al correo que aún se
+está sincronizando o indexando: Katna y su icono se cierran enseguida, y
+el resto continúa la próxima vez que se inicie Katna.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Detalles del contacto junto a tu correo"
+text = """
+En una ventana ancha, una tarjeta junto a la conversación abierta muestra
+ahora al remitente: su teléfono, cargo y empresa según sus firmas, su hora
+local, cuánto correo os habéis intercambiado, vuestras conversaciones
+recientes y los archivos entre vosotros. Haz clic en una conversación o un
+archivo para abrirlo, o en otra persona de la conversación para verla.
+Todo sale solo de tu correo en este ordenador. El botón de contacto de la
+barra del panel de lectura la oculta.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Almacenamiento usado"
+text = """
+El pie del panel de carpetas muestra cuánto se ha llenado el
+almacenamiento de correo de la cuenta, por ejemplo «34 % de 15 GB usado»,
+cuando su servidor de correo lo indica.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Busca correo desde KRunner y la búsqueda de GNOME"
+text = """
+Escribe un nombre en KRunner (Alt+Space) o en la búsqueda de Actividades
+para escribir a esa persona, copiar su dirección o buscar su correo.
+Aparecen los mensajes cuyo asunto o remitente contiene todas las palabras
+que escribes; empieza con mail: para buscar en todo tu correo, como en el
+cuadro de búsqueda de Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Plantillas para el correo que escribes a menudo"
+text = """
+Escribe un mensaje una vez y guárdalo con el nuevo botón Plantillas de la
+ventana de redacción; luego ponlo en cualquier correo nuevo o respuesta
+con un clic. Escribe {first name}, {name} o {my name} y Katna los rellena
+para cada destinatario. Edita, cambia de nombre o elimina plantillas en
+Ajustes > Redacción.
+"""

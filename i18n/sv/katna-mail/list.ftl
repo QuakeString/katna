@@ -101,6 +101,132 @@ list-select-all-in = { $kind ->
        *[other] Markera alla { $count } meddelanden i { $folder }
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } läst konversation på den här sidan har markerats.
+           *[other] Alla { $count } lästa konversationer på den här sidan har markerats.
+        }
+       *[message] { $count ->
+            [one] { $count } läst meddelande på den här sidan har markerats.
+           *[other] Alla { $count } lästa meddelanden på den här sidan har markerats.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } oläst konversation på den här sidan har markerats.
+           *[other] Alla { $count } olästa konversationer på den här sidan har markerats.
+        }
+       *[message] { $count ->
+            [one] { $count } oläst meddelande på den här sidan har markerats.
+           *[other] Alla { $count } olästa meddelanden på den här sidan har markerats.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } stjärnmärkt konversation på den här sidan har markerats.
+           *[other] Alla { $count } stjärnmärkta konversationer på den här sidan har markerats.
+        }
+       *[message] { $count ->
+            [one] { $count } stjärnmärkt meddelande på den här sidan har markerats.
+           *[other] Alla { $count } stjärnmärkta meddelanden på den här sidan har markerats.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } konversation utan stjärna på den här sidan har markerats.
+           *[other] Alla { $count } konversationer utan stjärna på den här sidan har markerats.
+        }
+       *[message] { $count ->
+            [one] { $count } meddelande utan stjärna på den här sidan har markerats.
+           *[other] Alla { $count } meddelanden utan stjärna på den här sidan har markerats.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } läst konversation
+           *[other] Markera alla { $count } lästa konversationer
+        }
+       *[message] { $count ->
+            [one] Markera { $count } läst meddelande
+           *[other] Markera alla { $count } lästa meddelanden
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } oläst konversation
+           *[other] Markera alla { $count } olästa konversationer
+        }
+       *[message] { $count ->
+            [one] Markera { $count } oläst meddelande
+           *[other] Markera alla { $count } olästa meddelanden
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } stjärnmärkt konversation
+           *[other] Markera alla { $count } stjärnmärkta konversationer
+        }
+       *[message] { $count ->
+            [one] Markera { $count } stjärnmärkt meddelande
+           *[other] Markera alla { $count } stjärnmärkta meddelanden
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } konversation utan stjärna
+           *[other] Markera alla { $count } konversationer utan stjärna
+        }
+       *[message] { $count ->
+            [one] Markera { $count } meddelande utan stjärna
+           *[other] Markera alla { $count } meddelanden utan stjärna
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } läst konversation i { $folder }
+           *[other] Markera alla { $count } lästa konversationer i { $folder }
+        }
+       *[message] { $count ->
+            [one] Markera { $count } läst meddelande i { $folder }
+           *[other] Markera alla { $count } lästa meddelanden i { $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } oläst konversation i { $folder }
+           *[other] Markera alla { $count } olästa konversationer i { $folder }
+        }
+       *[message] { $count ->
+            [one] Markera { $count } oläst meddelande i { $folder }
+           *[other] Markera alla { $count } olästa meddelanden i { $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } stjärnmärkt konversation i { $folder }
+           *[other] Markera alla { $count } stjärnmärkta konversationer i { $folder }
+        }
+       *[message] { $count ->
+            [one] Markera { $count } stjärnmärkt meddelande i { $folder }
+           *[other] Markera alla { $count } stjärnmärkta meddelanden i { $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } konversation utan stjärna i { $folder }
+           *[other] Markera alla { $count } konversationer utan stjärna i { $folder }
+        }
+       *[message] { $count ->
+            [one] Markera { $count } meddelande utan stjärna i { $folder }
+           *[other] Markera alla { $count } meddelanden utan stjärna i { $folder }
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->

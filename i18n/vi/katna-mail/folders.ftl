@@ -13,6 +13,8 @@ nav-all-accounts = Tất cả tài khoản
 nav-expand = Hiện thư mục
 nav-collapse = Ẩn thư mục
 nav-tab-new = { $count } thư mới
+storage-used = Đã dùng { $percent }% trong { $total }
+storage-used-detail = { $address }: đã dùng { $used } trong { $total }
 
 ## Special folders (the user's own folders keep their names)
 

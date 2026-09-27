@@ -49,6 +49,12 @@ compose-picker-attach = Załącz
 compose-file-too-large = Plik { $name } jest za duży: wiadomość może zawierać do { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Usuń załącznik
+compose-attachments-total = { $count ->
+    [one] { $count } plik, { $size }
+    [few] { $count } pliki, { $size }
+    [many] { $count } plików, { $size }
+   *[other] { $count } pliku, { $size }
+}
 compose-drop-files = Upuść pliki tutaj
 compose-drop-here = Upuść tutaj
 compose-paste-keep-formatting = Zachowaj formatowanie

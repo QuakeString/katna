@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] Họrọ mkparịta ụka { $count } niile dị na { $folder }
    *[message] Họrọ ozi { $count } niile dị na { $folder }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile agụrụ dị na ihuenyo.
+       *[message] Ahọrọla ozi { $count } niile agụrụ dị na ihuenyo.
+    }
+   *[unread] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile a gụghị dị na ihuenyo.
+       *[message] Ahọrọla ozi { $count } niile a gụghị dị na ihuenyo.
+    }
+    [starred] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile nwere kpakpando dị na ihuenyo.
+       *[message] Ahọrọla ozi { $count } niile nwere kpakpando dị na ihuenyo.
+    }
+    [unstarred] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile enweghị kpakpando dị na ihuenyo.
+       *[message] Ahọrọla ozi { $count } niile enweghị kpakpando dị na ihuenyo.
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile agụrụ
+       *[message] Họrọ ozi { $count } niile agụrụ
+    }
+   *[unread] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile a gụghị
+       *[message] Họrọ ozi { $count } niile a gụghị
+    }
+    [starred] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile nwere kpakpando
+       *[message] Họrọ ozi { $count } niile nwere kpakpando
+    }
+    [unstarred] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile enweghị kpakpando
+       *[message] Họrọ ozi { $count } niile enweghị kpakpando
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile agụrụ dị na { $folder }
+       *[message] Họrọ ozi { $count } niile agụrụ dị na { $folder }
+    }
+   *[unread] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile a gụghị dị na { $folder }
+       *[message] Họrọ ozi { $count } niile a gụghị dị na { $folder }
+    }
+    [starred] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile nwere kpakpando dị na { $folder }
+       *[message] Họrọ ozi { $count } niile nwere kpakpando dị na { $folder }
+    }
+    [unstarred] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile enweghị kpakpando dị na { $folder }
+       *[message] Họrọ ozi { $count } niile enweghị kpakpando dị na { $folder }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] Ahọrọla mkparịta ụka { $count } niile agụrụ.

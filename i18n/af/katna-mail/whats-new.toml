@@ -498,3 +498,78 @@ gestoor, ook op jou posbediener, soos in Gmail. Maak dit uit Konsepte
 oop om verder te skryf. Net die asblikknoppie gooi dit weg, en Ontdoen
 bring dit terug.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Plek vir baie aanhegsels"
+text = """
+Hoeveel lêers jy ook al aanheg, die lys rol nou bo die Stuur-balk in plaas daarvan om daaroor te loop, wys die nuutste lêer en sê hoeveel lêers daar is en wat hul totale grootte is.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Kies ongelese of gesterde e-pos, soos in Gmail"
+text = """
+Gelees, Ongelees, Gester en Ongester in die Kies-kieslys merk weer die
+e-pos op die skerm wat pas. 'n Reël bo die lys bied aan om elke gesprek in
+die vouer wat pas te kies, en Vee keuse uit maak dit ongedaan.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Vouers neem jou uit Instellings"
+text = """
+As Instellings oop is, maak 'n klik op 'n vouer of die E-pos-ikoon nou
+Instellings toe en daardie vouer oop, soos in Gmail. Die terugpyltjie werk
+steeds ook.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Los prente in die teks"
+text = """
+As jy 'n prent oor 'n boodskap sleep, wys 'n invoegpunt waar dit sal land, sodat jy dit in die middel van 'n sin kan los. Ander lêers wys steeds die losarea vir aanhegsels, en los werk nou ook nadat jy getik het.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Verlaat maak dadelik toe"
+text = """
+Verlaat in die stelselbalkikoon se kieslys wag nie meer vir e-pos wat nog
+sinkroniseer of geïndekseer word nie: Katna en sy stelselbalkikoon maak
+dadelik toe, en die res gaan voort wanneer Katna weer begin.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Kontakbesonderhede langs jou e-pos"
+text = """
+In 'n breë venster wys 'n kaart langs die oop gesprek nou die afsender:
+hul foon, titel en maatskappy uit hul handtekeninge, hul tyd van die dag,
+hoeveel e-pos julle uitgeruil het, julle onlangse gesprekke en die lêers
+tussen julle. Klik op 'n gesprek of 'n lêer om dit oop te maak, of op 'n
+ander persoon in die gesprek om hulle te sien. Dit word net uit jou e-pos
+op hierdie rekenaar gelees. Die kontakknoppie op die leesvenster se
+nutsbalk versteek dit.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Berging gebruik"
+text = """
+Die voet van die vouerpaneel wys hoe vol die rekening se e-posberging is,
+soos “34% van 15 GB gebruik”, wanneer sy e-posbediener dit meedeel.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Vind e-pos vanuit KRunner en GNOME-soektog"
+text = """
+Tik 'n naam in KRunner (Alt+Space) of die Aktiwiteite-soektog om aan
+daardie persoon te skryf, hul adres te kopieer of hul e-pos te vind.
+Boodskappe verskyn wanneer hul onderwerp of sender elke woord bevat wat jy
+tik; begin met mail: om al jou e-pos te deursoek, soos in Katna Mail se
+soekveld.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Sjablone vir e-pos wat jy gereeld skryf"
+text = """
+Skryf 'n boodskap een keer en stoor dit met die nuwe Sjablone-knoppie in
+die skryfvenster, en plaas dit dan met een klik in enige nuwe e-pos of
+antwoord. Skryf {first name}, {name} of {my name} en Katna vul dit vir
+elke ontvanger in. Wysig, hernoem of vee sjablone uit in Instellings >
+Skryf.
+"""

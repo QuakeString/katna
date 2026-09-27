@@ -49,6 +49,10 @@ compose-picker-attach = Haɗa
 compose-file-too-large = { $name } ya yi girma sosai: saƙo zai iya ɗaukar har zuwa { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Cire abin haɗawa
+compose-attachments-total = { $count ->
+    [one] fayil { $count }, { $size }
+   *[other] fayiloli { $count }, { $size }
+}
 compose-drop-files = Saki fayiloli a nan
 compose-drop-here = Saki a nan
 compose-paste-keep-formatting = Riƙe tsari

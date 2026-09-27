@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] { $folder }의 대화 { $count }개 모두 선택
    *[message] { $folder }의 메일 { $count }개 모두 선택
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] 이 페이지의 읽은 대화 { $count }개가 모두 선택되었습니다.
+       *[message] 이 페이지의 읽은 메일 { $count }개가 모두 선택되었습니다.
+    }
+   *[unread] { $kind ->
+        [conversation] 이 페이지의 읽지 않은 대화 { $count }개가 모두 선택되었습니다.
+       *[message] 이 페이지의 읽지 않은 메일 { $count }개가 모두 선택되었습니다.
+    }
+    [starred] { $kind ->
+        [conversation] 이 페이지의 별표가 있는 대화 { $count }개가 모두 선택되었습니다.
+       *[message] 이 페이지의 별표가 있는 메일 { $count }개가 모두 선택되었습니다.
+    }
+    [unstarred] { $kind ->
+        [conversation] 이 페이지의 별표가 없는 대화 { $count }개가 모두 선택되었습니다.
+       *[message] 이 페이지의 별표가 없는 메일 { $count }개가 모두 선택되었습니다.
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] 읽은 대화 { $count }개 모두 선택
+       *[message] 읽은 메일 { $count }개 모두 선택
+    }
+   *[unread] { $kind ->
+        [conversation] 읽지 않은 대화 { $count }개 모두 선택
+       *[message] 읽지 않은 메일 { $count }개 모두 선택
+    }
+    [starred] { $kind ->
+        [conversation] 별표가 있는 대화 { $count }개 모두 선택
+       *[message] 별표가 있는 메일 { $count }개 모두 선택
+    }
+    [unstarred] { $kind ->
+        [conversation] 별표가 없는 대화 { $count }개 모두 선택
+       *[message] 별표가 없는 메일 { $count }개 모두 선택
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $folder }의 읽은 대화 { $count }개 모두 선택
+       *[message] { $folder }의 읽은 메일 { $count }개 모두 선택
+    }
+   *[unread] { $kind ->
+        [conversation] { $folder }의 읽지 않은 대화 { $count }개 모두 선택
+       *[message] { $folder }의 읽지 않은 메일 { $count }개 모두 선택
+    }
+    [starred] { $kind ->
+        [conversation] { $folder }의 별표가 있는 대화 { $count }개 모두 선택
+       *[message] { $folder }의 별표가 있는 메일 { $count }개 모두 선택
+    }
+    [unstarred] { $kind ->
+        [conversation] { $folder }의 별표가 없는 대화 { $count }개 모두 선택
+       *[message] { $folder }의 별표가 없는 메일 { $count }개 모두 선택
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] 읽은 대화 { $count }개가 모두 선택되었습니다.

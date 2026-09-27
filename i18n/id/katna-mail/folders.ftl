@@ -13,6 +13,8 @@ nav-all-accounts = Semua Akun
 nav-expand = Tampilkan folder
 nav-collapse = Sembunyikan folder
 nav-tab-new = { $count } baru
+storage-used = { $percent }% dari { $total } terpakai
+storage-used-detail = { $address }: { $used } dari { $total } terpakai
 
 ## Special folders (the user's own folders keep their names)
 

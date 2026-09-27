@@ -182,6 +182,19 @@ settings-compose-spell-check-detail = A na-akpa ahịrị n'okpuru okwu a sụpe
 settings-compose-spell-desktop = Asụsụ desktọpụ ({ $language })
 settings-compose-templates = Ndebiri ụkpụrụ
 settings-compose-templates-detail = Chekwaa ozi ị na-edekarị, ma malite ozi ọhụrụ ma ọ bụ nzaghachi site na ya.
+settings-compose-no-templates = Enweghị ndebiri ụkpụrụ ọ bụla ka. N'ime ozi, họrọ Ndebiri ụkpụrụ, wee họrọ Chekwaa dị ka ndebiri ụkpụrụ.
+settings-compose-template-new = Mepụta nke ọhụrụ
+settings-compose-template-new-name = Ndebiri ụkpụrụ ọhụrụ
+settings-compose-template-subject = Isiokwu
+settings-compose-template-text = Ederede ndebiri ụkpụrụ
+settings-compose-template-fields = A na-eji aha onye nnata na aha gị edejupụta {"{"}first name{"}"}, {"{"}name{"}"} na {"{"}my name{"}"}.
+settings-compose-template-remove-file = Wepụ mgbakwunye
+settings-compose-template-save = Chekwaa
+settings-compose-template-saved = Echekwala ndebiri ụkpụrụ
+settings-compose-template-needs-name = Nye ndebiri ụkpụrụ ahụ aha
+settings-compose-template-delete = Hichapụ ndebiri ụkpụrụ
+settings-compose-template-deleted = Ehichapụla ndebiri ụkpụrụ
+settings-compose-template-delete-failed = Enweghị ike ihichapụ ndebiri ụkpụrụ ahụ: { $error }
 
 ## Settings > Shortcuts
 
@@ -236,7 +249,7 @@ settings-compose-for-new-mail-summary = Mbinye aka ozi ọhụrụ ji amalite
 settings-compose-for-replies-summary = Mbinye aka nzaghachi na nzigaa ji amalite
 settings-compose-format-summary = Dee ozi ọhụrụ na ederede nkịtị
 settings-compose-spelling-summary = Nyochaa nsụpe mgbe ị na-ede, na asụsụ ọkọwa okwu
-settings-compose-templates-summary = Ọ na-abịa n'oge na-adịghị anya: chekwaa ozi ị na-edekarị, ma malite ozi ọhụrụ ma ọ bụ nzaghachi site na ya
+settings-compose-templates-summary = Chekwaa ozi ị na-edekarị, ma malite ozi ọhụrụ ma ọ bụ nzaghachi site na ya
 settings-feedback-crash-reports-summary = Chekwaa akụkọ nkwụsị na kọmputa a mgbe Katna Mail ma ọ bụ ọrụ azụ ya kwụsịrị na mberede
 settings-feedback-saved-summary = Lelee, detuo ma ọ bụ hichapụ akụkọ nkwụsị echekwara na kọmputa a
 settings-feedback-help-improve-summary = Zipu akụkọ nkwụsị iji nyere aka dozie ihe mebiri emebi; ọ gbanyụrụ belụsọ ma i gbanye ya

@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = Verkeerd gespelde woorde word onderstreep,
 settings-compose-spell-desktop = Werkskerm se taal ({ $language })
 settings-compose-templates = Sjablone
 settings-compose-templates-detail = Stoor e-pos wat jy gereeld skryf, en begin nuwe e-pos of 'n antwoord daarmee.
+settings-compose-no-templates = Nog geen sjablone nie. Kies Sjablone in 'n boodskap, dan Stoor as sjabloon.
+settings-compose-template-new = Skep nuwe
+settings-compose-template-new-name = Nuwe sjabloon
+settings-compose-template-subject = Onderwerp
+settings-compose-template-text = Sjabloonteks
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} en {"{"}my name{"}"} word met die ontvanger se naam en joune ingevul.
+settings-compose-template-remove-file = Verwyder aanhegsel
+settings-compose-template-save = Stoor
+settings-compose-template-saved = Sjabloon gestoor
+settings-compose-template-needs-name = Gee die sjabloon 'n naam
+settings-compose-template-delete = Vee sjabloon uit
+settings-compose-template-deleted = Sjabloon uitgevee
+settings-compose-template-delete-failed = Kon nie die sjabloon uitvee nie: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = Die handtekening waarmee nuwe e-pos begi
 settings-compose-for-replies-summary = Die handtekening waarmee antwoorde en aangestuurde boodskappe begin
 settings-compose-format-summary = Skryf nuwe e-pos in gewone teks
 settings-compose-spelling-summary = Kontroleer spelling tydens skryf, en die woordeboek se taal
-settings-compose-templates-summary = Kom binnekort: stoor e-pos wat jy gereeld skryf, en begin nuwe e-pos of 'n antwoord daarmee
+settings-compose-templates-summary = Stoor e-pos wat jy gereeld skryf, en begin nuwe e-pos of 'n antwoord daarmee
 settings-feedback-crash-reports-summary = Stoor omvalverslae op hierdie rekenaar wanneer Katna Mail of sy agtergronddiens omval
 settings-feedback-saved-summary = Bekyk, kopieer of vee die omvalverslae uit wat op hierdie rekenaar gestoor is
 settings-feedback-help-improve-summary = Stuur omvalverslae om te help regmaak wat skeefgeloop het; af tensy jy dit aanskakel

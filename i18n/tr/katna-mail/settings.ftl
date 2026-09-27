@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = Yanlış yazılan kelimelerin altı çizil
 settings-compose-spell-desktop = Masaüstünün dili ({ $language })
 settings-compose-templates = Şablonlar
 settings-compose-templates-detail = Sık yazdığınız postaları kaydedin ve yeni bir postaya veya yanıta onunla başlayın.
+settings-compose-no-templates = Henüz şablon yok. Bir iletide Şablonlar'ı, ardından Şablon olarak kaydet'i seçin.
+settings-compose-template-new = Yeni oluştur
+settings-compose-template-new-name = Yeni şablon
+settings-compose-template-subject = Konu
+settings-compose-template-text = Şablon metni
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} ve {"{"}my name{"}"}, alıcının ve sizin adınızla doldurulur.
+settings-compose-template-remove-file = Eki kaldır
+settings-compose-template-save = Kaydet
+settings-compose-template-saved = Şablon kaydedildi
+settings-compose-template-needs-name = Şablona bir ad verin
+settings-compose-template-delete = Şablonu sil
+settings-compose-template-deleted = Şablon silindi
+settings-compose-template-delete-failed = Şablon silinemedi: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = Yeni postaların başladığı imza
 settings-compose-for-replies-summary = Yanıtların ve yönlendirmelerin başladığı imza
 settings-compose-format-summary = Yeni postaları düz metin olarak yaz
 settings-compose-spelling-summary = Yazarken yazım denetimi ve sözlüğün dili
-settings-compose-templates-summary = Çok yakında: sık yazdığınız postaları kaydedin ve yeni bir postaya veya yanıta onunla başlayın
+settings-compose-templates-summary = Sık yazdığınız postaları kaydedin ve yeni bir postaya veya yanıta onunla başlayın
 settings-feedback-crash-reports-summary = Katna Mail veya arka plan hizmeti çöktüğünde çökme raporlarını bu bilgisayara kaydet
 settings-feedback-saved-summary = Bu bilgisayara kaydedilen çökme raporlarını görüntüleyin, kopyalayın veya silin
 settings-feedback-help-improve-summary = Sorunun düzeltilmesine yardımcı olmak için çökme raporları gönderin; siz açmadıkça kapalı

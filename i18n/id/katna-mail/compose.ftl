@@ -49,6 +49,7 @@ compose-picker-attach = Lampirkan
 compose-file-too-large = { $name } terlalu besar: satu pesan hanya dapat memuat hingga { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Hapus lampiran
+compose-attachments-total = { $count } file, { $size }
 compose-drop-files = Letakkan file di sini
 compose-drop-here = Letakkan di sini
 compose-paste-keep-formatting = Pertahankan format

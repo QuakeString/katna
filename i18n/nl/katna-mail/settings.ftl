@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = Verkeerd gespelde woorden worden onderstre
 settings-compose-spell-desktop = Taal van de desktop ({ $language })
 settings-compose-templates = Sjablonen
 settings-compose-templates-detail = Sla e-mail op die je vaak schrijft, en begin daarmee een nieuwe e-mail of een antwoord.
+settings-compose-no-templates = Nog geen sjablonen. Kies in een bericht Sjablonen en daarna Opslaan als sjabloon.
+settings-compose-template-new = Nieuwe maken
+settings-compose-template-new-name = Nieuw sjabloon
+settings-compose-template-subject = Onderwerp
+settings-compose-template-text = Sjabloontekst
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} en {"{"}my name{"}"} worden ingevuld met de naam van de ontvanger en je eigen naam.
+settings-compose-template-remove-file = Bijlage verwijderen
+settings-compose-template-save = Opslaan
+settings-compose-template-saved = Sjabloon opgeslagen
+settings-compose-template-needs-name = Geef het sjabloon een naam
+settings-compose-template-delete = Sjabloon verwijderen
+settings-compose-template-deleted = Sjabloon verwijderd
+settings-compose-template-delete-failed = Kan het sjabloon niet verwijderen: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = De handtekening waarmee nieuwe e-mail be
 settings-compose-for-replies-summary = De handtekening waarmee antwoorden en doorgestuurde berichten beginnen
 settings-compose-format-summary = Nieuwe e-mail schrijven in platte tekst
 settings-compose-spelling-summary = Spelling controleren tijdens het schrijven, en de taal van het woordenboek
-settings-compose-templates-summary = Binnenkort: sla e-mail op die je vaak schrijft, en begin daarmee een nieuwe e-mail of een antwoord
+settings-compose-templates-summary = Sla e-mail op die je vaak schrijft, en begin daarmee een nieuwe e-mail of een antwoord
 settings-feedback-crash-reports-summary = Crashrapporten op deze computer bewaren als Katna Mail of de achtergrondservice crasht
 settings-feedback-saved-summary = De crashrapporten die op deze computer zijn bewaard bekijken, kopiëren of verwijderen
 settings-feedback-help-improve-summary = Crashrapporten versturen om te helpen oplossen wat er misging; uit tenzij je het aanzet

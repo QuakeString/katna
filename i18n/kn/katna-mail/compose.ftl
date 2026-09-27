@@ -49,6 +49,10 @@ compose-picker-attach = ಲಗತ್ತಿಸಿ
 compose-file-too-large = { $name } ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ: ಒಂದು ಸಂದೇಶವು { $limit } ವರೆಗೆ ಮಾತ್ರ ಒಯ್ಯಬಹುದು.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ಲಗತ್ತನ್ನು ತೆಗೆದುಹಾಕಿ
+compose-attachments-total = { $count ->
+    [one] { $count } ಫೈಲ್, { $size }
+   *[other] { $count } ಫೈಲ್‌ಗಳು, { $size }
+}
 compose-drop-files = ಫೈಲ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಬಿಡಿ
 compose-drop-here = ಇಲ್ಲಿ ಬಿಡಿ
 compose-paste-keep-formatting = ಫಾರ್ಮ್ಯಾಟಿಂಗ್ ಉಳಿಸಿಕೊಳ್ಳಿ

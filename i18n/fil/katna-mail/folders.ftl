@@ -16,6 +16,8 @@ nav-tab-new = { $count ->
     [one] { $count } bago
    *[other] { $count } bago
 }
+storage-used = { $percent }% ng { $total } ang nagamit
+storage-used-detail = { $address }: { $used } ng { $total } ang nagamit
 
 ## Special folders (the user's own folders keep their names)
 

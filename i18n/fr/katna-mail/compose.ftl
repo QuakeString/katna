@@ -49,6 +49,11 @@ compose-picker-attach = Joindre
 compose-file-too-large = { $name } est trop volumineux : un message peut contenir jusqu’à { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Retirer la pièce jointe
+compose-attachments-total = { $count ->
+    [one] { $count } fichier, { $size }
+    [many] { $count } de fichiers, { $size }
+   *[other] { $count } fichiers, { $size }
+}
 compose-drop-files = Déposez les fichiers ici
 compose-drop-here = Déposez ici
 compose-paste-keep-formatting = Conserver la mise en forme

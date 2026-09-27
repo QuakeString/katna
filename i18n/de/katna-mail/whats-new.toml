@@ -515,3 +515,82 @@ in Entwürfe gespeichert, auch auf Ihrem Mailserver, wie in Gmail. Öffnen
 Sie sie aus Entwürfe, um weiterzuschreiben. Nur der Papierkorb-Knopf
 verwirft sie, und Rückgängig holt sie zurück.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Platz für viele Anhänge"
+text = """
+Egal wie viele Dateien Sie anhängen: Die Liste scrollt jetzt über der Senden-Leiste, statt sie zu überdecken, zeigt die neueste Datei und nennt die Anzahl der Dateien und ihre Gesamtgröße.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Ungelesene oder markierte Mails auswählen, wie in Gmail"
+text = """
+Gelesen, Ungelesen, Markiert und Nicht markiert im Menü Auswählen haken
+wieder die passenden E-Mails auf dem Bildschirm an. Eine Zeile über der
+Liste bietet an, jede passende Unterhaltung im Ordner auszuwählen, und
+Auswahl aufheben macht das rückgängig.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Ordner führen aus den Einstellungen"
+text = """
+Sind die Einstellungen geöffnet, schließt ein Klick auf einen Ordner oder
+das E-Mail-Symbol jetzt die Einstellungen und öffnet diesen Ordner, wie in
+Gmail. Der Zurück-Pfeil funktioniert weiterhin.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Bilder in den Text ziehen"
+text = """
+Ziehen Sie ein Bild über eine Nachricht, zeigt eine Einfügemarke, wo es landet, sodass Sie es mitten in einem Satz ablegen können. Andere Dateien zeigen weiterhin den Ablagebereich für Anhänge, und Ablegen funktioniert jetzt auch, nachdem Sie getippt haben.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Beenden schließt sofort"
+text = """
+Beenden im Menü des Symbols im Systemabschnitt wartet nicht mehr auf
+E-Mails, die noch synchronisiert oder indiziert werden: Katna und sein
+Symbol schließen sofort, und der Rest wird beim nächsten Start von Katna
+fortgesetzt.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Kontaktdetails neben Ihren E-Mails"
+text = """
+In einem breiten Fenster zeigt jetzt eine Karte neben der geöffneten
+Unterhaltung den Absender: Telefon, Titel und Firma aus den Signaturen,
+die Ortszeit, wie viele E-Mails Sie ausgetauscht haben, Ihre letzten
+Unterhaltungen und die Dateien zwischen Ihnen. Klicken Sie auf eine
+Unterhaltung oder Datei, um sie zu öffnen, oder auf eine andere Person der
+Unterhaltung, um sie anzuzeigen. Die Angaben stammen nur aus Ihren E-Mails
+auf diesem Computer. Der Kontaktknopf in der Leiste des Lesebereichs
+blendet die Karte aus.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Belegter Speicher"
+text = """
+Unten im Ordnerbereich steht, wie voll der E-Mail-Speicher des Kontos ist,
+etwa „34 % von 15 GB belegt“, wenn sein Mailserver das mitteilt.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "E-Mails aus KRunner und der GNOME-Suche finden"
+text = """
+Tippen Sie in KRunner (Alt+Leertaste) oder in der Aktivitäten-Suche einen
+Namen ein, um dieser Person zu schreiben, ihre Adresse zu kopieren oder
+ihre E-Mails zu finden. Nachrichten erscheinen, wenn ihr Betreff oder
+Absender jedes eingetippte Wort enthält; beginnen Sie mit mail:, um alle
+Ihre E-Mails zu durchsuchen, wie im Suchfeld von Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Vorlagen für E-Mails, die Sie oft schreiben"
+text = """
+Schreiben Sie eine Nachricht einmal und speichern Sie sie mit dem neuen
+Knopf Vorlagen im Fenster zum Verfassen; danach fügen Sie sie mit einem
+Klick in jede neue E-Mail oder Antwort ein. Schreiben Sie {first name},
+{name} oder {my name}, und Katna füllt sie für jeden Empfänger aus.
+Vorlagen bearbeiten, umbenennen oder löschen Sie unter Einstellungen >
+Verfassen.
+"""

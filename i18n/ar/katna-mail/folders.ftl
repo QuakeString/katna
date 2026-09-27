@@ -20,6 +20,8 @@ nav-tab-new = { $count ->
     [many] { $count } جديدة
    *[other] { $count } جديدة
 }
+storage-used = مُستخدَم { $percent }٪ من { $total }
+storage-used-detail = { $address }: مُستخدَم { $used } من { $total }
 
 ## Special folders (the user's own folders keep their names)
 

@@ -507,3 +507,85 @@ seva yako ya barua, kama ilivyo kwenye Gmail. Ufungue kutoka Rasimu ili
 uendelee kuandika. Kitufe cha tupio pekee ndicho huutupa, na Tendua
 huurudisha.
 """
+
+["2026-09-27-1609-many-attachments"]
+title = "Nafasi kwa viambatisho vingi"
+text = """
+Hata ukiambatisha faili ngapi, orodha sasa husogezwa juu ya upau wa Tuma
+badala ya kuupita, huonyesha faili jipya zaidi, na husema kuna faili
+ngapi na ukubwa wake wote.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Chagua barua ambazo hazijasomwa au zenye nyota, kama Gmail"
+text = """
+Zilizosomwa, Ambazo hazijasomwa, Zenye nyota na Zisizo na nyota kwenye
+menyu ya Chagua hutia tena alama barua zinazolingana zilizo kwenye
+skrini. Mstari juu ya orodha hutoa kuchagua kila mazungumzo
+yanayolingana kwenye folda, na Futa uteuzi hutendua hilo.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Folda hukutoa kwenye Mipangilio"
+text = """
+Mipangilio ikiwa wazi, kubofya folda au aikoni ya Barua sasa hufunga
+Mipangilio na kufungua folda hiyo, kama ilivyo kwenye Gmail. Mshale wa
+kurudi bado unafanya kazi pia.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Dondosha picha ndani ya maandishi"
+text = """
+Kuburuta picha juu ya ujumbe huonyesha kishale mahali itakapotua, ili
+uweze kuidondosha katikati ya sentensi. Faili nyingine bado huonyesha
+eneo la kudondosha viambatisho, na kudondosha sasa hufanya kazi hata
+baada ya kuandika.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Ondoka hufunga mara moja"
+text = """
+Ondoka kwenye menyu ya aikoni ya trei haisubiri tena barua ambazo bado
+zinasawazishwa au kuorodheshwa: Katna na aikoni yake ya trei hufungwa
+papo hapo, na kilichobaki huendelea Katna itakapoanza tena.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Maelezo ya mwasiliani kando ya barua zako"
+text = """
+Katika dirisha pana, kadi kando ya mazungumzo yaliyo wazi sasa
+humwonyesha mtumaji: simu yake, cheo na kampuni kutoka kwenye sahihi
+zake, saa ya mahali alipo, kiasi cha barua mlizobadilishana, mazungumzo
+yenu ya hivi karibuni na faili kati yenu. Bofya mazungumzo au faili ili
+kuvifungua, au mtu mwingine wa mazungumzo ili kumwona. Maelezo husomwa
+kutoka kwenye barua zako kwenye kompyuta hii pekee. Kitufe cha
+mwasiliani kwenye upau wa zana wa kidirisha cha kusoma hukificha.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Nafasi iliyotumika"
+text = """
+Seva ya barua ikieleza, sehemu ya chini ya kidirisha cha folda huonyesha
+jinsi hifadhi ya barua ya akaunti ilivyojaa, kama vile “Imetumika 34% ya
+15 GB”.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Tafuta barua kutoka KRunner na utafutaji wa GNOME"
+text = """
+Andika jina katika KRunner (Alt+Space) au utafutaji wa Activities ili
+kumwandikia mtu huyo, kunakili anwani yake au kupata barua zake. Ujumbe
+huonekana wakati mada au mtumaji wake ana kila neno unaloandika; anza na
+mail: ili kutafuta katika barua zako zote, kama kwenye kisanduku cha
+kutafuta cha Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Violezo vya barua unazoandika mara kwa mara"
+text = """
+Andika ujumbe mara moja na uuhifadhi kwa kitufe kipya cha Violezo katika
+dirisha la kutunga, kisha uuweke katika barua mpya au jibu lolote kwa
+kubofya mara moja. Andika {first name}, {name} au {my name} na Katna
+itavijaza kwa kila mpokeaji. Hariri, badilisha jina au futa violezo
+katika Mipangilio > Tunga.
+"""

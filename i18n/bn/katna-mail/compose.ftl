@@ -49,6 +49,10 @@ compose-picker-attach = সংযুক্ত করুন
 compose-file-too-large = { $name } খুব বড়: একটি মেসেজে সর্বোচ্চ { $limit } রাখা যায়।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = সংযুক্তি সরান
+compose-attachments-total = { $count ->
+    [one] { $count }টি ফাইল, { $size }
+   *[other] { $count }টি ফাইল, { $size }
+}
 compose-drop-files = ফাইলগুলি এখানে ছাড়ুন
 compose-drop-here = এখানে ছাড়ুন
 compose-paste-keep-formatting = ফরম্যাটিং রাখুন
