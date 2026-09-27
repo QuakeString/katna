@@ -36,7 +36,8 @@ use crate::data::{EntryKey, Row, RowFile};
 use crate::format;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
-    icon, icon_button, icon_button_colored, menu, menu_item, placeholder, tip, toolbar,
+    card_outline, icon, icon_button, icon_button_colored, menu, menu_item, placeholder, tip,
+    toolbar,
 };
 
 const TAB_HEIGHT: f32 = 56.0;
@@ -108,6 +109,10 @@ impl MailWindow {
                 .into_any_element()
         };
         let reading_context = self.reading && (two_pane_reading || self.split());
+        let (radius, outline) = (
+            self.layout.shape.card_radius(),
+            self.layout.shape.card_outline(),
+        );
         let card = div()
             .id("card")
             .key_context(if reading_context {
@@ -119,9 +124,11 @@ impl MailWindow {
             .size_full()
             .flex()
             .flex_col()
-            .rounded(px(self.layout.shape.card_radius()))
+            .relative()
+            .rounded(px(radius))
             .overflow_hidden()
             .bg(rgba(th.surface))
+            .p(px(outline))
             .on_mouse_down(
                 gpui::MouseButton::Left,
                 cx.listener(|this, event: &gpui::MouseDownEvent, window, cx| {
@@ -149,7 +156,8 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_important))
             .on_action(cx.listener(Self::mark_not_important))
             .on_action(cx.listener(Self::toggle_check))
-            .child(inner);
+            .child(inner)
+            .children(card_outline(th, radius, outline));
         card.into_any_element()
     }
 

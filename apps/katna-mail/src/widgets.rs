@@ -125,6 +125,25 @@ pub fn pill_button(
         )
 }
 
+/// A faint line around a card (the list, the reading pane, Quick
+/// settings). It is drawn over the card's content, so lines of the list
+/// that fill the card's width do not hide it; the card keeps `t` px of
+/// padding inside it. `t` fades it away (0 on a phone, edge to edge).
+pub fn card_outline(th: &Theme, radius: f32, t: f32) -> Option<AnyElement> {
+    (t > 0.001).then(|| {
+        div()
+            .absolute()
+            .top_0()
+            .left_0()
+            .right_0()
+            .bottom_0()
+            .rounded(px(radius))
+            .border_1()
+            .border_color(rgba(fade(th.divider, t.min(1.0))))
+            .into_any_element()
+    })
+}
+
 /// A filled, rounded button (the primary action of a panel).
 pub fn filled_button(
     id: impl Into<gpui::ElementId>,

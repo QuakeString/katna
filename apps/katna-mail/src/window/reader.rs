@@ -27,7 +27,9 @@ use crate::daemon::Command;
 use crate::data::{self, EntryKey, Mail, Row};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button, icon_button_colored, placeholder, tip, toolbar};
+use crate::widgets::{
+    card_outline, icon, icon_button, icon_button_colored, placeholder, tip, toolbar,
+};
 
 mod security;
 use security::Secured;
@@ -313,16 +315,23 @@ enum Shown {
 impl MailWindow {
     /// The reading pane beside the list: its own card.
     pub(super) fn render_reader_card(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let (radius, outline) = (
+            self.layout.shape.card_radius(),
+            self.layout.shape.card_outline(),
+        );
         div()
             .id("reader-card")
             .size_full()
             .flex()
             .flex_col()
-            .rounded(px(self.layout.shape.card_radius()))
+            .relative()
+            .rounded(px(radius))
             .overflow_hidden()
             .bg(rgba(th.surface))
+            .p(px(outline))
             .child(self.render_reader_toolbar(th, cx))
             .child(div().flex_1().min_h_0().child(self.render_reader(th, cx)))
+            .children(card_outline(th, radius, outline))
             .into_any_element()
     }
 

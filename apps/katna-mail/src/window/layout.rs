@@ -139,6 +139,12 @@ impl Shape {
         self.label
     }
 
+    /// How much of the faint line around the cards shows: none on a
+    /// phone, whose cards run edge to edge.
+    pub(super) fn card_outline(&self) -> f32 {
+        1.0 - self.phone
+    }
+
     pub(super) fn card_radius(&self) -> f32 {
         super::PANEL_RADIUS * (1.0 - self.phone)
     }
