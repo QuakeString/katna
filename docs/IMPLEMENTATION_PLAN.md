@@ -32,7 +32,8 @@ Mail that the phases did not name.
   (Phase 2); KRunner and GNOME search (4.4, 4.5); the release track before
   any public release.
 - **Later:** Katna Calendar (Phase 6), Contacts, Tasks, Notes, Feeds,
-  phones, notes on mail, Workspace, Katna Server, own crash server.
+  phones, notes on mail, Workspace, Katna Server, own crash server, a
+  server check that recipient addresses exist.
 
 ## 1. Working principles
 
