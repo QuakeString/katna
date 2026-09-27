@@ -764,6 +764,7 @@ impl MailWindow {
                 }
                 this.checked_all = false;
                 this.page_pick = None;
+                this.picked = None;
                 cx.notify();
             }))
             .child(if checked {

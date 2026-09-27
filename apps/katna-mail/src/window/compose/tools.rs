@@ -10,13 +10,14 @@
 use std::rc::Rc;
 
 use gpui::{
-    Anchor, AnyElement, Context, Entity, Focusable, FontWeight, Hsla, MouseButton, Pixels, Point,
-    SharedString, Stateful, Subscription, Window, anchored, deferred, div, point, prelude::*, rgba,
+    Anchor, AnyElement, Bounds, Context, DispatchPhase, Div, Entity, Focusable, FontWeight, Hsla,
+    MouseButton, MouseMoveEvent, Pixels, Point, SharedString, Stateful, Subscription, Window,
+    anchored, canvas, deferred, div, point, prelude::*, rgba,
 };
 use jiff::civil::Date;
 use katna_i18n::{format, tr};
 use katna_ui::px;
-use katna_ui::rich::{Align, Font, GrammarIssue, List, RichEditor, Size, TableEdit, html};
+use katna_ui::rich::{Align, Font, GrammarIssue, List, Pos, RichEditor, Size, TableEdit, html};
 use katna_ui::{InputEvent, TextInput};
 
 use super::super::MailWindow;
@@ -65,11 +66,32 @@ pub(in crate::window) enum Popup {
         misspelled: Option<String>,
         grammar: Option<GrammarIssue>,
     },
-    /// A right click on a grammar mistake in the subject.
+    /// The fixes of marked words in the text, on a rest or a left click;
+    /// it closes when the pointer leaves the words and the card.
+    Hint {
+        word: Bounds<Pixels>,
+        at: Pos,
+        misspelled: Option<String>,
+        suggestions: Vec<String>,
+        grammar: Option<GrammarIssue>,
+    },
+    /// A right click on a grammar mistake in the subject, or with `word`, a
+    /// rest or a left click on it (closing like [`Popup::Hint`]).
     SubjectGrammar {
         position: Point<Pixels>,
         issue: GrammarIssue,
+        word: Option<Bounds<Pixels>>,
     },
+}
+
+impl Popup {
+    /// A card of fixes that opened without a right click.
+    pub(in crate::window) fn is_hint(&self) -> bool {
+        matches!(
+            self,
+            Popup::Hint { .. } | Popup::SubjectGrammar { word: Some(_), .. }
+        )
+    }
 }
 
 /// A change to the subject field, from its grammar menu.
@@ -610,6 +632,7 @@ impl MailWindow {
             )
             .children(self.render_popup_scrim(cx))
             .children(self.render_context_popup(th, cx))
+            .children(self.render_hint(th, cx))
             .children(self.render_subject_grammar(th, cx))
             .children(self.render_link_bubble(th, cx))
             .into_any_element()
@@ -618,11 +641,14 @@ impl MailWindow {
     /// Catches a click anywhere outside the open menu, closing it.
     fn render_popup_scrim(&self, cx: &mut Context<Self>) -> Option<AnyElement> {
         let popup = self.compose.as_ref()?.popup.as_ref()?;
-        // The dialogs close with their own buttons.
-        if matches!(
-            popup,
-            Popup::Link | Popup::PickTime | Popup::PlainText | Popup::SendCheck { .. }
-        ) {
+        // The dialogs close with their own buttons; the cards of fixes when
+        // the pointer leaves them, so the text under them still takes it.
+        if popup.is_hint()
+            || matches!(
+                popup,
+                Popup::Link | Popup::PickTime | Popup::PlainText | Popup::SendCheck { .. }
+            )
+        {
             return None;
         }
         Some(
@@ -1634,60 +1660,17 @@ impl MailWindow {
         let in_table = editor.in_table();
         let in_link = editor.link_at_cursor().is_some();
         let selection = editor.has_selection();
-        let mut items = menu(th).w(px(240.0));
-        if let Some(word) = misspelled.clone() {
-            if suggestions.is_empty() {
-                items = items.child(
-                    div()
-                        .h(px(32.0))
-                        .px(px(16.0))
-                        .flex()
-                        .items_center()
-                        .text_color(rgba(th.text_faint))
-                        .child(tr!("compose-tool-no-suggestions")),
-                );
-            }
-            for (ix, s) in suggestions.into_iter().enumerate() {
-                let word = s.clone();
-                items = items.child(
-                    menu_item(("spell-suggestion", ix), &s, th)
-                        .font_weight(FontWeight::BOLD)
-                        .on_click(self.on_body(cx, move |e, cx| e.replace_word(&word, cx))),
-                );
-            }
-            items = items.child(
-                menu_item("spell-add", &tr!("compose-tool-add-to-dictionary"), th).on_click(
-                    cx.listener(move |this, _, window, cx| {
-                        this.add_to_dictionary(&word, window, cx)
-                    }),
-                ),
-            );
+        let mut items = self.fix_items(
+            menu(th).w(px(240.0)),
+            misspelled.clone(),
+            suggestions,
+            grammar.clone(),
+            None,
+            th,
+            cx,
+        );
+        if misspelled.is_some() || grammar.is_some() {
             items = items.child(menu_divider(th));
-        }
-        if let Some(issue) = grammar.clone() {
-            items = items.child(
-                div()
-                    .px(px(16.0))
-                    .py(px(8.0))
-                    .text_size(px(13.0))
-                    .line_height(px(18.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(issue.message.clone()),
-            );
-            for (ix, fix) in issue.fixes.iter().enumerate() {
-                let (issue, fix) = (issue.clone(), fix.clone());
-                items = items.child(
-                    menu_item(("grammar-fix", ix), &fix.label, th)
-                        .font_weight(FontWeight::BOLD)
-                        .on_click(self.on_body(cx, move |e, cx| e.fix_grammar(&issue, &fix, cx))),
-                );
-            }
-            items = items
-                .child(
-                    menu_item("grammar-ignore", &tr!("grammar-ignore"), th)
-                        .on_click(self.on_body(cx, move |e, cx| e.ignore_grammar(&issue, cx))),
-                )
-                .child(menu_divider(th));
         }
         let action = |ix: usize, label: &str, keys: &'static str, what: Clip| {
             menu_item(("clip", ix), label, th)
@@ -1767,10 +1750,191 @@ impl MailWindow {
         )
     }
 
+    /// The fixes of a misspelled word (`suggestions` for `misspelled`) or a
+    /// grammar mistake, added to `items`. With `at`, the cursor moves to
+    /// the words first.
+    #[allow(clippy::too_many_arguments)]
+    fn fix_items(
+        &self,
+        mut items: Div,
+        misspelled: Option<String>,
+        suggestions: Vec<String>,
+        grammar: Option<GrammarIssue>,
+        at: Option<Pos>,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Div {
+        if let Some(word) = misspelled {
+            if suggestions.is_empty() {
+                items = items.child(
+                    div()
+                        .h(px(32.0))
+                        .px(px(16.0))
+                        .flex()
+                        .items_center()
+                        .text_color(rgba(th.text_faint))
+                        .child(tr!("compose-tool-no-suggestions")),
+                );
+            }
+            for (ix, s) in suggestions.into_iter().enumerate() {
+                let word = s.clone();
+                items = items.child(
+                    menu_item(("spell-suggestion", ix), &s, th)
+                        .font_weight(FontWeight::BOLD)
+                        .on_click(self.on_words(at, cx, move |e, cx| e.replace_word(&word, cx))),
+                );
+            }
+            items = items.child(
+                menu_item("spell-add", &tr!("compose-tool-add-to-dictionary"), th).on_click(
+                    cx.listener(move |this, _, window, cx| {
+                        this.add_to_dictionary(&word, window, cx)
+                    }),
+                ),
+            );
+        }
+        if let Some(issue) = grammar {
+            items = items.child(
+                div()
+                    .px(px(16.0))
+                    .py(px(8.0))
+                    .text_size(px(13.0))
+                    .line_height(px(18.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(issue.message.clone()),
+            );
+            for (ix, fix) in issue.fixes.iter().enumerate() {
+                let (issue, fix) = (issue.clone(), fix.clone());
+                items = items.child(
+                    menu_item(("grammar-fix", ix), &fix.label, th)
+                        .font_weight(FontWeight::BOLD)
+                        .on_click(
+                            self.on_words(at, cx, move |e, cx| e.fix_grammar(&issue, &fix, cx)),
+                        ),
+                );
+            }
+            items =
+                items.child(
+                    menu_item("grammar-ignore", &tr!("grammar-ignore"), th)
+                        .on_click(self.on_words(at, cx, move |e, cx| e.ignore_grammar(&issue, cx))),
+                );
+        }
+        items
+    }
+
+    /// A listener that runs `f` on the editor, with the cursor moved to `at`
+    /// first if given.
+    fn on_words<E>(
+        &self,
+        at: Option<Pos>,
+        cx: &mut Context<Self>,
+        f: impl Fn(&mut RichEditor, &mut Context<RichEditor>) + 'static,
+    ) -> impl Fn(&E, &mut Window, &mut gpui::App) + 'static {
+        self.on_body(cx, move |e, cx| {
+            if let Some(at) = at {
+                e.set_cursor(at, cx);
+            }
+            f(e, cx)
+        })
+    }
+
+    /// Shows a card of fixes unless another menu or dialog is open.
+    pub(super) fn show_hint(&mut self, hint: Popup, cx: &mut Context<Self>) {
+        if let Some(c) = &mut self.compose
+            && c.popup.as_ref().is_none_or(Popup::is_hint)
+        {
+            c.popup = Some(hint);
+            cx.notify();
+        }
+    }
+
+    /// Closes the card of fixes, if one is open.
+    pub(super) fn close_hint(&mut self, cx: &mut Context<Self>) {
+        let Some(c) = &mut self.compose else {
+            return;
+        };
+        if c.popup.as_ref().is_some_and(Popup::is_hint) {
+            c.popup = None;
+            c.body.update(cx, |editor, _| editor.end_hint());
+            c.subject.update(cx, |input, _| input.end_hint());
+            cx.notify();
+        }
+    }
+
+    /// The fixes of the marked words under the pointer or a left click.
+    fn render_hint(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let compose = self.compose.as_ref()?;
+        let Some(Popup::Hint {
+            word,
+            at,
+            misspelled,
+            suggestions,
+            grammar,
+        }) = &compose.popup
+        else {
+            return None;
+        };
+        let items = self.fix_items(
+            menu(th).w(px(240.0)),
+            misspelled.clone(),
+            suggestions.clone(),
+            grammar.clone(),
+            Some(*at),
+            th,
+            cx,
+        );
+        Some(self.hint_card(*word, items, cx))
+    }
+
+    /// A card of fixes under `word`, closing when the pointer leaves both or
+    /// on a click outside.
+    fn hint_card(&self, word: Bounds<Pixels>, items: Div, cx: &mut Context<Self>) -> AnyElement {
+        let this = cx.entity().downgrade();
+        let watch = canvas(
+            |_, _, _| {},
+            move |card, _, window, _| {
+                let this = this.clone();
+                window.on_mouse_event(move |event: &MouseMoveEvent, phase, _, cx| {
+                    let on_words = word.dilate(px(2.0)).contains(&event.position);
+                    if phase == DispatchPhase::Bubble
+                        && !on_words
+                        && !card.contains(&event.position)
+                    {
+                        this.update(cx, |this, cx| this.close_hint(cx)).ok();
+                    }
+                });
+            },
+        )
+        .absolute()
+        .top_0()
+        .left_0()
+        .size_full();
+        deferred(
+            anchored()
+                .position(word.bottom_left())
+                .snap_to_window_with_margin(px(8.0))
+                .child(
+                    div()
+                        .id("compose-hint")
+                        .relative()
+                        .occlude()
+                        .on_mouse_down_out(cx.listener(|this, _, _, cx| this.close_hint(cx)))
+                        .child(items)
+                        .child(watch),
+                ),
+        )
+        .with_priority(2)
+        .into_any_element()
+    }
+
     /// The fixes of a grammar mistake in the subject.
     fn render_subject_grammar(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
         let compose = self.compose.as_ref()?;
-        let Some(Popup::SubjectGrammar { position, issue }) = &compose.popup else {
+        let Some(Popup::SubjectGrammar {
+            position,
+            issue,
+            word,
+        }) = &compose.popup
+        else {
             return None;
         };
         let on_subject = |f: Box<SubjectEdit>| {
@@ -1810,6 +1974,9 @@ impl MailWindow {
                 Box::new(move |input, cx| input.ignore_grammar(&ignored, cx)),
             )),
         );
+        if let Some(word) = word {
+            return Some(self.hint_card(*word, items, cx));
+        }
         Some(
             deferred(
                 anchored()

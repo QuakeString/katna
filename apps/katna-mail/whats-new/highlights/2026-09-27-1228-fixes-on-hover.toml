@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Fixes without a right click"
+text = """
+Rest the pointer on an underlined word, or click it, and its fixes show
+right under it: spelling suggestions, grammar fixes and Ignore, in the text
+and the subject. Right-click still opens the full menu.
+"""
