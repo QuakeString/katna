@@ -40,7 +40,7 @@ use crate::format;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     TOOLBAR_HEIGHT, card_outline, card_shadow, icon, icon_button, icon_button_colored, menu,
-    menu_item, placeholder, tip, toolbar,
+    menu_item, menu_item_icon, placeholder, tip, toolbar,
 };
 
 const TAB_HEIGHT: f32 = 56.0;
@@ -133,6 +133,9 @@ impl MailWindow {
             .bg(rgba(th.surface))
             .shadow(card_shadow(th, outline))
             .p(px(outline))
+            // GPUI clips to rectangles, so the lines stop short of the
+            // rounded bottom corners rather than showing square ones.
+            .pb(px(radius.max(outline)))
             .on_action(cx.listener(Self::select_next))
             .on_action(cx.listener(Self::select_previous))
             .on_action(cx.listener(Self::select_first))
@@ -323,7 +326,9 @@ impl MailWindow {
                 )
                 .child({
                     let more = icon_button("list-more", "more", 20.0, th)
-                        .tooltip(tip(tr!("list-more"), th))
+                        .when(self.menu != Some(Menu::ListMore), |d| {
+                            d.tooltip(tip(tr!("list-more"), th))
+                        })
                         .on_click(
                             cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)),
                         );
@@ -350,13 +355,17 @@ impl MailWindow {
                 .child(read_button)
                 .child({
                     let move_to = icon_button("list-move", "move-to", 20.0, th)
-                        .tooltip(tip(tr!("list-move-to"), th))
+                        .when(self.menu != Some(Menu::MoveTo), |d| {
+                            d.tooltip(tip(tr!("list-move-to"), th))
+                        })
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)));
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
                 })
                 .child({
                     let more = icon_button("list-more", "more", 20.0, th)
-                        .tooltip(tip(tr!("list-more"), th))
+                        .when(self.menu != Some(Menu::ListMore), |d| {
+                            d.tooltip(tip(tr!("list-more"), th))
+                        })
                         .on_click(
                             cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)),
                         );
@@ -493,7 +502,9 @@ impl MailWindow {
             _ => self.folder_name().unwrap_or_default().into(),
         };
         let more = icon_button("list-more", "more", 20.0, th)
-            .tooltip(tip(tr!("list-more"), th))
+            .when(self.menu != Some(Menu::ListMore), |d| {
+                d.tooltip(tip(tr!("list-more"), th))
+            })
             .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)));
         toolbar(th)
             .pl(px(16.0))
@@ -643,11 +654,12 @@ impl MailWindow {
                     .with_priority(1),
                 )
                 .child(
-                    // Under the button, moved back inside the window when
-                    // it would run past an edge (a phone's narrow window).
+                    // Just under the button (where the button's row puts
+                    // it), moved back inside the window when it would run
+                    // past an edge (a phone's narrow window).
                     deferred(
                         anchored()
-                            .offset(point(px(0.0), px(40.0)))
+                            .offset(point(px(0.0), px(4.0)))
                             .snap_to_window_with_margin(px(8.0))
                             .child(
                                 div().occlude().child(
@@ -691,87 +703,131 @@ impl MailWindow {
                 };
                 match targets {
                     None => menu(th).child(
-                        menu_item("mark-all-read", &tr!("menu-mark-all-read"), th).on_click(
-                            cx.listener(|this, _, _, cx| {
-                                let keys = this.entries.iter().map(|e| e.key).collect();
-                                this.act(Act::Read(true), keys, cx);
-                            }),
-                        ),
+                        menu_item_icon(
+                            "mark-all-read",
+                            "mark-read",
+                            &tr!("menu-mark-all-read"),
+                            th,
+                        )
+                        .on_click(cx.listener(|this, _, _, cx| {
+                            let keys = this.entries.iter().map(|e| e.key).collect();
+                            this.act(Act::Read(true), keys, cx);
+                        })),
                     ),
                     Some(()) => menu(th)
                         // What a narrow reading pane leaves off its toolbar.
                         .when(
                             which == Menu::ReaderMore && self.reader_squeeze().spam,
                             |d| {
-                                d.child(menu_item("more-spam", &tr!("menu-spam"), th).on_click(
-                                    cx.listener(|this, _, _, cx| {
-                                        this.act_on_targets(Act::Spam, cx)
-                                    }),
-                                ))
+                                d.child(
+                                    menu_item_icon("more-spam", "junk", &tr!("menu-spam"), th)
+                                        .on_click(cx.listener(|this, _, _, cx| {
+                                            this.act_on_targets(Act::Spam, cx)
+                                        })),
+                                )
                             },
                         )
                         .when(
                             which == Menu::ReaderMore && self.reader_squeeze().delete,
                             |d| {
-                                d.child(menu_item("more-delete", &tr!("menu-delete"), th).on_click(
-                                    cx.listener(|this, _, _, cx| {
-                                        this.act_on_targets(Act::Delete, cx)
-                                    }),
-                                ))
+                                d.child(
+                                    menu_item_icon("more-delete", "trash", &tr!("menu-delete"), th)
+                                        .on_click(cx.listener(|this, _, _, cx| {
+                                            this.act_on_targets(Act::Delete, cx)
+                                        })),
+                                )
                             },
                         )
-                        .child(menu_item("more-read", &tr!("menu-mark-read"), th).on_click(
-                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)),
-                        ))
                         .child(
-                            menu_item("more-unread", &tr!("menu-mark-unread"), th).on_click(
-                                cx.listener(|this, _, window, cx| {
-                                    this.mark_unread(&super::MarkUnread, window, cx)
-                                }),
-                            ),
-                        )
-                        .child(menu_item("more-star", &tr!("menu-star"), th).on_click(
-                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Star(true), cx)),
-                        ))
-                        .child(menu_item("more-unstar", &tr!("menu-unstar"), th).on_click(
-                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Star(false), cx)),
-                        ))
-                        .child(
-                            menu_item("more-important", &tr!("menu-important"), th).on_click(
-                                cx.listener(|this, _, _, cx| {
-                                    this.act_on_targets(Act::Important(true), cx)
-                                }),
-                            ),
-                        )
-                        .child(
-                            menu_item("more-not-important", &tr!("menu-not-important"), th)
+                            menu_item_icon("more-read", "mark-read", &tr!("menu-mark-read"), th)
                                 .on_click(cx.listener(|this, _, _, cx| {
-                                    this.act_on_targets(Act::Important(false), cx)
+                                    this.act_on_targets(Act::Read(true), cx)
                                 })),
                         )
-                        .child(menu_item("more-pin", &tr!("menu-pin"), th).on_click(
-                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Pin(true), cx)),
-                        ))
-                        .child(menu_item("more-unpin", &tr!("menu-unpin"), th).on_click(
-                            cx.listener(|this, _, _, cx| this.act_on_targets(Act::Pin(false), cx)),
-                        ))
+                        .child(
+                            menu_item_icon("more-unread", "mail", &tr!("menu-mark-unread"), th)
+                                .on_click(cx.listener(|this, _, window, cx| {
+                                    this.mark_unread(&super::MarkUnread, window, cx)
+                                })),
+                        )
+                        .child(
+                            menu_item_icon("more-star", "star", &tr!("menu-star"), th).on_click(
+                                cx.listener(|this, _, _, cx| {
+                                    this.act_on_targets(Act::Star(true), cx)
+                                }),
+                            ),
+                        )
+                        .child(
+                            menu_item_icon("more-unstar", "star-filled", &tr!("menu-unstar"), th)
+                                .on_click(cx.listener(|this, _, _, cx| {
+                                    this.act_on_targets(Act::Star(false), cx)
+                                })),
+                        )
+                        .child(
+                            menu_item_icon(
+                                "more-important",
+                                "important",
+                                &tr!("menu-important"),
+                                th,
+                            )
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                this.act_on_targets(Act::Important(true), cx)
+                            })),
+                        )
+                        .child(
+                            menu_item_icon(
+                                "more-not-important",
+                                "important-filled",
+                                &tr!("menu-not-important"),
+                                th,
+                            )
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                this.act_on_targets(Act::Important(false), cx)
+                            })),
+                        )
+                        .child(
+                            menu_item_icon("more-pin", "pin", &tr!("menu-pin"), th).on_click(
+                                cx.listener(|this, _, _, cx| {
+                                    this.act_on_targets(Act::Pin(true), cx)
+                                }),
+                            ),
+                        )
+                        .child(
+                            menu_item_icon("more-unpin", "pin-filled", &tr!("menu-unpin"), th)
+                                .on_click(cx.listener(|this, _, _, cx| {
+                                    this.act_on_targets(Act::Pin(false), cx)
+                                })),
+                        )
                         .when(which == Menu::ReaderMore, |d| {
                             d.child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
                                 .child(
-                                    menu_item("more-print", &tr!("menu-print-all"), th).on_click(
-                                        cx.listener(|this, _, _, cx| {
+                                    menu_item_icon(
+                                        "more-print",
+                                        "print",
+                                        &tr!("menu-print-all"),
+                                        th,
+                                    )
+                                    .on_click(cx.listener(
+                                        |this, _, window, cx| {
                                             this.menu = None;
-                                            this.print_conversation(cx);
-                                        }),
-                                    ),
+                                            this.print_conversation(window, cx);
+                                        },
+                                    )),
                                 )
                                 .when(!self.detached, |d| {
                                     d.child(
-                                        menu_item("more-new-window", &tr!("menu-new-window"), th)
-                                            .on_click(cx.listener(|this, _, _, cx| {
+                                        menu_item_icon(
+                                            "more-new-window",
+                                            "open-external",
+                                            &tr!("menu-new-window"),
+                                            th,
+                                        )
+                                        .on_click(
+                                            cx.listener(|this, _, _, cx| {
                                                 this.menu = None;
                                                 this.open_reader_in_window(cx);
-                                            })),
+                                            }),
+                                        ),
                                     )
                                 })
                         }),

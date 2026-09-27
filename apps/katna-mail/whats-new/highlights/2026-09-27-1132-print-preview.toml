@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "See it before you print"
+text = """
+Print now opens a preview of the pages first, on A4 or Letter, before
+your printer dialog. The More menus open right under their button, with
+an icon beside each item.
+"""
