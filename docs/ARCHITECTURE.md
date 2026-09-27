@@ -1404,6 +1404,33 @@ Gemini or confidential mode):
   and is stopped when the last one closes (or grammar checking is turned
   off), so the app itself stays small. The app binary grows about 10 MB.
   Other languages are for Harper upstream.
+- **Writing suggestions.** While the cursor is at the end of a paragraph
+  the user writes (not a quote or the signature), the likely rest of the
+  phrase shows in grey after it, laid out and wrapped like text but not
+  in the document; Tab (or Right) takes it, Escape or typing on drops it
+  (`suggest.rs`, `RichEditor::set_suggest`). It is a table of which word
+  followed which one or two words, learned in the background on the
+  first message written from the newest 3,000 sent messages (the user's
+  own text only: quotes, "On … wrote:" and the signature are cut) plus
+  about forty phrases common in mail. A reply adds a second table from
+  the conversation it answers, where a phrase seen once counts, and that
+  conversation's names and longer words complete as they are typed
+  ("Thursday at" → "3pm" when the mail asked for Thursday at 3pm). A
+  word is offered only when it followed its context at least twice
+  (counting both tables) and at least 60% of the time, up to five words,
+  so it stays quiet when unsure and in languages it has not seen.
+  Looking up is a few hash lookups per keystroke on the UI thread;
+  nothing leaves the computer. On by default, Settings → Compose →
+  Writing suggestions.
+  - *Planned, second layer:* whole sentences that answer the mail
+    ("Thursday works for me, see you then") need a language model. It
+    would be an optional small on-device model, downloaded only when the
+    user turns it on, run by a helper process (`katna-suggest`) that
+    starts while a message is being written and exits after, fed the
+    conversation and the text so far, and answering after a pause in
+    typing; the phrase tables stay the instant answer. The app and the
+    daemon never load the model, so their size and memory budgets hold.
+    No cloud service.
 - **Sending account, Send and archive.** Settings → Compose picks the
   account new mail goes out from: the one whose mail is open (default) or
   always the same address (`sending.send_from`). Replies and forwards go

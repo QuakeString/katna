@@ -19,6 +19,7 @@ mod placement;
 mod sidebar;
 mod signatures;
 mod spell;
+mod suggest;
 mod tabs;
 mod theme;
 mod whats_new;

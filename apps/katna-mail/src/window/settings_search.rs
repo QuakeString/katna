@@ -282,6 +282,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Signatures,
+        "settings-compose-suggestions",
+        "settings-compose-suggestions-summary",
+        "writing suggestions autocomplete complete predict phrase ghost text tab smart compose",
+    ),
+    entry(
+        Section::Signatures,
         "settings-compose-signatures",
         "settings-compose-signatures-summary",
         "signature sign-off",
