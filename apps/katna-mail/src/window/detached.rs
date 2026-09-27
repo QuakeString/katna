@@ -157,6 +157,7 @@ impl MailWindow {
             viewer.update(cx, |viewer, _| viewer.th = th);
         }
         let reduce = cx.reduce_motion();
+        self.update_reply_row(f32::from(window.viewport_size().width), window, reduce);
         let title = self
             .reader
             .as_ref()
