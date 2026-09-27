@@ -155,6 +155,15 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                it too.",
         animation: None,
     },
+    Highlight {
+        id: 15,
+        title: "Settings tabs on one line",
+        text: "The Settings tabs stay on one line: when they don't fit, arrows at \
+               the edges and the scroll wheel glide the rest into view. Signatures \
+               and templates share a Compose tab, and folders and mail rules \
+               share one too.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.
