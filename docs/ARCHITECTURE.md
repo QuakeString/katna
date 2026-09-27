@@ -2467,6 +2467,22 @@ Optional. Self-hostable (container image) and offered as a hosted Pro service.
 - Tracking events arrive at the daemon over the server's event stream and
   can raise notifications ("Acme opened *Proposal v2*").
 
+**Implemented (server, `server/katna-server`):** axum + PostgreSQL behind
+Caddy (TLS), shipped as `ghcr.io/quakestring/katna-server` with a compose
+file; the owner runs it on his own server on a separate tracking domain
+(September 2026). Unknown pixel IDs still get the picture; links redirect
+only to targets stored with the ID (`http`/`https` only). Installs register
+without an account and get a bearer token (stored hashed); limits are 10
+new installs per address per hour and 5000 tracked copies per install per
+day. Each event is labelled `person`, `apple_proxy` (Apple's network or a
+bare `Mozilla/5.0` agent) or `scanner` (`HEAD`, bot-like agents, opens
+within 5 s or clicks within 30 s of sending); the address and user agent
+are read for the label and never stored. Events stream to the daemon as
+server-sent events numbered in order, resumed with `Last-Event-ID`.
+Everything is deleted after 180 days, and an install can delete its data.
+One server process (events are ordered within it). The API is in
+`server/katna-server/README.md`.
+
 ### 16.2 Stack
 
 `axum` + PostgreSQL; WebSocket/SSE delta stream to `katna-daemon`; a
