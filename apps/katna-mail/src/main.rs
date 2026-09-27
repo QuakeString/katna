@@ -32,7 +32,8 @@ use katna_platform::dbusmenu::Menu;
 use katna_platform::font;
 
 const USAGE: &str = "\
-Usage: katna-mail [--data-dir DIR] [--search QUERY] [--compose | --inbox | --settings]
+Usage: katna-mail [--data-dir DIR] [--search QUERY] [--compose | --inbox | --settings |
+                  --message ID | --reply-all ID]
 
 When Katna Mail is already running, it comes to the front and does what
 the options ask; a second window does not open.
@@ -45,6 +46,8 @@ Options:
   --compose        Start a new message
   --inbox          Show the Inbox
   --settings       Open the settings
+  --message ID     Open the message with this ID (as notifications do)
+  --reply-all ID   Open the message with this ID and reply to all
   -h, --help       Show this help
   -V, --version    Show the version
 
@@ -73,6 +76,12 @@ fn main() -> ExitCode {
             Some("--open") => open_first = true,
             Some(flag @ ("--compose" | "--inbox" | "--settings")) => {
                 request = instance::Request::from_flag(flag);
+            }
+            Some(flag @ ("--message" | "--reply-all")) => {
+                match args.next().and_then(|id| id.to_str()?.parse().ok()) {
+                    Some(id) => request = instance::Request::for_message(flag, id),
+                    None => return usage_error(),
+                }
             }
             Some("-h" | "--help") => {
                 print!("{USAGE}");

@@ -470,6 +470,15 @@ impl Mail {
             .map(|m| m.account)
     }
 
+    /// The conversation of message `id`, if it has one.
+    pub fn message_thread(&self, id: MessageId) -> Option<ThreadId> {
+        self.store
+            .messages_by_id(&[id])
+            .ok()?
+            .first()
+            .and_then(|m| m.thread_id)
+    }
+
     /// The messages of a line, oldest first: a whole conversation.
     pub fn entry_messages(&self, key: EntryKey) -> Vec<MessageId> {
         match key {
