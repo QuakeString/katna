@@ -188,6 +188,17 @@ macro_rules! pim_interface {
                 Ok(self.daemon.server_hold_limit(AccountId(account)).await?)
             }
 
+            async fn queue_tracked_send(
+                &self,
+                account: i64,
+                message: Vec<u8>,
+                delay: u32,
+            ) -> fdo::Result<i64> {
+                Ok(self
+                    .daemon
+                    .queue_tracked_send(AccountId(account), &message, delay)?)
+            }
+
             async fn save_template(&self, template: TemplateItem) -> fdo::Result<i64> {
                 Ok(self.daemon.save_template(template)?)
             }
@@ -339,6 +350,9 @@ macro_rules! pim_interface {
                 emitter: &SignalEmitter<'_>,
                 metered: bool,
             ) -> zbus::Result<()>;
+
+            #[zbus(signal)]
+            async fn tracking_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
         }
     };
 }
@@ -389,6 +403,7 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::OutboxChanged(id) => PimService::outbox_changed(&emitter, id).await,
             Notice::MeteredChanged(on) => PimService::metered_changed(&emitter, on).await,
             Notice::KatnaAccountChanged => PimService::katna_account_changed(&emitter).await,
+            Notice::TrackingChanged => PimService::tracking_changed(&emitter).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");

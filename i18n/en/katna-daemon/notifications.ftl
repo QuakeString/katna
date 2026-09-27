@@ -32,6 +32,15 @@ notify-no-reply = No reply yet
 # Under it. $subject: the subject of the sent message.
 notify-no-reply-to = Nobody has replied to “{ $subject }”.
 
+## Open and click tracking (only for mail sent with "Track opens and clicks")
+
+# The title when a recipient first opens a tracked message. $who is the
+# recipient's name or address, $subject the message's subject.
+notify-tracking-opened = { $who } opened { $subject }
+# The title when a recipient first follows a link in a tracked message;
+# the text under it is the link.
+notify-tracking-clicked = { $who } clicked a link in { $subject }
+
 ## Its buttons
 
 notify-open = Open

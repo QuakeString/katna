@@ -375,6 +375,18 @@ macro_rules! pim_proxy {
             /// cannot. Logs in to ask the first time.
             fn server_hold_limit(&self, account: i64) -> zbus::Result<u64>;
 
+            /// Like `QueueSend`, with open and click tracking: each
+            /// recipient gets their own tracked copy (`docs/ARCHITECTURE.md`
+            /// §11, §16.1). Mail that cannot be tracked (no HTML version,
+            /// signed or encrypted, over 50 recipients, tracking off, not
+            /// signed in to a Katna account or the server unreachable) goes
+            /// out untracked.
+            fn queue_tracked_send(
+                &self,
+                account: i64,
+                message: &[u8],
+                delay: u32,
+            ) -> zbus::Result<i64>;
             /// Takes a queued message back. Returns `false` when it is
             /// already being sent.
             fn undo_send(&self, id: i64) -> zbus::Result<bool>;
@@ -499,6 +511,11 @@ macro_rules! pim_proxy {
             /// `Metered` changed.
             #[zbus(signal)]
             fn metered_changed(&self, metered: bool) -> zbus::Result<()>;
+
+            /// A tracked message was opened or a link in it followed; read
+            /// the tracking tables of the store again.
+            #[zbus(signal)]
+            fn tracking_changed(&self) -> zbus::Result<()>;
         }
     };
 }
