@@ -32,6 +32,7 @@ they become the plan.
 | D4 | Rust toolchain | **Decided: latest stable** — `rust-toolchain.toml` with `channel = "stable"`; `rust-version` in `Cargo.toml` records the minimum and is raised deliberately | CI, contributors |
 | D5 | Supported systems for CI | **Decided: Arch Linux and Ubuntu 26.04 LTS** — Arch = latest Plasma and GNOME; Ubuntu = GNOME, Kubuntu 26.04 = older Plasma | Test matrix, Plasma versions |
 | D6 | App ID / D-Bus prefix | **Decided: `in.invenia.katna`** (domain `katna.invenia.in`): `in.invenia.katna.Mail`, `in.invenia.katna.Calendar`, `in.invenia.katna.Daemon`, interface `in.invenia.katna.Pim1` | Flatpak IDs, D-Bus names, desktop files |
+| D7 | Where crash reports and feedback go | **Decided: a Sentry cloud project** (owner, 27 September 2026), only after the user opts in; DSN empty until the project exists (`ARCHITECTURE.md` §19.2) | Crash-report track C.5–C.8 |
 
 D6 matters for Flathub: its app IDs must match a domain or code-hosting
 account you control.
@@ -236,6 +237,32 @@ setting, password or queued send; installing the previous stable again
 still opens the data or restores the backup; a daemon made to fail its
 self-check starts in safe mode and restores the backup from its
 notification; promotion to stable ships byte-identical, signed files.
+
+### Crash reports and feedback track
+
+Asked for by the owner on 27 September 2026 (design: `ARCHITECTURE.md`
+§19.2). Crash reports on the machine come first and need no network or
+consent (C.1–C.3). Sending, usage statistics and the feedback form (C.4–C.8)
+wait until the onboarding and Settings rewrites of that week have landed.
+Nothing leaves the machine before the user opts in.
+
+| Task | Deliverable |
+|---|---|
+| C.1 Local crash reports | `katna_core::crash`: panic hook in every binary, run marker plus `coredumpctl` lookup for native crashes, scrubber (home, user, host, machine ID, email addresses), one text report and its Sentry event JSON per crash in `$XDG_STATE_HOME/katna/crashes/`, newest 20 kept |
+| C.2 Crash notice | Next start of Katna Mail after a crash of the app or the daemon: "closed unexpectedly last time" with View report and Copy report; `katnactl crashes` lists and prints reports |
+| C.3 Readable stacks | Measure `strip = "debuginfo"` against the size budgets; CI keeps each build's debug files (by build ID) and, once the Sentry project exists, uploads them with `sentry-cli` |
+| C.4 Asking | "Help improve Katna" step in onboarding (Share / Don't share, equal weight, no default); asked once after updating for existing installs; Settings > General switches "Send crash reports" and "Send usage statistics" |
+| C.5 Sending crash reports | Daemon uploads envelopes to the DSN over `rustls` only when the switch is on and the network is not metered; Send / Always send in the crash notice; an empty DSN turns sending off |
+| C.6 Usage statistics | One enum of features, weekly `info` event with yes/no feature tags and bucketed facts, release-health sessions, random install ID rotated every 90 days and resettable; Settings shows what is counted |
+| C.7 Feedback form | Help > Send feedback (global menu, Quick settings > Help): form, optional reply address, preview of exactly what is sent, Sentry User Feedback item |
+| C.8 Sentry project | Project created, IP storage off, server-side scrubbing on, GitHub integration; DSN filled in `katna_core::ids` |
+
+**Done when:** a panic and a segfault in Katna Mail and in the daemon each
+leave a readable report with a stack and no personal data, and Katna Mail
+offers it on the next start; with sharing off nothing is sent (checked with
+a recording proxy); with sharing on, the same report appears in Sentry
+with function names and lines, and the weekly statistics event carries
+only the documented fields.
 
 ### Later: promotional website (not scheduled yet)
 

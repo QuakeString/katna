@@ -171,6 +171,7 @@ not runtime performance.
 | `$XDG_DATA_HOME/katna/blobs.db` | Raw messages, zstd-compressed, content-addressed (§5.2). |
 | `$XDG_DATA_HOME/katna/attachments/` | Large attachments only (> 256 KB). |
 | `$XDG_DATA_HOME/katna/index/` | tantivy index (rebuildable, but expensive, so not in cache). |
+| `$XDG_STATE_HOME/katna/crashes/` | Crash reports, plain text, readable by the user (§19.2). |
 | Secret Service (`oo7`) | Passwords and OAuth tokens. Never in files. |
 
 Only `katna-daemon` writes these databases. Apps open them read-only
@@ -1969,6 +1970,139 @@ queued, so the outbox and Sent hold only what was sent. Details:
   the subject (protected headers) and Autocrypt headers come later (E.3).
 
 
+### 19.2 Crash reports and feedback
+
+Asked for by the owner on 27 September 2026: when Katna crashes, the
+traceback and a bug report should exist, and the project should learn what
+to improve, but only with the user's consent and without tracking anyone.
+Katna sends nothing until the user says yes. There are no trackers or
+analytics libraries in the apps; the one outside service is the Sentry
+project the owner chose for crash reports (§25), reached only after
+consent.
+
+**Part 1: crash reports on this machine (no network).**
+
+- **Rust panics.** `katna_core::crash::install(app)` runs first in
+  `main` of `katna-mail`, `katna-calendar`, `katna-daemon` and `katnactl`.
+  It sets a panic hook that writes a report and then calls the previous
+  hook, so the journal still gets the panic line. A panic on a worker
+  thread that the app survives is still reported.
+- **Native crashes** (a segfault in a GPU driver, `wgpu`, a C library, an
+  abort). Katna forbids `unsafe`, so it does not install signal handlers.
+  Instead each process keeps a small **run marker**
+  (`$XDG_RUNTIME_DIR/katna/<app>.run`: PID, version, start time) and
+  removes it on a clean exit. On the next start, a marker whose process is
+  gone means the last run ended without saying goodbye; Katna then asks
+  `systemd-coredump` (`coredumpctl --json=short`, `coredumpctl info <pid>`)
+  whether that PID dumped core. If it did, the report gets the signal and
+  the stack `coredumpctl` printed. A marker without a core dump (killed at
+  logout, out of memory, power loss) is not reported: Katna only claims a
+  crash it can show. Systems without `systemd-coredump` (Ubuntu uses
+  apport) get "closed unexpectedly (signal unknown)" only when the journal
+  of the last run holds a matching "dumped core" line.
+- **Report file.** One plain-text file per crash in
+  `$XDG_STATE_HOME/katna/crashes/<app>-<UTC time>.txt`, at most 20 kept
+  (oldest removed). Contents: app and version (`KATNA_VERSION`, git hash),
+  Rust version, OS release (`/etc/os-release` `PRETTY_NAME`), desktop and
+  session type (`XDG_CURRENT_DESKTOP`, `XDG_SESSION_TYPE`), GPU adapter
+  name when the app knows it, thread name, panic message and location,
+  the backtrace, and the last 50 log lines of that process kept in memory.
+  Never: mail content, subjects, addresses, account names, file names of
+  attachments, passwords.
+- **Scrubbing.** Before a report is written, the home directory becomes
+  `~`, the user name, host name and machine ID become `<user>`,
+  `<host>`, `<machine>`, and anything shaped like an email address becomes
+  `<email>`. The same scrubber runs again before anything is sent (Part 2),
+  so a report edited by hand is checked twice.
+- **Readable tracebacks.** Release binaries are stripped today, which
+  leaves backtraces as bare addresses. Each frame is written with its
+  module's build ID and offset, so any report can be turned into function
+  names and lines later with the matching debug file. CI keeps the debug
+  files of every published build (the `-debug` package of `makepkg`, or a
+  separate release asset) for this. Whether release binaries keep their
+  symbol names (`strip = "debuginfo"`) depends on what that costs against
+  the size budgets (§17); it is measured before it is switched.
+- **Telling the user.** On the next start after a crash of Katna Mail or
+  of the daemon, Katna Mail shows a quiet notice: "Katna Mail closed
+  unexpectedly last time" (or "Katna's background service stopped
+  unexpectedly") with **View report** (opens the text file) and
+  **Copy report** (to paste into a GitHub issue). Dismissing it marks the
+  report as seen. Settings > General > "Crash reports" lists saved reports
+  and can delete them. `katnactl crashes` lists and prints them.
+
+**Part 2: sending, only with consent (later).** Reports go to a Sentry
+cloud project (decided by the owner on 27 September 2026, §25).
+
+- **Asking.** The first-run screen (onboarding) has one step, "Help improve
+  Katna", with **Share** and **Don't share** given equal weight and no
+  default: nothing is sent until the user picks. People who installed
+  before this existed are asked once in the same words after updating.
+  Settings > General has the same two switches afterwards, "Send crash
+  reports" and "Send usage statistics", each off unless the user turned it
+  on. The daemon reads the same config keys and sends nothing on metered
+  connections.
+- **Crash reports.** With consent, a new report is shown to the user and
+  sent when they click **Send** (or automatically, if they chose "Always
+  send" in the notice). The text sent is exactly the file they can read.
+- **Usage statistics.** Once a week at most, a small JSON document:
+  app version, OS release family (Arch, Ubuntu, …), desktop and session
+  type, screen scale bucket, number of accounts in buckets (1, 2–3, 4+),
+  and for a fixed list of features whether they were used that week (yes or
+  no, never counts of messages or times): search options, pins, labels,
+  scheduled send, encrypted mail, built-in viewers, phone layout, own frame,
+  and so on. The exact list lives in one Rust enum; each entry is described
+  in Settings so users can see what is counted. No message counts, no
+  addresses, no domains, no search terms, no timestamps finer than a week.
+- **Identity.** No user ID and no account ID. Each upload carries a random
+  **install ID** only so that one machine's weekly reports are not counted
+  twice; it is regenerated every 90 days and by "Reset" in Settings, and it
+  is never sent with crash reports. The Sentry project stores no IP
+  addresses (server side, below).
+- **Feedback.** Help > **Send feedback** (global menu and Quick settings >
+  Help) opens a short form: what worked, what did not, optional email for a
+  reply (clearly optional, never filled in from the account). It shows
+  exactly what will be sent before sending. This is independent of the
+  switches: sending feedback is itself the consent for that one message.
+- **Protocol and SDK.** Everything uses Sentry's envelope format
+  (`POST /api/<project>/envelope/`). Capture builds Sentry `Event`s with
+  the official crates (`sentry-backtrace` frames, `sentry-debug-images`
+  build IDs, the `sentry-panic` message) but without a Sentry client: a
+  report is the event JSON next to its readable text, so the later upload
+  sends exactly what the user could read. Native crashes become events
+  from the `coredumpctl` stack (module build ID plus offset per frame);
+  Sentry's minidump handler (`sentry-rust-minidump`, an extra process) is
+  not used unless the stacks from core dumps turn out not to be enough.
+  Crash reports are error events; feedback uses Sentry's User Feedback
+  item; usage statistics are one `info` event per week whose tags are the
+  feature flags above, plus release-health sessions for crash-free rates.
+- **Client settings.** `send_default_pii` off; no user object, no IP (the
+  project is set to not store IP addresses and to scrub data server-side
+  as well); `server_name` empty; breadcrumbs only from Katna's own log
+  lines after scrubbing. The DSN is one constant in `katna_core::ids`,
+  empty until the owner creates the Sentry project; an empty DSN disables
+  sending entirely, and config can point it at a self-hosted Sentry or
+  GlitchTip. TLS is `rustls` (the SDK is built without default features,
+  so no OpenSSL). The daemon does the upload (only it talks to the
+  network, §9); the app hands it reports over D-Bus. The daemon's 20 MB
+  budget is checked with the SDK in.
+
+**Server side.** A Sentry cloud project, set up once:
+
+- data scrubbing on, IP addresses not stored, default PII off, and the
+  Katna scrubber's placeholders added to the safe fields;
+- CI uploads each published build's debug files (`sentry-cli
+  debug-files upload`, keyed by build ID) so native and panic stacks get
+  function names and lines; the auth token lives only in the release
+  environment;
+- the Sentry GitHub integration links crash groups to GitHub issues, so
+  crashes land where bugs are already tracked;
+- retention at the plan's default (90 days) for events; usage statistics
+  are read as weekly totals per version and may be published on the
+  website so users see what their data is used for.
+
+A self-hosted receiver at `crash.katna.invenia.in` stays possible later:
+the envelope format is the same, so only the DSN changes.
+
 ## 20. Dependency policy
 
 - **GPUI:** pin exact `gpui-pre` and GPUI Kit versions; GPUI types only in
@@ -2163,9 +2297,10 @@ old and new daemon and app must keep working:
 - A **downgrade** (the user installs an older package after a bad update)
   meets `SchemaTooNew` only if the newer release broke the expand-then-contract
   rule; the older daemon then offers the same restore.
-- No telemetry. Crash details go to the journal; "Copy debug report"
-  collects version, health file and recent logs, without mail content,
-  for the user to attach to a bug report.
+- No telemetry unless the user opts in (§19.2). Crash details go to the
+  journal and to the local crash reports of §19.2; "Copy debug report"
+  collects version, health file, recent logs and those reports, without
+  mail content, for the user to attach to a bug report.
 
 #### Checks before a release ships
 
@@ -2276,6 +2411,10 @@ Decided:
 - Message storage: SQLite for metadata and compressed raw messages;
   files only for large attachments (§5.2).
 - Rust toolchain: latest stable (`channel = "stable"`).
+- Crash reports and feedback (§19.2): sent, only after the user opts in,
+  to a Sentry cloud project (owner's choice, 27 September 2026, over our
+  own receiver and GitHub issues only). The DSN stays empty until the
+  project exists.
 - Test and support matrix: Arch Linux (latest Plasma and GNOME) and
   Ubuntu 26.04 LTS (GNOME) / Kubuntu 26.04 (Plasma). The Plasma
   integration supports the Plasma versions of these two.
