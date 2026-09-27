@@ -171,7 +171,8 @@ impl MailWindow {
         let separator = || div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider));
 
         let folders = menu.move_to.then(|| {
-            let current = self.folder;
+            // Search results can be anywhere, so every folder is offered.
+            let current = self.listed_folder();
             let folders = self
                 .account()
                 .map(|a| self.tree.folders_of(a))
@@ -194,6 +195,10 @@ impl MailWindow {
                 })
                 .w(px(FOLDERS_WIDTH))
                 .py(px(8.0))
+                // It hangs outside the menu, so it must hide the scrim below
+                // itself: else pressing a folder closes the menu first and
+                // the move never happens.
+                .occlude()
                 .map(|d| raised(d, th, 8.0, 3.0))
                 .child(
                     div()
@@ -284,7 +289,7 @@ impl MailWindow {
                     .on_click(act(Act::Archive)),
             )
             .child(plain("context-delete", "trash", &tr!("menu-delete")).on_click(act(Act::Delete)))
-            .child(plain("context-spam", "junk", &tr!("menu-spam")).on_click(act(Act::Spam)))
+            .child(plain("context-spam", "junk", &self.spam_label(true)).on_click(act(Act::Spam)))
             .child(if row.unread {
                 plain("context-read", "mark-read", &tr!("menu-mark-read"))
                     .on_click(act(Act::Read(true)))

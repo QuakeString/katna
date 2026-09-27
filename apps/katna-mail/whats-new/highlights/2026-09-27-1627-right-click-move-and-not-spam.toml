@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Right-click Move to works, and Not spam"
+text = """
+Choosing a folder or label under Move to in the right-click menu now moves
+the mail, with Undo, from search results too. In Spam, Report spam becomes
+Not spam and takes the mail back to the inbox.
+"""

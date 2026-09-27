@@ -259,6 +259,8 @@ menu-forward = Forward
 menu-archive = Archive
 menu-delete = Delete
 menu-spam = Report spam
+# In the Spam folder, in place of "Report spam": back to the inbox.
+menu-not-spam = Not spam
 menu-mark-read = Mark as read
 menu-mark-unread = Mark as unread
 # Marks every line in the list as read.
@@ -381,6 +383,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] Message reported as spam.
        *[other] { $count } messages reported as spam.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation marked as not spam and moved to the inbox.
+       *[other] { $count } conversations marked as not spam and moved to the inbox.
+    }
+   *[message] { $count ->
+        [one] Message marked as not spam and moved to the inbox.
+       *[other] { $count } messages marked as not spam and moved to the inbox.
     }
 }
 toast-deleted-forever = { $kind ->
