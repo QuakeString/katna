@@ -52,7 +52,7 @@ include!(concat!(env!("OUT_DIR"), "/highlights.rs"));
 /// The highlights as they were numbered before they moved to files: a
 /// settings file of that time keeps the number of the newest one shown
 /// (`onboarding.whats_new_seen`). Never grows.
-const NUMBERED: [&str; 24] = [
+const NUMBERED: [&str; 25] = [
     "2026-09-27-0319-whats-new",
     "2026-09-27-0320-reply-buttons-fit",
     "2026-09-27-0321-notifications-open-mail",
@@ -77,6 +77,7 @@ const NUMBERED: [&str; 24] = [
     "2026-09-27-0646-more-settings",
     "2026-09-27-0706-your-language",
     "2026-09-27-0723-select-and-copy-text",
+    "2026-09-27-0743-address-suggestions",
 ];
 
 /// What the settings file says was shown: the names of the highlights
