@@ -1710,6 +1710,21 @@ desktop's own app stays one click away.
     `draw:page`s. Pictures, charts, layout and speaker notes are left out.
     A slide without a title placeholder takes a short first line as its
     title.
+  - **Selecting and copying.** Text files, documents, slides and PDFs
+    select like message text (§ "Message text can be selected" above,
+    `window/select.rs`, shared with the reader): drag, double- and
+    triple-click, Shift+click, Ctrl+A, Ctrl+C and a right-click Copy,
+    also to the primary selection. Copying and Ctrl+A reach text scrolled
+    out of sight. A PDF's text comes from the page itself: hayro reads each
+    page with a device that keeps every glyph with a known character
+    (ToUnicode, glyph names) and where it is drawn, and glyphs on one
+    baseline become a line (`katna_preview::pdf::TextLine`); pages are read
+    in the background, eight at a time, up to 2,000. The selection is drawn
+    over the page's picture. Scanned PDFs have no text to select.
+    Spreadsheets select cells instead: click, drag or Shift+click for a
+    range, a column letter or row number for all of it; Ctrl+C copies
+    them tab-separated (cells with tabs, line breaks or quotes quoted), so
+    they paste as cells into other spreadsheets.
   - Anything else opens straight in the desktop's default app, and so
     does a file of a previewable type that turns out unreadable (damaged,
     encrypted, Word 6/95; the viewer closes and hands it over, or asks
