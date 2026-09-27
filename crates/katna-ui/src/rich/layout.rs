@@ -57,7 +57,9 @@ impl TextBase {
             }
         }
         let link = !plain && style.link.is_some();
-        let color = if plain {
+        let color = if deco.ghost {
+            self.color.opacity(0.45)
+        } else if plain {
             self.color
         } else if let Some(c) = style.color {
             rgb(c)
@@ -85,7 +87,7 @@ impl TextBase {
                 thickness: px(2.0),
                 wavy: false,
             })
-        } else if !plain && (style.underline || link) {
+        } else if !deco.ghost && !plain && (style.underline || link) {
             Some(UnderlineStyle {
                 color: Some(color),
                 thickness: px(1.0),
@@ -94,7 +96,7 @@ impl TextBase {
         } else {
             None
         };
-        let strikethrough = (!plain && style.strike).then_some(StrikethroughStyle {
+        let strikethrough = (!deco.ghost && !plain && style.strike).then_some(StrikethroughStyle {
             color: Some(color),
             thickness: px(1.0),
         });
@@ -128,6 +130,8 @@ pub(crate) struct Deco {
     pub marked: bool,
     pub misspelled: bool,
     pub grammar: bool,
+    /// A writing suggestion, not in the text.
+    pub ghost: bool,
 }
 
 /// Where a paragraph's text went on screen at the last paint.
@@ -221,8 +225,14 @@ impl ParaLayout {
                 break;
             }
         }
-        let offset = floor_grapheme(text, offset.clamp(line.range.start, line.range.end))
-            .max(line.range.start);
+        // Past the text is a writing suggestion's line.
+        let offset = floor_grapheme(
+            text,
+            offset
+                .clamp(line.range.start, line.range.end)
+                .min(text.len()),
+        )
+        .max(line.range.start.min(text.len()));
         (offset, line.soft_end && offset == line.range.end)
     }
 
@@ -526,7 +536,22 @@ impl Element for ParaElement {
         let editor = self.editor.read(cx);
         let base = editor.text_base(window);
         let mut para = editor.doc.para(self.path).cloned().unwrap_or_default();
-        let decos = editor.decorations(self.path, &para);
+        let mut decos = editor.decorations(self.path, &para);
+        // A writing suggestion lays out as text after the cursor, so it
+        // wraps like the text it would become.
+        if editor.focus_handle.is_focused(window)
+            && let Some((offset, ghost, style)) = editor.ghost_in(self.path)
+            && offset == para.len()
+        {
+            para.insert(offset, ghost, &style);
+            decos.push((
+                offset..para.len(),
+                Deco {
+                    ghost: true,
+                    ..Deco::default()
+                },
+            ));
+        }
         let mut base = base;
         if para.is_empty()
             && let Some(placeholder) = &self.placeholder

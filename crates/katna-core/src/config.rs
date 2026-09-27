@@ -276,6 +276,9 @@ pub struct Sending {
     pub spell_language: String,
     /// Grammar mistakes are underlined while writing, in English.
     pub grammar_check: bool,
+    /// The likely rest of a phrase shows grey ahead of the cursor while
+    /// writing, learned on this computer from the user's sent mail.
+    pub writing_suggestions: bool,
     /// The address new mail is sent from; empty for the account whose
     /// mail is open. Replies go out from the account they answer.
     pub send_from: String,
@@ -297,6 +300,7 @@ impl Default for Sending {
             spell_check: true,
             spell_language: String::new(),
             grammar_check: true,
+            writing_suggestions: true,
             send_from: String::new(),
             send_and_archive: false,
         }

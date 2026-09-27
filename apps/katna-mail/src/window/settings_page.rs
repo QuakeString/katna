@@ -1438,7 +1438,7 @@ impl MailWindow {
     }
 
     /// Which account new mail goes out from, and what Send does on a reply.
-    fn sending_rows(&self, th: &Theme, cx: &mut Context<Self>) -> [Div; 3] {
+    fn sending_rows(&self, th: &Theme, cx: &mut Context<Self>) -> [Div; 4] {
         let sending = &self.config.sending;
         let chosen = &sending.send_from;
         // An address no longer set up counts as the open account.
@@ -1508,6 +1508,20 @@ impl MailWindow {
                     tr!("settings-compose-grammar-check-detail"),
                     sending.grammar_check,
                     Change::GrammarCheck(!sending.grammar_check),
+                    th,
+                    cx,
+                ),
+                th,
+            ),
+            self.row(
+                tr!("settings-compose-suggestions"),
+                Some(&tr!("settings-compose-suggestions-detail")),
+                self.switch_row(
+                    "page-suggestions",
+                    tr!("settings-compose-suggestions-on"),
+                    tr!("settings-compose-suggestions-on-detail"),
+                    sending.writing_suggestions,
+                    Change::WritingSuggestions(!sending.writing_suggestions),
                     th,
                     cx,
                 ),

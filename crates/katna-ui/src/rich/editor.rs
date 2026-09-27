@@ -60,11 +60,15 @@ actions!(
         InsertLink,
         NextCell,
         PrevCell,
+        AcceptSuggestion,
+        DismissSuggestion,
     ]
 );
 
 /// Key context of a focused [`RichEditor`], besides [`TEXT_AREA_CONTEXT`].
 pub const RICH_TEXT_CONTEXT: &str = "RichText";
+/// Added to [`RICH_TEXT_CONTEXT`] while a writing suggestion shows.
+const SUGGESTING_CONTEXT: &str = "Suggesting";
 
 /// Binds the formatting keys (webmail's). Call after the text area's.
 pub fn bind_keys(cx: &mut App) {
@@ -95,6 +99,10 @@ pub fn bind_keys(cx: &mut App) {
         KeyBinding::new("ctrl-k", InsertLink, context),
         KeyBinding::new("tab", NextCell, context),
         KeyBinding::new("shift-tab", PrevCell, context),
+        // Last, so they win over Tab and Right while a suggestion shows.
+        KeyBinding::new("tab", AcceptSuggestion, Some("RichText && Suggesting")),
+        KeyBinding::new("right", AcceptSuggestion, Some("RichText && Suggesting")),
+        KeyBinding::new("escape", DismissSuggestion, Some("RichText && Suggesting")),
     ]);
 }
 
@@ -152,6 +160,14 @@ pub struct GrammarFix {
     pub label: String,
     /// The text that takes the place of the mistake.
     pub replacement: String,
+}
+
+/// Writing suggestions the owner provides: the likely rest of a phrase.
+/// Asked on every keystroke, so it must answer at once.
+pub trait Suggest {
+    /// What likely follows `before`, the paragraph's text up to the
+    /// cursor, with the space it needs first; `None` when unsure.
+    fn suggest(&self, before: &str) -> Option<String>;
 }
 
 /// How long typing pauses before its paragraph's grammar is checked.
@@ -254,6 +270,10 @@ pub struct RichEditor {
     /// Mistakes the user chose to ignore in this text: the words and the
     /// message.
     grammar_ignored: std::collections::HashSet<(String, String)>,
+    suggest: Option<Rc<dyn Suggest>>,
+    /// The writing suggestion shown after the cursor, while the cursor
+    /// stays where it was made.
+    ghost: Option<(Pos, String)>,
     families: RefCell<Option<Rc<HashMap<Font, SharedString>>>>,
     /// What was copied, to paste it back with its formatting.
     copied: Option<(String, Vec<Block>)>,
@@ -298,6 +318,8 @@ impl RichEditor {
             grammar_asked: Vec::new(),
             grammar_task: None,
             grammar_ignored: Default::default(),
+            suggest: None,
+            ghost: None,
             families: RefCell::new(None),
             copied: None,
             images: HashMap::new(),
@@ -409,6 +431,69 @@ impl RichEditor {
         self.grammar_found.clear();
         self.grammar_asked.clear();
         self.grammar_task = None;
+        cx.notify();
+    }
+
+    /// Turns writing suggestions on with `suggest`, or off.
+    pub fn set_suggest(&mut self, suggest: Option<Rc<dyn Suggest>>, cx: &mut Context<Self>) {
+        self.suggest = suggest;
+        self.ghost = None;
+        cx.notify();
+    }
+
+    /// Asks for a writing suggestion after what was just typed: only at
+    /// the end of a paragraph the user writes (not a quote or the
+    /// signature), with nothing selected or being composed.
+    fn request_suggestion(&mut self) {
+        self.ghost = None;
+        let Some(suggest) = &self.suggest else {
+            return;
+        };
+        if self.has_selection() || self.marked.is_some() || self.selected_image.is_some() {
+            return;
+        }
+        let Some(para) = self.doc.para(self.head.path) else {
+            return;
+        };
+        if self.plain_blocked(para) || self.head.offset != para.len() {
+            return;
+        }
+        if let Some(text) = suggest.suggest(&para.text).filter(|t| !t.trim().is_empty()) {
+            self.ghost = Some((self.head, text));
+        }
+    }
+
+    /// The writing suggestion shown in paragraph `path`, and its style.
+    pub(crate) fn ghost_in(&self, path: Path) -> Option<(usize, &str, CharStyle)> {
+        let (pos, text) = self.ghost.as_ref()?;
+        (pos.path == path && *pos == self.head && !self.has_selection())
+            .then(|| (pos.offset, text.as_str(), self.style_for_typing()))
+    }
+
+    fn showing_suggestion(&self) -> bool {
+        self.ghost
+            .as_ref()
+            .is_some_and(|(pos, _)| *pos == self.head && !self.has_selection())
+    }
+
+    fn accept_suggestion(&mut self, _: &AcceptSuggestion, _: &mut Window, cx: &mut Context<Self>) {
+        match self.ghost.take() {
+            Some((pos, text)) if pos == self.head && !self.has_selection() => {
+                self.insert(&text, cx);
+            }
+            _ => cx.propagate(),
+        }
+    }
+
+    fn dismiss_suggestion(
+        &mut self,
+        _: &DismissSuggestion,
+        _: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if self.ghost.take().is_none() {
+            cx.propagate();
+        }
         cx.notify();
     }
 
@@ -728,6 +813,7 @@ impl RichEditor {
         self.marked = None;
         if changed {
             self.typing = None;
+            self.ghost = None;
             cx.emit(RichEvent::Selection);
         }
         cx.notify();
@@ -775,6 +861,7 @@ impl RichEditor {
             }
         }
         self.redo.clear();
+        self.ghost = None;
         self.last_edit = Some((kind, now));
         let selection = self.ordered();
         let cursor = f(&mut self.doc, selection);
@@ -2258,6 +2345,9 @@ impl EntityInputHandler for RichEditor {
         let typing = self.typing.take();
         self.typing = typing;
         self.insert(new_text, cx);
+        if !new_text.contains('\n') {
+            self.request_suggestion();
+        }
     }
 
     fn replace_and_mark_text_in_range(
@@ -2286,6 +2376,8 @@ impl EntityInputHandler for RichEditor {
         self.head = Pos::new(path, range.end);
         self.marked = None;
         self.replace_text_in_range(None, new_text, window, cx);
+        // No suggestion while a character is being composed.
+        self.ghost = None;
         self.marked = (!new_text.is_empty()).then(|| start..start + new_text.len());
         if let Some(sel) = new_selected_range_utf16 {
             let sel = range_from_utf16(new_text, &sel);
@@ -2486,13 +2578,18 @@ impl Render for RichEditor {
             .enumerate()
             .map(|(ix, block)| self.render_block(ix, block, cx))
             .collect();
+        let suggesting = if self.showing_suggestion() {
+            format!(" {SUGGESTING_CONTEXT}")
+        } else {
+            String::new()
+        };
         div()
             .relative()
             .w_full()
             .min_w_0()
             .flex()
             .flex_col()
-            .key_context(format!("{TEXT_AREA_CONTEXT} {RICH_TEXT_CONTEXT}").as_str())
+            .key_context(format!("{TEXT_AREA_CONTEXT} {RICH_TEXT_CONTEXT}{suggesting}").as_str())
             .track_focus(&self.focus_handle(cx))
             .cursor(CursorStyle::IBeam)
             .on_action(cx.listener(Self::backspace))
@@ -2532,6 +2629,8 @@ impl Render for RichEditor {
             .on_action(cx.listener(Self::cancel))
             .on_action(cx.listener(Self::next_cell))
             .on_action(cx.listener(Self::prev_cell))
+            .on_action(cx.listener(Self::accept_suggestion))
+            .on_action(cx.listener(Self::dismiss_suggestion))
             .on_action(cx.listener(|this, _: &Bold, _, cx| this.toggle_bold(cx)))
             .on_action(cx.listener(|this, _: &Italic, _, cx| this.toggle_italic(cx)))
             .on_action(cx.listener(|this, _: &Underline, _, cx| this.toggle_underline(cx)))
