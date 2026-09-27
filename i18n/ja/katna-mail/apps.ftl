@@ -28,3 +28,4 @@ app-contacts-count = メールでやり取りした { $count } 人（やり取�
 app-contacts-top = メールでやり取りした上位 { $count } 人（やり取りの多い順）
 app-contacts-messages = { $count } 件のメール
 app-contacts-last = 最終: { $date }
+top-brand = Katna

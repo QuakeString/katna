@@ -68,6 +68,10 @@ settings-general-new-mail-detail = Tare da Amsa wa kowa, Yi alama an karanta da 
 settings-general-new-mail-sound = Kunna sauti
 settings-general-new-mail-sound-detail = Sautin sabuwar wasiƙa na tebur
 settings-general-desktop = Tebur
+settings-general-start-at-login = Fara Katna lokacin shiga
+settings-general-start-at-login-detail = Yana daidaita wasiƙu kuma yana nuna sanarwar sababbin wasiƙu da gunkin tire, ba tare da buɗe taga ba
+settings-general-login-window = Buɗe tagar Katna Mail ita ma
+settings-general-login-window-detail = Taga ma tana buɗewa lokacin shiga
 settings-general-tray = Nuna Katna a cikin tiren tsarin
 settings-general-tray-detail = Tare da adadin waɗanda ba a karanta ba da menu
 settings-general-unread-badge = Adadin waɗanda ba a karanta ba a gunkin ma'ajin ayyuka
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = Koyaushe nuna hotunan kowane saƙo
 settings-general-sending-summary = Janye aikawa: tsawon lokacin da saƙon da aka aika zai jira, don a iya janye shi
 settings-general-offline-summary = Kwanaki nawa na sababbin wasiƙu ake saukewa gaba ɗaya, don karantawa ba tare da haɗi ba
 settings-general-notifications-summary = Sanarwar sababbin wasiƙu da sautinsu
-settings-general-desktop-summary = Buɗe Katna Mail lokacin shiga, gunkin tiren tsarin da adadin waɗanda ba a karanta ba a gunkin ma'ajin ayyuka
+settings-general-desktop-summary = Fara Katna lokacin shiga, gunkin tiren tsarin da adadin waɗanda ba a karanta ba a gunkin ma'ajin ayyuka
 settings-accounts-accounts-summary = Ƙara ko cire asusu, ko canza hotonsa
 settings-appearance-density-summary = Layuka na asali ko matsattsu a cikin jerin
 settings-appearance-scaling-summary = Ƙara ko rage girman komai: rubutu, gumaka, tazara da layukan rabuwa
@@ -241,7 +245,7 @@ settings-search-results = Saitunan da suka dace da “{ $query }”
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Ba a iya canza buɗewa lokacin shiga ba: { $error }
+settings-open-at-login-failed = Ba a iya canza farawa lokacin shiga ba: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = Nahawu
 settings-compose-grammar-detail = Ana dubawa a wannan kwamfuta da Harper. Turanci kawai a yanzu: ba a taɓa rubutu a wasu harsuna.
 settings-compose-grammar-check = Duba nahawu
 settings-compose-grammar-check-detail = Ja layi a ƙarƙashin kurakuran nahawu yayin rubutu, cikin Turanci
+settings-compose-suggestions = Shawarwarin rubutu
+settings-compose-suggestions-detail = Ana koyon su a wannan kwamfutar daga wasiƙun da kuka aika da wasiƙun da kuke amsawa; babu abin da ke barin ta. Danna Tab don karɓar shawara, ko ku ci gaba da bugawa.
+settings-compose-suggestions-on = Ba da shawara yayin rubutu
+settings-compose-suggestions-on-detail = Nuna yadda jimla za ta iya ƙarewa da launin toka yayin da kuke bugawa
 settings-compose-grammar-summary = Ja layi a ƙarƙashin kurakuran nahawu yayin rubutu, cikin Turanci
+settings-compose-suggestions-summary = Nuna yadda jimla za ta iya ƙarewa da launin toka yayin da kuke bugawa

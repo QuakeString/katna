@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] { $folder } मधील सर्व { $count } मेसेज निवडा
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } वाचलेले संभाषण निवडले आहे.
+           *[other] सर्व { $count } वाचलेली संभाषणे निवडली आहेत.
+        }
+       *[message] { $count ->
+            [one] { $count } वाचलेला मेसेज निवडला आहे.
+           *[other] सर्व { $count } वाचलेले मेसेज निवडले आहेत.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } न वाचलेले संभाषण निवडले आहे.
+           *[other] सर्व { $count } न वाचलेली संभाषणे निवडली आहेत.
+        }
+       *[message] { $count ->
+            [one] { $count } न वाचलेला मेसेज निवडला आहे.
+           *[other] सर्व { $count } न वाचलेले मेसेज निवडले आहेत.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } तारांकित संभाषण निवडले आहे.
+           *[other] सर्व { $count } तारांकित संभाषणे निवडली आहेत.
+        }
+       *[message] { $count ->
+            [one] { $count } तारांकित मेसेज निवडला आहे.
+           *[other] सर्व { $count } तारांकित मेसेज निवडले आहेत.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } तारांकित नसलेले संभाषण निवडले आहे.
+           *[other] सर्व { $count } तारांकित नसलेली संभाषणे निवडली आहेत.
+        }
+       *[message] { $count ->
+            [one] { $count } तारांकित नसलेला मेसेज निवडला आहे.
+           *[other] सर्व { $count } तारांकित नसलेले मेसेज निवडले आहेत.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } मधील { $count } वाचलेले संभाषण निवडले आहे.
+           *[other] { $folder } मधील सर्व { $count } वाचलेली संभाषणे निवडली आहेत.
+        }
+       *[message] { $count ->
+            [one] { $folder } मधील { $count } वाचलेला मेसेज निवडला आहे.
+           *[other] { $folder } मधील सर्व { $count } वाचलेले मेसेज निवडले आहेत.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } मधील { $count } न वाचलेले संभाषण निवडले आहे.
+           *[other] { $folder } मधील सर्व { $count } न वाचलेली संभाषणे निवडली आहेत.
+        }
+       *[message] { $count ->
+            [one] { $folder } मधील { $count } न वाचलेला मेसेज निवडला आहे.
+           *[other] { $folder } मधील सर्व { $count } न वाचलेले मेसेज निवडले आहेत.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } मधील { $count } तारांकित संभाषण निवडले आहे.
+           *[other] { $folder } मधील सर्व { $count } तारांकित संभाषणे निवडली आहेत.
+        }
+       *[message] { $count ->
+            [one] { $folder } मधील { $count } तारांकित मेसेज निवडला आहे.
+           *[other] { $folder } मधील सर्व { $count } तारांकित मेसेज निवडले आहेत.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } मधील { $count } तारांकित नसलेले संभाषण निवडले आहे.
+           *[other] { $folder } मधील सर्व { $count } तारांकित नसलेली संभाषणे निवडली आहेत.
+        }
+       *[message] { $count ->
+            [one] { $folder } मधील { $count } तारांकित नसलेला मेसेज निवडला आहे.
+           *[other] { $folder } मधील सर्व { $count } तारांकित नसलेले मेसेज निवडले आहेत.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] इथे वाचलेली संभाषणे नाहीत.
+       *[message] इथे वाचलेले मेसेज नाहीत.
+    }
+   *[unread] { $kind ->
+        [conversation] इथे न वाचलेली संभाषणे नाहीत.
+       *[message] इथे न वाचलेले मेसेज नाहीत.
+    }
+    [starred] { $kind ->
+        [conversation] इथे तारांकित संभाषणे नाहीत.
+       *[message] इथे तारांकित मेसेज नाहीत.
+    }
+    [unstarred] { $kind ->
+        [conversation] इथे तारांकित नसलेली संभाषणे नाहीत.
+       *[message] इथे तारांकित नसलेले मेसेज नाहीत.
+    }
+}
 list-clear-selection = निवड साफ करा
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count } मेसेज कायमचे हटवले.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] संभाषण वाचलेले म्हणून खूण केले.
+       *[other] { $count } संभाषणे वाचलेली म्हणून खूण केली.
+    }
+   *[message] { $count ->
+        [one] मेसेज वाचलेला म्हणून खूण केला.
+       *[other] { $count } मेसेज वाचलेले म्हणून खूण केले.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] संभाषण न वाचलेले म्हणून खूण केले.
+       *[other] { $count } संभाषणे न वाचलेली म्हणून खूण केली.
+    }
+   *[message] { $count ->
+        [one] मेसेज न वाचलेला म्हणून खूण केला.
+       *[other] { $count } मेसेज न वाचलेले म्हणून खूण केले.
+    }
+}
 toast-undone = कृती पूर्ववत केली.
+toast-nothing-to-undo = पूर्ववत करण्यासारखे काहीही नाही.
+toast-cannot-undo-delete-forever = कायमचा हटवलेला मेल परत आणता येत नाही.
+toast-send-undone = पाठवणे पूर्ववत केले.
+toast-too-late-to-undo-send = पूर्ववत करायला उशीर झाला: मेसेज आधीच पाठवला गेला आहे.
 toast-undo = पूर्ववत करा
 toast-no-spam-folder = या खात्यात स्पॅम फोल्डर नाही.

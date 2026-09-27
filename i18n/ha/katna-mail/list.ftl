@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] Zaɓi dukkan saƙonni { $count } da ke cikin { $folder }
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } da aka karanta.
+           *[other] An zaɓi dukkan tattaunawa { $count } da aka karanta.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } da aka karanta.
+           *[other] An zaɓi dukkan saƙonni { $count } da aka karanta.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } da ba a karanta ba.
+           *[other] An zaɓi dukkan tattaunawa { $count } da ba a karanta ba.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } da ba a karanta ba.
+           *[other] An zaɓi dukkan saƙonni { $count } da ba a karanta ba.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } mai tauraro.
+           *[other] An zaɓi dukkan tattaunawa { $count } masu tauraro.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } mai tauraro.
+           *[other] An zaɓi dukkan saƙonni { $count } masu tauraro.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } mara tauraro.
+           *[other] An zaɓi dukkan tattaunawa { $count } marasa tauraro.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } mara tauraro.
+           *[other] An zaɓi dukkan saƙonni { $count } marasa tauraro.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } da aka karanta a cikin { $folder }.
+           *[other] An zaɓi dukkan tattaunawa { $count } da aka karanta a cikin { $folder }.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } da aka karanta a cikin { $folder }.
+           *[other] An zaɓi dukkan saƙonni { $count } da aka karanta a cikin { $folder }.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } da ba a karanta ba a cikin { $folder }.
+           *[other] An zaɓi dukkan tattaunawa { $count } da ba a karanta ba a cikin { $folder }.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } da ba a karanta ba a cikin { $folder }.
+           *[other] An zaɓi dukkan saƙonni { $count } da ba a karanta ba a cikin { $folder }.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } mai tauraro a cikin { $folder }.
+           *[other] An zaɓi dukkan tattaunawa { $count } masu tauraro a cikin { $folder }.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } mai tauraro a cikin { $folder }.
+           *[other] An zaɓi dukkan saƙonni { $count } masu tauraro a cikin { $folder }.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } mara tauraro a cikin { $folder }.
+           *[other] An zaɓi dukkan tattaunawa { $count } marasa tauraro a cikin { $folder }.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } mara tauraro a cikin { $folder }.
+           *[other] An zaɓi dukkan saƙonni { $count } marasa tauraro a cikin { $folder }.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] Babu tattaunawa da aka karanta a nan.
+       *[message] Babu saƙonni da aka karanta a nan.
+    }
+   *[unread] { $kind ->
+        [conversation] Babu tattaunawa da ba a karanta ba a nan.
+       *[message] Babu saƙonni da ba a karanta ba a nan.
+    }
+    [starred] { $kind ->
+        [conversation] Babu tattaunawa masu tauraro a nan.
+       *[message] Babu saƙonni masu tauraro a nan.
+    }
+    [unstarred] { $kind ->
+        [conversation] Babu tattaunawa marasa tauraro a nan.
+       *[message] Babu saƙonni marasa tauraro a nan.
+    }
+}
 list-clear-selection = Share zaɓi
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] An share saƙonni { $count } har abada.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] An yi wa tattaunawa alama an karanta.
+       *[other] An yi wa tattaunawa { $count } alama an karanta.
+    }
+   *[message] { $count ->
+        [one] An yi wa saƙo alama an karanta.
+       *[other] An yi wa saƙonni { $count } alama an karanta.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] An yi wa tattaunawa alama ba a karanta ba.
+       *[other] An yi wa tattaunawa { $count } alama ba a karanta ba.
+    }
+   *[message] { $count ->
+        [one] An yi wa saƙo alama ba a karanta ba.
+       *[other] An yi wa saƙonni { $count } alama ba a karanta ba.
+    }
+}
 toast-undone = An janye aikin.
+toast-nothing-to-undo = Babu abin da za a janye.
+toast-cannot-undo-delete-forever = Ba za a iya dawo da wasiƙun da aka share har abada ba.
+toast-send-undone = An janye aikawa.
+toast-too-late-to-undo-send = Lokacin janyewa ya wuce: an riga an aika saƙon.
 toast-undo = Janye
 toast-no-spam-folder = Wannan asusun ba shi da foldar saƙonnin banza.

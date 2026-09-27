@@ -28,3 +28,4 @@ app-contacts-count = ཁྱོད་ཀྱི་གློག་འཕྲིན�
 app-contacts-top = ཁྱོད་ཀྱི་གློག་འཕྲིན་ནང་ལས་ གོང་མའི་མི་ { $count }། འཕྲིན་དོན་མང་ཤོས་བརྗེ་སོར་འབད་མི་ཧེ་མ།
 app-contacts-messages = འཕྲིན་དོན་ { $count }
 app-contacts-last = མཇུག་མ་ { $date }
+top-brand = Katna

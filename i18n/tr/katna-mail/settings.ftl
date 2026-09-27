@@ -68,6 +68,10 @@ settings-general-new-mail-detail = Tümünü yanıtla, Okundu olarak işaretle v
 settings-general-new-mail-sound = Ses çal
 settings-general-new-mail-sound-detail = Masaüstünün yeni posta sesi
 settings-general-desktop = Masaüstü
+settings-general-start-at-login = Oturum açıldığında Katna'yı başlat
+settings-general-start-at-login-detail = Pencereyi açmadan postaları eşitler, yeni posta bildirimlerini ve tepsi simgesini gösterir
+settings-general-login-window = Katna Mail penceresini de aç
+settings-general-login-window-detail = Pencere de oturum açıldığında açılır
 settings-general-tray = Katna'yı sistem tepsisinde göster
 settings-general-tray-detail = Okunmamış sayısı ve bir menüyle
 settings-general-unread-badge = Görev çubuğu simgesinde okunmamış sayısı
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = Her iletinin resimlerini her zaman gös
 settings-general-sending-summary = Göndermeyi geri al: gönderilen bir iletinin geri alınabilmesi için ne kadar bekleyeceği
 settings-general-offline-summary = Bağlantı olmadan okumak için son kaç günün postalarının tamamen indirileceği
 settings-general-notifications-summary = Yeni posta bildirimleri ve sesleri
-settings-general-desktop-summary = Oturum açıldığında Katna Mail'i açma, sistem tepsisi simgesi ve görev çubuğu simgesindeki okunmamış sayısı
+settings-general-desktop-summary = Oturum açıldığında Katna'yı başlatma, sistem tepsisi simgesi ve görev çubuğu simgesindeki okunmamış sayısı
 settings-accounts-accounts-summary = Hesap ekleyin veya kaldırın ya da hesabın resmini değiştirin
 settings-appearance-density-summary = Listede varsayılan veya sıkışık satırlar
 settings-appearance-scaling-summary = Her şeyi büyütün veya küçültün: metin, simgeler, boşluklar ve ayırıcılar
@@ -241,7 +245,7 @@ settings-search-results = “{ $query }” ile eşleşen ayarlar
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Oturum açılışında açma ayarı değiştirilemedi: { $error }
+settings-open-at-login-failed = Oturum açıldığında başlatma ayarı değiştirilemedi: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = Dil bilgisi
 settings-compose-grammar-detail = Bu bilgisayarda Harper ile denetlenir. Şimdilik yalnızca İngilizce: başka dillerdeki metinlere dokunulmaz.
 settings-compose-grammar-check = Dil bilgisini denetle
 settings-compose-grammar-check-detail = Yazarken dil bilgisi hatalarının altını çiz, İngilizce
+settings-compose-suggestions = Yazma önerileri
+settings-compose-suggestions-detail = Bu bilgisayarda, gönderdiğiniz ve yanıtladığınız postalardan öğrenilir; hiçbir şey bilgisayarın dışına çıkmaz. Bir öneriyi almak için Tab tuşuna basın veya yazmaya devam edin.
+settings-compose-suggestions-on = Yazarken öner
+settings-compose-suggestions-on-detail = Yazarken bir ifadenin olası devamını gri renkte göster
 settings-compose-grammar-summary = Yazarken dil bilgisi hatalarının altını çiz, İngilizce
+settings-compose-suggestions-summary = Yazarken bir ifadenin olası devamını gri renkte göster

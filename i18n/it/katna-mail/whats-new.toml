@@ -377,3 +377,21 @@ essa, e le sue correzioni compaiono proprio sotto: suggerimenti
 ortografici, correzioni grammaticali e Ignora, nel testo e nell'oggetto.
 Il clic destro apre ancora il menu completo.
 """
+
+["2026-09-27-1201-recipient-chips"]
+title = "I destinatari diventano chip"
+text = """
+Gli indirizzi in A, Cc e Ccn diventano chip che mostrano solo il nome. La
+freccia su un chip mostra il suo indirizzo, e con un doppio clic puoi
+modificarlo. Tutto ciò che non è un indirizzo valido è segnato in rosso, e
+Invia ti chiede di correggerlo prima.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna si avvia all'accesso"
+text = """
+Ora Katna si avvia in silenzio quando accedi: la posta si sincronizza, e
+le notifiche di nuova posta e l'icona nell'area di notifica compaiono
+senza aprire la finestra. Puoi disattivarlo, o far aprire anche la
+finestra, in Impostazioni > Generali > Desktop.
+"""

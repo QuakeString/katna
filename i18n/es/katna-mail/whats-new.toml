@@ -383,3 +383,21 @@ correcciones aparecen justo debajo: sugerencias de ortografía,
 correcciones gramaticales e Ignorar, en el texto y en el asunto. El clic
 derecho sigue abriendo el menú completo.
 """
+
+["2026-09-27-1201-recipient-chips"]
+title = "Destinatarios como fichas"
+text = """
+Las direcciones en Para, Cc y Cco se convierten en fichas que muestran
+solo el nombre. La flecha de una ficha muestra su dirección, y con un
+doble clic puedes editarla. Lo que no sea una dirección válida se marca en
+rojo, y Enviar te pide que lo corrijas primero.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna se inicia al iniciar sesión"
+text = """
+Katna ahora se inicia en silencio al iniciar sesión: el correo se
+sincroniza, y las notificaciones de correo nuevo y el icono de la bandeja
+aparecen sin abrir la ventana. Desactívalo, o haz que también se abra la
+ventana, en Ajustes > General > Escritorio.
+"""

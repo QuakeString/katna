@@ -126,6 +126,24 @@ attachment-encrypted-open = Este archivo llegó cifrado. Guárdalo para abrirlo 
 print-failed = No se ha podido imprimir: { $error }
 print-no-font = no se ha encontrado ninguna fuente
 print-opened-as-pdf = Se ha abierto como PDF para imprimirlo desde allí.
+print-preview-title = Vista previa de impresión
+print-preview-laying-out = Maquetando las páginas…
+print-preview-pages = { $count ->
+    [one] { $count } página
+    [many] { $count } de páginas
+   *[other] { $count } páginas
+}
+print-preview-more = { $count ->
+    [one] y { $count } página más
+    [many] y { $count } de páginas más
+   *[other] y { $count } páginas más
+}
+print-preview-failed = no se han podido mostrar las páginas
+print-preview-paper = Papel
+print-preview-a4 = A4
+print-preview-letter = Carta
+print-preview-cancel = Cancelar
+print-preview-print = Imprimir
 print-not-downloaded = (Aún no se ha descargado).
 print-encrypted = (Cifrado. Ábrelo en Katna Mail para imprimir su texto).
 print-to = Para: { $addresses }

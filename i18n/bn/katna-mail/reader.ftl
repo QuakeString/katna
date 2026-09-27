@@ -123,6 +123,22 @@ attachment-encrypted-open = এই ফাইলটি এনক্রিপ্�
 print-failed = প্রিন্ট করা যায়নি: { $error }
 print-no-font = কোনো ফন্ট পাওয়া যায়নি
 print-opened-as-pdf = PDF হিসেবে খোলা হয়েছে, সেখান থেকে প্রিন্ট করুন।
+print-preview-title = প্রিন্ট প্রিভিউ
+print-preview-laying-out = পৃষ্ঠাগুলি সাজানো হচ্ছে…
+print-preview-pages = { $count ->
+    [one] { $count }টি পৃষ্ঠা
+   *[other] { $count }টি পৃষ্ঠা
+}
+print-preview-more = { $count ->
+    [one] এবং আরও { $count }টি পৃষ্ঠা
+   *[other] এবং আরও { $count }টি পৃষ্ঠা
+}
+print-preview-failed = পৃষ্ঠাগুলি দেখানো যায়নি
+print-preview-paper = কাগজ
+print-preview-a4 = A4
+print-preview-letter = লেটার
+print-preview-cancel = বাতিল করুন
+print-preview-print = প্রিন্ট করুন
 print-not-downloaded = (এখনও ডাউনলোড করা হয়নি।)
 print-encrypted = (এনক্রিপ্ট করা। এর লেখা প্রিন্ট করতে Katna Mail-এ খুলুন।)
 print-to = প্রাপক: { $addresses }

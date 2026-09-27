@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] { $folder } ਵਿਚਲੇ ਸਾਰੇ { $count } ਸੁਨੇਹੇ ਚੁਣੋ
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] ਸਾਰੀਆਂ { $count } ਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] { $count } ਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] ਸਾਰੇ { $count } ਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ਅਣਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] ਸਾਰੀਆਂ { $count } ਅਣਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] { $count } ਅਣਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] ਸਾਰੇ { $count } ਅਣਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] ਸਾਰੀਆਂ { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] ਸਾਰੇ { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] ਸਾਰੀਆਂ { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] ਸਾਰੇ { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ਵਿਚਲੀ { $count } ਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] { $folder } ਵਿਚਲੀਆਂ ਸਾਰੀਆਂ { $count } ਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] { $folder } ਵਿਚਲਾ { $count } ਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] { $folder } ਵਿਚਲੇ ਸਾਰੇ { $count } ਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ਵਿਚਲੀ { $count } ਅਣਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] { $folder } ਵਿਚਲੀਆਂ ਸਾਰੀਆਂ { $count } ਅਣਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] { $folder } ਵਿਚਲਾ { $count } ਅਣਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] { $folder } ਵਿਚਲੇ ਸਾਰੇ { $count } ਅਣਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ਵਿਚਲੀ { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] { $folder } ਵਿਚਲੀਆਂ ਸਾਰੀਆਂ { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] { $folder } ਵਿਚਲਾ { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] { $folder } ਵਿਚਲੇ ਸਾਰੇ { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ਵਿਚਲੀ { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] { $folder } ਵਿਚਲੀਆਂ ਸਾਰੀਆਂ { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] { $folder } ਵਿਚਲਾ { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] { $folder } ਵਿਚਲੇ ਸਾਰੇ { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] ਇੱਥੇ ਕੋਈ ਪੜ੍ਹੀ ਗੱਲਬਾਤ ਨਹੀਂ ਹੈ।
+       *[message] ਇੱਥੇ ਕੋਈ ਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਨਹੀਂ ਹੈ।
+    }
+   *[unread] { $kind ->
+        [conversation] ਇੱਥੇ ਕੋਈ ਅਣਪੜ੍ਹੀ ਗੱਲਬਾਤ ਨਹੀਂ ਹੈ।
+       *[message] ਇੱਥੇ ਕੋਈ ਅਣਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਨਹੀਂ ਹੈ।
+    }
+    [starred] { $kind ->
+        [conversation] ਇੱਥੇ ਕੋਈ ਤਾਰਾਬੱਧ ਗੱਲਬਾਤ ਨਹੀਂ ਹੈ।
+       *[message] ਇੱਥੇ ਕੋਈ ਤਾਰਾਬੱਧ ਸੁਨੇਹਾ ਨਹੀਂ ਹੈ।
+    }
+    [unstarred] { $kind ->
+        [conversation] ਇੱਥੇ ਕੋਈ ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤ ਨਹੀਂ ਹੈ।
+       *[message] ਇੱਥੇ ਕੋਈ ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹਾ ਨਹੀਂ ਹੈ।
+    }
+}
 list-clear-selection = ਚੋਣ ਸਾਫ਼ ਕਰੋ
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count } ਸੁਨੇਹੇ ਹਮੇਸ਼ਾ ਲਈ ਮਿਟਾਏ ਗਏ।
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] ਗੱਲਬਾਤ ਪੜ੍ਹੀ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕੀਤੀ ਗਈ।
+       *[other] { $count } ਗੱਲਬਾਤਾਂ ਪੜ੍ਹੀਆਂ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕੀਤੀਆਂ ਗਈਆਂ।
+    }
+   *[message] { $count ->
+        [one] ਸੁਨੇਹਾ ਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕੀਤਾ ਗਿਆ।
+       *[other] { $count } ਸੁਨੇਹੇ ਪੜ੍ਹੇ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕੀਤੇ ਗਏ।
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] ਗੱਲਬਾਤ ਅਣਪੜ੍ਹੀ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕੀਤੀ ਗਈ।
+       *[other] { $count } ਗੱਲਬਾਤਾਂ ਅਣਪੜ੍ਹੀਆਂ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕੀਤੀਆਂ ਗਈਆਂ।
+    }
+   *[message] { $count ->
+        [one] ਸੁਨੇਹਾ ਅਣਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕੀਤਾ ਗਿਆ।
+       *[other] { $count } ਸੁਨੇਹੇ ਅਣਪੜ੍ਹੇ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕੀਤੇ ਗਏ।
+    }
+}
 toast-undone = ਕਾਰਵਾਈ ਅਣਕੀਤੀ ਕੀਤੀ ਗਈ।
+toast-nothing-to-undo = ਅਣਕੀਤਾ ਕਰਨ ਲਈ ਕੁਝ ਨਹੀਂ ਹੈ।
+toast-cannot-undo-delete-forever = ਹਮੇਸ਼ਾ ਲਈ ਮਿਟਾਈ ਗਈ ਮੇਲ ਵਾਪਸ ਨਹੀਂ ਲਿਆਂਦੀ ਜਾ ਸਕਦੀ।
+toast-send-undone = ਭੇਜਣਾ ਅਣਕੀਤਾ ਕੀਤਾ ਗਿਆ।
+toast-too-late-to-undo-send = ਅਣਕੀਤਾ ਕਰਨ ਲਈ ਬਹੁਤ ਦੇਰ ਹੋ ਗਈ: ਸੁਨੇਹਾ ਪਹਿਲਾਂ ਹੀ ਭੇਜਿਆ ਜਾ ਚੁੱਕਾ ਹੈ।
 toast-undo = ਅਣਕੀਤਾ ਕਰੋ
 toast-no-spam-folder = ਇਸ ਖਾਤੇ ਵਿੱਚ ਕੋਈ ਸਪੈਮ ਫੋਲਡਰ ਨਹੀਂ ਹੈ।

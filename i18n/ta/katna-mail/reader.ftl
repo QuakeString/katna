@@ -123,6 +123,22 @@ attachment-encrypted-open = இந்த ஃபைல் என்க்ரி�
 print-failed = அச்சிட முடியவில்லை: { $error }
 print-no-font = எழுத்துரு எதுவும் கிடைக்கவில்லை
 print-opened-as-pdf = அங்கிருந்து அச்சிட PDF ஆகத் திறக்கப்பட்டது.
+print-preview-title = அச்சு முன்னோட்டம்
+print-preview-laying-out = பக்கங்களை அமைக்கிறது…
+print-preview-pages = { $count ->
+    [one] { $count } பக்கம்
+   *[other] { $count } பக்கங்கள்
+}
+print-preview-more = { $count ->
+    [one] மேலும் { $count } பக்கம்
+   *[other] மேலும் { $count } பக்கங்கள்
+}
+print-preview-failed = பக்கங்களைக் காட்ட முடியவில்லை
+print-preview-paper = தாள்
+print-preview-a4 = A4
+print-preview-letter = லெட்டர்
+print-preview-cancel = ரத்துசெய்
+print-preview-print = அச்சிடு
 print-not-downloaded = (இன்னும் பதிவிறக்கப்படவில்லை.)
 print-encrypted = (என்க்ரிப்ட் செய்யப்பட்டது. இதன் உரையை அச்சிட Katna Mail இல் திறக்கவும்.)
 print-to = பெறுநர்: { $addresses }

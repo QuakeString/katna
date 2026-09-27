@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] { $folder }ରେ ଥିବା ସମସ୍ତ { $count }ଟି ମେସେଜ ଚୟନ କରନ୍ତୁ
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }ଟି ପଢ଼ାଯାଇଥିବା ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+           *[other] ସମସ୍ତ { $count }ଟି ପଢ଼ାଯାଇଥିବା ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+        }
+       *[message] { $count ->
+            [one] { $count }ଟି ପଢ଼ାଯାଇଥିବା ମେସେଜ ଚୟନ କରାଯାଇଛି।
+           *[other] ସମସ୍ତ { $count }ଟି ପଢ଼ାଯାଇଥିବା ମେସେଜ ଚୟନ କରାଯାଇଛି।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }ଟି ପଢ଼ାଯାଇନଥିବା ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+           *[other] ସମସ୍ତ { $count }ଟି ପଢ଼ାଯାଇନଥିବା ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+        }
+       *[message] { $count ->
+            [one] { $count }ଟି ପଢ଼ାଯାଇନଥିବା ମେସେଜ ଚୟନ କରାଯାଇଛି।
+           *[other] ସମସ୍ତ { $count }ଟି ପଢ଼ାଯାଇନଥିବା ମେସେଜ ଚୟନ କରାଯାଇଛି।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }ଟି ତାରାଙ୍କିତ ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+           *[other] ସମସ୍ତ { $count }ଟି ତାରାଙ୍କିତ ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+        }
+       *[message] { $count ->
+            [one] { $count }ଟି ତାରାଙ୍କିତ ମେସେଜ ଚୟନ କରାଯାଇଛି।
+           *[other] ସମସ୍ତ { $count }ଟି ତାରାଙ୍କିତ ମେସେଜ ଚୟନ କରାଯାଇଛି।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }ଟି ତାରାଙ୍କିତ ନଥିବା ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+           *[other] ସମସ୍ତ { $count }ଟି ତାରାଙ୍କିତ ନଥିବା ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+        }
+       *[message] { $count ->
+            [one] { $count }ଟି ତାରାଙ୍କିତ ନଥିବା ମେସେଜ ଚୟନ କରାଯାଇଛି।
+           *[other] ସମସ୍ତ { $count }ଟି ତାରାଙ୍କିତ ନଥିବା ମେସେଜ ଚୟନ କରାଯାଇଛି।
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }ରେ ଥିବା { $count }ଟି ପଢ଼ାଯାଇଥିବା ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+           *[other] { $folder }ରେ ଥିବା ସମସ୍ତ { $count }ଟି ପଢ଼ାଯାଇଥିବା ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+        }
+       *[message] { $count ->
+            [one] { $folder }ରେ ଥିବା { $count }ଟି ପଢ଼ାଯାଇଥିବା ମେସେଜ ଚୟନ କରାଯାଇଛି।
+           *[other] { $folder }ରେ ଥିବା ସମସ୍ତ { $count }ଟି ପଢ଼ାଯାଇଥିବା ମେସେଜ ଚୟନ କରାଯାଇଛି।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }ରେ ଥିବା { $count }ଟି ପଢ଼ାଯାଇନଥିବା ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+           *[other] { $folder }ରେ ଥିବା ସମସ୍ତ { $count }ଟି ପଢ଼ାଯାଇନଥିବା ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+        }
+       *[message] { $count ->
+            [one] { $folder }ରେ ଥିବା { $count }ଟି ପଢ଼ାଯାଇନଥିବା ମେସେଜ ଚୟନ କରାଯାଇଛି।
+           *[other] { $folder }ରେ ଥିବା ସମସ୍ତ { $count }ଟି ପଢ଼ାଯାଇନଥିବା ମେସେଜ ଚୟନ କରାଯାଇଛି।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }ରେ ଥିବା { $count }ଟି ତାରାଙ୍କିତ ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+           *[other] { $folder }ରେ ଥିବା ସମସ୍ତ { $count }ଟି ତାରାଙ୍କିତ ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+        }
+       *[message] { $count ->
+            [one] { $folder }ରେ ଥିବା { $count }ଟି ତାରାଙ୍କିତ ମେସେଜ ଚୟନ କରାଯାଇଛି।
+           *[other] { $folder }ରେ ଥିବା ସମସ୍ତ { $count }ଟି ତାରାଙ୍କିତ ମେସେଜ ଚୟନ କରାଯାଇଛି।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }ରେ ଥିବା { $count }ଟି ତାରାଙ୍କିତ ନଥିବା ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+           *[other] { $folder }ରେ ଥିବା ସମସ୍ତ { $count }ଟି ତାରାଙ୍କିତ ନଥିବା ବାର୍ତ୍ତାଳାପ ଚୟନ କରାଯାଇଛି।
+        }
+       *[message] { $count ->
+            [one] { $folder }ରେ ଥିବା { $count }ଟି ତାରାଙ୍କିତ ନଥିବା ମେସେଜ ଚୟନ କରାଯାଇଛି।
+           *[other] { $folder }ରେ ଥିବା ସମସ୍ତ { $count }ଟି ତାରାଙ୍କିତ ନଥିବା ମେସେଜ ଚୟନ କରାଯାଇଛି।
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] ଏଠାରେ କୌଣସି ପଢ଼ାଯାଇଥିବା ବାର୍ତ୍ତାଳାପ ନାହିଁ।
+       *[message] ଏଠାରେ କୌଣସି ପଢ଼ାଯାଇଥିବା ମେସେଜ ନାହିଁ।
+    }
+   *[unread] { $kind ->
+        [conversation] ଏଠାରେ କୌଣସି ପଢ଼ାଯାଇନଥିବା ବାର୍ତ୍ତାଳାପ ନାହିଁ।
+       *[message] ଏଠାରେ କୌଣସି ପଢ଼ାଯାଇନଥିବା ମେସେଜ ନାହିଁ।
+    }
+    [starred] { $kind ->
+        [conversation] ଏଠାରେ କୌଣସି ତାରାଙ୍କିତ ବାର୍ତ୍ତାଳାପ ନାହିଁ।
+       *[message] ଏଠାରେ କୌଣସି ତାରାଙ୍କିତ ମେସେଜ ନାହିଁ।
+    }
+    [unstarred] { $kind ->
+        [conversation] ଏଠାରେ କୌଣସି ତାରାଙ୍କିତ ନଥିବା ବାର୍ତ୍ତାଳାପ ନାହିଁ।
+       *[message] ଏଠାରେ କୌଣସି ତାରାଙ୍କିତ ନଥିବା ମେସେଜ ନାହିଁ।
+    }
+}
 list-clear-selection = ଚୟନ ଖାଲି କରନ୍ତୁ
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count }ଟି ମେସେଜ ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ କରାଗଲା।
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] ବାର୍ତ୍ତାଳାପ ପଢ଼ାଯାଇଛି ଭାବେ ଚିହ୍ନିତ କରାଗଲା।
+       *[other] { $count }ଟି ବାର୍ତ୍ତାଳାପ ପଢ଼ାଯାଇଛି ଭାବେ ଚିହ୍ନିତ କରାଗଲା।
+    }
+   *[message] { $count ->
+        [one] ମେସେଜ ପଢ଼ାଯାଇଛି ଭାବେ ଚିହ୍ନିତ କରାଗଲା।
+       *[other] { $count }ଟି ମେସେଜ ପଢ଼ାଯାଇଛି ଭାବେ ଚିହ୍ନିତ କରାଗଲା।
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] ବାର୍ତ୍ତାଳାପ ପଢ଼ାଯାଇନାହିଁ ଭାବେ ଚିହ୍ନିତ କରାଗଲା।
+       *[other] { $count }ଟି ବାର୍ତ୍ତାଳାପ ପଢ଼ାଯାଇନାହିଁ ଭାବେ ଚିହ୍ନିତ କରାଗଲା।
+    }
+   *[message] { $count ->
+        [one] ମେସେଜ ପଢ଼ାଯାଇନାହିଁ ଭାବେ ଚିହ୍ନିତ କରାଗଲା।
+       *[other] { $count }ଟି ମେସେଜ ପଢ଼ାଯାଇନାହିଁ ଭାବେ ଚିହ୍ନିତ କରାଗଲା।
+    }
+}
 toast-undone = କାର୍ଯ୍ୟ ପୂର୍ବବତ୍ କରାଗଲା।
+toast-nothing-to-undo = ପୂର୍ବବତ୍ କରିବାକୁ କିଛି ନାହିଁ।
+toast-cannot-undo-delete-forever = ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ ହୋଇଥିବା ମେଲ ଫେରାଇ ଅଣାଯାଇପାରିବ ନାହିଁ।
+toast-send-undone = ପଠାଇବା ପୂର୍ବବତ୍ କରାଗଲା।
+toast-too-late-to-undo-send = ପୂର୍ବବତ୍ କରିବାକୁ ବହୁତ ଡେରି ହୋଇଗଲା: ମେସେଜଟି ପୂର୍ବରୁ ପଠାଯାଇସାରିଛି।
 toast-undo = ପୂର୍ବବତ୍ କରନ୍ତୁ
 toast-no-spam-folder = ଏହି ଆକାଉଣ୍ଟରେ କୌଣସି ସ୍ପାମ ଫୋଲ୍ଡର ନାହିଁ।

@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] Họrọ mkparịta ụka { $count } niile dị na { $folder }
    *[message] Họrọ ozi { $count } niile dị na { $folder }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile agụrụ.
+       *[message] Ahọrọla ozi { $count } niile agụrụ.
+    }
+   *[unread] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile a gụghị.
+       *[message] Ahọrọla ozi { $count } niile a gụghị.
+    }
+    [starred] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile nwere kpakpando.
+       *[message] Ahọrọla ozi { $count } niile nwere kpakpando.
+    }
+    [unstarred] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile enweghị kpakpando.
+       *[message] Ahọrọla ozi { $count } niile enweghị kpakpando.
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile agụrụ dị na { $folder }.
+       *[message] Ahọrọla ozi { $count } niile agụrụ dị na { $folder }.
+    }
+   *[unread] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile a gụghị dị na { $folder }.
+       *[message] Ahọrọla ozi { $count } niile a gụghị dị na { $folder }.
+    }
+    [starred] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile nwere kpakpando dị na { $folder }.
+       *[message] Ahọrọla ozi { $count } niile nwere kpakpando dị na { $folder }.
+    }
+    [unstarred] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile enweghị kpakpando dị na { $folder }.
+       *[message] Ahọrọla ozi { $count } niile enweghị kpakpando dị na { $folder }.
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] Enweghị mkparịta ụka agụrụ ebe a.
+       *[message] Enweghị ozi agụrụ ebe a.
+    }
+   *[unread] { $kind ->
+        [conversation] Enweghị mkparịta ụka a gụghị ebe a.
+       *[message] Enweghị ozi a gụghị ebe a.
+    }
+    [starred] { $kind ->
+        [conversation] Enweghị mkparịta ụka nwere kpakpando ebe a.
+       *[message] Enweghị ozi nwere kpakpando ebe a.
+    }
+    [unstarred] { $kind ->
+        [conversation] Enweghị mkparịta ụka enweghị kpakpando ebe a.
+       *[message] Enweghị ozi enweghị kpakpando ebe a.
+    }
+}
 list-clear-selection = Kpochapụ nhọrọ
 
 ## Mail list: empty states
@@ -160,6 +214,18 @@ toast-deleted-forever = { $kind ->
     [conversation] Ehichapụla mkparịta ụka { $count } ruo mgbe ebighị ebi.
    *[message] Ehichapụla ozi { $count } ruo mgbe ebighị ebi.
 }
+toast-marked-read = { $kind ->
+    [conversation] Akaala mkparịta ụka { $count } akara dị ka agụrụ.
+   *[message] Akaala ozi { $count } akara dị ka agụrụ.
+}
+toast-marked-unread = { $kind ->
+    [conversation] Akaala mkparịta ụka { $count } akara dị ka a gụghị.
+   *[message] Akaala ozi { $count } akara dị ka a gụghị.
+}
 toast-undone = Emegharịala omume ahụ.
+toast-nothing-to-undo = Enweghị ihe a ga-emegharị.
+toast-cannot-undo-delete-forever = Enweghị ike iweghachi ozi ehichapụrụ ruo mgbe ebighị ebi.
+toast-send-undone = Emegharịala izipu.
+toast-too-late-to-undo-send = Oge agafeela imegharị ya: ezigalarịrị ozi ahụ.
 toast-undo = Megharịa
 toast-no-spam-folder = Akaụntụ a enweghị folda spam.

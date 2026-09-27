@@ -114,6 +114,20 @@ attachment-encrypted-open = ཡིག་སྣོད་འདི་ གསང་
 print-failed = དཔར་བསྐྲུན་འབད་མ་ཚུགས: { $error }
 print-no-font = ཡིག་གཟུགས་འཚོལ་མ་ཐོབ།
 print-opened-as-pdf = དེ་ལས་དཔར་བསྐྲུན་འབད་ནིའི་དོན་ལུ་ PDF སྦེ་ཁ་ཕྱེ་ཡི།
+print-preview-title = དཔར་བསྐྲུན་སྔོན་ལྟ།
+print-preview-laying-out = ཤོག་ལེབ་ཚུ་ སྒྲིག་བཀོད་འབད་དོ…
+print-preview-pages = { $count ->
+   *[other] ཤོག་ལེབ་ { $count }
+}
+print-preview-more = { $count ->
+   *[other] དེ་ལས་ ཤོག་ལེབ་ { $count } ཁ་སྐོང་
+}
+print-preview-failed = ཤོག་ལེབ་ཚུ་ སྟོན་མ་ཚུགས
+print-preview-paper = ཤོག་བུ།
+print-preview-a4 = A4
+print-preview-letter = Letter
+print-preview-cancel = ཆ་མེད་གཏང་།
+print-preview-print = དཔར་བསྐྲུན་འབད།
 print-not-downloaded = (ད་ཚུན་ཕབ་ལེན་འབད་དེ་མེད།)
 print-encrypted = (གསང་བཟོ་འབད་ཡོད། དེ་གི་ཚིག་ཡིག་དཔར་བསྐྲུན་འབད་ནིའི་དོན་ལུ་ Katna Mail ནང་ཁ་ཕྱེ།)
 print-to = ལུ: { $addresses }

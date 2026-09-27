@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] Chọn tất cả { $count } cuộc hội thoại trong { $folder }
    *[message] Chọn tất cả { $count } thư trong { $folder }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại đã đọc.
+       *[message] Đã chọn tất cả { $count } thư đã đọc.
+    }
+   *[unread] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại chưa đọc.
+       *[message] Đã chọn tất cả { $count } thư chưa đọc.
+    }
+    [starred] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại có gắn dấu sao.
+       *[message] Đã chọn tất cả { $count } thư có gắn dấu sao.
+    }
+    [unstarred] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại không có dấu sao.
+       *[message] Đã chọn tất cả { $count } thư không có dấu sao.
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại đã đọc trong { $folder }.
+       *[message] Đã chọn tất cả { $count } thư đã đọc trong { $folder }.
+    }
+   *[unread] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại chưa đọc trong { $folder }.
+       *[message] Đã chọn tất cả { $count } thư chưa đọc trong { $folder }.
+    }
+    [starred] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại có gắn dấu sao trong { $folder }.
+       *[message] Đã chọn tất cả { $count } thư có gắn dấu sao trong { $folder }.
+    }
+    [unstarred] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại không có dấu sao trong { $folder }.
+       *[message] Đã chọn tất cả { $count } thư không có dấu sao trong { $folder }.
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] Không có cuộc hội thoại đã đọc nào ở đây.
+       *[message] Không có thư đã đọc nào ở đây.
+    }
+   *[unread] { $kind ->
+        [conversation] Không có cuộc hội thoại chưa đọc nào ở đây.
+       *[message] Không có thư chưa đọc nào ở đây.
+    }
+    [starred] { $kind ->
+        [conversation] Không có cuộc hội thoại có gắn dấu sao nào ở đây.
+       *[message] Không có thư có gắn dấu sao nào ở đây.
+    }
+    [unstarred] { $kind ->
+        [conversation] Không có cuộc hội thoại không có dấu sao nào ở đây.
+       *[message] Không có thư không có dấu sao nào ở đây.
+    }
+}
 list-clear-selection = Bỏ chọn
 
 ## Mail list: empty states
@@ -160,6 +214,18 @@ toast-deleted-forever = { $kind ->
     [conversation] Đã xóa vĩnh viễn { $count } cuộc hội thoại.
    *[message] Đã xóa vĩnh viễn { $count } thư.
 }
+toast-marked-read = { $kind ->
+    [conversation] Đã đánh dấu { $count } cuộc hội thoại là đã đọc.
+   *[message] Đã đánh dấu { $count } thư là đã đọc.
+}
+toast-marked-unread = { $kind ->
+    [conversation] Đã đánh dấu { $count } cuộc hội thoại là chưa đọc.
+   *[message] Đã đánh dấu { $count } thư là chưa đọc.
+}
 toast-undone = Đã hoàn tác thao tác.
+toast-nothing-to-undo = Không có gì để hoàn tác.
+toast-cannot-undo-delete-forever = Thư đã xóa vĩnh viễn thì không thể khôi phục.
+toast-send-undone = Đã hoàn tác việc gửi.
+toast-too-late-to-undo-send = Quá muộn để hoàn tác: thư đã được gửi đi.
 toast-undo = Hoàn tác
 toast-no-spam-folder = Tài khoản này không có thư mục thư rác.

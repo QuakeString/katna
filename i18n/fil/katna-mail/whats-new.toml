@@ -389,3 +389,22 @@ lalabas ang mga pagtatama nito sa mismong ilalim: mga mungkahi sa
 baybay, mga pagtatama sa grammar at Balewalain, sa text at sa subject.
 Binubuksan pa rin ng right-click ang buong menu.
 """
+
+["2026-09-27-1201-recipient-chips"]
+title = "Mga tatanggap bilang chip"
+text = """
+Nagiging chip na pangalan lang ang ipinapakita ang mga address sa Para
+kay, Cc at Bcc. Ipinapakita ng arrow sa isang chip ang address nito, at
+sa pag-double click ay mae-edit mo ito. Minamarkahan nang pula ang
+anumang hindi valid na address, at hinihiling ng Ipadala na ayusin mo
+muna ito.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Nagsisimula ang Katna sa pag-log in"
+text = """
+Tahimik nang nagsisimula ang Katna kapag nag-log in ka: nagsi-sync ang
+mail, at lumalabas ang mga notification ng bagong mail at ang icon sa
+system tray nang hindi binubuksan ang window. I-off ito, o ipabukas din
+ang window, sa Mga setting > Pangkalahatan > Desktop.
+"""

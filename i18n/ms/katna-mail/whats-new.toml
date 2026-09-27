@@ -376,3 +376,21 @@ pembetulannya muncul betul-betul di bawahnya: cadangan ejaan, pembetulan
 tatabahasa dan Abaikan, dalam teks dan subjek. Klik kanan masih membuka
 menu penuh.
 """
+
+["2026-09-27-1201-recipient-chips"]
+title = "Penerima sebagai cip"
+text = """
+Alamat dalam Kepada, Sk dan Skt menjadi cip yang hanya menunjukkan nama.
+Anak panah pada cip menunjukkan alamatnya, dan klik dua kali membolehkan
+anda menyuntingnya. Apa-apa yang bukan alamat yang sah ditanda dengan
+warna merah, dan Hantar meminta anda membetulkannya dahulu.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna bermula semasa log masuk"
+text = """
+Katna kini bermula secara senyap apabila anda log masuk: mel
+disegerakkan, dan pemberitahuan mel baharu serta ikon dulang muncul
+tanpa membuka tetingkap. Matikannya, atau biarkan tetingkap turut
+dibuka, dalam Tetapan > Umum > Desktop.
+"""

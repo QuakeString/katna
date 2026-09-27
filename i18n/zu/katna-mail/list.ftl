@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] Khetha yonke imilayezo engu-{ $count } ku-{ $folder }
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Ingxoxo efundiwe engu-{ $count } ikhethiwe.
+           *[other] Zonke izingxoxo ezifundiwe ezingu-{ $count } zikhethiwe.
+        }
+       *[message] { $count ->
+            [one] Umlayezo ofundiwe ongu-{ $count } ukhethiwe.
+           *[other] Yonke imilayezo efundiwe engu-{ $count } ikhethiwe.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Ingxoxo engafundiwe engu-{ $count } ikhethiwe.
+           *[other] Zonke izingxoxo ezingafundiwe ezingu-{ $count } zikhethiwe.
+        }
+       *[message] { $count ->
+            [one] Umlayezo ongafundiwe ongu-{ $count } ukhethiwe.
+           *[other] Yonke imilayezo engafundiwe engu-{ $count } ikhethiwe.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Ingxoxo enenkanyezi engu-{ $count } ikhethiwe.
+           *[other] Zonke izingxoxo ezinenkanyezi ezingu-{ $count } zikhethiwe.
+        }
+       *[message] { $count ->
+            [one] Umlayezo onenkanyezi ongu-{ $count } ukhethiwe.
+           *[other] Yonke imilayezo enenkanyezi engu-{ $count } ikhethiwe.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Ingxoxo engenankanyezi engu-{ $count } ikhethiwe.
+           *[other] Zonke izingxoxo ezingenankanyezi ezingu-{ $count } zikhethiwe.
+        }
+       *[message] { $count ->
+            [one] Umlayezo ongenankanyezi ongu-{ $count } ukhethiwe.
+           *[other] Yonke imilayezo engenankanyezi engu-{ $count } ikhethiwe.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Ingxoxo efundiwe engu-{ $count } ku-{ $folder } ikhethiwe.
+           *[other] Zonke izingxoxo ezifundiwe ezingu-{ $count } ku-{ $folder } zikhethiwe.
+        }
+       *[message] { $count ->
+            [one] Umlayezo ofundiwe ongu-{ $count } ku-{ $folder } ukhethiwe.
+           *[other] Yonke imilayezo efundiwe engu-{ $count } ku-{ $folder } ikhethiwe.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Ingxoxo engafundiwe engu-{ $count } ku-{ $folder } ikhethiwe.
+           *[other] Zonke izingxoxo ezingafundiwe ezingu-{ $count } ku-{ $folder } zikhethiwe.
+        }
+       *[message] { $count ->
+            [one] Umlayezo ongafundiwe ongu-{ $count } ku-{ $folder } ukhethiwe.
+           *[other] Yonke imilayezo engafundiwe engu-{ $count } ku-{ $folder } ikhethiwe.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Ingxoxo enenkanyezi engu-{ $count } ku-{ $folder } ikhethiwe.
+           *[other] Zonke izingxoxo ezinenkanyezi ezingu-{ $count } ku-{ $folder } zikhethiwe.
+        }
+       *[message] { $count ->
+            [one] Umlayezo onenkanyezi ongu-{ $count } ku-{ $folder } ukhethiwe.
+           *[other] Yonke imilayezo enenkanyezi engu-{ $count } ku-{ $folder } ikhethiwe.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Ingxoxo engenankanyezi engu-{ $count } ku-{ $folder } ikhethiwe.
+           *[other] Zonke izingxoxo ezingenankanyezi ezingu-{ $count } ku-{ $folder } zikhethiwe.
+        }
+       *[message] { $count ->
+            [one] Umlayezo ongenankanyezi ongu-{ $count } ku-{ $folder } ukhethiwe.
+           *[other] Yonke imilayezo engenankanyezi engu-{ $count } ku-{ $folder } ikhethiwe.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] Azikho izingxoxo ezifundiwe lapha.
+       *[message] Ayikho imilayezo efundiwe lapha.
+    }
+   *[unread] { $kind ->
+        [conversation] Azikho izingxoxo ezingafundiwe lapha.
+       *[message] Ayikho imilayezo engafundiwe lapha.
+    }
+    [starred] { $kind ->
+        [conversation] Azikho izingxoxo ezinenkanyezi lapha.
+       *[message] Ayikho imilayezo enenkanyezi lapha.
+    }
+    [unstarred] { $kind ->
+        [conversation] Azikho izingxoxo ezingenankanyezi lapha.
+       *[message] Ayikho imilayezo engenankanyezi lapha.
+    }
+}
 list-clear-selection = Sula okukhethiwe
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] Imilayezo engu-{ $count } isuswe unomphela.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] Ingxoxo imakwe njengokufundiwe.
+       *[other] Izingxoxo ezingu-{ $count } zimakwe njengokufundiwe.
+    }
+   *[message] { $count ->
+        [one] Umlayezo umakwe njengokufundiwe.
+       *[other] Imilayezo engu-{ $count } imakwe njengokufundiwe.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] Ingxoxo imakwe njengokungafundiwe.
+       *[other] Izingxoxo ezingu-{ $count } zimakwe njengokungafundiwe.
+    }
+   *[message] { $count ->
+        [one] Umlayezo umakwe njengokungafundiwe.
+       *[other] Imilayezo engu-{ $count } imakwe njengokungafundiwe.
+    }
+}
 toast-undone = Isenzo sihlehlisiwe.
+toast-nothing-to-undo = Akukho okungahlehliswa.
+toast-cannot-undo-delete-forever = Imeyili esuswe unomphela ayikwazi ukubuyiswa.
+toast-send-undone = Ukuthumela kuhlehlisiwe.
+toast-too-late-to-undo-send = Sekwephuze kakhulu ukuhlehlisa: umlayezo usuthunyelwe.
 toast-undo = Hlehlisa
 toast-no-spam-folder = Le akhawunti ayinayo ifolda kagaxekile.

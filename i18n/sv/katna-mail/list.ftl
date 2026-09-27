@@ -101,6 +101,108 @@ list-select-all-in = { $kind ->
        *[other] Markera alla { $count } meddelanden i { $folder }
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } läst konversation är markerad.
+           *[other] Alla { $count } lästa konversationer är markerade.
+        }
+       *[message] { $count ->
+            [one] { $count } läst meddelande är markerat.
+           *[other] Alla { $count } lästa meddelanden är markerade.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } oläst konversation är markerad.
+           *[other] Alla { $count } olästa konversationer är markerade.
+        }
+       *[message] { $count ->
+            [one] { $count } oläst meddelande är markerat.
+           *[other] Alla { $count } olästa meddelanden är markerade.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } stjärnmärkt konversation är markerad.
+           *[other] Alla { $count } stjärnmärkta konversationer är markerade.
+        }
+       *[message] { $count ->
+            [one] { $count } stjärnmärkt meddelande är markerat.
+           *[other] Alla { $count } stjärnmärkta meddelanden är markerade.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } konversation utan stjärna är markerad.
+           *[other] Alla { $count } konversationer utan stjärna är markerade.
+        }
+       *[message] { $count ->
+            [one] { $count } meddelande utan stjärna är markerat.
+           *[other] Alla { $count } meddelanden utan stjärna är markerade.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } läst konversation i { $folder } är markerad.
+           *[other] Alla { $count } lästa konversationer i { $folder } är markerade.
+        }
+       *[message] { $count ->
+            [one] { $count } läst meddelande i { $folder } är markerat.
+           *[other] Alla { $count } lästa meddelanden i { $folder } är markerade.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } oläst konversation i { $folder } är markerad.
+           *[other] Alla { $count } olästa konversationer i { $folder } är markerade.
+        }
+       *[message] { $count ->
+            [one] { $count } oläst meddelande i { $folder } är markerat.
+           *[other] Alla { $count } olästa meddelanden i { $folder } är markerade.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } stjärnmärkt konversation i { $folder } är markerad.
+           *[other] Alla { $count } stjärnmärkta konversationer i { $folder } är markerade.
+        }
+       *[message] { $count ->
+            [one] { $count } stjärnmärkt meddelande i { $folder } är markerat.
+           *[other] Alla { $count } stjärnmärkta meddelanden i { $folder } är markerade.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } konversation utan stjärna i { $folder } är markerad.
+           *[other] Alla { $count } konversationer utan stjärna i { $folder } är markerade.
+        }
+       *[message] { $count ->
+            [one] { $count } meddelande utan stjärna i { $folder } är markerat.
+           *[other] Alla { $count } meddelanden utan stjärna i { $folder } är markerade.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] Inga lästa konversationer här.
+       *[message] Inga lästa meddelanden här.
+    }
+   *[unread] { $kind ->
+        [conversation] Inga olästa konversationer här.
+       *[message] Inga olästa meddelanden här.
+    }
+    [starred] { $kind ->
+        [conversation] Inga stjärnmärkta konversationer här.
+       *[message] Inga stjärnmärkta meddelanden här.
+    }
+    [unstarred] { $kind ->
+        [conversation] Inga konversationer utan stjärna här.
+       *[message] Inga meddelanden utan stjärna här.
+    }
+}
 list-clear-selection = Rensa markering
 
 ## Mail list: empty states
@@ -259,6 +361,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count } meddelanden har raderats permanent.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har markerats som läst.
+       *[other] { $count } konversationer har markerats som lästa.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har markerats som läst.
+       *[other] { $count } meddelanden har markerats som lästa.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har markerats som oläst.
+       *[other] { $count } konversationer har markerats som olästa.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har markerats som oläst.
+       *[other] { $count } meddelanden har markerats som olästa.
+    }
+}
 toast-undone = Åtgärden har ångrats.
+toast-nothing-to-undo = Inget att ångra.
+toast-cannot-undo-delete-forever = E-post som har raderats permanent kan inte återställas.
+toast-send-undone = Skickandet har ångrats.
+toast-too-late-to-undo-send = För sent att ångra: meddelandet har redan skickats.
 toast-undo = Ångra
 toast-no-spam-folder = Det här kontot har ingen skräppostmapp.

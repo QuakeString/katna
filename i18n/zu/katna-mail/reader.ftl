@@ -123,6 +123,22 @@ attachment-encrypted-open = Leli fayela lifike libethelwe. Lilondoloze ukuze uli
 print-failed = Ayikwazanga ukuphrinta: { $error }
 print-no-font = alikho ifonti elitholakele
 print-opened-as-pdf = Kuvulwe njenge-PDF ukuze uphrinte ukusuka lapho.
+print-preview-title = Ukubuka kuqala kokuphrinta
+print-preview-laying-out = Kuhlelwa amakhasi…
+print-preview-pages = { $count ->
+    [one] Ikhasi elingu-{ $count }
+   *[other] Amakhasi angu-{ $count }
+}
+print-preview-more = { $count ->
+    [one] nekhasi elingu-{ $count } elengeziwe
+   *[other] namakhasi angu-{ $count } engeziwe
+}
+print-preview-failed = amakhasi awakwazanga ukuboniswa
+print-preview-paper = Iphepha
+print-preview-a4 = A4
+print-preview-letter = Letter
+print-preview-cancel = Khansela
+print-preview-print = Phrinta
 print-not-downloaded = (Akukalandwa.)
 print-encrypted = (Kubethelwe. Kuvule ku-Katna Mail ukuze uphrinte umbhalo wakho.)
 print-to = Ku: { $addresses }

@@ -375,3 +375,21 @@ correções aparecem logo abaixo: sugestões de ortografia, correções
 gramaticais e Ignorar, no texto e no assunto. O clique direito continua
 abrindo o menu completo.
 """
+
+["2026-09-27-1201-recipient-chips"]
+title = "Destinatários como chips"
+text = """
+Os endereços em Para, Cc e Cco viram chips que mostram só o nome. A seta
+em um chip mostra o endereço, e um clique duplo permite editá-lo. Tudo o
+que não for um endereço válido fica marcado em vermelho, e Enviar pede
+que você corrija antes.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "O Katna inicia com o login"
+text = """
+Agora o Katna inicia discretamente quando você faz login: os e-mails são
+sincronizados, e as notificações de novos e-mails e o ícone da bandeja
+aparecem sem abrir a janela. Desative isso, ou faça a janela abrir
+também, em Configurações > Geral > Área de trabalho.
+"""

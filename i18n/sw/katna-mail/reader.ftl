@@ -123,6 +123,22 @@ attachment-encrypted-open = Faili hii ilikuja ikiwa imesimbwa. Ihifadhi ili uifu
 print-failed = Imeshindwa kuchapisha: { $error }
 print-no-font = hakuna fonti iliyopatikana
 print-opened-as-pdf = Imefunguliwa kama PDF ili uchapishe kutoka hapo.
+print-preview-title = Onyesho la kuchapisha
+print-preview-laying-out = Inapanga kurasa…
+print-preview-pages = { $count ->
+    [one] Ukurasa { $count }
+   *[other] Kurasa { $count }
+}
+print-preview-more = { $count ->
+    [one] na ukurasa { $count } zaidi
+   *[other] na kurasa { $count } zaidi
+}
+print-preview-failed = kurasa hazikuweza kuonyeshwa
+print-preview-paper = Karatasi
+print-preview-a4 = A4
+print-preview-letter = Letter
+print-preview-cancel = Ghairi
+print-preview-print = Chapisha
 print-not-downloaded = (Bado haujapakuliwa.)
 print-encrypted = (Umesimbwa. Ufungue katika Katna Mail ili uchapishe maandishi yake.)
 print-to = Kwa: { $addresses }

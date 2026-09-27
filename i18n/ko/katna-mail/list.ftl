@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] { $folder }의 대화 { $count }개 모두 선택
    *[message] { $folder }의 메일 { $count }개 모두 선택
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] 읽은 대화 { $count }개가 모두 선택되었습니다.
+       *[message] 읽은 메일 { $count }개가 모두 선택되었습니다.
+    }
+   *[unread] { $kind ->
+        [conversation] 읽지 않은 대화 { $count }개가 모두 선택되었습니다.
+       *[message] 읽지 않은 메일 { $count }개가 모두 선택되었습니다.
+    }
+    [starred] { $kind ->
+        [conversation] 별표가 있는 대화 { $count }개가 모두 선택되었습니다.
+       *[message] 별표가 있는 메일 { $count }개가 모두 선택되었습니다.
+    }
+    [unstarred] { $kind ->
+        [conversation] 별표가 없는 대화 { $count }개가 모두 선택되었습니다.
+       *[message] 별표가 없는 메일 { $count }개가 모두 선택되었습니다.
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $folder }의 읽은 대화 { $count }개가 모두 선택되었습니다.
+       *[message] { $folder }의 읽은 메일 { $count }개가 모두 선택되었습니다.
+    }
+   *[unread] { $kind ->
+        [conversation] { $folder }의 읽지 않은 대화 { $count }개가 모두 선택되었습니다.
+       *[message] { $folder }의 읽지 않은 메일 { $count }개가 모두 선택되었습니다.
+    }
+    [starred] { $kind ->
+        [conversation] { $folder }의 별표가 있는 대화 { $count }개가 모두 선택되었습니다.
+       *[message] { $folder }의 별표가 있는 메일 { $count }개가 모두 선택되었습니다.
+    }
+    [unstarred] { $kind ->
+        [conversation] { $folder }의 별표가 없는 대화 { $count }개가 모두 선택되었습니다.
+       *[message] { $folder }의 별표가 없는 메일 { $count }개가 모두 선택되었습니다.
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] 여기에 읽은 대화가 없습니다.
+       *[message] 여기에 읽은 메일이 없습니다.
+    }
+   *[unread] { $kind ->
+        [conversation] 여기에 읽지 않은 대화가 없습니다.
+       *[message] 여기에 읽지 않은 메일이 없습니다.
+    }
+    [starred] { $kind ->
+        [conversation] 여기에 별표가 있는 대화가 없습니다.
+       *[message] 여기에 별표가 있는 메일이 없습니다.
+    }
+    [unstarred] { $kind ->
+        [conversation] 여기에 별표가 없는 대화가 없습니다.
+       *[message] 여기에 별표가 없는 메일이 없습니다.
+    }
+}
 list-clear-selection = 선택 해제
 
 ## Mail list: empty states
@@ -160,6 +214,18 @@ toast-deleted-forever = { $kind ->
     [conversation] 대화 { $count }개를 영구삭제했습니다.
    *[message] 메일 { $count }개를 영구삭제했습니다.
 }
+toast-marked-read = { $kind ->
+    [conversation] 대화 { $count }개를 읽음으로 표시했습니다.
+   *[message] 메일 { $count }개를 읽음으로 표시했습니다.
+}
+toast-marked-unread = { $kind ->
+    [conversation] 대화 { $count }개를 읽지 않음으로 표시했습니다.
+   *[message] 메일 { $count }개를 읽지 않음으로 표시했습니다.
+}
 toast-undone = 작업을 실행취소했습니다.
+toast-nothing-to-undo = 실행취소할 작업이 없습니다.
+toast-cannot-undo-delete-forever = 영구삭제한 메일은 되돌릴 수 없습니다.
+toast-send-undone = 보내기를 취소했습니다.
+toast-too-late-to-undo-send = 실행취소하기에는 너무 늦었습니다: 메일이 이미 전송되었습니다.
 toast-undo = 실행취소
 toast-no-spam-folder = 이 계정에는 스팸함이 없습니다.

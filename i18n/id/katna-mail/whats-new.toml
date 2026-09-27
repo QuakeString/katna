@@ -371,3 +371,20 @@ perbaikannya muncul tepat di bawahnya: saran ejaan, perbaikan tata
 bahasa, dan Abaikan, di teks dan subjek. Klik kanan tetap membuka menu
 lengkap.
 """
+
+["2026-09-27-1201-recipient-chips"]
+title = "Penerima sebagai chip"
+text = """
+Alamat di Kepada, Cc, dan Bcc menjadi chip yang hanya menampilkan nama.
+Panah pada chip menampilkan alamatnya, dan klik dua kali untuk
+mengeditnya. Apa pun yang bukan alamat valid ditandai merah, dan Kirim
+meminta Anda memperbaikinya dulu.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna mulai saat login"
+text = """
+Katna kini mulai diam-diam saat Anda login: email disinkronkan, serta
+notifikasi email baru dan ikon baki muncul tanpa membuka jendela.
+Matikan, atau buka juga jendelanya, di Setelan > Umum > Desktop.
+"""

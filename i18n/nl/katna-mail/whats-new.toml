@@ -376,3 +376,21 @@ verbeteringen verschijnen er vlak onder: spellingsuggesties,
 grammaticaverbeteringen en Negeren, in de tekst en het onderwerp. Met
 rechts klikken opent nog steeds het volledige menu.
 """
+
+["2026-09-27-1201-recipient-chips"]
+title = "Ontvangers als chips"
+text = """
+Adressen in Aan, Cc en Bcc worden chips die alleen de naam tonen. Het
+pijltje op een chip toont het adres, en met dubbelklikken kun je het
+bewerken. Alles wat geen geldig adres is, wordt rood gemarkeerd, en
+Verzenden vraagt je het eerst te verbeteren.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna start bij inloggen"
+text = """
+Katna start nu stilletjes als je inlogt: e-mail wordt gesynchroniseerd,
+en meldingen voor nieuwe e-mail en het pictogram in het systeemvak
+verschijnen zonder dat het venster opent. Zet het uit, of laat ook het
+venster openen, in Instellingen > Algemeen > Desktop.
+"""

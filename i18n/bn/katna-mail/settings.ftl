@@ -68,6 +68,10 @@ settings-general-new-mail-detail = সবাইকে উত্তর দিন,
 settings-general-new-mail-sound = শব্দ বাজান
 settings-general-new-mail-sound-detail = ডেস্কটপের নতুন মেলের শব্দ
 settings-general-desktop = ডেস্কটপ
+settings-general-start-at-login = লগ ইন করলে Katna চালু করুন
+settings-general-start-at-login-detail = উইন্ডো না খুলেই মেল সিঙ্ক করে এবং নতুন মেলের বিজ্ঞপ্তি ও সিস্টেম ট্রে আইকন দেখায়
+settings-general-login-window = Katna Mail-এর উইন্ডোও খুলুন
+settings-general-login-window-detail = লগ ইন করলে উইন্ডোটিও খুলে যায়
 settings-general-tray = সিস্টেম ট্রে-তে Katna দেখান
 settings-general-tray-detail = অপঠিত সংখ্যা ও একটি মেনু সহ
 settings-general-unread-badge = টাস্কবারের আইকনে অপঠিত সংখ্যা
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = প্রতিটি মেসেজ�
 settings-general-sending-summary = পাঠানো পূর্বাবস্থায় ফেরান: পাঠানো মেসেজ কতক্ষণ অপেক্ষা করবে, যাতে সেটি ফিরিয়ে নেওয়া যায়
 settings-general-offline-summary = কত দিনের সাম্প্রতিক মেল পুরোপুরি ডাউনলোড হবে, যাতে কানেকশন ছাড়াই পড়া যায়
 settings-general-notifications-summary = নতুন মেলের বিজ্ঞপ্তি ও তার শব্দ
-settings-general-desktop-summary = লগ ইন করলে Katna Mail খোলা, সিস্টেম ট্রে আইকন ও টাস্কবারের আইকনে অপঠিত সংখ্যা
+settings-general-desktop-summary = লগ ইন করলে Katna চালু করা, সিস্টেম ট্রে আইকন ও টাস্কবারের আইকনে অপঠিত সংখ্যা
 settings-accounts-accounts-summary = অ্যাকাউন্ট যোগ করুন বা সরান, অথবা তার ছবি বদলান
 settings-appearance-density-summary = তালিকায় ডিফল্ট বা কমপ্যাক্ট লাইন
 settings-appearance-scaling-summary = সবকিছু বড় বা ছোট করুন: লেখা, আইকন, ফাঁকা জায়গা ও বিভাজক
@@ -241,7 +245,7 @@ settings-search-results = “{ $query }”-এর সাথে মেলে এ�
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = লগ ইনের সময় খোলার সেটিং বদলানো যায়নি: { $error }
+settings-open-at-login-failed = লগ ইনের সময় চালু হওয়ার সেটিং বদলানো যায়নি: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = ব্যাকরণ
 settings-compose-grammar-detail = এই কম্পিউটারেই Harper দিয়ে যাচাই করা হয়। আপাতত শুধু ইংরেজি: অন্য ভাষার লেখায় হাত দেওয়া হয় না।
 settings-compose-grammar-check = ব্যাকরণ যাচাই করুন
 settings-compose-grammar-check-detail = লেখার সময় ব্যাকরণের ভুলের নিচে দাগ দিন, ইংরেজিতে
+settings-compose-suggestions = লেখার পরামর্শ
+settings-compose-suggestions-detail = আপনার পাঠানো মেল আর যে মেলের উত্তর দিচ্ছেন তা থেকে এই কম্পিউটারেই শেখা; কিছুই এর বাইরে যায় না। পরামর্শ নিতে Tab চাপুন, অথবা টাইপ করে যান।
+settings-compose-suggestions-on = লেখার সময় পরামর্শ দিন
+settings-compose-suggestions-on-detail = টাইপ করার সময় বাক্যাংশের সম্ভাব্য বাকি অংশ ধূসর রঙে দেখান
 settings-compose-grammar-summary = লেখার সময় ব্যাকরণের ভুলের নিচে দাগ দিন, ইংরেজিতে
+settings-compose-suggestions-summary = টাইপ করার সময় বাক্যাংশের সম্ভাব্য বাকি অংশ ধূসর রঙে দেখান

@@ -98,6 +98,108 @@ list-select-all-in = { $kind ->
        *[other] Alle { $count } Nachrichten in { $folder } auswählen
     }
 }
+list-selected-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gelesene Konversation ist ausgewählt.
+           *[other] Alle { $count } gelesenen Konversationen sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] { $count } gelesene Nachricht ist ausgewählt.
+           *[other] Alle { $count } gelesenen Nachrichten sind ausgewählt.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ungelesene Konversation ist ausgewählt.
+           *[other] Alle { $count } ungelesenen Konversationen sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] { $count } ungelesene Nachricht ist ausgewählt.
+           *[other] Alle { $count } ungelesenen Nachrichten sind ausgewählt.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } markierte Konversation ist ausgewählt.
+           *[other] Alle { $count } markierten Konversationen sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] { $count } markierte Nachricht ist ausgewählt.
+           *[other] Alle { $count } markierten Nachrichten sind ausgewählt.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } nicht markierte Konversation ist ausgewählt.
+           *[other] Alle { $count } nicht markierten Konversationen sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] { $count } nicht markierte Nachricht ist ausgewählt.
+           *[other] Alle { $count } nicht markierten Nachrichten sind ausgewählt.
+        }
+    }
+}
+list-selected-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gelesene Konversation in { $folder } ist ausgewählt.
+           *[other] Alle { $count } gelesenen Konversationen in { $folder } sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] { $count } gelesene Nachricht in { $folder } ist ausgewählt.
+           *[other] Alle { $count } gelesenen Nachrichten in { $folder } sind ausgewählt.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ungelesene Konversation in { $folder } ist ausgewählt.
+           *[other] Alle { $count } ungelesenen Konversationen in { $folder } sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] { $count } ungelesene Nachricht in { $folder } ist ausgewählt.
+           *[other] Alle { $count } ungelesenen Nachrichten in { $folder } sind ausgewählt.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } markierte Konversation in { $folder } ist ausgewählt.
+           *[other] Alle { $count } markierten Konversationen in { $folder } sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] { $count } markierte Nachricht in { $folder } ist ausgewählt.
+           *[other] Alle { $count } markierten Nachrichten in { $folder } sind ausgewählt.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } nicht markierte Konversation in { $folder } ist ausgewählt.
+           *[other] Alle { $count } nicht markierten Konversationen in { $folder } sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] { $count } nicht markierte Nachricht in { $folder } ist ausgewählt.
+           *[other] Alle { $count } nicht markierten Nachrichten in { $folder } sind ausgewählt.
+        }
+    }
+}
+list-picked-none = { $pick ->
+    [read] { $kind ->
+        [conversation] Keine gelesenen Konversationen hier.
+       *[message] Keine gelesenen Nachrichten hier.
+    }
+   *[unread] { $kind ->
+        [conversation] Keine ungelesenen Konversationen hier.
+       *[message] Keine ungelesenen Nachrichten hier.
+    }
+    [starred] { $kind ->
+        [conversation] Keine markierten Konversationen hier.
+       *[message] Keine markierten Nachrichten hier.
+    }
+    [unstarred] { $kind ->
+        [conversation] Keine nicht markierten Konversationen hier.
+       *[message] Keine nicht markierten Nachrichten hier.
+    }
+}
 list-clear-selection = Auswahl aufheben
 
 ## Mail list: empty states
@@ -256,6 +358,30 @@ toast-deleted-forever = { $kind ->
        *[other] { $count } Nachrichten endgültig gelöscht.
     }
 }
+toast-marked-read = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation als gelesen markiert.
+       *[other] { $count } Konversationen als gelesen markiert.
+    }
+   *[message] { $count ->
+        [one] Nachricht als gelesen markiert.
+       *[other] { $count } Nachrichten als gelesen markiert.
+    }
+}
+toast-marked-unread = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation als ungelesen markiert.
+       *[other] { $count } Konversationen als ungelesen markiert.
+    }
+   *[message] { $count ->
+        [one] Nachricht als ungelesen markiert.
+       *[other] { $count } Nachrichten als ungelesen markiert.
+    }
+}
 toast-undone = Aktion rückgängig gemacht.
+toast-nothing-to-undo = Nichts rückgängig zu machen.
+toast-cannot-undo-delete-forever = Endgültig gelöschte E-Mails lassen sich nicht wiederherstellen.
+toast-send-undone = Senden rückgängig gemacht.
+toast-too-late-to-undo-send = Zu spät zum Rückgängigmachen: Die Nachricht wurde bereits gesendet.
 toast-undo = Rückgängig
 toast-no-spam-folder = Dieses Konto hat keinen Spam-Ordner.

@@ -370,3 +370,21 @@ regstellings verskyn net daaronder: spelvoorstelle,
 grammatikaregstellings en Ignoreer, in die teks en die onderwerp.
 Regsklik maak steeds die volle kieslys oop.
 """
+
+["2026-09-27-1201-recipient-chips"]
+title = "Ontvangers as skyfies"
+text = """
+Adresse in Aan, Cc en Bcc word skyfies wat net die naam wys. Die pyltjie
+op 'n skyfie wys sy adres, en met 'n dubbelklik kan jy dit wysig. Enigiets
+wat nie 'n geldige adres is nie, word in rooi gemerk, en Stuur vra jou om
+dit eers reg te maak.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna begin by aanmelding"
+text = """
+Katna begin nou stil wanneer jy aanmeld: e-pos sinkroniseer, en
+kennisgewings van nuwe e-pos en die stelselbalkikoon verskyn sonder dat
+die venster oopmaak. Skakel dit af, of laat die venster ook oopmaak, in
+Instellings > Algemeen > Werkskerm.
+"""

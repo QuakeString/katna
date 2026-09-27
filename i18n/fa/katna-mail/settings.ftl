@@ -68,6 +68,10 @@ settings-general-new-mail-detail = با «پاسخ به همه»، «علامت�
 settings-general-new-mail-sound = پخش صدا
 settings-general-new-mail-sound-detail = صدای ایمیل جدید میزکار
 settings-general-desktop = میزکار
+settings-general-start-at-login = اجرای Katna هنگام ورود
+settings-general-start-at-login-detail = ایمیل را همگام می‌کند و اعلان‌های ایمیل جدید و نماد سینی سیستم را نشان می‌دهد، بی‌آنکه پنجره باز شود
+settings-general-login-window = باز کردن پنجرهٔ Katna Mail نیز
+settings-general-login-window-detail = پنجره هم هنگام ورود باز می‌شود
 settings-general-tray = نمایش Katna در سینی سیستم
 settings-general-tray-detail = با تعداد خوانده‌نشده‌ها و یک منو
 settings-general-unread-badge = تعداد خوانده‌نشده‌ها روی نماد نوار وظیفه
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = همیشه نمایش تصاویر هم
 settings-general-sending-summary = واگرد ارسال: مدتی که پیام ارسال‌شده منتظر می‌ماند تا بتوان آن را پس گرفت
 settings-general-offline-summary = چند روز از ایمیل‌های اخیر به‌طور کامل بارگیری شود تا بدون اتصال خوانده شود
 settings-general-notifications-summary = اعلان‌های ایمیل جدید و صدای آن‌ها
-settings-general-desktop-summary = باز کردن Katna Mail هنگام ورود، نماد سینی سیستم و تعداد خوانده‌نشده‌ها روی نماد نوار وظیفه
+settings-general-desktop-summary = اجرای Katna هنگام ورود، نماد سینی سیستم و تعداد خوانده‌نشده‌ها روی نماد نوار وظیفه
 settings-accounts-accounts-summary = افزودن یا حذف حساب، یا تغییر تصویر آن
 settings-appearance-density-summary = سطرهای پیش‌فرض یا فشرده در فهرست
 settings-appearance-scaling-summary = بزرگ‌تر یا کوچک‌تر کردن همه‌چیز: متن، نمادها، فاصله‌ها و جداکننده‌ها
@@ -241,7 +245,7 @@ settings-search-results = تنظیمات مطابق با «{ $query }»
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = تغییر باز شدن هنگام ورود ممکن نشد: { $error }
+settings-open-at-login-failed = تغییر اجرا هنگام ورود ممکن نشد: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = دستور زبان
 settings-compose-grammar-detail = روی همین رایانه با Harper بررسی می‌شود. فعلاً فقط انگلیسی: متن به زبان‌های دیگر دست‌نخورده می‌ماند.
 settings-compose-grammar-check = بررسی دستور زبان
 settings-compose-grammar-check-detail = کشیدن خط زیر اشتباه‌های دستوری هنگام نوشتن، به انگلیسی
+settings-compose-suggestions = پیشنهادهای نوشتن
+settings-compose-suggestions-detail = روی همین رایانه از ایمیل‌هایی که فرستاده‌اید و ایمیل‌هایی که به آن‌ها پاسخ می‌دهید آموخته می‌شود؛ چیزی از آن بیرون نمی‌رود. برای پذیرفتن پیشنهاد Tab را بزنید، یا به نوشتن ادامه دهید.
+settings-compose-suggestions-on = پیشنهاد هنگام نوشتن
+settings-compose-suggestions-on-detail = نمایش ادامهٔ احتمالی عبارت به رنگ خاکستری هنگام تایپ
 settings-compose-grammar-summary = کشیدن خط زیر اشتباه‌های دستوری هنگام نوشتن، به انگلیسی
+settings-compose-suggestions-summary = نمایش ادامهٔ احتمالی عبارت به رنگ خاکستری هنگام تایپ

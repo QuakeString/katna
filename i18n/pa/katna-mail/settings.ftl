@@ -68,6 +68,10 @@ settings-general-new-mail-detail = ਸਭ ਨੂੰ ਜਵਾਬ ਦਿਓ, ਪ�
 settings-general-new-mail-sound = ਧੁਨੀ ਵਜਾਓ
 settings-general-new-mail-sound-detail = ਡੈਸਕਟਾਪ ਦੀ ਨਵੀਂ ਮੇਲ ਵਾਲੀ ਧੁਨੀ
 settings-general-desktop = ਡੈਸਕਟਾਪ
+settings-general-start-at-login = ਲੌਗਇਨ ’ਤੇ Katna ਸ਼ੁਰੂ ਕਰੋ
+settings-general-start-at-login-detail = ਵਿੰਡੋ ਖੋਲ੍ਹੇ ਬਿਨਾਂ ਮੇਲ ਸਿੰਕ ਕਰਦਾ ਹੈ ਅਤੇ ਨਵੀਂ ਮੇਲ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਅਤੇ ਟ੍ਰੇ ਆਈਕਨ ਦਿਖਾਉਂਦਾ ਹੈ
+settings-general-login-window = Katna Mail ਦੀ ਵਿੰਡੋ ਵੀ ਖੋਲ੍ਹੋ
+settings-general-login-window-detail = ਲੌਗਇਨ ’ਤੇ ਵਿੰਡੋ ਵੀ ਖੁੱਲ੍ਹਦੀ ਹੈ
 settings-general-tray = ਸਿਸਟਮ ਟ੍ਰੇ ਵਿੱਚ Katna ਦਿਖਾਓ
 settings-general-tray-detail = ਅਣਪੜ੍ਹੀਆਂ ਦੀ ਗਿਣਤੀ ਅਤੇ ਇੱਕ ਮੀਨੂ ਨਾਲ
 settings-general-unread-badge = ਟਾਸਕਬਾਰ ਆਈਕਨ ’ਤੇ ਅਣਪੜ੍ਹੀਆਂ ਦੀ ਗਿਣਤੀ
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = ਹਰ ਸੁਨੇਹੇ ਦੇ ਚਿ
 settings-general-sending-summary = ਭੇਜਣਾ ਅਣਕੀਤਾ ਕਰੋ: ਭੇਜਿਆ ਸੁਨੇਹਾ ਕਿੰਨੀ ਦੇਰ ਉਡੀਕ ਕਰੇ, ਤਾਂ ਜੋ ਉਸਨੂੰ ਵਾਪਸ ਲਿਆ ਜਾ ਸਕੇ
 settings-general-offline-summary = ਕਨੈਕਸ਼ਨ ਤੋਂ ਬਿਨਾਂ ਪੜ੍ਹਨ ਲਈ ਕਿੰਨੇ ਦਿਨਾਂ ਦੀ ਹਾਲੀਆ ਮੇਲ ਪੂਰੀ ਡਾਊਨਲੋਡ ਹੋਵੇ
 settings-general-notifications-summary = ਨਵੀਂ ਮੇਲ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਅਤੇ ਉਨ੍ਹਾਂ ਦੀ ਧੁਨੀ
-settings-general-desktop-summary = ਲੌਗਇਨ ’ਤੇ Katna Mail ਖੋਲ੍ਹੋ, ਸਿਸਟਮ ਟ੍ਰੇ ਆਈਕਨ ਅਤੇ ਟਾਸਕਬਾਰ ਆਈਕਨ ’ਤੇ ਅਣਪੜ੍ਹੀਆਂ ਦੀ ਗਿਣਤੀ
+settings-general-desktop-summary = ਲੌਗਇਨ ’ਤੇ Katna ਸ਼ੁਰੂ ਕਰੋ, ਸਿਸਟਮ ਟ੍ਰੇ ਆਈਕਨ ਅਤੇ ਟਾਸਕਬਾਰ ਆਈਕਨ ’ਤੇ ਅਣਪੜ੍ਹੀਆਂ ਦੀ ਗਿਣਤੀ
 settings-accounts-accounts-summary = ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ ਜਾਂ ਹਟਾਓ, ਜਾਂ ਉਸਦੀ ਤਸਵੀਰ ਬਦਲੋ
 settings-appearance-density-summary = ਸੂਚੀ ਵਿੱਚ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਜਾਂ ਸੰਖੇਪ ਲਾਈਨਾਂ
 settings-appearance-scaling-summary = ਹਰ ਚੀਜ਼ ਵੱਡੀ ਜਾਂ ਛੋਟੀ ਕਰੋ: ਲਿਖਤ, ਆਈਕਨ, ਵਿੱਥ ਅਤੇ ਵਿਭਾਜਕ
@@ -241,7 +245,7 @@ settings-search-results = “{ $query }” ਨਾਲ ਮੇਲ ਖਾਂਦੀ�
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = ਲੌਗਇਨ ’ਤੇ ਖੋਲ੍ਹਣਾ ਬਦਲਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ: { $error }
+settings-open-at-login-failed = ਲੌਗਇਨ ’ਤੇ ਸ਼ੁਰੂ ਹੋਣਾ ਬਦਲਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = ਵਿਆਕਰਨ
 settings-compose-grammar-detail = ਇਸੇ ਕੰਪਿਊਟਰ ’ਤੇ Harper ਨਾਲ ਜਾਂਚਿਆ ਜਾਂਦਾ ਹੈ। ਫ਼ਿਲਹਾਲ ਸਿਰਫ਼ ਅੰਗਰੇਜ਼ੀ: ਹੋਰ ਭਾਸ਼ਾਵਾਂ ਦੀ ਲਿਖਤ ਨੂੰ ਛੇੜਿਆ ਨਹੀਂ ਜਾਂਦਾ।
 settings-compose-grammar-check = ਵਿਆਕਰਨ ਜਾਂਚੋ
 settings-compose-grammar-check-detail = ਲਿਖਦੇ ਸਮੇਂ ਵਿਆਕਰਨ ਦੀਆਂ ਗਲਤੀਆਂ ਹੇਠਾਂ ਲਕੀਰ ਲਾਓ, ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ
+settings-compose-suggestions = ਲਿਖਣ ਦੇ ਸੁਝਾਅ
+settings-compose-suggestions-detail = ਤੁਹਾਡੀ ਭੇਜੀ ਮੇਲ ਅਤੇ ਜਿਸ ਮੇਲ ਦਾ ਤੁਸੀਂ ਜਵਾਬ ਦੇ ਰਹੇ ਹੋ ਉਸ ਤੋਂ ਇਸੇ ਕੰਪਿਊਟਰ ’ਤੇ ਸਿੱਖੇ ਗਏ; ਕੁਝ ਵੀ ਬਾਹਰ ਨਹੀਂ ਜਾਂਦਾ। ਸੁਝਾਅ ਲੈਣ ਲਈ Tab ਦਬਾਓ, ਜਾਂ ਟਾਈਪ ਕਰਦੇ ਰਹੋ।
+settings-compose-suggestions-on = ਲਿਖਦੇ ਸਮੇਂ ਸੁਝਾਅ ਦਿਓ
+settings-compose-suggestions-on-detail = ਟਾਈਪ ਕਰਦੇ ਸਮੇਂ ਵਾਕਾਂਸ਼ ਦਾ ਸੰਭਾਵੀ ਬਾਕੀ ਹਿੱਸਾ ਸਲੇਟੀ ਰੰਗ ਵਿੱਚ ਦਿਖਾਓ
 settings-compose-grammar-summary = ਲਿਖਦੇ ਸਮੇਂ ਵਿਆਕਰਨ ਦੀਆਂ ਗਲਤੀਆਂ ਹੇਠਾਂ ਲਕੀਰ ਲਾਓ, ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ
+settings-compose-suggestions-summary = ਟਾਈਪ ਕਰਦੇ ਸਮੇਂ ਵਾਕਾਂਸ਼ ਦਾ ਸੰਭਾਵੀ ਬਾਕੀ ਹਿੱਸਾ ਸਲੇਟੀ ਰੰਗ ਵਿੱਚ ਦਿਖਾਓ

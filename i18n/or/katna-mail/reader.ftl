@@ -123,6 +123,22 @@ attachment-encrypted-open = ଏହି ଫାଇଲ ଏନକ୍ରିପ୍ଟ �
 print-failed = ପ୍ରିଣ୍ଟ କରିହେଲା ନାହିଁ: { $error }
 print-no-font = କୌଣସି ଫଣ୍ଟ ମିଳିଲା ନାହିଁ
 print-opened-as-pdf = ସେଠାରୁ ପ୍ରିଣ୍ଟ କରିବା ପାଇଁ PDF ଭାବେ ଖୋଲାଗଲା।
+print-preview-title = ପ୍ରିଣ୍ଟ ପୂର୍ବାବଲୋକନ
+print-preview-laying-out = ପୃଷ୍ଠାଗୁଡ଼ିକ ସଜାଯାଉଛି…
+print-preview-pages = { $count ->
+    [one] { $count }ଟି ପୃଷ୍ଠା
+   *[other] { $count }ଟି ପୃଷ୍ଠା
+}
+print-preview-more = { $count ->
+    [one] ଆଉ { $count }ଟି ପୃଷ୍ଠା
+   *[other] ଆଉ { $count }ଟି ପୃଷ୍ଠା
+}
+print-preview-failed = ପୃଷ୍ଠାଗୁଡ଼ିକ ଦେଖାଯାଇପାରିଲା ନାହିଁ
+print-preview-paper = କାଗଜ
+print-preview-a4 = A4
+print-preview-letter = ଲେଟର
+print-preview-cancel = ବାତିଲ କରନ୍ତୁ
+print-preview-print = ପ୍ରିଣ୍ଟ କରନ୍ତୁ
 print-not-downloaded = (ଏପର୍ଯ୍ୟନ୍ତ ଡାଉନଲୋଡ ହୋଇନାହିଁ।)
 print-encrypted = (ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି। ଏହାର ଟେକ୍ସଟ ପ୍ରିଣ୍ଟ କରିବା ପାଇଁ ଏହାକୁ Katna Mailରେ ଖୋଲନ୍ତୁ।)
 print-to = ପ୍ରାପକ: { $addresses }

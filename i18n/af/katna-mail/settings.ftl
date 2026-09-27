@@ -68,6 +68,10 @@ settings-general-new-mail-detail = Met Antwoord almal, Merk as gelees en Argivee
 settings-general-new-mail-sound = Speel 'n klank
 settings-general-new-mail-sound-detail = Die werkskerm se nuwe-e-pos-klank
 settings-general-desktop = Werkskerm
+settings-general-start-at-login = Begin Katna by aanmelding
+settings-general-start-at-login-detail = Sinkroniseer e-pos en wys kennisgewings van nuwe e-pos en die stelselbalkikoon, sonder om die venster oop te maak
+settings-general-login-window = Maak ook die Katna Mail-venster oop
+settings-general-login-window-detail = Die venster gaan ook by aanmelding oop
 settings-general-tray = Wys Katna in die stelselbalk
 settings-general-tray-detail = Met die ongeleesde telling en 'n kieslys
 settings-general-unread-badge = Ongeleesde telling op die taakbalkikoon
@@ -205,7 +209,7 @@ settings-general-remote-images-summary = Wys altyd die prente van elke boodskap
 settings-general-sending-summary = Ontdoen stuur: hoe lank 'n gestuurde boodskap wag, sodat dit teruggeneem kan word
 settings-general-offline-summary = Hoeveel dae se onlangse e-pos volledig afgelaai word om sonder 'n verbinding te lees
 settings-general-notifications-summary = Kennisgewings van nuwe e-pos en hul klank
-settings-general-desktop-summary = Maak Katna Mail oop by aanmelding, die stelselbalkikoon en die ongeleesde telling op die taakbalkikoon
+settings-general-desktop-summary = Begin Katna by aanmelding, die stelselbalkikoon en die ongeleesde telling op die taakbalkikoon
 settings-accounts-accounts-summary = Voeg 'n rekening by of verwyder een, of verander sy prent
 settings-appearance-density-summary = Verstek- of kompakte reëls in die lys
 settings-appearance-scaling-summary = Maak alles groter of kleiner: teks, ikone, spasiëring en skeidslyne
@@ -241,7 +245,7 @@ settings-search-results = Instellings wat by “{ $query }” pas
 
 ## Settings: opening at login
 
-settings-open-at-login-failed = Kon nie oopmaak by aanmelding verander nie: { $error }
+settings-open-at-login-failed = Kon nie begin by aanmelding verander nie: { $error }
 
 ## Settings > General > Time
 
@@ -264,4 +268,9 @@ settings-compose-grammar = Grammatika
 settings-compose-grammar-detail = Word op hierdie rekenaar met Harper nagegaan. Tans net Engels: teks in ander tale word nie aangeraak nie.
 settings-compose-grammar-check = Kontroleer grammatika
 settings-compose-grammar-check-detail = Onderstreep grammatikafoute terwyl jy skryf, in Engels
+settings-compose-suggestions = Skryfvoorstelle
+settings-compose-suggestions-detail = Op hierdie rekenaar geleer uit die e-pos wat jy gestuur het en die e-pos wat jy beantwoord; niks verlaat dit nie. Druk Tab om 'n voorstel te aanvaar, of tik net verder.
+settings-compose-suggestions-on = Stel voor terwyl ek skryf
+settings-compose-suggestions-on-detail = Wys die waarskynlike res van 'n frase in grys terwyl jy tik
 settings-compose-grammar-summary = Onderstreep grammatikafoute terwyl jy skryf, in Engels
+settings-compose-suggestions-summary = Wys die waarskynlike res van 'n frase in grys terwyl jy tik

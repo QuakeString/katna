@@ -380,3 +380,22 @@ klicken Sie darauf, und seine Korrekturen erscheinen direkt darunter:
 Rechtschreibvorschläge, Grammatikkorrekturen und Ignorieren, im Text und
 im Betreff. Ein Rechtsklick öffnet weiterhin das ganze Menü.
 """
+
+["2026-09-27-1201-recipient-chips"]
+title = "Empfänger als Chips"
+text = """
+Adressen in An, Cc und Bcc werden zu Chips, die nur den Namen zeigen. Der
+Pfeil auf einem Chip zeigt seine Adresse, und ein Doppelklick lässt Sie
+sie bearbeiten. Was keine gültige Adresse ist, wird rot markiert, und
+Senden bittet Sie, es zuerst zu korrigieren.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna startet bei der Anmeldung"
+text = """
+Katna startet jetzt still, wenn Sie sich anmelden: E-Mails werden
+synchronisiert, und Benachrichtigungen über neue E-Mails sowie das Symbol
+im Systemabschnitt erscheinen, ohne das Fenster zu öffnen. Schalten Sie
+es aus oder lassen Sie auch das Fenster öffnen, unter Einstellungen >
+Allgemein > Arbeitsumgebung.
+"""

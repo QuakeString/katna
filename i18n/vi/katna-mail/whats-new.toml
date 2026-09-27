@@ -365,3 +365,21 @@ text = """
 hiện ngay bên dưới: gợi ý chính tả, sửa ngữ pháp và Bỏ qua, trong nội
 dung và tiêu đề. Nhấp chuột phải vẫn mở menu đầy đủ.
 """
+
+["2026-09-27-1201-recipient-chips"]
+title = "Người nhận hiện dưới dạng thẻ"
+text = """
+Địa chỉ trong Tới, Cc và Bcc trở thành các thẻ chỉ hiện tên. Mũi tên
+trên thẻ cho xem địa chỉ của thẻ, và nhấp đúp để sửa. Những gì không
+phải là địa chỉ hợp lệ sẽ được đánh dấu màu đỏ, và Gửi sẽ yêu cầu bạn
+sửa trước.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna khởi động khi đăng nhập"
+text = """
+Giờ đây Katna khởi động lặng lẽ khi bạn đăng nhập: thư được đồng bộ,
+thông báo thư mới và biểu tượng ở khay xuất hiện mà không cần mở cửa sổ.
+Tắt tính năng này, hoặc cho cửa sổ mở cùng, trong Cài đặt > Chung > Môi
+trường máy tính.
+"""

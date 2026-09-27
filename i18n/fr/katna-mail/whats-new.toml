@@ -387,3 +387,22 @@ corrections s’affichent juste en dessous : suggestions d’orthographe,
 corrections grammaticales et Ignorer, dans le texte et l’objet. Le clic
 droit ouvre toujours le menu complet.
 """
+
+["2026-09-27-1201-recipient-chips"]
+title = "Des destinataires en pastilles"
+text = """
+Les adresses des champs À, Cc et Cci deviennent des pastilles qui
+n’affichent que le nom. La flèche d’une pastille montre son adresse, et un
+double-clic permet de la modifier. Ce qui n’est pas une adresse valide est
+signalé en rouge, et Envoyer vous demande d’abord de le corriger.
+"""
+
+["2026-09-27-1253-start-at-login"]
+title = "Katna démarre à la connexion"
+text = """
+Katna démarre désormais discrètement quand vous vous connectez : les
+messages se synchronisent, et les notifications de nouveaux messages et
+l’icône de la zone de notification apparaissent sans ouvrir la fenêtre.
+Désactivez-le, ou faites aussi ouvrir la fenêtre, dans Paramètres >
+Général > Bureau.
+"""
