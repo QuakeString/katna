@@ -106,3 +106,14 @@ send-check-subject-title = Send without a subject?
 send-check-subject-text = This message has no subject.
 send-check-add-subject = Add subject
 send-check-send-anyway = Send anyway
+
+## Recipients (To, Cc and Bcc)
+
+# The tooltip of a recipient that is not an email address.
+recipient-not-valid = Not a valid email address
+# The tooltip of the arrow on a recipient that shows its address.
+recipient-show-address = Show address
+# Asked when Send finds a recipient that is not an email address.
+recipient-bad-title = Check the address
+recipient-bad-text = “{ $address }” is not a valid email address. Fix it or remove it before sending.
+recipient-bad-fix = Fix it

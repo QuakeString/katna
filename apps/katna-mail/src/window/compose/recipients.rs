@@ -3,7 +3,7 @@
 //! Address suggestions under To, Cc and Bcc, as in Gmail: from the first
 //! letter typed, the people written with most and most lately first, typos
 //! forgiven ([`katna_search::contacts`]). Up and Down move, Enter or Tab
-//! picks, Escape closes; a comma starts the next address.
+//! picks, Escape closes. A picked address becomes a chip (`chips`).
 //!
 //! The address book is shared by every window and read in the background:
 //! the saved copy first, then the store again when it is more than a few
@@ -12,12 +12,12 @@
 use std::time::{Duration, Instant};
 
 use gpui::{
-    AnyElement, Context, Div, FontWeight, Global, HighlightStyle, SharedString, StyledText,
-    anchored, deferred, div, point, prelude::*, rgba,
+    AnyElement, Context, Div, FontWeight, Global, HighlightStyle, KeyDownEvent, SharedString,
+    StyledText, anchored, deferred, div, point, prelude::*, rgba,
 };
 use katna_search::contacts::{ContactBook, Suggestion};
-use katna_ui::text_input::{Cancel, Down, Submit, Up};
-use katna_ui::{TextInput, px};
+use katna_ui::px;
+use katna_ui::text_input::{Backspace, Cancel, Delete, Down, Submit, Up};
 
 use super::super::FocusNext;
 use super::MailWindow;
@@ -39,6 +39,12 @@ pub(super) enum Field {
     To,
     Cc,
     Bcc,
+}
+
+impl Field {
+    pub fn ix(self) -> usize {
+        self as usize
+    }
 }
 
 /// The suggestions open under a field.
@@ -130,22 +136,18 @@ impl MailWindow {
         }
     }
 
-    fn recipient_input(&self, field: Field) -> Option<&gpui::Entity<TextInput>> {
-        let compose = self.compose.as_ref()?;
-        Some(match field {
-            Field::To => &compose.to,
-            Field::Cc => &compose.cc,
-            Field::Bcc => &compose.bcc,
-        })
-    }
-
-    /// Suggests addresses for what is being typed in `field`.
+    /// Makes chips of the addresses a comma or semicolon ended, and
+    /// suggests addresses for the one being typed in `field`.
     pub(super) fn recipient_changed(&mut self, field: Field, cx: &mut Context<Self>) {
         let Some(input) = self.recipient_input(field) else {
             return;
         };
-        let text = input.read(cx).text().to_owned();
-        let (start, typed) = last_entry(&text);
+        if last_entry(input.read(cx).text()).0 > 0 {
+            // Changing the text again brings this back for the rest.
+            self.commit_recipients(field, false, cx);
+            return;
+        }
+        let typed = input.read(cx).text().to_owned();
         // The account the message goes out from.
         let account = self.compose.as_ref().and_then(|compose| {
             compose
@@ -156,16 +158,13 @@ impl MailWindow {
         let items = match cx.try_global::<Book>().and_then(|b| b.book.as_ref()) {
             Some(book) if !typed.trim().is_empty() => {
                 // Everyone already added to To, Cc or Bcc.
-                let mut skip = added(&text[..start]);
-                for other in [Field::To, Field::Cc, Field::Bcc] {
-                    if other != field
-                        && let Some(input) = self.recipient_input(other)
-                    {
-                        skip.extend(added(input.read(cx).text()));
-                    }
-                }
+                let skip = self
+                    .compose
+                    .as_ref()
+                    .map(|c| c.chips.emails())
+                    .unwrap_or_default();
                 let now = jiff::Timestamp::now().as_second();
-                book.suggest(typed, account, now, &skip, SHOWN)
+                book.suggest(&typed, account, now, &skip, SHOWN)
             }
             _ => Vec::new(),
         };
@@ -179,7 +178,7 @@ impl MailWindow {
         cx.notify();
     }
 
-    fn close_suggestions(&mut self, cx: &mut Context<Self>) {
+    pub(super) fn close_suggestions(&mut self, cx: &mut Context<Self>) {
         if let Some(compose) = &mut self.compose
             && compose.suggest.take().is_some()
         {
@@ -195,25 +194,10 @@ impl MailWindow {
         let Some(suggest) = compose.suggest.take() else {
             return;
         };
-        let Some(item) = suggest.items.get(ix) else {
+        let Some(item) = suggest.items.into_iter().nth(ix) else {
             return;
         };
-        let mailbox = mailbox(item.name.as_deref(), &item.email);
-        let Some(input) = self.recipient_input(suggest.field).cloned() else {
-            return;
-        };
-        input.update(cx, |input, cx| {
-            let text = input.text().to_owned();
-            let (start, _) = last_entry(&text);
-            let before = text[..start].trim_end();
-            let text = if before.is_empty() {
-                format!("{mailbox}, ")
-            } else {
-                format!("{before} {mailbox}, ")
-            };
-            input.set_text(text, cx);
-        });
-        cx.notify();
+        self.add_recipient(suggest.field, item.name, item.email, cx);
     }
 
     fn move_suggestion(&mut self, by: isize, cx: &mut Context<Self>) {
@@ -224,15 +208,15 @@ impl MailWindow {
         }
     }
 
-    fn suggesting(&self, field: Field) -> bool {
+    pub(super) fn suggesting(&self, field: Field) -> bool {
         self.compose
             .as_ref()
             .and_then(|c| c.suggest.as_ref())
             .is_some_and(|s| s.field == field)
     }
 
-    /// Gives a recipient row its keys for the suggestions, and draws them
-    /// under it.
+    /// Gives a recipient row its keys for the suggestions and the chips,
+    /// and draws the suggestions under it.
     pub(super) fn recipient_row(
         &self,
         row: Div,
@@ -250,6 +234,17 @@ impl MailWindow {
             }
         };
         row.relative()
+            .capture_key_down(cx.listener(|this, _: &KeyDownEvent, _, cx| this.chip_other_key(cx)))
+            .capture_action(cx.listener(move |this, _: &Backspace, _, cx| {
+                if this.chip_backspace(field, false, cx) {
+                    cx.stop_propagation();
+                }
+            }))
+            .capture_action(cx.listener(move |this, _: &Delete, _, cx| {
+                if this.chip_backspace(field, true, cx) {
+                    cx.stop_propagation();
+                }
+            }))
             .capture_action(cx.listener(move |this, _: &Submit, _, cx| {
                 if take(this, cx) {
                     let ix = this.selected_suggestion();
@@ -407,7 +402,7 @@ impl MailWindow {
 
 /// Where the address being typed starts in `text`, and it: after the last
 /// comma or semicolon outside quotes and angle brackets.
-fn last_entry(text: &str) -> (usize, &str) {
+pub(super) fn last_entry(text: &str) -> (usize, &str) {
     let (mut start, mut quoted, mut angle) = (0, false, false);
     for (ix, c) in text.char_indices() {
         match c {
@@ -421,21 +416,8 @@ fn last_entry(text: &str) -> (usize, &str) {
     (start, &text[start..])
 }
 
-/// The addresses in `text` that parse, skipping any that do not.
-fn added(mut text: &str) -> Vec<String> {
-    let mut emails = Vec::new();
-    while !text.is_empty() {
-        let (start, entry) = last_entry(text);
-        if let Ok(parsed) = outgoing::parse_addresses(entry) {
-            emails.extend(parsed.into_iter().map(|m| m.email));
-        }
-        text = &text[..start.saturating_sub(1)];
-    }
-    emails
-}
-
 /// `Name <email>`, the name quoted when it has to be.
-fn mailbox(name: Option<&str>, email: &str) -> String {
+pub(super) fn mailbox(name: Option<&str>, email: &str) -> String {
     match name.map(str::trim).filter(|n| !n.is_empty()) {
         None => email.to_owned(),
         Some(name) if name.contains([',', ';', '"', '<', '>', '@', '(', ')']) => {
@@ -456,15 +438,6 @@ mod tests {
         assert_eq!(last_entry("Kay Mann <kay@x.org>, su"), (21, " su"));
         assert_eq!(last_entry("\"Doe, Jo\" <jo@x.org>; b"), (21, " b"));
         assert_eq!(last_entry("a@x.org,"), (8, ""));
-    }
-
-    #[test]
-    fn lists_added_addresses_past_broken_ones() {
-        assert_eq!(
-            added("a@x.org, not an address; \"Doe, J\" <j@y.org>,"),
-            ["j@y.org", "a@x.org"]
-        );
-        assert!(added("").is_empty());
     }
 
     #[test]
