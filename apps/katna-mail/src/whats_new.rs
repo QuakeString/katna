@@ -172,6 +172,12 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                and only if you say yes. Change it any time in Settings > User feedback.",
         animation: None,
     },
+    Highlight {
+        id: 17,
+        title: "Opens where you left it",
+        text: "Katna Mail opens at the size and place it had when you closed it,                maximized if it was. Quitting Katna from the tray starts it afresh.                On Wayland the place comes back where the desktop supports it                (Plasma 6.7 and later).",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.
