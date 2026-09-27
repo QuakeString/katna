@@ -27,6 +27,7 @@ use gpui::{
 };
 use katna_core::image::ImageKind;
 use katna_core::{AccountId, Paths};
+use katna_i18n::tr;
 use katna_store::MessageId;
 use katna_ui::px;
 
@@ -369,7 +370,7 @@ impl MailWindow {
             files: true,
             directories: false,
             multiple: false,
-            prompt: Some("Use".into()),
+            prompt: Some(tr!("remote-picture-use").into()),
         });
         cx.spawn(async move |this, cx| {
             let Ok(Ok(Some(paths))) = chosen.await else {
@@ -392,23 +393,31 @@ impl MailWindow {
                 let bytes = match read {
                     Ok(Some(bytes)) => bytes,
                     Ok(None) => {
-                        this.show_snackbar("Pick a picture of 8 MB or less.", None, cx);
+                        this.show_snackbar(tr!("remote-picture-too-big"), None, cx);
                         return;
                     }
                     Err(err) => {
-                        this.show_snackbar(format!("Cannot read the picture: {err}"), None, cx);
+                        this.show_snackbar(
+                            tr!("remote-picture-read-failed", error = err.to_string()),
+                            None,
+                            cx,
+                        );
                         return;
                     }
                 };
                 let Some(picture) = image(bytes.clone()) else {
-                    this.show_snackbar("Pick a PNG, JPEG, GIF, WebP or SVG picture.", None, cx);
+                    this.show_snackbar(tr!("remote-picture-type"), None, cx);
                     return;
                 };
                 let dir = this.remote.own_dir.clone();
                 if let Err(err) = std::fs::create_dir_all(&dir)
                     .and_then(|()| std::fs::write(dir.join(account.0.to_string()), &bytes))
                 {
-                    this.show_snackbar(format!("Cannot keep the picture: {err}"), None, cx);
+                    this.show_snackbar(
+                        tr!("remote-picture-keep-failed", error = err.to_string()),
+                        None,
+                        cx,
+                    );
                     return;
                 }
                 this.remote.own.insert(account.0, picture);
@@ -424,7 +433,11 @@ impl MailWindow {
         let path = self.remote.own_dir.join(account.0.to_string());
         match std::fs::remove_file(&path) {
             Err(err) if err.kind() != std::io::ErrorKind::NotFound => {
-                self.show_snackbar(format!("Cannot remove the picture: {err}"), None, cx);
+                self.show_snackbar(
+                    tr!("remote-picture-remove-failed", error = err.to_string()),
+                    None,
+                    cx,
+                );
             }
             _ => {
                 self.remote.own.remove(&account.0);
@@ -468,14 +481,9 @@ impl MailWindow {
             .text_size(px(12.0))
             .text_color(rgba(th.text_dim))
             .child(icon("image", th.text_faint, 16.0))
+            .child(div().pl(px(4.0)).pr(px(4.0)).child(tr!("remote-hidden")))
             .child(
-                div()
-                    .pl(px(4.0))
-                    .pr(px(4.0))
-                    .child("Images in this message are hidden."),
-            )
-            .child(
-                link("Show images".into(), ("show-images", ix)).on_click(cx.listener(
+                link(tr!("remote-show").into(), ("show-images", ix)).on_click(cx.listener(
                     move |this, _, _, cx| {
                         this.remote.shown.insert(id);
                         this.fetch_remote(cx);
@@ -485,7 +493,7 @@ impl MailWindow {
             )
             .when(!sender.is_empty(), |d| {
                 d.child(
-                    link("Always show from this sender".into(), ("trust-sender", ix)).on_click(
+                    link(tr!("remote-always-show").into(), ("trust-sender", ix)).on_click(
                         cx.listener(move |this, _, _, cx| {
                             this.remote.trust(&sender_owned);
                             this.fetch_remote(cx);

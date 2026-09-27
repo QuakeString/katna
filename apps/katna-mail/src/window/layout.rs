@@ -23,7 +23,6 @@ use katna_ui::unpx;
 
 use super::apps::{APP_RAIL_WIDTH, App as RailApp};
 use super::{Compose, MailWindow, NAV_ROW_INSET, NAV_WIDTH, ToggleSettings};
-use crate::format;
 use crate::theme::{Theme, fade};
 use crate::widgets::{TOOLBAR_HEIGHT, elevation, icon, tip};
 
@@ -546,7 +545,9 @@ impl MailWindow {
                         .text_size(px(14.0))
                         .font_weight(FontWeight::MEDIUM)
                         .shadow(elevation(th, 3.0))
-                        .when(label < 0.5, |d| d.tooltip(tip("Compose", th)))
+                        .when(label < 0.5, |d| {
+                            d.tooltip(tip(katna_i18n::tr!("compose"), th))
+                        })
                         .on_click(
                             cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)),
                         )
@@ -558,7 +559,7 @@ impl MailWindow {
                                 .overflow_hidden()
                                 .whitespace_nowrap()
                                 .opacity(label)
-                                .child("Compose"),
+                                .child(katna_i18n::tr!("compose")),
                         ),
                 )
                 .into_any_element(),
@@ -630,7 +631,7 @@ impl MailWindow {
                             .min_w_0()
                             .pl(px(18.0))
                             .truncate()
-                            .child(tab.label),
+                            .child(tab.label()),
                     )
                     .when(unread > 0 && ix != 0, |d| {
                         d.child(
@@ -642,7 +643,7 @@ impl MailWindow {
                                 .text_color(rgba(th.on_accent))
                                 .text_size(px(11.0))
                                 .line_height(px(18.0))
-                                .child(format!("{} new", format::thousands(unread))),
+                                .child(katna_i18n::tr!("nav-tab-new", count = unread)),
                         )
                     })
             });

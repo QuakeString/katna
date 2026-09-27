@@ -1601,7 +1601,7 @@ impl MailWindow {
 
     fn folder_name(&self) -> Option<String> {
         match &self.listing {
-            Some(Listing::Folder(folder)) => self.tree.node(*folder).map(|n| n.name.clone()),
+            Some(Listing::Folder(folder)) => self.tree.node(*folder).map(|n| n.label()),
             _ => None,
         }
     }
@@ -1665,11 +1665,12 @@ impl MailWindow {
         let Ok(mail) = &self.mail else {
             return None;
         };
-        let what = match (keys.len(), self.config.mail.conversations) {
-            (1, true) => "Conversation".to_owned(),
-            (1, false) => "Message".to_owned(),
-            (n, true) => format!("{n} conversations"),
-            (n, false) => format!("{n} messages"),
+        // What the snackbar counts: conversations or messages.
+        let (count, conversations) = (keys.len(), self.config.mail.conversations);
+        let kind = if conversations {
+            "conversation"
+        } else {
+            "message"
         };
         let folder = self
             .folder
@@ -1744,7 +1745,11 @@ impl MailWindow {
                         match junk {
                             Some(junk) => Some(junk),
                             None => {
-                                self.show_snackbar("This account has no spam folder.", None, cx);
+                                self.show_snackbar(
+                                    katna_i18n::tr!("toast-no-spam-folder"),
+                                    None,
+                                    cx,
+                                );
                                 return None;
                             }
                         }
@@ -1770,9 +1775,17 @@ impl MailWindow {
         };
         let done = match act {
             _ if !announce => None,
-            Act::Spam => Some(format!("{what} reported as spam.")),
-            Act::Delete if for_good => Some(format!("{what} deleted forever.")),
-            _ => command.done_text(&what),
+            Act::Spam => Some(katna_i18n::tr!(
+                "toast-spam",
+                count = count as u64,
+                kind = kind
+            )),
+            Act::Delete if for_good => Some(katna_i18n::tr!(
+                "toast-deleted-forever",
+                count = count as u64,
+                kind = kind
+            )),
+            _ => command.done_text(count, conversations),
         };
         // Moved out of a conversation window, which now closes: the mail
         // window says so and offers Undo.
@@ -1899,7 +1912,7 @@ impl MailWindow {
             .detach();
             return;
         }
-        self.send(undo, Some("Action undone.".to_owned()), None, false, cx);
+        self.send(undo, Some(katna_i18n::tr!("toast-undone")), None, false, cx);
     }
 
     fn archive(&mut self, _: &Archive, _: &mut Window, cx: &mut Context<Self>) {
@@ -2041,7 +2054,7 @@ impl MailWindow {
                             .cursor_pointer()
                             .hover(|s| s.bg(rgba(0xffffff1f)))
                             .on_click(cx.listener(|this, _, window, cx| this.undo(window, cx)))
-                            .child("Undo"),
+                            .child(katna_i18n::tr!("toast-undo")),
                     )
                 })
                 .into_any_element(),

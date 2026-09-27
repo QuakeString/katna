@@ -229,6 +229,13 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                drafted by AI, and corrections are welcome.",
         animation: None,
     },
+    Highlight {
+        id: 24,
+        title: "The main window in your language",
+        text: "The app rail, folders, tabs, list, menus and reading pane now follow \
+               the language you pick. Folders you made keep their own names.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.
