@@ -41,6 +41,7 @@ use katna_ui::scale::desktop_px;
 const USAGE: &str = "\
 Usage: katna-mail [--data-dir DIR] [--search QUERY] [--compose | --inbox | --settings |
                   --message ID | --reply-all ID]
+       katna-mail --background
 
 When Katna Mail is already running, it comes to the front and does what
 the options ask; a second window does not open.
@@ -57,6 +58,8 @@ Options:
   --reply-all ID   Open the message with this ID and reply to all
   mailto:...       Write a new message as the link asks (Katna Mail is
                    the desktop's mail app when Settings > General says so)
+  --background     Start the Katna service (sync, notifications, the tray
+                   icon) without a window, as at login
   -h, --help       Show this help
   -V, --version    Show the version
 
@@ -92,6 +95,8 @@ fn main() -> ExitCode {
                 None => return usage_error(),
             },
             Some("--open") => open_first = true,
+            // At login: the Katna service only, without a window.
+            Some(autostart::BACKGROUND_FLAG) => return autostart::start_service(),
             Some(flag @ ("--compose" | "--inbox" | "--settings")) => {
                 request = instance::Request::from_flag(flag);
             }
@@ -137,6 +142,9 @@ fn main() -> ExitCode {
     let general = Config::load(&paths.config_file())
         .unwrap_or_default()
         .general;
+    if single && !general.start_at_login_set {
+        start_at_login_by_default(&paths);
+    }
     format::set_clock(general.clock);
     katna_i18n::apply(&general.language);
     let (connection, sender, requests) = match instance::start(request, single) {
@@ -272,6 +280,23 @@ fn ui_font(env: &Environment, cx: &App) -> Option<SharedString> {
     let family = font::pick_family(wanted.as_ref().map(|f| f.family.as_str()), &installed, kde);
     tracing::info!(?wanted, ?family, "UI font");
     family.map(SharedString::from)
+}
+
+/// Katna starts quietly at login unless someone turned that off: done
+/// once, on the first run that has the setting, and remembered in the
+/// config file so turning it off stays off. A config file that can't be
+/// read is left alone.
+fn start_at_login_by_default(paths: &Paths) {
+    let file = paths.config_file();
+    let Ok(mut config) = Config::load(&file) else {
+        return;
+    };
+    if autostart::set_default() {
+        config.general.start_at_login_set = true;
+        if let Err(err) = config.save(&file) {
+            tracing::warn!(%err, "cannot save the config");
+        }
+    }
 }
 
 fn usage_error() -> ExitCode {

@@ -37,6 +37,7 @@ use super::tab_strip::TabStrip;
 use super::{
     FocusNext, FocusPrevious, MailWindow, OpenSettings, ShowShortcuts, apps::App as RailApp,
 };
+use crate::autostart::Start;
 use crate::tabs::{self, Provider};
 use crate::theme::Theme;
 use crate::widgets::{FocusRing, TabStops, icon, icon_button, outlined_button, tip};
@@ -136,8 +137,8 @@ pub(super) struct SettingsPage {
     pub(super) info: Rc<RefCell<Option<SharedString>>>,
     /// A drag on the Scaling slider.
     pub(super) scale: super::scale_slider::ScaleDrag,
-    /// Whether Katna Mail opens at login, read when the page opened.
-    pub(super) open_at_login: bool,
+    /// What Katna starts at login, read when the page opened.
+    pub(super) start_at_login: Option<crate::autostart::Start>,
     /// The spelling dictionaries installed, read when the page opened.
     dictionaries: Vec<String>,
     /// Whether email links open in Katna Mail, as of the page opening;
@@ -209,7 +210,7 @@ impl MailWindow {
             flash: None,
             info: Rc::default(),
             scale: Default::default(),
-            open_at_login: crate::autostart::is_on(),
+            start_at_login: crate::autostart::get(),
             dictionaries: crate::spell::installed(),
             mail_app: None,
         });
@@ -1047,20 +1048,40 @@ impl MailWindow {
 
     fn desktop_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let general = &self.config.general;
-        let open_at_login = self.settings_page.as_ref().is_some_and(|p| p.open_at_login);
+        let start = self.settings_page.as_ref().and_then(|p| p.start_at_login);
+        let window_too = start == Some(Start::Window);
         div()
             .flex()
             .flex_col()
             .gap(px(2.0))
             .child(self.switch_row(
-                "page-open-at-login",
-                tr!("settings-general-open-at-login"),
-                tr!("settings-general-open-at-login-detail"),
-                open_at_login,
-                Change::OpenAtLogin(!open_at_login),
+                "page-start-at-login",
+                tr!("settings-general-start-at-login"),
+                tr!("settings-general-start-at-login-detail"),
+                start.is_some(),
+                Change::StartAtLogin(match start {
+                    Some(_) => None,
+                    None => Some(Start::Quietly),
+                }),
                 th,
                 cx,
             ))
+            // Only while Katna starts at login at all.
+            .when(start.is_some(), |d| {
+                d.child(self.switch_row(
+                    "page-open-at-login",
+                    tr!("settings-general-login-window"),
+                    tr!("settings-general-login-window-detail"),
+                    window_too,
+                    Change::StartAtLogin(Some(if window_too {
+                        Start::Quietly
+                    } else {
+                        Start::Window
+                    })),
+                    th,
+                    cx,
+                ))
+            })
             .child(self.switch_row(
                 "page-tray",
                 tr!("settings-general-tray"),

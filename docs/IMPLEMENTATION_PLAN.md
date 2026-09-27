@@ -1,9 +1,34 @@
 # Katna PIM — Implementation Plan
 
-> Status: **Draft v0.1** (26 September 2026). Companion to
+> Status: **v0.2** (updated 27 September 2026, through PR #133). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
+
+## 0. Where we are (27 September 2026)
+
+✅ marks a task merged to `main`, with its pull requests. ◐ marks a task
+that is partly done; the table says what is left. Rows without a mark have
+not started. The plan is refreshed after each batch of merges. The
+"Daily use" track in §5 lists work the owner asked for while using Katna
+Mail that the phases did not name.
+
+- **Done:** spikes S1, S2; Phase 0; Phase 1 except `katna-meta` as its own
+  crate; most of Phase 3 (Katna Mail is in daily use on the owner's Plasma
+  6.7 Wayland laptop with a real Gmail account through the `arch-latest`
+  package); notifications, badge, tray and global menu from Phase 4;
+  local crash reports and opt-in sending; the language framework and most
+  of the UI translated; reading and sending encrypted mail.
+- **In review:** select all matching (#127), recipient chips (#130),
+  Reset cache (#109), What's new in the chosen language (#134).
+- **In progress:** the new Katna logo, Autostart on by default, rich paste
+  and drag and drop into compose.
+- **Next:** usage statistics, feedback form and debug-file upload (C.3,
+  C.6, C.7); right-to-left layout (L.2, L.3); OAuth2; organizations
+  (Phase 2); KRunner and GNOME search (4.4, 4.5); the release track before
+  any public release.
+- **Later:** Katna Calendar (Phase 6), Contacts, Tasks, Notes, Feeds,
+  phones, notes on mail, Workspace, Katna Server, own crash server.
 
 ## 1. Working principles
 
@@ -129,19 +154,23 @@ query set runs at p50 2.4 ms, p99 9.7 ms, including subjects and snippets.
 
 | Task | Deliverable |
 |---|---|
-| 1.1 I/O layer | rustls + async I/O driver for Pimalaya's sans-I/O coroutines; `MailBackend` trait |
-| 1.2 Account setup | Autoconfiguration (Thunderbird ISPDB, provider autoconfig, DNS SRV per RFC 6186), password login, secrets in Secret Service (`oo7`) |
-| 1.3 IMAP level 1 | Folder list, envelope/flags/`BODYSTRUCTURE` sync, CONDSTORE/QRESYNC incremental sync, UIDVALIDITY handling |
-| 1.4 IMAP push | IDLE with renewal, per-folder connections within server limits, reconnect/backoff |
-| 1.5 Levels 2 and 3 | Offline window (full bodies), text backfill for indexing, eviction when mail leaves the window |
-| 1.6 Op queue | Optimistic local flags/move/delete, replay with retries and conflict handling |
-| 1.7 Threading | JWZ threading + Gmail thread IDs; property tests |
-| 1.8 SMTP + outbox | Sending, Sent-folder handling, outbox with undo delay |
-| 1.9 `katna-meta` | Metadata table + scheduler (undo send first) |
-| 1.10 POP3 | Client with UIDL tracking, leave-on-server, `TOP` (header-first partial download of large messages comes later) |
-| 1.11 `katna-daemon` | Process, `in.invenia.katna.Pim1` D-Bus skeleton (commands + change signals), single instance, systemd user unit, D-Bus activation, graceful shutdown |
-| 1.12 System events | Network changes, suspend/resume, metered connections |
-| 1.13 `katnactl` | Small CLI client for the daemon (add account, sync, search, send, list) — the test harness until the GUI exists |
+| 1.1 I/O layer ✅ #4, #8 | rustls + async I/O driver for Pimalaya's sans-I/O coroutines; `MailBackend` trait |
+| 1.2 Account setup ✅ #23, #24, #29 | Autoconfiguration (Thunderbird ISPDB, provider autoconfig, DNS SRV per RFC 6186), password login, secrets in Secret Service (`oo7`) |
+| 1.3 IMAP level 1 ✅ #11, #31, #34, #37 | Folder list, envelope/flags/`BODYSTRUCTURE` sync, CONDSTORE/QRESYNC incremental sync, UIDVALIDITY handling |
+| 1.4 IMAP push ✅ #13 | IDLE with renewal, per-folder connections within server limits, reconnect/backoff |
+| 1.5 Levels 2 and 3 ✅ #16, #36, #59, #87 | Offline window (full bodies), text backfill for indexing, eviction when mail leaves the window |
+| 1.6 Op queue ✅ #20 | Optimistic local flags/move/delete, replay with retries and conflict handling |
+| 1.7 Threading ✅ #25, #34, #72 | JWZ threading + Gmail thread IDs; property tests |
+| 1.8 SMTP + outbox ✅ #22 | Sending, Sent-folder handling, outbox with undo delay |
+| 1.9 `katna-meta` ◐ undo send and scheduled send live in the outbox (#22, #53); the crate is still empty | Metadata table + scheduler (undo send first) |
+| 1.10 POP3 ✅ #27 | Client with UIDL tracking, leave-on-server, `TOP` (header-first partial download of large messages comes later) |
+| 1.11 `katna-daemon` ✅ #15, #17, #19, #65 | Process, `in.invenia.katna.Pim1` D-Bus skeleton (commands + change signals), single instance, systemd user unit, D-Bus activation, graceful shutdown |
+| 1.12 System events ✅ #30, #38 | Network changes, suspend/resume, metered connections |
+| 1.13 `katnactl` ✅ #15, #28, #33 | Small CLI client for the daemon (add account, sync, search, send, list) — the test harness until the GUI exists |
+
+Status (27 September 2026): all tasks merged except `katna-meta` as its
+own crate. Gmail syncs in the background on the owner's laptop; the
+integration tests run against Stalwart in CI.
 
 **Done when:** two real accounts (Stalwart + Gmail/Fastmail) sync
 incrementally in the background; new mail appears within seconds via IDLE;
@@ -160,6 +189,8 @@ integration tests pass against all dev containers.
 | 2.5 CLI | `katnactl org add/rule/list/show`, suggestions review |
 | 2.6 vCard mapping | Organizations/contacts as vCards (`KIND:org`, `MEMBER`) — CardDAV sync comes in Phase 6 |
 
+Status (27 September 2026): not started; `katna-org` is an empty crate.
+
 **Done when:** searching a company name returns mail from personal
 addresses mapped to it; adding an address updates the organization view
 instantly for all old mail; suggestions have a documented precision test.
@@ -168,18 +199,18 @@ instantly for all old mail; suggestions have a documented precision test.
 
 | Task | Deliverable |
 |---|---|
-| 3.1 App skeleton | GPUI app (pinned `gpui-pre` + GPUI Kit), daemon client, read-only store access, change-signal handling |
-| 3.2 `katna-chrome` | Production version of spike S1: SSD on KDE, CSD on GNOME, others; theme tokens; Breeze-like and Adwaita-like presets |
-| 3.3 `katna-platform` | Portal settings (color scheme, accent), `kdeglobals`, system font, icon theme, file chooser |
-| 3.4 Main layout | Sidebar (accounts, unified inbox, folders, organizations), virtualized thread list, conversation view |
-| 3.5 Rendering | Plain text + sanitized HTML (per spike S3 result), remote-content blocking, tracker removal, auth-result banners |
-| 3.6 Search UI | Search-as-you-type, filter chips, organization facets, "More results on server" section |
-| 3.7 Composer v1 | Plain text + Markdown, reply/reply-all/forward, identities and signatures, attachments, spell check, undo-send toast |
-| 3.8 Account setup UI | Wizard using Phase 1 autoconfiguration |
+| 3.1 App skeleton ✅ #18 | GPUI app (pinned `gpui-pre` + GPUI Kit), daemon client, read-only store access, change-signal handling |
+| 3.2 `katna-chrome` ✅ #7, #60, #75, #77, #83 | Production version of spike S1: SSD on KDE, CSD on GNOME, others; theme tokens; Breeze-like and Adwaita-like presets |
+| 3.3 `katna-platform` ✅ #40 | Portal settings (color scheme, accent), `kdeglobals`, system font, icon theme, file chooser |
+| 3.4 Main layout ◐ #18, #21, #25, #49, #57, #61, #68, #85, #90, #132; organizations in the sidebar wait for Phase 2 | Sidebar (accounts, unified inbox, folders, organizations), virtualized thread list, conversation view |
+| 3.5 Rendering ◐ #44, #73, #103; auth-result banners pending | Plain text + sanitized HTML (per spike S3 result), remote-content blocking, tracker removal, auth-result banners |
+| 3.6 Search UI ◐ #18, #50, #54, #88; organization facets and "More results on server" pending | Search-as-you-type, filter chips, organization facets, "More results on server" section |
+| 3.7 Composer v1 ✅ #25, #42, #53, #69, #84, #107, #110, #111, #117, #118, #126, #133 | Plain text + Markdown, reply/reply-all/forward, identities and signatures, attachments, spell check, undo-send toast |
+| 3.8 Account setup UI ✅ #29, #47, #51 | Wizard using Phase 1 autoconfiguration |
 | 3.9 Organizations UI | Organization pages, "Add to organization…", suggestion review |
-| 3.10 Keyboard + a11y | Gmail-style shortcuts, command palette, AccessKit labels |
-| 3.11 Packaging v1 | Flatpak (with Background portal), .deb, AUR (tested); .rpm (built, not tested); desktop files, AppStream, `mailto:` handler |
-| 3.12 Attachment viewer | Attachment cards with thumbnails; built-in viewer for PDF, pictures, text, spreadsheets (xlsx, xls, ods, csv), documents (docx, doc, odt) and slides as text (pptx, ppt, odp); save, open with another app, and a default app per file type in Settings (done, `ARCHITECTURE.md` §13.8) |
+| 3.10 Keyboard + a11y ◐ shortcuts #42, #71, #112; command palette and AccessKit labels pending | Gmail-style shortcuts, command palette, AccessKit labels |
+| 3.11 Packaging v1 ◐ Arch package and `[katna]` repository #19, #32; `mailto:` handler #106; Flatpak, .deb, .rpm, AppStream pending | Flatpak (with Background portal), .deb, AUR (tested); .rpm (built, not tested); desktop files, AppStream, `mailto:` handler |
+| 3.12 Attachment viewer ✅ #52, #55, #66, #79, #99, #102, #131 | Attachment cards with thumbnails; built-in viewer for PDF, pictures, text, spreadsheets (xlsx, xls, ods, csv), documents (docx, doc, odt) and slides as text (pptx, ppt, odp); save, open with another app, and a default app per file type in Settings (done, `ARCHITECTURE.md` §13.8) |
 
 Started: the first window (sidebar, message list, plain-text reading pane,
 search box) reads the local store; see `ARCHITECTURE.md` §13.5. The window
@@ -187,6 +218,13 @@ now follows Gmail's layout (app rail, three panes, conversations, category
 tabs, quick settings, search options) and has a composer that sends
 through the daemon's outbox with undo; see §13.6. GPUI Kit is
 not used yet because of the size budget.
+
+Status (27 September 2026): the owner uses Katna Mail daily with a Gmail
+account on Plasma 6.7 Wayland. Left before the "done when": organizations
+UI (3.9, after Phase 2), auth-result banners, server search results,
+command palette and AccessKit, packages other than Arch, and checks on
+GNOME and X11. The binary budget was raised to 100 MB (57 MB today)
+because GPUI with its Linux backends is larger than planned (spike S1).
 
 **Done when:** you can use Katna Mail as your daily client for one account
 on both Plasma and GNOME (Wayland and X11); performance budgets hold
@@ -197,21 +235,53 @@ run on the CI distro matrix.
 
 | Task | Deliverable |
 |---|---|
-| 4.1 `katna-notify` | Notifications with click-to-open (activation tokens), inline reply-all on Plasma, archive/mark read, fallback quick-reply window |
+| 4.1 `katna-notify` ✅ #41, #80 | Notifications with click-to-open (activation tokens), inline reply-all on Plasma, archive/mark read, fallback quick-reply window |
 | 4.2 Notification rules | Grouping, Inbox/category filters, per-organization policy, closing on read elsewhere |
-| 4.3 Badge + tray | Unity LauncherEntry unread count, tray icon with badge and menu, single-instance app actions, KDE global menu (done early, September 2026; §15.2) |
+| 4.3 Badge + tray ✅ #48, #65, #70 | Unity LauncherEntry unread count, tray icon with badge and menu, single-instance app actions, KDE global menu (done early, September 2026; §15.2) |
 | 4.4 KRunner | `org.kde.krunner1` in the daemon: contacts, mail, organizations; actions |
 | 4.5 GNOME search | `org.gnome.Shell.SearchProvider2` using the same backend |
 | 4.6 Small integrations | Global shortcut (portal), Dolphin service menu |
+
+Status (27 September 2026): 4.1 and 4.3 are done and translated (#129);
+4.2 is not planned in detail yet; 4.4–4.6 not started.
 
 **Done when:** with no window open, new mail raises a notification;
 clicking it focuses the right message on Wayland; reply-all from the
 Plasma notification is delivered (with undo); KRunner and GNOME search
 find contacts, mail and organizations in < 50 ms.
 
+### Daily use track — requests from the owner's own use (September 2026)
+
+Since #43 the owner has used each `arch-latest` build on Plasma 6.7
+Wayland with a busy Gmail account and asked for changes along the way. Most
+belong to Phase 3 tasks above; this track records them so none is lost.
+
+| Task | Deliverable |
+|---|---|
+| D.1 Gmail look and motion ✅ | Gmail-style layout, conversations, tabs and motion (#21, #25, #45, #64, #68, #78, #81); folder pane icon (#90); card outline, shadow and equal 16 px gaps (#85, #120, #128); one account at a time (#61); pins (#57) |
+| D.2 Settings ✅ | Settings page, tabs, search, (i) help, long names (#42, #47, #82, #88, #96, #124); 12/24-hour clock (#115); reading options (#108); shortcut sets and Mailspring settings (#112); scaling (#104) |
+| D.3 Onboarding, What's new, About ✅ | First-start pages and tour (#51), What's new after updates, one file per highlight (#89, #93, #113, #123), About Katna (#93) |
+| D.4 Window ✅ | Open in a new window (#57, #86), window memory (#105), print preview before the print dialog, More menu (#122), own frame and blur, Experimental (#75, #77) |
+| D.5 Undo everywhere ✅ | Undo in the snackbar and Ctrl+Z for archive, delete, move, spam, read, star, important, pin and a send during its undo delay (#76, #125) |
+| D.6 Selecting text ✅ | Select and copy mail text (#103) and viewer text; spreadsheet cells copy as cells (#131) |
+| D.7 Compose placement ✅ | Compose under the account name in the folder pane, sliding into the rail when folded; "Katna Mail" at the top left with the app word changing on app switch (#132) |
+| D.8 Select all matching | Select menu choices tick every matching conversation in the folder or tab, count line and Clear, in batches of 500 (#127, in review) |
+| D.9 Recipient chips | Chips in To, Cc and Bcc, name first with the address on demand, double-click to edit, invalid addresses in red blocking Send (#130, in review) |
+| D.10 Rich paste and drag and drop | Paste keeps formatting; spreadsheet tables paste as Table, Picture or Plain; files pasted or dragged from Dolphin attach; pictures ask Inline or Attachment (in progress) |
+| D.11 New Katna logo | The owner's own logo everywhere: app, hicolor, window and tray icons, top bar, About, onboarding, README, and the website page (in progress) |
+| D.12 Autostart on by default | The daemon and tray start with the session unless turned off (in progress) |
+| D.13 Reset cache | Settings > Reset cache, as in Mailspring (#109, in review) |
+| D.14 Whole-sentence suggestions (later) | Optional, downloaded small local model in a helper process; nothing sent to a cloud service without asking |
+
+Not yet checked on a real desktop: Open with (#55), Gmail Important sync
+(#56), scheduled send (#53), the badge count with one account (#61), the
+print hand-off to KDE's print dialog (#122) and reopening the window in
+place on Plasma 6.7 Wayland (#105).
+
 ### Release track — update channels and safe updates (before the first public release)
 
-Planned 26 September 2026 and **not started**: the basic apps come first.
+Planned 26 September 2026 (#39) and **not started** apart from the
+daemon's restart after updates (#65): the basic apps come first.
 The design is `ARCHITECTURE.md` §21.2. Until this track is done, only the
 nightly `arch-latest` build exists and it is for testers. It must be done
 before Katna is offered as a stable release or on Flathub. U.2 and U.3 are
@@ -224,7 +294,7 @@ mail schema stops changing every week.
 | U.2 Migration fixtures | A committed database of each released schema version (mail, PIM, blobs) and a test that migrates each to the current version and compares counts and query answers |
 | U.3 Backup before migrating | The daemon backs up each database before raising its `user_version`, checks free space first, keeps the last two backups |
 | U.4 Schema compatibility | `schema_meta.min_reader_version`; expand-then-contract rule checked in review and by a rollback test; settings keep unknown keys |
-| U.5 Running while updated | Daemon notices its binary was replaced and restarts when idle; `Version()` on D-Bus; restart pill in the apps; old/new app and daemon tests |
+| U.5 Running while updated ◐ the daemon restarts itself after an update (#65); the rest pending | Daemon notices its binary was replaced and restarts when idle; `Version()` on D-Bus; restart pill in the apps; old/new app and daemon tests |
 | U.6 Health check and safe mode | First-start self-check, `health.toml`, safe mode after three failed starts, restore from backup, export of local-only data, "Copy debug report" |
 | U.7 Upgrade and rollback tests in CI | Container test: previous stable → candidate with the daemon running, against the dev servers; candidate → previous stable |
 | U.8 Release workflow | On a tag: build every format once, run the checks, publish to beta; promotion to stable copies the same files after a required reviewer approves |
@@ -248,15 +318,15 @@ leaves the machine before the user opts in.
 
 | Task | Deliverable |
 |---|---|
-| C.1 Local crash reports ✅ | `katna_core::crash`: panic hook in every binary, `coredumpctl` lookup for native crashes, scrubber (home, user, host, machine ID, email addresses), one text report per crash in `$XDG_STATE_HOME/katna/crashes/` with raw frames and build ID, newest 20 kept; `feedback.save_crash_reports` (default on) |
-| C.2 Crash notice ✅ | Next start of Katna Mail after a crash of the app or the daemon: "closed unexpectedly last time" with View report and Copy report; `katnactl crashes` lists, prints and deletes reports |
-| C.2a User feedback tab ✅ | Settings > User feedback (tab before Experimental): "Save crash reports on this computer" (default on) and the saved reports with View, Copy, Delete and Delete all; the tab itself comes from the Settings rewrite |
-| C.3 Readable stacks | Measure `strip = "debuginfo"` against the size budgets; CI keeps each build's debug files (by build ID) and, once the Sentry project exists, uploads them with `sentry-cli` |
-| C.4 Asking ✅ | "Help improve Katna" step in onboarding (Don't send / Send crash reports, equal weight, no default); asked once after updating for existing installs; Settings > User feedback switch "Send crash reports", off until the user opts in, changeable at any time ("Send anonymous usage statistics" comes with C.6) |
-| C.5 Sending crash reports ✅ | Daemon sends new reports as hand-written envelopes (no SDK) over `rustls` only when the switch is on and the network is not metered: 20 s after start, every 15 minutes and when settings are saved; reports of the last 7 days, marked "Sent" in the list; an empty DSN turns sending off |
-| C.6 Usage statistics | One enum of features, weekly `info` event with yes/no feature tags and bucketed facts, release-health sessions, random install ID rotated every 90 days and resettable; Settings > User feedback shows what is counted |
-| C.7 Feedback form | Help > Send feedback (global menu, Quick settings > Help, Settings > User feedback): form, optional reply address, preview of exactly what is sent, Sentry User Feedback item |
-| C.8 Sentry project | Project `invenia-systems/4512156171698256` created (owner, 27 September 2026); organization-wide Require Data Scrubber, Require Using Default Scrubbers and Prevent Storing of IP Addresses on (done); GitHub integration; DSN filled in `katna_core::ids` (done); `SENTRY_AUTH_TOKEN` secret added by the owner for C.3's debug-file upload |
+| C.1 Local crash reports ✅ #95 | `katna_core::crash`: panic hook in every binary, `coredumpctl` lookup for native crashes, scrubber (home, user, host, machine ID, email addresses), one text report per crash in `$XDG_STATE_HOME/katna/crashes/` with raw frames and build ID, newest 20 kept; `feedback.save_crash_reports` (default on) |
+| C.2 Crash notice ✅ #95 | Next start of Katna Mail after a crash of the app or the daemon: "closed unexpectedly last time" with View report and Copy report; `katnactl crashes` lists, prints and deletes reports |
+| C.2a User feedback tab ✅ #96, #101 | Settings > User feedback (tab before Experimental): "Save crash reports on this computer" (default on) and the saved reports with View, Copy, Delete and Delete all; the tab itself comes from the Settings rewrite |
+| C.3 Readable stacks and debug-file upload (next) | Measure `strip = "debuginfo"` against the size budgets; CI keeps each build's debug files (by build ID) and, once the Sentry project exists, uploads them with `sentry-cli` |
+| C.4 Asking ✅ #101 | "Help improve Katna" step in onboarding (Don't send / Send crash reports, equal weight, no default); asked once after updating for existing installs; Settings > User feedback switch "Send crash reports", off until the user opts in, changeable at any time ("Send anonymous usage statistics" comes with C.6) |
+| C.5 Sending crash reports ✅ #101 | Daemon sends new reports as hand-written envelopes (no SDK) over `rustls` only when the switch is on and the network is not metered: 20 s after start, every 15 minutes and when settings are saved; reports of the last 7 days, marked "Sent" in the list; an empty DSN turns sending off |
+| C.6 Usage statistics (next) | One enum of features, weekly `info` event with yes/no feature tags and bucketed facts, release-health sessions, random install ID rotated every 90 days and resettable; Settings > User feedback shows what is counted |
+| C.7 Feedback form (next) | Help > Send feedback (global menu, Quick settings > Help, Settings > User feedback): form, optional reply address, preview of exactly what is sent, Sentry User Feedback item |
+| C.8 Sentry project ◐ waits only for the `SENTRY_AUTH_TOKEN` secret | Project `invenia-systems/4512156171698256` created (owner, 27 September 2026); organization-wide Require Data Scrubber, Require Using Default Scrubbers and Prevent Storing of IP Addresses on (done); GitHub integration; DSN filled in `katna_core::ids` (done); `SENTRY_AUTH_TOKEN` secret added by the owner for C.3's debug-file upload |
 | C.9 Own server (later) | GlitchTip or self-hosted Sentry on `katna.invenia.in` with the same settings as C.8; CI uploads debug files there; the DSN constant switches to it; the cloud project is closed once no supported version sends to it |
 
 **Done when:** a panic and a segfault in Katna Mail and in the daemon each
@@ -276,10 +346,10 @@ merging `main` first, rather than in one large one.
 
 | Task | Deliverable |
 |---|---|
-| L.1 Framework and picker | `katna-i18n` crate: language list (`i18n/languages.toml`), system language (`LANGUAGE`, `LC_*`, `plasma-localerc`), `general.language` setting, Fluent bundles with English fallback, `tr!`, override folder, pseudo-locales, id and variable checks; ICU4X dates, numbers and plurals in `format.rs`; top-bar language button and picker popover, Settings > General row, phone drawer row; bundled flags; the top bar and the picker translated into all 48 languages; CLAUDE.md rule that new UI text goes through `tr!` |
+| L.1 Framework and picker ✅ #100 | `katna-i18n` crate: language list (`i18n/languages.toml`), system language (`LANGUAGE`, `LC_*`, `plasma-localerc`), `general.language` setting, Fluent bundles with English fallback, `tr!`, override folder, pseudo-locales, id and variable checks; ICU4X dates, numbers and plurals in `format.rs`; top-bar language button and picker popover, Settings > General row, phone drawer row; bundled flags; the top bar and the picker translated into all 48 languages; CLAUDE.md rule that new UI text goes through `tr!` |
 | L.2 GPUI patches | `gpui-pre` vendored with `KATNA.md`: window layout direction with mirrored bounds, start/end text alignment, `.layout_ltr()`, UAX #14 and grapheme-safe line breaking with dictionary breaks for Thai, Lao, Khmer and Burmese, Han forms from Katna's language, bidi-aware carets |
 | L.3 Mirroring | RTL switch in `window/layout.rs` `Shape`; mirrored directional icons; drawer, conversation and menus from the right; arrow keys; checked with `qps-plocm` |
-| L.4 Strings, by area | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
+| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134 in review; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
 | L.5 Mail content | Per-message and per-paragraph direction in the reader and list; compose direction buttons and `dir` in sent HTML; quote and forward headers in the UI language; shortcuts by key position on non-Latin layouts; input method check (Fcitx5, IBus) |
 | L.6 Search in unspaced scripts | Thai, Lao, Khmer and Burmese word splitting in `katna-search` with the shared segmenter |
 | L.7 Corrections | Translation guide (`i18n/README.md`), "Translation correction" issue template, coverage report in CI; later hosted Weblate on the same files (owner applies) |
@@ -298,8 +368,11 @@ areas; and the app and the daemon stay within their size budgets.
 
 ### Later: promotional website (not scheduled yet)
 
-Asked for by the owner on 26 September 2026 so it is not forgotten; nothing
-is built. A public site at `katna.invenia.in` that says what Katna is (a
+Asked for by the owner on 26 September 2026 (#62). Started 27 September
+2026 as a `/katna` page on the owner's own site (repository
+`QuakeString/invenia_website`, PR #1, in 49 languages), which the owner
+builds and deploys; `katna.invenia.in` pointing there is the owner's
+server setting. Not merged by design until the owner is ready. A public site at `katna.invenia.in` that says what Katna is (a
 fast, private mail and calendar suite for Linux desktops), shows
 screenshots and short clips of Katna Mail and Katna Calendar, explains how
 to install it (today the `arch-latest` pre-release and its `[katna]`
@@ -315,7 +388,7 @@ privacy promise.
 
 ### Later: Katna on phones (not scheduled yet)
 
-Asked about by the owner on 27 September 2026; design only, in
+Asked about by the owner on 27 September 2026; design only (#94), in
 `ARCHITECTURE.md` §26. Nothing starts until the owner asks for it. M.1 and
 M.2 also help the desktop (a daemon-free engine is easier to test), so they
 may start earlier if a desktop task needs them.
@@ -346,6 +419,13 @@ reminders, rules engine + Sieve/ManageSieve upload, vacation responder,
 one-click unsubscribe (RFC 8058), templates, mute thread, inbox categories
 (local classifier), phishing/lookalike warnings, OAuth2 for Gmail/Microsoft
 (verification process started in parallel).
+
+Status (27 September 2026): done early: labels and folders created on the
+server (#58), Gmail labels stored once (#34), Gmail's inbox tabs (#31),
+send later (#53), pins (#57), Undo on every action (#125). Not started:
+snooze, follow-up reminders, rules and Sieve, vacation responder,
+one-click unsubscribe, templates, mute, a local category classifier,
+phishing warnings and **OAuth2** (Gmail works with an app password today).
 
 **Done when:** the feature checklist in the architecture (§10, §11) works
 against Stalwart, Dovecot and Gmail, with integration tests.
@@ -385,7 +465,9 @@ the published container image.
 
 ### Phase 8 — Polish (ongoing)
 
-Full-fidelity HTML rendering, WYSIWYG composer, semantic search
+Started early: HTML rendering (#44), a formatting composer with tables
+(#53), spelling, grammar with Harper (#111) and writing suggestions (#118),
+scaling 75–200 % (#104). Still open: Full-fidelity HTML rendering, WYSIWYG composer, semantic search
 (local embeddings), Katna Confidential, large-attachment links, GNOME
 top-bar calendar (EDS backend), more languages.
 
@@ -394,8 +476,8 @@ the user's GnuPG:
 
 | Task | Content |
 |---|---|
-| E.1 Read encrypted and signed mail ✅ | `katna-crypto`: PGP/MIME, inline PGP, S/MIME via `gpg`/`gpgsm`; banner in the reading view; armor left out of snippets and search |
-| E.2 Sign and encrypt when sending ✅ | Compose toggles, recipient key check, encrypt to self, hidden Bcc, PGP/MIME and S/MIME; answers to encrypted mail encrypted. Later: per-account defaults in Settings |
+| E.1 Read encrypted and signed mail ✅ #46 | `katna-crypto`: PGP/MIME, inline PGP, S/MIME via `gpg`/`gpgsm`; banner in the reading view; armor left out of snippets and search |
+| E.2 Sign and encrypt when sending ✅ #46 | Compose toggles, recipient key check, encrypt to self, hidden Bcc, PGP/MIME and S/MIME; answers to encrypted mail encrypted. Later: per-account defaults in Settings |
 | E.3 Keys | Autocrypt headers, WKD lookup, import keys from attachments, key details in the banner, protected (hidden) subject |
 
 **Done when:** mail from Thunderbird and KMail (OpenPGP and S/MIME,
@@ -445,8 +527,8 @@ Plasma integration (Phase 6), which have few dependencies on the rest.
 3. ✅ Cargo workspace with empty crates and the dependency rules.
 4. ✅ Toolchain (latest stable); CI `check` (Arch + Ubuntu 26.04), `deny`, `size`.
 5. ✅ Add `dev/compose.yaml` with Stalwart, Dovecot, Radicale, Mailpit and seed data.
-6. Start spike **S2** (Pimalaya + I/O) and spike **S1** (window chrome).
-   S1 done: `docs/spikes/S1-window-chrome.md`.
+6. ✅ Spike **S2** (Pimalaya + I/O, #4) and spike **S1** (window chrome, #7):
+   `docs/spikes/`. S3 and S4 were answered by building (#44, #41).
 7. ✅ Implement `katna-core` and the first `katna-store` migration (secrets move to task 1.2; `calendar.db` schema to Phase 6).
 8. ✅ Write the Enron download script and the Maildir importer.
 9. Create GitHub milestones (Phases 0–8) and issues for Phase 0 tasks.
@@ -454,6 +536,9 @@ Plasma integration (Phase 6), which have few dependencies on the rest.
 ## 9. How this plan is maintained
 
 - Update estimates at the end of each phase with actual numbers.
+- §0 and the status marks (✅ with pull request numbers, ◐ partly done) are
+  refreshed after each batch of merges, in one pull request at a time, so
+  parallel work does not race on this file.
 - Spike results and major decisions are recorded as short ADRs
   (architecture decision records) in `docs/adr/`.
 - If a "done when" check cannot be met, the plan is changed explicitly —

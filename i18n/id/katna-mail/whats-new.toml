@@ -1,0 +1,354 @@
+# Katna Mail, Indonesian (Bahasa Indonesia).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-27-0319-whats-new"]
+title = "Yang baru, setiap kali diperbarui"
+text = """
+Setelah pembaruan, Katna Mail menampilkan apa yang berubah, sekali saja,
+sebagai ganti tur sambutan. Setelan cepat bisa membukanya lagi.
+"""
+
+["2026-09-27-0320-reply-buttons-fit"]
+title = "Tombol balas yang selalu muat"
+text = """
+Balas, Balas semua, dan Teruskan tetap dalam satu baris: saat jendela
+menyempit, satu per satu berubah menjadi ikon. Di ponsel, ketiganya
+berbagi lebar layar.
+"""
+
+["2026-09-27-0321-notifications-open-mail"]
+title = "Notifikasi membuka emailnya"
+text = """
+Klik notifikasi email baru untuk membuka pesan itu, bahkan saat Katna
+Mail tertutup. Notifikasi juga punya Balas semua.
+"""
+
+["2026-09-27-0322-attachment-previews"]
+title = "Pratinjau untuk lebih banyak lampiran"
+text = """
+Spreadsheet, CSV, file teks, dan dokumen menampilkan pratinjau di
+kartunya, dan latar belakang penampil kini lebih terang.
+"""
+
+["2026-09-27-0323-frosted-menus"]
+title = "Menu kaca buram"
+text = """
+Dengan Setelan > Eksperimental > Latar belakang buram aktif, menu dan
+popover berubah menjadi kaca buram.
+"""
+
+["2026-09-27-0346-settings-search"]
+title = "Cari di setelan"
+text = """
+Saat Setelan terbuka, kotak pencarian menemukan setelan apa pun dan
+membawa Anda ke sana. Setelan punya lebih banyak tab, dengan urutan
+yang lebih jelas, dan penjelasan panjang ada di balik tombol (i).
+"""
+
+["2026-09-27-0410-crash-reports-kept"]
+title = "Laporan crash tetap di komputer Anda"
+text = """
+Jika Katna Mail atau layanan latarnya crash, saat dijalankan berikutnya
+akan memberi tahu Anda, dengan laporan yang bisa dilihat atau disalin
+untuk laporan bug. Setelan > Masukan pengguna mencantumkannya.
+"""
+
+["2026-09-27-0438-calmer-reply"]
+title = "Membalas dengan lebih tenang"
+text = """
+Membalas di panel baca menjaga Kirim dan format di bagian bawah,
+melipat email yang dikutip di balik "...", dan Buka balasan di jendela
+terpisah membuka balasan di jendelanya sendiri. Di ponsel, menulis
+memakai seluruh jendela.
+"""
+
+["2026-09-27-0439-mail-in-own-window"]
+title = "Email di jendelanya sendiri"
+text = """
+Shift+klik pesan, klik kanan, atau gunakan Di jendela baru di bilah alat
+pembaca untuk membukanya di jendelanya sendiri. Cetak semua mencetak
+seluruh percakapan.
+"""
+
+["2026-09-27-0440-settings-on-phone"]
+title = "Setelan di ponsel"
+text = """
+Di layar sempit, Setelan dan Setelan cepat memenuhi jendela, dan setiap
+menu dan popover tertutup dengan Esc atau klik di luarnya.
+"""
+
+["2026-09-27-0441-offline-mail"]
+title = "Pilih berapa banyak email yang tersimpan offline"
+text = """
+Setelan > Umum > Email offline menyimpan seminggu, sebulan, tiga bulan,
+setahun, atau semua email Anda di komputer ini. Email yang lebih lama
+diunduh saat Anda membukanya.
+"""
+
+["2026-09-27-0442-folder-pane-button"]
+title = "Tombol panel folder yang baru"
+text = """
+Tombol di kiri atas menampilkan dan menyembunyikan panel folder, dan
+sisi kirinya terisi selama folder ditampilkan.
+"""
+
+["2026-09-27-0443-cards-and-phone-rows"]
+title = "Kartu lebih rapi, ponsel lebih tenang"
+text = """
+Daftar dan pembaca berada di atas kartu dengan garis tepi tipis dan
+bayangan pendek, menu selalu tetap di dalam jendela, dan di ponsel baris
+pencarian dan bilah alat bergeser menghilang saat Anda menggulir.
+"""
+
+["2026-09-27-0444-about-katna"]
+title = "Tentang Katna"
+text = """
+Bantuan > Tentang Katna, juga ada di Setelan cepat, menampilkan versi,
+catatan perubahan, dan setiap pustaka yang menjadi dasar Katna, beserta
+penulis dan lisensinya. Versi di kepala Setelan juga membukanya.
+"""
+
+["2026-09-27-0457-settings-tabs-one-line"]
+title = "Tab Setelan dalam satu baris"
+text = """
+Tab Setelan tetap dalam satu baris: jika tidak muat, panah di tepi dan
+roda gulir menggeser sisanya ke dalam tampilan. Tanda tangan dan
+template berbagi tab Tulis, begitu juga folder dan aturan email.
+"""
+
+["2026-09-27-0515-send-crash-reports"]
+title = "Bantu tingkatkan Katna, jika Anda mau"
+text = """
+Katna bertanya sekali apakah laporan crash boleh dikirim untuk membantu
+memperbaiki masalahnya. Laporan dikirim tanpa alamat IP, pesan, atau
+alamat email Anda, dan hanya jika Anda setuju. Ubah kapan saja di
+Setelan > Masukan pengguna.
+"""
+
+["2026-09-27-0536-older-attachments-open"]
+title = "Lampiran email lama langsung terbuka"
+text = """
+Mengklik lampiran email lama yang belum ada di komputer ini akan
+mengunduhnya: lampiran terisi selama diunduh, lalu terbuka.
+"""
+
+["2026-09-27-0556-reading-options"]
+title = "Baca percakapan dengan cara Anda"
+text = """
+Setelan > Umum > Membaca bisa menampilkan pesan terbaru lebih dulu,
+membuka header lengkap setiap pesan, dan menulis nama penerima secara
+lengkap, bukan hanya nama depan.
+"""
+
+["2026-09-27-0609-send-and-archive"]
+title = "Kirim dan arsipkan"
+text = """
+Menu di samping Kirim pada balasan akan mengirimnya dan mengarsipkan
+percakapan. Setelan > Tulis bisa menjadikannya perilaku Kirim, dan bisa
+mengirim email baru dari akun yang sama setiap kali.
+"""
+
+["2026-09-27-0627-scaling"]
+title = "Perbesar atau perkecil semuanya"
+text = """
+Setelan > Tampilan > Skala mengubah ukuran seluruh jendela, teks, ikon,
+dan jarak sekaligus, dari 75% hingga 200% di atas skala desktop Anda.
+"""
+
+["2026-09-27-0645-shortcut-sets"]
+title = "Pintasan dari aplikasi email yang Anda kenal"
+text = """
+Setelan > Pintasan bisa dimulai dari tombol Gmail, Inbox by Gmail, Apple
+Mail, Outlook, atau Thunderbird, menampilkannya dalam dua kolom, dan
+Pulihkan default membatalkan perubahan Anda.
+"""
+
+["2026-09-27-0646-more-settings"]
+title = "Lebih banyak setelan"
+text = """
+Buka Katna Mail saat login, pilih kapan email ditandai sudah dibaca,
+buat tombol balas membalas ke semua orang, selalu tampilkan gambar,
+bisukan suara email baru, sembunyikan penanda Penting, persempit baris
+panjang, pertahankan warna asli email dalam mode gelap, matikan
+pratinjau lampiran, tulis dalam teks biasa, pilih bahasa ejaan, dan
+lihat file yang disimpan di foldernya.
+"""
+
+["2026-09-27-0706-your-language"]
+title = "Bahasa Anda"
+text = """
+Pilih salah satu dari 51 bahasa lewat tombol bendera di bilah atas, atau
+ikuti bahasa desktop Anda. Tanggal dan angka kini mengikutinya; bagian
+aplikasi lainnya diterjemahkan dalam pembaruan berikutnya. Terjemahannya
+dibuat oleh AI, dan koreksi sangat diterima.
+"""
+
+["2026-09-27-0723-select-and-copy-text"]
+title = "Pilih dan salin teks di email"
+text = """
+Seret di atas pesan untuk memilih teksnya, klik dua kali untuk satu kata
+atau klik tiga kali untuk satu paragraf. Ctrl+C atau klik kanan
+menyalinnya, dan Ctrl+A memilih seluruh percakapan.
+"""
+
+["2026-09-27-0743-address-suggestions"]
+title = "Alamat disarankan saat Anda mengetik"
+text = """
+Kepada, Cc, dan Bcc menyarankan orang yang paling sering Anda kirimi
+email saat Anda mengetik, bahkan jika ada salah ketik. Pilih dengan
+tombol panah lalu Enter, Tab, atau klik.
+"""
+
+["2026-09-27-0804-main-window-translated"]
+title = "Jendela utama dalam bahasa Anda"
+text = """
+Rel aplikasi, folder, tab, daftar, menu, dan panel baca kini mengikuti
+bahasa yang Anda pilih. Folder yang Anda buat tetap memakai namanya
+sendiri.
+"""
+
+["2026-09-27-0824-24-hour-clock"]
+title = "Jam 12 jam atau 24 jam"
+text = """
+Setelan > Umum > Waktu menampilkan waktu dengan format 12 jam atau 24
+jam, apa pun kebiasaan bahasanya.
+"""
+
+["2026-09-27-0824-settings-translated"]
+title = "Setelan dalam bahasa Anda"
+text = """
+Setelan, Setelan cepat, akun Anda, dan nama pintasan keyboard kini
+mengikuti bahasa yang Anda pilih, dan pencarian di Setelan menemukan
+baris berdasarkan nama terjemahannya.
+"""
+
+["2026-09-27-0825-default-mail-app"]
+title = "Katna sebagai aplikasi email Anda"
+text = """
+Tautan email di aplikasi lain dan di situs web bisa membuka pesan baru
+di Katna Mail, dengan alamat, subjek, dan teks sudah terisi. Aktifkan di
+Setelan > Umum > Aplikasi email default.
+"""
+
+["2026-09-27-0825-old-word-files-and-slides"]
+title = "File Word lama dan slide"
+text = """
+Dokumen Word 97–2003 (.doc) kini terbuka di penampil dengan judul,
+daftar, dan tabelnya, dan slide PowerPoint (.pptx, .ppt) dan
+OpenDocument (.odp) menampilkan teks setiap slide. Kartunya juga
+menampilkan baris pertama. File yang tidak bisa ditampilkan Katna
+langsung terbuka di aplikasi default Anda.
+"""
+
+["2026-09-27-0825-opens-where-you-left-it"]
+title = "Terbuka di tempat Anda meninggalkannya"
+text = """
+Katna Mail terbuka dengan ukuran dan posisi seperti saat Anda
+menutupnya, dan dimaksimalkan jika sebelumnya begitu. Keluar dari Katna
+lewat baki sistem akan memulainya dari awal. Di Wayland, posisinya
+kembali jika desktop mendukungnya (Plasma 6.7 dan yang lebih baru).
+"""
+
+["2026-09-27-0826-grammar-checking"]
+title = "Pemeriksaan tata bahasa"
+text = """
+Saat Anda menulis dalam bahasa Inggris, di teks dan subjek, kesalahan
+tata bahasa diberi garis bawah amber. Klik kanan untuk perbaikan atau
+untuk mengabaikannya. Semua berjalan di komputer Anda, dengan Harper;
+matikan di Setelan > Tulis.
+"""
+
+["2026-09-27-0828-check-before-sending"]
+title = "Pemeriksaan sebelum mengirim"
+text = """
+Jika pesan Anda menyebut lampiran tetapi tidak ada lampirannya, atau
+tidak punya subjek, Katna bertanya dulu sebelum mengirim, juga untuk
+email terjadwal.
+"""
+
+["2026-09-27-0831-writing-suggestions"]
+title = "Saran menulis"
+text = """
+Saat Anda menulis, kemungkinan lanjutan sebuah frasa muncul dalam warna
+abu-abu. Tekan Tab untuk memakainya, atau terus mengetik. Katna
+mempelajari frasa dari email yang Anda kirim dan dari percakapan yang
+sedang Anda balas, di komputer Anda; matikan di Setelan > Tulis.
+"""
+
+["2026-09-27-1043-dialogs-translated"]
+title = "Dialog dalam bahasa Anda"
+text = """
+Tentang, Yang baru, halaman sambutan dan tur, penambahan akun, opsi
+pencarian, dan pemberitahuan crash kini mengikuti bahasa yang Anda
+pilih.
+"""
+
+["2026-09-27-1129-compose-translated"]
+title = "Menulis email dalam bahasa Anda"
+text = """
+Jendela tulis, bilah formatnya, jadwal kirim, dan editor tanda tangan
+kini mengikuti bahasa yang Anda pilih, dan waktu kirim yang disarankan
+memakai cara penulisan tanggal bahasa itu serta jam 12 atau 24 jam
+pilihan Anda. Pilihan tema yang mengikuti desktop kini cukup bernama
+Sistem.
+"""
+
+["2026-09-27-1132-print-preview"]
+title = "Lihat dulu sebelum mencetak"
+text = """
+Cetak kini membuka pratinjau halaman lebih dulu, di kertas A4 atau
+Letter, sebelum dialog printer Anda. Menu Lainnya terbuka tepat di bawah
+tombolnya, dengan ikon di samping setiap item.
+"""
+
+["2026-09-27-1137-formatting-bar-colors"]
+title = "Bilah format yang lebih jelas"
+text = """
+Bilah format kini diwarnai dengan warna aksen Anda, dan format yang
+aktif, seperti Tebal atau daftar, tampil dalam warna seleksi. Saat
+membalas, Kirim dan alat-alatnya tetap di bawah saat Anda menggulir.
+"""
+
+["2026-09-27-1200-notifications-translated"]
+title = "Notifikasi dalam bahasa Anda"
+text = """
+Notifikasi email baru beserta tombolnya, serta menu dan tooltip ikon
+baki sistem, kini mengikuti bahasa yang Anda pilih, dan langsung
+berganti begitu Anda mengubahnya.
+"""
+
+["2026-09-27-1242-whats-new-translated"]
+title = "Yang baru dalam bahasa Anda"
+text = """
+Catatan ini kini tampil dalam bahasa yang dipilih di Katna Mail. Terjemahannya masih draf, jadi beri tahu kami bagian mana yang kata-katanya bisa lebih baik.
+"""
+
+["2026-09-27-1126-undo-anything"]
+title = "Urungkan apa saja dengan Ctrl+Z"
+text = """
+Tidak sengaja mengarsipkan, menghapus, memindahkan, atau memberi bintang
+pada sesuatu? Tekan Ctrl+Z, atau Urungkan pada catatan di bawah, untuk
+membatalkannya, termasuk dari hasil penelusuran dan percakapan yang
+terbuka di jendelanya sendiri. Ctrl+Z terus mundur melalui apa yang Anda
+lakukan, termasuk menandai sudah atau belum dibaca, dan menarik kembali
+pesan terkirim selama jeda urungkan kirimnya masih berjalan.
+"""
+
+["2026-09-27-1203-copy-from-attachments"]
+title = "Salin dari lampiran"
+text = """
+Teks di PDF, dokumen, slide, dan file teks yang dibuka di Katna kini
+bisa dipilih dan disalin seperti teks pesan. Di spreadsheet, seret
+melintasi sel, atau klik huruf kolom atau nomor baris, lalu Ctrl+C
+menyalinnya agar tertempel sebagai sel.
+"""
+
+["2026-09-27-1210-compose-beside-folders"]
+title = "Tulis pindah ke folder"
+text = """
+Tulis kini ada di bagian atas folder Anda. Lipat folder dan tombol itu
+bergeser ke bilah di kiri, tempat menahan penunjuk di atasnya
+menampilkan folder lagi. Kiri atas menampilkan Katna Mail, dan namanya
+bergulir ke Kalender, Kontak, dan lainnya saat Anda berpindah aplikasi.
+"""

@@ -87,8 +87,11 @@ settings-general-new-mail-sound = Play a sound
 settings-general-new-mail-sound-detail = The desktop's new-mail sound
 # The row of settings about the desktop: login, tray and taskbar.
 settings-general-desktop = Desktop
-settings-general-open-at-login = Open Katna Mail at login
-settings-general-open-at-login-detail = Mail syncs at login either way, while the service runs
+settings-general-start-at-login = Start Katna at login
+settings-general-start-at-login-detail = Syncs mail and shows new-mail notifications and the tray icon, without opening the window
+# Under "Start Katna at login", while it is on.
+settings-general-login-window = Open the Katna Mail window too
+settings-general-login-window-detail = The window opens at login as well
 settings-general-tray = Show Katna in the system tray
 settings-general-tray-detail = With the unread count and a menu
 settings-general-unread-badge = Unread count on the taskbar icon
@@ -263,7 +266,7 @@ settings-general-remote-images-summary = Always show the images of every message
 settings-general-sending-summary = Undo send: how long a sent message waits, so it can be taken back
 settings-general-offline-summary = How many days of recent mail are downloaded whole, to read without a connection
 settings-general-notifications-summary = New-mail notifications and their sound
-settings-general-desktop-summary = Open Katna Mail at login, the system tray icon and the unread count on the taskbar icon
+settings-general-desktop-summary = Start Katna at login, the system tray icon and the unread count on the taskbar icon
 settings-accounts-accounts-summary = Add or remove an account, or change its picture
 settings-appearance-density-summary = Default or compact lines in the list
 settings-appearance-scaling-summary = Make everything bigger or smaller: text, icons, spacing and dividers
@@ -303,10 +306,10 @@ settings-search-tab = Settings tab
 settings-search-none = No settings match “{ $query }”.
 settings-search-results = Settings that match “{ $query }”
 
-## Settings: opening at login
+## Settings: starting at login
 
 # $error: the system's error, in English.
-settings-open-at-login-failed = Could not change opening at login: { $error }
+settings-open-at-login-failed = Could not change starting at login: { $error }
 
 ## Settings > General > Time
 

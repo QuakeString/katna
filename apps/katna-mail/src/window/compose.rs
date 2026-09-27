@@ -20,6 +20,7 @@
 
 mod attach;
 mod checks;
+mod chips;
 mod popout;
 mod recipients;
 mod schedule;
@@ -64,6 +65,7 @@ use crate::widgets::{elevation, icon, tip};
 
 pub(super) use attach::Attachment;
 use checks::Passed;
+use chips::Chips;
 use recipients::{Field, Suggestions};
 pub(super) use scheduled::NAV_KEY as SCHEDULED_NAV_KEY;
 use security::Sealing;
@@ -124,6 +126,9 @@ pub(super) struct Compose {
     from: Option<AccountId>,
     show_cc: bool,
     show_bcc: bool,
+    /// The recipients of To, Cc and Bcc; their fields hold only what is
+    /// being typed after them.
+    chips: Chips,
     /// Addresses suggested for the recipient being typed.
     suggest: Option<Suggestions>,
     mode: Mode,
@@ -158,10 +163,11 @@ impl Compose {
     /// What the fields hold now.
     fn fields(&self, cx: &gpui::App) -> Draft {
         let text = |input: &Entity<TextInput>| input.read(cx).text().to_owned();
+        let recipients = |field, input| self.chips.text(field, &text(input));
         Draft {
-            to: text(&self.to),
-            cc: text(&self.cc),
-            bcc: text(&self.bcc),
+            to: recipients(Field::To, &self.to),
+            cc: recipients(Field::Cc, &self.cc),
+            bcc: recipients(Field::Bcc, &self.bcc),
             subject: text(&self.subject),
             body: {
                 let mut body = self.body.read(cx).doc().clone();
@@ -620,9 +626,9 @@ impl MailWindow {
         let set = |field: &Entity<TextInput>, text: String, cx: &mut Context<Self>| {
             field.update(cx, |input, cx| input.set_text(text, cx));
         };
-        set(&compose.to, mail.to.join(", "), cx);
-        set(&compose.cc, mail.cc.join(", "), cx);
-        set(&compose.bcc, mail.bcc.join(", "), cx);
+        compose.chips.set(Field::To, &mail.to.join(", "));
+        compose.chips.set(Field::Cc, &mail.cc.join(", "));
+        compose.chips.set(Field::Bcc, &mail.bcc.join(", "));
         set(&compose.subject, mail.subject.clone(), cx);
         compose.show_cc |= !mail.cc.is_empty();
         compose.show_bcc |= !mail.bcc.is_empty();
@@ -643,7 +649,7 @@ impl MailWindow {
             compose.body.focus_handle(cx)
         };
         window.focus(&focus, cx);
-        cx.notify();
+        self.chips_changed(Field::To, cx);
     }
 
     /// Scrolls the conversation smoothly to the reply that just opened at
@@ -778,9 +784,20 @@ impl MailWindow {
                 input
             })
         };
-        let to = input(&tr!("compose-recipients"), &draft.to, cx);
-        let cc = input("", &draft.cc, cx);
-        let bcc = input("", &draft.bcc, cx);
+        // The recipients open as chips, and the fields empty.
+        let chips = Chips::new(&draft.to, &draft.cc, &draft.bcc);
+        let mut start = start;
+        for text in [&mut start.to, &mut start.cc, &mut start.bcc] {
+            *text = chips::normalized(text);
+        }
+        let placeholder = if chips.get(Field::To).is_empty() {
+            tr!("compose-recipients")
+        } else {
+            String::new()
+        };
+        let to = input(&placeholder, "", cx);
+        let cc = input("", "", cx);
+        let bcc = input("", "", cx);
         let subject = input(&tr!("compose-subject"), &draft.subject, cx);
         let speller = self.speller(cx);
         let grammar = self.grammar();
@@ -799,8 +816,9 @@ impl MailWindow {
             editor
         });
         let mut subscriptions = Vec::new();
-        // Enter in a field moves on to the next one; typing a recipient
-        // suggests addresses.
+        // Enter in a field moves on to the next one, once the recipient
+        // typed there is a chip; typing a recipient suggests addresses, and
+        // leaving the field makes a chip of it.
         let fields: [(&Entity<TextInput>, FocusHandle, Option<Field>); 4] = [
             (&to, subject.focus_handle(cx), Some(Field::To)),
             (&cc, subject.focus_handle(cx), Some(Field::Cc)),
@@ -812,7 +830,12 @@ impl MailWindow {
                 input,
                 window,
                 move |this, _, event: &InputEvent, window, cx| match (event, field) {
-                    (InputEvent::Submit, _) => window.focus(&next, cx),
+                    (InputEvent::Submit, Some(field)) => {
+                        if !this.commit_recipients(field, true, cx) {
+                            window.focus(&next, cx);
+                        }
+                    }
+                    (InputEvent::Submit, None) => window.focus(&next, cx),
                     (InputEvent::Changed, Some(field)) => this.recipient_changed(field, cx),
                     (InputEvent::Changed | InputEvent::Cancel, _) => {
                         // Typing or Esc closes a card of fixes.
@@ -821,6 +844,15 @@ impl MailWindow {
                     }
                 },
             ));
+            if let Some(field) = field {
+                let focus = input.focus_handle(cx);
+                subscriptions.push(cx.on_blur(&focus, window, move |this, _, cx| {
+                    // A click on a suggestion picks it instead.
+                    if !this.suggesting(field) {
+                        this.commit_recipients(field, true, cx);
+                    }
+                }));
+            }
         }
         subscriptions.push(
             cx.subscribe(&subject, |this, _, event: &InputGrammarMenu, cx| {
@@ -894,6 +926,7 @@ impl MailWindow {
             cc,
             show_bcc: !draft.bcc.is_empty(),
             bcc,
+            chips,
             suggest: None,
             subject,
             body,
@@ -1151,6 +1184,13 @@ impl MailWindow {
         let signature = compose.signature;
         let attachments = compose.attachments.clone();
         let plain = compose.plain(cx);
+        if let Some((field, address)) = self.bad_recipient(cx) {
+            if let Some(c) = &mut self.compose {
+                c.popup = Some(Popup::BadAddress { field, address });
+            }
+            cx.notify();
+            return;
+        }
         let parse = |text: &str| outgoing::parse_addresses(text);
         let (to, cc, bcc) = match (parse(&draft.to), parse(&draft.cc), parse(&draft.bcc)) {
             (Ok(to), Ok(cc), Ok(bcc)) => (to, cc, bcc),
@@ -1650,9 +1690,10 @@ impl MailWindow {
                 };
                 self.person_avatar(&name, &a.address, 40.0)
             });
+        let to_field = self.render_recipient_field(Field::To, th, cx);
         let header = div()
             .flex_none()
-            .h(px(44.0))
+            .min_h(px(44.0))
             .pl(px(12.0))
             .pr(px(6.0))
             .flex()
@@ -1667,7 +1708,7 @@ impl MailWindow {
                     .tooltip(tip(kind_label, th))
                     .child(icon(kind_icon, th.text_dim, 20.0)),
             )
-            .child(div().flex_1().min_w_0().child(compose.to.clone()))
+            .child(to_field)
             .when(!compose.show_cc, |d| {
                 d.child(
                     div()
@@ -1695,11 +1736,13 @@ impl MailWindow {
                     // it back here.
                     .on_click(cx.listener(|this, _, window, cx| this.pop_out_compose(window, cx))),
             );
+        let header = self.recipient_row(header, Field::To, th, cx);
+        let cc_field = self.render_recipient_field(Field::Cc, th, cx);
         let cc = compose.show_cc.then(|| {
             div()
                 .flex_none()
                 .mx(px(12.0))
-                .h(px(36.0))
+                .min_h(px(36.0))
                 .flex()
                 .flex_row()
                 .items_center()
@@ -1713,8 +1756,9 @@ impl MailWindow {
                         .text_color(rgba(th.text_dim))
                         .child(tr!("compose-cc")),
                 )
-                .child(div().flex_1().min_w_0().child(compose.cc.clone()))
+                .child(cc_field)
         });
+        let cc = cc.map(|cc| self.recipient_row(cc, Field::Cc, th, cx));
         let focus = compose.body.focus_handle(cx);
         let body = div()
             .id("inline-body")
@@ -1863,23 +1907,42 @@ impl MailWindow {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };
-        let row = |label: String, input: &Entity<TextInput>| {
+        let row = |label: String, field: AnyElement| {
             div()
                 .flex_none()
                 .mx(px(16.0))
-                .h(px(40.0))
+                .min_h(px(40.0))
                 .flex()
                 .flex_row()
-                .items_center()
+                // With chips on several lines, the label stays by the first.
+                .items_start()
                 .gap(px(8.0))
                 .border_b_1()
                 .border_color(rgba(th.divider))
                 .text_size(px(14.0))
                 .when(!label.is_empty(), |d| {
-                    d.child(div().flex_none().text_color(rgba(th.text_dim)).child(label))
+                    d.child(
+                        div()
+                            .flex_none()
+                            .h(px(40.0))
+                            .flex()
+                            .items_center()
+                            .text_color(rgba(th.text_dim))
+                            .child(label),
+                    )
                 })
-                .child(div().flex_1().min_w_0().child(input.clone()))
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .min_h(px(40.0))
+                        .flex()
+                        .items_center()
+                        .child(field),
+                )
         };
+        let [to_field, cc_field, bcc_field] = [Field::To, Field::Cc, Field::Bcc]
+            .map(|field| self.render_recipient_field(field, th, cx));
         let link = |id: &'static str, label: String| {
             div()
                 .id(id)
@@ -1892,12 +1955,14 @@ impl MailWindow {
                 .child(label)
         };
         let to = self
-            .recipient_row(row(tr!("compose-to"), &compose.to), Field::To, th, cx)
+            .recipient_row(row(tr!("compose-to"), to_field), Field::To, th, cx)
             .child(
                 div()
                     .flex_none()
+                    .h(px(40.0))
                     .flex()
                     .flex_row()
+                    .items_center()
                     .gap(px(4.0))
                     .when(!compose.show_cc, |d| {
                         d.child(link("compose-cc", tr!("compose-cc")).on_click(cx.listener(
@@ -1931,17 +1996,15 @@ impl MailWindow {
             .flex_col()
             .child(to)
             .when(compose.show_cc, |d| {
-                d.child(self.recipient_row(row(tr!("compose-cc"), &compose.cc), Field::Cc, th, cx))
+                d.child(self.recipient_row(row(tr!("compose-cc"), cc_field), Field::Cc, th, cx))
             })
             .when(compose.show_bcc, |d| {
-                d.child(self.recipient_row(
-                    row(tr!("compose-bcc"), &compose.bcc),
-                    Field::Bcc,
-                    th,
-                    cx,
-                ))
+                d.child(self.recipient_row(row(tr!("compose-bcc"), bcc_field), Field::Bcc, th, cx))
             })
-            .child(row(String::new(), &compose.subject))
+            .child(row(
+                String::new(),
+                compose.subject.clone().into_any_element(),
+            ))
             .into_any_element()
     }
 

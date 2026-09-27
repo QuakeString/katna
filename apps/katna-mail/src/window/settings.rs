@@ -66,8 +66,8 @@ pub(super) enum Change {
     Scale(u16),
     /// 12- or 24-hour times.
     Clock(Clock),
-    /// Katna Mail opens at login (an autostart entry).
-    OpenAtLogin(bool),
+    /// What Katna starts at login, if anything (an autostart entry).
+    StartAtLogin(Option<crate::autostart::Start>),
     MarkRead(MarkRead),
     /// What opens after the open conversation is moved away.
     AutoAdvance(AutoAdvance),
@@ -482,8 +482,8 @@ impl MailWindow {
             Change::OpenSavedFolder(on) => view.open_saved_folder = on,
             Change::PlainText(on) => sending.plain_text = on,
             Change::SpellCheck(on) => sending.spell_check = on,
-            Change::OpenAtLogin(on) => {
-                if let Err(err) = crate::autostart::set(on) {
+            Change::StartAtLogin(start) => {
+                if let Err(err) = crate::autostart::set(start) {
                     tracing::warn!(%err, "cannot change opening at login");
                     self.show_snackbar(
                         tr!("settings-open-at-login-failed", error = err.to_string()),
@@ -492,7 +492,7 @@ impl MailWindow {
                     );
                 }
                 if let Some(page) = self.settings_page.as_mut() {
-                    page.open_at_login = crate::autostart::is_on();
+                    page.start_at_login = crate::autostart::get();
                 }
                 cx.notify();
                 return;
