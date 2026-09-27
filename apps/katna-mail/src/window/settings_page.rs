@@ -163,11 +163,19 @@ pub(super) struct SettingsPage {
 }
 
 /// Katna Mail's desktop file, which `mailto:` links name to open in it.
+#[cfg(not(windows))]
 fn desktop_file() -> String {
     format!("{}.desktop", katna_core::ids::MAIL_APP_ID)
 }
 
 /// Whether the desktop opens `mailto:` links in Katna Mail.
+#[cfg(windows)]
+fn opens_mail_links() -> Option<bool> {
+    Some(katna_platform::mail_handler::is_default())
+}
+
+/// Whether the desktop opens `mailto:` links in Katna Mail.
+#[cfg(not(windows))]
 fn opens_mail_links() -> Option<bool> {
     let lists = katna_platform::mimeapps::Lists::from_env()?;
     Some(lists.default_app(katna_platform::mimeapps::MAILTO) == Some(desktop_file()))
@@ -816,7 +824,20 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// Windows lets only the user pick the default mail app: opens the
+    /// Default apps page, where Katna Mail is listed.
+    #[cfg(windows)]
+    fn make_default_mail_app(&mut self, cx: &mut Context<Self>) {
+        if let Ok(exe) = std::env::current_exe()
+            && let Err(err) = katna_platform::mail_handler::register(&exe)
+        {
+            tracing::warn!(%err, "cannot register Katna Mail as a mail app");
+        }
+        cx.open_url(katna_platform::mail_handler::DEFAULT_APPS_PAGE);
+    }
+
     /// Makes the desktop open `mailto:` links in Katna Mail.
+    #[cfg(not(windows))]
     fn make_default_mail_app(&mut self, cx: &mut Context<Self>) {
         let done = katna_platform::mimeapps::Lists::from_env()
             .ok_or_else(|| "no home directory".to_owned())

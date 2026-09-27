@@ -8,5 +8,13 @@ pub mod dbusmenu;
 pub mod font;
 pub mod icon;
 pub mod launcher;
+#[cfg(windows)]
+pub mod mail_handler;
 pub mod mimeapps;
+#[cfg(windows)]
+pub mod toasts;
+#[cfg(not(windows))]
+pub mod tray;
+#[cfg(windows)]
+#[path = "tray_windows.rs"]
 pub mod tray;

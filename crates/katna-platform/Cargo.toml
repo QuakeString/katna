@@ -15,5 +15,14 @@ serde.workspace = true
 tracing.workspace = true
 zbus.workspace = true
 
+# The notification-area icon and toasts on Windows (tray_windows.rs,
+# toasts.rs).
+[target.'cfg(windows)'.dependencies]
+async-channel.workspace = true
+tray-icon.workspace = true
+tauri-winrt-notification.workspace = true
+winreg.workspace = true
+winit.workspace = true
+
 [lints]
 workspace = true
