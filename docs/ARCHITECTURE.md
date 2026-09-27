@@ -2027,8 +2027,14 @@ consent.
   unexpectedly last time" (or "Katna's background service stopped
   unexpectedly") with **View report** (opens the text file) and
   **Copy report** (to paste into a GitHub issue). Dismissing it marks the
-  report as seen. Settings > General > "Crash reports" lists saved reports
-  and can delete them. `katnactl crashes` lists and prints them.
+  report as seen. `katnactl crashes` lists and prints them.
+- **Settings > User feedback** (a tab of its own, just before
+  Experimental, asked for by the owner so all of this can be turned off at
+  any time). Now: "Save crash reports on this computer" (on by default,
+  since nothing leaves the machine; off means the panic hook and the
+  core-dump check write nothing), and the list of saved reports with
+  **View**, **Copy** and **Delete** (and Delete all). Later (Part 2): the
+  sending switches and **Send feedback**.
 
 **Part 2: sending, only with consent (later).** Reports go to a Sentry
 cloud project (decided by the owner on 27 September 2026, §25).
@@ -2037,9 +2043,9 @@ cloud project (decided by the owner on 27 September 2026, §25).
   Katna", with **Share** and **Don't share** given equal weight and no
   default: nothing is sent until the user picks. People who installed
   before this existed are asked once in the same words after updating.
-  Settings > General has the same two switches afterwards, "Send crash
-  reports" and "Send usage statistics", each off unless the user turned it
-  on. The daemon reads the same config keys and sends nothing on metered
+  Settings > User feedback has the same two switches afterwards, "Send
+  crash reports" and "Send anonymous usage statistics", each off unless the
+  user turned it on, and changeable at any time. The daemon reads the same config keys and sends nothing on metered
   connections.
 - **Crash reports.** With consent, a new report is shown to the user and
   sent when they click **Send** (or automatically, if they chose "Always
@@ -2051,15 +2057,15 @@ cloud project (decided by the owner on 27 September 2026, §25).
   no, never counts of messages or times): search options, pins, labels,
   scheduled send, encrypted mail, built-in viewers, phone layout, own frame,
   and so on. The exact list lives in one Rust enum; each entry is described
-  in Settings so users can see what is counted. No message counts, no
+  in Settings > User feedback so users can see what is counted. No message counts, no
   addresses, no domains, no search terms, no timestamps finer than a week.
 - **Identity.** No user ID and no account ID. Each upload carries a random
   **install ID** only so that one machine's weekly reports are not counted
-  twice; it is regenerated every 90 days and by "Reset" in Settings, and it
+  twice; it is regenerated every 90 days and by "Reset" in Settings > User feedback, and it
   is never sent with crash reports. The Sentry project stores no IP
   addresses (server side, below).
-- **Feedback.** Help > **Send feedback** (global menu and Quick settings >
-  Help) opens a short form: what worked, what did not, optional email for a
+- **Feedback.** Help > **Send feedback** (global menu, Quick settings >
+  Help and Settings > User feedback) opens a short form: what worked, what did not, optional email for a
   reply (clearly optional, never filled in from the account). It shows
   exactly what will be sent before sending. This is independent of the
   switches: sending feedback is itself the consent for that one message.
