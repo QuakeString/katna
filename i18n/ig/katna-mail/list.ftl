@@ -152,7 +152,10 @@ menu-reply-all = Zaa mmadụ niile
 menu-forward = Zigaa
 menu-archive = Chekwaa
 menu-delete = Hichapụ
+menu-delete-forever = Hichapụ ruo mgbe ebighị ebi
+menu-move-to-inbox = Bugharịa gaa Igbe ozi mbata
 menu-spam = Kọọ dị ka spam
+menu-not-spam = Ọ bụghị spam
 menu-mark-read = Kaa akara dị ka agụrụ
 menu-mark-unread = Kaa akara dị ka a gụghị
 menu-mark-all-read = Kaa akara na niile dị ka agụrụ
@@ -209,6 +212,10 @@ toast-unpinned = { $kind ->
 toast-spam = { $kind ->
     [conversation] Akọọla mkparịta ụka { $count } dị ka spam.
    *[message] Akọọla ozi { $count } dị ka spam.
+}
+toast-not-spam = { $kind ->
+    [conversation] Akaala mkparịta ụka { $count } dị ka ndị na-abụghị spam ma bugaa ha n'igbe ozi mbata.
+   *[message] Akaala ozi { $count } dị ka ndị na-abụghị spam ma bugaa ha n'igbe ozi mbata.
 }
 toast-deleted-forever = { $kind ->
     [conversation] Ehichapụla mkparịta ụka { $count } ruo mgbe ebighị ebi.

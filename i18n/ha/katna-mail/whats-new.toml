@@ -458,3 +458,42 @@ kibiyarsa don aika daga wani asusunka. Sabuwar wasiƙa tana farawa daga
 asusunka na farko, sai dai idan ka zaɓi wani na asali a Saituna >
 Rubutu > Aika sababbin saƙonni daga.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Haɗaɗɗen akwatin saƙo"
+text = """
+Kunna Saituna > Asusu > Haɗaɗɗen akwatin saƙo don ganin wasiƙun dukkan
+asusunku tare. “Dukkan asusu” yana saman wurin folda, da Akwatin saƙo,
+Ba a karanta ba, Masu tauraro, Muhimmi, Waɗanda aka aika, Zayyanai da
+ƙari, ɗaya-ɗaya don dukkan asusu; kibiyar da ke gefen kowanne tana buɗe
+layi ɗaya ga kowane asusu. Sunan kowane asusu yanzu yana da kibiya da ke
+naɗe foldodinsa.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menu na danna-dama sun dace da kowace folda"
+text = """
+Zaɓar folda ko lakabi a ƙarƙashin Matsar zuwa a menu na danna-dama yanzu
+yana matsar da wasiƙar, tare da Janye, har daga sakamakon bincike. A
+Saƙonnin banza, Rahoto saƙon banza ya zama Ba saƙon banza ba ne. Kwandon
+shara yana ba da Matsar zuwa Akwatin saƙo da Share har abada, Ma'ajiya
+tana ba da Matsar zuwa Akwatin saƙo, kuma Zayyanai da Waɗanda aka aika
+suna barin abubuwan da ba su dace a can ba.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Ja asusu don tsara su"
+text = """
+A Saituna > Asusu, jan asusu yanzu yana ɗaga dukan layinsa, kuma sauran
+asusun suna matsawa gefe don ba da wuri. Matsa sama da Matsa ƙasa suna
+bayyana idan ka nuna wani layi.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Ana adana zayyanai"
+text = """
+Rufe saƙon da kake rubutawa yanzu yana adana shi a Zayyanai, har a sabar
+wasiƙarka, kamar a Gmail. Buɗe shi daga Zayyanai don ci gaba da rubutu.
+Maɓallin kwandon shara ne kaɗai ke zubar da shi, kuma Janye yana dawo da
+shi.
+"""

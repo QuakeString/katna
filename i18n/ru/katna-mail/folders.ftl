@@ -9,6 +9,9 @@ nav-folders = Папки
 nav-label-new = Создать ярлык
 nav-folder-new = Создать папку
 nav-account-unnamed = Аккаунт { $number }
+nav-all-accounts = Все аккаунты
+nav-expand = Показать папки
+nav-collapse = Скрыть папки
 nav-tab-new = { $count ->
     [one] { $count } новое
     [few] { $count } новых
@@ -20,6 +23,8 @@ nav-tab-new = { $count ->
 
 folder-inbox = Входящие
 folder-starred = Помеченные
+folder-unread = Непрочитанные
+folder-important = Важные
 folder-drafts = Черновики
 folder-sent = Отправленные
 folder-archive = Архив

@@ -230,7 +230,10 @@ menu-reply-all = Phendula bonke
 menu-forward = Dlulisela
 menu-archive = Faka kungobo yomlando
 menu-delete = Susa
+menu-delete-forever = Susa unomphela
+menu-move-to-inbox = Hambisa kubhokisi lokungenayo
 menu-spam = Bika ugaxekile
+menu-not-spam = Akuyona ugaxekile
 menu-mark-read = Maka njengokufundiwe
 menu-mark-unread = Maka njengokungafundiwe
 menu-mark-all-read = Maka konke njengokufundiwe
@@ -346,6 +349,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] Umlayezo ubikwe njengogaxekile.
        *[other] Imilayezo engu-{ $count } ibikwe njengogaxekile.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Ingxoxo imakwe njengengeyona ugaxekile futhi yahanjiswa kubhokisi lokungenayo.
+       *[other] Izingxoxo ezingu-{ $count } zimakwe njengezingeyona ugaxekile futhi zahanjiswa kubhokisi lokungenayo.
+    }
+   *[message] { $count ->
+        [one] Umlayezo umakwe njengongeyona ugaxekile futhi wahanjiswa kubhokisi lokungenayo.
+       *[other] Imilayezo engu-{ $count } imakwe njengengeyona ugaxekile futhi yahanjiswa kubhokisi lokungenayo.
     }
 }
 toast-deleted-forever = { $kind ->

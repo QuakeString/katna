@@ -230,7 +230,10 @@ menu-reply-all = Tümünü yanıtla
 menu-forward = Yönlendir
 menu-archive = Arşivle
 menu-delete = Sil
+menu-delete-forever = Kalıcı olarak sil
+menu-move-to-inbox = Gelen Kutusu'na taşı
 menu-spam = Spam bildir
+menu-not-spam = Spam değil
 menu-mark-read = Okundu olarak işaretle
 menu-mark-unread = Okunmadı olarak işaretle
 menu-mark-all-read = Tümünü okundu olarak işaretle
@@ -346,6 +349,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] İleti spam olarak bildirildi.
        *[other] { $count } ileti spam olarak bildirildi.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] İleti dizisi spam değil olarak işaretlendi ve gelen kutusuna taşındı.
+       *[other] { $count } ileti dizisi spam değil olarak işaretlendi ve gelen kutusuna taşındı.
+    }
+   *[message] { $count ->
+        [one] İleti spam değil olarak işaretlendi ve gelen kutusuna taşındı.
+       *[other] { $count } ileti spam değil olarak işaretlendi ve gelen kutusuna taşındı.
     }
 }
 toast-deleted-forever = { $kind ->

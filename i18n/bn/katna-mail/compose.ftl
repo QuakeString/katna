@@ -38,6 +38,9 @@ compose-scheduled = { $when }-এ পাঠানোর জন্য শিড�
 compose-sent-archived = পাঠানো ও আর্কাইভ করা হয়েছে
 compose-sent = মেসেজ পাঠানো হয়েছে
 compose-discarded = খসড়া বাতিল করা হয়েছে
+compose-draft-saved = খসড়া সেভ করা হয়েছে
+compose-draft-failed = খসড়া সেভ করা যায়নি: { $error }
+compose-draft-not-opened = খসড়া খোলা যায়নি।
 
 ## Attachments
 

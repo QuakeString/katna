@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Storage used"
+text = """
+The foot of the folder pane shows how full the account's mail storage
+is, such as "34% of 15 GB used", when its mail server tells.
+"""

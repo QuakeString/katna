@@ -152,7 +152,10 @@ menu-reply-all = Trả lời tất cả
 menu-forward = Chuyển tiếp
 menu-archive = Lưu trữ
 menu-delete = Xóa
+menu-delete-forever = Xóa vĩnh viễn
+menu-move-to-inbox = Chuyển vào Hộp thư đến
 menu-spam = Báo cáo thư rác
+menu-not-spam = Không phải thư rác
 menu-mark-read = Đánh dấu là đã đọc
 menu-mark-unread = Đánh dấu là chưa đọc
 menu-mark-all-read = Đánh dấu tất cả là đã đọc
@@ -209,6 +212,10 @@ toast-unpinned = { $kind ->
 toast-spam = { $kind ->
     [conversation] Đã báo cáo { $count } cuộc hội thoại là thư rác.
    *[message] Đã báo cáo { $count } thư là thư rác.
+}
+toast-not-spam = { $kind ->
+    [conversation] Đã đánh dấu { $count } cuộc hội thoại không phải thư rác và chuyển vào hộp thư đến.
+   *[message] Đã đánh dấu { $count } thư không phải thư rác và chuyển vào hộp thư đến.
 }
 toast-deleted-forever = { $kind ->
     [conversation] Đã xóa vĩnh viễn { $count } cuộc hội thoại.

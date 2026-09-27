@@ -49,7 +49,7 @@ use async_channel::{Receiver, Sender};
 use async_io::Timer;
 use futures_lite::FutureExt;
 use katna_core::{AccountId, Pop3Keep};
-use katna_store::{FolderId, FolderRole, MessageId, Store};
+use katna_store::{FolderId, FolderRole, MessageId, StorageQuota, Store};
 
 use crate::{
     Credentials, Endpoint, Error, FolderStatus, MailBackend, Result,
@@ -163,6 +163,8 @@ pub enum Event {
     /// The server refused the password. The worker tries again only when
     /// asked to ([`Handle::sync_now`]).
     AuthFailed(String),
+    /// The account's storage quota in the store changed.
+    QuotaChanged,
 }
 
 /// A request to download one message, answered when it is stored.
@@ -424,6 +426,12 @@ async fn woken(control: &Control, statuses: &Receiver<Vec<(String, FolderStatus)
 /// Why a connection was dropped on [`Handle::reconnect`].
 const RECONNECTING: &str = "reconnecting after a network change";
 
+/// Why a connection was dropped when its [`Handle`] was.
+const STOPPING: &str = "stopping";
+
+/// How long a stopping worker waits for the server to answer its logout.
+const LOGOUT_TIMEOUT: Duration = Duration::from_secs(1);
+
 /// Runs the worker for `account` until its [`Handle`] is dropped.
 pub async fn run<C: Connector>(
     connector: C,
@@ -487,15 +495,32 @@ pub async fn run<C: Connector>(
                     reconnecting = true;
                     Err(Error::Closed(RECONNECTING.into()))
                 })
+                .or(async {
+                    // Stopping drops a sync or download half way, like a
+                    // reconnect does, so quitting never waits for it.
+                    control.stopped().await;
+                    Err(Error::Closed(STOPPING.into()))
+                })
                 .or(watch_folders(&connector, &config, statuses_tx))
                 .await;
-                match result {
-                    Ok(()) => {
-                        if let Err(error) = backend.logout().await {
+                if control.is_stopped() {
+                    // A clean logout when the session was idle; a busy or
+                    // slow server does not hold the quit up.
+                    if result.is_ok() {
+                        let logout = async { Some(backend.logout().await) }
+                            .or(async {
+                                Timer::after(LOGOUT_TIMEOUT).await;
+                                None
+                            })
+                            .await;
+                        if let Some(Err(error)) = logout {
                             tracing::debug!(%error, "logout on stop");
                         }
-                        return;
                     }
+                    return;
+                }
+                match result {
+                    Ok(()) => return,
                     Err(error) => {
                         // A session that got as far as a full sync counts
                         // as a success: start the next wait short again.
@@ -684,6 +709,7 @@ async fn session<B: MailBackend>(
         }
         if full || last_full.elapsed() >= config.full_sync_interval {
             let reports = engine::sync_account(backend, store, account).await?;
+            record_quota(backend, store, account, events).await?;
             let _ = events.try_send(Event::Synced(reports));
             *synced = true;
             full = false;
@@ -963,6 +989,35 @@ async fn serve<B: MailBackend>(
         Some(message) => Err(Error::Closed(message)),
         None => Ok(()),
     }
+}
+
+/// Asks the server how full the account is and keeps it in the store.
+async fn record_quota<B: MailBackend>(
+    backend: &mut B,
+    store: &mut Store,
+    account: AccountId,
+    events: &Sender<Event>,
+) -> Result<()> {
+    let quota = match backend.quota().await {
+        Ok(quota) => quota,
+        // Some servers list QUOTA but refuse to say for the inbox.
+        Err(Error::Rejected(why)) => {
+            tracing::debug!(%why, "server refused the quota");
+            None
+        }
+        Err(err) => return Err(err),
+    };
+    let quota = quota.map(|q| StorageQuota {
+        used: q.used,
+        limit: q.limit,
+    });
+    let mut batch = store.mail_batch()?;
+    let changed = batch.set_quota(account, quota, unix_now())?;
+    batch.commit()?;
+    if changed {
+        let _ = events.try_send(Event::QuotaChanged);
+    }
+    Ok(())
 }
 
 fn unix_now() -> i64 {

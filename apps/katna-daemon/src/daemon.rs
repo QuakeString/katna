@@ -18,10 +18,14 @@ use katna_core::{
     Account, AccountId, AccountKind, AccountSettings, Config, Paths, Pop3Keep, Security, Server,
     config::Metered,
 };
-use katna_dbus::{AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, state};
+use katna_dbus::{
+    AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, TemplateItem, state,
+};
 use katna_i18n::tr;
 use katna_search::IndexerWaker;
-use katna_store::{FolderId, Forgotten, MessageFlags, MessageId, Mode, SendState, Store};
+use katna_store::{
+    FolderId, Forgotten, MessageFlags, MessageId, Mode, SendState, Store, Template, TemplateFile,
+};
 use katna_sync::{
     Credentials, Endpoint, MailBackend,
     autoconfig::Discovery,
@@ -40,6 +44,27 @@ use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secre
 
 /// The longest account name taken.
 const MAX_ACCOUNT_NAME: usize = 200;
+/// The longest template name, in characters.
+const MAX_TEMPLATE_NAME: usize = 200;
+/// The most a template's attachments may hold, in bytes (the session bus
+/// carries 32 MB at most).
+const MAX_TEMPLATE_FILES: usize = 20_000_000;
+
+/// A template name, trimmed; not empty and not too long.
+fn template_name(name: &str) -> Result<String, CommandError> {
+    let name = name.trim();
+    if name.is_empty() {
+        return Err(CommandError::InvalidArgs(
+            "a template needs a name".to_owned(),
+        ));
+    }
+    if name.chars().count() > MAX_TEMPLATE_NAME {
+        return Err(CommandError::InvalidArgs(format!(
+            "a template name is at most {MAX_TEMPLATE_NAME} characters"
+        )));
+    }
+    Ok(name.to_owned())
+}
 
 /// How long a stopping worker may take to log out.
 const STOP_TIMEOUT: Duration = Duration::from_secs(10);
@@ -558,6 +583,7 @@ impl Daemon {
             batch.clear_ops(id)?;
             batch.clear_outbox(id)?;
             batch.clear_pop3(id)?;
+            batch.set_quota(id, None, 0)?;
             batch.commit()?;
             store.remove_account(id)?
         };
@@ -954,6 +980,52 @@ impl Daemon {
         Ok(id)
     }
 
+    /// Saves a mail template (a new one for ID 0). Returns its ID.
+    pub fn save_template(&self, template: TemplateItem) -> Result<i64, CommandError> {
+        let name = template_name(&template.name)?;
+        let size: usize = template.attachments.iter().map(|f| f.data.len()).sum();
+        if size > MAX_TEMPLATE_FILES {
+            return Err(CommandError::InvalidArgs(format!(
+                "a template's attachments are at most {} MB",
+                MAX_TEMPLATE_FILES / 1_000_000
+            )));
+        }
+        let template = Template {
+            id: template.id,
+            name,
+            subject: template.subject,
+            html: template.html,
+            text: template.text,
+            attachments: template
+                .attachments
+                .into_iter()
+                .map(|f| TemplateFile {
+                    name: f.name,
+                    mime: f.mime,
+                    data: f.data,
+                })
+                .collect(),
+        };
+        let id = self.store().save_template(&template)?;
+        tracing::info!(id, "template saved");
+        Ok(id)
+    }
+
+    /// Renames a template. Returns whether it exists.
+    pub fn rename_template(&self, id: i64, name: &str) -> Result<bool, CommandError> {
+        let name = template_name(name)?;
+        Ok(self.store().rename_template(id, &name)?)
+    }
+
+    /// Deletes a template. Returns whether it existed.
+    pub fn delete_template(&self, id: i64) -> Result<bool, CommandError> {
+        let deleted = self.store().delete_template(id)?;
+        if deleted {
+            tracing::info!(id, "template deleted");
+        }
+        Ok(deleted)
+    }
+
     /// Takes a queued message back, if it is not being sent yet.
     pub fn undo_send(&self, id: i64) -> Result<bool, CommandError> {
         let undone = outbox::cancel(&mut self.store(), id)?;
@@ -1232,6 +1304,11 @@ impl Daemon {
                 Event::AuthFailed(message) => {
                     status.state = state::AUTH_FAILED;
                     status.detail = message;
+                }
+                // The folder pane shows how full the account is.
+                Event::QuotaChanged => {
+                    let _ = self.notices.try_send(Notice::MailChanged(id));
+                    continue;
                 }
             }
             // A removed account's last events must not bring it back.

@@ -152,7 +152,10 @@ menu-reply-all = 全員に返信
 menu-forward = 転送
 menu-archive = アーカイブ
 menu-delete = 削除
+menu-delete-forever = 完全に削除
+menu-move-to-inbox = 受信トレイに移動
 menu-spam = 迷惑メールを報告
+menu-not-spam = 迷惑メールではない
 menu-mark-read = 既読にする
 menu-mark-unread = 未読にする
 menu-mark-all-read = すべて既読にする
@@ -209,6 +212,10 @@ toast-unpinned = { $kind ->
 toast-spam = { $kind ->
     [conversation] { $count } 件のスレッドを迷惑メールとして報告しました。
    *[message] { $count } 件のメールを迷惑メールとして報告しました。
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count } 件のスレッドを迷惑メールではないとして受信トレイに移動しました。
+   *[message] { $count } 件のメールを迷惑メールではないとして受信トレイに移動しました。
 }
 toast-deleted-forever = { $kind ->
     [conversation] { $count } 件のスレッドを完全に削除しました。

@@ -80,6 +80,14 @@ impl Chip {
         }]
     }
 
+    /// The recipient, for a chip that is an address.
+    pub(super) fn mailbox(&self) -> Option<crate::outgoing::Mailbox> {
+        self.valid.then(|| crate::outgoing::Mailbox {
+            name: self.name.clone(),
+            email: self.email.clone(),
+        })
+    }
+
     /// What the chip shows: the name, else the address.
     fn label(&self) -> &str {
         if !self.valid {

@@ -9,6 +9,9 @@ nav-folders = ഫോൾഡറുകൾ
 nav-label-new = പുതിയ ലേബൽ സൃഷ്‌ടിക്കുക
 nav-folder-new = പുതിയ ഫോൾഡർ സൃഷ്‌ടിക്കുക
 nav-account-unnamed = അക്കൗണ്ട് { $number }
+nav-all-accounts = എല്ലാ അക്കൗണ്ടുകളും
+nav-expand = ഫോൾഡറുകൾ കാണിക്കുക
+nav-collapse = ഫോൾഡറുകൾ മറയ്ക്കുക
 nav-tab-new = { $count ->
     [one] { $count } പുതിയത്
    *[other] { $count } പുതിയവ
@@ -18,6 +21,8 @@ nav-tab-new = { $count ->
 
 folder-inbox = ഇൻബോക്‌സ്
 folder-starred = നക്ഷത്രമിട്ടവ
+folder-unread = വായിക്കാത്തവ
+folder-important = പ്രധാനപ്പെട്ടത്
 folder-drafts = ഡ്രാഫ്റ്റുകൾ
 folder-sent = അയച്ചവ
 folder-archive = ആർക്കൈവ്

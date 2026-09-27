@@ -9,12 +9,17 @@ nav-folders = 文件夹
 nav-label-new = 新建标签
 nav-folder-new = 新建文件夹
 nav-account-unnamed = 账号 { $number }
+nav-all-accounts = 所有账号
+nav-expand = 显示文件夹
+nav-collapse = 隐藏文件夹
 nav-tab-new = { $count } 封新邮件
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = 收件箱
 folder-starred = 已加星标
+folder-unread = 未读
+folder-important = 重要
 folder-drafts = 草稿
 folder-sent = 已发送
 folder-archive = 归档

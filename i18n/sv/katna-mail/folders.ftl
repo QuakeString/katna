@@ -9,6 +9,9 @@ nav-folders = Mappar
 nav-label-new = Skapa ny etikett
 nav-folder-new = Skapa ny mapp
 nav-account-unnamed = Konto { $number }
+nav-all-accounts = Alla konton
+nav-expand = Visa mappar
+nav-collapse = Dölj mappar
 nav-tab-new = { $count ->
     [one] { $count } nytt
    *[other] { $count } nya
@@ -18,6 +21,8 @@ nav-tab-new = { $count ->
 
 folder-inbox = Inkorgen
 folder-starred = Stjärnmärkt
+folder-unread = Olästa
+folder-important = Viktigt
 folder-drafts = Utkast
 folder-sent = Skickat
 folder-archive = Arkiv

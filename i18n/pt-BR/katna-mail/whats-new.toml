@@ -467,3 +467,43 @@ seta dela para enviar de outra das suas contas. Novos e-mails começam
 pela sua primeira conta, a menos que você escolha outra padrão em
 Configurações > Escrever > Enviar novas mensagens de.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Caixa de entrada unificada"
+text = """
+Ative Configurações > Contas > Caixa de entrada unificada para ver
+juntos os e-mails de todas as suas contas. “Todas as contas” fica no
+topo do painel de pastas com uma só Caixa de entrada, Não lidas, Com
+estrela, Importantes, Enviados, Rascunhos e mais para todas as contas; a
+seta ao lado de cada uma abre uma linha por conta. Agora o nome de cada
+conta tem uma seta que recolhe as pastas dela.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menus do botão direito sob medida para cada pasta"
+text = """
+Escolher uma pasta ou marcador em Mover para no menu do botão direito
+agora move o e-mail, com Desfazer, inclusive nos resultados da pesquisa.
+Em Spam, Denunciar spam vira Não é spam. Lixeira oferece Mover para a
+Caixa de entrada e Excluir permanentemente, Arquivo oferece Mover para a
+Caixa de entrada, e Rascunhos e Enviados deixam de fora itens que não se
+aplicam ali.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Arraste as contas para ordená-las"
+text = """
+Em Configurações > Contas, arrastar uma conta agora levanta a linha
+inteira, e as outras contas deslizam para o lado para abrir espaço.
+Mover para cima e Mover para baixo aparecem quando você aponta para uma
+linha.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Rascunhos são guardados"
+text = """
+Fechar uma mensagem que você está escrevendo agora a salva em Rascunhos,
+também no seu servidor de e-mail, como no Gmail. Abra-a em Rascunhos
+para continuar escrevendo. Só o botão de lixeira a descarta, e Desfazer
+a traz de volta.
+"""

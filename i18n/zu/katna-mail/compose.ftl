@@ -38,6 +38,9 @@ compose-scheduled = Ukuthumela kuhlelelwe { $when }
 compose-sent-archived = Kuthunyelwe futhi kwafakwa kungobo yomlando
 compose-sent = Umlayezo uthunyelwe
 compose-discarded = Okusalungiswa kulahliwe
+compose-draft-saved = Okusalungiswa kulondoloziwe
+compose-draft-failed = Okusalungiswa akukwazanga ukulondolozwa: { $error }
+compose-draft-not-opened = Okusalungiswa akukwazanga ukuvulwa.
 
 ## Attachments
 
