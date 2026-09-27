@@ -9,8 +9,10 @@
 pub mod desktop;
 pub mod frame;
 pub mod geometry;
+pub mod placement;
 pub mod tokens;
 
 pub use desktop::{DecorationMode, Desktop, Environment, Preset, Session};
 pub use frame::{Bar, Look, WindowChrome, window_options};
+pub use placement::{Placement, restore_window};
 pub use tokens::{ChromeColors, ChromeTokens};

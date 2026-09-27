@@ -34,6 +34,22 @@ It also adds background blur for translucent windows
   Wayland), and going back to server-side decorations removes
   `_GTK_FRAME_EXTENTS`, so a window can switch both ways while open.
 
+It also opens the main window where it was (`src/linux/placement.rs`):
+
+- `restore_placement(Placement { session, name, restore })` names the
+  next normal window's session and whether to put it back.
+- Wayland: `xdg-session-management-v1` (`src/linux/wayland/session.rs`,
+  bindings generated from `protocols/xdg-session-management-v1.xml`, which
+  `wayland-protocols` ships without Rust code). The window joins the
+  session before its first commit; `placement_session()` is the session's
+  id to keep.
+- X11: a restored window opens exactly at its origin (no 2 px nudge,
+  `USPosition` with static gravity), `window_bounds()` reads the origin
+  from the server rather than from configure events (which are relative
+  to the window manager's frame), and a window that opens maximized sets
+  `_NET_WM_STATE` before it is mapped, as window managers ignore requests
+  for unmapped windows.
+
 The first commit that added this directory holds the crate unchanged, so
 `git diff` against it shows the whole patch. When GPUI is upgraded, copy the
 new version here and apply the same change, or drop the patch once upstream

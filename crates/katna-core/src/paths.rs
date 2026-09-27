@@ -114,6 +114,12 @@ impl Paths {
         &self.state_dir
     }
 
+    /// How the mail window was when it closed:
+    /// `$XDG_STATE_HOME/katna/mail-window.toml`.
+    pub fn mail_window_file(&self) -> PathBuf {
+        self.state_dir.join("mail-window.toml")
+    }
+
     /// Crash reports, one text file per crash:
     /// `$XDG_STATE_HOME/katna/crashes/` (`docs/ARCHITECTURE.md` §19.2).
     pub fn crash_dir(&self) -> PathBuf {
