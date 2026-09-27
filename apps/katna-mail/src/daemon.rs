@@ -273,6 +273,23 @@ pub async fn server_hold_limit(connection: &Connection, account: i64) -> Result<
         .map_err(|err| describe(&err))
 }
 
+/// Like [`queue_send`], with open and click tracking: each recipient gets
+/// a tracked copy of their own (mail that cannot be tracked goes out
+/// untracked).
+pub async fn queue_tracked_send(
+    connection: &Connection,
+    account: i64,
+    message: &[u8],
+    delay: u32,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.queue_tracked_send(account, message, delay)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Saves an RFC 5322 message as a draft of `account`, in place of the
 /// copies saved before with its `Message-ID`. Returns the saved message.
 pub async fn save_draft(
@@ -493,8 +510,8 @@ pub async fn first_sync_pending(connection: &Connection) -> Result<bool, String>
         .any(|a| a.last_sync == 0 && a.state != state::NOT_SYNCED && a.state != state::AUTH_FAILED))
 }
 
-/// Yields for every `MailChanged`, `AccountsChanged` and `SyncStatusChanged`
-/// signal.
+/// Yields for every `MailChanged`, `AccountsChanged`, `SyncStatusChanged`
+/// and `TrackingChanged` signal.
 pub async fn mail_changes(connection: &Connection) -> Result<impl Stream<Item = ()>, String> {
     let pim = PimProxy::new(connection)
         .await
@@ -511,10 +528,15 @@ pub async fn mail_changes(connection: &Connection) -> Result<impl Stream<Item = 
         .receive_sync_status_changed()
         .await
         .map_err(|err| describe(&err))?;
+    let tracking = pim
+        .receive_tracking_changed()
+        .await
+        .map_err(|err| describe(&err))?;
     Ok(changes
         .map(|_| ())
         .or(accounts.map(|_| ()))
-        .or(status.map(|_| ())))
+        .or(status.map(|_| ()))
+        .or(tracking.map(|_| ())))
 }
 
 #[cfg(test)]

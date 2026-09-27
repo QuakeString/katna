@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "See when mail is opened"
+text = """
+Turn on the eye by the recipients to see when each one opens your
+message or follows a link in it, or ask for a read receipt instead. Sent
+mail shows who opened it, and a notification tells you the first time.
+Both are off for every new message.
+"""

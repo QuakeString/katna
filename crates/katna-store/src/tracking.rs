@@ -4,6 +4,8 @@
 //! recipient each random tracking ID stands for, and the events the
 //! server reported (`docs/ARCHITECTURE.md` §16.1).
 
+use std::collections::HashMap;
+
 use katna_core::AccountId;
 use rusqlite::{OptionalExtension, params};
 
@@ -69,6 +71,51 @@ pub struct TrackingNews {
     pub first: bool,
     /// For a click, the link's target.
     pub link: Option<String>,
+}
+
+/// What one recipient did with their tracked copy. Scanner events are
+/// left out.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RecipientActivity {
+    pub email: String,
+    pub name: Option<String>,
+    /// Opens by a person.
+    pub opens: u32,
+    /// Opens through Apple's mail privacy proxy, which fetches pictures
+    /// whether or not the mail is read: "maybe opened".
+    pub maybe_opens: u32,
+    /// Links followed by a person.
+    pub clicks: u32,
+    /// The latest open or click (Unix milliseconds).
+    pub last: Option<i64>,
+}
+
+impl RecipientActivity {
+    pub fn opened(&self) -> bool {
+        self.opens > 0 || self.clicks > 0
+    }
+}
+
+/// What the recipients of a tracked message did.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MessageActivity {
+    pub subject: String,
+    /// When every copy went out (Unix seconds).
+    pub sent_at: Option<i64>,
+    pub links: usize,
+    pub recipients: Vec<RecipientActivity>,
+}
+
+impl MessageActivity {
+    /// Recipients who opened it (a click counts as an open).
+    pub fn opened(&self) -> usize {
+        self.recipients.iter().filter(|r| r.opened()).count()
+    }
+
+    /// Recipients who followed a link.
+    pub fn clicked(&self) -> usize {
+        self.recipients.iter().filter(|r| r.clicks > 0).count()
+    }
 }
 
 impl Store {
@@ -302,6 +349,68 @@ impl Store {
             .optional()?)
     }
 
+    /// The activity of the tracked ones among `messages`.
+    pub fn tracking_activity(
+        &self,
+        messages: &[crate::MessageId],
+    ) -> Result<HashMap<crate::MessageId, MessageActivity>> {
+        let mut found = HashMap::new();
+        if messages.is_empty() || !self.has_tracking()? {
+            return Ok(found);
+        }
+        for &message in messages {
+            let Some(id) = self.message_id_header(message)? else {
+                continue;
+            };
+            if let Some(tracked) = self.tracking_for_message(&id)? {
+                found.insert(message, self.activity(tracked)?);
+            }
+        }
+        Ok(found)
+    }
+
+    /// The `Message-ID` of stored message `message`, without angle
+    /// brackets.
+    pub fn message_id_header(&self, message: crate::MessageId) -> Result<Option<String>> {
+        Ok(self
+            .mail
+            .prepare_cached("SELECT message_id_hdr FROM message WHERE id = ?1")?
+            .query_row([message.0], |row| row.get(0))
+            .optional()?
+            .flatten())
+    }
+
+    /// The activity of `tracked`.
+    pub fn activity(&self, tracked: TrackedMessage) -> Result<MessageActivity> {
+        let mut recipients = Vec::with_capacity(tracked.recipients.len());
+        for recipient in tracked.recipients {
+            let mut activity = RecipientActivity {
+                email: recipient.email,
+                name: recipient.name,
+                opens: 0,
+                maybe_opens: 0,
+                clicks: 0,
+                last: None,
+            };
+            for event in self.tracking_events(&recipient.tracking_id)? {
+                match (event.kind.as_str(), event.source.as_str()) {
+                    ("open", "person") => activity.opens += 1,
+                    ("open", "apple_proxy") => activity.maybe_opens += 1,
+                    ("click", "person" | "apple_proxy") => activity.clicks += 1,
+                    _ => continue,
+                }
+                activity.last = activity.last.max(Some(event.at));
+            }
+            recipients.push(activity);
+        }
+        Ok(MessageActivity {
+            subject: tracked.subject,
+            sent_at: tracked.sent_at,
+            links: tracked.links.len(),
+            recipients,
+        })
+    }
+
     /// The events of `tracking_id`, oldest first.
     pub fn tracking_events(&self, tracking_id: &str) -> Result<Vec<TrackingEvent>> {
         let mut stmt = self.pim.prepare_cached(
@@ -441,6 +550,16 @@ mod tests {
         assert_eq!(store.last_tracking_seq().unwrap(), 5);
         assert_eq!(store.tracking_events("aa").unwrap().len(), 4);
         assert_eq!(store.tracked_messages(10).unwrap().len(), 1);
+
+        let activity = store
+            .activity(store.tracking_for_outbox(5).unwrap().unwrap())
+            .unwrap();
+        assert_eq!(activity.subject, "Proposal v2");
+        assert_eq!((activity.opened(), activity.clicked()), (1, 1));
+        let bea = &activity.recipients[0];
+        // The scanner's open does not count.
+        assert_eq!((bea.opens, bea.clicks, bea.last), (2, 1, Some(4000)));
+        assert!(!activity.recipients[1].opened());
 
         assert_eq!(store.forget_tracking(5).unwrap(), ["aa", "bb"]);
         assert!(store.tracking_for_outbox(5).unwrap().is_none());

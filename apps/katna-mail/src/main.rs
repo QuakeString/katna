@@ -17,6 +17,7 @@ mod mailto;
 mod outgoing;
 mod placement;
 mod profile;
+mod receipts;
 mod sidebar;
 mod signatures;
 mod spell;

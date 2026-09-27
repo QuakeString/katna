@@ -56,7 +56,10 @@ pub use pop3::Pop3Uidl;
 pub use quota::StorageQuota;
 pub use remote::{FolderRole, NewAttachment, RemoteMessage, StoredAttachment, StoredFolder};
 pub use templates::{Template, TemplateFile, TemplateSummary};
-pub use tracking::{NewRecipient, TrackedMessage, TrackedRecipient, TrackingEvent, TrackingNews};
+pub use tracking::{
+    MessageActivity, NewRecipient, RecipientActivity, TrackedMessage, TrackedRecipient,
+    TrackingEvent, TrackingNews,
+};
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.
 #[derive(Debug)]

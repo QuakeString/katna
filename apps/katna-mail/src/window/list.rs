@@ -1764,9 +1764,13 @@ impl MailWindow {
                                 .children(marker)
                                 .child(star)
                         })))
-                        .child(line(snippet).when(row.attachments && !has_chips, |d| {
-                            d.child(icon("attachment", th.text_faint, 16.0))
-                        }))
+                        .child(
+                            line(snippet)
+                                .when(row.attachments && !has_chips, |d| {
+                                    d.child(icon("attachment", th.text_faint, 16.0))
+                                })
+                                .children(tracking_mark(ix, &row, 16.0, th)),
+                        )
                         .when(has_chips, |d| {
                             let room = self.list_width() - lead_width - 12.0;
                             d.child(self.file_chips(ix, &row, 0.0, room, th, cx))
@@ -1828,6 +1832,7 @@ impl MailWindow {
                         .child(icon("attachment", th.text_faint, 18.0)),
                 )
             })
+            .children(tracking_mark(ix, &row, 18.0, th).map(|mark| div().pl(px(8.0)).child(mark)))
             .child(
                 div()
                     .flex_none()
@@ -2233,4 +2238,39 @@ fn pick_none_text(pick: Pick, conversations: bool) -> String {
         "message"
     };
     tr!("list-picked-none", pick = pick_name(pick), kind = kind)
+}
+
+/// The eye on a line of mail sent with open and click tracking: in the
+/// accent color once a recipient opened it, with who did in its tooltip.
+fn tracking_mark(ix: usize, row: &Row, size: f32, th: &Theme) -> Option<AnyElement> {
+    let tracked = row.tracking?;
+    let text = if tracked.clicked > 0 {
+        tr!(
+            "row-tracking-clicked",
+            opened = tracked.opened,
+            recipients = tracked.recipients,
+            clicked = tracked.clicked
+        )
+    } else if tracked.opened > 0 {
+        tr!(
+            "row-tracking-opened",
+            opened = tracked.opened,
+            recipients = tracked.recipients
+        )
+    } else {
+        tr!("row-tracking-none")
+    };
+    let color = if tracked.opened > 0 {
+        th.accent
+    } else {
+        th.text_faint
+    };
+    Some(
+        div()
+            .id(("row-tracking", ix))
+            .flex_none()
+            .child(icon("eye", color, size))
+            .tooltip(tip(text, th))
+            .into_any_element(),
+    )
 }

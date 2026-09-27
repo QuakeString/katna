@@ -14,13 +14,19 @@ use crate::theme::{Theme, fade};
 use crate::widgets::{icon_button_colored, tip};
 use crate::window::MailWindow;
 
-/// What the sender asked for.
+/// What the sender asked for: signing and encryption, and (kept here so
+/// they travel with the message through Undo and drafts) open and click
+/// tracking and a read receipt (`compose/tracking.rs`).
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub(in crate::window) struct Sealing {
     pub sign: bool,
     pub encrypt: bool,
     /// S/MIME rather than OpenPGP.
     pub smime: bool,
+    /// Open and click tracking, through Katna Server.
+    pub track: bool,
+    /// A `Disposition-Notification-To` header (RFC 8098).
+    pub receipt: bool,
 }
 
 impl Sealing {
@@ -32,12 +38,13 @@ impl Sealing {
                 sign: true,
                 encrypt: true,
                 smime: security.standard == Standard::Smime,
+                ..Self::default()
             },
             _ => Self::default(),
         }
     }
 
-    fn any(&self) -> bool {
+    pub(super) fn any(&self) -> bool {
         self.sign || self.encrypt
     }
 }
@@ -92,6 +99,7 @@ pub(in crate::window) fn unseal(raw: Vec<u8>) -> Option<(Vec<u8>, Sealing)> {
         sign: !security.signatures.is_empty(),
         encrypt: security.encrypted(),
         smime: security.standard == Standard::Smime,
+        ..Sealing::default()
     };
     Some((opened.raw, sealing))
 }
@@ -167,7 +175,8 @@ mod tests {
             Sealing {
                 sign: true,
                 encrypt: true,
-                smime: true
+                smime: true,
+                ..Sealing::default()
             }
         );
         let signed_only = Security {
