@@ -351,7 +351,7 @@ impl Viewer {
                                     .pb(px(8.0 * zoom))
                                     .text_size(px(13.0 * zoom))
                                     .text_color(rgba(SLIDE_LABEL))
-                                    .child(SharedString::from(format!("Slide {n}"))),
+                                    .child(SharedString::from(katna_i18n::tr!("viewer-slide", number = n))),
                             )
                             .into_any_element();
                     }

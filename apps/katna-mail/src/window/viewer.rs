@@ -120,6 +120,8 @@ enum Loaded {
     Text(Vec<SharedString>, bool),
     Sheet(sheet::Workbook),
     Document(document::Document),
+    /// Why there is nothing to show: a message id, translated on the
+    /// main thread.
     Nothing(&'static str),
 }
 
@@ -218,7 +220,7 @@ impl Viewer {
                     Loaded::Text(lines, cut) => Content::Text(Rc::new(lines), cut),
                     Loaded::Sheet(book) => Content::Sheet(SheetView::new(book)),
                     Loaded::Document(doc) => Content::Document(DocumentView::new(doc)),
-                    Loaded::Nothing(why) => Content::Nothing(why.into()),
+                    Loaded::Nothing(why) => Content::Nothing(katna_i18n::tr!(why).into()),
                 };
                 cx.notify();
             })
@@ -383,13 +385,13 @@ impl Viewer {
 /// Extracts `item` from the raw message and decodes it for showing.
 fn load(raw: &[u8], item: &Item) -> (Option<AttachmentFile>, Loaded) {
     let Some(file) = katna_render::attachment_file(raw, item.index) else {
-        return (None, Loaded::Nothing("This attachment could not be read."));
+        return (None, Loaded::Nothing("viewer-unreadable"));
     };
     let loaded = match katna_preview::kind(&file.mime, &file.name) {
         Kind::Pdf => match Document::open(file.bytes.clone()) {
             Ok(doc) => Loaded::Pdf(doc),
-            Err(pdf::Error::Locked) => Loaded::Nothing("This PDF is protected with a password."),
-            Err(pdf::Error::Invalid) => Loaded::Nothing("This PDF could not be read."),
+            Err(pdf::Error::Locked) => Loaded::Nothing("viewer-pdf-locked"),
+            Err(pdf::Error::Invalid) => Loaded::Nothing("viewer-pdf-unreadable"),
         },
         Kind::Picture(Picture::Svg) => Loaded::Drawn(
             Arc::new(gpui::Image::from_bytes(
@@ -412,7 +414,7 @@ fn load(raw: &[u8], item: &Item) -> (Option<AttachmentFile>, Loaded) {
                     let size = image.dimensions();
                     Loaded::Bitmap(bitmap(image), size)
                 }
-                Err(_) => Loaded::Nothing("This picture could not be read."),
+                Err(_) => Loaded::Nothing("viewer-picture-unreadable"),
             }
         }
         Kind::Text => {
@@ -426,17 +428,17 @@ fn load(raw: &[u8], item: &Item) -> (Option<AttachmentFile>, Loaded) {
         }
         Kind::Sheet { csv: false } => match sheet::open(file.bytes.clone()) {
             Ok(book) => Loaded::Sheet(book),
-            Err(_) => Loaded::Nothing("This spreadsheet could not be read."),
+            Err(_) => Loaded::Nothing("viewer-sheet-unreadable"),
         },
         Kind::Document => match document::open(file.bytes.clone()) {
             Ok(doc) => Loaded::Document(doc),
-            Err(_) => Loaded::Nothing("This document could not be read."),
+            Err(_) => Loaded::Nothing("viewer-document-unreadable"),
         },
         Kind::Slides => match slides::open(file.bytes.clone()) {
             Ok(doc) => Loaded::Document(doc),
-            Err(_) => Loaded::Nothing("These slides could not be read."),
+            Err(_) => Loaded::Nothing("viewer-slides-unreadable"),
         },
-        Kind::Other => Loaded::Nothing("No preview available"),
+        Kind::Other => Loaded::Nothing("viewer-no-preview"),
     };
     (Some(file), loaded)
 }

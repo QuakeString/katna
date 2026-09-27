@@ -103,6 +103,19 @@
       "repository": "https://github.com/rossmacarthur/emojis"
     },
     {
+      "name": "fluent-bundle",
+      "version": "0.16.0",
+      "description": "A low-level implementation of a collection of localization messages for a single locale for Project Fluent, a localization system designed to unleash the entire expressive power of natural language translations.",
+      "license": "Apache-2.0 OR MIT",
+      "authors": [
+        "Bruce Mitchener <bruce.mitchener@gmail.com",
+        "Caleb Maclennan",
+        "Staś Małolepszy",
+        "Zibi Braniecki"
+      ],
+      "repository": "https://github.com/projectfluent/fluent-rs"
+    },
+    {
       "name": "fontdb",
       "version": "0.23.0",
       "description": "A simple, in-memory font database with CSS-like queries.",
@@ -192,6 +205,66 @@
         "The html5ever Project Developers"
       ],
       "repository": "https://github.com/servo/html5ever"
+    },
+    {
+      "name": "icu_calendar",
+      "version": "2.3.0",
+      "description": "Date APIs for Gregorian and non-Gregorian calendars",
+      "license": "Unicode-3.0",
+      "authors": [
+        "The ICU4X Project Developers"
+      ],
+      "repository": "https://github.com/unicode-org/icu4x"
+    },
+    {
+      "name": "icu_datetime",
+      "version": "2.3.0",
+      "description": "Human-readable formatting of dates, times, and time zones in hundreds of locales",
+      "license": "Unicode-3.0",
+      "authors": [
+        "The ICU4X Project Developers"
+      ],
+      "repository": "https://github.com/unicode-org/icu4x"
+    },
+    {
+      "name": "icu_decimal",
+      "version": "2.3.0",
+      "description": "API for formatting basic decimal numbers in a locale-sensitive way",
+      "license": "Unicode-3.0",
+      "authors": [
+        "The ICU4X Project Developers"
+      ],
+      "repository": "https://github.com/unicode-org/icu4x"
+    },
+    {
+      "name": "icu_locale_core",
+      "version": "2.3.0",
+      "description": "API for managing Unicode Language and Locale Identifiers",
+      "license": "Unicode-3.0",
+      "authors": [
+        "The ICU4X Project Developers"
+      ],
+      "repository": "https://github.com/unicode-org/icu4x"
+    },
+    {
+      "name": "icu_provider",
+      "version": "2.3.1",
+      "description": "Trait and struct definitions for the ICU data provider",
+      "license": "Unicode-3.0",
+      "authors": [
+        "The ICU4X Project Developers"
+      ],
+      "repository": "https://github.com/unicode-org/icu4x"
+    },
+    {
+      "name": "icu_time",
+      "version": "2.3.0",
+      "description": "Processing of dates, times, and time zones with a focus on i18n and interop",
+      "license": "Unicode-3.0",
+      "authors": [
+        "The ICU4X Project Developers"
+      ],
+      "repository": "https://github.com/unicode-org/icu4x"
     },
     {
       "name": "image",
@@ -495,6 +568,16 @@
         "Tokio Contributors"
       ],
       "repository": "https://github.com/tokio-rs/tracing"
+    },
+    {
+      "name": "unic-langid",
+      "version": "0.9.6",
+      "description": "API for managing Unicode Language Identifiers",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Zibi Braniecki"
+      ],
+      "repository": "https://github.com/zbraniecki/unic-locale"
     },
     {
       "name": "unicode-segmentation",

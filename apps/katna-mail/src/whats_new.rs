@@ -222,6 +222,15 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 23,
+        title: "Your language",
+        text: "Pick one of 51 languages from the flag button in the top bar, or \
+               follow your desktop's. Dates and numbers follow it now; the rest of \
+               the app is translated over the next updates. The translations were \
+               drafted by AI, and corrections are welcome.",
+        animation: None,
+    },
+    Highlight {
+        id: 24,
         title: "Old Word files and slides",
         text: "Word 97–2003 documents (.doc) now open in the viewer with their \
                headings, lists and tables, and PowerPoint (.pptx, .ppt) and \
