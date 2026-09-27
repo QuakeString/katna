@@ -119,12 +119,11 @@ fn main() -> ExitCode {
     }
     // The language, before any text is drawn (§13.10).
     katna_i18n::init(TRANSLATIONS, Some(paths.data_dir().join("i18n")));
-    katna_i18n::apply(
-        &Config::load(&paths.config_file())
-            .unwrap_or_default()
-            .general
-            .language,
-    );
+    let general = Config::load(&paths.config_file())
+        .unwrap_or_default()
+        .general;
+    format::set_clock(general.clock);
+    katna_i18n::apply(&general.language);
     let (connection, sender, requests) = match instance::start(request, single) {
         instance::Started::HandedOff => return ExitCode::SUCCESS,
         instance::Started::First {
