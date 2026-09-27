@@ -134,7 +134,7 @@ const LIST_CONTEXT: &str = "MessageList";
 const READER_CONTEXT: &str = "MessageReader";
 const SEARCH_CONTEXT: &str = "SearchBox";
 
-const TOP_BAR_HEIGHT: f32 = 64.0;
+pub(super) const TOP_BAR_HEIGHT: f32 = 64.0;
 /// How far frosted menus and popovers blur what is behind them, in pixels.
 const FROST_BLUR: f32 = 20.0;
 const NAV_WIDTH: f32 = 256.0;

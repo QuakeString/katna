@@ -1336,9 +1336,15 @@ Gemini or confidential mode):
   Reply, Reply all and Forward stay pinned at the foot of the open
   conversation. Answering writes inline at the end of the conversation,
   as in Gmail: a card with the recipients, the text and the Send row,
-  which can pop out into the window. The card grows with its text and
+  which pops out into a desktop window of its own; docking it there brings it back to the conversation. The card grows with its text and
   scrolls with the messages; opening it scrolls smoothly to its first
-  line, and typing keeps the cursor in view; the list's single-letter keys are switched off inside text
+  line, and typing keeps the cursor in view. Its Send row sticks to the
+  bottom of the pane while the text runs on under it. A reply's quoted
+  message starts folded behind a "..." button (it is still sent). The
+  formatting bar (Aa) floats over the end of the text, tinted and as wide
+  as its buttons, so opening it moves nothing. On a phone, and a tablet
+  too narrow for the reading pane, New Message covers the whole window;
+  the list's single-letter keys are switched off inside text
   fields. The list has a right-click menu (reply, reply all, forward,
   archive, delete, spam, read, star, move to, find emails from the
   sender) acting on the ticked lines or the clicked one. The "select all
