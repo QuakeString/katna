@@ -60,3 +60,35 @@ activity-clicked = Link followed by { $clicked } of { $recipients }
 activity-no-subject = (no subject)
 activity-nothing-period = No tracked mail was sent in this period.
 activity-close = Close
+
+## Your mailbox: counted on this computer from all mail in the period
+
+insights-heading = Your mailbox
+insights-counting = Counting your mail…
+insights-failed = Your mail could not be counted.
+insights-sent = Sent
+insights-received = Received
+insights-replies = Replies
+# $percent: a whole number, already in the language's digits. $replied of
+# $messages messages were answered within two weeks.
+insights-you-replied = You answered { $percent }% of mail from others ({ $replied } of { $messages })
+insights-they-replied = Others answered { $percent }% of your mail ({ $replied } of { $messages })
+# $time: how long an answer usually takes, one of the three below.
+insights-median = Usually within { $time }
+insights-minutes = { $count ->
+    [one] a minute
+   *[other] { $count } minutes
+}
+insights-hours = { $count ->
+    [one] an hour
+   *[other] { $count } hours
+}
+insights-days = { $count ->
+    [one] a day
+   *[other] { $count } days
+}
+insights-people = People you write with most
+# How many messages went to and came from one person.
+insights-person-counts = { $sent } sent · { $received } received
+# A grid of weekdays and hours.
+insights-hours-heading = When mail arrives

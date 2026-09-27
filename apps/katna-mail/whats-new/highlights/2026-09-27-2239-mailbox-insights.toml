@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Mailbox insights"
+text = """
+Activity > Details now also shows how much mail you sent and received in
+the period, how often you and others answer and how fast, the people you
+write with most, and at which days and hours your mail arrives. It is
+counted on your computer from the mail Katna already has.
+"""

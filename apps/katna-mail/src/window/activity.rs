@@ -11,11 +11,11 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, MouseButton,
-    MouseDownEvent, Window, anchored, canvas, deferred, div, point, prelude::*, rgba,
+    MouseDownEvent, Task, Window, anchored, canvas, deferred, div, point, prelude::*, rgba,
 };
 use jiff::civil::Date;
 use katna_i18n::tr;
-use katna_store::{ActivityItem, MessageActivity};
+use katna_store::{ActivityItem, Insights, MessageActivity};
 use katna_ui::{TextInput, px, unpx};
 
 use super::MailWindow;
@@ -165,6 +165,75 @@ fn day_label(day: Date) -> String {
     }
 }
 
+/// A time to answer: "5 minutes", "3 hours", "2 days".
+fn duration(secs: i64) -> String {
+    let minutes = (secs / 60).max(1);
+    if minutes < 60 {
+        tr!("insights-minutes", count = minutes)
+    } else if minutes < 48 * 60 {
+        tr!("insights-hours", count = (minutes + 30) / 60)
+    } else {
+        tr!("insights-days", count = (minutes + 720) / 1440)
+    }
+}
+
+/// Mail received by weekday and hour, darker where more arrives; the
+/// language's first day of the week on top.
+fn hours_grid(hours: &[[u32; 24]; 7], th: &Theme) -> AnyElement {
+    let top = hours.iter().flatten().copied().max().unwrap_or(0).max(1) as f32;
+    let rows = katna_i18n::format::weekdays_short().map(|(day, name)| {
+        let row = hours
+            .get(usize::try_from(day.to_monday_zero_offset()).unwrap_or(0))
+            .copied()
+            .unwrap_or([0; 24]);
+        div()
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(2.0))
+            .child(
+                div()
+                    .flex_none()
+                    .w(px(36.0))
+                    .text_size(px(11.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(name),
+            )
+            .children(row.into_iter().map(|n| {
+                let strength = n as f32 / top;
+                div()
+                    .flex_1()
+                    .h(px(16.0))
+                    .rounded(px(3.0))
+                    .bg(rgba(if n == 0 {
+                        fade(th.text_faint, 0.12)
+                    } else {
+                        fade(th.accent, 0.15 + 0.85 * strength)
+                    }))
+            }))
+    });
+    let labels = [0u64, 6, 12, 18].map(|hour| {
+        div()
+            .flex_1()
+            .text_size(px(11.0))
+            .text_color(rgba(th.text_dim))
+            .child(katna_i18n::format::number(hour))
+    });
+    div()
+        .flex()
+        .flex_col()
+        .gap(px(2.0))
+        .children(rows)
+        .child(
+            div()
+                .flex()
+                .flex_row()
+                .child(div().flex_none().w(px(38.0)))
+                .children(labels),
+        )
+        .into_any_element()
+}
+
 /// The list under the Activity button.
 pub(super) struct Menu {
     feed: Vec<ActivityItem>,
@@ -188,6 +257,10 @@ pub(super) struct Report {
     /// The custom date fields are showing.
     editing: bool,
     error: bool,
+    /// What the mailbox did in the period, once counted.
+    insights: Option<Result<Insights, String>>,
+    /// The counting.
+    counting: Option<Task<()>>,
 }
 
 impl MailWindow {
@@ -274,8 +347,11 @@ impl MailWindow {
             dates: [date(cx), date(cx)],
             editing: false,
             error: false,
+            insights: None,
+            counting: None,
         });
         self.fill_report(Period::Month);
+        self.count_insights(cx);
         cx.notify();
     }
 
@@ -327,7 +403,48 @@ impl MailWindow {
             report.error = false;
         }
         self.fill_report(period);
+        self.count_insights(cx);
         cx.notify();
+    }
+
+    /// Counts the mailbox insights for the report's period on a
+    /// background thread.
+    fn count_insights(&mut self, cx: &mut Context<Self>) {
+        let Some(report) = &mut self.activity_report else {
+            return;
+        };
+        let tz = self.tz.clone();
+        let start = |day: Date| {
+            day.to_zoned(tz.clone())
+                .map_or(0, |z| z.timestamp().as_second())
+        };
+        let since = if report.period == Period::All {
+            0
+        } else {
+            start(report.first)
+        };
+        let until = report.last.tomorrow().map_or(i64::MAX, start);
+        let me: Vec<String> = self
+            .accounts
+            .iter()
+            .map(|a| a.address.trim().to_lowercase())
+            .collect();
+        let paths = self.paths.clone();
+        report.insights = None;
+        report.counting = Some(cx.spawn(async move |this, cx| {
+            let insights = cx
+                .background_executor()
+                .spawn(async move { crate::data::insights(&paths, &me, since, until, &tz) })
+                .await;
+            this.update(cx, |this, cx| {
+                if let Some(report) = &mut this.activity_report {
+                    report.insights = Some(insights);
+                    report.counting = None;
+                }
+                cx.notify();
+            })
+            .ok();
+        }));
     }
 
     fn edit_custom(&mut self, window: &mut Window, cx: &mut Context<Self>) {
@@ -355,6 +472,7 @@ impl MailWindow {
         report.error = a.is_none() || b.is_none();
         if let (Some(a), Some(b)) = (a, b) {
             self.fill_report(Period::Custom(a, b));
+            self.count_insights(cx);
         }
         cx.notify();
     }
@@ -1022,12 +1140,217 @@ impl MailWindow {
                                             d.child(heading(tr!("activity-by-open-rate")))
                                         })
                                         .child(div().flex().flex_col().children(rows))
-                                        .children(empty),
+                                        .children(empty)
+                                        .child(self.render_insights(report, th)),
                                 ),
                         ),
                 )
                 .into_any_element(),
         )
+    }
+
+    /// What the mailbox did in the period: mail sent and received, replies,
+    /// the people most written with, and when mail arrives.
+    fn render_insights(&self, report: &Report, th: &Theme) -> AnyElement {
+        let heading = |text: String| {
+            div()
+                .pt(px(20.0))
+                .pb(px(4.0))
+                .text_size(px(12.0))
+                .font_weight(FontWeight::MEDIUM)
+                .text_color(rgba(th.text_dim))
+                .child(text)
+        };
+        let section = div()
+            .mt(px(12.0))
+            .pt(px(8.0))
+            .border_t_1()
+            .border_color(rgba(th.divider))
+            .flex()
+            .flex_col()
+            .child(
+                div()
+                    .pt(px(12.0))
+                    .text_size(px(18.0))
+                    .child(tr!("insights-heading")),
+            );
+        let insights = match &report.insights {
+            None => {
+                return section
+                    .child(
+                        div()
+                            .py(px(16.0))
+                            .text_size(px(14.0))
+                            .text_color(rgba(th.text_dim))
+                            .child(tr!("insights-counting")),
+                    )
+                    .into_any_element();
+            }
+            Some(Err(err)) => {
+                tracing::warn!("{err}");
+                return section
+                    .child(
+                        div()
+                            .py(px(16.0))
+                            .text_size(px(14.0))
+                            .text_color(rgba(th.error))
+                            .child(tr!("insights-failed")),
+                    )
+                    .into_any_element();
+            }
+            Some(Ok(insights)) => insights,
+        };
+        let stat = |value: String, label: String| {
+            div()
+                .flex_1()
+                .flex()
+                .flex_col()
+                .gap(px(2.0))
+                .child(div().text_size(px(28.0)).line_height(px(36.0)).child(value))
+                .child(
+                    div()
+                        .text_size(px(13.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(label),
+                )
+        };
+        let counts = div()
+            .pt(px(12.0))
+            .flex()
+            .flex_row()
+            .gap(px(16.0))
+            .child(stat(
+                format::thousands(insights.sent as u64),
+                tr!("insights-sent"),
+            ))
+            .child(stat(
+                format::thousands(insights.received as u64),
+                tr!("insights-received"),
+            ))
+            .child(div().flex_1());
+        let reply_line = |share: String, replies: &katna_store::Replies| {
+            let median = replies
+                .median
+                .map(|secs| tr!("insights-median", time = duration(secs)));
+            div()
+                .py(px(6.0))
+                .flex()
+                .flex_col()
+                .gap(px(4.0))
+                .child(div().text_size(px(14.0)).child(share))
+                .children(median.map(|m| {
+                    div()
+                        .text_size(px(12.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(m)
+                }))
+                .child(
+                    div()
+                        .h(px(6.0))
+                        .w_full()
+                        .rounded(px(3.0))
+                        .bg(rgba(fade(th.accent, 0.16)))
+                        .child(
+                            div()
+                                .h_full()
+                                .w(gpui::relative(
+                                    percent(replies.replied, replies.messages) as f32 / 100.0,
+                                ))
+                                .rounded(px(3.0))
+                                .bg(rgba(th.accent)),
+                        ),
+                )
+        };
+        let most = insights
+            .people
+            .iter()
+            .map(|p| p.sent + p.received)
+            .max()
+            .unwrap_or(1)
+            .max(1);
+        let people = insights.people.iter().map(|person| {
+            let name = person.name.clone().unwrap_or_else(|| person.email.clone());
+            let share = (person.sent + person.received) as f32 / most as f32;
+            div()
+                .py(px(6.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(12.0))
+                .child(self.person_avatar(&name, &person.email, 28.0))
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_col()
+                        .gap(px(4.0))
+                        .child(
+                            div()
+                                .flex()
+                                .flex_row()
+                                .gap(px(8.0))
+                                .child(
+                                    div()
+                                        .flex_1()
+                                        .min_w_0()
+                                        .truncate()
+                                        .text_size(px(14.0))
+                                        .child(name),
+                                )
+                                .child(
+                                    div()
+                                        .flex_none()
+                                        .text_size(px(12.0))
+                                        .text_color(rgba(th.text_dim))
+                                        .child(tr!(
+                                            "insights-person-counts",
+                                            sent = person.sent,
+                                            received = person.received
+                                        )),
+                                ),
+                        )
+                        .child(
+                            div()
+                                .h(px(4.0))
+                                .w(gpui::relative(share))
+                                .rounded(px(2.0))
+                                .bg(rgba(fade(th.accent, 0.7))),
+                        ),
+                )
+        });
+        section
+            .child(counts)
+            .child(heading(tr!("insights-replies")))
+            .child(reply_line(
+                tr!(
+                    "insights-you-replied",
+                    percent =
+                        format::thousands(percent(insights.mine.replied, insights.mine.messages)),
+                    replied = insights.mine.replied,
+                    messages = insights.mine.messages
+                ),
+                &insights.mine,
+            ))
+            .child(reply_line(
+                tr!(
+                    "insights-they-replied",
+                    percent = format::thousands(percent(
+                        insights.theirs.replied,
+                        insights.theirs.messages
+                    )),
+                    replied = insights.theirs.replied,
+                    messages = insights.theirs.messages
+                ),
+                &insights.theirs,
+            ))
+            .when(!insights.people.is_empty(), |d| {
+                d.child(heading(tr!("insights-people")))
+                    .child(div().flex().flex_col().children(people))
+            })
+            .child(heading(tr!("insights-hours-heading")))
+            .child(hours_grid(&insights.hours, th))
+            .into_any_element()
     }
 
     /// Opens and clicks as bars, one a day (or a week), with a key.

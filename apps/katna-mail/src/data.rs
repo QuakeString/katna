@@ -1103,6 +1103,30 @@ pub fn unread_counts(paths: &Paths) -> HashMap<FolderId, u64> {
     }
 }
 
+/// Mailbox insights from `since` to before `until` (Unix seconds) for the
+/// user's addresses `me`, with hours in `tz`. Opens its own connection,
+/// for a background thread.
+pub fn insights(
+    paths: &Paths,
+    me: &[String],
+    since: i64,
+    until: i64,
+    tz: &jiff::tz::TimeZone,
+) -> Result<katna_store::Insights, String> {
+    let local = |unix: i64| {
+        jiff::Timestamp::from_second(unix).map_or((0, 0), |at| {
+            let at = at.to_zoned(tz.clone());
+            (
+                usize::try_from(at.weekday().to_monday_zero_offset()).unwrap_or(0),
+                usize::try_from(at.hour()).unwrap_or(0),
+            )
+        })
+    };
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.mailbox_insights(me, since, until, local))
+        .map_err(|err| format!("Counting mail failed: {err}"))
+}
+
 /// The people in the mail, most written with first. Opens its own
 /// connection, for a background thread.
 pub fn people(paths: &Paths) -> Result<Vec<katna_store::Person>, String> {
