@@ -23,10 +23,12 @@ mod attachments;
 mod colors;
 mod compose;
 mod context_menu;
+mod crash_notice;
 mod dark;
 mod desktop;
 mod detached;
 mod download;
+mod feedback_page;
 mod keymap;
 mod labels;
 mod layout;
@@ -384,6 +386,10 @@ pub struct MailWindow {
     /// The tab indicator's position, in tabs.
     tab_spring: Spring,
     snackbar: Option<Snackbar>,
+    /// After a crash: the report to view or copy.
+    crash_notice: Option<crash_notice::CrashNotice>,
+    /// Settings > User feedback's list of crash reports, as last read.
+    saved_reports: Option<feedback_page::SavedReports>,
     compose: Option<compose::Compose>,
     /// Attachment thumbnails and the attachment viewer.
     files: attachments::Files,
@@ -463,6 +469,7 @@ impl MailWindow {
             this.onboarding = Some(onboarding::Onboarding::new());
         }
         this.welcome_or_whats_new(config_existed, window, cx);
+        this.check_crashes(cx);
         tracing::info!(elapsed = ?started.elapsed(), lines = this.entries.len(), "mail loaded");
         this
     }
@@ -546,6 +553,8 @@ impl MailWindow {
             settings_spring: Spring::new(motion::SLIDE, 0.0),
             tab_spring: Spring::new(motion::SLIDE, 0.0),
             snackbar: None,
+            crash_notice: None,
+            saved_reports: None,
             compose: None,
             files: attachments::Files::default(),
             add_account: None,
@@ -2273,6 +2282,11 @@ impl Render for MailWindow {
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
+        let crash_notice = if onboarding {
+            None
+        } else {
+            self.render_crash_notice(&th, window, reduce, cx)
+        };
         let tour = self.render_tour(&th, window, cx);
         let content = div()
             .key_context(WINDOW_CONTEXT)
@@ -2315,6 +2329,7 @@ impl Render for MailWindow {
             .children(context_menu)
             .children(danger)
             .children(new_label)
+            .children(crash_notice)
             .children(whats_new)
             .children(snackbar)
             .children(tour)

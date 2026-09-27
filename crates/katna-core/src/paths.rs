@@ -22,11 +22,12 @@ pub struct Paths {
     config_dir: PathBuf,
     data_dir: PathBuf,
     cache_dir: PathBuf,
+    state_dir: PathBuf,
 }
 
 impl Paths {
     /// Resolves the directories from `$XDG_CONFIG_HOME`, `$XDG_DATA_HOME`,
-    /// `$XDG_CACHE_HOME` and `$HOME`.
+    /// `$XDG_CACHE_HOME`, `$XDG_STATE_HOME` and `$HOME`.
     pub fn from_env() -> Result<Self> {
         Self::from_lookup(|name| std::env::var_os(name))
     }
@@ -49,21 +50,27 @@ impl Paths {
                 .map(|dir| dir.join(APP_DIR))
                 .ok_or(Error::NoHomeDir)
         };
+        let cache_dir = base("XDG_CACHE_HOME", ".cache")?;
         Ok(Self {
             config_dir: base("XDG_CONFIG_HOME", ".config")?,
             data_dir: base("XDG_DATA_HOME", ".local/share")?,
-            cache_dir: base("XDG_CACHE_HOME", ".cache")?,
+            // Only crash reports live here; without $HOME or
+            // $XDG_STATE_HOME they go under the cache.
+            state_dir: base("XDG_STATE_HOME", ".local/state")
+                .unwrap_or_else(|_| cache_dir.join("state")),
+            cache_dir,
         })
     }
 
     /// Puts every directory under `root` (`root/config`, `root/data`,
-    /// `root/cache`). For tests and portable setups.
+    /// `root/cache`, `root/state`). For tests and portable setups.
     pub fn with_root(root: impl AsRef<Path>) -> Self {
         let root = root.as_ref();
         Self {
             config_dir: root.join("config"),
             data_dir: root.join("data"),
             cache_dir: root.join("cache"),
+            state_dir: root.join("state"),
         }
     }
 
@@ -100,6 +107,17 @@ impl Paths {
     /// `$XDG_CACHE_HOME/katna/` — only for data that is cheap to rebuild.
     pub fn cache_dir(&self) -> &Path {
         &self.cache_dir
+    }
+
+    /// `$XDG_STATE_HOME/katna/` — kept across runs but not worth a backup.
+    pub fn state_dir(&self) -> &Path {
+        &self.state_dir
+    }
+
+    /// Crash reports, one text file per crash:
+    /// `$XDG_STATE_HOME/katna/crashes/` (`docs/ARCHITECTURE.md` §19.2).
+    pub fn crash_dir(&self) -> PathBuf {
+        self.state_dir.join("crashes")
     }
 
     /// Settings file: `$XDG_CONFIG_HOME/katna/config.toml`.
@@ -151,8 +169,8 @@ impl Paths {
     }
 
     /// Deletes everything Katna keeps: the data directory (mail, contacts,
-    /// calendars, attachments, the search index), the cache and the
-    /// settings file. Other files in the configuration directory are left
+    /// calendars, attachments, the search index), the cache, the state
+    /// directory (crash reports) and the settings file. Other files in the configuration directory are left
     /// alone; the directory goes only if nothing else is in it. Only the
     /// daemon calls this, with every writer stopped.
     pub fn delete_all_data(&self) -> Result<()> {
@@ -160,7 +178,7 @@ impl Paths {
             Err(err) if err.kind() != std::io::ErrorKind::NotFound => Err(Error::io(path, err)),
             _ => Ok(()),
         };
-        for dir in [&self.data_dir, &self.cache_dir] {
+        for dir in [&self.data_dir, &self.cache_dir, &self.state_dir] {
             gone(dir, std::fs::remove_dir_all(dir))?;
         }
         for file in [self.config_file(), self.trusted_senders_file()] {
@@ -194,6 +212,10 @@ mod tests {
         assert_eq!(paths.data_dir(), Path::new("/home/ada/.local/share/katna"));
         assert_eq!(paths.cache_dir(), Path::new("/home/ada/.cache/katna"));
         assert_eq!(
+            paths.crash_dir(),
+            Path::new("/home/ada/.local/state/katna/crashes")
+        );
+        assert_eq!(
             paths.config_file(),
             Path::new("/home/ada/.config/katna/config.toml")
         );
@@ -210,8 +232,10 @@ mod tests {
             ("XDG_CONFIG_HOME", "/cfg"),
             ("XDG_DATA_HOME", "/data"),
             ("XDG_CACHE_HOME", "/cache"),
+            ("XDG_STATE_HOME", "/state"),
         ]))
         .unwrap();
+        assert_eq!(paths.state_dir(), Path::new("/state/katna"));
         assert_eq!(paths.config_dir(), Path::new("/cfg/katna"));
         assert_eq!(paths.blobs_db(), Path::new("/data/katna/blobs.db"));
         assert_eq!(paths.index_dir(), Path::new("/data/katna/index"));
@@ -275,8 +299,10 @@ mod tests {
         std::fs::write(paths.cache_dir().join("pictures"), "").unwrap();
         std::fs::write(paths.config_file(), "[mail]\n").unwrap();
         std::fs::write(paths.trusted_senders_file(), "a@example.com\n").unwrap();
+        std::fs::create_dir_all(paths.crash_dir()).unwrap();
         paths.delete_all_data().unwrap();
         assert!(!paths.data_dir().exists());
+        assert!(!paths.state_dir().exists());
         assert!(!paths.cache_dir().exists());
         assert!(!paths.config_dir().exists());
         // Nothing left to delete is fine.

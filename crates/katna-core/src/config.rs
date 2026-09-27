@@ -31,6 +31,24 @@ pub struct Config {
     pub notifications: Notifications,
     pub onboarding: Onboarding,
     pub experimental: Experimental,
+    pub feedback: Feedback,
+}
+
+/// Settings > User feedback: crash reports (`docs/ARCHITECTURE.md` §19.2).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Feedback {
+    /// Write a report on this computer when a Katna program crashes.
+    /// Nothing is sent anywhere.
+    pub save_crash_reports: bool,
+}
+
+impl Default for Feedback {
+    fn default() -> Self {
+        Self {
+            save_crash_reports: true,
+        }
+    }
 }
 
 /// Settings > Experimental: features still being tried out.

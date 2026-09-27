@@ -188,6 +188,24 @@ const ENTRIES: &[Entry] = &[
         "default signature reply forward",
     ),
     entry(
+        Section::Feedback,
+        "Crash reports",
+        "Save crash reports on this computer when Katna Mail or its background service crashes",
+        "crash report bug panic traceback stack privacy",
+    ),
+    entry(
+        Section::Feedback,
+        "Saved crash reports",
+        "View, copy or delete the crash reports saved on this computer",
+        "crash report bug delete copy view",
+    ),
+    entry(
+        Section::Feedback,
+        "Sharing",
+        "Nothing is shared; sending reports and anonymous usage statistics comes later, off unless you turn it on",
+        "telemetry analytics statistics anonymous sentry send share privacy opt in",
+    ),
+    entry(
         Section::Experimental,
         "Window frame",
         "Who draws the title bar, the window buttons, the corners and the shadow",
@@ -216,9 +234,6 @@ fn coming(section: Section) -> Option<&'static str> {
         Section::Templates => "Save mail you write often, and start new mail or a reply from it.",
         Section::McpServer => {
             "Let AI assistants on this computer search, read and draft your mail, with your say."
-        }
-        Section::Feedback => {
-            "Choose whether Katna Mail sends anonymous crash reports and asks for feedback, and turn either off at any time."
         }
         _ => return None,
     })

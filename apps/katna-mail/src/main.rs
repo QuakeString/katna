@@ -107,6 +107,7 @@ fn main() -> ExitCode {
             }
         },
     };
+    katna_core::crash::install("katna-mail", &paths);
     if let Err(err) = katna_core::logging::init("warn") {
         eprintln!("katna-mail: {err}");
     }

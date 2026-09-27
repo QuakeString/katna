@@ -3634,6 +3634,7 @@ dependencies = [
 name = "katna-core"
 version = "0.0.0"
 dependencies = [
+ "backtrace",
  "serde",
  "serde_json",
  "tempfile",
