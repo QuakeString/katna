@@ -120,8 +120,136 @@ list-select-all-in = { $kind ->
     }
 }
 # After choosing Read, Unread, Starred or Unstarred in the select menu,
-# which ticks every such line of the list, loaded or not.
+# which ticks such lines on screen; the link then ticks every such line.
 # $pick: "read", "unread", "starred" or "unstarred".
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] The { $count } read conversation on screen is selected.
+           *[other] All { $count } read conversations on screen are selected.
+        }
+       *[message] { $count ->
+            [one] The { $count } read message on screen is selected.
+           *[other] All { $count } read messages on screen are selected.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] The { $count } unread conversation on screen is selected.
+           *[other] All { $count } unread conversations on screen are selected.
+        }
+       *[message] { $count ->
+            [one] The { $count } unread message on screen is selected.
+           *[other] All { $count } unread messages on screen are selected.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] The { $count } starred conversation on screen is selected.
+           *[other] All { $count } starred conversations on screen are selected.
+        }
+       *[message] { $count ->
+            [one] The { $count } starred message on screen is selected.
+           *[other] All { $count } starred messages on screen are selected.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] The { $count } unstarred conversation on screen is selected.
+           *[other] All { $count } unstarred conversations on screen are selected.
+        }
+       *[message] { $count ->
+            [one] The { $count } unstarred message on screen is selected.
+           *[other] All { $count } unstarred messages on screen are selected.
+        }
+    }
+}
+# A link that ticks every such line, not only those on screen.
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } read conversation
+           *[other] Select all { $count } read conversations
+        }
+       *[message] { $count ->
+            [one] Select the { $count } read message
+           *[other] Select all { $count } read messages
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } unread conversation
+           *[other] Select all { $count } unread conversations
+        }
+       *[message] { $count ->
+            [one] Select the { $count } unread message
+           *[other] Select all { $count } unread messages
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } starred conversation
+           *[other] Select all { $count } starred conversations
+        }
+       *[message] { $count ->
+            [one] Select the { $count } starred message
+           *[other] Select all { $count } starred messages
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } unstarred conversation
+           *[other] Select all { $count } unstarred conversations
+        }
+       *[message] { $count ->
+            [one] Select the { $count } unstarred message
+           *[other] Select all { $count } unstarred messages
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } read conversation in { $folder }
+           *[other] Select all { $count } read conversations in { $folder }
+        }
+       *[message] { $count ->
+            [one] Select the { $count } read message in { $folder }
+           *[other] Select all { $count } read messages in { $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } unread conversation in { $folder }
+           *[other] Select all { $count } unread conversations in { $folder }
+        }
+       *[message] { $count ->
+            [one] Select the { $count } unread message in { $folder }
+           *[other] Select all { $count } unread messages in { $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } starred conversation in { $folder }
+           *[other] Select all { $count } starred conversations in { $folder }
+        }
+       *[message] { $count ->
+            [one] Select the { $count } starred message in { $folder }
+           *[other] Select all { $count } starred messages in { $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } unstarred conversation in { $folder }
+           *[other] Select all { $count } unstarred conversations in { $folder }
+        }
+       *[message] { $count ->
+            [one] Select the { $count } unstarred message in { $folder }
+           *[other] Select all { $count } unstarred messages in { $folder }
+        }
+    }
+}
+# Once the link ticked every such line of the list.
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->

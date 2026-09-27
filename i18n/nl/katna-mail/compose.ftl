@@ -19,6 +19,8 @@ compose-show-trimmed = Ingekorte inhoud tonen
 compose-to = Aan
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = Van
+compose-from-choose = Verzenden vanaf een ander account
 compose-recipients = Ontvangers
 compose-subject = Onderwerp
 

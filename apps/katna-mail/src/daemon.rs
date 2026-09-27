@@ -28,6 +28,9 @@ pub enum Command {
     SyncNow,
     /// Takes back the queued message with this outbox ID.
     UndoSend(i64),
+    /// Opens the message just discarded, or not saved, again. The app does
+    /// this itself; the daemon never sees it.
+    ReopenDraft,
     /// Has the daemon read the settings file again.
     ReloadConfig,
     /// These, one after the other: an undo that moves mail back to
@@ -94,6 +97,7 @@ impl Command {
             Self::MarkRead(..)
             | Self::SyncNow
             | Self::UndoSend(_)
+            | Self::ReopenDraft
             | Self::ReloadConfig
             | Self::Several(_) => {
                 return None;
@@ -179,6 +183,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
             Ok(false) => return Err(katna_i18n::tr!("toast-too-late-to-undo-send")),
             Err(err) => Err(err),
         },
+        Command::ReopenDraft => return Ok(()),
         Command::Several(commands) => {
             for command in commands {
                 Box::pin(send(connection, command)).await?;
@@ -212,6 +217,35 @@ pub async fn set_follow_up(connection: &Connection, id: i64, after: i64) -> Resu
         .await
         .map_err(|err| describe(&err))?;
     pim.set_follow_up(id, after)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Saves an RFC 5322 message as a draft of `account`, in place of the
+/// copies saved before with its `Message-ID`. Returns the saved message.
+pub async fn save_draft(
+    connection: &Connection,
+    account: i64,
+    message: &[u8],
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.save_draft(account, message)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Deletes every saved copy of the draft `message_id` of `account`.
+pub async fn discard_draft(
+    connection: &Connection,
+    account: i64,
+    message_id: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.discard_draft(account, message_id)
         .await
         .map_err(|err| describe(&err))
 }

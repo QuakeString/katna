@@ -311,7 +311,7 @@ impl MailWindow {
 }
 
 /// The message a scheduled `raw` message was written from, to edit again.
-fn unsent_from_raw(raw: &[u8]) -> Option<Unsent> {
+pub(super) fn unsent_from_raw(raw: &[u8]) -> Option<Unsent> {
     let message = MessageParser::default().parse(raw)?;
     let list = |a: Option<&mail_parser::Address<'_>>| {
         let list: Vec<katna_render::Address> = a
@@ -412,6 +412,8 @@ fn unsent_from_raw(raw: &[u8]) -> Option<Unsent> {
         from: None,
         answering: None,
         unarchive: None,
+        message_id: None,
+        saved: None,
     })
 }
 

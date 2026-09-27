@@ -153,7 +153,7 @@ settings-default-apps-show-folder-detail = Na-emepe njikwa faịlụ ya na mgbak
 ## Settings > Compose
 
 settings-compose-send-from = Zipu ozi ọhụrụ site na
-settings-compose-send-from-detail = Nzaghachi na ozi ezigara na-apụ mgbe niile site n'akaụntụ ị nọ na ya.
+settings-compose-send-from-detail = Ozi ọhụrụ na-amalite site n'akaụntụ a; ahịrị Si na-ahọrọ nke ọzọ. Nzaghachi na ozi ezigara na-apụ mgbe niile site n'akaụntụ ozi mbụ ahụ bịara.
 settings-compose-send-from-current = Akaụntụ ị nọ na ya
 settings-compose-send-on-replies = Izipu na nzaghachi
 settings-compose-send-on-replies-detail = Ihe Zipu na-eme na nzaghachi ma ọ bụ nzigaa. Menu dị n'akụkụ Zipu na-enye nke ọzọ.
@@ -229,7 +229,7 @@ settings-default-apps-text-summary = Ebe ederede nkịtị, ndekọ na koodu na-
 settings-default-apps-sheets-summary = Ebe faịlụ Excel, OpenDocument na CSV na-emepe
 settings-default-apps-documents-summary = Ebe Word, ederede OpenDocument na slaịdị na-emepe
 settings-default-apps-after-saving-summary = Gosi mgbakwunye echekwara na folda ha
-settings-compose-send-from-summary = Akaụntụ ozi ọhụrụ na-apụ site na ya: nke ị nọ na ya, ma ọ bụ otu ahụ mgbe niile
+settings-compose-send-from-summary = Akaụntụ ozi ọhụrụ na-apụ site na ya: nke mbụ, nke ọzọ, ma ọ bụ nke ị nọ na ya
 settings-compose-send-on-replies-summary = Zipu, ma ọ bụ Zipu ma chekwaa mkparịta ụka ahụ, na nzaghachi na nzigaa
 settings-compose-signatures-summary = A na-etinye ya n'okpuru ozi gị, mgbe ahịrị “--”
 settings-compose-for-new-mail-summary = Mbinye aka ozi ọhụrụ ji amalite

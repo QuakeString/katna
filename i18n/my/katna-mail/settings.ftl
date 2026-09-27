@@ -153,7 +153,7 @@ settings-default-apps-show-folder-detail = သိမ်းထားသော ပ
 ## Settings > Compose
 
 settings-compose-send-from = မက်ဆေ့ဂျ်အသစ်များကို ပို့မည့်နေရာ
-settings-compose-send-from-detail = ပြန်စာနှင့် ထပ်ဆင့်ပို့ချက်များကို သင်ရောက်နေသော အကောင့်မှ အမြဲပို့သည်။
+settings-compose-send-from-detail = မက်ဆေ့ဂျ်အသစ်များသည် ဤအကောင့်မှ စတင်ပြီး မှ အတန်းတွင် အခြားအကောင့်ကို ရွေးနိုင်သည်။ ပြန်စာနှင့် ထပ်ဆင့်ပို့ချက်များကို မူရင်းမက်ဆေ့ဂျ် ရောက်လာသော အကောင့်မှ အမြဲပို့သည်။
 settings-compose-send-from-current = သင်ရောက်နေသော အကောင့်
 settings-compose-send-on-replies = ပြန်စာများတွင် ပို့ခြင်း
 settings-compose-send-on-replies-detail = ပြန်စာ သို့မဟုတ် ထပ်ဆင့်ပို့ချက်တွင် ပို့ရန် ခလုတ်က လုပ်ဆောင်မည့်အရာ။ ပို့ရန်ဘေးရှိ မီနူးတွင် အခြားတစ်ခု ရှိသည်။
@@ -229,7 +229,7 @@ settings-default-apps-text-summary = စာသားသက်သက်၊ မှ
 settings-default-apps-sheets-summary = Excel, OpenDocument နှင့် CSV ဖိုင်များ ဖွင့်မည့်နေရာ
 settings-default-apps-documents-summary = Word၊ OpenDocument စာသား နှင့် ဆလိုက်များ ဖွင့်မည့်နေရာ
 settings-default-apps-after-saving-summary = သိမ်းထားသော ပူးတွဲဖိုင်များကို ၎င်းတို့၏ ဖိုင်တွဲတွင် ပြရန်
-settings-compose-send-from-summary = မေးလ်အသစ် ပို့မည့် အကောင့်- သင်ရောက်နေသော အကောင့် သို့မဟုတ် အမြဲတမ်း တူညီသော အကောင့်
+settings-compose-send-from-summary = မေးလ်အသစ် ပို့မည့် အကောင့်- ပထမ အကောင့်၊ အခြား အကောင့် သို့မဟုတ် သင်ရောက်နေသော အကောင့်
 settings-compose-send-on-replies-summary = ပြန်စာနှင့် ထပ်ဆင့်ပို့ချက်များတွင် ပို့ရန် သို့မဟုတ် ပို့ပြီး စကားဝိုင်းကို မှတ်တမ်းသိမ်းရန်
 settings-compose-signatures-summary = သင့်မက်ဆေ့ဂျ်အောက်တွင် “--” စာကြောင်းနောက်၌ ထည့်သည်
 settings-compose-for-new-mail-summary = မေးလ်အသစ် စတင်မည့် လက်မှတ်

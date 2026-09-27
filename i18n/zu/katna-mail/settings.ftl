@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = Ivula isiphathi samafayela okunamathi
 ## Settings > Compose
 
 settings-compose-send-from = Thumela imilayezo emisha ivela ku-
-settings-compose-send-from-detail = Izimpendulo nokudluliselwayo kuhlala kuphuma ku-akhawunti okuyo.
+settings-compose-send-from-detail = Imilayezo emisha iqala kule akhawunti; umugqa othi Kusuka ku ukhetha enye. Izimpendulo nokudluliselwayo kuhlala kuphuma ku-akhawunti umlayezo wokuqala ofike kuyo.
 settings-compose-send-from-current = I-akhawunti okuyo
 settings-compose-send-on-replies = Thumela ezimpendulweni
 settings-compose-send-on-replies-detail = Lokho okwenziwa ngu-Thumela empendulweni noma kokudluliselwayo. Imenyu eduze kuka-Thumela inikeza okunye.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = Lapho umbhalo osobala, amalogi nekhodi kuvu
 settings-default-apps-sheets-summary = Lapho amafayela e-Excel, OpenDocument ne-CSV avuleka khona
 settings-default-apps-documents-summary = Lapho umbhalo we-Word ne-OpenDocument namaslayidi kuvuleka khona
 settings-default-apps-after-saving-summary = Bonisa okunamathiselwe okulondoloziwe kufolda yakho
-settings-compose-send-from-summary = I-akhawunti imeyili entsha ephuma kuyo: leyo okuyo, noma efanayo njalo
+settings-compose-send-from-summary = I-akhawunti imeyili entsha ephuma kuyo: eyokuqala, enye, noma leyo okuyo
 settings-compose-send-on-replies-summary = Thumela, noma Thumela futhi ufake ingxoxo kungobo yomlando, ezimpendulweni nakokudluliselwayo
 settings-compose-signatures-summary = Kungezwa ngaphansi komlayezo wakho, ngemva komugqa othi “--”
 settings-compose-for-new-mail-summary = Isiginesha imeyili entsha eqala ngayo

@@ -153,7 +153,7 @@ settings-default-apps-show-folder-detail = បើកកម្មវិធីគ�
 ## Settings > Compose
 
 settings-compose-send-from = ផ្ញើសារថ្មីពី
-settings-compose-send-from-detail = ការឆ្លើយតប និងការបញ្ជូនបន្ត តែងតែផ្ញើចេញពីគណនីដែលអ្នកកំពុងនៅ។
+settings-compose-send-from-detail = សារថ្មីចាប់ផ្ដើមពីគណនីនេះ ហើយជួរ ពី អាចជ្រើសគណនីផ្សេង។ ការឆ្លើយតប និងការបញ្ជូនបន្ត តែងតែផ្ញើចេញពីគណនីដែលបានទទួលសារដើម។
 settings-compose-send-from-current = គណនីដែលអ្នកកំពុងនៅ
 settings-compose-send-on-replies = ការផ្ញើពេលឆ្លើយតប
 settings-compose-send-on-replies-detail = អ្វីដែលប៊ូតុងផ្ញើធ្វើ ពេលឆ្លើយតប ឬបញ្ជូនបន្ត។ ម៉ឺនុយនៅក្បែរប៊ូតុងផ្ញើផ្ដល់ជម្រើសមួយទៀត។
@@ -229,7 +229,7 @@ settings-default-apps-text-summary = កន្លែងដែលអត្ថប�
 settings-default-apps-sheets-summary = កន្លែងដែលឯកសារ Excel, OpenDocument និង CSV បើក
 settings-default-apps-documents-summary = កន្លែងដែល Word អត្ថបទ OpenDocument និងស្លាយបើក
 settings-default-apps-after-saving-summary = បង្ហាញឯកសារភ្ជាប់ដែលបានរក្សាទុកក្នុងថតរបស់វា
-settings-compose-send-from-summary = គណនីដែលសំបុត្រថ្មីផ្ញើចេញ៖ គណនីដែលអ្នកកំពុងនៅ ឬគណនីដដែលជានិច្ច
+settings-compose-send-from-summary = គណនីដែលសំបុត្រថ្មីផ្ញើចេញ៖ គណនីទីមួយ គណនីផ្សេង ឬគណនីដែលអ្នកកំពុងនៅ
 settings-compose-send-on-replies-summary = ផ្ញើ ឬផ្ញើ និងទុកការសន្ទនាក្នុងបណ្ណសារ ពេលឆ្លើយតប និងបញ្ជូនបន្ត
 settings-compose-signatures-summary = បន្ថែមនៅក្រោមសាររបស់អ្នក បន្ទាប់ពីបន្ទាត់ “--”
 settings-compose-for-new-mail-summary = ហត្ថលេខាដែលសំបុត្រថ្មីចាប់ផ្ដើមជាមួយ

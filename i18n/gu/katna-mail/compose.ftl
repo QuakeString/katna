@@ -19,6 +19,8 @@ compose-show-trimmed = ટૂંકાવેલી સામગ્રી બત�
 compose-to = પ્રતિ
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = મોકલનાર
+compose-from-choose = બીજા એકાઉન્ટમાંથી મોકલો
 compose-recipients = પ્રાપ્તકર્તાઓ
 compose-subject = વિષય
 

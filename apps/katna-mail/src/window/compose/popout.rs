@@ -84,13 +84,12 @@ impl MailWindow {
                 window.on_window_should_close(cx, move |_, cx| {
                     closing.update(cx, |this, cx| {
                         this.writing.compose_window = None;
-                        let touched = this.compose.as_ref().is_some_and(|c| c.touched(cx));
                         if this
                             .compose
                             .as_ref()
                             .is_some_and(|c| c.mode == Mode::Window)
                         {
-                            this.close_compose(touched, cx);
+                            this.close_compose_saving(cx);
                         }
                     });
                     true

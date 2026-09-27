@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = ಉಳಿಸಿದ ಲಗತ್ತು
 ## Settings > Compose
 
 settings-compose-send-from = ಹೊಸ ಸಂದೇಶಗಳನ್ನು ಇದರಿಂದ ಕಳುಹಿಸಿ
-settings-compose-send-from-detail = ಪ್ರತ್ಯುತ್ತರಗಳು ಮತ್ತು ಫಾರ್ವರ್ಡ್‌ಗಳು ಯಾವಾಗಲೂ ನೀವು ಇರುವ ಖಾತೆಯಿಂದಲೇ ಹೋಗುತ್ತವೆ.
+settings-compose-send-from-detail = ಹೊಸ ಸಂದೇಶಗಳು ಈ ಖಾತೆಯಿಂದ ಆರಂಭವಾಗುತ್ತವೆ; “ಇವರಿಂದ” ಸಾಲಿನಲ್ಲಿ ಇನ್ನೊಂದನ್ನು ಆಯ್ಕೆ ಮಾಡಬಹುದು. ಪ್ರತ್ಯುತ್ತರಗಳು ಮತ್ತು ಫಾರ್ವರ್ಡ್‌ಗಳು ಯಾವಾಗಲೂ ಮೂಲ ಸಂದೇಶ ಬಂದ ಖಾತೆಯಿಂದಲೇ ಹೋಗುತ್ತವೆ.
 settings-compose-send-from-current = ನೀವು ಇರುವ ಖಾತೆ
 settings-compose-send-on-replies = ಪ್ರತ್ಯುತ್ತರಗಳಲ್ಲಿ ಕಳುಹಿಸಿ ಬಟನ್
 settings-compose-send-on-replies-detail = ಪ್ರತ್ಯುತ್ತರ ಅಥವಾ ಫಾರ್ವರ್ಡ್‌ನಲ್ಲಿ ಕಳುಹಿಸಿ ಬಟನ್ ಏನು ಮಾಡುತ್ತದೆ. ಕಳುಹಿಸಿ ಪಕ್ಕದ ಮೆನು ಇನ್ನೊಂದನ್ನು ನೀಡುತ್ತದೆ.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = ಸಾದಾ ಪಠ್ಯ, ಲಾಗ್‌�
 settings-default-apps-sheets-summary = Excel, OpenDocument ಮತ್ತು CSV ಫೈಲ್‌ಗಳು ಎಲ್ಲಿ ತೆರೆಯುತ್ತವೆ
 settings-default-apps-documents-summary = Word, OpenDocument ಪಠ್ಯ ಮತ್ತು ಸ್ಲೈಡ್‌ಗಳು ಎಲ್ಲಿ ತೆರೆಯುತ್ತವೆ
 settings-default-apps-after-saving-summary = ಉಳಿಸಿದ ಲಗತ್ತುಗಳನ್ನು ಅವುಗಳ ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಿ
-settings-compose-send-from-summary = ಹೊಸ ಮೇಲ್ ಹೋಗುವ ಖಾತೆ: ನೀವು ಇರುವ ಖಾತೆ, ಅಥವಾ ಯಾವಾಗಲೂ ಒಂದೇ ಖಾತೆ
+settings-compose-send-from-summary = ಹೊಸ ಮೇಲ್ ಹೋಗುವ ಖಾತೆ: ಮೊದಲನೆಯದು, ಇನ್ನೊಂದು, ಅಥವಾ ನೀವು ಇರುವ ಖಾತೆ
 settings-compose-send-on-replies-summary = ಪ್ರತ್ಯುತ್ತರಗಳು ಮತ್ತು ಫಾರ್ವರ್ಡ್‌ಗಳಲ್ಲಿ ಕಳುಹಿಸಿ, ಅಥವಾ ಕಳುಹಿಸಿ ಸಂವಾದವನ್ನು ಆರ್ಕೈವ್ ಮಾಡಿ
 settings-compose-signatures-summary = ನಿಮ್ಮ ಸಂದೇಶದ ಕೆಳಗೆ, “--” ಸಾಲಿನ ನಂತರ ಸೇರಿಸಲಾಗುತ್ತದೆ
 settings-compose-for-new-mail-summary = ಹೊಸ ಮೇಲ್ ಆರಂಭವಾಗುವ ಸಹಿ

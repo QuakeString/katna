@@ -432,10 +432,10 @@ pub struct MailWindow {
     /// the ticked ones. The banner offering the whole list follows this
     /// rather than the lines on screen, which the banner itself changes.
     page_pick: Option<usize>,
-    /// What the select menu ticked in the whole list ("Unread") and how
-    /// many lines, while those are still the ticked ones: the banner says
-    /// so.
-    picked: Option<(list::Pick, usize)>,
+    /// What Read, Unread, Starred or Unstarred in the select menu ticked,
+    /// while those are still the ticked ones: the banner says so and offers
+    /// the rest.
+    picked: Option<list::Picked>,
     pending: HashMap<EntryKey, Pending>,
     /// Rows of the list on screen at the last layout.
     visible: Range<usize>,
@@ -565,6 +565,9 @@ pub struct MailWindow {
     /// Phone, tablet or desktop, by the window's width.
     layout: layout::Layout,
     list_focus: FocusHandle,
+    /// The whole window: where the menu bar's actions start when the
+    /// keyboard focus is on something no longer drawn.
+    window_focus: FocusHandle,
     /// The message list: lines differ in height (attachment chips).
     list_state: ListState,
     /// The line whose "+N" attachments button has its list open.
@@ -732,6 +735,7 @@ impl MailWindow {
             desktop_colors,
             layout: layout::Layout::new(),
             list_focus: cx.focus_handle(),
+            window_focus: cx.focus_handle(),
             list_state: ListState::new(0, ListAlignment::Top, px(400.0)),
             files_menu: None,
             list_shape: (false, 0),
@@ -1169,6 +1173,19 @@ impl MailWindow {
 
     fn open(&mut self, ix: usize, window: &mut Window, cx: &mut Context<Self>) {
         if ix >= self.entries.len() {
+            return;
+        }
+        // A draft is written on, as in Gmail: in Drafts, or wherever a
+        // line holds nothing but drafts.
+        let entry = self.entries[ix];
+        let only_drafts = self.mail.as_ref().ok().is_some_and(|mail| {
+            let ids = mail.entry_messages(entry.key);
+            !ids.is_empty() && mail.drafts(&ids).len() == ids.len()
+        });
+        if self.folder_role() == Role::Drafts || only_drafts {
+            self.selected = Some(ix);
+            self.open_draft(entry.latest, window, cx);
+            cx.notify();
             return;
         }
         if !self.reading && !self.split() {
@@ -2225,6 +2242,10 @@ impl MailWindow {
         if let Some(ix) = self.undo_reopens.iter().rposition(|(u, _)| *u == undo) {
             self.reopen_after_undo = Some(self.undo_reopens.remove(ix).1);
         }
+        if undo == Command::ReopenDraft {
+            self.reopen_closed_draft(window, cx);
+            return;
+        }
         if let Command::UndoSend(_) = undo {
             // Taken back from the outbox: the message opens again.
             let connection = self.daemon.clone();
@@ -2763,31 +2784,8 @@ impl Render for MailWindow {
             .size_full()
             .bg(rgba(th.backdrop))
             .text_color(rgba(th.text))
-            .on_action(cx.listener(Self::focus_next))
-            .on_action(cx.listener(Self::focus_previous))
-            .on_action(cx.listener(Self::focus_search))
-            .on_action(cx.listener(Self::focus_list))
-            .on_action(cx.listener(Self::toggle_navigation))
-            .on_action(cx.listener(Self::toggle_settings))
-            .on_action(cx.listener(Self::compose))
-            .on_action(cx.listener(Self::reload))
-            .on_action(cx.listener(Self::quit))
-            .on_action(cx.listener(Self::reply))
-            .on_action(cx.listener(Self::reply_all))
-            .on_action(cx.listener(Self::forward))
-            .on_action(cx.listener(Self::move_to))
-            .on_action(cx.listener(Self::select_all))
-            .on_action(cx.listener(Self::select_none))
-            .on_action(cx.listener(Self::undo_action))
-            .on_action(cx.listener(Self::go_to_inbox))
-            .on_action(cx.listener(Self::go_to_starred))
-            .on_action(cx.listener(Self::go_to_sent))
-            .on_action(cx.listener(Self::go_to_drafts))
-            .on_action(cx.listener(Self::go_to_all_mail))
-            .on_action(cx.listener(Self::open_settings))
-            .on_action(cx.listener(Self::show_shortcuts))
-            .on_action(cx.listener(Self::show_whats_new_action))
-            .on_action(cx.listener(Self::show_about))
+            // Where the menu bar's actions start when the focus is lost.
+            .child(div().absolute().size_0().track_focus(&self.window_focus))
             .child(content)
             .children(floating_settings)
             .children(fab)
@@ -2848,6 +2846,36 @@ impl Render for MailWindow {
         } else {
             frame
         };
+        // The window's actions sit on its outermost element, so they run
+        // wherever the keyboard focus is: in the top bar, or on something
+        // that is no longer drawn (the list while Settings or a
+        // conversation fills the page), where GPUI starts from the root.
+        let frame = frame
+            .on_action(cx.listener(Self::focus_next))
+            .on_action(cx.listener(Self::focus_previous))
+            .on_action(cx.listener(Self::focus_search))
+            .on_action(cx.listener(Self::focus_list))
+            .on_action(cx.listener(Self::toggle_navigation))
+            .on_action(cx.listener(Self::toggle_settings))
+            .on_action(cx.listener(Self::compose))
+            .on_action(cx.listener(Self::reload))
+            .on_action(cx.listener(Self::quit))
+            .on_action(cx.listener(Self::reply))
+            .on_action(cx.listener(Self::reply_all))
+            .on_action(cx.listener(Self::forward))
+            .on_action(cx.listener(Self::move_to))
+            .on_action(cx.listener(Self::select_all))
+            .on_action(cx.listener(Self::select_none))
+            .on_action(cx.listener(Self::undo_action))
+            .on_action(cx.listener(Self::go_to_inbox))
+            .on_action(cx.listener(Self::go_to_starred))
+            .on_action(cx.listener(Self::go_to_sent))
+            .on_action(cx.listener(Self::go_to_drafts))
+            .on_action(cx.listener(Self::go_to_all_mail))
+            .on_action(cx.listener(Self::open_settings))
+            .on_action(cx.listener(Self::show_shortcuts))
+            .on_action(cx.listener(Self::show_whats_new_action))
+            .on_action(cx.listener(Self::show_about));
         match &self.font {
             Some(font) => frame.font_family(font.clone()).into_any_element(),
             None => frame.into_any_element(),

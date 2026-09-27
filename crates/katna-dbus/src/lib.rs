@@ -286,6 +286,18 @@ macro_rules! pim_proxy {
             /// Messages waiting to be sent, failed or cancelled.
             fn outbox(&self) -> zbus::Result<Vec<OutboxItem>>;
 
+            /// Saves `message` (RFC 5322, with `Bcc` if any) as a draft of
+            /// `account` in its Drafts folder, here and on the server,
+            /// in place of the copies saved before with the same
+            /// `Message-ID`. Adds `Date` and `Message-ID` when missing.
+            /// Returns the saved message's ID.
+            fn save_draft(&self, account: i64, message: &[u8]) -> zbus::Result<i64>;
+
+            /// Deletes every saved copy of the draft whose `Message-ID` is
+            /// `message_id` from the Drafts folder of `account`, here and
+            /// on the server.
+            fn discard_draft(&self, account: i64, message_id: &str) -> zbus::Result<()>;
+
             /// Downloads a remote image of a message the user chose to show
             /// (`https`; `http` is upgraded), at most 8 MB. Fails for
             /// anything that is not an image. Apps never use the network

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Drafts are kept"
+text = """
+Closing a message you are writing now saves it in Drafts, on your mail
+server too, as in Gmail. Open it from Drafts to carry on writing. Only the
+trash button throws it away, and Undo brings it back.
+"""

@@ -161,7 +161,7 @@ settings-default-apps-show-folder-detail = Apre il gestore di file con gli alleg
 ## Settings > Compose
 
 settings-compose-send-from = Invia nuovi messaggi da
-settings-compose-send-from-detail = Le risposte e gli inoltri partono sempre dall’account in cui ti trovi.
+settings-compose-send-from-detail = I nuovi messaggi partono da questo account; la riga Da ne sceglie un altro. Le risposte e gli inoltri partono sempre dall’account che ha ricevuto il messaggio originale.
 settings-compose-send-from-current = L’account in cui ti trovi
 settings-compose-send-on-replies = Invio nelle risposte
 settings-compose-send-on-replies-detail = Cosa fa Invia in una risposta o un inoltro. Il menu accanto a Invia offre l’altra opzione.
@@ -237,7 +237,7 @@ settings-default-apps-text-summary = Dove si aprono testo semplice, log e codice
 settings-default-apps-sheets-summary = Dove si aprono i file Excel, OpenDocument e CSV
 settings-default-apps-documents-summary = Dove si aprono i testi Word e OpenDocument e le presentazioni
 settings-default-apps-after-saving-summary = Mostra gli allegati salvati nella loro cartella
-settings-compose-send-from-summary = L’account da cui parte la nuova posta: quello in cui ti trovi o sempre lo stesso
+settings-compose-send-from-summary = L’account da cui parte la nuova posta: il primo, un altro o quello in cui ti trovi
 settings-compose-send-on-replies-summary = Invia, o Invia e archivia la conversazione, nelle risposte e negli inoltri
 settings-compose-signatures-summary = Aggiunta sotto il tuo messaggio, dopo una riga «--»
 settings-compose-for-new-mail-summary = La firma con cui inizia la nuova posta

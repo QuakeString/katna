@@ -14,6 +14,9 @@
 //! it for the undo-send delay (or until the scheduled time); the
 //! snackbar's Undo takes it back and opens it again.
 //!
+//! Closing a message saves it as a draft, and Discard throws it away with
+//! Undo (`drafts`); a draft opened from Drafts is written on here.
+//!
 //! `tools` draws the bars and their menus, `attach` handles files and
 //! pictures, `schedule` the times of schedule send, `popout` the message
 //! in a window of its own.
@@ -21,6 +24,7 @@
 mod attach;
 mod checks;
 mod chips;
+mod drafts;
 mod paste;
 mod popout;
 mod recipients;
@@ -36,8 +40,8 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    AnyElement, Context, Entity, ExternalPaths, FocusHandle, Focusable, FontWeight, Hsla,
-    ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, rgba,
+    AnyElement, Context, DragMoveEvent, Entity, ExternalPaths, FocusHandle, Focusable, FontWeight,
+    Hsla, ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, rgba,
 };
 use katna_core::AccountId;
 use katna_core::config::SEND_FROM_CURRENT;
@@ -126,6 +130,11 @@ pub(super) struct Compose {
     answering: Option<EntryKey>,
     /// The account the message goes out from, chosen when it opened.
     from: Option<AccountId>,
+    /// The `Message-ID` its drafts carry, the same at every save so each
+    /// replaces the one before.
+    message_id: String,
+    /// The account whose Drafts folder has it saved, if any.
+    saved: Option<AccountId>,
     show_cc: bool,
     show_bcc: bool,
     /// The recipients of To, Cc and Bcc; their fields hold only what is
@@ -163,6 +172,8 @@ pub(super) struct Compose {
     /// Pictures just pasted or dropped, while the choice between the text
     /// and the attachments shows.
     picture_choice: Option<paste::PictureChoice>,
+    /// The attachment list, which scrolls when it holds many files.
+    attach_scroll: ScrollHandle,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -269,6 +280,9 @@ pub(super) struct Writing {
     compose_window: Option<popout::Handle>,
     /// That window has the desktop's title bar rather than Katna's.
     popout_server_frame: bool,
+    /// The message just discarded, or closed without being saved, for
+    /// Undo to open again.
+    closed_draft: Option<Unsent>,
 }
 
 impl Writing {
@@ -325,6 +339,35 @@ impl Threading {
     }
 }
 
+/// The HTML of `body` and the pictures it shows, by `cid:` names under
+/// `domain`; nothing for plain text.
+fn body_parts(body: &Doc, plain: bool, domain: &str) -> (Option<String>, Vec<Part>) {
+    if plain {
+        return (None, Vec::new());
+    }
+    // Each picture gets a name of its own in the message, even when the
+    // same one was pasted twice.
+    let mut doc = body.clone();
+    for (ix, block) in doc.blocks.iter_mut().enumerate() {
+        if let Block::Image(image) = block {
+            image.id = ix as u64;
+        }
+    }
+    let seed = std::process::id() as u64 ^ jiff::Timestamp::now().as_millisecond() as u64;
+    let cid = |id: u64| format!("ii_{seed:x}_{id}@{domain}");
+    let html = html::to_html(&doc, &|image| format!("cid:{}", cid(image.id)));
+    let inline = doc
+        .images()
+        .map(|image| Part {
+            name: image.name.clone(),
+            mime: image.mime.clone(),
+            data: image.data.clone(),
+            content_id: Some(cid(image.id)),
+        })
+        .collect();
+    (Some(html), inline)
+}
+
 /// A message handed to the outbox, kept so that Undo can reopen it.
 pub(super) struct Unsent {
     draft: Draft,
@@ -337,6 +380,10 @@ pub(super) struct Unsent {
     answering: Option<EntryKey>,
     /// Puts back the conversation Send and archive archived.
     pub(super) unarchive: Option<Command>,
+    /// The draft's `Message-ID`, and the account it is saved in; for a
+    /// draft reopened from Drafts or after Discard.
+    message_id: Option<String>,
+    saved: Option<AccountId>,
 }
 
 fn address(a: &Address) -> String {
@@ -950,6 +997,8 @@ impl MailWindow {
             conversation: None,
             answering: None,
             from: None,
+            message_id: drafts::new_message_id(),
+            saved: None,
             mode: Mode::Open,
             sealing: Sealing::default(),
             signature,
@@ -965,6 +1014,7 @@ impl MailWindow {
             stick: Rc::default(),
             grammar_color: grammar_color(&th),
             picture_choice: None,
+            attach_scroll: ScrollHandle::new(),
             _subscriptions: subscriptions,
         });
         cx.notify();
@@ -1198,6 +1248,8 @@ impl MailWindow {
         let chosen = compose.from;
         let answered = compose.answering;
         let answering = answered.filter(|_| archive && at.is_none());
+        // Sent, the draft it was saved as goes.
+        let saved = compose.saved.map(|a| (a.0, compose.message_id.clone()));
         let signature = compose.signature;
         let attachments = compose.attachments.clone();
         let plain = compose.plain(cx);
@@ -1266,31 +1318,7 @@ impl MailWindow {
             .map_or("katna.local", |(_, d)| d)
             .to_owned();
         let body_text = html::to_plain(&draft.body);
-        // Each picture gets a name of its own in the message, even when
-        // the same one was pasted twice.
-        let mut doc = draft.body.clone();
-        for (ix, block) in doc.blocks.iter_mut().enumerate() {
-            if let Block::Image(image) = block {
-                image.id = ix as u64;
-            }
-        }
-        let (html_body, inline) = if plain {
-            (None, Vec::new())
-        } else {
-            let seed = std::process::id() as u64 ^ jiff::Timestamp::now().as_millisecond() as u64;
-            let cid = |id: u64| format!("ii_{seed:x}_{id}@{domain}");
-            let html = html::to_html(&doc, &|image| format!("cid:{}", cid(image.id)));
-            let inline = doc
-                .images()
-                .map(|image| Part {
-                    name: image.name.clone(),
-                    mime: image.mime.clone(),
-                    data: image.data.clone(),
-                    content_id: Some(cid(image.id)),
-                })
-                .collect();
-            (Some(html), inline)
-        };
+        let (html_body, inline) = body_parts(&draft.body, plain, &domain);
         let delay = match at {
             Some(at) => {
                 let seconds = at.as_second() - jiff::Timestamp::now().as_second();
@@ -1320,6 +1348,7 @@ impl MailWindow {
             inline,
             attachments: attachments.iter().map(Attachment::part).collect(),
             date: at.map(|at| schedule::rfc2822(at, &self.tz)),
+            message_id: None,
         });
         let from = Some(account.id);
         let account = account.id.0;
@@ -1334,8 +1363,10 @@ impl MailWindow {
             from,
             answering: answered,
             unarchive: None,
+            message_id: None,
+            saved: None,
         });
-        self.close_compose(false, cx);
+        self.close_compose(cx);
         self.show_snackbar(
             if at.is_some() {
                 tr!("compose-scheduling")
@@ -1361,7 +1392,13 @@ impl MailWindow {
                     if follow_up > 0
                         && let Err(err) = daemon::set_follow_up(&connection, id, follow_up).await
                     {
-                        tracing::warn!("could not set the reminder: {err}");
+                        tracing::warn!(%err, "the reply reminder was not set");
+                    }
+                    if let Some((account, message_id)) = saved
+                        && let Err(err) =
+                            daemon::discard_draft(&connection, account, &message_id).await
+                    {
+                        tracing::warn!(%err, "the sent message's draft stays");
                     }
                     Ok::<_, String>(id)
                 })
@@ -1404,18 +1441,7 @@ impl MailWindow {
     /// Opens the message that was just handed to the outbox again, after
     /// Undo or a failure to queue it.
     pub(super) fn reopen_unsent(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let Some(Unsent {
-            draft,
-            thread,
-            sealing,
-            signature,
-            attachments,
-            plain,
-            from,
-            answering,
-            unarchive: _,
-        }) = self.unsent.take()
-        else {
+        let Some(unsent) = self.unsent.take() else {
             return;
         };
         if self
@@ -1425,7 +1451,32 @@ impl MailWindow {
         {
             return;
         }
-        self.show_compose(draft, Draft::default(), thread, signature, true, window, cx);
+        self.reopen_message(unsent, Draft::default(), window, cx);
+    }
+
+    /// Opens `unsent` in the compose window; `start` is what counts as
+    /// untouched.
+    fn reopen_message(
+        &mut self,
+        unsent: Unsent,
+        start: Draft,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Unsent {
+            draft,
+            thread,
+            sealing,
+            signature,
+            attachments,
+            plain,
+            from,
+            answering,
+            unarchive: _,
+            message_id,
+            saved,
+        } = unsent;
+        self.show_compose(draft, start, thread, signature, true, window, cx);
         if let Some(compose) = &mut self.compose {
             compose.attachments = attachments;
             compose
@@ -1434,10 +1485,14 @@ impl MailWindow {
             compose.sealing = sealing;
             compose.from = from;
             compose.answering = answering;
+            if let Some(message_id) = message_id {
+                compose.message_id = message_id;
+            }
+            compose.saved = saved;
         }
     }
 
-    fn close_compose(&mut self, discarded: bool, cx: &mut Context<Self>) {
+    fn close_compose(&mut self, cx: &mut Context<Self>) {
         if let Some(compose) = &mut self.compose {
             compose.closing = true;
             compose.popup = None;
@@ -1446,9 +1501,6 @@ impl MailWindow {
             }
         }
         self.close_compose_window(cx);
-        if discarded {
-            self.show_snackbar(tr!("compose-discarded"), None, cx);
-        }
         cx.notify();
     }
 
@@ -1592,9 +1644,7 @@ impl MailWindow {
                     .tooltip(tip(tr!("compose-save-close"), th))
                     .on_click(cx.listener(|this, _, _, cx| {
                         cx.stop_propagation();
-                        // Drafts are not saved yet, so closing loses the text.
-                        let touched = this.compose.as_ref().is_some_and(|c| c.touched(cx));
-                        this.close_compose(touched, cx)
+                        this.close_compose_saving(cx)
                     })),
             );
 
@@ -1793,6 +1843,11 @@ impl MailWindow {
             .line_height(px(20.0))
             .cursor_text()
             .on_click(move |_, window, cx| window.focus(&focus, cx))
+            .on_drag_move(
+                cx.listener(|this, event: &DragMoveEvent<ExternalPaths>, _, cx| {
+                    this.drag_over_body(event, cx);
+                }),
+            )
             .on_drop(cx.listener(|this, paths: &ExternalPaths, window, cx| {
                 this.drop_on_body(paths, window, cx);
             }))
@@ -2136,6 +2191,11 @@ impl MailWindow {
             // A click below the text still puts the cursor in the body, at
             // its end.
             .on_click(move |_, window, cx| window.focus(&focus, cx))
+            .on_drag_move(
+                cx.listener(|this, event: &DragMoveEvent<ExternalPaths>, _, cx| {
+                    this.drag_over_body(event, cx);
+                }),
+            )
             .on_drop(cx.listener(|this, paths: &ExternalPaths, window, cx| {
                 this.drop_on_body(paths, window, cx);
             }))

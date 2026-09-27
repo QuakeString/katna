@@ -552,3 +552,28 @@ fn worker_checks_again_after_a_network_change() {
         task.await;
     });
 }
+
+#[test]
+fn drafts_get_a_local_folder() {
+    let (_tmp, mut store, account) = store();
+    let raw =
+        b"From: me@example.org\r\nSubject: Plan\r\nMessage-ID: <d1@example.org>\r\n\r\nHi.\r\n";
+    let (id, queued) = katna_sync::ops::save_draft(&mut store, account, raw, 100).unwrap();
+    assert!(!queued, "nothing goes to a POP3 server");
+    let drafts = store
+        .folders(account)
+        .unwrap()
+        .into_iter()
+        .find(|f| f.path == "Drafts")
+        .unwrap();
+    assert_eq!(drafts.role, Some(katna_store::FolderRole::Drafts));
+    let ids: Vec<_> = store
+        .messages_in_folder(drafts.id)
+        .unwrap()
+        .into_iter()
+        .map(|m| m.id)
+        .collect();
+    assert_eq!(ids, [id]);
+    katna_sync::ops::discard_draft(&mut store, account, "d1@example.org").unwrap();
+    assert!(store.messages_in_folder(drafts.id).unwrap().is_empty());
+}

@@ -466,3 +466,12 @@ text = """
 Si Katna te resulta útil, Acerca de Katna ahora tiene un botón Invítame
 a un café y un código QR para abrir la misma página en tu móvil.
 """
+
+["2026-09-27-1615-from-row"]
+title = "Elige de quién es un mensaje"
+text = """
+Los mensajes nuevos ahora muestran una fila De debajo de Para. Haz clic
+en su flecha para enviar desde otra de tus cuentas. El correo nuevo
+empieza desde tu primera cuenta, salvo que elijas otra predeterminada en
+Ajustes > Redacción > Enviar mensajes nuevos desde.
+"""

@@ -299,6 +299,19 @@ impl MailBatch<'_> {
             .is_some())
     }
 
+    /// The messages in `folder` whose `Message-ID` is `message_id`
+    /// (without angle brackets): the saved copies of one draft.
+    pub fn with_message_id_in(&self, folder: FolderId, message_id: &str) -> Result<Vec<MessageId>> {
+        let mut stmt = self.tx().prepare_cached(
+            "SELECT m.id FROM message m JOIN message_location l ON l.message_id = m.id
+             WHERE l.folder_id = ?1 AND m.message_id_hdr = ?2 ORDER BY m.id",
+        )?;
+        let rows = stmt.query_map(params![folder.0, message_id], |row| {
+            Ok(MessageId(row.get(0)?))
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
     /// Makes the next sync of `folder` fetch every flag again, replacing
     /// local changes the server refused.
     pub fn forget_modseq(&mut self, folder: FolderId) -> Result<()> {

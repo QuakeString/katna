@@ -153,7 +153,7 @@ settings-default-apps-show-folder-detail = 打开文件管理器并选中已保�
 ## Settings > Compose
 
 settings-compose-send-from = 发送新邮件时使用
-settings-compose-send-from-detail = 回复和转发始终从你当前所在的账号发出。
+settings-compose-send-from-detail = 新邮件从此账号开始，可在发件人一行选择其他账号。回复和转发始终从收到原邮件的账号发出。
 settings-compose-send-from-current = 当前所在的账号
 settings-compose-send-on-replies = 回复时发送
 settings-compose-send-on-replies-detail = 回复或转发时“发送”按钮执行的操作。“发送”旁的菜单提供另一种操作。
@@ -229,7 +229,7 @@ settings-default-apps-text-summary = 纯文本、日志和代码的打开方式
 settings-default-apps-sheets-summary = Excel、OpenDocument 和 CSV 文件的打开方式
 settings-default-apps-documents-summary = Word、OpenDocument 文本和幻灯片的打开方式
 settings-default-apps-after-saving-summary = 在文件夹中显示已保存的附件
-settings-compose-send-from-summary = 新邮件从哪个账号发出：你当前所在的账号，或始终使用同一个账号
+settings-compose-send-from-summary = 新邮件从哪个账号发出：第一个账号、其他账号，或你当前所在的账号
 settings-compose-send-on-replies-summary = 回复和转发时“发送”，或“发送并归档”会话
 settings-compose-signatures-summary = 添加在邮件正文下方的“--”行之后
 settings-compose-for-new-mail-summary = 新邮件默认使用的签名

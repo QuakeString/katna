@@ -460,3 +460,12 @@ text = """
 Jika Katna berguna kepada Anda, Perihal Katna kini ada butang Belanja
 saya kopi dan kod QR untuk membuka halaman yang sama pada telefon Anda.
 """
+
+["2026-09-27-1615-from-row"]
+title = "Pilih daripada siapa mesej dihantar"
+text = """
+Mesej baharu kini menunjukkan baris Daripada di bawah Kepada. Klik anak
+panahnya untuk menghantar daripada akaun anda yang lain. Mel baharu
+bermula daripada akaun pertama anda, melainkan anda memilih lalai lain
+dalam Tetapan > Karang > Hantar mesej baharu daripada.
+"""
