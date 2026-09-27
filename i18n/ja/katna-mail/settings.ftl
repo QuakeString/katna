@@ -182,6 +182,19 @@ settings-compose-spell-check-detail = スペルミスに下線が引かれ、右
 settings-compose-spell-desktop = デスクトップの言語（{ $language }）
 settings-compose-templates = テンプレート
 settings-compose-templates-detail = よく書くメールを保存し、新規メールや返信に使えます。
+settings-compose-no-templates = テンプレートはまだありません。メッセージで「テンプレート」を選び、「テンプレートとして保存」を選択してください。
+settings-compose-template-new = 新規作成
+settings-compose-template-new-name = 新しいテンプレート
+settings-compose-template-subject = 件名
+settings-compose-template-text = テンプレートの本文
+settings-compose-template-fields = {"{"}first name{"}"}、{"{"}name{"}"}、{"{"}my name{"}"} は受信者の名前と自分の名前に置き換えられます。
+settings-compose-template-remove-file = 添付ファイルを削除
+settings-compose-template-save = 保存
+settings-compose-template-saved = テンプレートを保存しました
+settings-compose-template-needs-name = テンプレートに名前を付けてください
+settings-compose-template-delete = テンプレートを削除
+settings-compose-template-deleted = テンプレートを削除しました
+settings-compose-template-delete-failed = テンプレートを削除できませんでした: { $error }
 
 ## Settings > Shortcuts
 
@@ -236,7 +249,7 @@ settings-compose-for-new-mail-summary = 新規メールに最初から入れる�
 settings-compose-for-replies-summary = 返信や転送に最初から入れる署名
 settings-compose-format-summary = 新規メールをプレーンテキストで作成
 settings-compose-spelling-summary = 入力中のスペルチェックと辞書の言語
-settings-compose-templates-summary = 近日公開: よく書くメールを保存し、新規メールや返信に使えます
+settings-compose-templates-summary = よく書くメールを保存し、新規メールや返信に使えます
 settings-feedback-crash-reports-summary = Katna Mail またはバックグラウンド サービスがクラッシュしたときに、クラッシュレポートをこのパソコンに保存
 settings-feedback-saved-summary = このパソコンに保存したクラッシュレポートの表示、コピー、削除
 settings-feedback-help-improve-summary = 問題の修正に役立てるためクラッシュレポートを送信（オンにしない限りオフ）

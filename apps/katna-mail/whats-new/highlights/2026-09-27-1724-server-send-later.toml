@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Scheduled mail goes out with your computer off"
+text = """
+When your mail server can hold mail until a set time, as Stalwart can,
+Schedule send now hands the message to it once Undo is gone, so it goes
+out on time even with this computer off. The schedule menu says whether
+your mail server or Katna will send it.
+"""

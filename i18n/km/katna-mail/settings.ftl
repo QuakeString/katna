@@ -182,6 +182,19 @@ settings-compose-spell-check-detail = ពាក្យសរសេរខុសត
 settings-compose-spell-desktop = ភាសារបស់ផ្ទៃតុ ({ $language })
 settings-compose-templates = គំរូ
 settings-compose-templates-detail = រក្សាទុកសំបុត្រដែលអ្នកសរសេរញឹកញាប់ ហើយចាប់ផ្ដើមសំបុត្រថ្មី ឬការឆ្លើយតបពីវា។
+settings-compose-no-templates = មិនទាន់មានគំរូនៅឡើយទេ។ ក្នុងសារមួយ ជ្រើសរើស “គំរូ” រួច “រក្សាទុកជាគំរូ”។
+settings-compose-template-new = បង្កើតថ្មី
+settings-compose-template-new-name = គំរូថ្មី
+settings-compose-template-subject = ប្រធានបទ
+settings-compose-template-text = អត្ថបទគំរូ
+settings-compose-template-fields = {"{"}first name{"}"} {"{"}name{"}"} និង {"{"}my name{"}"} ត្រូវបានបំពេញដោយឈ្មោះអ្នកទទួល និងឈ្មោះរបស់អ្នក។
+settings-compose-template-remove-file = ដកឯកសារភ្ជាប់ចេញ
+settings-compose-template-save = រក្សាទុក
+settings-compose-template-saved = បានរក្សាទុកគំរូ
+settings-compose-template-needs-name = សូមដាក់ឈ្មោះឱ្យគំរូ
+settings-compose-template-delete = លុបគំរូ
+settings-compose-template-deleted = បានលុបគំរូ
+settings-compose-template-delete-failed = មិនអាចលុបគំរូបានទេ៖ { $error }
 
 ## Settings > Shortcuts
 
@@ -236,7 +249,7 @@ settings-compose-for-new-mail-summary = ហត្ថលេខាដែលសំ�
 settings-compose-for-replies-summary = ហត្ថលេខាដែលការឆ្លើយតប និងការបញ្ជូនបន្តចាប់ផ្ដើមជាមួយ
 settings-compose-format-summary = សរសេរសំបុត្រថ្មីជាអត្ថបទធម្មតា
 settings-compose-spelling-summary = ពិនិត្យអក្ខរាវិរុទ្ធពេលសរសេរ និងភាសារបស់វចនានុក្រម
-settings-compose-templates-summary = ឆាប់ៗនេះ៖ រក្សាទុកសំបុត្រដែលអ្នកសរសេរញឹកញាប់ ហើយចាប់ផ្ដើមសំបុត្រថ្មី ឬការឆ្លើយតបពីវា
+settings-compose-templates-summary = រក្សាទុកសំបុត្រដែលអ្នកសរសេរញឹកញាប់ ហើយចាប់ផ្ដើមសំបុត្រថ្មី ឬការឆ្លើយតបពីវា
 settings-feedback-crash-reports-summary = រក្សាទុករបាយការណ៍គាំងនៅលើកុំព្យូទ័រនេះ ពេល Katna Mail ឬសេវាផ្ទៃខាងក្រោយរបស់វាគាំង
 settings-feedback-saved-summary = មើល ចម្លង ឬលុបរបាយការណ៍គាំងដែលបានរក្សាទុកនៅលើកុំព្យូទ័រនេះ
 settings-feedback-help-improve-summary = ផ្ញើរបាយការណ៍គាំង ដើម្បីជួយជួសជុលបញ្ហា។ បិទ លុះត្រាតែអ្នកបើកវា

@@ -38,6 +38,9 @@ compose-scheduled = { $when } ന് അയയ്ക്കാൻ ഷെഡ്യ
 compose-sent-archived = അയച്ചു, ആർക്കൈവ് ചെയ്തു
 compose-sent = സന്ദേശം അയച്ചു
 compose-discarded = ഡ്രാഫ്റ്റ് നിരസിച്ചു
+compose-draft-saved = ഡ്രാഫ്റ്റ് സംരക്ഷിച്ചു
+compose-draft-failed = ഡ്രാഫ്റ്റ് സംരക്ഷിക്കാനായില്ല: { $error }
+compose-draft-not-opened = ഡ്രാഫ്റ്റ് തുറക്കാനായില്ല.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = അറ്റാച്ച് ചെയ്യുക
 compose-file-too-large = { $name } വളരെ വലുതാണ്: ഒരു സന്ദേശത്തിൽ { $limit } വരെ മാത്രമേ ഉൾക്കൊള്ളാനാകൂ.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = അറ്റാച്ച്‌മെന്റ് നീക്കം ചെയ്യുക
+compose-attachments-total = { $count ->
+    [one] { $count } ഫയൽ, { $size }
+   *[other] { $count } ഫയലുകൾ, { $size }
+}
 compose-drop-files = ഫയലുകൾ ഇവിടെ ഇടുക
 compose-drop-here = ഇവിടെ ഇടുക
 compose-paste-keep-formatting = ഫോർമാറ്റിംഗ് നിലനിർത്തുക

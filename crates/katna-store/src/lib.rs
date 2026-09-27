@@ -21,7 +21,9 @@ pub mod ops;
 pub mod outbox;
 mod people;
 pub mod pop3;
+mod quota;
 pub mod remote;
+pub mod templates;
 mod thread;
 mod translation;
 
@@ -49,7 +51,9 @@ pub use ops::{Location, PinnedMessage, QueuedOp};
 pub use outbox::{OutboxEntry, SendState};
 pub use people::{Correspondent, Person};
 pub use pop3::Pop3Uidl;
+pub use quota::StorageQuota;
 pub use remote::{FolderRole, NewAttachment, RemoteMessage, StoredAttachment, StoredFolder};
+pub use templates::{Template, TemplateFile, TemplateSummary};
 pub use translation::Translation;
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.

@@ -462,3 +462,125 @@ untuk mengirim dari akun Anda yang lain. Email baru dimulai dari akun
 pertama Anda, kecuali Anda memilih default lain di Setelan > Tulis >
 Kirim pesan baru dari.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Kotak masuk gabungan"
+text = """
+Aktifkan Setelan > Akun > Kotak masuk gabungan untuk melihat email semua
+akun Anda sekaligus. “Semua Akun” berada di bagian atas panel folder
+dengan satu Kotak Masuk, Belum dibaca, Berbintang, Penting, Terkirim,
+Draf, dan lainnya untuk semua akun; panah di samping masing-masing
+membuka satu baris per akun. Nama setiap akun kini punya panah yang
+menciutkan foldernya.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menu klik kanan sesuai setiap folder"
+text = """
+Memilih folder atau label di Pindahkan ke pada menu klik kanan kini
+memindahkan email, dengan Urungkan, juga dari hasil penelusuran. Di
+Spam, Laporkan spam menjadi Bukan spam. Sampah menawarkan Pindahkan ke
+Kotak Masuk dan Hapus selamanya, Arsip menawarkan Pindahkan ke Kotak
+Masuk, dan Draf serta Terkirim tidak menampilkan item yang tidak berlaku
+di sana.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Seret akun untuk mengurutkan"
+text = """
+Di Setelan > Akun, menyeret akun kini mengangkat seluruh barisnya, dan
+akun lain bergeser untuk memberi tempat. Pindahkan ke atas dan Pindahkan
+ke bawah muncul saat Anda menunjuk sebuah baris.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Draf tetap tersimpan"
+text = """
+Menutup pesan yang sedang Anda tulis kini menyimpannya di Draf, juga di
+server email Anda, seperti di Gmail. Buka dari Draf untuk melanjutkan
+menulis. Hanya tombol sampah yang membuangnya, dan Urungkan
+mengembalikannya.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "Ruang untuk banyak lampiran"
+text = """
+Berapa pun file yang Anda lampirkan, daftarnya kini bergulir di atas
+bilah Kirim alih-alih menutupinya, menampilkan file terbaru, dan
+menyebutkan jumlah file serta total ukurannya.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Pilih email belum dibaca atau berbintang, ala Gmail"
+text = """
+Sudah dibaca, Belum dibaca, Berbintang, dan Tidak berbintang di menu
+Pilih kembali mencentang email yang cocok di layar. Sebuah baris di atas
+daftar menawarkan untuk memilih semua percakapan yang cocok di folder,
+dan Hapus pilihan membatalkannya.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Folder membawa Anda keluar dari Setelan"
+text = """
+Saat Setelan terbuka, mengeklik folder atau ikon Email kini menutup
+Setelan dan membuka folder tersebut, seperti di Gmail. Panah kembali
+juga tetap berfungsi.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Letakkan gambar di dalam teks"
+text = """
+Saat gambar diseret ke atas pesan, muncul kursor di tempat gambar akan
+diletakkan, sehingga Anda bisa meletakkannya di tengah kalimat. File
+lain tetap menampilkan area letak untuk lampiran, dan kini meletakkan
+juga berfungsi setelah Anda mengetik.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Keluar langsung menutup"
+text = """
+Keluar di menu ikon baki tidak lagi menunggu email yang masih
+disinkronkan atau diindeks: Katna dan ikon bakinya langsung tertutup,
+dan sisanya dilanjutkan saat Katna dimulai lagi.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Detail kontak di samping email Anda"
+text = """
+Di jendela yang lebar, sebuah kartu di samping percakapan yang terbuka
+kini menampilkan pengirimnya: telepon, jabatan, dan perusahaannya dari
+tanda tangan mereka, waktu setempat mereka, seberapa banyak email yang
+Anda saling kirim, percakapan terbaru Anda, dan file di antara Anda.
+Klik percakapan atau file untuk membukanya, atau orang lain dalam
+percakapan untuk melihatnya. Informasi ini hanya dibaca dari email Anda
+di komputer ini. Tombol kontak di bilah alat panel baca
+menyembunyikannya.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Penyimpanan terpakai"
+text = """
+Bagian bawah panel folder kini menampilkan seberapa penuh penyimpanan
+email akun, misalnya “34% dari 15 GB terpakai”, jika server emailnya
+memberitahukannya.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Cari email dari KRunner dan penelusuran GNOME"
+text = """
+Ketik nama di KRunner (Alt+Space) atau penelusuran Aktivitas untuk
+menulis kepada orang itu, menyalin alamatnya, atau mencari emailnya.
+Pesan muncul jika subjek atau pengirimnya memuat setiap kata yang Anda
+ketik; awali dengan mail: untuk menelusuri semua email Anda, seperti di
+kotak penelusuran Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Template untuk email yang sering Anda tulis"
+text = """
+Tulis pesan sekali, lalu simpan dengan tombol Template yang baru di
+jendela tulis, lalu masukkan ke email baru atau balasan mana pun dengan
+sekali klik. Tulis {first name}, {name}, atau {my name} dan Katna
+mengisinya untuk setiap penerima. Edit, ganti nama, atau hapus template
+di Setelan > Tulis.
+"""

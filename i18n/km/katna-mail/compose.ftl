@@ -38,6 +38,9 @@ compose-scheduled = បានកំណត់ពេលផ្ញើនៅ { $when 
 compose-sent-archived = បានផ្ញើ និងទុកក្នុងបណ្ណសារ
 compose-sent = បានផ្ញើសារ
 compose-discarded = បានបោះបង់សេចក្ដីព្រាង
+compose-draft-saved = បានរក្សាទុកសេចក្ដីព្រាង
+compose-draft-failed = មិនអាចរក្សាទុកសេចក្ដីព្រាងបានទេ៖ { $error }
+compose-draft-not-opened = មិនអាចបើកសេចក្ដីព្រាងបានទេ។
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = ភ្ជាប់
 compose-file-too-large = { $name } ធំពេក៖ សារមួយអាចផ្ទុកបានត្រឹម { $limit }។
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ដកឯកសារភ្ជាប់ចេញ
+compose-attachments-total = ឯកសារ { $count }, { $size }
 compose-drop-files = ទម្លាក់ឯកសារនៅទីនេះ
 compose-drop-here = ទម្លាក់នៅទីនេះ
 compose-paste-keep-formatting = រក្សាទម្រង់

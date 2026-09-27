@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Back where you were"
+text = """
+Closing Katna Mail and opening it again brings back the app, the folder and
+inbox tab you had open, the folders you had opened and whether the folder
+pane was folded. Quitting Katna from the tray starts it afresh.
+"""

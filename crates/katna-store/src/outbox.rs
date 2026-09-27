@@ -65,10 +65,13 @@ pub struct OutboxEntry {
     pub state: SendState,
     /// Refused tries so far.
     pub attempts: u32,
+    /// When scheduled mail goes out (Unix seconds), if later than
+    /// `send_at`. A `Sent` entry with it is held by the server until then.
+    pub hold_until: Option<i64>,
 }
 
 const ENTRY_QUERY: &str = "SELECT o.id, m.account_id, o.draft_message_id, m.subject,
-                                  o.send_at, o.state, o.attempts
+                                  o.send_at, o.state, o.attempts, o.hold_until
                            FROM outbox o JOIN message m ON m.id = o.draft_message_id";
 
 fn entry(row: &rusqlite::Row<'_>) -> rusqlite::Result<OutboxEntry> {
@@ -80,6 +83,7 @@ fn entry(row: &rusqlite::Row<'_>) -> rusqlite::Result<OutboxEntry> {
         send_at: row.get(4)?,
         state: SendState::parse(&row.get::<_, String>(5)?),
         attempts: row.get(6)?,
+        hold_until: row.get(7)?,
     })
 }
 
@@ -112,12 +116,28 @@ impl Store {
         Ok(rows.collect::<rusqlite::Result<_>>()?)
     }
 
-    /// When the next queued message is due, if any.
+    /// When the next queued message is due, or the next held one goes
+    /// out, if any.
     pub fn next_send_at(&self) -> Result<Option<i64>> {
         Ok(self
             .mail
-            .prepare_cached("SELECT min(send_at) FROM outbox WHERE state = 'queued'")?
+            .prepare_cached(
+                "SELECT min(at) FROM (
+                     SELECT send_at AS at FROM outbox WHERE state = 'queued'
+                     UNION ALL
+                     SELECT hold_until FROM outbox
+                     WHERE state = 'sent' AND hold_until IS NOT NULL)",
+            )?
             .query_row([], |row| row.get(0))?)
+    }
+
+    /// Sent entries the server held until `now` or earlier, to file.
+    pub fn released_sends(&self, now: i64) -> Result<Vec<OutboxEntry>> {
+        let mut stmt = self.mail.prepare_cached(&format!(
+            "{ENTRY_QUERY} WHERE o.state = 'sent' AND o.hold_until <= ?1 ORDER BY o.id"
+        ))?;
+        let rows = stmt.query_map([now], entry)?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
     }
 }
 
@@ -167,10 +187,31 @@ impl MailBatch<'_> {
 
     /// Queues `message` to be sent at `send_at`. Returns the entry's ID.
     pub fn queue_send(&mut self, message: MessageId, send_at: i64) -> Result<i64> {
+        self.queue_held(message, send_at, None)
+    }
+
+    /// Queues `message` to be handed over at `send_at` and to go out at
+    /// `hold_until` (scheduled mail). Returns the entry's ID.
+    pub fn queue_held(
+        &mut self,
+        message: MessageId,
+        send_at: i64,
+        hold_until: Option<i64>,
+    ) -> Result<i64> {
         let tx = self.tx();
-        tx.prepare_cached("INSERT INTO outbox (draft_message_id, send_at) VALUES (?1, ?2)")?
-            .execute(params![message.0, send_at])?;
+        tx.prepare_cached(
+            "INSERT INTO outbox (draft_message_id, send_at, hold_until) VALUES (?1, ?2, ?3)",
+        )?
+        .execute(params![message.0, send_at, hold_until])?;
         Ok(tx.last_insert_rowid())
+    }
+
+    /// Forgets when a sent entry goes out: it is out, and being filed.
+    pub fn clear_hold(&mut self, id: i64) -> Result<()> {
+        self.tx()
+            .prepare_cached("UPDATE outbox SET hold_until = NULL WHERE id = ?1")?
+            .execute([id])?;
+        Ok(())
     }
 
     /// Sets an entry's state; `send_at` and `attempts` only when given.

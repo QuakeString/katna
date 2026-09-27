@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = ভুল বানানের শব্�
 settings-compose-spell-desktop = ডেস্কটপের ভাষা ({ $language })
 settings-compose-templates = টেমপ্লেট
 settings-compose-templates-detail = যে মেল আপনি প্রায়ই লেখেন তা সেভ করুন, আর সেখান থেকে নতুন মেল বা উত্তর শুরু করুন।
+settings-compose-no-templates = এখনও কোনো টেমপ্লেট নেই। একটি মেসেজে টেমপ্লেট বেছে নিন, তারপর টেমপ্লেট হিসেবে সেভ করুন।
+settings-compose-template-new = নতুন তৈরি করুন
+settings-compose-template-new-name = নতুন টেমপ্লেট
+settings-compose-template-subject = বিষয়
+settings-compose-template-text = টেমপ্লেটের লেখা
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} আর {"{"}my name{"}"} প্রাপকের ও আপনার নাম দিয়ে পূরণ করা হয়।
+settings-compose-template-remove-file = সংযুক্তি সরান
+settings-compose-template-save = সেভ করুন
+settings-compose-template-saved = টেমপ্লেট সেভ করা হয়েছে
+settings-compose-template-needs-name = টেমপ্লেটের একটি নাম দিন
+settings-compose-template-delete = টেমপ্লেট মুছুন
+settings-compose-template-deleted = টেমপ্লেট মুছে ফেলা হয়েছে
+settings-compose-template-delete-failed = টেমপ্লেট মোছা যায়নি: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = নতুন মেল যে স্ব�
 settings-compose-for-replies-summary = উত্তর ও ফরোয়ার্ড যে স্বাক্ষর দিয়ে শুরু হয়
 settings-compose-format-summary = নতুন মেল সাধারণ টেক্সটে লিখুন
 settings-compose-spelling-summary = লেখার সময় বানান যাচাই, এবং অভিধানের ভাষা
-settings-compose-templates-summary = শীঘ্রই আসছে: যে মেল আপনি প্রায়ই লেখেন তা সেভ করুন, আর সেখান থেকে নতুন মেল বা উত্তর শুরু করুন
+settings-compose-templates-summary = যে মেল আপনি প্রায়ই লেখেন তা সেভ করুন, আর সেখান থেকে নতুন মেল বা উত্তর শুরু করুন
 settings-feedback-crash-reports-summary = Katna Mail বা তার ব্যাকগ্রাউন্ড পরিষেবা ক্র্যাশ করলে এই কম্পিউটারে ক্র্যাশ রিপোর্ট সেভ করুন
 settings-feedback-saved-summary = এই কম্পিউটারে সেভ করা ক্র্যাশ রিপোর্ট দেখুন, কপি করুন বা মুছুন
 settings-feedback-help-improve-summary = কী ভুল হয়েছে তা ঠিক করতে সাহায্যের জন্য ক্র্যাশ রিপোর্ট পাঠান; আপনি চালু না করলে বন্ধ থাকে

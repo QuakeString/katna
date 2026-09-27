@@ -9,15 +9,22 @@ nav-folders = ஃபோல்டர்கள்
 nav-label-new = புதிய லேபிளை உருவாக்கு
 nav-folder-new = புதிய ஃபோல்டரை உருவாக்கு
 nav-account-unnamed = கணக்கு { $number }
+nav-all-accounts = எல்லாக் கணக்குகளும்
+nav-expand = ஃபோல்டர்களைக் காட்டு
+nav-collapse = ஃபோல்டர்களை மறை
 nav-tab-new = { $count ->
     [one] { $count } புதியது
    *[other] { $count } புதியவை
 }
+storage-used = { $total } இல் { $percent }% பயன்படுத்தப்பட்டுள்ளது
+storage-used-detail = { $address }: { $total } இல் { $used } பயன்படுத்தப்பட்டுள்ளது
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = இன்பாக்ஸ்
 folder-starred = நட்சத்திரமிட்டவை
+folder-unread = படிக்காதவை
+folder-important = முக்கியமானவை
 folder-drafts = வரைவுகள்
 folder-sent = அனுப்பியவை
 folder-archive = காப்பகம்

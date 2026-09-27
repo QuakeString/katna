@@ -182,6 +182,19 @@ settings-compose-spell-check-detail = 拼錯的字詞會加上底線，按右鍵
 settings-compose-spell-desktop = 桌面環境的語言（{ $language }）
 settings-compose-templates = 範本
 settings-compose-templates-detail = 儲存你常寫的郵件，並以此開始撰寫新郵件或回覆。
+settings-compose-no-templates = 尚未建立任何範本。在郵件中選擇「範本」，然後選擇「儲存為範本」。
+settings-compose-template-new = 新建
+settings-compose-template-new-name = 新範本
+settings-compose-template-subject = 主旨
+settings-compose-template-text = 範本內文
+settings-compose-template-fields = {"{"}first name{"}"}、{"{"}name{"}"} 和 {"{"}my name{"}"} 會填入收件者的名字和你的名字。
+settings-compose-template-remove-file = 移除附件
+settings-compose-template-save = 儲存
+settings-compose-template-saved = 範本已儲存
+settings-compose-template-needs-name = 請為範本命名
+settings-compose-template-delete = 刪除範本
+settings-compose-template-deleted = 已刪除範本
+settings-compose-template-delete-failed = 無法刪除範本：{ $error }
 
 ## Settings > Shortcuts
 
@@ -236,7 +249,7 @@ settings-compose-for-new-mail-summary = 新郵件預設使用的簽名
 settings-compose-for-replies-summary = 回覆和轉寄預設使用的簽名
 settings-compose-format-summary = 以純文字撰寫新郵件
 settings-compose-spelling-summary = 撰寫時檢查拼字，以及字典的語言
-settings-compose-templates-summary = 即將推出：儲存你常寫的郵件，並以此開始撰寫新郵件或回覆
+settings-compose-templates-summary = 儲存你常寫的郵件，並以此開始撰寫新郵件或回覆
 settings-feedback-crash-reports-summary = Katna Mail 或其背景服務當機時，將當機報告儲存在這台電腦上
 settings-feedback-saved-summary = 查看、複製或刪除這台電腦上儲存的當機報告
 settings-feedback-help-improve-summary = 傳送當機報告以協助修正問題；除非你開啟，否則預設為關閉

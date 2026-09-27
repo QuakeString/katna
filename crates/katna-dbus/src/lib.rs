@@ -84,6 +84,27 @@ pub mod state {
     pub const AUTH_FAILED: &str = "auth-failed";
 }
 
+/// A mail template for `SaveTemplate`; `id` 0 saves a new one.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct TemplateItem {
+    pub id: i64,
+    pub name: String,
+    pub subject: String,
+    /// The formatted body, pictures inside as `data:` URIs.
+    pub html: String,
+    /// The same body as plain text.
+    pub text: String,
+    pub attachments: Vec<TemplateFileItem>,
+}
+
+/// A file that goes with a template.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct TemplateFileItem {
+    pub name: String,
+    pub mime: String,
+    pub data: Vec<u8>,
+}
+
 /// A message waiting to be sent, or recently sent, from `Outbox`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 pub struct OutboxItem {
@@ -107,6 +128,9 @@ pub mod send_state {
     /// Being handed to the SMTP server; too late to undo.
     pub const SENDING: &str = "sending";
     pub const SENT: &str = "sent";
+    /// Scheduled mail the SMTP server holds until `send_at`; it cannot be
+    /// taken back.
+    pub const HELD: &str = "held";
     /// The server refused it for good.
     pub const FAILED: &str = "failed";
     /// Undone with `UndoSend`.
@@ -178,12 +202,15 @@ pub mod app_action {
     /// Open one message and start a reply to all; the parameter is its ID
     /// (`x`).
     pub const REPLY_ALL: &str = "reply-all";
+    /// Put a query in the search box and search; the parameter is the
+    /// query (`s`).
+    pub const SEARCH: &str = "search";
     /// Close the app.
     pub const QUIT: &str = "quit";
 
     /// The command-line flag that starts Katna Mail doing `action`, if it
     /// has one. The flags of [`takes_message`] actions are followed by the
-    /// message ID.
+    /// message ID, those of [`takes_text`] actions by the text.
     pub fn flag(action: &str) -> Option<&'static str> {
         match action {
             OPEN_INBOX => Some("--inbox"),
@@ -191,6 +218,7 @@ pub mod app_action {
             PREFERENCES => Some("--settings"),
             OPEN_MESSAGE => Some("--message"),
             REPLY_ALL => Some("--reply-all"),
+            SEARCH => Some("--search"),
             _ => None,
         }
     }
@@ -198,6 +226,11 @@ pub mod app_action {
     /// Whether `action`'s parameter is a message ID.
     pub fn takes_message(action: &str) -> bool {
         matches!(action, OPEN_MESSAGE | REPLY_ALL)
+    }
+
+    /// Whether `action`'s parameter is text.
+    pub fn takes_text(action: &str) -> bool {
+        action == SEARCH
     }
 }
 
@@ -325,6 +358,23 @@ macro_rules! pim_proxy {
             /// filed in the Sent folder. Returns the outbox ID.
             fn queue_send(&self, account: i64, message: &[u8], delay: u32) -> zbus::Result<i64>;
 
+            /// Like `QueueSend`, for mail scheduled to go out at `at` (Unix
+            /// seconds): after `delay` seconds (undo send) it goes to an
+            /// SMTP server that holds mail until then (`ServerHoldLimit`),
+            /// or else it is sent at `at` while the daemon runs.
+            fn schedule_send(
+                &self,
+                account: i64,
+                message: &[u8],
+                delay: u32,
+                at: i64,
+            ) -> zbus::Result<i64>;
+
+            /// How long, in seconds, the SMTP server of `account` holds
+            /// mail to send later (RFC 4865 `FUTURERELEASE`); 0 when it
+            /// cannot. Logs in to ask the first time.
+            fn server_hold_limit(&self, account: i64) -> zbus::Result<u64>;
+
             /// Takes a queued message back. Returns `false` when it is
             /// already being sent.
             fn undo_send(&self, id: i64) -> zbus::Result<bool>;
@@ -335,6 +385,18 @@ macro_rules! pim_proxy {
 
             /// Messages waiting to be sent, failed or cancelled.
             fn outbox(&self) -> zbus::Result<Vec<OutboxItem>>;
+
+            /// Saves a mail template on this computer, in place of the one
+            /// with its ID (0: a new one). Its name must not be empty, and
+            /// its attachments are at most 20 MB. Returns its ID. Apps read
+            /// templates from the store.
+            fn save_template(&self, template: &TemplateItem) -> zbus::Result<i64>;
+
+            /// Renames a template. Returns whether it exists.
+            fn rename_template(&self, id: i64, name: &str) -> zbus::Result<bool>;
+
+            /// Deletes a template. Returns whether it existed.
+            fn delete_template(&self, id: i64) -> zbus::Result<bool>;
 
             /// Saves `message` (RFC 5322, with `Bcc` if any) as a draft of
             /// `account` in its Drafts folder, here and on the server,

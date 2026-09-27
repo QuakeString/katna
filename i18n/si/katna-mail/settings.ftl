@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = වැරදි අක්ෂර වින�
 settings-compose-spell-desktop = ඩෙස්ක්ටොප් එකේ භාෂාව ({ $language })
 settings-compose-templates = අච්චු
 settings-compose-templates-detail = ඔබ නිතර ලියන තැපැල් සුරකින්න, සහ එයින් නව තැපැලක් හෝ පිළිතුරක් ආරම්භ කරන්න.
+settings-compose-no-templates = තවම අච්චු නැත. පණිවිඩයක අච්චු තෝරා, පසුව අච්චුවක් ලෙස සුරකින්න තෝරන්න.
+settings-compose-template-new = නව එකක් සාදන්න
+settings-compose-template-new-name = නව අච්චුව
+settings-compose-template-subject = විෂය
+settings-compose-template-text = අච්චු පෙළ
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} සහ {"{"}my name{"}"} ලබන්නාගේ සහ ඔබගේ නමින් පුරවනු ලැබේ.
+settings-compose-template-remove-file = ඇමුණුම ඉවත් කරන්න
+settings-compose-template-save = සුරකින්න
+settings-compose-template-saved = අච්චුව සුරැකිණි
+settings-compose-template-needs-name = අච්චුවට නමක් දෙන්න
+settings-compose-template-delete = අච්චුව මකන්න
+settings-compose-template-deleted = අච්චුව මකන ලදී
+settings-compose-template-delete-failed = අච්චුව මැකිය නොහැකි විය: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = නව තැපැල් ආරම්�
 settings-compose-for-replies-summary = පිළිතුරු සහ ඉදිරියට යැවීම් ආරම්භ වන අත්සන
 settings-compose-format-summary = නව තැපැල් සරල පෙළින් ලියන්න
 settings-compose-spelling-summary = ලියන අතරතුර අක්ෂර වින්‍යාසය පරීක්ෂා කිරීම, සහ ශබ්දකෝෂයේ භාෂාව
-settings-compose-templates-summary = ළඟදීම: ඔබ නිතර ලියන තැපැල් සුරකින්න, සහ එයින් නව තැපැලක් හෝ පිළිතුරක් ආරම්භ කරන්න
+settings-compose-templates-summary = ඔබ නිතර ලියන තැපැල් සුරකින්න, සහ එයින් නව තැපැලක් හෝ පිළිතුරක් ආරම්භ කරන්න
 settings-feedback-crash-reports-summary = Katna Mail හෝ එහි පසුබිම් සේවාව බිඳ වැටුණු විට බිඳවැටීම් වාර්තා මෙම පරිගණකයේ සුරකින්න
 settings-feedback-saved-summary = මෙම පරිගණකයේ සුරැකි බිඳවැටීම් වාර්තා බලන්න, පිටපත් කරන්න හෝ මකන්න
 settings-feedback-help-improve-summary = වැරදුණු දේ නිවැරදි කිරීමට උදවු වීමට බිඳවැටීම් වාර්තා යවන්න; ඔබ සක්‍රිය කරන තුරු අක්‍රියයි

@@ -38,6 +38,9 @@ compose-scheduled = Stuur geskeduleer vir { $when }
 compose-sent-archived = Gestuur en geargiveer
 compose-sent = Boodskap gestuur
 compose-discarded = Konsep weggegooi
+compose-draft-saved = Konsep gestoor
+compose-draft-failed = Die konsep kon nie gestoor word nie: { $error }
+compose-draft-not-opened = Die konsep kon nie oopgemaak word nie.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = Heg aan
 compose-file-too-large = { $name } is te groot: 'n boodskap kan tot { $limit } dra.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Verwyder aanhegsel
+compose-attachments-total = { $count ->
+    [one] { $count } lêer, { $size }
+   *[other] { $count } lêers, { $size }
+}
 compose-drop-files = Los lêers hier
 compose-drop-here = Los hier
 compose-paste-keep-formatting = Behou formatering

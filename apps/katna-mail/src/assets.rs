@@ -120,6 +120,7 @@ icons!(
     "table",
     "tag",
     "tasks",
+    "template",
     "text-color",
     "text-size",
     "tour",

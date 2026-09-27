@@ -196,6 +196,19 @@ settings-compose-spell-check-detail = يوضع خط تحت الكلمات الت
 settings-compose-spell-desktop = لغة سطح المكتب ({ $language })
 settings-compose-templates = النماذج
 settings-compose-templates-detail = احفظ الرسائل التي تكتبها كثيرًا، وابدأ منها رسالة جديدة أو ردًا.
+settings-compose-no-templates = لا توجد نماذج بعد. في رسالة، اختر «النماذج» ثم «حفظ كنموذج».
+settings-compose-template-new = إنشاء جديد
+settings-compose-template-new-name = نموذج جديد
+settings-compose-template-subject = الموضوع
+settings-compose-template-text = نص النموذج
+settings-compose-template-fields = تُملأ {"{"}first name{"}"} و{"{"}name{"}"} و{"{"}my name{"}"} باسم المستلم واسمك.
+settings-compose-template-remove-file = إزالة المرفق
+settings-compose-template-save = حفظ
+settings-compose-template-saved = تم حفظ النموذج
+settings-compose-template-needs-name = أعطِ النموذج اسمًا
+settings-compose-template-delete = حذف النموذج
+settings-compose-template-deleted = تم حذف النموذج
+settings-compose-template-delete-failed = تعذّر حذف النموذج: { $error }
 
 ## Settings > Shortcuts
 
@@ -250,7 +263,7 @@ settings-compose-for-new-mail-summary = التوقيع الذي يبدأ به ا
 settings-compose-for-replies-summary = التوقيع الذي تبدأ به الردود وإعادات التوجيه
 settings-compose-format-summary = كتابة البريد الجديد بنص عادي
 settings-compose-spelling-summary = التدقيق الإملائي أثناء الكتابة، ولغة القاموس
-settings-compose-templates-summary = قريبًا: احفظ الرسائل التي تكتبها كثيرًا، وابدأ منها رسالة جديدة أو ردًا
+settings-compose-templates-summary = احفظ الرسائل التي تكتبها كثيرًا، وابدأ منها رسالة جديدة أو ردًا
 settings-feedback-crash-reports-summary = حفظ تقارير الأعطال على هذا الكمبيوتر عند تعطّل Katna Mail أو خدمته في الخلفية
 settings-feedback-saved-summary = عرض تقارير الأعطال المحفوظة على هذا الكمبيوتر أو نسخها أو حذفها
 settings-feedback-help-improve-summary = إرسال تقارير الأعطال للمساعدة في إصلاح الخلل؛ متوقف ما لم تفعّله

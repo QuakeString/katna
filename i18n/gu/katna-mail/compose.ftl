@@ -38,6 +38,9 @@ compose-scheduled = { $when } માટે મોકલવાનું શેડ
 compose-sent-archived = મોકલ્યો અને આર્કાઇવ કર્યો
 compose-sent = મેસેજ મોકલ્યો
 compose-discarded = ડ્રાફ્ટ કાઢી નાખ્યો
+compose-draft-saved = ડ્રાફ્ટ સેવ કર્યો
+compose-draft-failed = ડ્રાફ્ટ સેવ કરી શકાયો નહીં: { $error }
+compose-draft-not-opened = ડ્રાફ્ટ ખોલી શકાયો નહીં.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = જોડો
 compose-file-too-large = { $name } ખૂબ મોટી છે: એક મેસેજમાં વધુમાં વધુ { $limit } સમાઈ શકે.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = જોડાણ દૂર કરો
+compose-attachments-total = { $count ->
+    [one] { $count } ફાઇલ, { $size }
+   *[other] { $count } ફાઇલ, { $size }
+}
 compose-drop-files = ફાઇલો અહીં મૂકો
 compose-drop-here = અહીં મૂકો
 compose-paste-keep-formatting = ફૉર્મેટિંગ રાખો

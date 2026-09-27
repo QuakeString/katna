@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] 「{ $folder }」の { $count } 件のスレッドをすべて選択
    *[message] 「{ $folder }」の { $count } 件のメールをすべて選択
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] このページの既読のスレッド { $count } 件がすべて選択されています。
+       *[message] このページの既読のメール { $count } 件がすべて選択されています。
+    }
+   *[unread] { $kind ->
+        [conversation] このページの未読のスレッド { $count } 件がすべて選択されています。
+       *[message] このページの未読のメール { $count } 件がすべて選択されています。
+    }
+    [starred] { $kind ->
+        [conversation] このページのスター付きのスレッド { $count } 件がすべて選択されています。
+       *[message] このページのスター付きのメール { $count } 件がすべて選択されています。
+    }
+    [unstarred] { $kind ->
+        [conversation] このページのスターなしのスレッド { $count } 件がすべて選択されています。
+       *[message] このページのスターなしのメール { $count } 件がすべて選択されています。
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] 既読のスレッド { $count } 件をすべて選択
+       *[message] 既読のメール { $count } 件をすべて選択
+    }
+   *[unread] { $kind ->
+        [conversation] 未読のスレッド { $count } 件をすべて選択
+       *[message] 未読のメール { $count } 件をすべて選択
+    }
+    [starred] { $kind ->
+        [conversation] スター付きのスレッド { $count } 件をすべて選択
+       *[message] スター付きのメール { $count } 件をすべて選択
+    }
+    [unstarred] { $kind ->
+        [conversation] スターなしのスレッド { $count } 件をすべて選択
+       *[message] スターなしのメール { $count } 件をすべて選択
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] 「{ $folder }」の既読のスレッド { $count } 件をすべて選択
+       *[message] 「{ $folder }」の既読のメール { $count } 件をすべて選択
+    }
+   *[unread] { $kind ->
+        [conversation] 「{ $folder }」の未読のスレッド { $count } 件をすべて選択
+       *[message] 「{ $folder }」の未読のメール { $count } 件をすべて選択
+    }
+    [starred] { $kind ->
+        [conversation] 「{ $folder }」のスター付きのスレッド { $count } 件をすべて選択
+       *[message] 「{ $folder }」のスター付きのメール { $count } 件をすべて選択
+    }
+    [unstarred] { $kind ->
+        [conversation] 「{ $folder }」のスターなしのスレッド { $count } 件をすべて選択
+       *[message] 「{ $folder }」のスターなしのメール { $count } 件をすべて選択
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] 既読のスレッド { $count } 件がすべて選択されています。
@@ -152,7 +206,10 @@ menu-reply-all = 全員に返信
 menu-forward = 転送
 menu-archive = アーカイブ
 menu-delete = 削除
+menu-delete-forever = 完全に削除
+menu-move-to-inbox = 受信トレイに移動
 menu-spam = 迷惑メールを報告
+menu-not-spam = 迷惑メールではない
 menu-mark-read = 既読にする
 menu-mark-unread = 未読にする
 menu-mark-all-read = すべて既読にする
@@ -209,6 +266,10 @@ toast-unpinned = { $kind ->
 toast-spam = { $kind ->
     [conversation] { $count } 件のスレッドを迷惑メールとして報告しました。
    *[message] { $count } 件のメールを迷惑メールとして報告しました。
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count } 件のスレッドを迷惑メールではないとして受信トレイに移動しました。
+   *[message] { $count } 件のメールを迷惑メールではないとして受信トレイに移動しました。
 }
 toast-deleted-forever = { $kind ->
     [conversation] { $count } 件のスレッドを完全に削除しました。

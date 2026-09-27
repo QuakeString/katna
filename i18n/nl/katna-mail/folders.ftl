@@ -9,15 +9,22 @@ nav-folders = Mappen
 nav-label-new = Nieuw label maken
 nav-folder-new = Nieuwe map maken
 nav-account-unnamed = Account { $number }
+nav-all-accounts = Alle accounts
+nav-expand = Mappen tonen
+nav-collapse = Mappen verbergen
 nav-tab-new = { $count ->
     [one] { $count } nieuw
    *[other] { $count } nieuw
 }
+storage-used = { $percent }% van { $total } gebruikt
+storage-used-detail = { $address }: { $used } van { $total } gebruikt
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = Inbox
 folder-starred = Met ster
+folder-unread = Ongelezen
+folder-important = Belangrijk
 folder-drafts = Concepten
 folder-sent = Verzonden
 folder-archive = Archief

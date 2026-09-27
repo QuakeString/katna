@@ -9,16 +9,23 @@ nav-folders = Cartelle
 nav-label-new = Crea nuova etichetta
 nav-folder-new = Crea nuova cartella
 nav-account-unnamed = Account { $number }
+nav-all-accounts = Tutti gli account
+nav-expand = Mostra cartelle
+nav-collapse = Nascondi cartelle
 nav-tab-new = { $count ->
     [one] { $count } nuovo
     [many] { $count } nuovi
    *[other] { $count } nuovi
 }
+storage-used = { $percent }% di { $total } in uso
+storage-used-detail = { $address }: { $used } di { $total } in uso
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = Posta in arrivo
 folder-starred = Speciali
+folder-unread = Da leggere
+folder-important = Importanti
 folder-drafts = Bozze
 folder-sent = Inviati
 folder-archive = Archivio

@@ -38,6 +38,9 @@ compose-scheduled = Envoi programmé pour { $when }
 compose-sent-archived = Envoyé et archivé
 compose-sent = Message envoyé
 compose-discarded = Brouillon supprimé
+compose-draft-saved = Brouillon enregistré
+compose-draft-failed = Impossible d’enregistrer le brouillon : { $error }
+compose-draft-not-opened = Impossible d’ouvrir le brouillon.
 
 ## Attachments
 
@@ -46,6 +49,11 @@ compose-picker-attach = Joindre
 compose-file-too-large = { $name } est trop volumineux : un message peut contenir jusqu’à { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Retirer la pièce jointe
+compose-attachments-total = { $count ->
+    [one] { $count } fichier, { $size }
+    [many] { $count } de fichiers, { $size }
+   *[other] { $count } fichiers, { $size }
+}
 compose-drop-files = Déposez les fichiers ici
 compose-drop-here = Déposez ici
 compose-paste-keep-formatting = Conserver la mise en forme

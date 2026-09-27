@@ -190,6 +190,19 @@ settings-compose-spell-check-detail = Palavras com erro são sublinhadas, com su
 settings-compose-spell-desktop = Idioma da área de trabalho ({ $language })
 settings-compose-templates = Modelos
 settings-compose-templates-detail = Salve e-mails que você escreve com frequência e comece um novo e-mail ou uma resposta a partir deles.
+settings-compose-no-templates = Nenhum modelo ainda. Em uma mensagem, escolha Modelos e depois Salvar como modelo.
+settings-compose-template-new = Criar novo
+settings-compose-template-new-name = Novo modelo
+settings-compose-template-subject = Assunto
+settings-compose-template-text = Texto do modelo
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} e {"{"}my name{"}"} são preenchidos com o nome do destinatário e o seu.
+settings-compose-template-remove-file = Remover anexo
+settings-compose-template-save = Salvar
+settings-compose-template-saved = Modelo salvo
+settings-compose-template-needs-name = Dê um nome ao modelo
+settings-compose-template-delete = Excluir modelo
+settings-compose-template-deleted = Modelo excluído
+settings-compose-template-delete-failed = Não foi possível excluir o modelo: { $error }
 
 ## Settings > Shortcuts
 
@@ -244,7 +257,7 @@ settings-compose-for-new-mail-summary = A assinatura com que os novos e-mails co
 settings-compose-for-replies-summary = A assinatura com que respostas e encaminhamentos começam
 settings-compose-format-summary = Escrever novos e-mails em texto simples
 settings-compose-spelling-summary = Verificar a ortografia ao escrever, e o idioma do dicionário
-settings-compose-templates-summary = Em breve: salve e-mails que você escreve com frequência e comece um novo e-mail ou uma resposta a partir deles
+settings-compose-templates-summary = Salve e-mails que você escreve com frequência e comece um novo e-mail ou uma resposta a partir deles
 settings-feedback-crash-reports-summary = Salvar relatórios de falhas neste computador quando o Katna Mail ou o serviço em segundo plano falhar
 settings-feedback-saved-summary = Ver, copiar ou excluir os relatórios de falhas salvos neste computador
 settings-feedback-help-improve-summary = Enviar relatórios de falhas para ajudar a corrigir o que deu errado; desativado a menos que você ative

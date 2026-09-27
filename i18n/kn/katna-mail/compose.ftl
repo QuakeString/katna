@@ -38,6 +38,9 @@ compose-scheduled = { $when } ಕ್ಕೆ ಕಳುಹಿಸಲು ನಿಗದ
 compose-sent-archived = ಕಳುಹಿಸಲಾಗಿದೆ ಮತ್ತು ಆರ್ಕೈವ್ ಮಾಡಲಾಗಿದೆ
 compose-sent = ಸಂದೇಶವನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ
 compose-discarded = ಡ್ರಾಫ್ಟ್ ಅನ್ನು ತ್ಯಜಿಸಲಾಗಿದೆ
+compose-draft-saved = ಡ್ರಾಫ್ಟ್ ಉಳಿಸಲಾಗಿದೆ
+compose-draft-failed = ಡ್ರಾಫ್ಟ್ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: { $error }
+compose-draft-not-opened = ಡ್ರಾಫ್ಟ್ ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = ಲಗತ್ತಿಸಿ
 compose-file-too-large = { $name } ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ: ಒಂದು ಸಂದೇಶವು { $limit } ವರೆಗೆ ಮಾತ್ರ ಒಯ್ಯಬಹುದು.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ಲಗತ್ತನ್ನು ತೆಗೆದುಹಾಕಿ
+compose-attachments-total = { $count ->
+    [one] { $count } ಫೈಲ್, { $size }
+   *[other] { $count } ಫೈಲ್‌ಗಳು, { $size }
+}
 compose-drop-files = ಫೈಲ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಬಿಡಿ
 compose-drop-here = ಇಲ್ಲಿ ಬಿಡಿ
 compose-paste-keep-formatting = ಫಾರ್ಮ್ಯಾಟಿಂಗ್ ಉಳಿಸಿಕೊಳ್ಳಿ

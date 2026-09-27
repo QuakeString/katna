@@ -38,6 +38,9 @@ compose-scheduled = Đã lên lịch gửi vào { $when }
 compose-sent-archived = Đã gửi và lưu trữ
 compose-sent = Đã gửi thư
 compose-discarded = Đã hủy thư nháp
+compose-draft-saved = Đã lưu thư nháp
+compose-draft-failed = Không lưu được thư nháp: { $error }
+compose-draft-not-opened = Không mở được thư nháp.
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = Đính kèm
 compose-file-too-large = { $name } quá lớn: một thư chỉ mang được tối đa { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Xóa tệp đính kèm
+compose-attachments-total = { $count } tệp, { $size }
 compose-drop-files = Thả tệp vào đây
 compose-drop-here = Thả vào đây
 compose-paste-keep-formatting = Giữ định dạng

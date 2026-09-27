@@ -38,6 +38,9 @@ compose-scheduled = An tsara aikawa a { $when }
 compose-sent-archived = An aika kuma an adana a ma'ajiya
 compose-sent = An aika saƙo
 compose-discarded = An yi watsi da zayyana
+compose-draft-saved = An adana zayyana
+compose-draft-failed = Ba a iya adana zayyanar ba: { $error }
+compose-draft-not-opened = Ba a iya buɗe zayyanar ba.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = Haɗa
 compose-file-too-large = { $name } ya yi girma sosai: saƙo zai iya ɗaukar har zuwa { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Cire abin haɗawa
+compose-attachments-total = { $count ->
+    [one] fayil { $count }, { $size }
+   *[other] fayiloli { $count }, { $size }
+}
 compose-drop-files = Saki fayiloli a nan
 compose-drop-here = Saki a nan
 compose-paste-keep-formatting = Riƙe tsari

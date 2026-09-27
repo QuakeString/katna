@@ -38,6 +38,9 @@ compose-scheduled = השליחה תוזמנה ל־{ $when }
 compose-sent-archived = נשלחה והועברה לארכיון
 compose-sent = ההודעה נשלחה
 compose-discarded = הטיוטה נמחקה
+compose-draft-saved = הטיוטה נשמרה
+compose-draft-failed = לא ניתן לשמור את הטיוטה: { $error }
+compose-draft-not-opened = לא ניתן לפתוח את הטיוטה.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = צירוף
 compose-file-too-large = { $name } גדול מדי: הודעה יכולה להכיל עד { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = הסרת הקובץ המצורף
+compose-attachments-total = { $count ->
+    [one] קובץ אחד, { $size }
+   *[other] { $count } קבצים, { $size }
+}
 compose-drop-files = אפשר לשחרר קבצים כאן
 compose-drop-here = אפשר לשחרר כאן
 compose-paste-keep-formatting = שמירת העיצוב

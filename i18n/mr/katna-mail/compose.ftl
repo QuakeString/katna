@@ -38,6 +38,9 @@ compose-scheduled = { $when } ला पाठवणे शेड्यूल �
 compose-sent-archived = पाठवले आणि संग्रहित केले
 compose-sent = मेसेज पाठवला
 compose-discarded = मसुदा टाकून दिला
+compose-draft-saved = मसुदा सेव्ह केला
+compose-draft-failed = मसुदा सेव्ह करता आला नाही: { $error }
+compose-draft-not-opened = मसुदा उघडता आला नाही.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = अटॅच करा
 compose-file-too-large = { $name } खूप मोठी आहे: एका मेसेजमध्ये जास्तीत जास्त { $limit } पाठवता येते.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = अटॅचमेंट काढा
+compose-attachments-total = { $count ->
+    [one] { $count } फाइल, { $size }
+   *[other] { $count } फाइल्स, { $size }
+}
 compose-drop-files = फाइल्स येथे सोडा
 compose-drop-here = येथे सोडा
 compose-paste-keep-formatting = फॉरमॅटिंग ठेवा

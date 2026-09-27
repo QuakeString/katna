@@ -1,0 +1,19 @@
+# Katna Mail, Ukrainian (Українська).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+contact-panel-show = Показати відомості про контакт
+contact-panel-hide = Сховати відомості про контакт
+contact-messages = { $count ->
+    [one] { $count } лист
+    [few] { $count } листи
+    [many] { $count } листів
+   *[other] { $count } листа
+}
+contact-from-to = { $from } від співрозмовника, { $to } від вас
+contact-first = Перший
+contact-latest = Останній
+contact-local-time = { $time } за часом співрозмовника ({ $offset })
+contact-conversations = Нещодавні ланцюжки
+contact-files = Файли
+contact-people = У цьому ланцюжку
+contact-local-only = Лише з вашої пошти на цьому комп’ютері

@@ -38,6 +38,9 @@ compose-scheduled = { $when } ལུ་གཏང་ནི་གི་དུས�
 compose-sent-archived = བཏང་སྟེ་ཡིག་མཛོད་ནང་བཙུགས་ཡི
 compose-sent = འཕྲིན་དོན་བཏང་ཡི
 compose-discarded = ཟིན་བྲིས་བཏོན་གཏང་ཡི
+compose-draft-saved = ཟིན་བྲིས་སྲུང་བཞག་འབད་ཡི
+compose-draft-failed = ཟིན་བྲིས་སྲུང་བཞག་འབད་མ་ཚུགས: { $error }
+compose-draft-not-opened = ཟིན་བྲིས་ཁ་ཕྱེ་མ་ཚུགས།
 
 ## Attachments
 
@@ -46,6 +49,9 @@ compose-picker-attach = མཉམ་སྦྲགས།
 compose-file-too-large = { $name } འདི་ སྦོམ་དྲགས་པས། འཕྲིན་དོན་ཅིག་ནང་ { $limit } ཚུན་འབག་ཚུགས།
 compose-attachment-size = ({ $size })
 compose-remove-attachment = མཉམ་སྦྲགས་རྩ་བསྐྲད་གཏང་།
+compose-attachments-total = { $count ->
+   *[other] ཡིག་སྣོད་ { $count }། { $size }
+}
 compose-drop-files = ཡིག་སྣོད་ཚུ་ ནཱ་ལུ་བཀོག
 compose-drop-here = ནཱ་ལུ་བཀོག
 compose-paste-keep-formatting = རྩ་སྒྲིག་བཞག

@@ -190,6 +190,19 @@ settings-compose-spell-check-detail = Le parole errate vengono sottolineate, con
 settings-compose-spell-desktop = Lingua del desktop ({ $language })
 settings-compose-templates = Modelli
 settings-compose-templates-detail = Salva i messaggi che scrivi spesso e usali per iniziare un nuovo messaggio o una risposta.
+settings-compose-no-templates = Ancora nessun modello. In un messaggio, scegli Modelli, poi Salva come modello.
+settings-compose-template-new = Crea nuovo
+settings-compose-template-new-name = Nuovo modello
+settings-compose-template-subject = Oggetto
+settings-compose-template-text = Testo del modello
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} e {"{"}my name{"}"} vengono sostituiti con il nome del destinatario e con il tuo.
+settings-compose-template-remove-file = Rimuovi allegato
+settings-compose-template-save = Salva
+settings-compose-template-saved = Modello salvato
+settings-compose-template-needs-name = Dai un nome al modello
+settings-compose-template-delete = Elimina modello
+settings-compose-template-deleted = Modello eliminato
+settings-compose-template-delete-failed = Impossibile eliminare il modello: { $error }
 
 ## Settings > Shortcuts
 
@@ -244,7 +257,7 @@ settings-compose-for-new-mail-summary = La firma con cui inizia la nuova posta
 settings-compose-for-replies-summary = La firma con cui iniziano risposte e inoltri
 settings-compose-format-summary = Scrivi la nuova posta in testo semplice
 settings-compose-spelling-summary = Controlla l’ortografia durante la scrittura, e la lingua del dizionario
-settings-compose-templates-summary = Prossimamente: salva i messaggi che scrivi spesso e usali per iniziare un nuovo messaggio o una risposta
+settings-compose-templates-summary = Salva i messaggi che scrivi spesso e usali per iniziare un nuovo messaggio o una risposta
 settings-feedback-crash-reports-summary = Salva i rapporti sugli arresti anomali su questo computer quando Katna Mail o il suo servizio in background si arresta in modo anomalo
 settings-feedback-saved-summary = Visualizza, copia o elimina i rapporti sugli arresti anomali salvati su questo computer
 settings-feedback-help-improve-summary = Invia i rapporti sugli arresti anomali per aiutare a risolvere il problema; disattivato finché non lo attivi

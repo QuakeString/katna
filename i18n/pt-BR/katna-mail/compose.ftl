@@ -38,6 +38,9 @@ compose-scheduled = Envio programado para { $when }
 compose-sent-archived = Enviada e arquivada
 compose-sent = Mensagem enviada
 compose-discarded = Rascunho descartado
+compose-draft-saved = Rascunho salvo
+compose-draft-failed = Não foi possível salvar o rascunho: { $error }
+compose-draft-not-opened = Não foi possível abrir o rascunho.
 
 ## Attachments
 
@@ -46,6 +49,11 @@ compose-picker-attach = Anexar
 compose-file-too-large = { $name } é grande demais: uma mensagem pode levar até { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Remover anexo
+compose-attachments-total = { $count ->
+    [one] { $count } arquivo, { $size }
+    [many] { $count } de arquivos, { $size }
+   *[other] { $count } arquivos, { $size }
+}
 compose-drop-files = Solte os arquivos aqui
 compose-drop-here = Solte aqui
 compose-paste-keep-formatting = Manter formatação

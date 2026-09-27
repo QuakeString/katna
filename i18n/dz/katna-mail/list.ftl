@@ -68,6 +68,108 @@ list-select-all-in = { $kind ->
     [conversation] { $folder } ནང་གི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ།
    *[message] { $folder } ནང་གི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ།
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+           *[other] གསལ་གཞི་གུ་ ལྷག་ཡོད་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+       *[message] { $count ->
+           *[other] གསལ་གཞི་གུ་ ལྷག་ཡོད་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+           *[other] གསལ་གཞི་གུ་ མ་ལྷག་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+       *[message] { $count ->
+           *[other] གསལ་གཞི་གུ་ མ་ལྷག་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+           *[other] གསལ་གཞི་གུ་ སྐར་མ་བཀལ་ཡོད་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+       *[message] { $count ->
+           *[other] གསལ་གཞི་གུ་ སྐར་མ་བཀལ་ཡོད་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+           *[other] གསལ་གཞི་གུ་ སྐར་མ་མ་བཀལ་བའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+       *[message] { $count ->
+           *[other] གསལ་གཞི་གུ་ སྐར་མ་མ་བཀལ་བའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ་ཡོད།
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+           *[other] ལྷག་ཡོད་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ།
+        }
+       *[message] { $count ->
+           *[other] ལྷག་ཡོད་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ།
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+           *[other] མ་ལྷག་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ།
+        }
+       *[message] { $count ->
+           *[other] མ་ལྷག་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ།
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+           *[other] སྐར་མ་བཀལ་ཡོད་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ།
+        }
+       *[message] { $count ->
+           *[other] སྐར་མ་བཀལ་ཡོད་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ།
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+           *[other] སྐར་མ་མ་བཀལ་བའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ།
+        }
+       *[message] { $count ->
+           *[other] སྐར་མ་མ་བཀལ་བའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ།
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+           *[other] { $folder } ནང་གི་ལྷག་ཡོད་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ།
+        }
+       *[message] { $count ->
+           *[other] { $folder } ནང་གི་ལྷག་ཡོད་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ།
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+           *[other] { $folder } ནང་གི་མ་ལྷག་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ།
+        }
+       *[message] { $count ->
+           *[other] { $folder } ནང་གི་མ་ལྷག་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ།
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+           *[other] { $folder } ནང་གི་སྐར་མ་བཀལ་ཡོད་པའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ།
+        }
+       *[message] { $count ->
+           *[other] { $folder } ནང་གི་སྐར་མ་བཀལ་ཡོད་པའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ།
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+           *[other] { $folder } ནང་གི་སྐར་མ་མ་བཀལ་བའི་གླེང་མོལ་ { $count } ཆ་མཉམ་གདམ།
+        }
+       *[message] { $count ->
+           *[other] { $folder } ནང་གི་སྐར་མ་མ་བཀལ་བའི་འཕྲིན་དོན་ { $count } ཆ་མཉམ་གདམ།
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->
@@ -184,7 +286,10 @@ menu-reply-all = ཆ་མཉམ་ལུ་ལན་སློག
 menu-forward = མདུན་སྐྱེལ་འབད།
 menu-archive = ཡིག་མཛོད་ནང་བཙུགས།
 menu-delete = བཏོན་གཏང་།
+menu-delete-forever = ཨ་རྟག་གི་དོན་ལུ་བཏོན་གཏང་།
+menu-move-to-inbox = ནང་འབྱོར་སྒྲོམ་ལུ་སྤོ།
 menu-spam = སྤེམ་སྦེ་སྙན་ཞུ་འབད།
+menu-not-spam = སྤེམ་མེན།
 menu-mark-read = ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ།
 menu-mark-unread = མ་ལྷག་པ་སྦེ་རྟགས་བཀལ།
 menu-mark-all-read = ཆ་མཉམ་ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ།
@@ -241,6 +346,10 @@ toast-unpinned = { $kind ->
 toast-spam = { $kind ->
     [conversation] གླེང་མོལ་ { $count } སྤེམ་སྦེ་སྙན་ཞུ་འབད་ཡི།
    *[message] འཕྲིན་དོན་ { $count } སྤེམ་སྦེ་སྙན་ཞུ་འབད་ཡི།
+}
+toast-not-spam = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } སྤེམ་མེན་པའི་རྟགས་བཀལ་ཏེ་ ནང་འབྱོར་སྒྲོམ་ལུ་སྤོ་ཡི།
+   *[message] འཕྲིན་དོན་ { $count } སྤེམ་མེན་པའི་རྟགས་བཀལ་ཏེ་ ནང་འབྱོར་སྒྲོམ་ལུ་སྤོ་ཡི།
 }
 toast-deleted-forever = { $kind ->
     [conversation] གླེང་མོལ་ { $count } ཨ་རྟག་གི་དོན་ལུ་བཏོན་གཏང་ཡི།

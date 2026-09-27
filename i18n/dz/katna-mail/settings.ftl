@@ -182,6 +182,19 @@ settings-compose-spell-check-detail = ཡིག་སྦྱོར་འཛོལ
 settings-compose-spell-desktop = ཌེཀསི་ཊོཔ་གི་སྐད་ཡིག ({ $language })
 settings-compose-templates = ཡིག་ཚུགས་ཚུ
 settings-compose-templates-detail = ཁྱོད་ཀྱིས་ཡང་ཡང་བྲི་མི་གློག་འཕྲིན་ཚུ་སྲུང་སྟེ་ དེ་ལས་གློག་འཕྲིན་གསརཔ་ ཡང་ན་ལན་ཅིག་འགོ་བཙུགས།
+settings-compose-no-templates = ད་ཚུན་ ཡིག་ཚུགས་མེད། འཕྲིན་དོན་ཅིག་ནང་ ཡིག་ཚུགས་ཚུ་ གདམ་ཞིནམ་ལས་ ཡིག་ཚུགས་སྦེ་སྲུང་ གདམ།
+settings-compose-template-new = གསརཔ་བཟོ།
+settings-compose-template-new-name = ཡིག་ཚུགས་གསརཔ
+settings-compose-template-subject = དོན་ཚན
+settings-compose-template-text = ཡིག་ཚུགས་ཀྱི་ཚིག་ཡིག
+settings-compose-template-fields = {"{"}first name{"}"} དང་ {"{"}name{"}"} {"{"}my name{"}"} ཚུ་ ལེན་མི་དང་ ཁྱོད་རའི་མིང་གིས་ བཀང་འོང་།
+settings-compose-template-remove-file = མཉམ་སྦྲགས་རྩ་བསྐྲད་གཏང་།
+settings-compose-template-save = སྲུང་།
+settings-compose-template-saved = ཡིག་ཚུགས་སྲུང་ཡི
+settings-compose-template-needs-name = ཡིག་ཚུགས་ལུ་མིང་ཅིག་བྱིན།
+settings-compose-template-delete = ཡིག་ཚུགས་བཏོན་གཏང་།
+settings-compose-template-deleted = ཡིག་ཚུགས་བཏོན་གཏང་ཡི
+settings-compose-template-delete-failed = ཡིག་ཚུགས་བཏོན་གཏང་མ་ཚུགས: { $error }
 
 ## Settings > Shortcuts
 
@@ -236,7 +249,7 @@ settings-compose-for-new-mail-summary = གློག་འཕྲིན་གས�
 settings-compose-for-replies-summary = ལན་དང་མདུན་སྐྱེལ་ཚུ་འགོ་བཙུགས་མི་མིང་རྟགས
 settings-compose-format-summary = གློག་འཕྲིན་གསརཔ་ ཚིག་ཡིག་རྐྱང་པ་ནང་བྲིས།
 settings-compose-spelling-summary = བྲི་བའི་སྐབས་ ཡིག་སྦྱོར་ཞིབ་དཔྱད་དང་ ཚིག་མཛོད་ཀྱི་སྐད་ཡིག
-settings-compose-templates-summary = ཉེ་འདབས་ལུ་འོང་: ཁྱོད་ཀྱིས་ཡང་ཡང་བྲི་མི་གློག་འཕྲིན་ཚུ་སྲུང་སྟེ་ དེ་ལས་གློག་འཕྲིན་གསརཔ་ ཡང་ན་ལན་ཅིག་འགོ་བཙུགས།
+settings-compose-templates-summary = ཁྱོད་ཀྱིས་ཡང་ཡང་བྲི་མི་གློག་འཕྲིན་ཚུ་སྲུང་སྟེ་ དེ་ལས་གློག་འཕྲིན་གསརཔ་ ཡང་ན་ལན་ཅིག་འགོ་བཙུགས།
 settings-feedback-crash-reports-summary = Katna Mail ཡང་ན་ དེ་གི་རྒྱབ་ཐག་ཞབས་ཏོག་ཆག་པའི་སྐབས་ ཆག་སྐྱོན་སྙན་ཞུ་ཚུ་ གློག་རིག་འདི་གུ་སྲུང་།
 settings-feedback-saved-summary = གློག་རིག་འདི་གུ་སྲུང་ཡོད་པའི་ ཆག་སྐྱོན་སྙན་ཞུ་ཚུ་ བལྟ་ འདྲ་བཤུས་རྐྱབ་ ཡང་ན་བཏོན་གཏང་།
 settings-feedback-help-improve-summary = འཛོལ་བ་བཅོ་ནིའི་རོགས་རམ་གྱི་དོན་ལུ་ ཆག་སྐྱོན་སྙན་ཞུ་ཚུ་གཏང་། ཁྱོད་ཀྱིས་ཤུགས་ལྡན་མ་བཏང་ཚུན་ ཤུགས་མེད

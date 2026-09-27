@@ -38,6 +38,9 @@ compose-scheduled = Kutuma kumeratibiwa { $when }
 compose-sent-archived = Umetumwa na kuwekwa kwenye kumbukumbu
 compose-sent = Ujumbe umetumwa
 compose-discarded = Rasimu imetupwa
+compose-draft-saved = Rasimu imehifadhiwa
+compose-draft-failed = Imeshindwa kuhifadhi rasimu: { $error }
+compose-draft-not-opened = Imeshindwa kufungua rasimu.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = Ambatisha
 compose-file-too-large = { $name } ni kubwa mno: ujumbe unaweza kubeba hadi { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Ondoa kiambatisho
+compose-attachments-total = { $count ->
+    [one] Faili { $count }, { $size }
+   *[other] Faili { $count }, { $size }
+}
 compose-drop-files = Dondosha faili hapa
 compose-drop-here = Dondosha hapa
 compose-paste-keep-formatting = Dumisha uumbizaji

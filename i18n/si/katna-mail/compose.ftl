@@ -38,6 +38,9 @@ compose-scheduled = { $when } ට යැවීමට කාලසටහන් �
 compose-sent-archived = යවා සංරක්ෂණය කළා
 compose-sent = පණිවිඩය යැව්වා
 compose-discarded = කෙටුම්පත ඉවත දැමුවා
+compose-draft-saved = කෙටුම්පත සුරැකිණි
+compose-draft-failed = කෙටුම්පත සුරැකිය නොහැකි විය: { $error }
+compose-draft-not-opened = කෙටුම්පත විවෘත කළ නොහැකි විය.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = අමුණන්න
 compose-file-too-large = { $name } ඉතා විශාලයි: පණිවිඩයකට { $limit } දක්වා පමණක් රැගෙන යා හැක.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ඇමුණුම ඉවත් කරන්න
+compose-attachments-total = { $count ->
+    [one] ගොනු { $count }, { $size }
+   *[other] ගොනු { $count }, { $size }
+}
 compose-drop-files = ගොනු මෙහි දමන්න
 compose-drop-here = මෙහි දමන්න
 compose-paste-keep-formatting = හැඩතල ගැන්වීම තබා ගන්න

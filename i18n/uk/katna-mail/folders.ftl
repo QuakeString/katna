@@ -9,17 +9,24 @@ nav-folders = Папки
 nav-label-new = Створити мітку
 nav-folder-new = Створити папку
 nav-account-unnamed = Обліковий запис { $number }
+nav-all-accounts = Усі облікові записи
+nav-expand = Показати папки
+nav-collapse = Сховати папки
 nav-tab-new = { $count ->
     [one] { $count } новий
     [few] { $count } нові
     [many] { $count } нових
    *[other] { $count } нового
 }
+storage-used = Використано { $percent }% із { $total }
+storage-used-detail = { $address }: використано { $used } із { $total }
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = Вхідні
 folder-starred = Із зірочкою
+folder-unread = Непрочитані
+folder-important = Важливі
 folder-drafts = Чернетки
 folder-sent = Надіслані
 folder-archive = Архів

@@ -188,6 +188,19 @@ settings-compose-spell-check-detail = Amagama apelwe kabi adwetshelwa, neziphaka
 settings-compose-spell-desktop = Ulimi lwedeskithophu ({ $language })
 settings-compose-templates = Izifanekiso
 settings-compose-templates-detail = Londoloza imeyili oyibhala kaningi, bese uqala imeyili entsha noma impendulo ngayo.
+settings-compose-no-templates = Azikho izifanekiso okwamanje. Emlayezweni, khetha Izifanekiso, bese ukhetha Londoloza njengesifanekiso.
+settings-compose-template-new = Dala esisha
+settings-compose-template-new-name = Isifanekiso esisha
+settings-compose-template-subject = Isihloko
+settings-compose-template-text = Umbhalo wesifanekiso
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} kanye no-{"{"}my name{"}"} kugcwaliswa ngegama lomamukeli nelakho.
+settings-compose-template-remove-file = Susa okunamathiselwe
+settings-compose-template-save = Londoloza
+settings-compose-template-saved = Isifanekiso silondoloziwe
+settings-compose-template-needs-name = Nika isifanekiso igama
+settings-compose-template-delete = Susa isifanekiso
+settings-compose-template-deleted = Isifanekiso sisusiwe
+settings-compose-template-delete-failed = Akukwazekanga ukususa isifanekiso: { $error }
 
 ## Settings > Shortcuts
 
@@ -242,7 +255,7 @@ settings-compose-for-new-mail-summary = Isiginesha imeyili entsha eqala ngayo
 settings-compose-for-replies-summary = Isiginesha izimpendulo nokudluliselwayo okuqala ngayo
 settings-compose-format-summary = Bhala imeyili entsha ngombhalo osobala
 settings-compose-spelling-summary = Hlola ukupela ngenkathi ubhala, nolimi lwesichazamazwi
-settings-compose-templates-summary = Kuyeza maduze: londoloza imeyili oyibhala kaningi, bese uqala imeyili entsha noma impendulo ngayo
+settings-compose-templates-summary = Londoloza imeyili oyibhala kaningi, bese uqala imeyili entsha noma impendulo ngayo
 settings-feedback-crash-reports-summary = Londoloza imibiko yokuphahlazeka kule khompyutha uma i-Katna Mail noma isevisi yayo yangemuva iphahlazeka
 settings-feedback-saved-summary = Buka, kopisha noma susa imibiko yokuphahlazeka elondolozwe kule khompyutha
 settings-feedback-help-improve-summary = Thumela imibiko yokuphahlazeka ukuze usize ukulungisa inkinga; kuvaliwe ngaphandle uma ukuvula

@@ -145,6 +145,8 @@ send-check-send-anyway = Send anyway
 recipient-not-valid = Not a valid email address
 # The tooltip of the arrow on a recipient that shows its address.
 recipient-show-address = Show address
+# The tooltip of the x on a recipient, which takes it out.
+recipient-remove = Remove
 # Asked when Send finds a recipient that is not an email address.
 recipient-bad-title = Check the address
 recipient-bad-text = “{ $address }” is not a valid email address. Fix it or remove it before sending.

@@ -192,6 +192,19 @@ settings-compose-spell-check-detail = Слова з помилками підк�
 settings-compose-spell-desktop = Мова стільниці ({ $language })
 settings-compose-templates = Шаблони
 settings-compose-templates-detail = Зберігайте листи, які часто пишете, і починайте з них новий лист або відповідь.
+settings-compose-no-templates = Шаблонів ще немає. У листі виберіть Шаблони, а потім Зберегти як шаблон.
+settings-compose-template-new = Створити
+settings-compose-template-new-name = Новий шаблон
+settings-compose-template-subject = Тема
+settings-compose-template-text = Текст шаблону
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} і {"{"}my name{"}"} заповнюються іменем одержувача та вашим іменем.
+settings-compose-template-remove-file = Вилучити вкладення
+settings-compose-template-save = Зберегти
+settings-compose-template-saved = Шаблон збережено
+settings-compose-template-needs-name = Дайте шаблону назву
+settings-compose-template-delete = Видалити шаблон
+settings-compose-template-deleted = Шаблон видалено
+settings-compose-template-delete-failed = Не вдалося видалити шаблон: { $error }
 
 ## Settings > Shortcuts
 
@@ -246,7 +259,7 @@ settings-compose-for-new-mail-summary = Підпис, з якого почина
 settings-compose-for-replies-summary = Підпис, з якого починаються відповіді й пересилання
 settings-compose-format-summary = Писати нові листи звичайним текстом
 settings-compose-spelling-summary = Перевірка правопису під час введення та мова словника
-settings-compose-templates-summary = Незабаром: зберігайте листи, які часто пишете, і починайте з них новий лист або відповідь
+settings-compose-templates-summary = Зберігайте листи, які часто пишете, і починайте з них новий лист або відповідь
 settings-feedback-crash-reports-summary = Зберігати звіти про збої на цьому комп’ютері, коли Katna Mail або її фонова служба аварійно завершується
 settings-feedback-saved-summary = Переглянути, скопіювати або видалити звіти про збої, збережені на цьому комп’ютері
 settings-feedback-help-improve-summary = Надсилати звіти про збої, щоб допомогти виправити помилки; вимкнено, доки ви не ввімкнете

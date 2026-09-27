@@ -9,15 +9,22 @@ nav-folders = አቃፊዎች
 nav-label-new = አዲስ መሰየሚያ ፍጠር
 nav-folder-new = አዲስ አቃፊ ፍጠር
 nav-account-unnamed = መለያ { $number }
+nav-all-accounts = ሁሉም መለያዎች
+nav-expand = አቃፊዎችን አሳይ
+nav-collapse = አቃፊዎችን ደብቅ
 nav-tab-new = { $count ->
     [one] { $count } አዲስ
    *[other] { $count } አዲስ
 }
+storage-used = ከ{ $total } ውስጥ { $percent }% ጥቅም ላይ ውሏል
+storage-used-detail = { $address }፦ ከ{ $total } ውስጥ { $used } ጥቅም ላይ ውሏል
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = ገቢ መልዕክት ሳጥን
 folder-starred = ኮከብ የተደረገባቸው
+folder-unread = ያልተነበቡ
+folder-important = አስፈላጊ
 folder-drafts = ረቂቆች
 folder-sent = የተላኩ
 folder-archive = ማህደር

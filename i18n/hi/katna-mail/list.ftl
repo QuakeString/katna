@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] { $folder } में सभी { $count } मैसेज चुनें
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रीन पर { $count } पढ़ी गई बातचीत चुनी गई है।
+           *[other] स्क्रीन पर सभी { $count } पढ़ी गई बातचीत चुनी गई हैं।
+        }
+       *[message] { $count ->
+            [one] स्क्रीन पर { $count } पढ़ा गया मैसेज चुना गया है।
+           *[other] स्क्रीन पर सभी { $count } पढ़े गए मैसेज चुने गए हैं।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रीन पर { $count } बिना पढ़ी बातचीत चुनी गई है।
+           *[other] स्क्रीन पर सभी { $count } बिना पढ़ी बातचीत चुनी गई हैं।
+        }
+       *[message] { $count ->
+            [one] स्क्रीन पर { $count } बिना पढ़ा मैसेज चुना गया है।
+           *[other] स्क्रीन पर सभी { $count } बिना पढ़े मैसेज चुने गए हैं।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रीन पर { $count } तारांकित बातचीत चुनी गई है।
+           *[other] स्क्रीन पर सभी { $count } तारांकित बातचीत चुनी गई हैं।
+        }
+       *[message] { $count ->
+            [one] स्क्रीन पर { $count } तारांकित मैसेज चुना गया है।
+           *[other] स्क्रीन पर सभी { $count } तारांकित मैसेज चुने गए हैं।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रीन पर { $count } तारांकित न की गई बातचीत चुनी गई है।
+           *[other] स्क्रीन पर सभी { $count } तारांकित न की गई बातचीत चुनी गई हैं।
+        }
+       *[message] { $count ->
+            [one] स्क्रीन पर { $count } तारांकित न किया गया मैसेज चुना गया है।
+           *[other] स्क्रीन पर सभी { $count } तारांकित न किए गए मैसेज चुने गए हैं।
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } पढ़ी गई बातचीत चुनें
+           *[other] सभी { $count } पढ़ी गई बातचीत चुनें
+        }
+       *[message] { $count ->
+            [one] { $count } पढ़ा गया मैसेज चुनें
+           *[other] सभी { $count } पढ़े गए मैसेज चुनें
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } बिना पढ़ी बातचीत चुनें
+           *[other] सभी { $count } बिना पढ़ी बातचीत चुनें
+        }
+       *[message] { $count ->
+            [one] { $count } बिना पढ़ा मैसेज चुनें
+           *[other] सभी { $count } बिना पढ़े मैसेज चुनें
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } तारांकित बातचीत चुनें
+           *[other] सभी { $count } तारांकित बातचीत चुनें
+        }
+       *[message] { $count ->
+            [one] { $count } तारांकित मैसेज चुनें
+           *[other] सभी { $count } तारांकित मैसेज चुनें
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } तारांकित न की गई बातचीत चुनें
+           *[other] सभी { $count } तारांकित न की गई बातचीत चुनें
+        }
+       *[message] { $count ->
+            [one] { $count } तारांकित न किया गया मैसेज चुनें
+           *[other] सभी { $count } तारांकित न किए गए मैसेज चुनें
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } में { $count } पढ़ी गई बातचीत चुनें
+           *[other] { $folder } में सभी { $count } पढ़ी गई बातचीत चुनें
+        }
+       *[message] { $count ->
+            [one] { $folder } में { $count } पढ़ा गया मैसेज चुनें
+           *[other] { $folder } में सभी { $count } पढ़े गए मैसेज चुनें
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } में { $count } बिना पढ़ी बातचीत चुनें
+           *[other] { $folder } में सभी { $count } बिना पढ़ी बातचीत चुनें
+        }
+       *[message] { $count ->
+            [one] { $folder } में { $count } बिना पढ़ा मैसेज चुनें
+           *[other] { $folder } में सभी { $count } बिना पढ़े मैसेज चुनें
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } में { $count } तारांकित बातचीत चुनें
+           *[other] { $folder } में सभी { $count } तारांकित बातचीत चुनें
+        }
+       *[message] { $count ->
+            [one] { $folder } में { $count } तारांकित मैसेज चुनें
+           *[other] { $folder } में सभी { $count } तारांकित मैसेज चुनें
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } में { $count } तारांकित न की गई बातचीत चुनें
+           *[other] { $folder } में सभी { $count } तारांकित न की गई बातचीत चुनें
+        }
+       *[message] { $count ->
+            [one] { $folder } में { $count } तारांकित न किया गया मैसेज चुनें
+           *[other] { $folder } में सभी { $count } तारांकित न किए गए मैसेज चुनें
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->
@@ -230,7 +356,10 @@ menu-reply-all = सभी को जवाब दें
 menu-forward = फ़ॉरवर्ड करें
 menu-archive = संग्रह करें
 menu-delete = मिटाएं
+menu-delete-forever = हमेशा के लिए मिटाएं
+menu-move-to-inbox = इनबॉक्स में ले जाएं
 menu-spam = स्पैम की शिकायत करें
+menu-not-spam = स्पैम नहीं है
 menu-mark-read = पढ़ा गया के रूप में मार्क करें
 menu-mark-unread = नहीं पढ़ा गया के रूप में मार्क करें
 menu-mark-all-read = सभी को पढ़ा गया के रूप में मार्क करें
@@ -346,6 +475,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] मैसेज की स्पैम के रूप में शिकायत की गई।
        *[other] { $count } मैसेज की स्पैम के रूप में शिकायत की गई।
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] बातचीत को स्पैम नहीं के रूप में मार्क करके इनबॉक्स में ले जाया गया।
+       *[other] { $count } बातचीत को स्पैम नहीं के रूप में मार्क करके इनबॉक्स में ले जाया गया।
+    }
+   *[message] { $count ->
+        [one] मैसेज को स्पैम नहीं के रूप में मार्क करके इनबॉक्स में ले जाया गया।
+       *[other] { $count } मैसेज को स्पैम नहीं के रूप में मार्क करके इनबॉक्स में ले जाया गया।
     }
 }
 toast-deleted-forever = { $kind ->

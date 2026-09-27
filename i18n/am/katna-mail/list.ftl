@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] በ{ $folder } ውስጥ ያሉትን ሁሉንም { $count } መልዕክቶች ምረጥ
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] በማያ ገጹ ላይ ያለው { $count } የተነበበ ውይይት ተመርጧል።
+           *[other] በማያ ገጹ ላይ ያሉት ሁሉም { $count } የተነበቡ ውይይቶች ተመርጠዋል።
+        }
+       *[message] { $count ->
+            [one] በማያ ገጹ ላይ ያለው { $count } የተነበበ መልዕክት ተመርጧል።
+           *[other] በማያ ገጹ ላይ ያሉት ሁሉም { $count } የተነበቡ መልዕክቶች ተመርጠዋል።
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] በማያ ገጹ ላይ ያለው { $count } ያልተነበበ ውይይት ተመርጧል።
+           *[other] በማያ ገጹ ላይ ያሉት ሁሉም { $count } ያልተነበቡ ውይይቶች ተመርጠዋል።
+        }
+       *[message] { $count ->
+            [one] በማያ ገጹ ላይ ያለው { $count } ያልተነበበ መልዕክት ተመርጧል።
+           *[other] በማያ ገጹ ላይ ያሉት ሁሉም { $count } ያልተነበቡ መልዕክቶች ተመርጠዋል።
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] በማያ ገጹ ላይ ያለው { $count } ኮከብ የተደረገበት ውይይት ተመርጧል።
+           *[other] በማያ ገጹ ላይ ያሉት ሁሉም { $count } ኮከብ የተደረገባቸው ውይይቶች ተመርጠዋል።
+        }
+       *[message] { $count ->
+            [one] በማያ ገጹ ላይ ያለው { $count } ኮከብ የተደረገበት መልዕክት ተመርጧል።
+           *[other] በማያ ገጹ ላይ ያሉት ሁሉም { $count } ኮከብ የተደረገባቸው መልዕክቶች ተመርጠዋል።
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] በማያ ገጹ ላይ ያለው { $count } ኮከብ ያልተደረገበት ውይይት ተመርጧል።
+           *[other] በማያ ገጹ ላይ ያሉት ሁሉም { $count } ኮከብ ያልተደረገባቸው ውይይቶች ተመርጠዋል።
+        }
+       *[message] { $count ->
+            [one] በማያ ገጹ ላይ ያለው { $count } ኮከብ ያልተደረገበት መልዕክት ተመርጧል።
+           *[other] በማያ ገጹ ላይ ያሉት ሁሉም { $count } ኮከብ ያልተደረገባቸው መልዕክቶች ተመርጠዋል።
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } የተነበበ ውይይት ምረጥ
+           *[other] ሁሉንም { $count } የተነበቡ ውይይቶች ምረጥ
+        }
+       *[message] { $count ->
+            [one] { $count } የተነበበ መልዕክት ምረጥ
+           *[other] ሁሉንም { $count } የተነበቡ መልዕክቶች ምረጥ
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ያልተነበበ ውይይት ምረጥ
+           *[other] ሁሉንም { $count } ያልተነበቡ ውይይቶች ምረጥ
+        }
+       *[message] { $count ->
+            [one] { $count } ያልተነበበ መልዕክት ምረጥ
+           *[other] ሁሉንም { $count } ያልተነበቡ መልዕክቶች ምረጥ
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ኮከብ የተደረገበት ውይይት ምረጥ
+           *[other] ሁሉንም { $count } ኮከብ የተደረገባቸው ውይይቶች ምረጥ
+        }
+       *[message] { $count ->
+            [one] { $count } ኮከብ የተደረገበት መልዕክት ምረጥ
+           *[other] ሁሉንም { $count } ኮከብ የተደረገባቸው መልዕክቶች ምረጥ
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ኮከብ ያልተደረገበት ውይይት ምረጥ
+           *[other] ሁሉንም { $count } ኮከብ ያልተደረገባቸው ውይይቶች ምረጥ
+        }
+       *[message] { $count ->
+            [one] { $count } ኮከብ ያልተደረገበት መልዕክት ምረጥ
+           *[other] ሁሉንም { $count } ኮከብ ያልተደረገባቸው መልዕክቶች ምረጥ
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] በ{ $folder } ውስጥ ያለውን { $count } የተነበበ ውይይት ምረጥ
+           *[other] በ{ $folder } ውስጥ ያሉትን ሁሉንም { $count } የተነበቡ ውይይቶች ምረጥ
+        }
+       *[message] { $count ->
+            [one] በ{ $folder } ውስጥ ያለውን { $count } የተነበበ መልዕክት ምረጥ
+           *[other] በ{ $folder } ውስጥ ያሉትን ሁሉንም { $count } የተነበቡ መልዕክቶች ምረጥ
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] በ{ $folder } ውስጥ ያለውን { $count } ያልተነበበ ውይይት ምረጥ
+           *[other] በ{ $folder } ውስጥ ያሉትን ሁሉንም { $count } ያልተነበቡ ውይይቶች ምረጥ
+        }
+       *[message] { $count ->
+            [one] በ{ $folder } ውስጥ ያለውን { $count } ያልተነበበ መልዕክት ምረጥ
+           *[other] በ{ $folder } ውስጥ ያሉትን ሁሉንም { $count } ያልተነበቡ መልዕክቶች ምረጥ
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] በ{ $folder } ውስጥ ያለውን { $count } ኮከብ የተደረገበት ውይይት ምረጥ
+           *[other] በ{ $folder } ውስጥ ያሉትን ሁሉንም { $count } ኮከብ የተደረገባቸው ውይይቶች ምረጥ
+        }
+       *[message] { $count ->
+            [one] በ{ $folder } ውስጥ ያለውን { $count } ኮከብ የተደረገበት መልዕክት ምረጥ
+           *[other] በ{ $folder } ውስጥ ያሉትን ሁሉንም { $count } ኮከብ የተደረገባቸው መልዕክቶች ምረጥ
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] በ{ $folder } ውስጥ ያለውን { $count } ኮከብ ያልተደረገበት ውይይት ምረጥ
+           *[other] በ{ $folder } ውስጥ ያሉትን ሁሉንም { $count } ኮከብ ያልተደረገባቸው ውይይቶች ምረጥ
+        }
+       *[message] { $count ->
+            [one] በ{ $folder } ውስጥ ያለውን { $count } ኮከብ ያልተደረገበት መልዕክት ምረጥ
+           *[other] በ{ $folder } ውስጥ ያሉትን ሁሉንም { $count } ኮከብ ያልተደረገባቸው መልዕክቶች ምረጥ
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->
@@ -230,7 +356,10 @@ menu-reply-all = ለሁሉም መልስ
 menu-forward = አስተላልፍ
 menu-archive = ወደ ማህደር አስቀምጥ
 menu-delete = ሰርዝ
+menu-delete-forever = እስከመጨረሻው ሰርዝ
+menu-move-to-inbox = ወደ ገቢ መልዕክት ሳጥን ውሰድ
 menu-spam = አይፈለጌ መልዕክት ሪፖርት አድርግ
+menu-not-spam = አይፈለጌ መልዕክት አይደለም
 menu-mark-read = እንደተነበበ ምልክት አድርግ
 menu-mark-unread = እንዳልተነበበ ምልክት አድርግ
 menu-mark-all-read = ሁሉንም እንደተነበቡ ምልክት አድርግ
@@ -346,6 +475,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] መልዕክቱ አይፈለጌ መልዕክት ተብሎ ሪፖርት ተደርጓል።
        *[other] { $count } መልዕክቶች አይፈለጌ መልዕክት ተብለው ሪፖርት ተደርገዋል።
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] ውይይቱ አይፈለጌ መልዕክት አይደለም ተብሎ ወደ ገቢ መልዕክት ሳጥን ተወስዷል።
+       *[other] { $count } ውይይቶች አይፈለጌ መልዕክት አይደሉም ተብለው ወደ ገቢ መልዕክት ሳጥን ተወስደዋል።
+    }
+   *[message] { $count ->
+        [one] መልዕክቱ አይፈለጌ መልዕክት አይደለም ተብሎ ወደ ገቢ መልዕክት ሳጥን ተወስዷል።
+       *[other] { $count } መልዕክቶች አይፈለጌ መልዕክት አይደሉም ተብለው ወደ ገቢ መልዕክት ሳጥን ተወስደዋል።
     }
 }
 toast-deleted-forever = { $kind ->

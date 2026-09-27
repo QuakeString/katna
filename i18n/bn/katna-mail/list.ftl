@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] { $folder }-এর সবকটি { $count }টি মেসেজ বেছে নিন
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] স্ক্রিনের { $count }টি পঠিত কথোপকথন বেছে নেওয়া হয়েছে।
+           *[other] স্ক্রিনের সবকটি { $count }টি পঠিত কথোপকথন বেছে নেওয়া হয়েছে।
+        }
+       *[message] { $count ->
+            [one] স্ক্রিনের { $count }টি পঠিত মেসেজ বেছে নেওয়া হয়েছে।
+           *[other] স্ক্রিনের সবকটি { $count }টি পঠিত মেসেজ বেছে নেওয়া হয়েছে।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] স্ক্রিনের { $count }টি অপঠিত কথোপকথন বেছে নেওয়া হয়েছে।
+           *[other] স্ক্রিনের সবকটি { $count }টি অপঠিত কথোপকথন বেছে নেওয়া হয়েছে।
+        }
+       *[message] { $count ->
+            [one] স্ক্রিনের { $count }টি অপঠিত মেসেজ বেছে নেওয়া হয়েছে।
+           *[other] স্ক্রিনের সবকটি { $count }টি অপঠিত মেসেজ বেছে নেওয়া হয়েছে।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] স্ক্রিনের { $count }টি তারকাচিহ্নিত কথোপকথন বেছে নেওয়া হয়েছে।
+           *[other] স্ক্রিনের সবকটি { $count }টি তারকাচিহ্নিত কথোপকথন বেছে নেওয়া হয়েছে।
+        }
+       *[message] { $count ->
+            [one] স্ক্রিনের { $count }টি তারকাচিহ্নিত মেসেজ বেছে নেওয়া হয়েছে।
+           *[other] স্ক্রিনের সবকটি { $count }টি তারকাচিহ্নিত মেসেজ বেছে নেওয়া হয়েছে।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] স্ক্রিনের { $count }টি তারকাচিহ্নহীন কথোপকথন বেছে নেওয়া হয়েছে।
+           *[other] স্ক্রিনের সবকটি { $count }টি তারকাচিহ্নহীন কথোপকথন বেছে নেওয়া হয়েছে।
+        }
+       *[message] { $count ->
+            [one] স্ক্রিনের { $count }টি তারকাচিহ্নহীন মেসেজ বেছে নেওয়া হয়েছে।
+           *[other] স্ক্রিনের সবকটি { $count }টি তারকাচিহ্নহীন মেসেজ বেছে নেওয়া হয়েছে।
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টি পঠিত কথোপকথন বেছে নিন
+           *[other] সবকটি { $count }টি পঠিত কথোপকথন বেছে নিন
+        }
+       *[message] { $count ->
+            [one] { $count }টি পঠিত মেসেজ বেছে নিন
+           *[other] সবকটি { $count }টি পঠিত মেসেজ বেছে নিন
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টি অপঠিত কথোপকথন বেছে নিন
+           *[other] সবকটি { $count }টি অপঠিত কথোপকথন বেছে নিন
+        }
+       *[message] { $count ->
+            [one] { $count }টি অপঠিত মেসেজ বেছে নিন
+           *[other] সবকটি { $count }টি অপঠিত মেসেজ বেছে নিন
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টি তারকাচিহ্নিত কথোপকথন বেছে নিন
+           *[other] সবকটি { $count }টি তারকাচিহ্নিত কথোপকথন বেছে নিন
+        }
+       *[message] { $count ->
+            [one] { $count }টি তারকাচিহ্নিত মেসেজ বেছে নিন
+           *[other] সবকটি { $count }টি তারকাচিহ্নিত মেসেজ বেছে নিন
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count }টি তারকাচিহ্নহীন কথোপকথন বেছে নিন
+           *[other] সবকটি { $count }টি তারকাচিহ্নহীন কথোপকথন বেছে নিন
+        }
+       *[message] { $count ->
+            [one] { $count }টি তারকাচিহ্নহীন মেসেজ বেছে নিন
+           *[other] সবকটি { $count }টি তারকাচিহ্নহীন মেসেজ বেছে নিন
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-এর { $count }টি পঠিত কথোপকথন বেছে নিন
+           *[other] { $folder }-এর সবকটি { $count }টি পঠিত কথোপকথন বেছে নিন
+        }
+       *[message] { $count ->
+            [one] { $folder }-এর { $count }টি পঠিত মেসেজ বেছে নিন
+           *[other] { $folder }-এর সবকটি { $count }টি পঠিত মেসেজ বেছে নিন
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-এর { $count }টি অপঠিত কথোপকথন বেছে নিন
+           *[other] { $folder }-এর সবকটি { $count }টি অপঠিত কথোপকথন বেছে নিন
+        }
+       *[message] { $count ->
+            [one] { $folder }-এর { $count }টি অপঠিত মেসেজ বেছে নিন
+           *[other] { $folder }-এর সবকটি { $count }টি অপঠিত মেসেজ বেছে নিন
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-এর { $count }টি তারকাচিহ্নিত কথোপকথন বেছে নিন
+           *[other] { $folder }-এর সবকটি { $count }টি তারকাচিহ্নিত কথোপকথন বেছে নিন
+        }
+       *[message] { $count ->
+            [one] { $folder }-এর { $count }টি তারকাচিহ্নিত মেসেজ বেছে নিন
+           *[other] { $folder }-এর সবকটি { $count }টি তারকাচিহ্নিত মেসেজ বেছে নিন
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-এর { $count }টি তারকাচিহ্নহীন কথোপকথন বেছে নিন
+           *[other] { $folder }-এর সবকটি { $count }টি তারকাচিহ্নহীন কথোপকথন বেছে নিন
+        }
+       *[message] { $count ->
+            [one] { $folder }-এর { $count }টি তারকাচিহ্নহীন মেসেজ বেছে নিন
+           *[other] { $folder }-এর সবকটি { $count }টি তারকাচিহ্নহীন মেসেজ বেছে নিন
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->
@@ -230,7 +356,10 @@ menu-reply-all = সবাইকে উত্তর দিন
 menu-forward = ফরোয়ার্ড করুন
 menu-archive = আর্কাইভ করুন
 menu-delete = মুছুন
+menu-delete-forever = চিরতরে মুছুন
+menu-move-to-inbox = ইনবক্সে সরান
 menu-spam = স্প্যাম হিসেবে রিপোর্ট করুন
+menu-not-spam = স্প্যাম নয়
 menu-mark-read = পঠিত হিসেবে চিহ্নিত করুন
 menu-mark-unread = অপঠিত হিসেবে চিহ্নিত করুন
 menu-mark-all-read = সবগুলি পঠিত হিসেবে চিহ্নিত করুন
@@ -346,6 +475,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] মেসেজ স্প্যাম হিসেবে রিপোর্ট করা হয়েছে।
        *[other] { $count }টি মেসেজ স্প্যাম হিসেবে রিপোর্ট করা হয়েছে।
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] কথোপকথন স্প্যাম নয় হিসেবে চিহ্নিত করে ইনবক্সে সরানো হয়েছে।
+       *[other] { $count }টি কথোপকথন স্প্যাম নয় হিসেবে চিহ্নিত করে ইনবক্সে সরানো হয়েছে।
+    }
+   *[message] { $count ->
+        [one] মেসেজ স্প্যাম নয় হিসেবে চিহ্নিত করে ইনবক্সে সরানো হয়েছে।
+       *[other] { $count }টি মেসেজ স্প্যাম নয় হিসেবে চিহ্নিত করে ইনবক্সে সরানো হয়েছে।
     }
 }
 toast-deleted-forever = { $kind ->

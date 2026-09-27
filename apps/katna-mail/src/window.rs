@@ -54,10 +54,12 @@ mod settings;
 mod settings_page;
 mod settings_search;
 mod share_ask;
+mod storage;
 mod tab_strip;
 mod tour;
 mod translate;
 mod unified;
+mod view_state;
 mod viewer;
 mod whats_new;
 
@@ -398,6 +400,11 @@ pub struct MailWindow {
     config_path: PathBuf,
     mail: Result<Mail, OpenError>,
     accounts: Vec<Account>,
+    /// How full each account's mail storage is, when its server says.
+    quotas: HashMap<AccountId, katna_store::StorageQuota>,
+    /// The account the storage line last showed, kept while the list
+    /// shows no one account's folder.
+    storage_account: std::cell::Cell<Option<AccountId>>,
     tree: Tree,
     /// Unread mail per folder, counted in the background.
     unread: HashMap<FolderId, u64>,
@@ -584,10 +591,13 @@ pub struct MailWindow {
 }
 
 impl MailWindow {
+    /// The main window, showing what `shown` showed when the window last
+    /// closed, if anything.
     pub fn new(
         env: Environment,
         paths: Paths,
         font: Option<SharedString>,
+        shown: Option<katna_core::window::ViewState>,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Self {
@@ -596,6 +606,9 @@ impl MailWindow {
         let mut this = Self::build(env, paths, font, window, cx);
         keymap::bind(&this.config.shortcuts, cx);
         this.load_tree();
+        if let Some(shown) = &shown {
+            this.restore_view(shown, cx);
+        }
         this.open_default_folder(cx);
         this.count_unread(cx);
         this.listen(cx);
@@ -646,6 +659,8 @@ impl MailWindow {
             translations: translate::Translations::default(),
             text: select::TextSelection::new(cx),
             accounts: Vec::new(),
+            quotas: HashMap::new(),
+            storage_account: std::cell::Cell::new(None),
             paths,
             config,
             config_path,
@@ -869,6 +884,7 @@ impl MailWindow {
             return;
         };
         self.accounts = mail.accounts();
+        self.quotas = mail.quotas();
         self.config.mail.order_accounts(&mut self.accounts);
         self.tree = Tree::build(&self.accounts, &mail.folders(), &self.unread);
         self.expanded = self.tree.initially_expanded();

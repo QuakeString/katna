@@ -68,6 +68,60 @@ list-select-all-in = { $kind ->
     [conversation] Yan gbogbo ìjíròrò { $count } nínú { $folder }
    *[message] Yan gbogbo ìfiránṣẹ́ { $count } nínú { $folder }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] A ti yan gbogbo ìjíròrò { $count } tí a ti kà lójú ìbòjú.
+       *[message] A ti yan gbogbo ìfiránṣẹ́ { $count } tí a ti kà lójú ìbòjú.
+    }
+   *[unread] { $kind ->
+        [conversation] A ti yan gbogbo ìjíròrò { $count } tí a kò tíì kà lójú ìbòjú.
+       *[message] A ti yan gbogbo ìfiránṣẹ́ { $count } tí a kò tíì kà lójú ìbòjú.
+    }
+    [starred] { $kind ->
+        [conversation] A ti yan gbogbo ìjíròrò { $count } oní ìràwọ̀ lójú ìbòjú.
+       *[message] A ti yan gbogbo ìfiránṣẹ́ { $count } oní ìràwọ̀ lójú ìbòjú.
+    }
+    [unstarred] { $kind ->
+        [conversation] A ti yan gbogbo ìjíròrò { $count } aláìní ìràwọ̀ lójú ìbòjú.
+       *[message] A ti yan gbogbo ìfiránṣẹ́ { $count } aláìní ìràwọ̀ lójú ìbòjú.
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] Yan gbogbo ìjíròrò { $count } tí a ti kà
+       *[message] Yan gbogbo ìfiránṣẹ́ { $count } tí a ti kà
+    }
+   *[unread] { $kind ->
+        [conversation] Yan gbogbo ìjíròrò { $count } tí a kò tíì kà
+       *[message] Yan gbogbo ìfiránṣẹ́ { $count } tí a kò tíì kà
+    }
+    [starred] { $kind ->
+        [conversation] Yan gbogbo ìjíròrò { $count } oní ìràwọ̀
+       *[message] Yan gbogbo ìfiránṣẹ́ { $count } oní ìràwọ̀
+    }
+    [unstarred] { $kind ->
+        [conversation] Yan gbogbo ìjíròrò { $count } aláìní ìràwọ̀
+       *[message] Yan gbogbo ìfiránṣẹ́ { $count } aláìní ìràwọ̀
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] Yan gbogbo ìjíròrò { $count } tí a ti kà nínú { $folder }
+       *[message] Yan gbogbo ìfiránṣẹ́ { $count } tí a ti kà nínú { $folder }
+    }
+   *[unread] { $kind ->
+        [conversation] Yan gbogbo ìjíròrò { $count } tí a kò tíì kà nínú { $folder }
+       *[message] Yan gbogbo ìfiránṣẹ́ { $count } tí a kò tíì kà nínú { $folder }
+    }
+    [starred] { $kind ->
+        [conversation] Yan gbogbo ìjíròrò { $count } oní ìràwọ̀ nínú { $folder }
+       *[message] Yan gbogbo ìfiránṣẹ́ { $count } oní ìràwọ̀ nínú { $folder }
+    }
+    [unstarred] { $kind ->
+        [conversation] Yan gbogbo ìjíròrò { $count } aláìní ìràwọ̀ nínú { $folder }
+       *[message] Yan gbogbo ìfiránṣẹ́ { $count } aláìní ìràwọ̀ nínú { $folder }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] A ti yan gbogbo ìjíròrò { $count } tí a ti kà.
@@ -152,7 +206,10 @@ menu-reply-all = Fèsì sí gbogbo
 menu-forward = Fi ránṣẹ́ síwájú
 menu-archive = Fi pamọ́
 menu-delete = Pa rẹ́
+menu-delete-forever = Pa rẹ́ títí láé
+menu-move-to-inbox = Gbé lọ sí Àpótí-ìwọlé
 menu-spam = Jábọ̀ àwúrúju
+menu-not-spam = Kì í ṣe àwúrúju
 menu-mark-read = Sàmì sí bí kíkà
 menu-mark-unread = Sàmì sí bí àìkà
 menu-mark-all-read = Sàmì sí gbogbo rẹ̀ bí kíkà
@@ -209,6 +266,10 @@ toast-unpinned = { $kind ->
 toast-spam = { $kind ->
     [conversation] A ti jábọ̀ ìjíròrò { $count } bí àwúrúju.
    *[message] A ti jábọ̀ ìfiránṣẹ́ { $count } bí àwúrúju.
+}
+toast-not-spam = { $kind ->
+    [conversation] A ti sàmì sí ìjíròrò { $count } pé kì í ṣe àwúrúju, a sì ti gbé wọn lọ sí àpótí-ìwọlé.
+   *[message] A ti sàmì sí ìfiránṣẹ́ { $count } pé kì í ṣe àwúrúju, a sì ti gbé wọn lọ sí àpótí-ìwọlé.
 }
 toast-deleted-forever = { $kind ->
     [conversation] A ti pa ìjíròrò { $count } rẹ́ títí láé.

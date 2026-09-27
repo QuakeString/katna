@@ -38,6 +38,9 @@ compose-scheduled = 已安排在 { $when } 发送
 compose-sent-archived = 已发送并归档
 compose-sent = 邮件已发送
 compose-discarded = 已舍弃草稿
+compose-draft-saved = 草稿已保存
+compose-draft-failed = 无法保存草稿：{ $error }
+compose-draft-not-opened = 无法打开草稿。
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = 添加
 compose-file-too-large = { $name } 太大：一封邮件最多可携带 { $limit }。
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 移除附件
+compose-attachments-total = { $count } 个文件，共 { $size }
 compose-drop-files = 将文件拖放到此处
 compose-drop-here = 拖放到此处
 compose-paste-keep-formatting = 保留格式

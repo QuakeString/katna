@@ -98,6 +98,132 @@ list-select-all-in = { $kind ->
        *[other] { $folder } ਵਿਚਲੇ ਸਾਰੇ { $count } ਸੁਨੇਹੇ ਚੁਣੋ
     }
 }
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੀਆਂ { $count } ਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੇ { $count } ਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਅਣਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੀਆਂ { $count } ਅਣਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਅਣਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੇ { $count } ਅਣਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੀਆਂ { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੇ { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੀਆਂ { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੇ { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] ਸਾਰੀਆਂ { $count } ਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $count } ਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] ਸਾਰੇ { $count } ਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ਅਣਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] ਸਾਰੀਆਂ { $count } ਅਣਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $count } ਅਣਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] ਸਾਰੇ { $count } ਅਣਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] ਸਾਰੀਆਂ { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] ਸਾਰੇ { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] ਸਾਰੀਆਂ { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] ਸਾਰੇ { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ਵਿਚਲੀ { $count } ਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੀਆਂ ਸਾਰੀਆਂ { $count } ਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $folder } ਵਿਚਲਾ { $count } ਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੇ ਸਾਰੇ { $count } ਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ਵਿਚਲੀ { $count } ਅਣਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੀਆਂ ਸਾਰੀਆਂ { $count } ਅਣਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $folder } ਵਿਚਲਾ { $count } ਅਣਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੇ ਸਾਰੇ { $count } ਅਣਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ਵਿਚਲੀ { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੀਆਂ ਸਾਰੀਆਂ { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $folder } ਵਿਚਲਾ { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੇ ਸਾਰੇ { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ਵਿਚਲੀ { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੀਆਂ ਸਾਰੀਆਂ { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $folder } ਵਿਚਲਾ { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੇ ਸਾਰੇ { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
+    }
+}
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->
@@ -230,7 +356,10 @@ menu-reply-all = ਸਭ ਨੂੰ ਜਵਾਬ ਦਿਓ
 menu-forward = ਅੱਗੇ ਭੇਜੋ
 menu-archive = ਪੁਰਾਲੇਖਬੱਧ ਕਰੋ
 menu-delete = ਮਿਟਾਓ
+menu-delete-forever = ਹਮੇਸ਼ਾ ਲਈ ਮਿਟਾਓ
+menu-move-to-inbox = ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜੋ
 menu-spam = ਸਪੈਮ ਦੀ ਰਿਪੋਰਟ ਕਰੋ
+menu-not-spam = ਸਪੈਮ ਨਹੀਂ
 menu-mark-read = ਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
 menu-mark-unread = ਅਣਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
 menu-mark-all-read = ਸਭ ਨੂੰ ਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
@@ -346,6 +475,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] ਸੁਨੇਹੇ ਦੀ ਸਪੈਮ ਵਜੋਂ ਰਿਪੋਰਟ ਕੀਤੀ ਗਈ।
        *[other] { $count } ਸੁਨੇਹਿਆਂ ਦੀ ਸਪੈਮ ਵਜੋਂ ਰਿਪੋਰਟ ਕੀਤੀ ਗਈ।
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] ਗੱਲਬਾਤ ਨੂੰ ਸਪੈਮ ਨਹੀਂ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕਰਕੇ ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ।
+       *[other] { $count } ਗੱਲਬਾਤਾਂ ਨੂੰ ਸਪੈਮ ਨਹੀਂ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕਰਕੇ ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ।
+    }
+   *[message] { $count ->
+        [one] ਸੁਨੇਹੇ ਨੂੰ ਸਪੈਮ ਨਹੀਂ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕਰਕੇ ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ।
+       *[other] { $count } ਸੁਨੇਹਿਆਂ ਨੂੰ ਸਪੈਮ ਨਹੀਂ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕਰਕੇ ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ।
     }
 }
 toast-deleted-forever = { $kind ->

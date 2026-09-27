@@ -18,14 +18,17 @@ use katna_core::{
     Account, AccountId, AccountKind, AccountSettings, Config, Paths, Pop3Keep, Security, Server,
     config::Metered,
 };
-use katna_dbus::{AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, state};
+use katna_dbus::{
+    AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, TemplateItem, state,
+};
 use katna_i18n::tr;
 use katna_search::IndexerWaker;
 use katna_store::{
-    FolderId, Forgotten, MessageFlags, MessageId, Mode, SendState, Store, Translation,
+    FolderId, Forgotten, MessageFlags, MessageId, Mode, SendState, Store, Template, TemplateFile,
+    Translation,
 };
 use katna_sync::{
-    Credentials, Endpoint, MailBackend,
+    Credentials, Endpoint, MailBackend, MailSender,
     autoconfig::Discovery,
     bodies,
     connection::Connection,
@@ -43,6 +46,27 @@ use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secre
 
 /// The longest account name taken.
 const MAX_ACCOUNT_NAME: usize = 200;
+/// The longest template name, in characters.
+const MAX_TEMPLATE_NAME: usize = 200;
+/// The most a template's attachments may hold, in bytes (the session bus
+/// carries 32 MB at most).
+const MAX_TEMPLATE_FILES: usize = 20_000_000;
+
+/// A template name, trimmed; not empty and not too long.
+fn template_name(name: &str) -> Result<String, CommandError> {
+    let name = name.trim();
+    if name.is_empty() {
+        return Err(CommandError::InvalidArgs(
+            "a template needs a name".to_owned(),
+        ));
+    }
+    if name.chars().count() > MAX_TEMPLATE_NAME {
+        return Err(CommandError::InvalidArgs(format!(
+            "a template name is at most {MAX_TEMPLATE_NAME} characters"
+        )));
+    }
+    Ok(name.to_owned())
+}
 
 /// How long a stopping worker may take to log out.
 const STOP_TIMEOUT: Duration = Duration::from_secs(10);
@@ -159,6 +183,9 @@ pub struct Daemon {
     outbox: Mutex<Option<Sending>>,
     /// Why each outbox entry's last try failed.
     send_errors: Mutex<HashMap<i64, String>>,
+    /// How long each account's SMTP server holds mail (FUTURERELEASE),
+    /// once asked; `None` when it cannot.
+    hold_limits: Mutex<HashMap<AccountId, Option<u64>>>,
     notices: Sender<Notice>,
     /// Connections for messages the user opens.
     on_demand: OnDemand,
@@ -210,6 +237,7 @@ impl Daemon {
             status: Mutex::default(),
             outbox: Mutex::default(),
             send_errors: Mutex::default(),
+            hold_limits: Mutex::default(),
             notices,
             on_demand: OnDemand::default(),
             new_mail: OnceLock::new(),
@@ -641,6 +669,7 @@ impl Daemon {
             batch.clear_ops(id)?;
             batch.clear_outbox(id)?;
             batch.clear_pop3(id)?;
+            batch.set_quota(id, None, 0)?;
             batch.commit()?;
             store.remove_account(id)?
         };
@@ -1018,6 +1047,53 @@ impl Daemon {
         raw: &[u8],
         delay: u32,
     ) -> Result<i64, CommandError> {
+        self.check_smtp(account)?;
+        let id = outbox::queue(&mut self.store(), account, raw, delay, unix_now())?;
+        tracing::info!(id, %account, delay, "queued to send");
+        self.queued(id);
+        Ok(id)
+    }
+
+    /// Queues `raw` from `account` to go out at `at`, handed over after
+    /// `delay` seconds (see [`outbox::schedule`]).
+    pub fn schedule_send(
+        &self,
+        account: AccountId,
+        raw: &[u8],
+        delay: u32,
+        at: i64,
+    ) -> Result<i64, CommandError> {
+        self.check_smtp(account)?;
+        let id = outbox::schedule(&mut self.store(), account, raw, delay, at, unix_now())?;
+        tracing::info!(id, %account, delay, at, "scheduled to send");
+        self.queued(id);
+        Ok(id)
+    }
+
+    /// How long the SMTP server of `account` holds mail, in seconds; 0
+    /// when it cannot. Logs in to ask the first time.
+    pub async fn server_hold_limit(
+        self: &Arc<Self>,
+        account: AccountId,
+    ) -> Result<u64, CommandError> {
+        self.check_smtp(account)?;
+        if let Some(limit) = self.hold_limits.lock().unwrap().get(&account) {
+            return Ok(limit.unwrap_or(0));
+        }
+        let failed = |err: katna_sync::Error| CommandError::Failed(err.to_string());
+        let mut sender = SmtpAccounts(Arc::downgrade(self))
+            .connect(account)
+            .await
+            .map_err(failed)?;
+        let limit = sender.hold_limit().await.map_err(failed)?;
+        if let Err(error) = sender.quit().await {
+            tracing::debug!(%error, "SMTP QUIT after asking");
+        }
+        self.hold_limits.lock().unwrap().insert(account, limit);
+        Ok(limit.unwrap_or(0))
+    }
+
+    fn check_smtp(&self, account: AccountId) -> Result<(), CommandError> {
         let has_smtp = self
             .store()
             .account_settings(account)?
@@ -1028,13 +1104,61 @@ impl Daemon {
                 "account {account} has no SMTP server"
             )));
         }
-        let id = outbox::queue(&mut self.store(), account, raw, delay, unix_now())?;
-        tracing::info!(id, %account, delay, "queued to send");
+        Ok(())
+    }
+
+    /// Tells clients about queued mail and wakes the outbox.
+    fn queued(&self, id: i64) {
         let _ = self.notices.try_send(Notice::OutboxChanged(id));
         if let Some(sending) = self.outbox.lock().unwrap().as_ref() {
             sending.handle.wake();
         }
+    }
+
+    /// Saves a mail template (a new one for ID 0). Returns its ID.
+    pub fn save_template(&self, template: TemplateItem) -> Result<i64, CommandError> {
+        let name = template_name(&template.name)?;
+        let size: usize = template.attachments.iter().map(|f| f.data.len()).sum();
+        if size > MAX_TEMPLATE_FILES {
+            return Err(CommandError::InvalidArgs(format!(
+                "a template's attachments are at most {} MB",
+                MAX_TEMPLATE_FILES / 1_000_000
+            )));
+        }
+        let template = Template {
+            id: template.id,
+            name,
+            subject: template.subject,
+            html: template.html,
+            text: template.text,
+            attachments: template
+                .attachments
+                .into_iter()
+                .map(|f| TemplateFile {
+                    name: f.name,
+                    mime: f.mime,
+                    data: f.data,
+                })
+                .collect(),
+        };
+        let id = self.store().save_template(&template)?;
+        tracing::info!(id, "template saved");
         Ok(id)
+    }
+
+    /// Renames a template. Returns whether it exists.
+    pub fn rename_template(&self, id: i64, name: &str) -> Result<bool, CommandError> {
+        let name = template_name(name)?;
+        Ok(self.store().rename_template(id, &name)?)
+    }
+
+    /// Deletes a template. Returns whether it existed.
+    pub fn delete_template(&self, id: i64) -> Result<bool, CommandError> {
+        let deleted = self.store().delete_template(id)?;
+        if deleted {
+            tracing::info!(id, "template deleted");
+        }
+        Ok(deleted)
     }
 
     /// Takes a queued message back, if it is not being sent yet.
@@ -1088,14 +1212,28 @@ impl Daemon {
         let errors = self.send_errors.lock().unwrap();
         Ok(entries
             .into_iter()
-            .map(|entry| OutboxItem {
-                id: entry.id,
-                account: entry.account.0,
-                message: entry.message.0,
-                subject: entry.subject,
-                send_at: entry.send_at,
-                state: entry.state.as_str().to_owned(),
-                detail: errors.get(&entry.id).cloned().unwrap_or_default(),
+            .map(|entry| {
+                // Scheduled mail shows when it goes out, not when it is
+                // handed over.
+                let held = entry.state == SendState::Sent && entry.hold_until.is_some();
+                OutboxItem {
+                    id: entry.id,
+                    account: entry.account.0,
+                    message: entry.message.0,
+                    subject: entry.subject,
+                    send_at: match entry.state {
+                        SendState::Queued | SendState::Sent => {
+                            entry.hold_until.unwrap_or(entry.send_at)
+                        }
+                        _ => entry.send_at,
+                    },
+                    state: if held {
+                        katna_dbus::send_state::HELD.to_owned()
+                    } else {
+                        entry.state.as_str().to_owned()
+                    },
+                    detail: errors.get(&entry.id).cloned().unwrap_or_default(),
+                }
             })
             .collect())
     }
@@ -1315,6 +1453,11 @@ impl Daemon {
                 Event::AuthFailed(message) => {
                     status.state = state::AUTH_FAILED;
                     status.detail = message;
+                }
+                // The folder pane shows how full the account is.
+                Event::QuotaChanged => {
+                    let _ = self.notices.try_send(Notice::MailChanged(id));
+                    continue;
                 }
             }
             // A removed account's last events must not bring it back.
