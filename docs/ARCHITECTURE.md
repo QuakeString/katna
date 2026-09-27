@@ -733,6 +733,15 @@ To, Cc and Bcc suggest addresses as the user types, like Gmail.
 - **Speed.** Candidates come from an index by first letter, and the marks
   that bold the matched text are worked out for the shown rows only: under
   6 ms a key on 100,000 contacts in a release build.
+- **Chips.** A finished recipient becomes a chip (comma, semicolon, Enter,
+  Tab, leaving the field, picking a suggestion, or pasting several). A chip
+  shows the name, or the address when there is none; a named chip has an
+  arrow that opens a card with the address, and a double-click puts it back
+  into the field for editing, in place. Anything `outgoing::valid_email`
+  rejects stays as a red chip, and Send, Send and archive and scheduled send
+  stop with a "Check the address" dialog until it is fixed or removed. The
+  chips live in `Compose.chips` (`compose/chips.rs`); drafts and sending
+  still read the fields as one "a, b, c" text.
 
 ## 8. Organizations (`katna-org`)
 
