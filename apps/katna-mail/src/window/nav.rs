@@ -19,6 +19,7 @@ use super::{
     SEARCH_CONTEXT, ToggleNavigation, ToggleSettings, compose,
 };
 use katna_core::AccountKind;
+use katna_i18n::tr;
 
 use crate::format;
 use crate::sidebar::{self, Role};
@@ -61,9 +62,9 @@ impl MailWindow {
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .tooltip(tip(
                 if open > 0.5 {
-                    "Hide folders"
+                    tr!("folders-hide")
                 } else {
-                    "Show folders"
+                    tr!("folders-show")
                 },
                 th,
             ))
@@ -116,7 +117,7 @@ impl MailWindow {
             .hover(|s| s.shadow(elevation(th, 1.5)))
             .cursor_pointer()
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
-            .when(label < 0.5, |d| d.tooltip(tip("Compose", th)))
+            .when(label < 0.5, |d| d.tooltip(tip(tr!("compose"), th)))
             .on_click(cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)))
             .child(Ripple::new("compose-ripple", rgba(th.ripple)).rounded(COMPOSE_RADIUS))
             .child(self.tour_mark(Spot::Compose))
@@ -135,7 +136,7 @@ impl MailWindow {
                     .text_size(px(super::COMPOSE_TEXT_SIZE))
                     .font_weight(FontWeight::MEDIUM)
                     .whitespace_nowrap()
-                    .child(super::COMPOSE_LABEL),
+                    .child(tr!("compose")),
             )
             .into_any_element();
         let mut start = vec![menu];
@@ -202,7 +203,7 @@ impl MailWindow {
                         .opacity(1.0 - phone)
                         .child(
                             icon_button("search-button", "search", 22.0, th)
-                                .tooltip(tip("Search", th))
+                                .tooltip(tip(tr!("search"), th))
                                 .on_click(cx.listener(|this, _, window, cx| {
                                     let text = this.search.read(cx).text().trim().to_owned();
                                     if text.is_empty() || this.settings_page.is_some() {
@@ -218,7 +219,7 @@ impl MailWindow {
             .when(has_text, |d| {
                 d.child(
                     icon_button("search-clear", "close", 22.0, th)
-                        .tooltip(tip("Clear search", th))
+                        .tooltip(tip(tr!("search-clear"), th))
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.clear_search(cx);
                             this.focus_search(&FocusSearch, window, cx);
@@ -234,7 +235,7 @@ impl MailWindow {
                         if panel_open { th.accent } else { th.text_dim },
                         th,
                     )
-                    .tooltip(tip("Show search options", th))
+                    .tooltip(tip(tr!("search-options-show"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.toggle_search_panel(window, cx);
                     })),
@@ -255,7 +256,7 @@ impl MailWindow {
             },
             th,
         )
-        .tooltip(tip("Settings", th))
+        .tooltip(tip(tr!("settings"), th))
         .on_click(
             cx.listener(|this, _, window, cx| this.toggle_settings(&ToggleSettings, window, cx)),
         )
@@ -291,7 +292,7 @@ impl MailWindow {
                     .into_any_element()
             }
             None => icon_button_colored("top-account", "person-add", 22.0, th.text_dim, th)
-                .tooltip(tip("Add an account", th))
+                .tooltip(tip(tr!("account-add"), th))
                 .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx)))
                 .into_any_element(),
         };
@@ -299,6 +300,18 @@ impl MailWindow {
         let phone = self.layout.shape.phone;
         let mut end = Vec::new();
         if phone < 0.999 {
+            end.push(
+                div()
+                    .flex_none()
+                    .w(px(super::LANGUAGE_BUTTON_WIDTH * (1.0 - phone)))
+                    .mr(px(
+                        (super::TOP_BAR_GAP - super::BAR_ITEM_GAP) * (1.0 - phone)
+                    ))
+                    .overflow_hidden()
+                    .opacity(1.0 - phone)
+                    .child(self.render_language_button(th, cx))
+                    .into_any_element(),
+            );
             end.push(
                 div()
                     .flex_none()

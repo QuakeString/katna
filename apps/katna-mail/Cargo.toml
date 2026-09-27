@@ -20,6 +20,7 @@ katna-ui.workspace = true
 katna-render.workspace = true
 katna-crypto.workspace = true
 katna-preview.workspace = true
+katna-i18n = { workspace = true, features = ["format"] }
 ashpd.workspace = true
 gpui.workspace = true
 gpui-platform.workspace = true

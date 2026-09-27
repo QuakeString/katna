@@ -199,6 +199,9 @@ pub struct General {
     pub show_in_tray: bool,
     /// Show the Inbox unread count on Katna Mail's taskbar or dock icon.
     pub unread_badge: bool,
+    /// The language of the interface, a tag from `i18n/languages.toml`
+    /// (`bn`, `en-IN`); empty follows the desktop (§13.10).
+    pub language: String,
 }
 
 impl Default for General {
@@ -207,6 +210,7 @@ impl Default for General {
             run_in_background: true,
             show_in_tray: true,
             unread_badge: true,
+            language: String::new(),
         }
     }
 }
