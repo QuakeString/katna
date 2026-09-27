@@ -97,7 +97,12 @@ const MENU_BAR: &[(&str, &[Entry])] = &[
     ),
     (
         "_Help",
-        &[Item("_Keyboard Shortcuts", "katna_mail::ShowShortcuts")],
+        &[
+            Item("_Keyboard Shortcuts", "katna_mail::ShowShortcuts"),
+            Item("_What's New", "katna_mail::ShowWhatsNew"),
+            Separator,
+            Item("_About Katna", "katna_mail::ShowAbout"),
+        ],
     ),
 ];
 

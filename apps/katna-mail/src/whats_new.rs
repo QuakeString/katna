@@ -101,6 +101,62 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 8,
+        title: "A calmer reply",
+        text: "Reply in the reading pane keeps Send and the formatting at the \
+               bottom, folds the quoted mail behind \"...\", and Pop out opens \
+               the reply in its own window. On a phone, writing takes the whole \
+               window.",
+        animation: None,
+    },
+    Highlight {
+        id: 9,
+        title: "Mail in its own window",
+        text: "Shift+click a message, right-click it or use In new window on the \
+               reader toolbar to open it in a window of its own. Print all prints \
+               the whole conversation.",
+        animation: None,
+    },
+    Highlight {
+        id: 10,
+        title: "Settings on a phone",
+        text: "On a narrow screen Settings and Quick settings fill the window, \
+               and every menu and popover closes with Escape or a click outside.",
+        animation: None,
+    },
+    Highlight {
+        id: 11,
+        title: "Choose how much mail stays offline",
+        text: "Settings > General > Offline mail keeps a week, a month, three \
+               months, a year or all of your mail on this computer. Older mail \
+               downloads when you open it.",
+        animation: None,
+    },
+    Highlight {
+        id: 12,
+        title: "A new folder pane button",
+        text: "The button at the top left shows and hides the folder pane, and \
+               its left side is filled while the folders show.",
+        animation: None,
+    },
+    Highlight {
+        id: 13,
+        title: "Cleaner cards, calmer phone",
+        text: "The list and reader sit on cards with a faint outline and a short \
+               shadow, menus always stay inside the window, and on a phone the \
+               search and toolbar rows slide away as you scroll.",
+        animation: None,
+    },
+    Highlight {
+        id: 14,
+        title: "About Katna",
+        text: "Help > About Katna, also in Quick settings, shows the version, \
+               the changelog and every library Katna is built on, with its \
+               authors and license. The version in the Settings header opens \
+               it too.",
+        animation: None,
+    },
+    Highlight {
+        id: 15,
         title: "Attachments of older mail open at once",
         text: "Clicking an attachment of older mail that is not on this computer yet \
                downloads it: the attachment fills up while it does, then opens.",
@@ -126,14 +182,16 @@ pub fn recent() -> (Vec<&'static Highlight>, usize) {
     newest(HIGHLIGHTS.iter())
 }
 
+/// At most [`SHOWN`] highlights: major ones (with an animation) first,
+/// even when older, then the newest.
 fn newest<'a>(
     highlights: impl DoubleEndedIterator<Item = &'a Highlight>,
 ) -> (Vec<&'a Highlight>, usize) {
-    let all: Vec<_> = highlights.rev().collect();
+    let mut all: Vec<_> = highlights.rev().collect();
+    all.sort_by_key(|h| h.animation.is_none());
     let more = all.len().saturating_sub(SHOWN);
-    let mut shown: Vec<_> = all.into_iter().take(SHOWN).collect();
-    shown.sort_by_key(|h| h.animation.is_none());
-    (shown, more)
+    all.truncate(SHOWN);
+    (all, more)
 }
 
 /// The commit a package version was built from: `abc1234` in
@@ -228,6 +286,9 @@ mod tests {
             .map(|h| h.id)
             .collect();
         assert!(rest.windows(2).all(|w| w[0] > w[1]), "then newest first");
+        if HIGHLIGHTS.iter().any(|h| h.animation.is_some()) {
+            assert!(major[0], "an older major highlight still shows");
+        }
         assert!(unseen(Some(latest())).0.is_empty());
         let (one, _) = unseen(Some(latest() - 1));
         assert_eq!(one.len(), 1);
