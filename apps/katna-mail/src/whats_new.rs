@@ -237,6 +237,13 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                and Ctrl+A selects the whole conversation.",
         animation: None,
     },
+    Highlight {
+        id: 25,
+        title: "Addresses suggested as you type",
+        text: "To, Cc and Bcc suggest the people you write to most as you type, even \
+               with a typo. Pick one with the arrow keys and Enter, Tab or a click.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.
