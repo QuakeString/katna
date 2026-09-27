@@ -174,6 +174,13 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 17,
+        title: "Attachments of older mail open at once",
+        text: "Clicking an attachment of older mail that is not on this computer yet \
+               downloads it: the attachment fills up while it does, then opens.",
+        animation: None,
+    },
+    Highlight {
+        id: 18,
         title: "Reset cache",
         text: "Settings > General > Reset cache deletes the mail Katna downloaded, \
                sender pictures and the search index, then downloads recent mail \
