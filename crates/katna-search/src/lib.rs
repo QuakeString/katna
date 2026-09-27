@@ -9,10 +9,12 @@
 //! - [`Indexer`]: keeps the index up to date on a background thread
 //!   (`katna-daemon`); apps search with [`SearchIndex::open_read_only`].
 //! - [`Query`]: the query language, compiled to tantivy queries by [`compile`].
+//! - [`contacts`]: recipient suggestions from the addresses in the mail.
 //!
 //! The index is disposable: it can be deleted and rebuilt from the store.
 
 pub mod compile;
+pub mod contacts;
 pub mod document;
 mod error;
 mod highlight;

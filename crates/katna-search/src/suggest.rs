@@ -197,7 +197,7 @@ fn nearest(
 
 /// Levenshtein automaton builders (a swap of neighbours is one typo); slow
 /// to make, so made once.
-fn builder(typos: u8) -> &'static LevenshteinAutomatonBuilder {
+pub(crate) fn builder(typos: u8) -> &'static LevenshteinAutomatonBuilder {
     static ONE: OnceLock<LevenshteinAutomatonBuilder> = OnceLock::new();
     static TWO: OnceLock<LevenshteinAutomatonBuilder> = OnceLock::new();
     if typos <= 1 {
