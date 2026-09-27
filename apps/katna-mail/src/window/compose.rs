@@ -989,6 +989,8 @@ impl MailWindow {
         window.focus(&focus, cx);
         let dialog = tools::Dialog::new(accent, cx);
         subscriptions.extend(dialog.subscribe(window, cx));
+        // Whether Track can be used: the Katna account, read again.
+        self.katna_load(window, cx);
         self.compose = Some(Compose {
             to,
             show_cc: !draft.cc.is_empty(),
@@ -1264,6 +1266,8 @@ impl MailWindow {
         let attachments = compose.attachments.clone();
         let plain = compose.plain(cx);
         let follow_up = i64::from(compose.follow_up);
+        // Tracking needs a Katna account with a confirmed address.
+        let track = sealing.track && !sealing.any() && !plain && self.katna_signed_in();
         if let Some((field, address)) = self.bad_recipient(cx) {
             if let Some(c) = &mut self.compose {
                 c.popup = Some(Popup::BadAddress { field, address });
@@ -1417,7 +1421,7 @@ impl MailWindow {
                         Some(at) => {
                             daemon::schedule_send(&connection, account, &raw, undo, at).await?
                         }
-                        None if sealing.track && !sealing.any() && !plain => {
+                        None if track => {
                             daemon::queue_tracked_send(&connection, account, &raw, delay).await?
                         }
                         None => daemon::queue_send(&connection, account, &raw, delay).await?,

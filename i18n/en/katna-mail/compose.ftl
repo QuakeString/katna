@@ -118,6 +118,8 @@ compose-track = Track opens and clicks
 compose-tracked = Tracked: you see when each recipient opens it or follows a link
 # Shown instead when tracking can't be used for this message.
 compose-track-unavailable = Signed, encrypted and plain-text mail can't be tracked
+# Shown instead while not signed in; clicking opens Settings > Katna account.
+compose-track-sign-in = Sign in to a Katna account to track opens and clicks
 compose-receipt = Request a read receipt
 compose-receipt-on = Read receipt requested: the recipient's app may ask them to send one
 

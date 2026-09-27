@@ -14,6 +14,7 @@ use katna_ui::px;
 use crate::theme::{Theme, fade};
 use crate::widgets::{icon_button_colored, tip};
 use crate::window::MailWindow;
+use crate::window::settings_page::Section;
 
 /// `raw` asking for a read receipt to `address`.
 pub(in crate::window) fn with_receipt(raw: Vec<u8>, address: &str) -> Vec<u8> {
@@ -34,13 +35,15 @@ impl MailWindow {
         // Tracking rewrites the HTML of each copy, which signed, encrypted
         // and plain-text mail don't allow.
         let trackable = !sealing.any() && !plain;
+        // The server takes tracked mail only from a Katna account.
+        let signed_in = self.katna_signed_in();
         let toggle = |id: &'static str, name: &'static str, on: bool, label: String| {
             icon_button_colored(id, name, 18.0, if on { th.accent } else { th.text_dim }, th)
                 .size(px(28.0))
                 .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
                 .tooltip(tip(label, th))
         };
-        let track = sealing.track && trackable;
+        let track = sealing.track && trackable && signed_in;
         [
             toggle(
                 "compose-track",
@@ -48,6 +51,8 @@ impl MailWindow {
                 track,
                 if !trackable {
                     tr!("compose-track-unavailable")
+                } else if !signed_in {
+                    tr!("compose-track-sign-in")
                 } else if track {
                     tr!("compose-tracked")
                 } else {
@@ -55,7 +60,11 @@ impl MailWindow {
                 },
             )
             .when(!trackable, |d| d.opacity(0.5))
-            .on_click(cx.listener(move |this, _, _, cx| {
+            .on_click(cx.listener(move |this, _, window, cx| {
+                if trackable && !signed_in {
+                    this.open_settings_page(Section::KatnaAccount, window, cx);
+                    return;
+                }
                 if let Some(c) = &mut this.compose
                     && trackable
                 {
