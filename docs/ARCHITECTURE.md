@@ -459,6 +459,10 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
     (`Store::trash_folder`, which the app also reads: a delete for good
     says "deleted forever" and offers no Undo). Archive moves to
     `\Archive` (or Gmail's `\All`).
+  - A move out of a folder the message was only just moved into (Undo
+    right after Archive) queues with no UID; when the earlier move runs,
+    its `COPYUID` answer is handed to the waiting one, so the pair
+    replays in order even offline.
   - A refused operation is retried after 60 s. After three refusals it is
     marked failed (kept for inspection) and undone locally: moves at once,
     flags by forgetting the folder's HIGHESTMODSEQ so the next sync reads
@@ -1199,6 +1203,14 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   `uniform_list`. Hovering a line shows Archive, Delete, Mark as
   read/unread and Pin in place of the date. Star, importance and pin
   changes show a snackbar with Undo.
+- **Undo.** Every change to mail (archive, delete to Trash, move, spam,
+  read/unread, star, importance, pin, send while its undo delay runs)
+  shows a snackbar with Undo, and each window keeps its last 50 as a
+  history that Ctrl+Z (and the set's own key, like Z) walks back through
+  after the snackbar is gone. Moves out of search results or a
+  conversation window go back per message to the folder each left.
+  Deletes for good and mail already sent cannot be undone; Ctrl+Z says so.
+  In text fields Ctrl+Z is about the text.
 - **Pins.** Pin to top (hover button, More and right-click menus) keeps a
   conversation, or a single message in message view, above the rest of
   every folder it is listed in, newest pin first, with a pin next to the
