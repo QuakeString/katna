@@ -81,9 +81,16 @@ tracking-opened = { $who } öppnade det { $count ->
     [one] en gång
    *[other] { $count } gånger
 }, senast { $when }
-tracking-opened-clicked = { $who } öppnade det och följde en länk { $count ->
+tracking-opens-clicks = { $who } öppnade det { $opens ->
     [one] en gång
-   *[other] { $count } gånger
+   *[other] { $opens } gånger
+} och följde en länk { $clicks ->
+    [one] en gång
+   *[other] { $clicks } gånger
+}, senast { $when }
+tracking-clicked = { $who } följde en länk { $clicks ->
+    [one] en gång
+   *[other] { $clicks } gånger
 }, senast { $when }
 tracking-maybe-opened = { $who } kan ha öppnat det (Apple Mail laddar bilder för att skydda integriteten)
 tracking-not-opened = { $who } har inte öppnat det än

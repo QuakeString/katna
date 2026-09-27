@@ -676,9 +676,9 @@ Katna-Konto (Einstellungen > Katna-Konto).
 ["2026-09-27-2042-activity"]
 title = "Aktivität für verfolgte E-Mails"
 text = """
-Aktivität unter Gesendet zeigt, wie viele Ihrer verfolgten Nachrichten
-geöffnet wurden und wie oft ihre Links aufgerufen wurden, mit Ihren
-Betreffzeilen danach sortiert, wie oft sie geöffnet werden.
+Aktivität neben dem Suchfeld zeigt, wie viele Ihrer verfolgten
+Nachrichten geöffnet wurden und wie oft ihre Links aufgerufen wurden,
+mit Ihren Betreffzeilen danach sortiert, wie oft sie geöffnet werden.
 """
 
 ["2026-09-27-2204-search-trigger-words"]
@@ -688,4 +688,26 @@ Geben Sie in KRunner oder der GNOME-Suche k oder m, ein Leerzeichen und
 dann das Gesuchte ein, etwa „k budget“, um dieselben Ergebnisse wie im
 Suchfeld von Katna Mail zu erhalten. Eigene Wörter wählen Sie in den
 Einstellungen unter Allgemein.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Aktivität neben dem Suchfeld"
+text = """
+Der Knopf Aktivität neben dem Suchfeld zählt neue Öffnungen und Klicks
+Ihrer verfolgten E-Mails und listet auf, wer was geöffnet hat und welche
+Links aufgerufen wurden; ein Klick auf einen Eintrag öffnet die Nachricht.
+Details zeigt die Öffnungs- und Klickraten, Öffnungen pro Tag und Ihre
+besten Betreffzeilen für die letzten 7 oder 30 Tage, den gesamten
+Zeitraum oder selbst gewählte Daten. Eine gesendete Nachricht zeigt jetzt,
+wie oft jede Person sie geöffnet und einen Link aufgerufen hat.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Einblicke ins Postfach"
+text = """
+Aktivität > Details zeigt jetzt auch, wie viele E-Mails Sie im Zeitraum
+gesendet und empfangen haben, wie oft und wie schnell Sie und andere
+antworten, mit wem Sie am meisten schreiben und an welchen Tagen und zu
+welchen Uhrzeiten Ihre E-Mails eintreffen. Gezählt wird auf Ihrem
+Computer aus den E-Mails, die Katna bereits hat.
 """

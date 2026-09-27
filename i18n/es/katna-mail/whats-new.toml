@@ -669,9 +669,9 @@ Cuenta de Katna).
 ["2026-09-27-2042-activity"]
 title = "Actividad del correo con seguimiento"
 text = """
-Actividad, bajo Enviados, muestra cuántos de tus mensajes con seguimiento
-se abrieron y cuántas veces se siguieron sus enlaces, con tus asuntos
-ordenados según cuánto se abren.
+Actividad, junto al cuadro de búsqueda, muestra cuántos de tus mensajes
+con seguimiento se abrieron y cuántas veces se siguieron sus enlaces,
+con tus asuntos ordenados según cuánto se abren.
 """
 
 ["2026-09-27-2204-search-trigger-words"]
@@ -681,4 +681,26 @@ Escribe k o m, un espacio y luego lo que quieras encontrar en KRunner o en
 la búsqueda de GNOME para obtener los mismos resultados que en el cuadro
 de búsqueda de Katna Mail, como «k budget». Elige tus propias palabras en
 Ajustes, en General.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Actividad junto al cuadro de búsqueda"
+text = """
+El botón Actividad, junto al cuadro de búsqueda, cuenta las nuevas
+aperturas y clics de tu correo con seguimiento y muestra quién abrió qué y
+qué enlaces siguió; haz clic en uno para abrir ese mensaje. Detalles
+muestra las tasas de apertura y de clics, las aperturas por día y tus
+mejores asuntos de los últimos 7 o 30 días, desde siempre o de las fechas
+que elijas. Un mensaje enviado muestra ahora cuántas veces lo abrió cada
+persona y siguió un enlace.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Estadísticas de tu buzón"
+text = """
+Actividad > Detalles muestra ahora también cuánto correo enviaste y
+recibiste en el periodo, cada cuánto y con qué rapidez respondes tú y
+responden los demás, las personas con las que más te escribes y en qué
+días y a qué horas llega tu correo. Se cuenta en tu ordenador a partir del
+correo que Katna ya tiene.
 """

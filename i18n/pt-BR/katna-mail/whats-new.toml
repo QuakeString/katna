@@ -667,9 +667,10 @@ rastreamento precisa de uma conta Katna (Configurações > Conta Katna).
 ["2026-09-27-2042-activity"]
 title = "Atividade dos e-mails rastreados"
 text = """
-Atividade, abaixo de Enviados, mostra quantas das suas mensagens
-rastreadas foram abertas e com que frequência os links delas foram
-acessados, com seus assuntos em ordem de quantas vezes são abertos.
+Atividade, ao lado da caixa de pesquisa, mostra
+quantas das suas mensagens rastreadas foram abertas e
+com que frequência os links delas foram acessados, com
+seus assuntos em ordem de quantas vezes são abertos.
 """
 
 ["2026-09-27-2204-search-trigger-words"]
@@ -679,4 +680,26 @@ Digite k ou m, um espaço e depois o que procura no KRunner ou na
 pesquisa do GNOME para ter os mesmos resultados da caixa de pesquisa do
 Katna Mail, como “k budget”. Escolha suas próprias palavras em
 Configurações > Geral.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Atividade ao lado da caixa de pesquisa"
+text = """
+O botão Atividade, ao lado da caixa de pesquisa, conta as novas aberturas
+e cliques dos seus e-mails rastreados e lista quem abriu o quê e quais
+links acessou; clique em um item para abrir a mensagem. Detalhes mostra
+as taxas de abertura e de cliques, as aberturas por dia e seus melhores
+assuntos nos últimos 7 ou 30 dias, em todo o período ou nas datas que
+você escolher. Uma mensagem enviada agora mostra quantas vezes cada
+pessoa a abriu e acessou um link.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Estatísticas da caixa de correio"
+text = """
+Atividade > Detalhes agora também mostra quantos e-mails você enviou e
+recebeu no período, com que frequência e rapidez você e os outros
+respondem, as pessoas com quem você mais troca e-mails e em quais dias e
+horários seus e-mails chegam. Tudo é contado no seu computador, a partir
+dos e-mails que o Katna já tem.
 """

@@ -81,9 +81,16 @@ tracking-opened = { $who } దీన్ని { $count ->
     [one] ఒకసారి
    *[other] { $count } సార్లు
 } తెరిచారు, చివరిగా { $when }
-tracking-opened-clicked = { $who } దీన్ని తెరిచి ఒక లింక్‌ను { $count ->
+tracking-opens-clicks = { $who } దీన్ని { $opens ->
     [one] ఒకసారి
-   *[other] { $count } సార్లు
+   *[other] { $opens } సార్లు
+} తెరిచారు, లింక్‌ను { $clicks ->
+    [one] ఒకసారి
+   *[other] { $clicks } సార్లు
+} తెరిచారు, చివరిగా { $when }
+tracking-clicked = { $who } లింక్‌ను { $clicks ->
+    [one] ఒకసారి
+   *[other] { $clicks } సార్లు
 } తెరిచారు, చివరిగా { $when }
 tracking-maybe-opened = { $who } దీన్ని తెరిచి ఉండవచ్చు (గోప్యత కోసం Apple Mail చిత్రాలను లోడ్ చేస్తుంది)
 tracking-not-opened = { $who } ఇంకా దీన్ని తెరవలేదు

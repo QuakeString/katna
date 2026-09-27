@@ -664,7 +664,7 @@ kapalıdır ve izleme bir Katna hesabı gerektirir (Ayarlar > Katna hesabı).
 ["2026-09-27-2042-activity"]
 title = "İzlenen postalar için Etkinlik"
 text = """
-Gönderilmiş Postalar altındaki Etkinlik, izlenen iletilerinizden kaçının
+Arama kutusunun yanındaki Etkinlik, izlenen iletilerinizden kaçının
 açıldığını ve bağlantılarının ne sıklıkla izlendiğini gösterir; konu
 satırlarınız da ne sıklıkla açıldıklarına göre sıralanır.
 """
@@ -675,4 +675,26 @@ text = """
 Katna Mail'in arama kutusuyla aynı sonuçları almak için KRunner'a veya
 GNOME aramasına k ya da m, bir boşluk ve ardından aradığınız şeyi yazın,
 örneğin “k budget”. Kendi sözcüklerinizi Ayarlar > Genel'de seçin.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Arama kutusunun yanında Etkinlik"
+text = """
+Arama kutusunun yanındaki Etkinlik düğmesi, izlenen postalarınızın yeni
+açılma ve tıklamalarını sayar; kimin neyi açtığını ve hangi bağlantıları
+izlediğini listeler. O iletiyi açmak için birine tıklayın. Ayrıntılar;
+son 7 veya 30 gün, tüm zamanlar ya da seçtiğiniz tarihler için açılma ve
+tıklanma oranlarını, günlük açılmaları ve en iyi konu satırlarınızı
+gösterir. Gönderilen bir ileti artık her kişinin onu kaç kez açtığını ve
+bir bağlantıyı kaç kez izlediğini gösterir.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Posta kutusu içgörüleri"
+text = """
+Etkinlik > Ayrıntılar artık dönem içinde ne kadar posta gönderip
+aldığınızı, sizin ve başkalarının ne sıklıkla ve ne kadar hızlı yanıt
+verdiğini, en çok yazıştığınız kişileri ve postalarınızın hangi gün ve
+saatlerde geldiğini de gösterir. Bunlar, Katna'da zaten bulunan
+postalardan bilgisayarınızda sayılır.
 """

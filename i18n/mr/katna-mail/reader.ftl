@@ -81,9 +81,16 @@ tracking-opened = { $who } यांनी तो { $count ->
     [one] एकदा
    *[other] { $count } वेळा
 } उघडला, शेवटी { $when }
-tracking-opened-clicked = { $who } यांनी तो उघडून लिंक { $count ->
+tracking-opens-clicks = { $who } यांनी तो { $opens ->
     [one] एकदा
-   *[other] { $count } वेळा
+   *[other] { $opens } वेळा
+} उघडला आणि लिंक { $clicks ->
+    [one] एकदा
+   *[other] { $clicks } वेळा
+} उघडली, शेवटी { $when }
+tracking-clicked = { $who } यांनी लिंक { $clicks ->
+    [one] एकदा
+   *[other] { $clicks } वेळा
 } उघडली, शेवटी { $when }
 tracking-maybe-opened = { $who } यांनी तो कदाचित उघडला असेल (Apple Mail गोपनीयतेसाठी चित्रे लोड करते)
 tracking-not-opened = { $who } यांनी तो अजून उघडलेला नाही

@@ -669,8 +669,8 @@ Katna-account).
 ["2026-09-27-2042-activity"]
 title = "Activiteit voor gevolgde e-mail"
 text = """
-Activiteit onder Verzonden toont hoeveel van je gevolgde berichten zijn
-geopend en hoe vaak hun links zijn gevolgd, met je onderwerpregels
+Activiteit naast het zoekvak toont hoeveel van je gevolgde berichten
+zijn geopend en hoe vaak hun links zijn gevolgd, met je onderwerpregels
 gerangschikt op hoe vaak ze worden geopend.
 """
 
@@ -681,4 +681,26 @@ Typ k of m, een spatie en dan wat je zoekt in KRunner of de
 GNOME-zoekfunctie, en je krijgt dezelfde resultaten als in het zoekvak
 van Katna Mail, zoals ‘k budget’. Kies je eigen woorden in
 Instellingen > Algemeen.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Activiteit naast het zoekvak"
+text = """
+De knop Activiteit naast het zoekvak telt nieuwe keren dat je gevolgde
+e-mail is geopend of aangeklikt en laat zien wie wat heeft geopend en
+welke links zijn gevolgd; klik erop om dat bericht te openen. Details
+toont het openings- en klikpercentage, openingen per dag en je beste
+onderwerpregels voor de afgelopen 7 of 30 dagen, altijd of de datums die
+je kiest. Een verzonden bericht laat nu zien hoe vaak iedereen het heeft
+geopend en een link heeft gevolgd.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Inzicht in je mailbox"
+text = """
+Activiteit > Details laat nu ook zien hoeveel e-mail je in die periode
+hebt verzonden en ontvangen, hoe vaak en hoe snel jij en anderen
+antwoorden, met wie je het vaakst mailt en op welke dagen en uren je
+e-mail binnenkomt. Het wordt op je computer geteld uit de e-mail die
+Katna al heeft.
 """

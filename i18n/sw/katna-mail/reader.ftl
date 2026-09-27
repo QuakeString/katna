@@ -81,9 +81,16 @@ tracking-opened = { $who } ameufungua { $count ->
     [one] mara moja
    *[other] mara { $count }
 }, mara ya mwisho { $when }
-tracking-opened-clicked = { $who } ameufungua na kufuata kiungo { $count ->
+tracking-opens-clicks = { $who } ameufungua { $opens ->
     [one] mara moja
-   *[other] mara { $count }
+   *[other] mara { $opens }
+} na kufuata kiungo { $clicks ->
+    [one] mara moja
+   *[other] mara { $clicks }
+}, mara ya mwisho { $when }
+tracking-clicked = { $who } amefuata kiungo { $clicks ->
+    [one] mara moja
+   *[other] mara { $clicks }
 }, mara ya mwisho { $when }
 tracking-maybe-opened = Huenda { $who } ameufungua (Apple Mail hupakia picha kwa ajili ya faragha)
 tracking-not-opened = { $who } bado hajaufungua
