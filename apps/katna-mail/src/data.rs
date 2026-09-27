@@ -890,6 +890,21 @@ pub fn people(paths: &Paths) -> Result<Vec<katna_store::Person>, String> {
         .map_err(|err| format!("Reading people from the mail failed: {err}"))
 }
 
+/// The mail templates, by name. Opens its own connection, for a
+/// background thread.
+pub fn templates(paths: &Paths) -> Result<Vec<katna_store::TemplateSummary>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.templates())
+        .map_err(|err| format!("Reading templates failed: {err}"))
+}
+
+/// Template `id` with its body and attachments.
+pub fn template(paths: &Paths, id: i64) -> Result<Option<katna_store::Template>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.template(id))
+        .map_err(|err| format!("Reading a template failed: {err}"))
+}
+
 /// The address book for recipient suggestions, read from the store (a
 /// few seconds on a big mailbox). Opens its own connection, for a
 /// background thread.

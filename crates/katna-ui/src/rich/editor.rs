@@ -706,6 +706,70 @@ impl RichEditor {
         });
     }
 
+    /// Puts a template in: its formatted body `html` (or its `text` in plain
+    /// text mode), with each `(field, value)` filled in. It goes at the
+    /// top when nothing is written above the signature, else in place of
+    /// the selection.
+    pub fn insert_template(
+        &mut self,
+        html: &str,
+        text: &str,
+        fields: &[(&str, String)],
+        cx: &mut Context<Self>,
+    ) {
+        let mut doc = if self.plain || html.trim().is_empty() {
+            html::from_plain(text.trim_end())
+        } else {
+            html::from_html(html, &mut self.next_image_id)
+        };
+        for (field, value) in fields {
+            doc.replace_text(field, value);
+        }
+        let at_top = self.doc.is_blank_above_signature();
+        self.edit(EditKind::Other, cx, |doc_now, (start, end)| {
+            let at = if at_top {
+                // The empty lines above the signature give way to it.
+                let blank = doc_now
+                    .blocks
+                    .iter()
+                    .take_while(|b| !matches!(b, Block::Para(p) if p.style.signature))
+                    .count();
+                let signed = blank < doc_now.blocks.len();
+                doc_now.blocks.drain(..blank);
+                doc_now.blocks.insert(0, Block::Para(Para::default()));
+                // An empty line stays between the text and the signature.
+                if signed {
+                    doc_now.blocks.insert(1, Block::Para(Para::default()));
+                }
+                Pos::new(Path::top(0), 0)
+            } else {
+                doc_now.delete(start, end)
+            };
+            doc_now.insert_fragment(at, doc.blocks)
+        });
+    }
+
+    /// Fills each `(field, value)` left in the text. Returns whether there
+    /// was one.
+    pub fn fill_fields(&mut self, fields: &[(&str, String)], cx: &mut Context<Self>) -> bool {
+        let present = fields.iter().any(|(field, _)| {
+            self.doc
+                .paths()
+                .iter()
+                .filter_map(|p| self.doc.para(*p))
+                .any(|p| p.text.contains(field))
+        });
+        if present {
+            self.edit(EditKind::Other, cx, |doc, (_, end)| {
+                for (field, value) in fields {
+                    doc.replace_text(field, value);
+                }
+                end
+            });
+        }
+        present
+    }
+
     /// Puts the cursor at `at`, such as the words of a [`RichEvent::Hint`].
     pub fn set_cursor(&mut self, at: Pos, cx: &mut Context<Self>) {
         self.set_selection(at, at, cx);

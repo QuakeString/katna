@@ -270,6 +270,8 @@ contact          (id, display_name, vcard_uid, notes)
 contact_address  (contact_id, email_norm)
 org_member       (org_id, contact_id)
 suggestion       (id, kind, payload_json, state)          -- pending | accepted | dismissed
+template         (id, name, subject, html, text, updated_at)   -- mail templates (v2)
+template_attachment (template_id, position, name, mime, data)
 meta             (object_kind, object_id, plugin, value_json, version,
                   expires_at NULL, dirty BOOL)            -- see §10
 ```
@@ -1047,7 +1049,17 @@ depend on `<style>` sheets turn out to matter.
   In plain text mode only the text part goes.
 - Spell check with `spellbook` and the system's Hunspell dictionaries
   (`spell.rs`); added words are kept in `$XDG_CONFIG_HOME/katna/dictionary`.
-- Templates later.
+- Templates (`window/compose/templates.rs`, `window/settings_page/templates.rs`):
+  the compose bar's Templates button lists them, puts one in (its text
+  replaces the empty lines above the signature, or goes at the cursor; its
+  subject fills an empty one; its files join the attachments) and saves
+  the message as one (same name replaces). `{first name}`, `{name}` and
+  `{my name}` are filled from the first recipient and the sender when it
+  is put in, and again on Send for a recipient added later
+  (`templates.rs`). Settings > Compose edits, renames and deletes them.
+  They live in `pim.db` (subject, HTML with pictures as `data:` URIs,
+  plain text, attachments as BLOBs, 20 MB at most), written by the daemon
+  (`SaveTemplate`, `DeleteTemplate`) and read by the app from the store.
 
 ## 13. UI
 
@@ -1404,8 +1416,8 @@ Gemini or confidential mode):
   Important markers, message width, dark colors for HTML mail, attachment
   previews), Shortcuts, Default apps (where each kind of attachment
   opens, and showing saved files in their folder), Folders & rules,
-  Compose (signatures, plain text, spelling and its language, templates
-  to come), MCP server, User feedback (turning crash reports and feedback off at any
+  Compose (signatures, plain text, spelling and its language,
+  templates), MCP server, User feedback (turning crash reports and feedback off at any
   time) and Experimental, always last. Subscription, Folders & rules and
   MCP server are still to come: their tabs are fainter and each shows a
   "Coming soon" page saying what it will do. The tabs always stay on one line (`window/tab_strip.rs`): when
@@ -2250,7 +2262,9 @@ on)` (local only; more than ten pinned conversations is an error),
 `DeleteMessages(ax)`, `ArchiveMessages(ax)`, `QueueSend(x account, ay
 message, u delay) → id`, `UndoSend(id) → b`, `DiscardSend(id) → b`,
 `Outbox() → a(xxxsxss)` (id, account, message, subject, send at, state,
-detail; states in `katna_dbus::send_state`), `FetchImage(url) → ay` and
+detail; states in `katna_dbus::send_state`), `SaveTemplate((xssssa(ssay)))
+→ x`, `RenameTemplate(id, name) → b`, `DeleteTemplate(id) → b` (mail
+templates in `pim.db`; apps read them from the store), `FetchImage(url) → ay` and
 `SenderPicture(address) → ay` (images for the reading pane, §12), and the
 signals
 `AccountsChanged`, `SyncStatusChanged(id)`, `MailChanged(id)` and

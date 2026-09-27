@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Templates for mail you write often"
+text = """
+Write a message once and save it with the new Templates button in compose,
+then put it in any new mail or reply with one click. Write {first name},
+{name} or {my name} and Katna fills them in for each recipient. Edit, rename
+or delete templates in Settings > Compose.
+"""

@@ -583,6 +583,30 @@ fn queues_undoes_and_retries_outgoing_mail() {
         assert!(pim.discard_send(id).await.unwrap());
         assert!(pim.outbox().await.unwrap().is_empty());
 
+        // Templates: saved, renamed and deleted on this computer.
+        let mut template = katna_dbus::TemplateItem {
+            name: "Welcome".to_owned(),
+            text: "Hi {first name}".to_owned(),
+            attachments: vec![katna_dbus::TemplateFileItem {
+                name: "a.txt".to_owned(),
+                mime: "text/plain".to_owned(),
+                data: b"a".to_vec(),
+            }],
+            ..Default::default()
+        };
+        let err = pim
+            .save_template(&katna_dbus::TemplateItem {
+                name: " ".to_owned(),
+                ..template.clone()
+            })
+            .await
+            .unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+        template.id = pim.save_template(&template).await.unwrap();
+        assert!(pim.rename_template(template.id, "Hello").await.unwrap());
+        assert!(pim.delete_template(template.id).await.unwrap());
+        assert!(!pim.delete_template(template.id).await.unwrap());
+
         // Offline: it goes back in the queue and says why.
         let id = pim.queue_send(account.0, message, 0).await.unwrap();
         within("retry", 10, async {
