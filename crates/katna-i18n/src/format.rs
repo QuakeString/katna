@@ -7,13 +7,19 @@
 
 use fluent_bundle::FluentValue;
 use icu_calendar::Date;
-use icu_datetime::fieldsets::{E, MD, T, YMD, YMDE, YMDET};
-use icu_datetime::{DateTimeFormatter, NoCalendarFormatter};
+use icu_calendar::cal::Gregorian;
+use icu_calendar::types::Weekday;
+use icu_calendar::week::WeekInformation;
+use icu_datetime::fieldsets::{E, M, MD, T, YMD, YMDE, YMDET};
+use icu_datetime::pattern::{DateTimePattern, FixedCalendarDateTimeNames};
+use icu_datetime::{DateTimeFormatter, FixedCalendarDateTimeFormatter, NoCalendarFormatter};
 use icu_decimal::DecimalFormatter;
 use icu_decimal::input::Decimal;
+use icu_decimal::options::GroupingStrategy;
 use icu_locale_core::Locale;
 use icu_time::{DateTime, Time};
 use std::sync::atomic::{AtomicU8, Ordering};
+use writeable::TryWriteable;
 
 /// How times show: as the language writes them, or always with a 12- or
 /// 24-hour clock (Settings > General > Time).
@@ -65,6 +71,15 @@ pub(crate) struct Formats {
     date: Option<DateTimeFormatter<YMD>>,
     long: Option<DateTimeFormatter<YMDET>>,
     decimal: Option<DecimalFormatter>,
+    /// For a date picker: month names (always Gregorian, as its days
+    /// are), the shortest weekday names, the first day of the week and
+    /// years without grouping.
+    medium_date: Option<DateTimeFormatter<YMD>>,
+    month: Option<FixedCalendarDateTimeFormatter<Gregorian, M>>,
+    /// CLDR's short weekday names (`Su`), which no field set gives.
+    weekday_short: Option<(FixedCalendarDateTimeNames<Gregorian>, DateTimePattern)>,
+    first_weekday: Option<Weekday>,
+    year: Option<DecimalFormatter>,
 }
 
 impl Formats {
@@ -83,6 +98,17 @@ impl Formats {
             date: DateTimeFormatter::try_new(prefs(), YMD::short()).ok(),
             long: DateTimeFormatter::try_new(prefs(), YMDE::medium().with_time_hm()).ok(),
             decimal: DecimalFormatter::try_new((&locale).into(), Default::default()).ok(),
+            medium_date: DateTimeFormatter::try_new(prefs(), YMD::medium()).ok(),
+            month: FixedCalendarDateTimeFormatter::try_new(prefs(), M::long()).ok(),
+            weekday_short: "cccccc".parse().ok().and_then(|pattern: DateTimePattern| {
+                let mut names = FixedCalendarDateTimeNames::try_new(prefs()).ok()?;
+                names.include_for_pattern(&pattern).ok()?;
+                Some((names, pattern))
+            }),
+            first_weekday: WeekInformation::try_new((&locale).into())
+                .ok()
+                .map(|w| w.first_weekday),
+            year: DecimalFormatter::try_new((&locale).into(), GroupingStrategy::Never.into()).ok(),
         }
     }
 }
@@ -164,6 +190,77 @@ pub fn long(date: jiff::civil::DateTime) -> String {
     };
     crate::catalog::with_formats(|f| f.long.as_ref().map(|w| plain(w.format(&input).to_string())))
         .unwrap_or_else(fallback)
+}
+
+/// Day, month and year: `May 14, 2002`, `14 May 2002`.
+pub fn day_month_year(date: jiff::civil::DateTime) -> String {
+    let fallback = || date.strftime("%b %-d, %Y").to_string();
+    let Some(input) = convert(date) else {
+        return fallback();
+    };
+    crate::catalog::with_formats(|f| {
+        f.medium_date
+            .as_ref()
+            .map(|w| plain(w.format(&input.date).to_string()))
+    })
+    .unwrap_or_else(fallback)
+}
+
+/// A month's name on its own, for month 1 to 12 of the Gregorian
+/// calendar: `September`, `সেপ্টেম্বর`.
+pub fn month_name(month: i8) -> String {
+    let fallback = || {
+        jiff::civil::Date::new(2026, month, 1)
+            .map(|d| d.strftime("%B").to_string())
+            .unwrap_or_default()
+    };
+    let Ok(date) = Date::try_new_gregorian(2026, month.clamp(1, 12) as u8, 1) else {
+        return fallback();
+    };
+    crate::catalog::with_formats(|f| f.month.as_ref().map(|m| plain(m.format(&date).to_string())))
+        .unwrap_or_else(fallback)
+}
+
+/// The first day of the week: Sunday in the US, Monday in most of
+/// Europe, Saturday in Egypt.
+pub fn first_weekday() -> jiff::civil::Weekday {
+    crate::catalog::with_formats(|f| f.first_weekday)
+        .and_then(|w| jiff::civil::Weekday::from_monday_one_offset(w as i8).ok())
+        .unwrap_or(jiff::civil::Weekday::Monday)
+}
+
+/// The seven weekdays' shortest names, from the first day of the week
+/// (see [`first_weekday`]), for a calendar's columns: `Su`, `Mo`, ….
+pub fn weekdays_short() -> [(jiff::civil::Weekday, String); 7] {
+    let first = first_weekday();
+    std::array::from_fn(|ix| {
+        let day = first.wrapping_add(ix as i64);
+        // 2024-01-01 was a Monday.
+        let date = jiff::civil::date(2024, 1, 1 + day.to_monday_zero_offset());
+        let fallback = || date.strftime("%a").to_string().chars().take(2).collect();
+        let name = Date::try_new_gregorian(2024, 1, date.day() as u8)
+            .ok()
+            .and_then(|input| crate::catalog::with_formats(|f| short_weekday(f, input)))
+            .unwrap_or_else(fallback);
+        (day, name)
+    })
+}
+
+fn short_weekday(f: &Formats, date: Date<Gregorian>) -> Option<String> {
+    let (names, pattern) = f.weekday_short.as_ref()?;
+    let input = DateTime {
+        date,
+        time: Time::start_of_day(),
+    };
+    let text = names.with_pattern_unchecked(pattern).format(&input);
+    Some(plain(text.try_write_to_string().ok()?.into_owned()))
+}
+
+/// A year with the language's digits and no grouping: `2026`, `২০২৬`.
+pub fn year(year: i16) -> String {
+    let d = Decimal::from(i64::from(year));
+    crate::catalog::with_formats(|f| f.year.as_ref().map(|x| x.format(&d).to_string()))
+        .unwrap_or_else(|| year.to_string())
 }
 
 /// A whole number with the language's digits and grouping: `1,234,567`,
@@ -291,6 +388,11 @@ mod tests {
             assert!(f.time.is_some(), "{}", language.tag);
             assert!(f.long.is_some(), "{}", language.tag);
             assert!(f.decimal.is_some(), "{}", language.tag);
+            assert!(f.medium_date.is_some(), "{}", language.tag);
+            assert!(f.month.is_some(), "{}", language.tag);
+            assert!(f.weekday_short.is_some(), "{}", language.tag);
+            assert!(f.first_weekday.is_some(), "{}", language.tag);
+            assert!(f.year.is_some(), "{}", language.tag);
             let long = f.long.as_ref().unwrap().format(&d).to_string();
             assert!(!long.is_empty(), "{}", language.tag);
         }
@@ -308,6 +410,45 @@ mod tests {
         });
         assert!(marks(&raw), "CLDR changed: {raw:?}");
         assert!(!marks(&super::plain(raw)));
+    }
+
+    #[test]
+    fn date_picker_names() {
+        let month = |tag, m: u8| {
+            with(tag, |f| {
+                let d = Date::try_new_gregorian(2026, m, 1).unwrap();
+                f.month.as_ref().unwrap().format(&d).to_string()
+            })
+        };
+        assert_eq!(month("en-US", 9), "September");
+        assert_eq!(month("de", 3), "März");
+        // Gregorian names even where another calendar is the default.
+        assert_eq!(month("th", 1), "มกราคม");
+        let first = |tag| Formats::new(tag, Clock::Language).first_weekday.unwrap();
+        assert_eq!(first("en-US"), Weekday::Sunday);
+        assert_eq!(first("de"), Weekday::Monday);
+        let short = |tag| {
+            let monday = Date::try_new_gregorian(2024, 1, 1).unwrap();
+            with(tag, |f| short_weekday(f, monday).unwrap())
+        };
+        assert_eq!(short("en-US"), "Mo");
+        assert_eq!(short("de"), "Mo.");
+        let year = |tag| {
+            with(tag, |f| {
+                let d = Decimal::from(2026u64);
+                f.year.as_ref().unwrap().format(&d).to_string()
+            })
+        };
+        assert_eq!(year("en-US"), "2026");
+        assert_eq!(year("bn-BD"), "২০২৬");
+        // What the functions give before a language is applied.
+        assert_eq!(super::first_weekday(), jiff::civil::Weekday::Sunday);
+        let days = super::weekdays_short();
+        assert_eq!(days[0], (jiff::civil::Weekday::Sunday, "Su".to_owned()));
+        assert_eq!(days[6], (jiff::civil::Weekday::Saturday, "Sa".to_owned()));
+        assert_eq!(super::month_name(5), "May");
+        let may14 = jiff::civil::date(2002, 5, 14).at(0, 0, 0, 0);
+        assert_eq!(super::day_month_year(may14), "May 14, 2002");
     }
 
     #[test]

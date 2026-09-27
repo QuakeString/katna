@@ -10,6 +10,7 @@
 use gpui::{
     AnyElement, Context, FocusHandle, KeyDownEvent, MouseButton, Window, div, prelude::*, rgba,
 };
+use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::{px, unpx};
 
@@ -21,10 +22,15 @@ use crate::widgets::{elevation, icon, outlined_button};
 
 const WIDTH: f32 = 520.0;
 
-pub(super) const TITLE: &str = "Help improve Katna";
-pub(super) const LEAD: &str = "When Katna crashes, it saves a report on this computer. \
-     Sending these reports helps fix what went wrong. You can change this any time in \
-     Settings > User feedback.";
+/// The title, here and on the onboarding page.
+pub(super) fn title_text() -> String {
+    tr!("share-title")
+}
+
+/// The sentences under the title.
+pub(super) fn lead_text() -> String {
+    tr!("share-lead")
+}
 
 /// What is sent, what never is, and where it goes.
 pub(super) fn points(th: &Theme) -> AnyElement {
@@ -34,23 +40,20 @@ pub(super) fn points(th: &Theme) -> AnyElement {
         .gap(px(16.0))
         .child(feature(
             "document",
-            "What is sent",
-            "The crash report as you can view it in Settings: what crashed and where in \
-             Katna, the version, your Linux system and desktop, and Katna's last log lines, \
-             which can name mail folders.",
+            tr!("share-sent"),
+            tr!("share-sent-detail"),
             th,
         ))
         .child(feature(
             "shield-check",
-            "What is never sent",
-            "Your messages, contacts, passwords, IP address, user name or computer name. \
-             Email addresses are removed from the report.",
+            tr!("share-never-sent"),
+            tr!("share-never-sent-detail"),
             th,
         ))
         .child(feature(
             "send",
-            "Where it goes",
-            "Katna's crash tracker at Sentry, stored in the EU. No ID ties reports to you.",
+            tr!("share-where"),
+            tr!("share-where-detail"),
             th,
         ))
         .into_any_element()
@@ -71,11 +74,11 @@ pub(super) fn answers(
         .justify_end()
         .gap(px(12.0))
         .child(
-            outlined_button(id("no"), "Don\u{2019}t send", th)
+            outlined_button(id("no"), tr!("share-dont-send"), th)
                 .on_click(cx.listener(move |this, _, window, cx| answer(this, false, window, cx))),
         )
         .child(
-            outlined_button(id("yes"), "Send crash reports", th)
+            outlined_button(id("yes"), tr!("share-send"), th)
                 .on_click(cx.listener(move |this, _, window, cx| answer(this, true, window, cx))),
         )
         .into_any_element()
@@ -132,9 +135,9 @@ impl MailWindow {
         self.close_share_ask(window, cx);
         self.show_snackbar(
             if send {
-                "Crash reports will be sent. Thank you."
+                tr!("share-sending")
             } else {
-                "Crash reports stay on this computer."
+                tr!("share-local")
             },
             None,
             cx,
@@ -190,8 +193,8 @@ impl MailWindow {
                     .bg(rgba(fade(th.accent, 0.14)))
                     .child(icon("shield-check", th.accent, 26.0)),
             )
-            .child(title(TITLE, th))
-            .child(lead(LEAD, th))
+            .child(title(title_text(), th))
+            .child(lead(&lead_text(), th))
             .child(div().pt(px(8.0)).w_full().child(points(th)));
         let footer = div()
             .flex_none()

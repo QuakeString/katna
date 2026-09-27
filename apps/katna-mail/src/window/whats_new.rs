@@ -14,6 +14,7 @@ use gpui::{
     AnyElement, Context, FocusHandle, FontWeight, ImageSource, KeyDownEvent, MouseButton,
     ObjectFit, RenderImage, Task, Window, div, img, prelude::*, rgba,
 };
+use katna_i18n::tr;
 use katna_preview::image::codecs::webp::WebPDecoder;
 use katna_preview::image::{AnimationDecoder, Frame};
 use katna_ui::motion::{self, Spring, lerp};
@@ -262,7 +263,7 @@ impl MailWindow {
                         div()
                             .text_size(px(22.0))
                             .line_height(px(30.0))
-                            .child("What\u{2019}s new in Katna Mail"),
+                            .child(tr!("whats-new-title")),
                     )
                     .child(
                         div()
@@ -270,9 +271,9 @@ impl MailWindow {
                             .line_height(px(18.0))
                             .text_color(rgba(th.text_dim))
                             .child(if dialog.updated {
-                                format!("Updated to version {}", whats_new::VERSION)
+                                tr!("whats-new-updated", version = whats_new::VERSION)
                             } else {
-                                format!("Version {}", whats_new::VERSION)
+                                tr!("whats-new-version", version = whats_new::VERSION)
                             }),
                     ),
             );
@@ -346,10 +347,7 @@ impl MailWindow {
                 .px(px(24.0))
                 .text_size(px(14.0))
                 .text_color(rgba(th.text_dim))
-                .child(match dialog.more {
-                    1 => "And one more in the full changelog.".to_owned(),
-                    n => format!("And {n} more in the full changelog."),
-                })
+                .child(tr!("whats-new-more", count = dialog.more))
         });
         let body = div()
             .id("whats-new-body")
@@ -375,14 +373,14 @@ impl MailWindow {
             .items_center()
             .gap(px(8.0))
             .child(
-                text_button("whats-new-changelog", "Full changelog", th)
+                text_button("whats-new-changelog", tr!("whats-new-changelog"), th)
                     .gap(px(8.0))
                     .child(icon("open-external", th.accent, 18.0))
                     .on_click(move |_, _, cx| cx.open_url(&url)),
             )
             .child(div().flex_1())
             .child(
-                filled_button("whats-new-close", "Got it", th)
+                filled_button("whats-new-close", tr!("whats-new-got-it"), th)
                     .on_click(cx.listener(|this, _, window, cx| this.close_whats_new(window, cx))),
             );
 

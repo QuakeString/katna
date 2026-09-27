@@ -7,6 +7,7 @@
 
 use gpui::{AnyElement, ClipboardItem, Context, Window, div, prelude::*, rgba};
 use katna_core::crash::{self, Report};
+use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 
@@ -28,14 +29,10 @@ pub(super) struct CrashNotice {
 
 impl CrashNotice {
     fn text(&self) -> String {
-        let what = match self.report.app.as_str() {
-            "katna-daemon" => "Katna's background service stopped unexpectedly",
-            _ => "Katna Mail closed unexpectedly last time",
-        };
-        match self.more {
-            0 => format!("{what}."),
-            1 => format!("{what}. One more crash report is saved."),
-            n => format!("{what}. {n} more crash reports are saved."),
+        let more = self.more;
+        match self.report.app.as_str() {
+            "katna-daemon" => tr!("crash-daemon", more = more),
+            _ => tr!("crash-mail", more = more),
         }
     }
 }
@@ -103,10 +100,14 @@ impl MailWindow {
             Ok(text) => {
                 cx.write_to_clipboard(ClipboardItem::new_string(text));
                 self.close_crash_notice(cx);
-                self.show_snackbar("Crash report copied.", None, cx);
+                self.show_snackbar(tr!("feedback-copied"), None, cx);
             }
             Err(err) => {
-                self.show_snackbar(format!("Could not read the crash report: {err}"), None, cx);
+                self.show_snackbar(
+                    tr!("feedback-read-failed", error = err.to_string()),
+                    None,
+                    cx,
+                );
             }
         }
     }
@@ -131,7 +132,7 @@ impl MailWindow {
         let edge = lerp(24.0, 8.0, shape.phone);
         let above = if self.snackbar.is_some() { 64.0 } else { 0.0 };
         let accent = if th.dark { th.nav_selected } else { 0xa8c7faff };
-        let action = |id: &'static str, label: &'static str| {
+        let action = |id: &'static str, label: String| {
             div()
                 .id(id)
                 .flex_none()
@@ -173,13 +174,13 @@ impl MailWindow {
                         .flex_row()
                         .items_center()
                         .child(
-                            action("crash-view", "View report")
-                                .tooltip(tip("Open the report, saved on this computer", th))
+                            action("crash-view", tr!("crash-view"))
+                                .tooltip(tip(tr!("crash-view-tooltip"), th))
                                 .on_click(cx.listener(|this, _, _, cx| this.view_crash_report(cx))),
                         )
                         .child(
-                            action("crash-copy", "Copy report")
-                                .tooltip(tip("Copy it to paste into a bug report", th))
+                            action("crash-copy", tr!("crash-copy"))
+                                .tooltip(tip(tr!("feedback-copy-tooltip"), th))
                                 .on_click(cx.listener(|this, _, _, cx| this.copy_crash_report(cx))),
                         )
                         .child(
@@ -192,7 +193,7 @@ impl MailWindow {
                                 .rounded_full()
                                 .cursor_pointer()
                                 .hover(|s| s.bg(rgba(0xffffff1f)))
-                                .tooltip(tip("Close", th))
+                                .tooltip(tip(tr!("crash-close"), th))
                                 .on_click(cx.listener(|this, _, _, cx| this.close_crash_notice(cx)))
                                 .child(icon("close", th.snackbar_text, 18.0)),
                         ),
