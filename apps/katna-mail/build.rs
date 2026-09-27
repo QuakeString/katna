@@ -116,7 +116,7 @@ fn highlights() {
                     panic!("whats-new/highlights/{file}: {key} must be a string")
                 });
                 // Written across lines in the file, shown as one paragraph.
-                text.split_whitespace().collect::<Vec<_>>().join(" ")
+                paragraph(text)
             })
         };
         let title = field("title").filter(|t| !t.is_empty());
@@ -210,7 +210,7 @@ fn translated_highlights(
                     .and_then(toml::Value::as_str)
                     .unwrap_or_else(|| panic!("{file}: [{stem:?}]: needs a {key} string"));
                 // Written across lines in the file, shown as one paragraph.
-                let text = text.split_whitespace().collect::<Vec<_>>().join(" ");
+                let text = paragraph(text);
                 assert!(!text.is_empty(), "{file}: [{stem:?}]: {key} is empty");
                 text
             });
@@ -247,4 +247,27 @@ fn is_name(name: &str) -> bool {
         && slug
             .bytes()
             .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
+}
+
+/// `text`'s lines joined into one paragraph: with a space, except between
+/// two Chinese or Japanese characters, which are written without spaces.
+/// (Thai, Lao, Khmer and Burmese put a space between phrases, and their
+/// lines break there, so they keep it.)
+fn paragraph(text: &str) -> String {
+    fn unspaced(c: char) -> bool {
+        matches!(c as u32,
+            0x3000..=0x30FF // CJK punctuation, kana
+            | 0x3400..=0x4DBF | 0x4E00..=0x9FFF // CJK ideographs
+            | 0xFF00..=0xFFEF) // full-width forms
+    }
+    let mut out = String::new();
+    for word in text.split_whitespace() {
+        let joins = out.chars().next_back().is_some_and(unspaced)
+            && word.chars().next().is_some_and(unspaced);
+        if !out.is_empty() && !joins {
+            out.push(' ');
+        }
+        out.push_str(word);
+    }
+    out
 }

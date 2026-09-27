@@ -1,0 +1,340 @@
+# Katna Mail, Filipino (Filipino).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-27-0319-whats-new"]
+title = "Ano’ng bago, pagkatapos ng bawat update"
+text = """
+Pagkatapos ng update, ipinapakita ng Katna Mail nang isang beses kung ano
+ang nagbago, sa halip na ang welcome tour. Mabubuksan ito ulit sa
+Mabilisang setting.
+"""
+
+["2026-09-27-0320-reply-buttons-fit"]
+title = "Mga reply button na laging kasya"
+text = """
+Nananatili sa iisang linya ang Sumagot, Sumagot sa lahat at Ipasa: habang
+kumikitid ang window, nagiging icon sila isa-isa. Sa phone, hati sila sa
+lapad.
+"""
+
+["2026-09-27-0321-notifications-open-mail"]
+title = "Binubuksan ng notification ang mail nito"
+text = """
+I-click ang notification ng bagong mail para buksan ang mensaheng iyon,
+kahit nakasara ang Katna Mail. May Sumagot sa lahat na rin ang mga
+notification.
+"""
+
+["2026-09-27-0322-attachment-previews"]
+title = "Preview ng mas maraming attachment"
+text = """
+May preview na sa card nila ang mga spreadsheet, CSV, text file at
+dokumento, at mas maliwanag na ang background ng viewer.
+"""
+
+["2026-09-27-0323-frosted-menus"]
+title = "Mga menu na parang frosted glass"
+text = """
+Kapag naka-on ang Mga setting > Pang-eksperimento > Malabong background,
+nagiging parang frosted glass ang mga menu at popover.
+"""
+
+["2026-09-27-0346-settings-search"]
+title = "Hanapin ang iyong mga setting"
+text = """
+Habang bukas ang Mga setting, hinahanap ng search box ang kahit anong
+setting at dinadala ka roon. Mas marami nang tab ang Mga setting, sa mas
+malinaw na ayos, at nasa likod ng (i) button ang mahahabang paliwanag.
+"""
+
+["2026-09-27-0410-crash-reports-kept"]
+title = "Nananatili sa computer mo ang mga crash report"
+text = """
+Kapag nag-crash ang Katna Mail o ang background service nito, sasabihin
+ito sa susunod na pagbukas, kasama ang report na puwedeng tingnan o
+kopyahin para sa bug report. Nakalista sila sa Mga setting > Feedback ng
+user.
+"""
+
+["2026-09-27-0438-calmer-reply"]
+title = "Mas kalmadong pagsagot"
+text = """
+Sa pagsagot sa pane ng pagbabasa, nasa ibaba ang Ipadala at ang
+formatting, nakatiklop sa likod ng "..." ang naka-quote na mail, at
+binubuksan ng Buksan nang hiwalay ang sagot ito sa sariling window. Sa
+phone, buong window ang para sa pagsusulat.
+"""
+
+["2026-09-27-0439-mail-in-own-window"]
+title = "Mail sa sarili nitong window"
+text = """
+Mag-Shift+click sa mensahe, i-right-click ito o gamitin ang Sa bagong
+window sa toolbar ng reader para buksan ito sa sariling window.
+Pini-print ng I-print lahat ang buong usapan.
+"""
+
+["2026-09-27-0440-settings-on-phone"]
+title = "Mga setting sa phone"
+text = """
+Sa makitid na screen, pinupuno ng Mga setting at Mabilisang setting ang
+window, at nagsasara ang bawat menu at popover sa Escape o sa pag-click
+sa labas.
+"""
+
+["2026-09-27-0441-offline-mail"]
+title = "Piliin kung gaano karaming mail ang offline"
+text = """
+Ang Mga setting > Pangkalahatan > Offline na mail ay nagtatago ng isang
+linggo, isang buwan, tatlong buwan, isang taon o lahat ng mail mo sa
+computer na ito. Dina-download ang mas lumang mail kapag binuksan mo ito.
+"""
+
+["2026-09-27-0442-folder-pane-button"]
+title = "Bagong button para sa folder pane"
+text = """
+Ipinapakita at itinatago ng button sa kaliwang itaas ang folder pane, at
+puno ang kaliwang bahagi nito habang nakikita ang mga folder.
+"""
+
+["2026-09-27-0443-cards-and-phone-rows"]
+title = "Mas malinis na card, mas kalmadong phone"
+text = """
+Nakapatong ang listahan at ang reader sa mga card na may manipis na
+outline at maikling anino, laging nasa loob ng window ang mga menu, at
+sa phone, dumudulas palayo ang search at toolbar habang nag-i-scroll ka.
+"""
+
+["2026-09-27-0444-about-katna"]
+title = "Tungkol sa Katna"
+text = """
+Ang Tulong > Tungkol sa Katna, na nasa Mabilisang setting din, ay
+nagpapakita ng bersyon, changelog at bawat library na pinagbatayan ng
+Katna, kasama ang mga may-akda at lisensya nito. Binubuksan din ito ng
+bersyon sa header ng Mga setting.
+"""
+
+["2026-09-27-0457-settings-tabs-one-line"]
+title = "Mga tab ng Mga setting sa iisang linya"
+text = """
+Nananatili sa iisang linya ang mga tab ng Mga setting: kapag hindi
+kasya, ipinapakita ng mga arrow sa gilid at ng scroll wheel ang iba pa.
+Magkasama sa tab na Mag-compose ang mga signature at template, at
+magkasama rin sa isang tab ang mga folder at mail rule.
+"""
+
+["2026-09-27-0515-send-crash-reports"]
+title = "Tumulong na pahusayin ang Katna, kung gusto mo"
+text = """
+Isang beses na magtatanong ang Katna kung magpapadala ng mga crash report
+para matulungang ayusin ang nagkaproblema. Ipinapadala ang mga ito nang
+walang IP address, mensahe o email address mo, at kapag pumayag ka lang.
+Baguhin ito anumang oras sa Mga setting > Feedback ng user.
+"""
+
+["2026-09-27-0536-older-attachments-open"]
+title = "Agad nabubuksan ang attachment ng lumang mail"
+text = """
+Kapag nag-click ka sa attachment ng lumang mail na wala pa sa computer
+na ito, dina-download ito: napupuno ang attachment habang nagda-download,
+saka nagbubukas.
+"""
+
+["2026-09-27-0556-reading-options"]
+title = "Basahin ang mga usapan sa paraang gusto mo"
+text = """
+Kaya ng Mga setting > Pangkalahatan > Pagbabasa na ipakita muna ang
+pinakabagong mensahe, buksan ang buong header ng bawat mensahe, at
+banggitin ang buong pangalan ng mga recipient sa halip na unang pangalan
+lang.
+"""
+
+["2026-09-27-0609-send-and-archive"]
+title = "Ipadala at i-archive"
+text = """
+Ipinapadala ng menu sa tabi ng Ipadala sa isang sagot ang mensahe at
+ina-archive ang usapan. Sa Mga setting > Mag-compose, puwede itong gawing
+gawa ng Ipadala, at puwedeng laging ipadala ang bagong mail mula sa
+parehong account.
+"""
+
+["2026-09-27-0627-scaling"]
+title = "Palakihin o paliitin ang lahat"
+text = """
+Binabago ng Mga setting > Hitsura > Scaling ang laki ng buong window,
+pantay ang text, mga icon at espasyo, mula 75% hanggang 200% dagdag sa
+scale ng desktop mo.
+"""
+
+["2026-09-27-0645-shortcut-sets"]
+title = "Mga shortcut mula sa mail app na kilala mo"
+text = """
+Puwedeng magsimula ang Mga setting > Mga Shortcut sa mga key ng Gmail,
+Inbox by Gmail, Apple Mail, Outlook o Thunderbird, nakalista ang mga ito
+sa dalawang column, at ibinabalik ng Ibalik ang mga default ang mga
+binago mo.
+"""
+
+["2026-09-27-0646-more-settings"]
+title = "Mas maraming setting"
+text = """
+Buksan ang Katna Mail sa pag-login, piliin kung kailan mamarkahang nabasa
+ang mail, gawing sumagot sa lahat ang reply button, laging ipakita ang
+mga larawan, i-mute ang tunog ng bagong mail, itago ang mga marker na
+Mahalaga, paikliin ang mahahabang linya, panatilihin ang sariling kulay
+ng mail sa dark mode, i-off ang preview ng attachment, magsulat sa plain
+text, piliin ang wika ng spelling at makita ang mga na-save na file sa
+folder nila.
+"""
+
+["2026-09-27-0706-your-language"]
+title = "Ang iyong wika"
+text = """
+Pumili ng isa sa 51 wika mula sa flag button sa itaas na bar, o sundin
+ang wika ng desktop mo. Sumusunod na rito ang mga petsa at numero;
+isasalin ang natitirang bahagi ng app sa mga susunod na update. AI ang
+gumawa ng unang draft ng mga salin, at malugod na tinatanggap ang mga
+pagwawasto.
+"""
+
+["2026-09-27-0723-select-and-copy-text"]
+title = "Pumili at kopyahin ang text sa mail"
+text = """
+I-drag sa isang mensahe para piliin ang text nito, mag-double-click para
+sa isang salita o mag-triple-click para sa isang talata. Kinokopya ito
+ng Ctrl+C o ng right-click, at pinipili ng Ctrl+A ang buong usapan.
+"""
+
+["2026-09-27-0743-address-suggestions"]
+title = "Mga address na mungkahi habang nagta-type"
+text = """
+Nagmumungkahi ang Para kay, Cc at Bcc ng mga taong pinakamadalas mong
+sulatan habang nagta-type ka, kahit may typo. Pumili gamit ang mga arrow
+key at Enter, Tab o isang click.
+"""
+
+["2026-09-27-0804-main-window-translated"]
+title = "Ang pangunahing window sa iyong wika"
+text = """
+Sumusunod na sa wikang pinili mo ang app rail, mga folder, tab,
+listahan, menu at pane ng pagbabasa. Pinapanatili ng mga folder na
+ginawa mo ang sarili nilang pangalan.
+"""
+
+["2026-09-27-0824-24-hour-clock"]
+title = "12-oras o 24-oras na orasan"
+text = """
+Ipinapakita ng Mga setting > Pangkalahatan > Oras ang oras sa 12-oras o
+24-oras na orasan, anuman ang karaniwang gamit ng wika.
+"""
+
+["2026-09-27-0824-settings-translated"]
+title = "Mga setting sa iyong wika"
+text = """
+Sumusunod na sa wikang pinili mo ang Mga setting, Mabilisang setting,
+mga account mo at ang mga pangalan ng keyboard shortcut, at nahahanap ng
+paghahanap sa Mga setting ang mga row ayon sa isinalin nilang pangalan.
+"""
+
+["2026-09-27-0825-default-mail-app"]
+title = "Katna bilang mail app mo"
+text = """
+Kayang magbukas ng mga email link sa ibang app at sa mga website ng
+bagong mensahe sa Katna Mail, na may nakapunong address, subject at
+text. I-on ito sa Mga setting > Pangkalahatan > Default na mail app.
+"""
+
+["2026-09-27-0825-old-word-files-and-slides"]
+title = "Mga lumang Word file at slide"
+text = """
+Nabubuksan na sa viewer ang mga dokumentong Word 97–2003 (.doc) kasama
+ang mga heading, listahan at table nila, at ipinapakita ng mga slide ng
+PowerPoint (.pptx, .ppt) at OpenDocument (.odp) ang text ng bawat slide.
+Ipinapakita rin ng mga card nila ang mga unang linya. Ang mga file na
+hindi maipakita ng Katna ay direktang bumubukas sa default app mo.
+"""
+
+["2026-09-27-0825-opens-where-you-left-it"]
+title = "Bumubukas kung saan mo iniwan"
+text = """
+Bumubukas ang Katna Mail sa laki at puwestong mayroon ito noong isinara
+mo, naka-maximize kung ganoon ito. Kapag ini-quit ang Katna mula sa
+system tray, magsisimula ito nang bago. Sa Wayland, bumabalik ang puwesto
+kung saan ito sinusuportahan ng desktop (Plasma 6.7 at mas bago).
+"""
+
+["2026-09-27-0826-grammar-checking"]
+title = "Pag-check ng grammar"
+text = """
+Habang nagsusulat ka sa Ingles, sa text at sa subject, may amber na
+salungguhit ang mga mali sa grammar. I-right-click ang isa para sa
+pagtatama o para balewalain ito. Tumatakbo ito sa computer mo, gamit ang
+Harper; i-off ito sa Mga setting > Mag-compose.
+"""
+
+["2026-09-27-0828-check-before-sending"]
+title = "Isang check bago magpadala"
+text = """
+Kapag may binabanggit na attachment ang mensahe mo pero wala, o walang
+subject, magtatanong ang Katna bago ito ipadala, pati sa naka-iskedyul
+na mail.
+"""
+
+["2026-09-27-0831-writing-suggestions"]
+title = "Mga mungkahi sa pagsusulat"
+text = """
+Habang nagsusulat ka, lumalabas nang kulay abo ang malamang na kasunod ng
+isang parirala. Pindutin ang Tab para kunin ito, o magpatuloy sa
+pag-type. Natututo ang Katna ng mga parirala mula sa mga mail na
+ipinadala mo at sa usapang sinasagot mo, sa computer mo; i-off ito sa
+Mga setting > Mag-compose.
+"""
+
+["2026-09-27-1043-dialogs-translated"]
+title = "Mga dialog sa iyong wika"
+text = """
+Sumusunod na sa wikang pinili mo ang Tungkol, Ano’ng bago, ang mga
+welcome page at ang tour, ang pagdaragdag ng account, ang mga opsyon sa
+paghahanap at ang abiso ng crash.
+"""
+
+["2026-09-27-1129-compose-translated"]
+title = "Pagsusulat ng mail sa iyong wika"
+text = """
+Sumusunod na sa wikang pinili mo ang compose window, ang formatting bar
+nito, ang pag-iskedyul ng pagpapadala at ang signature editor, at
+ginagamit ng mga mungkahing oras ng pagpapadala ang paraan nito ng
+pagsulat ng petsa at ang 12- o 24-oras na orasang pinili mo. Ang theme
+na sumusunod sa desktop ay tinatawag na lang na System.
+"""
+
+["2026-09-27-1132-print-preview"]
+title = "Tingnan muna bago mag-print"
+text = """
+Binubuksan na muna ng I-print ang preview ng mga pahina, sa A4 o Letter,
+bago ang dialog ng printer mo. Bumubukas ang mga menu na Higit pa sa
+mismong ilalim ng button nila, na may icon sa tabi ng bawat item.
+"""
+
+["2026-09-27-1137-formatting-bar-colors"]
+title = "Mas malinaw na formatting bar"
+text = """
+May kulay ng accent color mo ang formatting bar, at ang mga format na
+naka-on, gaya ng Bold o listahan, ay nasa kulay ng selection. Sa isang
+sagot, nananatili sa ibaba ang Ipadala at ang mga tool nito habang
+nag-i-scroll ka.
+"""
+
+["2026-09-27-1200-notifications-translated"]
+title = "Mga notification sa iyong wika"
+text = """
+Sumusunod na sa wikang pinili mo ang mga notification ng bagong mail at
+ang mga button nito, at ang menu at tooltip ng icon sa system tray, at
+nagbabago agad kapag pinalitan mo ito.
+"""
+
+["2026-09-27-1242-whats-new-translated"]
+title = "Ano'ng bago sa iyong wika"
+text = """
+Lumalabas na ngayon ang mga talang ito sa wikang nakatakda sa Katna Mail. Mga draft pa ang mga salin, kaya sabihin sa amin kung saan puwedeng pagandahin ang pananalita.
+"""

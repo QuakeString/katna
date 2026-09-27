@@ -1,0 +1,328 @@
+# Katna Mail, Malay (Bahasa Melayu).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-27-0319-whats-new"]
+title = "Apa yang baharu, selepas setiap kemas kini"
+text = """
+Selepas kemas kini, Katna Mail menunjukkan apa yang berubah sekali
+sahaja, dan bukan lawatan alu-aluan. Tetapan pantas membukanya semula.
+"""
+
+["2026-09-27-0320-reply-buttons-fit"]
+title = "Butang balas yang sentiasa muat"
+text = """
+Balas, Balas semua dan Majukan kekal dalam satu baris: apabila tetingkap
+mengecil, ia bertukar menjadi ikon satu demi satu. Pada telefon, ia
+berkongsi lebar.
+"""
+
+["2026-09-27-0321-notifications-open-mail"]
+title = "Pemberitahuan membuka mel masing-masing"
+text = """
+Klik pemberitahuan mel baharu untuk membuka mesej itu, walaupun Katna
+Mail ditutup. Pemberitahuan juga ada Balas semua.
+"""
+
+["2026-09-27-0322-attachment-previews"]
+title = "Pratonton untuk lebih banyak lampiran"
+text = """
+Hamparan, CSV, fail teks dan dokumen menunjukkan pratonton pada kad
+masing-masing, dan latar pemapar kini lebih cerah.
+"""
+
+["2026-09-27-0323-frosted-menus"]
+title = "Menu kaca kabur"
+text = """
+Dengan Tetapan > Percubaan > Latar belakang kabur dihidupkan, menu dan
+popover menjadi seperti kaca kabur.
+"""
+
+["2026-09-27-0346-settings-search"]
+title = "Cari dalam tetapan anda"
+text = """
+Semasa Tetapan dibuka, kotak carian menemui apa-apa tetapan dan membawa
+anda terus ke sana. Tetapan ada lebih banyak tab, dalam susunan yang
+lebih jelas, dan penerangan panjang disimpan di sebalik butang (i).
+"""
+
+["2026-09-27-0410-crash-reports-kept"]
+title = "Laporan ranap kekal pada komputer anda"
+text = """
+Jika Katna Mail atau perkhidmatan latarnya ranap, permulaan seterusnya
+akan memberitahu anda, dengan laporan untuk dilihat atau disalin bagi
+laporan pepijat. Tetapan > Maklum balas pengguna menyenaraikannya.
+"""
+
+["2026-09-27-0438-calmer-reply"]
+title = "Balasan yang lebih tenang"
+text = """
+Balas dalam anak tetingkap bacaan mengekalkan Hantar dan pemformatan di
+bawah, melipat mel yang dipetik di sebalik "...", dan Buka balasan dalam
+tetingkap sendiri membuka balasan dalam tetingkapnya sendiri. Pada
+telefon, menulis mengambil seluruh tetingkap.
+"""
+
+["2026-09-27-0439-mail-in-own-window"]
+title = "Mel dalam tetingkapnya sendiri"
+text = """
+Shift+klik mesej, klik kanan padanya atau guna Dalam tetingkap baharu
+pada bar alat pembaca untuk membukanya dalam tetingkap sendiri. Cetak
+semua mencetak seluruh perbualan.
+"""
+
+["2026-09-27-0440-settings-on-phone"]
+title = "Tetapan pada telefon"
+text = """
+Pada skrin sempit, Tetapan dan Tetapan pantas memenuhi tetingkap, dan
+setiap menu dan popover ditutup dengan Escape atau klik di luarnya.
+"""
+
+["2026-09-27-0441-offline-mail"]
+title = "Pilih berapa banyak mel kekal luar talian"
+text = """
+Tetapan > Umum > Mel luar talian menyimpan seminggu, sebulan, tiga
+bulan, setahun atau semua mel anda pada komputer ini. Mel yang lebih
+lama dimuat turun apabila anda membukanya.
+"""
+
+["2026-09-27-0442-folder-pane-button"]
+title = "Butang anak tetingkap folder yang baharu"
+text = """
+Butang di bahagian atas kiri menunjukkan dan menyembunyikan anak
+tetingkap folder, dan sisi kirinya berisi semasa folder dipaparkan.
+"""
+
+["2026-09-27-0443-cards-and-phone-rows"]
+title = "Kad lebih kemas, telefon lebih tenang"
+text = """
+Senarai dan pembaca terletak pada kad dengan garis luar yang samar dan
+bayang pendek, menu sentiasa kekal di dalam tetingkap, dan pada telefon
+baris carian dan bar alat meluncur pergi semasa anda menatal.
+"""
+
+["2026-09-27-0444-about-katna"]
+title = "Perihal Katna"
+text = """
+Bantuan > Perihal Katna, juga dalam Tetapan pantas, menunjukkan versi,
+log perubahan dan setiap pustaka yang menjadi asas Katna, bersama
+pengarang dan lesennya. Versi dalam pengepala Tetapan juga membukanya.
+"""
+
+["2026-09-27-0457-settings-tabs-one-line"]
+title = "Tab Tetapan dalam satu baris"
+text = """
+Tab Tetapan kekal dalam satu baris: apabila tidak muat, anak panah di
+tepi dan roda tatal menggelongsorkan selebihnya ke dalam pandangan.
+Tandatangan dan templat berkongsi tab Karang, dan folder serta peraturan
+mel juga berkongsi satu tab.
+"""
+
+["2026-09-27-0515-send-crash-reports"]
+title = "Bantu tambah baik Katna, jika anda mahu"
+text = """
+Katna bertanya sekali sama ada mahu menghantar laporan ranap untuk
+membantu membetulkan apa yang tidak kena. Ia dihantar tanpa alamat IP,
+mesej atau alamat e-mel anda, dan hanya jika anda bersetuju. Ubahnya
+bila-bila masa dalam Tetapan > Maklum balas pengguna.
+"""
+
+["2026-09-27-0536-older-attachments-open"]
+title = "Lampiran mel lama terus dibuka"
+text = """
+Mengklik lampiran mel lama yang belum ada pada komputer ini akan memuat
+turunnya: lampiran itu terisi semasa dimuat turun, kemudian dibuka.
+"""
+
+["2026-09-27-0556-reading-options"]
+title = "Baca perbualan cara anda"
+text = """
+Tetapan > Umum > Bacaan boleh menunjukkan mesej terbaharu dahulu,
+membuka pengepala penuh setiap mesej, dan menamakan penerima dengan nama
+penuh dan bukan nama pertama sahaja.
+"""
+
+["2026-09-27-0609-send-and-archive"]
+title = "Hantar dan arkibkan"
+text = """
+Menu di sebelah Hantar pada balasan akan menghantarnya dan mengarkibkan
+perbualan. Tetapan > Karang boleh menjadikannya tindakan Hantar, dan
+boleh menghantar mel baharu dari akaun yang sama setiap kali.
+"""
+
+["2026-09-27-0627-scaling"]
+title = "Besarkan atau kecilkan semuanya"
+text = """
+Tetapan > Penampilan > Penskalaan mengubah saiz seluruh tetingkap, teks,
+ikon dan jarak secara sama rata, dari 75% hingga 200% di atas skala
+desktop anda.
+"""
+
+["2026-09-27-0645-shortcut-sets"]
+title = "Pintasan daripada apl mel yang anda kenali"
+text = """
+Tetapan > Pintasan boleh bermula daripada kekunci Gmail, Inbox by Gmail,
+Apple Mail, Outlook atau Thunderbird, menyenaraikannya dalam dua lajur,
+dan Pulihkan lalai membatalkan perubahan anda.
+"""
+
+["2026-09-27-0646-more-settings"]
+title = "Lebih banyak tetapan"
+text = """
+Buka Katna Mail semasa log masuk, pilih bila mel ditanda sebagai dibaca,
+jadikan butang balas membalas semua orang, sentiasa tunjukkan imej,
+senyapkan bunyi mel baharu, sembunyikan penanda Penting, sempitkan baris
+panjang, kekalkan warna asal mel dalam mod gelap, matikan pratonton
+lampiran, tulis dalam teks biasa, pilih bahasa ejaan dan lihat fail yang
+disimpan dalam foldernya.
+"""
+
+["2026-09-27-0706-your-language"]
+title = "Bahasa anda"
+text = """
+Pilih salah satu daripada 51 bahasa daripada butang bendera di bar atas,
+atau ikut bahasa desktop anda. Tarikh dan nombor kini mengikutnya; bahagian
+lain apl akan diterjemah dalam kemas kini akan datang. Terjemahan ini
+dideraf oleh AI, dan pembetulan amat dialu-alukan.
+"""
+
+["2026-09-27-0723-select-and-copy-text"]
+title = "Pilih dan salin teks dalam mel"
+text = """
+Seret merentasi mesej untuk memilih teksnya, klik dua kali untuk satu
+perkataan atau klik tiga kali untuk satu perenggan. Ctrl+C atau klik
+kanan menyalinnya, dan Ctrl+A memilih seluruh perbualan.
+"""
+
+["2026-09-27-0743-address-suggestions"]
+title = "Alamat dicadangkan semasa menaip"
+text = """
+Kepada, Sk dan Skt mencadangkan orang yang paling kerap anda tulis
+semasa anda menaip, walaupun ada salah taip. Pilih satu dengan kekunci
+anak panah dan Enter, Tab atau klik.
+"""
+
+["2026-09-27-0804-main-window-translated"]
+title = "Tetingkap utama dalam bahasa anda"
+text = """
+Rel apl, folder, tab, senarai, menu dan anak tetingkap bacaan kini
+mengikut bahasa yang anda pilih. Folder yang anda buat sendiri kekal
+dengan nama asalnya.
+"""
+
+["2026-09-27-0824-24-hour-clock"]
+title = "Jam 12 jam atau 24 jam"
+text = """
+Tetapan > Umum > Masa menunjukkan waktu dengan jam 12 jam atau 24 jam,
+tidak kira bagaimana bahasa itu menulisnya.
+"""
+
+["2026-09-27-0824-settings-translated"]
+title = "Tetapan dalam bahasa anda"
+text = """
+Tetapan, Tetapan pantas, akaun anda dan nama pintasan papan kekunci kini
+mengikut bahasa yang anda pilih, dan carian dalam Tetapan menemui baris
+melalui nama terjemahannya.
+"""
+
+["2026-09-27-0825-default-mail-app"]
+title = "Katna sebagai apl mel anda"
+text = """
+Pautan e-mel dalam apl lain dan di laman web boleh membuka mesej baharu
+dalam Katna Mail, dengan alamat, subjek dan teks sudah diisi. Hidupkannya
+dalam Tetapan > Umum > Apl mel lalai.
+"""
+
+["2026-09-27-0825-old-word-files-and-slides"]
+title = "Fail Word lama dan slaid"
+text = """
+Dokumen Word 97–2003 (.doc) kini dibuka dalam pemapar bersama tajuk,
+senarai dan jadualnya, dan slaid PowerPoint (.pptx, .ppt) serta
+OpenDocument (.odp) menunjukkan teks setiap slaid. Kad fail ini juga
+menunjukkan baris pertamanya. Fail yang tidak dapat ditunjukkan oleh
+Katna terus dibuka dalam apl lalai anda.
+"""
+
+["2026-09-27-0825-opens-where-you-left-it"]
+title = "Dibuka di tempat anda tinggalkan"
+text = """
+Katna Mail dibuka pada saiz dan kedudukan yang sama seperti semasa anda
+menutupnya, dimaksimumkan jika begitu keadaannya. Keluar daripada Katna
+melalui dulang sistem akan memulakannya semula dari awal. Pada Wayland,
+kedudukan dipulihkan jika desktop menyokongnya (Plasma 6.7 dan lebih
+baharu).
+"""
+
+["2026-09-27-0826-grammar-checking"]
+title = "Semakan tatabahasa"
+text = """
+Semasa anda menulis dalam bahasa Inggeris, dalam teks dan subjek,
+kesilapan tatabahasa diberi garis bawah berwarna ambar. Klik kanan pada
+satu untuk pembetulan atau untuk mengabaikannya. Ia berjalan pada
+komputer anda, dengan Harper; matikannya dalam Tetapan > Karang.
+"""
+
+["2026-09-27-0828-check-before-sending"]
+title = "Semakan sebelum menghantar"
+text = """
+Jika mesej anda menyebut lampiran tetapi tiada lampiran, atau tiada
+subjek, Katna akan bertanya sebelum menghantarnya, termasuk untuk mel
+berjadual.
+"""
+
+["2026-09-27-0831-writing-suggestions"]
+title = "Cadangan penulisan"
+text = """
+Semasa anda menulis, sambungan frasa yang mungkin muncul dalam warna
+kelabu. Tekan Tab untuk menerimanya, atau teruskan menaip. Katna belajar
+frasa daripada mel yang anda hantar dan daripada perbualan yang anda
+balas, pada komputer anda; matikannya dalam Tetapan > Karang.
+"""
+
+["2026-09-27-1043-dialogs-translated"]
+title = "Dialog dalam bahasa anda"
+text = """
+Perihal, Apa yang baharu, halaman alu-aluan dan lawatan, penambahan
+akaun, pilihan carian dan notis ranap kini mengikut bahasa yang anda
+pilih.
+"""
+
+["2026-09-27-1129-compose-translated"]
+title = "Tulis mel dalam bahasa anda"
+text = """
+Tetingkap karang, bar pemformatannya, hantar berjadual dan penyunting
+tandatangan kini mengikut bahasa yang anda pilih, dan waktu hantar yang
+dicadangkan menulis tarikh mengikut cara bahasa itu dan jam 12 atau 24
+jam yang anda pilih. Pilihan tema yang mengikut desktop kini hanya
+dipanggil Sistem.
+"""
+
+["2026-09-27-1132-print-preview"]
+title = "Lihat sebelum mencetak"
+text = """
+Cetak kini membuka pratonton halaman dahulu, pada A4 atau Letter,
+sebelum dialog pencetak anda. Menu Lagi dibuka tepat di bawah butangnya,
+dengan ikon di sebelah setiap item.
+"""
+
+["2026-09-27-1137-formatting-bar-colors"]
+title = "Bar pemformatan yang lebih jelas"
+text = """
+Bar pemformatan diwarnai dengan warna aksen anda, dan format yang aktif,
+seperti Tebal atau senarai, ditunjukkan dalam warna pilihan. Dalam
+balasan, Hantar dan alatnya kekal di bawah semasa anda menatal.
+"""
+
+["2026-09-27-1200-notifications-translated"]
+title = "Pemberitahuan dalam bahasa anda"
+text = """
+Pemberitahuan mel baharu dan butangnya, serta menu dan petua alat ikon
+dulang sistem, kini mengikut bahasa yang anda pilih dan bertukar
+sebaik sahaja anda mengubahnya.
+"""
+
+["2026-09-27-1242-whats-new-translated"]
+title = "Apa yang baharu dalam bahasa anda"
+text = """
+Nota ini kini dipaparkan dalam bahasa yang ditetapkan untuk Katna Mail. Terjemahannya masih draf, jadi beritahu kami di mana perkataannya boleh diperbaik.
+"""

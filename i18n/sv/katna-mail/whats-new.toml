@@ -1,0 +1,321 @@
+# Katna Mail, Swedish (Svenska).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-27-0319-whats-new"]
+title = "Nyheter efter varje uppdatering"
+text = """
+Efter en uppdatering visar Katna Mail vad som har ändrats, en gång, i
+stället för välkomstturen. Snabbinställningar öppnar det igen.
+"""
+
+["2026-09-27-0320-reply-buttons-fit"]
+title = "Svarsknappar som alltid får plats"
+text = """
+Svara, Svara alla och Vidarebefordra stannar på en rad: när fönstret
+blir smalare viks de ihop till ikoner en i taget. På en telefon delar de
+på bredden.
+"""
+
+["2026-09-27-0321-notifications-open-mail"]
+title = "Aviseringar öppnar sitt mejl"
+text = """
+Klicka på en avisering om nytt mejl för att öppna det meddelandet, även
+när Katna Mail är stängt. Aviseringar har också Svara alla.
+"""
+
+["2026-09-27-0322-attachment-previews"]
+title = "Förhandsvisning av fler bilagor"
+text = """
+Kalkylblad, CSV, textfiler och dokument visar en förhandsvisning på sitt
+kort, och visarens bakgrund är ljusare.
+"""
+
+["2026-09-27-0323-frosted-menus"]
+title = "Frostade menyer"
+text = """
+Med Inställningar > Experimentellt > Suddig bakgrund påslaget blir menyer
+och popup-rutor som frostat glas.
+"""
+
+["2026-09-27-0346-settings-search"]
+title = "Sök i dina inställningar"
+text = """
+När Inställningar är öppet hittar sökrutan vilken inställning som helst
+och tar dig dit. Inställningar har fler flikar, i en tydligare ordning,
+och långa förklaringar ligger bakom en (i)-knapp.
+"""
+
+["2026-09-27-0410-crash-reports-kept"]
+title = "Kraschrapporter stannar på din dator"
+text = """
+Om Katna Mail eller dess bakgrundstjänst kraschar säger nästa start det,
+med rapporten att visa eller kopiera till en felrapport. Inställningar >
+Feedback listar dem.
+"""
+
+["2026-09-27-0438-calmer-reply"]
+title = "Lugnare svar"
+text = """
+Svar i läsrutan håller Skicka och formateringen längst ned, viker in det
+citerade mejlet bakom "..." och Öppna svaret i eget fönster gör just
+det. På en telefon tar skrivandet hela fönstret.
+"""
+
+["2026-09-27-0439-mail-in-own-window"]
+title = "Mejl i eget fönster"
+text = """
+Skift+klicka på ett meddelande, högerklicka på det eller använd I nytt
+fönster i läsarens verktygsfält för att öppna det i ett eget fönster.
+Skriv ut alla skriver ut hela konversationen.
+"""
+
+["2026-09-27-0440-settings-on-phone"]
+title = "Inställningar på en telefon"
+text = """
+På en smal skärm fyller Inställningar och Snabbinställningar fönstret,
+och varje meny och popup-ruta stängs med Escape eller ett klick utanför.
+"""
+
+["2026-09-27-0441-offline-mail"]
+title = "Välj hur mycket mejl som finns offline"
+text = """
+Inställningar > Allmänt > E-post offline sparar en vecka, en månad, tre
+månader, ett år eller all din e-post på den här datorn. Äldre mejl
+laddas ned när du öppnar dem.
+"""
+
+["2026-09-27-0442-folder-pane-button"]
+title = "En ny knapp för mappfältet"
+text = """
+Knappen längst upp till vänster visar och döljer mappfältet, och dess
+vänstra sida är ifylld medan mapparna syns.
+"""
+
+["2026-09-27-0443-cards-and-phone-rows"]
+title = "Renare kort, lugnare telefon"
+text = """
+Listan och läsaren ligger på kort med en svag kontur och en kort skugga,
+menyer stannar alltid inom fönstret, och på en telefon glider sök- och
+verktygsraderna undan när du scrollar.
+"""
+
+["2026-09-27-0444-about-katna"]
+title = "Om Katna"
+text = """
+Hjälp > Om Katna, som också finns i Snabbinställningar, visar versionen,
+ändringsloggen och varje bibliotek Katna bygger på, med upphovspersoner
+och licens. Versionen i sidhuvudet i Inställningar öppnar det också.
+"""
+
+["2026-09-27-0457-settings-tabs-one-line"]
+title = "Inställningarnas flikar på en rad"
+text = """
+Flikarna i Inställningar stannar på en rad: när de inte får plats för
+pilar vid kanterna och scrollhjulet in resten. Signaturer och mallar
+delar fliken Skriva, och mappar och e-postregler delar också en.
+"""
+
+["2026-09-27-0515-send-crash-reports"]
+title = "Hjälp till att förbättra Katna, om du vill"
+text = """
+Katna frågar en gång om du vill skicka kraschrapporter för att hjälpa
+till att rätta det som gick fel. De skickas utan din IP-adress, dina
+meddelanden eller e-postadresser, och bara om du säger ja. Ändra det när
+som helst i Inställningar > Feedback.
+"""
+
+["2026-09-27-0536-older-attachments-open"]
+title = "Bilagor i äldre mejl öppnas direkt"
+text = """
+Klickar du på en bilaga i ett äldre mejl som inte finns på datorn än
+laddas den ned: bilagan fylls på under tiden och öppnas sedan.
+"""
+
+["2026-09-27-0556-reading-options"]
+title = "Läs konversationer på ditt sätt"
+text = """
+Inställningar > Allmänt > Läsa kan visa det nyaste meddelandet först,
+öppna de fullständiga rubrikerna för varje meddelande och visa
+mottagarnas fullständiga namn i stället för förnamnet.
+"""
+
+["2026-09-27-0609-send-and-archive"]
+title = "Skicka och arkivera"
+text = """
+Menyn bredvid Skicka i ett svar skickar det och arkiverar
+konversationen. Inställningar > Skriva kan göra det till vad Skicka gör,
+och kan skicka nya mejl från samma konto varje gång.
+"""
+
+["2026-09-27-0627-scaling"]
+title = "Gör allt större eller mindre"
+text = """
+Inställningar > Utseende > Skalning ändrar storleken på hela fönstret,
+text, ikoner och mellanrum lika, från 75 % till 200 % utöver skrivbordets
+egen skala.
+"""
+
+["2026-09-27-0645-shortcut-sets"]
+title = "Kortkommandon från mejlappen du känner"
+text = """
+Inställningar > Kortkommandon kan utgå från tangenterna i Gmail, Inbox
+by Gmail, Apple Mail, Outlook eller Thunderbird, visar dem i två
+kolumner, och Återställ standardvärden tar tillbaka dina ändringar.
+"""
+
+["2026-09-27-0646-more-settings"]
+title = "Fler inställningar"
+text = """
+Öppna Katna Mail vid inloggning, välj när mejl markeras som läst, låt
+svarsknappen svara alla, visa alltid bilder, stäng av ljudet för nytt
+mejl, dölj Viktigt-markeringar, gör långa rader smalare, behåll mejlens
+egna färger i mörkt läge, stäng av förhandsvisning av bilagor, skriv i
+oformaterad text, välj stavningsspråk och se sparade filer i deras mapp.
+"""
+
+["2026-09-27-0706-your-language"]
+title = "Ditt språk"
+text = """
+Välj ett av 51 språk med flaggknappen i översta fältet, eller följ
+skrivbordets. Datum och tal följer det redan nu; resten av appen
+översätts i de kommande uppdateringarna. Översättningarna har skrivits
+av AI, och rättelser är välkomna.
+"""
+
+["2026-09-27-0723-select-and-copy-text"]
+title = "Markera och kopiera text i mejl"
+text = """
+Dra över ett meddelande för att markera texten, dubbelklicka för ett ord
+eller trippelklicka för ett stycke. Ctrl+C eller ett högerklick kopierar
+det, och Ctrl+A markerar hela konversationen.
+"""
+
+["2026-09-27-0743-address-suggestions"]
+title = "Adresser föreslås medan du skriver"
+text = """
+Till, Kopia och Dold kopia föreslår de personer du skriver oftast till
+medan du skriver, även med ett stavfel. Välj en med piltangenterna och
+Enter, Tab eller ett klick.
+"""
+
+["2026-09-27-0804-main-window-translated"]
+title = "Huvudfönstret på ditt språk"
+text = """
+Appfältet, mapparna, flikarna, listan, menyerna och läsrutan följer nu
+språket du väljer. Mappar du själv har skapat behåller sina namn.
+"""
+
+["2026-09-27-0824-24-hour-clock"]
+title = "12- eller 24-timmarsklocka"
+text = """
+Inställningar > Allmänt > Tid visar tider med 12- eller
+24-timmarsklocka, oavsett hur språket skriver dem.
+"""
+
+["2026-09-27-0824-settings-translated"]
+title = "Inställningar på ditt språk"
+text = """
+Inställningar, Snabbinställningar, dina konton och namnen på
+kortkommandon följer nu språket du väljer, och sökning i Inställningar
+hittar rader på deras översatta namn.
+"""
+
+["2026-09-27-0825-default-mail-app"]
+title = "Katna som din mejlapp"
+text = """
+E-postlänkar i andra appar och på webbplatser kan öppna ett nytt
+meddelande i Katna Mail, med adress, ämne och text ifyllda. Slå på det i
+Inställningar > Allmänt > Standardapp för e-post.
+"""
+
+["2026-09-27-0825-old-word-files-and-slides"]
+title = "Gamla Word-filer och bilder"
+text = """
+Word 97–2003-dokument (.doc) öppnas nu i visaren med sina rubriker,
+listor och tabeller, och presentationer i PowerPoint (.pptx, .ppt) och
+OpenDocument (.odp) visar texten på varje bild. Deras kort visar också
+de första raderna. Filer som Katna inte kan visa öppnas direkt i din
+standardapp.
+"""
+
+["2026-09-27-0825-opens-where-you-left-it"]
+title = "Öppnas där du lämnade det"
+text = """
+Katna Mail öppnas med samma storlek och på samma plats som när du
+stängde det, maximerat om det var det. Avslutar du Katna från
+systemfältet startar det från början. På Wayland kommer platsen tillbaka
+där skrivbordet stöder det (Plasma 6.7 och senare).
+"""
+
+["2026-09-27-0826-grammar-checking"]
+title = "Grammatikkontroll"
+text = """
+Medan du skriver på engelska, i texten och i ämnet, får grammatikfel en
+bärnstensfärgad understrykning. Högerklicka på ett för en rättning eller
+för att ignorera det. Det körs på din dator, med Harper; stäng av det i
+Inställningar > Skriva.
+"""
+
+["2026-09-27-0828-check-before-sending"]
+title = "En kontroll innan du skickar"
+text = """
+Om ditt meddelande nämner en bilaga men saknar en, eller saknar ämne,
+frågar Katna innan det skickas, även för schemalagda mejl.
+"""
+
+["2026-09-27-0831-writing-suggestions"]
+title = "Skrivförslag"
+text = """
+Medan du skriver visas den troliga fortsättningen på en fras i grått.
+Tryck på Tab för att ta den, eller fortsätt skriva. Katna lär sig
+fraserna från mejl du har skickat och från konversationen du svarar på,
+på din dator; stäng av det i Inställningar > Skriva.
+"""
+
+["2026-09-27-1043-dialogs-translated"]
+title = "Dialogrutor på ditt språk"
+text = """
+Om, Nyheter, välkomstsidorna och turen, att lägga till ett konto,
+sökalternativen och kraschmeddelandet följer nu språket du väljer.
+"""
+
+["2026-09-27-1129-compose-translated"]
+title = "Skriv mejl på ditt språk"
+text = """
+Skrivfönstret, dess formateringsfält, schemalagd sändning och
+signaturredigeraren följer nu språket du väljer, och föreslagna
+sändningstider skriver datum på språkets sätt och med den 12- eller
+24-timmarsklocka du valt. Temavalet som följer skrivbordet heter nu
+helt enkelt System.
+"""
+
+["2026-09-27-1132-print-preview"]
+title = "Se det innan du skriver ut"
+text = """
+Skriv ut öppnar nu först en förhandsvisning av sidorna, på A4 eller
+Letter, före skrivarens dialogruta. Menyerna Mer öppnas direkt under sin
+knapp, med en ikon bredvid varje alternativ.
+"""
+
+["2026-09-27-1137-formatting-bar-colors"]
+title = "Tydligare formateringsfält"
+text = """
+Formateringsfältet är tonat i din accentfärg, och formaten som är på,
+som Fet eller en lista, visas i markeringsfärgen. I ett svar stannar
+Skicka och dess verktyg längst ned när du scrollar.
+"""
+
+["2026-09-27-1200-notifications-translated"]
+title = "Aviseringar på ditt språk"
+text = """
+Aviseringar om nytt mejl och deras knappar, och menyn och verktygstipset
+för ikonen i systemfältet, följer nu språket du väljer och byter så fort
+du ändrar det.
+"""
+
+["2026-09-27-1242-whats-new-translated"]
+title = "Nyheter på ditt språk"
+text = """
+De här anteckningarna visas nu på det språk Katna Mail är inställt på. Översättningarna är utkast, så berätta för oss var formuleringen kan bli bättre.
+"""

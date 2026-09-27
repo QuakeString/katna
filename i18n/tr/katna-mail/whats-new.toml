@@ -1,0 +1,324 @@
+# Katna Mail, Turkish (Türkçe).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-27-0319-whats-new"]
+title = "Her güncellemeden sonra Yenilikler"
+text = """
+Bir güncellemeden sonra Katna Mail, hoş geldin turu yerine nelerin
+değiştiğini bir kez gösterir. Hızlı ayarlar onu yeniden açar.
+"""
+
+["2026-09-27-0320-reply-buttons-fit"]
+title = "Her zaman sığan yanıt düğmeleri"
+text = """
+Yanıtla, Tümünü yanıtla ve Yönlendir tek satırda kalır: pencere
+daraldıkça teker teker simgeye dönüşürler. Telefonda genişliği
+paylaşırlar.
+"""
+
+["2026-09-27-0321-notifications-open-mail"]
+title = "Bildirimler kendi e-postasını açar"
+text = """
+Yeni e-posta bildirimine tıklayın, Katna Mail kapalı olsa bile o ileti
+açılsın. Bildirimlerde artık Tümünü yanıtla da var.
+"""
+
+["2026-09-27-0322-attachment-previews"]
+title = "Daha çok ek için önizleme"
+text = """
+Elektronik tablolar, CSV, metin dosyaları ve belgeler kartlarında bir
+önizleme gösterir; görüntüleyicinin arka planı da artık daha açık.
+"""
+
+["2026-09-27-0323-frosted-menus"]
+title = "Buzlu cam menüler"
+text = """
+Ayarlar > Deneysel > Bulanık arka plan açıkken menüler ve açılır
+pencereler buzlu cama dönüşür.
+"""
+
+["2026-09-27-0346-settings-search"]
+title = "Ayarlarınızda arayın"
+text = """
+Ayarlar açıkken arama kutusu her ayarı bulur ve sizi oraya götürür.
+Ayarlar'da daha çok sekme var, daha anlaşılır bir sırayla; uzun
+açıklamalar da bir (i) düğmesinin arkasında duruyor.
+"""
+
+["2026-09-27-0410-crash-reports-kept"]
+title = "Çökme raporları bilgisayarınızda kalır"
+text = """
+Katna Mail ya da arka plan hizmeti çökerse, bir sonraki açılışta bunu
+söyler; raporu görüntüleyebilir ya da bir hata bildirimi için
+kopyalayabilirsiniz. Ayarlar > Kullanıcı geri bildirimi hepsini listeler.
+"""
+
+["2026-09-27-0438-calmer-reply"]
+title = "Daha sakin bir yanıt"
+text = """
+Okuma bölmesinde yanıt yazarken Gönder ve biçimlendirme altta kalır,
+alıntılanan e-posta "..." arkasına katlanır ve Yanıtı ayrı aç yanıtı
+kendi penceresinde açar. Telefonda yazmak tüm pencereyi kaplar.
+"""
+
+["2026-09-27-0439-mail-in-own-window"]
+title = "E-posta kendi penceresinde"
+text = """
+Bir iletiyi kendi penceresinde açmak için Shift ile tıklayın, sağ
+tıklayın ya da okuma araç çubuğundaki Yeni pencerede'yi kullanın.
+Tümünü yazdır tüm konuşmayı yazdırır.
+"""
+
+["2026-09-27-0440-settings-on-phone"]
+title = "Telefonda Ayarlar"
+text = """
+Dar bir ekranda Ayarlar ve Hızlı ayarlar pencereyi doldurur; her menü ve
+açılır pencere Escape ile ya da dışarıya tıklayınca kapanır.
+"""
+
+["2026-09-27-0441-offline-mail"]
+title = "Ne kadar e-postanın çevrimdışı kalacağını seçin"
+text = """
+Ayarlar > Genel > Çevrimdışı posta bu bilgisayarda bir hafta, bir ay,
+üç ay, bir yıl ya da tüm e-postanızı tutar. Daha eski e-postalar siz
+açtığınızda indirilir.
+"""
+
+["2026-09-27-0442-folder-pane-button"]
+title = "Yeni bir klasör bölmesi düğmesi"
+text = """
+Sol üstteki düğme klasör bölmesini gösterir ve gizler; klasörler
+görünürken düğmenin sol yarısı dolu olur.
+"""
+
+["2026-09-27-0443-cards-and-phone-rows"]
+title = "Daha temiz kartlar, daha sakin telefon"
+text = """
+Liste ve okuyucu, ince bir kenarlık ve kısa bir gölgesi olan kartlar
+üzerinde durur; menüler her zaman pencerenin içinde kalır ve telefonda
+arama ile araç çubuğu satırları kaydırdıkça gizlenir.
+"""
+
+["2026-09-27-0444-about-katna"]
+title = "Katna hakkında"
+text = """
+Yardım > Katna hakkında (Hızlı ayarlar'da da var) sürümü, değişiklik
+günlüğünü ve Katna'nın üzerine kurulduğu her kitaplığı, yazarları ve
+lisansıyla birlikte gösterir. Ayarlar başlığındaki sürüm de onu açar.
+"""
+
+["2026-09-27-0457-settings-tabs-one-line"]
+title = "Ayarlar sekmeleri tek satırda"
+text = """
+Ayarlar sekmeleri tek satırda kalır: sığmadıklarında kenarlardaki oklar
+ve fare tekerleği gerisini görünüme kaydırır. İmzalar ve şablonlar bir
+Oluşturma sekmesini paylaşır, klasörler ve posta kuralları da bir sekmeyi.
+"""
+
+["2026-09-27-0515-send-crash-reports"]
+title = "İsterseniz Katna'yı geliştirmeye yardım edin"
+text = """
+Katna, sorunların düzeltilmesine yardımcı olması için çökme raporlarının
+gönderilip gönderilmeyeceğini bir kez sorar. Raporlar IP adresiniz,
+iletileriniz ya da e-posta adresleriniz olmadan ve yalnızca siz evet
+derseniz gider. İstediğiniz zaman Ayarlar > Kullanıcı geri bildirimi'nden
+değiştirebilirsiniz.
+"""
+
+["2026-09-27-0536-older-attachments-open"]
+title = "Eski e-postaların ekleri hemen açılır"
+text = """
+Henüz bu bilgisayarda olmayan eski bir e-postanın ekine tıklamak onu
+indirir: ek inerken dolar, sonra açılır.
+"""
+
+["2026-09-27-0556-reading-options"]
+title = "Konuşmaları istediğiniz gibi okuyun"
+text = """
+Ayarlar > Genel > Okuma en yeni iletiyi önce gösterebilir, her iletinin
+tüm üst bilgilerini açabilir ve alıcıları yalnızca adlarıyla değil, tam
+adlarıyla gösterebilir.
+"""
+
+["2026-09-27-0609-send-and-archive"]
+title = "Gönder ve arşivle"
+text = """
+Bir yanıtta Gönder'in yanındaki menü yanıtı gönderir ve konuşmayı
+arşivler. Ayarlar > Oluşturma, Gönder'in bunu yapmasını sağlayabilir ve
+yeni e-postaları her seferinde aynı hesaptan gönderebilir.
+"""
+
+["2026-09-27-0627-scaling"]
+title = "Her şeyi büyütün ya da küçültün"
+text = """
+Ayarlar > Görünüm > Ölçekleme tüm pencereyi, metni, simgeleri ve
+boşlukları birlikte, masaüstünüzün ölçeğinin üzerine %75 ile %200
+arasında boyutlandırır.
+"""
+
+["2026-09-27-0645-shortcut-sets"]
+title = "Alıştığınız e-posta uygulamasının kısayolları"
+text = """
+Ayarlar > Kısayollar; Gmail, Inbox by Gmail, Apple Mail, Outlook ya da
+Thunderbird tuşlarından başlayabilir, kısayolları iki sütunda listeler
+ve Varsayılanları geri yükle değişikliklerinizi geri alır.
+"""
+
+["2026-09-27-0646-more-settings"]
+title = "Daha çok ayar"
+text = """
+Katna Mail'i oturum açılışında başlatın, e-postanın ne zaman okundu
+sayılacağını seçin, yanıt düğmesini herkese yanıtlayacak hale getirin,
+resimleri her zaman gösterin, yeni e-posta sesini kapatın, Önemli
+işaretlerini gizleyin, uzun satırları daraltın, karanlık modda
+e-postanın kendi renklerini koruyun, ek önizlemelerini kapatın, düz
+metinle yazın, yazım denetimi dilini seçin ve kaydedilen dosyaları
+klasörlerinde görün.
+"""
+
+["2026-09-27-0706-your-language"]
+title = "Sizin diliniz"
+text = """
+Üst çubuktaki bayrak düğmesinden 51 dilden birini seçin ya da
+masaüstünüzün dilini izleyin. Tarihler ve sayılar artık ona uyuyor;
+uygulamanın geri kalanı sonraki güncellemelerde çevrilecek. Çeviriler
+yapay zekâ ile hazırlandı; düzeltmelere açığız.
+"""
+
+["2026-09-27-0723-select-and-copy-text"]
+title = "E-postada metin seçin ve kopyalayın"
+text = """
+Metnini seçmek için bir iletinin üzerinde sürükleyin; bir sözcük için
+çift, bir paragraf için üç kez tıklayın. Ctrl+C ya da sağ tık onu
+kopyalar, Ctrl+A tüm konuşmayı seçer.
+"""
+
+["2026-09-27-0743-address-suggestions"]
+title = "Yazarken önerilen adresler"
+text = """
+Kime, Bilgi ve Gizli, yazarken en çok yazıştığınız kişileri önerir,
+yazım hatası olsa bile. Ok tuşları ve Enter, Tab ya da bir tıklamayla
+birini seçin.
+"""
+
+["2026-09-27-0804-main-window-translated"]
+title = "Ana pencere sizin dilinizde"
+text = """
+Uygulama çubuğu, klasörler, sekmeler, liste, menüler ve okuma bölmesi
+artık seçtiğiniz dili izliyor. Oluşturduğunuz klasörler kendi adlarını
+korur.
+"""
+
+["2026-09-27-0824-24-hour-clock"]
+title = "12 saatlik ya da 24 saatlik saat"
+text = """
+Ayarlar > Genel > Saat, dil nasıl yazarsa yazsın saatleri 12 saatlik ya
+da 24 saatlik düzende gösterir.
+"""
+
+["2026-09-27-0824-settings-translated"]
+title = "Ayarlar sizin dilinizde"
+text = """
+Ayarlar, Hızlı ayarlar, hesaplarınız ve klavye kısayollarının adları
+artık seçtiğiniz dili izliyor; Ayarlar'da arama da satırları çevrilmiş
+adlarıyla buluyor.
+"""
+
+["2026-09-27-0825-default-mail-app"]
+title = "E-posta uygulamanız olarak Katna"
+text = """
+Başka uygulamalardaki ve web sitelerindeki e-posta bağlantıları, adres,
+konu ve metin doldurulmuş olarak Katna Mail'de yeni bir ileti açabilir.
+Ayarlar > Genel > Varsayılan e-posta uygulaması'ndan açın.
+"""
+
+["2026-09-27-0825-old-word-files-and-slides"]
+title = "Eski Word dosyaları ve slaytlar"
+text = """
+Word 97–2003 belgeleri (.doc) artık görüntüleyicide başlıkları,
+listeleri ve tablolarıyla açılır; PowerPoint (.pptx, .ppt) ve
+OpenDocument (.odp) slaytları her slaytın metnini gösterir. Kartlarında
+da ilk satırlar görünür. Katna'nın gösteremediği dosyalar doğrudan
+varsayılan uygulamanızda açılır.
+"""
+
+["2026-09-27-0825-opens-where-you-left-it"]
+title = "Bıraktığınız yerde açılır"
+text = """
+Katna Mail, kapattığınızda sahip olduğu boyut ve konumda açılır; ekranı
+kaplıyorsa yine öyle açılır. Katna'dan sistem tepsisinden çıkmak onu
+sıfırdan başlatır. Wayland'de konum, masaüstünün desteklediği yerde geri
+gelir (Plasma 6.7 ve sonrası).
+"""
+
+["2026-09-27-0826-grammar-checking"]
+title = "Dil bilgisi denetimi"
+text = """
+İngilizce yazarken, metinde ve konuda, dil bilgisi hatalarının altı
+kehribar renkli çizilir. Bir düzeltme için ya da yok saymak için üzerine
+sağ tıklayın. Harper ile bilgisayarınızda çalışır; Ayarlar > Oluşturma
+bölümünden kapatabilirsiniz.
+"""
+
+["2026-09-27-0828-check-before-sending"]
+title = "Göndermeden önce bir kontrol"
+text = """
+İletiniz bir ekten söz ediyor ama ek yoksa ya da konusu yoksa, Katna
+göndermeden önce sorar; zamanlanmış e-postalar için de.
+"""
+
+["2026-09-27-0831-writing-suggestions"]
+title = "Yazma önerileri"
+text = """
+Siz yazarken bir ifadenin olası devamı gri olarak görünür. Almak için
+Tab'a basın ya da yazmaya devam edin. Katna ifadeleri gönderdiğiniz
+e-postalardan ve yanıtladığınız konuşmadan, bilgisayarınızda öğrenir;
+Ayarlar > Oluşturma bölümünden kapatabilirsiniz.
+"""
+
+["2026-09-27-1043-dialogs-translated"]
+title = "İletişim kutuları sizin dilinizde"
+text = """
+Hakkında, Yenilikler, hoş geldin sayfaları ve tur, hesap ekleme, arama
+seçenekleri ve çökme bildirimi artık seçtiğiniz dili izliyor.
+"""
+
+["2026-09-27-1129-compose-translated"]
+title = "E-posta yazmak sizin dilinizde"
+text = """
+Oluşturma penceresi, biçimlendirme çubuğu, zamanlanmış gönderim ve imza
+düzenleyici artık seçtiğiniz dili izliyor; önerilen gönderim saatleri
+de o dilin tarih yazımını ve seçtiğiniz 12 ya da 24 saatlik düzeni
+kullanıyor. Masaüstünü izleyen tema seçeneğinin adı artık kısaca Sistem.
+"""
+
+["2026-09-27-1132-print-preview"]
+title = "Yazdırmadan önce görün"
+text = """
+Yazdır artık yazıcı iletişim kutusundan önce sayfaların A4 ya da Letter
+boyutunda bir önizlemesini açıyor. Diğer menüleri tam düğmelerinin
+altında açılır ve her öğenin yanında bir simge var.
+"""
+
+["2026-09-27-1137-formatting-bar-colors"]
+title = "Daha net bir biçimlendirme çubuğu"
+text = """
+Biçimlendirme çubuğu vurgu renginizle renklenir; Kalın ya da bir liste
+gibi açık olan biçimler seçim renginde görünür. Bir yanıtta Gönder ve
+araçları kaydırırken altta kalır.
+"""
+
+["2026-09-27-1200-notifications-translated"]
+title = "Bildirimler sizin dilinizde"
+text = """
+Yeni e-posta bildirimleri ve düğmeleri, sistem tepsisi simgesinin menüsü
+ve ipucu artık seçtiğiniz dili izliyor ve dili değiştirir değiştirmez
+geçiş yapıyor.
+"""
+
+["2026-09-27-1242-whats-new-translated"]
+title = "Yenilikler kendi dilinizde"
+text = """
+Bu notlar artık Katna Mail'in ayarlandığı dilde görünüyor. Çeviriler taslak; ifadelerin nerede daha iyi olabileceğini bize bildirin.
+"""

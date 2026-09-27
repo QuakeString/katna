@@ -1,0 +1,328 @@
+# Katna Mail, Swahili (Kiswahili).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-27-0319-whats-new"]
+title = "Kilicho kipya, baada ya kila sasisho"
+text = """
+Baada ya sasisho, Katna Mail inaonyesha kilichobadilika, mara moja tu,
+badala ya ziara ya makaribisho. Mipangilio ya haraka inaifungua tena.
+"""
+
+["2026-09-27-0320-reply-buttons-fit"]
+title = "Vitufe vya kujibu vinavyotosha kila wakati"
+text = """
+Jibu, Jibu wote na Sambaza hukaa kwenye mstari mmoja: dirisha
+linapopungua upana, hujikunja kuwa aikoni kimoja baada ya kingine.
+Kwenye simu hugawana upana.
+"""
+
+["2026-09-27-0321-notifications-open-mail"]
+title = "Arifa hufungua barua yake"
+text = """
+Bofya arifa ya barua mpya ili kufungua ujumbe huo, hata Katna Mail
+ikiwa imefungwa. Arifa pia zina Jibu wote.
+"""
+
+["2026-09-27-0322-attachment-previews"]
+title = "Onyesho la kukagua la viambatisho zaidi"
+text = """
+Lahajedwali, CSV, faili za maandishi na hati huonyesha onyesho la
+kukagua kwenye kadi yao, na mandharinyuma ya kitazamaji ni angavu zaidi.
+"""
+
+["2026-09-27-0323-frosted-menus"]
+title = "Menyu za kioo chenye ukungu"
+text = """
+Mipangilio > Majaribio > Mandharinyuma yenye ukungu ikiwa imewashwa,
+menyu na vidirisha ibukizi huwa kama kioo chenye ukungu.
+"""
+
+["2026-09-27-0346-settings-search"]
+title = "Tafuta katika mipangilio yako"
+text = """
+Mipangilio ikiwa wazi, kisanduku cha kutafuta hupata mpangilio wowote na
+kukupeleka hapo. Mipangilio ina vichupo zaidi, kwa mpangilio ulio wazi
+zaidi, na maelezo marefu yamewekwa nyuma ya kitufe cha (i).
+"""
+
+["2026-09-27-0410-crash-reports-kept"]
+title = "Ripoti za kuharibika hubaki kwenye kompyuta yako"
+text = """
+Katna Mail au huduma yake ya chinichini ikiharibika, itakuambia
+itakapoanza tena, pamoja na ripoti ya kuona au kunakili kwa ajili ya
+ripoti ya hitilafu. Mipangilio > Maoni ya mtumiaji huziorodhesha.
+"""
+
+["2026-09-27-0438-calmer-reply"]
+title = "Kujibu kwa utulivu zaidi"
+text = """
+Kujibu kwenye kidirisha cha kusoma huweka Tuma na uumbizaji chini,
+hukunja barua iliyonukuliwa nyuma ya "...", na Fungua jibu nje hufungua
+jibu kwenye dirisha lake. Kwenye simu, kuandika huchukua dirisha zima.
+"""
+
+["2026-09-27-0439-mail-in-own-window"]
+title = "Barua kwenye dirisha lake"
+text = """
+Shift+bofya ujumbe, ubofye kulia au tumia Katika dirisha jipya kwenye
+upau wa zana wa kusoma ili kuufungua kwenye dirisha lake. Chapisha zote
+huchapisha mazungumzo yote.
+"""
+
+["2026-09-27-0440-settings-on-phone"]
+title = "Mipangilio kwenye simu"
+text = """
+Kwenye skrini nyembamba, Mipangilio na Mipangilio ya haraka hujaza
+dirisha, na kila menyu na kidirisha ibukizi hufungwa kwa Escape au kwa
+kubofya nje yake.
+"""
+
+["2026-09-27-0441-offline-mail"]
+title = "Chagua kiasi cha barua kinachobaki nje ya mtandao"
+text = """
+Mipangilio > Jumla > Barua nje ya mtandao huhifadhi wiki moja, mwezi
+mmoja, miezi mitatu, mwaka mmoja au barua zako zote kwenye kompyuta
+hii. Barua za zamani zaidi hupakuliwa unapozifungua.
+"""
+
+["2026-09-27-0442-folder-pane-button"]
+title = "Kitufe kipya cha kidirisha cha folda"
+text = """
+Kitufe kilicho juu kushoto huonyesha na kuficha kidirisha cha folda, na
+upande wake wa kushoto hujazwa wakati folda zinaonekana.
+"""
+
+["2026-09-27-0443-cards-and-phone-rows"]
+title = "Kadi safi zaidi, simu tulivu zaidi"
+text = """
+Orodha na kisomaji hukaa kwenye kadi zenye mstari hafifu na kivuli
+kifupi, menyu hubaki ndani ya dirisha kila wakati, na kwenye simu safu
+za kutafuta na upau wa zana huteleza kando unaposogeza.
+"""
+
+["2026-09-27-0444-about-katna"]
+title = "Kuhusu Katna"
+text = """
+Usaidizi > Kuhusu Katna, inayopatikana pia kwenye Mipangilio ya haraka,
+huonyesha toleo, kumbukumbu ya mabadiliko na kila maktaba ambayo Katna
+imejengwa juu yake, pamoja na waandishi na leseni zake. Toleo lililo
+kwenye kichwa cha Mipangilio huifungua pia.
+"""
+
+["2026-09-27-0457-settings-tabs-one-line"]
+title = "Vichupo vya Mipangilio kwenye mstari mmoja"
+text = """
+Vichupo vya Mipangilio hukaa kwenye mstari mmoja: visipotosha, mishale
+iliyo pembeni na gurudumu la kipanya huleta vilivyobaki. Sahihi na
+violezo hushiriki kichupo cha Tunga, na folda na sheria za barua
+hushiriki kichupo kimoja pia.
+"""
+
+["2026-09-27-0515-send-crash-reports"]
+title = "Saidia kuboresha Katna, ukipenda"
+text = """
+Katna huuliza mara moja kama itume ripoti za kuharibika ili kusaidia
+kurekebisha kilichoharibika. Hutumwa bila anwani yako ya IP, jumbe zako
+wala anwani za barua pepe, na tu ukikubali. Badilisha wakati wowote
+katika Mipangilio > Maoni ya mtumiaji.
+"""
+
+["2026-09-27-0536-older-attachments-open"]
+title = "Viambatisho vya barua za zamani hufunguka mara moja"
+text = """
+Kubofya kiambatisho cha barua ya zamani ambacho bado hakipo kwenye
+kompyuta hii hukipakua: kiambatisho hujaa kinapopakuliwa, kisha
+hufunguka.
+"""
+
+["2026-09-27-0556-reading-options"]
+title = "Soma mazungumzo kwa njia yako"
+text = """
+Mipangilio > Jumla > Kusoma inaweza kuonyesha ujumbe mpya zaidi kwanza,
+kufungua vichwa kamili vya kila ujumbe, na kutaja wapokeaji kwa majina
+kamili badala ya jina la kwanza.
+"""
+
+["2026-09-27-0609-send-and-archive"]
+title = "Tuma na uweke kwenye kumbukumbu"
+text = """
+Menyu iliyo kando ya Tuma kwenye jibu hulituma na kuweka mazungumzo
+kwenye kumbukumbu. Mipangilio > Tunga inaweza kufanya hivyo kuwa kazi ya
+Tuma, na inaweza kutuma barua mpya kutoka akaunti ileile kila wakati.
+"""
+
+["2026-09-27-0627-scaling"]
+title = "Fanya kila kitu kiwe kikubwa au kidogo"
+text = """
+Mipangilio > Mwonekano > Kiwango cha ukubwa hubadilisha ukubwa wa
+dirisha zima, maandishi, aikoni na nafasi kwa pamoja, kuanzia 75% hadi
+200% juu ya kiwango cha eneo-kazi lako.
+"""
+
+["2026-09-27-0645-shortcut-sets"]
+title = "Njia za mkato za programu ya barua unayoijua"
+text = """
+Mipangilio > Njia za mkato inaweza kuanzia na vitufe vya Gmail, Inbox
+by Gmail, Apple Mail, Outlook au Thunderbird, huziorodhesha kwa safu
+mbili, na Rejesha chaguomsingi hurudisha mabadiliko yako.
+"""
+
+["2026-09-27-0646-more-settings"]
+title = "Mipangilio zaidi"
+text = """
+Fungua Katna Mail unapoingia, chagua wakati barua inapowekwa alama ya
+kusomwa, fanya kitufe cha kujibu kiwajibu wote, onyesha picha kila
+wakati, zima sauti ya barua mpya, ficha alama za Muhimu, punguza upana
+wa mistari mirefu, weka rangi asili za barua katika hali ya giza, zima
+onyesho la kukagua viambatisho, andika kwa maandishi matupu, chagua
+lugha ya tahajia na uone faili zilizohifadhiwa kwenye folda zao.
+"""
+
+["2026-09-27-0706-your-language"]
+title = "Lugha yako"
+text = """
+Chagua mojawapo ya lugha 51 kwa kitufe cha bendera kwenye upau wa juu,
+au fuata lugha ya eneo-kazi lako. Tarehe na nambari sasa zinaifuata;
+sehemu nyingine ya programu itatafsiriwa katika masasisho yajayo.
+Tafsiri ziliandaliwa na AI, na marekebisho yanakaribishwa.
+"""
+
+["2026-09-27-0723-select-and-copy-text"]
+title = "Chagua na unakili maandishi kwenye barua"
+text = """
+Buruta juu ya ujumbe kuchagua maandishi yake, bofya mara mbili kwa neno
+moja au mara tatu kwa aya. Ctrl+C au kubofya kulia hunakili, na Ctrl+A
+huchagua mazungumzo yote.
+"""
+
+["2026-09-27-0743-address-suggestions"]
+title = "Anwani hupendekezwa unapoandika"
+text = """
+Kwa, Nakala na Nakala fiche hupendekeza watu unaowaandikia zaidi
+unapoandika, hata ukikosea herufi. Chagua mmoja kwa vitufe vya mishale
+na Enter, Tab au kwa kubofya.
+"""
+
+["2026-09-27-0804-main-window-translated"]
+title = "Dirisha kuu kwa lugha yako"
+text = """
+Upau wa programu, folda, vichupo, orodha, menyu na kidirisha cha kusoma
+sasa hufuata lugha unayochagua. Folda ulizounda huhifadhi majina yake.
+"""
+
+["2026-09-27-0824-24-hour-clock"]
+title = "Saa ya saa 12 au saa 24"
+text = """
+Mipangilio > Jumla > Saa huonyesha nyakati kwa saa ya saa 12 au saa 24,
+bila kujali lugha huziandika vipi.
+"""
+
+["2026-09-27-0824-settings-translated"]
+title = "Mipangilio kwa lugha yako"
+text = """
+Mipangilio, Mipangilio ya haraka, akaunti zako na majina ya njia za
+mkato za kibodi sasa hufuata lugha unayochagua, na kutafuta katika
+Mipangilio hupata safu kwa majina yake yaliyotafsiriwa.
+"""
+
+["2026-09-27-0825-default-mail-app"]
+title = "Katna kama programu yako ya barua pepe"
+text = """
+Viungo vya barua pepe katika programu nyingine na kwenye tovuti vinaweza
+kufungua ujumbe mpya katika Katna Mail, anwani, mada na maandishi
+yakiwa yamejazwa. Iwashe katika Mipangilio > Jumla > Programu
+chaguomsingi ya barua pepe.
+"""
+
+["2026-09-27-0825-old-word-files-and-slides"]
+title = "Faili za zamani za Word na slaidi"
+text = """
+Hati za Word 97–2003 (.doc) sasa hufunguka kwenye kitazamaji zikiwa na
+vichwa, orodha na majedwali yake, na slaidi za PowerPoint (.pptx, .ppt)
+na OpenDocument (.odp) huonyesha maandishi ya kila slaidi. Kadi zao
+pia huonyesha mistari ya kwanza. Faili ambazo Katna haiwezi kuonyesha
+hufunguka moja kwa moja katika programu yako chaguomsingi.
+"""
+
+["2026-09-27-0825-opens-where-you-left-it"]
+title = "Hufunguka ulipoiachia"
+text = """
+Katna Mail hufunguka kwa ukubwa na mahali ilipokuwa ulipoifunga, na
+ikiwa imekuzwa kabisa ikiwa ilikuwa hivyo. Kuondoka Katna kutoka trei
+ya mfumo huianzisha upya kabisa. Kwenye Wayland mahali hurudi pale
+eneo-kazi linapoliunga mkono (Plasma 6.7 na baadaye).
+"""
+
+["2026-09-27-0826-grammar-checking"]
+title = "Kukagua sarufi"
+text = """
+Unapoandika kwa Kiingereza, kwenye maandishi na mada, makosa ya sarufi
+hupigiwa mstari wa rangi ya kaharabu. Bofya kulia kosa ili kulirekebisha
+au kulipuuza. Hufanya kazi kwenye kompyuta yako, kwa Harper; izime
+katika Mipangilio > Tunga.
+"""
+
+["2026-09-27-0828-check-before-sending"]
+title = "Ukaguzi kabla ya kutuma"
+text = """
+Ujumbe wako ukitaja kiambatisho lakini hauna, au hauna mada, Katna
+huuliza kabla ya kuutuma, hata kwa barua zilizoratibiwa.
+"""
+
+["2026-09-27-0831-writing-suggestions"]
+title = "Mapendekezo ya uandishi"
+text = """
+Unapoandika, sehemu inayowezekana ya kumalizia kifungu huonekana kwa
+kijivu. Bonyeza Tab kuikubali, au endelea kuandika. Katna hujifunza
+vifungu kutoka barua ulizotuma na mazungumzo unayojibu, kwenye kompyuta
+yako; izime katika Mipangilio > Tunga.
+"""
+
+["2026-09-27-1043-dialogs-translated"]
+title = "Vidirisha kwa lugha yako"
+text = """
+Kuhusu, Kilicho kipya, kurasa za makaribisho na ziara, kuongeza akaunti,
+chaguo za kutafuta na taarifa ya kuharibika sasa hufuata lugha
+unayochagua.
+"""
+
+["2026-09-27-1129-compose-translated"]
+title = "Kuandika barua kwa lugha yako"
+text = """
+Dirisha la kutunga, upau wake wa uumbizaji, kuratibu kutuma na kihariri
+cha sahihi sasa hufuata lugha unayochagua, na nyakati zinazopendekezwa
+za kutuma hutumia njia yake ya kuandika tarehe na saa ya saa 12 au 24
+uliyochagua. Chaguo la mandhari linalofuata eneo-kazi sasa linaitwa
+Mfumo tu.
+"""
+
+["2026-09-27-1132-print-preview"]
+title = "Ione kabla ya kuchapisha"
+text = """
+Chapisha sasa hufungua kwanza onyesho la kukagua la kurasa, kwa A4 au
+Letter, kabla ya kidirisha cha printa yako. Menyu za Zaidi hufunguka
+chini kabisa ya kitufe chake, na aikoni kando ya kila kipengee.
+"""
+
+["2026-09-27-1137-formatting-bar-colors"]
+title = "Upau wa uumbizaji ulio wazi zaidi"
+text = """
+Upau wa uumbizaji una rangi ya msisitizo wako, na miundo iliyowashwa,
+kama Herufi nzito au orodha, huonekana kwa rangi ya uteuzi. Kwenye
+jibu, Tuma na zana zake hubaki chini unaposogeza.
+"""
+
+["2026-09-27-1200-notifications-translated"]
+title = "Arifa kwa lugha yako"
+text = """
+Arifa za barua mpya na vitufe vyake, pamoja na menyu na kidokezo cha
+aikoni ya trei ya mfumo, sasa hufuata lugha unayochagua, na hubadilika
+mara tu unapoibadilisha.
+"""
+
+["2026-09-27-1242-whats-new-translated"]
+title = "Mapya kwa lugha yako"
+text = """
+Maelezo haya sasa yanaonekana kwa lugha iliyowekwa kwenye Katna Mail. Tafsiri ni rasimu, kwa hivyo tuambie wapi maneno yanaweza kuboreshwa.
+"""

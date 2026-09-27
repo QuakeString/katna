@@ -1,0 +1,332 @@
+# Katna Mail, German (Deutsch).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-27-0319-whats-new"]
+title = "Neuigkeiten nach jedem Update"
+text = """
+Nach einem Update zeigt Katna Mail einmal, was sich geändert hat, statt
+der Einführungstour. In den Schnelleinstellungen öffnen Sie es erneut.
+"""
+
+["2026-09-27-0320-reply-buttons-fit"]
+title = "Antwortknöpfe, die immer passen"
+text = """
+Antworten, Allen antworten und Weiterleiten bleiben in einer Zeile: Wird
+das Fenster schmaler, werden sie nacheinander zu Symbolen. Auf dem Handy
+teilen sie sich die Breite.
+"""
+
+["2026-09-27-0321-notifications-open-mail"]
+title = "Benachrichtigungen öffnen ihre E-Mail"
+text = """
+Klicken Sie auf eine Benachrichtigung über neue E-Mails, um die Nachricht
+zu öffnen, auch wenn Katna Mail geschlossen ist. Benachrichtigungen haben
+jetzt auch Allen antworten.
+"""
+
+["2026-09-27-0322-attachment-previews"]
+title = "Vorschau für mehr Anhänge"
+text = """
+Tabellen, CSV, Textdateien und Dokumente zeigen eine Vorschau auf ihrer
+Karte, und der Hintergrund des Betrachters ist heller.
+"""
+
+["2026-09-27-0323-frosted-menus"]
+title = "Milchglas-Menüs"
+text = """
+Mit Einstellungen > Experimentell > Verschwommener Hintergrund werden
+Menüs und Popover zu Milchglas.
+"""
+
+["2026-09-27-0346-settings-search"]
+title = "Einstellungen durchsuchen"
+text = """
+Bei geöffneten Einstellungen findet das Suchfeld jede Einstellung und
+bringt Sie direkt dorthin. Die Einstellungen haben mehr Tabs in einer
+klareren Reihenfolge, und lange Erklärungen stecken hinter einem
+(i)-Knopf.
+"""
+
+["2026-09-27-0410-crash-reports-kept"]
+title = "Absturzberichte bleiben auf Ihrem Computer"
+text = """
+Stürzt Katna Mail oder sein Hintergrunddienst ab, sagt es der nächste
+Start, mit dem Bericht zum Ansehen oder Kopieren für eine Fehlermeldung.
+Einstellungen > Nutzerfeedback listet sie auf.
+"""
+
+["2026-09-27-0438-calmer-reply"]
+title = "Ruhigeres Antworten"
+text = """
+Beim Antworten im Lesebereich bleiben Senden und die Formatierung unten,
+die zitierte E-Mail steckt hinter "...", und Antwort in eigenem Fenster
+öffnet die Antwort separat. Auf dem Handy nimmt das Schreiben das ganze
+Fenster ein.
+"""
+
+["2026-09-27-0439-mail-in-own-window"]
+title = "E-Mails im eigenen Fenster"
+text = """
+Umschalt+Klick auf eine Nachricht, ein Rechtsklick oder In neuem Fenster
+in der Leseleiste öffnet sie in einem eigenen Fenster. Alle drucken
+druckt die ganze Unterhaltung.
+"""
+
+["2026-09-27-0440-settings-on-phone"]
+title = "Einstellungen auf dem Handy"
+text = """
+Auf schmalen Bildschirmen füllen Einstellungen und Schnelleinstellungen
+das Fenster, und jedes Menü und Popover schließt sich mit Escape oder
+einem Klick daneben.
+"""
+
+["2026-09-27-0441-offline-mail"]
+title = "Wählen Sie, wie viele E-Mails offline bleiben"
+text = """
+Einstellungen > Allgemein > Offline-E-Mails behält eine Woche, einen
+Monat, drei Monate, ein Jahr oder alle E-Mails auf diesem Computer.
+Ältere E-Mails werden beim Öffnen heruntergeladen.
+"""
+
+["2026-09-27-0442-folder-pane-button"]
+title = "Ein neuer Knopf für die Ordnerleiste"
+text = """
+Der Knopf oben links blendet die Ordnerleiste ein und aus. Solange die
+Ordner zu sehen sind, ist seine linke Seite gefüllt.
+"""
+
+["2026-09-27-0443-cards-and-phone-rows"]
+title = "Klarere Karten, ruhigeres Handy"
+text = """
+Liste und Leseansicht liegen auf Karten mit feinem Rand und kurzem
+Schatten, Menüs bleiben immer im Fenster, und auf dem Handy gleiten
+Suche und Werkzeugleiste beim Scrollen weg.
+"""
+
+["2026-09-27-0444-about-katna"]
+title = "Über Katna"
+text = """
+Hilfe > Über Katna, auch in den Schnelleinstellungen, zeigt die Version,
+das Änderungsprotokoll und jede Bibliothek, auf der Katna aufbaut, mit
+Autoren und Lizenz. Auch die Version im Kopf der Einstellungen öffnet es.
+"""
+
+["2026-09-27-0457-settings-tabs-one-line"]
+title = "Einstellungs-Tabs in einer Zeile"
+text = """
+Die Tabs der Einstellungen bleiben in einer Zeile: Passen sie nicht,
+holen Pfeile an den Rändern und das Mausrad den Rest ins Bild.
+Signaturen und Vorlagen teilen sich den Tab Verfassen, Ordner und
+E-Mail-Regeln ebenfalls einen.
+"""
+
+["2026-09-27-0515-send-crash-reports"]
+title = "Helfen Sie Katna, wenn Sie mögen"
+text = """
+Katna fragt einmal, ob Absturzberichte gesendet werden sollen, damit
+Fehler behoben werden können. Sie gehen ohne Ihre IP-Adresse, Nachrichten
+oder E-Mail-Adressen raus, und nur, wenn Sie zustimmen. Ändern Sie das
+jederzeit unter Einstellungen > Nutzerfeedback.
+"""
+
+["2026-09-27-0536-older-attachments-open"]
+title = "Anhänge älterer E-Mails öffnen sich sofort"
+text = """
+Ein Klick auf den Anhang einer älteren E-Mail, die noch nicht auf diesem
+Computer ist, lädt ihn herunter: Der Anhang füllt sich dabei und öffnet
+sich dann.
+"""
+
+["2026-09-27-0556-reading-options"]
+title = "Unterhaltungen lesen, wie Sie wollen"
+text = """
+Einstellungen > Allgemein > Lesen kann die neueste Nachricht zuerst
+zeigen, die vollständigen Kopfzeilen jeder Nachricht aufklappen und
+Empfänger mit vollem Namen statt nur mit Vornamen nennen.
+"""
+
+["2026-09-27-0609-send-and-archive"]
+title = "Senden und archivieren"
+text = """
+Das Menü neben Senden bei einer Antwort sendet sie und archiviert die
+Unterhaltung. Unter Einstellungen > Verfassen kann Senden immer so
+arbeiten, und neue E-Mails können jedes Mal vom selben Konto gehen.
+"""
+
+["2026-09-27-0627-scaling"]
+title = "Alles größer oder kleiner"
+text = """
+Einstellungen > Darstellung > Skalierung ändert die Größe des ganzen
+Fensters, Text, Symbole und Abstände gleichermaßen, von 75 % bis 200 %
+zusätzlich zur Skalierung Ihres Desktops.
+"""
+
+["2026-09-27-0645-shortcut-sets"]
+title = "Tastenkombinationen aus Ihrer gewohnten Mail-App"
+text = """
+Einstellungen > Tastenkombinationen kann mit den Tasten von Gmail, Inbox
+by Gmail, Apple Mail, Outlook oder Thunderbird beginnen, zeigt sie in
+zwei Spalten, und Standard wiederherstellen nimmt Ihre Änderungen zurück.
+"""
+
+["2026-09-27-0646-more-settings"]
+title = "Mehr Einstellungen"
+text = """
+Katna Mail beim Anmelden öffnen, festlegen, wann E-Mails als gelesen
+gelten, den Antwortknopf allen antworten lassen, Bilder immer zeigen,
+den Ton für neue E-Mails stummschalten, Wichtig-Markierungen ausblenden,
+lange Zeilen schmaler machen, die eigenen Farben von E-Mails im dunklen
+Modus behalten, Anhangvorschauen abschalten, in reinem Text schreiben,
+die Sprache der Rechtschreibprüfung wählen und gespeicherte Dateien in
+ihrem Ordner zeigen.
+"""
+
+["2026-09-27-0706-your-language"]
+title = "Ihre Sprache"
+text = """
+Wählen Sie eine von 51 Sprachen über den Flaggenknopf in der oberen
+Leiste, oder folgen Sie der Ihres Desktops. Datum und Zahlen folgen ihr
+schon jetzt; der Rest der App wird in den nächsten Updates übersetzt. Die
+Übersetzungen wurden von einer KI entworfen, Korrekturen sind willkommen.
+"""
+
+["2026-09-27-0723-select-and-copy-text"]
+title = "Text in E-Mails markieren und kopieren"
+text = """
+Ziehen Sie über eine Nachricht, um Text zu markieren, doppelklicken Sie
+für ein Wort oder dreifachklicken Sie für einen Absatz. Strg+C oder ein
+Rechtsklick kopiert ihn, und Strg+A markiert die ganze Unterhaltung.
+"""
+
+["2026-09-27-0743-address-suggestions"]
+title = "Adressvorschläge beim Tippen"
+text = """
+An, Cc und Bcc schlagen beim Tippen die Personen vor, denen Sie am
+häufigsten schreiben, sogar bei Tippfehlern. Wählen Sie mit den
+Pfeiltasten und Enter, Tab oder einem Klick.
+"""
+
+["2026-09-27-0804-main-window-translated"]
+title = "Das Hauptfenster in Ihrer Sprache"
+text = """
+App-Leiste, Ordner, Tabs, Liste, Menüs und Lesebereich folgen jetzt der
+Sprache, die Sie wählen. Selbst angelegte Ordner behalten ihre Namen.
+"""
+
+["2026-09-27-0824-24-hour-clock"]
+title = "12- oder 24-Stunden-Uhr"
+text = """
+Einstellungen > Allgemein > Uhrzeit zeigt Zeiten im 12- oder
+24-Stunden-Format, ganz gleich, wie die Sprache sie schreibt.
+"""
+
+["2026-09-27-0824-settings-translated"]
+title = "Einstellungen in Ihrer Sprache"
+text = """
+Einstellungen, Schnelleinstellungen, Ihre Konten und die Namen der
+Tastenkombinationen folgen jetzt der Sprache, die Sie wählen, und die
+Suche in den Einstellungen findet Zeilen über ihre übersetzten Namen.
+"""
+
+["2026-09-27-0825-default-mail-app"]
+title = "Katna als Ihre Mail-App"
+text = """
+E-Mail-Links in anderen Apps und auf Websites können eine neue Nachricht
+in Katna Mail öffnen, mit Adresse, Betreff und Text schon ausgefüllt.
+Schalten Sie es unter Einstellungen > Allgemein > Standard-Mail-App ein.
+"""
+
+["2026-09-27-0825-old-word-files-and-slides"]
+title = "Alte Word-Dateien und Folien"
+text = """
+Word-97–2003-Dokumente (.doc) öffnen sich jetzt im Betrachter mit ihren
+Überschriften, Listen und Tabellen, und Folien aus PowerPoint (.pptx,
+.ppt) und OpenDocument (.odp) zeigen den Text jeder Folie. Ihre Karten
+zeigen auch die ersten Zeilen. Dateien, die Katna nicht zeigen kann,
+öffnen sich direkt in Ihrer Standard-App.
+"""
+
+["2026-09-27-0825-opens-where-you-left-it"]
+title = "Öffnet sich, wo Sie aufgehört haben"
+text = """
+Katna Mail öffnet sich in der Größe und an der Stelle, die es beim
+Schließen hatte, maximiert, wenn es das war. Wird Katna über das Symbol
+im Systemabschnitt beendet, startet es beim nächsten Mal frisch. Unter
+Wayland kehrt die Position zurück, wo der Desktop das unterstützt
+(Plasma 6.7 und neuer).
+"""
+
+["2026-09-27-0826-grammar-checking"]
+title = "Grammatikprüfung"
+text = """
+Während Sie auf Englisch schreiben, im Text und im Betreff, bekommen
+Grammatikfehler eine bernsteinfarbene Unterstreichung. Ein Rechtsklick
+bietet eine Korrektur oder Ignorieren an. Das läuft auf Ihrem Computer,
+mit Harper; abschalten können Sie es unter Einstellungen > Verfassen.
+"""
+
+["2026-09-27-0828-check-before-sending"]
+title = "Eine Prüfung vor dem Senden"
+text = """
+Spricht Ihre Nachricht von einem Anhang, hat aber keinen, oder fehlt der
+Betreff, fragt Katna vor dem Senden nach, auch bei geplanten E-Mails.
+"""
+
+["2026-09-27-0831-writing-suggestions"]
+title = "Schreibvorschläge"
+text = """
+Beim Schreiben erscheint der wahrscheinliche Rest eines Satzes in Grau.
+Drücken Sie Tab, um ihn zu übernehmen, oder tippen Sie weiter. Katna lernt
+die Wendungen aus E-Mails, die Sie gesendet haben, und aus der
+Unterhaltung, auf die Sie antworten, auf Ihrem Computer; abschalten
+können Sie es unter Einstellungen > Verfassen.
+"""
+
+["2026-09-27-1043-dialogs-translated"]
+title = "Dialoge in Ihrer Sprache"
+text = """
+Über, Neuigkeiten, die Willkommensseiten und die Tour, das Hinzufügen
+eines Kontos, die Suchoptionen und der Absturzhinweis folgen jetzt der
+Sprache, die Sie wählen.
+"""
+
+["2026-09-27-1129-compose-translated"]
+title = "E-Mails schreiben in Ihrer Sprache"
+text = """
+Das Schreibfenster, seine Formatierungsleiste, Senden planen und der
+Signatur-Editor folgen jetzt der Sprache, die Sie wählen, und
+vorgeschlagene Sendezeiten nutzen ihre Datumsschreibweise und die
+12- oder 24-Stunden-Uhr, die Sie gewählt haben. Die Design-Option, die
+dem Desktop folgt, heißt jetzt einfach System.
+"""
+
+["2026-09-27-1132-print-preview"]
+title = "Vor dem Drucken ansehen"
+text = """
+Drucken öffnet jetzt zuerst eine Vorschau der Seiten, auf A4 oder Letter,
+vor dem Druckdialog. Die Mehr-Menüs öffnen sich direkt unter ihrem Knopf,
+mit einem Symbol neben jedem Eintrag.
+"""
+
+["2026-09-27-1137-formatting-bar-colors"]
+title = "Klarere Formatierungsleiste"
+text = """
+Die Formatierungsleiste ist in Ihrer Akzentfarbe getönt, und aktive
+Formate wie Fett oder eine Liste erscheinen in der Auswahlfarbe. In einer
+Antwort bleiben Senden und seine Werkzeuge beim Scrollen unten.
+"""
+
+["2026-09-27-1200-notifications-translated"]
+title = "Benachrichtigungen in Ihrer Sprache"
+text = """
+Benachrichtigungen über neue E-Mails und ihre Knöpfe sowie Menü und
+Tooltip des Symbols im Systemabschnitt folgen jetzt der Sprache, die Sie
+wählen, und wechseln, sobald Sie sie ändern.
+"""
+
+["2026-09-27-1242-whats-new-translated"]
+title = "Neuigkeiten in Ihrer Sprache"
+text = """
+Diese Hinweise erscheinen jetzt in der Sprache, auf die Katna Mail eingestellt ist. Die Übersetzungen sind Entwürfe – sagen Sie uns, wo die Formulierung besser sein könnte.
+"""

@@ -1,0 +1,330 @@
+# Katna Mail, Dutch (Nederlands).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-27-0319-whats-new"]
+title = "Wat er nieuw is, na elke update"
+text = """
+Na een update laat Katna Mail één keer zien wat er veranderd is, in
+plaats van de welkomstrondleiding. Snelle instellingen opent het opnieuw.
+"""
+
+["2026-09-27-0320-reply-buttons-fit"]
+title = "Antwoordknoppen die altijd passen"
+text = """
+Beantwoorden, Allen beantwoorden en Doorsturen blijven op één regel:
+als het venster smaller wordt, worden ze een voor een pictogrammen. Op
+een telefoon delen ze de breedte.
+"""
+
+["2026-09-27-0321-notifications-open-mail"]
+title = "Meldingen openen hun e-mail"
+text = """
+Klik op een melding van nieuwe e-mail om dat bericht te openen, ook als
+Katna Mail gesloten is. Meldingen hebben nu ook Allen beantwoorden.
+"""
+
+["2026-09-27-0322-attachment-previews"]
+title = "Voorbeelden van meer bijlagen"
+text = """
+Spreadsheets, CSV, tekstbestanden en documenten tonen een voorbeeld op
+hun kaart, en de achtergrond van de viewer is lichter.
+"""
+
+["2026-09-27-0323-frosted-menus"]
+title = "Matglazen menu's"
+text = """
+Met Instellingen > Experimenteel > Wazige achtergrond aan worden menu's
+en pop-ups van matglas.
+"""
+
+["2026-09-27-0346-settings-search"]
+title = "Zoek in je instellingen"
+text = """
+Met Instellingen open vindt het zoekvak elke instelling en brengt je er
+meteen heen. Instellingen heeft meer tabbladen, in een duidelijkere
+volgorde, en lange uitleg zit achter een (i)-knop.
+"""
+
+["2026-09-27-0410-crash-reports-kept"]
+title = "Crashrapporten blijven op je computer"
+text = """
+Als Katna Mail of de achtergronddienst crasht, meldt de volgende start
+dat, met het rapport om te bekijken of te kopiëren voor een bugmelding.
+Instellingen > Feedback zet ze op een rij.
+"""
+
+["2026-09-27-0438-calmer-reply"]
+title = "Rustiger antwoorden"
+text = """
+Beantwoorden in het leesvenster houdt Verzenden en de opmaak onderaan,
+vouwt de geciteerde e-mail weg achter "...", en Antwoord in apart
+venster opent het antwoord in een eigen venster. Op een telefoon neemt
+schrijven het hele venster in.
+"""
+
+["2026-09-27-0439-mail-in-own-window"]
+title = "E-mail in een eigen venster"
+text = """
+Shift+klik op een bericht, klik er met rechts op of gebruik In nieuw
+venster op de werkbalk van de lezer om het in een eigen venster te
+openen. Alles afdrukken drukt het hele gesprek af.
+"""
+
+["2026-09-27-0440-settings-on-phone"]
+title = "Instellingen op een telefoon"
+text = """
+Op een smal scherm vullen Instellingen en Snelle instellingen het
+venster, en elk menu en elke pop-up sluit met Escape of een klik
+erbuiten.
+"""
+
+["2026-09-27-0441-offline-mail"]
+title = "Kies hoeveel e-mail offline blijft"
+text = """
+Instellingen > Algemeen > Offline e-mail houdt een week, een maand,
+drie maanden, een jaar of al je e-mail op deze computer. Oudere e-mail
+wordt gedownload als je hem opent.
+"""
+
+["2026-09-27-0442-folder-pane-button"]
+title = "Een nieuwe knop voor het mappenpaneel"
+text = """
+De knop linksboven toont en verbergt het mappenpaneel, en de linkerkant
+ervan is gevuld zolang de mappen zichtbaar zijn.
+"""
+
+["2026-09-27-0443-cards-and-phone-rows"]
+title = "Strakkere kaarten, rustiger op de telefoon"
+text = """
+De lijst en de lezer staan op kaarten met een vage rand en een korte
+schaduw, menu's blijven altijd binnen het venster, en op een telefoon
+schuiven de zoek- en werkbalkrij weg terwijl je scrolt.
+"""
+
+["2026-09-27-0444-about-katna"]
+title = "Over Katna"
+text = """
+Help > Over Katna, ook in Snelle instellingen, toont de versie, de
+wijzigingslog en elke bibliotheek waarop Katna gebouwd is, met de
+auteurs en licentie. De versie in de kop van Instellingen opent het ook.
+"""
+
+["2026-09-27-0457-settings-tabs-one-line"]
+title = "Tabbladen van Instellingen op één regel"
+text = """
+De tabbladen van Instellingen blijven op één regel: als ze niet passen,
+schuiven pijlen aan de randen en het scrollwiel de rest in beeld.
+Handtekeningen en sjablonen delen het tabblad Opstellen, en mappen en
+e-mailregels delen er ook een.
+"""
+
+["2026-09-27-0515-send-crash-reports"]
+title = "Help Katna beter maken, als je wilt"
+text = """
+Katna vraagt één keer of je crashrapporten wilt sturen om te helpen
+oplossen wat er misging. Ze gaan zonder je IP-adres, berichten of
+e-mailadressen, en alleen als je ja zegt. Je kunt het altijd wijzigen
+in Instellingen > Feedback.
+"""
+
+["2026-09-27-0536-older-attachments-open"]
+title = "Bijlagen van oudere e-mail openen meteen"
+text = """
+Klik je op een bijlage van oudere e-mail die nog niet op deze computer
+staat, dan wordt die gedownload: de bijlage loopt vol terwijl dat
+gebeurt, en gaat dan open.
+"""
+
+["2026-09-27-0556-reading-options"]
+title = "Lees gesprekken op jouw manier"
+text = """
+Instellingen > Algemeen > Lezen kan het nieuwste bericht eerst tonen,
+de volledige kopregels van elk bericht openen en ontvangers met hun
+volledige naam tonen in plaats van alleen hun voornaam.
+"""
+
+["2026-09-27-0609-send-and-archive"]
+title = "Verzenden en archiveren"
+text = """
+Het menu naast Verzenden bij een antwoord verzendt het en archiveert het
+gesprek. Instellingen > Opstellen kan dat de standaard van Verzenden
+maken, en kan nieuwe e-mail altijd vanaf hetzelfde account versturen.
+"""
+
+["2026-09-27-0627-scaling"]
+title = "Maak alles groter of kleiner"
+text = """
+Instellingen > Weergave > Schaal past het hele venster aan, tekst,
+pictogrammen en ruimte gelijk, van 75% tot 200% bovenop de schaal van
+je bureaublad.
+"""
+
+["2026-09-27-0645-shortcut-sets"]
+title = "Sneltoetsen van de e-mailapp die je kent"
+text = """
+Instellingen > Sneltoetsen kan beginnen met de toetsen van Gmail, Inbox
+by Gmail, Apple Mail, Outlook of Thunderbird, toont ze in twee kolommen,
+en Standaardwaarden herstellen draait je wijzigingen terug.
+"""
+
+["2026-09-27-0646-more-settings"]
+title = "Meer instellingen"
+text = """
+Open Katna Mail bij het inloggen, kies wanneer e-mail als gelezen wordt
+gemarkeerd, laat de antwoordknop iedereen beantwoorden, toon altijd
+afbeeldingen, zet het geluid voor nieuwe e-mail uit, verberg
+Belangrijk-markeringen, maak lange regels smaller, houd de eigen kleuren
+van e-mail in de donkere modus, zet voorbeelden van bijlagen uit, schrijf
+in platte tekst, kies de spellingtaal en zie opgeslagen bestanden in hun
+map.
+"""
+
+["2026-09-27-0706-your-language"]
+title = "Jouw taal"
+text = """
+Kies een van 51 talen met de vlagknop in de bovenbalk, of volg die van je
+bureaublad. Datums en getallen volgen die nu al; de rest van de app
+wordt in de komende updates vertaald. De vertalingen zijn door AI
+opgesteld, en verbeteringen zijn welkom.
+"""
+
+["2026-09-27-0723-select-and-copy-text"]
+title = "Tekst in e-mail selecteren en kopiëren"
+text = """
+Sleep over een bericht om de tekst te selecteren, dubbelklik voor een
+woord of klik drie keer voor een alinea. Ctrl+C of een rechtermuisklik
+kopieert het, en Ctrl+A selecteert het hele gesprek.
+"""
+
+["2026-09-27-0743-address-suggestions"]
+title = "Adressen voorgesteld terwijl je typt"
+text = """
+Aan, Cc en Bcc stellen de mensen voor aan wie je het vaakst schrijft,
+terwijl je typt, zelfs met een typfout. Kies er een met de pijltoetsen
+en Enter, Tab of een klik.
+"""
+
+["2026-09-27-0804-main-window-translated"]
+title = "Het hoofdvenster in jouw taal"
+text = """
+De appbalk, mappen, tabbladen, lijst, menu's en het leesvenster volgen
+nu de taal die je kiest. Mappen die je zelf maakte houden hun eigen naam.
+"""
+
+["2026-09-27-0824-24-hour-clock"]
+title = "12-uurs- of 24-uursklok"
+text = """
+Instellingen > Algemeen > Tijd toont tijden met een 12-uurs- of
+24-uursklok, hoe de taal ze ook schrijft.
+"""
+
+["2026-09-27-0824-settings-translated"]
+title = "Instellingen in jouw taal"
+text = """
+Instellingen, Snelle instellingen, je accounts en de namen van
+sneltoetsen volgen nu de taal die je kiest, en zoeken in Instellingen
+vindt rijen op hun vertaalde naam.
+"""
+
+["2026-09-27-0825-default-mail-app"]
+title = "Katna als je e-mailapp"
+text = """
+E-maillinks in andere apps en op websites kunnen een nieuw bericht in
+Katna Mail openen, met het adres, onderwerp en de tekst al ingevuld. Zet
+het aan in Instellingen > Algemeen > Standaard-e-mailapp.
+"""
+
+["2026-09-27-0825-old-word-files-and-slides"]
+title = "Oude Word-bestanden en dia's"
+text = """
+Word 97–2003-documenten (.doc) openen nu in de viewer met hun koppen,
+lijsten en tabellen, en dia's van PowerPoint (.pptx, .ppt) en
+OpenDocument (.odp) tonen de tekst van elke dia. Hun kaarten tonen ook
+de eerste regels. Bestanden die Katna niet kan tonen, openen meteen in
+je standaardapp.
+"""
+
+["2026-09-27-0825-opens-where-you-left-it"]
+title = "Opent waar je gebleven was"
+text = """
+Katna Mail opent op de grootte en plek die het had toen je het sloot,
+gemaximaliseerd als het dat was. Katna afsluiten via het systeemvak
+start het opnieuw fris op. Op Wayland komt de plek terug waar het
+bureaublad dat ondersteunt (Plasma 6.7 en later).
+"""
+
+["2026-09-27-0826-grammar-checking"]
+title = "Grammaticacontrole"
+text = """
+Terwijl je in het Engels schrijft, in de tekst en het onderwerp, krijgen
+grammaticafouten een oranje onderstreping. Klik er met rechts op voor
+een verbetering of om hem te negeren. Het draait op je computer, met
+Harper; zet het uit in Instellingen > Opstellen.
+"""
+
+["2026-09-27-0828-check-before-sending"]
+title = "Een controle voor het verzenden"
+text = """
+Als je bericht een bijlage noemt maar er geen heeft, of geen onderwerp
+heeft, vraagt Katna het voordat het verzonden wordt, ook bij ingeplande
+e-mail.
+"""
+
+["2026-09-27-0831-writing-suggestions"]
+title = "Schrijfsuggesties"
+text = """
+Terwijl je schrijft, verschijnt het waarschijnlijke vervolg van een zin
+in grijs. Druk op Tab om het over te nemen, of typ gewoon door. Katna
+leert de zinnen van e-mail die je stuurde en van het gesprek dat je
+beantwoordt, op je computer; zet het uit in Instellingen > Opstellen.
+"""
+
+["2026-09-27-1043-dialogs-translated"]
+title = "Dialogen in jouw taal"
+text = """
+Over, Wat is er nieuw, de welkomstpagina's en de rondleiding, een
+account toevoegen, zoekopties en de crashmelding volgen nu de taal die
+je kiest.
+"""
+
+["2026-09-27-1129-compose-translated"]
+title = "E-mail schrijven in jouw taal"
+text = """
+Het opstelvenster, de opmaakbalk, later verzenden en de
+handtekeningeditor volgen nu de taal die je kiest, en voorgestelde
+verzendtijden gebruiken de manier waarop die taal datums schrijft en de
+12- of 24-uursklok die je koos. De themakeuze die het bureaublad volgt,
+heet nu gewoon Systeem.
+"""
+
+["2026-09-27-1132-print-preview"]
+title = "Bekijk het voordat je afdrukt"
+text = """
+Afdrukken opent nu eerst een voorbeeld van de pagina's, op A4 of Letter,
+vóór het dialoogvenster van je printer. De menu's Meer openen recht
+onder hun knop, met een pictogram naast elk item.
+"""
+
+["2026-09-27-1137-formatting-bar-colors"]
+title = "Duidelijkere opmaakbalk"
+text = """
+De opmaakbalk heeft een tint van je accentkleur, en opmaak die aan
+staat, zoals Vet of een lijst, verschijnt in de selectiekleur. In een
+antwoord blijven Verzenden en de hulpmiddelen onderaan staan terwijl je
+scrolt.
+"""
+
+["2026-09-27-1200-notifications-translated"]
+title = "Meldingen in jouw taal"
+text = """
+Meldingen van nieuwe e-mail en hun knoppen, en het menu en de tooltip
+van het pictogram in het systeemvak, volgen nu de taal die je kiest, en
+wisselen meteen mee als je die verandert.
+"""
+
+["2026-09-27-1242-whats-new-translated"]
+title = "Nieuw in uw taal"
+text = """
+Deze notities verschijnen nu in de taal waarop Katna Mail is ingesteld. De vertalingen zijn concepten, dus laat ons weten waar de formulering beter kan.
+"""

@@ -1,0 +1,320 @@
+# Katna Mail, Vietnamese (Tiếng Việt).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-27-0319-whats-new"]
+title = "Có gì mới, sau mỗi lần cập nhật"
+text = """
+Sau khi cập nhật, Katna Mail cho bạn xem những gì đã thay đổi, một lần,
+thay cho phần giới thiệu chào mừng. Cài đặt nhanh có thể mở lại nó.
+"""
+
+["2026-09-27-0320-reply-buttons-fit"]
+title = "Nút trả lời luôn vừa vặn"
+text = """
+Trả lời, Trả lời tất cả và Chuyển tiếp luôn nằm trên một dòng: khi cửa
+sổ hẹp lại, chúng lần lượt thu thành biểu tượng. Trên điện thoại, chúng
+chia đều chiều ngang.
+"""
+
+["2026-09-27-0321-notifications-open-mail"]
+title = "Thông báo mở đúng thư của nó"
+text = """
+Nhấp vào thông báo thư mới để mở thư đó, kể cả khi Katna Mail đang
+đóng. Thông báo giờ cũng có Trả lời tất cả.
+"""
+
+["2026-09-27-0322-attachment-previews"]
+title = "Xem trước nhiều loại tệp đính kèm hơn"
+text = """
+Bảng tính, CSV, tệp văn bản và tài liệu hiện bản xem trước trên thẻ của
+chúng, và nền của trình xem cũng sáng hơn.
+"""
+
+["2026-09-27-0323-frosted-menus"]
+title = "Menu kính mờ"
+text = """
+Khi bật Cài đặt > Thử nghiệm > Nền mờ, menu và cửa sổ bật lên sẽ trông
+như kính mờ.
+"""
+
+["2026-09-27-0346-settings-search"]
+title = "Tìm trong cài đặt"
+text = """
+Khi Cài đặt đang mở, ô tìm kiếm tìm được mọi tùy chọn và đưa bạn tới
+đó. Cài đặt có thêm thẻ, sắp xếp rõ ràng hơn, và những lời giải thích
+dài được đặt sau nút (i).
+"""
+
+["2026-09-27-0410-crash-reports-kept"]
+title = "Báo cáo sự cố nằm lại trên máy bạn"
+text = """
+Nếu Katna Mail hoặc dịch vụ chạy nền của nó gặp sự cố, lần mở tiếp theo
+sẽ cho bạn biết, kèm báo cáo để xem hoặc sao chép khi báo lỗi. Cài đặt >
+Ý kiến phản hồi liệt kê các báo cáo này.
+"""
+
+["2026-09-27-0438-calmer-reply"]
+title = "Trả lời nhẹ nhàng hơn"
+text = """
+Khi trả lời trong ngăn đọc, nút Gửi và định dạng nằm ở dưới cùng, thư
+được trích dẫn thu gọn sau "...", và Mở thư trả lời riêng mở thư trả
+lời trong cửa sổ của nó. Trên điện thoại, phần soạn thư chiếm cả cửa sổ.
+"""
+
+["2026-09-27-0439-mail-in-own-window"]
+title = "Thư trong cửa sổ riêng"
+text = """
+Shift+nhấp vào một thư, nhấp chuột phải vào nó hoặc dùng Mở trong cửa
+sổ mới trên thanh công cụ đọc thư để mở thư trong cửa sổ riêng. In tất
+cả sẽ in toàn bộ cuộc hội thoại.
+"""
+
+["2026-09-27-0440-settings-on-phone"]
+title = "Cài đặt trên điện thoại"
+text = """
+Trên màn hình hẹp, Cài đặt và Cài đặt nhanh chiếm toàn cửa sổ, và mọi
+menu, cửa sổ bật lên đều đóng khi bấm Escape hoặc nhấp ra ngoài.
+"""
+
+["2026-09-27-0441-offline-mail"]
+title = "Chọn lượng thư lưu ngoại tuyến"
+text = """
+Cài đặt > Chung > Thư ngoại tuyến giữ một tuần, một tháng, ba tháng,
+một năm hoặc toàn bộ thư của bạn trên máy này. Thư cũ hơn sẽ được tải
+về khi bạn mở.
+"""
+
+["2026-09-27-0442-folder-pane-button"]
+title = "Nút mới cho ngăn thư mục"
+text = """
+Nút ở góc trên bên trái hiện và ẩn ngăn thư mục, và nửa trái của nút
+được tô đầy khi các thư mục đang hiện.
+"""
+
+["2026-09-27-0443-cards-and-phone-rows"]
+title = "Thẻ gọn gàng hơn, điện thoại dễ chịu hơn"
+text = """
+Danh sách và phần đọc thư nằm trên các thẻ có viền mảnh và bóng ngắn,
+menu luôn nằm trong cửa sổ, và trên điện thoại hàng tìm kiếm và thanh
+công cụ trượt đi khi bạn cuộn.
+"""
+
+["2026-09-27-0444-about-katna"]
+title = "Giới thiệu về Katna"
+text = """
+Trợ giúp > Giới thiệu về Katna, cũng có trong Cài đặt nhanh, cho biết
+phiên bản, nhật ký thay đổi và mọi thư viện mà Katna dựa vào, cùng tác
+giả và giấy phép của chúng. Số phiên bản ở đầu Cài đặt cũng mở mục này.
+"""
+
+["2026-09-27-0457-settings-tabs-one-line"]
+title = "Các thẻ Cài đặt trên một dòng"
+text = """
+Các thẻ Cài đặt luôn nằm trên một dòng: khi không đủ chỗ, mũi tên ở hai
+bên và con lăn chuột sẽ đưa phần còn lại vào tầm nhìn. Chữ ký và mẫu thư
+dùng chung thẻ Soạn thư, còn thư mục và quy tắc thư dùng chung một thẻ.
+"""
+
+["2026-09-27-0515-send-crash-reports"]
+title = "Giúp Katna tốt hơn, nếu bạn muốn"
+text = """
+Katna hỏi một lần xem có gửi báo cáo sự cố để giúp sửa lỗi hay không.
+Báo cáo được gửi đi không kèm địa chỉ IP, thư hay địa chỉ email của bạn,
+và chỉ khi bạn đồng ý. Bạn có thể đổi lựa chọn bất cứ lúc nào trong Cài
+đặt > Ý kiến phản hồi.
+"""
+
+["2026-09-27-0536-older-attachments-open"]
+title = "Tệp đính kèm của thư cũ mở ngay"
+text = """
+Nhấp vào tệp đính kèm của một thư cũ chưa có trên máy này sẽ tải nó
+về: tệp đính kèm đầy dần trong lúc tải, rồi tự mở.
+"""
+
+["2026-09-27-0556-reading-options"]
+title = "Đọc hội thoại theo cách của bạn"
+text = """
+Cài đặt > Chung > Đọc thư có thể hiện thư mới nhất trước, mở toàn bộ
+tiêu đề của mọi thư và ghi đầy đủ tên người nhận thay vì chỉ tên gọi.
+"""
+
+["2026-09-27-0609-send-and-archive"]
+title = "Gửi và lưu trữ"
+text = """
+Menu bên cạnh nút Gửi khi trả lời sẽ gửi thư và lưu trữ cuộc hội thoại.
+Cài đặt > Soạn thư có thể biến đó thành hành động của nút Gửi, và có
+thể luôn gửi thư mới từ cùng một tài khoản.
+"""
+
+["2026-09-27-0627-scaling"]
+title = "Phóng to hoặc thu nhỏ mọi thứ"
+text = """
+Cài đặt > Giao diện > Tỷ lệ thay đổi kích thước cả cửa sổ, chữ, biểu
+tượng và khoảng cách như nhau, từ 75% đến 200%, cộng thêm vào tỷ lệ của
+màn hình nền.
+"""
+
+["2026-09-27-0645-shortcut-sets"]
+title = "Phím tắt của ứng dụng thư bạn quen"
+text = """
+Cài đặt > Phím tắt có thể bắt đầu từ bộ phím của Gmail, Inbox by Gmail,
+Apple Mail, Outlook hoặc Thunderbird, liệt kê chúng thành hai cột, và
+Khôi phục mặc định sẽ hoàn tác các thay đổi của bạn.
+"""
+
+["2026-09-27-0646-more-settings"]
+title = "Thêm nhiều cài đặt"
+text = """
+Mở Katna Mail khi đăng nhập, chọn khi nào thư được đánh dấu là đã đọc,
+cho nút trả lời trả lời tất cả mọi người, luôn hiện hình ảnh, tắt âm
+báo thư mới, ẩn dấu Quan trọng, thu hẹp các dòng dài, giữ màu gốc của
+thư trong chế độ tối, tắt xem trước tệp đính kèm, viết bằng văn bản
+thuần, chọn ngôn ngữ kiểm tra chính tả và xem tệp đã lưu trong thư mục
+của chúng.
+"""
+
+["2026-09-27-0706-your-language"]
+title = "Ngôn ngữ của bạn"
+text = """
+Chọn một trong 51 ngôn ngữ từ nút hình lá cờ trên thanh trên cùng, hoặc
+theo ngôn ngữ của màn hình nền. Ngày và số giờ đã theo ngôn ngữ đó;
+phần còn lại của ứng dụng sẽ được dịch trong các bản cập nhật tới. Bản
+dịch do AI soạn thảo, rất mong bạn góp ý sửa.
+"""
+
+["2026-09-27-0723-select-and-copy-text"]
+title = "Chọn và sao chép văn bản trong thư"
+text = """
+Kéo chuột qua một thư để chọn văn bản, nhấp đúp để chọn một từ hoặc
+nhấp ba lần để chọn một đoạn. Ctrl+C hoặc nhấp chuột phải sẽ sao chép,
+và Ctrl+A chọn toàn bộ cuộc hội thoại.
+"""
+
+["2026-09-27-0743-address-suggestions"]
+title = "Gợi ý địa chỉ khi bạn gõ"
+text = """
+Tới, Cc và Bcc gợi ý những người bạn hay viết thư nhất ngay khi bạn gõ,
+kể cả khi gõ sai. Chọn một người bằng phím mũi tên và Enter, Tab hoặc
+một cú nhấp.
+"""
+
+["2026-09-27-0804-main-window-translated"]
+title = "Cửa sổ chính bằng ngôn ngữ của bạn"
+text = """
+Thanh ứng dụng, thư mục, thẻ, danh sách, menu và ngăn đọc giờ theo ngôn
+ngữ bạn chọn. Các thư mục bạn tự tạo vẫn giữ tên của chúng.
+"""
+
+["2026-09-27-0824-24-hour-clock"]
+title = "Đồng hồ 12 giờ hoặc 24 giờ"
+text = """
+Cài đặt > Chung > Giờ hiển thị thời gian theo đồng hồ 12 giờ hoặc 24
+giờ, bất kể ngôn ngữ thường viết thế nào.
+"""
+
+["2026-09-27-0824-settings-translated"]
+title = "Cài đặt bằng ngôn ngữ của bạn"
+text = """
+Cài đặt, Cài đặt nhanh, các tài khoản của bạn và tên các phím tắt giờ
+theo ngôn ngữ bạn chọn, và tìm kiếm trong Cài đặt tìm được các mục theo
+tên đã dịch.
+"""
+
+["2026-09-27-0825-default-mail-app"]
+title = "Katna làm ứng dụng thư của bạn"
+text = """
+Liên kết email trong ứng dụng khác và trên trang web có thể mở một thư
+mới trong Katna Mail, điền sẵn địa chỉ, tiêu đề và nội dung. Bật tính
+năng này trong Cài đặt > Chung > Ứng dụng thư mặc định.
+"""
+
+["2026-09-27-0825-old-word-files-and-slides"]
+title = "Tệp Word cũ và trang chiếu"
+text = """
+Tài liệu Word 97–2003 (.doc) giờ mở trong trình xem với đề mục, danh
+sách và bảng, còn trang chiếu PowerPoint (.pptx, .ppt) và OpenDocument
+(.odp) hiện văn bản của từng trang. Thẻ của chúng cũng hiện vài dòng
+đầu. Những tệp Katna không hiển thị được sẽ mở thẳng trong ứng dụng
+mặc định của bạn.
+"""
+
+["2026-09-27-0825-opens-where-you-left-it"]
+title = "Mở lại đúng chỗ bạn để"
+text = """
+Katna Mail mở với kích thước và vị trí như lúc bạn đóng, và phóng to
+nếu lúc đó đang phóng to. Thoát Katna từ khay hệ thống sẽ khởi động lại
+từ đầu. Trên Wayland, vị trí được khôi phục nếu màn hình nền hỗ trợ
+(Plasma 6.7 trở lên).
+"""
+
+["2026-09-27-0826-grammar-checking"]
+title = "Kiểm tra ngữ pháp"
+text = """
+Khi bạn viết bằng tiếng Anh, trong nội dung và tiêu đề, lỗi ngữ pháp sẽ
+được gạch chân màu hổ phách. Nhấp chuột phải vào lỗi để sửa hoặc bỏ
+qua. Tính năng chạy trên máy bạn, nhờ Harper; tắt nó trong Cài đặt >
+Soạn thư.
+"""
+
+["2026-09-27-0828-check-before-sending"]
+title = "Kiểm tra trước khi gửi"
+text = """
+Nếu thư của bạn nhắc tới tệp đính kèm mà lại không có, hoặc thiếu tiêu
+đề, Katna sẽ hỏi trước khi gửi, kể cả với thư hẹn giờ.
+"""
+
+["2026-09-27-0831-writing-suggestions"]
+title = "Gợi ý khi viết"
+text = """
+Khi bạn viết, phần còn lại có thể có của cụm từ hiện màu xám. Nhấn Tab
+để dùng, hoặc cứ gõ tiếp. Katna học các cụm từ từ những thư bạn đã gửi
+và từ cuộc hội thoại bạn đang trả lời, ngay trên máy bạn; tắt nó trong
+Cài đặt > Soạn thư.
+"""
+
+["2026-09-27-1043-dialogs-translated"]
+title = "Hộp thoại bằng ngôn ngữ của bạn"
+text = """
+Giới thiệu, Có gì mới, các trang chào mừng và phần giới thiệu, thêm tài
+khoản, tùy chọn tìm kiếm và thông báo sự cố giờ theo ngôn ngữ bạn chọn.
+"""
+
+["2026-09-27-1129-compose-translated"]
+title = "Soạn thư bằng ngôn ngữ của bạn"
+text = """
+Cửa sổ soạn thư, thanh định dạng, hẹn giờ gửi và trình sửa chữ ký giờ
+theo ngôn ngữ bạn chọn, và giờ gửi được gợi ý dùng cách viết ngày của
+ngôn ngữ đó cùng đồng hồ 12 hoặc 24 giờ bạn đã chọn. Lựa chọn giao diện
+theo màn hình nền giờ chỉ gọi đơn giản là Hệ thống.
+"""
+
+["2026-09-27-1132-print-preview"]
+title = "Xem trước khi in"
+text = """
+In giờ mở bản xem trước các trang, khổ A4 hoặc Letter, trước hộp thoại
+máy in. Các menu Thêm mở ngay dưới nút của chúng, với biểu tượng bên
+cạnh mỗi mục.
+"""
+
+["2026-09-27-1137-formatting-bar-colors"]
+title = "Thanh định dạng rõ ràng hơn"
+text = """
+Thanh định dạng được phủ màu nhấn của bạn, và các định dạng đang bật,
+như In đậm hay danh sách, hiện bằng màu chọn. Khi trả lời, nút Gửi và
+các công cụ của nó luôn ở dưới cùng khi bạn cuộn.
+"""
+
+["2026-09-27-1200-notifications-translated"]
+title = "Thông báo bằng ngôn ngữ của bạn"
+text = """
+Thông báo thư mới và các nút của chúng, cùng menu và chú giải của biểu
+tượng khay hệ thống, giờ theo ngôn ngữ bạn chọn và chuyển ngay khi bạn
+đổi ngôn ngữ.
+"""
+
+["2026-09-27-1242-whats-new-translated"]
+title = "Có gì mới bằng ngôn ngữ của bạn"
+text = """
+Các ghi chú này giờ hiển thị bằng ngôn ngữ đã đặt cho Katna Mail. Bản dịch vẫn là bản nháp, hãy cho chúng tôi biết chỗ nào cách diễn đạt có thể tốt hơn.
+"""

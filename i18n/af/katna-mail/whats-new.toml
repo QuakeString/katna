@@ -1,0 +1,325 @@
+# Katna Mail, Afrikaans (Afrikaans).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-27-0319-whats-new"]
+title = "Wat's nuut, ná elke opdatering"
+text = """
+Ná 'n opdatering wys Katna Mail een keer wat verander het, in plaas van
+die verwelkomingstoer. Vinnige instellings maak dit weer oop.
+"""
+
+["2026-09-27-0320-reply-buttons-fit"]
+title = "Antwoordknoppies wat altyd pas"
+text = """
+Antwoord, Antwoord almal en Stuur aan bly op een reël: soos die venster
+smaller word, vou hulle een vir een in ikone in. Op 'n foon deel hulle
+die breedte.
+"""
+
+["2026-09-27-0321-notifications-open-mail"]
+title = "Kennisgewings maak hul e-pos oop"
+text = """
+Klik op 'n kennisgewing van nuwe e-pos om daardie boodskap oop te maak,
+selfs as Katna Mail toe is. Kennisgewings het nou ook Antwoord almal.
+"""
+
+["2026-09-27-0322-attachment-previews"]
+title = "Voorskoue van meer aanhegsels"
+text = """
+Sigblaaie, CSV, tekslêers en dokumente wys 'n voorskou op hul kaart, en
+die kyker se agtergrond is ligter.
+"""
+
+["2026-09-27-0323-frosted-menus"]
+title = "Matglas-kieslyste"
+text = """
+Met Instellings > Eksperimenteel > Vaag agtergrond aan, word kieslyste en
+opspringers matglas.
+"""
+
+["2026-09-27-0346-settings-search"]
+title = "Deursoek jou instellings"
+text = """
+Met Instellings oop vind die soekblokkie enige instelling en neem jou
+daarheen. Instellings het meer oortjies, in 'n duideliker volgorde, en
+lang verduidelikings sit agter 'n (i)-knoppie.
+"""
+
+["2026-09-27-0410-crash-reports-kept"]
+title = "Ineenstortingsverslae bly op jou rekenaar"
+text = """
+As Katna Mail of sy agtergronddiens ineenstort, sê die volgende
+begin so, met die verslag om te bekyk of te kopieer vir 'n foutverslag.
+Instellings > Gebruikersterugvoer lys hulle.
+"""
+
+["2026-09-27-0438-calmer-reply"]
+title = "'n Kalmer antwoord"
+text = """
+Antwoord in die leesvenster hou Stuur en die formatering onder, vou die
+aangehaalde e-pos agter "..." weg, en Maak antwoord apart oop maak die
+antwoord in sy eie venster oop. Op 'n foon neem skryf die hele venster.
+"""
+
+["2026-09-27-0439-mail-in-own-window"]
+title = "E-pos in sy eie venster"
+text = """
+Shift+klik op 'n boodskap, regsklik daarop of gebruik In nuwe venster op
+die leser se nutsbalk om dit in 'n eie venster oop te maak. Druk alles
+druk die hele gesprek.
+"""
+
+["2026-09-27-0440-settings-on-phone"]
+title = "Instellings op 'n foon"
+text = """
+Op 'n smal skerm vul Instellings en Vinnige instellings die venster, en
+elke kieslys en opspringer sluit met Escape of 'n klik daarbuite.
+"""
+
+["2026-09-27-0441-offline-mail"]
+title = "Kies hoeveel e-pos vanlyn bly"
+text = """
+Instellings > Algemeen > Vanlyn e-pos hou 'n week, 'n maand, drie maande,
+'n jaar of al jou e-pos op hierdie rekenaar. Ouer e-pos word afgelaai
+wanneer jy dit oopmaak.
+"""
+
+["2026-09-27-0442-folder-pane-button"]
+title = "'n Nuwe knoppie vir die gidspaneel"
+text = """
+Die knoppie links bo wys en versteek die gidspaneel, en sy linkerkant is
+gevul terwyl die gidse wys.
+"""
+
+["2026-09-27-0443-cards-and-phone-rows"]
+title = "Skoner kaarte, kalmer foon"
+text = """
+Die lys en die leser sit op kaarte met 'n dowwe buitelyn en 'n kort
+skaduwee, kieslyste bly altyd binne die venster, en op 'n foon gly die
+soek- en nutsbalkrye weg soos jy rol.
+"""
+
+["2026-09-27-0444-about-katna"]
+title = "Meer oor Katna"
+text = """
+Hulp > Meer oor Katna, ook in Vinnige instellings, wys die weergawe, die
+veranderingslog en elke biblioteek waarop Katna gebou is, met sy
+outeurs en lisensie. Die weergawe in die Instellings-kop maak dit ook
+oop.
+"""
+
+["2026-09-27-0457-settings-tabs-one-line"]
+title = "Instellings-oortjies op een reël"
+text = """
+Die Instellings-oortjies bly op een reël: as hulle nie pas nie, gly
+pyle aan die kante en die rolwiel die res in sig. Handtekeninge en
+sjablone deel 'n Skryf-oortjie, en gidse en e-posreëls deel ook een.
+"""
+
+["2026-09-27-0515-send-crash-reports"]
+title = "Help om Katna te verbeter, as jy wil"
+text = """
+Katna vra een keer of dit ineenstortingsverslae mag stuur om te help
+regmaak wat skeefgeloop het. Hulle gaan sonder jou IP-adres, boodskappe
+of e-posadresse, en net as jy ja sê. Verander dit enige tyd in
+Instellings > Gebruikersterugvoer.
+"""
+
+["2026-09-27-0536-older-attachments-open"]
+title = "Aanhegsels van ouer e-pos maak dadelik oop"
+text = """
+As jy op 'n aanhegsel klik van ouer e-pos wat nog nie op hierdie rekenaar
+is nie, word dit afgelaai: die aanhegsel vul terwyl dit gebeur, en maak
+dan oop.
+"""
+
+["2026-09-27-0556-reading-options"]
+title = "Lees gesprekke soos jy wil"
+text = """
+Instellings > Algemeen > Lees kan die nuutste boodskap eerste wys, die
+volle opskrifte van elke boodskap oopmaak, en ontvangers se volle name
+gebruik in plaas van net hul voornaam.
+"""
+
+["2026-09-27-0609-send-and-archive"]
+title = "Stuur en argiveer"
+text = """
+Die kieslys langs Stuur by 'n antwoord stuur dit en argiveer die gesprek.
+Instellings > Skryf kan dit maak wat Stuur doen, en kan nuwe e-pos elke
+keer van dieselfde rekening stuur.
+"""
+
+["2026-09-27-0627-scaling"]
+title = "Maak alles groter of kleiner"
+text = """
+Instellings > Voorkoms > Skalering verstel die grootte van die hele
+venster, teks, ikone en spasiëring gelyk, van 75% tot 200% bo-op jou
+werkskerm se skaal.
+"""
+
+["2026-09-27-0645-shortcut-sets"]
+title = "Kortpaaie van die e-posprogram wat jy ken"
+text = """
+Instellings > Kortpaaie kan begin met die sleutels van Gmail, Inbox by
+Gmail, Apple Mail, Outlook of Thunderbird, lys hulle in twee kolomme, en
+Herstel verstek neem jou veranderinge terug.
+"""
+
+["2026-09-27-0646-more-settings"]
+title = "Meer instellings"
+text = """
+Maak Katna Mail oop wanneer jy aanmeld, kies wanneer e-pos as gelees
+gemerk word, laat die antwoordknoppie almal antwoord, wys altyd prente,
+demp die klank vir nuwe e-pos, versteek Belangrik-merkers, maak lang
+reëls smaller, hou e-pos se eie kleure in donker modus, skakel
+aanhegselvoorskoue af, skryf in gewone teks, kies die speltaal en sien
+gestoorde lêers in hul gids.
+"""
+
+["2026-09-27-0706-your-language"]
+title = "Jou taal"
+text = """
+Kies een van 51 tale met die vlagknoppie in die boonste balk, of volg
+jou werkskerm s'n. Datums en getalle volg dit nou; die res van die
+program word oor die volgende opdaterings vertaal. Die vertalings is deur
+KI opgestel, en regstellings is welkom.
+"""
+
+["2026-09-27-0723-select-and-copy-text"]
+title = "Kies en kopieer teks in e-pos"
+text = """
+Sleep oor 'n boodskap om sy teks te kies, dubbelklik vir 'n woord of
+trippelklik vir 'n paragraaf. Ctrl+C of 'n regsklik kopieer dit, en
+Ctrl+A kies die hele gesprek.
+"""
+
+["2026-09-27-0743-address-suggestions"]
+title = "Adresse voorgestel terwyl jy tik"
+text = """
+Aan, Cc en Bcc stel die mense voor aan wie jy die meeste skryf terwyl jy
+tik, selfs met 'n tikfout. Kies een met die pyltjiesleutels en Enter,
+Tab of 'n klik.
+"""
+
+["2026-09-27-0804-main-window-translated"]
+title = "Die hoofvenster in jou taal"
+text = """
+Die programbalk, gidse, oortjies, lys, kieslyste en leesvenster volg nou
+die taal wat jy kies. Gidse wat jy self gemaak het, hou hul eie name.
+"""
+
+["2026-09-27-0824-24-hour-clock"]
+title = "12-uur- of 24-uurhorlosie"
+text = """
+Instellings > Algemeen > Tyd wys tye met 'n 12-uur- of 24-uurhorlosie,
+maak nie saak hoe die taal dit skryf nie.
+"""
+
+["2026-09-27-0824-settings-translated"]
+title = "Instellings in jou taal"
+text = """
+Instellings, Vinnige instellings, jou rekeninge en die name van
+kortpaaie volg nou die taal wat jy kies, en soek in Instellings vind rye
+volgens hul vertaalde name.
+"""
+
+["2026-09-27-0825-default-mail-app"]
+title = "Katna as jou e-posprogram"
+text = """
+E-posskakels in ander programme en op webwerwe kan 'n nuwe boodskap in
+Katna Mail oopmaak, met die adres, onderwerp en teks reeds ingevul.
+Skakel dit aan in Instellings > Algemeen > Verstek-e-posprogram.
+"""
+
+["2026-09-27-0825-old-word-files-and-slides"]
+title = "Ou Word-lêers en skyfies"
+text = """
+Word 97–2003-dokumente (.doc) maak nou in die kyker oop met hul opskrifte,
+lyste en tabelle, en PowerPoint- (.pptx, .ppt) en OpenDocument-skyfies
+(.odp) wys die teks van elke skyfie. Hul kaarte wys ook die eerste reëls.
+Lêers wat Katna nie kan wys nie, maak direk in jou verstekprogram oop.
+"""
+
+["2026-09-27-0825-opens-where-you-left-it"]
+title = "Maak oop waar jy dit gelos het"
+text = """
+Katna Mail maak oop met die grootte en op die plek wat dit gehad het toe
+jy dit gesluit het, gemaksimeer as dit so was. As jy Katna uit die
+stelselbalk afsluit, begin dit weer van voor af. Op Wayland kom die plek
+terug waar die werkskerm dit ondersteun (Plasma 6.7 en later).
+"""
+
+["2026-09-27-0826-grammar-checking"]
+title = "Grammatikakontrole"
+text = """
+Terwyl jy in Engels skryf, in die teks en die onderwerp, kry
+grammatikafoute 'n amber onderstreep. Regsklik op een vir 'n regstelling
+of om dit te ignoreer. Dit loop op jou rekenaar, met Harper; skakel dit
+af in Instellings > Skryf.
+"""
+
+["2026-09-27-0828-check-before-sending"]
+title = "'n Kontrole voor jy stuur"
+text = """
+As jou boodskap van 'n aanhegsel praat maar geen het nie, of geen
+onderwerp het nie, vra Katna voordat dit gestuur word, ook vir
+geskeduleerde e-pos.
+"""
+
+["2026-09-27-0831-writing-suggestions"]
+title = "Skryfvoorstelle"
+text = """
+Terwyl jy skryf, wys die waarskynlike res van 'n frase in grys. Druk Tab
+om dit te neem, of hou aan tik. Katna leer die frases uit e-pos wat jy
+gestuur het en uit die gesprek wat jy beantwoord, op jou rekenaar;
+skakel dit af in Instellings > Skryf.
+"""
+
+["2026-09-27-1043-dialogs-translated"]
+title = "Dialoë in jou taal"
+text = """
+Meer oor, Wat's nuut, die verwelkomingsblaaie en die toer, 'n rekening
+byvoeg, soekopsies en die ineenstortingskennisgewing volg nou die taal
+wat jy kies.
+"""
+
+["2026-09-27-1129-compose-translated"]
+title = "Skryf e-pos in jou taal"
+text = """
+Die skryfvenster, sy formateringsbalk, Skeduleer stuur en die
+handtekeningredigeerder volg nou die taal wat jy kies, en voorgestelde
+stuurtye gebruik sy manier om datums te skryf en die 12- of 24-uurhorlosie
+wat jy gekies het. Die temakeuse wat die werkskerm volg, heet nou net
+Stelsel.
+"""
+
+["2026-09-27-1132-print-preview"]
+title = "Sien dit voor jy druk"
+text = """
+Druk maak nou eers 'n voorskou van die bladsye oop, op A4 of Letter,
+voor jou drukker se dialoog. Die Meer-kieslyste maak reg onder hul
+knoppie oop, met 'n ikoon langs elke item.
+"""
+
+["2026-09-27-1137-formatting-bar-colors"]
+title = "Duideliker formateringsbalk"
+text = """
+Die formateringsbalk is getint met jou aksentkleur, en formate wat aan
+is, soos Vetdruk of 'n lys, wys in die seleksiekleur. In 'n antwoord bly
+Stuur en sy nutsgoed onder terwyl jy rol.
+"""
+
+["2026-09-27-1200-notifications-translated"]
+title = "Kennisgewings in jou taal"
+text = """
+Kennisgewings van nuwe e-pos en hul knoppies, en die stelselbalkikoon se
+kieslys en wenk, volg nou die taal wat jy kies, en verander sodra jy dit
+verander.
+"""
+
+["2026-09-27-1242-whats-new-translated"]
+title = "Wat's nuut in jou taal"
+text = """
+Hierdie notas verskyn nou in die taal waarop Katna Mail gestel is. Die vertalings is konsepte, so laat weet ons waar die bewoording beter kan wees.
+"""
