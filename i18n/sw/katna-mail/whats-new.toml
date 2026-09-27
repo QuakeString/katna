@@ -424,3 +424,32 @@ kila moja, kuibadilisha jina, na kupanga akaunti kwa mpangilio
 unaoupenda kwa mishale au kwa kuburuta; kidirisha cha folda na menyu ya
 akaunti hufuata.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Weka upya akiba"
+text = """
+Mipangilio > Jumla > Weka upya akiba hufuta barua ambazo Katna ilipakua,
+picha za watumaji na faharasa ya utafutaji, kisha hupakua tena barua za
+hivi karibuni. Inasaidia kitu kinapoonekana kimepitwa na wakati au ili
+kuachilia nafasi ya diski; akaunti, mipangilio, rasimu na barua zako
+kwenye seva hubaki.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "Barua inayofuata hufunguka yenyewe"
+text = """
+Futa, weka kwenye kumbukumbu au hamisha barua unayoisoma na inayofuata
+hufunguka mahali pake, badala ya kidirisha cha kusoma kufungwa. Tendua
+huirudisha barua na kuifungua tena. Mipangilio > Jumla > Kusonga mbele
+kiotomatiki inaweza kufungua iliyotangulia badala yake, au kurudi kwenye
+orodha.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "Orodha ya barua tulivu zaidi"
+text = """
+Kisanduku cha kuteua, nyota na alama ya Muhimu ya kila barua sasa hubaki
+hafifu na huonekana kikamilifu unapoelekeza kwenye mstari wake, kama
+katika Gmail. Barua iliyoteuliwa, yenye nyota au muhimu huonyeshwa kwa
+rangi kamili kila wakati.
+"""

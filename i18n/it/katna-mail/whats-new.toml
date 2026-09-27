@@ -425,3 +425,32 @@ per ciascuno, rinominarlo e mettere gli account nell'ordine che
 preferisci con le frecce o trascinandoli; il riquadro delle cartelle e
 il menu dell'account si adeguano.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Reimposta la cache"
+text = """
+Impostazioni > Generali > Reimposta la cache elimina la posta scaricata
+da Katna, le immagini dei mittenti e l'indice di ricerca, poi scarica di
+nuovo la posta recente. Utile quando qualcosa sembra non aggiornato o
+per liberare spazio su disco; account, impostazioni, bozze e la tua
+posta sul server restano.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "L'email successiva si apre da sola"
+text = """
+Elimina, archivia o sposta l'email che stai leggendo e al suo posto si
+apre la successiva, invece di chiudere il riquadro di lettura. Annulla
+riporta indietro l'email e la riapre. Impostazioni > Generali >
+Avanzamento automatico può invece aprire la precedente, o tornare
+all'elenco.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "Un elenco della posta più tranquillo"
+text = """
+La casella di selezione, la stella e l'indicatore Importante di ogni
+email ora restano attenuati e si illuminano del tutto quando passi il
+puntatore sulla riga, come in Gmail. Un'email selezionata, speciale o
+importante si vede sempre a colori pieni.
+"""

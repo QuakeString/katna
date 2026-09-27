@@ -412,3 +412,29 @@ för alla. I Inställningar > Konton kan du välja en bild för varje konto,
 byta namn på det och ordna kontona som du vill med pilarna eller genom
 att dra; mappfönstret och kontomenyn följer med.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Återställ cache"
+text = """
+Inställningar > Allmänt > Återställ cache raderar e-posten som Katna har
+hämtat, avsändarbilder och sökindexet och hämtar sedan ny e-post igen.
+Praktiskt när något ser inaktuellt ut eller för att frigöra diskutrymme;
+konton, inställningar, utkast och din e-post på servern blir kvar.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "Nästa mejl öppnas av sig självt"
+text = """
+Radera, arkivera eller flytta mejlet du läser så öppnas nästa i dess
+ställe, i stället för att läsrutan stängs. Ångra tar tillbaka mejlet och
+öppnar det igen. Med Inställningar > Allmänt > Gå vidare automatiskt kan
+det föregående öppnas i stället, eller så går du tillbaka till listan.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "En lugnare mejllista"
+text = """
+Kryssrutan, stjärnan och Viktigt-markeringen för varje mejl är nu
+dämpade och syns fullt ut när du pekar på raden, som i Gmail. Ett
+markerat, stjärnmärkt eller viktigt mejl visas alltid i full färg.
+"""

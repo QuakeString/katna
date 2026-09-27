@@ -418,3 +418,31 @@ untuk setiap akun, mengganti namanya, dan menyusun akun sesuai urutan
 yang Anda suka dengan tombol panah atau dengan menyeret; panel folder
 dan menu akun mengikuti urutan ini.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Reset cache"
+text = """
+Setelan > Umum > Reset cache menghapus email yang didownload Katna,
+gambar pengirim, dan indeks penelusuran, lalu mendownload ulang email
+terbaru. Berguna saat ada yang terlihat usang atau untuk mengosongkan
+ruang disk; akun, setelan, draf, dan email Anda di server tetap ada.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "Email berikutnya terbuka sendiri"
+text = """
+Hapus, arsipkan, atau pindahkan email yang sedang Anda baca, dan email
+berikutnya terbuka di tempatnya, alih-alih panel baca tertutup. Urungkan
+mengembalikan email itu dan membukanya lagi. Setelan > Umum > Maju
+otomatis dapat membuka email sebelumnya sebagai gantinya, atau kembali
+ke daftar.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "Daftar email yang lebih tenang"
+text = """
+Kotak centang, bintang, dan penanda Penting di setiap email kini tampil
+redup dan menyala penuh saat Anda mengarahkan penunjuk ke barisnya,
+seperti di Gmail. Email yang dicentang, berbintang, atau penting selalu
+tampil dengan warna penuh.
+"""

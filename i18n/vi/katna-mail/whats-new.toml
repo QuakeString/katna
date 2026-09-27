@@ -412,3 +412,29 @@ cả. Trong Cài đặt > Tài khoản, bạn có thể chọn ảnh cho từng 
 đổi tên và sắp xếp các tài khoản theo thứ tự mình muốn bằng mũi tên hoặc
 bằng cách kéo; ngăn thư mục và menu tài khoản sẽ theo thứ tự đó.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Đặt lại bộ nhớ đệm"
+text = """
+Cài đặt > Chung > Đặt lại bộ nhớ đệm sẽ xóa thư Katna đã tải xuống, ảnh
+người gửi và chỉ mục tìm kiếm, rồi tải xuống lại thư gần đây. Tiện khi
+có gì đó trông lỗi thời hoặc để giải phóng dung lượng ổ đĩa; tài khoản,
+cài đặt, thư nháp và thư của bạn trên máy chủ vẫn được giữ.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "Thư tiếp theo tự mở"
+text = """
+Xóa, lưu trữ hoặc di chuyển thư bạn đang đọc thì thư tiếp theo sẽ mở
+ngay tại chỗ, thay vì ngăn đọc bị đóng lại. Hoàn tác sẽ đưa thư trở lại
+và mở lại thư đó. Cài đặt > Chung > Tự động chuyển có thể mở thư trước
+đó thay vào, hoặc quay lại danh sách.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "Danh sách thư dịu mắt hơn"
+text = """
+Ô đánh dấu, dấu sao và điểm đánh dấu Quan trọng của mỗi thư giờ hiện mờ
+và rõ hẳn lên khi bạn trỏ vào dòng đó, giống như trong Gmail. Thư đã
+chọn, gắn dấu sao hoặc quan trọng luôn hiện đủ màu.
+"""

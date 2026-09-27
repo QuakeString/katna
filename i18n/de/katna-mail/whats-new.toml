@@ -429,3 +429,32 @@ jedes ein Bild wählen, es umbenennen und die Konten mit den Pfeilen oder
 durch Ziehen in die gewünschte Reihenfolge bringen; der Ordnerbereich und
 das Kontomenü folgen ihr.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Cache zurücksetzen"
+text = """
+Einstellungen > Allgemein > Cache zurücksetzen löscht die von Katna
+heruntergeladenen E-Mails, die Absenderbilder und den Suchindex und lädt
+dann aktuelle E-Mails erneut herunter. Praktisch, wenn etwas veraltet
+aussieht, oder um Speicherplatz freizugeben; Konten, Einstellungen,
+Entwürfe und Ihre E-Mails auf dem Server bleiben erhalten.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "Die nächste E-Mail öffnet sich von selbst"
+text = """
+Wenn Sie die E-Mail, die Sie gerade lesen, löschen, archivieren oder
+verschieben, öffnet sich an ihrer Stelle die nächste, statt dass sich
+der Lesebereich schließt. Rückgängig holt die E-Mail zurück und öffnet
+sie wieder. Unter Einstellungen > Allgemein > Automatisch weiter können
+Sie stattdessen die vorherige öffnen lassen oder zur Liste zurückkehren.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "Eine ruhigere E-Mail-Liste"
+text = """
+Kontrollkästchen, Markierung und Wichtig-Symbol jeder E-Mail sind jetzt
+gedimmt und erscheinen in voller Stärke, wenn Sie auf die Zeile zeigen,
+wie in Gmail. Eine ausgewählte, markierte oder wichtige E-Mail erscheint
+immer in voller Farbe.
+"""

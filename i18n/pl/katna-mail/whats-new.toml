@@ -424,3 +424,32 @@ każdego z nich, zmienić jego nazwę i ułożyć konta w wybranej kolejności
 strzałkami lub przeciągając; panel folderów i menu kont stosują tę
 kolejność.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Czyszczenie pamięci podręcznej"
+text = """
+Ustawienia > Ogólne > Wyczyść pamięć podręczną usuwa pocztę pobraną
+przez Katna, zdjęcia nadawców i indeks wyszukiwania, a potem ponownie
+pobiera najnowszą pocztę. Przydaje się, gdy coś wygląda nieaktualnie,
+albo by zwolnić miejsce na dysku; konta, ustawienia, wersje robocze i
+Twoja poczta na serwerze zostają.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "Następna wiadomość otwiera się sama"
+text = """
+Usuń, zarchiwizuj lub przenieś czytaną wiadomość, a w jej miejscu
+otworzy się następna, zamiast zamykać okienko odczytu. Cofnij przywraca
+wiadomość i otwiera ją ponownie. W Ustawienia > Ogólne > Automatyczne
+przechodzenie można zamiast tego otwierać poprzednią albo wracać do
+listy.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "Spokojniejsza lista wiadomości"
+text = """
+Pole wyboru, gwiazdka i znacznik ważności każdej wiadomości są teraz
+przygaszone i nabierają pełnej wyrazistości, gdy wskażesz wiersz, jak w
+Gmailu. Zaznaczona, oznaczona gwiazdką lub ważna wiadomość zawsze ma
+pełny kolor.
+"""

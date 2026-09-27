@@ -431,3 +431,31 @@ cada una, cambiarle el nombre y poner las cuentas en el orden que quieras
 con las flechas o arrastrándolas; el panel de carpetas y el menú de la
 cuenta siguen ese orden.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Restablecer caché"
+text = """
+Ajustes > General > Restablecer caché elimina el correo que descargó
+Katna, las imágenes de los remitentes y el índice de búsqueda, y luego
+vuelve a descargar el correo reciente. Útil cuando algo parece
+desactualizado o para liberar espacio en disco; las cuentas, los
+ajustes, los borradores y tu correo en el servidor se conservan.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "El siguiente correo se abre solo"
+text = """
+Elimina, archiva o mueve el correo que estás leyendo y el siguiente se
+abre en su lugar, en vez de cerrarse el panel de lectura. Deshacer
+recupera el correo y lo vuelve a abrir. En Ajustes > General > Avance
+automático puedes abrir el anterior en su lugar, o volver a la lista.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "Una lista de correos más tranquila"
+text = """
+La casilla, la estrella y el marcador de Importante de cada correo ahora
+quedan atenuados y recuperan toda su intensidad al señalar la línea,
+como en Gmail. Un correo marcado, destacado o importante siempre se ve a
+todo color.
+"""

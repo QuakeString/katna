@@ -437,3 +437,32 @@ ungakhetha isithombe sayo ngayinye, uyiqambe kabusha, futhi ubeke
 ama-akhawunti ngokulandelana okuthandayo ngemicibisholo noma
 ngokuhudula; iphaneli yamafolda nemenyu ye-akhawunti kuyalandela.
 """
+
+["2026-09-27-0826-reset-cache"]
+title = "Setha kabusha inqolobane"
+text = """
+Izilungiselelo > Okuvamile > Setha kabusha inqolobane isusa imeyili
+elandwe yi-Katna, izithombe zabathumeli nenkomba yosesho, bese ilanda
+kabusha imeyili yakamuva. Kuyasiza lapho okuthile kubukeka kuphelelwe
+yisikhathi noma ukukhulula isikhala sediski; ama-akhawunti,
+izilungiselelo, okusalungiswa nemeyili yakho eseva kuyahlala.
+"""
+
+["2026-09-27-1308-auto-advance"]
+title = "Imeyili elandelayo izivulela yona"
+text = """
+Susa, faka kungobo yomlando noma hambisa imeyili oyifundayo bese
+kuvuleka elandelayo endaweni yayo, esikhundleni sokuthi iphaneli
+yokufunda ivaleke. I-Hlehlisa ibuyisa imeyili futhi iyivule futhi.
+Ku-Izilungiselelo > Okuvamile > Qhubekela phambili ngokuzenzakalelayo
+ungavula edlule esikhundleni salokho, noma ubuyele ohlwini.
+"""
+
+["2026-09-27-1348-quiet-row-markers"]
+title = "Uhlu lwemeyili oluzolile"
+text = """
+Ibhokisi lokumaka, inkanyezi nophawu lokubalulekile lwemeyili ngayinye
+manje kuhlala kufiphele futhi kuvela ngokugcwele lapho ukhomba umugqa,
+njengaku-Gmail. Imeyili ekhethiwe, enenkanyezi noma ebalulekile ihlala
+ibonakala ngombala ogcwele.
+"""
