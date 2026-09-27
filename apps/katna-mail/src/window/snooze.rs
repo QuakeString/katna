@@ -517,7 +517,9 @@ mod tests {
     use super::*;
 
     fn at(date: &str, time: &str) -> Zoned {
-        format!("{date}T{time}[UTC]").parse().unwrap()
+        // CI images may have no zone database, so no zone by name.
+        let at: jiff::civil::DateTime = format!("{date}T{time}").parse().unwrap();
+        at.to_zoned(jiff::tz::TimeZone::UTC).unwrap()
     }
 
     fn names(now: &Zoned) -> Vec<(String, String)> {
