@@ -1407,7 +1407,7 @@ impl MailWindow {
                     .top_0()
                     .left_0()
                     .right_0()
-                    .h(px(8.0))
+                    .h(px(4.0))
                     .with_spring(
                         ("row-drop", ix),
                         SpringAnimation::new(ROW_LIFT).to(if under_hovered { 1.0 } else { 0.0 }),
@@ -1417,7 +1417,7 @@ impl MailWindow {
                                 el.bg(linear_gradient(
                                     180.0,
                                     linear_color_stop(
-                                        rgba(fade(shadow, 0.7 * s.clamp(0.0, 1.0))),
+                                        rgba(fade(shadow, 0.3 * s.clamp(0.0, 1.0))),
                                         0.0,
                                     ),
                                     linear_color_stop(rgba(fade(shadow, 0.0)), 1.0),
@@ -1460,17 +1460,17 @@ impl MailWindow {
                     if s > 0.001 {
                         el.bg(rgba(mix(background, lit, s))).shadow(vec![
                             BoxShadow {
-                                color: rgba(fade(shadow, 0.9 * s)).into(),
+                                color: rgba(fade(shadow, 0.5 * s)).into(),
                                 offset: point(px(0.0), px(1.0)),
-                                blur_radius: px(3.0),
+                                blur_radius: px(2.0),
                                 spread_radius: px(0.0),
                                 inset: false,
                             },
                             BoxShadow {
-                                color: rgba(fade(shadow, 0.5 * s)).into(),
-                                offset: point(px(0.0), px(2.0 * s)),
-                                blur_radius: px(8.0),
-                                spread_radius: px(1.0),
+                                color: rgba(fade(shadow, 0.25 * s)).into(),
+                                offset: point(px(0.0), px(1.0 * s)),
+                                blur_radius: px(3.0),
+                                spread_radius: px(0.0),
                                 inset: false,
                             },
                         ])
