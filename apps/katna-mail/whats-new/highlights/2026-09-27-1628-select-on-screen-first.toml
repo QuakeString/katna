@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Select unread or starred mail, Gmail style"
+text = """
+Read, Unread, Starred and Unstarred in the select menu tick the matching
+mail on screen again. A line above the list offers to select every
+matching conversation in the folder, and Clear selection undoes it.
+"""
