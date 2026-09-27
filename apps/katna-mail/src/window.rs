@@ -18,6 +18,7 @@
 mod about;
 mod account_view;
 mod accounts;
+mod activity;
 mod add_account;
 mod apps;
 mod attachments;
@@ -559,6 +560,8 @@ pub struct MailWindow {
     unsent: Option<compose::Unsent>,
     /// The spelling dictionary and scheduled mail of compose.
     writing: compose::Writing,
+    /// The Activity dialog of tracked mail, when open.
+    activity: Option<Vec<katna_store::MessageActivity>>,
     /// The Settings page, when open in place of the list.
     settings_page: Option<settings_page::SettingsPage>,
     /// The question before removing an account or deleting all data.
@@ -746,6 +749,7 @@ impl MailWindow {
             language_picker: None,
             unsent: None,
             writing: compose::Writing::default(),
+            activity: None,
             settings_page: None,
             danger: None,
             new_label: None,
@@ -1045,6 +1049,43 @@ impl MailWindow {
                     role: Role::Other,
                     folder: None,
                     unread: scheduled as u64,
+                    has_children: false,
+                    expanded: false,
+                },
+            );
+        }
+        // Activity follows Sent (and Scheduled) once mail was tracked.
+        if self.has_activity() {
+            let at = rows
+                .iter()
+                .rposition(|r| {
+                    matches!(
+                        r,
+                        sidebar::Row::Folder {
+                            role: Role::Sent,
+                            ..
+                        } | sidebar::Row::Unified {
+                            view: sidebar::Unified::Sent,
+                            ..
+                        }
+                    ) || matches!(r, sidebar::Row::Folder { key, .. } if key == compose::SCHEDULED_NAV_KEY)
+                })
+                .map_or(rows.len(), |ix| {
+                    ix + 1
+                        + rows[ix + 1..]
+                            .iter()
+                            .take_while(|r| matches!(r, sidebar::Row::UnifiedAccount { .. }))
+                            .count()
+                });
+            rows.insert(
+                at,
+                sidebar::Row::Folder {
+                    key: activity::NAV_KEY.to_owned(),
+                    depth: 0,
+                    label: "Activity".to_owned(),
+                    role: Role::Other,
+                    folder: None,
+                    unread: 0,
                     has_children: false,
                     expanded: false,
                 },
@@ -1635,6 +1676,7 @@ impl MailWindow {
         self.load_tree();
         self.expanded = expanded;
         self.rebuild_nav();
+        self.refresh_activity();
         let selected_key = self
             .selected
             .and_then(|ix| self.entries.get(ix))
@@ -2786,6 +2828,7 @@ impl Render for MailWindow {
         };
         let compose = self.render_compose(&th, window, reduce, cx);
         let scheduled = self.render_scheduled(&th, window, cx);
+        let activity = self.render_activity(&th, window, cx);
         let account_menu = self.render_account_menu(&th, cx);
         let language_picker = self.render_language_picker(&th, window, cx);
         let add_account = self.render_add_account(&th, window, reduce, cx);
@@ -2823,6 +2866,7 @@ impl Render for MailWindow {
             .children(search_panel)
             .children(compose)
             .children(scheduled)
+            .children(activity)
             .children(account_menu)
             .children(language_picker)
             .children(add_account)
