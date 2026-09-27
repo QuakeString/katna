@@ -17,6 +17,7 @@ macro_rules! icons {
 }
 
 icons!(
+    "activity",
     "add",
     "align-center",
     "align-left",

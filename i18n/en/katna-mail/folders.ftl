@@ -55,6 +55,8 @@ folder-trash = Trash
 folder-all-mail = All mail
 # Messages scheduled to be sent later.
 folder-scheduled = Scheduled
+# How mail sent with open and click tracking did.
+folder-activity = Activity
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 
