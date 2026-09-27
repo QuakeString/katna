@@ -258,6 +258,10 @@ menu-reply-all = Reply all
 menu-forward = Forward
 menu-archive = Archive
 menu-delete = Delete
+# In Trash: deletes the mail for good.
+menu-delete-forever = Delete forever
+# In Trash, Archive and All Mail: back to the inbox.
+menu-move-to-inbox = Move to Inbox
 menu-spam = Report spam
 # In the Spam folder, in place of "Report spam": back to the inbox.
 menu-not-spam = Not spam

@@ -20,6 +20,7 @@ use katna_i18n::tr;
 use super::compose::Kind;
 use super::{Act, MailWindow};
 use crate::data::{EntryKey, Row};
+use crate::sidebar::Role;
 use crate::theme::Theme;
 use crate::widgets::{icon, raised};
 
@@ -266,6 +267,20 @@ impl MailWindow {
             }))
         });
 
+        let role = self.folder_role();
+        let drafts = role == Role::Drafts;
+        let archives = !matches!(
+            role,
+            Role::Drafts | Role::Sent | Role::Junk | Role::Trash | Role::Archive | Role::All
+        );
+        let spam = !matches!(role, Role::Drafts | Role::Sent | Role::Trash);
+        // Trash restores to the inbox; archived mail goes back there too.
+        let to_inbox = matches!(role, Role::Trash | Role::Archive | Role::All)
+            .then(|| {
+                self.account()
+                    .and_then(|a| self.tree.role_folder(a, Role::Inbox))
+            })
+            .flatten();
         let list = div()
             .w(px(MENU_WIDTH))
             .py(px(8.0))
@@ -274,22 +289,47 @@ impl MailWindow {
             .map(|d| raised(d, th, 8.0, 3.0))
             .text_size(px(14.0))
             .text_color(rgba(th.text))
-            .child(plain("context-reply", "reply", &tr!("menu-reply")).on_click(reply(Kind::Reply)))
-            .child(
-                plain("context-reply-all", "reply-all", &tr!("menu-reply-all"))
-                    .on_click(reply(Kind::ReplyAll)),
-            )
-            .child(
-                plain("context-forward", "forward", &tr!("menu-forward"))
-                    .on_click(reply(Kind::Forward)),
-            )
-            .child(separator())
-            .child(
-                plain("context-archive", "archive", &tr!("menu-archive"))
-                    .on_click(act(Act::Archive)),
-            )
-            .child(plain("context-delete", "trash", &tr!("menu-delete")).on_click(act(Act::Delete)))
-            .child(plain("context-spam", "junk", &self.spam_label(true)).on_click(act(Act::Spam)))
+            // What fits the folder, as in webmail: no answering drafts, no
+            // archiving what is archived, in Spam or in Trash, and Trash
+            // restores and deletes for good.
+            .when(!drafts, |d| {
+                d.child(
+                    plain("context-reply", "reply", &tr!("menu-reply"))
+                        .on_click(reply(Kind::Reply)),
+                )
+                .child(
+                    plain("context-reply-all", "reply-all", &tr!("menu-reply-all"))
+                        .on_click(reply(Kind::ReplyAll)),
+                )
+                .child(
+                    plain("context-forward", "forward", &tr!("menu-forward"))
+                        .on_click(reply(Kind::Forward)),
+                )
+                .child(separator())
+            })
+            .when(archives, |d| {
+                d.child(
+                    plain("context-archive", "archive", &tr!("menu-archive"))
+                        .on_click(act(Act::Archive)),
+                )
+            })
+            .when_some(to_inbox, |d, inbox| {
+                d.child(
+                    plain("context-to-inbox", "inbox", &tr!("menu-move-to-inbox"))
+                        .on_click(act(Act::MoveTo(inbox))),
+                )
+            })
+            .child(if role == Role::Trash {
+                plain("context-delete", "trash", &tr!("menu-delete-forever"))
+                    .on_click(act(Act::Delete))
+            } else {
+                plain("context-delete", "trash", &tr!("menu-delete")).on_click(act(Act::Delete))
+            })
+            .when(spam, |d| {
+                d.child(
+                    plain("context-spam", "junk", &self.spam_label(true)).on_click(act(Act::Spam)),
+                )
+            })
             .child(if row.unread {
                 plain("context-read", "mark-read", &tr!("menu-mark-read"))
                     .on_click(act(Act::Read(true)))
