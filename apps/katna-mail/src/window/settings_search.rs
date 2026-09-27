@@ -138,6 +138,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
+        "settings-general-search-triggers",
+        "settings-general-search-triggers-summary",
+        "krunner gnome shell desktop search trigger keyword prefix word launcher",
+    ),
+    entry(
+        Section::General,
         "settings-general-mail-app",
         "settings-general-mail-app-summary",
         "default client mailto links handler email program",

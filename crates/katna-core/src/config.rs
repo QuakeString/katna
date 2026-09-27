@@ -212,6 +212,25 @@ pub struct General {
     /// autostart entry is the setting itself; this only stops the default
     /// from coming back after it was turned off.
     pub start_at_login_set: bool,
+    /// Words that, typed first in KRunner or GNOME's search with a space
+    /// after them, search the mail as Katna Mail's search box does
+    /// (`k budget`); `mail:` always does (§15.3).
+    pub search_triggers: Vec<String>,
+}
+
+impl General {
+    /// [`General::search_triggers`] from what was typed in Settings: words
+    /// apart by commas or spaces, each once, in lowercase.
+    pub fn parse_search_triggers(text: &str) -> Vec<String> {
+        let mut words: Vec<String> = Vec::new();
+        for word in text.split(|c: char| c == ',' || c.is_whitespace()) {
+            let word = word.trim_end_matches(':').to_lowercase();
+            if !word.is_empty() && !words.contains(&word) {
+                words.push(word);
+            }
+        }
+        words
+    }
 }
 
 /// How times show ([`General::clock`]).
@@ -238,6 +257,7 @@ impl Default for General {
             language: String::new(),
             clock: Clock::Language,
             start_at_login_set: false,
+            search_triggers: vec!["k".to_owned(), "m".to_owned()],
         }
     }
 }
@@ -974,6 +994,18 @@ mod tests {
         assert_eq!(config, Config::default());
         assert!(config.general.run_in_background);
         assert_eq!(config.sending.undo_send_seconds, 10);
+    }
+
+    #[test]
+    fn search_triggers_are_words() {
+        assert_eq!(Config::default().general.search_triggers, ["k", "m"]);
+        assert_eq!(
+            General::parse_search_triggers(" K, mail:  k find,,"),
+            ["k", "mail", "find"]
+        );
+        assert!(General::parse_search_triggers(" , ").is_empty());
+        let config = Config::parse("[general]\nsearch_triggers = []\n").unwrap();
+        assert!(config.general.search_triggers.is_empty());
     }
 
     #[test]

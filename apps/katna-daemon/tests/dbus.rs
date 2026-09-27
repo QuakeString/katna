@@ -346,7 +346,8 @@ fn translates_from_the_store_and_never_sends_mail_in_the_reading_language() {
 }
 
 /// KRunner and GNOME Shell find people as they are typed, and mail whose
-/// subject or sender has every word; `mail:` searches everything.
+/// subject or sender has every word; `mail:` or a trigger word searches
+/// everything.
 #[test]
 fn answers_krunner_and_gnome_search() {
     use std::collections::HashMap;
@@ -449,6 +450,20 @@ fn answers_krunner_and_gnome_search() {
         assert!(krunner("bu").await.is_empty());
         // `mail:` searches the text too, as Katna Mail's search box does.
         assert_eq!(krunner("mail: budget").await.len(), 2);
+        // So does a trigger word from Settings: "k" and "m" at first.
+        assert_eq!(krunner("k budget").await.len(), 2);
+        assert!(krunner("k bu").await.is_empty());
+        let mut config = katna_core::config::Config::default();
+        config.general.search_triggers = vec!["find".into()];
+        config.save(&paths.config_file()).unwrap();
+        PimProxy::new(&connection)
+            .await
+            .unwrap()
+            .reload_config()
+            .await
+            .unwrap();
+        assert_eq!(krunner("Find budget").await.len(), 2);
+        assert!(krunner("k budget").await.is_empty());
 
         let gnome = |method: &'static str, body: Vec<String>| {
             let connection = connection.clone();
