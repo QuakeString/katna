@@ -369,17 +369,6 @@ impl Store {
         Ok(found)
     }
 
-    /// The `Message-ID` of stored message `message`, without angle
-    /// brackets.
-    pub fn message_id_header(&self, message: crate::MessageId) -> Result<Option<String>> {
-        Ok(self
-            .mail
-            .prepare_cached("SELECT message_id_hdr FROM message WHERE id = ?1")?
-            .query_row([message.0], |row| row.get(0))
-            .optional()?
-            .flatten())
-    }
-
     /// The activity of `tracked`.
     pub fn activity(&self, tracked: TrackedMessage) -> Result<MessageActivity> {
         let mut recipients = Vec::with_capacity(tracked.recipients.len());
