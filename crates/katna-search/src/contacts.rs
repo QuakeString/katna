@@ -578,6 +578,8 @@ fn split(text: &str) -> Vec<(usize, String)> {
 }
 
 #[cfg(test)]
+// Marks are lists of ranges, often of one.
+#[allow(clippy::single_range_in_vec_init)]
 mod tests {
     use katna_core::AccountId;
 
