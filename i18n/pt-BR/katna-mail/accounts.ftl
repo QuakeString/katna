@@ -1,0 +1,64 @@
+# Katna Mail, Portuguese (Brazil) (Português (Brasil)).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Settings > Accounts
+
+accounts-folder-pane = Painel de pastas
+accounts-folder-pane-detail = De quais contas o painel à esquerda mostra as pastas.
+accounts-shown-one = Uma conta por vez; troque no cartão da conta
+accounts-shown-all = Todas as contas, uma após a outra
+accounts-row = Contas
+accounts-row-detail = Remover uma conta exclui a cópia dos e-mails dela que o Katna tem neste computador. Os e-mails continuam no servidor.
+accounts-none = Nenhuma conta ainda.
+accounts-kind-imported = Importada
+accounts-picture-reset = Usar imagem da área de trabalho
+accounts-picture-change = Alterar imagem
+accounts-remove = Remover
+accounts-delete-all-row = Excluir todos os dados
+accounts-delete-all-row-detail = Começar do zero, como em uma nova instalação.
+accounts-delete-all-about = Exclui deste computador todas as contas, todos os e-mails armazenados, contatos e agendas, o índice de pesquisa, suas configurações e senhas salvas. Nada muda nos seus servidores de e-mail.
+accounts-delete-all-open = Excluir todos os dados do Katna
+
+## Settings > Accounts: snackbars after deleting
+
+accounts-removed-local = { $address } foi removida do Katna.
+accounts-removed = { $address } foi removida do Katna. Os e-mails dela continuam no servidor.
+accounts-all-deleted = Todos os dados do Katna foram excluídos deste computador.
+
+## Settings > Accounts: the dialog that asks before deleting
+
+accounts-remove-title = Remover { $address }?
+accounts-remove-confirm = Remover conta
+accounts-removing = Removendo…
+accounts-remove-local-mail = { $folders ->
+    [0] Todos os e-mails importados para esta conta
+    [one] Todos os e-mails importados para esta conta, na pasta dela
+    [many] Todos os e-mails importados para esta conta, nas { $folders } de pastas dela
+   *[other] Todos os e-mails importados para esta conta, nas { $folders } pastas dela
+}
+accounts-remove-local-settings = As configurações dela no Katna
+accounts-remove-mail = { $folders ->
+    [0] Todos os e-mails desta conta armazenados pelo Katna
+    [one] Todos os e-mails desta conta armazenados pelo Katna, na pasta dela
+    [many] Todos os e-mails desta conta armazenados pelo Katna, nas { $folders } de pastas dela
+   *[other] Todos os e-mails desta conta armazenados pelo Katna, nas { $folders } pastas dela
+}
+accounts-remove-outbox = As mensagens dela aguardando na caixa de saída
+accounts-remove-settings = A senha salva e as configurações dela no Katna
+accounts-delete-all-title = Excluir todos os dados do Katna?
+accounts-delete-all-confirm = Excluir tudo
+accounts-deleting = Excluindo…
+accounts-delete-all-accounts = Todas as contas, e todos os e-mails e anexos armazenados pelo Katna
+accounts-delete-all-contacts = Contatos, agendas e o índice de pesquisa
+accounts-delete-all-settings = Todas as configurações, assinaturas e atalhos do teclado
+accounts-delete-all-passwords = Todas as senhas salvas
+accounts-deleted-heading = Excluído deste computador:
+accounts-cannot-undo = Não é possível desfazer esta ação.
+accounts-server-delete-all = Nada muda nos seus servidores de e-mail: seus e-mails continuam lá, e adicionar uma conta de novo os baixa novamente. Os e-mails importados de arquivos só existem no Katna; os arquivos não são alterados.
+accounts-server-local = Estes e-mails foram importados de arquivos, então o Katna tem a única cópia. Os arquivos de origem não são alterados; importe-os de novo para recuperá-los.
+accounts-server-remove = Nada muda no servidor de e-mail: seus e-mails continuam lá, e adicionar a conta de novo os baixa novamente.
+accounts-confirm-word = excluir
+accounts-confirm-placeholder = Digite “{ accounts-confirm-word }”
+accounts-confirm-prompt = Para confirmar, digite “{ accounts-confirm-word }”:
+accounts-cancel = Cancelar

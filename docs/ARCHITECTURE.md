@@ -1822,9 +1822,11 @@ Arabic, Persian, Hebrew and Urdu read right to left and mirror the whole
 layout.
 
 **Tooling: Fluent.** Strings live in Fluent files (`fluent-bundle`,
-Mozilla's Project Fluent), one per binary per language:
-`i18n/<tag>/katna-mail.ftl`, `katna-ui.ftl` (shared widgets),
-`katna-daemon.ftl` (notifications, tray, dock menu). Chosen over gettext
+Mozilla's Project Fluent), one folder per binary per language with one
+file per area, so changes made side by side add lines to different files:
+`i18n/<tag>/katna-mail/<area>.ftl` (`list.ftl`, `reader.ftl`,
+`settings.ftl`, …), `katna-ui.ftl` (shared widgets, one file),
+`katna-daemon/` (notifications, tray, dock menu). Chosen over gettext
 because:
 
 - It is pure Rust with no `libintl`, and small (about 0.3 MB).

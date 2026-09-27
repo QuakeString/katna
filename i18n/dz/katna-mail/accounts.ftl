@@ -1,0 +1,60 @@
+# Katna Mail, Dzongkha (རྫོང་ཁ).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Settings > Accounts
+
+accounts-folder-pane = སྣོད་འཛིན་པེན
+accounts-folder-pane-detail = གཡོན་ཁའི་པེན་འདི་གིས་ རྩིས་ཐོ་ག་འདི་ཚུ་གི་སྣོད་འཛིན་ཚུ་སྟོནམ་ཨིན་ན།
+accounts-shown-one = ཚར་གཅིག་ལུ་ རྩིས་ཐོ་གཅིག། རྩིས་ཐོའི་ཤོག་བྱང་ནང་སོར
+accounts-shown-all = རྩིས་ཐོ་ཆ་མཉམ་ གཅིག་གི་ཤུལ་ལས་གཅིག
+accounts-row = རྩིས་ཐོ་ཚུ
+accounts-row-detail = རྩིས་ཐོ་ཅིག་བཏོན་པ་ཅིན་ གློག་རིག་འདི་གུ་ཡོད་པའི་ དེ་གི་གློག་འཕྲིན་གྱི་ Katna འདྲ་བཤུས་བཏོན་གཏངམ་ཨིན། གློག་འཕྲིན་འདི་ སར་བར་གུ་སྡོདཔ་ཨིན།
+accounts-none = ད་ཚུན་ རྩིས་ཐོ་མིན་འདུག
+accounts-kind-imported = ནང་འདྲེན་འབད་ཡོདཔ
+accounts-picture-reset = ཌེཀསི་ཊོཔ་པར་ལག་ལེན་འཐབ།
+accounts-picture-change = པར་བསྒྱུར།
+accounts-remove = བཏོན།
+accounts-delete-all-row = གནས་སྡུད་ཆ་མཉམ་བཏོན་གཏང་།
+accounts-delete-all-row-detail = གཞི་བཙུགས་གསརཔ་བཟུམ་སྦེ་ ལོག་འགོ་བཙུགས།
+accounts-delete-all-about = རྩིས་ཐོ་རེ་རེ་དང་ སྲུང་ཡོད་པའི་གློག་འཕྲིན་ འབྲེལ་བ་དང་ཟླ་ཐོ་ཆ་མཉམ་ འཚོལ་ཞིབ་ཟུར་ཐོ་ ཁྱོད་ཀྱི་སྒྲིག་སྟངས་དང་ སྲུང་ཡོད་པའི་ཆོག་ཡིག་ཚུ་ གློག་རིག་འདི་ལས་བཏོན་གཏངམ་ཨིན། ཁྱོད་ཀྱི་གློག་འཕྲིན་སར་བར་ཚུ་གུ་ ག་ནི་ཡང་མི་འགྱུར།
+accounts-delete-all-open = Katna གནས་སྡུད་ཆ་མཉམ་བཏོན་གཏང་།
+
+## Settings > Accounts: snackbars after deleting
+
+accounts-removed-local = { $address } Katna ལས་བཏོན་ཡི།
+accounts-removed = { $address } Katna ལས་བཏོན་ཡི། དེ་གི་གློག་འཕྲིན་ ད་ལྟོ་ཡང་ སར་བར་གུ་ཡོད།
+accounts-all-deleted = Katna གནས་སྡུད་ཆ་མཉམ་ གློག་རིག་འདི་ལས་བཏོན་གཏང་ཡི།
+
+## Settings > Accounts: the dialog that asks before deleting
+
+accounts-remove-title = { $address } བཏོན་ནི་ཨིན་ན?
+accounts-remove-confirm = རྩིས་ཐོ་བཏོན།
+accounts-removing = བཏོན་དོ…
+accounts-remove-local-mail = { $folders ->
+    [0] རྩིས་ཐོ་འདི་ནང་ ནང་འདྲེན་འབད་ཡོད་པའི་གློག་འཕྲིན་ཆ་མཉམ
+   *[other] རྩིས་ཐོ་འདི་གི་སྣོད་འཛིན་ { $folders } ནང་ ནང་འདྲེན་འབད་ཡོད་པའི་གློག་འཕྲིན་ཆ་མཉམ
+}
+accounts-remove-local-settings = དེ་གི་ Katna སྒྲིག་སྟངས་ཚུ
+accounts-remove-mail = { $folders ->
+    [0] Katna གིས་སྲུང་ཡོད་པའི་ རྩིས་ཐོ་འདི་གི་གློག་འཕྲིན་ཆ་མཉམ
+   *[other] རྩིས་ཐོ་འདི་གི་སྣོད་འཛིན་ { $folders } ནང་ Katna གིས་སྲུང་ཡོད་པའི་གློག་འཕྲིན་ཆ་མཉམ
+}
+accounts-remove-outbox = ཕྱིར་གཏོང་སྒྲོམ་ནང་ སྒུག་སྡོད་པའི་དེ་གི་འཕྲིན་དོན་ཚུ
+accounts-remove-settings = དེ་གི་སྲུང་ཡོད་པའི་ཆོག་ཡིག་དང་ Katna སྒྲིག་སྟངས་ཚུ
+accounts-delete-all-title = Katna གནས་སྡུད་ཆ་མཉམ་བཏོན་གཏང་ནི་ཨིན་ན?
+accounts-delete-all-confirm = ག་ར་བཏོན་གཏང་།
+accounts-deleting = བཏོན་གཏང་དོ…
+accounts-delete-all-accounts = རྩིས་ཐོ་རེ་རེ་དང་ Katna གིས་སྲུང་ཡོད་པའི་ གློག་འཕྲིན་དང་མཉམ་སྦྲགས་ཆ་མཉམ
+accounts-delete-all-contacts = འབྲེལ་བ་ ཟླ་ཐོ་དང་ འཚོལ་ཞིབ་ཟུར་ཐོ
+accounts-delete-all-settings = སྒྲིག་སྟངས་ མིང་རྟགས་དང་ ལྡེ་སྒྲོམ་མགྱོགས་ཐབས་ཆ་མཉམ
+accounts-delete-all-passwords = སྲུང་ཡོད་པའི་ཆོག་ཡིག་རེ་རེ
+accounts-deleted-heading = གློག་རིག་འདི་ལས་བཏོན་གཏང་མི:
+accounts-cannot-undo = འདི་འབད་བཤོལ་འབད་མི་ཚུགས།
+accounts-server-delete-all = ཁྱོད་ཀྱི་གློག་འཕྲིན་སར་བར་ཚུ་གུ་ ག་ནི་ཡང་མི་འགྱུར: ཁྱོད་ཀྱི་གློག་འཕྲིན་ཚུ་དེ་ཁར་སྡོདཔ་ཨིན་ རྩིས་ཐོ་ལོག་ཁ་སྐོང་འབད་བ་ཅིན་ ལོག་ཕབ་ལེན་འབདཝ་ཨིན། ཡིག་སྣོད་ཚུ་ལས་ ནང་འདྲེན་འབད་མི་གློག་འཕྲིན་ཚུ་ Katna ནང་རྐྱངམ་ཅིག་ཡོདཔ་ཨིན། ཡིག་སྣོད་ཚུ་ལུ་ མ་རེག།
+accounts-server-local = གློག་འཕྲིན་འདི་ ཡིག་སྣོད་ཚུ་ལས་ནང་འདྲེན་འབད་ཡོདཔ་ལས་ Katna ལུ་ འདྲ་བཤུས་གཅིག་རྐྱངམ་ཅིག་ཡོདཔ་ཨིན། འོང་སའི་ཡིག་སྣོད་ཚུ་ལུ་ མ་རེག། ལོག་ཐོབ་ནིའི་དོན་ལུ་ དེ་ཚུ་ལོག་ནང་འདྲེན་འབད།
+accounts-server-remove = གློག་འཕྲིན་སར་བར་གུ་ ག་ནི་ཡང་མི་འགྱུར: ཁྱོད་ཀྱི་གློག་འཕྲིན་ཚུ་དེ་ཁར་སྡོདཔ་ཨིན་ རྩིས་ཐོ་ལོག་ཁ་སྐོང་འབད་བ་ཅིན་ ལོག་ཕབ་ལེན་འབདཝ་ཨིན།
+accounts-confirm-word = བཏོན
+accounts-confirm-placeholder = “{ accounts-confirm-word }” ཡིག་དཔར་རྐྱབ།
+accounts-confirm-prompt = ངེས་དཔྱད་འབད་ནིའི་དོན་ལུ་ “{ accounts-confirm-word }” ཡིག་དཔར་རྐྱབ:
+accounts-cancel = ཆ་མེད་གཏང་།

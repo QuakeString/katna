@@ -1,0 +1,135 @@
+# Katna Mail, Amharic (አማርኛ).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Reading pane: toolbar
+
+reader-close = ዝጋ
+reader-back = ተመለስ
+reader-mark-unread = እንዳልተነበበ ምልክት አድርግ
+reader-move-to = ውሰድ ወደ
+reader-more = ተጨማሪ
+reader-print-all = ሁሉንም አትም
+reader-new-window = በአዲስ መስኮት
+reader-position = { $position } ከ{ $total }
+reader-newer = አዲስ
+reader-older = የቆየ
+
+## Reading pane: the conversation
+
+reader-removed = ይህ ውይይት ተወግዷል።
+reader-no-subject = (ርዕሰ ጉዳይ የለም)
+reader-collapse-all = ሁሉንም ሰብስብ
+reader-expand-all = ሁሉንም ዘርጋ
+reader-unknown-sender = (ያልታወቀ ላኪ)
+reader-date-ago = { $date } ({ $ago })
+reader-me = እኔ
+reader-to = ለ{ $names }
+reader-starred = ኮከብ የተደረገበት
+reader-not-starred = ኮከብ ያልተደረገበት
+reader-too-long = መልዕክቱ ሙሉ በሙሉ ለማሳየት በጣም ረጅም ነው።
+reader-encrypted-images = በተመሰጠረ ደብዳቤ ውስጥ ከድር የሚመጡ ምስሎች በጭራሽ አይጫኑም።
+reader-window-failed = አዲስ መስኮት መክፈት አልተቻለም።
+
+## Reading pane: message details (opened from "to me")
+
+reader-details-from = ከ፦
+reader-details-to = ለ፦
+reader-details-cc = ግልባጭ፦
+reader-details-date = ቀን፦
+reader-details-subject = ርዕሰ ጉዳይ፦
+
+## Reading pane: downloading a message
+
+reader-downloading = ይህን መልዕክት ከአገልጋዩ በማውረድ ላይ…
+reader-download-failed = ይህን መልዕክት ማውረድ አልተቻለም።
+reader-try-again = እንደገና ሞክር
+
+## Reply row
+
+reply-reply = መልስ
+reply-reply-all = ለሁሉም መልስ
+reply-forward = አስተላልፍ
+
+## Encrypted and signed mail
+
+security-decrypting = ምስጠራውን በመፍታት ላይ…
+security-checking = ፊርማውን በማረጋገጥ ላይ…
+security-partly-encrypted = የዚህ መልዕክት ክፍል ብቻ ነው የተመሰጠረው። የተቀረው ከጥበቃው ውጭ የተጨመረ ሲሆን ከማንኛውም ሰው ሊመጣ ይችላል።
+security-partly-signed = የዚህ መልዕክት ክፍል ብቻ ነው የተፈረመው። የተቀረው ከጥበቃው ውጭ የተጨመረ ሲሆን ከማንኛውም ሰው ሊመጣ ይችላል።
+security-encrypted = የተመሰጠረ መልዕክት
+security-encrypted-smime = የተመሰጠረ መልዕክት (S/MIME)
+security-no-key = ይህን መልዕክት መፍታት አይቻልም፦ የተመሰጠረው እርስዎ በሌለዎት ቁልፍ ነው።
+security-cancelled = መፍታቱ ተሰርዟል።
+security-damaged = ይህን መልዕክት መፍታት አይቻልም፦ የተመሰጠረው ውሂብ ተበላሽቷል ወይም ተቀይሯል።
+security-decrypt-unavailable = ይህን መልዕክት መፍታት አይቻልም፦ የተመሰጠረ ደብዳቤ ለማንበብ { $tool }ን ይጫኑ።
+security-decrypt-failed = ይህን መልዕክት መፍታት አይቻልም፦ { $reason }
+security-unknown-signer = ያልታወቀ ፈራሚ
+security-signed-verified = በ{ $signer } የተፈረመ · የተረጋገጠ
+security-signed-not-sender = ላኪው ባልሆነው በ{ $signer } የተፈረመ
+security-signed-untrusted = እምነት የማይጣልበት ብለው ምልክት ባደረጉበት ቁልፍ በ{ $signer } የተፈረመ
+security-signed-unverified = በ{ $signer } የተፈረመ · ቁልፉ አልተረጋገጠም
+security-bad-signature = መጥፎ ፊርማ፦ ይህ መልዕክት ከተፈረመ በኋላ ተቀይሯል፣ ወይም ፊርማው የተጭበረበረ ነው።
+security-signature-expired = በ{ $signer } የተፈረመ · የፊርማው ጊዜ አልፏል
+security-key-expired = በ{ $signer } የተፈረመ · የቁልፉ ጊዜ ከዚያ ወዲህ አልፏል
+security-key-revoked = በተሻረ ቁልፍ በ{ $signer } የተፈረመ
+security-missing-key = በሌለዎት ቁልፍ የተፈረመ ስለሆነ ሊረጋገጥ አይችልም
+security-missing-key-id = በሌለዎት ቁልፍ ({ $key }) የተፈረመ ስለሆነ ሊረጋገጥ አይችልም
+security-signature-unavailable = የተፈረመ፤ ፊርማውን ለማረጋገጥ { $tool }ን ይጫኑ
+security-signature-error = ፊርማው ሊረጋገጥ አልቻለም።
+
+## Remote images and pictures
+
+remote-hidden = በዚህ መልዕክት ውስጥ ያሉ ምስሎች ተደብቀዋል።
+remote-show = ምስሎችን አሳይ
+remote-always-show = ከዚህ ላኪ ሁልጊዜ አሳይ
+remote-picture-use = ተጠቀም
+remote-picture-too-big = 8 MB ወይም ከዚያ ያነሰ ሥዕል ይምረጡ።
+remote-picture-type = የPNG፣ JPEG፣ GIF፣ WebP ወይም SVG ሥዕል ይምረጡ።
+remote-picture-read-failed = ሥዕሉን ማንበብ አይቻልም፦ { $error }
+remote-picture-keep-failed = ሥዕሉን ማስቀመጥ አይቻልም፦ { $error }
+remote-picture-remove-failed = ሥዕሉን ማስወገድ አይቻልም፦ { $error }
+
+## Attachments
+
+attachment-count = { $count ->
+    [one] አንድ አባሪ
+   *[other] { $count } አባሪዎች
+}
+attachment-save = አስቀምጥ
+attachment-save-all = ሁሉንም አስቀምጥ
+attachment-save-all-tooltip = እያንዳንዱን አባሪ ወደ አቃፊ አስቀምጥ
+attachment-save-here = እዚህ አስቀምጥ
+attachment-not-downloaded = ይህ መልዕክት አልወረደም።
+attachment-not-found = ይህ አባሪ በመልዕክቱ ውስጥ ሊገኝ አልቻለም።
+attachment-read-failed = { $name }ን ማንበብ አልተቻለም
+attachment-numbered = አባሪ { $number }
+attachment-saved-all = { $count ->
+    [one] { $count } ፋይል ወደ { $place } ተቀምጧል
+   *[other] { $count } ፋይሎች ወደ { $place } ተቀምጠዋል
+}
+attachment-saved-some = { $total ->
+    [one] ከ{ $total } ፋይል { $saved } ወደ { $place } ተቀምጧል። { $failed }ን ማስቀመጥ አልተቻለም
+   *[other] ከ{ $total } ፋይሎች { $saved } ወደ { $place } ተቀምጠዋል። { $failed }ን ማስቀመጥ አልተቻለም
+}
+attachment-saved-to = ወደ { $path } ተቀምጧል
+attachment-save-failed = { $name }ን ማስቀመጥ አልተቻለም፦ { $error }
+attachment-open-failed = { $name }ን መክፈት አልተቻለም፦ { $error }
+attachment-risky = ይህ ፋይል ፕሮግራም ሊያሄድ ስለሚችል Katna አይከፍተውም። በምትኩ ያስቀምጡት።
+attachment-encrypted-open = ይህ ፋይል ተመስጥሮ ነው የመጣው። ሌላ ቦታ ለመክፈት ያስቀምጡት።
+
+## Printing
+
+print-failed = ማተም አልተቻለም፦ { $error }
+print-no-font = ምንም ቅርጸ-ቁምፊ አልተገኘም
+print-opened-as-pdf = ከዚያ ለማተም እንደ PDF ተከፍቷል።
+print-not-downloaded = (ገና አልወረደም።)
+print-encrypted = (የተመሰጠረ። ጽሑፉን ለማተም በKatna Mail ውስጥ ይክፈቱት።)
+print-to = ለ፦ { $addresses }
+print-cc = ግልባጭ፦ { $addresses }
+
+## Leftovers from earlier areas (reading pane and its right-click menu)
+
+attachment-open-message = አባሪዎቹን ለማንበብ ይህን መልዕክት ይክፈቱ።
+text-copy = ቅዳ
+text-select-all = ሁሉንም ምረጥ

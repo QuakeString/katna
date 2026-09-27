@@ -1,0 +1,62 @@
+# Katna Mail, Telugu (తెలుగు).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Settings > Accounts
+
+accounts-folder-pane = ఫోల్డర్ పేన్
+accounts-folder-pane-detail = ఎడమ వైపు ఉన్న పేన్ ఏ ఖాతాల ఫోల్డర్‌లను చూపుతుంది.
+accounts-shown-one = ఒకసారి ఒక ఖాతా; ఖాతా కార్డ్‌లో మార్చండి
+accounts-shown-all = అన్ని ఖాతాలు, ఒకదాని తర్వాత ఒకటి
+accounts-row = ఖాతాలు
+accounts-row-detail = ఖాతాను తీసివేస్తే, ఈ కంప్యూటర్‌లోని దాని మెయిల్ యొక్క Katna కాపీ తొలగించబడుతుంది. మెయిల్ సర్వర్‌లో అలాగే ఉంటుంది.
+accounts-none = ఇంకా ఖాతాలు లేవు.
+accounts-kind-imported = ఇంపోర్ట్ చేయబడింది
+accounts-picture-reset = డెస్క్‌టాప్ చిత్రాన్ని ఉపయోగించండి
+accounts-picture-change = చిత్రాన్ని మార్చండి
+accounts-remove = తీసివేయండి
+accounts-delete-all-row = మొత్తం డేటాను తొలగించండి
+accounts-delete-all-row-detail = కొత్తగా ఇన్‌స్టాల్ చేసినట్లుగా, మళ్లీ మొదలుపెట్టండి.
+accounts-delete-all-about = ప్రతి ఖాతా, సేవ్ చేసిన అన్ని మెయిల్స్, కాంటాక్ట్‌లు, క్యాలెండర్‌లు, సెర్చ్ ఇండెక్స్, మీ సెట్టింగ్‌లు, సేవ్ చేసిన పాస్‌వర్డ్‌లను ఈ కంప్యూటర్ నుండి తొలగిస్తుంది. మీ మెయిల్ సర్వర్‌లలో ఏదీ మారదు.
+accounts-delete-all-open = మొత్తం Katna డేటాను తొలగించండి
+
+## Settings > Accounts: snackbars after deleting
+
+accounts-removed-local = { $address } Katna నుండి తీసివేయబడింది.
+accounts-removed = { $address } Katna నుండి తీసివేయబడింది. దాని మెయిల్ ఇప్పటికీ సర్వర్‌లో ఉంది.
+accounts-all-deleted = మొత్తం Katna డేటా ఈ కంప్యూటర్ నుండి తొలగించబడింది.
+
+## Settings > Accounts: the dialog that asks before deleting
+
+accounts-remove-title = { $address }ను తీసివేయాలా?
+accounts-remove-confirm = ఖాతాను తీసివేయండి
+accounts-removing = తీసివేస్తోంది…
+accounts-remove-local-mail = { $folders ->
+    [0] ఈ ఖాతాలోకి ఇంపోర్ట్ చేసిన అన్ని మెయిల్స్
+    [one] ఈ ఖాతాలోకి ఇంపోర్ట్ చేసిన, దాని ఫోల్డర్‌లోని అన్ని మెయిల్స్
+   *[other] ఈ ఖాతాలోకి ఇంపోర్ట్ చేసిన, దాని { $folders } ఫోల్డర్‌లలోని అన్ని మెయిల్స్
+}
+accounts-remove-local-settings = దాని Katna సెట్టింగ్‌లు
+accounts-remove-mail = { $folders ->
+    [0] Katna సేవ్ చేసిన ఈ ఖాతా యొక్క అన్ని మెయిల్స్
+    [one] Katna దాని ఫోల్డర్‌లో సేవ్ చేసిన ఈ ఖాతా యొక్క అన్ని మెయిల్స్
+   *[other] Katna దాని { $folders } ఫోల్డర్‌లలో సేవ్ చేసిన ఈ ఖాతా యొక్క అన్ని మెయిల్స్
+}
+accounts-remove-outbox = అవుట్‌బాక్స్‌లో వేచి ఉన్న దాని మెసేజ్‌లు
+accounts-remove-settings = దాని సేవ్ చేసిన పాస్‌వర్డ్, దాని Katna సెట్టింగ్‌లు
+accounts-delete-all-title = మొత్తం Katna డేటాను తొలగించాలా?
+accounts-delete-all-confirm = అన్నీ తొలగించండి
+accounts-deleting = తొలగిస్తోంది…
+accounts-delete-all-accounts = ప్రతి ఖాతా, Katna సేవ్ చేసిన అన్ని మెయిల్స్, అటాచ్‌మెంట్‌లు
+accounts-delete-all-contacts = కాంటాక్ట్‌లు, క్యాలెండర్‌లు, సెర్చ్ ఇండెక్స్
+accounts-delete-all-settings = అన్ని సెట్టింగ్‌లు, సంతకాలు, కీబోర్డ్ షార్ట్‌కట్‌లు
+accounts-delete-all-passwords = సేవ్ చేసిన ప్రతి పాస్‌వర్డ్
+accounts-deleted-heading = ఈ కంప్యూటర్ నుండి తొలగించబడేవి:
+accounts-cannot-undo = దీన్ని రద్దు చేయడం సాధ్యం కాదు.
+accounts-server-delete-all = మీ మెయిల్ సర్వర్‌లలో ఏదీ మారదు: మీ మెయిల్ అక్కడే ఉంటుంది, ఖాతాను మళ్లీ జోడిస్తే అది మళ్లీ డౌన్‌లోడ్ అవుతుంది. ఫైల్‌ల నుండి ఇంపోర్ట్ చేసిన మెయిల్ Katnaలో మాత్రమే ఉంది; ఆ ఫైల్‌లను తాకరు.
+accounts-server-local = ఈ మెయిల్ ఫైల్‌ల నుండి ఇంపోర్ట్ చేయబడింది, కాబట్టి దాని ఏకైక కాపీ Katna వద్దే ఉంది. అది వచ్చిన ఫైల్‌లను తాకరు; దాన్ని తిరిగి పొందడానికి వాటిని మళ్లీ ఇంపోర్ట్ చేయండి.
+accounts-server-remove = మెయిల్ సర్వర్‌లో ఏదీ మారదు: మీ మెయిల్ అక్కడే ఉంటుంది, ఖాతాను మళ్లీ జోడిస్తే అది మళ్లీ డౌన్‌లోడ్ అవుతుంది.
+accounts-confirm-word = తొలగించు
+accounts-confirm-placeholder = “{ accounts-confirm-word }” అని టైప్ చేయండి
+accounts-confirm-prompt = నిర్ధారించడానికి, “{ accounts-confirm-word }” అని టైప్ చేయండి:
+accounts-cancel = రద్దు చేయండి

@@ -7,6 +7,7 @@
 
 use gpui::{Action, App, KeyBinding, Keystroke};
 use katna_core::config::{ShortcutSet, Shortcuts};
+use katna_i18n::tr;
 
 use super::{
     Archive, CloseMessage, Compose, Delete, FocusList, FocusNext, FocusPrevious, FocusSearch,
@@ -64,12 +65,13 @@ pub(super) enum Group {
 impl Group {
     pub(super) const ALL: [Self; 4] = [Self::Moving, Self::Actions, Self::GoTo, Self::App];
 
-    pub(super) fn label(self) -> &'static str {
+    /// The heading, in the current language.
+    pub(super) fn title(self) -> String {
         match self {
-            Self::Moving => "Moving around",
-            Self::Actions => "Actions",
-            Self::GoTo => "Go to",
-            Self::App => "Application",
+            Self::Moving => tr!("shortcut-group-moving"),
+            Self::Actions => tr!("shortcut-group-actions"),
+            Self::GoTo => tr!("shortcut-group-go-to"),
+            Self::App => tr!("shortcut-group-app"),
         }
     }
 }
@@ -78,18 +80,33 @@ impl Group {
 pub(super) struct Shortcut {
     /// Stable name, the key in `[shortcuts.keys]`.
     pub name: &'static str,
-    pub label: &'static str,
     pub group: Group,
     pub scope: Scope,
     pub defaults: &'static [&'static str],
     action: fn() -> Box<dyn Action>,
 }
 
+impl Shortcut {
+    /// What the shortcut does, in the current language: message
+    /// `shortcut-<name>`, with `-` for `_`.
+    pub(super) fn title(&self) -> String {
+        tr!(&self.message())
+    }
+
+    /// What the shortcut does, in English.
+    pub(super) fn english_title(&self) -> String {
+        katna_i18n::english(&self.message())
+    }
+
+    fn message(&self) -> String {
+        format!("shortcut-{}", self.name.replace('_', "-"))
+    }
+}
+
 macro_rules! shortcut {
-    ($name:literal, $label:literal, $group:ident, $scope:ident, [$($key:literal),*], $action:expr) => {
+    ($name:literal, $group:ident, $scope:ident, [$($key:literal),*], $action:expr) => {
         Shortcut {
             name: $name,
-            label: $label,
             group: Group::$group,
             scope: Scope::$scope,
             defaults: &[$($key),*],
@@ -100,91 +117,26 @@ macro_rules! shortcut {
 
 /// Every shortcut, in the order the Settings page lists them.
 pub(super) static SHORTCUTS: &[Shortcut] = &[
-    shortcut!("next", "Next conversation", Moving, Mail, ["j"], SelectNext),
-    shortcut!(
-        "previous",
-        "Previous conversation",
-        Moving,
-        Mail,
-        ["k"],
-        SelectPrevious
-    ),
-    shortcut!(
-        "down",
-        "Move down the list",
-        Moving,
-        List,
-        ["down"],
-        SelectNext
-    ),
-    shortcut!(
-        "up",
-        "Move up the list",
-        Moving,
-        List,
-        ["up"],
-        SelectPrevious
-    ),
-    shortcut!(
-        "first",
-        "First in the list",
-        Moving,
-        List,
-        ["home"],
-        SelectFirst
-    ),
-    shortcut!(
-        "last",
-        "Last in the list",
-        Moving,
-        List,
-        ["end"],
-        SelectLast
-    ),
-    shortcut!(
-        "page_down",
-        "Page down the list",
-        Moving,
-        List,
-        ["pagedown"],
-        PageDown
-    ),
-    shortcut!(
-        "page_up",
-        "Page up the list",
-        Moving,
-        List,
-        ["pageup"],
-        PageUp
-    ),
-    shortcut!(
-        "open",
-        "Open conversation",
-        Moving,
-        List,
-        ["enter", "o"],
-        OpenMessage
-    ),
+    shortcut!("next", Moving, Mail, ["j"], SelectNext),
+    shortcut!("previous", Moving, Mail, ["k"], SelectPrevious),
+    shortcut!("down", Moving, List, ["down"], SelectNext),
+    shortcut!("up", Moving, List, ["up"], SelectPrevious),
+    shortcut!("first", Moving, List, ["home"], SelectFirst),
+    shortcut!("last", Moving, List, ["end"], SelectLast),
+    shortcut!("page_down", Moving, List, ["pagedown"], PageDown),
+    shortcut!("page_up", Moving, List, ["pageup"], PageUp),
+    shortcut!("open", Moving, List, ["enter", "o"], OpenMessage),
     shortcut!(
         "back",
-        "Back to the list",
         Moving,
         Reader,
         ["u", "escape", "backspace"],
         CloseMessage
     ),
-    shortcut!(
-        "scroll_down",
-        "Scroll down",
-        Moving,
-        Reader,
-        ["down"],
-        ScrollDown
-    ),
-    shortcut!("scroll_up", "Scroll up", Moving, Reader, ["up"], ScrollUp),
+    shortcut!("scroll_down", Moving, Reader, ["down"], ScrollDown),
+    shortcut!("scroll_up", Moving, Reader, ["up"], ScrollUp),
     shortcut!(
         "scroll_page_down",
-        "Scroll a page down",
         Moving,
         Reader,
         ["pagedown", "space"],
@@ -192,139 +144,40 @@ pub(super) static SHORTCUTS: &[Shortcut] = &[
     ),
     shortcut!(
         "scroll_page_up",
-        "Scroll a page up",
         Moving,
         Reader,
         ["pageup", "shift-space"],
         ScrollPageUp
     ),
-    shortcut!("compose", "Compose", Actions, Anywhere, ["c"], Compose),
-    shortcut!("reply", "Reply", Actions, Reader, ["r"], Reply),
-    shortcut!("reply_all", "Reply all", Actions, Reader, ["a"], ReplyAll),
-    shortcut!("forward", "Forward", Actions, Reader, ["f"], Forward),
-    shortcut!("archive", "Archive", Actions, Mail, ["e"], Archive),
-    shortcut!("delete", "Delete", Actions, Mail, ["#", "delete"], Delete),
-    shortcut!("spam", "Report spam", Actions, Mail, ["!"], ReportSpam),
-    shortcut!("move_to", "Move to", Actions, Mail, ["v"], MoveTo),
-    shortcut!(
-        "mark_read",
-        "Mark as read",
-        Actions,
-        Mail,
-        ["shift-i"],
-        MarkRead
-    ),
-    shortcut!(
-        "mark_unread",
-        "Mark as unread",
-        Actions,
-        Mail,
-        ["shift-u"],
-        MarkUnread
-    ),
-    shortcut!("star", "Star or unstar", Actions, Mail, ["s"], ToggleStar),
-    shortcut!(
-        "important",
-        "Mark as important",
-        Actions,
-        Mail,
-        ["+", "="],
-        MarkImportant
-    ),
-    shortcut!(
-        "not_important",
-        "Mark as not important",
-        Actions,
-        Mail,
-        ["-"],
-        MarkNotImportant
-    ),
-    shortcut!(
-        "check",
-        "Tick the conversation",
-        Actions,
-        List,
-        ["x"],
-        ToggleCheck
-    ),
-    shortcut!(
-        "select_all",
-        "Tick all conversations",
-        Actions,
-        List,
-        ["* a"],
-        SelectAll
-    ),
-    shortcut!(
-        "select_none",
-        "Untick all conversations",
-        Actions,
-        List,
-        ["* n"],
-        SelectNone
-    ),
-    shortcut!(
-        "undo",
-        "Undo the last action",
-        Actions,
-        Anywhere,
-        ["z"],
-        Undo
-    ),
-    shortcut!("go_inbox", "Inbox", GoTo, Anywhere, ["g i"], GoToInbox),
-    shortcut!(
-        "go_starred",
-        "Starred",
-        GoTo,
-        Anywhere,
-        ["g s"],
-        GoToStarred
-    ),
-    shortcut!("go_sent", "Sent", GoTo, Anywhere, ["g t"], GoToSent),
-    shortcut!("go_drafts", "Drafts", GoTo, Anywhere, ["g d"], GoToDrafts),
-    shortcut!("go_all", "All mail", GoTo, Anywhere, ["g a"], GoToAllMail),
-    shortcut!(
-        "search",
-        "Search mail",
-        App,
-        Anywhere,
-        ["/", "ctrl-f"],
-        FocusSearch
-    ),
-    shortcut!(
-        "navigation",
-        "Show or fold the menu",
-        App,
-        Anywhere,
-        [],
-        ToggleNavigation
-    ),
-    shortcut!(
-        "quick_settings",
-        "Quick settings",
-        App,
-        Anywhere,
-        ["ctrl-,"],
-        ToggleSettings
-    ),
-    shortcut!("settings", "All settings", App, Anywhere, [], OpenSettings),
-    shortcut!(
-        "shortcuts",
-        "Keyboard shortcuts",
-        App,
-        Anywhere,
-        ["?"],
-        ShowShortcuts
-    ),
-    shortcut!(
-        "reload",
-        "Check for new mail",
-        App,
-        Anywhere,
-        ["f5", "ctrl-r"],
-        Reload
-    ),
-    shortcut!("quit", "Quit", App, Anywhere, ["ctrl-q"], Quit),
+    shortcut!("compose", Actions, Anywhere, ["c"], Compose),
+    shortcut!("reply", Actions, Reader, ["r"], Reply),
+    shortcut!("reply_all", Actions, Reader, ["a"], ReplyAll),
+    shortcut!("forward", Actions, Reader, ["f"], Forward),
+    shortcut!("archive", Actions, Mail, ["e"], Archive),
+    shortcut!("delete", Actions, Mail, ["#", "delete"], Delete),
+    shortcut!("spam", Actions, Mail, ["!"], ReportSpam),
+    shortcut!("move_to", Actions, Mail, ["v"], MoveTo),
+    shortcut!("mark_read", Actions, Mail, ["shift-i"], MarkRead),
+    shortcut!("mark_unread", Actions, Mail, ["shift-u"], MarkUnread),
+    shortcut!("star", Actions, Mail, ["s"], ToggleStar),
+    shortcut!("important", Actions, Mail, ["+", "="], MarkImportant),
+    shortcut!("not_important", Actions, Mail, ["-"], MarkNotImportant),
+    shortcut!("check", Actions, List, ["x"], ToggleCheck),
+    shortcut!("select_all", Actions, List, ["* a"], SelectAll),
+    shortcut!("select_none", Actions, List, ["* n"], SelectNone),
+    shortcut!("undo", Actions, Anywhere, ["z"], Undo),
+    shortcut!("go_inbox", GoTo, Anywhere, ["g i"], GoToInbox),
+    shortcut!("go_starred", GoTo, Anywhere, ["g s"], GoToStarred),
+    shortcut!("go_sent", GoTo, Anywhere, ["g t"], GoToSent),
+    shortcut!("go_drafts", GoTo, Anywhere, ["g d"], GoToDrafts),
+    shortcut!("go_all", GoTo, Anywhere, ["g a"], GoToAllMail),
+    shortcut!("search", App, Anywhere, ["/", "ctrl-f"], FocusSearch),
+    shortcut!("navigation", App, Anywhere, [], ToggleNavigation),
+    shortcut!("quick_settings", App, Anywhere, ["ctrl-,"], ToggleSettings),
+    shortcut!("settings", App, Anywhere, [], OpenSettings),
+    shortcut!("shortcuts", App, Anywhere, ["?"], ShowShortcuts),
+    shortcut!("reload", App, Anywhere, ["f5", "ctrl-r"], Reload),
+    shortcut!("quit", App, Anywhere, ["ctrl-q"], Quit),
 ];
 
 pub(super) fn find(name: &str) -> Option<&'static Shortcut> {
@@ -559,8 +412,14 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
 pub(super) fn label(keys: &str) -> String {
     keys.split_whitespace()
         .map(stroke_label)
-        .collect::<Vec<_>>()
-        .join(" then ")
+        .reduce(|first, second| {
+            tr!(
+                "shortcut-sequence",
+                first = first.as_str(),
+                second = second.as_str()
+            )
+        })
+        .unwrap_or_default()
 }
 
 fn stroke_label(stroke: &str) -> String {
@@ -732,6 +591,17 @@ mod tests {
         assert_eq!(label("f5"), "F5");
         assert_eq!(label("ctrl-,"), "Ctrl+,");
         assert_eq!(label("escape"), "Esc");
+    }
+
+    /// Every shortcut and group has its English message.
+    #[test]
+    fn titles_have_messages() {
+        for s in SHORTCUTS {
+            let title = s.title();
+            assert!(!title.starts_with("shortcut-"), "no message for {}", s.name);
+        }
+        assert_eq!(Group::Moving.title(), "Moving around");
+        assert_eq!(SHORTCUTS[0].title(), "Next conversation");
     }
 
     #[test]

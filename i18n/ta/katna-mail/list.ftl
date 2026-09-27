@@ -1,0 +1,261 @@
+# Katna Mail, Tamil (தமிழ்).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Mail list: inbox tabs (Gmail's categories, Outlook's and Zoho's)
+
+tab-primary = முதன்மை
+tab-promotions = விளம்பரங்கள்
+tab-social = சமூகம்
+tab-updates = புதுப்பிப்புகள்
+tab-forums = மன்றங்கள்
+tab-focused = கவனத்திற்குரியவை
+tab-other = மற்றவை
+tab-inbox = இன்பாக்ஸ்
+tab-newsletters = செய்திமடல்கள்
+tab-notifications = அறிவிப்புகள்
+tab-new = { $count } புதியவை
+tab-provider-other = Katna வரிசைப்படுத்தியது
+
+## Mail list: toolbar
+
+list-select = தேர்ந்தெடு
+list-refresh = புதுப்பி
+list-more = மேலும்
+list-mark-read = படித்ததாகக் குறி
+list-mark-unread = படிக்காததாகக் குறி
+list-move-to = இதற்கு நகர்த்து
+list-archive = காப்பகப்படுத்து
+list-spam = ஸ்பேம் எனப் புகாரளி
+list-delete = நீக்கு
+list-newer = புதியவை
+list-older = பழையவை
+list-range = { $total } இல் { $first }–{ $last }
+list-range-about = சுமார் { $total } இல் { $first }–{ $last }
+list-results = “{ $query }” க்கான முடிவுகள்
+list-results-corrected = “{ $query }” க்கான முடிவுகள் காட்டப்படுகின்றன
+list-search-instead = அதற்குப் பதிலாக “{ $query }” என்று தேடு
+list-files-more = +{ $count }
+
+## Mail list: Select menu (which lines to tick)
+
+list-pick-all = அனைத்தும்
+list-pick-none = எதுவுமில்லை
+list-pick-read = படித்தவை
+list-pick-unread = படிக்காதவை
+list-pick-starred = நட்சத்திரமிட்டவை
+list-pick-unstarred = நட்சத்திரமிடாதவை
+
+## Mail list: banner when every line is ticked
+
+list-selected-all = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } உரையாடல் தேர்ந்தெடுக்கப்பட்டுள்ளது.
+       *[other] { $count } உரையாடல்களும் தேர்ந்தெடுக்கப்பட்டுள்ளன.
+    }
+   *[message] { $count ->
+        [one] { $count } மெசேஜ் தேர்ந்தெடுக்கப்பட்டுள்ளது.
+       *[other] { $count } மெசேஜ்களும் தேர்ந்தெடுக்கப்பட்டுள்ளன.
+    }
+}
+list-selected-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] { $folder } இல் உள்ள { $count } உரையாடல் தேர்ந்தெடுக்கப்பட்டுள்ளது.
+       *[other] { $folder } இல் உள்ள { $count } உரையாடல்களும் தேர்ந்தெடுக்கப்பட்டுள்ளன.
+    }
+   *[message] { $count ->
+        [one] { $folder } இல் உள்ள { $count } மெசேஜ் தேர்ந்தெடுக்கப்பட்டுள்ளது.
+       *[other] { $folder } இல் உள்ள { $count } மெசேஜ்களும் தேர்ந்தெடுக்கப்பட்டுள்ளன.
+    }
+}
+list-selected-screen = { $kind ->
+    [conversation] { $count ->
+        [one] திரையில் உள்ள { $count } உரையாடல் தேர்ந்தெடுக்கப்பட்டுள்ளது.
+       *[other] திரையில் உள்ள { $count } உரையாடல்களும் தேர்ந்தெடுக்கப்பட்டுள்ளன.
+    }
+   *[message] { $count ->
+        [one] திரையில் உள்ள { $count } மெசேஜ் தேர்ந்தெடுக்கப்பட்டுள்ளது.
+       *[other] திரையில் உள்ள { $count } மெசேஜ்களும் தேர்ந்தெடுக்கப்பட்டுள்ளன.
+    }
+}
+list-select-all = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } உரையாடலைத் தேர்ந்தெடு
+       *[other] { $count } உரையாடல்களையும் தேர்ந்தெடு
+    }
+   *[message] { $count ->
+        [one] { $count } மெசேஜைத் தேர்ந்தெடு
+       *[other] { $count } மெசேஜ்களையும் தேர்ந்தெடு
+    }
+}
+list-select-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] { $folder } இல் உள்ள { $count } உரையாடலைத் தேர்ந்தெடு
+       *[other] { $folder } இல் உள்ள { $count } உரையாடல்களையும் தேர்ந்தெடு
+    }
+   *[message] { $count ->
+        [one] { $folder } இல் உள்ள { $count } மெசேஜைத் தேர்ந்தெடு
+       *[other] { $folder } இல் உள்ள { $count } மெசேஜ்களையும் தேர்ந்தெடு
+    }
+}
+list-clear-selection = தேர்வை அழி
+
+## Mail list: empty states
+
+list-empty-search = உங்கள் தேடலுடன் பொருந்தும் மெசேஜ்கள் எதுவுமில்லை.
+list-empty-tab = { $tab } இல் அஞ்சல் எதுவுமில்லை.
+list-empty-tab-unknown = இந்தத் தாவலில் அஞ்சல் எதுவுமில்லை.
+list-empty-folder = { $folder } இல் மெசேஜ்கள் எதுவுமில்லை.
+list-empty-folder-unknown = இந்த ஃபோல்டரில் மெசேஜ்கள் எதுவுமில்லை.
+list-first-sync = உங்கள் அஞ்சலைப் பெறுகிறது…
+list-first-sync-detail = அஞ்சல் வர வர இங்கே காட்டப்படும்.
+
+## Mail list: lines
+
+row-removed = இந்த மெசேஜ் அகற்றப்பட்டது.
+row-starred = நட்சத்திரமிட்டது
+row-not-starred = நட்சத்திரமிடவில்லை
+row-important = முக்கியமானது. முக்கியமில்லாதது எனக் குறிக்கக் கிளிக் செய்யவும்.
+row-mark-important = முக்கியமானது எனக் குறி
+row-pinned = மேலே பின் செய்யப்பட்டது
+row-pin = மேலே பின் செய்
+row-unpin = பின்னை அகற்று
+
+## Mail list: More menu and right-click menu
+
+menu-reply = பதிலளி
+menu-reply-all = அனைவருக்கும் பதிலளி
+menu-forward = முன்னனுப்பு
+menu-archive = காப்பகப்படுத்து
+menu-delete = நீக்கு
+menu-spam = ஸ்பேம் எனப் புகாரளி
+menu-mark-read = படித்ததாகக் குறி
+menu-mark-unread = படிக்காததாகக் குறி
+menu-mark-all-read = அனைத்தையும் படித்ததாகக் குறி
+menu-star = நட்சத்திரமிடு
+menu-unstar = நட்சத்திரத்தை அகற்று
+menu-important = முக்கியமானது எனக் குறி
+menu-not-important = முக்கியமில்லாதது எனக் குறி
+menu-pin = மேலே பின் செய்
+menu-unpin = பின்னை அகற்று
+menu-print-all = அனைத்தையும் அச்சிடு
+menu-new-window = புதிய சாளரத்தில் திற
+menu-move-to = இதற்கு நகர்த்து
+menu-move-to-heading = இதற்கு நகர்த்து:
+menu-find-from = { $name } அனுப்பிய மின்னஞ்சல்களைக் கண்டறி
+
+## Snackbar after an action on mail in the list
+
+toast-archived = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடல் காப்பகப்படுத்தப்பட்டது.
+       *[other] { $count } உரையாடல்கள் காப்பகப்படுத்தப்பட்டன.
+    }
+   *[message] { $count ->
+        [one] மெசேஜ் காப்பகப்படுத்தப்பட்டது.
+       *[other] { $count } மெசேஜ்கள் காப்பகப்படுத்தப்பட்டன.
+    }
+}
+toast-trashed = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடல் நீக்கியவை ஃபோல்டருக்கு நகர்த்தப்பட்டது.
+       *[other] { $count } உரையாடல்கள் நீக்கியவை ஃபோல்டருக்கு நகர்த்தப்பட்டன.
+    }
+   *[message] { $count ->
+        [one] மெசேஜ் நீக்கியவை ஃபோல்டருக்கு நகர்த்தப்பட்டது.
+       *[other] { $count } மெசேஜ்கள் நீக்கியவை ஃபோல்டருக்கு நகர்த்தப்பட்டன.
+    }
+}
+toast-moved = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடல் நகர்த்தப்பட்டது.
+       *[other] { $count } உரையாடல்கள் நகர்த்தப்பட்டன.
+    }
+   *[message] { $count ->
+        [one] மெசேஜ் நகர்த்தப்பட்டது.
+       *[other] { $count } மெசேஜ்கள் நகர்த்தப்பட்டன.
+    }
+}
+toast-starred = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடல் நட்சத்திரமிடப்பட்டது.
+       *[other] { $count } உரையாடல்கள் நட்சத்திரமிடப்பட்டன.
+    }
+   *[message] { $count ->
+        [one] மெசேஜ் நட்சத்திரமிடப்பட்டது.
+       *[other] { $count } மெசேஜ்கள் நட்சத்திரமிடப்பட்டன.
+    }
+}
+toast-unstarred = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடலிலிருந்து நட்சத்திரம் அகற்றப்பட்டது.
+       *[other] { $count } உரையாடல்களிலிருந்து நட்சத்திரம் அகற்றப்பட்டது.
+    }
+   *[message] { $count ->
+        [one] மெசேஜிலிருந்து நட்சத்திரம் அகற்றப்பட்டது.
+       *[other] { $count } மெசேஜ்களிலிருந்து நட்சத்திரம் அகற்றப்பட்டது.
+    }
+}
+toast-important = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடல் முக்கியமானது எனக் குறிக்கப்பட்டது.
+       *[other] { $count } உரையாடல்கள் முக்கியமானவை எனக் குறிக்கப்பட்டன.
+    }
+   *[message] { $count ->
+        [one] மெசேஜ் முக்கியமானது எனக் குறிக்கப்பட்டது.
+       *[other] { $count } மெசேஜ்கள் முக்கியமானவை எனக் குறிக்கப்பட்டன.
+    }
+}
+toast-not-important = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடல் முக்கியமில்லாதது எனக் குறிக்கப்பட்டது.
+       *[other] { $count } உரையாடல்கள் முக்கியமில்லாதவை எனக் குறிக்கப்பட்டன.
+    }
+   *[message] { $count ->
+        [one] மெசேஜ் முக்கியமில்லாதது எனக் குறிக்கப்பட்டது.
+       *[other] { $count } மெசேஜ்கள் முக்கியமில்லாதவை எனக் குறிக்கப்பட்டன.
+    }
+}
+toast-pinned = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடல் மேலே பின் செய்யப்பட்டது.
+       *[other] { $count } உரையாடல்கள் மேலே பின் செய்யப்பட்டன.
+    }
+   *[message] { $count ->
+        [one] மெசேஜ் மேலே பின் செய்யப்பட்டது.
+       *[other] { $count } மெசேஜ்கள் மேலே பின் செய்யப்பட்டன.
+    }
+}
+toast-unpinned = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடலின் பின் அகற்றப்பட்டது.
+       *[other] { $count } உரையாடல்களின் பின் அகற்றப்பட்டது.
+    }
+   *[message] { $count ->
+        [one] மெசேஜின் பின் அகற்றப்பட்டது.
+       *[other] { $count } மெசேஜ்களின் பின் அகற்றப்பட்டது.
+    }
+}
+toast-spam = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடல் ஸ்பேம் எனப் புகாரளிக்கப்பட்டது.
+       *[other] { $count } உரையாடல்கள் ஸ்பேம் எனப் புகாரளிக்கப்பட்டன.
+    }
+   *[message] { $count ->
+        [one] மெசேஜ் ஸ்பேம் எனப் புகாரளிக்கப்பட்டது.
+       *[other] { $count } மெசேஜ்கள் ஸ்பேம் எனப் புகாரளிக்கப்பட்டன.
+    }
+}
+toast-deleted-forever = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடல் நிரந்தரமாக நீக்கப்பட்டது.
+       *[other] { $count } உரையாடல்கள் நிரந்தரமாக நீக்கப்பட்டன.
+    }
+   *[message] { $count ->
+        [one] மெசேஜ் நிரந்தரமாக நீக்கப்பட்டது.
+       *[other] { $count } மெசேஜ்கள் நிரந்தரமாக நீக்கப்பட்டன.
+    }
+}
+toast-undone = செயல் செயல்தவிர்க்கப்பட்டது.
+toast-undo = செயல்தவிர்
+toast-no-spam-folder = இந்தக் கணக்கில் ஸ்பேம் ஃபோல்டர் இல்லை.

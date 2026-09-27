@@ -1,0 +1,62 @@
+# Katna Mail, Hausa (Hausa).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Settings > Accounts
+
+accounts-folder-pane = Wurin folda
+accounts-folder-pane-detail = Foldar waɗanne asusu ne wurin da ke hagu yake nunawa.
+accounts-shown-one = Asusu ɗaya a lokaci guda; sauya a katin asusu
+accounts-shown-all = Dukkan asusu, ɗaya bayan ɗaya
+accounts-row = Asusu
+accounts-row-detail = Cire asusu yana share kwafin wasiƙunsa na Katna a wannan kwamfuta. Wasiƙun suna zama a sabar.
+accounts-none = Babu asusu tukuna.
+accounts-kind-imported = An shigo da shi
+accounts-picture-reset = Yi amfani da hoton tebur
+accounts-picture-change = Canza hoto
+accounts-remove = Cire
+accounts-delete-all-row = Share duk bayanai
+accounts-delete-all-row-detail = Fara daga farko, kamar sabon shigarwa.
+accounts-delete-all-about = Yana share kowane asusu, duk wasiƙun da aka ajiye, lambobin sadarwa da kalandoji, fihirisar bincike, saitunanku da kalmomin sirri da aka ajiye daga wannan kwamfuta. Babu abin da ke canzawa a sabobin wasiƙunku.
+accounts-delete-all-open = Share duk bayanan Katna
+
+## Settings > Accounts: snackbars after deleting
+
+accounts-removed-local = An cire { $address } daga Katna.
+accounts-removed = An cire { $address } daga Katna. Wasiƙunsa suna nan a sabar.
+accounts-all-deleted = An share duk bayanan Katna daga wannan kwamfuta.
+
+## Settings > Accounts: the dialog that asks before deleting
+
+accounts-remove-title = Cire { $address }?
+accounts-remove-confirm = Cire asusu
+accounts-removing = Ana cirewa…
+accounts-remove-local-mail = { $folders ->
+    [0] Duk wasiƙun da aka shigo da su cikin wannan asusu
+    [one] Duk wasiƙun da aka shigo da su cikin wannan asusu a foldarsa
+   *[other] Duk wasiƙun da aka shigo da su cikin wannan asusu a foldoji { $folders } nasa
+}
+accounts-remove-local-settings = Saitunansa na Katna
+accounts-remove-mail = { $folders ->
+    [0] Duk wasiƙun wannan asusu da Katna ta ajiye
+    [one] Duk wasiƙun wannan asusu da Katna ta ajiye a foldarsa
+   *[other] Duk wasiƙun wannan asusu da Katna ta ajiye a foldoji { $folders } nasa
+}
+accounts-remove-outbox = Saƙonninsa da ke jira a akwatin fita
+accounts-remove-settings = Kalmar sirrinsa da aka ajiye da saitunansa na Katna
+accounts-delete-all-title = Share duk bayanan Katna?
+accounts-delete-all-confirm = Share komai
+accounts-deleting = Ana sharewa…
+accounts-delete-all-accounts = Kowane asusu, da duk wasiƙu da abubuwan haɗawa da Katna ta ajiye
+accounts-delete-all-contacts = Lambobin sadarwa, kalandoji da fihirisar bincike
+accounts-delete-all-settings = Duk saituna, sa hannu da gajerun hanyoyin madannai
+accounts-delete-all-passwords = Kowace kalmar sirri da aka ajiye
+accounts-deleted-heading = Za a share daga wannan kwamfuta:
+accounts-cannot-undo = Ba za a iya janye wannan ba.
+accounts-server-delete-all = Babu abin da ke canzawa a sabobin wasiƙunku: wasiƙunku suna zama a can, kuma sake ƙara asusu zai sake sauke su. Wasiƙun da aka shigo da su daga fayiloli suna cikin Katna kaɗai; ba a taɓa fayilolin ba.
+accounts-server-local = An shigo da waɗannan wasiƙu daga fayiloli, don haka Katna ce kaɗai ke da kwafinsu. Ba a taɓa fayilolin da suka fito daga ciki ba; sake shigo da su don dawo da su.
+accounts-server-remove = Babu abin da ke canzawa a sabar wasiƙu: wasiƙunku suna zama a can, kuma sake ƙara asusun zai sake sauke su.
+accounts-confirm-word = share
+accounts-confirm-placeholder = Rubuta “{ accounts-confirm-word }”
+accounts-confirm-prompt = Don tabbatarwa, rubuta “{ accounts-confirm-word }”:
+accounts-cancel = Soke

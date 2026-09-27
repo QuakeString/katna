@@ -1,0 +1,330 @@
+# Katna Mail, Russian (Русский).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Mail list: inbox tabs (Gmail's categories, Outlook's and Zoho's)
+
+tab-primary = Несортированные
+tab-promotions = Промоакции
+tab-social = Соцсети
+tab-updates = Оповещения
+tab-forums = Форумы
+tab-focused = Отсортированные
+tab-other = Другие
+tab-inbox = Входящие
+tab-newsletters = Рассылки
+tab-notifications = Уведомления
+tab-new = { $count ->
+    [one] { $count } новое
+    [few] { $count } новых
+    [many] { $count } новых
+   *[other] { $count } новых
+}
+tab-provider-other = сортирует Katna
+
+## Mail list: toolbar
+
+list-select = Выбрать
+list-refresh = Обновить
+list-more = Ещё
+list-mark-read = Отметить как прочитанное
+list-mark-unread = Отметить как непрочитанное
+list-move-to = Переместить в
+list-archive = Архивировать
+list-spam = В спам
+list-delete = Удалить
+list-newer = Более новые
+list-older = Более старые
+list-range = { $first }–{ $last } из { $total }
+list-range-about = { $first }–{ $last } из примерно { $total }
+list-results = Результаты по запросу «{ $query }»
+list-results-corrected = Показаны результаты по запросу «{ $query }»
+list-search-instead = Искать вместо этого «{ $query }»
+list-files-more = +{ $count }
+
+## Mail list: Select menu (which lines to tick)
+
+list-pick-all = Все
+list-pick-none = Ни одного
+list-pick-read = Прочитанные
+list-pick-unread = Непрочитанные
+list-pick-starred = Помеченные
+list-pick-unstarred = Без пометки
+
+## Mail list: banner when every line is ticked
+
+list-selected-all = { $kind ->
+    [conversation] { $count ->
+        [one] Выбрана { $count } цепочка.
+        [few] Выбраны все { $count } цепочки.
+        [many] Выбраны все { $count } цепочек.
+       *[other] Выбраны все { $count } цепочки.
+    }
+   *[message] { $count ->
+        [one] Выбрано { $count } письмо.
+        [few] Выбраны все { $count } письма.
+        [many] Выбраны все { $count } писем.
+       *[other] Выбраны все { $count } письма.
+    }
+}
+list-selected-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] Выбрана { $count } цепочка в папке «{ $folder }».
+        [few] Выбраны все { $count } цепочки в папке «{ $folder }».
+        [many] Выбраны все { $count } цепочек в папке «{ $folder }».
+       *[other] Выбраны все { $count } цепочки в папке «{ $folder }».
+    }
+   *[message] { $count ->
+        [one] Выбрано { $count } письмо в папке «{ $folder }».
+        [few] Выбраны все { $count } письма в папке «{ $folder }».
+        [many] Выбраны все { $count } писем в папке «{ $folder }».
+       *[other] Выбраны все { $count } письма в папке «{ $folder }».
+    }
+}
+list-selected-screen = { $kind ->
+    [conversation] { $count ->
+        [one] Выбрана { $count } цепочка на этой странице.
+        [few] Выбраны все { $count } цепочки на этой странице.
+        [many] Выбраны все { $count } цепочек на этой странице.
+       *[other] Выбраны все { $count } цепочки на этой странице.
+    }
+   *[message] { $count ->
+        [one] Выбрано { $count } письмо на этой странице.
+        [few] Выбраны все { $count } письма на этой странице.
+        [many] Выбраны все { $count } писем на этой странице.
+       *[other] Выбраны все { $count } письма на этой странице.
+    }
+}
+list-select-all = { $kind ->
+    [conversation] { $count ->
+        [one] Выбрать { $count } цепочку
+        [few] Выбрать все { $count } цепочки
+        [many] Выбрать все { $count } цепочек
+       *[other] Выбрать все { $count } цепочки
+    }
+   *[message] { $count ->
+        [one] Выбрать { $count } письмо
+        [few] Выбрать все { $count } письма
+        [many] Выбрать все { $count } писем
+       *[other] Выбрать все { $count } письма
+    }
+}
+list-select-all-in = { $kind ->
+    [conversation] { $count ->
+        [one] Выбрать { $count } цепочку в папке «{ $folder }»
+        [few] Выбрать все { $count } цепочки в папке «{ $folder }»
+        [many] Выбрать все { $count } цепочек в папке «{ $folder }»
+       *[other] Выбрать все { $count } цепочки в папке «{ $folder }»
+    }
+   *[message] { $count ->
+        [one] Выбрать { $count } письмо в папке «{ $folder }»
+        [few] Выбрать все { $count } письма в папке «{ $folder }»
+        [many] Выбрать все { $count } писем в папке «{ $folder }»
+       *[other] Выбрать все { $count } письма в папке «{ $folder }»
+    }
+}
+list-clear-selection = Отменить выбор
+
+## Mail list: empty states
+
+list-empty-search = Нет писем, соответствующих запросу.
+list-empty-tab = На вкладке «{ $tab }» нет писем.
+list-empty-tab-unknown = На этой вкладке нет писем.
+list-empty-folder = В папке «{ $folder }» нет писем.
+list-empty-folder-unknown = В этой папке нет писем.
+list-first-sync = Загружаем вашу почту…
+list-first-sync-detail = Письма будут появляться здесь по мере получения.
+
+## Mail list: lines
+
+row-removed = Это письмо удалено.
+row-starred = Помечено
+row-not-starred = Без пометки
+row-important = Важное. Нажмите, чтобы отметить как неважное.
+row-mark-important = Отметить как важное
+row-pinned = Закреплено вверху
+row-pin = Закрепить вверху
+row-unpin = Открепить
+
+## Mail list: More menu and right-click menu
+
+menu-reply = Ответить
+menu-reply-all = Ответить всем
+menu-forward = Переслать
+menu-archive = Архивировать
+menu-delete = Удалить
+menu-spam = В спам
+menu-mark-read = Отметить как прочитанное
+menu-mark-unread = Отметить как непрочитанное
+menu-mark-all-read = Отметить все как прочитанные
+menu-star = Пометить
+menu-unstar = Снять пометку
+menu-important = Отметить как важное
+menu-not-important = Отметить как неважное
+menu-pin = Закрепить вверху
+menu-unpin = Открепить
+menu-print-all = Распечатать все
+menu-new-window = Открыть в новом окне
+menu-move-to = Переместить в
+menu-move-to-heading = Переместить в:
+menu-find-from = Найти письма от { $name }
+
+## Snackbar after an action on mail in the list
+
+toast-archived = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } цепочка перенесена в архив.
+        [few] { $count } цепочки перенесены в архив.
+        [many] { $count } цепочек перенесены в архив.
+       *[other] { $count } цепочки перенесены в архив.
+    }
+   *[message] { $count ->
+        [one] { $count } письмо перенесено в архив.
+        [few] { $count } письма перенесены в архив.
+        [many] { $count } писем перенесены в архив.
+       *[other] { $count } письма перенесены в архив.
+    }
+}
+toast-trashed = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } цепочка перемещена в корзину.
+        [few] { $count } цепочки перемещены в корзину.
+        [many] { $count } цепочек перемещены в корзину.
+       *[other] { $count } цепочки перемещены в корзину.
+    }
+   *[message] { $count ->
+        [one] { $count } письмо перемещено в корзину.
+        [few] { $count } письма перемещены в корзину.
+        [many] { $count } писем перемещены в корзину.
+       *[other] { $count } письма перемещены в корзину.
+    }
+}
+toast-moved = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } цепочка перемещена.
+        [few] { $count } цепочки перемещены.
+        [many] { $count } цепочек перемещены.
+       *[other] { $count } цепочки перемещены.
+    }
+   *[message] { $count ->
+        [one] { $count } письмо перемещено.
+        [few] { $count } письма перемещены.
+        [many] { $count } писем перемещены.
+       *[other] { $count } письма перемещены.
+    }
+}
+toast-starred = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } цепочка помечена.
+        [few] { $count } цепочки помечены.
+        [many] { $count } цепочек помечены.
+       *[other] { $count } цепочки помечены.
+    }
+   *[message] { $count ->
+        [one] { $count } письмо помечено.
+        [few] { $count } письма помечены.
+        [many] { $count } писем помечены.
+       *[other] { $count } письма помечены.
+    }
+}
+toast-unstarred = { $kind ->
+    [conversation] { $count ->
+        [one] С { $count } цепочки снята пометка.
+        [few] С { $count } цепочек снята пометка.
+        [many] С { $count } цепочек снята пометка.
+       *[other] С { $count } цепочки снята пометка.
+    }
+   *[message] { $count ->
+        [one] С { $count } письма снята пометка.
+        [few] С { $count } писем снята пометка.
+        [many] С { $count } писем снята пометка.
+       *[other] С { $count } письма снята пометка.
+    }
+}
+toast-important = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } цепочка отмечена как важная.
+        [few] { $count } цепочки отмечены как важные.
+        [many] { $count } цепочек отмечены как важные.
+       *[other] { $count } цепочки отмечены как важные.
+    }
+   *[message] { $count ->
+        [one] { $count } письмо отмечено как важное.
+        [few] { $count } письма отмечены как важные.
+        [many] { $count } писем отмечены как важные.
+       *[other] { $count } письма отмечены как важные.
+    }
+}
+toast-not-important = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } цепочка отмечена как неважная.
+        [few] { $count } цепочки отмечены как неважные.
+        [many] { $count } цепочек отмечены как неважные.
+       *[other] { $count } цепочки отмечены как неважные.
+    }
+   *[message] { $count ->
+        [one] { $count } письмо отмечено как неважное.
+        [few] { $count } письма отмечены как неважные.
+        [many] { $count } писем отмечены как неважные.
+       *[other] { $count } письма отмечены как неважные.
+    }
+}
+toast-pinned = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } цепочка закреплена вверху.
+        [few] { $count } цепочки закреплены вверху.
+        [many] { $count } цепочек закреплены вверху.
+       *[other] { $count } цепочки закреплены вверху.
+    }
+   *[message] { $count ->
+        [one] { $count } письмо закреплено вверху.
+        [few] { $count } письма закреплены вверху.
+        [many] { $count } писем закреплены вверху.
+       *[other] { $count } письма закреплены вверху.
+    }
+}
+toast-unpinned = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } цепочка откреплена.
+        [few] { $count } цепочки откреплены.
+        [many] { $count } цепочек откреплены.
+       *[other] { $count } цепочки откреплены.
+    }
+   *[message] { $count ->
+        [one] { $count } письмо откреплено.
+        [few] { $count } письма откреплены.
+        [many] { $count } писем откреплены.
+       *[other] { $count } письма откреплены.
+    }
+}
+toast-spam = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } цепочка отмечена как спам.
+        [few] { $count } цепочки отмечены как спам.
+        [many] { $count } цепочек отмечены как спам.
+       *[other] { $count } цепочки отмечены как спам.
+    }
+   *[message] { $count ->
+        [one] { $count } письмо отмечено как спам.
+        [few] { $count } письма отмечены как спам.
+        [many] { $count } писем отмечены как спам.
+       *[other] { $count } письма отмечены как спам.
+    }
+}
+toast-deleted-forever = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } цепочка удалена навсегда.
+        [few] { $count } цепочки удалены навсегда.
+        [many] { $count } цепочек удалены навсегда.
+       *[other] { $count } цепочки удалены навсегда.
+    }
+   *[message] { $count ->
+        [one] { $count } письмо удалено навсегда.
+        [few] { $count } письма удалены навсегда.
+        [many] { $count } писем удалены навсегда.
+       *[other] { $count } письма удалены навсегда.
+    }
+}
+toast-undone = Действие отменено.
+toast-undo = Отменить
+toast-no-spam-folder = В этом аккаунте нет папки «Спам».

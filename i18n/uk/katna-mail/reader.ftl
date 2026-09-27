@@ -1,0 +1,141 @@
+# Katna Mail, Ukrainian (Українська).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Reading pane: toolbar
+
+reader-close = Закрити
+reader-back = Назад
+reader-mark-unread = Позначити як непрочитане
+reader-move-to = Перемістити в
+reader-more = Більше
+reader-print-all = Надрукувати все
+reader-new-window = У новому вікні
+reader-position = { $position } з { $total }
+reader-newer = Новіший
+reader-older = Старіший
+
+## Reading pane: the conversation
+
+reader-removed = Цей ланцюжок видалено.
+reader-no-subject = (без теми)
+reader-collapse-all = Згорнути все
+reader-expand-all = Розгорнути все
+reader-unknown-sender = (невідомий відправник)
+reader-date-ago = { $date } ({ $ago })
+reader-me = мені
+reader-to = кому: { $names }
+reader-starred = Із зірочкою
+reader-not-starred = Без зірочки
+reader-too-long = Лист задовгий, щоб показати його повністю.
+reader-encrypted-images = У зашифрованих листах зображення з інтернету ніколи не завантажуються.
+reader-window-failed = Не вдалося відкрити нове вікно.
+
+## Reading pane: message details (opened from "to me")
+
+reader-details-from = від:
+reader-details-to = кому:
+reader-details-cc = копія:
+reader-details-date = дата:
+reader-details-subject = тема:
+
+## Reading pane: downloading a message
+
+reader-downloading = Завантаження цього листа із сервера…
+reader-download-failed = Не вдалося завантажити цей лист.
+reader-try-again = Повторити спробу
+
+## Reply row
+
+reply-reply = Відповісти
+reply-reply-all = Відповісти всім
+reply-forward = Переслати
+
+## Encrypted and signed mail
+
+security-decrypting = Розшифрування…
+security-checking = Перевірка підпису…
+security-partly-encrypted = Зашифровано лише частину цього листа. Решту додано поза захистом, і її міг надіслати будь-хто.
+security-partly-signed = Підписано лише частину цього листа. Решту додано поза захистом, і її міг надіслати будь-хто.
+security-encrypted = Зашифрований лист
+security-encrypted-smime = Зашифрований лист (S/MIME)
+security-no-key = Не вдається розшифрувати лист: його зашифровано для ключа, якого у вас немає.
+security-cancelled = Розшифрування скасовано.
+security-damaged = Не вдається розшифрувати лист: зашифровані дані пошкоджено або змінено.
+security-decrypt-unavailable = Не вдається розшифрувати лист: установіть { $tool }, щоб читати зашифровану пошту.
+security-decrypt-failed = Не вдається розшифрувати лист: { $reason }
+security-unknown-signer = невідомий автор підпису
+security-signed-verified = Підписано: { $signer } · підпис перевірено
+security-signed-not-sender = Підписано: { $signer } — це не відправник
+security-signed-untrusted = Підписано: { $signer }, ключем, який ви позначили як ненадійний
+security-signed-unverified = Підписано: { $signer } · ключ не перевірено
+security-bad-signature = Недійсний підпис: лист змінено після підписання, або підпис підроблено.
+security-signature-expired = Підписано: { $signer } · термін дії підпису минув
+security-key-expired = Підписано: { $signer } · термін дії ключа відтоді минув
+security-key-revoked = Підписано: { $signer }, ключем, який було відкликано
+security-missing-key = Підписано ключем, якого у вас немає, тому підпис не можна перевірити
+security-missing-key-id = Підписано ключем, якого у вас немає ({ $key }), тому підпис не можна перевірити
+security-signature-unavailable = Підписано; установіть { $tool }, щоб перевірити підпис
+security-signature-error = Не вдалося перевірити підпис.
+
+## Remote images and pictures
+
+remote-hidden = Зображення в цьому листі приховано.
+remote-show = Показати зображення
+remote-always-show = Завжди показувати від цього відправника
+remote-picture-use = Вибрати
+remote-picture-too-big = Виберіть зображення розміром не більше 8 МБ.
+remote-picture-type = Виберіть зображення PNG, JPEG, GIF, WebP або SVG.
+remote-picture-read-failed = Не вдається прочитати зображення: { $error }
+remote-picture-keep-failed = Не вдається зберегти зображення: { $error }
+remote-picture-remove-failed = Не вдається видалити зображення: { $error }
+
+## Attachments
+
+attachment-count = { $count ->
+    [one] { $count } вкладення
+    [few] { $count } вкладення
+    [many] { $count } вкладень
+   *[other] { $count } вкладення
+}
+attachment-save = Зберегти
+attachment-save-all = Зберегти все
+attachment-save-all-tooltip = Зберегти всі вкладення в папку
+attachment-save-here = Зберегти тут
+attachment-not-downloaded = Цей лист не завантажено.
+attachment-not-found = Це вкладення не знайдено в листі.
+attachment-read-failed = Не вдалося прочитати { $name }
+attachment-numbered = вкладення { $number }
+attachment-saved-all = { $count ->
+    [one] { $count } файл збережено в папку «{ $place }»
+    [few] { $count } файли збережено в папку «{ $place }»
+    [many] { $count } файлів збережено в папку «{ $place }»
+   *[other] { $count } файлу збережено в папку «{ $place }»
+}
+attachment-saved-some = { $total ->
+    [one] Збережено { $saved } з { $total } файлу в папку «{ $place }». Не вдалося зберегти { $failed }
+    [few] Збережено { $saved } з { $total } файлів у папку «{ $place }». Не вдалося зберегти { $failed }
+    [many] Збережено { $saved } з { $total } файлів у папку «{ $place }». Не вдалося зберегти { $failed }
+   *[other] Збережено { $saved } з { $total } файлу в папку «{ $place }». Не вдалося зберегти { $failed }
+}
+attachment-saved-to = Збережено в { $path }
+attachment-save-failed = Не вдалося зберегти { $name }: { $error }
+attachment-open-failed = Не вдалося відкрити { $name }: { $error }
+attachment-risky = Цей файл може запустити програму, тому Katna його не відкриває. Натомість збережіть його.
+attachment-encrypted-open = Цей файл надійшов зашифрованим. Збережіть його, щоб відкрити в іншій програмі.
+
+## Printing
+
+print-failed = Не вдалося надрукувати: { $error }
+print-no-font = не знайдено шрифту
+print-opened-as-pdf = Відкрито як PDF, щоб надрукувати звідти.
+print-not-downloaded = (Ще не завантажено.)
+print-encrypted = (Зашифровано. Відкрийте лист у Katna Mail, щоб надрукувати його текст.)
+print-to = Кому: { $addresses }
+print-cc = Копія: { $addresses }
+
+## Leftovers from earlier areas (reading pane and its right-click menu)
+
+attachment-open-message = Відкрийте цей лист, щоб переглянути вкладення.
+text-copy = Копіювати
+text-select-all = Вибрати все

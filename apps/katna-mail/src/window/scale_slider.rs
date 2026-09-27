@@ -12,6 +12,7 @@ use gpui::{
     AnyElement, Bounds, Context, DispatchPhase, KeyDownEvent, MouseButton, MouseDownEvent,
     MouseMoveEvent, MouseUpEvent, Pixels, canvas, div, prelude::*, relative, rgba,
 };
+use katna_i18n::tr;
 use katna_ui::px;
 
 use super::MailWindow;
@@ -208,7 +209,7 @@ impl MailWindow {
                 .justify_center()
                 .text_size(px(size))
                 .text_color(rgba(th.text_dim))
-                .child("A")
+                .child(tr!("scale-letter"))
         };
         div()
             .flex()
@@ -235,17 +236,19 @@ impl MailWindow {
                         div()
                             .text_size(px(14.0))
                             .text_color(rgba(th.text_dim))
-                            .child(format!("{value}%")),
+                            .child(tr!("scale-percent", percent = value)),
                     )
                     .when(applied != 100 && dragging.is_none(), |d| {
                         d.child(
-                            outlined_button("page-scale-reset", "Back to 100%", th)
-                                .map(|d| self.page_control(d, th, cx))
-                                .on_click(
-                                    cx.listener(|this, _, _, cx| {
-                                        this.apply(Change::Scale(100), cx)
-                                    }),
-                                ),
+                            outlined_button(
+                                "page-scale-reset",
+                                tr!("scale-reset", percent = 100),
+                                th,
+                            )
+                            .map(|d| self.page_control(d, th, cx))
+                            .on_click(
+                                cx.listener(|this, _, _, cx| this.apply(Change::Scale(100), cx)),
+                            ),
                         )
                     }),
             )

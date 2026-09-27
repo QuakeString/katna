@@ -2,8 +2,10 @@
 
 //! Languages (`docs/ARCHITECTURE.md` §13.10).
 //!
-//! The interface's text lives in Fluent files, `i18n/<translation>/<binary>.ftl`,
-//! embedded in each binary by its build script. A binary calls [`init`] once
+//! The interface's text lives in Fluent files, one folder per binary and
+//! one file per area (`i18n/<translation>/<binary>/<area>.ftl`; a small
+//! binary may have a single `<binary>.ftl`), embedded in each binary by its
+//! build script. A binary calls [`init`] once
 //! with its files, then [`apply`] with the user's choice (and again when it
 //! changes). Everything else asks for text with [`tr!`]:
 //!
@@ -22,7 +24,7 @@ mod languages;
 mod pseudo;
 mod system;
 
-pub use catalog::{Args, Sources, apply, current, init, lookup, rtl};
+pub use catalog::{Args, Sources, apply, current, english, init, lookup, rtl};
 pub use fluent_bundle::FluentValue;
 pub use languages::{Language, Status, all, find, fold, picker};
 pub use system::{Resolved, resolve, system_formats, system_language};

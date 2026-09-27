@@ -1,0 +1,62 @@
+# Katna Mail, Urdu (اردو).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Settings > Accounts
+
+accounts-folder-pane = فولڈر پین
+accounts-folder-pane-detail = دائیں جانب والا پین کن اکاؤنٹس کے فولڈرز دکھائے۔
+accounts-shown-one = ایک وقت میں ایک اکاؤنٹ؛ اکاؤنٹ کارڈ میں تبدیل کریں
+accounts-shown-all = تمام اکاؤنٹس، ایک کے بعد ایک
+accounts-row = اکاؤنٹس
+accounts-row-detail = اکاؤنٹ ہٹانے سے اس کمپیوٹر پر اس کی میل کی Katna والی کاپی حذف ہو جاتی ہے۔ میل سرور پر رہتی ہے۔
+accounts-none = ابھی کوئی اکاؤنٹ نہیں۔
+accounts-kind-imported = درآمد شدہ
+accounts-picture-reset = ڈیسک ٹاپ کی تصویر استعمال کریں
+accounts-picture-change = تصویر بدلیں
+accounts-remove = ہٹائیں
+accounts-delete-all-row = تمام ڈیٹا حذف کریں
+accounts-delete-all-row-detail = نئے انسٹال کی طرح، دوبارہ شروع کریں۔
+accounts-delete-all-about = اس کمپیوٹر سے ہر اکاؤنٹ، تمام محفوظ میل، رابطے اور کیلنڈر، تلاش کا انڈیکس، آپ کی ترتیبات اور محفوظ پاس ورڈز حذف کر دیتا ہے۔ آپ کے میل سرورز پر کچھ نہیں بدلتا۔
+accounts-delete-all-open = Katna کا تمام ڈیٹا حذف کریں
+
+## Settings > Accounts: snackbars after deleting
+
+accounts-removed-local = { $address } کو Katna سے ہٹا دیا گیا۔
+accounts-removed = { $address } کو Katna سے ہٹا دیا گیا۔ اس کی میل ابھی بھی سرور پر ہے۔
+accounts-all-deleted = Katna کا تمام ڈیٹا اس کمپیوٹر سے حذف کر دیا گیا۔
+
+## Settings > Accounts: the dialog that asks before deleting
+
+accounts-remove-title = { $address } کو ہٹائیں؟
+accounts-remove-confirm = اکاؤنٹ ہٹائیں
+accounts-removing = ہٹایا جا رہا ہے…
+accounts-remove-local-mail = { $folders ->
+    [0] اس اکاؤنٹ میں درآمد کی گئی تمام میل
+    [one] اس اکاؤنٹ میں درآمد کی گئی تمام میل، اس کے فولڈر میں
+   *[other] اس اکاؤنٹ میں درآمد کی گئی تمام میل، اس کے { $folders } فولڈرز میں
+}
+accounts-remove-local-settings = اس کی Katna ترتیبات
+accounts-remove-mail = { $folders ->
+    [0] Katna میں محفوظ اس اکاؤنٹ کی تمام میل
+    [one] Katna میں محفوظ اس اکاؤنٹ کی تمام میل، اس کے فولڈر میں
+   *[other] Katna میں محفوظ اس اکاؤنٹ کی تمام میل، اس کے { $folders } فولڈرز میں
+}
+accounts-remove-outbox = آؤٹ باکس میں منتظر اس کے پیغامات
+accounts-remove-settings = اس کا محفوظ پاس ورڈ اور اس کی Katna ترتیبات
+accounts-delete-all-title = Katna کا تمام ڈیٹا حذف کریں؟
+accounts-delete-all-confirm = سب کچھ حذف کریں
+accounts-deleting = حذف کیا جا رہا ہے…
+accounts-delete-all-accounts = ہر اکاؤنٹ، اور Katna میں محفوظ تمام میل اور اٹیچمنٹس
+accounts-delete-all-contacts = رابطے، کیلنڈر اور تلاش کا انڈیکس
+accounts-delete-all-settings = تمام ترتیبات، دستخط اور کی بورڈ شارٹ کٹس
+accounts-delete-all-passwords = ہر محفوظ پاس ورڈ
+accounts-deleted-heading = اس کمپیوٹر سے حذف ہو گا:
+accounts-cannot-undo = اسے کالعدم نہیں کیا جا سکتا۔
+accounts-server-delete-all = آپ کے میل سرورز پر کچھ نہیں بدلتا: آپ کی میل وہیں رہتی ہے، اور اکاؤنٹ دوبارہ شامل کرنے سے یہ دوبارہ ڈاؤن لوڈ ہو جاتی ہے۔ فائلوں سے درآمد کی گئی میل صرف Katna میں ہے؛ فائلوں کو نہیں چھیڑا جاتا۔
+accounts-server-local = یہ میل فائلوں سے درآمد کی گئی تھی، اس لیے واحد کاپی Katna کے پاس ہے۔ جن فائلوں سے یہ آئی انہیں نہیں چھیڑا جاتا؛ اسے واپس حاصل کرنے کے لیے انہیں دوبارہ درآمد کریں۔
+accounts-server-remove = میل سرور پر کچھ نہیں بدلتا: آپ کی میل وہیں رہتی ہے، اور اکاؤنٹ دوبارہ شامل کرنے سے یہ دوبارہ ڈاؤن لوڈ ہو جاتی ہے۔
+accounts-confirm-word = حذف
+accounts-confirm-placeholder = ”{ accounts-confirm-word }“ ٹائپ کریں
+accounts-confirm-prompt = تصدیق کے لیے، ”{ accounts-confirm-word }“ ٹائپ کریں:
+accounts-cancel = منسوخ کریں

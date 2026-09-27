@@ -1,0 +1,46 @@
+# Katna Mail, Chinese (Simplified) (简体中文).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Menu bar (the KDE global menu)
+
+desktop-menu-file = 文件(_F)
+desktop-menu-new-message = 新邮件(_N)
+desktop-menu-quit = 退出(_Q)
+desktop-menu-edit = 编辑(_E)
+desktop-menu-undo = 撤消(_U)
+desktop-menu-select-all = 全选(_A)
+desktop-menu-select-none = 取消全选(_N)
+desktop-menu-find = 查找(_F)…
+desktop-menu-view = 查看(_V)
+desktop-menu-folder-list = 显示文件夹列表(_F)
+desktop-menu-refresh = 刷新(_R)
+desktop-menu-go = 转到(_G)
+desktop-menu-inbox = 收件箱(_I)
+desktop-menu-starred = 已加星标(_S)
+desktop-menu-sent = 已发送(_E)
+desktop-menu-drafts = 草稿(_D)
+desktop-menu-all-mail = 所有邮件(_A)
+desktop-menu-next = 下一个会话(_N)
+desktop-menu-previous = 上一个会话(_P)
+desktop-menu-message = 邮件(_M)
+desktop-menu-open = 打开(_O)
+desktop-menu-reply = 回复(_R)
+desktop-menu-reply-all = 全部回复(_A)
+desktop-menu-forward = 转发(_F)
+desktop-menu-archive = 归档(_H)
+desktop-menu-delete = 删除(_D)
+desktop-menu-spam = 举报垃圾邮件(_S)
+desktop-menu-move-to = 移至(_M)…
+desktop-menu-mark-read = 标记为已读(_E)
+desktop-menu-mark-unread = 标记为未读(_U)
+desktop-menu-star = 加星标(_T)
+desktop-menu-important = 标记为重要(_P)
+desktop-menu-not-important = 标记为不重要(_N)
+desktop-menu-settings = 设置(_S)
+desktop-menu-quick-settings = 快速设置(_Q)
+desktop-menu-configure = 配置 Katna Mail(_C)…
+desktop-menu-help = 帮助(_H)
+desktop-menu-shortcuts = 键盘快捷键(_K)
+desktop-menu-whats-new = 新功能(_W)
+desktop-menu-about = 关于 Katna(_A)

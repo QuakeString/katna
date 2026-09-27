@@ -25,6 +25,7 @@ use katna_core::config::{
     AccountTabs, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane, ShortcutSet, TabStyle,
     Theme as ThemeChoice,
 };
+use katna_i18n::tr;
 use katna_ui::motion::lerp;
 use katna_ui::px;
 use katna_ui::rich::RichEvent;
@@ -94,20 +95,20 @@ impl Section {
         Self::Experimental,
     ];
 
-    pub(super) fn label(self) -> &'static str {
+    pub(super) fn label(self) -> String {
         match self {
-            Self::General => "General",
-            Self::Inbox => "Inbox",
-            Self::Accounts => "Accounts",
-            Self::Subscriptions => "Subscription",
-            Self::Appearance => "Appearance",
-            Self::Shortcuts => "Shortcuts",
-            Self::DefaultApps => "Default apps",
-            Self::MailRules => "Folders & rules",
-            Self::Signatures => "Compose",
-            Self::McpServer => "MCP server",
-            Self::Feedback => "User feedback",
-            Self::Experimental => "Experimental",
+            Self::General => tr!("settings-tab-general"),
+            Self::Inbox => tr!("settings-tab-inbox"),
+            Self::Accounts => tr!("settings-tab-accounts"),
+            Self::Subscriptions => tr!("settings-tab-subscriptions"),
+            Self::Appearance => tr!("settings-tab-appearance"),
+            Self::Shortcuts => tr!("settings-tab-shortcuts"),
+            Self::DefaultApps => tr!("settings-tab-default-apps"),
+            Self::MailRules => tr!("settings-tab-folders-rules"),
+            Self::Signatures => tr!("settings-tab-compose"),
+            Self::McpServer => tr!("settings-tab-mcp-server"),
+            Self::Feedback => tr!("settings-tab-feedback"),
+            Self::Experimental => tr!("settings-tab-experimental"),
         }
     }
 }
@@ -408,7 +409,7 @@ impl MailWindow {
                                 this.close_settings_page(window, cx)
                             })),
                     )
-                    .child(div().text_size(px(22.0)).child("Settings"))
+                    .child(div().text_size(px(22.0)).child(tr!("settings")))
                     .child(div().flex_1())
                     .child(self.version_button(th, cx)),
             )
@@ -458,24 +459,19 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(self.row(
-                "Language",
-                Some("The language of menus, buttons and messages, and the format of dates and numbers. System default follows the desktop."),
+                tr!("language-setting"),
+                Some(&tr!("language-setting-detail")),
                 self.language_choice(th, cx),
                 th,
             ))
+            .child(self.row(tr!("settings-time"), None, self.clock_choice(th, cx), th))
             .child(self.row(
-                katna_i18n::tr!("settings-time"),
-                None,
-                self.clock_choice(th, cx),
-                th,
-            ))
-            .child(self.row(
-                "Conversation view",
+                tr!("settings-general-conversations"),
                 None,
                 self.switch_row(
                     "page-conversations",
-                    "Group replies to the same mail",
-                    "One line per conversation in the list",
+                    tr!("settings-general-conversations-group"),
+                    tr!("settings-general-conversations-group-detail"),
                     view.conversations,
                     Change::Conversations(!view.conversations),
                     th,
@@ -483,15 +479,25 @@ impl MailWindow {
                 ),
                 th,
             ))
-            .child(self.row("Reading", None, self.reading_switches(th, cx), th))
-            .child(self.row("Mark as read", None, self.mark_read_choice(th, cx), th))
             .child(self.row(
-                "Reply button",
+                tr!("settings-general-reading"),
+                None,
+                self.reading_switches(th, cx),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-general-mark-read"),
+                None,
+                self.mark_read_choice(th, cx),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-general-reply-button"),
                 None,
                 self.switch_row(
                     "page-reply-all",
-                    "Reply to everyone",
-                    "The reply button beside each message replies to all, not only the sender",
+                    tr!("settings-general-reply-all"),
+                    tr!("settings-general-reply-all-detail"),
                     view.reply_all,
                     Change::ReplyAll(!view.reply_all),
                     th,
@@ -500,12 +506,12 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
-                "Images from the web",
-                Some("Loading a message's images tells its sender that you opened it, when, and roughly where. Off, each message asks first, and you can always show a sender's images."),
+                tr!("settings-general-remote-images"),
+                Some(&tr!("settings-general-remote-images-detail")),
                 self.switch_row(
                     "page-remote-images",
-                    "Always show images",
-                    "In every message, not only from senders you trust",
+                    tr!("settings-general-remote-images-always"),
+                    tr!("settings-general-remote-images-always-detail"),
                     view.remote_images,
                     Change::RemoteImages(!view.remote_images),
                     th,
@@ -514,25 +520,25 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
-                "Sending",
-                Some("How long a sent message waits, so it can be taken back."),
+                tr!("settings-general-sending"),
+                Some(&tr!("settings-general-sending-detail")),
                 self.undo_send_choice(th, cx),
                 th,
             ))
             .child(self.row(
-                "Offline mail",
-                Some("Recent mail is downloaded whole, to read without a connection. Older mail downloads when you open it."),
+                tr!("settings-general-offline"),
+                Some(&tr!("settings-general-offline-detail")),
                 self.offline_choice(th, cx),
                 th,
             ))
             .child(self.row(
-                "Notifications",
-                Some("For new mail in the Inbox, even while Katna Mail is closed."),
+                tr!("settings-general-notifications"),
+                Some(&tr!("settings-general-notifications-detail")),
                 self.notification_switches(th, cx),
                 th,
             ))
             .child(self.row(
-                "Desktop",
+                tr!("settings-general-desktop"),
                 None,
                 self.desktop_switches(th, cx),
                 th,
@@ -541,8 +547,8 @@ impl MailWindow {
                 self.settings_page.as_ref().and_then(|p| p.mail_app),
                 |d, default| {
                     d.child(self.row(
-                        "Default mail app",
-                        Some("Email links in other apps and on websites open a new message here."),
+                        tr!("settings-general-mail-app"),
+                        Some(&tr!("settings-general-mail-app-detail")),
                         self.mail_app_choice(default, th, cx),
                         th,
                     ))
@@ -554,9 +560,9 @@ impl MailWindow {
     /// Whether Katna Mail opens email links, with a button to make it so.
     fn mail_app_choice(&self, default: bool, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let text = if default {
-            katna_i18n::tr!("mail-app-is-default")
+            tr!("mail-app-is-default")
         } else {
-            katna_i18n::tr!("mail-app-is-other")
+            tr!("mail-app-is-other")
         };
         div()
             .flex()
@@ -574,13 +580,9 @@ impl MailWindow {
             )
             .when(!default, |d| {
                 d.child(
-                    outlined_button(
-                        "page-default-mail-app",
-                        katna_i18n::tr!("mail-app-make-default"),
-                        th,
-                    )
-                    .map(|b| self.page_control(b, th, cx))
-                    .on_click(cx.listener(|this, _, _, cx| this.make_default_mail_app(cx))),
+                    outlined_button("page-default-mail-app", tr!("mail-app-make-default"), th)
+                        .map(|b| self.page_control(b, th, cx))
+                        .on_click(cx.listener(|this, _, _, cx| this.make_default_mail_app(cx))),
                 )
             })
             .into_any_element()
@@ -594,18 +596,10 @@ impl MailWindow {
             (
                 Clock::Language,
                 "clock-language",
-                katna_i18n::tr!("settings-clock-language"),
+                tr!("settings-clock-language"),
             ),
-            (
-                Clock::TwelveHour,
-                "clock-12",
-                katna_i18n::tr!("settings-clock-12"),
-            ),
-            (
-                Clock::TwentyFourHour,
-                "clock-24",
-                katna_i18n::tr!("settings-clock-24"),
-            ),
+            (Clock::TwelveHour, "clock-12", tr!("settings-clock-12")),
+            (Clock::TwentyFourHour, "clock-24", tr!("settings-clock-24")),
         ]
         .map(|(clock, id, text)| {
             self.page_control(chip(id, text, clock == now, th), th, cx)
@@ -627,10 +621,12 @@ impl MailWindow {
         let mut choices = div().flex().flex_col().gap(px(2.0));
         for when in MarkRead::ALL {
             let (id, label) = match when {
-                MarkRead::Instantly => ("page-read-now", "As soon as it opens"),
-                MarkRead::AfterOneSecond => ("page-read-1s", "After it is open for 1 second"),
-                MarkRead::AfterThreeSeconds => ("page-read-3s", "After it is open for 3 seconds"),
-                MarkRead::Manually => ("page-read-never", "Only when I mark it read"),
+                MarkRead::Instantly => ("page-read-now", tr!("settings-general-mark-read-now")),
+                MarkRead::AfterOneSecond => ("page-read-1s", tr!("settings-general-mark-read-1s")),
+                MarkRead::AfterThreeSeconds => {
+                    ("page-read-3s", tr!("settings-general-mark-read-3s"))
+                }
+                MarkRead::Manually => ("page-read-never", tr!("settings-general-mark-read-never")),
             };
             choices = choices.child(self.radio_row(
                 id,
@@ -653,8 +649,8 @@ impl MailWindow {
             .gap(px(2.0))
             .child(self.switch_row(
                 "page-new-mail",
-                "Notify me about new mail",
-                "With Reply all, Mark as read and Archive",
+                tr!("settings-general-new-mail"),
+                tr!("settings-general-new-mail-detail"),
                 notifications.new_mail,
                 Change::NewMailNotices(!notifications.new_mail),
                 th,
@@ -663,8 +659,8 @@ impl MailWindow {
             .when(notifications.new_mail, |d| {
                 d.child(self.switch_row(
                     "page-new-mail-sound",
-                    "Play a sound",
-                    "The desktop's new-mail sound",
+                    tr!("settings-general-new-mail-sound"),
+                    tr!("settings-general-new-mail-sound-detail"),
                     notifications.sound,
                     Change::NotificationSound(!notifications.sound),
                     th,
@@ -691,7 +687,7 @@ impl MailWindow {
             }
             Err(err) => {
                 tracing::warn!(%err, "could not make Katna Mail the default mail app");
-                self.show_snackbar(katna_i18n::tr!("mail-app-make-default-failed"), None, cx);
+                self.show_snackbar(tr!("mail-app-make-default-failed"), None, cx);
             }
         }
         cx.notify();
@@ -706,12 +702,30 @@ impl MailWindow {
             .flex()
             .flex_row()
             .gap(px(12.0))
-            .child(self.pane_choice(ReadingPane::Right, "Right of the list", th, cx))
-            .child(self.pane_choice(ReadingPane::None, "No split", th, cx));
+            .child(self.pane_choice(
+                ReadingPane::Right,
+                tr!("settings-appearance-pane-right"),
+                th,
+                cx,
+            ))
+            .child(self.pane_choice(
+                ReadingPane::None,
+                tr!("settings-appearance-pane-none"),
+                th,
+                cx,
+            ));
         let mut density = div().flex().flex_col().gap(px(2.0));
         for (choice, id, label) in [
-            (Density::Default, "page-density-default", "Default"),
-            (Density::Compact, "page-density-compact", "Compact"),
+            (
+                Density::Default,
+                "page-density-default",
+                tr!("settings-appearance-density-default"),
+            ),
+            (
+                Density::Compact,
+                "page-density-compact",
+                tr!("settings-appearance-density-compact"),
+            ),
         ] {
             density = density.child(self.radio_row(
                 id,
@@ -727,10 +741,18 @@ impl MailWindow {
             (
                 ThemeChoice::System,
                 "page-theme-system",
-                "Same as the desktop",
+                tr!("settings-appearance-theme-system"),
             ),
-            (ThemeChoice::Light, "page-theme-light", "Light"),
-            (ThemeChoice::Dark, "page-theme-dark", "Dark"),
+            (
+                ThemeChoice::Light,
+                "page-theme-light",
+                tr!("settings-appearance-theme-light"),
+            ),
+            (
+                ThemeChoice::Dark,
+                "page-theme-dark",
+                tr!("settings-appearance-theme-dark"),
+            ),
         ] {
             theme = theme.child(self.radio_row(
                 id,
@@ -745,26 +767,26 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(self.row(
-                "Reading pane",
-                Some("Where an opened conversation shows."),
+                tr!("settings-appearance-reading-pane"),
+                Some(&tr!("settings-appearance-reading-pane-detail")),
                 panes,
                 th,
             ))
-            .child(self.row("Density", None, density, th))
+            .child(self.row(tr!("settings-appearance-density"), None, density, th))
             .child(self.row(
-                "Scaling",
-                Some("Makes everything in Katna Mail bigger or smaller, on top of the desktop's own scale: text, icons, spacing and dividers. Mail you send keeps its own font size. Very small sizes can make icons hard to click."),
+                tr!("settings-appearance-scaling"),
+                Some(&tr!("settings-appearance-scaling-detail")),
                 self.scale_control(th, cx),
                 th,
             ))
-            .child(self.row("Theme", None, theme, th))
+            .child(self.row(tr!("settings-appearance-theme"), None, theme, th))
             .child(self.row(
-                "Desktop colors",
+                tr!("settings-appearance-desktop-colors"),
                 None,
                 self.switch_row(
                     "page-desktop-colors",
-                    "Use the desktop's colors",
-                    "The color scheme and accent color of the desktop",
+                    tr!("settings-appearance-desktop-colors-use"),
+                    tr!("settings-appearance-desktop-colors-use-detail"),
                     view.desktop_colors,
                     Change::DesktopColors(!view.desktop_colors),
                     th,
@@ -773,12 +795,12 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
-                "App names",
+                tr!("settings-appearance-app-names"),
                 None,
                 self.switch_row(
                     "page-app-labels",
-                    "Show app names",
-                    "Names under the app icons at the far left",
+                    tr!("settings-appearance-app-names-show"),
+                    tr!("settings-appearance-app-names-show-detail"),
                     view.app_labels,
                     Change::AppLabels(!view.app_labels),
                     th,
@@ -787,12 +809,12 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
-                "Sender pictures",
+                tr!("settings-appearance-sender-pictures"),
                 None,
                 self.switch_row(
                     "page-sender-pictures",
-                    "Show company logos",
-                    "Looked up by the sender's domain, never by message, and kept for a week",
+                    tr!("settings-appearance-sender-pictures-show"),
+                    tr!("settings-appearance-sender-pictures-show-detail"),
                     view.sender_pictures,
                     Change::SenderPictures(!view.sender_pictures),
                     th,
@@ -801,12 +823,12 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
-                "Important markers",
+                tr!("settings-appearance-important"),
                 None,
                 self.switch_row(
                     "page-important-markers",
-                    "Show Important markers",
-                    "Beside each message in the list",
+                    tr!("settings-appearance-important-show"),
+                    tr!("settings-appearance-important-show-detail"),
                     view.important_markers,
                     Change::ImportantMarkers(!view.important_markers),
                     th,
@@ -815,12 +837,12 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
-                "Message width",
+                tr!("settings-appearance-message-width"),
                 None,
                 self.switch_row(
                     "page-limit-width",
-                    "Limit the width of messages",
-                    "Long lines are easier to read in a wide window",
+                    tr!("settings-appearance-message-width-limit"),
+                    tr!("settings-appearance-message-width-limit-detail"),
                     view.limit_width,
                     Change::LimitWidth(!view.limit_width),
                     th,
@@ -829,12 +851,12 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
-                "Mail colors",
-                Some("Most mail is designed for a white page. With a dark theme its colors are changed to dark ones that read well; off, it keeps its sender's colors on a light page."),
+                tr!("settings-appearance-mail-colors"),
+                Some(&tr!("settings-appearance-mail-colors-detail")),
                 self.switch_row(
                     "page-dark-mail",
-                    "Dark colors for mail too",
-                    "Only while the theme is dark",
+                    tr!("settings-appearance-dark-mail"),
+                    tr!("settings-appearance-dark-mail-detail"),
                     view.dark_mail,
                     Change::DarkMail(!view.dark_mail),
                     th,
@@ -843,12 +865,12 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
-                "Attachment previews",
+                tr!("settings-appearance-attachment-previews"),
                 None,
                 self.switch_row(
                     "page-attachment-previews",
-                    "Show previews of attachments",
-                    "A small picture of each file's content on its card",
+                    tr!("settings-appearance-attachment-previews-show"),
+                    tr!("settings-appearance-attachment-previews-show-detail"),
                     view.attachment_previews,
                     Change::AttachmentPreviews(!view.attachment_previews),
                     th,
@@ -862,11 +884,11 @@ impl MailWindow {
     /// How many days of mail the daemon keeps downloaded (`sync.offline_days`).
     fn offline_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let now = self.config.sync.offline_days;
-        let chips = OFFLINE_CHOICES.into_iter().map(|(days, label)| {
+        let chips = OFFLINE_CHOICES.into_iter().map(|days| {
             self.page_control(
                 chip(
                     ("offline-days", days as usize),
-                    label.to_owned(),
+                    offline_label(days),
                     days == now,
                     th,
                 ),
@@ -876,8 +898,8 @@ impl MailWindow {
             .on_click(cx.listener(move |this, _, _, cx| this.apply(Change::OfflineDays(days), cx)))
         });
         // A number set in the file by hand shows too.
-        let other = (!OFFLINE_CHOICES.iter().any(|(days, _)| *days == now))
-            .then(|| chip("offline-days-other", format!("{now} days"), true, th));
+        let other = (!OFFLINE_CHOICES.contains(&now))
+            .then(|| chip("offline-days-other", offline_label(now), true, th));
         div()
             .flex()
             .flex_col()
@@ -897,10 +919,7 @@ impl MailWindow {
                     .text_size(px(12.0))
                     .line_height(px(17.0))
                     .text_color(rgba(th.text_faint))
-                    .child(
-                        "Choosing fewer days keeps mail already downloaded. \
-                         Nothing changes on the server.",
-                    ),
+                    .child(tr!("settings-general-offline-note")),
             )
             .into_any_element()
     }
@@ -912,7 +931,7 @@ impl MailWindow {
         let name: SharedString = if resolved.system {
             format!(
                 "{} ({})",
-                katna_i18n::tr!("language-system-default"),
+                tr!("language-system-default"),
                 resolved.language.name
             )
             .into()
@@ -960,8 +979,8 @@ impl MailWindow {
             .gap(px(2.0))
             .child(self.switch_row(
                 "page-newest-first",
-                "Newest message first",
-                "A conversation starts with its latest reply",
+                tr!("settings-general-newest-first"),
+                tr!("settings-general-newest-first-detail"),
                 view.newest_first,
                 Change::NewestFirst(!view.newest_first),
                 th,
@@ -969,8 +988,8 @@ impl MailWindow {
             ))
             .child(self.switch_row(
                 "page-full-headers",
-                "Show full headers",
-                "From, to, cc, date and subject open on every message",
+                tr!("settings-general-full-headers"),
+                tr!("settings-general-full-headers-detail"),
                 view.full_headers,
                 Change::FullHeaders(!view.full_headers),
                 th,
@@ -978,8 +997,8 @@ impl MailWindow {
             ))
             .child(self.switch_row(
                 "page-full-names",
-                "Full names of recipients",
-                "\u{201c}to me, Ada Lovelace\u{201d} rather than \u{201c}to me, Ada\u{201d}",
+                tr!("settings-general-full-names"),
+                tr!("settings-general-full-names-detail"),
                 view.full_names,
                 Change::FullNames(!view.full_names),
                 th,
@@ -997,8 +1016,8 @@ impl MailWindow {
             .gap(px(2.0))
             .child(self.switch_row(
                 "page-open-at-login",
-                "Open Katna Mail at login",
-                "Mail syncs at login either way, while the service runs",
+                tr!("settings-general-open-at-login"),
+                tr!("settings-general-open-at-login-detail"),
                 open_at_login,
                 Change::OpenAtLogin(!open_at_login),
                 th,
@@ -1006,8 +1025,8 @@ impl MailWindow {
             ))
             .child(self.switch_row(
                 "page-tray",
-                "Show Katna in the system tray",
-                "With the unread count and a menu",
+                tr!("settings-general-tray"),
+                tr!("settings-general-tray-detail"),
                 general.show_in_tray,
                 Change::Tray(!general.show_in_tray),
                 th,
@@ -1015,8 +1034,8 @@ impl MailWindow {
             ))
             .child(self.switch_row(
                 "page-unread-badge",
-                "Unread count on the taskbar icon",
-                "How many Inbox messages are unread",
+                tr!("settings-general-unread-badge"),
+                tr!("settings-general-unread-badge-detail"),
                 general.unread_badge,
                 Change::UnreadBadge(!general.unread_badge),
                 th,
@@ -1032,36 +1051,36 @@ impl MailWindow {
         let groups = FileGroup::ALL.map(|group| {
             let (title, detail, ids) = match group {
                 FileGroup::Pdf => (
-                    "PDF files",
-                    "Pages, with zoom.",
+                    tr!("settings-default-apps-pdf"),
+                    tr!("settings-default-apps-pdf-detail"),
                     ["open-pdf-katna", "open-pdf-system", "open-pdf-ask"],
                 ),
                 FileGroup::Pictures => (
-                    "Pictures",
-                    "Photos (turned upright), PNG, GIF, WebP, BMP, TIFF and SVG.",
+                    tr!("settings-default-apps-pictures"),
+                    tr!("settings-default-apps-pictures-detail"),
                     ["open-pic-katna", "open-pic-system", "open-pic-ask"],
                 ),
                 FileGroup::Text => (
-                    "Text files",
-                    "Plain text, logs, code and other text.",
+                    tr!("settings-default-apps-text"),
+                    tr!("settings-default-apps-text-detail"),
                     ["open-text-katna", "open-text-system", "open-text-ask"],
                 ),
                 FileGroup::Spreadsheets => (
-                    "Spreadsheets",
-                    "Excel (xlsx, xls), OpenDocument (ods) and CSV.",
+                    tr!("settings-default-apps-sheets"),
+                    tr!("settings-default-apps-sheets-detail"),
                     ["open-sheet-katna", "open-sheet-system", "open-sheet-ask"],
                 ),
                 FileGroup::Documents => (
-                    "Documents",
-                    "Word (docx, doc), OpenDocument text (odt) and slides (pptx, ppt, odp).",
+                    tr!("settings-default-apps-documents"),
+                    tr!("settings-default-apps-documents-detail"),
                     ["open-doc-katna", "open-doc-system", "open-doc-ask"],
                 ),
             };
             let mut choices = div().flex().flex_col().gap(px(2.0));
             for (choice, id, label) in [
-                (OpenIn::Katna, ids[0], "Katna Mail's viewer"),
-                (OpenIn::System, ids[1], "The desktop's default app"),
-                (OpenIn::Ask, ids[2], "Ask which app each time"),
+                (OpenIn::Katna, ids[0], tr!("settings-default-apps-katna")),
+                (OpenIn::System, ids[1], tr!("settings-default-apps-system")),
+                (OpenIn::Ask, ids[2], tr!("settings-default-apps-ask")),
             ] {
                 choices = choices.child(self.radio_row(
                     id,
@@ -1072,7 +1091,7 @@ impl MailWindow {
                     cx,
                 ));
             }
-            self.row(title, Some(detail), choices, th)
+            self.row(title, Some(&detail), choices, th)
         });
         div()
             .flex()
@@ -1083,20 +1102,16 @@ impl MailWindow {
                     .pb(px(4.0))
                     .text_size(px(13.0))
                     .text_color(rgba(th.text_dim))
-                    .child(
-                        "Where attachments open when you click them. The viewer can \
-                         always open a file in another app too. The desktop's default \
-                         apps are set in its own settings.",
-                    ),
+                    .child(tr!("settings-default-apps-intro")),
             )
             .children(groups)
             .child(self.row(
-                "After saving",
+                tr!("settings-default-apps-after-saving"),
                 None,
                 self.switch_row(
                     "page-open-saved-folder",
-                    "Show saved files in their folder",
-                    "Opens the file manager with the saved attachments picked",
+                    tr!("settings-default-apps-show-folder"),
+                    tr!("settings-default-apps-show-folder-detail"),
                     self.config.mail.open_saved_folder,
                     Change::OpenSavedFolder(!self.config.mail.open_saved_folder),
                     th,
@@ -1121,12 +1136,12 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(self.row(
-                "Inbox tabs",
-                Some("Sort the inbox into tabs, as your mail provider's website does."),
+                tr!("settings-inbox-tabs"),
+                Some(&tr!("settings-inbox-tabs-detail")),
                 self.switch_row(
                     "page-tabs",
-                    "Show inbox tabs",
-                    "Off shows one list for every account",
+                    tr!("settings-inbox-tabs-show"),
+                    tr!("settings-inbox-tabs-show-detail"),
                     on,
                     Change::Tabs(!on),
                     th,
@@ -1152,7 +1167,7 @@ impl MailWindow {
                 }))
             })
             .when(accounts.is_empty() && on, |d| {
-                d.child(note("Add an account to choose its tabs.", th))
+                d.child(note(tr!("settings-inbox-no-accounts"), th))
             })
             .into_any_element()
     }
@@ -1170,16 +1185,16 @@ impl MailWindow {
         let styles = [
             (
                 TabStyle::Auto,
-                format!(
-                    "Automatic: {} ({})",
-                    style_name(provider.style()),
-                    provider.name()
+                tr!(
+                    "settings-inbox-tabs-automatic",
+                    tabs = style_name(provider.style()),
+                    provider = provider.name()
                 ),
             ),
-            (TabStyle::Gmail, style_name(TabStyle::Gmail).to_owned()),
-            (TabStyle::Focused, style_name(TabStyle::Focused).to_owned()),
-            (TabStyle::Zoho, style_name(TabStyle::Zoho).to_owned()),
-            (TabStyle::Off, "No tabs".to_owned()),
+            (TabStyle::Gmail, style_name(TabStyle::Gmail)),
+            (TabStyle::Focused, style_name(TabStyle::Focused)),
+            (TabStyle::Zoho, style_name(TabStyle::Zoho)),
+            (TabStyle::Off, tr!("settings-inbox-tabs-off")),
         ];
         let options = styles.into_iter().enumerate().map(|(n, (style, label))| {
             let address = address.to_owned();
@@ -1260,10 +1275,7 @@ impl MailWindow {
                         .px(px(8.0))
                         .text_size(px(12.0))
                         .text_color(rgba(th.text_faint))
-                        .child(format!(
-                            "Tabs shown. Mail of a tab you turn off stays in {}.",
-                            all[0].label()
-                        )),
+                        .child(tr!("settings-inbox-tabs-shown", tab = all[0].label())),
                 )
                 .children(checks)
             })
@@ -1300,7 +1312,7 @@ impl MailWindow {
         };
         let accent = rgba(self.theme(window).accent).into();
         let name = cx.new(|cx| {
-            let mut input = TextInput::new("Name, such as Work", cx);
+            let mut input = TextInput::new(tr!("settings-compose-signature-name"), cx);
             input.set_text(signature.name.clone(), cx);
             input.set_accent(accent);
             input
@@ -1380,9 +1392,9 @@ impl MailWindow {
     fn new_signature(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let n = self.config.sending.signatures.len() + 1;
         let name = if n == 1 {
-            "My signature".to_owned()
+            tr!("settings-compose-signature-first")
         } else {
-            format!("Signature {n}")
+            tr!("settings-compose-signature-numbered", number = n)
         };
         let id = self.config.sending.add_signature(name, String::new());
         self.save_config();
@@ -1399,7 +1411,7 @@ impl MailWindow {
         self.save_config();
         let next = self.config.sending.signatures.first().map(|s| s.id);
         self.edit_signature(next, window, cx);
-        self.show_snackbar("Signature deleted", None, cx);
+        self.show_snackbar(tr!("settings-compose-signature-deleted"), None, cx);
     }
 
     fn set_default_signature(&mut self, replies: bool, id: Option<u32>, cx: &mut Context<Self>) {
@@ -1434,11 +1446,12 @@ impl MailWindow {
             .accounts
             .iter()
             .any(|a| a.address.eq_ignore_ascii_case(chosen));
-        let choices = std::iter::once((String::new(), "The account you are in".to_owned())).chain(
-            self.accounts
-                .iter()
-                .map(|a| (a.address.clone(), a.address.clone())),
-        );
+        let choices = std::iter::once((String::new(), tr!("settings-compose-send-from-current")))
+            .chain(
+                self.accounts
+                    .iter()
+                    .map(|a| (a.address.clone(), a.address.clone())),
+            );
         let from =
             div()
                 .flex()
@@ -1458,10 +1471,14 @@ impl MailWindow {
                         }))
                 }));
         let archive = div().flex().flex_row().flex_wrap().gap(px(6.0)).children(
-            [(false, "Send"), (true, "Send and archive")].map(|(on, label)| {
+            [
+                (false, tr!("settings-compose-send-plain")),
+                (true, tr!("settings-compose-send-archive")),
+            ]
+            .map(|(on, label)| {
                 chip(
                     ("page-send-archive", usize::from(on)),
-                    label.to_owned(),
+                    label,
                     sending.send_and_archive == on,
                     th,
                 )
@@ -1471,28 +1488,24 @@ impl MailWindow {
         );
         [
             self.row(
-                "Send new messages from",
-                Some("Replies and forwards always go out from the account you are in."),
+                tr!("settings-compose-send-from"),
+                Some(&tr!("settings-compose-send-from-detail")),
                 from,
                 th,
             ),
             self.row(
-                "Send on replies",
-                Some(
-                    "What Send does on a reply or forward. The menu beside Send offers the other.",
-                ),
+                tr!("settings-compose-send-on-replies"),
+                Some(&tr!("settings-compose-send-on-replies-detail")),
                 archive,
                 th,
             ),
             self.row(
-                "Grammar",
-                Some(
-                    "Checked on this computer with Harper. English only for now: text in other languages is left alone.",
-                ),
+                tr!("settings-compose-grammar"),
+                Some(&tr!("settings-compose-grammar-detail")),
                 self.switch_row(
                     "page-grammar",
-                    "Check grammar",
-                    "Underline grammar mistakes while writing, in English",
+                    tr!("settings-compose-grammar-check"),
+                    tr!("settings-compose-grammar-check-detail"),
                     sending.grammar_check,
                     Change::GrammarCheck(!sending.grammar_check),
                     th,
@@ -1501,14 +1514,12 @@ impl MailWindow {
                 th,
             ),
             self.row(
-                "Writing suggestions",
-                Some(
-                    "Learned on this computer from the mail you sent and the mail you are answering; nothing leaves it. Press Tab to take a suggestion, or keep typing.",
-                ),
+                tr!("settings-compose-suggestions"),
+                Some(&tr!("settings-compose-suggestions-detail")),
                 self.switch_row(
                     "page-suggestions",
-                    "Suggest while writing",
-                    "Show the likely rest of a phrase in grey as you type",
+                    tr!("settings-compose-suggestions-on"),
+                    tr!("settings-compose-suggestions-on-detail"),
                     sending.writing_suggestions,
                     Change::WritingSuggestions(!sending.writing_suggestions),
                     th,
@@ -1551,7 +1562,7 @@ impl MailWindow {
                             .rounded(8.0),
                     )
                     .child(div().truncate().child(if s.name.trim().is_empty() {
-                        "Untitled".to_owned()
+                        tr!("settings-compose-untitled")
                     } else {
                         s.name.clone()
                     }))
@@ -1586,11 +1597,15 @@ impl MailWindow {
                 .children(tools)
                 .child(
                     div().flex().flex_row().child(div().flex_1()).child(
-                        outlined_button("page-signature-delete", "Delete", th)
-                            .map(|d| self.page_control(d, th, cx))
-                            .on_click(cx.listener(move |this, _, window, cx| {
-                                this.delete_signature(id, window, cx)
-                            })),
+                        outlined_button(
+                            "page-signature-delete",
+                            tr!("settings-compose-signature-delete"),
+                            th,
+                        )
+                        .map(|d| self.page_control(d, th, cx))
+                        .on_click(cx.listener(
+                            move |this, _, window, cx| this.delete_signature(id, window, cx),
+                        )),
                     ),
                 )
         });
@@ -1600,7 +1615,7 @@ impl MailWindow {
             } else {
                 sending.new_mail_signature
             };
-            let choices = std::iter::once((None, "No signature".to_owned())).chain(
+            let choices = std::iter::once((None, tr!("settings-compose-no-signature"))).chain(
                 sending
                     .signatures
                     .iter()
@@ -1628,57 +1643,63 @@ impl MailWindow {
             .flex()
             .flex_col()
             .children(sending_rows)
-            .child(self.row(
-                "Signatures",
-                Some("Added below your message, after a \u{201c}--\u{201d} line. Pick another one in the compose window."),
-                div()
-                    .flex()
-                    .flex_row()
-                    .flex_wrap()
-                    .gap(px(16.0))
-                    .child(
-                        label_column(200.0)
-                            .flex()
-                            .flex_col()
-                            .gap(px(2.0))
-                            .children(list)
-                            .child(
-                                outlined_button("page-signature-new", "Create new", th)
+            .child(
+                self.row(
+                    tr!("settings-compose-signatures"),
+                    Some(&tr!("settings-compose-signatures-detail")),
+                    div()
+                        .flex()
+                        .flex_row()
+                        .flex_wrap()
+                        .gap(px(16.0))
+                        .child(
+                            label_column(200.0)
+                                .flex()
+                                .flex_col()
+                                .gap(px(2.0))
+                                .children(list)
+                                .child(
+                                    outlined_button(
+                                        "page-signature-new",
+                                        tr!("settings-compose-signature-new"),
+                                        th,
+                                    )
                                     .map(|d| self.page_control(d, th, cx))
                                     .mt(px(8.0))
                                     .justify_center()
-                                    .on_click(cx.listener(|this, _, window, cx| {
-                                        this.new_signature(window, cx)
-                                    })),
-                            ),
-                    )
-                    .children(editor)
-                    .when(sending.signatures.is_empty(), |d| {
-                        d.child(note("No signatures yet.", th))
-                    }),
-                th,
-            ))
+                                    .on_click(cx.listener(
+                                        |this, _, window, cx| this.new_signature(window, cx),
+                                    )),
+                                ),
+                        )
+                        .children(editor)
+                        .when(sending.signatures.is_empty(), |d| {
+                            d.child(note(tr!("settings-compose-no-signatures"), th))
+                        }),
+                    th,
+                ),
+            )
             .when(!sending.signatures.is_empty(), |d| {
                 d.child(self.row(
-                    "For new mail",
+                    tr!("settings-compose-for-new-mail"),
                     None,
                     defaults(false),
                     th,
                 ))
                 .child(self.row(
-                    "For replies and forwards",
-                    Some("In a conversation where you signed a message, a reply starts with that signature instead."),
+                    tr!("settings-compose-for-replies"),
+                    Some(&tr!("settings-compose-for-replies-detail")),
                     defaults(true),
                     th,
                 ))
             })
             .child(self.row(
-                "Format",
+                tr!("settings-compose-format"),
                 None,
                 self.switch_row(
                     "page-plain-text",
-                    "Write in plain text",
-                    "New mail starts without formatting; the compose window can switch",
+                    tr!("settings-compose-plain-text"),
+                    tr!("settings-compose-plain-text-detail"),
                     sending.plain_text,
                     Change::PlainText(!sending.plain_text),
                     th,
@@ -1686,13 +1707,16 @@ impl MailWindow {
                 ),
                 th,
             ))
-            .child(self.row("Spelling", None, self.spelling_choice(th, cx), th))
             .child(self.row(
-                "Templates",
-                Some("Save mail you write often, and start new mail or a reply from it."),
-                div()
-                    .flex()
-                    .child(super::settings_search::coming_pill(th)),
+                tr!("settings-compose-spelling"),
+                None,
+                self.spelling_choice(th, cx),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-compose-templates"),
+                Some(&tr!("settings-compose-templates-detail")),
+                div().flex().child(super::settings_search::coming_pill(th)),
                 th,
             ))
             .into_any_element()
@@ -1713,7 +1737,10 @@ impl MailWindow {
             self.page_control(
                 chip(
                     "spell-desktop",
-                    format!("Desktop's language ({desktop})"),
+                    tr!(
+                        "settings-compose-spell-desktop",
+                        language = desktop.as_str()
+                    ),
                     chosen.is_empty(),
                     th,
                 ),
@@ -1747,8 +1774,8 @@ impl MailWindow {
             .gap(px(8.0))
             .child(self.switch_row(
                 "page-spell-check",
-                "Check spelling while I write",
-                "Misspelled words are underlined, with suggestions on right-click",
+                tr!("settings-compose-spell-check"),
+                tr!("settings-compose-spell-check-detail"),
                 sending.spell_check,
                 Change::SpellCheck(!sending.spell_check),
                 th,
@@ -1826,7 +1853,7 @@ impl MailWindow {
                         let adding = recording_here.is_some_and(|r| r.replace.is_none());
                         div()
                             .relative()
-                            .children(self.flash_mark(s.label, th))
+                            .children(self.flash_mark(&s.title(), th))
                             .min_h(px(44.0))
                             .py(px(4.0))
                             .flex()
@@ -1842,7 +1869,7 @@ impl MailWindow {
                                     .w(px(SHORTCUT_LABEL_WIDTH))
                                     .flex_none()
                                     .text_size(px(14.0))
-                                    .child(s.label),
+                                    .child(s.title()),
                             )
                             .child(
                                 div()
@@ -1860,7 +1887,7 @@ impl MailWindow {
                                             div()
                                                 .text_size(px(13.0))
                                                 .text_color(rgba(th.text_faint))
-                                                .child("No key"),
+                                                .child(tr!("settings-shortcuts-no-key")),
                                         )
                                     }),
                             )
@@ -1885,7 +1912,7 @@ impl MailWindow {
             div()
                 .flex()
                 .flex_col()
-                .child(heading(group.label(), th))
+                .child(heading(group.title(), th))
                 .children(rows)
         });
         let [moving, actions, go_to, app] = groups;
@@ -1918,14 +1945,14 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(self.row(
-                "Shortcut set",
-                Some("Start from the keys of a mail app you know. Cmd is Ctrl here. Your own changes stay on top of the set, and Restore defaults goes back to the set's keys."),
+                tr!("settings-shortcuts-set"),
+                Some(&tr!("settings-shortcuts-set-detail")),
                 sets,
                 th,
             ))
             .child(self.row(
-                "Single-key shortcuts",
-                Some("Keys without Ctrl or Alt, as in webmail: e archives, j and k move, / searches. They work in the list and the open conversation, never while typing."),
+                tr!("settings-shortcuts-single"),
+                Some(&tr!("settings-shortcuts-single-detail")),
                 div().child(self.shortcut_switch(single, th, cx)),
                 th,
             ))
@@ -1941,11 +1968,11 @@ impl MailWindow {
                         control_column(240.0)
                             .text_size(px(13.0))
                             .text_color(rgba(th.text_faint))
-                            .child("Click a key to change it, or + to add one, then press the new keys. Esc cancels."),
+                            .child(tr!("settings-shortcuts-how")),
                     )
                     .child(div().flex_1())
                     .child(
-                        outlined_button("keys-reset-all", "Restore defaults", th)
+                        outlined_button("keys-reset-all", tr!("settings-shortcuts-restore"), th)
                             .map(|d| self.page_control(d, th, cx))
                             .when(!changed, |d| {
                                 d.text_color(rgba(th.text_faint)).cursor_default()
@@ -1964,8 +1991,8 @@ impl MailWindow {
     fn shortcut_switch(&self, on: bool, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         self.switch_row(
             "page-single-keys",
-            "Use single-key shortcuts",
-            "Ctrl shortcuts always work",
+            tr!("settings-shortcuts-single-use"),
+            tr!("settings-shortcuts-single-use-detail"),
             on,
             Change::SingleKeys(!on),
             th,
@@ -2070,15 +2097,15 @@ impl MailWindow {
                 .map(str::to_owned)
                 .collect();
             self.store_keys(other.name, rest);
-            note = Some(format!(
-                "{} now does \u{201c}{}\u{201d} instead of \u{201c}{}\u{201d}.",
-                keymap::label(&pressed),
-                shortcut.label,
-                other.label
+            note = Some(tr!(
+                "settings-shortcuts-moved",
+                keys = keymap::label(&pressed),
+                action = shortcut.title(),
+                previous = other.title()
             ));
         }
         if note.is_none() && !self.config.shortcuts.single_keys && keymap::is_single_key(&pressed) {
-            note = Some("Single-key shortcuts are off, so this key works once they are on.".into());
+            note = Some(tr!("settings-shortcuts-single-off"));
         }
         self.store_keys(shortcut.name, keys);
         self.shortcuts_changed(cx);
@@ -2125,7 +2152,7 @@ impl MailWindow {
     fn reset_all_keys(&mut self, cx: &mut Context<Self>) {
         self.config.shortcuts.keys.clear();
         self.shortcuts_changed(cx);
-        self.show_snackbar("Every shortcut has its set's keys again.", None, cx);
+        self.show_snackbar(tr!("settings-shortcuts-restored"), None, cx);
     }
 
     /// Starts the shortcuts from `set`'s keys; the user's changes stay.
@@ -2183,21 +2210,24 @@ impl MailWindow {
     }
 }
 
-/// The offline mail choices: days (0 for all mail) and their names.
-const OFFLINE_CHOICES: [(u32, &str); 5] = [
-    (7, "7 days"),
-    (30, "30 days"),
-    (90, "90 days"),
-    (365, "1 year"),
-    (0, "All mail"),
-];
+/// The offline mail choices, in days (0 for all mail).
+const OFFLINE_CHOICES: [u32; 5] = [7, 30, 90, 365, 0];
 
-fn style_name(style: TabStyle) -> &'static str {
+/// The name of an offline mail choice.
+fn offline_label(days: u32) -> String {
+    match days {
+        0 => tr!("settings-general-offline-all"),
+        365 => tr!("settings-general-offline-years", count = 1),
+        days => tr!("settings-general-offline-days", count = days),
+    }
+}
+
+fn style_name(style: TabStyle) -> String {
     match style {
-        TabStyle::Auto | TabStyle::Gmail => "Primary, Promotions, Social, Updates, Forums",
-        TabStyle::Focused => "Focused and Other",
-        TabStyle::Zoho => "Inbox, Newsletters and Notifications",
-        TabStyle::Off => "No tabs",
+        TabStyle::Auto | TabStyle::Gmail => tr!("settings-inbox-tabs-gmail"),
+        TabStyle::Focused => tr!("settings-inbox-tabs-focused"),
+        TabStyle::Zoho => tr!("settings-inbox-tabs-zoho"),
+        TabStyle::Off => tr!("settings-inbox-tabs-off"),
     }
 }
 
@@ -2210,15 +2240,15 @@ fn style_name(style: TabStyle) -> &'static str {
 /// search has just led here.
 pub(super) fn setting_row(
     label: SharedString,
-    detail: Option<&'static str>,
+    detail: Option<SharedString>,
     content: impl IntoElement,
     info: &Rc<RefCell<Option<SharedString>>>,
     flash: Option<AnyElement>,
     th: &Theme,
 ) -> Div {
-    let long = detail.filter(|d| d.chars().count() > ONE_LINE);
+    let long = detail.clone().filter(|d| d.chars().count() > ONE_LINE);
     let open = long.is_some() && info.borrow().as_ref() == Some(&label);
-    let button = long.map(|text| {
+    let button = long.clone().map(|text| {
         let info = info.clone();
         let name = label.clone();
         div()
@@ -2308,7 +2338,7 @@ fn control_column(width: f32) -> Div {
     div().flex_basis(px(width)).flex_grow(1000.0).min_w_0()
 }
 
-fn note(text: &'static str, th: &Theme) -> Div {
+fn note(text: String, th: &Theme) -> Div {
     div()
         .py(px(12.0))
         .text_size(px(14.0))
@@ -2346,7 +2376,7 @@ fn chip(id: impl Into<gpui::ElementId>, label: String, on: bool, th: &Theme) -> 
         .cursor_pointer()
         .hover(|s| s.bg(rgba(th.hover)))
         .child(if label.trim().is_empty() {
-            "Untitled".to_owned()
+            tr!("settings-compose-untitled")
         } else {
             label
         })
@@ -2378,8 +2408,8 @@ fn key_chip(id: impl Into<gpui::ElementId>, label: String, off: bool, th: &Theme
 
 fn recording_chip(recording: Option<&Recording>, th: &Theme) -> Div {
     let text: SharedString = match recording.map(|r| r.keys.as_slice()) {
-        Some([first, ..]) => format!("{} then\u{2026}", keymap::label(first)).into(),
-        _ => "Press keys\u{2026}".into(),
+        Some([first, ..]) => tr!("settings-shortcuts-then", keys = keymap::label(first)).into(),
+        _ => tr!("settings-shortcuts-press").into(),
     };
     div()
         .h(px(28.0))
