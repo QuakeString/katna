@@ -174,6 +174,13 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 17,
+        title: "Attachments of older mail open at once",
+        text: "Clicking an attachment of older mail that is not on this computer yet \
+               downloads it: the attachment fills up while it does, then opens.",
+        animation: None,
+    },
+    Highlight {
+        id: 18,
         title: "Select and copy text in mail",
         text: "Drag across a message to select its text, double-click for a word \
                or triple-click for a paragraph. Ctrl+C or a right-click copies it, \
