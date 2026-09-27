@@ -499,6 +499,7 @@ impl MailWindow {
                 self.with_menu(more, Menu::ReaderMore, th, cx)
             })
             .child(div().flex_1())
+            .children(self.contact_toggle(th, cx))
             // Where the toolbar is short, both are in the More menu.
             .when(roomy, |d| {
                 d.child(
