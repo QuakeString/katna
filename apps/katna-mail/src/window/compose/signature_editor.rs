@@ -10,6 +10,7 @@ use gpui::{
     AnyElement, Context, Entity, Focusable, MouseButton, Window, anchored, deferred, div, point,
     prelude::*, rgba,
 };
+use katna_i18n::tr;
 use katna_ui::px;
 use katna_ui::rich::{Align, Doc, Font, List, RichEditor, Size, html};
 use katna_ui::{InputEvent, TextInput};
@@ -61,7 +62,7 @@ impl MailWindow {
         let doc = crate::signatures::doc(signature);
         let accent: gpui::Hsla = rgba(th.accent).into();
         let link = cx.new(|cx| {
-            let mut input = TextInput::new("Web address or email address", cx);
+            let mut input = TextInput::new(tr!("compose-tool-link-address"), cx);
             input.set_accent(accent);
             input
         });
@@ -85,7 +86,7 @@ impl MailWindow {
             _subscription: subscription,
         });
         let editor = cx.new(|cx| {
-            let mut editor = RichEditor::new("Your name, and anything to add below it", cx);
+            let mut editor = RichEditor::new(tr!("signature-placeholder"), cx);
             editor.set_palette(palette(&th));
             editor.set_doc(doc.clone(), doc.start(), cx);
             editor
@@ -188,7 +189,7 @@ impl MailWindow {
             files: true,
             directories: false,
             multiple: false,
-            prompt: Some("Insert".into()),
+            prompt: Some(tr!("signature-picture-choose").into()),
         });
         cx.spawn(async move |this, cx| {
             let Ok(Ok(Some(paths))) = chosen.await else {
@@ -209,9 +210,9 @@ impl MailWindow {
                 let data = match data {
                     Ok(data) if data.len() > MAX_PICTURE => {
                         this.show_snackbar(
-                            format!(
-                                "Pictures in a signature can be up to {}.",
-                                crate::format::size(MAX_PICTURE as u64)
+                            tr!(
+                                "signature-picture-too-big",
+                                size = crate::format::size(MAX_PICTURE as u64)
                             ),
                             None,
                             cx,
@@ -220,12 +221,20 @@ impl MailWindow {
                     }
                     Ok(data) => data,
                     Err(err) => {
-                        this.show_snackbar(format!("{name}: {err}"), None, cx);
+                        this.show_snackbar(
+                            tr!(
+                                "signature-picture-unreadable",
+                                name = name.as_str(),
+                                error = err.to_string()
+                            ),
+                            None,
+                            cx,
+                        );
                         return;
                     }
                 };
                 let Some(mime) = katna_ui::rich::image_mime(&name) else {
-                    this.show_snackbar("Pick a PNG, JPEG, GIF or WebP picture.", None, cx);
+                    this.show_snackbar(tr!("signature-picture-kind"), None, cx);
                     return;
                 };
                 if let Some(editor) = this.signature_body() {
@@ -257,7 +266,7 @@ impl MailWindow {
             .child(
                 format_dropdown("sig-font", th)
                     .w(px(104.0))
-                    .tooltip(tip("Font", th))
+                    .tooltip(tip(tr!("compose-tool-font"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.toggle_signature_popup(Popup::Font, window, cx)
                     }))
@@ -285,7 +294,7 @@ impl MailWindow {
             .relative()
             .child(
                 format_dropdown("sig-size", th)
-                    .tooltip(tip("Size", th))
+                    .tooltip(tip(tr!("compose-tool-size"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.toggle_signature_popup(Popup::Size, window, cx)
                     }))
@@ -308,7 +317,7 @@ impl MailWindow {
             .relative()
             .child(
                 format_dropdown("sig-color", th)
-                    .tooltip(tip("Text color", th))
+                    .tooltip(tip(tr!("compose-tool-text-color"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.toggle_signature_popup(Popup::Colors, window, cx)
                     }))
@@ -350,7 +359,7 @@ impl MailWindow {
                                 .children(swatches),
                         )
                         .child(
-                            menu_item("sig-color-default", "Default color", th)
+                            menu_item("sig-color-default", &tr!("compose-tool-default-color"), th)
                                 .px(px(4.0))
                                 .on_click(self.on_signature(cx, |e, cx| e.set_color(None, cx))),
                         ),
@@ -360,7 +369,7 @@ impl MailWindow {
             .relative()
             .child(
                 format_button("sig-link", "link", style.link.is_some(), th)
-                    .tooltip(tip("Link", th))
+                    .tooltip(tip(tr!("signature-link"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.toggle_signature_popup(Popup::Link, window, cx)
                     })),
@@ -382,25 +391,44 @@ impl MailWindow {
                                 .border_color(rgba(th.divider))
                                 .child(div().flex_1().child(tools.link.clone())),
                         )
-                        .child(div().flex().flex_row().justify_end().child(
-                            crate::widgets::filled_button("sig-link-ok", "Apply", th).on_click(
-                                cx.listener(|this, _, window, cx| {
-                                    this.apply_signature_link(window, cx)
-                                }),
+                        .child(
+                            div().flex().flex_row().justify_end().child(
+                                crate::widgets::filled_button(
+                                    "sig-link-ok",
+                                    tr!("signature-link-apply"),
+                                    th,
+                                )
+                                .on_click(cx.listener(
+                                    |this, _, window, cx| this.apply_signature_link(window, cx),
+                                )),
                             ),
-                        )),
+                        ),
                 ))
             });
-        let mut align =
-            |id: &'static str, name: &'static str, value: Align, label: &'static str| {
-                format_button(id, name, para.align == value, th)
-                    .tooltip(tip(label, th))
-                    .on_click(self.on_signature(cx, move |e, cx| e.set_align(value, cx)))
-            };
+        let mut align = |id: &'static str, name: &'static str, value: Align, label: String| {
+            format_button(id, name, para.align == value, th)
+                .tooltip(tip(label, th))
+                .on_click(self.on_signature(cx, move |e, cx| e.set_align(value, cx)))
+        };
         let aligns = [
-            align("sig-left", "align-left", Align::Left, "Align left"),
-            align("sig-center", "align-center", Align::Center, "Align center"),
-            align("sig-right", "align-right", Align::Right, "Align right"),
+            align(
+                "sig-left",
+                "align-left",
+                Align::Left,
+                tr!("signature-align-left"),
+            ),
+            align(
+                "sig-center",
+                "align-center",
+                Align::Center,
+                tr!("signature-align-center"),
+            ),
+            align(
+                "sig-right",
+                "align-right",
+                Align::Right,
+                tr!("signature-align-right"),
+            ),
         ];
         let scrim = popup.filter(|p| *p != Popup::Link).map(|_| {
             deferred(
@@ -437,17 +465,17 @@ impl MailWindow {
                 .child(separator(th))
                 .child(
                     format_button("sig-bold", "format-bold", style.bold, th)
-                        .tooltip(tip("Bold", th))
+                        .tooltip(tip(tr!("signature-bold"), th))
                         .on_click(self.on_signature(cx, |e, cx| e.toggle_bold(cx))),
                 )
                 .child(
                     format_button("sig-italic", "format-italic", style.italic, th)
-                        .tooltip(tip("Italic", th))
+                        .tooltip(tip(tr!("signature-italic"), th))
                         .on_click(self.on_signature(cx, |e, cx| e.toggle_italic(cx))),
                 )
                 .child(
                     format_button("sig-underline", "format-underline", style.underline, th)
-                        .tooltip(tip("Underline", th))
+                        .tooltip(tip(tr!("signature-underline"), th))
                         .on_click(self.on_signature(cx, |e, cx| e.toggle_underline(cx))),
                 )
                 .child(colors)
@@ -455,12 +483,12 @@ impl MailWindow {
                 .child(link)
                 .child(
                     format_button("sig-image", "image", false, th)
-                        .tooltip(tip("Insert picture", th))
+                        .tooltip(tip(tr!("signature-picture"), th))
                         .on_click(cx.listener(|this, _, _, cx| this.pick_signature_picture(cx))),
                 )
                 .child(
                     format_button("sig-table", "table", false, th)
-                        .tooltip(tip("Insert table", th))
+                        .tooltip(tip(tr!("compose-tool-insert-table"), th))
                         .on_click(self.on_signature(cx, |e, cx| e.insert_table(2, 2, cx))),
                 )
                 .child(separator(th))
@@ -472,7 +500,7 @@ impl MailWindow {
                         para.list == List::Numbered,
                         th,
                     )
-                    .tooltip(tip("Numbered list", th))
+                    .tooltip(tip(tr!("signature-numbered-list"), th))
                     .on_click(self.on_signature(cx, |e, cx| e.toggle_list(List::Numbered, cx))),
                 )
                 .child(
@@ -482,12 +510,12 @@ impl MailWindow {
                         para.list == List::Bullet,
                         th,
                     )
-                    .tooltip(tip("Bulleted list", th))
+                    .tooltip(tip(tr!("signature-bulleted-list"), th))
                     .on_click(self.on_signature(cx, |e, cx| e.toggle_list(List::Bullet, cx))),
                 )
                 .child(
                     format_button("sig-clear", "clear-format", false, th)
-                        .tooltip(tip("Remove formatting", th))
+                        .tooltip(tip(tr!("signature-remove-formatting"), th))
                         .on_click(self.on_signature(cx, |e, cx| e.clear_formatting(cx))),
                 )
                 .children(scrim)

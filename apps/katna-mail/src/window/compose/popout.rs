@@ -13,6 +13,7 @@ use gpui::{
 };
 use katna_chrome::{Bar, WindowChrome, window_options};
 use katna_core::ids::MAIL_APP_ID;
+use katna_i18n::tr;
 use katna_ui::px;
 use katna_ui::scale::desktop_px;
 use katna_ui::unpx;
@@ -95,7 +96,7 @@ impl MailWindow {
                 cx.new(|cx| ComposeWindow {
                     mail: mail.clone(),
                     // All of it is the message, on an opaque card.
-                    chrome: WindowChrome::new(env, "New Message", window, cx).opaque(),
+                    chrome: WindowChrome::new(env, tr!("compose-new-message"), window, cx).opaque(),
                     focus: cx.focus_handle(),
                 })
             });
@@ -107,7 +108,7 @@ impl MailWindow {
                             c.mode = c.docked_mode();
                         }
                         tracing::warn!("cannot open a compose window: {err}");
-                        this.show_snackbar("Could not open a new window.", None, cx);
+                        this.show_snackbar(tr!("reader-window-failed"), None, cx);
                     }
                 }
                 cx.notify();
@@ -255,7 +256,7 @@ fn dock_button(th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
         .rounded_full()
         .cursor_pointer()
         .hover(|s| s.bg(rgba(th.hover)))
-        .tooltip(tip("Back to the mail window", th))
+        .tooltip(tip(tr!("compose-back-to-mail"), th))
         .on_click(cx.listener(|this, _, _, cx| this.dock_compose(cx)))
         .child(icon("close-full", th.text_dim, 18.0))
         .into_any_element()

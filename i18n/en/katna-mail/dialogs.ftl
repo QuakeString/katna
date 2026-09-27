@@ -136,7 +136,7 @@ onboarding-pane-none = No split
 # Light or dark colors.
 onboarding-theme = Theme
 # Light or dark, following the desktop's setting.
-onboarding-theme-system = Same as the desktop
+onboarding-theme-system = System
 onboarding-theme-light = Light
 onboarding-theme-dark = Dark
 # How tightly the mail list is packed.
