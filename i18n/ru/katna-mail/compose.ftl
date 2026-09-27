@@ -19,6 +19,8 @@ compose-show-trimmed = Показать скрытую часть
 compose-to = Кому
 compose-cc = Копия
 compose-bcc = Скрытая копия
+compose-from = От
+compose-from-choose = Отправить с другого аккаунта
 compose-recipients = Получатели
 compose-subject = Тема
 

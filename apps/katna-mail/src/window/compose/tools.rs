@@ -650,7 +650,7 @@ impl MailWindow {
             .child(
                 icon_button_colored("compose-discard", "trash", 20.0, th.text_dim, th)
                     .tooltip(tip(tr!("compose-tool-discard"), th))
-                    .on_click(cx.listener(|this, _, _, cx| this.close_compose(true, cx))),
+                    .on_click(cx.listener(|this, _, _, cx| this.discard_compose(cx))),
             )
             .children(self.render_popup_scrim(cx))
             .children(self.render_context_popup(th, cx))

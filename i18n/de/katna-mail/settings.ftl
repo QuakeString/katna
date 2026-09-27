@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = Öffnet die Dateiverwaltung und wähl
 ## Settings > Compose
 
 settings-compose-send-from = Neue Nachrichten senden von
-settings-compose-send-from-detail = Antworten und Weiterleitungen werden immer von dem Konto gesendet, in dem Sie sich gerade befinden.
+settings-compose-send-from-detail = Neue Nachrichten beginnen mit diesem Konto; in der Zeile Von wählen Sie ein anderes. Antworten und Weiterleitungen werden immer von dem Konto gesendet, an das die ursprüngliche Nachricht ging.
 settings-compose-send-from-current = Dem aktuellen Konto
 settings-compose-send-on-replies = Senden bei Antworten
 settings-compose-send-on-replies-detail = Was „Senden“ bei einer Antwort oder Weiterleitung tut. Das Menü neben „Senden“ bietet die andere Möglichkeit.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = Womit reiner Text, Protokolle und Code geö
 settings-default-apps-sheets-summary = Womit Excel-, OpenDocument- und CSV-Dateien geöffnet werden
 settings-default-apps-documents-summary = Womit Word- und OpenDocument-Texte und Folien geöffnet werden
 settings-default-apps-after-saving-summary = Gespeicherte Anhänge in ihrem Ordner anzeigen
-settings-compose-send-from-summary = Das Konto, von dem neue E-Mails gesendet werden: das aktuelle oder immer dasselbe
+settings-compose-send-from-summary = Das Konto, von dem neue E-Mails gesendet werden: das erste, ein anderes oder das aktuelle
 settings-compose-send-on-replies-summary = „Senden“ oder „Senden und archivieren“ bei Antworten und Weiterleitungen
 settings-compose-signatures-summary = Wird unter Ihrer Nachricht nach einer Zeile „--“ eingefügt
 settings-compose-for-new-mail-summary = Die Signatur, mit der neue E-Mails beginnen

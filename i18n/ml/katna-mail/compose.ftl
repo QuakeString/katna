@@ -19,6 +19,8 @@ compose-show-trimmed = ചുരുക്കിയ ഉള്ളടക്കം �
 compose-to = സ്വീകർത്താവ്
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = അയച്ചയാൾ
+compose-from-choose = മറ്റൊരു അക്കൗണ്ടിൽ നിന്ന് അയയ്ക്കുക
 compose-recipients = സ്വീകർത്താക്കൾ
 compose-subject = വിഷയം
 

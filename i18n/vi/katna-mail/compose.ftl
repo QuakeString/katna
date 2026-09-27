@@ -19,6 +19,8 @@ compose-show-trimmed = Hiện nội dung bị rút gọn
 compose-to = Tới
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = Từ
+compose-from-choose = Gửi từ tài khoản khác
 compose-recipients = Người nhận
 compose-subject = Tiêu đề
 

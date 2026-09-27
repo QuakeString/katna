@@ -934,7 +934,19 @@ Features built on it:
   (`Outbox`, `OutboxChanged`) and counts one as scheduled when it is
   still queued, has no error and is due later than the undo-send delay
   would put it. Cancel is `UndoSend`, as for undo send.
-- Not yet: per-recipient sending, drafts saved on the server.
+- **Drafts.** Closing a message saves it (`SaveDraft(account, raw)`): the
+  app keeps one `Message-ID` for a message while it is written, and the
+  daemon replaces every copy in the Drafts folder with that `Message-ID`,
+  stores the new one there (flags `\Draft \Seen`, no UID yet) and queues
+  a `SaveDraft` operation. Replayed, it deletes the server's copies with
+  that `Message-ID` (read from the folder's headers, since Drafts is
+  small), APPENDs the new one and forgets the local copy; the next sync
+  brings the server's. A newer save drops the older queued upload.
+  `DiscardDraft(account, message_id)` deletes the copies here and queues
+  `DropDraft` for the server; the app calls it for Discard and after
+  Send. A draft opened from Drafts opens in compose. Accounts without a
+  server (POP3) get a local Drafts folder.
+- Not yet: per-recipient sending.
 
 ## 12. Message rendering (`katna-render`)
 

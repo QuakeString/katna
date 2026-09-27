@@ -180,6 +180,20 @@ impl Transfer {
     }
 }
 
+/// The input for a drag moving over a window: a move with the button held.
+///
+/// GPUI turns `FileDropEvent::Pending` into the same move, but only after it
+/// has noted what kind of input came last, so after typing it still thinks
+/// the keyboard came last and no element counts as hovered: the drop then
+/// lands nowhere. A plain move marks the mouse as the last input.
+pub(crate) fn drag_move(position: gpui::Point<gpui::Pixels>) -> gpui::PlatformInput {
+    gpui::PlatformInput::MouseMove(gpui::MouseMoveEvent {
+        position,
+        pressed_button: Some(gpui::MouseButton::Left),
+        modifiers: gpui::Modifiers::default(),
+    })
+}
+
 /// The types worth reading out of those `offered`, in the order to read
 /// them: files, HTML, one plain text type and one picture type.
 pub(crate) fn wanted_mimes<'a>(offered: &[&'a str]) -> Vec<&'a str> {

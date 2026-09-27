@@ -19,6 +19,8 @@ compose-show-trimmed = Ipakita ang tinabas na nilalaman
 compose-to = Para kay
 compose-cc = Cc
 compose-bcc = Bcc
+compose-from = Mula kay
+compose-from-choose = Ipadala mula sa ibang account
 compose-recipients = Mga tatanggap
 compose-subject = Paksa
 

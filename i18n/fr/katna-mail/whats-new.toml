@@ -475,3 +475,13 @@ Si Katna vous est utile, À propos de Katna propose désormais un bouton
 Offrez-moi un café et un code QR pour ouvrir la même page sur votre
 téléphone.
 """
+
+["2026-09-27-1615-from-row"]
+title = "Choisissez de qui vient un message"
+text = """
+Les nouveaux messages affichent maintenant une ligne De sous À. Cliquez
+sur sa flèche pour envoyer depuis un autre de vos comptes. Les nouveaux
+messages partent de votre premier compte, sauf si vous choisissez un
+autre compte par défaut dans Paramètres > Rédaction > Envoyer les
+nouveaux messages depuis.
+"""

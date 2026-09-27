@@ -159,7 +159,7 @@ settings-default-apps-show-folder-detail = Maak die lêerbestuurder oop met die 
 ## Settings > Compose
 
 settings-compose-send-from = Stuur nuwe boodskappe van
-settings-compose-send-from-detail = Antwoorde en aangestuurde boodskappe gaan altyd uit van die rekening waarin jy is.
+settings-compose-send-from-detail = Nuwe boodskappe begin van hierdie rekening; die Van-ry kies 'n ander een. Antwoorde en aangestuurde boodskappe gaan altyd uit van die rekening waarheen die oorspronklike boodskap gestuur is.
 settings-compose-send-from-current = Die rekening waarin jy is
 settings-compose-send-on-replies = Stuur op antwoorde
 settings-compose-send-on-replies-detail = Wat Stuur doen op 'n antwoord of aanstuur. Die kieslys langs Stuur bied die ander keuse.
@@ -235,7 +235,7 @@ settings-default-apps-text-summary = Waar gewone teks, logboeke en kode oopmaak
 settings-default-apps-sheets-summary = Waar Excel-, OpenDocument- en CSV-lêers oopmaak
 settings-default-apps-documents-summary = Waar Word- en OpenDocument-teks en skyfies oopmaak
 settings-default-apps-after-saving-summary = Wys gestoorde aanhegsels in hul vouer
-settings-compose-send-from-summary = Die rekening waarvandaan nuwe e-pos uitgaan: die een waarin jy is, of altyd dieselfde een
+settings-compose-send-from-summary = Die rekening waarvandaan nuwe e-pos uitgaan: die eerste een, 'n ander een, of die een waarin jy is
 settings-compose-send-on-replies-summary = Stuur, of Stuur en argiveer die gesprek, op antwoorde en aangestuurde boodskappe
 settings-compose-signatures-summary = Onder jou boodskap bygevoeg, ná 'n “--”-reël
 settings-compose-for-new-mail-summary = Die handtekening waarmee nuwe e-pos begin
