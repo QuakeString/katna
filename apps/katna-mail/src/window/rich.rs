@@ -58,6 +58,7 @@ impl<'a> Painter<'a> {
         images: &'a HashMap<String, Fetch>,
         remote: bool,
         mono: Option<SharedString>,
+        dark_mail: bool,
     ) -> Self {
         Self {
             ink: Ink {
@@ -72,7 +73,8 @@ impl<'a> Painter<'a> {
             remote,
             mono,
             next_id: 0,
-            dark: th.dark.then(|| Dark::new(th.surface)),
+            // Without `dark_mail`, mail keeps its colors, as in a light theme.
+            dark: (th.dark && dark_mail).then(|| Dark::new(th.surface)),
             bg: th.surface,
         }
     }

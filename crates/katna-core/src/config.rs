@@ -114,11 +114,16 @@ pub struct Onboarding {
 pub struct Notifications {
     /// Notify about new mail in the inbox (Primary tab).
     pub new_mail: bool,
+    /// New-mail notifications play the desktop's new-mail sound.
+    pub sound: bool,
 }
 
 impl Default for Notifications {
     fn default() -> Self {
-        Self { new_mail: true }
+        Self {
+            new_mail: true,
+            sound: true,
+        }
     }
 }
 
@@ -364,6 +369,25 @@ pub struct MailView {
     pub full_names: bool,
     /// Where each kind of attachment opens.
     pub open: OpenAttachments,
+    /// When an opened conversation is marked read.
+    pub mark_read: MarkRead,
+    /// Load the images of every message from the web, not only those of
+    /// trusted senders. Loading them tells senders that a message was read.
+    pub remote_images: bool,
+    /// The reply button of each message in a conversation replies to
+    /// everyone, not only the sender.
+    pub reply_all: bool,
+    /// Show the Important marker in the message list.
+    pub important_markers: bool,
+    /// Keep the lines of a message no wider than is easy to read.
+    pub limit_width: bool,
+    /// In a dark theme, give HTML mail dark colors too; off, mail keeps the
+    /// colors its sender picked, on a light page.
+    pub dark_mail: bool,
+    /// Show a small picture of each attachment's content on its card.
+    pub attachment_previews: bool,
+    /// Open the folder in the file manager after saving attachments.
+    pub open_saved_folder: bool,
     /// With several accounts: the folder pane shows one account, picked in
     /// the account card, or all of them one after another.
     pub accounts_shown: AccountsShown,
@@ -391,6 +415,14 @@ impl Default for MailView {
             full_headers: false,
             full_names: false,
             open: OpenAttachments::default(),
+            mark_read: MarkRead::Instantly,
+            remote_images: false,
+            reply_all: false,
+            important_markers: true,
+            limit_width: false,
+            dark_mail: true,
+            attachment_previews: true,
+            open_saved_folder: false,
             accounts_shown: AccountsShown::One,
             current_account: String::new(),
         }
@@ -404,6 +436,40 @@ impl MailView {
             .get(&address.to_lowercase())
             .cloned()
             .unwrap_or_default()
+    }
+}
+
+/// When an opened conversation is marked read ([`MailView::mark_read`]).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum MarkRead {
+    #[default]
+    Instantly,
+    /// After it has been open for a second.
+    AfterOneSecond,
+    /// After it has been open for three seconds.
+    AfterThreeSeconds,
+    /// Only with Mark as read.
+    Manually,
+}
+
+impl MarkRead {
+    pub const ALL: [Self; 4] = [
+        Self::Instantly,
+        Self::AfterOneSecond,
+        Self::AfterThreeSeconds,
+        Self::Manually,
+    ];
+
+    /// How long a conversation stays open before it is marked read;
+    /// `None` when it never is.
+    pub fn delay(self) -> Option<std::time::Duration> {
+        match self {
+            Self::Instantly => Some(std::time::Duration::ZERO),
+            Self::AfterOneSecond => Some(std::time::Duration::from_secs(1)),
+            Self::AfterThreeSeconds => Some(std::time::Duration::from_secs(3)),
+            Self::Manually => None,
+        }
     }
 }
 
@@ -513,7 +579,10 @@ pub enum OpenIn {
 pub struct Shortcuts {
     /// Shortcuts without Ctrl or Alt, such as `e` to archive, as in webmail.
     pub single_keys: bool,
-    /// Keys changed from the defaults, by shortcut name (`archive`,
+    /// Whose keys the shortcuts start from: Katna's own or another mail
+    /// app's. [`Shortcuts::keys`] changes them further.
+    pub set: ShortcutSet,
+    /// Keys changed from the set's, by shortcut name (`archive`,
     /// `reply`, ...): each a list of keystrokes such as `ctrl-shift-a` or
     /// `g i`. An empty list turns the shortcut off.
     pub keys: BTreeMap<String, Vec<String>>,
@@ -523,9 +592,25 @@ impl Default for Shortcuts {
     fn default() -> Self {
         Self {
             single_keys: true,
+            set: ShortcutSet::Katna,
             keys: BTreeMap::new(),
         }
     }
+}
+
+/// [`Shortcuts::set`]: the keys of a familiar mail app.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum ShortcutSet {
+    /// Gmail's keys, with the usual desktop keys as well.
+    #[default]
+    Katna,
+    Gmail,
+    InboxByGmail,
+    /// Apple Mail's, with Ctrl for Cmd.
+    AppleMail,
+    Outlook,
+    Thunderbird,
 }
 
 /// [`MailView::reading_pane`].
