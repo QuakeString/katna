@@ -614,3 +614,10 @@ grammar-add = Add “{ $words }”
 # A fix that removes the marked words.
 grammar-remove = Remove “{ $words }”
 grammar-ignore = Ignore
+
+## Settings > General > Time
+
+settings-time = Time
+settings-clock-language = As the language writes it
+settings-clock-12 = 12-hour, like 2:05 PM
+settings-clock-24 = 24-hour, like 14:05

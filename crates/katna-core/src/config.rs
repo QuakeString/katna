@@ -202,6 +202,23 @@ pub struct General {
     /// The language of the interface, a tag from `i18n/languages.toml`
     /// (`bn`, `en-IN`); empty follows the desktop (§13.10).
     pub language: String,
+    /// 12- or 24-hour times, or as the language writes them.
+    pub clock: Clock,
+}
+
+/// How times show ([`General::clock`]).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub enum Clock {
+    /// As the language (its formats) writes them.
+    #[default]
+    #[serde(rename = "language")]
+    Language,
+    /// `2:05 PM`.
+    #[serde(rename = "12-hour")]
+    TwelveHour,
+    /// `14:05`.
+    #[serde(rename = "24-hour")]
+    TwentyFourHour,
 }
 
 impl Default for General {
@@ -211,6 +228,7 @@ impl Default for General {
             show_in_tray: true,
             unread_badge: true,
             language: String::new(),
+            clock: Clock::Language,
         }
     }
 }

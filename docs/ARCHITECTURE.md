@@ -1057,6 +1057,24 @@ GPUI global):
   one plain box shadow that follows its rounded corners. Where the
   window's surface cannot be copied from, panels stay opaque.
 
+**Window state.** The mail window opens as it closed: its size, maximized
+state and place (`katna_chrome::placement`, saved in
+`$XDG_STATE_HOME/katna/mail-window.toml` when the app quits). The state
+belongs to one run of the Katna service, named by the daemon's process id
+and start time (which survive its re-exec after an update); once the
+service quits (the tray's Quit, logging out), the next start opens the
+window at its default size and place.
+
+- Wayland does not let a window place itself. Katna's copy of GPUI
+  (`vendor/gpui-pre-linux`) joins the window to an
+  `xdg-session-management-v1` session (KWin from Plasma 6.7), and the
+  compositor puts it back where it was; a fresh start removes the old
+  session and begins a new one. Without the protocol only the size and
+  maximized state come back.
+- X11: the window opens exactly at its old position (user-specified
+  position, static gravity). KWin adds the CSD shadow margin itself on X11,
+  so the saved frame is asked for as is.
+
 ### 13.2 Look and feel
 
 - One Katna design language on a **token layer** (radius, spacing, button
@@ -1303,7 +1321,8 @@ Gemini or confidential mode):
   pointer. Mail you send keeps its own font size.
 - **Settings page.** "See all settings", the rail's gear or `?` open it in
   place of the list (`window/settings_page.rs`). Its tabs, in the owner's
-  order: General (conversation view, reading order and headers, when mail
+  order: General (language, 12- or 24-hour time, conversation view,
+  reading order and headers, when mail
   is marked read, what the reply button does, images from the web, undo
   send, offline mail,
   new-mail notifications and their sound, opening at login, tray and

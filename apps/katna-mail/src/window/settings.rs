@@ -12,7 +12,7 @@ use gpui::{
     SpringAnimation, Stateful, div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountsShown, Density, FileGroup, MarkRead, OpenIn, ReadingPane, Theme as ThemeChoice,
+    AccountsShown, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane, Theme as ThemeChoice,
     UNDO_SEND_CHOICES, WindowFrame,
 };
 use katna_ui::Ripple;
@@ -63,6 +63,8 @@ pub(super) enum Change {
     SendCrashReports(bool),
     /// The interface scale, in percent.
     Scale(u16),
+    /// 12- or 24-hour times.
+    Clock(Clock),
     /// Katna Mail opens at login (an autostart entry).
     OpenAtLogin(bool),
     MarkRead(MarkRead),
@@ -516,6 +518,17 @@ impl MailWindow {
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
                 cx.notify();
+                return;
+            }
+            Change::Clock(clock) => {
+                if self.config.general.clock == clock {
+                    return;
+                }
+                self.config.general.clock = clock;
+                crate::format::set_clock(clock);
+                self.save_config();
+                // Every open window shows times.
+                cx.refresh_windows();
                 return;
             }
             Change::Language(tag) => {

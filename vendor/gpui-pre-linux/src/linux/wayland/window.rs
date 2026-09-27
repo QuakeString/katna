@@ -32,6 +32,7 @@ use wayland_protocols::ext::background_effect::v1::client::ext_background_effect
 use wayland_protocols_plasma::blur::client::org_kde_kwin_blur;
 use wayland_protocols_wlr::layer_shell::v1::client::zwlr_layer_surface_v1;
 
+use crate::linux::wayland::session::WindowSession;
 use crate::linux::wayland::{display::WaylandDisplay, serial::SerialKind};
 use crate::linux::{Globals, Output, WaylandClientStatePtr, get_window};
 use gpui::{
@@ -112,6 +113,8 @@ pub struct WaylandWindowState {
     background_effect: Option<ext_background_effect_surface_v1::ExtBackgroundEffectSurfaceV1>,
     /// Where the KDE global menu finds this window's menu bar.
     appmenu: Option<org_kde_kwin_appmenu::OrgKdeKwinAppmenu>,
+    /// Where the compositor remembers this window (xdg-session-management).
+    session: Option<WindowSession>,
     viewport: Option<wp_viewport::WpViewport>,
     outputs: HashMap<ObjectId, Output>,
     display: Option<(ObjectId, Output)>,
@@ -621,6 +624,23 @@ impl WaylandWindowState {
             _ => None,
         };
 
+        // The window the app asked to place (`crate::linux::placement`)
+        // joins its session before the first commit.
+        let session = match &surface_state {
+            WaylandSurfaceState::Xdg(xdg_state) if options.kind == WindowKind::Normal => {
+                crate::linux::placement::take_placement().and_then(|placement| {
+                    let manager = globals.session_manager.as_ref()?;
+                    Some(WindowSession::start(
+                        manager,
+                        &xdg_state.toplevel,
+                        placement,
+                        &globals.qh,
+                    ))
+                })
+            }
+            _ => None,
+        };
+
         Ok(Self {
             surface_state,
             parent,
@@ -630,6 +650,7 @@ impl WaylandWindowState {
             blur: None,
             background_effect: None,
             appmenu,
+            session,
             viewport,
             globals,
             outputs: HashMap::default(),
@@ -805,6 +826,11 @@ impl Drop for WaylandWindow {
             && appmenu.version() >= 2
         {
             appmenu.release();
+        }
+
+        // The session keeps its record of the window once it is gone.
+        if let Some(session) = &state.session {
+            session.destroy();
         }
 
         // Decorations must be destroyed before the xdg state.

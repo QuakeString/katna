@@ -8,7 +8,7 @@ use gpui::{
     Point, PromptButton, PromptLevel, RequestFrameOptions, ResizeEdge, ScaledPixels, Scene, Size,
     Tiling, WindowAppearance, WindowBackgroundAppearance, WindowBounds, WindowControlArea,
     WindowDecorations, WindowKind, WindowParams, WindowVisibility, popup::PopupNotSupportedError,
-    px,
+    point, px,
 };
 use gpui_wgpu::{CompositorGpuHint, WgpuRenderer, WgpuSurfaceConfig};
 
@@ -19,7 +19,7 @@ use x11rb::{
     connection::Connection,
     cookie::{Cookie, VoidCookie},
     errors::ConnectionError,
-    properties::{WmHints, WmSizeHints},
+    properties::{WmHints, WmSizeHints, WmSizeHintsSpecification},
     protocol::{
         sync,
         xinput::{self, ConnectionExt as _},
@@ -574,6 +574,12 @@ impl X11WindowState {
             bounds.size.width = 800.into();
             bounds.size.height = 600.into();
         }
+        // Katna: the window the app asked to put back where it was
+        // (`crate::linux::placement`) opens exactly at its origin.
+        let exact_place = params.kind == WindowKind::Normal
+            && crate::linux::placement::take_placement().is_some_and(|p| p.restore);
+        // Upstream opens windows 2 px right of where they were asked for.
+        let nudge = if exact_place { 0 } else { 2 };
 
         check_reply(
             || {
@@ -582,7 +588,7 @@ impl X11WindowState {
                     visual.depth,
                     x_window,
                     visual_set.root,
-                    bounds.origin.x.0 + 2,
+                    bounds.origin.x.0 + nudge,
                     bounds.origin.y.0,
                     bounds.size.width.0,
                     bounds.size.height.0
@@ -592,7 +598,7 @@ impl X11WindowState {
                 visual.depth,
                 x_window,
                 visual_set.root,
-                (bounds.origin.x.0 + 2) as i16,
+                (bounds.origin.x.0 + nudge) as i16,
                 bounds.origin.y.0 as i16,
                 bounds.size.width.0 as u16,
                 bounds.size.height.0 as u16,
@@ -853,6 +859,15 @@ impl X11WindowState {
                     Some((f32::from(size.width) as i32, f32::from(size.height) as i32));
             }
             size_hints.max_size = Some((max_texture_size as i32, max_texture_size as i32));
+            // Katna: and window managers keep it there.
+            if exact_place {
+                size_hints.position = Some((
+                    WmSizeHintsSpecification::UserSpecified,
+                    bounds.origin.x.0,
+                    bounds.origin.y.0,
+                ));
+                size_hints.win_gravity = Some(xproto::Gravity::STATIC);
+            }
             check_reply(
                 || {
                     format!(
@@ -1063,6 +1078,18 @@ impl X11Window {
         )?;
         xcb_flush(&self.0.xcb);
         Ok(())
+    }
+
+    /// The window's bounds with its origin on the root window. Katna:
+    /// configure events give the origin relative to the window manager's
+    /// frame, so the server is asked where the window is.
+    fn root_bounds(&self) -> Bounds<Pixels> {
+        let mut bounds = self.0.state.borrow().bounds;
+        if let Ok(root) = self.get_root_position(Point::default()) {
+            let scale = self.0.state.borrow().scale_factor;
+            bounds.origin = point(px(root.dst_x as f32 / scale), px(root.dst_y as f32 / scale));
+        }
+        bounds
     }
 
     fn get_root_position(
@@ -1500,20 +1527,21 @@ impl PlatformWindow for X11Window {
     }
 
     fn window_bounds(&self) -> WindowBounds {
-        let state = self.0.state.borrow();
+        let bounds = self.root_bounds();
         if self.is_maximized() {
-            WindowBounds::Maximized(state.bounds)
+            WindowBounds::Maximized(bounds)
         } else {
-            WindowBounds::Windowed(state.bounds)
+            WindowBounds::Windowed(bounds)
         }
     }
 
     fn inner_window_bounds(&self) -> WindowBounds {
+        let root_bounds = self.root_bounds();
         let state = self.0.state.borrow();
         if self.is_maximized() {
-            WindowBounds::Maximized(state.bounds)
+            WindowBounds::Maximized(root_bounds)
         } else {
-            let mut bounds = state.bounds;
+            let mut bounds = root_bounds;
             let [left, right, top, bottom] = state.last_insets;
 
             let [left, right, top, bottom] = [
@@ -1779,6 +1807,33 @@ impl PlatformWindow for X11Window {
 
     fn zoom(&self) {
         let state = self.0.state.borrow();
+        // Katna: window managers ignore requests for a window that is not
+        // mapped yet (one that opens maximized); such a window says it in
+        // its _NET_WM_STATE instead.
+        let unmapped = self
+            .0
+            .xcb
+            .get_window_attributes(self.0.x_window)
+            .ok()
+            .and_then(|cookie| cookie.reply().ok())
+            .is_some_and(|attributes| attributes.map_state == xproto::MapState::UNMAPPED);
+        if unmapped {
+            check_reply(
+                || "X11 ChangeProperty for _NET_WM_STATE failed.",
+                self.0.xcb.change_property32(
+                    xproto::PropMode::APPEND,
+                    self.0.x_window,
+                    state.atoms._NET_WM_STATE,
+                    xproto::AtomEnum::ATOM,
+                    &[
+                        state.atoms._NET_WM_STATE_MAXIMIZED_VERT,
+                        state.atoms._NET_WM_STATE_MAXIMIZED_HORZ,
+                    ],
+                ),
+            )
+            .log_err();
+            return;
+        }
         self.set_wm_hints(
             || "X11 SendEvent to maximize a window failed.",
             WmHintPropertyState::Toggle,

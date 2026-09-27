@@ -13,6 +13,48 @@ use icu_decimal::DecimalFormatter;
 use icu_decimal::input::Decimal;
 use icu_locale_core::Locale;
 use icu_time::{DateTime, Time};
+use std::sync::atomic::{AtomicU8, Ordering};
+
+/// How times show: as the language writes them, or always with a 12- or
+/// 24-hour clock (Settings > General > Time).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum Clock {
+    #[default]
+    Language,
+    Twelve,
+    TwentyFour,
+}
+
+static CLOCK: AtomicU8 = AtomicU8::new(0);
+
+/// Shows times with `clock` from now on.
+pub fn set_clock(clock: Clock) {
+    if CLOCK.swap(clock as u8, Ordering::Relaxed) != clock as u8 {
+        crate::catalog::rebuild();
+    }
+}
+
+pub(crate) fn clock() -> Clock {
+    match CLOCK.load(Ordering::Relaxed) {
+        1 => Clock::Twelve,
+        2 => Clock::TwentyFour,
+        _ => Clock::Language,
+    }
+}
+
+/// `tag` with CLDR's hour-cycle keyword for `clock` (`en-US-u-hc-h23`).
+fn with_clock(tag: &str, clock: Clock) -> String {
+    let cycle = match clock {
+        Clock::Language => return tag.to_owned(),
+        Clock::Twelve => "h12",
+        Clock::TwentyFour => "h23",
+    };
+    if tag.contains("-u-") {
+        format!("{tag}-hc-{cycle}")
+    } else {
+        format!("{tag}-u-hc-{cycle}")
+    }
+}
 
 /// The formatters for one locale. Each is `None` if ICU4X has no data for
 /// it, and the English (US) one is used instead.
@@ -26,7 +68,9 @@ pub(crate) struct Formats {
 }
 
 impl Formats {
-    pub(crate) fn new(tag: &str) -> Self {
+    pub(crate) fn new(tag: &str, clock: Clock) -> Self {
+        let tag = with_clock(tag, clock);
+        let tag = tag.as_str();
         let locale = Locale::try_from_str(tag).unwrap_or_else(|_| {
             tracing::warn!(tag, "unknown formats locale; using en-US");
             Locale::try_from_str("en-US").expect("en-US parses")
@@ -176,7 +220,7 @@ mod tests {
     use super::*;
 
     fn with(tag: &str, f: impl FnOnce(&Formats) -> String) -> String {
-        f(&Formats::new(tag))
+        f(&Formats::new(tag, Clock::Language))
     }
 
     fn sample() -> DateTime<icu_calendar::Iso> {
@@ -215,10 +259,35 @@ mod tests {
     }
 
     #[test]
+    fn the_clock_setting_wins_over_the_language() {
+        let d = sample();
+        let time = |tag, clock| {
+            plain(
+                Formats::new(tag, clock)
+                    .time
+                    .as_ref()
+                    .unwrap()
+                    .format(&d.time)
+                    .to_string(),
+            )
+        };
+        assert_eq!(time("en-US", Clock::TwentyFour), "14:05");
+        assert!(time("en-GB", Clock::Twelve).starts_with("2:05"));
+        assert!(time("de-DE", Clock::Twelve).starts_with("2:05"));
+        let long = Formats::new("en-US", Clock::TwentyFour)
+            .long
+            .as_ref()
+            .unwrap()
+            .format(&d)
+            .to_string();
+        assert!(long.ends_with("14:05"), "{long}");
+    }
+
+    #[test]
     fn every_language_has_formats() {
         let d = sample();
         for language in crate::all() {
-            let f = Formats::new(&language.formats);
+            let f = Formats::new(&language.formats, Clock::Language);
             assert!(f.time.is_some(), "{}", language.tag);
             assert!(f.long.is_some(), "{}", language.tag);
             assert!(f.decimal.is_some(), "{}", language.tag);
@@ -260,7 +329,7 @@ mod show {
     fn print_samples() {
         let d = super::convert(jiff::civil::date(2026, 9, 27).at(14, 5, 0, 0)).unwrap();
         for l in crate::all() {
-            let f = super::Formats::new(&l.formats);
+            let f = super::Formats::new(&l.formats, super::Clock::Language);
             println!(
                 "{:8} {} | {} | {} | {} | {} | {}",
                 l.tag,
