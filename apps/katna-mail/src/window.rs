@@ -44,6 +44,7 @@ mod rich;
 mod search_panel;
 mod settings;
 mod settings_page;
+mod settings_search;
 mod tour;
 mod viewer;
 mod whats_new;
@@ -342,6 +343,10 @@ pub struct MailWindow {
     /// Changes whenever the card switches content, to replay its fade-in.
     card_seq: usize,
     search: Entity<TextInput>,
+    /// The mail search put aside while the box searches settings.
+    mail_query: Option<String>,
+    /// Counts the rows a settings search has lit up.
+    flash_seq: usize,
     search_error: Option<SharedString>,
     /// Search this text as typed, not corrected ("Search instead for …").
     search_verbatim: Option<String>,
@@ -520,6 +525,8 @@ impl MailWindow {
             reading: false,
             card_seq: 0,
             search,
+            mail_query: None,
+            flash_seq: 0,
             search_error: None,
             search_verbatim: None,
             search_task: None,
@@ -1409,6 +1416,10 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        if self.settings_page.is_some() {
+            self.on_settings_search(event, window, cx);
+            return;
+        }
         match event {
             InputEvent::Changed => {
                 let text = search.read(cx).text().trim().to_owned();
@@ -2132,6 +2143,7 @@ impl Render for MailWindow {
         let accent: Hsla = rgba(th.accent).into();
         self.search
             .update(cx, |search, _| search.set_accent(accent));
+        self.sync_search_box(cx);
 
         // Widths: the cards get what the navigation and settings leave. On a
         // phone the settings float over the cards instead.
