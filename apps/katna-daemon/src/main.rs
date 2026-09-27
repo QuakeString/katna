@@ -48,6 +48,7 @@ fn run() -> ExitCode {
         Ok(paths) => paths,
         Err(err) => return fail(err),
     };
+    katna_core::crash::install("katna-daemon", &paths);
     let config = match Config::load(&paths.config_file()) {
         Ok(config) => config,
         Err(err) => return fail(err),

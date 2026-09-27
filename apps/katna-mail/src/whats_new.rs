@@ -91,6 +91,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
                explanations sit behind an (i) button.",
         animation: None,
     },
+    Highlight {
+        id: 7,
+        title: "Crash reports stay on your computer",
+        text: "If Katna Mail or its background service crashes, the next start says so, \
+               with the report to view or copy for a bug report. Nothing is sent. \
+               Settings > User feedback lists them.",
+        animation: None,
+    },
 ];
 
 /// The newest highlight's id.

@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 609 more of their own. Each keeps its own license.
+bring in 608 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -14,6 +14,7 @@ bring in 609 more of their own. Each keeps its own license.
 | [async-io](https://github.com/smol-rs/async-io) 2.6.0 | Stjepan Glavina | Apache-2.0 OR MIT | Async I/O and timers |
 | [async-net](https://github.com/smol-rs/async-net) 2.0.0 | Stjepan Glavina | Apache-2.0 OR MIT | Async networking primitives for TCP/UDP/Unix communication |
 | [async-signal](https://github.com/smol-rs/async-signal) 0.2.14 | John Nunley | Apache-2.0 OR MIT | Async signal handling |
+| [backtrace](https://github.com/rust-lang/backtrace-rs) 0.3.76 | The Rust Project Developers | MIT OR Apache-2.0 | A library to acquire a stack trace (backtrace) at runtime in a Rust program. |
 | [blake3](https://github.com/BLAKE3-team/BLAKE3) 1.8.7 | Jack O'Connor, Samuel Neves | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception | the BLAKE3 hash function |
 | [calamine](https://github.com/tafia/calamine) 0.36.1 | Johann Tuffe | MIT | An Excel/OpenDocument Spreadsheet reader and deserializer in pure Rust |
 | [emojis](https://github.com/rossmacarthur/emojis) 0.9.0 | Ross MacArthur | (MIT OR Apache-2.0) AND Unicode-3.0 | ✨ Lookup emoji in *O(1)* time, access metadata and GitHub shortcodes, iterate over all emoji, and more! |

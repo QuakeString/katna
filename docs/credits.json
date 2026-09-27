@@ -52,6 +52,16 @@
       "repository": "https://github.com/smol-rs/async-signal"
     },
     {
+      "name": "backtrace",
+      "version": "0.3.76",
+      "description": "A library to acquire a stack trace (backtrace) at runtime in a Rust program.",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "The Rust Project Developers"
+      ],
+      "repository": "https://github.com/rust-lang/backtrace-rs"
+    },
+    {
       "name": "blake3",
       "version": "1.8.7",
       "description": "the BLAKE3 hash function",

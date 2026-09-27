@@ -248,9 +248,9 @@ Nothing leaves the machine before the user opts in.
 
 | Task | Deliverable |
 |---|---|
-| C.1 Local crash reports | `katna_core::crash`: panic hook in every binary, run marker plus `coredumpctl` lookup for native crashes, scrubber (home, user, host, machine ID, email addresses), one text report and its Sentry event JSON per crash in `$XDG_STATE_HOME/katna/crashes/`, newest 20 kept |
-| C.2 Crash notice | Next start of Katna Mail after a crash of the app or the daemon: "closed unexpectedly last time" with View report and Copy report; `katnactl crashes` lists and prints reports |
-| C.2a User feedback tab | Settings > User feedback (tab before Experimental): "Save crash reports on this computer" (default on) and the saved reports with View, Copy, Delete and Delete all; the tab itself comes from the Settings rewrite |
+| C.1 Local crash reports ✅ | `katna_core::crash`: panic hook in every binary, `coredumpctl` lookup for native crashes, scrubber (home, user, host, machine ID, email addresses), one text report per crash in `$XDG_STATE_HOME/katna/crashes/` with raw frames and build ID, newest 20 kept; `feedback.save_crash_reports` (default on) |
+| C.2 Crash notice ✅ | Next start of Katna Mail after a crash of the app or the daemon: "closed unexpectedly last time" with View report and Copy report; `katnactl crashes` lists, prints and deletes reports |
+| C.2a User feedback tab ✅ | Settings > User feedback (tab before Experimental): "Save crash reports on this computer" (default on) and the saved reports with View, Copy, Delete and Delete all; the tab itself comes from the Settings rewrite |
 | C.3 Readable stacks | Measure `strip = "debuginfo"` against the size budgets; CI keeps each build's debug files (by build ID) and, once the Sentry project exists, uploads them with `sentry-cli` |
 | C.4 Asking | "Help improve Katna" step in onboarding (Share / Don't share, equal weight, no default); asked once after updating for existing installs; Settings > User feedback switches "Send crash reports" and "Send anonymous usage statistics", off until the user opts in, changeable at any time |
 | C.5 Sending crash reports | Daemon uploads envelopes to the DSN over `rustls` only when the switch is on and the network is not metered; Send / Always send in the crash notice; an empty DSN turns sending off |

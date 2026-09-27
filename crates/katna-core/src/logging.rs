@@ -5,7 +5,12 @@
 //! Programs call [`init`] once at startup with the filter from the
 //! configuration. `$KATNA_LOG`, when set, overrides it, so a user can turn on
 //! debug output without editing the settings file. Output goes to stderr,
-//! which systemd sends to the journal.
+//! which systemd sends to the journal. The last [`RECENT`] lines are also
+//! kept in memory for crash reports ([`recent_lines`]).
+
+use std::collections::VecDeque;
+use std::io::{self, Write};
+use std::sync::Mutex;
 
 use tracing_subscriber::EnvFilter;
 
@@ -13,6 +18,72 @@ use crate::error::{Error, Result};
 
 /// Environment variable that overrides the configured log filter.
 pub const LOG_ENV: &str = "KATNA_LOG";
+
+/// Log lines kept in memory for crash reports.
+pub const RECENT: usize = 50;
+
+static RECENT_LINES: Mutex<VecDeque<String>> = Mutex::new(VecDeque::new());
+
+/// The last [`RECENT`] lines logged by this process, oldest first, without
+/// terminal colors.
+pub fn recent_lines() -> Vec<String> {
+    // A panic while logging may have poisoned the lock; the lines are
+    // still good.
+    let lines = RECENT_LINES.lock().unwrap_or_else(|err| err.into_inner());
+    lines.iter().cloned().collect()
+}
+
+/// Writes one log event to stderr and keeps its lines in [`RECENT_LINES`].
+#[derive(Default)]
+struct Tee {
+    event: Vec<u8>,
+}
+
+impl Write for Tee {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        self.event.extend_from_slice(buf);
+        io::stderr().write(buf)
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        io::stderr().flush()
+    }
+}
+
+impl Drop for Tee {
+    fn drop(&mut self) {
+        let text = without_colors(&String::from_utf8_lossy(&self.event));
+        let Ok(mut lines) = RECENT_LINES.try_lock() else {
+            return;
+        };
+        for line in text.lines().filter(|line| !line.trim().is_empty()) {
+            if lines.len() == RECENT {
+                lines.pop_front();
+            }
+            lines.push_back(line.to_string());
+        }
+    }
+}
+
+/// `text` without ANSI escape sequences (`ESC [ … letter`).
+fn without_colors(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    let mut chars = text.chars();
+    while let Some(c) = chars.next() {
+        if c == '\u{1b}' {
+            if chars.next() == Some('[') {
+                for c in chars.by_ref() {
+                    if c.is_ascii_alphabetic() {
+                        break;
+                    }
+                }
+            }
+        } else {
+            out.push(c);
+        }
+    }
+    out
+}
 
 /// Installs the global `tracing` subscriber.
 ///
@@ -23,7 +94,7 @@ pub fn init(config_filter: &str) -> Result<()> {
     let filter = build_filter(config_filter, std::env::var(LOG_ENV).ok().as_deref())?;
     tracing_subscriber::fmt()
         .with_env_filter(filter)
-        .with_writer(std::io::stderr)
+        .with_writer(Tee::default)
         .try_init()
         .map_err(|err| Error::Logging(err.to_string()))
 }
@@ -62,6 +133,21 @@ mod tests {
         let err = build_filter("info", Some("katna=nonsense")).unwrap_err();
         assert!(err.to_string().contains(LOG_ENV), "{err}");
         assert!(build_filter("[", None).is_err());
+    }
+
+    #[test]
+    fn keeps_recent_lines_without_colors() {
+        assert_eq!(
+            without_colors("\u{1b}[2mtime\u{1b}[0m \u{1b}[33mWARN\u{1b}[0m x"),
+            "time WARN x"
+        );
+        for i in 0..RECENT + 5 {
+            let mut tee = Tee::default();
+            writeln!(tee, "\u{1b}[32mline {i}\u{1b}[0m").unwrap();
+        }
+        let lines = recent_lines();
+        assert_eq!(lines.len(), RECENT);
+        assert_eq!(lines.last().unwrap(), &format!("line {}", RECENT + 4));
     }
 
     #[test]
