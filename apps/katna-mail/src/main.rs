@@ -11,6 +11,7 @@ mod autostart;
 mod daemon;
 mod data;
 mod format;
+mod grammar;
 mod instance;
 mod mailto;
 mod outgoing;
@@ -68,6 +69,12 @@ shortcuts changes them.
 const TRANSLATIONS: katna_i18n::Sources = include!(concat!(env!("OUT_DIR"), "/translations.rs"));
 
 fn main() -> ExitCode {
+    // Grammar checking runs in a copy of the app, started by the app.
+    let mut given = std::env::args().skip(1);
+    if given.next().as_deref() == Some(grammar::HELPER_FLAG) {
+        let language = given.next().unwrap_or_default();
+        return grammar::run_helper(&language, &given.next().unwrap_or_default());
+    }
     let mut data_dir: Option<PathBuf> = None;
     let mut search: Option<String> = None;
     let mut open_first = false;

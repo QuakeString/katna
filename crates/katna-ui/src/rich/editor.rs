@@ -110,10 +110,12 @@ pub enum RichEvent {
     Cancel,
     /// Ctrl+K: the owner opens its link dialog.
     EditLink,
-    /// A right click at a window position, on a misspelled word if any.
+    /// A right click at a window position, on a misspelled word or a
+    /// grammar mistake if any.
     ContextMenu {
         position: Point<Pixels>,
         misspelled: Option<String>,
+        grammar: Option<GrammarIssue>,
     },
 }
 
@@ -125,12 +127,44 @@ pub trait SpellCheck {
     fn suggest(&self, word: &str) -> Vec<String>;
 }
 
+/// A grammar checker the owner provides. It runs off the UI thread, one
+/// paragraph at a time.
+pub trait GrammarCheck: Send + Sync {
+    /// The mistakes in a paragraph's text.
+    fn check(&self, text: &str) -> Vec<GrammarIssue>;
+}
+
+/// A grammar mistake in a paragraph.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GrammarIssue {
+    /// Where, in bytes of the paragraph's text.
+    pub range: Range<usize>,
+    /// What is wrong, in a sentence.
+    pub message: String,
+    /// Ways to fix it, best first.
+    pub fixes: Vec<GrammarFix>,
+}
+
+/// One way to fix a [`GrammarIssue`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GrammarFix {
+    /// What the menu says, as "Replace with \u{201c}an\u{201d}".
+    pub label: String,
+    /// The text that takes the place of the mistake.
+    pub replacement: String,
+}
+
+/// How long typing pauses before its paragraph's grammar is checked.
+pub(crate) const GRAMMAR_WAIT: Duration = Duration::from_millis(500);
+
 /// Colors of what the editor draws beside text.
 #[derive(Debug, Clone, Copy)]
 pub struct Palette {
     pub accent: Hsla,
     pub link: Hsla,
     pub misspelled: Hsla,
+    /// The underline of grammar mistakes.
+    pub grammar: Hsla,
     /// Table borders and quote bars.
     pub rule: Hsla,
     /// The image size bar.
@@ -145,6 +179,7 @@ impl Default for Palette {
             accent: gpui::blue(),
             link: gpui::blue(),
             misspelled: gpui::red(),
+            grammar: gpui::blue(),
             rule: gpui::rgb(0xcccccc).into(),
             surface: gpui::white(),
             text: gpui::black(),
@@ -210,6 +245,15 @@ pub struct RichEditor {
     plain: bool,
     spell: Option<Rc<dyn SpellCheck>>,
     misspellings: RefCell<HashMap<String, Vec<Range<usize>>>>,
+    grammar: Option<Arc<dyn GrammarCheck>>,
+    /// Grammar mistakes by paragraph text, as far as checked.
+    grammar_found: HashMap<String, Vec<GrammarIssue>>,
+    /// The paragraphs being checked.
+    grammar_asked: Vec<String>,
+    grammar_task: Option<gpui::Task<()>>,
+    /// Mistakes the user chose to ignore in this text: the words and the
+    /// message.
+    grammar_ignored: std::collections::HashSet<(String, String)>,
     families: RefCell<Option<Rc<HashMap<Font, SharedString>>>>,
     /// What was copied, to paste it back with its formatting.
     copied: Option<(String, Vec<Block>)>,
@@ -249,6 +293,11 @@ impl RichEditor {
             plain: false,
             spell: None,
             misspellings: RefCell::new(HashMap::new()),
+            grammar: None,
+            grammar_found: HashMap::new(),
+            grammar_asked: Vec::new(),
+            grammar_task: None,
+            grammar_ignored: Default::default(),
             families: RefCell::new(None),
             copied: None,
             images: HashMap::new(),
@@ -350,6 +399,137 @@ impl RichEditor {
         self.spell.is_some()
     }
 
+    /// Turns grammar checking on with `checker`, or off.
+    pub fn set_grammar_check(
+        &mut self,
+        checker: Option<Arc<dyn GrammarCheck>>,
+        cx: &mut Context<Self>,
+    ) {
+        self.grammar = checker;
+        self.grammar_found.clear();
+        self.grammar_asked.clear();
+        self.grammar_task = None;
+        cx.notify();
+    }
+
+    /// Checks the grammar of paragraphs not checked yet, once typing
+    /// pauses. Called on every render; a change starts the wait again.
+    fn request_grammar(&mut self, cx: &mut Context<Self>) {
+        let Some(checker) = self.grammar.clone() else {
+            return;
+        };
+        let mut wanted: Vec<String> = Vec::new();
+        for path in self.doc.paths() {
+            let Some(para) = self.doc.para(path) else {
+                continue;
+            };
+            if !self.plain_blocked(para)
+                && para.text.chars().any(char::is_alphabetic)
+                && !self.grammar_found.contains_key(&para.text)
+                && !wanted.contains(&para.text)
+            {
+                wanted.push(para.text.clone());
+            }
+        }
+        if wanted.is_empty() || wanted == self.grammar_asked {
+            return;
+        }
+        self.grammar_asked = wanted.clone();
+        self.grammar_task = Some(cx.spawn(async move |this, cx| {
+            cx.background_executor().timer(GRAMMAR_WAIT).await;
+            let found = cx
+                .background_executor()
+                .spawn(async move {
+                    wanted
+                        .into_iter()
+                        .map(|text| {
+                            let issues = checker.check(&text);
+                            (text, issues)
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .await;
+            this.update(cx, |this, cx| {
+                this.grammar_found.extend(found);
+                // Forget paragraphs that are gone, as typed on the way.
+                let texts: std::collections::HashSet<&str> = this
+                    .doc
+                    .paths()
+                    .into_iter()
+                    .filter_map(|p| this.doc.para(p))
+                    .map(|p| p.text.as_str())
+                    .collect();
+                this.grammar_found.retain(|t, _| texts.contains(t.as_str()));
+                this.grammar_asked.clear();
+                this.grammar_task = None;
+                cx.notify();
+            })
+            .ok();
+        }));
+    }
+
+    /// Mistakes found in `para`'s text, without the ignored ones.
+    fn grammar_issues(&self, para: &Para) -> Vec<&GrammarIssue> {
+        if self.grammar.is_none() || self.plain_blocked(para) {
+            return Vec::new();
+        }
+        self.grammar_found
+            .get(&para.text)
+            .into_iter()
+            .flatten()
+            .filter(|issue| {
+                para.text.get(issue.range.clone()).is_some_and(|words| {
+                    !self
+                        .grammar_ignored
+                        .contains(&(words.to_owned(), issue.message.clone()))
+                })
+            })
+            .collect()
+    }
+
+    /// The grammar mistake at the cursor, if any.
+    fn grammar_at_cursor(&self) -> Option<GrammarIssue> {
+        let para = self.doc.para(self.head.path)?;
+        let at = self.head.offset;
+        self.grammar_issues(para)
+            .into_iter()
+            .find(|issue| issue.range.start <= at && at <= issue.range.end)
+            .cloned()
+    }
+
+    /// Fixes grammar mistake `issue` in the cursor's paragraph with `fix`.
+    pub fn fix_grammar(&mut self, issue: &GrammarIssue, fix: &GrammarFix, cx: &mut Context<Self>) {
+        let path = self.head.path;
+        let range = issue.range.clone();
+        let current = self.doc.para(path).and_then(|p| p.text.get(range.clone()));
+        if current.is_none() {
+            return;
+        }
+        let replacement = fix.replacement.clone();
+        self.edit(EditKind::Other, cx, |doc, _| {
+            let style = doc
+                .para(path)
+                .map(|p| p.style_at(range.start))
+                .unwrap_or_default();
+            let start = Pos::new(path, range.start);
+            doc.delete(start, Pos::new(path, range.end));
+            doc.insert_text(start, &replacement, &style)
+        });
+    }
+
+    /// Stops marking `issue`'s words with its message in this text.
+    pub fn ignore_grammar(&mut self, issue: &GrammarIssue, cx: &mut Context<Self>) {
+        let words = self
+            .doc
+            .para(self.head.path)
+            .and_then(|p| p.text.get(issue.range.clone()))
+            .map(str::to_owned);
+        if let Some(words) = words {
+            self.grammar_ignored.insert((words, issue.message.clone()));
+            cx.notify();
+        }
+    }
+
     /// Suggestions for the misspelled word at the cursor.
     pub fn suggestions(&self) -> Vec<String> {
         let (Some(spell), Some(word)) = (&self.spell, self.word_at_cursor()) else {
@@ -445,7 +625,7 @@ impl RichEditor {
                 marked.clone(),
                 Deco {
                     marked: true,
-                    misspelled: false,
+                    ..Deco::default()
                 },
             ));
         }
@@ -470,11 +650,26 @@ impl RichEditor {
                     decos.push((
                         range,
                         Deco {
-                            marked: false,
                             misspelled: true,
+                            ..Deco::default()
                         },
                     ));
                 }
+            }
+        }
+        for issue in self.grammar_issues(para) {
+            let range = issue.range.clone();
+            let overlaps = decos
+                .iter()
+                .any(|(r, _): &(Range<usize>, Deco)| r.start < range.end && range.start < r.end);
+            if !overlaps && range.start < range.end {
+                decos.push((
+                    range,
+                    Deco {
+                        grammar: true,
+                        ..Deco::default()
+                    },
+                ));
             }
         }
         decos.sort_by_key(|(r, _)| r.start);
@@ -501,6 +696,7 @@ impl RichEditor {
             link: self.palette.link,
             accent: self.palette.accent,
             misspelled: self.palette.misspelled,
+            grammar: self.palette.grammar,
             families,
             plain: self.plain,
         }
@@ -1159,9 +1355,15 @@ impl RichEditor {
             let (_, word) = self.word_at_cursor()?;
             (!spell.check(&word)).then_some(word)
         });
+        let grammar = if misspelled.is_none() {
+            self.grammar_at_cursor()
+        } else {
+            None
+        };
         cx.emit(RichEvent::ContextMenu {
             position: event.position,
             misspelled,
+            grammar,
         });
     }
 
@@ -2275,6 +2477,7 @@ impl Render for RichEditor {
         self.numbers = list_numbers(&self.doc);
         self.layouts.clear();
         self.sync_images();
+        self.request_grammar(cx);
         let blocks: Vec<AnyElement> = self
             .doc
             .blocks

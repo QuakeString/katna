@@ -612,6 +612,16 @@ print-cc = Cc: { $addresses }
 text-copy = Copy
 text-select-all = Select all
 
+## Grammar checking (the right-click menu on a grammar mistake)
+
+# A fix that puts other words in place of the marked ones.
+grammar-replace = “{ $words }”
+# A fix that adds words after the marked ones.
+grammar-add = Add “{ $words }”
+# A fix that removes the marked words.
+grammar-remove = Remove “{ $words }”
+grammar-ignore = Ignore
+
 ## Settings > General > Time
 
 settings-time = Time

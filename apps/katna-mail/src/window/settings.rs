@@ -83,6 +83,8 @@ pub(super) enum Change {
     SpellCheck(bool),
     /// The interface's language, a tag; empty follows the desktop.
     Language(&'static str),
+    /// Grammar mistakes underlined while writing (English only).
+    GrammarCheck(bool),
 }
 
 impl MailWindow {
@@ -546,6 +548,13 @@ impl MailWindow {
                 self.save_config();
                 // The daemon's notifications, tray and dock menu follow.
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
+                return;
+            }
+            Change::GrammarCheck(on) => {
+                self.config.sending.grammar_check = on;
+                self.save_config();
+                self.grammar_changed(cx);
                 cx.notify();
                 return;
             }

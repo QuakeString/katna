@@ -187,6 +187,16 @@
       "repository": "https://github.com/zed-industries/zed"
     },
     {
+      "name": "harper-core",
+      "version": "2.11.0",
+      "description": "The language checker for developers.",
+      "license": "Apache-2.0",
+      "authors": [
+        "automattic"
+      ],
+      "repository": "https://github.com/automattic/harper"
+    },
+    {
       "name": "hayro",
       "version": "0.7.1",
       "description": "A rasterizer for PDF files.",
