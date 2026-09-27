@@ -124,6 +124,14 @@ pub const HIGHLIGHTS: &[Highlight] = &[
     },
     Highlight {
         id: 11,
+        title: "Cleaner cards, calmer phone",
+        text: "The list and reader sit on cards with a faint outline and a short \
+               shadow, menus always stay inside the window, and on a phone the \
+               search and toolbar rows slide away as you scroll.",
+        animation: None,
+    },
+    Highlight {
+        id: 12,
         title: "About Katna",
         text: "Help > About Katna, also in Quick settings, shows the version, \
                the changelog and every library Katna is built on, with its \
