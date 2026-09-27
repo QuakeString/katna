@@ -36,8 +36,8 @@ Mail that the phases did not name.
 - **Next, in the owner's order (27 September 2026):** finish tracking
   (7.1, 7.2) and translation (7.8), then mailbox insights (7.3).
   Organizations (Phase 2) is not needed first and comes later.
-- **Size:** the owner raised the daemon's budget from 20 MiB to 24 MiB
-  (27 September 2026); after #176 and #178 it is about 20.8 MB of it. Alongside:
+- **Size:** the owner raised the daemon's budget from 20 MiB to 50 MB
+  (27 September 2026); after #176 and #178 it is about 20.8 MB. Alongside:
   usage statistics, feedback form and debug-file upload (C.3, C.6, C.7);
   right-to-left layout (L.2, L.3); the release track before any public
   release.
