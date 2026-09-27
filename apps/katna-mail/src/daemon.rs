@@ -181,6 +181,30 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
     result.map_err(|err| describe(&err))
 }
 
+/// Saves a mail template (a new one when its ID is 0). Returns its ID.
+pub async fn save_template(
+    connection: &Connection,
+    template: &katna_dbus::TemplateItem,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.save_template(template)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Deletes template `id`.
+pub async fn delete_template(connection: &Connection, id: i64) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.delete_template(id)
+        .await
+        .map(|_| ())
+        .map_err(|err| describe(&err))
+}
+
 /// Queues an RFC 5322 message from `account` to go out in `delay` seconds.
 /// Returns its outbox ID, for [`Command::UndoSend`].
 pub async fn queue_send(

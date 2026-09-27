@@ -1,8 +1,12 @@
 -- SPDX-License-Identifier: GPL-3.0-or-later
--- mail.db schema v6: scheduled mail the SMTP server holds (docs/ARCHITECTURE.md §11).
+-- mail.db schema v6: how full each account's mail storage is
+-- (docs/ARCHITECTURE.md §13.5).
 
--- When scheduled mail goes out (Unix seconds). `send_at` is then when the
--- outbox hands it over: after the undo delay, to a server that holds mail
--- (RFC 4865 FUTURERELEASE), or at `hold_until` itself. A `sent` entry
--- with `hold_until` waits on the server and is filed in Sent at that time.
-ALTER TABLE outbox ADD COLUMN hold_until INTEGER;
+-- The server's storage quota (IMAP QUOTA), read on each full sync.
+-- Accounts whose server reports none have no row.
+CREATE TABLE quota (
+    account_id INTEGER PRIMARY KEY,
+    used       INTEGER NOT NULL,   -- bytes
+    quota_max  INTEGER NOT NULL,   -- bytes
+    checked_at INTEGER NOT NULL
+);

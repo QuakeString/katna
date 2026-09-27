@@ -9,6 +9,9 @@ nav-folders = አቃፊዎች
 nav-label-new = አዲስ መሰየሚያ ፍጠር
 nav-folder-new = አዲስ አቃፊ ፍጠር
 nav-account-unnamed = መለያ { $number }
+nav-all-accounts = ሁሉም መለያዎች
+nav-expand = አቃፊዎችን አሳይ
+nav-collapse = አቃፊዎችን ደብቅ
 nav-tab-new = { $count ->
     [one] { $count } አዲስ
    *[other] { $count } አዲስ
@@ -18,6 +21,8 @@ nav-tab-new = { $count ->
 
 folder-inbox = ገቢ መልዕክት ሳጥን
 folder-starred = ኮከብ የተደረገባቸው
+folder-unread = ያልተነበቡ
+folder-important = አስፈላጊ
 folder-drafts = ረቂቆች
 folder-sent = የተላኩ
 folder-archive = ማህደር

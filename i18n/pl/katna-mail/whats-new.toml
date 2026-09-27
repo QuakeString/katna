@@ -469,3 +469,42 @@ strzałkę, aby wysłać z innego ze swoich kont. Nowa poczta wychodzi z
 pierwszego konta, chyba że wybierzesz inne domyślne w Ustawienia >
 Tworzenie > Wysyłaj nowe wiadomości z.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Wspólna skrzynka odbiorcza"
+text = """
+Włącz Ustawienia > Konta > Wspólna skrzynka odbiorcza, aby widzieć
+pocztę ze wszystkich kont razem. „Wszystkie konta” otwierają panel
+folderów, z jednym folderem Odebrane, Nieprzeczytane, Oznaczone
+gwiazdką, Ważne, Wysłane, Wersje robocze i innymi dla wszystkich kont;
+strzałka obok każdego z nich rozwija po jednym wierszu na konto. Nazwa
+każdego konta ma teraz strzałkę, która zwija jego foldery.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menu kontekstowe dopasowane do folderu"
+text = """
+Wybranie folderu lub etykiety w Przenieś do w menu pod prawym
+przyciskiem przenosi teraz pocztę, z opcją Cofnij, także z wyników
+wyszukiwania. W folderze Spam zamiast Zgłoś spam jest To nie spam. Kosz
+oferuje Przenieś do Odebranych i Usuń trwale, Archiwum oferuje Przenieś
+do Odebranych, a Wersje robocze i Wysłane pomijają pozycje, które tam
+nie mają sensu.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Przeciągnij konta, by ustawić kolejność"
+text = """
+W Ustawienia > Konta przeciąganie konta unosi teraz cały jego wiersz, a
+pozostałe konta odsuwają się, robiąc miejsce. Przenieś w górę i Przenieś
+w dół pojawiają się po wskazaniu wiersza.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Wersje robocze zostają"
+text = """
+Zamknięcie pisanej wiadomości zapisuje ją teraz w Wersjach roboczych,
+także na twoim serwerze poczty, jak w Gmailu. Otwórz ją z Wersji
+roboczych, by pisać dalej. Tylko przycisk kosza ją odrzuca, a Cofnij ją
+przywraca.
+"""

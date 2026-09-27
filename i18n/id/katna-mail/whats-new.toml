@@ -462,3 +462,42 @@ untuk mengirim dari akun Anda yang lain. Email baru dimulai dari akun
 pertama Anda, kecuali Anda memilih default lain di Setelan > Tulis >
 Kirim pesan baru dari.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Kotak masuk gabungan"
+text = """
+Aktifkan Setelan > Akun > Kotak masuk gabungan untuk melihat email semua
+akun Anda sekaligus. “Semua Akun” berada di bagian atas panel folder
+dengan satu Kotak Masuk, Belum dibaca, Berbintang, Penting, Terkirim,
+Draf, dan lainnya untuk semua akun; panah di samping masing-masing
+membuka satu baris per akun. Nama setiap akun kini punya panah yang
+menciutkan foldernya.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menu klik kanan sesuai setiap folder"
+text = """
+Memilih folder atau label di Pindahkan ke pada menu klik kanan kini
+memindahkan email, dengan Urungkan, juga dari hasil penelusuran. Di
+Spam, Laporkan spam menjadi Bukan spam. Sampah menawarkan Pindahkan ke
+Kotak Masuk dan Hapus selamanya, Arsip menawarkan Pindahkan ke Kotak
+Masuk, dan Draf serta Terkirim tidak menampilkan item yang tidak berlaku
+di sana.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Seret akun untuk mengurutkan"
+text = """
+Di Setelan > Akun, menyeret akun kini mengangkat seluruh barisnya, dan
+akun lain bergeser untuk memberi tempat. Pindahkan ke atas dan Pindahkan
+ke bawah muncul saat Anda menunjuk sebuah baris.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Draf tetap tersimpan"
+text = """
+Menutup pesan yang sedang Anda tulis kini menyimpannya di Draf, juga di
+server email Anda, seperti di Gmail. Buka dari Draf untuk melanjutkan
+menulis. Hanya tombol sampah yang membuangnya, dan Urungkan
+mengembalikannya.
+"""

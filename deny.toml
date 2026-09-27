@@ -57,6 +57,10 @@ deny = [
     # is banned the same way, so the chain still ends in a UI crate.
     { crate = "gpui-pre", wrappers = ["katna-ui", "katna-chrome", "katna-mail", "katna-calendar", "gpui-pre-platform", "gpui-pre-linux", "gpui-pre-wgpu", "gpui-pre-apple", "gpui-pre-macos", "gpui-pre-windows", "gpui-pre-web"], reason = "GPUI is only allowed in UI crates" },
     { crate = "gpui-pre-platform", wrappers = ["katna-ui", "katna-chrome", "katna-mail", "katna-calendar"], reason = "GPUI is only allowed in UI crates" },
+    # Katna Server's HTTP and database crates stay in the server.
+    { crate = "axum", wrappers = ["katna-server"], reason = "server only" },
+    { crate = "tokio-postgres", wrappers = ["katna-server", "deadpool-postgres"], reason = "server only" },
+    { crate = "deadpool-postgres", wrappers = ["katna-server"], reason = "server only" },
     # TLS is rustls only (docs/ARCHITECTURE.md §19).
     { crate = "openssl-sys", reason = "use rustls" },
     { crate = "native-tls", reason = "use rustls" },

@@ -9,12 +9,17 @@ nav-folders = フォルダ
 nav-label-new = 新しいラベルを作成
 nav-folder-new = 新しいフォルダを作成
 nav-account-unnamed = アカウント { $number }
+nav-all-accounts = すべてのアカウント
+nav-expand = フォルダを表示
+nav-collapse = フォルダを隠す
 nav-tab-new = 新着 { $count } 件
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = 受信トレイ
 folder-starred = スター付き
+folder-unread = 未読
+folder-important = 重要
 folder-drafts = 下書き
 folder-sent = 送信済み
 folder-archive = アーカイブ

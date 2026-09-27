@@ -9,6 +9,9 @@ nav-folders = فولڈرز
 nav-label-new = نیا لیبل بنائیں
 nav-folder-new = نیا فولڈر بنائیں
 nav-account-unnamed = اکاؤنٹ { $number }
+nav-all-accounts = تمام اکاؤنٹس
+nav-expand = فولڈرز دکھائیں
+nav-collapse = فولڈرز چھپائیں
 nav-tab-new = { $count ->
     [one] { $count } نیا
    *[other] { $count } نئے
@@ -18,6 +21,8 @@ nav-tab-new = { $count ->
 
 folder-inbox = ان باکس
 folder-starred = ستارے والی
+folder-unread = ناخواندہ
+folder-important = اہم
 folder-drafts = ڈرافٹس
 folder-sent = ارسال کردہ
 folder-archive = آرکائیو

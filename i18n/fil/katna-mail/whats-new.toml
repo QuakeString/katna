@@ -485,3 +485,44 @@ mo. Nagsisimula ang bagong mail sa una mong account, maliban kung pumili
 ka ng ibang default sa Mga setting > Mag-compose > Ipadala ang mga
 bagong mensahe mula sa.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Pinag-isang inbox"
+text = """
+I-on ang Mga setting > Mga Account > Pinag-isang inbox para makita nang
+sabay ang mail ng lahat ng iyong account. Nasa itaas ng pane ng folder
+ang “Lahat ng Account”, na may iisang Inbox, Hindi pa nabasa, Naka-star,
+Mahalaga, Naipadala, Mga Draft at iba pa para sa lahat ng account;
+binubuksan ng arrow sa tabi ng bawat isa ang isang linya bawat account.
+May arrow na ngayon ang pangalan ng bawat account na nagtitiklop sa mga
+folder nito.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Mga right-click menu na angkop sa bawat folder"
+text = """
+Ang pagpili ng folder o label sa ilalim ng Ilipat sa sa right-click menu
+ay naglilipat na ngayon ng mail, may I-undo, pati mula sa mga resulta ng
+paghahanap. Sa Spam, nagiging Hindi spam ang Iulat bilang spam. May
+Ilipat sa Inbox at I-delete nang permanente ang Basurahan, may Ilipat sa
+Inbox ang Archive, at hindi na ipinapakita ng Mga Draft at Naipadala ang
+mga item na hindi angkop doon.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "I-drag ang mga account para iayos"
+text = """
+Sa Mga setting > Mga Account, ang pag-drag ng account ay iniaangat na
+ngayon ang buong row nito, at gumigilid ang ibang account para
+magbigay-daan. Lumalabas ang Iakyat at Ibaba kapag itinuro mo ang isang
+row.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Naitatabi ang mga draft"
+text = """
+Kapag isinara mo ang mensaheng sinusulat mo, sine-save na ito ngayon sa
+Mga Draft, pati sa iyong mail server, gaya sa Gmail. Buksan ito mula sa
+Mga Draft para ituloy ang pagsusulat. Ang button ng basurahan lang ang
+nagtatapon nito, at ibinabalik ito ng I-undo.
+"""

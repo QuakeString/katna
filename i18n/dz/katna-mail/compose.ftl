@@ -38,6 +38,9 @@ compose-scheduled = { $when } ལུ་གཏང་ནི་གི་དུས�
 compose-sent-archived = བཏང་སྟེ་ཡིག་མཛོད་ནང་བཙུགས་ཡི
 compose-sent = འཕྲིན་དོན་བཏང་ཡི
 compose-discarded = ཟིན་བྲིས་བཏོན་གཏང་ཡི
+compose-draft-saved = ཟིན་བྲིས་སྲུང་བཞག་འབད་ཡི
+compose-draft-failed = ཟིན་བྲིས་སྲུང་བཞག་འབད་མ་ཚུགས: { $error }
+compose-draft-not-opened = ཟིན་བྲིས་ཁ་ཕྱེ་མ་ཚུགས།
 
 ## Attachments
 

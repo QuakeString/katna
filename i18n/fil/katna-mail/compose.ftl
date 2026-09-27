@@ -38,6 +38,9 @@ compose-scheduled = Naka-iskedyul ipadala sa { $when }
 compose-sent-archived = Naipadala at na-archive
 compose-sent = Naipadala ang mensahe
 compose-discarded = Itinapon ang draft
+compose-draft-saved = Na-save ang draft
+compose-draft-failed = Hindi ma-save ang draft: { $error }
+compose-draft-not-opened = Hindi mabuksan ang draft.
 
 ## Attachments
 

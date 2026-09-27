@@ -1,0 +1,92 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+//! `katna-server`: see the library documentation and
+//! `server/katna-server/README.md`.
+
+use std::net::SocketAddr;
+use std::process::ExitCode;
+use std::time::Duration;
+
+use katna_server::db::{Db, now_ms};
+use katna_server::{AppState, Config, router};
+use tracing_subscriber::EnvFilter;
+
+#[tokio::main]
+async fn main() -> ExitCode {
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")),
+        )
+        .init();
+    match run().await {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(error) => {
+            tracing::error!("{error}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    let config = Config::from_env()?;
+    let db = Db::connect(&config.database_url)?;
+    // PostgreSQL may still be starting next to us.
+    let mut attempt = 0;
+    loop {
+        match db.migrate().await {
+            Ok(()) => break,
+            Err(error) if attempt < 30 => {
+                attempt += 1;
+                tracing::warn!(%error, "database not ready, trying again");
+                tokio::time::sleep(Duration::from_secs(2)).await;
+            }
+            Err(error) => return Err(error.into()),
+        }
+    }
+    tokio::spawn(purge(db.clone(), config.retention_days));
+
+    let listener = tokio::net::TcpListener::bind(config.listen).await?;
+    tracing::info!(address = %config.listen, "listening");
+    let app = router(AppState::new(db, config)).into_make_service_with_connect_info::<SocketAddr>();
+    // Event streams never end on their own, so shutdown waits for them only
+    // briefly.
+    let server = axum::serve(listener, app).with_graceful_shutdown(shutdown_signal());
+    tokio::select! {
+        result = server => result?,
+        () = async {
+            shutdown_signal().await;
+            tokio::time::sleep(Duration::from_secs(5)).await;
+        } => {}
+    }
+    Ok(())
+}
+
+/// Deletes old tracking IDs, events and unused installs every hour.
+async fn purge(db: Db, retention_days: u32) {
+    let retention = i64::from(retention_days) * 86_400_000;
+    loop {
+        match db.purge(now_ms() - retention).await {
+            Ok((tracks, installs)) if tracks + installs > 0 => {
+                tracing::info!(tracks, installs, "deleted old records");
+            }
+            Ok(_) => {}
+            Err(error) => tracing::warn!(%error, "could not delete old records"),
+        }
+        tokio::time::sleep(Duration::from_secs(3600)).await;
+    }
+}
+
+async fn shutdown_signal() {
+    let terminate = async {
+        match tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate()) {
+            Ok(mut signal) => {
+                signal.recv().await;
+            }
+            Err(_) => std::future::pending().await,
+        }
+    };
+    tokio::select! {
+        _ = tokio::signal::ctrl_c() => {}
+        () = terminate => {}
+    }
+}

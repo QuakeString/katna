@@ -28,6 +28,9 @@ pub enum Request {
     Menu(String),
     /// A `mailto:` link to write a message for.
     Mailto(String),
+    /// Text to search for (`app_action::SEARCH`), from KRunner or GNOME's
+    /// search.
+    Search(String),
 }
 
 impl Request {
@@ -106,6 +109,16 @@ impl Application {
         parameter: Vec<OwnedValue>,
         _platform_data: HashMap<String, OwnedValue>,
     ) {
+        if action_name == app_action::SEARCH {
+            if let Some(text) = parameter
+                .into_iter()
+                .next()
+                .and_then(|value| String::try_from(value).ok())
+            {
+                let _ = self.requests.try_send(Request::Search(text));
+            }
+            return;
+        }
         let message = parameter
             .into_iter()
             .next()
@@ -215,6 +228,18 @@ async fn hand_off(connection: &Connection, request: Option<&Request>) -> bool {
                     interface,
                     "Open",
                     &(vec![uri.as_str()], platform),
+                )
+                .await
+        }
+        Some(Request::Search(text)) => {
+            let params = vec![Value::from(text.as_str())];
+            connection
+                .call_method(
+                    app,
+                    path,
+                    interface,
+                    "ActivateAction",
+                    &(app_action::SEARCH, params, platform),
                 )
                 .await
         }

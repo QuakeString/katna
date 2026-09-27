@@ -230,7 +230,10 @@ menu-reply-all = ਸਭ ਨੂੰ ਜਵਾਬ ਦਿਓ
 menu-forward = ਅੱਗੇ ਭੇਜੋ
 menu-archive = ਪੁਰਾਲੇਖਬੱਧ ਕਰੋ
 menu-delete = ਮਿਟਾਓ
+menu-delete-forever = ਹਮੇਸ਼ਾ ਲਈ ਮਿਟਾਓ
+menu-move-to-inbox = ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜੋ
 menu-spam = ਸਪੈਮ ਦੀ ਰਿਪੋਰਟ ਕਰੋ
+menu-not-spam = ਸਪੈਮ ਨਹੀਂ
 menu-mark-read = ਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
 menu-mark-unread = ਅਣਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
 menu-mark-all-read = ਸਭ ਨੂੰ ਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
@@ -346,6 +349,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] ਸੁਨੇਹੇ ਦੀ ਸਪੈਮ ਵਜੋਂ ਰਿਪੋਰਟ ਕੀਤੀ ਗਈ।
        *[other] { $count } ਸੁਨੇਹਿਆਂ ਦੀ ਸਪੈਮ ਵਜੋਂ ਰਿਪੋਰਟ ਕੀਤੀ ਗਈ।
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] ਗੱਲਬਾਤ ਨੂੰ ਸਪੈਮ ਨਹੀਂ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕਰਕੇ ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ।
+       *[other] { $count } ਗੱਲਬਾਤਾਂ ਨੂੰ ਸਪੈਮ ਨਹੀਂ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕਰਕੇ ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ।
+    }
+   *[message] { $count ->
+        [one] ਸੁਨੇਹੇ ਨੂੰ ਸਪੈਮ ਨਹੀਂ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕਰਕੇ ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ।
+       *[other] { $count } ਸੁਨੇਹਿਆਂ ਨੂੰ ਸਪੈਮ ਨਹੀਂ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕਰਕੇ ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ।
     }
 }
 toast-deleted-forever = { $kind ->

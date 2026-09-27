@@ -152,7 +152,10 @@ menu-reply-all = ตอบกลับทั้งหมด
 menu-forward = ส่งต่อ
 menu-archive = เก็บถาวร
 menu-delete = ลบ
+menu-delete-forever = ลบอย่างถาวร
+menu-move-to-inbox = ย้ายไปที่กล่องจดหมาย
 menu-spam = รายงานสแปม
+menu-not-spam = ไม่ใช่สแปม
 menu-mark-read = ทำเครื่องหมายว่าอ่านแล้ว
 menu-mark-unread = ทำเครื่องหมายว่ายังไม่อ่าน
 menu-mark-all-read = ทำเครื่องหมายทั้งหมดว่าอ่านแล้ว
@@ -209,6 +212,10 @@ toast-unpinned = { $kind ->
 toast-spam = { $kind ->
     [conversation] รายงานการสนทนา { $count } รายการว่าเป็นสแปมแล้ว
    *[message] รายงานข้อความ { $count } รายการว่าเป็นสแปมแล้ว
+}
+toast-not-spam = { $kind ->
+    [conversation] ทำเครื่องหมายการสนทนา { $count } รายการว่าไม่ใช่สแปมและย้ายไปที่กล่องจดหมายแล้ว
+   *[message] ทำเครื่องหมายข้อความ { $count } รายการว่าไม่ใช่สแปมและย้ายไปที่กล่องจดหมายแล้ว
 }
 toast-deleted-forever = { $kind ->
     [conversation] ลบการสนทนา { $count } รายการอย่างถาวรแล้ว

@@ -135,7 +135,12 @@ async fn run() -> Result<bool> {
     loop {
         match next(Duration::from_secs(300)).await {
             Some(Event::Synced(_)) => break,
-            Some(Event::Connected | Event::BodiesStored(_) | Event::ChangesSent(_)) => {}
+            Some(
+                Event::Connected
+                | Event::BodiesStored(_)
+                | Event::ChangesSent(_)
+                | Event::QuotaChanged,
+            ) => {}
             // The worker tries again by itself.
             Some(Event::Disconnected { error, retry_in }) => {
                 println!("not connected yet ({error}); retrying in {retry_in:?}");

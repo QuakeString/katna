@@ -451,3 +451,41 @@ site n'akaụntụ gị ọzọ. Ozi ọhụrụ na-amalite site n'akaụntụ m
 gwụla ma ị họrọ ndabara ọzọ na Ntọala > Ide ozi > Zipu ozi ọhụrụ site
 na.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Igbe ozi mbata jikọtara ọnụ"
+text = """
+Gbanye Ntọala > Akaụntụ > Igbe ozi mbata jikọtara ọnụ ka ị hụ ozi nke
+akaụntụ gị niile ọnụ. “Akaụntụ niile” nọ n'elu paịn folda, ya na Igbe
+ozi mbata, A gụghị, Nwere kpakpando, Dị mkpa, Ezigara, Ndebiri na ndị
+ọzọ, otu otu maka akaụntụ niile; akụ dị n'akụkụ nke ọ bụla na-emepe otu
+ahịrị maka akaụntụ ọ bụla. Aha akaụntụ ọ bụla nwere akụ ugbu a nke
+na-apịaji folda ya.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menu ịpị aka nri dabara na folda ọ bụla"
+text = """
+Ịhọrọ folda ma ọ bụ leebụl n'okpuru Bugharịa gaa na menu ịpị aka nri
+na-ebugharị ozi ahụ ugbu a, ya na Megharịa, ọbụlagodi site na nsonaazụ
+ọchụchọ. Na Spam, Kọọ dị ka spam na-aghọ Ọ bụghị spam. Ihe mkpofu
+na-enye Bugharịa gaa Igbe ozi mbata na Hichapụ ruo mgbe ebighị ebi, Ebe
+nchekwa na-enye Bugharịa gaa Igbe ozi mbata, Ndebiri na Ezigara
+na-ahapụkwa ihe ndị na-adabaghị ebe ahụ.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Dọrọ akaụntụ ka ị hazie ha"
+text = """
+Na Ntọala > Akaụntụ, ịdọrọ akaụntụ na-ebuli ahịrị ya niile ugbu a,
+akaụntụ ndị ọzọ na-apụkwa n'akụkụ inye ya ohere. Bulie elu na Wedata ala
+na-apụta mgbe ị tụrụ aka n'ahịrị.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "A na-echekwa ndebiri"
+text = """
+Imechi ozi ị na-ede ugbu a na-echekwa ya na Ndebiri, na sava ozi gị kwa,
+dị ka na Gmail. Mepee ya site na Ndebiri ka ị gaa n'ihu na-ede. Naanị
+bọtịnụ ihe mkpofu na-atụfu ya, Megharịa na-eweghachikwa ya.
+"""

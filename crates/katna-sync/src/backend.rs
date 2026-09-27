@@ -98,6 +98,14 @@ pub struct FolderStatus {
     pub highest_modseq: Option<u64>,
 }
 
+/// How much of the account's mail storage is used, from the server's
+/// quota (IMAP QUOTA, RFC 9208). Both in bytes.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct Quota {
+    pub used: u64,
+    pub limit: u64,
+}
+
 /// A mailbox address from a message header.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Address {
@@ -373,6 +381,12 @@ pub trait MailBackend: Send + 'static {
         uids: &[u32],
     ) -> impl Future<Output = Result<Option<HashMap<u32, u64>>>> + Send {
         let _ = uids;
+        async { Ok(None) }
+    }
+
+    /// The storage quota of the account's inbox. `Ok(None)` when the
+    /// server has no QUOTA extension or sets no storage limit.
+    fn quota(&mut self) -> impl Future<Output = Result<Option<Quota>>> + Send {
         async { Ok(None) }
     }
 
