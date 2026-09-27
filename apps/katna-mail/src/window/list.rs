@@ -577,7 +577,7 @@ impl MailWindow {
             .when(!squeeze.spam, |d| {
                 d.child(
                     icon_button((prefix, 2_usize), "junk", 20.0, th)
-                        .tooltip(tip(tr!("list-spam"), th))
+                        .tooltip(tip(self.spam_label(false), th))
                         .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Spam, cx))),
                 )
             })
@@ -748,7 +748,7 @@ impl MailWindow {
                             which == Menu::ReaderMore && self.reader_squeeze().spam,
                             |d| {
                                 d.child(
-                                    menu_item_icon("more-spam", "junk", &tr!("menu-spam"), th)
+                                    menu_item_icon("more-spam", "junk", &self.spam_label(true), th)
                                         .on_click(cx.listener(|this, _, _, cx| {
                                             this.act_on_targets(Act::Spam, cx)
                                         })),
@@ -1283,7 +1283,7 @@ impl MailWindow {
                     Some(tab) => tr!("list-empty-tab", tab = tab.label()),
                     None => tr!("list-empty-tab-unknown"),
                 },
-                Some(Listing::Folder(_)) => match self.folder_name() {
+                Some(Listing::Folder(_) | Listing::Unified { .. }) => match self.folder_name() {
                     Some(folder) => tr!("list-empty-folder", folder = folder),
                     None => tr!("list-empty-folder-unknown"),
                 },

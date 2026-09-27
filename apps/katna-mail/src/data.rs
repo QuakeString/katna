@@ -13,8 +13,8 @@ use katna_core::{Account, AccountId, MailCategory, Paths};
 use katna_search::{Query, SearchIndex, SearchOptions, SearchResults};
 pub use katna_store::Marks;
 use katna_store::{
-    FolderId, FolderMarks, FolderSummary, MessageFlags, MessageId, Mode, ParticipantRole, Store,
-    StoredMessage, ThreadId, ThreadSender, ThreadSummary,
+    FlagFilter, FolderId, FolderMarks, FolderSummary, MessageFlags, MessageId, Mode,
+    ParticipantRole, Store, StoredMessage, ThreadId, ThreadSender, ThreadSummary,
 };
 
 /// At most this many search results are listed.
@@ -415,6 +415,39 @@ impl Mail {
         };
         let entries = entries.unwrap_or_else(|err| {
             tracing::warn!("reading folder {}: {err}", folder.0);
+            Vec::new()
+        });
+        pinned_first(entries, &self.pins)
+    }
+
+    /// The lines of a list across folders, such as the unified inbox's:
+    /// the mail in any of `folders` that `filter` keeps.
+    pub fn spread_entries(
+        &self,
+        folders: &[FolderId],
+        filter: FlagFilter,
+        conversations: bool,
+    ) -> Vec<Entry> {
+        let entries = if conversations {
+            self.store.spread_threads(folders, filter).map(|threads| {
+                threads
+                    .into_iter()
+                    .map(|entry| match entry.thread {
+                        Some(thread) => Entry {
+                            key: EntryKey::Thread(thread),
+                            latest: entry.latest,
+                        },
+                        None => Entry::message(entry.latest),
+                    })
+                    .collect()
+            })
+        } else {
+            self.store
+                .spread_message_ids(folders, filter)
+                .map(|ids| ids.into_iter().map(Entry::message).collect())
+        };
+        let entries = entries.unwrap_or_else(|err| {
+            tracing::warn!("reading {} folders: {err}", folders.len());
             Vec::new()
         });
         pinned_first(entries, &self.pins)

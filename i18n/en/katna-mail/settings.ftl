@@ -187,7 +187,7 @@ settings-default-apps-show-folder-detail = Opens the file manager with the saved
 ## Settings > Compose
 
 settings-compose-send-from = Send new messages from
-settings-compose-send-from-detail = Replies and forwards always go out from the account you are in.
+settings-compose-send-from-detail = New messages start from this account; the From row picks another. Replies and forwards always go out from the account they answer.
 # The choice to send new mail from whichever account is open.
 settings-compose-send-from-current = The account you are in
 settings-compose-send-on-replies = Send on replies
@@ -286,7 +286,7 @@ settings-default-apps-text-summary = Where plain text, logs and code open
 settings-default-apps-sheets-summary = Where Excel, OpenDocument and CSV files open
 settings-default-apps-documents-summary = Where Word and OpenDocument text and slides open
 settings-default-apps-after-saving-summary = Show saved attachments in their folder
-settings-compose-send-from-summary = The account new mail goes out from: the one you are in, or always the same one
+settings-compose-send-from-summary = The account new mail goes out from: the first one, another one, or the one you are in
 settings-compose-send-on-replies-summary = Send, or Send and archive the conversation, on replies and forwards
 settings-compose-signatures-summary = Added below your message, after a “--” line
 settings-compose-for-new-mail-summary = The signature new mail starts with
