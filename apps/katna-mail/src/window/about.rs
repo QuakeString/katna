@@ -29,6 +29,9 @@ const SUPPORT_URL: Option<&str> = None;
 /// The source of Katna.
 const SOURCE_URL: &str = env!("CARGO_PKG_REPOSITORY");
 
+/// KDE's donation page.
+const KDE_DONATE_URL: &str = "https://kde.org/donate/";
+
 /// Where to follow Katna's author: the site and the profile, or `None`
 /// until there is one (the link is left out).
 const FOLLOW: &[(&str, Option<&str>)] = &[
@@ -41,8 +44,15 @@ const FOLLOW: &[(&str, Option<&str>)] = &[
 ];
 
 /// The heart of Katna, picked by hand: the name, what it does in Katna,
-/// its license and its home. Every library is in [`LIBRARIES`].
+/// its license and its home. It matches the credits in README.md; every
+/// library is in [`LIBRARIES`].
 const CREDITS: &[(&str, &str, &str, &str)] = &[
+    (
+        "GPUI",
+        "The whole interface, from Zed Industries' Zed editor",
+        "Apache-2.0",
+        "https://github.com/zed-industries/zed",
+    ),
     (
         "Pimalaya",
         "IMAP, SMTP and sign-in (io-imap, io-smtp, io-sasl)",
@@ -54,18 +64,6 @@ const CREDITS: &[(&str, &str, &str, &str)] = &[
         "Reading and writing IMAP",
         "MIT or Apache-2.0",
         "https://github.com/duesee/imap-codec",
-    ),
-    (
-        "GPUI",
-        "The user interface, from the makers of Zed",
-        "Apache-2.0",
-        "https://github.com/zed-industries/zed",
-    ),
-    (
-        "wgpu",
-        "Drawing on the graphics card",
-        "MIT or Apache-2.0",
-        "https://github.com/gfx-rs/wgpu",
     ),
     (
         "Tantivy",
@@ -80,6 +78,12 @@ const CREDITS: &[(&str, &str, &str, &str)] = &[
         "https://github.com/rusqlite/rusqlite",
     ),
     (
+        "rustls",
+        "Secure connections",
+        "Apache-2.0, ISC or MIT",
+        "https://github.com/rustls/rustls",
+    ),
+    (
         "mail-parser",
         "Reading mail, from Stalwart Labs",
         "Apache-2.0 or MIT",
@@ -92,14 +96,8 @@ const CREDITS: &[(&str, &str, &str, &str)] = &[
         "https://github.com/servo/html5ever",
     ),
     (
-        "rustls",
-        "Secure connections",
-        "Apache-2.0, ISC or MIT",
-        "https://github.com/rustls/rustls",
-    ),
-    (
-        "zbus",
-        "Talking to the desktop over D-Bus",
+        "zbus and ashpd",
+        "Talking to the desktop over D-Bus and portals",
         "MIT",
         "https://github.com/z-galaxy/zbus",
     ),
@@ -110,8 +108,8 @@ const CREDITS: &[(&str, &str, &str, &str)] = &[
         "https://github.com/linux-credentials/oo7",
     ),
     (
-        "hayro",
-        "The PDF viewer",
+        "hayro and krilla",
+        "Viewing and printing PDFs",
         "Apache-2.0 or MIT",
         "https://github.com/LaurenzV/hayro",
     ),
@@ -128,16 +126,22 @@ const CREDITS: &[(&str, &str, &str, &str)] = &[
         "https://github.com/linebender/resvg",
     ),
     (
+        "Jiff",
+        "Dates and time zones",
+        "Unlicense or MIT",
+        "https://github.com/BurntSushi/jiff",
+    ),
+    (
         "Spellbook",
         "Spell check, from the Helix editor",
         "MPL-2.0",
         "https://github.com/helix-editor/spellbook",
     ),
     (
-        "Jiff",
-        "Dates and time zones",
-        "Unlicense or MIT",
-        "https://github.com/BurntSushi/jiff",
+        "smol",
+        "Doing many things at once",
+        "Apache-2.0 or MIT",
+        "https://github.com/smol-rs/smol",
     ),
 ];
 
@@ -448,12 +452,31 @@ impl MailWindow {
                             .line_height(px(21.0))
                             .text_color(rgba(th.text_dim))
                             .child(
-                                "Katna is written in Rust from top to bottom, and it \
-                                 is made for the Linux desktop, with a special love \
-                                 for KDE Plasma. Thank you to everyone who builds \
-                                 them, and the libraries below.",
+                                "Rust makes a fast and safe mail app a joy to write: \
+                                 Katna has no unsafe code. KDE's Plasma desktop and \
+                                 its PIM suite inspired Katna, and Linux and the free \
+                                 software community build the ground it stands on. \
+                                 Thank you, and thank you to the libraries below.",
                             ),
-                    ),
+                    )
+                    .child(
+                        div()
+                            .mt(px(6.0))
+                            .text_size(px(14.0))
+                            .line_height(px(21.0))
+                            .text_color(rgba(th.text_dim))
+                            .child(
+                                "KDE is made by volunteers and funded by people like \
+                                 you. If you enjoy Plasma or KDE's apps, please \
+                                 consider supporting it.",
+                            ),
+                    )
+                    .child(div().mt(px(8.0)).flex().flex_row().child(link_button(
+                        "about-donate-kde",
+                        "Donate to KDE",
+                        KDE_DONATE_URL.to_owned(),
+                        th,
+                    ))),
             );
 
         let personal = div()
@@ -771,6 +794,7 @@ mod tests {
             assert!(url.starts_with("https://"), "{name}");
         }
         assert!(SOURCE_URL.starts_with("https://github.com/"));
+        assert!(KDE_DONATE_URL.starts_with("https://kde.org/"));
         for (site, url) in FOLLOW {
             assert!(url.is_none_or(|url| url.starts_with("https://")), "{site}");
         }
