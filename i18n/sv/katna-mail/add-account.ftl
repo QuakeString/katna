@@ -62,6 +62,7 @@ add-account-address-empty = Ange en e-postadress.
 add-account-address-invalid = Ange en e-postadress som { $example }.
 add-account-not-found = Katna kunde inte hitta servrarna för { $address }, så de vanliga namnen fylldes i. Kontrollera dem med din leverantör.
 add-account-password-empty = Ange lösenordet.
+add-account-name-is-password = Namnet är detsamma som lösenordet. Skriv ditt namn där i stället, så som andra ska se det.
 add-account-added = { $address } har lagts till. Hämtar din e-post…
 add-account-app-password-refused = { $provider } avvisade lösenordet. Det krävs ett applösenord, inte det du använder på webben.
 add-account-password-refused = Servern avvisade lösenordet. Kontrollera det och försök igen.

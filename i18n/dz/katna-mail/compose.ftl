@@ -45,6 +45,13 @@ compose-file-too-large = { $name } འདི་ སྦོམ་དྲགས་�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = མཉམ་སྦྲགས་རྩ་བསྐྲད་གཏང་།
 compose-drop-files = ཡིག་སྣོད་ཚུ་ ནཱ་ལུ་བཀོག
+compose-drop-here = ནཱ་ལུ་བཀོག
+compose-paste-keep-formatting = རྩ་སྒྲིག་བཞག
+compose-paste-table = ཐིག་ཁྲམ
+compose-paste-picture = པར
+compose-paste-plain-text = ཚིག་ཡིག་རྐྱང་པ
+compose-paste-inline = ཚིག་ཡིག་ནང་
+compose-paste-attachment = མཉམ་སྦྲགས
 
 ## Encryption and signing (the toggles by the recipients)
 

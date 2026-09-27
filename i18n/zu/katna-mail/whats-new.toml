@@ -406,3 +406,34 @@ izaziso zemeyili entsha nesithonjana sethileyi kuyavela ngaphandle
 kokuvula iwindi. Kuvale, noma wenze iwindi livuleke nalo,
 ku-Izilungiselelo > Okuvamile > Ideskithophu.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Namathisela noma wehlisele noma yini emlayezweni"
+text = """
+Umbhalo okopishwe ku-Word, ku-LibreOffice noma ekhasini lewebhu ugcina
+amafonti awo, imibala nohlu, futhi amaseli avela ku-Excel,
+ku-LibreOffice Calc noma ku-Google Sheets angena njengethebula. Ibha
+encane ngaphansi kwalokho okunamathiselile ikuvumela ukuthi ukuthole
+njengethebula, isithombe noma umbhalo osobala esikhundleni salokho;
+u-Ctrl+Shift+V unamathisela umbhalo osobala. Amafayela akopishwe
+ku-Dolphin noma ahudulelwe emlayezweni ayanamathiselwa, futhi izithombe
+ziyabuza ukuthi zingena embhalweni noma njengokunamathiselwe.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Ilogo entsha ye-Katna"
+text = """
+I-Katna manje inelogo yayo: কাটনা ekhadini elingaphezu kwemvilophu.
+Uzoyibona kumenyu yama-app, kuphaneli, kuthileyi, kubha ephezulu
+naku-Mayelana ne-Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Ama-akhawunti akho, ngendlela yakho"
+text = """
+I-akhawunti ngayinye manje ibonisa uhlamvu lwayo olunombala esikhundleni
+sesithombe esifanayo kuzo zonke. Ku-Izilungiselelo > Ama-akhawunti
+ungakhetha isithombe sayo ngayinye, uyiqambe kabusha, futhi ubeke
+ama-akhawunti ngokulandelana okuthandayo ngemicibisholo noma
+ngokuhudula; iphaneli yamafolda nemenyu ye-akhawunti kuyalandela.
+"""

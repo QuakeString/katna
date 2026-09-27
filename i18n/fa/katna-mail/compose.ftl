@@ -45,6 +45,13 @@ compose-file-too-large = { $name } بیش از حد بزرگ است: هر پیا
 compose-attachment-size = ({ $size })
 compose-remove-attachment = حذف پیوست
 compose-drop-files = پرونده‌ها را اینجا رها کنید
+compose-drop-here = اینجا رها کنید
+compose-paste-keep-formatting = حفظ قالب‌بندی
+compose-paste-table = جدول
+compose-paste-picture = تصویر
+compose-paste-plain-text = متن ساده
+compose-paste-inline = درون متن
+compose-paste-attachment = پیوست
 
 ## Encryption and signing (the toggles by the recipients)
 

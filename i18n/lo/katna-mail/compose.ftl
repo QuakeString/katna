@@ -45,6 +45,13 @@ compose-file-too-large = { $name } ໃຫຍ່ເກີນໄປ: ຂໍ້ຄ�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ລຶບໄຟລ໌ແນບ
 compose-drop-files = ວາງໄຟລ໌ໄວ້ບ່ອນນີ້
+compose-drop-here = ວາງໄວ້ບ່ອນນີ້
+compose-paste-keep-formatting = ຮັກສາການຈັດຮູບແບບ
+compose-paste-table = ຕາຕະລາງ
+compose-paste-picture = ຮູບພາບ
+compose-paste-plain-text = ຂໍ້ຄວາມທຳມະດາ
+compose-paste-inline = ໃນເນື້ອຫາ
+compose-paste-attachment = ໄຟລ໌ແນບ
 
 ## Encryption and signing (the toggles by the recipients)
 

@@ -62,6 +62,7 @@ add-account-address-empty = Voer 'n e-posadres in.
 add-account-address-invalid = Voer 'n e-posadres in soos { $example }.
 add-account-not-found = Katna kon nie die bedieners vir { $address } vind nie, en het dus die gewone name ingevul. Kontroleer hulle by jou verskaffer.
 add-account-password-empty = Voer die wagwoord in.
+add-account-name-is-password = Die naam is dieselfde as die wagwoord. Tik eerder jou naam daar, soos mense dit moet sien.
 add-account-added = { $address } bygevoeg. Haal tans jou e-pos…
 add-account-app-password-refused = { $provider } het die wagwoord geweier. Dit het 'n programwagwoord nodig, nie die een wat jy op die web gebruik nie.
 add-account-password-refused = Die bediener het die wagwoord geweier. Kontroleer dit en probeer weer.

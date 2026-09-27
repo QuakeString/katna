@@ -45,6 +45,13 @@ compose-file-too-large = { $name } በጣም ትልቅ ነው፦ አንድ መ�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = አባሪውን አስወግድ
 compose-drop-files = ፋይሎችን እዚህ ይጣሉ
+compose-drop-here = እዚህ ይጣሉ
+compose-paste-keep-formatting = ቅርጸቱን አቆይ
+compose-paste-table = ሰንጠረዥ
+compose-paste-picture = ሥዕል
+compose-paste-plain-text = ግልጽ ጽሑፍ
+compose-paste-inline = በጽሑፉ ውስጥ
+compose-paste-attachment = አባሪ
 
 ## Encryption and signing (the toggles by the recipients)
 

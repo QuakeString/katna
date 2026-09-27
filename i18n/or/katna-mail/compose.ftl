@@ -45,6 +45,13 @@ compose-file-too-large = { $name } ବହୁତ ବଡ଼: ଏକ ମେସେ�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ଆଟାଚମେଣ୍ଟ ହଟାନ୍ତୁ
 compose-drop-files = ଫାଇଲଗୁଡ଼ିକ ଏଠାରେ ଛାଡ଼ନ୍ତୁ
+compose-drop-here = ଏଠାରେ ଛାଡ଼ନ୍ତୁ
+compose-paste-keep-formatting = ଫର୍ମାଟିଂ ରଖନ୍ତୁ
+compose-paste-table = ଟେବୁଲ
+compose-paste-picture = ଛବି
+compose-paste-plain-text = ସାଧା ଟେକ୍ସଟ
+compose-paste-inline = ଟେକ୍ସଟ ଭିତରେ
+compose-paste-attachment = ଆଟାଚମେଣ୍ଟ
 
 ## Encryption and signing (the toggles by the recipients)
 

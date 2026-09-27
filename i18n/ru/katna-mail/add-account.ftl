@@ -62,6 +62,7 @@ add-account-address-empty = Введите адрес электронной п�
 add-account-address-invalid = Введите адрес электронной почты, например { $example }.
 add-account-not-found = Katna не удалось найти серверы для { $address }, поэтому подставлены обычные имена. Уточните их у своего провайдера.
 add-account-password-empty = Введите пароль.
+add-account-name-is-password = Имя совпадает с паролем. Введите там своё имя — так, как его должны видеть другие.
 add-account-added = { $address } добавлен. Получение почты…
 add-account-app-password-refused = { $provider } не принял пароль. Нужен пароль приложения, а не тот, что вы используете на сайте.
 add-account-password-refused = Сервер не принял пароль. Проверьте его и попробуйте снова.

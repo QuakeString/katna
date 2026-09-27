@@ -62,6 +62,7 @@ add-account-address-empty = Tẹ àdírẹ́sì ímeèlì kan.
 add-account-address-invalid = Tẹ àdírẹ́sì ímeèlì bí { $example }.
 add-account-not-found = Katna kò rí àwọn sáfà fún { $address }, nítorí náà ó kọ àwọn orúkọ tí a sábà ń lò sí i. Ṣàyẹ̀wò wọn pẹ̀lú olùpèsè rẹ.
 add-account-password-empty = Tẹ ọ̀rọ̀ aṣínà.
+add-account-name-is-password = Orúkọ náà bá ọ̀rọ̀ aṣínà mu. Dípò bẹ́ẹ̀, tẹ orúkọ rẹ síbẹ̀, bí ó ṣe yẹ kí àwọn ènìyàn rí i.
 add-account-added = A ti ṣàfikún { $address }. À ń gba lẹ́tà rẹ…
 add-account-app-password-refused = { $provider } kọ ọ̀rọ̀ aṣínà náà. Ó nílò ọ̀rọ̀ aṣínà áàpù, kì í ṣe èyí tí o ń lò lórí wẹ́ẹ̀bù.
 add-account-password-refused = Sáfà kọ ọ̀rọ̀ aṣínà náà. Ṣàyẹ̀wò rẹ̀ kí o sì gbìyànjú lẹ́ẹ̀kan sí i.

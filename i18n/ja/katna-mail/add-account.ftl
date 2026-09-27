@@ -62,6 +62,7 @@ add-account-address-empty = メールアドレスを入力してください。
 add-account-address-invalid = { $example } のようなメールアドレスを入力してください。
 add-account-not-found = { $address } のサーバーが見つからなかったため、Katna は一般的な名前を入力しました。プロバイダーに確認してください。
 add-account-password-empty = パスワードを入力してください。
+add-account-name-is-password = 名前がパスワードと同じです。ここには、相手に表示される名前を入力してください。
 add-account-added = { $address } を追加しました。メールを取得しています…
 add-account-app-password-refused = { $provider } がパスワードを拒否しました。ウェブで使うパスワードではなく、アプリ パスワードが必要です。
 add-account-password-refused = サーバーがパスワードを拒否しました。確認して、もう一度お試しください。

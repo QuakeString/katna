@@ -45,6 +45,13 @@ compose-file-too-large = Файл { $name } слишком большой: пи�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Удалить вложение
 compose-drop-files = Перетащите файлы сюда
+compose-drop-here = Перетащите сюда
+compose-paste-keep-formatting = Сохранить форматирование
+compose-paste-table = Таблица
+compose-paste-picture = Изображение
+compose-paste-plain-text = Обычный текст
+compose-paste-inline = В тексте
+compose-paste-attachment = Вложение
 
 ## Encryption and signing (the toggles by the recipients)
 

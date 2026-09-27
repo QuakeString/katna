@@ -62,6 +62,7 @@ add-account-address-empty = ป้อนที่อยู่อีเมล
 add-account-address-invalid = ป้อนที่อยู่อีเมล เช่น { $example }
 add-account-not-found = Katna ไม่พบเซิร์ฟเวอร์ของ { $address } จึงใส่ชื่อที่ใช้กันทั่วไปให้ โปรดตรวจสอบกับผู้ให้บริการของคุณ
 add-account-password-empty = ป้อนรหัสผ่าน
+add-account-name-is-password = ชื่อเหมือนกับรหัสผ่าน ให้พิมพ์ชื่อของคุณในช่องนั้นแทน ตามที่ต้องการให้ผู้อื่นเห็น
 add-account-added = เพิ่ม { $address } แล้ว กำลังรับอีเมลของคุณ…
 add-account-app-password-refused = { $provider } ปฏิเสธรหัสผ่าน ต้องใช้รหัสผ่านสำหรับแอป ไม่ใช่รหัสผ่านที่คุณใช้บนเว็บ
 add-account-password-refused = เซิร์ฟเวอร์ปฏิเสธรหัสผ่าน โปรดตรวจสอบแล้วลองอีกครั้ง

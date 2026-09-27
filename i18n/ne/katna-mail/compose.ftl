@@ -45,6 +45,13 @@ compose-file-too-large = { $name } धेरै ठूलो छ: एउटा �
 compose-attachment-size = ({ $size })
 compose-remove-attachment = संलग्नक हटाउनुहोस्
 compose-drop-files = फाइलहरू यहाँ छोड्नुहोस्
+compose-drop-here = यहाँ छोड्नुहोस्
+compose-paste-keep-formatting = ढाँचा राख्नुहोस्
+compose-paste-table = तालिका
+compose-paste-picture = तस्बिर
+compose-paste-plain-text = सादा पाठ
+compose-paste-inline = पाठभित्र
+compose-paste-attachment = संलग्नक
 
 ## Encryption and signing (the toggles by the recipients)
 

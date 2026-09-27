@@ -394,3 +394,34 @@ disegerakkan, dan pemberitahuan mel baharu serta ikon dulang muncul
 tanpa membuka tetingkap. Matikannya, atau biarkan tetingkap turut
 dibuka, dalam Tetapan > Umum > Desktop.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Tampal dan lepaskan apa sahaja ke dalam mesej"
+text = """
+Teks yang disalin daripada Word, LibreOffice atau halaman web
+mengekalkan fon, warna dan senarainya, dan sel daripada Excel,
+LibreOffice Calc atau Google Sheets masuk sebagai jadual. Bar kecil di
+bawah apa yang anda tampal membolehkan anda menjadikannya jadual, gambar
+atau teks biasa; Ctrl+Shift+V menampal teks biasa. Fail yang disalin
+dalam Dolphin atau diseret ke atas mesej akan dilampirkan, dan untuk
+gambar anda ditanya sama ada ia masuk ke dalam teks atau sebagai
+lampiran.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Logo baharu Katna"
+text = """
+Katna kini ada logonya sendiri: কাটনা pada kad di atas sampul surat.
+Anda akan melihatnya dalam menu aplikasi, panel, dulang, bar atas dan
+Perihal Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Akaun anda, cara anda"
+text = """
+Setiap akaun kini menunjukkan huruf berwarnanya sendiri dan bukan gambar
+yang sama untuk semua. Dalam Tetapan > Akaun, anda boleh memilih gambar
+untuk setiap satu, menamakannya semula dan menyusun akaun mengikut
+susunan yang anda suka dengan anak panah atau dengan menyeret; anak
+tetingkap folder dan menu akaun turut mengikutinya.
+"""

@@ -62,6 +62,7 @@ add-account-address-empty = Maglagay ng email address.
 add-account-address-invalid = Maglagay ng email address gaya ng { $example }.
 add-account-not-found = Hindi mahanap ng Katna ang mga server para sa { $address }, kaya inilagay nito ang mga karaniwang pangalan. Tingnan ang mga ito sa iyong provider.
 add-account-password-empty = Ilagay ang password.
+add-account-name-is-password = Pareho ang pangalan at ang password. Sa halip, i-type doon ang pangalan mo, gaya ng dapat makita ng mga tao.
 add-account-added = Naidagdag ang { $address }. Kinukuha ang mail mo…
 add-account-app-password-refused = Tinanggihan ng { $provider } ang password. Kailangan nito ng app password, hindi ang ginagamit mo sa web.
 add-account-password-refused = Tinanggihan ng server ang password. Tingnan ito at subukang muli.

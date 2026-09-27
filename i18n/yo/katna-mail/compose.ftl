@@ -45,6 +45,13 @@ compose-file-too-large = { $name } ti tóbi jù: ìfiránṣẹ́ kan lè gbé t
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Yọ àfikún kúrò
 compose-drop-files = Ju àwọn fáìlì sí ibí
+compose-drop-here = Ju sí ibí
+compose-paste-keep-formatting = Pa ìgúnrege mọ́
+compose-paste-table = Tábìlì
+compose-paste-picture = Àwòrán
+compose-paste-plain-text = Ọ̀rọ̀ lásán
+compose-paste-inline = Nínú ọ̀rọ̀
+compose-paste-attachment = Àfikún
 
 ## Encryption and signing (the toggles by the recipients)
 

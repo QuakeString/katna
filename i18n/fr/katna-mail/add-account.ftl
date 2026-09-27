@@ -62,6 +62,7 @@ add-account-address-empty = Saisissez une adresse e-mail.
 add-account-address-invalid = Saisissez une adresse e-mail comme { $example }.
 add-account-not-found = Katna n’a pas trouvé les serveurs de { $address } et a donc rempli les noms habituels. Vérifiez-les auprès de votre fournisseur.
 add-account-password-empty = Saisissez le mot de passe.
+add-account-name-is-password = Le nom est identique au mot de passe. Saisissez plutôt votre nom, tel que les autres doivent le voir.
 add-account-added = { $address } ajouté. Récupération de votre courrier…
 add-account-app-password-refused = { $provider } a refusé le mot de passe. Il faut un mot de passe d’application, pas celui que vous utilisez sur le Web.
 add-account-password-refused = Le serveur a refusé le mot de passe. Vérifiez-le et réessayez.

@@ -45,6 +45,13 @@ compose-file-too-large = { $name } は大きすぎます。1 通のメッセー�
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 添付ファイルを削除
 compose-drop-files = ここにファイルをドロップ
+compose-drop-here = ここにドロップ
+compose-paste-keep-formatting = 書式を保持
+compose-paste-table = 表
+compose-paste-picture = 画像
+compose-paste-plain-text = プレーンテキスト
+compose-paste-inline = 本文に挿入
+compose-paste-attachment = 添付ファイル
 
 ## Encryption and signing (the toggles by the recipients)
 

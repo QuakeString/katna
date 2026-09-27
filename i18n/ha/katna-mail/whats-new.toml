@@ -385,3 +385,32 @@ Yanzu Katna yana farawa a hankali idan ka shiga: wasiƙu suna daidaitawa,
 kuma sanarwar sababbin wasiƙu da gunkin tire suna bayyana ba tare da buɗe
 taga ba. Kashe shi, ko sa taga ma ta buɗe, a Saituna > Gabaɗaya > Tebur.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Liƙa ko saki komai a cikin saƙo"
+text = """
+Rubutun da aka kwafa daga Word, LibreOffice ko shafin yanar gizo yana riƙe
+da haruffansa, launukansa da jerinsa, kuma sel daga Excel, LibreOffice Calc
+ko Google Sheets suna shigowa a matsayin tebur. Ƙaramar sanda a ƙarƙashin
+abin da ka liƙa tana ba ka damar samun sa a matsayin tebur, hoto ko rubutu
+mara ado maimakon haka; Ctrl+Shift+V yana liƙa rubutu mara ado. Fayilolin
+da aka kwafa a Dolphin ko aka ja kan saƙon ana haɗa su, kuma hotuna suna
+tambaya ko za su shiga cikin rubutu ne ko a matsayin abin haɗawa.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Sabon tambarin Katna"
+text = """
+Yanzu Katna yana da tambarinsa: কাটনা a kan kati bisa ambulan. Za ka gan
+shi a menu na manhajoji, a sandar tebur, a tire, a sandar sama da kuma a
+Game da Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Asusunka, yadda kake so"
+text = """
+Kowane asusu yanzu yana nuna harafinsa mai launi maimakon hoto ɗaya ga
+duka. A Saituna > Asusu za ka iya zaɓar hoto ga kowanne, sake masa suna,
+kuma ka jera asusun a tsarin da kake so da kibiyoyi ko ta hanyar ja; wurin
+folda da menu na asusu suna bin wannan tsari.
+"""

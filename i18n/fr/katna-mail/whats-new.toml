@@ -406,3 +406,34 @@ l’icône de la zone de notification apparaissent sans ouvrir la fenêtre.
 Désactivez-le, ou faites aussi ouvrir la fenêtre, dans Paramètres >
 Général > Bureau.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Collez et déposez n’importe quoi dans un message"
+text = """
+Le texte copié depuis Word, LibreOffice ou une page web garde ses
+polices, ses couleurs et ses listes, et les cellules d’Excel, de
+LibreOffice Calc ou de Google Sheets arrivent sous forme de tableau. Une
+petite barre sous ce que vous avez collé vous permet de l’avoir plutôt en
+tableau, en image ou en texte brut ; Ctrl+Shift+V colle du texte brut.
+Les fichiers copiés dans Dolphin ou glissés sur le message sont joints,
+et pour les images, Katna demande si elles vont dans le texte ou en pièce
+jointe.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Un nouveau logo pour Katna"
+text = """
+Katna a désormais son propre logo : কাটনা sur une carte posée sur une
+enveloppe. Vous le verrez dans le menu des applications, le panneau, la
+zone de notification, la barre supérieure et À propos de Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Vos comptes, à votre façon"
+text = """
+Chaque compte affiche désormais sa propre lettre en couleur au lieu de la
+même photo pour tous. Dans Paramètres > Comptes, vous pouvez choisir une
+photo pour chacun, le renommer et ranger les comptes dans l’ordre voulu
+avec les flèches ou par glisser-déposer ; le volet des dossiers et le
+menu du compte suivent.
+"""

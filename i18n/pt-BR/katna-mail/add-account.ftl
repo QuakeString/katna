@@ -62,6 +62,7 @@ add-account-address-empty = Digite um endereço de e-mail.
 add-account-address-invalid = Digite um endereço de e-mail como { $example }.
 add-account-not-found = O Katna não encontrou os servidores de { $address }, então preencheu os nomes usuais. Confira-os com seu provedor.
 add-account-password-empty = Digite a senha.
+add-account-name-is-password = O nome é igual à senha. Digite ali o seu nome, do jeito que as pessoas devem vê-lo.
 add-account-added = { $address } adicionado. Buscando seus e-mails…
 add-account-app-password-refused = O { $provider } recusou a senha. É preciso uma senha de app, não a que você usa na web.
 add-account-password-refused = O servidor recusou a senha. Confira-a e tente de novo.

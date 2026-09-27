@@ -45,6 +45,13 @@ compose-file-too-large = { $name } är för stor: ett meddelande kan innehålla 
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Ta bort bilaga
 compose-drop-files = Släpp filer här
+compose-drop-here = Släpp här
+compose-paste-keep-formatting = Behåll formatering
+compose-paste-table = Tabell
+compose-paste-picture = Bild
+compose-paste-plain-text = Oformaterad text
+compose-paste-inline = I texten
+compose-paste-attachment = Bilaga
 
 ## Encryption and signing (the toggles by the recipients)
 

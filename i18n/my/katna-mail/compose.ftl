@@ -45,6 +45,13 @@ compose-file-too-large = { $name } သည် ကြီးလွန်းသည�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ပူးတွဲဖိုင်ကို ဖယ်ရှားရန်
 compose-drop-files = ဖိုင်များကို ဤနေရာတွင် ချပါ
+compose-drop-here = ဤနေရာတွင် ချပါ
+compose-paste-keep-formatting = ပုံစံချမှုကို ထားရန်
+compose-paste-table = ဇယား
+compose-paste-picture = ပုံ
+compose-paste-plain-text = စာသားသက်သက်
+compose-paste-inline = စာထဲတွင်
+compose-paste-attachment = ပူးတွဲဖိုင်
 
 ## Encryption and signing (the toggles by the recipients)
 

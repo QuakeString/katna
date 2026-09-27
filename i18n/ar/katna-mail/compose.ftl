@@ -45,6 +45,13 @@ compose-file-too-large = الملف { $name } كبير جدًا: يمكن أن �
 compose-attachment-size = ({ $size })
 compose-remove-attachment = إزالة المرفق
 compose-drop-files = أفلت الملفات هنا
+compose-drop-here = أفلت هنا
+compose-paste-keep-formatting = الإبقاء على التنسيق
+compose-paste-table = جدول
+compose-paste-picture = صورة
+compose-paste-plain-text = نص عادي
+compose-paste-inline = داخل النص
+compose-paste-attachment = مرفق
 
 ## Encryption and signing (the toggles by the recipients)
 

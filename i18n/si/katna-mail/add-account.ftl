@@ -62,6 +62,7 @@ add-account-address-empty = ඊමේල් ලිපිනයක් ඇතු�
 add-account-address-invalid = { $example } වැනි ඊමේල් ලිපිනයක් ඇතුළත් කරන්න.
 add-account-not-found = Katna ට { $address } සඳහා සේවාදායක සොයා ගත නොහැකි වූ බැවින්, සාමාන්‍ය නම් පුරවා ඇත. ඒවා ඔබේ සපයන්නා සමඟ පරීක්ෂා කරන්න.
 add-account-password-empty = මුරපදය ඇතුළත් කරන්න.
+add-account-name-is-password = නම මුරපදයට සමානයි. ඒ වෙනුවට, අනෙක් අයට පෙනිය යුතු ආකාරයට ඔබේ නම එහි ටයිප් කරන්න.
 add-account-added = { $address } එක් කළා. ඔබේ තැපැල් ලබා ගනිමින්…
 add-account-app-password-refused = { $provider } මුරපදය ප්‍රතික්ෂේප කළා. ඔබ වෙබයේ භාවිත කරන මුරපදය නොව, යෙදුම් මුරපදයක් අවශ්‍යයි.
 add-account-password-refused = සේවාදායකය මුරපදය ප්‍රතික්ෂේප කළා. එය පරීක්ෂා කර නැවත උත්සාහ කරන්න.

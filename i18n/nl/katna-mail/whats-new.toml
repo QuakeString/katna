@@ -394,3 +394,33 @@ en meldingen voor nieuwe e-mail en het pictogram in het systeemvak
 verschijnen zonder dat het venster opent. Zet het uit, of laat ook het
 venster openen, in Instellingen > Algemeen > Desktop.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Plak en sleep alles in een bericht"
+text = """
+Tekst die je kopieert uit Word, LibreOffice of een webpagina houdt zijn
+lettertypen, kleuren en lijsten, en cellen uit Excel, LibreOffice Calc
+of Google Sheets komen binnen als tabel. Met een kleine balk onder wat
+je hebt geplakt maak je er in plaats daarvan een tabel, afbeelding of
+platte tekst van; Ctrl+Shift+V plakt platte tekst. Bestanden die je in
+Dolphin kopieert of op het bericht sleept, worden bijgevoegd, en bij
+afbeeldingen kies je of ze in de tekst komen of als bijlage.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Een nieuw Katna-logo"
+text = """
+Katna heeft nu een eigen logo: কাটনা op een kaartje boven een envelop.
+Je ziet het in het appmenu, het paneel, het systeemvak, de bovenbalk en
+Over Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Jouw accounts, zoals jij wilt"
+text = """
+Elk account toont nu zijn eigen gekleurde letter in plaats van dezelfde
+afbeelding voor allemaal. In Instellingen > Accounts kun je voor elk
+account een afbeelding kiezen, het een andere naam geven en de accounts
+in de volgorde zetten die je wilt, met de pijlen of door te slepen; het
+mappenvenster en het accountmenu volgen die volgorde.
+"""

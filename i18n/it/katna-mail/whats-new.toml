@@ -395,3 +395,33 @@ le notifiche di nuova posta e l'icona nell'area di notifica compaiono
 senza aprire la finestra. Puoi disattivarlo, o far aprire anche la
 finestra, in Impostazioni > Generali > Desktop.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Incolla e trascina di tutto in un messaggio"
+text = """
+Il testo copiato da Word, LibreOffice o da una pagina web mantiene
+caratteri, colori ed elenchi, e le celle di Excel, LibreOffice Calc o
+Google Sheets arrivano come tabella. Una piccola barra sotto ciò che hai
+incollato ti permette di averlo invece come tabella, immagine o testo
+semplice; Ctrl+Shift+V incolla testo semplice. I file copiati in
+Dolphin o trascinati sul messaggio vengono allegati, e per le immagini
+ti viene chiesto se vanno nel testo o come allegato.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "Un nuovo logo per Katna"
+text = """
+Katna ora ha un logo tutto suo: কাটনা su un cartoncino sopra una busta.
+Lo vedrai nel menu delle applicazioni, nel pannello, nell'area di
+notifica, nella barra in alto e in Informazioni su Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "I tuoi account, a modo tuo"
+text = """
+Ogni account ora mostra la sua lettera colorata invece della stessa
+immagine per tutti. In Impostazioni > Account puoi scegliere un'immagine
+per ciascuno, rinominarlo e mettere gli account nell'ordine che
+preferisci con le frecce o trascinandoli; il riquadro delle cartelle e
+il menu dell'account si adeguano.
+"""

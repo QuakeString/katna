@@ -62,6 +62,7 @@ add-account-address-empty = အီးမေးလ်လိပ်စာ ထည့
 add-account-address-invalid = { $example } ကဲ့သို့ အီးမေးလ်လိပ်စာ ထည့်ပါ။
 add-account-not-found = Katna သည် { $address } အတွက် ဆာဗာများကို ရှာမတွေ့သဖြင့် ပုံမှန်အမည်များကို ဖြည့်ထားသည်။ သင့်ဝန်ဆောင်မှုပေးသူနှင့် စစ်ဆေးပါ။
 add-account-password-empty = စကားဝှက်ကို ထည့်ပါ။
+add-account-name-is-password = အမည်သည် စကားဝှက်နှင့် တူနေသည်။ ထိုနေရာတွင် လူများ မြင်စေလိုသည့်အတိုင်း သင့်အမည်ကို ရိုက်ထည့်ပါ။
 add-account-added = { $address } ကို ထည့်ပြီးပါပြီ။ သင့်မေးလ်ကို ရယူနေသည်…
 add-account-app-password-refused = { $provider } က စကားဝှက်ကို ငြင်းပယ်သည်။ ဝဘ်ပေါ်တွင် သုံးသော စကားဝှက် မဟုတ်ဘဲ အက်ပ်စကားဝှက် လိုအပ်သည်။
 add-account-password-refused = ဆာဗာက စကားဝှက်ကို ငြင်းပယ်သည်။ စစ်ဆေးပြီး ထပ်ကြိုးစားပါ။

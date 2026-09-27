@@ -388,3 +388,32 @@ kennisgewings van nuwe e-pos en die stelselbalkikoon verskyn sonder dat
 die venster oopmaak. Skakel dit af, of laat die venster ook oopmaak, in
 Instellings > Algemeen > Werkskerm.
 """
+
+["2026-09-27-1215-paste-and-drop"]
+title = "Plak en los enigiets in 'n boodskap"
+text = """
+Teks wat uit Word, LibreOffice of 'n webblad gekopieer is, behou sy
+lettertipes, kleure en lyste, en selle uit Excel, LibreOffice Calc of
+Google Sheets kom in as 'n tabel. 'n Klein balk onder wat jy geplak het,
+laat jou dit eerder as 'n tabel, 'n prent of gewone teks kry;
+Ctrl+Shift+V plak gewone teks. Lêers wat in Dolphin gekopieer of op die
+boodskap gesleep is, word aangeheg, en by prente vra Katna of hulle in
+die teks of as 'n aanhegsel gaan.
+"""
+
+["2026-09-27-1300-new-logo"]
+title = "'n Nuwe Katna-logo"
+text = """
+Katna het nou sy eie logo: কাটনা op 'n kaart oor 'n koevert. Jy sien dit
+in die toepassingskieslys, die paneel, die stelselbalk, die boonste balk
+en Meer oor Katna.
+"""
+
+["2026-09-27-1335-account-names-pictures-order"]
+title = "Jou rekeninge, soos jy wil"
+text = """
+Elke rekening wys nou sy eie gekleurde letter in plaas van dieselfde
+prent vir almal. In Instellings > Rekeninge kan jy vir elkeen 'n prent
+kies, dit hernoem, en die rekeninge met die pyltjies of deur te sleep in
+die volgorde sit wat jy wil; die vouerpaneel en die rekeningkieslys volg.
+"""
