@@ -10,7 +10,6 @@ use katna_core::config::{Config, WindowFrame};
 
 use super::MailWindow;
 use super::settings::{Change, heading};
-use super::settings_page::row;
 use crate::theme::Theme;
 use crate::widgets::switch;
 
@@ -36,13 +35,13 @@ impl MailWindow {
                     .child("Features still being tried out. They may change or go away."),
             )
             .child(div().pt(px(12.0)).child(heading("Look & Feel", th)))
-            .child(row(
+            .child(self.row(
                 "Window frame",
                 Some("Who draws the title bar, the window buttons, the corners and the shadow."),
                 self.frame_choice(th, cx),
                 th,
             ))
-            .child(row(
+            .child(self.row(
                 "Blurred background",
                 Some(
                     "The desktop shows through the top bar and the folders, blurred, and \

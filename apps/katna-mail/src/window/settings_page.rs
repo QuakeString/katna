@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! The Settings page, shown in place of the list as in webmail's "See all
-//! settings": General (reading pane, density, theme, conversations, undo
-//! send, offline mail), Inbox (tabs per account), Accounts (remove one, or delete all
-//! data), Signatures (several, with defaults for new mail and replies),
-//! Default apps (where each kind of attachment opens) and Keyboard shortcuts (every one, each can be changed by pressing the new
-//! keys). Changes apply at once and are saved
-//! to `config.toml`.
+//! settings". Its tabs: General (conversations, undo send, offline
+//! mail, the tray),
+//! Inbox (tabs per account), Accounts (the folder pane, remove one, or
+//! delete all data), Appearance (reading pane, density, theme, pictures),
+//! Shortcuts (every one, each can be changed by pressing the new keys),
+//! Default apps (where each kind of attachment opens), Signature (several,
+//! with defaults for new mail and replies) and Experimental, with pages for
+//! the tabs still to come. The top bar's search box finds settings while
+//! the page is open (`settings_search.rs`). Changes apply at once and are
+//! saved to `config.toml`.
 
 use std::time::Duration;
 
@@ -48,50 +52,73 @@ pub(super) enum Section {
     General,
     Inbox,
     Accounts,
-    Signatures,
-    DefaultApps,
+    Subscriptions,
+    Appearance,
     Shortcuts,
+    DefaultApps,
+    MailRules,
+    Folders,
+    Signatures,
+    Templates,
+    McpServer,
     Experimental,
 }
 
 impl Section {
-    const ALL: [Self; 7] = [
+    pub(super) const ALL: [Self; 13] = [
         Self::General,
         Self::Inbox,
         Self::Accounts,
-        Self::Signatures,
-        Self::DefaultApps,
+        Self::Subscriptions,
+        Self::Appearance,
         Self::Shortcuts,
+        Self::DefaultApps,
+        Self::MailRules,
+        Self::Folders,
+        Self::Signatures,
+        Self::Templates,
+        Self::McpServer,
         Self::Experimental,
     ];
 
-    fn label(self) -> &'static str {
+    pub(super) fn label(self) -> &'static str {
         match self {
             Self::General => "General",
             Self::Inbox => "Inbox",
             Self::Accounts => "Accounts",
-            Self::Signatures => "Signatures",
+            Self::Subscriptions => "Subscription",
+            Self::Appearance => "Appearance",
+            Self::Shortcuts => "Shortcuts",
             Self::DefaultApps => "Default apps",
-            Self::Shortcuts => "Keyboard shortcuts",
+            Self::MailRules => "Mail rules",
+            Self::Folders => "Folders",
+            Self::Signatures => "Signature",
+            Self::Templates => "Templates",
+            Self::McpServer => "MCP server",
             Self::Experimental => "Experimental",
         }
     }
 }
 
 pub(super) struct SettingsPage {
-    section: Section,
+    pub(super) section: Section,
     /// The signature being edited, with its editors.
     editing: Option<SignatureEditor>,
     save: Option<Task<()>>,
     recording: Option<Recording>,
-    scroll: ScrollHandle,
+    pub(super) scroll: ScrollHandle,
     /// The open section's tab. It takes the focus when the page opens, so
     /// Tab goes on from there.
-    focus: FocusHandle,
+    pub(super) focus: FocusHandle,
     /// The controls Tab stops at, which the page scrolls to.
     stops: TabStops,
     /// The row of section tabs, which scrolls sideways on a phone.
     tabs: ScrollHandle,
+    /// What the top bar's search box has, which shows matching settings
+    /// in place of the open tab.
+    pub(super) query: SharedString,
+    /// The row a search has just led to.
+    pub(super) flash: Option<super::settings_search::Flash>,
 }
 
 impl SettingsPage {
@@ -143,6 +170,8 @@ impl MailWindow {
             focus: cx.focus_handle().tab_stop(true),
             stops: TabStops::new(scroll),
             tabs: ScrollHandle::new(),
+            query: SharedString::default(),
+            flash: None,
         });
         if fresh {
             window.focus(&page.focus, cx);
@@ -152,6 +181,7 @@ impl MailWindow {
             page.tabs.scroll_to_item(ix);
         }
         page.recording = None;
+        page.flash = None;
         page.scroll.set_offset(gpui::point(px(0.0), px(0.0)));
         if section == Section::Signatures {
             let first = self.config.sending.signatures.first().map(|s| s.id);
@@ -220,6 +250,14 @@ impl MailWindow {
     }
 
     fn page_section(&mut self, section: Section, window: &mut Window, cx: &mut Context<Self>) {
+        // A tab picked while searching shows that tab, not the results.
+        if self
+            .settings_page
+            .as_ref()
+            .is_some_and(|p| !p.query.is_empty())
+        {
+            self.search.update(cx, |search, cx| search.set_text("", cx));
+        }
         if self
             .settings_page
             .as_ref()
@@ -264,7 +302,14 @@ impl MailWindow {
                 } else {
                     FontWeight::NORMAL
                 })
-                .text_color(rgba(if on { th.accent } else { th.text_dim }))
+                // A tab still to come is fainter until picked.
+                .text_color(rgba(if on {
+                    th.accent
+                } else if super::settings_search::is_coming(s) {
+                    th.text_faint
+                } else {
+                    th.text_dim
+                }))
                 .border_b_2()
                 .border_color(rgba(if on { th.accent } else { 0 }))
                 .cursor_pointer()
@@ -277,14 +322,22 @@ impl MailWindow {
                 )
                 .child(s.label())
         });
+        let query = page.query.clone();
         let body = match section {
+            _ if !query.is_empty() => self.render_settings_results(&query, th, cx),
             Section::General => self.general_section(th, cx),
             Section::Inbox => self.inbox_section(th, cx),
             Section::Accounts => self.accounts_section(th, cx),
+            Section::Appearance => self.appearance_section(th, cx),
             Section::Signatures => self.signatures_section(th, cx),
             Section::DefaultApps => self.default_apps_section(th, cx),
             Section::Shortcuts => self.shortcuts_section(th, cx),
             Section::Experimental => self.experimental_section(th, cx),
+            Section::Subscriptions
+            | Section::MailRules
+            | Section::Folders
+            | Section::Templates
+            | Section::McpServer => self.coming_soon_section(section, th),
         };
         // On a phone the page fills the window below the top bar, like the
         // list, and its sides come in closer.
@@ -371,6 +424,48 @@ impl MailWindow {
 
     fn general_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let view = &self.config.mail;
+        div()
+            .flex()
+            .flex_col()
+            .child(self.row(
+                "Conversation view",
+                None,
+                self.switch_row(
+                    "page-conversations",
+                    "Group replies to the same mail",
+                    "One line per conversation in the list",
+                    view.conversations,
+                    Change::Conversations(!view.conversations),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row(
+                "Sending",
+                Some("How long a sent message waits, so it can be taken back."),
+                self.undo_send_choice(th, cx),
+                th,
+            ))
+            .child(self.row(
+                "Offline mail",
+                Some("Recent mail is downloaded whole, to read without a connection. Older mail downloads when you open it."),
+                self.offline_choice(th, cx),
+                th,
+            ))
+            .child(self.row(
+                "Desktop",
+                Some("Shown even while Katna Mail is closed."),
+                self.desktop_switches(th, cx),
+                th,
+            ))
+            .into_any_element()
+    }
+
+    // Appearance
+
+    fn appearance_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let view = &self.config.mail;
         let panes = div()
             .max_w(px(420.0))
             .flex()
@@ -414,29 +509,43 @@ impl MailWindow {
         div()
             .flex()
             .flex_col()
-            .child(row(
+            .child(self.row(
                 "Reading pane",
                 Some("Where an opened conversation shows."),
                 panes,
                 th,
             ))
-            .child(row("Density", None, density, th))
-            .child(row("Theme", None, theme, th))
-            .child(row(
-                "Conversation view",
+            .child(self.row("Density", None, density, th))
+            .child(self.row("Theme", None, theme, th))
+            .child(self.row(
+                "Desktop colors",
                 None,
                 self.switch_row(
-                    "page-conversations",
-                    "Group replies to the same mail",
-                    "One line per conversation in the list",
-                    view.conversations,
-                    Change::Conversations(!view.conversations),
+                    "page-desktop-colors",
+                    "Use the desktop's colors",
+                    "The color scheme and accent color of the desktop",
+                    view.desktop_colors,
+                    Change::DesktopColors(!view.desktop_colors),
                     th,
                     cx,
                 ),
                 th,
             ))
-            .child(row(
+            .child(self.row(
+                "App names",
+                None,
+                self.switch_row(
+                    "page-app-labels",
+                    "Show app names",
+                    "Names under the app icons at the far left",
+                    view.app_labels,
+                    Change::AppLabels(!view.app_labels),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row(
                 "Sender pictures",
                 None,
                 self.switch_row(
@@ -448,24 +557,6 @@ impl MailWindow {
                     th,
                     cx,
                 ),
-                th,
-            ))
-            .child(row(
-                "Sending",
-                Some("How long a sent message waits, so it can be taken back."),
-                self.undo_send_choice(th, cx),
-                th,
-            ))
-            .child(row(
-                "Offline mail",
-                Some("Recent mail is downloaded whole, to read without a connection. Older mail downloads when you open it."),
-                self.offline_choice(th, cx),
-                th,
-            ))
-            .child(row(
-                "Desktop",
-                Some("Shown even while Katna Mail is closed."),
-                self.desktop_switches(th, cx),
                 th,
             ))
             .into_any_element()
@@ -592,7 +683,7 @@ impl MailWindow {
                     cx,
                 ));
             }
-            row(title, Some(detail), choices, th)
+            self.row(title, Some(detail), choices, th)
         });
         div()
             .flex()
@@ -626,7 +717,7 @@ impl MailWindow {
         div()
             .flex()
             .flex_col()
-            .child(row(
+            .child(self.row(
                 "Inbox tabs",
                 Some("Sort the inbox into tabs, as your mail provider's website does."),
                 self.switch_row(
@@ -649,7 +740,7 @@ impl MailWindow {
                     } else {
                         format!("{} ({})", account.display_name.trim(), account.address)
                     };
-                    row(
+                    self.row(
                         title,
                         None,
                         self.account_tabs_choice(ix, &account.address, &setting, provider, th, cx),
@@ -1026,7 +1117,7 @@ impl MailWindow {
         div()
             .flex()
             .flex_col()
-            .child(row(
+            .child(self.row(
                 "Signatures",
                 Some("Added below your message, after a \u{201c}--\u{201d} line. Pick another one in the compose window."),
                 div()
@@ -1057,13 +1148,13 @@ impl MailWindow {
                 th,
             ))
             .when(!sending.signatures.is_empty(), |d| {
-                d.child(row(
+                d.child(self.row(
                     "For new mail",
                     None,
                     defaults(false),
                     th,
                 ))
-                .child(row(
+                .child(self.row(
                     "For replies and forwards",
                     Some("In a conversation where you signed a message, a reply starts with that signature instead."),
                     defaults(true),
@@ -1121,6 +1212,8 @@ impl MailWindow {
                         });
                         let adding = recording_here.is_some_and(|r| r.replace.is_none());
                         div()
+                            .relative()
+                            .children(self.flash_mark(s.label, th))
                             .min_h(px(44.0))
                             .py(px(4.0))
                             .flex()
@@ -1178,7 +1271,7 @@ impl MailWindow {
         div()
             .flex()
             .flex_col()
-            .child(row(
+            .child(self.row(
                 "Single-key shortcuts",
                 Some("Keys without Ctrl or Alt, as in webmail: e archives, j and k move, / searches. They work in the list and the open conversation, never while typing."),
                 div().child(self.shortcut_switch(single, th, cx)),
@@ -1436,13 +1529,17 @@ fn style_name(style: TabStyle) -> &'static str {
 /// A setting: its name (and a line on it) on the left, the controls on the
 /// right. Where the two don't fit side by side, as on a phone, the name
 /// goes above the controls and both take the whole width.
-pub(super) fn row(
-    label: impl Into<SharedString>,
+/// `flash` goes under it when a search has just led here.
+pub(super) fn setting_row(
+    label: SharedString,
     detail: Option<&'static str>,
     content: impl IntoElement,
+    flash: Option<AnyElement>,
     th: &Theme,
 ) -> Div {
     div()
+        .relative()
+        .children(flash)
         .py(px(20.0))
         .flex()
         .flex_row()
@@ -1460,7 +1557,7 @@ pub(super) fn row(
                     div()
                         .text_size(px(14.0))
                         .font_weight(FontWeight::MEDIUM)
-                        .child(label.into()),
+                        .child(label),
                 )
                 .children(detail.map(|d| {
                     div()
