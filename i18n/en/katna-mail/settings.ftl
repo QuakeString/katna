@@ -87,6 +87,13 @@ settings-general-tray = Show Katna in the system tray
 settings-general-tray-detail = With the unread count and a menu
 settings-general-unread-badge = Unread count on the taskbar icon
 settings-general-unread-badge-detail = How many Inbox messages are unread
+# The row saying which app opens email (mailto:) links.
+settings-general-mail-app = Default mail app
+settings-general-mail-app-detail = Email links in other apps and on websites open a new message here.
+mail-app-is-default = Katna Mail is your default mail app.
+mail-app-is-other = Email links open in another app.
+mail-app-make-default = Make default
+mail-app-make-default-failed = Couldn't change the default mail app.
 
 ## Settings > Inbox
 
@@ -157,7 +164,7 @@ settings-default-apps-text-detail = Plain text, logs, code and other text.
 settings-default-apps-sheets = Spreadsheets
 settings-default-apps-sheets-detail = Excel (xlsx, xls), OpenDocument (ods) and CSV.
 settings-default-apps-documents = Documents
-settings-default-apps-documents-detail = Word (docx) and OpenDocument text (odt).
+settings-default-apps-documents-detail = Word (docx, doc), OpenDocument text (odt) and slides (pptx, ppt, odp).
 settings-default-apps-katna = Katna Mail's viewer
 settings-default-apps-system = The desktop's default app
 settings-default-apps-ask = Ask which app each time
@@ -205,6 +212,11 @@ settings-compose-spell-check = Check spelling while I write
 settings-compose-spell-check-detail = Misspelled words are underlined, with suggestions on right-click
 # The spelling dictionary of the desktop's language. $language: its code, such as "en_US".
 settings-compose-spell-desktop = Desktop's language ({ $language })
+# Harper: the grammar checker's name.
+settings-compose-grammar = Grammar
+settings-compose-grammar-detail = Checked on this computer with Harper. English only for now: text in other languages is left alone.
+settings-compose-grammar-check = Check grammar
+settings-compose-grammar-check-detail = Underline grammar mistakes while writing, in English
 settings-compose-templates = Templates
 settings-compose-templates-detail = Save mail you write often, and start new mail or a reply from it.
 
@@ -254,7 +266,7 @@ settings-default-apps-pdf-summary = Where PDF attachments open
 settings-default-apps-pictures-summary = Where photos and pictures open
 settings-default-apps-text-summary = Where plain text, logs and code open
 settings-default-apps-sheets-summary = Where Excel, OpenDocument and CSV files open
-settings-default-apps-documents-summary = Where Word and OpenDocument text open
+settings-default-apps-documents-summary = Where Word and OpenDocument text and slides open
 settings-default-apps-after-saving-summary = Show saved attachments in their folder
 settings-compose-send-from-summary = The account new mail goes out from: the one you are in, or always the same one
 settings-compose-send-on-replies-summary = Send, or Send and archive the conversation, on replies and forwards
@@ -263,6 +275,8 @@ settings-compose-for-new-mail-summary = The signature new mail starts with
 settings-compose-for-replies-summary = The signature replies and forwards start with
 settings-compose-format-summary = Write new mail in plain text
 settings-compose-spelling-summary = Check spelling while writing, and the dictionary's language
+settings-general-mail-app-summary = Open email links from other apps and websites in Katna Mail
+settings-compose-grammar-summary = Underline grammar mistakes while writing, in English
 settings-compose-templates-summary = Coming soon: save mail you write often, and start new mail or a reply from it
 settings-feedback-crash-reports-summary = Save crash reports on this computer when Katna Mail or its background service crashes
 settings-feedback-saved-summary = View, copy or delete the crash reports saved on this computer

@@ -140,6 +140,20 @@ pub(super) struct SettingsPage {
     pub(super) open_at_login: bool,
     /// The spelling dictionaries installed, read when the page opened.
     dictionaries: Vec<String>,
+    /// Whether email links open in Katna Mail, as of the page opening;
+    /// `None` outside a desktop session.
+    mail_app: Option<bool>,
+}
+
+/// Katna Mail's desktop file, which `mailto:` links name to open in it.
+fn desktop_file() -> String {
+    format!("{}.desktop", katna_core::ids::MAIL_APP_ID)
+}
+
+/// Whether the desktop opens `mailto:` links in Katna Mail.
+fn opens_mail_links() -> Option<bool> {
+    let lists = katna_platform::mimeapps::Lists::from_env()?;
+    Some(lists.default_app(katna_platform::mimeapps::MAILTO) == Some(desktop_file()))
 }
 
 impl SettingsPage {
@@ -197,7 +211,9 @@ impl MailWindow {
             scale: Default::default(),
             open_at_login: crate::autostart::is_on(),
             dictionaries: crate::spell::installed(),
+            mail_app: None,
         });
+        page.mail_app = opens_mail_links();
         if fresh {
             window.focus(&page.focus, cx);
         }
@@ -527,6 +543,48 @@ impl MailWindow {
                 self.desktop_switches(th, cx),
                 th,
             ))
+            .when_some(
+                self.settings_page.as_ref().and_then(|p| p.mail_app),
+                |d, default| {
+                    d.child(self.row(
+                        tr!("settings-general-mail-app"),
+                        Some(&tr!("settings-general-mail-app-detail")),
+                        self.mail_app_choice(default, th, cx),
+                        th,
+                    ))
+                },
+            )
+            .into_any_element()
+    }
+
+    /// Whether Katna Mail opens email links, with a button to make it so.
+    fn mail_app_choice(&self, default: bool, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let text = if default {
+            tr!("mail-app-is-default")
+        } else {
+            tr!("mail-app-is-other")
+        };
+        div()
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .items_center()
+            .gap(px(12.0))
+            .py(px(4.0))
+            .child(
+                div()
+                    .flex_1()
+                    .min_w(px(160.0))
+                    .text_size(px(14.0))
+                    .child(text),
+            )
+            .when(!default, |d| {
+                d.child(
+                    outlined_button("page-default-mail-app", tr!("mail-app-make-default"), th)
+                        .map(|b| self.page_control(b, th, cx))
+                        .on_click(cx.listener(|this, _, _, cx| this.make_default_mail_app(cx))),
+                )
+            })
             .into_any_element()
     }
 
@@ -538,18 +596,10 @@ impl MailWindow {
             (
                 Clock::Language,
                 "clock-language",
-                katna_i18n::tr!("settings-clock-language"),
+                tr!("settings-clock-language"),
             ),
-            (
-                Clock::TwelveHour,
-                "clock-12",
-                katna_i18n::tr!("settings-clock-12"),
-            ),
-            (
-                Clock::TwentyFourHour,
-                "clock-24",
-                katna_i18n::tr!("settings-clock-24"),
-            ),
+            (Clock::TwelveHour, "clock-12", tr!("settings-clock-12")),
+            (Clock::TwentyFourHour, "clock-24", tr!("settings-clock-24")),
         ]
         .map(|(clock, id, text)| {
             self.page_control(chip(id, text, clock == now, th), th, cx)
@@ -618,6 +668,29 @@ impl MailWindow {
                 ))
             })
             .into_any_element()
+    }
+
+    /// Makes the desktop open `mailto:` links in Katna Mail.
+    fn make_default_mail_app(&mut self, cx: &mut Context<Self>) {
+        let done = katna_platform::mimeapps::Lists::from_env()
+            .ok_or_else(|| "no home directory".to_owned())
+            .and_then(|lists| {
+                lists
+                    .set_default(katna_platform::mimeapps::MAILTO, &desktop_file())
+                    .map_err(|err| err.to_string())
+            });
+        match done {
+            Ok(()) => {
+                if let Some(page) = &mut self.settings_page {
+                    page.mail_app = opens_mail_links();
+                }
+            }
+            Err(err) => {
+                tracing::warn!(%err, "could not make Katna Mail the default mail app");
+                self.show_snackbar(tr!("mail-app-make-default-failed"), None, cx);
+            }
+        }
+        cx.notify();
     }
 
     // Appearance
@@ -858,7 +931,7 @@ impl MailWindow {
         let name: SharedString = if resolved.system {
             format!(
                 "{} ({})",
-                katna_i18n::tr!("language-system-default"),
+                tr!("language-system-default"),
                 resolved.language.name
             )
             .into()
@@ -1365,7 +1438,7 @@ impl MailWindow {
     }
 
     /// Which account new mail goes out from, and what Send does on a reply.
-    fn sending_rows(&self, th: &Theme, cx: &mut Context<Self>) -> [Div; 2] {
+    fn sending_rows(&self, th: &Theme, cx: &mut Context<Self>) -> [Div; 3] {
         let sending = &self.config.sending;
         let chosen = &sending.send_from;
         // An address no longer set up counts as the open account.
@@ -1424,6 +1497,20 @@ impl MailWindow {
                 tr!("settings-compose-send-on-replies"),
                 Some(&tr!("settings-compose-send-on-replies-detail")),
                 archive,
+                th,
+            ),
+            self.row(
+                tr!("settings-compose-grammar"),
+                Some(&tr!("settings-compose-grammar-detail")),
+                self.switch_row(
+                    "page-grammar",
+                    tr!("settings-compose-grammar-check"),
+                    tr!("settings-compose-grammar-check-detail"),
+                    sending.grammar_check,
+                    Change::GrammarCheck(!sending.grammar_check),
+                    th,
+                    cx,
+                ),
                 th,
             ),
         ]

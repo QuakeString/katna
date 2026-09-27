@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 624 more of their own. Each keeps its own license.
+bring in 830 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -17,6 +17,7 @@ bring in 624 more of their own. Each keeps its own license.
 | [backtrace](https://github.com/rust-lang/backtrace-rs) 0.3.76 | The Rust Project Developers | MIT OR Apache-2.0 | A library to acquire a stack trace (backtrace) at runtime in a Rust program. |
 | [blake3](https://github.com/BLAKE3-team/BLAKE3) 1.8.7 | Jack O'Connor, Samuel Neves | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception | the BLAKE3 hash function |
 | [calamine](https://github.com/tafia/calamine) 0.36.1 | Johann Tuffe | MIT | An Excel/OpenDocument Spreadsheet reader and deserializer in pure Rust |
+| [cfb](https://github.com/mdsteele/rust-cfb) 0.15.0 | Matthew D. Steele | MIT | Read/write Compound File Binary (structured storage) files |
 | [emojis](https://github.com/rossmacarthur/emojis) 0.9.0 | Ross MacArthur | (MIT OR Apache-2.0) AND Unicode-3.0 | ✨ Lookup emoji in *O(1)* time, access metadata and GitHub shortcodes, iterate over all emoji, and more! |
 | [fluent-bundle](https://github.com/projectfluent/fluent-rs) 0.16.0 | Bruce Mitchener <bruce.mitchener@gmail.com, Caleb Maclennan, Staś Małolepszy, Zibi Braniecki | Apache-2.0 OR MIT | A low-level implementation of a collection of localization messages for a single locale for Project Fluent, a localization system designed to unleash the entire expressive power of natural language translations. |
 | [fontdb](https://github.com/RazrFalcon/fontdb) 0.23.0 | Yevhenii Reizner | MIT | A simple, in-memory font database with CSS-like queries. |
@@ -26,6 +27,7 @@ bring in 624 more of their own. Each keeps its own license.
 | [gpui-pre-linux](https://github.com/zed-industries/zed) 0.3.6 | zed-industries | Apache-2.0 | Zed's `gpui_linux` crate (gpui-pre snapshot of zed@bcf6582) |
 | [gpui-pre-platform](https://github.com/zed-industries/zed) 0.3.6 | zed-industries | Apache-2.0 | Zed's `gpui_platform` crate (gpui-pre snapshot of zed@bcf6582) |
 | [gpui-pre-wgpu](https://github.com/zed-industries/zed) 0.3.6 | zed-industries | Apache-2.0 | Zed's `gpui_wgpu` crate (gpui-pre snapshot of zed@bcf6582) |
+| [harper-core](https://github.com/automattic/harper) 2.11.0 | automattic | Apache-2.0 | The language checker for developers. |
 | [hayro](https://github.com/LaurenzV/hayro) 0.7.1 | Laurenz Stampfl | Apache-2.0 OR MIT | A rasterizer for PDF files. |
 | [html5ever](https://github.com/servo/html5ever) 0.40.1 | The html5ever Project Developers | MIT OR Apache-2.0 | High-performance browser-grade HTML5 parser |
 | [icu_calendar](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | Date APIs for Gregorian and non-Gregorian calendars |

@@ -1387,6 +1387,23 @@ Gemini or confidential mode):
   user signed their newest message in the conversation with, found by
   comparing the text after its `-- ` line (`signatures.rs`); otherwise the
   reply default. The single signature of older versions becomes the first.
+- **Grammar.** Harper (`harper-core`, Apache-2.0) checks English drafts,
+  text and subject, on this computer as you write (`grammar.rs`), on by default, under
+  Settings → Compose → Grammar. Paragraphs are checked off the UI thread
+  half a second after typing pauses, cached by their text; paragraphs
+  that do not look English, quotes and the signature are skipped, and
+  Harper's own spelling rule is off (spelling is Hunspell's). Mistakes
+  get a straight amber underline, apart from spelling's red wave; a right
+  click shows the message, up to four fixes and Ignore (for that draft).
+  The dialect follows the spelling language (British, Canadian,
+  Australian, Indian, else American). Harper's dictionary takes about
+  135 MB and stays loaded for the life of a process once any rule touches
+  it, so Harper runs in a helper process: the app binary started with
+  `--grammar-helper <language>`, one paragraph in and its mistakes out
+  as a JSON line each way over its pipes. It starts when a message opens
+  and is stopped when the last one closes (or grammar checking is turned
+  off), so the app itself stays small. The app binary grows about 10 MB.
+  Other languages are for Harper upstream.
 - **Sending account, Send and archive.** Settings → Compose picks the
   account new mail goes out from: the one whose mail is open (default) or
   always the same address (`sending.send_from`). Replies and forwards go
@@ -1598,8 +1615,9 @@ desktop's own app stays one click away.
 - **Cards.** Under each open message, one card per attachment (the
   webmail layout): a thumbnail (pictures, and the top of a PDF's first
   page), a glance drawn small on a white page (the top-left cells of a
-  spreadsheet or CSV, the first lines of a text file or document;
-  `katna_preview::glance`, skipped above 20 MB), or a colored type badge,
+  spreadsheet or CSV, the first lines of a text file or document, the
+  first slide's text centered; `katna_preview::glance`, skipped above
+  20 MB), or a colored type badge,
   and the file name. Hovering shows the name, the size and a Save button
   on frosted glass; "Save all" saves every attachment to a folder.
   Thumbnails are made in the background from the stored raw message and
@@ -1633,15 +1651,37 @@ desktop's own app stays one click away.
     numbered and bulleted lists (Word numbering and list styles, ODF list
     styles), tables, alignment and bold/italic/underline/strike-through.
     Pictures, headers, footers, notes, comments and text boxes are left
-    out. Only paragraphs on screen are laid out. Old Word (.doc), RTF and
-    slides have no preview.
-  - Anything else shows "No preview available" with Save and "Open
-    with…".
+    out. Only paragraphs on screen are laid out. Word 97–2003 (.doc) is
+    read into the same model (`katna_preview::word`): the OLE compound file
+    through `cfb` (MIT), then the FIB, the piece table (UTF-16 or
+    Windows-1252 text), the character and paragraph property pages, the
+    style sheet (built-in heading, title and subtitle styles) and the list
+    tables, giving the same headings, lists, tables, alignment and looks;
+    fields show their result, hidden text is dropped, and encrypted or
+    Word 6/95 files are not read. RTF has no preview.
+  - **Slides:** PowerPoint (pptx, ppt) and OpenDocument (odp),
+    `katna_preview::slides`, shown as text: each slide is its own white
+    page under a "Slide N" label, title first, then its text (bulleted
+    body placeholders, numbered lists), and its tables. pptx follows the
+    presentation's slide list; ppt follows the persist directory from the
+    last edit to the document's slide list and reads each slide's text
+    atoms, falling back to the texts kept in the slide list; odp reads
+    `draw:page`s. Pictures, charts, layout and speaker notes are left out.
+    A slide without a title placeholder takes a short first line as its
+    title.
+  - Anything else opens straight in the desktop's default app, and so
+    does a file of a previewable type that turns out unreadable (damaged,
+    encrypted, Word 6/95; the viewer closes and hands it over, or asks
+    which app when Default apps says Ask). Files that could run a program
+    never do: they show "No preview available" with Save only. Paging to
+    such a file with the viewer's arrows shows that page with "Open with…"
+    rather than launching an app.
 - **Default apps** (Settings → Default apps, `[mail.open]` in
-  `config.toml`): for PDFs, pictures, text, spreadsheets and documents,
+  `config.toml`): for PDFs, pictures, text, spreadsheets and documents
+  (slides included),
   clicking a card opens Katna Mail's viewer (the default), the desktop's
   default app for the type, or asks which app each time. Files without a
-  preview always open in the viewer. Which app is the desktop's default
+  preview always open in the desktop's default app (see above). Which app is the desktop's default
   is set in the desktop's own settings.
 - **Save** asks where through the desktop's file chooser (portal),
   starting in the download folder (`XDG_DOWNLOAD_DIR`); without a portal
@@ -2126,6 +2166,15 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   Preferences (right-click on the taskbar icon in Plasma and GNOME) run
   `katna-mail --compose`, `--inbox` and `--settings`. With `--data-dir` the
   app stands alone.
+- **Default mail app**: the desktop file declares
+  `MimeType=x-scheme-handler/mailto;` and `Exec=katna-mail %u`. A `mailto:`
+  link (RFC 6068: to, cc, bcc, subject, body) opens a new message filled
+  in; a running app gets it through `org.freedesktop.Application.Open`.
+  Settings > General > Default mail app shows whether the desktop's
+  `mimeapps.list` names Katna Mail for `x-scheme-handler/mailto` and can
+  set it (`katna_platform::mimeapps`, in the user's `mimeapps.list` and any
+  desktop-specific list that names another app). Plasma and GNOME read
+  these files. Under Flatpak this needs the OpenURI portal instead (later).
 - **KDE global menu**: the app serves its menu bar (File, Edit, View, Go,
   Message, Settings, Help) with `com.canonical.dbusmenu` at
   `/in/invenia/katna/Mail/MenuBar`, built from its GPUI actions and their

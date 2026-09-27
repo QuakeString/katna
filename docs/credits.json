@@ -83,6 +83,16 @@
       "repository": "https://github.com/tafia/calamine"
     },
     {
+      "name": "cfb",
+      "version": "0.15.0",
+      "description": "Read/write Compound File Binary (structured storage) files",
+      "license": "MIT",
+      "authors": [
+        "Matthew D. Steele"
+      ],
+      "repository": "https://github.com/mdsteele/rust-cfb"
+    },
+    {
       "name": "emojis",
       "version": "0.9.0",
       "description": "✨ Lookup emoji in *O(1)* time, access metadata and GitHub shortcodes, iterate over all emoji, and more!",
@@ -175,6 +185,16 @@
         "zed-industries"
       ],
       "repository": "https://github.com/zed-industries/zed"
+    },
+    {
+      "name": "harper-core",
+      "version": "2.11.0",
+      "description": "The language checker for developers.",
+      "license": "Apache-2.0",
+      "authors": [
+        "automattic"
+      ],
+      "repository": "https://github.com/automattic/harper"
     },
     {
       "name": "hayro",

@@ -29,6 +29,7 @@ mod tools;
 
 use std::cell::Cell;
 use std::rc::Rc;
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use gpui::{
@@ -41,14 +42,17 @@ use katna_render::{Address, MessageView};
 use katna_store::MessageId;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
-use katna_ui::rich::{Block, Doc, Palette, Para, RichEditor, RichEvent, SpellCheck, html};
+use katna_ui::rich::{
+    Block, Doc, GrammarCheck, Palette, Para, RichEditor, RichEvent, SpellCheck, html,
+};
 use katna_ui::unpx;
-use katna_ui::{InputEvent, TextInput};
+use katna_ui::{InputEvent, InputGrammarMenu, TextInput};
 
 use super::{MailWindow, SNACKBAR_TIME};
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::format;
+use crate::grammar;
 use crate::outgoing::{self, Mailbox, Outgoing, Part};
 use crate::signatures;
 use crate::spell::{self, Speller};
@@ -138,6 +142,8 @@ pub(super) struct Compose {
     /// Where an inline reply was last drawn, to keep its Send row at the
     /// bottom of the conversation while the rest scrolls under it.
     stick: Rc<Cell<Stick>>,
+    /// The underline of grammar mistakes in the subject.
+    grammar_color: Hsla,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -204,6 +210,9 @@ pub(super) struct Writing {
     speller: Option<Rc<Speller>>,
     /// Loading, or why it could not be loaded.
     speller_state: SpellerState,
+    /// Harper's grammar rules, in their helper process while a message is
+    /// open.
+    grammar: Option<Arc<dyn GrammarCheck>>,
     /// Messages waiting for their scheduled time, soonest first.
     scheduled: Vec<OutboxItem>,
     /// The list of scheduled mail shows.
@@ -545,6 +554,50 @@ impl MailWindow {
         }
     }
 
+    /// Starts a new message filled in from a `mailto:` link. An unsent
+    /// message already open stays, as it does for Compose.
+    pub(super) fn open_mailto(
+        &mut self,
+        mail: crate::mailto::Mailto,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.open_compose(Kind::New, None, window, cx);
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        if compose.kind != Kind::New || compose.touched(cx) {
+            return;
+        }
+        let set = |field: &Entity<TextInput>, text: String, cx: &mut Context<Self>| {
+            field.update(cx, |input, cx| input.set_text(text, cx));
+        };
+        set(&compose.to, mail.to.join(", "), cx);
+        set(&compose.cc, mail.cc.join(", "), cx);
+        set(&compose.bcc, mail.bcc.join(", "), cx);
+        set(&compose.subject, mail.subject.clone(), cx);
+        compose.show_cc |= !mail.cc.is_empty();
+        compose.show_bcc |= !mail.bcc.is_empty();
+        if !mail.body.is_empty() {
+            // The text goes where the cursor waits, above the signature.
+            let mut doc = compose.body.read(cx).doc().clone();
+            let text = html::from_plain(mail.body.trim_end()).blocks;
+            doc.blocks.splice(0..1.min(doc.blocks.len()), text);
+            compose.body.update(cx, |editor, cx| {
+                editor.set_doc(doc.clone(), doc.start(), cx)
+            });
+        }
+        let focus = if mail.to.is_empty() {
+            compose.to.focus_handle(cx)
+        } else if mail.subject.is_empty() {
+            compose.subject.focus_handle(cx)
+        } else {
+            compose.body.focus_handle(cx)
+        };
+        window.focus(&focus, cx);
+        cx.notify();
+    }
+
     /// Scrolls the conversation smoothly to the reply that just opened at
     /// its end, as Gmail does: to the end when the whole card fits, else
     /// just far enough that its first line, with the cursor, sits near the
@@ -682,11 +735,16 @@ impl MailWindow {
         let bcc = input("", &draft.bcc, cx);
         let subject = input("Subject", &draft.subject, cx);
         let speller = self.speller(cx);
+        let grammar = self.grammar();
+        subject.update(cx, |input, cx| {
+            input.set_grammar_check(grammar.clone(), grammar_color(&th), cx)
+        });
         let body = cx.new(|cx| {
             let mut editor = RichEditor::new("", cx);
             editor.set_palette(palette(&th));
             editor.set_doc(draft.body.clone(), draft.body.start(), cx);
             editor.set_spell_check(speller, cx);
+            editor.set_grammar_check(grammar, cx);
             editor
         });
         let mut subscriptions = Vec::new();
@@ -709,6 +767,17 @@ impl MailWindow {
                 },
             ));
         }
+        subscriptions.push(
+            cx.subscribe(&subject, |this, _, event: &InputGrammarMenu, cx| {
+                if let Some(c) = &mut this.compose {
+                    c.popup = Some(Popup::SubjectGrammar {
+                        position: event.position,
+                        issue: event.issue.clone(),
+                    });
+                    cx.notify();
+                }
+            }),
+        );
         self.load_address_book(cx);
         subscriptions.push(cx.subscribe_in(
             &body,
@@ -731,7 +800,8 @@ impl MailWindow {
                 RichEvent::ContextMenu {
                     position,
                     misspelled,
-                } => this.open_compose_menu(*position, misspelled.clone(), cx),
+                    grammar,
+                } => this.open_compose_menu(*position, misspelled.clone(), grammar.clone(), cx),
             },
         ));
         let focus = if focus_body {
@@ -769,6 +839,7 @@ impl MailWindow {
             body_scroll: ScrollHandle::new(),
             trimmed: None,
             stick: Rc::default(),
+            grammar_color: grammar_color(&th),
             _subscriptions: subscriptions,
         });
         cx.notify();
@@ -820,6 +891,41 @@ impl MailWindow {
             .speller
             .clone()
             .map(|s| s as Rc<dyn SpellCheck>)
+    }
+
+    /// Harper's grammar rules if grammar checking is on; starts their
+    /// helper process for the first message open.
+    pub(super) fn grammar(&mut self) -> Option<Arc<dyn GrammarCheck>> {
+        if !self.config.sending.grammar_check {
+            self.writing.grammar = None;
+            return None;
+        }
+        if self.writing.grammar.is_none() {
+            let language = spell::language(&self.config.sending.spell_language);
+            match grammar::Helper::start(&language, &self.config.general.language) {
+                Ok(helper) => self.writing.grammar = Some(Arc::new(helper)),
+                Err(err) => tracing::warn!("grammar checking: {err}"),
+            }
+        }
+        self.writing.grammar.clone()
+    }
+
+    /// The open message checks grammar, or stops, as Settings says.
+    pub(super) fn grammar_changed(&mut self, cx: &mut Context<Self>) {
+        if self.compose.is_none() {
+            self.writing.grammar = None;
+            return;
+        }
+        let grammar = self.grammar();
+        if let Some(compose) = &self.compose {
+            let color = compose.grammar_color;
+            compose.body.update(cx, |editor, cx| {
+                editor.set_grammar_check(grammar.clone(), cx)
+            });
+            compose
+                .subject
+                .update(cx, |input, cx| input.set_grammar_check(grammar, color, cx));
+        }
     }
 
     /// Scrolls the body so the cursor stays in view while typing. The
@@ -1166,6 +1272,10 @@ impl MailWindow {
         reduce: bool,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // Harper's helper is large: it runs only while a message is open.
+        if self.compose.is_none() && self.writing.grammar.is_some() {
+            self.writing.grammar = None;
+        }
         let (mode, conversation, closing) = self
             .compose
             .as_ref()
@@ -1762,6 +1872,12 @@ fn measure(
     .size_full()
 }
 
+/// The underline of grammar mistakes: amber, apart from spelling's red
+/// and the blue of links.
+fn grammar_color(th: &Theme) -> Hsla {
+    rgba(if th.dark { 0xfdd663ff } else { 0xf9ab00ff }).into()
+}
+
 /// The editor's colors from the window's theme.
 fn palette(th: &Theme) -> Palette {
     let color = |c: u32| -> Hsla { rgba(c).into() };
@@ -1769,6 +1885,7 @@ fn palette(th: &Theme) -> Palette {
         accent: color(th.accent),
         link: color(if th.dark { 0x8ab4f8ff } else { 0x1a0dabff }),
         misspelled: color(th.error),
+        grammar: grammar_color(th),
         rule: color(if th.dark { 0x5f6368ff } else { 0xccccccff }),
         surface: color(th.menu),
         text: color(th.text),

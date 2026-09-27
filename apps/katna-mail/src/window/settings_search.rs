@@ -119,6 +119,12 @@ const ENTRIES: &[Entry] = &[
         "tray badge unread count taskbar dock panel startup start login autostart launch boot",
     ),
     entry(
+        Section::General,
+        "settings-general-mail-app",
+        "settings-general-mail-app-summary",
+        "default client mailto links handler email program",
+    ),
+    entry(
         Section::Inbox,
         "settings-inbox-tabs",
         "settings-inbox-tabs-detail",
@@ -248,7 +254,7 @@ const ENTRIES: &[Entry] = &[
         Section::DefaultApps,
         "settings-default-apps-documents",
         "settings-default-apps-documents-summary",
-        "open attachment viewer app docx odt word",
+        "open attachment viewer app docx doc odt word pptx ppt odp powerpoint slides presentation",
     ),
     entry(
         Section::DefaultApps,
@@ -267,6 +273,12 @@ const ENTRIES: &[Entry] = &[
         "settings-compose-send-on-replies",
         "settings-compose-send-on-replies-summary",
         "send archive default behavior behaviour reply forward",
+    ),
+    entry(
+        Section::Signatures,
+        "settings-compose-grammar",
+        "settings-compose-grammar-summary",
+        "grammar check harper english writing mistakes proofread",
     ),
     entry(
         Section::Signatures,

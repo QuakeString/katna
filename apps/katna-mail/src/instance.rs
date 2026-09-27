@@ -26,6 +26,8 @@ pub enum Request {
     Action { name: String, message: Option<i64> },
     /// A click in the menu bar on the GPUI action with this name.
     Menu(String),
+    /// A `mailto:` link to write a message for.
+    Mailto(String),
 }
 
 impl Request {
@@ -84,9 +86,18 @@ impl Application {
         let _ = self.requests.try_send(Request::Activate);
     }
 
-    /// Katna Mail opens no files; `mailto:` links come later.
-    fn open(&self, _uris: Vec<String>, _platform_data: HashMap<String, OwnedValue>) {
-        let _ = self.requests.try_send(Request::Activate);
+    /// Opens `mailto:` links; Katna Mail opens no files.
+    fn open(&self, uris: Vec<String>, _platform_data: HashMap<String, OwnedValue>) {
+        let mut sent = false;
+        for uri in uris
+            .into_iter()
+            .filter(|uri| crate::mailto::Mailto::parse(uri).is_some())
+        {
+            sent |= self.requests.try_send(Request::Mailto(uri)).is_ok();
+        }
+        if !sent {
+            let _ = self.requests.try_send(Request::Activate);
+        }
     }
 
     fn activate_action(
@@ -194,6 +205,17 @@ async fn hand_off(connection: &Connection, request: Option<&Request>) -> bool {
         None | Some(Request::Activate | Request::Menu(_)) => {
             connection
                 .call_method(app, path, interface, "Activate", &platform)
+                .await
+        }
+        Some(Request::Mailto(uri)) => {
+            connection
+                .call_method(
+                    app,
+                    path,
+                    interface,
+                    "Open",
+                    &(vec![uri.as_str()], platform),
+                )
                 .await
         }
         Some(Request::Action { name, message }) => {

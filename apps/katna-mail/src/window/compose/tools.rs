@@ -15,7 +15,7 @@ use gpui::{
 };
 use jiff::civil::Date;
 use katna_ui::px;
-use katna_ui::rich::{Align, Font, List, RichEditor, Size, TableEdit, html};
+use katna_ui::rich::{Align, Font, GrammarIssue, List, RichEditor, Size, TableEdit, html};
 use katna_ui::{InputEvent, TextInput};
 
 use super::super::MailWindow;
@@ -53,8 +53,17 @@ pub(in crate::window) enum Popup {
     Context {
         position: Point<Pixels>,
         misspelled: Option<String>,
+        grammar: Option<GrammarIssue>,
+    },
+    /// A right click on a grammar mistake in the subject.
+    SubjectGrammar {
+        position: Point<Pixels>,
+        issue: GrammarIssue,
     },
 }
+
+/// A change to the subject field, from its grammar menu.
+type SubjectEdit = dyn Fn(&mut TextInput, &mut Context<TextInput>);
 
 /// Fields of the compose window's dialogs.
 pub(in crate::window) struct Dialog {
@@ -560,6 +569,7 @@ impl MailWindow {
             )
             .children(self.render_popup_scrim(cx))
             .children(self.render_context_popup(th, cx))
+            .children(self.render_subject_grammar(th, cx))
             .children(self.render_link_bubble(th, cx))
             .into_any_element()
     }
@@ -1504,12 +1514,14 @@ impl MailWindow {
         &mut self,
         position: Point<Pixels>,
         misspelled: Option<String>,
+        grammar: Option<GrammarIssue>,
         cx: &mut Context<Self>,
     ) {
         if let Some(c) = &mut self.compose {
             c.popup = Some(Popup::Context {
                 position,
                 misspelled,
+                grammar,
             });
         }
         cx.notify();
@@ -1520,6 +1532,7 @@ impl MailWindow {
         let Some(Popup::Context {
             position,
             misspelled,
+            grammar,
         }) = &compose.popup
         else {
             return None;
@@ -1558,6 +1571,31 @@ impl MailWindow {
                 cx.listener(move |this, _, window, cx| this.add_to_dictionary(&word, window, cx)),
             ));
             items = items.child(menu_divider(th));
+        }
+        if let Some(issue) = grammar.clone() {
+            items = items.child(
+                div()
+                    .px(px(16.0))
+                    .py(px(8.0))
+                    .text_size(px(13.0))
+                    .line_height(px(18.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(issue.message.clone()),
+            );
+            for (ix, fix) in issue.fixes.iter().enumerate() {
+                let (issue, fix) = (issue.clone(), fix.clone());
+                items = items.child(
+                    menu_item(("grammar-fix", ix), &fix.label, th)
+                        .font_weight(FontWeight::BOLD)
+                        .on_click(self.on_body(cx, move |e, cx| e.fix_grammar(&issue, &fix, cx))),
+                );
+            }
+            items = items
+                .child(
+                    menu_item("grammar-ignore", &katna_i18n::tr!("grammar-ignore"), th)
+                        .on_click(self.on_body(cx, move |e, cx| e.ignore_grammar(&issue, cx))),
+                )
+                .child(menu_divider(th));
         }
         let action = |ix: usize, label: &str, keys: &'static str, what: Clip| {
             menu_item(("clip", ix), label, th)
@@ -1603,6 +1641,66 @@ impl MailWindow {
                 .child(edit(5, "Delete column", TableEdit::DeleteColumn))
                 .child(edit(6, "Delete table", TableEdit::DeleteTable));
         }
+        Some(
+            deferred(
+                anchored()
+                    .position(*position)
+                    .snap_to_window_with_margin(px(8.0))
+                    .child(div().occlude().child(items)),
+            )
+            .with_priority(2)
+            .into_any_element(),
+        )
+    }
+
+    /// The fixes of a grammar mistake in the subject.
+    fn render_subject_grammar(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let compose = self.compose.as_ref()?;
+        let Some(Popup::SubjectGrammar { position, issue }) = &compose.popup else {
+            return None;
+        };
+        let on_subject = |f: Box<SubjectEdit>| {
+            cx.listener(move |this: &mut Self, _, window, cx| {
+                let Some(c) = &mut this.compose else {
+                    return;
+                };
+                c.popup = None;
+                let subject = c.subject.clone();
+                window.focus(&subject.focus_handle(cx), cx);
+                subject.update(cx, |input, cx| f(input, cx));
+                cx.notify();
+            })
+        };
+        let mut items = menu(th).w(px(240.0)).child(
+            div()
+                .px(px(16.0))
+                .py(px(8.0))
+                .text_size(px(13.0))
+                .line_height(px(18.0))
+                .text_color(rgba(th.text_dim))
+                .child(issue.message.clone()),
+        );
+        for (ix, fix) in issue.fixes.iter().enumerate() {
+            let (issue, fix) = (issue.clone(), fix.clone());
+            items = items.child(
+                menu_item(("subject-grammar-fix", ix), &fix.label, th)
+                    .font_weight(FontWeight::BOLD)
+                    .on_click(on_subject(Box::new(move |input, cx| {
+                        input.fix_grammar(&issue, &fix, cx)
+                    }))),
+            );
+        }
+        let ignored = issue.clone();
+        items = items.child(
+            menu_item(
+                "subject-grammar-ignore",
+                &katna_i18n::tr!("grammar-ignore"),
+                th,
+            )
+            .on_click(on_subject(Box::new(move |input, cx| {
+                input.ignore_grammar(&ignored, cx)
+            }))),
+        );
         Some(
             deferred(
                 anchored()

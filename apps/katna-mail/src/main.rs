@@ -11,7 +11,9 @@ mod autostart;
 mod daemon;
 mod data;
 mod format;
+mod grammar;
 mod instance;
+mod mailto;
 mod outgoing;
 mod placement;
 mod sidebar;
@@ -52,6 +54,8 @@ Options:
   --settings       Open the settings
   --message ID     Open the message with this ID (as notifications do)
   --reply-all ID   Open the message with this ID and reply to all
+  mailto:...       Write a new message as the link asks (Katna Mail is
+                   the desktop's mail app when Settings > General says so)
   -h, --help       Show this help
   -V, --version    Show the version
 
@@ -65,6 +69,12 @@ shortcuts changes them.
 const TRANSLATIONS: katna_i18n::Sources = include!(concat!(env!("OUT_DIR"), "/translations.rs"));
 
 fn main() -> ExitCode {
+    // Grammar checking runs in a copy of the app, started by the app.
+    let mut given = std::env::args().skip(1);
+    if given.next().as_deref() == Some(grammar::HELPER_FLAG) {
+        let language = given.next().unwrap_or_default();
+        return grammar::run_helper(&language, &given.next().unwrap_or_default());
+    }
     let mut data_dir: Option<PathBuf> = None;
     let mut search: Option<String> = None;
     let mut open_first = false;
@@ -89,6 +99,10 @@ fn main() -> ExitCode {
                     Some(id) => request = instance::Request::for_message(flag, id),
                     None => return usage_error(),
                 }
+            }
+            // The desktop file's `%u`: a link to write to.
+            Some(uri) if mailto::Mailto::parse(uri).is_some() => {
+                request = Some(instance::Request::Mailto(uri.to_owned()));
             }
             Some("-h" | "--help") => {
                 print!("{USAGE}");

@@ -4,7 +4,8 @@
 //! text (odt). Both are zip files of XML; this reads the text with its
 //! headings, lists, tables and bold/italic/underline/strike-through, and
 //! leaves out pictures, headers, footers, notes and comments. The viewer
-//! lays the result out as one long page.
+//! lays the result out as one long page. Older Word files (.doc) are read
+//! by [`crate::word`] and slides by [`crate::slides`] into the same model.
 
 use std::collections::HashMap;
 use std::io::{Cursor, Read};
@@ -35,6 +36,9 @@ pub enum Block {
     Paragraph(Paragraph),
     /// Rows of cells; each cell is its paragraphs.
     Table(Vec<Vec<Vec<Paragraph>>>),
+    /// The start of slide `n` (from 1) of a presentation: what follows,
+    /// up to the next one, is that slide's text.
+    Slide(u32),
 }
 
 #[derive(Debug, Clone, Default, PartialEq)]
@@ -91,8 +95,11 @@ impl Run {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Invalid;
 
-/// Reads a docx or odt file; the format is found from what is inside.
+/// Reads a docx, odt or doc file; the format is found from what is inside.
 pub fn open(bytes: Vec<u8>) -> Result<Document, Invalid> {
+    if crate::ole::is_ole(&bytes) {
+        return crate::word::open(bytes);
+    }
     let mut zip = ZipArchive::new(Cursor::new(bytes)).map_err(|_| Invalid)?;
     if zip.index_for_name("word/document.xml").is_some() {
         let body = part(&mut zip, "word/document.xml").ok_or(Invalid)?;
@@ -109,7 +116,7 @@ pub fn open(bytes: Vec<u8>) -> Result<Document, Invalid> {
 }
 
 /// One file of the zip as text, if it is there and not too large.
-fn part(zip: &mut ZipArchive<Cursor<Vec<u8>>>, name: &str) -> Option<String> {
+pub(crate) fn part(zip: &mut ZipArchive<Cursor<Vec<u8>>>, name: &str) -> Option<String> {
     let file = zip.by_name(name).ok()?;
     let mut text = String::new();
     file.take(MAX_PART_BYTES).read_to_string(&mut text).ok()?;
@@ -117,7 +124,7 @@ fn part(zip: &mut ZipArchive<Cursor<Vec<u8>>>, name: &str) -> Option<String> {
 }
 
 /// The value of attribute `name` (without its prefix).
-fn attr(e: &BytesStart, name: &str) -> Option<String> {
+pub(crate) fn attr(e: &BytesStart, name: &str) -> Option<String> {
     e.attributes()
         .flatten()
         .find(|a| a.key.local_name().as_ref() == name.as_bytes())
@@ -128,7 +135,7 @@ fn attr(e: &BytesStart, name: &str) -> Option<String> {
         })
 }
 
-fn local(e: &BytesStart) -> String {
+pub(crate) fn local(e: &BytesStart) -> String {
     String::from_utf8_lossy(e.local_name().as_ref()).into_owned()
 }
 
@@ -142,26 +149,26 @@ fn toggle(e: &BytesStart) -> bool {
 
 /// Collects paragraphs into blocks, tables included, within the limits.
 #[derive(Default)]
-struct Builder {
-    doc: Document,
+pub(crate) struct Builder {
+    pub(crate) doc: Document,
     chars: usize,
-    paragraph: Option<Paragraph>,
+    pub(crate) paragraph: Option<Paragraph>,
     /// Open tables, innermost last: rows of cells of paragraphs.
     tables: Vec<Vec<Vec<Vec<Paragraph>>>>,
     paragraphs: usize,
 }
 
 impl Builder {
-    fn full(&self) -> bool {
+    pub(crate) fn full(&self) -> bool {
         self.paragraphs >= MAX_PARAGRAPHS || self.chars >= MAX_CHARS
     }
 
-    fn start_paragraph(&mut self) {
+    pub(crate) fn start_paragraph(&mut self) {
         self.end_paragraph();
         self.paragraph = Some(Paragraph::default());
     }
 
-    fn text(&mut self, text: &str, look: &Run) {
+    pub(crate) fn text(&mut self, text: &str, look: &Run) {
         let Some(paragraph) = &mut self.paragraph else {
             return;
         };
@@ -179,7 +186,7 @@ impl Builder {
         }
     }
 
-    fn end_paragraph(&mut self) {
+    pub(crate) fn end_paragraph(&mut self) {
         let Some(paragraph) = self.paragraph.take() else {
             return;
         };
@@ -203,18 +210,41 @@ impl Builder {
         }
     }
 
-    fn start_table(&mut self) {
+    /// Ends the paragraph, dropping it when it has no text and is not in a
+    /// table (slides have many empty placeholders).
+    pub(crate) fn end_paragraph_unless_blank(&mut self) {
+        let blank = self
+            .paragraph
+            .as_ref()
+            .is_some_and(|p| p.runs.iter().all(|r| r.text.trim().is_empty()));
+        if blank && self.tables.is_empty() {
+            self.paragraph = None;
+        } else {
+            self.end_paragraph();
+        }
+    }
+
+    /// Starts slide `n`.
+    pub(crate) fn start_slide(&mut self, n: u32) {
+        self.end_paragraph();
+        while !self.tables.is_empty() {
+            self.end_table();
+        }
+        self.doc.blocks.push(Block::Slide(n));
+    }
+
+    pub(crate) fn start_table(&mut self) {
         self.end_paragraph();
         self.tables.push(Vec::new());
     }
 
-    fn start_row(&mut self) {
+    pub(crate) fn start_row(&mut self) {
         if let Some(table) = self.tables.last_mut() {
             table.push(Vec::new());
         }
     }
 
-    fn start_cell(&mut self, repeat: usize) {
+    pub(crate) fn start_cell(&mut self, repeat: usize) {
         self.end_paragraph();
         if let Some(row) = self.tables.last_mut().and_then(|t| t.last_mut()) {
             for _ in 0..repeat.max(1) {
@@ -225,7 +255,7 @@ impl Builder {
         }
     }
 
-    fn end_table(&mut self) {
+    pub(crate) fn end_table(&mut self) {
         self.end_paragraph();
         let Some(table) = self.tables.pop() else {
             return;
@@ -246,7 +276,7 @@ impl Builder {
         }
     }
 
-    fn finish(mut self) -> Document {
+    pub(crate) fn finish(mut self) -> Document {
         self.end_paragraph();
         while !self.tables.is_empty() {
             self.end_table();
@@ -454,12 +484,12 @@ fn word_numbering(xml: &str) -> Numbering {
 
 /// Counts list items so each gets its number.
 #[derive(Default)]
-struct Counters(HashMap<String, [u32; 10]>);
+pub(crate) struct Counters(HashMap<String, [u32; 10]>);
 
 impl Counters {
     /// The marker of the next item of list `key` at `level`, given each
     /// level's (format, text, start).
-    fn next(
+    pub(crate) fn next(
         &mut self,
         key: &str,
         level: u8,
@@ -493,12 +523,12 @@ impl Counters {
     }
 }
 
-fn bullet(level: u8) -> &'static str {
+pub(crate) fn bullet(level: u8) -> &'static str {
     ["•", "◦", "▪"][level as usize % 3]
 }
 
 /// `n` written as a list format asks: 3, c, C, iii, III.
-fn number_as(format: &str, n: u32) -> String {
+pub(crate) fn number_as(format: &str, n: u32) -> String {
     match format {
         "lowerLetter" | "a" => letters(n).to_lowercase(),
         "upperLetter" | "A" => letters(n),
@@ -721,7 +751,7 @@ fn docx(body: &str, styles: &str, numbering: &str) -> Document {
 }
 
 /// `&amp;`, `&#233;` and the other references XML knows.
-fn entity(r: &quick_xml::events::BytesRef) -> Option<char> {
+pub(crate) fn entity(r: &quick_xml::events::BytesRef) -> Option<char> {
     if let Ok(Some(c)) = r.resolve_char_ref() {
         return Some(c);
     }
@@ -908,6 +938,15 @@ const ODF_SKIP: [&str; 6] = [
 ];
 
 fn odt(content: &str, styles: &str) -> Document {
+    odf(content, styles, false)
+}
+
+/// An OpenDocument presentation (odp): each page's text as a slide.
+pub(crate) fn odp(content: &str, styles: &str) -> Document {
+    odf(content, styles, true)
+}
+
+fn odf(content: &str, styles: &str, slides: bool) -> Document {
     let odf = odf_styles(&[styles, content]);
     let mut out = Builder::default();
     let mut reader = Reader::from_str(content);
@@ -920,6 +959,10 @@ fn odt(content: &str, styles: &str) -> Document {
     let mut lists: Vec<String> = Vec::new();
     let mut item_pending = false;
     let mut counters: Vec<u32> = Vec::new();
+    // Slides: how many so far, and the look of the frame being read
+    // (a title or subtitle placeholder).
+    let mut slide = 0;
+    let mut frame_style: Option<Style> = None;
     loop {
         let event = match reader.read_event() {
             Ok(Event::Eof) | Err(_) => break,
@@ -943,7 +986,14 @@ fn odt(content: &str, styles: &str) -> Document {
                 if !in_body {
                     continue;
                 }
-                if ODF_SKIP.contains(&name.as_str()) {
+                let skipped = if slides {
+                    // Pictures and text sit in frames on a slide; speaker
+                    // notes are not shown.
+                    name == "notes" || (name != "frame" && ODF_SKIP.contains(&name.as_str()))
+                } else {
+                    ODF_SKIP.contains(&name.as_str())
+                };
+                if skipped {
                     if !empty {
                         skip = 1;
                     }
@@ -962,6 +1012,8 @@ fn odt(content: &str, styles: &str) -> Document {
                                     .and_then(|l| l.parse::<u8>().ok())
                                     .unwrap_or(1);
                                 Style::Heading(level.clamp(1, 6))
+                            } else if let Some(style) = frame_style {
+                                style
                             } else {
                                 odf.paragraph_style(&style_name)
                             };
@@ -986,7 +1038,9 @@ fn odt(content: &str, styles: &str) -> Document {
                                 p.list = Some((level.min(8) as u8, marker));
                             }
                         }
-                        if empty {
+                        if empty && slides {
+                            out.end_paragraph_unless_blank();
+                        } else if empty {
                             out.end_paragraph();
                         }
                     }
@@ -1027,6 +1081,17 @@ fn odt(content: &str, styles: &str) -> Document {
                         lists.push(style);
                         counters.truncate(lists.len() - 1);
                     }
+                    "page" if slides => {
+                        slide += 1;
+                        out.start_slide(slide);
+                    }
+                    "frame" if slides => {
+                        frame_style = match attr(&e, "class").as_deref() {
+                            Some("title") => Some(Style::Heading(1)),
+                            Some("subtitle") => Some(Style::Subtitle),
+                            _ => None,
+                        };
+                    }
                     "list-item" => item_pending = true,
                     "list-header" => item_pending = false,
                     "table" if !empty => out.start_table(),
@@ -1044,9 +1109,14 @@ fn odt(content: &str, styles: &str) -> Document {
             }
             Event::End(e) => match e.local_name().as_ref() {
                 b"p" | b"h" => {
-                    out.end_paragraph();
+                    if slides {
+                        out.end_paragraph_unless_blank();
+                    } else {
+                        out.end_paragraph();
+                    }
                     looks.clear();
                 }
+                b"frame" => frame_style = None,
                 b"span" | b"a" => {
                     if looks.len() > 1 {
                         looks.pop();
@@ -1107,7 +1177,7 @@ mod tests {
             .iter()
             .filter_map(|b| match b {
                 Block::Paragraph(p) => Some(p),
-                Block::Table(_) => None,
+                Block::Table(_) | Block::Slide(_) => None,
             })
             .collect();
         assert_eq!(paragraphs[0].style, Style::Title);
@@ -1132,7 +1202,7 @@ mod tests {
             .iter()
             .find_map(|b| match b {
                 Block::Table(t) => Some(t),
-                Block::Paragraph(_) => None,
+                Block::Paragraph(_) | Block::Slide(_) => None,
             })
             .unwrap();
         assert_eq!(table.len(), 2);
@@ -1149,6 +1219,7 @@ mod tests {
             .map(|b| match b {
                 Block::Paragraph(p) => p.text(),
                 Block::Table(t) => format!("table {}x{}", t.len(), t[0].len()),
+                Block::Slide(n) => format!("slide {n}"),
             })
             .collect();
         assert_eq!(
