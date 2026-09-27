@@ -44,6 +44,7 @@ use gpui::{
     ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, rgba,
 };
 use katna_core::AccountId;
+use katna_core::config::SEND_FROM_CURRENT;
 use katna_dbus::OutboxItem;
 use katna_i18n::tr;
 use katna_render::{Address, MessageView};
@@ -66,7 +67,7 @@ use crate::signatures;
 use crate::spell::{self, Speller};
 use crate::suggest::{Phrases, Suggester};
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, tip};
+use crate::widgets::{elevation, icon, menu, menu_item, tip};
 
 pub(super) use attach::Attachment;
 use checks::Passed;
@@ -1190,15 +1191,17 @@ impl MailWindow {
     }
 
     /// The account a message goes out from: for new mail the one chosen in
-    /// Settings, if any; else that of the open folder (the one a reply
-    /// answers in), or the first.
+    /// Settings, or the first account when none is chosen; else (a reply,
+    /// or new mail set to follow the open account) that of the open folder
+    /// (the one a reply answers in), or the first.
     fn compose_account(&self, kind: Kind) -> Option<&katna_core::Account> {
         let chosen = &self.config.sending.send_from;
-        let fixed = (kind == Kind::New && !chosen.is_empty())
+        let fixed = (kind == Kind::New && chosen != SEND_FROM_CURRENT)
             .then(|| {
                 self.accounts
                     .iter()
                     .find(|a| a.address.eq_ignore_ascii_case(chosen))
+                    .or_else(|| self.accounts.first())
             })
             .flatten();
         let open = self.folder.and_then(|folder| self.tree.account_of(folder));
@@ -2063,11 +2066,86 @@ impl MailWindow {
             .when(compose.show_bcc, |d| {
                 d.child(self.recipient_row(row(tr!("compose-bcc"), bcc_field), Field::Bcc, th, cx))
             })
+            .children(
+                self.render_from_row(th, cx)
+                    .map(|from| row(tr!("compose-from"), from)),
+            )
             .child(row(
                 String::new(),
                 compose.subject.clone().into_any_element(),
             ))
             .into_any_element()
+    }
+
+    /// The account the message goes out from, with the others to pick
+    /// from under its arrow.
+    fn render_from_row(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let compose = self.compose.as_ref()?;
+        let from = compose
+            .from
+            .and_then(|id| self.accounts.iter().find(|a| a.id == id))
+            .or_else(|| self.compose_account(compose.kind))?;
+        let open = compose.popup == Some(Popup::From);
+        let several = self.accounts.len() > 1;
+        let items = self.accounts.iter().enumerate().map(|(ix, account)| {
+            let id = account.id;
+            let chosen = account.id == from.id;
+            menu_item(("compose-from-account", ix), &sender_label(account), th)
+                .gap(px(12.0))
+                .child(div().flex_1())
+                .when(chosen, |d| {
+                    d.child(icon("check", th.nav_selected_text, 20.0))
+                })
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    if let Some(c) = &mut this.compose {
+                        c.from = Some(id);
+                        c.popup = None;
+                        window.focus(&c.body.focus_handle(cx), cx);
+                    }
+                    cx.notify();
+                }))
+        });
+        let button = div()
+            .id("compose-from")
+            .relative()
+            .max_w_full()
+            .h(px(30.0))
+            .pl(px(10.0))
+            .pr(px(if several { 6.0 } else { 10.0 }))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(6.0))
+            .rounded(px(6.0))
+            .border_1()
+            .border_color(rgba(if open { th.accent } else { th.divider }))
+            .text_color(rgba(th.text))
+            .child(
+                div()
+                    .min_w_0()
+                    .overflow_hidden()
+                    .text_ellipsis()
+                    .whitespace_nowrap()
+                    .child(sender_label(from)),
+            )
+            .when(several, |d| {
+                d.cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .when(!open, |d| d.tooltip(tip(tr!("compose-from-choose"), th)))
+                    .child(icon("chevron-down", th.text_dim, 18.0))
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::From, cx)))
+            })
+            .when(open, |d| {
+                d.child(tools::below(menu(th).min_w(px(280.0)).children(items)))
+            });
+        Some(
+            div()
+                .py(px(5.0))
+                .flex()
+                .min_w_0()
+                .child(button)
+                .into_any_element(),
+        )
     }
 
     fn render_compose_body(&self, th: &Theme, width: f32, cx: &mut Context<Self>) -> AnyElement {
@@ -2182,6 +2260,16 @@ fn small_button(id: &'static str, name: &'static str, th: &Theme) -> gpui::State
         .cursor_pointer()
         .hover(|s| s.bg(rgba(th.hover)))
         .child(icon(name, th.text_dim, 18.0))
+}
+
+/// An account as its mail shows it: `Name <address>`, or the address.
+fn sender_label(account: &katna_core::Account) -> String {
+    let name = account.display_name.trim();
+    if name.is_empty() || name.eq_ignore_ascii_case(&account.address) {
+        account.address.clone()
+    } else {
+        format!("{name} <{}>", account.address)
+    }
 }
 
 #[cfg(test)]
