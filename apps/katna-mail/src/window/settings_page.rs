@@ -1503,7 +1503,7 @@ impl MailWindow {
             self.row(
                 "Writing suggestions",
                 Some(
-                    "Learned on this computer from the mail you sent; nothing leaves it. Press Tab to take a suggestion, or keep typing.",
+                    "Learned on this computer from the mail you sent and the mail you are answering; nothing leaves it. Press Tab to take a suggestion, or keep typing.",
                 ),
                 self.switch_row(
                     "page-suggestions",

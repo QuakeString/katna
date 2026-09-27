@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Writing suggestions: the rest of a phrase shown ahead of the cursor
-//! while writing, from phrases the user wrote before. Learned on this
-//! computer from the user's own sent mail, plus a few phrases common in
-//! mail; nothing leaves the machine. English first: it only offers what
+//! while writing, from phrases the user wrote before and from the
+//! conversation being answered. Learned on this computer from the user's
+//! own sent mail, plus a few phrases common in mail; nothing leaves the
+//! machine. English first: it only offers what
 //! it has seen, so it stays quiet in other languages until it has seen
 //! them. No GPUI here.
 
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use katna_core::Paths;
 use katna_store::{Mode, Store};
@@ -25,6 +27,11 @@ const MIN_COUNT: u32 = 2;
 const MIN_SHARE: f32 = 0.6;
 /// Built-in phrases count as if written this often.
 const BUILT_IN_WEIGHT: u32 = 2;
+/// The conversation read at most, in characters.
+const THREAD_CHARS: usize = 20_000;
+/// Words of the conversation this long complete as they are typed, as do
+/// names.
+const TERM_CHARS: usize = 7;
 
 /// Phrases common in mail, so there is something to offer from the start.
 const BUILT_IN: &[&str] = &[
@@ -163,27 +170,90 @@ impl Phrases {
         self.after_one.shrink_to_fit();
     }
 
-    /// The likely next word after `context`, if one stands out. `prefix`,
-    /// lowercase, limits it to words that start with it.
-    fn next(&self, context: &[u32], prefix: &str) -> Option<u32> {
+    /// Adds the words seen after `context` (lowercase words) to `out`, by
+    /// lowercase word: how it is written and how often.
+    fn count_next(&self, context: &[String], out: &mut HashMap<String, (String, u32)>) {
+        let id = |w: &String| self.ids.get(w).copied();
         let nexts = match context {
-            [.., a, b] => self.after_two.get(&(*a, *b)),
-            [b] => self.after_one.get(b),
+            [.., a, b] => id(a).zip(id(b)).and_then(|ab| self.after_two.get(&ab)),
+            [b] => id(b).and_then(|b| self.after_one.get(&b)),
             [] => None,
-        }?;
-        let matching = nexts.iter().filter(|(w, _)| {
-            prefix.is_empty() || {
-                let word = self.words[*w as usize].to_lowercase();
-                word.starts_with(prefix) && word.len() > prefix.len()
-            }
-        });
-        let total: u32 = matching.clone().map(|(_, n)| n).sum();
-        let (best, count) = matching.max_by_key(|(_, n)| *n)?;
-        (*count >= MIN_COUNT && *count as f32 >= total as f32 * MIN_SHARE).then_some(*best)
+        };
+        for (word, n) in nexts.into_iter().flatten() {
+            let word = &self.words[*word as usize];
+            out.entry(word.to_lowercase())
+                .or_insert_with(|| (word.clone(), 0))
+                .1 += n;
+        }
     }
 }
 
-impl Suggest for Phrases {
+/// Suggestions for one message: from the phrases of the user's sent mail
+/// and of the conversation being answered, whose names and terms also
+/// complete as they are typed.
+pub struct Suggester {
+    sent: Rc<Phrases>,
+    thread: Phrases,
+    /// Names and longer words of the conversation, lowercase to as
+    /// written.
+    terms: HashMap<String, String>,
+}
+
+impl Suggester {
+    /// `thread` is the text of the conversation being answered, if any.
+    pub fn new(sent: Rc<Phrases>, thread: &str) -> Self {
+        // A conversation is short: what it says once counts.
+        let thread: String = thread.chars().take(THREAD_CHARS).collect();
+        let mut phrases = Phrases::default();
+        phrases.add(&thread, MIN_COUNT);
+        let mut terms = HashMap::new();
+        for sentence in sentences(&thread) {
+            for (ix, word) in words(sentence).enumerate() {
+                let name = ix > 0 && word.starts_with(char::is_uppercase);
+                if name || word.chars().count() >= TERM_CHARS {
+                    terms
+                        .entry(word.to_lowercase())
+                        .or_insert_with(|| word.to_owned());
+                }
+            }
+        }
+        Self {
+            sent,
+            thread: phrases,
+            terms,
+        }
+    }
+
+    /// The likely next word after `context`, if one stands out. `prefix`,
+    /// lowercase, limits it to words that start with it.
+    fn next(&self, context: &[String], prefix: &str) -> Option<String> {
+        let mut nexts = HashMap::new();
+        self.sent.count_next(context, &mut nexts);
+        self.thread.count_next(context, &mut nexts);
+        let matching = nexts.iter().filter(|(w, _)| {
+            prefix.is_empty() || (w.starts_with(prefix) && w.len() > prefix.len())
+        });
+        let total: u32 = matching.clone().map(|(_, (_, n))| n).sum();
+        let (_, (best, count)) = matching.max_by_key(|(_, (_, n))| *n)?;
+        (*count >= MIN_COUNT && *count as f32 >= total as f32 * MIN_SHARE).then(|| best.clone())
+    }
+
+    /// The one name or term of the conversation that starts with `prefix`
+    /// (lowercase), if there is one.
+    fn term(&self, prefix: &str) -> Option<&str> {
+        if prefix.chars().count() < 2 {
+            return None;
+        }
+        let mut found = self
+            .terms
+            .iter()
+            .filter(|(w, _)| w.starts_with(prefix) && w.len() >= prefix.len() + 3);
+        let (_, term) = found.next()?;
+        found.next().is_none().then_some(term.as_str())
+    }
+}
+
+impl Suggest for Suggester {
     fn suggest(&self, before: &str) -> Option<String> {
         // The sentence being written, up to the cursor.
         let sentence = before
@@ -196,27 +266,32 @@ impl Suggest for Phrases {
             (true, Some((last, rest))) => (rest, *last),
             _ => (&typed[..], ""),
         };
-        let id = |w: &str| self.ids.get(&w.to_lowercase()).copied();
-        let mut context: Vec<u32> = done
+        let mut context: Vec<String> = done
             .iter()
             .rev()
             .take(2)
             .rev()
-            .map(|w| id(w))
-            .collect::<Option<_>>()?;
+            .map(|w| w.to_lowercase())
+            .collect();
+        // Nothing to go on at the start of a sentence.
         if context.is_empty() {
             return None;
         }
-        // The rest of the word being typed, when one stands out; else the
-        // word may be whole already, and the phrase goes on after it.
         let mut out = String::new();
         if !partial.is_empty() {
-            match self.next(&context, &partial.to_lowercase()) {
+            let lower = partial.to_lowercase();
+            // The rest of the word being typed, when one stands out, or a
+            // name or term of the conversation; else the word may be
+            // whole already, and the phrase goes on after it.
+            let word = self
+                .next(&context, &lower)
+                .or_else(|| self.term(&lower).map(str::to_owned));
+            match word {
                 Some(word) => {
-                    out.push_str(self.words[word as usize].get(partial.len()..)?);
-                    context.push(word);
+                    out.push_str(word.get(partial.len()..)?);
+                    context.push(word.to_lowercase());
                 }
-                None => context.push(id(partial)?),
+                None => context.push(lower),
             }
         }
         let mut space = !before.ends_with(char::is_whitespace);
@@ -229,8 +304,8 @@ impl Suggest for Phrases {
                 out.push(' ');
             }
             space = true;
-            out.push_str(&self.words[word as usize]);
-            context.push(word);
+            context.push(word.to_lowercase());
+            out.push_str(&word);
         }
         // A letter or two is not worth a Tab.
         (out.trim().chars().count() >= 3).then_some(out)
@@ -303,13 +378,13 @@ fn own_text(body: &str) -> String {
 mod tests {
     use super::*;
 
-    fn learned(texts: &[&str]) -> Phrases {
+    fn learned(texts: &[&str]) -> Suggester {
         let mut phrases = Phrases::built_in();
         for text in texts {
             phrases.add(text, 1);
         }
         phrases.prune();
-        phrases
+        Suggester::new(Rc::new(phrases), "")
     }
 
     #[test]
@@ -351,6 +426,29 @@ mod tests {
         // Nothing to go on at the start of a sentence.
         assert_eq!(phrases.suggest("Thank"), None);
         assert_eq!(phrases.suggest("Wir treffen uns "), None);
+    }
+
+    #[test]
+    fn follows_the_conversation() {
+        let thread = "Hi Kay,\nCan we move the quarterly review to Thursday at 3pm? \
+                      Roberta will bring the forecast.\nThanks, Bob";
+        let suggester = Suggester::new(Rc::new(Phrases::built_in()), thread);
+        // Its phrases, though seen once.
+        assert_eq!(
+            suggester.suggest("Sure, Thursday at ").as_deref(),
+            Some("3pm")
+        );
+        // Its names and longer words.
+        assert_eq!(suggester.suggest("Thanks Rob").as_deref(), Some("erta"));
+        assert_eq!(
+            suggester.suggest("I will read the fore").as_deref(),
+            Some("cast")
+        );
+        // And still the common phrases.
+        assert_eq!(
+            suggester.suggest("Let me know if you have").as_deref(),
+            Some(" any questions")
+        );
     }
 
     #[test]

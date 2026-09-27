@@ -57,7 +57,7 @@ use crate::grammar;
 use crate::outgoing::{self, Mailbox, Outgoing, Part};
 use crate::signatures;
 use crate::spell::{self, Speller};
-use crate::suggest::Phrases;
+use crate::suggest::{Phrases, Suggester};
 use crate::theme::{Theme, fade};
 use crate::widgets::{elevation, icon, tip};
 
@@ -142,6 +142,9 @@ pub(super) struct Compose {
     /// The quoted message a reply answers, kept out of the text behind a
     /// "..." button until it is opened, as in Gmail. It is still sent.
     trimmed: Option<Vec<Block>>,
+    /// The text of the conversation a reply answers, for writing
+    /// suggestions.
+    answered: String,
     /// Where an inline reply was last drawn, to keep its Send row at the
     /// bottom of the conversation while the rest scrolls under it.
     stick: Rc<Cell<Stick>>,
@@ -346,6 +349,23 @@ fn quoted(body: &str) -> Vec<Block> {
         }
     }
     doc.blocks
+}
+
+/// The quoted conversation in a reply's `doc`, with its "On ... wrote:"
+/// line.
+fn thread_text(doc: &Doc) -> String {
+    let paras: Vec<&str> = doc
+        .blocks
+        .iter()
+        .filter_map(|b| match b {
+            Block::Para(p) => Some(p),
+            _ => None,
+        })
+        .skip_while(|p| p.style.quote == 0 && !p.text.trim_end().ends_with("wrote:"))
+        .filter(|p| !p.style.signature)
+        .map(|p| p.text.as_str())
+        .collect();
+    paras.join("\n")
 }
 
 /// Takes the quoted message off the end of a reply's `doc`: the "On ...
@@ -743,7 +763,8 @@ impl MailWindow {
         let subject = input("Subject", &draft.subject, cx);
         let speller = self.speller(cx);
         let grammar = self.grammar();
-        let suggest = self.suggestions(cx);
+        let answered = thread_text(&draft.body);
+        let suggest = self.suggestions(&answered, cx);
         subject.update(cx, |input, cx| {
             input.set_grammar_check(grammar.clone(), grammar_color(&th), cx)
         });
@@ -847,6 +868,7 @@ impl MailWindow {
             closing: false,
             body_scroll: ScrollHandle::new(),
             trimmed: None,
+            answered,
             stick: Rc::default(),
             grammar_color: grammar_color(&th),
             _subscriptions: subscriptions,
@@ -939,7 +961,7 @@ impl MailWindow {
 
     /// Writing suggestions if they are on; starts learning the phrases the
     /// first time.
-    fn suggestions(&mut self, cx: &mut Context<Self>) -> Option<Rc<dyn Suggest>> {
+    fn suggestions(&mut self, thread: &str, cx: &mut Context<Self>) -> Option<Rc<dyn Suggest>> {
         if !self.config.sending.writing_suggestions {
             return None;
         }
@@ -960,12 +982,23 @@ impl MailWindow {
             })
             .detach();
         }
-        self.writing.phrases.clone().map(|p| p as Rc<dyn Suggest>)
+        // Common phrases and the conversation until the sent mail is read.
+        let sent = self
+            .writing
+            .phrases
+            .clone()
+            .unwrap_or_else(|| Rc::new(Phrases::built_in()));
+        Some(Rc::new(Suggester::new(sent, thread)))
     }
 
     /// The open message suggests, or stops, as Settings says.
     pub(super) fn suggestions_changed(&mut self, cx: &mut Context<Self>) {
-        let suggest = self.suggestions(cx);
+        let thread = self
+            .compose
+            .as_ref()
+            .map(|c| c.answered.clone())
+            .unwrap_or_default();
+        let suggest = self.suggestions(&thread, cx);
         if let Some(compose) = &self.compose {
             compose
                 .body
