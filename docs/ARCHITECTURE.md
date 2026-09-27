@@ -1119,6 +1119,13 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   message in the card; `u`/Escape goes back, `j`/`k` move to the next or
   previous message in both views, as in Gmail. The toolbar shows the
   visible range ("1–19 of 72") and paging arrows.
+- **Menus and popovers close alike.** The account menu, the toolbar and
+  right-click menus, the "+N" attachments list, Search options and its date
+  picker all close on Escape (the top one first, before any shortcut, so
+  Escape never also goes back to the list) and on a press anywhere outside
+  them, the top bar included: each sits over a scrim that covers the whole
+  window (`window/popovers.rs`). Escape also closes quick settings; a click
+  beside them does not, since they sit beside the list rather than over it.
 - **Line extras (Gmail's).** Next to the star, an importance marker
   (`+`/`=` mark important, `-` not important; also in the More and
   right-click menus). Importance is the `$Important` keyword (RFC 8457,
@@ -1338,9 +1345,15 @@ Gemini or confidential mode):
   Reply, Reply all and Forward stay pinned at the foot of the open
   conversation. Answering writes inline at the end of the conversation,
   as in Gmail: a card with the recipients, the text and the Send row,
-  which can pop out into the window. The card grows with its text and
+  which pops out into a desktop window of its own; docking it there brings it back to the conversation. The card grows with its text and
   scrolls with the messages; opening it scrolls smoothly to its first
-  line, and typing keeps the cursor in view; the list's single-letter keys are switched off inside text
+  line, and typing keeps the cursor in view. Its Send row sticks to the
+  bottom of the pane while the text runs on under it. A reply's quoted
+  message starts folded behind a "..." button (it is still sent). The
+  formatting bar (Aa) floats over the end of the text, tinted and as wide
+  as its buttons, so opening it moves nothing. On a phone, and a tablet
+  too narrow for the reading pane, New Message covers the whole window;
+  the list's single-letter keys are switched off inside text
   fields. The list has a right-click menu (reply, reply all, forward,
   archive, delete, spam, read, star, move to, find emails from the
   sender) acting on the ticked lines or the clicked one. The "select all
@@ -1481,7 +1494,13 @@ one of three layouts by the width inside the window frame
 |---------|---------------|--------------|
 | Desktop | 1080 px and up | §13.6 as is. |
 | Tablet  | 600–1080 px   | The folders fold into a drawer the menu button opens over a dimmed list; Compose stays in the top bar beside the menu button (the owner's choice), folding down to its pencil below 760 px; the reading pane (three-pane setting) stays beside the list from 840 px, and narrower the conversation slides in over the list. |
-| Phone   | under 600 px  | No app rail: the apps sit in a bar along the bottom. The search box is a pill across the top bar with the menu button and account picture inside it (settings move to the drawer). The list is edge to edge, three lines a message with the sender's picture, which ticks the line when tapped; the inbox tabs move to the drawer. Compose floats at the bottom right; it folds to its pencil as the list scrolls down and grows back after a few steps up (or at the top). An open conversation slides in over the list and the bottom bar sinks away; its messages use the room under the sender's picture, from the picture's left edge, and Reply, Reply all and Forward share the width equally. Composing takes a sheet over the whole window. |
+| Phone   | under 600 px  | No app rail: the apps sit in a bar along the bottom. The search box is a pill across the top bar with the menu button and account picture inside it (settings move to the drawer). The list is edge to edge, three lines a message with the sender's picture, which ticks the line when tapped; the inbox tabs move to the drawer. Compose floats at the bottom right; it folds to its pencil as the list scrolls down and grows back after a few steps up (or at the top). An open conversation slides in over the list and the bottom bar sinks away; its messages use the room under the sender's picture, from the picture's left edge, and Reply, Reply all and Forward share the width equally. Composing takes a sheet over the whole window. Quick settings and the Settings page each fill the window between the top bar and the bottom bar, with no Compose button over them; the Settings page's section tabs stay on one line that scrolls sideways. |
+
+Settings rows put the name beside the controls and wrap on width alone,
+not on the layout: where the controls would get less than 300 px beside
+the name, the name goes above them and both span the row, as in Gmail's
+mobile settings. So a narrow tablet stacks them too. Long choices wrap to a
+second line instead of being cut off.
 
 A layout changes only 12 px past its threshold, so a window resized right
 at a threshold does not flicker between two layouts. The GNOME minimum

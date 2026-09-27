@@ -290,6 +290,17 @@ impl RichEditor {
         cx.notify();
     }
 
+    /// Adds `blocks` at the end of the content, as if they had always been
+    /// there: the selection stays and undo does not take them away.
+    pub fn append_blocks(&mut self, blocks: Vec<Block>, cx: &mut Context<Self>) {
+        for snapshot in self.undo.iter_mut().chain(self.redo.iter_mut()) {
+            snapshot.doc.blocks.extend(blocks.iter().cloned());
+        }
+        self.doc.blocks.extend(blocks);
+        cx.emit(RichEvent::Changed);
+        cx.notify();
+    }
+
     /// The content as mail HTML.
     pub fn html(&self, image_src: &dyn Fn(&Image) -> String) -> String {
         html::to_html(&self.doc, image_src)

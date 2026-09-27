@@ -454,6 +454,7 @@ impl MailWindow {
         if shown <= 0.001
             || compose_open
             || self.settings_open
+            || self.settings_page.is_some()
             || self.app != RailApp::Mail
             || self.mail.is_err()
             || self.accounts.is_empty()
