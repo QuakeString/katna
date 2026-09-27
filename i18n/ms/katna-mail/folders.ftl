@@ -30,6 +30,7 @@ folder-spam = Spam
 folder-trash = Sampah
 folder-all-mail = Semua Mel
 folder-scheduled = Dijadualkan
+folder-activity = Aktiviti
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

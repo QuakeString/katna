@@ -35,6 +35,7 @@ folder-spam = Спам
 folder-trash = Корзина
 folder-all-mail = Вся почта
 folder-scheduled = Запланированные
+folder-activity = Активность
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

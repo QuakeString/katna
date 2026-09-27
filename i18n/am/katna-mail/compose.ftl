@@ -68,6 +68,12 @@ compose-encrypt = አመስጥር
 compose-encrypted = ተመስጥሯል፦ ሊያነቡት የሚችሉት ተቀባዮቹ ብቻ ናቸው
 compose-sign = ፈርም
 compose-signed = ተፈርሟል፦ ተቀባዮች ከእርስዎ መሆኑን ማረጋገጥ ይችላሉ
+compose-track = መከፈትን እና ጠቅታዎችን ተከታተል
+compose-tracked = ክትትል ይደረግበታል፦ እያንዳንዱ ተቀባይ ሲከፍተው ወይም አገናኝ ሲከተል ያያሉ
+compose-track-unavailable = የተፈረመ፣ የተመሰጠረ እና ግልጽ ጽሑፍ ደብዳቤ መከታተል አይቻልም
+compose-track-sign-in = መከፈትን እና ጠቅታዎችን ለመከታተል ወደ Katna መለያ ይግቡ
+compose-receipt = የንባብ ማረጋገጫ ጠይቅ
+compose-receipt-on = የንባብ ማረጋገጫ ተጠይቋል፦ የተቀባዩ መተግበሪያ እንዲልኩ ሊጠይቃቸው ይችላል
 
 ## Spelling
 

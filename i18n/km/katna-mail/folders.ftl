@@ -30,6 +30,7 @@ folder-spam = សារឥតបានការ
 folder-trash = ធុងសំរាម
 folder-all-mail = សំបុត្រទាំងអស់
 folder-scheduled = បានកំណត់ពេល
+folder-activity = សកម្មភាព
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

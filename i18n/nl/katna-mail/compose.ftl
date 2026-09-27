@@ -68,6 +68,12 @@ compose-encrypt = Versleutelen
 compose-encrypted = Versleuteld: alleen de ontvangers kunnen het lezen
 compose-sign = Ondertekenen
 compose-signed = Ondertekend: ontvangers kunnen controleren dat het van jou komt
+compose-track = Openen en klikken volgen
+compose-tracked = Gevolgd: je ziet wanneer elke ontvanger het opent of een link volgt
+compose-track-unavailable = Ondertekende, versleutelde en platte-tekstmail kan niet worden gevolgd
+compose-track-sign-in = Meld je aan bij een Katna-account om openen en klikken te volgen
+compose-receipt = Leesbevestiging vragen
+compose-receipt-on = Leesbevestiging gevraagd: de app van de ontvanger kan vragen er een te sturen
 
 ## Spelling
 

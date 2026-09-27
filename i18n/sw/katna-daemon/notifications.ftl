@@ -11,6 +11,8 @@ notify-unknown-sender = Mtumaji asiyejulikana
 notify-snooze-back = Zimerudi baada ya kuahirishwa
 notify-no-reply = Bado hakuna jibu
 notify-no-reply-to = Hakuna aliyejibu “{ $subject }”.
+notify-tracking-opened = { $who } amefungua { $subject }
+notify-tracking-clicked = { $who } amebofya kiungo katika { $subject }
 
 ## Its buttons
 

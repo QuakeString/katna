@@ -661,3 +661,35 @@ arrow sa tabi ng Ipadala ay puwedeng magpaalala sa iyo kung walang sumagot
 sa loob ng 1, 3 o 7 araw. Parehong gumagana habang naka-on ang computer
 mo, at humahabol pagkagising nito.
 """
+
+["2026-09-27-1717-translate-mail"]
+title = "Basahin ang mail sa wika mo"
+text = """
+Ang mensaheng nasa ibang wika ay may button na ngayon sa itaas nito para
+isalin, at ibinabalik ito ng Ipakita ang orihinal. Tinutukoy ng Katna ang
+wika sa computer mo; kapag hiniling mo lang saka napupunta ang text ng
+mensahe sa sariling server ng Katna para isalin. Sa Mga setting >
+Pangkalahatan > Pagsasalin mo pinipili ang wika mo at ang mga wikang
+palaging isasalin.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Alamin kung kailan binuksan ang mail"
+text = """
+I-on ang mata sa tabi ng mga tatanggap para makita kung kailan binubuksan
+ng bawat isa ang mensahe mo o sinusundan ang isang link dito, o humingi
+na lang ng read receipt. Ipinapakita ng naipadalang mail kung sino ang
+nagbukas nito, at sinasabihan ka ng isang notification sa unang
+pagkakataon. Parehong naka-off ang mga ito sa bawat bagong mensahe, at
+kailangan ng Katna account para sa tracking (Mga setting > Katna
+account).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Aktibidad ng naka-track na mail"
+text = """
+Ipinapakita ng Aktibidad sa ilalim ng Naipadala kung ilan sa mga
+naka-track mong mensahe ang nabuksan at kung gaano kadalas sinundan ang
+mga link nila, kasama ang mga subject line mo na nakaayos ayon sa kung
+gaano kadalas binubuksan ang mga ito.
+"""

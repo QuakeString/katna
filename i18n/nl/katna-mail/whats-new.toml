@@ -644,3 +644,32 @@ herinneren als niemand binnen 1, 3 of 7 dagen antwoordt. Beide werken
 terwijl je computer aan staat, en halen de achterstand in zodra hij weer
 wakker wordt.
 """
+
+["2026-09-27-1717-translate-mail"]
+title = "E-mail lezen in je eigen taal"
+text = """
+Een bericht in een andere taal toont nu een knop Vertalen erboven, en
+Origineel tonen brengt het terug. Katna herkent de taal op je computer;
+alleen als je erom vraagt gaat de tekst van het bericht naar de eigen
+server van Katna om vertaald te worden. Instellingen > Algemeen >
+Vertaling kiest je taal en de talen die altijd vertaald worden.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Zien wanneer e-mail geopend wordt"
+text = """
+Zet het oog bij de ontvangers aan om te zien wanneer elk van hen je
+bericht opent of een link erin volgt, of vraag in plaats daarvan een
+leesbevestiging. Verzonden e-mail laat zien wie hem geopend heeft, en een
+melding laat het je de eerste keer weten. Beide staan uit voor elk nieuw
+bericht, en volgen vereist een Katna-account (Instellingen >
+Katna-account).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Activiteit voor gevolgde e-mail"
+text = """
+Activiteit onder Verzonden toont hoeveel van je gevolgde berichten zijn
+geopend en hoe vaak hun links zijn gevolgd, met je onderwerpregels
+gerangschikt op hoe vaak ze worden geopend.
+"""

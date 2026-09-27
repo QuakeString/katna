@@ -30,6 +30,7 @@ folder-spam = Thư rác
 folder-trash = Thùng rác
 folder-all-mail = Tất cả thư
 folder-scheduled = Đã lên lịch
+folder-activity = Hoạt động
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

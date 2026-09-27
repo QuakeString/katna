@@ -33,6 +33,7 @@ folder-spam = Spam
 folder-trash = Çöp Kutusu
 folder-all-mail = Tüm Postalar
 folder-scheduled = Planlanmış
+folder-activity = Etkinlik
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

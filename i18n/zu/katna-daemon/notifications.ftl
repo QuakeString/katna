@@ -14,6 +14,8 @@ notify-unknown-sender = Umthumeli ongaziwa
 notify-snooze-back = Kubuyile ngemva kokulibaziswa
 notify-no-reply = Ayikabikho impendulo
 notify-no-reply-to = Akekho ophendule “{ $subject }”.
+notify-tracking-opened = U-{ $who } uvule { $subject }
+notify-tracking-clicked = U-{ $who } uchofoze isixhumanisi ku-{ $subject }
 
 ## Its buttons
 

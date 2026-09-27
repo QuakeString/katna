@@ -30,6 +30,7 @@ folder-spam = Spam
 folder-trash = Ihe mkpofu
 folder-all-mail = Ozi niile
 folder-scheduled = Ahaziri ahazi
+folder-activity = Ihe omume
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

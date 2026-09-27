@@ -11,6 +11,8 @@ notify-unknown-sender = 不明な送信者
 notify-snooze-back = スヌーズから戻りました
 notify-no-reply = まだ返信がありません
 notify-no-reply-to = 「{ $subject }」に誰も返信していません。
+notify-tracking-opened = { $who } が「{ $subject }」を開きました
+notify-tracking-clicked = { $who } が「{ $subject }」のリンクをクリックしました
 
 ## Its buttons
 

@@ -30,6 +30,7 @@ folder-spam = 迷惑メール
 folder-trash = ゴミ箱
 folder-all-mail = すべてのメール
 folder-scheduled = 予定
+folder-activity = アクティビティ
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

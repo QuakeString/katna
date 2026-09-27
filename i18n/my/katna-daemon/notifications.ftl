@@ -11,6 +11,8 @@ notify-unknown-sender = မသိသော ပို့သူ
 notify-snooze-back = ခဏဆိုင်းထားရာမှ ပြန်ရောက်လာပြီ
 notify-no-reply = ပြန်စာ မရသေးပါ
 notify-no-reply-to = “{ $subject }” ကို မည်သူမျှ ပြန်စာ မပို့သေးပါ။
+notify-tracking-opened = { $who } က { $subject } ကို ဖွင့်လိုက်သည်
+notify-tracking-clicked = { $who } က { $subject } ထဲရှိ လင့်ခ်တစ်ခုကို နှိပ်လိုက်သည်
 
 ## Its buttons
 

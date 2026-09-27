@@ -644,3 +644,32 @@ a la hora que elegiste. Al enviar, la flecha junto a Enviar puede
 recordártelo si nadie responde en 1, 3 o 7 días. Ambas funciones van
 mientras el ordenador está encendido y se ponen al día cuando se reactiva.
 """
+
+["2026-09-27-1717-translate-mail"]
+title = "Lee el correo en tu idioma"
+text = """
+Un mensaje en otro idioma muestra ahora un botón Traducir encima, y
+Mostrar original lo devuelve como estaba. Katna detecta el idioma en tu
+ordenador; solo cuando lo pides, el texto del mensaje va al servidor
+propio de Katna para traducirse. Ajustes > General > Traducción elige tu
+idioma y los que se traducen siempre.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Mira cuándo se abre tu correo"
+text = """
+Activa el ojo junto a los destinatarios para ver cuándo cada uno abre tu
+mensaje o sigue un enlace que contiene, o pide en su lugar una
+confirmación de lectura. El correo enviado muestra quién lo abrió, y una
+notificación te avisa la primera vez. Ambos están desactivados en cada
+mensaje nuevo, y el seguimiento necesita una cuenta de Katna (Ajustes >
+Cuenta de Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Actividad del correo con seguimiento"
+text = """
+Actividad, bajo Enviados, muestra cuántos de tus mensajes con seguimiento
+se abrieron y cuántas veces se siguieron sus enlaces, con tus asuntos
+ordenados según cuánto se abren.
+"""

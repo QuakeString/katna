@@ -661,3 +661,32 @@ flèche à côté d’Envoyer peut vous le rappeler si personne ne répond sous
 1, 3 ou 7 jours. Les deux fonctionnent tant que votre ordinateur est
 allumé, et rattrapent leur retard à son réveil.
 """
+
+["2026-09-27-1717-translate-mail"]
+title = "Lisez vos messages dans votre langue"
+text = """
+Un message dans une autre langue affiche désormais un bouton Traduire
+au-dessus, et Afficher l’original le rétablit. Katna détecte la langue
+sur votre ordinateur ; le texte du message n’est envoyé au serveur de
+Katna pour être traduit que si vous le demandez. Paramètres > Général >
+Traduction choisit votre langue et celles à toujours traduire.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Sachez quand vos messages sont ouverts"
+text = """
+Activez l’œil à côté des destinataires pour voir quand chacun ouvre votre
+message ou suit un de ses liens, ou demandez plutôt un accusé de lecture.
+Les messages envoyés indiquent qui les a ouverts, et une notification
+vous prévient la première fois. Les deux sont désactivés pour chaque
+nouveau message, et le suivi nécessite un compte Katna (Paramètres >
+Compte Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Activité des messages suivis"
+text = """
+Activité, sous Messages envoyés, montre combien de vos messages suivis
+ont été ouverts et combien de fois leurs liens ont été suivis, avec vos
+objets classés selon leur taux d’ouverture.
+"""

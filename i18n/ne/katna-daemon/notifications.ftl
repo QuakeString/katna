@@ -11,6 +11,8 @@ notify-unknown-sender = अज्ञात प्रेषक
 notify-snooze-back = स्नुजबाट फर्कियो
 notify-no-reply = अझै जवाफ आएको छैन
 notify-no-reply-to = “{ $subject }” को जवाफ कसैले दिएको छैन।
+notify-tracking-opened = { $who } ले { $subject } खोल्नुभयो
+notify-tracking-clicked = { $who } ले { $subject } मा भएको लिङ्कमा क्लिक गर्नुभयो
 
 ## Its buttons
 

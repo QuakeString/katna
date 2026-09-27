@@ -16,6 +16,8 @@ notify-unknown-sender = Nieznany nadawca
 notify-snooze-back = Odłożona poczta wróciła
 notify-no-reply = Jeszcze bez odpowiedzi
 notify-no-reply-to = Nikt nie odpowiedział na „{ $subject }”.
+notify-tracking-opened = Otwarte przez { $who }: { $subject }
+notify-tracking-clicked = Link kliknięty przez { $who }: { $subject }
 
 ## Its buttons
 

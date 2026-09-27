@@ -33,6 +33,7 @@ folder-spam = Saƙonnin banza
 folder-trash = Kwandon shara
 folder-all-mail = Duk wasiƙu
 folder-scheduled = Waɗanda aka tsara
+folder-activity = Ayyuka
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

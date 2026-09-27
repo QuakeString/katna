@@ -638,3 +638,32 @@ dapat mengingatkan Anda jika tidak ada yang membalas dalam 1, 3, atau 7
 hari. Keduanya bekerja selama komputer Anda menyala, dan menyusul setelah
 komputer bangun.
 """
+
+["2026-09-27-1717-translate-mail"]
+title = "Baca email dalam bahasa Anda"
+text = """
+Pesan dalam bahasa lain kini menampilkan tombol Terjemahkan di atasnya,
+dan Tampilkan asli mengembalikannya. Katna mengenali bahasanya di komputer
+Anda; teks pesan baru dikirim ke server Katna sendiri untuk diterjemahkan
+saat Anda memintanya. Setelan > Umum > Terjemahan memilih bahasa Anda dan
+bahasa yang selalu diterjemahkan.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Lihat kapan email dibuka"
+text = """
+Aktifkan ikon mata di samping penerima untuk melihat kapan masing-masing
+membuka pesan Anda atau mengikuti link di dalamnya, atau minta tanda
+terima baca sebagai gantinya. Email terkirim menunjukkan siapa yang
+membukanya, dan notifikasi memberi tahu Anda pertama kalinya. Keduanya
+nonaktif untuk setiap pesan baru, dan pelacakan memerlukan akun Katna
+(Setelan > Akun Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Aktivitas untuk email yang dilacak"
+text = """
+Aktivitas di bawah Terkirim menunjukkan berapa banyak pesan terlacak Anda
+yang dibuka dan seberapa sering link-nya diikuti, dengan subjek diurutkan
+menurut seberapa sering dibuka.
+"""

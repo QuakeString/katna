@@ -11,6 +11,8 @@ notify-unknown-sender = Người gửi không xác định
 notify-snooze-back = Thư tạm ẩn đã quay lại
 notify-no-reply = Chưa có trả lời
 notify-no-reply-to = Chưa ai trả lời “{ $subject }”.
+notify-tracking-opened = { $who } đã mở { $subject }
+notify-tracking-clicked = { $who } đã nhấp vào một liên kết trong { $subject }
 
 ## Its buttons
 

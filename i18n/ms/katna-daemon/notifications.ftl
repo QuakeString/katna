@@ -11,6 +11,8 @@ notify-unknown-sender = Pengirim tidak diketahui
 notify-snooze-back = Kembali daripada tunda
 notify-no-reply = Belum ada balasan
 notify-no-reply-to = Tiada sesiapa yang membalas “{ $subject }”.
+notify-tracking-opened = { $who } membuka { $subject }
+notify-tracking-clicked = { $who } mengklik pautan dalam { $subject }
 
 ## Its buttons
 

@@ -640,3 +640,31 @@ veya 7 gün içinde kimse yanıt vermezse size hatırlatabilir. İkisi de
 bilgisayarınız açıkken çalışır ve uyku modundan çıktığında kaçırdıklarını
 tamamlar.
 """
+
+["2026-09-27-1717-translate-mail"]
+title = "Postaları kendi dilinizde okuyun"
+text = """
+Başka bir dildeki bir iletinin üstünde artık bir Çevir düğmesi var ve
+Orijinali göster onu geri getirir. Katna dili bilgisayarınızda bulur;
+iletinin metni yalnızca siz istediğinizde çevrilmek üzere Katna'nın kendi
+sunucusuna gider. Ayarlar > Genel > Çeviri, dilinizi ve her zaman
+çevrilecek dilleri seçer.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Postanın ne zaman açıldığını görün"
+text = """
+Her alıcının iletinizi ne zaman açtığını veya içindeki bir bağlantıyı
+izlediğini görmek için alıcıların yanındaki gözü açın ya da bunun yerine
+okundu bilgisi isteyin. Gönderilen postada kimin açtığı görünür ve ilk
+seferinde bir bildirim size haber verir. İkisi de her yeni iletide
+kapalıdır ve izleme bir Katna hesabı gerektirir (Ayarlar > Katna hesabı).
+"""
+
+["2026-09-27-2042-activity"]
+title = "İzlenen postalar için Etkinlik"
+text = """
+Gönderilmiş Postalar altındaki Etkinlik, izlenen iletilerinizden kaçının
+açıldığını ve bağlantılarının ne sıklıkla izlendiğini gösterir; konu
+satırlarınız da ne sıklıkla açıldıklarına göre sıralanır.
+"""

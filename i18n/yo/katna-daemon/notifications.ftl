@@ -11,6 +11,8 @@ notify-unknown-sender = Olùfiránṣẹ́ àìmọ̀
 notify-snooze-back = Àwọn lẹ́tà tí a sún síwájú ti padà
 notify-no-reply = Kò tíì sí èsì
 notify-no-reply-to = Kò sí ẹni tó fèsì sí “{ $subject }”.
+notify-tracking-opened = { $who } ti ṣí { $subject }
+notify-tracking-clicked = { $who } ti tẹ ìjápọ̀ kan nínú { $subject }
 
 ## Its buttons
 

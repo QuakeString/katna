@@ -33,6 +33,7 @@ folder-spam = Ugaxekile
 folder-trash = Udoti
 folder-all-mail = Wonke amameyili
 folder-scheduled = Okuhleliwe
+folder-activity = Umsebenzi
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

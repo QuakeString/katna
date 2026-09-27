@@ -77,6 +77,19 @@ security-missing-key = ਅਜਿਹੀ ਕੁੰਜੀ ਨਾਲ ਦਸਤਖ਼
 security-missing-key-id = ਅਜਿਹੀ ਕੁੰਜੀ ({ $key }) ਨਾਲ ਦਸਤਖ਼ਤ ਕੀਤਾ ਜੋ ਤੁਹਾਡੇ ਕੋਲ ਨਹੀਂ ਹੈ, ਇਸ ਲਈ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ
 security-signature-unavailable = ਦਸਤਖ਼ਤ ਕੀਤਾ; ਦਸਤਖ਼ਤ ਦੀ ਜਾਂਚ ਲਈ { $tool } ਸਥਾਪਤ ਕਰੋ
 security-signature-error = ਦਸਤਖ਼ਤ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।
+tracking-opened = { $who } ਨੇ ਇਸਨੂੰ { $count ->
+    [one] ਇੱਕ ਵਾਰ
+   *[other] { $count } ਵਾਰ
+} ਖੋਲ੍ਹਿਆ, ਆਖਰੀ ਵਾਰ { $when }
+tracking-opened-clicked = { $who } ਨੇ ਇਸਨੂੰ ਖੋਲ੍ਹ ਕੇ ਲਿੰਕ { $count ->
+    [one] ਇੱਕ ਵਾਰ
+   *[other] { $count } ਵਾਰ
+} ਖੋਲ੍ਹਿਆ, ਆਖਰੀ ਵਾਰ { $when }
+tracking-maybe-opened = { $who } ਨੇ ਸ਼ਾਇਦ ਇਸਨੂੰ ਖੋਲ੍ਹਿਆ ਹੋਵੇ (Apple Mail ਨਿੱਜਤਾ ਲਈ ਤਸਵੀਰਾਂ ਲੋਡ ਕਰਦਾ ਹੈ)
+tracking-not-opened = { $who } ਨੇ ਅਜੇ ਇਸਨੂੰ ਨਹੀਂ ਖੋਲ੍ਹਿਆ
+tracking-receipt = { $who } ਨੇ ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ ਭੇਜੀ
+tracking-receipt-displayed = ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ: { $who } ਨੇ ਤੁਹਾਡਾ ਸੁਨੇਹਾ ਖੋਲ੍ਹਿਆ
+tracking-receipt-other = ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ: { $who } ਨੇ ਤੁਹਾਡਾ ਸੁਨੇਹਾ ਖੋਲ੍ਹੇ ਬਿਨਾਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਂ ਨਿਪਟਾ ਦਿੱਤਾ
 
 ## Remote images and pictures
 

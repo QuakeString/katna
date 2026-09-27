@@ -65,6 +65,12 @@ compose-encrypt = Enkripsi
 compose-encrypted = Terenkripsi: hanya penerima yang dapat membacanya
 compose-sign = Tanda tangani
 compose-signed = Ditandatangani: penerima dapat memeriksa bahwa pesan ini dari Anda
+compose-track = Lacak saat dibuka dan diklik
+compose-tracked = Dilacak: Anda melihat kapan setiap penerima membukanya atau mengikuti link
+compose-track-unavailable = Email yang ditandatangani, dienkripsi, dan teks biasa tidak bisa dilacak
+compose-track-sign-in = Masuk ke akun Katna untuk melacak saat dibuka dan diklik
+compose-receipt = Minta tanda terima baca
+compose-receipt-on = Tanda terima baca diminta: aplikasi penerima mungkin meminta mereka mengirimkannya
 
 ## Spelling
 

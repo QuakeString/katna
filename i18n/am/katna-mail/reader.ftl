@@ -77,6 +77,19 @@ security-missing-key = በሌለዎት ቁልፍ የተፈረመ ስለሆነ �
 security-missing-key-id = በሌለዎት ቁልፍ ({ $key }) የተፈረመ ስለሆነ ሊረጋገጥ አይችልም
 security-signature-unavailable = የተፈረመ፤ ፊርማውን ለማረጋገጥ { $tool }ን ይጫኑ
 security-signature-error = ፊርማው ሊረጋገጥ አልቻለም።
+tracking-opened = { $who } { $count ->
+    [one] አንድ ጊዜ
+   *[other] { $count } ጊዜ
+} ከፍቶታል፣ መጨረሻ { $when }
+tracking-opened-clicked = { $who } ከፍቶ አገናኝ ተከትሏል { $count ->
+    [one] አንድ ጊዜ
+   *[other] { $count } ጊዜ
+}፣ መጨረሻ { $when }
+tracking-maybe-opened = { $who } ከፍቶት ሊሆን ይችላል (Apple Mail ለግላዊነት ሲባል ምስሎችን ይጭናል)
+tracking-not-opened = { $who } እስካሁን አልከፈተውም
+tracking-receipt = { $who } የንባብ ማረጋገጫ ልኳል
+tracking-receipt-displayed = የንባብ ማረጋገጫ፦ { $who } መልዕክትዎን ከፍቷል
+tracking-receipt-other = የንባብ ማረጋገጫ፦ { $who } መልዕክትዎን ሳይከፍት ሰርዞታል ወይም አስተናግዶታል
 
 ## Remote images and pictures
 

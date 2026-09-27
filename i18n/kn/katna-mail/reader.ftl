@@ -77,6 +77,19 @@ security-missing-key = ನಿಮ್ಮ ಬಳಿ ಇಲ್ಲದ ಕೀಯೊಂ
 security-missing-key-id = ನಿಮ್ಮ ಬಳಿ ಇಲ್ಲದ ಕೀಯೊಂದಿಗೆ ({ $key }) ಸಹಿ ಮಾಡಲಾಗಿದೆ, ಆದ್ದರಿಂದ ಅದನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ
 security-signature-unavailable = ಸಹಿ ಮಾಡಲಾಗಿದೆ; ಸಹಿಯನ್ನು ಪರಿಶೀಲಿಸಲು { $tool } ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ
 security-signature-error = ಸಹಿಯನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
+tracking-opened = { $who } ಅವರು ಇದನ್ನು { $count ->
+    [one] ಒಮ್ಮೆ
+   *[other] { $count } ಬಾರಿ
+} ತೆರೆದಿದ್ದಾರೆ, ಕೊನೆಯದಾಗಿ { $when }
+tracking-opened-clicked = { $who } ಅವರು ಇದನ್ನು ತೆರೆದು { $count ->
+    [one] ಒಮ್ಮೆ
+   *[other] { $count } ಬಾರಿ
+} ಲಿಂಕ್ ತೆರೆದಿದ್ದಾರೆ, ಕೊನೆಯದಾಗಿ { $when }
+tracking-maybe-opened = { $who } ಅವರು ಇದನ್ನು ತೆರೆದಿರಬಹುದು (ಗೌಪ್ಯತೆಗಾಗಿ Apple Mail ಚಿತ್ರಗಳನ್ನು ಲೋಡ್ ಮಾಡುತ್ತದೆ)
+tracking-not-opened = { $who } ಅವರು ಇನ್ನೂ ಇದನ್ನು ತೆರೆದಿಲ್ಲ
+tracking-receipt = { $who } ಅವರು ಓದಿದ ರಸೀದಿ ಕಳುಹಿಸಿದ್ದಾರೆ
+tracking-receipt-displayed = ಓದಿದ ರಸೀದಿ: { $who } ಅವರು ನಿಮ್ಮ ಸಂದೇಶವನ್ನು ತೆರೆದಿದ್ದಾರೆ
+tracking-receipt-other = ಓದಿದ ರಸೀದಿ: { $who } ಅವರು ನಿಮ್ಮ ಸಂದೇಶವನ್ನು ತೆರೆಯದೆ ಅಳಿಸಿದ್ದಾರೆ ಅಥವಾ ನಿರ್ವಹಿಸಿದ್ದಾರೆ
 
 ## Remote images and pictures
 

@@ -620,3 +620,31 @@ Zipu nwere ike ịchetara gị ma ọ bụrụ na onye ọ bụla azaghị n'ime
 1, 3 ma ọ bụ 7. Ha abụọ na-arụ ọrụ mgbe kọmputa gị gbanyere, ma na-emezu
 ihe fọdụrụ mgbe ọ tetara.
 """
+
+["2026-09-27-1717-translate-mail"]
+title = "Gụọ ozi n'asụsụ gị"
+text = """
+Ozi dị n'asụsụ ọzọ na-egosi bọtịnụ Tụgharịa n'elu ya ugbu a, Gosi nke
+mbụ na-eweghachi ya. Katna na-achọpụta asụsụ ahụ na kọmputa gị; naanị
+mgbe ị rịọrọ ka ederede ozi ahụ na-aga na sava Katna n'onwe ya ka a
+tụgharịa ya. Ntọala > Izugbe > Ntụgharị asụsụ na-ahọrọ asụsụ gị na ndị a
+ga-atụgharị mgbe niile.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Hụ mgbe e mepere ozi"
+text = """
+Gbanye anya dị n'akụkụ ndị nnata iji hụ mgbe onye ọ bụla mepere ozi gị
+ma ọ bụ soro njikọ dị n'ime ya, ma ọ bụ rịọ akara na-egosi na a gụrụ ozi
+kama. Ozi ezigara na-egosi onye mepere ya, ọkwa na-agwakwa gị oge mbụ.
+Ha abụọ gbanyụrụ maka ozi ọhụrụ ọ bụla, ịsochi chọkwara akaụntụ Katna
+(Ntọala > Akaụntụ Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Ihe omume maka ozi a na-esochi"
+text = """
+Ihe omume n'okpuru Ezigara na-egosi ole n'ime ozi gị a na-esochi e
+mepere na ugboro ole e sochiri njikọ ha, ya na isiokwu gị ahazi dịka
+ugboro ole e mepere ha.
+"""

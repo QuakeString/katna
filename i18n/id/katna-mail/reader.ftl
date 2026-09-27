@@ -77,6 +77,13 @@ security-missing-key = Ditandatangani dengan kunci yang tidak Anda miliki, jadi 
 security-missing-key-id = Ditandatangani dengan kunci yang tidak Anda miliki ({ $key }), jadi tidak dapat diperiksa
 security-signature-unavailable = Ditandatangani; instal { $tool } untuk memeriksa tanda tangan
 security-signature-error = Tanda tangan tidak dapat diperiksa.
+tracking-opened = { $who } membukanya { $count } kali, terakhir { $when }
+tracking-opened-clicked = { $who } membukanya dan mengikuti link { $count } kali, terakhir { $when }
+tracking-maybe-opened = { $who } mungkin sudah membukanya (Apple Mail memuat gambar demi privasi)
+tracking-not-opened = { $who } belum membukanya
+tracking-receipt = { $who } mengirim tanda terima baca
+tracking-receipt-displayed = Tanda terima baca: { $who } membuka pesan Anda
+tracking-receipt-other = Tanda terima baca: { $who } menghapus atau menangani pesan Anda tanpa membukanya
 
 ## Remote images and pictures
 

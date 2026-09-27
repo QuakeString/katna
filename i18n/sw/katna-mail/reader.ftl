@@ -77,6 +77,19 @@ security-missing-key = Imetiwa sahihi kwa ufunguo usio nao, kwa hivyo haiwezi ku
 security-missing-key-id = Imetiwa sahihi kwa ufunguo usio nao ({ $key }), kwa hivyo haiwezi kukaguliwa
 security-signature-unavailable = Imetiwa sahihi; sakinisha { $tool } ili kukagua sahihi
 security-signature-error = Sahihi haikuweza kukaguliwa.
+tracking-opened = { $who } ameufungua { $count ->
+    [one] mara moja
+   *[other] mara { $count }
+}, mara ya mwisho { $when }
+tracking-opened-clicked = { $who } ameufungua na kufuata kiungo { $count ->
+    [one] mara moja
+   *[other] mara { $count }
+}, mara ya mwisho { $when }
+tracking-maybe-opened = Huenda { $who } ameufungua (Apple Mail hupakia picha kwa ajili ya faragha)
+tracking-not-opened = { $who } bado hajaufungua
+tracking-receipt = { $who } ametuma stakabadhi ya kusoma
+tracking-receipt-displayed = Stakabadhi ya kusoma: { $who } amefungua ujumbe wako
+tracking-receipt-other = Stakabadhi ya kusoma: { $who } amefuta au ameshughulikia ujumbe wako bila kuufungua
 
 ## Remote images and pictures
 

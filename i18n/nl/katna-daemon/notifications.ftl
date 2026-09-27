@@ -14,6 +14,8 @@ notify-unknown-sender = Onbekende afzender
 notify-snooze-back = Terug van snooze
 notify-no-reply = Nog geen antwoord
 notify-no-reply-to = Niemand heeft geantwoord op ‘{ $subject }’.
+notify-tracking-opened = { $who } heeft { $subject } geopend
+notify-tracking-clicked = { $who } heeft op een link in { $subject } geklikt
 
 ## Its buttons
 

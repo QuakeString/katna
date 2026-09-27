@@ -643,3 +643,31 @@ pode lembrar você se ninguém responder em 1, 3 ou 7 dias. Os dois
 funcionam enquanto o computador está ligado e põem tudo em dia quando ele
 volta do modo de suspensão.
 """
+
+["2026-09-27-1717-translate-mail"]
+title = "Leia e-mails no seu idioma"
+text = """
+Uma mensagem em outro idioma agora mostra um botão Traduzir acima dela,
+e Mostrar original a traz de volta. O Katna detecta o idioma no seu
+computador; o texto da mensagem só vai para o servidor do próprio Katna
+para ser traduzido quando você pede. Configurações > Geral > Tradução
+escolhe o seu idioma e os que serão sempre traduzidos.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Saiba quando um e-mail é aberto"
+text = """
+Ative o olho ao lado dos destinatários para ver quando cada um abre sua
+mensagem ou acessa um link nela, ou peça uma confirmação de leitura. Os
+e-mails enviados mostram quem os abriu, e uma notificação avisa você na
+primeira vez. Os dois vêm desativados em toda mensagem nova, e o
+rastreamento precisa de uma conta Katna (Configurações > Conta Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Atividade dos e-mails rastreados"
+text = """
+Atividade, abaixo de Enviados, mostra quantas das suas mensagens
+rastreadas foram abertas e com que frequência os links delas foram
+acessados, com seus assuntos em ordem de quantas vezes são abertos.
+"""

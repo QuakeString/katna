@@ -14,6 +14,8 @@ notify-unknown-sender = Mai aikawa da ba a sani ba
 notify-snooze-back = Ya dawo daga jinkiri
 notify-no-reply = Babu amsa tukuna
 notify-no-reply-to = Babu wanda ya amsa “{ $subject }”.
+notify-tracking-opened = { $who } ya buɗe { $subject }
+notify-tracking-clicked = { $who } ya danna mahaɗi a cikin { $subject }
 
 ## Its buttons
 

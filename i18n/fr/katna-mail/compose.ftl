@@ -69,6 +69,12 @@ compose-encrypt = Chiffrer
 compose-encrypted = Chiffré : seuls les destinataires peuvent le lire
 compose-sign = Signer
 compose-signed = Signé : les destinataires peuvent vérifier qu’il vient de vous
+compose-track = Suivre les ouvertures et les clics
+compose-tracked = Suivi : vous voyez quand chaque destinataire l’ouvre ou suit un lien
+compose-track-unavailable = Les messages signés, chiffrés ou en texte brut ne peuvent pas être suivis
+compose-track-sign-in = Connectez-vous à un compte Katna pour suivre les ouvertures et les clics
+compose-receipt = Demander un accusé de lecture
+compose-receipt-on = Accusé de lecture demandé : l’application du destinataire peut lui proposer d’en envoyer un
 
 ## Spelling
 

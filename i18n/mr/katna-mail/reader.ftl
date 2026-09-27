@@ -77,6 +77,19 @@ security-missing-key = तुमच्याकडे नसलेल्या �
 security-missing-key-id = तुमच्याकडे नसलेल्या कीने ({ $key }) स्वाक्षरी केली आहे, त्यामुळे ती तपासता येत नाही
 security-signature-unavailable = स्वाक्षरी केलेले; स्वाक्षरी तपासण्यासाठी { $tool } इंस्टॉल करा
 security-signature-error = स्वाक्षरी तपासता आली नाही.
+tracking-opened = { $who } यांनी तो { $count ->
+    [one] एकदा
+   *[other] { $count } वेळा
+} उघडला, शेवटी { $when }
+tracking-opened-clicked = { $who } यांनी तो उघडून लिंक { $count ->
+    [one] एकदा
+   *[other] { $count } वेळा
+} उघडली, शेवटी { $when }
+tracking-maybe-opened = { $who } यांनी तो कदाचित उघडला असेल (Apple Mail गोपनीयतेसाठी चित्रे लोड करते)
+tracking-not-opened = { $who } यांनी तो अजून उघडलेला नाही
+tracking-receipt = { $who } यांनी वाचल्याची पावती पाठवली
+tracking-receipt-displayed = वाचल्याची पावती: { $who } यांनी तुमचा मेसेज उघडला
+tracking-receipt-other = वाचल्याची पावती: { $who } यांनी तुमचा मेसेज न उघडता हटवला किंवा हाताळला
 
 ## Remote images and pictures
 

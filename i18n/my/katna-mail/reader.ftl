@@ -77,6 +77,13 @@ security-missing-key = သင့်တွင် မရှိသော ကီး�
 security-missing-key-id = သင့်တွင် မရှိသော ကီး ({ $key }) ဖြင့် လက်မှတ်ထိုးထားသဖြင့် စစ်ဆေး၍ မရပါ
 security-signature-unavailable = လက်မှတ်ထိုးထားသည်။ လက်မှတ်ကို စစ်ဆေးရန် { $tool } ကို ထည့်သွင်းပါ
 security-signature-error = လက်မှတ်ကို စစ်ဆေး၍ မရပါ။
+tracking-opened = { $who } က ၎င်းကို { $count } ကြိမ် ဖွင့်ခဲ့သည်၊ နောက်ဆုံး { $when }
+tracking-opened-clicked = { $who } က ၎င်းကို ဖွင့်ပြီး လင့်ခ်ကို { $count } ကြိမ် ဖွင့်ခဲ့သည်၊ နောက်ဆုံး { $when }
+tracking-maybe-opened = { $who } က ၎င်းကို ဖွင့်ခဲ့နိုင်သည် (Apple Mail သည် ကိုယ်ရေးကိုယ်တာ ကာကွယ်ရန် ပုံများကို ကြိုတင် ရယူသည်)
+tracking-not-opened = { $who } က ၎င်းကို မဖွင့်ရသေးပါ
+tracking-receipt = { $who } က ဖတ်ပြီးကြောင်း အသိအမှတ်ပြုချက် ပို့ခဲ့သည်
+tracking-receipt-displayed = ဖတ်ပြီးကြောင်း အသိအမှတ်ပြုချက်- { $who } က သင့်မက်ဆေ့ဂျ်ကို ဖွင့်ခဲ့သည်
+tracking-receipt-other = ဖတ်ပြီးကြောင်း အသိအမှတ်ပြုချက်- { $who } က သင့်မက်ဆေ့ဂျ်ကို မဖွင့်ဘဲ ဖျက်ခဲ့သည် သို့မဟုတ် ကိုင်တွယ်ခဲ့သည်
 
 ## Remote images and pictures
 

@@ -30,6 +30,7 @@ folder-spam = စပမ်း
 folder-trash = အမှိုက်ပုံး
 folder-all-mail = မေးလ်အားလုံး
 folder-scheduled = အချိန်သတ်မှတ်ထားသည်
+folder-activity = လှုပ်ရှားမှု
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

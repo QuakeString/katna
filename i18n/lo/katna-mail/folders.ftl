@@ -30,6 +30,7 @@ folder-spam = ສະແປມ
 folder-trash = ຖັງຂີ້ເຫຍື້ອ
 folder-all-mail = ອີເມວທັງໝົດ
 folder-scheduled = ຕັ້ງເວລາໄວ້
+folder-activity = ກິດຈະກຳ
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

@@ -65,6 +65,12 @@ compose-encrypt = 암호화
 compose-encrypted = 암호화됨: 받는사람만 읽을 수 있습니다
 compose-sign = 서명
 compose-signed = 서명됨: 받는사람이 보낸 사람이 나인지 확인할 수 있습니다
+compose-track = 열람 및 클릭 추적
+compose-tracked = 추적 중: 받는사람이 각각 언제 메일을 열거나 링크를 클릭했는지 볼 수 있습니다
+compose-track-unavailable = 서명, 암호화 또는 일반 텍스트 메일은 추적할 수 없습니다
+compose-track-sign-in = 열람 및 클릭을 추적하려면 Katna 계정에 로그인하세요
+compose-receipt = 읽음 확인 요청
+compose-receipt-on = 읽음 확인 요청됨: 받는사람의 앱에서 읽음 확인을 보낼지 물어볼 수 있습니다
 
 ## Spelling
 

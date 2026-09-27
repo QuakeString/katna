@@ -34,6 +34,7 @@ folder-spam = Spam
 folder-trash = Cestino
 folder-all-mail = Tutti i messaggi
 folder-scheduled = Programmati
+folder-activity = Attività
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

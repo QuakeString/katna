@@ -33,6 +33,7 @@ folder-spam = Strooipos
 folder-trash = Asblik
 folder-all-mail = Alle pos
 folder-scheduled = Geskeduleer
+folder-activity = Aktiwiteit
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

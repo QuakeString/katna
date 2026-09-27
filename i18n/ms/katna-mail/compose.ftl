@@ -65,6 +65,12 @@ compose-encrypt = Sulitkan
 compose-encrypted = Disulitkan: hanya penerima boleh membacanya
 compose-sign = Tandatangani
 compose-signed = Ditandatangani: penerima boleh menyemak bahawa ia daripada anda
+compose-track = Jejaki pembukaan dan klik
+compose-tracked = Dijejaki: anda nampak bila setiap penerima membukanya atau mengikuti pautan
+compose-track-unavailable = Mel yang ditandatangani, disulitkan dan teks biasa tidak boleh dijejaki
+compose-track-sign-in = Log masuk ke akaun Katna untuk menjejaki pembukaan dan klik
+compose-receipt = Minta resit baca
+compose-receipt-on = Resit baca diminta: apl penerima mungkin meminta mereka menghantarnya
 
 ## Spelling
 
