@@ -19,6 +19,7 @@ use katna_ui::unpx;
 
 use super::super::MailWindow;
 use super::Mode;
+use super::recipients::Field;
 use crate::theme::Theme;
 use crate::widgets::{icon, tip};
 
@@ -52,7 +53,8 @@ impl MailWindow {
         let mail = cx.entity();
         let body = compose.body.focus_handle(cx);
         let to = compose.to.focus_handle(cx);
-        let empty_to = compose.to.read(cx).text().is_empty();
+        let empty_to =
+            compose.to.read(cx).text().is_empty() && compose.chips.get(Field::To).is_empty();
         let mut options = window_options(
             &env,
             MAIL_APP_ID,

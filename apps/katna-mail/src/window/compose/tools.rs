@@ -20,6 +20,7 @@ use katna_ui::{InputEvent, TextInput};
 
 use super::super::MailWindow;
 use super::checks::{Passed, SendCheck};
+use super::recipients::Field;
 use super::{Mode, schedule};
 use crate::theme::{Theme, fade};
 use crate::widgets::{filled_button, icon, icon_button, icon_button_colored, menu, menu_item, tip};
@@ -57,6 +58,11 @@ pub(in crate::window) enum Popup {
         at: Option<jiff::Timestamp>,
         archive: bool,
         passed: Passed,
+    },
+    /// Send found a recipient that is not an address.
+    BadAddress {
+        field: Field,
+        address: String,
     },
     /// The right-click menu.
     Context {
@@ -589,7 +595,11 @@ impl MailWindow {
         // The dialogs close with their own buttons.
         if matches!(
             popup,
-            Popup::Link | Popup::PickTime | Popup::PlainText | Popup::SendCheck { .. }
+            Popup::Link
+                | Popup::PickTime
+                | Popup::PlainText
+                | Popup::SendCheck { .. }
+                | Popup::BadAddress { .. }
         ) {
             return None;
         }
@@ -1974,6 +1984,9 @@ impl MailWindow {
                 archive,
                 passed,
             } => self.render_send_check(*check, *at, *archive, *passed, th, cx),
+            Popup::BadAddress { field, address } => {
+                self.render_bad_address(*field, address, th, cx)
+            }
             _ => return None,
         };
         Some(
@@ -2026,7 +2039,7 @@ impl MailWindow {
             )
     }
 
-    fn dialog_card(th: &Theme, width: f32, title: impl Into<SharedString>) -> gpui::Div {
+    pub(super) fn dialog_card(th: &Theme, width: f32, title: impl Into<SharedString>) -> gpui::Div {
         div()
             .w(px(width))
             .p(px(24.0))
