@@ -12,6 +12,8 @@ publish.workspace = true
 katna-core.workspace = true
 html5ever.workspace = true
 mail-parser.workspace = true
+krilla.workspace = true
+rustybuzz.workspace = true
 
 [lints]
 workspace = true

@@ -49,6 +49,11 @@ zip = { version = "8.6", default-features = false, features = ["deflate-flate2"]
 # The version GPUI decodes pictures with; no extra formats of our own.
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "webp", "bmp", "tiff", "ico"] }
 resvg = { version = "0.46", default-features = false }
+fontdb = { version = "0.23", default-features = false, features = ["fs", "memmap"] }
+# Printing: lays a conversation out as a PDF for the print portal.
+krilla = { version = "0.8", default-features = false, features = ["simple-text"] }
+# The shaper krilla draws with, to measure lines the same way.
+rustybuzz = "0.20"
 jiff = { version = "0.2.37", default-features = false, features = ["std", "tz-system", "tzdb-zoneinfo"] }
 html5ever = "0.40.1"
 levenshtein_automata = "0.2.1"
@@ -74,7 +79,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 unicode-segmentation = "1.13"
 # async-io, so zbus runs on the same executor family as katna-sync.
 zbus = { version = "5.19", default-features = false, features = ["async-io"] }
-ashpd = { version = "0.13", default-features = false, features = ["async-io", "open_uri"] }
+ashpd = { version = "0.13", default-features = false, features = ["async-io", "open_uri", "print"] }
 zstd = "0.14"
 
 # Pimalaya protocol crates: exact versions, because they break often

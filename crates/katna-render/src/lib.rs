@@ -9,6 +9,7 @@
 
 pub mod html;
 mod plain;
+pub mod print;
 mod rich;
 
 pub use plain::{

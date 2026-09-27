@@ -157,6 +157,46 @@ impl Conversation {
         &self.subject
     }
 
+    /// The line of the list it is, to open it elsewhere.
+    pub(super) fn entry(&self) -> Option<data::Entry> {
+        let latest = self.parts.last()?.id;
+        Some(data::Entry {
+            key: self.key,
+            latest,
+        })
+    }
+
+    /// Every message of the conversation, oldest first, as it is printed:
+    /// the loaded ones as they are shown (protected ones as GnuPG opened
+    /// them), folded ones read from the store.
+    pub(super) fn printable(&self, mail: &Mail) -> Vec<Printable> {
+        self.parts
+            .iter()
+            .map(|part| {
+                let read_now;
+                let body = match &part.body {
+                    Some(body) => body,
+                    None => {
+                        read_now = read(mail, part.id);
+                        &read_now
+                    }
+                };
+                // Protected and not opened (or failed to open): only its
+                // headers are known.
+                let sealed = match &body.security {
+                    Some(Secured::Opening(_)) => true,
+                    Some(Secured::Opened(_)) => body.opened.is_none(),
+                    None => false,
+                };
+                Printable {
+                    row: part.row.clone(),
+                    view: body.view.clone(),
+                    sealed,
+                }
+            })
+            .collect()
+    }
+
     /// Where the attachments of message `id` are read from.
     pub(super) fn attachment_source(&self, id: MessageId) -> AttachmentSource {
         let Some(body) = self
@@ -304,6 +344,15 @@ impl Conversation {
     }
 }
 
+/// A message of the conversation, for printing.
+pub(super) struct Printable {
+    pub row: Option<Rc<Row>>,
+    /// `None` when it is not downloaded yet.
+    pub view: Option<MessageView>,
+    /// Encrypted or signed, and its text not opened.
+    pub sealed: bool,
+}
+
 /// What the list of messages shows: a message, or a fold of several.
 enum Shown {
     Part(usize),
@@ -375,6 +424,21 @@ impl MailWindow {
                 self.with_menu(more, Menu::ReaderMore, th, cx)
             })
             .child(div().flex_1())
+            // Where the toolbar is short, both are in the More menu.
+            .when(!narrow, |d| {
+                d.child(
+                    icon_button("reader-print", "print", 20.0, th)
+                        .tooltip(tip("Print all", th))
+                        .on_click(cx.listener(|this, _, _, cx| this.print_conversation(cx))),
+                )
+                .when(!self.detached, |d| {
+                    d.child(
+                        icon_button("reader-new-window", "open-external", 20.0, th)
+                            .tooltip(tip("In new window", th))
+                            .on_click(cx.listener(|this, _, _, cx| this.open_reader_in_window(cx))),
+                    )
+                })
+            })
             // A conversation in its own window has no list to step through.
             .when(!narrow && count > 0 && !self.detached, |d| {
                 d.child(

@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! A conversation in a window of its own: double-clicking a line of the
-//! list opens it there, apart from the mail window.
+//! A conversation in a window of its own, apart from the mail window:
+//! Shift+click on a line of the list, "Open in new window" on its
+//! right-click menu, or the button on the open conversation's toolbar.
+//! A plain click (or double-click) always opens it in place.
 //!
 //! The window is a second [`MailWindow`] that shows only the reading view.
 //! It reads the store itself and follows the daemon's changes, so it stays
 //! right when the conversation changes in the main window, and closes when
 //! the conversation is archived, deleted or moved from it.
 
-use std::time::Duration;
-
 use gpui::{
-    AnyElement, Context, Decorations, FontWeight, MouseDownEvent, SharedString, Window, div,
-    prelude::*, px, rgba, size,
+    AnyElement, Context, Decorations, FontWeight, SharedString, Window, div, prelude::*, px, rgba,
+    size,
 };
 use katna_chrome::{Bar, Environment, window_options};
 use katna_core::Paths;
@@ -21,10 +21,6 @@ use katna_store::FolderId;
 
 use super::{Listing, MailWindow, READER_CONTEXT, WINDOW_CONTEXT};
 use crate::data::Entry;
-
-/// How soon a second click must follow the first to count as a double
-/// click, at most.
-const DOUBLE_CLICK: Duration = Duration::from_millis(600);
 
 /// The size a conversation window opens at.
 const WIDTH: f32 = 960.0;
@@ -41,9 +37,19 @@ struct Origin {
 impl MailWindow {
     /// Opens line `ix` of the list in a window of its own.
     pub(super) fn open_in_window(&mut self, ix: usize, cx: &mut Context<Self>) {
-        let Some(entry) = self.entries.get(ix).copied() else {
-            return;
-        };
+        if let Some(entry) = self.entries.get(ix).copied() {
+            self.open_entry_in_window(entry, cx);
+        }
+    }
+
+    /// Opens the open conversation in a window of its own too.
+    pub(super) fn open_reader_in_window(&mut self, cx: &mut Context<Self>) {
+        if let Some(entry) = self.reader.as_ref().and_then(|r| r.entry()) {
+            self.open_entry_in_window(entry, cx);
+        }
+    }
+
+    fn open_entry_in_window(&mut self, entry: Entry, cx: &mut Context<Self>) {
         let title = self.line_subject(entry);
         let env = self.chrome.environment();
         let paths = self.paths.clone();
@@ -78,27 +84,6 @@ impl MailWindow {
                 });
             }
         });
-    }
-
-    /// Without the reading pane, a line's first click replaces the list
-    /// with the conversation, so the second click of a double-click lands
-    /// there: it moves the conversation to its own window.
-    pub(super) fn double_click_reader(
-        &mut self,
-        event: &MouseDownEvent,
-        window: &mut Window,
-        cx: &mut Context<Self>,
-    ) {
-        let Some((at, ix)) = self.clicked else {
-            return;
-        };
-        if event.click_count < 2 || !self.reading || self.split() || at.elapsed() > DOUBLE_CLICK {
-            return;
-        }
-        self.clicked = None;
-        cx.stop_propagation();
-        self.close_message(&super::CloseMessage, window, cx);
-        self.open_in_window(ix, cx);
     }
 
     /// The subject of a line, for the new window's title.
