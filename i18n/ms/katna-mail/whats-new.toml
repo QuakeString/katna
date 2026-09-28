@@ -988,3 +988,38 @@ supaya tandatangan kekal sah. Mel teks biasa tidak dapat menunjukkan
 pembukaan, tetapi pautannya dijejaki, supaya anda nampak bila seseorang
 mengikuti salah satu daripadanya.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Balas bermula baharu selepas tetingkap mesej ditutup"
+text = """
+Menutup mesej yang ditulis dalam tetingkapnya sendiri kini mengekalkannya
+dalam Draf, dan Balas, Balas semua serta Majukan membuka mesej baharu semula
+dan bukannya membawa kembali yang lama.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Bar carian berkaca"
+text = """
+Apabila latar belakang kabur dihidupkan, bar carian membiarkan kekaburan
+menembusinya seperti bar di sekelilingnya, bukannya terletak di atasnya
+sebagai pil kelabu pepejal.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Tatal di atas gambar anda untuk bertukar akaun"
+text = """
+Dengan penuding di atas gambar akaun di bahagian kanan atas, putar roda
+tetikus untuk beralih ke akaun seterusnya atau sebelumnya, satu akaun bagi
+setiap klik. Gambar bergulir ke akaun baharu, seperti nama apl bergulir
+apabila anda bertukar apl, dan memilih akaun daripada kad menggulirkannya
+dengan cara yang sama.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Ruang untuk ramai penerima"
+text = """
+Penerima selepas baris pertama kini menggunakan seluruh lebar, dan senarai
+panjang menatal dalam beberapa baris, supaya mesej itu sendiri sentiasa
+boleh dicapai. Tinggalkan medan dan ia dilipat kepada satu baris, seperti
+"Kay, Sam, 19 lagi"; klik padanya untuk melihat semuanya semula.
+"""

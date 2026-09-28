@@ -58,3 +58,4 @@ search-clear = Wyczyść wyszukiwanie
 search-options-show = Pokaż opcje wyszukiwania
 settings = Ustawienia
 account-add = Dodaj konto
+account-wheel-hint = Przewiń, aby przełączyć konto

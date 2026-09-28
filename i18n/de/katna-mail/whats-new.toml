@@ -1000,3 +1000,39 @@ Die Kopie jedes Empfängers wird einzeln signiert oder verschlüsselt, sodass
 Signaturen gültig bleiben. Nur-Text-E-Mails können keine Öffnungen anzeigen,
 aber ihre Links werden verfolgt, sodass Sie sehen, wenn jemand einem folgt.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Antworten beginnt neu, nachdem ein Nachrichtenfenster geschlossen wurde"
+text = """
+Wenn Sie eine Nachricht schließen, die in einem eigenen Fenster geschrieben
+wurde, bleibt sie jetzt in den Entwürfen. Antworten, Allen antworten und
+Weiterleiten öffnen wieder eine neue Nachricht, statt die alte
+zurückzubringen.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Eine milchglasartige Suchleiste"
+text = """
+Bei eingeschaltetem verschwommenem Hintergrund lässt die Suchleiste den
+Weichzeichner durch, so wie die Leiste um sie herum, statt als einfarbige
+graue Kapsel darauf zu liegen.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Über Ihrem Bild scrollen, um das Konto zu wechseln"
+text = """
+Halten Sie den Zeiger über das Kontobild oben rechts und drehen Sie das
+Mausrad, um zum nächsten oder vorherigen Konto zu wechseln, pro Rastschritt
+ein Konto. Das Bild rollt zum neuen Konto, so wie der Name der App beim
+Wechseln zwischen Apps rollt, und wenn Sie ein Konto auf der Karte
+auswählen, rollt es genauso.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Platz für viele Empfänger"
+text = """
+Empfänger nach der ersten Zeile nutzen jetzt die ganze Breite, und eine
+lange Liste scrollt innerhalb weniger Zeilen, sodass die Nachricht selbst
+immer erreichbar bleibt. Verlassen Sie das Feld, klappt es auf eine Zeile
+zusammen, etwa "Kay, Sam, 19 weitere"; ein Klick darauf zeigt wieder alle.
+"""

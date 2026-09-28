@@ -38,3 +38,4 @@ search-clear = Kosongkan carian
 search-options-show = Tunjukkan pilihan carian
 settings = Tetapan
 account-add = Tambah akaun
+account-wheel-hint = Tatal untuk bertukar akaun

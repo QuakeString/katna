@@ -1012,3 +1012,38 @@ signatures restent valides. Les messages en texte brut ne peuvent pas
 indiquer les ouvertures, mais leurs liens sont suivis, afin que vous voyiez
 quand quelqu’un en suit un.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Répondre repart de zéro après la fermeture d'une fenêtre de message"
+text = """
+Fermer un message rédigé dans sa propre fenêtre le conserve désormais dans
+Brouillons, et Répondre, Répondre à tous et Transférer ouvrent de nouveau un
+nouveau message au lieu de rouvrir l'ancien.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Une barre de recherche givrée"
+text = """
+Lorsque l'arrière-plan flouté est activé, la barre de recherche laisse
+passer le flou comme la barre qui l'entoure, au lieu de se poser dessus
+comme une pastille grise opaque.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Faites défiler sur votre photo pour changer de compte"
+text = """
+Avec le pointeur sur la photo du compte, en haut à droite, tournez la
+molette de la souris pour passer au compte suivant ou précédent, un compte
+par cran. La photo défile vers le nouveau compte, comme le nom de l'app
+défile quand vous changez d'app, et choisir un compte depuis la carte la
+fait défiler de la même façon.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "De la place pour de nombreux destinataires"
+text = """
+Les destinataires après la première ligne utilisent maintenant toute la
+largeur, et une longue liste défile sur quelques lignes, de sorte que le
+message reste toujours accessible. Quittez le champ et il se replie sur une
+ligne, par exemple "Kay, Sam, 19 de plus" ; cliquez dessus pour tout revoir.
+"""

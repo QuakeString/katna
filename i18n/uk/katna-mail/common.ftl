@@ -58,3 +58,4 @@ search-clear = Очистити пошук
 search-options-show = Показати параметри пошуку
 settings = Налаштування
 account-add = Додати обліковий запис
+account-wheel-hint = Прокрутіть, щоб перемкнути обліковий запис

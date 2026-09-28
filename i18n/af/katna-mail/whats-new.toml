@@ -950,3 +950,36 @@ se kopie word apart onderteken of geënkripteer, sodat handtekeninge geldig
 bly. Gewone-teks-e-pos kan nie oopmaak wys nie, maar sy skakels word
 nagespoor, sodat jy sien wanneer iemand een volg.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Antwoord begin weer van voor af nadat 'n boodskapvenster gesluit is"
+text = """
+As jy 'n boodskap sluit wat in sy eie venster geskryf is, bly dit nou in
+Konsepte, en Antwoord, Antwoord almal en Stuur aan maak weer 'n nuwe
+boodskap oop in plaas daarvan om die ou een terug te bring.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "'n Ryperige soekbalk"
+text = """
+Met die vaag agtergrond aan, laat die soekbalk die vaagheid deur soos die
+balk daaromheen, in plaas daarvan om as 'n soliede grys pil daarop te sit.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Rol oor jou prent om van rekening te wissel"
+text = """
+Met die wyser oor die rekeningprent regs bo, draai die muiswiel om na die
+volgende of vorige rekening te gaan, een rekening per kliek. Die prent rol
+na die nuwe rekening, soos die program se naam rol wanneer jy van program
+wissel, en as jy 'n rekening op die kaart kies, rol dit op dieselfde manier.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Ruimte vir baie ontvangers"
+text = """
+Ontvangers ná die eerste reël gebruik nou die hele breedte, en 'n lang lys
+rol binne 'n paar reëls, sodat die boodskap self altyd bereikbaar bly.
+Verlaat die veld en dit vou op tot een reël, soos "Kay, Sam, 19 meer"; klik
+daarop om almal weer te sien.
+"""

@@ -1015,3 +1015,39 @@ nananatiling valid ang mga lagda. Hindi maipapakita ng plain text na mail
 ang mga pagbukas, pero naka-track ang mga link nito, kaya makikita mo kapag
 sinundan ng isang tao ang isa dito.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Nagsisimula muli ang Sumagot pagkatapos isara ang window ng mensahe"
+text = """
+Ang pagsara ng mensaheng isinulat sa sarili nitong window ay pananatilihin
+na ito sa Mga Draft, at ang Sumagot, Sumagot sa lahat at Ipasa ay muling
+magbubukas ng bagong mensahe sa halip na ibalik ang luma.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Isang frosted na search bar"
+text = """
+Kapag naka-on ang malabong background, pinapadaan ng search bar ang blur
+tulad ng bar sa paligid nito, sa halip na nakapatong dito bilang solidong
+kulay-abong pill.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "I-scroll ang iyong larawan para magpalit ng account"
+text = """
+Habang nasa ibabaw ng larawan ng account sa kanang itaas ang pointer,
+paikutin ang gulong ng mouse para lumipat sa susunod o nakaraang account,
+isang account bawat click. Gumugulong ang larawan papunta sa bagong account,
+tulad ng paggulong ng pangalan ng app kapag lumilipat ka ng app, at ganoon
+din kapag pumili ka ng account mula sa card.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "May puwang para sa maraming tatanggap"
+text = """
+Ang mga tatanggap pagkatapos ng unang linya ay gumagamit na ng buong lapad,
+at ang mahabang listahan ay nag-i-scroll sa loob ng ilang linya, kaya laging
+abot-kamay ang mismong mensahe. Lumabas sa field at ito ay magiging isang
+linya na lang, tulad ng "Kay, Sam, 19 pa"; i-click ito para makita ulit
+silang lahat.
+"""

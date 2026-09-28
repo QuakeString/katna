@@ -972,3 +972,37 @@ każdego odbiorcy jest podpisywana lub szyfrowana osobno, dzięki czemu
 podpisy pozostają ważne. Poczta w zwykłym tekście nie pokazuje otwarć, ale
 jej linki są śledzone, więc zobaczysz, kiedy ktoś kliknie któryś z nich.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Odpowiedź zaczyna od nowa po zamknięciu okna wiadomości"
+text = """
+Zamknięcie wiadomości napisanej we własnym oknie zachowuje ją teraz w
+Wersjach roboczych, a Odpowiedz, Odpowiedz wszystkim i Przekaż dalej znów
+otwierają nową wiadomość zamiast przywracać starą.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Mrożony pasek wyszukiwania"
+text = """
+Gdy rozmyte tło jest włączone, pasek wyszukiwania przepuszcza rozmycie tak
+jak otaczający go pasek, zamiast leżeć na nim jak jednolita szara pigułka.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Przewiń nad swoim zdjęciem, aby przełączyć konto"
+text = """
+Gdy wskaźnik jest nad zdjęciem konta w prawym górnym rogu, obróć kółko
+myszy, aby przejść do następnego lub poprzedniego konta, po jednym koncie na
+ząbek. Zdjęcie przewija się do nowego konta, tak jak nazwa aplikacji
+przewija się przy zmianie aplikacji, a wybranie konta z karty przewija je
+tak samo.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Miejsce na wielu odbiorców"
+text = """
+Odbiorcy po pierwszym wierszu zajmują teraz całą szerokość, a długa lista
+przewija się w kilku wierszach, więc sama wiadomość zawsze pozostaje w
+zasięgu. Opuść pole, a zwinie się do jednego wiersza, na przykład "Kay, Sam,
+jeszcze 19"; kliknij go, aby znów zobaczyć wszystkich.
+"""
