@@ -43,6 +43,7 @@ icons!(
     "coffee",
     "compose",
     "contacts",
+    "contrast",
     "delivery-receipt",
     "document",
     "done-all",

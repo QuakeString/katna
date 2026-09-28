@@ -59,7 +59,7 @@ image = { version = "0.25", default-features = false, features = ["png", "jpeg",
 resvg = { version = "0.46", default-features = false }
 fontdb = { version = "0.23", default-features = false, features = ["fs", "memmap"] }
 # Printing: lays a conversation out as a PDF for the print portal.
-krilla = { version = "0.8", default-features = false, features = ["simple-text"] }
+krilla = { version = "0.8", default-features = false, features = ["simple-text", "raster-images"] }
 # The shaper krilla draws with, to measure lines the same way.
 rustybuzz = "0.20"
 jiff = { version = "0.2.37", default-features = false, features = ["std", "tz-system", "tzdb-zoneinfo"] }
