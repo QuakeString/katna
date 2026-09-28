@@ -3,6 +3,8 @@
 # Corrections welcome: see i18n/README.md.
 contact-panel-show = نمایش جزئیات مخاطب
 contact-panel-hide = پنهان کردن جزئیات مخاطب
+contact-email = ارسال ایمیل
+contact-search = جستجوی ایمیل با او
 contact-messages = { $count ->
     [one] { $count } پیام
    *[other] { $count } پیام
@@ -15,6 +17,8 @@ contact-copy-number = کپی شماره
 contact-number-copied = شماره کپی شد
 contact-local-time = { $time } به وقت او ({ $offset })
 contact-conversations = مکالمه‌های اخیر
+contact-more = بیشتر
+contact-less = کمتر
 contact-files = پرونده‌ها
 contact-people = در این مکالمه
 contact-local-only = فقط از ایمیل‌های شما در این رایانه

@@ -3,6 +3,8 @@
 # Corrections welcome: see i18n/README.md.
 contact-panel-show = הצגת פרטי איש הקשר
 contact-panel-hide = הסתרת פרטי איש הקשר
+contact-email = שליחת אימייל
+contact-search = חיפוש דואר איתם
 contact-messages = { $count ->
     [one] הודעה אחת
    *[other] { $count } הודעות
@@ -15,6 +17,8 @@ contact-copy-number = העתקת המספר
 contact-number-copied = המספר הועתק
 contact-local-time = { $time } לפי השעון שלהם ({ $offset })
 contact-conversations = שיחות אחרונות
+contact-more = עוד
+contact-less = פחות
 contact-files = קבצים
 contact-people = בשיחה הזו
 contact-local-only = רק מהדואר שבמחשב הזה

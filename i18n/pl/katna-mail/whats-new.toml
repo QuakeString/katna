@@ -917,3 +917,21 @@ Wskaż otwarcie lub kliknięcie w Aktywności i naciśnij ×, aby usunąć je z
 listy, albo naciśnij Wyczyść wszystko, aby zacząć od nowa. Nowe otwarcia i
 kliknięcia nadal się pojawiają, a raport Szczegóły nadal liczy wszystko.
 """
+
+["2026-09-28-1541-round-logo"]
+title = "Nowe okrągłe logo Katna"
+text = """
+Katna ma nowe logo: kursywne k na morskim kręgu, w menu aplikacji, na górnym
+pasku i na pasku zadań. Zasobnik pokazuje je w jednym kolorze dopasowanym do
+twojego panelu, a O Katna i strona powitalna pokazują „katna mail” w pełnym
+brzmieniu.
+"""
+
+["2026-09-28-1546-contact-cards"]
+title = "Przejrzystsze dane kontaktu"
+text = """
+Dane kontaktu pokazują teraz każdą część na osobnej miękkiej karcie, z
+okrągłymi przyciskami pod imieniem i nazwiskiem, by napisać do tej osoby,
+znaleźć z nią pocztę albo do niej zadzwonić. Ostatnie wątki pokazują kilka
+najnowszych; naciśnij Więcej, by zobaczyć resztę, i Mniej, by je zwinąć.
+"""

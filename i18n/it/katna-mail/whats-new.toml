@@ -930,3 +930,22 @@ dall’elenco, oppure premi Cancella tutto per ricominciare da capo. Le nuove
 aperture e i nuovi clic continuano a comparire, e il resoconto Dettagli
 continua a contare tutto.
 """
+
+["2026-09-28-1541-round-logo"]
+title = "Il nuovo logo rotondo di Katna"
+text = """
+Katna ha un nuovo logo: una k corsiva su un cerchio verde acqua, nel menu
+delle applicazioni, nella barra in alto e nella barra delle applicazioni.
+L’area di notifica lo mostra in un colore adatto al tuo pannello, e
+Informazioni su Katna e la pagina di benvenuto mostrano per esteso «katna
+mail».
+"""
+
+["2026-09-28-1546-contact-cards"]
+title = "Dettagli del contatto più ordinati"
+text = """
+I dettagli del contatto ora mostrano ogni parte nella propria scheda
+morbida, con pulsanti rotondi sotto il nome per scrivere alla persona,
+cercare la tua posta con lei o chiamarla. Conversazioni recenti mostra le
+ultime; premi Altro per vedere il resto e Meno per richiuderle.
+"""

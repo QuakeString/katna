@@ -922,3 +922,22 @@ menghapusnya dari daftar, atau tekan Hapus semua untuk memulai dari awal.
 Item dibuka dan diklik yang baru tetap muncul, dan laporan Detail tetap
 menghitung semuanya.
 """
+
+["2026-09-28-1541-round-logo"]
+title = "Logo bulat baru Katna"
+text = """
+Katna kini punya logo baru: huruf "k" bergaya tulisan tangan di atas
+lingkaran teal — di menu aplikasi, bilah atas, dan panel. Ikon di baki
+sistem tampil dalam satu warna yang cocok dengan panel Anda, sementara
+Tentang Katna dan layar sambutan menampilkan "katna mail" secara utuh.
+"""
+
+["2026-09-28-1546-contact-cards"]
+title = "Panel kontak yang lebih rapi"
+text = """
+Panel kontak kini menampilkan setiap bagian dalam kartunya sendiri
+yang lembut, dengan tombol bulat di bawah nama untuk mengirim email
+ke orang itu, mencari email dengan mereka, atau meneleponnya.
+Percakapan terbaru menampilkan beberapa yang terbaru; tekan Lainnya
+untuk melihat sisanya dan Lebih sedikit untuk menyembunyikannya lagi.
+"""

@@ -923,3 +923,21 @@ het uit de lijst te halen, of druk op Alles wissen om opnieuw te beginnen.
 Wat nieuw geopend of aangeklikt wordt, verschijnt nog steeds, en het
 overzicht Details telt nog steeds alles.
 """
+
+["2026-09-28-1541-round-logo"]
+title = "Katna’s nieuwe ronde logo"
+text = """
+Katna heeft een nieuw logo: een cursieve k op een blauwgroene cirkel, in het
+appmenu, de bovenbalk en de taakbalk. Het systeemvak toont het in één kleur
+die bij je paneel past, en Over Katna en de welkomstpagina tonen ‘katna
+mail’ voluit.
+"""
+
+["2026-09-28-1546-contact-cards"]
+title = "Overzichtelijkere contactgegevens"
+text = """
+De contactgegevens tonen nu elk onderdeel in een eigen zachte kaart, met
+ronde knoppen onder de naam om de persoon te mailen, je mail met hen te
+vinden of te bellen. Recente gesprekken toont de laatste paar; druk op Meer
+om de rest te zien en op Minder om ze weer in te klappen.
+"""

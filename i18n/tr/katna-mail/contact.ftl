@@ -3,6 +3,8 @@
 # Corrections welcome: see i18n/README.md.
 contact-panel-show = Kişi ayrıntılarını göster
 contact-panel-hide = Kişi ayrıntılarını gizle
+contact-email = E-posta gönder
+contact-search = Onunla yazışmaları ara
 contact-messages = { $count ->
     [one] { $count } ileti
    *[other] { $count } ileti
@@ -15,6 +17,8 @@ contact-copy-number = Numarayı kopyala
 contact-number-copied = Numara kopyalandı
 contact-local-time = Onun saatiyle { $time } ({ $offset })
 contact-conversations = Son ileti dizileri
+contact-more = Daha fazla
+contact-less = Daha az
 contact-files = Dosyalar
 contact-people = Bu ileti dizisinde
 contact-local-only = Yalnızca bu bilgisayardaki postalarınızdan

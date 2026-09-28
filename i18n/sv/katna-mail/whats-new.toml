@@ -899,3 +899,21 @@ bort det från listan, eller tryck på Rensa allt för att börja om. Nya
 öppningar och klick visas fortfarande, och rapporten Detaljer räknar
 fortfarande med allt.
 """
+
+["2026-09-28-1541-round-logo"]
+title = "Katnas nya runda logotyp"
+text = """
+Katna har en ny logotyp: ett kursivt k på en blågrön cirkel, i programmenyn,
+den övre raden och aktivitetsfältet. Systemfältet visar den i en färg som
+passar din panel, och Om Katna och välkomstsidan visar ”katna mail” fullt
+ut.
+"""
+
+["2026-09-28-1546-contact-cards"]
+title = "Tydligare kontaktuppgifter"
+text = """
+Kontaktuppgifterna visar nu varje del i ett eget mjukt kort, med runda
+knappar under namnet för att skriva till personen, hitta din e-post med dem
+eller ringa. Senaste konversationer visar de senaste; tryck på Mer för att
+se resten och på Mindre för att fälla ihop dem.
+"""

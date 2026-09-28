@@ -3,6 +3,8 @@
 # Corrections welcome: see i18n/README.md.
 contact-panel-show = Wys kontakbesonderhede
 contact-panel-hide = Versteek kontakbesonderhede
+contact-email = Stuur e-pos
+contact-search = Soek e-pos met hulle
 contact-messages = { $count ->
     [one] { $count } boodskap
    *[other] { $count } boodskappe
@@ -15,6 +17,8 @@ contact-copy-number = Kopieer nommer
 contact-number-copied = Nommer gekopieer
 contact-local-time = { $time } hul tyd ({ $offset })
 contact-conversations = Onlangse gesprekke
+contact-more = Meer
+contact-less = Minder
 contact-files = Lêers
 contact-people = In hierdie gesprek
 contact-local-only = Slegs uit jou e-pos op hierdie rekenaar
