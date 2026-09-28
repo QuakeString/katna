@@ -666,6 +666,9 @@ impl MailWindow {
         this.open_default_folder(cx);
         this.count_unread(cx);
         this.count_activity();
+        // Whether this computer is signed in to Katna, read now so server
+        // features know it by the time they are opened.
+        this.katna_load(window, cx);
         this.listen(cx);
         this.watch_colors(cx);
         if let Some(err) = this.mail.as_ref().ok().and_then(Mail::index_error) {
