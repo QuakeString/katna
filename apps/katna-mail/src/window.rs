@@ -350,8 +350,10 @@ enum Act {
 /// What the pointer rests on that opens the folded navigation.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Hover {
+    /// Compose in the app rail.
+    Compose,
     /// Mail in the app rail.
-    Rail,
+    Mail,
     Panel,
 }
 
@@ -499,6 +501,8 @@ pub struct MailWindow {
     nav_peek: bool,
     /// The pointer is on Mail in the app rail, and on the panel.
     peek_hover: (bool, bool),
+    /// What in the rail opened the navigation last: its notch points there.
+    peek_from: Hover,
     peek_task: Option<Task<()>>,
     /// 0 = folded, 1 = open: the drawn navigation.
     nav_spring: Spring,
@@ -735,6 +739,7 @@ impl MailWindow {
             nav_open: true,
             nav_peek: false,
             peek_hover: (false, false),
+            peek_from: Hover::Mail,
             peek_task: None,
             nav_spring: Spring::new(motion::SLIDE, 1.0),
             reserve_spring: Spring::new(motion::SLIDE, 1.0),
@@ -1572,7 +1577,12 @@ impl MailWindow {
     /// rest and closes a moment after the pointer is gone from both.
     fn hover_navigation(&mut self, what: Hover, hovered: bool, cx: &mut Context<Self>) {
         match what {
-            Hover::Rail => self.peek_hover.0 = hovered,
+            Hover::Compose | Hover::Mail => {
+                self.peek_hover.0 = hovered;
+                if hovered && !self.nav_peek {
+                    self.peek_from = what;
+                }
+            }
             Hover::Panel => self.peek_hover.1 = hovered,
         }
         if self.nav_docked() || self.layout.drawer || self.app != RailApp::Mail {
@@ -2795,9 +2805,9 @@ impl Render for MailWindow {
                 .into_any_element()
         });
 
-        // On a desktop the search box stays where the list starts with the
-        // folders open, whether they are open or folded, and never moves
-        // with them. On a tablet (the folders in a drawer) it starts a
+        // On a desktop the search box starts where the list starts with the
+        // folders open; with them folded it grows to the left, a clear gap
+        // after the app's name, and its right end stays put. On a tablet (the folders in a drawer) it starts a
         // clear gap after the app's name beside the menu button, and it
         // never comes closer than that. It grows into a pill across the top
         // bar of a phone, under its menu button and account picture.
@@ -2810,7 +2820,7 @@ impl Render for MailWindow {
         } else {
             0.0
         };
-        let search_left = list_left.max(after_title);
+        let open_left = list_left.max(after_title);
         // The Activity button after the box, with the gap before it.
         let activity_room = if self.activity_shown() && shape.phone < 0.5 {
             ACTIVITY_BUTTON_WIDTH + 8.0
@@ -2819,12 +2829,31 @@ impl Render for MailWindow {
         };
         // The box gives way first, so the buttons after it keep their
         // gaps and never overlap.
-        let room = width - search_left - room_end - TOP_END_WIDTH - TOP_BAR_GAP;
+        let room = width - open_left - room_end - TOP_END_WIDTH - TOP_BAR_GAP;
         // Too narrow for both (wider than a phone, with wide window
         // buttons): the button goes rather than cover the language button.
         let activity_fits = room - activity_room >= SEARCH_MIN_WIDTH;
-        let regular = (room - if activity_fits { activity_room } else { 0.0 })
+        let open_width = (room - if activity_fits { activity_room } else { 0.0 })
             .clamp(SEARCH_MIN_WIDTH, SEARCH_WIDTH);
+        let search_left = if shape.is_desktop() {
+            // The title's box has room for the longest app name; the box
+            // comes up to the name shown.
+            let shown = text_width(
+                &self.app.label(),
+                TITLE_TEXT_SIZE,
+                FontWeight::NORMAL,
+                self.font.as_ref(),
+                window,
+            );
+            let after_name = room_start
+                + TITLE_LEFT
+                + title_width(shape.title_label(), (titles.0, shown))
+                + TOP_BAR_GAP;
+            lerp(after_name, open_left, reserve.clamp(0.0, 1.0))
+        } else {
+            open_left
+        };
+        let regular = open_width + open_left - search_left;
         let pill = (width - 12.0 - room_start - room_end).max(200.0);
         let search_width = lerp(regular, pill, shape.phone);
         let search_panel_width = lerp(regular, width - 16.0, shape.phone);

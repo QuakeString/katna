@@ -126,13 +126,24 @@ impl MailWindow {
         }));
     }
 
+    /// Room at the top of the rail for Compose while it is there.
+    pub(super) fn rail_compose_room(&self) -> f32 {
+        (super::COMPOSE_TOP + super::COMPOSE_HEIGHT + 12.0 - 4.0)
+            * (1.0 - self.compose_dock.value().clamp(0.0, 1.0))
+            * self.compose_shown.value().clamp(0.0, 1.0)
+    }
+
+    /// Where the middle of Mail's icon is, down from the rail's top.
+    pub(super) fn rail_mail_middle(&self) -> f32 {
+        // The rail's and the line's top padding, then half the icon's pill.
+        4.0 + self.rail_compose_room() + 4.0 + 16.0
+    }
+
     pub(super) fn render_app_rail(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let labels = self.config.mail.app_labels;
         // Room at the top for Compose while it is in the rail: the apps
         // move down as it slides in from the folders.
-        let compose_room = (super::COMPOSE_TOP + super::COMPOSE_HEIGHT + 12.0 - 4.0)
-            * (1.0 - self.compose_dock.value().clamp(0.0, 1.0))
-            * self.compose_shown.value().clamp(0.0, 1.0);
+        let compose_room = self.rail_compose_room();
         let items = App::ALL.into_iter().map(|app| {
             let on = self.app == app;
             div()
@@ -148,7 +159,7 @@ impl MailWindow {
                 .group("app")
                 .when(app == App::Mail, |d| {
                     d.on_hover(cx.listener(|this, hovered: &bool, _, cx| {
-                        this.hover_navigation(super::Hover::Rail, *hovered, cx)
+                        this.hover_navigation(super::Hover::Mail, *hovered, cx)
                     }))
                 })
                 // Picking an app leaves Settings, as picking a folder does.

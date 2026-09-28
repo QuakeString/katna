@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Folders that float, and a wider search"
+text = """
+With the folders hidden, resting on Compose or Mail opens them as a panel
+that stands clear of the edges, with a small notch pointing at the button.
+The search box grows to fill the room the folders leave, and clicking the
+folder you are already in no longer makes the list blink.
+"""

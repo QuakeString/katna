@@ -9,8 +9,9 @@ use std::ops::Range;
 use std::f32::consts::FRAC_PI_2;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, ElementId, FontWeight, SharedString, SpringAnimation,
-    Transformation, div, prelude::*, radians, rgba, svg, uniform_list,
+    AnimationExt, AnyElement, Context, ElementId, FontWeight, PathBuilder, SharedString,
+    SpringAnimation, Transformation, canvas, div, point, prelude::*, radians, rgba, svg,
+    uniform_list,
 };
 use katna_ui::Ripple;
 use katna_ui::motion::{self, lerp};
@@ -29,6 +30,11 @@ use crate::format;
 use crate::sidebar::{self, Role, Unified};
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{elevation, icon, icon_button, icon_button_colored, katna_mark, tip};
+
+/// How far the floating folder pane stands off the rail and the top bar.
+const FLOAT_GAP: f32 = 8.0;
+/// How far its notch reaches toward the rail, and half its height.
+const NOTCH: f32 = 8.0;
 
 const NAV_ROW_HEIGHT: f32 = 32.0;
 /// The gap around a folder's arrow, inside its pill's rounded end.
@@ -235,7 +241,7 @@ impl MailWindow {
                 // In the rail, resting on it opens the folded folders over
                 // the list, as resting on Mail does.
                 .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
-                    this.hover_navigation(Hover::Rail, *hovered, cx)
+                    this.hover_navigation(Hover::Compose, *hovered, cx)
                 }))
                 .on_click(cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)))
                 .child(
@@ -494,12 +500,14 @@ impl MailWindow {
         .w(px(NAV_WIDTH))
         .flex_1()
         .pb(px(16.0));
+        // Floating, it stands clear of the rail and the top bar.
+        let gap = if drawer { 0.0 } else { FLOAT_GAP * float };
         let panel = div()
             .id("navigation-panel")
             .occlude()
             .absolute()
-            .top_0()
-            .left_0()
+            .top(px(gap))
+            .left(px(gap))
             .bottom(px(if drawer { 0.0 } else { 16.0 * float }))
             .map(|d| {
                 if slides {
@@ -516,7 +524,11 @@ impl MailWindow {
             // panel never turns into a card, so folding it cannot flash.
             .when(float > 0.0, |d| {
                 d.bg(rgba(th.page))
-                    .when(!drawer, |d| d.rounded(px(PANEL_RADIUS)))
+                    .when(!drawer, |d| {
+                        d.rounded(px(PANEL_RADIUS))
+                            .border_1()
+                            .border_color(rgba(fade(th.divider, float)))
+                    })
                     .shadow(elevation(th, 3.0 * float))
             })
             .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
@@ -545,9 +557,47 @@ impl MailWindow {
                     // Room for the panel's shadow.
                     .w(px(width + 24.0))
                     .overflow_hidden()
-                    .child(panel),
+                    .child(panel)
+                    .children((!drawer && float > 0.0).then(|| self.render_notch(gap, float, th))),
             )
             .into_any_element()
+    }
+
+    /// The notch on the floating panel's edge, pointing at what in the
+    /// rail opened it.
+    fn render_notch(&self, gap: f32, float: f32, th: &Theme) -> AnyElement {
+        let middle = match self.peek_from {
+            Hover::Compose => super::COMPOSE_TOP + super::COMPOSE_HEIGHT / 2.0,
+            _ => self.rail_mail_middle(),
+        };
+        // It reaches over the panel's border there, so the two read as one.
+        let (tip, base) = (gap - NOTCH, gap + 1.0);
+        let fill = fade(th.page, float);
+        let line = fade(th.divider, float);
+        canvas(
+            |_, _, _| {},
+            move |bounds, _, window, _| {
+                let o = bounds.origin;
+                let p = |x: f32, y: f32| point(o.x + px(x), o.y + px(y));
+                let (top, bottom) = (p(base, middle - NOTCH), p(base, middle + NOTCH));
+                let tip = p(tip, middle);
+                let mut path = PathBuilder::fill();
+                path.add_polygon(&[top, tip, bottom], true);
+                if let Ok(path) = path.build() {
+                    window.paint_path(path, rgba(fill));
+                }
+                let mut edge = PathBuilder::stroke(px(1.0));
+                edge.move_to(top);
+                edge.line_to(tip);
+                edge.line_to(bottom);
+                if let Ok(path) = edge.build() {
+                    window.paint_path(path, rgba(line));
+                }
+            },
+        )
+        .absolute()
+        .size_full()
+        .into_any_element()
     }
 
     fn render_nav_row(&self, ix: usize, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
@@ -855,6 +905,13 @@ impl MailWindow {
         let Some(row) = self.nav_rows.get(ix).cloned() else {
             return;
         };
+        // The list already shown stays as it is, without a blink.
+        if let Some(next) = listing_of(&row)
+            && self.showing(&next, cx)
+        {
+            self.picked_from_nav(window, cx);
+            return;
+        }
         match row {
             sidebar::Row::Folder {
                 folder: Some(folder),
@@ -897,6 +954,16 @@ impl MailWindow {
             }
             _ => self.toggle_nav_row(ix, cx),
         }
+    }
+
+    /// Whether `listing` is on show as it is, with nothing over it: no
+    /// conversation, search or Settings.
+    fn showing(&self, listing: &Listing, cx: &Context<Self>) -> bool {
+        self.listing.as_ref() == Some(listing)
+            && !self.reading
+            && self.search_panel.is_none()
+            && self.settings_page.is_none()
+            && self.search.read(cx).text().is_empty()
     }
 
     /// Before a line of the folder pane opens `next`: the search gives
@@ -1002,5 +1069,33 @@ pub(super) fn role_icon(role: Role) -> &'static str {
         Role::Junk => "junk",
         Role::Trash => "trash",
         Role::Other => "label",
+    }
+}
+
+/// The list a line of the folder pane opens, if it opens one.
+fn listing_of(row: &sidebar::Row) -> Option<Listing> {
+    match row {
+        sidebar::Row::Folder {
+            folder: Some(folder),
+            ..
+        }
+        | sidebar::Row::UnifiedAccount {
+            folder: Some(folder),
+            ..
+        } => Some(Listing::Folder(*folder)),
+        sidebar::Row::Unified { view, .. } => Some(Listing::Unified {
+            view: *view,
+            account: None,
+        }),
+        sidebar::Row::UnifiedAccount {
+            view,
+            account,
+            folder: None,
+            ..
+        } => Some(Listing::Unified {
+            view: *view,
+            account: Some(*account),
+        }),
+        _ => None,
     }
 }
