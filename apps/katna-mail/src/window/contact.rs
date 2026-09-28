@@ -708,7 +708,12 @@ impl MailWindow {
 
     /// Opens a conversation from the panel: its line when the list shows
     /// it, else in the reader by itself.
-    fn open_contact_entry(&mut self, entry: Entry, window: &mut Window, cx: &mut Context<Self>) {
+    pub(super) fn open_contact_entry(
+        &mut self,
+        entry: Entry,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
         if let Some(ix) = self.entries.iter().position(|e| e.key == entry.key) {
             self.open(ix, window, cx);
             return;
