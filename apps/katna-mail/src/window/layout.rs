@@ -259,7 +259,9 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         let width = self.chrome.inner_width(window);
-        let room = self.chrome.button_room(window, cx);
+        let room = self
+            .chrome
+            .button_room(Some(super::TOP_BAR_HEIGHT), window, cx);
         let first = self.layout.size.is_none();
         let size = Size::for_width(width, self.layout.size.unwrap_or(Size::Desktop));
         if self.layout.size != Some(size) {

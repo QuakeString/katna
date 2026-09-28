@@ -61,6 +61,16 @@ pub(crate) fn surface_margin(env: &Environment) -> f32 {
     }
 }
 
+/// Space between the ends of the header bar and what it holds.
+const BAR_PADDING: f32 = 6.0;
+
+/// Padding on each side of a group of window buttons. The buttons sit
+/// centred in the bar, so this puts them as far from the window's side as
+/// from its top.
+fn button_side(t: &ChromeTokens, bar_height: f32) -> f32 {
+    ((bar_height - t.button_size) / 2.0 - BAR_PADDING).max(0.0)
+}
+
 /// Options for opening a Katna window with the right decorations.
 pub fn window_options(
     env: &Environment,
@@ -268,7 +278,11 @@ impl WindowChrome {
             .dark
             .get()
             .unwrap_or_else(|| Self::desktop_dark(window));
-        let tokens = ChromeTokens::new(self.env.borrow().preset(), dark);
+        let preset = self.env.borrow().preset();
+        let mut tokens = ChromeTokens::new(preset, dark);
+        if preset == Preset::BreezeLike {
+            tokens = tokens.with_button_size(crate::breeze::button_size());
+        }
         let mut tokens = match self.colors.get() {
             Some(colors) => tokens.recolored(&colors),
             None => tokens,
@@ -307,15 +321,17 @@ impl WindowChrome {
     /// The room the window buttons take at the start and at the end of
     /// the header bar, with their padding and the gap after them. Zero on a
     /// side without buttons, and on both under server-side decorations.
-    pub fn button_room(&self, window: &Window, cx: &App) -> (f32, f32) {
+    /// `bar_height` is [`Bar::height`].
+    pub fn button_room(&self, bar_height: Option<f32>, window: &Window, cx: &App) -> (f32, f32) {
         if !matches!(window.window_decorations(), Decorations::Client { .. }) {
             return (0.0, 0.0);
         }
         let t = self.tokens(window);
+        let side = button_side(&t, bar_height.unwrap_or(t.header_height));
         let layout = cx.button_layout().unwrap_or_else(default_button_layout);
         let controls = window.window_controls();
-        let room = |side: &[Option<WindowButton>]| {
-            let n = side
+        let room = |side_buttons: &[Option<WindowButton>]| {
+            let n = side_buttons
                 .iter()
                 .flatten()
                 .filter(|b| match b {
@@ -328,7 +344,7 @@ impl WindowChrome {
                 0.0
             } else {
                 // Buttons and gaps, the group's padding, the bar's gap.
-                n * t.button_size + (n - 1.0) * t.button_gap + 12.0 + 6.0
+                n * t.button_size + (n - 1.0) * t.button_gap + 2.0 * side + BAR_PADDING
             }
         };
         (room(&layout.left), room(&layout.right))
@@ -549,6 +565,7 @@ impl WindowChrome {
                 .justify_center()
                 .child(child)
         };
+        let bar_height = height.unwrap_or(t.header_height);
         let bar = div()
             .id("katna-header-bar")
             .relative()
@@ -556,8 +573,8 @@ impl WindowChrome {
             .flex_row()
             .items_center()
             .flex_none()
-            .h(px(height.unwrap_or(t.header_height)))
-            .px(px(6.0))
+            .h(px(bar_height))
+            .px(px(BAR_PADDING))
             .gap(px(6.0))
             .bg(rgba(bg))
             .when(background.is_none(), |d| {
@@ -592,6 +609,7 @@ impl WindowChrome {
         let left = buttons(&layout.left);
         let right = buttons(&layout.right);
 
+        let side = button_side(t, bar_height);
         let title_color = if focused { t.fg } else { t.fg_dim };
         let drag_down = self.drag_pending.clone();
         let drag_up = self.drag_pending.clone();
@@ -627,7 +645,7 @@ impl WindowChrome {
                     div()
                         .flex()
                         .gap(px(t.button_gap))
-                        .px(px(6.0))
+                        .px(px(side))
                         .children(left),
                 )
             })
@@ -639,7 +657,7 @@ impl WindowChrome {
                     div()
                         .flex()
                         .gap(px(t.button_gap))
-                        .px(px(6.0))
+                        .px(px(side))
                         .children(right),
                 )
             })
@@ -704,7 +722,9 @@ fn box_shadow(s: &Shadow) -> BoxShadow {
     BoxShadow {
         color: Hsla::from(rgba(s.color)),
         offset: point(px(s.x), px(s.y)),
-        blur_radius: px(s.blur),
+        // GPUI's blur radius is the Gaussian's standard deviation, half
+        // the CSS blur of the tokens.
+        blur_radius: px(s.blur / 2.0),
         spread_radius: px(s.spread),
         inset: false,
     }
@@ -724,6 +744,8 @@ fn window_button(t: &ChromeTokens, button: WindowButton, window: &Window) -> Any
         t.button_bg_hover
     };
     let (preset, fg, icon_size) = (t.preset, t.fg, t.button_icon_size);
+    // Breeze's lines stay about 1.5 px wide as its buttons grow.
+    let stroke = (t.button_size / 16.0).max(1.5);
     div()
         .id(button.id())
         .flex()
@@ -742,9 +764,35 @@ fn window_button(t: &ChromeTokens, button: WindowButton, window: &Window) -> Any
             WindowButton::Minimize => window.minimize_window(),
             WindowButton::Maximize => window.zoom_window(),
         })
-        .child(icon_canvas(icon, preset, fg, icon_size))
+        .when(!is_close || t.close_fg_hover == fg, |d| {
+            d.child(icon_canvas(icon, preset, fg, icon_size, stroke))
+        })
+        // Breeze's close button turns red with a white cross: two crosses,
+        // one shown while the pointer is over the button.
+        .when(is_close && t.close_fg_hover != fg, |d| {
+            let cross = |color, hovered: bool| {
+                div()
+                    .absolute()
+                    .inset_0()
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .opacity(if hovered { 0.0 } else { 1.0 })
+                    .group_hover(CLOSE_GROUP, move |s| {
+                        s.opacity(if hovered { 1.0 } else { 0.0 })
+                    })
+                    .child(icon_canvas(icon, preset, color, icon_size, stroke))
+            };
+            d.group(CLOSE_GROUP)
+                .relative()
+                .child(cross(fg, false))
+                .child(cross(t.close_fg_hover, true))
+        })
         .into_any_element()
 }
+
+/// The hover group of the close button.
+const CLOSE_GROUP: &str = "katna-close-button";
 
 #[derive(Clone, Copy)]
 enum Icon {
@@ -755,14 +803,20 @@ enum Icon {
 }
 
 /// Window button glyphs, drawn as strokes on a 16 px grid (own artwork).
-fn icon_canvas(icon: Icon, preset: Preset, color: u32, icon_size: f32) -> impl IntoElement {
+fn icon_canvas(
+    icon: Icon,
+    preset: Preset,
+    color: u32,
+    icon_size: f32,
+    stroke: f32,
+) -> impl IntoElement {
     canvas(
         |_, _, _| (),
         move |bounds, _, window, _| {
             let s = icon_size / 16.0;
             let o = bounds.origin;
             let p = |x: f32, y: f32| point(o.x + px(x * s), o.y + px(y * s));
-            let mut path = PathBuilder::stroke(px(1.5 * s));
+            let mut path = PathBuilder::stroke(px(stroke));
             match (icon, preset) {
                 (Icon::Close, _) => {
                     path.move_to(p(4.5, 4.5));
