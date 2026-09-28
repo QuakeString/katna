@@ -728,6 +728,17 @@ pub async fn update_status(connection: &Connection) -> Result<katna_dbus::Update
     pim.update_status().await.map_err(|err| describe(&err))
 }
 
+/// What the version on offer brings, once a check found one.
+pub async fn update_details(
+    connection: &Connection,
+) -> Result<Option<katna_core::update::Manifest>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let json = pim.update_details().await.map_err(|err| describe(&err))?;
+    Ok(katna_core::update::Manifest::parse(json.as_bytes()))
+}
+
 /// Has the daemon look for a newer version now.
 pub async fn check_for_update(connection: &Connection) -> Result<(), String> {
     let pim = PimProxy::new(connection)

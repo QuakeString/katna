@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Updates get their own window"
+text = """
+Help > Check for Updates opens a window of its own. It shows your version
+beside the new one, with when each was built and how big the download is,
+what's new in the update and every change since your version.
+"""

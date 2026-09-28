@@ -318,6 +318,23 @@ impl MailWindow {
                                         this.show_whats_new(window, cx)
                                     })),
                             )
+                            .child(
+                                help_row(
+                                    "check-updates",
+                                    "refresh",
+                                    tr!("quick-check-updates"),
+                                    th,
+                                )
+                                .on_click(cx.listener(
+                                    |this, _, window, cx| {
+                                        this.check_for_updates_action(
+                                            &super::CheckForUpdates,
+                                            window,
+                                            cx,
+                                        )
+                                    },
+                                )),
+                            )
                             .child(help_row("about", "info", tr!("quick-about"), th).on_click(
                                 cx.listener(|this, _, window, cx| this.open_about(window, cx)),
                             )),

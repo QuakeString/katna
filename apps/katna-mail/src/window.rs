@@ -156,6 +156,7 @@ actions!(
         OpenSettings,
         ShowShortcuts,
         ShowWhatsNew,
+        CheckForUpdates,
         ShowAbout,
     ]
 );
@@ -3046,6 +3047,7 @@ impl Render for MailWindow {
             self.render_share_ask(&th, window, reduce, cx)
         };
         let about = self.render_about(&th, window, reduce, cx);
+        let update_dialog = self.render_update_dialog(&th, window, reduce, cx);
         let print_preview = self.render_print_preview(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
@@ -3095,6 +3097,7 @@ impl Render for MailWindow {
             .children(whats_new)
             .children(share_ask)
             .children(about)
+            .children(update_dialog)
             .children(print_preview)
             .children(snackbar)
             .children(tour)
@@ -3173,6 +3176,7 @@ impl Render for MailWindow {
             .on_action(cx.listener(Self::open_settings))
             .on_action(cx.listener(Self::show_shortcuts))
             .on_action(cx.listener(Self::show_whats_new_action))
+            .on_action(cx.listener(Self::check_for_updates_action))
             .on_action(cx.listener(Self::show_about));
         match &self.font {
             Some(font) => frame.font_family(font.clone()).into_any_element(),

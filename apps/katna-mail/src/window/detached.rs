@@ -215,6 +215,7 @@ impl MailWindow {
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let about = self.render_about(&th, window, reduce, cx);
+        let update_dialog = self.render_update_dialog(&th, window, reduce, cx);
         let content = div()
             .key_context(WINDOW_CONTEXT)
             .relative()
@@ -232,6 +233,7 @@ impl MailWindow {
             .children(snackbar)
             .children(whats_new)
             .children(about)
+            .children(update_dialog)
             .into_any_element();
         // The desktop's own title bar already names the window.
         if server_frame {
@@ -271,6 +273,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::undo_action))
             .on_action(cx.listener(Self::quit))
             .on_action(cx.listener(Self::show_whats_new_action))
+            .on_action(cx.listener(Self::check_for_updates_action))
             .on_action(cx.listener(Self::show_about))
     }
 }

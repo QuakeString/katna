@@ -134,6 +134,11 @@ fn main() -> ExitCode {
                 println!("katna-mail {}", whats_new::VERSION);
                 return ExitCode::SUCCESS;
             }
+            // For CI's update manifest: this build's highlights as JSON.
+            Some("--highlights") => {
+                println!("{}", whats_new::highlights_json());
+                return ExitCode::SUCCESS;
+            }
             _ => return usage_error(),
         }
     }
