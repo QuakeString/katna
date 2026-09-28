@@ -900,3 +900,20 @@ Po wybraniu Odpowiedz lub Przekaż dalej przy wiadomości otwartej ze Wspólnej
 skrzynki odbiorczej lub z wyszukiwania odpowiedź wychodzi teraz z konta, na
 które przyszła wiadomość, a nie z konta wybranego pod zdjęciem profilowym.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "Wyszukiwanie pokazuje swój skrót"
+text = """
+Pole wyszukiwania pokazuje swój skrót klawiszowy obok „Przeszukaj pocztę”,
+zgodnie z ustawieniem w Ustawienia > Skróty. Po kliknięciu zachowuje swój
+kolor i pokazuje delikatną krawędź, zamiast ciemnieć i rzucać cień. Foldery
+unoszące się nad listą trzymają się teraz także z dala od dolnej krawędzi.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Porządki w Aktywności"
+text = """
+Wskaż otwarcie lub kliknięcie w Aktywności i naciśnij ×, aby usunąć je z
+listy, albo naciśnij Wyczyść wszystko, aby zacząć od nowa. Nowe otwarcia i
+kliknięcia nadal się pojawiają, a raport Szczegóły nadal liczy wszystko.
+"""

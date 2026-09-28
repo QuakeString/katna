@@ -17,7 +17,7 @@ use katna_i18n::tr;
 use katna_ui::motion::{self, lerp};
 use katna_ui::px;
 
-use super::add_account::{logo, text_button};
+use super::add_account::text_button;
 use super::settings::Change;
 use super::{MailWindow, PANEL_RADIUS, share_ask};
 use crate::daemon;
@@ -238,7 +238,11 @@ impl MailWindow {
             .flex_col()
             .items_center()
             .gap(px(12.0))
-            .child(div().pb(px(4.0)).child(logo()))
+            .child(
+                div()
+                    .pb(px(4.0))
+                    .child(crate::widgets::katna_wordmark(96.0)),
+            )
             .child(title(tr!("onboarding-welcome-title"), th))
             .child(lead(&tr!("onboarding-welcome-lead"), th))
             .child(

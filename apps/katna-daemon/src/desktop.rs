@@ -239,7 +239,8 @@ async fn show_tray(connection: &zbus::Connection, handle: &Handle) -> Option<Tra
         connection,
         ids::MAIL_APP_ID,
         "Katna Mail",
-        ids::MAIL_APP_ID,
+        // One colour, which the panel recolours to suit itself.
+        &format!("{}-symbolic", ids::MAIL_APP_ID),
         tray_menu(),
         move |action, token| {
             let _ = sender.try_send(Event::Tray(action.to_owned(), token));

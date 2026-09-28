@@ -905,3 +905,22 @@ Ao usar Responder ou Encaminhar em um e-mail aberto na Caixa de entrada
 unificada ou na pesquisa, a mensagem agora sai da conta que recebeu o
 e-mail, e não da conta escolhida sob sua foto de perfil.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "A pesquisa mostra seu atalho"
+text = """
+A caixa de pesquisa mostra seu atalho de teclado ao lado de “Pesquisar
+e-mail”, conforme definido em Configurações > Atalhos. Ao clicar nela, ela
+mantém a cor e mostra uma borda suave em vez de escurecer com uma sombra.
+As pastas que flutuam sobre a lista agora também ficam afastadas da borda
+inferior.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Organize a Atividade"
+text = """
+Aponte para uma abertura ou um clique em Atividade e pressione × para
+tirá-lo da lista, ou pressione Limpar tudo para começar do zero. Novas
+aberturas e cliques continuam aparecendo, e o relatório Detalhes continua
+contando tudo.
+"""

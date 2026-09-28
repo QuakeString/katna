@@ -21,7 +21,7 @@ use gpui::{
 use katna_i18n::tr;
 use katna_store::{ContactConversation, ContactFile};
 use katna_ui::motion::{self, Spring};
-use katna_ui::px;
+use katna_ui::{Ripple, px};
 
 use super::MailWindow;
 use super::attachments::kind_badge;
@@ -29,7 +29,7 @@ use super::select::{Pieces, selectable};
 use crate::data::{Entry, EntryKey, RowFile};
 use crate::format;
 use crate::profile::{self, Profile};
-use crate::theme::Theme;
+use crate::theme::{Theme, mix};
 use crate::widgets::{card_outline, card_shadow, icon, icon_button_colored, tip};
 
 /// The card's width.
@@ -51,6 +51,11 @@ const PICTURE: f32 = 56.0;
 /// conversation's messages, so a selection from one into the other keeps
 /// their order.
 const CONTACT_PART: usize = usize::MAX / 2;
+/// Recent conversations shown before More.
+const SHOWN: usize = 3;
+/// A clickable line of a section, and the gap between lines.
+const ROW: f32 = 32.0;
+const ROW_GAP: f32 = 2.0;
 
 /// People by lower-case address, with a name if the mail gives one.
 type People = Rc<Vec<(String, Option<String>)>>;
@@ -65,6 +70,10 @@ pub(super) struct ContactPanel {
     people: Option<(EntryKey, People)>,
     /// Profiles by address: `None` while one is read.
     profiles: HashMap<String, (Instant, Option<Rc<Profile>>)>,
+    /// The person whose recent conversations show in full (More).
+    more: Option<String>,
+    /// 0 = the first few conversations, 1 = all of them.
+    more_spring: Spring,
 }
 
 impl ContactPanel {
@@ -74,6 +83,8 @@ impl ContactPanel {
             picked: None,
             people: None,
             profiles: HashMap::new(),
+            more: None,
+            more_spring: Spring::new(motion::SMOOTH, 0.0),
         }
     }
 }
@@ -103,6 +114,9 @@ impl MailWindow {
             && self.contact_fits(available);
         self.contact.spring.set(if open { 1.0 } else { 0.0 });
         let t = self.contact.spring.tick(window, reduce).clamp(0.0, 1.0);
+        let more = self.contact.more.is_some();
+        self.contact.more_spring.set(if more { 1.0 } else { 0.0 });
+        self.contact.more_spring.tick(window, reduce);
         let room = |t: f32| (CONTACT_WIDTH + GAP) * t;
         (room(t), room(self.contact.spring.target()))
     }
@@ -266,6 +280,11 @@ impl MailWindow {
         let person = picked
             .and_then(|email| people.iter().find(|(e, _)| *e == email).cloned())
             .or_else(|| people.first().cloned());
+        // More folds back for another person.
+        if self.contact.more.as_ref() != person.as_ref().map(|(email, _)| email) {
+            self.contact.more = None;
+            self.contact.more_spring.snap(0.0);
+        }
         let body = match person {
             Some((email, name)) => {
                 let profile = self.contact_profile(&email, cx);
@@ -341,7 +360,11 @@ impl MailWindow {
                     }),
             );
 
-        let mut sections: Vec<AnyElement> = vec![header.into_any_element()];
+        let phone = profile.as_ref().and_then(|p| p.card.phone.clone());
+        let actions = self.contact_actions(email, phone, th, cx);
+
+        // Each section is a faintly tinted card, as in Google Contacts.
+        let mut sections: Vec<AnyElement> = Vec::new();
         if let Some(profile) = &profile {
             if let Some(details) = self.contact_details(profile, &mut pieces, th, cx) {
                 sections.push(details);
@@ -349,6 +372,7 @@ impl MailWindow {
             sections.push(self.contact_mail(profile, &mut pieces, th));
             if !profile.conversations.is_empty() {
                 sections.push(self.contact_conversations(
+                    email,
                     &profile.conversations,
                     &mut pieces,
                     th,
@@ -362,27 +386,32 @@ impl MailWindow {
         if people.len() > 1 {
             sections.push(self.contact_others(email, people, &mut pieces, th, cx));
         }
-        if profile.is_some() {
-            sections.push(
-                words(&mut pieces, tr!("contact-local-only"))
-                    .text_size(px(12.0))
-                    .line_height(px(16.0))
-                    .text_color(rgba(th.text_faint))
-                    .into_any_element(),
-            );
-        }
-        let mut body = div()
+        let tint = card_tint(th);
+        let foot = profile.is_some().then(|| {
+            words(&mut pieces, tr!("contact-local-only"))
+                .px(px(4.0))
+                .text_size(px(12.0))
+                .line_height(px(16.0))
+                .text_color(rgba(th.text_faint))
+        });
+        let body = div()
             .flex()
             .flex_col()
-            .px(px(16.0))
+            .gap(px(12.0))
+            .px(px(12.0))
             .pt(px(20.0))
-            .pb(px(16.0));
-        for (ix, section) in sections.into_iter().enumerate() {
-            if ix > 0 {
-                body = body.child(div().my(px(16.0)).h(px(1.0)).bg(rgba(th.divider)));
-            }
-            body = body.child(section);
-        }
+            .pb(px(16.0))
+            .child(header.mx(px(4.0)))
+            .child(actions.mx(px(4.0)).mb(px(4.0)))
+            .children(sections.into_iter().map(|section| {
+                div()
+                    .rounded(px(16.0))
+                    .bg(rgba(tint))
+                    .px(px(16.0))
+                    .py(px(14.0))
+                    .child(section)
+            }))
+            .children(foot);
         // A new person fades in, as a conversation opens.
         selectable(body, Some(CONTACT_PART), cx)
             .with_animation(
@@ -391,6 +420,65 @@ impl MailWindow {
                 |el, t| el.opacity(t),
             )
             .into_any_element()
+    }
+
+    /// Round tinted buttons under the name, as in Google Contacts: write
+    /// to them, find the mail with them, and call them when their number
+    /// is known.
+    fn contact_actions(
+        &self,
+        email: &str,
+        phone: Option<String>,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> gpui::Div {
+        let (bg, bg_hover) = action_tint(th);
+        let button = |id: &'static str, name: &str, label: String| {
+            div()
+                .id(id)
+                .relative()
+                .overflow_hidden()
+                .size(px(40.0))
+                .flex_none()
+                .flex()
+                .items_center()
+                .justify_center()
+                .rounded_full()
+                .cursor_pointer()
+                .bg(rgba(bg))
+                .hover(move |s| s.bg(rgba(bg_hover)))
+                .tooltip(tip(label, th))
+                .child(Ripple::new((id, 0usize), rgba(th.ripple)).centered())
+                .child(icon(name, th.accent, 20.0))
+        };
+        let to = email.to_owned();
+        let query = format!("from:{email} OR to:{email}");
+        div()
+            .flex()
+            .flex_row()
+            .justify_end()
+            .gap(px(12.0))
+            .child(
+                button("contact-email", "mail", tr!("contact-email")).on_click(cx.listener(
+                    move |this, _, window, cx| {
+                        let mail = crate::mailto::Mailto {
+                            to: vec![to.clone()],
+                            ..Default::default()
+                        };
+                        this.open_mailto(mail, window, cx);
+                    },
+                )),
+            )
+            .child(
+                button("contact-search", "search", tr!("contact-search")).on_click(cx.listener(
+                    move |this, _, window, cx| this.search_for(query.clone(), window, cx),
+                )),
+            )
+            .children(phone.map(|number| {
+                let dial = format!("tel:{}", dialable(&number));
+                button("contact-call-button", "phone", tr!("contact-call"))
+                    .on_click(move |_, _, cx| cx.open_url(&dial))
+            }))
     }
 
     /// Phone, title and company, and their time of day.
@@ -561,6 +649,7 @@ impl MailWindow {
 
     fn contact_conversations(
         &self,
+        email: &str,
         conversations: &[ContactConversation],
         pieces: &mut Pieces,
         th: &Theme,
@@ -568,57 +657,116 @@ impl MailWindow {
     ) -> AnyElement {
         let now = format::local(jiff::Timestamp::now().as_second(), &self.tz);
         let open = self.reader.as_ref().map(|r| r.key);
-        section(words(pieces, tr!("contact-conversations")), th)
-            .children(conversations.iter().enumerate().map(|(ix, c)| {
-                let key = match c.thread {
-                    Some(thread) => EntryKey::Thread(thread),
-                    None => EntryKey::Message(c.message),
-                };
-                let entry = Entry {
-                    key,
-                    latest: c.message,
-                };
-                let date = c
-                    .date
-                    .and_then(|d| format::local(d, &self.tz))
-                    .zip(now)
-                    .map(|(d, now)| format::list_date(d, now))
-                    .unwrap_or_default();
-                let subject = if c.subject.trim().is_empty() {
-                    tr!("reader-no-subject")
-                } else {
-                    c.subject.clone()
-                };
-                row(("contact-conversation", ix), th)
-                    .when(open == Some(key), |d| d.bg(rgba(th.hover)))
-                    .child(
-                        words(pieces, subject)
-                            .flex_1()
-                            .min_w_0()
-                            .truncate()
-                            .cursor_pointer()
-                            .text_color(rgba(th.text)),
-                    )
-                    .when(c.count > 1, |d| {
-                        d.child(
-                            words(pieces, katna_i18n::format::number(u64::from(c.count)))
-                                .flex_none()
-                                .cursor_pointer()
-                                .text_color(rgba(th.text_faint)),
-                        )
-                    })
-                    .child(
-                        words(pieces, date)
+        let mut rows = conversations.iter().enumerate().map(|(ix, c)| {
+            let key = match c.thread {
+                Some(thread) => EntryKey::Thread(thread),
+                None => EntryKey::Message(c.message),
+            };
+            let entry = Entry {
+                key,
+                latest: c.message,
+            };
+            let date = c
+                .date
+                .and_then(|d| format::local(d, &self.tz))
+                .zip(now)
+                .map(|(d, now)| format::list_date(d, now))
+                .unwrap_or_default();
+            let subject = if c.subject.trim().is_empty() {
+                tr!("reader-no-subject")
+            } else {
+                c.subject.clone()
+            };
+            row(("contact-conversation", ix), th)
+                .when(open == Some(key), |d| d.bg(rgba(th.hover)))
+                .child(
+                    words(pieces, subject)
+                        .flex_1()
+                        .min_w_0()
+                        .truncate()
+                        .cursor_pointer()
+                        .text_color(rgba(th.text)),
+                )
+                .when(c.count > 1, |d| {
+                    d.child(
+                        words(pieces, katna_i18n::format::number(u64::from(c.count)))
                             .flex_none()
                             .cursor_pointer()
-                            .text_size(px(12.0))
-                            .text_color(rgba(th.text_dim)),
+                            .text_color(rgba(th.text_faint)),
                     )
-                    .on_click(cx.listener(move |this, _, window, cx| {
-                        this.open_contact_entry(entry, window, cx)
-                    }))
-            }))
-            .into_any_element()
+                })
+                .child(
+                    words(pieces, date)
+                        .flex_none()
+                        .cursor_pointer()
+                        .text_size(px(12.0))
+                        .text_color(rgba(th.text_dim)),
+                )
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    this.open_contact_entry(entry, window, cx)
+                }))
+        });
+        let first: Vec<_> = rows.by_ref().take(SHOWN).collect();
+        let rest: Vec<_> = rows.collect();
+        let mut list = section(words(pieces, tr!("contact-conversations")), th).children(first);
+        if rest.is_empty() {
+            return list.into_any_element();
+        }
+        // The rest unfolds smoothly under the first few, and folds back.
+        let t = self.contact.more_spring.value().clamp(0.0, 1.0);
+        let full = rest.len() as f32 * (ROW + ROW_GAP) - ROW_GAP;
+        if t > 0.001 {
+            list = list.child(
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(ROW_GAP))
+                    // Room for the rows' hover to reach the card's edges.
+                    .mx(px(-8.0))
+                    .px(px(8.0))
+                    .h(px(full * t))
+                    .opacity(t)
+                    .overflow_hidden()
+                    .children(rest),
+            );
+        }
+        let more = self.contact.more.is_none();
+        let person = email.to_owned();
+        list.child(
+            div().pt(px(4.0)).flex().flex_row().child(
+                div()
+                    .id("contact-more")
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(2.0))
+                    .mx(px(-8.0))
+                    .pl(px(8.0))
+                    .pr(px(4.0))
+                    .h(px(28.0))
+                    .rounded_full()
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .text_size(px(13.0))
+                    .font_weight(FontWeight::MEDIUM)
+                    .text_color(rgba(th.accent))
+                    .child(if more {
+                        tr!("contact-more")
+                    } else {
+                        tr!("contact-less")
+                    })
+                    .child(icon(
+                        if more { "chevron-down" } else { "chevron-up" },
+                        th.accent,
+                        18.0,
+                    ))
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.contact.more = more.then(|| person.clone());
+                        cx.notify();
+                    })),
+            ),
+        )
+        .into_any_element()
     }
 
     fn contact_files(
@@ -735,7 +883,7 @@ impl MailWindow {
 
 /// A titled list in the panel.
 fn section(title: gpui::Div, th: &Theme) -> gpui::Div {
-    div().flex().flex_col().gap(px(2.0)).child(
+    div().flex().flex_col().gap(px(ROW_GAP)).child(
         title
             .pb(px(6.0))
             .text_size(px(13.0))
@@ -761,13 +909,37 @@ fn dialable(number: &str) -> String {
     }
 }
 
+/// The panel's cards: the card's own color with a faint touch of the
+/// accent, in light and dark.
+fn card_tint(th: &Theme) -> u32 {
+    mix(
+        th.surface,
+        opaque_accent(th),
+        if th.dark { 0.07 } else { 0.05 },
+    )
+}
+
+/// The round buttons under the name, and under the pointer.
+fn action_tint(th: &Theme) -> (u32, u32) {
+    let accent = opaque_accent(th);
+    let t = if th.dark { 0.16 } else { 0.17 };
+    (
+        mix(th.surface, accent, t),
+        mix(th.surface, accent, t + 0.08),
+    )
+}
+
+fn opaque_accent(th: &Theme) -> u32 {
+    th.accent | 0xff
+}
+
 /// A clickable line of a section, reaching the card's edges on hover.
 fn row(id: impl Into<gpui::ElementId>, th: &Theme) -> gpui::Stateful<gpui::Div> {
     div()
         .id(id)
         .mx(px(-8.0))
         .px(px(8.0))
-        .h(px(32.0))
+        .h(px(ROW))
         .flex()
         .flex_row()
         .items_center()

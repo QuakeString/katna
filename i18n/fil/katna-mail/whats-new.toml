@@ -933,3 +933,22 @@ Ang Sumagot o Ipasa sa mail na binuksan mula sa Pinag-isang inbox o mula sa
 paghahanap ay ipinapadala na ngayon mula sa account na tumanggap ng mail,
 hindi sa account na napili sa ilalim ng larawan ng iyong profile.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "Ipinapakita ng paghahanap ang shortcut nito"
+text = """
+Ipinapakita ng search box ang keyboard shortcut nito sa tabi ng "Maghanap sa
+mail", ayon sa nakatakda sa Mga setting > Mga Shortcut. Kapag na-click,
+pinapanatili nito ang kulay nito at nagpapakita ng malabong gilid sa halip
+na dumilim nang may anino. Hindi na rin dumidikit sa ibabang gilid ang mga
+folder na nakalutang sa ibabaw ng listahan.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Ayusin ang Aktibidad"
+text = """
+Ituro ang isang pagbukas o pag-click sa Aktibidad at pindutin ang × para
+alisin ito sa listahan, o pindutin ang I-clear lahat para magsimula muli.
+Lalabas pa rin ang mga bagong pagbukas at pag-click, at binibilang pa rin ng
+ulat na Mga detalye ang lahat.
+"""

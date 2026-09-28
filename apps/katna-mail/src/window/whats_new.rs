@@ -247,17 +247,7 @@ impl MailWindow {
             .flex_row()
             .items_start()
             .gap(px(16.0))
-            .child(
-                div()
-                    .flex_none()
-                    .size(px(48.0))
-                    .flex()
-                    .items_center()
-                    .justify_center()
-                    .rounded_full()
-                    .bg(rgba(fade(th.accent, 0.14)))
-                    .child(icon("sparkle", th.accent, 26.0)),
-            )
+            .child(crate::widgets::katna_mark(48.0))
             .child(
                 div()
                     .flex_1()

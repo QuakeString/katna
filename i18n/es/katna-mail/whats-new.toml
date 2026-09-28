@@ -909,3 +909,21 @@ Al usar Responder o Reenviar en un correo abierto desde la Bandeja de
 entrada unificada o desde la búsqueda, el mensaje sale ahora de la cuenta a
 la que llegó el correo, no de la cuenta elegida bajo tu foto de perfil.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "La búsqueda muestra su atajo"
+text = """
+El cuadro de búsqueda muestra su combinación de teclas junto a «Buscar
+correo», según lo establecido en Ajustes > Combinaciones de teclas. Al
+hacer clic en él, conserva su color y muestra un borde tenue en lugar de
+oscurecerse con una sombra. Las carpetas que flotan sobre la lista ahora
+también se separan del borde inferior.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Ordena Actividad"
+text = """
+Señala una apertura o un clic en Actividad y pulsa × para quitarlo de la
+lista, o pulsa Borrar todo para empezar de cero. Las nuevas aperturas y
+clics siguen apareciendo, y el informe Detalles sigue contándolo todo.
+"""

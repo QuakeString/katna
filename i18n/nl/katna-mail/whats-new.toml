@@ -905,3 +905,21 @@ Gecombineerde inbox of vanuit zoeken, gaat het bericht nu uit vanaf het
 account waar de e-mail binnenkwam, niet vanaf het account dat onder je
 profielfoto is gekozen.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "Zoeken toont zijn sneltoets"
+text = """
+Het zoekvak toont zijn sneltoets naast ‘Zoeken in e-mail’, zoals ingesteld
+in Instellingen > Sneltoetsen. Klik je erin, dan houdt het zijn kleur en
+toont het een vage rand in plaats van donkerder te worden met een schaduw.
+De mappen die boven de lijst zweven, blijven nu ook vrij van de onderrand.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Ruim Activiteit op"
+text = """
+Wijs in Activiteit iets aan dat geopend of aangeklikt is en druk op × om
+het uit de lijst te halen, of druk op Alles wissen om opnieuw te beginnen.
+Wat nieuw geopend of aangeklikt wordt, verschijnt nog steeds, en het
+overzicht Details telt nog steeds alles.
+"""

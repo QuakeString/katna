@@ -922,3 +922,22 @@ Posteingang oder aus der Suche geöffnet haben, jetzt von dem Konto, an das
 die E-Mail ging, nicht von dem Konto, das unter Ihrem Profilbild ausgewählt
 ist.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "Die Suche zeigt ihre Tastenkombination"
+text = """
+Das Suchfeld zeigt seine Tastenkombination neben „In E-Mails suchen“, wie
+unter Einstellungen > Tastenkombinationen festgelegt. Wenn Sie
+hineinklicken, behält es seine Farbe und zeigt einen dezenten Rand, statt
+dunkler zu werden und einen Schatten zu werfen. Die Ordner, die über der
+Liste schweben, halten jetzt auch Abstand zum unteren Rand.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Aktivität aufräumen"
+text = """
+Zeigen Sie in Aktivität auf eine Öffnung oder einen Klick und drücken Sie
+×, um den Eintrag aus der Liste zu nehmen, oder drücken Sie Alle entfernen,
+um neu anzufangen. Neue Öffnungen und Klicks erscheinen weiterhin, und der
+Bericht Details zählt weiterhin alles.
+"""

@@ -907,3 +907,22 @@ Balas atau Majukan pada mel yang dibuka dari Peti masuk bersatu atau dari
 carian kini dihantar dari akaun yang menerima mel itu, bukan akaun yang
 dipilih di bawah gambar profil anda.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "Carian menunjukkan pintasannya"
+text = """
+Kotak carian menunjukkan pintasan papan kekuncinya di sebelah "Cari mel",
+seperti yang ditetapkan dalam Tetapan > Pintasan. Apabila diklik, ia
+mengekalkan warnanya dan menunjukkan pinggir yang samar, bukannya menjadi
+lebih gelap dengan bayang. Folder yang terapung di atas senarai kini juga
+tidak lagi rapat dengan pinggir bawah.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Kemaskan Aktiviti"
+text = """
+Tuding pada pembukaan atau klik dalam Aktiviti dan tekan × untuk membuangnya
+daripada senarai, atau tekan Kosongkan semua untuk bermula semula. Pembukaan
+dan klik baharu masih akan muncul, dan laporan Butiran masih mengira
+semuanya.
+"""

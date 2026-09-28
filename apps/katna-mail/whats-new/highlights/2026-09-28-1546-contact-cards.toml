@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A cleaner contact panel"
+text = """
+The contact panel now shows each part in its own soft card, with round
+buttons under the name to write to the person, find your mail with them
+or call them. Recent conversations lists the latest few; press More to
+see the rest and Less to fold them away.
+"""
