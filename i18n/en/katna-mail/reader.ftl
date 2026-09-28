@@ -146,6 +146,9 @@ tracking-receipt-other = Read receipt: { $who } deleted or handled your message 
 ## Remote images and pictures
 
 remote-hidden = Images in this message are hidden.
+# For a sender whose images are always shown, when the mail provider could
+# not confirm that the message really comes from that address.
+remote-hidden-unconfirmed = Images are hidden: the sender could not be confirmed.
 remote-show = Show images
 remote-always-show = Always show from this sender
 # The button of the file chooser that picks an account's picture.

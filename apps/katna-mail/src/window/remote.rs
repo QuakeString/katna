@@ -6,7 +6,15 @@
 //! message was opened, and when, and from where. So none is loaded until
 //! the user says so: "Show images" for one message, or "Always show from"
 //! a sender (kept one per line in `$XDG_CONFIG_HOME/katna/trusted-senders`),
-//! or for all mail with Settings > General > Images from the web.
+//! or for all mail with Settings > General > Images from the web. Anyone
+//! can write any `From`, so a trusted sender's images load only when the
+//! user's provider vouched for the address (DMARC, or aligned DKIM; see
+//! [`katna_render::sender_authenticated`]). A message loads at most
+//! [`rich::MAX_REMOTE_IMAGES`] images, [`MAX_FETCHES`] at a time.
+//!
+//! SVG pictures, carried in a message or on the web, are drawn to bitmaps
+//! by [`katna_preview::svg`] before GPUI sees them: GPUI's own SVG support
+//! reads any local file an SVG links to.
 //!
 //! A sender's picture is their organization's BIMI logo or website icon.
 //! It is looked up by domain, not by message, and kept for a week, so it
@@ -20,7 +28,7 @@
 //! The daemon does all fetching; the app never uses the network.
 
 use std::cell::RefCell;
-use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -44,10 +52,26 @@ use crate::widgets::{avatar, icon};
 /// Where a remote image or picture is.
 pub(crate) enum Fetch {
     Loading,
-    Ready(Arc<gpui::Image>),
+    Ready(MailImage),
     /// Failed, or (for a picture) there is none.
     Missing,
 }
+
+/// A picture from a message, ready for GPUI: never SVG (see
+/// [`mail_image`]).
+#[derive(Clone)]
+pub(crate) struct MailImage {
+    pub image: Arc<gpui::Image>,
+    /// The size to draw it at, in CSS pixels, for an SVG drawn at twice
+    /// its size; `None` for a picture drawn at its own size.
+    pub size: Option<(f32, f32)>,
+}
+
+/// Remote images fetched at once.
+const MAX_FETCHES: usize = 6;
+/// An SVG from mail is drawn at twice its size (sharp on a high-density
+/// screen), at most this many pixels on a side.
+const SVG_SIDE: u32 = 2048;
 
 pub(crate) struct Remote {
     path: PathBuf,
@@ -58,6 +82,13 @@ pub(crate) struct Remote {
     /// Every message's images load (`mail.remote_images`).
     pub(super) always: bool,
     pub(super) images: HashMap<String, Fetch>,
+    /// Remote images waiting for one of the [`MAX_FETCHES`], in order.
+    queue: VecDeque<String>,
+    fetching: usize,
+    /// SVG pictures carried in the open messages, drawn to bitmaps, by the
+    /// address of their bytes ([`svg_key`]); the bytes are kept here so
+    /// the address stays theirs.
+    pub(super) drawn: HashMap<usize, (Arc<[u8]>, Fetch)>,
     /// Sender pictures made to fill a circle, by lower-case domain;
     /// `None` while loading or when there is none.
     pictures: HashMap<String, Option<Arc<RenderImage>>>,
@@ -104,6 +135,9 @@ impl Remote {
             shown: HashSet::new(),
             always: false,
             images: HashMap::new(),
+            queue: VecDeque::new(),
+            fetching: 0,
+            drawn: HashMap::new(),
             pictures: HashMap::new(),
             wanted: RefCell::default(),
             desktop: desktop_picture().map(|(_, picture)| picture),
@@ -141,9 +175,11 @@ impl Remote {
         !sender.is_empty() && self.trusted.contains(&sender.to_ascii_lowercase())
     }
 
-    /// Whether remote content of `message` from `sender` may load.
-    pub(super) fn allowed(&self, message: MessageId, sender: &str) -> bool {
-        self.always || self.shown.contains(&message) || self.trusts(sender)
+    /// Whether remote content of `message` from `sender` may load. A
+    /// trusted sender counts only when the provider vouched for the
+    /// address (`authenticated`): anyone can write any `From`.
+    pub(super) fn allowed(&self, message: MessageId, sender: &str, authenticated: bool) -> bool {
+        self.always || self.shown.contains(&message) || (authenticated && self.trusts(sender))
     }
 
     fn trust(&mut self, sender: &str) {
@@ -201,9 +237,33 @@ impl Remote {
 /// Largest picture read for an account.
 const MAX_OWN_PICTURE: u64 = 8 * 1024 * 1024;
 
-fn image(bytes: Vec<u8>) -> Option<Arc<gpui::Image>> {
+/// A picture for GPUI, known by its first bytes. An SVG is drawn to a
+/// bitmap first, with nothing it links to loaded, and kept to a sane size.
+pub(super) fn mail_image(bytes: Vec<u8>) -> Option<MailImage> {
     let kind = ImageKind::sniff(&bytes)?;
-    Some(Arc::new(gpui::Image::from_bytes(rich::format(kind), bytes)))
+    let Some(format) = rich::format(kind) else {
+        let drawing = katna_preview::svg::draw(&bytes, 2.0, SVG_SIDE)
+            .map_err(|err| tracing::debug!(err = err.0, "SVG not drawn"))
+            .ok()?;
+        let png = katna_preview::svg::png(&drawing.image).ok()?;
+        return Some(MailImage {
+            image: Arc::new(gpui::Image::from_bytes(gpui::ImageFormat::Png, png)),
+            size: Some(drawing.size),
+        });
+    };
+    Some(MailImage {
+        image: Arc::new(gpui::Image::from_bytes(format, bytes)),
+        size: None,
+    })
+}
+
+fn image(bytes: Vec<u8>) -> Option<Arc<gpui::Image>> {
+    mail_image(bytes).map(|picture| picture.image)
+}
+
+/// The key of SVG bytes carried in a message in [`Remote::drawn`].
+pub(super) fn svg_key(bytes: &Arc<[u8]>) -> usize {
+    Arc::as_ptr(bytes).cast::<u8>().addr()
 }
 
 fn read_picture(path: &Path) -> Option<Arc<gpui::Image>> {
@@ -278,46 +338,98 @@ fn sender_logo(bytes: Vec<u8>) -> Option<Arc<RenderImage>> {
 
 impl MailWindow {
     /// Starts fetching the remote images of the open conversation that
-    /// may show and are not here yet.
+    /// may show and are not here yet, and drawing the SVG pictures its
+    /// messages carry.
     pub(super) fn fetch_remote(&mut self, cx: &mut Context<Self>) {
         self.remote.find_mono(cx);
         let Some(reader) = &self.reader else {
             return;
         };
         let mut urls = Vec::new();
-        for (id, sender, remote) in reader.remote_content() {
-            if !self.remote.allowed(id, &sender) {
+        for content in reader.remote_content() {
+            if !self
+                .remote
+                .allowed(content.id, &content.sender, content.authenticated)
+            {
                 continue;
             }
             urls.extend(
-                remote
+                content
+                    .urls
                     .iter()
                     .filter(|url| !self.remote.images.contains_key(*url))
                     .cloned(),
             );
         }
+        let svgs = reader.carried_svgs();
         for url in urls {
-            self.remote.images.insert(url.clone(), Fetch::Loading);
+            if !self.remote.images.contains_key(&url) {
+                self.remote.images.insert(url.clone(), Fetch::Loading);
+                self.remote.queue.push_back(url);
+            }
+        }
+        self.fetch_queued(cx);
+        self.draw_svgs(svgs, cx);
+    }
+
+    /// Fetches queued remote images, at most [`MAX_FETCHES`] at once.
+    fn fetch_queued(&mut self, cx: &mut Context<Self>) {
+        while self.remote.fetching < MAX_FETCHES
+            && let Some(url) = self.remote.queue.pop_front()
+        {
+            self.remote.fetching += 1;
             let connection = self.daemon.clone();
             cx.spawn(async move |this, cx| {
                 let fetch_url = url.clone();
-                let result = cx
+                let image = cx
                     .background_executor()
                     .spawn(async move {
                         let connection = match connection {
                             Some(connection) => connection,
                             None => daemon::connect().await?,
                         };
-                        daemon::fetch_image(&connection, &fetch_url).await
+                        let bytes = daemon::fetch_image(&connection, &fetch_url).await?;
+                        Ok::<_, String>(mail_image(bytes))
                     })
+                    .await
+                    .ok()
+                    .flatten();
+                this.update(cx, |this, cx| {
+                    this.remote.fetching = this.remote.fetching.saturating_sub(1);
+                    let fetch = image.map_or(Fetch::Missing, Fetch::Ready);
+                    this.remote.images.insert(url, fetch);
+                    this.fetch_queued(cx);
+                    cx.notify();
+                })
+                .ok();
+            })
+            .detach();
+        }
+    }
+
+    /// Draws the SVG pictures carried in the open messages (`svgs`) that
+    /// are not drawn yet, and forgets those of messages no longer open.
+    fn draw_svgs(&mut self, svgs: Vec<Arc<[u8]>>, cx: &mut Context<Self>) {
+        let open: HashSet<usize> = svgs.iter().map(svg_key).collect();
+        self.remote.drawn.retain(|key, _| open.contains(key));
+        for bytes in svgs {
+            let key = svg_key(&bytes);
+            if self.remote.drawn.contains_key(&key) {
+                continue;
+            }
+            self.remote
+                .drawn
+                .insert(key, (bytes.clone(), Fetch::Loading));
+            cx.spawn(async move |this, cx| {
+                let image = cx
+                    .background_executor()
+                    .spawn(async move { mail_image(bytes.to_vec()) })
                     .await;
                 this.update(cx, |this, cx| {
-                    let fetch = match result.ok().and_then(image) {
-                        Some(image) => Fetch::Ready(image),
-                        None => Fetch::Missing,
-                    };
-                    this.remote.images.insert(url, fetch);
-                    cx.notify();
+                    if let Some((_, fetch)) = this.remote.drawn.get_mut(&key) {
+                        *fetch = image.map_or(Fetch::Missing, Fetch::Ready);
+                        cx.notify();
+                    }
                 })
                 .ok();
             })
@@ -504,7 +616,9 @@ impl MailWindow {
         }
     }
 
-    /// "Images are hidden" with the two ways to show them.
+    /// "Images are hidden" with the two ways to show them. For a sender
+    /// who is trusted already, but whose address the provider did not
+    /// vouch for, it says so, and only "Show images" is offered.
     pub(super) fn images_banner(
         &self,
         ix: usize,
@@ -513,6 +627,7 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
+        let unconfirmed = self.remote.trusts(sender);
         let link = |label: SharedString, id: (&'static str, usize)| {
             div()
                 .id(id)
@@ -539,7 +654,17 @@ impl MailWindow {
             .text_size(px(12.0))
             .text_color(rgba(th.text_dim))
             .child(icon("image", th.text_faint, 16.0))
-            .child(div().pl(px(4.0)).pr(px(4.0)).child(tr!("remote-hidden")))
+            .child(
+                div()
+                    .min_w_0()
+                    .pl(px(4.0))
+                    .pr(px(4.0))
+                    .child(if unconfirmed {
+                        tr!("remote-hidden-unconfirmed")
+                    } else {
+                        tr!("remote-hidden")
+                    }),
+            )
             .child(
                 link(tr!("remote-show").into(), ("show-images", ix)).on_click(cx.listener(
                     move |this, _, _, cx| {
@@ -549,7 +674,7 @@ impl MailWindow {
                     },
                 )),
             )
-            .when(!sender.is_empty(), |d| {
+            .when(!sender.is_empty() && !unconfirmed, |d| {
                 d.child(
                     link(tr!("remote-always-show").into(), ("trust-sender", ix)).on_click(
                         cx.listener(move |this, _, _, cx| {

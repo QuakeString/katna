@@ -482,6 +482,9 @@ pub struct MailWindow {
     main: Option<WeakEntity<Self>>,
     /// Remote images and sender pictures of the open conversation.
     remote: remote::Remote,
+    /// The link under the pointer in the reading pane, whose address shows
+    /// at its foot.
+    hovered_link: Option<rich::HoveredLink>,
     /// Translations of opened messages (the Translate bar).
     translations: translate::Translations,
     /// The selected text of the open conversation.
@@ -712,6 +715,7 @@ impl MailWindow {
             pill_text_lift: 0.0,
             mail: Mail::open(&paths),
             remote: remote::Remote::load(&paths),
+            hovered_link: None,
             translations: translate::Translations::default(),
             text: select::TextSelection::new(cx),
             accounts: Vec::new(),
