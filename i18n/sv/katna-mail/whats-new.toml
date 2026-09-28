@@ -946,3 +946,12 @@ berättar att det kommer starta om, ber om ditt lösenord, installerar
 uppdateringen och öppnas igen där du var. Inställningar > Allmänt >
 Uppdateringar stänger av den automatiska hämtningen.
 """
+
+["2026-09-28-1520-track-sealed-and-plain"]
+title = "Spårning av signerad, krypterad och oformaterad e-post"
+text = """
+Ögat fungerar nu även på signerad och krypterad e-post: varje mottagares
+kopia signeras eller krypteras för sig, så att signaturer förblir giltiga.
+Oformaterad e-post kan inte visa öppningar, men dess länkar spåras, så du
+ser när någon följer en.
+"""

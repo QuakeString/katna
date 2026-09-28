@@ -941,3 +941,12 @@ Katna Mail sẽ báo rằng nó sắp khởi động lại, hỏi mật khẩu c
 đặt bản cập nhật rồi mở lại đúng chỗ bạn đang dừng. Cài đặt > Chung >
 Cập nhật tắt việc tự động tải xuống.
 """
+
+["2026-09-28-1520-track-sealed-and-plain"]
+title = "Theo dõi thư đã ký, đã mã hóa và văn bản thuần"
+text = """
+Biểu tượng con mắt giờ cũng hoạt động trên thư đã ký và đã mã hóa: bản sao
+của mỗi người nhận được ký hoặc mã hóa riêng, nên chữ ký vẫn hợp lệ. Thư văn
+bản thuần không thể hiển thị lượt mở, nhưng các liên kết trong đó được theo
+dõi, nên bạn thấy khi ai đó mở một liên kết.
+"""

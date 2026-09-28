@@ -941,3 +941,12 @@ oor": Katna Mail sê dit gaan herbegin, vra jou wagwoord, installeer
 die opdatering en maak weer oop waar jy opgehou het. Instellings >
 Algemeen > Opdaterings skakel die outomatiese aflaai af.
 """
+
+["2026-09-28-1520-track-sealed-and-plain"]
+title = "Nasporing van onderteken, geënkripteerde en gewone-teks-e-pos"
+text = """
+Die oog werk nou ook op onderteken en geënkripteerde e-pos: elke ontvanger
+se kopie word apart onderteken of geënkripteer, sodat handtekeninge geldig
+bly. Gewone-teks-e-pos kan nie oopmaak wys nie, maar sy skakels word
+nagespoor, sodat jy sien wanneer iemand een volg.
+"""

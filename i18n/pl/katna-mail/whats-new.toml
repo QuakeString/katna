@@ -963,3 +963,12 @@ zapowie, że się uruchomi ponownie, poprosi o hasło, zainstaluje
 aktualizację i otworzy się ponownie w tym samym miejscu co wcześniej.
 Automatyczne pobieranie wyłączysz w Ustawienia > Ogólne > Aktualizacje.
 """
+
+["2026-09-28-1520-track-sealed-and-plain"]
+title = "Śledzenie podpisanej, zaszyfrowanej i zwykłej tekstowej poczty"
+text = """
+Oko działa teraz też w przypadku podpisanej i zaszyfrowanej poczty: kopia
+każdego odbiorcy jest podpisywana lub szyfrowana osobno, dzięki czemu
+podpisy pozostają ważne. Poczta w zwykłym tekście nie pokazuje otwarć, ale
+jej linki są śledzone, więc zobaczysz, kiedy ktoś kliknie któryś z nich.
+"""

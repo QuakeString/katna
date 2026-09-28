@@ -970,3 +970,13 @@ laat weten dat het herstart, vraagt om je wachtwoord, installeert de update
 en opent opnieuw waar je gebleven was. Instellingen > Algemeen > Updates
 schakelt het automatisch downloaden uit.
 """
+
+["2026-09-28-1520-track-sealed-and-plain"]
+title = "Volgen van ondertekende, versleutelde en platte-tekst-e-mail"
+text = """
+Het oog werkt nu ook bij ondertekende en versleutelde e-mail: de kopie van
+elke ontvanger wordt afzonderlijk ondertekend of versleuteld, zodat
+handtekeningen geldig blijven. E-mail in platte tekst kan geen openingen
+tonen, maar de links erin worden wel gevolgd, zodat je ziet wanneer iemand
+er een volgt.
+"""

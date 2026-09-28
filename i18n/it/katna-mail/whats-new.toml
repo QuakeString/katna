@@ -979,3 +979,12 @@ Mail avvisa che si riavvierà, chiede la tua password, installa
 l’aggiornamento e si apre di nuovo da dove avevi interrotto. Impostazioni >
 Generali > Aggiornamenti disattiva lo scaricamento automatico.
 """
+
+["2026-09-28-1520-track-sealed-and-plain"]
+title = "Tracciamento per email firmate, crittografate e in testo semplice"
+text = """
+L’occhio ora funziona anche sulle email firmate e crittografate: la copia di
+ogni destinatario viene firmata o crittografata singolarmente, così le firme
+restano valide. Le email in testo semplice non possono mostrare le aperture,
+ma i loro link vengono tracciati, così vedi quando qualcuno ne segue uno.
+"""

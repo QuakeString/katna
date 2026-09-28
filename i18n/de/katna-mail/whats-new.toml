@@ -991,3 +991,12 @@ startet, fragt nach Ihrem Passwort, installiert das Update und öffnet sich
 wieder dort, wo Sie aufgehört haben. Einstellungen > Allgemein > Updates
 schaltet den automatischen Download aus.
 """
+
+["2026-09-28-1520-track-sealed-and-plain"]
+title = "Verfolgung für signierte, verschlüsselte und Nur-Text-E-Mails"
+text = """
+Das Auge funktioniert jetzt auch bei signierten und verschlüsselten E-Mails:
+Die Kopie jedes Empfängers wird einzeln signiert oder verschlüsselt, sodass
+Signaturen gültig bleiben. Nur-Text-E-Mails können keine Öffnungen anzeigen,
+aber ihre Links werden verfolgt, sodass Sie sehen, wenn jemand einem folgt.
+"""

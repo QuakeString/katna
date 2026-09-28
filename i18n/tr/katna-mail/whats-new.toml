@@ -965,3 +965,12 @@ basın: Katna Mail yeniden başlayacağını söyler, parolanızı ister,
 güncellemeyi kurar ve kaldığınız yerden yeniden açılır. Ayarlar > Genel >
 Güncellemeler otomatik indirmeyi kapatır.
 """
+
+["2026-09-28-1520-track-sealed-and-plain"]
+title = "İmzalı, şifreli ve düz metin postaların izlenmesi"
+text = """
+Göz artık imzalı ve şifreli postalarda da çalışıyor: her alıcının kopyası
+ayrı ayrı imzalanır veya şifrelenir, böylece imzalar geçerli kalır. Düz
+metin postalar açılmaları gösteremez, ancak bağlantıları izlenir, böylece
+birinin bir bağlantıyı izlediğini görürsünüz.
+"""
