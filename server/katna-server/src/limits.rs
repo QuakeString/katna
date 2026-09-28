@@ -12,8 +12,30 @@ use std::time::{Duration, Instant};
 pub struct WindowLimit<K> {
     max: u32,
     window: Duration,
-    uses: Mutex<HashMap<K, (u32, Instant)>>,
+    uses: Mutex<Uses<K>>,
 }
+
+struct Uses<K> {
+    by_key: HashMap<K, (u32, Instant)>,
+    /// When keys whose window ended were last dropped.
+    swept: Instant,
+}
+
+impl<K> Default for Uses<K> {
+    fn default() -> Self {
+        Self {
+            by_key: HashMap::new(),
+            swept: Instant::now(),
+        }
+    }
+}
+
+/// Keys kept before ended windows are dropped.
+const SWEEP_ABOVE: usize = 10_000;
+
+/// At most one sweep this often, so a map full of live keys is not
+/// scanned on every use.
+const SWEEP_EVERY: Duration = Duration::from_secs(10);
 
 impl<K: Eq + Hash> WindowLimit<K> {
     /// A limit of `max` uses per `window`.
@@ -30,10 +52,12 @@ impl<K: Eq + Hash> WindowLimit<K> {
     pub fn allow(&self, key: K) -> bool {
         let now = Instant::now();
         let mut uses = self.uses.lock().unwrap_or_else(|e| e.into_inner());
-        if uses.len() > 10_000 {
-            uses.retain(|_, (_, start)| now.duration_since(*start) < self.window);
+        if uses.by_key.len() > SWEEP_ABOVE && now.duration_since(uses.swept) >= SWEEP_EVERY {
+            uses.by_key
+                .retain(|_, (_, start)| now.duration_since(*start) < self.window);
+            uses.swept = now;
         }
-        let (count, start) = uses.entry(key).or_insert((0, now));
+        let (count, start) = uses.by_key.entry(key).or_insert((0, now));
         if now.duration_since(*start) >= self.window {
             *count = 0;
             *start = now;

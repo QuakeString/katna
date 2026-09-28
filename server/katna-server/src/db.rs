@@ -155,8 +155,6 @@ pub struct Track {
     pub install: String,
     /// When it was created (the mail was sent).
     pub created_at: i64,
-    /// Link targets, in the order the daemon numbered them.
-    pub links: Vec<String>,
 }
 
 /// The database.
@@ -261,14 +259,14 @@ impl Db {
         now: i64,
     ) -> Result<Option<InstallAuth>, DbError> {
         let client = self.pool.get().await?;
-        let row = client
-            .query_opt(
+        let statement = client
+            .prepare_cached(
                 "SELECT i.id, i.last_seen, i.account_id, a.verified_at IS NOT NULL
                  FROM installs i LEFT JOIN accounts a ON a.id = i.account_id
                  WHERE i.token_hash = $1",
-                &[&token_hash],
             )
             .await?;
+        let row = client.query_opt(&statement, &[&token_hash]).await?;
         let Some(row) = row else { return Ok(None) };
         let id: String = row.get(0);
         let last_seen: i64 = row.get(1);
@@ -565,17 +563,16 @@ impl Db {
         links: &[String],
         now: i64,
     ) -> Result<(), DbError> {
-        let mut client = self.pool.get().await?;
-        let tx = client.transaction().await?;
-        let insert = tx
-            .prepare(
-                "INSERT INTO tracks (id, install_id, created_at, links) VALUES ($1, $2, $3, $4)",
+        // One statement for all the IDs, not a round trip each.
+        self.pool
+            .get()
+            .await?
+            .execute(
+                "INSERT INTO tracks (id, install_id, created_at, links)
+                 SELECT id, $2, $3, $4 FROM unnest($1::text[]) AS id",
+                &[&ids, &install, &now, &links],
             )
             .await?;
-        for id in ids {
-            tx.execute(&insert, &[id, &install, &now, &links]).await?;
-        }
-        tx.commit().await?;
         Ok(())
     }
 
@@ -594,21 +591,43 @@ impl Db {
         Ok(deleted > 0)
     }
 
-    /// Looks a tracking ID up.
+    /// Looks a tracking ID up, as an open does. Leaves the link targets
+    /// out: an open never needs them.
     pub async fn track(&self, id: &str) -> Result<Option<Track>, DbError> {
-        let row = self
-            .pool
-            .get()
-            .await?
-            .query_opt(
-                "SELECT install_id, created_at, links FROM tracks WHERE id = $1",
-                &[&id],
-            )
+        let client = self.pool.get().await?;
+        let statement = client
+            .prepare_cached("SELECT install_id, created_at FROM tracks WHERE id = $1")
             .await?;
+        let row = client.query_opt(&statement, &[&id]).await?;
         Ok(row.map(|row| Track {
             install: row.get(0),
             created_at: row.get(1),
-            links: row.get(2),
+        }))
+    }
+
+    /// Looks a tracking ID up with its link target number `n` (from 0), as a
+    /// click does. `None` when the ID is unknown; a target of `None` when it
+    /// has no link `n`.
+    pub async fn track_link(
+        &self,
+        id: &str,
+        n: u32,
+    ) -> Result<Option<(Track, Option<String>)>, DbError> {
+        let client = self.pool.get().await?;
+        // Postgres arrays count from 1. Reads the one target, not them all.
+        let statement = client
+            .prepare_cached(
+                "SELECT install_id, created_at, links[$2 + 1] FROM tracks WHERE id = $1",
+            )
+            .await?;
+        let n = i32::try_from(n).unwrap_or(i32::MAX - 1);
+        let row = client.query_opt(&statement, &[&id, &n]).await?;
+        Ok(row.map(|row| {
+            let track = Track {
+                install: row.get(0),
+                created_at: row.get(1),
+            };
+            (track, row.get(2))
         }))
     }
 
@@ -622,13 +641,16 @@ impl Db {
         source: Source,
         at: i64,
     ) -> Result<Event, DbError> {
-        let row = self
-            .pool
-            .get()
-            .await?
-            .query_one(
+        let client = self.pool.get().await?;
+        let statement = client
+            .prepare_cached(
                 "INSERT INTO events (install_id, track_id, kind, link, source, at)
                  VALUES ($1, $2, $3, $4, $5, $6) RETURNING seq",
+            )
+            .await?;
+        let row = client
+            .query_one(
+                &statement,
                 &[&install, &id, &kind.as_str(), &link, &source.as_str(), &at],
             )
             .await?;

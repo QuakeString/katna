@@ -313,6 +313,9 @@ pub struct Mail {
     me: Vec<String>,
     pins: Pins,
     reminders: Reminders,
+    /// Whether any mail was sent with tracking, read on each refresh: the
+    /// window asks on every frame.
+    tracked: bool,
 }
 
 /// Snoozed mail, and mail back from snooze or a follow-up reminder
@@ -443,6 +446,20 @@ fn surfaced_in_place(
     out
 }
 
+/// A folder's conversations as lines.
+fn thread_entries(threads: Vec<katna_store::ThreadEntry>) -> Vec<Entry> {
+    threads
+        .into_iter()
+        .map(|entry| match entry.thread {
+            Some(thread) => Entry {
+                key: EntryKey::Thread(thread),
+                latest: entry.latest,
+            },
+            None => Entry::message(entry.latest),
+        })
+        .collect()
+}
+
 /// Moves pinned lines to the top, newest pin first; the rest keep their
 /// order.
 fn pinned_first(entries: Vec<Entry>, pins: &Pins) -> Vec<Entry> {
@@ -475,6 +492,7 @@ impl Mail {
             me,
             pins: Pins::read(&store),
             reminders: Reminders::read(&store),
+            tracked: store.has_tracking().unwrap_or(false),
             store,
             index_dir,
             index,
@@ -524,18 +542,7 @@ impl Mail {
         let entries = if conversations {
             self.store
                 .folder_threads(folder, categories)
-                .map(|threads| {
-                    threads
-                        .into_iter()
-                        .map(|entry| match entry.thread {
-                            Some(thread) => Entry {
-                                key: EntryKey::Thread(thread),
-                                latest: entry.latest,
-                            },
-                            None => Entry::message(entry.latest),
-                        })
-                        .collect()
-                })
+                .map(thread_entries)
         } else {
             match categories {
                 Some(categories) => self.store.folder_messages_in(folder, categories),
@@ -543,6 +550,40 @@ impl Mail {
             }
             .map(|ids| ids.into_iter().map(Entry::message).collect())
         };
+        self.folder_lines(folder, entries)
+    }
+
+    /// An inbox's lines, as [`Mail::entries`] gives them, with its unread
+    /// conversations per tab ([`Mail::category_unread`]). Listing
+    /// conversations, both come from one read of the folder.
+    pub fn inbox_entries(
+        &self,
+        folder: FolderId,
+        categories: Option<&[MailCategory]>,
+        conversations: bool,
+    ) -> (Vec<Entry>, HashMap<MailCategory, u64>) {
+        if !conversations {
+            return (
+                self.entries(folder, categories, false),
+                self.category_unread(folder),
+            );
+        }
+        match self.store.inbox_threads(folder, categories) {
+            Ok((threads, unread)) => (
+                self.folder_lines(folder, Ok(thread_entries(threads))),
+                unread.into_iter().collect(),
+            ),
+            Err(err) => (self.folder_lines(folder, Err(err)), HashMap::new()),
+        }
+    }
+
+    /// `folder`'s lines as read, with mail back from snooze in place and
+    /// pinned lines first.
+    fn folder_lines(
+        &self,
+        folder: FolderId,
+        entries: katna_store::Result<Vec<Entry>>,
+    ) -> Vec<Entry> {
         let entries = entries.unwrap_or_else(|err| {
             tracing::warn!("reading folder {}: {err}", folder.0);
             Vec::new()
@@ -757,6 +798,7 @@ impl Mail {
         self.rows.clear();
         self.pins = Pins::read(&self.store);
         self.reminders = Reminders::read(&self.store);
+        self.tracked = self.store.has_tracking().unwrap_or(false);
         if let Some(index) = &self.index
             && let Err(err) = index.reload()
         {
@@ -1017,7 +1059,7 @@ impl Mail {
 
     /// Whether any mail was sent with tracking.
     pub fn has_tracking(&self) -> bool {
-        self.store.has_tracking().unwrap_or(false)
+        self.tracked
     }
 
     /// Forgets cached rows, for example when the sender/recipient column
@@ -1105,15 +1147,17 @@ fn open_index(dir: &std::path::Path) -> (Option<Arc<SearchIndex>>, Option<String
     }
 }
 
-/// Unread messages per folder. Opens its own connection, so it can run on
-/// a background thread while the UI uses [`Mail`].
-pub fn unread_counts(paths: &Paths) -> HashMap<FolderId, u64> {
-    let counts = Store::open(paths, Mode::ReadOnly).and_then(|store| store.unread_counts());
-    match counts {
-        Ok(counts) => counts.into_iter().collect(),
+/// The folders with their message counts, and unread messages per folder.
+/// Opens its own connection, so it can run on a background thread while
+/// the UI uses [`Mail`]. `None` for the folders when they could not be read.
+pub fn folders_and_unread(paths: &Paths) -> (Option<Vec<FolderSummary>>, HashMap<FolderId, u64>) {
+    let read = Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| Ok((store.folder_summaries()?, store.unread_counts()?)));
+    match read {
+        Ok((folders, counts)) => (Some(folders), counts.into_iter().collect()),
         Err(err) => {
             tracing::warn!("counting unread mail: {err}");
-            HashMap::new()
+            (None, HashMap::new())
         }
     }
 }
@@ -1482,7 +1526,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
             "To: bob@example.net"
         );
 
-        assert_eq!(unread_counts(&paths), HashMap::from([(inbox, 1)]));
+        assert_eq!(folders_and_unread(&paths).1, HashMap::from([(inbox, 1)]));
         assert_eq!(mail.raw(id).as_deref(), Some(RAW));
         assert_eq!(mail.raw(MessageId(999)), None);
     }

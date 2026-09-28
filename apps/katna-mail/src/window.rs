@@ -299,6 +299,11 @@ const PEEK_LINGER: Duration = Duration::from_millis(250);
 const SNACKBAR_TIME: Duration = Duration::from_secs(5);
 /// Changes signalled by the daemon within this time are read together.
 const CHANGE_DELAY: Duration = Duration::from_millis(120);
+/// At least this long between reloads for the daemon's changes. While it
+/// downloads mail it signals every few hundred milliseconds, and each
+/// reload of a big folder holds the window up for a moment; one reload
+/// per burst keeps scrolling and typing smooth meanwhile.
+const CHANGE_GAP: Duration = Duration::from_secs(1);
 const LINE_SCROLL: f32 = 48.0;
 /// How long a send failure stays on screen.
 const FAILURE_TIME: Duration = Duration::from_secs(12);
@@ -966,14 +971,17 @@ impl MailWindow {
         }
         let paths = self.paths.clone();
         self.unread_task = Some(cx.spawn(async move |this, cx| {
-            let unread = cx
+            // The folders are read there too, so the window never waits
+            // for their counts.
+            let (folders, unread) = cx
                 .background_executor()
-                .spawn(async move { data::unread_counts(&paths) })
+                .spawn(async move { data::folders_and_unread(&paths) })
                 .await;
             this.update(cx, |this, cx| {
                 this.unread = unread;
                 if let Ok(mail) = &this.mail {
-                    this.tree = Tree::build(&this.accounts, &mail.folders(), &this.unread);
+                    let folders = folders.unwrap_or_else(|| mail.folders());
+                    this.tree = Tree::build(&this.accounts, &folders, &this.unread);
                     this.rebuild_nav();
                 }
                 cx.notify();
@@ -1011,8 +1019,13 @@ impl MailWindow {
                     return;
                 }
             };
+            let mut reloaded: Option<Instant> = None;
             while changes.next().await.is_some() {
-                cx.background_executor().timer(CHANGE_DELAY).await;
+                let gap =
+                    reloaded.map_or(Duration::ZERO, |at| CHANGE_GAP.saturating_sub(at.elapsed()));
+                cx.background_executor().timer(CHANGE_DELAY.max(gap)).await;
+                // Everything signalled meanwhile is read by this one reload.
+                while let Some(Some(())) = futures_lite::future::poll_once(changes.next()).await {}
                 let refreshed = this.update(cx, |this, cx| {
                     this.refresh(false, cx);
                     if !this.detached {
@@ -1023,6 +1036,7 @@ impl MailWindow {
                 if refreshed.is_err() {
                     break;
                 }
+                reloaded = Some(Instant::now());
             }
         }));
     }
@@ -1183,9 +1197,14 @@ impl MailWindow {
         Provider::detect(&account.address, host.as_deref())
     }
 
-    fn list_entries(&self, folder: FolderId) -> Vec<Entry> {
+    /// `folder`'s lines and, for an inbox, its unread conversations per
+    /// tab.
+    fn list_entries(
+        &self,
+        folder: FolderId,
+    ) -> (Vec<Entry>, Option<HashMap<katna_core::MailCategory, u64>>) {
         let Ok(mail) = &self.mail else {
-            return Vec::new();
+            return (Vec::new(), None);
         };
         let role = self.tree.node(folder).map_or(Role::Other, |n| n.role);
         let categories = self
@@ -1193,7 +1212,13 @@ impl MailWindow {
             .get(self.tab)
             .filter(|_| role == Role::Inbox)
             .map(|tab| tab.categories.as_slice());
-        mail.entries(folder, categories, self.config.mail.conversations)
+        let conversations = self.config.mail.conversations;
+        if role == Role::Inbox {
+            let (entries, unread) = mail.inbox_entries(folder, categories, conversations);
+            (entries, Some(unread))
+        } else {
+            (mail.entries(folder, categories, conversations), None)
+        }
     }
 
     fn open_folder(&mut self, folder: FolderId, cx: &mut Context<Self>) {
@@ -1217,11 +1242,9 @@ impl MailWindow {
         self.folder = Some(folder);
         self.unified = None;
         self.listing = Some(Listing::Folder(folder));
-        self.entries = self.list_entries(folder);
-        self.category_unread = match &self.mail {
-            Ok(mail) if role == Role::Inbox => mail.category_unread(folder),
-            _ => HashMap::new(),
-        };
+        let (entries, unread) = self.list_entries(folder);
+        self.entries = entries;
+        self.category_unread = unread.unwrap_or_default();
         self.reset_list(false);
         self.selected = (!self.entries.is_empty()).then_some(0);
         self.checked.clear();
@@ -1744,17 +1767,17 @@ impl MailWindow {
             .map(|e| e.key);
         match self.listing.clone() {
             Some(listing @ (Listing::Folder(_) | Listing::Unified { .. })) => {
-                self.entries = match listing {
+                let (entries, unread) = match listing {
                     Listing::Folder(folder) => self.list_entries(folder),
-                    Listing::Unified { view, account } => self.unified_entries(view, account),
-                    Listing::Search { .. } => Vec::new(),
+                    Listing::Unified { view, account } => {
+                        (self.unified_entries(view, account), None)
+                    }
+                    Listing::Search { .. } => (Vec::new(), None),
                 };
+                self.entries = entries;
                 self.reset_list(true);
-                if let Ok(mail) = &self.mail
-                    && let Listing::Folder(folder) = listing
-                    && self.folder_role() == Role::Inbox
-                {
-                    self.category_unread = mail.category_unread(folder);
+                if let Some(unread) = unread {
+                    self.category_unread = unread;
                 }
                 self.selected =
                     selected_key.and_then(|key| self.entries.iter().position(|e| e.key == key));

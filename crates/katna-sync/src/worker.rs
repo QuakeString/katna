@@ -880,6 +880,10 @@ async fn watch_folders<C: Connector>(
         return std::future::pending().await;
     };
     let mut watcher = None;
+    // What the session was last told. A look that finds the same is not
+    // passed on: waking the session ends its IDLE and catches the inbox up
+    // again for nothing.
+    let mut told: Option<Vec<(String, FolderStatus)>> = None;
     loop {
         Timer::after(interval).await;
         let backend = match &mut watcher {
@@ -898,8 +902,10 @@ async fn watch_folders<C: Connector>(
         };
         match folder_statuses(backend).await {
             // Replaces a look the session has not taken yet.
+            Ok(list) if told.as_ref() == Some(&list) => {}
             Ok(list) => {
-                let _ = statuses.force_send(list);
+                let _ = statuses.force_send(list.clone());
+                told = Some(list);
             }
             Err(error) => {
                 tracing::debug!(%error, "folder watcher disconnected");

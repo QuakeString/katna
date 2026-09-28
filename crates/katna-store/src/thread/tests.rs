@@ -561,6 +561,16 @@ fn folder_lists_summaries_and_tab_counts() {
             (MailCategory::Forums, 0),
         ]
     );
+    // Both from one read of the folder, the same as each alone.
+    for tabs in [None, Some(&[MailCategory::Primary][..])] {
+        assert_eq!(
+            app.inbox_threads(inbox, tabs).unwrap(),
+            (
+                app.folder_threads(inbox, tabs).unwrap(),
+                app.category_unread(inbox).unwrap()
+            )
+        );
+    }
 }
 
 #[test]
