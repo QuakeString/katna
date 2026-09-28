@@ -25,10 +25,9 @@ use katna_ui::px;
 use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
 
-use super::{MailWindow, RailApp};
+use super::MailWindow;
 use crate::daemon::{self, AddError};
 use crate::outgoing;
-use crate::sidebar::Role;
 use crate::theme::{Theme, fade};
 use crate::widgets::{avatar, elevation, filled_button, icon, raised};
 
@@ -1319,14 +1318,7 @@ impl MailWindow {
                 .hover(move |s| s.bg(rgba(if current { th.nav_selected } else { th.hover })))
                 .on_click(cx.listener(move |this, _, _, cx| {
                     this.account_menu = false;
-                    this.app = RailApp::Mail;
-                    this.settings_page = None;
-                    if this.shown_account().is_some() {
-                        this.switch_account(id, cx);
-                    } else if let Some(inbox) = this.tree.role_folder(id, Role::Inbox) {
-                        this.open_folder(inbox, cx);
-                    }
-                    cx.notify();
+                    this.pick_account(id, cx);
                 }))
                 .child(self.person_avatar(&name, &account.address, 32.0))
                 .child(

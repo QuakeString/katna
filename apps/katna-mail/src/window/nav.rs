@@ -451,10 +451,8 @@ impl MailWindow {
         .child(self.tour_mark(Spot::Settings));
         // The account picture opens the account card; with no account yet,
         // the button adds one.
-        let shown = self
-            .account()
-            .and_then(|id| self.accounts.iter().find(|a| a.id == id));
-        let account = match shown.or_else(|| self.accounts.first()) {
+        // The mouse wheel over it switches accounts.
+        let account = match self.pictured_account() {
             Some(account) => {
                 let name = if account.display_name.trim().is_empty() {
                     account.address.clone()
@@ -470,13 +468,24 @@ impl MailWindow {
                     .hover(|s| s.bg(rgba(th.hover)))
                     .when(self.account_menu, |d| d.bg(rgba(th.hover)))
                     .on_mouse_move(|_, _, cx| cx.stop_propagation())
-                    .tooltip(tip(format!("{name}\n{}", account.address), th))
+                    .tooltip(tip(
+                        if self.accounts.len() > 1 {
+                            format!("{name}\n{}\n{}", account.address, tr!("account-wheel-hint"))
+                        } else {
+                            format!("{name}\n{}", account.address)
+                        },
+                        th,
+                    ))
+                    .on_scroll_wheel(cx.listener(|this, event, _, cx| {
+                        cx.stop_propagation();
+                        this.wheel_accounts(event, cx);
+                    }))
                     .on_click(cx.listener(|this, _, _, cx| {
                         this.account_menu = !this.account_menu;
                         this.app_menu = None;
                         cx.notify();
                     }))
-                    .child(self.person_avatar(&name, &account.address, 32.0))
+                    .child(self.render_rolling_avatar(32.0))
                     .child(self.tour_mark(Spot::Account))
                     .into_any_element()
             }
