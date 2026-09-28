@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Open and click tracking and read receipts in the compose window: two
-//! toggles by the recipients, both off for every new message
-//! (`docs/ARCHITECTURE.md` §16.1). Tracked mail goes to the daemon's
-//! `QueueTrackedSend`, which sends each recipient a copy of their own; a
-//! read receipt is a `Disposition-Notification-To` header (RFC 8098),
-//! which needs no server and which the recipient's app may ask them about.
+//! Open and click tracking, read receipts and delivery receipts in the
+//! compose window: three toggles by the recipients, all on for every new
+//! message and reply (`docs/ARCHITECTURE.md` §16.1). Tracking needs a
+//! Katna account, and mail goes out untracked without one. Tracked mail
+//! goes to the daemon's `QueueTrackedSend`, which sends each recipient a
+//! copy of their own. A read receipt is a `Disposition-Notification-To`
+//! header (RFC 8098), which needs no server and which the recipient's app
+//! may ask them about. A delivery receipt is asked of the mail server
+//! (SMTP DSN, RFC 3461), which mails one back per recipient when it
+//! delivers; not every server offers them (Gmail does not).
 
 use gpui::{AnyElement, Context, prelude::*, rgba};
 use katna_i18n::tr;
@@ -24,9 +28,18 @@ pub(in crate::window) fn with_receipt(raw: Vec<u8>, address: &str) -> Vec<u8> {
     out
 }
 
+/// `raw` asking the daemon for delivery receipts
+/// ([`katna_store::DELIVERY_RECEIPT_HEADER`], taken out before it is sent).
+pub(in crate::window) fn with_delivery_receipt(raw: Vec<u8>) -> Vec<u8> {
+    let mut out = format!("{}: yes\r\n", katna_store::DELIVERY_RECEIPT_HEADER).into_bytes();
+    out.extend_from_slice(&raw);
+    out
+}
+
 impl MailWindow {
-    /// The Track and Read receipt toggles, after Encrypt and Sign.
-    pub(super) fn render_tracking(&self, th: &Theme, cx: &mut Context<Self>) -> [AnyElement; 2] {
+    /// The Track, Read receipt and Delivery receipt toggles, after Encrypt
+    /// and Sign.
+    pub(super) fn render_tracking(&self, th: &Theme, cx: &mut Context<Self>) -> [AnyElement; 3] {
         let (sealing, plain) = self
             .compose
             .as_ref()
@@ -44,6 +57,8 @@ impl MailWindow {
                 .tooltip(tip(label, th))
         };
         let track = sealing.track && trackable && signed_in;
+        let offered = self.delivery_receipts_offered() != Some(false);
+        let delivery = sealing.delivery && offered;
         [
             toggle(
                 "compose-track",
@@ -86,6 +101,28 @@ impl MailWindow {
             .on_click(cx.listener(|this, _, _, cx| {
                 if let Some(c) = &mut this.compose {
                     c.sealing.receipt = !c.sealing.receipt;
+                }
+                cx.notify();
+            }))
+            .into_any_element(),
+            toggle(
+                "compose-delivery",
+                "delivery-receipt",
+                delivery,
+                if !offered {
+                    tr!("compose-delivery-unavailable")
+                } else if delivery {
+                    tr!("compose-delivery-on")
+                } else {
+                    tr!("compose-delivery")
+                },
+            )
+            .when(!offered, |d| d.opacity(0.5))
+            .on_click(cx.listener(move |this, _, _, cx| {
+                if let Some(c) = &mut this.compose
+                    && offered
+                {
+                    c.sealing.delivery = !c.sealing.delivery;
                 }
                 cx.notify();
             }))

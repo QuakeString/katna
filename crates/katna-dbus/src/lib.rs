@@ -421,6 +421,13 @@ macro_rules! pim_proxy {
             /// cannot. Logs in to ask the first time.
             fn server_hold_limit(&self, account: i64) -> zbus::Result<u64>;
 
+            /// Whether the SMTP server of `account` mails the sender a
+            /// delivery receipt per recipient (RFC 3461 `DSN`). A message
+            /// queued with the `X-Katna-Delivery-Receipt` header asks for
+            /// them where the server offers them. Logs in to ask the first
+            /// time.
+            fn server_delivery_receipts(&self, account: i64) -> zbus::Result<bool>;
+
             /// Like `QueueSend`, with open and click tracking: each
             /// recipient gets their own tracked copy (`docs/ARCHITECTURE.md`
             /// §11, §16.1). Mail that cannot be tracked (no HTML version,
