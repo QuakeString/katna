@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A rounder formatting bar"
+text = """
+The formatting bar in compose (Aa) is now pill-shaped with a faint edge, so
+it sits apart from your text in light and dark themes.
+"""

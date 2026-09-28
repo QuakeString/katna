@@ -944,9 +944,12 @@ impl MailWindow {
                         .bottom(px(FORMAT_BAR_GAP))
                         .left(px(12.0))
                         .max_w(px(width))
-                        // Tinted apart from the text under it; on a narrow
-                        // window its buttons scroll sideways.
-                        .rounded(px(8.0))
+                        // A pill tinted apart from the text under it, with
+                        // a faint edge; on a narrow window its buttons
+                        // scroll sideways.
+                        .rounded_full()
+                        .border_1()
+                        .border_color(rgba(th.divider))
                         .bg(rgba(format_bar_bg(th)))
                         .shadow(crate::widgets::elevation(th, 1.0))
                         .overflow_x_scroll()
@@ -968,7 +971,7 @@ impl MailWindow {
         if editor.is_plain() {
             return div()
                 .h(px(40.0))
-                .px(px(12.0))
+                .px(px(16.0))
                 .flex()
                 .items_center()
                 .text_size(px(13.0))
@@ -1200,7 +1203,7 @@ impl MailWindow {
         };
         div()
             .h(px(40.0))
-            .px(px(4.0))
+            .px(px(12.0))
             .flex()
             .flex_row()
             .items_center()
