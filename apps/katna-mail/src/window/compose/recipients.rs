@@ -68,7 +68,7 @@ impl Global for Book {}
 impl MailWindow {
     /// Reads the address book if it is missing or old: the saved copy
     /// first, so suggestions work at once, then the store.
-    pub(super) fn load_address_book(&mut self, cx: &mut Context<Self>) {
+    pub(in crate::window) fn load_address_book(&mut self, cx: &mut Context<Self>) {
         let book = cx.default_global::<Book>();
         if book.loading || book.read.is_some_and(|read| read.elapsed() < FRESH) {
             return;
@@ -166,19 +166,13 @@ impl MailWindow {
                 .or_else(|| self.compose_account(compose.kind).map(|a| a.id))
                 .map(|id| id.0)
         });
-        let items = match cx.try_global::<Book>().and_then(|b| b.book.as_ref()) {
-            Some(book) if !typed.trim().is_empty() => {
-                // Everyone already added to To, Cc or Bcc.
-                let skip = self
-                    .compose
-                    .as_ref()
-                    .map(|c| c.chips.emails())
-                    .unwrap_or_default();
-                let now = jiff::Timestamp::now().as_second();
-                book.suggest(&typed, account, now, &skip, SHOWN)
-            }
-            _ => Vec::new(),
-        };
+        // Everyone already added to To, Cc or Bcc.
+        let skip = self
+            .compose
+            .as_ref()
+            .map(|c| c.chips.emails())
+            .unwrap_or_default();
+        let items = address_suggestions(&typed, account, &skip, cx);
         if let Some(compose) = &mut self.compose {
             compose.suggest = (!items.is_empty()).then_some(Suggestions {
                 field,
@@ -316,11 +310,34 @@ impl MailWindow {
     /// The list under the field, over the rest of the message.
     fn render_suggestions(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
         let suggest = self.compose.as_ref()?.suggest.as_ref()?;
-        let rows: Vec<AnyElement> = suggest
-            .items
+        Some(self.suggestion_list(
+            &suggest.items,
+            suggest.selected,
+            px(24.0),
+            Self::pick_suggestion,
+            Self::close_suggestions,
+            th,
+            cx,
+        ))
+    }
+
+    /// Address suggestions under a field, `left` in from its start;
+    /// `pick` takes the index of the one clicked.
+    #[allow(clippy::too_many_arguments)]
+    pub(in crate::window) fn suggestion_list(
+        &self,
+        items: &[Suggestion],
+        selected: usize,
+        left: gpui::Pixels,
+        pick: fn(&mut Self, usize, &mut Context<Self>),
+        close: fn(&mut Self, &mut Context<Self>),
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let rows: Vec<AnyElement> = items
             .iter()
             .enumerate()
-            .map(|(ix, item)| self.render_suggestion(ix, item, ix == suggest.selected, th, cx))
+            .map(|(ix, item)| self.render_suggestion(ix, item, ix == selected, pick, th, cx))
             .collect();
         let list = raised(div(), th, 15.0, 3.0)
             .id("recipient-suggestions")
@@ -330,24 +347,22 @@ impl MailWindow {
             .flex()
             .flex_col()
             .overflow_hidden()
-            .on_mouse_down_out(cx.listener(|this, _, _, cx| this.close_suggestions(cx)))
+            .on_mouse_down_out(cx.listener(move |this, _, _, cx| close(this, cx)))
             .children(rows);
-        Some(
-            div()
-                .absolute()
-                .top_full()
-                .left(px(24.0))
-                .child(
-                    deferred(
-                        anchored()
-                            .offset(point(px(0.0), px(-4.0)))
-                            .snap_to_window_with_margin(px(8.0))
-                            .child(list),
-                    )
-                    .with_priority(2),
+        div()
+            .absolute()
+            .top_full()
+            .left(left)
+            .child(
+                deferred(
+                    anchored()
+                        .offset(point(px(0.0), px(-4.0)))
+                        .snap_to_window_with_margin(px(8.0))
+                        .child(list),
                 )
-                .into_any_element(),
-        )
+                .with_priority(2),
+            )
+            .into_any_element()
     }
 
     fn render_suggestion(
@@ -355,6 +370,7 @@ impl MailWindow {
         ix: usize,
         item: &Suggestion,
         selected: bool,
+        pick: fn(&mut Self, usize, &mut Context<Self>),
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -390,7 +406,7 @@ impl MailWindow {
                 gpui::MouseButton::Left,
                 cx.listener(move |this, _, _, cx| {
                     cx.stop_propagation();
-                    this.pick_suggestion(ix, cx);
+                    pick(this, ix, cx);
                 }),
             )
             .child(self.person_avatar(
@@ -422,6 +438,23 @@ impl MailWindow {
                     }),
             )
             .into_any_element()
+    }
+}
+
+/// Addresses from the address book for `typed`, those `account` writes
+/// to first, leaving out `skip`; none until the book is read.
+pub(in crate::window) fn address_suggestions(
+    typed: &str,
+    account: Option<i64>,
+    skip: &[String],
+    cx: &gpui::App,
+) -> Vec<Suggestion> {
+    match cx.try_global::<Book>().and_then(|b| b.book.as_ref()) {
+        Some(book) if !typed.trim().is_empty() => {
+            let now = jiff::Timestamp::now().as_second();
+            book.suggest(typed, account, now, skip, SHOWN)
+        }
+        _ => Vec::new(),
     }
 }
 

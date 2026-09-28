@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Address suggestions in Search options"
+text = """
+From and To in Search options now suggest addresses as you type, the
+same way To, Cc and Bcc do in compose. Pick one with Enter, Tab or a click.
+"""
