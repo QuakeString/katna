@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A calmer search box"
+text = """
+The search box keeps its color while you type in it and shows a faint edge
+instead of turning darker with a shadow. The folders that float over the
+list now stand clear of the bottom edge too.
+"""

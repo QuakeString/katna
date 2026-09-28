@@ -28,7 +28,7 @@ use katna_i18n::tr;
 
 use crate::format;
 use crate::sidebar::{self, Role, Unified};
-use crate::theme::{Theme, fade, mix};
+use crate::theme::{Theme, fade};
 use crate::widgets::{elevation, icon, icon_button, icon_button_colored, katna_mark, tip};
 
 /// How far the floating folder pane stands off the rail and the top bar.
@@ -309,8 +309,10 @@ impl MailWindow {
             .items_center()
             .gap(px(2.0))
             .rounded_full()
-            .bg(rgba(mix(th.search, th.search_focused, t)))
-            .shadow(elevation(th, 2.0 * t))
+            // Active, it keeps its color and gains a faint edge.
+            .bg(rgba(th.search))
+            .border_1()
+            .border_color(rgba(fade(th.text_faint, 0.5 * t.clamp(0.0, 1.0))))
             .text_size(px(16.0))
             .line_height(px(24.0))
             .text_color(rgba(th.text))
@@ -509,7 +511,7 @@ impl MailWindow {
             .absolute()
             .top(px(gap))
             .left(px(gap))
-            .bottom(px(if drawer { 0.0 } else { 16.0 * float }))
+            .bottom(px(if drawer { 0.0 } else { 16.0 * float + gap }))
             .map(|d| {
                 if slides {
                     d.left(px(-width * (1.0 - t))).w(px(width))
