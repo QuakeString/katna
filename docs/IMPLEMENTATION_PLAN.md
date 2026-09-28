@@ -1,11 +1,11 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 27 September 2026, through PR #187). Companion to
+> Status: **v0.2** (updated 27 September 2026, through PR #202). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
 
-## 0. Where we are (27 September 2026)
+## 0. Where we are (28 September 2026)
 
 ✅ marks a task merged to `main`, with its pull requests. ◐ marks a task
 that is partly done; the table says what is left. Rows without a mark have
@@ -22,20 +22,28 @@ Mail that the phases did not name.
   and automatic translation (Phase 7);
   local crash reports and opt-in sending; the language framework and most
   of the UI translated; reading and sending encrypted mail.
-- **Merged since the last refresh:** open and click tracking, read
-  receipts and who opened (#182); Activity (#184) with its button beside
-  search, the Details report by period, opens and clicks per person in the
-  reader and mailbox insights (#187); automatic translation through Katna
-  Server (#176); desktop search trigger words `k` and `m` (#185); faster
-  CI with cached builds, and docs-only pushes no longer rebuild the
-  package (#183); translations (#186).
-- **Next:** Windows (the Windows track in §5, asked 27 September 2026).
-  Alongside: usage statistics, feedback form and debug-file upload (C.3,
-  C.6, C.7); right-to-left layout (L.2, L.3); the release track before any
-  public release. Organizations (Phase 2) comes later.
+- **Merged since the last refresh:** Windows 10 and later (#190, the
+  Windows track below); sign-in to Google and Microsoft accounts with
+  OAuth2 (#163); tracking, read receipts and delivery receipts on by
+  default (#193); delivered and read ticks beside each recipient of sent
+  mail (#198); the Katna account inside the Subscription tab (#192); one
+  Buy me a coffee button in About without the QR code (#191); printing
+  that keeps the mail's formatting, original colors in dark themes (#196);
+  Gmail new-mail notifications (#197); a confirmation before deleting
+  several conversations or deleting for good (#200); folder arrows inside
+  their pill (#201); attachment types in Search options (#202);
+  translations (#189, #195, #199).
+- **In review:** Windows tray, notifications, `mailto:`, start at login
+  and Katna Setup (#194).
+- **Next:** finish the Windows track. Alongside: usage statistics,
+  feedback form and debug-file upload (C.3, C.6, C.7); right-to-left
+  layout (L.2, L.3); the release track before any public release.
+  Organizations (Phase 2) comes later.
 - **Size:** the owner raised the daemon's budget from 20 MiB to 50 MB
   (27 September 2026).
-- **On hold (owner, 27 September 2026):** OAuth2 for Gmail and Microsoft.
+- **Needs from the owner:** the Google and Microsoft OAuth2 client IDs as
+  GitHub secrets (the sign-in buttons stay hidden until then), and a
+  code-signing certificate for Windows.
 - **Later:** Organizations (Phase 2), Katna Calendar (Phase 6), Contacts,
   Tasks, Notes, Feeds, phones, notes on mail, Workspace, own crash server,
   a server check that recipient addresses exist.
@@ -299,6 +307,13 @@ belong to Phase 3 tasks above; this track records them so none is lost.
 | D.28 Softer hover shadow ✅ | A lighter shadow on the hovered mail line (#169) |
 | D.29 Chip drag ✅ | Address chips drag between To, Cc and Bcc; an x on hover removes one (#171) |
 | D.30 Reopen where left ✅ | The window reopens on the same app, folder, tab and folder pane (#173) |
+| D.31 Receipts on by default ✅ | Tracking, read receipts and delivery receipts are on for new mail (#193); delivered and read ticks beside each recipient of sent mail; on Gmail one tick means no bounce within 30 minutes (#198) |
+| D.32 Subscription tab ✅ | The Katna account lives inside the Subscription tab (#192); About has one Buy me a coffee button and no QR code (#191) |
+| D.33 Print as shown ✅ | Printing keeps the mail's formatting; original colors in dark themes; the top bar fits (#196) |
+| D.34 Gmail notifications ✅ | New mail is counted when it reaches the inbox, so Gmail's is not missed (#197) |
+| D.35 Delete confirmation ✅ | Deleting several conversations or deleting for good asks first (#200) |
+| D.36 Folder arrows ✅ | Each folder's arrow stays inside its pill (#201) |
+| D.37 Attachment types in search ✅ | Search options filter by attachment type: PDF, XLSX, ODF and others, or a custom one (#202) |
 
 Not yet checked on a real desktop: Open with (#55), Gmail Important sync
 (#56), scheduled send (#53), the badge count with one account (#61), the
@@ -337,23 +352,29 @@ notification; promotion to stable ships byte-identical, signed files.
 
 ### Windows track (asked by the owner, 27 September 2026)
 
-Katna Mail and the daemon on Windows 10 and later, with Windows
+Katna Mail and the daemon on Windows 10 version 1903 and later (GPUI
+needs the system's `icuuc.dll`), with Windows
 integration that works (start at login and so on), installed by a modern
 installer rather than NSIS. The Windows installer thread owns it. KDE's
 global menu, KRunner and GNOME search and the window blur stay Linux-only.
 
 | Task | Deliverable |
 |---|---|
-| W.1 Windows build | A Windows CI job; data and settings under `AppData`; Unix-only file calls kept to Linux |
-| W.2 App–daemon link | A local socket between the app and the daemon instead of the D-Bus session bus; the daemon starts from the `Run` key |
-| W.3 Passwords | Windows Credential Manager instead of the Secret Service keyring |
-| W.4 Windows integration | Tray, notifications, start at login, Katna as the default mail app, printing |
-| W.5 Installer | Katna's own GPUI "Katna Setup.exe": per user, no administrator prompt, a Start menu entry, an uninstall entry in Settings > Apps, the `mailto:` handler; an MSI for offices maybe later |
+| W.1 Windows build ✅ #190 | A Windows CI job; data and settings under `AppData`; Unix-only file calls kept to Linux |
+| W.2 App–daemon link ✅ #190 | Katna's own session bus (a bundled `dbus-daemon`), so `katna-dbus` works unchanged; the daemon starts from the `Run` key |
+| W.3 Passwords ✅ #190 | Windows Credential Manager instead of the Secret Service keyring |
+| W.4 Windows integration ◐ in review #194 | Tray with the unread count, notifications, start at login, Katna as the default mail app, printing |
+| W.5 Installer ◐ in review #194 | Katna's own GPUI "Katna Setup.exe": per user, no administrator prompt, a Start menu entry, an uninstall entry in Settings > Apps, the `mailto:` handler; an MSI for offices maybe later |
 | W.6 Pre-release | A `windows-latest` pre-release built on every push to `main`, like `arch-latest` |
 
 Needs from the owner: a code-signing certificate (SignPath Foundation or
 Certum's open-source certificate), kept in GitHub secrets, and testing on
 the owner's own Windows PC.
+
+Later: a taskbar overlay badge (needs COM, which `unsafe_code = "forbid"`
+rules out today); a PowerToys Run search plugin; Windows window chrome
+(the system title bar or Katna's own); signed files once the certificate
+secret is in place.
 
 ### Crash reports and feedback track
 
@@ -396,7 +417,7 @@ merging `main` first, rather than in one large one.
 | L.1 Framework and picker ✅ #100 | `katna-i18n` crate: language list (`i18n/languages.toml`), system language (`LANGUAGE`, `LC_*`, `plasma-localerc`), `general.language` setting, Fluent bundles with English fallback, `tr!`, override folder, pseudo-locales, id and variable checks; ICU4X dates, numbers and plurals in `format.rs`; top-bar language button and picker popover, Settings > General row, phone drawer row; bundled flags; the top bar and the picker translated into all 48 languages; CLAUDE.md rule that new UI text goes through `tr!` |
 | L.2 GPUI patches | `gpui-pre` vendored with `KATNA.md`: window layout direction with mirrored bounds, start/end text alignment, `.layout_ltr()`, UAX #14 and grapheme-safe line breaking with dictionary breaks for Thai, Lao, Khmer and Burmese, Han forms from Katna's language, bidi-aware carets |
 | L.3 Mirroring | RTL switch in `window/layout.rs` `Shape`; mirrored directional icons; drawer, conversation and menus from the right; arrow keys; checked with `qps-plocm` |
-| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134; account settings, paste and drop and newer text #141, #142, #147, #157, #165, #174, #175, #177, #179, #186; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
+| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134; account settings, paste and drop and newer text #141, #142, #147, #157, #165, #174, #175, #177, #179, #186, #189, #195, #199; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
 | L.5 Mail content | Per-message and per-paragraph direction in the reader and list; compose direction buttons and `dir` in sent HTML; quote and forward headers in the UI language; shortcuts by key position on non-Latin layouts; input method check (Fcitx5, IBus) |
 | L.6 Search in unspaced scripts | Thai, Lao, Khmer and Burmese word splitting in `katna-search` with the shared segmenter |
 | L.7 Corrections | Translation guide (`i18n/README.md`), "Translation correction" issue template, coverage report in CI; later hosted Weblate on the same files (owner applies) |
@@ -522,7 +543,10 @@ send later (#53, handed to the server with FUTURERELEASE in #167), pins
 (#57), Undo on every action (#125), templates (#168), snooze and
 follow-up reminders (#172). Not started: rules and Sieve, vacation
 responder, one-click unsubscribe, mute, a local category classifier,
-phishing warnings and **OAuth2** (Gmail works with an app password today).
+phishing warnings. **OAuth2** for Google and Microsoft is merged (#163): the
+installed-app flow with PKCE, tokens in the Secret Service or Credential
+Manager, SASL XOAUTH2; its buttons appear once the owner adds the client
+IDs as GitHub secrets.
 
 **Done when:** the feature checklist in the architecture (§10, §11) works
 against Stalwart, Dovecot and Gmail, with integration tests.
