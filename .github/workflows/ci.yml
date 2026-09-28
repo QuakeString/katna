@@ -107,7 +107,7 @@ jobs:
         with:
           save-if: ${{ github.ref == 'refs/heads/main' }}
       - run: cargo clippy --workspace --exclude katna-server --all-targets --locked -- -D warnings
-      - run: cargo test --workspace --exclude katna-server --locked
+      - run: cargo test --workspace --exclude katna-server --locked --no-fail-fast
       - uses: actions/cache@v4
         with:
           path: target/dbus

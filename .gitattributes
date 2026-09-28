@@ -1,0 +1,3 @@
+# Check out text files with LF on Windows too: tests and build scripts read
+# them byte for byte, and dbus-daemon and Fluent expect LF.
+* text=auto eol=lf
