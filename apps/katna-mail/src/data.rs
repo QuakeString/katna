@@ -957,6 +957,15 @@ impl Mail {
         crate::receipts::parse(&self.store.blobs().get(&message.blob_hash?).ok()??)
     }
 
+    /// What delivery and read receipts said about the message with
+    /// `Message-ID` `original`, per recipient.
+    pub fn receipts(&self, original: &str) -> Vec<katna_store::Receipt> {
+        self.store.receipts(original).unwrap_or_else(|err| {
+            tracing::warn!("reading receipts: {err}");
+            Vec::new()
+        })
+    }
+
     /// The `Message-ID` of message `id`, without angle brackets.
     pub fn message_id_header(&self, id: MessageId) -> Option<String> {
         self.store.message_id_header(id).ok().flatten()

@@ -301,6 +301,13 @@ pub fn envelope(raw: &[u8]) -> std::result::Result<Envelope, String> {
     Ok(Envelope { from, to })
 }
 
+/// A message's `Message-ID` (without angle brackets) and its envelope
+/// recipients.
+fn sent_to(raw: &[u8]) -> Option<(String, Vec<String>)> {
+    let message_id = katna_import::parse_message(raw)?.message_id?;
+    Some((message_id, envelope(raw).ok()?.to))
+}
+
 /// `raw` without its `Bcc` header, which recipients must not see.
 pub fn without_bcc(raw: &[u8]) -> Vec<u8> {
     let mut out = Vec::with_capacity(raw.len());
@@ -603,6 +610,8 @@ async fn send<O: Outgoing>(
         .transpose()?
         .flatten();
     let hold = entry.hold_until.filter(|&at| at > now);
+    // For the ticks beside its recipients: when it went out to whom.
+    let sent = raw.as_deref().and_then(sent_to);
     let mut tracked = None;
     let result = match (raw, hold) {
         (Some(raw), Some(at)) => hand_over(outgoing, entry, &raw, at).await,
@@ -626,6 +635,9 @@ async fn send<O: Outgoing>(
         Ok(Handover::Held) => {
             // Filed in Sent when it goes out; see `release`.
             batch.set_send_state(entry.id, SendState::Sent, None, None)?;
+            if let Some((message_id, to)) = &sent {
+                batch.receipt_sent(message_id, to, entry.hold_until.unwrap_or(now))?;
+            }
             batch.commit()?;
             tracing::info!(id = entry.id, account = %entry.account, "held by the server");
             changed(SendState::Sent, String::new());
@@ -634,6 +646,9 @@ async fn send<O: Outgoing>(
         Ok(Handover::Sent) => {
             batch.set_send_state(entry.id, SendState::Sent, None, None)?;
             batch.clear_hold(entry.id)?;
+            if let Some((message_id, to)) = &sent {
+                batch.receipt_sent(message_id, to, now)?;
+            }
             batch.commit()?;
             tracing::info!(id = entry.id, account = %entry.account, "sent");
             match &tracked {

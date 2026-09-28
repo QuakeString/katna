@@ -315,6 +315,8 @@ pub struct MailFacts {
     pub bulk_service: bool,
     /// `X-Autoreply` and friends: an automatic answer.
     pub auto_reply: bool,
+    /// A `multipart/report`: a delivery or read receipt.
+    pub report: bool,
 }
 
 impl MailFacts {
@@ -347,6 +349,12 @@ impl MailFacts {
                 }
             }
             "x-autoreply" | "x-autorespond" => self.auto_reply = true,
+            "content-type" => {
+                self.report = value
+                    .split(';')
+                    .next()
+                    .is_some_and(|kind| kind.trim().eq_ignore_ascii_case("multipart/report"));
+            }
             name if CAMPAIGN_HEADERS.contains(&name) || name.starts_with("x-mailchimp-") => {
                 self.campaign = true;
             }
@@ -362,9 +370,13 @@ impl MailFacts {
 /// `List-Id`, Google Groups and similar) → Forums; bulk mail (an unsubscribe
 /// link, a bulk-mail service or `Precedence: bulk`) → Promotions when it
 /// looks like marketing, otherwise Updates; other automated mail
-/// (`Auto-Submitted`, no-reply senders) → Updates; everything else, and
-/// replies from people, → Primary.
+/// (`Auto-Submitted`, no-reply senders, delivery and read receipts) →
+/// Updates; everything else, and replies from people, → Primary.
 pub fn classify(facts: &MailFacts) -> MailCategory {
+    // Receipts show as ticks on the sent mail, with no notification.
+    if facts.report {
+        return MailCategory::Updates;
+    }
     let from = facts.from.as_deref().unwrap_or_default();
     let (local, domain) = from.rsplit_once('@').unwrap_or((from, ""));
     let subject = facts.subject.as_deref().unwrap_or_default().to_lowercase();
@@ -617,6 +629,21 @@ mod tests {
         assert_eq!(
             classify_headers("From: MAILER-DAEMON@mx.example.org\nSubject: Undelivered Mail"),
             MailCategory::Updates
+        );
+    }
+
+    #[test]
+    fn receipts_are_updates() {
+        assert_eq!(
+            classify_headers(
+                "From: bea@example.org\nSubject: Read: Lunch\nIn-Reply-To: <m1@x>\n\
+                 Content-Type: multipart/report; report-type=disposition-notification"
+            ),
+            MailCategory::Updates
+        );
+        assert_eq!(
+            classify_headers("From: bea@example.org\nSubject: Hi\nContent-Type: text/plain"),
+            MailCategory::Primary
         );
     }
 
