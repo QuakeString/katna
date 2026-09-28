@@ -18,6 +18,7 @@ license=('GPL-3.0-or-later')
 # libvulkan (vulkan-icd-loader) and libEGL (libglvnd, the OpenGL fallback).
 # dbus: the session bus that katna-daemon and the apps talk over.
 # polkit: pkexec and the password prompt for updates from Katna Mail.
+# minisign: the update helper checks an update's signature with it.
 depends=(
   'dbus'
   'fontconfig'
@@ -28,6 +29,7 @@ depends=(
   'libxcb'
   'libxkbcommon'
   'libxkbcommon-x11'
+  'minisign'
   'polkit'
   'vulkan-icd-loader'
   'wayland'
@@ -111,5 +113,9 @@ package() {
   # action that allows it (katna_core::update::ARCH_HELPER).
   install -Dm755 packaging/arch/katna-update-helper "$pkgdir/usr/lib/katna/katna-update-helper"
   install -Dm644 -t "$pkgdir/usr/share/polkit-1/actions" packaging/polkit/*.policy
+  # With it, the helper installs only updates signed by its private half.
+  if [[ -f packaging/keys/katna-update.pub ]]; then
+    install -Dm644 packaging/keys/katna-update.pub "$pkgdir/usr/lib/katna/update-key.pub"
+  fi
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

@@ -7,14 +7,18 @@
 #
 #   pkexec /usr/lib/katna/katna-update-helper <package file> <sha256>
 #
-# It runs as root, so it trusts nothing about the file: it copies it where
-# only root can write, checks that copy against the SHA-256 Katna Mail
-# checked the download with, checks it is Katna's own package and newer
+# It runs as root, so it trusts nothing about the file or the caller: it
+# copies it where only root can write, checks that copy against the
+# SHA-256 Katna Mail checked the download with and, once the package
+# carries the update signing key, against the signature beside it
+# (<file>.minisig, made in CI with the key's private half), so no other
+# program can pass off its own package as an update. It then checks it is
+# Katna's own package and newer
 # than the one installed (never a downgrade to an older build with known
 # bugs), and only then hands it to pacman.
 #
 # Exit codes: 0 installed; 2 wrong arguments; 3 not the checked file, not
-# Katna's package, or not newer; 4 pacman failed (another update running, a
+# signed, not Katna's package, or not newer; 4 pacman failed (another update running, a
 # dependency missing).
 
 set -euo pipefail
@@ -22,6 +26,9 @@ export LC_ALL=C
 PATH=/usr/bin
 
 readonly PACKAGE=katna-git
+# The public half of the update signing key (packaging/keys/), installed
+# by the package once there is one.
+readonly KEY=/usr/lib/katna/update-key.pub
 
 fail() {
     echo "katna-update-helper: $2" >&2
@@ -42,6 +49,15 @@ cp -- "$source" "$package"
 got=$(sha256sum -- "$package")
 got=${got%% *}
 [[ $got == "$want" ]] || fail 3 "$source is not the update Katna Mail checked"
+
+# Before anything reads the package: only a signed one is opened.
+if [[ -s $KEY ]]; then
+    signature=$source.minisig
+    [[ -f $signature && ! -L $signature ]] || fail 3 "$source has no signature"
+    cp -- "$signature" "$package.minisig"
+    minisign -V -q -p "$KEY" -m "$package" -x "$package.minisig" ||
+        fail 3 "$source is not signed by Katna"
+fi
 
 name=$(pacman -Qp -- "$package" 2>/dev/null) || fail 3 "$source is not a package"
 version=${name#* }

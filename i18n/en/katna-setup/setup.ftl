@@ -13,6 +13,7 @@ setup-everyone-failed = Setup could not finish installing for everyone. Try agai
 setup-folder = Folder
 setup-folder-change = Change…
 setup-folder-pick = Choose where to install Katna Mail
+setup-folder-not-empty = { $path } already has other files in it. Choose an empty folder, or a new one.
 setup-desktop-shortcut = Add a shortcut to the desktop
 setup-start-menu = Add to the Start menu
 setup-autostart = Start Katna when I sign in, to get new mail

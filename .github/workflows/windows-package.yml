@@ -24,27 +24,31 @@ concurrency:
   group: windows-package-${{ github.ref }}
   cancel-in-progress: true
 
+# Read-only by default; the jobs that publish ask for more themselves.
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: windows-latest
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           # The version counts commits, as the Arch package's does.
           fetch-depth: 0
       - run: rustup toolchain install
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
         with:
           key: release
           save-if: ${{ github.ref == 'refs/heads/main' }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: target/dbus
           key: windows-dbus-${{ hashFiles('ci/windows-dbus.ps1') }}
       - name: Build Katna Setup
         run: ci/windows-package.ps1
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: windows-package
           path: target/windows/KatnaSetup.exe
@@ -56,11 +60,33 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: read
     concurrency:
       group: windows-package-release
       cancel-in-progress: false
     steps:
-      - uses: actions/download-artifact@v4
+      # Only a commit whose CI passed is published. A run cancelled by a
+      # newer push to main (its pull request passed CI before merging)
+      # still publishes; a failed one never does.
+      - name: Wait for CI on this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          for attempt in $(seq 120); do
+            result=$(gh api "repos/$GH_REPO/actions/workflows/ci.yml/runs?head_sha=$GITHUB_SHA&event=push" \
+              --jq '[.workflow_runs[] | "\(.status) \(.conclusion)"] | first // "none"')
+            echo "CI on $GITHUB_SHA: $result"
+            case "$result" in
+              "completed success") exit 0 ;;
+              "completed cancelled" | "completed skipped") exit 0 ;;
+              completed*) echo "CI did not pass; not publishing"; exit 1 ;;
+            esac
+            sleep 60
+          done
+          echo "CI did not finish in two hours; not publishing"
+          exit 1
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: windows-package
           path: out

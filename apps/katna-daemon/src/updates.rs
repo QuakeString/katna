@@ -415,6 +415,18 @@ async fn fetch_file(
 /// The update in `file` is downloaded and checked: Katna Mail can install
 /// it. Says so once per version.
 async fn ready(daemon: &Daemon, manifest: &Manifest, file: &Path, checked: i64) {
+    // The helper looks for the signature beside the package.
+    let signature = signature_path(file);
+    let written = match &manifest.minisig {
+        Some(sig) => std::fs::write(&signature, sig),
+        None => match std::fs::remove_file(&signature) {
+            Err(err) if err.kind() == std::io::ErrorKind::NotFound => Ok(()),
+            other => other,
+        },
+    };
+    if let Err(error) = written {
+        tracing::warn!(%error, "could not save the update's signature");
+    }
     let updates = daemon.updates();
     updates.set(daemon, |s| {
         *s = UpdateStatus {
@@ -439,6 +451,14 @@ async fn ready(daemon: &Daemon, manifest: &Manifest, file: &Path, checked: i64) 
     {
         *updates.notice.lock().unwrap() = Some(id);
     }
+}
+
+/// Where the signature of the package in `file` is saved: `<file>.minisig`,
+/// where `packaging/arch/katna-update-helper` reads it.
+fn signature_path(file: &Path) -> PathBuf {
+    let mut path = file.as_os_str().to_owned();
+    path.push(".minisig");
+    PathBuf::from(path)
 }
 
 /// Deletes the downloads in `dir`, except `keep`.

@@ -23,6 +23,12 @@ fn main() {
     if std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("windows") {
         resources();
     }
+    // Setup is usually run from Downloads, where a page can leave a DLL
+    // with a Windows DLL's name. Windows then looks for Setup's DLLs only
+    // in System32 (LOAD_LIBRARY_SEARCH_SYSTEM32), not beside Setup.
+    if std::env::var("CARGO_CFG_TARGET_ENV").as_deref() == Ok("msvc") {
+        println!("cargo:rustc-link-arg-bins=/DEPENDENTLOADFLAG:0x800");
+    }
 }
 
 fn pack(out: &Path) {

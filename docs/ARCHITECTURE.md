@@ -3303,9 +3303,18 @@ Arch is the first, Windows and the others follow the same flow.
   no updates and are never checked.
 - **Manifest.** CI writes `katna-update.json` beside the package on every
   build of `main`: version, file name, SHA-256 and size. One channel for
-  now, the latest build (today's `arch-latest`). It is not signed yet; the
-  download comes over TLS from GitHub and is checked against the
-  manifest's SHA-256 and size (signing: §25 item 3). The manifest names
+  now, the latest build (today's `arch-latest`). The download comes over
+  TLS from GitHub and is checked against the manifest's SHA-256 and size.
+  **Signing** (security audit, 28 September 2026): once
+  `packaging/keys/katna-update.pub` exists, CI's publish job signs the
+  package with minisign (the private half is the
+  `KATNA_UPDATE_SIGNING_KEY` secret, `packaging/keys/README.md`) and puts
+  the signature in the manifest (`minisig`); the daemon saves it beside the
+  download as `<file>.minisig`, and the root helper refuses a package
+  without a good signature. Until the key exists updates are unsigned, and
+  any program running as the user could pass its own `katna-git` package
+  to the helper. The publish jobs also wait for CI on the same commit and
+  publish only when it passed. The manifest names
   the package under its versioned file name, which CI uploads once and
   never replaces, and the daemon tries a failed download three times,
   reading the manifest again before each new try, because a new build
@@ -3325,8 +3334,9 @@ Arch is the first, Windows and the others follow the same flow.
   again, then runs `pkexec /usr/lib/katna/katna-update-helper <file>
   <sha256>`. The polkit action `in.invenia.katna.update` (`auth_admin`,
   never remembered) allows only that helper. As root, the helper copies
-  the file where only root can write, checks the copy's SHA-256 again and
-  that it is the `katna-git` package, and runs `pacman -U`.
+  the file where only root can write, checks the copy's SHA-256 again,
+  its signature (above), that it is the `katna-git` package and newer
+  than the one installed (never a downgrade), and runs `pacman -U`.
 - **Restart.** Katna Mail starts the new binary with
   `--after-update <pid>`, which waits for the old one to quit (the window
   state is saved on quit), and quits; the new one opens as the old one
@@ -3882,9 +3892,14 @@ is set. The choices: install for just me (the default, into
 `%LOCALAPPDATA%\Programs\Katna`, no administrator prompt) or for everyone
 (into `%ProgramFiles%\Katna`, with the machine's Start menu, public desktop
 and `HKLM` entries; Setup starts a second copy of itself as administrator,
-so Windows asks once, and follows its progress through a file); the folder
-(a picked folder gets its own `Katna` folder, so removing Katna never
-deletes the user's folder); a desktop shortcut (off), the Start menu (on)
+so Windows asks once, and follows its progress through a value under
+`HKLM\SOFTWARE\Katna\Setup` that only administrators can write); the
+folder (a picked folder gets its own `Katna` folder, so removing Katna never
+deletes the user's folder; Setup refuses one that already holds other
+files or is a link, and for everyone a folder outside `%ProgramFiles%` gets
+Program Files' rules: owned by Administrators, changed only by
+Administrators and SYSTEM, read and run by Users, so no user can replace
+programs every other user starts); a desktop shortcut (off), the Start menu (on)
 and start at sign-in (on). An update keeps the folder and what was chosen.
 Windows does not let installers pin to the taskbar (Windows 11 only for
 apps Microsoft approves), so the last screen says how to pin from Start.
@@ -3897,7 +3912,9 @@ programs packed with zstd; a newer Setup closes Katna, replaces them and
 keeps settings, mail and passwords. Removing Katna asks whether to delete
 mail and passwords too. `--quiet` installs without a window (`--all-users`, `--dir`,
 `--desktop`, `--no-start-menu`, `--no-autostart`) and `--uninstall`
-removes.
+removes. Setup starts PowerShell and icacls by their full System32 paths
+and links with `/DEPENDENTLOADFLAG:0x800`, so files left beside it in
+Downloads are never run or loaded as administrator.
 
 CI builds Setup.exe on every main push into a `windows-latest`
 pre-release, as it does the Arch package. Without a code-signing
