@@ -704,3 +704,57 @@ mejl som din e-postserver skickar dig när varje mottagares server tar
 emot meddelandet; knappen är nedtonad där din e-postserver inte erbjuder
 dem.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Bockar för levererat och läst"
+text = """
+Mejl du har skickat visar nu bockar bredvid varje mottagare. En grå bock
+betyder att deras e-postserver tog emot det: från ett leveranskvitto,
+eller, där din e-posttjänst inte skickar några (Gmail), när ingen studs
+kom tillbaka inom en halvtimme. Två bockar i din accentfärg betyder att
+de har läst det, från ett läskvitto eller spårning av öppningar, och en
+varning betyder att det studsade. Peka på en bock för att se när och
+hur. Kvittomejl stannar i din brevlåda under Uppdateringar, utan
+avisering.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Aviseringar för ny Gmail-post"
+text = """
+Ny post i en Gmail-inkorg visar nu en avisering igen. Katna missade
+tidigare post som Gmail lade i Alla mail en stund före inkorgen.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Sök efter typ av bilaga"
+text = """
+I Sökalternativ erbjuder ”Har bilaga” nu PDF, XLSX, ODF, XLS, ODS, PPT
+och PPTX, och Anpassat för alla andra filtillägg, till exempel png eller
+avif. Bara e-post med en bilaga av en vald typ visas.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Originalfärger i ett mörkt tema"
+text = """
+I ett mörkt tema visas e-post som har egna färger i mörka färger. Den
+nya halvcirkelknappen i läsrutans verktygsfält visar den i avsändarens
+originalfärger, och tillbaka igen.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "Utskriften behåller formateringen"
+text = """
+E-post skrivs ut som den ser ut i läsrutan, med sina tabeller, färger,
+kanter, listor och bilder. Förhandsgranskningen kan utesluta
+bakgrundsfärger för att spara bläck, eller skriva ut enbart texten med
+Endast text.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Fråga innan radering"
+text = """
+När flera konversationer raderas samtidigt frågar Katna Mail nu först om
+de ska flyttas till papperskorgen. Kryssa i ”Fråga inte igen” för att
+hoppa över frågan, eller slå på den igen under Inställningar > Allmänt.
+Permanent radering, i papperskorgen, frågar alltid.
+"""

@@ -710,3 +710,58 @@ asusunku na Katna. Rasidin isarwa imel ne da sabar wasiƙunku ke aiko muku
 idan sabar kowane mai karɓa ta karɓi saƙon; maɓallin yana dusashe inda
 sabar wasiƙunku ba ta bayar da su.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Alamun isarwa da karantawa"
+text = """
+Wasiƙun da kuka aika yanzu suna nuna alamu kusa da kowane mai karɓa.
+Alama ɗaya mai launin toka na nufin sabar wasiƙunsa ta karɓe ta: daga
+rasidin isarwa, ko, inda hidimar wasiƙunku ba ta aiko da ko ɗaya ba
+(Gmail), idan babu sanarwar gazawa da ta dawo cikin rabin sa'a. Alamu biyu
+a launin ƙawa naku na nufin ya karanta ta, daga rasidin karantawa ko
+bibiyar buɗewa, kuma gargaɗi na nufin ba a isar da ita ba. Ku nuna alama
+don ganin lokacin da yadda aka sani. Imel na rasidi suna zama a akwatin
+saƙonku ƙarƙashin “Sabuntawa”, ba tare da sanarwa ba.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Sanarwa don sababbin wasiƙun Gmail"
+text = """
+Sabuwar wasiƙa a Akwatin saƙo na Gmail tana sake nuna sanarwa. A da Katna
+yana rasa wasiƙun da Gmail ke saka a “Duk wasiƙu” ɗan lokaci
+kafin Akwatin saƙo.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Bincika ta nau'in abin haɗawa"
+text = """
+A Zaɓuɓɓukan bincike, “Yana da abin haɗawa” yanzu yana bayar da PDF,
+XLSX, ODF, XLS, ODS, PPT da PPTX, da “Na musamman” don kowane ƙarin
+sunan fayil, kamar png ko avif. Wasiƙa mai abin haɗawa na nau'in da aka
+zaɓa kawai ke nunawa.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Ainihin launuka a jigon duhu"
+text = """
+A jigon duhu, ana nuna wasiƙar da ta sa launukanta da launuka masu duhu.
+Sabon maɓallin rabin da'ira a kan kayan aikin wurin karatu yana nuna ta da
+ainihin launukan mai aikawa, sannan yana mayar da ita.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "Bugawa tana riƙe da tsarin"
+text = """
+Ana buga wasiƙa kamar yadda take a wurin karatu, tare da teburanta,
+launukanta, gefunanta, jerinta da hotunanta. Samfotin bugawa na iya barin
+launukan bango don adana tawada, ko buga rubutun kaɗai da Rubutu mai sauƙi.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Tambaya kafin sharewa"
+text = """
+Share tattaunawa da yawa lokaci ɗaya yanzu yana tambaya tukuna ko za a
+matsar da su zuwa Kwandon shara. Yi alama a “Kar a sake tambaya” don
+tsallake tambayar, ko kuma kunna ta a Saituna > Gabaɗaya. Sharewa har
+abada, a cikin Kwandon shara, tana tambaya kowane lokaci.
+"""

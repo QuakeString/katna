@@ -13,6 +13,9 @@ search-has-words = يتضمن الكلمات
 search-without = لا يتضمن
 search-date-within = التاريخ خلال
 search-has-attachment = يحتوي على مرفق
+search-attachment-custom = مخصص
+search-attachment-custom-hint = اكتب امتدادًا، مثل png، ثم اضغط مسافة
+search-attachment-remove = إزالة
 search-clear-filter = مسح عامل التصفية
 
 ## Search options: "Date within" choices

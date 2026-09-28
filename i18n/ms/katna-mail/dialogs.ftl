@@ -164,3 +164,29 @@ sign-in-again-tooltip = Buka halaman log masuk { $provider } dalam pelayar anda
 sign-in-again-waiting = Menunggu pelayar anda…
 sign-in-again-close = Tutup
 sign-in-again-done = Telah log masuk ke { $address } semula. Mendapatkan mel anda…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+       *[other] Alihkan { $count } perbualan ke Sampah?
+    }
+   *[message] { $count ->
+       *[other] Alihkan { $count } mesej ke Sampah?
+    }
+}
+delete-ask-body = { $count ->
+   *[other] Anda boleh membuat asal sebaik selepasnya, atau mengembalikannya dari Sampah kemudian.
+}
+delete-ask-confirm = Alihkan ke Sampah
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+       *[other] Padam { $count } perbualan selama-lamanya?
+    }
+   *[message] { $count ->
+       *[other] Padam { $count } mesej selama-lamanya?
+    }
+}
+delete-forever-body = { $count ->
+   *[other] Ia turut dipadamkan pada pelayan. Ini tidak boleh dibuat asal.
+}
+delete-forever-confirm = Padam selama-lamanya
+delete-ask-dont-ask = Jangan tanya lagi
+delete-ask-cancel = Batal

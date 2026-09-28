@@ -169,3 +169,35 @@ sign-in-again-tooltip = Open de aanmeldpagina van { $provider } in je browser
 sign-in-again-waiting = Wachten op je browser…
 sign-in-again-close = Sluiten
 sign-in-again-done = Opnieuw aangemeld bij { $address }. Je e-mail wordt opgehaald…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] Dit gesprek naar de Prullenbak verplaatsen?
+       *[other] { $count } gesprekken naar de Prullenbak verplaatsen?
+    }
+   *[message] { $count ->
+        [one] Dit bericht naar de Prullenbak verplaatsen?
+       *[other] { $count } berichten naar de Prullenbak verplaatsen?
+    }
+}
+delete-ask-body = { $count ->
+    [one] Je kunt het daarna meteen ongedaan maken, of het later uit de Prullenbak terughalen.
+   *[other] Je kunt het daarna meteen ongedaan maken, of ze later uit de Prullenbak terughalen.
+}
+delete-ask-confirm = Naar Prullenbak
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] Dit gesprek definitief verwijderen?
+       *[other] { $count } gesprekken definitief verwijderen?
+    }
+   *[message] { $count ->
+        [one] Dit bericht definitief verwijderen?
+       *[other] { $count } berichten definitief verwijderen?
+    }
+}
+delete-forever-body = { $count ->
+    [one] Het wordt ook op de server verwijderd. Dit kan niet ongedaan worden gemaakt.
+   *[other] Ze worden ook op de server verwijderd. Dit kan niet ongedaan worden gemaakt.
+}
+delete-forever-confirm = Definitief verwijderen
+delete-ask-dont-ask = Niet meer vragen
+delete-ask-cancel = Annuleren

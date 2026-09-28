@@ -166,3 +166,29 @@ sign-in-again-tooltip = 在浏览器中打开 { $provider } 登录页面
 sign-in-again-waiting = 正在等待浏览器…
 sign-in-again-close = 关闭
 sign-in-again-done = 已重新登录 { $address }。正在收取你的邮件…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+       *[other] 将 { $count } 个会话移至已删除邮件？
+    }
+   *[message] { $count ->
+       *[other] 将 { $count } 封邮件移至已删除邮件？
+    }
+}
+delete-ask-body = { $count ->
+   *[other] 你可以随后立即撤销，或以后从已删除邮件中找回。
+}
+delete-ask-confirm = 移至已删除邮件
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+       *[other] 永久删除 { $count } 个会话？
+    }
+   *[message] { $count ->
+       *[other] 永久删除 { $count } 封邮件？
+    }
+}
+delete-forever-body = { $count ->
+   *[other] 服务器上也会一并删除，且无法撤销。
+}
+delete-forever-confirm = 永久删除
+delete-ask-dont-ask = 不再询问
+delete-ask-cancel = 取消

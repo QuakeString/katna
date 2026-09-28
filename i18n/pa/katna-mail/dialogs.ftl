@@ -169,3 +169,35 @@ sign-in-again-tooltip = ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ { $pr
 sign-in-again-waiting = ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦੀ ਉਡੀਕ ਹੋ ਰਹੀ ਹੈ…
 sign-in-again-close = ਬੰਦ ਕਰੋ
 sign-in-again-done = { $address } ਵਿੱਚ ਦੁਬਾਰਾ ਸਾਈਨ ਇਨ ਹੋ ਗਿਆ। ਤੁਹਾਡੀ ਮੇਲ ਲਿਆ ਰਿਹਾ ਹੈ…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] ਇਹ ਗੱਲਬਾਤ ਰੱਦੀ ਵਿੱਚ ਭੇਜਣੀ ਹੈ?
+       *[other] { $count } ਗੱਲਬਾਤਾਂ ਰੱਦੀ ਵਿੱਚ ਭੇਜਣੀਆਂ ਹਨ?
+    }
+   *[message] { $count ->
+        [one] ਇਹ ਸੁਨੇਹਾ ਰੱਦੀ ਵਿੱਚ ਭੇਜਣਾ ਹੈ?
+       *[other] { $count } ਸੁਨੇਹੇ ਰੱਦੀ ਵਿੱਚ ਭੇਜਣੇ ਹਨ?
+    }
+}
+delete-ask-body = { $count ->
+    [one] ਤੁਸੀਂ ਇਸਨੂੰ ਝੱਟ ਬਾਅਦ ਅਣਕੀਤਾ ਕਰ ਸਕਦੇ ਹੋ, ਜਾਂ ਬਾਅਦ ਵਿੱਚ ਰੱਦੀ ਤੋਂ ਵਾਪਸ ਲਿਆ ਸਕਦੇ ਹੋ।
+   *[other] ਤੁਸੀਂ ਇਸਨੂੰ ਝੱਟ ਬਾਅਦ ਅਣਕੀਤਾ ਕਰ ਸਕਦੇ ਹੋ, ਜਾਂ ਬਾਅਦ ਵਿੱਚ ਉਨ੍ਹਾਂ ਨੂੰ ਰੱਦੀ ਤੋਂ ਵਾਪਸ ਲਿਆ ਸਕਦੇ ਹੋ।
+}
+delete-ask-confirm = ਰੱਦੀ ਵਿੱਚ ਭੇਜੋ
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] ਇਹ ਗੱਲਬਾਤ ਹਮੇਸ਼ਾ ਲਈ ਮਿਟਾਉਣੀ ਹੈ?
+       *[other] { $count } ਗੱਲਬਾਤਾਂ ਹਮੇਸ਼ਾ ਲਈ ਮਿਟਾਉਣੀਆਂ ਹਨ?
+    }
+   *[message] { $count ->
+        [one] ਇਹ ਸੁਨੇਹਾ ਹਮੇਸ਼ਾ ਲਈ ਮਿਟਾਉਣਾ ਹੈ?
+       *[other] { $count } ਸੁਨੇਹੇ ਹਮੇਸ਼ਾ ਲਈ ਮਿਟਾਉਣੇ ਹਨ?
+    }
+}
+delete-forever-body = { $count ->
+    [one] ਇਹ ਸਰਵਰ ਤੋਂ ਵੀ ਮਿਟ ਜਾਂਦਾ ਹੈ। ਇਸਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।
+   *[other] ਇਹ ਸਰਵਰ ਤੋਂ ਵੀ ਮਿਟ ਜਾਂਦੇ ਹਨ। ਇਸਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।
+}
+delete-forever-confirm = ਹਮੇਸ਼ਾ ਲਈ ਮਿਟਾਓ
+delete-ask-dont-ask = ਦੁਬਾਰਾ ਨਾ ਪੁੱਛੋ
+delete-ask-cancel = ਰੱਦ ਕਰੋ

@@ -164,3 +164,21 @@ sign-in-again-tooltip = ブラウザーで { $provider } のサインイン ペ�
 sign-in-again-waiting = ブラウザーを待っています…
 sign-in-again-close = 閉じる
 sign-in-again-done = { $address } に再度サインインしました。メールを取得しています…
+delete-ask-title = { $kind ->
+    [conversation] { $count } 件のスレッドをゴミ箱に移動しますか？
+   *[message] { $count } 件のメールをゴミ箱に移動しますか？
+}
+delete-ask-body = { $count ->
+   *[other] 直後なら元に戻せます。あとからゴミ箱に取りに行くこともできます。
+}
+delete-ask-confirm = ゴミ箱に移動
+delete-forever-title = { $kind ->
+    [conversation] { $count } 件のスレッドを完全に削除しますか？
+   *[message] { $count } 件のメールを完全に削除しますか？
+}
+delete-forever-body = { $count ->
+   *[other] サーバー上でも削除されます。元に戻すことはできません。
+}
+delete-forever-confirm = 完全に削除
+delete-ask-dont-ask = 次回から確認しない
+delete-ask-cancel = キャンセル

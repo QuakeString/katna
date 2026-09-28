@@ -13,6 +13,9 @@ search-has-words = Inamagama
 search-without = Ayinawo
 search-date-within = Usuku ngaphakathi kwesikhathi
 search-has-attachment = Inokunamathiselwe
+search-attachment-custom = Ngokwezifiso
+search-attachment-custom-hint = Thayipha isandiso, njenge-png, bese uchofoza i-Space
+search-attachment-remove = Susa
 search-clear-filter = Sula isihlungi
 
 ## Search options: "Date within" choices

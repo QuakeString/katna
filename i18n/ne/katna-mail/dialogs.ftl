@@ -169,3 +169,35 @@ sign-in-again-tooltip = आफ्नो ब्राउजरमा { $provider 
 sign-in-again-waiting = तपाईंको ब्राउजरको प्रतीक्षा गर्दै…
 sign-in-again-close = बन्द गर्नुहोस्
 sign-in-again-done = { $address } मा फेरि साइन इन भयो। तपाईंको मेल ल्याउँदै…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] यो वार्तालाप ट्र्यासमा सार्ने?
+       *[other] { $count } वार्तालापहरू ट्र्यासमा सार्ने?
+    }
+   *[message] { $count ->
+        [one] यो सन्देश ट्र्यासमा सार्ने?
+       *[other] { $count } सन्देशहरू ट्र्यासमा सार्ने?
+    }
+}
+delete-ask-body = { $count ->
+    [one] तुरुन्तै पछि पूर्ववत गर्न सकिन्छ, वा पछि ट्र्यासबाट फिर्ता ल्याउन सकिन्छ।
+   *[other] तुरुन्तै पछि पूर्ववत गर्न सकिन्छ, वा पछि ट्र्यासबाट फिर्ता ल्याउन सकिन्छ।
+}
+delete-ask-confirm = ट्र्यासमा सार्नुहोस्
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] यो वार्तालाप सधैँका लागि मेटाउने?
+       *[other] { $count } वार्तालापहरू सधैँका लागि मेटाउने?
+    }
+   *[message] { $count ->
+        [one] यो सन्देश सधैँका लागि मेटाउने?
+       *[other] { $count } सन्देशहरू सधैँका लागि मेटाउने?
+    }
+}
+delete-forever-body = { $count ->
+    [one] सर्भरबाट पनि मेटिन्छ। यसलाई पूर्ववत गर्न सकिँदैन।
+   *[other] सर्भरबाट पनि मेटिन्छन्। यसलाई पूर्ववत गर्न सकिँदैन।
+}
+delete-forever-confirm = सधैँका लागि मेटाउनुहोस्
+delete-ask-dont-ask = फेरि नसोध्नुहोस्
+delete-ask-cancel = रद्द गर्नुहोस्

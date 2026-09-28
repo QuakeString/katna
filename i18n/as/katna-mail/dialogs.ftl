@@ -169,3 +169,35 @@ sign-in-again-tooltip = আপোনাৰ ব্ৰাউজাৰত { $provid
 sign-in-again-waiting = আপোনাৰ ব্ৰাউজাৰলৈ অপেক্ষা কৰি থকা হৈছে…
 sign-in-again-close = বন্ধ কৰক
 sign-in-again-done = { $address }ত পুনৰ ছাইন ইন কৰা হ'ল। আপোনাৰ মেইল অনা হৈছে…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] এই কথোপকথনটো ট্ৰেছলৈ স্থানান্তৰ কৰিবনে?
+       *[other] { $count }টা কথোপকথন ট্ৰেছলৈ স্থানান্তৰ কৰিবনে?
+    }
+   *[message] { $count ->
+        [one] এই বাৰ্তাটো ট্ৰেছলৈ স্থানান্তৰ কৰিবনে?
+       *[other] { $count }টা বাৰ্তা ট্ৰেছলৈ স্থানান্তৰ কৰিবনে?
+    }
+}
+delete-ask-body = { $count ->
+    [one] আপুনি ইয়াৰ পিছতেই আনডু কৰিব পাৰে, বা পিছত ট্ৰেছৰ পৰা ইয়াক ঘূৰাই আনিব পাৰে।
+   *[other] আপুনি ইয়াৰ পিছতেই আনডু কৰিব পাৰে, বা পিছত ট্ৰেছৰ পৰা সেইবোৰ ঘূৰাই আনিব পাৰে।
+}
+delete-ask-confirm = ট্ৰেছলৈ স্থানান্তৰ কৰক
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] এই কথোপকথনটো চিৰদিনৰ বাবে মচিবনে?
+       *[other] { $count }টা কথোপকথন চিৰদিনৰ বাবে মচিবনে?
+    }
+   *[message] { $count ->
+        [one] এই বাৰ্তাটো চিৰদিনৰ বাবে মচিবনে?
+       *[other] { $count }টা বাৰ্তা চিৰদিনৰ বাবে মচিবনে?
+    }
+}
+delete-forever-body = { $count ->
+    [one] ইয়াক ছাৰ্ভাৰতো মচা হয়। ইয়াক আনডু কৰিব নোৱাৰি।
+   *[other] সেইবোৰ ছাৰ্ভাৰতো মচা হয়। ইয়াক আনডু কৰিব নোৱাৰি।
+}
+delete-forever-confirm = চিৰদিনৰ বাবে মচক
+delete-ask-dont-ask = পুনৰ নুসুধিব
+delete-ask-cancel = বাতিল কৰক

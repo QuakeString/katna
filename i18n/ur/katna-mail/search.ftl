@@ -13,6 +13,9 @@ search-has-words = یہ الفاظ شامل ہوں
 search-without = یہ شامل نہ ہوں
 search-date-within = تاریخ کی حد
 search-has-attachment = منسلکہ موجود ہو
+search-attachment-custom = حسب منشا
+search-attachment-custom-hint = کوئی ایکسٹینشن ٹائپ کریں، جیسے png، پھر اسپیس دبائیں
+search-attachment-remove = ہٹائیں
 search-clear-filter = فلٹر صاف کریں
 
 ## Search options: "Date within" choices

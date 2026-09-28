@@ -718,3 +718,59 @@ Katna hesabınızda oturum açmış olmanız gerekir. Teslim bilgisi, her
 alıcının sunucusu iletiyi aldığında posta sunucunuzun size gönderdiği
 bir e-postadır; posta sunucunuz bunu sunmuyorsa düğme soluk görünür.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Teslim edildi ve okundu işaretleri"
+text = """
+Gönderdiğiniz postalar artık her alıcının yanında onay işaretleri
+gösteriyor. Tek gri işaret, alıcının posta sunucusunun iletiyi aldığı
+anlamına gelir: bunu teslim bilgisinden ya da posta hizmetinizin teslim
+bilgisi göndermediği yerlerde (Gmail) yarım saat içinde geri dönme
+bildirimi gelmemesinden anlarız. Vurgu renginizdeki iki işaret, iletinin
+okunduğu anlamına gelir (okundu bilgisinden ya da açılma izlemeden); bir
+uyarı ise iletinin geri döndüğünü gösterir. Ne zaman ve nasıl olduğunu
+görmek için işaretin üzerine gelin. Bilgi e-postaları, bildirim
+göstermeden posta kutunuzda Güncellemeler altında kalır.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Yeni Gmail postaları için bildirimler"
+text = """
+Gmail gelen kutusundaki yeni postalar artık yeniden bildirim gösteriyor.
+Katna, Gmail'in gelen kutusundan bir an önce Tüm Postalar'a koyduğu
+postaları eskiden kaçırıyordu.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Ek türüne göre arayın"
+text = """
+Arama seçeneklerinde “Eki olan” artık PDF, XLSX, ODF, XLS, ODS, PPT ve
+PPTX'i, ayrıca png veya avif gibi diğer uzantılar için Özel'i sunuyor.
+Yalnızca seçilen türde eki olan postalar gösterilir.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Koyu temada özgün renkler"
+text = """
+Koyu temada, kendi renklerini belirleyen postalar koyu renklerle
+gösterilir. Okuma bölmesinin araç çubuğundaki yeni yarım daire düğmesi
+postayı göndericisinin özgün renkleriyle gösterir ve geri döndürür.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "Baskı biçimlendirmeyi korur"
+text = """
+Posta, okuma bölmesinde göründüğü gibi yazdırılır: tablolarıyla,
+renkleriyle, kenarlıklarıyla, listeleriyle ve resimleriyle. Baskı
+önizlemesi mürekkep tasarrufu için arka plan renklerini atlayabilir ya da
+Yalnızca metin ile yalnızca metni yazdırabilir.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Silmeden önce sor"
+text = """
+Birkaç ileti dizisini birden silmek artık önce onların Çöp Kutusu'na
+taşınıp taşınmayacağını sorar. Soruyu atlamak için “Bir daha sorma”yı
+işaretleyin ya da Ayarlar > Genel bölümünden yeniden açın. Çöp
+Kutusu'ndaki kalıcı silme her zaman sorar.
+"""

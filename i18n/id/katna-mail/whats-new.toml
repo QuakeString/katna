@@ -719,3 +719,60 @@ pengiriman adalah email yang dikirim server email Anda saat server setiap
 penerima menerima pesan; tombolnya berwarna abu-abu jika server email Anda
 tidak menyediakannya.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Tanda centang untuk sampai dan dibaca"
+text = """
+Email yang Anda kirim kini menampilkan tanda centang di samping setiap
+penerima. Satu centang abu-abu berarti server email penerima sudah
+menerimanya: dari tanda terima pengiriman, atau, jika layanan email Anda
+tidak mengirimkannya (Gmail), saat tidak ada pemberitahuan gagal kirim
+yang kembali dalam setengah jam. Dua centang dengan warna aksen Anda
+berarti pesan sudah dibaca, dari tanda terima baca atau pelacakan buka,
+dan tanda peringatan berarti pesan gagal terkirim. Arahkan penunjuk ke
+sebuah centang untuk melihat kapan dan bagaimana. Email tanda terima tetap
+ada di kotak surat Anda di “Pembaruan”, tanpa notifikasi.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Notifikasi untuk email Gmail baru"
+text = """
+Email baru di Kotak Masuk Gmail kembali memunculkan notifikasi.
+Sebelumnya Katna melewatkan email yang disimpan Gmail di
+“Semua Email” sesaat sebelum masuk ke Kotak Masuk.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Telusuri menurut jenis lampiran"
+text = """
+Di Opsi penelusuran, “Ada lampiran” kini menawarkan PDF, XLSX, ODF, XLS,
+ODS, PPT, dan PPTX, serta Kustom untuk ekstensi lain apa pun, seperti
+png atau avif. Hanya email dengan lampiran jenis yang dipilih yang
+ditampilkan.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Warna asli dalam tema gelap"
+text = """
+Dalam tema gelap, email yang mengatur warnanya sendiri ditampilkan dengan
+warna gelap. Tombol setengah lingkaran yang baru di toolbar panel baca
+menampilkannya dengan warna asli pengirimnya, dan kembali lagi.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "Hasil cetak menjaga formatnya"
+text = """
+Email tercetak seperti tampilannya di panel baca, lengkap dengan tabel,
+warna, garis tepi, daftar, dan gambarnya. Pratinjau cetak bisa mengabaikan
+warna latar belakang untuk menghemat tinta, atau mencetak teksnya saja
+dengan Teks sederhana.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Tanya sebelum menghapus"
+text = """
+Menghapus beberapa percakapan sekaligus kini bertanya lebih dahulu apakah
+percakapan itu dipindahkan ke Sampah. Centang “Jangan tanya lagi” untuk
+melewati pertanyaannya, atau aktifkan kembali di Setelan > Umum.
+Penghapusan selamanya, di Sampah, selalu bertanya.
+"""

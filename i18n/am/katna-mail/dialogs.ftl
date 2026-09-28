@@ -169,3 +169,35 @@ sign-in-again-tooltip = የ{ $provider } መግቢያ ገጽን በአሳሽዎ 
 sign-in-again-waiting = አሳሽዎን በመጠበቅ ላይ…
 sign-in-again-close = ዝጋ
 sign-in-again-done = ወደ { $address } እንደገና ገብተዋል። ደብዳቤዎን በማምጣት ላይ…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] ይህ ውይይት ወደ መጣያ ይወሰድ?
+       *[other] { $count } ውይይቶች ወደ መጣያ ይወሰዱ?
+    }
+   *[message] { $count ->
+        [one] ይህ መልዕክት ወደ መጣያ ይወሰድ?
+       *[other] { $count } መልዕክቶች ወደ መጣያ ይወሰዱ?
+    }
+}
+delete-ask-body = { $count ->
+    [one] ወዲያውኑ መቀልበስ ይችላሉ፣ ወይም በኋላ ከመጣያ መልሰው ማምጣት ይችላሉ።
+   *[other] ወዲያውኑ መቀልበስ ይችላሉ፣ ወይም በኋላ ከመጣያ እነሱን መልሰው ማምጣት ይችላሉ።
+}
+delete-ask-confirm = ወደ መጣያ ውሰድ
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] ይህ ውይይት እስከመጨረሻው ይሰረዝ?
+       *[other] { $count } ውይይቶች እስከመጨረሻው ይሰረዙ?
+    }
+   *[message] { $count ->
+        [one] ይህ መልዕክት እስከመጨረሻው ይሰረዝ?
+       *[other] { $count } መልዕክቶች እስከመጨረሻው ይሰረዙ?
+    }
+}
+delete-forever-body = { $count ->
+    [one] በአገልጋዩ ላይም ይሰረዛል። ይህ መቀልበስ አይቻልም።
+   *[other] በአገልጋዩ ላይም ይሰረዛሉ። ይህ መቀልበስ አይቻልም።
+}
+delete-forever-confirm = እስከመጨረሻው ሰርዝ
+delete-ask-dont-ask = ዳግም አትጠይቅ
+delete-ask-cancel = ይቅር

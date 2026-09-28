@@ -172,3 +172,41 @@ sign-in-again-tooltip = Apri la pagina di accesso di { $provider } nel browser
 sign-in-again-waiting = In attesa del browser…
 sign-in-again-close = Chiudi
 sign-in-again-done = Accesso a { $address } eseguito di nuovo. Scaricamento della posta…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] Spostare questa conversazione nel Cestino?
+        [many] Spostare { $count } di conversazioni nel Cestino?
+       *[other] Spostare { $count } conversazioni nel Cestino?
+    }
+   *[message] { $count ->
+        [one] Spostare questo messaggio nel Cestino?
+        [many] Spostare { $count } di messaggi nel Cestino?
+       *[other] Spostare { $count } messaggi nel Cestino?
+    }
+}
+delete-ask-body = { $count ->
+    [one] Puoi annullare subito dopo, oppure recuperarla dal Cestino più tardi.
+    [many] Puoi annullare subito dopo, oppure recuperarle dal Cestino più tardi.
+   *[other] Puoi annullare subito dopo, oppure recuperarle dal Cestino più tardi.
+}
+delete-ask-confirm = Sposta nel Cestino
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] Eliminare definitivamente questa conversazione?
+        [many] Eliminare definitivamente { $count } di conversazioni?
+       *[other] Eliminare definitivamente { $count } conversazioni?
+    }
+   *[message] { $count ->
+        [one] Eliminare definitivamente questo messaggio?
+        [many] Eliminare definitivamente { $count } di messaggi?
+       *[other] Eliminare definitivamente { $count } messaggi?
+    }
+}
+delete-forever-body = { $count ->
+    [one] L’eliminazione avviene anche sul server e non si può annullare.
+    [many] L’eliminazione avviene anche sul server e non si può annullare.
+   *[other] L’eliminazione avviene anche sul server e non si può annullare.
+}
+delete-forever-confirm = Elimina definitivamente
+delete-ask-dont-ask = Non chiedere più
+delete-ask-cancel = Annulla

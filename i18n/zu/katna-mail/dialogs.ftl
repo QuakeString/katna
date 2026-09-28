@@ -169,3 +169,35 @@ sign-in-again-tooltip = Vula ikhasi lokungena le-{ $provider } esipheqululini sa
 sign-in-again-waiting = Kulindwe isiphequluli sakho…
 sign-in-again-close = Vala
 sign-in-again-done = Uphinde wangena ku-{ $address }. Kulandwa imeyili yakho…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] Hambisa le ngxoxo kudoti?
+       *[other] Hambisa izingxoxo ezingu-{ $count } kudoti?
+    }
+   *[message] { $count ->
+        [one] Hambisa lo mlayezo kudoti?
+       *[other] Hambisa imilayezo engu-{ $count } kudoti?
+    }
+}
+delete-ask-body = { $count ->
+    [one] Ungakuhlehlisa ngokushesha emva kwalokho, noma uyikhiphe kudoti kamuva.
+   *[other] Ungakuhlehlisa ngokushesha emva kwalokho, noma uzikhiphe kudoti kamuva.
+}
+delete-ask-confirm = Hambisa kudoti
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] Susa le ngxoxo unomphela?
+       *[other] Susa izingxoxo ezingu-{ $count } unomphela?
+    }
+   *[message] { $count ->
+        [one] Susa lo mlayezo unomphela?
+       *[other] Susa imilayezo engu-{ $count } unomphela?
+    }
+}
+delete-forever-body = { $count ->
+    [one] Isuswa nakuseva. Lokhu akunakuhlehliswa.
+   *[other] Zisuswa nakuseva. Lokhu akunakuhlehliswa.
+}
+delete-forever-confirm = Susa unomphela
+delete-ask-dont-ask = Ungabuzi futhi
+delete-ask-cancel = Khansela

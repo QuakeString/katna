@@ -13,6 +13,9 @@ search-has-words = מכיל את המילים
 search-without = לא מכיל
 search-date-within = תאריך בטווח של
 search-has-attachment = עם קובץ מצורף
+search-attachment-custom = מותאם אישית
+search-attachment-custom-hint = יש להקליד סיומת, כמו png, ואז רווח
+search-attachment-remove = הסרה
 search-clear-filter = ניקוי המסנן
 
 ## Search options: "Date within" choices

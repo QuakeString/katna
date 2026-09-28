@@ -175,3 +175,47 @@ sign-in-again-tooltip = Otwórz stronę logowania { $provider } w przeglądarce
 sign-in-again-waiting = Czekanie na przeglądarkę…
 sign-in-again-close = Zamknij
 sign-in-again-done = Ponownie zalogowano do { $address }. Pobieranie poczty…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] Przenieść ten wątek do kosza?
+        [few] Przenieść { $count } wątki do kosza?
+        [many] Przenieść { $count } wątków do kosza?
+       *[other] Przenieść { $count } wątku do kosza?
+    }
+   *[message] { $count ->
+        [one] Przenieść tę wiadomość do kosza?
+        [few] Przenieść { $count } wiadomości do kosza?
+        [many] Przenieść { $count } wiadomości do kosza?
+       *[other] Przenieść { $count } wiadomości do kosza?
+    }
+}
+delete-ask-body = { $count ->
+    [one] Możesz to zaraz potem cofnąć albo później przywrócić z kosza.
+    [few] Możesz to zaraz potem cofnąć albo później przywrócić je z kosza.
+    [many] Możesz to zaraz potem cofnąć albo później przywrócić je z kosza.
+   *[other] Możesz to zaraz potem cofnąć albo później przywrócić je z kosza.
+}
+delete-ask-confirm = Przenieś do kosza
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] Usunąć ten wątek trwale?
+        [few] Usunąć { $count } wątki trwale?
+        [many] Usunąć { $count } wątków trwale?
+       *[other] Usunąć { $count } wątku trwale?
+    }
+   *[message] { $count ->
+        [one] Usunąć tę wiadomość trwale?
+        [few] Usunąć { $count } wiadomości trwale?
+        [many] Usunąć { $count } wiadomości trwale?
+       *[other] Usunąć { $count } wiadomości trwale?
+    }
+}
+delete-forever-body = { $count ->
+    [one] Usunięcie obejmuje też serwer. Tego nie da się cofnąć.
+    [few] Usunięcie obejmuje też serwer. Tego nie da się cofnąć.
+    [many] Usunięcie obejmuje też serwer. Tego nie da się cofnąć.
+   *[other] Usunięcie obejmuje też serwer. Tego nie da się cofnąć.
+}
+delete-forever-confirm = Usuń trwale
+delete-ask-dont-ask = Nie pytaj ponownie
+delete-ask-cancel = Anuluj

@@ -13,6 +13,9 @@ search-has-words = ଏହି ଶବ୍ଦ ଥିବା
 search-without = ଏହି ଶବ୍ଦ ନଥିବା
 search-date-within = ତାରିଖ ଏହି ଅବଧି ମଧ୍ୟରେ
 search-has-attachment = ଆଟାଚମେଣ୍ଟ ଥିବା
+search-attachment-custom = କଷ୍ଟମ
+search-attachment-custom-hint = ଏକ ଏକ୍ସଟେନସନ ଟାଇପ କରନ୍ତୁ, ଯେପରି png, ତାପରେ Space ଦବାନ୍ତୁ
+search-attachment-remove = କାଢ଼ନ୍ତୁ
 search-clear-filter = ଫିଲ୍ଟର ସଫା କରନ୍ତୁ
 
 ## Search options: "Date within" choices

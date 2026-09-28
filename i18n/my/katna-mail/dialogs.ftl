@@ -164,3 +164,29 @@ sign-in-again-tooltip = { $provider } ဝင်ရောက်ရန် စာ�
 sign-in-again-waiting = သင့်ဘရောက်ဇာကို စောင့်နေသည်…
 sign-in-again-close = ပိတ်ရန်
 sign-in-again-done = { $address } သို့ ထပ်မံ ဝင်ရောက်ပြီးပါပြီ။ သင့်မေးလ်ကို ရယူနေသည်…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+       *[other] စကားဝိုင်း { $count } ခုကို အမှိုက်ပုံးသို့ ရွှေ့မလား။
+    }
+   *[message] { $count ->
+       *[other] မက်ဆေ့ဂျ် { $count } စောင်ကို အမှိုက်ပုံးသို့ ရွှေ့မလား။
+    }
+}
+delete-ask-body = { $count ->
+   *[other] ရွှေ့ပြီးချင်း ပြန်ပြင်နိုင်သည်၊ သို့မဟုတ် နောင်တွင် အမှိုက်ပုံးမှ ပြန်ယူနိုင်သည်။
+}
+delete-ask-confirm = အမှိုက်ပုံးသို့ ရွှေ့ရန်
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+       *[other] စကားဝိုင်း { $count } ခုကို အပြီးဖျက်မလား။
+    }
+   *[message] { $count ->
+       *[other] မက်ဆေ့ဂျ် { $count } စောင်ကို အပြီးဖျက်မလား။
+    }
+}
+delete-forever-body = { $count ->
+   *[other] ဆာဗာပေါ်မှလည်း ဖျက်လိုက်မည်။ ဤအရာကို ပြန်ပြင်၍ မရပါ။
+}
+delete-forever-confirm = အပြီးဖျက်ရန်
+delete-ask-dont-ask = ထပ်မမေးပါနှင့်
+delete-ask-cancel = မလုပ်တော့ပါ

@@ -13,6 +13,9 @@ search-has-words = ఈ పదాలు ఉన్నవి
 search-without = ఇవి లేనివి
 search-date-within = తేదీ పరిధి
 search-has-attachment = అటాచ్‌మెంట్ ఉంది
+search-attachment-custom = అనుకూలం
+search-attachment-custom-hint = png లాంటి ఎక్స్‌టెన్షన్ టైప్ చేసి, ఆపై Space నొక్కండి
+search-attachment-remove = తీసివేయండి
 search-clear-filter = ఫిల్టర్‌ను క్లియర్ చేయండి
 
 ## Search options: "Date within" choices

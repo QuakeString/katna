@@ -172,3 +172,41 @@ sign-in-again-tooltip = Abrir la página de inicio de sesión de { $provider } e
 sign-in-again-waiting = Esperando a tu navegador…
 sign-in-again-close = Cerrar
 sign-in-again-done = Has vuelto a iniciar sesión en { $address }. Descargando tu correo…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] ¿Mover esta conversación a la papelera?
+        [many] ¿Mover { $count } de conversaciones a la papelera?
+       *[other] ¿Mover { $count } conversaciones a la papelera?
+    }
+   *[message] { $count ->
+        [one] ¿Mover este mensaje a la papelera?
+        [many] ¿Mover { $count } de mensajes a la papelera?
+       *[other] ¿Mover { $count } mensajes a la papelera?
+    }
+}
+delete-ask-body = { $count ->
+    [one] Puedes deshacerlo justo después, o recuperarlo de la papelera más tarde.
+    [many] Puedes deshacerlo justo después, o recuperarlos de la papelera más tarde.
+   *[other] Puedes deshacerlo justo después, o recuperarlos de la papelera más tarde.
+}
+delete-ask-confirm = Mover a la papelera
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] ¿Eliminar esta conversación definitivamente?
+        [many] ¿Eliminar { $count } de conversaciones definitivamente?
+       *[other] ¿Eliminar { $count } conversaciones definitivamente?
+    }
+   *[message] { $count ->
+        [one] ¿Eliminar este mensaje definitivamente?
+        [many] ¿Eliminar { $count } de mensajes definitivamente?
+       *[other] ¿Eliminar { $count } mensajes definitivamente?
+    }
+}
+delete-forever-body = { $count ->
+    [one] También se elimina del servidor. Esto no se puede deshacer.
+    [many] También se eliminan del servidor. Esto no se puede deshacer.
+   *[other] También se eliminan del servidor. Esto no se puede deshacer.
+}
+delete-forever-confirm = Eliminar definitivamente
+delete-ask-dont-ask = No volver a preguntar
+delete-ask-cancel = Cancelar

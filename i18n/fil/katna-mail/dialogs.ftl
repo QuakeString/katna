@@ -169,3 +169,35 @@ sign-in-again-tooltip = Buksan ang sign-in page ng { $provider } sa iyong browse
 sign-in-again-waiting = Hinihintay ang iyong browser…
 sign-in-again-close = Isara
 sign-in-again-done = Naka-sign in ulit sa { $address }. Kinukuha ang mail mo…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] Ilipat sa Basurahan ang pag-uusap na ito?
+       *[other] Ilipat sa Basurahan ang { $count } pag-uusap?
+    }
+   *[message] { $count ->
+        [one] Ilipat sa Basurahan ang mensaheng ito?
+       *[other] Ilipat sa Basurahan ang { $count } mensahe?
+    }
+}
+delete-ask-body = { $count ->
+    [one] Puwede mo itong i-undo kaagad pagkatapos, o ibalik ito mula sa Basurahan mamaya.
+   *[other] Puwede mo itong i-undo kaagad pagkatapos, o ibalik ang mga ito mula sa Basurahan mamaya.
+}
+delete-ask-confirm = Ilipat sa Basurahan
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] I-delete nang permanente ang pag-uusap na ito?
+       *[other] I-delete nang permanente ang { $count } pag-uusap?
+    }
+   *[message] { $count ->
+        [one] I-delete nang permanente ang mensaheng ito?
+       *[other] I-delete nang permanente ang { $count } mensahe?
+    }
+}
+delete-forever-body = { $count ->
+    [one] Nadedelete rin ito sa server. Hindi na ito maibabalik.
+   *[other] Nadedelete rin ang mga ito sa server. Hindi na ito maibabalik.
+}
+delete-forever-confirm = I-delete nang permanente
+delete-ask-dont-ask = Huwag nang magtanong
+delete-ask-cancel = Kanselahin

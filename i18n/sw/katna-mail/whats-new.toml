@@ -725,3 +725,60 @@ akaunti yako ya Katna. Stakabadhi ya kufikishwa ni barua pepe ambayo
 seva yako ya barua hukutumia seva ya kila mpokeaji inapoupokea ujumbe;
 kitufe huwa kijivu pale ambapo seva yako ya barua haizitoi.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Alama za kufikishwa na kusomwa"
+text = """
+Barua uliyotuma sasa inaonyesha alama kando ya kila mpokeaji. Alama moja
+ya kijivu inamaanisha seva yao ya barua imeipokea: kutoka kwa stakabadhi
+ya kufikishwa, au, pale ambapo huduma yako ya barua haitumi stakabadhi
+(Gmail), wakati hakuna barua iliyorudishwa ndani ya nusu saa. Alama
+mbili katika rangi yako ya msisitizo zinamaanisha wameisoma, kutoka kwa
+stakabadhi ya kusoma au ufuatiliaji wa kufunguliwa, na onyo linamaanisha
+ilirudishwa. Elekeza kiashiria kwenye alama ili kuona lini na jinsi
+gani. Barua pepe za stakabadhi hubaki kwenye sanduku lako la barua chini
+ya Taarifa, bila arifa.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Arifa za barua mpya za Gmail"
+text = """
+Barua mpya katika kikasha cha Gmail sasa zinaonyesha arifa tena. Hapo
+awali Katna ilikosa barua ambazo Gmail iliweka katika Barua zote muda
+mfupi kabla ya kikasha.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Tafuta kwa aina ya kiambatisho"
+text = """
+Katika Chaguo za utafutaji, “Ina kiambatisho” sasa inatoa PDF, XLSX,
+ODF, XLS, ODS, PPT na PPTX, na Maalum kwa kiendelezi kingine chochote,
+kama png au avif. Barua zenye kiambatisho cha aina iliyochaguliwa pekee
+ndizo zinazoonyeshwa.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Rangi za awali katika mandhari meusi"
+text = """
+Katika mandhari meusi, barua inayoweka rangi zake mwenyewe inaonyeshwa kwa
+rangi nyeusi. Kitufe kipya cha nusu duara kwenye upau wa vidhibiti wa
+kidirisha cha kusoma huionyesha kwa rangi za awali za mtumaji, na kurudi.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "Uchapishaji huhifadhi muundo"
+text = """
+Barua huchapishwa kama inavyoonekana kwenye kidirisha cha kusoma, pamoja
+na majedwali, rangi, mipaka, orodha na picha zake. Onyesho la kuchapisha
+linaweza kuacha rangi za mandhari ya nyuma ili kuhifadhi wino, au
+kuchapisha maandishi tu kwa Maandishi tu.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Uliza kabla ya kufuta"
+text = """
+Kufuta mazungumzo kadhaa kwa mara moja sasa huuliza kwanza kama
+yahamishwe kwenye Tupio. Teua “Usiulize tena” ili kuruka swali hili, au
+liwashe tena katika Mipangilio > Jumla. Kufuta kabisa, katika Tupio,
+huuliza kila wakati.
+"""

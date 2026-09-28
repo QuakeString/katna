@@ -169,3 +169,35 @@ sign-in-again-tooltip = Buɗe shafin shiga na { $provider } a burauzarku
 sign-in-again-waiting = Ana jiran burauzarku…
 sign-in-again-close = Rufe
 sign-in-again-done = An sake shiga { $address }. Ana samo wasiƙunku…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] A matsar da wannan tattaunawa zuwa Kwandon shara?
+       *[other] A matsar da tattaunawa { $count } zuwa Kwandon shara?
+    }
+   *[message] { $count ->
+        [one] A matsar da wannan saƙo zuwa Kwandon shara?
+       *[other] A matsar da saƙonni { $count } zuwa Kwandon shara?
+    }
+}
+delete-ask-body = { $count ->
+    [one] Za ka iya janye nan take, ko dawo da ita daga Kwandon shara daga baya.
+   *[other] Za ka iya janye nan take, ko dawo da su daga Kwandon shara daga baya.
+}
+delete-ask-confirm = Matsar zuwa Kwandon shara
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] A share wannan tattaunawa har abada?
+       *[other] A share tattaunawa { $count } har abada?
+    }
+   *[message] { $count ->
+        [one] A share wannan saƙo har abada?
+       *[other] A share saƙonni { $count } har abada?
+    }
+}
+delete-forever-body = { $count ->
+    [one] Ana share ta a sabar ma. Ba za a iya janye wannan ba.
+   *[other] Ana share su a sabar ma. Ba za a iya janye wannan ba.
+}
+delete-forever-confirm = Share har abada
+delete-ask-dont-ask = Kar a sake tambaya
+delete-ask-cancel = Soke

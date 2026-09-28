@@ -164,3 +164,21 @@ sign-in-again-tooltip = ເປີດໜ້າເຂົ້າສູ່ລະບ�
 sign-in-again-waiting = ກຳລັງລໍຖ້າບຣາວເຊີຂອງທ່ານ…
 sign-in-again-close = ປິດ
 sign-in-again-done = ເຂົ້າສູ່ລະບົບ { $address } ອີກຄັ້ງແລ້ວ. ກຳລັງດຶງອີເມວຂອງທ່ານ…
+delete-ask-title = { $kind ->
+    [conversation] ຍ້າຍການສົນທະນາ { $count } ລາຍການໄປໃສ່ຖັງຂີ້ເຫຍື້ອບໍ?
+   *[message] ຍ້າຍຂໍ້ຄວາມ { $count } ລາຍການໄປໃສ່ຖັງຂີ້ເຫຍື້ອບໍ?
+}
+delete-ask-body = { $count ->
+   *[other] ທ່ານສາມາດຍ້ອນກັບໄດ້ທັນທີຫຼັງຈາກນັ້ນ, ຫຼື ເອົາຄືນຈາກຖັງຂີ້ເຫຍື້ອໃນພາຍຫຼັງ.
+}
+delete-ask-confirm = ຍ້າຍໄປໃສ່ຖັງຂີ້ເຫຍື້ອ
+delete-forever-title = { $kind ->
+    [conversation] ລຶບການສົນທະນາ { $count } ລາຍການຖາວອນບໍ?
+   *[message] ລຶບຂໍ້ຄວາມ { $count } ລາຍການຖາວອນບໍ?
+}
+delete-forever-body = { $count ->
+   *[other] ມັນຈະຖືກລຶບຢູ່ເຊີບເວີນຳ. ການນີ້ບໍ່ສາມາດຍ້ອນກັບໄດ້.
+}
+delete-forever-confirm = ລຶບຖາວອນ
+delete-ask-dont-ask = ບໍ່ຕ້ອງຖາມອີກ
+delete-ask-cancel = ຍົກເລີກ

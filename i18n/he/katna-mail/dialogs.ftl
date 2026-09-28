@@ -172,3 +172,41 @@ sign-in-again-tooltip = פתיחת דף ההתחברות של { $provider } בד
 sign-in-again-waiting = ממתינים לדפדפן…
 sign-in-again-close = סגירה
 sign-in-again-done = התחברת שוב ל־{ $address }. מביאים את הדואר שלך…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] להעביר את השיחה הזאת לאשפה?
+        [two] להעביר את שתי השיחות לאשפה?
+       *[other] להעביר { $count } שיחות לאשפה?
+    }
+   *[message] { $count ->
+        [one] להעביר את ההודעה הזאת לאשפה?
+        [two] להעביר את שתי ההודעות לאשפה?
+       *[other] להעביר { $count } הודעות לאשפה?
+    }
+}
+delete-ask-body = { $count ->
+    [one] אפשר לבטל מיד אחר כך, או לשחזר אותה מהאשפה בהמשך.
+    [two] אפשר לבטל מיד אחר כך, או לשחזר אותן מהאשפה בהמשך.
+   *[other] אפשר לבטל מיד אחר כך, או לשחזר אותן מהאשפה בהמשך.
+}
+delete-ask-confirm = העברה לאשפה
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] למחוק את השיחה הזאת לצמיתות?
+        [two] למחוק את שתי השיחות לצמיתות?
+       *[other] למחוק { $count } שיחות לצמיתות?
+    }
+   *[message] { $count ->
+        [one] למחוק את ההודעה הזאת לצמיתות?
+        [two] למחוק את שתי ההודעות לצמיתות?
+       *[other] למחוק { $count } הודעות לצמיתות?
+    }
+}
+delete-forever-body = { $count ->
+    [one] היא נמחקת גם בשרת. אי אפשר לבטל את זה.
+    [two] הן נמחקות גם בשרת. אי אפשר לבטל את זה.
+   *[other] הן נמחקות גם בשרת. אי אפשר לבטל את זה.
+}
+delete-forever-confirm = מחיקה לצמיתות
+delete-ask-dont-ask = לא לשאול שוב
+delete-ask-cancel = ביטול

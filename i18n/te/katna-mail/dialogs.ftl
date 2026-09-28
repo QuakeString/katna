@@ -169,3 +169,35 @@ sign-in-again-tooltip = మీ బ్రౌజర్‌లో { $provider } స�
 sign-in-again-waiting = మీ బ్రౌజర్ కోసం వేచి ఉంది…
 sign-in-again-close = మూసివేయండి
 sign-in-again-done = { $address }కు మళ్లీ సైన్ ఇన్ అయ్యారు. మీ మెయిల్‌ను తెస్తోంది…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] ఈ సంభాషణను ట్రాష్‌కు తరలించాలా?
+       *[other] { $count } సంభాషణలను ట్రాష్‌కు తరలించాలా?
+    }
+   *[message] { $count ->
+        [one] ఈ మెసేజ్‌ను ట్రాష్‌కు తరలించాలా?
+       *[other] { $count } మెసేజ్‌లను ట్రాష్‌కు తరలించాలా?
+    }
+}
+delete-ask-body = { $count ->
+    [one] వెంటనే రద్దు చేయవచ్చు, లేదా తర్వాత ట్రాష్ నుండి తిరిగి తీసుకురావచ్చు.
+   *[other] వెంటనే రద్దు చేయవచ్చు, లేదా తర్వాత వాటిని ట్రాష్ నుండి తిరిగి తీసుకురావచ్చు.
+}
+delete-ask-confirm = ట్రాష్‌కు తరలించండి
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] ఈ సంభాషణను శాశ్వతంగా తొలగించాలా?
+       *[other] { $count } సంభాషణలను శాశ్వతంగా తొలగించాలా?
+    }
+   *[message] { $count ->
+        [one] ఈ మెసేజ్‌ను శాశ్వతంగా తొలగించాలా?
+       *[other] { $count } మెసేజ్‌లను శాశ్వతంగా తొలగించాలా?
+    }
+}
+delete-forever-body = { $count ->
+    [one] సర్వర్‌లోనూ తొలగించబడుతుంది. దీన్ని రద్దు చేయడం సాధ్యం కాదు.
+   *[other] సర్వర్‌లోనూ తొలగించబడతాయి. దీన్ని రద్దు చేయడం సాధ్యం కాదు.
+}
+delete-forever-confirm = శాశ్వతంగా తొలగించండి
+delete-ask-dont-ask = మళ్లీ అడగవద్దు
+delete-ask-cancel = రద్దు చేయండి

@@ -169,3 +169,35 @@ sign-in-again-tooltip = আপনার ব্রাউজারে { $provider 
 sign-in-again-waiting = আপনার ব্রাউজারের জন্য অপেক্ষা করা হচ্ছে…
 sign-in-again-close = বন্ধ করুন
 sign-in-again-done = { $address }-এ আবার সাইন ইন করা হয়েছে। আপনার মেল আনা হচ্ছে…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] এই কথোপকথনটি ট্র্যাশে সরাবেন?
+       *[other] { $count }টি কথোপকথন ট্র্যাশে সরাবেন?
+    }
+   *[message] { $count ->
+        [one] এই মেসেজটি ট্র্যাশে সরাবেন?
+       *[other] { $count }টি মেসেজ ট্র্যাশে সরাবেন?
+    }
+}
+delete-ask-body = { $count ->
+    [one] ঠিক পরেই পূর্বাবস্থায় ফেরাতে পারেন, বা পরে ট্র্যাশ থেকে এটি ফিরিয়ে আনতে পারেন।
+   *[other] ঠিক পরেই পূর্বাবস্থায় ফেরাতে পারেন, বা পরে ট্র্যাশ থেকে সেগুলি ফিরিয়ে আনতে পারেন।
+}
+delete-ask-confirm = ট্র্যাশে সরান
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] এই কথোপকথনটি চিরতরে মুছবেন?
+       *[other] { $count }টি কথোপকথন চিরতরে মুছবেন?
+    }
+   *[message] { $count ->
+        [one] এই মেসেজটি চিরতরে মুছবেন?
+       *[other] { $count }টি মেসেজ চিরতরে মুছবেন?
+    }
+}
+delete-forever-body = { $count ->
+    [one] এটি সার্ভার থেকেও মুছে যায়। এটি আর ফেরানো যায় না।
+   *[other] সেগুলি সার্ভার থেকেও মুছে যায়। এটি আর ফেরানো যায় না।
+}
+delete-forever-confirm = চিরতরে মুছুন
+delete-ask-dont-ask = আর জিজ্ঞাসা করবেন না
+delete-ask-cancel = বাতিল করুন
