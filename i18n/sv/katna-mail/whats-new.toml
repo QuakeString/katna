@@ -998,3 +998,21 @@ konton eller ett av dem, så följer de spårade meddelandena,
 frekvenserna, diagrammet, ämnesraderna och Din brevlåda ditt val.
 Rapporten anger vilket konto den visar och minns ditt val.
 """
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Nyare och Äldre alltid i verktygsfältet"
+text = """
+Hur smalt läsfönstret än är ligger räknaren och pilarna Nyare och Äldre
+kvar till höger i dess verktygsfält. De knappar du använder minst flyttas
+i stället in i menyn Mer, en i taget, även omkopplarna för
+kontaktuppgifter och originalfärger.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Skicka filer av vilken storlek som helst"
+text = """
+Med ett konto som är inloggat med Google hamnar en fil över e-postgränsen
+på 25 MB i din Google Drive så fort du bifogar den, och meddelandet
+innehåller dess länk, som i Gmail. Den delas med mottagarna när du trycker
+på Skicka; Katna frågar bara om någon inte kan få åtkomst.
+"""

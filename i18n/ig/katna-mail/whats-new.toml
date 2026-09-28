@@ -986,3 +986,20 @@ akaụntụ niile ma ọ bụ otu n'ime ha, ozi a na-esochi, ọnụ ọgụgụ
 isiokwu na igbe ozi gị niile ga-eso ya gbanwee. Akụkọ ahụ na-agwa gị akaụntụ
 ọ na-egosi ma na-echeta nhọrọ gị.
 """
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Nke ọhụrụ na Nke ochie na-anọ mgbe niile n'ogwe ngwa ọrụ"
+text = """
+Ma ebe a na-agụ ihe dị warara ka o dị, ọnụọgụ na ube Nke ọhụrụ na Nke ochie
+na-anọgide n'aka nri ogwe ngwa ọrụ ya. Bọtịnụ ndị ị na-ejikarị obere na-agbanwe
+n'ime menu Ọzọ otu n'otu kama, gụnyere ihe mgbanwe nkọwa kọntaktị na agba mbụ.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Zipu faịlụ nke nha ọ bụla"
+text = """
+Na akaụntụ ebanyere na Google, faịlụ karịrị ókè ozi nke 25 MB na-aga na Google
+Drive gị ozugbo ị gbakwunyere ya, ozi ahụ na-ebukwa njikọ ya, dị ka ọ dị na
+Gmail. A na-ekekọrịta ya na ndị na-anabata ya mgbe ị pịrị Zipu; Katna na-ajụ
+naanị ma a pụghị inye onye mmadụ ohere.
+"""
