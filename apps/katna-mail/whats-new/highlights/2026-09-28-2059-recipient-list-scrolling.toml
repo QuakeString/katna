@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Smoother long recipient lists"
+text = """
+A long list of recipients now has its own scroll bar and moves one line at a
+time, and the conversation scrolls on only once the list reaches its end.
+Adding recipients no longer makes the buttons below jump.
+"""
