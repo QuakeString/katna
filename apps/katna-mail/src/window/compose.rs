@@ -45,9 +45,8 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, DragMoveEvent, Entity, ExternalPaths,
-    FocusHandle, Focusable, FontWeight, Hsla, ScrollHandle, SharedString, Subscription, Task,
-    Window, canvas, div, ease_out_quint, prelude::*, rgba,
+    AnyElement, Context, DragMoveEvent, Entity, ExternalPaths, FocusHandle, Focusable, FontWeight,
+    Hsla, ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, rgba,
 };
 use katna_core::AccountId;
 use katna_core::config::SEND_FROM_CURRENT;
@@ -100,8 +99,9 @@ const REVEAL_ABOVE: f32 = 120.0;
 /// Below this width an inline reply's lock, signature and tracking
 /// buttons leave the From row for one of their own.
 const NARROW_REPLY: f32 = 560.0;
-/// How long an inline reply's recipient rows take to show.
-const HEADER_OPEN: Duration = Duration::from_millis(160);
+/// How strong the lines between the recipient rows are: fainter than
+/// other dividers.
+const FAINT_LINE: f32 = 0.55;
 
 /// What the window starts from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -199,6 +199,8 @@ pub(super) struct Compose {
     /// An inline reply shows its From, To, Cc and Bcc rows rather than
     /// one line naming the recipients.
     header_open: bool,
+    /// Those rows growing in or shrinking away.
+    rows_glide: reply_kind::RowsGlide,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -1085,6 +1087,7 @@ impl MailWindow {
             attach_scroll: ScrollHandle::new(),
             source: None,
             header_open: false,
+            rows_glide: reply_kind::RowsGlide::default(),
             _subscriptions: subscriptions,
         });
         self.ask_delivery_receipts(cx);
@@ -1954,16 +1957,6 @@ impl MailWindow {
                 .child(self.render_reply_summary(th, cx))
                 .child(pop_out)
         };
-        let link = |id: &'static str, label: String| {
-            div()
-                .id(id)
-                .px(px(4.0))
-                .rounded(px(4.0))
-                .text_color(rgba(th.text_dim))
-                .cursor_pointer()
-                .hover(|s| s.text_color(rgba(th.text)).bg(rgba(th.hover)))
-                .child(label)
-        };
         let field_row = |label: String| {
             div()
                 .flex_none()
@@ -1975,7 +1968,7 @@ impl MailWindow {
                 .items_start()
                 .gap(px(8.0))
                 .border_t_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(fade(th.divider, FAINT_LINE)))
                 .text_size(px(14.0))
                 .child(
                     div()
@@ -1990,8 +1983,10 @@ impl MailWindow {
         };
         // A chip being dragged can land in Cc or Bcc even while hidden.
         let dragging = self.chip_dragging(cx).is_some();
+        // The rows grow in above the text, the card's bottom staying put.
+        let rows_shown = self.rows_shown(open, cx);
         let rows =
-            open.then(|| {
+            (open || rows_shown.is_some()).then(|| {
                 let field = |field: AnyElement| {
                     div()
                         .flex_1()
@@ -2005,31 +2000,8 @@ impl MailWindow {
                     .flex_none()
                     .h(px(40.0))
                     .flex()
-                    .flex_row()
                     .items_center()
-                    .gap(px(4.0))
-                    .when(!compose.show_cc, |d| {
-                        d.child(link("inline-cc", tr!("compose-cc")).on_click(cx.listener(
-                            |this, _, window, cx| {
-                                if let Some(c) = &mut this.compose {
-                                    c.show_cc = true;
-                                    window.focus(&c.cc.focus_handle(cx), cx);
-                                }
-                                cx.notify();
-                            },
-                        )))
-                    })
-                    .when(!compose.show_bcc, |d| {
-                        d.child(link("inline-bcc", tr!("compose-bcc")).on_click(cx.listener(
-                            |this, _, window, cx| {
-                                if let Some(c) = &mut this.compose {
-                                    c.show_bcc = true;
-                                    window.focus(&c.bcc.focus_handle(cx), cx);
-                                }
-                                cx.notify();
-                            },
-                        )))
-                    });
+                    .children(self.render_cc_bcc(th, cx));
                 let to = field_row(tr!("compose-to"))
                     .child(field(self.render_recipient_field(Field::To, th, cx)))
                     .child(links);
@@ -2055,7 +2027,7 @@ impl MailWindow {
                         .justify_end()
                         .gap(px(8.0))
                         .border_t_1()
-                        .border_color(rgba(th.divider))
+                        .border_color(rgba(fade(th.divider, FAINT_LINE)))
                         .children(self.render_sealing(th, cx))
                         .children(self.render_tracking(th, cx))
                 });
@@ -2066,17 +2038,16 @@ impl MailWindow {
                     .child(to)
                     .children(cc)
                     .children(bcc)
-                    .children(tools);
-                if cx.reduce_motion() {
-                    rows.into_any_element()
-                } else {
-                    rows.with_animation(
-                        "inline-rows",
-                        Animation::new(HEADER_OPEN).with_easing(ease_out_quint()),
-                        |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
-                    )
-                    .into_any_element()
-                }
+                    .children(tools)
+                    // A line under the last row too, before the text.
+                    .child(
+                        div()
+                            .flex_none()
+                            .mx(px(12.0))
+                            .h(px(1.0))
+                            .bg(rgba(fade(th.divider, FAINT_LINE))),
+                    );
+                self.glide_rows(rows, rows_shown, cx)
             });
         let focus = compose.body.focus_handle(cx);
         let body = div()
@@ -2219,7 +2190,7 @@ impl MailWindow {
                 .items_start()
                 .gap(px(8.0))
                 .border_b_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(fade(th.divider, FAINT_LINE)))
                 .text_size(px(14.0))
                 .when(!label.is_empty(), |d| {
                     d.child(
@@ -2244,17 +2215,6 @@ impl MailWindow {
         };
         let [to_field, cc_field, bcc_field] = [Field::To, Field::Cc, Field::Bcc]
             .map(|field| self.render_recipient_field(field, th, cx));
-        let link = |id: &'static str, label: String| {
-            div()
-                .id(id)
-                .px(px(4.0))
-                .rounded(px(4.0))
-                .text_size(px(14.0))
-                .text_color(rgba(th.text_dim))
-                .cursor_pointer()
-                .hover(|s| s.text_color(rgba(th.text)).bg(rgba(th.hover)))
-                .child(label)
-        };
         // A chip being dragged can land in Cc or Bcc even while hidden.
         let dragging = self.chip_dragging(cx).is_some();
         let to = self
@@ -2267,30 +2227,7 @@ impl MailWindow {
                     .flex_row()
                     .items_center()
                     .gap(px(4.0))
-                    .when(!compose.show_cc, |d| {
-                        d.child(link("compose-cc", tr!("compose-cc")).on_click(cx.listener(
-                            |this, _, window, cx| {
-                                if let Some(c) = &mut this.compose {
-                                    c.show_cc = true;
-                                    window.focus(&c.cc.focus_handle(cx), cx);
-                                }
-                                cx.notify();
-                            },
-                        )))
-                    })
-                    .when(!compose.show_bcc, |d| {
-                        d.child(
-                            link("compose-bcc", tr!("compose-bcc")).on_click(cx.listener(
-                                |this, _, window, cx| {
-                                    if let Some(c) = &mut this.compose {
-                                        c.show_bcc = true;
-                                        window.focus(&c.bcc.focus_handle(cx), cx);
-                                    }
-                                    cx.notify();
-                                },
-                            )),
-                        )
-                    })
+                    .children(self.render_cc_bcc(th, cx))
                     .children(self.render_sealing(th, cx))
                     .children(self.render_tracking(th, cx)),
             );
