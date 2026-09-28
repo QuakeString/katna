@@ -8,7 +8,9 @@
 
 use std::time::{Duration, Instant};
 
-use gpui::{AnyElement, Context, Focusable, Window, canvas, div, prelude::*, rgba};
+use gpui::{
+    AnyElement, Context, Focusable, PathBuilder, Window, canvas, div, point, prelude::*, rgba,
+};
 use katna_i18n::tr;
 use katna_ui::px;
 use katna_ui::rich::Block;
@@ -99,6 +101,35 @@ impl Quote {
     }
 }
 
+/// A wavy line across its box, in `color`.
+fn squiggle(color: u32) -> impl IntoElement {
+    const WAVE: f32 = 8.0;
+    const AMPLITUDE: f32 = 1.75;
+    canvas(
+        |_, _, _| {},
+        move |bounds, _, window, _| {
+            let (o, width) = (bounds.origin, unpx(bounds.size.width));
+            let middle = unpx(bounds.size.height) / 2.0;
+            let at = |x: f32| {
+                let y = middle + AMPLITUDE * (x / WAVE * std::f32::consts::TAU).sin();
+                point(o.x + px(x), o.y + px(y))
+            };
+            let mut path = PathBuilder::stroke(px(1.0));
+            path.move_to(at(0.0));
+            let mut x = 0.0;
+            while x < width {
+                x = (x + 1.0).min(width);
+                path.line_to(at(x));
+            }
+            if let Ok(path) = path.build() {
+                window.paint_path(path, rgba(color));
+            }
+        },
+    )
+    .w_full()
+    .h(px(2.0 * AMPLITUDE + 2.0))
+}
+
 /// Where a quote shown at the end of `blocks` starts: its first block,
 /// looked for from the end so edits in the reply above don't matter, else
 /// its length from the end.
@@ -140,8 +171,11 @@ impl MailWindow {
         );
         // Measures the text and where its quote starts, and draws again
         // when that moved.
+        // The editor keeps where it drew each paragraph as it paints, so
+        // this reads them in paint, after the editor's.
         let measure = canvas(
-            move |bounds, _, cx| {
+            |_, _, _| {},
+            move |bounds, _, _, cx| {
                 let top = bounds.top();
                 let editor = editor.read(cx);
                 let quote = first.and_then(|at| editor.block_bounds(at)).map(|b| {
@@ -171,7 +205,6 @@ impl MailWindow {
                     });
                 }
             },
-            |_, _, _, _| {},
         )
         .absolute()
         .top_0()
@@ -206,7 +239,7 @@ impl MailWindow {
                             .h(px(BUTTON_HEIGHT))
                             .flex()
                             .items_center()
-                            .child(div().w_full().h(px(1.0)).bg(rgba(th.divider))),
+                            .child(squiggle(th.text_dim)),
                     )
             });
         div()
