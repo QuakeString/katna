@@ -9,6 +9,10 @@
 
 # Opens the report.
 activity-details = Details
+# Takes every open and click so far off the list (not out of the report).
+activity-clear-all = Clear all
+# Tooltip of the × on a line: takes that open or click off the list.
+activity-remove = Remove from the list
 # $who: a recipient's name or address. $subject: the message's subject.
 activity-feed-opened = { $who } opened “{ $subject }”
 activity-feed-clicked = { $who } clicked a link in “{ $subject }”

@@ -422,18 +422,19 @@ impl Store {
     }
 
     /// Opens and clicks by people (and Apple's proxy) at or after `since`
-    /// (Unix milliseconds), newest first, at most `limit`.
-    pub fn activity_feed(&self, since: i64, limit: u32) -> Result<Vec<ActivityItem>> {
+    /// (Unix milliseconds) and after event `after`, newest first, at most
+    /// `limit`.
+    pub fn activity_feed(&self, since: i64, after: i64, limit: u32) -> Result<Vec<ActivityItem>> {
         let mut stmt = self.pim.prepare_cached(
             "SELECT e.seq, e.kind, e.source, e.link, e.at, r.email, r.name,
                     m.subject, m.account_id, m.message_id_hdr, m.links_json
              FROM tracking_event e
              JOIN tracked_recipient r ON r.tracking_id = e.tracking_id
              JOIN tracked_message m ON m.id = r.tracked_id
-             WHERE e.source IN ('person', 'apple_proxy') AND e.at >= ?1
+             WHERE e.source IN ('person', 'apple_proxy') AND e.at >= ?1 AND e.seq > ?3
              ORDER BY e.at DESC, e.seq DESC LIMIT ?2",
         )?;
-        let rows = stmt.query_map(params![since, limit], |row| {
+        let rows = stmt.query_map(params![since, limit, after], |row| {
             let kind: String = row.get(1)?;
             let source: String = row.get(2)?;
             let link: Option<i64> = row.get(3)?;
@@ -624,15 +625,16 @@ mod tests {
         assert!(!activity.recipients[1].opened());
 
         // The feed: people only, newest first, with the link's target.
-        let feed = store.activity_feed(0, 10).unwrap();
+        let feed = store.activity_feed(0, 0, 10).unwrap();
         let seqs: Vec<i64> = feed.iter().map(|item| item.seq).collect();
         assert_eq!(seqs, [4, 3, 2]);
         assert!(feed[0].click);
         assert_eq!(feed[0].link.as_deref(), Some("https://example.com/"));
         assert_eq!(feed[0].name.as_deref(), Some("Bea"));
         assert_eq!(feed[0].message_id, "m1@x.org");
-        assert_eq!(store.activity_feed(3500, 10).unwrap().len(), 1);
-        assert_eq!(store.activity_feed(0, 1).unwrap().len(), 1);
+        assert_eq!(store.activity_feed(3500, 0, 10).unwrap().len(), 1);
+        assert_eq!(store.activity_feed(0, 0, 1).unwrap().len(), 1);
+        assert_eq!(store.activity_feed(0, 3, 10).unwrap().len(), 1);
         assert_eq!(store.activity_after(0).unwrap(), 3);
         assert_eq!(store.activity_after(3).unwrap(), 1);
 

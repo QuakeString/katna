@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tidy up Activity"
+text = """
+Point at an open or click in Activity and press × to take it off the
+list, or press Clear all to start fresh. New opens and clicks still show
+up, and the Details report still counts everything.
+"""

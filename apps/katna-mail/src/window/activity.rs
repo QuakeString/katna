@@ -19,7 +19,7 @@ use katna_store::{ActivityItem, Insights, MessageActivity};
 use katna_ui::{TextInput, px, unpx};
 
 use super::MailWindow;
-use crate::data::Entry;
+use crate::data::{Entry, Mail};
 use crate::format;
 use crate::theme::{Theme, fade};
 use crate::widgets::{elevation, icon, icon_button, icon_button_colored, raised, tip};
@@ -291,7 +291,7 @@ impl MailWindow {
         }
         self.katna_load(window, cx);
         let Ok(mail) = &self.mail else { return };
-        let feed = mail.activity_feed(0, FEED);
+        let feed = self.activity_list(mail);
         let newest = mail.last_activity();
         let seen = self.config.mail.activity_seen;
         self.activity = Some(Menu { feed, seen });
@@ -306,12 +306,62 @@ impl MailWindow {
     /// Reads the activity again while it is open.
     pub(super) fn refresh_activity(&mut self) {
         self.count_activity();
-        if let (Some(menu), Ok(mail)) = (&mut self.activity, &self.mail) {
-            menu.feed = mail.activity_feed(0, FEED);
+        if let Ok(mail) = &self.mail
+            && self.activity.is_some()
+        {
+            let feed = self.activity_list(mail);
+            if let Some(menu) = &mut self.activity {
+                menu.feed = feed;
+            }
         }
         if let Some(period) = self.activity_report.as_ref().map(|r| r.period) {
             self.fill_report(period);
         }
+    }
+
+    /// The newest opens and clicks, less the ones cleared or removed.
+    fn activity_list(&self, mail: &Mail) -> Vec<ActivityItem> {
+        let settings = &self.config.mail;
+        let removed = &settings.activity_removed;
+        let limit = FEED + u32::try_from(removed.len()).unwrap_or(u32::MAX);
+        let mut feed = mail.activity_feed(0, settings.activity_cleared, limit);
+        feed.retain(|item| !removed.contains(&item.seq));
+        feed.truncate(FEED as usize);
+        feed
+    }
+
+    /// Takes one open or click off the list.
+    fn remove_activity_item(&mut self, seq: i64, cx: &mut Context<Self>) {
+        let settings = &mut self.config.mail;
+        if seq > settings.activity_cleared && !settings.activity_removed.contains(&seq) {
+            settings.activity_removed.push(seq);
+            self.save_config();
+        }
+        if let Some(menu) = &mut self.activity {
+            menu.feed.retain(|item| item.seq != seq);
+        }
+        cx.notify();
+    }
+
+    /// Takes every open and click so far off the list; new ones still
+    /// come.
+    fn clear_activity(&mut self, cx: &mut Context<Self>) {
+        let newest = self
+            .activity
+            .iter()
+            .flat_map(|menu| &menu.feed)
+            .map(|item| item.seq)
+            .max();
+        let settings = &mut self.config.mail;
+        if let Some(newest) = newest.filter(|&n| n > settings.activity_cleared) {
+            settings.activity_cleared = newest;
+            settings.activity_removed.retain(|&seq| seq > newest);
+            self.save_config();
+        }
+        if let Some(menu) = &mut self.activity {
+            menu.feed.clear();
+        }
+        cx.notify();
     }
 
     /// Opens the sent message an open or click was about.
@@ -381,7 +431,7 @@ impl MailWindow {
             .to_zoned(tz.clone())
             .map_or(0, |z| z.timestamp().as_millisecond());
         let events: Vec<(Date, bool)> = mail
-            .activity_feed(since, EVENTS)
+            .activity_feed(since, 0, EVENTS)
             .into_iter()
             .filter(|item| !item.maybe)
             .filter_map(|item| Some((day_of(item.at.div_euclid(1000))?, item.click)))
@@ -595,9 +645,12 @@ impl MailWindow {
             None => when,
         };
         let open = item.clone();
+        let seq = item.seq;
         div()
             .id(("activity-item", ix))
-            .px(px(16.0))
+            .group("activity-item")
+            .pl(px(16.0))
+            .pr(px(4.0))
             .py(px(10.0))
             .flex()
             .flex_row()
@@ -643,6 +696,22 @@ impl MailWindow {
                             .text_size(px(12.0))
                             .text_color(rgba(th.text_dim))
                             .child(detail),
+                    ),
+            )
+            .child(
+                // Shows on the row under the pointer.
+                div()
+                    .flex_none()
+                    .invisible()
+                    .group_hover("activity-item", |s| s.visible())
+                    .child(
+                        icon_button(("activity-remove", ix), "close", 18.0, th)
+                            .size(px(32.0))
+                            .tooltip(tip(tr!("activity-remove"), th))
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                cx.stop_propagation();
+                                this.remove_activity_item(seq, cx);
+                            })),
                     ),
             )
             .into_any_element()
@@ -717,6 +786,24 @@ impl MailWindow {
                             .font_weight(FontWeight::MEDIUM)
                             .child(tr!("folder-activity")),
                     )
+                    .when(!menu.feed.is_empty(), |d| {
+                        d.child(
+                            div()
+                                .id("activity-clear")
+                                .h(px(32.0))
+                                .px(px(14.0))
+                                .flex()
+                                .items_center()
+                                .rounded_full()
+                                .text_size(px(14.0))
+                                .font_weight(FontWeight::MEDIUM)
+                                .text_color(rgba(th.accent))
+                                .cursor_pointer()
+                                .hover(|s| s.bg(rgba(th.hover)))
+                                .on_click(cx.listener(|this, _, _, cx| this.clear_activity(cx)))
+                                .child(tr!("activity-clear-all")),
+                        )
+                    })
                     .child(
                         div()
                             .id("activity-details")
