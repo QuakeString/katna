@@ -29,14 +29,27 @@ pub fn icon(name: &str, color: u32, size: f32) -> AnyElement {
         .into_any_element()
 }
 
-/// Katna's logo, `size` px square. Below 48 px it takes the logo's small
-/// form, whose card carries only ক, since the whole word can't be read
-/// there (`packaging/icons/src/`).
+/// Katna's logo, the k on its teal disc, `size` px square. Below 48 px it
+/// leaves out the shadow, which blurs to mush that small
+/// (`packaging/icons/src/`).
 pub fn katna_mark(size: f32) -> AnyElement {
     img(SharedString::from(crate::assets::logo_path(
         size * katna_ui::scale::scale(),
     )))
     .size(px(size))
+    .flex_none()
+    .into_any_element()
+}
+
+/// Katna Mail's wordmark, "katna mail" in script on the teal disc,
+/// `height` px tall.
+pub fn katna_wordmark(height: f32) -> AnyElement {
+    let (w, h) = crate::assets::WORDMARK_SIZE;
+    img(SharedString::from(crate::assets::wordmark_path(
+        height * katna_ui::scale::scale(),
+    )))
+    .w(px(height * w as f32 / h as f32))
+    .h(px(height))
     .flex_none()
     .into_any_element()
 }

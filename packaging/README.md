@@ -25,14 +25,26 @@ files match what
 `katna-daemon install-user-service` writes. Other files in these folders
 must not spell out an ID: install them with globs.
 
-The icon is Katna's logo, designed by Mozammel. Its sources are in
-`icons/src/`: `katna.svg`, the full logo, and `katna-small.svg`, a simpler
-form for 16 to 32 px whose card carries only ক, since the word কাটনা can't
-be read that small. The installed SVG is the full logo without its blur
-filters, which Qt (and so KDE) doesn't draw. After changing a source, run
-`python3 packaging/icons/render.py` (needs `rsvg-convert` and Pillow): it
-renders the PNGs, which KDE prefers at their sizes, and the tray's pixels
-in `crates/katna-platform/icons/`. Katna Mail draws the sources itself.
+The icon is Katna's logo, designed by Mozammel: a script k on a teal disc.
+Its sources are in `icons/src/`:
+
+- `katna.svg`, the k with its soft shadow, for 48 px and up;
+- `katna-small.svg`, the same without the shadow, which blurs to mush at
+  16 to 32 px. It is also the installed scalable icon, since Qt (and so
+  KDE) doesn't draw blur filters;
+- `katna-symbolic.svg`, the k cut out of a one-colour disc, installed as
+  `hicolor/symbolic/apps/<mail app ID>-symbolic.svg` for the tray: Plasma
+  (`ColorScheme-Text`) and GNOME (`-symbolic`) recolour it to suit the
+  panel. With unread mail the tray shows the coloured icon with a badge;
+- `katna-wordmark.svg`, "katna mail" in script on the disc, for large
+  places: About, the welcome and the README. Its strokes reach past the
+  disc in white.
+
+After changing a source, run `python3 packaging/icons/render.py` (needs
+`rsvg-convert` and Pillow), then `python3 packaging/windows/make-ico.py`.
+They render the PNGs, which KDE prefers at their sizes, the tray's pixels
+in `crates/katna-platform/icons/` and Windows' `katna.ico`. Katna Mail
+draws the sources itself.
 
 ## Arch Linux
 

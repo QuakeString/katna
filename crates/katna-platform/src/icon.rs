@@ -335,22 +335,19 @@ mod tests {
     }
 
     #[test]
-    fn icon_has_a_transparent_corner_a_teal_envelope_and_a_light_card() {
+    fn icon_has_a_transparent_corner_a_teal_disc_and_a_white_k() {
         for size in [16, 22, 24, 32, 48, 64] {
             let icon = app_icon_argb(size, None);
             assert_eq!(icon.len(), (size * size * 4) as usize);
             assert_eq!(pixel(&icon, size, 0, 0)[0], 0, "corner is transparent");
-            // The envelope's lower left, inside its outline.
-            let [a, r, g, b] = pixel(&icon, size, size / 5, size * 3 / 4);
+            // The disc's top, above the k.
+            let [a, r, g, b] = pixel(&icon, size, size / 2, size / 10);
             assert_eq!(a, 255, "{size}");
-            assert!(
-                g > 180 && b > 180 && r < 200,
-                "envelope is teal: {r} {g} {b}"
-            );
-            // The card, left of the lettering.
-            let [a, r, g, b] = pixel(&icon, size, size * 3 / 10, size * 2 / 5);
+            assert!(r < 30 && g > 110 && b > 110, "disc is teal: {r} {g} {b}");
+            // The k's first stroke.
+            let [a, r, g, b] = pixel(&icon, size, size / 10, size / 2);
             assert_eq!(a, 255, "{size}");
-            assert!(r > 200 && g > 200 && b > 200, "card is light: {r} {g} {b}");
+            assert!(r > 200 && g > 200 && b > 200, "k is white: {r} {g} {b}");
         }
     }
 

@@ -11,6 +11,11 @@ contact-panel-hide = Hide contact details
 
 ## The panel
 
+# Round buttons under the name: write to them, and find the mail with
+# them (from them or to them). The call button uses contact-call.
+contact-email = Send email
+contact-search = Search mail with them
+
 # Mail exchanged with the person, over all accounts.
 contact-messages = { $count ->
     [one] { $count } message
@@ -30,6 +35,10 @@ contact-number-copied = Number copied
 # their time (UTC+5:30)".
 contact-local-time = { $time } their time ({ $offset })
 contact-conversations = Recent conversations
+# Under the first few recent conversations: show all of them, and fold
+# them back.
+contact-more = More
+contact-less = Less
 contact-files = Files
 # The other people of the open conversation; a click shows one of them.
 contact-people = In this conversation

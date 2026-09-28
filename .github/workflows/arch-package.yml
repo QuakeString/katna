@@ -156,7 +156,7 @@ jobs:
         with:
           name: arch-package
           path: out
-      - name: Replace the arch-latest pre-release
+      - name: Update the arch-latest pre-release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -187,8 +187,71 @@ jobs:
           The package is not signed. See \`packaging/README.md\` for starting
           the background service and adding an account.
           EOF
-          gh release delete arch-latest --cleanup-tag --yes || true
-          gh release create arch-latest out/* --prerelease \
-            --target "$GITHUB_SHA" \
-            --title "Katna for Arch Linux (latest main)" \
-            --notes-file notes.md
+          # The release is updated in place, never deleted and created
+          # again: on 2026-09-28 a delete and create seconds apart left it
+          # a draft (every download 404) although gh reported success.
+          # Replacing it in place also keeps the files downloadable while
+          # the new ones go up.
+          tag=arch-latest
+          api="repos/$GH_REPO"
+          if gh api "$api/git/ref/tags/$tag" > /dev/null 2>&1; then
+            gh api -X PATCH "$api/git/refs/tags/$tag" -f sha="$GITHUB_SHA" -F force=true > /dev/null
+          else
+            gh api -X POST "$api/git/refs" -f ref="refs/tags/$tag" -f sha="$GITHUB_SHA" > /dev/null
+          fi
+          # Drafts included: the list is the only place they show.
+          ids=$(gh api --paginate "$api/releases" --jq ".[] | select(.tag_name == \"$tag\") | .id")
+          id=$(head -n1 <<<"$ids")
+          for extra in $(tail -n +2 <<<"$ids"); do
+            gh api -X DELETE "$api/releases/$extra"
+          done
+          fields=(-f tag_name="$tag" -f name="Katna for Arch Linux (latest main)"
+                  -F body=@notes.md -F draft=false -F prerelease=true)
+          if [[ -n "$id" ]]; then
+            gh api -X PATCH "$api/releases/$id" "${fields[@]}" > /dev/null
+          else
+            id=$(gh api -X POST "$api/releases" "${fields[@]}" --jq .id)
+          fi
+          # The new package first and the repository database last, so the
+          # database never names a package that is not there yet.
+          cd out
+          pkg=$(ls katna-git-*.pkg.tar.zst | grep -vxF katna-git-x86_64.pkg.tar.zst)
+          others=$(ls | grep -vxF -e "$pkg" -e 'katna.db' -e 'katna.db.tar.gz')
+          gh release upload "$tag" --clobber "$pkg"
+          gh release upload "$tag" --clobber $others
+          gh release upload "$tag" --clobber katna.db.tar.gz katna.db
+          # Earlier builds' packages.
+          gh api "$api/releases/$id/assets" --paginate --jq '.[] | "\(.id) \(.name)"' |
+            while read -r asset name; do
+              [[ -e "$name" ]] || gh api -X DELETE "$api/releases/assets/$asset"
+            done
+      # Fails the run unless the release is public and every file downloads,
+      # retrying for a while in case GitHub is slow to show the change.
+      - name: Check the release is public and complete
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          base="https://github.com/$GH_REPO/releases/download/arch-latest"
+          for attempt in $(seq 10); do
+            ok=true
+            release=$(gh api "repos/$GH_REPO/releases/tags/arch-latest" 2>/dev/null) || ok=false
+            if $ok && [[ $(jq -r .draft <<<"$release") != false ]]; then ok=false; fi
+            if $ok && [[ $(jq -r .target_commitish <<<"$release") != "$GITHUB_SHA" ]] &&
+               [[ $(gh api "repos/$GH_REPO/git/ref/tags/arch-latest" --jq .object.sha) != "$GITHUB_SHA" ]]; then
+              ok=false
+            fi
+            for file in out/*; do
+              $ok || break
+              name=$(basename "$file")
+              size=$(curl -fsSL -o /dev/null -w '%{size_download}' "$base/$name") || { ok=false; break; }
+              [[ "$size" == "$(stat -c %s "$file")" ]] || ok=false
+            done
+            if $ok; then echo "arch-latest is public with all $(ls out | wc -l) files"; exit 0; fi
+            echo "Not public and complete yet (attempt $attempt); trying to publish it again"
+            id=$(gh api --paginate "repos/$GH_REPO/releases" --jq '.[] | select(.tag_name == "arch-latest") | .id' | head -n1)
+            [[ -n "$id" ]] && gh api -X PATCH "repos/$GH_REPO/releases/$id" -F draft=false -f tag_name=arch-latest > /dev/null || true
+            sleep 15
+          done
+          echo "::error::arch-latest is still a draft or missing files; pacman cannot update"
+          exit 1

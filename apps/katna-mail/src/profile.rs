@@ -9,8 +9,9 @@ use katna_core::Paths;
 use katna_store::{ContactConversation, ContactFile, ContactSummary, MessageId, Mode, Store};
 use mail_parser::MessageParser;
 
-/// Recent conversations the panel lists.
-pub const CONVERSATIONS: usize = 5;
+/// Recent conversations the panel lists: the first few, and the rest
+/// after More.
+pub const CONVERSATIONS: usize = 10;
 /// Files the panel lists.
 pub const FILES: usize = 6;
 /// Their newest messages read for a signature.

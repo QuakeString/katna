@@ -820,9 +820,9 @@ fn link_button(
         .on_click(move |_, _, cx| cx.open_url(&url))
 }
 
-/// Katna's logo, larger than the one on the account pages.
+/// Katna Mail's wordmark.
 fn logo() -> AnyElement {
-    crate::widgets::katna_mark(64.0)
+    crate::widgets::katna_wordmark(112.0)
 }
 
 #[cfg(test)]

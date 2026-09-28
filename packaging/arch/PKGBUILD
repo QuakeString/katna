@@ -105,7 +105,7 @@ package() {
   install -Dm644 -t "$pkgdir/usr/share/gnome-shell/search-providers" packaging/gnome-shell/*.ini
   install -Dm644 -t "$pkgdir/usr/share/icons/hicolor/scalable/apps" packaging/icons/*.svg
   for dir in packaging/icons/hicolor/*/apps; do
-    install -Dm644 -t "$pkgdir/usr/share/icons/${dir#packaging/icons/}" "$dir"/*.png
+    install -Dm644 -t "$pkgdir/usr/share/icons/${dir#packaging/icons/}" "$dir"/*
   done
   # Updates from Katna Mail: the helper pkexec runs, and the polkit
   # action that allows it (katna_core::update::ARCH_HELPER).
