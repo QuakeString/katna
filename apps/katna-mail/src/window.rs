@@ -40,6 +40,7 @@ mod keymap;
 mod labels;
 mod language;
 mod layout;
+mod lines;
 mod list;
 mod look;
 mod nav;
@@ -78,9 +79,9 @@ use std::time::{Duration, Instant};
 
 use futures_lite::StreamExt;
 use gpui::{
-    AnyElement, App, Context, Entity, FocusHandle, Focusable, FontWeight, Hsla, ListAlignment,
-    ListState, MouseButton, MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task,
-    TextRun, UniformListScrollHandle, WeakEntity, Window, actions, div, prelude::*, rgba,
+    AnyElement, App, Context, Entity, FocusHandle, Focusable, FontWeight, Hsla, MouseButton,
+    MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task, TextRun,
+    UniformListScrollHandle, WeakEntity, Window, actions, div, prelude::*, rgba,
 };
 use jiff::tz::TimeZone;
 use katna_chrome::{Bar, ChromeColors, Environment, WindowChrome};
@@ -645,7 +646,7 @@ pub struct MailWindow {
     /// keyboard focus is on something no longer drawn.
     window_focus: FocusHandle,
     /// The message list: lines differ in height (attachment chips).
-    list_state: ListState,
+    list_state: lines::Lines,
     /// The line whose "+N" attachments button has its list open.
     files_menu: Option<EntryKey>,
     /// Layout and line height the list's lines were measured for.
@@ -858,7 +859,7 @@ impl MailWindow {
             layout: layout::Layout::new(),
             list_focus: cx.focus_handle(),
             window_focus: cx.focus_handle(),
-            list_state: ListState::new(0, ListAlignment::Top, px(400.0)),
+            list_state: lines::Lines::new(),
             files_menu: None,
             list_shape: (false, 0),
             nav_scroll: UniformListScrollHandle::new(),
@@ -870,7 +871,7 @@ impl MailWindow {
         this.watch_escape(window, cx);
         let weak = cx.entity().downgrade();
         // The toolbar's "1–50 of N" follows the scrolling.
-        this.list_state.set_scroll_handler(move |_, _, cx| {
+        this.list_state.state().set_scroll_handler(move |_, _, cx| {
             weak.update(cx, |_, cx| cx.notify()).ok();
         });
         this
@@ -2309,7 +2310,7 @@ impl MailWindow {
             .map(|at| at - removed_before(at, &self.entries));
         for ix in (0..self.entries.len()).rev() {
             if keys.contains(&self.entries[ix].key) {
-                self.list_state.splice(ix..ix + 1, 0);
+                self.list_state.remove(ix);
             }
         }
         self.entries.retain(|e| !keys.contains(&e.key));

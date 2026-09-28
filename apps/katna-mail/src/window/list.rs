@@ -615,12 +615,7 @@ impl MailWindow {
         let top = self.list_state.logical_scroll_top();
         let count = self.entries.len();
         self.list_state
-            .reset_with_uniform_height(count, px(self.row_height()));
-        if keep_scroll && top.item_ix < count {
-            self.list_state.scroll_to(top);
-        } else {
-            self.scroll_list_to(0);
-        }
+            .reset(count, px(self.row_height()), keep_scroll.then_some(top));
         self.files_menu = None;
     }
 
@@ -1381,9 +1376,11 @@ impl MailWindow {
             self.list_shape = shape;
             self.list_state.remeasure();
         }
+        self.list_state.follow();
         list(
-            self.list_state.clone(),
+            self.list_state.state().clone(),
             cx.processor(|this, ix: usize, window, cx| {
+                let ix = this.list_state.line(ix);
                 let Some(entry) = this.entries.get(ix).copied() else {
                     return div().into_any_element();
                 };
