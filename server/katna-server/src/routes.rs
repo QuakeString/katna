@@ -61,16 +61,29 @@ pub const MAX_LINK_BYTES: usize = 256 * 1024;
 /// Most bytes of link targets one account may store per 24 hours.
 pub const DAILY_LINK_BYTES: u64 = 16 * 1024 * 1024;
 
+/// Locks that keep each install's events in order (see
+/// [`AppState::record`]).
+const RECORD_LOCKS: usize = 64;
+
+/// The lock that orders `install`'s events.
+fn record_lock(install: &str) -> usize {
+    use std::hash::{BuildHasher, BuildHasherDefault, DefaultHasher};
+    // The same install always gets the same lock.
+    BuildHasherDefault::<DefaultHasher>::default().hash_one(install) as usize % RECORD_LOCKS
+}
+
 /// Shared state of the routes.
 #[derive(Clone)]
 pub struct AppState {
     db: Db,
     config: Arc<Config>,
     events: broadcast::Sender<Arc<Event>>,
-    /// Events are numbered and sent under this lock, so they reach the
+    /// Events are numbered and sent under a lock, so they reach the
     /// stream in the order of their numbers and a resuming stream misses
-    /// none. One server process; the load is small.
-    record: Arc<tokio::sync::Mutex<()>>,
+    /// none. Each install's stream only carries its own events, so the
+    /// locks are shared out by install: opens for different installs are
+    /// recorded side by side.
+    record: Arc<[tokio::sync::Mutex<()>; RECORD_LOCKS]>,
     registrations: Arc<WindowLimit<Option<IpAddr>>>,
     /// Translation requests per install and day.
     translations: Arc<WindowLimit<String>>,
@@ -100,7 +113,7 @@ impl AppState {
             db,
             config: Arc::new(config),
             events,
-            record: Arc::default(),
+            record: Arc::new(std::array::from_fn(|_| tokio::sync::Mutex::new(()))),
             registrations: Arc::new(registrations),
             translations: Arc::new(translations),
             mailer,
@@ -368,7 +381,7 @@ async fn record(
     link: Option<i32>,
     source: Source,
 ) {
-    let _order = state.record.lock().await;
+    let _order = state.record[record_lock(install)].lock().await;
     match state
         .db
         .insert_event(install, id, kind, link, source, now_ms())

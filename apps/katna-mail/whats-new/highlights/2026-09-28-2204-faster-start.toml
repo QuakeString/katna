@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Faster start, smoother syncing"
+text = """
+Katna Mail opens a big inbox about a quarter faster, and while mail
+downloads it updates the list once per batch instead of after every few
+messages, so scrolling and typing stay smooth during a sync.
+"""

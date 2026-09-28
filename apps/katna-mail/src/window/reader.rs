@@ -7,6 +7,7 @@
 //! at the foot, Reply, Reply all and Forward, or the reply being written.
 
 use std::cell::Cell;
+use std::collections::HashSet;
 use std::rc::Rc;
 use std::sync::Arc;
 use std::time::Duration;
@@ -69,6 +70,9 @@ pub(super) struct Conversation {
     pub original_colors: bool,
     /// The popover of who opened a sent message or followed its links.
     seen: Option<tracking::Seen>,
+    /// Its stored messages that are drafts, read with the messages rather
+    /// than on every frame.
+    drafts: HashSet<MessageId>,
 }
 
 /// One message of the conversation.
@@ -320,9 +324,17 @@ impl Conversation {
             show_all: false,
             original_colors: false,
             seen: None,
+            drafts: HashSet::new(),
         };
         conversation.read_tracking(mail);
+        conversation.read_drafts(mail);
         conversation
+    }
+
+    /// Notes which of its messages are drafts.
+    fn read_drafts(&mut self, mail: &Mail) {
+        let ids: Vec<MessageId> = self.parts.iter().map(|p| p.id).collect();
+        self.drafts = mail.drafts(&ids).into_iter().collect();
     }
 
     /// Reads what the recipients of the user's tracked messages did, and
@@ -410,6 +422,7 @@ impl Conversation {
         self.parts
             .extend(old.into_iter().filter(|p| p.pending.is_some()));
         self.read_tracking(mail);
+        self.read_drafts(mail);
     }
 
     /// The `Message-ID`s of the user's stored messages in it.
@@ -1026,10 +1039,8 @@ impl MailWindow {
         let key = reader.key;
         let reply = self.render_inline_reply(key, th, cx);
         // Drafts are edited, not answered.
-        let drafts_only = self.mail.as_ref().ok().is_some_and(|mail| {
-            let ids: Vec<MessageId> = reader.parts.iter().map(|p| p.id).collect();
-            mail.drafts(&ids).len() == ids.len()
-        });
+        let drafts_only =
+            self.mail.is_ok() && reader.parts.iter().all(|p| reader.drafts.contains(&p.id));
         let footer = (reply.is_none() && !drafts_only).then(|| self.render_reply_row(th, cx));
         // A reply goes next to the message it answers, the newest.
         let (reply_above, reply_below) = if newest_first {

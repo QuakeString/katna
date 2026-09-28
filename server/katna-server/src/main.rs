@@ -47,6 +47,9 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
     tokio::spawn(purge(db.clone(), config.retention_days));
+    // Worked out once now, off the request threads, rather than inside the
+    // first sign-in.
+    tokio::task::spawn_blocking(|| std::sync::LazyLock::force(&katna_server::auth::DUMMY_HASH));
 
     let listener = tokio::net::TcpListener::bind(config.listen).await?;
     tracing::info!(address = %config.listen, "listening");

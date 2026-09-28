@@ -50,7 +50,8 @@ pub use mail::{
 };
 pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
 pub use mail_view::{
-    FlagFilter, FolderMarks, FolderSummary, Marks, ThreadEntry, ThreadSender, ThreadSummary,
+    FlagFilter, FolderMarks, FolderSummary, InboxThreads, Marks, ThreadEntry, ThreadSender,
+    ThreadSummary,
 };
 pub use meta::MetaRow;
 pub use ops::{Location, PinnedMessage, QueuedOp};
@@ -388,6 +389,16 @@ impl Store {
     /// when any of its messages in the folder is.
     pub fn category_unread(&self, folder: FolderId) -> Result<Vec<(MailCategory, u64)>> {
         mail_view::category_unread(&self.mail, folder)
+    }
+
+    /// [`Store::folder_threads`] and [`Store::category_unread`] of an inbox
+    /// together, reading the folder once rather than twice.
+    pub fn inbox_threads(
+        &self,
+        folder: FolderId,
+        categories: Option<&[MailCategory]>,
+    ) -> Result<InboxThreads> {
+        mail_view::inbox_threads(&self.mail, folder, categories)
     }
 
     /// Number of messages in all accounts.
