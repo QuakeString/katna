@@ -1306,8 +1306,14 @@ mod tests {
         // 150-wide chips fit, the third goes to the lines under it.
         let layout = measured(500.0, 184.0, &[150.0, 150.0, 150.0]);
         assert_eq!(layout.first_line(Field::To, 3, true), Some(2));
-        // Not measured yet: laid out as before.
-        assert_eq!(layout.first_line(Field::To, 4, true), None);
+        // A chip just added, not measured yet, goes under the first line.
+        let layout = measured(500.0, 184.0, &[150.0]);
+        assert_eq!(layout.first_line(Field::To, 2, true), Some(1));
+        // Nothing measured yet: laid out as before.
+        assert_eq!(
+            measured(500.0, 184.0, &[]).first_line(Field::To, 1, true),
+            None
+        );
         assert_eq!(ChipLayout::default().first_line(Field::To, 0, false), None);
     }
 
