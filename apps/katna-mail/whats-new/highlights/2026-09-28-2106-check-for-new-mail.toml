@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Check for new mail"
+text = """
+Right-click a folder or an account in the folder pane for Check for new
+mail, Mark all as read, a new folder inside it, or Empty Trash. Refresh
+above the list now fetches from the server too, and its arrow turns until
+the check is done.
+"""

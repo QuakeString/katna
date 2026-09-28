@@ -9,9 +9,9 @@ use std::ops::Range;
 use std::f32::consts::FRAC_PI_2;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, ElementId, FontWeight, PathBuilder, SharedString,
-    SpringAnimation, Transformation, canvas, div, point, prelude::*, radians, rgba, svg,
-    uniform_list,
+    AnimationExt, AnyElement, Context, ElementId, FontWeight, MouseButton, MouseDownEvent,
+    PathBuilder, SharedString, SpringAnimation, Transformation, canvas, div, point, prelude::*,
+    radians, rgba, svg, uniform_list,
 };
 use katna_ui::Ripple;
 use katna_ui::motion::{self, lerp};
@@ -857,6 +857,13 @@ impl MailWindow {
                 th,
             ))
             .on_click(cx.listener(move |this, _, _, cx| this.toggle_nav_row(ix, cx)))
+            .on_mouse_down(
+                MouseButton::Right,
+                cx.listener(move |this, event: &MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    this.open_nav_menu(ix, event.position, cx);
+                }),
+            )
             .child(div().flex_1().min_w_0().pb(px(2.0)).truncate().child(name))
             .child(
                 div()
@@ -936,6 +943,13 @@ impl MailWindow {
             .when(!selected, |d| d.hover(|s| s.bg(rgba(th.hover))))
             .cursor_pointer()
             .on_click(cx.listener(move |this, _, window, cx| this.click_nav_row(ix, window, cx)))
+            .on_mouse_down(
+                MouseButton::Right,
+                cx.listener(move |this, event: &MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    this.open_nav_menu(ix, event.position, cx);
+                }),
+            )
             .child(Ripple::new(("nav-ripple", ix), rgba(th.ripple)).rounded(NAV_ROW_HEIGHT / 2.0))
             .child(icon(icon_name, text, 20.0))
             .child(
@@ -1042,7 +1056,7 @@ impl MailWindow {
 
     /// Before a line of the folder pane opens `next`: the search gives
     /// way, and the list fades in again when it shows the same.
-    fn leave_listing(&mut self, next: Listing, cx: &mut Context<Self>) {
+    pub(super) fn leave_listing(&mut self, next: Listing, cx: &mut Context<Self>) {
         self.clear_search(cx);
         self.search_panel = None;
         if self.listing.as_ref() == Some(&next) && !self.reading {
@@ -1051,7 +1065,7 @@ impl MailWindow {
     }
 
     /// After a line of the folder pane opened a list.
-    fn picked_from_nav(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
+    pub(super) fn picked_from_nav(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
         self.leave_settings(window, cx);
         self.reader = None;
         // A folder picked from the opened navigation closes it.

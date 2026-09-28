@@ -101,6 +101,7 @@ impl MailWindow {
         self.settings_open = false;
         self.account_menu = false;
         self.close_context_menu(cx);
+        self.close_nav_menu(cx);
         let focus = cx.focus_handle();
         window.focus(&focus, cx);
         self.tour = Some(Tour {
