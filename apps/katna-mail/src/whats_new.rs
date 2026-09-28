@@ -158,9 +158,13 @@ pub fn unseen(seen: &Seen) -> (Vec<&'static Highlight>, usize) {
     newest(HIGHLIGHTS.iter().filter(|h| !seen.contains(h.name)))
 }
 
-/// The newest highlights, for opening What's new by hand.
+/// The newest highlights, for opening What's new by hand. An older
+/// major one is not brought forward: it would show the same animation
+/// long after its update.
 pub fn recent() -> (Vec<&'static Highlight>, usize) {
-    newest(HIGHLIGHTS.iter())
+    let start = HIGHLIGHTS.len().saturating_sub(SHOWN);
+    let (shown, _) = newest(HIGHLIGHTS[start..].iter());
+    (shown, start)
 }
 
 /// At most [`SHOWN`] highlights: major ones (with an animation) first,
@@ -322,6 +326,19 @@ mod tests {
         let others: Vec<String> = every.iter().filter(|n| *n != late).cloned().collect();
         let (one, more) = unseen(&Seen::new(&others, None));
         assert_eq!((one.len(), more, one[0].name), (1, 0, late));
+    }
+
+    #[test]
+    fn recent_is_the_newest_only() {
+        let (shown, more) = recent();
+        assert_eq!(shown.len(), HIGHLIGHTS.len().min(SHOWN));
+        assert_eq!(more, HIGHLIGHTS.len().saturating_sub(SHOWN));
+        let start = HIGHLIGHTS.len().saturating_sub(SHOWN);
+        let newest: HashSet<&str> = HIGHLIGHTS[start..].iter().map(|h| h.name).collect();
+        assert!(
+            shown.iter().all(|h| newest.contains(h.name)),
+            "no older one"
+        );
     }
 
     #[test]
