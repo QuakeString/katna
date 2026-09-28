@@ -1118,11 +1118,12 @@ pub fn unread_counts(paths: &Paths) -> HashMap<FolderId, u64> {
     }
 }
 
-/// Mailbox insights from `since` to before `until` (Unix seconds) for the
-/// user's addresses `me`, with hours in `tz`. Opens its own connection,
-/// for a background thread.
+/// Mailbox insights from `since` to before `until` (Unix seconds) in
+/// `account` (or every account) for the user's addresses `me`, with hours
+/// in `tz`. Opens its own connection, for a background thread.
 pub fn insights(
     paths: &Paths,
+    account: Option<AccountId>,
     me: &[String],
     since: i64,
     until: i64,
@@ -1138,7 +1139,7 @@ pub fn insights(
         })
     };
     Store::open(paths, Mode::ReadOnly)
-        .and_then(|store| store.mailbox_insights(me, since, until, local))
+        .and_then(|store| store.mailbox_insights(account, me, since, until, local))
         .map_err(|err| format!("Counting mail failed: {err}"))
 }
 
