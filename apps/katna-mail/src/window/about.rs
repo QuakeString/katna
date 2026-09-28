@@ -457,7 +457,7 @@ impl MailWindow {
                     div()
                         .text_size(px(13.0))
                         .text_color(rgba(th.text_dim))
-                        .child(tr!("about-follow")),
+                        .child(tr!("about-follow-me")),
                 )
                 .children(follow)
         });
