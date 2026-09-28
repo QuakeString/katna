@@ -240,6 +240,8 @@ struct Stick {
     /// How far the Send row was drawn above its place, to see after
     /// layout whether that is still right.
     stuck: f32,
+    /// Device pixels per design pixel, which GPUI places elements on.
+    device: f32,
 }
 
 impl Stick {
@@ -251,11 +253,22 @@ impl Stick {
         // is laid out, after the window drew; the offset it ends up with
         // is what counts.
         let max = unpx(scroll.max_offset().y).max(0.0);
-        let offset = unpx(scroll.offset().y).clamp(-max, 0.0);
+        let offset = self.snap(unpx(scroll.offset().y).clamp(-max, 0.0));
         let bottom = unpx(scroll.bounds().size.height) - offset;
         let highest = self.card_top + STICK_BELOW;
         (self.footer_top + self.footer_height - bottom)
             .clamp(0.0, (self.footer_top - highest).max(0.0))
+    }
+
+    /// A scroll offset where GPUI draws it: on a whole device pixel. A
+    /// touchpad scrolls by fractions of a pixel, and the Send row placed
+    /// from the unrounded offset would land a pixel up or down each time.
+    fn snap(&self, offset: f32) -> f32 {
+        if self.device <= 0.0 {
+            return offset;
+        }
+        let dev = offset * self.device;
+        (dev.abs() - 0.5).ceil().copysign(dev) / self.device
     }
 }
 
@@ -2271,9 +2284,12 @@ fn measure(
 ) -> impl IntoElement {
     let (scroll, stick, this) = (scroll.clone(), stick.clone(), cx.entity().downgrade());
     canvas(
-        move |bounds, _, cx| {
-            let top = unpx(bounds.top() - scroll.bounds().top() - scroll.offset().y);
+        move |bounds, window, cx| {
             let mut at = stick.get();
+            at.device = window.scale_factor() * katna_ui::scale::scale();
+            // From the offset as drawn, so the place stays put while the
+            // conversation scrolls.
+            let top = unpx(bounds.top() - scroll.bounds().top()) - at.snap(unpx(scroll.offset().y));
             set(&mut at, top, unpx(bounds.size.height));
             // Also when the pane changed size or a scroll went past its
             // end since the Send row was placed.
@@ -2343,6 +2359,19 @@ fn sender_label(account: &katna_core::Account) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn scroll_offsets_snap_to_device_pixels() {
+        let at = Stick {
+            device: 1.25,
+            ..Stick::default()
+        };
+        // -60.55 design pixels is -75.6875 device pixels: drawn at -76.
+        assert!((at.snap(-60.55) - -60.8).abs() < 1e-4);
+        assert!((at.snap(-60.3) - -60.0).abs() < 1e-4);
+        // Not measured yet: as it is.
+        assert_eq!(Stick::default().snap(-0.37), -0.37);
+    }
 
     fn addr(name: Option<&str>, email: &str) -> Address {
         Address {
