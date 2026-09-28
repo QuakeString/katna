@@ -135,7 +135,7 @@ impl Drive {
         let mut failures = 0;
         progress(0, size);
         loop {
-            let chunk = read_chunk(path.to_owned(), offset, size).await?;
+            let chunk = read_chunk(path.to_owned(), offset, size, CHUNK).await?;
             let end = offset + chunk.len() as u64;
             let range = if size == 0 {
                 "bytes */0".to_owned()
@@ -291,10 +291,15 @@ impl Drive {
     }
 }
 
-/// Reads up to [`CHUNK`] bytes of `path` from `offset`, off the async
+/// Reads up to `chunk` bytes of `path` from `offset`, off the async
 /// threads.
-async fn read_chunk(path: PathBuf, offset: u64, size: u64) -> Result<Vec<u8>> {
-    let length = (size - offset.min(size)).min(CHUNK as u64) as usize;
+pub(crate) async fn read_chunk(
+    path: PathBuf,
+    offset: u64,
+    size: u64,
+    chunk: usize,
+) -> Result<Vec<u8>> {
+    let length = (size - offset.min(size)).min(chunk as u64) as usize;
     blocking::unblock(move || {
         let mut file = std::fs::File::open(path)?;
         file.seek(SeekFrom::Start(offset))?;

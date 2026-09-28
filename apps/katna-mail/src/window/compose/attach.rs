@@ -164,12 +164,14 @@ impl MailWindow {
                 })
                 .collect::<Vec<_>>()
         });
-        // Where files that do not fit the message go: the Drive of the
-        // account it goes out from, if that signs in with Google.
+        // Where files that do not fit the message go: the Google Drive or
+        // OneDrive of the account it goes out from, if that signs in with
+        // Google or Microsoft.
         let drive_account = self.compose.as_ref().and_then(|c| {
-            c.from
-                .or_else(|| self.compose_account(c.kind).map(|a| a.id))
-                .filter(|&id| super::drive::can_use_drive(self, id))
+            let id = c
+                .from
+                .or_else(|| self.compose_account(c.kind).map(|a| a.id))?;
+            Some((id, super::drive::drive_provider(self, id)?))
         });
         cx.spawn(async move |this, cx| {
             let files = read.await;
@@ -186,7 +188,7 @@ impl MailWindow {
                 for (path, name, size, data) in files {
                     if total as u64 + size > MAX_TOTAL as u64 {
                         match drive_account {
-                            Some(account) => to_drive.push((path, name, size, account)),
+                            Some((account, _)) => to_drive.push((path, name, size, account)),
                             None => {
                                 problem = Some(tr!(
                                     "compose-file-too-large",
@@ -231,11 +233,13 @@ impl MailWindow {
                 }
                 // The newest file shows, however long the list.
                 compose.attach_scroll.scroll_to_bottom();
-                if let Some((_, name, ..)) = to_drive.first() {
-                    let note = tr!(
-                        "compose-drive-note",
-                        name = name.clone(),
-                        limit = format::size(MAX_TOTAL as u64)
+                if let (Some((_, name, ..)), Some((_, provider))) =
+                    (to_drive.first(), drive_account)
+                {
+                    let note = super::drive::drive_note(
+                        provider,
+                        name.clone(),
+                        format::size(MAX_TOTAL as u64),
                     );
                     this.show_snackbar(note, None, cx);
                 }

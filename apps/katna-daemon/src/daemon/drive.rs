@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Attachments too large for mail, through the sender's Google Drive
-//! (`docs/ARCHITECTURE.md` §6.6): Katna Mail asks for a file to go up as
+//! Attachments too large for mail, through the sender's Google Drive or
+//! OneDrive (`docs/ARCHITECTURE.md` §6.6): Katna Mail asks for a file to go up as
 //! soon as it is attached, shows the upload's progress, and at Send asks
 //! to share the files with the recipients before the message with their
 //! links goes out.
@@ -17,7 +17,12 @@ use std::{
 
 use katna_core::{AccountId, OAuthProvider};
 use katna_dbus::{DriveUpload, drive_state};
-use katna_sync::{Error, drive::Drive, net::Tls};
+use katna_sync::{
+    Error, Result as SyncResult,
+    drive::{Drive, DriveFile},
+    net::Tls,
+    onedrive::OneDrive,
+};
 
 use super::{CommandError, Daemon, Notice};
 
@@ -36,21 +41,75 @@ struct Upload {
     task: Option<smol::Task<()>>,
 }
 
-impl Daemon {
-    /// The Drive of `account`, which must sign in with Google.
-    async fn drive(&self, account: AccountId) -> Result<Drive, CommandError> {
-        let settings = self.store().account_settings(account)?.unwrap_or_default();
-        if settings.oauth != Some(OAuthProvider::Google) {
-            return Err(CommandError::InvalidArgs(
-                "only accounts signed in with Google have a Google Drive".into(),
-            ));
+/// Where an account's large files go: its provider's own storage.
+enum Storage {
+    Google(Drive),
+    Microsoft(OneDrive),
+}
+
+impl Storage {
+    async fn allowed(&self) -> SyncResult<bool> {
+        match self {
+            Self::Google(drive) => drive.allowed().await,
+            Self::Microsoft(onedrive) => onedrive.allowed().await,
         }
+    }
+
+    async fn upload(
+        &self,
+        path: &std::path::Path,
+        name: &str,
+        progress: &(dyn Fn(u64, u64) + Sync),
+    ) -> SyncResult<DriveFile> {
+        match self {
+            Self::Google(drive) => drive.upload(path, name, mime_of(name), progress).await,
+            Self::Microsoft(onedrive) => onedrive.upload(path, name, progress).await,
+        }
+    }
+
+    async fn share(&self, id: &str, addresses: &[String]) -> SyncResult<Vec<String>> {
+        match self {
+            Self::Google(drive) => drive.share(id, addresses).await,
+            Self::Microsoft(onedrive) => onedrive.share(id, addresses).await,
+        }
+    }
+
+    /// Shares file `id` with anyone who has its link; returns a new link
+    /// for it, when the provider gives one.
+    async fn share_with_link(&self, id: &str) -> SyncResult<Option<String>> {
+        match self {
+            Self::Google(drive) => drive.share_with_link(id).await.map(|()| None),
+            Self::Microsoft(onedrive) => onedrive.share_with_link(id).await.map(Some),
+        }
+    }
+
+    async fn remove(&self, id: &str) -> SyncResult<()> {
+        match self {
+            Self::Google(drive) => drive.remove(id).await,
+            Self::Microsoft(onedrive) => onedrive.remove(id).await,
+        }
+    }
+}
+
+impl Daemon {
+    /// The Google Drive or OneDrive of `account`, which must sign in with
+    /// Google or Microsoft.
+    async fn drive(&self, account: AccountId) -> Result<Storage, CommandError> {
+        let settings = self.store().account_settings(account)?.unwrap_or_default();
+        let Some(provider) = settings.oauth else {
+            return Err(CommandError::InvalidArgs(
+                "only accounts signed in with Google or Microsoft keep large files".into(),
+            ));
+        };
         let tokens = self
-            .oauth_tokens(account, OAuthProvider::Google)
+            .oauth_tokens(account, provider)
             .await
             .map_err(CommandError::AuthFailed)?;
         let tls = Tls::system().map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
-        Ok(Drive::new(tokens, tls))
+        Ok(match provider {
+            OAuthProvider::Google => Storage::Google(Drive::new(tokens, tls)),
+            OAuthProvider::Microsoft => Storage::Microsoft(OneDrive::new(tokens, tls)),
+        })
     }
 
     /// Starts uploading `path` to the Drive of `account`.
@@ -89,7 +148,7 @@ impl Daemon {
                 task: Some(task),
             },
         );
-        tracing::info!(upload = id, %account, size, "uploading to Google Drive");
+        tracing::info!(upload = id, %account, size, "uploading a large attachment");
         Ok(id)
     }
 
@@ -112,7 +171,7 @@ impl Daemon {
         if let Some(file) = upload.file {
             let drive = self.drive(AccountId(upload.status.account)).await?;
             if let Err(err) = drive.remove(&file).await {
-                tracing::warn!(upload = id, %err, "could not remove the file from Drive");
+                tracing::warn!(upload = id, %err, "could not remove the uploaded file");
             }
         }
         Ok(true)
@@ -154,13 +213,23 @@ impl Daemon {
         Ok(refused)
     }
 
-    /// Lets anyone with the link view the files of `ids`.
-    pub async fn drive_share_with_link(&self, ids: &[i64]) -> Result<(), CommandError> {
-        for (account, file) in self.uploaded(ids)? {
+    /// Lets anyone with the link view the files of `ids`; returns the
+    /// links for the message, in order.
+    pub async fn drive_share_with_link(&self, ids: &[i64]) -> Result<Vec<String>, CommandError> {
+        let mut links = Vec::new();
+        for (id, (account, file)) in ids.iter().zip(self.uploaded(ids)?) {
             let drive = self.drive(account).await?;
-            drive.share_with_link(&file).await.map_err(failed)?;
+            let new = drive.share_with_link(&file).await.map_err(failed)?;
+            let mut all = self.uploads.all.lock().unwrap();
+            let upload = all
+                .get_mut(id)
+                .ok_or_else(|| CommandError::InvalidArgs(format!("no upload {id}")))?;
+            if let Some(new) = new {
+                upload.status.link = new;
+            }
+            links.push(upload.status.link.clone());
         }
-        Ok(())
+        Ok(links)
     }
 
     /// Changes upload `id` with `change` and tells Katna Mail.
@@ -182,7 +251,7 @@ fn failed(err: Error) -> CommandError {
 }
 
 /// Uploads `path`, keeping upload `id` up to date.
-async fn upload(daemon: Weak<Daemon>, drive: Drive, id: i64, path: PathBuf, name: String) {
+async fn upload(daemon: Weak<Daemon>, drive: Storage, id: i64, path: PathBuf, name: String) {
     let update = |change: &dyn Fn(&mut Upload)| {
         if let Some(daemon) = daemon.upgrade() {
             daemon.update_upload(id, change);
@@ -190,11 +259,10 @@ async fn upload(daemon: Weak<Daemon>, drive: Drive, id: i64, path: PathBuf, name
     };
     let allowed = drive.allowed().await;
     if let Ok(false) | Err(Error::Auth(_)) = allowed {
-        tracing::info!(upload = id, "the sign-in did not allow Google Drive");
+        tracing::info!(upload = id, "the sign-in did not allow Drive or OneDrive");
         update(&|u| u.status.state = drive_state::NEEDS_PERMISSION.into());
         return;
     }
-    let mime = mime_of(&name);
     // Katna Mail hears of every percent, not of every piece.
     let shown = Mutex::new(u64::MAX);
     let progress = |sent: u64, size: u64| {
@@ -203,9 +271,9 @@ async fn upload(daemon: Weak<Daemon>, drive: Drive, id: i64, path: PathBuf, name
             update(&|u| u.status.sent = sent);
         }
     };
-    match drive.upload(&path, &name, mime, &progress).await {
+    match drive.upload(&path, &name, &progress).await {
         Ok(file) => {
-            tracing::info!(upload = id, "uploaded to Google Drive");
+            tracing::info!(upload = id, "uploaded");
             update(&|u| {
                 u.status.sent = u.status.size;
                 u.status.state = drive_state::DONE.into();
@@ -214,13 +282,13 @@ async fn upload(daemon: Weak<Daemon>, drive: Drive, id: i64, path: PathBuf, name
             });
         }
         Err(Error::Auth(message)) => {
-            tracing::info!(upload = id, %message, "Google Drive refused access");
+            tracing::info!(upload = id, %message, "Drive or OneDrive refused access");
             update(&|u| {
                 u.status.state = drive_state::NEEDS_PERMISSION.into();
             });
         }
         Err(err) => {
-            tracing::warn!(upload = id, %err, "upload to Google Drive failed");
+            tracing::warn!(upload = id, %err, "upload failed");
             let message = err.to_string();
             update(&|u| {
                 u.status.state = drive_state::FAILED.into();
