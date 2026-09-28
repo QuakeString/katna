@@ -35,10 +35,12 @@ impl Home {
             return None;
         }
         // A short path: gpg-agent's socket path has a length limit.
-        let dir = tempfile::Builder::new()
-            .prefix("kc")
-            .tempdir_in("/tmp")
-            .expect("tempdir");
+        let mut builder = tempfile::Builder::new();
+        builder.prefix("kc");
+        #[cfg(unix)]
+        let dir = builder.tempdir_in("/tmp").expect("tempdir");
+        #[cfg(not(unix))]
+        let dir = builder.tempdir().expect("tempdir");
         #[cfg(unix)]
         {
             use std::os::unix::fs::PermissionsExt;
