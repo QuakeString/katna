@@ -71,6 +71,9 @@ compose-track-unavailable = Mel yang ditandatangani, disulitkan dan teks biasa t
 compose-track-sign-in = Log masuk ke akaun Katna untuk menjejaki pembukaan dan klik
 compose-receipt = Minta resit baca
 compose-receipt-on = Resit baca diminta: apl penerima mungkin meminta mereka menghantarnya
+compose-delivery = Minta resit penghantaran
+compose-delivery-on = Resit penghantaran diminta: pelayan mel anda akan menghantar e-mel kepada anda apabila pelayan setiap penerima menerimanya
+compose-delivery-unavailable = Pelayan mel anda tidak menghantar resit penghantaran
 
 ## Spelling
 

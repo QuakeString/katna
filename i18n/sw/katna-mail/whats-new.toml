@@ -703,3 +703,25 @@ kasi gani, watu unaowaandikia zaidi, na siku na saa gani barua zako
 zinafika. Inahesabiwa kwenye kompyuta yako kutoka kwa barua ambazo
 Katna tayari inazo.
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Ingia kwa Google au Microsoft"
+text = """
+Ongeza akaunti ya Gmail au Outlook kwa kuingia kwenye ukurasa wa Google
+au Microsoft wenyewe katika kivinjari chako, bila nenosiri la programu.
+Anwani za Outlook.com na Hotmail sasa zinafanya kazi pia. Kuingia
+kukiacha kufanya kazi, ujumbe ulio chini ya dirisha hukupa nafasi ya
+kuingia tena.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Ufuatiliaji na stakabadhi vimewashwa tangu mwanzo"
+text = """
+Ujumbe mpya na majibu sasa huanza na ufuatiliaji wa kufunguliwa na
+kubofya, stakabadhi ya kusoma na stakabadhi ya kufikishwa vikiwa
+vimewashwa; bofya kitufe kilicho kando ya wapokeaji ili kuzima
+kimojawapo kwa ujumbe huo. Ufuatiliaji unahitaji uwe umeingia kwenye
+akaunti yako ya Katna. Stakabadhi ya kufikishwa ni barua pepe ambayo
+seva yako ya barua hukutumia seva ya kila mpokeaji inapoupokea ujumbe;
+kitufe huwa kijivu pale ambapo seva yako ya barua haizitoi.
+"""

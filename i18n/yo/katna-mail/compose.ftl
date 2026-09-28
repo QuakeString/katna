@@ -71,6 +71,9 @@ compose-track-unavailable = A kò lè tọpa lẹ́tà tí a ti buwọ́ lù, t�
 compose-track-sign-in = Wọlé sí àkáǹtì Katna láti tọpa ṣíṣí àti títẹ̀
 compose-receipt = Béèrè ìwé-ẹ̀rí kíkà
 compose-receipt-on = A ti béèrè ìwé-ẹ̀rí kíkà: áàpù olùgbà lè ní kí ó fi ọ̀kan ránṣẹ́
+compose-delivery = Béèrè ìwé-ẹ̀rí ìfijíṣẹ́
+compose-delivery-on = A ti béèrè ìwé-ẹ̀rí ìfijíṣẹ́: sáfà lẹ́tà rẹ yóò fi ímeèlì ránṣẹ́ sí ọ nígbà tí sáfà olùgbà kọ̀ọ̀kan bá gba ìfiránṣẹ́ náà
+compose-delivery-unavailable = Sáfà lẹ́tà rẹ kì í fi ìwé-ẹ̀rí ìfijíṣẹ́ ránṣẹ́
 
 ## Spelling
 

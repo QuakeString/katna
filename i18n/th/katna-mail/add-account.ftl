@@ -11,6 +11,9 @@ add-account-servers-title = การตั้งค่าเซิร์ฟเ�
 add-account-servers-intro = ที่ที่ Katna อ่านและส่งอีเมลของ { $address }
 add-account-password-title = ป้อนรหัสผ่านของคุณ
 add-account-signing-in = กำลังลงชื่อเข้าใช้…
+add-account-browser-title = ดำเนินการต่อในเบราว์เซอร์ของคุณ
+add-account-browser-intro = Katna เปิดหน้าลงชื่อเข้าใช้ { $provider } ในเบราว์เซอร์ของคุณแล้ว ลงชื่อเข้าใช้ที่นั่นและอนุญาตให้ Katna อ่านและส่งอีเมลของคุณ แล้วกลับมาที่นี่
+add-account-browser-hint = ไม่มีหน้าใดเปิดขึ้นใช่ไหม ตรวจดูหน้าต่างเบราว์เซอร์ของคุณ หรือย้อนกลับแล้วลองอีกครั้ง
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] เซิร์ฟเวอร์: { $servers } จากการคาดเดา โปรดตรวจสอบหากลงชื่อเข้าใช้ไม่สำเร็จ
 }
 add-account-servers-entered = เซิร์ฟเวอร์: { $servers } ตามที่ป้อน
+add-account-or = หรือ
+add-account-sign-in-with = ลงชื่อเข้าใช้ด้วย { $provider }
+add-account-sign-in-instead = ลงชื่อเข้าใช้ด้วย { $provider } แทน
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = ชื่อเหมือนกับรหั�
 add-account-added = เพิ่ม { $address } แล้ว กำลังรับอีเมลของคุณ…
 add-account-app-password-refused = { $provider } ปฏิเสธรหัสผ่าน ต้องใช้รหัสผ่านสำหรับแอป ไม่ใช่รหัสผ่านที่คุณใช้บนเว็บ
 add-account-password-refused = เซิร์ฟเวอร์ปฏิเสธรหัสผ่าน โปรดตรวจสอบแล้วลองอีกครั้ง
+add-account-sign-in-refused = { $provider } ไม่อนุญาตให้ Katna เข้าใช้ ลองอีกครั้ง และอนุญาตให้เข้าถึงอีเมลของคุณ
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Katna ที่ติดตั้งอยู่นี้ยังลงชื่อเข้าใช้บัญชี Microsoft ไม่ได้
+    [Google] Katna ที่ติดตั้งอยู่นี้ยังลงชื่อเข้าใช้บัญชี Google ไม่ได้
+   *[other] ผู้ให้บริการนี้อนุญาตให้ลงชื่อเข้าใช้ได้เฉพาะในหน้าของตนเอง ซึ่ง Katna ยังทำให้ไม่ได้
+}
+add-account-signed-in = ลงชื่อเข้าใช้ด้วย { $provider } แล้ว กำลังรับอีเมลของคุณ…
 
 ## The account menu (from the account button on the top bar)
 

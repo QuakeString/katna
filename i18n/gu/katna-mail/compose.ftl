@@ -74,6 +74,9 @@ compose-track-unavailable = હસ્તાક્ષરિત, એન્ક્�
 compose-track-sign-in = ખોલવાનું અને ક્લિક ટ્રૅક કરવા Katna એકાઉન્ટમાં સાઇન ઇન કરો
 compose-receipt = વાંચ્યાની રસીદ માગો
 compose-receipt-on = વાંચ્યાની રસીદ માગી છે: પ્રાપ્તકર્તાની ઍપ તેમને રસીદ મોકલવા કહી શકે છે
+compose-delivery = ડિલિવરી રસીદ માગો
+compose-delivery-on = ડિલિવરી રસીદ માગી છે: દરેક પ્રાપ્તકર્તાનું સર્વર તેને સ્વીકારે ત્યારે તમારું મેઇલ સર્વર તમને ઇમેઇલ મોકલશે
+compose-delivery-unavailable = તમારું મેઇલ સર્વર ડિલિવરી રસીદ મોકલતું નથી
 
 ## Spelling
 

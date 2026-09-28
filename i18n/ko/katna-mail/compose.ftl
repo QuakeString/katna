@@ -71,6 +71,9 @@ compose-track-unavailable = 서명, 암호화 또는 일반 텍스트 메일은 
 compose-track-sign-in = 열람 및 클릭을 추적하려면 Katna 계정에 로그인하세요
 compose-receipt = 읽음 확인 요청
 compose-receipt-on = 읽음 확인 요청됨: 받는사람의 앱에서 읽음 확인을 보낼지 물어볼 수 있습니다
+compose-delivery = 배달 확인 요청
+compose-delivery-on = 배달 확인 요청됨: 각 받는사람의 서버가 메일을 받으면 메일 서버가 이메일로 알려 줍니다
+compose-delivery-unavailable = 메일 서버가 배달 확인을 보내지 않습니다
 
 ## Spelling
 

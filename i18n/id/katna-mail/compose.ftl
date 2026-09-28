@@ -71,6 +71,9 @@ compose-track-unavailable = Email yang ditandatangani, dienkripsi, dan teks bias
 compose-track-sign-in = Masuk ke akun Katna untuk melacak saat dibuka dan diklik
 compose-receipt = Minta tanda terima baca
 compose-receipt-on = Tanda terima baca diminta: aplikasi penerima mungkin meminta mereka mengirimkannya
+compose-delivery = Minta tanda terima pengiriman
+compose-delivery-on = Tanda terima pengiriman diminta: server email Anda akan mengirimi Anda email saat server setiap penerima menerimanya
+compose-delivery-unavailable = Server email Anda tidak mengirim tanda terima pengiriman
 
 ## Spelling
 

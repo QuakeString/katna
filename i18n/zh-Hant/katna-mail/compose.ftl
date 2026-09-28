@@ -71,6 +71,9 @@ compose-track-unavailable = 已簽署、已加密和純文字郵件無法追蹤
 compose-track-sign-in = 登入 Katna 帳戶即可追蹤開信和點閱
 compose-receipt = 要求已讀回條
 compose-receipt-on = 已要求已讀回條：收件者的應用程式可能會詢問對方是否傳送回條
+compose-delivery = 要求送達回條
+compose-delivery-on = 已要求送達回條：每位收件者的伺服器接收郵件時，你的郵件伺服器會寄信通知你
+compose-delivery-unavailable = 你的郵件伺服器不會傳送送達回條
 
 ## Spelling
 

@@ -11,6 +11,9 @@ add-account-servers-title = ਸਰਵਰ ਸੈਟਿੰਗਾਂ
 add-account-servers-intro = { $address } ਲਈ Katna ਕਿੱਥੋਂ ਮੇਲ ਪੜ੍ਹਦਾ ਅਤੇ ਭੇਜਦਾ ਹੈ।
 add-account-password-title = ਆਪਣਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ
 add-account-signing-in = ਸਾਈਨ ਇਨ ਹੋ ਰਿਹਾ ਹੈ…
+add-account-browser-title = ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਜਾਰੀ ਰੱਖੋ
+add-account-browser-intro = Katna ਨੇ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ { $provider } ਦਾ ਸਾਈਨ-ਇਨ ਪੰਨਾ ਖੋਲ੍ਹਿਆ ਹੈ। ਉੱਥੇ ਸਾਈਨ ਇਨ ਕਰੋ ਅਤੇ Katna ਨੂੰ ਤੁਹਾਡੀ ਮੇਲ ਪੜ੍ਹਨ ਅਤੇ ਭੇਜਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ, ਫਿਰ ਇੱਥੇ ਵਾਪਸ ਆਓ।
+add-account-browser-hint = ਕੋਈ ਪੰਨਾ ਨਹੀਂ ਖੁੱਲ੍ਹਿਆ? ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਦੀਆਂ ਵਿੰਡੋਆਂ ਦੇਖੋ, ਜਾਂ ਪਿੱਛੇ ਜਾ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] ਸਰਵਰ: { $servers }, ਅੰਦਾਜ਼ੇ ਨਾਲ; ਜੇ ਸਾਈਨ ਇਨ ਅਸਫਲ ਹੋਵੇ ਤਾਂ ਇਹਨਾਂ ਦੀ ਜਾਂਚ ਕਰੋ।
 }
 add-account-servers-entered = ਸਰਵਰ: { $servers }, ਜਿਵੇਂ ਦਰਜ ਕੀਤੇ।
+add-account-or = ਜਾਂ
+add-account-sign-in-with = { $provider } ਨਾਲ ਸਾਈਨ ਇਨ ਕਰੋ
+add-account-sign-in-instead = ਇਸਦੀ ਬਜਾਏ { $provider } ਨਾਲ ਸਾਈਨ ਇਨ ਕਰੋ
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = ਨਾਮ ਪਾਸਵਰਡ ਵਰਗਾ ਹੀ 
 add-account-added = { $address } ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ। ਤੁਹਾਡੀ ਮੇਲ ਲਿਆਂਦੀ ਜਾ ਰਹੀ ਹੈ…
 add-account-app-password-refused = { $provider } ਨੇ ਪਾਸਵਰਡ ਅਸਵੀਕਾਰ ਕਰ ਦਿੱਤਾ। ਇਸਨੂੰ ਐਪ ਪਾਸਵਰਡ ਚਾਹੀਦਾ ਹੈ, ਉਹ ਨਹੀਂ ਜੋ ਤੁਸੀਂ ਵੈੱਬ ’ਤੇ ਵਰਤਦੇ ਹੋ।
 add-account-password-refused = ਸਰਵਰ ਨੇ ਪਾਸਵਰਡ ਅਸਵੀਕਾਰ ਕਰ ਦਿੱਤਾ। ਇਸਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।
+add-account-sign-in-refused = { $provider } ਨੇ Katna ਨੂੰ ਅੰਦਰ ਨਹੀਂ ਆਉਣ ਦਿੱਤਾ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ, ਅਤੇ ਆਪਣੀ ਮੇਲ ਤੱਕ ਪਹੁੰਚ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ।
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Katna ਦੀ ਇਹ ਕਾਪੀ ਹਾਲੇ Microsoft ਖਾਤਿਆਂ ਵਿੱਚ ਸਾਈਨ ਇਨ ਨਹੀਂ ਕਰ ਸਕਦੀ।
+    [Google] Katna ਦੀ ਇਹ ਕਾਪੀ ਹਾਲੇ Google ਖਾਤਿਆਂ ਵਿੱਚ ਸਾਈਨ ਇਨ ਨਹੀਂ ਕਰ ਸਕਦੀ।
+   *[other] ਇਹ ਪ੍ਰਦਾਤਾ ਸਿਰਫ਼ ਆਪਣੇ ਪੰਨੇ ’ਤੇ ਹੀ ਸਾਈਨ ਇਨ ਕਰਨ ਦਿੰਦਾ ਹੈ, ਜੋ Katna ਹਾਲੇ ਇਸ ਲਈ ਨਹੀਂ ਕਰ ਸਕਦਾ।
+}
+add-account-signed-in = { $provider } ਨਾਲ ਸਾਈਨ ਇਨ ਹੋ ਗਿਆ। ਤੁਹਾਡੀ ਮੇਲ ਲਿਆ ਰਿਹਾ ਹੈ…
 
 ## The account menu (from the account button on the top bar)
 

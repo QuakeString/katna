@@ -74,6 +74,9 @@ compose-track-unavailable = የተፈረመ፣ የተመሰጠረ እና ግል�
 compose-track-sign-in = መከፈትን እና ጠቅታዎችን ለመከታተል ወደ Katna መለያ ይግቡ
 compose-receipt = የንባብ ማረጋገጫ ጠይቅ
 compose-receipt-on = የንባብ ማረጋገጫ ተጠይቋል፦ የተቀባዩ መተግበሪያ እንዲልኩ ሊጠይቃቸው ይችላል
+compose-delivery = የመድረስ ማረጋገጫ ጠይቅ
+compose-delivery-on = የመድረስ ማረጋገጫ ተጠይቋል፦ የእያንዳንዱ ተቀባይ አገልጋይ ሲቀበለው የደብዳቤ አገልጋይዎ ኢሜይል ይልክልዎታል
+compose-delivery-unavailable = የደብዳቤ አገልጋይዎ የመድረስ ማረጋገጫዎችን አይልክም
 
 ## Spelling
 

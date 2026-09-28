@@ -74,6 +74,9 @@ compose-track-unavailable = हस्ताक्षर गरिएको, इ�
 compose-track-sign-in = खोलेको र क्लिक ट्र्याक गर्न Katna खातामा साइन इन गर्नुहोस्
 compose-receipt = पढेको रसिद माग्नुहोस्
 compose-receipt-on = पढेको रसिद मागिएको छ: प्रापकको एपले उनीहरूलाई रसिद पठाउन सोध्न सक्छ
+compose-delivery = डेलिभरी रसिद माग्नुहोस्
+compose-delivery-on = डेलिभरी रसिद मागिएको छ: हरेक प्रापकको सर्भरले सन्देश स्वीकार गर्दा तपाईंको मेल सर्भरले तपाईंलाई इमेल पठाउनेछ
+compose-delivery-unavailable = तपाईंको मेल सर्भरले डेलिभरी रसिद पठाउँदैन
 
 ## Spelling
 

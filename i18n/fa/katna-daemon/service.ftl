@@ -5,3 +5,5 @@
 ## Errors Katna Mail shows
 
 daemon-deleting-data = Katna در حال پاک کردن همهٔ داده‌هایش است
+daemon-signed-in = به { $provider } وارد شده‌اید. می‌توانید این زبانه را ببندید و به Katna برگردید.
+daemon-sign-in-failed = Katna به { $provider } وارد نشده است. می‌توانید این زبانه را ببندید و در Katna دوباره امتحان کنید.

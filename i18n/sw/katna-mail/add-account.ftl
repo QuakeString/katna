@@ -11,6 +11,9 @@ add-account-servers-title = Mipangilio ya seva
 add-account-servers-intro = Mahali Katna inaposoma na kutuma barua za { $address }.
 add-account-password-title = Weka nenosiri lako
 add-account-signing-in = Inaingia…
+add-account-browser-title = Endelea kwenye kivinjari chako
+add-account-browser-intro = Katna imefungua ukurasa wa kuingia wa { $provider } kwenye kivinjari chako. Ingia hapo na uiruhusu Katna isome na kutuma barua zako, kisha urudi hapa.
+add-account-browser-hint = Hakuna ukurasa uliofunguka? Angalia madirisha ya kivinjari chako, au rudi ujaribu tena.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] Seva: { $servers }, zimekisiwa; zikague ikiwa kuingia kutashindwa.
 }
 add-account-servers-entered = Seva: { $servers }, kama zilivyowekwa.
+add-account-or = au
+add-account-sign-in-with = Ingia kwa { $provider }
+add-account-sign-in-instead = Ingia kwa { $provider } badala yake
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = Jina ni sawa na nenosiri. Andika jina lako hapo b
 add-account-added = { $address } imeongezwa. Inapokea barua zako…
 add-account-app-password-refused = { $provider } imekataa nenosiri. Inahitaji nenosiri la programu, si lile unalotumia kwenye wavuti.
 add-account-password-refused = Seva imekataa nenosiri. Likague na ujaribu tena.
+add-account-sign-in-refused = { $provider } haikuiruhusu Katna kuingia. Jaribu tena, na uruhusu ufikiaji wa barua zako.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Nakala hii ya Katna bado haiwezi kuingia kwenye akaunti za Microsoft.
+    [Google] Nakala hii ya Katna bado haiwezi kuingia kwenye akaunti za Google.
+   *[other] Mtoa huduma huyu anaruhusu kuingia kwenye ukurasa wake tu, jambo ambalo Katna bado haiwezi kulifanya kwa ajili yake.
+}
+add-account-signed-in = Umeingia kwa { $provider }. Inapokea barua zako…
 
 ## The account menu (from the account button on the top bar)
 

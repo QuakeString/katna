@@ -703,3 +703,25 @@ membalas dan berapa pantas, orang yang paling kerap anda utusi mel, dan
 pada hari serta jam apa mel anda tiba. Ia dikira pada komputer anda
 daripada mel yang sudah ada dalam Katna.
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Log masuk dengan Google atau Microsoft"
+text = """
+Tambah akaun Gmail atau Outlook dengan log masuk di halaman Google atau
+Microsoft sendiri dalam pelayar anda, tanpa kata laluan aplikasi. Alamat
+Outlook.com dan Hotmail kini berfungsi juga. Jika log masuk berhenti
+berfungsi, satu nota di bahagian bawah tetingkap menawarkan untuk log
+masuk semula.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Penjejakan dan resit dihidupkan dari awal"
+text = """
+Mesej dan balasan baharu kini bermula dengan penjejakan pembukaan dan
+klik, resit baca dan resit penghantaran dihidupkan; klik butang di
+sebelah penerima untuk mematikan salah satunya bagi mesej itu.
+Penjejakan memerlukan anda log masuk ke akaun Katna anda. Resit
+penghantaran ialah e-mel yang dihantar oleh pelayan mel anda apabila
+pelayan setiap penerima menerima mesej itu; butang itu dikelabukan jika
+pelayan mel anda tidak menyediakannya.
+"""

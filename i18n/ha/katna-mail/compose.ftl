@@ -74,6 +74,9 @@ compose-track-unavailable = Ba za a iya bibiyar wasiƙar da aka sa wa hannu, aka
 compose-track-sign-in = Ku shiga asusun Katna don bibiyar buɗewa da dannawa
 compose-receipt = Nemi rasidin karantawa
 compose-receipt-on = An nemi rasidin karantawa: manhajar mai karɓa na iya tambayarsa ya aiko da shi
+compose-delivery = Nemi rasidin isarwa
+compose-delivery-on = An nemi rasidin isarwa: sabar wasiƙunku za ta aiko muku da imel idan sabar kowane mai karɓa ta karɓe shi
+compose-delivery-unavailable = Sabar wasiƙunku ba ta aika rasidin isarwa
 
 ## Spelling
 

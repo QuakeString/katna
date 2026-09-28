@@ -74,6 +74,9 @@ compose-track-unavailable = Barua yenye sahihi, iliyosimbwa au ya maandishi matu
 compose-track-sign-in = Ingia kwenye akaunti ya Katna ili kufuatilia kufunguliwa na kubofya
 compose-receipt = Omba stakabadhi ya kusoma
 compose-receipt-on = Stakabadhi ya kusoma imeombwa: programu ya mpokeaji inaweza kumwomba aitume
+compose-delivery = Omba stakabadhi ya kufikishwa
+compose-delivery-on = Stakabadhi ya kufikishwa imeombwa: seva yako ya barua itakutumia barua pepe seva ya kila mpokeaji itakapoupokea ujumbe
+compose-delivery-unavailable = Seva yako ya barua haitumi stakabadhi za kufikishwa
 
 ## Spelling
 

@@ -11,6 +11,9 @@ add-account-servers-title = Bedienerinstellings
 add-account-servers-intro = Waar Katna e-pos vir { $address } lees en stuur.
 add-account-password-title = Voer jou wagwoord in
 add-account-signing-in = Meld tans aan…
+add-account-browser-title = Gaan voort in jou blaaier
+add-account-browser-intro = Katna het die { $provider }-aanmeldbladsy in jou blaaier oopgemaak. Meld daar aan en laat Katna toe om jou e-pos te lees en te stuur, en kom dan hierheen terug.
+add-account-browser-hint = Geen bladsy oopgemaak nie? Kyk na jou blaaier se vensters, of gaan terug en probeer weer.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] Bedieners: { $servers }, geraai; kontroleer hulle as aanmelding misluk.
 }
 add-account-servers-entered = Bedieners: { $servers }, soos ingevoer.
+add-account-or = of
+add-account-sign-in-with = Meld aan met { $provider }
+add-account-sign-in-instead = Meld eerder aan met { $provider }
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = Die naam is dieselfde as die wagwoord. Tik eerder
 add-account-added = { $address } bygevoeg. Haal tans jou e-pos…
 add-account-app-password-refused = { $provider } het die wagwoord geweier. Dit het 'n programwagwoord nodig, nie die een wat jy op die web gebruik nie.
 add-account-password-refused = Die bediener het die wagwoord geweier. Kontroleer dit en probeer weer.
+add-account-sign-in-refused = { $provider } het Katna nie ingelaat nie. Probeer weer, en gee toegang tot jou e-pos.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Hierdie kopie van Katna kan nog nie by Microsoft-rekeninge aanmeld nie.
+    [Google] Hierdie kopie van Katna kan nog nie by Google-rekeninge aanmeld nie.
+   *[other] Hierdie verskaffer laat aanmelding net op sy eie bladsy toe, wat Katna nog nie daarvoor kan doen nie.
+}
+add-account-signed-in = Aangemeld met { $provider }. Haal tans jou e-pos…
 
 ## The account menu (from the account button on the top bar)
 

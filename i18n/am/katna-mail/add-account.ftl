@@ -11,6 +11,9 @@ add-account-servers-title = የአገልጋይ ቅንብሮች
 add-account-servers-intro = Katna የ{ $address } ደብዳቤን የሚያነብበት እና የሚልክበት።
 add-account-password-title = የይለፍ ቃልዎን ያስገቡ
 add-account-signing-in = በመግባት ላይ…
+add-account-browser-title = በአሳሽዎ ውስጥ ይቀጥሉ
+add-account-browser-intro = Katna የ{ $provider } መግቢያ ገጽን በአሳሽዎ ውስጥ ከፍቷል። እዚያ ይግቡና Katna ደብዳቤዎን እንዲያነብና እንዲልክ ይፍቀዱ፣ ከዚያ ወደዚህ ይመለሱ።
+add-account-browser-hint = ምንም ገጽ አልተከፈተም? የአሳሽዎን መስኮቶች ይፈትሹ፣ ወይም ተመልሰው እንደገና ይሞክሩ።
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] አገልጋዮች፦ { $servers }፣ በግምት የተገኙ፤ መግባት ካልተሳካ ይፈትሿቸው።
 }
 add-account-servers-entered = አገልጋዮች፦ { $servers }፣ እንደገቡት።
+add-account-or = ወይም
+add-account-sign-in-with = በ{ $provider } ይግቡ
+add-account-sign-in-instead = በምትኩ በ{ $provider } ይግቡ
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = ስሙ ከይለፍ ቃሉ ጋር አንድ ነ�
 add-account-added = { $address } ታክሏል። ደብዳቤዎን በማምጣት ላይ…
 add-account-app-password-refused = { $provider } የይለፍ ቃሉን አልተቀበለም። በድር ላይ የሚጠቀሙበትን ሳይሆን የመተግበሪያ የይለፍ ቃል ያስፈልገዋል።
 add-account-password-refused = አገልጋዩ የይለፍ ቃሉን አልተቀበለም። ይፈትሹትና እንደገና ይሞክሩ።
+add-account-sign-in-refused = { $provider } Katnaን አላስገባም። እንደገና ይሞክሩ፣ እና ደብዳቤዎን እንዲደርስበት ይፍቀዱ።
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] ይህ የKatna ቅጂ ገና ወደ Microsoft መለያዎች መግባት አይችልም።
+    [Google] ይህ የKatna ቅጂ ገና ወደ Google መለያዎች መግባት አይችልም።
+   *[other] ይህ አቅራቢ መግባትን የሚፈቅደው በራሱ ገጽ ላይ ብቻ ነው፤ Katna ደግሞ ለእሱ ይህን ገና ማድረግ አይችልም።
+}
+add-account-signed-in = በ{ $provider } ገብተዋል። ደብዳቤዎን በማምጣት ላይ…
 
 ## The account menu (from the account button on the top bar)
 

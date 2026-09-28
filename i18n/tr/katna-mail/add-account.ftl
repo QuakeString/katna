@@ -11,6 +11,9 @@ add-account-servers-title = Sunucu ayarları
 add-account-servers-intro = Katna'nın { $address } için postaları okuduğu ve gönderdiği yer.
 add-account-password-title = Parolanızı girin
 add-account-signing-in = Oturum açılıyor…
+add-account-browser-title = Tarayıcınızda devam edin
+add-account-browser-intro = Katna, tarayıcınızda { $provider } oturum açma sayfasını açtı. Orada oturum açın ve Katna'nın postalarınızı okumasına ve göndermesine izin verin, ardından buraya dönün.
+add-account-browser-hint = Sayfa açılmadı mı? Tarayıcınızın pencerelerine bakın ya da geri dönüp yeniden deneyin.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] Sunucular: { $servers }, tahmin edildi; oturum açma başarısız olursa denetleyin.
 }
 add-account-servers-entered = Sunucular: { $servers }, girildiği gibi.
+add-account-or = veya
+add-account-sign-in-with = { $provider } ile oturum aç
+add-account-sign-in-instead = Bunun yerine { $provider } ile oturum aç
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = Ad, parolayla aynı. Oraya bunun yerine adınız�
 add-account-added = { $address } eklendi. Postalarınız alınıyor…
 add-account-app-password-refused = { $provider } parolayı reddetti. Web'de kullandığınız parola değil, bir uygulama parolası gerekiyor.
 add-account-password-refused = Sunucu parolayı reddetti. Denetleyip yeniden deneyin.
+add-account-sign-in-refused = { $provider }, Katna'nın girişine izin vermedi. Yeniden deneyin ve postalarınıza erişime izin verin.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Katna'nın bu kopyası henüz Microsoft hesaplarında oturum açamıyor.
+    [Google] Katna'nın bu kopyası henüz Google hesaplarında oturum açamıyor.
+   *[other] Bu sağlayıcı yalnızca kendi sayfasında oturum açmaya izin veriyor ve Katna bunu henüz bu sağlayıcı için yapamıyor.
+}
+add-account-signed-in = { $provider } ile oturum açıldı. Postalarınız alınıyor…
 
 ## The account menu (from the account button on the top bar)
 

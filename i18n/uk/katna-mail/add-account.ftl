@@ -11,6 +11,9 @@ add-account-servers-title = Налаштування сервера
 add-account-servers-intro = Де Katna читає й надсилає пошту для { $address }.
 add-account-password-title = Введіть пароль
 add-account-signing-in = Вхід…
+add-account-browser-title = Продовжте в браузері
+add-account-browser-intro = У вашому браузері відкрито сторінку входу { $provider }. Увійдіть там і дозвольте Katna читати й надсилати вашу пошту, а потім поверніться сюди.
+add-account-browser-hint = Сторінка не відкрилася? Перегляньте вікна браузера або поверніться назад і спробуйте ще раз.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] Сервери: { $servers }, вгадано; перевірте їх, якщо вхід не вдасться.
 }
 add-account-servers-entered = Сервери: { $servers }, як введено.
+add-account-or = або
+add-account-sign-in-with = Увійти через { $provider }
+add-account-sign-in-instead = Натомість увійти через { $provider }
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = Ім’я збігається з паролем.
 add-account-added = { $address } додано. Отримання пошти…
 add-account-app-password-refused = { $provider } відхилив пароль. Потрібен пароль застосунку, а не той, яким ви користуєтеся в браузері.
 add-account-password-refused = Сервер відхилив пароль. Перевірте його й спробуйте ще раз.
+add-account-sign-in-refused = { $provider } не впустив Katna. Спробуйте ще раз і дозвольте доступ до своєї пошти.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Ця копія Katna поки не вміє входити в облікові записи Microsoft.
+    [Google] Ця копія Katna поки не вміє входити в облікові записи Google.
+   *[other] Цей постачальник дозволяє входити лише на власній сторінці, а Katna поки не вміє цього для нього.
+}
+add-account-signed-in = Ви ввійшли через { $provider }. Отримання пошти…
 
 ## The account menu (from the account button on the top bar)
 

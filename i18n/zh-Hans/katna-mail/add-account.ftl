@@ -11,6 +11,9 @@ add-account-servers-title = 服务器设置
 add-account-servers-intro = Katna 为 { $address } 收取和发送邮件所用的服务器。
 add-account-password-title = 输入你的密码
 add-account-signing-in = 正在登录…
+add-account-browser-title = 在浏览器中继续
+add-account-browser-intro = Katna 已在你的浏览器中打开 { $provider } 登录页面。请在那里登录并允许 Katna 读取和发送你的邮件，然后回到这里。
+add-account-browser-hint = 没有打开页面？请查看浏览器的窗口，或返回后重试。
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] 服务器：{ $servers }，为推测结果；如果登录失败，请检查。
 }
 add-account-servers-entered = 服务器：{ $servers }，按输入内容。
+add-account-or = 或
+add-account-sign-in-with = 使用 { $provider } 登录
+add-account-sign-in-instead = 改用 { $provider } 登录
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = 姓名与密码相同。请在那里改为输入�
 add-account-added = 已添加 { $address }。正在收取你的邮件…
 add-account-app-password-refused = { $provider } 拒绝了该密码。它需要应用专用密码，而不是你在网页上使用的密码。
 add-account-password-refused = 服务器拒绝了该密码。请检查后重试。
+add-account-sign-in-refused = { $provider } 未允许 Katna 登录。请重试，并允许访问你的邮件。
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] 此版本的 Katna 暂时无法登录 Microsoft 账号。
+    [Google] 此版本的 Katna 暂时无法登录 Google 账号。
+   *[other] 此服务商只允许在其自己的页面上登录，Katna 暂时无法为其完成此操作。
+}
+add-account-signed-in = 已使用 { $provider } 登录。正在收取你的邮件…
 
 ## The account menu (from the account button on the top bar)
 

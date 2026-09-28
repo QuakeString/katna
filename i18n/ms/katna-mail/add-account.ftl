@@ -11,6 +11,9 @@ add-account-servers-title = Tetapan pelayan
 add-account-servers-intro = Tempat Katna membaca dan menghantar mel untuk { $address }.
 add-account-password-title = Masukkan kata laluan anda
 add-account-signing-in = Log masuk…
+add-account-browser-title = Teruskan dalam pelayar anda
+add-account-browser-intro = Katna telah membuka halaman log masuk { $provider } dalam pelayar anda. Log masuk di sana dan benarkan Katna membaca dan menghantar mel anda, kemudian kembali ke sini.
+add-account-browser-hint = Tiada halaman dibuka? Semak tetingkap pelayar anda, atau kembali dan cuba lagi.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] Pelayan: { $servers }, berdasarkan tekaan; semak jika log masuk gagal.
 }
 add-account-servers-entered = Pelayan: { $servers }, seperti yang dimasukkan.
+add-account-or = atau
+add-account-sign-in-with = Log masuk dengan { $provider }
+add-account-sign-in-instead = Log masuk dengan { $provider } sahaja
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = Nama itu sama dengan kata laluan. Taipkan nama an
 add-account-added = { $address } telah ditambah. Mengambil mel anda…
 add-account-app-password-refused = { $provider } menolak kata laluan itu. Ia memerlukan kata laluan aplikasi, bukan kata laluan yang anda gunakan di web.
 add-account-password-refused = Pelayan menolak kata laluan itu. Semak dan cuba lagi.
+add-account-sign-in-refused = { $provider } tidak membenarkan Katna masuk. Cuba lagi, dan benarkan akses kepada mel anda.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Salinan Katna ini belum boleh log masuk ke akaun Microsoft.
+    [Google] Salinan Katna ini belum boleh log masuk ke akaun Google.
+   *[other] Penyedia ini hanya membenarkan log masuk di halamannya sendiri, dan Katna belum boleh melakukannya untuk penyedia ini.
+}
+add-account-signed-in = Telah log masuk dengan { $provider }. Mendapatkan mel anda…
 
 ## The account menu (from the account button on the top bar)
 

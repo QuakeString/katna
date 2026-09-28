@@ -11,6 +11,9 @@ add-account-servers-title = सर्भर सेटिङहरू
 add-account-servers-intro = { $address } का लागि Katna ले मेल कहाँबाट पढ्छ र पठाउँछ।
 add-account-password-title = आफ्नो पासवर्ड लेख्नुहोस्
 add-account-signing-in = साइन इन गर्दै…
+add-account-browser-title = आफ्नो ब्राउजरमा जारी राख्नुहोस्
+add-account-browser-intro = Katna ले तपाईंको ब्राउजरमा { $provider } को साइन इन पेज खोल्यो। त्यहाँ साइन इन गर्नुहोस् र Katna लाई तपाईंको मेल पढ्न र पठाउन अनुमति दिनुहोस्, अनि यहाँ फर्कनुहोस्।
+add-account-browser-hint = कुनै पेज खुलेन? आफ्नो ब्राउजरका विन्डोहरू जाँच गर्नुहोस्, वा पछाडि गएर फेरि प्रयास गर्नुहोस्।
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] सर्भरहरू: { $servers }, अनुमान गरिएको; साइन इन असफल भए जाँच गर्नुहोस्।
 }
 add-account-servers-entered = सर्भरहरू: { $servers }, लेखिएअनुसार।
+add-account-or = वा
+add-account-sign-in-with = { $provider } बाट साइन इन गर्नुहोस्
+add-account-sign-in-instead = बरु { $provider } बाट साइन इन गर्नुहोस्
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = नाम र पासवर्ड उस्त�
 add-account-added = { $address } थपियो। तपाईंको मेल ल्याउँदै…
 add-account-app-password-refused = { $provider } ले पासवर्ड अस्वीकार गर्‍यो। यसलाई एप पासवर्ड चाहिन्छ, तपाईंले वेबमा प्रयोग गर्ने पासवर्ड होइन।
 add-account-password-refused = सर्भरले पासवर्ड अस्वीकार गर्‍यो। यसलाई जाँच गरेर फेरि प्रयास गर्नुहोस्।
+add-account-sign-in-refused = { $provider } ले Katna लाई भित्र आउन दिएन। फेरि प्रयास गर्नुहोस्, र आफ्नो मेलमा पहुँच दिनुहोस्।
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Katna को यो प्रतिले अझै Microsoft खाताहरूमा साइन इन गर्न सक्दैन।
+    [Google] Katna को यो प्रतिले अझै Google खाताहरूमा साइन इन गर्न सक्दैन।
+   *[other] यो प्रदायकले आफ्नै पेजमा मात्र साइन इन गर्न दिन्छ, जुन Katna ले यसका लागि अझै गर्न सक्दैन।
+}
+add-account-signed-in = { $provider } बाट साइन इन भयो। तपाईंको मेल ल्याउँदै…
 
 ## The account menu (from the account button on the top bar)
 

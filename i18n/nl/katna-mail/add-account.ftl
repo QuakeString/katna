@@ -11,6 +11,9 @@ add-account-servers-title = Serverinstellingen
 add-account-servers-intro = Waar Katna e-mail leest en verstuurt voor { $address }.
 add-account-password-title = Voer je wachtwoord in
 add-account-signing-in = Aanmelden…
+add-account-browser-title = Ga verder in je browser
+add-account-browser-intro = Katna heeft de aanmeldpagina van { $provider } geopend in je browser. Meld je daar aan en sta Katna toe je e-mail te lezen en te versturen, en kom dan hier terug.
+add-account-browser-hint = Geen pagina geopend? Kijk bij de vensters van je browser, of ga terug en probeer het opnieuw.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] Servers: { $servers }, geraden; controleer ze als aanmelden mislukt.
 }
 add-account-servers-entered = Servers: { $servers }, zoals ingevoerd.
+add-account-or = of
+add-account-sign-in-with = Aanmelden met { $provider }
+add-account-sign-in-instead = In plaats daarvan aanmelden met { $provider }
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = De naam is hetzelfde als het wachtwoord. Typ daar
 add-account-added = { $address } toegevoegd. Je e-mail wordt opgehaald…
 add-account-app-password-refused = { $provider } heeft het wachtwoord geweigerd. Er is een app-wachtwoord nodig, niet het wachtwoord dat je op het web gebruikt.
 add-account-password-refused = De server heeft het wachtwoord geweigerd. Controleer het en probeer het opnieuw.
+add-account-sign-in-refused = { $provider } heeft Katna niet binnengelaten. Probeer het opnieuw en geef toegang tot je e-mail.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Deze versie van Katna kan zich nog niet aanmelden bij Microsoft-accounts.
+    [Google] Deze versie van Katna kan zich nog niet aanmelden bij Google-accounts.
+   *[other] Deze provider staat aanmelden alleen toe op zijn eigen pagina, en dat kan Katna er nog niet voor doen.
+}
+add-account-signed-in = Aangemeld met { $provider }. Je e-mail wordt opgehaald…
 
 ## The account menu (from the account button on the top bar)
 

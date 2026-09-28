@@ -710,3 +710,26 @@ antworten, mit wem Sie am meisten schreiben und an welchen Tagen und zu
 welchen Uhrzeiten Ihre E-Mails eintreffen. Gezählt wird auf Ihrem
 Computer aus den E-Mails, die Katna bereits hat.
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Anmelden mit Google oder Microsoft"
+text = """
+Fügen Sie ein Gmail- oder Outlook-Konto hinzu, indem Sie sich auf der
+eigenen Seite von Google oder Microsoft in Ihrem Browser anmelden, ganz
+ohne App-Passwort. Auch Adressen von Outlook.com und Hotmail funktionieren
+jetzt. Wenn eine Anmeldung nicht mehr funktioniert, bietet ein Hinweis
+unten im Fenster an, sich erneut anzumelden.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Verfolgung und Bestätigungen von Anfang an"
+text = """
+Neue Nachrichten und Antworten beginnen jetzt mit eingeschalteter
+Verfolgung von Öffnungen und Klicks, Lesebestätigung und
+Zustellbestätigung; klicken Sie auf eine Schaltfläche neben den
+Empfängern, um eine davon für diese Nachricht auszuschalten. Für die
+Verfolgung müssen Sie bei Ihrem Katna-Konto angemeldet sein. Eine
+Zustellbestätigung ist eine E-Mail, die Ihr E-Mail-Server Ihnen schickt,
+wenn der Server jedes Empfängers die Nachricht annimmt; die Schaltfläche
+ist ausgegraut, wenn Ihr E-Mail-Server sie nicht anbietet.
+"""

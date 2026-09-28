@@ -11,6 +11,9 @@ add-account-servers-title = Cài đặt máy chủ
 add-account-servers-intro = Nơi Katna đọc và gửi thư cho { $address }.
 add-account-password-title = Nhập mật khẩu của bạn
 add-account-signing-in = Đang đăng nhập…
+add-account-browser-title = Tiếp tục trong trình duyệt
+add-account-browser-intro = Katna đã mở trang đăng nhập { $provider } trong trình duyệt của bạn. Hãy đăng nhập ở đó và cho phép Katna đọc và gửi thư của bạn, rồi quay lại đây.
+add-account-browser-hint = Không thấy trang nào mở ra? Hãy kiểm tra các cửa sổ trình duyệt, hoặc quay lại và thử lại.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] Máy chủ: { $servers }, được phỏng đoán; hãy kiểm tra nếu đăng nhập thất bại.
 }
 add-account-servers-entered = Máy chủ: { $servers }, như đã nhập.
+add-account-or = hoặc
+add-account-sign-in-with = Đăng nhập bằng { $provider }
+add-account-sign-in-instead = Thay vào đó, đăng nhập bằng { $provider }
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = Tên trùng với mật khẩu. Hãy nhập tên 
 add-account-added = Đã thêm { $address }. Đang nhận thư của bạn…
 add-account-app-password-refused = { $provider } đã từ chối mật khẩu. Cần mật khẩu ứng dụng, không phải mật khẩu bạn dùng trên web.
 add-account-password-refused = Máy chủ đã từ chối mật khẩu. Hãy kiểm tra và thử lại.
+add-account-sign-in-refused = { $provider } không cho Katna vào. Hãy thử lại và cho phép truy cập thư của bạn.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Bản Katna này chưa thể đăng nhập tài khoản Microsoft.
+    [Google] Bản Katna này chưa thể đăng nhập tài khoản Google.
+   *[other] Nhà cung cấp này chỉ cho phép đăng nhập trên trang riêng của họ, điều mà Katna chưa làm được với nhà cung cấp này.
+}
+add-account-signed-in = Đã đăng nhập bằng { $provider }. Đang nhận thư của bạn…
 
 ## The account menu (from the account button on the top bar)
 

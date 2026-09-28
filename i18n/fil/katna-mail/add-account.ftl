@@ -11,6 +11,9 @@ add-account-servers-title = Mga setting ng server
 add-account-servers-intro = Kung saan nagbabasa at nagpapadala ang Katna ng mail para sa { $address }.
 add-account-password-title = Ilagay ang iyong password
 add-account-signing-in = Nagsa-sign in…
+add-account-browser-title = Magpatuloy sa iyong browser
+add-account-browser-intro = Binuksan ng Katna ang sign-in page ng { $provider } sa iyong browser. Mag-sign in doon at payagan ang Katna na magbasa at magpadala ng iyong mail, pagkatapos ay bumalik dito.
+add-account-browser-hint = Walang page na bumukas? Tingnan ang mga window ng iyong browser, o bumalik at subukang muli.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] Mga server: { $servers }, hula lang; tingnan ang mga ito kung pumalya ang pag-sign in.
 }
 add-account-servers-entered = Mga server: { $servers }, gaya ng inilagay.
+add-account-or = o
+add-account-sign-in-with = Mag-sign in gamit ang { $provider }
+add-account-sign-in-instead = Mag-sign in na lang gamit ang { $provider }
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = Pareho ang pangalan at ang password. Sa halip, i-
 add-account-added = Naidagdag ang { $address }. Kinukuha ang mail mo…
 add-account-app-password-refused = Tinanggihan ng { $provider } ang password. Kailangan nito ng app password, hindi ang ginagamit mo sa web.
 add-account-password-refused = Tinanggihan ng server ang password. Tingnan ito at subukang muli.
+add-account-sign-in-refused = Hindi pinapasok ng { $provider } ang Katna. Subukang muli, at payagan ang access sa iyong mail.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Hindi pa makakapag-sign in ang kopyang ito ng Katna sa mga Microsoft account.
+    [Google] Hindi pa makakapag-sign in ang kopyang ito ng Katna sa mga Google account.
+   *[other] Pinapayagan lang ng provider na ito ang pag-sign in sa sarili nitong page, na hindi pa kayang gawin ng Katna para dito.
+}
+add-account-signed-in = Naka-sign in gamit ang { $provider }. Kinukuha ang mail mo…
 
 ## The account menu (from the account button on the top bar)
 

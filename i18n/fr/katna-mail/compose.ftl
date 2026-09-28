@@ -75,6 +75,9 @@ compose-track-unavailable = Les messages signés, chiffrés ou en texte brut ne 
 compose-track-sign-in = Connectez-vous à un compte Katna pour suivre les ouvertures et les clics
 compose-receipt = Demander un accusé de lecture
 compose-receipt-on = Accusé de lecture demandé : l’application du destinataire peut lui proposer d’en envoyer un
+compose-delivery = Demander un accusé de remise
+compose-delivery-on = Accusé de remise demandé : votre serveur de messagerie vous enverra un e-mail quand le serveur de chaque destinataire l’acceptera
+compose-delivery-unavailable = Votre serveur de messagerie n’envoie pas d’accusés de remise
 
 ## Spelling
 
