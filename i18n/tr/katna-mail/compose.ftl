@@ -78,6 +78,17 @@ compose-drive-share-link = Bağlantıyla paylaş
 compose-drive-send-without = Paylaşmadan gönder
 compose-drive-share-cancel = İptal
 compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } { $limit } sınırını aşıyor; bu yüzden OneDrive'ınıza gider ve ileti bir bağlantı taşır.
+compose-onedrive-tip = OneDrive'ınızda; ileti bir bağlantı taşır
+compose-onedrive-allow = OneDrive'a izin ver
+compose-onedrive-allow-tip = Katna'nın büyük dosyaları OneDrive'ınıza koyabilmesi için Microsoft ile yeniden oturum açın
+compose-onedrive-not-uploaded = { $name } henüz OneDrive'da değil
+compose-onedrive-share-failed = Dosyalar OneDrive'da paylaşılamadı: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive, dosyaları { $addresses } ile paylaşamıyor. Bunun yerine bağlantıya sahip herkes dosyaları açabilir.
+   *[other] OneDrive, dosyaları { $addresses } ile paylaşamıyor. Bunun yerine bağlantıya sahip herkes dosyaları açabilir.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Dosyaları buraya bırakın
 compose-drop-here = Buraya bırakın
 compose-paste-keep-formatting = Biçimlendirmeyi koru

@@ -34,7 +34,6 @@ about-changelog = Değişiklik günlüğü
 about-source = Kaynak kodu
 about-coffee = Bana bir kahve ısmarla
 about-coming-soon = Çok yakında
-about-follow = Geliştiriciyi takip edin
 about-love-title = Rust, KDE ve Linux sevgisiyle yapıldı
 about-love-text = Rust, hızlı ve güvenli bir posta uygulaması yazmayı keyifli kılıyor: Katna'da hiç unsafe kod yok. KDE'nin Plasma masaüstü ve PIM paketi Katna'ya ilham verdi; Linux ve özgür yazılım topluluğu da üzerinde durduğu zemini inşa ediyor. Teşekkürler, aşağıdaki kütüphanelere de teşekkürler.
 about-kde-text = KDE, Katna'nın kendini en çok evinde hissettiği masaüstünü geliştiriyor; gönüllüler tarafından yapılıyor ve sizin gibi insanlar tarafından destekleniyor. Plasma'yı veya KDE uygulamalarını seviyorsanız lütfen KDE'ye bağış yapmayı düşünün.

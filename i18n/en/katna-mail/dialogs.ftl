@@ -54,8 +54,8 @@ about-source = Source code
 about-coffee = Buy me a coffee
 # Tooltip on "Buy me a coffee" while it does nothing yet.
 about-coming-soon = Coming soon
-# Above links to the author's social media accounts.
-about-follow = Follow the author
+# Before the author's GitHub, x.com and LinkedIn links: "Follow me on GitHub"...
+about-follow-me = Follow me on
 # Rust is a programming language; KDE is a free software community and its
 # desktop. Keep both names as they are.
 about-love-title = Made with love for Rust, KDE and Linux

@@ -1079,3 +1079,33 @@ i-attach mo ito, at dala ng mensahe ang link nito, tulad sa Gmail.
 Ibinabahagi ito sa iyong mga tatanggap kapag pinindot mo ang Ipadala;
 magtatanong lang ang Katna kung may hindi mabigyan ng access.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Mas maayos na mahahabang listahan ng tatanggap"
+text = """
+May sarili nang scroll bar ang mahabang listahan ng mga tatanggap at
+isang linya lang ang usad nito; magpapatuloy lang ang pag-scroll ng
+pag-uusap kapag naabot na ng listahan ang dulo nito. Hindi na tumatalon
+ang mga button sa ibaba kapag nagdagdag ng tatanggap.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Tingnan kung may bagong mail"
+text = """
+I-right-click ang isang folder o account sa pane ng mga folder para sa
+“Tingnan kung may bagong mail”, “Markahan lahat bilang nabasa na”,
+bagong folder sa loob nito, o “Alisin ang laman ng Basurahan”. Kumukuha
+na rin sa server ang “I-refresh” sa itaas ng listahan. Habang nagsusuri
+ang Katna, umiikot ang mga arrow sa “I-refresh” at sa tabi ng Inbox, at
+lalabas sa itaas ang “Tinitingnan kung may bagong mail…” kapag tumagal
+nang higit sa sandali.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Malalaking file sa pamamagitan ng OneDrive"
+text = """
+Ang mga account na Outlook.com, Hotmail, at iba pang Microsoft ay
+nagpapadala na ngayon ng file na lampas sa limitasyon ng mail tulad ng
+mga Google account: mapupunta ang file sa iyong OneDrive sa sandaling
+i-attach mo ito, at dala ng mensahe ang link nito, tulad sa Outlook.
+"""

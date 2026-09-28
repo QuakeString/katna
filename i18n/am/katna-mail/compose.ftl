@@ -78,6 +78,17 @@ compose-drive-share-link = በአገናኝ አጋራ
 compose-drive-send-without = ሳያጋሩ ላክ
 compose-drive-share-cancel = ይቅር
 compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } ከ{ $limit } ስለሚበልጥ ወደ OneDrive ይሄዳል፣ መልዕክቱም አገናኝ ይይዛል።
+compose-onedrive-tip = በእርስዎ OneDrive ውስጥ፤ መልዕክቱ አገናኝ ይይዛል
+compose-onedrive-allow = OneDriveን ፍቀድ
+compose-onedrive-allow-tip = Katna ትላልቅ ፋይሎችን በOneDrive እንዲያስቀምጥ በMicrosoft እንደገና ይግቡ
+compose-onedrive-not-uploaded = { $name } ገና በOneDrive ውስጥ የለም
+compose-onedrive-share-failed = ፋይሎቹን በOneDrive ማጋራት አልተቻለም፦ { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive ፋይሎቹን ከ{ $addresses } ጋር ማጋራት አይችልም። በምትኩ አገናኙ ያለው ማንኛውም ሰው ሊከፍታቸው ይችላል።
+   *[other] OneDrive ፋይሎቹን ከ{ $addresses } ጋር ማጋራት አይችልም። በምትኩ አገናኙ ያለው ማንኛውም ሰው ሊከፍታቸው ይችላል።
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = ፋይሎችን እዚህ ይጣሉ
 compose-drop-here = እዚህ ይጣሉ
 compose-paste-keep-formatting = ቅርጸቱን አቆይ

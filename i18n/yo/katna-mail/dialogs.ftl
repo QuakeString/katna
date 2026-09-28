@@ -34,7 +34,6 @@ about-changelog = Àkọsílẹ̀ àwọn àyípadà
 about-source = Kóòdù orísun
 about-coffee = Ra kọfí kan fún mi
 about-coming-soon = Ó ń bọ̀ láìpẹ́
-about-follow = Tẹ̀lé olùkọ̀wé
 about-love-title = A fi ìfẹ́ ṣe é fún Rust, KDE àti Linux
 about-love-text = Rust ń jẹ́ kí kíkọ áàpù lẹ́tà tó yára tó sì ní ààbò jẹ́ ìgbádùn: Katna kò ní kóòdù unsafe kankan. Déskítọ́ọ̀pù Plasma ti KDE àti àkójọ PIM rẹ̀ ló fún Katna ní ìmísí, Linux àti àwùjọ sọ́fítíwèé ọ̀fẹ́ sì ń kọ́ ilẹ̀ tí ó dúró lé. A dúpẹ́, a sì dúpẹ́ lọ́wọ́ àwọn ibi ìkówèésí tó wà nísàlẹ̀.
 about-kde-text = KDE ń kọ́ déskítọ́ọ̀pù tí Katna ti ń rò pé òun wà nílé jù lọ, àwọn olùyọ̀ǹda ara ẹni ló ń ṣe é, àwọn ènìyàn bí ìwọ sì ń ṣe ìnáwó rẹ̀. Tí o bá gbádùn Plasma tàbí àwọn áàpù KDE, jọ̀wọ́ ronú nípa fífi ẹ̀bùn ṣètìlẹ́yìn fún KDE.

@@ -1024,3 +1024,29 @@ Google Drive ɗinka da zarar ka haɗa shi, kuma saƙon yana ɗauke da mahaɗinsa
 Gmail. Ana raba shi da masu karɓa idan ka danna Aika; Katna tana tambaya ne kawai idan
 ba za a iya ba wani damar shiga ba.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Dogayen jerin masu karɓa sun fi laushi"
+text = """
+Dogon jerin masu karɓa yanzu yana da nasa sandar gungurawa kuma yana motsawa layi ɗaya a
+lokaci guda, tattaunawar kuma tana gungurawa ne kawai idan jerin ya kai ƙarshe. Ƙara
+masu karɓa ba ya sa maɓallan da ke ƙasa tsalle kuma.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Duba sabbin wasiƙu"
+text = """
+Danna dama kan folda ko asusu a cikin allon folda don samun “Duba sabbin wasiƙu”, “Yi wa
+duka alama an karanta”, sabuwar folda a cikinta, ko “Kwashe kwandon shara”. “Sabunta” a
+saman jerin yanzu yana ɗauko daga uwar garke ma. Yayin da Katna ke dubawa, kibiyoyin da
+ke kan “Sabunta” da kusa da Akwatin saƙo suna juyawa, kuma “Ana duba sabbin wasiƙu…”
+yana bayyana a sama idan ya ɗauki fiye da ɗan lokaci.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Manyan fayiloli ta OneDrive"
+text = """
+Asusun Outlook.com, Hotmail da sauran asusun Microsoft yanzu suna aika fayilolin da
+suka wuce iyakar wasiƙa kamar asusun Google: fayil yana zuwa OneDrive ɗinka da zarar
+ka haɗa shi, kuma saƙon yana ɗauke da mahaɗinsa, kamar a Outlook.
+"""

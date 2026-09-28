@@ -21,6 +21,7 @@ tab-provider-other = do Katna sắp xếp
 
 list-select = Chọn
 list-refresh = Làm mới
+list-checking = Đang kiểm tra thư mới…
 list-more = Thêm
 list-mark-read = Đánh dấu là đã đọc
 list-mark-unread = Đánh dấu là chưa đọc

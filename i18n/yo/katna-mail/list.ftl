@@ -21,6 +21,7 @@ tab-provider-other = Katna ló tò ó
 
 list-select = Yàn
 list-refresh = Sọdọ̀tun
+list-checking = À ń ṣàyẹ̀wò lẹ́tà tuntun…
 list-more = Síi
 list-mark-read = Sàmì sí bí kíkà
 list-mark-unread = Sàmì sí bí àìkà

@@ -21,6 +21,7 @@ tab-provider-other = Katna에서 분류
 
 list-select = 선택
 list-refresh = 새로고침
+list-checking = 새 메일을 확인하는 중…
 list-more = 더보기
 list-mark-read = 읽음으로 표시
 list-mark-unread = 읽지 않음으로 표시

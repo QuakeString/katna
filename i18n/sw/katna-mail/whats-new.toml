@@ -1042,3 +1042,29 @@ kwenye Google Drive yako mara tu unapoliambatisha, na ujumbe hubeba kiungo chake
 Gmail. Hushirikiwa na wapokeaji unapobonyeza Tuma; Katna huuliza tu ikiwa mtu hawezi
 kupewa ufikiaji.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Orodha ndefu za wapokeaji zenye mwendo laini zaidi"
+text = """
+Orodha ndefu ya wapokeaji sasa ina upau wake wa kusogeza na husogea mstari mmoja kwa
+wakati, na mazungumzo huendelea kusogea tu orodha inapofika mwisho. Kuongeza wapokeaji
+hakufanyi tena vitufe vilivyo chini kuruka.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Kagua barua mpya"
+text = """
+Bofya kulia folda au akaunti kwenye kidirisha cha folda ili upate “Kagua barua mpya”,
+“Tia alama zote kuwa zimesomwa”, folda mpya ndani yake, au “Safisha Tupio”. “Onyesha
+upya” juu ya orodha sasa pia huleta kutoka kwa seva. Katna inapokagua, mishale kwenye
+“Onyesha upya” na kando ya Kikasha huzunguka, na “Inakagua barua mpya…” huonekana juu
+ikichukua muda zaidi ya kitambo.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Faili kubwa kupitia OneDrive"
+text = """
+Akaunti za Outlook.com, Hotmail na akaunti nyingine za Microsoft sasa hutuma faili
+zinazozidi kikomo cha barua kama akaunti za Google: faili huenda kwenye OneDrive yako
+mara tu unapoliambatisha, na ujumbe hubeba kiungo chake, kama Outlook.
+"""

@@ -21,6 +21,7 @@ tab-provider-other = 由 Katna 分類
 
 list-select = 選取
 list-refresh = 重新整理
+list-checking = 正在檢查新郵件…
 list-more = 更多
 list-mark-read = 標示為已讀取
 list-mark-unread = 標示為未讀取
