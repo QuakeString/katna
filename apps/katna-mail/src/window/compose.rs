@@ -45,8 +45,9 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    AnyElement, Context, DragMoveEvent, Entity, ExternalPaths, FocusHandle, Focusable, FontWeight,
-    Hsla, ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, rgba,
+    AnyElement, Context, Decorations, DragMoveEvent, Entity, ExternalPaths, FocusHandle, Focusable,
+    FontWeight, Hsla, ScrollHandle, SharedString, Subscription, Task, Window, canvas, div,
+    prelude::*, rgba,
 };
 use katna_core::AccountId;
 use katna_core::config::SEND_FROM_CURRENT;
@@ -169,6 +170,9 @@ pub(super) struct Compose {
     /// Fields of the link and schedule dialogs and the emoji search.
     dialog: tools::Dialog,
     shown: Spring,
+    /// The width of the room a sheet was last laid out in, 0 until then:
+    /// the window's frame may take more than its own reckoning says.
+    sheet_width: Rc<Cell<f32>>,
     closing: bool,
     body_scroll: ScrollHandle,
     /// The quoted message a reply answers, kept out of the text behind a
@@ -1074,6 +1078,7 @@ impl MailWindow {
             follow_up: 0,
             dialog,
             shown: Spring::new(motion::SLIDE, 0.0),
+            sheet_width: Rc::default(),
             closing: false,
             body_scroll: ScrollHandle::new(),
             quote: quote::Quote::None,
@@ -1799,10 +1804,18 @@ impl MailWindow {
         // On a phone, and a tablet too narrow for the reading pane, the
         // message is written on a sheet over the whole window, top bar and
         // all, as mobile mail does; minimized, it is a strip at the foot.
+        // With Katna's own frame the top bar holds the window buttons, so
+        // the sheet stays below it.
         let shape = self.layout.shape;
         let sheet = !shape.size.splits(shape.width) && mode != Mode::Minimized;
+        let under_bar = matches!(window.window_decorations(), Decorations::Client { .. });
+        // The room as laid out last time, once there is one.
+        let sheet_width = match compose.sheet_width.get() {
+            w if w > 0.0 => w,
+            _ => shape.width,
+        };
         let (width, height) = match mode {
-            _ if sheet => (shape.width, vh),
+            _ if sheet => (sheet_width, vh),
             Mode::Minimized if shape.is_phone() => (shape.width - 16.0, TITLE_HEIGHT),
             Mode::Open | Mode::Inline | Mode::Window => {
                 (WIDTH.min(vw - 32.0), MAX_HEIGHT.min(vh - 96.0))
@@ -1815,8 +1828,13 @@ impl MailWindow {
             .key_context("Compose")
             .occlude()
             .relative()
-            .w(px(width))
-            .map(|d| if sheet { d.h_full() } else { d.h(px(height)) })
+            .map(|d| {
+                if sheet {
+                    d.size_full()
+                } else {
+                    d.w(px(width)).h(px(height))
+                }
+            })
             .flex()
             .flex_col()
             .overflow_hidden()
@@ -1843,15 +1861,43 @@ impl MailWindow {
             });
 
         Some(match mode {
-            _ if sheet => div()
-                .absolute()
-                .top(px(lerp(48.0, 0.0, t) - super::TOP_BAR_HEIGHT))
-                .bottom(px(-lerp(48.0, 0.0, t)))
-                .left_0()
-                .right_0()
-                .opacity(t)
-                .child(panel)
-                .into_any_element(),
+            _ if sheet => {
+                let measured = compose.sheet_width.clone();
+                let this = cx.entity().downgrade();
+                let top = if under_bar {
+                    0.0
+                } else {
+                    -super::TOP_BAR_HEIGHT
+                };
+                div()
+                    .absolute()
+                    .top(px(lerp(48.0, 0.0, t) + top))
+                    .bottom(px(-lerp(48.0, 0.0, t)))
+                    .left_0()
+                    .right_0()
+                    .opacity(t)
+                    .child(
+                        canvas(
+                            move |bounds, _, cx| {
+                                let width = unpx(bounds.size.width);
+                                if (width - measured.get()).abs() > 0.5 {
+                                    measured.set(width);
+                                    // After this frame: a change asked for
+                                    // while drawing is lost.
+                                    let this = this.clone();
+                                    cx.defer(move |cx| {
+                                        this.update(cx, |_, cx| cx.notify()).ok();
+                                    });
+                                }
+                            },
+                            |_, _, _, _| {},
+                        )
+                        .absolute()
+                        .size_full(),
+                    )
+                    .child(panel)
+                    .into_any_element()
+            }
             Mode::Full => div()
                 .absolute()
                 .top_0()
