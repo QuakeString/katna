@@ -191,7 +191,8 @@ mod tests {
         let (path, config) = &files[0];
         assert!(path.ends_with("katna-bus.conf"));
         assert!(config.contains("<listen>nonce-tcp:host=127.0.0.1"));
-        assert!(config.contains("<servicedir>/state/bus/services</servicedir>"));
+        let services = Path::new("/state/bus").join("services");
+        assert!(config.contains(&format!("<servicedir>{}</servicedir>", services.display())));
         let (path, service) = &files[1];
         assert!(path.ends_with("in.invenia.katna.Daemon.service"));
         assert!(service.contains("Name=in.invenia.katna.Daemon\n"));

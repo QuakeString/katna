@@ -248,6 +248,8 @@ mod tests {
         move |name| vars.get(name).cloned()
     }
 
+    // XDG paths start with `/`, which is not a whole path on Windows.
+    #[cfg(unix)]
     #[test]
     fn defaults_to_home() {
         let paths = Paths::from_lookup(lookup(&[("HOME", "/home/ada")])).unwrap();
@@ -268,6 +270,8 @@ mod tests {
         );
     }
 
+    // XDG paths start with `/`, which is not a whole path on Windows.
+    #[cfg(unix)]
     #[test]
     fn xdg_variables_win_over_home() {
         let paths = Paths::from_lookup(lookup(&[
@@ -285,6 +289,8 @@ mod tests {
         assert_eq!(paths.cache_dir(), Path::new("/cache/katna"));
     }
 
+    // XDG paths start with `/`, which is not a whole path on Windows.
+    #[cfg(unix)]
     #[test]
     fn relative_and_empty_xdg_values_are_ignored() {
         let paths = Paths::from_lookup(lookup(&[
@@ -297,6 +303,8 @@ mod tests {
         assert_eq!(paths.data_dir(), Path::new("/home/ada/.local/share/katna"));
     }
 
+    // XDG paths start with `/`, which is not a whole path on Windows.
+    #[cfg(unix)]
     #[test]
     fn needs_a_home_directory() {
         assert!(matches!(
@@ -320,30 +328,29 @@ mod tests {
 
     #[test]
     fn windows_uses_appdata() {
+        let root = if cfg!(windows) {
+            r"C:\Users\ada"
+        } else {
+            "/Users/ada"
+        };
+        let roaming = Path::new(root).join("AppData").join("Roaming");
+        let local = Path::new(root).join("AppData").join("Local");
         let paths = Paths::from_windows_lookup(lookup(&[
-            ("APPDATA", "/Users/ada/AppData/Roaming"),
-            ("LOCALAPPDATA", "/Users/ada/AppData/Local"),
+            ("APPDATA", roaming.to_str().unwrap()),
+            ("LOCALAPPDATA", local.to_str().unwrap()),
             ("HOME", "/ignored"),
         ]))
         .unwrap();
+        let katna = local.join("Katna");
         assert_eq!(
             paths.config_file(),
-            Path::new("/Users/ada/AppData/Roaming/Katna/config.toml")
+            roaming.join("Katna").join("config.toml")
         );
-        assert_eq!(
-            paths.mail_db(),
-            Path::new("/Users/ada/AppData/Local/Katna/Data/mail.db")
-        );
-        assert_eq!(
-            paths.cache_dir(),
-            Path::new("/Users/ada/AppData/Local/Katna/Cache")
-        );
-        assert_eq!(
-            paths.crash_dir(),
-            Path::new("/Users/ada/AppData/Local/Katna/State/crashes")
-        );
+        assert_eq!(paths.mail_db(), katna.join("Data").join("mail.db"));
+        assert_eq!(paths.cache_dir(), katna.join("Cache"));
+        assert_eq!(paths.crash_dir(), katna.join("State").join("crashes"));
         assert!(matches!(
-            Paths::from_windows_lookup(lookup(&[("APPDATA", "/r")])),
+            Paths::from_windows_lookup(lookup(&[("APPDATA", root)])),
             Err(Error::NoHomeDir)
         ));
     }

@@ -75,6 +75,7 @@ mod tests {
         assert_eq!(new_binary(Path::new("/usr/bin/katna-daemon")), None);
     }
 
+    #[cfg(target_os = "linux")]
     #[test]
     fn this_binary_is_not_replaced() {
         let link = std::fs::read_link(SELF_EXE).unwrap();

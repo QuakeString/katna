@@ -346,6 +346,7 @@ mod tests {
         }
     }
 
+    #[cfg(unix)]
     fn write(root: &Path, rel: &str, contents: &[u8]) {
         let path = root.join(rel);
         fs::create_dir_all(path.parent().unwrap()).unwrap();
@@ -385,6 +386,8 @@ mod tests {
         }
     }
 
+    // Enron's file names end in a dot, which Windows drops.
+    #[cfg(unix)]
     #[test]
     fn imports_a_tree_in_batches_and_skips_junk() {
         let dir = tempfile::tempdir().unwrap();

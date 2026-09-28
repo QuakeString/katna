@@ -226,6 +226,8 @@ mod tests {
             .collect()
     }
 
+    // Enron's file names end in a dot, which Windows drops.
+    #[cfg(unix)]
     #[test]
     fn plain_tree_like_enron() {
         let dir = tempfile::tempdir().unwrap();

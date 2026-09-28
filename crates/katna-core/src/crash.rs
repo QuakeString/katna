@@ -1003,7 +1003,11 @@ mod tests {
         assert_eq!(modules[1].name, "libc.so.6");
         assert_eq!(modules[1].start, 0x7f00_0002_8000);
         assert_eq!(modules[1].base, 0x7f00_0000_0000);
+    }
 
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn frames_name_their_modules() {
         let frames = raw_frames();
         assert!(frames.lines().count() > 3, "{frames}");
         assert!(frames.contains(" + 0x"), "{frames}");
