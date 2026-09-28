@@ -58,26 +58,34 @@ impl Daemon {
                 .ok_or("no password saved; set one with katnactl password")?;
             return Ok(Credentials::new(server.username.clone(), password));
         };
-        let known = self.tokens.lock().unwrap().get(&account).cloned();
-        let tokens = match known {
-            Some(tokens) => tokens,
-            None => {
-                let refresh = self
-                    .secrets
-                    .password(account)
-                    .await
-                    .map_err(|err| err.to_string())?
-                    .ok_or_else(|| format!("{} asks to sign in again", provider.name()))?;
-                let tokens = Arc::new(self.token_source(account, provider, refresh, None)?);
-                self.tokens
-                    .lock()
-                    .unwrap()
-                    .entry(account)
-                    .or_insert(tokens)
-                    .clone()
-            }
-        };
+        let tokens = self.oauth_tokens(account, provider).await?;
         Ok(Credentials::oauth2(server.username.clone(), tokens))
+    }
+
+    /// The access tokens of `account`, which signs in to `provider`:
+    /// shared by its connections and its Drive.
+    pub(super) async fn oauth_tokens(
+        &self,
+        account: AccountId,
+        provider: OAuthProvider,
+    ) -> Result<Arc<TokenSource>, String> {
+        if let Some(tokens) = self.tokens.lock().unwrap().get(&account).cloned() {
+            return Ok(tokens);
+        }
+        let refresh = self
+            .secrets
+            .password(account)
+            .await
+            .map_err(|err| err.to_string())?
+            .ok_or_else(|| format!("{} asks to sign in again", provider.name()))?;
+        let tokens = Arc::new(self.token_source(account, provider, refresh, None)?);
+        Ok(self
+            .tokens
+            .lock()
+            .unwrap()
+            .entry(account)
+            .or_insert(tokens)
+            .clone())
     }
 
     /// A token source for `account` that saves refresh tokens the
@@ -105,7 +113,9 @@ impl Daemon {
             })),
         );
         Ok(match grant {
-            Some(grant) => tokens.with_access_token(grant.access_token.clone(), grant.expires_in),
+            Some(grant) => tokens
+                .with_access_token(grant.access_token.clone(), grant.expires_in)
+                .with_scope(grant.scope.clone()),
             None => tokens,
         })
     }

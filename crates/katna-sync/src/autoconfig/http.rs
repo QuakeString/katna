@@ -325,6 +325,9 @@ struct Head<'a> {
     chunked: bool,
     length: Option<usize>,
     location: Option<String>,
+    /// A `Range` header (Google's resumable uploads say how much they
+    /// have in it).
+    range: Option<String>,
     /// What follows the header.
     rest: &'a [u8],
 }
@@ -347,6 +350,7 @@ fn parse_head(response: &[u8]) -> Result<Head<'_>> {
         chunked: false,
         length: None,
         location: None,
+        range: None,
         rest: &response[end + 4..],
     };
     for line in lines {
@@ -358,6 +362,7 @@ fn parse_head(response: &[u8]) -> Result<Head<'_>> {
             "transfer-encoding" => parsed.chunked = value.eq_ignore_ascii_case("chunked"),
             "content-length" => parsed.length = value.parse::<usize>().ok(),
             "location" => parsed.location = Some(value.to_owned()),
+            "range" => parsed.range = Some(value.to_owned()),
             _ => {}
         }
     }
@@ -417,6 +422,44 @@ pub async fn request(
     tls: &Tls,
     timeout: Duration,
 ) -> Result<(u16, Vec<u8>)> {
+    let body = json.map(|json| ("application/json", json));
+    let reply = exchange(method, url, headers, body, None, tls, timeout).await?;
+    Ok((reply.status, reply.body))
+}
+
+/// The URL in environment variable `var`, when it names a server under
+/// test on this computer (`http://127.0.0.1:…` or `http://localhost:…`);
+/// anything else is ignored, so it can never send tokens elsewhere.
+pub fn test_url(var: &str) -> Option<String> {
+    let url = std::env::var(var).ok()?;
+    let url = url.trim().trim_end_matches('/');
+    (url.starts_with("http://127.0.0.1:") || url.starts_with("http://localhost:"))
+        .then(|| url.to_owned())
+}
+
+/// What [`exchange`] got back.
+#[derive(Debug)]
+pub struct Reply {
+    pub status: u16,
+    pub location: Option<String>,
+    pub range: Option<String>,
+    pub body: Vec<u8>,
+}
+
+/// Called with how many bytes of the body have gone out.
+pub type Progress<'a> = &'a (dyn Fn(usize) + Sync);
+
+/// Like [`request`], with a body of any type, and `sent` told as it goes
+/// out; the answer keeps its `Location` and `Range` headers. For uploads.
+pub async fn exchange(
+    method: &str,
+    url: &str,
+    headers: &[(&str, &str)],
+    body: Option<(&str, &[u8])>,
+    sent: Option<Progress<'_>>,
+    tls: &Tls,
+    timeout: Duration,
+) -> Result<Reply> {
     let exchange = async {
         let (parts, plain) = match url.strip_prefix("http://") {
             Some(rest) => {
@@ -436,9 +479,12 @@ pub async fn request(
              Accept: application/json\r\nConnection: close\r\n",
             parts.path, parts.host
         );
-        if let Some(body) = json {
+        if let Some((kind, body)) = body {
+            if kind.contains(['\r', '\n']) {
+                return Err(Error::Protocol(format!("{url}: bad content type")));
+            }
             request.push_str(&format!(
-                "Content-Type: application/json\r\nContent-Length: {}\r\n",
+                "Content-Type: {kind}\r\nContent-Length: {}\r\n",
                 body.len()
             ));
         } else if method != "GET" {
@@ -458,8 +504,16 @@ pub async fn request(
             conn.connect_tls(parts.host, parts.port).await?;
         }
         conn.write_all(request.as_bytes()).await?;
-        if let Some(body) = json {
-            conn.write_all(body).await?;
+        if let Some((_, body)) = body {
+            // In pieces, so progress shows while a large body goes out.
+            let mut done = 0;
+            for piece in body.chunks(256 * 1024) {
+                conn.write_all(piece).await?;
+                done += piece.len();
+                if let Some(sent) = sent {
+                    sent(done);
+                }
+            }
         }
         let mut response = Vec::new();
         loop {
@@ -475,7 +529,12 @@ pub async fn request(
         let _ = conn.close().await;
         let head = parse_head(&response)?;
         let body = parse_body(&head, MAX_BODY, false)?;
-        Ok((head.status, body))
+        Ok(Reply {
+            status: head.status,
+            location: head.location,
+            range: head.range,
+            body,
+        })
     };
     exchange
         .or(async {

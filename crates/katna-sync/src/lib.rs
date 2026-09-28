@@ -38,6 +38,7 @@ pub mod autoconfig;
 mod backend;
 pub mod bodies;
 pub mod connection;
+pub mod drive;
 pub mod engine;
 mod error;
 pub mod imap;

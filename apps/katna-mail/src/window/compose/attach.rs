@@ -156,10 +156,20 @@ impl MailWindow {
                         .file_name()
                         .map(|n| n.to_string_lossy().into_owned())
                         .unwrap_or_else(|| "attachment".to_owned());
-                    let data = std::fs::read(&path).map_err(|err| format!("{name}: {err}"));
-                    (name, data)
+                    let size = std::fs::metadata(&path).map_or(0, |m| m.len());
+                    // Larger files go through Drive, never into memory.
+                    let data = (size <= MAX_TOTAL as u64)
+                        .then(|| std::fs::read(&path).map_err(|err| format!("{name}: {err}")));
+                    (path, name, size, data)
                 })
                 .collect::<Vec<_>>()
+        });
+        // Where files that do not fit the message go: the Drive of the
+        // account it goes out from, if that signs in with Google.
+        let drive_account = self.compose.as_ref().and_then(|c| {
+            c.from
+                .or_else(|| self.compose_account(c.kind).map(|a| a.id))
+                .filter(|&id| super::drive::can_use_drive(self, id))
         });
         cx.spawn(async move |this, cx| {
             let files = read.await;
@@ -172,22 +182,29 @@ impl MailWindow {
                 let mut problem = None;
                 // Pictures to place with a choice, after the rest.
                 let mut chosen = Vec::new();
-                for (name, data) in files {
+                let mut to_drive = Vec::new();
+                for (path, name, size, data) in files {
+                    if total as u64 + size > MAX_TOTAL as u64 {
+                        match drive_account {
+                            Some(account) => to_drive.push((path, name, size, account)),
+                            None => {
+                                problem = Some(tr!(
+                                    "compose-file-too-large",
+                                    name = name,
+                                    limit = format::size(MAX_TOTAL as u64)
+                                ));
+                            }
+                        }
+                        continue;
+                    }
                     let data = match data {
-                        Ok(data) => data,
-                        Err(err) => {
+                        Some(Ok(data)) => data,
+                        Some(Err(err)) => {
                             problem = Some(err);
                             continue;
                         }
+                        None => continue,
                     };
-                    if total + data.len() > MAX_TOTAL {
-                        problem = Some(tr!(
-                            "compose-file-too-large",
-                            name = name,
-                            limit = format::size(MAX_TOTAL as u64)
-                        ));
-                        continue;
-                    }
                     let mime = mime_of(&name);
                     if matches!(place, Place::Choose { .. }) && mime.starts_with("image/") {
                         chosen.push(katna_ui::rich::Picture { name, mime, data });
@@ -214,6 +231,17 @@ impl MailWindow {
                 }
                 // The newest file shows, however long the list.
                 compose.attach_scroll.scroll_to_bottom();
+                if let Some((_, name, ..)) = to_drive.first() {
+                    let note = tr!(
+                        "compose-drive-note",
+                        name = name.clone(),
+                        limit = format::size(MAX_TOTAL as u64)
+                    );
+                    this.show_snackbar(note, None, cx);
+                }
+                for (path, name, size, account) in to_drive {
+                    this.upload_to_drive(path, name, size, account, cx);
+                }
                 if let Place::Choose { inline } = place
                     && !chosen.is_empty()
                 {
@@ -247,7 +275,7 @@ impl MailWindow {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };
-        if compose.attachments.is_empty() {
+        if compose.attachments.is_empty() && compose.drive.is_empty() {
             return div().into_any_element();
         }
         let chips = compose.attachments.iter().enumerate().map(|(ix, a)| {
@@ -293,7 +321,17 @@ impl MailWindow {
                         .child(icon("close", th.text_dim, 16.0)),
                 )
         });
-        let total: usize = compose.attachments.iter().map(|a| a.data.len()).sum();
+        let mut chips: Vec<AnyElement> = chips.map(|chip| chip.into_any_element()).collect();
+        for (ix, file) in compose.drive.iter().enumerate() {
+            chips.push(self.render_drive_chip(ix, file, th, cx));
+        }
+        let count = compose.attachments.len() + compose.drive.len();
+        let total = compose
+            .attachments
+            .iter()
+            .map(|a| a.data.len() as u64)
+            .sum::<u64>()
+            + compose.drive.iter().map(|f| f.size).sum::<u64>();
         // Two rows and part of a third show; the rest scrolls, so the list
         // never reaches the Send bar however many files there are.
         let list = div()
@@ -313,15 +351,15 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(4.0))
-            .when(compose.attachments.len() > 1, |d| {
+            .when(count > 1, |d| {
                 d.child(
                     div()
                         .text_size(px(12.0))
                         .text_color(rgba(th.text_dim))
                         .child(tr!(
                             "compose-attachments-total",
-                            count = compose.attachments.len() as u64,
-                            size = format::size(total as u64)
+                            count = count as u64,
+                            size = format::size(total)
                         )),
                 )
             })

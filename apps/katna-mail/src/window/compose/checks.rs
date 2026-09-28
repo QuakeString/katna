@@ -21,6 +21,9 @@ pub(in crate::window) enum SendCheck {
 pub(in crate::window) struct Passed {
     pub attachment: bool,
     pub subject: bool,
+    /// The files in Google Drive are shared with the recipients (or they
+    /// were told they would not be).
+    pub shared: bool,
 }
 
 impl Passed {
@@ -29,6 +32,11 @@ impl Passed {
             SendCheck::Attachment => self.attachment = true,
             SendCheck::Subject => self.subject = true,
         }
+        self
+    }
+
+    pub fn with_shared(mut self) -> Self {
+        self.shared = true;
         self
     }
 }

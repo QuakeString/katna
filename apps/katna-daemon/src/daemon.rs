@@ -46,6 +46,7 @@ use katna_sync::{
 use crate::translate::{self, KatnaServer, TranslateError};
 use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secrets};
 
+mod drive;
 mod reminders;
 
 pub use reminders::{SNOOZED, is_snoozed_path};
@@ -94,6 +95,8 @@ pub enum Notice {
     TrackingChanged,
     /// Where an update of Katna stands changed.
     UpdateChanged,
+    /// A Google Drive upload moved on.
+    DriveChanged(i64),
 }
 
 /// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
@@ -227,6 +230,8 @@ pub struct Daemon {
     rotated: (Sender<Rotated>, Receiver<Rotated>),
     /// Ends the browser sign-in under way, if any.
     signing_in: Mutex<Option<Sender<()>>>,
+    /// Files going up to Google Drive for messages.
+    uploads: drive::Uploads,
     /// Tells the tracking event stream to look again (a tracked message
     /// went out, or settings changed).
     tracking_wake: (Sender<()>, Receiver<()>),
@@ -285,6 +290,7 @@ impl Daemon {
             tokens: Mutex::default(),
             rotated: async_channel::unbounded(),
             signing_in: Mutex::default(),
+            uploads: drive::Uploads::default(),
             tracking_wake: async_channel::bounded(1),
             translation_languages: Default::default(),
             scheduler: OnceLock::new(),

@@ -508,9 +508,11 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   redirects under `localhost`, so `::1` is listened on too), opens the
   provider's page in the default browser (the OpenURI portal, else
   `xdg-open`), and trades the code for tokens with our own HTTPS client
-  (rustls). Scopes: Google `https://mail.google.com/ openid email profile`
-  (with `access_type=offline` and `prompt=consent`, so every sign-in brings
-  a refresh token); Microsoft `IMAP.AccessAsUser.All SMTP.Send
+  (rustls). Scopes: Google `https://mail.google.com/ drive.file openid
+  email profile` (with `access_type=offline` and `prompt=consent`, so every
+  sign-in brings a refresh token; `drive.file` is for large attachments,
+  §6.6, and Google refreshes are sent without scopes so grants from before
+  it keep working); Microsoft `IMAP.AccessAsUser.All SMTP.Send
   offline_access openid email profile` on `outlook.office.com`. The ID token
   names the address (Microsoft's personal accounts only in
   `preferred_username`), the name and, for Google, a picture. The refresh
@@ -599,6 +601,39 @@ blob's headers. It fills only fields still NULL, so it is idempotent, and
 it resumes after a restart from the messages still unthreaded (a partial
 index keeps finding them cheap). On a synthetic 100k-message store it takes
 about 14 s. Messages without a blob are covered by the header refresh (§6.4).
+
+### 6.6 Large attachments through Google Drive
+
+Gmail takes messages of up to 25 MB and sends larger files as Drive links;
+Katna does the same for accounts signed in with Google, with no extra
+steps in the common case.
+
+- **Permission.** Google sign-in asks for `drive.file`: only files Katna
+  itself put in the Drive, never the rest of it. The token answer names
+  the granted scopes and `TokenSource` keeps them; an account signed in
+  before (or with the Drive box unticked) shows **Allow Drive** on the
+  file's chip, which signs it in again.
+- **Upload.** A file that would take the message past the limit is never
+  read into memory: Katna Mail asks the daemon (`DriveUpload`) to upload
+  it the moment it is attached. `katna_sync::drive` uses Drive v3's
+  resumable upload in 8 MiB chunks over our own HTTPS client; after a
+  dropped connection it asks Drive how much arrived and goes on from
+  there. `DriveChanged` signals report progress (each percent) and the
+  end, and the chip shows it.
+- **Send.** Send waits for uploads under way and then goes by itself. It
+  shares each file with every recipient as a viewer, without Google's
+  own sharing mail. Only when Drive refuses some address (no Google
+  account, or an organisation's rule) does it ask: share with anyone who
+  has the link, send without sharing, or cancel. The message carries each
+  file as a link card under the text (and the link in the plain text).
+- **Removing** a chip before sending moves its file to the Drive's bin.
+  Saved drafts keep the links.
+- **Tests.** `KATNA_GOOGLE_TOKEN_URL` and `KATNA_GOOGLE_API_URL` point the
+  daemon at a fake Google on this computer; only `http://127.0.0.1:…` and
+  `http://localhost:…` are taken, so they can never send tokens elsewhere.
+
+OneDrive for Microsoft accounts can follow on the same design (an upload
+session and a sharing link through Microsoft Graph, `Files.ReadWrite`).
 
 ## 7. Search (`katna-search`)
 

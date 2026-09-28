@@ -113,6 +113,34 @@ pub struct TemplateFileItem {
     pub data: Vec<u8>,
 }
 
+/// A file going up to Google Drive for a message, from `DriveUpload`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct DriveUpload {
+    pub id: i64,
+    pub account: i64,
+    pub name: String,
+    /// Bytes Drive has, and the file's size.
+    pub sent: u64,
+    pub size: u64,
+    /// See [`drive_state`].
+    pub state: String,
+    /// Where recipients open it, once uploaded.
+    pub link: String,
+    /// Why it failed, or empty.
+    pub error: String,
+}
+
+/// Values of [`DriveUpload::state`].
+pub mod drive_state {
+    pub const UPLOADING: &str = "uploading";
+    pub const DONE: &str = "done";
+    pub const FAILED: &str = "failed";
+    /// The account's sign-in did not allow Drive (it was added before
+    /// Katna asked, or the box was unticked): `SignIn` again, then upload
+    /// again.
+    pub const NEEDS_PERMISSION: &str = "needs-permission";
+}
+
 /// A message waiting to be sent, or recently sent, from `Outbox`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 pub struct OutboxItem {
@@ -499,6 +527,28 @@ macro_rules! pim_proxy {
             /// Messages waiting to be sent, failed or cancelled.
             fn outbox(&self) -> zbus::Result<Vec<OutboxItem>>;
 
+            /// Starts putting the file at `path` in the Google Drive of
+            /// `account` (signed in with Google), for a message too large
+            /// to carry it. Returns the upload's ID; `DriveChanged` tells
+            /// how it goes.
+            fn drive_upload(&self, account: i64, path: &str) -> zbus::Result<i64>;
+
+            /// Where upload `id` stands.
+            fn drive_upload_status(&self, id: i64) -> zbus::Result<DriveUpload>;
+
+            /// Stops upload `id` and moves its file to the Drive's bin: it
+            /// was taken off the message. Returns whether there was one.
+            fn drive_cancel(&self, id: i64) -> zbus::Result<bool>;
+
+            /// Lets `addresses` view the files of `uploads`, without
+            /// Google's sharing mail. Returns the addresses Drive would not
+            /// share with (no Google account, or not allowed).
+            fn drive_share(&self, uploads: &[i64], addresses: &[&str])
+            -> zbus::Result<Vec<String>>;
+
+            /// Lets anyone with the link view the files of `uploads`.
+            fn drive_share_with_link(&self, uploads: &[i64]) -> zbus::Result<()>;
+
             /// Saves a mail template on this computer, in place of the one
             /// with its ID (0: a new one). Its name must not be empty, and
             /// its attachments are at most 20 MB. Returns its ID. Apps read
@@ -644,6 +694,10 @@ macro_rules! pim_proxy {
             /// Outbox entry `id` changed state; see `Outbox`.
             #[zbus(signal)]
             fn outbox_changed(&self, id: i64) -> zbus::Result<()>;
+
+            /// Drive upload `id` moved on; see `DriveUploadStatus`.
+            #[zbus(signal)]
+            fn drive_changed(&self, id: i64) -> zbus::Result<()>;
 
             /// `Metered` changed.
             #[zbus(signal)]

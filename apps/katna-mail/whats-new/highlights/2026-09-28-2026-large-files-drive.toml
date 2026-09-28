@@ -1,0 +1,4 @@
+title = "Send files of any size"
+text = """
+With an account signed in with Google, a file over the 25 MB mail limit goes to your Google Drive as soon as you attach it, and the message carries its link, as in Gmail. It is shared with your recipients when you press Send; Katna asks only if someone can't be given access.
+"""
