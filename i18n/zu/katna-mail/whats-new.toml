@@ -933,3 +933,21 @@ Ukuthi Phendula noma Dlulisela kumeyili evulwe ku-Ibhokisi lokungenayo
 elihlanganisiwe noma ekusesheni manje kuphuma ku-akhawunti imeyili efike
 kuyo, hhayi i-akhawunti ekhethwe ngaphansi kwesithombe sakho sephrofayela.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "Ukusesha kubonisa isinqamuleli sako"
+text = """
+Ibhokisi lokusesha libonisa isinqamuleli salo sekhibhodi eduze kokuthi
+Sesha imeyili, njengoba kusethwe ku-Izilungiselelo > Izinqamuleli. Uma
+uchofoza kulo, ligcina umbala walo futhi libonise umphetho ofiphele
+esikhundleni sokuba mnyama ngesithunzi. Amafolda antanta phezu kohlu manje
+asekude nomphetho ongezansi futhi.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Hlanza uMsebenzi"
+text = """
+Khomba ukuvulwa noma ukuchofozwa ku-Umsebenzi bese ucindezela × ukuze
+ukususe ohlwini, noma ucindezele Sula konke ukuze uqale kabusha. Ukuvulwa
+nokuchofozwa okusha kusavela, futhi umbiko we-Imininingwane usabala konke.
+"""

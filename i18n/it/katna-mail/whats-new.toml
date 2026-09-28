@@ -911,3 +911,22 @@ Con Rispondi o Inoltra su un messaggio aperto dalla Posta in arrivo
 unificata o dalla ricerca, il messaggio ora parte dall'account a cui è
 arrivata la posta, non da quello scelto sotto la tua immagine del profilo.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "La ricerca mostra la sua scorciatoia"
+text = """
+La casella di ricerca mostra la sua scorciatoia da tastiera accanto a
+«Cerca nella posta», come impostato in Impostazioni > Scorciatoie. Quando
+ci fai clic, mantiene il suo colore e mostra un bordo leggero invece di
+scurirsi con un’ombra. Anche le cartelle che fluttuano sopra l’elenco ora
+restano staccate dal bordo inferiore.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Fai ordine in Attività"
+text = """
+Punta un’apertura o un clic in Attività e premi × per toglierlo
+dall’elenco, oppure premi Cancella tutto per ricominciare da capo. Le nuove
+aperture e i nuovi clic continuano a comparire, e il resoconto Dettagli
+continua a contare tutto.
+"""

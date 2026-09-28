@@ -904,3 +904,21 @@ Balas atau Teruskan pada email yang dibuka dari Kotak masuk gabungan atau
 dari pencarian kini terkirim dari akun yang menerima email itu, bukan akun
 yang dipilih di bawah gambar profil Anda.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "Pencarian menampilkan pintasannya"
+text = """
+Kotak pencarian menampilkan pintasan keyboard di samping "Telusuri email",
+sesuai yang diatur di Setelan > Pintasan. Saat diklik, warnanya tetap dan
+hanya muncul tepi tipis, bukan menjadi lebih gelap dengan bayangan. Folder
+yang mengambang di atas daftar kini juga tidak lagi menempel di tepi bawah.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Rapikan Aktivitas"
+text = """
+Arahkan ke item dibuka atau diklik di Aktivitas lalu tekan × untuk
+menghapusnya dari daftar, atau tekan Hapus semua untuk memulai dari awal.
+Item dibuka dan diklik yang baru tetap muncul, dan laporan Detail tetap
+menghitung semuanya.
+"""

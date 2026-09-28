@@ -876,3 +876,20 @@ Trả lời hoặc Chuyển tiếp một thư mở từ Hộp thư đến hợp 
 tìm kiếm giờ được gửi từ tài khoản đã nhận thư đó, không phải tài khoản được
 chọn dưới ảnh hồ sơ của bạn.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "Ô tìm kiếm hiện phím tắt"
+text = """
+Ô tìm kiếm hiện phím tắt của nó bên cạnh "Tìm trong thư", theo thiết lập
+trong Cài đặt > Phím tắt. Khi được nhấp vào, ô giữ nguyên màu và chỉ hiện
+một viền mờ thay vì tối đi kèm bóng đổ. Các thư mục nổi phía trên danh sách
+giờ cũng không còn sát mép dưới.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Dọn gọn Hoạt động"
+text = """
+Trỏ vào một lượt mở hoặc lượt nhấp trong Hoạt động rồi nhấn × để gỡ nó khỏi
+danh sách, hoặc nhấn Xóa tất cả để bắt đầu lại từ đầu. Lượt mở và lượt nhấp
+mới vẫn hiện ra, và báo cáo Chi tiết vẫn tính mọi thứ.
+"""

@@ -888,3 +888,22 @@ Amsa ko Tura ga wasiƙar da aka buɗe daga Haɗaɗɗen akwatin saƙo ko daga
 bincike yanzu tana fita daga asusun da wasiƙar ta zo, ba asusun da aka
 zaɓa a ƙarƙashin hoton bayananku ba.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "Bincike yana nuna gajeriyar hanyarsa"
+text = """
+Akwatin bincike yana nuna gajeriyar hanyar madannai kusa da "Bincika
+wasiƙu", kamar yadda aka saita a Saituna > Gajerun hanyoyi. Idan aka danna
+cikinsa, yana riƙe launinsa kuma yana nuna gefe mara ƙarfi maimakon ya yi
+duhu da inuwa. Manyan fayilolin da ke shawagi a kan jerin yanzu ma suna nesa
+da gefen ƙasa.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Tsaftace Ayyuka"
+text = """
+Nuna kan buɗewa ko dannawa a cikin Ayyuka ka danna × don cire shi daga
+jerin, ko ka danna Share duka don fara sabo. Sababbin buɗewa da dannawa za
+su ci gaba da bayyana, kuma rahoton Cikakkun bayanai yana ci gaba da ƙirga
+komai.
+"""
