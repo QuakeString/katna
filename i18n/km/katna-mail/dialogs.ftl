@@ -164,3 +164,21 @@ sign-in-again-tooltip = បើកទំព័រចូលរបស់ { $provide
 sign-in-again-waiting = កំពុងរង់ចាំកម្មវិធីរុករករបស់អ្នក…
 sign-in-again-close = បិទ
 sign-in-again-done = បានចូល { $address } ម្ដងទៀត។ កំពុងទទួលសំបុត្ររបស់អ្នក…
+delete-ask-title = { $kind ->
+    [conversation] ផ្លាស់ទីការសន្ទនា { $count } ទៅធុងសំរាមឬ?
+   *[message] ផ្លាស់ទីសារ { $count } ទៅធុងសំរាមឬ?
+}
+delete-ask-body = { $count ->
+   *[other] អ្នកអាចមិនធ្វើវិញភ្លាមៗបន្ទាប់ពីនោះ ឬយកវាមកវិញពីធុងសំរាមនៅពេលក្រោយ។
+}
+delete-ask-confirm = ផ្លាស់ទីទៅធុងសំរាម
+delete-forever-title = { $kind ->
+    [conversation] លុបការសន្ទនា { $count } ជារៀងរហូតឬ?
+   *[message] លុបសារ { $count } ជារៀងរហូតឬ?
+}
+delete-forever-body = { $count ->
+   *[other] វាត្រូវបានលុបនៅលើម៉ាស៊ីនមេផងដែរ។ រឿងនេះមិនអាចមិនធ្វើវិញបានទេ។
+}
+delete-forever-confirm = លុបជារៀងរហូត
+delete-ask-dont-ask = មិនត្រូវសួរម្ដងទៀត
+delete-ask-cancel = បោះបង់

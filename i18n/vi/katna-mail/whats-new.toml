@@ -703,3 +703,56 @@ vào nút bên cạnh người nhận để tắt một mục cho thư đó. The
 thư của bạn gửi cho bạn khi máy chủ của mỗi người nhận nhận thư; nút sẽ
 bị làm mờ nếu máy chủ thư của bạn không hỗ trợ.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Dấu tích cho thư đã chuyển phát và đã đọc"
+text = """
+Thư bạn đã gửi giờ hiển thị dấu tích bên cạnh từng người nhận. Một dấu
+tích xám nghĩa là máy chủ thư của họ đã nhận thư: dựa trên xác nhận đã
+chuyển phát, hoặc, nơi dịch vụ thư của bạn không gửi xác nhận (Gmail),
+khi không có thư trả về trong nửa giờ. Hai dấu tích màu nhấn của bạn
+nghĩa là họ đã đọc thư, dựa trên xác nhận đã đọc hoặc theo dõi lượt mở,
+còn một cảnh báo nghĩa là thư bị trả về. Trỏ vào dấu tích để xem khi nào
+và bằng cách nào. Email xác nhận vẫn nằm trong hộp thư của bạn ở mục Cập
+nhật, không có thông báo.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Thông báo cho thư Gmail mới"
+text = """
+Thư mới trong hộp thư đến Gmail giờ lại hiển thị thông báo. Trước đây
+Katna bỏ lỡ thư mà Gmail xếp vào Tất cả thư ngay trước khi vào hộp thư
+đến.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Tìm theo loại tệp đính kèm"
+text = """
+Trong Tùy chọn tìm kiếm, “Có tệp đính kèm” giờ có PDF, XLSX, ODF, XLS,
+ODS, PPT và PPTX, cùng Tùy chỉnh cho mọi đuôi tệp khác, như png hoặc
+avif. Chỉ thư có tệp đính kèm thuộc loại đã chọn mới hiện ra.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Màu gốc trong chủ đề tối"
+text = """
+Với chủ đề tối, thư tự đặt màu riêng sẽ hiện bằng màu tối. Nút nửa hình
+tròn mới trên thanh công cụ của ngăn đọc hiện thư bằng màu gốc của người
+gửi, rồi trở lại.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "Bản in giữ nguyên định dạng"
+text = """
+Thư được in đúng như khi xem trong ngăn đọc, với bảng, màu, đường viền,
+danh sách và hình ảnh. Khi xem trước khi in, bạn có thể bỏ màu nền để
+tiết kiệm mực, hoặc chỉ in phần chữ với Chỉ văn bản.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Hỏi trước khi xóa"
+text = """
+Xóa nhiều cuộc hội thoại cùng lúc giờ sẽ hỏi trước xem có chuyển chúng
+vào Thùng rác không. Chọn “Không hỏi lại” để bỏ qua câu hỏi, hoặc bật lại
+trong Cài đặt > Chung. Xóa vĩnh viễn, trong Thùng rác, thì luôn hỏi.
+"""

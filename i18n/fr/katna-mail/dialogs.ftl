@@ -172,3 +172,41 @@ sign-in-again-tooltip = Ouvrir la page de connexion de { $provider } dans votre 
 sign-in-again-waiting = En attente de votre navigateur…
 sign-in-again-close = Fermer
 sign-in-again-done = Reconnecté à { $address }. Récupération de votre courrier…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] Placer cette conversation dans la corbeille ?
+        [many] Placer { $count } de conversations dans la corbeille ?
+       *[other] Placer { $count } conversations dans la corbeille ?
+    }
+   *[message] { $count ->
+        [one] Placer ce message dans la corbeille ?
+        [many] Placer { $count } de messages dans la corbeille ?
+       *[other] Placer { $count } messages dans la corbeille ?
+    }
+}
+delete-ask-body = { $count ->
+    [one] Vous pouvez annuler juste après, ou la récupérer plus tard dans la corbeille.
+    [many] Vous pouvez annuler juste après, ou les récupérer plus tard dans la corbeille.
+   *[other] Vous pouvez annuler juste après, ou les récupérer plus tard dans la corbeille.
+}
+delete-ask-confirm = Placer dans la corbeille
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] Supprimer définitivement cette conversation ?
+        [many] Supprimer définitivement { $count } de conversations ?
+       *[other] Supprimer définitivement { $count } conversations ?
+    }
+   *[message] { $count ->
+        [one] Supprimer définitivement ce message ?
+        [many] Supprimer définitivement { $count } de messages ?
+       *[other] Supprimer définitivement { $count } messages ?
+    }
+}
+delete-forever-body = { $count ->
+    [one] Elle est aussi supprimée sur le serveur. Cette action est irréversible.
+    [many] Elles sont aussi supprimées sur le serveur. Cette action est irréversible.
+   *[other] Elles sont aussi supprimées sur le serveur. Cette action est irréversible.
+}
+delete-forever-confirm = Supprimer définitivement
+delete-ask-dont-ask = Ne plus demander
+delete-ask-cancel = Annuler

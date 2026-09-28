@@ -696,3 +696,57 @@ chọrọ ka ị banye n'akaụntụ Katna gị. Akara na-egosi na ozi rutere b�
 sava ozi gị na-ezitere gị mgbe sava onye nnata ọ bụla natara ozi ahụ;
 bọtịnụ ahụ na-adị isi awọ ebe sava ozi gị anaghị enye ha.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Akara maka ozi rutere na nke a gụrụ"
+text = """
+Ozi ị zigara na-egosi akara ugbu a n'akụkụ onye nnata ọ bụla. Otu akara
+isi awọ pụtara na sava ozi ha nabatara ya: site n'akara na-egosi na ozi
+rutere, ma ọ bụ, ebe ọrụ ozi gị na-ezighị nke ọ bụla (Gmail), mgbe ọ dịghị
+ozi nlaghachi bịara n'ime ọkara awa. Akara abụọ n'agba mmesi ike gị pụtara
+na ha gụrụ ya, site n'akara na-egosi na a gụrụ ozi ma ọ bụ nsochi mmeghe,
+ịdọ aka ná ntị pụtara na ọ laghachiri. Rụtụ aka n'akara ka ị hụ mgbe ọ
+mere na otu e si mata. Email akara na-anọ n'igbe ozi gị n'okpuru
+“Mmelite”, n'enweghị ọkwa.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Ọkwa maka ozi Gmail ọhụrụ"
+text = """
+Ozi ọhụrụ dị n'igbe ozi mbata Gmail na-egosi ọkwa ọzọ. Na mbụ, Katna
+na-atụfu ozi Gmail tinyere na “Ozi niile” obere oge tupu igbe
+ozi mbata.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Chọọ site n'ụdị mgbakwunye"
+text = """
+Na Nhọrọ ọchụchọ, “Nwere mgbakwunye” na-enye ugbu a PDF, XLSX, ODF, XLS,
+ODS, PPT na PPTX, yana “Nke gị” maka ndọtị faịlụ ọ bụla ọzọ, dịka png ma
+ọ bụ avif. Naanị ozi nwere mgbakwunye nke ụdị a họọrọ ka a na-egosi.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Agba mbụ n'ụdị agba ọchịchịrị"
+text = """
+N'ụdị agba ọchịchịrị, a na-egosi ozi nke na-edozi agba nke ya n'agba gbara
+ọchịchịrị. Bọtịnụ ọhụrụ dị ka ọkara okirikiri dị na toolbar nke paịn ọgụgụ
+na-egosi ya n'agba mbụ nke onye zitere ya, ma na-eweghachi ya.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "Ibipụta na-edobe nhazi ya"
+text = """
+A na-ebipụta ozi otú ọ dị na paịn ọgụgụ, tinyere tebụl ya, agba ya, oke ya,
+ndepụta ya na foto ya. Nlele tupu ibipụta nwere ike ịhapụ agba ndabere iji
+chekwaa inki, ma ọ bụ bipụta naanị ederede ya site na Ederede nkịtị.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Jụọ tupu ihichapụ"
+text = """
+Ihichapụ ọtụtụ mkparịta ụka n'otu oge ugbu a na-ajụ mbụ ma a ga-ebuga ha na
+Ihe mkpofu. Pịa “Ajụla ọzọ” iji wụfee ajụjụ ahụ, ma ọ bụ gbanye ya ọzọ na
+Ntọala > Izugbe. Ihichapụ ruo mgbe ebighị ebi, na Ihe mkpofu, na-ajụ mgbe
+niile.
+"""

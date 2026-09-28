@@ -164,3 +164,21 @@ sign-in-again-tooltip = Buka halaman masuk { $provider } di browser Anda
 sign-in-again-waiting = Menunggu browser Anda…
 sign-in-again-close = Tutup
 sign-in-again-done = Sudah masuk lagi ke { $address }. Mengambil email Anda…
+delete-ask-title = { $kind ->
+    [conversation] Pindahkan { $count } percakapan ke Sampah?
+   *[message] Pindahkan { $count } pesan ke Sampah?
+}
+delete-ask-body = { $count ->
+   *[other] Anda bisa mengurungkannya sesaat setelahnya, atau mengembalikannya dari Sampah nanti.
+}
+delete-ask-confirm = Pindahkan ke Sampah
+delete-forever-title = { $kind ->
+    [conversation] Hapus { $count } percakapan selamanya?
+   *[message] Hapus { $count } pesan selamanya?
+}
+delete-forever-body = { $count ->
+   *[other] Email ini juga dihapus di server. Ini tidak bisa diurungkan.
+}
+delete-forever-confirm = Hapus selamanya
+delete-ask-dont-ask = Jangan tanya lagi
+delete-ask-cancel = Batal

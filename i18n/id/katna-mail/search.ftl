@@ -13,6 +13,9 @@ search-has-words = Berisi kata
 search-without = Tidak berisi
 search-date-within = Tanggal dalam
 search-has-attachment = Ada lampiran
+search-attachment-custom = Kustom
+search-attachment-custom-hint = Ketik ekstensi, seperti png, lalu Spasi
+search-attachment-remove = Hapus
 search-clear-filter = Hapus filter
 
 ## Search options: "Date within" choices

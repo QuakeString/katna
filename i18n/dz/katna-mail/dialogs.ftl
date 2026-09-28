@@ -164,3 +164,21 @@ sign-in-again-tooltip = ཁྱོད་ཀྱི་ བརྡ་འཚོལ་�
 sign-in-again-waiting = ཁྱོད་ཀྱི་ བརྡ་འཚོལ་ཆས་ལུ་ བསྒུག་དོ…
 sign-in-again-close = ཁ་བསྡམས།
 sign-in-again-done = { $address } ནང་ ལོག་ནང་བསྐྱོད་འབད་ཡི། ཁྱོད་ཀྱི་གློག་འཕྲིན་ལེན་དོ…
+delete-ask-title = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } གད་སྙིགས་ནང་སྤོ་ནི་ཨིན་ན?
+   *[message] འཕྲིན་དོན་ { $count } གད་སྙིགས་ནང་སྤོ་ནི་ཨིན་ན?
+}
+delete-ask-body = { $count ->
+   *[other] ཤུལ་ལས་འཕྲལ་ལས་ འབད་བཤོལ་འབད་ཚུགས་ ཡང་ན་ ཤུལ་ལས་ གད་སྙིགས་ནང་ལས་ ལོག་འབག་འོང་ཚུགས།
+}
+delete-ask-confirm = གད་སྙིགས་ནང་སྤོ།
+delete-forever-title = { $kind ->
+    [conversation] གླེང་མོལ་ { $count } ཨ་རྟག་གི་དོན་ལུ་ བཏོན་གཏང་ནི་ཨིན་ན?
+   *[message] འཕྲིན་དོན་ { $count } ཨ་རྟག་གི་དོན་ལུ་ བཏོན་གཏང་ནི་ཨིན་ན?
+}
+delete-forever-body = { $count ->
+   *[other] སར་བར་གུ་ཡང་ བཏོན་གཏངམ་ཨིན། འདི་ འབད་བཤོལ་འབད་མི་ཚུགས།
+}
+delete-forever-confirm = ཨ་རྟག་གི་དོན་ལུ་བཏོན་གཏང་།
+delete-ask-dont-ask = ལོག་མ་འདྲི།
+delete-ask-cancel = ཆ་མེད་གཏང་།

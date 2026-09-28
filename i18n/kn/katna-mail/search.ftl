@@ -13,6 +13,9 @@ search-has-words = ಈ ಪದಗಳಿವೆ
 search-without = ಇವು ಇಲ್ಲ
 search-date-within = ದಿನಾಂಕದ ಅವಧಿ
 search-has-attachment = ಲಗತ್ತು ಇದೆ
+search-attachment-custom = ಕಸ್ಟಮ್
+search-attachment-custom-hint = ಒಂದು ವಿಸ್ತರಣೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ, ಉದಾ. png, ನಂತರ Space ಒತ್ತಿ
+search-attachment-remove = ತೆಗೆದುಹಾಕಿ
 search-clear-filter = ಫಿಲ್ಟರ್ ತೆರವುಗೊಳಿಸಿ
 
 ## Search options: "Date within" choices

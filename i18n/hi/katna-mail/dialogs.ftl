@@ -169,3 +169,35 @@ sign-in-again-tooltip = अपने ब्राउज़र में { $provi
 sign-in-again-waiting = आपके ब्राउज़र का इंतज़ार है…
 sign-in-again-close = बंद करें
 sign-in-again-done = { $address } में फिर से साइन इन हो गया। आपका मेल लाया जा रहा है…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] इस बातचीत को ट्रैश में ले जाएं?
+       *[other] { $count } बातचीत को ट्रैश में ले जाएं?
+    }
+   *[message] { $count ->
+        [one] इस मैसेज को ट्रैश में ले जाएं?
+       *[other] { $count } मैसेज को ट्रैश में ले जाएं?
+    }
+}
+delete-ask-body = { $count ->
+    [one] आप इसके तुरंत बाद पहले जैसा कर सकते हैं, या बाद में इसे ट्रैश से वापस ला सकते हैं।
+   *[other] आप इसके तुरंत बाद पहले जैसा कर सकते हैं, या बाद में उन्हें ट्रैश से वापस ला सकते हैं।
+}
+delete-ask-confirm = ट्रैश में ले जाएं
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] इस बातचीत को हमेशा के लिए मिटाएं?
+       *[other] { $count } बातचीत को हमेशा के लिए मिटाएं?
+    }
+   *[message] { $count ->
+        [one] इस मैसेज को हमेशा के लिए मिटाएं?
+       *[other] { $count } मैसेज को हमेशा के लिए मिटाएं?
+    }
+}
+delete-forever-body = { $count ->
+    [one] यह सर्वर से भी मिट जाती है। इसे पहले जैसा नहीं किया जा सकता।
+   *[other] ये सर्वर से भी मिट जाती हैं। इसे पहले जैसा नहीं किया जा सकता।
+}
+delete-forever-confirm = हमेशा के लिए मिटाएं
+delete-ask-dont-ask = फिर से न पूछें
+delete-ask-cancel = रद्द करें

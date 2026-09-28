@@ -13,6 +13,9 @@ search-has-words = Có các từ
 search-without = Không có
 search-date-within = Ngày trong vòng
 search-has-attachment = Có tệp đính kèm
+search-attachment-custom = Tùy chỉnh
+search-attachment-custom-hint = Nhập đuôi tệp, như png, rồi nhấn phím cách
+search-attachment-remove = Xóa
 search-clear-filter = Xóa bộ lọc
 
 ## Search options: "Date within" choices

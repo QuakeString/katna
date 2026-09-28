@@ -13,6 +13,9 @@ search-has-words = ມີຄຳວ່າ
 search-without = ບໍ່ມີຄຳວ່າ
 search-date-within = ວັນທີພາຍໃນ
 search-has-attachment = ມີໄຟລ໌ແນບ
+search-attachment-custom = ກຳນົດເອງ
+search-attachment-custom-hint = ພິມນາມສະກຸນໄຟລ໌ ເຊັ່ນ png ແລ້ວກົດ Space
+search-attachment-remove = ລຶບອອກ
 search-clear-filter = ລ້າງຕົວກັ່ນຕອງ
 
 ## Search options: "Date within" choices

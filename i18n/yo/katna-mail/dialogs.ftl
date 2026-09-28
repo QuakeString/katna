@@ -166,3 +166,29 @@ sign-in-again-tooltip = Ṣí ojú-ìwé ìwọlé { $provider } nínú aṣàw�
 sign-in-again-waiting = À ń dúró de aṣàwákiri rẹ…
 sign-in-again-close = Pa á dé
 sign-in-again-done = O ti tún wọlé sí { $address }. À ń gba lẹ́tà rẹ…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+       *[other] Gbé ìjíròrò { $count } lọ sí Ìdọ̀tí?
+    }
+   *[message] { $count ->
+       *[other] Gbé ìfiránṣẹ́ { $count } lọ sí Ìdọ̀tí?
+    }
+}
+delete-ask-body = { $count ->
+   *[other] O lè dá a padà lẹ́sẹ̀kẹsẹ̀, tàbí kó wọn padà láti Ìdọ̀tí nígbà tó bá yá.
+}
+delete-ask-confirm = Gbé lọ sí Ìdọ̀tí
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+       *[other] Pa ìjíròrò { $count } rẹ́ títí láé?
+    }
+   *[message] { $count ->
+       *[other] Pa ìfiránṣẹ́ { $count } rẹ́ títí láé?
+    }
+}
+delete-forever-body = { $count ->
+   *[other] A tún pa wọ́n rẹ́ lórí sáfà. Èyí kò ṣeé dá padà.
+}
+delete-forever-confirm = Pa rẹ́ títí láé
+delete-ask-dont-ask = Má bèèrè mọ́
+delete-ask-cancel = Fagilé

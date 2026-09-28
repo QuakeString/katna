@@ -169,3 +169,35 @@ sign-in-again-tooltip = Maak die { $provider }-aanmeldbladsy in jou blaaier oop
 sign-in-again-waiting = Wag tans vir jou blaaier…
 sign-in-again-close = Maak toe
 sign-in-again-done = Weer by { $address } aangemeld. Haal tans jou e-pos…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] Skuif hierdie gesprek na die asblik?
+       *[other] Skuif { $count } gesprekke na die asblik?
+    }
+   *[message] { $count ->
+        [one] Skuif hierdie boodskap na die asblik?
+       *[other] Skuif { $count } boodskappe na die asblik?
+    }
+}
+delete-ask-body = { $count ->
+    [one] Jy kan dit net daarna ontdoen, of dit later uit die asblik terugbring.
+   *[other] Jy kan dit net daarna ontdoen, of hulle later uit die asblik terugbring.
+}
+delete-ask-confirm = Skuif na asblik
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] Vee hierdie gesprek permanent uit?
+       *[other] Vee { $count } gesprekke permanent uit?
+    }
+   *[message] { $count ->
+        [one] Vee hierdie boodskap permanent uit?
+       *[other] Vee { $count } boodskappe permanent uit?
+    }
+}
+delete-forever-body = { $count ->
+    [one] Dit word ook op die bediener uitgevee. Dit kan nie ontdoen word nie.
+   *[other] Hulle word ook op die bediener uitgevee. Dit kan nie ontdoen word nie.
+}
+delete-forever-confirm = Vee permanent uit
+delete-ask-dont-ask = Vra nie weer nie
+delete-ask-cancel = Kanselleer

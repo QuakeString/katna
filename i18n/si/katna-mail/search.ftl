@@ -13,6 +13,9 @@ search-has-words = මෙම වචන ඇති
 search-without = මෙම වචන නැති
 search-date-within = දිනය මෙම කාලය තුළ
 search-has-attachment = ඇමුණුමක් ඇති
+search-attachment-custom = අභිරුචි
+search-attachment-custom-hint = png වැනි දිගුවක් ටයිප් කර, පසුව Space ඔබන්න
+search-attachment-remove = ඉවත් කරන්න
 search-clear-filter = පෙරහන හිස් කරන්න
 
 ## Search options: "Date within" choices

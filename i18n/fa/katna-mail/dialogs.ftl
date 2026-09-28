@@ -169,3 +169,35 @@ sign-in-again-tooltip = باز کردن صفحهٔ ورود { $provider } در �
 sign-in-again-waiting = در انتظار مرورگر شما…
 sign-in-again-close = بستن
 sign-in-again-done = دوباره به { $address } وارد شدید. در حال دریافت ایمیل‌های شما…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] این مکالمه به سطل زباله منتقل شود؟
+       *[other] { $count } مکالمه به سطل زباله منتقل شود؟
+    }
+   *[message] { $count ->
+        [one] این پیام به سطل زباله منتقل شود؟
+       *[other] { $count } پیام به سطل زباله منتقل شود؟
+    }
+}
+delete-ask-body = { $count ->
+    [one] می‌توانید بی‌درنگ پس از آن واگرد کنید، یا بعداً آن را از سطل زباله برگردانید.
+   *[other] می‌توانید بی‌درنگ پس از آن واگرد کنید، یا بعداً آن‌ها را از سطل زباله برگردانید.
+}
+delete-ask-confirm = انتقال به سطل زباله
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] این مکالمه برای همیشه حذف شود؟
+       *[other] { $count } مکالمه برای همیشه حذف شود؟
+    }
+   *[message] { $count ->
+        [one] این پیام برای همیشه حذف شود؟
+       *[other] { $count } پیام برای همیشه حذف شود؟
+    }
+}
+delete-forever-body = { $count ->
+    [one] روی سرور هم حذف می‌شود. این کار برگشت‌پذیر نیست.
+   *[other] روی سرور هم حذف می‌شوند. این کار برگشت‌پذیر نیست.
+}
+delete-forever-confirm = حذف برای همیشه
+delete-ask-dont-ask = دیگر نپرس
+delete-ask-cancel = لغو

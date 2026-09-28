@@ -169,3 +169,35 @@ sign-in-again-tooltip = ඔබේ බ්‍රවුසරයේ { $provider } �
 sign-in-again-waiting = ඔබේ බ්‍රවුසරය එනතුරු රැඳී සිටිමින්…
 sign-in-again-close = වසන්න
 sign-in-again-done = { $address } වෙත නැවත පුරනය විය. ඔබේ තැපැල් ලබා ගනිමින්…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] මෙම සංවාදය කුණු කූඩයට ගෙන යන්නද?
+       *[other] සංවාද { $count } ක් කුණු කූඩයට ගෙන යන්නද?
+    }
+   *[message] { $count ->
+        [one] මෙම පණිවිඩය කුණු කූඩයට ගෙන යන්නද?
+       *[other] පණිවිඩ { $count } ක් කුණු කූඩයට ගෙන යන්නද?
+    }
+}
+delete-ask-body = { $count ->
+    [one] ඉන් පසු වහාම අහෝසි කළ හැක, නැතහොත් පසුව කුණු කූඩයෙන් ආපසු ගෙන ආ හැක.
+   *[other] ඉන් පසු වහාම අහෝසි කළ හැක, නැතහොත් පසුව ඒවා කුණු කූඩයෙන් ආපසු ගෙන ආ හැක.
+}
+delete-ask-confirm = කුණු කූඩයට ගෙන යන්න
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] මෙම සංවාදය සදහටම මකන්නද?
+       *[other] සංවාද { $count } ක් සදහටම මකන්නද?
+    }
+   *[message] { $count ->
+        [one] මෙම පණිවිඩය සදහටම මකන්නද?
+       *[other] පණිවිඩ { $count } ක් සදහටම මකන්නද?
+    }
+}
+delete-forever-body = { $count ->
+    [one] සේවාදායකයෙන් ද මැකෙයි. මෙය අහෝසි කළ නොහැක.
+   *[other] සේවාදායකයෙන් ද මැකෙයි. මෙය අහෝසි කළ නොහැක.
+}
+delete-forever-confirm = සදහටම මකන්න
+delete-ask-dont-ask = නැවත නොඅසන්න
+delete-ask-cancel = අවලංගු කරන්න

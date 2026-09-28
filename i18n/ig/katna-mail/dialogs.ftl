@@ -164,3 +164,21 @@ sign-in-again-tooltip = Mepee peeji mbanye { $provider } na ihe nchọgharị g�
 sign-in-again-waiting = Na-echere ihe nchọgharị gị…
 sign-in-again-close = Mechie
 sign-in-again-done = Abanyela ọzọ na { $address }. Na-enweta ozi gị…
+delete-ask-title = { $kind ->
+    [conversation] Buga mkparịta ụka { $count } na Ihe mkpofu?
+   *[message] Buga ozi { $count } na Ihe mkpofu?
+}
+delete-ask-body = { $count ->
+   *[other] Ị nwere ike imegharị ya ozugbo, ma ọ bụ weghachi ya site na Ihe mkpofu ma emesịa.
+}
+delete-ask-confirm = Buga na Ihe mkpofu
+delete-forever-title = { $kind ->
+    [conversation] Hichapụ mkparịta ụka { $count } ruo mgbe ebighị ebi?
+   *[message] Hichapụ ozi { $count } ruo mgbe ebighị ebi?
+}
+delete-forever-body = { $count ->
+   *[other] A na-ehichapụ ya na sava kwa. Enweghị ike imegharị nke a.
+}
+delete-forever-confirm = Hichapụ ruo mgbe ebighị ebi
+delete-ask-dont-ask = Ajụla ọzọ
+delete-ask-cancel = Kagbuo

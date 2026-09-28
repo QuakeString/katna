@@ -13,6 +13,9 @@ search-has-words = 含む語句
 search-without = 含まない語句
 search-date-within = 期間
 search-has-attachment = 添付ファイルあり
+search-attachment-custom = カスタム
+search-attachment-custom-hint = png などの拡張子を入力して Space キー
+search-attachment-remove = 削除
 search-clear-filter = フィルタをクリア
 
 ## Search options: "Date within" choices

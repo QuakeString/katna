@@ -749,3 +749,60 @@ Isaziso sokulethwa yimeyili iseva yakho yemeyili ekuthumelela yona lapho
 iseva yomamukeli ngamunye yamukela umlayezo; inkinobho iba mpunga lapho
 iseva yakho yemeyili ingazinikezi khona.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Amathikhi okulethwa nokufundwa"
+text = """
+Imeyili oyithumele manje ibonisa amathikhi eceleni komamukeli ngamunye.
+Ithikhi elilodwa elimpunga lisho ukuthi iseva yabo yemeyili iyamukele:
+kusukela esazisweni sokulethwa, noma, lapho isevisi yakho yemeyili
+ingazithumeli khona (Gmail), uma ingekho imeyili ebuyile phakathi
+nesigamu sehora. Amathikhi amabili ngombala wakho wokugcizelela asho
+ukuthi bayifundile, kusukela esazisweni sokufunda noma ekulandeleleni
+ukuvulwa, futhi isexwayiso sisho ukuthi ibuyile. Khomba ithikhi ukuze
+ubone ukuthi nini futhi kanjani. Amameyili ezaziso ahlala ebhokisini
+lakho leposi ngaphansi kwe-Izibuyekezo, ngaphandle kwesaziso.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Izaziso zemeyili entsha ye-Gmail"
+text = """
+Imeyili entsha ebhokisini lokungenayo le-Gmail manje iphinde ibonise
+isaziso. Ngaphambilini i-Katna yayiphuthelwa imeyili i-Gmail eyayiyifaka
+ku-Wonke amameyili umzuzwana ngaphambi kwebhokisi lokungenayo.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Sesha ngohlobo lokunamathiselwe"
+text = """
+Ku-Okukhethwa kukho kosesho, “Inokunamathiselwe” manje inikeza i-PDF,
+XLSX, ODF, XLS, ODS, PPT ne-PPTX, kanye nokuthi “Ngokwezifiso” kunoma
+yisiphi esinye isandiso, njenge-png noma i-avif. Kuboniswa kuphela
+imeyili enokunamathiselwe kohlobo olukhethiwe.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Imibala yangempela kutimu emnyama"
+text = """
+Kutimu emnyama, imeyili ezibekela imibala yayo ibonakala ngemibala
+emnyama. Inkinobho entsha yesigamu sendilinga kubha yamathuluzi yephaneli
+yokufunda iyibonisa ngemibala yangempela yomthumeli, bese ibuyisela emuva.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "Ukuphrinta kugcina ukwakheka"
+text = """
+Imeyili iphrintwa njengoba ibonakala kuphaneli yokufunda, namathebula
+ayo, imibala, imiphetho, izinhlu nezithombe. Ukubuka kuqala kokuphrinta
+kungashiya imibala yangemuva ukonga uyinki, noma kuphrinte umbhalo kuphela
+ngo-Umbhalo kuphela.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Buza ngaphambi kokususa"
+text = """
+Ukususa izingxoxo eziningi ngasikhathi sinye manje kubuza kuqala ukuthi
+zihanjiswe kudoti yini. Maka u-“Ungabuzi futhi” ukweqa lo mbuzo, noma
+ukuvule futhi ku-Izilungiselelo > Okuvamile. Ukususa unomphela, kudoti,
+kubuza njalo.
+"""

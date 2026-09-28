@@ -13,6 +13,9 @@ search-has-words = ཚིག་འདི་ཚུ་ཡོདཔ
 search-without = འདི་ཚུ་མེདཔ
 search-date-within = དུས་ཡུན
 search-has-attachment = མཉམ་སྦྲགས་ཡོདཔ
+search-attachment-custom = རང་སྒྲིག
+search-attachment-custom-hint = png བཟུམ་གྱི་ རྒྱ་སྐྱེད་ཅིག་ ཡིག་དཔར་རྐྱབ་ཞིནམ་ལས་ Space ཨེབ།
+search-attachment-remove = བཏོན།
 search-clear-filter = ཚགས་མ་བསལ།
 
 ## Search options: "Date within" choices

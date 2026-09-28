@@ -166,3 +166,29 @@ sign-in-again-tooltip = เปิดหน้าลงชื่อเข้า�
 sign-in-again-waiting = กำลังรอเบราว์เซอร์ของคุณ…
 sign-in-again-close = ปิด
 sign-in-again-done = ลงชื่อเข้าใช้ { $address } อีกครั้งแล้ว กำลังรับอีเมลของคุณ…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+       *[other] ย้ายการสนทนา { $count } รายการไปที่ถังขยะไหม
+    }
+   *[message] { $count ->
+       *[other] ย้ายข้อความ { $count } รายการไปที่ถังขยะไหม
+    }
+}
+delete-ask-body = { $count ->
+   *[other] คุณเลิกทำได้ทันทีหลังจากนั้น หรือนำกลับมาจากถังขยะได้ในภายหลัง
+}
+delete-ask-confirm = ย้ายไปที่ถังขยะ
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+       *[other] ลบการสนทนา { $count } รายการอย่างถาวรไหม
+    }
+   *[message] { $count ->
+       *[other] ลบข้อความ { $count } รายการอย่างถาวรไหม
+    }
+}
+delete-forever-body = { $count ->
+   *[other] จะถูกลบบนเซิร์ฟเวอร์ด้วย และไม่สามารถเลิกทำได้
+}
+delete-forever-confirm = ลบอย่างถาวร
+delete-ask-dont-ask = ไม่ต้องถามอีก
+delete-ask-cancel = ยกเลิก

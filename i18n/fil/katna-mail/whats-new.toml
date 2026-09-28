@@ -745,3 +745,62 @@ iyo ng mail server mo kapag natanggap ng server ng bawat tatanggap ang
 mensahe; naka-gray out ang button kapag hindi ito inaalok ng mail server
 mo.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Mga tsek para sa nakarating at nabasa"
+text = """
+May mga tsek na ngayon sa tabi ng bawat tatanggap sa mail na ipinadala
+mo. Ang isang kulay-abong tsek ay nangangahulugang tinanggap ito ng mail
+server nila: mula sa delivery receipt, o, kapag wala nitong ipinapadala
+ang mail service mo (Gmail), kapag walang mensaheng bumalik sa loob ng
+kalahating oras. Ang dalawang tsek sa accent color mo ay nangangahulugang
+binasa nila ito, mula sa read receipt o open tracking, at ang babala ay
+nangangahulugang hindi ito nakarating. Ituro ang isang tsek para makita
+kung kailan at paano. Nananatili sa mailbox mo ang mga email ng receipt sa
+ilalim ng “Mga Update”, nang walang notification.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Mga notification para sa bagong mail sa Gmail"
+text = """
+May notification na muli ang bagong mail sa inbox ng Gmail. Dati ay hindi
+nahuhuli ng Katna ang mail na inilalagay ng Gmail sa
+“Lahat ng Mail” sandali bago ito mapunta sa inbox.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Maghanap ayon sa uri ng attachment"
+text = """
+Sa Mga opsyon sa paghahanap, nag-aalok na ngayon ang “May attachment” ng
+PDF, XLSX, ODF, XLS, ODS, PPT at PPTX, at Custom para sa kahit anong
+ibang extension, gaya ng png o avif. Mail lang na may attachment ng
+napiling uri ang lumalabas.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Orihinal na mga kulay sa madilim na tema"
+text = """
+Sa madilim na tema, ipinapakita sa madidilim na kulay ang mail na may
+sariling mga kulay. Ipinapakita ito ng bagong button na kalahating bilog sa
+toolbar ng pane ng pagbabasa sa orihinal na mga kulay ng nagpadala, at
+ibinabalik ito.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "Pinapanatili ng pag-print ang pormat"
+text = """
+Nakaprint ang mail gaya ng hitsura nito sa pane ng pagbabasa, kasama ang
+mga talahanayan, kulay, border, listahan at larawan nito. Puwedeng iwan ng
+preview ng pag-print ang mga kulay ng background para makatipid sa tinta,
+o i-print ang teksto lang sa Simpleng teksto.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Magtanong bago i-delete"
+text = """
+Kapag nag-delete ka ng maraming pag-uusap nang sabay-sabay, nagtatanong na
+muna ito kung ililipat ang mga ito sa Basurahan. I-tik ang “Huwag nang
+magtanong” para laktawan ang tanong, o i-on itong muli sa Mga setting >
+Pangkalahatan. Palaging nagtatanong ang permanenteng pag-delete sa
+Basurahan.
+"""

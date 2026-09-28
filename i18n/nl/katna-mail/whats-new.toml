@@ -725,3 +725,59 @@ ontvangstbevestiging is een e-mail die je mailserver je stuurt wanneer
 de server van elke ontvanger het bericht aanneemt; de knop is grijs als
 je mailserver ze niet aanbiedt.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Vinkjes voor afgeleverd en gelezen"
+text = """
+Mail die je hebt verstuurd toont nu vinkjes naast elke ontvanger. Eén
+grijs vinkje betekent dat hun mailserver het heeft aangenomen: volgens
+een ontvangstbevestiging, of, waar je maildienst die niet stuurt
+(Gmail), als er binnen een half uur geen bounce terugkwam. Twee vinkjes
+in je accentkleur betekenen dat ze het hebben gelezen, volgens een
+leesbevestiging of het volgen van openen, en een waarschuwing betekent
+dat het is teruggestuurd. Wijs een vinkje aan om te zien wanneer en hoe.
+Bevestigingsmails blijven in je mailbox onder Updates, zonder melding.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Meldingen voor nieuwe Gmail-mail"
+text = """
+Nieuwe mail in een Gmail-inbox geeft nu weer een melding. Katna miste
+eerder mail die Gmail een moment vóór de inbox in Alle berichten had
+gezet.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Zoeken op type bijlage"
+text = """
+In Zoekopties biedt ‘Heeft bijlage’ nu PDF, XLSX, ODF, XLS, ODS, PPT en
+PPTX, en Aangepast voor elke andere extensie, zoals png of avif. Alleen
+e-mail met een bijlage van een gekozen type wordt getoond.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Originele kleuren in een donker thema"
+text = """
+In een donker thema wordt e-mail met eigen kleuren in donkere kleuren
+getoond. De nieuwe knop met de halve cirkel in de werkbalk van het
+leesvenster laat hem zien in de originele kleuren van de afzender, en
+weer terug.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "Afdrukken houdt de opmaak"
+text = """
+E-mail wordt afgedrukt zoals hij in het leesvenster te zien is, met zijn
+tabellen, kleuren, randen, lijsten en afbeeldingen. Het afdrukvoorbeeld
+kan achtergrondkleuren weglaten om inkt te sparen, of met Alleen tekst
+alleen de tekst afdrukken.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Vragen voor het verwijderen"
+text = """
+Als je meerdere gesprekken tegelijk verwijdert, wordt nu eerst gevraagd
+of ze naar de Prullenbak mogen. Vink ‘Niet meer vragen’ aan om de vraag
+over te slaan, of zet hem weer aan bij Instellingen > Algemeen.
+Definitief verwijderen, in de Prullenbak, vraagt altijd.
+"""

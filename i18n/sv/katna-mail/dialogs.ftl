@@ -169,3 +169,35 @@ sign-in-again-tooltip = Öppna inloggningssidan för { $provider } i webbläsare
 sign-in-again-waiting = Väntar på webbläsaren…
 sign-in-again-close = Stäng
 sign-in-again-done = Inloggad på { $address } igen. Hämtar din e-post…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] Flytta konversationen till papperskorgen?
+       *[other] Flytta { $count } konversationer till papperskorgen?
+    }
+   *[message] { $count ->
+        [one] Flytta meddelandet till papperskorgen?
+       *[other] Flytta { $count } meddelanden till papperskorgen?
+    }
+}
+delete-ask-body = { $count ->
+    [one] Du kan ångra det direkt efteråt, eller hämta tillbaka det från papperskorgen senare.
+   *[other] Du kan ångra det direkt efteråt, eller hämta tillbaka dem från papperskorgen senare.
+}
+delete-ask-confirm = Flytta till papperskorgen
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] Radera konversationen permanent?
+       *[other] Radera { $count } konversationer permanent?
+    }
+   *[message] { $count ->
+        [one] Radera meddelandet permanent?
+       *[other] Radera { $count } meddelanden permanent?
+    }
+}
+delete-forever-body = { $count ->
+    [one] Det raderas även på servern. Det går inte att ångra.
+   *[other] De raderas även på servern. Det går inte att ångra.
+}
+delete-forever-confirm = Radera permanent
+delete-ask-dont-ask = Fråga inte igen
+delete-ask-cancel = Avbryt

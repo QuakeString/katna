@@ -725,3 +725,59 @@ Uma confirmação de entrega é um e-mail que seu servidor de e-mail envia
 quando o servidor de cada destinatário recebe a mensagem; o botão fica
 desativado quando seu servidor de e-mail não oferece esse recurso.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Tiques de entregue e lido"
+text = """
+Os e-mails que você enviou agora mostram tiques ao lado de cada
+destinatário. Um tique cinza significa que o servidor de e-mail da
+pessoa o aceitou: por uma confirmação de entrega ou, quando seu serviço
+de e-mail não envia uma (Gmail), quando nenhuma devolução voltou em meia
+hora. Dois tiques na sua cor de destaque significam que a pessoa leu,
+por uma confirmação de leitura ou pelo rastreamento de aberturas, e um
+aviso significa que ele foi devolvido. Aponte para um tique para ver
+quando e como. Os e-mails de confirmação ficam na sua caixa de correio
+em Atualizações, sem notificação.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Notificações de novos e-mails do Gmail"
+text = """
+Novos e-mails em uma caixa de entrada do Gmail voltam a mostrar uma
+notificação. O Katna deixava passar e-mails que o Gmail colocava em
+Todos os e-mails um instante antes da caixa de entrada.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Pesquise por tipo de anexo"
+text = """
+Em Opções de pesquisa, “Com anexo” agora oferece PDF, XLSX, ODF, XLS,
+ODS, PPT e PPTX, e Personalizado para qualquer outra extensão, como png
+ou avif. Só aparecem e-mails com um anexo de um tipo escolhido.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Cores originais em um tema escuro"
+text = """
+Com um tema escuro, o e-mail que define as próprias cores é mostrado em
+cores escuras. O novo botão de meio círculo na barra de ferramentas do
+painel de leitura o mostra nas cores originais do remetente, e de volta.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "A impressão mantém a formatação"
+text = """
+O e-mail é impresso como aparece no painel de leitura, com suas tabelas,
+cores, bordas, listas e imagens. A visualização de impressão pode deixar
+de fora as cores de fundo para economizar tinta, ou imprimir só o texto
+com Somente texto.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Perguntar antes de excluir"
+text = """
+Excluir várias conversas de uma vez agora pergunta primeiro se elas devem
+ir para a Lixeira. Marque “Não perguntar novamente” para pular a pergunta,
+ou ative-a de novo em Configurações > Geral. A exclusão permanente, na
+Lixeira, sempre pergunta.
+"""

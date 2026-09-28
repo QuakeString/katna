@@ -703,3 +703,57 @@ jou e-posbediener vir jou stuur wanneer elke ontvanger se bediener die
 boodskap neem; die knoppie is grys waar jou e-posbediener dit nie aanbied
 nie.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Merkies vir afgelewer en gelees"
+text = """
+Pos wat jy gestuur het, wys nou merkies langs elke ontvanger. Een grys
+merkie beteken hul e-posbediener het dit geneem: uit 'n afleweringsbewys,
+of, waar jou e-posdiens geen een stuur nie (Gmail), wanneer geen
+afleweringsfout binne 'n halfuur teruggekom het nie. Twee merkies in jou
+aksentkleur beteken hulle het dit gelees, uit 'n leesbewys of
+oopmaaknasporing, en 'n waarskuwing beteken dit is teruggestuur. Wys na 'n
+merkie om te sien wanneer en hoe. Bewys-e-posse bly in jou posbus onder
+“Opdaterings”, sonder 'n kennisgewing.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Kennisgewings vir nuwe Gmail-pos"
+text = """
+Nuwe pos in 'n Gmail-inkassie wys weer 'n kennisgewing. Katna het
+voorheen pos gemis wat Gmail 'n oomblik voor die inkassie in
+“Alle pos” geplaas het.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Soek volgens aanhegseltipe"
+text = """
+In Soekopsies bied “Het aanhegsel” nou PDF, XLSX, ODF, XLS, ODS, PPT en
+PPTX, en Pasgemaak vir enige ander uitbreiding, soos png of avif. Slegs
+e-pos met 'n aanhegsel van 'n gekose tipe word gewys.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Oorspronklike kleure in 'n donker tema"
+text = """
+In 'n donker tema word e-pos wat sy eie kleure stel, in donker kleure
+gewys. Die nuwe halfsirkel-knoppie op die leesvenster se nutsbalk wys dit
+in sy sender se oorspronklike kleure, en weer terug.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "Druk hou die formatering"
+text = """
+E-pos druk soos dit in die leesvenster lyk, met sy tabelle, kleure, rame,
+lyste en prente. Die drukvoorskou kan agtergrondkleure uitlaat om ink te
+spaar, of met Eenvoudige teks net die teks druk.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Vra voordat uitgevee word"
+text = """
+Om verskeie gesprekke gelyk uit te vee, vra nou eers of hulle na die
+asblik geskuif moet word. Merk “Vra nie weer nie” om die vraag oor te
+slaan, of skakel dit weer aan in Instellings > Algemeen. Om permanent uit
+te vee, in die asblik, vra altyd.
+"""

@@ -727,3 +727,60 @@ conferma di consegna è un’email che il tuo server di posta ti invia quando
 il server di ogni destinatario accetta il messaggio; il pulsante appare in
 grigio se il tuo server di posta non le offre.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Spunte per consegnato e letto"
+text = """
+La posta che invii mostra ora delle spunte accanto a ogni destinatario.
+Una spunta grigia significa che il suo server di posta l’ha presa: da una
+conferma di consegna oppure, quando il tuo servizio di posta non ne invia
+(Gmail), quando entro mezz’ora non è tornato alcun avviso di mancata
+consegna. Due spunte nel tuo colore di risalto significano che l’ha letta,
+da una conferma di lettura o dal tracciamento delle aperture, e un avviso
+significa che è stata respinta. Punta una spunta per vedere quando e come.
+Le email di conferma restano nella casella in
+«Aggiornamenti», senza notifica.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Notifiche per la nuova posta Gmail"
+text = """
+La posta nuova in una casella Gmail mostra di nuovo una notifica. Prima
+Katna perdeva i messaggi che Gmail archiviava in
+«Tutti i messaggi» un attimo prima della posta in arrivo.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Cerca per tipo di allegato"
+text = """
+In Opzioni di ricerca, «Con allegato» ora offre PDF, XLSX, ODF, XLS,
+ODS, PPT e PPTX, e Personalizzato per qualsiasi altra estensione, come
+png o avif. Compare solo la posta con un allegato di un tipo scelto.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Colori originali con un tema scuro"
+text = """
+Con un tema scuro, la posta che imposta i propri colori viene mostrata in
+colori scuri. Il nuovo pulsante a mezzo cerchio nella barra degli strumenti
+del riquadro di lettura la mostra nei colori originali del mittente, e
+torna indietro.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "La stampa mantiene la formattazione"
+text = """
+La posta si stampa come appare nel riquadro di lettura, con le sue tabelle,
+i colori, i bordi, gli elenchi e le immagini. L’anteprima di stampa può
+tralasciare i colori di sfondo per risparmiare inchiostro, oppure stampare
+solo il testo con Testo semplice.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Chiedere prima di eliminare"
+text = """
+Eliminando più conversazioni in una volta, ora viene chiesto prima se
+spostarle nel Cestino. Spunta «Non chiedere più» per saltare la domanda,
+oppure riattivala in Impostazioni > Generali. L’eliminazione definitiva,
+nel Cestino, chiede sempre.
+"""

@@ -172,3 +172,41 @@ sign-in-again-tooltip = Abrir a página de login do { $provider } no navegador
 sign-in-again-waiting = Aguardando o navegador…
 sign-in-again-close = Fechar
 sign-in-again-done = Login feito de novo em { $address }. Buscando seus e-mails…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] Mover esta conversa para a Lixeira?
+        [many] Mover { $count } conversas para a Lixeira?
+       *[other] Mover { $count } conversas para a Lixeira?
+    }
+   *[message] { $count ->
+        [one] Mover esta mensagem para a Lixeira?
+        [many] Mover { $count } mensagens para a Lixeira?
+       *[other] Mover { $count } mensagens para a Lixeira?
+    }
+}
+delete-ask-body = { $count ->
+    [one] Você pode desfazer logo depois ou trazê-la de volta da Lixeira mais tarde.
+    [many] Você pode desfazer logo depois ou trazê-las de volta da Lixeira mais tarde.
+   *[other] Você pode desfazer logo depois ou trazê-las de volta da Lixeira mais tarde.
+}
+delete-ask-confirm = Mover para a Lixeira
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] Excluir esta conversa permanentemente?
+        [many] Excluir { $count } conversas permanentemente?
+       *[other] Excluir { $count } conversas permanentemente?
+    }
+   *[message] { $count ->
+        [one] Excluir esta mensagem permanentemente?
+        [many] Excluir { $count } mensagens permanentemente?
+       *[other] Excluir { $count } mensagens permanentemente?
+    }
+}
+delete-forever-body = { $count ->
+    [one] Ela também é excluída no servidor. Isso não pode ser desfeito.
+    [many] Elas também são excluídas no servidor. Isso não pode ser desfeito.
+   *[other] Elas também são excluídas no servidor. Isso não pode ser desfeito.
+}
+delete-forever-confirm = Excluir permanentemente
+delete-ask-dont-ask = Não perguntar novamente
+delete-ask-cancel = Cancelar

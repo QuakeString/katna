@@ -744,3 +744,63 @@ messagerie vous envoie quand le serveur de chaque destinataire prend en
 charge le message ; le bouton est grisé si votre serveur de messagerie
 n’en propose pas.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Des coches pour remis et lu"
+text = """
+Les messages que vous envoyez affichent maintenant des coches à côté de
+chaque destinataire. Une coche grise signifie que son serveur de
+messagerie l’a pris en charge : d’après un accusé de remise ou, quand
+votre service de messagerie n’en envoie pas (Gmail), parce qu’aucun avis
+de non-remise n’est revenu en une demi-heure. Deux coches dans votre
+couleur d’accentuation signifient qu’il l’a lu, d’après un accusé de
+lecture ou le suivi des ouvertures, et un avertissement signifie qu’il a
+été rejeté. Pointez une coche pour voir quand et comment. Les accusés
+reçus par e-mail restent dans votre boîte, dans
+« Notifications », sans notification.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Des notifications pour les nouveaux messages Gmail"
+text = """
+Les nouveaux messages d’une boîte de réception Gmail affichent de nouveau
+une notification. Katna laissait passer les messages que Gmail classait
+dans « Tous les messages » juste avant la boîte de
+réception.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Recherche par type de pièce jointe"
+text = """
+Dans Options de recherche, « Contient une pièce jointe » propose
+désormais PDF, XLSX, ODF, XLS, ODS, PPT et PPTX, ainsi que Personnalisé
+pour toute autre extension, comme png ou avif. Seuls les messages ayant
+une pièce jointe d’un type choisi s’affichent.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Les couleurs d’origine avec un thème sombre"
+text = """
+Avec un thème sombre, les messages qui définissent leurs propres couleurs
+s’affichent en couleurs sombres. Le nouveau bouton en demi-cercle de la
+barre d’outils du volet de lecture les affiche dans les couleurs d’origine
+de l’expéditeur, puis revient en arrière.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "L’impression garde la mise en forme"
+text = """
+Les messages s’impriment tels qu’ils apparaissent dans le volet de
+lecture, avec leurs tableaux, couleurs, bordures, listes et images.
+L’aperçu avant impression peut laisser de côté les couleurs d’arrière-plan
+pour économiser l’encre, ou n’imprimer que le texte avec Texte simple.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Demander avant de supprimer"
+text = """
+Supprimer plusieurs conversations d’un coup demande maintenant d’abord si
+elles doivent être placées dans la corbeille. Cochez « Ne plus demander »
+pour passer la question, ou réactivez-la dans Paramètres > Général. La
+suppression définitive, dans la corbeille, demande toujours.
+"""

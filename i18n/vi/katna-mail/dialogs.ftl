@@ -166,3 +166,29 @@ sign-in-again-tooltip = Mở trang đăng nhập { $provider } trong trình duy�
 sign-in-again-waiting = Đang chờ trình duyệt…
 sign-in-again-close = Đóng
 sign-in-again-done = Đã đăng nhập lại vào { $address }. Đang nhận thư của bạn…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+       *[other] Chuyển { $count } cuộc hội thoại vào Thùng rác?
+    }
+   *[message] { $count ->
+       *[other] Chuyển { $count } thư vào Thùng rác?
+    }
+}
+delete-ask-body = { $count ->
+   *[other] Bạn có thể hoàn tác ngay sau đó, hoặc lấy lại từ Thùng rác về sau.
+}
+delete-ask-confirm = Chuyển vào Thùng rác
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+       *[other] Xóa vĩnh viễn { $count } cuộc hội thoại?
+    }
+   *[message] { $count ->
+       *[other] Xóa vĩnh viễn { $count } thư?
+    }
+}
+delete-forever-body = { $count ->
+   *[other] Chúng cũng bị xóa trên máy chủ. Việc này không thể hoàn tác.
+}
+delete-forever-confirm = Xóa vĩnh viễn
+delete-ask-dont-ask = Không hỏi lại
+delete-ask-cancel = Hủy

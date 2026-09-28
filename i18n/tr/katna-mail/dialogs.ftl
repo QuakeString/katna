@@ -169,3 +169,35 @@ sign-in-again-tooltip = { $provider } oturum açma sayfasını tarayıcınızda 
 sign-in-again-waiting = Tarayıcınız bekleniyor…
 sign-in-again-close = Kapat
 sign-in-again-done = { $address } hesabında yeniden oturum açıldı. Postalarınız alınıyor…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] İleti dizisi Çöp Kutusu'na taşınsın mı?
+       *[other] { $count } ileti dizisi Çöp Kutusu'na taşınsın mı?
+    }
+   *[message] { $count ->
+        [one] İleti Çöp Kutusu'na taşınsın mı?
+       *[other] { $count } ileti Çöp Kutusu'na taşınsın mı?
+    }
+}
+delete-ask-body = { $count ->
+    [one] Hemen ardından geri alabilir ya da daha sonra Çöp Kutusu'ndan geri getirebilirsiniz.
+   *[other] Hemen ardından geri alabilir ya da daha sonra onları Çöp Kutusu'ndan geri getirebilirsiniz.
+}
+delete-ask-confirm = Çöp Kutusu'na taşı
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] İleti dizisi kalıcı olarak silinsin mi?
+       *[other] { $count } ileti dizisi kalıcı olarak silinsin mi?
+    }
+   *[message] { $count ->
+        [one] İleti kalıcı olarak silinsin mi?
+       *[other] { $count } ileti kalıcı olarak silinsin mi?
+    }
+}
+delete-forever-body = { $count ->
+    [one] Sunucudan da silinir. Bu geri alınamaz.
+   *[other] Sunucudan da silinirler. Bu geri alınamaz.
+}
+delete-forever-confirm = Kalıcı olarak sil
+delete-ask-dont-ask = Bir daha sorma
+delete-ask-cancel = İptal

@@ -13,6 +13,9 @@ search-has-words = Contiene le parole
 search-without = Non contiene
 search-date-within = Data entro
 search-has-attachment = Con allegato
+search-attachment-custom = Personalizzato
+search-attachment-custom-hint = Digita un'estensione, come png, poi Spazio
+search-attachment-remove = Rimuovi
 search-clear-filter = Cancella filtro
 
 ## Search options: "Date within" choices

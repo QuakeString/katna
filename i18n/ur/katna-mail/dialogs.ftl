@@ -169,3 +169,35 @@ sign-in-again-tooltip = اپنے براؤزر میں { $provider } کا سائن
 sign-in-again-waiting = آپ کے براؤزر کا انتظار ہے…
 sign-in-again-close = بند کریں
 sign-in-again-done = { $address } میں دوبارہ سائن ان ہو گیا۔ آپ کی میل لائی جا رہی ہے…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] یہ گفتگو کوڑے دان میں منتقل کریں؟
+       *[other] { $count } گفتگوئیں کوڑے دان میں منتقل کریں؟
+    }
+   *[message] { $count ->
+        [one] یہ پیغام کوڑے دان میں منتقل کریں؟
+       *[other] { $count } پیغامات کوڑے دان میں منتقل کریں؟
+    }
+}
+delete-ask-body = { $count ->
+    [one] آپ فوراً بعد اسے کالعدم کر سکتے ہیں، یا بعد میں کوڑے دان سے واپس لا سکتے ہیں۔
+   *[other] آپ فوراً بعد اسے کالعدم کر سکتے ہیں، یا بعد میں انہیں کوڑے دان سے واپس لا سکتے ہیں۔
+}
+delete-ask-confirm = کوڑے دان میں منتقل کریں
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] یہ گفتگو ہمیشہ کے لیے حذف کریں؟
+       *[other] { $count } گفتگوئیں ہمیشہ کے لیے حذف کریں؟
+    }
+   *[message] { $count ->
+        [one] یہ پیغام ہمیشہ کے لیے حذف کریں؟
+       *[other] { $count } پیغامات ہمیشہ کے لیے حذف کریں؟
+    }
+}
+delete-forever-body = { $count ->
+    [one] یہ سرور سے بھی حذف ہو جاتا ہے۔ اسے کالعدم نہیں کیا جا سکتا۔
+   *[other] یہ سرور سے بھی حذف ہو جاتے ہیں۔ اسے کالعدم نہیں کیا جا سکتا۔
+}
+delete-forever-confirm = ہمیشہ کے لیے حذف کریں
+delete-ask-dont-ask = دوبارہ نہ پوچھیں
+delete-ask-cancel = منسوخ کریں

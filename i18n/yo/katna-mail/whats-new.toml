@@ -706,3 +706,56 @@ sáfà lẹ́tà rẹ ń fi ránṣẹ́ sí ọ nígbà tí sáfà olùgbà k�
 ìfiránṣẹ́ náà; bọ́tìnnì náà máa ń ṣú níbi tí sáfà lẹ́tà rẹ kò ti pèsè
 wọn.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Àmì fún lẹ́tà tó dé àti tí a kà"
+text = """
+Lẹ́tà tí o fi ránṣẹ́ ti ń fi àmì hàn báyìí lẹ́gbẹ̀ẹ́ olùgbà kọ̀ọ̀kan.
+Àmì eérú kan túmọ̀ sí pé sáfà lẹ́tà wọn ti gbà á: láti inú ìwé-ẹ̀rí
+ìfijíṣẹ́, tàbí, níbi tí iṣẹ́ lẹ́tà rẹ kò ti fi í ránṣẹ́ (Gmail), nígbà
+tí kò sí lẹ́tà ìpadàbọ̀ tó padà láàárín ààbọ̀ wákàtí. Àmì méjì ní àwọ̀
+àfihàn rẹ túmọ̀ sí pé wọ́n ti kà á, láti inú ìwé-ẹ̀rí kíkà tàbí títọpa
+ṣíṣí, ìkìlọ̀ sì túmọ̀ sí pé ó padà. Tọ́ka sí àmì kan láti rí ìgbà àti bí
+ó ṣe ṣẹlẹ̀. Àwọn ímeèlì ìwé-ẹ̀rí máa ń wà nínú àpótí lẹ́tà rẹ lábẹ́
+Ìmúdójúìwọ̀n, láìsí ìfitónilétí.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Ìfitónilétí fún lẹ́tà Gmail tuntun"
+text = """
+Lẹ́tà tuntun nínú àpótí-ìwọlé Gmail ti ń fi ìfitónilétí hàn lẹ́ẹ̀kan sí
+i báyìí. Tẹ́lẹ̀, Katna máa ń pàdánù lẹ́tà tí Gmail fi sí Gbogbo lẹ́tà ní
+ìṣẹ́jú díẹ̀ ṣáájú àpótí-ìwọlé.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Wá nípa irú àfikún"
+text = """
+Nínú Àwọn àṣàyàn àwárí, “Ní àfikún” ń fúnni ní PDF, XLSX, ODF, XLS, ODS,
+PPT àti PPTX báyìí, àti “Àdáni” fún ìtẹ̀síwájú fáìlì mìíràn, bí png tàbí
+avif. Méèlì tí ó ní àfikún irú tí a yàn nìkan ló ń hàn.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Àwọn àwọ̀ ìpilẹ̀ nínú àwọ̀ ìrísí òkùnkùn"
+text = """
+Nínú àwọ̀ ìrísí òkùnkùn, lẹ́tà tí ó ní àwọ̀ tirẹ̀ máa hàn ní àwọ̀ òkùnkùn.
+Bọ́tìnnì ìdajì àyíká tuntun lórí pátákó irinṣẹ́ pánẹ́ẹ̀lì kíkà máa fi í hàn
+ní àwọ̀ ìpilẹ̀ ẹni tó rán an, àti padà.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "Ìtẹ̀jáde máa pa ìṣàtúnṣe mọ́"
+text = """
+Lẹ́tà máa tẹ̀ jáde bí ó ṣe hàn nínú pánẹ́ẹ̀lì kíkà, pẹ̀lú àwọn tábìlì, àwọ̀,
+ààlà, àkójọ àti àwòrán rẹ̀. Àwòtẹ́lẹ̀ ìtẹ̀jáde lè fi àwọn àwọ̀ ẹ̀yìn sílẹ̀
+láti dín inki kù, tàbí kí ó tẹ ọ̀rọ̀ nìkan jáde pẹ̀lú Ọ̀rọ̀ nìkan.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Bèèrè kí o pa á rẹ́"
+text = """
+Pípa ìjíròrò púpọ̀ rẹ́ lẹ́ẹ̀kan náà yóò kọ́kọ́ bèèrè bóyá kí a gbé wọn lọ sí
+Ìdọ̀tí. Sàmì sí “Má bèèrè mọ́” láti fo ìbéèrè náà, tàbí tàn án padà nínú
+Ètò > Gbogbogbò. Pípa rẹ́ títí láé, nínú Ìdọ̀tí, máa bèèrè nígbà gbogbo.
+"""

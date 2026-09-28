@@ -13,6 +13,9 @@ search-has-words = Bevat de woorden
 search-without = Bevat niet
 search-date-within = Datum binnen
 search-has-attachment = Heeft bijlage
+search-attachment-custom = Aangepast
+search-attachment-custom-hint = Typ een extensie, zoals png, en dan Spatie
+search-attachment-remove = Verwijderen
 search-clear-filter = Filter wissen
 
 ## Search options: "Date within" choices

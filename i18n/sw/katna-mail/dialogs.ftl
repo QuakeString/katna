@@ -169,3 +169,35 @@ sign-in-again-tooltip = Fungua ukurasa wa kuingia wa { $provider } kwenye kivinj
 sign-in-again-waiting = Inasubiri kivinjari chako…
 sign-in-again-close = Funga
 sign-in-again-done = Umeingia tena kwenye { $address }. Inapokea barua zako…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] Hamisha mazungumzo haya kwenye Tupio?
+       *[other] Hamisha mazungumzo { $count } kwenye Tupio?
+    }
+   *[message] { $count ->
+        [one] Hamisha ujumbe huu kwenye Tupio?
+       *[other] Hamisha jumbe { $count } kwenye Tupio?
+    }
+}
+delete-ask-body = { $count ->
+    [one] Unaweza kutendua mara moja baadaye, au kuirejesha kutoka Tupio baadaye.
+   *[other] Unaweza kutendua mara moja baadaye, au kuzirejesha kutoka Tupio baadaye.
+}
+delete-ask-confirm = Hamisha kwenye Tupio
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] Futa mazungumzo haya kabisa?
+       *[other] Futa mazungumzo { $count } kabisa?
+    }
+   *[message] { $count ->
+        [one] Futa ujumbe huu kabisa?
+       *[other] Futa jumbe { $count } kabisa?
+    }
+}
+delete-forever-body = { $count ->
+    [one] Inafutwa pia kwenye seva. Hili haliwezi kutendulika.
+   *[other] Zinafutwa pia kwenye seva. Hili haliwezi kutendulika.
+}
+delete-forever-confirm = Futa kabisa
+delete-ask-dont-ask = Usiulize tena
+delete-ask-cancel = Ghairi

@@ -169,3 +169,35 @@ sign-in-again-tooltip = તમારા બ્રાઉઝરમાં { $provid
 sign-in-again-waiting = તમારા બ્રાઉઝરની રાહ જોઈ રહ્યાં છીએ…
 sign-in-again-close = બંધ કરો
 sign-in-again-done = { $address } માં ફરી સાઇન ઇન કર્યું. તમારી મેઇલ લાવી રહ્યાં છીએ…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] આ વાર્તાલાપ કચરાપેટીમાં ખસેડવો છે?
+       *[other] { $count } વાર્તાલાપ કચરાપેટીમાં ખસેડવા છે?
+    }
+   *[message] { $count ->
+        [one] આ મેસેજ કચરાપેટીમાં ખસેડવો છે?
+       *[other] { $count } મેસેજ કચરાપેટીમાં ખસેડવા છે?
+    }
+}
+delete-ask-body = { $count ->
+    [one] તમે તરત પછી પૂર્વવત્ કરી શકો છો, અથવા પછીથી કચરાપેટીમાંથી પાછો લાવી શકો છો.
+   *[other] તમે તરત પછી પૂર્વવત્ કરી શકો છો, અથવા પછીથી કચરાપેટીમાંથી પાછા લાવી શકો છો.
+}
+delete-ask-confirm = કચરાપેટીમાં ખસેડો
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] આ વાર્તાલાપ કાયમ માટે ડિલીટ કરવો છે?
+       *[other] { $count } વાર્તાલાપ કાયમ માટે ડિલીટ કરવા છે?
+    }
+   *[message] { $count ->
+        [one] આ મેસેજ કાયમ માટે ડિલીટ કરવો છે?
+       *[other] { $count } મેસેજ કાયમ માટે ડિલીટ કરવા છે?
+    }
+}
+delete-forever-body = { $count ->
+    [one] તે સર્વર પરથી પણ ડિલીટ થાય છે. આ પૂર્વવત્ કરી શકાતું નથી.
+   *[other] તે સર્વર પરથી પણ ડિલીટ થાય છે. આ પૂર્વવત્ કરી શકાતું નથી.
+}
+delete-forever-confirm = કાયમ માટે ડિલીટ કરો
+delete-ask-dont-ask = ફરી ન પૂછો
+delete-ask-cancel = રદ કરો

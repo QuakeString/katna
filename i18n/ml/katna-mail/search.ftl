@@ -13,6 +13,9 @@ search-has-words = ഈ വാക്കുകൾ ഉള്ളത്
 search-without = ഇവ ഇല്ലാത്തത്
 search-date-within = തീയതി പരിധി
 search-has-attachment = അറ്റാച്ച്‌മെന്റ് ഉള്ളത്
+search-attachment-custom = ഇഷ്‌ടാനുസൃതം
+search-attachment-custom-hint = png പോലുള്ള ഒരു എക്സ്റ്റൻഷൻ ടൈപ്പ് ചെയ്യുക, തുടർന്ന് Space അമർത്തുക
+search-attachment-remove = നീക്കം ചെയ്യുക
 search-clear-filter = ഫിൽട്ടർ മായ്‌ക്കുക
 
 ## Search options: "Date within" choices

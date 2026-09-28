@@ -13,6 +13,9 @@ search-has-words = Ina maneno
 search-without = Haina
 search-date-within = Tarehe ndani ya
 search-has-attachment = Ina kiambatisho
+search-attachment-custom = Maalum
+search-attachment-custom-hint = Andika kiendelezi, kama png, kisha Space
+search-attachment-remove = Ondoa
 search-clear-filter = Futa kichujio
 
 ## Search options: "Date within" choices

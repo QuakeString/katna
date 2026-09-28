@@ -722,3 +722,59 @@ Katna. Potwierdzenie dostarczenia to e-mail, który serwer poczty wysyła
 Ci, gdy serwer każdego odbiorcy przyjmie wiadomość; przycisk jest
 wyszarzony, jeśli Twój serwer poczty ich nie oferuje.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Znaczniki dostarczenia i przeczytania"
+text = """
+Wysłana poczta pokazuje teraz znaczniki obok każdego odbiorcy. Jeden
+szary znacznik oznacza, że serwer poczty odbiorcy ją przyjął: według
+potwierdzenia dostarczenia lub, gdy Twoja usługa poczty go nie wysyła
+(Gmail), gdy w ciągu pół godziny nie przyszedł zwrot. Dwa znaczniki w
+Twoim kolorze akcentu oznaczają, że wiadomość przeczytano, według
+potwierdzenia przeczytania lub śledzenia otwarć, a ostrzeżenie oznacza,
+że wiadomość została zwrócona. Wskaż znacznik, aby zobaczyć, kiedy i
+jak. E-maile z potwierdzeniami zostają w skrzynce w zakładce
+Powiadomienia i nie wyświetlają powiadomień.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Powiadomienia o nowej poczcie w Gmailu"
+text = """
+Nowa poczta w skrzynce Gmaila znów pokazuje powiadomienie. Wcześniej
+umykała poczta, którą Gmail umieścił w folderze Wszystkie chwilę przed
+folderem Odebrane.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Szukaj według typu załącznika"
+text = """
+W Opcjach wyszukiwania „Ma załącznik” oferuje teraz PDF, XLSX, ODF, XLS,
+ODS, PPT i PPTX oraz Niestandardowy dla każdego innego rozszerzenia, np.
+png lub avif. Wyświetlana jest tylko poczta z załącznikiem wybranego
+typu.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Oryginalne kolory w ciemnym motywie"
+text = """
+W ciemnym motywie poczta, która ustawia własne kolory, jest pokazywana w
+ciemnych. Nowy przycisk z półkolem na pasku narzędzi okienka odczytu
+pokazuje ją w oryginalnych kolorach nadawcy i z powrotem.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "Wydruk zachowuje formatowanie"
+text = """
+Poczta drukuje się tak, jak wygląda w okienku odczytu, z tabelami,
+kolorami, obramowaniami, listami i obrazami. Podgląd wydruku może pominąć
+kolory tła, aby oszczędzić tusz, albo wydrukować sam tekst opcją Tylko
+tekst.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Pytanie przed usunięciem"
+text = """
+Usunięcie kilku wątków naraz pyta teraz najpierw, czy przenieść je do
+kosza. Zaznacz „Nie pytaj ponownie”, aby pominąć to pytanie, albo włącz
+je znowu w Ustawienia > Ogólne. Trwałe usuwanie, w koszu, pyta zawsze.
+"""

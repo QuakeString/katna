@@ -13,6 +13,9 @@ search-has-words = આ શબ્દો હોય
 search-without = આ ન હોય
 search-date-within = તારીખની સમયમર્યાદા
 search-has-attachment = જોડાણ હોય
+search-attachment-custom = કસ્ટમ
+search-attachment-custom-hint = એક્સટેન્શન લખો, જેમ કે png, પછી Space દબાવો
+search-attachment-remove = કાઢી નાખો
 search-clear-filter = ફિલ્ટર સાફ કરો
 
 ## Search options: "Date within" choices

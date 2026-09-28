@@ -13,6 +13,9 @@ search-has-words = Ní àwọn ọ̀rọ̀ wọ̀nyí
 search-without = Kò ní
 search-date-within = Ọjọ́ láàrin
 search-has-attachment = Ní àfikún
+search-attachment-custom = Àdáni
+search-attachment-custom-hint = Tẹ ìtẹ̀síwájú fáìlì kan, bí png, lẹ́yìn náà tẹ Space
+search-attachment-remove = Yọ kúrò
 search-clear-filter = Pa àlẹ̀mọ́ rẹ́
 
 ## Search options: "Date within" choices

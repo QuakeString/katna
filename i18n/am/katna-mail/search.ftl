@@ -13,6 +13,9 @@ search-has-words = ቃላቱን የያዘ
 search-without = የማይይዘው
 search-date-within = የጊዜ ክልል
 search-has-attachment = አባሪ ያለው
+search-attachment-custom = ብጁ
+search-attachment-custom-hint = ቅጥያ ይተይቡ፣ ለምሳሌ png፣ ከዚያ Space ይጫኑ
+search-attachment-remove = አስወግድ
 search-clear-filter = ማጣሪያውን አጽዳ
 
 ## Search options: "Date within" choices

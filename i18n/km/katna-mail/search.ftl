@@ -13,6 +13,9 @@ search-has-words = មានពាក្យ
 search-without = គ្មានពាក្យ
 search-date-within = កាលបរិច្ឆេទក្នុងរយៈពេល
 search-has-attachment = មានឯកសារភ្ជាប់
+search-attachment-custom = ផ្ទាល់ខ្លួន
+search-attachment-custom-hint = វាយកន្ទុយឯកសារ ដូចជា png រួចចុច Space
+search-attachment-remove = ដកចេញ
 search-clear-filter = សម្អាតតម្រង
 
 ## Search options: "Date within" choices

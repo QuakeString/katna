@@ -169,3 +169,35 @@ sign-in-again-tooltip = Anmeldeseite von { $provider } im Browser öffnen
 sign-in-again-waiting = Warten auf Ihren Browser…
 sign-in-again-close = Schließen
 sign-in-again-done = Erneut bei { $address } angemeldet. E-Mails werden abgerufen…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] Diese Konversation in den Papierkorb verschieben?
+       *[other] { $count } Konversationen in den Papierkorb verschieben?
+    }
+   *[message] { $count ->
+        [one] Diese Nachricht in den Papierkorb verschieben?
+       *[other] { $count } Nachrichten in den Papierkorb verschieben?
+    }
+}
+delete-ask-body = { $count ->
+    [one] Sie können das gleich danach rückgängig machen oder sie später aus dem Papierkorb zurückholen.
+   *[other] Sie können das gleich danach rückgängig machen oder sie später aus dem Papierkorb zurückholen.
+}
+delete-ask-confirm = In den Papierkorb
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] Diese Konversation endgültig löschen?
+       *[other] { $count } Konversationen endgültig löschen?
+    }
+   *[message] { $count ->
+        [one] Diese Nachricht endgültig löschen?
+       *[other] { $count } Nachrichten endgültig löschen?
+    }
+}
+delete-forever-body = { $count ->
+    [one] Sie wird auch auf dem Server gelöscht. Das lässt sich nicht rückgängig machen.
+   *[other] Sie werden auch auf dem Server gelöscht. Das lässt sich nicht rückgängig machen.
+}
+delete-forever-confirm = Endgültig löschen
+delete-ask-dont-ask = Nicht mehr fragen
+delete-ask-cancel = Abbrechen

@@ -733,3 +733,62 @@ Zustellbestätigung ist eine E-Mail, die Ihr E-Mail-Server Ihnen schickt,
 wenn der Server jedes Empfängers die Nachricht annimmt; die Schaltfläche
 ist ausgegraut, wenn Ihr E-Mail-Server sie nicht anbietet.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Häkchen für zugestellt und gelesen"
+text = """
+Gesendete E-Mails zeigen jetzt Häkchen neben jedem Empfänger. Ein graues
+Häkchen heißt, dass sein E-Mail-Server sie angenommen hat: aus einer
+Zustellbestätigung oder, wenn Ihr E-Mail-Dienst keine sendet (Gmail), wenn
+innerhalb einer halben Stunde keine Unzustellbarkeitsnachricht zurückkam.
+Zwei Häkchen in Ihrer Akzentfarbe heißen, dass sie gelesen wurde, aus
+einer Lesebestätigung oder der Öffnungsverfolgung, und eine Warnung heißt,
+sie war unzustellbar. Zeigen Sie auf ein Häkchen, um zu sehen, wann und
+wie. Bestätigungs-E-Mails bleiben im Postfach unter Benachrichtigungen,
+ohne dass eine Benachrichtigung erscheint.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Benachrichtigungen für neue Gmail-E-Mails"
+text = """
+Neue E-Mails in einem Gmail-Posteingang zeigen wieder eine
+Benachrichtigung. Katna hat bisher E-Mails übersehen, die Gmail einen
+Moment vor dem Posteingang in Alle Nachrichten einsortiert hat.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Nach Anhangstyp suchen"
+text = """
+In den Suchoptionen bietet „Mit Anhang“ jetzt PDF, XLSX, ODF, XLS, ODS,
+PPT und PPTX sowie Benutzerdefiniert für jede andere Dateiendung, etwa
+png oder avif. Angezeigt werden nur E-Mails mit einem Anhang eines
+gewählten Typs.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Originalfarben bei dunklem Design"
+text = """
+Bei dunklem Design werden E-Mails, die eigene Farben setzen, in dunklen
+Farben angezeigt. Der neue Halbkreis-Knopf in der Werkzeugleiste des
+Lesebereichs zeigt sie in den Originalfarben des Absenders – und wieder
+zurück.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "Der Ausdruck behält die Formatierung"
+text = """
+E-Mails werden so gedruckt, wie sie im Lesebereich aussehen: mit Tabellen,
+Farben, Rahmen, Listen und Bildern. Die Druckvorschau kann
+Hintergrundfarben weglassen, um Tinte zu sparen, oder mit Einfacher Text
+nur den Text drucken.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Fragen vor dem Löschen"
+text = """
+Wenn Sie mehrere Konversationen auf einmal löschen, wird jetzt zuerst
+gefragt, ob sie in den Papierkorb sollen. Setzen Sie ein Häkchen bei
+„Nicht mehr fragen“, um die Frage zu überspringen, oder schalten Sie sie
+unter Einstellungen > Allgemein wieder ein. Beim endgültigen Löschen im
+Papierkorb wird immer gefragt.
+"""

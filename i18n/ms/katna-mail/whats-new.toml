@@ -725,3 +725,60 @@ penghantaran ialah e-mel yang dihantar oleh pelayan mel anda apabila
 pelayan setiap penerima menerima mesej itu; butang itu dikelabukan jika
 pelayan mel anda tidak menyediakannya.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Tanda untuk mel yang sampai dan dibaca"
+text = """
+Mel yang anda hantar kini menunjukkan tanda di sebelah setiap penerima.
+Satu tanda kelabu bermaksud pelayan mel mereka telah menerimanya:
+daripada resit penghantaran, atau, jika perkhidmatan mel anda tidak
+menghantarnya (Gmail), apabila tiada lantunan kembali dalam masa
+setengah jam. Dua tanda dalam warna aksen anda bermaksud mereka telah
+membacanya, daripada resit baca atau penjejakan pembukaan, dan amaran
+bermaksud ia melantun. Halakan penuding pada tanda untuk melihat bila
+dan bagaimana. E-mel resit kekal dalam peti mel anda di bawah Kemas
+kini, tanpa pemberitahuan.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Pemberitahuan untuk mel Gmail baharu"
+text = """
+Mel baharu dalam peti masuk Gmail kini menunjukkan pemberitahuan semula.
+Dahulu Katna terlepas mel yang Gmail failkan dalam Semua Mel sejurus
+sebelum peti masuk.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Cari mengikut jenis lampiran"
+text = """
+Dalam Pilihan carian, “Ada lampiran” kini menawarkan PDF, XLSX, ODF,
+XLS, ODS, PPT dan PPTX, serta Tersuai untuk sebarang sambungan lain,
+seperti png atau avif. Hanya mel yang mempunyai lampiran jenis yang
+dipilih akan dipaparkan.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Warna asal dalam tema gelap"
+text = """
+Dalam tema gelap, mel yang menetapkan warnanya sendiri dipaparkan dengan
+warna gelap. Butang separuh bulatan baharu pada bar alat anak tetingkap
+bacaan memaparkannya dengan warna asal pengirimnya, dan kembali semula.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "Cetakan mengekalkan format"
+text = """
+Mel dicetak sebagaimana ia kelihatan dalam anak tetingkap bacaan, dengan
+jadual, warna, sempadan, senarai dan gambarnya. Pratonton cetakan boleh
+meninggalkan warna latar belakang untuk menjimatkan dakwat, atau mencetak
+teks sahaja dengan Teks sahaja.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Tanya sebelum memadam"
+text = """
+Memadam beberapa perbualan sekali gus kini bertanya dahulu sama ada
+hendak mengalihkannya ke Sampah. Tandakan “Jangan tanya lagi” untuk
+melangkau soalan itu, atau hidupkannya semula dalam Tetapan > Umum.
+Pemadaman selama-lamanya, dalam Sampah, sentiasa bertanya.
+"""

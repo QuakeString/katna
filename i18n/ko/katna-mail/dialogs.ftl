@@ -164,3 +164,21 @@ sign-in-again-tooltip = 브라우저에서 { $provider } 로그인 페이지 열
 sign-in-again-waiting = 브라우저를 기다리는 중…
 sign-in-again-close = 닫기
 sign-in-again-done = { $address }에 다시 로그인했습니다. 메일을 가져오는 중…
+delete-ask-title = { $kind ->
+    [conversation] 대화 { $count }개를 휴지통으로 이동하시겠습니까?
+   *[message] 메일 { $count }개를 휴지통으로 이동하시겠습니까?
+}
+delete-ask-body = { $count ->
+   *[other] 바로 뒤에 실행취소할 수 있고, 나중에 휴지통에서 되돌릴 수도 있습니다.
+}
+delete-ask-confirm = 휴지통으로 이동
+delete-forever-title = { $kind ->
+    [conversation] 대화 { $count }개를 영구삭제하시겠습니까?
+   *[message] 메일 { $count }개를 영구삭제하시겠습니까?
+}
+delete-forever-body = { $count ->
+   *[other] 서버에서도 삭제됩니다. 되돌릴 수 없습니다.
+}
+delete-forever-confirm = 영구삭제
+delete-ask-dont-ask = 다시 묻지 않기
+delete-ask-cancel = 취소

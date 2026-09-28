@@ -726,3 +726,61 @@ tu cuenta de Katna. Una confirmación de entrega es un correo que te envía
 tu servidor de correo cuando el servidor de cada destinatario recibe el
 mensaje; el botón aparece atenuado si tu servidor de correo no las ofrece.
 """
+
+["2026-09-28-0120-delivered-read-ticks"]
+title = "Marcas de entregado y leído"
+text = """
+El correo que envías muestra ahora marcas junto a cada destinatario. Una
+marca gris significa que el servidor de correo del destinatario lo aceptó:
+por una confirmación de entrega o, cuando tu servicio de correo no envía
+ninguna (Gmail), porque no volvió ningún mensaje de error en media hora.
+Dos marcas en tu color de acento significan que lo leyó, por una
+confirmación de lectura o por el seguimiento de aperturas, y una
+advertencia significa que rebotó. Apunta a una marca para ver cuándo y
+cómo. Los correos de confirmación se quedan en tu buzón, en
+«Notificaciones», sin mostrar una notificación.
+"""
+
+["2026-09-28-0143-gmail-new-mail-notifications"]
+title = "Notificaciones del correo nuevo de Gmail"
+text = """
+El correo nuevo de una bandeja de Gmail vuelve a mostrar una
+notificación. Antes Katna se perdía el correo que Gmail guardaba en
+«Todos» un instante antes que en Recibidos.
+"""
+
+["2026-09-28-0156-attachment-types"]
+title = "Busca por tipo de archivo adjunto"
+text = """
+En Opciones de búsqueda, «Con archivo adjunto» ahora ofrece PDF, XLSX,
+ODF, XLS, ODS, PPT y PPTX, y Personalizado para cualquier otra
+extensión, como png o avif. Solo se muestra el correo con un adjunto de
+un tipo elegido.
+"""
+
+["2026-09-28-0106-original-colors"]
+title = "Colores originales con un tema oscuro"
+text = """
+Con un tema oscuro, el correo que fija sus propios colores se muestra en
+colores oscuros. El nuevo botón de medio círculo de la barra de
+herramientas del panel de lectura lo muestra con los colores originales de
+su remitente, y lo devuelve.
+"""
+
+["2026-09-28-0127-print-as-shown"]
+title = "La impresión conserva el formato"
+text = """
+El correo se imprime como se ve en el panel de lectura, con sus tablas,
+colores, bordes, listas e imágenes. La vista previa de impresión puede
+omitir los colores de fondo para ahorrar tinta, o imprimir solo el texto
+con Texto simple.
+"""
+
+["2026-09-28-0141-ask-before-deleting"]
+title = "Preguntar antes de eliminar"
+text = """
+Al eliminar varias conversaciones a la vez, ahora se pregunta primero si
+se mueven a la papelera. Marca «No volver a preguntar» para saltarte la
+pregunta, o vuelve a activarla en Ajustes > General. La eliminación
+definitiva, en la papelera, pregunta siempre.
+"""

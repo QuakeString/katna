@@ -166,3 +166,29 @@ sign-in-again-tooltip = 在瀏覽器中開啟 { $provider } 登入頁面
 sign-in-again-waiting = 正在等待瀏覽器…
 sign-in-again-close = 關閉
 sign-in-again-done = 已重新登入 { $address }。正在接收你的郵件…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+       *[other] 將 { $count } 個會話群組移至垃圾桶？
+    }
+   *[message] { $count ->
+       *[other] 將 { $count } 封郵件移至垃圾桶？
+    }
+}
+delete-ask-body = { $count ->
+   *[other] 你可以隨後立即復原，或以後從垃圾桶救回。
+}
+delete-ask-confirm = 移至垃圾桶
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+       *[other] 永久刪除 { $count } 個會話群組？
+    }
+   *[message] { $count ->
+       *[other] 永久刪除 { $count } 封郵件？
+    }
+}
+delete-forever-body = { $count ->
+   *[other] 伺服器上也會一併刪除，而且無法復原。
+}
+delete-forever-confirm = 永久刪除
+delete-ask-dont-ask = 不再詢問
+delete-ask-cancel = 取消

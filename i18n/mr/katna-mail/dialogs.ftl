@@ -169,3 +169,35 @@ sign-in-again-tooltip = तुमच्या ब्राउझरमध्य�
 sign-in-again-waiting = तुमच्या ब्राउझरची वाट पाहत आहे…
 sign-in-again-close = बंद करा
 sign-in-again-done = { $address } मध्ये पुन्हा साइन इन केले. तुमचे मेल आणत आहे…
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] हे संभाषण कचरापेटीत हलवायचे?
+       *[other] { $count } संभाषणे कचरापेटीत हलवायची?
+    }
+   *[message] { $count ->
+        [one] हा मेसेज कचरापेटीत हलवायचा?
+       *[other] { $count } मेसेज कचरापेटीत हलवायचे?
+    }
+}
+delete-ask-body = { $count ->
+    [one] लगेचच पूर्ववत करता येईल, किंवा नंतर कचरापेटीतून परत आणता येईल.
+   *[other] लगेचच पूर्ववत करता येईल, किंवा नंतर कचरापेटीतून परत आणता येतील.
+}
+delete-ask-confirm = कचरापेटीत हलवा
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] हे संभाषण कायमचे हटवायचे?
+       *[other] { $count } संभाषणे कायमची हटवायची?
+    }
+   *[message] { $count ->
+        [one] हा मेसेज कायमचा हटवायचा?
+       *[other] { $count } मेसेज कायमचे हटवायचे?
+    }
+}
+delete-forever-body = { $count ->
+    [one] सर्व्हरवरूनही हटवला जाईल. हे पूर्ववत करता येणार नाही.
+   *[other] सर्व्हरवरूनही हटवले जातील. हे पूर्ववत करता येणार नाही.
+}
+delete-forever-confirm = कायमचे हटवा
+delete-ask-dont-ask = पुन्हा विचारू नका
+delete-ask-cancel = रद्द करा
