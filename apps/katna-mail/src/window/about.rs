@@ -52,13 +52,18 @@ const GPUI_URL: &str = "https://github.com/zed-industries/zed/tree/main/crates/g
 /// KDE's donation page.
 const KDE_DONATE_URL: &str = "https://kde.org/donate/";
 
-/// Where to follow Katna's author: the site and the profile, or `None`
-/// until there is one (the link is left out).
-const FOLLOW: &[(&str, Option<&str>)] = &[
-    ("GitHub", Some("https://github.com/QuakeString")),
-    ("x.com", Some("https://x.com/QuakeString")),
+/// Where to follow Katna's author: the site, its icon and the profile, or
+/// `None` until there is one (the link is left out).
+const FOLLOW: &[(&str, &str, Option<&str>)] = &[
+    (
+        "GitHub",
+        "brand-github",
+        Some("https://github.com/QuakeString"),
+    ),
+    ("x.com", "brand-x", Some("https://x.com/QuakeString")),
     (
         "LinkedIn",
+        "brand-linkedin",
         Some("https://www.linkedin.com/in/md-mozammel-hossain-97a20446/"),
     ),
 ];
@@ -414,9 +419,9 @@ impl MailWindow {
 
         let follow = FOLLOW
             .iter()
-            .filter_map(|(site, url)| Some((*site, (*url)?)))
+            .filter_map(|(site, logo, url)| Some((*site, *logo, (*url)?)))
             .enumerate()
-            .map(|(ix, (site, url))| {
+            .map(|(ix, (site, logo, url))| {
                 div()
                     .id(("about-follow", ix))
                     .h(px(32.0))
@@ -432,6 +437,7 @@ impl MailWindow {
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
                     .on_click(move |_, _, cx| cx.open_url(url))
+                    .child(icon(logo, th.text, 14.0))
                     .child(site)
                     .child(icon("open-external", th.text_dim, 14.0))
             })
@@ -848,7 +854,8 @@ mod tests {
         assert!(SOURCE_URL.starts_with("https://github.com/"));
         assert!(KDE_DONATE_URL.starts_with("https://kde.org/"));
         assert!(ZED_URL.starts_with("https://") && GPUI_URL.starts_with("https://github.com/"));
-        for (site, url) in FOLLOW {
+        for (site, logo, url) in FOLLOW {
+            assert!(logo.starts_with("brand-"), "{site}");
             assert!(url.is_none_or(|url| url.starts_with("https://")), "{site}");
         }
     }
