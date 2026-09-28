@@ -574,11 +574,24 @@ fn add_error(err: &katna_dbus::zbus::Error) -> AddError {
     }
 }
 
-/// Yields the subject and reason of each message the server refused for
-/// good.
-pub async fn send_failures(
+/// What became of a message handed to the outbox.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum SendOutcome {
+    /// Outbox entry `0` went out.
+    Sent(i64),
+    /// The server refused it for good: its subject and why.
+    Failed {
+        id: i64,
+        subject: String,
+        detail: String,
+    },
+}
+
+/// Yields each message that went out (or left the outbox) or that the
+/// server refused for good.
+pub async fn send_outcomes(
     connection: &Connection,
-) -> Result<impl Stream<Item = (String, String)>, String> {
+) -> Result<impl Stream<Item = SendOutcome>, String> {
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
@@ -592,13 +605,23 @@ pub async fn send_failures(
             async move {
                 let id = signal.args().ok()?.id;
                 let items = pim.outbox().await.ok()?;
-                items
-                    .into_iter()
-                    .find(|item| item.id == id && item.state == send_state::FAILED)
-                    .map(|item| (item.subject, item.detail))
+                // A sent message the mail server files in Sent itself
+                // leaves the outbox at once.
+                let Some(item) = items.into_iter().find(|item| item.id == id) else {
+                    return Some(SendOutcome::Sent(id));
+                };
+                match item.state.as_str() {
+                    send_state::SENT => Some(SendOutcome::Sent(id)),
+                    send_state::FAILED => Some(SendOutcome::Failed {
+                        id,
+                        subject: item.subject,
+                        detail: item.detail,
+                    }),
+                    _ => None,
+                }
             }
         })
-        .filter_map(|failure| failure))
+        .filter_map(|outcome| outcome))
 }
 
 /// Every message in the outbox: waiting, being sent, sent or failed.

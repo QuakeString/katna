@@ -20,6 +20,13 @@ compose-back-to-mail = Back to the mail window
 # Tooltip in a reply written at the foot of a conversation: opens it in
 # the compose window.
 compose-pop-out-reply = Pop out reply
+# A reply at the foot of a conversation shows its recipients on one line
+# until it is clicked. Tooltip of that line: shows the From, To, Cc and
+# Bcc rows.
+compose-edit-recipients = Edit recipients
+# On that line, before the names in Cc and in Bcc.
+compose-summary-cc = Cc: { $names }
+compose-summary-bcc = Bcc: { $names }
 # Tooltip of the "…" button under a reply: shows the quoted message.
 compose-show-trimmed = Show trimmed content
 # The same button once the quoted message shows: hides it again.
@@ -59,6 +66,8 @@ compose-no-account = Add an account to send mail from.
 compose-past-time = Pick a time in the future.
 compose-scheduling = Scheduling…
 compose-sending = Sending…
+# While the message waits for the undo-send delay; $seconds counts down.
+compose-sending-in = Sending in { $seconds }…
 # $when: the day and time it goes out, such as "Tomorrow, 8:00 AM".
 compose-scheduled = Send scheduled for { $when }
 # The message went out and its conversation was archived (Send and archive).

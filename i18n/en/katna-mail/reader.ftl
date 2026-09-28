@@ -37,6 +37,8 @@ reader-expand-all = Expand all
 reader-unknown-sender = (unknown sender)
 # A message's date with how long ago it was. $date: the full date; $ago: "2 hours ago".
 reader-date-ago = { $date } ({ $ago })
+# In place of the date of a reply that has not gone out yet.
+reader-sending = Sending…
 # Stands for the user's own address among the recipients: "to me, Bob".
 reader-me = me
 # Under the sender's name. $names: the recipients, separated by commas ("me, Bob").
