@@ -71,6 +71,9 @@ compose-track-unavailable = 署名付き、暗号化、プレーンテキスト�
 compose-track-sign-in = 開封とクリックを追跡するには Katna アカウントにサインインしてください
 compose-receipt = 開封確認を要求
 compose-receipt-on = 開封確認を要求しました: 受信者のアプリで、開封確認を送るかどうか尋ねられる場合があります
+compose-delivery = 配信確認を要求
+compose-delivery-on = 配信確認を要求しました: 各宛先のサーバーがメールを受け付けると、メールサーバーからメールで通知されます
+compose-delivery-unavailable = お使いのメールサーバーは配信確認を送信しません
 
 ## Spelling
 

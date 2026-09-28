@@ -74,6 +74,9 @@ compose-track-unavailable = אי אפשר לעקוב אחר דואר חתום, �
 compose-track-sign-in = כדי לעקוב אחר פתיחות ולחיצות צריך להתחבר לחשבון Katna
 compose-receipt = בקשת אישור קריאה
 compose-receipt-on = התבקש אישור קריאה: ייתכן שהיישום של הנמען יבקש ממנו לשלוח אותו
+compose-delivery = בקשת אישור מסירה
+compose-delivery-on = התבקש אישור מסירה: שרת הדואר שלך ישלח לך הודעה כשהשרת של כל נמען יקבל אותה
+compose-delivery-unavailable = שרת הדואר שלך לא שולח אישורי מסירה
 
 ## Spelling
 

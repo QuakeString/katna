@@ -74,6 +74,9 @@ compose-track-unavailable = E-post som är signerad, krypterad eller i ren text 
 compose-track-sign-in = Logga in på ett Katna-konto för att spåra öppningar och klick
 compose-receipt = Begär läskvitto
 compose-receipt-on = Läskvitto begärt: mottagarens app kan be hen att skicka ett
+compose-delivery = Begär leveranskvitto
+compose-delivery-on = Leveranskvitto begärt: din e-postserver mejlar dig när varje mottagares server tar emot meddelandet
+compose-delivery-unavailable = Din e-postserver skickar inte leveranskvitton
 
 ## Spelling
 

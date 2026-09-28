@@ -691,3 +691,15 @@ bladsy in jou blaaier aan te meld, sonder 'n programwagwoord. Outlook.com-
 en Hotmail-adresse werk nou ook. As 'n aanmelding ophou werk, bied 'n nota
 onderaan die venster aan om weer aan te meld.
 """
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Nasporing en bewyse van die begin af aan"
+text = """
+Nuwe boodskappe en antwoorde begin nou met oopmaak- en kliknasporing, 'n
+leesbewys en 'n afleweringsbewys aangeskakel; klik 'n knoppie langs die
+ontvangers om een vir daardie boodskap af te skakel. Nasporing vereis dat
+jy by jou Katna-rekening aangemeld is. 'n Afleweringsbewys is 'n e-pos wat
+jou e-posbediener vir jou stuur wanneer elke ontvanger se bediener die
+boodskap neem; die knoppie is grys waar jou e-posbediener dit nie aanbied
+nie.
+"""

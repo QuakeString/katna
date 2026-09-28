@@ -71,6 +71,9 @@ compose-track-unavailable = Không thể theo dõi thư đã ký, đã mã hóa 
 compose-track-sign-in = Đăng nhập tài khoản Katna để theo dõi lượt mở và lượt nhấp
 compose-receipt = Yêu cầu xác nhận đã đọc
 compose-receipt-on = Đã yêu cầu xác nhận đã đọc: ứng dụng của người nhận có thể hỏi họ có gửi xác nhận không
+compose-delivery = Yêu cầu xác nhận đã chuyển phát
+compose-delivery-on = Đã yêu cầu xác nhận đã chuyển phát: máy chủ thư của bạn sẽ gửi email cho bạn khi máy chủ của mỗi người nhận chấp nhận thư
+compose-delivery-unavailable = Máy chủ thư của bạn không gửi xác nhận đã chuyển phát
 
 ## Spelling
 

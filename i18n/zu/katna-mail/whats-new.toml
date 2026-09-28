@@ -737,3 +737,15 @@ yohlelo lokusebenza. Amakheli e-Outlook.com ne-Hotmail nawo asesebenza
 manje. Uma ukungena kuyeka ukusebenza, inothi ngezansi kwewindi
 likunikeza ukuthi uphinde ungene.
 """
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Ukulandelela nezaziso kuvuliwe kusukela ekuqaleni"
+text = """
+Imilayezo emisha nezimpendulo manje ziqala nokulandelela ukuvulwa
+nokuchofozwa, isaziso sokufunda nesaziso sokulethwa kuvuliwe; chofoza
+inkinobho eceleni kwabamukeli ukuze uvale okukodwa kwalokho kulowo
+mlayezo. Ukulandelela kudinga ukuthi ungene ku-akhawunti yakho ye-Katna.
+Isaziso sokulethwa yimeyili iseva yakho yemeyili ekuthumelela yona lapho
+iseva yomamukeli ngamunye yamukela umlayezo; inkinobho iba mpunga lapho
+iseva yakho yemeyili ingazinikezi khona.
+"""

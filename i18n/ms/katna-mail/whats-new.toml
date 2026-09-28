@@ -713,3 +713,15 @@ Outlook.com dan Hotmail kini berfungsi juga. Jika log masuk berhenti
 berfungsi, satu nota di bahagian bawah tetingkap menawarkan untuk log
 masuk semula.
 """
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Penjejakan dan resit dihidupkan dari awal"
+text = """
+Mesej dan balasan baharu kini bermula dengan penjejakan pembukaan dan
+klik, resit baca dan resit penghantaran dihidupkan; klik butang di
+sebelah penerima untuk mematikan salah satunya bagi mesej itu.
+Penjejakan memerlukan anda log masuk ke akaun Katna anda. Resit
+penghantaran ialah e-mel yang dihantar oleh pelayan mel anda apabila
+pelayan setiap penerima menerima mesej itu; butang itu dikelabukan jika
+pelayan mel anda tidak menyediakannya.
+"""

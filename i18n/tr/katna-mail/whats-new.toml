@@ -707,3 +707,14 @@ Outlook.com ve Hotmail adresleri de artık çalışıyor. Oturum açma
 çalışmayı bırakırsa pencerenin altındaki bir not yeniden oturum açmayı
 önerir.
 """
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "İzleme, okundu ve teslim bilgisi baştan açık"
+text = """
+Yeni iletiler ve yanıtlar artık açılma ve tıklama izleme, okundu bilgisi
+ve teslim bilgisi açık olarak başlıyor; bunlardan birini o ileti için
+kapatmak üzere alıcıların yanındaki bir düğmeye tıklayın. İzleme için
+Katna hesabınızda oturum açmış olmanız gerekir. Teslim bilgisi, her
+alıcının sunucusu iletiyi aldığında posta sunucunuzun size gönderdiği
+bir e-postadır; posta sunucunuz bunu sunmuyorsa düğme soluk görünür.
+"""

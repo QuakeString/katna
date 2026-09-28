@@ -707,3 +707,15 @@ Microsoft sendiri di browser Anda, tanpa sandi aplikasi. Alamat Outlook.com
 dan Hotmail kini juga bisa digunakan. Jika proses masuk berhenti berfungsi,
 catatan di bagian bawah jendela menawarkan untuk masuk lagi.
 """
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Pelacakan dan tanda terima aktif sejak awal"
+text = """
+Pesan baru dan balasan kini dimulai dengan pelacakan buka dan klik, tanda
+terima baca, dan tanda terima pengiriman dalam keadaan menyala; klik
+tombol di samping penerima untuk mematikan salah satunya untuk pesan itu.
+Pelacakan mengharuskan Anda masuk ke akun Katna Anda. Tanda terima
+pengiriman adalah email yang dikirim server email Anda saat server setiap
+penerima menerima pesan; tombolnya berwarna abu-abu jika server email Anda
+tidak menyediakannya.
+"""

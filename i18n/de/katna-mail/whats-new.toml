@@ -720,3 +720,16 @@ ohne App-Passwort. Auch Adressen von Outlook.com und Hotmail funktionieren
 jetzt. Wenn eine Anmeldung nicht mehr funktioniert, bietet ein Hinweis
 unten im Fenster an, sich erneut anzumelden.
 """
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Verfolgung und Bestätigungen von Anfang an"
+text = """
+Neue Nachrichten und Antworten beginnen jetzt mit eingeschalteter
+Verfolgung von Öffnungen und Klicks, Lesebestätigung und
+Zustellbestätigung; klicken Sie auf eine Schaltfläche neben den
+Empfängern, um eine davon für diese Nachricht auszuschalten. Für die
+Verfolgung müssen Sie bei Ihrem Katna-Konto angemeldet sein. Eine
+Zustellbestätigung ist eine E-Mail, die Ihr E-Mail-Server Ihnen schickt,
+wenn der Server jedes Empfängers die Nachricht annimmt; die Schaltfläche
+ist ausgegraut, wenn Ihr E-Mail-Server sie nicht anbietet.
+"""

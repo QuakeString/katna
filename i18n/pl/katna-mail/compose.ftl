@@ -76,6 +76,9 @@ compose-track-unavailable = Nie można śledzić wiadomości podpisanych, zaszyf
 compose-track-sign-in = Zaloguj się na konto Katna, aby śledzić otwarcia i kliknięcia
 compose-receipt = Poproś o potwierdzenie przeczytania
 compose-receipt-on = Poproszono o potwierdzenie przeczytania: aplikacja odbiorcy może zapytać go o jego wysłanie
+compose-delivery = Poproś o potwierdzenie dostarczenia
+compose-delivery-on = Poproszono o potwierdzenie dostarczenia: serwer poczty wyśle Ci e-mail, gdy serwer każdego odbiorcy przyjmie wiadomość
+compose-delivery-unavailable = Twój serwer poczty nie wysyła potwierdzeń dostarczenia
 
 ## Spelling
 

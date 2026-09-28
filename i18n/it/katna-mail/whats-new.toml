@@ -715,3 +715,15 @@ Microsoft nel browser, senza password per le app. Ora funzionano anche gli
 indirizzi Outlook.com e Hotmail. Se un accesso smette di funzionare, un
 avviso in fondo alla finestra propone di accedere di nuovo.
 """
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Tracciamento e conferme attivi fin dall’inizio"
+text = """
+I nuovi messaggi e le risposte ora partono con il tracciamento di aperture
+e clic, la conferma di lettura e la conferma di consegna attivi; fai clic
+su un pulsante accanto ai destinatari per disattivarne uno per quel
+messaggio. Il tracciamento richiede l’accesso al tuo account Katna. Una
+conferma di consegna è un’email che il tuo server di posta ti invia quando
+il server di ogni destinatario accetta il messaggio; il pulsante appare in
+grigio se il tuo server di posta non le offre.
+"""

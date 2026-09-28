@@ -692,3 +692,14 @@ của Google hoặc Microsoft trong trình duyệt, không cần mật khẩu �
 Địa chỉ Outlook.com và Hotmail giờ cũng dùng được. Nếu việc đăng nhập
 ngừng hoạt động, một ghi chú ở cuối cửa sổ sẽ đề nghị bạn đăng nhập lại.
 """
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Theo dõi và xác nhận được bật ngay từ đầu"
+text = """
+Thư mới và thư trả lời giờ bắt đầu với tính năng theo dõi lượt mở và
+lượt nhấp, xác nhận đã đọc và xác nhận đã chuyển phát được bật sẵn; nhấp
+vào nút bên cạnh người nhận để tắt một mục cho thư đó. Theo dõi cần bạn
+đăng nhập tài khoản Katna. Xác nhận đã chuyển phát là email mà máy chủ
+thư của bạn gửi cho bạn khi máy chủ của mỗi người nhận nhận thư; nút sẽ
+bị làm mờ nếu máy chủ thư của bạn không hỗ trợ.
+"""

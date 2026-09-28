@@ -74,6 +74,9 @@ compose-track-unavailable = İmzalı, şifreli ve düz metin postalar izlenemez
 compose-track-sign-in = Açılmaları ve tıklamaları izlemek için bir Katna hesabında oturum açın
 compose-receipt = Okundu bilgisi iste
 compose-receipt-on = Okundu bilgisi istendi: alıcının uygulaması ondan bilgi göndermesini isteyebilir
+compose-delivery = Teslim bilgisi iste
+compose-delivery-on = Teslim bilgisi istendi: her alıcının sunucusu iletiyi kabul ettiğinde posta sunucunuz size e-posta gönderecek
+compose-delivery-unavailable = Posta sunucunuz teslim bilgisi göndermiyor
 
 ## Spelling
 

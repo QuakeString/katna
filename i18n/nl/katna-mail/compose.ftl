@@ -74,6 +74,9 @@ compose-track-unavailable = Ondertekende, versleutelde en platte-tekstmail kan n
 compose-track-sign-in = Meld je aan bij een Katna-account om openen en klikken te volgen
 compose-receipt = Leesbevestiging vragen
 compose-receipt-on = Leesbevestiging gevraagd: de app van de ontvanger kan vragen er een te sturen
+compose-delivery = Ontvangstbevestiging vragen
+compose-delivery-on = Ontvangstbevestiging gevraagd: je mailserver mailt je wanneer de server van elke ontvanger het bericht accepteert
+compose-delivery-unavailable = Je mailserver stuurt geen ontvangstbevestigingen
 
 ## Spelling
 

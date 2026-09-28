@@ -694,3 +694,15 @@ Microsoft fúnra wọn nínú aṣàwákiri rẹ, láìsí ọ̀rọ̀ aṣínà
 àdírẹ́sì Outlook.com àti Hotmail náà ń ṣiṣẹ́ báyìí. Bí wíwọlé bá dẹ́kun
 iṣẹ́, àkíyèsí kan ní ìsàlẹ̀ fèrèsé yóò fún ọ láǹfààní láti tún wọlé.
 """
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Títọpa àti ìwé-ẹ̀rí ti wà ní títàn láti ìbẹ̀rẹ̀"
+text = """
+Àwọn ìfiránṣẹ́ tuntun àti àwọn èsì ti ń bẹ̀rẹ̀ báyìí pẹ̀lú títọpa ṣíṣí
+àti títẹ̀, ìwé-ẹ̀rí kíkà àti ìwé-ẹ̀rí ìfijíṣẹ́ ní títàn; tẹ bọ́tìnnì kan
+lẹ́gbẹ̀ẹ́ àwọn olùgbà láti pa ọ̀kan nínú wọn fún ìfiránṣẹ́ náà. Títọpa
+nílò kí o ti wọlé sí àkáǹtì Katna rẹ. Ìwé-ẹ̀rí ìfijíṣẹ́ jẹ́ ímeèlì tí
+sáfà lẹ́tà rẹ ń fi ránṣẹ́ sí ọ nígbà tí sáfà olùgbà kọ̀ọ̀kan bá gba
+ìfiránṣẹ́ náà; bọ́tìnnì náà máa ń ṣú níbi tí sáfà lẹ́tà rẹ kò ti pèsè
+wọn.
+"""

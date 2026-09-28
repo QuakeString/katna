@@ -710,3 +710,15 @@ Microsoftu w przeglądarce, bez hasła do aplikacji. Adresy Outlook.com i
 Hotmail też już działają. Jeśli logowanie przestanie działać, komunikat
 na dole okna zaproponuje ponowne zalogowanie się.
 """
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Śledzenie i potwierdzenia włączone od początku"
+text = """
+Nowe wiadomości i odpowiedzi mają teraz od początku włączone śledzenie
+otwarć i kliknięć, potwierdzenie przeczytania i potwierdzenie
+dostarczenia; kliknij przycisk obok odbiorców, aby wyłączyć któreś z
+nich dla tej wiadomości. Śledzenie wymaga zalogowania się na konto
+Katna. Potwierdzenie dostarczenia to e-mail, który serwer poczty wysyła
+Ci, gdy serwer każdego odbiorcy przyjmie wiadomość; przycisk jest
+wyszarzony, jeśli Twój serwer poczty ich nie oferuje.
+"""

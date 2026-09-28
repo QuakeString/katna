@@ -713,3 +713,15 @@ Endereços do Outlook.com e do Hotmail também funcionam agora. Se um
 login parar de funcionar, um aviso na parte de baixo da janela oferece
 fazer login de novo.
 """
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Rastreamento e confirmações ativados desde o início"
+text = """
+Novas mensagens e respostas agora começam com o rastreamento de
+aberturas e cliques, a confirmação de leitura e a confirmação de entrega
+ativados; clique em um botão ao lado dos destinatários para desativar um
+deles naquela mensagem. O rastreamento exige login na sua conta Katna.
+Uma confirmação de entrega é um e-mail que seu servidor de e-mail envia
+quando o servidor de cada destinatário recebe a mensagem; o botão fica
+desativado quando seu servidor de e-mail não oferece esse recurso.
+"""

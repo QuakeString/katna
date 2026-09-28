@@ -74,6 +74,9 @@ compose-track-unavailable = Hindi maita-track ang mail na may lagda, naka-encryp
 compose-track-sign-in = Mag-sign in sa isang Katna account para ma-track ang mga pagbukas at pag-click
 compose-receipt = Humingi ng read receipt
 compose-receipt-on = Humingi ng read receipt: maaaring hilingin ng app ng tatanggap na magpadala sila nito
+compose-delivery = Humingi ng delivery receipt
+compose-delivery-on = Humingi ng delivery receipt: mag-e-email sa iyo ang mail server mo kapag tinanggap ito ng server ng bawat tatanggap
+compose-delivery-unavailable = Hindi nagpapadala ng mga delivery receipt ang mail server mo
 
 ## Spelling
 

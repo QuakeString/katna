@@ -74,6 +74,9 @@ compose-track-unavailable = স্বাক্ষরিত, এনক্রি�
 compose-track-sign-in = খোলা ও ক্লিক ট্র্যাক করতে একটি Katna অ্যাকাউন্টে সাইন ইন করুন
 compose-receipt = পঠিত রসিদ চান
 compose-receipt-on = পঠিত রসিদ চাওয়া হয়েছে: প্রাপকের অ্যাপ হয়তো তাঁকে একটি পাঠাতে বলবে
+compose-delivery = ডেলিভারি রসিদ চান
+compose-delivery-on = ডেলিভারি রসিদ চাওয়া হয়েছে: প্রত্যেক প্রাপকের সার্ভার এটি গ্রহণ করলে আপনার মেল সার্ভার আপনাকে একটি ইমেল পাঠাবে
+compose-delivery-unavailable = আপনার মেল সার্ভার ডেলিভারি রসিদ পাঠায় না
 
 ## Spelling
 

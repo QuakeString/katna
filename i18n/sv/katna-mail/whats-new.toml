@@ -692,3 +692,15 @@ eller Microsofts egen sida i webbläsaren, utan applösenord. Adresser på
 Outlook.com och Hotmail fungerar nu också. Om en inloggning slutar
 fungera erbjuder en notis längst ned i fönstret att logga in igen.
 """
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Spårning och kvitton på från början"
+text = """
+Nya meddelanden och svar börjar nu med spårning av öppningar och klick,
+läskvitto och leveranskvitto påslagna; klicka på en knapp bredvid
+mottagarna för att stänga av något av dem för det meddelandet. Spårning
+kräver att du är inloggad på ditt Katna-konto. Ett leveranskvitto är ett
+mejl som din e-postserver skickar dig när varje mottagares server tar
+emot meddelandet; knappen är nedtonad där din e-postserver inte erbjuder
+dem.
+"""
