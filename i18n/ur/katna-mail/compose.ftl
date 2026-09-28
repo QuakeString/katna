@@ -13,6 +13,9 @@ compose-save-close = محفوظ کر کے بند کریں
 compose-back-to-mail = میل ونڈو پر واپس جائیں
 compose-pop-out-reply = جواب الگ کھولیں
 compose-show-trimmed = کاٹا گیا مواد دکھائیں
+compose-hide-trimmed = کاٹا گیا مواد چھپائیں
+compose-remove-trimmed = حوالہ دیا گیا متن ہٹائیں
+compose-trimmed-removed = حوالہ دیا گیا متن ہٹا دیا گیا
 
 ## Recipients and subject
 

@@ -84,3 +84,4 @@ add-account-signed-in = Login feito com o { $provider }. Buscando seus e-mailsâ€
 
 add-account-menu-another = Adicionar outra conta
 add-account-menu-manage = Gerenciar contas
+app-menu = Menu principal

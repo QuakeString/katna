@@ -101,6 +101,7 @@ tracking-clicked = { $who } లింక్‌ను { $clicks ->
    *[other] { $clicks } సార్లు
 } తెరిచారు, చివరిగా { $when }
 tracking-maybe-opened = { $who } దీన్ని తెరిచి ఉండవచ్చు (గోప్యత కోసం Apple Mail చిత్రాలను లోడ్ చేస్తుంది)
+tracking-seen-none = ఇంకా ఎవరూ దీన్ని గానీ లింక్‌ను గానీ తెరవలేదు
 tracking-receipt = { $who } రీడ్ రసీదును పంపారు
 tracking-receipt-displayed = రీడ్ రసీదు: { $who } మీ మెసేజ్‌ను తెరిచారు
 tracking-receipt-other = రీడ్ రసీదు: { $who } మీ మెసేజ్‌ను తెరవకుండానే తొలగించారు లేదా నిర్వహించారు

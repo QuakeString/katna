@@ -13,6 +13,9 @@ compose-save-close = सेव्ह करा आणि बंद करा
 compose-back-to-mail = मेल विंडोवर परत जा
 compose-pop-out-reply = उत्तर वेगळ्या विंडोमध्ये उघडा
 compose-show-trimmed = कापलेला मजकूर दाखवा
+compose-hide-trimmed = कापलेला मजकूर लपवा
+compose-remove-trimmed = अवतरित मजकूर काढा
+compose-trimmed-removed = अवतरित मजकूर काढला
 
 ## Recipients and subject
 

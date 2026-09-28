@@ -84,3 +84,4 @@ add-account-signed-in = { $provider }로 로그인했습니다. 메일을 가져
 
 add-account-menu-another = 다른 계정 추가
 add-account-menu-manage = 계정 관리
+app-menu = 기본 메뉴

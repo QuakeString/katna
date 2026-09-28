@@ -756,3 +756,84 @@ Xóa nhiều cuộc hội thoại cùng lúc giờ sẽ hỏi trước xem có c
 vào Thùng rác không. Chọn “Không hỏi lại” để bỏ qua câu hỏi, hoặc bật lại
 trong Cài đặt > Chung. Xóa vĩnh viễn, trong Thùng rác, thì luôn hỏi.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna cho Windows"
+text = """
+Katna Mail giờ chạy được cả trên Windows 10 và 11, được cài bằng Katna Setup
+riêng, có biểu tượng ở khay hệ thống, thông báo, tự khởi động khi đăng nhập
+và mở liên kết thư trong Katna.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Nút xóa trên mọi địa chỉ"
+text = """
+Mỗi thẻ địa chỉ trong Tới, Cc và Bcc giờ luôn hiện dấu x, để bạn có thể xóa
+địa chỉ mà không cần trỏ vào nó trước.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Thanh định dạng tròn hơn"
+text = """
+Thanh định dạng khi soạn thư (Aa) giờ có hình viên thuốc với viền mờ, nên
+tách biệt khỏi phần chữ của bạn trong cả chủ đề sáng lẫn tối.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Chuỗi thư dài mở nhanh"
+text = """
+Thư có định dạng trích dẫn nhiều thư trả lời trước đó, như một chuỗi trích
+dẫn dài, giờ mở ngay lập tức và cuộn mượt mà thay vì làm chậm cả cửa sổ.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Ai đã xem thư, sau một con mắt"
+text = """
+Thư bạn gửi có theo dõi không còn khung các dòng phía trên nữa. Con mắt cạnh
+ngôi sao chuyển sang màu nhấn của bạn khi có người mở thư; trỏ vào đó để xem
+ai đã mở thư hoặc mở liên kết, và vào lúc nào.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Gọi và sao chép từ thông tin liên hệ"
+text = """
+Trong thông tin liên hệ bên cạnh cuộc hội thoại, nhấp vào số điện thoại để
+gọi bằng ứng dụng điện thoại hoặc KDE Connect, hoặc dùng nút sao chép bên
+cạnh. Toàn bộ chữ trong ngăn này giờ cũng có thể chọn và sao chép.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Ẩn hoặc xóa thư được trích dẫn trong thư trả lời"
+text = """
+Nút “...” bên dưới thư trả lời giờ ẩn lại phần thư được trích dẫn sau khi
+bạn mở nó. Trỏ vào nút và nhấp vào dấu x ở góc để bỏ phần thư được trích dẫn
+khỏi thư trả lời; Hoàn tác hoặc Ctrl+Z sẽ đưa nó trở lại. Thanh công cụ của
+thư trả lời cũng giữ nguyên vị trí khi bạn cuộn.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Thư mục nổi và ô tìm kiếm rộng hơn"
+text = """
+Khi thư mục bị ẩn, đặt con trỏ lên Soạn thư hoặc Thư sẽ mở chúng thành một
+bảng cách xa các cạnh, có một khấc nhỏ chỉ vào nút. Ô tìm kiếm giãn ra lấp
+chỗ trống mà thư mục để lại, và nhấp vào thư mục bạn đang mở không còn làm
+danh sách nhấp nháy.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Gợi ý địa chỉ trong Tùy chọn tìm kiếm"
+text = """
+Từ và Đến trong Tùy chọn tìm kiếm giờ gợi ý địa chỉ khi bạn gõ, giống như
+Tới, Cc và Bcc khi soạn thư. Chọn một địa chỉ bằng Enter, Tab hoặc một cú
+nhấp.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Menu chính trong thẻ tài khoản, Trả lời tất cả trong cửa sổ riêng"
+text = """
+Thẻ tài khoản có nút ☰ bên cạnh Quản lý tài khoản. Nút này mở các menu Tệp,
+Sửa, Xem, Đi tới, Thư, Cài đặt và Trợ giúp giống như menu toàn cục của môi
+trường máy tính, dành cho những môi trường không hiển thị menu này. Trả lời
+tất cả trên thông báo thư mới giờ mở cuộc hội thoại trong cửa sổ riêng, sẵn
+sàng để gõ, và giữ nguyên cửa sổ chính.
+"""

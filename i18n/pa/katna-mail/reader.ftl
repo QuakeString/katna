@@ -101,6 +101,7 @@ tracking-clicked = { $who } ਨੇ ਲਿੰਕ { $clicks ->
    *[other] { $clicks } ਵਾਰ
 } ਖੋਲ੍ਹਿਆ, ਆਖਰੀ ਵਾਰ { $when }
 tracking-maybe-opened = { $who } ਨੇ ਸ਼ਾਇਦ ਇਸਨੂੰ ਖੋਲ੍ਹਿਆ ਹੋਵੇ (Apple Mail ਨਿੱਜਤਾ ਲਈ ਤਸਵੀਰਾਂ ਲੋਡ ਕਰਦਾ ਹੈ)
+tracking-seen-none = ਅਜੇ ਤੱਕ ਕਿਸੇ ਨੇ ਨਾ ਇਸਨੂੰ ਖੋਲ੍ਹਿਆ ਹੈ, ਨਾ ਕੋਈ ਲਿੰਕ ਖੋਲ੍ਹਿਆ ਹੈ
 tracking-receipt = { $who } ਨੇ ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ ਭੇਜੀ
 tracking-receipt-displayed = ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ: { $who } ਨੇ ਤੁਹਾਡਾ ਸੁਨੇਹਾ ਖੋਲ੍ਹਿਆ
 tracking-receipt-other = ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ: { $who } ਨੇ ਤੁਹਾਡਾ ਸੁਨੇਹਾ ਖੋਲ੍ਹੇ ਬਿਨਾਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਂ ਨਿਪਟਾ ਦਿੱਤਾ

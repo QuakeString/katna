@@ -13,6 +13,9 @@ compose-save-close = சேமித்து மூடு
 compose-back-to-mail = அஞ்சல் சாளரத்துக்குத் திரும்பு
 compose-pop-out-reply = பதிலைத் தனியாகத் திற
 compose-show-trimmed = சுருக்கிய உள்ளடக்கத்தைக் காட்டு
+compose-hide-trimmed = சுருக்கிய உள்ளடக்கத்தை மறை
+compose-remove-trimmed = மேற்கோள் உரையை நீக்கு
+compose-trimmed-removed = மேற்கோள் உரை நீக்கப்பட்டது
 
 ## Recipients and subject
 

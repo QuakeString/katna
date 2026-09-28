@@ -84,3 +84,4 @@ add-account-signed-in = Umeingia kwa { $provider }. Inapokea barua zako…
 
 add-account-menu-another = Ongeza akaunti nyingine
 add-account-menu-manage = Dhibiti akaunti
+app-menu = Menyu kuu

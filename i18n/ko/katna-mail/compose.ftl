@@ -13,6 +13,9 @@ compose-save-close = 저장 후 닫기
 compose-back-to-mail = 메일 창으로 돌아가기
 compose-pop-out-reply = 답장을 새 창에서 열기
 compose-show-trimmed = 생략된 내용 표시
+compose-hide-trimmed = 생략된 내용 숨기기
+compose-remove-trimmed = 인용된 텍스트 삭제
+compose-trimmed-removed = 인용된 텍스트를 삭제했습니다
 
 ## Recipients and subject
 

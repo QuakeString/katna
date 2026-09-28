@@ -13,6 +13,9 @@ compose-save-close = Opslaan en sluiten
 compose-back-to-mail = Terug naar het e-mailvenster
 compose-pop-out-reply = Antwoord in apart venster
 compose-show-trimmed = Ingekorte inhoud tonen
+compose-hide-trimmed = Ingekorte inhoud verbergen
+compose-remove-trimmed = Geciteerde tekst verwijderen
+compose-trimmed-removed = Geciteerde tekst verwijderd
 
 ## Recipients and subject
 

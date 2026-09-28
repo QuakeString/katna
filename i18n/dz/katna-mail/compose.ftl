@@ -13,6 +13,9 @@ compose-save-close = སྲུང་སྟེ་ཁ་བསྡམས།
 compose-back-to-mail = གློག་འཕྲིན་སྒོ་སྒྲིག་ལུ་ལོག
 compose-pop-out-reply = ལན་འདི་ སྒོ་སྒྲིག་སོ་སོ་ནང་ཁ་ཕྱེ།
 compose-show-trimmed = བཅད་ཡོད་པའི་ནང་དོན་སྟོན།
+compose-hide-trimmed = བཅད་ཡོད་པའི་ནང་དོན་སྦ།
+compose-remove-trimmed = ལུང་འདྲེན་འབད་མི་ཚིག་ཡིག་བཏོན་གཏང་།
+compose-trimmed-removed = ལུང་འདྲེན་འབད་མི་ཚིག་ཡིག་ བཏོན་གཏང་ཡི།
 
 ## Recipients and subject
 

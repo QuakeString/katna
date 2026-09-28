@@ -84,3 +84,4 @@ add-account-signed-in = { $provider } ସହିତ ସାଇନ ଇନ ହୋଇ
 
 add-account-menu-another = ଆଉ ଏକ ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ
 add-account-menu-manage = ଆକାଉଣ୍ଟ ପରିଚାଳନା କରନ୍ତୁ
+app-menu = ମୁଖ୍ୟ ମେନୁ

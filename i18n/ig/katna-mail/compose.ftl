@@ -13,6 +13,9 @@ compose-save-close = Chekwaa ma mechie
 compose-back-to-mail = Laghachi na windo ozi
 compose-pop-out-reply = Mepee nzaghachi na windo nke ya
 compose-show-trimmed = Gosi ọdịnaya e wepụrụ
+compose-hide-trimmed = Zoo ọdịnaya e wepụrụ
+compose-remove-trimmed = Wepụ ederede e hotara
+compose-trimmed-removed = Ewepụla ederede e hotara
 
 ## Recipients and subject
 

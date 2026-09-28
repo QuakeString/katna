@@ -13,6 +13,9 @@ compose-save-close = Simpan dan tutup
 compose-back-to-mail = Kembali ke jendela email
 compose-pop-out-reply = Buka balasan di jendela terpisah
 compose-show-trimmed = Tampilkan konten yang dipangkas
+compose-hide-trimmed = Sembunyikan konten yang dipangkas
+compose-remove-trimmed = Hapus teks kutipan
+compose-trimmed-removed = Teks kutipan dihapus
 
 ## Recipients and subject
 

@@ -13,6 +13,9 @@ compose-save-close = ਰੱਖਿਅਤ ਕਰਕੇ ਬੰਦ ਕਰੋ
 compose-back-to-mail = ਮੇਲ ਵਿੰਡੋ ’ਤੇ ਵਾਪਸ ਜਾਓ
 compose-pop-out-reply = ਜਵਾਬ ਵੱਖਰੀ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ
 compose-show-trimmed = ਕੱਟੀ ਗਈ ਸਮੱਗਰੀ ਦਿਖਾਓ
+compose-hide-trimmed = ਕੱਟੀ ਗਈ ਸਮੱਗਰੀ ਲੁਕਾਓ
+compose-remove-trimmed = ਹਵਾਲੇ ਵਾਲਾ ਟੈਕਸਟ ਹਟਾਓ
+compose-trimmed-removed = ਹਵਾਲੇ ਵਾਲਾ ਟੈਕਸਟ ਹਟਾਇਆ ਗਿਆ
 
 ## Recipients and subject
 

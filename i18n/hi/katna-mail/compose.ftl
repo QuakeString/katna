@@ -13,6 +13,9 @@ compose-save-close = सेव करें और बंद करें
 compose-back-to-mail = मेल विंडो पर वापस जाएं
 compose-pop-out-reply = जवाब को अलग विंडो में खोलें
 compose-show-trimmed = छिपा हुआ कॉन्टेंट दिखाएं
+compose-hide-trimmed = छिपा हुआ कॉन्टेंट फिर से छिपाएं
+compose-remove-trimmed = कोट किया गया टेक्स्ट हटाएं
+compose-trimmed-removed = कोट किया गया टेक्स्ट हटाया गया
 
 ## Recipients and subject
 

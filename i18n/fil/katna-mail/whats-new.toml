@@ -804,3 +804,90 @@ magtanong” para laktawan ang tanong, o i-on itong muli sa Mga setting >
 Pangkalahatan. Palaging nagtatanong ang permanenteng pag-delete sa
 Basurahan.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna para sa Windows"
+text = """
+Tumatakbo na rin ang Katna Mail sa Windows 10 at 11, na ini-install ng
+sarili nitong Katna Setup, kasama ang tray icon, mga notification,
+pagsisimula sa pag-login at pagbubukas ng mga mail link sa Katna.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Button na pang-alis sa bawat address"
+text = """
+Palagi nang ipinapakita ng bawat address chip sa Para kay, Cc at Bcc ang x
+nito, kaya maaalis mo ito nang hindi muna itinatapat ang pointer dito.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Mas bilugang formatting bar"
+text = """
+Hugis-pill na ngayon ang formatting bar sa pag-compose (Aa), na may malabong
+gilid, kaya hiwalay ito sa teksto mo sa light at dark na tema.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Mabilis nang nagbubukas ang mahahabang usapan"
+text = """
+Agad nang nagbubukas at maayos nang nag-i-scroll ang naka-format na mail na
+sumisipi ng maraming naunang sagot, gaya ng mahabang serye ng mga sipi, sa
+halip na pabagalin ang buong window.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Kung sino ang nakakita nito, sa likod ng isang mata"
+text = """
+Wala nang kahon ng mga linya sa itaas ng mail na ipinadala mo nang may
+tracking. Nagiging accent color mo ang mata sa tabi ng bituin kapag may
+nagbukas nito; itapat ang pointer dito para makita kung sino ang nagbukas
+nito o sumunod sa isang link, at kailan.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Tumawag at kumopya mula sa detalye ng contact"
+text = """
+Sa detalye ng contact sa tabi ng isang usapan, i-click ang isang numero ng
+telepono para tawagan ito gamit ang phone app mo o KDE Connect, o gamitin
+ang button na pangkopya sa tabi nito. Mapipili at makokopya na rin ang lahat
+ng teksto sa panel.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Itago o alisin ang siniping mail sa isang sagot"
+text = """
+Itinatago na muli ng button na “...” sa ilalim ng isang sagot ang siniping
+mail pagkatapos mo itong buksan. Itapat ang pointer dito at i-click ang x sa
+sulok nito para alisin ang siniping mail sa sagot mo; ibinabalik ito ng
+I-undo o Ctrl+Z. Nananatili rin sa puwesto ang toolbar ng sagot habang
+nag-i-scroll ka.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Mga folder na lumulutang, at mas malapad na paghahanap"
+text = """
+Kapag nakatago ang mga folder, binubuksan ang mga ito bilang panel na
+hiwalay sa mga gilid kapag ipinatong mo ang pointer sa Mag-compose o Mail,
+na may maliit na bingaw na nakaturo sa button. Lumalaki ang search box para
+punan ang espasyong iniiwan ng mga folder, at hindi na kumukurap ang
+listahan kapag na-click mo ang folder na kinaroroonan mo na.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Mga mungkahing address sa Mga opsyon sa paghahanap"
+text = """
+Nagmumungkahi na ng mga address ang Mula kay at Para kay sa Mga opsyon sa
+paghahanap habang nagta-type ka, gaya ng Para kay, Cc at Bcc sa pag-compose.
+Pumili ng isa gamit ang Enter, Tab o isang click.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Pangunahing menu sa account card, Sumagot sa lahat sa sarili nitong window"
+text = """
+May ☰ button ang account card sa tabi ng Pamahalaan ang mga account.
+Binubuksan nito ang parehong mga menu na File, I-edit, Tingnan, Pumunta,
+Mensahe, Mga Setting at Tulong gaya ng global menu ng desktop, para sa mga
+desktop na hindi nagpapakita nito. Binubuksan na ngayon ng Sumagot sa lahat
+sa notification ng bagong mail ang usapan sa sarili nitong window, handa
+nang pag-type-an, at iniiwan ang pangunahing window kung nasaan ito.
+"""
