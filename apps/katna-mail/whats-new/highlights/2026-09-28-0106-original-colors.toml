@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Original colors in a dark theme"
+text = """
+In a dark theme, mail that sets its own colors is shown in dark ones. The
+new half-circle button in the reading pane's toolbar shows it in its
+sender's original colors, and back.
+"""

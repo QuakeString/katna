@@ -96,6 +96,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
+        "settings-general-confirm-delete",
+        "settings-general-confirm-delete-summary",
+        "confirm delete trash ask warning dialog several many",
+    ),
+    entry(
+        Section::General,
         "settings-general-reply-button",
         "settings-general-reply-button-summary",
         "reply all default behaviour behavior",

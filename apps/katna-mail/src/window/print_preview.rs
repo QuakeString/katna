@@ -13,7 +13,7 @@ use gpui::{
 };
 use katna_i18n::tr;
 use katna_preview::pdf::Document;
-use katna_render::print::Paper;
+use katna_render::print::{Paper, PrintOptions};
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::{px, unpx};
 
@@ -21,7 +21,7 @@ use super::attachments::bitmap;
 use super::print::{PrintJob, local_paper};
 use super::{MailWindow, PANEL_RADIUS};
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, filled_button, outlined_button};
+use crate::widgets::{elevation, filled_button, outlined_button, switch};
 
 const WIDTH: f32 = 720.0;
 
@@ -38,6 +38,7 @@ pub(super) struct PrintPreview {
     closing: bool,
     job: Arc<PrintJob>,
     paper: Paper,
+    options: PrintOptions,
     pages: Pages,
     /// Page bitmaps no longer shown, for the window to free.
     released: Vec<Arc<RenderImage>>,
@@ -69,7 +70,9 @@ impl MailWindow {
         let mut shown = Spring::new(motion::SMOOTH, 0.0);
         shown.set(1.0);
         let paper = local_paper();
-        let task = self.lay_out_preview(job.clone(), paper, window, cx);
+        // As the reader shows it.
+        let options = PrintOptions::default();
+        let task = self.lay_out_preview(job.clone(), paper, options, window, cx);
         let released = self
             .print_preview
             .take()
@@ -81,6 +84,7 @@ impl MailWindow {
             closing: false,
             job,
             paper,
+            options,
             pages: Pages::Laying,
             released,
             _layout: task,
@@ -109,6 +113,7 @@ impl MailWindow {
         &self,
         job: Arc<PrintJob>,
         paper: Paper,
+        options: PrintOptions,
         window: &Window,
         cx: &mut Context<Self>,
     ) -> Task<()> {
@@ -118,7 +123,7 @@ impl MailWindow {
             let laid = cx
                 .background_executor()
                 .spawn(async move {
-                    let pdf = job.layout(paper)?;
+                    let pdf = job.layout(paper, options)?;
                     let doc =
                         Document::open(pdf.clone()).map_err(|_| tr!("print-preview-failed"))?;
                     let images = (0..doc.pages().min(MAX_PAGES))
@@ -131,7 +136,7 @@ impl MailWindow {
                 let Some(preview) = &mut this.print_preview else {
                     return;
                 };
-                if preview.paper != paper {
+                if preview.paper != paper || preview.options != options {
                     return;
                 }
                 let old = std::mem::replace(
@@ -150,18 +155,26 @@ impl MailWindow {
         })
     }
 
-    fn set_print_paper(&mut self, paper: Paper, window: &mut Window, cx: &mut Context<Self>) {
+    /// Lays the preview out again on `paper` with `options`.
+    fn set_print_setup(
+        &mut self,
+        paper: Paper,
+        options: PrintOptions,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
         let Some(job) = self
             .print_preview
             .as_ref()
-            .filter(|p| p.paper != paper)
+            .filter(|p| p.paper != paper || p.options != options)
             .map(|p| p.job.clone())
         else {
             return;
         };
-        let task = self.lay_out_preview(job, paper, window, cx);
+        let task = self.lay_out_preview(job, paper, options, window, cx);
         if let Some(preview) = &mut self.print_preview {
             preview.paper = paper;
+            preview.options = options;
             if let Pages::Ready { images, .. } =
                 std::mem::replace(&mut preview.pages, Pages::Laying)
             {
@@ -180,9 +193,14 @@ impl MailWindow {
         let Pages::Ready { pdf, .. } = &preview.pages else {
             return;
         };
-        let (job, pdf, paper) = (preview.job.clone(), pdf.clone(), preview.paper);
+        let (job, pdf, paper, options) = (
+            preview.job.clone(),
+            pdf.clone(),
+            preview.paper,
+            preview.options,
+        );
         self.close_print_preview(window, cx);
-        self.print_pdf(job, pdf, paper, cx);
+        self.print_pdf(job, pdf, paper, options, cx);
     }
 
     fn print_preview_key(
@@ -338,65 +356,132 @@ impl MailWindow {
                     .gap(px(16.0))
                     .children(pages),
             );
-        let paper_choice =
-            |id: &'static str, label: String, choice: Paper| {
-                let on = paper == choice;
-                div()
-                    .id(id)
-                    .h(px(32.0))
-                    .px(px(14.0))
-                    .flex()
-                    .items_center()
-                    .rounded_full()
-                    .border_1()
-                    .border_color(rgba(if on { th.accent } else { th.divider }))
-                    .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
-                    .text_size(px(13.0))
-                    .font_weight(if on {
-                        FontWeight::MEDIUM
-                    } else {
-                        FontWeight::NORMAL
-                    })
-                    .text_color(rgba(if on { th.accent } else { th.text_dim }))
-                    .cursor_pointer()
+        let options = preview.options;
+        let formatted = preview.job.formatted();
+        let chip = |id: &'static str, label: String, on: bool| {
+            div()
+                .id(id)
+                .h(px(32.0))
+                .px(px(14.0))
+                .flex()
+                .items_center()
+                .rounded_full()
+                .border_1()
+                .border_color(rgba(if on { th.accent } else { th.divider }))
+                .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
+                .text_size(px(13.0))
+                .font_weight(if on {
+                    FontWeight::MEDIUM
+                } else {
+                    FontWeight::NORMAL
+                })
+                .text_color(rgba(if on { th.accent } else { th.text_dim }))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .child(label)
+        };
+        let caption = |text: String| {
+            div()
+                .text_size(px(13.0))
+                .text_color(rgba(th.text_dim))
+                .pr(px(4.0))
+                .child(text)
+        };
+        let paper_choice = |id: &'static str, label: String, choice: Paper| {
+            chip(id, label, paper == choice).on_click(cx.listener(move |this, _, window, cx| {
+                this.set_print_setup(choice, options, window, cx)
+            }))
+        };
+        let layout_choice = |id: &'static str, label: String, simple: bool| {
+            chip(id, label, options.simple == simple).on_click(cx.listener(
+                move |this, _, window, cx| {
+                    this.set_print_setup(paper, PrintOptions { simple, ..options }, window, cx)
+                },
+            ))
+        };
+        // Simple text has no backgrounds to leave out.
+        let backgrounds_on = options.backgrounds && !options.simple;
+        let backgrounds = div()
+            .id("print-backgrounds")
+            .h(px(32.0))
+            .px(px(8.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(10.0))
+            .rounded_full()
+            .text_size(px(13.0))
+            .text_color(rgba(th.text_dim))
+            .when(options.simple, |d| d.opacity(0.5))
+            .when(!options.simple, |d| {
+                d.cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
                     .on_click(cx.listener(move |this, _, window, cx| {
-                        this.set_print_paper(choice, window, cx)
+                        let options = PrintOptions {
+                            backgrounds: !options.backgrounds,
+                            ..options
+                        };
+                        this.set_print_setup(paper, options, window, cx)
                     }))
-                    .child(label)
-            };
-        let footer = div()
-            .flex_none()
-            .px(px(24.0))
-            .py(px(16.0))
+            })
+            .child(switch(if backgrounds_on { 1.0 } else { 0.0 }, th))
+            .child(tr!("print-preview-backgrounds"));
+        let settings = div()
             .flex()
             .flex_row()
             .flex_wrap()
             .items_center()
             .gap(px(8.0))
-            .child(
-                div()
-                    .text_size(px(13.0))
-                    .text_color(rgba(th.text_dim))
-                    .pr(px(4.0))
-                    .child(tr!("print-preview-paper")),
-            )
+            .child(caption(tr!("print-preview-paper")))
             .child(paper_choice("print-a4", tr!("print-preview-a4"), Paper::A4))
             .child(paper_choice(
                 "print-letter",
                 tr!("print-preview-letter"),
                 Paper::LETTER,
             ))
-            .child(div().flex_1())
+            .when(formatted, |d| {
+                d.child(div().w(px(12.0)))
+                    .child(caption(tr!("print-preview-layout")))
+                    .child(layout_choice(
+                        "print-as-shown",
+                        tr!("print-preview-as-shown"),
+                        false,
+                    ))
+                    .child(layout_choice(
+                        "print-simple",
+                        tr!("print-preview-simple"),
+                        true,
+                    ))
+                    .child(div().w(px(12.0)))
+                    .child(backgrounds)
+            });
+        let footer = div()
+            .flex_none()
+            .px(px(24.0))
+            .py(px(16.0))
+            .flex()
+            .flex_col()
+            .gap(px(12.0))
+            .child(settings)
             .child(
-                outlined_button("print-cancel", tr!("print-preview-cancel"), th).on_click(
-                    cx.listener(|this, _, window, cx| this.close_print_preview(window, cx)),
-                ),
-            )
-            .child(
-                filled_button("print-go", tr!("print-preview-print"), th)
-                    .when(!ready, |d| d.opacity(0.5).cursor_default())
-                    .on_click(cx.listener(|this, _, window, cx| this.print_previewed(window, cx))),
+                div()
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .justify_end()
+                    .gap(px(8.0))
+                    .child(
+                        outlined_button("print-cancel", tr!("print-preview-cancel"), th).on_click(
+                            cx.listener(|this, _, window, cx| this.close_print_preview(window, cx)),
+                        ),
+                    )
+                    .child(
+                        filled_button("print-go", tr!("print-preview-print"), th)
+                            .when(!ready, |d| d.opacity(0.5).cursor_default())
+                            .on_click(
+                                cx.listener(|this, _, window, cx| this.print_previewed(window, cx)),
+                            ),
+                    ),
             );
         let card = div()
             .id("print-preview")

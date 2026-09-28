@@ -247,3 +247,40 @@ sign-in-again-waiting = Waiting for your browser…
 sign-in-again-close = Close
 # Shown briefly after signing in again. $address: the account's email address.
 sign-in-again-done = Signed in to { $address } again. Getting your mail…
+
+## Before deleting several conversations, or deleting for good
+# $kind: "conversation" or "message", as the list groups mail. $count: how many.
+
+delete-ask-title = { $kind ->
+    [conversation] { $count ->
+        [one] Move this conversation to Trash?
+       *[other] Move { $count } conversations to Trash?
+    }
+   *[message] { $count ->
+        [one] Move this message to Trash?
+       *[other] Move { $count } messages to Trash?
+    }
+}
+delete-ask-body = { $count ->
+    [one] You can undo it right after, or bring it back from Trash later.
+   *[other] You can undo it right after, or bring them back from Trash later.
+}
+delete-ask-confirm = Move to Trash
+delete-forever-title = { $kind ->
+    [conversation] { $count ->
+        [one] Delete this conversation forever?
+       *[other] Delete { $count } conversations forever?
+    }
+   *[message] { $count ->
+        [one] Delete this message forever?
+       *[other] Delete { $count } messages forever?
+    }
+}
+delete-forever-body = { $count ->
+    [one] It is deleted on the server too. This can’t be undone.
+   *[other] They are deleted on the server too. This can’t be undone.
+}
+delete-forever-confirm = Delete forever
+# A tick box in the dialog; the same as the switch in Settings > General.
+delete-ask-dont-ask = Don’t ask again
+delete-ask-cancel = Cancel

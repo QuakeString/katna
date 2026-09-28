@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Ask before deleting"
+text = """
+Deleting several conversations at once now asks first whether to move
+them to Trash. Tick "Don't ask again" to skip the question, or turn it
+back on in Settings > General. Deleting for good, in Trash, always asks.
+"""

@@ -28,6 +28,7 @@ mod contact;
 mod context_menu;
 mod crash_notice;
 mod dark;
+mod delete_ask;
 mod desktop;
 mod detached;
 mod download;
@@ -268,6 +269,10 @@ const TITLE_WORD_GAP: f32 = 6.0;
 /// Corners of cards that float: menus aside, dialogs and panels.
 const PANEL_RADIUS: f32 = 15.0;
 const SEARCH_WIDTH: f32 = 720.0;
+/// The narrowest the search box gets beside the top bar's buttons.
+const SEARCH_MIN_WIDTH: f32 = 120.0;
+/// The Activity button beside the search box.
+const ACTIVITY_BUTTON_WIDTH: f32 = 40.0;
 /// Quick settings panel, with its right margin.
 const SETTINGS_WIDTH: f32 = 336.0;
 /// The space between cards side by side (the list, the reading pane,
@@ -578,6 +583,11 @@ pub struct MailWindow {
     settings_page: Option<settings_page::SettingsPage>,
     /// The question before removing an account or deleting all data.
     danger: Option<accounts::Danger>,
+    /// The question before deleting several lines, or deleting for good.
+    delete_ask: Option<delete_ask::DeleteAsk>,
+    /// Set while the answered question's delete runs, so it isn't asked
+    /// again.
+    delete_confirmed: bool,
     new_label: Option<labels::NewLabel>,
     /// Bodies being downloaded because their message or an attachment
     /// chip of it was opened.
@@ -770,6 +780,8 @@ impl MailWindow {
             activity_button: std::rc::Rc::default(),
             settings_page: None,
             danger: None,
+            delete_ask: None,
+            delete_confirmed: false,
             new_label: None,
             downloads: HashMap::new(),
             chip_download: None,
@@ -1959,6 +1971,10 @@ impl MailWindow {
                     .flat_map(|k| messages_in(*k))
                     .all(|id| mail.message_folders(id).contains(&trash)),
             };
+        if matches!(act, Act::Delete) && announce && self.delete_needs_asking(count, for_good) {
+            self.ask_delete(keys, for_good, cx);
+            return None;
+        }
         let (command, undo) = match act {
             Act::Read(read) => {
                 let ids = data::flag_changes(&copies_of(&keys), MessageFlags::SEEN, read);
@@ -2795,8 +2811,20 @@ impl Render for MailWindow {
             0.0
         };
         let search_left = list_left.max(after_title);
-        let regular = (width - search_left - room_end - TOP_END_WIDTH - TOP_BAR_GAP)
-            .clamp(200.0, SEARCH_WIDTH);
+        // The Activity button after the box, with the gap before it.
+        let activity_room = if self.activity_shown() && shape.phone < 0.5 {
+            ACTIVITY_BUTTON_WIDTH + 8.0
+        } else {
+            0.0
+        };
+        // The box gives way first, so the buttons after it keep their
+        // gaps and never overlap.
+        let room = width - search_left - room_end - TOP_END_WIDTH - TOP_BAR_GAP;
+        // Too narrow for both (wider than a phone, with wide window
+        // buttons): the button goes rather than cover the language button.
+        let activity_fits = room - activity_room >= SEARCH_MIN_WIDTH;
+        let regular = (room - if activity_fits { activity_room } else { 0.0 })
+            .clamp(SEARCH_MIN_WIDTH, SEARCH_WIDTH);
         let pill = (width - 12.0 - room_start - room_end).max(200.0);
         let search_width = lerp(regular, pill, shape.phone);
         let search_panel_width = lerp(regular, width - 16.0, shape.phone);
@@ -2817,6 +2845,7 @@ impl Render for MailWindow {
         let language_picker = self.render_language_picker(&th, window, cx);
         let add_account = self.render_add_account(&th, window, reduce, cx);
         let danger = self.render_danger(&th, window, reduce, cx);
+        let delete_ask = self.render_delete_ask(&th, window, reduce, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let share_ask = if onboarding {
@@ -2863,6 +2892,7 @@ impl Render for MailWindow {
             .children(context_menu)
             .children(snooze_menu)
             .children(danger)
+            .children(delete_ask)
             .children(new_label)
             .children(crash_notice)
             .children(sign_in_again)
@@ -2890,7 +2920,7 @@ impl Render for MailWindow {
                     .items_center()
                     .gap(px(8.0))
                     .child(self.render_search(&th, search_width, search_t, cx))
-                    .when(shape.phone < 0.5, |d| {
+                    .when(shape.phone < 0.5 && activity_fits, |d| {
                         d.children(self.render_activity_button(&th, cx))
                     })
                     .into_any_element()
