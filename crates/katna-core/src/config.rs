@@ -441,6 +441,9 @@ pub struct MailView {
     /// What opens after the open conversation is deleted, archived or
     /// moved away.
     pub auto_advance: AutoAdvance,
+    /// Ask before deleting two or more conversations at once. Deleting for
+    /// good (in Trash, or on an account without one) always asks.
+    pub confirm_delete: bool,
     /// Load the images of every message from the web, not only those of
     /// trusted senders. Loading them tells senders that a message was read.
     pub remote_images: bool,
@@ -538,6 +541,7 @@ impl Default for MailView {
             open: OpenAttachments::default(),
             mark_read: MarkRead::Instantly,
             auto_advance: AutoAdvance::Next,
+            confirm_delete: true,
             remote_images: false,
             reply_all: false,
             important_markers: true,

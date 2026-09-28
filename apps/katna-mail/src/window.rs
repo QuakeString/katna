@@ -28,6 +28,7 @@ mod contact;
 mod context_menu;
 mod crash_notice;
 mod dark;
+mod delete_ask;
 mod desktop;
 mod detached;
 mod download;
@@ -582,6 +583,11 @@ pub struct MailWindow {
     settings_page: Option<settings_page::SettingsPage>,
     /// The question before removing an account or deleting all data.
     danger: Option<accounts::Danger>,
+    /// The question before deleting several lines, or deleting for good.
+    delete_ask: Option<delete_ask::DeleteAsk>,
+    /// Set while the answered question's delete runs, so it isn't asked
+    /// again.
+    delete_confirmed: bool,
     new_label: Option<labels::NewLabel>,
     /// Bodies being downloaded because their message or an attachment
     /// chip of it was opened.
@@ -774,6 +780,8 @@ impl MailWindow {
             activity_button: std::rc::Rc::default(),
             settings_page: None,
             danger: None,
+            delete_ask: None,
+            delete_confirmed: false,
             new_label: None,
             downloads: HashMap::new(),
             chip_download: None,
@@ -1963,6 +1971,10 @@ impl MailWindow {
                     .flat_map(|k| messages_in(*k))
                     .all(|id| mail.message_folders(id).contains(&trash)),
             };
+        if matches!(act, Act::Delete) && announce && self.delete_needs_asking(count, for_good) {
+            self.ask_delete(keys, for_good, cx);
+            return None;
+        }
         let (command, undo) = match act {
             Act::Read(read) => {
                 let ids = data::flag_changes(&copies_of(&keys), MessageFlags::SEEN, read);
@@ -2833,6 +2845,7 @@ impl Render for MailWindow {
         let language_picker = self.render_language_picker(&th, window, cx);
         let add_account = self.render_add_account(&th, window, reduce, cx);
         let danger = self.render_danger(&th, window, reduce, cx);
+        let delete_ask = self.render_delete_ask(&th, window, reduce, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let share_ask = if onboarding {
@@ -2879,6 +2892,7 @@ impl Render for MailWindow {
             .children(context_menu)
             .children(snooze_menu)
             .children(danger)
+            .children(delete_ask)
             .children(new_label)
             .children(crash_notice)
             .children(sign_in_again)
