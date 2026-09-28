@@ -10,7 +10,12 @@
 //! this page only asks it. The account's password is never a mail
 //! password, and mail logins never go to the server.
 
-use gpui::{AnyElement, Context, Entity, FontWeight, Subscription, Window, div, prelude::*, rgba};
+use std::time::Duration;
+
+use gpui::{
+    Animation, AnimationExt, AnyElement, Context, Entity, FontWeight, Subscription, Window, div,
+    prelude::*, rgba,
+};
 use katna_dbus::{KatnaAccount, KatnaDevice, PimProxy, katna_error};
 use katna_i18n::tr;
 use katna_ui::{InputEvent, TextInput, px};
@@ -19,7 +24,7 @@ use super::MailWindow;
 use super::settings_page::Section;
 use crate::daemon;
 use crate::format;
-use crate::theme::Theme;
+use crate::theme::{Theme, fade};
 use crate::widgets::{filled_button, outlined_button};
 
 /// What the signed-out page, or a signed-in action, is asking for.
@@ -43,6 +48,9 @@ enum Mode {
 pub(super) struct KatnaPage {
     /// `None` until the daemon answered.
     account: Option<KatnaAccount>,
+    /// The daemon has said whether this computer is signed in, since the
+    /// app started.
+    answered: bool,
     devices: Vec<KatnaDevice>,
     mode: Mode,
     email: Entity<TextInput>,
@@ -95,6 +103,41 @@ impl MailWindow {
             .as_ref()
             .and_then(|page| page.account.as_ref())
             .is_some_and(|account| account.signed_in && account.verified)
+    }
+
+    /// Whether the account is still being read after the app started:
+    /// until then, server features show [`MailWindow::katna_checking`]
+    /// rather than asking to sign in.
+    pub(super) fn katna_checking(&self) -> bool {
+        self.katna
+            .as_ref()
+            .is_none_or(|page| !page.answered && (page.busy || page.account.is_none()))
+    }
+
+    /// A thin moving bar while [`MailWindow::katna_checking`].
+    pub(super) fn katna_checking_bar(&self, id: &'static str, th: &Theme) -> AnyElement {
+        div()
+            .w(px(160.0))
+            .h(px(4.0))
+            .rounded_full()
+            .overflow_hidden()
+            .relative()
+            .bg(rgba(fade(th.accent, 0.24)))
+            .child(
+                div()
+                    .absolute()
+                    .top_0()
+                    .h_full()
+                    .w(px(64.0))
+                    .rounded_full()
+                    .bg(rgba(th.accent))
+                    .with_animation(
+                        id,
+                        Animation::new(Duration::from_millis(1300)).repeat(),
+                        |bar, t| bar.left(px(-64.0 + 224.0 * t)),
+                    ),
+            )
+            .into_any_element()
     }
 
     /// "Sign in to use this", with a button to Settings > Subscription,
@@ -155,6 +198,7 @@ impl MailWindow {
                 .collect();
             self.katna = Some(KatnaPage {
                 account: None,
+                answered: false,
                 devices: Vec::new(),
                 mode: Mode::SignIn,
                 email,
@@ -260,6 +304,7 @@ impl MailWindow {
                     page.mode = Mode::SignIn;
                 }
                 page.account = Some(account);
+                page.answered = true;
                 page.devices = devices;
                 for field in [&page.password, &page.code, &page.new_password] {
                     clear(field, cx);

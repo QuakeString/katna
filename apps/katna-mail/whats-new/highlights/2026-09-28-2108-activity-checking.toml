@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "No more Sign in flash in Activity"
+text = """
+Right after Katna starts, Activity shows a thin loading bar while it checks
+your Katna account, instead of briefly asking you to sign in. Katna also
+checks the account as soon as it starts, so the wait is shorter.
+"""
