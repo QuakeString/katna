@@ -1,6 +1,6 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 27 September 2026, through PR #208). Companion to
+> Status: **v0.2** (updated 27 September 2026, through PR #222). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
@@ -22,12 +22,17 @@ Mail that the phases did not name.
   and automatic translation (Phase 7);
   local crash reports and opt-in sending; the language framework and most
   of the UI translated; reading and sending encrypted mail.
-- **Merged since the last refresh:** Katna Setup, tray, notifications,
-  `mailto:` and start at login on Windows, with `KatnaSetup.exe` published
-  from `main` as the `windows-latest` release (#194); the remove button
-  always shown on recipient chips (#205); a pill-shaped formatting bar
-  (#206); fast layout of deeply nested quoted mail (#207); translations
-  (#204, #208).
+- **Merged since the last refresh:** who opened a sent message, in a
+  popover from an eye beside the star (#210); calling and copying a phone
+  number in the contact panel (#211); a floating folder pane with a notch
+  (#212); hiding or removing the quoted mail in a reply (#213); no storage
+  bar for unlimited quotas (#214); address suggestions in Search options
+  (#215) and Search options that fit small windows (#219); the main menu
+  behind ☰ in the account card (#216); tray and notification clicks that
+  bring the window forward and open the mail (#217); a send countdown
+  ring, a sent toast and sound, and a reply that stays in place (#220);
+  replies sent from the conversation's own account (#221); translations
+  (#218, #222).
 - **In progress:** testing Katna on a Windows 11 virtual machine.
 - **Next:** usage statistics, feedback form and debug-file upload (C.3,
   C.6, C.7); right-to-left layout (L.2, L.3); the release track before any
@@ -309,6 +314,16 @@ belong to Phase 3 tasks above; this track records them so none is lost.
 | D.37 Attachment types in search ✅ | Search options filter by attachment type: PDF, XLSX, ODF and others, or a custom one (#202) |
 | D.38 Chips and format bar ✅ | The remove button always shows on recipient chips (#205); the formatting bar is a pill with a faint border (#206) |
 | D.39 Fast nested quotes ✅ | Long threads of nested quoted HTML lay out in linear time instead of slowing the reader (#207) |
+| D.40 Who opened ✅ | An eye beside the star opens a popover of who opened a sent message and when (#210) |
+| D.41 Contact panel actions ✅ | Call or copy the phone number; the panel's text is selectable (#211) |
+| D.42 Floating folder pane ✅ | The folded folder pane floats out with a notch; search widens while it is folded; the open folder no longer blinks (#212) |
+| D.43 Quoted mail in replies ✅ | Hide or remove the quoted mail in a reply; the Send row stays still (#213) |
+| D.44 Storage bar for unlimited quotas ✅ | No storage bar when the account has no quota (#214) |
+| D.45 Search options ✅ | Address suggestions in From and To (#215); the panel fits narrow and short windows (#219) |
+| D.46 Main menu ✅ | The main menu sits behind ☰ in the account card; Reply all from a notification opens its own window (#216) |
+| D.47 Open from tray and notifications ✅ | Clicking the tray or a notification brings the window forward and opens the mail (#217) |
+| D.48 Sending feedback ✅ | A countdown ring on Send, a sent toast and sound, the reply staying in place and a simpler reply head (#220) |
+| D.49 Reply from the right account ✅ | A reply starts from the account the conversation is in (#221) |
 
 Not yet checked on a real desktop: Open with (#55), Gmail Important sync
 (#56), scheduled send (#53), the badge count with one account (#61), the
@@ -416,7 +431,7 @@ merging `main` first, rather than in one large one.
 | L.1 Framework and picker ✅ #100 | `katna-i18n` crate: language list (`i18n/languages.toml`), system language (`LANGUAGE`, `LC_*`, `plasma-localerc`), `general.language` setting, Fluent bundles with English fallback, `tr!`, override folder, pseudo-locales, id and variable checks; ICU4X dates, numbers and plurals in `format.rs`; top-bar language button and picker popover, Settings > General row, phone drawer row; bundled flags; the top bar and the picker translated into all 48 languages; CLAUDE.md rule that new UI text goes through `tr!` |
 | L.2 GPUI patches | `gpui-pre` vendored with `KATNA.md`: window layout direction with mirrored bounds, start/end text alignment, `.layout_ltr()`, UAX #14 and grapheme-safe line breaking with dictionary breaks for Thai, Lao, Khmer and Burmese, Han forms from Katna's language, bidi-aware carets |
 | L.3 Mirroring | RTL switch in `window/layout.rs` `Shape`; mirrored directional icons; drawer, conversation and menus from the right; arrow keys; checked with `qps-plocm` |
-| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134; account settings, paste and drop and newer text #141, #142, #147, #157, #165, #174, #175, #177, #179, #186, #189, #195, #199, #204, #208; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
+| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134; account settings, paste and drop and newer text #141, #142, #147, #157, #165, #174, #175, #177, #179, #186, #189, #195, #199, #204, #208, #218, #222; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
 | L.5 Mail content | Per-message and per-paragraph direction in the reader and list; compose direction buttons and `dir` in sent HTML; quote and forward headers in the UI language; shortcuts by key position on non-Latin layouts; input method check (Fcitx5, IBus) |
 | L.6 Search in unspaced scripts | Thai, Lao, Khmer and Burmese word splitting in `katna-search` with the shared segmenter |
 | L.7 Corrections | Translation guide (`i18n/README.md`), "Translation correction" issue template, coverage report in CI; later hosted Weblate on the same files (owner applies) |
