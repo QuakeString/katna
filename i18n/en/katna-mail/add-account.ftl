@@ -34,6 +34,8 @@ add-account-field-port = Port
 # The connection's encryption, in the list beside SSL/TLS and STARTTLS
 # (which stay as they are): no encryption.
 add-account-security-none = None
+# Shown under a server's settings while None is picked.
+add-account-security-none-warning = Not encrypted: your password and mail can be read on the way.
 # The name to sign in to the server with.
 add-account-field-username = Username
 add-account-field-password = Password
