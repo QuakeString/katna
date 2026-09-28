@@ -56,7 +56,7 @@ const KDE_DONATE_URL: &str = "https://kde.org/donate/";
 /// until there is one (the link is left out).
 const FOLLOW: &[(&str, Option<&str>)] = &[
     ("GitHub", Some("https://github.com/QuakeString")),
-    ("X", Some("https://x.com/QuakeString")),
+    ("x.com", Some("https://x.com/QuakeString")),
     (
         "LinkedIn",
         Some("https://www.linkedin.com/in/md-mozammel-hossain-97a20446/"),
