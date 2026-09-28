@@ -11,7 +11,6 @@ about-changelog = ບັນທຶກການປ່ຽນແປງ
 about-source = ຊອສໂຄດ
 about-coffee = ລ້ຽງກາເຟຂ້ອຍຈອກໜຶ່ງ
 about-coming-soon = ມາໄວໆນີ້
-about-coffee-scan = ຫຼື ສະແກນລະຫັດດ້ວຍໂທລະສັບຂອງທ່ານ.
 about-follow = ຕິດຕາມຜູ້ສ້າງ
 about-love-title = ສ້າງດ້ວຍຄວາມຮັກຕໍ່ Rust, KDE ແລະ Linux
 about-love-text = Rust ເຮັດໃຫ້ການຂຽນແອັບອີເມວທີ່ໄວ ແລະ ປອດໄພເປັນເລື່ອງມ່ວນ: Katna ບໍ່ມີໂຄດ unsafe ເລີຍ. ເດັສທັອບ Plasma ຂອງ KDE ແລະ ຊຸດ PIM ຂອງມັນເປັນແຮງບັນດານໃຈໃຫ້ Katna, ແລະ Linux ກັບຊຸມຊົນຊອບແວເສລີໄດ້ສ້າງພື້ນຖານທີ່ Katna ຢືນຢູ່. ຂອບໃຈ, ແລະ ຂອບໃຈໄລບຣາຣີຂ້າງລຸ່ມນີ້ນຳ.

@@ -11,7 +11,6 @@ about-changelog = সলনিৰ তালিকা
 about-source = উৎস ক'ড
 about-coffee = মোক একাপ কফি খুৱাওক
 about-coming-soon = সোনকালে আহিছে
-about-coffee-scan = নাইবা আপোনাৰ ফোনেৰে ক'ডটো স্কেন কৰক।
 about-follow = নিৰ্মাতাক অনুসৰণ কৰক
 about-love-title = Rust, KDE আৰু Linuxৰ প্ৰতি মৰমেৰে নিৰ্মিত
 about-love-text = Rustৰ বাবে এটা দ্ৰুত আৰু সুৰক্ষিত মেইল এপ লিখাটো আনন্দৰ: Katnaত কোনো unsafe ক'ড নাই। KDEৰ Plasma ডেস্কটপ আৰু ইয়াৰ PIM ছুইটে Katnaক অনুপ্ৰাণিত কৰিছে, আৰু Linux আৰু মুক্ত ছফ্টৱেৰ সমাজে সেই ভেটি গঢ়ে যাৰ ওপৰত ই থিয় হৈ আছে। ধন্যবাদ, আৰু তলৰ লাইব্ৰেৰীবোৰলৈও ধন্যবাদ।
