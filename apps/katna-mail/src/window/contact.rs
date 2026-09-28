@@ -456,6 +456,7 @@ impl MailWindow {
         div()
             .flex()
             .flex_row()
+            .justify_end()
             .gap(px(12.0))
             .child(
                 button("contact-email", "mail", tr!("contact-email")).on_click(cx.listener(
