@@ -16,6 +16,7 @@
 //! layouts, by the window's width).
 
 mod about;
+mod account_roll;
 mod account_view;
 mod accounts;
 mod activity;
@@ -405,6 +406,10 @@ pub struct MailWindow {
     /// new name has rolled in (0 to 1).
     title_from: RailApp,
     title_roll: Spring,
+    /// The account picture at the top right rolling from the last
+    /// account's, and how far the new one has rolled in (0 to 1).
+    avatar_roll: account_roll::AvatarRoll,
+    avatar_turn: Spring,
     /// 0 = hidden, 1 = shown: Compose, in the folder pane or the rail.
     compose_shown: Spring,
     /// 0 = Compose is in the rail, 1 = over the folders beside the list.
@@ -697,6 +702,8 @@ impl MailWindow {
             reopen_after_undo: None,
             title_from: RailApp::Mail,
             title_roll: Spring::new(motion::SLIDE, 1.0),
+            avatar_roll: account_roll::AvatarRoll::new(),
+            avatar_turn: Spring::new(motion::SLIDE, 1.0),
             compose_shown: Spring::new(motion::SMOOTH, 1.0),
             compose_dock: Spring::new(motion::SLIDE, 1.0),
             people: None,
@@ -2873,6 +2880,7 @@ impl Render for MailWindow {
             });
         self.compose_dock.tick(window, reduce);
         self.title_roll.tick(window, reduce);
+        self.avatar_turn.tick(window, reduce);
         let compose_text = compose_text_width(self.font.as_ref(), window);
         let content = match &self.mail {
             _ if onboarding => self.render_onboarding(&th, window, cx),

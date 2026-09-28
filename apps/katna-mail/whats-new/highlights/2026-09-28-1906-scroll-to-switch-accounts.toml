@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Scroll over your picture to switch accounts"
+text = """
+With the pointer over the account picture at the top right, turn the mouse
+wheel to move to the next or the previous account, one account per notch.
+The picture rolls to the new account, as the app's name rolls when you
+switch apps, and picking an account from the card rolls it the same way.
+"""
