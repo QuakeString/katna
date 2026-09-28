@@ -174,6 +174,10 @@ pub(super) struct Compose {
     /// The quoted message a reply answers, kept out of the text behind a
     /// "..." button until it is opened, as in Gmail. It is still sent.
     quote: quote::Quote,
+    /// Where the shown quote and the text were drawn, and the quote
+    /// opening or closing.
+    quote_view: Rc<Cell<quote::QuoteView>>,
+    quote_glide: Option<quote::Glide>,
     /// The text of the conversation a reply answers, for writing
     /// suggestions.
     answered: String,
@@ -1071,6 +1075,8 @@ impl MailWindow {
             closing: false,
             body_scroll: ScrollHandle::new(),
             quote: quote::Quote::None,
+            quote_view: Rc::default(),
+            quote_glide: None,
             answered,
             stick: Rc::default(),
             grammar_color: grammar_color(&th),
@@ -2093,7 +2099,7 @@ impl MailWindow {
             .on_drop(cx.listener(|this, paths: &ExternalPaths, window, cx| {
                 this.drop_on_body(paths, window, cx);
             }))
-            .child(div().flex_none().child(compose.body.clone()))
+            .child(self.render_body_and_quote(th, cx))
             .children(self.render_trimmed(th, cx));
         // Like Gmail, the Send row stays at the bottom of the conversation
         // while the text runs on below it, and moves up with the card.
@@ -2387,7 +2393,6 @@ impl MailWindow {
             return div().into_any_element();
         };
         let focus = compose.body.focus_handle(cx);
-        let body = compose.body.clone();
         div()
             .id("compose-body")
             .flex_1()
@@ -2420,7 +2425,7 @@ impl MailWindow {
                 div()
                     .flex_none()
                     .w(px((width - 32.0).max(80.0)))
-                    .child(body),
+                    .child(self.render_body_and_quote(th, cx)),
             )
             .children(self.render_trimmed(th, cx))
             .into_any_element()

@@ -961,6 +961,12 @@ impl RichEditor {
         self.drawn_focused.get()
     }
 
+    /// Where top-level paragraph `block` was drawn, in window coordinates,
+    /// as of the last paint.
+    pub fn block_bounds(&self, block: usize) -> Option<Bounds<Pixels>> {
+        self.layouts.get(&Path::top(block)).map(|l| l.bounds)
+    }
+
     pub fn cursor_bounds(&self) -> Option<Bounds<Pixels>> {
         let layout = self.layouts.get(&self.head.path)?;
         let (at, height) = layout.caret(self.head.offset, self.upstream);
