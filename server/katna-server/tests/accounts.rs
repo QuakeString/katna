@@ -91,6 +91,28 @@ impl App {
             .expect("a code was mailed")
     }
 
+    /// How many codes went to `to` for `purpose`.
+    fn mailed(&self, to: &str, purpose: Purpose) -> usize {
+        self.outbox
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|sent| sent.to == to && sent.purpose == purpose)
+            .count()
+    }
+
+    /// The code mailed to `to` for `purpose` after the first `before`,
+    /// waiting for it: reset codes are mailed after the answer.
+    async fn new_code(&self, to: &str, purpose: Purpose, before: usize) -> String {
+        for _ in 0..100 {
+            if self.mailed(to, purpose) > before {
+                return self.code(to, purpose);
+            }
+            tokio::time::sleep(std::time::Duration::from_millis(20)).await;
+        }
+        panic!("no new {purpose:?} code mailed to {to}");
+    }
+
     /// Whether `token` may use a server feature (creating a tracking ID).
     async fn feature(&self, token: &str) -> (StatusCode, Value) {
         self.call("POST", "/api/v1/tracks", token, Some(json!({ "count": 1 })))
@@ -353,7 +375,7 @@ async fn passwords_change_and_reset() {
         )
         .await;
     assert_eq!(status, StatusCode::ACCEPTED);
-    let code = app.code(&email, Purpose::Reset);
+    let code = app.new_code(&email, Purpose::Reset, 0).await;
     let (status, _) = app
         .call(
             "POST",
@@ -504,4 +526,166 @@ async fn deleting_the_account_deletes_its_data() {
         )
         .await;
     assert_eq!(status, StatusCode::CREATED);
+}
+
+/// A code of six digits other than `code`.
+fn other_than(code: &str) -> &'static str {
+    if code == "000000" { "000001" } else { "000000" }
+}
+
+#[tokio::test]
+#[ignore = "needs PostgreSQL in KATNA_SERVER_TEST_DATABASE_URL"]
+async fn wrong_guesses_are_capped_per_account_across_codes() {
+    let app = App::new().await;
+    let token = app.install().await;
+    let email = new_email().to_lowercase();
+    app.call(
+        "POST",
+        "/api/v1/account",
+        &token,
+        Some(json!({ "email": email, "password": "correct horse" })),
+    )
+    .await;
+    // Two codes, five wrong guesses each: ten for the account today.
+    for round in 0..2 {
+        if round > 0 {
+            let (status, _) = app
+                .call("POST", "/api/v1/account/verify/resend", &token, None)
+                .await;
+            assert_eq!(status, StatusCode::ACCEPTED);
+        }
+        let code = app.code(&email, Purpose::Verify);
+        for _ in 0..5 {
+            let (_, body) = app
+                .call(
+                    "POST",
+                    "/api/v1/account/verify",
+                    &token,
+                    Some(json!({ "code": other_than(&code) })),
+                )
+                .await;
+            assert_eq!(body["code"], "wrong_code");
+        }
+    }
+    // A new code does not bring more guesses: even the right one is
+    // refused for the rest of the day.
+    app.call("POST", "/api/v1/account/verify/resend", &token, None)
+        .await;
+    let code = app.code(&email, Purpose::Verify);
+    let (status, body) = app
+        .call(
+            "POST",
+            "/api/v1/account/verify",
+            &token,
+            Some(json!({ "code": code })),
+        )
+        .await;
+    assert_eq!(status, StatusCode::TOO_MANY_REQUESTS, "{body}");
+
+    // The count is in the database, so a restarted server keeps it.
+    let restarted = App::new().await;
+    let (status, _) = restarted
+        .call(
+            "POST",
+            "/api/v1/account/verify",
+            &token,
+            Some(json!({ "code": code })),
+        )
+        .await;
+    assert_eq!(status, StatusCode::TOO_MANY_REQUESTS);
+}
+
+#[tokio::test]
+#[ignore = "needs PostgreSQL in KATNA_SERVER_TEST_DATABASE_URL"]
+async fn reset_guesses_are_capped_too() {
+    let app = App::new().await;
+    let (laptop, email) = account(&app).await;
+    let desktop = app.install().await;
+    let confirm = |code: String| {
+        app.call(
+            "POST",
+            "/api/v1/account/reset/confirm",
+            &desktop,
+            Some(json!({ "email": email, "code": code, "password": "taken over" })),
+        )
+    };
+    for round in 0..2 {
+        let (status, _) = app
+            .call(
+                "POST",
+                "/api/v1/account/reset",
+                &desktop,
+                Some(json!({ "email": email })),
+            )
+            .await;
+        assert_eq!(status, StatusCode::ACCEPTED);
+        let code = app.new_code(&email, Purpose::Reset, round).await;
+        for _ in 0..5 {
+            let (status, body) = confirm(other_than(&code).to_owned()).await;
+            assert_eq!(status, StatusCode::BAD_REQUEST);
+            assert_eq!(body["code"], "wrong_code");
+        }
+    }
+    app.call(
+        "POST",
+        "/api/v1/account/reset",
+        &desktop,
+        Some(json!({ "email": email })),
+    )
+    .await;
+    let code = app.new_code(&email, Purpose::Reset, 2).await;
+    let (status, body) = confirm(code).await;
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+    assert_eq!(body["code"], "wrong_code");
+    // The password is unchanged and the laptop still signed in.
+    assert_eq!(app.feature(&laptop).await.0, StatusCode::CREATED);
+    let (status, _) = app
+        .call(
+            "POST",
+            "/api/v1/account/sign-in",
+            &desktop,
+            Some(json!({ "email": email, "password": "correct horse" })),
+        )
+        .await;
+    assert_eq!(status, StatusCode::OK);
+}
+
+#[tokio::test]
+#[ignore = "needs PostgreSQL in KATNA_SERVER_TEST_DATABASE_URL"]
+async fn reset_does_not_tell_whether_an_address_has_an_account() {
+    let app = App::new().await;
+    let (_, email) = account(&app).await;
+    let unknown = new_email().to_lowercase();
+    let token = app.install().await;
+    let reset = |email: String| {
+        app.call(
+            "POST",
+            "/api/v1/account/reset",
+            &token,
+            Some(json!({ "email": email })),
+        )
+    };
+    // Past the five codes an hour an address may be mailed, both still
+    // answer 202.
+    for _ in 0..7 {
+        assert_eq!(reset(email.clone()).await.0, StatusCode::ACCEPTED);
+        assert_eq!(reset(unknown.clone()).await.0, StatusCode::ACCEPTED);
+    }
+    app.new_code(&email, Purpose::Reset, 3).await;
+    tokio::time::sleep(std::time::Duration::from_millis(300)).await;
+    // The sign-up code was the first of the five this hour.
+    assert_eq!(app.mailed(&email, Purpose::Reset), 4);
+    assert_eq!(app.mailed(&unknown, Purpose::Reset), 0);
+
+    // Confirming answers the same for an unknown address as for a wrong
+    // code.
+    let confirm = |email: String| {
+        app.call(
+            "POST",
+            "/api/v1/account/reset/confirm",
+            &token,
+            Some(json!({ "email": email, "code": "123456", "password": "long enough" })),
+        )
+    };
+    assert_eq!(confirm(email).await, confirm(unknown).await);
 }

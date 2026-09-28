@@ -3,31 +3,41 @@
 //! The daemon's Katna account against a running Katna Server. Start one
 //! (`server/katna-server/README.md`) and run with
 //! `KATNA_SERVER_URL=http://127.0.0.1:8080` and `--include-ignored`. The
-//! server must log codes (no `KATNA_SERVER_SMTP_URL`); this test reads
-//! them from `KATNA_SERVER_LOG`, the server's log file.
+//! server must log codes (`KATNA_SERVER_DEV_MAILER=log` and no SMTP
+//! relay); this test reads them from `KATNA_SERVER_LOG`, the server's log
+//! file.
 
 use katna_daemon::daemon::CommandError;
 use katna_daemon::katna_account::Session;
 use katna_daemon::secrets::Secrets;
 use katna_dbus::katna_error;
 
-/// The last code the server logged for `email`.
-fn logged_code(email: &str) -> String {
+/// The last code the server logged for `email` and `purpose` (`verify` or
+/// `reset`). Reset codes are mailed after the server answers, so this
+/// waits a little for the line.
+fn logged_code(email: &str, purpose: &str) -> String {
     let path = std::env::var("KATNA_SERVER_LOG").expect("KATNA_SERVER_LOG");
-    let log = std::fs::read_to_string(path).unwrap();
-    log.lines()
-        .rev()
-        .filter(|line| line.contains(email))
-        .find_map(|line| {
-            let at = line.find("code=")? + 5;
-            let digits: String = line[at..]
-                .chars()
-                .skip_while(|c| !c.is_ascii_digit())
-                .take(6)
-                .collect();
-            (digits.len() == 6).then_some(digits)
-        })
-        .expect("a logged code")
+    for _ in 0..50 {
+        let log = std::fs::read_to_string(&path).unwrap();
+        let code = log
+            .lines()
+            .rev()
+            .filter(|line| line.contains(email) && line.contains(purpose))
+            .find_map(|line| {
+                let at = line.find("code=")? + 5;
+                let digits: String = line[at..]
+                    .chars()
+                    .skip_while(|c| !c.is_ascii_digit())
+                    .take(6)
+                    .collect();
+                (digits.len() == 6).then_some(digits)
+            });
+        if let Some(code) = code {
+            return code;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+    panic!("no {purpose} code logged for {email}");
 }
 
 fn code_of(result: Result<impl std::fmt::Debug, CommandError>) -> String {
@@ -66,7 +76,7 @@ fn sign_up_confirm_and_devices() {
             code_of(laptop.verify("000000x").await),
             katna_error::WRONG_CODE
         );
-        let account = laptop.verify(&logged_code(&email)).await.unwrap();
+        let account = laptop.verify(&logged_code(&email, "verify")).await.unwrap();
         assert!(account.verified);
 
         // A second computer signs in; the first signs it out.
@@ -93,7 +103,7 @@ fn sign_up_confirm_and_devices() {
 
         // Reset the password from the desktop.
         desktop.reset_password(&email).await.unwrap();
-        let reset = logged_code(&email);
+        let reset = logged_code(&email, "reset");
         let account = desktop
             .confirm_reset(&email, &reset, "battery staple")
             .await

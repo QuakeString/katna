@@ -604,3 +604,266 @@ async fn limits_count_per_account_and_links_are_stored_once() {
     assert_eq!(status, StatusCode::FOUND);
     assert_eq!(headers[header::LOCATION], links[1]);
 }
+
+/// A router over the test database with `config` changed by `change`.
+async fn app_with(change: impl FnOnce(&mut Config)) -> Router {
+    let url = std::env::var("KATNA_SERVER_TEST_DATABASE_URL").expect(NEEDS_DB);
+    let db = Db::connect(&url).unwrap();
+    db.migrate().await.unwrap();
+    let mut config = Config {
+        database_url: url,
+        installs_per_hour: 1000,
+        daily_limit: 50,
+        ..Config::default()
+    };
+    change(&mut config);
+    router(AppState::with_mailer(
+        db,
+        config,
+        Mailer::Memory(OUTBOX.clone()),
+    ))
+}
+
+/// Events stored for `ids`, read straight from the database.
+async fn stored_events(ids: &[String]) -> i64 {
+    let url = std::env::var("KATNA_SERVER_TEST_DATABASE_URL").expect(NEEDS_DB);
+    let (client, connection) = tokio_postgres::connect(&url, tokio_postgres::NoTls)
+        .await
+        .unwrap();
+    tokio::spawn(connection);
+    client
+        .query_one(
+            "SELECT count(*) FROM events WHERE track_id = ANY($1)",
+            &[&ids],
+        )
+        .await
+        .unwrap()
+        .get(0)
+}
+
+fn get_from(uri: &str, ip: &str) -> Request<Body> {
+    Request::get(uri)
+        .header(header::USER_AGENT, FIREFOX)
+        .header("x-forwarded-for", ip)
+        .body(Body::empty())
+        .unwrap()
+}
+
+#[tokio::test]
+#[ignore = "needs PostgreSQL in KATNA_SERVER_TEST_DATABASE_URL"]
+async fn recording_is_limited_but_pictures_and_links_still_work() {
+    use katna_server::routes::{EVENTS_PER_ID, EVENTS_PER_IP};
+    let app = app_with(|config| config.trust_forwarded = true).await;
+    let token = register(&app).await;
+
+    // One ID fetched over and over: only the first few count.
+    let ids = create(&app, &token, 1, &["https://example.com/"]).await;
+    for n in 0..EVENTS_PER_ID + 5 {
+        let (status, _, body) =
+            send(&app, get_from(&format!("/o/{}.png", ids[0]), "192.0.2.1")).await;
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(body, katna_server::routes::PIXEL, "fetch {n}");
+    }
+    let (status, headers, _) = send(&app, get_from(&format!("/l/{}/0", ids[0]), "192.0.2.1")).await;
+    assert_eq!(status, StatusCode::FOUND);
+    assert_eq!(headers[header::LOCATION], "https://example.com/");
+    assert_eq!(stored_events(&ids).await, i64::from(EVENTS_PER_ID));
+
+    // One network (an IPv6 /64) fetching many IDs: only the first few
+    // hundred count, whichever address in it they come from.
+    let per_id = EVENTS_PER_ID - 1;
+    let count = EVENTS_PER_IP.div_ceil(per_id) + 1;
+    let many = create(&app, &token, count, &[]).await;
+    let mut fetches = 0;
+    for id in &many {
+        for n in 0..per_id {
+            let ip = format!("2001:db8:1:2::{:x}", n + 1);
+            let (status, _, _) = send(&app, get_from(&format!("/o/{id}.png"), &ip)).await;
+            assert_eq!(status, StatusCode::OK);
+            fetches += 1;
+        }
+    }
+    assert!(fetches > EVENTS_PER_IP);
+    assert_eq!(stored_events(&many).await, i64::from(EVENTS_PER_IP));
+    // Another network still counts.
+    let fresh = create(&app, &token, 1, &[]).await;
+    send(
+        &app,
+        get_from(&format!("/o/{}.png", fresh[0]), "2001:db8:1:3::1"),
+    )
+    .await;
+    assert_eq!(stored_events(&fresh).await, 1);
+}
+
+#[tokio::test]
+#[ignore = "needs PostgreSQL in KATNA_SERVER_TEST_DATABASE_URL"]
+async fn blocked_hosts_are_refused_and_no_longer_followed() {
+    let app = app().await;
+    let token = register(&app).await;
+    let ids = create(
+        &app,
+        &token,
+        1,
+        &["https://login.evil.example/", "https://example.com/"],
+    )
+    .await;
+
+    let blocked = app_with(|config| config.blocked_hosts = vec!["evil.example".into()]).await;
+    for link in ["https://evil.example/x", "https://a@www.EVIL.example./"] {
+        let (status, _, _) = send(
+            &blocked,
+            authed(
+                "POST",
+                "/api/v1/tracks",
+                &token,
+                Some(json!({ "count": 1, "links": [link] })),
+            ),
+        )
+        .await;
+        assert_eq!(status, StatusCode::BAD_REQUEST, "{link}");
+    }
+    // Stored before the host was blocked: no longer followed.
+    let (status, headers, _) = send(&blocked, get(&format!("/l/{}/0", ids[0]), FIREFOX)).await;
+    assert_eq!(status, StatusCode::NOT_FOUND);
+    assert!(headers.get(header::LOCATION).is_none());
+    let (status, _, _) = send(&blocked, get(&format!("/l/{}/1", ids[0]), FIREFOX)).await;
+    assert_eq!(status, StatusCode::FOUND);
+}
+
+/// Opens an event stream; the response, or its status when refused.
+async fn open_stream(app: &Router, token: &str) -> Result<axum::response::Response, StatusCode> {
+    let response = app
+        .clone()
+        .oneshot(authed("GET", "/api/v1/events", token, None))
+        .await
+        .unwrap();
+    if response.status() == StatusCode::OK {
+        Ok(response)
+    } else {
+        Err(response.status())
+    }
+}
+
+/// Whether the stream ends within a few seconds.
+async fn ends(response: axum::response::Response) -> bool {
+    let mut body = response.into_body();
+    tokio::time::timeout(Duration::from_secs(5), async {
+        while let Some(frame) = body.frame().await {
+            if frame.is_err() {
+                break;
+            }
+        }
+    })
+    .await
+    .is_ok()
+}
+
+#[tokio::test]
+#[ignore = "needs PostgreSQL in KATNA_SERVER_TEST_DATABASE_URL"]
+async fn event_streams_are_capped_and_end_when_signed_out() {
+    use katna_server::routes::STREAMS_PER_INSTALL;
+    let app = app().await;
+    let (laptop, email) = register_as(&app).await;
+    let mut open = Vec::new();
+    for _ in 0..STREAMS_PER_INSTALL {
+        open.push(open_stream(&app, &laptop).await.unwrap());
+    }
+    assert_eq!(
+        open_stream(&app, &laptop).await.err(),
+        Some(StatusCode::TOO_MANY_REQUESTS)
+    );
+    // A closed stream makes room.
+    drop(open.pop());
+    open.push(open_stream(&app, &laptop).await.unwrap());
+
+    // Another device's streams are counted apart.
+    let desktop = new_install(&app).await;
+    let (status, _, _) = send(
+        &app,
+        authed(
+            "POST",
+            "/api/v1/account/sign-in",
+            &desktop,
+            Some(json!({ "email": email, "password": "correct horse", "device": "desktop" })),
+        ),
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK);
+    let desktop_stream = open_stream(&app, &desktop).await.unwrap();
+
+    // The laptop changes the password: the desktop's stream ends at once,
+    // the laptop's go on.
+    let (status, _, _) = send(
+        &app,
+        authed(
+            "POST",
+            "/api/v1/account/password",
+            &laptop,
+            Some(json!({ "current": "correct horse", "new": "battery staple" })),
+        ),
+    )
+    .await;
+    assert_eq!(status, StatusCode::NO_CONTENT);
+    assert!(ends(desktop_stream).await);
+    let still_open = open.pop().unwrap();
+    let mut body = still_open.into_body();
+    assert!(
+        tokio::time::timeout(Duration::from_millis(500), body.frame())
+            .await
+            .is_err(),
+        "the laptop's stream goes on"
+    );
+
+    // Signing the laptop out ends its streams.
+    let (status, _, _) = send(
+        &app,
+        authed("POST", "/api/v1/account/sign-out", &laptop, None),
+    )
+    .await;
+    assert_eq!(status, StatusCode::NO_CONTENT);
+    for response in open {
+        assert!(ends(response).await);
+    }
+}
+
+/// A stand-in for LibreTranslate that takes half a second to translate.
+async fn slow_libretranslate() -> String {
+    use axum::routing::post;
+    let app = Router::new().route(
+        "/translate",
+        post(|| async {
+            tokio::time::sleep(Duration::from_millis(500)).await;
+            axum::Json(json!({ "translatedText": "slow" }))
+        }),
+    );
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
+    format!("http://{address}")
+}
+
+#[tokio::test]
+#[ignore = "needs PostgreSQL in KATNA_SERVER_TEST_DATABASE_URL"]
+async fn translations_take_turns() {
+    let translate_url = slow_libretranslate().await;
+    let app = app_with(|config| {
+        config.translate_url = translate_url;
+        config.translate_concurrency = 1;
+    })
+    .await;
+    let token = register(&app).await;
+    let request = || {
+        authed(
+            "POST",
+            "/api/v1/translate",
+            &token,
+            Some(json!({"q": "Hola", "source": "es", "target": "en"})),
+        )
+    };
+    let (first, second) = tokio::join!(send(&app, request()), send(&app, request()));
+    let mut statuses = [first.0, second.0];
+    statuses.sort();
+    assert_eq!(statuses, [StatusCode::OK, StatusCode::SERVICE_UNAVAILABLE]);
+    // Its turn given back, the next one goes through.
+    assert_eq!(send(&app, request()).await.0, StatusCode::OK);
+}

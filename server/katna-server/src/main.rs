@@ -29,8 +29,14 @@ async fn main() -> ExitCode {
 
 async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let config = Config::from_env()?;
-    if !katna_server::mailer::Mailer::from_config(&config)?.sends_mail() {
-        tracing::warn!("KATNA_SERVER_SMTP_URL not set: Katna account codes go to this log only");
+    // Without an SMTP relay this is an error, unless KATNA_SERVER_DEV_MAILER
+    // asks for the log.
+    let mailer = katna_server::mailer::Mailer::from_config(&config)?;
+    if !mailer.sends_mail() {
+        tracing::warn!(
+            "KATNA_SERVER_DEV_MAILER=log: account codes go to this log only; \
+             never use this where others can sign up"
+        );
     }
     let db = Db::connect(&config.database_url)?;
     // PostgreSQL may still be starting next to us.
@@ -50,7 +56,8 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     let listener = tokio::net::TcpListener::bind(config.listen).await?;
     tracing::info!(address = %config.listen, "listening");
-    let app = router(AppState::new(db, config)).into_make_service_with_connect_info::<SocketAddr>();
+    let app = router(AppState::with_mailer(db, config, mailer))
+        .into_make_service_with_connect_info::<SocketAddr>();
     // Event streams never end on their own, so shutdown waits for them only
     // briefly.
     let server = axum::serve(listener, app).with_graceful_shutdown(shutdown_signal());

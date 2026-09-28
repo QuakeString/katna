@@ -3,7 +3,10 @@
 //! Automatic translation (`docs/ARCHITECTURE.md` §16.4): LibreTranslate
 //! runs in its own container on the compose file's internal network, and
 //! these routes pass its API through for computers signed in to a
-//! confirmed Katna account, with a daily limit per account:
+//! confirmed Katna account, with a daily limit per account and a limit on
+//! requests passed on at once for everyone together
+//! (`KATNA_SERVER_TRANSLATE_CONCURRENCY`; beyond it the answer is 503 at
+//! once, so one account cannot keep LibreTranslate busy for all):
 //!
 //! - `GET /api/v1/languages`: the languages it translates between.
 //! - `POST /api/v1/translate` `{"q", "source", "target"}`: plain text only.
@@ -23,6 +26,7 @@ use axum::response::{IntoResponse, Response};
 use http_body_util::{BodyExt, Full};
 use hyper_util::rt::TokioIo;
 use serde::{Deserialize, Serialize};
+use tokio::sync::OwnedSemaphorePermit;
 
 use crate::auth::SignedIn;
 use crate::routes::AppState;
@@ -60,25 +64,38 @@ fn refuse(status: StatusCode, message: &'static str) -> Response {
     (status, Json(serde_json::json!({ "error": message }))).into_response()
 }
 
-/// Counts one use by `account`, or the answer when there is none left.
-fn over_limit(state: &AppState, account: &str) -> Option<Response> {
+/// A turn to pass one request on, counted as one use by `account`, or why
+/// there is none: no turn free or no use left.
+fn admit(
+    state: &AppState,
+    account: &str,
+) -> Result<OwnedSemaphorePermit, (StatusCode, &'static str)> {
     if state.config().translate_url.is_empty() {
-        return Some(refuse(
+        return Err((
             StatusCode::SERVICE_UNAVAILABLE,
             "translation is not set up on this server",
         ));
     }
-    (!state.translations().allow(account.to_owned()))
-        .then(|| refuse(StatusCode::TOO_MANY_REQUESTS, "too many translations today"))
+    let Ok(turn) = state.translating().clone().try_acquire_owned() else {
+        return Err((
+            StatusCode::SERVICE_UNAVAILABLE,
+            "translation is busy; try again shortly",
+        ));
+    };
+    if !state.translations().allow(account.to_owned()) {
+        return Err((StatusCode::TOO_MANY_REQUESTS, "too many translations today"));
+    }
+    Ok(turn)
 }
 
 pub(crate) async fn languages(
     State(state): State<AppState>,
     SignedIn { account, .. }: SignedIn,
 ) -> Response {
-    if let Some(refused) = over_limit(&state, &account) {
-        return refused;
-    }
+    let _turn = match admit(&state, &account) {
+        Ok(turn) => turn,
+        Err((status, message)) => return refuse(status, message),
+    };
     pass_on(&state, "GET", "/languages", None).await
 }
 
@@ -96,9 +113,10 @@ pub(crate) async fn translate(
     if request.q.is_empty() || !is_code(&request.source) || !is_code(&request.target) {
         return refuse(StatusCode::BAD_REQUEST, "expected q, source and target");
     }
-    if let Some(refused) = over_limit(&state, &account) {
-        return refused;
-    }
+    let _turn = match admit(&state, &account) {
+        Ok(turn) => turn,
+        Err((status, message)) => return refuse(status, message),
+    };
     let body = serde_json::json!({
         "q": request.q,
         "source": request.source,
@@ -119,9 +137,10 @@ pub(crate) async fn detect(
     let Ok(request) = serde_json::from_slice::<DetectBody>(&body) else {
         return refuse(StatusCode::BAD_REQUEST, "expected q");
     };
-    if let Some(refused) = over_limit(&state, &account) {
-        return refused;
-    }
+    let _turn = match admit(&state, &account) {
+        Ok(turn) => turn,
+        Err((status, message)) => return refuse(status, message),
+    };
     pass_on(
         &state,
         "POST",
