@@ -62,6 +62,26 @@ compose-attachments-total = { $count ->
     [many] { $count } файлов, { $size }
    *[other] { $count } файла, { $size }
 }
+compose-drive-note = { $name } больше { $limit }, поэтому файл попадёт на ваш Google Drive, а в письме будет ссылка.
+compose-drive-tip = На вашем Google Drive; в письме будет ссылка
+compose-drive-uploading = Загрузка { $percent }%
+compose-drive-allow = Разрешить Drive
+compose-drive-allow-tip = Войдите через Google ещё раз, чтобы Katna могла помещать большие файлы на ваш Drive
+compose-drive-retry = Повторить попытку
+compose-drive-sends-when-uploaded = Письмо будет отправлено после загрузки { $name }
+compose-drive-not-uploaded = { $name } ещё не на Google Drive
+compose-drive-share-failed = Не удалось предоставить доступ к файлам на Google Drive: { $error }
+compose-drive-share-title = Предоставить доступ к файлам всем?
+compose-drive-share-text = { $count ->
+    [one] Google Drive не может предоставить доступ к файлам адресату { $addresses }, у которого нет аккаунта Google. Вместо этого файлы сможет открыть любой, у кого есть ссылка.
+    [few] Google Drive не может предоставить доступ к файлам адресатам { $addresses }, у которых нет аккаунта Google. Вместо этого файлы сможет открыть любой, у кого есть ссылка.
+    [many] Google Drive не может предоставить доступ к файлам адресатам { $addresses }, у которых нет аккаунта Google. Вместо этого файлы сможет открыть любой, у кого есть ссылка.
+   *[other] Google Drive не может предоставить доступ к файлам адресатам { $addresses }, у которых нет аккаунта Google. Вместо этого файлы сможет открыть любой, у кого есть ссылка.
+}
+compose-drive-share-link = Поделиться по ссылке
+compose-drive-send-without = Отправить без доступа
+compose-drive-share-cancel = Отмена
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = Перетащите файлы сюда
 compose-drop-here = Перетащите сюда
 compose-paste-keep-formatting = Сохранить форматирование

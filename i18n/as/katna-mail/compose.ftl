@@ -60,6 +60,24 @@ compose-attachments-total = { $count ->
     [one] { $count }টা ফাইল, { $size }
    *[other] { $count }টা ফাইল, { $size }
 }
+compose-drive-note = { $name } { $limit }তকৈ ডাঙৰ, গতিকে ই আপোনাৰ Google Drive-লৈ যায় আৰু বাৰ্তাত ইয়াৰ লিংক থাকে।
+compose-drive-tip = আপোনাৰ Google Drive-ত; বাৰ্তাত লিংক থাকে
+compose-drive-uploading = আপলোড হৈ আছে { $percent }%
+compose-drive-allow = Drive-ৰ অনুমতি দিয়ক
+compose-drive-allow-tip = ডাঙৰ ফাইল আপোনাৰ Drive-ত ৰাখিবলৈ Katna-ক অনুমতি দিবলৈ Google-ৰে পুনৰ ছাইন ইন কৰক
+compose-drive-retry = পুনৰ চেষ্টা কৰক
+compose-drive-sends-when-uploaded = { $name } আপলোড হোৱাৰ লগে লগে পঠোৱা হ'ব
+compose-drive-not-uploaded = { $name } এতিয়ালৈকে Google Drive-ত নাই
+compose-drive-share-failed = Google Drive-ত ফাইলবোৰ শ্বেয়াৰ কৰিব পৰা নগ'ল: { $error }
+compose-drive-share-title = ফাইলবোৰ সকলোৰে সৈতে শ্বেয়াৰ কৰিব নে?
+compose-drive-share-text = { $count ->
+    [one] Google Drive-এ { $addresses }ৰ সৈতে ফাইলবোৰ শ্বেয়াৰ কৰিব নোৱাৰে, যাৰ Google একাউণ্ট নাই। ইয়াৰ সলনি লিংক থকা যিকোনোৱে সেইবোৰ খুলিব পাৰে।
+   *[other] Google Drive-এ { $addresses }ৰ সৈতে ফাইলবোৰ শ্বেয়াৰ কৰিব নোৱাৰে, যিসকলৰ Google একাউণ্ট নাই। ইয়াৰ সলনি লিংক থকা যিকোনোৱে সেইবোৰ খুলিব পাৰে।
+}
+compose-drive-share-link = লিংকৰে শ্বেয়াৰ কৰক
+compose-drive-send-without = শ্বেয়াৰ নকৰাকৈ পঠিয়াওক
+compose-drive-share-cancel = বাতিল কৰক
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = ফাইলসমূহ ইয়াত এৰক
 compose-drop-here = ইয়াত এৰক
 compose-paste-keep-formatting = ফৰ্মেটিং ৰাখক

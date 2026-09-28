@@ -1032,3 +1032,22 @@ Semua akaun atau salah satu daripadanya, dan mesej dijejaki, kadar,
 carta, baris subjek serta Peti mel anda akan mengikutinya. Laporan
 menyatakan akaun yang dipaparkan dan mengingati pilihan anda.
 """
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Anak panah Lebih baharu dan Lebih lama sentiasa pada bar alat"
+text = """
+Walau sesempit mana pun anak tetingkap bacaan, pembilang serta anak panah
+Lebih baharu dan Lebih lama kekal di sebelah kanan bar alatnya. Butang
+yang paling jarang anda guna akan berpindah satu demi satu ke menu Lagi,
+termasuk suis butiran kenalan dan warna asal.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Hantar fail dalam apa jua saiz"
+text = """
+Dengan akaun yang log masuk melalui Google, fail yang melebihi had mel 25
+MB dihantar ke Google Drive anda sebaik sahaja anda melampirkannya, dan
+mesej membawa pautannya, seperti dalam Gmail. Ia dikongsi dengan penerima
+anda apabila anda menekan Hantar; Katna hanya bertanya jika seseorang
+tidak boleh diberi akses.
+"""

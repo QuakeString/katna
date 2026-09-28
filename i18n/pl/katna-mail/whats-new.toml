@@ -1015,3 +1015,21 @@ albo jedno z nich, a śledzone wiadomości, wskaźniki, wykres, tematy i
 Twoja skrzynka dostosują się do wyboru. Raport podaje, które konto
 pokazuje, i zapamiętuje twój wybór.
 """
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Nowsze i Starsze zawsze na pasku narzędzi"
+text = """
+Bez względu na to, jak wąski jest panel czytania, licznik oraz strzałki
+Nowszy i Starszy zostają po prawej stronie jego paska narzędzi.
+Najrzadziej używane przyciski przenoszą się zamiast tego jeden po drugim
+do menu Więcej, w tym przełączniki danych kontaktu i oryginalnych kolorów.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Wysyłaj pliki dowolnej wielkości"
+text = """
+Na koncie zalogowanym przez Google plik przekraczający limit poczty 25 MB
+trafia na Twój Google Drive od razu po dołączeniu, a wiadomość zawiera
+jego link, jak w Gmailu. Po naciśnięciu Wyślij jest udostępniany
+odbiorcom; Katna pyta tylko wtedy, gdy komuś nie można nadać dostępu.
+"""

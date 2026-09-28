@@ -1024,3 +1024,22 @@ Semua akun atau salah satunya, dan pesan yang dilacak, tingkat, grafik,
 subjek, serta Kotak surat Anda akan mengikuti. Laporan menyebutkan akun
 yang ditampilkan dan mengingat pilihan Anda.
 """
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Panah Lebih baru dan Lebih lama selalu tampil di bilah alat"
+text = """
+Selebar apa pun panel baca, penghitung dan panah Lebih baru serta Lebih
+lama tetap berada di sisi kanan bilah alatnya. Tombol yang paling jarang
+Anda pakai justru berpindah satu per satu ke menu Lainnya, termasuk
+sakelar detail kontak dan warna asli.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Kirim file dengan ukuran berapa pun"
+text = """
+Dengan akun yang masuk melalui Google, file yang melebihi batas email 25
+MB langsung dikirim ke Google Drive Anda begitu dilampirkan, dan pesan
+membawa link-nya, seperti di Gmail. File dibagikan kepada penerima saat
+Anda menekan Kirim; Katna hanya bertanya jika ada yang tidak dapat diberi
+akses.
+"""

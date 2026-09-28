@@ -1056,3 +1056,23 @@ dates. Choisissez Tous les comptes ou l’un d’eux, et les messages suivis,
 les taux, le graphique, les objets et Votre boîte aux lettres s’adaptent.
 Le rapport indique quel compte il affiche et retient votre choix.
 """
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Plus récent et Plus ancien toujours dans la barre d’outils"
+text = """
+Même dans un volet de lecture très étroit, le compteur et les flèches Plus
+récent et Plus ancien restent à droite de sa barre d’outils. Les boutons
+que vous utilisez le moins passent à la place, un par un, dans le menu
+Plus, y compris les commutateurs des coordonnées du contact et des
+couleurs d’origine.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Envoyez des fichiers de toute taille"
+text = """
+Avec un compte connecté à Google, un fichier dépassant la limite de 25 Mo
+du courrier est placé dans votre Google Drive dès que vous le joignez, et
+le message contient son lien, comme dans Gmail. Il est partagé avec vos
+destinataires quand vous appuyez sur Envoyer ; Katna ne demande que si
+l’accès ne peut pas être accordé à quelqu’un.
+"""
