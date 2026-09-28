@@ -22,6 +22,7 @@ i18n/
   en/katna-ui.ftl         shared widgets
   en/katna-daemon/        the background service: notifications, the
                           tray icon
+  en/katna-setup/         Katna Setup, the Windows installer
   bn/katna-mail/          Bengali, the same files
   bn/katna-mail/whats-new.toml
                           Katna Mail's What's new highlights in Bengali
