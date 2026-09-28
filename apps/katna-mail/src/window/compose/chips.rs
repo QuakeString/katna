@@ -649,7 +649,7 @@ impl MailWindow {
                         }
                         cx.notify();
                     }))
-                    .child(label),
+                    .child(div().relative().top(px(-self.pill_lift(13.0))).child(label)),
             );
         }
         Some(pill.into_any_element())
@@ -719,6 +719,8 @@ impl MailWindow {
             .child(
                 div()
                     .min_w_0()
+                    .relative()
+                    .top(px(-self.pill_lift(14.0)))
                     .truncate()
                     .child(SharedString::from(chip.label().to_owned())),
             )

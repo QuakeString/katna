@@ -412,6 +412,9 @@ pub struct MailWindow {
     people_task: Option<Task<()>>,
     /// The desktop's UI font, or `None` to leave GPUI's default.
     font: Option<SharedString>,
+    /// How far text in a pill goes up to look centred in it, per pixel
+    /// of font size: see [`MailWindow::measure_pill_text`].
+    pill_text_lift: f32,
     paths: Paths,
     config: Config,
     config_path: PathBuf,
@@ -696,6 +699,7 @@ impl MailWindow {
             people: None,
             people_task: None,
             font,
+            pill_text_lift: 0.0,
             mail: Mail::open(&paths),
             remote: remote::Remote::load(&paths),
             translations: translate::Translations::default(),
@@ -2695,6 +2699,43 @@ impl MailWindow {
     }
 }
 
+impl MailWindow {
+    /// A line of text is centred on the middle of its ascent and descent,
+    /// which puts most names below the middle of a short pill: with a long
+    /// descent, as in Noto Sans, a pixel or two. Measures how far to lift
+    /// it so the middle of its small and capital letters is centred.
+    fn measure_pill_text(&mut self, window: &Window) {
+        let family = self
+            .font
+            .clone()
+            .unwrap_or_else(|| window.text_style().font_family.clone());
+        let text = window.text_system();
+        let id = text.resolve_font(&gpui::font(family));
+        let size = px(100.0);
+        // A font without its letter heights (an old OS/2 table, as in
+        // DejaVu Sans) gets the usual ones for a sans serif.
+        let height = |metric: gpui::Pixels, usual: f32| {
+            let metric = unpx(metric);
+            if metric > 0.0 {
+                metric
+            } else {
+                usual * unpx(size)
+            }
+        };
+        let x_height = height(text.x_height(id, size), 0.55);
+        let cap_height = height(text.cap_height(id, size), 0.73);
+        let [ascent, descent] = [text.ascent(id, size), text.descent(id, size)].map(unpx);
+        // Fonts give the descent either way up.
+        let lift = (ascent - descent.abs()) / 2.0 - (x_height + cap_height) / 4.0;
+        self.pill_text_lift = (lift / unpx(size)).clamp(0.0, 0.2);
+    }
+
+    /// How far text of `size` goes up to look centred in a pill.
+    pub(super) fn pill_lift(&self, size: f32) -> f32 {
+        self.pill_text_lift * size
+    }
+}
+
 impl Render for MailWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         // Text without a size of its own follows Settings > Appearance > Scaling.
@@ -2706,6 +2747,7 @@ impl Render for MailWindow {
             return detached;
         }
         self.tour_new_frame();
+        self.measure_pill_text(window);
         let th = self.theme(window);
         self.release_images(window, cx);
         if let Some(viewer) = &self.files.viewer {
