@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Sign in with Google or Microsoft"
+text = """
+Add a Gmail or Outlook account by signing in on Google's or Microsoft's
+own page in your browser, with no app password. Outlook.com and Hotmail
+addresses work now too. If a sign-in stops working, a note at the bottom
+of the window offers to sign in again.
+"""

@@ -525,8 +525,10 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   which runs `SignIn` for that account. Network trouble while refreshing is
   not, and retries like any other. The client IDs live in
   `katna_core::ids` (`GOOGLE_OAUTH_CLIENT_ID`, with Google's non-secret
-  desktop `GOOGLE_OAUTH_CLIENT_SECRET`, and `MICROSOFT_OAUTH_CLIENT_ID`);
-  an empty one hides that provider's button and makes `SignIn` fail.
+  desktop `GOOGLE_OAUTH_CLIENT_SECRET`, and `MICROSOFT_OAUTH_CLIENT_ID`),
+  filled at build time from `KATNA_`-prefixed environment variables of the
+  same names, which the package build takes from GitHub secrets, so none is
+  in the repository; an empty one hides that provider's button and makes `SignIn` fail.
   Google's restricted scope for full mail access requires app verification
   and a yearly security assessment; until then Google lets only test users
   in. Tests use a local fake OAuth server and a fake IMAP server, never a
