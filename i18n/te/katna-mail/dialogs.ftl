@@ -7,6 +7,31 @@
 about-tooltip = Katna గురించి
 about-tagline = Linux డెస్క్‌టాప్ కోసం మెయిల్, క్యాలెండర్
 about-whats-new = కొత్తగా ఏమి ఉన్నాయి
+
+## Updates, in a box under the version in About (only in packages that
+## update themselves).
+
+about-update-not-checked = అప్‌డేట్‌ల కోసం ఇంకా చెక్ చేయలేదు
+about-update-checking = అప్‌డేట్‌ల కోసం చెక్ చేస్తోంది…
+about-update-up-to-date = Katna Mail తాజాగా ఉంది
+about-update-check-failed = అప్‌డేట్‌ల కోసం చెక్ చేయలేకపోయాము
+about-update-available = వెర్షన్ { $version } అందుబాటులో ఉంది
+about-update-downloading = వెర్షన్ { $version } డౌన్‌లోడ్ అవుతోంది… { $percent }%
+about-update-ready = వెర్షన్ { $version } ఇన్‌స్టాల్ చేయడానికి సిద్ధంగా ఉంది
+about-update-ready-detail = అప్‌డేట్‌ను పూర్తి చేయడానికి Katna Mail రీస్టార్ట్ అవుతుంది.
+about-update-confirm = వెర్షన్ { $version }ని ఇన్‌స్టాల్ చేయాలా?
+about-update-confirm-detail = Katna Mail మూసుకుపోయి, అప్‌డేట్‌ను ఇన్‌స్టాల్ చేసి, మీరు వదిలిన చోటనే మళ్లీ తెరుచుకుంటుంది. మీ కంప్యూటర్ మీ పాస్‌వర్డ్‌ను అడుగుతుంది.
+about-update-installing = వెర్షన్ { $version } ఇన్‌స్టాల్ అవుతోంది…
+about-update-installing-detail = తెరుచుకున్న విండోలో మీ పాస్‌వర్డ్‌ను ఎంటర్ చేయండి.
+about-update-cancelled = పాస్‌వర్డ్ ఇవ్వనందున అప్‌డేట్ ఇన్‌స్టాల్ చేయలేదు.
+about-update-failed = అప్‌డేట్‌ను ఇన్‌స్టాల్ చేయలేకపోయాము: { $error }
+about-update-unsupported = Katna Mail-లోని ఈ కాపీని మీ ప్యాకేజీ మేనేజర్ అప్‌డేట్ చేస్తుంది.
+about-update-restart-failed = అప్‌డేట్ ఇన్‌స్టాల్ అయింది, కానీ Katna Mail మళ్లీ తెరుచుకోలేకపోయింది ({ $error }). దాన్ని మీరే తెరవండి.
+about-update-check = అప్‌డేట్‌ల కోసం చెక్ చేయండి
+about-update-download = డౌన్‌లోడ్
+about-update-button = అప్‌డేట్
+about-update-restart = అప్‌డేట్ చేసి రీస్టార్ట్ చేయండి
+about-update-cancel = ఇప్పుడు వద్దు
 about-changelog = మార్పుల జాబితా
 about-source = సోర్స్ కోడ్
 about-coffee = నాకు ఒక కాఫీ కొనివ్వండి

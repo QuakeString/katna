@@ -7,6 +7,31 @@
 about-tooltip = Maka Katna
 about-tagline = Ozi na kalịnda maka desktọpụ Linux
 about-whats-new = Ihe ọhụrụ
+
+## Updates, in a box under the version in About (only in packages that
+## update themselves).
+
+about-update-not-checked = Elebeghị anya na imelite ndị dị ugbu a
+about-update-checking = Na-elele imelite ndị dị…
+about-update-up-to-date = Katna Mail bụ nke kachasị ọhụrụ
+about-update-check-failed = Enweghị ike ilele imelite ndị dị
+about-update-available = Ụdị { $version } dị
+about-update-downloading = Na-ebudata ụdị { $version }… { $percent }%
+about-update-ready = Ụdị { $version } dị njikere ka a wụnye ya
+about-update-ready-detail = Katna Mail ga-amaligharị ka o mechaa imelite ahụ.
+about-update-confirm = Wụnye ụdị { $version }?
+about-update-confirm-detail = Katna Mail ga-emechi, wụnye imelite ahụ wee meghee ọzọ n'ebe ị hapụrụ. Kọmputa gị ga-ajụ okwuntughe gị.
+about-update-installing = Na-awụnye ụdị { $version }…
+about-update-installing-detail = Tinye okwuntughe gị na windo mepere.
+about-update-cancelled = A wụnyeghị imelite ahụ, n'ihi na e nyeghị okwuntughe.
+about-update-failed = Enweghị ike iwụnye imelite ahụ: { $error }
+about-update-unsupported = Onye njikwa ngwugwu gị na-emelite ihe oyiyi Katna Mail a.
+about-update-restart-failed = A wụnyela imelite ahụ, mana Katna Mail enweghị ike imeghe ọzọ ({ $error }). Meghee ya n'onwe gị.
+about-update-check = Lelee imelite ndị dị
+about-update-download = Budata
+about-update-button = Melite
+about-update-restart = Melite ma malitegharịa
+about-update-cancel = Ọ bụghị ugbu a
 about-changelog = Ndepụta mgbanwe
 about-source = Koodu isi mmalite
 about-coffee = Zụtara m kọfị

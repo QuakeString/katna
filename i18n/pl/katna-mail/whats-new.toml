@@ -935,3 +935,31 @@ okrągłymi przyciskami pod imieniem i nazwiskiem, by napisać do tej osoby,
 znaleźć z nią pocztę albo do niej zadzwonić. Ostatnie wątki pokazują kilka
 najnowszych; naciśnij Więcej, by zobaczyć resztę, i Mniej, by je zwinąć.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "Bardziej uporządkowane pole odpowiedzi"
+text = """
+Odbiorcy pokazują się teraz ze swoimi zdjęciami, a DW i UDW mieszczą się
+razem w jednym małym przycisku. Otwarcie odbiorców odpowiedzi płynnie
+powiększa pole ku górze, a cytowana wiadomość płynnie otwiera się i zamyka
+pod falistą linią, którą można kliknąć, aby znów ją zwinąć.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "Delikatniejszy cień okna i przyciski w rozmiarze KDE"
+text = """
+Z ramką okna Katna cień wokół okna jest węższy i całkowicie zanika, bez
+twardej krawędzi, którą wcześniej zostawiał przy oknie. Przyciski okna mają
+teraz taki sam rozmiar jak własne przyciski KDE i zachowują taki sam
+odstęp od boku okna, jak od jego góry.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Aktualizuj Katna z poziomu aplikacji"
+text = """
+Katna teraz sama pobiera nowe wersje i informuje, gdy jedna jest gotowa.
+Naciśnij Aktualizuj w powiadomieniu albo w oknie O Katna: Katna Mail
+zapowie, że się uruchomi ponownie, poprosi o hasło, zainstaluje
+aktualizację i otworzy się ponownie w tym samym miejscu co wcześniej.
+Automatyczne pobieranie wyłączysz w Ustawienia > Ogólne > Aktualizacje.
+"""

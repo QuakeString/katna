@@ -7,6 +7,31 @@
 about-tooltip = Katna အကြောင်း
 about-tagline = Linux ဒက်စ်တော့အတွက် မေးလ်နှင့် ပြက္ခဒိန်
 about-whats-new = အသစ်များ
+
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
+about-update-not-checked = အပ်ဒိတ်ကို မစစ်ဆေးရသေးပါ
+about-update-checking = အပ်ဒိတ်ကို စစ်ဆေးနေသည်…
+about-update-up-to-date = Katna Mail သည် နောက်ဆုံးဗားရှင်းဖြစ်သည်
+about-update-check-failed = အပ်ဒိတ်ကို စစ်ဆေး၍ မရပါ
+about-update-available = ဗားရှင်း { $version } ရရှိနိုင်သည်
+about-update-downloading = ဗားရှင်း { $version } ကို ဒေါင်းလုဒ်လုပ်နေသည်… { $percent }%
+about-update-ready = ဗားရှင်း { $version } ထည့်သွင်းရန် အသင့်ဖြစ်နေပြီ
+about-update-ready-detail = အပ်ဒိတ်ကို ပြီးမြောက်ရန် Katna Mail ပြန်လည်စတင်မည်။
+about-update-confirm = ဗားရှင်း { $version } ကို ထည့်သွင်းမလား?
+about-update-confirm-detail = Katna Mail ပိတ်ပြီး အပ်ဒိတ်ကို ထည့်သွင်းကာ သင်ထားခဲ့သည့်နေရာမှ ပြန်ဖွင့်ပေးမည်။ သင့်ကွန်ပျူတာက စကားဝှက် တောင်းပါမည်။
+about-update-installing = ဗားရှင်း { $version } ကို ထည့်သွင်းနေသည်…
+about-update-installing-detail = ဖွင့်ထားသော ဝင်းဒိုးတွင် သင့်စကားဝှက်ကို ရိုက်ထည့်ပါ။
+about-update-cancelled = စကားဝှက် မပေးခဲ့သဖြင့် အပ်ဒိတ်ကို မထည့်သွင်းခဲ့ပါ။
+about-update-failed = အပ်ဒိတ်ကို ထည့်သွင်း၍ မရပါ- { $error }
+about-update-unsupported = ဤ Katna Mail ကို သင့်ပက်ကေ့ချ် မန်နေဂျာက အပ်ဒိတ်လုပ်ပေးသည်။
+about-update-restart-failed = အပ်ဒိတ်ကို ထည့်သွင်းပြီးပါပြီ၊ သို့သော် Katna Mail ကို ပြန်ဖွင့်၍ မရပါ ({ $error })။ ကိုယ်တိုင် ဖွင့်ပါ။
+about-update-check = အပ်ဒိတ် စစ်ဆေးရန်
+about-update-download = ဒေါင်းလုဒ်
+about-update-button = အပ်ဒိတ်
+about-update-restart = အပ်ဒိတ်လုပ်ပြီး ပြန်လည်စတင်ရန်
+about-update-cancel = အခုမလုပ်သေးပါ
 about-changelog = ပြောင်းလဲမှု မှတ်တမ်း
 about-source = ရင်းမြစ်ကုဒ်
 about-coffee = ကော်ဖီတစ်ခွက် တိုက်ရန်

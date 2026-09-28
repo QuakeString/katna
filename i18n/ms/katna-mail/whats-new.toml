@@ -947,3 +947,34 @@ memanggil mereka. Perbualan terkini menunjukkan beberapa yang
 terbaharu; tekan Lagi untuk melihat selebihnya dan Kurang untuk
 melipatnya semula.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "Kotak balasan yang lebih kemas"
+text = """
+Penerima kini dipaparkan dengan gambar mereka, dan Sk serta Skt
+disatukan dalam satu butang kecil. Membuka penerima balasan
+mengembangkan kotak ke atas dengan lancar, dan mesej petikan terbuka
+dan tertutup dengan lancar di bawah garis berombak yang boleh anda
+klik untuk melipatnya semula.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "Bayang tetingkap yang lebih lembut dan butang bersaiz KDE"
+text = """
+Dengan bingkai tetingkap Katna, bayang di sekeliling tetingkap kini
+lebih nipis dan pudar sepenuhnya, tanpa bucu tajam yang dahulu
+ditinggalkan di sisi tetingkap. Butang tetingkap kini sebesar butang
+KDE sendiri, dan berjarak sama daripada sisi tetingkap seperti
+daripada bahagian atasnya.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Kemas kini Katna dari dalam aplikasi"
+text = """
+Katna kini memuat turun versi baharu dengan sendirinya dan
+memberitahu anda apabila satu sedia. Tekan Kemas kini dalam
+pemberitahuan atau dalam Perihal: Katna Mail memberitahu ia akan
+mulakan semula, meminta kata laluan anda, memasang kemas kini dan
+buka semula di tempat anda berhenti. Tetapan > Umum > Kemas kini
+mematikan muat turun automatik.
+"""

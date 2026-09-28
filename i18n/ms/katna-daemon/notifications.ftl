@@ -16,6 +16,9 @@ notify-tracking-clicked = { $who } mengklik pautan dalam { $subject }
 
 ## Its buttons
 
+notify-update-ready = Katna Mail boleh dikemas kini
+notify-update-ready-body = Versi { $version } telah dimuat turun. Kemas kini akan memasangnya dan memulakan semula Katna Mail.
+notify-update = Kemas kini
 notify-open = Buka
 notify-reply-all = Balas semua
 notify-mark-read = Tandai sebagai dibaca

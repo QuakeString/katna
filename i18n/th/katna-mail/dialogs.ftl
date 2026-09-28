@@ -7,6 +7,31 @@
 about-tooltip = เกี่ยวกับ Katna
 about-tagline = อีเมลและปฏิทินสำหรับเดสก์ท็อป Linux
 about-whats-new = มีอะไรใหม่
+
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
+about-update-not-checked = ยังไม่ได้ตรวจสอบการอัปเดต
+about-update-checking = กำลังตรวจสอบการอัปเดต…
+about-update-up-to-date = Katna Mail เป็นเวอร์ชันล่าสุดแล้ว
+about-update-check-failed = ตรวจสอบการอัปเดตไม่ได้
+about-update-available = มีเวอร์ชัน { $version } ให้อัปเดต
+about-update-downloading = กำลังดาวน์โหลดเวอร์ชัน { $version }… { $percent }%
+about-update-ready = เวอร์ชัน { $version } พร้อมติดตั้งแล้ว
+about-update-ready-detail = Katna Mail จะรีสตาร์ทเพื่อติดตั้งการอัปเดตให้เสร็จสมบูรณ์
+about-update-confirm = ติดตั้งเวอร์ชัน { $version } หรือไม่?
+about-update-confirm-detail = Katna Mail จะปิด ติดตั้งการอัปเดต แล้วเปิดขึ้นใหม่ตรงจุดที่คุณค้างไว้ คอมพิวเตอร์ของคุณจะขอรหัสผ่าน
+about-update-installing = กำลังติดตั้งเวอร์ชัน { $version }…
+about-update-installing-detail = ป้อนรหัสผ่านของคุณในหน้าต่างที่เปิดขึ้น
+about-update-cancelled = ไม่ได้ติดตั้งการอัปเดต เพราะไม่ได้ป้อนรหัสผ่าน
+about-update-failed = ติดตั้งการอัปเดตไม่ได้: { $error }
+about-update-unsupported = Katna Mail ชุดนี้อัปเดตโดยตัวจัดการแพ็กเกจของคุณ
+about-update-restart-failed = ติดตั้งการอัปเดตแล้ว แต่ Katna Mail เปิดขึ้นใหม่ไม่ได้ ({ $error }) โปรดเปิดเองด้วยตนเอง
+about-update-check = ตรวจสอบการอัปเดต
+about-update-download = ดาวน์โหลด
+about-update-button = อัปเดต
+about-update-restart = อัปเดตและรีสตาร์ท
+about-update-cancel = ไว้ทีหลัง
 about-changelog = บันทึกการเปลี่ยนแปลง
 about-source = ซอร์สโค้ด
 about-coffee = เลี้ยงกาแฟฉันสักแก้ว

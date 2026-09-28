@@ -7,6 +7,31 @@
 about-tooltip = ກ່ຽວກັບ Katna
 about-tagline = ອີເມວ ແລະ ປະຕິທິນສຳລັບເດັສທັອບ Linux
 about-whats-new = ມີຫຍັງໃໝ່
+
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
+about-update-not-checked = ຍັງບໍ່ໄດ້ກວດຫາການອັບເດດ
+about-update-checking = ກຳລັງກວດຫາການອັບເດດ…
+about-update-up-to-date = Katna Mail ເປັນເວີຊັນຫຼ້າສຸດແລ້ວ
+about-update-check-failed = ກວດຫາການອັບເດດບໍ່ໄດ້
+about-update-available = ມີເວີຊັນ { $version } ໃຫ້ອັບເດດ
+about-update-downloading = ກຳລັງດາວໂຫຼດເວີຊັນ { $version }… { $percent }%
+about-update-ready = ເວີຊັນ { $version } ພ້ອມຕິດຕັ້ງແລ້ວ
+about-update-ready-detail = Katna Mail ຈະເລີ່ມໃໝ່ເພື່ອສຳເລັດການອັບເດດ.
+about-update-confirm = ຕິດຕັ້ງເວີຊັນ { $version } ບໍ?
+about-update-confirm-detail = Katna Mail ຈະປິດ, ຕິດຕັ້ງການອັບເດດ, ແລ້ວເປີດຄືນຢູ່ບ່ອນທີ່ທ່ານຄ້າງໄວ້. ຄອມພິວເຕີຂອງທ່ານຈະຖາມຫາລະຫັດຜ່ານ.
+about-update-installing = ກຳລັງຕິດຕັ້ງເວີຊັນ { $version }…
+about-update-installing-detail = ພິມລະຫັດຜ່ານຂອງທ່ານໃນໜ້າຕ່າງທີ່ເປີດຂຶ້ນ.
+about-update-cancelled = ບໍ່ໄດ້ຕິດຕັ້ງການອັບເດດ ເພາະບໍ່ໄດ້ພິມລະຫັດຜ່ານ.
+about-update-failed = ຕິດຕັ້ງການອັບເດດບໍ່ໄດ້: { $error }
+about-update-unsupported = Katna Mail ສະບັບນີ້ອັບເດດໂດຍຕົວຈັດການແພັກເກດຂອງທ່ານ.
+about-update-restart-failed = ຕິດຕັ້ງການອັບເດດແລ້ວ, ແຕ່ Katna Mail ເປີດຄືນບໍ່ໄດ້ ({ $error }). ກະລຸນາເປີດມັນເອງ.
+about-update-check = ກວດຫາການອັບເດດ
+about-update-download = ດາວໂຫຼດ
+about-update-button = ອັບເດດ
+about-update-restart = ອັບເດດ ແລະ ເລີ່ມໃໝ່
+about-update-cancel = ບໍ່ເອົາຕອນນີ້
 about-changelog = ບັນທຶກການປ່ຽນແປງ
 about-source = ຊອສໂຄດ
 about-coffee = ລ້ຽງກາເຟຂ້ອຍຈອກໜຶ່ງ

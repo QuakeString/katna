@@ -925,3 +925,31 @@ da maɓallan zagaye ƙarƙashin sunan don rubuta wa mutumin, bincika saƙonku
 da su ko kiransu. "Tattaunawa na kwanan nan" tana lissafa 'yan kwanan nan;
 danna "Ƙari" don ganin sauran da "Kaɗan" don naɗe su.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "Akwatin amsa mai tsabta"
+text = """
+Yanzu masu karɓa suna bayyana tare da hotunansu, kuma Cc da Bcc suna
+zama tare a maɓalli ɗaya ƙarami. Buɗe masu karɓar amsa yana ƙara akwatin
+girma zuwa sama a hankali, kuma saƙon da aka ambato yana buɗewa da rufewa
+a hankali ƙarƙashin layin igiyar ruwa da za ku danna don sake naɗe shi.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "Inuwar taga mai laushi da maɓallai girman KDE"
+text = """
+Da firam na tagar Katna, inuwar da ke kewaye da tagar yanzu ta fi ƙunci
+kuma tana ɓacewa gaba ɗaya, ba tare da gefen ƙarfi da take barin gefen
+tagar ba a da. Maɓallan taga yanzu girman nasu na KDE ne, kuma suna nesa
+da gefen taga daidai yadda suke nesa da saman ta.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Sabunta Katna daga cikin manhajar"
+text = """
+Katna yanzu tana sauke sabbin sigogi da kanta kuma tana gaya muku lokacin
+da ɗaya ya shirya. Danna Sabunta a cikin sanarwar ko a Game da: Katna
+Mail za ta ce za ta sake kunnawa, ta nemi kalmar sirrinku, ta shigar da
+sabuntawa sannan ta sake buɗewa a inda kuka bari. Saituna > Gabaɗaya >
+Sabuntawa yana kashe saukewa ta atomatik.
+"""

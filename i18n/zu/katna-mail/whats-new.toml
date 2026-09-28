@@ -971,3 +971,32 @@ ubhalele lowo muntu, usesha imeyili yenu noma umshayele. Izingxoxo
 zakamuva zibalisa ezimbalwa zakamuva; cindezela Okuningi ukuze ubone
 ezinye, cindezela Okuncane ukuze uzigoqe.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "Ibhokisi lokuphendula elihlelwe kangcono"
+text = """
+Abamukeli manje babonakala nezithombe zabo, futhi i-Cc ne-Bcc kuhlala ndawonye
+kunkinobho eyodwa encane. Ukuvula abamukeli bempendulo kukhulisa ibhokisi
+ngokushelela phezulu, futhi umbhalo ocashuniwe uyavuleka futhi uvaleke
+ngokushelela ngaphansi komugqa onqamukayo ongawuchofoza ukuze uwugoqe futhi.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "Isithunzi sewindi esithambile kanye nezinkinobho zosayizi lwe-KDE"
+text = """
+Ngokusetshenziswa kohlaka lwewindi lwe-Katna, isithunzi esizungeze iwindi
+sesigxile futhi sicimile ngokuphelele, ngaphandle konqenqema oluqinile
+obelusala ngasohlangothini lwewindi. Izinkinobho zewindi manje sezingusayizi
+we-KDE ngokwayo, futhi zihlala kude ngokufanayo ohlangothini lwewindi
+njengasesicongweni salo.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Buyekeza i-Katna kusuka kuhlelo lokusebenza"
+text = """
+I-Katna manje ilanda izinguqulo ezintsha ngokwayo bese ikutshela lapho eyodwa
+isilungele. Cindezela u-Buyekeza esazisweni noma ku-Mayelana: i-Katna Mail
+izosho ukuthi izoqala kabusha, icele iphasiwedi yakho, ifake ukubuyekeza bese
+ivuleka futhi lapho oshiye khona. Izilungiselelo > Okuvamile > Izibuyekezo
+kucisha ukulanda okuzenzakalelayo.
+"""

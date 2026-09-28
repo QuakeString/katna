@@ -17,6 +17,10 @@ notify-no-reply-to = Babu wanda ya amsa “{ $subject }”.
 notify-tracking-opened = { $who } ya buɗe { $subject }
 notify-tracking-clicked = { $who } ya danna mahaɗi a cikin { $subject }
 
+notify-update-ready = Ana iya sabunta Katna Mail
+notify-update-ready-body = An sauke sigar { $version }. Sabunta yana shigar da ita kuma yana sake kunna Katna Mail.
+notify-update = Sabunta
+
 ## Its buttons
 
 notify-open = Buɗe

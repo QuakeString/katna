@@ -906,3 +906,30 @@ chọọ ozi ya ma ọ bụ kpọọ ya. Mkparịta ụka na-adịbeghị anya n
 ole na ole ikpeazụ; pịa Ọzọ ka ị hụ ndị fọdụrụ, pịa Ntakịrị ka ị
 zochie ha.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "Igbe azịza dị mma karị"
+text = """
+Ndị nnata na-egosi ugbu a ya na foto ha, Cc na Bcc na-anọkọ n'otu bọtịnụ nta.
+Imepe ndị nnata nke azịza na-eme ka igbe ahụ too elu nke ọma, ederede e hotara
+na-emepe na-emechikwa nke ọma n'okpuru otu ahịrị dị ka ebili mmiri nke ị nwere
+ike pịa ka ọ chịkọtaghachi ya.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "Onyinyo windo dị nro na bọtịnụ ha buru ibu dịka nke KDE"
+text = """
+Site na ngwaike windo Katna, onyinyo gburugburu windo na-adị nkọ ma na-apụ zuo
+oke, na-enweghị nsọtụ siri ike ọ hapụrụ n'akụkụ windo ahụ. Bọtịnụ windo ndị
+ahụ bụ ugbu a buru ibu dịka nke KDE, ma nọdụ n'ebe dị anya site n'akụkụ windo
+ahụ dịka o si dị anya site n'elu ya.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Melite Katna site na ngwa ahụ"
+text = """
+Katna na-ebudata ugbu a ụdị ọhụrụ n'onwe ya ma na-agwa gị mgbe otu dị njikere.
+Pịa Melite n'ọkwa ahụ ma ọ bụ na Maka Katna: Katna Mail ga-ekwu na ọ
+ga-amaligharị, jụọ okwuntughe gị, wụnye imelite ahụ wee meghee ọzọ n'ebe ị
+hapụrụ. Ntọala > Izugbe > Imelite na-agbanyụ nbudata na-akpaghị aka.
+"""

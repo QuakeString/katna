@@ -912,3 +912,32 @@ tròn dưới tên để gửi email cho người đó, tìm thư với họ ho�
 họ. Cuộc hội thoại gần đây hiện vài cuộc mới nhất; nhấn Thêm để xem
 phần còn lại và Thu gọn để ẩn chúng lại.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "Hộp trả lời gọn gàng hơn"
+text = """
+Người nhận giờ đây hiển thị cùng ảnh đại diện của họ, còn Cc và Bcc
+được gộp vào một nút nhỏ. Mở danh sách người nhận của một trả lời sẽ
+làm hộp mở rộng lên trên một cách mượt mà, và tin nhắn được trích dẫn
+mở ra và đóng lại mượt mà bên dưới một đường lượn sóng mà bạn có thể
+nhấp để gấp nó lại.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "Bóng cửa sổ mềm hơn và các nút cỡ như KDE"
+text = """
+Với khung cửa sổ của Katna, bóng quanh cửa sổ giờ hẹp hơn và mờ dần
+hoàn toàn, không còn viền cứng mà trước đây để lại bên cạnh cửa sổ.
+Các nút cửa sổ giờ có kích thước như của KDE, và cách mép cửa sổ một
+khoảng bằng khoảng cách tới đỉnh của nó.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Cập nhật Katna ngay trong ứng dụng"
+text = """
+Giờ đây Katna tự tải xuống các phiên bản mới và báo cho bạn biết khi
+có bản sẵn sàng. Nhấn Cập nhật trong thông báo hoặc trong Giới thiệu:
+Katna Mail sẽ báo rằng nó sắp khởi động lại, hỏi mật khẩu của bạn, cài
+đặt bản cập nhật rồi mở lại đúng chỗ bạn đang dừng. Cài đặt > Chung >
+Cập nhật tắt việc tự động tải xuống.
+"""

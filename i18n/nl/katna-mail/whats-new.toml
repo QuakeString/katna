@@ -941,3 +941,32 @@ ronde knoppen onder de naam om de persoon te mailen, je mail met hen te
 vinden of te bellen. Recente gesprekken toont de laatste paar; druk op Meer
 om de rest te zien en op Minder om ze weer in te klappen.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "Een opgeruimder antwoordvak"
+text = """
+Ontvangers tonen nu met hun foto, en Cc en Bcc staan samen in één kleine
+knop. Het openen van de ontvangers van een antwoord laat het vak soepel
+omhoog groeien, en het geciteerde bericht opent en sluit soepel onder een
+golvende lijn waarop je kunt klikken om het weer in te klappen.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "Een zachtere vensterschaduw en KDE-grote knoppen"
+text = """
+Met het Katna-vensterkader is de schaduw rond het venster strakker en
+vervaagt volledig, zonder de harde rand die hij vroeger naast het venster
+achterliet. De vensterknoppen hebben nu dezelfde grootte als die van KDE,
+en houden evenveel afstand tot de zijkant van het venster als tot de
+bovenkant.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Werk Katna vanuit de app bij"
+text = """
+Katna downloadt nu zelf nieuwe versies en laat het weten zodra er een
+klaarstaat. Druk op Bijwerken in de melding of in Over Katna: Katna Mail
+laat weten dat het herstart, vraagt om je wachtwoord, installeert de update
+en opent opnieuw waar je gebleven was. Instellingen > Algemeen > Updates
+schakelt het automatisch downloaden uit.
+"""

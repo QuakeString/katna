@@ -14,6 +14,10 @@ notify-no-reply-to = Hakuna aliyejibu “{ $subject }”.
 notify-tracking-opened = { $who } amefungua { $subject }
 notify-tracking-clicked = { $who } amebofya kiungo katika { $subject }
 
+notify-update-ready = Katna Mail inaweza kusasishwa
+notify-update-ready-body = Toleo { $version } limepakuliwa. Sasisha huliweka na kuanzisha upya Katna Mail.
+notify-update = Sasisha
+
 ## Its buttons
 
 notify-open = Fungua

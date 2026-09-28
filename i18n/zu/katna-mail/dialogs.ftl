@@ -7,6 +7,31 @@
 about-tooltip = Mayelana ne-Katna
 about-tagline = Imeyili nekhalenda yedeskithophu ye-Linux
 about-whats-new = Okusha
+
+## Updates, in a box under the version in About (only in packages that
+## update themselves).
+
+about-update-not-checked = Izibuyekezo azikaqinisekiswa
+about-update-checking = Iqinisekisa izibuyekezo…
+about-update-up-to-date = I-Katna Mail isesimweni esisha
+about-update-check-failed = Ayikwazanga ukuqinisekisa izibuyekezo
+about-update-available = Inguqulo { $version } iyatholakala
+about-update-downloading = Ilanda inguqulo { $version }… { $percent }%
+about-update-ready = Inguqulo { $version } isilungele ukufakwa
+about-update-ready-detail = I-Katna Mail izoqala kabusha ukuze iqedele ukubuyekeza.
+about-update-confirm = Faka inguqulo { $version }?
+about-update-confirm-detail = I-Katna Mail izovaleka, ifake ukubuyekeza bese ivuleka futhi lapho oshiye khona. Ikhompyutha yakho izocela iphasiwedi yakho.
+about-update-installing = Ifaka inguqulo { $version }…
+about-update-installing-detail = Faka iphasiwedi yakho ewindini elivuliwe.
+about-update-cancelled = Ukubuyekeza akufakwanga, ngoba iphasiwedi ayinikezwanga.
+about-update-failed = Ukubuyekeza akukwazanga ukufakwa: { $error }
+about-update-unsupported = Le khophi ye-Katna Mail ibuyekezwa umphathi wephakheji yakho.
+about-update-restart-failed = Ukubuyekeza sekufakiwe, kodwa i-Katna Mail ayikwazanga ukuvuleka futhi ({ $error }). Yivule ngokwakho.
+about-update-check = Qinisekisa izibuyekezo
+about-update-download = Landa
+about-update-button = Buyekeza
+about-update-restart = Buyekeza uphinde uqale kabusha
+about-update-cancel = Hhayi manje
 about-changelog = Uhlu lwezinguquko
 about-source = Ikhodi yomthombo
 about-coffee = Ngithengele ikhofi

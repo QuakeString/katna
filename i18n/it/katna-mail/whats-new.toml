@@ -949,3 +949,33 @@ morbida, con pulsanti rotondi sotto il nome per scrivere alla persona,
 cercare la tua posta con lei o chiamarla. Conversazioni recenti mostra le
 ultime; premi Altro per vedere il resto e Meno per richiuderle.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "Una casella di risposta più ordinata"
+text = """
+I destinatari ora mostrano la loro immagine, e Cc e Ccn stanno insieme in
+un unico piccolo pulsante. Aprire i destinatari di una risposta fa
+crescere la casella verso l’alto in modo fluido, e il messaggio citato si
+apre e si chiude in modo fluido sotto una linea ondulata su cui puoi fare
+clic per richiuderlo di nuovo.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "Un’ombra della finestra più morbida e pulsanti grandi come quelli di KDE"
+text = """
+Con la cornice della finestra di Katna, l’ombra intorno alla finestra è
+più stretta e sfuma del tutto, senza il bordo netto che lasciava prima
+accanto alla finestra. I pulsanti della finestra ora hanno la stessa
+dimensione di quelli di KDE, e stanno alla stessa distanza dal lato della
+finestra e dalla sua parte superiore.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Aggiorna Katna dall’app"
+text = """
+Katna ora scarica da solo le nuove versioni e ti avvisa quando una è
+pronta. Premi Aggiorna nella notifica o in Informazioni su Katna: Katna
+Mail avvisa che si riavvierà, chiede la tua password, installa
+l’aggiornamento e si apre di nuovo da dove avevi interrotto. Impostazioni >
+Generali > Aggiornamenti disattiva lo scaricamento automatico.
+"""

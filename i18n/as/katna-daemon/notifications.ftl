@@ -13,6 +13,9 @@ notify-no-reply = এতিয়াও কোনো উত্তৰ নাই
 notify-no-reply-to = “{ $subject }”ৰ উত্তৰ কোনেও দিয়া নাই।
 notify-tracking-opened = { $who }-এ { $subject } খুলিছে
 notify-tracking-clicked = { $who }-এ { $subject }ত থকা এটা লিংকত ক্লিক কৰিছে
+notify-update-ready = Katna Mail আপডেট কৰিব পাৰি
+notify-update-ready-body = সংস্কৰণ { $version } ডাউনল'ড হৈ গৈছে। আপডেটে ইয়াক ইনষ্টল কৰে আৰু Katna Mail ৰিষ্টাৰ্ট কৰে।
+notify-update = আপডেট
 
 ## Its buttons
 

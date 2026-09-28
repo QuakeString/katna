@@ -917,3 +917,32 @@ knappar under namnet för att skriva till personen, hitta din e-post med dem
 eller ringa. Senaste konversationer visar de senaste; tryck på Mer för att
 se resten och på Mindre för att fälla ihop dem.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "En snyggare svarsruta"
+text = """
+Mottagare visas nu med sina bilder, och Kopia och Dold kopia ligger
+tillsammans i en liten knapp. Att öppna mottagarna för ett svar gör att
+rutan mjukt växer uppåt, och det citerade meddelandet öppnas och stängs
+mjukt under en vågig linje som du kan klicka på för att fälla ihop det
+igen.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "En mjukare fönsterskugga och knappar i KDE-storlek"
+text = """
+Med Katnas fönsterram är skuggan runt fönstret smalare och tonas bort
+helt, utan den hårda kant den tidigare lämnade bredvid fönstret.
+Fönsterknapparna har nu samma storlek som KDE:s egna, och håller lika
+långt avstånd till fönstrets sida som till dess topp.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Uppdatera Katna från appen"
+text = """
+Katna hämtar nu nya versioner av sig själv och säger till dig när en är
+redo. Tryck på Uppdatera i aviseringen eller i Om Katna: Katna Mail
+berättar att det kommer starta om, ber om ditt lösenord, installerar
+uppdateringen och öppnas igen där du var. Inställningar > Allmänt >
+Uppdateringar stänger av den automatiska hämtningen.
+"""

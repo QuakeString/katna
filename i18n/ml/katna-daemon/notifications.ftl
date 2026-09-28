@@ -17,6 +17,12 @@ notify-no-reply-to = “{ $subject }” എന്നതിന് ആരും �
 notify-tracking-opened = { $who } { $subject } തുറന്നു
 notify-tracking-clicked = { $who } { $subject }-ലെ ഒരു ലിങ്കിൽ ക്ലിക്ക് ചെയ്തു
 
+## An update of Katna is downloaded and ready to install
+
+notify-update-ready = Katna Mail അപ്‌ഡേറ്റ് ചെയ്യാം
+notify-update-ready-body = പതിപ്പ് { $version } ഡൗൺലോഡ് ചെയ്തു. അപ്‌ഡേറ്റ് അത് ഇൻസ്റ്റാൾ ചെയ്ത് Katna Mail റീസ്റ്റാർട്ട് ചെയ്യും.
+notify-update = അപ്‌ഡേറ്റ്
+
 ## Its buttons
 
 notify-open = തുറക്കുക

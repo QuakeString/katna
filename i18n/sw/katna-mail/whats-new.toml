@@ -943,3 +943,32 @@ barua pepe mtu huyo, kutafuta barua zako naye au kumpigia simu.
 "Mazungumzo ya hivi karibuni" huorodhesha machache ya hivi karibuni; bofya
 "Zaidi" kuona yaliyobaki na "Chache" kuyakunja tena.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "Kisanduku cha kujibu kilicho safi zaidi"
+text = """
+Sasa wapokeaji wanaonyeshwa na picha zao, na Cc na Bcc hukaa pamoja
+kwenye kitufe kimoja kidogo. Kufungua wapokeaji wa jibu hukuza kisanduku
+juu kwa upole, na ujumbe uliyonukuliwa hufunguka na kufungwa kwa upole
+chini ya mstari wa mawimbi unaoweza kubofya ili kuukunja tena.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "Kivuli laini zaidi cha dirisha na vitufe vya ukubwa wa KDE"
+text = """
+Kwa fremu ya dirisha ya Katna, kivuli kinachozunguka dirisha kinakuwa
+finyu zaidi na kufifia kikamilifu, bila ile kingo ngumu ambayo hapo awali
+iliacha kando ya dirisha. Vitufe vya dirisha sasa vina ukubwa wa vile vya
+KDE mwenyewe, na hukaa mbali na kando ya dirisha kama vile vilivyo mbali
+na sehemu yake ya juu.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Sasisha Katna kutoka kwenye programu"
+text = """
+Katna sasa hupakua matoleo mapya yenyewe na kukuambia toleo linapokuwa
+tayari. Bofya Sasisha kwenye arifa au kwenye Kuhusu: Katna Mail itasema
+itaanza upya, itauliza nenosiri lako, itasakinisha sasisho na kufunguka
+tena mahali ulipoacha. Mipangilio > Jumla > Masasisho huzima upakuaji wa
+kiotomatiki.
+"""

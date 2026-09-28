@@ -936,3 +936,32 @@ yazışmaları arayabilir ya da onu arayabilirsiniz. Son ileti dizileri
 en yeni birkaçını listeler; hepsini görmek için Daha fazla'ya,
 gizlemek için Daha az'a basın.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "Daha derli toplu yanıt kutusu"
+text = """
+Alıcılar artık resimleriyle gösteriliyor, Bilgi ve Gizli ise tek küçük
+bir düğmede birleşti. Bir yanıtın alıcılarını açmak kutuyu yumuşakça
+yukarı doğru büyütüyor, alıntılanan iletiyse tıklayarak tekrar
+katlayabileceğiniz dalgalı bir çizginin altında yumuşakça açılıp
+kapanıyor.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "Daha yumuşak pencere gölgesi ve KDE boyutunda düğmeler"
+text = """
+Katna pencere çerçevesiyle, pencerenin çevresindeki gölge daralıyor
+ve pencerenin yanında bıraktığı sert kenar olmadan tamamen sönümleniyor.
+Pencere düğmeleri artık KDE'nin kendi düğmeleri boyutunda ve pencerenin
+kenarından, üstünden olduğu kadar uzakta duruyor.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Katna'yı uygulama içinden güncelleyin"
+text = """
+Katna artık yeni sürümleri kendiliğinden indiriyor ve biri hazır
+olduğunda size bildiriyor. Bildirimde veya Hakkında'da Güncelle'ye
+basın: Katna Mail yeniden başlayacağını söyler, parolanızı ister,
+güncellemeyi kurar ve kaldığınız yerden yeniden açılır. Ayarlar > Genel >
+Güncellemeler otomatik indirmeyi kapatır.
+"""

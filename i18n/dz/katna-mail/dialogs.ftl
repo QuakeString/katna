@@ -7,6 +7,31 @@
 about-tooltip = Katna གི་སྐོར་ལས
 about-tagline = Linux ཌེཀསི་ཊོཔ་གི་དོན་ལུ་ གློག་འཕྲིན་དང་ཟླ་ཐོ
 about-whats-new = གསརཔ་ག་ཅི་ཡོདཔ
+
+## Updates, in a box under the version in About (only in packages that
+## update themselves).
+
+about-update-not-checked = དུས་མཐུན་བཟོ་ནི་ཚུ་ ད་ལྟོ་ཚུན་ཞིབ་དཔྱད་མ་འབད་བས།
+about-update-checking = དུས་མཐུན་བཟོ་ནི་ཚུ་ཞིབ་དཔྱད་འབད་དོ…
+about-update-up-to-date = Katna Mail དུས་མཐུན་ཨིན།
+about-update-check-failed = དུས་མཐུན་བཟོ་ནི་ཚུ་ཞིབ་དཔྱད་འབད་མ་ཚུགས།
+about-update-available = ཐོན་རིམ་ { $version } འཐོབ་ཚུགསཔ་ཨིན།
+about-update-downloading = ཐོན་རིམ་ { $version } ཕབ་ལེན་འབད་དོ… { $percent }%
+about-update-ready = ཐོན་རིམ་ { $version } གཞི་བཙུགས་འབད་ནི་ལུ་གྲ་སྒྲིག་ཨིན།
+about-update-ready-detail = དུས་མཐུན་བཟོ་ནི་མཇུག་བསྡུ་ནི་ལུ་ Katna Mail ལོག་འགོ་བཙུགསཔ་ཨིན།
+about-update-confirm = ཐོན་རིམ་ { $version } གཞི་བཙུགས་འབད་ནི་ཨིན་ན?
+about-update-confirm-detail = Katna Mail ཁ་བསྡམས་དེ་ དུས་མཐུན་བཟོ་ནི་གཞི་བཙུགས་འབད་ཞིནམ་ལས་ ཁྱོད་ཀྱིས་བར་སྟོང་བཞག་སའི་ས་གནས་ལས་ལོག་འགོ་བཙུགསཔ་ཨིན། ཁྱོད་ཀྱི་གློག་རིག་གིས་ཁྱོད་ཀྱི་ཆོག་ཡིག་འདྲི་འོང་།
+about-update-installing = ཐོན་རིམ་ { $version } གཞི་བཙུགས་འབད་དོ…
+about-update-installing-detail = ཁ་ཕྱེ་ཡོད་པའི་སྒོ་སྒྲིག་ནང་ ཁྱོད་ཀྱི་ཆོག་ཡིག་བཙུགས།
+about-update-cancelled = ཆོག་ཡིག་མ་བྱིན་པའི་དོན་ལུ་ དུས་མཐུན་བཟོ་ནི་གཞི་བཙུགས་མ་འབད།
+about-update-failed = དུས་མཐུན་བཟོ་ནི་གཞི་བཙུགས་འབད་མ་ཚུགས: { $error }
+about-update-unsupported = Katna Mail་གི་འདྲ་བཤུས་འདི་ ཁྱོད་ཀྱི་ཐུམ་སྒྲིལ་འཛིན་སྐྱོང་པ་གིས་དུས་མཐུན་བཟོཝ་ཨིན།
+about-update-restart-failed = དུས་མཐུན་བཟོ་ནི་གཞི་བཙུགས་འབད་ཡི, འདི་འབདཝ་ད་ Katna Mail ལོག་ཁ་ཕྱེ་མ་ཚུགས ({ $error })། རང་གིས་ཁ་ཕྱེ།
+about-update-check = དུས་མཐུན་བཟོ་ནི་ཚུ་ཞིབ་དཔྱད་འབད།
+about-update-download = ཕབ་ལེན་འབད།
+about-update-button = དུས་མཐུན་བཟོ།
+about-update-restart = དུས་མཐུན་བཟོ་སྟེ་ལོག་འགོ་བཙུགས།
+about-update-cancel = ད་ལྟོ་མེན།
 about-changelog = བསྒྱུར་བཅོས་ཐོ་ཡིག
 about-source = འབྱུང་ཁུངས་ཨང་རྟགས
 about-coffee = ང་ལུ་ ཀོ་ཕི་ཅིག་ཉོ་བྱིན།
