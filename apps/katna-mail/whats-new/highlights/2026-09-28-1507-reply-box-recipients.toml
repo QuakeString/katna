@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A tidier reply box"
+text = """
+Recipients now show with their pictures, and Cc and Bcc sit together in one
+small button. Opening the recipients of a reply grows the box upwards
+smoothly, and the quoted message opens and closes smoothly under a wavy line
+you can click to fold it away again.
+"""

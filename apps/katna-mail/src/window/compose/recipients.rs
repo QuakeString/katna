@@ -17,7 +17,7 @@ use gpui::{
 };
 use katna_search::contacts::{ContactBook, Suggestion};
 use katna_ui::px;
-use katna_ui::text_input::{Backspace, Cancel, Delete, Down, Submit, Up};
+use katna_ui::text_input::{Backspace, Cancel, Delete, Down, Left, Right, Submit, Up};
 
 use super::super::FocusNext;
 use super::MailWindow;
@@ -253,7 +253,25 @@ impl MailWindow {
             .on_drop(
                 cx.listener(move |this, drag: &ChipDrag, _, cx| this.drop_chip(drag, field, cx)),
             )
-            .capture_key_down(cx.listener(|this, _: &KeyDownEvent, _, cx| this.chip_other_key(cx)))
+            .capture_key_down(cx.listener(|this, event: &KeyDownEvent, _, cx| {
+                // Those keys act on the selected chip themselves.
+                let key = event.keystroke.key.as_str();
+                if !matches!(key, "left" | "right" | "backspace" | "delete")
+                    || event.keystroke.modifiers.modified()
+                {
+                    this.chip_other_key(cx);
+                }
+            }))
+            .capture_action(cx.listener(move |this, _: &Left, _, cx| {
+                if this.chip_arrow(field, true, cx) {
+                    cx.stop_propagation();
+                }
+            }))
+            .capture_action(cx.listener(move |this, _: &Right, _, cx| {
+                if this.chip_arrow(field, false, cx) {
+                    cx.stop_propagation();
+                }
+            }))
             .capture_action(cx.listener(move |this, _: &Backspace, _, cx| {
                 if this.chip_backspace(field, false, cx) {
                     cx.stop_propagation();

@@ -6,13 +6,17 @@
 //! the reply icon turns the message into a reply, a reply to all or a
 //! forward, keeping what was written.
 
+use std::cell::{Cell, RefCell};
+use std::rc::Rc;
+use std::time::{Duration, Instant};
+
 use gpui::{
-    AnyElement, Context, Focusable, MouseButton, Window, anchored, deferred, div, point,
-    prelude::*, rgba, svg,
+    AnyElement, Context, Div, Focusable, MouseButton, Task, Window, anchored, canvas, deferred,
+    div, point, prelude::*, rgba, svg,
 };
 use katna_i18n::tr;
-use katna_ui::px;
 use katna_ui::rich::{Block, Doc};
+use katna_ui::{px, unpx};
 
 use super::super::MailWindow;
 use super::chips::Chip;
@@ -27,6 +31,46 @@ use crate::widgets::{icon, menu, menu_item_icon, tip};
 const FORWARDED: &str = "---------- Forwarded message ---------";
 /// The height of the notch on the kind menu, pointing at its button.
 const NOTCH: f32 = 8.0;
+
+/// How long the rows take to grow in or shrink away.
+const ROWS_GLIDE: Duration = Duration::from_millis(200);
+/// How near the top of the conversation the card may go as it grows.
+const CARD_ROOM: f32 = 12.0;
+
+/// The rows of an inline reply's head growing in or shrinking away, the
+/// card growing upwards: the conversation scrolls by as much as they grow.
+#[derive(Default)]
+pub(in crate::window) struct RowsGlide {
+    /// Whether the rows were open when last drawn.
+    was_open: Cell<Option<bool>>,
+    /// Their height, measured while they show.
+    natural: Rc<Cell<f32>>,
+    /// How far the conversation scrolled on as they opened, to scroll
+    /// back as they close.
+    lifted: Cell<f32>,
+    run: RefCell<Option<RowsRun>>,
+}
+
+struct RowsRun {
+    opening: bool,
+    /// Opening, it starts once the rows were measured.
+    start: Cell<Option<Instant>>,
+    /// The height the rows were last drawn at.
+    drawn: Cell<f32>,
+    _tick: Task<()>,
+}
+
+impl RowsRun {
+    /// How much of the rows shows, 0 to 1, and whether it is over.
+    fn shown(&self) -> (f32, bool) {
+        let Some(start) = self.start.get() else {
+            return (if self.opening { 0.0 } else { 1.0 }, false);
+        };
+        let t = (start.elapsed().as_secs_f32() / ROWS_GLIDE.as_secs_f32()).min(1.0);
+        let eased = 1.0 - (1.0 - t).powi(3);
+        (if self.opening { eased } else { 1.0 - eased }, t >= 1.0)
+    }
+}
 
 /// What a chip shows in the one-line head: the name and the address, or
 /// only the name when there are several.
@@ -78,6 +122,124 @@ impl MailWindow {
                     .iter()
                     .all(|f| c.chips.get(*f).is_empty())
         })
+    }
+
+    /// Starts the rows growing in or shrinking away when `open` changed
+    /// since they were last drawn; how much of them shows while they do.
+    pub(super) fn rows_shown(&self, open: bool, cx: &mut Context<Self>) -> Option<f32> {
+        let compose = self.compose.as_ref()?;
+        let glide = &compose.rows_glide;
+        let was = glide.was_open.replace(Some(open));
+        if was == Some(!open) && !cx.reduce_motion() {
+            let tick = cx.spawn(async |this, cx| {
+                loop {
+                    cx.background_executor()
+                        .timer(Duration::from_millis(16))
+                        .await;
+                    if this.update(cx, |_, cx| cx.notify()).is_err() {
+                        break;
+                    }
+                }
+            });
+            let natural = if open { 0.0 } else { glide.natural.get() };
+            *glide.run.borrow_mut() = Some(RowsRun {
+                opening: open,
+                start: Cell::new((!open).then(Instant::now)),
+                drawn: Cell::new(natural),
+                _tick: tick,
+            });
+            if open {
+                glide.natural.set(0.0);
+                glide.lifted.set(0.0);
+            }
+        }
+        let mut run = glide.run.borrow_mut();
+        let shown = run.as_ref().map(|run| {
+            if run.start.get().is_none() && glide.natural.get() > 0.0 {
+                run.start.set(Some(Instant::now()));
+            }
+            run.shown()
+        });
+        match shown {
+            Some((_, true)) => {
+                *run = None;
+                if !open {
+                    glide.natural.set(0.0);
+                }
+                None
+            }
+            Some((shown, false)) => Some(shown),
+            None => None,
+        }
+    }
+
+    /// The rows, cut to how much of them shows while they glide; the
+    /// conversation scrolls by what they grew so the card's bottom stays.
+    pub(super) fn glide_rows(
+        &self,
+        rows: Div,
+        shown: Option<f32>,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let Some(compose) = &self.compose else {
+            return rows.into_any_element();
+        };
+        let glide = &compose.rows_glide;
+        let (natural, this) = (glide.natural.clone(), cx.entity().downgrade());
+        let measure = canvas(
+            move |bounds, _, cx| {
+                let height = unpx(bounds.size.height);
+                if natural.get() != height {
+                    natural.set(height);
+                    let this = this.clone();
+                    cx.defer(move |cx| {
+                        this.update(cx, |_, cx| cx.notify()).ok();
+                    });
+                }
+            },
+            |_, _, _, _| {},
+        )
+        .absolute()
+        .top_0()
+        .left_0()
+        .size_full();
+        let rows = rows.relative().child(measure);
+        let (Some(shown), Some(run)) =
+            (shown, glide.run.borrow().as_ref().map(|r| r.drawn.clone()))
+        else {
+            return rows.into_any_element();
+        };
+        let height = glide.natural.get() * shown;
+        let grown = height - run.replace(height);
+        if grown != 0.0 {
+            // Scrolled on by as much, the card's bottom stays where it was
+            // and its top goes up, as long as the top stays in sight;
+            // closing, it scrolls back as far. The Send row placed from the
+            // last frame moves with the rows.
+            let offset = unpx(self.reader_scroll.offset().y);
+            let mut at = compose.stick.get();
+            let lift = if grown > 0.0 {
+                let room = (at.card_top + offset - CARD_ROOM).max(0.0);
+                grown.min(room)
+            } else {
+                -(-grown).min(glide.lifted.get())
+            };
+            glide.lifted.set(glide.lifted.get() + lift);
+            if lift != 0.0 {
+                let y = (offset - lift).min(0.0);
+                self.reader_scroll
+                    .set_offset(point(self.reader_scroll.offset().x, px(y)));
+            }
+            at.footer_top += grown;
+            compose.stick.set(at);
+        }
+        div()
+            .flex_none()
+            .h(px(height))
+            .overflow_hidden()
+            .opacity(shown)
+            .child(rows)
+            .into_any_element()
     }
 
     /// Opens the rows of the inline reply's head, with the cursor in To.

@@ -9,7 +9,8 @@
 
 use crate::desktop::Preset;
 
-/// One box shadow layer, CSS order: x, y, blur, spread, color.
+/// One box shadow layer, CSS order: x, y, blur, spread, color. As in CSS,
+/// `blur` is twice the Gaussian's standard deviation.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Shadow {
     pub x: f32,
@@ -17,6 +18,15 @@ pub struct Shadow {
     pub blur: f32,
     pub spread: f32,
     pub color: u32,
+}
+
+impl Shadow {
+    /// How far past the window's edge the shadow reaches before it has
+    /// faded out: three standard deviations of its blur, plus its spread and
+    /// offset.
+    pub fn reach(&self) -> f32 {
+        1.5 * self.blur + self.spread + self.x.abs().max(self.y.abs())
+    }
 }
 
 /// How window buttons look.
@@ -89,15 +99,15 @@ impl ChromeTokens {
             Shadow {
                 x: 0.0,
                 y: 3.0,
-                blur: 20.0,
-                spread: 10.0,
+                blur: 16.0,
+                spread: 4.0,
                 color: 0x00000017,
             },
             Shadow {
                 x: 0.0,
-                y: 6.0,
-                blur: 32.0,
-                spread: 16.0,
+                y: 4.0,
+                blur: 24.0,
+                spread: 4.0,
                 color: 0x00000008,
             },
         ];
@@ -133,8 +143,7 @@ impl ChromeTokens {
             preset: Preset::AdwaitaLike,
             dark,
             window_radius: 12.0,
-            // Covers the largest layer (6 + 32 + 16) on the sides; the
-            // bottom edge of the farthest layer is clipped by 6 px.
+            // Every layer fades out inside it (`shadows_fade_inside_the_margin`).
             shadow_inset: 48.0,
             shadow_focused,
             shadow_unfocused,
@@ -184,9 +193,9 @@ impl ChromeTokens {
             shadow_focused: [
                 Shadow {
                     x: 0.0,
-                    y: 6.0,
-                    blur: 24.0,
-                    spread: 2.0,
+                    y: 3.0,
+                    blur: 16.0,
+                    spread: 0.0,
                     color: 0x00000040,
                 },
                 none,
@@ -195,8 +204,8 @@ impl ChromeTokens {
             shadow_unfocused: [
                 Shadow {
                     x: 0.0,
-                    y: 4.0,
-                    blur: 12.0,
+                    y: 2.0,
+                    blur: 10.0,
                     spread: 0.0,
                     color: 0x00000026,
                 },
@@ -209,16 +218,16 @@ impl ChromeTokens {
             sidebar_bg: window_bg,
             fg,
             fg_dim: with_alpha(fg, 0x99),
-            header_height: 30.0,
+            header_height: 36.0,
             header_bg,
             header_bg_unfocused,
             header_shade: with_alpha(fg, 0x26),
             title_weight: 400,
             title_size: 13.3,
             button_style: ButtonStyle::Flat,
-            button_size: 18.0,
-            button_icon_size: 16.0,
-            button_gap: 6.0,
+            button_size: 24.0,
+            button_icon_size: 22.0,
+            button_gap: 8.0,
             button_bg: 0x00000000,
             button_bg_hover: with_alpha(fg, 0x33),
             button_bg_active: with_alpha(fg, 0x55),
@@ -226,6 +235,19 @@ impl ChromeTokens {
             close_fg_hover: 0xffffffff,
             accent: 0x3daee9ff,
         }
+    }
+}
+
+impl ChromeTokens {
+    /// Breeze's buttons at `size` logical pixels across, with its icon,
+    /// spacing and header height following (`crate::breeze`).
+    pub fn with_button_size(mut self, size: f32) -> Self {
+        let size = size.round().max(12.0);
+        self.button_size = size;
+        self.button_icon_size = (size * 11.0 / 12.0).round();
+        self.button_gap = (size / 3.0).round();
+        self.header_height = self.header_height.max(size + 12.0);
+        self
     }
 }
 
@@ -311,6 +333,20 @@ pub const fn with_alpha(rgba: u32, alpha: u8) -> u32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// A shadow cut off by the edge of the surface shows as a hard line
+    /// around the window.
+    #[test]
+    fn shadows_fade_inside_the_margin() {
+        for preset in [Preset::AdwaitaLike, Preset::BreezeLike] {
+            for dark in [false, true] {
+                let t = ChromeTokens::new(preset, dark);
+                for s in t.shadow_focused.iter().chain(&t.shadow_unfocused) {
+                    assert!(s.reach() <= t.shadow_inset, "{preset:?}: {s:?}");
+                }
+            }
+        }
+    }
 
     #[test]
     fn recolored_keeps_shapes() {
