@@ -169,7 +169,11 @@ fn store_message(
         category: Some(parsed.category),
     };
     let mut batch = store.mail_batch()?;
-    batch.add_pop3_message(account, inbox, uidl, &new, now)?;
+    if let katna_store::Added::Message(id) =
+        batch.add_pop3_message(account, inbox, uidl, &new, now)?
+    {
+        crate::engine::record_auth_results(&mut batch, id, raw, &parsed.participants)?;
+    }
     batch.commit()?;
     Ok(())
 }

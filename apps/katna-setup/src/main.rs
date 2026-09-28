@@ -71,8 +71,9 @@ struct Args {
     delete_data: bool,
     dir: Option<PathBuf>,
     choices: Choices,
-    /// Where a Setup running as administrator writes how far it got.
-    progress: Option<PathBuf>,
+    /// The process ID of the Setup waiting for this one, running as
+    /// administrator, to say how far it got (`install::write_progress`).
+    progress: Option<u32>,
 }
 
 impl Args {
@@ -89,7 +90,7 @@ impl Args {
                 "--no-start-menu" => out.choices.start_menu = false,
                 "--no-autostart" => out.choices.autostart = false,
                 "--dir" => out.dir = args.next().map(PathBuf::from),
-                "--progress" => out.progress = args.next().map(PathBuf::from),
+                "--progress" => out.progress = args.next().and_then(|id| id.parse().ok()),
                 _ => {}
             }
         }
@@ -107,18 +108,14 @@ impl Args {
 
 /// The arguments that make a Setup running as administrator do what this
 /// one would: install `layout` with `choices`, or update it.
-fn elevated_args(
-    layout: &Layout,
-    choices: Option<Choices>,
-    progress: &std::path::Path,
-) -> Vec<String> {
+fn elevated_args(layout: &Layout, choices: Option<Choices>, progress: u32) -> Vec<String> {
     let mut args = vec![
         "--quiet".to_owned(),
         "--all-users".to_owned(),
         "--dir".to_owned(),
         layout.programs.display().to_string(),
         "--progress".to_owned(),
-        progress.display().to_string(),
+        progress.to_string(),
     ];
     match choices {
         None => args.push("--update".to_owned()),
@@ -242,11 +239,15 @@ fn quiet(args: &Args, payload: &Payload<'_>) -> std::io::Result<()> {
         return Err(std::io::Error::other(tr!("setup-empty")));
     }
     let choices = (!args.update).then_some(args.choices);
-    install::install(&layout, payload, VERSION, choices, &|step| {
-        if let Some(file) = &args.progress {
-            let _ = std::fs::write(file, step_line(step));
+    let installed = install::install(&layout, payload, VERSION, choices, &|step| {
+        if let Some(id) = args.progress {
+            install::write_progress(id, &step_line(step));
         }
-    })
+    });
+    if let Some(id) = args.progress {
+        install::clear_progress(id);
+    }
+    installed
 }
 
 /// What the window shows.
@@ -335,7 +336,7 @@ impl Setup {
     }
 
     fn install(&mut self, cx: &mut Context<Self>) {
-        let layout = match self.target() {
+        let layout = match self.target().and_then(|l| l.check_folder().map(|()| l)) {
             Ok(layout) => layout,
             Err(err) => {
                 self.screen = Screen::Failed(err.to_string());
@@ -348,19 +349,15 @@ impl Setup {
         *self.progress.lock().unwrap() = None;
         let (shared_step, result) = (step.clone(), self.progress.clone());
         if layout.scope == Scope::Machine && !install::elevated() {
-            // A second Setup does the work as administrator and writes
-            // how far it got to a file this one reads.
-            let file = std::env::temp_dir().join(format!("katna-setup-{}.txt", std::process::id()));
-            let _ = std::fs::remove_file(&file);
-            let args = elevated_args(&layout, choices, &file);
-            let (watched, stop) = (file.clone(), Arc::new(Mutex::new(false)));
+            // A second Setup does the work as administrator and records
+            // how far it got where this one reads it.
+            let id = std::process::id();
+            let args = elevated_args(&layout, choices, id);
+            let stop = Arc::new(Mutex::new(false));
             let stopped = stop.clone();
             std::thread::spawn(move || {
                 while !*stopped.lock().unwrap() {
-                    if let Some(now) = std::fs::read_to_string(&watched)
-                        .ok()
-                        .and_then(|l| parse_step(&l))
-                    {
+                    if let Some(now) = install::read_progress(id).and_then(|l| parse_step(&l)) {
                         *shared_step.lock().unwrap() = now;
                     }
                     std::thread::sleep(Duration::from_millis(100));
@@ -373,7 +370,6 @@ impl Setup {
                     Err(_) => Err(tr!("setup-everyone-refused")),
                 };
                 *stop.lock().unwrap() = true;
-                let _ = std::fs::remove_file(&file);
                 *result.lock().unwrap() = Some(done);
             });
         } else {
@@ -1034,13 +1030,14 @@ mod tests {
             start_menu: false,
             autostart: false,
         };
-        let args = elevated_args(&layout, Some(choices), std::path::Path::new("/tmp/p"));
+        let args = elevated_args(&layout, Some(choices), 42);
         let parsed = Args::parse(args.into_iter());
         assert!(parsed.quiet && parsed.all_users && !parsed.update);
         assert_eq!(parsed.choices, choices);
         assert_eq!(parsed.dir.as_deref(), Some(layout.programs.as_path()));
+        assert_eq!(parsed.progress, Some(42));
 
-        let update = elevated_args(&layout, None, std::path::Path::new("/tmp/p"));
+        let update = elevated_args(&layout, None, 42);
         assert!(Args::parse(update.into_iter()).update);
     }
 

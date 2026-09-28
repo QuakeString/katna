@@ -174,7 +174,7 @@ not runtime performance.
 | `$XDG_DATA_HOME/katna/blobs.db` | Raw messages, zstd-compressed, content-addressed (§5.2). |
 | `$XDG_DATA_HOME/katna/attachments/` | Large attachments only (> 256 KB). |
 | `$XDG_DATA_HOME/katna/index/` | tantivy index (rebuildable, but expensive, so not in cache). |
-| `$XDG_STATE_HOME/katna/crashes/` | Crash reports, plain text, readable by the user (§19.2). |
+| `$XDG_STATE_HOME/katna/crashes/` | Crash reports, plain text, readable by the user only (`0700`, files `0600`; §19.2). |
 | Secret Service (`oo7`) | Passwords and OAuth tokens. Never in files. |
 
 Only `katna-daemon` writes these databases. Apps open them read-only
@@ -207,7 +207,8 @@ folder           (id, account_id, path, role, uidvalidity, highestmodseq, sync_s
 message          (id, account_id, message_id_hdr, thread_id, subject, date,
                   size, flags, keywords, has_attachments, list_id,
                   body_state,          -- 0 headers | 1 text_indexed | 2 full
-                  blob_hash, snippet, auth_results_json,
+                  blob_hash, snippet,
+                  auth_results_json,   -- provider's verdict on From: {"dmarc", "aligned"}
                   category)            -- inbox tab, katna_core::MailCategory (v2)
 message_location (message_id, folder_id, uid)        -- one message, many folders/labels
 participant      (message_id, role, email_norm, domain, display_name)
@@ -549,7 +550,13 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   8314), then the ISPDB entry of the MX host's domain (hosted mail such as
   Google Workspace), then probing `imap.`, `mail.` and `smtp.DOMAIN` on
   993/143 and 465/587 for a mail greeting. Files come only over HTTPS; TLS
-  beats STARTTLS beats plain. Servers of Google and Microsoft are marked
+  beats STARTTLS beats plain, and a cleartext server is only taken when
+  the file offers nothing else (logged as a warning; the dialog shows the
+  security). DNS answers are not authenticated, so an SRV record is only
+  used when its target is the domain itself, a host under it, or a server
+  of a provider Katna knows (the built-in list, Google, Microsoft), as
+  RFC 6186 §6 asks; the resolver uses a random transaction ID and checks
+  that the answer echoes the question's name, type and class. Servers of Google and Microsoft are marked
   for OAuth2 sign-in (`Discovered::oauth`); Outlook.com, Hotmail, Live and
   MSN addresses and files whose IMAP server takes only OAuth2 at a known
   provider get that provider's servers and no password step; other
@@ -1136,6 +1143,18 @@ is the sanitizer: scripts, style sheets, forms, frames, objects, SVG and
 unknown elements never reach the tree, hidden preheaders are dropped, link
 targets are limited to `http`, `https` and `mailto`, and the tree is capped
 in depth and size. `cid:` and `data:` images come from the message.
+SVG pictures from mail (carried in it, on the web, or attached) are never
+handed to GPUI as they are: GPUI's SVG support reads any local file an
+`<image href>` names (`/dev/zero` never ends). `katna_preview::svg` draws
+them to bitmaps on a background thread instead, with nothing they link to
+loaded, `svgz` refused, pictures inside them size-checked, and the bitmap
+at twice the SVG's size but at most 2048 px on a side in the reading pane
+(4096 px and 16 MP in the viewer). A message's links open the address in
+their `href`, whatever their text says, so while the pointer is on a link
+its real address shows at the foot of the reading pane, as in a browser:
+the host stands out (an internationalized one as the punycode the network
+sees, a name and password before it left out), the rest is quieter
+(`rich::link_status`).
 In a light theme a message that sets its own colors is drawn on its own
 page; one that does not follows the app's colors. In a dark theme the
 message's colors are remapped (`window/dark.rs`): white becomes the reading
@@ -1151,9 +1170,25 @@ that is really an HTML document is rendered as HTML.
 Remote content is blocked by default. Tracking pixels (tiny images and
 known open-tracking paths) are dropped. A banner offers "Show images" (this
 message) and "Always show from this sender" (kept in
-`$XDG_CONFIG_HOME/katna/trusted-senders`). Images are fetched by the daemon
-(`FetchImage`, `https` only, `http` upgraded, at most 8 MB, checked to be an
-image by its bytes); the app never uses the network.
+`$XDG_CONFIG_HOME/katna/trusted-senders`). Anyone can write any `From`, so
+a trusted sender's images load only when the user's provider vouched for
+the address: its `Authentication-Results` (the topmost field, and others
+from the same server) show DMARC passing for the `From` domain, or DKIM
+passing for a domain aligned with it (`katna_render::sender_authenticated`).
+Otherwise the banner says the message may not be from that sender and
+offers "Show images" for it. A provider that adds no such field leaves the
+topmost one to the sender, which is no worse than trusting `From` alone.
+Images are fetched by the daemon (`FetchImage`, `https` only, `http`
+upgraded, at most 8 MB, checked to be an image by its bytes), at most 200
+different ones per message and 6 at a time; the app never uses the
+network. Remote images and
+sender pictures go only to port 443 of public addresses
+(`katna_sync::net::Reach::Public`): the name is resolved once, loopback,
+private, link-local, shared (CGNAT), unique-local, multicast and other
+special addresses are refused, and the connection goes to the address that
+was checked, on every redirect too, so mail cannot make the daemon reach
+this computer or its network. Configuration, OAuth2, Katna Server and
+update requests are not limited this way (tests run them on localhost).
 
 Message text can be selected and copied as in a browser (`window/select.rs`):
 each run of text a body draws records its layout, so a pointer position maps
@@ -1162,11 +1197,27 @@ Drag, double- and triple-click, Shift+click, Ctrl+A and Ctrl+C (once the
 text was clicked) and a right-click Copy work in plain and HTML mail; the
 selection also goes to the primary selection for middle-click paste.
 
-Sender pictures load without asking, since they are looked up by domain,
-never by message, and kept for a week, so they cannot tell anyone that a
-message was read. The daemon's `SenderPicture` looks up the organization's
-BIMI logo (`default._bimi` TXT record, SVG) and falls back to the largest
-icon its home page names (`<link rel="icon">`, `apple-touch-icon`), then
+Sender pictures load without asking. Looking one up does reach the
+network (a DNS query and HTTPS requests from this computer to the
+organization), so it is kept narrow (security audit of 28 September 2026):
+the daemon looks up only the sender's organizational domain
+(`katna_sync::pictures::organizational_domain`: the last two labels, or
+three under a two-letter country domain with a second level such as `co`,
+`com`, `org`, `net`, `ac`, `gov` or `edu`; a heuristic, as the Public
+Suffix List is not in the tree), never the sender's own subdomain, which
+could be unique to one recipient, and keys the week-long cache on it. It
+follows a BIMI `l=` URL or an icon a home page names only when its host is
+that domain or under it. And `SenderPicture` returns nothing unless the
+user's provider authenticated mail from the address's domain: when a
+message arrives, the daemon reads its topmost `Authentication-Results`
+field (`katna_sync::auth_results`) and keeps `{"dmarc", "aligned"}` in
+`message.auth_results_json`, `aligned` meaning DMARC passed for the `From`
+domain or DKIM passed for a domain of the same organization; a picture is
+looked up only when some message `From` that domain is `aligned`. Mail
+stored before this has no verdict, so its senders get a picture once new
+mail from them arrives. The lookup itself is the organization's BIMI logo
+(`default._bimi` TXT record, SVG), falling back to the largest icon its
+home page names (`<link rel="icon">`, `apple-touch-icon`), then
 `apple-touch-icon.png` and `favicon.ico`. Free-mail domains get none, and
 answers are cached in `$XDG_CACHE_HOME/katna/pictures` for a week. The
 General setting "Sender pictures" (`mail.sender_pictures`) turns them off;
@@ -2014,7 +2065,9 @@ desktop's own app stays one click away.
     viewer says so and offers the other app).
   - **Pictures:** PNG, JPEG, GIF, WebP, BMP, TIFF through the `image`
     crate GPUI already uses, turned upright by their EXIF orientation and
-    scaled to at most 4096 px; animated GIFs and SVG are drawn by GPUI.
+    scaled to at most 4096 px; animated GIFs are drawn by GPUI. SVG is
+    drawn by `katna_preview::svg` (resvg with nothing linked loaded; see
+    §12), never by GPUI.
   - **Text** (`text/*`, JSON, logs, code by extension): monospace, the
     first 512 KB and 10,000 lines.
   - **Spreadsheets:** Excel (xlsx, xlsm, xlsb, xls) and OpenDocument (ods)
@@ -2024,6 +2077,11 @@ desktop's own app stays one click away.
     right, and a tab per sheet at the foot. Values only: formulas show
     their saved result, dates show as dates; no cell colors, merged cells
     or charts. Up to 20,000 rows, 256 columns and 2 million cells.
+    calamine lays a sheet out from its first cell to its last, so xlsx
+    and xlsb sheets are read cell by cell and cut to those limits (one
+    cell in A1 and one in XFD1048576 would otherwise ask for 17 billion
+    cells), and an xls file, which calamine lays out whole while opening
+    it, is refused when a sheet spans more than 4 million cells.
   - **Documents:** Word (docx) and OpenDocument text (odt), read by
     `katna-preview` itself (the zip through `zip`, the XML through
     `quick-xml`, both MIT): one long white page with the title, headings,
@@ -2736,8 +2794,13 @@ Plan: `IMPLEMENTATION_PLAN.md` Phase 7.
   stores the mapping. No decodable data (Mailspring's base64-JSON token leaks
   the recipient and can be forged).
 - **Links:** `https://<tracking-domain>/l/<id>/<n>`. The destination is stored
-  on the server (or the URL is HMAC-signed), so the server can never be
-  used as an open redirect.
+  on the server and the link answers with a plain `302`, so recipients
+  never see a page in between. Anyone with a confirmed Katna account can
+  store a destination, so the server can still be misused as a redirect
+  (security audit, 28 September 2026); that is contained by the daily
+  limits per account and by `KATNA_SERVER_BLOCKED_HOSTS`, hosts the server
+  refuses to store or redirect to (decided 28 September 2026, over an
+  interstitial page or signed URLs).
 - **Event quality:** label Apple Mail Privacy Protection fetches as "maybe
   opened"; label clicks from security scanners (data-center IPs within
   seconds of delivery) as "scanner"; Gmail/Outlook proxies hide location.
@@ -2799,8 +2862,17 @@ per Katna account and day, 5000 tracked copies and 16 MiB of link targets
 per copy). Each event is labelled `person`, `apple_proxy` (Apple's network or a
 bare `Mozilla/5.0` agent) or `scanner` (`HEAD`, bot-like agents, opens
 within 5 s or clicks within 30 s of sending); the address and user agent
-are read for the label and never stored. Events stream to the daemon as
-server-sent events numbered in order, resumed with `Last-Event-ID`.
+are read for the label and never stored. Opens and clicks always get the
+picture or the redirect, but only 300 per hour per client network (IPv4
+address or IPv6 /64) and 20 per hour per tracking ID are recorded. Events
+stream to the daemon as server-sent events numbered in order, resumed with
+`Last-Event-ID`; an install may have 4 streams open, and a stream ends as
+soon as its install is signed out, deleted or its password changed
+elsewhere (and is checked every minute). In-memory limits hold at most
+100,000 keys each and refuse new keys when full; a request waits at most
+5 s for a database connection. Caddy adds HSTS, `nosniff`,
+`Referrer-Policy: no-referrer`, `X-Frame-Options: DENY` and a strict CSP,
+and caps request bodies at 1 MB.
 Everything is deleted after 180 days, and an install can delete its data.
 One server process (events are ordered within it). The API is in
 `server/katna-server/README.md`.
@@ -2843,9 +2915,17 @@ Every server feature needs a **Katna account**, like a Mailspring ID
 own on Katna Server; mail logins never go to the server.
 
 - **Server:** accounts with Argon2id password hashes; a six-digit code
-  mailed through an SMTP relay the owner sets (`KATNA_SERVER_SMTP_URL`)
-  confirms the address and resets a forgotten password (30 minutes, 5
-  wrong tries, stored hashed). An install signed in to an account is one
+  mailed through an SMTP relay the owner sets (`KATNA_SERVER_SMTP_URL`;
+  without one the server does not start unless `KATNA_SERVER_DEV_MAILER=log`
+  asks for codes in the log, for local testing) confirms the address and
+  resets a forgotten password (30 minutes, 5 wrong tries, stored hashed;
+  and at most 10 wrong tries per account in 24 hours over all its codes,
+  counted in PostgreSQL so new codes and restarts do not reset it).
+  `reset` answers `202` at once whether or not the address has an account
+  and mails afterwards; `reset/confirm` answers an unknown address like a
+  wrong code. Sign-up still answers `409` for a taken address (a notice to
+  the owner instead is not built yet). Argon2 hashing runs one per CPU at
+  a time (at least two). An install signed in to an account is one
   of its **devices**; any device can sign the others out, and changing or
   resetting the password signs them out. Feature routes take the
   `SignedIn` extractor, which needs a confirmed address. Unconfirmed
@@ -2880,8 +2960,11 @@ owner's server, over on-device models or DeepL).
   (`LT_LOAD_ONLY`). `katna-server` passes `GET /api/v1/languages` and
   `POST /api/v1/translate` / `/api/v1/detect` through for computers signed
   in to a Katna account with a confirmed address (§16.2), with a daily
-  limit per account, and logs and keeps neither the text nor the
-  translation.
+  limit per account and at most `KATNA_SERVER_TRANSLATE_CONCURRENCY` (8)
+  requests passed on at once (more are answered 503), and logs and keeps
+  neither the text nor the translation. LibreTranslate shares a network
+  only with `katna-server`, never with PostgreSQL, and its image is
+  pinned to a release.
 - **Daemon:** `Translate(message, text, source, target)` on D-Bus. Katna
   Mail finds the message's language on this computer (`katna-translate`,
   whatlang; in the app, as its models would crowd the daemon's size
@@ -2972,6 +3055,10 @@ ashpd), IMAP parsing and regex.
 ## 19. Security and privacy
 
 - TLS only via `rustls`; no plain-text auth without an explicit warning.
+- "Accept invalid certificates" on an account (`ServerSpec`,
+  `katnactl --insecure`) is for test servers only: the connection refuses
+  the TLS handshake when the address it reached is not on this computer or
+  the local network (`katna_sync::net::is_internal`).
 - Secrets only in the Secret Service (via portal inside Flatpak).
 - Remote content blocked by default; HTML always sanitized.
 - Incoming tracker removal.
@@ -3026,6 +3113,17 @@ real Subject; other inner headers are ignored.
   (a mailing list footer), the banner says the rest could come from anyone.
   Remote content stays blocked in encrypted mail whatever the setting
   (for the HTML view).
+- **GnuPG's word.** Decrypted means `DECRYPTION_OKAY`, then
+  `END_DECRYPTION` (gpg; gpgsm sends neither), with no `BADMDC`, `NODATA`
+  or `DECRYPTION_FAILED` on the way; a stream that is damaged or cut short
+  never shows. The exit status does not decide, as gpg exits with an error
+  for a signature whose key is missing, or when one of several keys a
+  message is encrypted to fails though another opened it. GnuPG runs with
+  `--no-verbose`, so a message cannot make it print lines that look like
+  status lines (which share stderr with its log; a separate status pipe
+  would need `unsafe` fd passing), and gpg with `--no-auto-key-retrieve
+  --auto-key-locate local`, so checking a signature never fetches a key
+  from the network (the fetch would tell the sender it was read).
 - **Snippets and search.** Inline armor is left out of list snippets and
   the index (`katna_crypto::without_armor`): encrypted blocks are dropped,
   clear-signed text is kept without its armor.
@@ -3097,10 +3195,14 @@ consent.
   location, message, backtrace, raw frames and the last 50 log lines of
   that process (kept in memory by `katna_core::logging`). Never: mail
   content, subjects, account names, file names of attachments, passwords.
-- **Scrubbing.** Before a report is written, the home directory becomes
-  `~`, the user name, host name and machine ID become `<user>`,
-  `<host>`, `<machine>`, and anything shaped like an email address becomes
-  `<email>`. The same scrubber runs again before anything is sent (Part 2),
+- **Scrubbing.** Before a report is written, percent-escapes are decoded,
+  every `scheme://…` URL is cut to its scheme and host, the home directory
+  becomes `~`, the user name, host name and machine ID become `<user>`,
+  `<host>`, `<machine>`, and anything shaped like an email address, in any
+  script, becomes `<email>`. A panic message loses the text it quotes
+  (`` `…` `` and `"…"`, where Rust puts the string or value involved) and
+  is cut to 200 characters. The crash directory and the state directory
+  are created `0700` and reports `0600`. The same scrubber runs again before anything is sent (Part 2),
   so a report edited by hand is checked twice.
 - **Readable tracebacks.** Release binaries are stripped, which leaves
   Rust's backtrace as `<unknown>` frames. So a panic report also lists
@@ -3369,10 +3471,19 @@ Arch is the first, Windows and the others follow the same flow.
   build of `main`: version, file name, SHA-256 and size, and for the
   Update dialog the commit, when it was made, the What's new highlights
   (`katna-mail --highlights`) and the last 200 commits' first lines. One
-  channel for
-  now, the latest build (today's `arch-latest`). It is not signed yet; the
-  download comes over TLS from GitHub and is checked against the
-  manifest's SHA-256 and size (signing: §25 item 3). The manifest names
+  channel for now, the latest build (today's `arch-latest`). The download
+  comes over TLS from GitHub and is checked against the manifest's SHA-256
+  and size.
+  **Signing** (security audit, 28 September 2026): once
+  `packaging/keys/katna-update.pub` exists, CI's publish job signs the
+  package with minisign (the private half is the
+  `KATNA_UPDATE_SIGNING_KEY` secret, `packaging/keys/README.md`) and puts
+  the signature in the manifest (`minisig`); the daemon saves it beside the
+  download as `<file>.minisig`, and the root helper refuses a package
+  without a good signature. Until the key exists updates are unsigned, and
+  any program running as the user could pass its own `katna-git` package
+  to the helper. The publish jobs also wait for CI on the same commit and
+  publish only when it passed. The manifest names
   the package under its versioned file name, which CI uploads once and
   never replaces, and the daemon tries a failed download three times,
   reading the manifest again before each new try, because a new build
@@ -3400,8 +3511,9 @@ Arch is the first, Windows and the others follow the same flow.
   and restart runs `pkexec /usr/lib/katna/katna-update-helper <file>
   <sha256>`. The polkit action `in.invenia.katna.update` (`auth_admin`,
   never remembered) allows only that helper. As root, the helper copies
-  the file where only root can write, checks the copy's SHA-256 again and
-  that it is the `katna-git` package, and runs `pacman -U`.
+  the file where only root can write, checks the copy's SHA-256 again,
+  its signature (above), that it is the `katna-git` package and newer
+  than the one installed (never a downgrade), and runs `pacman -U`.
 - **Restart.** Katna Mail starts the new binary with
   `--after-update <pid>`, which waits for the old one to quit (the window
   state is saved on quit), and quits; the new one opens as the old one
@@ -3957,9 +4069,18 @@ is set. The choices: install for just me (the default, into
 `%LOCALAPPDATA%\Programs\Katna`, no administrator prompt) or for everyone
 (into `%ProgramFiles%\Katna`, with the machine's Start menu, public desktop
 and `HKLM` entries; Setup starts a second copy of itself as administrator,
-so Windows asks once, and follows its progress through a file); the folder
-(a picked folder gets its own `Katna` folder, so removing Katna never
-deletes the user's folder); a desktop shortcut (off), the Start menu (on)
+so Windows asks once, and follows its progress through a value under
+`HKLM\SOFTWARE\Katna\Setup` that only administrators can write); the
+folder (a picked folder gets its own `Katna` folder, so removing Katna never
+deletes the user's folder; Setup refuses one that already holds other
+files or is a link, and for everyone a folder outside `%ProgramFiles%` gets
+Program Files' rules: owned by Administrators, changed only by
+Administrators and SYSTEM, read and run by Users, so no user can replace
+programs every other user starts; a new install there also needs every
+folder above it to be owned by Administrators, SYSTEM or TrustedInstaller
+and to give nobody else Delete, Delete subfolders, Change permissions or
+Take ownership, since renaming a folder above would swap Katna out too);
+a desktop shortcut (off), the Start menu (on)
 and start at sign-in (on). An update keeps the folder and what was chosen.
 Windows does not let installers pin to the taskbar (Windows 11 only for
 apps Microsoft approves), so the last screen says how to pin from Start.
@@ -3972,7 +4093,9 @@ programs packed with zstd; a newer Setup closes Katna, replaces them and
 keeps settings, mail and passwords. Removing Katna asks whether to delete
 mail and passwords too. `--quiet` installs without a window (`--all-users`, `--dir`,
 `--desktop`, `--no-start-menu`, `--no-autostart`) and `--uninstall`
-removes.
+removes. Setup starts PowerShell and icacls by their full System32 paths
+and links with `/DEPENDENTLOADFLAG:0x800`, so files left beside it in
+Downloads are never run or loaded as administrator.
 
 CI builds Setup.exe on every main push into a `windows-latest`
 pre-release, as it does the Arch package. Without a code-signing

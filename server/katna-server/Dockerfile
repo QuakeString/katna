@@ -3,7 +3,10 @@
 # Katna Server's container image. Build from the repository root:
 #   docker build -f server/katna-server/Dockerfile -t katna-server .
 
-FROM docker.io/library/rust:1-bookworm AS build
+# Base images by version rather than a moving tag: Rust 1.98.1 on Debian 12
+# to build, distroless Debian 12 to run. Bump the Rust one with each stable
+# release.
+FROM docker.io/library/rust:1.98.1-bookworm AS build
 WORKDIR /src
 COPY . .
 # rust-toolchain.toml picks the toolchain; only this package is built.

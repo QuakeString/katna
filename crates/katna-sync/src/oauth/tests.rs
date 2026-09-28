@@ -359,6 +359,50 @@ fn only_loopback_http() {
 }
 
 #[test]
+fn a_cancelled_refresh_does_not_block_the_next() {
+    use futures_lite::FutureExt;
+
+    let listener = StdListener::bind("127.0.0.1:0").unwrap();
+    let url = format!(
+        "http://127.0.0.1:{}/token",
+        listener.local_addr().unwrap().port()
+    );
+    thread::spawn(move || {
+        // The first refresh is never answered; the second is.
+        let (first, _) = listener.accept().unwrap();
+        let (mut stream, _) = listener.accept().unwrap();
+        read_http(&mut stream);
+        let body = token_json(None, false);
+        let answer = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\
+             Content-Length: {}\r\nConnection: close\r\n\r\n{body}",
+            body.len()
+        );
+        stream.write_all(answer.as_bytes()).unwrap();
+        drop(first);
+    });
+    let tokens = TokenSource::new(provider(OAuthProvider::Google, &url), "rt".into(), None);
+    let within = |limit: Duration| async move {
+        async_io::Timer::after(limit).await;
+        Err(Error::Timeout(limit))
+    };
+    smol::block_on(async {
+        // Dropped mid-refresh, as a stopped worker's would be.
+        let cancelled = tokens
+            .access_token()
+            .or(within(Duration::from_millis(300)))
+            .await;
+        assert!(matches!(cancelled, Err(Error::Timeout(_))), "{cancelled:?}");
+        let token = tokens
+            .access_token()
+            .or(within(Duration::from_secs(10)))
+            .await
+            .unwrap();
+        assert_eq!(token, "at-1");
+    });
+}
+
+#[test]
 fn a_prefilled_token_is_used_first() {
     let tokens = TokenSource::new(
         provider(OAuthProvider::Google, "http://127.0.0.1:9/t"),

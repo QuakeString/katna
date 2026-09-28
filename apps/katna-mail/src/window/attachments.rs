@@ -189,8 +189,12 @@ pub(super) fn kind_badge(kind: Kind, size: f32) -> AnyElement {
 /// Whether the cards show a thumbnail of this kind.
 fn has_thumbnail(kind: Kind) -> bool {
     match kind {
-        Kind::Pdf | Kind::Text | Kind::Sheet { .. } | Kind::Document | Kind::Slides => true,
-        Kind::Picture(picture) => picture.decodable(),
+        Kind::Pdf
+        | Kind::Picture(_)
+        | Kind::Text
+        | Kind::Sheet { .. }
+        | Kind::Document
+        | Kind::Slides => true,
         Kind::Other => false,
     }
 }

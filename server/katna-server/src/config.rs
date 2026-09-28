@@ -33,13 +33,27 @@ pub struct Config {
     /// (`KATNA_SERVER_TRANSLATIONS_PER_DAY`, default 2000; a long message
     /// takes one per 4000 characters).
     pub translations_per_day: u32,
+    /// Translation requests passed to LibreTranslate at once, for all
+    /// accounts together (`KATNA_SERVER_TRANSLATE_CONCURRENCY`, default 8:
+    /// twice its default threads); more are answered 503 at once.
+    pub translate_concurrency: usize,
     /// Where the mail with Katna account codes goes out: made from
     /// `KATNA_SERVER_SMTP_HOST`, `_PORT` (465), `_USERNAME` and `_PASSWORD`,
     /// or given whole as `KATNA_SERVER_SMTP_URL` (for example
     /// `smtps://user:password@smtp.example.com` or
     /// `smtp://user:password@smtp.example.com:587?tls=required`). Without
-    /// either the codes are only written to the log, for local testing.
+    /// either the server does not start, unless [`Config::dev_mailer_log`]
+    /// is set.
     pub smtp_url: Option<Secret>,
+    /// Write account codes to the log instead of mailing them, when no SMTP
+    /// relay is set (`KATNA_SERVER_DEV_MAILER=log`). Only for local testing:
+    /// anyone who reads the log could then reset any account.
+    pub dev_mailer_log: bool,
+    /// Hosts that links may not go to (`KATNA_SERVER_BLOCKED_HOSTS`, split
+    /// by commas or spaces, lowercased). Each blocks itself and its
+    /// subdomains: tracking IDs with such a link are refused, and stored
+    /// links to them are no longer followed.
+    pub blocked_hosts: Vec<String>,
     /// The sender of that mail (`KATNA_SERVER_MAIL_FROM`; default the SMTP
     /// username when it is an address, else
     /// `Katna <no-reply@katna.invenia.in>`).
@@ -67,7 +81,10 @@ impl Default for Config {
             installs_per_hour: 10,
             translate_url: String::new(),
             translations_per_day: 2000,
+            translate_concurrency: 8,
             smtp_url: None,
+            dev_mailer_log: false,
+            blocked_hosts: Vec::new(),
             mail_from: "Katna <no-reply@katna.invenia.in>".into(),
         }
     }
@@ -125,6 +142,28 @@ impl Config {
         }
         if let Some(value) = lookup("KATNA_SERVER_TRANSLATIONS_PER_DAY") {
             config.translations_per_day = parse("KATNA_SERVER_TRANSLATIONS_PER_DAY", &value)?;
+        }
+        if let Some(value) = lookup("KATNA_SERVER_TRANSLATE_CONCURRENCY") {
+            config.translate_concurrency = parse("KATNA_SERVER_TRANSLATE_CONCURRENCY", &value)?;
+        }
+        if let Some(value) = lookup("KATNA_SERVER_BLOCKED_HOSTS") {
+            config.blocked_hosts = value
+                .split(|c: char| c == ',' || c.is_whitespace())
+                .map(|host| host.trim().trim_matches('.').to_lowercase())
+                .filter(|host| !host.is_empty())
+                .collect();
+        }
+        if let Some(value) = lookup("KATNA_SERVER_DEV_MAILER") {
+            config.dev_mailer_log = match value.trim() {
+                "" => false,
+                "log" => true,
+                other => {
+                    return Err(ConfigError {
+                        name: "KATNA_SERVER_DEV_MAILER",
+                        problem: format!("{other:?}: only \"log\" (or empty)"),
+                    });
+                }
+            };
         }
         let set = |name: &str| {
             lookup(name)
@@ -218,6 +257,34 @@ mod tests {
         assert_eq!(config.translate_url, "http://translate:5000");
         assert_eq!(config.translations_per_day, 2000);
         assert!(config.smtp_url.is_none());
+        assert!(!config.dev_mailer_log);
+        assert!(config.blocked_hosts.is_empty());
+    }
+
+    #[test]
+    fn reads_blocked_hosts_and_the_dev_mailer() {
+        let env: HashMap<&str, &str> = HashMap::from([
+            ("DATABASE_URL", "postgres://x"),
+            (
+                "KATNA_SERVER_BLOCKED_HOSTS",
+                " Evil.example, .bad.test  phish.io.",
+            ),
+            ("KATNA_SERVER_DEV_MAILER", "log"),
+            ("KATNA_SERVER_TRANSLATE_CONCURRENCY", "2"),
+        ]);
+        let config = Config::from_lookup(|name| env.get(name).map(|v| v.to_string())).unwrap();
+        assert_eq!(
+            config.blocked_hosts,
+            ["evil.example", "bad.test", "phish.io"]
+        );
+        assert!(config.dev_mailer_log);
+        assert_eq!(config.translate_concurrency, 2);
+        let bad = Config::from_lookup(|name| match name {
+            "DATABASE_URL" => Some("postgres://x".into()),
+            "KATNA_SERVER_DEV_MAILER" => Some("yes".into()),
+            _ => None,
+        });
+        assert!(bad.is_err());
     }
 
     #[test]

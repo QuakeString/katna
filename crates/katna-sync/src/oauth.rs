@@ -612,6 +612,15 @@ pub struct TokenSource {
     on_rotate: Option<OnRotate>,
 }
 
+/// The refresh permit of a [`TokenSource`], returned when dropped.
+struct Permit<'a>(&'a async_channel::Sender<()>);
+
+impl Drop for Permit<'_> {
+    fn drop(&mut self) {
+        let _ = self.0.try_send(());
+    }
+}
+
 impl TokenSource {
     pub fn new(provider: Provider, refresh_token: String, on_rotate: Option<OnRotate>) -> Self {
         let gate = async_channel::bounded(1);
@@ -679,7 +688,11 @@ impl TokenSource {
             return Ok(token);
         }
         let _ = self.gate.1.recv().await;
-        let result = async {
+        // Hands the permit back however this ends, also when the future is
+        // dropped mid-refresh (a stopped worker, a lost race): otherwise
+        // every later call would wait forever.
+        let _permit = Permit(&self.gate.0);
+        async {
             // Another connection may have refreshed meanwhile.
             if let Some(token) = self.cached() {
                 return Ok(token);
@@ -697,9 +710,7 @@ impl TokenSource {
             tracing::debug!(provider = %self.provider.kind, "access token refreshed");
             Ok(grant.access_token)
         }
-        .await;
-        let _ = self.gate.0.try_send(());
-        result
+        .await
     }
 
     /// Drops the access token after a server refused it. Returns whether a

@@ -3,7 +3,36 @@
 # Katna Server. Access logs stay off: the server keeps no addresses, and
 # neither should its proxy.
 
+{
+	# Nothing here changes the configuration at run time; restart the
+	# container to apply a new one.
+	admin off
+	servers {
+		timeouts {
+			read_header 10s
+			read_body 30s
+			idle 2m
+			# No write timeout: event streams stay open for hours.
+		}
+	}
+}
+
 {$KATNA_TRACKING_DOMAIN} {
+	# `-Server` defers these until Katna Server has answered, so they
+	# replace any it sets.
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		X-Frame-Options DENY
+		# The only page is `/`: no scripts, no pictures, its own style.
+		Content-Security-Policy "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+		-Server
+	}
+	# The largest request (tracking IDs with their links) is under 300 KB.
+	request_body {
+		max_size 1MB
+	}
 	encode gzip
 	reverse_proxy server:8080 {
 		# Event streams stay open; send events as they come.

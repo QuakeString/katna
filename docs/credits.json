@@ -744,6 +744,16 @@
       "repository": "https://github.com/unicode-rs/unicode-segmentation"
     },
     {
+      "name": "url",
+      "version": "2.5.8",
+      "description": "URL library for Rust, based on the WHATWG URL Standard",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "The rust-url developers"
+      ],
+      "repository": "https://github.com/servo/rust-url"
+    },
+    {
       "name": "whatlang",
       "version": "0.18.0",
       "description": "Fast and lightweight language identification library for Rust.",

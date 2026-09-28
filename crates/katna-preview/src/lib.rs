@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Previews of attachments for the viewer in Katna Mail: the pages of a
-//! PDF ([`pdf`]), pictures ([`picture`]), text files ([`text`]),
+//! PDF ([`pdf`]), pictures ([`picture`], SVG drawn by [`svg`] for every
+//! SVG from mail), text files ([`text`]),
 //! spreadsheets ([`sheet`]), word processor documents ([`document`],
 //! [`word`]) and slides ([`slides`]). All of
 //! it is pure Rust and runs off the UI thread; the app only draws the
@@ -19,6 +20,7 @@ mod pdf_text;
 pub mod picture;
 pub mod sheet;
 pub mod slides;
+pub mod svg;
 pub mod table;
 pub mod text;
 pub mod word;
@@ -54,14 +56,6 @@ pub enum Picture {
     Bmp,
     Tiff,
     Svg,
-}
-
-impl Picture {
-    /// Whether [`picture::decode`] reads it. SVG and animated GIFs are
-    /// drawn by the UI toolkit itself.
-    pub fn decodable(self) -> bool {
-        !matches!(self, Picture::Svg)
-    }
 }
 
 /// What a file is, from its MIME type and, for the vague

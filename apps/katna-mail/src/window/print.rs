@@ -174,7 +174,10 @@ impl MailWindow {
             }
         };
         let sender = view.from.first().map(|a| a.email.as_str()).unwrap_or("");
-        let shown = !message.encrypted && self.remote.allowed(message.id, sender);
+        let shown = !message.encrypted
+            && self
+                .remote
+                .allowed(message.id, sender, message.authenticated);
         let images = message
             .doc
             .as_ref()
@@ -183,9 +186,9 @@ impl MailWindow {
             .unwrap_or_default()
             .into_iter()
             .filter_map(|url| match self.remote.images.get(&url) {
-                Some(Fetch::Ready(image)) => {
-                    let kind = rich::kind(image.format)?;
-                    Some((url, (kind, Arc::from(image.bytes.as_slice()))))
+                Some(Fetch::Ready(picture)) => {
+                    let kind = rich::kind(picture.image.format)?;
+                    Some((url, (kind, Arc::from(picture.image.bytes.as_slice()))))
                 }
                 _ => None,
             })

@@ -353,6 +353,70 @@ fn missing_keys() {
     assert_eq!(opened.raw, raw);
 }
 
+/// Signed by someone whose key the reader lacks, then encrypted to the
+/// reader: gpg decrypts it but exits with 2 for the signature. The text
+/// still opens, with the signature shown as unchecked.
+#[test]
+fn encrypted_and_signed_by_a_stranger() {
+    let Some(home) = openpgp_home() else { return };
+    let stranger = Home::new("gpg").expect("gpg");
+    stranger.new_key("Dave <dave@example.org>");
+    let public = home.gpg(&["--armor", "--export", BOB], b"");
+    stranger.gpg(&["--import"], &public);
+    let ciphertext = stranger.gpg(
+        &[
+            "--armor",
+            "--trust-model",
+            "always",
+            "--sign",
+            "--local-user",
+            "dave@example.org",
+            "--encrypt",
+            "--recipient",
+            BOB,
+        ],
+        b"Content-Type: text/plain\r\n\r\nFrom a stranger, sealed.",
+    );
+    let opened = open(
+        &pgp_mime("dave@example.org", "Sealed", &ciphertext),
+        &home.gnupg(),
+    )
+    .expect("protected");
+    assert_eq!(opened.security.decryption, Some(Decryption::Decrypted));
+    assert_eq!(
+        opened.security.signatures[0].state,
+        SignatureState::MissingKey
+    );
+    assert_eq!(text_of(&opened.raw).trim(), "From a stranger, sealed.");
+}
+
+/// Ciphertext changed in transit never opens, whatever gpg printed before
+/// it noticed.
+#[test]
+fn tampered_ciphertext() {
+    let Some(home) = openpgp_home() else { return };
+    let binary = home.gpg(
+        &["--trust-model", "always", "--encrypt", "--recipient", BOB],
+        &b"Content-Type: text/plain\r\n\r\nThe plan.\r\n".repeat(200),
+    );
+    // Flip bytes in the middle of the encrypted data.
+    for at in [binary.len() / 2, binary.len() - 30] {
+        let mut changed = binary.clone();
+        changed[at] ^= 0x55;
+        let armored = home.gpg(&["--enarmor"], &changed);
+        let armored = String::from_utf8_lossy(&armored)
+            .replace("ARMORED FILE", "MESSAGE")
+            .into_bytes();
+        let opened = open(&pgp_mime(ADA, "x", &armored), &home.gnupg()).expect("protected");
+        assert!(
+            matches!(opened.security.decryption, Some(Decryption::Failed(_))),
+            "{at}: {:?}",
+            opened.security.decryption
+        );
+        assert!(!text_of(&opened.raw).contains("The plan."));
+    }
+}
+
 #[test]
 fn inline_pgp() {
     let Some(home) = openpgp_home() else { return };

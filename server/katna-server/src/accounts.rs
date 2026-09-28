@@ -14,11 +14,17 @@
 //! - `DELETE /api/v1/account/devices/<id>`: sign another device out.
 //! - `POST /api/v1/account/password` `{current, new}`: change the password;
 //!   signs the other devices out.
-//! - `POST /api/v1/account/reset` `{email}`: mail a reset code.
+//! - `POST /api/v1/account/reset` `{email}`: mail a reset code. Answers
+//!   at once and the same whether or not the address has an account; the
+//!   mail goes out afterwards.
 //! - `POST /api/v1/account/reset/confirm` `{email, code, password, device}`:
 //!   set a new password and sign this install in; signs the others out.
 //! - `POST /api/v1/account/delete` `{password}`: delete the account, its
 //!   devices and all their data.
+//!
+//! Emailed codes allow 5 wrong guesses each and 10 per account in 24 hours
+//! over all its codes, counted in the database, so asking for new codes or
+//! restarting the server does not give more guesses.
 
 use std::net::IpAddr;
 use std::time::Duration;
@@ -166,7 +172,10 @@ async fn create(
         .sign_in(&install.0, &account, &clean_device_name(&body.device), now)
         .await?;
     // The account exists either way; a failed mail is sent again with
-    // "resend".
+    // "resend". (An address that already has an account got 409 above:
+    // that tells anyone with an install whether an address has an
+    // account. Answering 201 instead would need a mail telling the owner
+    // that someone tried, which the server does not send yet.)
     if let Err(error) = mail_code(&state, &account, &email, Purpose::Verify).await {
         tracing::warn!(?error, "sign-up code not mailed");
     }
@@ -209,6 +218,9 @@ async fn check(
         CodeCheck::Gone => Err(ApiError::Invalid(
             "code_expired",
             "the code has expired; ask for a new one",
+        )),
+        CodeCheck::Locked => Err(ApiError::TooMany(
+            "too many wrong codes; try again tomorrow",
         )),
     }
 }
@@ -255,7 +267,7 @@ async fn sign_in(
         || DUMMY_HASH.clone(),
         |account| account.password_hash.clone(),
     );
-    let right = verify_password(body.password, hash).await;
+    let right = verify_password(body.password, hash).await?;
     let account = account.filter(|_| right).ok_or(ApiError::WrongPassword)?;
     state
         .db()
@@ -266,6 +278,9 @@ async fn sign_in(
             now_ms(),
         )
         .await?;
+    // A stream of this install for an account it was signed in to before
+    // ends.
+    state.signed_out(&install.0);
     Ok(Json(AccountInfo {
         email: account.email,
         verified: account.verified_at.is_some(),
@@ -278,6 +293,7 @@ async fn sign_out(State(state): State<AppState>, member: Member) -> Result<Statu
         .db()
         .sign_out(&member.account, &member.install)
         .await?;
+    state.signed_out(&member.install);
     Ok(StatusCode::NO_CONTENT)
 }
 
@@ -329,6 +345,7 @@ async fn sign_out_device(
     Path(id): Path<String>,
 ) -> Result<StatusCode, ApiError> {
     if ids::is_valid_id(&id) && state.db().sign_out(&member.account, &id).await? {
+        state.signed_out(&id);
         Ok(StatusCode::NO_CONTENT)
     } else {
         Err(ApiError::NotFound)
@@ -362,7 +379,7 @@ async fn confirm_password(
         .account(&member.account)
         .await?
         .ok_or(ApiError::SignInNeeded)?;
-    if verify_password(password, account.password_hash).await {
+    if verify_password(password, account.password_hash).await? {
         Ok(())
     } else {
         Err(ApiError::WrongPassword)
@@ -382,6 +399,7 @@ async fn change_password(
         .db()
         .sign_out_others(&member.account, &member.install)
         .await?;
+    state.signed_out(&member.account);
     Ok(StatusCode::NO_CONTENT)
 }
 
@@ -402,10 +420,22 @@ async fn reset(
     limited(&state, &headers, addr)?;
     let email = normalize_email(&body.email)
         .ok_or(ApiError::Invalid("bad_email", "not an email address"))?;
-    // The same answer whether or not the address has an account.
-    if let Some(account) = state.db().account_by_email(&email).await? {
-        mail_code(&state, &account.id, &email, Purpose::Reset).await?;
-    }
+    // The same answer, just as fast, whether or not the address has an
+    // account, and whatever becomes of the mail: the lookup and the mail
+    // happen after answering, and a failure is only logged.
+    tokio::spawn(async move {
+        let account = match state.db().account_by_email(&email).await {
+            Ok(Some(account)) => account,
+            Ok(None) => return,
+            Err(error) => {
+                tracing::warn!(%error, "reset code not mailed");
+                return;
+            }
+        };
+        if let Err(error) = mail_code(&state, &account.id, &email, Purpose::Reset).await {
+            tracing::warn!(?error, "reset code not mailed");
+        }
+    });
     Ok(StatusCode::ACCEPTED)
 }
 
@@ -432,14 +462,32 @@ async fn confirm_reset(
 ) -> Result<Json<AccountInfo>, ApiError> {
     limited(&state, &headers, addr)?;
     check_password(&body.password)?;
-    let email =
-        normalize_email(&body.email).ok_or(ApiError::Invalid("wrong_code", "wrong code"))?;
-    let account = state
+    // One answer for an unknown address and for any code that does not
+    // work (wrong, expired, or too many wrong guesses), so this does not
+    // tell whether an address has an account either.
+    let refused = ApiError::Invalid(
+        "wrong_code",
+        "wrong or expired code; ask for a new one if it keeps failing",
+    );
+    let Some(email) = normalize_email(&body.email) else {
+        return Err(refused);
+    };
+    let Some(account) = state.db().account_by_email(&email).await? else {
+        return Err(refused);
+    };
+    let code = clean_code(&body.code);
+    let checked = state
         .db()
-        .account_by_email(&email)
-        .await?
-        .ok_or(ApiError::Invalid("wrong_code", "wrong code"))?;
-    check(&state, &account.id, Purpose::Reset, &body.code).await?;
+        .check_code(
+            &account.id,
+            Purpose::Reset.as_str(),
+            &code_hash(&account.id, &code),
+            now_ms(),
+        )
+        .await?;
+    if checked != CodeCheck::Right {
+        return Err(refused);
+    }
     let hash = hash_password(body.password).await?;
     let now = now_ms();
     state.db().set_password(&account.id, &hash).await?;
@@ -455,6 +503,7 @@ async fn confirm_reset(
         )
         .await?;
     state.db().sign_out_others(&account.id, &install.0).await?;
+    state.signed_out(&account.id);
     Ok(Json(AccountInfo {
         email: account.email,
         verified: true,
@@ -476,5 +525,6 @@ async fn delete_account(
 ) -> Result<StatusCode, ApiError> {
     confirm_password(&state, &member, body.password).await?;
     state.db().delete_account(&member.account).await?;
+    state.signed_out(&member.account);
     Ok(StatusCode::NO_CONTENT)
 }
