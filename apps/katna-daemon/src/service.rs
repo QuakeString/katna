@@ -7,8 +7,8 @@ use std::sync::Arc;
 use async_channel::Receiver;
 use katna_core::{AccountId, ids};
 use katna_dbus::{
-    AccountStatus, KatnaAccount, KatnaDevice, NewImapAccount, NewPop3Account, OutboxItem,
-    TemplateItem, UpdateStatus, flag,
+    AccountStatus, DriveUpload, KatnaAccount, KatnaDevice, NewImapAccount, NewPop3Account,
+    OutboxItem, TemplateItem, UpdateStatus, flag,
 };
 use katna_store::{FolderId, MessageFlags, MessageId};
 use zbus::{fdo, object_server::SignalEmitter};
@@ -290,6 +290,30 @@ macro_rules! pim_interface {
                 Ok(self.daemon.outbox()?)
             }
 
+            async fn drive_upload(&self, account: i64, path: String) -> fdo::Result<i64> {
+                Ok(self.daemon.drive_upload(AccountId(account), &path).await?)
+            }
+
+            async fn drive_upload_status(&self, id: i64) -> fdo::Result<DriveUpload> {
+                Ok(self.daemon.drive_upload_status(id)?)
+            }
+
+            async fn drive_cancel(&self, id: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.drive_cancel(id).await?)
+            }
+
+            async fn drive_share(
+                &self,
+                uploads: Vec<i64>,
+                addresses: Vec<String>,
+            ) -> fdo::Result<Vec<String>> {
+                Ok(self.daemon.drive_share(&uploads, &addresses).await?)
+            }
+
+            async fn drive_share_with_link(&self, uploads: Vec<i64>) -> fdo::Result<()> {
+                Ok(self.daemon.drive_share_with_link(&uploads).await?)
+            }
+
             async fn fetch_image(&self, url: String) -> fdo::Result<Vec<u8>> {
                 Ok(self.daemon.fetch_image(&url).await?)
             }
@@ -439,6 +463,9 @@ macro_rules! pim_interface {
 
             #[zbus(signal)]
             async fn tracking_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
+
+            #[zbus(signal)]
+            async fn drive_changed(emitter: &SignalEmitter<'_>, id: i64) -> zbus::Result<()>;
         }
     };
 }
@@ -491,6 +518,7 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::KatnaAccountChanged => PimService::katna_account_changed(&emitter).await,
             Notice::TrackingChanged => PimService::tracking_changed(&emitter).await,
             Notice::UpdateChanged => PimService::update_changed(&emitter).await,
+            Notice::DriveChanged(id) => PimService::drive_changed(&emitter, id).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");

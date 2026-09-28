@@ -25,6 +25,7 @@ mod attach;
 mod checks;
 mod chips;
 mod drafts;
+mod drive;
 mod paste;
 mod popout;
 mod quote;
@@ -131,6 +132,11 @@ pub(super) struct Compose {
     subject: Entity<TextInput>,
     body: Entity<RichEditor>,
     attachments: Vec<Attachment>,
+    /// Files too large for mail, going through Google Drive.
+    drive: Vec<drive::DriveFile>,
+    /// Send was pressed while files were still going up to Drive: it
+    /// goes once they are there.
+    send_when_uploaded: bool,
     /// The fields as they were opened, to tell whether anything was
     /// written.
     start: Draft,
@@ -235,7 +241,7 @@ impl Compose {
 
     /// Something was written that closing would lose.
     fn touched(&self, cx: &gpui::App) -> bool {
-        !self.attachments.is_empty() || self.fields(cx) != self.start
+        !self.attachments.is_empty() || !self.drive.is_empty() || self.fields(cx) != self.start
     }
 
     fn title(&self, cx: &gpui::App) -> SharedString {
@@ -434,6 +440,7 @@ pub(super) struct Unsent {
     sealing: Sealing,
     signature: Option<u32>,
     attachments: Vec<Attachment>,
+    drive: Vec<drive::DriveFile>,
     plain: bool,
     from: Option<AccountId>,
     answering: Option<EntryKey>,
@@ -1150,6 +1157,8 @@ impl MailWindow {
             subject,
             body,
             attachments: Vec::new(),
+            drive: Vec::new(),
+            send_when_uploaded: false,
             start,
             thread,
             kind: Kind::New,
@@ -1429,6 +1438,7 @@ impl MailWindow {
         let saved = compose.saved.map(|a| (a.0, compose.message_id.clone()));
         let signature = compose.signature;
         let attachments = compose.attachments.clone();
+        let drive_files = compose.drive.clone();
         let plain = compose.plain(cx);
         let follow_up = i64::from(compose.follow_up);
         // Tracking needs a Katna account with a confirmed address.
@@ -1474,7 +1484,7 @@ impl MailWindow {
             );
             return;
         }
-        let attached = attachments.len() + draft.body.images().count();
+        let attached = attachments.len() + drive_files.len() + draft.body.images().count();
         if let Some(check) = checks::check(&draft.subject, &draft.body, attached, passed) {
             if let Some(c) = &mut self.compose {
                 c.popup = Some(Popup::SendCheck {
@@ -1485,6 +1495,11 @@ impl MailWindow {
                 });
             }
             cx.notify();
+            return;
+        }
+        let everyone = to.iter().chain(&cc).chain(&bcc);
+        let everyone: Vec<String> = everyone.map(|m| m.email.clone()).collect();
+        if self.drive_before_send(at, archive, passed, everyone, window, cx) {
             return;
         }
         let account = chosen
@@ -1504,8 +1519,13 @@ impl MailWindow {
             .rsplit_once('@')
             .map_or("katna.local", |(_, d)| d)
             .to_owned();
-        let body_text = html::to_plain(&draft.body);
-        let (html_body, inline) = body_parts(&draft.body, plain, &domain);
+        let mut body_text = html::to_plain(&draft.body);
+        let (mut html_body, inline) = body_parts(&draft.body, plain, &domain);
+        // Files in Drive go as links at the end, as in Gmail.
+        body_text.push_str(&drive::links_text(&drive_files));
+        if let Some(html) = &mut html_body {
+            html.push_str(&drive::links_html(&drive_files));
+        }
         // Known here, to find the stored copy of a reply shown at once.
         let message_id = sent::new_message_id(&domain);
         let snippet: String = body_text
@@ -1560,6 +1580,7 @@ impl MailWindow {
             sealing,
             signature,
             attachments,
+            drive: drive_files,
             plain,
             from,
             answering: answered,
@@ -1713,6 +1734,7 @@ impl MailWindow {
             sealing,
             signature,
             attachments,
+            drive,
             plain,
             from,
             answering,
@@ -1723,6 +1745,7 @@ impl MailWindow {
         self.show_compose(draft, start, thread, signature, true, window, cx);
         if let Some(compose) = &mut self.compose {
             compose.attachments = attachments;
+            compose.drive = drive;
             compose
                 .body
                 .update(cx, |editor, cx| editor.set_plain(plain, cx));

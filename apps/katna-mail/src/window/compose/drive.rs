@@ -1,0 +1,627 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+//! Files too large for mail go through the sender's Google Drive, as in
+//! Gmail: a file over the 25 MB limit starts uploading as soon as it is
+//! attached, its chip shows how far it got, and Send shares it with the
+//! recipients and puts its link in the message. Nothing is asked unless
+//! it has to be: an account signed in before Katna asked for Drive gets
+//! one Allow button, and Send asks only when a recipient cannot be given
+//! access (`docs/ARCHITECTURE.md` §6.6).
+
+use std::path::PathBuf;
+
+use gpui::{AnyElement, Context, FontWeight, Window, div, prelude::*, relative, rgba};
+use katna_core::{AccountId, OAuthProvider};
+use katna_dbus::{DriveUpload, drive_state};
+use katna_i18n::tr;
+use katna_ui::px;
+use katna_ui::rich::html::escape;
+
+use super::super::MailWindow;
+use super::checks::Passed;
+use super::tools::Popup;
+use crate::daemon;
+use crate::format;
+use crate::theme::Theme;
+use crate::widgets::{filled_button, icon, tip};
+
+/// A file on its way to, or in, Google Drive.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::window) struct DriveFile {
+    pub path: PathBuf,
+    pub name: String,
+    pub size: u64,
+    /// The account whose Drive it goes to.
+    pub account: AccountId,
+    /// The daemon's upload, once it started one.
+    pub upload: Option<i64>,
+    pub sent: u64,
+    pub state: DriveState,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::window) enum DriveState {
+    Uploading,
+    Done {
+        link: String,
+    },
+    /// The account's sign-in did not allow Drive.
+    NeedsPermission,
+    Failed(String),
+}
+
+impl DriveFile {
+    fn link(&self) -> Option<&str> {
+        match &self.state {
+            DriveState::Done { link } => Some(link),
+            _ => None,
+        }
+    }
+}
+
+/// Whether `account` can put files in Google Drive: it signs in with
+/// Google.
+pub(super) fn can_use_drive(window: &MailWindow, account: AccountId) -> bool {
+    window
+        .mail
+        .as_ref()
+        .ok()
+        .and_then(|mail| mail.sign_in_provider(account))
+        == Some(OAuthProvider::Google)
+}
+
+/// The links of the uploaded files, for the end of the message's text.
+pub(super) fn links_text(files: &[DriveFile]) -> String {
+    let mut text = String::new();
+    for file in files {
+        if let Some(link) = file.link() {
+            text.push_str(&format!("\n\n{}\n{link}", file.name));
+        }
+    }
+    text
+}
+
+/// The links of the uploaded files as cards under the message, like
+/// Gmail's.
+pub(super) fn links_html(files: &[DriveFile]) -> String {
+    let mut html = String::new();
+    for file in files {
+        let Some(link) = file.link() else {
+            continue;
+        };
+        let under = tr!("compose-drive-card-detail", size = format::size(file.size));
+        html.push_str(&format!(
+            "<div style=\"margin:12px 0 0\"><div style=\"display:inline-block;\
+             border:1px solid #dadce0;border-radius:8px;padding:10px 14px;\
+             font-family:sans-serif;font-size:14px;line-height:20px\">\
+             <a href=\"{}\" style=\"color:#1a73e8;text-decoration:none;\
+             font-weight:500\">{}</a><div style=\"color:#5f6368;font-size:12px;\
+             line-height:16px\">{}</div></div></div>",
+            escape(link),
+            escape(&file.name),
+            escape(&under)
+        ));
+    }
+    html
+}
+
+impl MailWindow {
+    /// Starts putting `path` in the Drive of `account`, with a chip that
+    /// shows how it goes.
+    pub(super) fn upload_to_drive(
+        &mut self,
+        path: PathBuf,
+        name: String,
+        size: u64,
+        account: AccountId,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        compose.drive.push(DriveFile {
+            path: path.clone(),
+            name,
+            size,
+            account,
+            upload: None,
+            sent: 0,
+            state: DriveState::Uploading,
+        });
+        compose.attach_scroll.scroll_to_bottom();
+        self.start_drive_upload(path, cx);
+    }
+
+    /// Asks the daemon to upload the chip of `path`, again after a
+    /// failure or a sign-in.
+    fn start_drive_upload(&mut self, path: PathBuf, cx: &mut Context<Self>) {
+        let Some(connection) = self.daemon.clone() else {
+            self.set_drive_state(&path, DriveState::Failed(daemon::NOT_RUNNING.into()), cx);
+            return;
+        };
+        let Some(file) = self
+            .compose
+            .as_mut()
+            .and_then(|c| c.drive.iter_mut().find(|f| f.path == path))
+        else {
+            return;
+        };
+        file.state = DriveState::Uploading;
+        file.sent = 0;
+        let account = file.account.0;
+        self.watch_drive(cx);
+        cx.spawn(async move |this, cx| {
+            let started = daemon::drive_upload(&connection, account, &path.to_string_lossy()).await;
+            this.update(cx, |this, cx| {
+                let Some(file) = this
+                    .compose
+                    .as_mut()
+                    .and_then(|c| c.drive.iter_mut().find(|f| f.path == path))
+                else {
+                    // Taken off before the upload started.
+                    if let Ok(id) = started {
+                        this.cancel_drive_upload(id, cx);
+                    }
+                    return;
+                };
+                match started {
+                    Ok(id) => file.upload = Some(id),
+                    Err(err) => file.state = DriveState::Failed(err),
+                }
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    fn set_drive_state(&mut self, path: &PathBuf, state: DriveState, cx: &mut Context<Self>) {
+        if let Some(file) = self
+            .compose
+            .as_mut()
+            .and_then(|c| c.drive.iter_mut().find(|f| &f.path == path))
+        {
+            file.state = state;
+            cx.notify();
+        }
+    }
+
+    /// Follows the daemon's uploads, once one started.
+    fn watch_drive(&mut self, cx: &mut Context<Self>) {
+        if self.drive_watch.is_some() {
+            return;
+        }
+        let Some(connection) = self.daemon.clone() else {
+            return;
+        };
+        self.drive_watch = Some(cx.spawn(async move |this, cx| {
+            use futures_lite::StreamExt;
+            let Ok(mut changes) = daemon::drive_changes(&connection).await else {
+                return;
+            };
+            while let Some(id) = changes.next().await {
+                let Ok(status) = daemon::drive_upload_status(&connection, id).await else {
+                    continue;
+                };
+                if this
+                    .update(cx, |this, cx| this.drive_changed(status, cx))
+                    .is_err()
+                {
+                    return;
+                }
+            }
+        }));
+    }
+
+    fn drive_changed(&mut self, status: DriveUpload, cx: &mut Context<Self>) {
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        let Some(file) = compose
+            .drive
+            .iter_mut()
+            .find(|f| f.upload == Some(status.id))
+        else {
+            return;
+        };
+        file.sent = status.sent;
+        file.state = match status.state.as_str() {
+            drive_state::DONE => DriveState::Done { link: status.link },
+            drive_state::NEEDS_PERMISSION => DriveState::NeedsPermission,
+            drive_state::FAILED => DriveState::Failed(status.error),
+            _ => DriveState::Uploading,
+        };
+        cx.notify();
+    }
+
+    fn cancel_drive_upload(&mut self, id: i64, cx: &mut Context<Self>) {
+        if let Some(connection) = self.daemon.clone() {
+            cx.background_executor()
+                .spawn(async move {
+                    if let Err(err) = daemon::drive_cancel(&connection, id).await {
+                        tracing::warn!(%err, "cannot remove the file from Drive");
+                    }
+                })
+                .detach();
+        }
+    }
+
+    /// Takes chip `ix` off the message, and its file out of Drive.
+    fn remove_drive_file(&mut self, ix: usize, cx: &mut Context<Self>) {
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        if ix >= compose.drive.len() {
+            return;
+        }
+        let file = compose.drive.remove(ix);
+        if let Some(id) = file.upload {
+            self.cancel_drive_upload(id, cx);
+        }
+        cx.notify();
+    }
+
+    /// Signs the account of chip `ix` in with Google again, now allowing
+    /// Drive, then uploads its files that waited for it.
+    fn allow_drive(&mut self, ix: usize, cx: &mut Context<Self>) {
+        let Some(connection) = self.daemon.clone() else {
+            return;
+        };
+        let Some(account) = self
+            .compose
+            .as_ref()
+            .and_then(|c| c.drive.get(ix))
+            .map(|f| f.account)
+        else {
+            return;
+        };
+        let address = self
+            .accounts
+            .iter()
+            .find(|a| a.id == account)
+            .map(|a| a.address.clone())
+            .unwrap_or_default();
+        cx.spawn(async move |this, cx| {
+            let signed_in = daemon::sign_in(
+                &connection,
+                OAuthProvider::Google,
+                Some(account.0),
+                &address,
+            )
+            .await;
+            this.update(cx, |this, cx| {
+                if signed_in.is_err() {
+                    return;
+                }
+                let waiting: Vec<PathBuf> = this
+                    .compose
+                    .iter()
+                    .flat_map(|c| &c.drive)
+                    .filter(|f| f.account == account && f.state == DriveState::NeedsPermission)
+                    .map(|f| f.path.clone())
+                    .collect();
+                for path in waiting {
+                    this.start_drive_upload(path, cx);
+                }
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Before Send: waits for uploads under way, then shares the files
+    /// with the recipients. Returns whether sending has to stop here (it
+    /// goes on by itself once it can).
+    pub(super) fn drive_before_send(
+        &mut self,
+        at: Option<jiff::Timestamp>,
+        archive: bool,
+        passed: Passed,
+        recipients: Vec<String>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> bool {
+        let Some(compose) = &mut self.compose else {
+            return false;
+        };
+        if compose.drive.is_empty() || passed.shared {
+            return false;
+        }
+        if let Some(file) = compose
+            .drive
+            .iter()
+            .find(|f| matches!(f.state, DriveState::NeedsPermission | DriveState::Failed(_)))
+        {
+            let text = tr!("compose-drive-not-uploaded", name = file.name.clone());
+            self.show_snackbar(text, None, cx);
+            return true;
+        }
+        if let Some(file) = compose
+            .drive
+            .iter()
+            .find(|f| f.state == DriveState::Uploading)
+        {
+            // Sent by itself once the uploads are done, as in Gmail.
+            if !std::mem::replace(&mut compose.send_when_uploaded, true) {
+                let text = tr!(
+                    "compose-drive-sends-when-uploaded",
+                    name = file.name.clone()
+                );
+                self.show_snackbar(text, None, cx);
+                cx.spawn_in(window, async move |this, cx| {
+                    loop {
+                        cx.background_executor()
+                            .timer(std::time::Duration::from_millis(300))
+                            .await;
+                        let go_on = this.update_in(cx, |this, window, cx| {
+                            let Some(c) = &mut this.compose else {
+                                return false;
+                            };
+                            if !c.send_when_uploaded {
+                                return false;
+                            }
+                            if c.drive.iter().any(|f| f.state == DriveState::Uploading) {
+                                return true;
+                            }
+                            c.send_when_uploaded = false;
+                            this.send_compose(at, archive, passed, window, cx);
+                            false
+                        });
+                        if !matches!(go_on, Ok(true)) {
+                            return;
+                        }
+                    }
+                })
+                .detach();
+            }
+            cx.notify();
+            return true;
+        }
+        let Some(connection) = self.daemon.clone() else {
+            return false;
+        };
+        let uploads: Vec<i64> = compose.drive.iter().filter_map(|f| f.upload).collect();
+        cx.spawn_in(window, async move |this, cx| {
+            let refused = daemon::drive_share(&connection, &uploads, &recipients).await;
+            this.update_in(cx, |this, window, cx| match refused {
+                Ok(refused) if refused.is_empty() => {
+                    this.send_compose(at, archive, passed.with_shared(), window, cx);
+                }
+                Ok(refused) => {
+                    if let Some(c) = &mut this.compose {
+                        c.popup = Some(Popup::DriveShare {
+                            refused,
+                            at,
+                            archive,
+                            passed,
+                        });
+                    }
+                    cx.notify();
+                }
+                Err(err) => {
+                    this.show_snackbar(tr!("compose-drive-share-failed", error = err), None, cx);
+                }
+            })
+            .ok();
+        })
+        .detach();
+        true
+    }
+
+    /// Send's question when Drive would not share with some recipients.
+    pub(super) fn render_drive_share(
+        &self,
+        refused: &[String],
+        at: Option<jiff::Timestamp>,
+        archive: bool,
+        passed: Passed,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let text = tr!(
+            "compose-drive-share-text",
+            count = refused.len() as u64,
+            addresses = refused.join(", ")
+        );
+        let plain = |id: &'static str, label: String| {
+            div()
+                .id(id)
+                .h(px(36.0))
+                .px(px(16.0))
+                .flex()
+                .items_center()
+                .rounded_full()
+                .text_size(px(14.0))
+                .font_weight(FontWeight::MEDIUM)
+                .text_color(rgba(th.accent))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .child(label)
+        };
+        Self::dialog_card(th, 460.0, tr!("compose-drive-share-title"))
+            .child(
+                div()
+                    .text_size(px(14.0))
+                    .line_height(px(20.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(text),
+            )
+            .child(
+                div()
+                    .mt(px(20.0))
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .justify_end()
+                    .gap(px(8.0))
+                    .child(
+                        plain("drive-share-cancel", tr!("compose-drive-share-cancel")).on_click(
+                            cx.listener(|this, _, _, cx| {
+                                if let Some(c) = &mut this.compose {
+                                    c.popup = None;
+                                }
+                                cx.notify();
+                            }),
+                        ),
+                    )
+                    .child(
+                        plain("drive-share-without", tr!("compose-drive-send-without")).on_click(
+                            cx.listener(move |this, _, window, cx| {
+                                this.send_compose(at, archive, passed.with_shared(), window, cx)
+                            }),
+                        ),
+                    )
+                    .child(
+                        filled_button("drive-share-link", tr!("compose-drive-share-link"), th)
+                            .on_click(cx.listener(move |this, _, window, cx| {
+                                this.share_with_link_and_send(at, archive, passed, window, cx)
+                            })),
+                    ),
+            )
+            .into_any_element()
+    }
+
+    fn share_with_link_and_send(
+        &mut self,
+        at: Option<jiff::Timestamp>,
+        archive: bool,
+        passed: Passed,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let (Some(connection), Some(compose)) = (self.daemon.clone(), &mut self.compose) else {
+            return;
+        };
+        compose.popup = None;
+        let uploads: Vec<i64> = compose.drive.iter().filter_map(|f| f.upload).collect();
+        cx.spawn_in(window, async move |this, cx| {
+            let shared = daemon::drive_share_with_link(&connection, &uploads).await;
+            this.update_in(cx, |this, window, cx| match shared {
+                Ok(()) => this.send_compose(at, archive, passed.with_shared(), window, cx),
+                Err(err) => {
+                    this.show_snackbar(tr!("compose-drive-share-failed", error = err), None, cx);
+                }
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// The chip of Drive file `ix`: its name, how far the upload got, and
+    /// what to do when it cannot go on.
+    pub(super) fn render_drive_chip(
+        &self,
+        ix: usize,
+        file: &DriveFile,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let action = |id: &'static str, label: String| {
+            div()
+                .id((id, ix))
+                .flex_none()
+                .h(px(24.0))
+                .px(px(8.0))
+                .flex()
+                .items_center()
+                .rounded_full()
+                .text_size(px(12.0))
+                .font_weight(FontWeight::MEDIUM)
+                .text_color(rgba(th.accent))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .child(label)
+        };
+        let detail: AnyElement =
+            match &file.state {
+                DriveState::Uploading => {
+                    let percent = (file.sent * 100).checked_div(file.size).unwrap_or(0);
+                    div()
+                        .flex_none()
+                        .text_color(rgba(th.text_dim))
+                        .child(tr!("compose-drive-uploading", percent = percent))
+                        .into_any_element()
+                }
+                DriveState::Done { .. } => div()
+                    .flex_none()
+                    .text_color(rgba(th.text_dim))
+                    .child(tr!(
+                        "compose-attachment-size",
+                        size = format::size(file.size)
+                    ))
+                    .into_any_element(),
+                DriveState::NeedsPermission => action("drive-allow", tr!("compose-drive-allow"))
+                    .tooltip(tip(tr!("compose-drive-allow-tip"), th))
+                    .on_click(cx.listener(move |this, _, _, cx| this.allow_drive(ix, cx)))
+                    .into_any_element(),
+                DriveState::Failed(error) => {
+                    let path = file.path.clone();
+                    action("drive-retry", tr!("compose-drive-retry"))
+                        .tooltip(tip(error.clone(), th))
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            this.start_drive_upload(path.clone(), cx)
+                        }))
+                        .into_any_element()
+                }
+            };
+        let progress = match file.state {
+            DriveState::Uploading if file.size > 0 => {
+                Some((file.sent as f32 / file.size as f32).clamp(0.02, 1.0))
+            }
+            _ => None,
+        };
+        div()
+            .id(("drive-file", ix))
+            .relative()
+            .overflow_hidden()
+            .h(px(36.0))
+            .max_w(px(280.0))
+            .pl(px(10.0))
+            .pr(px(4.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(8.0))
+            .rounded(px(8.0))
+            .bg(rgba(th.chip))
+            .text_size(px(13.0))
+            .when(file.link().is_some(), |d| {
+                d.tooltip(tip(tr!("compose-drive-tip"), th))
+            })
+            .child(icon("cloud", th.accent, 18.0))
+            .child(
+                div()
+                    .min_w_0()
+                    .truncate()
+                    .font_weight(FontWeight::MEDIUM)
+                    .text_color(rgba(th.accent))
+                    .child(file.name.clone()),
+            )
+            .child(detail)
+            .child(
+                div()
+                    .id(("drive-remove", ix))
+                    .flex_none()
+                    .size(px(24.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded_full()
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .tooltip(tip(tr!("compose-remove-attachment"), th))
+                    .on_click(cx.listener(move |this, _, _, cx| this.remove_drive_file(ix, cx)))
+                    .child(icon("close", th.text_dim, 16.0)),
+            )
+            .children(progress.map(|done| {
+                div()
+                    .absolute()
+                    .left_0()
+                    .bottom_0()
+                    .h(px(3.0))
+                    .w(relative(done))
+                    .bg(rgba(th.accent))
+            }))
+            .into_any_element()
+    }
+}

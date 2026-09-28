@@ -98,6 +98,30 @@ compose-attachments-total = { $count ->
     [one] { $count } file, { $size }
    *[other] { $count } files, { $size }
 }
+# Google Drive: files over the mail limit. $name: the first such file;
+# $limit: such as "25 MB".
+compose-drive-note = { $name } is over { $limit }, so it goes to your Google Drive and the message carries a link.
+compose-drive-tip = In your Google Drive; the message carries a link
+# On a file's chip while it uploads. $percent: 0 to 100.
+compose-drive-uploading = Uploading { $percent }%
+# On the chip when the account's sign-in did not allow Google Drive.
+compose-drive-allow = Allow Drive
+compose-drive-allow-tip = Sign in with Google again to let Katna put large files in your Drive
+compose-drive-retry = Try again
+compose-drive-sends-when-uploaded = Sending once { $name } is uploaded
+compose-drive-not-uploaded = { $name } is not in Google Drive yet
+compose-drive-share-failed = Could not share the files in Google Drive: { $error }
+compose-drive-share-title = Share the files with everyone?
+# $addresses: the recipients, separated by commas.
+compose-drive-share-text = { $count ->
+    [one] Google Drive can't share the files with { $addresses }, who has no Google account. Anyone with the link can open them instead.
+   *[other] Google Drive can't share the files with { $addresses }, who have no Google account. Anyone with the link can open them instead.
+}
+compose-drive-share-link = Share with link
+compose-drive-send-without = Send without sharing
+compose-drive-share-cancel = Cancel
+# Under a Drive file's link in the sent message. $size: such as "84 MB".
+compose-drive-card-detail = { $size } · Google Drive
 # Shown over the message while files are dragged over it.
 compose-drop-files = Drop files here
 # Shown over the message while text, cells or a picture from another app

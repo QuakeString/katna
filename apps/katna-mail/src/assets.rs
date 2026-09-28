@@ -40,6 +40,7 @@ icons!(
     "clear-format",
     "close-full",
     "close",
+    "cloud",
     "coffee",
     "compose",
     "contacts",
