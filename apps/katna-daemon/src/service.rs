@@ -229,6 +229,13 @@ macro_rules! pim_interface {
                 Ok(self.daemon.server_hold_limit(AccountId(account)).await?)
             }
 
+            async fn server_delivery_receipts(&self, account: i64) -> fdo::Result<bool> {
+                Ok(self
+                    .daemon
+                    .server_delivery_receipts(AccountId(account))
+                    .await?)
+            }
+
             async fn queue_tracked_send(
                 &self,
                 account: i64,

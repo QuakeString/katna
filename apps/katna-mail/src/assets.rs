@@ -44,6 +44,7 @@ icons!(
     "compose",
     "contacts",
     "contrast",
+    "delivery-receipt",
     "document",
     "download",
     "drafts",

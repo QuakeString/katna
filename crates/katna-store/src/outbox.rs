@@ -53,6 +53,42 @@ impl SendState {
     }
 }
 
+/// The header by which Katna Mail asks the daemon for delivery receipts
+/// on a message it queues. The daemon takes it out before the message is
+/// stored, so it is never sent.
+pub const DELIVERY_RECEIPT_HEADER: &str = "X-Katna-Delivery-Receipt";
+
+/// `raw` without the [`DELIVERY_RECEIPT_HEADER`], if it had one.
+pub fn take_delivery_receipt(raw: &[u8]) -> Option<Vec<u8>> {
+    let name = DELIVERY_RECEIPT_HEADER.as_bytes();
+    let mut out = Vec::with_capacity(raw.len());
+    let mut found = false;
+    let mut skipping = false;
+    let mut rest = raw;
+    while !rest.is_empty() {
+        let end = rest
+            .iter()
+            .position(|&b| b == b'\n')
+            .map_or(rest.len(), |at| at + 1);
+        let (line, tail) = rest.split_at(end);
+        if line == b"\r\n" || line == b"\n" {
+            out.extend_from_slice(rest);
+            break;
+        }
+        if !matches!(line.first(), Some(b' ' | b'\t')) {
+            skipping = line.len() > name.len()
+                && line[..name.len()].eq_ignore_ascii_case(name)
+                && line[name.len()] == b':';
+            found |= skipping;
+        }
+        if !skipping {
+            out.extend_from_slice(line);
+        }
+        rest = tail;
+    }
+    found.then_some(out)
+}
+
 /// One outbox row.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OutboxEntry {
@@ -70,10 +106,13 @@ pub struct OutboxEntry {
     pub hold_until: Option<i64>,
     /// Sent as one tracked copy per recipient (§11, §16.1).
     pub per_recipient: bool,
+    /// Delivery status notifications asked for (SMTP DSN, §16.1).
+    pub delivery_receipt: bool,
 }
 
 const ENTRY_QUERY: &str = "SELECT o.id, m.account_id, o.draft_message_id, m.subject,
-                                  o.send_at, o.state, o.attempts, o.hold_until, o.per_recipient
+                                  o.send_at, o.state, o.attempts, o.hold_until, o.per_recipient,
+                                  o.delivery_receipt
                            FROM outbox o JOIN message m ON m.id = o.draft_message_id";
 
 fn entry(row: &rusqlite::Row<'_>) -> rusqlite::Result<OutboxEntry> {
@@ -87,6 +126,7 @@ fn entry(row: &rusqlite::Row<'_>) -> rusqlite::Result<OutboxEntry> {
         attempts: row.get(6)?,
         hold_until: row.get(7)?,
         per_recipient: row.get(8)?,
+        delivery_receipt: row.get(9)?,
     })
 }
 
@@ -229,6 +269,14 @@ impl MailBatch<'_> {
         )?
         .execute(params![message.0, send_at, hold_until, per_recipient])?;
         Ok(tx.last_insert_rowid())
+    }
+
+    /// Asks for delivery status notifications when entry `id` is sent.
+    pub fn ask_delivery_receipt(&mut self, id: i64) -> Result<()> {
+        self.tx()
+            .prepare_cached("UPDATE outbox SET delivery_receipt = 1 WHERE id = ?1")?
+            .execute([id])?;
+        Ok(())
     }
 
     /// Forgets when a sent entry goes out: it is out, and being filed.
@@ -414,5 +462,15 @@ mod tests {
         batch.commit().unwrap();
         assert!(store.outbox().unwrap().is_empty());
         assert!(store.messages_by_id(&[first, second]).unwrap().is_empty());
+    }
+
+    #[test]
+    fn the_receipt_header_is_taken_out() {
+        let raw = b"X-Katna-Delivery-Receipt: yes\r\nFrom: a@x.org\r\n\r\nX-Katna-Delivery-Receipt: body\r\n";
+        assert_eq!(
+            take_delivery_receipt(raw).unwrap(),
+            b"From: a@x.org\r\n\r\nX-Katna-Delivery-Receipt: body\r\n".to_vec()
+        );
+        assert_eq!(take_delivery_receipt(b"From: a@x.org\r\n\r\nHi\r\n"), None);
     }
 }

@@ -177,6 +177,9 @@ fn queue_held(
     now: i64,
     tracked: bool,
 ) -> std::result::Result<i64, QueueError> {
+    let asked = katna_store::take_delivery_receipt(raw);
+    let receipt = asked.is_some();
+    let raw = asked.as_deref().unwrap_or(raw);
     let envelope = envelope(raw).map_err(QueueError::Invalid)?;
     let domain = envelope
         .from
@@ -191,6 +194,9 @@ fn queue_held(
         } else {
             batch.queue_held(id, send_at, hold_until)?
         };
+        if receipt {
+            batch.ask_delivery_receipt(entry)?;
+        }
         batch.commit()?;
         Ok(entry)
     })
@@ -599,16 +605,16 @@ async fn send<O: Outgoing>(
     let hold = entry.hold_until.filter(|&at| at > now);
     let mut tracked = None;
     let result = match (raw, hold) {
-        (Some(raw), Some(at)) => hand_over(outgoing, entry.account, &raw, at).await,
+        (Some(raw), Some(at)) => hand_over(outgoing, entry, &raw, at).await,
         (Some(raw), None) if entry.per_recipient => {
             tracked = prepare_tracking(outgoing, store, entry, &raw).await?;
             match &tracked {
-                Some(plan) => deliver_tracked(outgoing, store, entry.account, &raw, plan).await,
-                None => deliver(outgoing, entry.account, &raw).await,
+                Some(plan) => deliver_tracked(outgoing, store, entry, &raw, plan).await,
+                None => deliver(outgoing, entry, &raw).await,
             }
             .map(|()| Handover::Sent)
         }
-        (Some(raw), None) => deliver(outgoing, entry.account, &raw)
+        (Some(raw), None) => deliver(outgoing, entry, &raw)
             .await
             .map(|()| Handover::Sent),
         (None, _) => Err(Error::Rejected("the message is gone from the store".into())),
@@ -684,10 +690,17 @@ async fn send<O: Outgoing>(
     Ok(delivery)
 }
 
-async fn deliver<O: Outgoing>(outgoing: &O, account: AccountId, raw: &[u8]) -> Result<()> {
+/// Connects to send `entry`, asking for delivery receipts if it wants them.
+async fn connect<O: Outgoing>(outgoing: &O, entry: &OutboxEntry) -> Result<O::Sender> {
+    let mut sender = outgoing.connect(entry.account).await?;
+    sender.ask_for_receipts(entry.delivery_receipt);
+    Ok(sender)
+}
+
+async fn deliver<O: Outgoing>(outgoing: &O, entry: &OutboxEntry, raw: &[u8]) -> Result<()> {
     let envelope = envelope(raw).map_err(Error::Rejected)?;
     let to: Vec<&str> = envelope.to.iter().map(String::as_str).collect();
-    let mut sender = outgoing.connect(account).await?;
+    let mut sender = connect(outgoing, entry).await?;
     sender.send(&envelope.from, &to, without_bcc(raw)).await?;
     if let Err(error) = sender.quit().await {
         tracing::debug!(%error, "SMTP QUIT after sending");
@@ -698,13 +711,13 @@ async fn deliver<O: Outgoing>(outgoing: &O, account: AccountId, raw: &[u8]) -> R
 /// Hands scheduled mail to the server to hold until `at`, when it can.
 async fn hand_over<O: Outgoing>(
     outgoing: &O,
-    account: AccountId,
+    entry: &OutboxEntry,
     raw: &[u8],
     at: i64,
 ) -> Result<Handover> {
     let envelope = envelope(raw).map_err(Error::Rejected)?;
     let to: Vec<&str> = envelope.to.iter().map(String::as_str).collect();
-    let mut sender = outgoing.connect(account).await?;
+    let mut sender = connect(outgoing, entry).await?;
     let wait = at - unix_now();
     // A hold shorter than the margins is no use.
     let limit = sender
@@ -820,7 +833,7 @@ async fn prepare_tracking<O: Outgoing>(
 async fn deliver_tracked<O: Outgoing>(
     outgoing: &O,
     store: &mut Store,
-    account: AccountId,
+    entry: &OutboxEntry,
     raw: &[u8],
     plan: &TrackingPlan,
 ) -> Result<()> {
@@ -842,7 +855,7 @@ async fn deliver_tracked<O: Outgoing>(
         )
         .unwrap_or_else(|| clean.clone());
         if sender.is_none() {
-            sender = Some(outgoing.connect(account).await?);
+            sender = Some(connect(outgoing, entry).await?);
         }
         let Some(open) = sender.as_mut() else {
             continue;
