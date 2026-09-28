@@ -50,3 +50,4 @@ search-clear = Rensa sökning
 search-options-show = Visa sökalternativ
 settings = Inställningar
 account-add = Lägg till ett konto
+account-wheel-hint = Rulla för att byta konto

@@ -15,6 +15,7 @@ compose-pop-out-reply = Vula impendulo ngokwehlukile
 compose-edit-recipients = Hlela abamukeli
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = { $count } ngaphezulu
 compose-show-trimmed = Bonisa okuqukethwe okufinyeziwe
 compose-hide-trimmed = Fihla okuqukethwe okufinyeziwe
 compose-remove-trimmed = Susa umbhalo ocashuniwe

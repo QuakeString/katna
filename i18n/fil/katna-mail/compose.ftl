@@ -15,6 +15,7 @@ compose-pop-out-reply = Buksan nang hiwalay ang sagot
 compose-edit-recipients = I-edit ang mga tatanggap
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = { $count } pa
 compose-show-trimmed = Ipakita ang tinabas na nilalaman
 compose-hide-trimmed = Itago ang tinabas na nilalaman
 compose-remove-trimmed = Alisin ang siniping teksto

@@ -50,3 +50,4 @@ search-clear = ፍለጋን አጽዳ
 search-options-show = የፍለጋ አማራጮችን አሳይ
 settings = ቅንብሮች
 account-add = መለያ አክል
+account-wheel-hint = መለያዎችን ለመቀያየር ያሸብልሉ

@@ -38,3 +38,4 @@ search-clear = འཚོལ་ཞིབ་བསལ།
 search-options-show = འཚོལ་ཞིབ་ཀྱི་གདམ་ཁ་ཚུ་སྟོན།
 settings = སྒྲིག་སྟངས།
 account-add = རྩིས་ཐོ་ཁ་སྐོང་འབད།
+account-wheel-hint = རྩིས་ཐོ་སོར་ནི་ལུ་ བཤུད་བྱིས།

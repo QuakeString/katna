@@ -950,3 +950,36 @@ của mỗi người nhận được ký hoặc mã hóa riêng, nên chữ ký 
 bản thuần không thể hiển thị lượt mở, nhưng các liên kết trong đó được theo
 dõi, nên bạn thấy khi ai đó mở một liên kết.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Trả lời bắt đầu lại từ đầu sau khi đóng cửa sổ thư"
+text = """
+Đóng một thư được soạn trong cửa sổ riêng giờ sẽ giữ nó trong Thư nháp, còn
+Trả lời, Trả lời tất cả và Chuyển tiếp lại mở một thư mới thay vì đưa thư cũ
+trở lại.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Thanh tìm kiếm mờ như kính"
+text = """
+Khi bật nền mờ, thanh tìm kiếm để lớp mờ xuyên qua giống như thanh xung
+quanh nó, thay vì nằm trên đó như một viên thuốc màu xám đặc.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Cuộn trên ảnh của bạn để chuyển tài khoản"
+text = """
+Khi con trỏ nằm trên ảnh tài khoản ở góc trên bên phải, hãy xoay con lăn
+chuột để chuyển sang tài khoản kế tiếp hoặc trước đó, mỗi nấc một tài khoản.
+Ảnh cuộn sang tài khoản mới, giống như tên ứng dụng cuộn khi bạn chuyển ứng
+dụng, và chọn một tài khoản từ thẻ cũng làm nó cuộn theo cách đó.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Đủ chỗ cho nhiều người nhận"
+text = """
+Người nhận sau dòng đầu tiên giờ dùng toàn bộ chiều rộng, và một danh sách
+dài cuộn trong vài dòng, nên bản thân thư luôn nằm trong tầm với. Rời khỏi
+trường và nó gập lại thành một dòng, chẳng hạn "Kay, Sam, 19 người nữa";
+nhấp vào đó để xem lại tất cả.
+"""

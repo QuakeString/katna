@@ -15,6 +15,7 @@ compose-pop-out-reply = 弹出回复
 compose-edit-recipients = 编辑收件人
 compose-summary-cc = 抄送：{ $names }
 compose-summary-bcc = 密送：{ $names }
+compose-more-recipients = 另外 { $count } 人
 compose-show-trimmed = 显示被截去的内容
 compose-hide-trimmed = 隐藏被截去的内容
 compose-remove-trimmed = 移除引用的文字

@@ -15,6 +15,7 @@ compose-pop-out-reply = Ṣí èsì sí ọ̀tọ̀
 compose-edit-recipients = Ṣàtúnṣe àwọn olùgbà
 compose-summary-cc = Ẹ̀dà: { $names }
 compose-summary-bcc = Ẹ̀dà àṣírí: { $names }
+compose-more-recipients = { $count } míì
 compose-show-trimmed = Fi àkóónú tí a gé kúrú hàn
 compose-hide-trimmed = Fi àkóónú tí a gé kúrú pamọ́
 compose-remove-trimmed = Yọ ọ̀rọ̀ tí a fà yọ kúrò

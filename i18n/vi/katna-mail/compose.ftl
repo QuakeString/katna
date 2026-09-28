@@ -15,6 +15,7 @@ compose-pop-out-reply = Mở thư trả lời riêng
 compose-edit-recipients = Sửa người nhận
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = { $count } người nữa
 compose-show-trimmed = Hiện nội dung bị rút gọn
 compose-hide-trimmed = Ẩn nội dung bị rút gọn
 compose-remove-trimmed = Xóa phần trích dẫn

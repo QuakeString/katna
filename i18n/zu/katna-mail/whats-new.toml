@@ -1009,3 +1009,40 @@ ngamunye isayinwa noma ibethelwe yodwa, ngakho izisayino zihlala zisebenza.
 Imeyili yombhalo osobala ayikwazi ukubonisa ukuvulwa, kepha izixhumanisi
 zayo ziyalandelelwa, ngakho uyabona uma othile elandela isixhumanisi.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Impendulo iqala ngokusha ngemva kokuvala iwindi lomlayezo"
+text = """
+Ukuvala umlayezo obhalwe kwiwindi lawo manje kuwugcina kokusalungiswa,
+futhi Phendula, Phendula bonke kanye Nokudlulisela kuvula umlayezo
+omusha futhi esikhundleni sokubuyisa omdala.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Ibha yosesho ehwamukile"
+text = """
+Uma ingemuva elimpunga livuliwe, ibha yosesho ivumela ukuhwamuka kudlule
+njengebha ezungeze yona, esikhundleni sokuhlala phezu kwayo njengepilisi
+elimpunga eliqinile.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Skrola phezu kwesithombe sakho ukushintsha ama-akhawunti"
+text = """
+Uma inkomba iphezu kwesithombe se-akhawunti phezulu kwesokudla, jikisa
+ivili lempuku ukuze uye ku-akhawunti elandelayo noma yangaphambilini,
+i-akhawunti eyodwa ngokuchofoza ngakunye. Isithombe siyagiqika siye
+ku-akhawunti entsha, njengoba igama lohlelo lokusebenza ligiqika uma
+ushintsha izinhlelo, futhi ukukhetha i-akhawunti kukhadi kuyigiqika
+ngendlela efanayo.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Isikhala sabamukeli abaningi"
+text = """
+Abamukeli ngemva komugqa wokuqala manje basebenzisa ububanzi bonke,
+futhi uhlu olude luskrola phakathi kwemigqa embalwa, ukuze umlayezo
+uhlale usondele. Shiya inkambu futhi igoqeke ibe umugqa owodwa,
+njengokuthi “Kay, Sam, 19 ngaphezulu”; yichofoze ukuze ubabone bonke
+futhi.
+"""

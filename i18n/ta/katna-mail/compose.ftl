@@ -15,6 +15,7 @@ compose-pop-out-reply = பதிலைத் தனியாகத் திற
 compose-edit-recipients = பெறுநர்களைத் திருத்து
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = மேலும் { $count }
 compose-show-trimmed = சுருக்கிய உள்ளடக்கத்தைக் காட்டு
 compose-hide-trimmed = சுருக்கிய உள்ளடக்கத்தை மறை
 compose-remove-trimmed = மேற்கோள் உரையை நீக்கு

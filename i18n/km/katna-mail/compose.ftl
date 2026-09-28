@@ -15,6 +15,7 @@ compose-pop-out-reply = បើកការឆ្លើយតបក្នុង�
 compose-edit-recipients = កែសម្រួលអ្នកទទួល
 compose-summary-cc = ចម្លងជូន៖ { $names }
 compose-summary-bcc = ចម្លងជូនសម្ងាត់៖ { $names }
+compose-more-recipients = ផ្សេងទៀត { $count } នាក់
 compose-show-trimmed = បង្ហាញខ្លឹមសារដែលបានកាត់
 compose-hide-trimmed = លាក់ខ្លឹមសារដែលបានកាត់
 compose-remove-trimmed = ដកអត្ថបទដែលដកស្រង់ចេញ

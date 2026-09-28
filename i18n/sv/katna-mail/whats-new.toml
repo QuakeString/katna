@@ -955,3 +955,37 @@ kopia signeras eller krypteras för sig, så att signaturer förblir giltiga.
 Oformaterad e-post kan inte visa öppningar, men dess länkar spåras, så du
 ser när någon följer en.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Svara börjar om efter att ett meddelandefönster stängts"
+text = """
+Om du stänger ett meddelande som skrivits i ett eget fönster ligger det nu
+kvar i Utkast, och Svara, Svara alla och Vidarebefordra öppnar åter ett nytt
+meddelande i stället för att hämta tillbaka det gamla.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Ett frostat sökfält"
+text = """
+När den suddiga bakgrunden är på släpper sökfältet igenom suddigheten,
+precis som fältet runt omkring, i stället för att ligga ovanpå som en
+enfärgad grå pill.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Rulla över din bild för att byta konto"
+text = """
+Håll pekaren över kontobilden uppe till höger och vrid på mushjulet för att
+gå till nästa eller föregående konto, ett konto per hack. Bilden rullar till
+det nya kontot, som appens namn rullar när du byter app, och när du väljer
+ett konto från kortet rullar den på samma sätt.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Plats för många mottagare"
+text = """
+Mottagare efter den första raden använder nu hela bredden, och en lång lista
+rullar inom några få rader, så att själva meddelandet alltid finns inom
+räckhåll. Lämna fältet så viks det ihop till en rad, till exempel "Kay, Sam,
+19 till"; klicka på det för att se alla igen.
+"""

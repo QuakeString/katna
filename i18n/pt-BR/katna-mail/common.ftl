@@ -54,3 +54,4 @@ search-clear = Limpar pesquisa
 search-options-show = Mostrar opções de pesquisa
 settings = Configurações
 account-add = Adicionar uma conta
+account-wheel-hint = Role para trocar de conta

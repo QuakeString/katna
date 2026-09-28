@@ -15,6 +15,7 @@ compose-pop-out-reply = පිළිතුර වෙනම කවුළුවක
 compose-edit-recipients = ලබන්නන් සංස්කරණය කරන්න
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = තවත් { $count }
 compose-show-trimmed = කපා හැරි අන්තර්ගතය පෙන්වන්න
 compose-hide-trimmed = කපා හැරි අන්තර්ගතය සඟවන්න
 compose-remove-trimmed = උපුටා දැක්වූ පෙළ ඉවත් කරන්න

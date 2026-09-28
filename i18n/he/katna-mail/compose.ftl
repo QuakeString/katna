@@ -15,6 +15,7 @@ compose-pop-out-reply = פתיחת התשובה בחלון נפרד
 compose-edit-recipients = עריכת הנמענים
 compose-summary-cc = עותק: { $names }
 compose-summary-bcc = עותק מוסתר: { $names }
+compose-more-recipients = { $count } נוספים
 compose-show-trimmed = הצגת התוכן שקוצץ
 compose-hide-trimmed = הסתרת התוכן שקוצץ
 compose-remove-trimmed = הסרת הטקסט המצוטט

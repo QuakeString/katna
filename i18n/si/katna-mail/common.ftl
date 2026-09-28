@@ -50,3 +50,4 @@ search-clear = සෙවීම හිස් කරන්න
 search-options-show = සෙවීම් විකල්ප පෙන්වන්න
 settings = සැකසීම්
 account-add = ගිණුමක් එක් කරන්න
+account-wheel-hint = ගිණුම මාරු කිරීමට ස්ක්‍රෝල් කරන්න

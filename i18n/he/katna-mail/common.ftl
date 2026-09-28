@@ -54,3 +54,4 @@ search-clear = ניקוי החיפוש
 search-options-show = הצגת אפשרויות החיפוש
 settings = הגדרות
 account-add = הוספת חשבון
+account-wheel-hint = גלילה להחלפת חשבונות

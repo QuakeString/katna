@@ -15,6 +15,7 @@ compose-pop-out-reply = Buɗe amsar a taga ta daban
 compose-edit-recipients = Gyara masu karɓa
 compose-summary-cc = Kwafi: { $names }
 compose-summary-bcc = Kwafi a ɓoye: { $names }
+compose-more-recipients = { $count } ƙari
 compose-show-trimmed = Nuna abin da aka taƙaita
 compose-hide-trimmed = Ɓoye abin da aka taƙaita
 compose-remove-trimmed = Cire rubutun da aka ambato
