@@ -34,6 +34,7 @@ about-changelog = Veranderingslog
 about-source = Bronkode
 about-coffee = Koop vir my 'n koffie
 about-coming-soon = Kom binnekort
+about-follow-me = Volg my op
 about-love-title = Met liefde gemaak vir Rust, KDE en Linux
 about-love-text = Rust maak dit 'n plesier om 'n vinnige en veilige e-posprogram te skryf: Katna het geen unsafe-kode nie. KDE se Plasma-werkskerm en sy PIM-suite het Katna geïnspireer, en Linux en die vryesagteware-gemeenskap bou die grond waarop dit staan. Dankie, en dankie aan die biblioteke hieronder.
 about-kde-text = KDE bou die werkskerm waarop Katna die meeste tuis voel, en dit word deur vrywilligers gemaak en deur mense soos jy befonds. As jy van Plasma of KDE se programme hou, oorweeg asseblief 'n skenking aan KDE.

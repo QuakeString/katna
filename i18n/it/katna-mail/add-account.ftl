@@ -23,6 +23,7 @@ add-account-outgoing = Posta in uscita ({ $protocol })
 add-account-field-server = Server
 add-account-field-port = Porta
 add-account-security-none = Nessuna
+add-account-security-none-warning = Non cifrata: la tua password e la tua posta possono essere lette durante il tragitto.
 add-account-field-username = Nome utente
 add-account-field-password = Password
 add-account-show-password = Mostra la password

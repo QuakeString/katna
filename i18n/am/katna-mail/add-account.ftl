@@ -23,6 +23,7 @@ add-account-outgoing = ወጪ ደብዳቤ ({ $protocol })
 add-account-field-server = አገልጋይ
 add-account-field-port = ወደብ
 add-account-security-none = የለም
+add-account-security-none-warning = አልተመሰጠረም፦ የይለፍ ቃልዎ እና ደብዳቤዎ በመንገድ ላይ ሊነበቡ ይችላሉ።
 add-account-field-username = የተጠቃሚ ስም
 add-account-field-password = የይለፍ ቃል
 add-account-show-password = የይለፍ ቃል አሳይ

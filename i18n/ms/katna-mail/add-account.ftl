@@ -23,6 +23,7 @@ add-account-outgoing = Mel keluar ({ $protocol })
 add-account-field-server = Pelayan
 add-account-field-port = Port
 add-account-security-none = Tiada
+add-account-security-none-warning = Tidak disulitkan: kata laluan dan mel anda boleh dibaca semasa dalam perjalanan.
 add-account-field-username = Nama pengguna
 add-account-field-password = Kata laluan
 add-account-show-password = Tunjukkan kata laluan

@@ -1043,3 +1043,12 @@ e-postgränsen på samma sätt som Google-konton: filen hamnar i din
 OneDrive så fort du bifogar den, och meddelandet innehåller dess länk,
 som i Outlook.
 """
+
+["2026-09-28-2108-activity-checking"]
+title = "Slut på Logga in-blinkningen i Aktivitet"
+text = """
+Direkt när Katna startar visar Aktivitet ett tunt laddningsfält medan
+ditt Katna-konto kontrolleras, i stället för att kort be dig logga in.
+Katna kontrollerar också kontot så snart det startar, så väntan blir
+kortare.
+"""

@@ -1062,3 +1062,12 @@ aşan dosyaları Google hesapları gibi gönderiyor: dosya eklediğiniz anda
 OneDrive'ınıza gider ve ileti, Outlook'taki gibi dosyanın bağlantısını
 taşır.
 """
+
+["2026-09-28-2108-activity-checking"]
+title = "Etkinlik'te artık Oturum aç ekranı yanıp sönmüyor"
+text = """
+Katna başlar başlamaz Etkinlik, Katna hesabınız denetlenirken sizden
+kısa süreliğine oturum açmanızı istemek yerine ince bir yükleme çubuğu
+gösterir. Katna ayrıca hesabı başlar başlamaz denetler, böylece bekleme
+süresi kısalır.
+"""

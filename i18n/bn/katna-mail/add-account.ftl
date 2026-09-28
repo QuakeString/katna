@@ -23,6 +23,7 @@ add-account-outgoing = বহির্গামী মেল ({ $protocol })
 add-account-field-server = সার্ভার
 add-account-field-port = পোর্ট
 add-account-security-none = কিছু না
+add-account-security-none-warning = এনক্রিপ্ট করা নয়: আপনার পাসওয়ার্ড ও মেল পথে পড়ে ফেলা যেতে পারে।
 add-account-field-username = ব্যবহারকারীর নাম
 add-account-field-password = পাসওয়ার্ড
 add-account-show-password = পাসওয়ার্ড দেখান

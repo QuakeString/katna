@@ -23,6 +23,7 @@ add-account-outgoing = ອີເມວຂາອອກ ({ $protocol })
 add-account-field-server = ເຊີບເວີ
 add-account-field-port = ພອດ
 add-account-security-none = ບໍ່ມີ
+add-account-security-none-warning = ບໍ່ໄດ້ເຂົ້າລະຫັດ: ລະຫັດຜ່ານ ແລະ ອີເມວຂອງທ່ານອາດຖືກອ່ານໄດ້ລະຫວ່າງທາງ.
 add-account-field-username = ຊື່ຜູ້ໃຊ້
 add-account-field-password = ລະຫັດຜ່ານ
 add-account-show-password = ສະແດງລະຫັດຜ່ານ

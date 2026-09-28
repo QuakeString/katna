@@ -922,3 +922,10 @@ Outlook.com、Hotmail 等 Microsoft 帳戶現在\
 存入你的 OneDrive，郵件中會附上其連結，與 Outlook 相同\
 。
 """
+
+["2026-09-28-2108-activity-checking"]
+title = "動態中不再閃現登入提示"
+text = """
+Katna 啟動後，動態會在檢查你的 Katna 帳戶時顯示一條細細的載入列，\
+而不是短暫地要求你登入。Katna 也會在啟動時立即檢查帳戶，因此等待時間更短。
+"""

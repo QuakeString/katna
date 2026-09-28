@@ -23,6 +23,7 @@ add-account-outgoing = যোৱা মেইল ({ $protocol })
 add-account-field-server = ছাৰ্ভাৰ
 add-account-field-port = প'ৰ্ট
 add-account-security-none = নাই
+add-account-security-none-warning = এনক্ৰিপ্ট কৰা হোৱা নাই: আপোনাৰ পাছৱৰ্ড আৰু মেইল বাটতে পঢ়িব পাৰি।
 add-account-field-username = ব্যৱহাৰকাৰীৰ নাম
 add-account-field-password = পাছৱৰ্ড
 add-account-show-password = পাছৱৰ্ড দেখুৱাওক

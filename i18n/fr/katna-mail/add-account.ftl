@@ -23,6 +23,7 @@ add-account-outgoing = Courrier sortant ({ $protocol })
 add-account-field-server = Serveur
 add-account-field-port = Port
 add-account-security-none = Aucune
+add-account-security-none-warning = Non chiffrée : votre mot de passe et vos e-mails peuvent être lus en chemin.
 add-account-field-username = Nom d’utilisateur
 add-account-field-password = Mot de passe
 add-account-show-password = Afficher le mot de passe

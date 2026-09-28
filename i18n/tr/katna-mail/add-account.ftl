@@ -23,6 +23,7 @@ add-account-outgoing = Giden posta ({ $protocol })
 add-account-field-server = Sunucu
 add-account-field-port = Bağlantı noktası
 add-account-security-none = Yok
+add-account-security-none-warning = Şifrelenmemiş: parolanız ve postalarınız yolda okunabilir.
 add-account-field-username = Kullanıcı adı
 add-account-field-password = Parola
 add-account-show-password = Parolayı göster

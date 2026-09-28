@@ -23,6 +23,7 @@ add-account-outgoing = Thư đi ({ $protocol })
 add-account-field-server = Máy chủ
 add-account-field-port = Cổng
 add-account-security-none = Không
+add-account-security-none-warning = Không được mã hóa: mật khẩu và thư của bạn có thể bị đọc trên đường truyền.
 add-account-field-username = Tên người dùng
 add-account-field-password = Mật khẩu
 add-account-show-password = Hiện mật khẩu

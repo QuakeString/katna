@@ -23,6 +23,7 @@ add-account-outgoing = అవుట్‌గోయింగ్ మెయిల�
 add-account-field-server = సర్వర్
 add-account-field-port = పోర్ట్
 add-account-security-none = ఏదీ లేదు
+add-account-security-none-warning = ఎన్‌క్రిప్ట్ చేయబడలేదు: మీ పాస్‌వర్డ్, మెయిల్ మార్గమధ్యంలో చదవబడవచ్చు.
 add-account-field-username = యూజర్‌నేమ్
 add-account-field-password = పాస్‌వర్డ్
 add-account-show-password = పాస్‌వర్డ్‌ను చూపండి

@@ -1038,3 +1038,12 @@ tệp vượt quá giới hạn thư giống như tài khoản Google: tệp đ�
 OneDrive của bạn ngay khi bạn đính kèm, và thư kèm liên kết của tệp, như
 trong Outlook.
 """
+
+["2026-09-28-2108-activity-checking"]
+title = "Không còn nháy Đăng nhập trong Hoạt động"
+text = """
+Ngay sau khi Katna khởi động, Hoạt động hiển thị một thanh tải mỏng
+trong khi kiểm tra tài khoản Katna của bạn, thay vì nhắc bạn đăng nhập
+trong chốc lát. Katna cũng kiểm tra tài khoản ngay khi khởi động, nên
+thời gian chờ ngắn hơn.
+"""

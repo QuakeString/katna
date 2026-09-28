@@ -985,3 +985,10 @@ text = """
 Outlook.com, Hotmail 등 Microsoft 계정에서도 Google 계정처럼 메일 한도를 넘는 파일을 보낼 수 있습니다. 파일을 첨부하는
 즉시 OneDrive에 올라가고, Outlook처럼 메일에는 그 링크가 포함됩니다.
 """
+
+["2026-09-28-2108-activity-checking"]
+title = "Activity에서 로그인 화면이 깜빡이지 않습니다"
+text = """
+Katna를 시작한 직후 Activity는 Katna 계정을 확인하는 동안 잠깐 로그인을 요청하는 대신 얇은 로딩 막대를 표시합니다. 또한 Katna가
+시작되자마자 계정을 확인하므로 대기 시간이 더 짧아졌습니다.
+"""

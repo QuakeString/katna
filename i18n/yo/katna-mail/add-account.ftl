@@ -23,6 +23,7 @@ add-account-outgoing = Lẹ́tà tó ń jáde ({ $protocol })
 add-account-field-server = Sáfà
 add-account-field-port = Pọ́ọ̀tù
 add-account-security-none = Kò sí
+add-account-security-none-warning = A kò fi àṣírí bò ó: a lè ka ọ̀rọ̀ìpamọ́ àti lẹ́tà rẹ lójú ọ̀nà.
 add-account-field-username = Orúkọ oníṣe
 add-account-field-password = Ọ̀rọ̀ aṣínà
 add-account-show-password = Fi ọ̀rọ̀ aṣínà hàn

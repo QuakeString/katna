@@ -1094,3 +1094,12 @@ Mail-Limit jetzt wie Google-Konten: Die Datei landet sofort nach dem
 Anhängen in Ihrem OneDrive, und die Nachricht enthält ihren Link, wie in
 Outlook.
 """
+
+["2026-09-28-2108-activity-checking"]
+title = "Kein „Anmelden“-Aufblitzen mehr in Aktivität"
+text = """
+Direkt nach dem Start zeigt Aktivität einen dünnen Ladebalken, während
+Ihr Katna-Konto geprüft wird, statt kurz zur Anmeldung aufzufordern.
+Katna prüft das Konto außerdem schon beim Start, sodass die Wartezeit
+kürzer ist.
+"""
