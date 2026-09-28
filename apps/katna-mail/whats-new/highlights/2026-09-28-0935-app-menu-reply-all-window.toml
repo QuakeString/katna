@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Main menu in the account card, Reply all in its own window"
+text = """
+The account card has a ☰ button beside Manage accounts. It opens the same
+File, Edit, View, Go, Message, Settings and Help menus as the desktop's
+global menu, for desktops that don't show one. Reply all on a new-mail
+notification now opens the conversation in a window of its own, ready to
+type, and leaves the main window where it is.
+"""

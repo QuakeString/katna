@@ -86,6 +86,7 @@ icons!(
     "lock",
     "mail",
     "mark-read",
+    "menu",
     "minimize",
     "more",
     "move-to",

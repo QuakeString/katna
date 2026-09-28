@@ -20,6 +20,7 @@ mod account_view;
 mod accounts;
 mod activity;
 mod add_account;
+mod app_menu;
 mod apps;
 mod attachments;
 mod colors;
@@ -565,6 +566,8 @@ pub struct MailWindow {
     _first_sync_check: Option<Task<()>>,
     /// The account card above the rail's account picture.
     account_menu: bool,
+    /// The application menu, open from the account card's ☰ button.
+    app_menu: Option<app_menu::AppMenu>,
     /// The language picker, open from the top bar, the drawer or Settings.
     language_picker: Option<language::LanguagePicker>,
     /// The message last handed to the outbox, for Undo.
@@ -771,6 +774,7 @@ impl MailWindow {
             first_sync: false,
             _first_sync_check: None,
             account_menu: false,
+            app_menu: None,
             language_picker: None,
             unsent: None,
             writing: compose::Writing::default(),
