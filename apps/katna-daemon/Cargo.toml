@@ -22,6 +22,8 @@ katna-dbus.workspace = true
 # numbers in the daemon's text show as Western digits.
 katna-i18n.workspace = true
 katna-notify.workspace = true
+# SHA-256 of downloaded updates (already in the tree through rustls).
+ring.workspace = true
 katna-platform.workspace = true
 katna-translate.workspace = true
 async-channel.workspace = true

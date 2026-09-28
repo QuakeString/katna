@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Update Katna from the app"
+text = """
+Katna now downloads new versions by itself and tells you when one is
+ready. Press Update in the notification or in About: Katna Mail says it
+will restart, asks for your password, installs the update and opens again
+where you left off. Settings > General > Updates turns the automatic
+download off.
+"""

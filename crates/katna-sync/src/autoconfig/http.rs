@@ -73,6 +73,98 @@ async fn fetch(
         .await
 }
 
+/// Downloads `url`, following a few redirects, handing the body to `sink`
+/// piece by piece with the whole body's length, without keeping it in
+/// memory: for update packages. The answer must be a `200` with a
+/// `Content-Length` of at most `max_size` bytes. Returns the length.
+pub async fn download(
+    url: &str,
+    tls: &Tls,
+    max_size: u64,
+    sink: &mut (dyn FnMut(&[u8], u64) -> std::io::Result<()> + Send),
+) -> Result<u64> {
+    let mut url = url.to_owned();
+    for _ in 0..=MAX_REDIRECTS {
+        match download_once(&url, tls, max_size, sink).await? {
+            Downloaded::Done(size) => return Ok(size),
+            Downloaded::Redirect(to) => url = resolve(&url, &to)?,
+        }
+    }
+    Err(Error::Protocol(format!("{url}: too many redirects")))
+}
+
+enum Downloaded {
+    Done(u64),
+    Redirect(String),
+}
+
+async fn download_once(
+    url: &str,
+    tls: &Tls,
+    max_size: u64,
+    sink: &mut (dyn FnMut(&[u8], u64) -> std::io::Result<()> + Send),
+) -> Result<Downloaded> {
+    let parts = parse_url(url)?;
+    let mut conn = Conn::new(tls.clone());
+    conn.connect_tls(parts.host, parts.port).await?;
+    let request = format!(
+        "GET {} HTTP/1.1\r\nHost: {}\r\nUser-Agent: Katna\r\nAccept: */*\r\n\
+         Connection: close\r\n\r\n",
+        parts.path, parts.host
+    );
+    conn.write_all(request.as_bytes()).await?;
+    let mut response = Vec::new();
+    while !response.windows(4).any(|w| w == b"\r\n\r\n") {
+        let chunk = conn.read_raw().await?;
+        if chunk.is_empty() {
+            return Err(Error::Closed(format!("{url}: no answer")));
+        }
+        response.extend_from_slice(chunk);
+        if response.len() > 64 * 1024 {
+            return Err(Error::Protocol(format!("{url}: header too large")));
+        }
+    }
+    let head = parse_head(&response)?;
+    match head.status {
+        200 => {}
+        301 | 302 | 303 | 307 | 308 => {
+            let _ = conn.close().await;
+            return head
+                .location
+                .map(Downloaded::Redirect)
+                .ok_or_else(|| Error::Protocol("HTTP: redirect without Location".into()));
+        }
+        other => return Err(Error::Protocol(format!("{url}: HTTP status {other}"))),
+    }
+    if head.chunked {
+        return Err(Error::Protocol(format!("{url}: no Content-Length")));
+    }
+    let total =
+        head.length
+            .ok_or_else(|| Error::Protocol(format!("{url}: no Content-Length")))? as u64;
+    if total > max_size {
+        return Err(Error::Protocol(format!(
+            "{url}: {total} bytes is too large"
+        )));
+    }
+    let first = &head.rest[..head.rest.len().min(total as usize)];
+    sink(first, total)?;
+    let mut done = first.len() as u64;
+    while done < total {
+        let chunk = conn.read_raw().await?;
+        if chunk.is_empty() {
+            return Err(Error::Closed(format!(
+                "{url}: ended after {done} of {total} bytes"
+            )));
+        }
+        let take = chunk.len().min((total - done) as usize);
+        sink(&chunk[..take], total)?;
+        done += take as u64;
+    }
+    let _ = conn.close().await;
+    Ok(Downloaded::Done(total))
+}
+
 /// Posts `body` to `url` with the headers `headers` and returns the answer's
 /// status code. Redirects are not followed.
 pub async fn post(

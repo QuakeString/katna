@@ -64,6 +64,7 @@ mod tab_strip;
 mod tour;
 mod translate;
 mod unified;
+mod updates;
 mod view_state;
 mod viewer;
 mod whats_new;
@@ -560,6 +561,8 @@ pub struct MailWindow {
     share_ask_later: bool,
     /// The About Katna dialog.
     about: Option<about::About>,
+    /// Updates of Katna, shown in About.
+    updates: updates::Updates,
     tour: Option<tour::Tour>,
     tour_marks: tour::Marks,
     /// Where the parts the tour shows were in the last frame.
@@ -778,6 +781,7 @@ impl MailWindow {
             print_preview: None,
             share_ask_later: false,
             about: None,
+            updates: updates::Updates::default(),
             tour: None,
             tour_marks: Default::default(),
             tour_seen: HashMap::new(),
@@ -983,6 +987,7 @@ impl MailWindow {
                 if !this.detached {
                     this.watch_sending(connection.clone(), cx);
                     this.watch_scheduled(connection.clone(), cx);
+                    this.watch_updates(connection.clone(), cx);
                     this.check_first_sync(cx);
                     this.check_signed_out(cx);
                 }

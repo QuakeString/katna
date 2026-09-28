@@ -29,6 +29,7 @@ mod suggest;
 mod tabs;
 mod templates;
 mod theme;
+mod updater;
 mod whats_new;
 mod widgets;
 mod window;
@@ -63,6 +64,7 @@ Options:
   --settings       Open the settings
   --message ID     Open the message with this ID (as notifications do)
   --reply-all ID   Open the message with this ID and reply to all
+  --update         Show the downloaded update of Katna, ready to install
   mailto:...       Write a new message as the link asks (Katna Mail is
                    the desktop's mail app when Settings > General says so)
   --background     Start the Katna service (sync, notifications, the tray
@@ -103,7 +105,15 @@ fn main() -> ExitCode {
             Some("--open") => open_first = true,
             // At login: the Katna service only, without a window.
             Some(autostart::BACKGROUND_FLAG) => return autostart::start_service(),
-            Some(flag @ ("--compose" | "--inbox" | "--settings")) => {
+            // Started by the Katna Mail it replaces after an update: waits
+            // for that one to close, so this one becomes the app.
+            Some(updater::AFTER_FLAG) => {
+                match args.next().and_then(|pid| pid.to_str()?.parse().ok()) {
+                    Some(pid) => updater::wait_for_exit(pid),
+                    None => return usage_error(),
+                }
+            }
+            Some(flag @ ("--compose" | "--inbox" | "--settings" | "--update")) => {
                 request = instance::Request::from_flag(flag);
             }
             Some(flag @ ("--message" | "--reply-all")) => {

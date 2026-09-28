@@ -41,7 +41,16 @@ notify-tracking-opened = { $who } opened { $subject }
 # the text under it is the link.
 notify-tracking-clicked = { $who } clicked a link in { $subject }
 
-## Its buttons
+## An update of Katna is downloaded and ready to install
+
+# The title.
+notify-update-ready = Katna Mail can be updated
+# Under it. $version: the new version, such as 0.0.0.r236.g1a2b3c4.
+notify-update-ready-body = Version { $version } is downloaded. Update installs it and restarts Katna Mail.
+# Its button: shows the update in Katna Mail, ready to install.
+notify-update = Update
+
+## The buttons of new-mail notifications and reminders
 
 notify-open = Open
 # Only on a notification about one message.
