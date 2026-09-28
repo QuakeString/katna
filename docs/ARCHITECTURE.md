@@ -3705,19 +3705,29 @@ menu.
 ### 27.2 Setup
 
 Katna Setup.exe is Katna's own installer, written in Rust with GPUI in
-Katna's look: one window with the logo, Install, a progress bar and Open
-Katna, light or dark as Windows is set. It installs for the current user
-without an administrator prompt, into `%LOCALAPPDATA%\Programs\Katna`, and
-adds the Start menu shortcut, the uninstall entry in Settings > Apps, the
-Run key and the mail handler registrations. MSI and NSIS installers are not
-used: their wizard dialogs look like Windows XP. An MSI for managed
-deployment can be added later if an organization needs one.
+Katna's look: one rounded window with its own shadow and close button (the
+same on Windows 10, which draws windows square, and 11), the logo, the
+choices, Install, a progress bar and Open Katna, light or dark as Windows
+is set. The choices: install for just me (the default, into
+`%LOCALAPPDATA%\Programs\Katna`, no administrator prompt) or for everyone
+(into `%ProgramFiles%\Katna`, with the machine's Start menu, public desktop
+and `HKLM` entries; Setup starts a second copy of itself as administrator,
+so Windows asks once, and follows its progress through a file); the folder
+(a picked folder gets its own `Katna` folder, so removing Katna never
+deletes the user's folder); a desktop shortcut (off), the Start menu (on)
+and start at sign-in (on). An update keeps the folder and what was chosen.
+Windows does not let installers pin to the taskbar (Windows 11 only for
+apps Microsoft approves), so the last screen says how to pin from Start.
+MSI and NSIS installers are not used: their wizard dialogs look like
+Windows XP. An MSI for managed deployment can be added later if an
+organization needs one.
 
 `packaging/windows/README.md` lists the files. Setup carries Katna's
 programs packed with zstd; a newer Setup closes Katna, replaces them and
 keeps settings, mail and passwords. Removing Katna asks whether to delete
-mail and passwords too. `--quiet` installs without a window and
-`--uninstall` removes.
+mail and passwords too. `--quiet` installs without a window (`--all-users`, `--dir`,
+`--desktop`, `--no-start-menu`, `--no-autostart`) and `--uninstall`
+removes.
 
 CI builds Setup.exe on every main push into a `windows-latest`
 pre-release, as it does the Arch package. Without a code-signing

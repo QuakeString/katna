@@ -2,7 +2,8 @@
 
 //! Katna Mail as a mail app on Windows (`docs/ARCHITECTURE.md` §27.1): the
 //! registrations that list it in Settings > Apps > Default apps for
-//! `mailto:` links, all under `HKEY_CURRENT_USER`.
+//! `mailto:` links, under `HKEY_CURRENT_USER` (or `HKEY_LOCAL_MACHINE` when
+//! Setup installs for everyone).
 //!
 //! Windows 10 and later let only the user pick the default app, so Katna
 //! registers itself and opens the Default apps page; the user's choice is
@@ -66,9 +67,14 @@ pub fn entries(exe: &Path) -> Vec<(String, &'static str, String)> {
 
 /// Registers `exe` as a mail app for this user.
 pub fn register(exe: &Path) -> io::Result<()> {
-    let user = RegKey::predef(HKEY_CURRENT_USER);
+    register_in(&RegKey::predef(HKEY_CURRENT_USER), exe)
+}
+
+/// Registers `exe` as a mail app under `root`: `HKEY_LOCAL_MACHINE` for
+/// everyone on the computer, when Setup installs for everyone.
+pub fn register_in(root: &RegKey, exe: &Path) -> io::Result<()> {
     for (path, name, data) in entries(exe) {
-        let (key, _) = user.create_subkey(&path)?;
+        let (key, _) = root.create_subkey(&path)?;
         key.set_value(name, &data)?;
     }
     Ok(())

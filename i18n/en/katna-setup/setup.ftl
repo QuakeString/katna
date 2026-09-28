@@ -3,7 +3,19 @@
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
 setup-tagline = Fast, private email that lives on your computer.
-setup-where = Installs for you only, in { $path }. No administrator rights needed.
+setup-update-where = Updates Katna Mail in { $path }. Your mail, settings and shortcuts stay as they are.
+setup-for = Install for
+setup-for-me = Just me
+setup-for-everyone = Everyone on this computer
+setup-for-everyone-note = Windows will ask for an administrator’s permission.
+setup-everyone-refused = Windows did not allow Setup to install for everyone. Try again, or install just for you.
+setup-everyone-failed = Setup could not finish installing for everyone. Try again, or install just for you.
+setup-folder = Folder
+setup-folder-change = Change…
+setup-folder-pick = Choose where to install Katna Mail
+setup-desktop-shortcut = Add a shortcut to the desktop
+setup-start-menu = Add to the Start menu
+setup-autostart = Start Katna when I sign in, to get new mail
 setup-version = Version { $version }
 setup-install = Install
 setup-update = Update
@@ -21,7 +33,8 @@ setup-step-registering = Adding Katna Mail to Windows…
 ## Done
 
 setup-done-title = Katna Mail is ready
-setup-done-body = It’s in the Start menu. Katna starts when you sign in and shows new mail in the notification area.
+setup-done-body = Katna shows new mail in the notification area while it runs.
+setup-pin-hint = To pin it to the taskbar, right-click Katna Mail in Start and choose Pin to taskbar.
 setup-open = Open Katna Mail
 
 ## Something went wrong
