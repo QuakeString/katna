@@ -451,7 +451,7 @@ tampil dengan warna penuh.
 title = "Traktir saya kopi"
 text = """
 Jika Katna berguna bagi Anda, Tentang Katna kini punya tombol Traktir
-saya kopi dan kode QR untuk membuka halaman yang sama di ponsel Anda.
+saya kopi.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -613,7 +613,7 @@ menampilkan x untuk menghapusnya.
 ["2026-09-27-1722-katna-account"]
 title = "Akun Katna"
 text = """
-Setelan > Akun Katna memungkinkan Anda membuat akun di server Katna sendiri,
+Setelan > Langganan memungkinkan Anda membuat akun di server Katna sendiri,
 dengan sandinya sendiri, tidak pernah sandi email. Fitur online Katna,
 seperti tanda terima baca dan pelacakan tautan, akan memerlukannya. Anda
 bisa melihat komputer yang masuk dan mengeluarkan salah satunya.
@@ -657,7 +657,7 @@ membuka pesan Anda atau mengikuti link di dalamnya, atau minta tanda
 terima baca sebagai gantinya. Email terkirim menunjukkan siapa yang
 membukanya, dan notifikasi memberi tahu Anda pertama kalinya. Keduanya
 nonaktif untuk setiap pesan baru, dan pelacakan memerlukan akun Katna
-(Setelan > Akun Katna).
+(Setelan > Langganan).
 """
 
 ["2026-09-27-2042-activity"]
@@ -697,4 +697,25 @@ kirim dan terima dalam periode itu, seberapa sering dan seberapa cepat
 Anda dan orang lain membalas, orang yang paling sering berkirim email
 dengan Anda, serta hari dan jam email Anda masuk. Semuanya dihitung di
 komputer Anda dari email yang sudah ada di Katna.
+"""
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Masuk dengan Google atau Microsoft"
+text = """
+Tambahkan akun Gmail atau Outlook dengan masuk di halaman Google atau
+Microsoft sendiri di browser Anda, tanpa sandi aplikasi. Alamat Outlook.com
+dan Hotmail kini juga bisa digunakan. Jika proses masuk berhenti berfungsi,
+catatan di bagian bawah jendela menawarkan untuk masuk lagi.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Pelacakan dan tanda terima aktif sejak awal"
+text = """
+Pesan baru dan balasan kini dimulai dengan pelacakan buka dan klik, tanda
+terima baca, dan tanda terima pengiriman dalam keadaan menyala; klik
+tombol di samping penerima untuk mematikan salah satunya untuk pesan itu.
+Pelacakan mengharuskan Anda masuk ke akun Katna Anda. Tanda terima
+pengiriman adalah email yang dikirim server email Anda saat server setiap
+penerima menerima pesan; tombolnya berwarna abu-abu jika server email Anda
+tidak menyediakannya.
 """

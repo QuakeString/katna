@@ -31,6 +31,11 @@ use crate::theme::{Theme, fade, mix};
 use crate::widgets::{elevation, icon, icon_button, icon_button_colored, katna_mark, tip};
 
 const NAV_ROW_HEIGHT: f32 = 32.0;
+/// The gap around a folder's arrow, inside its pill's rounded end.
+const CHEVRON_GAP: f32 = (NAV_ROW_HEIGHT - 20.0) / 2.0;
+/// Where folder icons and headings start, from the pane's edge: after the
+/// inset, the arrow and a gap.
+const NAV_TEXT_LEFT: f32 = NAV_ROW_INSET + CHEVRON_GAP + 20.0 + 4.0;
 const SEARCH_HEIGHT: f32 = 40.0;
 /// The line the app's name rolls through on the top bar.
 const TITLE_LINE: f32 = 28.0;
@@ -568,7 +573,7 @@ impl MailWindow {
                     .flex()
                     .flex_row()
                     .items_center()
-                    .pl(px(26.0))
+                    .pl(px(NAV_TEXT_LEFT))
                     .text_size(px(15.0))
                     .font_weight(FontWeight::MEDIUM)
                     .child(div().flex_1().min_w_0().truncate().child(if gmail {
@@ -714,7 +719,7 @@ impl MailWindow {
             .flex_row()
             .items_end()
             .pb(px(2.0))
-            .pl(px(26.0))
+            .pl(px(NAV_TEXT_LEFT))
             .text_size(px(12.0))
             .font_weight(FontWeight::MEDIUM)
             .text_color(rgba(th.text_faint))
@@ -772,9 +777,9 @@ impl MailWindow {
             div()
                 .id(("nav-chevron", ix))
                 .absolute()
-                // Where it was before the highlight was inset: just
-                // left of the pill's rounded end.
-                .left(px(indent - 4.0))
+                // In the pill's rounded end, centred on it, so its hover
+                // circle keeps an even gap to the pill's edge.
+                .left(px(indent + CHEVRON_GAP))
                 .top(px(6.0))
                 .size(px(20.0))
                 .flex()
@@ -795,7 +800,7 @@ impl MailWindow {
             .relative()
             .h(px(NAV_ROW_HEIGHT))
             .w(px(NAV_WIDTH - 16.0 - NAV_ROW_INSET))
-            .pl(px(26.0 - NAV_ROW_INSET + indent))
+            .pl(px(NAV_TEXT_LEFT - NAV_ROW_INSET + indent))
             .pr(px(12.0))
             .flex()
             .flex_row()

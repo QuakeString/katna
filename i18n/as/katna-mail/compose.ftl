@@ -74,6 +74,9 @@ compose-track-unavailable = স্বাক্ষৰিত, এনক্ৰি�
 compose-track-sign-in = খোলা আৰু ক্লিক ট্ৰেক কৰিবলৈ এটা Katna একাউণ্টত ছাইন ইন কৰক
 compose-receipt = পঢ়াৰ ৰচিদ বিচাৰক
 compose-receipt-on = পঢ়াৰ ৰচিদ বিচৰা হৈছে: প্ৰাপকৰ এপে তেওঁক এখন পঠিয়াবলৈ ক'ব পাৰে
+compose-delivery = ডেলিভাৰী ৰচিদ বিচাৰক
+compose-delivery-on = ডেলিভাৰী ৰচিদ বিচৰা হৈছে: প্ৰতিজন প্ৰাপকৰ ছাৰ্ভাৰে ইয়াক গ্ৰহণ কৰিলে আপোনাৰ মেইল ছাৰ্ভাৰে আপোনাক এটা ইমেইল পঠিয়াব
+compose-delivery-unavailable = আপোনাৰ মেইল ছাৰ্ভাৰে ডেলিভাৰী ৰচিদ নপঠিয়ায়
 
 ## Spelling
 

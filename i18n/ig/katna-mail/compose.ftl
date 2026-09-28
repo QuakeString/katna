@@ -71,6 +71,9 @@ compose-track-unavailable = A pụghị isochi ozi e binyere aka, nke e zoro ezo
 compose-track-sign-in = Banye n'akaụntụ Katna iji soro mmeghe na mpị
 compose-receipt = Rịọ akara na-egosi na a gụrụ ozi
 compose-receipt-on = A rịọrọ akara na-egosi na a gụrụ ozi: ngwa onye nnata nwere ike ịgwa ya ka o ziga ya
+compose-delivery = Rịọ akara na-egosi na ozi rutere
+compose-delivery-on = A rịọrọ akara na-egosi na ozi rutere: sava ozi gị ga-ezitere gị email mgbe sava onye nnata ọ bụla nabatara ya
+compose-delivery-unavailable = Sava ozi gị anaghị eziga akara na-egosi na ozi rutere
 
 ## Spelling
 

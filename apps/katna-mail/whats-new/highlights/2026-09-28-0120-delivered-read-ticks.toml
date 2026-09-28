@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Ticks for delivered and read"
+text = """
+Mail you sent now shows ticks beside each recipient. One grey tick means
+their mail server took it: from a delivery receipt, or, where your mail
+service sends none (Gmail), when no bounce came back within half an
+hour. Two ticks in your accent colour mean they read it, from a read
+receipt or open tracking, and a warning means it bounced. Point at a
+tick to see when and how. Receipt emails stay in your mailbox under
+Updates, without a notification.
+"""

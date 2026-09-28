@@ -11,6 +11,9 @@ add-account-servers-title = Izilungiselelo zeseva
 add-account-servers-intro = Lapho i-Katna ifunda khona futhi ithumele imeyili ka-{ $address }.
 add-account-password-title = Faka iphasiwedi yakho
 add-account-signing-in = Iyangena…
+add-account-browser-title = Qhubeka esipheqululini sakho
+add-account-browser-intro = I-Katna ivule ikhasi lokungena le-{ $provider } esipheqululini sakho. Ngena lapho bese uvumela i-Katna ukuthi ifunde futhi ithumele imeyili yakho, bese ubuyela lapha.
+add-account-browser-hint = Alivulekanga ikhasi? Hlola amawindi esiphequluli sakho, noma ubuyele emuva uzame futhi.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] Amaseva: { $servers }, aqagelwe; wahlole uma ukungena kwehluleka.
 }
 add-account-servers-entered = Amaseva: { $servers }, njengoba efakiwe.
+add-account-or = noma
+add-account-sign-in-with = Ngena nge-{ $provider }
+add-account-sign-in-instead = Ngena nge-{ $provider } esikhundleni salokho
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = Igama liyafana nephasiwedi. Esikhundleni salokho,
 add-account-added = Kwengezwe u-{ $address }. Kulandwa imeyili yakho…
 add-account-app-password-refused = I-{ $provider } yenqabe iphasiwedi. Idinga iphasiwedi yohlelo lokusebenza, hhayi leyo oyisebenzisa kuwebhu.
 add-account-password-refused = Iseva yenqabe iphasiwedi. Yihlole bese uzama futhi.
+add-account-sign-in-refused = I-{ $provider } ayizange iyivumele i-Katna ukuthi ingene. Zama futhi, bese uvumela ukufinyelela kumeyili yakho.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Le khophi ye-Katna ayikakwazi ukungena kuma-akhawunti e-Microsoft.
+    [Google] Le khophi ye-Katna ayikakwazi ukungena kuma-akhawunti e-Google.
+   *[other] Lo mhlinzeki uvumela ukungena ekhasini lakhe kuphela, into i-Katna engakakwazi ukuyenzela yena.
+}
+add-account-signed-in = Ungene nge-{ $provider }. Kulandwa imeyili yakho…
 
 ## The account menu (from the account button on the top bar)
 

@@ -628,6 +628,11 @@ in:inbox  label:x  is:unread  is:starred  is:important  before:2025-01-01  after
 larger:5M  smaller:  list:  "exact phrase"  -exclude  OR  ( )
 ```
 
+Search options build these queries. Its file types after "Has attachment"
+(PDF, XLSX, ODF for `.odf`/`.odt`, XLS, ODS, PPT, PPTX, and typed
+extensions under Custom) become `filename:pdf` or
+`filename:(pdf OR xlsx)`: mail with an attachment of any chosen type.
+
 Free text that matches an organization name or alias is expanded to
 "any participant matches that organization" **plus** normal text matching (§8.3).
 
@@ -1076,7 +1081,10 @@ message's colors are remapped (`window/dark.rs`): white becomes the reading
 pane, other light backgrounds become dark ones of the same hue as dark by
 eye as they were light, dark backgrounds stay, and text that falls under
 3:1 contrast on its new background has its lightness flipped and raised to
-4.5:1. Images are not changed. A `text/plain` part
+4.5:1. Images are not changed. Where the open conversation has such mail,
+a half-circle button on the reader's toolbar shows it in its sender's
+original colors on its own light page, and back; it holds for that
+conversation only. A `text/plain` part
 that is really an HTML document is rendered as HTML.
 
 Remote content is blocked by default. Tracking pixels (tiny images and
@@ -1402,9 +1410,19 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   an A4 or Letter switch lays them out again. Print hands off to the
   desktop's print dialog (XDG print portal), which starts on the previewed
   paper; if a different paper is picked there, the pages are laid out
-  again on it. The text of each message is printed, with sender, date,
-  recipients and attachment names; pictures and HTML styling are not, and
-  there is no font fallback for scripts the UI font lacks. Without a print
+  again on it. Each message prints with sender, date, recipients and
+  attachment names, and an HTML body as the reader draws it
+  (`print/flow.rs` follows `window/rich.rs`): boxes, table rows as cells
+  (stretched to the row's height), colors, borders, lists, quotes, links,
+  bold, italic and monospace faces, and pictures (the message's own, and
+  remote ones the reader has shown), at 10.5 pt for the mail's 16 px.
+  Everything is placed on one strip and cut into pages between lines,
+  never through a line, a picture or a short table row. The preview's
+  Layout switch picks As shown (the default) or Simple text (a line per
+  paragraph, a row's cells on one line); its Backgrounds switch leaves out
+  page, box and text backgrounds (light text is darkened) while the
+  formatting stays. There is no font fallback for scripts the UI font
+  lacks. Without a print
   portal the PDF opens in the default app. PDFs are written to
   `$XDG_RUNTIME_DIR/katna/print` and removed after an hour. Print and In
   new window sit right of the actions and move to the More menu when the
@@ -1536,9 +1554,9 @@ Gemini or confidential mode):
   still open then; with "Always show images" off, each message's images
   still wait to be asked for; and the new-mail sound is the notification's
   `sound-name` hint, or `suppress-sound` when off. Open and click
-  tracking is not a setting: it is off for every new message and turned
-  on per message in compose (§16.1), so Mailspring's tracking defaults
-  have no counterpart.
+  tracking is not a setting: it, a read receipt and a delivery receipt
+  are on for every new message and reply and turned off per message in compose (§16.1), so
+  Mailspring's tracking defaults have no counterpart.
 - **Searching settings.** While the Settings page is open the top bar's
   search box searches settings ("Search settings"; `window/settings_search.rs`):
   matching rows from every tab replace the open tab, each with its tab and
@@ -2654,7 +2672,39 @@ Plan: `IMPLEMENTATION_PLAN.md` Phase 7.
   no recipients, no content. The app keeps the ID → message mapping.
 - **Deliverability:** dedicated tracking domain; custom domains for
   business users (`t.customer.com`).
-- **Consent:** tracking is opt-in per message and off by default. Legal
+- **Consent:** tracking, a read receipt and a delivery receipt are on by
+  default for each new message and reply (the owner's choice, 2026-09-28)
+  and turned off per message; without a Katna account mail goes out
+  untracked.
+- **Delivery receipts** need no Katna account: the daemon asks the
+  account's SMTP server for a delivery status notification per recipient
+  (RFC 3461: `RET=HDRS` on `MAIL FROM`, `NOTIFY=SUCCESS,FAILURE,DELAY` on
+  each `RCPT TO`), and the server mails them back to the sender. Only
+  servers that list `DSN` after EHLO offer them; Gmail does not.
+  `ServerDeliveryReceipts(account)` tells compose, which greys the switch
+  where they are not offered. The app asks with an
+  `X-Katna-Delivery-Receipt` header that the daemon takes out when it
+  queues the message and keeps as `outbox.delivery_receipt` (mail.db v9).
+  With it, each `RCPT TO` carries `ORCPT=rfc822;<address>`, so a report
+  names the address as written even after forwarding.
+- **Ticks:** receipts that come back are read by the sync as their bodies
+  download (`katna_import::report`): a DSN's recipients whose `Action` is
+  `delivered`, `relayed` or `expanded`, and an MDN whose disposition is
+  `displayed`, matched to the sent message by `Original-Message-ID` or the
+  returned headers' `Message-ID`, and to the recipient by
+  `Original-Recipient`, else `Final-Recipient`. They are kept per
+  `(Message-ID, recipient)` in `mail.db`'s `receipt` table (v10), with
+  the time the outbox sent it to each recipient and when a DSN said it
+  bounced. The reading view shows a grey tick beside a recipient of the
+  user's mail once delivered, two accent ticks once read (by a read
+  receipt or an open seen by tracking; the tooltip says which) and a
+  warning once it bounced. Where no delivery receipt comes (Gmail sends
+  none), the grey tick appears half an hour after sending if no bounce
+  came back, and its tooltip says that is what it means: only the sending
+  server knows whether mail arrived, and relaying through Katna Server
+  would fail SPF and DKIM and need the mail login. Receipt mail
+  (`multipart/report`) stays in the mailbox, under Updates, so it raises
+  no notification. Legal
   review is needed before selling in the EU (GDPR/ePrivacy). Read receipts
   (MDN) are offered as a consent-based alternative.
 - Tracking events arrive at the daemon over the server's event stream and

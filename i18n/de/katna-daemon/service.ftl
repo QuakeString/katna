@@ -5,3 +5,5 @@
 ## Errors Katna Mail shows
 
 daemon-deleting-data = Katna löscht gerade alle seine Daten
+daemon-signed-in = Sie sind bei { $provider } angemeldet. Sie können diesen Tab schließen und zu Katna zurückkehren.
+daemon-sign-in-failed = Katna ist nicht bei { $provider } angemeldet. Sie können diesen Tab schließen und es in Katna erneut versuchen.

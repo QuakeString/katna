@@ -471,8 +471,7 @@ ibonakala ngombala ogcwele.
 title = "Ngithengele ikhofi"
 text = """
 Uma i-Katna iwusizo kuwe, ku-Mayelana ne-Katna manje kunenkinobho ethi
-Ngithengele ikhofi kanye nekhodi ye-QR evula ikhasi elifanayo efonini
-yakho.
+Ngithengele ikhofi.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -640,7 +639,7 @@ i-chip kubonisa u-x oyisusayo.
 ["2026-09-27-1722-katna-account"]
 title = "I-akhawunti ye-Katna"
 text = """
-Izilungiselelo > I-akhawunti ye-Katna ikuvumela ukuthi udale i-akhawunti
+Izilungiselelo > Ukubhalisa kukuvumela ukuthi udale i-akhawunti
 kuseva ye-Katna uqobo, enephasiwedi yayo, hhayi neze iphasiwedi yemeyili.
 Izici ze-inthanethi ze-Katna, njengezaziso zokufunda nokulandelela
 izixhumanisi, zizoyidinga. Ungabona amakhompyutha angenile futhi ukhiphe
@@ -684,9 +683,9 @@ text = """
 Vula iso eliseduze nabamukeli ukuze ubone lapho ngamunye evula umlayezo
 wakho noma elandela isixhumanisi esikuwo, noma esikhundleni salokho cela
 isaziso sokufunda. Imeyili ethunyelwe ibonisa ukuthi ubani oyivulile,
-futhi isaziso sikwazisa okokuqala. Kokubili kuvaliwe kuyo yonke imilayezo
-emisha, futhi ukulandelela kudinga i-akhawunti ye-Katna (Izilungiselelo >
-I-akhawunti ye-Katna).
+futhi isaziso sikwazisa okokuqala. Kokubili kuvaliwe kuyo yonke
+imilayezo emisha, futhi ukulandelela kudinga i-akhawunti ye-Katna
+(Izilungiselelo > Ukubhalisa).
 """
 
 ["2026-09-27-2042-activity"]
@@ -727,4 +726,26 @@ imeyili engakanani kuleso sikhathi, ukuthi wena nabanye niphendula
 kangaki futhi ngokushesha kangakanani, abantu obabhalela kakhulu,
 nokuthi imeyili yakho ifika ngaziphi izinsuku nangamaphi amahora.
 Kubalwa kukhompyutha yakho kusuka kumeyili i-Katna esenayo kakade.
+"""
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Ngena nge-Google noma i-Microsoft"
+text = """
+Engeza i-akhawunti ye-Gmail noma ye-Outlook ngokungena ekhasini le-Google
+noma le-Microsoft uqobo esipheqululini sakho, ngaphandle kwephasiwedi
+yohlelo lokusebenza. Amakheli e-Outlook.com ne-Hotmail nawo asesebenza
+manje. Uma ukungena kuyeka ukusebenza, inothi ngezansi kwewindi
+likunikeza ukuthi uphinde ungene.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Ukulandelela nezaziso kuvuliwe kusukela ekuqaleni"
+text = """
+Imilayezo emisha nezimpendulo manje ziqala nokulandelela ukuvulwa
+nokuchofozwa, isaziso sokufunda nesaziso sokulethwa kuvuliwe; chofoza
+inkinobho eceleni kwabamukeli ukuze uvale okukodwa kwalokho kulowo
+mlayezo. Ukulandelela kudinga ukuthi ungene ku-akhawunti yakho ye-Katna.
+Isaziso sokulethwa yimeyili iseva yakho yemeyili ekuthumelela yona lapho
+iseva yomamukeli ngamunye yamukela umlayezo; inkinobho iba mpunga lapho
+iseva yakho yemeyili ingazinikezi khona.
 """

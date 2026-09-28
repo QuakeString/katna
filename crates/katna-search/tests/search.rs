@@ -138,6 +138,8 @@ fn indexes_the_store_and_answers_queries() {
     assert_eq!(q("to:tim.belden"), ["California power"]);
     assert_eq!(q("cc:tim.belden"), ["California power"]);
     assert_eq!(q("filename:xls"), ["2001 budget"]);
+    assert_eq!(q("filename:(pdf OR xls)"), ["2001 budget"]);
+    assert!(q("filename:xlsx").is_empty());
     assert_eq!(q("budget2001"), ["2001 budget"]);
     assert_eq!(q("list:lunch.example.org"), ["Lunch"]);
     assert_eq!(q("cafe"), ["Lunch"]);

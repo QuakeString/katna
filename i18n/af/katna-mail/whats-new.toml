@@ -449,7 +449,7 @@ Gemerkte, gesterde of belangrike e-pos wys altyd in volle kleur.
 title = "Koop vir my 'n koffie"
 text = """
 As Katna vir jou nuttig is, het Meer oor Katna nou 'n knoppie Koop vir
-my 'n koffie en 'n QR-kode wat dieselfde bladsy op jou foon oopmaak.
+my 'n koffie.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -601,7 +601,7 @@ verskyn 'n x wat dit verwyder.
 ["2026-09-27-1722-katna-account"]
 title = "Katna-rekening"
 text = """
-Instellings > Katna-rekening laat jou 'n rekening op Katna se eie bediener
+Instellings > Intekening laat jou 'n rekening op Katna se eie bediener
 skep, met sy eie wagwoord, nooit 'n e-poswagwoord nie. Katna se aanlyn
 funksies, soos leesbewyse en skakelnasporing, sal dit nodig hê. Jy kan die
 aangemelde rekenaars sien en enigeen van hulle afmeld.
@@ -643,7 +643,7 @@ Skakel die oog by die ontvangers aan om te sien wanneer elkeen jou
 boodskap oopmaak of 'n skakel daarin volg, of vra eerder 'n leesbewys.
 Gestuurde e-pos wys wie dit oopgemaak het, en 'n kennisgewing laat jou
 die eerste keer weet. Albei is af vir elke nuwe boodskap, en nasporing
-het 'n Katna-rekening nodig (Instellings > Katna-rekening).
+het 'n Katna-rekening nodig (Instellings > Intekening).
 """
 
 ["2026-09-27-2042-activity"]
@@ -681,4 +681,25 @@ Aktiwiteit > Besonderhede wys nou ook hoeveel e-pos jy in die tydperk
 gestuur en ontvang het, hoe dikwels en hoe vinnig jy en ander antwoord, die
 mense met wie jy die meeste skryf, en op watter dae en ure jou e-pos
 aankom. Dit word op jou rekenaar getel uit die e-pos wat Katna reeds het.
+"""
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Meld aan met Google of Microsoft"
+text = """
+Voeg 'n Gmail- of Outlook-rekening by deur op Google of Microsoft se eie
+bladsy in jou blaaier aan te meld, sonder 'n programwagwoord. Outlook.com-
+en Hotmail-adresse werk nou ook. As 'n aanmelding ophou werk, bied 'n nota
+onderaan die venster aan om weer aan te meld.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Nasporing en bewyse van die begin af aan"
+text = """
+Nuwe boodskappe en antwoorde begin nou met oopmaak- en kliknasporing, 'n
+leesbewys en 'n afleweringsbewys aangeskakel; klik 'n knoppie langs die
+ontvangers om een vir daardie boodskap af te skakel. Nasporing vereis dat
+jy by jou Katna-rekening aangemeld is. 'n Afleweringsbewys is 'n e-pos wat
+jou e-posbediener vir jou stuur wanneer elke ontvanger se bediener die
+boodskap neem; die knoppie is grys waar jou e-posbediener dit nie aanbied
+nie.
 """

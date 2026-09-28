@@ -36,6 +36,7 @@ use crate::widgets::{
 };
 
 mod security;
+mod ticks;
 mod tracking;
 use security::Secured;
 
@@ -63,6 +64,9 @@ pub(super) struct Conversation {
     parts: Vec<Part>,
     /// The folded middle of a long conversation is shown.
     show_all: bool,
+    /// In a dark theme, its HTML mail keeps the sender's own colors
+    /// rather than dark ones.
+    pub original_colors: bool,
 }
 
 /// One message of the conversation.
@@ -96,9 +100,11 @@ struct Part {
     /// A read receipt for one of the user's messages; `None` inside
     /// until looked at.
     receipt: Option<Option<crate::receipts::Receipt>>,
-    /// The user's own message's `Message-ID`, when the conversation has a
-    /// read receipt to match it with.
+    /// The user's own message's `Message-ID`.
     message_id: Option<String>,
+    /// For the user's own message: its recipients' delivery and read
+    /// ticks, by address (lower case).
+    ticks: std::collections::HashMap<String, ticks::Tick>,
 }
 
 impl Part {
@@ -115,6 +121,7 @@ impl Part {
             activity: None,
             receipt: None,
             message_id: None,
+            ticks: std::collections::HashMap::new(),
         }
     }
 
@@ -165,6 +172,16 @@ impl Body {
 }
 
 impl Conversation {
+    /// A loaded message of it is HTML that sets its own colors.
+    fn has_own_colors(&self) -> bool {
+        self.parts.iter().any(|p| {
+            p.body
+                .as_ref()
+                .and_then(|b| b.doc.as_ref())
+                .is_some_and(|d| d.styled || d.background.is_some())
+        })
+    }
+
     /// The loaded message `id`, or by default the newest loaded one: what a
     /// reply or forward starts from.
     pub(super) fn view(&self, id: Option<MessageId>) -> Option<&MessageView> {
@@ -213,8 +230,11 @@ impl Conversation {
                     None => false,
                 };
                 Printable {
+                    id: part.id,
                     row: part.row.clone(),
                     view: body.view.clone(),
+                    doc: body.doc.clone().filter(|_| !sealed),
+                    encrypted: body.encrypted(),
                     sealed,
                 }
             })
@@ -268,6 +288,7 @@ impl Conversation {
             subject,
             parts,
             show_all: false,
+            original_colors: false,
         };
         conversation.read_tracking(mail);
         conversation
@@ -288,14 +309,33 @@ impl Conversation {
                 part.receipt = Some((!mine(part)).then(|| mail.receipt(part.id)).flatten());
             }
         }
-        let receipts = self
-            .parts
-            .iter()
-            .any(|p| matches!(p.receipt, Some(Some(_))));
         for part in &mut self.parts {
-            if receipts && part.message_id.is_none() && mine(part) {
+            if part.message_id.is_none() && mine(part) {
                 part.message_id = mail.message_id_header(part.id);
             }
+        }
+        let ticks: Vec<_> = self
+            .parts
+            .iter()
+            .map(|part| match &part.message_id {
+                Some(id) if mine(part) => {
+                    // Read receipts in the conversation, with when they came.
+                    let read: Vec<_> = self
+                        .parts
+                        .iter()
+                        .filter_map(|p| {
+                            let receipt = p.receipt.as_ref()?.as_ref()?;
+                            (receipt.original.as_ref() == Some(id))
+                                .then(|| (receipt, p.row.as_ref().and_then(|r| r.date)))
+                        })
+                        .collect();
+                    ticks::ticks(&mail.receipts(id), &read, part.activity.as_ref())
+                }
+                _ => std::collections::HashMap::new(),
+            })
+            .collect();
+        for (part, ticks) in self.parts.iter_mut().zip(ticks) {
+            part.ticks = ticks;
         }
     }
 
@@ -411,9 +451,14 @@ impl Conversation {
 
 /// A message of the conversation, for printing.
 pub(super) struct Printable {
+    pub id: MessageId,
     pub row: Option<Rc<Row>>,
     /// `None` when it is not downloaded yet.
     pub view: Option<MessageView>,
+    /// Its HTML body laid out, as the reader draws it.
+    pub doc: Option<Document>,
+    /// Encrypted: its remote pictures are never loaded.
+    pub encrypted: bool,
     /// Encrypted or signed, and its text not opened.
     pub sealed: bool,
 }
@@ -453,6 +498,44 @@ impl Squeeze {
 enum Shown {
     Part(usize),
     Fold(usize),
+}
+
+impl MailWindow {
+    /// In a dark theme, the button that shows the open conversation's HTML
+    /// mail in its sender's own colors, or back in dark ones. Only where
+    /// a message sets its own colors, so there is something to switch.
+    fn original_colors_toggle(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let reader = self.reader.as_ref()?;
+        if !th.dark || !self.config.mail.dark_mail || !reader.has_own_colors() {
+            return None;
+        }
+        let on = reader.original_colors;
+        Some(
+            icon_button_colored(
+                "reader-original-colors",
+                "contrast",
+                20.0,
+                if on { th.accent } else { th.text_dim },
+                th,
+            )
+            .when(on, |d| d.bg(rgba(th.hover)))
+            .tooltip(tip(
+                if on {
+                    tr!("reader-dark-colors")
+                } else {
+                    tr!("reader-original-colors")
+                },
+                th,
+            ))
+            .on_click(cx.listener(|this, _, _, cx| {
+                if let Some(reader) = &mut this.reader {
+                    reader.original_colors = !reader.original_colors;
+                }
+                cx.notify();
+            }))
+            .into_any_element(),
+        )
+    }
 }
 
 impl MailWindow {
@@ -553,6 +636,7 @@ impl MailWindow {
             })
             .child(div().flex_1())
             .children(self.contact_toggle(th, cx))
+            .children(self.original_colors_toggle(th, cx))
             // Where the toolbar is short, both are in the More menu.
             .when(roomy, |d| {
                 d.child(
@@ -900,7 +984,44 @@ impl MailWindow {
         let recipients = view.map(|v| {
             let mut all = v.to.clone();
             all.extend(v.cc.iter().cloned());
-            tr!("reader-to", names = names(&all))
+            if part.ticks.is_empty() {
+                return div()
+                    .min_w_0()
+                    .truncate()
+                    .child(tr!("reader-to", names = names(&all)))
+                    .into_any_element();
+            }
+            // Each name with its delivered or read tick.
+            let mut seen = std::collections::HashSet::new();
+            let people: Vec<(bool, &katna_render::Address)> = all
+                .iter()
+                .filter(|a| seen.insert(a.email.to_lowercase()))
+                .map(|a| (self.is_me(&a.email), a))
+                .collect();
+            let labels = recipient_names(&people, full_names);
+            let count = labels.len();
+            div()
+                .min_w_0()
+                .flex()
+                .flex_row()
+                .items_center()
+                .overflow_hidden()
+                .whitespace_nowrap()
+                .child(div().flex_none().mr(px(4.0)).child(tr!("reader-to-label")))
+                .children(people.iter().zip(labels).enumerate().map(
+                    |(i, ((_, address), label))| {
+                        let tick = part.ticks.get(&address.email.to_lowercase());
+                        div()
+                            .flex_none()
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .child(label)
+                            .children(self.render_tick(tick, ("part-tick", ix * 1000 + i), th))
+                            .when(i + 1 < count, |d| d.child(div().mr(px(4.0)).child(",")))
+                    },
+                ))
+                .into_any_element()
         });
         // Clicking \u{201c}to\u{201d} turns the details the other way from the
         // Full headers setting.
@@ -970,7 +1091,7 @@ impl MailWindow {
                                     }
                                     cx.notify();
                                 }))
-                                .child(div().min_w_0().truncate().child(recipients))
+                                .child(recipients)
                                 .child(icon("drop-down", th.text_faint, 18.0)),
                         )
                     }),
@@ -1156,7 +1277,8 @@ impl MailWindow {
                                     &self.remote.images,
                                     allowed,
                                     self.remote.mono(),
-                                    self.config.mail.dark_mail,
+                                    self.config.mail.dark_mail
+                                        && !self.reader.as_ref().is_some_and(|r| r.original_colors),
                                     pieces,
                                 )
                                 .document(doc),

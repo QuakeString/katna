@@ -443,7 +443,7 @@ chọn, gắn dấu sao hoặc quan trọng luôn hiện đủ màu.
 title = "Mời tôi một ly cà phê"
 text = """
 Nếu Katna có ích với bạn, Giới thiệu về Katna giờ có nút Mời tôi một ly
-cà phê và mã QR để mở cùng trang đó trên điện thoại của bạn.
+cà phê.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -599,7 +599,7 @@ bạn kéo, kể cả khi đang ẩn. Trỏ vào thẻ sẽ hiện dấu x để
 ["2026-09-27-1722-katna-account"]
 title = "Tài khoản Katna"
 text = """
-Cài đặt > Tài khoản Katna cho phép bạn tạo tài khoản trên máy chủ riêng
+Cài đặt > Gói đăng ký cho phép bạn tạo tài khoản trên máy chủ riêng
 của Katna, với mật khẩu riêng, không bao giờ là mật khẩu thư. Các tính
 năng trực tuyến của Katna, như xác nhận đã đọc và theo dõi liên kết, sẽ
 cần đến tài khoản này. Bạn có thể xem các máy tính đang đăng nhập và
@@ -643,7 +643,7 @@ Bật biểu tượng con mắt cạnh người nhận để thấy khi mỗi ng
 bạn hoặc mở một liên kết trong thư, hoặc yêu cầu xác nhận đã đọc thay vào
 đó. Thư đã gửi cho thấy ai đã mở, và một thông báo cho bạn biết ở lần đầu
 tiên. Cả hai đều tắt với mọi thư mới, và việc theo dõi cần tài khoản Katna
-(Cài đặt > Tài khoản Katna).
+(Cài đặt > Gói đăng ký).
 """
 
 ["2026-09-27-2042-activity"]
@@ -682,4 +682,24 @@ trong khoảng thời gian đó, bạn và người khác trả lời thường 
 nhanh đến đâu, những người bạn viết thư nhiều nhất, và thư của bạn đến
 vào những ngày và giờ nào. Mọi thứ được đếm trên máy tính của bạn từ
 những thư Katna đã có.
+"""
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Đăng nhập bằng Google hoặc Microsoft"
+text = """
+Thêm tài khoản Gmail hoặc Outlook bằng cách đăng nhập trên trang riêng
+của Google hoặc Microsoft trong trình duyệt, không cần mật khẩu ứng dụng.
+Địa chỉ Outlook.com và Hotmail giờ cũng dùng được. Nếu việc đăng nhập
+ngừng hoạt động, một ghi chú ở cuối cửa sổ sẽ đề nghị bạn đăng nhập lại.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Theo dõi và xác nhận được bật ngay từ đầu"
+text = """
+Thư mới và thư trả lời giờ bắt đầu với tính năng theo dõi lượt mở và
+lượt nhấp, xác nhận đã đọc và xác nhận đã chuyển phát được bật sẵn; nhấp
+vào nút bên cạnh người nhận để tắt một mục cho thư đó. Theo dõi cần bạn
+đăng nhập tài khoản Katna. Xác nhận đã chuyển phát là email mà máy chủ
+thư của bạn gửi cho bạn khi máy chủ của mỗi người nhận nhận thư; nút sẽ
+bị làm mờ nếu máy chủ thư của bạn không hỗ trợ.
 """

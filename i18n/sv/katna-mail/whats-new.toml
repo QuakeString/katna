@@ -442,8 +442,7 @@ markerat, stjärnmärkt eller viktigt mejl visas alltid i full färg.
 ["2026-09-27-1512-buy-me-a-coffee"]
 title = "Bjud mig på en kaffe"
 text = """
-Om du har nytta av Katna har Om Katna nu knappen Bjud mig på en kaffe
-och en QR-kod som öppnar samma sida på telefonen.
+Om du har nytta av Katna har Om Katna nu knappen Bjud mig på en kaffe.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -601,7 +600,7 @@ bricka visas ett x som tar bort den.
 ["2026-09-27-1722-katna-account"]
 title = "Katna-konto"
 text = """
-Under Inställningar > Katna-konto kan du skapa ett konto på Katnas egen
+Under Inställningar > Abonnemang kan du skapa ett konto på Katnas egen
 server, med ett eget lösenord, aldrig ett e-postlösenord. Katnas
 onlinefunktioner, som läskvitton och länkspårning, kommer att behöva
 det. Du ser vilka datorer som är inloggade och kan logga ut vilken som
@@ -644,7 +643,7 @@ Slå på ögat vid mottagarna för att se när var och en öppnar ditt
 meddelande eller följer en länk i det, eller be om ett läskvitto i
 stället. Skickad e-post visar vem som har öppnat den, och en avisering
 berättar det första gången. Båda är av för varje nytt meddelande, och
-spårning kräver ett Katna-konto (Inställningar > Katna-konto).
+spårning kräver ett Katna-konto (Inställningar > Abonnemang).
 """
 
 ["2026-09-27-2042-activity"]
@@ -683,4 +682,25 @@ Aktivitet > Detaljer visar nu också hur mycket e-post du skickade och
 tog emot under perioden, hur ofta och hur snabbt du och andra svarar,
 vilka du skriver mest med och vilka dagar och timmar din e-post kommer
 in. Det räknas på din dator från den e-post som Katna redan har.
+"""
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Logga in med Google eller Microsoft"
+text = """
+Lägg till ett Gmail- eller Outlook-konto genom att logga in på Googles
+eller Microsofts egen sida i webbläsaren, utan applösenord. Adresser på
+Outlook.com och Hotmail fungerar nu också. Om en inloggning slutar
+fungera erbjuder en notis längst ned i fönstret att logga in igen.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Spårning och kvitton på från början"
+text = """
+Nya meddelanden och svar börjar nu med spårning av öppningar och klick,
+läskvitto och leveranskvitto påslagna; klicka på en knapp bredvid
+mottagarna för att stänga av något av dem för det meddelandet. Spårning
+kräver att du är inloggad på ditt Katna-konto. Ett leveranskvitto är ett
+mejl som din e-postserver skickar dig när varje mottagares server tar
+emot meddelandet; knappen är nedtonad där din e-postserver inte erbjuder
+dem.
 """

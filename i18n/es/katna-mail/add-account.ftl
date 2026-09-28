@@ -11,6 +11,9 @@ add-account-servers-title = Configuración del servidor
 add-account-servers-intro = Dónde lee y envía Katna el correo de { $address }.
 add-account-password-title = Escribe tu contraseña
 add-account-signing-in = Iniciando sesión…
+add-account-browser-title = Continúa en tu navegador
+add-account-browser-intro = Katna ha abierto la página de inicio de sesión de { $provider } en tu navegador. Inicia sesión allí y permite que Katna lea y envíe tu correo; después, vuelve aquí.
+add-account-browser-hint = ¿No se ha abierto ninguna página? Revisa las ventanas de tu navegador, o vuelve atrás y inténtalo de nuevo.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] Servidores: { $servers }, deducidos; compruébalos si falla el inicio de sesión.
 }
 add-account-servers-entered = Servidores: { $servers }, tal como se escribieron.
+add-account-or = o
+add-account-sign-in-with = Iniciar sesión con { $provider }
+add-account-sign-in-instead = Iniciar sesión con { $provider } en su lugar
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = El nombre es igual que la contraseña. Escribe ah
 add-account-added = Se ha añadido { $address }. Descargando tu correo…
 add-account-app-password-refused = { $provider } ha rechazado la contraseña. Necesita una contraseña de aplicación, no la que usas en la web.
 add-account-password-refused = El servidor ha rechazado la contraseña. Compruébala y vuelve a intentarlo.
+add-account-sign-in-refused = { $provider } no ha dejado entrar a Katna. Vuelve a intentarlo y permite el acceso a tu correo.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Esta copia de Katna aún no puede iniciar sesión en cuentas de Microsoft.
+    [Google] Esta copia de Katna aún no puede iniciar sesión en cuentas de Google.
+   *[other] Este proveedor solo permite iniciar sesión en su propia página, algo que Katna aún no puede hacer con él.
+}
+add-account-signed-in = Has iniciado sesión con { $provider }. Descargando tu correo…
 
 ## The account menu (from the account button on the top bar)
 

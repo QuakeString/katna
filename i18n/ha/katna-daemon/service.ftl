@@ -5,3 +5,5 @@
 ## Errors Katna Mail shows
 
 daemon-deleting-data = Katna na goge dukkan bayanansa
+daemon-signed-in = Kun shiga { $provider }. Kuna iya rufe wannan shafi ku koma Katna.
+daemon-sign-in-failed = Katna bai shiga { $provider } ba. Kuna iya rufe wannan shafi ku sake gwadawa a Katna.

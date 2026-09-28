@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Notifications for new Gmail mail"
+text = """
+New mail in a Gmail inbox now shows a notification again. Katna used to
+miss mail that Gmail filed in All Mail a moment before the inbox.
+"""

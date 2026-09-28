@@ -459,7 +459,7 @@ importante si vede sempre a colori pieni.
 title = "Offrimi un caffè"
 text = """
 Se Katna ti è utile, Informazioni su Katna ora ha un pulsante Offrimi un
-caffè e un codice QR per aprire la stessa pagina sul telefono.
+caffè.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -621,7 +621,7 @@ una x che lo rimuove.
 ["2026-09-27-1722-katna-account"]
 title = "Account Katna"
 text = """
-Impostazioni > Account Katna ti permette di creare un account sul server di
+Impostazioni > Abbonamento ti permette di creare un account sul server di
 Katna, con una password sua, mai quella della posta. Le funzioni online di
 Katna, come le conferme di lettura e il tracciamento dei link, ne avranno
 bisogno. Puoi vedere i computer connessi e disconnetterne uno qualsiasi.
@@ -664,7 +664,7 @@ Attiva l’occhio accanto ai destinatari per vedere quando ognuno apre il
 messaggio o segue un suo link, oppure chiedi una conferma di lettura.
 Nella posta inviata vedi chi l’ha aperta, e una notifica te lo dice la
 prima volta. Entrambi sono disattivati per ogni nuovo messaggio, e il
-tracciamento richiede un account Katna (Impostazioni > Account Katna).
+tracciamento richiede un account Katna (Impostazioni > Abbonamento).
 """
 
 ["2026-09-27-2042-activity"]
@@ -705,4 +705,25 @@ nel periodo, quanto spesso e quanto in fretta rispondi tu e rispondono
 gli altri, le persone con cui scrivi di più e in quali giorni e a quali
 ore arriva la tua posta. Il conteggio avviene sul tuo computer, a
 partire dalla posta che Katna ha già.
+"""
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Accedi con Google o Microsoft"
+text = """
+Aggiungi un account Gmail o Outlook accedendo dalla pagina di Google o di
+Microsoft nel browser, senza password per le app. Ora funzionano anche gli
+indirizzi Outlook.com e Hotmail. Se un accesso smette di funzionare, un
+avviso in fondo alla finestra propone di accedere di nuovo.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Tracciamento e conferme attivi fin dall’inizio"
+text = """
+I nuovi messaggi e le risposte ora partono con il tracciamento di aperture
+e clic, la conferma di lettura e la conferma di consegna attivi; fai clic
+su un pulsante accanto ai destinatari per disattivarne uno per quel
+messaggio. Il tracciamento richiede l’accesso al tuo account Katna. Una
+conferma di consegna è un’email che il tuo server di posta ti invia quando
+il server di ogni destinatario accetta il messaggio; il pulsante appare in
+grigio se il tuo server di posta non le offre.
 """

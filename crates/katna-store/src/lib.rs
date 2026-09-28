@@ -24,6 +24,7 @@ pub mod outbox;
 mod people;
 pub mod pop3;
 mod quota;
+mod receipts;
 pub mod remote;
 pub mod templates;
 mod thread;
@@ -53,10 +54,11 @@ pub use mail_view::{
 };
 pub use meta::MetaRow;
 pub use ops::{Location, PinnedMessage, QueuedOp};
-pub use outbox::{OutboxEntry, SendState};
+pub use outbox::{DELIVERY_RECEIPT_HEADER, OutboxEntry, SendState, take_delivery_receipt};
 pub use people::{Correspondent, Person};
 pub use pop3::Pop3Uidl;
 pub use quota::StorageQuota;
+pub use receipts::{Receipt, ReceiptKind};
 pub use remote::{FolderRole, NewAttachment, RemoteMessage, StoredAttachment, StoredFolder};
 pub use templates::{Template, TemplateFile, TemplateSummary};
 pub use tracking::{

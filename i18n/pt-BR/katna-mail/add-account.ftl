@@ -11,6 +11,9 @@ add-account-servers-title = Configurações do servidor
 add-account-servers-intro = Onde o Katna lê e envia e-mails de { $address }.
 add-account-password-title = Digite sua senha
 add-account-signing-in = Fazendo login…
+add-account-browser-title = Continue no navegador
+add-account-browser-intro = O Katna abriu a página de login do { $provider } no seu navegador. Faça login lá e permita que o Katna leia e envie seus e-mails, depois volte aqui.
+add-account-browser-hint = Nenhuma página abriu? Confira as janelas do navegador ou volte e tente de novo.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] Servidores: { $servers }, estimados; confira-os se o login falhar.
 }
 add-account-servers-entered = Servidores: { $servers }, como digitados.
+add-account-or = ou
+add-account-sign-in-with = Fazer login com o { $provider }
+add-account-sign-in-instead = Fazer login com o { $provider } em vez disso
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = O nome é igual à senha. Digite ali o seu nome, 
 add-account-added = { $address } adicionado. Buscando seus e-mails…
 add-account-app-password-refused = O { $provider } recusou a senha. É preciso uma senha de app, não a que você usa na web.
 add-account-password-refused = O servidor recusou a senha. Confira-a e tente de novo.
+add-account-sign-in-refused = O { $provider } não deixou o Katna entrar. Tente de novo e permita o acesso aos seus e-mails.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Esta cópia do Katna ainda não consegue fazer login em contas Microsoft.
+    [Google] Esta cópia do Katna ainda não consegue fazer login em contas Google.
+   *[other] Este provedor só permite fazer login na própria página, o que o Katna ainda não consegue fazer para ele.
+}
+add-account-signed-in = Login feito com o { $provider }. Buscando seus e-mails…
 
 ## The account menu (from the account button on the top bar)
 

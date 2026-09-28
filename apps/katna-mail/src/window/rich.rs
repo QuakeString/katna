@@ -504,6 +504,20 @@ pub(super) fn format(kind: ImageKind) -> gpui::ImageFormat {
     }
 }
 
+/// The kind of a picture GPUI decoded, for printing it.
+pub(super) fn kind(format: gpui::ImageFormat) -> Option<ImageKind> {
+    Some(match format {
+        gpui::ImageFormat::Png => ImageKind::Png,
+        gpui::ImageFormat::Jpeg => ImageKind::Jpeg,
+        gpui::ImageFormat::Gif => ImageKind::Gif,
+        gpui::ImageFormat::Webp => ImageKind::Webp,
+        gpui::ImageFormat::Bmp => ImageKind::Bmp,
+        gpui::ImageFormat::Ico => ImageKind::Ico,
+        gpui::ImageFormat::Svg => ImageKind::Svg,
+        gpui::ImageFormat::Tiff | gpui::ImageFormat::Pnm => return None,
+    })
+}
+
 /// Every remote image URL of `doc`.
 pub(super) fn remote_urls(doc: &Document) -> Vec<String> {
     fn walk(blocks: &[Block], out: &mut Vec<String>) {

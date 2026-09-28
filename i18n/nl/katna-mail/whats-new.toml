@@ -458,7 +458,7 @@ staat altijd in volle kleur.
 title = "Trakteer me op een koffie"
 text = """
 Als je Katna nuttig vindt, heeft Over Katna nu een knop Trakteer me op
-een koffie en een QR-code die dezelfde pagina op je telefoon opent.
+een koffie.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -618,7 +618,7 @@ chip wijst, verschijnt een x die het verwijdert.
 ["2026-09-27-1722-katna-account"]
 title = "Katna-account"
 text = """
-Met Instellingen > Katna-account maak je een account op de eigen server
+Met Instellingen > Abonnement maak je een account op de eigen server
 van Katna, met een eigen wachtwoord, nooit een e-mailwachtwoord. De
 onlinefuncties van Katna, zoals leesbevestigingen en linktracking,
 hebben het nodig. Je ziet welke computers zijn aangemeld en kunt elk
@@ -662,8 +662,7 @@ Zet het oog bij de ontvangers aan om te zien wanneer elk van hen je
 bericht opent of een link erin volgt, of vraag in plaats daarvan een
 leesbevestiging. Verzonden e-mail laat zien wie hem geopend heeft, en een
 melding laat het je de eerste keer weten. Beide staan uit voor elk nieuw
-bericht, en volgen vereist een Katna-account (Instellingen >
-Katna-account).
+bericht, en volgen vereist een Katna-account (Instellingen > Abonnement).
 """
 
 ["2026-09-27-2042-activity"]
@@ -703,4 +702,26 @@ hebt verzonden en ontvangen, hoe vaak en hoe snel jij en anderen
 antwoorden, met wie je het vaakst mailt en op welke dagen en uren je
 e-mail binnenkomt. Het wordt op je computer geteld uit de e-mail die
 Katna al heeft.
+"""
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Aanmelden met Google of Microsoft"
+text = """
+Voeg een Gmail- of Outlook-account toe door je aan te melden op de eigen
+pagina van Google of Microsoft in je browser, zonder app-wachtwoord.
+Adressen van Outlook.com en Hotmail werken nu ook. Werkt een aanmelding
+niet meer, dan biedt een melding onder in het venster aan om je opnieuw
+aan te melden.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Volgen en bevestigingen meteen aan"
+text = """
+Nieuwe berichten en antwoorden beginnen nu met het volgen van openen en
+klikken, een leesbevestiging en een ontvangstbevestiging aan; klik op
+een knop naast de ontvangers om er een voor dat bericht uit te zetten.
+Voor het volgen moet je aangemeld zijn bij je Katna-account. Een
+ontvangstbevestiging is een e-mail die je mailserver je stuurt wanneer
+de server van elke ontvanger het bericht aanneemt; de knop is grijs als
+je mailserver ze niet aanbiedt.
 """

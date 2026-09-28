@@ -42,6 +42,8 @@ struct Received {
     message: String,
     /// `HOLDUNTIL`, for mail the server holds.
     held_until: Option<i64>,
+    /// Delivery receipts were asked for.
+    receipts: bool,
 }
 
 #[derive(Clone, Default)]
@@ -60,6 +62,7 @@ struct FakeSender {
     answer: Answer,
     received: Arc<Mutex<Vec<Received>>>,
     hold: Option<u64>,
+    receipts: bool,
 }
 
 impl Outgoing for FakeSmtp {
@@ -79,6 +82,7 @@ impl Outgoing for FakeSmtp {
             answer,
             received: self.received.clone(),
             hold: self.hold,
+            receipts: false,
         })
     }
 
@@ -113,6 +117,7 @@ impl FakeSender {
             to: to.iter().map(|to| to.to_string()).collect(),
             message: String::from_utf8(message).unwrap(),
             held_until: held,
+            receipts: self.receipts,
         });
         Ok(())
     }
@@ -125,6 +130,10 @@ impl MailSender for FakeSender {
 
     async fn hold_limit(&mut self) -> Result<Option<u64>> {
         Ok(self.hold)
+    }
+
+    fn ask_for_receipts(&mut self, on: bool) {
+        self.receipts = on;
     }
 
     async fn send_held(
@@ -204,6 +213,7 @@ fn sends_without_bcc_and_files_in_sent() {
     let id = outbox::queue(&mut store, account, MESSAGE, 0, now()).unwrap();
     let entry = store.outbox_entry(id).unwrap().unwrap();
     assert_eq!(entry.subject, "Lunch");
+    let message_id = store.message_id_header(entry.message).unwrap().unwrap();
     let smtp = FakeSmtp::default();
     let events = run_until(&smtp, &tmp, config(3), SendState::Sent);
     assert_eq!(
@@ -222,6 +232,22 @@ fn sends_without_bcc_and_files_in_sent() {
     assert!(!wire.contains("Bcc") && !wire.contains("dave"), "{wire}");
     assert!(wire.starts_with("Date: ") && wire.contains("\r\nMessage-ID: <"));
     assert!(wire.ends_with("Subject: Lunch\r\n\r\nNoon?\r\n"), "{wire}");
+    drop(received);
+    // Each recipient's send time, for the ticks.
+    let sent: Vec<_> = store
+        .receipts(&message_id)
+        .unwrap()
+        .into_iter()
+        .map(|r| (r.recipient, r.sent_at.is_some()))
+        .collect();
+    assert_eq!(
+        sent,
+        [
+            ("bob@example.org".into(), true),
+            ("carol@example.org".into(), true),
+            ("dave@example.org".into(), true)
+        ]
+    );
 
     // The worker's replay files the stored copy, Bcc and all, as seen.
     assert_eq!(store.next_op_due(account).unwrap(), Some(0));
@@ -236,6 +262,30 @@ fn sends_without_bcc_and_files_in_sent() {
     drop(state);
     assert!(store.outbox().unwrap().is_empty());
     assert!(store.messages_by_id(&[entry.message]).unwrap().is_empty());
+}
+
+#[test]
+fn delivery_receipts_are_asked_of_the_server_without_the_header() {
+    let (tmp, mut store, account) = setup();
+    let mut asked = b"X-Katna-Delivery-Receipt: yes\r\n".to_vec();
+    asked.extend_from_slice(MESSAGE);
+    let id = outbox::queue(&mut store, account, &asked, 0, now()).unwrap();
+    assert!(store.outbox_entry(id).unwrap().unwrap().delivery_receipt);
+    let smtp = FakeSmtp::default();
+    run_until(&smtp, &tmp, config(3), SendState::Sent);
+    let plain = outbox::queue(&mut store, account, MESSAGE, 0, now()).unwrap();
+    assert!(!store.outbox_entry(plain).unwrap().unwrap().delivery_receipt);
+    run_until(&smtp, &tmp, config(3), SendState::Sent);
+    let received = smtp.received.lock().unwrap();
+    assert_eq!(
+        received.iter().map(|r| r.receipts).collect::<Vec<_>>(),
+        [true, false]
+    );
+    assert!(
+        !received[0].message.contains("X-Katna"),
+        "{}",
+        received[0].message
+    );
 }
 
 #[test]

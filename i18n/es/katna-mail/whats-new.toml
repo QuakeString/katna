@@ -464,7 +464,7 @@ todo color.
 title = "Invítame a un café"
 text = """
 Si Katna te resulta útil, Acerca de Katna ahora tiene un botón Invítame
-a un café y un código QR para abrir la misma página en tu móvil.
+a un café.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -619,7 +619,7 @@ aparece una x que la quita.
 ["2026-09-27-1722-katna-account"]
 title = "Cuenta de Katna"
 text = """
-Ajustes > Cuenta de Katna te permite crear una cuenta en el propio
+Ajustes > Suscripción te permite crear una cuenta en el propio
 servidor de Katna, con su propia contraseña, nunca la de tu correo. Las
 funciones en línea de Katna, como las confirmaciones de lectura y el
 seguimiento de enlaces, la necesitarán. Puedes ver los ordenadores con
@@ -663,7 +663,7 @@ mensaje o sigue un enlace que contiene, o pide en su lugar una
 confirmación de lectura. El correo enviado muestra quién lo abrió, y una
 notificación te avisa la primera vez. Ambos están desactivados en cada
 mensaje nuevo, y el seguimiento necesita una cuenta de Katna (Ajustes >
-Cuenta de Katna).
+Suscripción).
 """
 
 ["2026-09-27-2042-activity"]
@@ -703,4 +703,26 @@ recibiste en el periodo, cada cuánto y con qué rapidez respondes tú y
 responden los demás, las personas con las que más te escribes y en qué
 días y a qué horas llega tu correo. Se cuenta en tu ordenador a partir del
 correo que Katna ya tiene.
+"""
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Inicia sesión con Google o Microsoft"
+text = """
+Añade una cuenta de Gmail o de Outlook iniciando sesión en la propia
+página de Google o de Microsoft en tu navegador, sin contraseña de
+aplicación. Las direcciones de Outlook.com y Hotmail ya funcionan también.
+Si un inicio de sesión deja de funcionar, un aviso en la parte inferior de
+la ventana te ofrece volver a iniciar sesión.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Seguimiento y confirmaciones activados desde el principio"
+text = """
+Los mensajes nuevos y las respuestas empiezan ahora con el seguimiento de
+aperturas y clics, la confirmación de lectura y la confirmación de entrega
+activados; haz clic en un botón junto a los destinatarios para desactivar
+uno en ese mensaje. El seguimiento necesita que hayas iniciado sesión en
+tu cuenta de Katna. Una confirmación de entrega es un correo que te envía
+tu servidor de correo cuando el servidor de cada destinatario recibe el
+mensaje; el botón aparece atenuado si tu servidor de correo no las ofrece.
 """

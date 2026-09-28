@@ -11,6 +11,9 @@ add-account-servers-title = تنظیمات سرور
 add-account-servers-intro = جایی که Katna ایمیل‌های { $address } را از آن می‌خواند و می‌فرستد.
 add-account-password-title = گذرواژهٔ خود را وارد کنید
 add-account-signing-in = در حال ورود…
+add-account-browser-title = در مرورگر خود ادامه دهید
+add-account-browser-intro = Katna صفحهٔ ورود { $provider } را در مرورگرتان باز کرد. آن‌جا وارد شوید و به Katna اجازه دهید ایمیل‌هایتان را بخواند و بفرستد، سپس به این‌جا برگردید.
+add-account-browser-hint = صفحه‌ای باز نشد؟ پنجره‌های مرورگرتان را بررسی کنید، یا برگردید و دوباره امتحان کنید.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] سرورها: { $servers }، حدس زده‌شده؛ اگر ورود ناموفق بود آن‌ها را بررسی کنید.
 }
 add-account-servers-entered = سرورها: { $servers }، همان‌طور که وارد شد.
+add-account-or = یا
+add-account-sign-in-with = ورود با { $provider }
+add-account-sign-in-instead = به‌جای آن با { $provider } وارد شوید
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = نام با گذرواژه یکی است. به‌
 add-account-added = { $address } افزوده شد. در حال دریافت ایمیل‌های شما…
 add-account-app-password-refused = { $provider } گذرواژه را نپذیرفت. به گذرواژهٔ برنامه نیاز دارد، نه گذرواژه‌ای که در وب به کار می‌برید.
 add-account-password-refused = سرور گذرواژه را نپذیرفت. آن را بررسی کنید و دوباره امتحان کنید.
+add-account-sign-in-refused = { $provider } به Katna اجازهٔ ورود نداد. دوباره امتحان کنید و اجازهٔ دسترسی به ایمیل‌هایتان را بدهید.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] این نسخه از Katna هنوز نمی‌تواند به حساب‌های Microsoft وارد شود.
+    [Google] این نسخه از Katna هنوز نمی‌تواند به حساب‌های Google وارد شود.
+   *[other] این سرویس‌دهنده فقط در صفحهٔ خودش اجازهٔ ورود می‌دهد، و Katna هنوز نمی‌تواند این کار را برای آن انجام دهد.
+}
+add-account-signed-in = با { $provider } وارد شدید. در حال دریافت ایمیل‌های شما…
 
 ## The account menu (from the account button on the top bar)
 

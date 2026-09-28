@@ -11,6 +11,10 @@ reader-mark-unread = Mark as unread
 reader-move-to = Move to
 # The ⋮ button that opens more actions.
 reader-more = More
+# In a dark theme: shows the open mail in its sender's own colors…
+reader-original-colors = Show original colors
+# …and back in dark colors.
+reader-dark-colors = Show in dark colors
 # Prints every message of the open conversation.
 reader-print-all = Print all
 # Opens the conversation in a window of its own.
@@ -37,6 +41,13 @@ reader-date-ago = { $date } ({ $ago })
 reader-me = me
 # Under the sender's name. $names: the recipients, separated by commas ("me, Bob").
 reader-to = to { $names }
+# Before the recipients when each has a delivered or read tick.
+reader-to-label = to
+reader-tick-delivered = Delivered { $when }
+reader-tick-no-bounce = Sent { $when }; no bounce came back, so it most likely arrived
+reader-tick-bounced = Not delivered: bounced { $when }
+reader-tick-read = Read { $when } (read receipt)
+reader-tick-opened = Opened, last { $when } (open tracking)
 # Tooltip of the star button on a starred message.
 reader-starred = Starred
 # Tooltip of the star button on a message that is not starred.
@@ -202,6 +213,12 @@ print-preview-failed = the pages could not be shown
 print-preview-paper = Paper
 print-preview-a4 = A4
 print-preview-letter = Letter
+# How HTML mail prints: as the reading pane shows it, or its text alone.
+print-preview-layout = Layout
+print-preview-as-shown = As shown
+print-preview-simple = Simple text
+# Switch: print the background colors of HTML mail (off saves ink).
+print-preview-backgrounds = Backgrounds
 print-preview-cancel = Cancel
 print-preview-print = Print
 # In the printed page, in place of a message's text.

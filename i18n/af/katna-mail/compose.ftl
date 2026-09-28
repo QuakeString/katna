@@ -74,6 +74,9 @@ compose-track-unavailable = Ondertekende, geënkripteerde en gewoneteks-e-pos ka
 compose-track-sign-in = Meld by 'n Katna-rekening aan om oopmaak en klikke na te spoor
 compose-receipt = Vra 'n leesbewys
 compose-receipt-on = Leesbewys gevra: die ontvanger se program vra hulle dalk om een te stuur
+compose-delivery = Vra 'n afleweringsbewys
+compose-delivery-on = Afleweringsbewys gevra: jou e-posbediener stuur vir jou 'n e-pos wanneer elke ontvanger se bediener dit aanvaar
+compose-delivery-unavailable = Jou e-posbediener stuur nie afleweringsbewyse nie
 
 ## Spelling
 

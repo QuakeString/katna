@@ -5,3 +5,5 @@
 ## Errors Katna Mail shows
 
 daemon-deleting-data = Katna usuwa wszystkie swoje dane
+daemon-signed-in = Zalogowano w usłudze { $provider }. Możesz zamknąć tę kartę i wrócić do aplikacji Katna.
+daemon-sign-in-failed = Katna nie jest zalogowana w usłudze { $provider }. Możesz zamknąć tę kartę i spróbować ponownie w aplikacji Katna.

@@ -11,6 +11,9 @@ add-account-servers-title = Serverinställningar
 add-account-servers-intro = Var Katna läser och skickar e-post för { $address }.
 add-account-password-title = Ange ditt lösenord
 add-account-signing-in = Loggar in…
+add-account-browser-title = Fortsätt i webbläsaren
+add-account-browser-intro = Katna har öppnat inloggningssidan för { $provider } i din webbläsare. Logga in där och låt Katna läsa och skicka din e-post, och kom sedan tillbaka hit.
+add-account-browser-hint = Öppnades ingen sida? Titta bland webbläsarens fönster, eller gå tillbaka och försök igen.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] Servrar: { $servers }, gissade; kontrollera dem om inloggningen misslyckas.
 }
 add-account-servers-entered = Servrar: { $servers }, som angivna.
+add-account-or = eller
+add-account-sign-in-with = Logga in med { $provider }
+add-account-sign-in-instead = Logga in med { $provider } i stället
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = Namnet är detsamma som lösenordet. Skriv ditt n
 add-account-added = { $address } har lagts till. Hämtar din e-post…
 add-account-app-password-refused = { $provider } avvisade lösenordet. Det krävs ett applösenord, inte det du använder på webben.
 add-account-password-refused = Servern avvisade lösenordet. Kontrollera det och försök igen.
+add-account-sign-in-refused = { $provider } släppte inte in Katna. Försök igen och ge åtkomst till din e-post.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Den här versionen av Katna kan inte logga in på Microsoft-konton än.
+    [Google] Den här versionen av Katna kan inte logga in på Google-konton än.
+   *[other] Den här leverantören tillåter bara inloggning på sin egen sida, vilket Katna inte kan göra för den än.
+}
+add-account-signed-in = Inloggad med { $provider }. Hämtar din e-post…
 
 ## The account menu (from the account button on the top bar)
 

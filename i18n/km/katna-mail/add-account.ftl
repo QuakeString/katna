@@ -11,6 +11,9 @@ add-account-servers-title = ការកំណត់ម៉ាស៊ីនមេ
 add-account-servers-intro = កន្លែងដែល Katna អាន និងផ្ញើសំបុត្រសម្រាប់ { $address }។
 add-account-password-title = បញ្ចូលពាក្យសម្ងាត់របស់អ្នក
 add-account-signing-in = កំពុងចូល…
+add-account-browser-title = បន្តនៅក្នុងកម្មវិធីរុករករបស់អ្នក
+add-account-browser-intro = Katna បានបើកទំព័រចូលរបស់ { $provider } នៅក្នុងកម្មវិធីរុករករបស់អ្នក។ ចូលនៅទីនោះ ហើយអនុញ្ញាតឱ្យ Katna អាន និងផ្ញើសំបុត្ររបស់អ្នក រួចត្រឡប់មកទីនេះវិញ។
+add-account-browser-hint = គ្មានទំព័របើកទេឬ? ពិនិត្យមើលបង្អួចនៃកម្មវិធីរុករករបស់អ្នក ឬថយក្រោយ ហើយព្យាយាមម្ដងទៀត។
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] ម៉ាស៊ីនមេ៖ { $servers } ដោយការស្មាន សូមពិនិត្យវា បើការចូលបរាជ័យ។
 }
 add-account-servers-entered = ម៉ាស៊ីនមេ៖ { $servers } ដូចដែលបានបញ្ចូល។
+add-account-or = ឬ
+add-account-sign-in-with = ចូលដោយប្រើ { $provider }
+add-account-sign-in-instead = ចូលដោយប្រើ { $provider } ជំនួសវិញ
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = ឈ្មោះដូចគ្នានឹងព�
 add-account-added = បានបញ្ចូល { $address }។ កំពុងទាញយកសំបុត្ររបស់អ្នក…
 add-account-app-password-refused = { $provider } បានបដិសេធពាក្យសម្ងាត់។ វាត្រូវការពាក្យសម្ងាត់កម្មវិធី មិនមែនពាក្យសម្ងាត់ដែលអ្នកប្រើនៅលើវេបទេ។
 add-account-password-refused = ម៉ាស៊ីនមេបានបដិសេធពាក្យសម្ងាត់។ សូមពិនិត្យវា ហើយព្យាយាមម្ដងទៀត។
+add-account-sign-in-refused = { $provider } មិនបានអនុញ្ញាតឱ្យ Katna ចូលទេ។ សូមព្យាយាមម្ដងទៀត ហើយអនុញ្ញាតឱ្យចូលប្រើសំបុត្ររបស់អ្នក។
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] ច្បាប់ចម្លង Katna នេះមិនទាន់អាចចូលគណនី Microsoft បានទេ។
+    [Google] ច្បាប់ចម្លង Katna នេះមិនទាន់អាចចូលគណនី Google បានទេ។
+   *[other] អ្នកផ្ដល់សេវានេះអនុញ្ញាតឱ្យចូលតែនៅលើទំព័ររបស់ខ្លួនប៉ុណ្ណោះ ដែល Katna មិនទាន់អាចធ្វើសម្រាប់វាបានទេ។
+}
+add-account-signed-in = បានចូលដោយប្រើ { $provider }។ កំពុងទទួលសំបុត្ររបស់អ្នក…
 
 ## The account menu (from the account button on the top bar)
 

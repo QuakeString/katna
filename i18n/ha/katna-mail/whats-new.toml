@@ -447,7 +447,7 @@ cikakken launi.
 title = "Saya min kofi"
 text = """
 Idan Katna na da amfani a gare ka, yanzu Game da Katna yana da maɓallin
-Saya min kofi da lambar QR da ke buɗe wannan shafin a wayarka.
+Saya min kofi.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -607,7 +607,7 @@ bayyana x da ke cire shi.
 ["2026-09-27-1722-katna-account"]
 title = "Asusun Katna"
 text = """
-Saituna > Asusun Katna yana ba ku damar ƙirƙirar asusu a sabar Katna ta
+Saituna > Rajista yana ba ku damar ƙirƙirar asusu a sabar Katna ta
 kanta, da kalmar sirrinsa ta kansa, ba kalmar sirrin wasiƙa ba. Fasalolin
 Katna na intanet, kamar rasidin karantawa da bin diddigin hanyoyin haɗi,
 za su buƙace shi. Kuna iya ganin kwamfutocin da suka shiga kuma ku fitar da
@@ -650,7 +650,7 @@ Kunna ido kusa da masu karɓa don ganin lokacin da kowannensu ya buɗe
 saƙonka ko ya bi mahaɗi a cikinsa, ko ka nemi rasidin karantawa a maimakon
 haka. Wasiƙun da aka aika suna nuna wanda ya buɗe su, kuma sanarwa tana
 gaya maka a karon farko. Duka biyun a kashe suke ga kowane sabon saƙo, kuma
-bibiya tana buƙatar asusun Katna (Saituna > Asusun Katna).
+bibiya tana buƙatar asusun Katna (Saituna > Rajista).
 """
 
 ["2026-09-27-2042-activity"]
@@ -689,4 +689,24 @@ da ka karɓa a wannan lokaci, sau nawa kai da wasu kuke amsawa da kuma
 yadda kuke yin sauri, mutanen da kake yawan rubuta wa, da ranaku da
 sa'o'in da wasiƙunka ke isowa. Ana ƙirga shi a kwamfutarka daga wasiƙun
 da Katna ke da su tuni.
+"""
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Shiga da Google ko Microsoft"
+text = """
+Ƙara asusun Gmail ko Outlook ta hanyar shiga a shafin Google ko na
+Microsoft da kansa a burauzarku, ba tare da kalmar sirrin manhaja ba.
+Adireshin Outlook.com da Hotmail ma suna aiki yanzu. Idan shiga ya daina
+aiki, sanarwa a ƙasan taga tana ba da damar sake shiga.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Bibiya da rasidai a kunne tun farko"
+text = """
+Sababbin saƙonni da amsoshi yanzu suna farawa da bibiyar buɗewa da
+dannawa, rasidin karantawa da rasidin isarwa a kunne; danna maɓalli kusa
+da masu karɓa don kashe ɗaya a wannan saƙon. Bibiya tana buƙatar kun shiga
+asusunku na Katna. Rasidin isarwa imel ne da sabar wasiƙunku ke aiko muku
+idan sabar kowane mai karɓa ta karɓi saƙon; maɓallin yana dusashe inda
+sabar wasiƙunku ba ta bayar da su.
 """

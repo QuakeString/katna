@@ -463,8 +463,7 @@ immer in voller Farbe.
 title = "Spendieren Sie mir einen Kaffee"
 text = """
 Wenn Katna Ihnen nützlich ist: Unter Über Katna gibt es jetzt den Knopf
-Spendieren Sie mir einen Kaffee und einen QR-Code, der dieselbe Seite
-auf Ihrem Handy öffnet.
+Spendieren Sie mir einen Kaffee.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -624,7 +623,7 @@ Zeigen Sie auf einen Chip, erscheint ein x, das ihn entfernt.
 ["2026-09-27-1722-katna-account"]
 title = "Katna-Konto"
 text = """
-Unter Einstellungen > Katna-Konto erstellen Sie ein Konto auf dem eigenen
+Unter Einstellungen > Abonnement erstellen Sie ein Konto auf dem eigenen
 Server von Katna, mit eigenem Passwort, nie einem E-Mail-Passwort. Die
 Online-Funktionen von Katna, etwa Lesebestätigungen und Link-Tracking,
 werden es brauchen. Sie sehen die angemeldeten Computer und können jeden
@@ -670,7 +669,7 @@ Ihre Nachricht öffnet oder einem Link darin folgt, oder fordern Sie
 stattdessen eine Lesebestätigung an. Gesendete E-Mails zeigen, wer sie
 geöffnet hat, und beim ersten Mal meldet es eine Benachrichtigung. Beides
 ist bei jeder neuen Nachricht aus, und die Verfolgung braucht ein
-Katna-Konto (Einstellungen > Katna-Konto).
+Katna-Konto (Einstellungen > Abonnement).
 """
 
 ["2026-09-27-2042-activity"]
@@ -710,4 +709,27 @@ gesendet und empfangen haben, wie oft und wie schnell Sie und andere
 antworten, mit wem Sie am meisten schreiben und an welchen Tagen und zu
 welchen Uhrzeiten Ihre E-Mails eintreffen. Gezählt wird auf Ihrem
 Computer aus den E-Mails, die Katna bereits hat.
+"""
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Anmelden mit Google oder Microsoft"
+text = """
+Fügen Sie ein Gmail- oder Outlook-Konto hinzu, indem Sie sich auf der
+eigenen Seite von Google oder Microsoft in Ihrem Browser anmelden, ganz
+ohne App-Passwort. Auch Adressen von Outlook.com und Hotmail funktionieren
+jetzt. Wenn eine Anmeldung nicht mehr funktioniert, bietet ein Hinweis
+unten im Fenster an, sich erneut anzumelden.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Verfolgung und Bestätigungen von Anfang an"
+text = """
+Neue Nachrichten und Antworten beginnen jetzt mit eingeschalteter
+Verfolgung von Öffnungen und Klicks, Lesebestätigung und
+Zustellbestätigung; klicken Sie auf eine Schaltfläche neben den
+Empfängern, um eine davon für diese Nachricht auszuschalten. Für die
+Verfolgung müssen Sie bei Ihrem Katna-Konto angemeldet sein. Eine
+Zustellbestätigung ist eine E-Mail, die Ihr E-Mail-Server Ihnen schickt,
+wenn der Server jedes Empfängers die Nachricht annimmt; die Schaltfläche
+ist ausgegraut, wenn Ihr E-Mail-Server sie nicht anbietet.
 """

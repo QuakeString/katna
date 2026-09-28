@@ -458,7 +458,7 @@ dipaparkan dengan warna penuh.
 title = "Belanja saya kopi"
 text = """
 Jika Katna berguna kepada Anda, Perihal Katna kini ada butang Belanja
-saya kopi dan kod QR untuk membuka halaman yang sama pada telefon Anda.
+saya kopi.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -617,7 +617,7 @@ menunjukkan x yang mengalih keluarnya.
 ["2026-09-27-1722-katna-account"]
 title = "Akaun Katna"
 text = """
-Tetapan > Akaun Katna membolehkan anda mencipta akaun pada pelayan Katna
+Tetapan > Langganan membolehkan anda mencipta akaun pada pelayan Katna
 sendiri, dengan kata laluannya sendiri, bukan kata laluan mel. Ciri
 dalam talian Katna, seperti resit baca dan penjejakan pautan, akan
 memerlukannya. Anda boleh melihat komputer yang telah log masuk dan
@@ -662,7 +662,7 @@ membuka mesej anda atau mengikuti pautan di dalamnya, atau minta resit
 baca sebagai gantinya. Mel yang dihantar menunjukkan siapa yang telah
 membukanya, dan pemberitahuan memaklumkan anda pada kali pertama.
 Kedua-duanya dimatikan untuk setiap mesej baharu, dan penjejakan
-memerlukan akaun Katna (Tetapan > Akaun Katna).
+memerlukan akaun Katna (Tetapan > Langganan).
 """
 
 ["2026-09-27-2042-activity"]
@@ -702,4 +702,26 @@ hantar dan terima dalam tempoh itu, berapa kerap anda dan orang lain
 membalas dan berapa pantas, orang yang paling kerap anda utusi mel, dan
 pada hari serta jam apa mel anda tiba. Ia dikira pada komputer anda
 daripada mel yang sudah ada dalam Katna.
+"""
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Log masuk dengan Google atau Microsoft"
+text = """
+Tambah akaun Gmail atau Outlook dengan log masuk di halaman Google atau
+Microsoft sendiri dalam pelayar anda, tanpa kata laluan aplikasi. Alamat
+Outlook.com dan Hotmail kini berfungsi juga. Jika log masuk berhenti
+berfungsi, satu nota di bahagian bawah tetingkap menawarkan untuk log
+masuk semula.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Penjejakan dan resit dihidupkan dari awal"
+text = """
+Mesej dan balasan baharu kini bermula dengan penjejakan pembukaan dan
+klik, resit baca dan resit penghantaran dihidupkan; klik butang di
+sebelah penerima untuk mematikan salah satunya bagi mesej itu.
+Penjejakan memerlukan anda log masuk ke akaun Katna anda. Resit
+penghantaran ialah e-mel yang dihantar oleh pelayan mel anda apabila
+pelayan setiap penerima menerima mesej itu; butang itu dikelabukan jika
+pelayan mel anda tidak menyediakannya.
 """

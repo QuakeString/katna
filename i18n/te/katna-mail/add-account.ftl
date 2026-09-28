@@ -11,6 +11,9 @@ add-account-servers-title = సర్వర్ సెట్టింగ్‌ల
 add-account-servers-intro = { $address } కోసం Katna మెయిల్‌ను ఎక్కడ చదువుతుంది, ఎక్కడి నుండి పంపుతుంది.
 add-account-password-title = మీ పాస్‌వర్డ్‌ను ఎంటర్ చేయండి
 add-account-signing-in = సైన్ ఇన్ అవుతోంది…
+add-account-browser-title = మీ బ్రౌజర్‌లో కొనసాగించండి
+add-account-browser-intro = Katna మీ బ్రౌజర్‌లో { $provider } సైన్ ఇన్ పేజీని తెరిచింది. అక్కడ సైన్ ఇన్ చేసి, మీ మెయిల్‌ను చదవడానికి, పంపడానికి Katnaను అనుమతించండి, ఆ తర్వాత ఇక్కడికి తిరిగి రండి.
+add-account-browser-hint = పేజీ ఏదీ తెరుచుకోలేదా? మీ బ్రౌజర్ విండోలను చూడండి, లేదా వెనుకకు వెళ్లి మళ్లీ ప్రయత్నించండి.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] సర్వర్‌లు: { $servers }, ఊహించినవి; సైన్ ఇన్ విఫలమైతే వాటిని తనిఖీ చేయండి.
 }
 add-account-servers-entered = సర్వర్‌లు: { $servers }, ఎంటర్ చేసినట్లే.
+add-account-or = లేదా
+add-account-sign-in-with = { $provider }తో సైన్ ఇన్ చేయండి
+add-account-sign-in-instead = బదులుగా { $provider }తో సైన్ ఇన్ చేయండి
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = పేరు పాస్‌వర్డ్‌ల
 add-account-added = { $address } జోడించబడింది. మీ మెయిల్‌ను తెస్తోంది…
 add-account-app-password-refused = { $provider } పాస్‌వర్డ్‌ను తిరస్కరించింది. దానికి యాప్ పాస్‌వర్డ్ అవసరం, వెబ్‌లో మీరు ఉపయోగించేది కాదు.
 add-account-password-refused = సర్వర్ పాస్‌వర్డ్‌ను తిరస్కరించింది. దాన్ని తనిఖీ చేసి మళ్లీ ప్రయత్నించండి.
+add-account-sign-in-refused = { $provider } Katnaను లోపలికి అనుమతించలేదు. మళ్లీ ప్రయత్నించి, మీ మెయిల్‌కు యాక్సెస్ అనుమతించండి.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Katna యొక్క ఈ కాపీ ఇంకా Microsoft ఖాతాలకు సైన్ ఇన్ చేయలేదు.
+    [Google] Katna యొక్క ఈ కాపీ ఇంకా Google ఖాతాలకు సైన్ ఇన్ చేయలేదు.
+   *[other] ఈ ప్రొవైడర్ తన సొంత పేజీలో మాత్రమే సైన్ ఇన్ చేయడానికి అనుమతిస్తుంది, దాని కోసం Katna ఇంకా అలా చేయలేదు.
+}
+add-account-signed-in = { $provider }తో సైన్ ఇన్ అయ్యారు. మీ మెయిల్‌ను తెస్తోంది…
 
 ## The account menu (from the account button on the top bar)
 

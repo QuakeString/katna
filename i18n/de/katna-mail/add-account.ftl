@@ -11,6 +11,9 @@ add-account-servers-title = Servereinstellungen
 add-account-servers-intro = Wo Katna E-Mails für { $address } liest und sendet.
 add-account-password-title = Passwort eingeben
 add-account-signing-in = Anmeldung läuft…
+add-account-browser-title = Im Browser fortfahren
+add-account-browser-intro = Katna hat die Anmeldeseite von { $provider } in Ihrem Browser geöffnet. Melden Sie sich dort an, erlauben Sie Katna, Ihre E-Mails zu lesen und zu senden, und kehren Sie dann hierher zurück.
+add-account-browser-hint = Keine Seite geöffnet? Sehen Sie in den Fenstern Ihres Browsers nach, oder gehen Sie zurück und versuchen Sie es erneut.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] Server: { $servers }, geschätzt; prüfen Sie sie, falls die Anmeldung fehlschlägt.
 }
 add-account-servers-entered = Server: { $servers }, wie eingegeben.
+add-account-or = oder
+add-account-sign-in-with = Mit { $provider } anmelden
+add-account-sign-in-instead = Stattdessen mit { $provider } anmelden
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = Der Name ist derselbe wie das Passwort. Geben Sie
 add-account-added = { $address } hinzugefügt. E-Mails werden abgerufen…
 add-account-app-password-refused = { $provider } hat das Passwort abgelehnt. Nötig ist ein App-Passwort, nicht das Passwort, das Sie im Web verwenden.
 add-account-password-refused = Der Server hat das Passwort abgelehnt. Prüfen Sie es und versuchen Sie es erneut.
+add-account-sign-in-refused = { $provider } hat Katna keinen Zugang gewährt. Versuchen Sie es erneut und erlauben Sie den Zugriff auf Ihre E-Mails.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Diese Version von Katna kann sich noch nicht bei Microsoft-Konten anmelden.
+    [Google] Diese Version von Katna kann sich noch nicht bei Google-Konten anmelden.
+   *[other] Dieser Anbieter erlaubt die Anmeldung nur auf seiner eigenen Seite, und das kann Katna für ihn noch nicht.
+}
+add-account-signed-in = Mit { $provider } angemeldet. E-Mails werden abgerufen…
 
 ## The account menu (from the account button on the top bar)
 

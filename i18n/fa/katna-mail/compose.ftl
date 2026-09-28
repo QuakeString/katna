@@ -74,6 +74,9 @@ compose-track-unavailable = ایمیل امضاشده، رمزگذاری‌شد�
 compose-track-sign-in = برای ردیابی باز شدن و کلیک‌ها، به یک حساب Katna وارد شوید
 compose-receipt = درخواست رسید خواندن
 compose-receipt-on = رسید خواندن درخواست شد: ممکن است برنامهٔ گیرنده از او بخواهد رسیدی بفرستد
+compose-delivery = درخواست رسید تحویل
+compose-delivery-on = رسید تحویل درخواست شد: وقتی سرور هر گیرنده آن را بپذیرد، سرور ایمیل شما ایمیلی برایتان می‌فرستد
+compose-delivery-unavailable = سرور ایمیل شما رسید تحویل نمی‌فرستد
 
 ## Spelling
 

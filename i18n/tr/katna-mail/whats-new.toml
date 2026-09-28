@@ -451,8 +451,7 @@ Seçili, yıldızlı veya önemli bir posta her zaman tam renkli görünür.
 title = "Bana bir kahve ısmarla"
 text = """
 Katna işinize yarıyorsa, Katna hakkında penceresinde artık Bana bir
-kahve ısmarla düğmesi ve aynı sayfayı telefonunuzda açan bir QR kodu
-var.
+kahve ısmarla düğmesi var.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -614,7 +613,7 @@ gelince onu kaldıran bir x görünür.
 ["2026-09-27-1722-katna-account"]
 title = "Katna hesabı"
 text = """
-Ayarlar > Katna hesabı, Katna'nın kendi sunucusunda, asla bir posta
+Ayarlar > Abonelik, Katna'nın kendi sunucusunda, asla bir posta
 parolası olmayan kendi parolasıyla bir hesap oluşturmanızı sağlar.
 Okundu bilgisi ve bağlantı izleme gibi çevrimiçi Katna özellikleri buna
 ihtiyaç duyacak. Oturum açmış bilgisayarları görebilir, istediğinizin
@@ -658,7 +657,7 @@ Her alıcının iletinizi ne zaman açtığını veya içindeki bir bağlantıy�
 izlediğini görmek için alıcıların yanındaki gözü açın ya da bunun yerine
 okundu bilgisi isteyin. Gönderilen postada kimin açtığı görünür ve ilk
 seferinde bir bildirim size haber verir. İkisi de her yeni iletide
-kapalıdır ve izleme bir Katna hesabı gerektirir (Ayarlar > Katna hesabı).
+kapalıdır ve izleme bir Katna hesabı gerektirir (Ayarlar > Abonelik).
 """
 
 ["2026-09-27-2042-activity"]
@@ -697,4 +696,25 @@ aldığınızı, sizin ve başkalarının ne sıklıkla ve ne kadar hızlı yan�
 verdiğini, en çok yazıştığınız kişileri ve postalarınızın hangi gün ve
 saatlerde geldiğini de gösterir. Bunlar, Katna'da zaten bulunan
 postalardan bilgisayarınızda sayılır.
+"""
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Google veya Microsoft ile oturum açın"
+text = """
+Gmail veya Outlook hesabını, tarayıcınızda Google'ın ya da Microsoft'un
+kendi sayfasında oturum açarak, uygulama parolası olmadan ekleyin.
+Outlook.com ve Hotmail adresleri de artık çalışıyor. Oturum açma
+çalışmayı bırakırsa pencerenin altındaki bir not yeniden oturum açmayı
+önerir.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "İzleme, okundu ve teslim bilgisi baştan açık"
+text = """
+Yeni iletiler ve yanıtlar artık açılma ve tıklama izleme, okundu bilgisi
+ve teslim bilgisi açık olarak başlıyor; bunlardan birini o ileti için
+kapatmak üzere alıcıların yanındaki bir düğmeye tıklayın. İzleme için
+Katna hesabınızda oturum açmış olmanız gerekir. Teslim bilgisi, her
+alıcının sunucusu iletiyi aldığında posta sunucunuzun size gönderdiği
+bir e-postadır; posta sunucunuz bunu sunmuyorsa düğme soluk görünür.
 """

@@ -27,9 +27,24 @@ pub(in crate::window) struct Sealing {
     pub track: bool,
     /// A `Disposition-Notification-To` header (RFC 8098).
     pub receipt: bool,
+    /// Delivery receipts from the mail server (SMTP DSN, RFC 3461).
+    pub delivery: bool,
 }
 
 impl Sealing {
+    /// The default for a new message: tracked, with read and delivery
+    /// receipts asked for. Tracking only happens when signed in to a Katna
+    /// account and the message can be tracked; delivery receipts only where
+    /// the mail server sends them (`compose/tracking.rs`).
+    pub fn new_message() -> Self {
+        Self {
+            track: true,
+            receipt: true,
+            delivery: true,
+            ..Self::default()
+        }
+    }
+
     /// The default for an answer to (or forward of) a message: encrypted
     /// mail is answered encrypted and signed, in the same standard.
     pub fn answering(security: Option<&Security>) -> Self {
@@ -38,9 +53,9 @@ impl Sealing {
                 sign: true,
                 encrypt: true,
                 smime: security.standard == Standard::Smime,
-                ..Self::default()
+                ..Self::new_message()
             },
-            _ => Self::default(),
+            _ => Self::new_message(),
         }
     }
 
@@ -176,15 +191,18 @@ mod tests {
                 sign: true,
                 encrypt: true,
                 smime: true,
-                ..Sealing::default()
+                ..Sealing::new_message()
             }
         );
         let signed_only = Security {
             decryption: None,
             ..security
         };
-        assert_eq!(Sealing::answering(Some(&signed_only)), Sealing::default());
-        assert_eq!(Sealing::answering(None), Sealing::default());
+        assert_eq!(
+            Sealing::answering(Some(&signed_only)),
+            Sealing::new_message()
+        );
+        assert_eq!(Sealing::answering(None), Sealing::new_message());
     }
 
     #[test]

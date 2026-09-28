@@ -448,7 +448,7 @@ hàn ní àwọ̀ kíkún nígbà gbogbo.
 title = "Ra kọfí kan fún mi"
 text = """
 Bí Katna bá wúlò fún ọ, Nípa Katna ti ní bọ́tìnnì Ra kọfí kan fún mi
-báyìí àti kóòdù QR láti ṣí ojú-ìwé kan náà lórí fóònù rẹ.
+báyìí.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -604,7 +604,7 @@ sí ṣíìpù kan máa ń fi x kan hàn tí ó ń yọ ọ́ kúrò.
 ["2026-09-27-1722-katna-account"]
 title = "Àkáǹtì Katna"
 text = """
-Ètò > Àkáǹtì Katna ń jẹ́ kí o ṣẹ̀dá àkáǹtì lórí sáfà Katna fúnra rẹ̀,
+Ètò > Ìforúkọsílẹ̀ ń jẹ́ kí o ṣẹ̀dá àkáǹtì lórí sáfà Katna fúnra rẹ̀,
 pẹ̀lú ọ̀rọ̀ aṣínà tirẹ̀, kì í ṣe ọ̀rọ̀ aṣínà lẹ́tà láé. Àwọn ẹ̀yà orí
 ayélujára Katna, bí ìwé-ẹ̀rí kíkà àti títọpa ìjápọ̀, máa nílò rẹ̀. O lè
 rí àwọn kọ̀ǹpútà tó ti wọlé, kí o sì mú èyíkéyìí nínú wọn jáde.
@@ -647,7 +647,7 @@ Tan ojú tó wà lẹ́gbẹ̀ẹ́ àwọn olùgbà láti rí ìgbà tí ẹnì
 ìfiránṣẹ́ rẹ tàbí tẹ̀lé ìjápọ̀ kan nínú rẹ̀, tàbí béèrè ìwé-ẹ̀rí kíkà dípò
 bẹ́ẹ̀. Lẹ́tà tí a fi ránṣẹ́ máa ń fi ẹni tó ṣí i hàn, ìfitónilétí kan sì
 máa sọ fún ọ ní ìgbà àkọ́kọ́. Méjèèjì wà ní pípa fún gbogbo ìfiránṣẹ́
-tuntun, títọpa sì nílò àkáǹtì Katna (Ètò > Àkáǹtì Katna).
+tuntun, títọpa sì nílò àkáǹtì Katna (Ètò > Ìforúkọsílẹ̀).
 """
 
 ["2026-09-27-2042-activity"]
@@ -684,4 +684,25 @@ text = """
 àkókò náà hàn báyìí, bí ìwọ àti àwọn míì ṣe ń dáhùn lóòrèkóòrè àti bí ó
 ṣe yára tó, àwọn tí o ń kọ̀wé sí jù, àti àwọn ọjọ́ àti wákàtí tí lẹ́tà rẹ
 máa ń dé. A ń kà á lórí kọ̀ǹpútà rẹ láti inú lẹ́tà tí Katna ti ní tẹ́lẹ̀.
+"""
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Wọlé pẹ̀lú Google tàbí Microsoft"
+text = """
+Ṣàfikún àkáǹtì Gmail tàbí Outlook nípa wíwọlé lórí ojú-ìwé Google tàbí
+Microsoft fúnra wọn nínú aṣàwákiri rẹ, láìsí ọ̀rọ̀ aṣínà áàpù. Àwọn
+àdírẹ́sì Outlook.com àti Hotmail náà ń ṣiṣẹ́ báyìí. Bí wíwọlé bá dẹ́kun
+iṣẹ́, àkíyèsí kan ní ìsàlẹ̀ fèrèsé yóò fún ọ láǹfààní láti tún wọlé.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Títọpa àti ìwé-ẹ̀rí ti wà ní títàn láti ìbẹ̀rẹ̀"
+text = """
+Àwọn ìfiránṣẹ́ tuntun àti àwọn èsì ti ń bẹ̀rẹ̀ báyìí pẹ̀lú títọpa ṣíṣí
+àti títẹ̀, ìwé-ẹ̀rí kíkà àti ìwé-ẹ̀rí ìfijíṣẹ́ ní títàn; tẹ bọ́tìnnì kan
+lẹ́gbẹ̀ẹ́ àwọn olùgbà láti pa ọ̀kan nínú wọn fún ìfiránṣẹ́ náà. Títọpa
+nílò kí o ti wọlé sí àkáǹtì Katna rẹ. Ìwé-ẹ̀rí ìfijíṣẹ́ jẹ́ ímeèlì tí
+sáfà lẹ́tà rẹ ń fi ránṣẹ́ sí ọ nígbà tí sáfà olùgbà kọ̀ọ̀kan bá gba
+ìfiránṣẹ́ náà; bọ́tìnnì náà máa ń ṣú níbi tí sáfà lẹ́tà rẹ kò ti pèsè
+wọn.
 """

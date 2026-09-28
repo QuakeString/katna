@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Search by attachment type"
+text = """
+In Search options, "Has attachment" now offers PDF, XLSX, ODF, XLS, ODS,
+PPT and PPTX, and Custom for any other extension, like png or avif. Only
+mail with an attachment of a chosen type shows.
+"""

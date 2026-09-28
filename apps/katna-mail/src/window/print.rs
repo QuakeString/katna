@@ -18,35 +18,40 @@ use std::time::{Duration, SystemTime};
 use gpui::{Context, Window};
 use katna_i18n::tr;
 use katna_render::Address;
-use katna_render::print::{Paper, PrintFont, PrintMessage, conversation_pdf};
+use katna_render::print::{
+    Paper, PrintFont, PrintFonts, PrintMessage, PrintOptions, conversation_pdf,
+};
 
 use super::MailWindow;
 use super::reader::Printable;
+use super::remote::Fetch;
+use super::rich;
 use crate::format;
 
 /// How long a printed PDF is kept.
 const KEEP: Duration = Duration::from_secs(60 * 60);
 
 /// What is printed: the conversation's subject and its messages, in the
-/// desktop's UI font.
+/// desktop's UI font (and the reader's monospace one).
 pub(super) struct PrintJob {
     pub subject: String,
     messages: Vec<PrintMessage>,
     family: Option<String>,
+    mono: Option<String>,
 }
 
 impl PrintJob {
     /// The conversation laid out on `paper`, as a PDF.
-    pub(super) fn layout(&self, paper: Paper) -> Result<Vec<u8>, String> {
-        let (regular, bold) = fonts(self.family.as_deref()).ok_or_else(|| tr!("print-no-font"))?;
-        conversation_pdf(
-            &self.subject,
-            &self.messages,
-            paper,
-            &regular,
-            bold.as_ref(),
-        )
-        .map_err(|err| err.to_string())
+    pub(super) fn layout(&self, paper: Paper, options: PrintOptions) -> Result<Vec<u8>, String> {
+        let fonts = fonts(self.family.as_deref(), self.mono.as_deref())
+            .ok_or_else(|| tr!("print-no-font"))?;
+        conversation_pdf(&self.subject, &self.messages, paper, &fonts, options)
+            .map_err(|err| err.to_string())
+    }
+
+    /// Whether any message has formatting to print (HTML).
+    pub(super) fn formatted(&self) -> bool {
+        self.messages.iter().any(|m| m.document.is_some())
     }
 }
 
@@ -68,6 +73,7 @@ impl MailWindow {
                 .map(|p| self.print_message(p))
                 .collect(),
             family: self.font.as_ref().map(ToString::to_string),
+            mono: self.remote.mono().map(|m| m.to_string()),
         };
         self.open_print_preview(Arc::new(job), window, cx);
     }
@@ -79,6 +85,7 @@ impl MailWindow {
         job: Arc<PrintJob>,
         pdf: Arc<Vec<u8>>,
         paper: Paper,
+        options: PrintOptions,
         cx: &mut Context<Self>,
     ) {
         let dir = print_dir();
@@ -100,7 +107,7 @@ impl MailWindow {
                     let pdf = if same_paper(picked, paper) {
                         pdf
                     } else {
-                        Arc::new(job.layout(picked)?)
+                        Arc::new(job.layout(picked, options)?)
                     };
                     save_pdf(&dir, &pdf)
                 })
@@ -131,7 +138,8 @@ impl MailWindow {
         .detach();
     }
 
-    /// A message as it is printed: its sender, date, recipients and text.
+    /// A message as it is printed: its sender, date, recipients and body,
+    /// with the remote pictures the reader shows.
     fn print_message(&self, message: Printable) -> PrintMessage {
         let addresses = |list: &[Address]| {
             list.iter()
@@ -165,6 +173,24 @@ impl MailWindow {
                 text(addresses(list))
             }
         };
+        let sender = view.from.first().map(|a| a.email.as_str()).unwrap_or("");
+        let shown = !message.encrypted && self.remote.allowed(message.id, sender);
+        let images = message
+            .doc
+            .as_ref()
+            .filter(|_| shown)
+            .map(rich::remote_urls)
+            .unwrap_or_default()
+            .into_iter()
+            .filter_map(|url| match self.remote.images.get(&url) {
+                Some(Fetch::Ready(image)) => {
+                    let kind = rich::kind(image.format)?;
+                    Some((url, (kind, Arc::from(image.bytes.as_slice()))))
+                }
+                _ => None,
+            })
+            .collect();
+        let count = view.attachments.len();
         PrintMessage {
             from: addresses(&view.from),
             date: date(view.date.or(message.row.as_ref().and_then(|r| r.date))),
@@ -175,7 +201,10 @@ impl MailWindow {
             } else {
                 view.body
             },
+            document: message.doc,
+            images,
             attachments: view.attachments.into_iter().map(|a| a.name).collect(),
+            attachments_label: tr!("attachment-count", count = count),
         }
     }
 }
@@ -247,8 +276,9 @@ fn save_pdf(dir: &Path, pdf: &[u8]) -> Result<PathBuf, String> {
 }
 
 /// The desktop's UI font (`family`), else a common sans-serif one, in
-/// regular and, when the family has one, bold.
-fn fonts(family: Option<&str>) -> Option<(PrintFont, Option<PrintFont>)> {
+/// regular and, when the family has them, bold, italic and bold italic;
+/// and a monospace font (`mono`, else a common one).
+fn fonts(family: Option<&str>, mono: Option<&str>) -> Option<PrintFonts> {
     let mut db = fontdb::Database::new();
     db.load_system_fonts();
     let families: Vec<fontdb::Family> = family
@@ -263,22 +293,61 @@ fn fonts(family: Option<&str>) -> Option<(PrintFont, Option<PrintFont>)> {
         .map(fontdb::Family::Name)
         .chain([fontdb::Family::SansSerif])
         .collect();
-    let face = |weight| {
+    let monos: Vec<fontdb::Family> = mono
+        .into_iter()
+        .chain([
+            "Noto Sans Mono",
+            "DejaVu Sans Mono",
+            "Liberation Mono",
+            "Cascadia Mono",
+            "Consolas",
+        ])
+        .map(fontdb::Family::Name)
+        .chain([fontdb::Family::Monospace])
+        .collect();
+    let query = |families: &[fontdb::Family], weight, style| {
         db.query(&fontdb::Query {
-            families: &families,
+            families,
             weight,
+            style,
             ..fontdb::Query::default()
         })
     };
-    let regular = face(fontdb::Weight::NORMAL).or_else(|| db.faces().next().map(|f| f.id))?;
-    let bold = face(fontdb::Weight::BOLD).filter(|bold| *bold != regular);
+    let (upright, italic) = (fontdb::Style::Normal, fontdb::Style::Italic);
+    let regular = query(&families, fontdb::Weight::NORMAL, upright)
+        .or_else(|| db.faces().next().map(|f| f.id))?;
+    // Only a face that is what was asked for: the closest match may be
+    // the regular one.
+    let styled = |bold: bool, style| {
+        let weight = if bold {
+            fontdb::Weight::BOLD
+        } else {
+            fontdb::Weight::NORMAL
+        };
+        query(&families, weight, style).filter(|id| {
+            *id != regular
+                && db.face(*id).is_some_and(|f| {
+                    // DejaVu's italic is an oblique.
+                    let slanted = f.style != fontdb::Style::Normal;
+                    slanted == (style == italic) && (f.weight >= fontdb::Weight::SEMIBOLD) == bold
+                })
+        })
+    };
+    let mono_face = query(&monos, fontdb::Weight::NORMAL, upright)
+        .filter(|id| *id != regular && db.face(*id).is_some_and(|f| f.monospaced));
     let load = |id| {
         db.with_face_data(id, |data, index| PrintFont {
             data: data.to_vec(),
             index,
         })
     };
-    Some((load(regular)?, bold.and_then(load)))
+    Some(PrintFonts {
+        regular: load(regular)?,
+        bold: styled(true, upright).and_then(load),
+        italic: styled(false, italic).and_then(load),
+        bold_italic: styled(true, italic).and_then(load),
+        mono: mono_face.and_then(load),
+    })
 }
 
 /// The desktop's print dialog (the print portal).
@@ -455,10 +524,11 @@ mod tests {
                 ..PrintMessage::default()
             }],
             family: Some("No Such Font".into()),
+            mono: None,
         };
-        let Ok(pdf) = job.layout(Paper::A4) else {
+        let Ok(pdf) = job.layout(Paper::A4, PrintOptions::default()) else {
             // A system without fonts (a bare CI image) cannot print.
-            assert!(fonts(None).is_none());
+            assert!(fonts(None, None).is_none());
             return;
         };
         let path = save_pdf(&dir, &pdf).unwrap();

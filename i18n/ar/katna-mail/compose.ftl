@@ -78,6 +78,9 @@ compose-track-unavailable = لا يمكن تتبُّع البريد الموقَ
 compose-track-sign-in = سجّل الدخول إلى حساب Katna لتتبُّع الفتح والنقرات
 compose-receipt = طلب إشعار بالقراءة
 compose-receipt-on = طُلب إشعار بالقراءة: قد يطلب تطبيق المستلم منه إرساله
+compose-delivery = طلب إشعار بالتسليم
+compose-delivery-on = طُلب إشعار بالتسليم: سيرسل إليك خادم بريدك رسالة عندما يقبلها خادم كل مستلم
+compose-delivery-unavailable = خادم بريدك لا يرسل إشعارات التسليم
 
 ## Spelling
 

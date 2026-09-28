@@ -440,7 +440,7 @@ n'agba zuru ezu.
 title = "Zụtara m kọfị"
 text = """
 Ọ bụrụ na Katna bara uru nye gị, Maka Katna nwere bọtịnụ Zụtara m kọfị
-ugbu a, ya na koodu QR iji mepee otu ibe ahụ na ekwentị gị.
+ugbu a.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -596,7 +596,7 @@ na-ewepụ ya.
 ["2026-09-27-1722-katna-account"]
 title = "Akaụntụ Katna"
 text = """
-Ntọala > Akaụntụ Katna na-enye gị ohere imepụta akaụntụ na sava nke Katna
+Ntọala > Ndenye aha na-enye gị ohere imepụta akaụntụ na sava nke Katna
 n'onwe ya, nwere okwuntughe nke ya, ọ bụghị okwuntughe ozi. Atụmatụ
 ịntanetị nke Katna, dịka akara na-egosi na a gụrụ ozi na nsochi njikọ, ga-achọ
 ya. Ị nwere ike ịhụ kọmputa ndị banyere ma pụpụ nke ọ bụla n'ime ha.
@@ -638,7 +638,7 @@ Gbanye anya dị n'akụkụ ndị nnata iji hụ mgbe onye ọ bụla mepere oz
 ma ọ bụ soro njikọ dị n'ime ya, ma ọ bụ rịọ akara na-egosi na a gụrụ ozi
 kama. Ozi ezigara na-egosi onye mepere ya, ọkwa na-agwakwa gị oge mbụ.
 Ha abụọ gbanyụrụ maka ozi ọhụrụ ọ bụla, ịsochi chọkwara akaụntụ Katna
-(Ntọala > Akaụntụ Katna).
+(Ntọala > Ndenye aha).
 """
 
 ["2026-09-27-2042-activity"]
@@ -675,4 +675,24 @@ Ihe omume > Nkọwa zuru ezu na-egosikwa ugbu a ole ozi ị zigara na nke ị
 natara n'oge ahụ, ugboro ole na otú gị na ndị ọzọ si aza ngwa ngwa, ndị
 gị na ha na-edekọrịta ozi karịa, na ụbọchị na awa ozi gị na-abata. A
 na-agụ ya na kọmputa gị site n'ozi Katna nweburu.
+"""
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Banye na Google ma ọ bụ Microsoft"
+text = """
+Tinye akaụntụ Gmail ma ọ bụ Outlook site n'ịbanye na peeji Google ma ọ
+bụ Microsoft n'onwe ha na ihe nchọgharị gị, na-enweghị okwuntughe ngwa.
+Adreesị Outlook.com na Hotmail na-arụkwa ọrụ ugbu a. Ọ bụrụ na mbanye
+akwụsị ịrụ ọrụ, ozi dị n'okpuru windo na-enye ohere ịbanye ọzọ.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Nsochi na akara ndị a gbanyere site na mmalite"
+text = """
+Ozi ọhụrụ na nzaghachi na-amalite ugbu a na nsochi mmeghe na mpị, akara
+na-egosi na a gụrụ ozi na akara na-egosi na ozi rutere agbanyere; pịa
+bọtịnụ dị n'akụkụ ndị nnata iji gbanyụọ otu n'ime ha maka ozi ahụ. Nsochi
+chọrọ ka ị banye n'akaụntụ Katna gị. Akara na-egosi na ozi rutere bụ email
+sava ozi gị na-ezitere gị mgbe sava onye nnata ọ bụla natara ozi ahụ;
+bọtịnụ ahụ na-adị isi awọ ebe sava ozi gị anaghị enye ha.
 """

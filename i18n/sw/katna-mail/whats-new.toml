@@ -457,8 +457,8 @@ rangi kamili kila wakati.
 ["2026-09-27-1512-buy-me-a-coffee"]
 title = "Ninunulie kahawa"
 text = """
-Ikiwa Katna inakufaa, Kuhusu Katna sasa ina kitufe cha Ninunulie kahawa
-na msimbo wa QR wa kufungua ukurasa huo huo kwenye simu yako.
+Ikiwa Katna inakufaa, Kuhusu Katna sasa ina kitufe cha Ninunulie
+kahawa.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -617,7 +617,7 @@ kwenye kipande huonyesha x inayokiondoa.
 ["2026-09-27-1722-katna-account"]
 title = "Akaunti ya Katna"
 text = """
-Mipangilio > Akaunti ya Katna hukuwezesha kufungua akaunti kwenye seva
+Mipangilio > Usajili hukuwezesha kufungua akaunti kwenye seva
 ya Katna yenyewe, yenye nenosiri lake, kamwe si nenosiri la barua.
 Vipengele vya mtandaoni vya Katna, kama stakabadhi za kusoma na
 ufuatiliaji wa viungo, vitaihitaji. Unaweza kuona kompyuta zilizoingia
@@ -661,8 +661,7 @@ Washa jicho karibu na wapokeaji ili uone kila mmoja anapofungua ujumbe
 wako au kufuata kiungo ndani yake, au omba stakabadhi ya kusoma badala
 yake. Barua zilizotumwa zinaonyesha nani amezifungua, na arifa
 inakujulisha mara ya kwanza. Vyote viwili vimezimwa kwa kila ujumbe
-mpya, na ufuatiliaji unahitaji akaunti ya Katna (Mipangilio > Akaunti ya
-Katna).
+mpya, na ufuatiliaji unahitaji akaunti ya Katna (Mipangilio > Usajili).
 """
 
 ["2026-09-27-2042-activity"]
@@ -703,4 +702,26 @@ kupokea katika kipindi hicho, mara ngapi wewe na wengine mnajibu na kwa
 kasi gani, watu unaowaandikia zaidi, na siku na saa gani barua zako
 zinafika. Inahesabiwa kwenye kompyuta yako kutoka kwa barua ambazo
 Katna tayari inazo.
+"""
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Ingia kwa Google au Microsoft"
+text = """
+Ongeza akaunti ya Gmail au Outlook kwa kuingia kwenye ukurasa wa Google
+au Microsoft wenyewe katika kivinjari chako, bila nenosiri la programu.
+Anwani za Outlook.com na Hotmail sasa zinafanya kazi pia. Kuingia
+kukiacha kufanya kazi, ujumbe ulio chini ya dirisha hukupa nafasi ya
+kuingia tena.
+"""
+
+["2026-09-28-0054-tracking-on-by-default"]
+title = "Ufuatiliaji na stakabadhi vimewashwa tangu mwanzo"
+text = """
+Ujumbe mpya na majibu sasa huanza na ufuatiliaji wa kufunguliwa na
+kubofya, stakabadhi ya kusoma na stakabadhi ya kufikishwa vikiwa
+vimewashwa; bofya kitufe kilicho kando ya wapokeaji ili kuzima
+kimojawapo kwa ujumbe huo. Ufuatiliaji unahitaji uwe umeingia kwenye
+akaunti yako ya Katna. Stakabadhi ya kufikishwa ni barua pepe ambayo
+seva yako ya barua hukutumia seva ya kila mpokeaji inapoupokea ujumbe;
+kitufe huwa kijivu pale ambapo seva yako ya barua haizitoi.
 """

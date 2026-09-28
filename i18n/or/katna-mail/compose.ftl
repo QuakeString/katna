@@ -74,6 +74,9 @@ compose-track-unavailable = ଦସ୍ତଖତ ହୋଇଥିବା, ଏନକ�
 compose-track-sign-in = ଖୋଲିବା ଓ କ୍ଲିକ ଟ୍ରାକ କରିବାକୁ ଏକ Katna ଆକାଉଣ୍ଟରେ ସାଇନ ଇନ କରନ୍ତୁ
 compose-receipt = ପଢ଼ିବା ରସିଦ ମାଗନ୍ତୁ
 compose-receipt-on = ପଢ଼ିବା ରସିଦ ମଗାଯାଇଛି: ପ୍ରାପକଙ୍କ ଆପ ତାଙ୍କୁ ଗୋଟିଏ ପଠାଇବାକୁ କହିପାରେ
+compose-delivery = ଡେଲିଭରି ରସିଦ ମାଗନ୍ତୁ
+compose-delivery-on = ଡେଲିଭରି ରସିଦ ମଗାଯାଇଛି: ପ୍ରତ୍ୟେକ ପ୍ରାପକଙ୍କ ସର୍ଭର ମେସେଜଟି ଗ୍ରହଣ କଲେ ଆପଣଙ୍କ ମେଲ ସର୍ଭର ଆପଣଙ୍କୁ ଇମେଲ ପଠାଇବ
+compose-delivery-unavailable = ଆପଣଙ୍କ ମେଲ ସର୍ଭର ଡେଲିଭରି ରସିଦ ପଠାଏ ନାହିଁ
 
 ## Spelling
 

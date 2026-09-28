@@ -74,6 +74,9 @@ compose-track-unavailable = ਦਸਤਖ਼ਤ ਕੀਤੀ, ਇਨਕ੍ਰਿ�
 compose-track-sign-in = ਖੋਲ੍ਹਣਾ ਅਤੇ ਕਲਿੱਕ ਟ੍ਰੈਕ ਕਰਨ ਲਈ Katna ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ ਇਨ ਕਰੋ
 compose-receipt = ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ ਮੰਗੋ
 compose-receipt-on = ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ ਮੰਗੀ ਗਈ: ਪ੍ਰਾਪਤਕਰਤਾ ਦੀ ਐਪ ਉਹਨਾਂ ਨੂੰ ਇਹ ਭੇਜਣ ਲਈ ਕਹਿ ਸਕਦੀ ਹੈ
+compose-delivery = ਡਿਲੀਵਰੀ ਰਸੀਦ ਮੰਗੋ
+compose-delivery-on = ਡਿਲੀਵਰੀ ਰਸੀਦ ਮੰਗੀ ਗਈ: ਜਦੋਂ ਹਰ ਪ੍ਰਾਪਤਕਰਤਾ ਦਾ ਸਰਵਰ ਸੁਨੇਹਾ ਸਵੀਕਾਰ ਕਰੇਗਾ, ਤੁਹਾਡਾ ਮੇਲ ਸਰਵਰ ਤੁਹਾਨੂੰ ਈਮੇਲ ਭੇਜੇਗਾ
+compose-delivery-unavailable = ਤੁਹਾਡਾ ਮੇਲ ਸਰਵਰ ਡਿਲੀਵਰੀ ਰਸੀਦਾਂ ਨਹੀਂ ਭੇਜਦਾ
 
 ## Spelling
 

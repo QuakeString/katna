@@ -102,6 +102,49 @@ impl MailWindow {
             .map(|&limit| limit > 0)
     }
 
+    /// Whether the mail server of the open message's account sends
+    /// delivery receipts: `None` until the daemon has said.
+    pub(super) fn delivery_receipts_offered(&self) -> Option<bool> {
+        let account = self.sending_account()?;
+        self.writing.delivery_receipts.get(&account).copied()
+    }
+
+    /// Asks the daemon, once per account, whether its mail server sends
+    /// delivery receipts, for the Delivery receipt switch.
+    pub(super) fn ask_delivery_receipts(&mut self, cx: &mut Context<Self>) {
+        let Some(account) = self.sending_account() else {
+            return;
+        };
+        if self.writing.delivery_receipts.contains_key(&account) {
+            return;
+        }
+        let connection = self.daemon.clone();
+        cx.spawn(async move |this, cx| {
+            let result = cx
+                .background_executor()
+                .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await?,
+                    };
+                    daemon::server_delivery_receipts(&connection, account.0).await
+                })
+                .await;
+            match result {
+                Ok(offered) => {
+                    this.update(cx, |this, cx| {
+                        this.writing.delivery_receipts.insert(account, offered);
+                        cx.notify();
+                    })
+                    .ok();
+                }
+                // Offline: ask again next time.
+                Err(err) => tracing::debug!(%err, "asking whether the server sends receipts"),
+            }
+        })
+        .detach();
+    }
+
     /// Asks the daemon, once per account, whether its mail server holds
     /// scheduled mail, for the schedule menu to say who sends it.
     pub(super) fn ask_hold_limit(&mut self, cx: &mut Context<Self>) {

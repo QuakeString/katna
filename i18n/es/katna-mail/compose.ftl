@@ -75,6 +75,9 @@ compose-track-unavailable = No se puede hacer seguimiento del correo firmado, ci
 compose-track-sign-in = Inicia sesión en una cuenta de Katna para seguir aperturas y clics
 compose-receipt = Pedir confirmación de lectura
 compose-receipt-on = Confirmación de lectura pedida: la aplicación del destinatario puede pedirle que la envíe
+compose-delivery = Pedir confirmación de entrega
+compose-delivery-on = Confirmación de entrega pedida: tu servidor de correo te enviará un correo cuando el servidor de cada destinatario lo acepte
+compose-delivery-unavailable = Tu servidor de correo no envía confirmaciones de entrega
 
 ## Spelling
 
