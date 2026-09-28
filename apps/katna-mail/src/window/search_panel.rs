@@ -12,13 +12,19 @@ use gpui::{
     canvas, div, prelude::*, rgba,
 };
 use katna_i18n::tr;
+use katna_search::contacts::Suggestion;
 use katna_ui::px;
+use katna_ui::text_input::{Cancel, Down, Submit, Up};
 use katna_ui::{InputEvent, TextInput};
 
-use super::MailWindow;
+use super::compose::address_suggestions;
+use super::{FocusNext, MailWindow};
 use crate::theme::Theme;
 use crate::widgets::{filled_button, icon, icon_button, raised, tip};
 use dates::{CustomDates, DateError};
+
+/// Width of a field's label.
+const LABEL: f32 = 120.0;
 
 /// "Date within" choices: `newer_than:` values, labeled by
 /// [`within_label`].
@@ -117,10 +123,37 @@ pub(super) struct SearchPanel {
     types: Types,
     /// Where other attachment extensions are typed.
     extension: Entity<TextInput>,
+    /// Addresses suggested under From or To.
+    suggest: Option<Suggestions>,
     _subscriptions: Vec<Subscription>,
 }
 
+/// A field that suggests addresses from the address book.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Person {
+    From,
+    To,
+}
+
+/// The addresses suggested under a field.
+struct Suggestions {
+    field: Person,
+    items: Vec<Suggestion>,
+    selected: usize,
+}
+
 impl SearchPanel {
+    fn person(&self, field: Person) -> &Entity<TextInput> {
+        match field {
+            Person::From => &self.from,
+            Person::To => &self.to,
+        }
+    }
+
+    fn suggesting(&self, field: Person) -> bool {
+        self.suggest.as_ref().is_some_and(|s| s.field == field)
+    }
+
     /// The search query the fields make, or why the custom dates are wrong.
     fn query(&self, cx: &gpui::App) -> Result<String, DateError> {
         let text = |input: &Entity<TextInput>| input.read(cx).text().trim().to_owned();
@@ -206,7 +239,8 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> bool {
-        match &self.search_panel {
+        match &mut self.search_panel {
+            Some(panel) if panel.suggest.is_some() => panel.suggest = None,
             Some(panel) if panel.custom.open => self.custom_cancel(window, cx),
             Some(_) => self.search_panel = None,
             None => return false,
@@ -225,22 +259,35 @@ impl MailWindow {
             (input(cx), input(cx), input(cx), input(cx), input(cx));
         let custom = CustomDates::new(cx);
         let extension = cx.new(|cx| TextInput::new(tr!("search-attachment-custom-hint"), cx));
-        let mut subscriptions: Vec<Subscription> =
-            [&from, &to, &subject, &words, &without]
-                .into_iter()
-                .map(|input| {
-                    cx.subscribe_in(input, window, |this, _, event: &InputEvent, window, cx| {
-                        match event {
-                            InputEvent::Submit => this.run_search_panel(window, cx),
-                            InputEvent::Cancel => {
-                                this.search_panel = None;
-                                cx.notify();
-                            }
-                            InputEvent::Changed => {}
+        let fields = [
+            (&from, Some(Person::From)),
+            (&to, Some(Person::To)),
+            (&subject, None),
+            (&words, None),
+            (&without, None),
+        ];
+        let mut subscriptions: Vec<Subscription> = fields
+            .into_iter()
+            .map(|(input, person)| {
+                cx.subscribe_in(
+                    input,
+                    window,
+                    move |this, _, event: &InputEvent, window, cx| match event {
+                        InputEvent::Submit => this.run_search_panel(window, cx),
+                        InputEvent::Cancel => {
+                            this.search_panel = None;
+                            cx.notify();
                         }
-                    })
-                })
-                .collect();
+                        InputEvent::Changed => {
+                            if let Some(person) = person {
+                                this.person_changed(person, cx);
+                            }
+                        }
+                    },
+                )
+            })
+            .collect();
+        self.load_address_book(cx);
         // Space or Enter makes a pill of a typed extension; Enter with
         // nothing typed searches.
         subscriptions.push(cx.subscribe_in(
@@ -298,9 +345,127 @@ impl MailWindow {
             attachment: false,
             types: Types::default(),
             extension,
+            suggest: None,
             _subscriptions: subscriptions,
         });
         cx.notify();
+    }
+
+    /// Suggests addresses for what is typed in From or To.
+    fn person_changed(&mut self, field: Person, cx: &mut Context<Self>) {
+        let Some(panel) = &self.search_panel else {
+            return;
+        };
+        let typed = panel.person(field).read(cx).text().trim().to_owned();
+        let mut items = address_suggestions(&typed, None, &[], cx);
+        // A picked address is not suggested again.
+        if items.iter().any(|i| i.email.eq_ignore_ascii_case(&typed)) {
+            items.clear();
+        }
+        if let Some(panel) = &mut self.search_panel {
+            panel.suggest = (!items.is_empty()).then_some(Suggestions {
+                field,
+                items,
+                selected: 0,
+            });
+        }
+        cx.notify();
+    }
+
+    /// Puts suggested address `ix` in the field.
+    fn pick_person(&mut self, ix: usize, cx: &mut Context<Self>) {
+        let Some(panel) = &mut self.search_panel else {
+            return;
+        };
+        let Some(suggest) = panel.suggest.take() else {
+            return;
+        };
+        let Some(item) = suggest.items.into_iter().nth(ix) else {
+            return;
+        };
+        panel
+            .person(suggest.field)
+            .clone()
+            .update(cx, |input, cx| input.set_text(item.email, cx));
+        cx.notify();
+    }
+
+    fn close_person_suggestions(&mut self, cx: &mut Context<Self>) {
+        if let Some(panel) = &mut self.search_panel
+            && panel.suggest.take().is_some()
+        {
+            cx.notify();
+        }
+    }
+
+    fn move_person_suggestion(&mut self, by: isize, cx: &mut Context<Self>) {
+        if let Some(suggest) = self.search_panel.as_mut().and_then(|p| p.suggest.as_mut()) {
+            let len = suggest.items.len() as isize;
+            suggest.selected = (suggest.selected as isize + by).rem_euclid(len) as usize;
+            cx.notify();
+        }
+    }
+
+    /// Gives From or To the keys for its suggestions, and draws them
+    /// under it: Up and Down move, Enter or Tab picks, Escape closes.
+    fn person_row(&self, row: Div, field: Person, th: &Theme, cx: &mut Context<Self>) -> Div {
+        let open = move |this: &Self| {
+            this.search_panel
+                .as_ref()
+                .is_some_and(|panel| panel.suggesting(field))
+        };
+        let pick = move |this: &mut Self, cx: &mut Context<Self>| {
+            if open(this) {
+                cx.stop_propagation();
+                let ix = this
+                    .search_panel
+                    .as_ref()
+                    .and_then(|p| p.suggest.as_ref())
+                    .map_or(0, |s| s.selected);
+                this.pick_person(ix, cx);
+            }
+        };
+        let list = self
+            .search_panel
+            .as_ref()
+            .and_then(|panel| panel.suggest.as_ref())
+            .filter(|s| s.field == field)
+            .map(|s| {
+                self.suggestion_list(
+                    &s.items,
+                    s.selected,
+                    // Under the field, past its label.
+                    px(LABEL + 16.0),
+                    Self::pick_person,
+                    Self::close_person_suggestions,
+                    th,
+                    cx,
+                )
+            });
+        row.relative()
+            .capture_action(cx.listener(move |this, _: &Submit, _, cx| pick(this, cx)))
+            .capture_action(cx.listener(move |this, _: &FocusNext, _, cx| pick(this, cx)))
+            .capture_action(cx.listener(move |this, _: &Cancel, _, cx| {
+                if open(this) {
+                    cx.stop_propagation();
+                    this.close_person_suggestions(cx);
+                }
+            }))
+            .on_action(cx.listener(move |this, _: &Up, _, cx| {
+                if open(this) {
+                    this.move_person_suggestion(-1, cx);
+                } else {
+                    cx.propagate();
+                }
+            }))
+            .on_action(cx.listener(move |this, _: &Down, _, cx| {
+                if open(this) {
+                    this.move_person_suggestion(1, cx);
+                } else {
+                    cx.propagate();
+                }
+            }))
+            .children(list)
     }
 
     fn run_search_panel(&mut self, window: &mut Window, cx: &mut Context<Self>) {
@@ -520,7 +685,7 @@ impl MailWindow {
                 .gap(px(16.0))
                 .child(
                     div()
-                        .w(px(120.0))
+                        .w(px(LABEL))
                         .flex_none()
                         .text_size(px(14.0))
                         .text_color(rgba(th.text_dim))
@@ -581,6 +746,10 @@ impl MailWindow {
                 )
                 .into_any_element(),
         );
+        let from = field(tr!("search-from"), &panel.from);
+        let to = field(tr!("search-to"), &panel.to);
+        let from = self.person_row(from, Person::From, th, cx);
+        let to = self.person_row(to, Person::To, th, cx);
         let popover = self.render_custom_popover(th, window, cx);
         let attachment = panel.attachment;
         let types = self.render_attachment_types(th, cx);
@@ -619,8 +788,8 @@ impl MailWindow {
                             })),
                     ),
             )
-            .child(field(tr!("search-from"), &panel.from))
-            .child(field(tr!("search-to"), &panel.to))
+            .child(from)
+            .child(to)
             .child(field(tr!("search-subject"), &panel.subject))
             .child(field(tr!("search-has-words"), &panel.words))
             .child(field(tr!("search-without"), &panel.without))

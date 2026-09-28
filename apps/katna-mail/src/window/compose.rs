@@ -75,6 +75,7 @@ use crate::widgets::{elevation, icon, menu, menu_item, tip};
 pub(super) use attach::Attachment;
 use checks::Passed;
 use chips::Chips;
+pub(in crate::window) use recipients::address_suggestions;
 use recipients::{Field, Suggestions};
 pub(super) use scheduled::NAV_KEY as SCHEDULED_NAV_KEY;
 use security::Sealing;
