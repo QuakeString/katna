@@ -22,6 +22,11 @@ compose-back-to-mail = Back to the mail window
 compose-pop-out-reply = Pop out reply
 # Tooltip of the "…" button under a reply: shows the quoted message.
 compose-show-trimmed = Show trimmed content
+# The same button once the quoted message shows: hides it again.
+compose-hide-trimmed = Hide trimmed content
+# The x on the corner of that button: takes the quoted message out.
+compose-remove-trimmed = Remove quoted text
+compose-trimmed-removed = Quoted text removed
 
 ## Recipients and subject
 

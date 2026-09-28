@@ -431,6 +431,47 @@ impl RichEditor {
         cx.notify();
     }
 
+    /// Takes the blocks from `from` on out of the text, and out of the
+    /// undo history too, as if they had never been there: the opposite of
+    /// [`Self::append_blocks`].
+    pub fn take_tail(&mut self, from: usize, cx: &mut Context<Self>) -> Vec<Block> {
+        if from >= self.doc.blocks.len() {
+            return Vec::new();
+        }
+        let tail = self.doc.blocks.split_off(from);
+        for snapshot in self.undo.iter_mut().chain(self.redo.iter_mut()) {
+            let keep = snapshot.doc.blocks.len().saturating_sub(tail.len()).max(1);
+            snapshot.doc.blocks.truncate(keep);
+        }
+        if self.doc.blocks.is_empty() {
+            self.doc = Doc::default();
+        }
+        self.anchor = self.doc.clamp(self.anchor);
+        self.head = self.doc.clamp(self.head);
+        self.selected_image = None;
+        self.marked = None;
+        cx.emit(RichEvent::Changed);
+        cx.emit(RichEvent::Selection);
+        cx.notify();
+        tail
+    }
+
+    /// Deletes the blocks from `from` on, as an edit Undo takes back.
+    pub fn remove_tail(&mut self, from: usize, cx: &mut Context<Self>) {
+        if from >= self.doc.blocks.len() {
+            return;
+        }
+        self.edit(EditKind::Other, cx, |doc, (_, head)| {
+            doc.blocks.truncate(from.max(1));
+            head
+        });
+    }
+
+    /// How many steps Undo can take back.
+    pub fn undo_depth(&self) -> usize {
+        self.undo.len()
+    }
+
     /// The content as mail HTML.
     pub fn html(&self, image_src: &dyn Fn(&Image) -> String) -> String {
         html::to_html(&self.doc, image_src)

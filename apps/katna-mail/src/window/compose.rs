@@ -27,6 +27,7 @@ mod chips;
 mod drafts;
 mod paste;
 mod popout;
+mod quote;
 mod recipients;
 pub(super) mod schedule;
 mod scheduled;
@@ -162,7 +163,7 @@ pub(super) struct Compose {
     body_scroll: ScrollHandle,
     /// The quoted message a reply answers, kept out of the text behind a
     /// "..." button until it is opened, as in Gmail. It is still sent.
-    trimmed: Option<Vec<Block>>,
+    quote: quote::Quote,
     /// The text of the conversation a reply answers, for writing
     /// suggestions.
     answered: String,
@@ -193,7 +194,7 @@ impl Compose {
             subject: text(&self.subject),
             body: {
                 let mut body = self.body.read(cx).doc().clone();
-                body.blocks.extend(self.trimmed.iter().flatten().cloned());
+                body.blocks.extend(self.quote.hidden().iter().cloned());
                 body
             },
         }
@@ -239,6 +240,8 @@ struct Stick {
     /// How far the Send row was drawn above its place, to see after
     /// layout whether that is still right.
     stuck: f32,
+    /// Device pixels per design pixel, which GPUI places elements on.
+    device: f32,
 }
 
 impl Stick {
@@ -250,11 +253,22 @@ impl Stick {
         // is laid out, after the window drew; the offset it ends up with
         // is what counts.
         let max = unpx(scroll.max_offset().y).max(0.0);
-        let offset = unpx(scroll.offset().y).clamp(-max, 0.0);
+        let offset = self.snap(unpx(scroll.offset().y).clamp(-max, 0.0));
         let bottom = unpx(scroll.bounds().size.height) - offset;
         let highest = self.card_top + STICK_BELOW;
         (self.footer_top + self.footer_height - bottom)
             .clamp(0.0, (self.footer_top - highest).max(0.0))
+    }
+
+    /// A scroll offset where GPUI draws it: on a whole device pixel. A
+    /// touchpad scrolls by fractions of a pixel, and the Send row placed
+    /// from the unrounded offset would land a pixel up or down each time.
+    fn snap(&self, offset: f32) -> f32 {
+        if self.device <= 0.0 {
+            return offset;
+        }
+        let dev = offset * self.device;
+        (dev.abs() - 0.5).ceil().copysign(dev) / self.device
     }
 }
 
@@ -661,8 +675,8 @@ impl MailWindow {
             compose.sealing = sealing;
             if matches!(kind, Kind::Reply | Kind::ReplyAll) {
                 let mut doc = compose.body.read(cx).doc().clone();
-                compose.trimmed = trim_quote(&mut doc);
-                if compose.trimmed.is_some() {
+                compose.quote = quote::Quote::hidden_from(trim_quote(&mut doc));
+                if compose.quote.is_hidden() {
                     compose.body.update(cx, |editor, cx| {
                         editor.set_doc(doc.clone(), doc.start(), cx)
                     });
@@ -723,6 +737,16 @@ impl MailWindow {
     /// just far enough that its first line, with the cursor, sits near the
     /// top.
     pub(super) fn reveal_inline_reply(&mut self, cx: &mut Context<Self>) {
+        self.scroll_to_inline_reply(false, cx);
+    }
+
+    /// Scrolls back up to the reply after it got shorter, when the cursor
+    /// in it went out of sight above; never down.
+    pub(super) fn scroll_back_to_inline_reply(&mut self, cx: &mut Context<Self>) {
+        self.scroll_to_inline_reply(true, cx);
+    }
+
+    fn scroll_to_inline_reply(&mut self, back: bool, cx: &mut Context<Self>) {
         let Some(body) = self.compose.as_ref().map(|c| c.body.clone()) else {
             return;
         };
@@ -749,7 +773,11 @@ impl MailWindow {
                 let eased = 1.0 - (1.0 - t).powi(3);
                 // The end can move while the card settles. Never upwards.
                 let end = -scroll.max_offset().y;
-                let to = limit.map_or(end, |limit| end.max(limit.min(from)));
+                let to = if back {
+                    limit.map_or(from, |limit| limit.max(from).min(px(0.0)))
+                } else {
+                    limit.map_or(end, |limit| end.max(limit.min(from)))
+                };
                 scroll.set_offset(gpui::point(scroll.offset().x, from + (to - from) * eased));
                 if this.update(cx, |_, cx| cx.notify()).is_err() || t >= 1.0 {
                     return;
@@ -943,6 +971,7 @@ impl MailWindow {
             |this, _, event: &RichEvent, window, cx| match event {
                 RichEvent::Submit => this.send_compose_default(window, cx),
                 RichEvent::Changed => {
+                    this.quote_changed(cx);
                     this.close_hint(cx);
                     this.keep_cursor_in_view(cx);
                     cx.notify();
@@ -1023,7 +1052,7 @@ impl MailWindow {
             shown: Spring::new(motion::SLIDE, 0.0),
             closing: false,
             body_scroll: ScrollHandle::new(),
-            trimmed: None,
+            quote: quote::Quote::None,
             answered,
             stick: Rc::default(),
             grammar_color: grammar_color(&th),
@@ -1959,7 +1988,23 @@ impl MailWindow {
                         div()
                             .relative()
                             .top(px(-stuck))
-                            .rounded_b(px(12.0))
+                            // Held up at the bottom of the pane, the row has
+                            // square corners and a strip of the card under
+                            // it, so no quoted line shows below it when the
+                            // pane edge and the row round to different
+                            // pixels as the conversation scrolls.
+                            .when(stuck <= 0.0, |d| d.rounded_b(px(12.0)))
+                            .when(stuck > 0.0, |d| {
+                                d.child(
+                                    div()
+                                        .absolute()
+                                        .top_full()
+                                        .left_0()
+                                        .right_0()
+                                        .h(px(STICK_SKIRT))
+                                        .bg(rgba(th.surface)),
+                                )
+                            })
                             .bg(rgba(th.surface))
                             .border_t_1()
                             .border_color(if stuck > 0.0 {
@@ -1991,50 +2036,6 @@ impl MailWindow {
                 .child(card)
                 .into_any_element(),
         )
-    }
-
-    /// The "..." button under a reply's text that shows the quoted message.
-    fn render_trimmed(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
-        self.compose.as_ref()?.trimmed.as_ref()?;
-        let dot = || div().size(px(4.0)).rounded_full().bg(rgba(th.text_dim));
-        Some(
-            div()
-                .id("show-trimmed")
-                .mt(px(12.0))
-                .w(px(30.0))
-                .h(px(16.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .justify_center()
-                .gap(px(3.0))
-                .rounded(px(8.0))
-                .bg(rgba(th.chip))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
-                .tooltip(tip(tr!("compose-show-trimmed"), th))
-                .on_click(cx.listener(|this, _, _, cx| {
-                    cx.stop_propagation();
-                    this.show_trimmed(cx);
-                }))
-                .child(dot())
-                .child(dot())
-                .child(dot())
-                .into_any_element(),
-        )
-    }
-
-    /// Puts the quoted message back into the text of the reply.
-    fn show_trimmed(&mut self, cx: &mut Context<Self>) {
-        let Some(compose) = &mut self.compose else {
-            return;
-        };
-        if let Some(blocks) = compose.trimmed.take() {
-            compose
-                .body
-                .update(cx, |editor, cx| editor.append_blocks(blocks, cx));
-        }
-        cx.notify();
     }
 
     fn render_compose_fields(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
@@ -2269,6 +2270,8 @@ impl MailWindow {
 /// How far below the top of an inline reply its stuck Send row stops: the
 /// recipients and a line or two of text stay above it.
 const STICK_BELOW: f32 = 96.0;
+/// The card's color drawn under a Send row held at the bottom of the pane.
+const STICK_SKIRT: f32 = 4.0;
 
 /// Records where its parent is drawn in the conversation `scroll`, in
 /// pixels from the top of the content, and draws again when that moved or
@@ -2281,9 +2284,12 @@ fn measure(
 ) -> impl IntoElement {
     let (scroll, stick, this) = (scroll.clone(), stick.clone(), cx.entity().downgrade());
     canvas(
-        move |bounds, _, cx| {
-            let top = unpx(bounds.top() - scroll.bounds().top() - scroll.offset().y);
+        move |bounds, window, cx| {
             let mut at = stick.get();
+            at.device = window.scale_factor() * katna_ui::scale::scale();
+            // From the offset as drawn, so the place stays put while the
+            // conversation scrolls.
+            let top = unpx(bounds.top() - scroll.bounds().top()) - at.snap(unpx(scroll.offset().y));
             set(&mut at, top, unpx(bounds.size.height));
             // Also when the pane changed size or a scroll went past its
             // end since the Send row was placed.
@@ -2353,6 +2359,19 @@ fn sender_label(account: &katna_core::Account) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn scroll_offsets_snap_to_device_pixels() {
+        let at = Stick {
+            device: 1.25,
+            ..Stick::default()
+        };
+        // -60.55 design pixels is -75.6875 device pixels: drawn at -76.
+        assert!((at.snap(-60.55) - -60.8).abs() < 1e-4);
+        assert!((at.snap(-60.3) - -60.0).abs() < 1e-4);
+        // Not measured yet: as it is.
+        assert_eq!(Stick::default().snap(-0.37), -0.37);
+    }
 
     fn addr(name: Option<&str>, email: &str) -> Address {
         Address {
