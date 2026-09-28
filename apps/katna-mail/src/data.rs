@@ -506,6 +506,14 @@ impl Mail {
         settings.imap.map(|server| server.host)
     }
 
+    /// The provider an account signs in with, if not a password.
+    pub fn sign_in_provider(
+        &self,
+        account: katna_core::AccountId,
+    ) -> Option<katna_core::OAuthProvider> {
+        self.store.account_settings(account).ok()??.oauth
+    }
+
     pub fn folders(&self) -> Vec<FolderSummary> {
         self.store.folder_summaries().unwrap_or_else(|err| {
             tracing::warn!("reading folders: {err}");

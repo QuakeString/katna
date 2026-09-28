@@ -69,6 +69,13 @@ pub(in crate::window) enum Popup {
         archive: bool,
         passed: Passed,
     },
+    /// Drive would not share the message's files with these recipients.
+    DriveShare {
+        refused: Vec<String>,
+        at: Option<jiff::Timestamp>,
+        archive: bool,
+        passed: Passed,
+    },
     /// Send found a recipient that is not an address.
     BadAddress {
         field: Field,
@@ -685,6 +692,7 @@ impl MailWindow {
                     | Popup::PickTime
                     | Popup::PlainText
                     | Popup::SendCheck { .. }
+                    | Popup::DriveShare { .. }
                     | Popup::BadAddress { .. }
             )
         {
@@ -2350,6 +2358,12 @@ impl MailWindow {
                 archive,
                 passed,
             } => self.render_send_check(*check, *at, *archive, *passed, th, cx),
+            Popup::DriveShare {
+                refused,
+                at,
+                archive,
+                passed,
+            } => self.render_drive_share(refused, *at, *archive, *passed, th, cx),
             Popup::BadAddress { field, address } => {
                 self.render_bad_address(*field, address, th, cx)
             }

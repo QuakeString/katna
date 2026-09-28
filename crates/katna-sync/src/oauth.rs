@@ -32,6 +32,10 @@ const TOKEN_TIMEOUT: Duration = Duration::from_secs(30);
 /// An access token is renewed this long before it runs out.
 const EXPIRY_MARGIN: Duration = Duration::from_secs(120);
 
+/// Google Drive, limited to the files Katna itself put there: for
+/// attachments too large to send by mail.
+pub const GOOGLE_DRIVE_FILE: &str = "https://www.googleapis.com/auth/drive.file";
+
 /// Largest request the loopback listener reads.
 const MAX_REQUEST: usize = 16 * 1024;
 
@@ -65,19 +69,31 @@ impl Provider {
     /// The provider with the client ID from `katna_core::ids`; `None` when
     /// this build has none.
     pub fn new(kind: OAuthProvider, tls: Tls) -> Option<Self> {
-        if !kind.available() {
+        // A token server under test stands in for Google's, also in builds
+        // without a client ID (`tests/drive.rs` of the daemon).
+        let test_tokens = match kind {
+            OAuthProvider::Google => http::test_url("KATNA_GOOGLE_TOKEN_URL"),
+            OAuthProvider::Microsoft => None,
+        };
+        if !kind.available() && test_tokens.is_none() {
             return None;
         }
         Some(match kind {
             OAuthProvider::Google => Self {
                 kind,
                 auth_url: "https://accounts.google.com/o/oauth2/v2/auth".into(),
-                token_url: "https://oauth2.googleapis.com/token".into(),
-                client_id: kind.client_id().into(),
+                token_url: test_tokens
+                    .unwrap_or_else(|| "https://oauth2.googleapis.com/token".into()),
+                client_id: if kind.available() {
+                    kind.client_id().into()
+                } else {
+                    "katna-test".into()
+                },
                 client_secret: katna_core::ids::GOOGLE_OAUTH_CLIENT_SECRET.into(),
-                // Full IMAP and SMTP, and who signed in (address, name,
+                // Full IMAP and SMTP, the files Katna puts in Drive for
+                // large attachments, and who signed in (address, name,
                 // picture) in the ID token.
-                scope: "https://mail.google.com/ openid email profile".into(),
+                scope: format!("https://mail.google.com/ {GOOGLE_DRIVE_FILE} openid email profile"),
                 redirect_host: "127.0.0.1",
                 tls,
             },
@@ -152,6 +168,8 @@ pub struct Grant {
     pub expires_in: Duration,
     /// Absent when refreshing.
     pub identity: Option<Identity>,
+    /// The scopes granted, when the provider says (Google does).
+    pub scope: Option<String>,
 }
 
 impl fmt::Debug for Grant {
@@ -172,6 +190,8 @@ struct TokenAnswer {
     expires_in: Option<u64>,
     #[serde(default)]
     id_token: Option<String>,
+    #[serde(default)]
+    scope: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -240,6 +260,7 @@ async fn token_request<'a>(
             // Both providers give an hour; assume less if they say nothing.
             expires_in: Duration::from_secs(answer.expires_in.unwrap_or(600)),
             identity: answer.id_token.as_deref().and_then(identity),
+            scope: answer.scope,
         });
     }
     let name = provider.kind.name();
@@ -275,15 +296,16 @@ async fn token_request<'a>(
 
 /// Trades a refresh token for a new access token.
 pub async fn refresh(provider: &Provider, refresh_token: &str) -> Result<Grant> {
-    token_request(
-        provider,
-        &mut vec![
-            ("grant_type", "refresh_token"),
-            ("refresh_token", refresh_token),
-            ("scope", &provider.scope),
-        ],
-    )
-    .await
+    let mut form = vec![
+        ("grant_type", "refresh_token"),
+        ("refresh_token", refresh_token),
+    ];
+    // Google refuses scopes the grant lacks, as accounts signed in before
+    // Drive was asked for do; without any it grants what the sign-in did.
+    if provider.kind != OAuthProvider::Google {
+        form.push(("scope", &provider.scope));
+    }
+    token_request(provider, &mut form).await
 }
 
 /// `n` random bytes, base64url.
@@ -539,6 +561,8 @@ pub struct TokenSource {
     provider: Provider,
     refresh_token: Mutex<String>,
     access: Mutex<Option<(String, Instant)>>,
+    /// The scopes granted, once the provider said.
+    granted: Mutex<Option<String>>,
     /// Lets one refresh run at a time: holding its only message.
     gate: (async_channel::Sender<()>, async_channel::Receiver<()>),
     on_rotate: Option<OnRotate>,
@@ -552,6 +576,7 @@ impl TokenSource {
             provider,
             refresh_token: Mutex::new(refresh_token),
             access: Mutex::new(None),
+            granted: Mutex::new(None),
             gate,
             on_rotate,
         }
@@ -561,6 +586,32 @@ impl TokenSource {
     pub fn with_access_token(self, token: String, expires_in: Duration) -> Self {
         *self.access.lock().unwrap() = Some((token, Instant::now() + expires_in));
         self
+    }
+
+    /// Also knows the scopes that sign-in granted.
+    pub fn with_scope(self, scope: Option<String>) -> Self {
+        *self.granted.lock().unwrap() = scope;
+        self
+    }
+
+    /// Whether the grant covers `scope`: `None` until the provider said.
+    pub fn granted(&self, scope: &str) -> Option<bool> {
+        self.granted
+            .lock()
+            .unwrap()
+            .as_deref()
+            .map(|granted| granted.split_whitespace().any(|s| s == scope))
+    }
+
+    /// Like [`Self::granted`], asking the provider when it has not said
+    /// yet; `true` when it never does.
+    pub async fn has_scope(&self, scope: &str) -> Result<bool> {
+        if let Some(known) = self.granted(scope) {
+            return Ok(known);
+        }
+        self.forget_access_token();
+        self.access_token().await?;
+        Ok(self.granted(scope).unwrap_or(true))
     }
 
     pub fn provider(&self) -> OAuthProvider {
@@ -597,6 +648,9 @@ impl TokenSource {
                 if let Some(on_rotate) = &self.on_rotate {
                     on_rotate(new);
                 }
+            }
+            if grant.scope.is_some() {
+                *self.granted.lock().unwrap() = grant.scope.clone();
             }
             *self.access.lock().unwrap() = Some((
                 grant.access_token.clone(),

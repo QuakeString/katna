@@ -644,6 +644,80 @@ pub async fn outbox_changes(connection: &Connection) -> Result<impl Stream<Item 
     Ok(changes.map(|_| ()))
 }
 
+/// Starts putting the file at `path` in the Google Drive of `account`.
+/// Returns the upload's ID.
+pub async fn drive_upload(
+    connection: &Connection,
+    account: i64,
+    path: &str,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.drive_upload(account, path)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Where Drive upload `id` stands.
+pub async fn drive_upload_status(
+    connection: &Connection,
+    id: i64,
+) -> Result<katna_dbus::DriveUpload, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.drive_upload_status(id)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Stops Drive upload `id` and moves its file to the bin.
+pub async fn drive_cancel(connection: &Connection, id: i64) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.drive_cancel(id).await.map_err(|err| describe(&err))
+}
+
+/// Shares the files of `uploads` with `addresses`; returns those Drive
+/// would not share with.
+pub async fn drive_share(
+    connection: &Connection,
+    uploads: &[i64],
+    addresses: &[String],
+) -> Result<Vec<String>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let addresses: Vec<&str> = addresses.iter().map(String::as_str).collect();
+    pim.drive_share(uploads, &addresses)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Lets anyone with the link view the files of `uploads`.
+pub async fn drive_share_with_link(connection: &Connection, uploads: &[i64]) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.drive_share_with_link(uploads)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Yields the ID of each Drive upload that moves on.
+pub async fn drive_changes(connection: &Connection) -> Result<impl Stream<Item = i64>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let changes = pim
+        .receive_drive_changed()
+        .await
+        .map_err(|err| describe(&err))?;
+    Ok(changes.filter_map(|signal| signal.args().ok().map(|args| args.id)))
+}
+
 /// Where an update of Katna stands.
 pub async fn update_status(connection: &Connection) -> Result<katna_dbus::UpdateStatus, String> {
     let pim = PimProxy::new(connection)

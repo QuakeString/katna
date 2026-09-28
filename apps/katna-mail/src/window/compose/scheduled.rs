@@ -512,6 +512,7 @@ pub(super) fn unsent_from_raw(raw: &[u8]) -> Option<Unsent> {
         // The signature stays in the text as it was written.
         signature: None,
         attachments,
+        drive: Vec::new(),
         plain,
         from: None,
         answering: None,

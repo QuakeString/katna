@@ -50,14 +50,20 @@ fn draft_raw(unsent: &Unsent, from: Mailbox, message_id: &str) -> Vec<u8> {
         .map_or("katna.local", |(_, d)| d)
         .to_owned();
     let draft = &unsent.draft;
-    let (html_body, inline) = body_parts(&draft.body, unsent.plain, &domain);
+    let (mut html_body, inline) = body_parts(&draft.body, unsent.plain, &domain);
+    // Files already in Drive stay in the draft as their links.
+    let mut body = html::to_plain(&draft.body);
+    body.push_str(&super::drive::links_text(&unsent.drive));
+    if let Some(html) = &mut html_body {
+        html.push_str(&super::drive::links_html(&unsent.drive));
+    }
     outgoing::build(&Outgoing {
         from: Some(from),
         to: addresses(&draft.to),
         cc: addresses(&draft.cc),
         bcc: addresses(&draft.bcc),
         subject: draft.subject.clone(),
-        body: html::to_plain(&draft.body),
+        body,
         in_reply_to: unsent.thread.in_reply_to.clone(),
         references: unsent.thread.references.clone(),
         html: html_body,
@@ -81,6 +87,7 @@ impl MailWindow {
             sealing: compose.sealing,
             signature: compose.signature,
             attachments: compose.attachments.clone(),
+            drive: compose.drive.clone(),
             plain: compose.plain(cx),
             from,
             answering: compose.answering,
@@ -334,6 +341,7 @@ mod tests {
             sealing: Default::default(),
             signature: None,
             attachments: Vec::new(),
+            drive: Vec::new(),
             plain: true,
             from: None,
             answering: None,

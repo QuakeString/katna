@@ -571,6 +571,8 @@ pub struct MailWindow {
     about: Option<about::About>,
     /// Updates of Katna, shown in About.
     updates: updates::Updates,
+    /// Follows uploads to Google Drive, once one started.
+    drive_watch: Option<Task<()>>,
     tour: Option<tour::Tour>,
     tour_marks: tour::Marks,
     /// Where the parts the tour shows were in the last frame.
@@ -793,6 +795,7 @@ impl MailWindow {
             share_ask_later: false,
             about: None,
             updates: updates::Updates::default(),
+            drive_watch: None,
             tour: None,
             tour_marks: Default::default(),
             tour_seen: HashMap::new(),
