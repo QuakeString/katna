@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Call and copy from contact details"
+text = """
+In the contact details beside a conversation, click a phone number to call
+it with your phone app or KDE Connect, or use the copy button beside it. All
+of the panel's text can now be selected and copied too.
+"""

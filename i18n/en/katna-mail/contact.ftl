@@ -21,6 +21,11 @@ contact-from-to = { $from } from them, { $to } from you
 # The date of the first and of the latest mail with them.
 contact-first = First
 contact-latest = Latest
+# A click on their phone number (from their signature) calls it, through
+# the phone app or KDE Connect; the icon beside it copies it.
+contact-call = Call
+contact-copy-number = Copy number
+contact-number-copied = Number copied
 # Their time now, from the time zone their mail is dated in: "9:41 PM
 # their time (UTC+5:30)".
 contact-local-time = { $time } their time ({ $offset })

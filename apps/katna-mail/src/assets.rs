@@ -44,6 +44,7 @@ icons!(
     "compose",
     "contacts",
     "contrast",
+    "copy",
     "delivery-receipt",
     "document",
     "done-all",
