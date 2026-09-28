@@ -3303,7 +3303,12 @@ Arch is the first, Windows and the others follow the same flow.
   build of `main`: version, file name, SHA-256 and size. One channel for
   now, the latest build (today's `arch-latest`). It is not signed yet; the
   download comes over TLS from GitHub and is checked against the
-  manifest's SHA-256 and size (signing: §25 item 3).
+  manifest's SHA-256 and size (signing: §25 item 3). The manifest names
+  the package under its versioned file name, which CI uploads once and
+  never replaces, and the daemon tries a failed download three times,
+  reading the manifest again before each new try, because a new build
+  can publish while a download runs. A download that still fails shows
+  as such in About, with Try again.
 - **The daemon checks and downloads** (the only network user): two
   minutes after it starts, then every six hours, never on a metered
   connection unless the user presses Check for updates. With

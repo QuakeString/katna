@@ -232,8 +232,11 @@ pub mod update_state {
     pub const DOWNLOADING: &str = "downloading";
     /// Downloaded and checked: Katna Mail can install it.
     pub const READY: &str = "ready";
-    /// The last check or download failed; `detail` says why.
+    /// The last check failed; `detail` says why.
     pub const FAILED: &str = "failed";
+    /// The download of `version` failed, even after trying again;
+    /// `detail` says why. `DownloadUpdate` tries once more.
+    pub const DOWNLOAD_FAILED: &str = "download-failed";
 }
 
 /// Actions Katna Mail serves through `org.freedesktop.Application`

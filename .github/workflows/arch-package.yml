@@ -112,11 +112,13 @@ jobs:
           cp "packaging/arch/$pkg" out/katna-git-x86_64.pkg.tar.zst
           cd out
           # What Katna Mail's updates read (katna_core::update::Manifest):
-          # the version, the file under its fixed name, its SHA-256 and
-          # size.
+          # the version, the file under its versioned name, its SHA-256
+          # and size. The versioned file goes up first and is never
+          # replaced, unlike the fixed name, so a download running while
+          # the next build publishes is not cut short.
           version=$(pacman -Qp "$pkg" | cut -d' ' -f2)
           version=${version%-*}
-          file=katna-git-x86_64.pkg.tar.zst
+          file=$pkg
           sha=$(sha256sum "$file" | cut -d' ' -f1)
           size=$(stat -c %s "$file")
           printf '{"version":"%s","file":"%s","sha256":"%s","size":%s}\n' \

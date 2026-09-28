@@ -194,6 +194,10 @@ impl MailWindow {
                     tr!("about-update-check-failed"),
                     (!status.detail.is_empty()).then(|| status.detail.clone()),
                 ),
+                state::DOWNLOAD_FAILED => (
+                    tr!("about-update-download-failed", version = version),
+                    (!status.detail.is_empty()).then(|| status.detail.clone()),
+                ),
                 _ => (tr!("about-update-not-checked"), None),
             }
         };
@@ -231,6 +235,12 @@ impl MailWindow {
                 state::AVAILABLE => Some(
                     buttons.child(
                         filled_button("about-update-download", tr!("about-update-download"), th)
+                            .on_click(cx.listener(|this, _, _, cx| this.download_update(cx))),
+                    ),
+                ),
+                state::DOWNLOAD_FAILED => Some(
+                    buttons.child(
+                        filled_button("about-update-retry", tr!("about-update-retry"), th)
                             .on_click(cx.listener(|this, _, _, cx| this.download_update(cx))),
                     ),
                 ),

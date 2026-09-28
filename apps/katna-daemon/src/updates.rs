@@ -31,6 +31,10 @@ const EVERY: Duration = Duration::from_secs(6 * 3600);
 /// Sooner again after a check skipped on a metered connection.
 const METERED_RETRY: Duration = Duration::from_secs(3600);
 const MANIFEST_TIMEOUT: Duration = Duration::from_secs(30);
+/// How many times a download is tried before it counts as failed, and
+/// the pause before the second try (longer before each later one).
+const DOWNLOAD_TRIES: u32 = 3;
+const RETRY_PAUSE: Duration = Duration::from_secs(10);
 /// Progress is told to Katna Mail at most this often.
 const PROGRESS_EVERY: Duration = Duration::from_millis(250);
 
@@ -266,10 +270,13 @@ async fn fetch_manifest(package: Package) -> Result<Manifest, String> {
 }
 
 /// Downloads the build a check found, checking its size and SHA-256.
+/// A failed download is tried again: CI replaces the release's files
+/// while a download may be running, so the next try reads the manifest
+/// again.
 async fn download(daemon: &Daemon, package: Package) {
     let updates = daemon.updates();
     let offered = updates.offered.lock().unwrap().clone();
-    let Some(manifest) = offered else {
+    let Some(mut manifest) = offered else {
         // Nothing found yet: look first, then download what is found.
         Box::pin(check(daemon, package, true)).await;
         if updates.state() == state::AVAILABLE {
@@ -280,10 +287,61 @@ async fn download(daemon: &Daemon, package: Package) {
     if updates.state() == state::READY {
         return;
     }
-    let Some(url) = package.file_url(&manifest.file) else {
-        return;
-    };
     let dir = download_dir(daemon);
+    let mut try_number = 1;
+    let fetched = loop {
+        let err = match download_once(daemon, package, &dir, &manifest).await {
+            Ok(file) => break Ok(file),
+            Err(err) => err,
+        };
+        let Some(pause) = retry_pause(try_number) else {
+            break Err(err);
+        };
+        tracing::info!(%err, try_number, "update download failed; trying again");
+        async_io::Timer::after(pause).await;
+        try_number += 1;
+        // The release may have changed under the download.
+        match fetch_manifest(package).await {
+            Ok(newest) if newest.newer_than(update::VERSION) => {
+                *updates.offered.lock().unwrap() = Some(newest.clone());
+                manifest = newest;
+            }
+            Ok(_) => break Err("the update is no longer offered".to_owned()),
+            Err(err) => break Err(err),
+        }
+    };
+    match fetched {
+        Ok(file) => ready(daemon, &manifest, &file, unix_now()).await,
+        Err(err) => {
+            tracing::warn!(%err, "update download failed");
+            updates.set(daemon, |s| {
+                s.state = state::DOWNLOAD_FAILED.to_owned();
+                s.version = manifest.version.clone();
+                s.done = 0;
+                s.detail = err;
+            });
+        }
+    }
+}
+
+/// How long to wait after try `try_number` of a download failed, or
+/// `None` when it was the last.
+fn retry_pause(try_number: u32) -> Option<Duration> {
+    (try_number < DOWNLOAD_TRIES).then(|| RETRY_PAUSE * try_number)
+}
+
+/// Downloads the file `manifest` names into `dir` and checks it. Returns
+/// where it is.
+async fn download_once(
+    daemon: &Daemon,
+    package: Package,
+    dir: &Path,
+    manifest: &Manifest,
+) -> Result<PathBuf, String> {
+    let updates = daemon.updates();
+    let url = package
+        .file_url(&manifest.file)
+        .ok_or_else(|| "this build does not update itself".to_owned())?;
     let file = dir.join(&manifest.file);
     let part = dir.join(format!("{}.part", manifest.file));
     updates.set(daemon, |s| {
@@ -294,7 +352,7 @@ async fn download(daemon: &Daemon, package: Package) {
         s.detail.clear();
     });
     tracing::info!(url, "downloading an update");
-    let fetched = fetch_file(daemon, &url, &dir, &part, manifest.size).await;
+    let fetched = fetch_file(daemon, &url, dir, &part, manifest.size).await;
     let checked = fetched.and_then(|(size, sha)| {
         if size != manifest.size || sha != manifest.sha256 {
             Err(format!(
@@ -305,18 +363,10 @@ async fn download(daemon: &Daemon, package: Package) {
             std::fs::rename(&part, &file).map_err(|err| err.to_string())
         }
     });
-    match checked {
-        Ok(()) => ready(daemon, &manifest, &file, unix_now()).await,
-        Err(err) => {
-            tracing::warn!(%err, "update download failed");
-            let _ = std::fs::remove_file(&part);
-            updates.set(daemon, |s| {
-                s.state = state::FAILED.to_owned();
-                s.done = 0;
-                s.detail = err;
-            });
-        }
+    if checked.is_err() {
+        let _ = std::fs::remove_file(&part);
     }
+    checked.map(|()| file)
 }
 
 /// Downloads `url` into `part`, in `dir` with only this download in it.
@@ -442,6 +492,13 @@ mod tests {
             sha256_file(&path).unwrap(),
             "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
         );
+    }
+
+    #[test]
+    fn a_failed_download_is_tried_again() {
+        assert_eq!(retry_pause(1), Some(RETRY_PAUSE));
+        assert_eq!(retry_pause(2), Some(RETRY_PAUSE * 2));
+        assert_eq!(retry_pause(DOWNLOAD_TRIES), None);
     }
 
     #[test]
