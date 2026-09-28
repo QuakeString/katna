@@ -55,3 +55,6 @@ activity-range-custom = आफू अनुकूल
 activity-range-from = देखि
 activity-range-to = सम्म
 activity-range-apply = लागू गर्नुहोस्
+activity-range-of = { $days } · { $account }
+activity-accounts-all = सबै खाता
+activity-accounts-tip = एउटा खाता वा सबै देखाउनुहोस्

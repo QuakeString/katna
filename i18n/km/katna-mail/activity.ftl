@@ -46,3 +46,6 @@ activity-range-custom = ផ្ទាល់ខ្លួន
 activity-range-from = ពី
 activity-range-to = ដល់
 activity-range-apply = អនុវត្ត
+activity-range-of = { $days } · { $account }
+activity-accounts-all = គណនីទាំងអស់
+activity-accounts-tip = បង្ហាញគណនីមួយ ឬទាំងអស់

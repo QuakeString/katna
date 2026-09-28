@@ -989,3 +989,12 @@ rullar inom några få rader, så att själva meddelandet alltid finns inom
 räckhåll. Lämna fältet så viks det ihop till en rad, till exempel "Kay, Sam,
 19 till"; klicka på det för att se alla igen.
 """
+
+["2026-09-28-1952-activity-by-account"]
+title = "Aktivitetsrapport för ett konto"
+text = """
+Aktivitetsrapporten har nu en kontoväljare bredvid datumen. Välj Alla
+konton eller ett av dem, så följer de spårade meddelandena,
+frekvenserna, diagrammet, ämnesraderna och Din brevlåda ditt val.
+Rapporten anger vilket konto den visar och minns ditt val.
+"""

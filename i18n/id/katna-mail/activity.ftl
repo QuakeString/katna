@@ -46,3 +46,6 @@ activity-range-custom = Kustom
 activity-range-from = Dari
 activity-range-to = Sampai
 activity-range-apply = Terapkan
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Semua akun
+activity-accounts-tip = Tampilkan satu akun atau semua

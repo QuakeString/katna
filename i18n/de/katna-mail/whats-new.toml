@@ -1036,3 +1036,12 @@ lange Liste scrollt innerhalb weniger Zeilen, sodass die Nachricht selbst
 immer erreichbar bleibt. Verlassen Sie das Feld, klappt es auf eine Zeile
 zusammen, etwa "Kay, Sam, 19 weitere"; ein Klick darauf zeigt wieder alle.
 """
+
+["2026-09-28-1952-activity-by-account"]
+title = "Aktivitätsbericht für ein Konto"
+text = """
+Der Aktivitätsbericht hat jetzt neben den Daten eine Kontoauswahl. Wählen
+Sie Alle Konten oder eines davon, und die verfolgten Nachrichten, Raten,
+das Diagramm, die Betreffzeilen und Ihr Postfach richten sich danach. Der
+Bericht nennt das angezeigte Konto und merkt sich Ihre Wahl.
+"""

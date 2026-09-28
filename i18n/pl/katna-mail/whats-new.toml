@@ -1006,3 +1006,12 @@ przewija się w kilku wierszach, więc sama wiadomość zawsze pozostaje w
 zasięgu. Opuść pole, a zwinie się do jednego wiersza, na przykład "Kay, Sam,
 jeszcze 19"; kliknij go, aby znów zobaczyć wszystkich.
 """
+
+["2026-09-28-1952-activity-by-account"]
+title = "Raport aktywności dla jednego konta"
+text = """
+Raport aktywności ma teraz wybór konta obok dat. Wybierz Wszystkie konta
+albo jedno z nich, a śledzone wiadomości, wskaźniki, wykres, tematy i
+Twoja skrzynka dostosują się do wyboru. Raport podaje, które konto
+pokazuje, i zapamiętuje twój wybór.
+"""

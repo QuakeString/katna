@@ -46,3 +46,6 @@ activity-range-custom = Àṣàyàn
 activity-range-from = Láti
 activity-range-to = Sí
 activity-range-apply = Lò ó
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Gbogbo àkáǹtì
+activity-accounts-tip = Ṣàfihàn àkáǹtì kan tàbí gbogbo wọn

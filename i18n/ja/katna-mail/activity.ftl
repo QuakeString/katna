@@ -46,3 +46,6 @@ activity-range-custom = カスタム
 activity-range-from = 開始日
 activity-range-to = 終了日
 activity-range-apply = 適用
+activity-range-of = { $days } · { $account }
+activity-accounts-all = すべてのアカウント
+activity-accounts-tip = 1 つのアカウントまたはすべてを表示

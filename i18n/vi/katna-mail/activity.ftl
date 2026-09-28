@@ -46,3 +46,6 @@ activity-range-custom = Tùy chỉnh
 activity-range-from = Từ
 activity-range-to = Đến
 activity-range-apply = Áp dụng
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Tất cả tài khoản
+activity-accounts-tip = Hiển thị một tài khoản hoặc tất cả

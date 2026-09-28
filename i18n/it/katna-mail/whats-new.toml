@@ -1023,3 +1023,12 @@ elenco scorre entro poche righe, così il messaggio resta sempre a portata di
 mano. Esci dal campo e si riduce a una riga, come "Kay, Sam, altri 19"; fai
 clic per rivederli tutti.
 """
+
+["2026-09-28-1952-activity-by-account"]
+title = "Report attività per un account"
+text = """
+Il report attività ora ha un selettore di account accanto alle date.
+Scegli Tutti gli account o uno di essi, e i messaggi tracciati, i tassi,
+il grafico, gli oggetti e La tua casella di posta si adeguano. Il report
+indica quale account mostra e ricorda la tua scelta.
+"""

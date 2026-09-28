@@ -55,3 +55,6 @@ activity-range-custom = ብጁ
 activity-range-from = ከ
 activity-range-to = እስከ
 activity-range-apply = ተግብር
+activity-range-of = { $days } · { $account }
+activity-accounts-all = ሁሉም መለያዎች
+activity-accounts-tip = አንድ መለያ ወይም ሁሉንም አሳይ

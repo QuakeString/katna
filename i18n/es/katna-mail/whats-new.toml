@@ -1019,3 +1019,12 @@ una lista larga se desplaza dentro de unas pocas líneas, así que el propio
 mensaje siempre queda al alcance. Sal del campo y se pliega a una línea,
 como "Kay, Sam, 19 más"; haz clic para volver a verlos todos.
 """
+
+["2026-09-28-1952-activity-by-account"]
+title = "Informe de actividad de una cuenta"
+text = """
+El informe de actividad ahora tiene un selector de cuenta junto a las
+fechas. Elige Todas las cuentas o una de ellas, y los mensajes con
+seguimiento, las tasas, el gráfico, los asuntos y Tu buzón se ajustan a
+tu elección. El informe indica qué cuenta muestra y recuerda tu elección.
+"""

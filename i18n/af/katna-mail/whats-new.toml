@@ -983,3 +983,12 @@ rol binne 'n paar reëls, sodat die boodskap self altyd bereikbaar bly.
 Verlaat die veld en dit vou op tot een reël, soos "Kay, Sam, 19 meer"; klik
 daarop om almal weer te sien.
 """
+
+["2026-09-28-1952-activity-by-account"]
+title = "Aktiwiteitsverslag vir een rekening"
+text = """
+Die aktiwiteitsverslag het nou ’n rekeningkieser langs die datums. Kies
+Alle rekeninge of een daarvan, en die nagespoorde boodskappe, koerse,
+grafiek, onderwerpreëls en Jou posbus volg jou keuse. Die verslag sê
+watter rekening dit wys en onthou jou keuse.
+"""

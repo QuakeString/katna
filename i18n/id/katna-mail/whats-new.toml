@@ -1015,3 +1015,12 @@ panjang bergulir dalam beberapa baris, sehingga pesannya sendiri selalu
 terjangkau. Tinggalkan kolom dan ia melipat menjadi satu baris, seperti
 "Kay, Sam, 19 lagi"; klik untuk melihat semuanya lagi.
 """
+
+["2026-09-28-1952-activity-by-account"]
+title = "Laporan aktivitas untuk satu akun"
+text = """
+Laporan aktivitas kini punya pemilih akun di samping tanggal. Pilih
+Semua akun atau salah satunya, dan pesan yang dilacak, tingkat, grafik,
+subjek, serta Kotak surat Anda akan mengikuti. Laporan menyebutkan akun
+yang ditampilkan dan mengingat pilihan Anda.
+"""

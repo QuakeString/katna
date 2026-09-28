@@ -55,3 +55,6 @@ activity-range-custom = Na musamman
 activity-range-from = Daga
 activity-range-to = Zuwa
 activity-range-apply = Yi amfani
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Duk asusu
+activity-accounts-tip = Nuna asusu ɗaya ko duka

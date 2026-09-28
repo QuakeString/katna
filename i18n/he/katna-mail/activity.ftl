@@ -58,3 +58,6 @@ activity-range-custom = מותאם אישית
 activity-range-from = מתאריך
 activity-range-to = עד תאריך
 activity-range-apply = החלה
+activity-range-of = { $days } · { $account }
+activity-accounts-all = כל החשבונות
+activity-accounts-tip = הצגת חשבון אחד או את כולם
