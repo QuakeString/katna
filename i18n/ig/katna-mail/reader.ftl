@@ -89,7 +89,6 @@ tracking-opened = { $who } mepere ya ugboro { $count }, nke ikpeazụ { $when }
 tracking-opens-clicks = { $who } mepere ya ugboro { $opens } ma soro njikọ ugboro { $clicks }, nke ikpeazụ { $when }
 tracking-clicked = { $who } soro njikọ ugboro { $clicks }, nke ikpeazụ { $when }
 tracking-maybe-opened = O nwere ike ịbụ na { $who } mepere ya (Apple Mail na-ebudata foto maka nzuzo)
-tracking-not-opened = { $who } emepebeghị ya
 tracking-receipt = { $who } zitere akara na-egosi na a gụrụ ozi
 tracking-receipt-displayed = Akara na-egosi na a gụrụ ozi: { $who } mepere ozi gị
 tracking-receipt-other = Akara na-egosi na a gụrụ ozi: { $who } hichapụrụ ma ọ bụ jikwaa ozi gị n'emeghe ya

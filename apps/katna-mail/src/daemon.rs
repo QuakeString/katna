@@ -32,6 +32,9 @@ pub enum Command {
     /// Opens the message just discarded, or not saved, again. The app does
     /// this itself; the daemon never sees it.
     ReopenDraft,
+    /// Puts back the quoted message just removed from a reply. The app does
+    /// this itself; the daemon never sees it.
+    RestoreQuote,
     /// Has the daemon read the settings file again.
     ReloadConfig,
     /// These, one after the other: an undo that moves mail back to
@@ -99,6 +102,7 @@ impl Command {
             | Self::SyncNow
             | Self::UndoSend(_)
             | Self::ReopenDraft
+            | Self::RestoreQuote
             | Self::ReloadConfig
             | Self::Several(_) => {
                 return None;
@@ -184,7 +188,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
             Ok(false) => return Err(katna_i18n::tr!("toast-too-late-to-undo-send")),
             Err(err) => Err(err),
         },
-        Command::ReopenDraft => return Ok(()),
+        Command::ReopenDraft | Command::RestoreQuote => return Ok(()),
         Command::Several(commands) => {
             for command in commands {
                 Box::pin(send(connection, command)).await?;

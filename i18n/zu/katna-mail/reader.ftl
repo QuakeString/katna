@@ -101,7 +101,6 @@ tracking-clicked = U-{ $who } ulandele isixhumanisi { $clicks ->
    *[other] izikhathi ezingu-{ $clicks }
 }, okokugcina { $when }
 tracking-maybe-opened = Kungenzeka ukuthi u-{ $who } uwuvulile (i-Apple Mail ilayisha izithombe ngenxa yobumfihlo)
-tracking-not-opened = U-{ $who } akakawuvuli
 tracking-receipt = U-{ $who } uthumele isaziso sokufunda
 tracking-receipt-displayed = Isaziso sokufunda: u-{ $who } uvule umlayezo wakho
 tracking-receipt-other = Isaziso sokufunda: u-{ $who } ususile noma uphathe umlayezo wakho engawuvulanga

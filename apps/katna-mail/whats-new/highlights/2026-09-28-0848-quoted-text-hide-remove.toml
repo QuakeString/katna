@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Hide or remove the quoted mail in a reply"
+text = """
+The "..." button under a reply now hides the quoted mail again after you
+open it. Point at it and click the x on its corner to take the quoted mail
+out of your reply; Undo or Ctrl+Z puts it back. The reply's toolbar also
+stays put while you scroll.
+"""

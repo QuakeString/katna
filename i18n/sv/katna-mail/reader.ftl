@@ -101,7 +101,6 @@ tracking-clicked = { $who } följde en länk { $clicks ->
    *[other] { $clicks } gånger
 }, senast { $when }
 tracking-maybe-opened = { $who } kan ha öppnat det (Apple Mail laddar bilder för att skydda integriteten)
-tracking-not-opened = { $who } har inte öppnat det än
 tracking-receipt = { $who } skickade ett läskvitto
 tracking-receipt-displayed = Läskvitto: { $who } öppnade ditt meddelande
 tracking-receipt-other = Läskvitto: { $who } raderade eller hanterade ditt meddelande utan att öppna det

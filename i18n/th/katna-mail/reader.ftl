@@ -89,7 +89,6 @@ tracking-opened = { $who } เปิดแล้ว { $count } ครั้ง �
 tracking-opens-clicks = { $who } เปิดแล้ว { $opens } ครั้ง และคลิกลิงก์ { $clicks } ครั้ง ล่าสุด { $when }
 tracking-clicked = { $who } คลิกลิงก์ { $clicks } ครั้ง ล่าสุด { $when }
 tracking-maybe-opened = { $who } อาจเปิดแล้ว (Apple Mail โหลดรูปภาพเพื่อความเป็นส่วนตัว)
-tracking-not-opened = { $who } ยังไม่ได้เปิด
 tracking-receipt = { $who } ส่งใบตอบรับการอ่านแล้ว
 tracking-receipt-displayed = ใบตอบรับการอ่าน: { $who } เปิดข้อความของคุณแล้ว
 tracking-receipt-other = ใบตอบรับการอ่าน: { $who } ลบหรือจัดการข้อความของคุณโดยไม่ได้เปิด

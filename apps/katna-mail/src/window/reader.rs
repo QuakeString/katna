@@ -67,6 +67,8 @@ pub(super) struct Conversation {
     /// In a dark theme, its HTML mail keeps the sender's own colors
     /// rather than dark ones.
     pub original_colors: bool,
+    /// The popover of who opened a sent message or followed its links.
+    seen: Option<tracking::Seen>,
 }
 
 /// One message of the conversation.
@@ -105,6 +107,9 @@ struct Part {
     /// For the user's own message: its recipients' delivery and read
     /// ticks, by address (lower case).
     ticks: std::collections::HashMap<String, ticks::Tick>,
+    /// Where its eye button was last drawn, and the window's size then,
+    /// for the popover to point at.
+    eye: tracking::Anchor,
 }
 
 impl Part {
@@ -122,6 +127,7 @@ impl Part {
             receipt: None,
             message_id: None,
             ticks: std::collections::HashMap::new(),
+            eye: Rc::default(),
         }
     }
 
@@ -289,6 +295,7 @@ impl Conversation {
             parts,
             show_all: false,
             original_colors: false,
+            seen: None,
         };
         conversation.read_tracking(mail);
         conversation
@@ -1108,6 +1115,8 @@ impl MailWindow {
                         .child(long_date.clone()),
                 )
             })
+            .children(self.seen_eye(ix, part, th, cx))
+            .children(self.seen_popover(ix, part, th, cx))
             .when(roomy, |d| {
                 d.child(
                     icon_button_colored(
