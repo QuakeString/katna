@@ -6,7 +6,8 @@
 //! is picked or several addresses are pasted. A chip with a name has a
 //! small arrow that shows its address. Double-clicking a chip puts it back
 //! as text to fix, in its place. Backspace in an empty field selects the
-//! last chip, and a second Backspace removes it.
+//! last chip, and a second Backspace removes it. Left and Right step
+//! through the chips and back to typing.
 //!
 //! Text that is not an address stays as a chip with a red outline, and
 //! Send refuses to go while one is there.
@@ -488,6 +489,32 @@ impl MailWindow {
             return false;
         }
         chips.selected = Some((field, before - 1));
+        cx.notify();
+        true
+    }
+
+    /// Left and Right step through the chips, as in Gmail: Left at the
+    /// start of the field selects the chip before it, and Right from the
+    /// last chip goes back to typing. Whether it was taken.
+    pub(super) fn chip_arrow(&mut self, field: Field, left: bool, cx: &mut Context<Self>) -> bool {
+        let Some(input) = self.recipient_input(field) else {
+            return false;
+        };
+        let at_start = input.read(cx).caret_at_start();
+        let Some(compose) = &mut self.compose else {
+            return false;
+        };
+        let chips = &mut compose.chips;
+        if chips.editing.is_some_and(|(f, _)| f == field) {
+            return false;
+        }
+        let count = chips.get(field).len();
+        chips.selected = match (chips.selected.filter(|(f, _)| *f == field), left) {
+            (Some((_, ix)), true) => Some((field, ix.saturating_sub(1))),
+            (Some((_, ix)), false) => (ix + 1 < count).then_some((field, ix + 1)),
+            (None, true) if at_start && count > 0 => Some((field, count - 1)),
+            (None, _) => return false,
+        };
         cx.notify();
         true
     }
