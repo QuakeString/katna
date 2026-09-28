@@ -23,6 +23,7 @@ add-account-outgoing = อีเมลขาออก ({ $protocol })
 add-account-field-server = เซิร์ฟเวอร์
 add-account-field-port = พอร์ต
 add-account-security-none = ไม่มี
+add-account-security-none-warning = ไม่ได้เข้ารหัส: รหัสผ่านและอีเมลของคุณอาจถูกอ่านได้ระหว่างทาง
 add-account-field-username = ชื่อผู้ใช้
 add-account-field-password = รหัสผ่าน
 add-account-show-password = แสดงรหัสผ่าน

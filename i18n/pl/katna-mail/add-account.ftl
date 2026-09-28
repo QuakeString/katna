@@ -23,6 +23,7 @@ add-account-outgoing = Poczta wychodząca ({ $protocol })
 add-account-field-server = Serwer
 add-account-field-port = Port
 add-account-security-none = Brak
+add-account-security-none-warning = Brak szyfrowania: hasło i wiadomości mogą zostać odczytane w trakcie przesyłania.
 add-account-field-username = Nazwa użytkownika
 add-account-field-password = Hasło
 add-account-show-password = Pokaż hasło

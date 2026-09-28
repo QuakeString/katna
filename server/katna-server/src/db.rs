@@ -322,14 +322,14 @@ impl Db {
         now: i64,
     ) -> Result<Option<InstallAuth>, DbError> {
         let client = self.pool.get().await?;
-        let row = client
-            .query_opt(
+        let statement = client
+            .prepare_cached(
                 "SELECT i.id, i.last_seen, i.account_id, a.verified_at IS NOT NULL
                  FROM installs i LEFT JOIN accounts a ON a.id = i.account_id
                  WHERE i.token_hash = $1",
-                &[&token_hash],
             )
             .await?;
+        let row = client.query_opt(&statement, &[&token_hash]).await?;
         let Some(row) = row else { return Ok(None) };
         let id: String = row.get(0);
         let last_seen: i64 = row.get(1);
@@ -696,15 +696,13 @@ impl Db {
             )
             .await?
             .get(0);
-        let insert = tx
-            .prepare(
-                "INSERT INTO tracks (id, install_id, created_at, links, link_set) VALUES ($1, $2, $3, '{}', $4)",
-            )
-            .await?;
-        for id in ids {
-            tx.execute(&insert, &[id, &install, &now, &link_set])
-                .await?;
-        }
+        // One statement for all the IDs, not a round trip each.
+        tx.execute(
+            "INSERT INTO tracks (id, install_id, created_at, links, link_set)
+             SELECT id, $2, $3, '{}', $4 FROM unnest($1::text[]) AS id",
+            &[&ids, &install, &now, &link_set],
+        )
+        .await?;
         tx.commit().await?;
         Ok(Ok(()))
     }
@@ -739,17 +737,15 @@ impl Db {
             .and_then(|n| n.checked_add(1))
             .and_then(|n| i32::try_from(n).ok())
             .unwrap_or(0);
-        let row = self
-            .pool
-            .get()
-            .await?
-            .query_opt(
+        let client = self.pool.get().await?;
+        let statement = client
+            .prepare_cached(
                 "SELECT t.install_id, t.created_at, (COALESCE(s.links, t.links))[$2]
                  FROM tracks t LEFT JOIN link_sets s ON s.id = t.link_set
                  WHERE t.id = $1",
-                &[&id, &index],
             )
             .await?;
+        let row = client.query_opt(&statement, &[&id, &index]).await?;
         Ok(row.map(|row| Track {
             install: row.get(0),
             created_at: row.get(1),
@@ -767,13 +763,16 @@ impl Db {
         source: Source,
         at: i64,
     ) -> Result<Event, DbError> {
-        let row = self
-            .pool
-            .get()
-            .await?
-            .query_one(
+        let client = self.pool.get().await?;
+        let statement = client
+            .prepare_cached(
                 "INSERT INTO events (install_id, track_id, kind, link, source, at)
                  VALUES ($1, $2, $3, $4, $5, $6) RETURNING seq",
+            )
+            .await?;
+        let row = client
+            .query_one(
+                &statement,
                 &[&install, &id, &kind.as_str(), &link, &source.as_str(), &at],
             )
             .await?;

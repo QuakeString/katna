@@ -87,6 +87,16 @@ impl Updates {
         self.status.lock().unwrap().clone()
     }
 
+    /// The manifest of the version on offer, as JSON, or empty.
+    pub(crate) fn details(&self) -> String {
+        self.offered
+            .lock()
+            .unwrap()
+            .as_ref()
+            .and_then(|manifest| serde_json::to_string(manifest).ok())
+            .unwrap_or_default()
+    }
+
     pub(crate) fn check_now(&self) {
         let _ = self.wake.0.try_send(Wake::Check);
     }

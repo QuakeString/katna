@@ -23,6 +23,7 @@ add-account-outgoing = Вихідна пошта ({ $protocol })
 add-account-field-server = Сервер
 add-account-field-port = Порт
 add-account-security-none = Немає
+add-account-security-none-warning = Без шифрування: ваш пароль і листи можуть бути прочитані дорогою.
 add-account-field-username = Ім’я користувача
 add-account-field-password = Пароль
 add-account-show-password = Показати пароль

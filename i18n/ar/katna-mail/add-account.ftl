@@ -23,6 +23,7 @@ add-account-outgoing = البريد الصادر ({ $protocol })
 add-account-field-server = الخادم
 add-account-field-port = المنفذ
 add-account-security-none = بلا
+add-account-security-none-warning = غير مشفّر: يمكن قراءة كلمة مرورك وبريدك أثناء نقلهما.
 add-account-field-username = اسم المستخدم
 add-account-field-password = كلمة المرور
 add-account-show-password = إظهار كلمة المرور

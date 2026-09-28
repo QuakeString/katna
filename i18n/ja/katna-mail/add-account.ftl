@@ -23,6 +23,7 @@ add-account-outgoing = 送信メール（{ $protocol }）
 add-account-field-server = サーバー
 add-account-field-port = ポート
 add-account-security-none = なし
+add-account-security-none-warning = 暗号化なし: パスワードとメールが通信中に読み取られる可能性があります。
 add-account-field-username = ユーザー名
 add-account-field-password = パスワード
 add-account-show-password = パスワードを表示

@@ -3,6 +3,7 @@
 //! Reading `mail.db` for the mail app: the folder list with counts and the
 //! messages of one folder. Works in both read-write and read-only mode.
 
+use std::cmp::Reverse;
 use std::collections::{HashMap, HashSet};
 
 use katna_core::{AccountId, MailCategory};
@@ -67,13 +68,15 @@ pub(crate) fn unread_counts(conn: &Connection) -> Result<Vec<(FolderId, u64)>> {
 
 /// The messages in `folder`, newest first. Messages without a date come last.
 pub(crate) fn folder_message_ids(conn: &Connection, folder: FolderId) -> Result<Vec<MessageId>> {
+    // Sorted here, as in `folder_rows`.
     let mut stmt = conn.prepare_cached(
-        "SELECT l.message_id FROM message_location l JOIN message m ON m.id = l.message_id
-         WHERE l.folder_id = ?1
-         ORDER BY m.date IS NULL, m.date DESC, m.id DESC",
+        "SELECT l.message_id, m.date FROM message_location l JOIN message m ON m.id = l.message_id
+         WHERE l.folder_id = ?1",
     )?;
-    let rows = stmt.query_map([folder.0], |row| Ok(MessageId(row.get(0)?)))?;
-    Ok(rows.collect::<rusqlite::Result<_>>()?)
+    let rows = stmt.query_map([folder.0], |row| Ok((row.get::<_, i64>(0)?, row.get(1)?)))?;
+    let mut rows = rows.collect::<rusqlite::Result<Vec<(i64, Option<i64>)>>>()?;
+    rows.sort_unstable_by_key(|(id, date)| newest_first(*date, *id));
+    Ok(rows.into_iter().map(|(id, _)| MessageId(id)).collect())
 }
 
 /// One conversation in a folder's list.
@@ -126,24 +129,37 @@ struct FolderRow {
 
 /// Every message in `folder`, newest first (undated last).
 fn folder_rows(conn: &Connection, folder: FolderId) -> Result<Vec<FolderRow>> {
+    // Sorted here rather than by SQLite: no index orders a folder by date,
+    // and SQLite's sorter takes about as long again as reading the rows
+    // (60 ms of 110 ms for a 100,000-message inbox).
     let mut stmt = conn.prepare_cached(
-        "SELECT m.id, m.thread_id, m.category, m.flags FROM message_location l
+        "SELECT m.id, m.thread_id, m.category, m.flags, m.date FROM message_location l
          JOIN message m ON m.id = l.message_id
-         WHERE l.folder_id = ?1
-         ORDER BY m.date IS NULL, m.date DESC, m.id DESC",
+         WHERE l.folder_id = ?1",
     )?;
     let rows = stmt.query_map([folder.0], |row| {
         let flags: i64 = row.get(3)?;
-        Ok(FolderRow {
+        let date: Option<i64> = row.get(4)?;
+        let row = FolderRow {
             id: row.get(0)?,
             thread: row.get(1)?,
             category: row
                 .get::<_, Option<i64>>(2)?
                 .and_then(MailCategory::from_storage),
             unread: flags & i64::from(MessageFlags::SEEN.bits()) == 0,
-        })
+        };
+        Ok((date, row))
     })?;
-    Ok(rows.collect::<rusqlite::Result<_>>()?)
+    let mut rows = rows.collect::<rusqlite::Result<Vec<_>>>()?;
+    rows.sort_unstable_by_key(|(date, row)| newest_first(*date, row.id));
+    Ok(rows.into_iter().map(|(_, row)| row).collect())
+}
+
+/// The order of a folder's list: newest first, then the most recently
+/// stored; undated messages last. As `ORDER BY date IS NULL, date DESC,
+/// id DESC` would sort them.
+fn newest_first(date: Option<i64>, id: i64) -> (bool, Reverse<Option<i64>>, Reverse<i64>) {
+    (date.is_none(), Reverse(date), Reverse(id))
 }
 
 /// Unclassified messages count as Primary.
@@ -160,16 +176,35 @@ pub(crate) fn folder_threads(
     folder: FolderId,
     categories: Option<&[MailCategory]>,
 ) -> Result<Vec<ThreadEntry>> {
+    Ok(threads_of(&folder_rows(conn, folder)?, categories))
+}
+
+/// An inbox's conversations, as [`folder_threads`] lists them, and its
+/// unread conversations per tab, as [`category_unread`] counts them.
+pub type InboxThreads = (Vec<ThreadEntry>, Vec<(MailCategory, u64)>);
+
+/// [`folder_threads`] and [`category_unread`] of an inbox together, from
+/// one read of the folder: each read sorts the whole folder.
+pub(crate) fn inbox_threads(
+    conn: &Connection,
+    folder: FolderId,
+    categories: Option<&[MailCategory]>,
+) -> Result<InboxThreads> {
+    let rows = folder_rows(conn, folder)?;
+    Ok((threads_of(&rows, categories), unread_by_category(&rows)))
+}
+
+/// The conversations of a folder's `rows`, as [`folder_threads`] gives them.
+fn threads_of(rows: &[FolderRow], categories: Option<&[MailCategory]>) -> Vec<ThreadEntry> {
     let mut seen = HashSet::new();
-    Ok(folder_rows(conn, folder)?
-        .into_iter()
+    rows.iter()
         .filter(|row| row.thread.is_none_or(|thread| seen.insert(thread)))
         .filter(|row| categories.is_none_or(|wanted| wanted.contains(&tab(row.category))))
         .map(|row| ThreadEntry {
             thread: row.thread.map(ThreadId),
             latest: MessageId(row.id),
         })
-        .collect())
+        .collect()
 }
 
 /// Which messages a list across folders keeps, by their flags: those with
@@ -217,11 +252,10 @@ fn spread_rows(
     }
     let marks = vec!["?"; folders.len()].join(",");
     let mut stmt = conn.prepare_cached(&format!(
-        "SELECT m.id, m.thread_id, m.category, m.flags, m.account_id, m.message_id_hdr
+        "SELECT m.id, m.thread_id, m.category, m.flags, m.account_id, m.message_id_hdr, m.date
          FROM message m
          WHERE m.id IN (SELECT message_id FROM message_location WHERE folder_id IN ({marks}))
-           AND (m.flags & ?) = ?
-         ORDER BY m.date IS NULL, m.date DESC, m.id DESC"
+           AND (m.flags & ?) = ?"
     ))?;
     let mask = i64::from((filter.set | filter.unset).bits());
     let want = i64::from(filter.set.bits());
@@ -232,7 +266,7 @@ fn spread_rows(
         .collect::<Vec<i64>>();
     let rows = stmt.query_map(rusqlite::params_from_iter(params), |row| {
         let flags: i64 = row.get(3)?;
-        Ok(SpreadRow {
+        let spread = SpreadRow {
             row: FolderRow {
                 id: row.get(0)?,
                 thread: row.get(1)?,
@@ -243,9 +277,13 @@ fn spread_rows(
             },
             account: row.get(4)?,
             message_id_hdr: row.get(5)?,
-        })
+        };
+        Ok((row.get::<_, Option<i64>>(6)?, spread))
     })?;
-    Ok(rows.collect::<rusqlite::Result<_>>()?)
+    // Sorted here, as in `folder_rows`.
+    let mut rows = rows.collect::<rusqlite::Result<Vec<_>>>()?;
+    rows.sort_unstable_by_key(|(date, r)| newest_first(*date, r.row.id));
+    Ok(rows.into_iter().map(|(_, r)| r).collect())
 }
 
 /// The conversations with a message in any of `folders` that `filter`
@@ -321,10 +359,16 @@ pub(crate) fn category_unread(
     conn: &Connection,
     folder: FolderId,
 ) -> Result<Vec<(MailCategory, u64)>> {
+    Ok(unread_by_category(&folder_rows(conn, folder)?))
+}
+
+/// The unread conversations of a folder's `rows` per inbox tab, as
+/// [`category_unread`] counts them.
+fn unread_by_category(rows: &[FolderRow]) -> Vec<(MailCategory, u64)> {
     // Thread → (tab of its newest message, unread).
     let mut threads: HashMap<i64, (MailCategory, bool)> = HashMap::new();
     let mut counts: HashMap<MailCategory, u64> = HashMap::new();
-    for row in folder_rows(conn, folder)? {
+    for row in rows {
         match row.thread {
             Some(thread) => {
                 let entry = threads.entry(thread).or_insert((tab(row.category), false));
@@ -339,10 +383,10 @@ pub(crate) fn category_unread(
             *counts.entry(category).or_default() += 1;
         }
     }
-    Ok(MailCategory::ALL
+    MailCategory::ALL
         .into_iter()
         .map(|c| (c, counts.get(&c).copied().unwrap_or_default()))
-        .collect())
+        .collect()
 }
 
 /// One message row of a thread.

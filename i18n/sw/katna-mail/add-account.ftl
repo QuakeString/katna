@@ -23,6 +23,7 @@ add-account-outgoing = Barua zinazotoka ({ $protocol })
 add-account-field-server = Seva
 add-account-field-port = Mlango
 add-account-security-none = Hakuna
+add-account-security-none-warning = Haijasimbwa: nenosiri na barua zako zinaweza kusomwa njiani.
 add-account-field-username = Jina la mtumiaji
 add-account-field-password = Nenosiri
 add-account-show-password = Onyesha nenosiri

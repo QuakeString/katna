@@ -1003,3 +1003,41 @@ Drive gị ozugbo ị gbakwunyere ya, ozi ahụ na-ebukwa njikọ ya, dị ka �
 Gmail. A na-ekekọrịta ya na ndị na-anabata ya mgbe ị pịrị Zipu; Katna na-ajụ
 naanị ma a pụghị inye onye mmadụ ohere.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Ndepụta ndị nataara ozi toro ogologo dị nfe karị"
+text = """
+Ndepụta ogologo nke ndị nataara ozi nwere ogwe mmịgharị nke ya ugbu a, ọ
+na-aga otu ahịrị n'otu oge, mkparịta ụka na-agafe naanị mgbe ndepụta ahụ ruru
+njedebe ya. Ịgbakwunye ndị nataara ozi anaghịzi eme ka bọtịn ndị dị n'okpuru
+wụpụ.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Lelee ozi ọhụrụ"
+text = """
+Pịa aka nri na folda ma ọ bụ akaụntụ dị na mpaghara folda maka "Lelee ozi
+ọhụrụ", "Kaa akara na niile dị ka agụrụ", folda ọhụrụ n'ime ya, ma ọ bụ
+"Kpochapụ Ihe mkpofu". "Mee ọhụrụ" dị n'elu ndepụta na-ewetakwa ozi site na
+sava ugbu a. Mgbe Katna na-elele, akụ na-agba gburugburu na "Mee ọhụrụ" na
+n'akụkụ Igbe ozi mbata, ma "Na-elele ozi ọhụrụ…" na-egosi n'elu ma ọ bụrụ na ọ
+were ihe karịrị obere oge.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Nnukwu faịlụ site na OneDrive"
+text = """
+Akaụntụ Outlook.com, Hotmail na akaụntụ Microsoft ndị ọzọ na-ezipụkwa ugbu a
+faịlụ karịrị ókè ozi dị ka akaụntụ Google si eme: faịlụ ahụ na-aga na
+OneDrive gị ozugbo ị gbakwunyere ya, ozi ahụ na-ebukwa njikọ ya, dị ka ọ dị
+na Outlook.
+"""
+
+["2026-09-28-2108-activity-checking"]
+title = "Enweghị ọzọ ngosi Banye n'Ihe omume"
+text = """
+Ozugbo Katna malitere, Ihe omume na-egosi ogwe ibu dị gịrịgịrị mgbe ọ
+na-enyocha akaụntụ Katna gị, kama ịjụ gị ka i banye nwa oge. Katna na-
+enyochakwa akaụntụ ozugbo ọ malitere, ya mere ogologo oge ichere dị
+mkpụmkpụ.
+"""

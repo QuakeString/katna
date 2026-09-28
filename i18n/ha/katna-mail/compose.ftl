@@ -78,6 +78,17 @@ compose-drive-share-link = Raba ta hanyar mahaɗi
 compose-drive-send-without = Aika ba tare da rabawa ba
 compose-drive-share-cancel = Soke
 compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } ya wuce { $limit }, don haka ana ajiye shi a OneDrive ɗinka kuma saƙon yana ɗauke da mahaɗi.
+compose-onedrive-tip = A OneDrive ɗinka; saƙon yana ɗauke da mahaɗi
+compose-onedrive-allow = Ba da izinin OneDrive
+compose-onedrive-allow-tip = Sake shiga da Microsoft don Katna ta iya sanya manyan fayiloli a OneDrive ɗinka
+compose-onedrive-not-uploaded = { $name } bai riga ya shiga OneDrive ba
+compose-onedrive-share-failed = Ba a iya raba fayilolin a OneDrive ba: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive ba zai iya raba fayilolin da { $addresses } ba. Maimakon haka, duk wanda yake da mahaɗin zai iya buɗe su.
+   *[other] OneDrive ba zai iya raba fayilolin da { $addresses } ba. Maimakon haka, duk wanda yake da mahaɗin zai iya buɗe su.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Saki fayiloli a nan
 compose-drop-here = Saki a nan
 compose-paste-keep-formatting = Riƙe tsari

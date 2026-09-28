@@ -21,6 +21,7 @@ tab-provider-other = Katna haziri ya
 
 list-select = Họrọ
 list-refresh = Mee ọhụrụ
+list-checking = Na-elele ozi ọhụrụ…
 list-more = Ọzọ
 list-mark-read = Kaa akara dị ka agụrụ
 list-mark-unread = Kaa akara dị ka a gụghị

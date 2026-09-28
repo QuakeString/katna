@@ -1052,3 +1052,42 @@ il messaggio contiene il suo link, come in Gmail. Viene condiviso con i
 destinatari quando premi Invia; Katna chiede solo se a qualcuno non si può
 dare l’accesso.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Elenchi di destinatari lunghi più scorrevoli"
+text = """
+Un lungo elenco di destinatari ha ora una barra di scorrimento propria e
+avanza una riga alla volta; la conversazione scorre solo quando l’elenco
+è arrivato in fondo. Aggiungere destinatari non fa più saltare i
+pulsanti sotto.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Controlla nuova posta"
+text = """
+Fai clic con il pulsante destro su una cartella o un account nel
+pannello delle cartelle per scegliere «Controlla nuova posta», «Segna
+tutti come già letti», una nuova cartella al suo interno o «Svuota il
+Cestino». «Aggiorna», sopra l’elenco, ora interroga anche il server.
+Mentre Katna controlla, le frecce girano su «Aggiorna» e accanto a Posta
+in arrivo, e «Controllo della nuova posta…» compare in alto se ci vuole
+più di un momento.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "File grandi con OneDrive"
+text = """
+Outlook.com, Hotmail e gli altri account Microsoft ora inviano i file
+oltre il limite della posta come gli account Google: il file va nel tuo
+OneDrive appena lo alleghi, e il messaggio contiene il suo link, come in
+Outlook.
+"""
+
+["2026-09-28-2108-activity-checking"]
+title = "Niente più lampo di «Accedi» in Attività"
+text = """
+Subito dopo l’avvio di Katna, Attività mostra una sottile barra di
+caricamento mentre controlla il tuo account Katna, invece di chiederti
+per un attimo di accedere. Katna controlla l’account anche appena si
+avvia, quindi l’attesa è più breve.
+"""

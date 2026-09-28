@@ -18,6 +18,12 @@ pub const VERSION: &str = match option_env!("KATNA_VERSION") {
     None => env!("CARGO_PKG_VERSION"),
 };
 
+/// When this build's commit was made (Unix seconds), if the package said
+/// (`KATNA_BUILT`).
+pub fn built() -> Option<i64> {
+    option_env!("KATNA_BUILT")?.parse().ok()
+}
+
 /// At most this many highlights at once; the full changelog has the rest.
 pub const SHOWN: usize = 6;
 
@@ -186,13 +192,33 @@ fn commit(version: &str) -> Option<&str> {
     (hash.len() >= 7 && hash.bytes().all(|b| b.is_ascii_hexdigit())).then_some(hash)
 }
 
+/// Every highlight in English, newest first, as JSON: what an update
+/// manifest lists (`katna_core::update::NewHighlight`).
+pub fn highlights_json() -> String {
+    let highlights: Vec<_> = HIGHLIGHTS
+        .iter()
+        .rev()
+        .map(|h| katna_core::update::NewHighlight {
+            name: h.name.to_owned(),
+            title: h.title.to_owned(),
+            text: h.text.to_owned(),
+        })
+        .collect();
+    serde_json::to_string(&highlights).unwrap_or_default()
+}
+
+/// Whether this build has the highlight named `name`.
+pub fn has_highlight(name: &str) -> bool {
+    HIGHLIGHTS.iter().any(|h| h.name == name)
+}
+
 /// Where to read every change: the commits since `from`, the version that
 /// ran before, when both versions name their commit.
 pub fn changelog_url(from: Option<&str>) -> String {
     changelog_url_for(from, VERSION)
 }
 
-fn changelog_url_for(from: Option<&str>, to: &str) -> String {
+pub fn changelog_url_for(from: Option<&str>, to: &str) -> String {
     let repo = env!("CARGO_PKG_REPOSITORY");
     match (from.and_then(commit), commit(to)) {
         (Some(old), Some(new)) if old != new => format!("{repo}/compare/{old}...{new}"),

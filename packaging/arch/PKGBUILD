@@ -82,6 +82,9 @@ build() {
   export CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-target}"
   # Katna Mail names this version in What's new after an update.
   export KATNA_VERSION="$pkgver"
+  # When its commit was made (Unix seconds), for the Update dialog.
+  KATNA_BUILT="$(git log -1 --format=%ct)"
+  export KATNA_BUILT
   # Katna updates itself from the arch-latest release, with pacman
   # (katna_core::update::Package).
   export KATNA_PACKAGE=arch

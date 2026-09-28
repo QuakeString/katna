@@ -21,6 +21,7 @@ tab-provider-other = ຈັດຮຽງໂດຍ Katna
 
 list-select = ເລືອກ
 list-refresh = ໂຫຼດຄືນໃໝ່
+list-checking = ກຳລັງກວດຫາອີເມວໃໝ່…
 list-more = ເພີ່ມເຕີມ
 list-mark-read = ໝາຍວ່າອ່ານແລ້ວ
 list-mark-unread = ໝາຍວ່າຍັງບໍ່ໄດ້ອ່ານ

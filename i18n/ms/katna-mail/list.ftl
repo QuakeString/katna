@@ -21,6 +21,7 @@ tab-provider-other = diisih oleh Katna
 
 list-select = Pilih
 list-refresh = Muat semula
+list-checking = Menyemak mel baharu…
 list-more = Lagi
 list-mark-read = Tandai sebagai dibaca
 list-mark-unread = Tandai sebagai belum dibaca

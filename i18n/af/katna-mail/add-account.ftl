@@ -23,6 +23,7 @@ add-account-outgoing = Uitgaande e-pos ({ $protocol })
 add-account-field-server = Bediener
 add-account-field-port = Poort
 add-account-security-none = Geen
+add-account-security-none-warning = Nie geënkripteer nie: jou wagwoord en pos kan onderweg gelees word.
 add-account-field-username = Gebruikersnaam
 add-account-field-password = Wagwoord
 add-account-show-password = Wys wagwoord

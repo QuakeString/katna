@@ -23,6 +23,7 @@ add-account-outgoing = Ausgehende E-Mails ({ $protocol })
 add-account-field-server = Server
 add-account-field-port = Port
 add-account-security-none = Keine
+add-account-security-none-warning = Nicht verschlüsselt: Ihr Passwort und Ihre E-Mails können unterwegs mitgelesen werden.
 add-account-field-username = Benutzername
 add-account-field-password = Passwort
 add-account-show-password = Passwort anzeigen

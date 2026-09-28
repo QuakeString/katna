@@ -349,6 +349,10 @@ macro_rules! pim_interface {
                 self.daemon.updates().status()
             }
 
+            async fn update_details(&self) -> String {
+                self.daemon.updates().details()
+            }
+
             async fn check_for_update(&self) {
                 self.daemon.updates().check_now();
             }

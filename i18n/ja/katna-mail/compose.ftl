@@ -74,6 +74,16 @@ compose-drive-share-link = リンクで共有
 compose-drive-send-without = 共有せずに送信
 compose-drive-share-cancel = キャンセル
 compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } は { $limit } を超えているため、OneDrive に保存され、メッセージにはそのリンクが付きます。
+compose-onedrive-tip = OneDrive 内にあります。メッセージにはリンクが付きます
+compose-onedrive-allow = OneDrive を許可
+compose-onedrive-allow-tip = Microsoft でもう一度サインインすると、Katna が大きなファイルを OneDrive に置けるようになります
+compose-onedrive-not-uploaded = { $name } はまだ OneDrive にありません
+compose-onedrive-share-failed = OneDrive でファイルを共有できませんでした: { $error }
+compose-onedrive-share-text = { $count ->
+   *[other] OneDrive では { $addresses } とファイルを共有できません。代わりに、リンクを知っている人なら誰でも開けるようになります。
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = ここにファイルをドロップ
 compose-drop-here = ここにドロップ
 compose-paste-keep-formatting = 書式を保持

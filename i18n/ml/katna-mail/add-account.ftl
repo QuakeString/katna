@@ -23,6 +23,7 @@ add-account-outgoing = ഔട്ട്‌ഗോയിംഗ് മെയിൽ (
 add-account-field-server = സെർവർ
 add-account-field-port = പോർട്ട്
 add-account-security-none = ഒന്നുമില്ല
+add-account-security-none-warning = എൻക്രിപ്റ്റ് ചെയ്തിട്ടില്ല: നിങ്ങളുടെ പാസ്‌വേഡും മെയിലും വഴിയിൽ വായിക്കാൻ കഴിയും.
 add-account-field-username = ഉപയോക്തൃനാമം
 add-account-field-password = പാസ്‌വേഡ്
 add-account-show-password = പാസ്‌വേഡ് കാണിക്കുക

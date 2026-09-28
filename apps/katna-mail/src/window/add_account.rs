@@ -1174,6 +1174,26 @@ impl MailWindow {
                             .children(chips),
                     ),
             )
+            // No encryption: say so, without stopping anyone.
+            .when(fields.security == Security::Plain, |d| {
+                d.child(
+                    div()
+                        .flex()
+                        .flex_row()
+                        .items_start()
+                        .gap(px(8.0))
+                        .text_size(px(12.0))
+                        .line_height(px(16.0))
+                        .text_color(rgba(th.error))
+                        .child(icon("warning", th.error, 16.0))
+                        .child(
+                            div()
+                                .flex_1()
+                                .min_w_0()
+                                .child(tr!("add-account-security-none-warning")),
+                        ),
+                )
+            })
             .into_any_element()
     }
 

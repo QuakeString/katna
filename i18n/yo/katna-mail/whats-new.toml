@@ -1012,3 +1012,37 @@ rẹ ní kété tí o bá so ó mọ́ ọn, ìfiránṣẹ́ náà sì ní ìj�
 pẹ̀lú àwọn olùgbà nígbà tí o bá tẹ Fi ránṣẹ́; Katna á béèrè nìkan tí a kò bá lè fún ẹnikan
 ní àǹfààní.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Àwọn àtòjọ olùgbà gígùn ń rìn dáadáa sí i"
+text = """
+Àtòjọ olùgbà gígùn ní ọ̀pá ìyíra tirẹ̀ báyìí, ó sì ń rìn ìlà kan lẹ́ẹ̀kan; ìjíròrò á sì
+máa yí lọ nìkan nígbà tí àtòjọ náà bá dé òpin rẹ̀. Fífi olùgbà kún kò ní jẹ́ kí àwọn
+bọ́tìnì tó wà nísàlẹ̀ fò mọ́.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Ṣàyẹ̀wò lẹ́tà tuntun"
+text = """
+Tẹ fódà tàbí àkáǹtì lórí pánẹ́ẹ̀lì fódà pẹ̀lú bọ́tìnì ọ̀tún láti rí “Ṣàyẹ̀wò lẹ́tà
+tuntun”, “Sàmì sí gbogbo rẹ̀ bí kíkà”, fódà tuntun ní inú rẹ̀, tàbí “Sọ Ìdọ̀tí di òfo”.
+“Sọdọ̀tun” lókè àtòjọ báyìí ń mú láti ọ̀dọ̀ sáfà pẹ̀lú. Nígbà tí Katna bá ń ṣàyẹ̀wò,
+àwọn ọfà tó wà lórí “Sọdọ̀tun” àti lẹ́gbẹ̀ẹ́ Àpótí-ìwọlé ń yí, “À ń ṣàyẹ̀wò lẹ́tà
+tuntun…” sì ń hàn lókè bí ó bá gùn ju ìgbà díẹ̀ lọ.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Àwọn fáìlì ńlá nípasẹ̀ OneDrive"
+text = """
+Àwọn àkáǹtì Outlook.com, Hotmail àti àwọn àkáǹtì Microsoft mìíràn ń fi àwọn fáìlì tó
+ju ààlà lẹ́tà lọ ránṣẹ́ bíi ti àkáǹtì Google: fáìlì náà máa ń lọ sí OneDrive rẹ ní
+kété tí o bá so ó mọ́ ọn, ìfiránṣẹ́ náà sì ní ìjápọ̀ rẹ̀, bíi ti Outlook.
+"""
+
+["2026-09-28-2108-activity-checking"]
+title = "Kò sí àfihàn Wọlé tó ń tàn ní Ìgbòkègbodò mọ́"
+text = """
+Kété tí Katna bá bẹ̀rẹ̀, Ìgbòkègbodò máa ń fi ọ̀pá ìgbàjáde tín-ín-rín hàn nígbà tí ó bá ń
+ṣàyẹ̀wò àkáǹtì Katna rẹ, dípò kí ó bẹ̀ ọ́ kí o wọlé fún ìgbà díẹ̀. Katna tún máa ń ṣàyẹ̀wò
+àkáǹtì náà bí ó ṣe bẹ̀rẹ̀, nítorí náà ìdúró kúrú jù.
+"""

@@ -23,6 +23,7 @@ add-account-outgoing = Papalabas na mail ({ $protocol })
 add-account-field-server = Server
 add-account-field-port = Port
 add-account-security-none = Wala
+add-account-security-none-warning = Hindi naka-encrypt: mababasa ang iyong password at mail habang nasa daan.
 add-account-field-username = Username
 add-account-field-password = Password
 add-account-show-password = Ipakita ang password

@@ -78,6 +78,17 @@ compose-drive-share-link = लिंक से शेयर करें
 compose-drive-send-without = शेयर किए बिना भेजें
 compose-drive-share-cancel = रद्द करें
 compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } { $limit } से बड़ी है, इसलिए यह आपके OneDrive में जाती है और मैसेज में उसका लिंक रहता है।
+compose-onedrive-tip = आपके OneDrive में; मैसेज में लिंक रहता है
+compose-onedrive-allow = OneDrive की अनुमति दें
+compose-onedrive-allow-tip = बड़ी फ़ाइलें आपके OneDrive में रखने की अनुमति Katna को देने के लिए Microsoft से फिर साइन इन करें
+compose-onedrive-not-uploaded = { $name } अभी OneDrive में नहीं है
+compose-onedrive-share-failed = OneDrive में फ़ाइलें शेयर नहीं की जा सकीं: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive { $addresses } के साथ फ़ाइलें शेयर नहीं कर सकता। इसके बजाय लिंक वाला कोई भी व्यक्ति उन्हें खोल सकता है।
+   *[other] OneDrive { $addresses } के साथ फ़ाइलें शेयर नहीं कर सकता। इसके बजाय लिंक वाला कोई भी व्यक्ति उन्हें खोल सकता है।
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = फ़ाइलें यहां छोड़ें
 compose-drop-here = यहां छोड़ें
 compose-paste-keep-formatting = फ़ॉर्मैटिंग रखें

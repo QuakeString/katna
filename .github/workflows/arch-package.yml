@@ -48,7 +48,7 @@ jobs:
       # makepkg finds them all installed and needs no sudo.
       - name: Install build tools and dependencies
         run: |
-          pacman -Syu --noconfirm --needed base-devel git rustup \
+          pacman -Syu --noconfirm --needed base-devel git jq rustup \
             dbus fontconfig freetype2 gcc-libs glibc libglvnd libxcb \
             libxkbcommon libxkbcommon-x11 minisign polkit vulkan-icd-loader wayland
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -115,19 +115,6 @@ jobs:
           # one-off download.
           cp "packaging/arch/$pkg" out/katna-git-x86_64.pkg.tar.zst
           cd out
-          # What Katna Mail's updates read (katna_core::update::Manifest):
-          # the version, the file under its versioned name, its SHA-256
-          # and size. The versioned file goes up first and is never
-          # replaced, unlike the fixed name, so a download running while
-          # the next build publishes is not cut short.
-          version=$(pacman -Qp "$pkg" | cut -d' ' -f2)
-          version=${version%-*}
-          file=$pkg
-          sha=$(sha256sum "$file" | cut -d' ' -f1)
-          size=$(stat -c %s "$file")
-          printf '{"version":"%s","file":"%s","sha256":"%s","size":%s}\n' \
-            "$version" "$file" "$sha" "$size" > katna-update.json
-          cat katna-update.json
           repo-add katna.db.tar.gz "$pkg"
           # Release assets cannot be symlinks.
           rm katna.db katna.files
@@ -142,10 +129,42 @@ jobs:
           done
           katnactl --help > /dev/null
           test -x /usr/lib/katna/katna-update-helper
-          # The manifest names the version the package reports.
-          test "$(katna-mail --version)" = \
-            "katna-mail $(sed 's/.*"version":"\([^"]*\)".*/\1/' out/katna-update.json)"
           pacman -Ql katna-git
+      - name: Write the update manifest
+        run: |
+          # What Katna Mail's updates read (katna_core::update::Manifest):
+          # the version, the file under its versioned name, its SHA-256
+          # and size, and for the Update dialog the commit, when it was
+          # made, the What's new highlights and the latest commits. The
+          # versioned file goes up first and is never replaced, unlike
+          # the fixed name, so a download running while the next build
+          # publishes is not cut short.
+          git config --global --add safe.directory "$PWD"
+          file=$(cd out && ls katna-git-*.pkg.tar.zst |
+            grep -vx 'katna-git-x86_64\.pkg\.tar\.zst')
+          version=$(pacman -Qp "out/$file" | cut -d' ' -f2)
+          version=${version%-*}
+          # The package reports the version the manifest names.
+          test "$(katna-mail --version)" = "katna-mail $version"
+          git log -200 --format='%h%x09%s' HEAD |
+            jq -R 'split("\t") | {commit: .[0], title: (.[1:] | join("\t"))}' |
+            jq -s . > changes.json
+          katna-mail --highlights > highlights.json
+          jq -n \
+            --arg version "$version" \
+            --arg file "$file" \
+            --arg sha256 "$(sha256sum "out/$file" | cut -d' ' -f1)" \
+            --argjson size "$(stat -c %s "out/$file")" \
+            --argjson built "$(git log -1 --format=%ct HEAD)" \
+            --arg commit "$(git rev-parse HEAD)" \
+            --slurpfile highlights highlights.json \
+            --slurpfile changes changes.json \
+            '{$version, $file, $sha256, $size, $built, $commit,
+              highlights: $highlights[0][:50], changes: $changes[0]}' \
+            > out/katna-update.json
+          jq '{version, file, size, built, commit,
+               highlights: (.highlights | length), changes: (.changes | length)}' \
+            out/katna-update.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: arch-package

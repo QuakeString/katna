@@ -23,6 +23,7 @@ add-account-outgoing = வெளிச்செல்லும் அஞ்ச�
 add-account-field-server = சர்வர்
 add-account-field-port = போர்ட்
 add-account-security-none = எதுவுமில்லை
+add-account-security-none-warning = மறையாக்கம் இல்லை: உங்கள் கடவுச்சொல்லையும் அஞ்சலையும் வழியிலேயே படிக்க முடியும்.
 add-account-field-username = பயனர் பெயர்
 add-account-field-password = கடவுச்சொல்
 add-account-show-password = கடவுச்சொல்லைக் காட்டு

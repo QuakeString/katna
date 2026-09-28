@@ -68,4 +68,5 @@ quick-help = Help
 # Starts the guided tour of the app.
 quick-tour = Take the tour
 quick-whats-new = What’s new
+quick-check-updates = Check for updates
 quick-about = About Katna

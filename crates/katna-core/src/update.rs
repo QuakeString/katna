@@ -85,6 +85,22 @@ pub struct Manifest {
     pub sha256: String,
     /// The file's size in bytes.
     pub size: u64,
+    /// When the build's commit was made (Unix seconds), or 0 in a
+    /// manifest from before it was written.
+    #[serde(default)]
+    pub built: i64,
+    /// The build's commit, in full, or empty.
+    #[serde(default)]
+    pub commit: String,
+    /// The newest What's new highlights, newest first, in English: the
+    /// Update dialog shows those the installed version does not have.
+    #[serde(default)]
+    pub highlights: Vec<NewHighlight>,
+    /// The newest commits on `main`, newest first, down to at most
+    /// [`MAX_CHANGES`]: the Update dialog lists those after the installed
+    /// version's commit.
+    #[serde(default)]
+    pub changes: Vec<Change>,
     /// The file's minisign signature (the text of a `.minisig` file), by
     /// the update signing key (`packaging/keys/`). Saved beside the
     /// download, where the root update helper checks it once the package
@@ -92,6 +108,30 @@ pub struct Manifest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub minisig: Option<String>,
 }
+
+/// A What's new highlight of a build, as `katna-mail --highlights`
+/// prints it.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct NewHighlight {
+    /// The file's name without `.toml`, such as `2026-09-28-2059-slug`.
+    pub name: String,
+    pub title: String,
+    pub text: String,
+}
+
+/// A commit of a build.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Change {
+    /// The commit's hash, at least its first seven digits.
+    pub commit: String,
+    /// The commit's first line.
+    pub title: String,
+}
+
+/// Most commits a manifest lists.
+pub const MAX_CHANGES: usize = 200;
+/// Most highlights a manifest lists.
+const MAX_HIGHLIGHTS: usize = 50;
 
 /// Largest package accepted, far above Katna's size budgets.
 pub const MAX_SIZE: u64 = 512 * 1024 * 1024;
@@ -101,7 +141,9 @@ impl Manifest {
     /// file name that is not a plain name, a checksum that is not SHA-256,
     /// or a size of nothing or too much.
     pub fn parse(json: &[u8]) -> Option<Self> {
-        let manifest: Self = serde_json::from_slice(json).ok()?;
+        let mut manifest: Self = serde_json::from_slice(json).ok()?;
+        manifest.changes.truncate(MAX_CHANGES);
+        manifest.highlights.truncate(MAX_HIGHLIGHTS);
         let plain_name = !manifest.file.is_empty()
             && manifest
                 .file
@@ -129,6 +171,27 @@ impl Manifest {
     pub fn newer_than(&self, installed: &str) -> bool {
         newer(installed, &self.version)
     }
+
+    /// The commits after `installed`, a version naming its commit, newest
+    /// first, and whether that is all of them: `false` when the installed
+    /// commit is older than the list, or unknown.
+    pub fn changes_since(&self, installed: &str) -> (&[Change], bool) {
+        let at = commit_of(installed).and_then(|commit| {
+            self.changes
+                .iter()
+                .position(|c| c.commit.starts_with(commit) || commit.starts_with(&c.commit))
+        });
+        match at {
+            Some(at) => (&self.changes[..at], true),
+            None => (&self.changes, false),
+        }
+    }
+}
+
+/// The commit a package's version names (`…gHASH`).
+pub fn commit_of(version: &str) -> Option<&str> {
+    let (_, hash) = version.rsplit_once(".g")?;
+    (hash.len() >= 7 && hash.bytes().all(|b| b.is_ascii_hexdigit())).then_some(hash)
 }
 
 /// A version as the packages write it: `X.Y.Z.rN.gHASH` (N commits after
@@ -194,6 +257,41 @@ mod tests {
         let signed = bad("\"size\"", &format!("\"minisig\":{sig:?},\"size\""));
         assert_eq!(signed.unwrap().minisig.as_deref(), Some(sig));
         assert!(bad("\"size\"", "\"minisig\":\"a\\u0000b\",\"size\"").is_none());
+    }
+
+    #[test]
+    fn reads_what_changed() {
+        let json = br#"{"version":"0.0.0.r3.gccccccc","file":"k.pkg.tar.zst",
+            "sha256":"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+            "size":10,"built":1790000000,"commit":"cccccccdddd",
+            "highlights":[{"name":"2026-09-28-2100-x","title":"X","text":"Y"}],
+            "changes":[{"commit":"ccccccc","title":"c"},{"commit":"bbbbbbb","title":"b"},
+                {"commit":"aaaaaaa","title":"a"}]}"#;
+        let manifest = Manifest::parse(json).unwrap();
+        assert_eq!(manifest.built, 1_790_000_000);
+        assert_eq!(manifest.highlights[0].title, "X");
+        fn titles((changes, all): (&[Change], bool)) -> (Vec<&str>, bool) {
+            (changes.iter().map(|c| c.title.as_str()).collect(), all)
+        }
+        assert_eq!(
+            titles(manifest.changes_since("0.0.0.r1.gaaaaaaa")),
+            (vec!["c", "b"], true)
+        );
+        assert_eq!(
+            titles(manifest.changes_since("0.0.0.r3.gccccccc")),
+            (vec![], true)
+        );
+        assert_eq!(
+            titles(manifest.changes_since("0.0.0.r0.g0123456")).0.len(),
+            3
+        );
+        assert!(!manifest.changes_since("dev").1);
+        // A manifest from before these were written still reads.
+        let old = br#"{"version":"0.0.0.r3.gccccccc","file":"k.pkg.tar.zst",
+            "sha256":"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+            "size":10}"#;
+        let old = Manifest::parse(old).unwrap();
+        assert!(old.changes.is_empty() && old.built == 0);
     }
 
     #[test]

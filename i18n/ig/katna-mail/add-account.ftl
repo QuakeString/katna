@@ -23,6 +23,7 @@ add-account-outgoing = Ozi mpụta ({ $protocol })
 add-account-field-server = Sava
 add-account-field-port = Ọdụ
 add-account-security-none = Ọ dịghị
+add-account-security-none-warning = Adịghị ezoro ezo: a pụrụ ịgụ okwuntughe gị na ozi ebe ọ na-aga.
 add-account-field-username = Aha onye ọrụ
 add-account-field-password = Okwuntughe
 add-account-show-password = Gosi okwuntughe

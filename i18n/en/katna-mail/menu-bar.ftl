@@ -49,4 +49,6 @@ desktop-menu-configure = _Configure Katna Mail…
 desktop-menu-help = _Help
 desktop-menu-shortcuts = _Keyboard Shortcuts
 desktop-menu-whats-new = _What's New
+# Opens the Update dialog and looks for a newer version.
+desktop-menu-check-updates = Check for _Updates…
 desktop-menu-about = _About Katna

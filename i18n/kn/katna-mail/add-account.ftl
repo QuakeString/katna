@@ -23,6 +23,7 @@ add-account-outgoing = ಹೊರಹೋಗುವ ಮೇಲ್ ({ $protocol })
 add-account-field-server = ಸರ್ವರ್
 add-account-field-port = ಪೋರ್ಟ್
 add-account-security-none = ಯಾವುದೂ ಇಲ್ಲ
+add-account-security-none-warning = ಎನ್‌ಕ್ರಿಪ್ಟ್ ಆಗಿಲ್ಲ: ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಮತ್ತು ಮೇಲ್ ಮಾರ್ಗಮಧ್ಯದಲ್ಲಿ ಓದಬಹುದು.
 add-account-field-username = ಬಳಕೆದಾರ ಹೆಸರು
 add-account-field-password = ಪಾಸ್‌ವರ್ಡ್
 add-account-show-password = ಪಾಸ್‌ವರ್ಡ್ ತೋರಿಸಿ

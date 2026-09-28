@@ -1051,3 +1051,42 @@ mesej membawa pautannya, seperti dalam Gmail. Ia dikongsi dengan penerima
 anda apabila anda menekan Hantar; Katna hanya bertanya jika seseorang
 tidak boleh diberi akses.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Senarai penerima panjang yang lebih lancar"
+text = """
+Senarai penerima yang panjang kini mempunyai bar tatal sendiri dan
+bergerak satu baris pada satu masa; perbualan hanya menatal selepas
+senarai sampai ke penghujungnya. Menambah penerima tidak lagi
+menyebabkan butang di bawahnya melompat.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Semak mel baharu"
+text = """
+Klik kanan folder atau akaun dalam anak tetingkap folder untuk memilih
+“Semak mel baharu”, “Tandai semua sebagai dibaca”, folder baharu di
+dalamnya atau “Kosongkan Sampah”. “Muat semula” di atas senarai kini
+turut mengambil daripada pelayan. Semasa Katna menyemak, anak panah
+berputar pada “Muat semula” dan di sebelah Peti Masuk, dan “Menyemak mel
+baharu…” dipaparkan di atas jika ia mengambil masa lebih daripada
+seketika.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Fail besar melalui OneDrive"
+text = """
+Akaun Outlook.com, Hotmail dan akaun Microsoft lain kini menghantar fail
+yang melebihi had mel seperti akaun Google: fail dihantar ke OneDrive
+anda sebaik sahaja anda melampirkannya, dan mesej membawa pautannya,
+seperti dalam Outlook.
+"""
+
+["2026-09-28-2108-activity-checking"]
+title = "Tiada lagi kelipan Log masuk dalam Aktiviti"
+text = """
+Sebaik sahaja Katna bermula, Aktiviti memaparkan bar pemuatan nipis
+semasa menyemak akaun Katna anda, bukannya meminta anda log masuk
+seketika. Katna juga menyemak akaun sebaik sahaja bermula, jadi masa
+menunggu lebih singkat.
+"""

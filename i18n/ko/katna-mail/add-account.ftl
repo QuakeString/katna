@@ -23,6 +23,7 @@ add-account-outgoing = 보내는 메일({ $protocol })
 add-account-field-server = 서버
 add-account-field-port = 포트
 add-account-security-none = 없음
+add-account-security-none-warning = 암호화되지 않음: 비밀번호와 메일이 전송 중에 읽힐 수 있습니다.
 add-account-field-username = 사용자 이름
 add-account-field-password = 비밀번호
 add-account-show-password = 비밀번호 표시

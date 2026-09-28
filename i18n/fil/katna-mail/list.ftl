@@ -21,6 +21,7 @@ tab-provider-other = inayos ng Katna
 
 list-select = Piliin
 list-refresh = I-refresh
+list-checking = Tinitingnan kung may bagong mail…
 list-more = Higit pa
 list-mark-read = Markahan bilang nabasa na
 list-mark-unread = Markahan bilang hindi pa nabasa

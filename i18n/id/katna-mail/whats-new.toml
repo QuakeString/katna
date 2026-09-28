@@ -1043,3 +1043,41 @@ membawa link-nya, seperti di Gmail. File dibagikan kepada penerima saat
 Anda menekan Kirim; Katna hanya bertanya jika ada yang tidak dapat diberi
 akses.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Daftar penerima panjang yang lebih mulus"
+text = """
+Daftar penerima yang panjang kini punya bilah gulir sendiri dan bergerak
+satu baris demi satu baris; percakapan baru bergulir setelah daftar
+mencapai ujungnya. Menambah penerima tidak lagi membuat tombol di
+bawahnya melompat.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Periksa email baru"
+text = """
+Klik kanan folder atau akun di panel folder untuk memilih “Periksa email
+baru”, “Tandai semua sudah dibaca”, folder baru di dalamnya, atau
+“Kosongkan Sampah”. “Muat ulang” di atas daftar kini juga mengambil dari
+server. Saat Katna memeriksa, panah berputar di “Muat ulang” dan di
+samping Kotak Masuk, dan “Memeriksa email baru…” muncul di atas jika
+butuh lebih dari sesaat.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "File besar melalui OneDrive"
+text = """
+Akun Outlook.com, Hotmail, dan akun Microsoft lainnya kini mengirim file
+yang melebihi batas email seperti akun Google: file langsung dikirim ke
+OneDrive Anda begitu dilampirkan, dan pesan membawa link-nya, seperti di
+Outlook.
+"""
+
+["2026-09-28-2108-activity-checking"]
+title = "Tak ada lagi kilatan Masuk di Aktivitas"
+text = """
+Tepat setelah Katna dimulai, Aktivitas menampilkan bilah pemuatan tipis
+saat memeriksa akun Katna Anda, bukan sesaat meminta Anda masuk. Katna
+juga memeriksa akun begitu dimulai, sehingga waktu tunggunya lebih
+singkat.
+"""

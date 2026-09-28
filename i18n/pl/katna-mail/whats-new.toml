@@ -1033,3 +1033,41 @@ trafia na Twój Google Drive od razu po dołączeniu, a wiadomość zawiera
 jego link, jak w Gmailu. Po naciśnięciu Wyślij jest udostępniany
 odbiorcom; Katna pyta tylko wtedy, gdy komuś nie można nadać dostępu.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Płynniejsze długie listy odbiorców"
+text = """
+Długa lista odbiorców ma teraz własny pasek przewijania i przesuwa się o
+jeden wiersz naraz, a wątek przewija się dalej dopiero po dojściu do
+końca listy. Dodawanie odbiorców nie powoduje już przeskakiwania
+przycisków poniżej.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Sprawdź nową pocztę"
+text = """
+Kliknij prawym przyciskiem folder lub konto w panelu folderów, aby
+wybrać „Sprawdź nową pocztę”, „Oznacz wszystkie jako przeczytane”, nowy
+folder w środku lub „Opróżnij kosz”. „Odśwież” nad listą pobiera teraz
+dane także z serwera. Gdy Katna sprawdza, strzałki obracają się przy
+„Odśwież” i obok folderu Odebrane, a u góry pojawia się „Sprawdzanie
+nowej poczty…”, jeśli trwa to dłużej niż chwilę.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Duże pliki przez OneDrive"
+text = """
+Konta Outlook.com, Hotmail i inne konta Microsoft wysyłają teraz pliki
+przekraczające limit poczty tak jak konta Google: plik trafia na Twój
+OneDrive od razu po dołączeniu, a wiadomość zawiera jego link, jak w
+Outlooku.
+"""
+
+["2026-09-28-2108-activity-checking"]
+title = "Koniec z mignięciem „Zaloguj się” w Aktywności"
+text = """
+Zaraz po uruchomieniu Katna Aktywność pokazuje cienki pasek ładowania
+podczas sprawdzania konta Katna, zamiast na chwilę prosić o zalogowanie
+się. Katna sprawdza też konto od razu po uruchomieniu, więc czekanie
+jest krótsze.
+"""

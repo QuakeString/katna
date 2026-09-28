@@ -23,6 +23,7 @@ add-account-outgoing = जाने वाला मेल ({ $protocol })
 add-account-field-server = सर्वर
 add-account-field-port = पोर्ट
 add-account-security-none = कोई नहीं
+add-account-security-none-warning = एन्क्रिप्ट नहीं है: आपका पासवर्ड और मेल रास्ते में पढ़े जा सकते हैं।
 add-account-field-username = यूज़र नाम
 add-account-field-password = पासवर्ड
 add-account-show-password = पासवर्ड दिखाएँ

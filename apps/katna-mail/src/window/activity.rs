@@ -794,7 +794,16 @@ impl MailWindow {
             .enumerate()
             .map(|(ix, item)| self.render_item(ix, item, item.seq > menu.seen, th, cx))
             .collect();
+        let checking = self.katna_checking();
         let empty = items.is_empty().then(|| {
+            if checking {
+                return div()
+                    .px(px(24.0))
+                    .py(px(48.0))
+                    .flex()
+                    .justify_center()
+                    .child(self.katna_checking_bar("activity-checking", th));
+            }
             div()
                 .px(px(24.0))
                 .py(px(32.0))
@@ -878,7 +887,7 @@ impl MailWindow {
                     ),
             )
             // New opens and clicks arrive only while signed in.
-            .when(!self.katna_signed_in(), |d| {
+            .when(!checking && !self.katna_signed_in(), |d| {
                 d.child(
                     div()
                         .flex_none()
@@ -1285,8 +1294,17 @@ impl MailWindow {
                                                 .text_color(rgba(th.text_dim))
                                                 .child(span_label),
                                         )
-                                        .when(!self.katna_signed_in(), |d| {
-                                            d.child(self.katna_sign_in_needed(th, cx))
+                                        .map(|d| {
+                                            if self.katna_checking() {
+                                                d.child(self.katna_checking_bar(
+                                                    "activity-report-checking",
+                                                    th,
+                                                ))
+                                            } else if !self.katna_signed_in() {
+                                                d.child(self.katna_sign_in_needed(th, cx))
+                                            } else {
+                                                d
+                                            }
                                         })
                                         .child(summary)
                                         .child(heading(tr!("activity-by-day")))

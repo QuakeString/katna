@@ -23,6 +23,7 @@ add-account-outgoing = Email keluar ({ $protocol })
 add-account-field-server = Server
 add-account-field-port = Port
 add-account-security-none = Tidak ada
+add-account-security-none-warning = Tidak terenkripsi: sandi dan email Anda dapat dibaca di tengah jalan.
 add-account-field-username = Nama pengguna
 add-account-field-password = Sandi
 add-account-show-password = Tampilkan sandi

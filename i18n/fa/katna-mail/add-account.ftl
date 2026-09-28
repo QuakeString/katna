@@ -23,6 +23,7 @@ add-account-outgoing = ایمیل خروجی ({ $protocol })
 add-account-field-server = سرور
 add-account-field-port = درگاه
 add-account-security-none = هیچ
+add-account-security-none-warning = رمزگذاری‌نشده: گذرواژه و ایمیل شما در مسیر قابل خواندن است.
 add-account-field-username = نام کاربری
 add-account-field-password = گذرواژه
 add-account-show-password = نمایش گذرواژه

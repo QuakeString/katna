@@ -530,6 +530,36 @@ fn watches_other_folders_on_a_second_connection() {
 }
 
 #[test]
+fn an_unchanged_look_at_other_folders_leaves_idle_alone() {
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    server.create("Archive", 1);
+    server.deliver("INBOX", "one");
+    let worker = start(
+        &server,
+        WorkerConfig {
+            watch_interval: Some(Duration::from_millis(50)),
+            ..config()
+        },
+    );
+    smol::block_on(async {
+        assert!(matches!(worker.next().await, Event::Connected));
+        assert_eq!(added(&worker.next().await), 1);
+        // The first look is always handed over; let it settle.
+        Timer::after(Duration::from_millis(200)).await;
+        let count = |what: &str| server.log().iter().filter(|c| *c == what).count();
+        let (idles, looks) = (count("IDLE"), count("STATUS Archive"));
+
+        Timer::after(Duration::from_millis(400)).await;
+        // The watcher kept looking, but nothing changed, so the inbox
+        // connection stayed in the same IDLE.
+        assert!(count("STATUS Archive") >= looks + 3);
+        assert_eq!(count("IDLE"), idles);
+        worker.stop().await;
+    });
+}
+
+#[test]
 fn sends_changes_when_asked_and_after_reconnecting() {
     let server = FakeServer::default();
     server.create("INBOX", 1);

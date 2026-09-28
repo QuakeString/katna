@@ -23,6 +23,7 @@ add-account-outgoing = ထွက်သွားသော မေးလ် ({ $pro
 add-account-field-server = ဆာဗာ
 add-account-field-port = ပေါ့တ်
 add-account-security-none = မရှိ
+add-account-security-none-warning = စာဝှက်မထားပါ- သင့်စကားဝှက်နှင့် မေးလ်ကို လမ်းတစ်လျှောက် ဖတ်နိုင်ပါသည်။
 add-account-field-username = အသုံးပြုသူအမည်
 add-account-field-password = စကားဝှက်
 add-account-show-password = စကားဝှက် ပြရန်

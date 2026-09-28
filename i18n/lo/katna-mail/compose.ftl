@@ -74,6 +74,16 @@ compose-drive-share-link = ແບ່ງປັນດ້ວຍລິ້ງ
 compose-drive-send-without = ສົ່ງໂດຍບໍ່ແບ່ງປັນ
 compose-drive-share-cancel = ຍົກເລີກ
 compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } ໃຫຍ່ກວ່າ { $limit } ຈຶ່ງຈະຖືກອັບໂຫຼດໄປທີ່ OneDrive ຂອງທ່ານ ແລະ ຂໍ້ຄວາມຈະມີລິ້ງ
+compose-onedrive-tip = ຢູ່ໃນ OneDrive ຂອງທ່ານ; ຂໍ້ຄວາມຈະມີລິ້ງ
+compose-onedrive-allow = ອະນຸຍາດ OneDrive
+compose-onedrive-allow-tip = ເຂົ້າສູ່ລະບົບດ້ວຍ Microsoft ອີກຄັ້ງ ເພື່ອໃຫ້ Katna ວາງໄຟລ໌ໃຫຍ່ໃນ OneDrive ຂອງທ່ານໄດ້
+compose-onedrive-not-uploaded = { $name } ຍັງບໍ່ຢູ່ໃນ OneDrive
+compose-onedrive-share-failed = ບໍ່ສາມາດແບ່ງປັນໄຟລ໌ໃນ OneDrive ໄດ້: { $error }
+compose-onedrive-share-text = { $count ->
+   *[other] OneDrive ແບ່ງປັນໄຟລ໌ກັບ { $addresses } ບໍ່ໄດ້. ແຕ່ທຸກຄົນທີ່ມີລິ້ງຈະເປີດໄຟລ໌ໄດ້ແທນ.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = ວາງໄຟລ໌ໄວ້ບ່ອນນີ້
 compose-drop-here = ວາງໄວ້ບ່ອນນີ້
 compose-paste-keep-formatting = ຮັກສາການຈັດຮູບແບບ

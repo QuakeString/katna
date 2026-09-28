@@ -23,6 +23,7 @@ add-account-outgoing = 发件（{ $protocol }）
 add-account-field-server = 服务器
 add-account-field-port = 端口
 add-account-security-none = 无
+add-account-security-none-warning = 未加密：你的密码和邮件在传输途中可能被读取。
 add-account-field-username = 用户名
 add-account-field-password = 密码
 add-account-show-password = 显示密码

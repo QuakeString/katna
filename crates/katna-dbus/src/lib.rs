@@ -672,6 +672,12 @@ macro_rules! pim_proxy {
             /// Where an update of Katna stands.
             fn update_status(&self) -> zbus::Result<UpdateStatus>;
 
+            /// What the version on offer brings, as the JSON of its
+            /// `katna_core::update::Manifest`, or empty before a check found
+            /// one. A string, so the manifest can grow without changing the
+            /// interface.
+            fn update_details(&self) -> zbus::Result<String>;
+
             /// Looks for a newer version now, also on a metered connection,
             /// and downloads it when `updates.auto_download` is on.
             fn check_for_update(&self) -> zbus::Result<()>;

@@ -1010,3 +1010,40 @@ Với tài khoản đăng nhập bằng Google, tệp vượt quá giới hạn 
 liên kết của tệp, như trong Gmail. Tệp được chia sẻ với người nhận khi bạn
 nhấn Gửi; Katna chỉ hỏi nếu không thể cấp quyền truy cập cho ai đó.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Danh sách người nhận dài mượt hơn"
+text = """
+Danh sách người nhận dài giờ có thanh cuộn riêng và cuộn từng dòng một;
+cuộc hội thoại chỉ cuộn tiếp khi danh sách đã tới cuối. Thêm người nhận
+không còn làm các nút bên dưới nhảy nữa.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Kiểm tra thư mới"
+text = """
+Nhấp chuột phải vào một thư mục hoặc tài khoản trong ngăn thư mục để
+chọn “Kiểm tra thư mới”, “Đánh dấu tất cả là đã đọc”, thư mục mới bên
+trong hoặc “Dọn sạch Thùng rác”. “Làm mới” phía trên danh sách giờ cũng
+tải từ máy chủ. Khi Katna đang kiểm tra, các mũi tên xoay trên “Làm mới”
+và bên cạnh Hộp thư đến, còn “Đang kiểm tra thư mới…” hiện ở trên cùng
+nếu mất hơn một lúc.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Tệp lớn qua OneDrive"
+text = """
+Các tài khoản Outlook.com, Hotmail và tài khoản Microsoft khác nay gửi
+tệp vượt quá giới hạn thư giống như tài khoản Google: tệp được đưa lên
+OneDrive của bạn ngay khi bạn đính kèm, và thư kèm liên kết của tệp, như
+trong Outlook.
+"""
+
+["2026-09-28-2108-activity-checking"]
+title = "Không còn nháy Đăng nhập trong Hoạt động"
+text = """
+Ngay sau khi Katna khởi động, Hoạt động hiển thị một thanh tải mỏng
+trong khi kiểm tra tài khoản Katna của bạn, thay vì nhắc bạn đăng nhập
+trong chốc lát. Katna cũng kiểm tra tài khoản ngay khi khởi động, nên
+thời gian chờ ngắn hơn.
+"""
