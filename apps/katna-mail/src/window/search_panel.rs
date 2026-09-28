@@ -25,6 +25,10 @@ use dates::{CustomDates, DateError};
 
 /// Width of a field's label.
 const LABEL: f32 = 120.0;
+/// The narrowest the panel gets while the window has room.
+pub(super) const MIN_WIDTH: f32 = 640.0;
+/// Below this width labels go above their fields.
+const STACK_BELOW: f32 = 600.0;
 
 /// "Date within" choices: `newer_than:` values, labeled by
 /// [`within_label`].
@@ -408,7 +412,14 @@ impl MailWindow {
 
     /// Gives From or To the keys for its suggestions, and draws them
     /// under it: Up and Down move, Enter or Tab picks, Escape closes.
-    fn person_row(&self, row: Div, field: Person, th: &Theme, cx: &mut Context<Self>) -> Div {
+    fn person_row(
+        &self,
+        row: Div,
+        field: Person,
+        stacked: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Div {
         let open = move |this: &Self| {
             this.search_panel
                 .as_ref()
@@ -434,8 +445,8 @@ impl MailWindow {
                 self.suggestion_list(
                     &s.items,
                     s.selected,
-                    // Under the field, past its label.
-                    px(LABEL + 16.0),
+                    // Under the field, past its label unless it is above.
+                    px(if stacked { 0.0 } else { LABEL + 16.0 }),
                     Self::pick_person,
                     Self::close_person_suggestions,
                     th,
@@ -533,7 +544,12 @@ impl MailWindow {
     }
 
     /// The file-type chips after "Has attachment", and the Custom field.
-    fn render_attachment_types(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+    fn render_attachment_types(
+        &self,
+        stacked: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
         let panel = self.search_panel.as_ref()?;
         let types = &panel.types;
         let mut chips: Vec<AnyElement> = TYPES
@@ -649,8 +665,8 @@ impl MailWindow {
         });
         Some(
             div()
-                .flex_1()
-                .min_w_0()
+                .when(stacked, |d| d.w_full())
+                .when(!stacked, |d| d.flex_1().min_w_0())
                 .flex()
                 .flex_col()
                 .gap(px(8.0))
@@ -667,34 +683,44 @@ impl MailWindow {
         )
     }
 
+    /// The panel, `left` in from the window's start and `width` wide,
+    /// at most `height` tall (it scrolls beyond); in a narrow window labels
+    /// go above their fields.
     pub(super) fn render_search_panel(
         &mut self,
         th: &Theme,
         left: f32,
         width: f32,
+        height: f32,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let t = self.search_panel_spring.value().clamp(0.0, 1.0);
         let panel = self.search_panel.as_ref()?;
-        let field = |label: String, input: &Entity<TextInput>| {
+        let stacked = width < STACK_BELOW;
+        let caption = |text: String| {
+            div()
+                .when(!stacked, |d| d.w(px(LABEL)))
+                .flex_none()
+                .text_size(px(14.0))
+                .text_color(rgba(th.text_dim))
+                .child(text)
+        };
+        // A label and what it labels: side by side, or one above the other.
+        let row = || {
             div()
                 .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(16.0))
+                .when(stacked, |d| d.flex_col().gap(px(2.0)))
+                .when(!stacked, |d| d.flex_row().gap(px(16.0)))
+        };
+        let field = |text: String, input: &Entity<TextInput>| {
+            row()
+                .when(!stacked, |d| d.items_center())
+                .child(caption(text))
                 .child(
                     div()
-                        .w(px(LABEL))
-                        .flex_none()
-                        .text_size(px(14.0))
-                        .text_color(rgba(th.text_dim))
-                        .child(label),
-                )
-                .child(
-                    div()
-                        .flex_1()
-                        .min_w_0()
+                        .when(stacked, |d| d.w_full())
+                        .when(!stacked, |d| d.flex_1().min_w_0())
                         .h(px(36.0))
                         .flex()
                         .items_center()
@@ -748,15 +774,17 @@ impl MailWindow {
         );
         let from = field(tr!("search-from"), &panel.from);
         let to = field(tr!("search-to"), &panel.to);
-        let from = self.person_row(from, Person::From, th, cx);
-        let to = self.person_row(to, Person::To, th, cx);
+        let from = self.person_row(from, Person::From, stacked, th, cx);
+        let to = self.person_row(to, Person::To, stacked, th, cx);
         let popover = self.render_custom_popover(th, window, cx);
         let attachment = panel.attachment;
-        let types = self.render_attachment_types(th, cx);
+        let types = self.render_attachment_types(stacked, th, cx);
         let body = div()
             .id("search-panel")
             .occlude()
             .w(px(width))
+            .max_h(px(height))
+            .overflow_y_scroll()
             .p(px(24.0))
             .pt(px(12.0))
             .flex()
@@ -794,24 +822,15 @@ impl MailWindow {
             .child(field(tr!("search-has-words"), &panel.words))
             .child(field(tr!("search-without"), &panel.without))
             .child(
-                div()
+                row()
                     .pt(px(8.0))
-                    .flex()
-                    .flex_row()
+                    .when(stacked, |d| d.gap(px(8.0)))
                     .items_start()
-                    .gap(px(16.0))
+                    .child(caption(tr!("search-date-within")).when(!stacked, |d| d.pt(px(4.0))))
                     .child(
                         div()
-                            .w(px(120.0))
-                            .pt(px(4.0))
-                            .flex_none()
-                            .text_size(px(14.0))
-                            .text_color(rgba(th.text_dim))
-                            .child(tr!("search-date-within")),
-                    )
-                    .child(
-                        div()
-                            .flex_1()
+                            .when(stacked, |d| d.w_full())
+                            .when(!stacked, |d| d.flex_1())
                             .flex()
                             .flex_row()
                             .flex_wrap()
@@ -820,12 +839,10 @@ impl MailWindow {
                     ),
             )
             .child(
-                div()
+                row()
                     .pt(px(8.0))
-                    .flex()
-                    .flex_row()
+                    .when(stacked, |d| d.gap(px(8.0)))
                     .items_start()
-                    .gap(px(16.0))
                     .child(
                         div()
                             .id("has-attachment")
