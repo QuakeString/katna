@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Katna for Windows"
+text = """
+Katna Mail now runs on Windows 10 and 11 too, installed by its own Katna
+Setup, with the tray icon, notifications, start at login and mail links
+opening in Katna.
+"""

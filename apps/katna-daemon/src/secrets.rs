@@ -212,15 +212,12 @@ impl Secrets {
     }
 }
 
-/// Katna's entries in the Windows Credential Manager. Each is a generic
-/// credential named `<user>.in.invenia.katna`, kept on this computer only.
+/// The daemon's view of the Windows Credential Manager
+/// ([`katna_platform::credentials`]).
 #[cfg(windows)]
 mod windows {
-    use std::{collections::HashMap, sync::Arc};
-
-    use katna_core::{AccountId, ids};
-    use keyring_core::{Entry, api::CredentialStoreApi};
-    use windows_native_keyring_store::Store as WinStore;
+    use katna_core::AccountId;
+    use katna_platform::credentials::Credentials;
 
     use super::Error;
 
@@ -232,51 +229,27 @@ mod windows {
         format!("account-{account}")
     }
 
-    fn error(err: keyring_core::Error) -> Error {
-        Error(format!("Credential Manager: {err}"))
-    }
-
-    pub struct Store(Arc<WinStore>);
+    pub struct Store(Credentials);
 
     impl Store {
         pub fn new() -> Result<Self, Error> {
-            WinStore::new().map(Self).map_err(error)
-        }
-
-        fn entry(&self, user: &str) -> Result<Entry, Error> {
-            let local = HashMap::from([("persistence", "Local")]);
-            self.0.build(ids::PREFIX, user, Some(&local)).map_err(error)
+            Credentials::open().map(Self).map_err(Error)
         }
 
         pub async fn get(&self, user: &str) -> Result<Option<String>, Error> {
-            match self.entry(user)?.get_password() {
-                Ok(password) => Ok(Some(password)),
-                Err(keyring_core::Error::NoEntry) => Ok(None),
-                Err(err) => Err(error(err)),
-            }
+            self.0.get(user).map_err(Error)
         }
 
         pub async fn set(&self, user: &str, password: &str) -> Result<(), Error> {
-            self.entry(user)?.set_password(password).map_err(error)
+            self.0.set(user, password).map_err(Error)
         }
 
         pub async fn delete(&self, user: &str) -> Result<(), Error> {
-            match self.entry(user)?.delete_credential() {
-                Ok(()) | Err(keyring_core::Error::NoEntry) => Ok(()),
-                Err(err) => Err(error(err)),
-            }
+            self.0.delete(user).map_err(Error)
         }
 
         pub async fn delete_all(&self) -> Result<(), Error> {
-            let pattern = format!(r"^.+\.{}$", ids::PREFIX.replace('.', r"\."));
-            let spec = HashMap::from([("pattern", pattern.as_str())]);
-            for entry in self.0.search(&spec).map_err(error)? {
-                match entry.delete_credential() {
-                    Ok(()) | Err(keyring_core::Error::NoEntry) => {}
-                    Err(err) => return Err(error(err)),
-                }
-            }
-            Ok(())
+            self.0.delete_all().map_err(Error)
         }
     }
 }

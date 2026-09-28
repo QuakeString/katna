@@ -4,6 +4,8 @@
 //! See `docs/ARCHITECTURE.md` §13.2 and §15.
 
 pub mod colors;
+#[cfg(windows)]
+pub mod credentials;
 pub mod dbusmenu;
 pub mod font;
 pub mod icon;

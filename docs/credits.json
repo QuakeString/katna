@@ -724,6 +724,16 @@
       "repository": "https://github.com/greyblake/whatlang-rs"
     },
     {
+      "name": "winresource",
+      "version": "0.1.31",
+      "description": "Create and set windows icons and metadata for executables",
+      "license": "MIT",
+      "authors": [
+        "Max Resch"
+      ],
+      "repository": "https://github.com/BenjaminRi/winresource"
+    },
+    {
       "name": "writeable",
       "version": "0.6.4",
       "description": "A more efficient alternative to fmt::Display",

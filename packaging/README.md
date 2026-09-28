@@ -14,6 +14,7 @@ Files that distribution packages install, and the Arch Linux package.
 | `icons/<mail app ID>.svg` | `/usr/share/icons/hicolor/scalable/apps/` |
 | `icons/hicolor/<N>x<N>/apps/<mail app ID>.png` | `/usr/share/icons/hicolor/<N>x<N>/apps/` |
 | `arch/PKGBUILD` | Arch Linux package `katna-git` |
+| `windows/` | Katna Setup for Windows (`windows/README.md`) |
 
 The file names are the IDs from `katna_core::ids` (`in.invenia.katna.Mail`,
 `in.invenia.katna.Daemon`). `crates/katna-core/tests/packaging.rs` checks

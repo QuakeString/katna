@@ -74,8 +74,11 @@ winreg = "0.56"
 # Windows tray icon, its menu and the message loop they need (katna-platform).
 tray-icon = { version = "0.25", default-features = false }
 winit = { version = "0.30", default-features = false }
-# Windows toasts (katna-notify).
+# Windows toasts (katna-platform).
 tauri-winrt-notification = "0.8"
+# Katna Setup: the Start menu shortcut, and the icon of Windows programs.
+mslnk = "0.1.8"
+winresource = "0.1.31"
 rusqlite = { version = "0.40", features = ["bundled"] }
 # Password prompts without echo (katnactl).
 rpassword = "7.5"
