@@ -725,6 +725,7 @@ impl MailWindow {
                 }),
             ),
             Menu::ListMore | Menu::ReaderMore => {
+                let squeeze = (which == Menu::ReaderMore).then(|| self.reader_squeeze(th));
                 let targets = if which == Menu::ListMore && self.checked.is_empty() {
                     None
                 } else {
@@ -745,28 +746,31 @@ impl MailWindow {
                     ),
                     Some(()) => menu(th)
                         // What a narrow reading pane leaves off its toolbar.
-                        .when(
-                            which == Menu::ReaderMore && self.reader_squeeze().spam,
-                            |d| {
-                                d.child(
-                                    menu_item_icon("more-spam", "junk", &self.spam_label(true), th)
-                                        .on_click(cx.listener(|this, _, _, cx| {
-                                            this.act_on_targets(Act::Spam, cx)
-                                        })),
-                                )
-                            },
-                        )
-                        .when(
-                            which == Menu::ReaderMore && self.reader_squeeze().delete,
-                            |d| {
-                                d.child(
-                                    menu_item_icon("more-delete", "trash", &tr!("menu-delete"), th)
-                                        .on_click(cx.listener(|this, _, _, cx| {
-                                            this.act_on_targets(Act::Delete, cx)
-                                        })),
-                                )
-                            },
-                        )
+                        .when(squeeze.is_some_and(|s| s.spam), |d| {
+                            d.child(
+                                menu_item_icon("more-spam", "junk", &self.spam_label(true), th)
+                                    .on_click(cx.listener(|this, _, _, cx| {
+                                        this.act_on_targets(Act::Spam, cx)
+                                    })),
+                            )
+                        })
+                        .when(squeeze.is_some_and(|s| s.delete), |d| {
+                            d.child(
+                                menu_item_icon("more-delete", "trash", &tr!("menu-delete"), th)
+                                    .on_click(cx.listener(|this, _, _, cx| {
+                                        this.act_on_targets(Act::Delete, cx)
+                                    })),
+                            )
+                        })
+                        .when(squeeze.is_some_and(|s| s.move_to), |d| {
+                            d.child(
+                                menu_item_icon("more-move-to", "move-to", &tr!("menu-move-to"), th)
+                                    .on_click(cx.listener(|this, _, _, cx| {
+                                        this.menu = Some(Menu::MoveTo);
+                                        cx.notify();
+                                    })),
+                            )
+                        })
                         .child(
                             menu_item_icon("more-read", "mark-read", &tr!("menu-mark-read"), th)
                                 .on_click(cx.listener(|this, _, _, cx| {
@@ -859,6 +863,62 @@ impl MailWindow {
                                         ),
                                     )
                                 })
+                                .when(
+                                    squeeze.is_some_and(|s| s.contact)
+                                        && self
+                                            .contact_fits(self.cards_width + self.contact_room()),
+                                    |d| {
+                                        let on = self.config.mail.contact_panel;
+                                        d.child(
+                                            menu_item_icon(
+                                                "more-contact",
+                                                "contacts",
+                                                &if on {
+                                                    tr!("contact-panel-hide")
+                                                } else {
+                                                    tr!("contact-panel-show")
+                                                },
+                                                th,
+                                            )
+                                            .on_click(
+                                                cx.listener(|this, _, _, cx| {
+                                                    this.menu = None;
+                                                    this.toggle_contact_panel(cx);
+                                                }),
+                                            ),
+                                        )
+                                    },
+                                )
+                                .when(
+                                    squeeze.is_some_and(|s| s.colors)
+                                        && self.original_colors_offered(th),
+                                    |d| {
+                                        let on =
+                                            self.reader.as_ref().is_some_and(|r| r.original_colors);
+                                        d.child(
+                                            menu_item_icon(
+                                                "more-colors",
+                                                "contrast",
+                                                &if on {
+                                                    tr!("reader-dark-colors")
+                                                } else {
+                                                    tr!("reader-original-colors")
+                                                },
+                                                th,
+                                            )
+                                            .on_click(
+                                                cx.listener(|this, _, _, cx| {
+                                                    this.menu = None;
+                                                    if let Some(reader) = &mut this.reader {
+                                                        reader.original_colors =
+                                                            !reader.original_colors;
+                                                    }
+                                                    cx.notify();
+                                                }),
+                                            ),
+                                        )
+                                    },
+                                )
                         }),
                 }
             }
