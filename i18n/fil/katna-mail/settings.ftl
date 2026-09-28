@@ -8,7 +8,7 @@ settings-tab-general = Pangkalahatan
 settings-tab-inbox = Inbox
 settings-tab-accounts = Mga Account
 settings-tab-katna-account = Katna account
-settings-tab-subscriptions = Mga Subscription
+settings-tab-subscriptions = Subscription
 settings-tab-appearance = Hitsura
 settings-tab-shortcuts = Mga Shortcut
 settings-tab-default-apps = Mga default na app
@@ -20,7 +20,6 @@ settings-tab-experimental = Pang-eksperimento
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = Tingnan ang mga newsletter at mailing list na natatanggap mo, at mag-unsubscribe sa isang click.
 settings-tab-folders-rules-coming = Gumawa, mag-rename, maglipat at magtago ng mga folder at label, at piliin kung alin ang magsi-sync. Kusang inaayos, nilalagyan ng label, ipinapasa o dine-delete ng mga panuntunan ang bagong mail, ayon sa nagpadala, subject o mga salita.
 settings-tab-mcp-server-coming = Payagan ang mga AI assistant sa computer na ito na maghanap, magbasa at mag-draft ng iyong mail, nang may pahintulot mo.
 

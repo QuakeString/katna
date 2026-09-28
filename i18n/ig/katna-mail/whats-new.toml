@@ -440,7 +440,7 @@ n'agba zuru ezu.
 title = "Zụtara m kọfị"
 text = """
 Ọ bụrụ na Katna bara uru nye gị, Maka Katna nwere bọtịnụ Zụtara m kọfị
-ugbu a, ya na koodu QR iji mepee otu ibe ahụ na ekwentị gị.
+ugbu a.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -596,7 +596,7 @@ na-ewepụ ya.
 ["2026-09-27-1722-katna-account"]
 title = "Akaụntụ Katna"
 text = """
-Ntọala > Akaụntụ Katna na-enye gị ohere imepụta akaụntụ na sava nke Katna
+Ntọala > Ndenye aha na-enye gị ohere imepụta akaụntụ na sava nke Katna
 n'onwe ya, nwere okwuntughe nke ya, ọ bụghị okwuntughe ozi. Atụmatụ
 ịntanetị nke Katna, dịka akara na-egosi na a gụrụ ozi na nsochi njikọ, ga-achọ
 ya. Ị nwere ike ịhụ kọmputa ndị banyere ma pụpụ nke ọ bụla n'ime ha.
@@ -638,7 +638,7 @@ Gbanye anya dị n'akụkụ ndị nnata iji hụ mgbe onye ọ bụla mepere oz
 ma ọ bụ soro njikọ dị n'ime ya, ma ọ bụ rịọ akara na-egosi na a gụrụ ozi
 kama. Ozi ezigara na-egosi onye mepere ya, ọkwa na-agwakwa gị oge mbụ.
 Ha abụọ gbanyụrụ maka ozi ọhụrụ ọ bụla, ịsochi chọkwara akaụntụ Katna
-(Ntọala > Akaụntụ Katna).
+(Ntọala > Ndenye aha).
 """
 
 ["2026-09-27-2042-activity"]

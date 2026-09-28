@@ -1,9 +1,9 @@
-# Katna Mail, English: Settings > Katna account.
+# Katna Mail, English: Settings > Subscription (the Katna account).
 # Guide: i18n/README.md. Keep ids stable; change the text freely.
 # A Katna account is an account on Katna's own server (Katna Server),
 # needed for its features. It is not a mail account.
 
-## Settings > Katna account
+## Settings > Subscription: the Katna account
 
 # At the top of the page.
 katna-intro = A Katna account turns on Katna's online features: read receipts, link tracking, Activity and automatic translation. Its password is its own, not a mail password, and your mail logins never leave this computer.

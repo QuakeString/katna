@@ -69,8 +69,7 @@ pub(super) enum Section {
     General,
     Inbox,
     Accounts,
-    /// Katna account: sign-in for Katna Server's features.
-    KatnaAccount,
+    /// Subscription: the Katna account, sign-in for Katna Server's features.
     Subscriptions,
     Appearance,
     Shortcuts,
@@ -85,11 +84,10 @@ pub(super) enum Section {
 }
 
 impl Section {
-    pub(super) const ALL: [Self; 13] = [
+    pub(super) const ALL: [Self; 12] = [
         Self::General,
         Self::Inbox,
         Self::Accounts,
-        Self::KatnaAccount,
         Self::Subscriptions,
         Self::Appearance,
         Self::Shortcuts,
@@ -106,7 +104,6 @@ impl Section {
             Self::General => tr!("settings-tab-general"),
             Self::Inbox => tr!("settings-tab-inbox"),
             Self::Accounts => tr!("settings-tab-accounts"),
-            Self::KatnaAccount => tr!("settings-tab-katna-account"),
             Self::Subscriptions => tr!("settings-tab-subscriptions"),
             Self::Appearance => tr!("settings-tab-appearance"),
             Self::Shortcuts => tr!("settings-tab-shortcuts"),
@@ -415,16 +412,14 @@ impl MailWindow {
             Section::General => self.general_section(th, cx),
             Section::Inbox => self.inbox_section(th, cx),
             Section::Accounts => self.accounts_section(th, cx),
-            Section::KatnaAccount => self.katna_section(th, window, cx),
+            Section::Subscriptions => self.katna_section(th, window, cx),
             Section::Appearance => self.appearance_section(th, cx),
             Section::Signatures => self.signatures_section(th, cx),
             Section::DefaultApps => self.default_apps_section(th, cx),
             Section::Shortcuts => self.shortcuts_section(th, cx),
             Section::Experimental => self.experimental_section(th, cx),
             Section::Feedback => self.feedback_section(th, cx),
-            Section::Subscriptions | Section::MailRules | Section::McpServer => {
-                self.coming_soon_section(section, th)
-            }
+            Section::MailRules | Section::McpServer => self.coming_soon_section(section, th),
         };
         // On a phone the page fills the window below the top bar, like the
         // list, and its sides come in closer.

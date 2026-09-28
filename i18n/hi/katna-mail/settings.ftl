@@ -8,7 +8,7 @@ settings-tab-general = सामान्य
 settings-tab-inbox = इनबॉक्स
 settings-tab-accounts = खाते
 settings-tab-katna-account = Katna खाता
-settings-tab-subscriptions = सदस्यताएं
+settings-tab-subscriptions = सदस्यता
 settings-tab-appearance = रूप-रंग
 settings-tab-shortcuts = शॉर्टकट
 settings-tab-default-apps = डिफ़ॉल्ट ऐप
@@ -20,7 +20,6 @@ settings-tab-experimental = प्रयोगात्मक
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = आपको मिलने वाले न्यूज़लेटर और मेलिंग लिस्ट देखें, और एक क्लिक में सदस्यता छोड़ें।
 settings-tab-folders-rules-coming = फ़ोल्डर और लेबल बनाएं, उनका नाम बदलें, उन्हें ले जाएं और छिपाएं, और चुनें कि कौन-से सिंक हों। नियम नए मेल को भेजने वाले, विषय या शब्दों के हिसाब से अपने-आप छांटते हैं, उन पर लेबल लगाते हैं, उन्हें फ़ॉरवर्ड करते हैं या मिटाते हैं।
 settings-tab-mcp-server-coming = इस कंप्यूटर पर मौजूद AI असिस्टेंट को, आपकी मंज़ूरी से, आपका मेल खोजने, पढ़ने और उसके ड्राफ़्ट लिखने दें।
 

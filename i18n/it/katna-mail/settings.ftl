@@ -8,7 +8,7 @@ settings-tab-general = Generali
 settings-tab-inbox = Posta in arrivo
 settings-tab-accounts = Account
 settings-tab-katna-account = Account Katna
-settings-tab-subscriptions = Iscrizioni
+settings-tab-subscriptions = Abbonamento
 settings-tab-appearance = Aspetto
 settings-tab-shortcuts = Scorciatoie
 settings-tab-default-apps = App predefinite
@@ -20,7 +20,6 @@ settings-tab-experimental = Sperimentali
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = Visualizza le newsletter e le mailing list che ricevi e annulla l’iscrizione con un clic.
 settings-tab-folders-rules-coming = Crea, rinomina, sposta e nascondi cartelle ed etichette e scegli quali sincronizzare. Le regole ordinano, etichettano, inoltrano o eliminano automaticamente la nuova posta, in base a mittente, oggetto o parole.
 settings-tab-mcp-server-coming = Consenti agli assistenti IA su questo computer di cercare, leggere e scrivere bozze della tua posta, con il tuo consenso.
 

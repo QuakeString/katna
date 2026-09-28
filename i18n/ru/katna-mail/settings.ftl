@@ -8,7 +8,7 @@ settings-tab-general = Общие
 settings-tab-inbox = Входящие
 settings-tab-accounts = Аккаунты
 settings-tab-katna-account = Аккаунт Katna
-settings-tab-subscriptions = Подписки
+settings-tab-subscriptions = Подписка
 settings-tab-appearance = Внешний вид
 settings-tab-shortcuts = Быстрые клавиши
 settings-tab-default-apps = Приложения по умолчанию
@@ -20,7 +20,6 @@ settings-tab-experimental = Экспериментальные
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = Смотрите, какие рассылки и списки рассылки вы получаете, и отписывайтесь в один клик.
 settings-tab-folders-rules-coming = Создавайте, переименовывайте, перемещайте и скрывайте папки и ярлыки, выбирайте, какие из них синхронизировать. Правила сами сортируют, помечают ярлыками, пересылают или удаляют новые письма — по отправителю, теме или словам.
 settings-tab-mcp-server-coming = Разрешите ИИ-помощникам на этом компьютере искать, читать и составлять черновики ваших писем — с вашего согласия.
 

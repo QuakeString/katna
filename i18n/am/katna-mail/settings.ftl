@@ -8,7 +8,7 @@ settings-tab-general = አጠቃላይ
 settings-tab-inbox = ገቢ መልዕክት ሳጥን
 settings-tab-accounts = መለያዎች
 settings-tab-katna-account = የKatna መለያ
-settings-tab-subscriptions = ምዝገባዎች
+settings-tab-subscriptions = የደንበኝነት ምዝገባ
 settings-tab-appearance = መልክ
 settings-tab-shortcuts = አቋራጮች
 settings-tab-default-apps = ነባሪ መተግበሪያዎች
@@ -20,7 +20,6 @@ settings-tab-experimental = የሙከራ
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = የሚደርሱዎትን ጋዜጣዎች እና የደብዳቤ ዝርዝሮች ይመልከቱ፣ እና በአንድ ጠቅታ ከደንበኝነት ይውጡ።
 settings-tab-folders-rules-coming = አቃፊዎችን እና መሰየሚያዎችን ይፍጠሩ፣ እንደገና ይሰይሙ፣ ያንቀሳቅሱ እና ይደብቁ፣ እና የትኞቹ እንደሚሰምሩ ይምረጡ። ደንቦች አዲስ ደብዳቤን በራሳቸው በላኪ፣ በርዕሰ ጉዳይ ወይም በቃላት ይለያሉ፣ ይሰይማሉ፣ ያስተላልፋሉ ወይም ይሰርዛሉ።
 settings-tab-mcp-server-coming = በዚህ ኮምፒውተር ላይ ያሉ የAI ረዳቶች ደብዳቤዎን እንዲፈልጉ፣ እንዲያነቡ እና ረቂቅ እንዲጽፉ ይፍቀዱ፣ በእርስዎ ፈቃድ።
 

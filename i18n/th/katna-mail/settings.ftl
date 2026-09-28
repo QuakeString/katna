@@ -8,7 +8,7 @@ settings-tab-general = ทั่วไป
 settings-tab-inbox = กล่องจดหมาย
 settings-tab-accounts = บัญชี
 settings-tab-katna-account = บัญชี Katna
-settings-tab-subscriptions = การสมัครรับข้อมูล
+settings-tab-subscriptions = การสมัครสมาชิก
 settings-tab-appearance = ลักษณะที่ปรากฏ
 settings-tab-shortcuts = แป้นพิมพ์ลัด
 settings-tab-default-apps = แอปเริ่มต้น
@@ -20,7 +20,6 @@ settings-tab-experimental = ทดลอง
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = ดูจดหมายข่าวและรายชื่ออีเมลที่คุณได้รับ และยกเลิกการสมัครได้ในคลิกเดียว
 settings-tab-folders-rules-coming = สร้าง เปลี่ยนชื่อ ย้าย และซ่อนโฟลเดอร์และป้ายกำกับ และเลือกว่าจะซิงค์รายการใด กฎจะจัดเรียง ติดป้ายกำกับ ส่งต่อ หรือลบอีเมลใหม่โดยอัตโนมัติ ตามผู้ส่ง หัวเรื่อง หรือคำ
 settings-tab-mcp-server-coming = ให้ผู้ช่วย AI ในคอมพิวเตอร์เครื่องนี้ค้นหา อ่าน และร่างอีเมลของคุณได้ โดยคุณเป็นผู้อนุญาต
 

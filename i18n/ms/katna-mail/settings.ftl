@@ -20,7 +20,6 @@ settings-tab-experimental = Percubaan
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = Lihat surat berita dan senarai mel yang anda terima, dan nyahlanggan dengan satu klik.
 settings-tab-folders-rules-coming = Cipta, namakan semula, alihkan dan sembunyikan folder dan label, dan pilih yang mana disegerakkan. Peraturan mengisih, melabel, memajukan atau memadam mel baharu dengan sendirinya, mengikut pengirim, subjek atau perkataan.
 settings-tab-mcp-server-coming = Benarkan pembantu AI pada komputer ini mencari, membaca dan mendraf mel anda, dengan kebenaran anda.
 

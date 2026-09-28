@@ -111,6 +111,71 @@ pub struct AccountSettings {
     /// What a POP3 account leaves on the server.
     #[serde(skip_serializing_if = "Pop3Keep::is_default")]
     pub pop3_keep: Pop3Keep,
+    /// Signs in through this provider with OAuth2 instead of a password;
+    /// the Secret Service then keeps the refresh token.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub oauth: Option<OAuthProvider>,
+}
+
+/// A provider Katna signs in to with OAuth2 (`docs/ARCHITECTURE.md` §6.4).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum OAuthProvider {
+    /// Gmail and Google Workspace.
+    Google,
+    /// Outlook.com, Hotmail and Microsoft 365.
+    Microsoft,
+}
+
+impl OAuthProvider {
+    pub const ALL: [Self; 2] = [Self::Google, Self::Microsoft];
+
+    /// Stable name used in settings and on D-Bus.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Google => "google",
+            Self::Microsoft => "microsoft",
+        }
+    }
+
+    /// The provider's own name, for "Sign in with …".
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::Google => "Google",
+            Self::Microsoft => "Microsoft",
+        }
+    }
+
+    /// The client ID from [`crate::ids`]; empty when this build cannot
+    /// sign in to the provider.
+    pub fn client_id(self) -> &'static str {
+        match self {
+            Self::Google => crate::ids::GOOGLE_OAUTH_CLIENT_ID,
+            Self::Microsoft => crate::ids::MICROSOFT_OAUTH_CLIENT_ID,
+        }
+    }
+
+    /// Whether this build can sign in to the provider.
+    pub fn available(self) -> bool {
+        !self.client_id().is_empty()
+    }
+}
+
+impl fmt::Display for OAuthProvider {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+impl FromStr for OAuthProvider {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Self::ALL
+            .into_iter()
+            .find(|provider| provider.as_str() == s)
+            .ok_or_else(|| format!("unknown sign-in provider {s:?} (google or microsoft)"))
+    }
 }
 
 /// What a POP3 account leaves on the server once mail is downloaded.
@@ -268,6 +333,24 @@ mod tests {
             serde_json::to_string(&settings).unwrap(),
             r#"{"pop3_keep":{"leave_on_server":false,"delete_with_local":true}}"#
         );
+    }
+
+    #[test]
+    fn oauth_provider_is_stored_by_name() {
+        let settings = AccountSettings {
+            oauth: Some(OAuthProvider::Microsoft),
+            ..AccountSettings::default()
+        };
+        let json = serde_json::to_string(&settings).unwrap();
+        assert_eq!(json, r#"{"oauth":"microsoft"}"#);
+        assert_eq!(
+            serde_json::from_str::<AccountSettings>(&json).unwrap(),
+            settings
+        );
+        for provider in OAuthProvider::ALL {
+            assert_eq!(provider.as_str().parse(), Ok(provider));
+        }
+        assert!("yahoo".parse::<OAuthProvider>().is_err());
     }
 
     #[test]

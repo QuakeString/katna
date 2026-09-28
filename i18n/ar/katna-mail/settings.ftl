@@ -8,7 +8,7 @@ settings-tab-general = عام
 settings-tab-inbox = البريد الوارد
 settings-tab-accounts = الحسابات
 settings-tab-katna-account = حساب Katna
-settings-tab-subscriptions = الاشتراكات
+settings-tab-subscriptions = الاشتراك
 settings-tab-appearance = المظهر
 settings-tab-shortcuts = الاختصارات
 settings-tab-default-apps = التطبيقات التلقائية
@@ -20,7 +20,6 @@ settings-tab-experimental = تجريبي
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = اطّلع على النشرات الإخبارية والقوائم البريدية التي تصلك، وألغِ الاشتراك بنقرة واحدة.
 settings-tab-folders-rules-coming = أنشئ المجلدات والتصنيفات وأعِد تسميتها وانقلها وأخفِها، واختر ما تتم مزامنته منها. تفرز القواعد البريد الجديد وتصنّفه وتعيد توجيهه أو تحذفه تلقائيًا، حسب المُرسِل أو الموضوع أو الكلمات.
 settings-tab-mcp-server-coming = اسمح لمساعدي الذكاء الاصطناعي على هذا الكمبيوتر بالبحث في بريدك وقراءته وكتابة مسودات الرسائل، بموافقتك.
 

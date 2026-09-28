@@ -8,7 +8,7 @@ settings-tab-general = عمومی
 settings-tab-inbox = صندوق ورودی
 settings-tab-accounts = حساب‌ها
 settings-tab-katna-account = حساب Katna
-settings-tab-subscriptions = اشتراک‌ها
+settings-tab-subscriptions = اشتراک
 settings-tab-appearance = ظاهر
 settings-tab-shortcuts = میان‌برها
 settings-tab-default-apps = برنامه‌های پیش‌فرض
@@ -20,7 +20,6 @@ settings-tab-experimental = آزمایشی
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = خبرنامه‌ها و فهرست‌های پستی‌ای را که دریافت می‌کنید ببینید و با یک کلیک اشتراکشان را لغو کنید.
 settings-tab-folders-rules-coming = پوشه‌ها و برچسب‌ها را بسازید، نامشان را تغییر دهید، جابه‌جا یا پنهانشان کنید و انتخاب کنید کدام‌ها همگام شوند. قوانین، ایمیل‌های جدید را خودکار بر اساس فرستنده، موضوع یا کلمات مرتب می‌کنند، برچسب می‌زنند، بازارسال یا حذف می‌کنند.
 settings-tab-mcp-server-coming = به دستیارهای هوش مصنوعی روی این رایانه اجازه دهید با نظر شما ایمیل‌هایتان را جستجو کنند، بخوانند و پیش‌نویس بنویسند.
 

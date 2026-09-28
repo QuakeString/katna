@@ -8,7 +8,7 @@ settings-tab-general = Algemeen
 settings-tab-inbox = Inkassie
 settings-tab-accounts = Rekeninge
 settings-tab-katna-account = Katna-rekening
-settings-tab-subscriptions = Intekeninge
+settings-tab-subscriptions = Intekening
 settings-tab-appearance = Voorkoms
 settings-tab-shortcuts = Kortpaaie
 settings-tab-default-apps = Verstekprogramme
@@ -20,7 +20,6 @@ settings-tab-experimental = Eksperimenteel
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = Sien die nuusbriewe en poslyste wat jy kry, en beëindig jou intekening met een klik.
 settings-tab-folders-rules-coming = Skep, hernoem, skuif en versteek vouers en etikette, en kies watter een sinkroniseer. Reëls sorteer, etiketteer, stuur aan of vee nuwe e-pos vanself uit, volgens sender, onderwerp of woorde.
 settings-tab-mcp-server-coming = Laat KI-assistente op hierdie rekenaar jou e-pos deursoek, lees en konsepte skryf, met jou toestemming.
 

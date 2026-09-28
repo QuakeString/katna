@@ -458,7 +458,7 @@ pełny kolor.
 title = "Postaw mi kawę"
 text = """
 Jeśli Katna Ci się przydaje, w oknie O Katna jest teraz przycisk Postaw
-mi kawę i kod QR, który otwiera tę samą stronę na telefonie.
+mi kawę.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -616,7 +616,7 @@ plakietki pokazuje x, które ją usuwa.
 ["2026-09-27-1722-katna-account"]
 title = "Konto Katna"
 text = """
-Ustawienia > Konto Katna pozwalają utworzyć konto na własnym serwerze
+Ustawienia > Subskrypcja pozwalają utworzyć konto na własnym serwerze
 Katna, z osobnym hasłem, nigdy hasłem do poczty. Będą go potrzebować
 funkcje online Katna, takie jak potwierdzenia przeczytania i śledzenie
 linków. Widać tam komputery, na których się zalogowano, i każdy z nich
@@ -660,7 +660,7 @@ wiadomość lub klika zawarty w niej link, albo poproś zamiast tego o
 potwierdzenie przeczytania. Wysłana poczta pokazuje, kto ją otworzył, a
 powiadomienie informuje o tym za pierwszym razem. Obie funkcje są
 wyłączone dla każdej nowej wiadomości, a śledzenie wymaga konta Katna
-(Ustawienia > Konto Katna).
+(Ustawienia > Subskrypcja).
 """
 
 ["2026-09-27-2042-activity"]

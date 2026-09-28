@@ -19,8 +19,6 @@ about-source = Source code
 about-coffee = Buy me a coffee
 # Tooltip on "Buy me a coffee" while it does nothing yet.
 about-coming-soon = Coming soon
-# Beside the "Buy me a coffee" button, next to a QR code for the same page.
-about-coffee-scan = Or scan the code with your phone.
 # Above links to the author's social media accounts.
 about-follow = Follow the author
 # Rust is a programming language; KDE is a free software community and its
@@ -235,3 +233,17 @@ crash-view-tooltip = Open the report, saved on this computer
 crash-copy = Copy report
 # Closes the crash notice.
 crash-close = Close
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
+# $address: the account's email address.
+sign-in-again-text = { $provider } asks you to sign in to { $address } again.
+# Opens the provider's sign-in page in the browser.
+sign-in-again-button = Sign in
+sign-in-again-tooltip = Open the { $provider } sign-in page in your browser
+# In place of the button while the browser page is open.
+sign-in-again-waiting = Waiting for your browser…
+sign-in-again-close = Close
+# Shown briefly after signing in again. $address: the account's email address.
+sign-in-again-done = Signed in to { $address } again. Getting your mail…

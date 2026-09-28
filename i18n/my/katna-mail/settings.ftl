@@ -8,7 +8,7 @@ settings-tab-general = အထွေထွေ
 settings-tab-inbox = ဝင်စာ
 settings-tab-accounts = အကောင့်များ
 settings-tab-katna-account = Katna အကောင့်
-settings-tab-subscriptions = စာရင်းသွင်းမှုများ
+settings-tab-subscriptions = စာရင်းသွင်းမှု
 settings-tab-appearance = အသွင်အပြင်
 settings-tab-shortcuts = ဖြတ်လမ်းများ
 settings-tab-default-apps = မူရင်း အက်ပ်များ
@@ -20,7 +20,6 @@ settings-tab-experimental = စမ်းသပ်ဆဲ
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = သင်ရရှိသော သတင်းလွှာများနှင့် မေးလ်စာရင်းများကို ကြည့်ပြီး တစ်ချက်နှိပ်ရုံဖြင့် စာရင်းသွင်းမှု ရပ်ဆိုင်းပါ။
 settings-tab-folders-rules-coming = ဖိုင်တွဲများနှင့် အညွှန်းများကို ပြုလုပ်၊ အမည်ပြောင်း၊ ရွှေ့နှင့် ဖျောက်နိုင်ပြီး မည်သည်တို့ကို စင့်ခ်လုပ်မည်ကို ရွေးနိုင်သည်။ စည်းမျဉ်းများက မေးလ်အသစ်ကို ပို့သူ၊ ခေါင်းစဉ် သို့မဟုတ် စကားလုံးများအလိုက် အလိုအလျောက် စီခြင်း၊ အညွှန်းတပ်ခြင်း၊ ထပ်ဆင့်ပို့ခြင်း သို့မဟုတ် ဖျက်ခြင်း ပြုလုပ်သည်။
 settings-tab-mcp-server-coming = ဤကွန်ပျူတာပေါ်ရှိ AI လက်ထောက်များကို သင့်ခွင့်ပြုချက်ဖြင့် သင့်မေးလ်ကို ရှာခြင်း၊ ဖတ်ခြင်းနှင့် မူကြမ်းရေးခြင်း ပြုလုပ်ခွင့်ပေးပါ။
 

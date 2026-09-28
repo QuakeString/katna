@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Settings > Katna account: create a Katna account, sign in and out, see
+//! Settings > Subscription, the Katna account: create a Katna account, sign in and out, see
 //! and sign out the computers signed in, change or reset the password and
 //! delete the account. Katna Server's features (read receipts, link
 //! tracking, Activity, translation) work only while signed in to an
@@ -97,7 +97,7 @@ impl MailWindow {
             .is_some_and(|account| account.signed_in && account.verified)
     }
 
-    /// "Sign in to use this", with a button to Settings > Katna account,
+    /// "Sign in to use this", with a button to Settings > Subscription,
     /// for a server feature while signed out.
     pub(super) fn katna_sign_in_needed(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         div()
@@ -115,7 +115,7 @@ impl MailWindow {
             .child(
                 outlined_button("katna-sign-in-needed", tr!("katna-sign-in"), th).on_click(
                     cx.listener(|this, _, window, cx| {
-                        this.open_settings_page(Section::KatnaAccount, window, cx)
+                        this.open_settings_page(Section::Subscriptions, window, cx)
                     }),
                 ),
             )
@@ -383,7 +383,7 @@ impl MailWindow {
         });
     }
 
-    /// Settings > Katna account.
+    /// Settings > Subscription: the Katna account.
     pub(super) fn katna_section(
         &mut self,
         th: &Theme,
@@ -404,13 +404,27 @@ impl MailWindow {
         );
         let (email, password, code, new_password) = fields;
 
+        // The Subscription tab holds the Katna account, under its name.
         let intro = div()
             .pt(px(20.0))
             .pb(px(4.0))
-            .text_size(px(13.0))
-            .line_height(px(19.0))
-            .text_color(rgba(th.text_dim))
-            .child(tr!("katna-intro"));
+            .flex()
+            .flex_col()
+            .gap(px(4.0))
+            .child(
+                div()
+                    .text_size(px(16.0))
+                    .font_weight(FontWeight::SEMIBOLD)
+                    .text_color(rgba(th.text))
+                    .child(tr!("settings-tab-katna-account")),
+            )
+            .child(
+                div()
+                    .text_size(px(13.0))
+                    .line_height(px(19.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(tr!("katna-intro")),
+            );
         let status = div()
             .flex()
             .flex_col()

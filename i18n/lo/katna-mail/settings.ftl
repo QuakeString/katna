@@ -8,7 +8,7 @@ settings-tab-general = ທົ່ວໄປ
 settings-tab-inbox = ກ່ອງຈົດໝາຍເຂົ້າ
 settings-tab-accounts = ບັນຊີ
 settings-tab-katna-account = ບັນຊີ Katna
-settings-tab-subscriptions = ການສະໝັກຮັບ
+settings-tab-subscriptions = ການສະໝັກໃຊ້
 settings-tab-appearance = ລັກສະນະ
 settings-tab-shortcuts = ປຸ່ມລັດ
 settings-tab-default-apps = ແອັບເລີ່ມຕົ້ນ
@@ -20,7 +20,6 @@ settings-tab-experimental = ທົດລອງ
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = ເບິ່ງຈົດໝາຍຂ່າວ ແລະ ລາຍຊື່ອີເມວທີ່ທ່ານໄດ້ຮັບ, ແລະ ຍົກເລີກການສະໝັກໃນຄລິກດຽວ.
 settings-tab-folders-rules-coming = ສ້າງ, ປ່ຽນຊື່, ຍ້າຍ ແລະ ເຊື່ອງໂຟນເດີ ແລະ ປ້າຍກຳກັບ, ແລະ ເລືອກວ່າຈະຊິງຄ໌ອັນໃດ. ກົດຈະຈັດຮຽງ, ຕິດປ້າຍກຳກັບ, ສົ່ງຕໍ່ ຫຼື ລຶບອີເມວໃໝ່ໂດຍອັດຕະໂນມັດ, ຕາມຜູ້ສົ່ງ, ຫົວຂໍ້ ຫຼື ຄຳ.
 settings-tab-mcp-server-coming = ໃຫ້ຜູ້ຊ່ວຍ AI ໃນຄອມພິວເຕີນີ້ຊອກຫາ, ອ່ານ ແລະ ຮ່າງອີເມວຂອງທ່ານ, ໂດຍທ່ານເປັນຜູ້ອະນຸຍາດ.
 

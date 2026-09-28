@@ -8,7 +8,7 @@ settings-tab-general = כללי
 settings-tab-inbox = דואר נכנס
 settings-tab-accounts = חשבונות
 settings-tab-katna-account = חשבון Katna
-settings-tab-subscriptions = מינויים
+settings-tab-subscriptions = מינוי
 settings-tab-appearance = מראה
 settings-tab-shortcuts = קיצורי דרך
 settings-tab-default-apps = אפליקציות ברירת מחדל
@@ -20,7 +20,6 @@ settings-tab-experimental = ניסיוני
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = צפייה בניוזלטרים וברשימות התפוצה שמגיעים אליך, וביטול מינוי בלחיצה אחת.
 settings-tab-folders-rules-coming = יצירה, שינוי שם, העברה והסתרה של תיקיות ותוויות, ובחירה אילו מהן יסונכרנו. כללים ממיינים, מתייגים, מעבירים או מוחקים דואר חדש באופן אוטומטי, לפי שולח, נושא או מילים.
 settings-tab-mcp-server-coming = מתן אפשרות לעוזרי AI במחשב הזה לחפש, לקרוא ולנסח טיוטות בדואר שלך, באישורך.
 

@@ -8,7 +8,7 @@ settings-tab-general = 全般
 settings-tab-inbox = 受信トレイ
 settings-tab-accounts = アカウント
 settings-tab-katna-account = Katna アカウント
-settings-tab-subscriptions = 登録
+settings-tab-subscriptions = サブスクリプション
 settings-tab-appearance = 外観
 settings-tab-shortcuts = ショートカット
 settings-tab-default-apps = デフォルトのアプリ
@@ -20,7 +20,6 @@ settings-tab-experimental = 試験運用
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = 受け取っているニュースレターやメーリングリストを一覧し、ワンクリックで登録解除できます。
 settings-tab-folders-rules-coming = フォルダやラベルの作成、名前の変更、移動、非表示、同期するものの選択ができます。ルールを使うと、新着メールを送信者、件名、キーワードで自動的に分類、ラベル付け、転送、削除できます。
 settings-tab-mcp-server-coming = このパソコン上の AI アシスタントが、あなたの許可のもとでメールを検索、閲覧、下書きできるようにします。
 
