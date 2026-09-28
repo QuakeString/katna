@@ -76,7 +76,6 @@ compose-sign = Onderteken
 compose-signed = Onderteken: ontvangers kan nagaan dat dit van jou af kom
 compose-track = Spoor oopmaak en klikke na
 compose-tracked = Nagespoor: jy sien wanneer elke ontvanger dit oopmaak of 'n skakel volg
-compose-track-unavailable = Ondertekende, geënkripteerde en gewoneteks-e-pos kan nie nagespoor word nie
 compose-track-sign-in = Meld by 'n Katna-rekening aan om oopmaak en klikke na te spoor
 compose-receipt = Vra 'n leesbewys
 compose-receipt-on = Leesbewys gevra: die ontvanger se program vra hulle dalk om een te stuur

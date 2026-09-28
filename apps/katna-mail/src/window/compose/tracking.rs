@@ -45,9 +45,8 @@ impl MailWindow {
             .as_ref()
             .map(|c| (c.sealing, c.plain(cx)))
             .unwrap_or_default();
-        // Tracking rewrites the HTML of each copy, which signed, encrypted
-        // and plain-text mail don't allow.
-        let trackable = !sealing.any() && !plain;
+        // Plain text has no pixel: only its links are tracked. Signed and
+        // encrypted copies are signed and encrypted again one by one.
         // The server takes tracked mail only from a Katna account.
         let signed_in = self.katna_signed_in();
         let toggle = |id: &'static str, name: &'static str, on: bool, label: String| {
@@ -56,7 +55,7 @@ impl MailWindow {
                 .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
                 .tooltip(tip(label, th))
         };
-        let track = sealing.track && trackable && signed_in;
+        let track = sealing.track && signed_in;
         let offered = self.delivery_receipts_offered() != Some(false);
         let delivery = sealing.delivery && offered;
         [
@@ -64,25 +63,20 @@ impl MailWindow {
                 "compose-track",
                 "eye",
                 track,
-                if !trackable {
-                    tr!("compose-track-unavailable")
-                } else if !signed_in {
-                    tr!("compose-track-sign-in")
-                } else if track {
-                    tr!("compose-tracked")
-                } else {
-                    tr!("compose-track")
+                match (signed_in, track, plain) {
+                    (false, _, _) => tr!("compose-track-sign-in"),
+                    (true, true, false) => tr!("compose-tracked"),
+                    (true, true, true) => tr!("compose-tracked-clicks"),
+                    (true, false, false) => tr!("compose-track"),
+                    (true, false, true) => tr!("compose-track-clicks"),
                 },
             )
-            .when(!trackable, |d| d.opacity(0.5))
             .on_click(cx.listener(move |this, _, window, cx| {
-                if trackable && !signed_in {
+                if !signed_in {
                     this.open_settings_page(Section::Subscriptions, window, cx);
                     return;
                 }
-                if let Some(c) = &mut this.compose
-                    && trackable
-                {
+                if let Some(c) = &mut this.compose {
                     c.sealing.track = !c.sealing.track;
                 }
                 cx.notify();

@@ -4,19 +4,32 @@
 //! §16.1): the HTML version gets the open pixel before the quoted text,
 //! and its links (outside the quoted text) point through the tracking
 //! server. Headers, the plain text version and attachments stay as they
-//! are. Signed or encrypted mail is never changed.
+//! are. Mail with no HTML version gets the web addresses in its plain
+//! text pointed through the server instead: clicks, but no opens. Signed
+//! or encrypted mail is changed only once opened (`outbox`), never here.
 
 use std::fmt::Write as _;
 
 /// The link targets the tracked copies of `raw` will redirect to, numbered
-/// in this order. `None` when `raw` cannot be tracked: no UTF-8 HTML
-/// version, or signed or encrypted.
+/// in this order. `None` when `raw` cannot be tracked: no UTF-8 HTML or
+/// plain text version, or signed or encrypted.
 pub fn links(raw: &[u8]) -> Option<Vec<String>> {
+    let kind = kind(raw)?;
     let mut found = Vec::new();
     let mut any = false;
-    walk(raw, &mut |html| {
+    walk(raw, kind, &mut |text| {
         any = true;
-        for (_, _, target) in anchors(own_part(html)) {
+        let targets = match kind {
+            HTML => anchors(own_part(text))
+                .into_iter()
+                .map(|(_, _, target)| target)
+                .collect(),
+            _ => addresses(own_text(text))
+                .into_iter()
+                .map(|(_, _, target)| target.to_owned())
+                .collect::<Vec<_>>(),
+        };
+        for target in targets {
             if !found.contains(&target) {
                 found.push(target);
             }
@@ -26,12 +39,102 @@ pub fn links(raw: &[u8]) -> Option<Vec<String>> {
     any.then_some(found)
 }
 
+/// Whether the tracked copies of `raw` can show when it was opened: it
+/// has an HTML version for the pixel. Plain text mail tracks clicks only.
+pub fn tracks_opens(raw: &[u8]) -> bool {
+    kind(raw) == Some(HTML)
+}
+
 /// `raw` with the tracking pixel and links of tracking ID `id` on the
 /// server at `base` (`https://server.example`). `links` is what [`links`]
 /// returned for `raw`.
 pub fn tracked_copy(raw: &[u8], base: &str, id: &str, links: &[String]) -> Option<Vec<u8>> {
     let base = base.trim_end_matches('/');
-    walk(raw, &mut |html| Some(rewrite_html(html, base, id, links)))
+    let kind = kind(raw)?;
+    walk(raw, kind, &mut |text| {
+        Some(match kind {
+            HTML => rewrite_html(text, base, id, links),
+            _ => rewrite_plain(text, base, id, links),
+        })
+    })
+}
+
+const HTML: &str = "text/html";
+const PLAIN: &str = "text/plain";
+
+/// The version whose links are tracked: HTML when there is one, else the
+/// plain text. `None` for signed or encrypted mail or a broken structure.
+fn kind(raw: &[u8]) -> Option<&'static str> {
+    let mut html = false;
+    walk(raw, HTML, &mut |_| {
+        html = true;
+        None
+    })?;
+    Some(if html { HTML } else { PLAIN })
+}
+
+/// Plain text with its `http` and `https` addresses (outside the quoted
+/// text) pointed through the tracking server.
+fn rewrite_plain(text: &str, base: &str, id: &str, links: &[String]) -> String {
+    let own_end = own_text(text).len();
+    let mut out = String::with_capacity(text.len() + 128);
+    let mut from = 0;
+    for (start, end, target) in addresses(&text[..own_end]) {
+        let Some(n) = links.iter().position(|link| link == target) else {
+            continue;
+        };
+        out.push_str(&text[from..start]);
+        let _ = write!(out, "{base}/l/{id}/{n}");
+        from = end;
+    }
+    out.push_str(&text[from..]);
+    out
+}
+
+/// The sender's own part of a plain text body: everything before the
+/// first quoted line (`>`).
+fn own_text(text: &str) -> &str {
+    let mut at = 0;
+    for line in text.split_inclusive('\n') {
+        if line.starts_with('>') {
+            return &text[..at];
+        }
+        at += line.len();
+    }
+    text
+}
+
+/// The `http` and `https` addresses written in plain text:
+/// `(start, end, address)`. An address starts a word (or follows `<`,
+/// `(` or a quote) and ends at a space, `<`, `>` or `"`, less the
+/// punctuation a sentence puts after it.
+fn addresses(text: &str) -> Vec<(usize, usize, &str)> {
+    let lower = text.to_ascii_lowercase();
+    let mut found = Vec::new();
+    let mut at = 0;
+    while let Some(offset) = lower[at..].find("http") {
+        let start = at + offset;
+        at = start + 4;
+        let rest = &lower[start..];
+        if !(rest.starts_with("http://") || rest.starts_with("https://")) {
+            continue;
+        }
+        let before = text[..start].chars().next_back();
+        if before.is_some_and(|c| !(c.is_whitespace() || matches!(c, '<' | '(' | '"' | '\''))) {
+            continue;
+        }
+        let len = text[start..]
+            .find(|c: char| c.is_whitespace() || c.is_control() || matches!(c, '<' | '>' | '"'))
+            .unwrap_or(text.len() - start);
+        let address = text[start..start + len]
+            .trim_end_matches(['.', ',', ';', ':', '!', '?', ')', ']', '\'']);
+        let end = start + address.len();
+        at = end.max(at);
+        if address.len() > "https://".len() {
+            found.push((start, end, address));
+        }
+    }
+    found
 }
 
 fn rewrite_html(html: &str, base: &str, id: &str, links: &[String]) -> String {
@@ -150,11 +253,11 @@ fn find_ci(haystack: &str, needle: &str) -> Option<usize> {
     haystack.to_ascii_lowercase().find(needle)
 }
 
-/// Calls `edit` with the text of every UTF-8 `text/html` part that is not
-/// an attachment; a `Some` answer replaces the part's text. Returns the
-/// whole message, or `None` for signed or encrypted mail or a broken
-/// structure.
-fn walk(raw: &[u8], edit: &mut dyn FnMut(&str) -> Option<String>) -> Option<Vec<u8>> {
+/// Calls `edit` with the text of every UTF-8 part of type `kind`
+/// (`text/html` or `text/plain`) that is not an attachment; a `Some`
+/// answer replaces the part's text. Returns the whole message, or `None`
+/// for signed or encrypted mail or a broken structure.
+fn walk(raw: &[u8], kind: &str, edit: &mut dyn FnMut(&str) -> Option<String>) -> Option<Vec<u8>> {
     let (header, body, separator) = split_entity(raw)?;
     let fields = Fields::parse(header);
     let content_type = fields.get("content-type").unwrap_or("text/plain");
@@ -170,7 +273,7 @@ fn walk(raw: &[u8], edit: &mut dyn FnMut(&str) -> Option<String>) -> Option<Vec<
     if let Some(sub) = media.strip_prefix("multipart/") {
         let _ = sub;
         let boundary = param(content_type, "boundary")?;
-        let body = walk_multipart(body, &boundary, edit)?;
+        let body = walk_multipart(body, &boundary, kind, edit)?;
         let mut out = raw[..header.len() + separator.len()].to_vec();
         out.extend_from_slice(&body);
         return Some(out);
@@ -184,7 +287,7 @@ fn walk(raw: &[u8], edit: &mut dyn FnMut(&str) -> Option<String>) -> Option<Vec<
             "utf-8" | "us-ascii" | "utf8"
         )
     });
-    if media != "text/html" || attachment || !utf8 {
+    if media != kind || attachment || !utf8 {
         return Some(raw.to_vec());
     }
     let encoding = fields
@@ -219,6 +322,7 @@ fn walk(raw: &[u8], edit: &mut dyn FnMut(&str) -> Option<String>) -> Option<Vec<
 fn walk_multipart(
     body: &[u8],
     boundary: &str,
+    kind: &str,
     edit: &mut dyn FnMut(&str) -> Option<String>,
 ) -> Option<Vec<u8>> {
     let delimiter = format!("--{boundary}");
@@ -258,7 +362,7 @@ fn walk_multipart(
             part_end -= 1;
         }
         let part = &body[line_end..part_end.max(line_end)];
-        out.extend_from_slice(&walk(part, edit)?);
+        out.extend_from_slice(&walk(part, kind, edit)?);
         out.extend_from_slice(&body[part_end.max(line_end)..next]);
     }
     out.extend_from_slice(&body[*starts.last()?..]);
@@ -440,7 +544,7 @@ mod tests {
 
     fn html_of(raw: &[u8]) -> String {
         let mut found = String::new();
-        walk(raw, &mut |html| {
+        walk(raw, HTML, &mut |html| {
             found = html.to_owned();
             None
         })
@@ -497,9 +601,33 @@ mod tests {
     }
 
     #[test]
+    fn plain_text_tracks_its_addresses() {
+        let raw =
+            b"From: a@x.org\r\nTo: b@y.org\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n\
+                    See https://example.com/p?a=1. Or (http://example.org/x) and\r\n\
+                    nothttps://no.example/ and https://example.com/p?a=1 again.\r\n\
+                    > https://quoted.example/\r\n";
+        assert!(!tracks_opens(raw));
+        let found = links(raw).unwrap();
+        assert_eq!(found, ["https://example.com/p?a=1", "http://example.org/x"]);
+        let copy = String::from_utf8(tracked_copy(raw, BASE, ID, &found).unwrap()).unwrap();
+        let text = String::from_utf8(decode_qp(copy.split("\r\n\r\n").nth(1).unwrap().as_bytes()))
+            .unwrap();
+        assert!(
+            text.starts_with(&format!(
+                "See {BASE}/l/{ID}/0. Or ({BASE}/l/{ID}/1) and\r\n\
+                 nothttps://no.example/ and {BASE}/l/{ID}/0 again.\r\n"
+            )),
+            "{text}"
+        );
+        assert!(text.contains("> https://quoted.example/"));
+        assert!(!text.contains("/o/"));
+    }
+
+    #[test]
     fn nothing_to_track() {
         let plain = b"From: a@x.org\r\nTo: b@y.org\r\nContent-Type: text/plain\r\n\r\nHi\r\n";
-        assert_eq!(links(plain), None);
+        assert_eq!(links(plain), Some(Vec::new()));
         let signed = b"From: a@x.org\r\nContent-Type: multipart/signed; boundary=b\r\n\r\n--b\r\n\r\nx\r\n--b--\r\n";
         assert_eq!(links(signed), None);
         assert_eq!(tracked_copy(signed, BASE, ID, &[]), None);

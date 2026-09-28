@@ -2735,17 +2735,29 @@ One server process (events are ordered within it). The API is in
 `server/katna-server/README.md`.
 
 **Implemented (daemon, `katna-sync::tracking`, `apps/katna-daemon/src/tracking.rs`):**
-a message queued with tracking (D-Bus `QueueTrackedSend`) that has an HTML
-part, is not signed or encrypted, and has at most 50 recipients (To, Cc and
-Bcc) goes out as one copy per recipient, each in its own SMTP transaction
-with the headers unchanged. Each copy's HTML gets the pixel before the
-first `<blockquote` and its links outside quotes rewritten; plain-text
-parts are left alone. A refused recipient does not stop the others and the
-send retries only the rest. Sent keeps one clean copy; on Gmail the
-tracked copies Gmail filed are found by `rfc822msgid:` plus a marker in the
-body and moved to Trash and deleted there (op `PurgeTracked`). Anything
-that stops tracking (no server, server error, too many recipients) sends
-the message once, untracked. The recipient mapping and events live in
+a message queued with tracking (D-Bus `QueueTrackedSend`) with at most 50
+recipients (To, Cc and Bcc) goes out as one copy per recipient, each in
+its own SMTP transaction with the headers unchanged. Each copy's HTML gets
+the pixel before the first `<blockquote` and its links outside quotes
+rewritten; plain-text parts are left alone. Mail with no HTML part has the
+`http`/`https` addresses of its plain text (before the first `>` line)
+rewritten instead: clicks are seen, opens are not, and plain text without
+links goes out untracked. Signed or encrypted mail (sealed by the app
+before queueing) is opened with the user's GnuPG at send time (the sender
+is always among an encrypted message's recipients), tracked, and each copy
+signed and/or encrypted again in the same standard, encrypted to its
+recipient and the sender only; each such copy carries an
+`X-Katna-Copy: <tracking ID>` header, since its links are out of sight.
+One signature per copy means one passphrase or smartcard touch each where
+the agent does not cache it. Opens of encrypted mail are rare: most
+clients load no remote pictures in it. A refused recipient does not stop
+the others and the send retries only the rest. Sent keeps one clean copy
+(the sealed original); on Gmail the tracked copies Gmail filed are found
+by `rfc822msgid:` plus a marker (the tracking server's address, or
+`X-Katna-Copy:`) and moved to Trash and deleted there (op
+`PurgeTracked`). Anything that stops tracking (no server, server error,
+too many recipients, a sealed message that can't be opened) sends the
+message once, untracked. The recipient mapping and events live in
 `pim.db` (schema v3). Tracking uses the Katna account token
 (`katna_account::Session::token`, §16.2) and server (`server_url`); the
 server takes it only while this computer is signed in to an account with a

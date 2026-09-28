@@ -56,6 +56,8 @@ struct FakeSmtp {
     hold: Option<u64>,
     /// The tracking server and this install's token, when tracking is on.
     tracking: Option<(String, String)>,
+    /// A throwaway `GNUPGHOME` for signed and encrypted mail.
+    gnupg: Option<std::path::PathBuf>,
 }
 
 struct FakeSender {
@@ -97,6 +99,14 @@ impl Outgoing for FakeSmtp {
             server,
             Tls::insecure_for_local_tests(),
         ))
+    }
+
+    fn gnupg(&self) -> katna_crypto::Gnupg {
+        let gnupg = katna_crypto::Gnupg::new();
+        match &self.gnupg {
+            Some(home) => gnupg.with_home(home),
+            None => gnupg,
+        }
     }
 
     async fn tracking_token(&self) -> Result<String> {
@@ -528,6 +538,135 @@ fn tracked_mail_goes_to_each_recipient_alone() {
     let tracked = store.tracking_for_outbox(id).unwrap().unwrap();
     assert!(tracked.sent_at.is_some());
     assert!(tracked.recipients.iter().all(|r| r.sent_at.is_some()));
+}
+
+/// A throwaway `GNUPGHOME` with secret keys for Alice and her three
+/// recipients, or `None` without GnuPG.
+fn keyring() -> Option<tempfile::TempDir> {
+    let run = |home: &std::path::Path, args: &[&str]| {
+        std::process::Command::new("gpg")
+            .args(["--batch", "--no-tty"])
+            .args(args)
+            .env("GNUPGHOME", home)
+            .output()
+            .is_ok_and(|out| out.status.success())
+    };
+    // A short path: gpg-agent's socket path has a length limit.
+    let mut builder = tempfile::Builder::new();
+    builder.prefix("ko");
+    #[cfg(unix)]
+    let dir = builder.tempdir_in("/tmp").ok()?;
+    #[cfg(not(unix))]
+    let dir = builder.tempdir().ok()?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700)).ok()?;
+    }
+    for email in [
+        "alice@example.org",
+        "bob@example.org",
+        "carol@example.org",
+        "dave@example.org",
+    ] {
+        let uid = format!("<{email}>");
+        let args = [
+            "--passphrase",
+            "",
+            "--quick-gen-key",
+            &uid,
+            "default",
+            "default",
+            "never",
+        ];
+        if !run(dir.path(), &args) {
+            eprintln!("gpg is not installed or failed; skipping");
+            return None;
+        }
+    }
+    Some(dir)
+}
+
+#[test]
+fn signed_and_encrypted_mail_is_tracked_per_copy() {
+    let Some(home) = keyring() else { return };
+    let gnupg = katna_crypto::Gnupg::new().with_home(home.path());
+    let how = katna_crypto::Protect {
+        standard: katna_crypto::Standard::OpenPgp,
+        sign: true,
+        encrypt: true,
+    };
+    let recipients = katna_crypto::Recipients {
+        sender: "alice@example.org".into(),
+        visible: vec!["bob@example.org".into(), "carol@example.org".into()],
+        hidden: vec!["dave@example.org".into()],
+    };
+    let sealed = katna_crypto::protect(HTML_MESSAGE, how, &recipients, &gnupg).unwrap();
+    let (tmp, mut store, account) = setup();
+    let (_, ids) = queue_tracked(&mut store, account, &sealed);
+    let smtp = FakeSmtp {
+        tracking: Some((TEST_SERVER.into(), "t".into())),
+        gnupg: Some(home.path().to_owned()),
+        ..FakeSmtp::default()
+    };
+    run_until(&smtp, &tmp, config(3), SendState::Sent);
+    let received = smtp.received.lock().unwrap();
+    assert_eq!(received.len(), 3);
+    for (copy, tracking_id) in received.iter().zip(&ids) {
+        assert!(
+            copy.message
+                .contains(&format!("X-Katna-Copy: {tracking_id}\r\n")),
+            "{}",
+            copy.message
+        );
+        // Nothing readable on the wire.
+        assert!(!copy.message.contains("example.com/p"), "{}", copy.message);
+        let raw = copy.message.as_bytes();
+        assert_eq!(
+            katna_crypto::protection(raw),
+            Some(katna_crypto::Protection::Encrypted(
+                katna_crypto::Standard::OpenPgp
+            ))
+        );
+        let opened = katna_crypto::open(raw, &gnupg).unwrap();
+        assert!(opened.security.decrypted());
+        assert!(!opened.security.signatures.is_empty());
+        let html = String::from_utf8_lossy(&opened.raw).replace("=\r\n", "");
+        assert!(
+            html.contains(&format!("{TEST_SERVER}/o/{tracking_id}.png")),
+            "{html}"
+        );
+        assert!(
+            html.contains(&format!("{TEST_SERVER}/l/{tracking_id}/0")),
+            "{html}"
+        );
+    }
+    drop(received);
+    let _ = std::process::Command::new("gpgconf")
+        .args(["--kill", "all"])
+        .env("GNUPGHOME", home.path())
+        .status();
+}
+
+#[test]
+fn plain_text_is_tracked_by_its_links() {
+    let raw = b"From: Alice <alice@example.org>\r\nTo: bob@example.org\r\n\
+        Subject: Proposal v2\r\nMessage-ID: <m@example.org>\r\n\
+        Content-Type: text/plain; charset=utf-8\r\n\r\nSee https://example.com/p today.\r\n";
+    let (tmp, mut store, account) = setup();
+    let (_, ids) = queue_tracked(&mut store, account, raw);
+    let smtp = FakeSmtp {
+        tracking: Some((TEST_SERVER.into(), "t".into())),
+        ..FakeSmtp::default()
+    };
+    run_until(&smtp, &tmp, config(3), SendState::Sent);
+    let received = smtp.received.lock().unwrap();
+    let text = received[0].message.replace("=\r\n", "");
+    assert!(
+        text.contains(&format!("See {TEST_SERVER}/l/{}/0 today.", ids[0])),
+        "{text}"
+    );
+    assert!(!text.contains("/o/"));
 }
 
 #[test]

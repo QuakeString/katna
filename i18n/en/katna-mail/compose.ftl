@@ -128,8 +128,9 @@ compose-signed = Signed: recipients can check it is from you
 # Tooltips: the short texts turn it on; the longer ones say it is on.
 compose-track = Track opens and clicks
 compose-tracked = Tracked: you see when each recipient opens it or follows a link
-# Shown instead when tracking can't be used for this message.
-compose-track-unavailable = Signed, encrypted and plain-text mail can't be tracked
+# Plain text has no picture to see opens by: only its links are tracked.
+compose-track-clicks = Track link clicks (plain text can't show opens)
+compose-tracked-clicks = Tracked: you see when each recipient follows a link
 # Shown instead while not signed in; clicking opens Settings > Subscription.
 compose-track-sign-in = Sign in to a Katna account to track opens and clicks
 compose-receipt = Request a read receipt

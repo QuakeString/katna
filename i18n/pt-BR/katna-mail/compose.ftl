@@ -77,7 +77,6 @@ compose-sign = Assinar
 compose-signed = Assinada: os destinatários podem confirmar que é sua
 compose-track = Rastrear aberturas e cliques
 compose-tracked = Rastreada: você vê quando cada destinatário a abre ou acessa um link
-compose-track-unavailable = E-mails assinados, criptografados e em texto simples não podem ser rastreados
 compose-track-sign-in = Faça login em uma conta Katna para rastrear aberturas e cliques
 compose-receipt = Pedir confirmação de leitura
 compose-receipt-on = Confirmação de leitura pedida: o app do destinatário pode pedir que ele envie uma

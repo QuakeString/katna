@@ -76,7 +76,6 @@ compose-sign = Lagdaan
 compose-signed = Nilagdaan: masusuri ng mga tatanggap na galing ito sa iyo
 compose-track = I-track ang mga pagbukas at pag-click
 compose-tracked = Naka-track: makikita mo kung kailan ito binubuksan ng bawat tatanggap o sinusundan ang isang link
-compose-track-unavailable = Hindi maita-track ang mail na may lagda, naka-encrypt o plain text
 compose-track-sign-in = Mag-sign in sa isang Katna account para ma-track ang mga pagbukas at pag-click
 compose-receipt = Humingi ng read receipt
 compose-receipt-on = Humingi ng read receipt: maaaring hilingin ng app ng tatanggap na magpadala sila nito

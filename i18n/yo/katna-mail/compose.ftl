@@ -73,7 +73,6 @@ compose-sign = Buwọ́ lù ú
 compose-signed = A ti buwọ́ lù ú: àwọn olùgbà lè ṣàyẹ̀wò pé ọ̀dọ̀ rẹ ló ti wá
 compose-track = Tọpa ṣíṣí àti títẹ̀
 compose-tracked = A ń tọpa rẹ̀: wàá rí ìgbà tí olùgbà kọ̀ọ̀kan bá ṣí i tàbí tẹ̀lé ìjápọ̀ kan
-compose-track-unavailable = A kò lè tọpa lẹ́tà tí a ti buwọ́ lù, tí a ti pa lároko tàbí ti ọ̀rọ̀ lásán
 compose-track-sign-in = Wọlé sí àkáǹtì Katna láti tọpa ṣíṣí àti títẹ̀
 compose-receipt = Béèrè ìwé-ẹ̀rí kíkà
 compose-receipt-on = A ti béèrè ìwé-ẹ̀rí kíkà: áàpù olùgbà lè ní kí ó fi ọ̀kan ránṣẹ́

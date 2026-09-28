@@ -54,6 +54,12 @@ pub trait Outgoing: Send + Sync + 'static {
         None
     }
 
+    /// The user's GnuPG, which signs and encrypts the tracked copies of
+    /// signed and encrypted mail.
+    fn gnupg(&self) -> katna_crypto::Gnupg {
+        katna_crypto::Gnupg::new()
+    }
+
     /// This computer's Katna Server token; the server takes it only while
     /// signed in to a Katna account (§16.2).
     fn tracking_token(&self) -> impl Future<Output = Result<String>> + Send {
@@ -612,14 +618,43 @@ async fn send<O: Outgoing>(
     let hold = entry.hold_until.filter(|&at| at > now);
     // For the ticks beside its recipients: when it went out to whom.
     let sent = raw.as_deref().and_then(sent_to);
+    let sealed = raw
+        .as_deref()
+        .is_some_and(|raw| katna_crypto::protection(raw).is_some());
     let mut tracked = None;
     let result = match (raw, hold) {
         (Some(raw), Some(at)) => hand_over(outgoing, entry, &raw, at).await,
         (Some(raw), None) if entry.per_recipient => {
-            tracked = prepare_tracking(outgoing, store, entry, &raw).await?;
-            match &tracked {
-                Some(plan) => deliver_tracked(outgoing, store, entry, &raw, plan).await,
-                None => deliver(outgoing, entry, &raw).await,
+            // Signed or encrypted: tracked from its content, each copy
+            // signed or encrypted again.
+            let opened = match outgoing.tracking() {
+                Some(_) => open_sealed(&raw, outgoing.gnupg()).await,
+                None => Ok(None),
+            };
+            tracked = match &opened {
+                Ok(opened) => {
+                    let content = opened.as_ref().map_or(&raw[..], |s| &s.content[..]);
+                    prepare_tracking(outgoing, store, entry, content).await?
+                }
+                Err(why) => {
+                    tracing::info!(id = entry.id, why, "sending untracked");
+                    None
+                }
+            };
+            match (&tracked, opened) {
+                (Some(plan), Ok(Some(opened))) => {
+                    deliver_tracked(
+                        outgoing,
+                        store,
+                        entry,
+                        &opened.content,
+                        plan,
+                        Some(opened.how),
+                    )
+                    .await
+                }
+                (Some(plan), _) => deliver_tracked(outgoing, store, entry, &raw, plan, None).await,
+                (None, _) => deliver(outgoing, entry, &raw).await,
             }
             .map(|()| Handover::Sent)
         }
@@ -654,7 +689,7 @@ async fn send<O: Outgoing>(
             match &tracked {
                 Some(plan) => {
                     store.tracking_sent(plan.message.id, now)?;
-                    file_tracked(outgoing, store, entry, plan);
+                    file_tracked(outgoing, store, entry, plan, sealed);
                 }
                 None => file(outgoing, store, entry.account, entry.message),
             }
@@ -756,6 +791,71 @@ async fn hand_over<O: Outgoing>(
     Ok(handover)
 }
 
+/// A signed or encrypted message opened for tracking: its content, and
+/// how each tracked copy is protected again.
+struct Sealed {
+    content: Vec<u8>,
+    how: katna_crypto::Protect,
+}
+
+/// Marks the signed or encrypted tracked copies, whose tracking links are
+/// out of sight, so Gmail's filed copies of them can be found (the clean
+/// copy has none).
+const SEALED_COPY: &str = "X-Katna-Copy";
+
+/// Opens a signed or encrypted message (`Ok(None)` for others) with the
+/// user's GnuPG, to track its content. `Err` when it can't be: it then
+/// goes out as it is, untracked. Decrypting uses the sender's own key,
+/// which every encrypted message from Katna is encrypted to.
+async fn open_sealed(
+    raw: &[u8],
+    gnupg: katna_crypto::Gnupg,
+) -> std::result::Result<Option<Sealed>, &'static str> {
+    if katna_crypto::protection(raw).is_none() {
+        return Ok(None);
+    }
+    let raw = raw.to_vec();
+    let opened = blocking::unblock(move || katna_crypto::open(&raw, &gnupg)).await;
+    let opened = opened.ok_or("signed or encrypted, but could not be opened")?;
+    let security = &opened.security;
+    if !security.whole {
+        return Err("only part of it is signed or encrypted");
+    }
+    if security.encrypted() && !security.decrypted() {
+        return Err("encrypted, and could not be decrypted");
+    }
+    Ok(Some(Sealed {
+        how: katna_crypto::Protect {
+            standard: security.standard,
+            sign: !security.signatures.is_empty(),
+            encrypt: security.encrypted(),
+        },
+        content: opened.raw,
+    }))
+}
+
+/// A tracked copy for `recipient` signed and/or encrypted as `how`: for
+/// them (and the sender) only, marked for [`file_tracked`].
+async fn seal_copy(
+    gnupg: katna_crypto::Gnupg,
+    copy: Vec<u8>,
+    how: katna_crypto::Protect,
+    sender: &str,
+    recipient: &str,
+    tracking_id: &str,
+) -> Result<Vec<u8>> {
+    let mut marked = format!("{SEALED_COPY}: {tracking_id}\r\n").into_bytes();
+    marked.extend_from_slice(&copy);
+    let recipients = katna_crypto::Recipients {
+        sender: sender.to_owned(),
+        visible: vec![recipient.to_owned()],
+        hidden: Vec::new(),
+    };
+    blocking::unblock(move || katna_crypto::protect(&marked, how, &recipients, &gnupg))
+        .await
+        .map_err(|err| Error::Rejected(err.to_string()))
+}
+
 /// How a tracked message goes out: the tracking server's address and
 /// each recipient's tracking ID.
 struct TrackingPlan {
@@ -764,10 +864,11 @@ struct TrackingPlan {
 }
 
 /// Gets tracking IDs for `entry`'s recipients (once; a retry reuses them).
+/// `raw` is the message, opened when it is signed or encrypted.
 /// `Ok(None)` sends the message untracked: tracking is off or the server
-/// cannot be reached, the message has no HTML version or is signed or
-/// encrypted, or it has too many recipients. Mail is never held back for
-/// tracking.
+/// cannot be reached, the message has neither an HTML version nor links
+/// in its plain text, or it has too many recipients. Mail is never held
+/// back for tracking.
 async fn prepare_tracking<O: Outgoing>(
     outgoing: &O,
     store: &mut Store,
@@ -787,8 +888,11 @@ async fn prepare_tracking<O: Outgoing>(
         Ok(None)
     };
     let Some(links) = rewrite::links(raw) else {
-        return untracked("no HTML version, or signed or encrypted");
+        return untracked("no text to track");
     };
+    if links.is_empty() && !rewrite::tracks_opens(raw) {
+        return untracked("plain text without links");
+    }
     let Ok(envelope) = envelope(raw) else {
         return untracked("no envelope");
     };
@@ -844,13 +948,15 @@ async fn prepare_tracking<O: Outgoing>(
 
 /// Sends each recipient who has not got it yet their own tracked copy,
 /// each in its own SMTP transaction over one connection. The headers are
-/// the same in every copy.
+/// the same in every copy. With `sealed`, `raw` is the opened content of
+/// a signed or encrypted message, and each copy is protected again.
 async fn deliver_tracked<O: Outgoing>(
     outgoing: &O,
     store: &mut Store,
     entry: &OutboxEntry,
     raw: &[u8],
     plan: &TrackingPlan,
+    sealed: Option<katna_crypto::Protect>,
 ) -> Result<()> {
     let envelope = envelope(raw).map_err(Error::Rejected)?;
     let clean = without_bcc(raw);
@@ -869,6 +975,20 @@ async fn deliver_tracked<O: Outgoing>(
             &plan.message.links,
         )
         .unwrap_or_else(|| clean.clone());
+        let copy = match sealed {
+            Some(how) => {
+                seal_copy(
+                    outgoing.gnupg(),
+                    copy,
+                    how,
+                    &envelope.from,
+                    &recipient.email,
+                    &recipient.tracking_id,
+                )
+                .await?
+            }
+            None => copy,
+        };
         if sender.is_none() {
             sender = Some(connect(outgoing, entry).await?);
         }
@@ -925,9 +1045,16 @@ fn file_tracked<O: Outgoing>(
     store: &mut Store,
     entry: &OutboxEntry,
     plan: &TrackingPlan,
+    sealed: bool,
 ) {
     let result = if outgoing.files_sent_mail(entry.account) {
-        let marker = format!("{}/o/", plan.base);
+        // The copies' tracking links (plain text copies have no pixel),
+        // or for signed and encrypted copies their mark.
+        let marker = if sealed {
+            format!("{SEALED_COPY}: ")
+        } else {
+            format!("{}/", plan.base)
+        };
         ops::file_sent_tracked(
             store,
             entry.message,
