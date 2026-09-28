@@ -92,6 +92,17 @@ impl Quote {
         blocks.map_or(Self::None, Self::Hidden)
     }
 
+    /// The quote behind the button, taken out; any other state stays.
+    fn take_hidden(&mut self) -> Option<Vec<Block>> {
+        match std::mem::take(self) {
+            Self::Hidden(blocks) => Some(blocks),
+            other => {
+                *self = other;
+                None
+            }
+        }
+    }
+
     pub(super) fn is_hidden(&self) -> bool {
         matches!(self, Self::Hidden(_))
     }
@@ -489,7 +500,7 @@ impl MailWindow {
         let body = compose.body.clone();
         // A hidden quote goes into the text first, as if it had always
         // been there, so taking it out is one edit Undo takes back.
-        if let Quote::Hidden(blocks) = std::mem::take(&mut compose.quote) {
+        if let Some(blocks) = compose.quote.take_hidden() {
             if let Some(first) = blocks.first().cloned() {
                 compose.quote = Quote::Shown {
                     first,
@@ -580,5 +591,18 @@ mod tests {
         assert_eq!(quote_start(&blocks, &para("nope"), 1), Some(3));
         // Never the whole text.
         assert_eq!(quote_start(&blocks[..1], &para("nope"), 1), None);
+    }
+
+    #[test]
+    fn taking_a_hidden_quote_leaves_a_shown_one() {
+        let mut shown = Quote::Shown {
+            first: para("On Mon, Kay wrote:"),
+            len: 2,
+        };
+        assert!(shown.take_hidden().is_none());
+        assert!(matches!(shown, Quote::Shown { len: 2, .. }));
+        let mut hidden = Quote::Hidden(vec![para("> x")]);
+        assert_eq!(hidden.take_hidden().map(|b| b.len()), Some(1));
+        assert!(matches!(hidden, Quote::None));
     }
 }

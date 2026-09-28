@@ -94,11 +94,25 @@ impl MailWindow {
                     });
                     true
                 });
-                cx.new(|cx| ComposeWindow {
-                    mail: mail.clone(),
-                    // All of it is the message, on an opaque card.
-                    chrome: WindowChrome::new(env, tr!("compose-new-message"), window, cx).opaque(),
-                    focus: cx.focus_handle(),
+                // The close button of Katna's own title bar removes the
+                // window without asking first: the message is closed and
+                // saved then, or the next Reply would bring it back.
+                let released = mail.clone();
+                cx.new(|cx| {
+                    cx.on_release(move |_, cx| {
+                        let released = released.clone();
+                        cx.defer(move |cx| {
+                            released.update(cx, |this, cx| this.compose_window_gone(cx));
+                        });
+                    })
+                    .detach();
+                    ComposeWindow {
+                        mail: mail.clone(),
+                        // All of it is the message, on an opaque card.
+                        chrome: WindowChrome::new(env, tr!("compose-new-message"), window, cx)
+                            .opaque(),
+                        focus: cx.focus_handle(),
+                    }
                 })
             });
             mail.update(cx, |this, cx| {
@@ -132,6 +146,26 @@ impl MailWindow {
             self.reveal_inline_reply(cx);
         }
         cx.notify();
+    }
+
+    /// The popped-out window went away, however it was closed: a message
+    /// still written there closes too, saved as a draft.
+    fn compose_window_gone(&mut self, cx: &mut Context<Self>) {
+        let alive = self
+            .writing
+            .compose_window
+            .is_some_and(|handle| handle.update(cx, |_, _, _| ()).is_ok());
+        if alive {
+            return;
+        }
+        self.writing.compose_window = None;
+        if self
+            .compose
+            .as_ref()
+            .is_some_and(|c| c.mode == Mode::Window && !c.closing)
+        {
+            self.close_compose_saving(cx);
+        }
     }
 
     /// Closes the popped-out window, if any. The message itself is left as
