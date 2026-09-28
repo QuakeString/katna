@@ -11,7 +11,6 @@ about-changelog = Uhlu lwezinguquko
 about-source = Ikhodi yomthombo
 about-coffee = Ngithengele ikhofi
 about-coming-soon = Kuyeza maduze
-about-coffee-scan = Noma skena ikhodi ngefoni yakho.
 about-follow = Landela umbhali
 about-love-title = Kwenziwe ngothando lwe-Rust, i-KDE ne-Linux
 about-love-text = I-Rust yenza ukubhala uhlelo lokusebenza lwemeyili olusheshayo noluphephile kube yinjabulo: i-Katna ayinayo ikhodi ye-unsafe. Ideskithophu ye-Plasma ye-KDE kanye nephakheji layo le-PIM kwagqugquzela i-Katna, futhi i-Linux nomphakathi wesofthiwe yamahhala bakha isisekelo emi phezu kwaso. Siyabonga, futhi siyabonga nakumalabhulali angezansi.

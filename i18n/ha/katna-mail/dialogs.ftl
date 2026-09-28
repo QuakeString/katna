@@ -11,7 +11,6 @@ about-changelog = Jerin canje-canje
 about-source = Lambar tushe
 about-coffee = Saya min kofi
 about-coming-soon = Yana nan tafe
-about-coffee-scan = Ko ku yi sikanin lambar da wayarku.
 about-follow = Bi marubucin
 about-love-title = An yi shi da ƙauna ga Rust, KDE da Linux
 about-love-text = Rust yana sa rubuta manhajar wasiƙu mai sauri da aminci ya zama abin jin daɗi: Katna ba ta da lambar unsafe ko kaɗan. Teburin Plasma na KDE da rukunin PIM ɗinsa ne suka zaburar da Katna, kuma Linux da al'ummar manhaja kyauta ne suka gina ƙasar da take tsaye a kai. Mun gode, kuma mun gode wa ɗakunan karatu da ke ƙasa.
