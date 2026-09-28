@@ -325,3 +325,38 @@ fn probes_read_the_greeting() {
             .await;
     });
 }
+
+#[test]
+fn google_and_microsoft_offer_oauth() {
+    let net = FakeNet::default();
+    let gmail = discover(&net, "ada@gmail.com").unwrap();
+    assert_eq!(gmail.oauth, Some(OAuthProvider::Google));
+    assert!(gmail.password, "Gmail also takes app passwords");
+
+    let outlook = discover(&net, "ada@outlook.com").unwrap();
+    assert_eq!(outlook.oauth, Some(OAuthProvider::Microsoft));
+    assert!(!outlook.password);
+    assert_eq!(outlook.imap.host, "outlook.office365.com");
+    assert_eq!(outlook.imap.username, "ada@outlook.com");
+    assert_eq!(outlook.smtp.unwrap().security, Security::StartTls);
+
+    // A Microsoft 365 domain whose MX leads to an OAuth2-only ISPDB entry.
+    let mut net = FakeNet::default();
+    net.mx.insert(
+        "corp.example".into(),
+        vec![dns::Mx {
+            preference: 0,
+            exchange: "corp-example.mail.protection.outlook.com".into(),
+        }],
+    );
+    let office = OAUTH_ONLY.replace("imap.x.org", "outlook.office365.com");
+    net.files.insert(
+        "https://ispdb.test/v1.1/outlook.com".into(),
+        Box::leak(office.into_boxed_str()),
+    );
+    let found = discover(&net, "ada@corp.example").unwrap();
+    assert_eq!(found.source, Source::Mx);
+    assert_eq!(found.oauth, Some(OAuthProvider::Microsoft));
+    assert!(!found.password);
+    assert_eq!(found.imap.username, "ada@corp.example");
+}

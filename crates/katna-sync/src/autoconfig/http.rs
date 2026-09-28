@@ -401,6 +401,99 @@ fn parse_url_loopback(rest: &str) -> Result<Url<'_>> {
     Ok(Url { host, port, path })
 }
 
+/// Largest answer [`post_form`] reads; token answers are a few kilobytes.
+const MAX_FORM_ANSWER: usize = 256 * 1024;
+
+/// Posts an `application/x-www-form-urlencoded` form to `url` and returns
+/// the answer's status and body, whatever the status: OAuth2 token
+/// endpoints explain a refusal in the body. Redirects are not followed.
+/// Besides `https`, it takes `http` to a loopback address with a port,
+/// which only a test's own token server uses.
+pub async fn post_form(
+    url: &str,
+    form: &[(&str, &str)],
+    tls: &Tls,
+    timeout: Duration,
+) -> Result<(u16, Vec<u8>)> {
+    let post = async {
+        let (secure, https) = match url.strip_prefix("http://") {
+            Some(rest) => (false, format!("https://{rest}")),
+            None => (true, url.to_owned()),
+        };
+        let parts = parse_url(&https)?;
+        if !secure {
+            let loopback = ["127.0.0.1", "localhost", "[::1]"].contains(&parts.host);
+            let port_given = https["https://".len()..]
+                .split(['/', '?'])
+                .next()
+                .and_then(|authority| authority.rsplit_once(':'))
+                .is_some_and(|(_, port)| port.parse::<u16>().is_ok());
+            if !loopback || !port_given {
+                return Err(Error::Protocol(format!("{url}: only https URLs are used")));
+            }
+        }
+        let body = form_encode(form);
+        let request = format!(
+            "POST {} HTTP/1.1\r\nHost: {}\r\nUser-Agent: Katna\r\nAccept: application/json\r\n\
+             Content-Type: application/x-www-form-urlencoded\r\nContent-Length: {}\r\n\
+             Connection: close\r\n\r\n{body}",
+            parts.path,
+            parts.host,
+            body.len()
+        );
+        let mut conn = Conn::new(tls.clone());
+        if secure {
+            conn.connect_tls(parts.host, parts.port).await?;
+        } else {
+            conn.connect_tcp(parts.host.trim_matches(['[', ']']), parts.port)
+                .await?;
+        }
+        conn.write_all(request.as_bytes()).await?;
+        let mut response = Vec::new();
+        loop {
+            let chunk = conn.read().await?;
+            if chunk.is_empty() {
+                break;
+            }
+            response.extend_from_slice(chunk);
+            if response.len() > MAX_FORM_ANSWER {
+                return Err(Error::Protocol(format!("{url}: answer too large")));
+            }
+        }
+        let _ = conn.close().await;
+        let head = parse_head(&response)?;
+        let body = parse_body(&head, MAX_FORM_ANSWER, false)?;
+        Ok((head.status, body))
+    };
+    post.or(async {
+        async_io::Timer::after(timeout).await;
+        Err(Error::Timeout(timeout))
+    })
+    .await
+}
+
+/// `name=value&…`, escaped for a form or a URL query.
+pub fn form_encode(fields: &[(&str, &str)]) -> String {
+    fields
+        .iter()
+        .map(|(name, value)| format!("{}={}", escape(name), escape(value)))
+        .collect::<Vec<_>>()
+        .join("&")
+}
+
+/// Percent-escapes everything but RFC 3986's unreserved characters.
+pub fn escape(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    for byte in text.bytes() {
+        if byte.is_ascii_alphanumeric() || b"-._~".contains(&byte) {
+            out.push(char::from(byte));
+        } else {
+            out.push_str(&format!("%{byte:02X}"));
+        }
+    }
+    out
+}
+
 /// The data of a chunked body; with `cut`, what arrived of a body that
 /// was not read to its end.
 fn dechunk(mut data: &[u8], cut: bool) -> Option<Vec<u8>> {
@@ -485,6 +578,14 @@ mod tests {
             Answer::Status(404)
         ));
         assert!(parse_response(b"HTTP/1.1 200 OK\r\n", MAX_BODY, false).is_err());
+    }
+
+    #[test]
+    fn forms() {
+        assert_eq!(
+            form_encode(&[("a", "x y"), ("redirect_uri", "http://127.0.0.1:5/")]),
+            "a=x%20y&redirect_uri=http%3A%2F%2F127.0.0.1%3A5%2F"
+        );
     }
 
     #[test]

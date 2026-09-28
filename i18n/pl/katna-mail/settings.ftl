@@ -20,7 +20,6 @@ settings-tab-experimental = Eksperymentalne
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = Zobacz biuletyny i listy mailingowe, które otrzymujesz, i wypisz się jednym kliknięciem.
 settings-tab-folders-rules-coming = Twórz, zmieniaj nazwy, przenoś i ukrywaj foldery i etykiety oraz wybieraj, które mają się synchronizować. Reguły same sortują, etykietują, przekazują dalej lub usuwają nową pocztę według nadawcy, tematu lub słów.
 settings-tab-mcp-server-coming = Pozwól asystentom AI na tym komputerze przeszukiwać i czytać Twoją pocztę oraz tworzyć wersje robocze – za Twoją zgodą.
 

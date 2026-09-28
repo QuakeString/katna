@@ -2,7 +2,7 @@
 
 title = "Katna account"
 text = """
-Settings > Katna account lets you create an account on Katna's own server,
+Settings > Subscription lets you create an account on Katna's own server,
 with its own password, never a mail password. Katna's online features, such
 as read receipts and link tracking, will need it. You can see the computers
 signed in and sign any of them out.

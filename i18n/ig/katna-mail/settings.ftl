@@ -20,7 +20,6 @@ settings-tab-experimental = Nnwale
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = Hụ akwụkwọ akụkọ na ndepụta ozi ị na-enweta, ma kwụsị ịnata ha site na ịpị otu ugboro.
 settings-tab-folders-rules-coming = Mepụta, gụgharịa aha, bugharịa ma zoo folda na leebụl, ma họrọ ndị ga-emekọ ihe. Iwu na-ahazi, na-etinye leebụl, na-ezigaa ma ọ bụ na-ehichapụ ozi ọhụrụ n'onwe ha, dịka onye zitere, isiokwu ma ọ bụ okwu.
 settings-tab-mcp-server-coming = Kwe ka ndị enyemaka AI nọ na kọmputa a chọọ, gụọ ma debe ndebiri ozi gị, site n'ikike gị.
 

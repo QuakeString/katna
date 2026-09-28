@@ -20,7 +20,6 @@ settings-tab-experimental = Thử nghiệm
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = Xem các bản tin và danh sách gửi thư bạn nhận được, và hủy đăng ký chỉ bằng một lần nhấp.
 settings-tab-folders-rules-coming = Tạo, đổi tên, di chuyển và ẩn thư mục và nhãn, và chọn những mục được đồng bộ. Quy tắc tự động sắp xếp, gắn nhãn, chuyển tiếp hoặc xóa thư mới theo người gửi, tiêu đề hoặc từ ngữ.
 settings-tab-mcp-server-coming = Cho phép trợ lý AI trên máy tính này tìm kiếm, đọc và soạn nháp thư của bạn, khi bạn đồng ý.
 

@@ -11,7 +11,6 @@ about-changelog = 변경 기록
 about-source = 소스 코드
 about-coffee = 커피 한 잔 사 주기
 about-coming-soon = 곧 제공 예정
-about-coffee-scan = 또는 휴대전화로 코드를 스캔하세요.
 about-follow = 개발자 팔로우
 about-love-title = Rust, KDE, Linux를 향한 사랑으로 만들었습니다
 about-love-text = Rust 덕분에 빠르고 안전한 메일 앱을 즐겁게 만들 수 있습니다. Katna에는 unsafe 코드가 없습니다. KDE의 Plasma 데스크톱과 PIM 제품군은 Katna에 영감을 주었고, Linux와 자유 소프트웨어 커뮤니티는 Katna가 서 있는 토대를 만들어 줍니다. 감사합니다. 아래의 라이브러리에도 감사드립니다.

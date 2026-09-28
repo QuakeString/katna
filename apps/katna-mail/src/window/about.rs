@@ -7,11 +7,11 @@
 //! for Rust, KDE and Linux. Opened from Help in the menu bar, quick
 //! settings and the version in the Settings header.
 
-use std::sync::{Arc, LazyLock};
+use std::sync::LazyLock;
 
 use gpui::{
-    AnyElement, Context, FocusHandle, FontWeight, Image, ImageFormat, ImageSource, KeyDownEvent,
-    MouseButton, ObjectFit, SharedString, Window, div, img, prelude::*, rgba,
+    AnyElement, Context, FocusHandle, FontWeight, KeyDownEvent, MouseButton, SharedString, Window,
+    div, prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
@@ -26,20 +26,13 @@ use crate::widgets::{elevation, filled_button, icon, outlined_button, tip};
 const WIDTH: f32 = 520.0;
 
 /// Where "Buy me a coffee" leads. `None` until the page exists; the
-/// button then shows, disabled, with "Coming soon", and no QR code.
+/// button then shows, disabled, with "Coming soon".
 const SUPPORT_URL: Option<&str> = Some("https://buymeacoffee.com/quakestring");
-
-/// The same page as a QR code, from Buy Me a Coffee, to open it on a phone.
-const SUPPORT_QR: &[u8] = include_bytes!("../../about/buymeacoffee-qr.png");
 
 /// Buy Me a Coffee's own button colours: black on yellow with a black
 /// outline.
 const COFFEE_YELLOW: u32 = 0xffdd00ff;
 const COFFEE_INK: u32 = 0x000000ff;
-
-/// [`SUPPORT_QR`], decoded once and kept while the app runs.
-static QR: LazyLock<Arc<Image>> =
-    LazyLock::new(|| Arc::new(Image::from_bytes(ImageFormat::Png, SUPPORT_QR.to_vec())));
 
 /// The source of Katna.
 const SOURCE_URL: &str = env!("CARGO_PKG_REPOSITORY");
@@ -373,7 +366,7 @@ impl MailWindow {
         // Drawn like Buy Me a Coffee's own button, in both themes.
         let button = div()
             .id("about-coffee")
-            .flex_none()
+            .flex_1()
             .h(px(44.0))
             .px(px(20.0))
             .flex()
@@ -400,50 +393,13 @@ impl MailWindow {
                 .opacity(0.55)
                 .tooltip(tip(tr!("about-coming-soon"), th)),
         };
-        let qr = SUPPORT_URL.map(|_| {
-            // On white in both themes, so any phone reads it.
-            div()
-                .flex_none()
-                .size(px(112.0))
-                .p(px(6.0))
-                .rounded(px(12.0))
-                .bg(rgba(0xffffffff))
-                .border_1()
-                .border_color(rgba(th.divider))
-                .child(
-                    img(ImageSource::Image(QR.clone()))
-                        .size_full()
-                        .object_fit(ObjectFit::Contain),
-                )
-        });
+        // One wide button across the content, like the box below it.
         let coffee = div()
             .flex_none()
             .mx(px(24.0))
             .mt(px(12.0))
             .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(16.0))
-            .child(
-                div()
-                    .flex_1()
-                    .min_w_0()
-                    .flex()
-                    .flex_col()
-                    .items_start()
-                    .gap(px(8.0))
-                    .child(button)
-                    .when(qr.is_some(), |d| {
-                        d.child(
-                            div()
-                                .text_size(px(13.0))
-                                .line_height(px(18.0))
-                                .text_color(rgba(th.text_dim))
-                                .child(tr!("about-coffee-scan")),
-                        )
-                    }),
-            )
-            .children(qr);
+            .child(button);
 
         let follow = FOLLOW
             .iter()

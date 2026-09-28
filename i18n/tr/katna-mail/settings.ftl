@@ -20,7 +20,6 @@ settings-tab-experimental = Deneysel
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = Aldığınız bültenleri ve e-posta listelerini görün, tek tıklamayla abonelikten çıkın.
 settings-tab-folders-rules-coming = Klasörleri ve etiketleri oluşturun, yeniden adlandırın, taşıyın ve gizleyin; hangilerinin senkronize edileceğini seçin. Kurallar yeni postaları gönderene, konuya veya kelimelere göre kendiliğinden sıralar, etiketler, yönlendirir ya da siler.
 settings-tab-mcp-server-coming = Bu bilgisayardaki yapay zekâ asistanlarının, sizin onayınızla postalarınızda arama yapmasına, onları okumasına ve taslak yazmasına izin verin.
 

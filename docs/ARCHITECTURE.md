@@ -500,9 +500,42 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   client has `TOP`; partial download of very large messages (header first,
   body on request) is a later option. Discovery does not look for POP3
   servers yet, so `AddPop3Account` needs the server.
-- **Gmail / Microsoft:** OAuth2. Google's restricted scope for full mail
-  access requires app verification and a yearly security assessment.
-  Launch with generic IMAP, Fastmail/JMAP and app-password accounts first.
+- **Gmail / Microsoft:** OAuth2 (`katna_sync::oauth`, daemon
+  `daemon/sign_in.rs`, D-Bus `SignIn`): the installed-app flow with PKCE
+  (RFC 7636) and a loopback redirect (RFC 8252). The daemon listens on a
+  free port of `127.0.0.1` (`http://127.0.0.1:PORT/` for Google;
+  `http://localhost:PORT/` for Microsoft, which registers loopback
+  redirects under `localhost`, so `::1` is listened on too), opens the
+  provider's page in the default browser (the OpenURI portal, else
+  `xdg-open`), and trades the code for tokens with our own HTTPS client
+  (rustls). Scopes: Google `https://mail.google.com/ openid email profile`
+  (with `access_type=offline` and `prompt=consent`, so every sign-in brings
+  a refresh token); Microsoft `IMAP.AccessAsUser.All SMTP.Send
+  offline_access openid email profile` on `outlook.office.com`. The ID token
+  names the address (Microsoft's personal accounts only in
+  `preferred_username`), the name and, for Google, a picture. The refresh
+  token goes to the Secret Service in the account's password slot, and
+  `AccountSettings.oauth` names the provider. A `TokenSource` per account,
+  shared by its connections, hands out access tokens and refreshes them
+  two minutes before they run out (one refresh at a time), saving the
+  refresh tokens Microsoft replaces. IMAP and SMTP log in with SASL XOAUTH2,
+  which both providers take; a refused access token is dropped and a fresh
+  one tried once. A refused refresh token (`invalid_grant`) is an auth
+  failure: the account stops syncing and Katna Mail shows "Sign in again",
+  which runs `SignIn` for that account. Network trouble while refreshing is
+  not, and retries like any other. The client IDs live in
+  `katna_core::ids` (`GOOGLE_OAUTH_CLIENT_ID`, with Google's non-secret
+  desktop `GOOGLE_OAUTH_CLIENT_SECRET`, and `MICROSOFT_OAUTH_CLIENT_ID`),
+  filled at build time from `KATNA_`-prefixed environment variables of the
+  same names, which the package build takes from GitHub secrets, so none is
+  in the repository. Refresh tokens are kept like passwords (Secret Service,
+  or Credential Manager on Windows, where a token too long for one entry is
+  split over `<user>~1`, `<user>~2`, …); an empty one hides that provider's button and makes `SignIn` fail.
+  Google's restricted scope for full mail access requires app verification
+  and a yearly security assessment; until then Google lets only test users
+  in. Tests use a local fake OAuth server and a fake IMAP server, never a
+  real provider. App passwords keep working for Gmail; setting a password on
+  an OAuth2 account (`SetPassword`) switches it back to the password.
 - **Account setup** (task 1.2, `katna_sync::autoconfig`, D-Bus
   `DiscoverAccount`): the user gives an address and the daemon finds the
   servers, in Thunderbird's order. First built-in settings for Gmail,
@@ -513,7 +546,11 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   8314), then the ISPDB entry of the MX host's domain (hosted mail such as
   Google Workspace), then probing `imap.`, `mail.` and `smtp.DOMAIN` on
   993/143 and 465/587 for a mail greeting. Files come only over HTTPS; TLS
-  beats STARTTLS beats plain; servers that only take OAuth2 are skipped.
+  beats STARTTLS beats plain. Servers of Google and Microsoft are marked
+  for OAuth2 sign-in (`Discovered::oauth`); Outlook.com, Hotmail, Live and
+  MSN addresses and files whose IMAP server takes only OAuth2 at a known
+  provider get that provider's servers and no password step; other
+  OAuth2-only servers are skipped.
   The HTTP client and DNS resolver are our own few hundred lines (UDP to
   `/etc/resolv.conf` servers), not a crate, to keep the daemon small.
   Adding the account still checks the login.
@@ -1076,10 +1113,11 @@ The user's own accounts show the picture picked in Settings → Accounts
 its own coloured letter, so accounts tell apart. "Use desktop picture"
 copies the desktop user's picture (`~/.face.icon`, the AccountsService
 icon, or `~/.face`) in as the account's picture; it is not the default,
-because it made every account look the same. There is no OAuth, so a
-provider's profile photo (Google's needs a Google sign-in) is out of
-reach; when OAuth2 comes, it goes after the picked picture in
-`own_picture` (`window/remote.rs`). Libravatar or Gravatar could come
+because it made every account look the same. An account that signed in
+with Google shows its Google picture (the daemon saves it under
+`account-pictures/provider/<account id>`) when none was picked
+(`own_picture`, `window/remote.rs`); Microsoft's needs Microsoft Graph,
+which Katna does not ask for. Libravatar or Gravatar could come
 later as an opt-in. Settings → Accounts also renames an account and sets
 the order accounts are listed in everywhere (Move up, Move down, or a
 drag by the handle; `mail.account_order` in `config.toml`), the first
@@ -1687,7 +1725,14 @@ Gemini or confidential mode):
   nothing is found, or from "Server settings", the servers are entered by
   hand: host, port and SSL/TLS, STARTTLS or none for IMAP and SMTP, and
   the username. `AddImapAccount` checks the login before saving; a refused
-  password is shown under the field. It opens from the first-start pages
+  password is shown under the field. When this build has the client IDs,
+  "Sign in with Google" and "Sign in with Microsoft" sit under the address
+  field, and a Gmail password step offers "Sign in with Google instead";
+  for Microsoft's own addresses discovery leads straight there. Signing in
+  shows "Continue in your browser" while the daemon waits for the
+  provider's page (`SignIn`; Back or Cancel ends it with `CancelSignIn`). An
+  OAuth2 account whose sign-in stopped working shows a note at the bottom
+  of the window with "Sign in" (`window/sign_in_again.rs`). It opens from the first-start pages
   (no account yet), the account card above the rail's account picture ("Add
   another account", which also lists the accounts and opens their
   inboxes), and Send without an account. The daemon signals `MailChanged`
@@ -2304,9 +2349,11 @@ Sketch — versioned by the interface name; breaking changes create `Pim2`.
 | Sync | `SyncNow(account?)`, `SetForegroundFolders(ids)`, `Status() → per-account state` |
 | Signals | `MessagesChanged(ids)`, `FoldersChanged`, `EventsChanged(range)`, `SyncStatusChanged`, `UnreadCountChanged(n)` |
 
-Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssx)`
-(id, kind, name, address, state, detail, last sync),
-`DiscoverAccount(address) → (account, source)`, `AddImapAccount(account,
+Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssxs)`
+(id, kind, name, address, state, detail, last sync, OAuth2 provider),
+`DiscoverAccount(address) → (account, source, provider, password works)`,
+`SignIn(provider, id, address) → id` (OAuth2 in the browser; adds the
+account, or signs one in again), `CancelSignIn() → b`, `AddImapAccount(account,
 password) → id`, `AddPop3Account(account, password) → id` (with
 leave-on-server, days to keep, and delete-with-local),
 `SetPassword(id, password)`, `RenameAccount(id, name)` (an empty name
@@ -2671,7 +2718,7 @@ own on Katna Server; mail logins never go to the server.
   `KatnaDevices`, `KatnaSignOutDevice`, `KatnaChangePassword`,
   `KatnaResetPassword`, `KatnaConfirmReset`, `KatnaDeleteAccount`, signal
   `KatnaAccountChanged`; errors carry `katna_dbus::katna_error` names.
-- **App:** Settings > Katna account. Features check
+- **App:** Settings > Subscription. Features check
   `MailWindow::katna_signed_in` and show `katna_sign_in_needed` ("Sign in
   to use this") when not.
 
@@ -2709,7 +2756,7 @@ owner's server, over on-device models or DeepL).
   is never offered for translation.
 - **App:** a bar above a message in another language: "Translate to
   <reading language>", then "Show original"; while signed out it says to
-  sign in to a Katna account, with a button to Settings > Katna account.
+  sign in to a Katna account, with a button to Settings > Subscription.
   Settings > General >
   Translation: offer translations (on), the reading language (the UI
   language by default), languages always translated (none by default, one

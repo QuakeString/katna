@@ -13,9 +13,10 @@
 //! 5. Guessing `imap.DOMAIN`, `mail.DOMAIN` and `smtp.DOMAIN` on the usual
 //!    ports, keeping those that greet like a mail server.
 //!
-//! Configuration files only come over HTTPS. Servers that only offer
-//! OAuth2 are skipped until Katna supports it. Whatever is found, adding the
-//! account still checks the login.
+//! Configuration files only come over HTTPS. Google and Microsoft servers
+//! are marked for OAuth2 sign-in ([`Discovered::oauth`]); other servers that
+//! only offer OAuth2 are skipped. Whatever is found, adding the account
+//! still checks the login.
 
 pub(crate) mod dns;
 pub mod http;
@@ -23,11 +24,12 @@ pub mod http;
 use std::{future::Future, net::SocketAddr, pin::Pin, time::Duration};
 
 use futures_lite::{FutureExt, future};
-use katna_core::{Security, Server};
+use katna_core::{OAuthProvider, Security, Server};
 
 use crate::{
     Error, Result,
     net::{Conn, Tls},
+    oauth::Provider,
 };
 
 /// Where settings were found.
@@ -63,6 +65,35 @@ pub struct Discovered {
     /// `None` when no SMTP server was found; the account can still read.
     pub smtp: Option<Server>,
     pub source: Source,
+    /// The servers belong to a provider Katna signs in to with OAuth2.
+    pub oauth: Option<OAuthProvider>,
+    /// A password (an app password, often) also works. `false` when the
+    /// provider only takes OAuth2.
+    pub password: bool,
+}
+
+impl Discovered {
+    fn new(imap: Server, smtp: Option<Server>, source: Source) -> Self {
+        Self {
+            oauth: Provider::for_imap_host(&imap.host),
+            imap,
+            smtp,
+            source,
+            password: true,
+        }
+    }
+
+    /// The provider's own servers, for signing in with OAuth2 only.
+    fn oauth_only(provider: OAuthProvider, address: &str, source: Source) -> Self {
+        let (imap, smtp) = Provider::servers(provider, address);
+        Self {
+            imap,
+            smtp: Some(smtp),
+            source,
+            oauth: Some(provider),
+            password: false,
+        }
+    }
 }
 
 /// Which of an account's two servers.
@@ -193,26 +224,30 @@ async fn discover_with(
         format!("{}{domain}", net.ispdb()),
     ];
     let bodies = join_all(urls.into_iter().map(|url| net.fetch(url)).collect()).await;
-    let mut oauth_only = false;
+    let mut oauth_only = None;
     for (index, body) in bodies.into_iter().enumerate() {
         let Some(body) = body else { continue };
+        let source = if index < 2 {
+            Source::Provider
+        } else {
+            Source::Ispdb
+        };
         match parse_config(&body, &user) {
-            Ok(Some((imap, smtp))) => {
-                let source = if index < 2 {
-                    Source::Provider
-                } else {
-                    Source::Ispdb
-                };
-                return Ok(Discovered { imap, smtp, source });
+            Ok(Some((imap, smtp))) => return Ok(Discovered::new(imap, smtp, source)),
+            Ok(None) => {
+                oauth_only.get_or_insert((oauth_provider(&body, &user), source));
             }
-            Ok(None) => oauth_only = true,
             Err(err) => tracing::debug!(%err, "unusable autoconfig file"),
         }
     }
     // The provider says how to sign in; guessing would only find servers
     // that refuse the password.
-    if oauth_only {
-        return Err(oauth_error(&domain));
+    match oauth_only {
+        Some((Some(provider), source)) => {
+            return Ok(Discovered::oauth_only(provider, address, source));
+        }
+        Some((None, _)) => return Err(oauth_error(&domain)),
+        None => {}
     }
 
     if let Some(found) = from_srv(net, &user).await {
@@ -229,14 +264,13 @@ async fn discover_with(
         tried.push(base.clone());
         if let Some(body) = net.fetch(format!("{}{base}", net.ispdb())).await {
             match parse_config(&body, &user) {
-                Ok(Some((imap, smtp))) => {
-                    return Ok(Discovered {
-                        imap,
-                        smtp,
-                        source: Source::Mx,
-                    });
+                Ok(Some((imap, smtp))) => return Ok(Discovered::new(imap, smtp, Source::Mx)),
+                Ok(None) => {
+                    return match oauth_provider(&body, &user) {
+                        Some(provider) => Ok(Discovered::oauth_only(provider, address, Source::Mx)),
+                        None => Err(oauth_error(&domain)),
+                    };
                 }
-                Ok(None) => return Err(oauth_error(&domain)),
                 Err(err) => tracing::debug!(%err, "unusable ISPDB file"),
             }
         }
@@ -251,8 +285,30 @@ async fn discover_with(
 }
 
 fn oauth_error(domain: &str) -> String {
-    format!("{domain} only allows OAuth2 sign-in, which Katna does not support yet")
+    format!("{domain} only allows OAuth2 sign-in, which Katna cannot do for this provider yet")
 }
+
+/// The provider whose OAuth2 sign-in the IMAP servers of a configuration
+/// file ask for, if Katna knows it.
+fn oauth_provider(xml: &[u8], user: &User<'_>) -> Option<OAuthProvider> {
+    let text = std::str::from_utf8(xml).ok()?;
+    let doc = roxmltree::Document::parse(text).ok()?;
+    doc.descendants()
+        .filter(|node| {
+            node.has_tag_name("incomingServer") && node.attribute("type") == Some("imap")
+        })
+        .filter_map(|node| {
+            let host = node
+                .children()
+                .find(|c| c.has_tag_name("hostname"))?
+                .text()?;
+            Provider::for_imap_host(&user.expand(host.trim()))
+        })
+        .next()
+}
+
+/// Microsoft's own domains, whose servers only take OAuth2.
+const MICROSOFT_DOMAINS: &[&str] = &["outlook.com", "hotmail.com", "live.com", "msn.com"];
 
 struct User<'a> {
     address: &'a str,
@@ -302,6 +358,13 @@ const BUILT_IN: &[(&[&str], &str, &str, Security, bool)] = &[
 ];
 
 fn built_in(user: &User<'_>) -> Option<Discovered> {
+    if MICROSOFT_DOMAINS.contains(&user.domain) {
+        return Some(Discovered::oauth_only(
+            OAuthProvider::Microsoft,
+            user.address,
+            Source::BuiltIn,
+        ));
+    }
     let (_, imap, smtp, smtp_security, local_login) = BUILT_IN
         .iter()
         .find(|(domains, ..)| domains.contains(&user.domain))?;
@@ -310,9 +373,9 @@ fn built_in(user: &User<'_>) -> Option<Discovered> {
     } else {
         user.address
     };
-    Some(Discovered {
-        imap: server(imap, 993, Security::Tls, username),
-        smtp: Some(server(
+    Some(Discovered::new(
+        server(imap, 993, Security::Tls, username),
+        Some(server(
             smtp,
             if *smtp_security == Security::Tls {
                 465
@@ -322,8 +385,8 @@ fn built_in(user: &User<'_>) -> Option<Discovered> {
             *smtp_security,
             username,
         )),
-        source: Source::BuiltIn,
-    })
+        Source::BuiltIn,
+    ))
 }
 
 fn server(host: &str, port: u16, security: Security, username: &str) -> Server {
@@ -436,11 +499,7 @@ async fn from_srv(net: &impl Network, user: &User<'_>) -> Option<Discovered> {
     };
     let imap = pick(&found[0], Security::Tls).or_else(|| pick(&found[1], Security::StartTls))?;
     let smtp = pick(&found[2], Security::Tls).or_else(|| pick(&found[3], Security::StartTls));
-    Some(Discovered {
-        imap,
-        smtp,
-        source: Source::DnsSrv,
-    })
+    Some(Discovered::new(imap, smtp, Source::DnsSrv))
 }
 
 /// Probes the usual host names and ports at once; the first candidate in
@@ -484,11 +543,11 @@ async fn guess(net: &impl Network, user: &User<'_>) -> Option<Discovered> {
             .find(|(_, ok)| **ok)
             .map(|(s, _)| s.clone())
     };
-    Some(Discovered {
-        imap: first(&imap, imap_ok)?,
-        smtp: first(&smtp, smtp_ok),
-        source: Source::Guess,
-    })
+    Some(Discovered::new(
+        first(&imap, imap_ok)?,
+        first(&smtp, smtp_ok),
+        Source::Guess,
+    ))
 }
 
 /// The registrable part of a host name, roughly: the last two labels, or
