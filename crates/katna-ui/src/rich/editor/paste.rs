@@ -59,10 +59,10 @@ pub struct Transfer {
 }
 
 impl Transfer {
-    /// What a clipboard item holds (read with `gpui_linux::read_rich`).
+    /// What a clipboard item holds (read with `crate::native::read_rich`).
     pub fn from_clipboard(item: &ClipboardItem) -> Self {
         let mut transfer = Transfer {
-            html: gpui_linux::clipboard_html(item).map(str::to_owned),
+            html: crate::native::clipboard_html(item).map(str::to_owned),
             ..Transfer::default()
         };
         let mut text = String::new();
@@ -85,7 +85,7 @@ impl Transfer {
     }
 
     /// What was dropped from another app.
-    pub fn from_dropped(content: gpui_linux::DroppedContent) -> Self {
+    pub fn from_dropped(content: crate::native::DroppedContent) -> Self {
         Transfer {
             text: content.text,
             html: content.html,
@@ -126,7 +126,7 @@ impl RichEditor {
     }
 
     fn paste_clipboard(&mut self, plain: bool, cx: &mut Context<Self>) {
-        let Some(item) = gpui_linux::read_rich(|| cx.read_from_clipboard()) else {
+        let Some(item) = crate::native::read_rich(|| cx.read_from_clipboard()) else {
             return;
         };
         let transfer = Transfer::from_clipboard(&item);

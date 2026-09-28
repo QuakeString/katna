@@ -83,7 +83,7 @@ fn table_picture(blocks: &[Block]) -> Option<Picture> {
 /// Whether a drag holds only pictures (files, or a picture from another
 /// app), which go where they are dropped in the text.
 pub(super) fn pictures_only(paths: &ExternalPaths) -> bool {
-    match gpui_linux::dropped_content(paths) {
+    match katna_ui::native::dropped_content(paths) {
         Some(content) => {
             content.image.is_some() && content.text.is_none() && content.html.is_none()
         }
@@ -159,7 +159,7 @@ impl MailWindow {
     }
 
     fn take_drop(&mut self, paths: &ExternalPaths, inline: bool, cx: &mut Context<Self>) {
-        if let Some(content) = gpui_linux::dropped_content(paths) {
+        if let Some(content) = katna_ui::native::dropped_content(paths) {
             if let Some(compose) = &self.compose {
                 compose.body.update(cx, |editor, cx| {
                     editor.take(Transfer::from_dropped(content), false, cx)

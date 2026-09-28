@@ -5,6 +5,7 @@
 
 pub mod frost;
 pub mod motion;
+pub mod native;
 pub mod rich;
 pub mod ripple;
 pub mod scale;

@@ -11,10 +11,16 @@
 //! first run after [`General::start_at_login_set`] was added writes it once,
 //! and from then on only the switch (or the desktop) changes it.
 //!
+//! On Windows the setting is the `Katna` value of the user's `Run` key
+//! (`HKCU\Software\Microsoft\Windows\CurrentVersion\Run`), which Settings >
+//! Apps > Startup also shows and turns off.
+//!
 //! [`General::start_at_login_set`]: katna_core::config::General::start_at_login_set
 
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+#[cfg(not(windows))]
+use std::path::PathBuf;
 use std::process::ExitCode;
 
 use katna_core::ids;
@@ -31,6 +37,7 @@ pub enum Start {
     Window,
 }
 
+#[cfg(not(windows))]
 /// The autostart entry's path, or `None` without a home folder.
 fn path() -> Option<PathBuf> {
     let absolute = |name: &str| {
@@ -47,6 +54,7 @@ fn path() -> Option<PathBuf> {
     )
 }
 
+#[cfg(not(windows))]
 /// What Katna starts at login, or `None` for nothing.
 pub fn get() -> Option<Start> {
     let text = std::fs::read_to_string(path()?).ok()?;
@@ -54,6 +62,7 @@ pub fn get() -> Option<Start> {
 }
 
 /// What the entry `text` starts.
+#[cfg(not(windows))]
 fn start_of(text: &str) -> Start {
     let quiet = text
         .lines()
@@ -62,6 +71,7 @@ fn start_of(text: &str) -> Start {
     if quiet { Start::Quietly } else { Start::Window }
 }
 
+#[cfg(not(windows))]
 /// Makes Katna start at login as `start` says, or not at all.
 pub fn set(start: Option<Start>) -> io::Result<()> {
     let path = path().ok_or_else(|| io::Error::other("no home folder"))?;
@@ -95,6 +105,7 @@ pub fn set_default() -> bool {
     }
 }
 
+#[cfg(not(windows))]
 /// Off also means the service's systemd unit, which the install notes used
 /// to have people enable, no longer starts it at login. Where there is no
 /// systemd, or the unit was never enabled, this does nothing.
@@ -108,12 +119,66 @@ fn stop_service_unit() {
     });
 }
 
+/// The user's `Run` key and Katna's value in it.
+#[cfg(windows)]
+const RUN_KEY: &str = r"Software\Microsoft\Windows\CurrentVersion\Run";
+#[cfg(windows)]
+const RUN_VALUE: &str = "Katna";
+
+/// What Katna starts at login, or `None` for nothing.
+#[cfg(windows)]
+pub fn get() -> Option<Start> {
+    let key = winreg::RegKey::predef(winreg::enums::HKEY_CURRENT_USER)
+        .open_subkey(RUN_KEY)
+        .ok()?;
+    let command: String = key.get_value(RUN_VALUE).ok()?;
+    Some(start_of_command(&command))
+}
+
+/// What the `Run` command `command` starts.
+#[cfg_attr(not(windows), allow(dead_code))]
+fn start_of_command(command: &str) -> Start {
+    if command
+        .split_whitespace()
+        .any(|word| word == BACKGROUND_FLAG)
+    {
+        Start::Quietly
+    } else {
+        Start::Window
+    }
+}
+
+/// The `Run` command that starts `exe` as `start` says.
+#[cfg_attr(not(windows), allow(dead_code))]
+fn run_command(exe: &Path, start: Start) -> String {
+    let program = format!("\"{}\"", exe.display());
+    match start {
+        Start::Quietly => format!("{program} {BACKGROUND_FLAG}"),
+        Start::Window => program,
+    }
+}
+
+/// Makes Katna start at login as `start` says, or not at all.
+#[cfg(windows)]
+pub fn set(start: Option<Start>) -> io::Result<()> {
+    let (key, _) =
+        winreg::RegKey::predef(winreg::enums::HKEY_CURRENT_USER).create_subkey(RUN_KEY)?;
+    let Some(start) = start else {
+        return match key.delete_value(RUN_VALUE) {
+            Err(err) if err.kind() != io::ErrorKind::NotFound => Err(err),
+            _ => Ok(()),
+        };
+    };
+    let exe = std::env::current_exe()?;
+    key.set_value(RUN_VALUE, &run_command(&exe, start))
+}
+
 /// `katna-mail --background`: starts the Katna service through D-Bus
 /// activation (the systemd unit where there is one, so there is only ever
 /// one) and exits without a window.
 pub fn start_service() -> ExitCode {
     let started = futures_lite::future::block_on(async {
-        let connection = zbus::Connection::session().await?;
+        let connection = katna_dbus::session().await?;
         connection
             .call_method(
                 Some("org.freedesktop.DBus"),
@@ -135,6 +200,7 @@ pub fn start_service() -> ExitCode {
 }
 
 /// The desktop entry that starts `exe` as `start` says.
+#[cfg(not(windows))]
 fn entry(exe: &Path, start: Start) -> String {
     // The installed program by name, so an update that moves it still
     // starts; a build run from elsewhere by its path, quoted.
@@ -171,6 +237,7 @@ fn entry(exe: &Path, start: Start) -> String {
 mod tests {
     use super::*;
 
+    #[cfg(not(windows))]
     #[test]
     fn installed_program_starts_by_name() {
         let text = entry(Path::new("/usr/bin/katna-mail"), Start::Window);
@@ -178,6 +245,7 @@ mod tests {
         assert!(text.contains(&format!("\nIcon={}\n", ids::MAIL_APP_ID)));
     }
 
+    #[cfg(not(windows))]
     #[test]
     fn other_builds_start_by_quoted_path() {
         let text = entry(Path::new("/home/me/my katna/katna-mail"), Start::Window);
@@ -187,6 +255,7 @@ mod tests {
         );
     }
 
+    #[cfg(not(windows))]
     #[test]
     fn quiet_start_has_the_flag_and_reads_back() {
         for exe in ["/usr/bin/katna-mail", "/home/me/my katna/katna-mail"] {
@@ -199,6 +268,22 @@ mod tests {
         assert!(text.contains("\nExec=katna-mail --background\n"), "{text}");
     }
 
+    #[test]
+    fn windows_run_command_reads_back() {
+        let exe = Path::new(r"C:\Users\Ada\AppData\Local\Programs\Katna\katna-mail.exe");
+        let quiet = run_command(exe, Start::Quietly);
+        assert_eq!(
+            quiet,
+            r#""C:\Users\Ada\AppData\Local\Programs\Katna\katna-mail.exe" --background"#
+        );
+        assert_eq!(start_of_command(&quiet), Start::Quietly);
+        assert_eq!(
+            start_of_command(&run_command(exe, Start::Window)),
+            Start::Window
+        );
+    }
+
+    #[cfg(not(windows))]
     #[test]
     fn an_entry_from_before_opens_the_window() {
         // What "Open Katna Mail at login" wrote before the quiet start.

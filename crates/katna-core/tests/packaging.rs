@@ -192,8 +192,12 @@ fn prefix_only_in_checked_files() {
         }
         for file in fs::read_dir(&dir).unwrap() {
             let path = file.unwrap().path();
-            let relative = path.strip_prefix(packaging()).unwrap().to_string_lossy();
-            if path.is_dir() || checked.iter().any(|name| *name == relative) {
+            let relative = path
+                .strip_prefix(packaging())
+                .unwrap()
+                .to_string_lossy()
+                .replace('\\', "/");
+            if path.is_dir() || checked.contains(&relative) {
                 continue;
             }
             // Built packages are not text.

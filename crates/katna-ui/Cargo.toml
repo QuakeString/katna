@@ -11,9 +11,13 @@ publish.workspace = true
 [dependencies]
 katna-core.workspace = true
 gpui.workspace = true
+unicode-segmentation.workspace = true
+
+# Katna's patched Linux backend and renderer (vendor/); Windows uses GPUI's
+# own backend, reached through `native`.
+[target.'cfg(not(windows))'.dependencies]
 gpui-linux.workspace = true
 gpui-wgpu.workspace = true
-unicode-segmentation.workspace = true
 
 [lints]
 workspace = true
