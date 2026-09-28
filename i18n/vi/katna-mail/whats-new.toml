@@ -893,3 +893,22 @@ Trỏ vào một lượt mở hoặc lượt nhấp trong Hoạt động rồi n
 danh sách, hoặc nhấn Xóa tất cả để bắt đầu lại từ đầu. Lượt mở và lượt nhấp
 mới vẫn hiện ra, và báo cáo Chi tiết vẫn tính mọi thứ.
 """
+
+["2026-09-28-1541-round-logo"]
+title = "Logo tròn mới của Katna"
+text = """
+Katna có logo mới: chữ "k" viết tay trên một hình tròn màu xanh
+ngọc — trong menu ứng dụng, thanh trên cùng và bảng điều khiển. Khay
+hệ thống hiển thị logo bằng một màu phù hợp với thanh của bạn, còn
+Giới thiệu về Katna và trang chào mừng hiển thị đầy đủ tên "katna
+mail".
+"""
+
+["2026-09-28-1546-contact-cards"]
+title = "Thông tin liên hệ gọn gàng hơn"
+text = """
+Thông tin liên hệ giờ hiện mỗi phần trên thẻ mềm riêng, với các nút
+tròn dưới tên để gửi email cho người đó, tìm thư với họ hoặc gọi cho
+họ. Cuộc hội thoại gần đây hiện vài cuộc mới nhất; nhấn Thêm để xem
+phần còn lại và Thu gọn để ẩn chúng lại.
+"""

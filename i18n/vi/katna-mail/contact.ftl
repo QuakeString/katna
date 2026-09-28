@@ -3,6 +3,8 @@
 # Corrections welcome: see i18n/README.md.
 contact-panel-show = Hiện thông tin liên hệ
 contact-panel-hide = Ẩn thông tin liên hệ
+contact-email = Gửi email
+contact-search = Tìm thư với họ
 contact-messages = { $count } thư
 contact-from-to = { $from } từ họ, { $to } từ bạn
 contact-first = Đầu tiên
@@ -12,6 +14,8 @@ contact-copy-number = Sao chép số
 contact-number-copied = Đã sao chép số
 contact-local-time = { $time } giờ của họ ({ $offset })
 contact-conversations = Cuộc hội thoại gần đây
+contact-more = Thêm
+contact-less = Thu gọn
 contact-files = Tệp
 contact-people = Trong cuộc hội thoại này
 contact-local-only = Chỉ từ thư của bạn trên máy tính này

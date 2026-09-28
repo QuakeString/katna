@@ -952,3 +952,22 @@ retirer de la liste, ou appuyez sur Tout effacer pour repartir de zéro. Les
 nouvelles ouvertures et les nouveaux clics s’affichent toujours, et le
 rapport Détails compte toujours tout.
 """
+
+["2026-09-28-1541-round-logo"]
+title = "Le nouveau logo rond de Katna"
+text = """
+Katna a un nouveau logo : un k cursif sur un cercle bleu-vert, dans le menu
+des applications, la barre supérieure et la barre des tâches. La zone de
+notification l’affiche dans une couleur adaptée à votre panneau, et À propos
+de Katna et la page d’accueil affichent « katna mail » en entier.
+"""
+
+["2026-09-28-1546-contact-cards"]
+title = "Des détails du contact plus clairs"
+text = """
+Les détails du contact affichent désormais chaque partie dans sa propre
+carte douce, avec des boutons ronds sous le nom pour écrire à la personne,
+retrouver vos messages avec elle ou l’appeler. Conversations récentes
+affiche les dernières ; appuyez sur Plus pour voir le reste et sur Moins
+pour les replier.
+"""

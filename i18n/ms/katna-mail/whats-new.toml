@@ -926,3 +926,24 @@ daripada senarai, atau tekan Kosongkan semua untuk bermula semula. Pembukaan
 dan klik baharu masih akan muncul, dan laporan Butiran masih mengira
 semuanya.
 """
+
+["2026-09-28-1541-round-logo"]
+title = "Logo bulat baharu Katna"
+text = """
+Katna kini mempunyai logo baharu: huruf "k" bergaya tulisan tangan di
+atas bulatan warna teal — dalam menu aplikasi, bar atas dan panel.
+Dulang menunjukkannya dalam satu warna yang sesuai dengan panel anda,
+manakala Perihal Katna dan alu-aluan menunjukkan "katna mail" secara
+penuh.
+"""
+
+["2026-09-28-1546-contact-cards"]
+title = "Kad butiran kenalan yang lebih kemas"
+text = """
+Kad butiran kenalan kini menunjukkan setiap bahagian pada kad
+lembutnya sendiri, dengan butang bulat di bawah nama untuk
+menghantar e-mel kepada orang itu, mencari e-mel dengan mereka atau
+memanggil mereka. Perbualan terkini menunjukkan beberapa yang
+terbaharu; tekan Lagi untuk melihat selebihnya dan Kurang untuk
+melipatnya semula.
+"""

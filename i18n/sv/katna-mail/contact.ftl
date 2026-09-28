@@ -3,6 +3,8 @@
 # Corrections welcome: see i18n/README.md.
 contact-panel-show = Visa kontaktuppgifter
 contact-panel-hide = Dölj kontaktuppgifter
+contact-email = Skicka e-post
+contact-search = Sök e-post
 contact-messages = { $count ->
     [one] { $count } meddelande
    *[other] { $count } meddelanden
@@ -15,6 +17,8 @@ contact-copy-number = Kopiera nummer
 contact-number-copied = Numret har kopierats
 contact-local-time = { $time } hos dem ({ $offset })
 contact-conversations = Senaste konversationer
+contact-more = Mer
+contact-less = Mindre
 contact-files = Filer
 contact-people = I den här konversationen
 contact-local-only = Bara från din e-post på den här datorn

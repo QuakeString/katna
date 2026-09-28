@@ -3,6 +3,8 @@
 # Corrections welcome: see i18n/README.md.
 contact-panel-show = Показати відомості про контакт
 contact-panel-hide = Сховати відомості про контакт
+contact-email = Написати листа
+contact-search = Знайти листування зі співрозмовником
 contact-messages = { $count ->
     [one] { $count } лист
     [few] { $count } листи
@@ -17,6 +19,8 @@ contact-copy-number = Копіювати номер
 contact-number-copied = Номер скопійовано
 contact-local-time = { $time } за часом співрозмовника ({ $offset })
 contact-conversations = Нещодавні ланцюжки
+contact-more = Ще
+contact-less = Згорнути
 contact-files = Файли
 contact-people = У цьому ланцюжку
 contact-local-only = Лише з вашої пошти на цьому комп’ютері

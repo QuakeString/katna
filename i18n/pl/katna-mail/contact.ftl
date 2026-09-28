@@ -3,6 +3,8 @@
 # Corrections welcome: see i18n/README.md.
 contact-panel-show = Pokaż dane kontaktu
 contact-panel-hide = Ukryj dane kontaktu
+contact-email = Wyślij e-mail
+contact-search = Szukaj w poczcie
 contact-messages = { $count ->
     [one] { $count } wiadomość
     [few] { $count } wiadomości
@@ -17,6 +19,8 @@ contact-copy-number = Kopiuj numer
 contact-number-copied = Skopiowano numer
 contact-local-time = { $time } u tej osoby ({ $offset })
 contact-conversations = Ostatnie wątki
+contact-more = Więcej
+contact-less = Mniej
 contact-files = Pliki
 contact-people = W tym wątku
 contact-local-only = Tylko z poczty na tym komputerze
