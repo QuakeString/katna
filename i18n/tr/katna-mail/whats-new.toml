@@ -883,3 +883,19 @@ Yanıt simgesinin yanındaki ok, yazdıklarınızı koruyarak Yanıtla, Tümün�
 yanıtla ve Yönlendir arasında geçiş yapar.
 """
 
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Arama seçenekleri dar pencerelere sığar"
+text = """
+Dar ya da kısa bir pencerede Arama seçenekleri artık eldeki alan kadar
+genişler, telefonda etiketleri alanlarının üstüne koyar ve sığmadığında
+kayar; böylece Ara düğmesi her zaman elinizin altındadır.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Yanıtlar doğru hesaptan gider"
+text = """
+Birleşik gelen kutusundan ya da aramadan açılan bir postayı Yanıtla veya
+Yönlendir artık profil resminizin altında seçili hesaptan değil, postanın
+geldiği hesaptan gönderir.
+"""

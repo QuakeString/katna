@@ -884,3 +884,19 @@ zobaczyć Od, Do, DW i UDW. Strzałka obok ikony odpowiedzi przełącza między
 Odpowiedz, Odpowiedz wszystkim i Przekaż dalej, zachowując to, co już
 napisano.
 """
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Opcje wyszukiwania mieszczą się w wąskich oknach"
+text = """
+W wąskim lub niskim oknie Opcje wyszukiwania zajmują teraz dostępną
+szerokość, na telefonie umieszczają etykiety nad polami i przewijają się,
+gdy się nie mieszczą, więc przycisk Szukaj jest zawsze pod ręką.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Odpowiedzi wychodzą z właściwego konta"
+text = """
+Po wybraniu Odpowiedz lub Przekaż dalej przy wiadomości otwartej ze Wspólnej
+skrzynki odbiorczej lub z wyszukiwania odpowiedź wychodzi teraz z konta, na
+które przyszła wiadomość, a nie z konta wybranego pod zdjęciem profilowym.
+"""

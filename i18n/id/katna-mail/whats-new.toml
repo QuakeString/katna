@@ -888,3 +888,19 @@ Kepada, Cc, dan Bcc. Panah di samping ikon balas beralih antara Balas, Balas
 semua, dan Teruskan, tanpa menghapus yang sudah Anda tulis.
 """
 
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Opsi penelusuran muat di jendela sempit"
+text = """
+Di jendela yang sempit atau pendek, Opsi penelusuran kini melebar sesuai
+ruang yang ada, menaruh label di atas kolomnya di ponsel, dan dapat digulir
+saat tidak muat, sehingga tombol Telusuri selalu terjangkau.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Balasan terkirim dari akun yang tepat"
+text = """
+Balas atau Teruskan pada email yang dibuka dari Kotak masuk gabungan atau
+dari pencarian kini terkirim dari akun yang menerima email itu, bukan akun
+yang dipilih di bawah gambar profil Anda.
+"""

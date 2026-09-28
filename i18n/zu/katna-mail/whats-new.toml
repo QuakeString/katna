@@ -916,3 +916,20 @@ ukuthi iya kubani; yichofoze ukuze uthole okuthi Kusuka ku, Ku, Cc no-Bcc.
 Umcibisholo oseduze kwesithonjana sokuphendula ushintsha phakathi kokuthi
 Phendula, Phendula bonke no-Dlulisela, ugcine lokho okubhalile.
 """
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Okukhethwa kukho kosesho kulingana namawindi amancane"
+text = """
+Ewindini elincane noma elifushane, okuthi Okukhethwa kukho kosesho manje
+kuyanweba kuze kugcwalise isikhala esikhona, kubeka amalebula ngaphezu
+kwezinkambu zawo kufoni futhi kuyaskrola uma kungalingani, ukuze inkinobho
+ethi Sesha ihlale iseduze.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Izimpendulo ziphuma ku-akhawunti efanele"
+text = """
+Ukuthi Phendula noma Dlulisela kumeyili evulwe ku-Ibhokisi lokungenayo
+elihlanganisiwe noma ekusesheni manje kuphuma ku-akhawunti imeyili efike
+kuyo, hhayi i-akhawunti ekhethwe ngaphansi kwesithombe sakho sephrofayela.
+"""

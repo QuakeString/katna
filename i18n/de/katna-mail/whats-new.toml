@@ -904,3 +904,21 @@ zeigt Von, An, Cc und Bcc. Der Pfeil neben dem Antwortsymbol wechselt
 zwischen Antworten, Allen antworten und Weiterleiten und behält, was Sie
 geschrieben haben.
 """
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Suchoptionen passen in schmale Fenster"
+text = """
+In einem schmalen oder niedrigen Fenster werden die Suchoptionen jetzt so
+breit, wie Platz ist, setzen auf einem Smartphone die Beschriftungen über
+ihre Felder und scrollen, wenn sie nicht passen, sodass die Schaltfläche
+Suchen immer erreichbar bleibt.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Antworten gehen vom richtigen Konto aus"
+text = """
+Antworten und Weiterleiten senden bei E-Mails, die Sie im Gemeinsamen
+Posteingang oder aus der Suche geöffnet haben, jetzt von dem Konto, an das
+die E-Mail ging, nicht von dem Konto, das unter Ihrem Profilbild ausgewählt
+ist.
+"""

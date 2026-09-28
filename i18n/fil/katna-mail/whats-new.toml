@@ -916,3 +916,20 @@ sa pagitan ng Sumagot, Sumagot sa lahat at Ipasa, nang hindi nawawala ang
 naisulat mo.
 """
 
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Kasya na ang Mga opsyon sa paghahanap sa makikitid na window"
+text = """
+Sa makitid o maikling window, lumalapad na ngayon ang Mga opsyon sa
+paghahanap ayon sa lugar na mayroon, inilalagay ang mga label sa itaas ng
+kanilang field sa phone at nag-i-scroll kapag hindi kasya, kaya laging abot-
+kamay ang button na Maghanap.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Lumalabas ang mga sagot mula sa tamang account"
+text = """
+Ang Sumagot o Ipasa sa mail na binuksan mula sa Pinag-isang inbox o mula sa
+paghahanap ay ipinapadala na ngayon mula sa account na tumanggap ng mail,
+hindi sa account na napili sa ilalim ng larawan ng iyong profile.
+"""

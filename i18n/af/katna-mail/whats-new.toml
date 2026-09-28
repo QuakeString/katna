@@ -861,3 +861,19 @@ Die pyltjie langs die antwoordikoon wissel tussen Antwoord, Antwoord almal
 en Stuur aan, en hou wat jy geskryf het.
 """
 
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Soekopsies pas in smal vensters"
+text = """
+In 'n smal of kort venster word Soekopsies nou so breed as wat daar plek is,
+sit dit op 'n foon die etikette bo hul velde en rol dit as dit nie pas nie,
+sodat die Soek-knoppie altyd binne bereik is.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Antwoorde gaan uit van die regte rekening"
+text = """
+Antwoord of Stuur aan op e-pos wat uit die Verenigde inkassie of uit soek
+oopgemaak is, stuur nou van die rekening waarheen die e-pos gekom het, nie
+die rekening wat onder jou profielprent gekies is nie.
+"""

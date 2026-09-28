@@ -860,3 +860,19 @@ Mũi tên bên cạnh biểu tượng trả lời chuyển giữa Trả lời, T
 Chuyển tiếp, vẫn giữ nguyên những gì bạn đã viết.
 """
 
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Tùy chọn tìm kiếm vừa với cửa sổ hẹp"
+text = """
+Trong cửa sổ hẹp hoặc thấp, Tùy chọn tìm kiếm giờ giãn rộng theo chỗ trống
+có được, đặt nhãn phía trên ô nhập trên điện thoại và cuộn được khi không
+vừa, nên nút Tìm kiếm luôn trong tầm tay.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Thư trả lời được gửi từ đúng tài khoản"
+text = """
+Trả lời hoặc Chuyển tiếp một thư mở từ Hộp thư đến hợp nhất hay từ kết quả
+tìm kiếm giờ được gửi từ tài khoản đã nhận thư đó, không phải tài khoản được
+chọn dưới ảnh hồ sơ của bạn.
+"""

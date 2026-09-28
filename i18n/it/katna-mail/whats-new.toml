@@ -894,3 +894,20 @@ solo a chi va; fai clic per vedere Da, A, Cc e Ccn. La freccia accanto
 all'icona di risposta passa tra Rispondi, Rispondi a tutti e Inoltra,
 mantenendo quello che hai scritto.
 """
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Le Opzioni di ricerca si adattano alle finestre strette"
+text = """
+In una finestra stretta o bassa, le Opzioni di ricerca ora si allargano allo
+spazio disponibile, mettono le etichette sopra i campi su un telefono e
+scorrono quando non ci stanno, così il pulsante Cerca è sempre a portata di
+mano.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Le risposte partono dall'account giusto"
+text = """
+Con Rispondi o Inoltra su un messaggio aperto dalla Posta in arrivo
+unificata o dalla ricerca, il messaggio ora parte dall'account a cui è
+arrivata la posta, non da quello scelto sotto la tua immagine del profilo.
+"""

@@ -889,3 +889,19 @@ vai; clique nele para ver De, Para, Cc e Cco. A seta ao lado do ícone de
 resposta alterna entre Responder, Responder a todos e Encaminhar, mantendo o
 que você escreveu.
 """
+
+["2026-09-28-1110-search-options-narrow"]
+title = "As Opções de pesquisa cabem em janelas estreitas"
+text = """
+Em uma janela estreita ou baixa, as Opções de pesquisa agora ocupam a
+largura disponível, colocam os rótulos acima dos campos no celular e rolam
+quando não cabem, para que o botão Pesquisar esteja sempre ao alcance.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Respostas saem da conta certa"
+text = """
+Ao usar Responder ou Encaminhar em um e-mail aberto na Caixa de entrada
+unificada ou na pesquisa, a mensagem agora sai da conta que recebeu o
+e-mail, e não da conta escolhida sob sua foto de perfil.
+"""

@@ -888,3 +888,20 @@ aan wie het gaat; klik erop voor Van, Aan, Cc en Bcc. De pijl naast het
 antwoordpictogram wisselt tussen Beantwoorden, Allen beantwoorden en
 Doorsturen, en houdt vast wat je schreef.
 """
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Zoekopties passen in smalle vensters"
+text = """
+In een smal of laag venster worden de Zoekopties nu zo breed als de ruimte
+toelaat, staan de labels op een telefoon boven hun velden en scrollen ze als
+ze niet passen, zodat de knop Zoeken altijd binnen bereik is.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Antwoorden gaan uit van het juiste account"
+text = """
+Met Beantwoorden of Doorsturen bij een e-mail die je opent vanuit de
+Gecombineerde inbox of vanuit zoeken, gaat het bericht nu uit vanaf het
+account waar de e-mail binnenkwam, niet vanaf het account dat onder je
+profielfoto is gekozen.
+"""
