@@ -984,10 +984,16 @@ impl Mail {
             .collect()
     }
 
-    /// Opens and clicks since `since` (Unix milliseconds), newest first.
-    pub fn activity_feed(&self, since: i64, limit: u32) -> Vec<katna_store::ActivityItem> {
+    /// Opens and clicks since `since` (Unix milliseconds) and after event
+    /// `after`, newest first.
+    pub fn activity_feed(
+        &self,
+        since: i64,
+        after: i64,
+        limit: u32,
+    ) -> Vec<katna_store::ActivityItem> {
         self.store
-            .activity_feed(since, limit)
+            .activity_feed(since, after, limit)
             .unwrap_or_else(|err| {
                 tracing::warn!("reading tracking: {err}");
                 Vec::new()

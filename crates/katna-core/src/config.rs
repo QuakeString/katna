@@ -486,6 +486,13 @@ pub struct MailView {
     /// number), so the Activity button can count the ones after it.
     #[serde(skip_serializing_if = "is_zero")]
     pub activity_seen: i64,
+    /// Activity's list leaves out opens and clicks up to this event
+    /// (Clear all) ...
+    #[serde(skip_serializing_if = "is_zero")]
+    pub activity_cleared: i64,
+    /// ... and these ones, removed one by one after it.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub activity_removed: Vec<i64>,
 }
 
 fn is_zero(n: &i64) -> bool {
@@ -558,6 +565,8 @@ impl Default for MailView {
             account_order: Vec::new(),
             translation: TranslationSettings::default(),
             activity_seen: 0,
+            activity_cleared: 0,
+            activity_removed: Vec::new(),
         }
     }
 }
