@@ -12,12 +12,14 @@
 //! Text that is not an address stays as a chip with a red outline, and
 //! Send refuses to go while one is there.
 
+use std::cell::RefCell;
+
 use gpui::{
-    AnyElement, ClickEvent, Context, Focusable, FontWeight, SharedString, Window, anchored,
+    AnyElement, ClickEvent, Context, Focusable, FontWeight, SharedString, Window, anchored, canvas,
     deferred, div, point, prelude::*, rgba,
 };
 use katna_i18n::tr;
-use katna_ui::{TextInput, px};
+use katna_ui::{TextInput, px, unpx};
 
 use super::MailWindow;
 use super::recipients::{Field, last_entry, mailbox};
@@ -122,6 +124,135 @@ impl Chip {
             self.typed.clone()
         }
     }
+}
+
+/// The most chips of a field measured to lay out its first line.
+const MAX_CHIPS: usize = 512;
+/// A chip's width besides its name: the picture, the x and the padding.
+const CHIP_CHROME: f32 = 56.0;
+/// The ", " between folded names.
+const FOLD_COMMA: f32 = 8.0;
+/// Room for the "N more" badge after folded names.
+const FOLD_BADGE: f32 = 88.0;
+
+/// Where the chips of To, Cc and Bcc were last drawn: each chip's width,
+/// the field's and that of what ends its first line, to work out how many
+/// chips fit on the first line.
+#[derive(Debug)]
+pub(in crate::window) struct ChipLayout {
+    chips: RefCell<Vec<f32>>,
+    field: RefCell<Vec<f32>>,
+    trailing: RefCell<Vec<f32>>,
+}
+
+impl Default for ChipLayout {
+    fn default() -> Self {
+        Self {
+            chips: RefCell::new(vec![0.0; 3 * MAX_CHIPS]),
+            field: RefCell::new(vec![0.0; 3]),
+            trailing: RefCell::new(vec![0.0; 3]),
+        }
+    }
+}
+
+impl ChipLayout {
+    /// Records a width; whether it changed.
+    fn set(&self, list: &RefCell<Vec<f32>>, at: usize, width: f32) -> bool {
+        let mut list = list.borrow_mut();
+        let changed = (list[at] - width).abs() > 0.5;
+        if changed {
+            list[at] = width;
+        }
+        changed
+    }
+
+    /// Room for chips on a field's first line.
+    fn first_room(&self, field: Field) -> f32 {
+        let trailing = self.trailing.borrow()[field.ix()];
+        self.field.borrow()[field.ix()] - trailing - if trailing > 0.0 { 8.0 } else { 0.0 }
+    }
+
+    /// How many of the `count` chips fit on a field's first line, once
+    /// they were all measured.
+    fn first_line(&self, field: Field, count: usize, trailing: bool) -> Option<usize> {
+        let widths = self.chips.borrow();
+        let widths =
+            widths.get(field.ix() * MAX_CHIPS..field.ix() * MAX_CHIPS + count.min(MAX_CHIPS))?;
+        let measured = count <= MAX_CHIPS
+            && self.field.borrow()[field.ix()] > 0.0
+            && (!trailing || self.trailing.borrow()[field.ix()] > 0.0)
+            && widths.iter().all(|w| *w > 0.0);
+        if !measured {
+            return None;
+        }
+        let room = self.first_room(field);
+        let mut used = 0.0;
+        Some(
+            widths
+                .iter()
+                .take_while(|w| {
+                    let next = used + if used > 0.0 { 4.0 } else { 0.0 } + **w;
+                    let fits = next <= room;
+                    if fits {
+                        used = next;
+                    }
+                    fits
+                })
+                .count(),
+        )
+    }
+
+    /// How many names fit on a folded field's line, before its "N more"
+    /// badge: a name is about as wide as its chip without the picture, the
+    /// x and the padding.
+    fn folded_fits(&self, field: Field, count: usize) -> usize {
+        let widths = self.chips.borrow();
+        let base = field.ix() * MAX_CHIPS;
+        let room = self.first_room(field) - FOLD_BADGE;
+        let mut used = 0.0;
+        widths[base..base + count.min(MAX_CHIPS)]
+            .iter()
+            .take_while(|w| {
+                let name = (**w - CHIP_CHROME).max(0.0);
+                let next = used + if used > 0.0 { FOLD_COMMA } else { 0.0 } + name;
+                let fits = next <= room;
+                if fits {
+                    used = next;
+                }
+                fits
+            })
+            .count()
+            .max(1)
+    }
+
+    /// The room left on a field's first line after its first `count`
+    /// chips.
+    fn room_left(&self, field: Field, count: usize) -> f32 {
+        let widths = self.chips.borrow();
+        let base = field.ix() * MAX_CHIPS;
+        let used: f32 = widths[base..base + count.min(MAX_CHIPS)]
+            .iter()
+            .map(|w| w + 4.0)
+            .sum();
+        self.first_room(field) - used
+    }
+}
+
+/// Draws `this` again after the frame being drawn.
+fn notify_later(this: &gpui::WeakEntity<MailWindow>, cx: &mut gpui::App) {
+    let this = this.clone();
+    cx.defer(move |cx| {
+        this.update(cx, |_, cx| cx.notify()).ok();
+    });
+}
+
+/// Draws the mail window again once the current update and frame are
+/// done.
+pub(super) fn notify_soon(cx: &mut Context<MailWindow>) {
+    cx.spawn(async move |this, cx| {
+        this.update(cx, |_, cx| cx.notify()).ok();
+    })
+    .detach();
 }
 
 /// The chips of To, Cc and Bcc.
@@ -347,6 +478,10 @@ impl MailWindow {
                 cx.notify();
             });
         }
+        // Typing goes on at the end of a long list.
+        if let Some(c) = &self.compose {
+            c.chip_scroll[field.ix()].scroll_to_bottom();
+        }
         cx.notify();
     }
 
@@ -550,6 +685,7 @@ impl MailWindow {
     pub(super) fn render_recipient_field(
         &self,
         field: Field,
+        trailing: Option<AnyElement>,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -559,12 +695,134 @@ impl MailWindow {
         let Some(input) = self.recipient_input(field) else {
             return div().into_any_element();
         };
-        let mut chips: Vec<AnyElement> = compose
-            .chips
-            .get(field)
+        let list = compose.chips.get(field);
+        let layout = compose.chip_layout.clone();
+        let fits = layout.first_line(field, list.len(), trailing.is_some());
+        let this = cx.entity().downgrade();
+        // Records the field's width, to work out what fits on its first
+        // line next time.
+        let measure_field = {
+            let (layout, this) = (layout.clone(), this.clone());
+            canvas(
+                move |bounds, _, cx| {
+                    if layout.set(&layout.field, field.ix(), unpx(bounds.size.width)) {
+                        notify_later(&this, cx);
+                    }
+                },
+                |_, _, _, _| {},
+            )
+            .absolute()
+            .top_0()
+            .left_0()
+            .size_full()
+        };
+        let trailing = trailing.map(|trailing| {
+            let (layout, this) = (layout.clone(), this.clone());
+            div().relative().flex_none().child(trailing).child(
+                canvas(
+                    move |bounds, _, cx| {
+                        if layout.set(&layout.trailing, field.ix(), unpx(bounds.size.width)) {
+                            notify_later(&this, cx);
+                        }
+                    },
+                    |_, _, _, _| {},
+                )
+                .absolute()
+                .top_0()
+                .left_0()
+                .size_full(),
+            )
+        });
+        // Away from the field, many recipients fold into one line:
+        // "Name, Name, 19 more", as in Gmail. A click opens them again.
+        if let Some(shown) = fits.filter(|shown| {
+            *shown < list.len() && compose.active_field != Some(field) && self.chips_at_rest(field)
+        }) {
+            let shown = layout
+                .folded_fits(field, list.len())
+                .max(shown)
+                .min(list.len());
+            let names = list[..shown]
+                .iter()
+                .map(|c| c.label().to_owned())
+                .collect::<Vec<_>>()
+                .join(", ");
+            let focus = input.focus_handle(cx);
+            return div()
+                .id(("recipients-folded", field.ix()))
+                .relative()
+                .flex_1()
+                .min_w_0()
+                .min_h(px(40.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(8.0))
+                .cursor_text()
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    // Open, so the field is there to take the cursor.
+                    if let Some(c) = &mut this.compose {
+                        c.active_field = Some(field);
+                        c.chip_scroll[field.ix()].scroll_to_bottom();
+                    }
+                    window.focus(&focus, cx);
+                    cx.notify();
+                }))
+                .child(
+                    div()
+                        .min_w_0()
+                        .truncate()
+                        .text_color(rgba(th.text))
+                        .child(names),
+                )
+                .when(shown < list.len(), |d| {
+                    d.child(
+                        div()
+                            .flex_none()
+                            .px(px(6.0))
+                            .rounded(px(4.0))
+                            .border_1()
+                            .border_color(rgba(th.divider))
+                            .text_size(px(13.0))
+                            .text_color(rgba(th.text_dim))
+                            .child(tr!("compose-more-recipients", count = list.len() - shown)),
+                    )
+                })
+                .child(div().flex_1())
+                .children(trailing)
+                .child(measure_field)
+                .into_any_element();
+        }
+        let mut chips: Vec<AnyElement> = list
             .iter()
             .enumerate()
-            .map(|(ix, chip)| self.render_chip(field, ix, chip, th, cx))
+            .map(|(ix, chip)| {
+                let (layout, this) = (layout.clone(), this.clone());
+                div()
+                    .relative()
+                    .flex_shrink(1.0)
+                    .min_w_0()
+                    .flex()
+                    .child(self.render_chip(field, ix, chip, th, cx))
+                    .child(
+                        canvas(
+                            move |bounds, _, cx| {
+                                let at = field.ix() * MAX_CHIPS + ix.min(MAX_CHIPS - 1);
+                                if ix < MAX_CHIPS
+                                    && layout.set(&layout.chips, at, unpx(bounds.size.width))
+                                {
+                                    notify_later(&this, cx);
+                                }
+                            },
+                            |_, _, _, _| {},
+                        )
+                        .absolute()
+                        .top_0()
+                        .left_0()
+                        .size_full(),
+                    )
+                    .into_any_element()
+            })
             .collect();
         // An address being fixed is typed where its chip was, about as
         // wide as its text; otherwise typing goes after the chips.
@@ -581,18 +839,88 @@ impl MailWindow {
         } else {
             typing.flex_1().min_w(px(TYPING))
         };
+        let editing = at < chips.len();
         chips.insert(at, typing.into_any_element());
+        let wrap = |d: gpui::Div| d.flex().flex_row().flex_wrap().items_center().gap(px(4.0));
+        // Until the chips were measured, or while one is being fixed, they
+        // wrap beside what ends the first line.
+        let Some(first) = fits.filter(|_| !editing) else {
+            return div()
+                .relative()
+                .flex_1()
+                .min_w_0()
+                .flex()
+                .flex_row()
+                .items_start()
+                .gap(px(8.0))
+                .child(wrap(div().flex_1().min_w_0().py(px(5.0))).children(chips))
+                .children(trailing.map(|t| t.h(px(40.0)).flex().items_center()))
+                .child(measure_field)
+                .into_any_element();
+        };
+        // Only the first line makes room for what ends it; the lines under
+        // it run to the edge. A long list scrolls under its first line.
+        let typing_fits = first == list.len() && layout.room_left(field, first) >= TYPING;
+        let first = if typing_fits { first + 1 } else { first };
+        let rest: Vec<AnyElement> = chips.drain(first..).collect();
+        let scroll = compose.chip_scroll[field.ix()].clone();
         div()
+            .relative()
             .flex_1()
             .min_w_0()
-            .py(px(6.0))
             .flex()
-            .flex_row()
-            .flex_wrap()
-            .items_center()
-            .gap(px(4.0))
-            .children(chips)
+            .flex_col()
+            .child(
+                div()
+                    .min_h(px(40.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(4.0))
+                    .children(chips)
+                    .when(!typing_fits, |d| {
+                        // The room left on the first line puts the cursor
+                        // where typing goes.
+                        let focus = input.focus_handle(cx);
+                        d.child(
+                            div()
+                                .id(("recipients-room", field.ix()))
+                                .flex_1()
+                                .self_stretch()
+                                .cursor_text()
+                                .on_click(move |_, window, cx| window.focus(&focus, cx)),
+                        )
+                    })
+                    .children(trailing.map(|t| t.ml(px(4.0)))),
+            )
+            .when(!rest.is_empty(), |d| {
+                d.child(
+                    wrap(div())
+                        .id(("recipient-lines", field.ix()))
+                        .max_h(px(4.0 * (HEIGHT + 4.0) + 6.0))
+                        .overflow_y_scroll()
+                        .track_scroll(&scroll)
+                        .pb(px(6.0))
+                        .children(rest),
+                )
+            })
+            .child(measure_field)
             .into_any_element()
+    }
+
+    /// Whether a field's chips can fold away: none selected, open, being
+    /// fixed or dragged, and no suggestions under it.
+    fn chips_at_rest(&self, field: Field) -> bool {
+        let Some(compose) = &self.compose else {
+            return false;
+        };
+        let chips = &compose.chips;
+        let here = |at: Option<(Field, usize)>| at.is_some_and(|(f, _)| f == field);
+        !(here(chips.selected)
+            || here(chips.open)
+            || here(chips.editing)
+            || chips.dragging.is_some()
+            || self.suggesting(field))
     }
 
     /// Cc and Bcc in one faint pill, a line between them, beside To; each
@@ -860,6 +1188,42 @@ impl MailWindow {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn measured(field: f32, trailing: f32, chips: &[f32]) -> ChipLayout {
+        let layout = ChipLayout::default();
+        layout.set(&layout.field, Field::To.ix(), field);
+        layout.set(&layout.trailing, Field::To.ix(), trailing);
+        for (ix, width) in chips.iter().enumerate() {
+            layout.set(&layout.chips, ix, *width);
+        }
+        layout
+    }
+
+    #[test]
+    fn only_the_first_line_leaves_room_for_the_buttons() {
+        // 500 wide, 192 for the buttons and the gap before them: two
+        // 150-wide chips fit, the third goes to the lines under it.
+        let layout = measured(500.0, 184.0, &[150.0, 150.0, 150.0]);
+        assert_eq!(layout.first_line(Field::To, 3, true), Some(2));
+        // Not measured yet: laid out as before.
+        assert_eq!(layout.first_line(Field::To, 4, true), None);
+        assert_eq!(ChipLayout::default().first_line(Field::To, 0, false), None);
+    }
+
+    #[test]
+    fn folded_names_take_less_room_than_their_chips() {
+        // Names without their picture and x: 94 each, and ", " between.
+        let layout = measured(500.0, 184.0, &[150.0; 5]);
+        assert_eq!(layout.first_line(Field::To, 5, true), Some(2));
+        assert_eq!(layout.folded_fits(Field::To, 5), 2);
+        let wide = measured(800.0, 184.0, &[150.0; 5]);
+        assert_eq!(wide.folded_fits(Field::To, 5), 5);
+        // At least one name, however narrow the field.
+        assert_eq!(
+            measured(100.0, 184.0, &[150.0]).folded_fits(Field::To, 1),
+            1
+        );
+    }
 
     fn labels(chips: &[Chip]) -> Vec<(&str, bool)> {
         chips.iter().map(|c| (c.label(), c.valid)).collect()

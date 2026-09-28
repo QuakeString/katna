@@ -203,6 +203,13 @@ pub(super) struct Compose {
     /// An inline reply shows its From, To, Cc and Bcc rows rather than
     /// one line naming the recipients.
     header_open: bool,
+    /// The recipient field the cursor is in; the others fold up when they
+    /// hold many.
+    active_field: Option<Field>,
+    /// Where the chips of each field were drawn, and each field's lines
+    /// after the first, which scroll.
+    chip_layout: Rc<chips::ChipLayout>,
+    chip_scroll: [ScrollHandle; 3],
     /// Those rows growing in or shrinking away.
     rows_glide: reply_kind::RowsGlide,
     _subscriptions: Vec<Subscription>,
@@ -1034,11 +1041,27 @@ impl MailWindow {
             ));
             if let Some(field) = field {
                 let focus = input.focus_handle(cx);
+                // Focus moves while a frame is drawn: the fold changes on
+                // the next one.
+                subscriptions.push(cx.on_focus(&focus, window, move |this, _, cx| {
+                    if let Some(c) = &mut this.compose {
+                        c.active_field = Some(field);
+                        // Typing goes on at the end of the list.
+                        c.chip_scroll[field.ix()].scroll_to_bottom();
+                    }
+                    chips::notify_soon(cx);
+                }));
                 subscriptions.push(cx.on_blur(&focus, window, move |this, _, cx| {
+                    if let Some(c) = &mut this.compose
+                        && c.active_field == Some(field)
+                    {
+                        c.active_field = None;
+                    }
                     // A click on a suggestion picks it instead.
                     if !this.suggesting(field) {
                         this.commit_recipients(field, true, cx);
                     }
+                    chips::notify_soon(cx);
                 }));
             }
         }
@@ -1157,6 +1180,9 @@ impl MailWindow {
             attach_scroll: ScrollHandle::new(),
             source: None,
             header_open: false,
+            active_field: None,
+            chip_layout: Rc::default(),
+            chip_scroll: Default::default(),
             rows_glide: reply_kind::RowsGlide::default(),
             _subscriptions: subscriptions,
         });
@@ -2107,24 +2133,21 @@ impl MailWindow {
                         .items_center()
                         .child(field)
                 };
-                let links = div()
-                    .flex_none()
-                    .h(px(40.0))
-                    .flex()
-                    .items_center()
-                    .children(self.render_cc_bcc(th, cx));
-                let to = field_row(tr!("compose-to"))
-                    .child(field(self.render_recipient_field(Field::To, th, cx)))
-                    .child(links);
+                let to = field_row(tr!("compose-to")).child(field(self.render_recipient_field(
+                    Field::To,
+                    self.render_cc_bcc(th, cx),
+                    th,
+                    cx,
+                )));
                 let to = self.recipient_row(to, Field::To, th, cx);
                 let cc = (compose.show_cc || dragging).then(|| {
                     let row = field_row(tr!("compose-cc"))
-                        .child(field(self.render_recipient_field(Field::Cc, th, cx)));
+                        .child(field(self.render_recipient_field(Field::Cc, None, th, cx)));
                     self.recipient_row(row, Field::Cc, th, cx)
                 });
                 let bcc = (compose.show_bcc || dragging).then(|| {
                     let row = field_row(tr!("compose-bcc"))
-                        .child(field(self.render_recipient_field(Field::Bcc, th, cx)));
+                        .child(field(self.render_recipient_field(Field::Bcc, None, th, cx)));
                     self.recipient_row(row, Field::Bcc, th, cx)
                 });
                 let tools = (!roomy).then(|| {
@@ -2324,24 +2347,22 @@ impl MailWindow {
                         .child(field),
                 )
         };
-        let [to_field, cc_field, bcc_field] = [Field::To, Field::Cc, Field::Bcc]
-            .map(|field| self.render_recipient_field(field, th, cx));
+        let tools = div()
+            .flex_none()
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(4.0))
+            .children(self.render_cc_bcc(th, cx))
+            .children(self.render_sealing(th, cx))
+            .children(self.render_tracking(th, cx))
+            .into_any_element();
+        let to_field = self.render_recipient_field(Field::To, Some(tools), th, cx);
+        let [cc_field, bcc_field] =
+            [Field::Cc, Field::Bcc].map(|field| self.render_recipient_field(field, None, th, cx));
         // A chip being dragged can land in Cc or Bcc even while hidden.
         let dragging = self.chip_dragging(cx).is_some();
-        let to = self
-            .recipient_row(row(tr!("compose-to"), to_field), Field::To, th, cx)
-            .child(
-                div()
-                    .flex_none()
-                    .h(px(40.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(4.0))
-                    .children(self.render_cc_bcc(th, cx))
-                    .children(self.render_sealing(th, cx))
-                    .children(self.render_tracking(th, cx)),
-            );
+        let to = self.recipient_row(row(tr!("compose-to"), to_field), Field::To, th, cx);
         div()
             .flex_none()
             .flex()

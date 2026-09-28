@@ -27,6 +27,9 @@ compose-edit-recipients = Edit recipients
 # On that line, before the names in Cc and in Bcc.
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+# After the first names of a field with many recipients, once the cursor
+# left it: how many more there are. A click shows them all.
+compose-more-recipients = { $count } more
 # Tooltip of the "…" button under a reply: shows the quoted message.
 compose-show-trimmed = Show trimmed content
 # The same button once the quoted message shows: hides it again.
