@@ -315,6 +315,8 @@ pub struct Sending {
     /// Send on replies and forwards also archives the conversation; the
     /// Send menu offers the other way.
     pub send_and_archive: bool,
+    /// A short sound plays when a message has gone out.
+    pub sent_sound: bool,
 }
 
 impl Default for Sending {
@@ -333,6 +335,7 @@ impl Default for Sending {
             writing_suggestions: true,
             send_from: String::new(),
             send_and_archive: false,
+            sent_sound: true,
         }
     }
 }

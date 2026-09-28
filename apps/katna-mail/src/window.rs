@@ -71,7 +71,7 @@ mod whats_new;
 use std::collections::{HashMap, HashSet};
 use std::ops::Range;
 use std::path::PathBuf;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use futures_lite::StreamExt;
 use gpui::{
@@ -96,7 +96,7 @@ use crate::data::{self, Entry, EntryKey, Mail, OpenError};
 use crate::sidebar::{self, Role, Tree};
 use crate::tabs::{self, Provider, Tab};
 use crate::theme::Theme;
-use crate::widgets::{elevation, icon};
+use crate::widgets::{elevation, icon, tip};
 
 use apps::{App as RailApp, People};
 use reader::Conversation;
@@ -374,6 +374,9 @@ const UNDO_STEPS: usize = 50;
 struct Snackbar {
     text: SharedString,
     undo: Option<Command>,
+    /// Counting down to this moment from this long before, in a ring
+    /// with the seconds inside; Undo goes when it is reached.
+    countdown: Option<(Instant, Duration)>,
     shown: Spring,
     _hide: Task<()>,
 }
@@ -576,6 +579,9 @@ pub struct MailWindow {
     language_picker: Option<language::LanguagePicker>,
     /// The message last handed to the outbox, for Undo.
     unsent: Option<compose::Unsent>,
+    /// Messages on their way out, and replies shown before the store has
+    /// them.
+    sending: compose::Sending,
     /// The spelling dictionary and scheduled mail of compose.
     writing: compose::Writing,
     /// The list of opens and clicks under the Activity button, when open.
@@ -798,6 +804,7 @@ impl MailWindow {
             daemon: None,
             _listen: None,
             _watch_sending: None,
+            sending: compose::Sending::default(),
             desktop_colors,
             layout: layout::Layout::new(),
             list_focus: cx.focus_handle(),
@@ -1004,29 +1011,36 @@ impl MailWindow {
         }));
     }
 
-    /// Says when the server refuses a message for good.
+    /// Says when a message went out, or when the server refused it for
+    /// good.
     fn watch_sending(&mut self, connection: Connection, cx: &mut Context<Self>) {
         self._watch_sending = Some(cx.spawn(async move |this, cx| {
-            let mut failures = match daemon::send_failures(&connection).await {
-                Ok(failures) => Box::pin(failures),
+            let mut outcomes = match daemon::send_outcomes(&connection).await {
+                Ok(outcomes) => Box::pin(outcomes),
                 Err(err) => {
                     tracing::info!("not following the outbox: {err}");
                     return;
                 }
             };
-            while let Some((subject, detail)) = failures.next().await {
-                let subject = if subject.trim().is_empty() {
-                    "(no subject)".to_owned()
-                } else {
-                    subject
-                };
-                let text = format!("\u{201c}{subject}\u{201d} could not be sent: {detail}");
-                if this
-                    .update(cx, |this, cx| {
-                        this.show_snackbar_for(text, None, FAILURE_TIME, cx)
-                    })
-                    .is_err()
-                {
+            while let Some(outcome) = outcomes.next().await {
+                let shown = this.update(cx, |this, cx| match outcome {
+                    daemon::SendOutcome::Sent(id) => this.went_out(id, cx),
+                    daemon::SendOutcome::Failed {
+                        id,
+                        subject,
+                        detail,
+                    } => {
+                        this.send_failed(id, cx);
+                        let subject = if subject.trim().is_empty() {
+                            "(no subject)".to_owned()
+                        } else {
+                            subject
+                        };
+                        let text = format!("\u{201c}{subject}\u{201d} could not be sent: {detail}");
+                        this.show_snackbar_for(text, None, FAILURE_TIME, cx);
+                    }
+                });
+                if shown.is_err() {
                     break;
                 }
             }
@@ -1278,10 +1292,14 @@ impl MailWindow {
         };
         let conversation = Conversation::load(mail, entry.key);
         self.reader_scroll.set_offset(gpui::point(px(0.0), px(0.0)));
+        let has_cards = self.sending.cards(entry.key).next().is_some();
         // Opening marks the conversation read, as webmail does: at once,
         // after it has been open a moment, or never (`mail.mark_read`).
         let unread = conversation.unread_messages();
         self.reader = Some(conversation);
+        if has_cards {
+            self.show_sent_cards(cx);
+        }
         self.read_timer = None;
         if unread.is_empty() {
             return;
@@ -1555,10 +1573,28 @@ impl MailWindow {
         self.snackbar = Some(Snackbar {
             text: text.into(),
             undo,
+            countdown: None,
             shown,
             _hide: hide,
         });
         cx.notify();
+    }
+
+    /// A snackbar counting the seconds down to `until`, with Undo until
+    /// then; it stays for `time` in all.
+    fn show_countdown(
+        &mut self,
+        text: impl Into<SharedString>,
+        undo: Command,
+        until: Instant,
+        time: Duration,
+        cx: &mut Context<Self>,
+    ) {
+        self.show_snackbar_for(text, Some(undo), time, cx);
+        if let Some(snackbar) = &mut self.snackbar {
+            let total = until.saturating_duration_since(Instant::now());
+            snackbar.countdown = Some((until, total));
+        }
     }
 
     /// Keeps `step` for Ctrl+Z.
@@ -1679,7 +1715,7 @@ impl MailWindow {
             if let (Some(reader), Ok(mail)) = (&mut self.reader, &mut self.mail) {
                 reader.refresh(mail);
             }
-            cx.notify();
+            self.show_sent_cards(cx);
             return;
         }
         self.load_tree();
@@ -1734,6 +1770,7 @@ impl MailWindow {
         if let (Some(reader), Ok(mail)) = (&mut self.reader, &mut self.mail) {
             reader.refresh(mail);
         }
+        self.show_sent_cards(cx);
         if animate {
             self.card_seq += 1;
         }
@@ -2329,7 +2366,8 @@ impl MailWindow {
             self.restore_quote(window, cx);
             return;
         }
-        if let Command::UndoSend(_) = undo {
+        if let Command::UndoSend(id) = undo {
+            self.send_undone(id, cx);
             // Taken back from the outbox: the message opens again.
             let connection = self.daemon.clone();
             cx.spawn_in(window, async move |this, cx| {
@@ -2465,6 +2503,22 @@ impl MailWindow {
             return None;
         }
         let s = s.max(0.0);
+        // Counted down: too late to take back.
+        let left = snackbar
+            .countdown
+            .map(|(until, total)| (until.saturating_duration_since(Instant::now()), total))
+            .filter(|(left, _)| !left.is_zero());
+        if left.is_none() && snackbar.countdown.is_some() {
+            snackbar.undo = None;
+            snackbar.countdown = None;
+        }
+        // The ring shrinks smoothly, a frame at a time.
+        let ring = left.map(|(left, total)| {
+            window.request_animation_frame();
+            let share = left.as_secs_f32() / total.as_secs_f32().max(0.001);
+            countdown_ring(share, left.as_secs_f32().ceil() as u64, th)
+        });
+        let text = snackbar.text.clone();
         let has_undo = snackbar.undo.is_some();
         // On a phone the note spans the window above the bottom bar.
         let shape = self.layout.shape;
@@ -2479,18 +2533,21 @@ impl MailWindow {
                 .min_w(px(288.0))
                 .max_w(px(560.0))
                 .pl(px(16.0))
-                .pr(px(if has_undo { 8.0 } else { 16.0 }))
-                .py(px(if has_undo { 6.0 } else { 14.0 }))
+                .pr(px(8.0))
+                .py(px(6.0))
+                .min_h(px(48.0))
                 .flex()
                 .flex_row()
                 .items_center()
-                .gap(px(24.0))
+                .gap(px(8.0))
                 .rounded(px(6.0))
                 .bg(rgba(th.snackbar))
                 .text_color(rgba(th.snackbar_text))
                 .text_size(px(14.0))
                 .shadow(elevation(th, 3.0))
-                .child(div().flex_1().min_w_0().child(snackbar.text.clone()))
+                .when(ring.is_some(), |d| d.pl(px(10.0)))
+                .children(ring)
+                .child(div().flex_1().min_w_0().mr(px(16.0)).child(text))
                 .when(has_undo, |d| {
                     d.child(
                         div()
@@ -2506,6 +2563,21 @@ impl MailWindow {
                             .child(katna_i18n::tr!("toast-undo")),
                     )
                 })
+                .child(
+                    div()
+                        .id("snackbar-close")
+                        .size(px(32.0))
+                        .flex_none()
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .rounded_full()
+                        .cursor_pointer()
+                        .hover(|s| s.bg(rgba(0xffffff1f)))
+                        .tooltip(tip(katna_i18n::tr!("toast-close"), th))
+                        .on_click(cx.listener(|this, _, _, cx| this.hide_snackbar(cx)))
+                        .child(icon("close", th.snackbar_text, 18.0)),
+                )
                 .into_any_element(),
         )
     }
@@ -3094,4 +3166,65 @@ fn page_card(th: &Theme) -> gpui::Div {
         .gap(px(12.0))
         .rounded(px(PANEL_RADIUS))
         .bg(rgba(th.surface))
+}
+
+/// The undo-send countdown: a ring whose line runs back as time passes,
+/// `share` of it left, with the `seconds` left inside.
+fn countdown_ring(share: f32, seconds: u64, th: &Theme) -> AnyElement {
+    const SIZE: f32 = 30.0;
+    const LINE: f32 = 2.5;
+    let track = crate::theme::fade(th.snackbar_text, 0.25);
+    let color = th.snackbar_text;
+    div()
+        .relative()
+        .flex_none()
+        .size(px(SIZE))
+        .flex()
+        .items_center()
+        .justify_center()
+        .child(
+            gpui::canvas(
+                |_, _, _| {},
+                move |bounds, _, window, _| {
+                    let radius = (SIZE - LINE) / 2.0;
+                    let center = bounds.center();
+                    let at = |turn: f32| {
+                        // From the top, clockwise.
+                        let angle = std::f32::consts::TAU * turn - std::f32::consts::FRAC_PI_2;
+                        gpui::point(
+                            center.x + px(radius * angle.cos()),
+                            center.y + px(radius * angle.sin()),
+                        )
+                    };
+                    let arc = |from: f32, to: f32| {
+                        let mut path = gpui::PathBuilder::stroke(px(LINE));
+                        let steps = ((to - from) * 96.0).ceil().max(1.0) as usize;
+                        path.move_to(at(from));
+                        for step in 1..=steps {
+                            path.line_to(at(from + (to - from) * step as f32 / steps as f32));
+                        }
+                        path.build().ok()
+                    };
+                    if let Some(path) = arc(0.0, 1.0) {
+                        window.paint_path(path, rgba(track));
+                    }
+                    // The line left runs from the top clockwise and shrinks
+                    // back towards it.
+                    if share > 0.0
+                        && let Some(path) = arc(1.0 - share.min(1.0), 1.0)
+                    {
+                        window.paint_path(path, rgba(color));
+                    }
+                },
+            )
+            .absolute()
+            .size_full(),
+        )
+        .child(
+            div()
+                .text_size(px(13.0))
+                .font_weight(gpui::FontWeight::MEDIUM)
+                .child(katna_i18n::format::number(seconds)),
+        )
+        .into_any_element()
 }

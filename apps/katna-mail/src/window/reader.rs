@@ -23,7 +23,7 @@ use katna_ui::motion::lerp;
 use katna_ui::px;
 use katna_ui::unpx;
 
-use super::compose::Kind;
+use super::compose::{Kind, SentCard};
 use super::list::separator;
 use super::rich::{self, Painter};
 use super::{MailWindow, Menu, SelectNext, SelectPrevious};
@@ -110,6 +110,9 @@ struct Part {
     /// Where its eye button was last drawn, and the window's size then,
     /// for the popover to point at.
     eye: tracking::Anchor,
+    /// A reply just sent, shown before the store has it: `true` once it
+    /// went out. Its ID is a stand-in.
+    pending: Option<bool>,
 }
 
 impl Part {
@@ -128,6 +131,7 @@ impl Part {
             message_id: None,
             ticks: std::collections::HashMap::new(),
             eye: Rc::default(),
+            pending: None,
         }
     }
 
@@ -196,8 +200,28 @@ impl Conversation {
         }
         match id {
             Some(id) => self.parts.iter().find(|p| p.id == id).and_then(view),
-            None => self.parts.iter().rev().find_map(view),
+            None => self
+                .parts
+                .iter()
+                .rev()
+                .filter(|p| p.pending.is_none())
+                .find_map(view),
         }
+    }
+
+    /// The message [`Self::view`] picks.
+    pub(super) fn view_id(&self, id: Option<MessageId>) -> Option<MessageId> {
+        let has_view = |p: &&Part| p.body.as_ref().is_some_and(|b| b.view.is_some());
+        match id {
+            Some(id) => self.parts.iter().find(|p| p.id == id).filter(has_view),
+            None => self
+                .parts
+                .iter()
+                .rev()
+                .filter(|p| p.pending.is_none())
+                .find(has_view),
+        }
+        .map(|p| p.id)
     }
 
     pub(super) fn subject(&self) -> &str {
@@ -206,7 +230,7 @@ impl Conversation {
 
     /// The line of the list it is, to open it elsewhere.
     pub(super) fn entry(&self) -> Option<data::Entry> {
-        let latest = self.parts.last()?.id;
+        let latest = self.parts.iter().rev().find(|p| p.pending.is_none())?.id;
         Some(data::Entry {
             key: self.key,
             latest,
@@ -382,7 +406,40 @@ impl Conversation {
                 },
             })
             .collect();
+        // Replies just sent stay until the store has them.
+        self.parts
+            .extend(old.into_iter().filter(|p| p.pending.is_some()));
         self.read_tracking(mail);
+    }
+
+    /// The `Message-ID`s of the user's stored messages in it.
+    pub(super) fn own_message_ids(&self) -> Vec<String> {
+        self.parts
+            .iter()
+            .filter(|p| p.pending.is_none())
+            .filter_map(|p| p.message_id.clone())
+            .collect()
+    }
+
+    /// Shows `cards`, replies just sent, after its stored messages, in
+    /// place of those shown before.
+    pub(super) fn place_sent<'a>(&mut self, cards: impl Iterator<Item = &'a SentCard>) {
+        let (mut shown, stored): (Vec<Part>, Vec<Part>) = std::mem::take(&mut self.parts)
+            .into_iter()
+            .partition(|p| p.pending.is_some());
+        self.parts = stored;
+        for card in cards {
+            let mut part = match shown.iter().position(|p| p.id == card.id) {
+                Some(ix) => shown.swap_remove(ix),
+                None => Part {
+                    body: Some(shown_body(&card.raw)),
+                    message_id: Some(card.message_id.clone()),
+                    ..Part::new(card.id, Some(card.row.clone()), true)
+                },
+            };
+            part.pending = Some(card.sent.is_some());
+            self.parts.push(part);
+        }
     }
 
     /// Open messages whose body is not stored yet.
@@ -408,7 +465,7 @@ impl Conversation {
     pub(super) fn unread_messages(&self) -> Vec<MessageId> {
         self.parts
             .iter()
-            .filter(|p| p.row.as_ref().is_some_and(|r| r.unread))
+            .filter(|p| p.pending.is_none() && p.row.as_ref().is_some_and(|r| r.unread))
             .map(|p| p.id)
             .collect()
     }
@@ -894,6 +951,9 @@ impl MailWindow {
         let unread = row.as_ref().is_some_and(|r| r.unread);
         let flagged = row.as_ref().is_some_and(|r| r.flagged);
         let id = part.id;
+        // A reply just sent: not stored yet, so nothing acts on it.
+        let pending = part.pending.is_some();
+        let waiting = part.pending == Some(false);
         let toggle = cx.listener(move |this, _, _, cx| {
             if let (Some(reader), Ok(mail)) = (&mut this.reader, &this.mail) {
                 reader.toggle(ix, mail);
@@ -903,11 +963,14 @@ impl MailWindow {
 
         if !part.expanded {
             let snippet = row.as_ref().map(|r| r.snippet.clone()).unwrap_or_default();
-            let short_date = date
-                .and_then(|d| format::local(d, &self.tz))
-                .zip(format::local(now, &self.tz))
-                .map(|(d, now)| format::list_date(d, now))
-                .unwrap_or_default();
+            let short_date = if waiting {
+                tr!("reader-sending")
+            } else {
+                date.and_then(|d| format::local(d, &self.tz))
+                    .zip(format::local(now, &self.tz))
+                    .map(|(d, now)| format::list_date(d, now))
+                    .unwrap_or_default()
+            };
             return div()
                 .id(("part", ix))
                 .flex()
@@ -969,15 +1032,18 @@ impl MailWindow {
                 .into_any_element();
         }
 
-        let long_date = date
-            .and_then(|d| {
+        let long_date = if waiting {
+            Some(tr!("reader-sending"))
+        } else {
+            date.and_then(|d| {
                 let long = format::long_date(format::local(d, &self.tz)?);
                 Some(match format::ago(d, now) {
                     Some(ago) => tr!("reader-date-ago", date = long, ago = ago),
                     None => long,
                 })
             })
-            .unwrap_or_default();
+        }
+        .unwrap_or_default();
         let full_names = self.config.mail.full_names;
         let names = |list: &[katna_render::Address]| {
             let mut seen = std::collections::HashSet::new();
@@ -1115,9 +1181,11 @@ impl MailWindow {
                         .child(long_date.clone()),
                 )
             })
-            .children(self.seen_eye(ix, part, th, cx))
-            .children(self.seen_popover(ix, part, th, cx))
-            .when(roomy, |d| {
+            .when(!pending, |d| {
+                d.children(self.seen_eye(ix, part, th, cx))
+                    .children(self.seen_popover(ix, part, th, cx))
+            })
+            .when(roomy && !pending, |d| {
                 d.child(
                     icon_button_colored(
                         ("part-star", ix),
@@ -1141,20 +1209,22 @@ impl MailWindow {
                     })),
                 )
             })
-            .child({
-                // Settings > General > Reply button.
-                let (kind, name, label) = if self.config.mail.reply_all {
-                    (Kind::ReplyAll, "reply-all", tr!("reply-reply-all"))
-                } else {
-                    (Kind::Reply, "reply", tr!("reply-reply"))
-                };
-                icon_button(("part-reply", ix), name, 20.0, th)
-                    .tooltip(tip(label, th))
-                    .size(px(32.0))
-                    .on_click(cx.listener(move |this, _, window, cx| {
-                        cx.stop_propagation();
-                        this.open_compose(kind, Some(id), window, cx);
-                    }))
+            .when(!pending, |d| {
+                d.child({
+                    // Settings > General > Reply button.
+                    let (kind, name, label) = if self.config.mail.reply_all {
+                        (Kind::ReplyAll, "reply-all", tr!("reply-reply-all"))
+                    } else {
+                        (Kind::Reply, "reply", tr!("reply-reply"))
+                    };
+                    icon_button(("part-reply", ix), name, 20.0, th)
+                        .tooltip(tip(label, th))
+                        .size(px(32.0))
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            cx.stop_propagation();
+                            this.open_compose(kind, Some(id), window, cx);
+                        }))
+                })
             });
 
         let details_box = (details && view.is_some()).then(|| {
@@ -1247,8 +1317,12 @@ impl MailWindow {
                         })
                     })
                     .collect();
-                let attachments = self.attachment_cards(id, &listed, th, cx);
-                let translation = self.translation_bar(ix, id, &view.body, encrypted, th, cx);
+                let attachments = (!pending).then(|| self.attachment_cards(id, &listed, th, cx));
+                let translation = if pending {
+                    None
+                } else {
+                    self.translation_bar(ix, id, &view.body, encrypted, th, cx)
+                };
                 let translated = self.translated_blocks(id);
                 div()
                     .flex()
@@ -1306,7 +1380,7 @@ impl MailWindow {
                         };
                         self.selectable_body(slot, text, cx)
                     })
-                    .children(attachments)
+                    .children(attachments.flatten())
                     .into_any_element()
             }
             _ => self.download_note(id, ix, th, cx),
@@ -1583,6 +1657,11 @@ fn read(mail: &Mail, id: MessageId) -> Body {
         Some(protection) => security::sealed(raw, protection),
         None => shown(&raw, None),
     }
+}
+
+/// The body of a message just sent, as written.
+fn shown_body(raw: &[u8]) -> Body {
+    shown(raw, None)
 }
 
 /// The body of `raw` as the reading view shows it.

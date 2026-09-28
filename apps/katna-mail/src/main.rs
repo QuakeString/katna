@@ -23,6 +23,7 @@ mod profile;
 mod receipts;
 mod sidebar;
 mod signatures;
+mod sound;
 mod spell;
 mod suggest;
 mod tabs;

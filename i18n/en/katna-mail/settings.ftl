@@ -78,6 +78,9 @@ settings-general-remote-images-always-detail = In every message, not only from s
 # The row of the undo-send delay.
 settings-general-sending = Sending
 settings-general-sending-detail = How long a sent message waits, so it can be taken back.
+# A switch under the undo-send choice.
+settings-general-sent-sound = Sound when mail is sent
+settings-general-sent-sound-detail = A short sound plays once a message has gone out.
 settings-general-offline = Offline mail
 settings-general-offline-detail = Recent mail is downloaded whole, to read without a connection. Older mail downloads when you open it.
 # A choice of how much mail is kept for offline reading.
