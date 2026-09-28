@@ -25,6 +25,9 @@ use crate::widgets::tip;
 const GLIDE: Duration = Duration::from_millis(220);
 /// The height of the "..." button.
 const BUTTON_HEIGHT: f32 = 16.0;
+/// The height the "..." button takes under the text while the quote is
+/// hidden: its gap, the room for its x and the button.
+const TRIMMED_HEIGHT: f32 = 5.0 + 7.0 + BUTTON_HEIGHT;
 
 /// Where the text and its shown quote were last drawn, from the top of the
 /// text.
@@ -40,18 +43,31 @@ pub(in crate::window) struct QuoteView {
 
 /// The text growing as the quote opens, or shrinking as it closes.
 pub(in crate::window) struct Glide {
-    start: Instant,
+    /// Opening, it starts once the quote was first laid out, which takes a
+    /// while for a long one.
+    start: std::cell::Cell<Option<Instant>>,
+    /// When it was asked for; one never laid out ends after a second.
+    made: Instant,
     /// The text's height when it began.
     from: f32,
     /// Closing: the height it shrinks to, before the quote is taken out.
     to: Option<f32>,
+    /// The height it was last drawn at.
+    drawn: std::cell::Cell<f32>,
     _tick: gpui::Task<()>,
 }
 
 impl Glide {
     /// How far along, eased: 0 at the start, 1 when done.
     fn eased(&self) -> f32 {
-        let t = (self.start.elapsed().as_secs_f32() / GLIDE.as_secs_f32()).min(1.0);
+        let Some(start) = self.start.get() else {
+            return if self.made.elapsed() > Duration::from_secs(1) {
+                1.0
+            } else {
+                0.0
+            };
+        };
+        let t = (start.elapsed().as_secs_f32() / GLIDE.as_secs_f32()).min(1.0);
         1.0 - (1.0 - t).powi(3)
     }
 }
@@ -161,8 +177,21 @@ impl MailWindow {
             _ => None,
         };
         let height = compose.quote_glide.as_ref().map(|glide| {
+            if glide.start.get().is_none() && view.height + TRIMMED_HEIGHT > glide.from {
+                glide.start.set(Some(Instant::now()));
+            }
             let to = glide.to.unwrap_or(view.height);
-            glide.from + (to - glide.from) * glide.eased()
+            let height = glide.from + (to - glide.from) * glide.eased();
+            // The Send row is placed before the card is laid out, from
+            // where it was last drawn: move that by what the text grows,
+            // or the row lags a frame behind and jumps.
+            let grown = height - glide.drawn.replace(height);
+            if grown != 0.0 {
+                let mut at = compose.stick.get();
+                at.footer_top += grown;
+                compose.stick.set(at);
+            }
+            height
         });
         let (cell, editor, this) = (
             compose.quote_view.clone(),
@@ -365,7 +394,8 @@ impl MailWindow {
                     };
                     body.update(cx, |editor, cx| editor.append_blocks(blocks, cx));
                     if !reduce {
-                        self.start_glide(view.height, None, cx);
+                        // The button under the text goes as the text grows.
+                        self.start_glide(view.height + TRIMMED_HEIGHT, None, cx);
                     }
                 }
             }
@@ -374,7 +404,8 @@ impl MailWindow {
                 // Back to the reply, with the cursor in it.
                 window.focus(&body.focus_handle(cx), cx);
                 match view.quote_top.filter(|_| !reduce) {
-                    Some(top) => self.start_glide(view.height, Some(top), cx),
+                    // Down to the text with the button back under it.
+                    Some(top) => self.start_glide(view.height, Some(top + TRIMMED_HEIGHT), cx),
                     None => self.hide_quote(cx),
                 }
             }
@@ -387,30 +418,34 @@ impl MailWindow {
     /// when `None`; closing, the quote goes when the text is short enough.
     fn start_glide(&mut self, from: f32, to: Option<f32>, cx: &mut Context<Self>) {
         let tick = cx.spawn(async move |this, cx| {
-            let start = Instant::now();
             loop {
                 cx.background_executor()
                     .timer(Duration::from_millis(16))
                     .await;
-                let done = start.elapsed() >= GLIDE;
-                let alive = this
-                    .update(cx, |this, cx| {
-                        if done {
-                            this.end_glide(cx);
-                        }
-                        cx.notify();
-                    })
-                    .is_ok();
-                if done || !alive {
+                let done = this.update(cx, |this, cx| {
+                    let done = this
+                        .compose
+                        .as_ref()
+                        .and_then(|c| c.quote_glide.as_ref())
+                        .is_none_or(|g| g.eased() >= 1.0);
+                    if done {
+                        this.end_glide(cx);
+                    }
+                    cx.notify();
+                    done
+                });
+                if done.unwrap_or(true) {
                     break;
                 }
             }
         });
         if let Some(compose) = &mut self.compose {
             compose.quote_glide = Some(Glide {
-                start: Instant::now(),
+                start: std::cell::Cell::new(to.map(|_| Instant::now())),
+                made: Instant::now(),
                 from,
                 to,
+                drawn: std::cell::Cell::new(from),
                 _tick: tick,
             });
         }
